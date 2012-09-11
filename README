@@ -1,0 +1,140 @@
+# Прототип ядра системы и веб-сервиса для работы с пациентом
+
+Используемые обозначения
+
+ * SRC_DIR - директория, в которой размещаются исходные коды сервера ТМИС
+ * DOMAIN_DIR - директория, в которой размещаются домены сервера Glassfish
+ * KORUS_DOMAIN - директория, в которой размещается домен для серверного приложения ТМИС
+ * GF_DIR - директория установки сервера Glassfish
+ * GF_ADMIN, GF_PASSWORD, GF_MASTERPASSWORD - аутентификационные данные для
+ домена серверного приложения ТМИС
+ * DB_SERVER - сервер, на котором развернута БД ТМИС
+ * DB_USERNAME, DB_PASSWORD - имя и пароль пользователя для доступа к серверу БД ТМИС
+
+Примеры
+
+ * SRC_DIR - /home/user/devel/tmis-server
+ * DOMAIN_DIR - /home/user/domains
+ * KORUS_DOMAIN - korus-domain
+ * GF_DIR - /opt/glassfishv3
+ * GF_ADMIN - admin
+ * GF_PASSWORD - adminadmin
+ * GF_MASTERPASSWORD - changeit
+ * DB_SERVER - db.local
+ * DB_USERNAME - root
+ * DB_PASSWORD - root
+
+## Зависимости
+
+Требуемое ПО
+
+ * Для развертывания ядра
+  * Maven 3.0.2+
+  * Glassfish v3
+  * mysql-jbdc 5.1.15+
+  * log4j 1.2.16+
+ * Для функциональных тестов
+  * python 2.7
+  * suds 0.4+
+  * nosetests-1.0.0+
+  * freshen-0.2+
+
+  Библиотеки mysql-connector-java-bin.jar и log4j.jar должны быть доступны в директории DOMAIN_DIR/KORUS_DOMAIN/lib/ext (путем копирования или создания символической ссылки).
+
+## Настройки сервера ТМИС
+
+ Настройки сервера ТМИС хранятся в таблице Setting базы tmis_core.
+ В настоящий момент интерес представляют следующие настройки:
+
+ * Drugstore.ServiceUrl - URL сервера 1С-аптеки (полный URL с указанием протокола!);
+ * Drugstore.User - Логин к серверу 1С-аптеки;
+ * Drugstore.Password - Пароль к серверу 1С-аптеки;
+
+ Для их указания следует создать в таблице записи со значениями:
+ 
+ * path - соответствующим имени настройки;
+ * value - соответствующим непосредственному значению для настройки.
+
+## Развертывание сервера ТМИС
+
+ 1. создать каталог для размещения доменов
+
+	    $ mkdir -p DOMAIN_DIR
+
+ 1. создать домен Glassfish
+
+	    $ asadmin create-domain --user GF_ADMIN --adminport 4848 --profile developer --savemasterpassword --domaindir DOMAIN_DIR KORUS_DOMAIN
+
+    * указать пароль администратора (GF_PASSWORD)
+    * указать Master Password длиной более 6 символов (GF_MASTERPASSWORD)
+
+ 1. создать в каталоге домена файл с данными аутентификации администратора
+
+	    $ cat DOMAIN_DIR/KORUS_DOMAIN/korus-domain.passwd
+	    AS_ADMIN_PASSWORD=GF_PASSWORD
+	    AS_ADMIN_MASTERPASSWORD=GF_MASTERPASSWORD
+
+ 1. создать файл настроек на основе примера
+
+	    $ cd SRC_DIR/core/server
+	    $ cp sample.properties gf.properties
+
+	    $ cat gf.properties
+	    glassfish.home=GF_DIR
+
+	    domain.dir=DOMAIN_DIR
+	    domain.name=KORUS_DOMAIN
+	    domain.adminPort=4848
+
+	    domain.user=GF_ADMIN
+	    # название файла с данными аутентификации администратора
+	    domain.passwdFile=${domain.dir}/${domain.name}/korus-domain.passwd
+
+ 1. запустить сервер GlassFish
+
+		$ asadmin start-domain --domaindir DOMAIN_DIR KORUS_DOMAIN
+
+ 1. настроить Connection Pool и Datasource для доступа к БД s11r64
+
+    * запустить Web консоль администратора http://localhost:4848/
+       * на вкладке Resources->JDBC->Connection Pools создать пул соединений для доступа к БД
+          * Resource Type = javax.sql.DataSource
+          * Database Vendor = MySQL
+          * Datasource Classname = com.mysql.jdbc.jdbc2.optional.MysqlDataSource
+          * на вкладке Advanced Properties добавить свойства
+             * useUnicode = yes
+             * characterEncoding = UTF-8
+             * characterSetResults = UTF-8
+             * databaseName = s11r64
+             * datasourceName = s11r64
+             * serverName = DB_SERVER
+             * userName = DB_USERNAME
+             * password = DB_PASSWORD
+             * zeroDateTimeBehavior = convertToNull
+       * на вкладке Resources->JDBC->JDBC Resources создать источник данных для доступа к БД
+          * указать имя источника данных s11r64
+          * указать имя ранее созданного Connection Pool
+
+ 1. Настроить Connection Pool и Datasource для доступа к БД rls
+
+    * так же как для s11r64, только с другим именем БД: databaseName = rls
+
+       * NB! На сервере MySQL рекомендуется включить кэширование запросов
+
+ 1. собрать сервер
+
+	    $ cd SRC_DIR/core
+	    $ mvn clean install
+
+ 1. развернуть приложение ядра на сервере приложений
+
+        $ cd SRC_DIR/core/server
+	    $ mvn initialize glassfish:deploy
+
+## Проверка работоспособности приложения
+
+Для проверки работаспособности приложения необходимо:
+
+ 1. запустить веб-консоль администратора
+ 1. выбрать Applications > tmis-server > View Endpoint
+ 1. запустить тестовое веб-приложение, ссылка на которое указана в пункте Tester.

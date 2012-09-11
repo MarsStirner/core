@@ -1,0 +1,86 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
+
+    <modelVersion>4.0.0</modelVersion>
+    <groupId>ru.korus.tmis.drugstore</groupId>
+    <artifactId>tmis-ws-drugstore</artifactId>
+    <packaging>war</packaging>
+    <name>TMIS 1C Drugstore Webservice</name>
+
+    <parent>
+        <groupId>ru.korus.tmis</groupId>
+        <artifactId>tmis-nexus</artifactId>
+        <version>0.8.11-SNAPSHOT</version>
+        <relativePath>../</relativePath>
+    </parent>
+
+    <dependencies>
+        <dependency>
+            <groupId>ru.korus.tmis.core</groupId>
+            <artifactId>tmis-core-database</artifactId>
+            <version>0.8.11-SNAPSHOT</version>
+            <type>ejb</type>
+        </dependency>
+        <dependency>
+            <groupId>ru.korus.tmis.core</groupId>
+            <artifactId>tmis-core-common</artifactId>
+            <version>0.8.11-SNAPSHOT</version>
+            <type>jar</type>
+        </dependency>
+
+        <dependency>
+            <groupId>ru.korus.tmis.drugstore</groupId>
+            <artifactId>tmis-drugstore-tier</artifactId>
+            <version>0.8.11-SNAPSHOT</version>
+            <type>ejb</type>
+        </dependency>
+    </dependencies>
+
+    <build>
+        <plugins>
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-war-plugin</artifactId>
+                <version>2.1.1</version>
+                <configuration>
+                    <packagingExcludes>WEB-INF/lib/*.jar</packagingExcludes>
+                    <archive>
+                        <manifest>
+                            <addClasspath>true</addClasspath>
+                            <classpathPrefix>lib/</classpathPrefix>
+                        </manifest>
+                    </archive>
+                    <failOnMissingWebXml>false</failOnMissingWebXml>
+                </configuration>
+            </plugin>
+
+            <plugin>
+                <groupId>org.codehaus.mojo</groupId>
+                <artifactId>jaxws-maven-plugin</artifactId>
+                <version>1.12</version>
+                <configuration>
+                    <pluginArtifacts>
+                        <artifact>
+                            ${project.build.outputDirectory}/${project.build.finalName}.${project.packaging}
+                        </artifact>
+                    </pluginArtifacts>
+                    <sei>ru.korus.tmis.ws.medipad.MedipadWebService</sei>
+                    <genWsdl>true</genWsdl>
+                </configuration>
+                <dependencies>
+                    <dependency>
+                        <groupId>org.glassfish</groupId>
+                        <artifactId>javax.ejb</artifactId>
+                        <version>3.1</version>
+                    </dependency>
+                    <dependency>
+                        <groupId>org.glassfish</groupId>
+                        <artifactId>javax.persistence</artifactId>
+                        <version>3.0-SNAPSHOT</version>
+                    </dependency>
+                </dependencies>
+            </plugin>
+        </plugins>
+    </build>
+
+</project>
