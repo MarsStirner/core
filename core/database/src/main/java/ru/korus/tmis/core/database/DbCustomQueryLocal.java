@@ -12,7 +12,7 @@ import javax.ejb.Local;
 @Local
 public interface DbCustomQueryLocal {
 
-    TakenTissue getTakenTissueById(int id)
+    TakenTissue getTakenTissueByBarcode(int barcode, int period)
             throws CoreException;
 
     List<Event> getActiveEventsForDoctor(int id)

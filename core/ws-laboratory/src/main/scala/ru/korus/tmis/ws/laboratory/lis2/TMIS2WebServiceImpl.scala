@@ -29,9 +29,12 @@ class TMIS2WebServiceImpl
   @EJB
   var labBean: LaboratoryBeanLocal = _
 
+
+
   def setAnalysisResults(
                           orderMisId: String,
                           orderBarCode: Int,
+                          orderPrefBarCode: Int,
                           referralIsFinished: JBoolean,
                           results: JList[AnalysisResult],
                           biomaterialDefects: JString,
@@ -43,6 +46,7 @@ class TMIS2WebServiceImpl
 
     labBean.setLis2AnalysisResults(catchy(orderMisId.toInt).getOrElse(-1),
                                    orderBarCode,
+                                   orderPrefBarCode,
                                    referralIsFinished.getOrElse(false),
                                    results ?: new JLinked[AnalysisResult](),
                                    biomaterialDefects ?: "")

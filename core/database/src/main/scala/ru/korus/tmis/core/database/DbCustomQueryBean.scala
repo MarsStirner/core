@@ -29,9 +29,10 @@ class DbCustomQueryBean
   @PersistenceContext(unitName = "s11r64")
   var em: EntityManager = _
 
-  def getTakenTissueById(id: Int) = {
-    val result = em.createQuery(takenTissueByIdQuery, classOf[TakenTissue])
-                  .setParameter("id", id)
+  def getTakenTissueByBarcode(id: Int, period: Int) = {
+    val result = em.createQuery(takenTissueByBarcodeQuery, classOf[TakenTissue])
+                  .setParameter("barcode", id)
+                  .setParameter("period", period)
                   .getResultList.headOption
     result.map{ it => em.detach(it);it }.orNull
   }
@@ -600,7 +601,7 @@ class DbCustomQueryBean
       AND (a.endDate IS NULL OR a.endDate BETWEEN :beginDate AND :endDate)
   """
 
-  val takenTissueByIdQuery ="""
-      SELECT t from TakenTissue t where t.id = :id
+  val takenTissueByBarcodeQuery ="""
+      SELECT t from TakenTissue t where t.barcode = :barcode and t.period = :period
     """
 }

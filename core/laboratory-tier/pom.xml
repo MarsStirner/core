@@ -10,7 +10,7 @@
     <parent>
         <groupId>ru.korus.tmis</groupId>
         <artifactId>tmis-nexus</artifactId>
-        <version>0.8.11-SNAPSHOT</version>
+        <version>0.8.13-SNAPSHOT</version>
         <relativePath>../</relativePath>
     </parent>
 
@@ -19,13 +19,13 @@
         <dependency>
             <groupId>ru.korus.tmis.core</groupId>
             <artifactId>tmis-core-common</artifactId>
-            <version>0.8.11-SNAPSHOT</version>
+            <version>0.8.13-SNAPSHOT</version>
             <type>jar</type>
         </dependency>
         <dependency>
             <groupId>ru.korus.tmis.core</groupId>
             <artifactId>tmis-core-database</artifactId>
-            <version>0.8.11-SNAPSHOT</version>
+            <version>0.8.13-SNAPSHOT</version>
             <type>ejb</type>
         </dependency>
 
@@ -73,23 +73,24 @@
                 <groupId>org.codehaus.mojo</groupId>
                 <artifactId>axistools-maven-plugin</artifactId>
                 <version>1.4</version>
-                <configuration>
-                    <outputDirectory>${project.build.directory}/generated-sources/labisws</outputDirectory>
-                    <sourceDirectory>${project.basedir}/src/main/resources</sourceDirectory>
-                    <packageSpace>ru.korus.ws.laboratory2</packageSpace>
-                    <testCases>false</testCases>
-                    <serverSide>false</serverSide>
-                    <subPackageByFileName>false</subPackageByFileName>
-                    <wsdlFiles>
-                        <wsdlFile>labisws2.wsdl</wsdlFile>
-                    </wsdlFiles>
-                    <debug>false</debug>
-                </configuration>
                 <executions>
                     <execution>
                         <goals>
                             <goal>wsdl2java</goal>
                         </goals>
+                        <configuration>
+                            <outputDirectory>${project.build.directory}/generated-sources/labis2ws</outputDirectory>
+                            <sourceDirectory>${project.basedir}/src/main/resources</sourceDirectory>
+                            <packageSpace>ru.korus.ws.laboratory2</packageSpace>
+                            <testCases>false</testCases>
+                            <serverSide>false</serverSide>
+                            <subPackageByFileName>false</subPackageByFileName>
+                            <wsdlFiles>
+                                <wsdlFile>labisws2.wsdl</wsdlFile>
+                            </wsdlFiles>
+                            <debug>false</debug>
+                        </configuration>
+                        <id>axistools-generate-laboratory2-ws</id>
                         <phase>generate-sources</phase>
                     </execution>
                 </executions>

@@ -17,6 +17,7 @@ sealed case class BiomaterialInfo(
   orderBiomaterialCode: Option[String] = None,
   orderBiomaterialname: Option[String] = None,
   orderBarCode: Option[String] = None,
+  orderBarCodePeriod: Option[Int] = None,
   orderTakenTissueId: Option[Int] = None,
   orderProbeDate: Option[Date] = None,
   orderBiomaterialComment: Option[String] = None
@@ -56,7 +57,8 @@ object BiomaterialInfo {
 
     setAsOptional(orderBiomaterialCode){ bi.setOrderBiomaterialCode(_) }
     setAsOptional(orderBiomaterialname){ bi.setOrderBiomaterialName(_) }
-    setAsDefaultible(orderTakenTissueId){ it => bi.setOrderBarCode(it.toString) }
+    setAsDefaultible(orderBarCode){ it => bi.setOrderBarCode(it.toString) }
+    setAsDefaultible(orderBarCodePeriod){ it => bi.setOrderPrefBarCode(it) }
     setAsRequired(new CoreException("BiomaterialInfo: orderProbeDate not specified"))(orderProbeDate){
       it => bi.setOrderProbeDate(date2GC(it))
     }

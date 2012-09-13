@@ -35,10 +35,11 @@
                 <sequence>
                     <element name="orderBiomaterialCode" type="xs:string"/>
                     <element name="orderBiomaterialName" type="xs:string"/>
+                    <element name="orderPrefBarCode" type="xs:int"/>
                     <element name="orderBarCode" type="xs:string"/>
                     <element name="orderProbeDate" type="xs:dateTime"/>
-                    <element name="orderBiomaterialComment" type="xs:string"/>
 
+                    <element name="orderBiomaterialComment" type="xs:string"/>
                 </sequence>
             </complexType>
             <complexType name="OrderInfo">
@@ -47,8 +48,8 @@
                     <element name="diagnosticName" type="xs:string"/>
                     <element name="orderPriority" type="xs:int"/>
                     <element name="indicators" type="ns1:arr_indic"/>
-                </sequence>
 
+                </sequence>
             </complexType>
             <complexType name="Tindicator">
                 <sequence>
@@ -57,8 +58,8 @@
                 </sequence>
             </complexType>
         </schema>
-        <schema xmlns="http://www.w3.org/2001/XMLSchema" targetNamespace="urn:AcrossIntf_FNKCIntf">
 
+        <schema xmlns="http://www.w3.org/2001/XMLSchema" targetNamespace="urn:AcrossIntf_FNKCIntf">
             <complexType name="arr_indic">
                 <complexContent>
                     <restriction base="soapenc:Array">
@@ -67,8 +68,8 @@
                     </restriction>
                 </complexContent>
             </complexType>
-        </schema>
 
+        </schema>
     </types>
     <message name="queryAnalysis0Request">
         <part name="PatientInfo" type="tns:PatientInfo"/>
@@ -77,24 +78,13 @@
         <part name="OrderInfo" type="tns:OrderInfo"/>
     </message>
     <message name="queryAnalysis0Response">
-        <part name="return" type="xs:int"/>
 
-    </message>
-    <message name="testTRFU1Request">
-        <part name="PatientInfo" type="tns:PatientInfo"/>
-    </message>
-    <message name="testTRFU1Response">
-        <part name="return" type="xs:string"/>
+        <part name="return" type="xs:int"/>
     </message>
     <portType name="IAcrossIntf_FNKC">
         <operation name="queryAnalysis">
-
             <input message="tns:queryAnalysis0Request"/>
             <output message="tns:queryAnalysis0Response"/>
-        </operation>
-        <operation name="testTRFU">
-            <input message="tns:testTRFU1Request"/>
-            <output message="tns:testTRFU1Response"/>
         </operation>
     </portType>
     <binding name="IAcrossIntf_FNKCbinding" type="tns:IAcrossIntf_FNKC">
@@ -110,23 +100,14 @@
             </output>
 
         </operation>
-        <operation name="testTRFU">
-            <operation xmlns="http://schemas.xmlsoap.org/wsdl/soap/" soapAction="http://www.korusconsulting.ru#testTRFU" style="rpc"/>
-            <input>
-                <body xmlns="http://schemas.xmlsoap.org/wsdl/soap/" use="encoded" encodingStyle="http://schemas.xmlsoap.org/soap/encoding/" namespace="http://www.korusconsulting.ru"/>
-            </input>
-            <output>
-                <body xmlns="http://schemas.xmlsoap.org/wsdl/soap/" use="encoded" encodingStyle="http://schemas.xmlsoap.org/soap/encoding/" namespace="http://www.korusconsulting.ru"/>
-            </output>
-
-        </operation>
     </binding>
     <service name="IAcrossIntf_FNKCservice">
         <port name="IAcrossIntf_FNKCPort" binding="tns:IAcrossIntf_FNKCbinding">
-            <address xmlns="http://schemas.xmlsoap.org/wsdl/soap/" location="http://10.128.225.17/Across/AcrossWebServ.exe/soap/IAcrossIntf_FNKC"/>
+            <address xmlns="http://schemas.xmlsoap.org/wsdl/soap/" location="http://10.0.227.10/ws_acl/Acrosswebserv.exe/soap/IAcrossIntf_FNKC"/>
         </port>
     </service>
 </definitions>
+
 
 
 

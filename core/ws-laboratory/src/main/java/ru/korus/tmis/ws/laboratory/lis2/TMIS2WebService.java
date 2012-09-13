@@ -29,6 +29,8 @@ public interface TMIS2WebService {
             String requestId,
             @WebParam(name = "orderBarCode", targetNamespace = Namespace)
             int orderBarCode,
+            @WebParam(name = "orderPrefBarCode", targetNamespace = Namespace)
+            int orderPrefBarCode,
             @WebParam(name = "referralIsFinished", targetNamespace = Namespace)
             Boolean finished,
             @WebParam(name = "results", targetNamespace = Namespace)

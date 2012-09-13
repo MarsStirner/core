@@ -34,6 +34,7 @@ public interface LaboratoryBeanLocal {
     int setLis2AnalysisResults(
             int requestId,
             int barCode,
+            int period,
             boolean lastPiece,
             List<ru.korus.tmis.laboratory.data.lis2.accept.AnalysisResult> results,
             String biomaterialDefects) throws CoreException;

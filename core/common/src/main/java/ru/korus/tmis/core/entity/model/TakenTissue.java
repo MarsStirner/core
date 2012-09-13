@@ -59,6 +59,16 @@ public class TakenTissue implements Serializable {
     @ManyToOne(optional = false)
     private Patient patient;
 
+    @Basic(optional = false)
+    @NotNull
+    @Column(name = "barcode")
+    private int barcode;
+
+    @Basic(optional = false)
+    @NotNull
+    @Column(name = "period")
+    private int period;
+
     public TakenTissue() {
     }
 
@@ -146,6 +156,21 @@ public class TakenTissue implements Serializable {
         this.patient = patient;
     }
 
+    public int getBarcode() {
+        return barcode;
+    }
+
+    public void setBarcode(int barcode) {
+        this.barcode = barcode;
+    }
+
+    public int getPeriod() {
+        return period;
+    }
+
+    public void setPeriod(int period) {
+        this.period = period;
+    }
 
     @OneToMany(mappedBy = "takenTissue", cascade = CascadeType.ALL)
     private List<Action> actions = new LinkedList<Action>();

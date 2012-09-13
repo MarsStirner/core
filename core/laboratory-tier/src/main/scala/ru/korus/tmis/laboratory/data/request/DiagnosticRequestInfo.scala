@@ -24,7 +24,7 @@ sealed case class DiagnosticRequestInfo (
   orderDiagText: Option[String],
   orderComment: Option[String],
   orderDepartmentName: Option[String],
-  orderDepartmentMisId: Option[Int],
+  orderDepartmentMisCode: Option[String],
   orderDoctorFamily: Option[String],
   orderDoctorName: Option[String],
   orderDoctorPatronum: Option[String],
@@ -50,7 +50,7 @@ object DiagnosticRequestInfo {
     setAsOptional(orderDiagText) { ret.setOrderDiagText(_) }
     setAsOptional(orderComment) { ret.setOrderComment(_) }
     setAsOptional(orderDepartmentName) { ret.setOrderDepartmentName(_) }
-    setAsDefaultible(orderDepartmentMisId) { it => ret.setOrderDepartmentMisId(it.toString) }
+    setAsDefaultible(orderDepartmentMisCode) { it => ret.setOrderDepartmentMisId(it) }
     setAsOptional(orderDoctorFamily) { ret.setOrderDoctorFamily(_) }
     setAsOptional(orderDoctorName) { ret.setOrderDoctorName(_) }
     setAsOptional(orderDoctorPatronum) { ret.setOrderDoctorPatronum(_) }
@@ -74,7 +74,7 @@ object DiagnosticRequestInfo {
     setAsOptional(orderDiagText){ ret.setOrderDiagText(_) }
     setAsOptional(orderComment){ ret.setOrderComment(_) }
     setAsOptional(orderDepartmentName) { ret.setOrderDepartmentName(_) }
-    setAsDefaultible(orderDepartmentMisId) { it => ret.setOrderDepartmentMisId(it.toString) }
+    setAsDefaultible(orderDepartmentMisCode) { it => ret.setOrderDepartmentMisId(it) }
     setAsOptional(orderDoctorFamily) { ret.setOrderDoctorFamily(_) }
     setAsOptional(orderDoctorName) { ret.setOrderDoctorName(_) }
     setAsOptional(orderDoctorPatronum) { ret.setOrderDoctorPatronum(_) }

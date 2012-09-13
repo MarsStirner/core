@@ -184,6 +184,7 @@ class LaboratoryBean
       ) yield {
         stub._setProperty(Stub.PASSWORD_PROPERTY, password)
         stub._setProperty(Stub.USERNAME_PROPERTY, user)
+        stub._setProperty(org.apache.axis.AxisEngine.PROP_DOMULTIREFS, false)
       }
 
       port
@@ -208,6 +209,7 @@ class LaboratoryBean
           Option(tt.getCode),
           Option(tt.getName),
           Option(t.getBarcode),
+          None,
           None, // no takenTissue.id for LIS
           Option(t.getDate),
           Option("")
@@ -232,8 +234,9 @@ class LaboratoryBean
         BiomaterialInfo(
           Option(tt.getCode),
           Option(tt.getName),
-          None, // barcode for LIS2 is taken from id
-          t.getId, // no takenTissue.id for LIS
+          Option(t.getBarcode.toString), // barcode for LIS2 is taken from id
+          Option(t.getPeriod),
+          None, // no takenTissue.id for LIS
           Option(t.getDatetimeTaken),
           Option(t.getNote)
         )
@@ -270,7 +273,8 @@ class LaboratoryBean
     val apsMap = a.getActionPropertiesByTypes(aptsSet)
     // Фильтруем map чтобы найти показатели/методы
 
-    val indicators = apsMap.collect{ case (apt, ap) if (apt.getTest != null) =>
+    val indicators = apsMap.collect{
+    case (apt, ap) if (apt.getTest != null && (apt.getIsAssignable == false || ap.getIsAssigned == true)) =>
       info("ap.id=" + ap.getId + " apt.name=" + apt.getName +
              " code=" + apt.getTest.getCode + " name=" + apt.getTest.getName)
 
@@ -350,12 +354,12 @@ class LaboratoryBean
       case null => {
         info("Request:DepartmentName=<empty>")
         info("Request:DepartmentCode=<empty>")
-        ("", null)
+        ("", "")
       }
       case _ => {
         info("Request:DepartmentName=" + department.getName)
         info("Request:DepartmentCode=" + department.getCode)
-        (department.getName, department.getId)
+        (department.getName, department.getCode)
       }
     }
 
@@ -385,7 +389,7 @@ class LaboratoryBean
       Option(diagName),
       Option(comment),
       Option(depName),
-      depCode,
+      Option(depCode),
       Option(drLastName),
       Option(drFirstName),
       Option(drMiddleName),
@@ -468,30 +472,61 @@ class LaboratoryBean
   def setAnalysisResults(a: Action, results: List[AnalysisResult], finished: Boolean, biomaterialDefects: String) = {
     // Сохраняем результаты анализов
     val entities = scala.collection.mutable.Buffer[AnyRef](a)
+    import ru.korus.tmis.util.General.{nullity_implicits, typedEquality}
 
     results.foreach{r =>
+      info("Applying analysis result " + r)
     // Находим ActionProperty для данного показателя
-      val aps = a.getActionProperties.filter{ap =>
+
+      val aps_byCode = a.getActionProperties.filter{ap =>
         val check: Option[Boolean] = for(
-          apt <- Option(ap.getType);
-          tst <- Option(apt.getTest);
-          name <- Option(tst.getName)
-        ) yield name == r.name
+          apt   <- Option(ap.getType);
+          tst   <- Option(apt.getTest);
+          code  <- Option(tst.getCode);
+          rcode <- r.code
+        ) yield code =!= rcode
 
         check.getOrElse(false)
       }
+
+      info("Action properties found by code: " + aps_byCode)
+
+      val aps_byName = a.getActionProperties.filter{ap =>
+        val check: Option[Boolean] = for(
+          apt   <- Option(ap.getType);
+          tst   <- Option(apt.getTest);
+          name  <- Option(tst.getName);
+          rname <- r.name
+        ) yield name =!= rname
+
+        check.getOrElse(false)
+      }
+
+      info("Action properties found by name: " + aps_byName)
+
+      val aps = (aps_byCode union aps_byName).distinct
+
+      info("Total action properties found: " + aps)
+
       aps.foreach(ap => {
         // Записываем значение
 
+        info("Writing action property #" + ap.getId + " to " + r.value)
+
         val apv = r.value.get0.map{ txt =>  dbActionProperty.setActionPropertyValue(ap, txt) }
         apv.foreach{ entities += _ }
+
+        info("Writing norm to " + r.norm)
 
         // Устанавливаем норму
         r.norm.foreach{ ap.setNorm(_) }
 
 
+
         // Находим единицу изменения
-        val unit = for( code <- r.code; un <- Option(dbCustomQuery.getUnitByCode(code))) yield un
+        val unit = for( code <- r.unitCode; un <- Option(dbCustomQuery.getUnitByCode(code))) yield un
+        info("Writing unit to " + (unit map {_.getCode}))
+
         unit.foreach{ ap.setUnit(_) }
 
         entities += ap
@@ -525,7 +560,7 @@ class LaboratoryBean
         val organismConcentration = r.organismConcentration
         val apsFound = aps.filter(ap => {
           val check = for(apt <- Option(ap.getType); tst <- Option(apt.getTest); oname <- organismName)
-                        yield oname == tst.getName
+                        yield oname =!= tst.getName
           check.getOrElse(false)
         })
         apsFound.foreach(ap => {
@@ -540,7 +575,7 @@ class LaboratoryBean
         val antibioticName = r.name
         val apsFound = aps.filter(ap => {
           val check = for(apt <- Option(ap.getType); tst <- Option(apt.getTest); aname <- antibioticName)
-                        yield aname == tst.getName
+                        yield aname =!= tst.getName
           check.getOrElse(false)
         })
 
@@ -559,8 +594,6 @@ class LaboratoryBean
     a.setNote(biomaterialDefects)
     // Изменяем статус действия на "Закончено"
     if(finished) a.setStatus(ActionStatus.FINISHED.getCode)
-
-    entities += a
 
     // Сохраняем изменившиеся сущности в БД
     dbManager.mergeAll(entities)
@@ -584,8 +617,12 @@ class LaboratoryBean
   }
 
 
-  def setLis2AnalysisResults(requestId: Int, barCode: Int, lastPiece: Boolean, results: JList[AResult2],
+  def setLis2AnalysisResults(requestId: Int, barCode: Int, period: Int, lastPiece: Boolean, lis_results: JList[AResult2],
                              biomaterialDefects: String) = {
+
+    import ru.korus.tmis.util.General.cast_implicits
+
+    val results: mutable.Buffer[AnalysisResult] = lis_results map { _.castTo[AnalysisResult] }
 
     info("Acquired requestId = " + requestId)
     info("Acquired barCode = " + barCode)
@@ -593,16 +630,16 @@ class LaboratoryBean
     info("Acquired results = " + results)
     info("Acquired biomaterialDefects = " + biomaterialDefects )
 
-    import ru.korus.tmis.util.General.cast_implicits
-
-    val tissue = Option(dbCustomQuery.getTakenTissueById(barCode)).getOrElse{
+    val tissue = Option(dbCustomQuery.getTakenTissueByBarcode(barCode, period)).getOrElse{
       throw new CoreException(i18n("error.takenTissueNotFound", barCode))
     }
 
+    info("Processing results for tissue #" + tissue.getId)
+
     val ress = tissue.getActions.collect{ case a =>
       info(msg = "SetAnalysisResults requested with id = " + a.getId)
-      val res: mutable.Buffer[AnalysisResult] = results map { _.castTo[AnalysisResult] }
-      setAnalysisResults(a, res.toList, lastPiece, biomaterialDefects)
+      val res = results.toList
+      setAnalysisResults(a, res, lastPiece, biomaterialDefects)
     }.sum
 
     if(ress == 0) 0 else 1
@@ -633,7 +670,7 @@ class LaboratoryBean
                                           Option("Рыболовецкий сейнер"),
                                           Option("Без комментариев"),
                                           Option("Отделение трансфузиологии"),
-                                          Option(42),
+                                          Option("42"),
                                           Option("Пётрович"),
                                           Option("Пётрович"),
                                           Option("Пётрович"),
@@ -645,6 +682,7 @@ class LaboratoryBean
                                  Option("Кровь каппилярная"),
                                  Option(barCode.toString),
                                  Option(barCode),
+                                 Option(0),
                                  Option(new Date(112,2,27,17,0)),
                                  Option("Без комментариев")
                                )
@@ -680,13 +718,12 @@ class LaboratoryBean
     if(at.getId == -1) throw new CoreException(i18n("error.noTypeForAction", a.getId))
 
     if (at.getTypeClass != Integer.valueOf(i18n("db.action.diagnosticClass")).intValue) {
-      throw new CoreException(i18n("error.invalidActionClass", at.getTypeClass))
+      throw new CoreException(i18n("error.invalidActionClass", a.getId, at.getTypeClass))
     }
 
     info("sendLisAnalysisRequest actionId=" + actionId)
 
     // Patient section
-
     val event = checkNull(a.getEvent, i18n("error.noEventForAction", a.getId))
     val patient = checkNull(event.getPatient, i18n("error.noPatientForEvent", event.getId))
 

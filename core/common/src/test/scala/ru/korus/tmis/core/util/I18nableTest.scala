@@ -6,6 +6,7 @@ import java.util.{List => JList, LinkedList}
 
 import org.junit.Assert._
 
+
 class I18nableTest {
 
   object Tester extends I18nable {
