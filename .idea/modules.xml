@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project version="4">
+  <component name="ProjectModuleManager">
+    <modules>
+      <module fileurl="file://$PROJECT_DIR$/core/laboratory-tier/src/main/Main.iml" filepath="$PROJECT_DIR$/core/laboratory-tier/src/main/Main.iml" />
+      <module fileurl="file://$PROJECT_DIR$/core/ws-drugstore/src/main/Main1.iml" filepath="$PROJECT_DIR$/core/ws-drugstore/src/main/Main1.iml" />
+      <module fileurl="file://$PROJECT_DIR$/core/ws-medipad/src/main/Main2.iml" filepath="$PROJECT_DIR$/core/ws-medipad/src/main/Main2.iml" />
+      <module fileurl="file://$PROJECT_DIR$/core/database/src/main/Main3.iml" filepath="$PROJECT_DIR$/core/database/src/main/Main3.iml" />
+      <module fileurl="file://$PROJECT_DIR$/core/drugstore-tier/src/main/Main4.iml" filepath="$PROJECT_DIR$/core/drugstore-tier/src/main/Main4.iml" />
+      <module fileurl="file://$PROJECT_DIR$/core/business-tier/src/main/Main5.iml" filepath="$PROJECT_DIR$/core/business-tier/src/main/Main5.iml" />
+      <module fileurl="file://$PROJECT_DIR$/core/common/src/main/Main6.iml" filepath="$PROJECT_DIR$/core/common/src/main/Main6.iml" />
+      <module fileurl="file://$PROJECT_DIR$/core/ws-laboratory/src/main/Main7.iml" filepath="$PROJECT_DIR$/core/ws-laboratory/src/main/Main7.iml" />
+      <module fileurl="file://$PROJECT_DIR$/core/common/src/test/Test.iml" filepath="$PROJECT_DIR$/core/common/src/test/Test.iml" />
+      <module fileurl="file://$PROJECT_DIR$/core/drugstore-tier/src/test/Test1.iml" filepath="$PROJECT_DIR$/core/drugstore-tier/src/test/Test1.iml" />
+    </modules>
+  </component>
+</project>
+
