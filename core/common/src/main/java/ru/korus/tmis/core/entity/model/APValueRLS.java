@@ -1,6 +1,7 @@
 package ru.korus.tmis.core.entity.model;
 
 import ru.korus.tmis.core.exception.CoreException;
+import ru.korus.tmis.util.TextUtils;
 
 import java.io.Serializable;
 import javax.persistence.Basic;
@@ -102,7 +103,7 @@ public class APValueRLS extends AbstractAPValue implements Serializable, APValue
     public boolean setValueFromString(String value)
             throws CoreException {
         try {
-            this.key = Integer.valueOf(value);
+            this.key = TextUtils.getRobustInt(value);
             return true;
         } catch (NumberFormatException ex) {
             throw new CoreException(

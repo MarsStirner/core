@@ -1,6 +1,7 @@
 package ru.korus.tmis.core.entity.model;
 
 import ru.korus.tmis.core.exception.CoreException;
+import ru.korus.tmis.util.TextUtils;
 
 import java.io.Serializable;
 import javax.persistence.Entity;
@@ -50,7 +51,7 @@ public class APValueAnalysisStatus extends AbstractAPValue implements Serializab
             throws CoreException {
         RbAnalysisStatus ras;
         try {
-            ras = RbAnalysisStatus.getById(Integer.valueOf(value));
+            ras = RbAnalysisStatus.getById(TextUtils.getRobustInt(value));
             if (ras != null) {
                 this.value = ras;
             } else {

@@ -1,6 +1,7 @@
 package ru.korus.tmis.core.entity.model;
 
 import ru.korus.tmis.core.exception.CoreException;
+import ru.korus.tmis.util.TextUtils;
 
 import java.io.Serializable;
 import javax.persistence.Basic;
@@ -61,7 +62,7 @@ public class APValueDouble extends AbstractAPValue implements Serializable, APVa
         }
 
         try {
-            this.value = Double.valueOf(value);
+            this.value = TextUtils.getRobustDouble(value);
             return true;
         } catch (NumberFormatException ex) {
             throw new CoreException(
