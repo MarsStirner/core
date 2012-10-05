@@ -65,18 +65,17 @@ class LaboratoryBean
   var dbManager: DbManagerBeanLocal = _
 
 
-
   def getLabWs(): lab.IntegrationCorusPortType = {
     import lab._
 
-    try{
+    try {
       // Вызываем удаленный веб-сервис
 
       import ConfigManager._
 
-      if(Laboratory.User != null && Laboratory.Password != null) {
+      if (Laboratory.User != null && Laboratory.Password != null) {
         Authenticator.setDefault(new Authenticator() {
-          override def getPasswordAuthentication():PasswordAuthentication = {
+          override def getPasswordAuthentication(): PasswordAuthentication = {
             info("Authentication requested")
             return new PasswordAuthentication(Laboratory.User, Laboratory.Password.toCharArray);
           }
@@ -85,10 +84,11 @@ class LaboratoryBean
 
       import CompileTimeConfigManager.Laboratory._
 
-      val service = Option(Laboratory.WSDLUrl).map{ it =>
-        info("LIS WSDL URL specified: overriding standard url to '" + it.toString + "'")
-        new IntegrationCorus(it, new QName(Namespace, ServiceName))
-      }.getOrElse{
+      val service = Option(Laboratory.WSDLUrl).map {
+        it =>
+          info("LIS WSDL URL specified: overriding standard url to '" + it.toString + "'")
+          new IntegrationCorus(it, new QName(Namespace, ServiceName))
+      }.getOrElse {
         warn("LIS WSDL URL not specified: using local WSDL")
         val url = this.getClass.getResource("/labisws.wsdl")
         new IntegrationCorus(url, new QName(Namespace, ServiceName))
@@ -98,16 +98,19 @@ class LaboratoryBean
       ws match {
         case bp: BindingProvider => {
 
-          Option(Laboratory.ServiceUrl).foreach{  url =>
-            bp.getRequestContext().put(BindingProvider.ENDPOINT_ADDRESS_PROPERTY, url.toString)
+          Option(Laboratory.ServiceUrl).foreach {
+            url =>
+              bp.getRequestContext().put(BindingProvider.ENDPOINT_ADDRESS_PROPERTY, url.toString)
           }
 
-          Option(Laboratory.User).foreach{ value =>
-            bp.getRequestContext().put(BindingProvider.USERNAME_PROPERTY, value)
+          Option(Laboratory.User).foreach {
+            value =>
+              bp.getRequestContext().put(BindingProvider.USERNAME_PROPERTY, value)
           }
 
-          Option(Laboratory.Password).foreach{ value =>
-            bp.getRequestContext().put(BindingProvider.PASSWORD_PROPERTY, value)
+          Option(Laboratory.Password).foreach {
+            value =>
+              bp.getRequestContext().put(BindingProvider.PASSWORD_PROPERTY, value)
           }
 
 
@@ -115,7 +118,7 @@ class LaboratoryBean
 
           val handlerChain = Option(binding.getHandlerChain).getOrElse(new LinkedList[Handler[_ <: MessageContext]]())
 
-          if(!handlerChain.contains(LoggingHandler)) handlerChain.add(LoggingHandler)
+          if (!handlerChain.contains(LoggingHandler)) handlerChain.add(LoggingHandler)
 
           binding.setHandlerChain(handlerChain)
           ws
@@ -133,27 +136,28 @@ class LaboratoryBean
 
   def getLab2Ws(): lab2.IAcrossIntf_FNKC = {
     import lab2._
-    try{
+    try {
       // Вызываем удаленный веб-сервис
 
 
-      if(ConfigManager.Laboratory2.User != null && ConfigManager.Laboratory2.Password != null) {
+      if (ConfigManager.Laboratory2.User != null && ConfigManager.Laboratory2.Password != null) {
         Authenticator.setDefault(new Authenticator() {
-          override def getPasswordAuthentication():PasswordAuthentication = {
+          override def getPasswordAuthentication(): PasswordAuthentication = {
             info("Authentication requested")
             info("host: " + getRequestingHost)
             info("site: " + getRequestingSite.toString)
             info("url: " + getRequestingURL.toString)
 
-            return new PasswordAuthentication(ConfigManager.Laboratory2.User, ConfigManager.Laboratory2.Password.toCharArray);
+            new PasswordAuthentication(ConfigManager.Laboratory2.User, ConfigManager.Laboratory2.Password.toCharArray);
           }
-        });
+        })
       }
 
-      val service = Option(ConfigManager.Laboratory2.WSDLUrl).map{ it =>
-        info("LIS2 WSDL URL specified: overriding standard url to '" + it.toString + "'")
-        new IAcrossIntf_FNKCserviceLocator(it.toString, new QName(CompileTimeConfigManager.Laboratory2.Namespace, CompileTimeConfigManager.Laboratory2.ServiceName))
-      }.getOrElse{
+      val service = Option(ConfigManager.Laboratory2.WSDLUrl).map {
+        it =>
+          info("LIS2 WSDL URL specified: overriding standard url to '" + it.toString + "'")
+          new IAcrossIntf_FNKCserviceLocator(it.toString, new QName(CompileTimeConfigManager.Laboratory2.Namespace, CompileTimeConfigManager.Laboratory2.ServiceName))
+      }.getOrElse {
         warn("LIS2 WSDL URL not specified: using local WSDL")
         val url = this.getClass.getResource("/labisws2.wsdl")
         new IAcrossIntf_FNKCserviceLocator(url.toString, new QName(CompileTimeConfigManager.Laboratory2.Namespace, CompileTimeConfigManager.Laboratory2.ServiceName))
@@ -161,15 +165,16 @@ class LaboratoryBean
 
       val endPoint = service.getPorts.next().asInstanceOf[QName]
 
-      Option(ConfigManager.Laboratory2.ServiceUrl).foreach{  url =>
-        service.setIAcrossIntf_FNKCPortEndpointAddress(url.toString)
+      Option(ConfigManager.Laboratory2.ServiceUrl).foreach {
+        url =>
+          service.setIAcrossIntf_FNKCPortEndpointAddress(url.toString)
       }
 
       val handlerInfo = LoggingHandler.handlerInfo
       val handlerChain =
         Option(service.getHandlerRegistry.getHandlerChain(endPoint).asInstanceOf[JList[AnyRef]]).getOrElse(new ArrayList[AnyRef])
 
-      if(!handlerChain.contains(handlerInfo)) handlerChain.add(handlerInfo)
+      if (!handlerChain.contains(handlerInfo)) handlerChain.add(handlerInfo)
 
       service.getHandlerRegistry.setHandlerChain(endPoint, handlerChain)
 
@@ -177,7 +182,7 @@ class LaboratoryBean
 
       import ru.korus.tmis.util.General.cast_implicits
 
-      for(
+      for (
         user <- Option(ConfigManager.Laboratory2.User);
         password <- Option(ConfigManager.Laboratory2.Password);
         stub <- port.asSafe[Stub]
@@ -254,7 +259,7 @@ class LaboratoryBean
     info("OrderInfo:Name=" + name)
 
     // Флаг срочности
-    val priority = if(a.getIsUrgent) OrderInfo.OrderPriority.Urgent else OrderInfo.OrderPriority.Normal
+    val priority = if (a.getIsUrgent) OrderInfo.OrderPriority.Urgent else OrderInfo.OrderPriority.Normal
     info("OrderInfo:Urgent=" + priority)
 
     // Показатели
@@ -273,14 +278,14 @@ class LaboratoryBean
     val apsMap = a.getActionPropertiesByTypes(aptsSet)
     // Фильтруем map чтобы найти показатели/методы
 
-    val indicators = apsMap.collect{
-    case (apt, ap) if (apt.getTest != null && (apt.getIsAssignable == false || ap.getIsAssigned == true)) =>
-      info("ap.id=" + ap.getId + " apt.name=" + apt.getName +
-             " code=" + apt.getTest.getCode + " name=" + apt.getTest.getName)
+    val indicators = apsMap.collect {
+      case (apt, ap) if (apt.getTest != null && (apt.getIsAssignable == false || ap.getIsAssigned == true)) =>
+        info("ap.id=" + ap.getId + " apt.name=" + apt.getName +
+          " code=" + apt.getTest.getCode + " name=" + apt.getTest.getName)
 
-      val code = apt.getTest.getCode
-      val name = apt.getTest.getName
-      IndicatorMetodic(Option(name), Option(code))
+        val code = apt.getTest.getCode
+        val name = apt.getTest.getName
+        IndicatorMetodic(Option(name), Option(code))
     }
 
     OrderInfo(Option(code), Option(name), Option(priority), indicators.toList)
@@ -306,17 +311,25 @@ class LaboratoryBean
     info("Patient:Sex=" + patient.getSex)
 
     PatientInfo(misId,
-                Option(lastName),
-                Option(firstName),
-                Option(patrName),
-                Option(birthDate),
-                sex)
+      Option(lastName),
+      Option(firstName),
+      Option(patrName),
+      Option(birthDate),
+      sex)
   }
 
   def getDiagnosticRequestInfo(a: Action): DiagnosticRequestInfo = {
     // Id (long) -- уникальный идентификатор направления в МИС (Action.id)
     val id = (a.getId.intValue)
     info("Request:Id=" + a.getId.intValue)
+
+    // номер истории болезни eventid
+    val orderCaseId = "" + a.getEvent.getExternalId
+    info("Request:OrderCaseId=" + orderCaseId)
+
+    // код финансирования
+ //   val orderFinanceId = 0 // getFinanceId(a.getEvent)
+ //   info("Request:OrderFinanceId=" + orderFinanceId)
 
     // CreateDate (datetime) -- дата создания направления врачом (Action.createDatetime)
     val date = a.getCreateDatetime
@@ -332,7 +345,7 @@ class LaboratoryBean
     val (diagCode, diagName) = diagnosis match {
       case null => {
         warn("Request: no diagnosis found for event #" + a.getEvent.getId)
-        ("","")
+        ("", "")
       }
       case _ => {
         // Diagnosis (string) -- диагноз (текст из МКБ) (последний из обоснования; если нет, то из первичного осмотра)
@@ -358,8 +371,9 @@ class LaboratoryBean
       }
       case _ => {
         info("Request:DepartmentName=" + department.getName)
-        info("Request:DepartmentCode=" + department.getCode)
-        (department.getName, department.getCode)
+        //todo изменено 03.10 hack
+        info("Request:DepartmentCode=" + department.getId)
+        (department.getName, "" + department.getId)
       }
     }
 
@@ -382,6 +396,8 @@ class LaboratoryBean
 
     DiagnosticRequestInfo(
       id,
+      Option(orderCaseId),
+   //   Option(orderFinanceId),
       Option(date),
       Option(pregMin),
       Option(pregMax),
@@ -427,8 +443,12 @@ class LaboratoryBean
           })
       }
     }
+    null
+  }
 
-    return null
+  def getFinanceId(e: Event): Int = {
+    val id = dbCustomQuery.getFinanceId(e.getId.intValue())
+    id.intValue()
   }
 
   /**
@@ -442,6 +462,7 @@ class LaboratoryBean
 
     // Выбираем диагнозы
     val diagMap = dbCustomQuery.getDiagnosisSubstantiationByEvents(Collections.singletonList(e))
+
     val a = diagMap.get(e) match {
       case null => {
         warn("Diagnosis not found")
@@ -452,21 +473,39 @@ class LaboratoryBean
 
     // Получаем список пар (APT, AP)
     val aps = a.getActionPropertiesByTypes(diagnosisAPT)
+
     // Получаем список APValue
     val apvals = aps.foldLeft(scala.collection.immutable.List[APValue]())((ps, pair) => {
       val ap = pair._2
       val apvs = dbActionProperty.getActionPropertyValue(ap).toList
       apvs ::: ps
     })
+
+    apvals.size match {
+      case 0 => return null
+      case x: Int => {
+        val pair = apvals.get(0)
+        var res = pair.getValueAsString.replaceAll("<(.)+?>", "")
+        res = res.replaceAll("<(\n)+?>", "")
+        res = res.replaceAll("\\&.*?\\;", "")
+        ("", res)
+      }
+    }
+
+    /*
     val mkbs = apvals.filter(apv => apv.isInstanceOf[APValueMKB])
+    System.out.println("mkbs: " + mkbs);
+
     mkbs.size match {
       case 0 => return null
       case x: Int => {
         val mkbValue = mkbs.get(0).asInstanceOf[APValueMKB]
+        System.out.println("mkbValue: " + mkbValue);
         val mkb = mkbValue.getMkb()
         return (mkb.getDiagID, mkb.getDiagName)
       }
     }
+    */
   }
 
   def setAnalysisResults(a: Action, results: List[AnalysisResult], finished: Boolean, biomaterialDefects: String) = {
@@ -474,144 +513,167 @@ class LaboratoryBean
     val entities = scala.collection.mutable.Buffer[AnyRef](a)
     import ru.korus.tmis.util.General.{nullity_implicits, typedEquality}
 
-    results.foreach{r =>
-      info("Applying analysis result " + r)
-    // Находим ActionProperty для данного показателя
+    results.foreach {
+      r =>
+        info("Applying analysis result " + r)
+        // Находим ActionProperty для данного показателя
 
-      val aps_byCode = a.getActionProperties.filter{ap =>
-        val check: Option[Boolean] = for(
-          apt   <- Option(ap.getType);
-          tst   <- Option(apt.getTest);
-          code  <- Option(tst.getCode);
-          rcode <- r.code
-        ) yield code =!= rcode
+        val aps_byCode = a.getActionProperties.filter {
+          ap =>
+            val check: Option[Boolean] = for (
+              apt <- Option(ap.getType);
+              tst <- Option(apt.getTest);
+              code <- Option(tst.getCode);
+              rcode <- r.code
+            ) yield code =!= rcode
 
-        check.getOrElse(false)
-      }
+            check.getOrElse(false)
+        }
 
-      info("Action properties found by code: " + aps_byCode)
+        info("Action properties found by code: " + aps_byCode)
 
-      val aps_byName = a.getActionProperties.filter{ap =>
-        val check: Option[Boolean] = for(
-          apt   <- Option(ap.getType);
-          tst   <- Option(apt.getTest);
-          name  <- Option(tst.getName);
-          rname <- r.name
-        ) yield name =!= rname
+        val aps_byName = a.getActionProperties.filter {
+          ap =>
+            val check: Option[Boolean] = for (
+              apt <- Option(ap.getType);
+              tst <- Option(apt.getTest);
+              name <- Option(tst.getName);
+              rname <- r.name
+            ) yield name =!= rname
 
-        check.getOrElse(false)
-      }
+            check.getOrElse(false)
+        }
 
-      info("Action properties found by name: " + aps_byName)
+        info("Action properties found by name: " + aps_byName)
 
-      val aps = (aps_byCode union aps_byName).distinct
+        val aps = (aps_byCode union aps_byName).distinct
 
-      info("Total action properties found: " + aps)
+        info("Total action properties found: " + aps)
 
-      aps.foreach(ap => {
-        // Записываем значение
+        aps.foreach(ap => {
+          // Записываем значение
 
-        info("Writing action property #" + ap.getId + " to " + r.value)
+          info("Writing action property #" + ap.getId + " to " + r.value)
 
-        val apv = r.value.get0.map{ txt =>  dbActionProperty.setActionPropertyValue(ap, txt) }
-        apv.foreach{ entities += _ }
+          val apv = r.value.get0.map {
+            txt => dbActionProperty.setActionPropertyValue(ap, txt)
+          }
+          apv.foreach {
+            entities += _
+          }
 
-        info("Writing norm to " + r.norm)
+          info("Writing norm to " + r.norm)
 
-        // Устанавливаем норму
-        r.norm.foreach{ ap.setNorm(_) }
+          // Устанавливаем норму
+          r.norm.foreach {
+            ap.setNorm(_)
+          }
 
 
 
-        // Находим единицу изменения
-        val unit = for( code <- r.unitCode; un <- Option(dbCustomQuery.getUnitByCode(code))) yield un
-        info("Writing unit to " + (unit map {_.getCode}))
+          // Находим единицу изменения
+          val unit = for (code <- r.unitCode; un <- Option(dbCustomQuery.getUnitByCode(code))) yield un
+          info("Writing unit to " + (unit map {
+            _.getCode
+          }))
 
-        unit.foreach{ ap.setUnit(_) }
+          unit.foreach {
+            ap.setUnit(_)
+          }
 
-        entities += ap
-      })
+          entities += ap
+        })
 
-      // Изображения
-      r.value.get1.getOrElse(Nil) match {
-        case List(image) => {
-          // Получаем actionProperty по названию
-          val aps = a.getActionProperties.filter(ap => {
-            ap.getType match {
-              case null => false
-              case at: ActionPropertyType => at.getName.startsWith(i18n("db.actionProperty.imageName"))
+        // Изображения
+        r.value.get1.getOrElse(Nil) match {
+          case List(image) => {
+            // Получаем actionProperty по названию
+            val aps = a.getActionProperties.filter(ap => {
+              ap.getType match {
+                case null => false
+                case at: ActionPropertyType => at.getName.startsWith(i18n("db.actionProperty.imageName"))
+              }
+            })
+            // Записываем значение
+            aps.foreach(ap => {
+              // TODO: сохранять также imageString
+              // Передаем base64 строку, которая в APValueImage сохраняется в byte[]
+              val apv = image.imageData.map {
+                it => dbActionProperty.setActionPropertyValue(ap, it)
+              }
+              apv.foreach {
+                entities += _
+              }
+            })
+
+          }
+          case _ => {}
+        }
+
+        val microOrganismResults = r.value.get2.getOrElse(Nil)
+        microOrganismResults.foreach(r => {
+          val organismName = r.organismName
+          val organismConcentration = r.organismConcentration
+          val apsFound = aps.filter(ap => {
+            val check = for (apt <- Option(ap.getType); tst <- Option(apt.getTest); oname <- organismName)
+            yield oname =!= tst.getName
+            check.getOrElse(false)
+          })
+          apsFound.foreach(ap => {
+            val apv = organismConcentration.map {
+              txt => dbActionProperty.setActionPropertyValue(ap, txt)
+            }
+            apv.foreach {
+              entities += _
             }
           })
-          // Записываем значение
-          aps.foreach(ap => {
-            // TODO: сохранять также imageString
-            // Передаем base64 строку, которая в APValueImage сохраняется в byte[]
-            val apv = image.imageData.map { it => dbActionProperty.setActionPropertyValue(ap,it) }
-            apv.foreach{ entities += _ }
+        })
+
+
+        val sensitivityResults = r.value.get3.getOrElse(Nil)
+        sensitivityResults.foreach(r => {
+          val antibioticName = r.name
+          val apsFound = aps.filter(ap => {
+            val check = for (apt <- Option(ap.getType); tst <- Option(apt.getTest); aname <- antibioticName)
+            yield aname =!= tst.getName
+            check.getOrElse(false)
           })
 
-        }
-        case _ => {}
-      }
-
-      val microOrganismResults = r.value.get2.getOrElse(Nil)
-      microOrganismResults.foreach(r => {
-        val organismName = r.organismName
-        val organismConcentration = r.organismConcentration
-        val apsFound = aps.filter(ap => {
-          val check = for(apt <- Option(ap.getType); tst <- Option(apt.getTest); oname <- organismName)
-                        yield oname =!= tst.getName
-          check.getOrElse(false)
+          // Записываем значение
+          apsFound.foreach(ap => {
+            val apv = r.mic match {
+              case None => dbActionProperty.setActionPropertyValue(ap, r.value.getOrElse(""))
+              case Some(mic) => dbActionProperty.setActionPropertyValue(ap, r.value.getOrElse("") + "/" + mic)
+            }
+            entities += apv
+          })
         })
-        apsFound.foreach(ap => {
-          val apv = organismConcentration.map{ txt =>  dbActionProperty.setActionPropertyValue(ap, txt) }
-          apv.foreach{ entities += _ }
-        })
-      })
-
-
-      val sensitivityResults = r.value.get3.getOrElse(Nil)
-      sensitivityResults.foreach(r => {
-        val antibioticName = r.name
-        val apsFound = aps.filter(ap => {
-          val check = for(apt <- Option(ap.getType); tst <- Option(apt.getTest); aname <- antibioticName)
-                        yield aname =!= tst.getName
-          check.getOrElse(false)
-        })
-
-        // Записываем значение
-        apsFound.foreach(ap => {
-          val apv = r.mic match {
-            case None => dbActionProperty.setActionPropertyValue(ap, r.value.getOrElse(""))
-            case Some(mic) => dbActionProperty.setActionPropertyValue(ap, r.value.getOrElse("") + "/" + mic)
-          }
-          entities += apv
-        })
-      })
     }
 
     // Сохраняем дефекты биоматериала в комментарий к действию
     a.setNote(biomaterialDefects)
     // Изменяем статус действия на "Закончено"
-    if(finished) a.setStatus(ActionStatus.FINISHED.getCode)
+    if (finished) a.setStatus(ActionStatus.FINISHED.getCode)
 
     // Сохраняем изменившиеся сущности в БД
     dbManager.mergeAll(entities)
 
-    if(finished) 0 else 1
+    if (finished) 0 else 1
   }
 
   def setLisAnalysisResults(requestId: Int,
-                         finished: Boolean,
-                         results: JList[AResult1],
-                         biomaterialDefects: String) = {
+                            finished: Boolean,
+                            results: JList[AResult1],
+                            biomaterialDefects: String) = {
     // Получаем действие направления
     info("SetAnalysisResults requested with id = " + requestId)
 
     import ru.korus.tmis.util.General.cast_implicits
 
     val a = dbActionBean.getActionById(requestId)
-    val res: mutable.Buffer[AnalysisResult] = results map { _.castTo[AnalysisResult] }
+    val res: mutable.Buffer[AnalysisResult] = results map {
+      _.castTo[AnalysisResult]
+    }
 
     setAnalysisResults(a, res.toList, finished, biomaterialDefects)
   }
@@ -622,28 +684,32 @@ class LaboratoryBean
 
     import ru.korus.tmis.util.General.cast_implicits
 
-    val results: mutable.Buffer[AnalysisResult] = lis_results map { _.castTo[AnalysisResult] }
+    val results: mutable.Buffer[AnalysisResult] = lis_results map {
+      _.castTo[AnalysisResult]
+    }
 
     info("Acquired requestId = " + requestId)
     info("Acquired barCode = " + barCode)
     info("Acquired lastPiece = " + lastPiece)
     info("Acquired results = " + results)
-    info("Acquired biomaterialDefects = " + biomaterialDefects )
+    info("Acquired biomaterialDefects = " + biomaterialDefects)
 
-    val tissue = Option(dbCustomQuery.getTakenTissueByBarcode(barCode, period)).getOrElse{
+    val tissue = Option(dbCustomQuery.getTakenTissueByBarcode(barCode, period)).getOrElse {
       throw new CoreException(i18n("error.takenTissueNotFound", barCode))
     }
 
     info("Processing results for tissue #" + tissue.getId)
 
-    val ress = tissue.getActions.collect{ case a =>
-      info(msg = "SetAnalysisResults requested with id = " + a.getId)
-      val res = results.toList
-      setAnalysisResults(a, res, lastPiece, biomaterialDefects)
+    val ress = tissue.getActions.collect {
+      case a =>
+        info(msg = "SetAnalysisResults requested with id = " + a.getId)
+        val res = results.toList
+        setAnalysisResults(a, res, lastPiece, biomaterialDefects)
     }.sum
 
-    if(ress == 0) 0 else 1
+    if (ress == 0) 0 else 1
   }
+
   def checkNull[T](o: T, message: String): T = {
     o match {
       case null => throw new CoreException(message)
@@ -655,52 +721,54 @@ class LaboratoryBean
     val barCode = 0xCAFEBABE
 
     val exPatient = PatientInfo(100,
-                                Option("Иванов"),
-                                Option("Сидор"),
-                                Option("Петрович"),
-                                Option(new Date(88,10,1)),
-                                Sex.MEN
+      Option("Иванов"),
+      Option("Сидор"),
+      Option("Петрович"),
+      Option(new Date(88, 10, 1)),
+      Sex.MEN
     )
 
     val exRequest = DiagnosticRequestInfo(220,
-                                          Option(new Date(112,2,27,17,0)),
-                                          Option(9),
-                                          Option(9),
-                                          Option("111"),
-                                          Option("Рыболовецкий сейнер"),
-                                          Option("Без комментариев"),
-                                          Option("Отделение трансфузиологии"),
-                                          Option("42"),
-                                          Option("Пётрович"),
-                                          Option("Пётрович"),
-                                          Option("Пётрович"),
-                                          Option(21)
+      Option("0"),
+//      Option(0),
+      Option(new Date(112, 2, 27, 17, 0)),
+      Option(9),
+      Option(9),
+      Option("111"),
+      Option("Рыболовецкий сейнер"),
+      Option("Без комментариев"),
+      Option("Отделение трансфузиологии"),
+      Option("42"),
+      Option("Пётрович"),
+      Option("Пётрович"),
+      Option("Пётрович"),
+      Option(21)
     )
 
     val exBio = BiomaterialInfo(
-                                 Option("XY"),
-                                 Option("Кровь каппилярная"),
-                                 Option(barCode.toString),
-                                 Option(barCode),
-                                 Option(0),
-                                 Option(new Date(112,2,27,17,0)),
-                                 Option("Без комментариев")
-                               )
+      Option("XY"),
+      Option("Кровь каппилярная"),
+      Option(barCode.toString),
+      Option(barCode),
+      Option(0),
+      Option(new Date(112, 2, 27, 17, 0)),
+      Option("Без комментариев")
+    )
 
     val exOrder = OrderInfo(
-                             Option("x001"),
-                             Option("RTFM"),
-                             Option(OrderInfo.OrderPriority.Normal),
-                             List(
-                                   IndicatorMetodic(Option("WBC"),Option("Г0001")),
-                                   IndicatorMetodic(Option("RBC"),Option("Г0010"))
-                                 )
-                           )
+      Option("x001"),
+      Option("RTFM"),
+      Option(OrderInfo.OrderPriority.Normal),
+      List(
+        IndicatorMetodic(Option("WBC"), Option("Г0001")),
+        IndicatorMetodic(Option("RBC"), Option("Г0010"))
+      )
+    )
 
 
     info("connecting to LIS2 webservice...")
 
-    val labws =  getLab2Ws()
+    val labws = getLab2Ws()
 
     info("sending to LIS2 webservice...")
     try {
@@ -715,7 +783,7 @@ class LaboratoryBean
     val a = dbActionBean.getActionById(actionId)
 
     val at = a.getActionType
-    if(at.getId == -1) throw new CoreException(i18n("error.noTypeForAction", a.getId))
+    if (at.getId == -1) throw new CoreException(i18n("error.noTypeForAction", a.getId))
 
     if (at.getTypeClass != Integer.valueOf(i18n("db.action.diagnosticClass")).intValue) {
       throw new CoreException(i18n("error.invalidActionClass", a.getId, at.getTypeClass))
@@ -744,18 +812,18 @@ class LaboratoryBean
   def sendLisAnalysisRequest(actionId: Int) = {
     val (patientInfo, requestInfo, biomaterialInfo, orderInfo) = getAnalysisRequest(actionId)
 
-    info{
-          """Lis data:
-            |  %s
-            |  %s
-            |  %s
-            |  %s
-          """.stripMargin format (
-            patientInfo.toString,
-            requestInfo.toString,
-            biomaterialInfo.toString,
-            orderInfo.toString
-          )
+    info {
+      """Lis data:
+        |  %s
+        |  %s
+        |  %s
+        |  %s
+      """.stripMargin format(
+        patientInfo.toString,
+        requestInfo.toString,
+        biomaterialInfo.toString,
+        orderInfo.toString
+        )
     }
 
     info("connecting to LIS webservice...")
@@ -775,18 +843,18 @@ class LaboratoryBean
     // sendTestLis2AnalysisRequest()
     val (patientInfo, requestInfo, biomaterialInfo, orderInfo) = getAnalysisRequest(actionId)
 
-    info{
-          """Lis data:
-            |  %s
-            |  %s
-            |  %s
-            |  %s
-          """.stripMargin format (
-            patientInfo.toString,
-            requestInfo.toString,
-            biomaterialInfo.toString,
-            orderInfo.toString
-          )
+    info {
+      """Lis data:
+        |  %s
+        |  %s
+        |  %s
+        |  %s
+      """.stripMargin format(
+        patientInfo.toString,
+        requestInfo.toString,
+        biomaterialInfo.toString,
+        orderInfo.toString
+        )
     }
 
     val labws = getLab2Ws()

@@ -17,6 +17,8 @@ import ru.korus.tmis.laboratory.data.request.Utility._
 
 sealed case class DiagnosticRequestInfo (
   orderMisId: Int,
+  orderCaseId: Option[String],
+//  orderFinanceId: Option[Int],
   orderMisDate: Option[Date],
   orderPregnatMin: Option[Int],
   orderPregnatMax: Option[Int],
@@ -70,6 +72,8 @@ object DiagnosticRequestInfo {
 
     for( min <- orderPregnatMin; max <- orderPregnatMax) yield ret.setOrderPregnat(min/2 + max/2)
 
+    setAsOptional(orderCaseId) {ret.setOrderCaseId(_) }
+//    setAsOptional(orderFinanceId) {ret.setOrderFinanceId(_) }
     setAsOptional(orderDiagCode){ ret.setOrderDiagCode(_) }
     setAsOptional(orderDiagText){ ret.setOrderDiagText(_) }
     setAsOptional(orderComment){ ret.setOrderComment(_) }

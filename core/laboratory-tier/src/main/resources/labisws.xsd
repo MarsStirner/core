@@ -1,91 +1,93 @@
-<?xml version='1.0' encoding='UTF-8'?><!-- Published by JAX-WS RI at http://jax-ws.dev.java.net. RI's version is Metro/2.1 (branches/2.1-6728; 2011-02-03T14:14:58+0000) JAXWS-RI/2.2.3 JAXWS/2.2. --><xs:schema xmlns:tns="http://korus.ru/laboratory/labisws" xmlns:xs="http://www.w3.org/2001/XMLSchema" version="1.0" targetNamespace="http://korus.ru/laboratory/labisws">
+<?xml version='1.0' encoding='UTF-8'?><!-- Published by JAX-WS RI at http://jax-ws.dev.java.net. RI's version is Metro/2.1 (branches/2.1-6728; 2011-02-03T14:14:58+0000) JAXWS-RI/2.2.3 JAXWS/2.2. -->
+<xs:schema xmlns:tns="http://korus.ru/laboratory/labisws" xmlns:xs="http://www.w3.org/2001/XMLSchema" version="1.0"
+           targetNamespace="http://korus.ru/laboratory/labisws">
 
-<xs:element name="ExceptionFault" nillable="true" type="tns:faultBean" />
+    <xs:element name="ExceptionFault" nillable="true" type="tns:faultBean"/>
 
-<xs:element name="queryAnalysis" type="tns:queryAnalysis" />
+    <xs:element name="queryAnalysis" type="tns:queryAnalysis"/>
 
-<xs:element name="queryAnalysisResponse" type="tns:queryAnalysisResponse" />
+    <xs:element name="queryAnalysisResponse" type="tns:queryAnalysisResponse"/>
 
-<xs:complexType name="queryAnalysis">
-<xs:sequence>
-<xs:element name="patientInfo" type="tns:patientInfo" minOccurs="0" />
-<xs:element name="requestInfo" type="tns:diagnosticRequestInfo" minOccurs="0" />
-<xs:element name="biomaterialInfo" type="tns:biomaterialInfo" minOccurs="0" />
-<xs:element name="orderInfo" type="tns:orderInfo" minOccurs="0" />
-</xs:sequence>
-</xs:complexType>
+    <xs:complexType name="queryAnalysis">
+        <xs:sequence>
+            <xs:element name="patientInfo" type="tns:patientInfo" minOccurs="0"/>
+            <xs:element name="requestInfo" type="tns:diagnosticRequestInfo" minOccurs="0"/>
+            <xs:element name="biomaterialInfo" type="tns:biomaterialInfo" minOccurs="0"/>
+            <xs:element name="orderInfo" type="tns:orderInfo" minOccurs="0"/>
+        </xs:sequence>
+    </xs:complexType>
 
-<xs:complexType name="patientInfo">
-<xs:sequence>
-<xs:element name="patientBirthDate" type="xs:date" />
-<xs:element name="patientMisId" type="xs:int" />
-<xs:element name="patientName" type="xs:string" />
-<xs:element name="patientSex" type="tns:gender" />
-<xs:element name="patientFamily" type="xs:string" />
-<xs:element name="patientPatronum" type="xs:string" />
-</xs:sequence>
-</xs:complexType>
+    <xs:complexType name="patientInfo">
+        <xs:sequence>
+            <xs:element name="patientBirthDate" type="xs:date"/>
+            <xs:element name="patientMisId" type="xs:int"/>
+            <xs:element name="patientName" type="xs:string"/>
+            <xs:element name="patientSex" type="tns:gender"/>
+            <xs:element name="patientFamily" type="xs:string"/>
+            <xs:element name="patientPatronum" type="xs:string"/>
+        </xs:sequence>
+    </xs:complexType>
 
-<xs:complexType name="diagnosticRequestInfo">
-<xs:sequence>
-<xs:element name="orderComment" type="xs:string" minOccurs="0" />
-<xs:element name="orderMisDate" type="xs:dateTime" />
-<xs:element name="orderDepartmentMisId" type="xs:string" />
-<xs:element name="orderDepartmentName" type="xs:string" minOccurs="0" />
-<xs:element name="orderDiagText" type="xs:string" />
-<xs:element name="orderDoctorMisId" type="xs:string" />
-<xs:element name="orderDoctorName" type="xs:string" minOccurs="0" />
-<xs:element name="orderDoctorFamily" type="xs:string" minOccurs="0" />
-<xs:element name="orderDoctorPatronum" type="xs:string" minOccurs="0" />
-<xs:element name="orderMisId" type="xs:int" />
-<xs:element name="orderDiagCode" type="xs:string" />
-<xs:element name="orderPregnatMax" type="xs:int" />
-<xs:element name="orderPregnatMin" type="xs:int" />
-</xs:sequence>
-</xs:complexType>
+    <xs:complexType name="diagnosticRequestInfo">
+        <xs:sequence>
+            <xs:element name="orderComment" type="xs:string" minOccurs="0"/>
+            <xs:element name="orderMisDate" type="xs:dateTime"/>
+            <xs:element name="orderDepartmentMisId" type="xs:string"/>
+            <xs:element name="orderDepartmentName" type="xs:string" minOccurs="0"/>
+            <xs:element name="orderDiagText" type="xs:string"/>
+            <xs:element name="orderDoctorMisId" type="xs:string"/>
+            <xs:element name="orderDoctorName" type="xs:string" minOccurs="0"/>
+            <xs:element name="orderDoctorFamily" type="xs:string" minOccurs="0"/>
+            <xs:element name="orderDoctorPatronum" type="xs:string" minOccurs="0"/>
+            <xs:element name="orderMisId" type="xs:int"/>
+            <xs:element name="orderDiagCode" type="xs:string"/>
+            <xs:element name="orderPregnatMax" type="xs:int"/>
+            <xs:element name="orderPregnatMin" type="xs:int"/>
+        </xs:sequence>
+    </xs:complexType>
 
-<xs:complexType name="biomaterialInfo">
-<xs:sequence>
-<xs:element name="orderBarCode" type="xs:string" />
-<xs:element name="orderBiomaterialCode" type="xs:string" />
-<xs:element name="orderBiomaterialComment" type="xs:string" minOccurs="0" />
-<xs:element name="orderBiomaterialname" type="xs:string" minOccurs="0" />
-<xs:element name="orderProbeDate" type="xs:dateTime" />
-</xs:sequence>
-</xs:complexType>
+    <xs:complexType name="biomaterialInfo">
+        <xs:sequence>
+            <xs:element name="orderBarCode" type="xs:string"/>
+            <xs:element name="orderBiomaterialCode" type="xs:string"/>
+            <xs:element name="orderBiomaterialComment" type="xs:string" minOccurs="0"/>
+            <xs:element name="orderBiomaterialname" type="xs:string" minOccurs="0"/>
+            <xs:element name="orderProbeDate" type="xs:dateTime"/>
+        </xs:sequence>
+    </xs:complexType>
 
-<xs:complexType name="orderInfo">
-<xs:sequence>
-<xs:element name="diagnosticCode" type="xs:string" />
-<xs:element name="indicators" type="tns:indicator" minOccurs="0" maxOccurs="unbounded" />
-<xs:element name="diagnosticName" type="xs:string" minOccurs="0" />
-<xs:element name="orderPriority" type="xs:int" />
-</xs:sequence>
-</xs:complexType>
+    <xs:complexType name="orderInfo">
+        <xs:sequence>
+            <xs:element name="diagnosticCode" type="xs:string"/>
+            <xs:element name="indicators" type="tns:indicator" minOccurs="0" maxOccurs="unbounded"/>
+            <xs:element name="diagnosticName" type="xs:string" minOccurs="0"/>
+            <xs:element name="orderPriority" type="xs:int"/>
+        </xs:sequence>
+    </xs:complexType>
 
-<xs:complexType name="indicator">
-<xs:sequence>
-<xs:element name="indicatorCode" type="xs:string" />
-<xs:element name="indicatorName" type="xs:string" minOccurs="0" />
-</xs:sequence>
-</xs:complexType>
+    <xs:complexType name="indicator">
+        <xs:sequence>
+            <xs:element name="indicatorCode" type="xs:string"/>
+            <xs:element name="indicatorName" type="xs:string" minOccurs="0"/>
+        </xs:sequence>
+    </xs:complexType>
 
-<xs:complexType name="queryAnalysisResponse">
-<xs:sequence />
-</xs:complexType>
+    <xs:complexType name="queryAnalysisResponse">
+        <xs:sequence/>
+    </xs:complexType>
 
-<xs:complexType name="faultBean">
-<xs:sequence>
-<xs:element name="id" type="xs:int" />
-<xs:element name="message" type="xs:string" minOccurs="0" />
-</xs:sequence>
-</xs:complexType>
+    <xs:complexType name="faultBean">
+        <xs:sequence>
+            <xs:element name="id" type="xs:int"/>
+            <xs:element name="message" type="xs:string" minOccurs="0"/>
+        </xs:sequence>
+    </xs:complexType>
 
-<xs:simpleType name="gender">
-<xs:restriction base="xs:int">
-<xs:enumeration value="1" />
-<xs:enumeration value="2" />
-<xs:enumeration value="3" />
-</xs:restriction>
-</xs:simpleType>
+    <xs:simpleType name="gender">
+        <xs:restriction base="xs:int">
+            <xs:enumeration value="1"/>
+            <xs:enumeration value="2"/>
+            <xs:enumeration value="3"/>
+        </xs:restriction>
+    </xs:simpleType>
 </xs:schema>

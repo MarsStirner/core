@@ -16,6 +16,8 @@
             <complexType name="DiagnosticRequestInfo">
                 <sequence>
                     <element name="orderMisId" type="xs:int"/>
+                    <element name="orderCaseId" type="xs:string"/>
+                    <element name="orderFinanceId" type="xs:int"/>
                     <element name="orderMisDate" type="xs:dateTime"/>
                     <element name="orderPregnat" type="xs:int"/>
 

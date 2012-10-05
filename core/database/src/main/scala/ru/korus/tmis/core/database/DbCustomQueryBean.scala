@@ -29,19 +29,28 @@ class DbCustomQueryBean
   @PersistenceContext(unitName = "s11r64")
   var em: EntityManager = _
 
+  def getFinanceId(eventId: Int) = {
+    val result = em.createQuery(finance, classOf[Int])
+      .setParameter("externalId", eventId)
+      .getSingleResult
+    result
+  }
+
   def getTakenTissueByBarcode(id: Int, period: Int) = {
     val result = em.createQuery(takenTissueByBarcodeQuery, classOf[TakenTissue])
-                  .setParameter("barcode", id)
-                  .setParameter("period", period)
-                  .getResultList.headOption
-    result.map{ it => em.detach(it);it }.orNull
+      .setParameter("barcode", id)
+      .setParameter("period", period)
+      .getResultList.headOption
+    result.map {
+      it => em.detach(it); it
+    }.orNull
   }
 
   def getActiveEventsForDoctor(id: Int) = {
     val result = em.createQuery(ActiveEventsByDoctorIdQuery,
-                                classOf[Event])
-                 .setParameter("doctorId", id)
-                 .getResultList
+      classOf[Event])
+      .setParameter("doctorId", id)
+      .getResultList
 
     result.foreach((event) => em.detach(event))
     result
@@ -49,9 +58,9 @@ class DbCustomQueryBean
 
   def getActiveEventsForDepartment(id: Int) = {
     val result = em.createQuery(ActiveEventsByDepartmentIdQuery,
-                                classOf[Array[AnyRef]])
-                 .setParameter("departmentId", id)
-                 .getResultList
+      classOf[Array[AnyRef]])
+      .setParameter("departmentId", id)
+      .getResultList
 
     val events = result.map((e) => e(0).asInstanceOf[Event])
     events.foreach((event) => em.detach(event))
@@ -90,10 +99,10 @@ class DbCustomQueryBean
 
     val ids = events.map((event) => event.getId.intValue)
     val result = em.createQuery(query,
-                                classOf[Array[AnyRef]])
-                 .setParameter("eventIds",
-                               asJavaCollection(ids))
-                 .getResultList
+      classOf[Array[AnyRef]])
+      .setParameter("eventIds",
+      asJavaCollection(ids))
+      .getResultList
 
     result.foldLeft(LinkedHashMap.empty[Event, T])(
       (map, pair) => {
@@ -118,8 +127,8 @@ class DbCustomQueryBean
   def getAllActionsByQueryAndEventId(query: String,
                                      eventId: Int) = {
     val result = em.createQuery(query, classOf[Action])
-                 .setParameter("eventId", eventId)
-                 .getResultList
+      .setParameter("eventId", eventId)
+      .getResultList
 
     result.foreach((a) => em.detach(a))
     result
@@ -130,12 +139,12 @@ class DbCustomQueryBean
                                                      beginDate: Date,
                                                      endDate: Date) = {
     val result = em.createQuery(IndicatorByEventIdAndIndicatorNameQuery,
-                                classOf[Array[AnyRef]])
-                 .setParameter("eventId", eventId)
-                 .setParameter("indicatorName", indicatorName)
-                 .setParameter("beginDate", beginDate, TemporalType.TIMESTAMP)
-                 .setParameter("endDate", endDate, TemporalType.TIMESTAMP)
-                 .getResultList
+      classOf[Array[AnyRef]])
+      .setParameter("eventId", eventId)
+      .setParameter("indicatorName", indicatorName)
+      .setParameter("beginDate", beginDate, TemporalType.TIMESTAMP)
+      .setParameter("endDate", endDate, TemporalType.TIMESTAMP)
+      .getResultList
 
     val indicators =
       result.foldLeft(List.empty[IndicatorValue[JDouble]])(
@@ -158,21 +167,21 @@ class DbCustomQueryBean
                        endDate: Date) = {
     val ts = if (beginDate != null && endDate != null) {
       em.createQuery(TreatmentActionsByEventId +
-                       filterActionTypeId +
-                       filterTimePeriod,
-                     classOf[Action])
-      .setParameter("eventId", eventId)
-      .setParameter("actionTypeId", actionTypeId)
-      .setParameter("beginDate", beginDate)
-      .setParameter("endDate", endDate)
-      .getResultList
+        filterActionTypeId +
+        filterTimePeriod,
+        classOf[Action])
+        .setParameter("eventId", eventId)
+        .setParameter("actionTypeId", actionTypeId)
+        .setParameter("beginDate", beginDate)
+        .setParameter("endDate", endDate)
+        .getResultList
     } else {
       em.createQuery(TreatmentActionsByEventId +
-                       filterActionTypeId,
-                     classOf[Action])
-      .setParameter("eventId", eventId)
-      .setParameter("actionTypeId", actionTypeId)
-      .getResultList
+        filterActionTypeId,
+        classOf[Action])
+        .setParameter("eventId", eventId)
+        .setParameter("actionTypeId", actionTypeId)
+        .getResultList
     }
     ts.foreach(em.detach(_))
     ts
@@ -181,16 +190,16 @@ class DbCustomQueryBean
   def getTreatmentInfo(eventId: Int, beginDate: Date, endDate: Date) = {
     val ts = if (beginDate != null && endDate != null) {
       em.createQuery(TreatmentActionsByEventId + filterTimePeriod,
-                     classOf[Action])
-      .setParameter("eventId", eventId)
-      .setParameter("beginDate", beginDate)
-      .setParameter("endDate", endDate)
-      .getResultList
+        classOf[Action])
+        .setParameter("eventId", eventId)
+        .setParameter("beginDate", beginDate)
+        .setParameter("endDate", endDate)
+        .getResultList
     } else {
       em.createQuery(TreatmentActionsByEventId,
-                     classOf[Action])
-      .setParameter("eventId", eventId)
-      .getResultList
+        classOf[Action])
+        .setParameter("eventId", eventId)
+        .getResultList
     }
     ts.foreach(em.detach(_))
     ts
@@ -208,15 +217,19 @@ class DbCustomQueryBean
     import ru.korus.tmis.util.General.catchy
 
     em.createQuery(HeightQuery,
-                   classOf[Array[AnyRef]])
-    .setParameter("pid", p.getId)
-    .getResultList
-    .collect{ case Array(v: JDouble, date: java.util.Date) => (v, date) }
-    .sortBy( _._2.getTime )
-    .lastOption
-    .map(_._1)
-    .orElse(catchy{ new JDouble(p.getWeight.toDouble) })
-    .orNull
+      classOf[Array[AnyRef]])
+      .setParameter("pid", p.getId)
+      .getResultList
+      .collect {
+      case Array(v: JDouble, date: java.util.Date) => (v, date)
+    }
+      .sortBy(_._2.getTime)
+      .lastOption
+      .map(_._1)
+      .orElse(catchy {
+      new JDouble(p.getWeight.toDouble)
+    })
+      .orNull
     //.getOrElse{ throw new CoreException(i18n("error.noHeightForPatientFound").format(p.getId)) }
   }
 
@@ -224,15 +237,19 @@ class DbCustomQueryBean
     import ru.korus.tmis.util.General.catchy
 
     em.createQuery(WeightQuery,
-                   classOf[Array[AnyRef]])
-    .setParameter("pid", p.getId)
-    .getResultList
-    .collect{ case Array(v: JDouble, date: java.util.Date) => (v, date) }
-    .sortBy( _._2.getTime )
-    .lastOption
-    .map(_._1)
-    .orElse(catchy{ new JDouble(p.getWeight.toDouble) })
-    .orNull
+      classOf[Array[AnyRef]])
+      .setParameter("pid", p.getId)
+      .getResultList
+      .collect {
+      case Array(v: JDouble, date: java.util.Date) => (v, date)
+    }
+      .sortBy(_._2.getTime)
+      .lastOption
+      .map(_._1)
+      .orElse(catchy {
+      new JDouble(p.getWeight.toDouble)
+    })
+      .orNull
     //.getOrElse{ throw new CoreException(i18n("error.noWeightForPatientFound").format(p.getId)) }
   }
 
@@ -247,7 +264,7 @@ class DbCustomQueryBean
     AND ap.action.deleted = false
     AND ap.action.event.deleted = false
     AND ap.action.event.patient.deleted = false
-  """
+                    """
 
   val WeightQuery = """
     SELECT apd.value, ap.action.begDate
@@ -260,7 +277,7 @@ class DbCustomQueryBean
     AND ap.action.deleted = false
     AND ap.action.event.deleted = false
     AND ap.action.event.patient.deleted = false
-  """
+                    """
 
   val ActiveEventsQuery = """
     SELECT e
@@ -297,12 +314,12 @@ class DbCustomQueryBean
       )
     AND
       e.deleted = 0
-  """
+                          """
 
   val ActiveEventsByDoctorIdQuery = ActiveEventsQuery + """
     AND
       e.executor.id = :doctorId
-  """
+                                                        """
 
   val ActiveEventsByDepartmentIdQuery = """
     SELECT e, MAX(a.createDatetime)
@@ -349,7 +366,7 @@ class DbCustomQueryBean
     AND
       e.deleted = 0
     GROUP BY e
-  """.format(i18n("db.action.movingFlatCode"))
+                                        """.format(i18n("db.action.movingFlatCode"))
 
   val ActionsByEventIdsAndFlatCodeQuery = """
     SELECT e, a
@@ -370,7 +387,7 @@ class DbCustomQueryBean
       a.deleted = 0
     ORDER BY
       a.createDatetime %s
-  """
+                                          """
 
   val AdmissionsByEventIdsQuery =
     ActionsByEventIdsAndFlatCodeQuery.format(
@@ -400,7 +417,7 @@ class DbCustomQueryBean
       ap.deleted = 0
     ORDER BY
       ap.createDatetime ASC
-  """.format(
+                                    """.format(
     i18n("db.action.movingFlatCode"),
     i18n("db.apt.hospitalBedName"))
 
@@ -532,9 +549,9 @@ class DbCustomQueryBean
     AND e.deleted = 0
     AND at.deleted = 0
     ORDER BY
-      a.createDatetime ASC
-    """.format(i18n("db.action.preAssessmentGroupName"),
-             i18n("db.action.diagnosisSubstantiation"))
+      a.begDate DESC
+                                               """.format(i18n("db.action.preAssessmentGroupName"),
+    i18n("db.action.diagnosisSubstantiation"))
 
   val AllAssessmentsByEventIdQuery = """
     SELECT a
@@ -546,7 +563,7 @@ class DbCustomQueryBean
     AND a.deleted = 0
     AND a.event.deleted = 0
     AND a.actionType.deleted = 0
-  """.format(i18n("db.action.assessmentClass"))
+                                     """.format(i18n("db.action.assessmentClass"))
 
   val AllDiagnosticsByEventIdQuery = """
     SELECT a
@@ -558,7 +575,7 @@ class DbCustomQueryBean
       a.deleted = 0 AND
       a.event.deleted = 0 AND
       a.actionType.deleted = 0
-  """.format(i18n("db.action.diagnosticClass"))
+                                     """.format(i18n("db.action.diagnosticClass"))
 
   val IndicatorByEventIdAndIndicatorNameQuery = """
     SELECT ap.id, apt.name, apd.value, ap.createDatetime FROM
@@ -578,7 +595,7 @@ class DbCustomQueryBean
       a.event.deleted = 0 AND
       ap.deleted = 0 AND
       apt.deleted = 0
-  """
+                                                """
 
   val TreatmentActionsByEventId = """
     SELECT a FROM
@@ -593,15 +610,20 @@ class DbCustomQueryBean
       e.deleted = 0 AND
       a.deleted = 0 AND
       at.deleted = 0
-    """.format(i18n("db.action.treatmentClass"))
+                                  """.format(i18n("db.action.treatmentClass"))
 
   val filterActionTypeId = " AND at.id = :actionTypeId"
   val filterTimePeriod = """
       AND (a.begDate IS NULL OR a.begDate BETWEEN :beginDate AND :endDate)
       AND (a.endDate IS NULL OR a.endDate BETWEEN :beginDate AND :endDate)
-  """
+                         """
 
-  val takenTissueByBarcodeQuery ="""
+  val takenTissueByBarcodeQuery = """
       SELECT t from TakenTissue t where t.barcode = :barcode and t.period = :period
-    """
+                                  """
+
+  val finance = """
+      SELECT RbFinance rf
+
+                """
 }

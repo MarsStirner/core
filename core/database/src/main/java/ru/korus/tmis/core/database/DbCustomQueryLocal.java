@@ -39,6 +39,9 @@ public interface DbCustomQueryLocal {
     Map<Event, Action> getDiagnosisSubstantiationByEvents(List<Event> events)
             throws CoreException;
 
+    Integer getFinanceId(int eventId)
+            throws CoreException;
+
     List<Action> getAllAssessmentsByEventId(int eventId)
             throws CoreException;
 
