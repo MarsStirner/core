@@ -9,8 +9,8 @@ import javax.jws.{HandlerChain, WebService}
 import scala.collection.JavaConversions._
 import javax.inject.Named
 import ru.korus.tmis.core.database.DbStaffBeanLocal
-import ru.korus.tmis.core.auth.AuthStorageBeanLocal
-import ru.korus.tmis.core.data.RoleData
+import ru.korus.tmis.core.auth.{AuthToken, AuthData, AuthStorageBeanLocal}
+import ru.korus.tmis.core.data.{DoctorSpecsContainer, StaffEntity, RoleData}
 
 
 @Named

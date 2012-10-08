@@ -27,8 +27,8 @@ class ExceptionLoggingHandler
 
   def handleMessage(context: SOAPMessageContext) = {
     val isOutbound = context
-      .get(MessageContext.MESSAGE_OUTBOUND_PROPERTY)
-      .asInstanceOf[Boolean]
+                     .get(MessageContext.MESSAGE_OUTBOUND_PROPERTY)
+                     .asInstanceOf[Boolean]
 
     if (!isOutbound) {
       msg = context.getMessage
@@ -39,8 +39,8 @@ class ExceptionLoggingHandler
 
   def handleFault(context: SOAPMessageContext) = {
     val isOutbound = context
-      .get(MessageContext.MESSAGE_OUTBOUND_PROPERTY)
-      .asInstanceOf[Boolean]
+                     .get(MessageContext.MESSAGE_OUTBOUND_PROPERTY)
+                     .asInstanceOf[Boolean]
 
     val req = new ByteArrayOutputStream()
     val res = new ByteArrayOutputStream()
