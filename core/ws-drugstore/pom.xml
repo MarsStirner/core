@@ -10,7 +10,7 @@
     <parent>
         <groupId>ru.korus.tmis</groupId>
         <artifactId>tmis-nexus</artifactId>
-        <version>0.8.13-SNAPSHOT</version>
+        <version>0.9.0</version>
         <relativePath>../</relativePath>
     </parent>
 
