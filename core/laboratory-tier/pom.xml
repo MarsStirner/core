@@ -4,7 +4,7 @@
     <modelVersion>4.0.0</modelVersion>
     <groupId>ru.korus.tmis.laboratory</groupId>
     <artifactId>tmis-laboratory-tier</artifactId>
-  <version>0.9.0</version>
+  <version>0.8.14</version>
     <packaging>ejb</packaging>
     <name>TMIS Laboratory Business Tier EJBs</name>
 
