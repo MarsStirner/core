@@ -1,7 +1,7 @@
 package ru.korus.tmis.core.database
 
-import ru.korus.tmis.core.logging.db.LoggingInterceptor
 import javax.interceptor.Interceptors
+import ru.korus.tmis.core.logging.LoggingInterceptor
 import grizzled.slf4j.Logging
 import javax.persistence.{EntityManager, PersistenceContext}
 import javax.annotation.PostConstruct
@@ -16,9 +16,9 @@ import ru.korus.tmis.util.I18nable
 @Interceptors(Array(classOf[LoggingInterceptor]))
 @Singleton
 @TransactionManagement(TransactionManagementType.BEAN)
-class DbSettingsBean  extends DbSettingsBeanLocal
-  with Logging
-  with I18nable {
+class DbSettingsBean extends DbSettingsBeanLocal
+with Logging
+with I18nable {
 
   @PersistenceContext(unitName = "tmis_core")
   var tmis_core: EntityManager = _
@@ -33,16 +33,17 @@ class DbSettingsBean  extends DbSettingsBeanLocal
     import ru.korus.tmis.util.ConfigManager._
     import collection.JavaConversions._
 
-    
+
     val settings: Buffer[Setting] = tmis_core.createNamedQuery[Setting]("Setting.findAll", classOf[Setting]).getResultList.toBuffer
 
-    settings.foreach{ setting =>
-      info("Setting \"" + setting.getPath + "\" to \"" + setting.getValue + "\"")
-      if (!setSetting(setting.getPath, setting.getValue)){
-        warn("Could not set setting '" + setting.getPath + "' to value '" + setting.getValue + "'")
-      } else {
-        info("Successfully changed setting")
-      }
+    settings.foreach {
+      setting =>
+        info("Setting \"" + setting.getPath + "\" to \"" + setting.getValue + "\"")
+        if (!setSetting(setting.getPath, setting.getValue)) {
+          warn("Could not set setting '" + setting.getPath + "' to value '" + setting.getValue + "'")
+        } else {
+          info("Successfully changed setting")
+        }
     }
 
 

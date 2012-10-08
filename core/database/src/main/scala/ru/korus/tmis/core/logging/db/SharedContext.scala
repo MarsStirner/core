@@ -9,14 +9,14 @@ object SharedContext {
   var number: ThreadLocal[java.lang.Integer] = new ThreadLocal[java.lang.Integer]()
 
   def currentSessionId() = {
-    if(sessionId.get() == null) {
+    if (sessionId.get() == null) {
       sessionId.set(UUID.randomUUID())
     }
     sessionId.get()
   }
 
   def pushNestedLevel() = {
-    if(nestedLevel.get() == null) {
+    if (nestedLevel.get() == null) {
       nestedLevel.set(0)
     }
     val r = nestedLevel.get().intValue
@@ -25,7 +25,7 @@ object SharedContext {
   }
 
   def popNestedLevel() = {
-    if(nestedLevel.get() == null) {
+    if (nestedLevel.get() == null) {
       nestedLevel.set(0)
     }
     val r = nestedLevel.get().intValue
@@ -34,7 +34,7 @@ object SharedContext {
   }
 
   def nextNumber() = {
-    if(number.get() == null) {
+    if (number.get() == null) {
       number.set(0)
     }
     val r = number.get().intValue

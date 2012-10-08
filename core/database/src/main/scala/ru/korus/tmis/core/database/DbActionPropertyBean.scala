@@ -3,7 +3,7 @@ package ru.korus.tmis.core.database
 import ru.korus.tmis.core.auth.AuthData
 import ru.korus.tmis.core.entity.model._
 import ru.korus.tmis.core.exception.CoreException
-import ru.korus.tmis.core.logging.db.LoggingInterceptor
+import ru.korus.tmis.core.logging.LoggingInterceptor
 import ru.korus.tmis.util.{ConfigManager, I18nable}
 
 import java.util.{List, Date}
@@ -37,9 +37,9 @@ class DbActionPropertyBean
   @TransactionAttribute(TransactionAttributeType.REQUIRES_NEW)
   def getActionPropertyById(id: Int) = {
     val result = em.createQuery(ActionPropertyFindQuery,
-                                classOf[ActionProperty])
-                 .setParameter("id", id)
-                 .getResultList
+      classOf[ActionProperty])
+      .setParameter("id", id)
+      .getResultList
 
     result.size match {
       case 0 => {
@@ -49,7 +49,7 @@ class DbActionPropertyBean
       }
       case size => {
         val actionProperty = result.iterator.next()
-        em.detach(actionProperty)
+        em.detach(actionProperty) //временно закрыл
         actionProperty
       }
     }
@@ -58,9 +58,9 @@ class DbActionPropertyBean
   @TransactionAttribute(TransactionAttributeType.REQUIRES_NEW)
   def getActionPropertiesByActionId(actionId: Int) = {
     val result = em.createQuery(ActionPropertiesByActionIdQuery,
-                                classOf[ActionProperty])
-                 .setParameter("actionId", actionId)
-                 .getResultList
+      classOf[ActionProperty])
+      .setParameter("actionId", actionId)
+      .getResultList
 
     result.foldLeft(LinkedHashMap.empty[ActionProperty, java.util.List[APValue]])(
       (map, ap) => {
@@ -108,10 +108,15 @@ class DbActionPropertyBean
 
     val ap = new ActionProperty
 
-    ap.setCreatePerson(userData.user)
     ap.setCreateDatetime(now)
-    ap.setModifyPerson(userData.user)
     ap.setModifyDatetime(now)
+    //TODO: временно подсовываю пустой Staff когда нет AuthData
+    if (userData != null) {
+      ap.setCreatePerson(userData.user)
+      ap.setCreateDatetime(now)
+      ap.setModifyPerson(userData.user)
+      ap.setModifyDatetime(now)
+    }
 
     ap.setAction(a)
     ap.setType(apt)
@@ -129,24 +134,29 @@ class DbActionPropertyBean
     ap
   }
 
-  def setActionPropertyValue(ap: ActionProperty, value: String) = {
+  def setActionPropertyValue(ap: ActionProperty, value: String, index: Int = 0) = {
     val apvs = getActionPropertyValue(ap)
 
     apvs.size match {
       case 0 => {
         // Если не нашли значение, то создаем новое
-        val apv = createActionPropertyValue(ap, value)
+        val apv = createActionPropertyValue(ap, value, index)
         apv
       }
       case size => {
-        val apv = apvs.get(0)
-        apv.unwrap.setValueFromString(value)
-        apv
+        if (ap.getType.getIsVector) {
+          val apv = createActionPropertyValue(ap, value, index)
+          apv
+        }
+        else {
+          val apv = apvs.get(0)
+          if (apv.unwrap.setValueFromString(value)) apv else null
+        }
       }
     }
   }
 
-  def createActionPropertyValue(ap: ActionProperty, value: String) = {
+  def createActionPropertyValue(ap: ActionProperty, value: String, index: Int = 0) = {
     val cls = ap.getValueClass
     cls match {
       case null => {
@@ -156,10 +166,9 @@ class DbActionPropertyBean
     }
     val apv = cls.newInstance.asInstanceOf[APValue]
     // Устанваливаем id, index
-    apv.linkToActionProperty(ap)
+    apv.linkToActionProperty(ap, index)
     // Записываем значение
-    apv.setValueFromString(value)
-    apv
+    if (apv.setValueFromString(value)) apv else null
   }
 
   ///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -171,8 +180,8 @@ class DbActionPropertyBean
   def getPropertyValues(id: Int, entityName: String) = {
     val query = APValueQuery.format(entityName)
     val apvs = em.createQuery(query)
-               .setParameter("id", id)
-               .getResultList
+      .setParameter("id", id)
+      .getResultList
     apvs.foreach(v => em.detach(v))
     apvs
   }
@@ -183,9 +192,38 @@ class DbActionPropertyBean
   @TransactionAttribute(TransactionAttributeType.REQUIRES_NEW)
   def getRLSNomenclature(code: Int): List[Nomenclature] = {
     emRls.createQuery("SELECT n FROM Nomenclature n WHERE n.code = :code",
-                      classOf[Nomenclature])
-    .setParameter("code", code)
-    .getResultList
+      classOf[Nomenclature])
+      .setParameter("code", code)
+      .getResultList
+  }
+
+  @TransactionAttribute(TransactionAttributeType.REQUIRES_NEW)
+  def getActionPropertiesByActionIdAndTypeNames(actionId: Int, names: java.util.List[String]) = {
+    val result = em.createQuery(ActionPropertiesByActionIdAndNamesQuery,
+      classOf[ActionProperty])
+      .setParameter("actionId", actionId)
+      .setParameter("names", asJavaCollection(names))
+      .getResultList
+
+    result.foldLeft(LinkedHashMap.empty[ActionProperty, java.util.List[APValue]])(
+      (map, ap) => {
+        em.detach(ap)
+        map.put(ap, getActionPropertyValue(ap))
+        map
+      }
+    )
+  }
+
+  @TransactionAttribute(TransactionAttributeType.REQUIRES_NEW)
+  def getActionPropertiesByActionIdAndTypeId(actionId: Int, typeId: Int) = {
+    val result = em.createQuery(ActionPropertiesByActionIdAndTypeIdQuery,
+      classOf[ActionProperty])
+      .setParameter("actionId", actionId)
+      .setParameter("typeId", typeId)
+      .getResultList
+
+    result.foreach(v => em.detach(v))
+    result
   }
 
   val ActionPropertyFindQuery = """
@@ -196,7 +234,7 @@ class DbActionPropertyBean
       ap.id = :id
     AND
       ap.deleted = 0
-  """
+                                """
 
   val APValueQuery = """
     SELECT v
@@ -206,7 +244,7 @@ class DbActionPropertyBean
       v.id.id = :id
     ORDER BY
       v.id.index ASC
-  """
+                     """
 
   val ActionPropertiesByActionIdQuery = """
     SELECT ap
@@ -218,5 +256,31 @@ class DbActionPropertyBean
       ap.deleted = 0
     ORDER BY
       ap.actionPropertyType.idx ASC
-  """
+                                        """
+
+  val ActionPropertiesByActionIdAndNamesQuery = """
+    SELECT ap
+    FROM
+      ActionProperty ap
+    WHERE
+      ap.action.id = :actionId
+    AND
+      ap.actionPropertyType.name IN :names
+    AND
+      ap.deleted = 0
+    ORDER BY
+      ap.actionPropertyType.idx ASC
+                                                """
+
+  val ActionPropertiesByActionIdAndTypeIdQuery = """
+    SELECT ap
+    FROM
+      ActionProperty ap
+    WHERE
+      ap.action.id = :actionId
+    AND
+      ap.actionPropertyType.id = :typeId
+    AND
+      ap.deleted = 0
+                                                 """
 }

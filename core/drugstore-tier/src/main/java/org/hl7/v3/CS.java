@@ -14,15 +14,14 @@ import javax.xml.bind.annotation.XmlType;
 
 
 /**
- * 
- *             Coded accept, consists of a code, display name, code system,
- *             and original text. Used when a single code value must be sent.
- *          
- * 
+ * Coded accept, consists of a code, display name, code system,
+ * and original text. Used when a single code value must be sent.
+ * <p/>
+ * <p/>
  * <p>Java class for CS complex type.
- * 
+ * <p/>
  * <p>The following schema fragment specifies the expected content contained within this class.
- * 
+ * <p/>
  * <pre>
  * &lt;complexType name="CS">
  *   &lt;complexContent>
@@ -32,14 +31,11 @@ import javax.xml.bind.annotation.XmlType;
  *   &lt;/complexContent>
  * &lt;/complexType>
  * </pre>
- * 
- * 
  */
 @XmlAccessorType(XmlAccessType.FIELD)
 @XmlType(name = "CS")
 public class CS
-    extends CV
-{
+        extends CV {
 
 
 }

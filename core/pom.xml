@@ -6,7 +6,7 @@
     <groupId>ru.korus.tmis</groupId>
     <artifactId>tmis-nexus</artifactId>
     <packaging>pom</packaging>
-    <version>0.8.12.3</version>
+    <version>0.9.0</version>
     <name>TMIS Root Project</name>
 
     <modules>
@@ -307,10 +307,11 @@
 
     <scm>
         <connection>
-            scm:hg:file://${project.basedir}/..
+            scm:git:git://git@github.com:SkyFox/tmis-core.git
+            <!--scm:hg:file://${project.basedir}/..-->
         </connection>
         <developerConnection>
-            scm:hg:file://${project.basedir}/..
+            scm:git:git://git@github.com:SkyFox/tmis-core.git
         </developerConnection>
     </scm>
 

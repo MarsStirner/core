@@ -36,18 +36,18 @@ class LoggingInterceptor extends Logging {
     } finally {
       val endTime = System.nanoTime
       trace("Called: " + className + "." + methodName +
-            " -> " + ((endTime - startTime) / 1000000000.0).toString)
+        " -> " + ((endTime - startTime) / 1000000000.0).toString)
 
       internalLogger.logMethodCall(sessionId,
-                                   nestedLevel,
-                                   number,
-                                   endTime - startTime,
-                                   className,
-                                   methodName)
+        nestedLevel,
+        number,
+        endTime - startTime,
+        className,
+        methodName)
 
       SharedContext.popNestedLevel()
 
-      if(isRoot) {
+      if (isRoot) {
         SharedContext.release()
       }
     }

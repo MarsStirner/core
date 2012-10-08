@@ -15,16 +15,15 @@ import javax.xml.bind.annotation.XmlType;
 
 
 /**
- * 
- *             The BooleanNonNull type is used where a Boolean cannot
- *             have a null value. A Boolean value can be either
- *             true or false.
- *          
- * 
+ * The BooleanNonNull type is used where a Boolean cannot
+ * have a null value. A Boolean value can be either
+ * true or false.
+ * <p/>
+ * <p/>
  * <p>Java class for ANYNonNull complex type.
- * 
+ * <p/>
  * <p>The following schema fragment specifies the expected content contained within this class.
- * 
+ * <p/>
  * <pre>
  * &lt;complexType name="ANYNonNull">
  *   &lt;complexContent>
@@ -33,17 +32,14 @@ import javax.xml.bind.annotation.XmlType;
  *   &lt;/complexContent>
  * &lt;/complexType>
  * </pre>
- * 
- * 
  */
 @XmlAccessorType(XmlAccessType.FIELD)
 @XmlType(name = "ANYNonNull")
 @XmlSeeAlso({
-    BN.class
+        BN.class
 })
 public class ANYNonNull
-    extends ANY
-{
+        extends ANY {
 
 
 }

@@ -8,18 +8,14 @@
 
 package org.hl7.v3;
 
-import javax.xml.bind.annotation.XmlAccessType;
-import javax.xml.bind.annotation.XmlAccessorType;
-import javax.xml.bind.annotation.XmlAttribute;
-import javax.xml.bind.annotation.XmlSeeAlso;
-import javax.xml.bind.annotation.XmlType;
+import javax.xml.bind.annotation.*;
 
 
 /**
  * <p>Java class for PPD_TS complex type.
- * 
+ * <p/>
  * <p>The following schema fragment specifies the expected content contained within this class.
- * 
+ * <p/>
  * <pre>
  * &lt;complexType name="PPD_TS">
  *   &lt;complexContent>
@@ -32,20 +28,17 @@ import javax.xml.bind.annotation.XmlType;
  *   &lt;/complexContent>
  * &lt;/complexType>
  * </pre>
- * 
- * 
  */
 @XmlAccessorType(XmlAccessType.FIELD)
 @XmlType(name = "PPD_TS", propOrder = {
-    "standardDeviation"
+        "standardDeviation"
 })
 @XmlSeeAlso({
-    IVXBPPDTS.class,
-    SXCMPPDTS.class
+        IVXBPPDTS.class,
+        SXCMPPDTS.class
 })
 public class PPDTS
-    extends TS
-{
+        extends TS {
 
     protected PQ standardDeviation;
     @XmlAttribute
@@ -53,11 +46,9 @@ public class PPDTS
 
     /**
      * Gets the value of the standardDeviation property.
-     * 
-     * @return
-     *     possible object is
-     *     {@link PQ }
-     *     
+     *
+     * @return possible object is
+     *         {@link PQ }
      */
     public PQ getStandardDeviation() {
         return standardDeviation;
@@ -65,11 +56,9 @@ public class PPDTS
 
     /**
      * Sets the value of the standardDeviation property.
-     * 
-     * @param value
-     *     allowed object is
-     *     {@link PQ }
-     *     
+     *
+     * @param value allowed object is
+     *              {@link PQ }
      */
     public void setStandardDeviation(PQ value) {
         this.standardDeviation = value;
@@ -77,11 +66,9 @@ public class PPDTS
 
     /**
      * Gets the value of the distributionType property.
-     * 
-     * @return
-     *     possible object is
-     *     {@link ProbabilityDistributionType }
-     *     
+     *
+     * @return possible object is
+     *         {@link ProbabilityDistributionType }
      */
     public ProbabilityDistributionType getDistributionType() {
         return distributionType;
@@ -89,11 +76,9 @@ public class PPDTS
 
     /**
      * Sets the value of the distributionType property.
-     * 
-     * @param value
-     *     allowed object is
-     *     {@link ProbabilityDistributionType }
-     *     
+     *
+     * @param value allowed object is
+     *              {@link ProbabilityDistributionType }
      */
     public void setDistributionType(ProbabilityDistributionType value) {
         this.distributionType = value;

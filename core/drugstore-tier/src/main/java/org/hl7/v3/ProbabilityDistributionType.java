@@ -15,9 +15,9 @@ import javax.xml.bind.annotation.XmlType;
 
 /**
  * <p>Java class for ProbabilityDistributionType.
- * 
+ * <p/>
  * <p>The following schema fragment specifies the expected content contained within this class.
- * <p>
+ * <p/>
  * <pre>
  * &lt;simpleType name="ProbabilityDistributionType">
  *   &lt;restriction base="{urn:hl7-org:v3}cs">
@@ -33,7 +33,6 @@ import javax.xml.bind.annotation.XmlType;
  *   &lt;/restriction>
  * &lt;/simpleType>
  * </pre>
- * 
  */
 @XmlType(name = "ProbabilityDistributionType")
 @XmlEnum
@@ -60,7 +59,7 @@ public enum ProbabilityDistributionType {
     }
 
     public static ProbabilityDistributionType fromValue(String v) {
-        for (ProbabilityDistributionType c: ProbabilityDistributionType.values()) {
+        for (ProbabilityDistributionType c : ProbabilityDistributionType.values()) {
             if (c.value.equals(v)) {
                 return c;
             }

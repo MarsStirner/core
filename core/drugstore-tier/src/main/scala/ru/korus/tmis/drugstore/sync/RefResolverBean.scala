@@ -50,10 +50,10 @@ class RefResolverBean
       orgStructureRefMap.clear()
 
       val orgListResponse = sendSoapMessage(new YGetOrganizationListRequest().toXmlDom,
-                                            CMD.GetOrgList_RequestRootElement,
-                                            CMD.GetOrgList_SoapAction,
-                                            CMD.GetOrgList_SoapOperation,
-                                            CMD.DefaultXsiType)
+        CMD.GetOrgList_RequestRootElement,
+        CMD.GetOrgList_SoapAction,
+        CMD.GetOrgList_SoapOperation,
+        CMD.DefaultXsiType)
 
       if (orgListResponse == null) {
         error("Cannot get organization list from 1C drugstore server")
@@ -90,13 +90,13 @@ class RefResolverBean
       organizationRefMap.putAll(newOrganizationRefMap)
 
       orgRefs
-      .map(_ \ "Ref" text)
-      .foreach(orgRef => {
+        .map(_ \ "Ref" text)
+        .foreach(orgRef => {
         val depListResponse = sendSoapMessage(new YGetDepartmentListRequest(orgRef).toXmlDom,
-                                              CMD.GetDepList_RequestRootElement,
-                                              CMD.GetDepList_SoapAction,
-                                              CMD.GetDepList_SoapOperation,
-                                              CMD.DefaultXsiType)
+          CMD.GetDepList_RequestRootElement,
+          CMD.GetDepList_SoapAction,
+          CMD.GetDepList_SoapOperation,
+          CMD.DefaultXsiType)
 
         if (depListResponse == null) {
           error("Cannot get department list from 1C drugstore server")

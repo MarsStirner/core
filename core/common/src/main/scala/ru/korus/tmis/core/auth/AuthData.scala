@@ -4,6 +4,7 @@ import ru.korus.tmis.core.entity.model.{Staff, Role}
 
 import reflect.BeanProperty
 import javax.xml.bind.annotation.{XmlType, XmlRootElement, XmlTransient}
+import ru.korus.tmis.core.data.DoctorSpecsContainer
 
 @XmlType(name = "authData")
 @XmlRootElement(name = "authData")
@@ -11,6 +12,9 @@ class AuthData() {
 
   @BeanProperty
   var authToken: AuthToken = _
+
+  @BeanProperty
+  var doctor: DoctorSpecsContainer = _
 
   @BeanProperty
   var userId: Int = _
@@ -57,7 +61,7 @@ class AuthData() {
            userLastName: String,
            userPatronymicName: String,
            userSpecs: String) = {
-    this ()
+    this()
     this.authToken = token
     this.user = user
     this.userId = userId
@@ -66,6 +70,7 @@ class AuthData() {
     this.userPatronymicName = userPatronymicName
     this.userSpecs = userSpecs
     this.userRole = userRole
+    this.doctor = new DoctorSpecsContainer(user)
   }
 
   override def toString = {

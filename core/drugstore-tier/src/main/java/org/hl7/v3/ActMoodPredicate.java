@@ -15,9 +15,9 @@ import javax.xml.bind.annotation.XmlType;
 
 /**
  * <p>Java class for ActMoodPredicate.
- * 
+ * <p/>
  * <p>The following schema fragment specifies the expected content contained within this class.
- * <p>
+ * <p/>
  * <pre>
  * &lt;simpleType name="ActMoodPredicate">
  *   &lt;restriction base="{urn:hl7-org:v3}cs">
@@ -29,7 +29,6 @@ import javax.xml.bind.annotation.XmlType;
  *   &lt;/restriction>
  * &lt;/simpleType>
  * </pre>
- * 
  */
 @XmlType(name = "ActMoodPredicate")
 @XmlEnum
@@ -52,7 +51,7 @@ public enum ActMoodPredicate {
     }
 
     public static ActMoodPredicate fromValue(String v) {
-        for (ActMoodPredicate c: ActMoodPredicate.values()) {
+        for (ActMoodPredicate c : ActMoodPredicate.values()) {
             if (c.value.equals(v)) {
                 return c;
             }

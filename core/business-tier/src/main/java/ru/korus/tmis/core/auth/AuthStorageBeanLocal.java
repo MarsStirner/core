@@ -4,9 +4,10 @@ import ru.korus.tmis.core.entity.model.Role;
 import ru.korus.tmis.core.exception.CoreException;
 import ru.korus.tmis.core.exception.NoSuchUserException;
 
+import javax.ejb.Local;
+import javax.servlet.http.HttpServletRequest;
 import java.util.Date;
 import java.util.Set;
-import javax.ejb.Local;
 
 @Local
 public interface AuthStorageBeanLocal {
@@ -16,9 +17,7 @@ public interface AuthStorageBeanLocal {
      *
      * @param login
      * @param password
-     *
      * @return список ролей для пользователя
-     *
      * @throws NoSuchUserException
      */
     Set<Role> getRoles(String login, String password)
@@ -30,9 +29,7 @@ public interface AuthStorageBeanLocal {
      * @param login
      * @param password
      * @param roleId
-     *
      * @return данные пользователя
-     *
      * @throws NoSuchUserException
      */
     AuthData createToken(String login, String password, int roleId)
@@ -42,7 +39,6 @@ public interface AuthStorageBeanLocal {
      * Получить данные аутентификации по токену.
      *
      * @param token токен
-     *
      * @return данные аутентификации
      */
     AuthData getAuthData(AuthToken token)
@@ -52,9 +48,11 @@ public interface AuthStorageBeanLocal {
      * Получить время создания токена.
      *
      * @param token токен
-     *
      * @return время создания токена
      */
     Date getAuthDateTime(AuthToken token)
             throws CoreException;
+
+    AuthData checkTokenCookies(HttpServletRequest srvletRequest)
+            throws CoreException;//AuthenticationException
 }

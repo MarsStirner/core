@@ -8,19 +8,19 @@
 
 package org.hl7.v3;
 
-import java.util.ArrayList;
-import java.util.List;
 import javax.xml.bind.annotation.XmlAccessType;
 import javax.xml.bind.annotation.XmlAccessorType;
 import javax.xml.bind.annotation.XmlAttribute;
 import javax.xml.bind.annotation.XmlType;
+import java.util.ArrayList;
+import java.util.List;
 
 
 /**
  * <p>Java class for POCD_MT000040.OrganizationPartOf complex type.
- * 
+ * <p/>
  * <p>The following schema fragment specifies the expected content contained within this class.
- * 
+ * <p/>
  * <pre>
  * &lt;complexType name="POCD_MT000040.OrganizationPartOf">
  *   &lt;complexContent>
@@ -41,19 +41,17 @@ import javax.xml.bind.annotation.XmlType;
  *   &lt;/complexContent>
  * &lt;/complexType>
  * </pre>
- * 
- * 
  */
 @XmlAccessorType(XmlAccessType.FIELD)
 @XmlType(name = "POCD_MT000040.OrganizationPartOf", propOrder = {
-    "realmCode",
-    "typeId",
-    "templateId",
-    "id",
-    "code",
-    "statusCode",
-    "effectiveTime",
-    "wholeOrganization"
+        "realmCode",
+        "typeId",
+        "templateId",
+        "id",
+        "code",
+        "statusCode",
+        "effectiveTime",
+        "wholeOrganization"
 })
 public class PocdOrganizationPartOf {
 
@@ -72,25 +70,23 @@ public class PocdOrganizationPartOf {
 
     /**
      * Gets the value of the realmCode property.
-     * 
-     * <p>
+     * <p/>
+     * <p/>
      * This accessor method returns a reference to the live list,
      * not a snapshot. Therefore any modification you make to the
      * returned list will be present inside the JAXB object.
      * This is why there is not a <CODE>set</CODE> method for the realmCode property.
-     * 
-     * <p>
+     * <p/>
+     * <p/>
      * For example, to add a new item, do as follows:
      * <pre>
      *    getRealmCode().add(newItem);
      * </pre>
-     * 
-     * 
-     * <p>
+     * <p/>
+     * <p/>
+     * <p/>
      * Objects of the following type(s) are allowed in the list
      * {@link CS }
-     * 
-     * 
      */
     public List<CS> getRealmCode() {
         if (realmCode == null) {
@@ -101,11 +97,9 @@ public class PocdOrganizationPartOf {
 
     /**
      * Gets the value of the typeId property.
-     * 
-     * @return
-     *     possible object is
-     *     {@link PocdInfrastructureRootTypeId }
-     *     
+     *
+     * @return possible object is
+     *         {@link PocdInfrastructureRootTypeId }
      */
     public PocdInfrastructureRootTypeId getTypeId() {
         return typeId;
@@ -113,11 +107,9 @@ public class PocdOrganizationPartOf {
 
     /**
      * Sets the value of the typeId property.
-     * 
-     * @param value
-     *     allowed object is
-     *     {@link PocdInfrastructureRootTypeId }
-     *     
+     *
+     * @param value allowed object is
+     *              {@link PocdInfrastructureRootTypeId }
      */
     public void setTypeId(PocdInfrastructureRootTypeId value) {
         this.typeId = value;
@@ -125,25 +117,23 @@ public class PocdOrganizationPartOf {
 
     /**
      * Gets the value of the templateId property.
-     * 
-     * <p>
+     * <p/>
+     * <p/>
      * This accessor method returns a reference to the live list,
      * not a snapshot. Therefore any modification you make to the
      * returned list will be present inside the JAXB object.
      * This is why there is not a <CODE>set</CODE> method for the templateId property.
-     * 
-     * <p>
+     * <p/>
+     * <p/>
      * For example, to add a new item, do as follows:
      * <pre>
      *    getTemplateId().add(newItem);
      * </pre>
-     * 
-     * 
-     * <p>
+     * <p/>
+     * <p/>
+     * <p/>
      * Objects of the following type(s) are allowed in the list
      * {@link II }
-     * 
-     * 
      */
     public List<II> getTemplateId() {
         if (templateId == null) {
@@ -154,25 +144,23 @@ public class PocdOrganizationPartOf {
 
     /**
      * Gets the value of the id property.
-     * 
-     * <p>
+     * <p/>
+     * <p/>
      * This accessor method returns a reference to the live list,
      * not a snapshot. Therefore any modification you make to the
      * returned list will be present inside the JAXB object.
      * This is why there is not a <CODE>set</CODE> method for the id property.
-     * 
-     * <p>
+     * <p/>
+     * <p/>
      * For example, to add a new item, do as follows:
      * <pre>
      *    getId().add(newItem);
      * </pre>
-     * 
-     * 
-     * <p>
+     * <p/>
+     * <p/>
+     * <p/>
      * Objects of the following type(s) are allowed in the list
      * {@link II }
-     * 
-     * 
      */
     public List<II> getId() {
         if (id == null) {
@@ -183,11 +171,9 @@ public class PocdOrganizationPartOf {
 
     /**
      * Gets the value of the code property.
-     * 
-     * @return
-     *     possible object is
-     *     {@link CE }
-     *     
+     *
+     * @return possible object is
+     *         {@link CE }
      */
     public CE getCode() {
         return code;
@@ -195,11 +181,9 @@ public class PocdOrganizationPartOf {
 
     /**
      * Sets the value of the code property.
-     * 
-     * @param value
-     *     allowed object is
-     *     {@link CE }
-     *     
+     *
+     * @param value allowed object is
+     *              {@link CE }
      */
     public void setCode(CE value) {
         this.code = value;
@@ -207,11 +191,9 @@ public class PocdOrganizationPartOf {
 
     /**
      * Gets the value of the statusCode property.
-     * 
-     * @return
-     *     possible object is
-     *     {@link CS }
-     *     
+     *
+     * @return possible object is
+     *         {@link CS }
      */
     public CS getStatusCode() {
         return statusCode;
@@ -219,11 +201,9 @@ public class PocdOrganizationPartOf {
 
     /**
      * Sets the value of the statusCode property.
-     * 
-     * @param value
-     *     allowed object is
-     *     {@link CS }
-     *     
+     *
+     * @param value allowed object is
+     *              {@link CS }
      */
     public void setStatusCode(CS value) {
         this.statusCode = value;
@@ -231,11 +211,9 @@ public class PocdOrganizationPartOf {
 
     /**
      * Gets the value of the effectiveTime property.
-     * 
-     * @return
-     *     possible object is
-     *     {@link IVLTS }
-     *     
+     *
+     * @return possible object is
+     *         {@link IVLTS }
      */
     public IVLTS getEffectiveTime() {
         return effectiveTime;
@@ -243,11 +221,9 @@ public class PocdOrganizationPartOf {
 
     /**
      * Sets the value of the effectiveTime property.
-     * 
-     * @param value
-     *     allowed object is
-     *     {@link IVLTS }
-     *     
+     *
+     * @param value allowed object is
+     *              {@link IVLTS }
      */
     public void setEffectiveTime(IVLTS value) {
         this.effectiveTime = value;
@@ -255,11 +231,9 @@ public class PocdOrganizationPartOf {
 
     /**
      * Gets the value of the wholeOrganization property.
-     * 
-     * @return
-     *     possible object is
-     *     {@link PocdOrganization }
-     *     
+     *
+     * @return possible object is
+     *         {@link PocdOrganization }
      */
     public PocdOrganization getWholeOrganization() {
         return wholeOrganization;
@@ -267,11 +241,9 @@ public class PocdOrganizationPartOf {
 
     /**
      * Sets the value of the wholeOrganization property.
-     * 
-     * @param value
-     *     allowed object is
-     *     {@link PocdOrganization }
-     *     
+     *
+     * @param value allowed object is
+     *              {@link PocdOrganization }
      */
     public void setWholeOrganization(PocdOrganization value) {
         this.wholeOrganization = value;
@@ -279,25 +251,23 @@ public class PocdOrganizationPartOf {
 
     /**
      * Gets the value of the nullFlavor property.
-     * 
-     * <p>
+     * <p/>
+     * <p/>
      * This accessor method returns a reference to the live list,
      * not a snapshot. Therefore any modification you make to the
      * returned list will be present inside the JAXB object.
      * This is why there is not a <CODE>set</CODE> method for the nullFlavor property.
-     * 
-     * <p>
+     * <p/>
+     * <p/>
      * For example, to add a new item, do as follows:
      * <pre>
      *    getNullFlavor().add(newItem);
      * </pre>
-     * 
-     * 
-     * <p>
+     * <p/>
+     * <p/>
+     * <p/>
      * Objects of the following type(s) are allowed in the list
      * {@link String }
-     * 
-     * 
      */
     public List<String> getNullFlavor() {
         if (nullFlavor == null) {
@@ -308,25 +278,23 @@ public class PocdOrganizationPartOf {
 
     /**
      * Gets the value of the classCode property.
-     * 
-     * <p>
+     * <p/>
+     * <p/>
      * This accessor method returns a reference to the live list,
      * not a snapshot. Therefore any modification you make to the
      * returned list will be present inside the JAXB object.
      * This is why there is not a <CODE>set</CODE> method for the classCode property.
-     * 
-     * <p>
+     * <p/>
+     * <p/>
      * For example, to add a new item, do as follows:
      * <pre>
      *    getClassCode().add(newItem);
      * </pre>
-     * 
-     * 
-     * <p>
+     * <p/>
+     * <p/>
+     * <p/>
      * Objects of the following type(s) are allowed in the list
      * {@link String }
-     * 
-     * 
      */
     public List<String> getClassCode() {
         if (classCode == null) {

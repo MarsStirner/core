@@ -3,8 +3,10 @@ package ru.korus.tmis.core.database;
 import ru.korus.tmis.core.entity.model.ActionPropertyType;
 import ru.korus.tmis.core.exception.CoreException;
 
-import java.util.Set;
 import javax.ejb.Local;
+import java.util.LinkedList;
+import java.util.List;
+import java.util.Set;
 
 @Local
 public interface DbActionPropertyTypeBeanLocal {
@@ -31,5 +33,16 @@ public interface DbActionPropertyTypeBeanLocal {
             throws CoreException;
 
     Set<ActionPropertyType> getDosageAPT()
+            throws CoreException;
+
+    List<ActionPropertyType> getActionPropertyTypeByActionTypeIdWithCode(String code)
+            throws CoreException;
+
+    List<ActionPropertyType> getActionPropertyTypesByActionTypeId(int actionTypeId)
+            throws CoreException;
+
+    LinkedList<Object> getActionPropertyTypeValueDomainsWithFilter(int page, int limit,
+                                                                   String sortingField, String sortingMethod,
+                                                                   Object filter)
             throws CoreException;
 }

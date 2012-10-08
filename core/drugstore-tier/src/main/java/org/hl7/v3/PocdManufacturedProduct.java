@@ -8,19 +8,19 @@
 
 package org.hl7.v3;
 
-import java.util.ArrayList;
-import java.util.List;
 import javax.xml.bind.annotation.XmlAccessType;
 import javax.xml.bind.annotation.XmlAccessorType;
 import javax.xml.bind.annotation.XmlAttribute;
 import javax.xml.bind.annotation.XmlType;
+import java.util.ArrayList;
+import java.util.List;
 
 
 /**
  * <p>Java class for POCD_MT000040.ManufacturedProduct complex type.
- * 
+ * <p/>
  * <p>The following schema fragment specifies the expected content contained within this class.
- * 
+ * <p/>
  * <pre>
  * &lt;complexType name="POCD_MT000040.ManufacturedProduct">
  *   &lt;complexContent>
@@ -42,18 +42,16 @@ import javax.xml.bind.annotation.XmlType;
  *   &lt;/complexContent>
  * &lt;/complexType>
  * </pre>
- * 
- * 
  */
 @XmlAccessorType(XmlAccessType.FIELD)
 @XmlType(name = "POCD_MT000040.ManufacturedProduct", propOrder = {
-    "realmCode",
-    "typeId",
-    "templateId",
-    "id",
-    "manufacturedLabeledDrug",
-    "manufacturedMaterial",
-    "manufacturerOrganization"
+        "realmCode",
+        "typeId",
+        "templateId",
+        "id",
+        "manufacturedLabeledDrug",
+        "manufacturedMaterial",
+        "manufacturerOrganization"
 })
 public class PocdManufacturedProduct {
 
@@ -71,25 +69,23 @@ public class PocdManufacturedProduct {
 
     /**
      * Gets the value of the realmCode property.
-     * 
-     * <p>
+     * <p/>
+     * <p/>
      * This accessor method returns a reference to the live list,
      * not a snapshot. Therefore any modification you make to the
      * returned list will be present inside the JAXB object.
      * This is why there is not a <CODE>set</CODE> method for the realmCode property.
-     * 
-     * <p>
+     * <p/>
+     * <p/>
      * For example, to add a new item, do as follows:
      * <pre>
      *    getRealmCode().add(newItem);
      * </pre>
-     * 
-     * 
-     * <p>
+     * <p/>
+     * <p/>
+     * <p/>
      * Objects of the following type(s) are allowed in the list
      * {@link CS }
-     * 
-     * 
      */
     public List<CS> getRealmCode() {
         if (realmCode == null) {
@@ -100,11 +96,9 @@ public class PocdManufacturedProduct {
 
     /**
      * Gets the value of the typeId property.
-     * 
-     * @return
-     *     possible object is
-     *     {@link PocdInfrastructureRootTypeId }
-     *     
+     *
+     * @return possible object is
+     *         {@link PocdInfrastructureRootTypeId }
      */
     public PocdInfrastructureRootTypeId getTypeId() {
         return typeId;
@@ -112,11 +106,9 @@ public class PocdManufacturedProduct {
 
     /**
      * Sets the value of the typeId property.
-     * 
-     * @param value
-     *     allowed object is
-     *     {@link PocdInfrastructureRootTypeId }
-     *     
+     *
+     * @param value allowed object is
+     *              {@link PocdInfrastructureRootTypeId }
      */
     public void setTypeId(PocdInfrastructureRootTypeId value) {
         this.typeId = value;
@@ -124,25 +116,23 @@ public class PocdManufacturedProduct {
 
     /**
      * Gets the value of the templateId property.
-     * 
-     * <p>
+     * <p/>
+     * <p/>
      * This accessor method returns a reference to the live list,
      * not a snapshot. Therefore any modification you make to the
      * returned list will be present inside the JAXB object.
      * This is why there is not a <CODE>set</CODE> method for the templateId property.
-     * 
-     * <p>
+     * <p/>
+     * <p/>
      * For example, to add a new item, do as follows:
      * <pre>
      *    getTemplateId().add(newItem);
      * </pre>
-     * 
-     * 
-     * <p>
+     * <p/>
+     * <p/>
+     * <p/>
      * Objects of the following type(s) are allowed in the list
      * {@link II }
-     * 
-     * 
      */
     public List<II> getTemplateId() {
         if (templateId == null) {
@@ -153,25 +143,23 @@ public class PocdManufacturedProduct {
 
     /**
      * Gets the value of the id property.
-     * 
-     * <p>
+     * <p/>
+     * <p/>
      * This accessor method returns a reference to the live list,
      * not a snapshot. Therefore any modification you make to the
      * returned list will be present inside the JAXB object.
      * This is why there is not a <CODE>set</CODE> method for the id property.
-     * 
-     * <p>
+     * <p/>
+     * <p/>
      * For example, to add a new item, do as follows:
      * <pre>
      *    getId().add(newItem);
      * </pre>
-     * 
-     * 
-     * <p>
+     * <p/>
+     * <p/>
+     * <p/>
      * Objects of the following type(s) are allowed in the list
      * {@link II }
-     * 
-     * 
      */
     public List<II> getId() {
         if (id == null) {
@@ -182,11 +170,9 @@ public class PocdManufacturedProduct {
 
     /**
      * Gets the value of the manufacturedLabeledDrug property.
-     * 
-     * @return
-     *     possible object is
-     *     {@link PocdLabeledDrug }
-     *     
+     *
+     * @return possible object is
+     *         {@link PocdLabeledDrug }
      */
     public PocdLabeledDrug getManufacturedLabeledDrug() {
         return manufacturedLabeledDrug;
@@ -194,11 +180,9 @@ public class PocdManufacturedProduct {
 
     /**
      * Sets the value of the manufacturedLabeledDrug property.
-     * 
-     * @param value
-     *     allowed object is
-     *     {@link PocdLabeledDrug }
-     *     
+     *
+     * @param value allowed object is
+     *              {@link PocdLabeledDrug }
      */
     public void setManufacturedLabeledDrug(PocdLabeledDrug value) {
         this.manufacturedLabeledDrug = value;
@@ -206,11 +190,9 @@ public class PocdManufacturedProduct {
 
     /**
      * Gets the value of the manufacturedMaterial property.
-     * 
-     * @return
-     *     possible object is
-     *     {@link PocdMaterial }
-     *     
+     *
+     * @return possible object is
+     *         {@link PocdMaterial }
      */
     public PocdMaterial getManufacturedMaterial() {
         return manufacturedMaterial;
@@ -218,11 +200,9 @@ public class PocdManufacturedProduct {
 
     /**
      * Sets the value of the manufacturedMaterial property.
-     * 
-     * @param value
-     *     allowed object is
-     *     {@link PocdMaterial }
-     *     
+     *
+     * @param value allowed object is
+     *              {@link PocdMaterial }
      */
     public void setManufacturedMaterial(PocdMaterial value) {
         this.manufacturedMaterial = value;
@@ -230,11 +210,9 @@ public class PocdManufacturedProduct {
 
     /**
      * Gets the value of the manufacturerOrganization property.
-     * 
-     * @return
-     *     possible object is
-     *     {@link PocdOrganization }
-     *     
+     *
+     * @return possible object is
+     *         {@link PocdOrganization }
      */
     public PocdOrganization getManufacturerOrganization() {
         return manufacturerOrganization;
@@ -242,11 +220,9 @@ public class PocdManufacturedProduct {
 
     /**
      * Sets the value of the manufacturerOrganization property.
-     * 
-     * @param value
-     *     allowed object is
-     *     {@link PocdOrganization }
-     *     
+     *
+     * @param value allowed object is
+     *              {@link PocdOrganization }
      */
     public void setManufacturerOrganization(PocdOrganization value) {
         this.manufacturerOrganization = value;
@@ -254,25 +230,23 @@ public class PocdManufacturedProduct {
 
     /**
      * Gets the value of the nullFlavor property.
-     * 
-     * <p>
+     * <p/>
+     * <p/>
      * This accessor method returns a reference to the live list,
      * not a snapshot. Therefore any modification you make to the
      * returned list will be present inside the JAXB object.
      * This is why there is not a <CODE>set</CODE> method for the nullFlavor property.
-     * 
-     * <p>
+     * <p/>
+     * <p/>
      * For example, to add a new item, do as follows:
      * <pre>
      *    getNullFlavor().add(newItem);
      * </pre>
-     * 
-     * 
-     * <p>
+     * <p/>
+     * <p/>
+     * <p/>
      * Objects of the following type(s) are allowed in the list
      * {@link String }
-     * 
-     * 
      */
     public List<String> getNullFlavor() {
         if (nullFlavor == null) {
@@ -283,11 +257,9 @@ public class PocdManufacturedProduct {
 
     /**
      * Gets the value of the classCode property.
-     * 
-     * @return
-     *     possible object is
-     *     {@link RoleClassManufacturedProduct }
-     *     
+     *
+     * @return possible object is
+     *         {@link RoleClassManufacturedProduct }
      */
     public RoleClassManufacturedProduct getClassCode() {
         if (classCode == null) {
@@ -299,11 +271,9 @@ public class PocdManufacturedProduct {
 
     /**
      * Sets the value of the classCode property.
-     * 
-     * @param value
-     *     allowed object is
-     *     {@link RoleClassManufacturedProduct }
-     *     
+     *
+     * @param value allowed object is
+     *              {@link RoleClassManufacturedProduct }
      */
     public void setClassCode(RoleClassManufacturedProduct value) {
         this.classCode = value;

@@ -1,12 +1,12 @@
 package ru.korus.tmis.core.entity.model;
 
+import javax.persistence.*;
+import javax.xml.bind.annotation.XmlRootElement;
+import javax.xml.bind.annotation.XmlType;
 import java.io.Serializable;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
-import javax.persistence.*;
-import javax.xml.bind.annotation.XmlRootElement;
-import javax.xml.bind.annotation.XmlType;
 
 @Entity
 @Table(name = "ActionProperty", catalog = "", schema = "")
@@ -123,6 +123,9 @@ public class ActionProperty
         valueTypeMap.put("Image", APValueImage.class);
         valueTypeMap.put("Жалобы", APValueString.class);
         valueTypeMap.put("DiagnosticEpicrisisPartitional", APValueString.class);
+        valueTypeMap.put("FlatDictionary", APValueFlatDirectory.class);
+        valueTypeMap.put("FlatDirectory", APValueFlatDirectory.class);
+        valueTypeMap.put("Legal_representative_id", APValueInteger.class);//че за тип такой?
     }
 
     public Class getValueClass() {

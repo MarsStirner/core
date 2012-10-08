@@ -19,13 +19,16 @@ import javax.xml.soap.SOAPMessage
 // slf4j to soap logging adapter
 class LoggingHandler
   extends SOAPHandler[SOAPMessageContext]
-          with javax.xml.rpc.handler.Handler
-          with Logging
-          with I18nable {
+  with javax.xml.rpc.handler.Handler
+  with Logging
+  with I18nable {
 
   import ru.korus.tmis.util.General.flow_implicits
   import ru.korus.tmis.util.reflect.Manifests.{actuallyWorkingClassOf => classOf}
-  val handlerInfo: HandlerInfo = new HandlerInfo().stating{ _.setHandlerClass(classOf[LoggingHandler]) }
+
+  val handlerInfo: HandlerInfo = new HandlerInfo().stating {
+    _.setHandlerClass(classOf[LoggingHandler])
+  }
 
   override def getHeaders = null
 
@@ -35,16 +38,18 @@ class LoggingHandler
 
   def logMessage(context: SOAPMessageContext, fault: Boolean) = {
 
-    if(fault) {
+    if (fault) {
       info("SOAP Fault!")
     }
     val strop = context.get(MessageContext.MESSAGE_OUTBOUND_PROPERTY).asInstanceOf[Boolean] match {
       case true => "=>"
       case false => "<=[" +
-                    (context.get(MessageContext.SERVLET_REQUEST)
-                     ?!! { _.asInstanceOf[HttpServletRequest].getRemoteAddr }
-                     getOrElse "Unknown host") +
-                    "]"
+        (context.get(MessageContext.SERVLET_REQUEST)
+          ?!! {
+          _.asInstanceOf[HttpServletRequest].getRemoteAddr
+        }
+          getOrElse "Unknown host") +
+        "]"
       case _ => "???"
     }
 

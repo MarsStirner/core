@@ -30,7 +30,7 @@ public class MicroOrganismResult {
      */
     private String organismConcentration;
 
-    @XmlElement(name = "organismLisId",required = true)
+    @XmlElement(name = "organismLisId", required = true)
     public String getOrganismCode() {
         return organismCode;
     }
@@ -39,7 +39,7 @@ public class MicroOrganismResult {
         this.organismCode = organismCode;
     }
 
-    @XmlElement(name = "organismName",required = true)
+    @XmlElement(name = "organismName", required = true)
     public String getOrganismName() {
         return organismName;
     }
@@ -48,7 +48,7 @@ public class MicroOrganismResult {
         this.organismName = organismName;
     }
 
-    @XmlElement(name = "organismConcetration",required = true)
+    @XmlElement(name = "organismConcetration", required = true)
     public String getOrganismConcentration() {
         return organismConcentration;
     }

@@ -2,7 +2,8 @@ package ru.korus.tmis.util
 
 import reflect.Configuration
 
-object ActionWrapperInfo extends Configuration { awi =>
+object ActionWrapperInfo extends Configuration {
+  awi =>
 
   def Types = ConfigManager.Types
 
@@ -19,18 +20,36 @@ object ActionWrapperInfo extends Configuration { awi =>
   var ExecutorSpecs = StringId("actionExecutorSpecs")
   var ExecutorPost = StringId("actionExecutorPost")
   var Status = StringId("actionStatus")
+  var Urgent = StringId("urgent")
+  var Multiplicity = StringId("multiplicity")
+
   // Typed internal Ids
   def TypedId = (Id, Types.Integer)
+
   def TypedName = (Name, Types.String)
+
   def TypedBeginDate = (BeginDate, Types.Datetime)
+
   def TypedEndDate = (EndDate, Types.Datetime)
+
   def TypedDates = (Dates, Types.Datetime)
+
   def TypedExecutorLastName = (ExecutorLastName, Types.String)
+
   def TypedExecutorFirstName = (ExecutorFirstName, Types.String)
+
   def TypedExecutorMiddleName = (ExecutorMiddleName, Types.String)
+
   def TypedExecutorSpecs = (ExecutorSpecs, Types.String)
+
   def TypedExecutorPost = (ExecutorPost, Types.String)
+
   def TypedStatus = (Status, Types.Integer)
+
+  def TypedUrgent = (Urgent, Types.Boolean)
+
+  def TypedMultiplicity = (Multiplicity, Types.Integer)
+
   // External Ids
   var assessmentId = StringId("assessmentId")
   var diagnosticId = StringId("diagnosticId")
@@ -38,6 +57,8 @@ object ActionWrapperInfo extends Configuration { awi =>
   var diagnosticName = StringId("diagnosticName")
   var treatmentName = StringId("treatmentName")
   var assessmentDate = StringId("assessmentDate")
+  var assessmentBeginDate = StringId("assessmentBeginDate")
+  var assessmentEndDate = StringId("assessmentEndDate")
   var diagnosticDate = StringId("diagnosticDate")
   var treatmentBeginDate = StringId("treatmentBeginDate")
   var treatmentEndDate = StringId("treatmentEndDate")
@@ -51,6 +72,8 @@ object ActionWrapperInfo extends Configuration { awi =>
   var doctorSpecs = StringId("doctorSpecs")
   var executorPost = StringId("executorPost")
   var actionStatus = StringId("actionStatus")
+  var urgent = StringId("urgent")
+  var multiplicity = StringId("multiplicity")
   //////////////////////////////////////////////////////////////////////////////
 
   def map = Map(
@@ -62,10 +85,12 @@ object ActionWrapperInfo extends Configuration { awi =>
     treatmentName -> TypedName,
 
     assessmentDate -> TypedBeginDate,
+    assessmentBeginDate -> TypedBeginDate,
     diagnosticDate -> TypedBeginDate,
     treatmentBeginDate -> TypedBeginDate,
 
     treatmentEndDate -> TypedEndDate,
+    assessmentEndDate -> TypedEndDate,
 
     treatmentDates -> TypedDates,
 
@@ -85,7 +110,10 @@ object ActionWrapperInfo extends Configuration { awi =>
 
     executorPost -> TypedExecutorPost,
 
-    actionStatus -> TypedStatus
+    actionStatus -> TypedStatus,
+
+    urgent -> TypedUrgent,
+    multiplicity -> TypedMultiplicity
   )
 
   def apply(key: StringId) = {
@@ -108,6 +136,8 @@ object ActionWrapperInfo extends Configuration { awi =>
     val ExecutorSpecs = awi.ExecutorSpecs
     val ExecutorPost = awi.ExecutorPost
     val Status = awi.Status
+    val Urgent = awi.Urgent
+    val Multiplicity = awi.Multiplicity
 
     def apply(key: StringId) = awi(key)
   }

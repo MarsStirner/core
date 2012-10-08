@@ -15,9 +15,9 @@ import javax.xml.bind.annotation.XmlType;
 
 /**
  * <p>Java class for MultipartMediaType.
- * 
+ * <p/>
  * <p>The following schema fragment specifies the expected content contained within this class.
- * <p>
+ * <p/>
  * <pre>
  * &lt;simpleType name="MultipartMediaType">
  *   &lt;restriction base="{urn:hl7-org:v3}cs">
@@ -25,7 +25,6 @@ import javax.xml.bind.annotation.XmlType;
  *   &lt;/restriction>
  * &lt;/simpleType>
  * </pre>
- * 
  */
 @XmlType(name = "MultipartMediaType")
 @XmlEnum
@@ -44,7 +43,7 @@ public enum MultipartMediaType {
     }
 
     public static MultipartMediaType fromValue(String v) {
-        for (MultipartMediaType c: MultipartMediaType.values()) {
+        for (MultipartMediaType c : MultipartMediaType.values()) {
             if (c.value.equals(v)) {
                 return c;
             }

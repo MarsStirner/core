@@ -12,17 +12,18 @@ public interface LaboratoryBeanLocal {
     /**
      * Отправить в ЛИС запрос анализа
      *
-     * @param actionId  идентификатор действия, соответствующего назначенному анализу
+     * @param actionId идентификатор действия, соответствующего назначенному анализу
      */
     void sendLisAnalysisRequest(int actionId) throws CoreException;
+
     void sendLis2AnalysisRequest(int actionId) throws CoreException;
 
     /**
      * Сохранить результаты анализа в БД ТМИС
      *
-     * @param requestId             идентификатор направления (Action.id)
-     * @param results               результаты анализа
-     * @param biomaterialDefects    дефекты биоматериала
+     * @param requestId          идентификатор направления (Action.id)
+     * @param results            результаты анализа
+     * @param biomaterialDefects дефекты биоматериала
      * @throws CoreException
      */
     int setLisAnalysisResults(

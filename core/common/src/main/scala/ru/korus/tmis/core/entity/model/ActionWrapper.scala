@@ -70,7 +70,7 @@ class ActionWrapper(a: Action)
             fixedDatetime.add(Calendar.HOUR_OF_DAY, hour.getId.getHour)
 
             Map(APWI.Value.toString -> CMDF.format(fixedDatetime.getTime),
-                APWI.Completed.toString -> hour.isComplete.toString) :: list
+              APWI.Completed.toString -> hour.isComplete.toString) :: list
           })
       }
 
@@ -135,6 +135,17 @@ class ActionWrapper(a: Action)
           Map(APWI.Value.toString -> this.a.getStatus.toString)
         )
       }
+      case AWI.Urgent => {
+        List(
+          Map(APWI.Value.toString -> this.a.getIsUrgent.toString)
+        )
+      }
+      case AWI.Multiplicity => {
+        //кратность только для get
+        List(
+          Map(APWI.Value.toString -> "1")
+        )
+      }
 
       case _ => {
         debug("Cannot get <" + name + ">")
@@ -177,10 +188,12 @@ class ActionWrapper(a: Action)
 
         try {
           val ah = new AssignmentHour(this.a.getId.intValue(),
-                                      CMDF.parse(value))
+            CMDF.parse(value))
           ah.setComplete(Boolean.parseBoolean(completed))
 
-          this.a.getAssignmentHours.find{ _ == ah} match {
+          this.a.getAssignmentHours.find {
+            _ == ah
+          } match {
             case None => this.a.addAssignmentHour(ah)
             case Some(eah) => eah.setComplete(ah.isComplete)
           }
@@ -214,6 +227,16 @@ class ActionWrapper(a: Action)
       case AWI.Status => {
         try {
           this.a.setStatus(Short.parseShort(value))
+        } catch {
+          case ex: NumberFormatException => {
+            error("Cannot parse <" + value + "> as short")
+          }
+        }
+      }
+
+      case AWI.Urgent => {
+        try {
+          this.a.setIsUrgent(Boolean.parseBoolean(value))
         } catch {
           case ex: NumberFormatException => {
             error("Cannot parse <" + value + "> as short")

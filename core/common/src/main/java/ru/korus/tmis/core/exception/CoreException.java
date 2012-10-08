@@ -3,7 +3,7 @@ package ru.korus.tmis.core.exception;
 import javax.xml.ws.WebFault;
 
 @WebFault(name = "ExceptionFault",
-          faultBean = "ru.korus.tmis.core.exception.FaultBean")
+        faultBean = "ru.korus.tmis.core.exception.FaultBean")
 public class CoreException extends Exception {
 
     final FaultBean faultBean;

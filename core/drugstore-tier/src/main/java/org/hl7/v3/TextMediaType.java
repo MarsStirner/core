@@ -15,9 +15,9 @@ import javax.xml.bind.annotation.XmlType;
 
 /**
  * <p>Java class for TextMediaType.
- * 
+ * <p/>
  * <p>The following schema fragment specifies the expected content contained within this class.
- * <p>
+ * <p/>
  * <pre>
  * &lt;simpleType name="TextMediaType">
  *   &lt;restriction base="{urn:hl7-org:v3}cs">
@@ -30,7 +30,6 @@ import javax.xml.bind.annotation.XmlType;
  *   &lt;/restriction>
  * &lt;/simpleType>
  * </pre>
- * 
  */
 @XmlType(name = "TextMediaType")
 @XmlEnum
@@ -59,7 +58,7 @@ public enum TextMediaType {
     }
 
     public static TextMediaType fromValue(String v) {
-        for (TextMediaType c: TextMediaType.values()) {
+        for (TextMediaType c : TextMediaType.values()) {
             if (c.value.equals(v)) {
                 return c;
             }

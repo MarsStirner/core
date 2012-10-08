@@ -48,9 +48,9 @@ class RelocationEventBean
     val props = asScalaBuffer(a.getActionProperties)
 
     props //                              List[ActionProperty]
-    .find(_.getType.getName == name) //   Option[ActionProperty]
-    .flatMap(vMap.get(_)) //              Option[List[APValue]]
-    .flatMap(_.headOption) //             Option[APValue]
+      .find(_.getType.getName == name) //   Option[ActionProperty]
+      .flatMap(vMap.get(_)) //              Option[List[APValue]]
+      .flatMap(_.headOption) //             Option[APValue]
   }
 
   @Asynchronous
@@ -81,13 +81,13 @@ class RelocationEventBean
             //  }
             case MOVE => {
               val in = actionProperty(can.a, apIN, can.values)
-                       .collect {
-                                  case apos: APValueOrgStructure => apos.getValue
-                                }
+                .collect {
+                case apos: APValueOrgStructure => apos.getValue
+              }
               val out = actionProperty(can.a, apOUT, can.values)
-                        .collect {
-                                   case apos: APValueOrgStructure => apos.getValue
-                                 }
+                .collect {
+                case apos: APValueOrgStructure => apos.getValue
+              }
               (in, out) match {
                 case (Some(i), Some(o)) =>
                   yes(createMoving(act, orgStrucToRef(o), orgStrucToRef(i)))
@@ -106,10 +106,10 @@ class RelocationEventBean
     doc match {
       case None => {}
       case Some(msg) => sendSoapMessage(msg.toXmlDom,
-                                        msg.rootElement,
-                                        msg.soapAction,
-                                        msg.soapOperation,
-                                        msg.xsiType)
+        msg.rootElement,
+        msg.soapAction,
+        msg.soapOperation,
+        msg.xsiType)
     }
   }
 }

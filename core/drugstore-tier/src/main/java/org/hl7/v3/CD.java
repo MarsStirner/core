@@ -8,36 +8,31 @@
 
 package org.hl7.v3;
 
-import java.util.ArrayList;
-import java.util.List;
-import javax.xml.bind.annotation.XmlAccessType;
-import javax.xml.bind.annotation.XmlAccessorType;
-import javax.xml.bind.annotation.XmlAttribute;
-import javax.xml.bind.annotation.XmlSeeAlso;
-import javax.xml.bind.annotation.XmlType;
+import javax.xml.bind.annotation.*;
 import javax.xml.bind.annotation.adapters.CollapsedStringAdapter;
 import javax.xml.bind.annotation.adapters.XmlJavaTypeAdapter;
+import java.util.ArrayList;
+import java.util.List;
 
 
 /**
- * 
- *             A concept descriptor represents any kind of concept usually
- *             by giving a code defined in a code system.  A concept
- *             descriptor can contain the original text or phrase that
- *             served as the basis of the coding and one or more
- *             translations into different coding systems. A concept
- *             descriptor can also contain qualifiers to describe, e.g.,
- *             the concept of a "left foot" as a postcoordinated term built
- *             from the primary code "FOOT" and the qualifier "LEFT".
- *             In exceptional cases, the concept descriptor need not
- *             contain a code but only the original text describing
- *             that concept.
- *          
- * 
+ * A concept descriptor represents any kind of concept usually
+ * by giving a code defined in a code system.  A concept
+ * descriptor can contain the original text or phrase that
+ * served as the basis of the coding and one or more
+ * translations into different coding systems. A concept
+ * descriptor can also contain qualifiers to describe, e.g.,
+ * the concept of a "left foot" as a postcoordinated term built
+ * from the primary code "FOOT" and the qualifier "LEFT".
+ * In exceptional cases, the concept descriptor need not
+ * contain a code but only the original text describing
+ * that concept.
+ * <p/>
+ * <p/>
  * <p>Java class for CD complex type.
- * 
+ * <p/>
  * <p>The following schema fragment specifies the expected content contained within this class.
- * 
+ * <p/>
  * <pre>
  * &lt;complexType name="CD">
  *   &lt;complexContent>
@@ -56,23 +51,20 @@ import javax.xml.bind.annotation.adapters.XmlJavaTypeAdapter;
  *   &lt;/complexContent>
  * &lt;/complexType>
  * </pre>
- * 
- * 
  */
 @XmlAccessorType(XmlAccessType.FIELD)
 @XmlType(name = "CD", propOrder = {
-    "originalText",
-    "qualifier",
-    "translation"
+        "originalText",
+        "qualifier",
+        "translation"
 })
 @XmlSeeAlso({
-    BXITCD.class,
-    SXCMCD.class,
-    CE.class
+        BXITCD.class,
+        SXCMCD.class,
+        CE.class
 })
 public class CD
-    extends ANY
-{
+        extends ANY {
 
     protected ED originalText;
     protected List<CR> qualifier;
@@ -91,11 +83,9 @@ public class CD
 
     /**
      * Gets the value of the originalText property.
-     * 
-     * @return
-     *     possible object is
-     *     {@link ED }
-     *     
+     *
+     * @return possible object is
+     *         {@link ED }
      */
     public ED getOriginalText() {
         return originalText;
@@ -103,11 +93,9 @@ public class CD
 
     /**
      * Sets the value of the originalText property.
-     * 
-     * @param value
-     *     allowed object is
-     *     {@link ED }
-     *     
+     *
+     * @param value allowed object is
+     *              {@link ED }
      */
     public void setOriginalText(ED value) {
         this.originalText = value;
@@ -115,25 +103,23 @@ public class CD
 
     /**
      * Gets the value of the qualifier property.
-     * 
-     * <p>
+     * <p/>
+     * <p/>
      * This accessor method returns a reference to the live list,
      * not a snapshot. Therefore any modification you make to the
      * returned list will be present inside the JAXB object.
      * This is why there is not a <CODE>set</CODE> method for the qualifier property.
-     * 
-     * <p>
+     * <p/>
+     * <p/>
      * For example, to add a new item, do as follows:
      * <pre>
      *    getQualifier().add(newItem);
      * </pre>
-     * 
-     * 
-     * <p>
+     * <p/>
+     * <p/>
+     * <p/>
      * Objects of the following type(s) are allowed in the list
      * {@link CR }
-     * 
-     * 
      */
     public List<CR> getQualifier() {
         if (qualifier == null) {
@@ -144,25 +130,23 @@ public class CD
 
     /**
      * Gets the value of the translation property.
-     * 
-     * <p>
+     * <p/>
+     * <p/>
      * This accessor method returns a reference to the live list,
      * not a snapshot. Therefore any modification you make to the
      * returned list will be present inside the JAXB object.
      * This is why there is not a <CODE>set</CODE> method for the translation property.
-     * 
-     * <p>
+     * <p/>
+     * <p/>
      * For example, to add a new item, do as follows:
      * <pre>
      *    getTranslation().add(newItem);
      * </pre>
-     * 
-     * 
-     * <p>
+     * <p/>
+     * <p/>
+     * <p/>
      * Objects of the following type(s) are allowed in the list
      * {@link CD }
-     * 
-     * 
      */
     public List<CD> getTranslation() {
         if (translation == null) {
@@ -173,11 +157,9 @@ public class CD
 
     /**
      * Gets the value of the code property.
-     * 
-     * @return
-     *     possible object is
-     *     {@link String }
-     *     
+     *
+     * @return possible object is
+     *         {@link String }
      */
     public String getCode() {
         return code;
@@ -185,11 +167,9 @@ public class CD
 
     /**
      * Sets the value of the code property.
-     * 
-     * @param value
-     *     allowed object is
-     *     {@link String }
-     *     
+     *
+     * @param value allowed object is
+     *              {@link String }
      */
     public void setCode(String value) {
         this.code = value;
@@ -197,11 +177,9 @@ public class CD
 
     /**
      * Gets the value of the codeSystem property.
-     * 
-     * @return
-     *     possible object is
-     *     {@link String }
-     *     
+     *
+     * @return possible object is
+     *         {@link String }
      */
     public String getCodeSystem() {
         return codeSystem;
@@ -209,11 +187,9 @@ public class CD
 
     /**
      * Sets the value of the codeSystem property.
-     * 
-     * @param value
-     *     allowed object is
-     *     {@link String }
-     *     
+     *
+     * @param value allowed object is
+     *              {@link String }
      */
     public void setCodeSystem(String value) {
         this.codeSystem = value;
@@ -221,11 +197,9 @@ public class CD
 
     /**
      * Gets the value of the codeSystemName property.
-     * 
-     * @return
-     *     possible object is
-     *     {@link String }
-     *     
+     *
+     * @return possible object is
+     *         {@link String }
      */
     public String getCodeSystemName() {
         return codeSystemName;
@@ -233,11 +207,9 @@ public class CD
 
     /**
      * Sets the value of the codeSystemName property.
-     * 
-     * @param value
-     *     allowed object is
-     *     {@link String }
-     *     
+     *
+     * @param value allowed object is
+     *              {@link String }
      */
     public void setCodeSystemName(String value) {
         this.codeSystemName = value;
@@ -245,11 +217,9 @@ public class CD
 
     /**
      * Gets the value of the codeSystemVersion property.
-     * 
-     * @return
-     *     possible object is
-     *     {@link String }
-     *     
+     *
+     * @return possible object is
+     *         {@link String }
      */
     public String getCodeSystemVersion() {
         return codeSystemVersion;
@@ -257,11 +227,9 @@ public class CD
 
     /**
      * Sets the value of the codeSystemVersion property.
-     * 
-     * @param value
-     *     allowed object is
-     *     {@link String }
-     *     
+     *
+     * @param value allowed object is
+     *              {@link String }
      */
     public void setCodeSystemVersion(String value) {
         this.codeSystemVersion = value;
@@ -269,11 +237,9 @@ public class CD
 
     /**
      * Gets the value of the displayName property.
-     * 
-     * @return
-     *     possible object is
-     *     {@link String }
-     *     
+     *
+     * @return possible object is
+     *         {@link String }
      */
     public String getDisplayName() {
         return displayName;
@@ -281,11 +247,9 @@ public class CD
 
     /**
      * Sets the value of the displayName property.
-     * 
-     * @param value
-     *     allowed object is
-     *     {@link String }
-     *     
+     *
+     * @param value allowed object is
+     *              {@link String }
      */
     public void setDisplayName(String value) {
         this.displayName = value;

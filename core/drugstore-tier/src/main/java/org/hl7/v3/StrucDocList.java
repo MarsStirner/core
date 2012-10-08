@@ -8,24 +8,18 @@
 
 package org.hl7.v3;
 
-import java.util.ArrayList;
-import java.util.List;
-import javax.xml.bind.annotation.XmlAccessType;
-import javax.xml.bind.annotation.XmlAccessorType;
-import javax.xml.bind.annotation.XmlAttribute;
-import javax.xml.bind.annotation.XmlElement;
-import javax.xml.bind.annotation.XmlID;
-import javax.xml.bind.annotation.XmlSchemaType;
-import javax.xml.bind.annotation.XmlType;
+import javax.xml.bind.annotation.*;
 import javax.xml.bind.annotation.adapters.CollapsedStringAdapter;
 import javax.xml.bind.annotation.adapters.XmlJavaTypeAdapter;
+import java.util.ArrayList;
+import java.util.List;
 
 
 /**
  * <p>Java class for StrucDoc.List complex type.
- * 
+ * <p/>
  * <p>The following schema fragment specifies the expected content contained within this class.
- * 
+ * <p/>
  * <pre>
  * &lt;complexType name="StrucDoc.List">
  *   &lt;complexContent>
@@ -49,13 +43,11 @@ import javax.xml.bind.annotation.adapters.XmlJavaTypeAdapter;
  *   &lt;/complexContent>
  * &lt;/complexType>
  * </pre>
- * 
- * 
  */
 @XmlAccessorType(XmlAccessType.FIELD)
 @XmlType(name = "StrucDoc.List", propOrder = {
-    "caption",
-    "item"
+        "caption",
+        "item"
 })
 public class StrucDocList {
 
@@ -80,11 +72,9 @@ public class StrucDocList {
 
     /**
      * Gets the value of the caption property.
-     * 
-     * @return
-     *     possible object is
-     *     {@link StrucDocCaption }
-     *     
+     *
+     * @return possible object is
+     *         {@link StrucDocCaption }
      */
     public StrucDocCaption getCaption() {
         return caption;
@@ -92,11 +82,9 @@ public class StrucDocList {
 
     /**
      * Sets the value of the caption property.
-     * 
-     * @param value
-     *     allowed object is
-     *     {@link StrucDocCaption }
-     *     
+     *
+     * @param value allowed object is
+     *              {@link StrucDocCaption }
      */
     public void setCaption(StrucDocCaption value) {
         this.caption = value;
@@ -104,25 +92,23 @@ public class StrucDocList {
 
     /**
      * Gets the value of the item property.
-     * 
-     * <p>
+     * <p/>
+     * <p/>
      * This accessor method returns a reference to the live list,
      * not a snapshot. Therefore any modification you make to the
      * returned list will be present inside the JAXB object.
      * This is why there is not a <CODE>set</CODE> method for the item property.
-     * 
-     * <p>
+     * <p/>
+     * <p/>
      * For example, to add a new item, do as follows:
      * <pre>
      *    getItem().add(newItem);
      * </pre>
-     * 
-     * 
-     * <p>
+     * <p/>
+     * <p/>
+     * <p/>
      * Objects of the following type(s) are allowed in the list
      * {@link StrucDocItem }
-     * 
-     * 
      */
     public List<StrucDocItem> getItem() {
         if (item == null) {
@@ -133,11 +119,9 @@ public class StrucDocList {
 
     /**
      * Gets the value of the id property.
-     * 
-     * @return
-     *     possible object is
-     *     {@link String }
-     *     
+     *
+     * @return possible object is
+     *         {@link String }
      */
     public String getID() {
         return id;
@@ -145,11 +129,9 @@ public class StrucDocList {
 
     /**
      * Sets the value of the id property.
-     * 
-     * @param value
-     *     allowed object is
-     *     {@link String }
-     *     
+     *
+     * @param value allowed object is
+     *              {@link String }
      */
     public void setID(String value) {
         this.id = value;
@@ -157,11 +139,9 @@ public class StrucDocList {
 
     /**
      * Gets the value of the language property.
-     * 
-     * @return
-     *     possible object is
-     *     {@link String }
-     *     
+     *
+     * @return possible object is
+     *         {@link String }
      */
     public String getLanguage() {
         return language;
@@ -169,11 +149,9 @@ public class StrucDocList {
 
     /**
      * Sets the value of the language property.
-     * 
-     * @param value
-     *     allowed object is
-     *     {@link String }
-     *     
+     *
+     * @param value allowed object is
+     *              {@link String }
      */
     public void setLanguage(String value) {
         this.language = value;
@@ -181,25 +159,23 @@ public class StrucDocList {
 
     /**
      * Gets the value of the styleCode property.
-     * 
-     * <p>
+     * <p/>
+     * <p/>
      * This accessor method returns a reference to the live list,
      * not a snapshot. Therefore any modification you make to the
      * returned list will be present inside the JAXB object.
      * This is why there is not a <CODE>set</CODE> method for the styleCode property.
-     * 
-     * <p>
+     * <p/>
+     * <p/>
      * For example, to add a new item, do as follows:
      * <pre>
      *    getStyleCode().add(newItem);
      * </pre>
-     * 
-     * 
-     * <p>
+     * <p/>
+     * <p/>
+     * <p/>
      * Objects of the following type(s) are allowed in the list
      * {@link String }
-     * 
-     * 
      */
     public List<String> getStyleCode() {
         if (styleCode == null) {
@@ -210,11 +186,9 @@ public class StrucDocList {
 
     /**
      * Gets the value of the listType property.
-     * 
-     * @return
-     *     possible object is
-     *     {@link String }
-     *     
+     *
+     * @return possible object is
+     *         {@link String }
      */
     public String getListType() {
         if (listType == null) {
@@ -226,11 +200,9 @@ public class StrucDocList {
 
     /**
      * Sets the value of the listType property.
-     * 
-     * @param value
-     *     allowed object is
-     *     {@link String }
-     *     
+     *
+     * @param value allowed object is
+     *              {@link String }
      */
     public void setListType(String value) {
         this.listType = value;

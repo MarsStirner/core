@@ -15,9 +15,9 @@ import javax.xml.bind.annotation.XmlType;
 
 /**
  * <p>Java class for adxp.deliveryAddressLine complex type.
- * 
+ * <p/>
  * <p>The following schema fragment specifies the expected content contained within this class.
- * 
+ * <p/>
  * <pre>
  * &lt;complexType name="adxp.deliveryAddressLine">
  *   &lt;complexContent>
@@ -27,14 +27,11 @@ import javax.xml.bind.annotation.XmlType;
  *   &lt;/complexContent>
  * &lt;/complexType>
  * </pre>
- * 
- * 
  */
 @XmlAccessorType(XmlAccessType.FIELD)
 @XmlType(name = "adxp.deliveryAddressLine")
 public class AdxpDeliveryAddressLine
-    extends ADXP
-{
+        extends ADXP {
 
 
 }

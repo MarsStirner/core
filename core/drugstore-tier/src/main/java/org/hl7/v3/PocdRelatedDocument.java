@@ -8,20 +8,16 @@
 
 package org.hl7.v3;
 
+import javax.xml.bind.annotation.*;
 import java.util.ArrayList;
 import java.util.List;
-import javax.xml.bind.annotation.XmlAccessType;
-import javax.xml.bind.annotation.XmlAccessorType;
-import javax.xml.bind.annotation.XmlAttribute;
-import javax.xml.bind.annotation.XmlElement;
-import javax.xml.bind.annotation.XmlType;
 
 
 /**
  * <p>Java class for POCD_MT000040.RelatedDocument complex type.
- * 
+ * <p/>
  * <p>The following schema fragment specifies the expected content contained within this class.
- * 
+ * <p/>
  * <pre>
  * &lt;complexType name="POCD_MT000040.RelatedDocument">
  *   &lt;complexContent>
@@ -38,15 +34,13 @@ import javax.xml.bind.annotation.XmlType;
  *   &lt;/complexContent>
  * &lt;/complexType>
  * </pre>
- * 
- * 
  */
 @XmlAccessorType(XmlAccessType.FIELD)
 @XmlType(name = "POCD_MT000040.RelatedDocument", propOrder = {
-    "realmCode",
-    "typeId",
-    "templateId",
-    "parentDocument"
+        "realmCode",
+        "typeId",
+        "templateId",
+        "parentDocument"
 })
 public class PocdRelatedDocument {
 
@@ -62,25 +56,23 @@ public class PocdRelatedDocument {
 
     /**
      * Gets the value of the realmCode property.
-     * 
-     * <p>
+     * <p/>
+     * <p/>
      * This accessor method returns a reference to the live list,
      * not a snapshot. Therefore any modification you make to the
      * returned list will be present inside the JAXB object.
      * This is why there is not a <CODE>set</CODE> method for the realmCode property.
-     * 
-     * <p>
+     * <p/>
+     * <p/>
      * For example, to add a new item, do as follows:
      * <pre>
      *    getRealmCode().add(newItem);
      * </pre>
-     * 
-     * 
-     * <p>
+     * <p/>
+     * <p/>
+     * <p/>
      * Objects of the following type(s) are allowed in the list
      * {@link CS }
-     * 
-     * 
      */
     public List<CS> getRealmCode() {
         if (realmCode == null) {
@@ -91,11 +83,9 @@ public class PocdRelatedDocument {
 
     /**
      * Gets the value of the typeId property.
-     * 
-     * @return
-     *     possible object is
-     *     {@link PocdInfrastructureRootTypeId }
-     *     
+     *
+     * @return possible object is
+     *         {@link PocdInfrastructureRootTypeId }
      */
     public PocdInfrastructureRootTypeId getTypeId() {
         return typeId;
@@ -103,11 +93,9 @@ public class PocdRelatedDocument {
 
     /**
      * Sets the value of the typeId property.
-     * 
-     * @param value
-     *     allowed object is
-     *     {@link PocdInfrastructureRootTypeId }
-     *     
+     *
+     * @param value allowed object is
+     *              {@link PocdInfrastructureRootTypeId }
      */
     public void setTypeId(PocdInfrastructureRootTypeId value) {
         this.typeId = value;
@@ -115,25 +103,23 @@ public class PocdRelatedDocument {
 
     /**
      * Gets the value of the templateId property.
-     * 
-     * <p>
+     * <p/>
+     * <p/>
      * This accessor method returns a reference to the live list,
      * not a snapshot. Therefore any modification you make to the
      * returned list will be present inside the JAXB object.
      * This is why there is not a <CODE>set</CODE> method for the templateId property.
-     * 
-     * <p>
+     * <p/>
+     * <p/>
      * For example, to add a new item, do as follows:
      * <pre>
      *    getTemplateId().add(newItem);
      * </pre>
-     * 
-     * 
-     * <p>
+     * <p/>
+     * <p/>
+     * <p/>
      * Objects of the following type(s) are allowed in the list
      * {@link II }
-     * 
-     * 
      */
     public List<II> getTemplateId() {
         if (templateId == null) {
@@ -144,11 +130,9 @@ public class PocdRelatedDocument {
 
     /**
      * Gets the value of the parentDocument property.
-     * 
-     * @return
-     *     possible object is
-     *     {@link PocdParentDocument }
-     *     
+     *
+     * @return possible object is
+     *         {@link PocdParentDocument }
      */
     public PocdParentDocument getParentDocument() {
         return parentDocument;
@@ -156,11 +140,9 @@ public class PocdRelatedDocument {
 
     /**
      * Sets the value of the parentDocument property.
-     * 
-     * @param value
-     *     allowed object is
-     *     {@link PocdParentDocument }
-     *     
+     *
+     * @param value allowed object is
+     *              {@link PocdParentDocument }
      */
     public void setParentDocument(PocdParentDocument value) {
         this.parentDocument = value;
@@ -168,25 +150,23 @@ public class PocdRelatedDocument {
 
     /**
      * Gets the value of the nullFlavor property.
-     * 
-     * <p>
+     * <p/>
+     * <p/>
      * This accessor method returns a reference to the live list,
      * not a snapshot. Therefore any modification you make to the
      * returned list will be present inside the JAXB object.
      * This is why there is not a <CODE>set</CODE> method for the nullFlavor property.
-     * 
-     * <p>
+     * <p/>
+     * <p/>
      * For example, to add a new item, do as follows:
      * <pre>
      *    getNullFlavor().add(newItem);
      * </pre>
-     * 
-     * 
-     * <p>
+     * <p/>
+     * <p/>
+     * <p/>
      * Objects of the following type(s) are allowed in the list
      * {@link String }
-     * 
-     * 
      */
     public List<String> getNullFlavor() {
         if (nullFlavor == null) {
@@ -197,11 +177,9 @@ public class PocdRelatedDocument {
 
     /**
      * Gets the value of the typeCode property.
-     * 
-     * @return
-     *     possible object is
-     *     {@link XActRelationshipDocument }
-     *     
+     *
+     * @return possible object is
+     *         {@link XActRelationshipDocument }
      */
     public XActRelationshipDocument getTypeCode() {
         return typeCode;
@@ -209,11 +187,9 @@ public class PocdRelatedDocument {
 
     /**
      * Sets the value of the typeCode property.
-     * 
-     * @param value
-     *     allowed object is
-     *     {@link XActRelationshipDocument }
-     *     
+     *
+     * @param value allowed object is
+     *              {@link XActRelationshipDocument }
      */
     public void setTypeCode(XActRelationshipDocument value) {
         this.typeCode = value;

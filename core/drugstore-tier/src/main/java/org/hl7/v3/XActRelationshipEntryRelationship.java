@@ -14,9 +14,9 @@ import javax.xml.bind.annotation.XmlType;
 
 /**
  * <p>Java class for x_ActRelationshipEntryRelationship.
- * 
+ * <p/>
  * <p>The following schema fragment specifies the expected content contained within this class.
- * <p>
+ * <p/>
  * <pre>
  * &lt;simpleType name="x_ActRelationshipEntryRelationship">
  *   &lt;restriction base="{urn:hl7-org:v3}cs">
@@ -33,7 +33,6 @@ import javax.xml.bind.annotation.XmlType;
  *   &lt;/restriction>
  * &lt;/simpleType>
  * </pre>
- * 
  */
 @XmlType(name = "x_ActRelationshipEntryRelationship")
 @XmlEnum

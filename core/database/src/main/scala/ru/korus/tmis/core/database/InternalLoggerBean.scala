@@ -41,11 +41,11 @@ class InternalLoggerBean
                     methodName: String) = {
     try {
       em.persist(new ProfileEvent(sessionId,
-                                  nestedLevel,
-                                  number,
-                                  time,
-                                  className,
-                                  methodName))
+        nestedLevel,
+        number,
+        time,
+        className,
+        methodName))
     }
     catch {
       case ex: Exception => {
@@ -56,20 +56,20 @@ class InternalLoggerBean
 
   def getStatistics(limit: Int) = {
     val rootEvents = em
-                     .createQuery(SelectTopStatisticsQuery, classOf[ProfileEvent])
-                     .setMaxResults(limit)
-                     .getResultList
+      .createQuery(SelectTopStatisticsQuery, classOf[ProfileEvent])
+      .setMaxResults(limit)
+      .getResultList
 
     val sessionIdsHigh = rootEvents.map(_.getSessionIdHigh)
     val sessionIdsLow = rootEvents.map(_.getSessionIdLow)
 
     val allEvents = em
-                    .createQuery(SelectDetailedTopStatisticsQuery, classOf[ProfileEvent])
-                    .setParameter("sessionIdsHigh",
-                                  asJavaCollection(sessionIdsHigh))
-                    .setParameter("sessionIdsLow",
-                                  asJavaCollection(sessionIdsLow))
-                    .getResultList
+      .createQuery(SelectDetailedTopStatisticsQuery, classOf[ProfileEvent])
+      .setParameter("sessionIdsHigh",
+      asJavaCollection(sessionIdsHigh))
+      .setParameter("sessionIdsLow",
+      asJavaCollection(sessionIdsLow))
+      .getResultList
 
     val auxMap = rootEvents.foldLeft(
       Map.empty[(Long, Long), ProfileEvent]
@@ -106,7 +106,7 @@ class InternalLoggerBean
     AND
       p.number = 0
     ORDER BY p.time DESC
-  """
+                                 """
 
   val SelectDetailedTopStatisticsQuery = """
     SELECT p
@@ -116,5 +116,5 @@ class InternalLoggerBean
     AND
       p.sessionIdLow IN :sessionIdsLow
     ORDER BY p.number ASC
-  """
+                                         """
 }

@@ -1,25 +1,21 @@
 package ru.korus.tmis.core.entity.model;
 
-import java.io.Serializable;
-import javax.persistence.Basic;
-import javax.persistence.Column;
-import javax.persistence.Entity;
-import javax.persistence.GeneratedValue;
-import javax.persistence.GenerationType;
-import javax.persistence.Id;
-import javax.persistence.NamedQueries;
-import javax.persistence.NamedQuery;
-import javax.persistence.Table;
+import javax.persistence.*;
 import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Size;
 import javax.xml.bind.annotation.XmlRootElement;
+import javax.xml.bind.annotation.XmlType;
+import java.io.Serializable;
+import java.util.LinkedList;
+import java.util.List;
 
 @Entity
-@Table(name = "MKB")
-@XmlRootElement
+@Table(name = "MKB", catalog = "", schema = "")
 @NamedQueries({
-    @NamedQuery(name = "Mkb.findAll", query = "SELECT m FROM Mkb m"),
-    @NamedQuery(name = "Mkb.findById", query = "SELECT m FROM Mkb m WHERE m.id = :id")})
+        @NamedQuery(name = "Mkb.findAll", query = "SELECT m FROM Mkb m"),
+        @NamedQuery(name = "Mkb.findById", query = "SELECT m FROM Mkb m WHERE m.id = :id")})
+@XmlType(name = "mkb")
+@XmlRootElement(name = "mkb")
 public class Mkb implements Serializable {
     private static final long serialVersionUID = 1L;
     @Id
@@ -59,14 +55,14 @@ public class Mkb implements Serializable {
     @Column(name = "DiagName")
     private String diagName;
     @Basic(optional = false)
-    @NotNull
-    @Size(min = 1, max = 1)
+    //@NotNull
+    //@Size(min = 1, max = 1)
     @Column(name = "Prim")
     private String prim;
     @Basic(optional = false)
     @NotNull
     @Column(name = "sex")
-    private boolean sex;
+    private short sex;
     @Basic(optional = false)
     @NotNull
     @Size(min = 1, max = 12)
@@ -93,6 +89,10 @@ public class Mkb implements Serializable {
     @Column(name = "MKBSubclass_id")
     private Integer mKBSubclassid;
 
+    /* @OneToMany(mappedBy = "mkb", cascade = CascadeType.ALL)
+private List<Diagnosis> diagnosis =
+  new LinkedList<Diagnosis>(); */
+
     public Mkb() {
     }
 
@@ -100,7 +100,7 @@ public class Mkb implements Serializable {
         this.id = id;
     }
 
-    public Mkb(Integer id, String classID, String className, String blockID, String blockName, String diagID, String diagName, String prim, boolean sex, String age, short characters, int duration) {
+    public Mkb(Integer id, String classID, String className, String blockID, String blockName, String diagID, String diagName, String prim, short sex, String age, short characters, int duration) {
         this.id = id;
         this.classID = classID;
         this.className = className;
@@ -155,6 +155,21 @@ public class Mkb implements Serializable {
         this.blockName = blockName;
     }
 
+    @OneToMany(mappedBy = "mkb", cascade = CascadeType.ALL)
+    //(fetch = FetchType.LAZY, mappedBy = "pk.fdField", cascade=CascadeType.ALL)
+    private List<Diagnosis> diagnosis = new LinkedList<Diagnosis>();
+
+    public List<Diagnosis> getDiagnosis() {
+        return diagnosis;
+    }
+
+    public void addDiagnosis(final Diagnosis diagnosis) {
+        this.diagnosis.add(diagnosis);
+        if (diagnosis.getMkb() != this) {
+            diagnosis.setMkb(this);
+        }
+    }
+
     public String getDiagID() {
         return diagID;
     }
@@ -179,11 +194,11 @@ public class Mkb implements Serializable {
         this.prim = prim;
     }
 
-    public boolean getSex() {
+    public short getSex() {
         return sex;
     }
 
-    public void setSex(boolean sex) {
+    public void setSex(short sex) {
         this.sex = sex;
     }
 
@@ -283,5 +298,5 @@ public class Mkb implements Serializable {
     public String toString() {
         return "ru.korus.tmis.core.entity.model.Mkb[ id=" + id + " ]";
     }
-    
+
 }

@@ -14,8 +14,8 @@ import ru.korus.tmis.util.General.nullity_implicits
 // slf4j to soap logging adapter, logging only ips
 class LoggingHandler
   extends SOAPHandler[SOAPMessageContext]
-          with Logging
-          with I18nable {
+  with Logging
+  with I18nable {
 
   override def getHeaders() = null
 
@@ -28,10 +28,12 @@ class LoggingHandler
     val strop = context.get(MessageContext.MESSAGE_OUTBOUND_PROPERTY).asInstanceOf[Boolean] match {
       case true => "=>"
       case false => "<=[" +
-                    (context.get(MessageContext.SERVLET_REQUEST)
-                     ?!! { _.asInstanceOf[HttpServletRequest].getRemoteAddr }
-                     getOrElse "Unknown host") +
-                    "]"
+        (context.get(MessageContext.SERVLET_REQUEST)
+          ?!! {
+          _.asInstanceOf[HttpServletRequest].getRemoteAddr
+        }
+          getOrElse "Unknown host") +
+        "]"
       case _ => "???"
     }
 

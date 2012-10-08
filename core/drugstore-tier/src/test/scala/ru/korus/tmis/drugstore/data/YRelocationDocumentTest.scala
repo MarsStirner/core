@@ -1,14 +1,10 @@
 package ru.korus.tmis.drugstore.data
 
 
-import java.io.{StringReader, ByteArrayOutputStream}
-import javax.xml.bind.JAXBContext
 import org.junit.Test
 
-import ru.korus.tmis.drugstore.data.{YOutgoingRelocationDocument, YIncomingRelocationDocument, YMovingRelocationDocument, YRelocationDocument}
-import xml.{XML, PrettyPrinter}
 import ru.korus.tmis.core.entity.model._
-import java.util.{Date, Calendar, LinkedList}
+import java.util.Date
 
 class YRelocationDocumentTest {
   @Test
@@ -33,12 +29,12 @@ class YRelocationDocumentTest {
     p.addEvent(e)
     e.setPatient(p)
 
-    
+
     val org0 = new OrgStructure()
     org0.setId(42)
     val org1 = new OrgStructure()
     org1.setId(43)
-    
+
     val mov = new YMovingRelocationDocument(a, org0.toString, org1.toString)
     val in = new YIncomingRelocationDocument(a, org1.toString)
     val out = new YOutgoingRelocationDocument(a)

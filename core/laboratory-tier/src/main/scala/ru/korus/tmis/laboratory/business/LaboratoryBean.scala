@@ -11,7 +11,7 @@ import grizzled.slf4j.Logging
 import java.lang.String
 import javax.ejb.{Remote, Stateless, EJB}
 import javax.interceptor.Interceptors
-import javax.xml.datatype.{Duration, DatatypeFactory, XMLGregorianCalendar}
+import javax.xml.datatype.{DatatypeFactory, XMLGregorianCalendar}
 
 import scala.collection.JavaConversions._
 import java.text.SimpleDateFormat
@@ -23,16 +23,15 @@ import javax.xml.ws.handler.{MessageContext, Handler}
 import ru.korus.tmis.core.logging.slf4j.soap.LoggingHandler
 import ru.korus.tmis.util.{CompileTimeConfigManager, ConfigManager, I18nable}
 import javax.xml.namespace.QName
-import java.net.{PasswordAuthentication, Authenticator, URL}
-import ru.korus.tmis.core.logging.slf4j.interceptor.NoDBLoggingInterceptor
+import java.net.{PasswordAuthentication, Authenticator}
 import java.util.{LinkedList, Date}
 import ru.korus.tmis.laboratory.data.request._
 import ru.korus.tmis.laboratory.data.accept.AnalysisResult
-import ru.korus.tmis.laboratory.data.accept.AnalysisResult._
-import javax.xml.ws.handler.soap.{SOAPMessageContext, SOAPHandler}
-import ru.korus.tmis.core.logging.db.LoggingInterceptor
-import javax.xml.rpc.handler.HandlerInfo
+import ru.korus.tmis.core.logging.LoggingInterceptor
 import javax.xml.rpc.Stub
+
+import org.apache.axis.client.{Stub => AxisStub}
+
 import scala.collection.mutable
 
 @Interceptors(Array(classOf[LoggingInterceptor]))
@@ -148,9 +147,9 @@ class LaboratoryBean
             info("site: " + getRequestingSite.toString)
             info("url: " + getRequestingURL.toString)
 
-            new PasswordAuthentication(ConfigManager.Laboratory2.User, ConfigManager.Laboratory2.Password.toCharArray);
+            return new PasswordAuthentication(ConfigManager.Laboratory2.User, ConfigManager.Laboratory2.Password.toCharArray);
           }
-        })
+        });
       }
 
       val service = Option(ConfigManager.Laboratory2.WSDLUrl).map {
@@ -180,7 +179,6 @@ class LaboratoryBean
 
       val port = service.getIAcrossIntf_FNKCPort
 
-      import ru.korus.tmis.util.General.cast_implicits
 
       for (
         user <- Option(ConfigManager.Laboratory2.User);
@@ -189,7 +187,12 @@ class LaboratoryBean
       ) yield {
         stub._setProperty(Stub.PASSWORD_PROPERTY, password)
         stub._setProperty(Stub.USERNAME_PROPERTY, user)
-        stub._setProperty(org.apache.axis.AxisEngine.PROP_DOMULTIREFS, false)
+      }
+
+      // Disable multiRef generation
+      port.asSafe[AxisStub] match {
+        case Some(stub) => stub._setProperty(org.apache.axis.AxisEngine.PROP_DOMULTIREFS, false)
+        case None => {}
       }
 
       port
@@ -227,7 +230,6 @@ class LaboratoryBean
 
   // get bio from TakenTissue (LIS2)
   def getBiomaterialInfo(action: Action, takenTissue: TakenTissue): BiomaterialInfo = {
-    import ru.korus.tmis.util.General.NumberImplicits._
 
     Option(action.getTakenTissue) match {
       case Some(t) => {
@@ -327,10 +329,6 @@ class LaboratoryBean
     val orderCaseId = "" + a.getEvent.getExternalId
     info("Request:OrderCaseId=" + orderCaseId)
 
-    // код финансирования
- //   val orderFinanceId = 0 // getFinanceId(a.getEvent)
- //   info("Request:OrderFinanceId=" + orderFinanceId)
-
     // CreateDate (datetime) -- дата создания направления врачом (Action.createDatetime)
     val date = a.getCreateDatetime
     info("Request:CreateDate=" + a.getCreateDatetime)
@@ -371,9 +369,8 @@ class LaboratoryBean
       }
       case _ => {
         info("Request:DepartmentName=" + department.getName)
-        //todo изменено 03.10 hack
-        info("Request:DepartmentCode=" + department.getId)
-        (department.getName, "" + department.getId)
+        info("Request:DepartmentCode=" + department.getCode)
+        (department.getName, department.getCode)
       }
     }
 
@@ -397,7 +394,6 @@ class LaboratoryBean
     DiagnosticRequestInfo(
       id,
       Option(orderCaseId),
-   //   Option(orderFinanceId),
       Option(date),
       Option(pregMin),
       Option(pregMax),
@@ -443,12 +439,8 @@ class LaboratoryBean
           })
       }
     }
-    null
-  }
 
-  def getFinanceId(e: Event): Int = {
-    val id = dbCustomQuery.getFinanceId(e.getId.intValue())
-    id.intValue()
+    null
   }
 
   /**
@@ -462,7 +454,6 @@ class LaboratoryBean
 
     // Выбираем диагнозы
     val diagMap = dbCustomQuery.getDiagnosisSubstantiationByEvents(Collections.singletonList(e))
-
     val a = diagMap.get(e) match {
       case null => {
         warn("Diagnosis not found")
@@ -473,7 +464,6 @@ class LaboratoryBean
 
     // Получаем список пар (APT, AP)
     val aps = a.getActionPropertiesByTypes(diagnosisAPT)
-
     // Получаем список APValue
     val apvals = aps.foldLeft(scala.collection.immutable.List[APValue]())((ps, pair) => {
       val ap = pair._2
@@ -482,7 +472,7 @@ class LaboratoryBean
     })
 
     apvals.size match {
-      case 0 => return null
+      case 0 => null
       case x: Int => {
         val pair = apvals.get(0)
         var res = pair.getValueAsString.replaceAll("<(.)+?>", "")
@@ -493,25 +483,22 @@ class LaboratoryBean
     }
 
     /*
-    val mkbs = apvals.filter(apv => apv.isInstanceOf[APValueMKB])
-    System.out.println("mkbs: " + mkbs);
-
-    mkbs.size match {
-      case 0 => return null
-      case x: Int => {
-        val mkbValue = mkbs.get(0).asInstanceOf[APValueMKB]
-        System.out.println("mkbValue: " + mkbValue);
-        val mkb = mkbValue.getMkb()
-        return (mkb.getDiagID, mkb.getDiagName)
-      }
-    }
+        val mkbs = apvals.filter(apv => apv.isInstanceOf[APValueMKB])
+        mkbs.size match {
+          case 0 => return null
+          case x: Int => {
+            val mkbValue = mkbs.get(0).asInstanceOf[APValueMKB]
+            val mkb = mkbValue.getMkb()
+            return (mkb.getDiagID, mkb.getDiagName)
+          }
+        }
     */
   }
 
   def setAnalysisResults(a: Action, results: List[AnalysisResult], finished: Boolean, biomaterialDefects: String) = {
     // Сохраняем результаты анализов
     val entities = scala.collection.mutable.Buffer[AnyRef](a)
-    import ru.korus.tmis.util.General.{nullity_implicits, typedEquality}
+    import ru.korus.tmis.util.General.typedEquality
 
     results.foreach {
       r =>
@@ -556,7 +543,7 @@ class LaboratoryBean
           info("Writing action property #" + ap.getId + " to " + r.value)
 
           val apv = r.value.get0.map {
-            txt => dbActionProperty.setActionPropertyValue(ap, txt)
+            txt => dbActionProperty.setActionPropertyValue(ap, txt, 0)
           }
           apv.foreach {
             entities += _
@@ -599,7 +586,7 @@ class LaboratoryBean
               // TODO: сохранять также imageString
               // Передаем base64 строку, которая в APValueImage сохраняется в byte[]
               val apv = image.imageData.map {
-                it => dbActionProperty.setActionPropertyValue(ap, it)
+                it => dbActionProperty.setActionPropertyValue(ap, it, 0)
               }
               apv.foreach {
                 entities += _
@@ -621,7 +608,7 @@ class LaboratoryBean
           })
           apsFound.foreach(ap => {
             val apv = organismConcentration.map {
-              txt => dbActionProperty.setActionPropertyValue(ap, txt)
+              txt => dbActionProperty.setActionPropertyValue(ap, txt, 0)
             }
             apv.foreach {
               entities += _
@@ -642,8 +629,8 @@ class LaboratoryBean
           // Записываем значение
           apsFound.foreach(ap => {
             val apv = r.mic match {
-              case None => dbActionProperty.setActionPropertyValue(ap, r.value.getOrElse(""))
-              case Some(mic) => dbActionProperty.setActionPropertyValue(ap, r.value.getOrElse("") + "/" + mic)
+              case None => dbActionProperty.setActionPropertyValue(ap, r.value.getOrElse(""), 0)
+              case Some(mic) => dbActionProperty.setActionPropertyValue(ap, r.value.getOrElse("") + "/" + mic, 0)
             }
             entities += apv
           })
@@ -729,8 +716,7 @@ class LaboratoryBean
     )
 
     val exRequest = DiagnosticRequestInfo(220,
-      Option("0"),
-//      Option(0),
+      Option("111"),
       Option(new Date(112, 2, 27, 17, 0)),
       Option(9),
       Option(9),

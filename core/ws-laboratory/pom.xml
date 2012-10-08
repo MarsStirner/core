@@ -1,5 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
 
     <modelVersion>4.0.0</modelVersion>
     <groupId>ru.korus.tmis.laboratory</groupId>
@@ -59,6 +60,30 @@
                 <groupId>org.codehaus.mojo</groupId>
                 <artifactId>jaxws-maven-plugin</artifactId>
                 <version>1.12</version>
+                <executions>
+                    <execution>
+                        <goals>
+                            <goal>wsimport</goal>
+                        </goals>
+                        <configuration>
+                            <sourceDestDir>
+                                ${project.build.directory}/generated-sources/labisws
+                            </sourceDestDir>
+                            <wsdlDirectory>
+                                ${project.basedir}/src/main/resources
+                            </wsdlDirectory>
+                            <wsdlFiles>
+                                <wsdlFile>labisws.wsdl</wsdlFile>
+                            </wsdlFiles>
+                            <packageName>ru.korus.ws.laboratory</packageName>
+                            <staleFile>
+                                ${project.build.directory}/stale/tmis/laboratory/service
+                            </staleFile>
+                        </configuration>
+                        <id>wsimport-generate-laboratory-ws</id>
+                        <phase>generate-sources</phase>
+                    </execution>
+                </executions>
                 <configuration>
                     <pluginArtifacts>
                         <artifact>

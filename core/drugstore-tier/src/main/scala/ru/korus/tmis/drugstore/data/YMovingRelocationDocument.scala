@@ -1,12 +1,12 @@
 package ru.korus.tmis.drugstore.data
 
-import ru.korus.tmis.core.entity.model.{OrgStructure, Action}
+import ru.korus.tmis.core.entity.model.Action
 
 class YMovingRelocationDocument(
-    action: Action,
-    fromUUID: String,
-    toUUID: String
-) extends YAbstractActionBasedRelocationDocument(action) {
+                                 action: Action,
+                                 fromUUID: String,
+                                 toUUID: String
+                                 ) extends YAbstractActionBasedRelocationDocument(action) {
 
   val soapOperation = "ProcessHL7v3Message"
   val soapAction = "urn:hl7-org:v3#MISExchange:ProcessHL7v3Message"
@@ -14,12 +14,12 @@ class YMovingRelocationDocument(
 
   val xml =
     <PRPA_IN302011UV02
-        ITSVersion="XML_1.0"
-        xsi:schemaLocation="urn:hl7-org:v3 PRPA_IN302011UV02.xsd"
-        xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-        xmlns="urn:hl7-org:v3">
+    ITSVersion="XML_1.0"
+    xsi:schemaLocation="urn:hl7-org:v3 PRPA_IN302011UV02.xsd"
+    xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+    xmlns="urn:hl7-org:v3">
       <id root={xUUID.toString}/>
-      <creationTime  value={formattedDate}/>
+      <creationTime value={formattedDate}/>
       <interactionId extension="PRPA_IN302011UV02" root="2.16.840.1.113883.1.18"/>
       <processingCode code="P"/>
       <processingModeCode code="T"/>
@@ -50,7 +50,8 @@ class YMovingRelocationDocument(
                 <id root={fromUUID}/> <!-- UUID подразделения -->
               </serviceDeliveryLocation>
             </location1>
-            <location2 typeCode="LOC"> <!-- куда переводится -->
+            <location2 typeCode="LOC">
+              <!-- куда переводится -->
               <time value={formattedEndDate}/> <!-- когда прибыл -->
               <statusCode code="active"/> <!-- фиксированное значение -->
               <serviceDeliveryLocation classCode="SDLOC">

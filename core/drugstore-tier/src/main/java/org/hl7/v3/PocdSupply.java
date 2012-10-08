@@ -8,19 +8,19 @@
 
 package org.hl7.v3;
 
-import java.util.ArrayList;
-import java.util.List;
 import javax.xml.bind.annotation.XmlAccessType;
 import javax.xml.bind.annotation.XmlAccessorType;
 import javax.xml.bind.annotation.XmlAttribute;
 import javax.xml.bind.annotation.XmlType;
+import java.util.ArrayList;
+import java.util.List;
 
 
 /**
  * <p>Java class for POCD_MT000040.Supply complex type.
- * 
+ * <p/>
  * <p>The following schema fragment specifies the expected content contained within this class.
- * 
+ * <p/>
  * <pre>
  * &lt;complexType name="POCD_MT000040.Supply">
  *   &lt;complexContent>
@@ -57,34 +57,32 @@ import javax.xml.bind.annotation.XmlType;
  *   &lt;/complexContent>
  * &lt;/complexType>
  * </pre>
- * 
- * 
  */
 @XmlAccessorType(XmlAccessType.FIELD)
 @XmlType(name = "POCD_MT000040.Supply", propOrder = {
-    "realmCode",
-    "typeId",
-    "templateId",
-    "id",
-    "code",
-    "text",
-    "statusCode",
-    "effectiveTime",
-    "priorityCode",
-    "repeatNumber",
-    "independentInd",
-    "quantity",
-    "expectedUseTime",
-    "subject",
-    "specimen",
-    "product",
-    "performer",
-    "author",
-    "informant",
-    "participant",
-    "entryRelationship",
-    "reference",
-    "precondition"
+        "realmCode",
+        "typeId",
+        "templateId",
+        "id",
+        "code",
+        "text",
+        "statusCode",
+        "effectiveTime",
+        "priorityCode",
+        "repeatNumber",
+        "independentInd",
+        "quantity",
+        "expectedUseTime",
+        "subject",
+        "specimen",
+        "product",
+        "performer",
+        "author",
+        "informant",
+        "participant",
+        "entryRelationship",
+        "reference",
+        "precondition"
 })
 public class PocdSupply {
 
@@ -120,25 +118,23 @@ public class PocdSupply {
 
     /**
      * Gets the value of the realmCode property.
-     * 
-     * <p>
+     * <p/>
+     * <p/>
      * This accessor method returns a reference to the live list,
      * not a snapshot. Therefore any modification you make to the
      * returned list will be present inside the JAXB object.
      * This is why there is not a <CODE>set</CODE> method for the realmCode property.
-     * 
-     * <p>
+     * <p/>
+     * <p/>
      * For example, to add a new item, do as follows:
      * <pre>
      *    getRealmCode().add(newItem);
      * </pre>
-     * 
-     * 
-     * <p>
+     * <p/>
+     * <p/>
+     * <p/>
      * Objects of the following type(s) are allowed in the list
      * {@link CS }
-     * 
-     * 
      */
     public List<CS> getRealmCode() {
         if (realmCode == null) {
@@ -149,11 +145,9 @@ public class PocdSupply {
 
     /**
      * Gets the value of the typeId property.
-     * 
-     * @return
-     *     possible object is
-     *     {@link PocdInfrastructureRootTypeId }
-     *     
+     *
+     * @return possible object is
+     *         {@link PocdInfrastructureRootTypeId }
      */
     public PocdInfrastructureRootTypeId getTypeId() {
         return typeId;
@@ -161,11 +155,9 @@ public class PocdSupply {
 
     /**
      * Sets the value of the typeId property.
-     * 
-     * @param value
-     *     allowed object is
-     *     {@link PocdInfrastructureRootTypeId }
-     *     
+     *
+     * @param value allowed object is
+     *              {@link PocdInfrastructureRootTypeId }
      */
     public void setTypeId(PocdInfrastructureRootTypeId value) {
         this.typeId = value;
@@ -173,25 +165,23 @@ public class PocdSupply {
 
     /**
      * Gets the value of the templateId property.
-     * 
-     * <p>
+     * <p/>
+     * <p/>
      * This accessor method returns a reference to the live list,
      * not a snapshot. Therefore any modification you make to the
      * returned list will be present inside the JAXB object.
      * This is why there is not a <CODE>set</CODE> method for the templateId property.
-     * 
-     * <p>
+     * <p/>
+     * <p/>
      * For example, to add a new item, do as follows:
      * <pre>
      *    getTemplateId().add(newItem);
      * </pre>
-     * 
-     * 
-     * <p>
+     * <p/>
+     * <p/>
+     * <p/>
      * Objects of the following type(s) are allowed in the list
      * {@link II }
-     * 
-     * 
      */
     public List<II> getTemplateId() {
         if (templateId == null) {
@@ -202,25 +192,23 @@ public class PocdSupply {
 
     /**
      * Gets the value of the id property.
-     * 
-     * <p>
+     * <p/>
+     * <p/>
      * This accessor method returns a reference to the live list,
      * not a snapshot. Therefore any modification you make to the
      * returned list will be present inside the JAXB object.
      * This is why there is not a <CODE>set</CODE> method for the id property.
-     * 
-     * <p>
+     * <p/>
+     * <p/>
      * For example, to add a new item, do as follows:
      * <pre>
      *    getId().add(newItem);
      * </pre>
-     * 
-     * 
-     * <p>
+     * <p/>
+     * <p/>
+     * <p/>
      * Objects of the following type(s) are allowed in the list
      * {@link II }
-     * 
-     * 
      */
     public List<II> getId() {
         if (id == null) {
@@ -231,11 +219,9 @@ public class PocdSupply {
 
     /**
      * Gets the value of the code property.
-     * 
-     * @return
-     *     possible object is
-     *     {@link CD }
-     *     
+     *
+     * @return possible object is
+     *         {@link CD }
      */
     public CD getCode() {
         return code;
@@ -243,11 +229,9 @@ public class PocdSupply {
 
     /**
      * Sets the value of the code property.
-     * 
-     * @param value
-     *     allowed object is
-     *     {@link CD }
-     *     
+     *
+     * @param value allowed object is
+     *              {@link CD }
      */
     public void setCode(CD value) {
         this.code = value;
@@ -255,11 +239,9 @@ public class PocdSupply {
 
     /**
      * Gets the value of the text property.
-     * 
-     * @return
-     *     possible object is
-     *     {@link ED }
-     *     
+     *
+     * @return possible object is
+     *         {@link ED }
      */
     public ED getText() {
         return text;
@@ -267,11 +249,9 @@ public class PocdSupply {
 
     /**
      * Sets the value of the text property.
-     * 
-     * @param value
-     *     allowed object is
-     *     {@link ED }
-     *     
+     *
+     * @param value allowed object is
+     *              {@link ED }
      */
     public void setText(ED value) {
         this.text = value;
@@ -279,11 +259,9 @@ public class PocdSupply {
 
     /**
      * Gets the value of the statusCode property.
-     * 
-     * @return
-     *     possible object is
-     *     {@link CS }
-     *     
+     *
+     * @return possible object is
+     *         {@link CS }
      */
     public CS getStatusCode() {
         return statusCode;
@@ -291,11 +269,9 @@ public class PocdSupply {
 
     /**
      * Sets the value of the statusCode property.
-     * 
-     * @param value
-     *     allowed object is
-     *     {@link CS }
-     *     
+     *
+     * @param value allowed object is
+     *              {@link CS }
      */
     public void setStatusCode(CS value) {
         this.statusCode = value;
@@ -303,25 +279,23 @@ public class PocdSupply {
 
     /**
      * Gets the value of the effectiveTime property.
-     * 
-     * <p>
+     * <p/>
+     * <p/>
      * This accessor method returns a reference to the live list,
      * not a snapshot. Therefore any modification you make to the
      * returned list will be present inside the JAXB object.
      * This is why there is not a <CODE>set</CODE> method for the effectiveTime property.
-     * 
-     * <p>
+     * <p/>
+     * <p/>
      * For example, to add a new item, do as follows:
      * <pre>
      *    getEffectiveTime().add(newItem);
      * </pre>
-     * 
-     * 
-     * <p>
+     * <p/>
+     * <p/>
+     * <p/>
      * Objects of the following type(s) are allowed in the list
      * {@link SXCMTS }
-     * 
-     * 
      */
     public List<SXCMTS> getEffectiveTime() {
         if (effectiveTime == null) {
@@ -332,25 +306,23 @@ public class PocdSupply {
 
     /**
      * Gets the value of the priorityCode property.
-     * 
-     * <p>
+     * <p/>
+     * <p/>
      * This accessor method returns a reference to the live list,
      * not a snapshot. Therefore any modification you make to the
      * returned list will be present inside the JAXB object.
      * This is why there is not a <CODE>set</CODE> method for the priorityCode property.
-     * 
-     * <p>
+     * <p/>
+     * <p/>
      * For example, to add a new item, do as follows:
      * <pre>
      *    getPriorityCode().add(newItem);
      * </pre>
-     * 
-     * 
-     * <p>
+     * <p/>
+     * <p/>
+     * <p/>
      * Objects of the following type(s) are allowed in the list
      * {@link CE }
-     * 
-     * 
      */
     public List<CE> getPriorityCode() {
         if (priorityCode == null) {
@@ -361,11 +333,9 @@ public class PocdSupply {
 
     /**
      * Gets the value of the repeatNumber property.
-     * 
-     * @return
-     *     possible object is
-     *     {@link IVLINT }
-     *     
+     *
+     * @return possible object is
+     *         {@link IVLINT }
      */
     public IVLINT getRepeatNumber() {
         return repeatNumber;
@@ -373,11 +343,9 @@ public class PocdSupply {
 
     /**
      * Sets the value of the repeatNumber property.
-     * 
-     * @param value
-     *     allowed object is
-     *     {@link IVLINT }
-     *     
+     *
+     * @param value allowed object is
+     *              {@link IVLINT }
      */
     public void setRepeatNumber(IVLINT value) {
         this.repeatNumber = value;
@@ -385,11 +353,9 @@ public class PocdSupply {
 
     /**
      * Gets the value of the independentInd property.
-     * 
-     * @return
-     *     possible object is
-     *     {@link BL }
-     *     
+     *
+     * @return possible object is
+     *         {@link BL }
      */
     public BL getIndependentInd() {
         return independentInd;
@@ -397,11 +363,9 @@ public class PocdSupply {
 
     /**
      * Sets the value of the independentInd property.
-     * 
-     * @param value
-     *     allowed object is
-     *     {@link BL }
-     *     
+     *
+     * @param value allowed object is
+     *              {@link BL }
      */
     public void setIndependentInd(BL value) {
         this.independentInd = value;
@@ -409,11 +373,9 @@ public class PocdSupply {
 
     /**
      * Gets the value of the quantity property.
-     * 
-     * @return
-     *     possible object is
-     *     {@link PQ }
-     *     
+     *
+     * @return possible object is
+     *         {@link PQ }
      */
     public PQ getQuantity() {
         return quantity;
@@ -421,11 +383,9 @@ public class PocdSupply {
 
     /**
      * Sets the value of the quantity property.
-     * 
-     * @param value
-     *     allowed object is
-     *     {@link PQ }
-     *     
+     *
+     * @param value allowed object is
+     *              {@link PQ }
      */
     public void setQuantity(PQ value) {
         this.quantity = value;
@@ -433,11 +393,9 @@ public class PocdSupply {
 
     /**
      * Gets the value of the expectedUseTime property.
-     * 
-     * @return
-     *     possible object is
-     *     {@link IVLTS }
-     *     
+     *
+     * @return possible object is
+     *         {@link IVLTS }
      */
     public IVLTS getExpectedUseTime() {
         return expectedUseTime;
@@ -445,11 +403,9 @@ public class PocdSupply {
 
     /**
      * Sets the value of the expectedUseTime property.
-     * 
-     * @param value
-     *     allowed object is
-     *     {@link IVLTS }
-     *     
+     *
+     * @param value allowed object is
+     *              {@link IVLTS }
      */
     public void setExpectedUseTime(IVLTS value) {
         this.expectedUseTime = value;
@@ -457,11 +413,9 @@ public class PocdSupply {
 
     /**
      * Gets the value of the subject property.
-     * 
-     * @return
-     *     possible object is
-     *     {@link PocdSubject }
-     *     
+     *
+     * @return possible object is
+     *         {@link PocdSubject }
      */
     public PocdSubject getSubject() {
         return subject;
@@ -469,11 +423,9 @@ public class PocdSupply {
 
     /**
      * Sets the value of the subject property.
-     * 
-     * @param value
-     *     allowed object is
-     *     {@link PocdSubject }
-     *     
+     *
+     * @param value allowed object is
+     *              {@link PocdSubject }
      */
     public void setSubject(PocdSubject value) {
         this.subject = value;
@@ -481,25 +433,23 @@ public class PocdSupply {
 
     /**
      * Gets the value of the specimen property.
-     * 
-     * <p>
+     * <p/>
+     * <p/>
      * This accessor method returns a reference to the live list,
      * not a snapshot. Therefore any modification you make to the
      * returned list will be present inside the JAXB object.
      * This is why there is not a <CODE>set</CODE> method for the specimen property.
-     * 
-     * <p>
+     * <p/>
+     * <p/>
      * For example, to add a new item, do as follows:
      * <pre>
      *    getSpecimen().add(newItem);
      * </pre>
-     * 
-     * 
-     * <p>
+     * <p/>
+     * <p/>
+     * <p/>
      * Objects of the following type(s) are allowed in the list
      * {@link PocdSpecimen }
-     * 
-     * 
      */
     public List<PocdSpecimen> getSpecimen() {
         if (specimen == null) {
@@ -510,11 +460,9 @@ public class PocdSupply {
 
     /**
      * Gets the value of the product property.
-     * 
-     * @return
-     *     possible object is
-     *     {@link PocdProduct }
-     *     
+     *
+     * @return possible object is
+     *         {@link PocdProduct }
      */
     public PocdProduct getProduct() {
         return product;
@@ -522,11 +470,9 @@ public class PocdSupply {
 
     /**
      * Sets the value of the product property.
-     * 
-     * @param value
-     *     allowed object is
-     *     {@link PocdProduct }
-     *     
+     *
+     * @param value allowed object is
+     *              {@link PocdProduct }
      */
     public void setProduct(PocdProduct value) {
         this.product = value;
@@ -534,25 +480,23 @@ public class PocdSupply {
 
     /**
      * Gets the value of the performer property.
-     * 
-     * <p>
+     * <p/>
+     * <p/>
      * This accessor method returns a reference to the live list,
      * not a snapshot. Therefore any modification you make to the
      * returned list will be present inside the JAXB object.
      * This is why there is not a <CODE>set</CODE> method for the performer property.
-     * 
-     * <p>
+     * <p/>
+     * <p/>
      * For example, to add a new item, do as follows:
      * <pre>
      *    getPerformer().add(newItem);
      * </pre>
-     * 
-     * 
-     * <p>
+     * <p/>
+     * <p/>
+     * <p/>
      * Objects of the following type(s) are allowed in the list
      * {@link PocdPerformer2 }
-     * 
-     * 
      */
     public List<PocdPerformer2> getPerformer() {
         if (performer == null) {
@@ -563,25 +507,23 @@ public class PocdSupply {
 
     /**
      * Gets the value of the author property.
-     * 
-     * <p>
+     * <p/>
+     * <p/>
      * This accessor method returns a reference to the live list,
      * not a snapshot. Therefore any modification you make to the
      * returned list will be present inside the JAXB object.
      * This is why there is not a <CODE>set</CODE> method for the author property.
-     * 
-     * <p>
+     * <p/>
+     * <p/>
      * For example, to add a new item, do as follows:
      * <pre>
      *    getAuthor().add(newItem);
      * </pre>
-     * 
-     * 
-     * <p>
+     * <p/>
+     * <p/>
+     * <p/>
      * Objects of the following type(s) are allowed in the list
      * {@link PocdAuthor }
-     * 
-     * 
      */
     public List<PocdAuthor> getAuthor() {
         if (author == null) {
@@ -592,25 +534,23 @@ public class PocdSupply {
 
     /**
      * Gets the value of the informant property.
-     * 
-     * <p>
+     * <p/>
+     * <p/>
      * This accessor method returns a reference to the live list,
      * not a snapshot. Therefore any modification you make to the
      * returned list will be present inside the JAXB object.
      * This is why there is not a <CODE>set</CODE> method for the informant property.
-     * 
-     * <p>
+     * <p/>
+     * <p/>
      * For example, to add a new item, do as follows:
      * <pre>
      *    getInformant().add(newItem);
      * </pre>
-     * 
-     * 
-     * <p>
+     * <p/>
+     * <p/>
+     * <p/>
      * Objects of the following type(s) are allowed in the list
      * {@link PocdInformant12 }
-     * 
-     * 
      */
     public List<PocdInformant12> getInformant() {
         if (informant == null) {
@@ -621,25 +561,23 @@ public class PocdSupply {
 
     /**
      * Gets the value of the participant property.
-     * 
-     * <p>
+     * <p/>
+     * <p/>
      * This accessor method returns a reference to the live list,
      * not a snapshot. Therefore any modification you make to the
      * returned list will be present inside the JAXB object.
      * This is why there is not a <CODE>set</CODE> method for the participant property.
-     * 
-     * <p>
+     * <p/>
+     * <p/>
      * For example, to add a new item, do as follows:
      * <pre>
      *    getParticipant().add(newItem);
      * </pre>
-     * 
-     * 
-     * <p>
+     * <p/>
+     * <p/>
+     * <p/>
      * Objects of the following type(s) are allowed in the list
      * {@link PocdParticipant2 }
-     * 
-     * 
      */
     public List<PocdParticipant2> getParticipant() {
         if (participant == null) {
@@ -650,25 +588,23 @@ public class PocdSupply {
 
     /**
      * Gets the value of the entryRelationship property.
-     * 
-     * <p>
+     * <p/>
+     * <p/>
      * This accessor method returns a reference to the live list,
      * not a snapshot. Therefore any modification you make to the
      * returned list will be present inside the JAXB object.
      * This is why there is not a <CODE>set</CODE> method for the entryRelationship property.
-     * 
-     * <p>
+     * <p/>
+     * <p/>
      * For example, to add a new item, do as follows:
      * <pre>
      *    getEntryRelationship().add(newItem);
      * </pre>
-     * 
-     * 
-     * <p>
+     * <p/>
+     * <p/>
+     * <p/>
      * Objects of the following type(s) are allowed in the list
      * {@link PocdEntryRelationship }
-     * 
-     * 
      */
     public List<PocdEntryRelationship> getEntryRelationship() {
         if (entryRelationship == null) {
@@ -679,25 +615,23 @@ public class PocdSupply {
 
     /**
      * Gets the value of the reference property.
-     * 
-     * <p>
+     * <p/>
+     * <p/>
      * This accessor method returns a reference to the live list,
      * not a snapshot. Therefore any modification you make to the
      * returned list will be present inside the JAXB object.
      * This is why there is not a <CODE>set</CODE> method for the reference property.
-     * 
-     * <p>
+     * <p/>
+     * <p/>
      * For example, to add a new item, do as follows:
      * <pre>
      *    getReference().add(newItem);
      * </pre>
-     * 
-     * 
-     * <p>
+     * <p/>
+     * <p/>
+     * <p/>
      * Objects of the following type(s) are allowed in the list
      * {@link PocdReference }
-     * 
-     * 
      */
     public List<PocdReference> getReference() {
         if (reference == null) {
@@ -708,25 +642,23 @@ public class PocdSupply {
 
     /**
      * Gets the value of the precondition property.
-     * 
-     * <p>
+     * <p/>
+     * <p/>
      * This accessor method returns a reference to the live list,
      * not a snapshot. Therefore any modification you make to the
      * returned list will be present inside the JAXB object.
      * This is why there is not a <CODE>set</CODE> method for the precondition property.
-     * 
-     * <p>
+     * <p/>
+     * <p/>
      * For example, to add a new item, do as follows:
      * <pre>
      *    getPrecondition().add(newItem);
      * </pre>
-     * 
-     * 
-     * <p>
+     * <p/>
+     * <p/>
+     * <p/>
      * Objects of the following type(s) are allowed in the list
      * {@link PocdPrecondition }
-     * 
-     * 
      */
     public List<PocdPrecondition> getPrecondition() {
         if (precondition == null) {
@@ -737,25 +669,23 @@ public class PocdSupply {
 
     /**
      * Gets the value of the nullFlavor property.
-     * 
-     * <p>
+     * <p/>
+     * <p/>
      * This accessor method returns a reference to the live list,
      * not a snapshot. Therefore any modification you make to the
      * returned list will be present inside the JAXB object.
      * This is why there is not a <CODE>set</CODE> method for the nullFlavor property.
-     * 
-     * <p>
+     * <p/>
+     * <p/>
      * For example, to add a new item, do as follows:
      * <pre>
      *    getNullFlavor().add(newItem);
      * </pre>
-     * 
-     * 
-     * <p>
+     * <p/>
+     * <p/>
+     * <p/>
      * Objects of the following type(s) are allowed in the list
      * {@link String }
-     * 
-     * 
      */
     public List<String> getNullFlavor() {
         if (nullFlavor == null) {
@@ -766,11 +696,9 @@ public class PocdSupply {
 
     /**
      * Gets the value of the classCode property.
-     * 
-     * @return
-     *     possible object is
-     *     {@link ActClassSupply }
-     *     
+     *
+     * @return possible object is
+     *         {@link ActClassSupply }
      */
     public ActClassSupply getClassCode() {
         if (classCode == null) {
@@ -782,11 +710,9 @@ public class PocdSupply {
 
     /**
      * Sets the value of the classCode property.
-     * 
-     * @param value
-     *     allowed object is
-     *     {@link ActClassSupply }
-     *     
+     *
+     * @param value allowed object is
+     *              {@link ActClassSupply }
      */
     public void setClassCode(ActClassSupply value) {
         this.classCode = value;
@@ -794,11 +720,9 @@ public class PocdSupply {
 
     /**
      * Gets the value of the moodCode property.
-     * 
-     * @return
-     *     possible object is
-     *     {@link XDocumentSubstanceMood }
-     *     
+     *
+     * @return possible object is
+     *         {@link XDocumentSubstanceMood }
      */
     public XDocumentSubstanceMood getMoodCode() {
         return moodCode;
@@ -806,11 +730,9 @@ public class PocdSupply {
 
     /**
      * Sets the value of the moodCode property.
-     * 
-     * @param value
-     *     allowed object is
-     *     {@link XDocumentSubstanceMood }
-     *     
+     *
+     * @param value allowed object is
+     *              {@link XDocumentSubstanceMood }
      */
     public void setMoodCode(XDocumentSubstanceMood value) {
         this.moodCode = value;

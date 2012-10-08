@@ -19,6 +19,8 @@ object ConfigManager extends Configuration {
   val AWI = ActionWrapperInfo
 
   val APWI = ActionPropertyWrapperInfo
+  val APPEALWI = AppealWrapperInfo
+  val APPEALPWI = AppealPropertyWrapperInfo
 
   val Types = new Configuration {
     var Integer = "Integer"
@@ -29,6 +31,8 @@ object ConfigManager extends Configuration {
     var Datetime = "Datetime"
     var Date = "Date"
     var Time = "Time"
+    var Boolean = "Boolean"
+    var Object = "Object"
   }
 
   val ActionStatus = new Configuration {
@@ -58,6 +62,26 @@ object ConfigManager extends Configuration {
     var InvalidCommonData = 0x0104
     var RecordChanged = 0x0105
     var IllegalPropertyValue = 0x0106
+    var ClientDocumentNotFound = 0x107
+    var RbDocumentTypeNotFound = 0x108
+    var ClientPolicyNotFound = 0x109
+    var RbPolicyTypeNotFound = 0x110
+    var OrganisationNotFound = 0x111
+    var RbContactTypeNotFound = 0x112
+    var ClientContactNotFound = 0x113
+    var ClientAddressNotFound = 0x114
+    var ClientAllergyNotFound = 0x115
+    var ClientIntoleranceMedicamentNotFound = 0x116
+    var RbBloodTypeNotFound = 0x117
+    var RbRelationTypeNotFound = 0x118
+    var ClientRelationNotFound = 0x119
+    var RbTempInvalidDocumentNotFound = 0x120
+    var RbTempInvalidReasonNotFound = 0x121
+    var ClientSocStatusNotFound = 0x122
+    var ClientSocStatusTypeNotFound = 0x123
+    var ClientSocStatusClassNotFound = 0x124
+    var ClientSocStatusTypeAssocNotFound = 0x125
+    var RbCounterNotFound = 0x126
   }
 
   val Drugstore = new Configuration {
@@ -103,11 +127,14 @@ object ConfigManager extends Configuration {
     // - RuntimeWSDLUrl if it's defined
     // - ServiceUrl + "?wsdl" if RuntimeWSDLUrl is not defined and ServiceUrl is defined
     // - compile-time-defined otherwise
-    def WSDLUrl: URL = Option(RuntimeWSDLUrl).getOrElse{
-      Option(ServiceUrl).map{ it => new URL(it.toString + "?wsdl") }.orNull
+    def WSDLUrl: URL = Option(RuntimeWSDLUrl).getOrElse {
+      Option(ServiceUrl).map {
+        it => new URL(it.toString + "?wsdl")
+      }.orNull
     }
 
     object CompileTime extends CompileTimeConfigManager.Laboratory
+
   }
 
   val Laboratory2 = new Configuration {
@@ -135,8 +162,8 @@ object ConfigManager extends Configuration {
     var Token = "tmisAuthToken"
 
     def QName = new QName(Namespace,
-                          Token,
-                          NamespacePrefix)
+      Token,
+      NamespacePrefix)
 
     val ErrorCodes = new {
       var LoginIncorrect = 0x01
@@ -146,7 +173,7 @@ object ConfigManager extends Configuration {
     }
 
     // Время действия токена в мс
-    var AuthTokenPeriod = 30 * 60 * 1000
+    var AuthTokenPeriod = 60 * 60 * 1000 // 30 * 60 * 1000 = 30 мин
 
     var AuthDataPropertyName = "ru.korus.tmis.authData"
 
@@ -171,12 +198,13 @@ object ConfigManager extends Configuration {
 
   val Messages = new Logging {
     val bundle = ResourceBundle.getBundle("messages",
-                                          Utf8ResourceBundleControl.Singleton)
+      Utf8ResourceBundleControl.Singleton)
 
     def apply(msg: String, params: Any*) = {
       bundle.getString(msg) match {
         case null => "<EMPTY>"
-        case result => if(params.isEmpty) result else try {
+        case result => if (params.isEmpty) result
+        else try {
           result.format(params: _*)
         } catch {
           case e: Throwable => error("Could not format pattern " + msg + ". Using it as-is."); msg

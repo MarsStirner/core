@@ -15,9 +15,9 @@ import javax.xml.bind.annotation.XmlType;
 
 /**
  * <p>Java class for IntegrityCheckAlgorithm.
- * 
+ * <p/>
  * <p>The following schema fragment specifies the expected content contained within this class.
- * <p>
+ * <p/>
  * <pre>
  * &lt;simpleType name="IntegrityCheckAlgorithm">
  *   &lt;restriction base="{urn:hl7-org:v3}cs">
@@ -26,7 +26,6 @@ import javax.xml.bind.annotation.XmlType;
  *   &lt;/restriction>
  * &lt;/simpleType>
  * </pre>
- * 
  */
 @XmlType(name = "IntegrityCheckAlgorithm")
 @XmlEnum
@@ -47,7 +46,7 @@ public enum IntegrityCheckAlgorithm {
     }
 
     public static IntegrityCheckAlgorithm fromValue(String v) {
-        for (IntegrityCheckAlgorithm c: IntegrityCheckAlgorithm.values()) {
+        for (IntegrityCheckAlgorithm c : IntegrityCheckAlgorithm.values()) {
             if (c.value.equals(v)) {
                 return c;
             }

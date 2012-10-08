@@ -1,0 +1,27 @@
+<settings>
+    <profiles>
+        <profile>
+            <id>misCore</id>
+            <properties>
+                <my.build.directory>
+                    /Users/rednekis/Documents/work/projects/misCore/build/${project.groupId}-${project.artifactId}
+                </my.build.directory>
+                <glassfish.home>/usr/local/glassfish3</glassfish.home>
+                <glassfish.domain.name>testdomain</glassfish.domain.name>
+                <glassfish.domain.adminPort>4848</glassfish.domain.adminPort>
+                <glassfish.domain.httpPort>8080</glassfish.domain.httpPort>
+                <glassfish.domain.httpsPort>8443</glassfish.domain.httpsPort>
+                <glassfish.domain.iiopPort>3700</glassfish.domain.iiopPort>
+                <glassfish.domain.jmsPort>7676</glassfish.domain.jmsPort>
+                <glassfish.domain.host>localhost</glassfish.domain.host>
+                <glassfish.domain.user>admin</glassfish.domain.user>
+                <glassfish.domain.password>adminpassword</glassfish.domain.password>
+                <glassfish.domain.passwordFile>${domain.dir}/${domain.name}/master-password
+                </glassfish.domain.passwordFile>
+            </properties>
+        </profile>
+    </profiles>
+    <activeProfiles>
+        <activeProfile>misCore</activeProfile>
+    </activeProfiles>
+</settings>

@@ -36,17 +36,17 @@ trait Soaping extends Logging {
 
       var message = MessageFactory.newInstance().createMessage()
       message.getMimeHeaders.setHeader("SOAPAction",
-                                       soapAction)
+        soapAction)
       message.getMimeHeaders.setHeader("Authorization",
-                                       "Basic " + httpAuthToken)
+        "Basic " + httpAuthToken)
 
       var soapBody = domBuilder.newDocument()
       var rootElement = soapBody.createElementNS(xmlNamespace, soapOperation)
 
       if (document.getDocumentElement != null) {
         document.renameNode(document.getDocumentElement,
-                            xmlNamespace,
-                            rootElementName)
+          xmlNamespace,
+          rootElementName)
         if (
           !document.getDocumentElement.hasAttributeNS(CMD.XsiNamespace, "type") &&
             xsiType != null && !xsiType.isEmpty

@@ -2,10 +2,10 @@
 <handler-chains xmlns="http://java.sun.com/xml/ns/javaee">
     <handler-chain>
         <handler>
-            <handler-class>ru.korus.tmis.ws.medipad.handlers.AuthenticatingHandler</handler-class>
+            <handler-class>ru.korus.tmis.ws.handlers.AuthenticatingHandler</handler-class>
         </handler>
         <handler>
-            <handler-class>ru.korus.tmis.ws.medipad.handlers.ExceptionLoggingHandler</handler-class>
+            <handler-class>ru.korus.tmis.ws.handlers.ExceptionLoggingHandler</handler-class>
         </handler>
     </handler-chain>
 </handler-chains>

@@ -28,7 +28,7 @@ class YGenericTimeTS(@XmlTransient d: Date) extends TS {
   setValue(timeFormatter.format(d))
 
   def this() = {
-    this (new Date())
+    this(new Date())
   }
 }
 

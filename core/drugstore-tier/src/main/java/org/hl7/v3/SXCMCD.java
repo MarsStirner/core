@@ -16,9 +16,9 @@ import javax.xml.bind.annotation.XmlType;
 
 /**
  * <p>Java class for SXCM_CD complex type.
- * 
+ * <p/>
  * <p>The following schema fragment specifies the expected content contained within this class.
- * 
+ * <p/>
  * <pre>
  * &lt;complexType name="SXCM_CD">
  *   &lt;complexContent>
@@ -28,25 +28,20 @@ import javax.xml.bind.annotation.XmlType;
  *   &lt;/complexContent>
  * &lt;/complexType>
  * </pre>
- * 
- * 
  */
 @XmlAccessorType(XmlAccessType.FIELD)
 @XmlType(name = "SXCM_CD")
 public class SXCMCD
-    extends CD
-{
+        extends CD {
 
     @XmlAttribute
     protected SetOperator operator;
 
     /**
      * Gets the value of the operator property.
-     * 
-     * @return
-     *     possible object is
-     *     {@link SetOperator }
-     *     
+     *
+     * @return possible object is
+     *         {@link SetOperator }
      */
     public SetOperator getOperator() {
         if (operator == null) {
@@ -58,11 +53,9 @@ public class SXCMCD
 
     /**
      * Sets the value of the operator property.
-     * 
-     * @param value
-     *     allowed object is
-     *     {@link SetOperator }
-     *     
+     *
+     * @param value allowed object is
+     *              {@link SetOperator }
      */
     public void setOperator(SetOperator value) {
         this.operator = value;

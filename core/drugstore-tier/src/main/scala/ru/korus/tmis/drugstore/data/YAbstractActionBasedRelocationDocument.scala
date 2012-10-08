@@ -25,7 +25,9 @@ abstract class YAbstractActionBasedRelocationDocument(action: Action)
   }
 
   // UUIDs
+
   import YUUID._
+
   protected lazy val xUUID = generateRandom()
   protected lazy val patientUUID = generateById(patient)
   protected lazy val eventUUID = generateById(event)

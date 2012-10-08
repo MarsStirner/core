@@ -2,7 +2,7 @@ package ru.korus.tmis.core.database
 
 import ru.korus.tmis.core.auth.AuthData
 import ru.korus.tmis.core.exception.CoreException
-import ru.korus.tmis.core.logging.db.LoggingInterceptor
+import ru.korus.tmis.core.logging.LoggingInterceptor
 import ru.korus.tmis.util.I18nable
 
 import grizzled.slf4j.Logging
@@ -26,7 +26,7 @@ class AppLockBean
 
   def prepare() = {
     em.createNativeQuery(getAppLockPrepareCall)
-    .executeUpdate()
+      .executeUpdate()
   }
 
   def acquireLock(table: String,
@@ -60,9 +60,9 @@ class AppLockBean
     args.add("MEDIPAD")
 
     val result = JpaHelper.getEntityManager(em)
-                 .getActiveSession
-                 .executeQuery(query, args)
-                 .asInstanceOf[String]
+      .getActiveSession
+      .executeQuery(query, args)
+      .asInstanceOf[String]
 
     result.size match {
       case 0 => {
@@ -84,8 +84,8 @@ class AppLockBean
 
   def releaseLock(lockId: Int) = {
     em.createNativeQuery(releaseAppLockCall)
-    .setParameter(1, lockId)
-    .executeUpdate()
+      .setParameter(1, lockId)
+      .executeUpdate()
     true
   }
 

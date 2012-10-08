@@ -6,7 +6,7 @@ import org.junit.Assert._
 
 import java.lang.{Integer => JInteger}
 
-import ru.korus.tmis.util.reflect.clones.{StaticCloner, Cloner}
+import ru.korus.tmis.util.reflect.clones.Cloner
 
 import ru.korus.tmis.core.entity.model._
 
@@ -27,7 +27,7 @@ class ClonerTest {
     assertTrue(ap1 == ap2)
     assertFalse(ap1 eq ap2)
 
-    assertTrue{
+    assertTrue {
       ap2 match {
         case ap2: ActionProperty => true
         case _ => false
@@ -60,6 +60,7 @@ class ClonerTest {
 
 
   case class A(v: List[Int])
+
   case class B(v: A)
 
 
@@ -68,10 +69,10 @@ class ClonerTest {
   def testCloneA() = {
     import Cloner._
 
-    val a = A(List(1,2,3,4))
+    val a = A(List(1, 2, 3, 4))
     a.copy()
     val b = deepClone(a)
-    val c = A(List(1,2,3,4))
+    val c = A(List(1, 2, 3, 4))
 
     // assertTrue(a == b) //does not work =(
     assertFalse(a eq b)
@@ -84,14 +85,14 @@ class ClonerTest {
 
     scala.collection.mutable.ListBuffer
 
-      // assertTrue(bb == ba) does not work =(
+    // assertTrue(bb == ba) does not work =(
     assertFalse(bb.v eq ba.v)
 
 
-    val cc = scala.collection.mutable.LinkedList(1,2,3)
+    val cc = scala.collection.mutable.LinkedList(1, 2, 3)
     val ccopy = deepClone(cc)
 
-    assertEquals(cc,ccopy)
+    assertEquals(cc, ccopy)
     assertFalse(cc eq ccopy)
 
   }

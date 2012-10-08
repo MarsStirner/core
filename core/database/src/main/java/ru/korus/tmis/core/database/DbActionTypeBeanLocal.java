@@ -4,9 +4,9 @@ import ru.korus.tmis.core.entity.model.ActionPropertyType;
 import ru.korus.tmis.core.entity.model.ActionType;
 import ru.korus.tmis.core.exception.CoreException;
 
+import javax.ejb.Local;
 import java.util.List;
 import java.util.Set;
-import javax.ejb.Local;
 
 @Local
 public interface DbActionTypeBeanLocal {
@@ -26,5 +26,17 @@ public interface DbActionTypeBeanLocal {
             throws CoreException;
 
     List<ActionPropertyType> getActionTypePropertiesById(int actionTypeId)
+            throws CoreException;
+
+    ActionType getActionTypeByCode(String code)
+            throws CoreException;
+
+    Set<ActionType> getActionTypesByCode(String code)
+            throws CoreException;
+
+    List<ActionType> getAllActionTypeWithFilter(int page, int limit, String sortingField, String sortingMethod, Object filter)
+            throws CoreException;
+
+    long getCountAllActionTypeWithFilter(Object filter)
             throws CoreException;
 }

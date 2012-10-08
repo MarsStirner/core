@@ -1,5 +1,6 @@
 package ru.korus.tmis.ws.drugstore;
 
+
 import ru.korus.tmis.drugstore.data.PrescriptionInfoList;
 
 import javax.jws.WebMethod;

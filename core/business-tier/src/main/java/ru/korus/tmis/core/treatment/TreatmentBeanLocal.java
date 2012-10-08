@@ -6,8 +6,8 @@ import ru.korus.tmis.core.data.CompactRlsData;
 import ru.korus.tmis.core.data.RlsData;
 import ru.korus.tmis.core.exception.CoreException;
 
-import java.util.Date;
 import javax.ejb.Local;
+import java.util.Date;
 
 @Local
 public interface TreatmentBeanLocal {
@@ -24,7 +24,6 @@ public interface TreatmentBeanLocal {
      *
      * @param eventId  идентификатор обращения
      * @param userData информация о текущем пользователе
-     *
      * @return список назначений
      */
     CommonData getTreatmentTypes(int eventId,
@@ -57,7 +56,6 @@ public interface TreatmentBeanLocal {
      * @param beginDate    дата и время начала запрашиваемого интервала времени
      * @param endTime      дата и время окончания запрашиваемого интервала
      *                     времени
-     *
      * @return список назначений заданного типа за интересующий интервал времени
      *         для данного обращения
      */

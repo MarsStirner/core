@@ -8,18 +8,18 @@
 
 package org.hl7.v3;
 
-import java.math.BigInteger;
 import javax.xml.bind.annotation.XmlAccessType;
 import javax.xml.bind.annotation.XmlAccessorType;
 import javax.xml.bind.annotation.XmlAttribute;
 import javax.xml.bind.annotation.XmlType;
+import java.math.BigInteger;
 
 
 /**
  * <p>Java class for BXIT_IVL_PQ complex type.
- * 
+ * <p/>
  * <p>The following schema fragment specifies the expected content contained within this class.
- * 
+ * <p/>
  * <pre>
  * &lt;complexType name="BXIT_IVL_PQ">
  *   &lt;complexContent>
@@ -29,25 +29,20 @@ import javax.xml.bind.annotation.XmlType;
  *   &lt;/complexContent>
  * &lt;/complexType>
  * </pre>
- * 
- * 
  */
 @XmlAccessorType(XmlAccessType.FIELD)
 @XmlType(name = "BXIT_IVL_PQ")
 public class BXITIVLPQ
-    extends IVLPQ
-{
+        extends IVLPQ {
 
     @XmlAttribute
     protected BigInteger qty;
 
     /**
      * Gets the value of the qty property.
-     * 
-     * @return
-     *     possible object is
-     *     {@link BigInteger }
-     *     
+     *
+     * @return possible object is
+     *         {@link BigInteger }
      */
     public BigInteger getQty() {
         if (qty == null) {
@@ -59,11 +54,9 @@ public class BXITIVLPQ
 
     /**
      * Sets the value of the qty property.
-     * 
-     * @param value
-     *     allowed object is
-     *     {@link BigInteger }
-     *     
+     *
+     * @param value allowed object is
+     *              {@link BigInteger }
      */
     public void setQty(BigInteger value) {
         this.qty = value;

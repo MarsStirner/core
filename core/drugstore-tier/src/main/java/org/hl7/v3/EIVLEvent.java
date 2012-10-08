@@ -14,16 +14,15 @@ import javax.xml.bind.annotation.XmlType;
 
 
 /**
- * 
- *                         A code for a common (periodical) activity of daily
- *                         living based on which the event related periodic
- *                         interval is specified.
- *                      
- * 
+ * A code for a common (periodical) activity of daily
+ * living based on which the event related periodic
+ * interval is specified.
+ * <p/>
+ * <p/>
  * <p>Java class for EIVL.event complex type.
- * 
+ * <p/>
  * <p>The following schema fragment specifies the expected content contained within this class.
- * 
+ * <p/>
  * <pre>
  * &lt;complexType name="EIVL.event">
  *   &lt;complexContent>
@@ -35,14 +34,11 @@ import javax.xml.bind.annotation.XmlType;
  *   &lt;/complexContent>
  * &lt;/complexType>
  * </pre>
- * 
- * 
  */
 @XmlAccessorType(XmlAccessType.FIELD)
 @XmlType(name = "EIVL.event")
 public class EIVLEvent
-    extends CE
-{
+        extends CE {
 
 
 }

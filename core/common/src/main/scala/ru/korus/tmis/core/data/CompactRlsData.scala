@@ -50,7 +50,7 @@ class CompactRlsEntry {
 
   def this(id: (String, String),
            vars: Collection[Nomenclature]) = {
-    this ()
+    this()
     this.tn = id._1
     this.in = id._2
     (this.v /: vars)((v, e) => {
@@ -69,13 +69,13 @@ class CompactRlsVarEntry {
   var dose: String = _
 
   def this(code: Int, dose: String) = {
-    this ()
+    this()
     this.code = code
     this.dose = dose
   }
 
   def this(n: Nomenclature) = {
-    this (n.getCode, n.getDosage)
+    this(n.getCode, n.getDosage)
   }
 }
 

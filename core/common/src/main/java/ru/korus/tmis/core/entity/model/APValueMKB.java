@@ -3,23 +3,17 @@ package ru.korus.tmis.core.entity.model;
 import ru.korus.tmis.core.exception.CoreException;
 import ru.korus.tmis.util.TextUtils;
 
+import javax.persistence.*;
 import java.io.Serializable;
-import javax.persistence.Column;
-import javax.persistence.Entity;
-import javax.persistence.JoinColumn;
-import javax.persistence.NamedQueries;
-import javax.persistence.NamedQuery;
-import javax.persistence.OneToOne;
-import javax.persistence.Table;
 
 @Entity
 @Table(name = "ActionProperty_MKB")
 @NamedQueries(
         {
                 @NamedQuery(name = "APValueMKB.findAll",
-                            query = "SELECT a FROM APValueMKB a"),
+                        query = "SELECT a FROM APValueMKB a"),
                 @NamedQuery(name = "APValueMKB.findById",
-                            query = "SELECT a FROM APValueMKB a WHERE a.id.id = :id")
+                        query = "SELECT a FROM APValueMKB a WHERE a.id.id = :id")
         })
 public class APValueMKB extends AbstractAPValue implements Serializable, APValue {
     private static final long serialVersionUID = 1L;

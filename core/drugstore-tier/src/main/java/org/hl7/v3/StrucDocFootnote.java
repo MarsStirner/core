@@ -8,28 +8,20 @@
 
 package org.hl7.v3;
 
+import javax.xml.bind.JAXBElement;
+import javax.xml.bind.annotation.*;
+import javax.xml.bind.annotation.adapters.CollapsedStringAdapter;
+import javax.xml.bind.annotation.adapters.XmlJavaTypeAdapter;
 import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
-import javax.xml.bind.JAXBElement;
-import javax.xml.bind.annotation.XmlAccessType;
-import javax.xml.bind.annotation.XmlAccessorType;
-import javax.xml.bind.annotation.XmlAttribute;
-import javax.xml.bind.annotation.XmlElementRef;
-import javax.xml.bind.annotation.XmlElementRefs;
-import javax.xml.bind.annotation.XmlID;
-import javax.xml.bind.annotation.XmlMixed;
-import javax.xml.bind.annotation.XmlSchemaType;
-import javax.xml.bind.annotation.XmlType;
-import javax.xml.bind.annotation.adapters.CollapsedStringAdapter;
-import javax.xml.bind.annotation.adapters.XmlJavaTypeAdapter;
 
 
 /**
  * <p>Java class for StrucDoc.Footnote complex type.
- * 
+ * <p/>
  * <p>The following schema fragment specifies the expected content contained within this class.
- * 
+ * <p/>
  * <pre>
  * &lt;complexType name="StrucDoc.Footnote">
  *   &lt;complexContent>
@@ -52,25 +44,23 @@ import javax.xml.bind.annotation.adapters.XmlJavaTypeAdapter;
  *   &lt;/complexContent>
  * &lt;/complexType>
  * </pre>
- * 
- * 
  */
 @XmlAccessorType(XmlAccessType.FIELD)
 @XmlType(name = "StrucDoc.Footnote", propOrder = {
-    "content"
+        "content"
 })
 public class StrucDocFootnote {
 
     @XmlElementRefs({
-        @XmlElementRef(name = "table", namespace = "urn:hl7-org:v3", type = JAXBElement.class),
-        @XmlElementRef(name = "paragraph", namespace = "urn:hl7-org:v3", type = JAXBElement.class),
-        @XmlElementRef(name = "linkHtml", namespace = "urn:hl7-org:v3", type = JAXBElement.class),
-        @XmlElementRef(name = "br", namespace = "urn:hl7-org:v3", type = JAXBElement.class),
-        @XmlElementRef(name = "sup", namespace = "urn:hl7-org:v3", type = JAXBElement.class),
-        @XmlElementRef(name = "list", namespace = "urn:hl7-org:v3", type = JAXBElement.class),
-        @XmlElementRef(name = "renderMultiMedia", namespace = "urn:hl7-org:v3", type = JAXBElement.class),
-        @XmlElementRef(name = "sub", namespace = "urn:hl7-org:v3", type = JAXBElement.class),
-        @XmlElementRef(name = "content", namespace = "urn:hl7-org:v3", type = JAXBElement.class)
+            @XmlElementRef(name = "table", namespace = "urn:hl7-org:v3", type = JAXBElement.class),
+            @XmlElementRef(name = "paragraph", namespace = "urn:hl7-org:v3", type = JAXBElement.class),
+            @XmlElementRef(name = "linkHtml", namespace = "urn:hl7-org:v3", type = JAXBElement.class),
+            @XmlElementRef(name = "br", namespace = "urn:hl7-org:v3", type = JAXBElement.class),
+            @XmlElementRef(name = "sup", namespace = "urn:hl7-org:v3", type = JAXBElement.class),
+            @XmlElementRef(name = "list", namespace = "urn:hl7-org:v3", type = JAXBElement.class),
+            @XmlElementRef(name = "renderMultiMedia", namespace = "urn:hl7-org:v3", type = JAXBElement.class),
+            @XmlElementRef(name = "sub", namespace = "urn:hl7-org:v3", type = JAXBElement.class),
+            @XmlElementRef(name = "content", namespace = "urn:hl7-org:v3", type = JAXBElement.class)
     })
     @XmlMixed
     protected List<Serializable> content;
@@ -89,21 +79,21 @@ public class StrucDocFootnote {
 
     /**
      * Gets the value of the content property.
-     * 
-     * <p>
+     * <p/>
+     * <p/>
      * This accessor method returns a reference to the live list,
      * not a snapshot. Therefore any modification you make to the
      * returned list will be present inside the JAXB object.
      * This is why there is not a <CODE>set</CODE> method for the content property.
-     * 
-     * <p>
+     * <p/>
+     * <p/>
      * For example, to add a new item, do as follows:
      * <pre>
      *    getContent().add(newItem);
      * </pre>
-     * 
-     * 
-     * <p>
+     * <p/>
+     * <p/>
+     * <p/>
      * Objects of the following type(s) are allowed in the list
      * {@link JAXBElement }{@code <}{@link StrucDocParagraph }{@code >}
      * {@link JAXBElement }{@code <}{@link StrucDocTable }{@code >}
@@ -115,8 +105,6 @@ public class StrucDocFootnote {
      * {@link JAXBElement }{@code <}{@link StrucDocRenderMultiMedia }{@code >}
      * {@link JAXBElement }{@code <}{@link StrucDocSub }{@code >}
      * {@link JAXBElement }{@code <}{@link StrucDocContent }{@code >}
-     * 
-     * 
      */
     public List<Serializable> getContent() {
         if (content == null) {
@@ -127,11 +115,9 @@ public class StrucDocFootnote {
 
     /**
      * Gets the value of the id property.
-     * 
-     * @return
-     *     possible object is
-     *     {@link String }
-     *     
+     *
+     * @return possible object is
+     *         {@link String }
      */
     public String getID() {
         return id;
@@ -139,11 +125,9 @@ public class StrucDocFootnote {
 
     /**
      * Sets the value of the id property.
-     * 
-     * @param value
-     *     allowed object is
-     *     {@link String }
-     *     
+     *
+     * @param value allowed object is
+     *              {@link String }
      */
     public void setID(String value) {
         this.id = value;
@@ -151,11 +135,9 @@ public class StrucDocFootnote {
 
     /**
      * Gets the value of the language property.
-     * 
-     * @return
-     *     possible object is
-     *     {@link String }
-     *     
+     *
+     * @return possible object is
+     *         {@link String }
      */
     public String getLanguage() {
         return language;
@@ -163,11 +145,9 @@ public class StrucDocFootnote {
 
     /**
      * Sets the value of the language property.
-     * 
-     * @param value
-     *     allowed object is
-     *     {@link String }
-     *     
+     *
+     * @param value allowed object is
+     *              {@link String }
      */
     public void setLanguage(String value) {
         this.language = value;
@@ -175,25 +155,23 @@ public class StrucDocFootnote {
 
     /**
      * Gets the value of the styleCode property.
-     * 
-     * <p>
+     * <p/>
+     * <p/>
      * This accessor method returns a reference to the live list,
      * not a snapshot. Therefore any modification you make to the
      * returned list will be present inside the JAXB object.
      * This is why there is not a <CODE>set</CODE> method for the styleCode property.
-     * 
-     * <p>
+     * <p/>
+     * <p/>
      * For example, to add a new item, do as follows:
      * <pre>
      *    getStyleCode().add(newItem);
      * </pre>
-     * 
-     * 
-     * <p>
+     * <p/>
+     * <p/>
+     * <p/>
      * Objects of the following type(s) are allowed in the list
      * {@link String }
-     * 
-     * 
      */
     public List<String> getStyleCode() {
         if (styleCode == null) {

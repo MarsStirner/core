@@ -31,8 +31,8 @@ public abstract class AbstractAPValue implements APValue {
     }
 
     @Override
-    public void linkToActionProperty(ActionProperty ap) {
-        this.setId(new IndexedId(ap.getId(), 0));
+    public void linkToActionProperty(ActionProperty ap, int index) {
+        this.setId(new IndexedId(ap.getId(), index));
     }
 
     public IndexedId getId() {

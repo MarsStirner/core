@@ -9,7 +9,9 @@ class YGetDepartmentListRequest(orgRefId: String) {
   val domBuilder = DocumentBuilderFactory.newInstance().newDocumentBuilder()
 
   val xml =
-    <OrganizationRef>{orgRefId}</OrganizationRef>
+    <OrganizationRef>
+      {orgRefId}
+    </OrganizationRef>
 
   def toXml = xml
 

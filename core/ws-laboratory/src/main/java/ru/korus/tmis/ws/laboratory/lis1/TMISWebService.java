@@ -7,21 +7,22 @@ import javax.jws.WebMethod;
 import javax.jws.WebParam;
 import javax.jws.WebResult;
 import javax.jws.WebService;
-import java.util.*;
+import java.util.List;
 
 /**
  * Интерфейс для взаимодействия ЛИС и новой МИС.
  */
 @WebService(
-  targetNamespace = "http://korus.ru/tmis/tmis-laboratory-integration",
-  name = "tmis")
+        targetNamespace = "http://korus.ru/tmis/tmis-laboratory-integration",
+        name = "tmis")
 public interface TMISWebService {
 
     /**
      * Запрос для передачи результатов анализов из ЛИС в МИС.
-     * @param requestId                 идентификатор направления на анализы
+     *
+     * @param requestId          идентификатор направления на анализы
+     * @param biomaterialDefects браки биоматериала
      * @paran results                   результаты анализов
-     * @param biomaterialDefects        браки биоматериала
      */
     @WebMethod
     @WebResult(targetNamespace = "http://korus.ru/tmis/tmis-laboratory-integration")

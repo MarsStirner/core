@@ -8,18 +8,14 @@
 
 package org.hl7.v3;
 
-import javax.xml.bind.annotation.XmlAccessType;
-import javax.xml.bind.annotation.XmlAccessorType;
-import javax.xml.bind.annotation.XmlAttribute;
-import javax.xml.bind.annotation.XmlSeeAlso;
-import javax.xml.bind.annotation.XmlType;
+import javax.xml.bind.annotation.*;
 
 
 /**
  * <p>Java class for SXCM_TS complex type.
- * 
+ * <p/>
  * <p>The following schema fragment specifies the expected content contained within this class.
- * 
+ * <p/>
  * <pre>
  * &lt;complexType name="SXCM_TS">
  *   &lt;complexContent>
@@ -29,31 +25,26 @@ import javax.xml.bind.annotation.XmlType;
  *   &lt;/complexContent>
  * &lt;/complexType>
  * </pre>
- * 
- * 
  */
 @XmlAccessorType(XmlAccessType.FIELD)
 @XmlType(name = "SXCM_TS")
 @XmlSeeAlso({
-    EIVLTS.class,
-    IVLTS.class,
-    SXPRTS.class,
-    PIVLTS.class
+        EIVLTS.class,
+        IVLTS.class,
+        SXPRTS.class,
+        PIVLTS.class
 })
 public class SXCMTS
-    extends TS
-{
+        extends TS {
 
     @XmlAttribute
     protected SetOperator operator;
 
     /**
      * Gets the value of the operator property.
-     * 
-     * @return
-     *     possible object is
-     *     {@link SetOperator }
-     *     
+     *
+     * @return possible object is
+     *         {@link SetOperator }
      */
     public SetOperator getOperator() {
         if (operator == null) {
@@ -65,11 +56,9 @@ public class SXCMTS
 
     /**
      * Sets the value of the operator property.
-     * 
-     * @param value
-     *     allowed object is
-     *     {@link SetOperator }
-     *     
+     *
+     * @param value allowed object is
+     *              {@link SetOperator }
      */
     public void setOperator(SetOperator value) {
         this.operator = value;

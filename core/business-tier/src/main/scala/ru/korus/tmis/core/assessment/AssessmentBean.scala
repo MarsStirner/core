@@ -5,7 +5,7 @@ import ru.korus.tmis.core.common.{CommonDataProcessorBeanLocal, TypeFilterBeanLo
 import ru.korus.tmis.core.data._
 import ru.korus.tmis.core.database._
 import ru.korus.tmis.core.entity.model._
-import ru.korus.tmis.core.logging.db.LoggingInterceptor
+import ru.korus.tmis.core.logging.LoggingInterceptor
 import ru.korus.tmis.util.{ConfigManager, I18nable}
 import ru.korus.tmis.util.ConfigManager.APWI
 
@@ -61,14 +61,14 @@ class AssessmentBean
     }
 
     commonDataProcessor.fromActionTypes(types,
-                                        "AssessmentType",
-                                        converter)
+      "AssessmentType",
+      converter)
   }
 
   def getAllAssessmentTypes = {
     commonDataProcessor.fromActionTypes(dbActionType.getAssessmentTypes,
-                                        "AssessmentType",
-                                        converter)
+      "AssessmentType",
+      converter)
   }
 
   def converter(apt: ActionPropertyType) = {
@@ -77,11 +77,11 @@ class AssessmentBean
       case u: RbUnit => u.getName
     }
     new CA(apt.getId,
-           0,
-           apt.getName,
-           apt.getTypeName,
-           apt.getConstructorValueDomain,
-           Map("unit" -> unit)
+      0,
+      apt.getName,
+      apt.getTypeName,
+      apt.getConstructorValueDomain,
+      Map("unit" -> unit)
     )
   }
 
@@ -132,14 +132,14 @@ class AssessmentBean
         apvs.size match {
           case 0 => {
             group add apw.get(null, List(APWI.Unit,
-                                         APWI.Norm))
+              APWI.Norm))
           }
           case _ => {
             apvs.foreach((apv) => {
               group add apw.get(apv, List(APWI.Value,
-                                          APWI.ValueId,
-                                          APWI.Unit,
-                                          APWI.Norm))
+                APWI.ValueId,
+                APWI.Unit,
+                APWI.Norm))
             })
           }
         }
@@ -169,12 +169,12 @@ class AssessmentBean
       new CommonGroup(cdTemperatureId, "Temperature values"))(
       (g, t) => {
         g.add(new CA(t.getId,
-                     0,
-                     t.getName,
-                     ConfigManager.Types.Double,
-                     null,
-                     Map("value" -> t.getValue.toString,
-                         "datetime" -> CMDF.format(t.getDate))))
+          0,
+          t.getName,
+          ConfigManager.Types.Double,
+          null,
+          Map("value" -> t.getValue.toString,
+            "datetime" -> CMDF.format(t.getDate))))
       })
     e.add(gT)
 
@@ -188,12 +188,12 @@ class AssessmentBean
       new CommonGroup(cdPressureHighId, "Blood pressure high values"))(
       (g, p) => {
         g.add(new CA(p.getId,
-                     0,
-                     p.getName,
-                     ConfigManager.Types.Double,
-                     null,
-                     Map("value" -> p.getValue.toString,
-                         "datetime" -> CMDF.format(p.getDate))))
+          0,
+          p.getName,
+          ConfigManager.Types.Double,
+          null,
+          Map("value" -> p.getValue.toString,
+            "datetime" -> CMDF.format(p.getDate))))
       })
     e.add(gph)
 
@@ -207,12 +207,12 @@ class AssessmentBean
       new CommonGroup(cdPressureLowId, "Blood pressure low values"))(
       (g, p) => {
         g.add(new CA(p.getId,
-                     0,
-                     p.getName,
-                     ConfigManager.Types.Double,
-                     null,
-                     Map("value" -> p.getValue.toString,
-                         "datetime" -> CMDF.format(p.getDate))))
+          0,
+          p.getName,
+          ConfigManager.Types.Double,
+          null,
+          Map("value" -> p.getValue.toString,
+            "datetime" -> CMDF.format(p.getDate))))
       })
     e.add(gpl)
 
@@ -226,12 +226,12 @@ class AssessmentBean
       new CommonGroup(cdBreathingId, "Breathing frequency values"))(
       (g, b) => {
         g.add(new CA(b.getId,
-                     0,
-                     b.getName,
-                     ConfigManager.Types.Double,
-                     null,
-                     Map("value" -> b.getValue.toString,
-                         "datetime" -> CMDF.format(b.getDate))))
+          0,
+          b.getName,
+          ConfigManager.Types.Double,
+          null,
+          Map("value" -> b.getValue.toString,
+            "datetime" -> CMDF.format(b.getDate))))
       })
     e.add(gB)
 
@@ -245,12 +245,12 @@ class AssessmentBean
       new CommonGroup(cdHeartBeatId, "Heart beat values"))(
       (g, h) => {
         g.add(new CA(h.getId,
-                     0,
-                     h.getName,
-                     ConfigManager.Types.Double,
-                     null,
-                     Map("value" -> h.getValue.toString,
-                         "datetime" -> CMDF.format(h.getDate))))
+          0,
+          h.getName,
+          ConfigManager.Types.Double,
+          null,
+          Map("value" -> h.getValue.toString,
+            "datetime" -> CMDF.format(h.getDate))))
       })
     e.add(gH)
 

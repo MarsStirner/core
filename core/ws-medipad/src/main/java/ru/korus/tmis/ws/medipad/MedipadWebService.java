@@ -1,20 +1,19 @@
 package ru.korus.tmis.ws.medipad;
 
-import ru.korus.tmis.core.data.CommonData;
-import ru.korus.tmis.core.data.CompactRlsData;
-import ru.korus.tmis.core.data.RlsData;
-import ru.korus.tmis.core.data.ThesaurusData;
+import ru.korus.tmis.core.auth.AuthData;
+import ru.korus.tmis.core.data.*;
 import ru.korus.tmis.core.exception.CoreException;
 
-import java.util.Date;
 import javax.jws.WebMethod;
 import javax.jws.WebService;
+import java.io.Serializable;
+import java.util.Date;
 
 @WebService(
         targetNamespace = "http://korus.ru/tmis/medipad",
         name = "medipad"
 )
-public interface MedipadWebService {
+public interface MedipadWebService extends Serializable {
 
     ////////////////////////////////////////////////////////////////////////////
     // Patient view
@@ -126,7 +125,6 @@ public interface MedipadWebService {
      *
      * @param globalVersion глобальная версия справочников ТМИС
      * @param eventId       идентификатор обращения
-     *
      * @return список назначений
      */
     @WebMethod
@@ -161,7 +159,6 @@ public interface MedipadWebService {
      * @param beginDate    дата и время начала запрашиваемого интервала времени
      * @param endTime      дата и время окончания запрашиваемого интервала
      *                     времени
-     *
      * @return список назначений заданного типа за интересующий интервал времени
      *         для данного обращения
      */
@@ -191,6 +188,126 @@ public interface MedipadWebService {
      * @param actionId
      */
     @WebMethod
-    void revokeTreatment(int eventId, int actionId)
-            throws CoreException;
+    void revokeTreatment(int eventId, int actionId) throws CoreException;
+
+    ////////////////////////////////////////////////////////////////////////////
+    // Core Services
+    ////////////////////////////////////////////////////////////////////////////
+
+    @WebMethod
+    PatientCardData insertPatient(PatientCardData patientData, AuthData auth) throws CoreException;
+
+    @WebMethod
+    PatientCardData updatePatient(PatientCardData patientData, AuthData auth) throws CoreException;
+
+    @WebMethod
+    PatientData getAllPatients(PatientRequestData requestData, AuthData auth) throws CoreException;
+
+    @WebMethod
+    PatientCardData getPatientById(int id, AuthData auth) throws CoreException;
+
+    @WebMethod
+    String insertAppealForPatient(AppealData appealData, int patientId, AuthData auth) throws CoreException;
+
+    @WebMethod
+    String getAppealById(int id, AuthData auth) throws CoreException;
+
+    @WebMethod
+    String getAppealPrintFormById(int id, AuthData auth) throws CoreException;
+
+    @WebMethod
+    AppealSimplifiedDataList getAllAppealsByPatient(AppealSimplifiedRequestData requestData, AuthData auth) throws CoreException;
+
+    @WebMethod
+    ReceivedPatientsData getAllAppealsForReceivedPatientByPeriod(ReceivedRequestData requestData, AuthData auth) throws CoreException;
+
+    @WebMethod
+    TrueFalseContainer checkExistanceNumber(String name, int typeId, String number, String serial) throws CoreException;
+
+    @WebMethod
+    JSONCommonData getStructOfPrimaryMedExam(AuthData authData) throws CoreException;
+
+    @WebMethod
+    JSONCommonData insertPrimaryMedExamForPatient(int eventId, JSONCommonData data, AuthData authData) throws CoreException;
+
+    @WebMethod
+    JSONCommonData modifyPrimaryMedExamForPatient(int actionId, JSONCommonData data, AuthData authData) throws CoreException;
+
+    @WebMethod
+    JSONCommonData getPrimaryAssessmentById(int assessmentId, AuthData authData) throws CoreException;
+
+    @WebMethod
+    String getAllPatientsForDepartmentIdAndDoctorIdByPeriod(PatientsListRequestData requestData, int role, AuthData auth) throws CoreException;
+
+    @WebMethod
+    AssessmentsListData getListOfAssessmentsForPatientByEvent(AssessmentsListRequestData requestData, AuthData auth) throws CoreException;
+
+    @WebMethod
+    String getPatientToHospitalBedById(int actionId, AuthData authData) throws CoreException;
+
+    @WebMethod
+    String registryPatientToHospitalBed(int eventId, HospitalBedData data, AuthData authData) throws CoreException;
+
+    @WebMethod
+    String getMovingListForEvent(HospitalBedDataRequest request, AuthData authData) throws CoreException;
+
+    @WebMethod
+    String modifyPatientToHospitalBed(int actionId, HospitalBedData data, AuthData authData) throws CoreException;
+
+    @WebMethod
+    boolean callOffHospitalBedForPatient(int actionId, AuthData authData) throws CoreException;
+
+    @WebMethod
+    FormOfAccountingMovementOfPatientsData getFormOfAccountingMovementOfPatients(int departmentId) throws CoreException;
+
+    @WebMethod
+    String movingPatientToDepartment(int eventId, HospitalBedData data, AuthData authData) throws CoreException;
+
+    @WebMethod
+    TalonSPODataList getAllTalonsForPatient(TalonSPOListRequestData requestData) throws CoreException;
+
+    @WebMethod
+    AllDepartmentsListData getAllDepartments(ListDataRequest requestData) throws CoreException;
+
+    @WebMethod
+    DiagnosticsListData getListOfDiagnosticsForPatientByEvent(DiagnosticsListRequestData requestData) throws CoreException;
+
+    @WebMethod
+    JSONCommonData getInfoAboutDiagnosticsForPatientByEvent(int actionId) throws CoreException;
+
+    @WebMethod
+    AllPersonsListData getFreePersons(ListDataRequest requestData) throws CoreException;
+
+    @WebMethod
+    Object getListOfActionTypeIdNames(ListDataRequest request) throws CoreException;
+
+    @WebMethod
+    JSONCommonData insertConsultation(ConsultationRequestData request) throws CoreException;
+
+    @WebMethod
+    JSONCommonData insertLaboratoryStudies(int eventId, CommonData data) throws CoreException;
+
+    @WebMethod
+    FlatDirectoryData getFlatDirectories(FlatDirectoryRequestData request) throws CoreException;
+
+    @WebMethod
+    String getAllMkbs(ListDataRequest request, AuthData auth) throws CoreException;
+
+    @WebMethod
+    ThesaurusListData getThesaurusList(ListDataRequest request, AuthData auth) throws CoreException;
+
+    @WebMethod
+    AllPersonsListData getAllPersons(ListDataRequest requestData) throws CoreException;
+
+    @WebMethod
+    String getDictionary(ListDataRequest request, String dictName) throws CoreException;
+
+    //@WebMethod
+    //AssignmentData insertAssignment(AssignmentData assignmentData, int eventId, AuthData auth) throws CoreException;
+
+    //@WebMethod
+    //AssignmentData getAssignmentById(int actionId, AuthData auth) throws CoreException;
+
+    //@WebMethod
+    //RlsDataList getFilteredRlsList(RlsDataListRequestData request) throws CoreException;
 }

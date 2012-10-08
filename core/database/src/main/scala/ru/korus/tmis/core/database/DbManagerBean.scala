@@ -1,16 +1,18 @@
 package ru.korus.tmis.core.database
 
 import ru.korus.tmis.core.exception.CoreException
-import ru.korus.tmis.core.logging.db.LoggingInterceptor
+import ru.korus.tmis.core.logging.LoggingInterceptor
 import ru.korus.tmis.util.{ConfigManager, I18nable}
 
 import grizzled.slf4j.Logging
 import java.util.Collection
-import javax.ejb.{TransactionAttributeType, Stateless, TransactionAttribute}
 import javax.interceptor.Interceptors
 import javax.persistence._
 
 import scala.collection.JavaConversions._
+import org.eclipse.persistence.jpa.JpaEntityManager
+import javax.ejb.{SessionContext, TransactionAttributeType, Stateless, TransactionAttribute}
+import javax.annotation.Resource
 
 @Interceptors(Array(classOf[LoggingInterceptor]))
 @Stateless
@@ -22,6 +24,62 @@ class DbManagerBean
 
   @PersistenceContext(unitName = "s11r64")
   var em: EntityManager = _
+  var vendorJpaEm: JpaEntityManager = _
+
+  @Resource
+  protected var ctx: SessionContext = _
+
+  def getEntityId[T](entity: T) = {
+    //## TODO: работает строго через раз: каждый второй раз vendorJpaEm.getServerSession() == null
+    //##    if (vendorJpaEm == null) {
+    //##      vendorJpaEm = em.unwrap(classOf[JpaEntityManager])
+    //##    }
+    vendorJpaEm = em.unwrap(classOf[JpaEntityManager])
+    vendorJpaEm.getServerSession().getId(entity)
+  }
+
+  def mergeOrPersisRoutine[T](e: T): T = {
+    var id = getEntityId(e)
+    var ci = e.asInstanceOf[AnyRef].getClass.asInstanceOf[Class[T]]
+    var existingEntity = id match {
+      case null => {
+        null
+      }
+      case _ => {
+        em.find(ci, id)
+      }
+    }
+    if (existingEntity == null) {
+      //persts only when entry not exists         	trace("!!!Persisted " + e)
+      em.persist(e)
+      e
+    } else if (!em.contains(e)) {
+      //merge entity e with managed entity _e
+      //##TODO: ситуация исключительная. Если entity не найдена по ИД то и мерджить ее нельзя. Вешается с локом БД
+      //      var _e = em.merge(e)
+      //      _e
+      e
+    } else {
+      //do nothing.. if e managed all changes
+      //will persist to db on em.flush()
+      e
+    }
+  }
+
+  def persist[T](entity: T) = {
+    try {
+      em.persist(entity)
+      em.flush()
+      trace("Persisted " + entity)
+    } catch {
+      case entity: OptimisticLockException => {
+        throw new CoreException(
+          ConfigManager.ErrorCodes.RecordChanged,
+          i18n("error.entryIsChanged"))
+      }
+    }
+  }
+
 
   def persistAll[T](entities: Collection[T]) = {
     try {
@@ -30,6 +88,45 @@ class DbManagerBean
       entities.foreach(e => trace("Persisted " + e))
     } catch {
       case e: OptimisticLockException => {
+        throw new CoreException(
+          ConfigManager.ErrorCodes.RecordChanged,
+          i18n("error.entryIsChanged"))
+      }
+    }
+  }
+
+  def persistOrMerge[T](entity: T) = {
+    var result = mergeOrPersisRoutine(entity)
+    em.flush()
+    result
+  }
+
+  def persistOrMergeAll[T](entities: Collection[T]) = {
+    try {
+      val result =
+        entities.map(e => {
+          mergeOrPersisRoutine(e)
+        })
+      em.flush()
+      entities.foreach(e => trace("Persisted " + e))
+      asJavaCollection(result)
+    } catch {
+      case e: OptimisticLockException => {
+        throw new CoreException(
+          ConfigManager.ErrorCodes.RecordChanged,
+          i18n("error.entryIsChanged"))
+      }
+    }
+  }
+
+  def merge[T](entity: T) = {
+    try {
+      val result = em.merge(entity)
+      em.flush()
+      trace("Merged " + entity)
+      result
+    } catch {
+      case entity: OptimisticLockException => {
         throw new CoreException(
           ConfigManager.ErrorCodes.RecordChanged,
           i18n("error.entryIsChanged"))
@@ -50,6 +147,12 @@ class DbManagerBean
           i18n("error.entryIsChanged"))
       }
     }
+  }
+
+  def detach[T](entity: T) = {
+    em.detach(entity)
+    trace("Detached " + entity)
+    entity
   }
 
   def detachAll[T](entities: Collection[T]) = {
@@ -74,5 +177,13 @@ class DbManagerBean
           i18n("error.entryIsChanged"))
       }
     }
+  }
+
+  def refresh[T](entity: T) {
+    em.refresh(entity)
+  }
+
+  def rollbackTransaction[T]() = {
+    ctx.setRollbackOnly();
   }
 }

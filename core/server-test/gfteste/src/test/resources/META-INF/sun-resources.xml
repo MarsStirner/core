@@ -1,0 +1,57 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE resources PUBLIC "-//Sun Microsystems, Inc.//DTD Application Server 9.0 Resource Definitions //EN"
+        "http://www.sun.com/software/appserver/dtds/sun-resources_1_4.dtd">
+<resources>
+    <jdbc-connection-pool datasource-classname="com.mysql.jdbc.jdbc2.optional.MysqlDataSource" name="s11r64-pool">
+        <property name="characterEncoding" value="UTF-8"></property>
+        <property name="port" value="3306"></property>
+        <property name="DatabaseName" value="s11r64"></property>
+        <property name="characterSetResults" value="UTF-8"></property>
+        <property name="user" value="root"></property>
+        <property name="datasourceName" value="s11r64"></property>
+        <property name="useUnicode" value="true"></property>
+        <property name="password" value="xxx"></property>
+        <property name="ServerName" value="localhost"></property>
+        <property name="zeroDateTimeBehavior" value="convertToNull"></property>
+    </jdbc-connection-pool>
+    <jdbc-resource pool-name="s11r64-pool" jndi-name="s11r64"></jdbc-resource>
+    <jdbc-connection-pool datasource-classname="com.mysql.jdbc.jdbc2.optional.MysqlDataSource" name="rls-pool">
+        <property name="characterEncoding" value="UTF-8"></property>
+        <property name="port" value="3306"></property>
+        <property name="DatabaseName" value="rls"></property>
+        <property name="characterSetResults" value="UTF-8"></property>
+        <property name="user" value="root"></property>
+        <property name="datasourceName" value="rls"></property>
+        <property name="useUnicode" value="true"></property>
+        <property name="password" value="xxx"></property>
+        <property name="ServerName" value="localhost"></property>
+        <property name="zeroDateTimeBehavior" value="convertToNull"></property>
+    </jdbc-connection-pool>
+    <jdbc-resource pool-name="rls-pool" jndi-name="rls"></jdbc-resource>
+    <jdbc-connection-pool datasource-classname="com.mysql.jdbc.jdbc2.optional.MysqlDataSource" name="tmis_core-pool">
+        <property name="characterEncoding" value="UTF-8"></property>
+        <property name="port" value="3306"></property>
+        <property name="DatabaseName" value="tmis_core"></property>
+        <property name="characterSetResults" value="UTF-8"></property>
+        <property name="user" value="root"></property>
+        <property name="datasourceName" value="tmis_core"></property>
+        <property name="useUnicode" value="true"></property>
+        <property name="password" value="xxx"></property>
+        <property name="ServerName" value="localhost"></property>
+        <property name="zeroDateTimeBehavior" value="convertToNull"></property>
+    </jdbc-connection-pool>
+    <jdbc-resource pool-name="tmis_core-pool" jndi-name="tmis_core"></jdbc-resource>
+    <jdbc-connection-pool datasource-classname="com.mysql.jdbc.jdbc2.optional.MysqlDataSource" name="kladr-pool">
+        <property name="characterEncoding" value="UTF-8"></property>
+        <property name="port" value="3306"></property>
+        <property name="DatabaseName" value="kladr"></property>
+        <property name="characterSetResults" value="UTF-8"></property>
+        <property name="user" value="root"></property>
+        <property name="datasourceName" value="kladr"></property>
+        <property name="useUnicode" value="true"></property>
+        <property name="password" value="xxx"></property>
+        <property name="ServerName" value="localhost"></property>
+        <property name="zeroDateTimeBehavior" value="convertToNull"></property>
+    </jdbc-connection-pool>
+    <jdbc-resource pool-name="kladr-pool" jndi-name="kladr"></jdbc-resource>
+</resources>

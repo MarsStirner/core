@@ -1,13 +1,11 @@
 package ru.korus.tmis.core.entity.model;
 
-import java.io.Serializable;
-import javax.persistence.Column;
-import javax.persistence.Entity;
-import javax.persistence.NamedQueries;
-import javax.persistence.NamedQuery;
-import javax.persistence.Table;
+import ru.korus.tmis.core.exception.CoreException;
+
+import javax.persistence.*;
 import javax.xml.bind.annotation.XmlRootElement;
 import javax.xml.bind.annotation.XmlType;
+import java.io.Serializable;
 
 @Entity
 @Table(name = "ActionProperty_Person", catalog = "", schema = "")
@@ -22,7 +20,11 @@ public class APValuePerson extends AbstractAPValue implements Serializable, APVa
     private static final long serialVersionUID = 1L;
 
     @Column(name = "value")
-    private Integer value;
+    private Integer personId;
+
+    @OneToOne
+    @JoinColumn(name = "value", insertable = false, updatable = false)
+    private Staff value;
 
     public APValuePerson() {
     }
@@ -43,23 +45,39 @@ public class APValuePerson extends AbstractAPValue implements Serializable, APVa
         this.id = id;
     }
 
-    @Override
-    public Integer getValue() {
+    public Staff getValue() {
         return value;
     }
 
-    public void setValue(Integer value) {
+    public void setValue(Staff value) {
         this.value = value;
     }
 
     @Override
     public String getValueAsString() {
-        return value != null ? value.toString() : "";
+        return value.getLastName();
     }
 
     @Override
-    public boolean setValueFromString(final String value) {
-        return false;
+    public String getValueAsId() {
+        return personId != null ? Integer.toString(personId) : "";
+    }
+
+    @Override
+    public boolean setValueFromString(final String value) throws CoreException {
+        if ("".equals(value)) {
+            this.personId = null;  //TODO: Возможно будет падать!!!!?????
+            return true;
+        }
+        try {
+            this.personId = Integer.valueOf(value);
+            return true;
+        } catch (NumberFormatException ex) {
+            throw new CoreException(
+                    0x0106,
+                    "Не могу установить " + this.getClass().getSimpleName() + " в значение <" + value + ">"
+            );
+        }
     }
 
     @Override

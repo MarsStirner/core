@@ -15,9 +15,9 @@ import javax.xml.bind.annotation.XmlType;
 
 /**
  * <p>Java class for HXIT_PQ complex type.
- * 
+ * <p/>
  * <p>The following schema fragment specifies the expected content contained within this class.
- * 
+ * <p/>
  * <pre>
  * &lt;complexType name="HXIT_PQ">
  *   &lt;complexContent>
@@ -29,26 +29,21 @@ import javax.xml.bind.annotation.XmlType;
  *   &lt;/complexContent>
  * &lt;/complexType>
  * </pre>
- * 
- * 
  */
 @XmlAccessorType(XmlAccessType.FIELD)
 @XmlType(name = "HXIT_PQ", propOrder = {
-    "validTime"
+        "validTime"
 })
 public class HXITPQ
-    extends PQ
-{
+        extends PQ {
 
     protected IVLTS validTime;
 
     /**
      * Gets the value of the validTime property.
-     * 
-     * @return
-     *     possible object is
-     *     {@link IVLTS }
-     *     
+     *
+     * @return possible object is
+     *         {@link IVLTS }
      */
     public IVLTS getValidTime() {
         return validTime;
@@ -56,11 +51,9 @@ public class HXITPQ
 
     /**
      * Sets the value of the validTime property.
-     * 
-     * @param value
-     *     allowed object is
-     *     {@link IVLTS }
-     *     
+     *
+     * @param value allowed object is
+     *              {@link IVLTS }
      */
     public void setValidTime(IVLTS value) {
         this.validTime = value;

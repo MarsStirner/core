@@ -7,9 +7,11 @@ import java.lang.Integer
 import java.util.{Date, LinkedList}
 import javax.xml.bind.annotation._
 import javax.xml.bind.annotation.adapters.{XmlJavaTypeAdapter, XmlAdapter}
+import org.codehaus.jackson.annotate.JsonIgnoreProperties
 
 @XmlType(name = "entities")
 @XmlRootElement(name = "entities")
+@JsonIgnoreProperties(ignoreUnknown = true)
 class CommonData {
   var id: Integer = _
 
@@ -34,12 +36,12 @@ class CommonData {
   }
 
   def this(id: Integer) = {
-    this ()
+    this()
     this.id = id
   }
 
   def this(id: Integer, version: String) = {
-    this (id)
+    this(id)
     this.version = version
   }
 
@@ -54,6 +56,7 @@ class CommonData {
 
 @XmlType(name = "entity")
 @XmlRootElement(name = "entity")
+@JsonIgnoreProperties(ignoreUnknown = true)
 class CommonEntity {
   var id: Integer = _
 
@@ -136,7 +139,7 @@ class CommonEntity {
                    name: String,
                    eType: String,
                    eTypeId: Integer) = {
-    this ()
+    this()
     this.id = id
     this.name = name
     this.eType = eType
@@ -148,7 +151,7 @@ class CommonEntity {
                    name: String,
                    eType: String,
                    eTypeId: Integer) = {
-    this (id, name, eType, eTypeId)
+    this(id, name, eType, eTypeId)
     this.version = version
   }
 
@@ -158,7 +161,7 @@ class CommonEntity {
                    eType: String,
                    eTypeId: Integer,
                    status: Integer) = {
-    this (id, version, name, eType, eTypeId)
+    this(id, version, name, eType, eTypeId)
     this.status = status
   }
 
@@ -169,7 +172,7 @@ class CommonEntity {
            eTypeId: Integer,
            status: Integer,
            code: String) = {
-    this (id, version, name, eType, eTypeId, status)
+    this(id, version, name, eType, eTypeId, status)
     this.code = code
   }
 
@@ -184,6 +187,7 @@ class CommonEntity {
 
 @XmlType(name = "group")
 @XmlRootElement(name = "group")
+@JsonIgnoreProperties(ignoreUnknown = true)
 class CommonGroup {
   var id: Integer = _
 
@@ -219,13 +223,13 @@ class CommonGroup {
   }
 
   def this(id: Integer, name: String) = {
-    this ()
+    this()
     this.id = id
     this.name = name
   }
 
   def this(id: Integer, version: Integer, name: String) = {
-    this (id, name)
+    this(id, name)
     this.version = version
   }
 
@@ -248,6 +252,7 @@ class CommonGroup {
 
 @XmlType(name = "attribute")
 @XmlRootElement(name = "attribute")
+@JsonIgnoreProperties(ignoreUnknown = true)
 class CommonAttribute() {
 
   @XmlTransient
@@ -308,11 +313,22 @@ class CommonAttribute() {
     this.scope = scope
   }
 
+  var typeId: Integer = _
+
+  @XmlAttribute(name = "typeId")
+  def getTypeId() = {
+    typeId
+  }
+
+  def setTypeId(eTypeId: Integer) = {
+    this.typeId = typeId
+  }
+
   private def this(id: Integer,
                    name: String,
                    aType: String,
                    scope: String) = {
-    this ()
+    this()
     this.id = id
     this.name = name
     this.aType = aType
@@ -324,7 +340,7 @@ class CommonAttribute() {
            name: String,
            aType: String,
            scope: String) = {
-    this (id, name, aType, scope)
+    this(id, name, aType, scope)
     this.version = version
   }
 
@@ -333,7 +349,7 @@ class CommonAttribute() {
                    aType: String,
                    scope: String,
                    value: Date) = {
-    this (id, name, aType, scope)
+    this(id, name, aType, scope)
     value match {
       case null => {}
       case _ => addProperty("value", dateFormatter.format(value))
@@ -346,7 +362,7 @@ class CommonAttribute() {
            aType: String,
            scope: String,
            value: Date) = {
-    this (id, version, name, aType, scope)
+    this(id, version, name, aType, scope)
     value match {
       case null => {}
       case _ => addProperty("value", dateFormatter.format(value))
@@ -358,7 +374,7 @@ class CommonAttribute() {
                    aType: String,
                    scope: String,
                    value: String) = {
-    this (id, name, aType, scope)
+    this(id, name, aType, scope)
     addProperty("value", value)
   }
 
@@ -368,7 +384,7 @@ class CommonAttribute() {
            aType: String,
            scope: String,
            value: String) = {
-    this (id, version, name, aType, scope)
+    this(id, version, name, aType, scope)
     addProperty("value", value)
   }
 
@@ -377,7 +393,7 @@ class CommonAttribute() {
                    aType: String,
                    scope: String,
                    props: Map[String, String]) = {
-    this (id, name, aType, scope)
+    this(id, name, aType, scope)
     this.apply(props)
   }
 
@@ -387,7 +403,7 @@ class CommonAttribute() {
            aType: String,
            scope: String,
            props: Map[String, String]) = {
-    this (id, version, name, aType, scope)
+    this(id, version, name, aType, scope)
     this.apply(props)
   }
 
@@ -409,6 +425,9 @@ class CommonAttribute() {
   }
 }
 
+@XmlType(name = "propertyMapAdapter")
+@XmlRootElement(name = "propertyMapAdapter")
+@JsonIgnoreProperties(ignoreUnknown = true)
 class PropertyMapAdapter
   extends XmlAdapter[Array[PropertyPair], Map[String, String]] {
 
@@ -458,7 +477,7 @@ class PropertyPair {
   }
 
   def this(name: String, value: String) = {
-    this ()
+    this()
     this.name = name
     this.value = value
   }

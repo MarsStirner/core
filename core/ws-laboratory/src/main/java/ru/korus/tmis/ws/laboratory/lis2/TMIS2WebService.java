@@ -9,19 +9,21 @@ import javax.jws.WebService;
 import java.util.List;
 
 import static ru.korus.tmis.util.CompileTimeConfigManager.Laboratory.Namespace;
+
 /**
  * Интерфейс для взаимодействия ЛИС и новой МИС.
  */
 @WebService(
-  targetNamespace = Namespace,
-  name = "tmis2")
+        targetNamespace = Namespace,
+        name = "tmis2")
 public interface TMIS2WebService {
 
     /**
      * Запрос для передачи результатов анализов из ЛИС в МИС.
-     * @param requestId                 идентификатор направления на анализы
+     *
+     * @param requestId          идентификатор направления на анализы
+     * @param biomaterialDefects браки биоматериала
      * @paran results                   результаты анализов
-     * @param biomaterialDefects        браки биоматериала
      */
     @WebMethod
     int setAnalysisResults(

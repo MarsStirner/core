@@ -1,16 +1,10 @@
 package ru.korus.tmis.core.entity.model;
 
-import java.io.Serializable;
-import java.util.Date;
-import java.util.LinkedHashSet;
-import java.util.LinkedList;
-import java.util.List;
-import java.util.Set;
 import javax.persistence.*;
 import javax.xml.bind.annotation.XmlRootElement;
 import javax.xml.bind.annotation.XmlType;
-
-import ru.korus.tmis.util.PublicClonable;
+import java.io.Serializable;
+import java.util.*;
 
 @Entity
 @Table(name = "ActionType", catalog = "", schema = "")
@@ -207,8 +201,8 @@ public class ActionType implements Serializable {
 
     @ManyToMany(cascade = CascadeType.ALL)
     @JoinTable(name = "ActionType_TissueType",
-               joinColumns = {@JoinColumn(name = "tissueType_id")},
-               inverseJoinColumns = {@JoinColumn(name = "master_id")})
+            joinColumns = {@JoinColumn(name = "tissueType_id")},
+            inverseJoinColumns = {@JoinColumn(name = "master_id")})
     private Set<RbTissueType> tissueTypes = new LinkedHashSet<RbTissueType>();
 
     ////////////////////////////////////////////////////////////////////////////
@@ -561,5 +555,4 @@ public class ActionType implements Serializable {
     public String toString() {
         return "ru.korus.tmis.core.entity.model.ActionType[id=" + id + "]";
     }
-
 }

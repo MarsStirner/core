@@ -8,19 +8,19 @@
 
 package org.hl7.v3;
 
-import java.util.ArrayList;
-import java.util.List;
 import javax.xml.bind.annotation.XmlAccessType;
 import javax.xml.bind.annotation.XmlAccessorType;
 import javax.xml.bind.annotation.XmlAttribute;
 import javax.xml.bind.annotation.XmlType;
+import java.util.ArrayList;
+import java.util.List;
 
 
 /**
  * <p>Java class for POCD_MT000040.Place complex type.
- * 
+ * <p/>
  * <p>The following schema fragment specifies the expected content contained within this class.
- * 
+ * <p/>
  * <pre>
  * &lt;complexType name="POCD_MT000040.Place">
  *   &lt;complexContent>
@@ -39,16 +39,14 @@ import javax.xml.bind.annotation.XmlType;
  *   &lt;/complexContent>
  * &lt;/complexType>
  * </pre>
- * 
- * 
  */
 @XmlAccessorType(XmlAccessType.FIELD)
 @XmlType(name = "POCD_MT000040.Place", propOrder = {
-    "realmCode",
-    "typeId",
-    "templateId",
-    "name",
-    "addr"
+        "realmCode",
+        "typeId",
+        "templateId",
+        "name",
+        "addr"
 })
 public class PocdPlace {
 
@@ -66,25 +64,23 @@ public class PocdPlace {
 
     /**
      * Gets the value of the realmCode property.
-     * 
-     * <p>
+     * <p/>
+     * <p/>
      * This accessor method returns a reference to the live list,
      * not a snapshot. Therefore any modification you make to the
      * returned list will be present inside the JAXB object.
      * This is why there is not a <CODE>set</CODE> method for the realmCode property.
-     * 
-     * <p>
+     * <p/>
+     * <p/>
      * For example, to add a new item, do as follows:
      * <pre>
      *    getRealmCode().add(newItem);
      * </pre>
-     * 
-     * 
-     * <p>
+     * <p/>
+     * <p/>
+     * <p/>
      * Objects of the following type(s) are allowed in the list
      * {@link CS }
-     * 
-     * 
      */
     public List<CS> getRealmCode() {
         if (realmCode == null) {
@@ -95,11 +91,9 @@ public class PocdPlace {
 
     /**
      * Gets the value of the typeId property.
-     * 
-     * @return
-     *     possible object is
-     *     {@link PocdInfrastructureRootTypeId }
-     *     
+     *
+     * @return possible object is
+     *         {@link PocdInfrastructureRootTypeId }
      */
     public PocdInfrastructureRootTypeId getTypeId() {
         return typeId;
@@ -107,11 +101,9 @@ public class PocdPlace {
 
     /**
      * Sets the value of the typeId property.
-     * 
-     * @param value
-     *     allowed object is
-     *     {@link PocdInfrastructureRootTypeId }
-     *     
+     *
+     * @param value allowed object is
+     *              {@link PocdInfrastructureRootTypeId }
      */
     public void setTypeId(PocdInfrastructureRootTypeId value) {
         this.typeId = value;
@@ -119,25 +111,23 @@ public class PocdPlace {
 
     /**
      * Gets the value of the templateId property.
-     * 
-     * <p>
+     * <p/>
+     * <p/>
      * This accessor method returns a reference to the live list,
      * not a snapshot. Therefore any modification you make to the
      * returned list will be present inside the JAXB object.
      * This is why there is not a <CODE>set</CODE> method for the templateId property.
-     * 
-     * <p>
+     * <p/>
+     * <p/>
      * For example, to add a new item, do as follows:
      * <pre>
      *    getTemplateId().add(newItem);
      * </pre>
-     * 
-     * 
-     * <p>
+     * <p/>
+     * <p/>
+     * <p/>
      * Objects of the following type(s) are allowed in the list
      * {@link II }
-     * 
-     * 
      */
     public List<II> getTemplateId() {
         if (templateId == null) {
@@ -148,11 +138,9 @@ public class PocdPlace {
 
     /**
      * Gets the value of the name property.
-     * 
-     * @return
-     *     possible object is
-     *     {@link EN }
-     *     
+     *
+     * @return possible object is
+     *         {@link EN }
      */
     public EN getName() {
         return name;
@@ -160,11 +148,9 @@ public class PocdPlace {
 
     /**
      * Sets the value of the name property.
-     * 
-     * @param value
-     *     allowed object is
-     *     {@link EN }
-     *     
+     *
+     * @param value allowed object is
+     *              {@link EN }
      */
     public void setName(EN value) {
         this.name = value;
@@ -172,11 +158,9 @@ public class PocdPlace {
 
     /**
      * Gets the value of the addr property.
-     * 
-     * @return
-     *     possible object is
-     *     {@link AD }
-     *     
+     *
+     * @return possible object is
+     *         {@link AD }
      */
     public AD getAddr() {
         return addr;
@@ -184,11 +168,9 @@ public class PocdPlace {
 
     /**
      * Sets the value of the addr property.
-     * 
-     * @param value
-     *     allowed object is
-     *     {@link AD }
-     *     
+     *
+     * @param value allowed object is
+     *              {@link AD }
      */
     public void setAddr(AD value) {
         this.addr = value;
@@ -196,25 +178,23 @@ public class PocdPlace {
 
     /**
      * Gets the value of the nullFlavor property.
-     * 
-     * <p>
+     * <p/>
+     * <p/>
      * This accessor method returns a reference to the live list,
      * not a snapshot. Therefore any modification you make to the
      * returned list will be present inside the JAXB object.
      * This is why there is not a <CODE>set</CODE> method for the nullFlavor property.
-     * 
-     * <p>
+     * <p/>
+     * <p/>
      * For example, to add a new item, do as follows:
      * <pre>
      *    getNullFlavor().add(newItem);
      * </pre>
-     * 
-     * 
-     * <p>
+     * <p/>
+     * <p/>
+     * <p/>
      * Objects of the following type(s) are allowed in the list
      * {@link String }
-     * 
-     * 
      */
     public List<String> getNullFlavor() {
         if (nullFlavor == null) {
@@ -225,11 +205,9 @@ public class PocdPlace {
 
     /**
      * Gets the value of the classCode property.
-     * 
-     * @return
-     *     possible object is
-     *     {@link EntityClassPlace }
-     *     
+     *
+     * @return possible object is
+     *         {@link EntityClassPlace }
      */
     public EntityClassPlace getClassCode() {
         if (classCode == null) {
@@ -241,11 +219,9 @@ public class PocdPlace {
 
     /**
      * Sets the value of the classCode property.
-     * 
-     * @param value
-     *     allowed object is
-     *     {@link EntityClassPlace }
-     *     
+     *
+     * @param value allowed object is
+     *              {@link EntityClassPlace }
      */
     public void setClassCode(EntityClassPlace value) {
         this.classCode = value;
@@ -253,11 +229,9 @@ public class PocdPlace {
 
     /**
      * Gets the value of the determinerCode property.
-     * 
-     * @return
-     *     possible object is
-     *     {@link String }
-     *     
+     *
+     * @return possible object is
+     *         {@link String }
      */
     public String getDeterminerCode() {
         if (determinerCode == null) {
@@ -269,11 +243,9 @@ public class PocdPlace {
 
     /**
      * Sets the value of the determinerCode property.
-     * 
-     * @param value
-     *     allowed object is
-     *     {@link String }
-     *     
+     *
+     * @param value allowed object is
+     *              {@link String }
      */
     public void setDeterminerCode(String value) {
         this.determinerCode = value;

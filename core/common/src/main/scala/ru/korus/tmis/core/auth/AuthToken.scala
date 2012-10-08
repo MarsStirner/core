@@ -11,7 +11,7 @@ class AuthToken() {
   var id: String = _
 
   def this(id: String) = {
-    this ()
+    this()
     this.id = id
   }
 

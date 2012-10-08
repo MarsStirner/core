@@ -2,16 +2,14 @@ package ru.korus.tmis.laboratory.data.request
 
 import ru.korus.ws.{laboratory => lab, laboratory2 => lab2}
 
-import ru.korus.tmis.util.General.nullity_implicits
 
-import DataConverter._
 import ru.korus.tmis.util.Defaultible._
 
 
-sealed case class IndicatorMetodic (
-  indicatorName: Option[String] = None,
-  indicatorCode: Option[String] = None
-)
+sealed case class IndicatorMetodic(
+                                    indicatorName: Option[String] = None,
+                                    indicatorCode: Option[String] = None
+                                    )
 
 object IndicatorMetodic {
   implicit def toLab1IM(v: IndicatorMetodic) = {
@@ -24,8 +22,12 @@ object IndicatorMetodic {
 
     import v._
 
-    setAsOptional(indicatorCode){ ret.setIndicatorCode(_) }
-    setAsDefaultible(indicatorName) { ret.setIndicatorName(_) }
+    setAsOptional(indicatorCode) {
+      ret.setIndicatorCode(_)
+    }
+    setAsDefaultible(indicatorName) {
+      ret.setIndicatorName(_)
+    }
 
     ret
   }
@@ -40,8 +42,12 @@ object IndicatorMetodic {
 
     import v._
 
-    setAsDefaultible(indicatorCode){ ret.setIndicatorCode(_) }
-    setAsOptional(indicatorName) { ret.setIndicatorName(_) }
+    setAsDefaultible(indicatorCode) {
+      ret.setIndicatorCode(_)
+    }
+    setAsOptional(indicatorName) {
+      ret.setIndicatorName(_)
+    }
 
     ret
   }

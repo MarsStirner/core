@@ -14,18 +14,17 @@ import javax.xml.bind.annotation.XmlType;
 
 
 /**
- * 
- *             Coded accept, where the domain from which the codeset comes
- *             is ordered. The Coded Ordinal accept type adds semantics
- *             related to ordering so that models that make use of such
- *             domains may introduce model elements that involve statements
- *             about the order of the terms in a domain. 
- *          
- * 
+ * Coded accept, where the domain from which the codeset comes
+ * is ordered. The Coded Ordinal accept type adds semantics
+ * related to ordering so that models that make use of such
+ * domains may introduce model elements that involve statements
+ * about the order of the terms in a domain.
+ * <p/>
+ * <p/>
  * <p>Java class for CO complex type.
- * 
+ * <p/>
  * <p>The following schema fragment specifies the expected content contained within this class.
- * 
+ * <p/>
  * <pre>
  * &lt;complexType name="CO">
  *   &lt;complexContent>
@@ -34,14 +33,11 @@ import javax.xml.bind.annotation.XmlType;
  *   &lt;/complexContent>
  * &lt;/complexType>
  * </pre>
- * 
- * 
  */
 @XmlAccessorType(XmlAccessType.FIELD)
 @XmlType(name = "CO")
 public class CO
-    extends CV
-{
+        extends CV {
 
 
 }

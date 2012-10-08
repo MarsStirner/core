@@ -15,7 +15,7 @@ import collection.JavaConversions._
 
 @Interceptors(Array(classOf[LoggingInterceptor]))
 @Stateless
-class DrugstoreBean extends DrugstoreBeanLocal{
+class DrugstoreBean extends DrugstoreBeanLocal {
 
   @EJB
   var dbAction: DbActionBeanLocal = _
@@ -48,10 +48,10 @@ class DrugstoreBean extends DrugstoreBeanLocal{
       def toAssignmentHoursByType(infos: JCollection[PrescriptionInfo],
                                   typeId: Int) = {
         Option(infos)
-        .getOrElse(new JLinkedList)
-        .filter(_.`type` == typeId)
-        .map(info => new AssignmentHour(actionId.intValue, info.date, info.hour))
-        .toSet
+          .getOrElse(new JLinkedList)
+          .filter(_.`type` == typeId)
+          .map(info => new AssignmentHour(actionId.intValue, info.date, info.hour))
+          .toSet
       }
 
       val created = toAssignmentHoursByType(infos, 1)
@@ -62,7 +62,7 @@ class DrugstoreBean extends DrugstoreBeanLocal{
       val deleted = toAssignmentHoursByType(infos, 5)
 
       externalEventFacade.triggerPrescriptionChangedNotification(
-         new PrescriptionChangedNotification(action, values, created, done, notDone ++ unDone, removed)
+        new PrescriptionChangedNotification(action, values, created, done, notDone ++ unDone, removed)
       )
     })
   }

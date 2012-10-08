@@ -12,11 +12,11 @@ class CommonDataTest {
       (new CommonEntity(2, 42, "Нейм", "Тайп", 28, 17, "Кодовый код") add
         (new CommonGroup(3, "Нейм оф групп") add
           (new CommonAttribute(17,
-                               42,
-                               "Господь Бог",
-                               "Тайп оф ГАД",
-                               "6_6_6",
-                               "ЗНАЧЕНИЕ"))))
+            42,
+            "Господь Бог",
+            "Тайп оф ГАД",
+            "6_6_6",
+            "ЗНАЧЕНИЕ"))))
 
     val jaxb = JAXBContext.newInstance("ru.korus.tmis.core.data")
     val m = jaxb createMarshaller

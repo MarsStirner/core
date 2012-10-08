@@ -38,8 +38,8 @@ class YClinicalDocumentBuilder
   : Document = {
 
     processCreateDrugRequest(action,
-                             action.getAssignmentHours,
-                             values)
+      action.getAssignmentHours,
+      values)
   }
 
   def buildDeleteDrugRequest(action: Action,
@@ -47,8 +47,8 @@ class YClinicalDocumentBuilder
   : Document = {
 
     processDeleteDrugRequest(action,
-                             action.getAssignmentHours,
-                             values)
+      action.getAssignmentHours,
+      values)
   }
 
   def buildCreateDrugEvent(oldAction: Action,
@@ -71,8 +71,8 @@ class YClinicalDocumentBuilder
     }).keySet
 
     processCreateDrugEvent(newAction,
-                           createDrugEventTimings,
-                           values)
+      createDrugEventTimings,
+      values)
   }
 
   def buildDeleteDrugEvent(oldAction: Action,
@@ -95,8 +95,8 @@ class YClinicalDocumentBuilder
     }).keySet
 
     processDeleteDrugEvent(newAction,
-                           deleteDrugEventTimings,
-                           values)
+      deleteDrugEventTimings,
+      values)
   }
 
   def processCreateDrugRequest(action: Action,
@@ -105,9 +105,9 @@ class YClinicalDocumentBuilder
     timing.size match {
       case 0 => null
       case _ => processDrugAdministration(action,
-                                          timing,
-                                          properties,
-                                          CreateDrugRequest)
+        timing,
+        properties,
+        CreateDrugRequest)
     }
   }
 
@@ -117,9 +117,9 @@ class YClinicalDocumentBuilder
     timing.size match {
       case 0 => null
       case _ => processDrugAdministration(action,
-                                          timing,
-                                          properties,
-                                          DeleteDrugRequest)
+        timing,
+        properties,
+        DeleteDrugRequest)
     }
   }
 
@@ -129,9 +129,9 @@ class YClinicalDocumentBuilder
     timing.size match {
       case 0 => null
       case _ => processDrugAdministration(action,
-                                          timing,
-                                          properties,
-                                          CreateDrugEvent)
+        timing,
+        properties,
+        CreateDrugEvent)
     }
   }
 
@@ -141,9 +141,9 @@ class YClinicalDocumentBuilder
     timing.size match {
       case 0 => null
       case _ => processDrugAdministration(action,
-                                          timing,
-                                          properties,
-                                          DeleteDrugEvent)
+        timing,
+        properties,
+        DeleteDrugEvent)
     }
   }
 

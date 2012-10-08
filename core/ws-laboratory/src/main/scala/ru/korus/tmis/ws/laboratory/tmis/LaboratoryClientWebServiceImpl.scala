@@ -2,11 +2,9 @@ package ru.korus.tmis.ws.laboratory.tmis
 
 import javax.jws.{HandlerChain, WebService}
 import grizzled.slf4j.Logging
-import ru.korus.tmis.util.{CompileTimeConfigManager, I18nable}
+import ru.korus.tmis.util.I18nable
 import javax.ejb.EJB
 import ru.korus.tmis.laboratory.business.LaboratoryBeanLocal
-import javax.interceptor.Interceptors
-import ru.korus.tmis.core.logging.slf4j.interceptor.NoDBLoggingInterceptor
 
 import CompileTimeConfigManager.LaboratoryClient._
 
@@ -26,7 +24,11 @@ class LaboratoryClientWebServiceImpl
   var labBean: LaboratoryBeanLocal = _
 
   def sendAnalysisRequest(actionId: Int) {
-    try{ labBean.sendLisAnalysisRequest(actionId) }
-    catch { case e => () }
+    try {
+      labBean.sendLisAnalysisRequest(actionId)
+    }
+    catch {
+      case e => ()
+    }
   }
 }

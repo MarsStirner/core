@@ -44,7 +44,7 @@ class YClinicalDocumentTest {
     drug.setId(666)
     drug.setForm("табл.")
     val timing = List(new AssignmentHour(666, new Date),
-                      new AssignmentHour(777, new Date))
+      new AssignmentHour(777, new Date))
 
     val apv: APValue = new APValueString()
     apv.setValueFromString("25 мг")

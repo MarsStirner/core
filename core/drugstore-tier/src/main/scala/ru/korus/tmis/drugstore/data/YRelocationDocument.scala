@@ -12,10 +12,14 @@ object YRelocationDocument {
 trait YRelocationDocument extends ScalaXmlable {
   // implemented stuff
   def timeFormat = YRelocationDocument.timeFormat
+
   def dateFormat = YRelocationDocument.dateFormat
 
   def rootElement: String = "Message"
+
   def soapAction: String
+
   def soapOperation: String
+
   def xsiType: String
 }

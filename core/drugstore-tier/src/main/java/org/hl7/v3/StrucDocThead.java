@@ -8,24 +8,18 @@
 
 package org.hl7.v3;
 
-import java.util.ArrayList;
-import java.util.List;
-import javax.xml.bind.annotation.XmlAccessType;
-import javax.xml.bind.annotation.XmlAccessorType;
-import javax.xml.bind.annotation.XmlAttribute;
-import javax.xml.bind.annotation.XmlElement;
-import javax.xml.bind.annotation.XmlID;
-import javax.xml.bind.annotation.XmlSchemaType;
-import javax.xml.bind.annotation.XmlType;
+import javax.xml.bind.annotation.*;
 import javax.xml.bind.annotation.adapters.CollapsedStringAdapter;
 import javax.xml.bind.annotation.adapters.XmlJavaTypeAdapter;
+import java.util.ArrayList;
+import java.util.List;
 
 
 /**
  * <p>Java class for StrucDoc.Thead complex type.
- * 
+ * <p/>
  * <p>The following schema fragment specifies the expected content contained within this class.
- * 
+ * <p/>
  * <pre>
  * &lt;complexType name="StrucDoc.Thead">
  *   &lt;complexContent>
@@ -63,12 +57,10 @@ import javax.xml.bind.annotation.adapters.XmlJavaTypeAdapter;
  *   &lt;/complexContent>
  * &lt;/complexType>
  * </pre>
- * 
- * 
  */
 @XmlAccessorType(XmlAccessType.FIELD)
 @XmlType(name = "StrucDoc.Thead", propOrder = {
-    "tr"
+        "tr"
 })
 public class StrucDocThead {
 
@@ -99,25 +91,23 @@ public class StrucDocThead {
 
     /**
      * Gets the value of the tr property.
-     * 
-     * <p>
+     * <p/>
+     * <p/>
      * This accessor method returns a reference to the live list,
      * not a snapshot. Therefore any modification you make to the
      * returned list will be present inside the JAXB object.
      * This is why there is not a <CODE>set</CODE> method for the tr property.
-     * 
-     * <p>
+     * <p/>
+     * <p/>
      * For example, to add a new item, do as follows:
      * <pre>
      *    getTr().add(newItem);
      * </pre>
-     * 
-     * 
-     * <p>
+     * <p/>
+     * <p/>
+     * <p/>
      * Objects of the following type(s) are allowed in the list
      * {@link StrucDocTr }
-     * 
-     * 
      */
     public List<StrucDocTr> getTr() {
         if (tr == null) {
@@ -128,11 +118,9 @@ public class StrucDocThead {
 
     /**
      * Gets the value of the id property.
-     * 
-     * @return
-     *     possible object is
-     *     {@link String }
-     *     
+     *
+     * @return possible object is
+     *         {@link String }
      */
     public String getID() {
         return id;
@@ -140,11 +128,9 @@ public class StrucDocThead {
 
     /**
      * Sets the value of the id property.
-     * 
-     * @param value
-     *     allowed object is
-     *     {@link String }
-     *     
+     *
+     * @param value allowed object is
+     *              {@link String }
      */
     public void setID(String value) {
         this.id = value;
@@ -152,11 +138,9 @@ public class StrucDocThead {
 
     /**
      * Gets the value of the language property.
-     * 
-     * @return
-     *     possible object is
-     *     {@link String }
-     *     
+     *
+     * @return possible object is
+     *         {@link String }
      */
     public String getLanguage() {
         return language;
@@ -164,11 +148,9 @@ public class StrucDocThead {
 
     /**
      * Sets the value of the language property.
-     * 
-     * @param value
-     *     allowed object is
-     *     {@link String }
-     *     
+     *
+     * @param value allowed object is
+     *              {@link String }
      */
     public void setLanguage(String value) {
         this.language = value;
@@ -176,25 +158,23 @@ public class StrucDocThead {
 
     /**
      * Gets the value of the styleCode property.
-     * 
-     * <p>
+     * <p/>
+     * <p/>
      * This accessor method returns a reference to the live list,
      * not a snapshot. Therefore any modification you make to the
      * returned list will be present inside the JAXB object.
      * This is why there is not a <CODE>set</CODE> method for the styleCode property.
-     * 
-     * <p>
+     * <p/>
+     * <p/>
      * For example, to add a new item, do as follows:
      * <pre>
      *    getStyleCode().add(newItem);
      * </pre>
-     * 
-     * 
-     * <p>
+     * <p/>
+     * <p/>
+     * <p/>
      * Objects of the following type(s) are allowed in the list
      * {@link String }
-     * 
-     * 
      */
     public List<String> getStyleCode() {
         if (styleCode == null) {
@@ -205,11 +185,9 @@ public class StrucDocThead {
 
     /**
      * Gets the value of the align property.
-     * 
-     * @return
-     *     possible object is
-     *     {@link String }
-     *     
+     *
+     * @return possible object is
+     *         {@link String }
      */
     public String getAlign() {
         return align;
@@ -217,11 +195,9 @@ public class StrucDocThead {
 
     /**
      * Sets the value of the align property.
-     * 
-     * @param value
-     *     allowed object is
-     *     {@link String }
-     *     
+     *
+     * @param value allowed object is
+     *              {@link String }
      */
     public void setAlign(String value) {
         this.align = value;
@@ -229,11 +205,9 @@ public class StrucDocThead {
 
     /**
      * Gets the value of the char property.
-     * 
-     * @return
-     *     possible object is
-     *     {@link String }
-     *     
+     *
+     * @return possible object is
+     *         {@link String }
      */
     public String getChar() {
         return _char;
@@ -241,11 +215,9 @@ public class StrucDocThead {
 
     /**
      * Sets the value of the char property.
-     * 
-     * @param value
-     *     allowed object is
-     *     {@link String }
-     *     
+     *
+     * @param value allowed object is
+     *              {@link String }
      */
     public void setChar(String value) {
         this._char = value;
@@ -253,11 +225,9 @@ public class StrucDocThead {
 
     /**
      * Gets the value of the charoff property.
-     * 
-     * @return
-     *     possible object is
-     *     {@link String }
-     *     
+     *
+     * @return possible object is
+     *         {@link String }
      */
     public String getCharoff() {
         return charoff;
@@ -265,11 +235,9 @@ public class StrucDocThead {
 
     /**
      * Sets the value of the charoff property.
-     * 
-     * @param value
-     *     allowed object is
-     *     {@link String }
-     *     
+     *
+     * @param value allowed object is
+     *              {@link String }
      */
     public void setCharoff(String value) {
         this.charoff = value;
@@ -277,11 +245,9 @@ public class StrucDocThead {
 
     /**
      * Gets the value of the valign property.
-     * 
-     * @return
-     *     possible object is
-     *     {@link String }
-     *     
+     *
+     * @return possible object is
+     *         {@link String }
      */
     public String getValign() {
         return valign;
@@ -289,11 +255,9 @@ public class StrucDocThead {
 
     /**
      * Sets the value of the valign property.
-     * 
-     * @param value
-     *     allowed object is
-     *     {@link String }
-     *     
+     *
+     * @param value allowed object is
+     *              {@link String }
      */
     public void setValign(String value) {
         this.valign = value;

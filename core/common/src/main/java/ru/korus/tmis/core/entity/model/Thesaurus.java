@@ -1,9 +1,9 @@
 package ru.korus.tmis.core.entity.model;
 
-import java.io.Serializable;
 import javax.persistence.*;
 import javax.xml.bind.annotation.XmlRootElement;
 import javax.xml.bind.annotation.XmlType;
+import java.io.Serializable;
 
 @Entity
 @Table(name = "rbThesaurus")
@@ -11,11 +11,11 @@ import javax.xml.bind.annotation.XmlType;
         {
                 @NamedQuery(name = "Thesaurus.findAll", query = "SELECT t FROM Thesaurus t"),
                 @NamedQuery(name = "Thesaurus.findByGroupId",
-                            query = "SELECT t FROM Thesaurus t WHERE t.groupId = :groupId"),
+                        query = "SELECT t FROM Thesaurus t WHERE t.groupId = :groupId"),
                 @NamedQuery(name = "Thesaurus.findById",
-                            query = "SELECT t FROM Thesaurus t WHERE t.id = :id"),
+                        query = "SELECT t FROM Thesaurus t WHERE t.id = :id"),
                 @NamedQuery(name = "Thesaurus.findByCode",
-                            query = "SELECT t FROM Thesaurus t WHERE t.code = :code AND t.groupId IS NULL")
+                        query = "SELECT t FROM Thesaurus t WHERE t.code = :code AND t.groupId IS NULL")
         })
 @XmlType(name = "thesaurus")
 @XmlRootElement(name = "thesaurus")

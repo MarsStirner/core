@@ -1,37 +1,35 @@
 package ru.korus.tmis.core.entity.model;
 
-import java.io.Serializable;
-import java.util.Date;
-import java.util.LinkedHashSet;
-import java.util.Set;
 import javax.persistence.*;
 import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Size;
 import javax.xml.bind.annotation.XmlRootElement;
+import java.io.Serializable;
+import java.util.Date;
 
 @Entity
 @Table(name = "Tissue")
 @XmlRootElement
 @NamedQueries({
-    @NamedQuery(name = "Tissue.findAll", query = "SELECT t FROM Tissue t"),
-    @NamedQuery(name = "Tissue.findById", query = "SELECT t FROM Tissue t WHERE t.id = :id")
+        @NamedQuery(name = "Tissue.findAll", query = "SELECT t FROM Tissue t"),
+        @NamedQuery(name = "Tissue.findById", query = "SELECT t FROM Tissue t WHERE t.id = :id")
 })
 public class Tissue implements Serializable {
     private static final long serialVersionUID = 1L;
-    
+
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Basic(optional = false)
     @NotNull
     @Column(name = "id")
     private Integer id;
-    
+
     @Basic(optional = false)
     @NotNull
     @Column(name = "date")
     @Temporal(TemporalType.TIMESTAMP)
     private Date date;
-    
+
     @Basic(optional = false)
     @NotNull
     @Size(min = 1, max = 255)
@@ -122,5 +120,5 @@ public class Tissue implements Serializable {
     @Override
     public String toString() {
         return "ru.korus.tmis.core.entity.model.Tissue[ id=" + id + " ]";
-    }    
+    }
 }

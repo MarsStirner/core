@@ -15,9 +15,9 @@ import javax.xml.bind.annotation.XmlType;
 
 /**
  * <p>Java class for URLScheme.
- * 
+ * <p/>
  * <p>The following schema fragment specifies the expected content contained within this class.
- * <p>
+ * <p/>
  * <pre>
  * &lt;simpleType name="URLScheme">
  *   &lt;restriction base="{urn:hl7-org:v3}cs">
@@ -34,7 +34,6 @@ import javax.xml.bind.annotation.XmlType;
  *   &lt;/restriction>
  * &lt;/simpleType>
  * </pre>
- * 
  */
 @XmlType(name = "URLScheme")
 @XmlEnum
@@ -71,7 +70,7 @@ public enum URLScheme {
     }
 
     public static URLScheme fromValue(String v) {
-        for (URLScheme c: URLScheme.values()) {
+        for (URLScheme c : URLScheme.values()) {
             if (c.value.equals(v)) {
                 return c;
             }

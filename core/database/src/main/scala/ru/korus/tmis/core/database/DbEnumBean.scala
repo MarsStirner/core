@@ -1,7 +1,7 @@
 package ru.korus.tmis.core.database
 
 import ru.korus.tmis.core.entity.model.{Nomenclature, RbAnalysisStatus, DbEnumerable}
-import ru.korus.tmis.core.logging.db.LoggingInterceptor
+import ru.korus.tmis.core.logging.LoggingInterceptor
 import ru.korus.tmis.util.I18nable
 
 import javax.annotation.{Resource, PostConstruct}
@@ -55,8 +55,7 @@ class DbEnumBean
   def syncEnums(em: EntityManager, EmId: String) = {
     tx.begin()
     try {
-      enums.synchronized
-      {
+      enums.synchronized {
         enums.foreach(tuple => {
           val (emId, e) = tuple
           val ee = e.asInstanceOf[Class[DbEnumerable]]
@@ -76,9 +75,9 @@ class DbEnumBean
 
   def processEnums(em: EntityManager, e: Class[DbEnumerable]) = {
     val enums = em
-                .createNamedQuery(e.getSimpleName + ".findAll")
-                .getResultList
-                .map(_.asInstanceOf[DbEnumerable])
+      .createNamedQuery(e.getSimpleName + ".findAll")
+      .getResultList
+      .map(_.asInstanceOf[DbEnumerable])
     enums.foreach(em.detach(_))
     info("Reloading DB enums of " + e.getSimpleName)
     e.newInstance().loadEnums(enums)

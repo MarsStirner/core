@@ -69,11 +69,11 @@ class ActionPropertyWrapper(ap: ActionProperty)
       })
 
     new CA(ap.getId,
-           ap.getVersion.intValue,
-           apt.getName,
-           apt.getTypeName,
-           apt.getConstructorValueDomain,
-           map)
+      ap.getVersion.intValue,
+      apt.getName,
+      apt.getTypeName,
+      apt.getConstructorValueDomain,
+      map)
   }
 
   def set(value: CA) = {

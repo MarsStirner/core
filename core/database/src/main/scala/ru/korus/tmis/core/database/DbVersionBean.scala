@@ -1,6 +1,6 @@
 package ru.korus.tmis.core.database
 
-import ru.korus.tmis.core.logging.db.LoggingInterceptor
+import ru.korus.tmis.core.logging.LoggingInterceptor
 
 import grizzled.slf4j.Logging
 import javax.ejb.Stateless
@@ -21,9 +21,9 @@ class DbVersionBean
 
   def getGlobalVersion = {
     em
-    .createNamedQuery("DbVersions.findAll", classOf[DbVersions])
-    .getResultList
-    .map(_.getVersion.toString)
-    .reduceLeft(_ + ":" + _)
+      .createNamedQuery("DbVersions.findAll", classOf[DbVersions])
+      .getResultList
+      .map(_.getVersion.toString)
+      .reduceLeft(_ + ":" + _)
   }
 }

@@ -26,32 +26,38 @@ object AnalysisResult {
     import ValueType._
 
     tp match {
-      case TEXT           => Variant0(sv)
-      case IMAGE          => Variant1(iv)
-      case CONCENTRATION  => Variant2(morv)
-      case SENSITIVITY    => Variant3(asv)
+      case TEXT => Variant0(sv)
+      case IMAGE => Variant1(iv)
+      case CONCENTRATION => Variant2(morv)
+      case SENSITIVITY => Variant3(asv)
     }
   }
 
   implicit def fromLab1(v: lab.AnalysisResult) = {
     AnalysisResult(
-                    Option(v.getCode),
-                    Option(v.getName),
-                    Option(v.getDeviceName),
-                    genValue(
-                      ValueType(v.getValueTypeNum),
-                      v.getTextValue,
-                      v.getImageValues.map{ ImageValue.fromLab1(_) }.toList,
-                      v.getMicroValues.map{ MicroOrganismResult.fromLab1(_) }.toList,
-                      v.getMicroSensitivity.map{ AntibioticSensitivity.fromLab1(_) }.toList
-                    ),
-                    Option(v.getNorm),
-                    Option(v.getNormalityIndex),
-                    Option(v.getUnitCode),
-                    Option(v.getEndDate),
-                    Option(v.getResultStatus),
-                    Option(v.getComment)
-                  )
+      Option(v.getCode),
+      Option(v.getName),
+      Option(v.getDeviceName),
+      genValue(
+        ValueType(v.getValueTypeNum),
+        v.getTextValue,
+        v.getImageValues.map {
+          ImageValue.fromLab1(_)
+        }.toList,
+        v.getMicroValues.map {
+          MicroOrganismResult.fromLab1(_)
+        }.toList,
+        v.getMicroSensitivity.map {
+          AntibioticSensitivity.fromLab1(_)
+        }.toList
+      ),
+      Option(v.getNorm),
+      Option(v.getNormalityIndex),
+      Option(v.getUnitCode),
+      Option(v.getEndDate),
+      Option(v.getResultStatus),
+      Option(v.getComment)
+    )
   }
 
 
@@ -59,66 +65,81 @@ object AnalysisResult {
     import ru.korus.tmis.util.General.NumberImplicits.optFloat
 
     AnalysisResult(
-                    Option(v.getCode),
-                    Option(v.getName),
-                    Option(v.getDeviceName),
-                    genValue(
-                      ValueType(v.getValueTypeNum),
-                      v.getTextValue,
-                      v.getImageValues.map{ ImageValue.fromLab2(_) }.toList,
-                      v.getMicroValues.map{ MicroOrganismResult.fromLab2(_) }.toList,
-                      v.getMicroSensitivity.map{ AntibioticSensitivity.fromLab2(_) }.toList
-                    ),
-                    Option(v.getNorm),
-                    v.getNormalityIndex,
-                    Option(v.getUnitCode),
-                    Option(v.getEndDate),
-                    Option(v.getResultStatus),
-                    Option(v.getComment)
-                  )
+      Option(v.getCode),
+      Option(v.getName),
+      Option(v.getDeviceName),
+      genValue(
+        ValueType(v.getValueTypeNum),
+        v.getTextValue,
+        v.getImageValues.map {
+          ImageValue.fromLab2(_)
+        }.toList,
+        v.getMicroValues.map {
+          MicroOrganismResult.fromLab2(_)
+        }.toList,
+        v.getMicroSensitivity.map {
+          AntibioticSensitivity.fromLab2(_)
+        }.toList
+      ),
+      Option(v.getNorm),
+      v.getNormalityIndex,
+      Option(v.getUnitCode),
+      Option(v.getEndDate),
+      Option(v.getResultStatus),
+      Option(v.getComment)
+    )
   }
 }
 
-sealed case class AnalysisResult (
-  /**
-   * Код методики/показателя (Основной)
-   */
-  code: Option[String],
-  /**
-   * Название методики/показателя
-   */
-  name: Option[String],
-  /**
-   * Название прибора, на котором выполнялось исследование
-   */
-  deviceName: Option[String],
-  /**
-   * Тип значения
-   */
-  value: AnalysisResult.AnalysisValue,
-  /**
-   * Норма (для числового результата)
-   */
-  norm: Option[String],
-  /**
-   * Значение результата относительно нормы (не опр./норма/ниже критической/ниже/выше критической/выше)
-   */
-  normalityIndex: Option[Float],
-  /**
-   * Единица измерения
-   */
-  unitCode: Option[String],
-  /**
-   * Дата выполнения
-   */
-  endDate: Option[Date],
-  /**
-   * Статус результата. В это поле выводится причина в случае отсутствия результата
-   */
-  resultStatus: Option[String],
-  /**
-   * Комментарий к методике
-   */
-  comment: Option[String]
-)
+sealed case class AnalysisResult(
+                                  /**
+                                   * Код методики/показателя (Основной)
+                                   */
+                                  code: Option[String],
+
+                                  /**
+                                   * Название методики/показателя
+                                   */
+                                  name: Option[String],
+
+                                  /**
+                                   * Название прибора, на котором выполнялось исследование
+                                   */
+                                  deviceName: Option[String],
+
+                                  /**
+                                   * Тип значения
+                                   */
+                                  value: AnalysisResult.AnalysisValue,
+
+                                  /**
+                                   * Норма (для числового результата)
+                                   */
+                                  norm: Option[String],
+
+                                  /**
+                                   * Значение результата относительно нормы (не опр./норма/ниже критической/ниже/выше критической/выше)
+                                   */
+                                  normalityIndex: Option[Float],
+
+                                  /**
+                                   * Единица измерения
+                                   */
+                                  unitCode: Option[String],
+
+                                  /**
+                                   * Дата выполнения
+                                   */
+                                  endDate: Option[Date],
+
+                                  /**
+                                   * Статус результата. В это поле выводится причина в случае отсутствия результата
+                                   */
+                                  resultStatus: Option[String],
+
+                                  /**
+                                   * Комментарий к методике
+                                   */
+                                  comment: Option[String]
+                                  )
 

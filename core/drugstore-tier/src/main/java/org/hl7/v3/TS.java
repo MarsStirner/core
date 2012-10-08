@@ -8,24 +8,19 @@
 
 package org.hl7.v3;
 
-import javax.xml.bind.annotation.XmlAccessType;
-import javax.xml.bind.annotation.XmlAccessorType;
-import javax.xml.bind.annotation.XmlAttribute;
-import javax.xml.bind.annotation.XmlSeeAlso;
-import javax.xml.bind.annotation.XmlType;
+import javax.xml.bind.annotation.*;
 
 
 /**
- * 
- *             A quantity specifying a point on the axis of natural time.
- *             A point in time is most often represented as a calendar
- *             expression.
- *          
- * 
+ * A quantity specifying a point on the axis of natural time.
+ * A point in time is most often represented as a calendar
+ * expression.
+ * <p/>
+ * <p/>
  * <p>Java class for TS complex type.
- * 
+ * <p/>
  * <p>The following schema fragment specifies the expected content contained within this class.
- * 
+ * <p/>
  * <pre>
  * &lt;complexType name="TS">
  *   &lt;complexContent>
@@ -35,31 +30,26 @@ import javax.xml.bind.annotation.XmlType;
  *   &lt;/complexContent>
  * &lt;/complexType>
  * </pre>
- * 
- * 
  */
 @XmlAccessorType(XmlAccessType.FIELD)
 @XmlType(name = "TS")
 @XmlSeeAlso({
-    UVPTS.class,
-    IVXBTS.class,
-    SXCMTS.class,
-    PPDTS.class
+        UVPTS.class,
+        IVXBTS.class,
+        SXCMTS.class,
+        PPDTS.class
 })
 public class TS
-    extends QTY
-{
+        extends QTY {
 
     @XmlAttribute
     protected String value;
 
     /**
      * Gets the value of the value property.
-     * 
-     * @return
-     *     possible object is
-     *     {@link String }
-     *     
+     *
+     * @return possible object is
+     *         {@link String }
      */
     public String getValue() {
         return value;
@@ -67,11 +57,9 @@ public class TS
 
     /**
      * Sets the value of the value property.
-     * 
-     * @param value
-     *     allowed object is
-     *     {@link String }
-     *     
+     *
+     * @param value allowed object is
+     *              {@link String }
      */
     public void setValue(String value) {
         this.value = value;

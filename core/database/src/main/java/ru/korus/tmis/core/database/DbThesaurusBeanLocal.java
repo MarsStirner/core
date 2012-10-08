@@ -4,8 +4,8 @@ import ru.korus.tmis.core.entity.model.Mkb;
 import ru.korus.tmis.core.entity.model.Thesaurus;
 import ru.korus.tmis.core.exception.CoreException;
 
-import java.util.List;
 import javax.ejb.Local;
+import java.util.List;
 
 @Local
 public interface DbThesaurusBeanLocal {
@@ -22,7 +22,6 @@ public interface DbThesaurusBeanLocal {
      * Получить дерево тезауруса, начиная с корневой вершины, имеющей код code.
      *
      * @param code код корневой вершины
-     *
      * @return список элементов тезауруса
      */
     List<Thesaurus> getThesaurusByCode(int code)

@@ -8,19 +8,15 @@
 
 package org.hl7.v3;
 
+import javax.xml.bind.annotation.*;
 import java.math.BigInteger;
-import javax.xml.bind.annotation.XmlAccessType;
-import javax.xml.bind.annotation.XmlAccessorType;
-import javax.xml.bind.annotation.XmlAttribute;
-import javax.xml.bind.annotation.XmlElement;
-import javax.xml.bind.annotation.XmlType;
 
 
 /**
  * <p>Java class for GLIST_PQ complex type.
- * 
+ * <p/>
  * <p>The following schema fragment specifies the expected content contained within this class.
- * 
+ * <p/>
  * <pre>
  * &lt;complexType name="GLIST_PQ">
  *   &lt;complexContent>
@@ -35,17 +31,14 @@ import javax.xml.bind.annotation.XmlType;
  *   &lt;/complexContent>
  * &lt;/complexType>
  * </pre>
- * 
- * 
  */
 @XmlAccessorType(XmlAccessType.FIELD)
 @XmlType(name = "GLIST_PQ", propOrder = {
-    "head",
-    "increment"
+        "head",
+        "increment"
 })
 public class GLISTPQ
-    extends ANY
-{
+        extends ANY {
 
     @XmlElement(required = true)
     protected PQ head;
@@ -58,11 +51,9 @@ public class GLISTPQ
 
     /**
      * Gets the value of the head property.
-     * 
-     * @return
-     *     possible object is
-     *     {@link PQ }
-     *     
+     *
+     * @return possible object is
+     *         {@link PQ }
      */
     public PQ getHead() {
         return head;
@@ -70,11 +61,9 @@ public class GLISTPQ
 
     /**
      * Sets the value of the head property.
-     * 
-     * @param value
-     *     allowed object is
-     *     {@link PQ }
-     *     
+     *
+     * @param value allowed object is
+     *              {@link PQ }
      */
     public void setHead(PQ value) {
         this.head = value;
@@ -82,11 +71,9 @@ public class GLISTPQ
 
     /**
      * Gets the value of the increment property.
-     * 
-     * @return
-     *     possible object is
-     *     {@link PQ }
-     *     
+     *
+     * @return possible object is
+     *         {@link PQ }
      */
     public PQ getIncrement() {
         return increment;
@@ -94,11 +81,9 @@ public class GLISTPQ
 
     /**
      * Sets the value of the increment property.
-     * 
-     * @param value
-     *     allowed object is
-     *     {@link PQ }
-     *     
+     *
+     * @param value allowed object is
+     *              {@link PQ }
      */
     public void setIncrement(PQ value) {
         this.increment = value;
@@ -106,11 +91,9 @@ public class GLISTPQ
 
     /**
      * Gets the value of the period property.
-     * 
-     * @return
-     *     possible object is
-     *     {@link BigInteger }
-     *     
+     *
+     * @return possible object is
+     *         {@link BigInteger }
      */
     public BigInteger getPeriod() {
         return period;
@@ -118,11 +101,9 @@ public class GLISTPQ
 
     /**
      * Sets the value of the period property.
-     * 
-     * @param value
-     *     allowed object is
-     *     {@link BigInteger }
-     *     
+     *
+     * @param value allowed object is
+     *              {@link BigInteger }
      */
     public void setPeriod(BigInteger value) {
         this.period = value;
@@ -130,11 +111,9 @@ public class GLISTPQ
 
     /**
      * Gets the value of the denominator property.
-     * 
-     * @return
-     *     possible object is
-     *     {@link BigInteger }
-     *     
+     *
+     * @return possible object is
+     *         {@link BigInteger }
      */
     public BigInteger getDenominator() {
         return denominator;
@@ -142,11 +121,9 @@ public class GLISTPQ
 
     /**
      * Sets the value of the denominator property.
-     * 
-     * @param value
-     *     allowed object is
-     *     {@link BigInteger }
-     *     
+     *
+     * @param value allowed object is
+     *              {@link BigInteger }
      */
     public void setDenominator(BigInteger value) {
         this.denominator = value;

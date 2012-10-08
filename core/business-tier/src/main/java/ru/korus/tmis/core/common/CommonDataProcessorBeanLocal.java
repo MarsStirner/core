@@ -11,10 +11,11 @@ import ru.korus.tmis.core.entity.model.ActionWrapper;
 import ru.korus.tmis.core.exception.CoreException;
 import ru.korus.tmis.util.StringId;
 import scala.Function1;
+import scala.Function2;
 
+import javax.ejb.Local;
 import java.util.List;
 import java.util.Set;
-import javax.ejb.Local;
 
 @Local
 public interface CommonDataProcessorBeanLocal {
@@ -35,6 +36,14 @@ public interface CommonDataProcessorBeanLocal {
             Set<ActionType> types,
             String typeName,
             Function1<ActionPropertyType, CommonAttribute> converter)
+            throws CoreException;
+
+    CommonData fromActionTypesForWebClient(
+            Set<ActionType> types,
+            String typeName,
+            List<StringId> listForSummary,
+            List<String> listForConverter,
+            Function2<List<String>, ActionPropertyType, CommonAttribute> converter)
             throws CoreException;
 
     CommonData fromActions(

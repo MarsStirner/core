@@ -1,10 +1,10 @@
 package ru.korus.tmis.core.entity.model;
 
-import java.io.Serializable;
-import java.util.Date;
 import javax.persistence.*;
 import javax.xml.bind.annotation.XmlRootElement;
 import javax.xml.bind.annotation.XmlType;
+import java.io.Serializable;
+import java.util.Date;
 
 @Entity
 @Table(name = "OrgStructure_HospitalBed", catalog = "", schema = "")
@@ -48,8 +48,10 @@ public class OrgStructureHospitalBed implements Serializable {
     @Column(name = "type_id")
     private Integer typeId;
 
-    @Column(name = "profile_id")
-    private Integer profileId;
+    @OneToOne
+    @JoinColumn(name = "profile_id",
+            nullable = false)
+    private RbHospitalBedProfile profileId;
 
     @Basic(optional = false)
     @Column(name = "relief")
@@ -149,11 +151,11 @@ public class OrgStructureHospitalBed implements Serializable {
         this.typeId = typeId;
     }
 
-    public Integer getProfileId() {
+    public RbHospitalBedProfile getProfileId() {
         return profileId;
     }
 
-    public void setProfileId(Integer profileId) {
+    public void setProfileId(RbHospitalBedProfile profileId) {
         this.profileId = profileId;
     }
 

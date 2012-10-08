@@ -8,19 +8,19 @@
 
 package org.hl7.v3;
 
-import java.util.ArrayList;
-import java.util.List;
 import javax.xml.bind.annotation.XmlAccessType;
 import javax.xml.bind.annotation.XmlAccessorType;
 import javax.xml.bind.annotation.XmlAttribute;
 import javax.xml.bind.annotation.XmlType;
+import java.util.ArrayList;
+import java.util.List;
 
 
 /**
  * <p>Java class for POCD_MT000040.IntendedRecipient complex type.
- * 
+ * <p/>
  * <p>The following schema fragment specifies the expected content contained within this class.
- * 
+ * <p/>
  * <pre>
  * &lt;complexType name="POCD_MT000040.IntendedRecipient">
  *   &lt;complexContent>
@@ -41,19 +41,17 @@ import javax.xml.bind.annotation.XmlType;
  *   &lt;/complexContent>
  * &lt;/complexType>
  * </pre>
- * 
- * 
  */
 @XmlAccessorType(XmlAccessType.FIELD)
 @XmlType(name = "POCD_MT000040.IntendedRecipient", propOrder = {
-    "realmCode",
-    "typeId",
-    "templateId",
-    "id",
-    "addr",
-    "telecom",
-    "informationRecipient",
-    "receivedOrganization"
+        "realmCode",
+        "typeId",
+        "templateId",
+        "id",
+        "addr",
+        "telecom",
+        "informationRecipient",
+        "receivedOrganization"
 })
 public class PocdIntendedRecipient {
 
@@ -72,25 +70,23 @@ public class PocdIntendedRecipient {
 
     /**
      * Gets the value of the realmCode property.
-     * 
-     * <p>
+     * <p/>
+     * <p/>
      * This accessor method returns a reference to the live list,
      * not a snapshot. Therefore any modification you make to the
      * returned list will be present inside the JAXB object.
      * This is why there is not a <CODE>set</CODE> method for the realmCode property.
-     * 
-     * <p>
+     * <p/>
+     * <p/>
      * For example, to add a new item, do as follows:
      * <pre>
      *    getRealmCode().add(newItem);
      * </pre>
-     * 
-     * 
-     * <p>
+     * <p/>
+     * <p/>
+     * <p/>
      * Objects of the following type(s) are allowed in the list
      * {@link CS }
-     * 
-     * 
      */
     public List<CS> getRealmCode() {
         if (realmCode == null) {
@@ -101,11 +97,9 @@ public class PocdIntendedRecipient {
 
     /**
      * Gets the value of the typeId property.
-     * 
-     * @return
-     *     possible object is
-     *     {@link PocdInfrastructureRootTypeId }
-     *     
+     *
+     * @return possible object is
+     *         {@link PocdInfrastructureRootTypeId }
      */
     public PocdInfrastructureRootTypeId getTypeId() {
         return typeId;
@@ -113,11 +107,9 @@ public class PocdIntendedRecipient {
 
     /**
      * Sets the value of the typeId property.
-     * 
-     * @param value
-     *     allowed object is
-     *     {@link PocdInfrastructureRootTypeId }
-     *     
+     *
+     * @param value allowed object is
+     *              {@link PocdInfrastructureRootTypeId }
      */
     public void setTypeId(PocdInfrastructureRootTypeId value) {
         this.typeId = value;
@@ -125,25 +117,23 @@ public class PocdIntendedRecipient {
 
     /**
      * Gets the value of the templateId property.
-     * 
-     * <p>
+     * <p/>
+     * <p/>
      * This accessor method returns a reference to the live list,
      * not a snapshot. Therefore any modification you make to the
      * returned list will be present inside the JAXB object.
      * This is why there is not a <CODE>set</CODE> method for the templateId property.
-     * 
-     * <p>
+     * <p/>
+     * <p/>
      * For example, to add a new item, do as follows:
      * <pre>
      *    getTemplateId().add(newItem);
      * </pre>
-     * 
-     * 
-     * <p>
+     * <p/>
+     * <p/>
+     * <p/>
      * Objects of the following type(s) are allowed in the list
      * {@link II }
-     * 
-     * 
      */
     public List<II> getTemplateId() {
         if (templateId == null) {
@@ -154,25 +144,23 @@ public class PocdIntendedRecipient {
 
     /**
      * Gets the value of the id property.
-     * 
-     * <p>
+     * <p/>
+     * <p/>
      * This accessor method returns a reference to the live list,
      * not a snapshot. Therefore any modification you make to the
      * returned list will be present inside the JAXB object.
      * This is why there is not a <CODE>set</CODE> method for the id property.
-     * 
-     * <p>
+     * <p/>
+     * <p/>
      * For example, to add a new item, do as follows:
      * <pre>
      *    getId().add(newItem);
      * </pre>
-     * 
-     * 
-     * <p>
+     * <p/>
+     * <p/>
+     * <p/>
      * Objects of the following type(s) are allowed in the list
      * {@link II }
-     * 
-     * 
      */
     public List<II> getId() {
         if (id == null) {
@@ -183,25 +171,23 @@ public class PocdIntendedRecipient {
 
     /**
      * Gets the value of the addr property.
-     * 
-     * <p>
+     * <p/>
+     * <p/>
      * This accessor method returns a reference to the live list,
      * not a snapshot. Therefore any modification you make to the
      * returned list will be present inside the JAXB object.
      * This is why there is not a <CODE>set</CODE> method for the addr property.
-     * 
-     * <p>
+     * <p/>
+     * <p/>
      * For example, to add a new item, do as follows:
      * <pre>
      *    getAddr().add(newItem);
      * </pre>
-     * 
-     * 
-     * <p>
+     * <p/>
+     * <p/>
+     * <p/>
      * Objects of the following type(s) are allowed in the list
      * {@link AD }
-     * 
-     * 
      */
     public List<AD> getAddr() {
         if (addr == null) {
@@ -212,25 +198,23 @@ public class PocdIntendedRecipient {
 
     /**
      * Gets the value of the telecom property.
-     * 
-     * <p>
+     * <p/>
+     * <p/>
      * This accessor method returns a reference to the live list,
      * not a snapshot. Therefore any modification you make to the
      * returned list will be present inside the JAXB object.
      * This is why there is not a <CODE>set</CODE> method for the telecom property.
-     * 
-     * <p>
+     * <p/>
+     * <p/>
      * For example, to add a new item, do as follows:
      * <pre>
      *    getTelecom().add(newItem);
      * </pre>
-     * 
-     * 
-     * <p>
+     * <p/>
+     * <p/>
+     * <p/>
      * Objects of the following type(s) are allowed in the list
      * {@link TEL }
-     * 
-     * 
      */
     public List<TEL> getTelecom() {
         if (telecom == null) {
@@ -241,11 +225,9 @@ public class PocdIntendedRecipient {
 
     /**
      * Gets the value of the informationRecipient property.
-     * 
-     * @return
-     *     possible object is
-     *     {@link PocdPerson }
-     *     
+     *
+     * @return possible object is
+     *         {@link PocdPerson }
      */
     public PocdPerson getInformationRecipient() {
         return informationRecipient;
@@ -253,11 +235,9 @@ public class PocdIntendedRecipient {
 
     /**
      * Sets the value of the informationRecipient property.
-     * 
-     * @param value
-     *     allowed object is
-     *     {@link PocdPerson }
-     *     
+     *
+     * @param value allowed object is
+     *              {@link PocdPerson }
      */
     public void setInformationRecipient(PocdPerson value) {
         this.informationRecipient = value;
@@ -265,11 +245,9 @@ public class PocdIntendedRecipient {
 
     /**
      * Gets the value of the receivedOrganization property.
-     * 
-     * @return
-     *     possible object is
-     *     {@link PocdOrganization }
-     *     
+     *
+     * @return possible object is
+     *         {@link PocdOrganization }
      */
     public PocdOrganization getReceivedOrganization() {
         return receivedOrganization;
@@ -277,11 +255,9 @@ public class PocdIntendedRecipient {
 
     /**
      * Sets the value of the receivedOrganization property.
-     * 
-     * @param value
-     *     allowed object is
-     *     {@link PocdOrganization }
-     *     
+     *
+     * @param value allowed object is
+     *              {@link PocdOrganization }
      */
     public void setReceivedOrganization(PocdOrganization value) {
         this.receivedOrganization = value;
@@ -289,25 +265,23 @@ public class PocdIntendedRecipient {
 
     /**
      * Gets the value of the nullFlavor property.
-     * 
-     * <p>
+     * <p/>
+     * <p/>
      * This accessor method returns a reference to the live list,
      * not a snapshot. Therefore any modification you make to the
      * returned list will be present inside the JAXB object.
      * This is why there is not a <CODE>set</CODE> method for the nullFlavor property.
-     * 
-     * <p>
+     * <p/>
+     * <p/>
      * For example, to add a new item, do as follows:
      * <pre>
      *    getNullFlavor().add(newItem);
      * </pre>
-     * 
-     * 
-     * <p>
+     * <p/>
+     * <p/>
+     * <p/>
      * Objects of the following type(s) are allowed in the list
      * {@link String }
-     * 
-     * 
      */
     public List<String> getNullFlavor() {
         if (nullFlavor == null) {
@@ -318,11 +292,9 @@ public class PocdIntendedRecipient {
 
     /**
      * Gets the value of the classCode property.
-     * 
-     * @return
-     *     possible object is
-     *     {@link XInformationRecipientRole }
-     *     
+     *
+     * @return possible object is
+     *         {@link XInformationRecipientRole }
      */
     public XInformationRecipientRole getClassCode() {
         if (classCode == null) {
@@ -334,11 +306,9 @@ public class PocdIntendedRecipient {
 
     /**
      * Sets the value of the classCode property.
-     * 
-     * @param value
-     *     allowed object is
-     *     {@link XInformationRecipientRole }
-     *     
+     *
+     * @param value allowed object is
+     *              {@link XInformationRecipientRole }
      */
     public void setClassCode(XInformationRecipientRole value) {
         this.classCode = value;

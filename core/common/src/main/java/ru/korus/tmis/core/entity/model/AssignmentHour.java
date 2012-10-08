@@ -1,10 +1,10 @@
 package ru.korus.tmis.core.entity.model;
 
+import javax.persistence.*;
 import java.io.Serializable;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.GregorianCalendar;
-import javax.persistence.*;
 
 @Entity
 @Table(name = "AssignmentHour", catalog = "", schema = "")
@@ -93,8 +93,8 @@ public class AssignmentHour
 
     @ManyToOne
     @JoinColumn(name = "action_id",
-                insertable = false,
-                updatable = false)
+            insertable = false,
+            updatable = false)
     private Action action;
 
     public AssignmentHour() {

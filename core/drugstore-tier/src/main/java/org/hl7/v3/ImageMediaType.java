@@ -15,9 +15,9 @@ import javax.xml.bind.annotation.XmlType;
 
 /**
  * <p>Java class for ImageMediaType.
- * 
+ * <p/>
  * <p>The following schema fragment specifies the expected content contained within this class.
- * <p>
+ * <p/>
  * <pre>
  * &lt;simpleType name="ImageMediaType">
  *   &lt;restriction base="{urn:hl7-org:v3}cs">
@@ -29,7 +29,6 @@ import javax.xml.bind.annotation.XmlType;
  *   &lt;/restriction>
  * &lt;/simpleType>
  * </pre>
- * 
  */
 @XmlType(name = "ImageMediaType")
 @XmlEnum
@@ -56,7 +55,7 @@ public enum ImageMediaType {
     }
 
     public static ImageMediaType fromValue(String v) {
-        for (ImageMediaType c: ImageMediaType.values()) {
+        for (ImageMediaType c : ImageMediaType.values()) {
             if (c.value.equals(v)) {
                 return c;
             }

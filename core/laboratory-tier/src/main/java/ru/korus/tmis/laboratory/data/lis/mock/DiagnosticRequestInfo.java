@@ -178,7 +178,7 @@ public class DiagnosticRequestInfo {
         this.doctorMiddleName = doctorMiddleName;
     }
 
-    @XmlElement(name = "orderDoctorMisId", required=true)
+    @XmlElement(name = "orderDoctorMisId", required = true)
     public String getDoctorCode() {
         return doctorCode;
     }

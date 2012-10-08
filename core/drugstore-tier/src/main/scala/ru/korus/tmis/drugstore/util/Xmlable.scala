@@ -21,9 +21,9 @@ object Xmlable {
   def asScalaXml(dom: DomNode): Node = {
     val adapter = new NoBindingFactoryAdapter
     TransformerFactory
-    .newInstance()
-    .newTransformer()
-    .transform(new DOMSource(dom), new SAXResult(adapter))
+      .newInstance()
+      .newTransformer()
+      .transform(new DOMSource(dom), new SAXResult(adapter))
     adapter.rootElem
   }
 

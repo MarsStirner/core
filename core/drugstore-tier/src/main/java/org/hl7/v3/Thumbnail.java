@@ -14,21 +14,20 @@ import javax.xml.bind.annotation.XmlType;
 
 
 /**
- * 
- *                      A thumbnail is an abbreviated rendition of the full
- *                      accept. A thumbnail requires significantly fewer
- *                      resources than the full accept, while still maintaining
- *                      some distinctive similarity with the full accept. A
- *                      thumbnail is typically used with by-reference
- *                      encapsulated accept. It allows a user to select accept
- *                      more efficiently before actually downloading through
- *                      the reference.
- *                   
- * 
+ * A thumbnail is an abbreviated rendition of the full
+ * accept. A thumbnail requires significantly fewer
+ * resources than the full accept, while still maintaining
+ * some distinctive similarity with the full accept. A
+ * thumbnail is typically used with by-reference
+ * encapsulated accept. It allows a user to select accept
+ * more efficiently before actually downloading through
+ * the reference.
+ * <p/>
+ * <p/>
  * <p>Java class for thumbnail complex type.
- * 
+ * <p/>
  * <p>The following schema fragment specifies the expected content contained within this class.
- * 
+ * <p/>
  * <pre>
  * &lt;complexType name="thumbnail">
  *   &lt;complexContent>
@@ -41,14 +40,11 @@ import javax.xml.bind.annotation.XmlType;
  *   &lt;/complexContent>
  * &lt;/complexType>
  * </pre>
- * 
- * 
  */
 @XmlAccessorType(XmlAccessType.FIELD)
 @XmlType(name = "thumbnail")
 public class Thumbnail
-    extends ED
-{
+        extends ED {
 
 
 }

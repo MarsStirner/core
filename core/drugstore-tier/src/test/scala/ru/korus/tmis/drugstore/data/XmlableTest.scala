@@ -13,7 +13,9 @@ import javax.xml.transform.stream.StreamResult
 class XmlableTest {
 
   class FooXmlable extends ScalaXmlable {
-    override val toXml = <foo><bar/></foo>
+    override val toXml = <foo>
+      <bar/>
+    </foo>
   }
 
   def xmlToString(node: Document): String = {

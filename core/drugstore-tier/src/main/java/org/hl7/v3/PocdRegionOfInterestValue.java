@@ -16,9 +16,9 @@ import javax.xml.bind.annotation.XmlType;
 
 /**
  * <p>Java class for POCD_MT000040.RegionOfInterest.value complex type.
- * 
+ * <p/>
  * <p>The following schema fragment specifies the expected content contained within this class.
- * 
+ * <p/>
  * <pre>
  * &lt;complexType name="POCD_MT000040.RegionOfInterest.value">
  *   &lt;complexContent>
@@ -28,25 +28,20 @@ import javax.xml.bind.annotation.XmlType;
  *   &lt;/complexContent>
  * &lt;/complexType>
  * </pre>
- * 
- * 
  */
 @XmlAccessorType(XmlAccessType.FIELD)
 @XmlType(name = "POCD_MT000040.RegionOfInterest.value")
 public class PocdRegionOfInterestValue
-    extends INT
-{
+        extends INT {
 
     @XmlAttribute
     protected Boolean unsorted;
 
     /**
      * Gets the value of the unsorted property.
-     * 
-     * @return
-     *     possible object is
-     *     {@link Boolean }
-     *     
+     *
+     * @return possible object is
+     *         {@link Boolean }
      */
     public boolean isUnsorted() {
         if (unsorted == null) {
@@ -58,11 +53,9 @@ public class PocdRegionOfInterestValue
 
     /**
      * Sets the value of the unsorted property.
-     * 
-     * @param value
-     *     allowed object is
-     *     {@link Boolean }
-     *     
+     *
+     * @param value allowed object is
+     *              {@link Boolean }
      */
     public void setUnsorted(Boolean value) {
         this.unsorted = value;

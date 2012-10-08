@@ -91,10 +91,10 @@ class AdministrationEventProcessorBean
       ycd match {
         case null => {}
         case document => sendSoapMessage(new YRcmrWrapperDocument(document).toXmlDom,
-                                         CMD.Hl7_RequestRootElement,
-                                         CMD.Hl7_SoapAction,
-                                         CMD.Hl7_SoapOperation,
-                                         CMD.Hl7_XsiType)
+          CMD.Hl7_RequestRootElement,
+          CMD.Hl7_SoapAction,
+          CMD.Hl7_SoapOperation,
+          CMD.Hl7_XsiType)
       }
     })
   }

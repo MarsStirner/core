@@ -14,5 +14,4 @@ object Types {
   type JString = String
 
 
-
 }

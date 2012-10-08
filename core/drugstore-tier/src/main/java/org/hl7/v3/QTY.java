@@ -15,20 +15,19 @@ import javax.xml.bind.annotation.XmlType;
 
 
 /**
- * 
- *             The quantity accept type is an abstract generalization
- *             for all accept types (1) whose value set has an order
- *             relation (less-or-equal) and (2) where difference is
- *             defined in all of the accept type's totally ordered value
- *             subsets.  The quantity type abstraction is needed in
- *             defining certain other types, such as the interval and
- *             the probability distribution.
- *          
- * 
+ * The quantity accept type is an abstract generalization
+ * for all accept types (1) whose value set has an order
+ * relation (less-or-equal) and (2) where difference is
+ * defined in all of the accept type's totally ordered value
+ * subsets.  The quantity type abstraction is needed in
+ * defining certain other types, such as the interval and
+ * the probability distribution.
+ * <p/>
+ * <p/>
  * <p>Java class for QTY complex type.
- * 
+ * <p/>
  * <p>The following schema fragment specifies the expected content contained within this class.
- * 
+ * <p/>
  * <pre>
  * &lt;complexType name="QTY">
  *   &lt;complexContent>
@@ -37,24 +36,21 @@ import javax.xml.bind.annotation.XmlType;
  *   &lt;/complexContent>
  * &lt;/complexType>
  * </pre>
- * 
- * 
  */
 @XmlAccessorType(XmlAccessType.FIELD)
 @XmlType(name = "QTY")
 @XmlSeeAlso({
-    RTOPQPQ.class,
-    TS.class,
-    MO.class,
-    RTOMOPQ.class,
-    PQ.class,
-    REAL.class,
-    INT.class,
-    RTOQTYQTY.class
+        RTOPQPQ.class,
+        TS.class,
+        MO.class,
+        RTOMOPQ.class,
+        PQ.class,
+        REAL.class,
+        INT.class,
+        RTOQTYQTY.class
 })
 public abstract class QTY
-    extends ANY
-{
+        extends ANY {
 
 
 }

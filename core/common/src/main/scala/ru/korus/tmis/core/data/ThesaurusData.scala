@@ -3,6 +3,8 @@ package ru.korus.tmis.core.data
 import reflect.BeanProperty
 import java.util.LinkedList
 import javax.xml.bind.annotation.{XmlType, XmlRootElement, XmlAttribute}
+import org.codehaus.jackson.annotate.JsonIgnoreProperties
+import ru.korus.tmis.core.entity.model.Thesaurus
 
 @XmlType(name = "thesaurus")
 @XmlRootElement(name = "thesaurus")
@@ -23,7 +25,7 @@ class ThesaurusData {
   var entry = new LinkedList[ThesaurusEntry]
 
   def this(version: String) = {
-    this ()
+    this()
     this.version = version
   }
 
@@ -51,11 +53,50 @@ class ThesaurusEntry {
            code: String,
            name: String,
            template: String) {
-    this ()
+    this()
     this.id = id
     this.groupId = groupId
     this.code = code
     this.name = name
     this.template = template
+  }
+}
+
+@XmlType(name = "thesaurusContainer")
+@XmlRootElement(name = "thesaurusContainer")
+@JsonIgnoreProperties(ignoreUnknown = true)
+class ThesaurusContainer {
+  @BeanProperty
+  var id: java.lang.Integer = _
+  @BeanProperty
+  var name: String = _
+  @BeanProperty
+  var code: String = _
+  @BeanProperty
+  var groupId: java.lang.Integer = _
+
+  def this(id: java.lang.Integer, name: String, code: String, groupId: java.lang.Integer) {
+    this()
+    this.id = id
+    this.name = name
+    this.code = code
+    this.groupId = groupId
+  }
+
+  def this(thesaurus: Thesaurus) {
+    this()
+    this.id = thesaurus.getId
+    this.name = thesaurus.getName
+    this.code = thesaurus.getCode
+    this.groupId = thesaurus.getGroupId
+  }
+
+  def toMap = {
+    var map = new java.util.HashMap[String, Object]
+    map.put("id", this.id)
+    map.put("name", this.name)
+    map.put("code", this.code)
+    map.put("groupId", this.groupId)
+    map
   }
 }

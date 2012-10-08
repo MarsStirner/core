@@ -38,7 +38,7 @@ public class APValueRLSWrapper implements Serializable, APValue {
     }
 
     @Override
-    public void linkToActionProperty(ActionProperty ap) {
+    public void linkToActionProperty(ActionProperty ap, int index) {
         throw new UnsupportedOperationException();
     }
 

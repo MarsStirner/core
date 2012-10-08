@@ -15,17 +15,16 @@ import javax.xml.bind.annotation.XmlType;
 
 
 /**
- * 
- *             The character string accept type stands for text accept,
- *             primarily intended for machine processing (e.g.,
- *             sorting, querying, indexing, etc.) Used for names,
- *             symbols, and formal expressions.
- *          
- * 
+ * The character string accept type stands for text accept,
+ * primarily intended for machine processing (e.g.,
+ * sorting, querying, indexing, etc.) Used for names,
+ * symbols, and formal expressions.
+ * <p/>
+ * <p/>
  * <p>Java class for ST complex type.
- * 
+ * <p/>
  * <p>The following schema fragment specifies the expected content contained within this class.
- * 
+ * <p/>
  * <pre>
  * &lt;complexType name="ST">
  *   &lt;complexContent>
@@ -41,19 +40,16 @@ import javax.xml.bind.annotation.XmlType;
  *   &lt;/complexContent>
  * &lt;/complexType>
  * </pre>
- * 
- * 
  */
 @XmlAccessorType(XmlAccessType.FIELD)
 @XmlType(name = "ST")
 @XmlSeeAlso({
-    SC.class,
-    ADXP.class,
-    ENXP.class
+        SC.class,
+        ADXP.class,
+        ENXP.class
 })
 public class ST
-    extends ED
-{
+        extends ED {
 
 
 }

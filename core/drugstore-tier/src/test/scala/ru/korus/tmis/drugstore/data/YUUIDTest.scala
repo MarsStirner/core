@@ -9,7 +9,7 @@ package ru.korus.tmis.drugstore.data
  */
 
 import org.junit.Test
-import java.lang.{ Integer => JInteger }
+import java.lang.{Integer => JInteger}
 import ru.korus.tmis.core.entity.model.{Event, Patient, Action}
 
 class YUUIDTest {
@@ -28,21 +28,23 @@ class YUUIDTest {
     // id-based generation
     // if it wouldn't work, it wouldn't compile as well
     assert(generateById(action0) == generateById(action1))
-    
+
     val event0 = new Event
     event0 setId 100500
     val event1 = new Event
     event1 setId 42
 
-    assert(generateById(event0)  != generateById(event1))
+    assert(generateById(event0) != generateById(event1))
     assert(generateById(action0) != generateById(event0))
-    
+
     // should also compile
     generateById(new Event())
     generateById(new Patient())
-    generateById(new AnyRef{ def getId(): JInteger = 0xCAFEBABE } )
+    generateById(new AnyRef {
+      def getId(): JInteger = 0xCAFEBABE
+    })
 
-    
+
     // should not compile
     //generateById(any)
     //generateById("hi")

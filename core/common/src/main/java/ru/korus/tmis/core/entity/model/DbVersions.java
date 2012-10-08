@@ -1,14 +1,14 @@
 package ru.korus.tmis.core.entity.model;
 
-import java.io.Serializable;
 import javax.persistence.*;
+import java.io.Serializable;
 
 @Entity
 @Table(name = "Versions", catalog = "", schema = "")
 @NamedQueries(
         {
                 @NamedQuery(name = "DbVersions.findAll",
-                            query = "SELECT d FROM DbVersions d ORDER BY d.id")
+                        query = "SELECT d FROM DbVersions d ORDER BY d.id")
         })
 public class DbVersions implements Serializable {
 

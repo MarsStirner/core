@@ -16,9 +16,9 @@ import javax.xml.bind.annotation.XmlType;
 
 /**
  * <p>Java class for UVP_TS complex type.
- * 
+ * <p/>
  * <p>The following schema fragment specifies the expected content contained within this class.
- * 
+ * <p/>
  * <pre>
  * &lt;complexType name="UVP_TS">
  *   &lt;complexContent>
@@ -28,25 +28,20 @@ import javax.xml.bind.annotation.XmlType;
  *   &lt;/complexContent>
  * &lt;/complexType>
  * </pre>
- * 
- * 
  */
 @XmlAccessorType(XmlAccessType.FIELD)
 @XmlType(name = "UVP_TS")
 public class UVPTS
-    extends TS
-{
+        extends TS {
 
     @XmlAttribute
     protected Double probability;
 
     /**
      * Gets the value of the probability property.
-     * 
-     * @return
-     *     possible object is
-     *     {@link Double }
-     *     
+     *
+     * @return possible object is
+     *         {@link Double }
      */
     public Double getProbability() {
         return probability;
@@ -54,11 +49,9 @@ public class UVPTS
 
     /**
      * Sets the value of the probability property.
-     * 
-     * @param value
-     *     allowed object is
-     *     {@link Double }
-     *     
+     *
+     * @param value allowed object is
+     *              {@link Double }
      */
     public void setProbability(Double value) {
         this.probability = value;

@@ -64,7 +64,7 @@ class RlsEntry {
            dosage: String,
            filling: String,
            packing: String) = {
-    this ()
+    this()
     this.id = id
     this.code = code
     this.tradeName = tradeName

@@ -1,14 +1,11 @@
 package ru.korus.tmis.core.entity.model;
 
-import java.io.Serializable;
-import javax.persistence.Entity;
-import javax.persistence.JoinColumn;
-import javax.persistence.NamedQueries;
-import javax.persistence.NamedQuery;
-import javax.persistence.OneToOne;
-import javax.persistence.Table;
+import ru.korus.tmis.core.exception.CoreException;
+
+import javax.persistence.*;
 import javax.xml.bind.annotation.XmlRootElement;
 import javax.xml.bind.annotation.XmlType;
+import java.io.Serializable;
 
 @Entity
 @Table(name = "ActionProperty_OrgStructure", catalog = "", schema = "")
@@ -22,8 +19,11 @@ public class APValueOrgStructure extends AbstractAPValue implements Serializable
 
     private static final long serialVersionUID = 1L;
 
+    @Column(name = "value")
+    private Integer orgId;
+
     @OneToOne
-    @JoinColumn(name = "value")
+    @JoinColumn(name = "value", insertable = false, updatable = false)
     private OrgStructure value;
 
     public APValueOrgStructure() {
@@ -48,12 +48,29 @@ public class APValueOrgStructure extends AbstractAPValue implements Serializable
 
     @Override
     public String getValueAsString() {
-        return value.getName();
+        return value != null ? value.getName() : null;
     }
 
     @Override
-    public boolean setValueFromString(final String value) {
-        return false;
+    public String getValueAsId() {
+        return orgId != null ? Integer.toString(orgId) : "";
+    }
+
+    @Override
+    public boolean setValueFromString(final String value) throws CoreException {
+        if ("".equals(value)) {
+            return true;
+        }
+
+        try {
+            this.orgId = Integer.valueOf(value);
+            return true;
+        } catch (NumberFormatException ex) {
+            throw new CoreException(
+                    0x0106,
+                    "Не могу установить " + this.getClass().getSimpleName() + " в значение <" + value + ">"
+            );
+        }
     }
 
     @Override

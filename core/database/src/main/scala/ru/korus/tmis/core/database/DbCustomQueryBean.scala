@@ -1,20 +1,21 @@
 package ru.korus.tmis.core.database
 
-import ru.korus.tmis.core.entity.model._
 import ru.korus.tmis.core.indicators.IndicatorValue
-import ru.korus.tmis.core.logging.db.LoggingInterceptor
+import ru.korus.tmis.core.logging.LoggingInterceptor
 import ru.korus.tmis.util.I18nable
 
 import grizzled.slf4j.Logging
-import java.util.Date
-import javax.ejb.{TransactionAttributeType, TransactionAttribute, Stateless}
 import javax.interceptor.Interceptors
-import javax.persistence.{TemporalType, EntityManager, PersistenceContext}
 
 import scala.collection.JavaConversions._
 import scala.collection.mutable.LinkedHashMap
-import ru.korus.tmis.core.exception.CoreException
-import ru.korus.tmis.util.General._
+import java.lang.String
+import javax.persistence.{TemporalType, EntityManager, PersistenceContext}
+import ru.korus.tmis.core.entity.model._
+import scala.Predef._
+import java.util.{Date, List}
+import ru.korus.tmis.core.data._
+import javax.ejb.{EJB, Stateless, TransactionAttributeType, TransactionAttribute}
 
 import java.lang.{Double => JDouble}
 
@@ -29,12 +30,8 @@ class DbCustomQueryBean
   @PersistenceContext(unitName = "s11r64")
   var em: EntityManager = _
 
-  def getFinanceId(eventId: Int) = {
-    val result = em.createQuery(finance, classOf[Int])
-      .setParameter("externalId", eventId)
-      .getSingleResult
-    result
-  }
+  @EJB
+  private var eventBean: DbEventBeanLocal = _
 
   def getTakenTissueByBarcode(id: Int, period: Int) = {
     val result = em.createQuery(takenTissueByBarcodeQuery, classOf[TakenTissue])
@@ -65,6 +62,48 @@ class DbCustomQueryBean
     val events = result.map((e) => e(0).asInstanceOf[Event])
     events.foreach((event) => em.detach(event))
     events
+  }
+
+  def getActiveEventsForDepartmentAndDoctor(page: Int, limit: Int, sortingField: String, sortingMethod: String, filter: Object) = {
+
+    val sorting = "ORDER BY %s %s".format(sortingField, sortingMethod)
+    val queryStr: QueryDataStructure = if (filter.isInstanceOf[PatientsListRequestDataFilter]) {
+      filter.asInstanceOf[PatientsListRequestDataFilter].toQueryStructure()
+    }
+    else {
+      new QueryDataStructure()
+    }
+
+    var typed = em.createQuery(ActiveEventsByDepartmentIdAndDoctorIdBetweenDatesQuery.format("e", queryStr.query, i18n("db.action.movingFlatCode"), "GROUP BY e", sorting), classOf[Array[AnyRef]])
+      .setMaxResults(limit)
+      .setFirstResult(limit * page)
+
+    if (queryStr.data.size() > 0) {
+      queryStr.data.foreach(qdp => typed.setParameter(qdp.name, qdp.value))
+    }
+    val result = typed.getResultList
+
+    val events = result.map((e) => e(0).asInstanceOf[Event])
+    events.foreach((event) => em.detach(event))
+    events
+  }
+
+  def getCountActiveEventsForDepartmentAndDoctor(filter: Object) = {
+
+    val queryStr: QueryDataStructure = if (filter.isInstanceOf[PatientsListRequestDataFilter]) {
+      filter.asInstanceOf[PatientsListRequestDataFilter].toQueryStructure()
+    }
+    else {
+      new QueryDataStructure()
+    }
+
+    var typed = em.createQuery(ActiveEventsByDepartmentIdAndDoctorIdBetweenDatesQuery.format("count(e)", queryStr.query, i18n("db.action.movingFlatCode"), "", ""), classOf[Array[AnyRef]])
+
+    if (queryStr.data.size() > 0) {
+      queryStr.data.foreach(qdp => typed.setParameter(qdp.name, qdp.value))
+    }
+    val result = typed.getSingleResult
+    result(0).asInstanceOf[Long]
   }
 
   def getAdmissionsByEvents(events: java.util.List[Event]) = {
@@ -120,8 +159,56 @@ class DbCustomQueryBean
     getAllActionsByQueryAndEventId(AllAssessmentsByEventIdQuery, eventId)
   }
 
+  def getLastAssessmentByEvents(events: List[Event]) = {
+    getEntitiesByEvents[Action](events, LastAssessmentByEventIdsQuery)
+  }
+
   def getAllDiagnosticsByEventId(eventId: Int) = {
-    getAllActionsByQueryAndEventId(AllDiagnosticsByEventIdQuery, eventId)
+    getAllActionsByQueryAndEventId(AllDiagnosticsByEventIdQuery.format(
+      "a",
+      i18n("db.action.diagnosticClass")),
+      eventId)
+  }
+
+  def getAllDiagnosticsWithFilter(page: Int, limit: Int, sortingField: String, sortingMethod: String, filter: Object) = {
+
+    val queryStr: QueryDataStructure = if (filter.isInstanceOf[DiagnosticsListRequestDataFilter]) {
+      filter.asInstanceOf[DiagnosticsListRequestDataFilter].toQueryStructure()
+    }
+    else {
+      new QueryDataStructure()
+    }
+
+    val sorting = "ORDER BY %s %s".format(sortingField, sortingMethod)
+
+    var typed = em.createQuery(AllDiagnosticsByEventIdAndFiltredByCodeQuery.format("a", i18n("db.action.diagnosticClass"), queryStr.query, sorting), classOf[Action])
+      .setMaxResults(limit)
+      .setFirstResult(limit * page)
+
+    if (queryStr.data.size() > 0) {
+      queryStr.data.foreach(qdp => typed.setParameter(qdp.name, qdp.value))
+    }
+
+    val result = typed.getResultList
+    result.foreach(a => em.detach(a))
+    result
+  }
+
+  def getCountDiagnosticsWithFilter(filter: Object) = {
+
+    val queryStr: QueryDataStructure = if (filter.isInstanceOf[DiagnosticsListRequestDataFilter]) {
+      filter.asInstanceOf[DiagnosticsListRequestDataFilter].toQueryStructure()
+    }
+    else {
+      new QueryDataStructure()
+    }
+
+    var typed = em.createQuery(AllDiagnosticsByEventIdAndFiltredByCodeQuery.format("count(a)", i18n("db.action.diagnosticClass"), queryStr.query, ""), classOf[Long])
+
+    if (queryStr.data.size() > 0) {
+      queryStr.data.foreach(qdp => typed.setParameter(qdp.name, qdp.value))
+    }
+    typed.getSingleResult
   }
 
   def getAllActionsByQueryAndEventId(query: String,
@@ -147,7 +234,7 @@ class DbCustomQueryBean
       .getResultList
 
     val indicators =
-      result.foldLeft(List.empty[IndicatorValue[JDouble]])(
+      result.foldLeft(scala.List.empty[IndicatorValue[JDouble]])(
         (inds, a) => {
           val iv = new IndicatorValue[JDouble](
             a(0).asInstanceOf[Int],
@@ -205,6 +292,7 @@ class DbCustomQueryBean
     ts
   }
 
+
   def getUnitByCode(code: String) = {
     em.createNamedQuery[RbUnit]("RbUnit.findByCode", classOf[RbUnit])
       .setParameter("code", code)
@@ -233,6 +321,185 @@ class DbCustomQueryBean
     //.getOrElse{ throw new CoreException(i18n("error.noHeightForPatientFound").format(p.getId)) }
   }
 
+  def getCountOfAppealsWithFilter(filter: Object) = {
+
+    val queryStr: QueryDataStructure = if (filter.isInstanceOf[TalonSPODataListFilter]) {
+      filter.asInstanceOf[TalonSPODataListFilter].toQueryStructure()
+    }
+    else if (filter.isInstanceOf[AppealSimplifiedRequestDataFilter]) {
+      filter.asInstanceOf[AppealSimplifiedRequestDataFilter].toQueryStructure()
+    }
+    else {
+      new QueryDataStructure()
+    }
+
+    var typed = em.createQuery(AllAppealsWithFilterQuery.format("count(e)", queryStr.query, "", ""), classOf[Long])
+
+    if (queryStr.data.size() > 0) {
+      queryStr.data.foreach(qdp => typed.setParameter(qdp.name, qdp.value))
+    }
+
+    typed.getSingleResult
+  }
+
+  def getAllAppealsWithFilter(page: Int, limit: Int, sortingField: String, sortingMethod: String, filter: Object) = {
+
+    var diagnostic_filter: String = ""
+    var ap_string_filter: String = ""
+    var ap_mkb_filter: String = ""
+    var flgDiagnosesSwitched: Boolean = false
+    var sorting = "ORDER BY %s %s".format(sortingField, sortingMethod)
+
+    val queryStr: QueryDataStructure = if (filter.isInstanceOf[TalonSPODataListFilter]) {
+      filter.asInstanceOf[TalonSPODataListFilter].toQueryStructure()
+    }
+    else if (filter.isInstanceOf[AppealSimplifiedRequestDataFilter]) {
+      if (filter.asInstanceOf[AppealSimplifiedRequestDataFilter].diagnosis != null && !filter.asInstanceOf[AppealSimplifiedRequestDataFilter].diagnosis.isEmpty) {
+        diagnostic_filter = "AND upper(mkb.diagID) LIKE upper(:diagnosis)\n"
+        ap_string_filter = "AND upper(apv.value) LIKE upper(:diagnosis)\n"
+        ap_mkb_filter = "AND upper(apv.mkb.diagID) LIKE upper(:diagnosis)\n"
+        flgDiagnosesSwitched = true
+      }
+      filter.asInstanceOf[AppealSimplifiedRequestDataFilter].toQueryStructure()
+    }
+    else {
+      new QueryDataStructure()
+    }
+
+    //Получаем список всех обращений (без диагнозов) (сортированный)
+    val query = AllAppealsWithFilterExQuery.format("e", queryStr.query, "", sorting)
+    var typed = em.createQuery(query, classOf[Event])
+      .setMaxResults(limit)
+      .setFirstResult(limit * page)
+
+    if (queryStr.data.size() > 0) {
+      queryStr.data.foreach(qdp => typed.setParameter(qdp.name, qdp.value))
+    }
+
+    var res = typed.getResultList
+
+    val ids = new java.util.HashSet[java.lang.Integer]
+    val ret_value = new java.util.LinkedHashMap[Event, java.util.Map[Object, Object]]
+
+    if (res.size() > 0) {
+      res.foreach(e => ids.add(e.getId))
+
+      val map = new java.util.LinkedHashMap[java.lang.Integer, Object]()
+      map.put(0, (MainDiagnosisQuery, "", ""))
+      map.put(1, (ClinicalDiagnosisQuery, "4501", "Основной клинический диагноз"))
+      map.put(2, (AttendantDiagnosisQuery, "1_1_01", "Основной клинический диагноз"))
+      map.put(3, (AttendantDiagnosisQuery, "4201", "Диагноз направившего учреждения"))
+
+
+      var i = 0
+      while (ids.size() > 0 && i <= 3) {
+        val map_value = map.get(Integer.valueOf(i)).asInstanceOf[(String, String, String)]
+        val typed2 = i match {
+          case 0 => em.createQuery(map_value._1.format(diagnostic_filter), classOf[Array[AnyRef]])
+          case 1 => em.createQuery(map_value._1.format(map_value._2, map_value._3, ap_string_filter), classOf[Array[AnyRef]])
+          case _ => em.createQuery(map_value._1.format(map_value._2, map_value._3, ap_mkb_filter), classOf[Array[AnyRef]])
+        }
+
+        if (flgDiagnosesSwitched) {
+          typed2.setParameter("diagnosis", "%" + filter.asInstanceOf[AppealSimplifiedRequestDataFilter].diagnosis + "%")
+        }
+        val res2 = typed2.setParameter("ids", asJavaCollection(ids)).getResultList
+
+        res2.foreach(f => {
+          if (f(0).isInstanceOf[Event]) {
+            ids.remove(f(0).asInstanceOf[Event].getId)
+          }
+          val internalMap = new java.util.HashMap[Object, Object]
+          internalMap.put(f(1), f(2))
+          ret_value.put(f(0).asInstanceOf[Event], internalMap)
+          em.detach(f(0))
+          em.detach(f(1))
+          em.detach(f(2))
+        })
+        i = i + 1
+      }
+      map.clear()
+      //эвенты без диагнозов
+      if (ids.size() > 0 && !flgDiagnosesSwitched) {
+        ids.foreach(f => ret_value.put(eventBean.getEventById(f.intValue()), new java.util.HashMap[Object, Object]))
+      }
+      ids.clear()
+    }
+    //вернуть первоначальную сортировку
+    val ret_value_sorted = new java.util.LinkedHashMap[Event, java.util.Map[Object, Object]]
+    res.foreach(e => {
+      val pos = ret_value.get(e)
+      if (pos != null)
+        ret_value_sorted.put(e, pos)
+    })
+
+    ret_value.clear()
+    ret_value_sorted
+  }
+
+  def getDiagnosisForMainDiagInAppeal(appealId: Int): Mkb = {
+    var diagnostic_filter: String = ""
+    var ap_string_filter: String = ""
+    var ap_mkb_filter: String = ""
+
+    val ids = new java.util.HashSet[java.lang.Integer]
+    ids.add(appealId)
+    val ret_value = new java.util.LinkedHashMap[Event, java.util.Map[Object, Object]]
+    val map = new java.util.LinkedHashMap[java.lang.Integer, Object]()
+    //map.put(0, (MainDiagnosisQuery,"",""))
+    map.put(0, (ClinicalDiagnosisQuery, "4501", "Основной клинический диагноз"))
+    map.put(1, (AttendantDiagnosisQuery, "1_1_01", "Основной клинический диагноз"))
+    map.put(2, (AttendantDiagnosisQuery, "4201", "Диагноз направившего учреждения"))
+
+    var i = 0
+    while (i <= 2) {
+      val map_value = map.get(Integer.valueOf(i)).asInstanceOf[(String, String, String)]
+      val typed2 = i match {
+        case 0 => em.createQuery(map_value._1.format(map_value._2, map_value._3, ap_string_filter), classOf[Array[AnyRef]])
+        case _ => em.createQuery(map_value._1.format(map_value._2, map_value._3, ap_mkb_filter), classOf[Array[AnyRef]])
+      }
+      val res2 = typed2.setParameter("ids", asJavaCollection(ids)).getResultList
+
+      res2.foreach(f => {
+        val internalMap = new java.util.HashMap[Object, Object]
+        internalMap.put(f(1), f(2))
+        ret_value.put(f(0).asInstanceOf[Event], internalMap)
+        //em.detach(f(0))
+        //em.detach(f(1))
+        //em.detach(f(2))
+      })
+      i = i + 1
+      if (res2 != null && res2.size() > 0) {
+        if (res2(0)(2).asInstanceOf[Mkb] != null) {
+          map.clear()
+          ids.clear()
+          val qwe = em.createNamedQuery("Mkb.findById", classOf[Mkb])
+            .setParameter("id", res2(0)(2).asInstanceOf[Mkb].getId)
+            .getResultList
+
+          val asd = qwe.get(0)
+          em.detach(asd)
+          return asd
+          //return res2(0)(2).asInstanceOf[Mkb]
+        }
+      }
+    }
+    map.clear()
+    ids.clear()
+    null
+  }
+
+  private def putValueToMap(key: String,
+                            query: String,
+                            parName: String,
+                            parValue: AnyRef,
+                            by: java.util.Map[String, java.util.Map[String, String]]) {
+    val res = em.createQuery(query, classOf[Array[AnyRef]])
+    if (parName != null && !parName.isEmpty && parValue != null) {
+      res.setParameter(parName, parValue)
+    }
+  }
+
   def getWeightForPatient(p: Patient): JDouble = {
     import ru.korus.tmis.util.General.catchy
 
@@ -251,6 +518,217 @@ class DbCustomQueryBean
     })
       .orNull
     //.getOrElse{ throw new CoreException(i18n("error.noWeightForPatientFound").format(p.getId)) }
+  }
+
+  def getDistinctMkbsWithFilter(sortingField: String, sortingMethod: String, filter: Object) = {
+
+    val retValue = new java.util.HashMap[String, java.util.Map[String, String]]
+    if (filter.asInstanceOf[MKBListRequestDataFilter].display == true) {
+      var queryStr: QueryDataStructure = if (filter.isInstanceOf[MKBListRequestDataFilter]) {
+        filter.asInstanceOf[MKBListRequestDataFilter].toQueryStructure()
+      }
+      else {
+        new QueryDataStructure()
+      }
+      val sorting = "ORDER BY %s %s".format(sortingField, sortingMethod)
+      if (queryStr.data.size() > 0) {
+        var pos = 0
+        var value: AnyRef = null
+        queryStr.data.foreach(qdp => {
+          qdp.name match {
+            case "code" => {
+              if (pos < 3) {
+                pos = 3
+                value = qdp.value
+              }
+            }
+            case "blockId" => {
+              if (pos < 2) {
+                pos = 2
+                value = qdp.value
+              }
+            }
+            case "classId" => {
+              if (pos < 1) {
+                pos = 1
+                value = qdp.value
+              }
+            }
+            case _ => {
+              if (pos < 0) pos = 0
+            }
+          }
+        })
+
+        pos match {
+          case 1 => {
+            this.putValueToMap("class",
+              "SELECT DISTINCT(mkb.classID), mkb.className FROM Mkb mkb ORDER BY mkb.classID ASC",
+              null,
+              null,
+              retValue)
+          }
+          case 2 => {
+            this.putValueToMap("class",
+              "SELECT DISTINCT(mkb.classID), mkb.className FROM Mkb mkb ORDER BY mkb.classID ASC",
+              null,
+              null,
+              retValue)
+            this.putValueToMap("block",
+              "SELECT DISTINCT(mkb.blockID), mkb.blockName FROM Mkb mkb WHERE mkb.classID IN (\n" +
+                "SELECT mkb2.classID FROM Mkb mkb2 WHERE mkb2.blockID = :blockId )\n" +
+                "ORDER BY mkb.blockID ASC, mkb.classID ASC",
+              "blockId",
+              value,
+              retValue)
+          }
+          case 3 => {
+            this.putValueToMap("class",
+              "SELECT DISTINCT(mkb.classID), mkb.className FROM Mkb mkb ORDER BY mkb.classID ASC",
+              null,
+              null,
+              retValue)
+            this.putValueToMap("block",
+              "SELECT DISTINCT(mkb.blockID), mkb.blockName FROM Mkb mkb WHERE mkb.classID IN (\n" +
+                "SELECT mkb2.classID FROM Mkb mkb2 WHERE mkb2.blockID = :blockId )\n" +
+                "ORDER BY mkb.blockID ASC, mkb.classID ASC",
+              "blockId",
+              em.createQuery("SELECT MAX(mkb.blockId) FROM Mkb mkb ORDER BY mkb.diagID = :diagID", classOf[AnyRef])
+                .getSingleResult,
+              retValue)
+            this.putValueToMap("code",
+              "SELECT DISTINCT(mkb.diagID), mkb.diagName FROM Mkb mkb WHERE mkb.blockID IN \n" +
+                "(SELECT mkb2.blockID FROM Mkb mkb2 WHERE mkb2.diagID = :diagID)\n" +
+                "ORDER BY mkb.diagID ASC, mkb.blockID ASC, mkb.classID ASC",
+              "diagID",
+              value,
+              retValue)
+          }
+          case _ => {}
+        }
+      }
+    }
+    retValue
+  }
+
+  def getAllMkbsWithFilter(page: Int, limit: Int, sortingField: String, sortingMethod: String, filter: Object) = {
+
+    var queryStr: QueryDataStructure = if (filter.isInstanceOf[MKBListRequestDataFilter]) {
+      filter.asInstanceOf[MKBListRequestDataFilter].toQueryStructure()
+    }
+    else {
+      new QueryDataStructure()
+    }
+
+    val sorting = "ORDER BY %s %s".format(sortingField, sortingMethod)
+    if (queryStr.data.size() > 0) {
+      if (queryStr.query.indexOf("AND ") == 0) {
+        queryStr.query = "WHERE " + queryStr.query.substring("AND ".length())
+      }
+    }
+
+    var typed = em.createQuery(AllMkbWithFilterQuery.format("mkb", queryStr.query, sorting), classOf[Mkb])
+      .setMaxResults(limit)
+      .setFirstResult(limit * page)
+
+    if (queryStr.data.size() > 0) {
+      queryStr.data.foreach(qdp => typed.setParameter(qdp.name, qdp.value))
+    }
+
+    val result = typed.getResultList
+    result.foreach(f => {
+      em.detach(f)
+    })
+    result
+  }
+
+  def getCountOfMkbsWithFilter(filter: Object) = {
+
+    var queryStr: QueryDataStructure = if (filter.isInstanceOf[MKBListRequestDataFilter]) {
+      filter.asInstanceOf[MKBListRequestDataFilter].toQueryStructure()
+    }
+    else {
+      new QueryDataStructure()
+    }
+
+    if (queryStr.data.size() > 0) {
+      if (queryStr.query.indexOf("AND ") == 0) {
+        queryStr.query = "WHERE " + queryStr.query.substring("AND ".length())
+      }
+    }
+
+    var typed = em.createQuery(AllMkbWithFilterQuery.format("count(mkb)", queryStr.query, ""), classOf[Long])
+
+    if (queryStr.data.size() > 0) {
+      queryStr.data.foreach(qdp => typed.setParameter(qdp.name, qdp.value))
+    }
+
+    typed.getSingleResult
+  }
+
+  def getCountOfThesaurusWithFilter(filter: Object) = {
+    var queryStr: QueryDataStructure = if (filter.isInstanceOf[ThesaurusListRequestDataFilter]) {
+      filter.asInstanceOf[ThesaurusListRequestDataFilter].toQueryStructure()
+    }
+    else {
+      new QueryDataStructure()
+    }
+    if (queryStr.data.size() > 0) {
+      if (queryStr.query.indexOf("AND ") == 0) {
+        queryStr.query = "WHERE " + queryStr.query.substring("AND ".length())
+      }
+    }
+    var typed = em.createQuery(AllThesaurusWithFilterQuery.format("count(r)", queryStr.query, ""), classOf[Long])
+    if (queryStr.data.size() > 0) {
+      queryStr.data.foreach(qdp => typed.setParameter(qdp.name, qdp.value))
+    }
+    typed.getSingleResult
+  }
+
+
+  def getAllThesaurusWithFilter(page: Int, limit: Int, sortingField: String, sortingMethod: String, filter: Object) = {
+    var queryStr: QueryDataStructure = if (filter.isInstanceOf[ThesaurusListRequestDataFilter]) {
+      filter.asInstanceOf[ThesaurusListRequestDataFilter].toQueryStructure()
+    }
+    else {
+      new QueryDataStructure()
+    }
+    val sorting = "ORDER BY %s %s".format(sortingField, sortingMethod)
+    if (queryStr.data.size() > 0) {
+      if (queryStr.query.indexOf("AND ") == 0) {
+        queryStr.query = "WHERE " + queryStr.query.substring("AND ".length())
+      }
+    }
+    var typed = em.createQuery(AllThesaurusWithFilterQuery.format("r", queryStr.query, sorting), classOf[Thesaurus])
+      .setMaxResults(limit)
+      .setFirstResult(limit * page)
+    if (queryStr.data.size() > 0) {
+      queryStr.data.foreach(qdp => typed.setParameter(qdp.name, qdp.value))
+    }
+    val result = typed.getResultList
+    result.foreach(f => {
+      em.detach(f)
+    })
+    result
+  }
+
+  def getLastActionByTypeCodeAndAPTypeName(eventId: Int, code: String, aptName: String) = {
+
+    val result = em.createQuery(LastActionByTypeCodeAndAPTypeNameQuery, classOf[Action])
+      .setParameter("id", eventId)
+      .setParameter("code", code)
+      .setParameter("name", aptName)
+      .getResultList
+
+    result.size match {
+      case 0 => {
+        null
+      }
+      case _ => {
+        result.foreach(a => em.detach(a))
+        result.iterator().next()
+      }
+    }
   }
 
   val HeightQuery = """
@@ -293,6 +771,7 @@ class DbCustomQueryBean
           EventType et
         WHERE
           et.form = '003'
+      )
       )
     AND
       e.id NOT IN
@@ -368,6 +847,58 @@ class DbCustomQueryBean
     GROUP BY e
                                         """.format(i18n("db.action.movingFlatCode"))
 
+
+  val ActiveEventsByDepartmentIdAndDoctorIdBetweenDatesQuery = """
+    SELECT %s, MAX(a.createDatetime), MAX(e.executor.id), MAX(org.masterDepartment.id)
+    FROM
+      Event e,
+      Action a,
+      ActionProperty ap,
+      APValueHospitalBed bed,
+      OrgStructureHospitalBed org
+    WHERE
+      e.execDate is NULL AND
+      e.id = a.event.id AND
+      a.id = ap.action.id AND
+      ap.id = bed.id.id AND
+      bed.value.id = org.id
+      %s
+    AND
+      a.actionType.id IN
+      (
+        SELECT actionType.id
+        FROM
+          ActionType actionType
+        WHERE
+          actionType.flatCode = '%s'
+      )
+    AND
+      e.id NOT IN
+      (
+        SELECT leaved.event.id
+        FROM
+          Action leaved
+        WHERE
+          leaved.actionType.id IN
+          (
+            SELECT at.id
+            FROM
+              ActionType at
+            WHERE
+              at.flatCode = 'leaved'
+          )
+        AND
+          leaved.event.id = e.id
+      )
+    AND
+      e.deleted = 0
+    %s
+    %s
+                                                               """
+  /*
+       %s
+    GROUP BY e
+   */
   val ActionsByEventIdsAndFlatCodeQuery = """
     SELECT e, a
     FROM
@@ -491,6 +1022,58 @@ class DbCustomQueryBean
     i18n("db.action.preAssessmentGroupName"),
     i18n("db.apt.allergoanamnesisName"))
 
+  /*
+  JOIN (select MAX(a1.createDatetime) maxCDT
+       a1.actionType,
+       a1.event
+        from  Action a1
+        where a1.deleted = 0
+        group by a1.actionType, a1.event) maxDateAction
+
+     a.createDatetime = maxDateAction.maxCDT
+     AND a.actionType = maxDateAction.actionType
+     AND a.event = maxDateAction.event
+  * */
+  /*  val LastAssessmentByEventIdsQuery = """
+   SELECT e, ap, MAX(a.createDatetime)
+   FROM
+     ActionProperty ap
+     JOIN ap.action a
+     JOIN a.event e
+   WHERE
+     e.id IN :eventIds
+   AND
+     a.actionType.clazz = %s
+   AND
+     a.deleted = 0
+     group by e
+ """.format(i18n("db.action.assessmentClass")) */
+
+  val LastAssessmentByEventIdsQuery = """
+    SELECT e, a
+    FROM
+      Action a
+      JOIN a.event e
+    WHERE
+      e.id IN :eventIds
+    AND
+      a.actionType.clazz = '%s'
+    AND
+      a.deleted = 0
+    AND
+      a.createDatetime = (
+      SELECT MAX(a1.createDatetime)
+      FROM
+        Action a1
+      WHERE
+        a1.event = e
+      AND
+        a1.actionType.clazz = '%s'
+      AND
+        a1.deleted = 0
+      )
+                                      """.format(i18n("db.action.assessmentClass"), i18n("db.action.assessmentClass"))
+
   val DiagnosesByEventIdsQuery = """
     SELECT e, ap
     FROM
@@ -549,7 +1132,7 @@ class DbCustomQueryBean
     AND e.deleted = 0
     AND at.deleted = 0
     ORDER BY
-      a.begDate DESC
+      a.createDatetime ASC
                                                """.format(i18n("db.action.preAssessmentGroupName"),
     i18n("db.action.diagnosisSubstantiation"))
 
@@ -576,6 +1159,18 @@ class DbCustomQueryBean
       a.event.deleted = 0 AND
       a.actionType.deleted = 0
                                      """.format(i18n("db.action.diagnosticClass"))
+
+  val AllDiagnosticsByEventIdAndFiltredByCodeQuery = """
+    SELECT %s
+    FROM
+      Action a
+    WHERE
+      a.actionType.clazz = %s
+    %s
+    AND
+      a.deleted = 0
+    %s
+                                                     """
 
   val IndicatorByEventIdAndIndicatorNameQuery = """
     SELECT ap.id, apt.name, apd.value, ap.createDatetime FROM
@@ -622,8 +1217,151 @@ class DbCustomQueryBean
       SELECT t from TakenTissue t where t.barcode = :barcode and t.period = :period
                                   """
 
-  val finance = """
-      SELECT RbFinance rf
+  //TODO: тип диагноза установлен как заключительный (согласовать!)
 
-                """
+  val AllAppealsWithFilterQuery = """
+  SELECT %s
+  FROM
+    Event e
+    LEFT JOIN e.diagnostics dia
+    LEFT JOIN dia.diagnosis dias
+    LEFT JOIN dias.mkb mkb
+  WHERE
+    e.deleted = 0
+  %s
+    AND (dia.diagnosisType IS NULL OR dia.diagnosisType.id = 1)
+    AND (dia.deleted IS NULL OR dia.deleted = 0)
+  %s
+  %s
+                                  """
+
+  val AllAppealsWithFilterExQuery = """
+  SELECT %s
+  FROM
+    Event e
+  WHERE
+    e.deleted = 0
+  %s
+  %s
+  %s
+                                    """
+
+  val MainDiagnosisQuery = """
+    SELECT e, dia, mkb
+    FROM
+      Event e
+        JOIN e.diagnostics dia
+        JOIN dia.diagnosis dias
+        JOIN dias.mkb mkb
+    WHERE
+      e.id IN :ids
+    AND (dia.diagnosisType IS NULL OR dia.diagnosisType.id = 1)
+    AND (dia.deleted IS NULL OR dia.deleted = 0)
+    %s
+    GROUP BY e
+                           """
+
+  val ClinicalDiagnosisQuery = """
+    SELECT e, ap, apv.value
+    FROM
+      ActionProperty ap
+        JOIN ap.actionPropertyType apt
+        JOIN ap.action a
+        JOIN a.event e
+        JOIN a.actionType at,
+      APValueString apv
+    WHERE
+      e.id IN :ids
+    AND ap.id = apv.id.id
+    AND at.code = '%s'
+    AND apt.name = '%s'
+    %s
+    GROUP BY e
+                               """
+  val AttendantDiagnosisQuery = """
+    SELECT e, ap, apv.mkb
+    FROM
+      ActionProperty ap
+        JOIN ap.actionPropertyType apt
+        JOIN ap.action a
+        JOIN a.event e
+        JOIN a.actionType at,
+      APValueMKB apv
+    WHERE
+      e.id IN :ids
+    AND ap.id = apv.id.id
+    AND at.code = '%s'
+    AND apt.name = '%s'
+    %s
+    GROUP BY e
+                                """
+
+  val AllMkbWithFilterQuery = """
+  SELECT DISTINCT %s
+  FROM
+  Mkb mkb
+  %s
+  %s
+                              """
+
+  val AllThesaurusWithFilterQuery = """
+  SELECT DISTINCT %s
+  FROM
+  Thesaurus r
+  %s
+  %s
+                                    """
+
+  val LastActionByTypeCodeAndAPTypeNameQuery = """
+  SELECT a2
+  FROM
+    Action a2
+  WHERE
+    a2.createDatetime = (
+  SELECT MAX(a.createDatetime)
+    FROM
+      Action a
+    WHERE
+      a.event.id = :id
+    AND
+      exists (
+        SELECT at
+        FROM
+          ActionType at
+        WHERE
+          at = a.actionType
+        AND
+          at.code = :code
+        AND
+          at.deleted = 0
+      )
+    AND
+      exists (
+        SELECT apt
+        FROM
+          ActionProperty ap,
+          ActionPropertyType apt
+        WHERE
+          ap.action = a
+        AND
+          ap.actionPropertyType.id = apt.id
+        AND
+          apt.name = :name
+        AND
+          ap.deleted = 0
+        AND
+          apt.deleted = 0
+      )
+    AND
+      a.deleted = 0
+  )
+                                               """
+
+  val DiagnosisByMkbQuery = """
+  SELECT DISTINCT d
+  FROM
+    Diagnosis d
+  WHERE
+    d.mkb = :mkb
+                            """
 }

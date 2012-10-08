@@ -2,9 +2,9 @@ package ru.korus.tmis.ws.pharmacy;
 
 import ru.korus.tmis.core.entity.model.Medicament;
 
-import java.util.List;
 import javax.jws.WebMethod;
 import javax.jws.WebService;
+import java.util.List;
 
 @WebService(
         targetNamespace = "http://korus.ru/tmis/pharmacy",
@@ -16,7 +16,6 @@ public interface PharmacyWebService {
      * Получить список лекарств, имеющихся в наличии.
      *
      * @param medicament наименование лекарства.
-     *
      * @return cписок имеющихся лекарств-аналогов
      */
     @WebMethod
@@ -26,7 +25,6 @@ public interface PharmacyWebService {
      * Проверить доступность лекарства.
      *
      * @param code код лекарства из РЛС (rls.vNomen.code)
-     *
      * @return true, если лекарство есть в наличии в аптеке
      */
     @WebMethod

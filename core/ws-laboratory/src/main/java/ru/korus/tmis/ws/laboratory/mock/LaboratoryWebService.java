@@ -15,8 +15,8 @@ import javax.jws.WebService;
  * Интерфейс для взаимодействия ЛИС и новой МИС.
  */
 @WebService(
-  targetNamespace = CompileTimeConfigManager.Laboratory.Namespace,
-  name = CompileTimeConfigManager.Laboratory.ServiceName)
+        targetNamespace = CompileTimeConfigManager.Laboratory.Namespace,
+        name = CompileTimeConfigManager.Laboratory.ServiceName)
 public interface LaboratoryWebService {
 
     @WebMethod

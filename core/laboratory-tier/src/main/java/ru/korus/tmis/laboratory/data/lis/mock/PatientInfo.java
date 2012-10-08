@@ -50,14 +50,16 @@ public class PatientInfo {
          */
         @XmlEnumValue("3")
         UNKNOWN
-    };
+    }
+
+    ;
 
     /**
      * Пол пациента
      */
     Gender gender;
 
-    @XmlElement(name="patientMisId")
+    @XmlElement(name = "patientMisId")
     public int getCode() {
         return code;
     }
@@ -66,7 +68,7 @@ public class PatientInfo {
         this.code = code;
     }
 
-    @XmlElement(name="patientFamily", required=true)
+    @XmlElement(name = "patientFamily", required = true)
     public String getLastName() {
         return lastName;
     }
@@ -75,7 +77,7 @@ public class PatientInfo {
         this.lastName = lastName;
     }
 
-    @XmlElement(name="patientName", required=true)
+    @XmlElement(name = "patientName", required = true)
     public String getFirstName() {
         return firstName;
     }
@@ -84,7 +86,7 @@ public class PatientInfo {
         this.firstName = firstName;
     }
 
-    @XmlElement(name="patientPatronum", required=true)
+    @XmlElement(name = "patientPatronum", required = true)
     public String getMiddleName() {
         return middleName;
     }
@@ -93,8 +95,8 @@ public class PatientInfo {
         this.middleName = middleName;
     }
 
-    @XmlElement(name="patientBirthDate", required=true)
-    @XmlSchemaType(name="date")
+    @XmlElement(name = "patientBirthDate", required = true)
+    @XmlSchemaType(name = "date")
     public Date getBirthDate() {
         return birthDate;
     }
@@ -103,7 +105,7 @@ public class PatientInfo {
         this.birthDate = birthDate;
     }
 
-    @XmlElement(name="patientSex", required=true)
+    @XmlElement(name = "patientSex", required = true)
     public Gender getGender() {
         return gender;
     }

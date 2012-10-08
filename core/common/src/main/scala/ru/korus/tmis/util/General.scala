@@ -14,11 +14,13 @@ object General {
 
   object NumberImplicits {
     implicit def optInt(v: JInteger): Option[Int] = if (v == null) None else Some(v.intValue)
+
     implicit def optDouble(v: JDouble): Option[Double] = if (v == null) None else Some(v.doubleValue)
+
     implicit def optFloat(v: JFloat): Option[Float] = if (v == null) None else Some(v.floatValue)
+
     implicit def optBoolean(v: JBoolean): Option[Boolean] = if (v == null) None else Some(v.booleanValue)
   }
-
 
 
   // equality operator that only works for values of the same type
@@ -35,27 +37,31 @@ object General {
   // and
   //   cos of stupid scala creators =>
   //        http://scala-programming-language.1934581.n4.nabble.com/scala-Structural-types-with-generic-type-question-td1992248.html#a1992249
-  sealed case class TypedEquality[A](v: A) { def =!=(v1: A) = v == v1 }
+  sealed case class TypedEquality[A](v: A) {
+    def =!=(v1: A) = v == v1
+  }
+
   implicit def typedEquality[A](v: A) = TypedEquality(v)
 
-  implicit def nullity_implicits[A >: Null](nullity: =>A) = new {
+  implicit def nullity_implicits[A >: Null](nullity: => A) = new {
     // poor man's safe navigation operators
     //-------------------------------------
     // when the res is nullable
     // usage:
     // rewrite the code: if(a != null && a.b != null && a.b.c != null) { a.b.c.d } else null
     // to: a ?! {_.b} ?! {_.c} ?! {_.d}
-    def ?![B >: Null](f: A=>B): B = {
+    def ?![B >: Null](f: A => B): B = {
       nullity match {
         case null => null.asInstanceOf[B]
         case v => f(v)
       }
     }
+
     // when the res is not nullable
     // usage:
     // rewrite the code: if(a != null && a.b != null && a.b.c != null) { a.b.c.d } else 0
     // to: a ?! {_.b} ?! {_.c} ?!! {_.d} getOrElse 0
-    def ?!![B](f: A=>B): Option[B] = {
+    def ?!![B](f: A => B): Option[B] = {
       nullity match {
         case null => None
         case v => Some(f(v))
@@ -81,12 +87,14 @@ object General {
     // after:
     // val j = new JList[Int]() stating (_.add(1),_.add(2)) map (_+1) filter (...)
     def stating(f: (A => Any)*): A = {
-      f.foreach{ _(v) }
+      f.foreach {
+        _(v)
+      }
       v
     }
 
     def whether(f: (A => Boolean)) = {
-      if(f(v)) Some(v) else None
+      if (f(v)) Some(v) else None
     }
 
 
@@ -98,11 +106,10 @@ object General {
     def castTo[B: CastableFromA]: B = v
 
     def asSafe[B]: Option[B] = {
-      if(v.isInstanceOf[B]) Some(v.asInstanceOf[B])
+      if (v.isInstanceOf[B]) Some(v.asInstanceOf[B])
       else None
     }
   }
-
 
 
 }

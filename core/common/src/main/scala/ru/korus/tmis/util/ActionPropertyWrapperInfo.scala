@@ -2,8 +2,9 @@ package ru.korus.tmis.util
 
 import reflect.Configuration
 
-object ActionPropertyWrapperInfo extends Configuration { apwi =>
-  
+object ActionPropertyWrapperInfo extends Configuration {
+  apwi =>
+
   // Internal Ids
   // External Ids are the same
   var Value = StringId("value")

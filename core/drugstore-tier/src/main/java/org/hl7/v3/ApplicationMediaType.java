@@ -15,9 +15,9 @@ import javax.xml.bind.annotation.XmlType;
 
 /**
  * <p>Java class for ApplicationMediaType.
- * 
+ * <p/>
  * <p>The following schema fragment specifies the expected content contained within this class.
- * <p>
+ * <p/>
  * <pre>
  * &lt;simpleType name="ApplicationMediaType">
  *   &lt;restriction base="{urn:hl7-org:v3}cs">
@@ -27,7 +27,6 @@ import javax.xml.bind.annotation.XmlType;
  *   &lt;/restriction>
  * &lt;/simpleType>
  * </pre>
- * 
  */
 @XmlType(name = "ApplicationMediaType")
 @XmlEnum
@@ -50,7 +49,7 @@ public enum ApplicationMediaType {
     }
 
     public static ApplicationMediaType fromValue(String v) {
-        for (ApplicationMediaType c: ApplicationMediaType.values()) {
+        for (ApplicationMediaType c : ApplicationMediaType.values()) {
             if (c.value.equals(v)) {
                 return c;
             }

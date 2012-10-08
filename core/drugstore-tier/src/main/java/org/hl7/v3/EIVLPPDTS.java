@@ -14,21 +14,20 @@ import javax.xml.bind.annotation.XmlType;
 
 
 /**
- * 
- *             Note: because this type is defined as an extension of SXCM_T,
- *             all of the attributes and elements accepted for T are also
- *             accepted by this definition.  However, they are NOT allowed
- *             by the normative description of this type.  Unfortunately,
- *             we cannot write a general purpose schematron contraints to
- *             provide that extra validation, thus applications must be
- *             aware that instance (fragments) that pass validation with
- *             this might might still not be legal.
- *          
- * 
+ * Note: because this type is defined as an extension of SXCM_T,
+ * all of the attributes and elements accepted for T are also
+ * accepted by this definition.  However, they are NOT allowed
+ * by the normative description of this type.  Unfortunately,
+ * we cannot write a general purpose schematron contraints to
+ * provide that extra validation, thus applications must be
+ * aware that instance (fragments) that pass validation with
+ * this might might still not be legal.
+ * <p/>
+ * <p/>
  * <p>Java class for EIVL_PPD_TS complex type.
- * 
+ * <p/>
  * <p>The following schema fragment specifies the expected content contained within this class.
- * 
+ * <p/>
  * <pre>
  * &lt;complexType name="EIVL_PPD_TS">
  *   &lt;complexContent>
@@ -41,28 +40,23 @@ import javax.xml.bind.annotation.XmlType;
  *   &lt;/complexContent>
  * &lt;/complexType>
  * </pre>
- * 
- * 
  */
 @XmlAccessorType(XmlAccessType.FIELD)
 @XmlType(name = "EIVL_PPD_TS", propOrder = {
-    "event",
-    "offset"
+        "event",
+        "offset"
 })
 public class EIVLPPDTS
-    extends SXCMPPDTS
-{
+        extends SXCMPPDTS {
 
     protected EIVLEvent event;
     protected IVLPPDPQ offset;
 
     /**
      * Gets the value of the event property.
-     * 
-     * @return
-     *     possible object is
-     *     {@link EIVLEvent }
-     *     
+     *
+     * @return possible object is
+     *         {@link EIVLEvent }
      */
     public EIVLEvent getEvent() {
         return event;
@@ -70,11 +64,9 @@ public class EIVLPPDTS
 
     /**
      * Sets the value of the event property.
-     * 
-     * @param value
-     *     allowed object is
-     *     {@link EIVLEvent }
-     *     
+     *
+     * @param value allowed object is
+     *              {@link EIVLEvent }
      */
     public void setEvent(EIVLEvent value) {
         this.event = value;
@@ -82,11 +74,9 @@ public class EIVLPPDTS
 
     /**
      * Gets the value of the offset property.
-     * 
-     * @return
-     *     possible object is
-     *     {@link IVLPPDPQ }
-     *     
+     *
+     * @return possible object is
+     *         {@link IVLPPDPQ }
      */
     public IVLPPDPQ getOffset() {
         return offset;
@@ -94,11 +84,9 @@ public class EIVLPPDTS
 
     /**
      * Sets the value of the offset property.
-     * 
-     * @param value
-     *     allowed object is
-     *     {@link IVLPPDPQ }
-     *     
+     *
+     * @param value allowed object is
+     *              {@link IVLPPDPQ }
      */
     public void setOffset(IVLPPDPQ value) {
         this.offset = value;

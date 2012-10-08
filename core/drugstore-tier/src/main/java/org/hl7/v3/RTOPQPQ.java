@@ -16,9 +16,9 @@ import javax.xml.bind.annotation.XmlType;
 
 /**
  * <p>Java class for RTO_PQ_PQ complex type.
- * 
+ * <p/>
  * <p>The following schema fragment specifies the expected content contained within this class.
- * 
+ * <p/>
  * <pre>
  * &lt;complexType name="RTO_PQ_PQ">
  *   &lt;complexContent>
@@ -31,17 +31,14 @@ import javax.xml.bind.annotation.XmlType;
  *   &lt;/complexContent>
  * &lt;/complexType>
  * </pre>
- * 
- * 
  */
 @XmlAccessorType(XmlAccessType.FIELD)
 @XmlType(name = "RTO_PQ_PQ", propOrder = {
-    "numerator",
-    "denominator"
+        "numerator",
+        "denominator"
 })
 public class RTOPQPQ
-    extends QTY
-{
+        extends QTY {
 
     @XmlElement(required = true)
     protected PQ numerator;
@@ -50,11 +47,9 @@ public class RTOPQPQ
 
     /**
      * Gets the value of the numerator property.
-     * 
-     * @return
-     *     possible object is
-     *     {@link PQ }
-     *     
+     *
+     * @return possible object is
+     *         {@link PQ }
      */
     public PQ getNumerator() {
         return numerator;
@@ -62,11 +57,9 @@ public class RTOPQPQ
 
     /**
      * Sets the value of the numerator property.
-     * 
-     * @param value
-     *     allowed object is
-     *     {@link PQ }
-     *     
+     *
+     * @param value allowed object is
+     *              {@link PQ }
      */
     public void setNumerator(PQ value) {
         this.numerator = value;
@@ -74,11 +67,9 @@ public class RTOPQPQ
 
     /**
      * Gets the value of the denominator property.
-     * 
-     * @return
-     *     possible object is
-     *     {@link PQ }
-     *     
+     *
+     * @return possible object is
+     *         {@link PQ }
      */
     public PQ getDenominator() {
         return denominator;
@@ -86,11 +77,9 @@ public class RTOPQPQ
 
     /**
      * Sets the value of the denominator property.
-     * 
-     * @param value
-     *     allowed object is
-     *     {@link PQ }
-     *     
+     *
+     * @param value allowed object is
+     *              {@link PQ }
      */
     public void setDenominator(PQ value) {
         this.denominator = value;

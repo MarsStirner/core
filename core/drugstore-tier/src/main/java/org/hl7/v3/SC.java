@@ -17,16 +17,15 @@ import javax.xml.bind.annotation.adapters.XmlJavaTypeAdapter;
 
 
 /**
- * 
- *             A ST that optionally may have a code attached.
- *             The text must always be present if a code is present. The
- *             code is often a local code.
- *          
- * 
+ * A ST that optionally may have a code attached.
+ * The text must always be present if a code is present. The
+ * code is often a local code.
+ * <p/>
+ * <p/>
  * <p>Java class for SC complex type.
- * 
+ * <p/>
  * <p>The following schema fragment specifies the expected content contained within this class.
- * 
+ * <p/>
  * <pre>
  * &lt;complexType name="SC">
  *   &lt;complexContent>
@@ -40,14 +39,11 @@ import javax.xml.bind.annotation.adapters.XmlJavaTypeAdapter;
  *   &lt;/complexContent>
  * &lt;/complexType>
  * </pre>
- * 
- * 
  */
 @XmlAccessorType(XmlAccessType.FIELD)
 @XmlType(name = "SC")
 public class SC
-    extends ST
-{
+        extends ST {
 
     @XmlAttribute
     @XmlJavaTypeAdapter(CollapsedStringAdapter.class)
@@ -63,11 +59,9 @@ public class SC
 
     /**
      * Gets the value of the code property.
-     * 
-     * @return
-     *     possible object is
-     *     {@link String }
-     *     
+     *
+     * @return possible object is
+     *         {@link String }
      */
     public String getCode() {
         return code;
@@ -75,11 +69,9 @@ public class SC
 
     /**
      * Sets the value of the code property.
-     * 
-     * @param value
-     *     allowed object is
-     *     {@link String }
-     *     
+     *
+     * @param value allowed object is
+     *              {@link String }
      */
     public void setCode(String value) {
         this.code = value;
@@ -87,11 +79,9 @@ public class SC
 
     /**
      * Gets the value of the codeSystem property.
-     * 
-     * @return
-     *     possible object is
-     *     {@link String }
-     *     
+     *
+     * @return possible object is
+     *         {@link String }
      */
     public String getCodeSystem() {
         return codeSystem;
@@ -99,11 +89,9 @@ public class SC
 
     /**
      * Sets the value of the codeSystem property.
-     * 
-     * @param value
-     *     allowed object is
-     *     {@link String }
-     *     
+     *
+     * @param value allowed object is
+     *              {@link String }
      */
     public void setCodeSystem(String value) {
         this.codeSystem = value;
@@ -111,11 +99,9 @@ public class SC
 
     /**
      * Gets the value of the codeSystemName property.
-     * 
-     * @return
-     *     possible object is
-     *     {@link String }
-     *     
+     *
+     * @return possible object is
+     *         {@link String }
      */
     public String getCodeSystemName() {
         return codeSystemName;
@@ -123,11 +109,9 @@ public class SC
 
     /**
      * Sets the value of the codeSystemName property.
-     * 
-     * @param value
-     *     allowed object is
-     *     {@link String }
-     *     
+     *
+     * @param value allowed object is
+     *              {@link String }
      */
     public void setCodeSystemName(String value) {
         this.codeSystemName = value;
@@ -135,11 +119,9 @@ public class SC
 
     /**
      * Gets the value of the codeSystemVersion property.
-     * 
-     * @return
-     *     possible object is
-     *     {@link String }
-     *     
+     *
+     * @return possible object is
+     *         {@link String }
      */
     public String getCodeSystemVersion() {
         return codeSystemVersion;
@@ -147,11 +129,9 @@ public class SC
 
     /**
      * Sets the value of the codeSystemVersion property.
-     * 
-     * @param value
-     *     allowed object is
-     *     {@link String }
-     *     
+     *
+     * @param value allowed object is
+     *              {@link String }
      */
     public void setCodeSystemVersion(String value) {
         this.codeSystemVersion = value;
@@ -159,11 +139,9 @@ public class SC
 
     /**
      * Gets the value of the displayName property.
-     * 
-     * @return
-     *     possible object is
-     *     {@link String }
-     *     
+     *
+     * @return possible object is
+     *         {@link String }
      */
     public String getDisplayName() {
         return displayName;
@@ -171,11 +149,9 @@ public class SC
 
     /**
      * Sets the value of the displayName property.
-     * 
-     * @param value
-     *     allowed object is
-     *     {@link String }
-     *     
+     *
+     * @param value allowed object is
+     *              {@link String }
      */
     public void setDisplayName(String value) {
         this.displayName = value;

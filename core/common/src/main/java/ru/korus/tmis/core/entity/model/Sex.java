@@ -1,9 +1,9 @@
 package ru.korus.tmis.core.entity.model;
 
 public enum Sex {
-    UNDEFINED((short)0),
-    MEN((short)1),
-    WOMEN((short)2);
+    UNDEFINED((short) 0),
+    MEN((short) 1),
+    WOMEN((short) 2);
 
     private short code;
 

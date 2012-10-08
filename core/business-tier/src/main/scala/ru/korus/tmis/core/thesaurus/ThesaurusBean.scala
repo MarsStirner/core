@@ -3,7 +3,7 @@ package ru.korus.tmis.core.thesaurus
 import ru.korus.tmis.core.data._
 import ru.korus.tmis.core.database.{DbVersionBeanLocal, DbThesaurusBeanLocal}
 import ru.korus.tmis.core.entity.model.{Mkb, Thesaurus}
-import ru.korus.tmis.core.logging.db.LoggingInterceptor
+import ru.korus.tmis.core.logging.LoggingInterceptor
 
 import grizzled.slf4j.Logging
 import javax.ejb.{EJB, Stateless}
@@ -44,10 +44,10 @@ class ThesaurusBean
         }
 
         val e = new ThesaurusEntry(t.getId.intValue,
-                                   groupId,
-                                   t.getCode,
-                                   t.getName,
-                                   t.getTemplate)
+          groupId,
+          t.getCode,
+          t.getName,
+          t.getTemplate)
 
         data.add(e)
         data
@@ -58,10 +58,10 @@ class ThesaurusBean
     mkbs.foldLeft(new ThesaurusData(dbVersion.getGlobalVersion))(
       (data, mkb) => {
         data add new ThesaurusEntry(mkb.getId.intValue,
-                                    0,
-                                    mkb.getDiagID,
-                                    mkb.getDiagName,
-                                    null)
+          0,
+          mkb.getDiagID,
+          mkb.getDiagName,
+          null)
         data
       })
   }

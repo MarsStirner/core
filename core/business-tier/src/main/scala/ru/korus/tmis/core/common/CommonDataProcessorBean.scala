@@ -6,7 +6,7 @@ import ru.korus.tmis.core.database._
 import ru.korus.tmis.core.entity.model._
 import ru.korus.tmis.core.event._
 import ru.korus.tmis.core.exception.CoreException
-import ru.korus.tmis.core.logging.db.LoggingInterceptor
+import ru.korus.tmis.core.logging.LoggingInterceptor
 import ru.korus.tmis.util.{I18nable, StringId, ConfigManager}
 
 import grizzled.slf4j.Logging
@@ -18,6 +18,7 @@ import javax.inject.Inject
 import javax.interceptor.Interceptors
 
 import scala.collection.JavaConversions._
+import java.util.Date
 
 @Interceptors(Array(classOf[LoggingInterceptor]))
 @Stateless
@@ -63,7 +64,7 @@ class CommonDataProcessorBean
 
     if (data == null) {
       throw new CoreException(ConfigManager.ErrorCodes.InvalidCommonData,
-                              i18n("error.invalidCommonData"))
+        i18n("error.invalidCommonData"))
     }
 
     var result = List.empty[Action]
@@ -72,100 +73,143 @@ class CommonDataProcessorBean
     data.entity.foreach(entity => {
       try {
 
-        val action = dbAction.createAction(eventId,
-                                           entity.id.intValue,
-                                           userData)
-        val actionType = dbActionType.getActionTypeById(entity.id.intValue)
-        val aw = new ActionWrapper(action)
-
         // Collect all ActionProperties sent from the client
         val aps = entity.group.foldLeft(List.empty[CommonAttribute])(
           (list, group) => list ++ group.attribute)
 
-        // Create sent APs
-        val apList = aps.foldLeft(
-          List.empty[(ActionProperty, CommonAttribute)]
-        )((list, attribute) => {
-          if (AWI.isSupported(attribute.name)) {
-            list
-          } else {
-            val ap = dbActionProperty.createActionProperty(
-              action,
-              attribute.id.intValue,
-              userData)
-            new ActionPropertyWrapper(ap).set(attribute)
-            (ap, attribute) :: list
-          }
-        })
+        var multiplicity: Int = 1
+        var beginDate: Date = null
+        var endDate: Date = null
 
-        // Create empty APs not sent from the client
-        val emptyApts = actionType.getActionPropertyTypes
-        emptyApts.removeAll(apList.map(_._1.getType))
-
-        val emptyApList = emptyApts.map(
-          apt => {
-            dbActionProperty.createActionProperty(
-              action,
-              apt.getId.intValue,
-              userData)
-          })
-
-        entities = entities + action
-        dbManager.persistAll(List(action))
-
-        // Save sent AP values
-        val apvList = apList.foldLeft(
-          List.empty[APValue]
-        )((list, entry) => {
-          val (ap, attribute) = entry
-          (attribute.properties.get("valueId"), attribute.properties.get("value")) match {
-            case (None | Some(null) | Some(""), None | Some(null) | Some("")) => {
-              val apv = dbActionProperty.setActionPropertyValue(
-                ap,
-                ap.getType.getDefaultValue)
-              apv :: list
-            }
-            case (None | Some(null) | Some(""), Some(value)) => {
-              val apv = dbActionProperty.setActionPropertyValue(
-                ap,
-                value)
-              apv :: list
-            }
-            case (Some(valueId), _) => {
-              val apv = dbActionProperty.setActionPropertyValue(
-                ap,
-                valueId)
-              apv :: list
-            }
-          }
-        })
-
-        entities = (entities /: apvList)(_ + _)
-        dbManager.persistAll(apvList)
-
-        // Save empty AP values (set to default values)
-        val emptyApvList = emptyApList.map(
-          ap => {
-            dbActionProperty.setActionPropertyValue(
-              ap,
-              ap.getType.getDefaultValue)
-          })
-
-        entities = (entities /: emptyApvList)(_ + _)
-        dbManager.persistAll(emptyApvList)
-
-        // Set AWI values
         aps.foreach(attribute => {
-          if (AWI.isSupported(attribute.name)) {
-            aw.set(attribute)
+          if (attribute.name == AWI.Multiplicity.toString) {
+            multiplicity = attribute.properties.get(APWI.Value.toString) match {
+              case None | Some("") => 1
+              case Some(x) => x.toInt
+            }
+          }
+          else if (attribute.name == AWI.assessmentBeginDate.toString) {
+            beginDate = attribute.properties.get(APWI.Value.toString) match {
+              case None | Some("") => null
+              case Some(x) => ConfigManager.DateFormatter.parse(x)
+            }
+          }
+          else if (attribute.name == AWI.assessmentEndDate.toString) {
+            endDate = attribute.properties.get(APWI.Value.toString) match {
+              case None | Some("") => null
+              case Some(x) => ConfigManager.DateFormatter.parse(x)
+            }
           }
         })
 
-        val updatedAction =
-          dbManager.mergeAll[Action](List(action)).iterator().next()
-        entities = entities - action + updatedAction
+        var i = 0
+        while (i < multiplicity) {
 
-        result = updatedAction :: result
+          val action = dbAction.createAction(eventId,
+            entity.id.intValue,
+            userData)
+          //Если пришли значения Даты начала и дата конца, то перепишем дефолтные
+          if (beginDate != null) action.setBegDate(beginDate)
+          if (endDate != null) action.setEndDate(endDate)
+
+          val actionType = dbActionType.getActionTypeById(entity.id.intValue)
+          val aw = new ActionWrapper(action)
+
+          // Collect all ActionProperties sent from the client
+          val aps = entity.group.foldLeft(List.empty[CommonAttribute])(
+            (list, group) => list ++ group.attribute)
+
+          // Create sent APs
+          val apList = aps.foldLeft(
+            List.empty[(ActionProperty, CommonAttribute)]
+          )((list, attribute) => {
+            if (AWI.isSupported(attribute.name)) {
+              list
+            } else {
+              val ap = dbActionProperty.createActionProperty(
+                action,
+                attribute.id.intValue,
+                userData)
+              new ActionPropertyWrapper(ap).set(attribute)
+              (ap, attribute) :: list
+            }
+          })
+
+          // Create empty APs not sent from the client
+          val emptyApts = actionType.getActionPropertyTypes
+          emptyApts.removeAll(apList.map(_._1.getType))
+
+          val emptyApList = emptyApts.map(
+            apt => {
+              dbActionProperty.createActionProperty(
+                action,
+                apt.getId.intValue,
+                userData)
+            })
+
+          entities = entities + action
+          dbManager.persistAll(List(action))
+
+          // Save sent AP values
+          val apvList = apList.foldLeft(
+            List.empty[APValue]
+          )((list, entry) => {
+            val (ap, attribute) = entry
+            (attribute.properties.get("valueId"), attribute.properties.get("value")) match {
+              case (None | Some(null) | Some(""), None | Some(null) | Some("")) => {
+                if (ap.getType.getTypeName.compareTo("FlatDirectory") != 0 && ap.getType.getTypeName.compareTo("FlatDictionary") != 0) {
+                  val apv = dbActionProperty.setActionPropertyValue(
+                    ap,
+                    ap.getType.getDefaultValue,
+                    0)
+                  apv :: list
+                } else list
+              }
+              case (None | Some(null) | Some(""), Some(value)) => {
+                val apv = dbActionProperty.setActionPropertyValue(
+                  ap,
+                  value,
+                  0)
+                apv :: list
+              }
+              case (Some(valueId), _) => {
+                val apv = dbActionProperty.setActionPropertyValue(
+                  ap,
+                  valueId,
+                  0)
+                apv :: list
+              }
+            }
+          })
+
+          entities = (entities /: apvList)(_ + _)
+          dbManager.persistAll(apvList)
+
+          // Save empty AP values (set to default values)
+          //Для FlatDictionary (FlatDirectory) нету значения по умолчанию, внутри релэйшн по значению валуе, дефолт значение решил не писать
+          val emptyApvList = emptyApList.filter(p => (p.getType.getTypeName.compareTo("FlatDictionary") != 0 && p.getType.getTypeName.compareTo("FlatDirectory") != 0)).map(
+            ap => {
+              dbActionProperty.setActionPropertyValue(ap, ap.getType.getDefaultValue, 0)
+            })
+
+          entities = (entities /: emptyApvList)(_ + _)
+          dbManager.persistAll(emptyApvList)
+
+          // Set AWI values
+          aps.foreach(attribute => {
+            if (AWI.isSupported(attribute.name)) {
+              aw.set(attribute)
+            }
+          })
+
+          val updatedAction =
+            dbManager.mergeAll[Action](List(action)).iterator().next()
+          entities = entities - action + updatedAction
+
+          result = updatedAction :: result
+
+          i += 1
+        }
 
       } catch {
         case e: Exception => {
@@ -189,7 +233,7 @@ class CommonDataProcessorBean
 
     if (data == null) {
       throw new CoreException(ConfigManager.ErrorCodes.InvalidCommonData,
-                              i18n("error.invalidCommonData"))
+        i18n("error.invalidCommonData"))
     }
 
     var result = List[Action]();
@@ -198,25 +242,47 @@ class CommonDataProcessorBean
     val oldAction = Action.clone(dbAction.getActionById(actionId))
     val oldValues = dbActionProperty.getActionPropertiesByActionId(oldAction.getId.intValue)
     val lockId = appLock.acquireLock("Action",
-                                     actionId,
-                                     oldAction.getIdx,
-                                     userData);
+      actionId,
+      oldAction.getIdx,
+      userData);
 
     try {
       data.entity.filter(_.id == actionId).foreach(entity => {
-        val a = dbAction.updateAction(entity.id.intValue,
-                                      entity.version.intValue,
-                                      userData)
+        var a = dbAction.updateAction(entity.id.intValue,
+          entity.version.intValue,
+          userData)
         val aw = new ActionWrapper(a)
 
         // очистить часы
         a.resetAssignmentHours()
 
-        result = a :: result
-        entities = entities + a
-
         val aps = entity.group.foldLeft(List.empty[CommonAttribute])(
           (list, group) => list ++ group.attribute)
+
+        //Если пришли значения Даты начала и дата конца, то перепишем дефолтные
+        var beginDate: Date = null
+        var endDate: Date = null
+
+        var res = aps.find(p => p.name == AWI.assessmentBeginDate.toString).getOrElse(null)
+        if (res != null) {
+          beginDate = res.properties.get(APWI.Value.toString) match {
+            case None | Some("") => null
+            case Some(x) => ConfigManager.DateFormatter.parse(x)
+          }
+        }
+        res = aps.find(p => p.name == AWI.assessmentEndDate.toString).getOrElse(null)
+        if (res != null) {
+          endDate = res.properties.get(APWI.Value.toString) match {
+            case None | Some("") => null
+            case Some(x) => ConfigManager.DateFormatter.parse(x)
+          }
+        }
+
+        if (beginDate != null) a.setBegDate(beginDate)
+        if (endDate != null) a.setEndDate(endDate)
+
+        result = a :: result
+        entities = entities + a
 
         aps.foreach(attribute => {
           val id = attribute.id
@@ -240,7 +306,8 @@ class CommonDataProcessorBean
                   userData)
                 val apv = dbActionProperty.setActionPropertyValue(
                   ap,
-                  value)
+                  value,
+                  0)
                 new ActionPropertyWrapper(ap).set(attribute)
                 entities = entities + ap + apv.unwrap
               }
@@ -252,7 +319,8 @@ class CommonDataProcessorBean
                   userData)
                 val apv = dbActionProperty.setActionPropertyValue(
                   ap,
-                  valueId)
+                  valueId,
+                  0)
                 new ActionPropertyWrapper(ap).set(attribute)
                 entities = entities + ap + apv.unwrap
               }
@@ -263,18 +331,18 @@ class CommonDataProcessorBean
       })
 
       result = dbManager
-               .mergeAll(entities)
-               .filter(result.contains(_))
-               .map(_.asInstanceOf[Action])
-               .toList
+        .mergeAll(entities)
+        .filter(result.contains(_))
+        .map(_.asInstanceOf[Action])
+        .toList
 
       val r = dbManager.detachAll[Action](result).toList
       r.foreach(newAction => {
         val newValues = dbActionProperty.getActionPropertiesByActionId(newAction.getId.intValue)
         actionEvent.fire(new ModifyActionNotification(oldAction,
-                                                      oldValues,
-                                                      newAction,
-                                                      newValues))
+          oldValues,
+          newAction,
+          newValues))
       })
       return r
 
@@ -290,7 +358,7 @@ class CommonDataProcessorBean
     val r = dbManager.mergeAll[Action](List(action))
 
     val ActionStatus = ConfigManager.ActionStatus.immutable
-    
+
     status match {
       case ActionStatus.Canceled => {
         r.foreach(a => {
@@ -298,8 +366,10 @@ class CommonDataProcessorBean
           actionEvent.fire(new CancelActionNotification(a, values))
         })
       }
-    }
+      case _ => {
 
+      }
+    }
     true
   }
 
@@ -310,15 +380,50 @@ class CommonDataProcessorBean
       new CommonData(0, dbVersion.getGlobalVersion)
     )((data, at) => {
       val entity = new CommonEntity(at.getId,
-                                    0,
-                                    at.getName,
-                                    typeName,
-                                    at.getGroupId,
-                                    null,
-                                    at.getCode)
+        0,
+        at.getName,
+        typeName,
+        at.getGroupId,
+        null,
+        at.getCode)
       val group = new CommonGroup
       dbActionType.getActionTypePropertiesById(at.getId.intValue).foreach(
         (apt) => group add converter(apt)
+      )
+      data add (entity add group)
+    })
+  }
+
+  def fromActionTypesForWebClient(types: java.util.Set[ActionType],
+                                  typeName: String,
+                                  listForSummary: java.util.List[StringId],
+                                  listForConverter: java.util.List[String],
+                                  converter: (java.util.List[String], ActionPropertyType) => CommonAttribute) = {
+    types.foldLeft(
+      new CommonData(0, dbVersion.getGlobalVersion)
+    )((data, at) => {
+      val entity = new CommonEntity(at.getId,
+        0,
+        at.getName,
+        typeName,
+        at.getGroupId,
+        null,
+        at.getCode)
+      //***
+      val group0 = new CommonGroup(0, "Summary")
+      var a = new Action()
+      a.setId(0)
+
+      this.addAttributes(
+        group0,
+        new ActionWrapper(a),
+        /*attributes*/ listForSummary)
+
+      entity add group0
+      //***
+      val group = new CommonGroup(1, "Details")
+      dbActionType.getActionTypePropertiesById(at.getId.intValue).foreach(
+        (apt) => group add converter(listForConverter, apt)
       )
       data add (entity add group)
     })
@@ -332,12 +437,12 @@ class CommonDataProcessorBean
     )((data, action) => {
       data add converters.foldLeft(
         new CommonEntity(action.getId,
-                         action.getVersion,
-                         action.getActionType.getName,
-                         actionName,
-                         action.getActionType.getId,
-                         action.getStatus,
-                         action.getActionType.getCode)
+          action.getVersion,
+          action.getActionType.getName,
+          actionName,
+          action.getActionType.getId,
+          action.getStatus,
+          action.getActionType.getCode)
       )((entity, converter) => entity add converter(action))
     })
   }

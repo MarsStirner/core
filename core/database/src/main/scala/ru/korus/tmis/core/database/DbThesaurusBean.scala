@@ -1,6 +1,6 @@
 package ru.korus.tmis.core.database
 
-import ru.korus.tmis.core.logging.db.LoggingInterceptor
+import ru.korus.tmis.core.logging.LoggingInterceptor
 
 import grizzled.slf4j.Logging
 import javax.ejb.Stateless
@@ -24,14 +24,14 @@ class DbThesaurusBean
 
   def getMkb = {
     em.createNamedQuery("Mkb.findAll",
-                        classOf[Mkb])
-    .getResultList
+      classOf[Mkb])
+      .getResultList
   }
 
   def getThesaurus = {
     em.createNamedQuery("Thesaurus.findAll",
-                        classOf[Thesaurus])
-    .getResultList
+      classOf[Thesaurus])
+      .getResultList
   }
 
   def getThesaurusByCode(code: Int): java.util.List[Thesaurus] = {

@@ -1,121 +1,128 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<definitions xmlns="http://schemas.xmlsoap.org/wsdl/" xmlns:soap12bind="http://schemas.xmlsoap.org/wsdl/soap12/" xmlns:soapbind="http://schemas.xmlsoap.org/wsdl/soap/" xmlns:tns="http://www.korusconsulting.ru" xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:xsd1="http://www.korusconsulting.ru" name="IntegrationCorus" targetNamespace="http://www.korusconsulting.ru">
-	<types>
-		<xs:schema xmlns:xs="http://www.w3.org/2001/XMLSchema" xmlns:xs1="http://www.korusconsulting.ru" targetNamespace="http://www.korusconsulting.ru" attributeFormDefault="unqualified" elementFormDefault="qualified">
-			<xs:complexType name="BiomaterialInfo">
-				<xs:sequence>
-					<xs:element name="orderBiomaterialCode" type="xs:string"/>
-					<xs:element name="orderBiomaterialname" type="xs:string"/>
-					<xs:element name="orderBarCode" type="xs:string"/>
-					<xs:element name="orderProbeDate" type="xs:dateTime"/>
-					<xs:element name="orderBiomaterialComment" type="xs:string" minOccurs="0"/>
-				</xs:sequence>
-			</xs:complexType>
-			<xs:complexType name="DiagnosticRequestInfo">
-				<xs:sequence>
-					<xs:element name="orderMisId" type="xs:int"/>
-					<xs:element name="orderMisDate" type="xs:dateTime"/>
-					<xs:element name="orderPregnatMin" type="xs:int" minOccurs="0"/>
-					<xs:element name="orderPregnatMax" type="xs:int" minOccurs="0"/>
-					<xs:element name="orderDiagCode" type="xs:string"/>
-					<xs:element name="orderDiagText" type="xs:string" minOccurs="0"/>
-					<xs:element name="orderComment" type="xs:string" minOccurs="0"/>
-					<xs:element name="orderDepartmentName" type="xs:string" minOccurs="0"/>
-					<xs:element name="orderDepartmentMisId" type="xs:string"/>
-					<xs:element name="orderDoctorFamily" type="xs:string" minOccurs="0"/>
-					<xs:element name="orderDoctorName" type="xs:string" minOccurs="0"/>
-					<xs:element name="orderDoctorPatronum" type="xs:string" minOccurs="0"/>
-					<xs:element name="orderDoctorMisId" type="xs:string"/>
-				</xs:sequence>
-			</xs:complexType>
-			<xs:complexType name="IndicatorMetodic">
-				<xs:sequence>
-					<xs:element name="indicatorName" type="xs:string"/>
-					<xs:element name="indicatorCode" type="xs:string" minOccurs="0"/>
-				</xs:sequence>
-			</xs:complexType>
-			<xs:complexType name="OrderInfo">
-				<xs:sequence>
-					<xs:element name="diagnosticCode" type="xs:string" minOccurs="0"/>
-					<xs:element name="diagnosticName" type="xs:string" minOccurs="0"/>
-					<xs:element name="orderPriority" type="xs:int" minOccurs="0"/>
-					<xs:element name="indicators" type="tns:IndicatorMetodic" minOccurs="0" maxOccurs="unbounded"/>
-				</xs:sequence>
-			</xs:complexType>
-			<xs:complexType name="PatientInfo">
-				<xs:sequence>
-					<xs:element name="patientMisId" type="xs:int"/>
-					<xs:element name="patientFamily" type="xs:string"/>
-					<xs:element name="patientName" type="xs:string"/>
-					<xs:element name="patientPatronum" type="xs:string"/>
-					<xs:element name="patientBirthDate" type="xs:string"/>
-					<xs:element name="patientSex" type="xs:int"/>
-				</xs:sequence>
-			</xs:complexType>
-			<xs:element name="queryAnalysis">
-				<xs:complexType>
-					<xs:sequence>
-						<xs:element name="PatientInfo" type="tns:PatientInfo"/>
-						<xs:element name="DiagnosticRequestInfo" type="tns:DiagnosticRequestInfo"/>
-						<xs:element name="BiomaterialInfo" type="tns:BiomaterialInfo"/>
-						<xs:element name="OrderInfo" type="tns:OrderInfo"/>
-					</xs:sequence>
-				</xs:complexType>
-			</xs:element>
-			<xs:element name="queryAnalysisResponse">
-				<xs:complexType>
-					<xs:sequence>
-						<xs:element name="return" type="xs:int"/>
-					</xs:sequence>
-				</xs:complexType>
-			</xs:element>
-		</xs:schema>
-	</types>
-	<message name="queryAnalysisRequestMessage">
-		<part name="parameters" element="tns:queryAnalysis"/>
-	</message>
-	<message name="queryAnalysisResponseMessage">
-		<part name="parameters" element="tns:queryAnalysisResponse"/>
-	</message>
-	<portType name="IntegrationCorusPortType">
-		<operation name="queryAnalysis">
-			<input message="tns:queryAnalysisRequestMessage"/>
-			<output message="tns:queryAnalysisResponseMessage"/>
-		</operation>
-	</portType>
-	<binding name="IntegrationCorusSoapBinding" type="tns:IntegrationCorusPortType">
-		<soapbind:binding style="document" transport="http://schemas.xmlsoap.org/soap/http"/>
-		<operation name="queryAnalysis">
-			<soapbind:operation style="document" soapAction="http://www.korusconsulting.ru#IntegrationCorus:queryAnalysis"/>
-			<input>
-				<soapbind:body use="literal"/>
-			</input>
-			<output>
-				<soapbind:body use="literal"/>
-			</output>
-		</operation>
-	</binding>
-	<binding name="IntegrationCorusSoap12Binding" type="tns:IntegrationCorusPortType">
-		<soap12bind:binding style="document" transport="http://schemas.xmlsoap.org/soap/http"/>
-		<operation name="queryAnalysis">
-			<soap12bind:operation style="document" soapAction="http://www.korusconsulting.ru#IntegrationCorus:queryAnalysis"/>
-			<input>
-				<soap12bind:body use="literal"/>
-			</input>
-			<output>
-				<soap12bind:body use="literal"/>
-			</output>
-		</operation>
-	</binding>
-	<service name="IntegrationCorus">
-		<port name="IntegrationCorusSoap" binding="tns:IntegrationCorusSoapBinding">
-			<documentation> 
-				<wsi:Claim xmlns:wsi="http://ws-i.org/schemas/conformanceClaim/" conformsTo="http://ws-i.org/profiles/basic/1.1"/>
-			</documentation>
-			<soapbind:address location="http://10.0.200.68/LIS/ws/IntegrationCorus/"/>
-		</port>
-		<port name="IntegrationCorusSoap12" binding="tns:IntegrationCorusSoap12Binding">
-			<soap12bind:address location="http://10.0.200.68/LIS/ws/IntegrationCorus/"/>
-		</port>
-	</service>
+<definitions xmlns="http://schemas.xmlsoap.org/wsdl/" xmlns:soap12bind="http://schemas.xmlsoap.org/wsdl/soap12/"
+             xmlns:soapbind="http://schemas.xmlsoap.org/wsdl/soap/" xmlns:tns="http://www.korusconsulting.ru"
+             name="IntegrationCorus" targetNamespace="http://www.korusconsulting.ru">
+    <types>
+        <xs:schema xmlns:xs="http://www.w3.org/2001/XMLSchema"
+                   targetNamespace="http://www.korusconsulting.ru" attributeFormDefault="unqualified"
+                   elementFormDefault="qualified">
+            <xs:complexType name="BiomaterialInfo">
+                <xs:sequence>
+                    <xs:element name="orderBiomaterialCode" type="xs:string"/>
+                    <xs:element name="orderBiomaterialname" type="xs:string"/>
+                    <xs:element name="orderBarCode" type="xs:string"/>
+                    <xs:element name="orderProbeDate" type="xs:dateTime"/>
+                    <xs:element name="orderBiomaterialComment" type="xs:string" minOccurs="0"/>
+                </xs:sequence>
+            </xs:complexType>
+            <xs:complexType name="DiagnosticRequestInfo">
+                <xs:sequence>
+                    <xs:element name="orderMisId" type="xs:int"/>
+                    <xs:element name="orderMisDate" type="xs:dateTime"/>
+                    <xs:element name="orderPregnatMin" type="xs:int" minOccurs="0"/>
+                    <xs:element name="orderPregnatMax" type="xs:int" minOccurs="0"/>
+                    <xs:element name="orderDiagCode" type="xs:string"/>
+                    <xs:element name="orderDiagText" type="xs:string" minOccurs="0"/>
+                    <xs:element name="orderComment" type="xs:string" minOccurs="0"/>
+                    <xs:element name="orderDepartmentName" type="xs:string" minOccurs="0"/>
+                    <xs:element name="orderDepartmentMisId" type="xs:string"/>
+                    <xs:element name="orderDoctorFamily" type="xs:string" minOccurs="0"/>
+                    <xs:element name="orderDoctorName" type="xs:string" minOccurs="0"/>
+                    <xs:element name="orderDoctorPatronum" type="xs:string" minOccurs="0"/>
+                    <xs:element name="orderDoctorMisId" type="xs:string"/>
+                </xs:sequence>
+            </xs:complexType>
+            <xs:complexType name="IndicatorMetodic">
+                <xs:sequence>
+                    <xs:element name="indicatorName" type="xs:string"/>
+                    <xs:element name="indicatorCode" type="xs:string" minOccurs="0"/>
+                </xs:sequence>
+            </xs:complexType>
+            <xs:complexType name="OrderInfo">
+                <xs:sequence>
+                    <xs:element name="diagnosticCode" type="xs:string" minOccurs="0"/>
+                    <xs:element name="diagnosticName" type="xs:string" minOccurs="0"/>
+                    <xs:element name="orderPriority" type="xs:int" minOccurs="0"/>
+                    <xs:element name="indicators" type="tns:IndicatorMetodic" minOccurs="0" maxOccurs="unbounded"/>
+                </xs:sequence>
+            </xs:complexType>
+            <xs:complexType name="PatientInfo">
+                <xs:sequence>
+                    <xs:element name="patientMisId" type="xs:int"/>
+                    <xs:element name="patientFamily" type="xs:string"/>
+                    <xs:element name="patientName" type="xs:string"/>
+                    <xs:element name="patientPatronum" type="xs:string"/>
+                    <xs:element name="patientBirthDate" type="xs:string"/>
+                    <xs:element name="patientSex" type="xs:int"/>
+                </xs:sequence>
+            </xs:complexType>
+            <xs:element name="queryAnalysis">
+                <xs:complexType>
+                    <xs:sequence>
+                        <xs:element name="PatientInfo" type="tns:PatientInfo"/>
+                        <xs:element name="DiagnosticRequestInfo" type="tns:DiagnosticRequestInfo"/>
+                        <xs:element name="BiomaterialInfo" type="tns:BiomaterialInfo"/>
+                        <xs:element name="OrderInfo" type="tns:OrderInfo"/>
+                    </xs:sequence>
+                </xs:complexType>
+            </xs:element>
+            <xs:element name="queryAnalysisResponse">
+                <xs:complexType>
+                    <xs:sequence>
+                        <xs:element name="return" type="xs:int"/>
+                    </xs:sequence>
+                </xs:complexType>
+            </xs:element>
+        </xs:schema>
+    </types>
+    <message name="queryAnalysisRequestMessage">
+        <part name="parameters" element="tns:queryAnalysis"/>
+    </message>
+    <message name="queryAnalysisResponseMessage">
+        <part name="parameters" element="tns:queryAnalysisResponse"/>
+    </message>
+    <portType name="IntegrationCorusPortType">
+        <operation name="queryAnalysis">
+            <input message="tns:queryAnalysisRequestMessage"/>
+            <output message="tns:queryAnalysisResponseMessage"/>
+        </operation>
+    </portType>
+    <binding name="IntegrationCorusSoapBinding" type="tns:IntegrationCorusPortType">
+        <soapbind:binding style="document" transport="http://schemas.xmlsoap.org/soap/http"/>
+        <operation name="queryAnalysis">
+            <soapbind:operation style="document"
+                                soapAction="http://www.korusconsulting.ru#IntegrationCorus:queryAnalysis"/>
+            <input>
+                <soapbind:body use="literal"/>
+            </input>
+            <output>
+                <soapbind:body use="literal"/>
+            </output>
+        </operation>
+    </binding>
+    <binding name="IntegrationCorusSoap12Binding" type="tns:IntegrationCorusPortType">
+        <soap12bind:binding style="document" transport="http://schemas.xmlsoap.org/soap/http"/>
+        <operation name="queryAnalysis">
+            <soap12bind:operation style="document"
+                                  soapAction="http://www.korusconsulting.ru#IntegrationCorus:queryAnalysis"/>
+            <input>
+                <soap12bind:body use="literal"/>
+            </input>
+            <output>
+                <soap12bind:body use="literal"/>
+            </output>
+        </operation>
+    </binding>
+    <service name="IntegrationCorus">
+        <port name="IntegrationCorusSoap" binding="tns:IntegrationCorusSoapBinding">
+            <documentation>
+                <wsi:Claim xmlns:wsi="http://ws-i.org/schemas/conformanceClaim/"
+                           conformsTo="http://ws-i.org/profiles/basic/1.1"/>
+            </documentation>
+            <soapbind:address location="http://10.0.200.68/LIS/ws/IntegrationCorus/"/>
+        </port>
+        <port name="IntegrationCorusSoap12" binding="tns:IntegrationCorusSoap12Binding">
+            <soap12bind:address location="http://10.0.200.68/LIS/ws/IntegrationCorus/"/>
+        </port>
+    </service>
 </definitions> 

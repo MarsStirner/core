@@ -23,7 +23,7 @@ public class BactOrderInfo {
      */
     private String bactName;
 
-    @XmlElement(required=true)
+    @XmlElement(required = true)
     public String getCode() {
         return code;
     }
@@ -48,7 +48,7 @@ public class BactOrderInfo {
         this.urgent = urgent;
     }
 
-    @XmlElement(required=true)
+    @XmlElement(required = true)
     public String getBactName() {
         return bactName;
     }

@@ -2,26 +2,18 @@ package ru.korus.tmis.core.entity.model;
 
 import ru.korus.tmis.util.PublicClonable;
 
-import java.io.Serializable;
-import javax.persistence.Basic;
-import javax.persistence.Column;
-import javax.persistence.Entity;
-import javax.persistence.GeneratedValue;
-import javax.persistence.GenerationType;
-import javax.persistence.Id;
-import javax.persistence.NamedQueries;
-import javax.persistence.NamedQuery;
-import javax.persistence.Table;
+import javax.persistence.*;
 import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Size;
 import javax.xml.bind.annotation.XmlRootElement;
+import java.io.Serializable;
 
 @Entity
 @Table(name = "rbTissueType")
 @XmlRootElement
 @NamedQueries({
-    @NamedQuery(name = "RbTissueType.findAll", query = "SELECT r FROM RbTissueType r"),
-    @NamedQuery(name = "RbTissueType.findById", query = "SELECT r FROM RbTissueType r WHERE r.id = :id")
+        @NamedQuery(name = "RbTissueType.findAll", query = "SELECT r FROM RbTissueType r"),
+        @NamedQuery(name = "RbTissueType.findById", query = "SELECT r FROM RbTissueType r WHERE r.id = :id")
 })
 public class RbTissueType implements Serializable, PublicClonable<RbTissueType> {
     private static final long serialVersionUID = 1L;
@@ -31,24 +23,24 @@ public class RbTissueType implements Serializable, PublicClonable<RbTissueType> 
     @NotNull
     @Column(name = "id")
     private int id;
-    
+
     @Basic(optional = false)
     @NotNull
     @Size(min = 1, max = 64)
     @Column(name = "code")
     private String code;
-    
+
     @Basic(optional = false)
     @NotNull
     @Size(min = 1, max = 128)
     @Column(name = "name")
     private String name;
-    
+
     @Basic(optional = false)
     @NotNull
     @Column(name = "sex")
     private short sex;
-        
+
     @Basic(optional = false)
     @Column(name = "group_id")
     private int groupId;

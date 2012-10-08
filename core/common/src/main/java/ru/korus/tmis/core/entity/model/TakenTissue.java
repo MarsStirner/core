@@ -1,16 +1,15 @@
 package ru.korus.tmis.core.entity.model;
 
-import java.io.Serializable;
-import java.util.Date;
-import java.util.LinkedList;
-import java.util.List;
 import javax.persistence.*;
 import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Size;
 import javax.xml.bind.annotation.XmlRootElement;
+import java.io.Serializable;
+import java.util.Date;
+import java.util.LinkedList;
+import java.util.List;
 
 /**
- *
  * @author belyaev
  */
 @Entity
@@ -176,7 +175,7 @@ public class TakenTissue implements Serializable {
     private List<Action> actions = new LinkedList<Action>();
 
     public List<Action> getActions() {
-        if(actions == null) actions = new LinkedList<Action>();
+        if (actions == null) actions = new LinkedList<Action>();
         return actions;
     }
 

@@ -1,10 +1,12 @@
 package ru.korus.tmis.core.entity.model;
 
-import java.io.Serializable;
-import java.util.Date;
 import javax.persistence.*;
 import javax.xml.bind.annotation.XmlRootElement;
 import javax.xml.bind.annotation.XmlType;
+import java.io.Serializable;
+import java.util.Date;
+import java.util.LinkedList;
+import java.util.List;
 
 @Entity
 @Table(name = "Event", catalog = "", schema = "")
@@ -52,7 +54,7 @@ public class Event implements Serializable {
 
     @ManyToOne
     @JoinColumn(name = "eventType_id",
-                nullable = false)
+            nullable = false)
     private EventType eventType;
 
     @Column(name = "org_id")
@@ -127,6 +129,9 @@ public class Event implements Serializable {
     @Column(name = "mesSpecification_id")
     private Integer mesSpecificationId;
 
+    //@Column(name = "refusal")
+    //private Integer refusal;
+
     @Version
     @Basic(optional = false)
     @Column(name = "version")
@@ -151,6 +156,20 @@ public class Event implements Serializable {
         }
     }
 
+    @OneToMany(mappedBy = "event", cascade = CascadeType.ALL)
+    private List<Diagnostic> diagnostics =
+            new LinkedList<Diagnostic>();
+
+    public List<Diagnostic> getDiagnostics() {
+        return diagnostics;
+    }
+
+    public void addDiagnostic(final Diagnostic diagnostic) {
+        this.diagnostics.add(diagnostic);
+        if (diagnostic.getEvent() != this) {
+            diagnostic.setEvent(this);
+        }
+    }
     ////////////////////////////////////////////////////////////////////////////
     // End of custom mappings
     ////////////////////////////////////////////////////////////////////////////
@@ -409,5 +428,21 @@ public class Event implements Serializable {
     @Override
     public String toString() {
         return "ru.korus.tmis.core.entity.model.Event[id=" + id + "]";
+    }
+
+    @Override
+    public Object clone() throws CloneNotSupportedException {
+        return super.clone();
+    }
+
+    public static Event clone(Event self) throws CloneNotSupportedException {
+        Event newEvent = (Event) self.clone();
+
+        newEvent.diagnostics = new LinkedList<Diagnostic>();
+        for (Diagnostic dia : self.getDiagnostics()) {
+            newEvent.addDiagnostic((Diagnostic) dia.clone());
+        }
+
+        return newEvent;
     }
 }

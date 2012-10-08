@@ -53,7 +53,7 @@ public class OrderInfo {
 
     @XmlElement(name = "indicators")
     public Collection<Indicator> getIndicators() {
-        if(indicators == null) indicators = new LinkedList<Indicator>();
+        if (indicators == null) indicators = new LinkedList<Indicator>();
         return indicators;
     }
 

@@ -82,11 +82,11 @@ class YClinicalDocument extends Xmlable {
                      drug: Nomenclature,
                      timing: Iterable[AssignmentHour]) = {
     addDrug(treatment,
-            dosage,
-            drug,
-            timing,
-            XDocumentSubstanceMood.RQO,
-            false)
+      dosage,
+      drug,
+      timing,
+      XDocumentSubstanceMood.RQO,
+      false)
   }
 
   def addDrugEvent(treatment: Action,
@@ -94,11 +94,11 @@ class YClinicalDocument extends Xmlable {
                    drug: Nomenclature,
                    timing: Iterable[AssignmentHour]) = {
     addDrug(treatment,
-            dosage,
-            drug,
-            timing,
-            XDocumentSubstanceMood.EVN,
-            false)
+      dosage,
+      drug,
+      timing,
+      XDocumentSubstanceMood.EVN,
+      false)
   }
 
   def addDrugRequestCancel(treatment: Action,
@@ -106,11 +106,11 @@ class YClinicalDocument extends Xmlable {
                            drug: Nomenclature,
                            timing: Iterable[AssignmentHour]) = {
     addDrug(treatment,
-            dosage,
-            drug,
-            timing,
-            XDocumentSubstanceMood.RQO,
-            true)
+      dosage,
+      drug,
+      timing,
+      XDocumentSubstanceMood.RQO,
+      true)
   }
 
   def addDrugEventCancel(treatment: Action,
@@ -118,11 +118,11 @@ class YClinicalDocument extends Xmlable {
                          drug: Nomenclature,
                          timing: Iterable[AssignmentHour]) = {
     addDrug(treatment,
-            dosage,
-            drug,
-            timing,
-            XDocumentSubstanceMood.EVN,
-            true)
+      dosage,
+      drug,
+      timing,
+      XDocumentSubstanceMood.EVN,
+      true)
   }
 
   def addDrug(treatment: Action,

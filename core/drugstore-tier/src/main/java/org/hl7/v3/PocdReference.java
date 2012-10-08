@@ -8,19 +8,19 @@
 
 package org.hl7.v3;
 
-import java.util.ArrayList;
-import java.util.List;
 import javax.xml.bind.annotation.XmlAccessType;
 import javax.xml.bind.annotation.XmlAccessorType;
 import javax.xml.bind.annotation.XmlAttribute;
 import javax.xml.bind.annotation.XmlType;
+import java.util.ArrayList;
+import java.util.List;
 
 
 /**
  * <p>Java class for POCD_MT000040.Reference complex type.
- * 
+ * <p/>
  * <p>The following schema fragment specifies the expected content contained within this class.
- * 
+ * <p/>
  * <pre>
  * &lt;complexType name="POCD_MT000040.Reference">
  *   &lt;complexContent>
@@ -43,19 +43,17 @@ import javax.xml.bind.annotation.XmlType;
  *   &lt;/complexContent>
  * &lt;/complexType>
  * </pre>
- * 
- * 
  */
 @XmlAccessorType(XmlAccessType.FIELD)
 @XmlType(name = "POCD_MT000040.Reference", propOrder = {
-    "realmCode",
-    "typeId",
-    "templateId",
-    "seperatableInd",
-    "externalAct",
-    "externalObservation",
-    "externalProcedure",
-    "externalDocument"
+        "realmCode",
+        "typeId",
+        "templateId",
+        "seperatableInd",
+        "externalAct",
+        "externalObservation",
+        "externalProcedure",
+        "externalDocument"
 })
 public class PocdReference {
 
@@ -74,25 +72,23 @@ public class PocdReference {
 
     /**
      * Gets the value of the realmCode property.
-     * 
-     * <p>
+     * <p/>
+     * <p/>
      * This accessor method returns a reference to the live list,
      * not a snapshot. Therefore any modification you make to the
      * returned list will be present inside the JAXB object.
      * This is why there is not a <CODE>set</CODE> method for the realmCode property.
-     * 
-     * <p>
+     * <p/>
+     * <p/>
      * For example, to add a new item, do as follows:
      * <pre>
      *    getRealmCode().add(newItem);
      * </pre>
-     * 
-     * 
-     * <p>
+     * <p/>
+     * <p/>
+     * <p/>
      * Objects of the following type(s) are allowed in the list
      * {@link CS }
-     * 
-     * 
      */
     public List<CS> getRealmCode() {
         if (realmCode == null) {
@@ -103,11 +99,9 @@ public class PocdReference {
 
     /**
      * Gets the value of the typeId property.
-     * 
-     * @return
-     *     possible object is
-     *     {@link PocdInfrastructureRootTypeId }
-     *     
+     *
+     * @return possible object is
+     *         {@link PocdInfrastructureRootTypeId }
      */
     public PocdInfrastructureRootTypeId getTypeId() {
         return typeId;
@@ -115,11 +109,9 @@ public class PocdReference {
 
     /**
      * Sets the value of the typeId property.
-     * 
-     * @param value
-     *     allowed object is
-     *     {@link PocdInfrastructureRootTypeId }
-     *     
+     *
+     * @param value allowed object is
+     *              {@link PocdInfrastructureRootTypeId }
      */
     public void setTypeId(PocdInfrastructureRootTypeId value) {
         this.typeId = value;
@@ -127,25 +119,23 @@ public class PocdReference {
 
     /**
      * Gets the value of the templateId property.
-     * 
-     * <p>
+     * <p/>
+     * <p/>
      * This accessor method returns a reference to the live list,
      * not a snapshot. Therefore any modification you make to the
      * returned list will be present inside the JAXB object.
      * This is why there is not a <CODE>set</CODE> method for the templateId property.
-     * 
-     * <p>
+     * <p/>
+     * <p/>
      * For example, to add a new item, do as follows:
      * <pre>
      *    getTemplateId().add(newItem);
      * </pre>
-     * 
-     * 
-     * <p>
+     * <p/>
+     * <p/>
+     * <p/>
      * Objects of the following type(s) are allowed in the list
      * {@link II }
-     * 
-     * 
      */
     public List<II> getTemplateId() {
         if (templateId == null) {
@@ -156,11 +146,9 @@ public class PocdReference {
 
     /**
      * Gets the value of the seperatableInd property.
-     * 
-     * @return
-     *     possible object is
-     *     {@link BL }
-     *     
+     *
+     * @return possible object is
+     *         {@link BL }
      */
     public BL getSeperatableInd() {
         return seperatableInd;
@@ -168,11 +156,9 @@ public class PocdReference {
 
     /**
      * Sets the value of the seperatableInd property.
-     * 
-     * @param value
-     *     allowed object is
-     *     {@link BL }
-     *     
+     *
+     * @param value allowed object is
+     *              {@link BL }
      */
     public void setSeperatableInd(BL value) {
         this.seperatableInd = value;
@@ -180,11 +166,9 @@ public class PocdReference {
 
     /**
      * Gets the value of the externalAct property.
-     * 
-     * @return
-     *     possible object is
-     *     {@link PocdExternalAct }
-     *     
+     *
+     * @return possible object is
+     *         {@link PocdExternalAct }
      */
     public PocdExternalAct getExternalAct() {
         return externalAct;
@@ -192,11 +176,9 @@ public class PocdReference {
 
     /**
      * Sets the value of the externalAct property.
-     * 
-     * @param value
-     *     allowed object is
-     *     {@link PocdExternalAct }
-     *     
+     *
+     * @param value allowed object is
+     *              {@link PocdExternalAct }
      */
     public void setExternalAct(PocdExternalAct value) {
         this.externalAct = value;
@@ -204,11 +186,9 @@ public class PocdReference {
 
     /**
      * Gets the value of the externalObservation property.
-     * 
-     * @return
-     *     possible object is
-     *     {@link PocdExternalObservation }
-     *     
+     *
+     * @return possible object is
+     *         {@link PocdExternalObservation }
      */
     public PocdExternalObservation getExternalObservation() {
         return externalObservation;
@@ -216,11 +196,9 @@ public class PocdReference {
 
     /**
      * Sets the value of the externalObservation property.
-     * 
-     * @param value
-     *     allowed object is
-     *     {@link PocdExternalObservation }
-     *     
+     *
+     * @param value allowed object is
+     *              {@link PocdExternalObservation }
      */
     public void setExternalObservation(PocdExternalObservation value) {
         this.externalObservation = value;
@@ -228,11 +206,9 @@ public class PocdReference {
 
     /**
      * Gets the value of the externalProcedure property.
-     * 
-     * @return
-     *     possible object is
-     *     {@link PocdExternalProcedure }
-     *     
+     *
+     * @return possible object is
+     *         {@link PocdExternalProcedure }
      */
     public PocdExternalProcedure getExternalProcedure() {
         return externalProcedure;
@@ -240,11 +216,9 @@ public class PocdReference {
 
     /**
      * Sets the value of the externalProcedure property.
-     * 
-     * @param value
-     *     allowed object is
-     *     {@link PocdExternalProcedure }
-     *     
+     *
+     * @param value allowed object is
+     *              {@link PocdExternalProcedure }
      */
     public void setExternalProcedure(PocdExternalProcedure value) {
         this.externalProcedure = value;
@@ -252,11 +226,9 @@ public class PocdReference {
 
     /**
      * Gets the value of the externalDocument property.
-     * 
-     * @return
-     *     possible object is
-     *     {@link PocdExternalDocument }
-     *     
+     *
+     * @return possible object is
+     *         {@link PocdExternalDocument }
      */
     public PocdExternalDocument getExternalDocument() {
         return externalDocument;
@@ -264,11 +236,9 @@ public class PocdReference {
 
     /**
      * Sets the value of the externalDocument property.
-     * 
-     * @param value
-     *     allowed object is
-     *     {@link PocdExternalDocument }
-     *     
+     *
+     * @param value allowed object is
+     *              {@link PocdExternalDocument }
      */
     public void setExternalDocument(PocdExternalDocument value) {
         this.externalDocument = value;
@@ -276,25 +246,23 @@ public class PocdReference {
 
     /**
      * Gets the value of the nullFlavor property.
-     * 
-     * <p>
+     * <p/>
+     * <p/>
      * This accessor method returns a reference to the live list,
      * not a snapshot. Therefore any modification you make to the
      * returned list will be present inside the JAXB object.
      * This is why there is not a <CODE>set</CODE> method for the nullFlavor property.
-     * 
-     * <p>
+     * <p/>
+     * <p/>
      * For example, to add a new item, do as follows:
      * <pre>
      *    getNullFlavor().add(newItem);
      * </pre>
-     * 
-     * 
-     * <p>
+     * <p/>
+     * <p/>
+     * <p/>
      * Objects of the following type(s) are allowed in the list
      * {@link String }
-     * 
-     * 
      */
     public List<String> getNullFlavor() {
         if (nullFlavor == null) {
@@ -305,11 +273,9 @@ public class PocdReference {
 
     /**
      * Gets the value of the typeCode property.
-     * 
-     * @return
-     *     possible object is
-     *     {@link XActRelationshipExternalReference }
-     *     
+     *
+     * @return possible object is
+     *         {@link XActRelationshipExternalReference }
      */
     public XActRelationshipExternalReference getTypeCode() {
         return typeCode;
@@ -317,11 +283,9 @@ public class PocdReference {
 
     /**
      * Sets the value of the typeCode property.
-     * 
-     * @param value
-     *     allowed object is
-     *     {@link XActRelationshipExternalReference }
-     *     
+     *
+     * @param value allowed object is
+     *              {@link XActRelationshipExternalReference }
      */
     public void setTypeCode(XActRelationshipExternalReference value) {
         this.typeCode = value;

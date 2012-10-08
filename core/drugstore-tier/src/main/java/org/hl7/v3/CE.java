@@ -15,17 +15,16 @@ import javax.xml.bind.annotation.XmlType;
 
 
 /**
- * 
- *             Coded accept, consists of a coded value (CV)
- *             and, optionally, coded value(s) from other coding systems
- *             that identify the same concept. Used when alternative
- *             codes may exist.
- *          
- * 
+ * Coded accept, consists of a coded value (CV)
+ * and, optionally, coded value(s) from other coding systems
+ * that identify the same concept. Used when alternative
+ * codes may exist.
+ * <p/>
+ * <p/>
  * <p>Java class for CE complex type.
- * 
+ * <p/>
  * <p>The following schema fragment specifies the expected content contained within this class.
- * 
+ * <p/>
  * <pre>
  * &lt;complexType name="CE">
  *   &lt;complexContent>
@@ -44,19 +43,16 @@ import javax.xml.bind.annotation.XmlType;
  *   &lt;/complexContent>
  * &lt;/complexType>
  * </pre>
- * 
- * 
  */
 @XmlAccessorType(XmlAccessType.FIELD)
 @XmlType(name = "CE")
 @XmlSeeAlso({
-    CV.class,
-    EIVLEvent.class,
-    HXITCE.class
+        CV.class,
+        EIVLEvent.class,
+        HXITCE.class
 })
 public class CE
-    extends CD
-{
+        extends CD {
 
 
 }

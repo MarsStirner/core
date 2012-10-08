@@ -1,17 +1,10 @@
 package ru.korus.tmis.core.entity.model;
 
-import java.io.Serializable;
-import java.util.Date;
-import java.util.HashSet;
-import java.util.LinkedHashMap;
-import java.util.LinkedHashSet;
-import java.util.LinkedList;
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
 import javax.persistence.*;
 import javax.xml.bind.annotation.XmlRootElement;
 import javax.xml.bind.annotation.XmlType;
+import java.io.Serializable;
+import java.util.*;
 
 @Entity
 @Table(name = "Action", catalog = "", schema = "")
@@ -164,8 +157,8 @@ public class Action
 
     @ManyToMany(cascade = CascadeType.ALL)
     @JoinTable(name = "ActionTissue",
-               joinColumns = {@JoinColumn(name = "action_id")},
-               inverseJoinColumns = {@JoinColumn(name = "tissue_id")})
+            joinColumns = {@JoinColumn(name = "action_id")},
+            inverseJoinColumns = {@JoinColumn(name = "tissue_id")})
     private Set<Tissue> tissue = new LinkedHashSet<Tissue>();
 
     ////////////////////////////////////////////////////////////////////////////
@@ -176,7 +169,7 @@ public class Action
     private List<ActionProperty> actionProperties = new LinkedList<ActionProperty>();
 
     public List<ActionProperty> getActionProperties() {
-        if(actionProperties == null) actionProperties = new LinkedList<ActionProperty>();
+        if (actionProperties == null) actionProperties = new LinkedList<ActionProperty>();
         return actionProperties;
     }
 
@@ -214,7 +207,7 @@ public class Action
     }
 
     public Set<AssignmentHour> getAssignmentHours() {
-        if(assignmentHours == null) {
+        if (assignmentHours == null) {
             assignmentHours = new HashSet<AssignmentHour>();
         }
         return assignmentHours;
@@ -509,7 +502,7 @@ public class Action
     }
 
     public Set<Tissue> getTissue() {
-        if(tissue == null) tissue = new HashSet<Tissue>();
+        if (tissue == null) tissue = new HashSet<Tissue>();
         return tissue;
     }
 

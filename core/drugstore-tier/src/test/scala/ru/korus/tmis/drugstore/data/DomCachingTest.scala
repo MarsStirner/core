@@ -6,7 +6,9 @@ import ru.korus.tmis.drugstore.util.{DomCaching, ScalaXmlable}
 class DomCachingTest {
 
   class FooXmlable extends ScalaXmlable {
-    override val toXml = <foo><bar/></foo>
+    override val toXml = <foo>
+      <bar/>
+    </foo>
   }
 
   @Test

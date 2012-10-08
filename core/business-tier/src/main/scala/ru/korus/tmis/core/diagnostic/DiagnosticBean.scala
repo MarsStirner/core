@@ -5,7 +5,7 @@ import ru.korus.tmis.core.common.{CommonDataProcessorBeanLocal, TypeFilterBeanLo
 import ru.korus.tmis.core.data._
 import ru.korus.tmis.core.database._
 import ru.korus.tmis.core.entity.model._
-import ru.korus.tmis.core.logging.db.LoggingInterceptor
+import ru.korus.tmis.core.logging.LoggingInterceptor
 import ru.korus.tmis.util.{ConfigManager, I18nable}
 import ru.korus.tmis.util.ConfigManager.APWI
 
@@ -65,31 +65,32 @@ class DiagnosticBean
     }
 
     commonDataProcessor.fromActionTypes(types,
-                                        "DiagnosticType",
-                                        converter)
+      "DiagnosticType",
+      converter)
   }
 
   def getAllDiagnosticTypes = {
     commonDataProcessor.fromActionTypes(dbActionType.getDiagnosticTypes,
-                                        "DiagnosticType",
-                                        converter)
+      "DiagnosticType",
+      converter)
   }
 
   def converter(apt: ActionPropertyType) = {
     new CA(apt.getId,
-           0,
-           apt.getName,
-           apt.getTypeName,
-           apt.getConstructorValueDomain,
-           Map(APWI.Norm.toString -> apt.getNorm,
-               APWI.Unit.toString -> apt.getUnit.getName,
-               APWI.IsAssignable.toString -> apt.getIsAssignable.toString))
+      0,
+      apt.getName,
+      apt.getTypeName,
+      apt.getConstructorValueDomain,
+      Map(APWI.Norm.toString -> apt.getNorm,
+        APWI.Unit.toString -> apt.getUnit.getName,
+        APWI.IsAssignable.toString -> apt.getIsAssignable.toString))
   }
 
   def getAllDiagnosticsByEventId(eventId: Int) = {
     commonDataProcessor.fromActions(
       customQuery
-      .getAllDiagnosticsByEventId(eventId),
+        .getAllDiagnosticsByEventId(eventId)
+        .filter(_.getStatus != ConfigManager.ActionStatus.Canceled),
       "Diagnostic",
       List(summary _, details _))
   }
@@ -102,7 +103,7 @@ class DiagnosticBean
   }
 
   def summary(diagnostic: Action) = {
-    info ("Getting Action summary: " + diagnostic.getId)
+    info("Getting Action summary: " + diagnostic.getId)
 
     val group = new CommonGroup(0, "Summary")
 
@@ -123,7 +124,7 @@ class DiagnosticBean
   }
 
   def details(diagnostic: Action) = {
-    info ("Getting Action details: " + diagnostic.getId)
+    info("Getting Action details: " + diagnostic.getId)
 
     val propertiesMap =
       dbActionProperty.getActionPropertiesByActionId(diagnostic.getId.intValue)
@@ -140,18 +141,18 @@ class DiagnosticBean
         apvs.size match {
           case 0 => {
             group add apw.get(null, List(APWI.Norm,
-                                         APWI.Unit,
-                                         APWI.IsAssignable,
-                                         APWI.IsAssigned))
+              APWI.Unit,
+              APWI.IsAssignable,
+              APWI.IsAssigned))
           }
           case _ => {
             apvs.foreach((apv) => {
               group add apw.get(apv, List(APWI.Value,
-                                          APWI.ValueId,
-                                          APWI.Norm,
-                                          APWI.Unit,
-                                          APWI.IsAssignable,
-                                          APWI.IsAssigned))
+                APWI.ValueId,
+                APWI.Norm,
+                APWI.Unit,
+                APWI.IsAssignable,
+                APWI.IsAssigned))
             })
           }
         }
@@ -193,7 +194,7 @@ class DiagnosticBean
                                  diagnosticId: Int,
                                  status: Short) = {
     commonDataProcessor.changeActionStatus(eventId,
-                                           diagnosticId,
-                                           status)
+      diagnosticId,
+      status)
   }
 }

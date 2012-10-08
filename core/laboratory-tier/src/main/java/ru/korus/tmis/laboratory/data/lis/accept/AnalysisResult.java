@@ -1,6 +1,8 @@
 package ru.korus.tmis.laboratory.data.lis.accept;
 
-import javax.xml.bind.annotation.*;
+import javax.xml.bind.annotation.XmlElement;
+import javax.xml.bind.annotation.XmlTransient;
+import javax.xml.bind.annotation.XmlType;
 import java.util.Date;
 import java.util.LinkedList;
 import java.util.List;
@@ -94,7 +96,7 @@ public class AnalysisResult {
     private String Comment;
 
     public List<AntibioticSensitivity> getMicroSensitivity() {
-        if(microSensitivity == null) microSensitivity = new LinkedList<AntibioticSensitivity>();
+        if (microSensitivity == null) microSensitivity = new LinkedList<AntibioticSensitivity>();
         return microSensitivity;
     }
 
@@ -109,7 +111,10 @@ public class AnalysisResult {
         DIAPASON(4);
 
         int val;
-        ValueType(int v) { this.val = v; }
+
+        ValueType(int v) {
+            this.val = v;
+        }
     }
 
     @XmlElement(name = "indicatorName", required = true)
@@ -150,7 +155,7 @@ public class AnalysisResult {
 
     @XmlTransient
     public ValueType getValueType() {
-        return ValueType.values()[this.valueTypeNum-1];
+        return ValueType.values()[this.valueTypeNum - 1];
     }
 
     public void setValueType(ValueType valueType) {
@@ -167,7 +172,7 @@ public class AnalysisResult {
     }
 
     public List<ImageValue> getImageValues() {
-        if(imageValues == null) imageValues = new LinkedList<ImageValue>();
+        if (imageValues == null) imageValues = new LinkedList<ImageValue>();
         return imageValues;
     }
 
@@ -176,7 +181,7 @@ public class AnalysisResult {
     }
 
     public List<MicroOrganismResult> getMicroValues() {
-        if(microValues == null) microValues = new LinkedList<MicroOrganismResult>();
+        if (microValues == null) microValues = new LinkedList<MicroOrganismResult>();
         return microValues;
     }
 

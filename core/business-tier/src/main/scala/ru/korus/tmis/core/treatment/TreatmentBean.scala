@@ -14,7 +14,7 @@ import javax.ejb.{EJB, Stateless}
 import javax.interceptor.Interceptors
 
 import scala.collection.JavaConversions._
-import ru.korus.tmis.core.logging.db.LoggingInterceptor
+import ru.korus.tmis.core.logging.LoggingInterceptor
 import ru.korus.tmis.core.entity.model.{ActionPropertyWrapper, ActionWrapper, ActionPropertyType, Nomenclature}
 
 @Interceptors(Array(classOf[LoggingInterceptor]))
@@ -87,14 +87,14 @@ class TreatmentBean
     }
 
     commonDataProcessor.fromActionTypes(types,
-                                        "TreatmentType",
-                                        converter)
+      "TreatmentType",
+      converter)
   }
 
   def getAllTreatmentTypes = {
     commonDataProcessor.fromActionTypes(dbActionType.getTreatmentTypes,
-                                        "TreatmentType",
-                                        converter)
+      "TreatmentType",
+      converter)
   }
 
   def converter(apt: ActionPropertyType) = {
@@ -142,14 +142,14 @@ class TreatmentBean
     val ts = actionTypeId match {
       case null => {
         customQuery.getTreatmentInfo(eventId,
-                                     beginDate,
-                                     endData)
+          beginDate,
+          endData)
       }
       case _ => {
         customQuery.getTreatmentInfo(eventId,
-                                     actionTypeId.intValue,
-                                     beginDate,
-                                     endData)
+          actionTypeId.intValue,
+          beginDate,
+          endData)
       }
     }
 
@@ -217,19 +217,19 @@ class TreatmentBean
                           drugId: Int) = {
     new CommonData add (
       new CommonEntity(ConfigManager.VeriDrug.Compatible,
-                       null,
-                       null,
-                       null,
-                       null,
-                       null,
-                       null) add (
+        null,
+        null,
+        null,
+        null,
+        null,
+        null) add (
         new CommonGroup add (
           new CommonAttribute(null,
-                              null,
-                              "ResultText",
-                              null,
-                              null,
-                              "<COMMENT TEXT>")
+            null,
+            "ResultText",
+            null,
+            null,
+            "<COMMENT TEXT>")
           )
         )
       )
@@ -237,7 +237,7 @@ class TreatmentBean
 
   def revokeTreatment(eventId: Int, actionId: Int) = {
     commonDataProcessor.changeActionStatus(eventId,
-                                           actionId,
-                                           ConfigManager.ActionStatus.Canceled)
+      actionId,
+      ConfigManager.ActionStatus.Canceled)
   }
 }

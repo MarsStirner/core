@@ -15,5 +15,5 @@ public interface APValue {
 
     APValue unwrap();
 
-    void linkToActionProperty(ActionProperty ap);
+    void linkToActionProperty(ActionProperty ap, int index);
 }

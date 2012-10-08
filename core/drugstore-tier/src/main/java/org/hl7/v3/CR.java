@@ -15,20 +15,19 @@ import javax.xml.bind.annotation.XmlType;
 
 
 /**
- * 
- *             A concept qualifier code with optionally named role.
- *             Both qualifier role and value codes must be defined by
- *             the coding system.  For example, if SNOMED RT defines a
- *             concept "leg", a role relation "has-laterality", and
- *             another concept "left", the concept role relation allows
- *             to add the qualifier "has-laterality: left" to a primary
- *             code "leg" to construct the meaning "left leg".
- *          
- * 
+ * A concept qualifier code with optionally named role.
+ * Both qualifier role and value codes must be defined by
+ * the coding system.  For example, if SNOMED RT defines a
+ * concept "leg", a role relation "has-laterality", and
+ * another concept "left", the concept role relation allows
+ * to add the qualifier "has-laterality: left" to a primary
+ * code "leg" to construct the meaning "left leg".
+ * <p/>
+ * <p/>
  * <p>Java class for CR complex type.
- * 
+ * <p/>
  * <p>The following schema fragment specifies the expected content contained within this class.
- * 
+ * <p/>
  * <pre>
  * &lt;complexType name="CR">
  *   &lt;complexContent>
@@ -42,17 +41,14 @@ import javax.xml.bind.annotation.XmlType;
  *   &lt;/complexContent>
  * &lt;/complexType>
  * </pre>
- * 
- * 
  */
 @XmlAccessorType(XmlAccessType.FIELD)
 @XmlType(name = "CR", propOrder = {
-    "name",
-    "value"
+        "name",
+        "value"
 })
 public class CR
-    extends ANY
-{
+        extends ANY {
 
     protected CV name;
     protected CD value;
@@ -61,11 +57,9 @@ public class CR
 
     /**
      * Gets the value of the name property.
-     * 
-     * @return
-     *     possible object is
-     *     {@link CV }
-     *     
+     *
+     * @return possible object is
+     *         {@link CV }
      */
     public CV getName() {
         return name;
@@ -73,11 +67,9 @@ public class CR
 
     /**
      * Sets the value of the name property.
-     * 
-     * @param value
-     *     allowed object is
-     *     {@link CV }
-     *     
+     *
+     * @param value allowed object is
+     *              {@link CV }
      */
     public void setName(CV value) {
         this.name = value;
@@ -85,11 +77,9 @@ public class CR
 
     /**
      * Gets the value of the value property.
-     * 
-     * @return
-     *     possible object is
-     *     {@link CD }
-     *     
+     *
+     * @return possible object is
+     *         {@link CD }
      */
     public CD getValue() {
         return value;
@@ -97,11 +87,9 @@ public class CR
 
     /**
      * Sets the value of the value property.
-     * 
-     * @param value
-     *     allowed object is
-     *     {@link CD }
-     *     
+     *
+     * @param value allowed object is
+     *              {@link CD }
      */
     public void setValue(CD value) {
         this.value = value;
@@ -109,11 +97,9 @@ public class CR
 
     /**
      * Gets the value of the inverted property.
-     * 
-     * @return
-     *     possible object is
-     *     {@link Boolean }
-     *     
+     *
+     * @return possible object is
+     *         {@link Boolean }
      */
     public boolean isInverted() {
         if (inverted == null) {
@@ -125,11 +111,9 @@ public class CR
 
     /**
      * Sets the value of the inverted property.
-     * 
-     * @param value
-     *     allowed object is
-     *     {@link Boolean }
-     *     
+     *
+     * @param value allowed object is
+     *              {@link Boolean }
      */
     public void setInverted(Boolean value) {
         this.inverted = value;

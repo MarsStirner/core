@@ -1,11 +1,11 @@
 package ru.korus.tmis.core.entity.model;
 
-import java.io.Serializable;
-import java.util.LinkedHashSet;
-import java.util.Set;
 import javax.persistence.*;
 import javax.xml.bind.annotation.XmlRootElement;
 import javax.xml.bind.annotation.XmlType;
+import java.io.Serializable;
+import java.util.LinkedHashSet;
+import java.util.Set;
 
 /**
  * Класс для представления роли (профиля в терминах предыдущих версий системы).
@@ -42,8 +42,8 @@ public class Role implements Serializable {
 
     @ManyToMany(cascade = CascadeType.ALL)
     @JoinTable(name = "rbUserProfile_Right",
-               joinColumns = {@JoinColumn(name = "master_id")},
-               inverseJoinColumns = {@JoinColumn(name = "userRight_id")})
+            joinColumns = {@JoinColumn(name = "master_id")},
+            inverseJoinColumns = {@JoinColumn(name = "userRight_id")})
     private Set<UserRight> rights = new LinkedHashSet<UserRight>();
 
     public Set<UserRight> getRights() {

@@ -8,18 +8,14 @@
 
 package org.hl7.v3;
 
-import javax.xml.bind.annotation.XmlAccessType;
-import javax.xml.bind.annotation.XmlAccessorType;
-import javax.xml.bind.annotation.XmlAttribute;
-import javax.xml.bind.annotation.XmlSeeAlso;
-import javax.xml.bind.annotation.XmlType;
+import javax.xml.bind.annotation.*;
 
 
 /**
  * <p>Java class for SXCM_PPD_PQ complex type.
- * 
+ * <p/>
  * <p>The following schema fragment specifies the expected content contained within this class.
- * 
+ * <p/>
  * <pre>
  * &lt;complexType name="SXCM_PPD_PQ">
  *   &lt;complexContent>
@@ -29,28 +25,23 @@ import javax.xml.bind.annotation.XmlType;
  *   &lt;/complexContent>
  * &lt;/complexType>
  * </pre>
- * 
- * 
  */
 @XmlAccessorType(XmlAccessType.FIELD)
 @XmlType(name = "SXCM_PPD_PQ")
 @XmlSeeAlso({
-    IVLPPDPQ.class
+        IVLPPDPQ.class
 })
 public class SXCMPPDPQ
-    extends PPDPQ
-{
+        extends PPDPQ {
 
     @XmlAttribute
     protected SetOperator operator;
 
     /**
      * Gets the value of the operator property.
-     * 
-     * @return
-     *     possible object is
-     *     {@link SetOperator }
-     *     
+     *
+     * @return possible object is
+     *         {@link SetOperator }
      */
     public SetOperator getOperator() {
         if (operator == null) {
@@ -62,11 +53,9 @@ public class SXCMPPDPQ
 
     /**
      * Sets the value of the operator property.
-     * 
-     * @param value
-     *     allowed object is
-     *     {@link SetOperator }
-     *     
+     *
+     * @param value allowed object is
+     *              {@link SetOperator }
      */
     public void setOperator(SetOperator value) {
         this.operator = value;

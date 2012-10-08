@@ -17,7 +17,7 @@ public interface Laboratory2ClientWebService {
     /**
      * Отправить в ЛИС запрос анализа
      *
-     * @param actionId  идентификатор действия, соответствующего назначенному анализу
+     * @param actionId идентификатор действия, соответствующего назначенному анализу
      */
     @WebMethod
     void sendAnalysisRequest(int actionId) throws CoreException;

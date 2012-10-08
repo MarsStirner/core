@@ -8,30 +8,23 @@
 
 package org.hl7.v3;
 
+import javax.xml.bind.JAXBElement;
+import javax.xml.bind.annotation.*;
 import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
-import javax.xml.bind.JAXBElement;
-import javax.xml.bind.annotation.XmlAccessType;
-import javax.xml.bind.annotation.XmlAccessorType;
-import javax.xml.bind.annotation.XmlAttribute;
-import javax.xml.bind.annotation.XmlElementRef;
-import javax.xml.bind.annotation.XmlElementRefs;
-import javax.xml.bind.annotation.XmlMixed;
-import javax.xml.bind.annotation.XmlType;
 
 
 /**
- * 
- *             Mailing and home or office addresses. A sequence of
- *             address parts, such as street or post office Box, city,
- *             postal code, country, etc.
- *          
- * 
+ * Mailing and home or office addresses. A sequence of
+ * address parts, such as street or post office Box, city,
+ * postal code, country, etc.
+ * <p/>
+ * <p/>
  * <p>Java class for AD complex type.
- * 
+ * <p/>
  * <p>The following schema fragment specifies the expected content contained within this class.
- * 
+ * <p/>
  * <pre>
  * &lt;complexType name="AD">
  *   &lt;complexContent>
@@ -74,44 +67,42 @@ import javax.xml.bind.annotation.XmlType;
  *   &lt;/complexContent>
  * &lt;/complexType>
  * </pre>
- * 
- * 
  */
 @XmlAccessorType(XmlAccessType.FIELD)
 @XmlType(name = "AD", propOrder = {
-    "content"
+        "content"
 })
 public class AD {
 
     @XmlElementRefs({
-        @XmlElementRef(name = "streetNameType", namespace = "urn:hl7-org:v3", type = JAXBElement.class),
-        @XmlElementRef(name = "state", namespace = "urn:hl7-org:v3", type = JAXBElement.class),
-        @XmlElementRef(name = "streetNameBase", namespace = "urn:hl7-org:v3", type = JAXBElement.class),
-        @XmlElementRef(name = "direction", namespace = "urn:hl7-org:v3", type = JAXBElement.class),
-        @XmlElementRef(name = "deliveryInstallationArea", namespace = "urn:hl7-org:v3", type = JAXBElement.class),
-        @XmlElementRef(name = "streetName", namespace = "urn:hl7-org:v3", type = JAXBElement.class),
-        @XmlElementRef(name = "precinct", namespace = "urn:hl7-org:v3", type = JAXBElement.class),
-        @XmlElementRef(name = "buildingNumberSuffix", namespace = "urn:hl7-org:v3", type = JAXBElement.class),
-        @XmlElementRef(name = "deliveryModeIdentifier", namespace = "urn:hl7-org:v3", type = JAXBElement.class),
-        @XmlElementRef(name = "additionalLocator", namespace = "urn:hl7-org:v3", type = JAXBElement.class),
-        @XmlElementRef(name = "deliveryMode", namespace = "urn:hl7-org:v3", type = JAXBElement.class),
-        @XmlElementRef(name = "postalCode", namespace = "urn:hl7-org:v3", type = JAXBElement.class),
-        @XmlElementRef(name = "unitType", namespace = "urn:hl7-org:v3", type = JAXBElement.class),
-        @XmlElementRef(name = "deliveryInstallationType", namespace = "urn:hl7-org:v3", type = JAXBElement.class),
-        @XmlElementRef(name = "careOf", namespace = "urn:hl7-org:v3", type = JAXBElement.class),
-        @XmlElementRef(name = "censusTract", namespace = "urn:hl7-org:v3", type = JAXBElement.class),
-        @XmlElementRef(name = "houseNumber", namespace = "urn:hl7-org:v3", type = JAXBElement.class),
-        @XmlElementRef(name = "city", namespace = "urn:hl7-org:v3", type = JAXBElement.class),
-        @XmlElementRef(name = "delimiter", namespace = "urn:hl7-org:v3", type = JAXBElement.class),
-        @XmlElementRef(name = "county", namespace = "urn:hl7-org:v3", type = JAXBElement.class),
-        @XmlElementRef(name = "country", namespace = "urn:hl7-org:v3", type = JAXBElement.class),
-        @XmlElementRef(name = "houseNumberNumeric", namespace = "urn:hl7-org:v3", type = JAXBElement.class),
-        @XmlElementRef(name = "streetAddressLine", namespace = "urn:hl7-org:v3", type = JAXBElement.class),
-        @XmlElementRef(name = "useablePeriod", namespace = "urn:hl7-org:v3", type = JAXBElement.class),
-        @XmlElementRef(name = "deliveryInstallationQualifier", namespace = "urn:hl7-org:v3", type = JAXBElement.class),
-        @XmlElementRef(name = "unitID", namespace = "urn:hl7-org:v3", type = JAXBElement.class),
-        @XmlElementRef(name = "deliveryAddressLine", namespace = "urn:hl7-org:v3", type = JAXBElement.class),
-        @XmlElementRef(name = "postBox", namespace = "urn:hl7-org:v3", type = JAXBElement.class)
+            @XmlElementRef(name = "streetNameType", namespace = "urn:hl7-org:v3", type = JAXBElement.class),
+            @XmlElementRef(name = "state", namespace = "urn:hl7-org:v3", type = JAXBElement.class),
+            @XmlElementRef(name = "streetNameBase", namespace = "urn:hl7-org:v3", type = JAXBElement.class),
+            @XmlElementRef(name = "direction", namespace = "urn:hl7-org:v3", type = JAXBElement.class),
+            @XmlElementRef(name = "deliveryInstallationArea", namespace = "urn:hl7-org:v3", type = JAXBElement.class),
+            @XmlElementRef(name = "streetName", namespace = "urn:hl7-org:v3", type = JAXBElement.class),
+            @XmlElementRef(name = "precinct", namespace = "urn:hl7-org:v3", type = JAXBElement.class),
+            @XmlElementRef(name = "buildingNumberSuffix", namespace = "urn:hl7-org:v3", type = JAXBElement.class),
+            @XmlElementRef(name = "deliveryModeIdentifier", namespace = "urn:hl7-org:v3", type = JAXBElement.class),
+            @XmlElementRef(name = "additionalLocator", namespace = "urn:hl7-org:v3", type = JAXBElement.class),
+            @XmlElementRef(name = "deliveryMode", namespace = "urn:hl7-org:v3", type = JAXBElement.class),
+            @XmlElementRef(name = "postalCode", namespace = "urn:hl7-org:v3", type = JAXBElement.class),
+            @XmlElementRef(name = "unitType", namespace = "urn:hl7-org:v3", type = JAXBElement.class),
+            @XmlElementRef(name = "deliveryInstallationType", namespace = "urn:hl7-org:v3", type = JAXBElement.class),
+            @XmlElementRef(name = "careOf", namespace = "urn:hl7-org:v3", type = JAXBElement.class),
+            @XmlElementRef(name = "censusTract", namespace = "urn:hl7-org:v3", type = JAXBElement.class),
+            @XmlElementRef(name = "houseNumber", namespace = "urn:hl7-org:v3", type = JAXBElement.class),
+            @XmlElementRef(name = "city", namespace = "urn:hl7-org:v3", type = JAXBElement.class),
+            @XmlElementRef(name = "delimiter", namespace = "urn:hl7-org:v3", type = JAXBElement.class),
+            @XmlElementRef(name = "county", namespace = "urn:hl7-org:v3", type = JAXBElement.class),
+            @XmlElementRef(name = "country", namespace = "urn:hl7-org:v3", type = JAXBElement.class),
+            @XmlElementRef(name = "houseNumberNumeric", namespace = "urn:hl7-org:v3", type = JAXBElement.class),
+            @XmlElementRef(name = "streetAddressLine", namespace = "urn:hl7-org:v3", type = JAXBElement.class),
+            @XmlElementRef(name = "useablePeriod", namespace = "urn:hl7-org:v3", type = JAXBElement.class),
+            @XmlElementRef(name = "deliveryInstallationQualifier", namespace = "urn:hl7-org:v3", type = JAXBElement.class),
+            @XmlElementRef(name = "unitID", namespace = "urn:hl7-org:v3", type = JAXBElement.class),
+            @XmlElementRef(name = "deliveryAddressLine", namespace = "urn:hl7-org:v3", type = JAXBElement.class),
+            @XmlElementRef(name = "postBox", namespace = "urn:hl7-org:v3", type = JAXBElement.class)
     })
     @XmlMixed
     protected List<Serializable> content;
@@ -121,26 +112,25 @@ public class AD {
     protected Boolean isNotOrdered;
 
     /**
-     * 
-     *             Mailing and home or office addresses. A sequence of
-     *             address parts, such as street or post office Box, city,
-     *             postal code, country, etc.
-     *          Gets the value of the content property.
-     * 
-     * <p>
+     * Mailing and home or office addresses. A sequence of
+     * address parts, such as street or post office Box, city,
+     * postal code, country, etc.
+     * Gets the value of the content property.
+     * <p/>
+     * <p/>
      * This accessor method returns a reference to the live list,
      * not a snapshot. Therefore any modification you make to the
      * returned list will be present inside the JAXB object.
      * This is why there is not a <CODE>set</CODE> method for the content property.
-     * 
-     * <p>
+     * <p/>
+     * <p/>
      * For example, to add a new item, do as follows:
      * <pre>
      *    getContent().add(newItem);
      * </pre>
-     * 
-     * 
-     * <p>
+     * <p/>
+     * <p/>
+     * <p/>
      * Objects of the following type(s) are allowed in the list
      * {@link JAXBElement }{@code <}{@link AdxpStreetNameType }{@code >}
      * {@link JAXBElement }{@code <}{@link AdxpState }{@code >}
@@ -171,8 +161,6 @@ public class AD {
      * {@link JAXBElement }{@code <}{@link AdxpUnitID }{@code >}
      * {@link JAXBElement }{@code <}{@link AdxpDeliveryAddressLine }{@code >}
      * {@link JAXBElement }{@code <}{@link AdxpPostBox }{@code >}
-     * 
-     * 
      */
     public List<Serializable> getContent() {
         if (content == null) {
@@ -183,25 +171,23 @@ public class AD {
 
     /**
      * Gets the value of the use property.
-     * 
-     * <p>
+     * <p/>
+     * <p/>
      * This accessor method returns a reference to the live list,
      * not a snapshot. Therefore any modification you make to the
      * returned list will be present inside the JAXB object.
      * This is why there is not a <CODE>set</CODE> method for the use property.
-     * 
-     * <p>
+     * <p/>
+     * <p/>
      * For example, to add a new item, do as follows:
      * <pre>
      *    getUse().add(newItem);
      * </pre>
-     * 
-     * 
-     * <p>
+     * <p/>
+     * <p/>
+     * <p/>
      * Objects of the following type(s) are allowed in the list
      * {@link String }
-     * 
-     * 
      */
     public List<String> getUse() {
         if (use == null) {
@@ -212,11 +198,9 @@ public class AD {
 
     /**
      * Gets the value of the isNotOrdered property.
-     * 
-     * @return
-     *     possible object is
-     *     {@link Boolean }
-     *     
+     *
+     * @return possible object is
+     *         {@link Boolean }
      */
     public Boolean isIsNotOrdered() {
         return isNotOrdered;
@@ -224,11 +208,9 @@ public class AD {
 
     /**
      * Sets the value of the isNotOrdered property.
-     * 
-     * @param value
-     *     allowed object is
-     *     {@link Boolean }
-     *     
+     *
+     * @param value allowed object is
+     *              {@link Boolean }
      */
     public void setIsNotOrdered(Boolean value) {
         this.isNotOrdered = value;

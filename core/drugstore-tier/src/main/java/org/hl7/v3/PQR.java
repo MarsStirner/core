@@ -15,16 +15,15 @@ import javax.xml.bind.annotation.XmlType;
 
 
 /**
- * 
- *             A representation of a physical quantity in a unit from
- *             any code system. Used to show alternative representation
- *             for a physical quantity.
- *          
- * 
+ * A representation of a physical quantity in a unit from
+ * any code system. Used to show alternative representation
+ * for a physical quantity.
+ * <p/>
+ * <p/>
  * <p>Java class for PQR complex type.
- * 
+ * <p/>
  * <p>The following schema fragment specifies the expected content contained within this class.
- * 
+ * <p/>
  * <pre>
  * &lt;complexType name="PQR">
  *   &lt;complexContent>
@@ -34,25 +33,20 @@ import javax.xml.bind.annotation.XmlType;
  *   &lt;/complexContent>
  * &lt;/complexType>
  * </pre>
- * 
- * 
  */
 @XmlAccessorType(XmlAccessType.FIELD)
 @XmlType(name = "PQR")
 public class PQR
-    extends CV
-{
+        extends CV {
 
     @XmlAttribute
     protected String value;
 
     /**
      * Gets the value of the value property.
-     * 
-     * @return
-     *     possible object is
-     *     {@link String }
-     *     
+     *
+     * @return possible object is
+     *         {@link String }
      */
     public String getValue() {
         return value;
@@ -60,11 +54,9 @@ public class PQR
 
     /**
      * Sets the value of the value property.
-     * 
-     * @param value
-     *     allowed object is
-     *     {@link String }
-     *     
+     *
+     * @param value allowed object is
+     *              {@link String }
      */
     public void setValue(String value) {
         this.value = value;

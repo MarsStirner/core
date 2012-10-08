@@ -8,19 +8,19 @@
 
 package org.hl7.v3;
 
-import java.util.ArrayList;
-import java.util.List;
 import javax.xml.bind.annotation.XmlAccessType;
 import javax.xml.bind.annotation.XmlAccessorType;
 import javax.xml.bind.annotation.XmlAttribute;
 import javax.xml.bind.annotation.XmlType;
+import java.util.ArrayList;
+import java.util.List;
 
 
 /**
  * <p>Java class for POCD_MT000040.Component4 complex type.
- * 
+ * <p/>
  * <p>The following schema fragment specifies the expected content contained within this class.
- * 
+ * <p/>
  * <pre>
  * &lt;complexType name="POCD_MT000040.Component4">
  *   &lt;complexContent>
@@ -50,25 +50,23 @@ import javax.xml.bind.annotation.XmlType;
  *   &lt;/complexContent>
  * &lt;/complexType>
  * </pre>
- * 
- * 
  */
 @XmlAccessorType(XmlAccessType.FIELD)
 @XmlType(name = "POCD_MT000040.Component4", propOrder = {
-    "realmCode",
-    "typeId",
-    "templateId",
-    "sequenceNumber",
-    "seperatableInd",
-    "act",
-    "encounter",
-    "observation",
-    "observationMedia",
-    "organizer",
-    "procedure",
-    "regionOfInterest",
-    "substanceAdministration",
-    "supply"
+        "realmCode",
+        "typeId",
+        "templateId",
+        "sequenceNumber",
+        "seperatableInd",
+        "act",
+        "encounter",
+        "observation",
+        "observationMedia",
+        "organizer",
+        "procedure",
+        "regionOfInterest",
+        "substanceAdministration",
+        "supply"
 })
 public class PocdComponent4 {
 
@@ -95,25 +93,23 @@ public class PocdComponent4 {
 
     /**
      * Gets the value of the realmCode property.
-     * 
-     * <p>
+     * <p/>
+     * <p/>
      * This accessor method returns a reference to the live list,
      * not a snapshot. Therefore any modification you make to the
      * returned list will be present inside the JAXB object.
      * This is why there is not a <CODE>set</CODE> method for the realmCode property.
-     * 
-     * <p>
+     * <p/>
+     * <p/>
      * For example, to add a new item, do as follows:
      * <pre>
      *    getRealmCode().add(newItem);
      * </pre>
-     * 
-     * 
-     * <p>
+     * <p/>
+     * <p/>
+     * <p/>
      * Objects of the following type(s) are allowed in the list
      * {@link CS }
-     * 
-     * 
      */
     public List<CS> getRealmCode() {
         if (realmCode == null) {
@@ -124,11 +120,9 @@ public class PocdComponent4 {
 
     /**
      * Gets the value of the typeId property.
-     * 
-     * @return
-     *     possible object is
-     *     {@link PocdInfrastructureRootTypeId }
-     *     
+     *
+     * @return possible object is
+     *         {@link PocdInfrastructureRootTypeId }
      */
     public PocdInfrastructureRootTypeId getTypeId() {
         return typeId;
@@ -136,11 +130,9 @@ public class PocdComponent4 {
 
     /**
      * Sets the value of the typeId property.
-     * 
-     * @param value
-     *     allowed object is
-     *     {@link PocdInfrastructureRootTypeId }
-     *     
+     *
+     * @param value allowed object is
+     *              {@link PocdInfrastructureRootTypeId }
      */
     public void setTypeId(PocdInfrastructureRootTypeId value) {
         this.typeId = value;
@@ -148,25 +140,23 @@ public class PocdComponent4 {
 
     /**
      * Gets the value of the templateId property.
-     * 
-     * <p>
+     * <p/>
+     * <p/>
      * This accessor method returns a reference to the live list,
      * not a snapshot. Therefore any modification you make to the
      * returned list will be present inside the JAXB object.
      * This is why there is not a <CODE>set</CODE> method for the templateId property.
-     * 
-     * <p>
+     * <p/>
+     * <p/>
      * For example, to add a new item, do as follows:
      * <pre>
      *    getTemplateId().add(newItem);
      * </pre>
-     * 
-     * 
-     * <p>
+     * <p/>
+     * <p/>
+     * <p/>
      * Objects of the following type(s) are allowed in the list
      * {@link II }
-     * 
-     * 
      */
     public List<II> getTemplateId() {
         if (templateId == null) {
@@ -177,11 +167,9 @@ public class PocdComponent4 {
 
     /**
      * Gets the value of the sequenceNumber property.
-     * 
-     * @return
-     *     possible object is
-     *     {@link INT }
-     *     
+     *
+     * @return possible object is
+     *         {@link INT }
      */
     public INT getSequenceNumber() {
         return sequenceNumber;
@@ -189,11 +177,9 @@ public class PocdComponent4 {
 
     /**
      * Sets the value of the sequenceNumber property.
-     * 
-     * @param value
-     *     allowed object is
-     *     {@link INT }
-     *     
+     *
+     * @param value allowed object is
+     *              {@link INT }
      */
     public void setSequenceNumber(INT value) {
         this.sequenceNumber = value;
@@ -201,11 +187,9 @@ public class PocdComponent4 {
 
     /**
      * Gets the value of the seperatableInd property.
-     * 
-     * @return
-     *     possible object is
-     *     {@link BL }
-     *     
+     *
+     * @return possible object is
+     *         {@link BL }
      */
     public BL getSeperatableInd() {
         return seperatableInd;
@@ -213,11 +197,9 @@ public class PocdComponent4 {
 
     /**
      * Sets the value of the seperatableInd property.
-     * 
-     * @param value
-     *     allowed object is
-     *     {@link BL }
-     *     
+     *
+     * @param value allowed object is
+     *              {@link BL }
      */
     public void setSeperatableInd(BL value) {
         this.seperatableInd = value;
@@ -225,11 +207,9 @@ public class PocdComponent4 {
 
     /**
      * Gets the value of the act property.
-     * 
-     * @return
-     *     possible object is
-     *     {@link PocdAct }
-     *     
+     *
+     * @return possible object is
+     *         {@link PocdAct }
      */
     public PocdAct getAct() {
         return act;
@@ -237,11 +217,9 @@ public class PocdComponent4 {
 
     /**
      * Sets the value of the act property.
-     * 
-     * @param value
-     *     allowed object is
-     *     {@link PocdAct }
-     *     
+     *
+     * @param value allowed object is
+     *              {@link PocdAct }
      */
     public void setAct(PocdAct value) {
         this.act = value;
@@ -249,11 +227,9 @@ public class PocdComponent4 {
 
     /**
      * Gets the value of the encounter property.
-     * 
-     * @return
-     *     possible object is
-     *     {@link PocdEncounter }
-     *     
+     *
+     * @return possible object is
+     *         {@link PocdEncounter }
      */
     public PocdEncounter getEncounter() {
         return encounter;
@@ -261,11 +237,9 @@ public class PocdComponent4 {
 
     /**
      * Sets the value of the encounter property.
-     * 
-     * @param value
-     *     allowed object is
-     *     {@link PocdEncounter }
-     *     
+     *
+     * @param value allowed object is
+     *              {@link PocdEncounter }
      */
     public void setEncounter(PocdEncounter value) {
         this.encounter = value;
@@ -273,11 +247,9 @@ public class PocdComponent4 {
 
     /**
      * Gets the value of the observation property.
-     * 
-     * @return
-     *     possible object is
-     *     {@link PocdObservation }
-     *     
+     *
+     * @return possible object is
+     *         {@link PocdObservation }
      */
     public PocdObservation getObservation() {
         return observation;
@@ -285,11 +257,9 @@ public class PocdComponent4 {
 
     /**
      * Sets the value of the observation property.
-     * 
-     * @param value
-     *     allowed object is
-     *     {@link PocdObservation }
-     *     
+     *
+     * @param value allowed object is
+     *              {@link PocdObservation }
      */
     public void setObservation(PocdObservation value) {
         this.observation = value;
@@ -297,11 +267,9 @@ public class PocdComponent4 {
 
     /**
      * Gets the value of the observationMedia property.
-     * 
-     * @return
-     *     possible object is
-     *     {@link PocdObservationMedia }
-     *     
+     *
+     * @return possible object is
+     *         {@link PocdObservationMedia }
      */
     public PocdObservationMedia getObservationMedia() {
         return observationMedia;
@@ -309,11 +277,9 @@ public class PocdComponent4 {
 
     /**
      * Sets the value of the observationMedia property.
-     * 
-     * @param value
-     *     allowed object is
-     *     {@link PocdObservationMedia }
-     *     
+     *
+     * @param value allowed object is
+     *              {@link PocdObservationMedia }
      */
     public void setObservationMedia(PocdObservationMedia value) {
         this.observationMedia = value;
@@ -321,11 +287,9 @@ public class PocdComponent4 {
 
     /**
      * Gets the value of the organizer property.
-     * 
-     * @return
-     *     possible object is
-     *     {@link PocdOrganizer }
-     *     
+     *
+     * @return possible object is
+     *         {@link PocdOrganizer }
      */
     public PocdOrganizer getOrganizer() {
         return organizer;
@@ -333,11 +297,9 @@ public class PocdComponent4 {
 
     /**
      * Sets the value of the organizer property.
-     * 
-     * @param value
-     *     allowed object is
-     *     {@link PocdOrganizer }
-     *     
+     *
+     * @param value allowed object is
+     *              {@link PocdOrganizer }
      */
     public void setOrganizer(PocdOrganizer value) {
         this.organizer = value;
@@ -345,11 +307,9 @@ public class PocdComponent4 {
 
     /**
      * Gets the value of the procedure property.
-     * 
-     * @return
-     *     possible object is
-     *     {@link PocdProcedure }
-     *     
+     *
+     * @return possible object is
+     *         {@link PocdProcedure }
      */
     public PocdProcedure getProcedure() {
         return procedure;
@@ -357,11 +317,9 @@ public class PocdComponent4 {
 
     /**
      * Sets the value of the procedure property.
-     * 
-     * @param value
-     *     allowed object is
-     *     {@link PocdProcedure }
-     *     
+     *
+     * @param value allowed object is
+     *              {@link PocdProcedure }
      */
     public void setProcedure(PocdProcedure value) {
         this.procedure = value;
@@ -369,11 +327,9 @@ public class PocdComponent4 {
 
     /**
      * Gets the value of the regionOfInterest property.
-     * 
-     * @return
-     *     possible object is
-     *     {@link PocdRegionOfInterest }
-     *     
+     *
+     * @return possible object is
+     *         {@link PocdRegionOfInterest }
      */
     public PocdRegionOfInterest getRegionOfInterest() {
         return regionOfInterest;
@@ -381,11 +337,9 @@ public class PocdComponent4 {
 
     /**
      * Sets the value of the regionOfInterest property.
-     * 
-     * @param value
-     *     allowed object is
-     *     {@link PocdRegionOfInterest }
-     *     
+     *
+     * @param value allowed object is
+     *              {@link PocdRegionOfInterest }
      */
     public void setRegionOfInterest(PocdRegionOfInterest value) {
         this.regionOfInterest = value;
@@ -393,11 +347,9 @@ public class PocdComponent4 {
 
     /**
      * Gets the value of the substanceAdministration property.
-     * 
-     * @return
-     *     possible object is
-     *     {@link PocdSubstanceAdministration }
-     *     
+     *
+     * @return possible object is
+     *         {@link PocdSubstanceAdministration }
      */
     public PocdSubstanceAdministration getSubstanceAdministration() {
         return substanceAdministration;
@@ -405,11 +357,9 @@ public class PocdComponent4 {
 
     /**
      * Sets the value of the substanceAdministration property.
-     * 
-     * @param value
-     *     allowed object is
-     *     {@link PocdSubstanceAdministration }
-     *     
+     *
+     * @param value allowed object is
+     *              {@link PocdSubstanceAdministration }
      */
     public void setSubstanceAdministration(PocdSubstanceAdministration value) {
         this.substanceAdministration = value;
@@ -417,11 +367,9 @@ public class PocdComponent4 {
 
     /**
      * Gets the value of the supply property.
-     * 
-     * @return
-     *     possible object is
-     *     {@link PocdSupply }
-     *     
+     *
+     * @return possible object is
+     *         {@link PocdSupply }
      */
     public PocdSupply getSupply() {
         return supply;
@@ -429,11 +377,9 @@ public class PocdComponent4 {
 
     /**
      * Sets the value of the supply property.
-     * 
-     * @param value
-     *     allowed object is
-     *     {@link PocdSupply }
-     *     
+     *
+     * @param value allowed object is
+     *              {@link PocdSupply }
      */
     public void setSupply(PocdSupply value) {
         this.supply = value;
@@ -441,25 +387,23 @@ public class PocdComponent4 {
 
     /**
      * Gets the value of the nullFlavor property.
-     * 
-     * <p>
+     * <p/>
+     * <p/>
      * This accessor method returns a reference to the live list,
      * not a snapshot. Therefore any modification you make to the
      * returned list will be present inside the JAXB object.
      * This is why there is not a <CODE>set</CODE> method for the nullFlavor property.
-     * 
-     * <p>
+     * <p/>
+     * <p/>
      * For example, to add a new item, do as follows:
      * <pre>
      *    getNullFlavor().add(newItem);
      * </pre>
-     * 
-     * 
-     * <p>
+     * <p/>
+     * <p/>
+     * <p/>
      * Objects of the following type(s) are allowed in the list
      * {@link String }
-     * 
-     * 
      */
     public List<String> getNullFlavor() {
         if (nullFlavor == null) {
@@ -470,11 +414,9 @@ public class PocdComponent4 {
 
     /**
      * Gets the value of the typeCode property.
-     * 
-     * @return
-     *     possible object is
-     *     {@link ActRelationshipHasComponent }
-     *     
+     *
+     * @return possible object is
+     *         {@link ActRelationshipHasComponent }
      */
     public ActRelationshipHasComponent getTypeCode() {
         if (typeCode == null) {
@@ -486,11 +428,9 @@ public class PocdComponent4 {
 
     /**
      * Sets the value of the typeCode property.
-     * 
-     * @param value
-     *     allowed object is
-     *     {@link ActRelationshipHasComponent }
-     *     
+     *
+     * @param value allowed object is
+     *              {@link ActRelationshipHasComponent }
      */
     public void setTypeCode(ActRelationshipHasComponent value) {
         this.typeCode = value;
@@ -498,11 +438,9 @@ public class PocdComponent4 {
 
     /**
      * Gets the value of the contextConductionInd property.
-     * 
-     * @return
-     *     possible object is
-     *     {@link Boolean }
-     *     
+     *
+     * @return possible object is
+     *         {@link Boolean }
      */
     public boolean isContextConductionInd() {
         if (contextConductionInd == null) {
@@ -514,11 +452,9 @@ public class PocdComponent4 {
 
     /**
      * Sets the value of the contextConductionInd property.
-     * 
-     * @param value
-     *     allowed object is
-     *     {@link Boolean }
-     *     
+     *
+     * @param value allowed object is
+     *              {@link Boolean }
      */
     public void setContextConductionInd(Boolean value) {
         this.contextConductionInd = value;

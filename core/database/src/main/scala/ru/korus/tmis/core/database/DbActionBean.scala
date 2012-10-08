@@ -1,16 +1,18 @@
 package ru.korus.tmis.core.database
 
 import ru.korus.tmis.core.auth.AuthData
-import ru.korus.tmis.core.entity.model.{ActionStatus, Action}
 import ru.korus.tmis.core.exception.CoreException
-import ru.korus.tmis.core.logging.db.LoggingInterceptor
+import ru.korus.tmis.core.logging.LoggingInterceptor
 import ru.korus.tmis.util.{ConfigManager, I18nable}
 
 import grizzled.slf4j.Logging
 import java.util.Date
 import javax.ejb.{TransactionAttributeType, TransactionAttribute, EJB, Stateless}
 import javax.interceptor.Interceptors
-import javax.persistence.{PersistenceContext, EntityManager}
+import ru.korus.tmis.core.entity.model.{ActionType, ActionStatus, Action}
+import scala.collection.JavaConversions._
+import javax.persistence.{TypedQuery, PersistenceContext, EntityManager}
+import ru.korus.tmis.core.data.{AssessmentsListRequestDataFilter, AssessmentsListRequestData}
 
 @Interceptors(Array(classOf[LoggingInterceptor]))
 @Stateless
@@ -28,13 +30,29 @@ class DbActionBean
   @EJB
   var dbActionType: DbActionTypeBeanLocal = _
 
+  def getCountRecordsOrPagesQuery(enterPosition: String, filterQuery: String): TypedQuery[Long] = {
+
+    val cntMacroStr = "count(a)"
+    val sorting = ""
+
+    //выберем нужный запрос
+    var curentRequest = enterPosition.format(cntMacroStr, filterQuery, sorting)
+
+    //уберем из запроса фильтрацию
+    val index = curentRequest.indexOf("ORDER BY")
+    if (index > 0) {
+      curentRequest = curentRequest.substring(0, index)
+    }
+    em.createQuery(curentRequest.toString(), classOf[Long])
+  }
+
   @TransactionAttribute(TransactionAttributeType.REQUIRES_NEW)
   def getActionById(id: Int) = {
-    info("Requested action id["+ id + "]")
+    info("Requested action id[" + id + "]")
     val result = em.createQuery(ActionFindQuery,
-                                classOf[Action])
-                 .setParameter("id", id)
-                 .getResultList
+      classOf[Action])
+      .setParameter("id", id)
+      .getResultList
 
     result.size match {
       case 0 => {
@@ -58,13 +76,26 @@ class DbActionBean
 
     val a = new Action
 
-    a.setCreatePerson(userData.user)
-    a.setCreateDatetime(now)
-    a.setModifyPerson(userData.user)
-    a.setModifyDatetime(now)
+    //TODO: временнр подсовываю пустой Staff когда нет AuthData
+    if (userData != null) {
+      a.setCreatePerson(userData.user)
+      a.setCreateDatetime(now)
+      a.setModifyPerson(userData.user)
+      a.setModifyDatetime(now)
 
-    a.setAssigner(userData.user)
-    a.setExecutor(userData.user)
+      a.setAssigner(userData.user)
+      a.setExecutor(userData.user)
+    }
+    else {
+      //var staff = new Staff
+      //a.setCreatePerson(staff)
+      // a.setModifyPerson(staff)
+      // a.setAssigner(staff)
+      //a.setExecutor(staff)
+    }
+
+    a.setCreateDatetime(now)
+    a.setModifyDatetime(now)
     a.setBegDate(now)
     a.setEndDate(now)
 
@@ -99,6 +130,106 @@ class DbActionBean
     a
   }
 
+  def getAppealActionByEventId(eventId: Int, code: String) = {
+    //val e = dbEvent.getEventById(eventId)
+    //val actionType = dbActionType.getActionTypeByCode(code)
+
+    val result = em.createQuery(ActionByEventIdAndActionTypeQuery,
+      classOf[Action])
+      .setParameter("id", eventId)
+      .setParameter("code", code)
+      .getResultList
+
+    result.size match {
+      case 0 => {
+        null
+      }
+      case size => {
+        result.foreach(a => em.detach(a))
+        result.iterator().next
+      }
+    }
+  }
+
+  def getActionByEventExternalId(externalId: String) = {
+    val result = em.createQuery(ActionByEventExternalIdQuery,
+      classOf[Action])
+      .setParameter("externalId", externalId)
+      .getResultList
+
+    result.size match {
+      case 0 => {
+        null
+      }
+      case size => {
+        result.foreach(a => em.detach(a))
+        val action = result.iterator().next
+        action
+      }
+    }
+  }
+
+  def getLastActionWithTypeId(actionType: ActionType) = {
+    val result = em.createQuery(ActionLastByTypeId,
+      classOf[Action])
+      .setParameter("actionType", actionType)
+      .getResultList
+
+    result.foreach(a => em.detach(a))
+    result.iterator().next()
+  }
+
+  def getActionsByEventIdWithFilter(eventId: Int, userData: AuthData, requestData: AssessmentsListRequestData) = {
+
+    val queryStr = requestData.filter.asInstanceOf[AssessmentsListRequestDataFilter].toQueryStructure()
+
+    var typed = getCountRecordsOrPagesQuery(ActionsForSwitchPatientByEventQuery, queryStr.query)
+      .setParameter("eventId", eventId)
+
+    val sorting = "ORDER BY %s %s".format(requestData.sortingFieldInternal, requestData.sortingMethod)
+    var typed2 = em.createQuery(ActionsForSwitchPatientByEventQuery.format("a", queryStr.query, sorting), classOf[Action])
+      .setMaxResults(requestData.limit)
+      .setFirstResult(requestData.limit * (requestData.page - 1))
+      .setParameter("eventId", eventId)
+
+    queryStr.data.foreach(qdp => {
+      //проставляем динамическую фильтрацию
+      typed.setParameter(qdp.name, qdp.value)
+      typed2.setParameter(qdp.name, qdp.value)
+    })
+    requestData.setRecordsCount(typed.getSingleResult)
+    val result = typed2.getResultList
+
+    result.foreach(a => em.detach(a))
+    result
+  }
+
+  def getActionsByTypeCode(code: String, userData: AuthData) = {
+    val result = em.createQuery(ActionsByCodeQuery,
+      classOf[Action])
+      .setParameter("code", code)
+      .getResultList
+
+    result.foreach(a => em.detach(a))
+    result
+  }
+
+  def getActionsByTypeCodeAndEventId(codes: java.util.Set[String], eventId: Int, sort: String, userData: AuthData) = {
+    val result = em.createQuery(ActionsByCodeAndEventQuery.format(sort),
+      classOf[Action])
+      .setParameter("codes", asJavaCollection(codes))
+      .setParameter("id", eventId)
+      .getResultList
+
+    result.size match {
+      case 0 => null
+      case size => {
+        result.foreach(a => em.detach(a))
+        result
+      }
+    }
+  }
+
   val ActionFindQuery = """
     SELECT a
     FROM
@@ -107,5 +238,84 @@ class DbActionBean
       a.id = :id
     AND
       a.deleted = 0
-  """
+                        """
+
+  val ActionByEventIdAndActionTypeQuery = """
+    SELECT a
+    FROM
+      Action a
+      JOIN a.event e
+      JOIN a.actionType at
+    WHERE
+      e.id = :id
+    AND
+      at.code = :code
+    AND
+      a.deleted = 0
+                                          """
+
+  val ActionByEventExternalIdQuery = """
+    SELECT a
+    FROM Action a
+    WHERE
+    exists (
+      SELECT e
+      FROM Event e
+      WHERE e.externalId = :externalId
+      AND e.deleted = 0
+      AND e = a.event
+    )
+    AND a.deleted = 0
+                                     """
+
+  val ActionLastByTypeId = """
+    SELECT a
+    FROM
+      Action a
+    WHERE
+      a.actionType = :actionType
+    AND
+      a.deleted = 0
+    ORDER BY a.createDatetime
+                           """
+
+  val ActionsForSwitchPatientByEventQuery = """
+    SELECT %s
+    FROM
+      Action a
+    WHERE
+      a.event.id = :eventId
+    AND
+      a.event.deleted = 0
+      %s
+    AND
+      a.deleted = 0
+    %s
+                                            """
+
+  val ActionsByCodeQuery = """
+    SELECT a
+    FROM
+      Action a
+    WHERE
+      a.actionType.code = :code
+    AND
+      a.deleted = 0
+    ORDER BY
+      a.createDatetime
+                           """
+
+  val ActionsByCodeAndEventQuery = """
+    SELECT a
+    FROM
+      Action a
+    WHERE
+      a.actionType.code IN :codes
+    AND
+      a.event.id = :id
+    AND
+      a.deleted = 0
+    ORDER BY
+      %s
+                                   """
 }
