@@ -4,13 +4,14 @@
     <modelVersion>4.0.0</modelVersion>
     <groupId>ru.korus.tmis.laboratory</groupId>
     <artifactId>tmis-ws-laboratory</artifactId>
+  <version>0.9.0</version>
     <packaging>war</packaging>
     <name>TMIS Laboratory Webservice</name>
 
     <parent>
         <groupId>ru.korus.tmis</groupId>
         <artifactId>tmis-nexus</artifactId>
-        <version>0.9.0</version>
+        <version>0.8.14</version>
         <relativePath>../</relativePath>
     </parent>
 
