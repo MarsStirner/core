@@ -2,7 +2,7 @@ package ru.korus.tmis.ws.laboratory.tmis
 
 import javax.jws.{HandlerChain, WebService}
 import grizzled.slf4j.Logging
-import ru.korus.tmis.util.I18nable
+import ru.korus.tmis.util.{CompileTimeConfigManager, I18nable}
 import javax.ejb.EJB
 import ru.korus.tmis.laboratory.business.LaboratoryBeanLocal
 

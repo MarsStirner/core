@@ -34,6 +34,6 @@ public class TextUtils {
      * @return корректная строка
      */
     private static String processString(final String value) {
-        return value.trim().replaceAll(",", ".");
+        return value != null && !"".equals(value) ? value.trim().replaceAll(",", ".") : "0";
     }
 }

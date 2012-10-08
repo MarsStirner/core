@@ -11,7 +11,7 @@ import grizzled.slf4j.Logging
 import java.lang.String
 import javax.ejb.{Remote, Stateless, EJB}
 import javax.interceptor.Interceptors
-import javax.xml.datatype.{DatatypeFactory, XMLGregorianCalendar}
+import javax.xml.datatype.{Duration, DatatypeFactory, XMLGregorianCalendar}
 
 import scala.collection.JavaConversions._
 import java.text.SimpleDateFormat
@@ -23,11 +23,15 @@ import javax.xml.ws.handler.{MessageContext, Handler}
 import ru.korus.tmis.core.logging.slf4j.soap.LoggingHandler
 import ru.korus.tmis.util.{CompileTimeConfigManager, ConfigManager, I18nable}
 import javax.xml.namespace.QName
-import java.net.{PasswordAuthentication, Authenticator}
+import java.net.{PasswordAuthentication, Authenticator, URL}
+import ru.korus.tmis.core.logging.slf4j.interceptor.NoDBLoggingInterceptor
 import java.util.{LinkedList, Date}
 import ru.korus.tmis.laboratory.data.request._
 import ru.korus.tmis.laboratory.data.accept.AnalysisResult
+import ru.korus.tmis.laboratory.data.accept.AnalysisResult._
+import javax.xml.ws.handler.soap.{SOAPMessageContext, SOAPHandler}
 import ru.korus.tmis.core.logging.LoggingInterceptor
+import javax.xml.rpc.handler.HandlerInfo
 import javax.xml.rpc.Stub
 
 import org.apache.axis.client.{Stub => AxisStub}
@@ -179,6 +183,7 @@ class LaboratoryBean
 
       val port = service.getIAcrossIntf_FNKCPort
 
+      import ru.korus.tmis.util.General.cast_implicits
 
       for (
         user <- Option(ConfigManager.Laboratory2.User);
@@ -230,6 +235,7 @@ class LaboratoryBean
 
   // get bio from TakenTissue (LIS2)
   def getBiomaterialInfo(action: Action, takenTissue: TakenTissue): BiomaterialInfo = {
+    import ru.korus.tmis.util.General.NumberImplicits._
 
     Option(action.getTakenTissue) match {
       case Some(t) => {

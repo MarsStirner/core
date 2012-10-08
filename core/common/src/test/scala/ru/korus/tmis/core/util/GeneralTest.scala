@@ -1,7 +1,7 @@
 package ru.korus.tmis.core.util
 
 import org.junit.Test
-import ru.korus.tmis.util.Types
+import ru.korus.tmis.util.{General, Types}
 
 import org.junit.Assert._
 import Types.{JLinked, JDouble, JInteger}
