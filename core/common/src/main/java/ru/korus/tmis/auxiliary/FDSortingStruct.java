@@ -3,6 +3,7 @@ package ru.korus.tmis.auxiliary;
 
 import ru.korus.tmis.core.entity.model.fd.FDFieldValue;
 import ru.korus.tmis.core.entity.model.fd.FDRecord;
+import ru.korus.tmis.core.entity.model.fd.FlatDirectory;
 
 import java.util.Set;
 

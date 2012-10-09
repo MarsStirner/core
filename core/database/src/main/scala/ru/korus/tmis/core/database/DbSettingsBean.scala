@@ -1,11 +1,14 @@
 package ru.korus.tmis.core.database
 
+import ru.korus.tmis.core.logging.LoggingInterceptor
 import javax.interceptor.Interceptors
 import ru.korus.tmis.core.logging.LoggingInterceptor
 import grizzled.slf4j.Logging
+import javax.persistence.PersistenceContext._
 import javax.persistence.{EntityManager, PersistenceContext}
 import javax.annotation.PostConstruct
 import javax.ejb.{Schedule, TransactionManagementType, TransactionManagement, Startup, Singleton}
+import javax.ejb.Schedule._
 import ru.korus.tmis.core.entity.model.Setting
 import collection.mutable.Buffer
 

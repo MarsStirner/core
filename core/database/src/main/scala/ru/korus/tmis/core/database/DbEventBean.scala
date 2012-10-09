@@ -1,10 +1,13 @@
 package ru.korus.tmis.core.database
 
 import ru.korus.tmis.core.logging.LoggingInterceptor
+import ru.korus.tmis.core.entity.model.{OrgStructure, ActionType, Event}
 import ru.korus.tmis.util.I18nable
 
 import grizzled.slf4j.Logging
 import java.util.{Calendar, Date}
+import javax.persistence.{EntityManager, PersistenceContext}
+import javax.ejb.{TransactionAttributeType, TransactionAttribute, Stateless}
 import javax.interceptor.Interceptors
 
 import scala.collection.JavaConversions._
@@ -13,6 +16,8 @@ import ru.korus.tmis.core.auth.AuthData
 import scala._
 import javax.persistence.{TypedQuery, EntityManager, PersistenceContext}
 import ru.korus.tmis.core.entity.model._
+import fd.FDRecord
+import ru.korus.tmis.core.data.{ReceivedRequestData, AppealRequestData, PatientRequestData}
 import ru.korus.tmis.core.exception.CoreException
 
 @Interceptors(Array(classOf[LoggingInterceptor]))

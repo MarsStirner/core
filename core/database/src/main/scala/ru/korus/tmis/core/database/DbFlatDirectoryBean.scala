@@ -9,7 +9,7 @@ import javax.persistence.{EntityManager, PersistenceContext}
 import ru.korus.tmis.core.auth.AuthData
 import scala.collection.JavaConversions._
 import ru.korus.tmis.core.entity.model.fd.{FDFieldValue, FDRecord, FlatDirectory}
-import ru.korus.tmis.auxiliary.FDSortingStruct
+import ru.korus.tmis.auxiliary.{AuxiliaryFunctions, FDSortingStruct}
 import ru.korus.tmis.core.data.{FlatDirectoryRequestData, FlatDirectoryRequestDataListFilter, QueryDataStructure}
 
 @Interceptors(Array(classOf[LoggingInterceptor]))

@@ -1,6 +1,6 @@
 package ru.korus.tmis.core.database
 
-import ru.korus.tmis.core.entity.model.Mkb
+import ru.korus.tmis.core.entity.model.{Mkb, Nomenclature}
 import ru.korus.tmis.core.logging.LoggingInterceptor
 
 import grizzled.slf4j.Logging
@@ -9,6 +9,7 @@ import javax.interceptor.Interceptors
 import javax.persistence.{EntityManager, PersistenceContext}
 
 import scala.collection.JavaConversions._
+import ru.korus.tmis.core.data.{RlsDataListFilter, QueryDataStructure}
 
 @Interceptors(Array(classOf[LoggingInterceptor]))
 @Stateless

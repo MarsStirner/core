@@ -1,9 +1,9 @@
 package ru.korus.tmis.core.entity.model;
 
+import java.io.Serializable;
 import javax.persistence.*;
 import javax.xml.bind.annotation.XmlRootElement;
 import javax.xml.bind.annotation.XmlType;
-import java.io.Serializable;
 
 @Entity
 @Table(name = "rbThesaurus")

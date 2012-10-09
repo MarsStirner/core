@@ -3,8 +3,10 @@ package ru.korus.tmis.core.data
 import ru.korus.tmis.util.ConfigManager
 
 import reflect.BeanProperty
+import java.lang.Integer
 import java.util.{Date, LinkedList}
 import javax.xml.bind.annotation._
+import javax.xml.bind.annotation.adapters.{XmlJavaTypeAdapter, XmlAdapter}
 
 @XmlType(name = "jsonCommonData")
 @XmlRootElement(name = "jsonCommonData")

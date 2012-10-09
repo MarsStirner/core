@@ -1,5 +1,6 @@
 package ru.korus.tmis.laboratory.data.request
 
+import javax.xml.datatype.XMLGregorianCalendar
 
 import ru.korus.ws.{laboratory => lab, laboratory2 => lab2}
 import java.util.Date
@@ -7,6 +8,8 @@ import java.lang.{Integer => JInteger}
 
 import DataConverter._
 
+import ru.korus.tmis.util.General.nullity_implicits
+import java.util
 import ru.korus.tmis.util.Defaultible._
 import ru.korus.tmis.core.exception.CoreException
 

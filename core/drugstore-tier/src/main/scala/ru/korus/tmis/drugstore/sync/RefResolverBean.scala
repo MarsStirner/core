@@ -2,7 +2,7 @@ package ru.korus.tmis.drugstore.sync
 
 import ru.korus.tmis.core.database.{DbOrganizationBeanLocal, DbOrgStructureBeanLocal}
 import ru.korus.tmis.core.entity.model.{Organisation, OrgStructure}
-import ru.korus.tmis.core.logging.db.LoggingInterceptor
+import ru.korus.tmis.core.logging.LoggingInterceptor
 import ru.korus.tmis.drugstore.data.{YGetDepartmentListRequest, YGetOrganizationListRequest}
 import ru.korus.tmis.drugstore.util.Xmlable.asScalaXml
 

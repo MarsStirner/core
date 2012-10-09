@@ -1,5 +1,6 @@
 package ru.korus.tmis.ws.laboratory.mock
 
+import ru.korus.tmis.laboratory.data.lis.mock._
 import javax.jws.{HandlerChain, WebService}
 import ru.korus.tmis.util.CompileTimeConfigManager
 import ru.korus.tmis.laboratory.data.lis.mock.{PatientInfo, OrderInfo, DiagnosticRequestInfo, BiomaterialInfo}

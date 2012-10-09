@@ -139,9 +139,10 @@ class DbActionPropertyBean
 
     apvs.size match {
       case 0 => {
-        // Если не нашли значение, то создаем новое
-        val apv = createActionPropertyValue(ap, value, index)
-        apv
+        // Если не нашли значение, то создаем новое, если не флатДиректори
+        if (ap.getType.getTypeName.compareTo("FlatDirectory") != 0 && ap.getType.getTypeName.compareTo("FlatDictionary") != 0) {
+          createActionPropertyValue(ap, value, index)
+        } else null
       }
       case size => {
         if (ap.getType.getIsVector) {

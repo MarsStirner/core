@@ -1,10 +1,14 @@
 package ru.korus.tmis.drugstore.data
 
 
+import java.io.{StringReader, ByteArrayOutputStream}
+import javax.xml.bind.JAXBContext
 import org.junit.Test
 
+import ru.korus.tmis.drugstore.data.{YOutgoingRelocationDocument, YIncomingRelocationDocument, YMovingRelocationDocument, YRelocationDocument}
+import xml.{XML, PrettyPrinter}
 import ru.korus.tmis.core.entity.model._
-import java.util.Date
+import java.util.{Date, Calendar, LinkedList}
 
 class YRelocationDocumentTest {
   @Test

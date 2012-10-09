@@ -5,7 +5,7 @@ import reflect.BeanProperty
 import java.util.{LinkedList, Date}
 import scala.collection.JavaConversions._
 import ru.korus.tmis.util.ConfigManager
-import ru.korus.tmis.core.entity.model.{ActionStatus, Action}
+import ru.korus.tmis.core.entity.model.{ActionStatus, Staff, Action}
 
 //Контейнер для списка диагностик
 @XmlType(name = "diagnosticsListData")

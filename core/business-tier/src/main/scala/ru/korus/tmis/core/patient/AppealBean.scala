@@ -11,8 +11,13 @@ import scala.collection.JavaConversions._
 import ru.korus.tmis.core.auth.AuthData
 import ru.korus.tmis.util.{ConfigManager, I18nable}
 import javax.persistence.{PersistenceContext, EntityManager}
+import collection.mutable.{HashMap, HashSet}
 import java.util.{ArrayList, Date, LinkedList}
+import java.text.{DateFormat, SimpleDateFormat}
 import ru.korus.tmis.core.exception.CoreException
+import java.{util, sql}
+import collection.mutable
+import java.sql.{Connection, DriverManager, ResultSet}
 import ru.korus.tmis.core.event.{Notification, ModifyActionNotification}
 import javax.inject.Inject
 import javax.enterprise.inject.Any
@@ -248,7 +253,7 @@ with I18nable {
 
         flgEventRewrite = true
       }
-      if (appealData.data.refuseAppealReason != null) {
+      if (appealData.data.refuseAppealReason != null && !appealData.data.refuseAppealReason.isEmpty) {
         newEvent = this.revokeAppealById(newEvent, 15, authData)
         this.insertCompleteDiagnoses(appealData.data.id, authData)
 
@@ -342,7 +347,8 @@ with I18nable {
 
     val sorting = "ORDER BY %s %s".format(sortingField, sortingMethod)
 
-    var typed = em.createQuery(AllAppealsWithFilterQuery.format("e, a", queryStr.query, sorting), classOf[Array[AnyRef]])
+    val q = AllAppealsWithFilterQuery.format("e, a", queryStr.query, sorting)
+    var typed = em.createQuery(q, classOf[Array[AnyRef]])
       .setMaxResults(limit)
       .setFirstResult(limit * page)
 
@@ -354,12 +360,21 @@ with I18nable {
 
     val map = new java.util.LinkedHashMap[Event, Object]
     result.foreach(f => {
-      map.put(f(0).asInstanceOf[Event],
-        (
-          f(1).asInstanceOf[Action],
-          this.getDiagnosisListByActionId(f(1).asInstanceOf[Action].getId.intValue())
-          )
-      )
+      val first = f(0).asInstanceOf[Event]
+      val second = f(1).asInstanceOf[Action]
+      val valueMap = if (filter.asInstanceOf[ReceivedRequestDataFilter].role == 29)
+        actionPropertyBean.getActionPropertiesByActionId(second.getId.intValue())
+      else
+        this.getDiagnosisListByActionId(second.getId.intValue(), filter.asInstanceOf[ReceivedRequestDataFilter].diagnosis)
+      if (filter.asInstanceOf[ReceivedRequestDataFilter].diagnosis != null &&
+        !filter.asInstanceOf[ReceivedRequestDataFilter].diagnosis.isEmpty) {
+
+        val filteredValueMap = valueMap.filter(element => element._2.size() > 0)
+        if (filteredValueMap.size > 0)
+          map.put(first, (second, valueMap))
+      }
+      else
+        map.put(first, (second, valueMap))
     })
     map
   }
@@ -539,34 +554,30 @@ with I18nable {
     valueSet
   }
 
-  private def getDiagnosisListByActionId(actionId: Int) = {
+  //Диагнозы из первичного осмотра(при госпитализации)
+  private def getDiagnosisListByActionId(actionId: Int, filter: String) = {
+    val constPartToName = "Диагноз направившего учреждения"
+    val diagnosisPropertyList = Map("assignment" -> i18n("appeal.db.actionPropertyType.name.diagnosis.assigment.code").toString,
+      "attendant" -> i18n("appeal.db.actionPropertyType.name.diagnosis.attendant.code").toString,
+      "aftereffect" -> i18n("appeal.db.actionPropertyType.name.diagnosis.aftereffect.code").toString)
 
     val map = new java.util.HashMap[String, java.util.List[Mkb]]
-    val actionProperties = actionPropertyBean.getActionPropertiesByActionId(actionId)
-    var diagnoses: LinkedList[DiagnosisSimplifyContainer] = new LinkedList[DiagnosisSimplifyContainer]
-
-    actionProperties.foreach(f => {
-      val ap_name = f._1.getType.getName
-      if (ap_name.contains("Диагноз направившего учреждения")) {
-        val dStr: String =
-          if (ap_name.contains("(осложнения)")) {
-            "aftereffect"
-          }
-          else if (ap_name.contains("(сопутствующий)")) {
-            "attendant"
-          }
-          else "assignment"
-
-        f._2.foreach(apv => {
-          if (!map.containsKey(dStr))
-            map.put(dStr, new java.util.LinkedList[Mkb])
-
-          val list = map.get(dStr)
-          list.add(apv.getValue.asInstanceOf[Mkb])
-          map.remove(dStr)
-          map.put(dStr, list)
-        })
-      }
+    var actionProperties = actionPropertyBean.getActionPropertiesByActionId(actionId)
+      .filter(element => element._1.getType.getName.contains(constPartToName))
+    if (filter != null && !filter.isEmpty) {
+      actionProperties = actionProperties.filter(element => element._2.filter(value => (value.getValue.asInstanceOf[Mkb].getDiagID.contains(filter) ||
+        value.getValue.asInstanceOf[Mkb].getDiagName.contains(filter))).size > 0)
+    }
+    diagnosisPropertyList.foreach(name => {
+      val values = actionProperties.find(element => element._1.getType.getName.compareTo(name._2) == 0).getOrElse(null)
+      val mkbs = if (values != null) {
+        values._2.foldLeft(new java.util.LinkedList[Mkb])(
+          (mkbList, value) => {
+            mkbList.add(value.getValue.asInstanceOf[Mkb])
+            mkbList
+          })
+      } else new java.util.LinkedList[Mkb]
+      map.put(name._1, mkbs)
     })
     map
   }
@@ -653,6 +664,13 @@ with I18nable {
     }
   }
 
+  def getAppealTypeCodesWithFlatDirectoryId(id: Int) = {
+    val rbResult = em.createQuery(eventTypeCodesByFlatDirectoryIdQuery, classOf[String])
+      .setParameter("id", id)
+      .getResultList
+    rbResult
+  }
+
   /*
   def getBasicInfoOfDiseaseHistory(patientId: Int, externalId: String, authData: AuthData) = {
 
@@ -729,6 +747,20 @@ with I18nable {
 
 */
 
+  val eventTypeCodesByFlatDirectoryIdQuery = """
+    SELECT et.code
+    FROM
+      FDRecord fdr,
+      FDFieldValue fdfv,
+      EventType et
+    WHERE
+      fdr.flatDirectory.id = :id
+    AND
+      fdfv.pk.fdRecord.id = fdr.id
+    AND
+      et.name = fdfv.value
+                                             """
+
   val DiagnosisTypeByIdQuery = """
     SELECT dt
     FROM
@@ -771,3 +803,21 @@ with I18nable {
 
                                 """
 }
+
+/*
+    AND
+      exists(
+        SELECT ap3
+        FROM ActionProperty ap3
+                JOIN ap3.actionPropertyType apt3,
+             APValueString apstr
+        WHERE
+          ap3.action = a2
+        AND
+          apt3.name = 'Патронаж'
+        AND
+          ap3.id = apstr.id.id
+        AND
+          apstr.value = 'Да'
+      )
+*/

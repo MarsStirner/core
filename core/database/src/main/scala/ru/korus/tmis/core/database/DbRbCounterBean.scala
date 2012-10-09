@@ -9,6 +9,7 @@ import ru.korus.tmis.core.entity.model.RbCounter
 import ru.korus.tmis.util.{ConfigManager, I18nable}
 import ru.korus.tmis.core.exception.NoSuchRbCounterIdException
 import java.lang.Iterable
+import javax.ejb.{TransactionAttributeType, TransactionAttribute}
 
 @Interceptors(Array(classOf[LoggingInterceptor]))
 @Stateless

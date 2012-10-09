@@ -1,12 +1,27 @@
 package ru.korus.tmis.core.data
 
+import javax.xml.bind.annotation.XmlType._
 import javax.xml.bind.annotation.{XmlRootElement, XmlType}
+import javax.xml.bind.annotation.XmlRootElement._
 import reflect.BeanProperty
 import java.util.{Calendar, Date, LinkedList}
-import ru.korus.tmis.core.entity.model.{Mkb, Patient, Action, Event}
+import ru.korus.tmis.core.entity.model._
 import ru.korus.tmis.util.ConfigManager
 import scala.collection.JavaConversions._
 import java.text.SimpleDateFormat
+import org.codehaus.jackson.map.annotate.JsonView
+
+object ReceivedPatientsDataViews {
+
+  class AdmissionDepartmentsNurseView {
+  }
+
+  class AdmissionDepartmentsDoctorView {
+  }
+
+}
+
+class ReceivedPatientsDataViews {}
 
 //Контейнер для данных об пациентах поступивших за период
 @XmlType(name = "receivedPatientsData")
@@ -21,9 +36,14 @@ class ReceivedPatientsData {
            request: ReceivedRequestData) {
     this()
     this.requestData = request
-    map.foreach(f => this.data.add(new ReceivedPatientsEntry(f._1,
-      f._2.asInstanceOf[(Action, java.util.Map[String, java.util.List[Mkb]])]._1,
-      f._2.asInstanceOf[(Action, java.util.Map[String, java.util.List[Mkb]])]._2)))
+
+    map.foreach(f => {
+      if (f._2.isInstanceOf[(Action, java.util.Map[_, java.util.List[_]])]) {
+        this.data.add(new ReceivedPatientsEntry(f._1,
+          f._2.asInstanceOf[(Action, java.util.Map[_, java.util.List[_]])]._1,
+          f._2.asInstanceOf[(Action, java.util.Map[_, java.util.List[_]])]._2))
+      }
+    })
   }
 }
 
@@ -107,6 +127,11 @@ class ReceivedRequestDataFilter {
   var beginDate: Date = _
   @BeanProperty
   var endDate: Date = _
+  @BeanProperty
+  var diagnosis: String = _
+
+
+  var role: Int = _
 
   def this(eventId: Int,
            fullName: String,
@@ -133,6 +158,29 @@ class ReceivedRequestDataFilter {
     } else {
       new Date(eDate.longValue())
     }
+  }
+
+  def this(eventId: Int,
+           fullName: String,
+           birthDate: java.lang.Long,
+           externalId: String,
+           bDate: java.lang.Long,
+           eDate: java.lang.Long,
+           diagnosis: String) = {
+    this(eventId, fullName, birthDate, externalId, bDate, eDate)
+    this.diagnosis = diagnosis
+  }
+
+  def this(eventId: Int,
+           fullName: String,
+           birthDate: java.lang.Long,
+           externalId: String,
+           bDate: java.lang.Long,
+           eDate: java.lang.Long,
+           diagnosis: String,
+           role: Int) = {
+    this(eventId, fullName, birthDate, externalId, bDate, eDate, diagnosis)
+    this.role = role
   }
 
   def toQueryStructure() = {
@@ -176,7 +224,50 @@ class ReceivedRequestDataFilter {
       qs.add("beginDate", this.beginDate)
       qs.add("endDate", this.endDate)
     }
-    qs.query += "AND a.actionType.code = '4201'\n"
+    if (this.diagnosis != null && !this.diagnosis.isEmpty) {
+      qs.query += "AND exists( " +
+        "SELECT ap " +
+        "FROM ActionProperty ap JOIN ap.actionPropertyType apt, APValueMKB mkb " +
+        "WHERE ap.action = a " +
+        "AND apt.name LIKE 'Диагноз направившего учреждения%' " +
+        "AND ap.id = mkb.id.id " +
+        "AND (mkb.mkb.diagID LIKE :diagnosis OR mkb.mkb.diagName LIKE :diagnosis))"
+      qs.add("diagnosis", "%" + this.diagnosis + "%")
+    }
+    if (this.role != 29)
+      qs.query += "AND a.actionType.code = '4201'\n"
+    else {
+      qs.query += "AND (\n" +
+        "(a.actionType.id = '113'\n" +
+        "AND\n" +
+        "exists(\n" +
+        "  SELECT ap2\n" +
+        "    FROM ActionProperty ap2\n" +
+        "    JOIN ap2.actionPropertyType apt2,\n" +
+        "  APValueOrgStructure apstr\n" +
+        "    WHERE ap2.action = a\n" +
+        "AND apt2.name = 'Отделение пребывания'\n" +
+        "AND ap2.id = apstr.id.id\n" +
+        "AND apstr.value IS NOT NULL\n" +
+        //"  AND apstr.value.id <> ''\n" +
+        ")\n" +
+        ")\n" +
+        "OR (\n" +
+        "  a.actionType.id = '112'\n" +
+        "AND\n" +
+        "exists(\n" +
+        "  SELECT ap3\n" +
+        "    FROM ActionProperty ap3\n" +
+        "    JOIN ap3.actionPropertyType apt3,\n" +
+        "  APValueOrgStructure apstr2\n" +
+        "    WHERE ap3.action = a\n" +
+        "AND apt3.name = 'Направлен в отделение'\n" +
+        "AND ap3.id = apstr2.id.id\n" +
+        "AND apstr2.value IS NOT NULL\n" +
+        //"  AND apstr2.value.id <> ''\n"
+        ")\n" +
+        "))\n"
+    }
     qs
   }
 
@@ -211,23 +302,64 @@ class ReceivedPatientsEntry {
   var createDatetime: Date = _
   @BeanProperty
   var number: String = _
+  @JsonView(Array(classOf[ReceivedPatientsDataViews.AdmissionDepartmentsDoctorView]))
   @BeanProperty
   var urgent: Boolean = _
   @BeanProperty
   var patient: IdPatientDataContainer = new IdPatientDataContainer
+  @JsonView(Array(classOf[ReceivedPatientsDataViews.AdmissionDepartmentsDoctorView]))
   @BeanProperty
   var diagnoses: LinkedList[DiagnosisSimplifyContainer] = new LinkedList[DiagnosisSimplifyContainer]
+  @JsonView(Array(classOf[ReceivedPatientsDataViews.AdmissionDepartmentsNurseView]))
+  @BeanProperty
+  var moving: MovingContainer = _
 
-  def this(event: Event, action: Action, map: java.util.Map[String, java.util.List[Mkb]]) {
+  def this(event: Event, action: Action) {
     this()
     this.id = event.getId.intValue()
     this.createDatetime = event.getSetDate
     this.number = event.getExternalId
     this.urgent = action.getIsUrgent
     this.patient = new IdPatientDataContainer(event.getPatient)
+  }
+
+  /*def this(event: Event, action: Action, map: java.util.Map[String, java.util.List[Mkb]]) {
+    this(event, action)
     map.foreach(f => {
       f._2.foreach(mkb => this.diagnoses += new DiagnosisSimplifyContainer(f._1, mkb))
     })
+  }*/
+
+  def this(event: Event, action: Action, map: java.util.Map[_, java.util.List[_]]) {
+    //ActionProperty, java.util.List[APValue]
+    this(event, action)
+    val element = map.iterator.next
+    if (element._1.isInstanceOf[ActionProperty] && element._2.isInstanceOf[java.util.List[APValue]]) {
+      this.moving = new MovingContainer()
+      if (event.getExecDate != null) {
+        action.getActionType.getId.intValue() match {
+          case 113 => {
+            val res = map.asInstanceOf[java.util.Map[ActionProperty, java.util.List[APValue]]].find(element => element._1.getType.getName.compareTo("Отделение пребывания") == 0).getOrElse(null)
+            if (res != null)
+              this.moving.department = new IdNameContainer(res._2.get(0).getValue.asInstanceOf[OrgStructure].getId.intValue(), res._2.get(0).getValue.asInstanceOf[OrgStructure].getName)
+            val res2 = map.asInstanceOf[java.util.Map[ActionProperty, java.util.List[APValue]]].find(element => element._1.getType.getName.compareTo("койка") == 0).getOrElse(null)
+            if (res2 != null)
+              this.moving.bed = res2._2.get(0).getValueAsString
+          }
+          case 112 => {
+            val res = map.asInstanceOf[java.util.Map[ActionProperty, java.util.List[APValue]]].find(element => element._1.getType.getName.compareTo("Направлен в отделение") == 0).getOrElse(null)
+            if (res != null)
+              this.moving.department = new IdNameContainer(res._2.get(0).getValue.asInstanceOf[OrgStructure].getId.intValue(), res._2.get(0).getValue.asInstanceOf[OrgStructure].getName)
+          }
+          case _ => {}
+        }
+      }
+    }
+    else if (element._1.isInstanceOf[String] && element._2.isInstanceOf[java.util.List[Mkb]]) {
+      map.asInstanceOf[java.util.Map[String, java.util.List[Mkb]]].foreach(f => {
+        f._2.foreach(mkb => this.diagnoses += new DiagnosisSimplifyContainer(f._1, mkb))
+      })
+    }
   }
 }
 
@@ -272,5 +404,25 @@ class DiagnosisSimplifyContainer {
     this()
     this.diagnosisKind = kind
     this.mkb = new MKBContainer(mkb)
+  }
+}
+
+@XmlType(name = "movingContainer")
+@XmlRootElement(name = "movingContainer")
+class MovingContainer {
+  @BeanProperty
+  var department: IdNameContainer = _
+  @BeanProperty
+  var room: String = _
+  @BeanProperty
+  var bed: String = _
+
+  def this(departmentId: Int,
+           room: String,
+           bed: String) {
+    this()
+    this.department = new IdNameContainer(departmentId, "")
+    this.room = room
+    this.bed = bed
   }
 }

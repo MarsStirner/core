@@ -3,7 +3,7 @@ package ru.korus.tmis.core.data
 import javax.xml.bind.annotation.{XmlRootElement, XmlType}
 import org.codehaus.jackson.annotate.JsonIgnoreProperties
 import reflect.BeanProperty
-import ru.korus.tmis.core.entity.model.Nomenclature
+import ru.korus.tmis.core.entity.model.{Nomenclature, Action}
 import ru.korus.tmis.util.ConfigManager
 import scala.collection.JavaConversions._
 

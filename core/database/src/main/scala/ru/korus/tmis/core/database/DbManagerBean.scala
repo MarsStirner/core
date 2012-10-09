@@ -6,6 +6,7 @@ import ru.korus.tmis.util.{ConfigManager, I18nable}
 
 import grizzled.slf4j.Logging
 import java.util.Collection
+import javax.ejb.{TransactionAttributeType, Stateless, TransactionAttribute}
 import javax.interceptor.Interceptors
 import javax.persistence._
 

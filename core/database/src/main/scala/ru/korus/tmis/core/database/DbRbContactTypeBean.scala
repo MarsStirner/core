@@ -7,7 +7,7 @@ import grizzled.slf4j.Logging
 import javax.persistence.{EntityManager, PersistenceContext}
 import ru.korus.tmis.util.{ConfigManager, I18nable}
 import ru.korus.tmis.core.exception.NoSuchRbContactTypeException
-import ru.korus.tmis.core.entity.model.RbContactType
+import ru.korus.tmis.core.entity.model.{RbContactType}
 import java.lang.Iterable
 
 @Interceptors(Array(classOf[LoggingInterceptor]))

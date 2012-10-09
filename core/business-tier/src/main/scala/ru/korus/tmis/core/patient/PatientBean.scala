@@ -7,6 +7,7 @@ import ru.korus.tmis.core.entity.model._
 
 import grizzled.slf4j.Logging
 import java.lang.{Double => JDouble}
+import javax.ejb.{EJB, Stateless}
 import javax.interceptor.Interceptors
 
 import kladr.{Street, Kladr}

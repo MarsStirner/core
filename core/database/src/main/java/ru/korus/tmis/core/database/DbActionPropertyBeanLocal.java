@@ -6,9 +6,9 @@ import ru.korus.tmis.core.entity.model.Action;
 import ru.korus.tmis.core.entity.model.ActionProperty;
 import ru.korus.tmis.core.exception.CoreException;
 
-import javax.ejb.Local;
 import java.util.List;
 import java.util.Map;
+import javax.ejb.Local;
 
 @Local
 public interface DbActionPropertyBeanLocal {

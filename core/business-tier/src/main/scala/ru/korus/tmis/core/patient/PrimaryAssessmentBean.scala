@@ -12,7 +12,8 @@ import ru.korus.tmis.util.ConfigManager.APWI
 import java.util.{LinkedList, HashSet, Date}
 import ru.korus.tmis.core.database._
 import ru.korus.tmis.core.data._
-import ru.korus.tmis.util.{StringId, ConfigManager, I18nable}
+import collection.immutable.HashMap
+import ru.korus.tmis.util.{StringId, ConfigManager, ActionPropertyWrapperInfo, I18nable}
 
 @Interceptors(Array(classOf[LoggingInterceptor]))
 @Stateless
@@ -161,7 +162,8 @@ class PrimaryAssessmentBean
                         title: String,
                         listForConverter: java.util.List[String],
                         listForSummary: java.util.List[StringId],
-                        userData: AuthData) = {
+                        userData: AuthData,
+                        postProcessing: (JSONCommonData, java.lang.Boolean) => JSONCommonData) = {
 
     var json_data = new JSONCommonData()
     val cd = commonDataProcessor.fromActionTypesForWebClient(actionTypeBean.getActionTypesByCode(code),
@@ -170,6 +172,9 @@ class PrimaryAssessmentBean
       listForConverter,
       converterFromList)
     json_data.data = cd.entity
+    if (postProcessing != null) {
+      json_data = postProcessing(json_data, true)
+    }
     json_data
   }
 
@@ -188,47 +193,49 @@ class PrimaryAssessmentBean
      При редактировании сущ. первичного осмотра actionTypeId приходит в поле typeId в поле id - actionId
   */
 
-  def createPrimaryAssessmentForEventId(eventId: Int, assessment: JSONCommonData, title: String, userData: AuthData) = {
+  def createPrimaryAssessmentForEventId(eventId: Int,
+                                        assessment: JSONCommonData,
+                                        title: String,
+                                        userData: AuthData,
+                                        preProcessing: (JSONCommonData, java.lang.Boolean) => JSONCommonData,
+                                        postProcessing: (JSONCommonData, java.lang.Boolean) => JSONCommonData) = {
 
     var json_data = assessment
+
+    if (preProcessing != null) {
+      json_data = preProcessing(json_data, true)
+    }
 
     var com_data = new CommonData()
     com_data.entity = json_data.data
 
     var actions: java.util.List[Action] = commonDataProcessor.createActionForEventFromCommonData(eventId, com_data, userData)
 
-    //шаманство с ид
-    /*
-    json_data.data.id = actions.get(0).getId
-    json_data.data.getGroup().foreach(group=>{
-      if(group.getName().compare("Summary")==0) {
-        group.getAttribute().foreach(attribute=>{
-          attribute.id = actions.get(0).getId
-        })
-      }
-      else {
-        group.getAttribute().foreach(attribute=>{
-          val tempId = attribute.getId()
-          attribute.typeId = tempId
-          val aps = actionPropertyBean.getActionPropertiesByActionIdAndTypeId(actions.get(0).getId.intValue(), tempId.intValue())
-          attribute.id = aps.get(0).getId
-        })
-      }
-    })
-    */
     com_data = commonDataProcessor.fromActions(
       actions,
       title,
       List(summary _, details _))
 
     json_data.data = com_data.entity
+    if (postProcessing != null) {
+      json_data = postProcessing(json_data, false)
+    }
     json_data
   }
 
 
-  def modifyPrimaryAssessmentById(assessmentId: Int, assessment: JSONCommonData, title: String, userData: AuthData) = {
+  def modifyPrimaryAssessmentById(assessmentId: Int,
+                                  assessment: JSONCommonData,
+                                  title: String,
+                                  userData: AuthData,
+                                  preProcessing: (JSONCommonData, java.lang.Boolean) => JSONCommonData,
+                                  postProcessing: (JSONCommonData, java.lang.Boolean) => JSONCommonData) = {
 
     var json_data = assessment
+
+    if (preProcessing != null) {
+      json_data = preProcessing(json_data, false)
+    }
 
     var com_data = new CommonData()
     com_data.entity = json_data.data
@@ -241,10 +248,16 @@ class PrimaryAssessmentBean
       List(summary _, details _))
 
     json_data.data = com_data.entity
+    if (postProcessing != null) {
+      json_data = postProcessing(json_data, false)
+    }
     json_data
   }
 
-  def getPrimaryAssessmentById(assessmentId: Int, title: String, userData: AuthData) = {
+  def getPrimaryAssessmentById(assessmentId: Int,
+                               title: String,
+                               userData: AuthData,
+                               postProcessing: (JSONCommonData, java.lang.Boolean) => JSONCommonData) = {
     val action = actionBean.getActionById(assessmentId)
     var actions: java.util.List[Action] = new LinkedList[Action]
     actions.add(action)
@@ -256,6 +269,9 @@ class PrimaryAssessmentBean
 
     var json_data = new JSONCommonData()
     json_data.data = com_data.entity
+    if (postProcessing != null) {
+      json_data = postProcessing(json_data, false)
+    }
     json_data
   }
 
@@ -325,7 +341,7 @@ class PrimaryAssessmentBean
 
     dbManager.mergeAll(apSet)
 
-    var json = this.getPrimaryAssessmentById(action.getId.intValue(), "Consultation", userData)
+    var json = this.getPrimaryAssessmentById(action.getId.intValue(), "Consultation", userData, null)
     json.setRequestData(request) //по идее эта штука должна быть в конструкторе вызываемая в методе гет
     json
   }

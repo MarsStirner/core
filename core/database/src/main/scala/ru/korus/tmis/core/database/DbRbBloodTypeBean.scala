@@ -8,9 +8,9 @@ import ru.korus.tmis.util.{ConfigManager, I18nable}
 import ru.korus.tmis.core.entity.model.RbBloodType
 import ru.korus.tmis.core.exception.NoSuchRbBloodTypeException
 import java.lang.Iterable
-import javax.ejb.Stateless
+import javax.ejb.{Stateless}
 import scala.collection.JavaConversions._
-import ru.korus.tmis.core.data.{QueryDataStructure, DictionaryListRequestDataFilter}
+import ru.korus.tmis.core.data.{QueryDataStructure, DictionaryListRequestDataFilter, ListDataRequest, DictionaryListData}
 
 @Interceptors(Array(classOf[LoggingInterceptor]))
 @Stateless

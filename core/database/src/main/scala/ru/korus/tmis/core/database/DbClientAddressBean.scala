@@ -6,7 +6,7 @@ import javax.interceptor.Interceptors
 import java.lang.Iterable
 import grizzled.slf4j.Logging
 import javax.persistence.{EntityManager, PersistenceContext}
-import javax.ejb.Stateless
+import javax.ejb.{EJB, Stateless}
 import ru.korus.tmis.util.{ConfigManager, I18nable}
 import ru.korus.tmis.core.exception.NoSuchClientAddressException
 import java.util.Date

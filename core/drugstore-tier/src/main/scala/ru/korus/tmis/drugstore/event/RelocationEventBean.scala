@@ -3,7 +3,7 @@ package ru.korus.tmis.drugstore.event
 import ru.korus.tmis.core.database.DbActionTypeBeanLocal
 import ru.korus.tmis.core.entity.model._
 import ru.korus.tmis.core.event.{CreateActionNotification, Notification}
-import ru.korus.tmis.core.logging.db.LoggingInterceptor
+import ru.korus.tmis.core.logging.LoggingInterceptor
 import ru.korus.tmis.drugstore.data.{YRelocationDocument, YRelocationDocumentBuilder}
 import ru.korus.tmis.drugstore.sync.RefResolverBeanLocal
 import ru.korus.tmis.drugstore.util.SoapAcknowlegement
@@ -15,6 +15,7 @@ import javax.enterprise.event.Observes
 import javax.interceptor.Interceptors
 
 import grizzled.slf4j.Logging
+import ru.korus.tmis.drugstore.util.{SoapAcknowlegement, Soaping}
 
 @Interceptors(Array(classOf[LoggingInterceptor]))
 @Stateless

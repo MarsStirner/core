@@ -6,7 +6,7 @@ import javax.ejb.Stateless
 import ru.korus.tmis.core.logging.LoggingInterceptor
 import javax.interceptor.Interceptors
 import ru.korus.tmis.core.data.{QueryDataStructure, DictionaryListRequestDataFilter}
-import javax.persistence.{PersistenceContext, EntityManager}
+import javax.persistence.{TypedQuery, PersistenceContext, EntityManager}
 import scala.collection.JavaConversions._
 import ru.korus.tmis.core.entity.model.kladr.{Street, Kladr}
 

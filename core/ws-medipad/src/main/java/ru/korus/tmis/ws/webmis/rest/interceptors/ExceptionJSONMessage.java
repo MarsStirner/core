@@ -10,43 +10,43 @@ import javax.xml.bind.annotation.XmlType;
 
 import ru.korus.tmis.core.exception.CoreException;
 import ru.korus.tmis.core.exception.AuthenticationException;
+
 import javax.servlet.ServletException;
 
 
 @XmlType(name = "error")
 @XmlRootElement(name = "error")
 public class ExceptionJSONMessage implements Serializable {
-	/**
-	 * 
-	 */
-	private static final long serialVersionUID = -7378649465312132315L;
+    /**
+     *
+     */
+    private static final long serialVersionUID = -7378649465312132315L;
 
-	private String methodName;
-	private List<String> params = new LinkedList<String>();
-	private String errorMessage;
+    private String methodName;
+    private List<String> params = new LinkedList<String>();
+    private String errorMessage;
     private int errorCode;
-	private Object exception;
+    private Object exception;
     private String validationErrors;
     private String callStack;
-	
-	public ExceptionJSONMessage(Exception e, InvocationContext ctx){
-		this(e);
-		if (ctx.getParameters() != null) {
-			for (Object obj : ctx.getParameters()) {
-				
-				params.add(String.valueOf(obj));
-			}
-		}
-		this.methodName = String.valueOf(ctx.getMethod());
-	}
-	
-	public ExceptionJSONMessage(Exception e){
+
+    public ExceptionJSONMessage(Exception e, InvocationContext ctx) {
+        this(e);
+        if (ctx.getParameters() != null) {
+            for (Object obj : ctx.getParameters()) {
+
+                params.add(String.valueOf(obj));
+            }
+        }
+        this.methodName = String.valueOf(ctx.getMethod());
+    }
+
+    public ExceptionJSONMessage(Exception e) {
         Throwable rootException = e.getCause(); //Достаем причинный ексепш
         if (rootException != null) {
             if (rootException instanceof AuthenticationException) {
                 this.errorCode = ((AuthenticationException) rootException).getId();
-            }
-            else if (rootException instanceof CoreException) {//instanceof CoreException
+            } else if (rootException instanceof CoreException) {//instanceof CoreException
                 int faultId = ((CoreException) rootException).getId();
                 this.errorCode = faultId;
             }
@@ -61,42 +61,42 @@ public class ExceptionJSONMessage implements Serializable {
         }
         this.callStack = stackString;
     }
-	
-	public ExceptionJSONMessage(){
 
-	}
+    public ExceptionJSONMessage() {
 
-	public String getMethodName() {
-		return methodName;
-	}
+    }
 
-	public void setMethodName(String methodName) {
-		this.methodName = methodName;
-	}
+    public String getMethodName() {
+        return methodName;
+    }
 
-	public List<String> getParams() {
-		return params;
-	}
+    public void setMethodName(String methodName) {
+        this.methodName = methodName;
+    }
 
-	public void setParams(List<String> params) {
-		this.params = params;
-	}
+    public List<String> getParams() {
+        return params;
+    }
 
-	public String getErrorMessage() {
-		return errorMessage;
-	}
+    public void setParams(List<String> params) {
+        this.params = params;
+    }
 
-	public void setErrorMessage(String errorMessage) {
-		this.errorMessage = errorMessage;
-	}
+    public String getErrorMessage() {
+        return errorMessage;
+    }
 
-	public Object getException() {
-		return exception;
-	}
+    public void setErrorMessage(String errorMessage) {
+        this.errorMessage = errorMessage;
+    }
 
-	public void setException(Object exception) {
-		this.exception = exception;
-	}
+    public Object getException() {
+        return exception;
+    }
+
+    public void setException(Object exception) {
+        this.exception = exception;
+    }
 
     public int getErrorCode() {
         return errorCode;

@@ -127,7 +127,6 @@ public interface MedipadWebService extends Serializable {
      *
      * @param globalVersion глобальная версия справочников ТМИС
      * @param eventId       идентификатор обращения
-     *
      * @return список назначений
      */
     @WebMethod
@@ -162,7 +161,6 @@ public interface MedipadWebService extends Serializable {
      * @param beginDate    дата и время начала запрашиваемого интервала времени
      * @param endTime      дата и время окончания запрашиваемого интервала
      *                     времени
-     *
      * @return список назначений заданного типа за интересующий интервал времени
      *         для данного обращения
      */
@@ -205,13 +203,13 @@ public interface MedipadWebService extends Serializable {
     PatientCardData updatePatient(PatientCardData patientData, AuthData auth) throws CoreException;
 
     @WebMethod
-    PatientData getAllPatients(PatientRequestData requestData, AuthData auth)  throws CoreException;
+    PatientData getAllPatients(PatientRequestData requestData, AuthData auth) throws CoreException;
 
     @WebMethod
-    PatientCardData getPatientById(int id, AuthData auth)  throws CoreException;
+    PatientCardData getPatientById(int id, AuthData auth) throws CoreException;
 
     @WebMethod
-    String insertAppealForPatient(AppealData appealData,  int patientId, AuthData auth) throws CoreException;
+    String insertAppealForPatient(AppealData appealData, int patientId, AuthData auth) throws CoreException;
 
     @WebMethod
     String getAppealById(int id, AuthData auth) throws CoreException;
@@ -223,7 +221,7 @@ public interface MedipadWebService extends Serializable {
     AppealSimplifiedDataList getAllAppealsByPatient(AppealSimplifiedRequestData requestData, AuthData auth) throws CoreException;
 
     @WebMethod
-    ReceivedPatientsData getAllAppealsForReceivedPatientByPeriod(ReceivedRequestData requestData, AuthData auth) throws CoreException;
+    Object getAllAppealsForReceivedPatientByPeriod(ReceivedRequestData requestData, AuthData auth) throws CoreException;
 
     @WebMethod
     TrueFalseContainer checkExistanceNumber(String name, int typeId, String number, String serial) throws CoreException;
@@ -238,7 +236,7 @@ public interface MedipadWebService extends Serializable {
     JSONCommonData modifyPrimaryMedExamForPatient(int actionId, JSONCommonData data, AuthData authData) throws CoreException;
 
     @WebMethod
-    JSONCommonData getPrimaryAssessmentById (int assessmentId, AuthData authData) throws CoreException;
+    JSONCommonData getPrimaryAssessmentById(int assessmentId, AuthData authData) throws CoreException;
 
     @WebMethod
     String getAllPatientsForDepartmentIdAndDoctorIdByPeriod(PatientsListRequestData requestData, int role, AuthData auth) throws CoreException;
@@ -247,7 +245,7 @@ public interface MedipadWebService extends Serializable {
     AssessmentsListData getListOfAssessmentsForPatientByEvent(AssessmentsListRequestData requestData, AuthData auth) throws CoreException;
 
     @WebMethod
-    String getPatientToHospitalBedById (int actionId, AuthData authData) throws CoreException;
+    String getPatientToHospitalBedById(int actionId, AuthData authData) throws CoreException;
 
     @WebMethod
     String registryPatientToHospitalBed(int eventId, HospitalBedData data, AuthData authData) throws CoreException;
@@ -256,7 +254,7 @@ public interface MedipadWebService extends Serializable {
     String getMovingListForEvent(HospitalBedDataRequest request, AuthData authData) throws CoreException;
 
     @WebMethod
-    String modifyPatientToHospitalBed (int actionId, HospitalBedData data, AuthData authData) throws CoreException;
+    String modifyPatientToHospitalBed(int actionId, HospitalBedData data, AuthData authData) throws CoreException;
 
     @WebMethod
     boolean callOffHospitalBedForPatient(int actionId, AuthData authData) throws CoreException;

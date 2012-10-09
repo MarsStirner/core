@@ -504,7 +504,7 @@ class LaboratoryBean
   def setAnalysisResults(a: Action, results: List[AnalysisResult], finished: Boolean, biomaterialDefects: String) = {
     // Сохраняем результаты анализов
     val entities = scala.collection.mutable.Buffer[AnyRef](a)
-    import ru.korus.tmis.util.General.typedEquality
+    import ru.korus.tmis.util.General.{nullity_implicits, typedEquality}
 
     results.foreach {
       r =>

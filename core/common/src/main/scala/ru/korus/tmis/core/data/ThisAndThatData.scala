@@ -4,11 +4,12 @@ import reflect.BeanProperty
 import javax.xml.bind.annotation.{XmlRootElement, XmlType}
 import scala.collection.JavaConversions._
 import ru.korus.tmis.util.ConfigManager
-import java.util.{Date, ArrayList}
+import java.util.{Calendar, TimeZone, Date, ArrayList}
 import java.text.{DateFormat, SimpleDateFormat}
 import scala.Predef._
 import ru.korus.tmis.core.entity.model._
 import org.codehaus.jackson.annotate.JsonIgnoreProperties
+import org.codehaus.jackson.annotate.JsonIgnoreProperties._
 import org.codehaus.jackson.map.annotate.JsonView
 import ru.korus.tmis.auxiliary.AuxiliaryFunctions
 
@@ -497,7 +498,7 @@ class MKBListRequestDataFilter {
       }
       if (this.diagnosis != null && !this.diagnosis.isEmpty) {
         qs.query += ("AND upper(mkb.diagName) LIKE upper(:diagnosis)\n")
-        qs.add("diagnosis", this.diagnosis + "%")
+        qs.add("diagnosis", "%" + this.diagnosis + "%")
       }
     }
     if (this.sex > 0) {

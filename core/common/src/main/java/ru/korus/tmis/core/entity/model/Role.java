@@ -1,11 +1,11 @@
 package ru.korus.tmis.core.entity.model;
 
-import javax.persistence.*;
-import javax.xml.bind.annotation.XmlRootElement;
-import javax.xml.bind.annotation.XmlType;
 import java.io.Serializable;
 import java.util.LinkedHashSet;
 import java.util.Set;
+import javax.persistence.*;
+import javax.xml.bind.annotation.XmlRootElement;
+import javax.xml.bind.annotation.XmlType;
 
 /**
  * Класс для представления роли (профиля в терминах предыдущих версий системы).

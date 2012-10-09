@@ -8,8 +8,8 @@ import javax.persistence.{EntityManager, PersistenceContext}
 import javax.ejb.{EJB, Stateless}
 import ru.korus.tmis.util.{ConfigManager, I18nable}
 import java.util.Date
-import ru.korus.tmis.core.entity.model.{Staff, Patient, ClientPolicy}
-import ru.korus.tmis.core.exception.NoSuchClientPolicyException
+import ru.korus.tmis.core.entity.model.{RbPolicyType, Staff, Patient, ClientPolicy}
+import ru.korus.tmis.core.exception.{CoreException, NoSuchOrganisationException, NoSuchClientPolicyException}
 import scala.collection.JavaConversions._
 
 @Interceptors(Array(classOf[LoggingInterceptor]))

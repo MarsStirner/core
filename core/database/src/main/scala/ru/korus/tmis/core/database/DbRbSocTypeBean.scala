@@ -7,6 +7,9 @@ import ru.korus.tmis.util.{ConfigManager, I18nable}
 import ru.korus.tmis.core.logging.LoggingInterceptor
 import javax.persistence.PersistenceContext
 import javax.persistence.EntityManager
+import java.lang.Iterable
+import java.util.Date
+import javax.ejb.EJB
 import ru.korus.tmis.core.exception.NoSuchEntityException
 import ru.korus.tmis.core.entity.model.RbSocStatusType
 import scala.collection.JavaConversions._

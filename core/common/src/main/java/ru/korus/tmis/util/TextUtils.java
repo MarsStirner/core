@@ -13,7 +13,7 @@ public class TextUtils {
      * @param value исходная строка
      * @return число типа Int
      */
-    public static final int getRobustInt(final String value) {
+    public static int getRobustInt(final String value) {
         return Integer.parseInt(processString(value));
     }
 
@@ -21,9 +21,9 @@ public class TextUtils {
      * Заменяем во входных данных "," на "." и возвращаем число
      *
      * @param value исходная строка
-     * @return число типа Int
+     * @return число типа Double
      */
-    public static final double getRobustDouble(final String value) {
+    public static double getRobustDouble(final String value) {
         return Double.parseDouble(processString(value));
     }
 

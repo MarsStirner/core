@@ -3,8 +3,8 @@ package ru.korus.tmis.core.database;
 import ru.korus.tmis.core.entity.model.Organisation;
 import ru.korus.tmis.core.exception.CoreException;
 
-import javax.ejb.Local;
 import java.util.List;
+import javax.ejb.Local;
 
 @Local
 public interface DbOrganizationBeanLocal {

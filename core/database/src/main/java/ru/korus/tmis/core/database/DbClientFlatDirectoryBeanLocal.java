@@ -1,5 +1,6 @@
 package ru.korus.tmis.core.database;
 
+import ru.korus.tmis.core.data.IdNameContainer;
 import ru.korus.tmis.core.entity.model.Patient;
 import ru.korus.tmis.core.entity.model.Staff;
 import ru.korus.tmis.core.entity.model.fd.ClientFDProperty;

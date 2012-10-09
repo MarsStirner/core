@@ -9,7 +9,7 @@ import java.lang.Iterable
 import ru.korus.tmis.util.{ConfigManager, I18nable}
 import java.util.Date
 import ru.korus.tmis.core.exception.NoSuchClientRelationException
-import ru.korus.tmis.core.data.ClientContactContainer
+import ru.korus.tmis.core.data.{RelationEntryContainer, ClientContactContainer}
 import ru.korus.tmis.core.entity.model.{Staff, Patient, ClientRelation}
 import scala.collection.JavaConversions._
 import scala.util.control.Breaks._

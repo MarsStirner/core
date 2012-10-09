@@ -2,6 +2,7 @@ package ru.korus.tmis.ws.laboratory.business;
 
 import ru.korus.tmis.core.exception.CoreException;
 import ru.korus.tmis.lis.data.AnalysisResult;
+import ru.korus.tmis.lis.data.AntibioticSensitivity;
 
 import javax.ejb.Local;
 import java.util.List;

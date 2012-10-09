@@ -4,10 +4,10 @@ import ru.korus.tmis.core.entity.model.Role;
 import ru.korus.tmis.core.exception.CoreException;
 import ru.korus.tmis.core.exception.NoSuchUserException;
 
-import javax.ejb.Local;
-import javax.servlet.http.HttpServletRequest;
 import java.util.Date;
 import java.util.Set;
+import javax.ejb.Local;
+import javax.servlet.http.HttpServletRequest;
 
 @Local
 public interface AuthStorageBeanLocal {

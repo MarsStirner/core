@@ -4,10 +4,14 @@ import java.util.{List => JList}
 
 import ru.korus.ws.{laboratory => lab, laboratory2 => lab2}
 
+import ru.korus.tmis.util.General.nullity_implicits
+
+import DataConverter._
 
 import scala.collection.JavaConversions._
 import ru.korus.tmis.util.Defaultible._
 import ru.korus.tmis.core.exception.CoreException
+import ru.korus.tmis.laboratory.data.request.Utility._
 import ru.korus.tmis.util.Defaultible
 import ru.korus.ws.laboratory2.Tindicator
 

@@ -8,6 +8,7 @@ import org.codehaus.jackson.map.annotate.JsonView
 import java.util.{Calendar, Date}
 import ru.korus.tmis.util.ConfigManager
 import scala.collection.JavaConversions._
+import java.text.{DateFormat, SimpleDateFormat}
 
 object HospitalBedViews {
 

@@ -2,10 +2,12 @@ package ru.korus.tmis.core.data
 
 import javax.xml.bind.annotation.{XmlRootElement, XmlType}
 import reflect.BeanProperty
-import java.util.LinkedList
+import java.util.{LinkedList, Date}
 import scala.collection.JavaConversions._
 import ru.korus.tmis.util.ConfigManager
+import ru.korus.tmis.core.entity.model.{ActionStatus, Staff, Action}
 import ru.korus.tmis.core.entity.model.fd.{FDFieldValue, FDRecord, FDField, FlatDirectory}
+import ru.korus.tmis.core.exception.CoreException
 
 //Контейнер для справочника плоских структур
 @XmlType(name = "flatDirectoryData")

@@ -1,18 +1,22 @@
 package ru.korus.tmis.core.database
 
+import ru.korus.tmis.core.entity.model.Patient
+import ru.korus.tmis.core.exception.NoSuchPatientException
 import ru.korus.tmis.core.logging.LoggingInterceptor
 import ru.korus.tmis.util.{ConfigManager, I18nable}
 
 import grizzled.slf4j.Logging
 import java.lang.Iterable
+import javax.ejb.Stateless
 import javax.interceptor.Interceptors
-import ru.korus.tmis.core.exception.NoSuchPatientException
+import ru.korus.tmis.core.exception.{NoSuchPatientException}
 import ru.korus.tmis.core.entity.model.{Staff, Patient}
-import java.util.Date
+import java.util.{Date}
 import scala.Predef._
 import javax.persistence.{TypedQuery, EntityManager, PersistenceContext}
-import ru.korus.tmis.core.data.PatientRequestData
+import ru.korus.tmis.core.data.{PatientRequestData}
 import javax.ejb.{EJB, Stateless}
+import scala.collection.JavaConversions._
 
 @Interceptors(Array(classOf[LoggingInterceptor]))
 @Stateless

@@ -1,11 +1,12 @@
 package ru.korus.tmis.core.entity.model;
 
 import ru.korus.tmis.core.exception.CoreException;
+import ru.korus.tmis.util.TextUtils;
 
+import java.io.Serializable;
 import javax.persistence.*;
 import javax.xml.bind.annotation.XmlRootElement;
 import javax.xml.bind.annotation.XmlType;
-import java.io.Serializable;
 
 @Entity
 @Table(name = "ActionProperty_OrgStructure", catalog = "", schema = "")
@@ -63,7 +64,7 @@ public class APValueOrgStructure extends AbstractAPValue implements Serializable
         }
 
         try {
-            this.orgId = Integer.valueOf(value);
+            this.orgId = TextUtils.getRobustInt(value);
             return true;
         } catch (NumberFormatException ex) {
             throw new CoreException(

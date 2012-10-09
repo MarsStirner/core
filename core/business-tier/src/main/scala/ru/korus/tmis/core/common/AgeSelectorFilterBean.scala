@@ -1,10 +1,11 @@
 package ru.korus.tmis.core.common
 
+import ru.korus.tmis.core.database.{DbEventBeanLocal, DbOrgStructureBeanLocal}
 import ru.korus.tmis.core.logging.LoggingInterceptor
 
 
 import grizzled.slf4j.Logging
-import javax.ejb.Stateless
+import javax.ejb.{Stateless}
 import javax.interceptor.Interceptors
 
 import scala.collection.JavaConversions._

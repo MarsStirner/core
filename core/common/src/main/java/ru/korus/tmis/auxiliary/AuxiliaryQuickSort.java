@@ -1,5 +1,6 @@
 package ru.korus.tmis.auxiliary;
 
+import java.util.Arrays;
 import java.util.Random;
 
 public class AuxiliaryQuickSort {

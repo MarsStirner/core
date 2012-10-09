@@ -10,6 +10,7 @@ import ru.korus.tmis.core.exception.NoSuchEntityException
 import java.util.Date
 import ru.korus.tmis.core.entity.model.{Staff, Patient, ClientWork}
 import scala.collection.JavaConversions._
+import ru.korus.tmis.core.entity.model.fd.FDRecord
 
 @Interceptors(Array(classOf[LoggingInterceptor]))
 @Stateless

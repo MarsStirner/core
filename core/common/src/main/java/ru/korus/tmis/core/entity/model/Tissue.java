@@ -1,11 +1,13 @@
 package ru.korus.tmis.core.entity.model;
 
+import java.io.Serializable;
+import java.util.Date;
+import java.util.LinkedHashSet;
+import java.util.Set;
 import javax.persistence.*;
 import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Size;
 import javax.xml.bind.annotation.XmlRootElement;
-import java.io.Serializable;
-import java.util.Date;
 
 @Entity
 @Table(name = "Tissue")

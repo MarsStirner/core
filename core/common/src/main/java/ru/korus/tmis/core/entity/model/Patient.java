@@ -2,13 +2,13 @@ package ru.korus.tmis.core.entity.model;
 
 import ru.korus.tmis.core.entity.model.fd.ClientFlatDirectory;
 
-import javax.persistence.*;
-import javax.xml.bind.annotation.XmlRootElement;
-import javax.xml.bind.annotation.XmlType;
 import java.io.Serializable;
 import java.util.Date;
 import java.util.LinkedList;
 import java.util.List;
+import javax.persistence.*;
+import javax.xml.bind.annotation.XmlRootElement;
+import javax.xml.bind.annotation.XmlType;
 
 @Entity
 @Table(name = "Client", catalog = "", schema = "")

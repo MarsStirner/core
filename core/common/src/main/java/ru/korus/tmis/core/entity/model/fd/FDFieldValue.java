@@ -1,6 +1,8 @@
 package ru.korus.tmis.core.entity.model.fd;
 
 import javax.persistence.*;
+import javax.xml.bind.annotation.XmlRootElement;
+import javax.xml.bind.annotation.XmlType;
 import java.io.Serializable;
 
 @Entity

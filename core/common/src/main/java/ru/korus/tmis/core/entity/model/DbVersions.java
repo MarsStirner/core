@@ -1,7 +1,7 @@
 package ru.korus.tmis.core.entity.model;
 
-import javax.persistence.*;
 import java.io.Serializable;
+import javax.persistence.*;
 
 @Entity
 @Table(name = "Versions", catalog = "", schema = "")

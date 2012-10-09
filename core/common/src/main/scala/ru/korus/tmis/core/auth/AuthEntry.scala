@@ -1,6 +1,8 @@
 package ru.korus.tmis.core.auth
 
+import javax.xml.bind.annotation.XmlType._
 import javax.xml.bind.annotation.{XmlRootElement, XmlType}
+import javax.xml.bind.annotation.XmlRootElement._
 import reflect.BeanProperty
 
 /**

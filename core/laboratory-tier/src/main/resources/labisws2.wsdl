@@ -1,9 +1,9 @@
 <?xml version="1.0"?>
 <definitions xmlns="http://schemas.xmlsoap.org/wsdl/" xmlns:xs="http://www.w3.org/2001/XMLSchema"
              name="IAcrossIntf_FNKCservice" targetNamespace="http://www.korusconsulting.ru"
-             xmlns:tns="http://www.korusconsulting.ru"
+             xmlns:tns="http://www.korusconsulting.ru" xmlns:soap="http://schemas.xmlsoap.org/wsdl/soap/"
              xmlns:soapenc="http://schemas.xmlsoap.org/soap/encoding/"
-             xmlns:ns1="urn:AcrossIntf_FNKCIntf">
+             xmlns:mime="http://schemas.xmlsoap.org/wsdl/mime/" xmlns:ns1="urn:AcrossIntf_FNKCIntf">
     <types>
         <schema xmlns="http://www.w3.org/2001/XMLSchema" targetNamespace="http://www.korusconsulting.ru">
             <complexType name="PatientInfo">
@@ -23,6 +23,7 @@
                     <element name="orderCaseId" type="xs:string"/>
                     <element name="orderMisDate" type="xs:dateTime"/>
                     <element name="orderPregnat" type="xs:int"/>
+
                     <element name="orderDiagCode" type="xs:string"/>
                     <element name="orderDiagText" type="xs:string"/>
                     <element name="orderComment" type="xs:string"/>

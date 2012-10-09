@@ -2,14 +2,12 @@ package ru.korus.tmis.core.patient;
 
 
 import ru.korus.tmis.core.auth.AuthData;
-import ru.korus.tmis.core.data.AppealData;
-import ru.korus.tmis.core.data.AppealSimplifiedDataList;
-import ru.korus.tmis.core.data.AppealSimplifiedRequestData;
-import ru.korus.tmis.core.entity.model.Action;
-import ru.korus.tmis.core.entity.model.Event;
+import ru.korus.tmis.core.data.*;
+import ru.korus.tmis.core.entity.model.*;
 import ru.korus.tmis.core.exception.CoreException;
 
 import javax.ejb.Local;
+import java.util.List;
 
 @Local
 public interface AppealBeanLocal {
@@ -33,4 +31,6 @@ public interface AppealBeanLocal {
             throws CoreException;
 
     Event revokeAppealById(Event event, int resultId, AuthData authData) throws CoreException;
+
+    List<String> getAppealTypeCodesWithFlatDirectoryId(int id) throws CoreException;
 }
