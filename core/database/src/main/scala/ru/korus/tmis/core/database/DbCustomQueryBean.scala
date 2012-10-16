@@ -737,6 +737,32 @@ class DbCustomQueryBean
     }
   }
 
+  /**
+   * Получить код источника финансирования
+   * @param e - карточка пациента
+   * @return - код источника финансирования
+   * @throws CoreException
+   */
+  def getFinanceId(e: Event) = {
+    val result = em.createQuery(finance, classOf[Int])
+      //      .setParameter("eventTypeId", e.getEventType.getId)
+      .setParameter("eventId", e.getId)
+      .getSingleResult
+    result
+  }
+
+
+  // ---- Секция кастомных запросов
+
+  /**
+   * Запрос кода источника финансирования
+   */
+  val finance = """
+      SELECT et.financeId
+      FROM EventType et, Event e, RbFinance rf
+              WHERE e.id = :eventId AND e.eventType.id = et.id AND et.financeId = rf.id
+                """
+
   val HeightQuery = """
     SELECT apd.value, ap.action.begDate
     FROM ActionProperty ap, APValueDouble apd

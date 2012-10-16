@@ -115,4 +115,12 @@ public interface DbCustomQueryLocal {
     Action getLastActionByTypeCodeAndAPTypeName(int eventId, String code, String aptName)
             throws CoreException;
 
+    /**
+     * Получить код источника финансирования
+     *
+     * @param e - карточка пациента
+     * @return - код источника финансирования
+     * @throws CoreException
+     */
+    Integer getFinanceId(Event e) throws CoreException;
 }

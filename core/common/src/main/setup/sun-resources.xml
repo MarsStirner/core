@@ -31,8 +31,8 @@
                           wrap-jdbc-objects="false">
         <property name="serverName" value="vm0.local"/>
         <property name="databaseName" value="s11r64"/>
-        <property name="User" value="root"/>
-        <property name="Password" value="root"/>
+        <property name="User" value="${mysql.user}"/>
+        <property name="Password" value="${mysql.password}"/>
         <property name="zeroDateTimeBehavior" value="convertToNull"/>
         <property name="useUnicode" value="yes"/>
         <property name="characterEncoding" value="UTF-8"/>

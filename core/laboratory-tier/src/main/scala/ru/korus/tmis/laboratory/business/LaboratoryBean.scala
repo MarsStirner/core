@@ -335,6 +335,10 @@ class LaboratoryBean
     val orderCaseId = "" + a.getEvent.getExternalId
     info("Request:OrderCaseId=" + orderCaseId)
 
+    // код финансирования
+    val orderFinanceId = getFinanceId(a.getEvent)
+    info("Request:OrderFinanceId=" + orderFinanceId)
+
     // CreateDate (datetime) -- дата создания направления врачом (Action.createDatetime)
     val date = a.getCreateDatetime
     info("Request:CreateDate=" + a.getCreateDatetime)
@@ -413,6 +417,16 @@ class LaboratoryBean
       Option(drMiddleName),
       drCode
     )
+  }
+
+  /**
+   * Получить информацио о источнике финансирования
+   * @param e событие карточка пациента
+   * @return код финансирования
+   */
+  def getFinanceId(e: Event): Int = {
+    val id = dbCustomQuery.getFinanceId(e)
+    id.intValue()
   }
 
   def getXmlStringForDate(date: java.util.Date): String = {
