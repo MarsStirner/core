@@ -2,11 +2,11 @@
 <project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
 
     <modelVersion>4.0.0</modelVersion>
-    <groupId>ru.korus.tmis.drugstore</groupId>
-    <artifactId>tmis-ws-drugstore</artifactId>
+    <groupId>ru.korus.tmis.hl7</groupId>
+    <artifactId>tmis-hl7</artifactId>
   <version>0.9.1</version>
     <packaging>war</packaging>
-    <name>TMIS 1C Drugstore Webservice</name>
+    <name>TMIS HL7</name>
 
     <parent>
         <groupId>ru.korus.tmis</groupId>
@@ -16,25 +16,13 @@
     </parent>
 
     <dependencies>
-        <dependency>
-            <groupId>ru.korus.tmis.core</groupId>
-            <artifactId>tmis-core-database</artifactId>
-            <version>0.9.1</version>
-            <type>ejb</type>
-        </dependency>
-        <dependency>
-            <groupId>ru.korus.tmis.core</groupId>
-            <artifactId>tmis-core-common</artifactId>
-            <version>0.9.1</version>
-            <type>jar</type>
-        </dependency>
-
+      <!--
         <dependency>
             <groupId>ru.korus.tmis.drugstore</groupId>
             <artifactId>tmis-drugstore-tier</artifactId>
             <version>0.9.1</version>
             <type>ejb</type>
-        </dependency>
+        </dependency> -->
     </dependencies>
 
     <build>
