@@ -3,58 +3,54 @@
         version="2.0"
         xmlns="http://java.sun.com/xml/ns/persistence"
         xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-        xsi:schemaLocation="http://java.sun.com/xml/ns/persistence persistence_2_0.xsd">
+        xsi:schemaLocation="http://java.sun.com/xml/ns/persistence http://java.sun.com/xml/ns/persistence/persistence_2_0.xsd">
 
-    <persistence-unit name="s11r64"
-                      transaction-type="JTA">
+    <persistence-unit name="s11r64" transaction-type="JTA">
         <jta-data-source>s11r64</jta-data-source>
         <exclude-unlisted-classes>false</exclude-unlisted-classes>
         <shared-cache-mode>NONE</shared-cache-mode>
         <properties>
-            <property name="eclipselink.logging.level" value="OFF"/>
+            <!--<property name="eclipselink.logging.level" value="OFF"/>-->
             <property name="eclipselink.cache.shared.default" value="false"/>
             <property name="eclipselink.cache.size.default" value="0"/>
             <property name="eclipselink.cache.type.default" value="none"/>
             <property name="eclipselink.query-results-cache" value="false"/>
-            <property name="eclipselink.logging.logger"
-                      value="ru.korus.tmis.core.logging.slf4j.eclipselink.Logger"/>
+            <property name="eclipselink.logging.logger" value="ru.korus.tmis.core.logging.slf4j.eclipselink.Logger"/>
             <property name="eclipselink.logging.level" value="WARNING"/>
         </properties>
     </persistence-unit>
-    <persistence-unit name="rls"
-                      transaction-type="JTA">
+
+    <persistence-unit name="rls" transaction-type="JTA">
         <jta-data-source>rls</jta-data-source>
         <exclude-unlisted-classes>false</exclude-unlisted-classes>
         <shared-cache-mode>NONE</shared-cache-mode>
         <properties>
-            <property name="eclipselink.logging.level" value="OFF"/>
+            <!--<property name="eclipselink.logging.level" value="OFF"/>-->
             <property name="eclipselink.cache.shared.default" value="false"/>
             <property name="eclipselink.cache.size.default" value="0"/>
             <property name="eclipselink.cache.type.default" value="none"/>
             <property name="eclipselink.query-results-cache" value="false"/>
-            <property name="eclipselink.logging.logger"
-                      value="ru.korus.tmis.core.logging.slf4j.eclipselink.Logger"/>
+            <property name="eclipselink.logging.logger" value="ru.korus.tmis.core.logging.slf4j.eclipselink.Logger"/>
             <property name="eclipselink.logging.level" value="WARNING"/>
         </properties>
     </persistence-unit>
-    <persistence-unit name="tmis_core"
-                      transaction-type="JTA">
+
+    <persistence-unit name="tmis_core" transaction-type="JTA">
         <jta-data-source>tmis_core</jta-data-source>
         <exclude-unlisted-classes>false</exclude-unlisted-classes>
         <shared-cache-mode>NONE</shared-cache-mode>
         <properties>
-            <property name="eclipselink.logging.level" value="OFF"/>
+            <!--<property name="eclipselink.logging.level" value="OFF"/>-->
             <property name="eclipselink.cache.shared.default" value="false"/>
             <property name="eclipselink.cache.size.default" value="0"/>
             <property name="eclipselink.cache.type.default" value="none"/>
             <property name="eclipselink.query-results-cache" value="false"/>
-            <property name="eclipselink.logging.logger"
-                      value="ru.korus.tmis.core.logging.slf4j.eclipselink.Logger"/>
+            <property name="eclipselink.logging.logger" value="ru.korus.tmis.core.logging.slf4j.eclipselink.Logger"/>
             <property name="eclipselink.logging.level" value="WARNING"/>
         </properties>
     </persistence-unit>
-    <persistence-unit name="kladr"
-                      transaction-type="JTA">
+
+    <persistence-unit name="kladr" transaction-type="JTA">
         <jta-data-source>s11r64</jta-data-source>
         <exclude-unlisted-classes>false</exclude-unlisted-classes>
         <shared-cache-mode>NONE</shared-cache-mode>

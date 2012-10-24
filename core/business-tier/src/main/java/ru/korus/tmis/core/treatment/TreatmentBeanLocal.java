@@ -6,8 +6,8 @@ import ru.korus.tmis.core.data.CompactRlsData;
 import ru.korus.tmis.core.data.RlsData;
 import ru.korus.tmis.core.exception.CoreException;
 
-import javax.ejb.Local;
 import java.util.Date;
+import javax.ejb.Local;
 
 @Local
 public interface TreatmentBeanLocal {

@@ -2,6 +2,7 @@ package ru.korus.tmis.core.data
 
 import javax.xml.bind.annotation.{XmlRootElement, XmlType}
 import reflect.BeanProperty
+import javax.xml.bind.annotation.XmlType._
 import ru.korus.tmis.core.entity.model._
 import fd.FDRecord
 import kladr.{Street, Kladr}
@@ -9,8 +10,9 @@ import scala.collection.JavaConversions._
 import ru.korus.tmis.util.ConfigManager
 
 import java.util.{Date, HashMap, LinkedList}
+import javax.xml.bind.annotation.XmlRootElement._
 import org.codehaus.jackson.map.annotate.JsonView
-import org.codehaus.jackson.annotate.JsonIgnoreProperties
+import org.codehaus.jackson.annotate.{JsonAutoDetect, JsonMethod, JsonIgnoreProperties, JsonProperty}
 import collection.mutable.LinkedHashSet
 
 //Dynamic Filters

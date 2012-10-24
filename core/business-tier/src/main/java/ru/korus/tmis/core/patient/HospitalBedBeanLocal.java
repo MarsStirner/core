@@ -2,7 +2,9 @@ package ru.korus.tmis.core.patient;
 
 import ru.korus.tmis.core.auth.AuthData;
 import ru.korus.tmis.core.data.HospitalBedData;
+import ru.korus.tmis.core.entity.model.APValue;
 import ru.korus.tmis.core.entity.model.Action;
+import ru.korus.tmis.core.entity.model.ActionProperty;
 import ru.korus.tmis.core.exception.CoreException;
 
 import javax.ejb.Local;

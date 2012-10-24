@@ -5,7 +5,7 @@ import ru.korus.tmis.core.auth.AuthData;
 //Храним данные о пользователе для текущего запроса
 public class CurrentAuthContext {
 
-    public enum HResult{
+    public enum HResult {
         S_OK,                       //Все корректно
         E_NOAUTHDATA,               //Нету валидных данных по авторизации
         E_INVALIDPERIOD,            //Период действия сертификата истек
@@ -21,10 +21,11 @@ public class CurrentAuthContext {
 
     //setters
     public void setCurrentAuthContext(AuthData authData, HResult hRes, String desc) {
-        this.currentUserAuthData =  authData;
-        this.description =  desc;
+        this.currentUserAuthData = authData;
+        this.description = desc;
         this.hResult = hRes;
     }
+
     /*
     //reserved
     public void setCurrentUserAuthData(AuthData authData) {
@@ -41,14 +42,17 @@ public class CurrentAuthContext {
     public AuthData getCurrentUserAuthData() {
         return this.currentUserAuthData;
     }
+
     public String getDescription() {
         return this.description;
     }
+
     public HResult getHResult() {
         return this.hResult;
     }
+
     //clean this context
-    public  void clean() {
+    public void clean() {
         this.currentUserAuthData = null;
         this.description = null;
     }

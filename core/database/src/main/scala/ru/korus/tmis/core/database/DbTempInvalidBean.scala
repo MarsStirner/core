@@ -8,6 +8,7 @@ import ru.korus.tmis.util.{ConfigManager, I18nable}
 import ru.korus.tmis.core.logging.LoggingInterceptor
 import javax.persistence.PersistenceContext
 import javax.persistence.EntityManager
+import java.lang.Iterable
 import ru.korus.tmis.core.exception.NoSuchRbTempInvalidDocumentException
 import java.util.Date
 import javax.ejb.EJB

@@ -1,13 +1,15 @@
 package ru.korus.tmis.core.data
 
 import javax.xml.bind.annotation.{XmlRootElement, XmlType}
+import javax.xml.bind.annotation.XmlType._
+import javax.xml.bind.annotation.XmlRootElement._
 import org.codehaus.jackson.annotate.JsonIgnoreProperties
 import reflect.BeanProperty
 import ru.korus.tmis.core.entity.model._
 import java.util.Date
 import ru.korus.tmis.util.ConfigManager
 import scala.collection.JavaConversions._
-import ru.korus.tmis.core.entity.model.fd.{FDField, FDFieldValue}
+import ru.korus.tmis.core.entity.model.fd.{FDField, FDFieldValue, FDRecord}
 
 @XmlType(name = "assignmentData")
 @XmlRootElement(name = "assignmentData")

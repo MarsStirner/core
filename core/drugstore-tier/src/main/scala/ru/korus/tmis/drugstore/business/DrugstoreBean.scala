@@ -8,10 +8,10 @@ import com.google.common.collect.LinkedListMultimap
 import java.lang.{Integer => JInteger}
 import java.util.{LinkedList => JLinkedList, Collection => JCollection}
 import ru.korus.tmis.core.entity.model.AssignmentHour
-import ru.korus.tmis.drugstore.data.{PrescriptionInfo, PrescriptionInfoList}
 import javax.interceptor.Interceptors
-import ru.korus.tmis.core.logging.db.LoggingInterceptor
+import ru.korus.tmis.core.logging.LoggingInterceptor
 import collection.JavaConversions._
+import ru.korus.tmis.drugstore.data.{PrescriptionInfo, PrescriptionInfoList}
 
 @Interceptors(Array(classOf[LoggingInterceptor]))
 @Stateless

@@ -2,7 +2,7 @@ package ru.korus.tmis.drugstore.data
 
 import ru.korus.tmis.core.database.{DbEventBeanLocal, DbActionPropertyTypeBeanLocal}
 import ru.korus.tmis.core.entity.model._
-import ru.korus.tmis.core.logging.db.LoggingInterceptor
+import ru.korus.tmis.core.logging.LoggingInterceptor
 import ru.korus.tmis.drugstore.sync.RefResolverBeanLocal
 
 import java.util.{Set => JSet, Map => JMap, List => JList}

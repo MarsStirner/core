@@ -4,9 +4,13 @@
  */
 package ru.korus.tmis.core.entity.model;
 
-import javax.persistence.*;
+import org.hibernate.annotations.NotFound;
+import org.hibernate.annotations.NotFoundAction;
+import ru.korus.tmis.core.entity.model.fd.FDRecord;
+
 import java.io.Serializable;
 import java.util.Date;
+import javax.persistence.*;
 
 /**
  * @author s0

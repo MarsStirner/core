@@ -4,7 +4,7 @@ import javax.interceptor.Interceptors
 import ru.korus.tmis.core.logging.LoggingInterceptor
 import grizzled.slf4j.Logging
 import javax.persistence.{EntityManager, PersistenceContext}
-import javax.ejb.Stateless
+import javax.ejb.{Stateless}
 import ru.korus.tmis.util.{ConfigManager, I18nable}
 import ru.korus.tmis.core.entity.model.{Staff, Patient, ClientAllergy}
 import java.util.Date

@@ -6,6 +6,7 @@ import javax.ejb.Stateless
 import grizzled.slf4j.Logging
 import ru.korus.tmis.util.I18nable
 import javax.persistence.{EntityManager, PersistenceContext}
+import ru.korus.tmis.core.entity.model.Speciality
 import scala.collection.JavaConversions._
 import ru.korus.tmis.core.data.{DictionaryListRequestDataFilter, QueryDataStructure}
 

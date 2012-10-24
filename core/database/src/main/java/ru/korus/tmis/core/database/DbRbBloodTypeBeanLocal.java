@@ -1,6 +1,9 @@
 package ru.korus.tmis.core.database;
 
+import ru.korus.tmis.core.data.DictionaryListData;
+import ru.korus.tmis.core.data.ListDataRequest;
 import ru.korus.tmis.core.entity.model.RbBloodType;
+import ru.korus.tmis.core.entity.model.RbContactType;
 import ru.korus.tmis.core.exception.CoreException;
 
 import javax.ejb.Local;

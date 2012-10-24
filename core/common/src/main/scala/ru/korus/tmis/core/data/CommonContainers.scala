@@ -6,6 +6,7 @@ import java.util.Date
 
 import ru.korus.tmis.util.ConfigManager
 import org.codehaus.jackson.annotate.JsonIgnoreProperties
+import org.codehaus.jackson.annotate.JsonIgnoreProperties._
 
 @XmlType(name = "idNameContainer")
 @XmlRootElement(name = "idNameContainer")

@@ -1,12 +1,13 @@
 package ru.korus.tmis.ws.laboratory.lis2
 
 import grizzled.slf4j.Logging
-import ru.korus.tmis.util.{CompileTimeConfigManager, I18nable}
+import ru.korus.tmis.util.{CompileTimeConfigManager, ConfigManager, I18nable}
 import ru.korus.tmis.util.Types.{JList, JLinked, JString, JBoolean, JInteger}
 import javax.ejb.EJB
 import ru.korus.tmis.laboratory.data.lis2.accept._
 
 import ru.korus.tmis.util.General.catchy
+import ru.korus.tmis.core.exception.CoreException
 import javax.jws.{HandlerChain, WebService}
 
 import ru.korus.tmis.util.General.nullity_implicits

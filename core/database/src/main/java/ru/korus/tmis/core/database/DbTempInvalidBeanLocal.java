@@ -1,11 +1,12 @@
 package ru.korus.tmis.core.database;
 
+import java.util.Date;
+
+import javax.ejb.Local;
+
 import ru.korus.tmis.core.entity.model.Patient;
 import ru.korus.tmis.core.entity.model.Staff;
 import ru.korus.tmis.core.entity.model.TempInvalid;
-
-import javax.ejb.Local;
-import java.util.Date;
 
 @Local
 public interface DbTempInvalidBeanLocal {

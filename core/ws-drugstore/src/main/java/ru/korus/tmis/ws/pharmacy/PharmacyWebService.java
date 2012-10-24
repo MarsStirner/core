@@ -2,9 +2,9 @@ package ru.korus.tmis.ws.pharmacy;
 
 import ru.korus.tmis.core.entity.model.Medicament;
 
+import java.util.List;
 import javax.jws.WebMethod;
 import javax.jws.WebService;
-import java.util.List;
 
 @WebService(
         targetNamespace = "http://korus.ru/tmis/pharmacy",

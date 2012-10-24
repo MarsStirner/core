@@ -1,14 +1,14 @@
 package ru.korus.tmis.core.entity.model;
 
+import java.io.Serializable;
+import java.util.Date;
+import java.util.LinkedHashSet;
+import java.util.Set;
 import javax.persistence.*;
 import javax.xml.bind.annotation.XmlElement;
 import javax.xml.bind.annotation.XmlRootElement;
 import javax.xml.bind.annotation.XmlTransient;
 import javax.xml.bind.annotation.XmlType;
-import java.io.Serializable;
-import java.util.Date;
-import java.util.LinkedHashSet;
-import java.util.Set;
 
 @Entity
 @Table(name = "Person", catalog = "", schema = "")

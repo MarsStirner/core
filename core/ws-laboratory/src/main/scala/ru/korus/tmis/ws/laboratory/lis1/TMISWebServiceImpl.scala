@@ -12,6 +12,8 @@ import ru.korus.tmis.core.exception.CoreException
 import javax.jws.{HandlerChain, WebService}
 
 import ru.korus.tmis.util.General.nullity_implicits
+import javax.interceptor.Interceptors
+import ru.korus.tmis.core.logging.slf4j.interceptor.NoDBLoggingInterceptor
 import ru.korus.tmis.laboratory.business.LaboratoryBeanLocal
 
 

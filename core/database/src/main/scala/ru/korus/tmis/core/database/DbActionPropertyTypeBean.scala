@@ -2,6 +2,7 @@ package ru.korus.tmis.core.database
 
 
 import ru.korus.tmis.core.logging.LoggingInterceptor
+import ru.korus.tmis.core.entity.model.ActionPropertyType
 import ru.korus.tmis.util.I18nable
 
 import grizzled.slf4j.Logging
@@ -13,6 +14,7 @@ import javax.persistence.{TypedQuery, PersistenceContext, EntityManager}
 import scala.collection.JavaConversions._
 import ru.korus.tmis.core.entity.model.{ActionType, ActionPropertyType}
 import ru.korus.tmis.core.data.{QueryDataStructure, DictionaryListRequestDataFilter}
+import ru.korus.tmis.auxiliary.AuxiliaryQuickSort
 
 @Interceptors(Array(classOf[LoggingInterceptor]))
 @Stateless

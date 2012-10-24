@@ -1,6 +1,7 @@
 package ru.korus.tmis.core.auth
 
 import ru.korus.tmis.core.database.DbStaffBeanLocal
+import ru.korus.tmis.core.exception.NoSuchUserException
 import ru.korus.tmis.core.logging.LoggingInterceptor
 import ru.korus.tmis.util.{I18nable, ConfigManager}
 

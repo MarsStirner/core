@@ -3,8 +3,14 @@ package ru.korus.tmis.core.entity.model;
 import ru.korus.tmis.core.exception.CoreException;
 import ru.korus.tmis.util.TextUtils;
 
-import javax.persistence.*;
 import java.io.Serializable;
+import javax.persistence.Column;
+import javax.persistence.Entity;
+import javax.persistence.JoinColumn;
+import javax.persistence.NamedQueries;
+import javax.persistence.NamedQuery;
+import javax.persistence.OneToOne;
+import javax.persistence.Table;
 
 @Entity
 @Table(name = "ActionProperty_MKB")

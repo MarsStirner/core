@@ -7,19 +7,21 @@ import com.sun.jersey.spi.container.ContainerRequestFilter;
 import com.sun.jersey.spi.container.ContainerResponseFilter;
 
 import com.sun.jersey.api.model.AbstractMethod;
+
 import java.util.Collections;
 import java.util.List;
 import java.util.Date;
 import javax.ws.rs.core.Response;
 import javax.ws.rs.WebApplicationException;
 import javax.ejb.EJB;
+
 import ru.korus.tmis.core.auth.AuthToken;
 import ru.korus.tmis.core.auth.AuthData;
 import ru.korus.tmis.core.auth.AuthStorageBean;
 import ru.korus.tmis.ws.webmis.rest.CurrentAuthContext;
 import ru.korus.tmis.ws.webmis.rest.ThreadLocalByRequest;
 
-public class AuthentificationRESTFilterFactory implements  ResourceFilterFactory {
+public class AuthentificationRESTFilterFactory implements ResourceFilterFactory {
 
     @EJB
     private AuthStorageBean authStorage;// = new AuthStorageBean();
@@ -45,10 +47,10 @@ public class AuthentificationRESTFilterFactory implements  ResourceFilterFactory
 
             CurrentAuthContext context = new CurrentAuthContext();
             String token = request.getHeaderValue("cookie");   //посм getCookies()
-            if(token!=null) {
+            if (token != null) {
                 token = token.substring(token.indexOf("=") + 1);
             }
-            if(token!=null) {
+            if (token != null) {
                 AuthToken authToken = new AuthToken(token);
                 //данные об авторизации
                 AuthData authData = authStorage.getAuthData(authToken);
@@ -72,11 +74,10 @@ public class AuthentificationRESTFilterFactory implements  ResourceFilterFactory
                     return request;
                 }
                 //Запишем в контекст данные об авторизации...
-                context.setCurrentAuthContext(authData ,CurrentAuthContext.HResult.S_OK, "ALL OK!");
+                context.setCurrentAuthContext(authData, CurrentAuthContext.HResult.S_OK, "ALL OK!");
                 ThreadLocalByRequest.set(context);
                 return request;
-            }
-            else { //временно чтоб тестить без авторизации
+            } else { //временно чтоб тестить без авторизации
                 context.setCurrentAuthContext(null, CurrentAuthContext.HResult.E_NOAUTHDATA, "NO_AUTHENTIFICATION_DATA");
                 ThreadLocalByRequest.set(context);
                 return request;

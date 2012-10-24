@@ -1,9 +1,13 @@
 package ru.korus.tmis.core.entity.model.fd;
 
+import ru.korus.tmis.core.entity.model.AssignmentHour;
+
 import javax.persistence.*;
 import javax.xml.bind.annotation.XmlRootElement;
 import javax.xml.bind.annotation.XmlType;
 import java.io.Serializable;
+import java.util.HashSet;
+import java.util.Set;
 
 @Entity
 @Table(name = "FlatDirectory", catalog = "", schema = "")

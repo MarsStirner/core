@@ -7,10 +7,11 @@ import ru.korus.tmis.util.{ConfigManager, I18nable}
 import ru.korus.tmis.core.logging.LoggingInterceptor
 import javax.persistence.PersistenceContext
 import javax.persistence.EntityManager
+import java.lang.Iterable
 import java.util.Date
 import javax.ejb.EJB
 import ru.korus.tmis.core.exception.NoSuchEntityException
-import ru.korus.tmis.core.entity.model.{ClientSocStatus, Staff, Patient}
+import ru.korus.tmis.core.entity.model.{RbSocStatusClass, ClientSocStatus, Staff, Patient}
 import scala.collection.JavaConversions._
 
 @Interceptors(Array(classOf[LoggingInterceptor]))
@@ -115,7 +116,7 @@ class DbClientSocStatusBean
         } else {
           0
         },
-        documentId,
+        documentId, //тип документа (documentTypeId)
         "", //clientIdCard.getIssued(),
         "", //clientIdCard.getNumber(),
         "", //clientIdCard.getSeries(),

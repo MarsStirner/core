@@ -1,5 +1,6 @@
 package ru.korus.tmis.core.database
 
+import ru.korus.tmis.core.logging.LoggingInterceptor
 import ru.korus.tmis.core.entity.model.{OrgStructure, ActionType}
 import ru.korus.tmis.core.logging.LoggingInterceptor
 

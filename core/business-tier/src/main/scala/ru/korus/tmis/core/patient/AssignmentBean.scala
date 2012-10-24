@@ -11,10 +11,11 @@ import ru.korus.tmis.core.data._
 import ru.korus.tmis.core.database._
 import javax.inject.Inject
 import ru.korus.tmis.core.event.{ModifyActionNotification, Notification}
-import java.util.Date
+import java.util.{LinkedList, Date}
 import ru.korus.tmis.core.entity.model._
 import ru.korus.tmis.core.exception.CoreException
 import scala.collection.JavaConversions._
+import collection.mutable
 import javax.enterprise.inject.Any
 
 @Interceptors(Array(classOf[LoggingInterceptor]))

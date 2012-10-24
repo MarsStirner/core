@@ -6,12 +6,12 @@ import grizzled.slf4j.Logging
 import ru.korus.tmis.util.I18nable
 import javax.persistence.{EntityManager, PersistenceContext}
 import scala.collection.JavaConversions._
-import javax.ejb.Stateless
+import javax.ejb.{TransactionAttribute, TransactionAttributeType, EJB, Stateless}
 import ru.korus.tmis.core.exception.CoreException
 import java.text.SimpleDateFormat
 import java.util.{Calendar, Date}
 import ru.korus.tmis.core.entity.model.{Patient, RbHospitalBedProfile, Action}
-import ru.korus.tmis.core.data.SeventhFormLinearView
+import ru.korus.tmis.core.data.{FormOfAccountingMovementOfPatientsData, SeventhFormLinearView}
 
 
 @Interceptors(Array(classOf[LoggingInterceptor]))

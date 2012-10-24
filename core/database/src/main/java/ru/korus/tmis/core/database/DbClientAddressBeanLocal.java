@@ -1,9 +1,7 @@
 package ru.korus.tmis.core.database;
 
 import ru.korus.tmis.core.data.AddressEntryContainer;
-import ru.korus.tmis.core.entity.model.ClientAddress;
-import ru.korus.tmis.core.entity.model.Patient;
-import ru.korus.tmis.core.entity.model.Staff;
+import ru.korus.tmis.core.entity.model.*;
 import ru.korus.tmis.core.exception.CoreException;
 
 import javax.ejb.Local;

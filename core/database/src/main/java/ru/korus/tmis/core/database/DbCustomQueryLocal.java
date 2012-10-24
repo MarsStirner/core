@@ -4,10 +4,10 @@ import ru.korus.tmis.core.entity.model.*;
 import ru.korus.tmis.core.exception.CoreException;
 import ru.korus.tmis.core.indicators.IndicatorValue;
 
-import javax.ejb.Local;
 import java.util.Date;
 import java.util.List;
 import java.util.Map;
+import javax.ejb.Local;
 
 @Local
 public interface DbCustomQueryLocal {
@@ -115,4 +115,12 @@ public interface DbCustomQueryLocal {
     Action getLastActionByTypeCodeAndAPTypeName(int eventId, String code, String aptName)
             throws CoreException;
 
+    /**
+     * Получить код источника финансирования
+     *
+     * @param e - карточка пациента
+     * @return - код источника финансирования
+     * @throws CoreException
+     */
+    Integer getFinanceId(Event e) throws CoreException;
 }

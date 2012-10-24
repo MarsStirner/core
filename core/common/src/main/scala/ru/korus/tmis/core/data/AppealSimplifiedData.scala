@@ -2,7 +2,7 @@ package ru.korus.tmis.core.data
 
 import reflect.BeanProperty
 import java.util.{Date, LinkedList}
-import javax.xml.bind.annotation.{XmlRootElement, XmlType}
+import javax.xml.bind.annotation.{XmlAttribute, XmlRootElement, XmlType}
 import ru.korus.tmis.util.ConfigManager
 import scala.collection.JavaConversions._
 import ru.korus.tmis.core.entity.model._
@@ -121,7 +121,7 @@ class AppealSimplifiedRequestDataFilter {
   @BeanProperty
   var number: String = _
 
-  var code: java.util.Set[String] = _
+  var code: java.util.Collection[String] = _
 
 
   def this(patientId: Int,
@@ -131,7 +131,7 @@ class AppealSimplifiedRequestDataFilter {
            doctorId: Int,
            diagnosis: String,
            number: String,
-           code: java.util.Set[String]) {
+           code: java.util.Collection[String]) {
     this()
     this.patientId = patientId
     this.beginDate = if (beginDate == 0) {

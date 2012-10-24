@@ -1,8 +1,8 @@
 package ru.korus.tmis.core.database;
 
-import ru.korus.tmis.core.entity.model.RbTempInvalidDocument;
-
 import javax.ejb.Local;
+
+import ru.korus.tmis.core.entity.model.RbTempInvalidDocument;
 
 @Local
 public interface DbRbTempInvalidDocumentBeanLocal {

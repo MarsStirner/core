@@ -81,6 +81,21 @@ class DbRbCoreActionPropertyBean
     }
   }
 
+  def getRbCoreActionPropertiesById(id: Int) = {
+    val result = em.createQuery(RbCoreActionPropertiesByActionTypeIdQuery.format(CoreId),
+      classOf[RbCoreActionProperty])
+      .setParameter("id", id)
+      .getResultList
+
+    result.size() match {
+      case 0 => null
+      case _ => {
+        result.foreach(em.detach(_))
+        result.iterator().next()
+      }
+    }
+  }
+
   val RbCoreActionPropertiesByActionTypeIdQuery =
     """
        SELECT cap
@@ -105,5 +120,9 @@ class DbRbCoreActionPropertyBean
   val ActionPropertyTypeId =
     """
       cap.actionPropertyType.id = :actionPropertyTypeId
+    """
+  val CoreId =
+    """
+      cap.id = :id
     """
 }

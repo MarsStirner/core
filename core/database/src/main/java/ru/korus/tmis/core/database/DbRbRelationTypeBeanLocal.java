@@ -1,5 +1,7 @@
 package ru.korus.tmis.core.database;
 
+import ru.korus.tmis.core.data.DictionaryListData;
+import ru.korus.tmis.core.data.ListDataRequest;
 import ru.korus.tmis.core.entity.model.RbRelationType;
 import ru.korus.tmis.core.exception.CoreException;
 

@@ -1,11 +1,12 @@
 package ru.korus.tmis.core.entity.model;
 
 import ru.korus.tmis.core.exception.CoreException;
+import ru.korus.tmis.util.TextUtils;
 
+import java.io.Serializable;
 import javax.persistence.*;
 import javax.xml.bind.annotation.XmlRootElement;
 import javax.xml.bind.annotation.XmlType;
-import java.io.Serializable;
 
 @Entity
 @Table(name = "ActionProperty_Person", catalog = "", schema = "")
@@ -55,7 +56,12 @@ public class APValuePerson extends AbstractAPValue implements Serializable, APVa
 
     @Override
     public String getValueAsString() {
-        return value.getLastName();
+        if (value != null) {
+            return value.getLastName();
+        } else {
+            return null;
+        }
+
     }
 
     @Override
@@ -70,7 +76,7 @@ public class APValuePerson extends AbstractAPValue implements Serializable, APVa
             return true;
         }
         try {
-            this.personId = Integer.valueOf(value);
+            this.personId = TextUtils.getRobustInt(value);
             return true;
         } catch (NumberFormatException ex) {
             throw new CoreException(

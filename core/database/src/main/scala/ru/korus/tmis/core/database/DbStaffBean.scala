@@ -9,7 +9,8 @@ import javax.ejb.Stateless
 import javax.interceptor.Interceptors
 import scala.collection.JavaConversions._
 import java.util.Date
-import javax.persistence.{EntityManager, PersistenceContext}
+import java.text.{DateFormat, SimpleDateFormat}
+import javax.persistence.{TypedQuery, EntityManager, PersistenceContext}
 import ru.korus.tmis.core.entity.model.Staff
 import ru.korus.tmis.core.data.{FreePersonsListDataFilter, QueryDataStructure}
 

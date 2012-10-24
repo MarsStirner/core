@@ -5,6 +5,7 @@ import ru.korus.tmis.core.common.{CommonDataProcessorBeanLocal, TypeFilterBeanLo
 import ru.korus.tmis.core.data._
 import ru.korus.tmis.core.database._
 import ru.korus.tmis.core.entity.model._
+import ru.korus.tmis.core.logging.LoggingInterceptor
 import ru.korus.tmis.util.ConfigManager
 import ru.korus.tmis.util.ConfigManager.APWI
 

@@ -24,7 +24,7 @@ class RoleData {
   var roles = new LinkedList[RoleEntry]
 
   def this(staffEn: Staff, roles: Set[Role]) = {
-    this ()
+    this()
     this.doctor = new DoctorSpecsContainer(staffEn)
     roles.foreach(r => this.roles.add(new RoleEntry(r)))
   }
@@ -47,7 +47,7 @@ class RoleEntry {
   var right = new LinkedList[UserRightEntry]()
 
   def this(role: Role) = {
-    this ()
+    this()
     this.id = role.getId.intValue()
     this.code = role.getCode
     this.name = role.getName
@@ -71,7 +71,7 @@ class UserRightEntry {
   var isPermitted: Boolean = _
 
   def this(code: String, isPermitted: Boolean) = {
-    this ()
+    this()
     this.code = code
     this.isPermitted = isPermitted
   }
@@ -101,7 +101,7 @@ class StaffEntity {
            userLastName: String,
            userPatronymicName: String,
            userSpecs: String) = {
-    this ()
+    this()
     this.userId = userId
     this.userFirstName = userFirstName
     this.userLastName = userLastName

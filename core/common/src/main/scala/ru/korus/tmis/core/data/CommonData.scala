@@ -321,7 +321,7 @@ class CommonAttribute() {
   }
 
   def setTypeId(eTypeId: Integer) = {
-    this.typeId = typeId
+    this.typeId = eTypeId
   }
 
   private def this(id: Integer,

@@ -13,6 +13,8 @@ import ru.korus.tmis.core.exception.CoreException;
 import javax.ejb.Local;
 import java.util.LinkedHashMap;
 import java.util.LinkedList;
+import java.util.Set;
+import java.util.Date;
 
 @Local
 public interface PatientBeanLocal {

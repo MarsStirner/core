@@ -11,7 +11,7 @@ import ru.korus.tmis.core.exception.NoSuchRbRelationTypeException
 
 import java.lang.Iterable
 import scala.collection.JavaConversions._
-import ru.korus.tmis.core.data.{DictionaryListRequestDataFilter, QueryDataStructure}
+import ru.korus.tmis.core.data.{DictionaryListRequestDataFilter, QueryDataStructure, DictionaryListData, ListDataRequest}
 
 @Interceptors(Array(classOf[LoggingInterceptor]))
 @Stateless

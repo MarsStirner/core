@@ -1,7 +1,7 @@
 package ru.korus.tmis.drugstore.event
 
 import ru.korus.tmis.core.event._
-import ru.korus.tmis.core.logging.db.LoggingInterceptor
+import ru.korus.tmis.core.logging.LoggingInterceptor
 
 import javax.ejb.Stateless
 import javax.enterprise.event.Event

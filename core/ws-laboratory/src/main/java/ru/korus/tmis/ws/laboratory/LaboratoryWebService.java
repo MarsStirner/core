@@ -1,9 +1,6 @@
 package ru.korus.tmis.ws.laboratory;
 
-import ru.korus.tmis.lis.data.BiomaterialInfo;
-import ru.korus.tmis.lis.data.DiagnosticRequestInfo;
-import ru.korus.tmis.lis.data.OrderInfo;
-import ru.korus.tmis.lis.data.PatientInfo;
+import ru.korus.tmis.lis.data.*;
 
 import javax.jws.WebMethod;
 import javax.jws.WebParam;

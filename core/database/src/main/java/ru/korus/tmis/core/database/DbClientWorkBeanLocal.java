@@ -6,6 +6,7 @@ import ru.korus.tmis.core.entity.model.Staff;
 import ru.korus.tmis.core.exception.CoreException;
 
 import javax.ejb.Local;
+import java.util.Date;
 
 @Local
 public interface DbClientWorkBeanLocal {

@@ -1,15 +1,15 @@
 package ru.korus.tmis.core.patient;
 
-import ru.korus.tmis.core.data.SeventhFormLinearView;
-import ru.korus.tmis.core.entity.model.Action;
-import ru.korus.tmis.core.entity.model.RbHospitalBedProfile;
-import ru.korus.tmis.core.exception.CoreException;
-
 import javax.ejb.Local;
 import java.util.Date;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
+
+import ru.korus.tmis.core.data.SeventhFormLinearView;
+import ru.korus.tmis.core.entity.model.Action;
+import ru.korus.tmis.core.entity.model.RbHospitalBedProfile;
+import ru.korus.tmis.core.exception.CoreException;
 
 @Local
 public interface SeventhFormBeanLocal {

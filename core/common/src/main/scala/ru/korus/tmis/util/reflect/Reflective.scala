@@ -45,8 +45,7 @@ trait Reflective {
 
         f.getParameterTypes match {
           case Array(sType) if canAssign(sType, classForValue(value)) => {
-            f.invoke(target, box(value));
-            true
+            f.invoke(target, box(value)); true
           }
           case _ => false
         }

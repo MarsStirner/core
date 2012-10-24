@@ -1,6 +1,7 @@
 package ru.korus.tmis.core.database
 
 import ru.korus.tmis.core.auth.AuthData
+import ru.korus.tmis.core.entity.model.{ActionStatus, Action}
 import ru.korus.tmis.core.exception.CoreException
 import ru.korus.tmis.core.logging.LoggingInterceptor
 import ru.korus.tmis.util.{ConfigManager, I18nable}
@@ -9,7 +10,7 @@ import grizzled.slf4j.Logging
 import java.util.Date
 import javax.ejb.{TransactionAttributeType, TransactionAttribute, EJB, Stateless}
 import javax.interceptor.Interceptors
-import ru.korus.tmis.core.entity.model.{ActionType, ActionStatus, Action}
+import ru.korus.tmis.core.entity.model.{ActionType, ActionStatus, Action, Staff}
 import scala.collection.JavaConversions._
 import javax.persistence.{TypedQuery, PersistenceContext, EntityManager}
 import ru.korus.tmis.core.data.{AssessmentsListRequestDataFilter, AssessmentsListRequestData}

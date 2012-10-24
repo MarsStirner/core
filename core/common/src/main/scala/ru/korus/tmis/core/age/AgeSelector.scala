@@ -2,6 +2,7 @@ package ru.korus.tmis.core.age
 
 import util.parsing.combinator.JavaTokenParsers
 
+import scala.math.abs
 import java.util.{Calendar, GregorianCalendar, Date}
 import ru.korus.tmis.util.CloneUtils
 

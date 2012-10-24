@@ -5,10 +5,12 @@ import scala.collection.JavaConversions._
 import ru.korus.tmis.core.entity.model._
 import kladr.{Street, Kladr}
 import org.codehaus.jackson.annotate.JsonIgnoreProperties
+import javax.xml.bind.annotation.XmlRootElement._
 import java.util.{Date, LinkedList}
 import reflect.BeanProperty
 import scala.Predef._
 import ru.korus.tmis.util.ConfigManager
+import org.codehaus.jackson.annotate.JsonIgnoreProperties._
 
 @XmlType(name = "patientData")
 @XmlRootElement(name = "patientData")
@@ -180,7 +182,11 @@ class PatientEntry {
     patient.getActiveClientContacts().foreach(c => this.phones.add(new ClientContactContainer(c)))
     patient.getActiveClientPolicies().foreach(p => this.payments.add(new PolicyEntryContainer(p)))
     patient.getActiveClientRelatives().foreach(r => this.relations.add(new RelationEntryContainer(r))) // getClientRelatives
-    patient.getActiveClientDocuments().foreach(d => this.idCards.add(new DocumentEntryContainer(d)))
+    patient.getActiveClientDocuments().foreach(d =>
+      if (d.getDocumentType.getId != 20) {
+        this.idCards.add(new DocumentEntryContainer(d))
+      }
+    )
     val allSocStatuses = patient.getActiveClientSocStatuses()
     allSocStatuses.foreach(t => {
       //TODO: нужно вынести проверку типов в entity

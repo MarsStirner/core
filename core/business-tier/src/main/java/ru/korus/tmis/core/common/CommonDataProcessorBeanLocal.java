@@ -13,9 +13,9 @@ import ru.korus.tmis.util.StringId;
 import scala.Function1;
 import scala.Function2;
 
-import javax.ejb.Local;
 import java.util.List;
 import java.util.Set;
+import javax.ejb.Local;
 
 @Local
 public interface CommonDataProcessorBeanLocal {

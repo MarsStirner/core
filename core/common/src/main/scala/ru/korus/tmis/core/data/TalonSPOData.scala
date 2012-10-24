@@ -2,9 +2,10 @@ package ru.korus.tmis.core.data
 
 import javax.xml.bind.annotation.{XmlType, XmlRootElement}
 import reflect.BeanProperty
+import java.util.LinkedList
 import ru.korus.tmis.util.ConfigManager
 import scala.collection.JavaConversions._
-import ru.korus.tmis.core.entity.model.{Staff, Event}
+import ru.korus.tmis.core.entity.model.{Mkb, Diagnostic, Staff, Event}
 
 /*========== Контейнер для просмотра полных данных о талоне СПО ========== */
 

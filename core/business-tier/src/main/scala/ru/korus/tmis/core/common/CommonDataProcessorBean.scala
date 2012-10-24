@@ -309,7 +309,11 @@ class CommonDataProcessorBean
                   value,
                   0)
                 new ActionPropertyWrapper(ap).set(attribute)
-                entities = entities + ap + apv.unwrap
+                if (apv != null) {
+                  entities = entities + ap + apv.unwrap
+                } else {
+                  entities = entities + ap
+                }
               }
 
               case (Some(valueId), _) => {

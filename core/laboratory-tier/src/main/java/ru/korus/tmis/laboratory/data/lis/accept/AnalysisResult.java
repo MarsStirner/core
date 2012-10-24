@@ -1,8 +1,6 @@
 package ru.korus.tmis.laboratory.data.lis.accept;
 
-import javax.xml.bind.annotation.XmlElement;
-import javax.xml.bind.annotation.XmlTransient;
-import javax.xml.bind.annotation.XmlType;
+import javax.xml.bind.annotation.*;
 import java.util.Date;
 import java.util.LinkedList;
 import java.util.List;

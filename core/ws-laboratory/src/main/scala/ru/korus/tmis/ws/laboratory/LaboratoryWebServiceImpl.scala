@@ -1,5 +1,6 @@
 package ru.korus.tmis.ws.laboratory
 
+import ru.korus.tmis.lis.data.{DiagnosticRequestInfo}
 import javax.jws.WebService
 import ru.korus.tmis.lis.data._
 

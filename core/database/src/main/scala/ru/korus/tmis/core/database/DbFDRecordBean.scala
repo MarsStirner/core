@@ -7,7 +7,7 @@ import ru.korus.tmis.core.logging.LoggingInterceptor
 import javax.interceptor.Interceptors
 import ru.korus.tmis.core.entity.model.fd.FDRecord
 import scala.collection.JavaConversions._
-import javax.ejb.Stateless
+import javax.ejb.{TransactionAttributeType, TransactionAttribute, Stateless}
 
 
 @Interceptors(Array(classOf[LoggingInterceptor]))

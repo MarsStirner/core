@@ -1,5 +1,9 @@
 package ru.korus.tmis.util.reflect.clones
 
+import java.util.Map
+import com.rits.cloning.{IFastCloner}
+import scala.reflect.Manifest
+import ru.korus.tmis.util.reflect.Manifests
 import scala.annotation.implicitNotFound
 
 @implicitNotFound(msg = "No static cloner found for class ${T}.")

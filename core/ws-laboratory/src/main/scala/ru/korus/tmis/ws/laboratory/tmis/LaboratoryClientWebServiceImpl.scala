@@ -5,6 +5,8 @@ import grizzled.slf4j.Logging
 import ru.korus.tmis.util.{CompileTimeConfigManager, I18nable}
 import javax.ejb.EJB
 import ru.korus.tmis.laboratory.business.LaboratoryBeanLocal
+import javax.interceptor.Interceptors
+import ru.korus.tmis.core.logging.slf4j.interceptor.NoDBLoggingInterceptor
 
 import CompileTimeConfigManager.LaboratoryClient._
 

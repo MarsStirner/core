@@ -1,6 +1,7 @@
 package ru.korus.tmis.ws.webmis.rest;
 
 import java.lang.ThreadLocal;
+
 import ru.korus.tmis.ws.webmis.rest.CurrentAuthContext;
 
 //Контейнер тредлокала для пользовательского запроса
@@ -17,7 +18,7 @@ public class ThreadLocalByRequest {
     }
 
     public static CurrentAuthContext get() {
-        return (CurrentAuthContext)currentThreadLocal.get();
+        return (CurrentAuthContext) currentThreadLocal.get();
     }
 }
 

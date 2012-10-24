@@ -8,7 +8,7 @@ import grizzled.slf4j.Logging
 import java.lang.Iterable
 import ru.korus.tmis.util.{ConfigManager, I18nable}
 import ru.korus.tmis.core.exception.NoSuchRbDocumentTypeException
-import ru.korus.tmis.core.entity.model.RbDocumentType
+import ru.korus.tmis.core.entity.model.{RbDocumentType}
 import scala.collection.JavaConversions._
 import ru.korus.tmis.core.data.{DictionaryListRequestDataFilter, QueryDataStructure}
 

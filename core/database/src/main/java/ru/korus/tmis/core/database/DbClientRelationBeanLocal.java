@@ -1,6 +1,7 @@
 package ru.korus.tmis.core.database;
 
 import ru.korus.tmis.core.data.ClientContactContainer;
+import ru.korus.tmis.core.data.RelationEntryContainer;
 import ru.korus.tmis.core.entity.model.ClientRelation;
 import ru.korus.tmis.core.entity.model.Patient;
 import ru.korus.tmis.core.entity.model.Staff;

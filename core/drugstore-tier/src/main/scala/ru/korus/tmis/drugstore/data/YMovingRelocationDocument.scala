@@ -1,6 +1,6 @@
 package ru.korus.tmis.drugstore.data
 
-import ru.korus.tmis.core.entity.model.Action
+import ru.korus.tmis.core.entity.model.{OrgStructure, Action}
 
 class YMovingRelocationDocument(
                                  action: Action,

@@ -1,21 +1,27 @@
 package ru.korus.tmis.core.database
 
+import ru.korus.tmis.core.entity.model._
 import ru.korus.tmis.core.indicators.IndicatorValue
 import ru.korus.tmis.core.logging.LoggingInterceptor
 import ru.korus.tmis.util.I18nable
 
 import grizzled.slf4j.Logging
+import java.util.Date
+import javax.ejb.{TransactionAttributeType, TransactionAttribute, Stateless}
 import javax.interceptor.Interceptors
+import javax.persistence.{TemporalType, EntityManager, PersistenceContext}
 
 import scala.collection.JavaConversions._
 import scala.collection.mutable.LinkedHashMap
-import java.lang.String
+import java.lang.{String, Double}
 import javax.persistence.{TemporalType, EntityManager, PersistenceContext}
 import ru.korus.tmis.core.entity.model._
 import scala.Predef._
-import java.util.{Date, List}
+import java.util.{Date, ArrayList, List}
 import ru.korus.tmis.core.data._
 import javax.ejb.{EJB, Stateless, TransactionAttributeType, TransactionAttribute}
+import ru.korus.tmis.core.exception.CoreException
+import ru.korus.tmis.util.General._
 
 import java.lang.{Double => JDouble}
 
@@ -731,6 +737,32 @@ class DbCustomQueryBean
     }
   }
 
+  /**
+   * Получить код источника финансирования
+   * @param e - карточка пациента
+   * @return - код источника финансирования
+   * @throws CoreException
+   */
+  def getFinanceId(e: Event) = {
+    val result = em.createQuery(finance, classOf[Int])
+      //      .setParameter("eventTypeId", e.getEventType.getId)
+      .setParameter("eventId", e.getId)
+      .getSingleResult
+    result
+  }
+
+
+  // ---- Секция кастомных запросов
+
+  /**
+   * Запрос кода источника финансирования
+   */
+  val finance = """
+      SELECT et.financeId
+      FROM EventType et, Event e, RbFinance rf
+              WHERE e.id = :eventId AND e.eventType.id = et.id AND et.financeId = rf.id
+                """
+
   val HeightQuery = """
     SELECT apd.value, ap.action.begDate
     FROM ActionProperty ap, APValueDouble apd
@@ -1275,6 +1307,7 @@ class DbCustomQueryBean
     AND ap.id = apv.id.id
     AND at.code = '%s'
     AND apt.name = '%s'
+    AND apv.value IS NOT NULL
     %s
     GROUP BY e
                                """
@@ -1292,6 +1325,7 @@ class DbCustomQueryBean
     AND ap.id = apv.id.id
     AND at.code = '%s'
     AND apt.name = '%s'
+    AND apv.mkb IS NOT NULL
     %s
     GROUP BY e
                                 """

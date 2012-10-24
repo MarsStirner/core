@@ -1,6 +1,7 @@
 package ru.korus.tmis.lis.data;
 
 import javax.xml.bind.annotation.XmlElement;
+import java.util.Collection;
 
 /**
  * Результат анализа микроорганизмов

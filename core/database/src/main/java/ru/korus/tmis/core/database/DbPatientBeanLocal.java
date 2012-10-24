@@ -1,12 +1,16 @@
 package ru.korus.tmis.core.database;
 
 import ru.korus.tmis.core.data.PatientRequestData;
+import ru.korus.tmis.core.data.PatientsListRequestData;
+import ru.korus.tmis.core.entity.model.Event;
 import ru.korus.tmis.core.entity.model.Patient;
 import ru.korus.tmis.core.entity.model.Staff;
 import ru.korus.tmis.core.exception.CoreException;
 
 import javax.ejb.Local;
+import javax.persistence.TypedQuery;
 import java.util.Date;
+import java.util.List;
 
 @Local
 public interface DbPatientBeanLocal {
