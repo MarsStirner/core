@@ -18,6 +18,7 @@ import ru.korus.tmis.laboratory.data.request.Utility._
 sealed case class DiagnosticRequestInfo(
                                          orderMisId: Int,
                                          orderCaseId: Option[String],
+                                         orderFinanceId: Option[Int],
                                          orderMisDate: Option[Date],
                                          orderPregnatMin: Option[Int],
                                          orderPregnatMax: Option[Int],
@@ -44,6 +45,7 @@ object DiagnosticRequestInfo {
     val ret = new lab.DiagnosticRequestInfo
 
     ret.setOrderMisId(orderMisId)
+
     setAsRequired(new CoreException("OrderMisDate: not found"))(orderMisDate) {
       it => ret.setOrderMisDate(date2xmlGC(it))
     }
@@ -90,10 +92,17 @@ object DiagnosticRequestInfo {
 
     import v._
     val ret = new lab2.DiagnosticRequestInfo
+
     ret.setOrderMisId(orderMisId)
+
     setAsOptional(orderCaseId) {
       ret.setOrderCaseId(_)
     }
+
+    setAsOptional(orderFinanceId) {
+      ret.setOrderFinanceId(_)
+    }
+
     setAsRequired(new CoreException("OrderMisDate: not found"))(orderMisDate) {
       it => ret.setOrderMisDate(date2GC(it))
     }
@@ -127,7 +136,6 @@ object DiagnosticRequestInfo {
     setAsDefaultible(orderDoctorMisId) {
       it => ret.setOrderDoctorMisId(it.toString)
     }
-
     ret
   }
 

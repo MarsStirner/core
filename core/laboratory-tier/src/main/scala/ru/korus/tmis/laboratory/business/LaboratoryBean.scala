@@ -404,6 +404,7 @@ class LaboratoryBean
     DiagnosticRequestInfo(
       id,
       Option(orderCaseId),
+      Option(orderFinanceId),
       Option(date),
       Option(pregMin),
       Option(pregMax),
@@ -737,6 +738,7 @@ class LaboratoryBean
 
     val exRequest = DiagnosticRequestInfo(220,
       Option("111"),
+      Option(1),
       Option(new Date(112, 2, 27, 17, 0)),
       Option(9),
       Option(9),

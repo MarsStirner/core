@@ -761,6 +761,8 @@ class DbCustomQueryBean
       SELECT et.financeId
       FROM EventType et, Event e, RbFinance rf
               WHERE e.id = :eventId AND e.eventType.id = et.id AND et.financeId = rf.id
+                   AND et.deleted = 0
+                   AND e.deleted = 0
                 """
 
   val HeightQuery = """
@@ -1165,8 +1167,7 @@ class DbCustomQueryBean
     AND at.deleted = 0
     ORDER BY
       a.createDatetime ASC
-                                               """.format(i18n("db.action.preAssessmentGroupName"),
-    i18n("db.action.diagnosisSubstantiation"))
+    """.format(i18n("db.action.preAssessmentGroupName"), i18n("db.action.diagnosisSubstantiation"))
 
   val AllAssessmentsByEventIdQuery = """
     SELECT a

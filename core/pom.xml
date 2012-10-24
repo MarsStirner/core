@@ -6,7 +6,7 @@
     <groupId>ru.korus.tmis</groupId>
     <artifactId>tmis-nexus</artifactId>
     <packaging>pom</packaging>
-    <version>0.9.0</version>
+    <version>0.9.1</version>
     <name>TMIS Root Project</name>
 
     <modules>
@@ -19,6 +19,7 @@
         <module>ws-medipad</module>
         <module>ws-laboratory</module>
         <module>ws-drugstore</module>
+        <module>hl7</module>
     </modules>
 
     <profiles>
@@ -37,7 +38,7 @@
             <id>nde</id>
             <properties>
                 <mysql.login>root</mysql.login>
-                <mysql.password></mysql.password>
+                <mysql.password>root</mysql.password>
             </properties>
         </profile>
     </profiles>
