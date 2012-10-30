@@ -4,14 +4,14 @@
     <modelVersion>4.0.0</modelVersion>
     <groupId>ru.korus.tmis.hl7</groupId>
     <artifactId>tmis-hl7</artifactId>
-  <version>0.9.1</version>
+  <version>0.9.2</version>
     <packaging>war</packaging>
     <name>TMIS HL7</name>
 
     <parent>
         <groupId>ru.korus.tmis</groupId>
         <artifactId>tmis-nexus</artifactId>
-        <version>0.9.1</version>
+        <version>0.9.2</version>
         <relativePath>../</relativePath>
     </parent>
 
@@ -20,7 +20,7 @@
         <dependency>
             <groupId>ru.korus.tmis.drugstore</groupId>
             <artifactId>tmis-drugstore-tier</artifactId>
-            <version>0.9.1</version>
+            <version>0.9.2</version>
             <type>ejb</type>
         </dependency> -->
     </dependencies>

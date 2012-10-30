@@ -43,7 +43,7 @@ public class Test2 {
         String XsiNamespace = "http://www.w3.org/2001/XMLSchema-instance";
 
 
-  /*      try {
+        try {
 //            MISExchange misExchange = new MISExchange(new URL("../resources/MISExchange.wsdl"), new QName("urn:hl7-org:v3", "MISExchangeSoap"));
 
             ObjectFactory objectFactory = new ObjectFactory();
@@ -69,7 +69,7 @@ public class Test2 {
         } catch (JAXBException e) {
             e.printStackTrace();
         }
-*/
+
 
     }
 }

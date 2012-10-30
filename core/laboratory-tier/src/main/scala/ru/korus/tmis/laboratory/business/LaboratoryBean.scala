@@ -379,8 +379,9 @@ class LaboratoryBean
       }
       case _ => {
         info("Request:DepartmentName=" + department.getName)
-        info("Request:DepartmentCode=" + department.getCode)
-        (department.getName, department.getCode)
+        //todo изменено 03.10 hack
+        info("Request:DepartmentCode=" + department.getId)
+        (department.getName, "" + department.getId)
       }
     }
 

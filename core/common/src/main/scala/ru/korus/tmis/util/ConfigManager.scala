@@ -107,7 +107,7 @@ object ConfigManager extends Configuration {
     var GetDepList_RequestRootElement = "OrganizationRef"
 
     var User = "admin"
-    var Password = "admin1234"
+    var Password = "1234"
 
     def HttpAuthToken = DatatypeConverter.printBase64Binary(
       (User + ":" + Password).getBytes)
