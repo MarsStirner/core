@@ -9,6 +9,8 @@ import ru.korus.tmis.util.{ConfigManager, I18nable}
 import ru.korus.tmis.core.exception.NoSuchRbContactTypeException
 import ru.korus.tmis.core.entity.model.{RbContactType}
 import java.lang.Iterable
+import ru.korus.tmis.core.data.{DictionaryListRequestDataFilter, QueryDataStructure}
+import scala.collection.JavaConversions._
 
 @Interceptors(Array(classOf[LoggingInterceptor]))
 @Stateless
@@ -29,9 +31,11 @@ class DbRbContactTypeBean
                                """
 
 
-  def getAllRbContactTypes(): Iterable[RbContactType] = {
+  /*def getAllRbContactTypes(): Iterable[RbContactType] = {
     em.createNamedQuery("RbContactType.findAll", classOf[RbContactType]).getResultList
-  }
+  }*/
+
+
 
   def getRbContactTypeById(id: Int): RbContactType = {
     val result = em.createQuery(RbContactTypeFindQuery,
@@ -53,4 +57,51 @@ class DbRbContactTypeBean
       }
     }
   }
+
+  def getCountOfAllRbContactTypesWithFilter(filter: Object) = {
+    val queryStr: QueryDataStructure = if (filter.isInstanceOf[DictionaryListRequestDataFilter])
+      filter.asInstanceOf[DictionaryListRequestDataFilter].toQueryStructure()
+    else new QueryDataStructure()
+
+    if (queryStr.data.size() > 0) {
+      if (queryStr.query.indexOf("AND ") == 0) {
+        queryStr.query = "WHERE " + queryStr.query.substring("AND ".length())
+      }
+    }
+    var typed = em.createQuery(AllRbContactTypesWithFilterQuery.format("count(r)", queryStr.query,""), classOf[Long])
+    if (queryStr.data.size() > 0) queryStr.data.foreach(qdp => typed.setParameter(qdp.name, qdp.value))
+    typed.getSingleResult
+  }
+
+  def getAllRbContactTypesWithFilter(page: Int, limit: Int, sortingField: String, sortingMethod: String, filter: Object): java.util.LinkedList[Object] = {
+    val queryStr: QueryDataStructure = if (filter.isInstanceOf[DictionaryListRequestDataFilter])
+      filter.asInstanceOf[DictionaryListRequestDataFilter].toQueryStructure()
+    else new QueryDataStructure()
+
+    val sorting = "ORDER BY %s %s".format(sortingField, sortingMethod)
+    if (queryStr.data.size() > 0) {
+      if (queryStr.query.indexOf("AND ") == 0) {
+        queryStr.query = "WHERE " + queryStr.query.substring("AND ".length())
+      }
+    }
+    var typed = em.createQuery(AllRbContactTypesWithFilterQuery.format("r.id, r.name", queryStr.query, sorting), classOf[Array[AnyRef]])
+                  .setMaxResults(limit)
+                  .setFirstResult(limit * page)
+    if (queryStr.data.size() > 0) queryStr.data.foreach(qdp => typed.setParameter(qdp.name, qdp.value))
+
+    val result = typed.getResultList
+    val list = new java.util.LinkedList[Object]
+    result.foreach(f => {
+      list.add((f(0).asInstanceOf[java.lang.Integer], f(1).asInstanceOf[java.lang.String]))
+    })
+    list
+  }
+
+  val AllRbContactTypesWithFilterQuery = """
+  SELECT DISTINCT %s
+  FROM
+    RbContactType r
+  %s
+  %s
+                                     """
 }

@@ -55,7 +55,7 @@ public class Event implements Serializable {
 
     @ManyToOne
     @JoinColumn(name = "eventType_id",
-            nullable = false)
+                nullable = false)
     private EventType eventType;
 
     @Column(name = "org_id")
@@ -87,11 +87,11 @@ public class Event implements Serializable {
 
     @Basic(optional = false)
     @Column(name = "isPrimary")
-    private boolean isPrimary;
+    private Integer isPrimary;
 
     @Basic(optional = false)
     @Column(name = "order")
-    private boolean order;
+    private Integer order;
 
     @Column(name = "result_id")
     private Integer resultId;
@@ -302,19 +302,19 @@ public class Event implements Serializable {
         this.executor = executor;
     }
 
-    public boolean getIsPrimary() {
+    public Integer getIsPrimary() {
         return isPrimary;
     }
 
-    public void setIsPrimary(boolean isPrimary) {
+    public void setIsPrimary(Integer isPrimary) {
         this.isPrimary = isPrimary;
     }
 
-    public boolean getOrder() {
+    public Integer getOrder() {
         return order;
     }
 
-    public void setOrder(boolean order) {
+    public void setOrder(Integer order) {
         this.order = order;
     }
 

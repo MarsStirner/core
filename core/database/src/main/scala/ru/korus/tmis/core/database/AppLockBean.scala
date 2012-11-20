@@ -56,7 +56,7 @@ class AppLockBean
     args.add(table)
     args.add(Integer.valueOf(recordId))
     args.add(Integer.valueOf(recordIndex))
-    args.add(Integer.valueOf(userData.userId))
+    args.add(Integer.valueOf(userData.doctor.id))
     args.add("MEDIPAD")
 
     val result = JpaHelper.getEntityManager(em)

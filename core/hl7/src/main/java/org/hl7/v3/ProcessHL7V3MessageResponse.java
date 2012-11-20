@@ -35,17 +35,17 @@ import javax.xml.bind.annotation.XmlType;
 public class ProcessHL7V3MessageResponse {
 
     @XmlElement(name = "return", required = true, nillable = true)
-    protected MCCIIN000002UV012 _return;
+    protected MCCIIN000002UV01 _return;
 
     /**
      * Gets the value of the return property.
      * 
      * @return
      *     possible object is
-     *     {@link MCCIIN000002UV012 }
+     *     {@link MCCIIN000002UV01 }
      *     
      */
-    public MCCIIN000002UV012 getReturn() {
+    public MCCIIN000002UV01 getReturn() {
         return _return;
     }
 
@@ -54,10 +54,10 @@ public class ProcessHL7V3MessageResponse {
      * 
      * @param value
      *     allowed object is
-     *     {@link MCCIIN000002UV012 }
+     *     {@link MCCIIN000002UV01 }
      *     
      */
-    public void setReturn(MCCIIN000002UV012 value) {
+    public void setReturn(MCCIIN000002UV01 value) {
         this._return = value;
     }
 

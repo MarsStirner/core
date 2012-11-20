@@ -11,8 +11,9 @@ import java.lang.Iterable
 import java.util.Date
 import javax.ejb.EJB
 import ru.korus.tmis.core.exception.NoSuchEntityException
-import ru.korus.tmis.core.entity.model.{RbSocStatusClass, ClientSocStatus, Staff, Patient}
+import ru.korus.tmis.core.entity.model._
 import scala.collection.JavaConversions._
+import ru.korus.tmis.core.data.DocumentContainer
 
 @Interceptors(Array(classOf[LoggingInterceptor]))
 @Stateless
@@ -72,7 +73,7 @@ class DbClientSocStatusBean
                                      id: Int,
                                      socStatusClassId: Int, /* NOT USED*/
                                      socStatusTypeId: Int,
-                                     documentId: Int,
+                                     document: DocumentContainer,      //documentId: Int,
                                      begDate: Date,
                                      endDate: Date,
                                      patient: Patient,
@@ -103,11 +104,11 @@ class DbClientSocStatusBean
       cs.setBegDate(begDate)
     }
 
-    if (endDate != null) {
+    //if (endDate != null) {
       cs.setEndDate(endDate)
-    }
+    //}
 
-    if (begDate != null && documentId > 0) {
+    if (document != null && document.getId() > 0) {
       var currentDocument = cs.getDocument
       //cs.setDocument(dbClientDocument.getClientDocumentById(documentId))
       currentDocument = dbClientDocument.insertOrUpdateClientDocument(
@@ -116,12 +117,12 @@ class DbClientSocStatusBean
         } else {
           0
         },
-        documentId, //тип документа (documentTypeId)
-        "", //clientIdCard.getIssued(),
-        "", //clientIdCard.getNumber(),
-        "", //clientIdCard.getSeries(),
-        begDate,
-        endDate,
+        document.getId(), //тип документа (documentTypeId)
+        document.getComment(), //clientIdCard.getIssued(),
+        document.getNumber(), //clientIdCard.getNumber(),
+        document.getSeries(), //clientIdCard.getSeries(),
+        document.getDate(),
+        null,//endDate,
         patient,
         sessUser
       )

@@ -18,7 +18,7 @@ import javax.xml.bind.annotation.XmlType;
  *   &lt;complexContent>
  *     &lt;restriction base="{http://www.w3.org/2001/XMLSchema}anyType">
  *       &lt;sequence>
- *         &lt;element name="Message" type="{urn:hl7-org:v3}ANY"/>
+ *         &lt;element name="Message" type="{http://www.w3.org/2001/XMLSchema}anyType"/>
  *       &lt;/sequence>
  *     &lt;/restriction>
  *   &lt;/complexContent>
@@ -35,17 +35,17 @@ import javax.xml.bind.annotation.XmlType;
 public class ProcessHL7V3Message {
 
     @XmlElement(name = "Message", required = true)
-    protected ANY message;
+    protected Object message;
 
     /**
      * Gets the value of the message property.
      * 
      * @return
      *     possible object is
-     *     {@link ANY }
+     *     {@link Object }
      *     
      */
-    public ANY getMessage() {
+    public Object getMessage() {
         return message;
     }
 
@@ -54,10 +54,10 @@ public class ProcessHL7V3Message {
      * 
      * @param value
      *     allowed object is
-     *     {@link ANY }
+     *     {@link Object }
      *     
      */
-    public void setMessage(ANY value) {
+    public void setMessage(Object value) {
         this.message = value;
     }
 

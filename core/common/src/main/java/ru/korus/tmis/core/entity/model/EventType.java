@@ -57,8 +57,9 @@ public class EventType implements Serializable {
     @Column(name = "purpose_id")
     private Integer purposeId;
 
-    @Column(name = "finance_id")
-    private Integer financeId;
+    @ManyToOne
+    @JoinColumn(name = "finance_id")
+    private RbFinance finance;
 
     @Column(name = "scene_id")
     private Integer sceneId;
@@ -205,6 +206,10 @@ public class EventType implements Serializable {
     @Column(name = "age")
     private String age;
 
+    @ManyToOne
+    @JoinColumn(name = "requestType_id")
+    private RbRequestType requestType;
+
     public EventType() {
     }
 
@@ -282,14 +287,6 @@ public class EventType implements Serializable {
 
     public void setPurposeId(Integer purposeId) {
         this.purposeId = purposeId;
-    }
-
-    public Integer getFinanceId() {
-        return financeId;
-    }
-
-    public void setFinanceId(Integer financeId) {
-        this.financeId = financeId;
     }
 
     public Integer getSceneId() {
@@ -594,6 +591,22 @@ public class EventType implements Serializable {
 
     public void setAge(String age) {
         this.age = age;
+    }
+
+    public RbFinance getFinance() {
+        return finance;
+    }
+
+    public void setFinance(RbFinance finance) {
+        this.finance = finance;
+    }
+
+    public RbRequestType getRequestType() {
+        return requestType;
+    }
+
+    public void setRequestType(RbRequestType requestType) {
+        this.requestType = requestType;
     }
 
     @Override

@@ -13,11 +13,11 @@ import org.codehaus.jackson.annotate.JsonIgnoreProperties._
 @JsonIgnoreProperties(ignoreUnknown = true)
 class IdNameContainer {
   @BeanProperty
-  var id: Int = _
+  var id : Int = _
   @BeanProperty
-  var name: String = _
+  var name : String = _
 
-  def this(id: Int, name: String) = {
+  def this( id : Int, name : String) = {
     this()
     this.id = id;
     this.name = name
@@ -57,11 +57,11 @@ class IdValueContainer {
 @JsonIgnoreProperties(ignoreUnknown = true)
 class DatePeriodContainer {
   @BeanProperty
-  var start: Date = _
+  var start : Date = _
   @BeanProperty
-  var end: Date = _
+  var end : Date = _
 
-  def this(start: Date, end: Date) = {
+  def this( start : Date, end : Date) = {
     this()
     this.start = start
     this.end = end
@@ -78,7 +78,7 @@ class DatePeriodContainer {
 
   private def DateToString(date: Date) = {
     val CMDF = ConfigManager.DateFormatter
-    if (date != null) {
+    if(date!=null){
       CMDF.format(date)
     } else {
       ""
@@ -91,14 +91,17 @@ class DatePeriodContainer {
 @JsonIgnoreProperties(ignoreUnknown = true)
 class RangeLeftRightContainer {
   @BeanProperty
-  var left: String = _
+  var left: HandPreassureContainer = _
   @BeanProperty
-  var right: String = _
+  var right: HandPreassureContainer = _
 
-  def this(left: String, right: String) {
+  def this(leftDiast:Double,
+           leftSyst:Double,
+           rightDiast:Double,
+           rightSyst: Double) {
     this()
-    this.left = left
-    this.right = right
+    this.left = new HandPreassureContainer(leftDiast, leftSyst)
+    this.right = new HandPreassureContainer(rightDiast, rightSyst)
   }
 
   def toMap = {
@@ -106,5 +109,20 @@ class RangeLeftRightContainer {
     map.put("left", this.left)
     map.put("right", this.right)
     map
+  }
+}
+@XmlType(name = "handPreassureContainer")
+@XmlRootElement(name = "handPreassureContainer")
+@JsonIgnoreProperties(ignoreUnknown = true)
+class HandPreassureContainer {
+  @BeanProperty
+  var diast: Double = _
+  @BeanProperty
+  var syst: Double = _
+
+  def this(diast: Double, syst: Double) {
+    this()
+    this.diast = diast
+    this.syst = syst
   }
 }

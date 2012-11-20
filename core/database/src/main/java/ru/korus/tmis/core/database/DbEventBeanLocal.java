@@ -39,4 +39,6 @@ public interface DbEventBeanLocal {
 
     int getEventTypeIdByFDRecordId(int fdRecordId)
             throws CoreException;
+
+    int getEventTypeIdByRequestTypeIdAndFinanceId(int requestTypeId, int financeId) throws CoreException;
 }

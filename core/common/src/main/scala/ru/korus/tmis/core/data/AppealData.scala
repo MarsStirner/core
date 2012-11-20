@@ -6,7 +6,7 @@ import javax.xml.bind.annotation.XmlType._
 import ru.korus.tmis.core.entity.model._
 import fd.FDRecord
 import kladr.{Street, Kladr}
-import scala.collection.JavaConversions._
+import collection.JavaConversions._
 import ru.korus.tmis.util.ConfigManager
 
 import java.util.{Date, HashMap, LinkedList}
@@ -14,18 +14,16 @@ import javax.xml.bind.annotation.XmlRootElement._
 import org.codehaus.jackson.map.annotate.JsonView
 import org.codehaus.jackson.annotate.{JsonAutoDetect, JsonMethod, JsonIgnoreProperties, JsonProperty}
 import collection.mutable.LinkedHashSet
+import java.util
+import collection.JavaConversions
 
 //Dynamic Filters
 object Views {
-
   class DynamicFieldsStandartForm {
   }
-
   class DynamicFieldsPrintForm {
   }
-
 }
-
 class Views {}
 
 @XmlType(name = "appealData")
@@ -38,7 +36,7 @@ class AppealData {
   var data: AppealEntry = _
 
   def this(appeal: Action, requestData: AppealRequestData) = {
-    this()
+    this ()
     this.requestData = requestData
     this.data = new AppealEntry(appeal)
   }
@@ -50,10 +48,15 @@ class AppealData {
            typeOfResponse: String,
            map: java.util.LinkedHashMap[java.lang.Integer, java.util.LinkedList[Kladr]],
            street: java.util.LinkedHashMap[java.lang.Integer, Street],
-           requestData: AppealRequestData) {
-    this()
+           requestData: AppealRequestData,
+           postProcessing: (Int, java.util.Set[java.lang.Integer]) => Int){
+    this ()
     this.requestData = requestData
-    this.data = new AppealEntry(event, appeal, appType, values, typeOfResponse, map, street)
+    val setATIds = JavaConversions.asJavaSet(Set(ConfigManager.Messages("db.actionType.primary").toInt :java.lang.Integer,
+                                                 ConfigManager.Messages("db.actionType.secondary").toInt :java.lang.Integer))
+    val havePrimary = if (postProcessing != null && postProcessing(event.getId.intValue(), setATIds)>0) true
+                      else false
+    this.data = new AppealEntry(event, appeal, appType, values, typeOfResponse, map, street, havePrimary)
   }
 
   def this(event: Event,
@@ -64,10 +67,48 @@ class AppealData {
            typeOfResponse: String,
            map: java.util.LinkedHashMap[java.lang.Integer, java.util.LinkedList[Kladr]],
            street: java.util.LinkedHashMap[java.lang.Integer, Street],
-           requestData: AppealRequestData) {
-    this()
+           requestData: AppealRequestData,
+           postProcessing: (Int, java.util.Set[java.lang.Integer]) => Int){
+    this ()
     this.requestData = requestData
-    this.data = new AppealEntry(event, appeal, appType, values, aps, typeOfResponse, map, street)
+    val setATIds = JavaConversions.asJavaSet(Set(ConfigManager.Messages("db.actionType.primary").toInt :java.lang.Integer,
+                                                 ConfigManager.Messages("db.actionType.secondary").toInt :java.lang.Integer))
+    val havePrimary = if (postProcessing != null && postProcessing(event.getId.intValue(), setATIds)>0) true
+    else false
+    this.data = new AppealEntry(event, appeal, appType, values, aps, typeOfResponse, map, street, havePrimary)
+  }
+
+  def this(event: Event,
+           appeal: Action,
+           appType: Object,
+           values: java.util.Map[String, java.util.List[Object]],
+           aps: java.util.Map[ActionProperty, java.util.List[APValue]],
+           typeOfResponse: String,
+           map: java.util.LinkedHashMap[java.lang.Integer, java.util.LinkedList[Kladr]],
+           street: java.util.LinkedHashMap[java.lang.Integer, Street],
+           requestData: AppealRequestData,
+           postProcessing: (Int, java.util.Set[java.lang.Integer]) => Int,
+           mAdmissionDiagnosis: (Int, java.util.List[java.lang.Integer]) => java.util.Map[ActionProperty, java.util.List[APValue]],
+           mCorrList: (java.util.List[java.lang.Integer])=> java.util.List[RbCoreActionProperty]){
+    this ()
+    this.requestData = requestData
+    val setATIds = JavaConversions.asJavaSet(Set(ConfigManager.Messages("db.actionType.primary").toInt :java.lang.Integer,
+                                                 ConfigManager.Messages("db.actionType.secondary").toInt :java.lang.Integer))
+
+    val setAdmissionIds = JavaConversions.asJavaList(List(ConfigManager.Messages("db.rbCAP.primary.admission").toInt :java.lang.Integer,
+                                                          ConfigManager.Messages("db.rbCAP.primary.description").toInt :java.lang.Integer,
+                                                          ConfigManager.Messages("db.rbCAP.secondary.admission").toInt :java.lang.Integer,
+                                                          ConfigManager.Messages("db.rbCAP.secondary.description").toInt :java.lang.Integer))
+    var havePrimary: Boolean = false
+    val primaryId = if (postProcessing != null) postProcessing(event.getId.intValue(), setATIds) else 0
+    if (primaryId>0){
+        havePrimary = true
+        val admissions = if (mAdmissionDiagnosis!=null) mAdmissionDiagnosis(primaryId, setAdmissionIds) else null
+        val corrMap = if(mCorrList!=null) mCorrList(setAdmissionIds) else null
+        this.data = new AppealEntry(event, appeal, appType, values, aps, typeOfResponse, map, street, havePrimary, admissions, corrMap)
+    } else {
+      this.data = new AppealEntry(event, appeal, appType, values, aps, typeOfResponse, map, street)
+    }
   }
 }
 
@@ -107,14 +148,11 @@ class AppealRequestData {
 
 class AppealRequestDataFilter {
   @BeanProperty
-  var eventId: String = _
-  // — Номер обращения
+  var eventId: String = _ // — Номер обращения
   @BeanProperty
-  var fullName: String = _
-  // — ФИО
+  var fullName: String = _ // — ФИО
   @BeanProperty
-  var birthDate: Date = _
-  // — Дата рождения
+  var birthDate: Date = _  // — Дата рождения
   @BeanProperty
   var externalId: String = _ // — номер карточки пациента
 
@@ -133,74 +171,59 @@ class AppealRequestDataFilter {
 @XmlType(name = "appealEntry")
 @XmlRootElement(name = "appealEntry")
 @JsonIgnoreProperties(ignoreUnknown = true)
-//@JsonAutoDetect(Array(JsonMethod.FIELD))
 class AppealEntry {
   @BeanProperty
   var id: Int = _
   @BeanProperty
-  var number: String = _
-  //Номер обращения
+  var version: Int = _
   @BeanProperty
-  var urgent: Boolean = _
-  //Срочно
+  var number: String = _                   //Номер обращения
   @BeanProperty
-  var ambulanceNumber: String = _
-  //Номер наряда СП
+  var urgent: Boolean = _                  //Срочно
   @BeanProperty
-  var rangeAppealDateTime: DatePeriodContainer = _
-  //Дата начала и конца госпитализации
+  var setPerson: ComplexPersonContainer = _            //Данные о враче и отделении
+  @BeanProperty
+  var ambulanceNumber: String = _          //Номер наряда СП
+  @BeanProperty
+  var rangeAppealDateTime: DatePeriodContainer = _    //Дата начала и конца госпитализации
   @BeanProperty
   var patient: AnyRef = _
   @BeanProperty
-  var appealType: IdNameContainer = _
-  //Тип обращения
+  var appealType: IdNameContainer = _      //Тип обращения
   @BeanProperty
-  var agreedType: IdNameContainer = _
-  //Тип согласования
+  var agreedType: IdNameContainer = _      //Тип согласования
   @BeanProperty
-  var agreedDoctor: String = _
-  //Комментарий к согласованию
+  var agreedDoctor: String = _      //Комментарий к согласованию
   @BeanProperty
-  var assignment: AppealAssignmentContainer = _
-  //Назначения
+  var assignment: AppealAssignmentContainer = _  //Назначения
   @BeanProperty
-  var hospitalizationType: IdNameContainer = _
-  //Госпитализация тип
+  var hospitalizationType: IdNameContainer = _   //Госпитализация тип
   @BeanProperty
-  var hospitalizationPointType: IdNameContainer = _
-  //Цель госпитализации
+  var hospitalizationPointType: IdNameContainer = _  //Цель госпитализации
   @BeanProperty
-  var hospitalizationChannelType: IdNameContainer = _
-  //Канал госпитализации
+  var hospitalizationChannelType: IdNameContainer = _  //Канал госпитализации
   @BeanProperty
-  var hospitalizationWith: LinkedList[IdValueContainer] = new LinkedList[IdValueContainer]
-  //С кем госпитализирован (законный представитель)
+  var hospitalizationWith: LinkedList[IdValueContainer] = new LinkedList[IdValueContainer] //С кем госпитализирован (законный представитель)
   @BeanProperty
-  var deliveredType: String = _
-  //IdNameContainer = _    //Кем доставлен
+  var deliveredType: String = _//IdNameContainer = _    //Кем доставлен
   @BeanProperty
-  var deliveredAfterType: String = _
-  //IdNameContainer = _    //Доставлен от начала заболевания через
+  var deliveredAfterType: String = _ //IdNameContainer = _    //Доставлен от начала заболевания через
   @BeanProperty
-  var movingType: String = "Может идти"
-  //Вид транспортировки  (!)
+  var movingType: String = "может идти"     //Вид транспортировки  (!)
   @BeanProperty
-  var stateType: String = _
-  //IdNameContainer = _       //Состояние при поступлении
+  var stateType: String =_//IdNameContainer = _       //Состояние при поступлении
   @BeanProperty
-  var physicalParameters: PhysicalParametersContainer = _
-  //Физические параметры
+  var physicalParameters: PhysicalParametersContainer =_    //Физические параметры
   @BeanProperty
-  var diagnoses: LinkedList[DiagnosisContainer] = new LinkedList[DiagnosisContainer]
-  //Диагнозы
+  var diagnoses: LinkedList[DiagnosisContainer] = new LinkedList[DiagnosisContainer]    //Диагнозы
   @BeanProperty
-  var injury: String = _ //Травма
-
+  var injury: String =_       //Травма
   @BeanProperty
-  var refuseAppealReason: String = _
-  //Причина отказа в госпитализации
+  var refuseAppealReason: String =_       //Причина отказа в госпитализации
   @BeanProperty
-  var appealWithDeseaseThisYear: String = _ //Госпитализирован по поводу данного заболевания в текущем году
+  var appealWithDeseaseThisYear: String =_       //Госпитализирован по поводу данного заболевания в текущем году
+  @BeanProperty
+  var havePrimary: Boolean = false
 
   //TODO: временно, до выяснения судьбы поля relations
   @BeanProperty
@@ -209,11 +232,11 @@ class AppealEntry {
 
   @JsonView(Array(classOf[Views.DynamicFieldsPrintForm]))
   @BeanProperty
-  var ward: String = _ //Diff with AppealData
+  var ward: String = _                                            //Diff with AppealData
 
   @JsonView(Array(classOf[Views.DynamicFieldsPrintForm]))
   @BeanProperty
-  var totalDays: String = _ //Diff with AppealData
+  var totalDays: String = _                                       //Diff with AppealData
 
   def this(appeal: Action) {
     this()
@@ -233,34 +256,30 @@ class AppealEntry {
 
     //Обращение и Действие
     this.id = event.getId.intValue()
+    this.version = event.getVersion
     this.number = event.getExternalId
+    this.setPerson = if (event.getAssigner != null) {new ComplexPersonContainer(event.getAssigner)} else {new ComplexPersonContainer}
     this.urgent = action.getIsUrgent
 
     exValue = this.extractValuesInNumberedMap(Set(ConfigManager.Messages("appeal.db.actionPropertyType.name.ambulanceNumber").toString), values).get("0")
     this.ambulanceNumber = exValue.get(0).asInstanceOf[String]
 
-    this.rangeAppealDateTime = new DatePeriodContainer(action.getBegDate, action.getEndDate)
+    this.rangeAppealDateTime = new DatePeriodContainer(event.getSetDate, event.getExecDate)//(action.getBegDate, action.getEndDate)
 
     this.patient = typeOfResponse match {
-      case "standart" => {
-        new IdValueContainer(event.getPatient.getId.toString)
-      }
+      case "standart"  => {new IdValueContainer(event.getPatient.getId.toString)}
       case "print_form" => {
-        new PatientEntry(event.getPatient, map, street)
-      }
-      case _ => {
-        new IdValueContainer(event.getPatient.getId.toString)
-      }
+        new PatientEntry(event.getPatient, map, street)}
+      case _ => {new IdValueContainer(event.getPatient.getId.toString)}
     }
 
-    if (appType.isInstanceOf[(java.lang.Integer, String)] && appType.asInstanceOf[(java.lang.Integer, String)]._1 != null) {
-      //TODO приходят нулы! спросить у Вани!
+    if(appType.isInstanceOf[(java.lang.Integer, String)] && appType.asInstanceOf[(java.lang.Integer, String)]._1 != null) {
       //this.appealType = new IdNameContainer(event.getEventType.getId.intValue(), event.getEventType.getName)
-      this.appealType = new IdNameContainer(appType.asInstanceOf[(java.lang.Integer, String)]._1.intValue(), appType.asInstanceOf[(java.lang.Integer, String)]._2)
+     this.appealType = new IdNameContainer(appType.asInstanceOf[(java.lang.Integer, String)]._1.intValue(), appType.asInstanceOf[(java.lang.Integer, String)]._2)
     }
     //TODO мапинг по имени акшенПроперти... Если имена будут не уникальны, то нужно будет переделать
     exValue = this.extractValuesInNumberedMap(Set(ConfigManager.Messages("appeal.db.actionPropertyType.name.agreedType").toString), values).get("0")
-    if (exValue.get(0).isInstanceOf[FDRecord])
+    if(exValue.get(0).isInstanceOf[FDRecord])
       this.agreedType = new IdNameContainer(exValue.get(0).asInstanceOf[FDRecord].getId.intValue(), "")
 
     exValue = this.extractValuesInNumberedMap(Set(ConfigManager.Messages("appeal.db.actionPropertyType.name.agreedDoctor").toString), values).get("0")
@@ -273,7 +292,7 @@ class AppealEntry {
       ConfigManager.Messages("appeal.db.actionPropertyType.name.doctor").toString
     ), values)
     var assignmentDate: Date = null
-    if (exAssignment.get("2").get(0).isInstanceOf[Date]) {
+    if(exAssignment.get("2").get(0).isInstanceOf[Date]){
       assignmentDate = exAssignment.get("2").get(0).asInstanceOf[Date]
     }
 
@@ -284,15 +303,15 @@ class AppealEntry {
     )
 
     exValue = this.extractValuesInNumberedMap(Set(ConfigManager.Messages("appeal.db.actionPropertyType.name.hospitalizationType").toString), values).get("0")
-    if (exValue.get(0).isInstanceOf[FDRecord])
+    if(exValue.get(0).isInstanceOf[FDRecord])
       this.hospitalizationType = new IdNameContainer(exValue.get(0).asInstanceOf[FDRecord].getId.intValue(), "")
 
     exValue = this.extractValuesInNumberedMap(Set(ConfigManager.Messages("appeal.db.actionPropertyType.name.hospitalizationPointType").toString), values).get("0")
-    if (exValue.get(0).isInstanceOf[FDRecord])
+    if(exValue.get(0).isInstanceOf[FDRecord])
       this.hospitalizationPointType = new IdNameContainer(exValue.get(0).asInstanceOf[FDRecord].getId.intValue(), "")
 
     exValue = this.extractValuesInNumberedMap(Set(ConfigManager.Messages("appeal.db.actionPropertyType.name.hospitalizationChannelType").toString), values).get("0")
-    if (exValue.get(0).isInstanceOf[Organisation]) {
+    if(exValue.get(0).isInstanceOf[Organisation]){
       val organisationChannel = exValue.get(0).asInstanceOf[Organisation]
       this.hospitalizationChannelType = new IdNameContainer(organisationChannel.getId.intValue(), organisationChannel.getShortName)
     }
@@ -300,13 +319,16 @@ class AppealEntry {
       this.hospitalizationChannelType = new IdNameContainer(-1, exValue.get(0).asInstanceOf[String])
 
     val exWith = this.extractValuesInNumberedMap(Set(ConfigManager.Messages("appeal.db.actionPropertyType.name.hospitalizationWith").toString), values).get("0")
-    exWith.foreach(e => {
-      if (e.isInstanceOf[java.lang.Integer] && e.asInstanceOf[java.lang.Integer] != null)
-        this.hospitalizationWith += new IdValueContainer(e.asInstanceOf[java.lang.Integer].toString)
-    })
+      exWith.foreach(e => {
+        if(e.isInstanceOf[java.lang.Integer] && e.asInstanceOf[java.lang.Integer]!=null)
+          this.hospitalizationWith += new IdValueContainer(e.asInstanceOf[java.lang.Integer].toString)
+      })
 
     exValue = this.extractValuesInNumberedMap(Set(ConfigManager.Messages("appeal.db.actionPropertyType.name.deliveredType").toString), values).get("0")
     this.deliveredType = exValue.get(0).asInstanceOf[String]
+
+    exValue = this.extractValuesInNumberedMap(Set(ConfigManager.Messages("appeal.db.actionPropertyType.name.transportationType").toString), values).get("0")
+    this.movingType = exValue.get(0).asInstanceOf[String]
 
     exValue = this.extractValuesInNumberedMap(Set(ConfigManager.Messages("appeal.db.actionPropertyType.name.deliveredAfterType").toString), values).get("0")
     this.deliveredAfterType = exValue.get(0).asInstanceOf[String]
@@ -317,57 +339,46 @@ class AppealEntry {
     val exPhysical = this.extractValuesInNumberedMap(LinkedHashSet(ConfigManager.Messages("appeal.db.actionPropertyType.name.height").toString,
       ConfigManager.Messages("appeal.db.actionPropertyType.name.weight").toString,
       ConfigManager.Messages("appeal.db.actionPropertyType.name.temperature").toString,
-      ConfigManager.Messages("appeal.db.actionPropertyType.name.bloodPressure.left").toString,
-      ConfigManager.Messages("appeal.db.actionPropertyType.name.bloodPressure.right").toString
+      ConfigManager.Messages("appeal.db.actionPropertyType.name.bloodPressure.left.ADdiast").toString,
+      ConfigManager.Messages("appeal.db.actionPropertyType.name.bloodPressure.left.ADsyst").toString,
+      ConfigManager.Messages("appeal.db.actionPropertyType.name.bloodPressure.right.ADdiast").toString,
+      ConfigManager.Messages("appeal.db.actionPropertyType.name.bloodPressure.right.ADsyst").toString
     ), values)
 
-    var d1, d2, d3: Double = 0.0
-    if (exPhysical.get("0").get(0).isInstanceOf[Double]) {
-      d1 = (exPhysical.get("0").get(0).asInstanceOf[Double])
-    }
-    if (exPhysical.get("1").get(0).isInstanceOf[Double]) {
-      d2 = (exPhysical.get("1").get(0).asInstanceOf[Double])
-    }
-    if (exPhysical.get("2").get(0).isInstanceOf[Double]) {
-      d3 = (exPhysical.get("2").get(0).asInstanceOf[Double])
-    }
-
-    this.physicalParameters = new PhysicalParametersContainer(d1,
-      d2,
-      d3,
-      exPhysical.get("3").get(0).asInstanceOf[String],
-      exPhysical.get("4").get(0).asInstanceOf[String]
-    )
+    var d1, d2, d3, d4, d5, d6, d7 :Double = 0.0
+    if(exPhysical.get("0").get(0).isInstanceOf[Double]) {d1 = (exPhysical.get("0").get(0).asInstanceOf[Double])}
+    if(exPhysical.get("1").get(0).isInstanceOf[Double]) {d2 = (exPhysical.get("1").get(0).asInstanceOf[Double])}
+    if(exPhysical.get("2").get(0).isInstanceOf[Double]) {d3 = (exPhysical.get("2").get(0).asInstanceOf[Double])}
+    if(exPhysical.get("3").get(0).isInstanceOf[Double]) {d4 = (exPhysical.get("3").get(0).asInstanceOf[Double])}
+    if(exPhysical.get("4").get(0).isInstanceOf[Double]) {d5 = (exPhysical.get("4").get(0).asInstanceOf[Double])}
+    if(exPhysical.get("5").get(0).isInstanceOf[Double]) {d6 = (exPhysical.get("5").get(0).asInstanceOf[Double])}
+    if(exPhysical.get("6").get(0).isInstanceOf[Double]) {d7 = (exPhysical.get("6").get(0).asInstanceOf[Double])}
+    this.physicalParameters= new PhysicalParametersContainer(d1,d2,d3,d4,d5,d6,d7)
 
     val exDiagnosis = this.extractValuesInNumberedMap(LinkedHashSet(
-      ConfigManager.Messages("appeal.db.actionPropertyType.name.diagnosis.assigment.code").toString,
-      ConfigManager.Messages("appeal.db.actionPropertyType.name.diagnosis.aftereffect.code").toString,
-      ConfigManager.Messages("appeal.db.actionPropertyType.name.diagnosis.attendant.code").toString,
-      ConfigManager.Messages("appeal.db.actionPropertyType.name.diagnosis.assignment.description").toString,
-      ConfigManager.Messages("appeal.db.actionPropertyType.name.diagnosis.aftereffect.description").toString,
-      ConfigManager.Messages("appeal.db.actionPropertyType.name.diagnosis.attendant.description").toString
+        ConfigManager.Messages("appeal.db.actionPropertyType.name.diagnosis.assigment.code").toString,
+        ConfigManager.Messages("appeal.db.actionPropertyType.name.diagnosis.aftereffect.code").toString,
+        ConfigManager.Messages("appeal.db.actionPropertyType.name.diagnosis.attendant.code").toString,
+        ConfigManager.Messages("appeal.db.actionPropertyType.name.diagnosis.assignment.description").toString,
+        ConfigManager.Messages("appeal.db.actionPropertyType.name.diagnosis.aftereffect.description").toString,
+        ConfigManager.Messages("appeal.db.actionPropertyType.name.diagnosis.attendant.description").toString
     ), values)
 
     Set("assignment", "aftereffect", "attendant").foreach(pos => {
       val key = "code_%s".format(pos)
       val key_desc = "description_%s".format(pos)
-      var i: Int = 0
-      if (exDiagnosis.get(key) != null && exDiagnosis.get(key).size() > 0) {
-        exDiagnosis.get(key).foreach(diagnosis => {
-          if (diagnosis.isInstanceOf[Mkb]) {
-            var description: String = ""
-            if (exDiagnosis.get(key_desc) != null && exDiagnosis.get(key_desc).size() >= i) {
-              description = exDiagnosis.get(key_desc).get(i).asInstanceOf[String]
-            }
 
-            this.diagnoses += new DiagnosisContainer(pos,
-              description,
-              "",
-              diagnosis.asInstanceOf[Mkb])
-          }
-          i = i + 1
-        })
-        i = 0
+      val diagnoses = if(exDiagnosis.get(key)!=null) exDiagnosis.get(key).toList else List.empty[Object]
+      val descriptions = if(exDiagnosis.get(key_desc)!=null) exDiagnosis.get(key_desc).toList else List.empty[Object]
+
+      for(i <- 0 until math.max(diagnoses.size, descriptions.size)){
+        val diagnosis =  if(diagnoses.size>i && diagnoses.get(i).isInstanceOf[Mkb])
+                            diagnoses.get(i).asInstanceOf[Mkb]
+                         else null
+        val description = if(descriptions.size>i && descriptions.get(i).isInstanceOf[String])
+                            descriptions.get(i).asInstanceOf[String]
+                          else ""
+        this.diagnoses += new DiagnosisContainer(pos, description, "", diagnosis)
       }
     })
 
@@ -380,7 +391,7 @@ class AppealEntry {
     exValue = this.extractValuesInNumberedMap(Set(ConfigManager.Messages("appeal.db.actionPropertyType.name.appealWithDeseaseThisYear").toString), values).get("0")
     this.appealWithDeseaseThisYear = exValue.get(0).asInstanceOf[String]
 
-  }
+}
 
   def this(event: Event,
            action: Action,
@@ -391,16 +402,16 @@ class AppealEntry {
            map: java.util.LinkedHashMap[java.lang.Integer, java.util.LinkedList[Kladr]],
            street: java.util.LinkedHashMap[java.lang.Integer, Street]) = {
     this(event, action, appType, values, typeOfResponse, map, street)
-    if (aps != null && aps.size > 0) {
-      aps.foreach(c => {
-        val (ap, apvs) = c
+    if(aps!=null && aps.size>0){
+      aps.foreach(c =>  {
+        val (ap,  apvs) = c
         ap.getType.getName match {
-          case "Переведен в отделение" => {
+          case "Переведен в отделение" =>  {
             this.ward = apvs.size() match {
               case 0 => ""
               case size => {
                 val place = apvs.get(0).getValue
-                if (place.isInstanceOf[OrgStructure]) {
+                if(place.isInstanceOf[OrgStructure]){
                   place.asInstanceOf[OrgStructure].getName
                 }
                 else ""
@@ -409,15 +420,75 @@ class AppealEntry {
             val msecInDay = 1000 * 60 * 60 * 24
             val beginDate = ap.getAction.getBegDate.getTime
             val nowDate = (new Date()).getTime
-            val diffOfDays = (nowDate - beginDate) / msecInDay + 1
+            val diffOfDays = (nowDate - beginDate)/msecInDay + 1
             this.totalDays = "Проведено %d койко-дней".format(diffOfDays)
           }
-          case _ => {}
+        case _ => {}
         }
       })
     }
     //this.totalDays
 
+  }
+
+  def this(event: Event,
+           action: Action,
+           appType: Object,
+           values: java.util.Map[String, java.util.List[Object]],
+           typeOfResponse: String,
+           map: java.util.LinkedHashMap[java.lang.Integer, java.util.LinkedList[Kladr]],
+           street: java.util.LinkedHashMap[java.lang.Integer, Street],
+           havePrimary: Boolean) {
+    this(event, action, appType, values, typeOfResponse, map, street)
+    this.havePrimary = havePrimary
+  }
+
+  def this(event: Event,
+           action: Action,
+           appType: Object,
+           values: java.util.Map[String, java.util.List[Object]],
+           aps: java.util.Map[ActionProperty, java.util.List[APValue]],
+           typeOfResponse: String,
+           map: java.util.LinkedHashMap[java.lang.Integer, java.util.LinkedList[Kladr]],
+           street: java.util.LinkedHashMap[java.lang.Integer, Street],
+           havePrimary: Boolean) {
+    this(event, action, appType, values, aps, typeOfResponse, map, street)
+    this.havePrimary = havePrimary
+  }
+
+  def this(event: Event,
+           action: Action,
+           appType: Object,
+           values: java.util.Map[String, java.util.List[Object]],
+           aps: java.util.Map[ActionProperty, java.util.List[APValue]],
+           typeOfResponse: String,
+           map: java.util.LinkedHashMap[java.lang.Integer, java.util.LinkedList[Kladr]],
+           street: java.util.LinkedHashMap[java.lang.Integer, Street],
+           havePrimary: Boolean,
+           admissions: java.util.Map[ActionProperty, java.util.List[APValue]],
+           corrList: java.util.List[RbCoreActionProperty]) {
+    this(event, action, appType, values, aps, typeOfResponse, map, street, havePrimary)
+    var description: String = ""
+    var diagnosis: Mkb = null
+    if (admissions!=null && corrList!=null) {
+      admissions.foreach(prop => {
+        val result = corrList.find(p=> p.getActionPropertyType.getId.intValue()==prop._1.getType.getId.intValue()).getOrElse(null)
+        if (result!=null) {
+          if (result.getId.compareTo(ConfigManager.Messages("db.rbCAP.primary.admission").toInt :java.lang.Integer)==0 ||
+              result.getId.compareTo(ConfigManager.Messages("db.rbCAP.secondary.admission").toInt :java.lang.Integer)==0) {
+            if (prop._2 != null && prop._2.size() > 0) {
+              diagnosis = prop._2.get(0).getValue.asInstanceOf[Mkb]
+            }
+          } else if (result.getId.compareTo(ConfigManager.Messages("db.rbCAP.primary.description").toInt :java.lang.Integer)==0 ||
+            result.getId.compareTo(ConfigManager.Messages("db.rbCAP.secondary.description").toInt :java.lang.Integer)==0) {
+            if (prop._2 != null && prop._2.size() > 0) {
+              description = prop._2.get(0).getValueAsString
+            }
+          }
+        }
+      })
+    }
+    this.diagnoses += new DiagnosisContainer("supply", description, "", diagnosis)
   }
 
   //Достаем мапу значений под контейнер
@@ -427,25 +498,25 @@ class AppealEntry {
 
     var counter: Int = 0
     set.foreach(e => {
-      if (values.containsKey(e)) {
+      if(values.containsKey(e)){
         var dStr: String = null
-        if (e.compareTo(ConfigManager.Messages("appeal.db.actionPropertyType.name.diagnosis.assigment.code").toString) == 0) {
+        if(e.compareTo(ConfigManager.Messages("appeal.db.actionPropertyType.name.diagnosis.assigment.code").toString)==0){
           dStr = "code_assignment"
         }
-        else if (e.compareTo(ConfigManager.Messages("appeal.db.actionPropertyType.name.diagnosis.aftereffect.code").toString) == 0) {
-          dStr = "code_aftereffect"
+        else if(e.compareTo(ConfigManager.Messages("appeal.db.actionPropertyType.name.diagnosis.aftereffect.code").toString)==0){
+          dStr ="code_aftereffect"
         }
-        else if (e.compareTo(ConfigManager.Messages("appeal.db.actionPropertyType.name.diagnosis.attendant.code").toString) == 0) {
-          dStr = "code_attendant"
+        else if(e.compareTo(ConfigManager.Messages("appeal.db.actionPropertyType.name.diagnosis.attendant.code").toString)==0){
+          dStr ="code_attendant"
         }
-        else if (e.compareTo(ConfigManager.Messages("appeal.db.actionPropertyType.name.diagnosis.assignment.description").toString) == 0) {
-          dStr = "description_assignment"
+        else if(e.compareTo(ConfigManager.Messages("appeal.db.actionPropertyType.name.diagnosis.assignment.description").toString)==0){
+          dStr ="description_assignment"
         }
-        else if (e.compareTo(ConfigManager.Messages("appeal.db.actionPropertyType.name.diagnosis.aftereffect.description").toString) == 0) {
-          dStr = "description_aftereffect"
+        else if(e.compareTo(ConfigManager.Messages("appeal.db.actionPropertyType.name.diagnosis.aftereffect.description").toString)==0){
+          dStr ="description_aftereffect"
         }
-        else if (e.compareTo(ConfigManager.Messages("appeal.db.actionPropertyType.name.diagnosis.attendant.description").toString) == 0) {
-          dStr = "description_attendant"
+        else if(e.compareTo(ConfigManager.Messages("appeal.db.actionPropertyType.name.diagnosis.attendant.description").toString)==0){
+          dStr ="description_attendant"
         }
         else dStr = counter.toString
         map.put(dStr, values.get(e))
@@ -472,42 +543,35 @@ class DiagnosisContainer {
   @BeanProperty
   var mkb: MKBContainer = new MKBContainer()
 
-  def this(diagnosisKind: String, description: String, injury: String, mkb: Mkb) {
+  def this(diagnosisKind: String, description: String, injury: String, mkb: Mkb){
     this()
     this.diagnosisKind = diagnosisKind
     this.description = description
     this.injury = injury
-    this.mkb = new MKBContainer(mkb)
+    if(mkb!=null)
+      this.mkb = new MKBContainer(mkb)
   }
 
-  def this(diagnosis: Diagnostic, mkb: Mkb) {
+  def this(diagnosis: Diagnostic, mkb: Mkb){
     this()
-    if (diagnosis != null) {
+    if(diagnosis!=null) {
       this.diagnosisKind = diagnosis.getDiagnosisType.getName
       this.description = diagnosis.getNotes
-      this.injury = if (diagnosis.getTraumaType != null) {
-        diagnosis.getTraumaType.getName
-      } else {
-        ""
-      }
+      this.injury = if(diagnosis.getTraumaType!=null) {diagnosis.getTraumaType.getName} else {""}
     }
-    if (mkb != null) {
+    if(mkb!=null) {
       this.mkb = new MKBContainer(mkb)
     }
   }
 
-  def this(diagnosis: Object, mkb: Object) {
+  def this(diagnosis: Object, mkb: Object){
     this()
-    if (diagnosis != null) {
-      if (diagnosis.isInstanceOf[Diagnostic]) {
+    if(diagnosis!=null) {
+      if(diagnosis.isInstanceOf[Diagnostic]) {
         this.diagnosisKind = diagnosis.asInstanceOf[Diagnostic].getDiagnosisType.getName
         this.description = diagnosis.asInstanceOf[Diagnostic].getNotes
-        this.injury = if (diagnosis.asInstanceOf[Diagnostic].getTraumaType != null) {
-          diagnosis.asInstanceOf[Diagnostic].getTraumaType.getName
-        } else {
-          ""
-        }
-      } else if (diagnosis.isInstanceOf[ActionProperty]) {
+        this.injury = if(diagnosis.asInstanceOf[Diagnostic].getTraumaType!=null) {diagnosis.asInstanceOf[Diagnostic].getTraumaType.getName} else {""}
+      } else if(diagnosis.isInstanceOf[ActionProperty]) {
         this.diagnosisKind = diagnosis.asInstanceOf[ActionProperty].getAction.getActionType.getCode match {
           case "4501" => "клинический"
           case "1_1_01" => "при поступлении"
@@ -517,10 +581,10 @@ class DiagnosisContainer {
         //TODO: Нужно или нет передавать description и injury в этом случае???
       }
     }
-    if (mkb != null) {
-      if (mkb.isInstanceOf[Mkb]) {
+    if(mkb!=null) {
+      if(mkb.isInstanceOf[Mkb]) {
         this.mkb = new MKBContainer(mkb.asInstanceOf[Mkb])
-      } else if (mkb.isInstanceOf[String]) {
+      } else if(mkb.isInstanceOf[String]){
         this.mkb = new MKBContainer("", mkb.asInstanceOf[String])
       }
     }
@@ -552,15 +616,19 @@ class PhysicalParametersContainer {
   def this(height: Double,
            weight: Double,
            temperature: Double,
-           bloodPressureLeft: String,
-           bloodPressureRight: String) {
+           bloodPressureLeftDiast: Double,
+           bloodPressureLeftSyst: Double,
+           bloodPressureRightDiast: Double,
+           bloodPressureRightSyst: Double){
     this()
     this.height = height
     this.weight = weight
     this.temperature = temperature
-    this.bloodPressure = new RangeLeftRightContainer(bloodPressureLeft, bloodPressureRight)
+    this.bloodPressure = new RangeLeftRightContainer( bloodPressureLeftDiast,
+                                                      bloodPressureLeftSyst,
+                                                      bloodPressureRightDiast,
+                                                      bloodPressureRightSyst)
   }
-
   def toMap = {
     var map = new java.util.HashMap[String, Object]
     map.put("height", this.height.toString)
@@ -580,10 +648,9 @@ class AppealAssignmentContainer {
   @BeanProperty
   var number: String = null
   @BeanProperty
-  var directed: String = _
-  //IdNameContainer = new IdNameContainer()
+  var directed: String = _ //IdNameContainer = new IdNameContainer()
   @BeanProperty
-  var doctor: String = _ //DoctorContainer = new DoctorContainer()
+  var doctor: String = _//DoctorContainer = new DoctorContainer()
 
   def this(assignmentDate: Date,
            number: String,
@@ -606,7 +673,7 @@ class AppealAssignmentContainer {
     this.assignmentDate = assignmentDate
     this.number = number
     this.directed = directedName
-    this.doctor = doctor
+    this.doctor =  doctor
   }
 
   def toMap = {
@@ -628,15 +695,15 @@ class DoctorContainer {
   @BeanProperty
   var name: PersonNameContainer = new PersonNameContainer()
 
-  def this(staff: Staff) {
+  def this(staff: Staff){
     this()
-    if (staff != null) {
+    if(staff!=null)  {
       this.id = staff.getId.intValue()
       this.name = new PersonNameContainer(staff)
     }
   }
 
-  def this(fullName: String) {
+  def this(fullName: String){
     this()
     this.id = 0
     this.name = new PersonNameContainer(fullName)
@@ -655,24 +722,29 @@ class DoctorContainer {
 @JsonIgnoreProperties(ignoreUnknown = true)
 class MKBContainer {
   @BeanProperty
+  var id: Int = _
+  @BeanProperty
   var code: String = _
   @BeanProperty
   var diagnosis: String = _
 
-  def this(code: String, diagnosis: String) {
+  def this(code: String, diagnosis: String){
     this()
+    //this.id = id
     this.code = code
     this.diagnosis = diagnosis
   }
 
-  def this(mkb: Mkb) {
+  def this(mkb: Mkb){
     this()
+    this.id = mkb.getId.intValue()
     this.code = mkb.getDiagID
     this.diagnosis = mkb.getDiagName
   }
 
   def toMap = {
     var map = new java.util.HashMap[String, Object]
+    //map.put("id", this.id)
     map.put("code", this.code)
     map.put("diagnosis", this.diagnosis)
     map

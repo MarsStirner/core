@@ -115,14 +115,14 @@ public interface MISExchangePortType {
      * 
      * @param message
      * @return
-     *     returns org.hl7.v3.MCCIIN000002UV012
+     *     returns org.hl7.v3.MCCIIN000002UV01
      */
     @WebMethod(operationName = "ProcessHL7v3Message", action = "urn:hl7-org:v3#MISExchange:ProcessHL7v3Message")
     @WebResult(targetNamespace = "urn:hl7-org:v3")
     @RequestWrapper(localName = "ProcessHL7v3Message", targetNamespace = "urn:hl7-org:v3", className = "org.hl7.v3.ProcessHL7V3Message")
     @ResponseWrapper(localName = "ProcessHL7v3MessageResponse", targetNamespace = "urn:hl7-org:v3", className = "org.hl7.v3.ProcessHL7V3MessageResponse")
-    public MCCIIN000002UV012 processHL7V3Message(
+    public MCCIIN000002UV01 processHL7V3Message(
         @WebParam(name = "Message", targetNamespace = "urn:hl7-org:v3")
-        ANY message);
+        Object message);
 
 }

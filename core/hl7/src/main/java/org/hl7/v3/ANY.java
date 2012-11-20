@@ -29,10 +29,10 @@ import javax.xml.bind.annotation.XmlType;
 @XmlType(name = "ANY")
 @XmlSeeAlso({
     SLISTPQ.class,
-    II.class,
     SLISTTS.class,
     BL.class,
     CR.class,
+    II.class,
     ANYNonNull.class,
     GLISTTS.class,
     URL.class,

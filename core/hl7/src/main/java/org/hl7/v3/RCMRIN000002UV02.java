@@ -4,17 +4,16 @@ package org.hl7.v3;
 import javax.xml.bind.annotation.XmlAccessType;
 import javax.xml.bind.annotation.XmlAccessorType;
 import javax.xml.bind.annotation.XmlAttribute;
-import javax.xml.bind.annotation.XmlRootElement;
 import javax.xml.bind.annotation.XmlType;
 
 
 /**
- * <p>Java class for anonymous complex type.
+ * <p>Java class for RCMR_IN000002UV02 complex type.
  * 
  * <p>The following schema fragment specifies the expected content contained within this class.
  * 
  * <pre>
- * &lt;complexType>
+ * &lt;complexType name="RCMR_IN000002UV02">
  *   &lt;complexContent>
  *     &lt;extension base="{urn:hl7-org:v3}RCMR_IN000002UV02.MCCI_MT000100UV01.Message">
  *       &lt;attribute name="ITSVersion" type="{http://www.w3.org/2001/XMLSchema}string" fixed="XML_1.0" />
@@ -26,8 +25,7 @@ import javax.xml.bind.annotation.XmlType;
  * 
  */
 @XmlAccessorType(XmlAccessType.FIELD)
-@XmlType(name = "")
-@XmlRootElement(name = "RCMR_IN000002UV02")
+@XmlType(name = "RCMR_IN000002UV02")
 public class RCMRIN000002UV02
     extends RCMRIN000002UV02MCCIMT000100UV01Message
 {

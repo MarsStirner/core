@@ -1,5 +1,4 @@
 package ru.korus.tmis.core.patient;
-
 import ru.korus.tmis.core.auth.AuthData;
 import ru.korus.tmis.core.data.CommonAttribute;
 import ru.korus.tmis.core.data.CommonData;
@@ -21,10 +20,10 @@ public interface PrimaryAssessmentBeanLocal {
     JSONCommonData createPrimaryAssessmentForEventId(int eventId, JSONCommonData assessment, String title, AuthData userData, Function2<JSONCommonData, Boolean, JSONCommonData> preProcessing, Function2<JSONCommonData, Boolean, JSONCommonData> postProcessing)
             throws CoreException;
 
-    JSONCommonData modifyPrimaryAssessmentById(int assessmentId, JSONCommonData assessment, String title, AuthData userData, Function2<JSONCommonData, Boolean, JSONCommonData> preProcessing, Function2<JSONCommonData, Boolean, JSONCommonData> postProcessing)
+    JSONCommonData modifyPrimaryAssessmentById(int assessmentId, JSONCommonData assessment, String title,AuthData userData, Function2<JSONCommonData, Boolean, JSONCommonData> preProcessing, Function2<JSONCommonData, Boolean, JSONCommonData> postProcessing)
             throws CoreException;
 
-    JSONCommonData getEmptyStructure(String code, String title, List<String> listForConverter, List<StringId> listForSummary, AuthData userData, Function2<JSONCommonData, Boolean, JSONCommonData> postProcessing)
+    JSONCommonData getEmptyStructure(int actionTypeId, String title, List<String> listForConverter, List<StringId> listForSummary, AuthData userData, Function2<JSONCommonData, Boolean, JSONCommonData> postProcessing)
             throws CoreException;
 
     void deletePreviousAssessmentById(int assessmentId, AuthData userData)

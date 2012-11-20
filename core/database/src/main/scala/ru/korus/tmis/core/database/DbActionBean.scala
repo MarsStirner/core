@@ -131,14 +131,12 @@ class DbActionBean
     a
   }
 
-  def getAppealActionByEventId(eventId: Int, code: String) = {
-    //val e = dbEvent.getEventById(eventId)
-    //val actionType = dbActionType.getActionTypeByCode(code)
+  def getAppealActionByEventId(eventId: Int, atId: Int) = {
 
     val result = em.createQuery(ActionByEventIdAndActionTypeQuery,
       classOf[Action])
       .setParameter("id", eventId)
-      .setParameter("code", code)
+      .setParameter("atId", atId)
       .getResultList
 
     result.size match {
@@ -231,6 +229,64 @@ class DbActionBean
     }
   }
 
+  def getActionIdWithCopyByEventId(eventId: Int, actionTypeId: Int) = {
+    val result = em.createQuery(ActionsIdFindQuery, classOf[Int])
+      .setParameter("id", eventId)
+      .setParameter("actionTypeId", actionTypeId)
+      .getResultList
+
+    result.size match {
+      case 0 => 0
+      case size => {
+        result(0)
+      }
+    }
+  }
+
+  def getLastActionByActionTypeIdAndEventId(eventId: Int, actionTypeIds: java.util.Set[java.lang.Integer]) = {
+    val result = em.createQuery(ActionsByATypeIdAndEventId, classOf[Int])
+      .setParameter("id", eventId)
+      .setParameter("atIds", asJavaCollection(actionTypeIds) )
+      .getResultList
+
+    result.size match {
+      case 0 => 0
+      case size => {
+        result(0)
+      }
+    }
+  }
+
+  val ActionsByATypeIdAndEventId = """
+    SELECT a.id
+    FROM
+      Action a
+      JOIN a.event e
+      JOIN a.actionType at
+    WHERE
+      e.id = :id
+    AND
+      a.deleted = 0
+    AND
+      at.id IN :atIds
+    ORDER BY a.createDatetime DESC
+  """
+
+  val ActionsIdFindQuery = """
+    SELECT a.id
+    FROM
+      Action a
+      JOIN a.event e
+      JOIN a.actionType at
+    WHERE
+      a.deleted = 0
+    AND
+      at.id = :actionTypeId
+    AND
+      e.patient.id IN (SELECT DISTINCT e2.patient.id FROM Event e2 WHERE e2.id = :id AND e2.deleted = 0)
+    ORDER BY a.createDatetime DESC
+                           """
+
   val ActionFindQuery = """
     SELECT a
     FROM
@@ -250,7 +306,7 @@ class DbActionBean
     WHERE
       e.id = :id
     AND
-      at.code = :code
+      at.id = :atId
     AND
       a.deleted = 0
                                           """

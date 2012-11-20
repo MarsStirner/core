@@ -24,6 +24,7 @@ import ru.korus.tmis.core.exception.CoreException
 import ru.korus.tmis.util.General._
 
 import java.lang.{Double => JDouble}
+import collection.immutable.ListMap
 
 @Interceptors(Array(classOf[LoggingInterceptor]))
 @Stateless
@@ -38,6 +39,9 @@ class DbCustomQueryBean
 
   @EJB
   private var eventBean: DbEventBeanLocal = _
+
+  @EJB
+  private var orgStructure: DbOrgStructureBeanLocal = _
 
   def getTakenTissueByBarcode(id: Int, period: Int) = {
     val result = em.createQuery(takenTissueByBarcodeQuery, classOf[TakenTissue])
@@ -348,13 +352,23 @@ class DbCustomQueryBean
     typed.getSingleResult
   }
 
-  def getAllAppealsWithFilter(page: Int, limit: Int, sortingField: String, sortingMethod: String, filter: Object) = {
+  def getAllAppealsWithFilter(page: Int, limit: Int, sortingField: String, sortingMethod: String, filter: Object, records: (java.lang.Long) => java.lang.Boolean) = {
 
     var diagnostic_filter: String = ""
     var ap_string_filter: String = ""
     var ap_mkb_filter: String = ""
+    var department_filter: String = ""
     var flgDiagnosesSwitched: Boolean = false
-    var sorting = "ORDER BY %s %s".format(sortingField, sortingMethod)
+    var flgDepartmentSwitched: Boolean = false
+    var sorting = "ORDER BY e.id %s".format(sortingMethod)
+    var flgDepartmentSort: Boolean = false
+    if(sortingField.compareTo("department")!=0)
+      sorting = "ORDER BY %s %s".format(sortingField, sortingMethod)
+    else
+      flgDepartmentSort = true
+    if(sortingField.contains("%s"))sorting = "ORDER BY %s".format(sortingField.format(sortingMethod,sortingMethod,sortingMethod)) //костыль для докторв
+
+    val default_org = orgStructure.getAllOrgStructures.filter(element => element.getType == 4).toList.get(0)  //Приемное отделение
 
     val queryStr: QueryDataStructure = if (filter.isInstanceOf[TalonSPODataListFilter]) {
       filter.asInstanceOf[TalonSPODataListFilter].toQueryStructure()
@@ -366,6 +380,11 @@ class DbCustomQueryBean
         ap_mkb_filter = "AND upper(apv.mkb.diagID) LIKE upper(:diagnosis)\n"
         flgDiagnosesSwitched = true
       }
+      if (filter.asInstanceOf[AppealSimplifiedRequestDataFilter].departmentId > 0 &&
+          filter.asInstanceOf[AppealSimplifiedRequestDataFilter].departmentId != default_org.getId.intValue()){
+        department_filter = "AND apv.value.id = :departmentId"
+        flgDepartmentSwitched = true
+      }
       filter.asInstanceOf[AppealSimplifiedRequestDataFilter].toQueryStructure()
     }
     else {
@@ -375,34 +394,60 @@ class DbCustomQueryBean
     //Получаем список всех обращений (без диагнозов) (сортированный)
     val query = AllAppealsWithFilterExQuery.format("e", queryStr.query, "", sorting)
     var typed = em.createQuery(query, classOf[Event])
-      .setMaxResults(limit)
-      .setFirstResult(limit * page)
+ //     .setMaxResults(limit)
+ //     .setFirstResult(limit * page)
 
     if (queryStr.data.size() > 0) {
       queryStr.data.foreach(qdp => typed.setParameter(qdp.name, qdp.value))
     }
-
     var res = typed.getResultList
+
 
     val ids = new java.util.HashSet[java.lang.Integer]
     val ret_value = new java.util.LinkedHashMap[Event, java.util.Map[Object, Object]]
+    var org_value = new java.util.HashMap[Event, OrgStructure]
 
     if (res.size() > 0) {
       res.foreach(e => ids.add(e.getId))
 
-      val map = new java.util.LinkedHashMap[java.lang.Integer, Object]()
-      map.put(0, (MainDiagnosisQuery, "", ""))
-      map.put(1, (ClinicalDiagnosisQuery, "4501", "Основной клинический диагноз"))
-      map.put(2, (AttendantDiagnosisQuery, "1_1_01", "Основной клинический диагноз"))
-      map.put(3, (AttendantDiagnosisQuery, "4201", "Диагноз направившего учреждения"))
+      //Получение отделения из последнего из последнего экшена движения
+      val depArrayTyped = em.createQuery(OrgStructureSubQuery.format(i18n("db.actionType.moving"),
+                                                                     i18n("db.rbCAP.moving.id.located"),
+                                                                     department_filter),
+                                      classOf[Array[AnyRef]])
+                            .setParameter("ids", asJavaCollection(ids))
+      if (flgDepartmentSwitched)
+        depArrayTyped.setParameter("departmentId", filter.asInstanceOf[AppealSimplifiedRequestDataFilter].departmentId)
 
+      val depArray = depArrayTyped.getResultList
+      org_value = depArray.foldLeft(new java.util.HashMap[Event, OrgStructure])(
+        (map, pair) => {
+          val event = pair(0).asInstanceOf[Event]
+          var department: OrgStructure = default_org
+          if(pair(1).isInstanceOf[OrgStructure]){
+            department = pair(1).asInstanceOf[OrgStructure]
+            em.detach(department)
+          }
+          em.detach(event)
+          map.put(event, department)
+          map
+        }
+      )
+
+      //Получение диагнозов
+      val map = new java.util.LinkedHashMap[java.lang.Integer, Object]()
+      map.put(0, (MainDiagnosisQuery, i18n("db.diagnostics.diagnosisType.id.clinical"), ""))
+      map.put(1, (MainDiagnosisQuery, i18n("db.diagnostics.diagnosisType.id.main"), ""))
+      map.put(2, (ClinicalDiagnosisQuery, "4501", "Основной клинический диагноз"))
+      map.put(3, (AttendantDiagnosisQuery, "1_1_01", "Основной клинический диагноз"))
+      map.put(4, (AttendantDiagnosisQuery, "4201", "Диагноз направившего учреждения"))
 
       var i = 0
-      while (ids.size() > 0 && i <= 3) {
+      while (ids.size() > 0 && i <= 4) {
         val map_value = map.get(Integer.valueOf(i)).asInstanceOf[(String, String, String)]
         val typed2 = i match {
-          case 0 => em.createQuery(map_value._1.format(diagnostic_filter), classOf[Array[AnyRef]])
-          case 1 => em.createQuery(map_value._1.format(map_value._2, map_value._3, ap_string_filter), classOf[Array[AnyRef]])
+          case 0 | 1 => em.createQuery(map_value._1.format(map_value._2,diagnostic_filter), classOf[Array[AnyRef]])
+          case 2 => em.createQuery(map_value._1.format(map_value._2, map_value._3, ap_string_filter), classOf[Array[AnyRef]])
           case _ => em.createQuery(map_value._1.format(map_value._2, map_value._3, ap_mkb_filter), classOf[Array[AnyRef]])
         }
 
@@ -431,16 +476,43 @@ class DbCustomQueryBean
       }
       ids.clear()
     }
-    //вернуть первоначальную сортировку
-    val ret_value_sorted = new java.util.LinkedHashMap[Event, java.util.Map[Object, Object]]
+    //вернуть первоначальную сортировку и прописать отделения (учитывая страницу и лимит)
+    val ret_value_sorted = LinkedHashMap.empty[Event, Object]
     res.foreach(e => {
       val pos = ret_value.get(e)
-      if (pos != null)
-        ret_value_sorted.put(e, pos)
+      if (pos != null){
+        val pos_org = org_value.get(e)
+        if (pos_org != null){
+          if (filter.asInstanceOf[AppealSimplifiedRequestDataFilter].departmentId != default_org.getId.intValue() ||
+            pos_org.getId.intValue()==default_org.getId.intValue()) {
+            ret_value_sorted.put(e, (pos, pos_org))
+          }
+        }
+        else if(!flgDepartmentSwitched) {
+          ret_value_sorted.put(e, (pos, default_org))
+        }
+      }
     })
+    var ret_value_sorted_page = Map.empty[Event, Object]
+    val ret_value_sorted2 = if (flgDepartmentSort){  //Cортировка по department name
+        if (sortingMethod.compareTo("desc")==0)   //desc
+          ListMap(ret_value_sorted.toList.sortWith(_._2.asInstanceOf[(Map[Object,Object],OrgStructure)]._2.getName > _._2.asInstanceOf[(Map[Object,Object],OrgStructure)]._2.getName):_*)
+        else //asc
+          ListMap(ret_value_sorted.toList.sortBy(_._2.asInstanceOf[(Map[Object,Object],OrgStructure)]._2.getName):_*)
+    } else {
+        ListMap(ret_value_sorted.toList:_*)
+    }
+    //проведем ручной пэйджинг
+    ret_value_sorted_page = if((ret_value_sorted2.size - limit*(page+1))>0)
+      ret_value_sorted2.dropRight(ret_value_sorted2.size - limit*(page+1)).drop(page*limit)
+    else ret_value_sorted2.drop(page*limit)
+
+
+    if (records!=null) records(ret_value_sorted.size)//Перепишем количество записей для структуры
 
     ret_value.clear()
-    ret_value_sorted
+    ret_value_sorted.clear()
+    ret_value_sorted_page
   }
 
   def getDiagnosisForMainDiagInAppeal(appealId: Int): Mkb = {
@@ -1167,7 +1239,8 @@ class DbCustomQueryBean
     AND at.deleted = 0
     ORDER BY
       a.createDatetime ASC
-    """.format(i18n("db.action.preAssessmentGroupName"), i18n("db.action.diagnosisSubstantiation"))
+                                               """.format(i18n("db.action.preAssessmentGroupName"),
+    i18n("db.action.diagnosisSubstantiation"))
 
   val AllAssessmentsByEventIdQuery = """
     SELECT a
@@ -1288,7 +1361,7 @@ class DbCustomQueryBean
         JOIN dias.mkb mkb
     WHERE
       e.id IN :ids
-    AND (dia.diagnosisType IS NULL OR dia.diagnosisType.id = 1)
+    AND (dia.diagnosisType IS NULL OR dia.diagnosisType.id = '%s')
     AND (dia.deleted IS NULL OR dia.deleted = 0)
     %s
     GROUP BY e
@@ -1399,4 +1472,30 @@ class DbCustomQueryBean
   WHERE
     d.mkb = :mkb
                             """
+//
+  val OrgStructureSubQuery = """
+    SELECT e, apv.value, MAX(a.createDatetime)
+    FROM
+      ActionProperty ap
+        JOIN ap.action a
+        JOIN a.event e
+        JOIN a.actionType at
+        JOIN ap.actionPropertyType apt,
+      APValueOrgStructure apv
+    WHERE
+      e.id IN :ids
+    AND
+      at.id = '%s'
+    AND
+      apt.id IN (
+         SELECT cap.actionPropertyType.id
+         FROM RbCoreActionProperty cap
+         WHERE cap.actionType.id = at.id
+         AND cap.id = '%s'
+      )
+    AND ap.id = apv.id.id
+    AND apv.value IS NOT NULL
+    %s
+    GROUP BY e
+                             """
 }

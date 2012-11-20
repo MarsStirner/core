@@ -4,6 +4,8 @@ import java.util.Date;
 
 import javax.ejb.Local;
 
+import ru.korus.tmis.core.data.DocumentContainer;
+import ru.korus.tmis.core.entity.model.ClientDocument;
 import ru.korus.tmis.core.entity.model.ClientSocStatus;
 import ru.korus.tmis.core.entity.model.Patient;
 import ru.korus.tmis.core.entity.model.Staff;
@@ -20,7 +22,7 @@ public interface DbClientSocStatusBeanLocal {
             int id,
             int socStatusId,
             int socStatusTypeId,
-            int documentId,
+            DocumentContainer document,
             Date begDate,
             Date endDate,
             Patient patient,

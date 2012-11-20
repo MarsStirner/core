@@ -13,28 +13,36 @@
 
 
     <servlet>
-        <servlet-name>Jersey REST Service</servlet-name>
-        <servlet-class>
-            ru.korus.tmis.ws.webmis.rest.servlet.RestServlet
-        </servlet-class>
-        <!--
-        init-param>
+	  <servlet-name>Jersey REST Service</servlet-name>
+	<servlet-class>
+	  ru.korus.tmis.ws.webmis.rest.servlet.RestServlet
+	</servlet-class>
+	  <init-param>
+	   <param-name>com.sun.jersey.api.json.POJOMappingFeature</param-name>
+	   <param-value>true</param-value>
+	  </init-param>
+     <!-- <init-param>
           <param-name>com.sun.jersey.config.property.packages</param-name>
           <param-value>ru.korus.tmis.ws.medipad.rest</param-value>
-        </init-param>
-          -->
-        <init-param>
-            <param-name>com.sun.jersey.api.json.POJOMappingFeature</param-name>
-            <param-value>true</param-value>
-        </init-param>
-        <!--  <init-param>       Фильтр    новое
+      </init-param>  -->
+      <!--<init-param>
         <param-name>com.sun.jersey.spi.container.ResourceFilters</param-name>
         <param-value>ru.korus.tmis.ws.webmis.rest.AuthentificationRESTFilterFactory</param-value>
-      </init-param>   -->
-        <load-on-startup>1</load-on-startup>
-    </servlet>
-    <servlet-mapping>
-        <servlet-name>Jersey REST Service</servlet-name>
+      </init-param> -->
+      <load-on-startup>1</load-on-startup>
+	</servlet>
+	<servlet-mapping>
+	  <servlet-name>Jersey REST Service</servlet-name>
+	  <url-pattern>/rest/*</url-pattern>
+	</servlet-mapping>
+
+    <filter>
+        <filter-name>AuthFilter</filter-name>
+        <filter-class>ru.korus.tmis.ws.webmis.rest.servlet.AuthenticationFilter</filter-class>
+    </filter>
+
+    <filter-mapping>
+        <filter-name>AuthFilter</filter-name>
         <url-pattern>/rest/*</url-pattern>
-    </servlet-mapping>
+    </filter-mapping>
 </web-app>

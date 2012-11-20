@@ -96,57 +96,18 @@ class PrimaryAssessmentBean
     group
   }
 
-  //конвертер ActionPropertyType в CommonAttribute  /для метода getStructOfPrimaryMedExam/
-  /*def converter(apt: ActionPropertyType) = {
-    //TODO: Ограничить Map  в зависимости от TypeName  (пока общая структура 4эл. всегда)
-    new CommonAttribute(apt.getId,
-      0,
-      apt.getName,
-      apt.getTypeName,
-      apt.getConstructorValueDomain,
-      Map(
-        ActionPropertyWrapperInfo.Value.toString -> apt.getDefaultValue,
-        ActionPropertyWrapperInfo.ValueId.toString -> apt.getDefaultValue,
-        ActionPropertyWrapperInfo.Norm.toString -> apt.getNorm,
-        ActionPropertyWrapperInfo.Unit.toString -> apt.getUnit.getName))
-  }
-
-  def getPrimaryAssessmentEmptyStruct(code: String, title: String, userData: AuthData) = {
-
-    var json_data = new JSONCommonData()
-    val cd = commonDataProcessor.fromActionTypesForWebClient(actionTypeBean.getActionTypesByCode(code),
-                                                            title,
-                                                            converter)
-    json_data.data = cd.entity(0)
-    json_data
-  }  */
-
   def converterFromList(list: java.util.List[String], apt: ActionPropertyType) = {
 
-    var map = list.foldLeft(Map.empty[String, String])(
+    var map = list.foldLeft(Map.empty[String,String])(
       (str_key, el) => {
         val key = el
-        val value = if (key == APWI.Value.toString) {
-          apt.getDefaultValue
-        }
-        else if (key == APWI.ValueId.toString) {
-          apt.getDefaultValue
-        }
-        else if (key == APWI.Unit.toString) {
-          apt.getUnit.getName
-        }
-        else if (key == APWI.Norm.toString) {
-          apt.getNorm
-        }
-        else if (key == APWI.IsAssignable.toString) {
-          apt.getIsAssignable.toString
-        }
-        else if (key == APWI.IsAssigned.toString) {
-          ""
-        }
-        else {
-          ""
-        }
+        val value  =   if(key == APWI.Value.toString){apt.getDefaultValue}
+        else if(key == APWI.ValueId.toString){apt.getDefaultValue}
+        else if(key == APWI.Unit.toString){apt.getUnit.getName}
+        else if(key == APWI.Norm.toString){apt.getNorm}
+        else if(key == APWI.IsAssignable.toString){apt.getIsAssignable.toString}
+        else if(key == APWI.IsAssigned.toString){""}
+        else {""}
         str_key + (key -> value)
       })
 
@@ -158,7 +119,7 @@ class PrimaryAssessmentBean
       map)
   }
 
-  def getEmptyStructure(code: String,
+  def getEmptyStructure(atId: Int,
                         title: String,
                         listForConverter: java.util.List[String],
                         listForSummary: java.util.List[StringId],
@@ -166,25 +127,25 @@ class PrimaryAssessmentBean
                         postProcessing: (JSONCommonData, java.lang.Boolean) => JSONCommonData) = {
 
     var json_data = new JSONCommonData()
-    val cd = commonDataProcessor.fromActionTypesForWebClient(actionTypeBean.getActionTypesByCode(code),
-      title,
-      listForSummary,
-      listForConverter,
-      converterFromList)
+    val cd = commonDataProcessor.fromActionTypesForWebClient(Set(actionTypeBean.getActionTypeById(atId)),
+                                                             title,
+                                                             listForSummary,
+                                                             listForConverter,
+                                                             converterFromList)
     json_data.data = cd.entity
     if (postProcessing != null) {
-      json_data = postProcessing(json_data, true)
+      json_data =  postProcessing(json_data, true)
     }
     json_data
   }
 
-  def createAssessmentsForEventIdFromCommonData(eventId: Int, assessments: CommonData, title: String, request: Object, userData: AuthData) = {
+  def  createAssessmentsForEventIdFromCommonData(eventId: Int, assessments: CommonData, title: String, request: Object, userData: AuthData) = {
 
-    val actions: java.util.List[Action] = commonDataProcessor.createActionForEventFromCommonData(eventId, assessments, userData)
-    val com_data = commonDataProcessor.fromActions(actions, title, List(summary _, details _))
+     val actions: java.util.List[Action] = commonDataProcessor.createActionForEventFromCommonData(eventId, assessments, userData)
+     val com_data = commonDataProcessor.fromActions( actions, title, List(summary _, details _))
 
-    var json_data = new JSONCommonData(request, com_data)
-    json_data
+     var json_data = new JSONCommonData(request, com_data)
+     json_data
   }
 
   /*
@@ -203,7 +164,7 @@ class PrimaryAssessmentBean
     var json_data = assessment
 
     if (preProcessing != null) {
-      json_data = preProcessing(json_data, true)
+      json_data =  preProcessing(json_data, true)
     }
 
     var com_data = new CommonData()
@@ -218,7 +179,7 @@ class PrimaryAssessmentBean
 
     json_data.data = com_data.entity
     if (postProcessing != null) {
-      json_data = postProcessing(json_data, false)
+      json_data =  postProcessing(json_data, false)
     }
     json_data
   }
@@ -234,7 +195,7 @@ class PrimaryAssessmentBean
     var json_data = assessment
 
     if (preProcessing != null) {
-      json_data = preProcessing(json_data, false)
+      json_data =  preProcessing(json_data, false)
     }
 
     var com_data = new CommonData()
@@ -249,7 +210,7 @@ class PrimaryAssessmentBean
 
     json_data.data = com_data.entity
     if (postProcessing != null) {
-      json_data = postProcessing(json_data, false)
+      json_data =  postProcessing(json_data, false)
     }
     json_data
   }
@@ -270,7 +231,7 @@ class PrimaryAssessmentBean
     var json_data = new JSONCommonData()
     json_data.data = com_data.entity
     if (postProcessing != null) {
-      json_data = postProcessing(json_data, false)
+      json_data =  postProcessing(json_data, false)
     }
     json_data
   }
@@ -284,9 +245,9 @@ class PrimaryAssessmentBean
     val now = new Date()
 
     var findAction = actionBean.getActionById(assessmentId)
-    if (findAction != null) {
+    if(findAction!=null) {
       findAction.setDeleted(true)
-      if (userData != null) {
+      if(userData!=null) {
         findAction.setModifyPerson(userData.getUser)
       }
       findAction.setModifyDatetime(now)
@@ -297,11 +258,11 @@ class PrimaryAssessmentBean
         (element) => {
           val (ap, listApVal) = element
           ap.setDeleted(true)
-          if (userData != null) {
+          if(userData!=null) {
             ap.setModifyPerson(userData.getUser)
           }
           ap.setModifyDatetime(now)
-          apSet += ap
+          apSet+=ap
         })
       dbManager.mergeAll(apSet)
     }
@@ -312,15 +273,15 @@ class PrimaryAssessmentBean
                                      actionTypeId: Int,
                                      executorId: Int,
                                      bDate: Date,
-                                     eDate: Date,
-                                     urgent: Boolean,
+                                     eDate:Date,
+                                     urgent:Boolean,
                                      request: Object,
                                      userData: AuthData) = {
 
     //action
     var action: Action = actionBean.createAction(eventId.intValue(),
-      actionTypeId.intValue(),
-      userData)
+                                                 actionTypeId.intValue(),
+                                                 userData)
     action.setIsUrgent(urgent)
     action.setExecutor(dbStaff.getStaffById(executorId))
     action.setBegDate(bDate)
@@ -333,10 +294,10 @@ class PrimaryAssessmentBean
     actionPropertyTypeBean.getActionPropertyTypesByActionTypeId(actionTypeId.intValue())
       .toList
       .foreach((apt) => {
-      val property = actionPropertyBean.createActionProperty(action,
-        apt.getId.intValue(),
-        userData)
-      apSet += property
+        val property = actionPropertyBean.createActionProperty(action,
+                                                               apt.getId.intValue(),
+                                                               userData)
+        apSet += property
     })
 
     dbManager.mergeAll(apSet)

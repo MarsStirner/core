@@ -24,45 +24,47 @@ import com.sun.jersey.api.json.JSONWithPadding;
 @Path("/on-deamand-data/")
 @Produces(MediaType.APPLICATION_JSON)
 public class OnDeamandData {
+	
 
-
-    @GET
-    @Path("/invoke")
-    @Produces(MediaType.APPLICATION_JSON)
-    public Object invoke(@QueryParam("clazz") String _clazz) {
-        Object result = null;
-        Class<?> clazz;
-        try {
-            clazz = Class.forName(_clazz);
-            result = clazz.newInstance();
-        } catch (ClassNotFoundException e) {
-            // TODO Auto-generated catch block
-            e.printStackTrace();
-        } catch (InstantiationException e) {
-            // TODO Auto-generated catch block
-            e.printStackTrace();
-        } catch (IllegalAccessException e) {
-            // TODO Auto-generated catch block
-            e.printStackTrace();
-        }
-        return result;
-    }
-
-
-    @GET
-    @Path("/nullPointer")
-    @Produces(MediaType.APPLICATION_JSON)
-    public Object nullPointerTestMethod() throws Exception {
-        throw new NullPointerException("oohhh god");
-    }
-
-
-    @GET
-    @Path("/noSuchEntity")
-    @Produces(MediaType.APPLICATION_JSON)
-    public Object noSuchEntityTestMethod() throws Exception {
-        throw new NoSuchClientDocumentException(0, 0, "oohhh god messga");
-    }
-
+	
+	@GET
+	@Path("/invoke")
+	@Produces(MediaType.APPLICATION_JSON)
+	public Object invoke(@QueryParam("clazz")String  _clazz){
+		Object result = null;
+		Class<?> clazz;
+		try {
+			clazz = Class.forName(_clazz);
+			result = clazz.newInstance();
+		} catch (ClassNotFoundException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		} catch (InstantiationException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		} catch (IllegalAccessException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+    	return result;
+	}
+	
+	
+	
+	@GET
+	@Path("/nullPointer")
+	@Produces(MediaType.APPLICATION_JSON)
+	public Object nullPointerTestMethod() throws Exception {
+		throw new NullPointerException("oohhh god");
+	}
+	
+	
+	@GET
+	@Path("/noSuchEntity")
+	@Produces(MediaType.APPLICATION_JSON)
+	public Object noSuchEntityTestMethod() throws Exception {
+		throw new NoSuchClientDocumentException(0,0,"oohhh god messga");
+	}
+	
 
 }

@@ -196,11 +196,11 @@ public class Diagnostic implements Serializable {
         this.diagnosisType = diagnosisType;
     }
 
-    public Integer getСharacterId() {
+    public Integer getCharacterId() {
         return characterId;
     }
 
-    public void setСharacterId(Integer characterId) {
+    public void setCharacterId(Integer characterId) {
         this.characterId = characterId;
     }
 

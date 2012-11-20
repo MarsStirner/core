@@ -1,5 +1,7 @@
 package ru.korus.tmis.pharmacy;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import ru.korus.tmis.core.database.DbActionBeanLocal;
 import ru.korus.tmis.core.database.DbActionPropertyBeanLocal;
 import ru.korus.tmis.core.entity.model.APValue;
@@ -10,6 +12,7 @@ import ru.korus.tmis.core.exception.CoreException;
 import ru.korus.tmis.core.logging.LoggingInterceptor;
 import ru.korus.tmis.drugstore.event.ExternalEventFacadeBeanLocal;
 
+import javax.annotation.PostConstruct;
 import javax.ejb.EJB;
 import javax.ejb.Stateless;
 import javax.interceptor.Interceptors;
@@ -25,7 +28,9 @@ import java.util.Map;
  */
 @Interceptors(LoggingInterceptor.class)
 @Stateless
-public class PharmacyManagerImpl implements PharmacyManager {
+public class PharmacyBean implements PharmacyBeanLocal {
+
+    final static Logger logger = LoggerFactory.getLogger(PharmacyBean.class);
 
     @EJB
     private DbActionBeanLocal dbAction;
@@ -41,6 +46,7 @@ public class PharmacyManagerImpl implements PharmacyManager {
      */
     @Override
     public void eventActionCreated(int actionId) {
+        logger.info("eventActionCreated, actionId {}", actionId);
         try {
             Action action = dbAction.getActionById(actionId);
             Map<ActionProperty, List<APValue>> values = dbActionProperty.getActionPropertiesByActionId(action.getId());
@@ -48,6 +54,12 @@ public class PharmacyManagerImpl implements PharmacyManager {
         } catch (CoreException e) {
             e.printStackTrace();
         }
+    }
+
+    @PostConstruct
+    public void init(){
+
 
     }
+
 }

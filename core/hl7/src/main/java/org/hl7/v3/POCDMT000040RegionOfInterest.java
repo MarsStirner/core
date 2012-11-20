@@ -40,7 +40,7 @@ import javax.xml.bind.annotation.adapters.XmlJavaTypeAdapter;
  *         &lt;element name="reference" type="{urn:hl7-org:v3}POCD_MT000040.Reference" maxOccurs="unbounded" minOccurs="0"/>
  *         &lt;element name="precondition" type="{urn:hl7-org:v3}POCD_MT000040.Precondition" maxOccurs="unbounded" minOccurs="0"/>
  *       &lt;/sequence>
- *       &lt;attribute name="ID" type="{http://www.w3.org/2001/XMLSchema}ID" />
+ *       &lt;attribute name="ID1" type="{http://www.w3.org/2001/XMLSchema}ID" />
  *       &lt;attribute name="nullFlavor" type="{urn:hl7-org:v3}NullFlavor" />
  *       &lt;attribute name="classCode" type="{urn:hl7-org:v3}ActClass" fixed="ROIOVL" />
  *       &lt;attribute name="moodCode" type="{urn:hl7-org:v3}ActMood" fixed="EVN" />
@@ -89,7 +89,7 @@ public class POCDMT000040RegionOfInterest {
     protected List<POCDMT000040EntryRelationship> entryRelationship;
     protected List<POCDMT000040Reference> reference;
     protected List<POCDMT000040Precondition> precondition;
-    @XmlAttribute(name = "ID")
+    @XmlAttribute(name = "ID1")
     @XmlJavaTypeAdapter(CollapsedStringAdapter.class)
     @XmlID
     @XmlSchemaType(name = "ID")

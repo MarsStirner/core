@@ -161,11 +161,11 @@ public class Diagnosis implements Serializable {
         this.diagnosisType = diagnosisType;
     }
 
-    public Integer getСharacterId() {
+    public Integer getCharacterId() {
         return characterId;
     }
 
-    public void setСharacterId(Integer characterId) {
+    public void setCharacterId(Integer characterId) {
         this.characterId = characterId;
     }
 
@@ -239,7 +239,7 @@ public class Diagnosis implements Serializable {
 
     public void setMkb(final Mkb mkb) {
         this.mkb = mkb;
-        if (!mkb.getDiagnosis().contains(this)) {
+        if (mkb != null && !mkb.getDiagnosis().contains(this)) {
             mkb.addDiagnosis(this);
         }
     }
