@@ -36,7 +36,7 @@ import javax.xml.bind.annotation.adapters.XmlJavaTypeAdapter;
  *       &lt;attribute name="rel" type="{http://www.w3.org/2001/XMLSchema}string" />
  *       &lt;attribute name="rev" type="{http://www.w3.org/2001/XMLSchema}string" />
  *       &lt;attribute name="title" type="{http://www.w3.org/2001/XMLSchema}string" />
- *       &lt;attribute name="ID" type="{http://www.w3.org/2001/XMLSchema}ID" />
+ *       &lt;attribute name="ID1" type="{http://www.w3.org/2001/XMLSchema}ID" />
  *       &lt;attribute name="language" type="{http://www.w3.org/2001/XMLSchema}NMTOKEN" />
  *       &lt;attribute name="styleCode" type="{http://www.w3.org/2001/XMLSchema}NMTOKENS" />
  *     &lt;/restriction>
@@ -68,7 +68,7 @@ public class StrucDocLinkHtml {
     protected String rev;
     @XmlAttribute(name = "title")
     protected String title;
-    @XmlAttribute(name = "ID")
+    @XmlAttribute(name = "ID1")
     @XmlJavaTypeAdapter(CollapsedStringAdapter.class)
     @XmlID
     @XmlSchemaType(name = "ID")
@@ -99,9 +99,9 @@ public class StrucDocLinkHtml {
      * 
      * <p>
      * Objects of the following type(s) are allowed in the list
+     * {@link JAXBElement }{@code <}{@link StrucDocFootnote }{@code >}
      * {@link String }
      * {@link JAXBElement }{@code <}{@link StrucDocFootnoteRef }{@code >}
-     * {@link JAXBElement }{@code <}{@link StrucDocFootnote }{@code >}
      * 
      * 
      */

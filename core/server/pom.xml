@@ -1,17 +1,18 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
 
     <modelVersion>4.0.0</modelVersion>
     <groupId>ru.korus.tmis</groupId>
     <artifactId>tmis-server</artifactId>
-  <version>0.9.2</version>
+    <version>0.9.3</version>
     <packaging>ear</packaging>
     <name>TMIS Server EAR</name>
 
     <parent>
         <groupId>ru.korus.tmis</groupId>
         <artifactId>tmis-nexus</artifactId>
-        <version>0.9.2</version>
+        <version>0.9.3</version>
         <relativePath>../</relativePath>
     </parent>
 
@@ -19,51 +20,51 @@
         <dependency>
             <groupId>ru.korus.tmis.core</groupId>
             <artifactId>tmis-core-business</artifactId>
-            <version>0.9.2</version>
+            <version>0.9.3</version>
             <type>ejb</type>
         </dependency>
         <dependency>
             <groupId>ru.korus.tmis.core</groupId>
             <artifactId>tmis-core-common</artifactId>
-            <version>0.9.2</version>
+            <version>0.9.3</version>
             <type>jar</type>
         </dependency>
         <dependency>
             <groupId>ru.korus.tmis.core</groupId>
             <artifactId>tmis-core-database</artifactId>
-            <version>0.9.2</version>
+            <version>0.9.3</version>
             <type>ejb</type>
         </dependency>
         <dependency>
             <groupId>ru.korus.tmis</groupId>
             <artifactId>tmis-ws-medipad</artifactId>
-            <version>0.9.2</version>
+            <version>0.9.3</version>
             <type>war</type>
         </dependency>
 
         <dependency>
             <groupId>ru.korus.tmis.laboratory</groupId>
             <artifactId>tmis-laboratory-tier</artifactId>
-            <version>0.9.2</version>
+            <version>0.9.3</version>
             <type>ejb</type>
         </dependency>
         <dependency>
             <groupId>ru.korus.tmis.laboratory</groupId>
             <artifactId>tmis-ws-laboratory</artifactId>
-            <version>0.9.2</version>
+            <version>0.9.3</version>
             <type>war</type>
         </dependency>
 
         <dependency>
             <groupId>ru.korus.tmis.drugstore</groupId>
             <artifactId>tmis-drugstore-tier</artifactId>
-            <version>0.9.2</version>
+            <version>0.9.3</version>
             <type>ejb</type>
         </dependency>
         <dependency>
             <groupId>ru.korus.tmis.drugstore</groupId>
             <artifactId>tmis-ws-drugstore</artifactId>
-            <version>0.9.2</version>
+            <version>0.9.3</version>
             <type>war</type>
         </dependency>
     </dependencies>

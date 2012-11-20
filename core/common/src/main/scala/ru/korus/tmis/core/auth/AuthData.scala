@@ -17,19 +17,19 @@ class AuthData() {
   var doctor: DoctorSpecsContainer = _
 
   @BeanProperty
-  var userId: Int = _
+  var userId: Int = _                               //Оставлено для медипад
 
   @BeanProperty
-  var userFirstName: String = _
+  var userFirstName: String = _                     //Оставлено для медипад
 
   @BeanProperty
-  var userLastName: String = _
+  var userLastName: String = _                      //Оставлено для медипад
 
   @BeanProperty
-  var userPatronymicName: String = _
+  var userPatronymicName: String = _                //Оставлено для медипад
 
   @BeanProperty
-  var userSpecs: String = _
+  var userSpecs: String = _                         //Оставлено для медипад
 
   var userRole: Role = _
 
@@ -61,7 +61,7 @@ class AuthData() {
            userLastName: String,
            userPatronymicName: String,
            userSpecs: String) = {
-    this()
+    this ()
     this.authToken = token
     this.user = user
     this.userId = userId

@@ -18,6 +18,9 @@ public interface DbRbCoreActionPropertyBeanLocal {
     List<RbCoreActionProperty> getRbCoreActionPropertiesByActionTypeId(int actionTypeId)
             throws CoreException;
 
+    List<RbCoreActionProperty> getRbCoreActionPropertiesByIds(List<Integer> capIds)
+            throws CoreException;
+
     RbCoreActionProperty getRbCoreActionPropertiesByActionPropertyTypeId(int actionPropertyTypeId)
             throws CoreException;
 

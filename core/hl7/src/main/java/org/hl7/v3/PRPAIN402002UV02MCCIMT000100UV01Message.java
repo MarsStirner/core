@@ -70,7 +70,6 @@ import javax.xml.bind.annotation.XmlType;
     "controlActProcess"
 })
 @XmlSeeAlso({
-    PRPAIN402002UV022 .class,
     PRPAIN402002UV02 .class
 })
 public class PRPAIN402002UV02MCCIMT000100UV01Message {

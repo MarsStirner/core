@@ -142,7 +142,10 @@ class DbActionPropertyBean
         // Если не нашли значение, то создаем новое, если не флатДиректори
         if (ap.getType.getTypeName.compareTo("FlatDirectory") != 0 && ap.getType.getTypeName.compareTo("FlatDictionary") != 0) {
           createActionPropertyValue(ap, value, index)
-        } else null
+        } else if(value !=null && value.compareTo("") != 0) {
+          createActionPropertyValue(ap, value, index)
+        }
+        else null
       }
       case size => {
         if (ap.getType.getIsVector) {
@@ -227,6 +230,39 @@ class DbActionPropertyBean
     result
   }
 
+  @TransactionAttribute(TransactionAttributeType.REQUIRES_NEW)
+  def getActionPropertiesByActionIdAndRbCoreActionPropertyIds(actionId: Int, ids: java.util.List[java.lang.Integer]) = {
+    val result =  em.createQuery(ActionPropertiesByActionIdAndRbCoreActionPropertyIds, classOf[ActionProperty])
+                    .setParameter("actionId", actionId)
+                    .setParameter("ids", asJavaCollection(ids))
+                    .getResultList
+
+    result.foldLeft(LinkedHashMap.empty[ActionProperty, java.util.List[APValue]])(
+      (map, ap) => {
+        em.detach(ap)
+        map.put(ap, getActionPropertyValue(ap))
+        map
+      }
+    )
+  }
+
+  @TransactionAttribute(TransactionAttributeType.REQUIRES_NEW)
+  def getActionPropertiesForEventByActionTypes(eventId: Int, atIds: java.util.Set[java.lang.Integer], coreIds: java.util.Set[java.lang.Integer])  = {
+    val result =  em.createQuery(ActionPropertiesForEventByActionTypesQuery, classOf[Array[AnyRef]])
+      .setParameter("eventId", eventId)
+      .setParameter("atIds", asJavaCollection(atIds))
+      .setParameter("coreIds", asJavaCollection(coreIds))
+      .getResultList
+
+    result.foldLeft(LinkedHashMap.empty[ActionProperty, java.util.List[APValue]])(
+      (map, ap) => {
+        em.detach(ap(0).asInstanceOf[ActionProperty])
+        map.put(ap(0).asInstanceOf[ActionProperty], getActionPropertyValue(ap(0).asInstanceOf[ActionProperty]))
+        map
+      }
+    )
+  }
+
   val ActionPropertyFindQuery = """
     SELECT ap
     FROM
@@ -284,4 +320,44 @@ class DbActionPropertyBean
     AND
       ap.deleted = 0
                                                  """
+
+  val ActionPropertiesByActionIdAndRbCoreActionPropertyIds =
+    """
+      SELECT ap
+      FROM
+        ActionProperty ap
+      WHERE
+        ap.action.id = :actionId
+      AND
+        ap.actionPropertyType.id IN (
+          SELECT cap.actionPropertyType.id
+          FROM RbCoreActionProperty cap
+          WHERE cap.actionType.id = ap.action.actionType.id
+          AND cap.id IN :ids
+        )
+      AND
+        ap.deleted = 0
+    """
+  val ActionPropertiesForEventByActionTypesQuery =
+    """
+      SELECT ap, MAX(a.createDatetime)
+      FROM
+        ActionProperty ap
+          JOIN ap.action a
+          JOIN a.actionType at
+          JOIN a.event e
+      WHERE
+        e.id = :eventId
+      AND at.id IN :atIds
+      AND
+        ap.actionPropertyType.id IN (
+          SELECT cap.actionPropertyType.id
+          FROM RbCoreActionProperty cap
+          WHERE cap.actionType.id = at.id
+          AND cap.id IN :coreIds
+        )
+      AND
+        ap.deleted = 0
+      GROUP BY ap
+    """
 }

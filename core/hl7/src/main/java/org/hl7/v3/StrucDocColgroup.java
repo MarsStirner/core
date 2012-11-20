@@ -25,7 +25,7 @@ import javax.xml.bind.annotation.adapters.XmlJavaTypeAdapter;
  *       &lt;choice>
  *         &lt;element name="col" type="{urn:hl7-org:v3}StrucDoc.Col" maxOccurs="unbounded" minOccurs="0"/>
  *       &lt;/choice>
- *       &lt;attribute name="ID" type="{http://www.w3.org/2001/XMLSchema}ID" />
+ *       &lt;attribute name="ID1" type="{http://www.w3.org/2001/XMLSchema}ID" />
  *       &lt;attribute name="language" type="{http://www.w3.org/2001/XMLSchema}NMTOKEN" />
  *       &lt;attribute name="styleCode" type="{http://www.w3.org/2001/XMLSchema}NMTOKENS" />
  *       &lt;attribute name="span" type="{http://www.w3.org/2001/XMLSchema}string" default="1" />
@@ -67,7 +67,7 @@ import javax.xml.bind.annotation.adapters.XmlJavaTypeAdapter;
 public class StrucDocColgroup {
 
     protected List<StrucDocCol> col;
-    @XmlAttribute(name = "ID")
+    @XmlAttribute(name = "ID1")
     @XmlJavaTypeAdapter(CollapsedStringAdapter.class)
     @XmlID
     @XmlSchemaType(name = "ID")

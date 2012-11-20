@@ -30,7 +30,7 @@ import javax.xml.bind.annotation.adapters.XmlJavaTypeAdapter;
  *         &lt;element name="tfoot" type="{urn:hl7-org:v3}StrucDoc.Tfoot" minOccurs="0"/>
  *         &lt;element name="tbody" type="{urn:hl7-org:v3}StrucDoc.Tbody" maxOccurs="unbounded"/>
  *       &lt;/choice>
- *       &lt;attribute name="ID" type="{http://www.w3.org/2001/XMLSchema}ID" />
+ *       &lt;attribute name="ID1" type="{http://www.w3.org/2001/XMLSchema}ID" />
  *       &lt;attribute name="language" type="{http://www.w3.org/2001/XMLSchema}NMTOKEN" />
  *       &lt;attribute name="styleCode" type="{http://www.w3.org/2001/XMLSchema}NMTOKENS" />
  *       &lt;attribute name="summary" type="{http://www.w3.org/2001/XMLSchema}string" />
@@ -88,7 +88,7 @@ public class StrucDocTable {
     protected StrucDocThead thead;
     protected StrucDocTfoot tfoot;
     protected List<StrucDocTbody> tbody;
-    @XmlAttribute(name = "ID")
+    @XmlAttribute(name = "ID1")
     @XmlJavaTypeAdapter(CollapsedStringAdapter.class)
     @XmlID
     @XmlSchemaType(name = "ID")

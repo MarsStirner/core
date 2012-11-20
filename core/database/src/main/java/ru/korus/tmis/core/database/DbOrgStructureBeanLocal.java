@@ -17,10 +17,10 @@ public interface DbOrgStructureBeanLocal {
                                                     int page,
                                                     String sortingField,
                                                     String sortingMethod,
-                                                    String filter)
+                                                    Object filter)
             throws CoreException;
 
-    long getCountAllOrgStructuresWithFilter(String filter)
+    long getCountAllOrgStructuresWithFilter(Object filter)
             throws CoreException;
 
 

@@ -130,9 +130,9 @@ class DbSchemeKladrBean
           queryStr.query = "WHERE " + queryStr.query.substring("AND ".length())
         }
       }
-      query = StreetByFilterQuery.format("str.code, str.name, str.socr", queryStr.query, "" /*sorting*/)
+      query = StreetByFilterQuery.format("str.code, str.name, str.socr, str.index", queryStr.query, "" /*sorting*/)
     } else {
-      query = KladrByFilterQuery.format("kl.code, kl.name, kl.socr", queryStr.query, "" /*sorting*/)
+      query = KladrByFilterQuery.format("kl.code, kl.name, kl.socr, kl.index", queryStr.query, "" /*sorting*/)
     }
 
     var typed = em.createQuery(query, classOf[Array[AnyRef]])
@@ -146,7 +146,7 @@ class DbSchemeKladrBean
     val result = typed.getResultList
     val list = new java.util.LinkedList[Object]
     result.foreach(f => {
-      list.add((f(0).asInstanceOf[java.lang.String], f(1).asInstanceOf[java.lang.String], f(2).asInstanceOf[java.lang.String]))
+      list.add((f(0).asInstanceOf[java.lang.String], f(1).asInstanceOf[java.lang.String], f(2).asInstanceOf[java.lang.String], f(3).asInstanceOf[java.lang.String]))
     })
     list
   }

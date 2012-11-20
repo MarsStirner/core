@@ -80,52 +80,25 @@ class DbPatientBean
     ORDER BY p.%s %s
                                      """
 
-  val PatientFindActiveByDocumentPatternQuery = """
-    SELECT %s
-    FROM
-      Patient p
-    WHERE
-      NOT exists (
-       SELECT r
-         FROM ClientRelation r
-         WHERE r.relative.id = p.id
-       )
-     AND
-       p.deleted = 0
-     ORDER BY p.%s %s
-                                                """
-
-  //    //TODO: в таблице Client нет поля "код пациента"
-  //    val PatientFindActiveByCodeQuery = """
-  //      SELECT %s
-  //      FROM
-  //        Patient p
-  //      WHERE
-  //        p.id = :patientCode
-  //      AND
-  //        p.deleted = 0
-  //      ORDER BY p.%s %s
-  //    """
-  //
-  //    val PatientFindActiveByDocumentPatternQuery = """
-  //      SELECT %s
-  //      FROM
-  //        Patient p
-  //      WHERE
-  //        NOT exists (
-  //         SELECT r
-  //           FROM ClientRelation r
-  //           WHERE r.relative.id = p.id
-  //         )
-  //      AND
-  //        exists (
-  //          SELECT d FROM ClientDocument d
-  //          WHERE upper(d.serial) LIKE upper(:documentPattern) OR upper(d.number) LIKE upper(:documentPattern)
-  //          AND d.patient = p)
-  //      AND
-  //        p.deleted = 0
-  //      ORDER BY p.%s %s
-  //    """
+      val PatientFindActiveByDocumentPatternQuery = """
+        SELECT %s
+        FROM
+          Patient p
+        WHERE
+          NOT exists (
+           SELECT r
+             FROM ClientRelation r
+             WHERE r.relative.id = p.id
+           )
+        AND
+          exists (
+            SELECT d FROM ClientDocument d
+            WHERE upper(d.serial) LIKE upper(:documentPattern) OR upper(d.number) LIKE upper(:documentPattern)
+            AND d.patient = p)
+        AND
+          p.deleted = 0
+        ORDER BY p.%s %s
+      """
 
   //TODO: решить, как лучше искать по ФИО
   val PatientFindActiveByFullNamePatternQuery = """

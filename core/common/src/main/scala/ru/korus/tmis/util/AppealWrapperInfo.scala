@@ -2,19 +2,16 @@ package ru.korus.tmis.util
 
 import reflect.Configuration
 
-object AppealWrapperInfo extends Configuration {
-  awi =>
+object AppealWrapperInfo extends Configuration { awi =>
 
   def Types = ConfigManager.Types
-
   var Mess = ConfigManager.Messages
 
   //////////////////////////////////////////////////////////////////////////////
   // Internal Ids
   var Id = StringId("id")
   var Number = StringId("number")
-  var AmbulanceNumber = StringId("ambulanceNumber")
-  //????????
+  var AmbulanceNumber = StringId("ambulanceNumber")    //????????
   var AppealTypeId = StringId("appealType")
   var Urgent = StringId("urgent")
   var AppealDateTime = StringId("rangeAppealDateTime")
@@ -26,7 +23,7 @@ object AppealWrapperInfo extends Configuration {
 
   var AgreedType = StringId("agreedType")
   var Assignment = StringId("assignment")
-  var HospitalizationType = StringId("hospitalizationType")
+  var HospitalizationType= StringId("hospitalizationType")
   var HospitalizationPointType = StringId("hospitalizationPointType")
   var HospitalizationChannelType = StringId("hospitalizationChannelType")
   var DeliveredType = StringId("deliveredType")
@@ -56,59 +53,33 @@ object AppealWrapperInfo extends Configuration {
 
   // Typed internal Ids
   def TypedId = (Id, Types.Integer, ApTypedInt)
-
   def TypedNumber = (Number, Types.String, ApTypedString)
-
   def TypedAmbulanceNumber = (AmbulanceNumber, Types.String, ApTypedString)
-
   def TypedAppealType = (AppealTypeId, Types.Object, ApTypedIdNameContainer)
-
   def TypedUrgent = (Urgent, Types.Boolean, ApTypedBoolean)
-
   def TypedDate = (AppealDateTime, Types.Object, ApTypedDatePeriodContainer)
-
   def TypedPatient = (Patient, Types.Object, ApTypedIdValueContainer)
-
   def TypedExecutorLastName = (ExecutorLastName, Types.String, ApTypedString)
-
   def TypedExecutorFirstName = (ExecutorFirstName, Types.String, ApTypedString)
-
   def TypedExecutorMiddleName = (ExecutorMiddleName, Types.String, ApTypedString)
-
   def TypedExecutorSpecs = (ExecutorSpecs, Types.String, ApTypedString)
 
   def TypedAgreedType = (AgreedType, Types.Object, ApTypedIdNameContainer)
-
   def TypedAssignment = (Assignment, Types.Object, ApTypedAppealAssignmentContainer)
-
   def TypedHospitalizationType = (HospitalizationType, Types.Object, ApTypedIdNameContainer)
-
   def TypedHospitalizationPointType = (HospitalizationPointType, Types.Object, ApTypedIdNameContainer)
-
   def TypedHospitalizationChannelType = (HospitalizationChannelType, Types.Object, ApTypedIdNameContainer)
-
   def TypedDeliveredType = (DeliveredType, Types.Object, ApTypedIdNameContainer)
-
   def TypedDeliveredAfterType = (DeliveredAfterType, Types.Object, ApTypedIdNameContainer)
-
   def TypedStateType = (StateType, Types.Object, ApTypedIdNameContainer)
-
   def TypedDrugsType = (DrugsType, Types.Object, ApTypedIdNameContainer)
-
   def TypedPhysicalParameters = (PhysicalParameters, Types.Object, ApTypedPhysicalParameterContainer)
-
   def TypedBranchType = (BranchType, Types.Object, ApTypedIdNameContainer)
-
   def TypedPlaceType = (PlaceType, Types.Object, ApTypedIdNameContainer)
-
   def TypedDiagnoses = (Diagnoses, Types.Object, ApTypedDiagnosisContainer)
-
   def TypedAgreedDoctor = (AgreedDoctor, Types.Object, ApTypedIdValueContainer)
-
   def TypedRelations = (Relations, Types.Object, ApTypedRelationsEntryContainer)
-
   def TypedMKB = (MKB, Types.Object, ApTypedMKBContainer)
-
   //////////////////////////////////////////////////////////////////////////////
 
   def map = Map(
@@ -144,39 +115,41 @@ object AppealWrapperInfo extends Configuration {
   )
 
   def map_property = Map(
-    AgreedType -> Set(ConfigManager.Messages("appeal.db.actionPropertyType.name.agreedType")),
-    Assignment -> Set(ConfigManager.Messages("appeal.db.actionPropertyType.name.assignmentDate"),
-      ConfigManager.Messages("appeal.db.actionPropertyType.name.number"),
-      ConfigManager.Messages("appeal.db.actionPropertyType.name.directed"),
-      ConfigManager.Messages("appeal.db.actionPropertyType.name.doctor")),
-    HospitalizationType -> Set(ConfigManager.Messages("appeal.db.actionPropertyType.name.hospitalizationType")),
-    HospitalizationPointType -> Set(ConfigManager.Messages("appeal.db.actionPropertyType.name.hospitalizationPointType")),
-    HospitalizationChannelType -> Set(ConfigManager.Messages("appeal.db.actionPropertyType.name.hospitalizationChannelType")),
-    DeliveredType -> Set(ConfigManager.Messages("appeal.db.actionPropertyType.name.deliveredType")),
-    DeliveredAfterType -> Set(ConfigManager.Messages("appeal.db.actionPropertyType.name.deliveredAfterType")),
-    StateType -> Set(ConfigManager.Messages("appeal.db.actionPropertyType.name.stateType")),
-    DrugsType -> Set(ConfigManager.Messages("appeal.db.actionPropertyType.name.drugsType")),
-    PhysicalParameters -> Set(ConfigManager.Messages("appeal.db.actionPropertyType.name.height"),
-      ConfigManager.Messages("appeal.db.actionPropertyType.name.weight"),
-      ConfigManager.Messages("appeal.db.actionPropertyType.name.temperature"),
-      ConfigManager.Messages("appeal.db.actionPropertyType.name.bloodPressure.left"),
-      ConfigManager.Messages("appeal.db.actionPropertyType.name.bloodPressure.right")),
-    BranchType -> Set(ConfigManager.Messages("appeal.db.actionPropertyType.name.brunchType")),
-    PlaceType -> Set(ConfigManager.Messages("appeal.db.actionPropertyType.name.placeType")),
-    Diagnoses -> Set(ConfigManager.Messages("appeal.db.actionPropertyType.name.diagnosis.assigment.code"),
-      ConfigManager.Messages("appeal.db.actionPropertyType.name.diagnosis.assignment.description"),
-      ConfigManager.Messages("appeal.db.actionPropertyType.name.diagnosis.aftereffect.code"),
-      ConfigManager.Messages("appeal.db.actionPropertyType.name.diagnosis.aftereffect.description"),
-      ConfigManager.Messages("appeal.db.actionPropertyType.name.diagnosis.attendant.code"),
-      ConfigManager.Messages("appeal.db.actionPropertyType.name.diagnosis.attendant.description")),
-    AgreedDoctor -> Set(ConfigManager.Messages("appeal.db.actionPropertyType.name.agreedDoctor")),
-    Relations -> Set(),
-    MKB -> Set(ConfigManager.Messages("appeal.db.actionPropertyType.name.diagnosis.assigment.code"),
-      ConfigManager.Messages("appeal.db.actionPropertyType.name.diagnosis.assignment.description"),
-      ConfigManager.Messages("appeal.db.actionPropertyType.name.diagnosis.aftereffect.code"),
-      ConfigManager.Messages("appeal.db.actionPropertyType.name.diagnosis.aftereffect.description"),
-      ConfigManager.Messages("appeal.db.actionPropertyType.name.diagnosis.attendant.code"),
-      ConfigManager.Messages("appeal.db.actionPropertyType.name.diagnosis.attendant.description"))
+      AgreedType -> Set(ConfigManager.Messages("appeal.db.actionPropertyType.name.agreedType")),
+      Assignment -> Set(ConfigManager.Messages("appeal.db.actionPropertyType.name.assignmentDate"),
+                        ConfigManager.Messages("appeal.db.actionPropertyType.name.number"),
+                        ConfigManager.Messages("appeal.db.actionPropertyType.name.directed"),
+                        ConfigManager.Messages("appeal.db.actionPropertyType.name.doctor")),
+      HospitalizationType -> Set(ConfigManager.Messages("appeal.db.actionPropertyType.name.hospitalizationType")),
+      HospitalizationPointType -> Set(ConfigManager.Messages("appeal.db.actionPropertyType.name.hospitalizationPointType")),
+      HospitalizationChannelType -> Set(ConfigManager.Messages("appeal.db.actionPropertyType.name.hospitalizationChannelType")),
+      DeliveredType -> Set(ConfigManager.Messages("appeal.db.actionPropertyType.name.deliveredType")),
+      DeliveredAfterType -> Set(ConfigManager.Messages("appeal.db.actionPropertyType.name.deliveredAfterType")),
+      StateType -> Set(ConfigManager.Messages("appeal.db.actionPropertyType.name.stateType")),
+      DrugsType -> Set(ConfigManager.Messages("appeal.db.actionPropertyType.name.drugsType")),
+      PhysicalParameters -> Set(ConfigManager.Messages("appeal.db.actionPropertyType.name.height"),
+                            ConfigManager.Messages("appeal.db.actionPropertyType.name.weight"),
+                            ConfigManager.Messages("appeal.db.actionPropertyType.name.temperature"),
+                            ConfigManager.Messages("appeal.db.actionPropertyType.name.bloodPressure.left.ADdiast"),
+                            ConfigManager.Messages("appeal.db.actionPropertyType.name.bloodPressure.left.ADsyst"),
+                            ConfigManager.Messages("appeal.db.actionPropertyType.name.bloodPressure.right.ADdiast"),
+                            ConfigManager.Messages("appeal.db.actionPropertyType.name.bloodPressure.right.ADsyst")),
+      BranchType -> Set(ConfigManager.Messages("appeal.db.actionPropertyType.name.brunchType")),
+      PlaceType -> Set(ConfigManager.Messages("appeal.db.actionPropertyType.name.placeType")),
+      Diagnoses -> Set(ConfigManager.Messages("appeal.db.actionPropertyType.name.diagnosis.assigment.code"),
+                        ConfigManager.Messages("appeal.db.actionPropertyType.name.diagnosis.assignment.description"),
+                        ConfigManager.Messages("appeal.db.actionPropertyType.name.diagnosis.aftereffect.code"),
+                        ConfigManager.Messages("appeal.db.actionPropertyType.name.diagnosis.aftereffect.description"),
+                        ConfigManager.Messages("appeal.db.actionPropertyType.name.diagnosis.attendant.code"),
+                        ConfigManager.Messages("appeal.db.actionPropertyType.name.diagnosis.attendant.description")),
+      AgreedDoctor -> Set(ConfigManager.Messages("appeal.db.actionPropertyType.name.agreedDoctor")),
+      Relations -> Set(),
+      MKB -> Set(ConfigManager.Messages("appeal.db.actionPropertyType.name.diagnosis.assigment.code"),
+        ConfigManager.Messages("appeal.db.actionPropertyType.name.diagnosis.assignment.description"),
+        ConfigManager.Messages("appeal.db.actionPropertyType.name.diagnosis.aftereffect.code"),
+        ConfigManager.Messages("appeal.db.actionPropertyType.name.diagnosis.aftereffect.description"),
+        ConfigManager.Messages("appeal.db.actionPropertyType.name.diagnosis.attendant.code"),
+        ConfigManager.Messages("appeal.db.actionPropertyType.name.diagnosis.attendant.description"))
   )
 
   def apply(key: StringId) = {
@@ -188,13 +161,12 @@ object AppealWrapperInfo extends Configuration {
   }
 
   def apply_property(key: StringId) = {
-    if (map_property.keySet(key) == true) {
+    if (map_property.keySet(key)==true) {
       map_property(key)
     }
     else
       null
   }
-
   def immutable = new {
 
     val Id = awi.Id
@@ -238,7 +210,6 @@ object AppealWrapperInfo extends Configuration {
     val ApTypedRelationsEntryContainer = awi.ApTypedRelationsEntryContainer
 
     def apply(key: StringId) = awi(key)
-
     def apply_property(key: StringId) = awi(key)
   }
 }

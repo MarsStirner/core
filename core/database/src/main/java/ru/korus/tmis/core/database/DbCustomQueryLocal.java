@@ -3,6 +3,7 @@ package ru.korus.tmis.core.database;
 import ru.korus.tmis.core.entity.model.*;
 import ru.korus.tmis.core.exception.CoreException;
 import ru.korus.tmis.core.indicators.IndicatorValue;
+import scala.Function1;
 
 import java.util.Date;
 import java.util.List;
@@ -82,7 +83,7 @@ public interface DbCustomQueryLocal {
     RbUnit getUnitByCode(String code)
             throws CoreException;
 
-    Map<Event, Map<Object, Object>> getAllAppealsWithFilter(int page, int limit, String sortingField, String sortingMethod, Object filter)
+    Map<Event, Object> getAllAppealsWithFilter(int page, int limit, String sortingField, String sortingMethod, Object filter, Function1<Long, Boolean> postProcessing)
             throws CoreException;
 
     Mkb getDiagnosisForMainDiagInAppeal(int appealId)
@@ -94,6 +95,7 @@ public interface DbCustomQueryLocal {
     Double getWeightForPatient(Patient patient)
             throws CoreException;
 
+    @Deprecated
     long getCountOfAppealsWithFilter(Object filter)
             throws CoreException;
 

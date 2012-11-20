@@ -102,7 +102,11 @@ class DbClientDocumentBean
     d.setIssued(issued)
     d.setNumber(number)
     d.setSerial(serial)
-    d.setDate(startDate)
+    if (startDate != null) {
+      d.setDate(startDate)
+    } else {
+      d.setDate(now)
+    }
     d.setEndDate(endDate)
     d.setPatient(patient)
 

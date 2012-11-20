@@ -15,11 +15,11 @@
             <param-name>com.sun.jersey.api.json.POJOMappingFeature</param-name>
             <param-value>true</param-value>
         </init-param>
-        <!-- Фильтр       старое
-      <init-param>      
-        <param-name>com.sun.jersey.spi.container.ResourceFilters</param-name>
-        <param-value>ru.korus.tmis.ws.webmis.rest.AuthentificationRESTFilterFactory</param-value>
-      </init-param>
+        <!-- Фильтр
+        <init-param>
+          <param-name>com.sun.jersey.spi.container.ResourceFilters</param-name>
+          <param-value>ru.korus.tmis.ws.webmis.rest.AuthentificationRESTFilterFactory</param-value>
+        </init-param>
         -->
         <load-on-startup>1</load-on-startup>
     </servlet>
@@ -29,22 +29,23 @@
     </servlet-mapping>
 
     <!--
-        <servlet>
-            <servlet-name>authentication</servlet-name>
-            <servlet-class>
-                ru.korus.tmis.ws.impl.AuthenticationWSImpl
-            </servlet-class>
-            <load-on-startup>1</load-on-startup>
-        </servlet>
+
+     <servlet>
+         <servlet-name>authentication</servlet-name>
+         <servlet-class>
+             ru.korus.tmis.ws.impl.AuthenticationWSImpl
+         </servlet-class>
+         <load-on-startup>1</load-on-startup>
+     </servlet>
 
 
-            <servlet>
-            <servlet-name>medipad</servlet-name>
-            <servlet-class>
-                ru.korus.tmis.ws.impl.MedipadWSImpl
-            </servlet-class>
-            <load-on-startup>1</load-on-startup>
-        </servlet>
-    -->
+         <servlet>
+         <servlet-name>medipad</servlet-name>
+         <servlet-class>
+             ru.korus.tmis.ws.impl.MedipadWSImpl
+         </servlet-class>
+         <load-on-startup>1</load-on-startup>
+     </servlet>
+      -->
 
 </web-app>

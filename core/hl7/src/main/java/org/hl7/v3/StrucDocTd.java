@@ -40,7 +40,7 @@ import javax.xml.bind.annotation.adapters.XmlJavaTypeAdapter;
  *         &lt;element name="paragraph" type="{urn:hl7-org:v3}StrucDoc.Paragraph" maxOccurs="unbounded" minOccurs="0"/>
  *         &lt;element name="list" type="{urn:hl7-org:v3}StrucDoc.List" maxOccurs="unbounded" minOccurs="0"/>
  *       &lt;/choice>
- *       &lt;attribute name="ID" type="{http://www.w3.org/2001/XMLSchema}ID" />
+ *       &lt;attribute name="ID1" type="{http://www.w3.org/2001/XMLSchema}ID" />
  *       &lt;attribute name="language" type="{http://www.w3.org/2001/XMLSchema}NMTOKEN" />
  *       &lt;attribute name="styleCode" type="{http://www.w3.org/2001/XMLSchema}NMTOKENS" />
  *       &lt;attribute name="abbr" type="{http://www.w3.org/2001/XMLSchema}string" />
@@ -95,20 +95,20 @@ import javax.xml.bind.annotation.adapters.XmlJavaTypeAdapter;
 public class StrucDocTd {
 
     @XmlElementRefs({
-        @XmlElementRef(name = "sup", namespace = "urn:hl7-org:v3", type = JAXBElement.class, required = false),
-        @XmlElementRef(name = "renderMultiMedia", namespace = "urn:hl7-org:v3", type = JAXBElement.class, required = false),
-        @XmlElementRef(name = "sub", namespace = "urn:hl7-org:v3", type = JAXBElement.class, required = false),
-        @XmlElementRef(name = "content", namespace = "urn:hl7-org:v3", type = JAXBElement.class, required = false),
         @XmlElementRef(name = "br", namespace = "urn:hl7-org:v3", type = JAXBElement.class, required = false),
-        @XmlElementRef(name = "footnote", namespace = "urn:hl7-org:v3", type = JAXBElement.class, required = false),
-        @XmlElementRef(name = "linkHtml", namespace = "urn:hl7-org:v3", type = JAXBElement.class, required = false),
-        @XmlElementRef(name = "list", namespace = "urn:hl7-org:v3", type = JAXBElement.class, required = false),
         @XmlElementRef(name = "paragraph", namespace = "urn:hl7-org:v3", type = JAXBElement.class, required = false),
-        @XmlElementRef(name = "footnoteRef", namespace = "urn:hl7-org:v3", type = JAXBElement.class, required = false)
+        @XmlElementRef(name = "list", namespace = "urn:hl7-org:v3", type = JAXBElement.class, required = false),
+        @XmlElementRef(name = "renderMultiMedia", namespace = "urn:hl7-org:v3", type = JAXBElement.class, required = false),
+        @XmlElementRef(name = "linkHtml", namespace = "urn:hl7-org:v3", type = JAXBElement.class, required = false),
+        @XmlElementRef(name = "sup", namespace = "urn:hl7-org:v3", type = JAXBElement.class, required = false),
+        @XmlElementRef(name = "content", namespace = "urn:hl7-org:v3", type = JAXBElement.class, required = false),
+        @XmlElementRef(name = "footnoteRef", namespace = "urn:hl7-org:v3", type = JAXBElement.class, required = false),
+        @XmlElementRef(name = "footnote", namespace = "urn:hl7-org:v3", type = JAXBElement.class, required = false),
+        @XmlElementRef(name = "sub", namespace = "urn:hl7-org:v3", type = JAXBElement.class, required = false)
     })
     @XmlMixed
     protected List<Serializable> content;
-    @XmlAttribute(name = "ID")
+    @XmlAttribute(name = "ID1")
     @XmlJavaTypeAdapter(CollapsedStringAdapter.class)
     @XmlID
     @XmlSchemaType(name = "ID")
@@ -164,16 +164,16 @@ public class StrucDocTd {
      * 
      * <p>
      * Objects of the following type(s) are allowed in the list
-     * {@link JAXBElement }{@code <}{@link StrucDocSup }{@code >}
-     * {@link JAXBElement }{@code <}{@link StrucDocRenderMultiMedia }{@code >}
-     * {@link JAXBElement }{@code <}{@link StrucDocContent }{@code >}
-     * {@link JAXBElement }{@code <}{@link StrucDocSub }{@code >}
      * {@link JAXBElement }{@code <}{@link String }{@code >}
-     * {@link JAXBElement }{@code <}{@link StrucDocFootnote }{@code >}
-     * {@link JAXBElement }{@code <}{@link StrucDocLinkHtml }{@code >}
-     * {@link JAXBElement }{@code <}{@link StrucDocList }{@code >}
-     * {@link String }
      * {@link JAXBElement }{@code <}{@link StrucDocParagraph }{@code >}
+     * {@link JAXBElement }{@code <}{@link StrucDocList }{@code >}
+     * {@link JAXBElement }{@code <}{@link StrucDocLinkHtml }{@code >}
+     * {@link JAXBElement }{@code <}{@link StrucDocRenderMultiMedia }{@code >}
+     * {@link String }
+     * {@link JAXBElement }{@code <}{@link StrucDocContent }{@code >}
+     * {@link JAXBElement }{@code <}{@link StrucDocSup }{@code >}
+     * {@link JAXBElement }{@code <}{@link StrucDocSub }{@code >}
+     * {@link JAXBElement }{@code <}{@link StrucDocFootnote }{@code >}
      * {@link JAXBElement }{@code <}{@link StrucDocFootnoteRef }{@code >}
      * 
      * 

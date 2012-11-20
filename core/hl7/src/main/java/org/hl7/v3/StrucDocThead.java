@@ -25,7 +25,7 @@ import javax.xml.bind.annotation.adapters.XmlJavaTypeAdapter;
  *       &lt;choice>
  *         &lt;element name="tr" type="{urn:hl7-org:v3}StrucDoc.Tr" maxOccurs="unbounded"/>
  *       &lt;/choice>
- *       &lt;attribute name="ID" type="{http://www.w3.org/2001/XMLSchema}ID" />
+ *       &lt;attribute name="ID1" type="{http://www.w3.org/2001/XMLSchema}ID" />
  *       &lt;attribute name="language" type="{http://www.w3.org/2001/XMLSchema}NMTOKEN" />
  *       &lt;attribute name="styleCode" type="{http://www.w3.org/2001/XMLSchema}NMTOKENS" />
  *       &lt;attribute name="align">
@@ -65,7 +65,7 @@ import javax.xml.bind.annotation.adapters.XmlJavaTypeAdapter;
 public class StrucDocThead {
 
     protected List<StrucDocTr> tr;
-    @XmlAttribute(name = "ID")
+    @XmlAttribute(name = "ID1")
     @XmlJavaTypeAdapter(CollapsedStringAdapter.class)
     @XmlID
     @XmlSchemaType(name = "ID")

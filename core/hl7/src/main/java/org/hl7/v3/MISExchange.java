@@ -1,14 +1,13 @@
 
 package org.hl7.v3;
 
+import java.net.Authenticator;
 import java.net.MalformedURLException;
+import java.net.PasswordAuthentication;
 import java.net.URL;
+import java.util.Map;
 import javax.xml.namespace.QName;
-import javax.xml.ws.Service;
-import javax.xml.ws.WebEndpoint;
-import javax.xml.ws.WebServiceClient;
-import javax.xml.ws.WebServiceException;
-import javax.xml.ws.WebServiceFeature;
+import javax.xml.ws.*;
 
 
 /**
@@ -17,7 +16,7 @@ import javax.xml.ws.WebServiceFeature;
  * Generated source version: 2.2
  * 
  */
-@WebServiceClient(name = "MISExchange", targetNamespace = "urn:hl7-org:v3", wsdlLocation = "file:/C:/Project/tmis-core/core/drugstore-tier/src/main/resources/MISExchange.wsdl")
+@WebServiceClient(name = "MISExchange", targetNamespace = "urn:hl7-org:v3", wsdlLocation = "http://app1c-01.app.fccho-moscow.ru/pharmacy3/ws/MISExchange?wsdl")
 public class MISExchange
     extends Service
 {
@@ -27,10 +26,18 @@ public class MISExchange
     private final static QName MISEXCHANGE_QNAME = new QName("urn:hl7-org:v3", "MISExchange");
 
     static {
+        Authenticator.setDefault(new Authenticator() {
+            @Override
+            protected PasswordAuthentication getPasswordAuthentication() {
+                return new PasswordAuthentication(
+                        "admin",
+                        "1234".toCharArray());
+            }
+        });
         URL url = null;
         WebServiceException e = null;
         try {
-            url = new URL("file:/C:/Project/tmis-core/core/drugstore-tier/src/main/resources/MISExchange.wsdl");
+            url = new URL("http://app1c-01.app.fccho-moscow.ru/pharmacy3/ws/MISExchange?wsdl");
         } catch (MalformedURLException ex) {
             e = new WebServiceException(ex);
         }
@@ -69,7 +76,14 @@ public class MISExchange
      */
     @WebEndpoint(name = "MISExchangeSoap")
     public MISExchangePortType getMISExchangeSoap() {
-        return super.getPort(new QName("urn:hl7-org:v3", "MISExchangeSoap"), MISExchangePortType.class);
+        final MISExchangePortType misExchangeSoap = super.getPort(new QName("urn:hl7-org:v3", "MISExchangeSoap"), MISExchangePortType.class);
+
+        Map<String, Object> requestContext = ((BindingProvider)misExchangeSoap).getRequestContext();
+       // requestContext.put(BindingProvider.ENDPOINT_ADDRESS_PROPERTY, "http://app1c-01.app.fccho-moscow.ru/pharmacy3/ws/MISExchange");
+        requestContext.put(BindingProvider.USERNAME_PROPERTY, "admin");
+        requestContext.put(BindingProvider.PASSWORD_PROPERTY, "1234");
+
+        return misExchangeSoap;
     }
 
     /**

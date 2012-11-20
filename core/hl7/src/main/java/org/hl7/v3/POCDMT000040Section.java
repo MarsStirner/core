@@ -38,7 +38,7 @@ import javax.xml.bind.annotation.adapters.XmlJavaTypeAdapter;
  *         &lt;element name="entry" type="{urn:hl7-org:v3}POCD_MT000040.Entry" maxOccurs="unbounded" minOccurs="0"/>
  *         &lt;element name="component" type="{urn:hl7-org:v3}POCD_MT000040.Component5" maxOccurs="unbounded" minOccurs="0"/>
  *       &lt;/sequence>
- *       &lt;attribute name="ID" type="{http://www.w3.org/2001/XMLSchema}ID" />
+ *       &lt;attribute name="ID1" type="{http://www.w3.org/2001/XMLSchema}ID" />
  *       &lt;attribute name="nullFlavor" type="{urn:hl7-org:v3}NullFlavor" />
  *       &lt;attribute name="classCode" type="{urn:hl7-org:v3}ActClass" fixed="DOCSECT" />
  *       &lt;attribute name="moodCode" type="{urn:hl7-org:v3}ActMood" fixed="EVN" />
@@ -82,7 +82,7 @@ public class POCDMT000040Section {
     protected List<POCDMT000040Informant12> informant;
     protected List<POCDMT000040Entry> entry;
     protected List<POCDMT000040Component5> component;
-    @XmlAttribute(name = "ID")
+    @XmlAttribute(name = "ID1")
     @XmlJavaTypeAdapter(CollapsedStringAdapter.class)
     @XmlID
     @XmlSchemaType(name = "ID")

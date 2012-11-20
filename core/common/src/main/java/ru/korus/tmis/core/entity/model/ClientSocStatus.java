@@ -11,19 +11,20 @@ import java.util.Date;
 import javax.persistence.*;
 
 /**
+ *
  * @author s0
  */
 @Entity
 @Table(name = "ClientSocStatus")
 @NamedQueries({
-        @NamedQuery(name = "ClientSocStatus.findAll", query = "SELECT c FROM ClientSocStatus c"),
-        @NamedQuery(name = "ClientSocStatus.findById", query = "SELECT c FROM ClientSocStatus c WHERE c.id = :id"),
-        @NamedQuery(name = "ClientSocStatus.findByCreateDatetime", query = "SELECT c FROM ClientSocStatus c WHERE c.createDatetime = :createDatetime"),
-        @NamedQuery(name = "ClientSocStatus.findByModifyDatetime", query = "SELECT c FROM ClientSocStatus c WHERE c.modifyDatetime = :modifyDatetime"),
-        @NamedQuery(name = "ClientSocStatus.findByDeleted", query = "SELECT c FROM ClientSocStatus c WHERE c.deleted = :deleted"),
-        @NamedQuery(name = "ClientSocStatus.findByBegDate", query = "SELECT c FROM ClientSocStatus c WHERE c.begDate = :begDate"),
-        @NamedQuery(name = "ClientSocStatus.findByEndDate", query = "SELECT c FROM ClientSocStatus c WHERE c.endDate = :endDate")
-})
+    @NamedQuery(name = "ClientSocStatus.findAll", query = "SELECT c FROM ClientSocStatus c"),
+    @NamedQuery(name = "ClientSocStatus.findById", query = "SELECT c FROM ClientSocStatus c WHERE c.id = :id"),
+    @NamedQuery(name = "ClientSocStatus.findByCreateDatetime", query = "SELECT c FROM ClientSocStatus c WHERE c.createDatetime = :createDatetime"),
+    @NamedQuery(name = "ClientSocStatus.findByModifyDatetime", query = "SELECT c FROM ClientSocStatus c WHERE c.modifyDatetime = :modifyDatetime"),
+    @NamedQuery(name = "ClientSocStatus.findByDeleted", query = "SELECT c FROM ClientSocStatus c WHERE c.deleted = :deleted"),
+    @NamedQuery(name = "ClientSocStatus.findByBegDate", query = "SELECT c FROM ClientSocStatus c WHERE c.begDate = :begDate"),
+    @NamedQuery(name = "ClientSocStatus.findByEndDate", query = "SELECT c FROM ClientSocStatus c WHERE c.endDate = :endDate")
+    })
 public class ClientSocStatus implements Serializable, Cloneable {
     private static final long serialVersionUID = 1L;
     @Id
@@ -31,29 +32,29 @@ public class ClientSocStatus implements Serializable, Cloneable {
     @Basic(optional = false)
     @Column(name = "id")
     private Integer id;
-
+    
     @Basic(optional = false)
     @Column(name = "createDatetime")
     @Temporal(TemporalType.TIMESTAMP)
     private Date createDatetime;
-
+    
     @ManyToOne
     @JoinColumn(name = "createPerson_id")
     private Staff createPerson;
-
+    
     @Basic(optional = false)
     @Column(name = "modifyDatetime")
     @Temporal(TemporalType.TIMESTAMP)
     private Date modifyDatetime;
-
+    
     @ManyToOne
     @JoinColumn(name = "modifyPerson_id")
     private Staff modifyPerson;
-
+    
     @Basic(optional = false)
     @Column(name = "deleted")
     private boolean deleted;
-
+    
     @ManyToOne
     @JoinColumn(name = "client_id")
     private Patient patient;
@@ -69,22 +70,22 @@ public class ClientSocStatus implements Serializable, Cloneable {
     @ManyToOne
     @JoinColumn(name = "socStatusClass_id")
     private RbSocStatusClass socStatusClass;
-
+    
 
     @ManyToOne
     @JoinColumn(name = "socStatusType_id")
     private RbSocStatusType socStatusType;
-
+    
     @Basic(optional = false)
     @Column(name = "begDate")
     @Temporal(TemporalType.DATE)
     private Date begDate;
-
+    
     @Column(name = "endDate")
     @Temporal(TemporalType.DATE)
     private Date endDate;
 
-    @ManyToOne
+    @ManyToOne(cascade = CascadeType.ALL)
     @JoinColumn(name = "document_id")
     private ClientDocument document;
 
@@ -114,7 +115,7 @@ public class ClientSocStatus implements Serializable, Cloneable {
         this.modifyDatetime = modifyDatetime;
         this.deleted = deleted;
         this.patient = patient;
-        this.socStatusType = socStatusType;
+        this.socStatusType= socStatusType;
         this.begDate = begDate;
     }
 
@@ -172,51 +173,51 @@ public class ClientSocStatus implements Serializable, Cloneable {
     }
 
     public Staff getCreatePerson() {
-        return createPerson;
-    }
+		return createPerson;
+	}
 
-    public void setCreatePerson(Staff createPerson) {
-        this.createPerson = createPerson;
-    }
+	public void setCreatePerson(Staff createPerson) {
+		this.createPerson = createPerson;
+	}
 
-    public Staff getModifyPerson() {
-        return modifyPerson;
-    }
+	public Staff getModifyPerson() {
+		return modifyPerson;
+	}
 
-    public void setModifyPerson(Staff modifyPerson) {
-        this.modifyPerson = modifyPerson;
-    }
+	public void setModifyPerson(Staff modifyPerson) {
+		this.modifyPerson = modifyPerson;
+	}
 
-    public Patient getPatient() {
-        return patient;
-    }
+	public Patient getPatient() {
+		return patient;
+	}
 
-    public void setPatient(Patient patient) {
-        this.patient = patient;
-        if (!patient.getClientSocStatuses().contains(this) || this.id == null) {//TODO: не понимаю, почему здесь не работает contains, когда идет добавление двух новых соцстатусов
-            patient.getClientSocStatuses().add(this);
-        }
-    }
+	public void setPatient(Patient patient) {
+		this.patient = patient;
+		if (!patient.getClientSocStatuses().contains(this) || this.id == null) {//TODO: не понимаю, почему здесь не работает contains, когда идет добавление двух новых соцстатусов
+			patient.getClientSocStatuses().add(this);
+		}
+	}
 
-    public RbSocStatusClass getSocStatusClass() {
-        return socStatusClass;
-    }
+	public RbSocStatusClass getSocStatusClass() {
+		return socStatusClass;
+	}
 
-    public void setSocStatusClass(RbSocStatusClass socStatusClass) {
-        this.socStatusClass = socStatusClass;
-    }
+	public void setSocStatusClass(RbSocStatusClass socStatusClass) {
+		this.socStatusClass = socStatusClass;
+	}
 
-    public RbSocStatusType getSocStatusType() {
-        return socStatusType;
-    }
+	public RbSocStatusType getSocStatusType() {
+		return socStatusType;
+	}
 
-    public void setSocStatusType(RbSocStatusType socStatusType) {
-        this.socStatusType = socStatusType;
-    }
+	public void setSocStatusType(RbSocStatusType socStatusType) {
+		this.socStatusType = socStatusType;
+	}
 
-    public void setDeleted(boolean deleted) {
-        this.deleted = deleted;
-    }
+	public void setDeleted(boolean deleted) {
+		this.deleted = deleted;
+	}
 
     public String getNote() {
         return note;
@@ -234,7 +235,7 @@ public class ClientSocStatus implements Serializable, Cloneable {
         this.version = version;
     }
 
-    @Override
+	@Override
     public int hashCode() {
         int hash = 0;
         hash += (id != null ? id.hashCode() : 0);

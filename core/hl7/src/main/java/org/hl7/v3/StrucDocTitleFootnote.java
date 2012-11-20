@@ -33,7 +33,7 @@ import javax.xml.bind.annotation.adapters.XmlJavaTypeAdapter;
  *         &lt;element name="sup" type="{urn:hl7-org:v3}StrucDoc.Sup" maxOccurs="unbounded" minOccurs="0"/>
  *         &lt;element name="br" type="{urn:hl7-org:v3}StrucDoc.Br" maxOccurs="unbounded" minOccurs="0"/>
  *       &lt;/choice>
- *       &lt;attribute name="ID" type="{http://www.w3.org/2001/XMLSchema}ID" />
+ *       &lt;attribute name="ID1" type="{http://www.w3.org/2001/XMLSchema}ID" />
  *       &lt;attribute name="language" type="{http://www.w3.org/2001/XMLSchema}NMTOKEN" />
  *       &lt;attribute name="styleCode" type="{http://www.w3.org/2001/XMLSchema}NMTOKENS" />
  *     &lt;/restriction>
@@ -57,7 +57,7 @@ public class StrucDocTitleFootnote {
     })
     @XmlMixed
     protected List<Serializable> content;
-    @XmlAttribute(name = "ID")
+    @XmlAttribute(name = "ID1")
     @XmlJavaTypeAdapter(CollapsedStringAdapter.class)
     @XmlID
     @XmlSchemaType(name = "ID")
@@ -89,9 +89,9 @@ public class StrucDocTitleFootnote {
      * <p>
      * Objects of the following type(s) are allowed in the list
      * {@link JAXBElement }{@code <}{@link StrucDocTitleContent }{@code >}
-     * {@link JAXBElement }{@code <}{@link String }{@code >}
-     * {@link JAXBElement }{@code <}{@link StrucDocSub }{@code >}
      * {@link String }
+     * {@link JAXBElement }{@code <}{@link StrucDocSub }{@code >}
+     * {@link JAXBElement }{@code <}{@link String }{@code >}
      * {@link JAXBElement }{@code <}{@link StrucDocSup }{@code >}
      * 
      * 

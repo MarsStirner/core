@@ -133,9 +133,10 @@ class DbEventBean
       newEvent.setCreatePerson(authData.user)
       newEvent.setModifyPerson(authData.user)
       newEvent.setExecutor(authData.user)
+      newEvent.setAssigner(authData.user)
       newEvent.setNote(" ")
       newEvent.setSetDate(begDate)
-      newEvent.setExecDate(endDate)
+      //newEvent.setExecDate(endDate)
     }
     catch {
       case ex: Exception => {
@@ -183,6 +184,14 @@ class DbEventBean
   def getEventTypeIdByFDRecordId(fdRecordId: Int) = {
 
     val result = em.createQuery(EventTypeIdByFDRecordIdQuery.format(fdRecordId), classOf[Int]).getSingleResult
+    result
+  }
+
+  def getEventTypeIdByRequestTypeIdAndFinanceId(requestTypeId: Int, financeId: Int) = {
+    val result = em.createQuery(EventTypeIdByRequestTypeIdAndFinanceIdQuery, classOf[Int])
+                   .setParameter("requestTypeId", requestTypeId)
+                   .setParameter("financeId", financeId)
+                   .getSingleResult
     result
   }
 
@@ -442,4 +451,17 @@ class DbEventBean
   AND
     et.code = fdfv.value
                                      """
+
+  val EventTypeIdByRequestTypeIdAndFinanceIdQuery =
+    """
+    SELECT Max(et.id)
+    FROM
+      EventType et
+    WHERE
+      et.finance.id = :financeId
+    AND
+      et.requestType.id = :requestTypeId
+    AND
+      et.deleted = '0'
+    """
 }

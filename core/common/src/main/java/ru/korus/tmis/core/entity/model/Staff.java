@@ -16,7 +16,7 @@ import javax.xml.bind.annotation.XmlType;
         {
                 @NamedQuery(name = "Staff.findAll", query = "SELECT s FROM Staff s"),
                 @NamedQuery(name = "Staff.findByLogin",
-                        query = "SELECT s FROM Staff s WHERE s.login = :login AND s.deleted = 0")
+                            query = "SELECT s FROM Staff s WHERE s.login = :login AND s.deleted = 0")
         })
 @XmlType(name = "staff")
 @XmlRootElement(name = "staff")
@@ -242,24 +242,24 @@ public class Staff implements Serializable {
         this.modifyPerson = modifyPerson;
     }
 
-//    @Transient
-//    private Integer modifyPersonId;
+    @Transient
+    private Integer modifyPersonId;
 
     @XmlElement
     private Integer getModifyPersonId() {
-        return modifyPerson != null ? modifyPerson.getId() : -1;
+        return modifyPersonId != null ? modifyPerson.getId() : -1;
     }
 
-//    private void setModifyPersonId(Integer modifyPersonId) {
-//        this.modifyPersonId = modifyPersonId;
-//    }
+    private void setModifyPersonId(Integer modifyPersonId) {
+        this.modifyPersonId = modifyPersonId;
+    }
 
     ////////////////////////////////////////////////////////////////////////////
 
     @ManyToMany(cascade = CascadeType.ALL)
     @JoinTable(name = "Person_Profiles",
-            joinColumns = {@JoinColumn(name = "person_id")},
-            inverseJoinColumns = {@JoinColumn(name = "userProfile_id")})
+               joinColumns = {@JoinColumn(name = "person_id")},
+               inverseJoinColumns = {@JoinColumn(name = "userProfile_id")})
     private Set<Role> roles = new LinkedHashSet<Role>();
 
     public Set<Role> getRoles() {

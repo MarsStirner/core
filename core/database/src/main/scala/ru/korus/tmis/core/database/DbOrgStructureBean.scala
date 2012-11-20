@@ -11,6 +11,7 @@ import javax.interceptor.Interceptors
 import javax.persistence.{EntityManager, PersistenceContext}
 
 import scala.collection.JavaConversions._
+import ru.korus.tmis.core.data.{QueryDataStructure, DepartmentsDataFilter}
 
 @Interceptors(Array(classOf[LoggingInterceptor]))
 @Stateless
@@ -35,21 +36,36 @@ class DbOrgStructureBean
     new java.util.HashSet(result)
   }
 
-  def getCountAllOrgStructuresWithFilter(filter: String) = {
-    val result = em.createQuery(OrgStructuresAndCountRecordsWithFilterQuery.format("count(os)", "", filter), classOf[Long])
-      .getSingleResult
-    result
+  def getCountAllOrgStructuresWithFilter(filter: Object) = {
+    val queryStr: QueryDataStructure = if (filter.isInstanceOf[DepartmentsDataFilter]) {
+      filter.asInstanceOf[DepartmentsDataFilter].toQueryStructure()
+    } else  new QueryDataStructure()
+
+    val typed = em.createQuery(OrgStructuresAndCountRecordsWithFilterQuery.format(
+                  "count(os)",
+                  queryStr.query,
+                   ""), classOf[Long])
+    if (queryStr.data.size() > 0) {
+      queryStr.data.foreach(qdp => typed.setParameter(qdp.name, qdp.value))
+    }
+    typed.getSingleResult
   }
 
-  def getAllOrgStructuresByRequest(limit: Int, page: Int, sortField: String, sortMethod: String, filter: String) = {
+  def getAllOrgStructuresByRequest(limit: Int, page: Int, sortField: String, sortMethod: String, filter: Object) = {
 
-    val sorting: String = "ORDER BY os.%s %s".format(sortField, sortMethod)
-    val result = em.createQuery(OrgStructuresAndCountRecordsWithFilterQuery.format("os", sorting, filter), classOf[OrgStructure])
-      .setMaxResults(limit)
-      .setFirstResult(limit * page)
-      .getResultList
+    val queryStr: QueryDataStructure = if (filter.isInstanceOf[DepartmentsDataFilter]) {
+      filter.asInstanceOf[DepartmentsDataFilter].toQueryStructure()
+    } else  new QueryDataStructure()
 
-    result
+    val sorting = "ORDER BY %s %s".format(sortField, sortMethod)
+
+    var typed = em.createQuery(OrgStructuresAndCountRecordsWithFilterQuery.format("os", queryStr.query, sorting), classOf[OrgStructure])
+                  .setMaxResults(limit)
+                  .setFirstResult(limit * page)
+    if (queryStr.data.size() > 0) {
+      queryStr.data.foreach(qdp => typed.setParameter(qdp.name, qdp.value))
+    }
+    typed.getResultList
   }
 
   def getOrgStructureByHospitalBedId(bedId: Int) = {

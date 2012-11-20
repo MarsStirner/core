@@ -30,27 +30,11 @@ public class ObjectFactory {
     }
 
     /**
-     * Create an instance of {@link Storage }
-     * 
-     */
-    public Storage createStorage() {
-        return new Storage();
-    }
-
-    /**
      * Create an instance of {@link OrganizationList }
      * 
      */
     public OrganizationList createOrganizationList() {
         return new OrganizationList();
-    }
-
-    /**
-     * Create an instance of {@link Organization }
-     * 
-     */
-    public Organization createOrganization() {
-        return new Organization();
     }
 
     /**
@@ -67,6 +51,22 @@ public class ObjectFactory {
      */
     public StorageList createStorageList() {
         return new StorageList();
+    }
+
+    /**
+     * Create an instance of {@link Storage }
+     * 
+     */
+    public Storage createStorage() {
+        return new Storage();
+    }
+
+    /**
+     * Create an instance of {@link Organization }
+     * 
+     */
+    public Organization createOrganization() {
+        return new Organization();
     }
 
     /**
