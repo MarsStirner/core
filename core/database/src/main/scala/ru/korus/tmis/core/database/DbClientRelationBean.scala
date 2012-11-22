@@ -41,6 +41,14 @@ class DbClientRelationBean
       d.id = :id
                                 """
 
+  val ClientRelationFindByRelativeQuery = """
+    SELECT d
+    FROM
+      ClientRelation d
+    WHERE
+      d.relative.id = :id
+                                """
+
 
   def getAllClientRelations(patientId: Int): Iterable[ClientRelation] = {
     em.createNamedQuery("ClientRelation.findAll", classOf[ClientRelation]).getResultList
@@ -48,6 +56,28 @@ class DbClientRelationBean
 
   def getClientRelationById(id: Int): ClientRelation = {
     val result = em.createQuery(ClientRelationFindQuery,
+      classOf[ClientRelation])
+      .setParameter("id", id)
+      .getResultList
+
+    result.size match {
+      case 0 => {
+        throw new NoSuchClientRelationException(
+          ConfigManager.ErrorCodes.ClientRelationNotFound,
+          id,
+          i18n("error.clientRelationNotFound").format(id))
+      }
+      case size => {
+        result.foreach(rbType => {
+          em.detach(rbType)
+        })
+        result(0)
+      }
+    }
+  }
+
+  def getClientRelationByRelativeId(id: Int): ClientRelation = {
+    val result = em.createQuery(ClientRelationFindByRelativeQuery,
       classOf[ClientRelation])
       .setParameter("id", id)
       .getResultList
@@ -170,6 +200,42 @@ class DbClientRelationBean
       //(d.getRelative() == null) {
       d.setRelative(relative)
     }
+    if (d.getPatient() == null) {
+      d.setPatient(patient)
+    }
+
+    d.setDeleted(false)
+    d.setModifyPerson(sessionUser)
+    d.setModifyDatetime(now)
+
+    d
+  }
+
+  def insertOrUpdateClientRelationByRelativePerson( id: Int,
+                                                    rbRelationTypeId: Int,
+                                                    relative: Patient,
+                                                    patient: Patient,
+                                                    sessionUser: Staff): ClientRelation = {
+    var d: ClientRelation = null
+    val now = new Date
+    if (id > 0) {
+      d = getClientRelationById(id)
+    }
+    else {
+      d = new ClientRelation
+      d.setCreatePerson(sessionUser)
+      d.setCreateDatetime(now)
+    }
+
+
+    if (rbRelationTypeId > 0) {
+      d.setRelativeType(dbRbRelationType.getRbRelationTypeById(rbRelationTypeId))
+    }
+
+    if (relative != null) {
+      d.setRelative(relative)
+    }
+
     if (d.getPatient() == null) {
       d.setPatient(patient)
     }

@@ -6,6 +6,7 @@ import ru.korus.tmis.core.entity.model.Event;
 import ru.korus.tmis.core.entity.model.EventType;
 import ru.korus.tmis.core.entity.model.OrgStructure;
 import ru.korus.tmis.core.exception.CoreException;
+import scala.Function1;
 
 import javax.ejb.Local;
 import java.util.Date;
@@ -40,5 +41,18 @@ public interface DbEventBeanLocal {
     int getEventTypeIdByFDRecordId(int fdRecordId)
             throws CoreException;
 
-    int getEventTypeIdByRequestTypeIdAndFinanceId(int requestTypeId, int financeId) throws CoreException;
+    /**
+     * Запрос на справочники типов обращений.
+     * @param page Выводимая страница.
+     * @param limit Максимальное количество типов оплаты в выводимом списке.
+     * @param sortingField Поле для сортировки.
+     * @param sortingMethod Метод для сортировки.
+     * @param filter Фильтр значений списка.
+     * @param setRecCount Делегируемый метод для перезаписи общего количества элементов по запросу.
+     * @return Список типов обращений как java.util.LinkedList[EventType]
+     * @throws CoreException
+     * @see EventType
+     */
+    java.util.List<EventType> getEventTypesByRequestTypeIdAndFinanceId(int page, int limit, String sortingField, String sortingMethod, Object filter, Function1<Long, Boolean> setRecCount)
+            throws CoreException;
 }
