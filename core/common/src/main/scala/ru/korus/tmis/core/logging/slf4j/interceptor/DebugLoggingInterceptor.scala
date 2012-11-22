@@ -49,12 +49,12 @@ class DebugLoggingInterceptor extends Logging with TmisLogging {
         logTmis.StatusKeys.Success)
       val currStatus = logTmis.getStatus()
       if (currStatus==null || currStatus.compareTo(logTmis.StatusKeys.Success.toString)==0)
-        logger.info(logTmis.getLogStringByValues())
+        logger.info(logTmis.getLogStringByValues(true))
       else if(currStatus.compareTo(logTmis.StatusKeys.Warning.toString)==0)
-        logger.warn(logTmis.getLogStringByValues())
+        logger.warn(logTmis.getLogStringByValues(true))
       else
-        logger.error(logTmis.getLogStringByValues())
-      logTmis.clearLog()
+        logger.error(logTmis.getLogStringByValues(true))
+      //logTmis.clearLog()
     }
 
   }

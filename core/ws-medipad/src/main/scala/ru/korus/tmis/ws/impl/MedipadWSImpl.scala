@@ -1111,7 +1111,7 @@ class MedipadWSImpl
       case "requestTypes" => {  //  Типы обращений
         mapper.getSerializationConfig().setSerializationView(classOf[DictionaryDataViews.DefaultView])
         dbRbRequestTypes.getAllRbRequestTypesWithFilter(request.page,
-                                                        request.limit,
+                                                              request.limit,
                                                         request.sortingFieldInternal,
                                                         request.sortingMethod,
                                                         request.filter,

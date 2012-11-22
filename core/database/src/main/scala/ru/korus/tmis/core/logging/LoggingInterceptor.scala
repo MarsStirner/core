@@ -31,8 +31,6 @@ class LoggingInterceptor extends Logging with TmisLogging {
       ctx proceed
     } catch {
       case ex: CoreException => {
-        var esese = ex.getStackTrace.toString
-        var esese2 = ex.getStackTraceString
         logTmis.setValueForKey(logTmis.LoggingKeys.Error,
           ex.getClass.getSimpleName + " -> " + ex.getId + ": " + ex.getMessage + "/n" + ex.getStackTraceString,
           logTmis.StatusKeys.Failed)
@@ -53,13 +51,17 @@ class LoggingInterceptor extends Logging with TmisLogging {
         " " + className + "." + methodName + " -> " + ((endTime - startTime) / 1000000000.0).toString,
         logTmis.StatusKeys.Success)
       val currStatus = logTmis.getStatus()
-      if (currStatus==null || currStatus.compareTo(logTmis.StatusKeys.Success.toString)==0)
-        logger.info(logTmis.getLogStringByValues())
+      if (currStatus==null || currStatus.compareTo(logTmis.StatusKeys.Success.toString)==0) {
+        logger.info(logTmis.getLogStringByValues(false))
+        if (logTmis.getValueForKey(logTmis.LoggingKeys.URL) != null && !logTmis.getValueForKey(logTmis.LoggingKeys.URL).isEmpty) {
+          logTmis.removeValueForKey(logTmis.LoggingKeys.FirstCall)
+        }
+      }
       else if(currStatus.compareTo(logTmis.StatusKeys.Warning.toString)==0)
-        logger.warn(logTmis.getLogStringByValues())
+        logger.warn(logTmis.getLogStringByValues(true))
       else
-        logger.error(logTmis.getLogStringByValues())
-      logTmis.clearLog()
+        logger.error(logTmis.getLogStringByValues(true))
+      //logTmis.clearLog()
 
 
       internalLogger.logMethodCall(sessionId,

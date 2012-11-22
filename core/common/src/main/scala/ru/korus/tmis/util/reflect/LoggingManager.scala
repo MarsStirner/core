@@ -39,6 +39,8 @@ object LoggingManager {
     val Called = Value("Called")
     val Status = Value("Status")
     val Error = Value("Err")
+
+    val FirstCall = Value
   }
 
   /**
@@ -101,14 +103,45 @@ object LoggingManager {
   }
 
   /**
+   * Метод удаляет значение по ключу из ассоциативного диагностического контекста (org.slf4j.MDC) для текущей сессии
+   * @param key Категория логирования (значения из LoggingKeys).
+   * @return void
+   * @see LoggingKeys
+   * @see StatusKeys
+   * @see org.slf4j.MDC
+   */
+  def removeValueForKey(key: LoggingKeys) {
+    MDC.remove(key.toString)
+  }
+
+  /**
+   * Метод возвращает значение по ключу из ассоциативного диагностического контекста (org.slf4j.MDC) для текущей сессии
+   * @param key Категория логирования (значения из LoggingKeys).
+   * @return java.lang.String
+   * @see LoggingKeys
+   * @see StatusKeys
+   * @see org.slf4j.MDC
+   */
+  def getValueForKey(key: LoggingKeys) = {
+    MDC.get(key.toString)
+  }
+
+  /**
    * Метод формирует строку лога из ассоциативного диагностического контекста (org.slf4j.MDC) для текущей сессии.
    * @return String Строка лога, выводимая с помощью паттерна @msg
    */
-  def getLogStringByValues() = {
+  def getLogStringByValues(isAllParams: Boolean) = {
     var output = ""
     LoggingKeys.values.filter(value => MDC.get(value.toString)!=null)
                       .foreach(key => {
-      output = output + key.toString + ": " + MDC.get(key.toString).toString + "; "
+      if (isAllParams) {
+        output = output + key.toString + ": " + MDC.get(key.toString).toString + "; "
+      } else {
+        if (LoggingKeys.Ip != key && LoggingKeys.URL != key && LoggingKeys.UserAgent != key) {
+          output = output + key.toString + ": " + MDC.get(key.toString).toString + "; "
+        }
+      }
+
     })
     output
   }
@@ -147,6 +180,13 @@ object LoggingManager {
    * @see LoggingKeys
    */
   def getUserAgent = LoggingKeys.UserAgent
+
+  /**
+   * Метод возвращает LoggingKeys.FirstCall
+   * @return LoggingKeys.Value
+   * @see LoggingKeys
+   */
+  def getFirstCall = LoggingKeys.FirstCall
 
   /**
    * Метод возвращает StatusKeys.Success

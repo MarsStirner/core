@@ -1,0 +1,47 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<configuration>
+
+    <appender name="AUTH" class="ch.qos.logback.core.FileAppender">
+        <file>${com.sun.aas.instanceRoot}/logs/auth.log</file>
+        <encoder>
+            <pattern>%d{HH:mm:ss.SSS} %-5level %msg%n</pattern>
+            <charset>UTF8</charset>
+        </encoder>
+    </appender>
+    <logger name="ru.korus.tmis.core.logging.slf4j.interceptor.AuthLoggingInterceptor" level="INFO" additivity="false">
+        <appender-ref ref="AUTH"/>
+    </logger>
+
+    <appender name="SERVICES" class="ch.qos.logback.core.FileAppender">
+        <file>${com.sun.aas.instanceRoot}/logs/services.log</file>
+        <encoder>
+            <pattern>%d{HH:mm:ss.SSS} %-5level %msg%n</pattern>
+            <charset>UTF8</charset>
+        </encoder>
+    </appender>
+    <!-- additivity=false ensures analytics data only goes to the analytics log -->
+    <logger name="ru.korus.tmis.core.logging.slf4j.interceptor.ServicesLoggingInterceptor" level="INFO" additivity="false">
+        <appender-ref ref="SERVICES"/>
+    </logger>
+
+    <appender name="DEBUGLOG" class="ch.qos.logback.core.FileAppender">
+        <file>${com.sun.aas.instanceRoot}/logs/debug.log</file>
+        <encoder>
+            <pattern>%d{HH:mm:ss.SSS} [%thread] %-5level %logger{35} - %msg%n</pattern>
+            <charset>UTF8</charset>
+        </encoder>
+    </appender>
+    <!--
+    <logger name="ru.korus.tmis.core.logging.slf4j.interceptor.ServicesLoggingInterceptor" level="INFO" additivity="true">
+        <appender-ref ref="DEBUGLOG"/>
+    </logger>
+    -->
+    <logger name="ru.korus.tmis.core.logging._LoggingInterceptor_Serializable" level="INFO" additivity="false">
+        <appender-ref ref="DEBUGLOG"/>
+    </logger>
+    <!--
+    <root level="INFO">
+        <appender-ref ref="DEBUGLOG" />
+    </root>
+    -->
+</configuration>
