@@ -51,16 +51,19 @@ class LoggingInterceptor extends Logging with TmisLogging {
         " " + className + "." + methodName + " -> " + ((endTime - startTime) / 1000000000.0).toString,
         logTmis.StatusKeys.Success)
       val currStatus = logTmis.getStatus()
+
+      var needAllParams = false
+      if (logTmis.getValueForKey(logTmis.LoggingKeys.FirstCall) != null && !logTmis.getValueForKey(logTmis.LoggingKeys.FirstCall).isEmpty) {
+        logTmis.removeValueForKey(logTmis.LoggingKeys.FirstCall)
+        needAllParams = true
+      }
       if (currStatus==null || currStatus.compareTo(logTmis.StatusKeys.Success.toString)==0) {
-        logger.info(logTmis.getLogStringByValues(false))
-        if (logTmis.getValueForKey(logTmis.LoggingKeys.URL) != null && !logTmis.getValueForKey(logTmis.LoggingKeys.URL).isEmpty) {
-          logTmis.removeValueForKey(logTmis.LoggingKeys.FirstCall)
-        }
+        logger.info(logTmis.getLogStringByValues(needAllParams))
       }
       else if(currStatus.compareTo(logTmis.StatusKeys.Warning.toString)==0)
-        logger.warn(logTmis.getLogStringByValues(true))
+        logger.warn(logTmis.getLogStringByValues(needAllParams))
       else
-        logger.error(logTmis.getLogStringByValues(true))
+        logger.error(logTmis.getLogStringByValues(needAllParams))
       //logTmis.clearLog()
 
 
@@ -77,5 +80,10 @@ class LoggingInterceptor extends Logging with TmisLogging {
         SharedContext.release()
       }
     }
+  }
+
+  def logMessage(className: String, methodName: String, message: String) {
+    logTmis.setValueForKey(logTmis.LoggingKeys.Called, " " + className + "." + methodName, logTmis.StatusKeys.Success)
+    logger.info(logTmis.getLogStringByValues(false))
   }
 }

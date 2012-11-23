@@ -17,6 +17,9 @@ public interface DbClientRelationBeanLocal {
     ClientRelation getClientRelationById(int id)
             throws CoreException;
 
+    ClientRelation getClientRelationByRelativeId(int id)
+            throws CoreException;
+
     ClientRelation insertOrUpdateClientRelation(
             int id,
             int rbRelationTypeId,
@@ -27,6 +30,15 @@ public interface DbClientRelationBeanLocal {
             Patient patient,
             Staff sessionUser)
             throws CoreException;
+
+    ClientRelation insertOrUpdateClientRelationByRelativePerson(
+                                                                int id,
+                                                                int rbRelationTypeId,
+                                                                Patient relative,
+                                                                Patient patient,
+                                                                Staff sessionUser)
+                                                                throws CoreException;
+
 
     void deleteClientRelation(int id,
                               Staff sessionUser)

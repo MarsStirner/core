@@ -43,25 +43,26 @@ class AppealData {
 
   def this(event: Event,
            appeal: Action,
-           appType: Object,
+           //appType: Object,
            values: java.util.Map[String, java.util.List[Object]],
            typeOfResponse: String,
            map: java.util.LinkedHashMap[java.lang.Integer, java.util.LinkedList[Kladr]],
            street: java.util.LinkedHashMap[java.lang.Integer, Street],
            requestData: AppealRequestData,
-           postProcessing: (Int, java.util.Set[java.lang.Integer]) => Int){
+           postProcessing: (Int, java.util.Set[java.lang.Integer]) => Int,
+           mRelationByRelativeId: (Int)=> ClientRelation){
     this ()
     this.requestData = requestData
     val setATIds = JavaConversions.asJavaSet(Set(ConfigManager.Messages("db.actionType.primary").toInt :java.lang.Integer,
                                                  ConfigManager.Messages("db.actionType.secondary").toInt :java.lang.Integer))
     val havePrimary = if (postProcessing != null && postProcessing(event.getId.intValue(), setATIds)>0) true
                       else false
-    this.data = new AppealEntry(event, appeal, appType, values, typeOfResponse, map, street, havePrimary)
+    this.data = new AppealEntry(event, appeal,/* appType,*/ values, typeOfResponse, map, street, havePrimary, mRelationByRelativeId)
   }
 
-  def this(event: Event,
+  /*def this(event: Event,
            appeal: Action,
-           appType: Object,
+           //appType: Object,
            values: java.util.Map[String, java.util.List[Object]],
            aps: java.util.Map[ActionProperty, java.util.List[APValue]],
            typeOfResponse: String,
@@ -75,12 +76,12 @@ class AppealData {
                                                  ConfigManager.Messages("db.actionType.secondary").toInt :java.lang.Integer))
     val havePrimary = if (postProcessing != null && postProcessing(event.getId.intValue(), setATIds)>0) true
     else false
-    this.data = new AppealEntry(event, appeal, appType, values, aps, typeOfResponse, map, street, havePrimary)
-  }
+    this.data = new AppealEntry(event, appeal, /*appType,*/ values, aps, typeOfResponse, map, street, havePrimary)
+  }*/
 
   def this(event: Event,
            appeal: Action,
-           appType: Object,
+           //appType: Object,
            values: java.util.Map[String, java.util.List[Object]],
            aps: java.util.Map[ActionProperty, java.util.List[APValue]],
            typeOfResponse: String,
@@ -88,6 +89,7 @@ class AppealData {
            street: java.util.LinkedHashMap[java.lang.Integer, Street],
            requestData: AppealRequestData,
            postProcessing: (Int, java.util.Set[java.lang.Integer]) => Int,
+           mRelationByRelativeId: (Int)=> ClientRelation,
            mAdmissionDiagnosis: (Int, java.util.List[java.lang.Integer]) => java.util.Map[ActionProperty, java.util.List[APValue]],
            mCorrList: (java.util.List[java.lang.Integer])=> java.util.List[RbCoreActionProperty]){
     this ()
@@ -105,9 +107,9 @@ class AppealData {
         havePrimary = true
         val admissions = if (mAdmissionDiagnosis!=null) mAdmissionDiagnosis(primaryId, setAdmissionIds) else null
         val corrMap = if(mCorrList!=null) mCorrList(setAdmissionIds) else null
-        this.data = new AppealEntry(event, appeal, appType, values, aps, typeOfResponse, map, street, havePrimary, admissions, corrMap)
+        this.data = new AppealEntry(event, appeal, /*appType,*/ values, aps, typeOfResponse, map, street, havePrimary, mRelationByRelativeId, admissions, corrMap)
     } else {
-      this.data = new AppealEntry(event, appeal, appType, values, aps, typeOfResponse, map, street)
+      this.data = new AppealEntry(event, appeal, /*appType,*/ values, aps, typeOfResponse, map, street, mRelationByRelativeId)
     }
   }
 }
@@ -189,7 +191,8 @@ class AppealEntry {
   @BeanProperty
   var patient: AnyRef = _
   @BeanProperty
-  var appealType: IdNameContainer = _      //Тип обращения
+  var appealType: AppealTypeContainer = _      //Тип обращен
+  //var appealType: IdNameContainer = _      //Тип обращения
   @BeanProperty
   var agreedType: IdNameContainer = _      //Тип согласования
   @BeanProperty
@@ -203,7 +206,7 @@ class AppealEntry {
   @BeanProperty
   var hospitalizationChannelType: IdNameContainer = _  //Канал госпитализации
   @BeanProperty
-  var hospitalizationWith: LinkedList[IdValueContainer] = new LinkedList[IdValueContainer] //С кем госпитализирован (законный представитель)
+  var hospitalizationWith: LinkedList[LegalRepresentativeContainer] = new LinkedList[LegalRepresentativeContainer] //С кем госпитализирован (законный представитель)
   @BeanProperty
   var deliveredType: String = _//IdNameContainer = _    //Кем доставлен
   @BeanProperty
@@ -244,15 +247,16 @@ class AppealEntry {
 
   def this(event: Event,
            action: Action,
-           appType: Object,
+           //appType: Object,
            values: java.util.Map[String, java.util.List[Object]],
            typeOfResponse: String,
            map: java.util.LinkedHashMap[java.lang.Integer, java.util.LinkedList[Kladr]],
-           street: java.util.LinkedHashMap[java.lang.Integer, Street]) {
+           street: java.util.LinkedHashMap[java.lang.Integer, Street],
+           mRelationByRelativeId: (Int)=> ClientRelation) {
 
     this()
 
-    var exValue: java.util.List[Object] = null;
+    var exValue: java.util.List[Object] = null
 
     //Обращение и Действие
     this.id = event.getId.intValue()
@@ -264,7 +268,7 @@ class AppealEntry {
     exValue = this.extractValuesInNumberedMap(Set(ConfigManager.Messages("appeal.db.actionPropertyType.name.ambulanceNumber").toString), values).get("0")
     this.ambulanceNumber = exValue.get(0).asInstanceOf[String]
 
-    this.rangeAppealDateTime = new DatePeriodContainer(event.getSetDate, event.getExecDate)//(action.getBegDate, action.getEndDate)
+    this.rangeAppealDateTime = new DatePeriodContainer(action.getBegDate, action.getEndDate)//(action.getBegDate, action.getEndDate) //event.getSetDate, event.getExecDate
 
     this.patient = typeOfResponse match {
       case "standart"  => {new IdValueContainer(event.getPatient.getId.toString)}
@@ -273,10 +277,10 @@ class AppealEntry {
       case _ => {new IdValueContainer(event.getPatient.getId.toString)}
     }
 
-    if(appType.isInstanceOf[(java.lang.Integer, String)] && appType.asInstanceOf[(java.lang.Integer, String)]._1 != null) {
-      //this.appealType = new IdNameContainer(event.getEventType.getId.intValue(), event.getEventType.getName)
-     this.appealType = new IdNameContainer(appType.asInstanceOf[(java.lang.Integer, String)]._1.intValue(), appType.asInstanceOf[(java.lang.Integer, String)]._2)
-    }
+    //if(appType.isInstanceOf[(java.lang.Integer, String)] && appType.asInstanceOf[(java.lang.Integer, String)]._1 != null) {
+    this.appealType = new AppealTypeContainer(event.getEventType)
+     //this.appealType = new IdNameContainer(appType.asInstanceOf[(java.lang.Integer, String)]._1.intValue(), appType.asInstanceOf[(java.lang.Integer, String)]._2)
+    //}
     //TODO мапинг по имени акшенПроперти... Если имена будут не уникальны, то нужно будет переделать
     exValue = this.extractValuesInNumberedMap(Set(ConfigManager.Messages("appeal.db.actionPropertyType.name.agreedType").toString), values).get("0")
     if(exValue.get(0).isInstanceOf[FDRecord])
@@ -321,7 +325,15 @@ class AppealEntry {
     val exWith = this.extractValuesInNumberedMap(Set(ConfigManager.Messages("appeal.db.actionPropertyType.name.hospitalizationWith").toString), values).get("0")
       exWith.foreach(e => {
         if(e.isInstanceOf[java.lang.Integer] && e.asInstanceOf[java.lang.Integer]!=null)
-          this.hospitalizationWith += new IdValueContainer(e.asInstanceOf[java.lang.Integer].toString)
+          //<=запускать метод получения связи в клиент релэйшн по ид
+          //this.hospitalizationWith += new IdValueContainer(e.asInstanceOf[java.lang.Integer].toString)     //TODO: !!
+          if (mRelationByRelativeId!=null){
+            val representativeId = e.asInstanceOf[java.lang.Integer].intValue()
+            if (representativeId>0){
+              val clientRelation = mRelationByRelativeId(representativeId)
+              this.hospitalizationWith += new LegalRepresentativeContainer(clientRelation, "")
+            }
+          }
       })
 
     exValue = this.extractValuesInNumberedMap(Set(ConfigManager.Messages("appeal.db.actionPropertyType.name.deliveredType").toString), values).get("0")
@@ -395,13 +407,14 @@ class AppealEntry {
 
   def this(event: Event,
            action: Action,
-           appType: Object,
+           //appType: Object,
            values: java.util.Map[String, java.util.List[Object]],
            aps: java.util.Map[ActionProperty, java.util.List[APValue]],
            typeOfResponse: String,
            map: java.util.LinkedHashMap[java.lang.Integer, java.util.LinkedList[Kladr]],
-           street: java.util.LinkedHashMap[java.lang.Integer, Street]) = {
-    this(event, action, appType, values, typeOfResponse, map, street)
+           street: java.util.LinkedHashMap[java.lang.Integer, Street],
+           mRelationByRelativeId: (Int)=> ClientRelation) = {
+    this(event, action, values, typeOfResponse, map, street, mRelationByRelativeId)
     if(aps!=null && aps.size>0){
       aps.foreach(c =>  {
         val (ap,  apvs) = c
@@ -433,41 +446,44 @@ class AppealEntry {
 
   def this(event: Event,
            action: Action,
-           appType: Object,
+           //appType: Object,
            values: java.util.Map[String, java.util.List[Object]],
            typeOfResponse: String,
            map: java.util.LinkedHashMap[java.lang.Integer, java.util.LinkedList[Kladr]],
            street: java.util.LinkedHashMap[java.lang.Integer, Street],
-           havePrimary: Boolean) {
-    this(event, action, appType, values, typeOfResponse, map, street)
+           havePrimary: Boolean,
+           mRelationByRelativeId: (Int)=> ClientRelation) {
+    this(event, action, /*appType,*/ values, typeOfResponse, map, street, mRelationByRelativeId)
     this.havePrimary = havePrimary
   }
 
   def this(event: Event,
            action: Action,
-           appType: Object,
-           values: java.util.Map[String, java.util.List[Object]],
-           aps: java.util.Map[ActionProperty, java.util.List[APValue]],
-           typeOfResponse: String,
-           map: java.util.LinkedHashMap[java.lang.Integer, java.util.LinkedList[Kladr]],
-           street: java.util.LinkedHashMap[java.lang.Integer, Street],
-           havePrimary: Boolean) {
-    this(event, action, appType, values, aps, typeOfResponse, map, street)
-    this.havePrimary = havePrimary
-  }
-
-  def this(event: Event,
-           action: Action,
-           appType: Object,
+           //appType: Object,
            values: java.util.Map[String, java.util.List[Object]],
            aps: java.util.Map[ActionProperty, java.util.List[APValue]],
            typeOfResponse: String,
            map: java.util.LinkedHashMap[java.lang.Integer, java.util.LinkedList[Kladr]],
            street: java.util.LinkedHashMap[java.lang.Integer, Street],
            havePrimary: Boolean,
+           mRelationByRelativeId: (Int)=> ClientRelation) {
+    this(event, action, /*appType,*/ values, aps, typeOfResponse, map, street, mRelationByRelativeId)
+    this.havePrimary = havePrimary
+  }
+
+  def this(event: Event,
+           action: Action,
+           //appType: Object,
+           values: java.util.Map[String, java.util.List[Object]],
+           aps: java.util.Map[ActionProperty, java.util.List[APValue]],
+           typeOfResponse: String,
+           map: java.util.LinkedHashMap[java.lang.Integer, java.util.LinkedList[Kladr]],
+           street: java.util.LinkedHashMap[java.lang.Integer, Street],
+           havePrimary: Boolean,
+           mRelationByRelativeId: (Int)=> ClientRelation,
            admissions: java.util.Map[ActionProperty, java.util.List[APValue]],
            corrList: java.util.List[RbCoreActionProperty]) {
-    this(event, action, appType, values, aps, typeOfResponse, map, street, havePrimary)
+    this(event, action, /*appType,*/ values, aps, typeOfResponse, map, street, havePrimary, mRelationByRelativeId)
     var description: String = ""
     var diagnosis: Mkb = null
     if (admissions!=null && corrList!=null) {
@@ -748,5 +764,49 @@ class MKBContainer {
     map.put("code", this.code)
     map.put("diagnosis", this.diagnosis)
     map
+  }
+}
+
+class AppealTypeContainer {
+  @BeanProperty
+  var eventType: IdNameContainer = _
+
+  @BeanProperty
+  var requestType: IdNameContainer = _
+
+  @BeanProperty
+  var finance: IdNameContainer = _
+
+  def this(eventType: EventType){
+    this()
+    this.eventType = new IdNameContainer(eventType.getId.intValue(), eventType.getName)
+    this.requestType = new IdNameContainer(eventType.getRequestType.getId.intValue(), eventType.getRequestType.getName)
+    this.finance = new IdNameContainer(eventType.getFinance.getId.intValue(), eventType.getFinance.getName)
+  }
+}
+
+class LegalRepresentativeContainer {
+
+  @BeanProperty
+  var relativeId: Int = _                   //Ид законного представителя
+
+  @BeanProperty
+  var relativeType: IdNameContainer = _     //Тип связи
+
+  @BeanProperty
+  var note: String = _                      //Комментарий
+
+  def this(relation: ClientRelation,
+           note: String){
+    this()
+
+    if (relation!=null){
+      this.relativeId = if(relation.getRelative!=null) relation.getRelative.getId.intValue() else 0
+      this.relativeType =
+        if(relation.getRelativeType!=null)
+          new IdNameContainer(relation.getRelativeType.getId.intValue(),"%s(%s)".format(relation.getRelativeType.getLeftName, relation.getRelativeType.getRightName))
+        else null
+    }
+    this.note = note
   }
 }

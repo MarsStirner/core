@@ -17,8 +17,9 @@ import scala._
 import javax.persistence.{TypedQuery, EntityManager, PersistenceContext}
 import ru.korus.tmis.core.entity.model._
 import fd.FDRecord
-import ru.korus.tmis.core.data.{ReceivedRequestData, AppealRequestData, PatientRequestData}
+import ru.korus.tmis.core.data._
 import ru.korus.tmis.core.exception.CoreException
+import scala.Some
 
 @Interceptors(Array(classOf[LoggingInterceptor]))
 @Stateless
@@ -187,11 +188,26 @@ class DbEventBean
     result
   }
 
-  def getEventTypeIdByRequestTypeIdAndFinanceId(requestTypeId: Int, financeId: Int) = {
-    val result = em.createQuery(EventTypeIdByRequestTypeIdAndFinanceIdQuery, classOf[Int])
-                   .setParameter("requestTypeId", requestTypeId)
-                   .setParameter("financeId", financeId)
-                   .getSingleResult
+  def getEventTypesByRequestTypeIdAndFinanceId(page: Int, limit: Int, sortingField: String, sortingMethod: String, filter: Object, records: (java.lang.Long) => java.lang.Boolean) = {
+    val queryStr: QueryDataStructure = if (filter.isInstanceOf[EventTypesListRequestDataFilter])
+      filter.asInstanceOf[EventTypesListRequestDataFilter].toQueryStructure()
+    else new QueryDataStructure()
+
+    val sorting = "ORDER BY %s %s".format(sortingField, sortingMethod)
+
+    if (records!=null) { //Перепишем количество записей для структуры
+      val recC = em.createQuery(EventTypeIdByRequestTypeIdAndFinanceIdQuery.format("count(et)", queryStr.query, ""), classOf[Long])
+      if (queryStr.data.size() > 0) queryStr.data.foreach(qdp => recC.setParameter(qdp.name, qdp.value))
+      records(recC.getSingleResult)
+    }
+
+    var typed = em.createQuery(EventTypeIdByRequestTypeIdAndFinanceIdQuery.format("et", queryStr.query, sorting), classOf[EventType])
+                  .setMaxResults(limit)
+                  .setFirstResult(limit * page)
+    if (queryStr.data.size() > 0) queryStr.data.foreach(qdp => typed.setParameter(qdp.name, qdp.value))
+
+    val result = typed.getResultList
+    result.foreach(em.detach(_))
     result
   }
 
@@ -454,14 +470,12 @@ class DbEventBean
 
   val EventTypeIdByRequestTypeIdAndFinanceIdQuery =
     """
-    SELECT Max(et.id)
+    SELECT %s
     FROM
       EventType et
     WHERE
-      et.finance.id = :financeId
-    AND
-      et.requestType.id = :requestTypeId
-    AND
       et.deleted = '0'
+      %s
+      %s
     """
 }

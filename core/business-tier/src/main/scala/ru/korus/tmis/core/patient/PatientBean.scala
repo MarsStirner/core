@@ -59,6 +59,9 @@ class PatientBean
   var dbClientIntoleranceMedicament: DbClientIntoleranceMedicamentBeanLocal = _
 
   @EJB
+  var actionBean: DbActionBeanLocal = _
+
+  @EJB
   var dbActionProperty: DbActionPropertyBeanLocal = _
 
   @EJB
@@ -84,6 +87,9 @@ class PatientBean
 
   @EJB
   var dbStaff: DbStaffBeanLocal = _
+
+  @EJB
+  private var dbRbCoreActionPropertyBean: DbRbCoreActionPropertyBeanLocal = _
   //////////////////////////////////////////////////////////////////////////////
 
   def getCurrentPatientsForDoctor(userData: AuthData) = {
@@ -351,7 +357,7 @@ class PatientBean
                                                                     requestData.sortingMethod,
                                                                     requestData.filter)
     //дозаполним структуру данными о палате\койке
-    val hospitalBeds = customQuery.getHospitalBedsByEvents(events)    //проверить что каунт эвентов до и после равны
+    /*val hospitalBeds = customQuery.getHospitalBedsByEvents(events)    //проверить что каунт эвентов до и после равны
     val hospitalInfo: Map[Event, OrgStructureHospitalBed]  =
     hospitalBeds.foldLeft(Map.empty[Event, OrgStructureHospitalBed])(
     (key, element) => {
@@ -373,8 +379,7 @@ class PatientBean
         }
       }
       key + (event -> value)
-    })
-
+    })*/
     var conditionsInfo = new java.util.HashMap[Event, java.util.Map[ActionProperty, java.util.List[APValue]]]
     if(role == 1) {  //Для сестры отделения только
       val conditions = customQuery.getLastAssessmentByEvents(events)
@@ -384,11 +389,17 @@ class PatientBean
           conditionsInfo.put(c._1, apList)
         }
       )
-      mapper.getSerializationConfig().setSerializationView(classOf[PatientsListDataViews.NurseView]);
+      mapper.getSerializationConfig().withView(classOf[PatientsListDataViews.NurseView])
     }
-    else
-      mapper.getSerializationConfig().setSerializationView(classOf[PatientsListDataViews.AttendingDoctorView]);
-    mapper.writeValueAsString(new PatientsListData(events, hospitalInfo, conditionsInfo,  requestData))
+    else mapper.getSerializationConfig().withView(classOf[PatientsListDataViews.AttendingDoctorView])
+
+    mapper.writeValueAsString(new PatientsListData(events,
+                                                   requestData,
+                                                   role,
+                                                   conditionsInfo,
+                                                   actionBean.getLastActionByActionTypeIdAndEventId _,
+                                                   dbActionProperty.getActionPropertiesByActionIdAndRbCoreActionPropertyIds _,
+                                                   dbRbCoreActionPropertyBean.getRbCoreActionPropertiesByIds _))
   }
 
   def getPatientById(id: Int) = {

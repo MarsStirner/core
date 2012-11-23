@@ -16,11 +16,12 @@ import java.util.{ArrayList, Date, LinkedList}
 import java.text.{DateFormat, SimpleDateFormat}
 import ru.korus.tmis.core.exception.CoreException
 import java.{util, sql}
-import collection.{JavaConversions, mutable}
+import collection.{mutable, JavaConversions}
 import java.sql.{Connection, DriverManager, ResultSet}
 import ru.korus.tmis.core.event.{Notification, ModifyActionNotification}
 import javax.inject.Inject
 import javax.enterprise.inject.Any
+import java.lang.Iterable
 ;
 
 //import ru.korus.tmis.core.common.CommonDataProcessorBeanLocal
@@ -73,6 +74,12 @@ with I18nable{
 
   @EJB
   private var dbFDRecordBean: DbFDRecordBeanLocal = _
+
+  @EJB
+  var dbPatientBean: DbPatientBeanLocal = _
+
+  @EJB
+  var dbClientRelation: DbClientRelationBeanLocal = _
 
   @Inject
   @Any
@@ -165,6 +172,7 @@ with I18nable{
         action = actionBean.createAction(newEvent.getId.intValue(),
                                           actionTypeBean.getActionTypeByCode("4201").getId.intValue(),
                                           authData)
+        action.setStatus(ActionStatus.FINISHED.getCode) //TODO: Материть Александра!
         em.persist(action)
         list = actionPropertyTypeBean.getActionPropertyTypeByActionTypeIdWithCode("4201").toList
       }
@@ -303,34 +311,26 @@ with I18nable{
     }
     //******
     //Создание/Редактирование записей для законных представителей
+    val clientRelations = appealData.data.getHospitalizationWith
+    var setRel = Set.empty[ClientRelation]
+    if (clientRelations!=null && clientRelations.size()>0) { //Если законные представители заполнены
+      val patient = newEvent.getPatient
+      val serverRelations = patient.getActiveClientRelatives()
 
-
-    /*
-    set = Set.empty[Int]
-    val clientRelations = patientEntry.getRelations()
-    val serverRelations = patient.getActiveClientRelatives()
-    serverRelations.foreach(
-      (serverRelation) => {
-        val result = clientRelations.find {element => element.getId() == serverRelation.getId().intValue()}
-        val clientRelation = result.getOrElse(null)
-        if (clientRelation != null) {
-          set = set + clientRelation.getId().intValue()
-          var tempServerRelation = serverRelation
-          tempServerRelation = dbClientRelation.insertOrUpdateClientRelation(   //внутри себя будет работать с персонами и их контактами
-            clientRelation.getId(),
-            clientRelation.getRelationType().getId(),
-            clientRelation.getName().getFirst(),
-            clientRelation.getName().getLast(),
-            clientRelation.getName().getMiddle(),
-            clientRelation.getPhones(),
-            patient,
-            usver
-          )
-        } else {
-          dbClientRelation.deleteClientRelation(serverRelation.getId().intValue(), usver)
+      clientRelations.foreach(f => {
+        val serverRelation = serverRelations.find(element => element.getRelative.getId().intValue() == f.getRelativeId).getOrElse(null)
+        if (serverRelation==null){
+          val parent = dbPatientBean.getPatientById(f.getRelativeId)
+          val tempServerRelation = dbClientRelation.insertOrUpdateClientRelationByRelativePerson( -1,
+                                                                                    f.getRelativeType.getId(),
+                                                                                    parent,
+                                                                                    patient,
+                                                                                    authData.user)
+          setRel += tempServerRelation
         }
-      }
-    )*/
+      })
+    }
+    if (setRel!=null && setRel.size>0) dbManager.mergeAll(setRel)
     //*****
 
     newEvent.getId.intValue()
@@ -547,11 +547,19 @@ with I18nable{
     var event: Event = null
     if (flgCreate) {            //Создаем новое
       if (patientId <= 0) {
-        throw new CoreException("Невозможно открыть госпитализацию. Пациент не установлен.")
+        throw new CoreException("Невозможно создать госпитализацию. Пациент не установлен.")
+        return null
+      }
+      if (appealData.data.appealType==null ||
+        appealData.data.appealType.eventType==null ||
+        appealData.data.appealType.eventType.getId<=0){
+        throw new CoreException("Невозможно создать госпитализацию. Не задан тип обращения.")
         return null
       }
       event = eventBean.createEvent(patientId,
-                                    eventBean.getEventTypeIdByFDRecordId(appealData.data.appealType.getId()),
+                                    //eventBean.getEventTypeIdByFDRecordId(appealData.data.appealType.getId()),
+                                    appealData.data.appealType.eventType.getId,
+                                    //eventBean.getEventTypeIdByRequestTypeIdAndFinanceId(appealData.data.appealType.requestType.getId(), appealData.data.appealType.finance.getId()),
                                     appealData.data.rangeAppealDateTime.getStart(),
                                     /*appealData.data.rangeAppealDateTime.getEnd()*/null,
                                     authData)
@@ -563,9 +571,10 @@ with I18nable{
         return null
       }
 
-      val eventTypeId = eventBean.getEventTypeIdByFDRecordId(appealData.data.appealType.getId())
+      //val eventTypeId = eventBean.getEventTypeIdByFDRecordId(appealData.data.appealType.getId())
+      val eventTypeId = appealData.data.appealType.eventType.getId//eventBean.getEventTypeIdByRequestTypeIdAndFinanceId(appealData.data.appealType.requestType.getId(), appealData.data.appealType.finance.getId())
       if(event.getEventType.getId.intValue()!=eventTypeId) {
-        throw new CoreException("Тип найденного обращения не соответствует типу в запросе (appealType = %s)".format(appealData.data.appealType.getId().toString))
+        throw new CoreException("Тип найденного обращения не соответствует типу в полученному в запросе (requestType = %s, finance = %s)".format(appealData.data.appealType.requestType.getId().toString, appealData.data.appealType.finance.getId().toString))
         return null
       }
 
@@ -608,9 +617,9 @@ with I18nable{
     if (that.isInstanceOf[Date]) {
       return Set(ConfigManager.DateFormatter.format(that))
     }
-    else if (that.isInstanceOf[LinkedList[IdValueContainer]]) {
-      val hospWith = Set.empty[String]
-      that.asInstanceOf[LinkedList[IdValueContainer]].foreach(e => if(e.getId().toInt>0) hospWith + e.getId().toString)
+    else if (that.isInstanceOf[LinkedList[/*IdValueContainer*/LegalRepresentativeContainer]]) {
+      var hospWith = Set.empty[String]
+      that.asInstanceOf[LinkedList[LegalRepresentativeContainer]].foreach(e => if(e.getRelativeId().toInt>0) hospWith += e.getRelativeId().toString)
       return hospWith
     }
     else if (that.isInstanceOf[IdNameContainer]) {

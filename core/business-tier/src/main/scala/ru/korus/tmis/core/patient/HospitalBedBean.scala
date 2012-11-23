@@ -21,12 +21,15 @@ import javax.enterprise.inject.Any
 import collection.JavaConversions
 import ru.korus.tmis.core.common.CommonDataProcessorBeanLocal
 import java.util.Date
+import org.slf4j.LoggerFactory
+import ru.korus.tmis.util.reflect.TmisLogging
 
 @Interceptors(Array(classOf[LoggingInterceptor]))
 @Stateless
 class HospitalBedBean extends HospitalBedBeanLocal
 with Logging
-with I18nable {
+with I18nable
+with TmisLogging{
 
   @PersistenceContext(unitName = "s11r64")
   var em: EntityManager = _
@@ -264,6 +267,7 @@ with I18nable {
       val action = actionBean.updateAction (actionList.get(0).getId.intValue(),
                                             oldAction.getVersion.intValue,
                                             authData)
+      action.setStatus(ActionStatus.FINISHED.getCode)  //Добавлено в спеку по переводам
       action.setBegDate(oldAction.getBegDate)
       if (flgOption == this.directionInDepartment)
         action.setEndDate(oldAction.getEndDate)
@@ -431,6 +435,16 @@ with I18nable {
           map.put(action, apv_map)
         })
       } else {
+        /*
+        val debugLogger = LoggerFactory.getLogger("ru.korus.tmis.core.logging._LoggingInterceptor_Serializable")
+        debugLogger.warn("=================!!!!!!!!!!!!!!!!!===================")
+        val claaassic = this.getClass.toString
+        val methodic = this.getClass.getEnclosingMethod
+        val methodic = this.get
+        logTmis.setValueForKey(logTmis.LoggingKeys.Called, " " + this.getClass.toString + "." + this.getClass.getEnclosingMethod.toString, logTmis.StatusKeys.Success)
+        logger.info(logTmis.getLogStringByValues(false))
+        logger.info("Не найдено ни одного действия для выбранного обращения")
+        */
         //TODO: Варнинг, что не найдена экшны для этого обращения
       }
       return new HospitalBedData(map, corrMap, null)

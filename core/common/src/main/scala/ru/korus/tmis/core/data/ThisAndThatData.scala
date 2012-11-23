@@ -61,6 +61,9 @@ class ListDataRequest {
       else if (this.filter.isInstanceOf[DepartmentsDataFilter]) {
         this.filter.asInstanceOf[DepartmentsDataFilter].toSortingString(this.sortingField)
       }
+      else if (this.filter.isInstanceOf[EventTypesListRequestDataFilter]) {
+        this.filter.asInstanceOf[EventTypesListRequestDataFilter].toSortingString(this.sortingField)
+      }
       else {
         this.sortingField
       }
@@ -700,9 +703,13 @@ class DictionaryListData {
   @BeanProperty
   var data: ArrayList[DictionaryContainer] = new ArrayList[DictionaryContainer]
 
-  def this(types: java.util.List[AnyRef], requestData: ListDataRequest) = {
+  def this(requestData: ListDataRequest) = {
     this ()
     this.requestData = requestData
+  }
+
+  def this(types: java.util.List[AnyRef], requestData: ListDataRequest) = {
+    this (requestData)
     if (types != null) {
       types.foreach(dict => {
 
@@ -977,5 +984,64 @@ class TrueFalseContainer {
   def this(boolParam: java.lang.Boolean) {
     this()
     this.trueFalse = if (boolParam != null) {boolParam} else {false}
+  }
+}
+
+@XmlType(name = "eventTypesListRequestDataFilter")
+@XmlRootElement(name = "eventTypesListRequestDataFilter")
+class EventTypesListRequestDataFilter {
+
+  @BeanProperty
+  var financeId: Int = _
+
+  @BeanProperty
+  var requestTypeId: Int = _
+
+  def this(financeId: Int,
+           requestTypeId: Int) {
+    this()
+    this.financeId = financeId
+    this.requestTypeId = requestTypeId
+  }
+
+  def toQueryStructure() = {
+    var qs = new QueryDataStructure()
+
+    if(this.financeId>0){
+      qs.query += ("AND et.finance.id = :financeId\n")
+      qs.add("financeId", this.financeId:java.lang.Integer)
+    }
+    if(this.requestTypeId>0){
+        qs.query += ("AND et.requestType.id = :requestTypeId\n")
+        qs.add("requestTypeId",this.requestTypeId:java.lang.Integer)
+    }
+    qs
+  }
+
+  def toSortingString (sortingField: String) = {
+    sortingField match {
+      case "name" => {"et.name"}
+      case _ => {"et.id"}
+    }
+  }
+}
+
+@XmlType(name = "eventTypesListData")
+@XmlRootElement(name = "eventTypesListData")
+class EventTypesListData {
+
+  @BeanProperty
+  var requestData: ListDataRequest = _
+  @BeanProperty
+  var data: ArrayList[DictionaryContainer] = new ArrayList[DictionaryContainer]
+
+  def this(requestData: ListDataRequest) {
+    this ()
+    this.requestData = requestData
+  }
+
+  def this(types: java.util.List[EventType], requestData: ListDataRequest) {
+    this (requestData)
+    types.foreach(eType => this.data.add(new DictionaryContainer(eType.getId.intValue(), eType.getName)))
   }
 }

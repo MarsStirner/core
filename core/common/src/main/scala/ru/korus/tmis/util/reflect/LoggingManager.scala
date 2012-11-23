@@ -129,15 +129,17 @@ object LoggingManager {
   /**
    * Метод формирует строку лога из ассоциативного диагностического контекста (org.slf4j.MDC) для текущей сессии.
    * @return String Строка лога, выводимая с помощью паттерна @msg
+   * @param needAllParams Переменная определяет, нужно ли записать в сообщение лога все параметры? если нет,
+   *                      то не записывается IP, URL и User-Agent
    */
-  def getLogStringByValues(isAllParams: Boolean) = {
+  def getLogStringByValues(needAllParams: Boolean) = {
     var output = ""
     LoggingKeys.values.filter(value => MDC.get(value.toString)!=null)
                       .foreach(key => {
-      if (isAllParams) {
+      if (needAllParams) {
         output = output + key.toString + ": " + MDC.get(key.toString).toString + "; "
       } else {
-        if (LoggingKeys.Ip != key && LoggingKeys.URL != key && LoggingKeys.UserAgent != key) {
+        if (LoggingKeys.Ip != key && LoggingKeys.URL != key && LoggingKeys.UserAgent != key && LoggingKeys.Status != key) {
           output = output + key.toString + ": " + MDC.get(key.toString).toString + "; "
         }
       }

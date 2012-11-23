@@ -157,6 +157,12 @@ class MedipadWSImpl
 
   @EJB
   private var dbRbRequestTypes: DbRbRequestTypeBeanLocal = _
+
+  @EJB
+  private var dbEventBean: DbEventBeanLocal = _
+
+  @EJB
+  private var dbClientRelation: DbClientRelationBeanLocal = _
   //////////////////////////////////////////////////////////////////////////////
 
   def checkTokenCookies(srvletRequest: HttpServletRequest): AuthData = {
@@ -466,16 +472,17 @@ class MedipadWSImpl
       val patient = patientBean.getPatientById(patientId)
       val map = patientBean.getKLADRAddressMapForPatient(patient)
       val street = patientBean.getKLADRStreetForPatient(patient)
-      val appType = dbFDRecordBean.getIdValueFDRecordByEventTypeId(25, positionE._1.getEventType.getId.intValue())
+      //val appType = dbFDRecordBean.getIdValueFDRecordByEventTypeId(25, positionE._1.getEventType.getId.intValue())
       mapper.writeValueAsString(new AppealData( positionE._1,
                                                 positionA._1,
-                                                appType,
+                                                //appType,
                                                 values,
                                                 "standart",
                                                 map,
                                                 street,
                                                 null,
-                                                actionBean.getLastActionByActionTypeIdAndEventId _  //havePrimary
+                                                actionBean.getLastActionByActionTypeIdAndEventId _,  //havePrimary
+                                                dbClientRelation.getClientRelationByRelativeId _
                                 ))
     } else {
       throw new CoreException("Не удачная попытка сохранения(изменения) обращения")
@@ -493,16 +500,17 @@ class MedipadWSImpl
     val mapper: ObjectMapper = new ObjectMapper()
     mapper.getSerializationConfig().setSerializationView(classOf[Views.DynamicFieldsStandartForm]);
     //val map = patientBean.getKLADRAddressMapForPatient(result)
-    val appType = dbFDRecordBean.getIdValueFDRecordByEventTypeId(25, positionE._1.getEventType.getId.intValue())
+    //val appType = dbFDRecordBean.getIdValueFDRecordByEventTypeId(25, positionE._1.getEventType.getId.intValue())
     mapper.writeValueAsString(new AppealData( positionE._1,
                                               positionA._1,
-                                              appType,
+                                              //appType,
                                               values,
                                               "standart",
                                               null,
                                               null,
                                               null,
-                                              actionBean.getLastActionByActionTypeIdAndEventId _  //havePrimary
+                                              actionBean.getLastActionByActionTypeIdAndEventId _,  //havePrimary
+                                              dbClientRelation.getClientRelationByRelativeId _
                               ))
   }
 
@@ -525,11 +533,11 @@ class MedipadWSImpl
     val map = patientBean.getKLADRAddressMapForPatient(positionE._1.getPatient)
     val street = patientBean.getKLADRStreetForPatient(positionE._1.getPatient)
 
-    val appType = dbFDRecordBean.getIdValueFDRecordByEventTypeId(i18n("db.flatDirectory.eventType.hospitalization").toInt,
-                                                                 positionE._1.getEventType.getId.intValue())
+    //val appType = dbFDRecordBean.getIdValueFDRecordByEventTypeId(i18n("db.flatDirectory.eventType.hospitalization").toInt,
+    //                                                             positionE._1.getEventType.getId.intValue())
     mapper.writeValueAsString(new AppealData( positionE._1,
                                               positionA._1,
-                                              appType,
+                                              //appType,
                                               values,
                                               aps,
                                               "print_form",
@@ -537,6 +545,7 @@ class MedipadWSImpl
                                               street,
                                               null,
                                               actionBean.getLastActionByActionTypeIdAndEventId _, //havePrimary
+                                              dbClientRelation.getClientRelationByRelativeId _,
                                               actionPropertyBean.getActionPropertiesByActionIdAndRbCoreActionPropertyIds _,  //Admission Diagnosis
                                               dbRbCoreActionPropertyBean.getRbCoreActionPropertiesByIds _          //таблица соответствия
                               ))
@@ -1111,7 +1120,7 @@ class MedipadWSImpl
       case "requestTypes" => {  //  Типы обращений
         mapper.getSerializationConfig().setSerializationView(classOf[DictionaryDataViews.DefaultView])
         dbRbRequestTypes.getAllRbRequestTypesWithFilter(request.page,
-                                                              request.limit,
+                                                        request.limit,
                                                         request.sortingFieldInternal,
                                                         request.sortingMethod,
                                                         request.filter,
@@ -1150,6 +1159,20 @@ class MedipadWSImpl
       new RlsDataList(list, request)
     else
       new RlsDataList()
+  }
+
+  def getEventTypes(request: ListDataRequest, authData: AuthData) = {
+    val mapper: ObjectMapper = new ObjectMapper()
+    mapper.getSerializationConfig().setSerializationView(classOf[DictionaryDataViews.DefaultView])
+
+    val list = dbEventBean.getEventTypesByRequestTypeIdAndFinanceId(request.page,
+                                                                    request.limit,
+                                                                    request.sortingFieldInternal,
+                                                                    request.sortingMethod,
+                                                                    request.filter,
+                                                                    request.rewriteRecordsCount _)
+
+    mapper.writeValueAsString(new EventTypesListData(list, request))
   }
 
 }
