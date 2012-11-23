@@ -465,7 +465,7 @@ class MedipadWSImpl
 
       val positionE = result.iterator.next()
       val positionA = positionE._2.iterator.next()
-      val values = positionA._2.asInstanceOf[java.util.Map[String, java.util.List[Object]]]
+      val values = positionA._2.asInstanceOf[java.util.Map[java.lang.Integer, java.util.List[Object]]]
 
       val mapper: ObjectMapper = new ObjectMapper()
       mapper.getSerializationConfig().setSerializationView(classOf[Views.DynamicFieldsStandartForm]);
@@ -495,7 +495,7 @@ class MedipadWSImpl
 
     val positionE = result.iterator.next()
     val positionA = positionE._2.iterator.next()
-    val values = positionA._2.asInstanceOf[java.util.Map[String, java.util.List[Object]]]
+    val values = positionA._2.asInstanceOf[java.util.Map[java.lang.Integer, java.util.List[Object]]]
 
     val mapper: ObjectMapper = new ObjectMapper()
     mapper.getSerializationConfig().setSerializationView(classOf[Views.DynamicFieldsStandartForm]);
@@ -519,7 +519,7 @@ class MedipadWSImpl
 
     val positionE = result.iterator.next()
     val positionA = positionE._2.iterator.next()
-    val values = positionA._2.asInstanceOf[java.util.Map[String, java.util.List[Object]]]
+    val values = positionA._2.asInstanceOf[java.util.Map[java.lang.Integer, java.util.List[Object]]]
 
     val ward = dbCustomQueryBean.getLastActionByTypeCodeAndAPTypeName(id, "4202", "Переведен в отделение")
     var aps: java.util.Map[ActionProperty, java.util.List[APValue]] = null
