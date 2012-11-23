@@ -44,7 +44,7 @@ class AppealData {
   def this(event: Event,
            appeal: Action,
            //appType: Object,
-           values: java.util.Map[String, java.util.List[Object]],
+           values: java.util.Map[java.lang.Integer, java.util.List[Object]],
            typeOfResponse: String,
            map: java.util.LinkedHashMap[java.lang.Integer, java.util.LinkedList[Kladr]],
            street: java.util.LinkedHashMap[java.lang.Integer, Street],
@@ -82,7 +82,7 @@ class AppealData {
   def this(event: Event,
            appeal: Action,
            //appType: Object,
-           values: java.util.Map[String, java.util.List[Object]],
+           values: java.util.Map[java.lang.Integer, java.util.List[Object]],
            aps: java.util.Map[ActionProperty, java.util.List[APValue]],
            typeOfResponse: String,
            map: java.util.LinkedHashMap[java.lang.Integer, java.util.LinkedList[Kladr]],
@@ -247,8 +247,7 @@ class AppealEntry {
 
   def this(event: Event,
            action: Action,
-           //appType: Object,
-           values: java.util.Map[String, java.util.List[Object]],
+           values: java.util.Map[java.lang.Integer, java.util.List[Object]],
            typeOfResponse: String,
            map: java.util.LinkedHashMap[java.lang.Integer, java.util.LinkedList[Kladr]],
            street: java.util.LinkedHashMap[java.lang.Integer, Street],
@@ -265,7 +264,7 @@ class AppealEntry {
     this.setPerson = if (event.getAssigner != null) {new ComplexPersonContainer(event.getAssigner)} else {new ComplexPersonContainer}
     this.urgent = action.getIsUrgent
 
-    exValue = this.extractValuesInNumberedMap(Set(ConfigManager.Messages("appeal.db.actionPropertyType.name.ambulanceNumber").toString), values).get("0")
+    exValue = this.extractValuesInNumberedMap(Set(ConfigManager.RbCAPIds("db.rbCAP.hosp.primary.id.ambulanceNumber").toInt :java.lang.Integer), values).get("0")
     this.ambulanceNumber = exValue.get(0).asInstanceOf[String]
 
     this.rangeAppealDateTime = new DatePeriodContainer(action.getBegDate, action.getEndDate)//(action.getBegDate, action.getEndDate) //event.getSetDate, event.getExecDate
@@ -277,23 +276,20 @@ class AppealEntry {
       case _ => {new IdValueContainer(event.getPatient.getId.toString)}
     }
 
-    //if(appType.isInstanceOf[(java.lang.Integer, String)] && appType.asInstanceOf[(java.lang.Integer, String)]._1 != null) {
     this.appealType = new AppealTypeContainer(event.getEventType)
-     //this.appealType = new IdNameContainer(appType.asInstanceOf[(java.lang.Integer, String)]._1.intValue(), appType.asInstanceOf[(java.lang.Integer, String)]._2)
-    //}
-    //TODO мапинг по имени акшенПроперти... Если имена будут не уникальны, то нужно будет переделать
-    exValue = this.extractValuesInNumberedMap(Set(ConfigManager.Messages("appeal.db.actionPropertyType.name.agreedType").toString), values).get("0")
+
+    exValue = this.extractValuesInNumberedMap(Set(ConfigManager.RbCAPIds("db.rbCAP.hosp.primary.id.agreedType").toInt :java.lang.Integer), values).get("0")
     if(exValue.get(0).isInstanceOf[FDRecord])
       this.agreedType = new IdNameContainer(exValue.get(0).asInstanceOf[FDRecord].getId.intValue(), "")
 
-    exValue = this.extractValuesInNumberedMap(Set(ConfigManager.Messages("appeal.db.actionPropertyType.name.agreedDoctor").toString), values).get("0")
+    exValue = this.extractValuesInNumberedMap(Set(ConfigManager.RbCAPIds("db.rbCAP.hosp.primary.id.agreedDoctor").toInt :java.lang.Integer), values).get("0")
     this.agreedDoctor = exValue.get(0).asInstanceOf[String]
 
 
-    val exAssignment = this.extractValuesInNumberedMap(LinkedHashSet(ConfigManager.Messages("appeal.db.actionPropertyType.name.directed").toString,
-      ConfigManager.Messages("appeal.db.actionPropertyType.name.number").toString,
-      ConfigManager.Messages("appeal.db.actionPropertyType.name.assignmentDate").toString,
-      ConfigManager.Messages("appeal.db.actionPropertyType.name.doctor").toString
+    val exAssignment = this.extractValuesInNumberedMap(LinkedHashSet(ConfigManager.RbCAPIds("db.rbCAP.hosp.primary.id.directed").toInt :java.lang.Integer,
+      ConfigManager.RbCAPIds("db.rbCAP.hosp.primary.id.number").toInt :java.lang.Integer,
+      ConfigManager.RbCAPIds("db.rbCAP.hosp.primary.id.assignmentDate").toInt :java.lang.Integer,
+      ConfigManager.RbCAPIds("db.rbCAP.hosp.primary.id.doctor").toInt :java.lang.Integer
     ), values)
     var assignmentDate: Date = null
     if(exAssignment.get("2").get(0).isInstanceOf[Date]){
@@ -306,15 +302,15 @@ class AppealEntry {
       exAssignment.get("3").get(0).asInstanceOf[String]
     )
 
-    exValue = this.extractValuesInNumberedMap(Set(ConfigManager.Messages("appeal.db.actionPropertyType.name.hospitalizationType").toString), values).get("0")
+    exValue = this.extractValuesInNumberedMap(Set(ConfigManager.RbCAPIds("db.rbCAP.hosp.primary.id.hospitalizationType").toInt :java.lang.Integer), values).get("0")
     if(exValue.get(0).isInstanceOf[FDRecord])
       this.hospitalizationType = new IdNameContainer(exValue.get(0).asInstanceOf[FDRecord].getId.intValue(), "")
 
-    exValue = this.extractValuesInNumberedMap(Set(ConfigManager.Messages("appeal.db.actionPropertyType.name.hospitalizationPointType").toString), values).get("0")
+    exValue = this.extractValuesInNumberedMap(Set(ConfigManager.RbCAPIds("db.rbCAP.hosp.primary.id.hospitalizationPointType").toInt :java.lang.Integer), values).get("0")
     if(exValue.get(0).isInstanceOf[FDRecord])
       this.hospitalizationPointType = new IdNameContainer(exValue.get(0).asInstanceOf[FDRecord].getId.intValue(), "")
 
-    exValue = this.extractValuesInNumberedMap(Set(ConfigManager.Messages("appeal.db.actionPropertyType.name.hospitalizationChannelType").toString), values).get("0")
+    exValue = this.extractValuesInNumberedMap(Set(ConfigManager.RbCAPIds("db.rbCAP.hosp.primary.id.hospitalizationChannelType").toInt :java.lang.Integer), values).get("0")
     if(exValue.get(0).isInstanceOf[Organisation]){
       val organisationChannel = exValue.get(0).asInstanceOf[Organisation]
       this.hospitalizationChannelType = new IdNameContainer(organisationChannel.getId.intValue(), organisationChannel.getShortName)
@@ -322,39 +318,43 @@ class AppealEntry {
     else
       this.hospitalizationChannelType = new IdNameContainer(-1, exValue.get(0).asInstanceOf[String])
 
-    val exWith = this.extractValuesInNumberedMap(Set(ConfigManager.Messages("appeal.db.actionPropertyType.name.hospitalizationWith").toString), values).get("0")
-      exWith.foreach(e => {
-        if(e.isInstanceOf[java.lang.Integer] && e.asInstanceOf[java.lang.Integer]!=null)
-          //<=запускать метод получения связи в клиент релэйшн по ид
-          //this.hospitalizationWith += new IdValueContainer(e.asInstanceOf[java.lang.Integer].toString)     //TODO: !!
-          if (mRelationByRelativeId!=null){
-            val representativeId = e.asInstanceOf[java.lang.Integer].intValue()
-            if (representativeId>0){
-              val clientRelation = mRelationByRelativeId(representativeId)
-              this.hospitalizationWith += new LegalRepresentativeContainer(clientRelation, "")
-            }
-          }
-      })
+    if (mRelationByRelativeId!=null){
+      val exRepresantative = this.extractValuesInNumberedMap(LinkedHashSet(ConfigManager.RbCAPIds("db.rbCAP.hosp.primary.id.hospitalizationWith").toInt :java.lang.Integer,
+                                                                           ConfigManager.RbCAPIds("db.rbCAP.hosp.primary.id.note").toInt :java.lang.Integer), values)
+      val relativeIds = exRepresantative.get("0")
+      val notes = exRepresantative.get("1")
 
-    exValue = this.extractValuesInNumberedMap(Set(ConfigManager.Messages("appeal.db.actionPropertyType.name.deliveredType").toString), values).get("0")
+      for(i <- 0 until relativeIds.size)  {
+        if(relativeIds.get(i).isInstanceOf[java.lang.Integer] && relativeIds.get(i).asInstanceOf[java.lang.Integer]!=null){
+          val representativeId = relativeIds.get(i).asInstanceOf[java.lang.Integer].intValue()
+          if (representativeId>0){
+            val clientRelation = mRelationByRelativeId(representativeId)
+            val note = if (i<notes.size()) notes.get(i).asInstanceOf[String] else ""
+            this.hospitalizationWith += new LegalRepresentativeContainer(clientRelation, note)
+          }
+        }
+      }
+    }
+
+    exValue = this.extractValuesInNumberedMap(Set(ConfigManager.RbCAPIds("db.rbCAP.hosp.primary.id.deliveredType").toInt :java.lang.Integer), values).get("0")
     this.deliveredType = exValue.get(0).asInstanceOf[String]
 
-    exValue = this.extractValuesInNumberedMap(Set(ConfigManager.Messages("appeal.db.actionPropertyType.name.transportationType").toString), values).get("0")
+    exValue = this.extractValuesInNumberedMap(Set(ConfigManager.RbCAPIds("db.rbCAP.hosp.primary.id.transportationType").toInt :java.lang.Integer), values).get("0")
     this.movingType = exValue.get(0).asInstanceOf[String]
 
-    exValue = this.extractValuesInNumberedMap(Set(ConfigManager.Messages("appeal.db.actionPropertyType.name.deliveredAfterType").toString), values).get("0")
+    exValue = this.extractValuesInNumberedMap(Set(ConfigManager.RbCAPIds("db.rbCAP.hosp.primary.id.deliveredAfterType").toInt :java.lang.Integer), values).get("0")
     this.deliveredAfterType = exValue.get(0).asInstanceOf[String]
 
-    exValue = this.extractValuesInNumberedMap(Set(ConfigManager.Messages("appeal.db.actionPropertyType.name.stateType").toString), values).get("0")
+    exValue = this.extractValuesInNumberedMap(Set(ConfigManager.RbCAPIds("db.rbCAP.hosp.primary.id.drugsType").toInt :java.lang.Integer), values).get("0")
     this.stateType = exValue.get(0).asInstanceOf[String]
 
-    val exPhysical = this.extractValuesInNumberedMap(LinkedHashSet(ConfigManager.Messages("appeal.db.actionPropertyType.name.height").toString,
-      ConfigManager.Messages("appeal.db.actionPropertyType.name.weight").toString,
-      ConfigManager.Messages("appeal.db.actionPropertyType.name.temperature").toString,
-      ConfigManager.Messages("appeal.db.actionPropertyType.name.bloodPressure.left.ADdiast").toString,
-      ConfigManager.Messages("appeal.db.actionPropertyType.name.bloodPressure.left.ADsyst").toString,
-      ConfigManager.Messages("appeal.db.actionPropertyType.name.bloodPressure.right.ADdiast").toString,
-      ConfigManager.Messages("appeal.db.actionPropertyType.name.bloodPressure.right.ADsyst").toString
+    val exPhysical = this.extractValuesInNumberedMap(LinkedHashSet(ConfigManager.RbCAPIds("db.rbCAP.hosp.primary.id.height").toInt :java.lang.Integer,
+      ConfigManager.RbCAPIds("db.rbCAP.hosp.primary.id.weight").toInt :java.lang.Integer,
+      ConfigManager.RbCAPIds("db.rbCAP.hosp.primary.id.temperature").toInt :java.lang.Integer,
+      ConfigManager.RbCAPIds("db.rbCAP.hosp.primary.id.bloodPressure.left.ADdiast").toInt :java.lang.Integer,
+      ConfigManager.RbCAPIds("db.rbCAP.hosp.primary.id.bloodPressure.left.ADsyst").toInt :java.lang.Integer,
+      ConfigManager.RbCAPIds("db.rbCAP.hosp.primary.id.bloodPressure.right.ADdiast").toInt :java.lang.Integer,
+      ConfigManager.RbCAPIds("db.rbCAP.hosp.primary.id.bloodPressure.right.ADsyst").toInt :java.lang.Integer
     ), values)
 
     var d1, d2, d3, d4, d5, d6, d7 :Double = 0.0
@@ -368,12 +368,12 @@ class AppealEntry {
     this.physicalParameters= new PhysicalParametersContainer(d1,d2,d3,d4,d5,d6,d7)
 
     val exDiagnosis = this.extractValuesInNumberedMap(LinkedHashSet(
-        ConfigManager.Messages("appeal.db.actionPropertyType.name.diagnosis.assigment.code").toString,
-        ConfigManager.Messages("appeal.db.actionPropertyType.name.diagnosis.aftereffect.code").toString,
-        ConfigManager.Messages("appeal.db.actionPropertyType.name.diagnosis.attendant.code").toString,
-        ConfigManager.Messages("appeal.db.actionPropertyType.name.diagnosis.assignment.description").toString,
-        ConfigManager.Messages("appeal.db.actionPropertyType.name.diagnosis.aftereffect.description").toString,
-        ConfigManager.Messages("appeal.db.actionPropertyType.name.diagnosis.attendant.description").toString
+        ConfigManager.RbCAPIds("db.rbCAP.hosp.primary.id.diagnosis.assigment.code").toInt :java.lang.Integer,
+        ConfigManager.RbCAPIds("db.rbCAP.hosp.primary.id.diagnosis.aftereffect.code").toInt :java.lang.Integer,
+        ConfigManager.RbCAPIds("db.rbCAP.hosp.primary.id.diagnosis.attendant.code").toInt :java.lang.Integer,
+        ConfigManager.RbCAPIds("db.rbCAP.hosp.primary.id.diagnosis.assignment.description").toInt :java.lang.Integer,
+        ConfigManager.RbCAPIds("db.rbCAP.hosp.primary.id.diagnosis.aftereffect.description").toInt :java.lang.Integer,
+        ConfigManager.RbCAPIds("db.rbCAP.hosp.primary.id.diagnosis.attendant.description").toInt :java.lang.Integer
     ), values)
 
     Set("assignment", "aftereffect", "attendant").foreach(pos => {
@@ -394,21 +394,20 @@ class AppealEntry {
       }
     })
 
-    exValue = this.extractValuesInNumberedMap(Set(ConfigManager.Messages("appeal.db.actionPropertyType.name.injury").toString), values).get("0")
+    exValue = this.extractValuesInNumberedMap(Set(ConfigManager.RbCAPIds("db.rbCAP.hosp.primary.id.injury").toInt :java.lang.Integer), values).get("0")
     this.injury = exValue.get(0).asInstanceOf[String]
 
-    exValue = this.extractValuesInNumberedMap(Set(ConfigManager.Messages("appeal.db.actionPropertyType.name.refuseAppealReason").toString), values).get("0")
+    exValue = this.extractValuesInNumberedMap(Set(ConfigManager.RbCAPIds("db.rbCAP.hosp.primary.id.cancel").toInt :java.lang.Integer), values).get("0")
     this.refuseAppealReason = exValue.get(0).asInstanceOf[String]
 
-    exValue = this.extractValuesInNumberedMap(Set(ConfigManager.Messages("appeal.db.actionPropertyType.name.appealWithDeseaseThisYear").toString), values).get("0")
+    exValue = this.extractValuesInNumberedMap(Set(ConfigManager.RbCAPIds("db.rbCAP.hosp.primary.id.appealWithDeseaseThisYear").toInt :java.lang.Integer), values).get("0")
     this.appealWithDeseaseThisYear = exValue.get(0).asInstanceOf[String]
 
 }
 
   def this(event: Event,
            action: Action,
-           //appType: Object,
-           values: java.util.Map[String, java.util.List[Object]],
+           values: java.util.Map[java.lang.Integer, java.util.List[Object]],
            aps: java.util.Map[ActionProperty, java.util.List[APValue]],
            typeOfResponse: String,
            map: java.util.LinkedHashMap[java.lang.Integer, java.util.LinkedList[Kladr]],
@@ -440,14 +439,11 @@ class AppealEntry {
         }
       })
     }
-    //this.totalDays
-
   }
 
   def this(event: Event,
            action: Action,
-           //appType: Object,
-           values: java.util.Map[String, java.util.List[Object]],
+           values: java.util.Map[java.lang.Integer, java.util.List[Object]],
            typeOfResponse: String,
            map: java.util.LinkedHashMap[java.lang.Integer, java.util.LinkedList[Kladr]],
            street: java.util.LinkedHashMap[java.lang.Integer, Street],
@@ -459,8 +455,7 @@ class AppealEntry {
 
   def this(event: Event,
            action: Action,
-           //appType: Object,
-           values: java.util.Map[String, java.util.List[Object]],
+           values: java.util.Map[java.lang.Integer, java.util.List[Object]],
            aps: java.util.Map[ActionProperty, java.util.List[APValue]],
            typeOfResponse: String,
            map: java.util.LinkedHashMap[java.lang.Integer, java.util.LinkedList[Kladr]],
@@ -473,8 +468,7 @@ class AppealEntry {
 
   def this(event: Event,
            action: Action,
-           //appType: Object,
-           values: java.util.Map[String, java.util.List[Object]],
+           values: java.util.Map[java.lang.Integer, java.util.List[Object]],
            aps: java.util.Map[ActionProperty, java.util.List[APValue]],
            typeOfResponse: String,
            map: java.util.LinkedHashMap[java.lang.Integer, java.util.LinkedList[Kladr]],
@@ -508,7 +502,7 @@ class AppealEntry {
   }
 
   //Достаем мапу значений под контейнер
-  private def extractValuesInNumberedMap(set: java.util.Set[String], values: java.util.Map[String, java.util.List[Object]]) = {
+  private def extractValuesInNumberedMap(set: java.util.Set[java.lang.Integer], values: java.util.Map[java.lang.Integer, java.util.List[Object]]) = {
 
     var map: java.util.Map[String, java.util.List[Object]] = new HashMap[String, java.util.List[Object]]
 
@@ -516,22 +510,22 @@ class AppealEntry {
     set.foreach(e => {
       if(values.containsKey(e)){
         var dStr: String = null
-        if(e.compareTo(ConfigManager.Messages("appeal.db.actionPropertyType.name.diagnosis.assigment.code").toString)==0){
+        if(e.compareTo(ConfigManager.RbCAPIds("db.rbCAP.hosp.primary.id.diagnosis.assigment.code").toInt :java.lang.Integer)==0){
           dStr = "code_assignment"
         }
-        else if(e.compareTo(ConfigManager.Messages("appeal.db.actionPropertyType.name.diagnosis.aftereffect.code").toString)==0){
+        else if(e.compareTo(ConfigManager.RbCAPIds("db.rbCAP.hosp.primary.id.diagnosis.aftereffect.code").toInt :java.lang.Integer)==0){
           dStr ="code_aftereffect"
         }
-        else if(e.compareTo(ConfigManager.Messages("appeal.db.actionPropertyType.name.diagnosis.attendant.code").toString)==0){
+        else if(e.compareTo(ConfigManager.RbCAPIds("db.rbCAP.hosp.primary.id.diagnosis.attendant.code").toInt :java.lang.Integer)==0){
           dStr ="code_attendant"
         }
-        else if(e.compareTo(ConfigManager.Messages("appeal.db.actionPropertyType.name.diagnosis.assignment.description").toString)==0){
+        else if(e.compareTo(ConfigManager.RbCAPIds("db.rbCAP.hosp.primary.id.diagnosis.assignment.description").toInt :java.lang.Integer)==0){
           dStr ="description_assignment"
         }
-        else if(e.compareTo(ConfigManager.Messages("appeal.db.actionPropertyType.name.diagnosis.aftereffect.description").toString)==0){
+        else if(e.compareTo(ConfigManager.RbCAPIds("db.rbCAP.hosp.primary.id.diagnosis.aftereffect.description").toInt :java.lang.Integer)==0){
           dStr ="description_aftereffect"
         }
-        else if(e.compareTo(ConfigManager.Messages("appeal.db.actionPropertyType.name.diagnosis.attendant.description").toString)==0){
+        else if(e.compareTo(ConfigManager.RbCAPIds("db.rbCAP.hosp.primary.id.diagnosis.attendant.description").toInt :java.lang.Integer)==0){
           dStr ="description_attendant"
         }
         else dStr = counter.toString
@@ -746,7 +740,6 @@ class MKBContainer {
 
   def this(code: String, diagnosis: String){
     this()
-    //this.id = id
     this.code = code
     this.diagnosis = diagnosis
   }
@@ -794,7 +787,7 @@ class LegalRepresentativeContainer {
   var relativeType: IdNameContainer = _     //Тип связи
 
   @BeanProperty
-  var note: String = _                      //Комментарий
+  var note: String = ""                      //Комментарий
 
   def this(relation: ClientRelation,
            note: String){
