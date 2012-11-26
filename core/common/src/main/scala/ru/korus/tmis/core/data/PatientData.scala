@@ -23,7 +23,7 @@ class PatientData {
 
   def this(patients: java.util.List[Patient], requestData: PatientRequestData) = {
     this ()
-    patients.foreach(p => this.data.add(new PatientEntry(p, null, null))) //TODO: подключить мапу с кладром! (по аналогии с картой пациента)
+    patients.foreach(p => this.data.add(new PatientEntry(p, null, null)))
     this.requestData = requestData
   }
 }
@@ -883,6 +883,42 @@ class KladrNameContainer {
   def this( code : String, name : String, socr: String, index: String) = {
     this(code, name, socr)
     this.index = index
+  }
+}
+
+@XmlType(name = "quotaContainer")
+@XmlRootElement(name = "quotaContainer")
+@JsonIgnoreProperties(ignoreUnknown = true)
+class QuotaContainer  {
+  @BeanProperty
+  var appealNumber : String = _
+  @BeanProperty
+  var talonNumber : String = _
+  @BeanProperty
+  var stage : IdNameContainer = _
+  @BeanProperty
+  var primaryOrRepeated: Int = _
+  @BeanProperty
+  var diagnosis : MKBContainer = _
+  @BeanProperty
+  var quotaType : IdNameContainer = _
+  @BeanProperty
+  var department : IdNameContainer = _
+  @BeanProperty
+  var status : IdNameContainer = _
+  //@BeanProperty
+  //var quotaHistory : IdNameContainer = _
+
+  def this(appealNumber: String, talonNumber: String, stage: Int, primaryOrRepeated: Int, diagnosis: Mkb, quotaType: Int, department: Int, status: Int) = {
+    this()
+    this.appealNumber = appealNumber
+    this.talonNumber = talonNumber
+    this.stage = stage
+    this.primaryOrRepeated = primaryOrRepeated
+    this.diagnosis = new MKBContainer(mkb)
+    this.quotaType = quotaType
+    this.department = department
+    this.status = status
   }
 }
 

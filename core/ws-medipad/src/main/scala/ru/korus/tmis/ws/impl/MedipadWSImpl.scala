@@ -163,6 +163,9 @@ class MedipadWSImpl
 
   @EJB
   private var dbClientRelation: DbClientRelationBeanLocal = _
+
+  @EJB
+  private  var dbRbQuotaStatus: DbRbQuotaStatusBeanLocal = _
   //////////////////////////////////////////////////////////////////////////////
 
   def checkTokenCookies(srvletRequest: HttpServletRequest): AuthData = {
@@ -1134,6 +1137,15 @@ class MedipadWSImpl
                                               request.sortingMethod,
                                               request.filter,
                                               request.rewriteRecordsCount _)
+      }
+      case "quotaStatus" => { //   Статусы квот
+        mapper.getSerializationConfig().setSerializationView(classOf[DictionaryDataViews.DefaultView])
+        request.setRecordsCount(dbRbQuotaStatus.getCountOfRbQuotaStatusWithFilter(request.filter))
+        dbRbQuotaStatus.getAllRbQuotaStatusWithFilter(request.page,
+                                              request.limit,
+                                              request.sortingFieldInternal,
+                                              request.sortingMethod,
+                                              request.filter)
       }
     }
     mapper.writeValueAsString(new DictionaryListData(list, request))
