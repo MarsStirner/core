@@ -573,6 +573,15 @@ class DiagnosisContainer {
       this.mkb = new MKBContainer(mkb)
     }
   }
+  def this(diagnosis: Diagnostic){
+    this()
+    if(diagnosis!=null) {
+      this.diagnosisKind = diagnosis.getDiagnosisType.getName
+      this.description = diagnosis.getNotes
+      this.injury = if(diagnosis.getTraumaType!=null) {diagnosis.getTraumaType.getName} else {""}
+      this.mkb =  if(diagnosis.getDiagnosis!=null && diagnosis.getDiagnosis.getMkb!=null) new MKBContainer(diagnosis.getDiagnosis.getMkb) else null
+    }
+  }
 
   def this(diagnosis: Object, mkb: Object){
     this()

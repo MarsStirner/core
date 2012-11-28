@@ -571,11 +571,18 @@ class DbCustomQueryBean
                             query: String,
                             parName: String,
                             parValue: AnyRef,
-                            by: java.util.Map[String, java.util.Map[String, String]]) {
+                            by: java.util.Map[String, java.util.Map[String, Mkb]]) {
     val res = em.createQuery(query, classOf[Array[AnyRef]])
     if (parName != null && !parName.isEmpty && parValue != null) {
       res.setParameter(parName, parValue)
     }
+
+    val res1 = res.getResultList
+      .foldLeft(new java.util.LinkedHashMap[String, Mkb])(
+      (map, mkb) => {
+        map.put(mkb(0).asInstanceOf[String], mkb(1).asInstanceOf[Mkb])
+        map})
+    by.put(key, res1)
   }
 
   def getWeightForPatient(p: Patient): JDouble = {
@@ -600,7 +607,7 @@ class DbCustomQueryBean
 
   def getDistinctMkbsWithFilter(sortingField: String, sortingMethod: String, filter: Object) = {
 
-    val retValue = new java.util.HashMap[String, java.util.Map[String, String]]
+    val retValue = new java.util.HashMap[String, java.util.Map[String, Mkb]]
     if (filter.asInstanceOf[MKBListRequestDataFilter].display == true) {
       var queryStr: QueryDataStructure = if (filter.isInstanceOf[MKBListRequestDataFilter]) {
         filter.asInstanceOf[MKBListRequestDataFilter].toQueryStructure()
@@ -641,19 +648,19 @@ class DbCustomQueryBean
         pos match {
           case 1 => {
             this.putValueToMap("class",
-              "SELECT DISTINCT(mkb.classID), mkb.className FROM Mkb mkb ORDER BY mkb.classID ASC",
+              "SELECT DISTINCT(mkb.classID), mkb FROM Mkb mkb ORDER BY mkb.classID ASC",
               null,
               null,
               retValue)
           }
           case 2 => {
             this.putValueToMap("class",
-              "SELECT DISTINCT(mkb.classID), mkb.className FROM Mkb mkb ORDER BY mkb.classID ASC",
+              "SELECT DISTINCT(mkb.classID), mkb FROM Mkb mkb ORDER BY mkb.classID ASC",
               null,
               null,
               retValue)
             this.putValueToMap("block",
-              "SELECT DISTINCT(mkb.blockID), mkb.blockName FROM Mkb mkb WHERE mkb.classID IN (\n" +
+              "SELECT DISTINCT(mkb.blockID), mkb FROM Mkb mkb WHERE mkb.classID IN (\n" +
                 "SELECT mkb2.classID FROM Mkb mkb2 WHERE mkb2.blockID = :blockId )\n" +
                 "ORDER BY mkb.blockID ASC, mkb.classID ASC",
               "blockId",
@@ -662,12 +669,12 @@ class DbCustomQueryBean
           }
           case 3 => {
             this.putValueToMap("class",
-              "SELECT DISTINCT(mkb.classID), mkb.className FROM Mkb mkb ORDER BY mkb.classID ASC",
+              "SELECT DISTINCT(mkb.classID), mkb FROM Mkb mkb ORDER BY mkb.classID ASC",
               null,
               null,
               retValue)
             this.putValueToMap("block",
-              "SELECT DISTINCT(mkb.blockID), mkb.blockName FROM Mkb mkb WHERE mkb.classID IN (\n" +
+              "SELECT DISTINCT(mkb.blockID), mkb FROM Mkb mkb WHERE mkb.classID IN (\n" +
                 "SELECT mkb2.classID FROM Mkb mkb2 WHERE mkb2.blockID = :blockId )\n" +
                 "ORDER BY mkb.blockID ASC, mkb.classID ASC",
               "blockId",
@@ -675,7 +682,7 @@ class DbCustomQueryBean
                 .getSingleResult,
               retValue)
             this.putValueToMap("code",
-              "SELECT DISTINCT(mkb.diagID), mkb.diagName FROM Mkb mkb WHERE mkb.blockID IN \n" +
+              "SELECT DISTINCT(mkb.diagID), mkb FROM Mkb mkb WHERE mkb.blockID IN \n" +
                 "(SELECT mkb2.blockID FROM Mkb mkb2 WHERE mkb2.diagID = :diagID)\n" +
                 "ORDER BY mkb.diagID ASC, mkb.blockID ASC, mkb.classID ASC",
               "diagID",

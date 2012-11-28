@@ -90,6 +90,9 @@ class PatientBean
 
   @EJB
   private var dbRbCoreActionPropertyBean: DbRbCoreActionPropertyBeanLocal = _
+
+  @EJB
+  private var dbDiagnocticsBean: DbDiagnosticBeanLocal = _
   //////////////////////////////////////////////////////////////////////////////
 
   def getCurrentPatientsForDoctor(userData: AuthData) = {
@@ -389,9 +392,9 @@ class PatientBean
           conditionsInfo.put(c._1, apList)
         }
       )
-      mapper.getSerializationConfig().withView(classOf[PatientsListDataViews.NurseView])
+      mapper.getSerializationConfig().setSerializationView(classOf[PatientsListDataViews.NurseView])
     }
-    else mapper.getSerializationConfig().withView(classOf[PatientsListDataViews.AttendingDoctorView])
+    else mapper.getSerializationConfig().setSerializationView(classOf[PatientsListDataViews.AttendingDoctorView])
 
     mapper.writeValueAsString(new PatientsListData(events,
                                                    requestData,
@@ -399,7 +402,8 @@ class PatientBean
                                                    conditionsInfo,
                                                    actionBean.getLastActionByActionTypeIdAndEventId _,
                                                    dbActionProperty.getActionPropertiesByActionIdAndRbCoreActionPropertyIds _,
-                                                   dbRbCoreActionPropertyBean.getRbCoreActionPropertiesByIds _))
+                                                   dbRbCoreActionPropertyBean.getRbCoreActionPropertiesByIds _,
+                                                   dbDiagnocticsBean.getDiagnosticsByEventId _))
   }
 
   def getPatientById(id: Int) = {

@@ -429,24 +429,6 @@ with CAPids{
     val result = typed.getResultList
     result.foreach(e=>em.detach(e))
     result
-    /*val map = new java.util.LinkedHashMap[Event, Object]
-    result.foreach(f => {
-       val first = f(0).asInstanceOf[Event]
-       val second = f(1).asInstanceOf[Action]
-       val valueMap = if(filter.asInstanceOf[ReceivedRequestDataFilter].role == 29)
-                        actionPropertyBean.getActionPropertiesByActionId(second.getId.intValue())
-                     else
-                       this.getDiagnosisListByActionId(second.getId.intValue(), filter.asInstanceOf[ReceivedRequestDataFilter].diagnosis)
-       if (filter.asInstanceOf[ReceivedRequestDataFilter].diagnosis!=null &&
-           !filter.asInstanceOf[ReceivedRequestDataFilter].diagnosis.isEmpty){
-
-         val filteredValueMap = valueMap.filter(element=>element._2.size()>0)
-         if(filteredValueMap.size>0)
-          map.put(first,(second, valueMap))
-       }
-       else
-         map.put(first,(second, valueMap))
-    })*/
   }
 
   def checkAppealNumber(number : String) = {
