@@ -319,12 +319,15 @@ public interface MedipadWebService extends Serializable {
     @WebMethod
     String getDictionary(ListDataRequest request, String dictName) throws CoreException;
 
-    //@WebMethod
-    //AssignmentData insertAssignment(AssignmentData assignmentData, int eventId, AuthData auth) throws CoreException;
+    @WebMethod
+    AssignmentData insertAssignment(AssignmentData assignmentData, int eventId, AuthData auth) throws CoreException;
 
-    //@WebMethod
-    //AssignmentData getAssignmentById(int actionId, AuthData auth) throws CoreException;
+    @WebMethod
+    AssignmentData getAssignmentById(int actionId, AuthData auth) throws CoreException;
 
-    //@WebMethod
-    //RlsDataList getFilteredRlsList(RlsDataListRequestData request) throws CoreException;
+    @WebMethod
+    RlsDataList getFilteredRlsList(RlsDataListRequestData request) throws CoreException;
+
+    @WebMethod
+    String getEventTypes(ListDataRequest request, AuthData authData) throws CoreException;
 }
