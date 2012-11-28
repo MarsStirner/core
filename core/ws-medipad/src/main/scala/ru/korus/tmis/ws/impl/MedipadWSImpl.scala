@@ -165,7 +165,10 @@ class MedipadWSImpl
   private var dbClientRelation: DbClientRelationBeanLocal = _
 
   @EJB
-  private  var dbRbQuotaStatus: DbRbQuotaStatusBeanLocal = _
+  private var dbRbQuotaStatus: DbRbQuotaStatusBeanLocal = _
+
+  @EJB
+  private var dbQuotaTypeBean: DbQuotaTypeBeanLocal = _
   //////////////////////////////////////////////////////////////////////////////
 
   def checkTokenCookies(srvletRequest: HttpServletRequest): AuthData = {
@@ -815,7 +818,6 @@ class MedipadWSImpl
   }
 
   def getAllDepartments(requestData: ListDataRequest) = {
-
     //TODO: подключить анализ авторизационных данных и доступных ролей
     requestData.setRecordsCount(dbOrgStructureBean.getCountAllOrgStructuresWithFilter(requestData.filter))
     val list = new AllDepartmentsListData(dbOrgStructureBean.getAllOrgStructuresByRequest(requestData.limit,
@@ -1140,12 +1142,21 @@ class MedipadWSImpl
       }
       case "quotaStatus" => { //   Статусы квот
         mapper.getSerializationConfig().setSerializationView(classOf[DictionaryDataViews.DefaultView])
-        request.setRecordsCount(dbRbQuotaStatus.getCountOfRbQuotaStatusWithFilter(request.filter))
         dbRbQuotaStatus.getAllRbQuotaStatusWithFilter(request.page,
-                                              request.limit,
-                                              request.sortingFieldInternal,
-                                              request.sortingMethod,
-                                              request.filter)
+                                                      request.limit,
+                                                      request.sortingFieldInternal,
+                                                      request.sortingMethod,
+                                                      request.filter,
+                                                      request.rewriteRecordsCount _)
+      }
+      case "quotaType" => { //   Типы квот
+        mapper.getSerializationConfig().setSerializationView(classOf[DictionaryDataViews.DefaultView])
+        dbQuotaTypeBean.getAllQuotaTypesWithFilter(request.page,
+                                                   request.limit,
+                                                   request.sortingFieldInternal,
+                                                   request.sortingMethod,
+                                                   request.filter,
+                                                   request.rewriteRecordsCount _)
       }
     }
     mapper.writeValueAsString(new DictionaryListData(list, request))

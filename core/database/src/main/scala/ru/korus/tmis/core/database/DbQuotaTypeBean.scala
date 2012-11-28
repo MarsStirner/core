@@ -1,45 +1,43 @@
 package ru.korus.tmis.core.database
 
-import javax.interceptor.Interceptors
-import ru.korus.tmis.core.logging.LoggingInterceptor
-import javax.ejb.Stateless
 import grizzled.slf4j.Logging
 import ru.korus.tmis.util.{ConfigManager, I18nable}
 import javax.persistence.{EntityManager, PersistenceContext}
-import ru.korus.tmis.core.data.{DictionaryListRequestDataFilter, QueryDataStructure}
-import scala.collection.JavaConversions._
-import ru.korus.tmis.core.entity.model.RbQuotaStatus
+import ru.korus.tmis.core.entity.model.QuotaType
 import ru.korus.tmis.core.exception.CoreException
+import scala.collection.JavaConversions._
+import ru.korus.tmis.core.data.{DictionaryListRequestDataFilter, QueryDataStructure}
+import javax.interceptor.Interceptors
+import ru.korus.tmis.core.logging.LoggingInterceptor
+import javax.ejb.Stateless
 
 /**
- * Класс с методами для работы с таблицей s11r64.RbQuotaStatus
+ * Класс с методами для работы с таблицей s11r64.QuotaType
  * @author mmakankov
  * @since 1.0.0.48
- * @see DbRbQuotaStatusBeanLocal
+ * @see DbQuotaTypeBeanLocal
  */
-
 @Interceptors(Array(classOf[LoggingInterceptor]))
 @Stateless
-class DbRbQuotaStatusBean
-  extends DbRbQuotaStatusBeanLocal
+class DbQuotaTypeBean
+  extends DbQuotaTypeBeanLocal
   with Logging
   with I18nable {
 
   @PersistenceContext(unitName = "s11r64")
   var em: EntityManager = _
 
-
-  def getRbQuotaStatusById(id: Int): RbQuotaStatus = {
-    val result = em.createQuery(RbQuotaStatusFindQuery,
-      classOf[RbQuotaStatus])
+  def getQuotaTypeById(id: Int): QuotaType = {
+    val result = em.createQuery(QuotaTypeFindQuery,
+      classOf[QuotaType])
       .setParameter("id", id)
       .getResultList
 
     result.size match {
       case 0 => {
         throw new CoreException(
-          ConfigManager.ErrorCodes.RbQuotaStatusNotFound,
-          i18n("error.rbQuotaStatusNotFound").format(id))
+          ConfigManager.ErrorCodes.QuotaTypeNotFound,
+          i18n("error.quotaTypeNotFound").format(id))
       }
       case size => {
         result.foreach(rbType => {
@@ -50,7 +48,7 @@ class DbRbQuotaStatusBean
     }
   }
 
-  def getAllRbQuotaStatusWithFilter(page: Int, limit: Int, sortingField: String, sortingMethod: String, filter: Object, records: (java.lang.Long) => java.lang.Boolean) = {
+  def getAllQuotaTypesWithFilter(page: Int, limit: Int, sortingField: String, sortingMethod: String, filter: Object, records: (java.lang.Long) => java.lang.Boolean) = {
     val queryStr: QueryDataStructure = if (filter.isInstanceOf[DictionaryListRequestDataFilter])
       filter.asInstanceOf[DictionaryListRequestDataFilter].toQueryStructure()
     else new QueryDataStructure()
@@ -62,9 +60,9 @@ class DbRbQuotaStatusBean
       }
     }
 
-    if (records!=null) records(em.createQuery(AllRbQuotaStatusWithFilterQuery.format("count(r)", queryStr.query, ""), classOf[Long]).getSingleResult)//Перепишем количество записей для структуры
+    if (records!=null) records(em.createQuery(AllQuotaTypesWithFilterQuery.format("count(r)", queryStr.query, ""), classOf[Long]).getSingleResult)//Перепишем количество записей для структуры
 
-    var typed = em.createQuery(AllRbQuotaStatusWithFilterQuery.format("r.id, r.name", queryStr.query, sorting), classOf[Array[AnyRef]])
+    var typed = em.createQuery(AllQuotaTypesWithFilterQuery.format("r.id, r.name", queryStr.query, sorting), classOf[Array[AnyRef]])
       .setMaxResults(limit)
       .setFirstResult(limit * page)
     if (queryStr.data.size() > 0) queryStr.data.foreach(qdp => typed.setParameter(qdp.name, qdp.value))
@@ -77,17 +75,17 @@ class DbRbQuotaStatusBean
     list
   }
 
-  val RbQuotaStatusFindQuery = """
+  val QuotaTypeFindQuery = """
     SELECT r
     FROM
-      RbQuotaStatus r
+      QuotaType r
     WHERE
       r.id = :id
                                """
 
-  val AllRbQuotaStatusWithFilterQuery = """
+  val AllQuotaTypesWithFilterQuery = """
   SELECT %s
-  FROM RbQuotaStatus r
+  FROM QuotaType r
   %s
   %s
                                         """

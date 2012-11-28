@@ -909,16 +909,16 @@ class QuotaContainer  {
   //@BeanProperty
   //var quotaHistory : IdNameContainer = _
 
-  def this(appealNumber: String, talonNumber: String, stage: Int, primaryOrRepeated: Int, diagnosis: Mkb, quotaType: Int, department: Int, status: Int) = {
+  def this(appealNumber: String, talonNumber: String, stage: Int, primaryOrRepeated: Int, mkb: Mkb, quotaType: Int, department: Int, status: Int) = {
     this()
     this.appealNumber = appealNumber
     this.talonNumber = talonNumber
-    this.stage = stage
+    this.stage = new IdNameContainer(stage, "")
     this.primaryOrRepeated = primaryOrRepeated
     this.diagnosis = new MKBContainer(mkb)
-    this.quotaType = quotaType
-    this.department = department
-    this.status = status
+    this.quotaType = new IdNameContainer(quotaType, "")
+    this.department = new IdNameContainer(department, "")
+    this.status = new IdNameContainer(status, "")
   }
 }
 

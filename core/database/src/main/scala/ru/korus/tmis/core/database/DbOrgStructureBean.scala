@@ -1,6 +1,5 @@
 package ru.korus.tmis.core.database
 
-import ru.korus.tmis.core.logging.LoggingInterceptor
 import ru.korus.tmis.core.entity.model.{OrgStructure, ActionType}
 import ru.korus.tmis.core.logging.LoggingInterceptor
 
@@ -12,15 +11,47 @@ import javax.persistence.{EntityManager, PersistenceContext}
 
 import scala.collection.JavaConversions._
 import ru.korus.tmis.core.data.{QueryDataStructure, DepartmentsDataFilter}
+import ru.korus.tmis.core.exception.CoreException
+import ru.korus.tmis.util.{I18nable, ConfigManager}
 
 @Interceptors(Array(classOf[LoggingInterceptor]))
 @Stateless
 class DbOrgStructureBean
   extends DbOrgStructureBeanLocal
-  with Logging {
+  with Logging
+  with I18nable {
 
   @PersistenceContext(unitName = "s11r64")
   var em: EntityManager = _
+
+  val OrgStructureFindQuery = """
+    SELECT os
+    FROM
+      OrgStructure os
+    WHERE
+      os.id = :id
+                               """
+
+  def getOrgStructureById(id: Int): OrgStructure = {
+    val result = em.createQuery(OrgStructureFindQuery,
+      classOf[OrgStructure])
+      .setParameter("id", id)
+      .getResultList
+
+    result.size match {
+      case 0 => {
+        throw new CoreException(
+          ConfigManager.ErrorCodes.ClientQuotingNotFound,
+          i18n("error.orgStructureNotFound").format(id))
+      }
+      case size => {
+        result.foreach(rbType => {
+          em.detach(rbType)
+        })
+        result(0)
+      }
+    }
+  }
 
   def getAllOrgStructures() = {
     em.createNamedQuery("OrgStructure.findAll", classOf[OrgStructure]).getResultList

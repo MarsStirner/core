@@ -1722,8 +1722,9 @@ public class PatientRegistryRESTImpl implements Serializable {
      * &#15; "KLADR" - КЛАДР;
      * &#15; "valueDomain" - список возможных значений для ActionProperty;
      * &#15; "specialities" - справочник специальностей;
-     * &#15; "contactTypes" - справочник типов контактов;
      * &#15; "quotaStatus" - Справочник статусов квот</pre>
+     * &#15; "quotaType" - Справочник типов квот</pre>
+     * &#15; "contactTypes" - справочник типов контактов;
      * @param headId   Фильтр для справочника "insurance". Идентификатор родительской компании. (В url: filter[headId]=...)
      * @param groupId  Фильтр для справочника "clientDocument". Идентификатор группы типов документов. (В url: filter[groupId]=...)
      * @param name     Фильтр для справочника "policyTypes". Идентификатор обозначения полиса. (В url: filter[name]=...)

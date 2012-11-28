@@ -1,27 +1,27 @@
 package ru.korus.tmis.core.database;
 
-import ru.korus.tmis.core.entity.model.RbQuotaStatus;
+import ru.korus.tmis.core.entity.model.QuotaType;
 import ru.korus.tmis.core.exception.CoreException;
 import scala.Function1;
 
 /**
- * Класс с методами для работы с таблицей s11r64.RbQuotaStatus
+ * Класс с методами для работы с таблицей s11r64.QuotaType
  * @author mmakankov
  * @since 1.0.0.48
- * @see DbRbQuotaStatusBean
+ * @see DbQuotaTypeBean
  */
-public interface DbRbQuotaStatusBeanLocal {
+public interface DbQuotaTypeBeanLocal {
     /**
-     * Запрос на статус квоты по идентификатору.
+     * Запрос на тип квоты по идентификатору.
      * @param id идентификатор записи.
      * @return
      * @throws CoreException
      */
-    RbQuotaStatus getRbQuotaStatusById(int id)
+    QuotaType getQuotaTypeById(int id)
             throws CoreException;
 
     /**
-     * Запрос на справочники статусов квот.
+     * Запрос на справочники типов квот.
      * @param page Выводимая страница.
      * @param limit Максимальное количество типов оплаты в выводимом списке.
      * @param sortingField Поле для сортировки.
@@ -31,6 +31,6 @@ public interface DbRbQuotaStatusBeanLocal {
      * @return
      * @throws CoreException
      */
-    java.util.LinkedList<Object> getAllRbQuotaStatusWithFilter(int page, int limit, String sortingField, String sortingMethod, Object filter, Function1<Long, Boolean> setRecCount)
+    java.util.LinkedList<Object> getAllQuotaTypesWithFilter(int page, int limit, String sortingField, String sortingMethod, Object filter, Function1<Long, Boolean> setRecCount)
             throws CoreException;
 }

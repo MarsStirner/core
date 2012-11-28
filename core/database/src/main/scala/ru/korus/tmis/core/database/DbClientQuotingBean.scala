@@ -3,10 +3,13 @@ package ru.korus.tmis.core.database
 import javax.interceptor.Interceptors
 import javax.ejb.{EJB, Stateless}
 import grizzled.slf4j.Logging
-import ru.korus.tmis.util.I18nable
+import ru.korus.tmis.util.{ConfigManager, I18nable}
 import ru.korus.tmis.core.logging.LoggingInterceptor
 import javax.persistence.{EntityManager, PersistenceContext}
 import java.util.Date
+import ru.korus.tmis.core.entity.model.{Mkb, Patient, Staff, ClientQuoting}
+import scala.collection.JavaConversions._
+import ru.korus.tmis.core.exception.CoreException
 
 /**
  * Класс с методами для работы с таблицей s11r64.Client_Quoting
@@ -28,6 +31,12 @@ class DbClientQuotingBean
   @EJB
   var dbRbQuotaStatus: DbRbQuotaStatusBeanLocal = _
 
+  @EJB
+  var dbQuotaType: DbQuotaTypeBeanLocal = _
+
+  @EJB
+  var dbOrgStructure: DbOrgStructureBeanLocal = _
+
   val ClientQuotingFindQuery = """
     SELECT cq
     FROM
@@ -36,52 +45,73 @@ class DbClientQuotingBean
       cq.id = :id
                                 """
 
-  def insertOrUpdateClientQuoting(id: Int,
-                                  rbDocumentTypeId: Int,
-                                  issued: String,
-                                  number: String,
-                                  serial: String,
-                                  startDate: Date,
-                                  endDate: Date,
-                                  patient: Patient,
-                                  sessionUser: Staff): ClientDocument = {
-    var d: ClientDocument = null
-    val now = new Date
-    if (id > 0) {
-      d = getClientDocumentById(id)
-    }
-    else {
-      d = new ClientDocument
-      d.setCreatePerson(sessionUser)
-      d.setCreateDatetime(now)
-    }
+  def getClientQuotingById(id: Int): ClientQuoting = {
+    val result = em.createQuery(ClientQuotingFindQuery,
+      classOf[ClientQuoting])
+      .setParameter("id", id)
+      .getResultList
 
-    d.setDocumentType(dbRbDocumentType.getRbDocumentTypeById(rbDocumentTypeId))
-    d.setIssued(issued)
-    d.setNumber(number)
-    d.setSerial(serial)
-    if (startDate != null) {
-      d.setDate(startDate)
-    } else {
-      d.setDate(now)
+    result.size match {
+      case 0 => {
+        throw new CoreException(
+          ConfigManager.ErrorCodes.ClientQuotingNotFound,
+          i18n("error.clientDocumentNotFound").format(id))
+      }
+      case size => {
+        result.foreach(rbType => {
+          em.detach(rbType)
+        })
+        result(0)
+      }
     }
-    d.setEndDate(endDate)
-    d.setPatient(patient)
-
-    d.setDeleted(false)
-    d.setModifyPerson(sessionUser)
-    d.setModifyDatetime(now)
-
-    d
   }
 
-  def deleteClientDocument(id: Int,
-                           sessionUser: Staff) = {
-    val d = getClientDocumentById(id)
+  def insertOrUpdateClientQuoting(id: Int,
+                                  rbQuotaTypeId: Int,
+                                  quotaStatusId: Int,
+                                  orgStructureId: Int,
+                                  appealNumber: String,
+                                  talonNumber: String,
+                                  stage: Int,
+                                  request: Int,
+                                  mkb: Mkb,
+                                  patient: Patient,
+                                  sessionUser: Staff): ClientQuoting = {
+
+    var cq: ClientQuoting = null
     val now = new Date
-    d.setDeleted(true)
-    d.setModifyPerson(sessionUser)
-    d.setModifyDatetime(now)
+    if (id > 0) {
+      cq = getClientQuotingById(id)
+    }
+    else {
+      cq = new ClientQuoting
+      cq.setCreatePerson(sessionUser)
+      cq.setCreateDatetime(now)
+      cq.setMaster(patient)
+    }
+
+    cq.setIdentifier(appealNumber)
+    cq.setQuotaTicket(talonNumber)
+    cq.setStage(stage)
+    cq.setRequest(request)
+    cq.setMkb(mkb)
+    cq.setQuotaType(dbQuotaType.getQuotaTypeById(rbQuotaTypeId))
+    cq.setOrgStructure(dbOrgStructure.getOrgStructureById(orgStructureId))
+    cq.setStatus(dbRbQuotaStatus.getRbQuotaStatusById(quotaStatusId))
+
+    cq.setDeleted(false)
+    cq.setModifyPerson(sessionUser)
+    cq.setModifyDatetime(now)
+    cq
+  }
+
+  def deleteClientQuoting(id: Int,
+                          sessionUser: Staff) = {
+    val cq = getClientQuotingById(id)
+    val now = new Date
+    cq.setDeleted(true)
+    cq.setModifyPerson(sessionUser)
+    cq.setModifyDatetime(now)
   }
 }
 
