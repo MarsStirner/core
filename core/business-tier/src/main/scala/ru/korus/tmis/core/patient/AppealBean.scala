@@ -172,6 +172,7 @@ with CAPids{
         action = actionBean.createAction(newEvent.getId.intValue(),
                                           actionTypeBean.getActionTypeById(i18n("db.actionType.hospitalization.primary").toInt).getId.intValue(),
                                           authData)
+        action.setStatus(ActionStatus.FINISHED.getCode) //TODO: Материть Александра!
         em.persist(action)
         list = actionPropertyTypeBean.getActionPropertyTypesByActionTypeId(i18n("db.actionType.hospitalization.primary").toInt).toList
       }

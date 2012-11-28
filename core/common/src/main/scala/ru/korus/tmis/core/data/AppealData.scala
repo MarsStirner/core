@@ -267,7 +267,7 @@ class AppealEntry {
     exValue = this.extractValuesInNumberedMap(Set(ConfigManager.RbCAPIds("db.rbCAP.hosp.primary.id.ambulanceNumber").toInt :java.lang.Integer), values).get("0")
     this.ambulanceNumber = exValue.get(0).asInstanceOf[String]
 
-    this.rangeAppealDateTime = new DatePeriodContainer(event.getSetDate, event.getExecDate)//(action.getBegDate, action.getEndDate)
+    this.rangeAppealDateTime = new DatePeriodContainer(action.getBegDate, action.getEndDate)//(action.getBegDate, action.getEndDate) //event.getSetDate, event.getExecDate
 
     this.patient = typeOfResponse match {
       case "standart"  => {new IdValueContainer(event.getPatient.getId.toString)}

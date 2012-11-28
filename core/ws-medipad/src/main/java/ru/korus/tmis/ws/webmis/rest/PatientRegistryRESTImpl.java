@@ -537,7 +537,7 @@ public class PatientRegistryRESTImpl implements Serializable {
                                             @PathParam("actionTypeId") int actionTypeId,
                                             @Context HttpServletRequest servRequest) {
         AuthData auth = wsImpl.checkTokenCookies(servRequest);
-        JSONWithPadding returnValue = new JSONWithPadding(wsImpl.getStructOfPrimaryMedExam(/*actionTypeId*/ 139, auth), callback); //TODO: раскоментить когда-нить
+        JSONWithPadding returnValue = new JSONWithPadding(wsImpl.getStructOfPrimaryMedExam(actionTypeId, auth), callback);
         return returnValue;
     }
 
@@ -558,7 +558,7 @@ public class PatientRegistryRESTImpl implements Serializable {
                                                     @PathParam("actionTypeId") int actionTypeId,
                                                     @Context HttpServletRequest servRequest) {
         AuthData auth = wsImpl.checkTokenCookies(servRequest);
-        JSONWithPadding returnValue = new JSONWithPadding(wsImpl.getStructOfPrimaryMedExamWithCopy(/*actionTypeId*/ 139, auth, eventId), callback);
+        JSONWithPadding returnValue = new JSONWithPadding(wsImpl.getStructOfPrimaryMedExamWithCopy(actionTypeId, auth, eventId), callback);
         return returnValue;
     }
 
