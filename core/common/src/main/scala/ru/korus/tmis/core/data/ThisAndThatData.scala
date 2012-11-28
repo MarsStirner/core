@@ -74,7 +74,7 @@ class ListDataRequest {
       case _ => {sortingMethod}
     }
     this.limit = limit
-    this.page = page
+    this.page = if(page>1)page else 1
     this.coreVersion = ConfigManager.Messages("misCore.assembly.version")
   }
 

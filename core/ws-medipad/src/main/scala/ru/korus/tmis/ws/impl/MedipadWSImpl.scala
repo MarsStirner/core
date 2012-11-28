@@ -1102,7 +1102,7 @@ class MedipadWSImpl
       case "specialities" => {  //  Специальности
         mapper.getSerializationConfig().setSerializationView(classOf[DictionaryDataViews.DefaultView]);
         request.setRecordsCount(dbSpeciality.getCountOfBloodTypesWithFilter(request.filter))
-        dbSpeciality.getAllSpecialitiesWithFilter(request.page,
+        dbSpeciality.getAllSpecialitiesWithFilter(request.page-1,
                                                   request.limit,
                                                   request.sortingFieldInternal,
                                                   request.sortingMethod,
@@ -1111,7 +1111,7 @@ class MedipadWSImpl
       case "contactTypes" => {  //  Типы контактов
         mapper.getSerializationConfig().setSerializationView(classOf[DictionaryDataViews.DefaultView])
         request.setRecordsCount(dbRbContactType.getCountOfAllRbContactTypesWithFilter(request.filter))
-        dbRbContactType.getAllRbContactTypesWithFilter( request.page,
+        dbRbContactType.getAllRbContactTypesWithFilter( request.page-1,
                                                         request.limit,
                                                         request.sortingFieldInternal,
                                                         request.sortingMethod,
@@ -1119,7 +1119,7 @@ class MedipadWSImpl
       }
       case "requestTypes" => {  //  Типы обращений
         mapper.getSerializationConfig().setSerializationView(classOf[DictionaryDataViews.DefaultView])
-        dbRbRequestTypes.getAllRbRequestTypesWithFilter(request.page,
+        dbRbRequestTypes.getAllRbRequestTypesWithFilter(request.page-1,
                                                         request.limit,
                                                         request.sortingFieldInternal,
                                                         request.sortingMethod,
@@ -1128,7 +1128,7 @@ class MedipadWSImpl
       }
       case "finance" => {  //  Типы оплаты
         mapper.getSerializationConfig().setSerializationView(classOf[DictionaryDataViews.DefaultView])
-        dbRbFinance.getAllRbFinanceWithFilter(request.page,
+        dbRbFinance.getAllRbFinanceWithFilter(request.page-1,
                                               request.limit,
                                               request.sortingFieldInternal,
                                               request.sortingMethod,
@@ -1165,7 +1165,7 @@ class MedipadWSImpl
     val mapper: ObjectMapper = new ObjectMapper()
     mapper.getSerializationConfig().setSerializationView(classOf[DictionaryDataViews.DefaultView])
 
-    val list = dbEventBean.getEventTypesByRequestTypeIdAndFinanceId(request.page,
+    val list = dbEventBean.getEventTypesByRequestTypeIdAndFinanceId(request.page-1,
                                                                     request.limit,
                                                                     request.sortingFieldInternal,
                                                                     request.sortingMethod,
