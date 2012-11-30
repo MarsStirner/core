@@ -4,12 +4,15 @@ import ru.korus.tmis.core.entity.model.RbQuotaStatus;
 import ru.korus.tmis.core.exception.CoreException;
 import scala.Function1;
 
+import javax.ejb.Local;
+
 /**
  * Класс с методами для работы с таблицей s11r64.RbQuotaStatus
  * @author mmakankov
  * @since 1.0.0.48
  * @see DbRbQuotaStatusBean
  */
+@Local
 public interface DbRbQuotaStatusBeanLocal {
     /**
      * Запрос на статус квоты по идентификатору.

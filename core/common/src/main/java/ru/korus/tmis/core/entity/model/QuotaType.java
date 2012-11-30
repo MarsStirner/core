@@ -17,8 +17,8 @@ import java.util.Date;
         {
                 @NamedQuery(name = "QuotaType.findAll", query = "SELECT cq FROM QuotaType cq")
         })
-@XmlType(name = "QuotaType")
-@XmlRootElement(name = "QuotaType")
+@XmlType(name = "quotaType")
+@XmlRootElement(name = "quotaType")
 public class QuotaType implements Serializable {
 
     private static final long serialVersionUID = 1L;
@@ -29,9 +29,11 @@ public class QuotaType implements Serializable {
     @Column(name = "id")
     private Integer id;
 
+    @Basic(optional = false)
     @Column(name = "code")
     private String code;
 
+    @Basic(optional = false)
     @Column(name = "name")
     private String name;
 
@@ -39,20 +41,39 @@ public class QuotaType implements Serializable {
     @JoinColumn(name = "MKB")
     private Mkb mkb;
 
+    @Basic(optional = false)
     @Column(name = "class")
-    private Integer quotaClass;
+    private int quotaClass = 0;
 
     @Basic(optional = false)
     @Column(name = "createDatetime")
     @Temporal(TemporalType.TIMESTAMP)
     private Date createDatetime;
 
+    @Basic(optional = false)
+    @Column(name = "deleted")
+    private boolean deleted;
+
+    @Basic(optional = false)
+    @Column(name = "group_code")
+    private String groupCode;
+
+    @Basic(optional = false)
+    @Column(name = "modifyDatetime")
+    @Temporal(TemporalType.TIMESTAMP)
+    private Date modifyDatetime;
+
     @ManyToOne
     @JoinColumn(name = "createPerson_id")
     private Staff createPerson;
 
+    @ManyToOne
+    @JoinColumn(name = "modifyPerson_id")
+    private Staff modifyPerson;
+
+    @Basic(optional = false)
     @Column(name = "teenOlder")
-    private Integer teenOlder;
+    private int teenOlder = 0;
 
     public Integer getId() {
         return id;
@@ -86,11 +107,11 @@ public class QuotaType implements Serializable {
         this.mkb = mkb;
     }
 
-    public Integer getQuotaClass() {
+    public int getQuotaClass() {
         return quotaClass;
     }
 
-    public void setQuotaClass(Integer quotaClass) {
+    public void setQuotaClass(int quotaClass) {
         this.quotaClass = quotaClass;
     }
 
@@ -102,6 +123,30 @@ public class QuotaType implements Serializable {
         this.createDatetime = createDatetime;
     }
 
+    public boolean isDeleted() {
+        return deleted;
+    }
+
+    public void setDeleted(boolean deleted) {
+        this.deleted = deleted;
+    }
+
+    public String getGroupCode() {
+        return groupCode;
+    }
+
+    public void setGroupCode(String groupCode) {
+        this.groupCode = groupCode;
+    }
+
+    public Date getModifyDatetime() {
+        return modifyDatetime;
+    }
+
+    public void setModifyDatetime(Date modifyDatetime) {
+        this.modifyDatetime = modifyDatetime;
+    }
+
     public Staff getCreatePerson() {
         return createPerson;
     }
@@ -110,11 +155,19 @@ public class QuotaType implements Serializable {
         this.createPerson = createPerson;
     }
 
-    public Integer getTeenOlder() {
+    public Staff getModifyPerson() {
+        return modifyPerson;
+    }
+
+    public void setModifyPerson(Staff modifyPerson) {
+        this.modifyPerson = modifyPerson;
+    }
+
+    public int getTeenOlder() {
         return teenOlder;
     }
 
-    public void setTeenOlder(Integer teenOlder) {
+    public void setTeenOlder(int teenOlder) {
         this.teenOlder = teenOlder;
     }
 

@@ -6,6 +6,8 @@ import ru.korus.tmis.core.entity.model.Patient;
 import ru.korus.tmis.core.entity.model.Staff;
 import ru.korus.tmis.core.exception.CoreException;
 
+import javax.ejb.Local;
+
 /**
  * Класс с методами для работы с таблицей s11r64.Client_Quoting
  * @author mmakankov
@@ -13,6 +15,7 @@ import ru.korus.tmis.core.exception.CoreException;
  * @see DbClientQuotingBean
  */
 
+@Local
 public interface DbClientQuotingBeanLocal {
     /**
      * Запрос на квоту по идентификатору.

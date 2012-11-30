@@ -95,7 +95,8 @@ class DbClientQuotingBean
     cq.setStage(stage)
     cq.setRequest(request)
     cq.setMkb(mkb)
-    cq.setQuotaType(dbQuotaType.getQuotaTypeById(rbQuotaTypeId))
+    val qwas = dbQuotaType.getQuotaTypeById(rbQuotaTypeId)
+    cq.setQuotaType(qwas)
     cq.setOrgStructure(dbOrgStructure.getOrgStructureById(orgStructureId))
     cq.setStatus(dbRbQuotaStatus.getRbQuotaStatusById(quotaStatusId))
 

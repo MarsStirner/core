@@ -1941,4 +1941,21 @@ public class PatientRegistryRESTImpl implements Serializable {
         JSONWithPadding returnValue = new JSONWithPadding(oip, callback);
         return returnValue;
     }
+
+    @POST
+    @Path("/events/{eventId}/quota")
+    @Produces("application/x-javascript")
+    public Object createQuota(QuotaData data,
+                              @PathParam("eventId")int eventId,
+                              @QueryParam("token") String token,
+                              @QueryParam("callback") String callback,
+                              @Context HttpServletRequest servRequest) {
+        //AuthData auth = wsImpl.checkTokenCookies(servRequest);
+        AuthToken authToken = new AuthToken(token);
+        AuthData auth = wsImpl.getStorageAuthData(authToken);
+
+        Object oip = wsImpl.insertOrUpdateQuota(data.getData(), eventId, auth);
+        JSONWithPadding returnValue = new JSONWithPadding(oip, callback);
+        return returnValue;
+    }
 }

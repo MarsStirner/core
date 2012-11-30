@@ -82,6 +82,9 @@ with CAPids{
   @EJB
   var dbClientRelation: DbClientRelationBeanLocal = _
 
+  @EJB
+  var dbClientQuoting: DbClientQuotingBeanLocal = _
+
   @Inject
   @Any
   var actionEvent: javax.enterprise.event.Event[Notification] = _
@@ -855,6 +858,33 @@ with CAPids{
       .setParameter("id", id)
       .getResultList
     rbResult
+  }
+
+  def insertOrUpdateClientQuoting(dataEntry: QuotaEntry, eventId: Int, auth: AuthData) = {
+    //try {
+      val patient = eventBean.getEventById(eventId).getPatient
+      val mkb = dbMkbBean.getMkbByCode(dataEntry.getMkb.getCode)
+      var isPersist = true
+      if (dataEntry.getId > 0) {
+        isPersist = false
+      }
+      val clientQuoting = dbClientQuoting.insertOrUpdateClientQuoting(dataEntry.getId,
+                                                                      dataEntry.getQuotaType.getId,
+                                                                      dataEntry.getStatus.getId,
+                                                                      dataEntry.getDepartment.getId,
+                                                                      dataEntry.getAppealNumber,
+                                                                      dataEntry.getTalonNumber,
+                                                                      dataEntry.getStage.intValue(),
+                                                                      dataEntry.getRequest,
+                                                                      mkb,
+                                                                      patient,
+                                                                      auth.getUser)
+      if (isPersist) dbManager.persist(clientQuoting) else dbManager.merge(clientQuoting)
+      clientQuoting
+    //} catch {
+    //  case e: CoreException => null
+    //  case e: Exception => throw new CoreException("Ошибка при сохранении квоты")
+    //}
   }
 
   /*

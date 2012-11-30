@@ -327,4 +327,7 @@ public interface MedipadWebService extends Serializable {
 
     //@WebMethod
     //RlsDataList getFilteredRlsList(RlsDataListRequestData request) throws CoreException;
+
+    @WebMethod
+    QuotaData insertOrUpdateQuota(QuotaEntry dataEntry, int eventId, AuthData auth) throws CoreException;
 }

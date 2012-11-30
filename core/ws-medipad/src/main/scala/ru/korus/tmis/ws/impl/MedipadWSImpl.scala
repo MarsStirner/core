@@ -580,7 +580,7 @@ class MedipadWSImpl
 
      val mapper: ObjectMapper = new ObjectMapper()
      requestData.filter.asInstanceOf[ReceivedRequestDataFilter].role match {
-       //case 29 => mapper.getSerializationConfig().setSerializationView(classOf[ReceivedPatientsDataViews.AdmissionDepartmentsNurseView]) //Сестра приемного отделения
+       case 29 => mapper.getSerializationConfig().setSerializationView(classOf[ReceivedPatientsDataViews.AdmissionDepartmentsNurseView]) //Сестра приемного отделения
        case _ =>  mapper.getSerializationConfig().setSerializationView(classOf[ReceivedPatientsDataViews.AdmissionDepartmentsDoctorView]) //Доктор
      }
 
@@ -778,6 +778,11 @@ class MedipadWSImpl
     val mapper: ObjectMapper = new ObjectMapper()
     mapper.getSerializationConfig().setSerializationView(classOf[HospitalBedViews.MoveView])
     mapper.writeValueAsString(hospitalBedBean.getRegistryOriginalForm(action, authData))
+  }
+
+  def insertOrUpdateQuota(dataEntry: QuotaEntry, eventId: Int, auth: AuthData) = {
+    val quota = appealBean.insertOrUpdateClientQuoting(dataEntry, eventId, auth)
+    new QuotaData(quota, null)
   }
 
   /*

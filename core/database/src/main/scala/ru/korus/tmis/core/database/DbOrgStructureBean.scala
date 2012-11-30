@@ -2,13 +2,10 @@ package ru.korus.tmis.core.database
 
 import ru.korus.tmis.core.entity.model.{OrgStructure, ActionType}
 import ru.korus.tmis.core.logging.LoggingInterceptor
-
-
 import grizzled.slf4j.Logging
 import javax.ejb.Stateless
 import javax.interceptor.Interceptors
 import javax.persistence.{EntityManager, PersistenceContext}
-
 import scala.collection.JavaConversions._
 import ru.korus.tmis.core.data.{QueryDataStructure, DepartmentsDataFilter}
 import ru.korus.tmis.core.exception.CoreException

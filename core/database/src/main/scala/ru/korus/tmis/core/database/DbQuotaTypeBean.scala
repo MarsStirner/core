@@ -27,9 +27,9 @@ class DbQuotaTypeBean
   @PersistenceContext(unitName = "s11r64")
   var em: EntityManager = _
 
-  def getQuotaTypeById(id: Int): QuotaType = {
+  def getQuotaTypeById(id: Int) = {
     val result = em.createQuery(QuotaTypeFindQuery,
-      classOf[QuotaType])
+      classOf[Array[AnyRef]])
       .setParameter("id", id)
       .getResultList
 
@@ -38,6 +38,28 @@ class DbQuotaTypeBean
         throw new CoreException(
           ConfigManager.ErrorCodes.QuotaTypeNotFound,
           i18n("error.quotaTypeNotFound").format(id))
+      }
+      case size => {
+        result.foreach(rbType => {
+          em.detach(rbType)
+        })
+        result(0).asInstanceOf[QuotaType]
+      }
+    }
+  }
+
+  def getQuotaTypeByCode(code: String) = {
+    val result = em.createQuery(QuotaTypeFindByCodeQuery,
+      classOf[QuotaType])
+      .setParameter("code", code)
+      .getResultList
+
+    result.size match {
+      case 0 => {
+        null
+        //throw new CoreException(
+        //  ConfigManager.ErrorCodes.QuotaTypeNotFound,
+        //  i18n("error.quotaTypeNotFound").format(id))
       }
       case size => {
         result.foreach(rbType => {
@@ -74,6 +96,14 @@ class DbQuotaTypeBean
     })
     list
   }
+
+  val QuotaTypeFindByCodeQuery = """
+  SELECT r
+  FROM
+    QuotaType r
+  WHERE
+    r.code = :code
+                                 """
 
   val QuotaTypeFindQuery = """
     SELECT r

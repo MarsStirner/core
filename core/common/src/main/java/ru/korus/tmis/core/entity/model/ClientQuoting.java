@@ -35,7 +35,7 @@ public class ClientQuoting implements Serializable {
 
     @Basic(optional = false)
     @Column(name = "amount")
-    private Integer amount = 0;
+    private int amount = 0;
 
     @Basic(optional = false)
     @Column(name = "createDatetime")
@@ -111,10 +111,10 @@ public class ClientQuoting implements Serializable {
     private String regionCode;
 
     @Column(name = "request")
-    private Integer request;
+    private int request;
 
     @Column(name = "stage")
-    private Integer stage;
+    private int stage;
 
     @Column(name = "statement")
     private String statement;
@@ -122,17 +122,6 @@ public class ClientQuoting implements Serializable {
     @ManyToOne
     @JoinColumn(name = "status")
     private RbQuotaStatus status;
-
-    @Column(name = "treatment_id")
-    private Integer treatmentId = 0;
-
-    //TODO: Попросить добавить поле version
-    /*
-    @Version
-    @Basic(optional = false)
-    @Column(name = "version")
-    private int version;
-    */
 
     public Integer getId() {
         return id;
@@ -150,11 +139,11 @@ public class ClientQuoting implements Serializable {
         this.mkb = mkb;
     }
 
-    public Integer getAmount() {
+    public int getAmount() {
         return amount;
     }
 
-    public void setAmount(Integer amount) {
+    public void setAmount(int amount) {
         this.amount = amount;
     }
 
@@ -302,19 +291,19 @@ public class ClientQuoting implements Serializable {
         this.regionCode = regionCode;
     }
 
-    public Integer getRequest() {
+    public int getRequest() {
         return request;
     }
 
-    public void setRequest(Integer request) {
+    public void setRequest(int request) {
         this.request = request;
     }
 
-    public Integer getStage() {
+    public int getStage() {
         return stage;
     }
 
-    public void setStage(Integer stage) {
+    public void setStage(int stage) {
         this.stage = stage;
     }
 
@@ -341,6 +330,19 @@ public class ClientQuoting implements Serializable {
     public void setTreatmentId(Integer treatmentId) {
         this.treatmentId = treatmentId;
     }
+
+    @Column(name = "treatment_id")
+    private Integer treatmentId = 0;
+
+    //TODO: Попросить добавить поле version
+    /*
+    @Version
+    @Basic(optional = false)
+    @Column(name = "version")
+    private int version;
+    */
+
+
 
     @Override
     public boolean equals(Object o) {

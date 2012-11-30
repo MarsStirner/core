@@ -4,12 +4,15 @@ import ru.korus.tmis.core.entity.model.QuotaType;
 import ru.korus.tmis.core.exception.CoreException;
 import scala.Function1;
 
+import javax.ejb.Local;
+
 /**
  * Класс с методами для работы с таблицей s11r64.QuotaType
  * @author mmakankov
  * @since 1.0.0.48
  * @see DbQuotaTypeBean
  */
+@Local
 public interface DbQuotaTypeBeanLocal {
     /**
      * Запрос на тип квоты по идентификатору.
@@ -19,6 +22,14 @@ public interface DbQuotaTypeBeanLocal {
      */
     QuotaType getQuotaTypeById(int id)
             throws CoreException;
+
+    /**
+     * Запрос на тип квоты по коду.
+     * @param code уникальный код записи.
+     * @return
+     * @throws CoreException
+     */
+    QuotaType getQuotaTypeByCode(String code) throws CoreException;
 
     /**
      * Запрос на справочники типов квот.
