@@ -32,6 +32,7 @@ import ru.korus.tmis.core.patient._
 import java.util._
 import ru.korus.tmis.util.StringId
 import java.util
+import javax.swing.JList
 
 @Named
 @WebService(
@@ -157,6 +158,18 @@ class MedipadWSImpl
 
   @EJB
   private var dbRbRequestTypes: DbRbRequestTypeBeanLocal = _
+
+  @EJB
+  private var dbEventBean: DbEventBeanLocal = _
+
+  @EJB
+  private var dbClientRelation: DbClientRelationBeanLocal = _
+
+  @EJB
+  private var dbRbQuotaStatus: DbRbQuotaStatusBeanLocal = _
+
+  @EJB
+  private var dbQuotaTypeBean: DbQuotaTypeBeanLocal = _
   //////////////////////////////////////////////////////////////////////////////
 
   def checkTokenCookies(srvletRequest: HttpServletRequest): AuthData = {
@@ -459,23 +472,24 @@ class MedipadWSImpl
 
       val positionE = result.iterator.next()
       val positionA = positionE._2.iterator.next()
-      val values = positionA._2.asInstanceOf[java.util.Map[String, java.util.List[Object]]]
+      val values = positionA._2.asInstanceOf[java.util.Map[java.lang.Integer, java.util.List[Object]]]
 
       val mapper: ObjectMapper = new ObjectMapper()
       mapper.getSerializationConfig().setSerializationView(classOf[Views.DynamicFieldsStandartForm]);
       val patient = patientBean.getPatientById(patientId)
       val map = patientBean.getKLADRAddressMapForPatient(patient)
       val street = patientBean.getKLADRStreetForPatient(patient)
-      val appType = dbFDRecordBean.getIdValueFDRecordByEventTypeId(25, positionE._1.getEventType.getId.intValue())
+      //val appType = dbFDRecordBean.getIdValueFDRecordByEventTypeId(25, positionE._1.getEventType.getId.intValue())
       mapper.writeValueAsString(new AppealData( positionE._1,
                                                 positionA._1,
-                                                appType,
+                                                //appType,
                                                 values,
                                                 "standart",
                                                 map,
                                                 street,
                                                 null,
-                                                actionBean.getLastActionByActionTypeIdAndEventId _  //havePrimary
+                                                actionBean.getLastActionByActionTypeIdAndEventId _,  //havePrimary
+                                                dbClientRelation.getClientRelationByRelativeId _
                                 ))
     } else {
       throw new CoreException("Не удачная попытка сохранения(изменения) обращения")
@@ -488,21 +502,22 @@ class MedipadWSImpl
 
     val positionE = result.iterator.next()
     val positionA = positionE._2.iterator.next()
-    val values = positionA._2.asInstanceOf[java.util.Map[String, java.util.List[Object]]]
+    val values = positionA._2.asInstanceOf[java.util.Map[java.lang.Integer, java.util.List[Object]]]
 
     val mapper: ObjectMapper = new ObjectMapper()
     mapper.getSerializationConfig().setSerializationView(classOf[Views.DynamicFieldsStandartForm]);
     //val map = patientBean.getKLADRAddressMapForPatient(result)
-    val appType = dbFDRecordBean.getIdValueFDRecordByEventTypeId(25, positionE._1.getEventType.getId.intValue())
+    //val appType = dbFDRecordBean.getIdValueFDRecordByEventTypeId(25, positionE._1.getEventType.getId.intValue())
     mapper.writeValueAsString(new AppealData( positionE._1,
                                               positionA._1,
-                                              appType,
+                                              //appType,
                                               values,
                                               "standart",
                                               null,
                                               null,
                                               null,
-                                              actionBean.getLastActionByActionTypeIdAndEventId _  //havePrimary
+                                              actionBean.getLastActionByActionTypeIdAndEventId _,  //havePrimary
+                                              dbClientRelation.getClientRelationByRelativeId _
                               ))
   }
 
@@ -511,7 +526,7 @@ class MedipadWSImpl
 
     val positionE = result.iterator.next()
     val positionA = positionE._2.iterator.next()
-    val values = positionA._2.asInstanceOf[java.util.Map[String, java.util.List[Object]]]
+    val values = positionA._2.asInstanceOf[java.util.Map[java.lang.Integer, java.util.List[Object]]]
 
     val ward = dbCustomQueryBean.getLastActionByTypeCodeAndAPTypeName(id, "4202", "Переведен в отделение")
     var aps: java.util.Map[ActionProperty, java.util.List[APValue]] = null
@@ -525,11 +540,11 @@ class MedipadWSImpl
     val map = patientBean.getKLADRAddressMapForPatient(positionE._1.getPatient)
     val street = patientBean.getKLADRStreetForPatient(positionE._1.getPatient)
 
-    val appType = dbFDRecordBean.getIdValueFDRecordByEventTypeId(i18n("db.flatDirectory.eventType.hospitalization").toInt,
-                                                                 positionE._1.getEventType.getId.intValue())
+    //val appType = dbFDRecordBean.getIdValueFDRecordByEventTypeId(i18n("db.flatDirectory.eventType.hospitalization").toInt,
+    //                                                             positionE._1.getEventType.getId.intValue())
     mapper.writeValueAsString(new AppealData( positionE._1,
                                               positionA._1,
-                                              appType,
+                                              //appType,
                                               values,
                                               aps,
                                               "print_form",
@@ -537,6 +552,7 @@ class MedipadWSImpl
                                               street,
                                               null,
                                               actionBean.getLastActionByActionTypeIdAndEventId _, //havePrimary
+                                              dbClientRelation.getClientRelationByRelativeId _,
                                               actionPropertyBean.getActionPropertiesByActionIdAndRbCoreActionPropertyIds _,  //Admission Diagnosis
                                               dbRbCoreActionPropertyBean.getRbCoreActionPropertiesByIds _          //таблица соответствия
                               ))
@@ -565,7 +581,7 @@ class MedipadWSImpl
 
      val mapper: ObjectMapper = new ObjectMapper()
      requestData.filter.asInstanceOf[ReceivedRequestDataFilter].role match {
-       //case 29 => mapper.getSerializationConfig().setSerializationView(classOf[ReceivedPatientsDataViews.AdmissionDepartmentsNurseView]) //Сестра приемного отделения
+       case 29 => mapper.getSerializationConfig().setSerializationView(classOf[ReceivedPatientsDataViews.AdmissionDepartmentsNurseView]) //Сестра приемного отделения
        case _ =>  mapper.getSerializationConfig().setSerializationView(classOf[ReceivedPatientsDataViews.AdmissionDepartmentsDoctorView]) //Доктор
      }
 
@@ -742,7 +758,7 @@ class MedipadWSImpl
     val action = hospitalBedBean.modifyPatientToHospitalBed(actionId, data, authData)
 
     val mapper: ObjectMapper = new ObjectMapper()
-    mapper.getSerializationConfig().setSerializationView(classOf[HospitalBedViews.RegistrationView]);
+    mapper.getSerializationConfig().setSerializationView(classOf[HospitalBedViews.RegistrationView])
     mapper.writeValueAsString(hospitalBedBean.getRegistryOriginalForm(action, authData))
   }
 
@@ -763,6 +779,11 @@ class MedipadWSImpl
     val mapper: ObjectMapper = new ObjectMapper()
     mapper.getSerializationConfig().setSerializationView(classOf[HospitalBedViews.MoveView])
     mapper.writeValueAsString(hospitalBedBean.getRegistryOriginalForm(action, authData))
+  }
+
+  def insertOrUpdateQuota(dataEntry: QuotaEntry, eventId: Int, auth: AuthData) = {
+    val quota = appealBean.insertOrUpdateClientQuoting(dataEntry, eventId, auth)
+    new QuotaData(quota, null)
   }
 
   /*
@@ -803,7 +824,6 @@ class MedipadWSImpl
   }
 
   def getAllDepartments(requestData: ListDataRequest) = {
-
     //TODO: подключить анализ авторизационных данных и доступных ролей
     requestData.setRecordsCount(dbOrgStructureBean.getCountAllOrgStructuresWithFilter(requestData.filter))
     val list = new AllDepartmentsListData(dbOrgStructureBean.getAllOrgStructuresByRequest(requestData.limit,
@@ -1093,7 +1113,7 @@ class MedipadWSImpl
       case "specialities" => {  //  Специальности
         mapper.getSerializationConfig().setSerializationView(classOf[DictionaryDataViews.DefaultView]);
         request.setRecordsCount(dbSpeciality.getCountOfBloodTypesWithFilter(request.filter))
-        dbSpeciality.getAllSpecialitiesWithFilter(request.page,
+        dbSpeciality.getAllSpecialitiesWithFilter(request.page-1,
                                                   request.limit,
                                                   request.sortingFieldInternal,
                                                   request.sortingMethod,
@@ -1102,7 +1122,7 @@ class MedipadWSImpl
       case "contactTypes" => {  //  Типы контактов
         mapper.getSerializationConfig().setSerializationView(classOf[DictionaryDataViews.DefaultView])
         request.setRecordsCount(dbRbContactType.getCountOfAllRbContactTypesWithFilter(request.filter))
-        dbRbContactType.getAllRbContactTypesWithFilter( request.page,
+        dbRbContactType.getAllRbContactTypesWithFilter( request.page-1,
                                                         request.limit,
                                                         request.sortingFieldInternal,
                                                         request.sortingMethod,
@@ -1110,7 +1130,7 @@ class MedipadWSImpl
       }
       case "requestTypes" => {  //  Типы обращений
         mapper.getSerializationConfig().setSerializationView(classOf[DictionaryDataViews.DefaultView])
-        dbRbRequestTypes.getAllRbRequestTypesWithFilter(request.page,
+        dbRbRequestTypes.getAllRbRequestTypesWithFilter(request.page-1,
                                                         request.limit,
                                                         request.sortingFieldInternal,
                                                         request.sortingMethod,
@@ -1119,12 +1139,30 @@ class MedipadWSImpl
       }
       case "finance" => {  //  Типы оплаты
         mapper.getSerializationConfig().setSerializationView(classOf[DictionaryDataViews.DefaultView])
-        dbRbFinance.getAllRbFinanceWithFilter(request.page,
+        dbRbFinance.getAllRbFinanceWithFilter(request.page-1,
                                               request.limit,
                                               request.sortingFieldInternal,
                                               request.sortingMethod,
                                               request.filter,
                                               request.rewriteRecordsCount _)
+      }
+      case "quotaStatus" => { //   Статусы квот
+        mapper.getSerializationConfig().setSerializationView(classOf[DictionaryDataViews.DefaultView])
+        dbRbQuotaStatus.getAllRbQuotaStatusWithFilter(request.page,
+                                                      request.limit,
+                                                      request.sortingFieldInternal,
+                                                      request.sortingMethod,
+                                                      request.filter,
+                                                      request.rewriteRecordsCount _)
+      }
+      case "quotaType" => { //   Типы квот
+        mapper.getSerializationConfig().setSerializationView(classOf[DictionaryDataViews.DefaultView])
+        dbQuotaTypeBean.getAllQuotaTypesWithFilter(request.page,
+                                                   request.limit,
+                                                   request.sortingFieldInternal,
+                                                   request.sortingMethod,
+                                                   request.filter,
+                                                   request.rewriteRecordsCount _)
       }
     }
     mapper.writeValueAsString(new DictionaryListData(list, request))
@@ -1150,6 +1188,24 @@ class MedipadWSImpl
       new RlsDataList(list, request)
     else
       new RlsDataList()
+  }
+
+  def getEventTypes(request: ListDataRequest, authData: AuthData) = {
+    val mapper: ObjectMapper = new ObjectMapper()
+    mapper.getSerializationConfig().setSerializationView(classOf[DictionaryDataViews.DefaultView])
+
+    val list = dbEventBean.getEventTypesByRequestTypeIdAndFinanceId(request.page-1,
+                                                                    request.limit,
+                                                                    request.sortingFieldInternal,
+                                                                    request.sortingMethod,
+                                                                    request.filter,
+                                                                    request.rewriteRecordsCount _)
+
+    mapper.writeValueAsString(new EventTypesListData(list, request))
+  }
+
+  def getPatientsFromOpenAppealWhatHasBedByDepartmentId(departmentId: Int, authData: AuthData) = {
+    patientBean.getCurrentPatientsByDepartmentId(departmentId)
   }
 
 }

@@ -9,18 +9,19 @@ import javax.ejb.{EJB, Stateless}
 import ru.korus.tmis.core.database._
 import scala.collection.JavaConversions._
 import ru.korus.tmis.core.auth.AuthData
-import ru.korus.tmis.util.{ConfigManager, I18nable}
+import ru.korus.tmis.util.{CAPids, ConfigManager, I18nable}
 import javax.persistence.{PersistenceContext, EntityManager}
 import collection.mutable.{HashMap, HashSet}
 import java.util.{ArrayList, Date, LinkedList}
 import java.text.{DateFormat, SimpleDateFormat}
 import ru.korus.tmis.core.exception.CoreException
 import java.{util, sql}
-import collection.{JavaConversions, mutable}
+import collection.{mutable, JavaConversions}
 import java.sql.{Connection, DriverManager, ResultSet}
 import ru.korus.tmis.core.event.{Notification, ModifyActionNotification}
 import javax.inject.Inject
 import javax.enterprise.inject.Any
+import java.lang.Iterable
 ;
 
 //import ru.korus.tmis.core.common.CommonDataProcessorBeanLocal
@@ -31,7 +32,8 @@ import javax.enterprise.inject.Any
 @Stateless
 class AppealBean extends AppealBeanLocal
 with Logging
-with I18nable{
+with I18nable
+with CAPids{
 
 //  val APPEALWI = ConfigManager.APPEALWI
 
@@ -74,6 +76,15 @@ with I18nable{
   @EJB
   private var dbFDRecordBean: DbFDRecordBeanLocal = _
 
+  @EJB
+  var dbPatientBean: DbPatientBeanLocal = _
+
+  @EJB
+  var dbClientRelation: DbClientRelationBeanLocal = _
+
+  @EJB
+  var dbClientQuoting: DbClientQuotingBeanLocal = _
+
   @Inject
   @Any
   var actionEvent: javax.enterprise.event.Event[Notification] = _
@@ -82,48 +93,47 @@ with I18nable{
     def unapply(pos: T) = seq find (pos ==) map (seq indexOf _)
   }
 
-  val list = List(i18n("appeal.db.actionPropertyType.name.directed").toString,            //Кем направлен
-    i18n("appeal.db.actionPropertyType.name.number").toString,                            //№ направления
-    i18n("appeal.db.actionPropertyType.name.deliveredType").toString,                     //Кем доставлен
-    i18n("appeal.db.actionPropertyType.name.diagnosis.assigment.code").toString,          //Диагноз направившего учреждения
-    i18n("appeal.db.actionPropertyType.name.deliveredAfterType").toString,                //Доставлен в стационар от начала заболевания
-    i18n("appeal.db.actionPropertyType.name.brunchType").toString,                        //Направлен в отделение
-    i18n("appeal.db.actionPropertyType.name.refuseAppealReason").toString,                //Причина отказа в госпитализации
-    i18n("appeal.db.actionPropertyType.name.appealWithDeseaseThisYear").toString,         //Госпитализирован по поводу данного заболевания в текущем году
-    i18n("appeal.db.actionPropertyType.name.transportationType").toString,                //Вид транспортировки
-    i18n("appeal.db.actionPropertyType.name.placeType").toString,                         //Профиль койки
-    i18n("appeal.db.actionPropertyType.name.stateType").toString,                         //Доставлен в состоянии опьянения
-    i18n("appeal.db.actionPropertyType.name.injury").toString,                            //Травма
-    i18n("appeal.db.actionPropertyType.name.assignmentDate").toString,                    //Дата направления
-    i18n("appeal.db.actionPropertyType.name.hospitalizationChannelType").toString,        //Канал госпитализации
-    i18n("appeal.db.actionPropertyType.name.doctor").toString,                            //Направивший врач
-    i18n("appeal.db.actionPropertyType.name.diagnosis.assignment.description").toString,  //Клиническое описание
-    i18n("appeal.db.actionPropertyType.name.diagnosis.aftereffect.code").toString,        //Диагноз направившего учреждения (осложнения)
-    i18n("appeal.db.actionPropertyType.name.diagnosis.aftereffect.description").toString, //Клиническое описание (осложнения)
-    i18n("appeal.db.actionPropertyType.name.ambulanceNumber").toString,                   //№ наряда СП
-    //i18n("appeal.db.actionPropertyType.name.bloodPressure.left").toString,                //Артериальное давление. Левая рука
-    //i18n("appeal.db.actionPropertyType.name.bloodPressure.right").toString,               //Артериальное давление. Правая рука
-    i18n("appeal.db.actionPropertyType.name.bloodPressure.left.ADdiast").toString,        //Левая рука: АД диаст.
-    i18n("appeal.db.actionPropertyType.name.bloodPressure.left.ADsyst").toString,         //Левая рука: АД сист.
-    i18n("appeal.db.actionPropertyType.name.temperature").toString,                       //t
-    i18n("appeal.db.actionPropertyType.name.weight").toString,                            //Вес при поступлении
-    i18n("appeal.db.actionPropertyType.name.height").toString,                            //Рост
-    i18n("appeal.db.actionPropertyType.name.agreedType").toString,                        //Тип согласования
-    i18n("appeal.db.actionPropertyType.name.agreedDoctor").toString,                      //Комментарий к согласованию
-    i18n("appeal.db.actionPropertyType.name.hospitalizationWith").toString,               //Законный представитель
-    i18n("appeal.db.actionPropertyType.name.hospitalizationType").toString,               //Тип госпитализации
-    i18n("appeal.db.actionPropertyType.name.hospitalizationPointType").toString,          //Цель госпитализации
-    i18n("appeal.db.actionPropertyType.name.diagnosis.attendant.code").toString,          //Диагноз направившего учреждения (сопутствующий)
-    i18n("appeal.db.actionPropertyType.name.diagnosis.attendant.description").toString,   //Клиническое описание (сопутствующий)
-    i18n("appeal.db.actionPropertyType.name.bloodPressure.right.ADdiast").toString,       //Правая рука: АД диаст.
-    i18n("appeal.db.actionPropertyType.name.bloodPressure.right.ADsyst").toString,        //Правая рука: АД сист.
-    i18n("db.actionPropertyType.moving.name.beginTime").toString,                         //Время поступления
-    i18n("db.actionPropertyType.moving.name.bed").toString,                               //койка
-    i18n("db.actionPropertyType.moving.name.endTime").toString,                           //Время выбытия
-    i18n("db.actionPropertyType.moving.name.patronage").toString,                         //Патронаж
-    i18n("db.actionPropertyType.moving.name.located").toString,                           //Отделение пребывания
-    i18n("db.actionPropertyType.moving.name.movedIn").toString,                           //Переведен в отделение
-    i18n("db.actionPropertyType.moving.name.movedFrom").toString)                         //Переведен из отделения
+  val list = List(  iCapIds("db.rbCAP.hosp.primary.id.directed").toInt,                          //Кем направлен
+                    iCapIds("db.rbCAP.hosp.primary.id.number").toInt,                            //№ направления
+                    iCapIds("db.rbCAP.hosp.primary.id.deliveredType").toInt,                     //Кем доставлен
+                    iCapIds("db.rbCAP.hosp.primary.id.diagnosis.assigment.code").toInt,          //Диагноз направившего учреждения
+                    iCapIds("db.rbCAP.hosp.primary.id.deliveredAfterType").toInt,                //Доставлен в стационар от начала заболевания
+                    iCapIds("db.rbCAP.hosp.primary.id.sentTo").toInt,                        //Направлен в отделение
+                    iCapIds("db.rbCAP.hosp.primary.id.cancel").toInt,                //Причина отказа в госпитализации
+                    iCapIds("db.rbCAP.hosp.primary.id.appealWithDeseaseThisYear").toInt,         //Госпитализирован по поводу данного заболевания в текущем году
+                    iCapIds("db.rbCAP.hosp.primary.id.transportationType").toInt,                //Вид транспортировки
+                    iCapIds("db.rbCAP.hosp.primary.id.placeType").toInt,                         //Профиль койки
+                    iCapIds("db.rbCAP.hosp.primary.id.drugsType").toString,                      //Доставлен в состоянии опьянения
+                    iCapIds("db.rbCAP.hosp.primary.id.injury").toInt,                            //Травма
+                    iCapIds("db.rbCAP.hosp.primary.id.assignmentDate").toInt,                    //Дата направления
+                    iCapIds("db.rbCAP.hosp.primary.id.hospitalizationChannelType").toInt,        //Канал госпитализации
+                    iCapIds("db.rbCAP.hosp.primary.id.doctor").toInt,                            //Направивший врач
+                    iCapIds("db.rbCAP.hosp.primary.id.diagnosis.assignment.description").toInt,  //Клиническое описание
+                    iCapIds("db.rbCAP.hosp.primary.id.diagnosis.aftereffect.code").toInt,        //Диагноз направившего учреждения (осложнения)
+                    iCapIds("db.rbCAP.hosp.primary.id.diagnosis.aftereffect.description").toInt, //Клиническое описание (осложнения)
+                    iCapIds("db.rbCAP.hosp.primary.id.ambulanceNumber").toInt,                   //№ наряда СП
+                    iCapIds("db.rbCAP.hosp.primary.id.bloodPressure.left.ADdiast").toInt,        //Левая рука: АД диаст.
+                    iCapIds("db.rbCAP.hosp.primary.id.bloodPressure.left.ADsyst").toInt,         //Левая рука: АД сист.
+                    iCapIds("db.rbCAP.hosp.primary.id.temperature").toInt,                       //t
+                    iCapIds("db.rbCAP.hosp.primary.id.weight").toInt,                            //Вес при поступлении
+                    iCapIds("db.rbCAP.hosp.primary.id.height").toInt,                            //Рост
+                    iCapIds("db.rbCAP.hosp.primary.id.agreedType").toInt,                        //Тип согласования
+                    iCapIds("db.rbCAP.hosp.primary.id.agreedDoctor").toInt,                      //Комментарий к согласованию
+                    iCapIds("db.rbCAP.hosp.primary.id.hospitalizationWith").toInt,               //Законный представитель
+                    iCapIds("db.rbCAP.hosp.primary.id.hospitalizationType").toInt,               //Тип госпитализации
+                    iCapIds("db.rbCAP.hosp.primary.id.hospitalizationPointType").toInt,          //Цель госпитализации
+                    iCapIds("db.rbCAP.hosp.primary.id.diagnosis.attendant.code").toInt,          //Диагноз направившего учреждения (сопутствующий)
+                    iCapIds("db.rbCAP.hosp.primary.id.diagnosis.attendant.description").toInt,   //Клиническое описание (сопутствующий)
+                    iCapIds("db.rbCAP.hosp.primary.id.bloodPressure.right.ADdiast").toInt,       //Правая рука: АД диаст.
+                    iCapIds("db.rbCAP.hosp.primary.id.bloodPressure.right.ADsyst").toInt,        //Правая рука: АД сист.
+                    iCapIds("db.rbCAP.hosp.primary.id.note").toInt)                              //Примечание
+    //              i18n("db.actionPropertyType.moving.name.beginTime").toString,                         //Время поступления
+    //              i18n("db.actionPropertyType.moving.name.bed").toString,                               //койка
+    //              i18n("db.actionPropertyType.moving.name.endTime").toString,                           //Время выбытия
+    //              i18n("db.actionPropertyType.moving.name.patronage").toString,                         //Патронаж
+    //              i18n("db.actionPropertyType.moving.name.located").toString,                           //Отделение пребывания
+    //              i18n("db.actionPropertyType.moving.name.movedIn").toString,                           //Переведен в отделение
+    //              i18n("db.actionPropertyType.moving.name.movedFrom").toString)                         //Переведен из отделения
 
   //Insert or modify appeal
   def insertAppealForPatient(appealData : AppealData, patientId: Int, authData: AuthData) = {
@@ -163,10 +173,11 @@ with I18nable{
 
       if (temp==null){
         action = actionBean.createAction(newEvent.getId.intValue(),
-                                          actionTypeBean.getActionTypeByCode("4201").getId.intValue(),
+                                          actionTypeBean.getActionTypeById(i18n("db.actionType.hospitalization.primary").toInt).getId.intValue(),
                                           authData)
+        action.setStatus(ActionStatus.FINISHED.getCode) //TODO: Материть Александра!
         em.persist(action)
-        list = actionPropertyTypeBean.getActionPropertyTypeByActionTypeIdWithCode("4201").toList
+        list = actionPropertyTypeBean.getActionPropertyTypesByActionTypeId(i18n("db.actionType.hospitalization.primary").toInt).toList
       }
       else {
         action = actionBean.updateAction(temp.getId.intValue(),
@@ -174,7 +185,7 @@ with I18nable{
                                          authData)
         list = actionPropertyBean.getActionPropertiesByActionId(temp.getId.intValue).keySet.toList
 
-        var list2 = actionPropertyTypeBean.getActionPropertyTypeByActionTypeIdWithCode("4201")
+        var list2 = actionPropertyTypeBean.getActionPropertyTypesByActionTypeId(i18n("db.actionType.hospitalization.primary").toInt)
                                           .toList
                                           .filter(p => {
           val sadasd = list.filter(pp => pp.asInstanceOf[ActionProperty].getType.getId == p.getId)
@@ -303,34 +314,26 @@ with I18nable{
     }
     //******
     //Создание/Редактирование записей для законных представителей
+    val clientRelations = appealData.data.getHospitalizationWith
+    var setRel = Set.empty[ClientRelation]
+    if (clientRelations!=null && clientRelations.size()>0) { //Если законные представители заполнены
+      val patient = newEvent.getPatient
+      val serverRelations = patient.getActiveClientRelatives()
 
-
-    /*
-    set = Set.empty[Int]
-    val clientRelations = patientEntry.getRelations()
-    val serverRelations = patient.getActiveClientRelatives()
-    serverRelations.foreach(
-      (serverRelation) => {
-        val result = clientRelations.find {element => element.getId() == serverRelation.getId().intValue()}
-        val clientRelation = result.getOrElse(null)
-        if (clientRelation != null) {
-          set = set + clientRelation.getId().intValue()
-          var tempServerRelation = serverRelation
-          tempServerRelation = dbClientRelation.insertOrUpdateClientRelation(   //внутри себя будет работать с персонами и их контактами
-            clientRelation.getId(),
-            clientRelation.getRelationType().getId(),
-            clientRelation.getName().getFirst(),
-            clientRelation.getName().getLast(),
-            clientRelation.getName().getMiddle(),
-            clientRelation.getPhones(),
-            patient,
-            usver
-          )
-        } else {
-          dbClientRelation.deleteClientRelation(serverRelation.getId().intValue(), usver)
+      clientRelations.foreach(f => {
+        val serverRelation = serverRelations.find(element => element.getRelative.getId().intValue() == f.getRelativeId).getOrElse(null)
+        if (serverRelation==null){
+          val parent = dbPatientBean.getPatientById(f.getRelativeId)
+          val tempServerRelation = dbClientRelation.insertOrUpdateClientRelationByRelativePerson( -1,
+                                                                                    f.getRelativeType.getId(),
+                                                                                    parent,
+                                                                                    patient,
+                                                                                    authData.user)
+          setRel += tempServerRelation
         }
-      }
-    )*/
+      })
+    }
+    if (setRel!=null && setRel.size>0) dbManager.mergeAll(setRel)
     //*****
 
     newEvent.getId.intValue()
@@ -350,27 +353,33 @@ with I18nable{
     //Запрос данных из ActionProperty
     val findMapActionProperty = actionPropertyBean.getActionPropertiesByActionId(action.getId.intValue())
 
-    val values: java.util.Map[String, java.util.List[Object]] = findMapActionProperty.foldLeft(new java.util.HashMap[String, java.util.List[Object]])(
+    val values: java.util.Map[java.lang.Integer, java.util.List[Object]] = findMapActionProperty.foldLeft(new java.util.HashMap[java.lang.Integer, java.util.List[Object]])(
       (str_key, el) => {
         val (ap,  apvs) = el
-        val key = ap.getType.getName
-        val list: java.util.List[Object] = new ArrayList[Object]
-        if(apvs!=null && apvs.size>0) {
-          apvs.foreach(apv=>list += apv.getValue)
-        }
-        else
-          list += null
+        val aptId = ap.getType.getId.intValue()
+        val rbCap = dbRbCoreActionPropertyBean.getRbCoreActionPropertiesByActionPropertyTypeId(aptId)
+        if (rbCap!=null) {
+          val key = rbCap.getId
+          val list: java.util.List[Object] = new ArrayList[Object]
+          if(apvs!=null && apvs.size>0) {
+            apvs.foreach(apv=>list += apv.getValue)
+          }
+          else
+            list += null
 
-        if(str_key.containsKey(key)){
-          list.addAll(str_key.get(key))
-          str_key.remove(key)
+          if(str_key.containsKey(key)){
+            list.addAll(str_key.get(key))
+            str_key.remove(key)
+          }
+          str_key.put(key,list)
+        } else {
+          //Ворнинг! Нету такого типа экшн проперти в кореэкшнпропертитайп
         }
-        str_key.put(key,list)
         str_key
       })
 
-    val eventsMap = new java.util.HashMap[Event, java.util.Map[Action, java.util.Map[String,java.util.List[Object]]]]
-    val actionsMap = new java.util.HashMap[Action, java.util.Map[String,java.util.List[Object]]]
+    val eventsMap = new java.util.HashMap[Event, java.util.Map[Action, java.util.Map[java.lang.Integer,java.util.List[Object]]]]
+    val actionsMap = new java.util.HashMap[Action, java.util.Map[java.lang.Integer,java.util.List[Object]]]
 
     actionsMap.put(action, values)
     eventsMap.put(event, actionsMap)
@@ -424,24 +433,6 @@ with I18nable{
     val result = typed.getResultList
     result.foreach(e=>em.detach(e))
     result
-    /*val map = new java.util.LinkedHashMap[Event, Object]
-    result.foreach(f => {
-       val first = f(0).asInstanceOf[Event]
-       val second = f(1).asInstanceOf[Action]
-       val valueMap = if(filter.asInstanceOf[ReceivedRequestDataFilter].role == 29)
-                        actionPropertyBean.getActionPropertiesByActionId(second.getId.intValue())
-                     else
-                       this.getDiagnosisListByActionId(second.getId.intValue(), filter.asInstanceOf[ReceivedRequestDataFilter].diagnosis)
-       if (filter.asInstanceOf[ReceivedRequestDataFilter].diagnosis!=null &&
-           !filter.asInstanceOf[ReceivedRequestDataFilter].diagnosis.isEmpty){
-
-         val filteredValueMap = valueMap.filter(element=>element._2.size()>0)
-         if(filteredValueMap.size>0)
-          map.put(first,(second, valueMap))
-       }
-       else
-         map.put(first,(second, valueMap))
-    })*/
   }
 
   def checkAppealNumber(number : String) = {
@@ -547,11 +538,19 @@ with I18nable{
     var event: Event = null
     if (flgCreate) {            //Создаем новое
       if (patientId <= 0) {
-        throw new CoreException("Невозможно открыть госпитализацию. Пациент не установлен.")
+        throw new CoreException("Невозможно создать госпитализацию. Пациент не установлен.")
+        return null
+      }
+      if (appealData.data.appealType==null ||
+        appealData.data.appealType.eventType==null ||
+        appealData.data.appealType.eventType.getId<=0){
+        throw new CoreException("Невозможно создать госпитализацию. Не задан тип обращения.")
         return null
       }
       event = eventBean.createEvent(patientId,
-                                    eventBean.getEventTypeIdByFDRecordId(appealData.data.appealType.getId()),
+                                    //eventBean.getEventTypeIdByFDRecordId(appealData.data.appealType.getId()),
+                                    appealData.data.appealType.eventType.getId,
+                                    //eventBean.getEventTypeIdByRequestTypeIdAndFinanceId(appealData.data.appealType.requestType.getId(), appealData.data.appealType.finance.getId()),
                                     appealData.data.rangeAppealDateTime.getStart(),
                                     /*appealData.data.rangeAppealDateTime.getEnd()*/null,
                                     authData)
@@ -563,9 +562,10 @@ with I18nable{
         return null
       }
 
-      val eventTypeId = eventBean.getEventTypeIdByFDRecordId(appealData.data.appealType.getId())
+      //val eventTypeId = eventBean.getEventTypeIdByFDRecordId(appealData.data.appealType.getId())
+      val eventTypeId = appealData.data.appealType.eventType.getId//eventBean.getEventTypeIdByRequestTypeIdAndFinanceId(appealData.data.appealType.requestType.getId(), appealData.data.appealType.finance.getId())
       if(event.getEventType.getId.intValue()!=eventTypeId) {
-        throw new CoreException("Тип найденного обращения не соответствует типу в запросе (appealType = %s)".format(appealData.data.appealType.getId().toString))
+        throw new CoreException("Тип найденного обращения не соответствует типу в полученному в запросе (requestType = %s, finance = %s)".format(appealData.data.appealType.requestType.getId().toString, appealData.data.appealType.finance.getId().toString))
         return null
       }
 
@@ -601,16 +601,24 @@ with I18nable{
     return event
   }
 
-  private def AnyToSetOfString(that: AnyRef): Set[String] = {
+  private def AnyToSetOfString(that: AnyRef, sec: String): Set[String] = {
     if(that==null)
       return Set.empty[String]
 
     if (that.isInstanceOf[Date]) {
       return Set(ConfigManager.DateFormatter.format(that))
     }
-    else if (that.isInstanceOf[LinkedList[IdValueContainer]]) {
-      val hospWith = Set.empty[String]
-      that.asInstanceOf[LinkedList[IdValueContainer]].foreach(e => if(e.getId().toInt>0) hospWith + e.getId().toString)
+    else if (that.isInstanceOf[LinkedList[/*IdValueContainer*/LegalRepresentativeContainer]]) {
+      var hospWith = Set.empty[String]
+      that.asInstanceOf[LinkedList[LegalRepresentativeContainer]].foreach(e => {
+        if(e.getRelativeId().toInt>0) {
+          sec match {
+            case "relative" => hospWith += e.getRelativeId().toString
+            case "note" => hospWith += e.getNote().toString
+            case _ => hospWith += e.getRelativeId().toString
+          }
+        }
+      })
       return hospWith
     }
     else if (that.isInstanceOf[IdNameContainer]) {
@@ -636,41 +644,42 @@ with I18nable{
     val listNdx = new IndexOf(list)
     val cap = dbRbCoreActionPropertyBean.getRbCoreActionPropertiesByActionPropertyTypeId(aptId)
 
-    cap.getName match {
-      case listNdx(0) => this.AnyToSetOfString(appealData.data.assignment.directed)                                                 //Кем направлен
-      case listNdx(1) => this.AnyToSetOfString(appealData.data.assignment.number)                                                   //Номер направления
-      case listNdx(2) => this.AnyToSetOfString(appealData.data.deliveredType)                                                       //Кем доставлен
+    cap.getId.intValue() match {
+      case listNdx(0) => this.AnyToSetOfString(appealData.data.assignment.directed, "")                                                 //Кем направлен
+      case listNdx(1) => this.AnyToSetOfString(appealData.data.assignment.number, "")                                                   //Номер направления
+      case listNdx(2) => this.AnyToSetOfString(appealData.data.deliveredType, "")                                                       //Кем доставлен
       case listNdx(3) => this.writeMKBDiagnosesFromAppealData(appealData.data.diagnoses, "assignment", false)                       //Диагноз направившего учреждения
-      case listNdx(4) => this.AnyToSetOfString(appealData.data.deliveredAfterType)                                                  //Доставлен в стационар от начала заболевания
-      case listNdx(5) => this.AnyToSetOfString(null)                                                                                //Направлен в отделение
-      case listNdx(6) => this.AnyToSetOfString(appealData.data.refuseAppealReason)                                                  //Причина отказа в госпитализации
-      case listNdx(7) => this.AnyToSetOfString(appealData.data.appealWithDeseaseThisYear)                                           //Госпитализирован по поводу данного заболевания в текущем году
-      case listNdx(8) => this.AnyToSetOfString(appealData.data.movingType)                                                          //Вид транспортировки
-      case listNdx(9) => this.AnyToSetOfString(null)                                                                                //Профиль койки
-      case listNdx(10) => this.AnyToSetOfString(appealData.data.stateType)                                                          //Доставлен в состоянии опьянения
-      case listNdx(11) => this.AnyToSetOfString(appealData.data.injury)                                                             //Травма
-      case listNdx(12) => this.AnyToSetOfString(appealData.data.assignment.assignmentDate)                                          //Дата направления
-      case listNdx(13) => this.AnyToSetOfString(appealData.data.hospitalizationChannelType)      //Канал госпитализации
-      case listNdx(14) => this.AnyToSetOfString(appealData.data.assignment.doctor)                                                  //Направивший врач
+      case listNdx(4) => this.AnyToSetOfString(appealData.data.deliveredAfterType, "")                                                  //Доставлен в стационар от начала заболевания
+      case listNdx(5) => this.AnyToSetOfString(null, "")                                                                                //Направлен в отделение
+      case listNdx(6) => this.AnyToSetOfString(appealData.data.refuseAppealReason, "")                                                  //Причина отказа в госпитализации
+      case listNdx(7) => this.AnyToSetOfString(appealData.data.appealWithDeseaseThisYear, "")                                           //Госпитализирован по поводу данного заболевания в текущем году
+      case listNdx(8) => this.AnyToSetOfString(appealData.data.movingType, "")                                                          //Вид транспортировки
+      case listNdx(9) => this.AnyToSetOfString(null, "")                                                                                //Профиль койки
+      case listNdx(10) => this.AnyToSetOfString(appealData.data.stateType, "")                                                          //Доставлен в состоянии опьянения
+      case listNdx(11) => this.AnyToSetOfString(appealData.data.injury, "")                                                             //Травма
+      case listNdx(12) => this.AnyToSetOfString(appealData.data.assignment.assignmentDate, "")                                          //Дата направления
+      case listNdx(13) => this.AnyToSetOfString(appealData.data.hospitalizationChannelType, "")      //Канал госпитализации
+      case listNdx(14) => this.AnyToSetOfString(appealData.data.assignment.doctor, "")                                                  //Направивший врач
       case listNdx(15) => this.writeMKBDiagnosesFromAppealData(appealData.data.diagnoses, "assignment", true)                       //Клиническое описание
       case listNdx(16) => this.writeMKBDiagnosesFromAppealData(appealData.data.diagnoses, "aftereffect", false)                     //Диагноз направившего учреждения (осложнения)
       case listNdx(17) => this.writeMKBDiagnosesFromAppealData(appealData.data.diagnoses, "aftereffect", true)                      //Клиническое описание (осложнения)
-      case listNdx(18) => this.AnyToSetOfString(appealData.data.ambulanceNumber)                                                    //Номер наряда СП
-      case listNdx(19) => this.AnyToSetOfString(java.lang.Double.valueOf(appealData.data.physicalParameters.bloodPressure.left.diast))                              //Артериальное давление (левая рука Диаст)
-      case listNdx(20) => this.AnyToSetOfString(java.lang.Double.valueOf(appealData.data.physicalParameters.bloodPressure.left.syst))                             //Артериальное давление (левая рука Сист)
-      case listNdx(21) => this.AnyToSetOfString(java.lang.Double.valueOf(appealData.data.physicalParameters.temperature))           //t температура тела
-      case listNdx(22) => this.AnyToSetOfString(java.lang.Double.valueOf(appealData.data.physicalParameters.weight))                //Вес при поступлении
-      case listNdx(23) => this.AnyToSetOfString(java.lang.Double.valueOf(appealData.data.physicalParameters.height))                //Рост
-      case listNdx(24) => this.AnyToSetOfString(appealData.data.agreedType)                      //Тип согласования
-      case listNdx(25) => this.AnyToSetOfString(appealData.data.agreedDoctor)                                                       //Комментарий к согласованию
-      case listNdx(26) => this.AnyToSetOfString(appealData.data.hospitalizationWith)                                                //Законный представитель
-      case listNdx(27) => this.AnyToSetOfString(appealData.data.hospitalizationType)             //Тип госпитализации
-      case listNdx(28) => this.AnyToSetOfString(appealData.data.hospitalizationPointType)        //Цель госпитализации
+      case listNdx(18) => this.AnyToSetOfString(appealData.data.ambulanceNumber, "")                                                    //Номер наряда СП
+      case listNdx(19) => this.AnyToSetOfString(java.lang.Double.valueOf(appealData.data.physicalParameters.bloodPressure.left.diast), "")                              //Артериальное давление (левая рука Диаст)
+      case listNdx(20) => this.AnyToSetOfString(java.lang.Double.valueOf(appealData.data.physicalParameters.bloodPressure.left.syst), "")                             //Артериальное давление (левая рука Сист)
+      case listNdx(21) => this.AnyToSetOfString(java.lang.Double.valueOf(appealData.data.physicalParameters.temperature), "")           //t температура тела
+      case listNdx(22) => this.AnyToSetOfString(java.lang.Double.valueOf(appealData.data.physicalParameters.weight), "")                //Вес при поступлении
+      case listNdx(23) => this.AnyToSetOfString(java.lang.Double.valueOf(appealData.data.physicalParameters.height), "")                //Рост
+      case listNdx(24) => this.AnyToSetOfString(appealData.data.agreedType, "")                      //Тип согласования
+      case listNdx(25) => this.AnyToSetOfString(appealData.data.agreedDoctor, "")                                                       //Комментарий к согласованию
+      case listNdx(26) => this.AnyToSetOfString(appealData.data.hospitalizationWith, "relative")                                                //Законный представитель
+      case listNdx(27) => this.AnyToSetOfString(appealData.data.hospitalizationType, "")             //Тип госпитализации
+      case listNdx(28) => this.AnyToSetOfString(appealData.data.hospitalizationPointType, "")        //Цель госпитализации
       case listNdx(29) => this.writeMKBDiagnosesFromAppealData(appealData.data.diagnoses, "attendant", false)                       //Диагноз направившего учреждения (сопутствующий)
       case listNdx(30) => this.writeMKBDiagnosesFromAppealData(appealData.data.diagnoses, "attendant", true)                        //Клиническое описание (сопутствующий)
-      case listNdx(31) => this.AnyToSetOfString(java.lang.Double.valueOf(appealData.data.physicalParameters.bloodPressure.right.diast))                              //Артериальное давление (правая рука)
-      case listNdx(32) => this.AnyToSetOfString(java.lang.Double.valueOf(appealData.data.physicalParameters.bloodPressure.right.syst))
-      case _ => this.AnyToSetOfString(null)
+      case listNdx(31) => this.AnyToSetOfString(java.lang.Double.valueOf(appealData.data.physicalParameters.bloodPressure.right.diast), "")                              //Артериальное давление (правая рука)
+      case listNdx(32) => this.AnyToSetOfString(java.lang.Double.valueOf(appealData.data.physicalParameters.bloodPressure.right.syst), "")
+      case listNdx(33) => this.AnyToSetOfString(appealData.data.hospitalizationWith, "note") //Примечание
+      case _ => this.AnyToSetOfString(null, "")
     }
   }
 
@@ -831,6 +840,33 @@ with I18nable{
       .setParameter("id", id)
       .getResultList
     rbResult
+  }
+
+  def insertOrUpdateClientQuoting(dataEntry: QuotaEntry, eventId: Int, auth: AuthData) = {
+    //try {
+      val patient = eventBean.getEventById(eventId).getPatient
+      val mkb = dbMkbBean.getMkbByCode(dataEntry.getMkb.getCode)
+      var isPersist = true
+      if (dataEntry.getId > 0) {
+        isPersist = false
+      }
+      val clientQuoting = dbClientQuoting.insertOrUpdateClientQuoting(dataEntry.getId,
+                                                                      dataEntry.getQuotaType.getId,
+                                                                      dataEntry.getStatus.getId,
+                                                                      dataEntry.getDepartment.getId,
+                                                                      dataEntry.getAppealNumber,
+                                                                      dataEntry.getTalonNumber,
+                                                                      dataEntry.getStage.intValue(),
+                                                                      dataEntry.getRequest,
+                                                                      mkb,
+                                                                      patient,
+                                                                      auth.getUser)
+      if (isPersist) dbManager.persist(clientQuoting) else dbManager.merge(clientQuoting)
+      clientQuoting
+    //} catch {
+    //  case e: CoreException => null
+    //  case e: Exception => throw new CoreException("Ошибка при сохранении квоты")
+    //}
   }
 
   /*

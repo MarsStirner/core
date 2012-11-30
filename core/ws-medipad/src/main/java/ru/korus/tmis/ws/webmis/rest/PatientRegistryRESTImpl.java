@@ -537,7 +537,7 @@ public class PatientRegistryRESTImpl implements Serializable {
                                             @PathParam("actionTypeId") int actionTypeId,
                                             @Context HttpServletRequest servRequest) {
         AuthData auth = wsImpl.checkTokenCookies(servRequest);
-        JSONWithPadding returnValue = new JSONWithPadding(wsImpl.getStructOfPrimaryMedExam(/*actionTypeId*/ 139, auth), callback); //TODO: раскоментить когда-нить
+        JSONWithPadding returnValue = new JSONWithPadding(wsImpl.getStructOfPrimaryMedExam(actionTypeId, auth), callback);
         return returnValue;
     }
 
@@ -558,7 +558,7 @@ public class PatientRegistryRESTImpl implements Serializable {
                                                     @PathParam("actionTypeId") int actionTypeId,
                                                     @Context HttpServletRequest servRequest) {
         AuthData auth = wsImpl.checkTokenCookies(servRequest);
-        JSONWithPadding returnValue = new JSONWithPadding(wsImpl.getStructOfPrimaryMedExamWithCopy(/*actionTypeId*/ 139, auth, eventId), callback);
+        JSONWithPadding returnValue = new JSONWithPadding(wsImpl.getStructOfPrimaryMedExamWithCopy(actionTypeId, auth, eventId), callback);
         return returnValue;
     }
 
@@ -1722,7 +1722,9 @@ public class PatientRegistryRESTImpl implements Serializable {
      * &#15; "KLADR" - КЛАДР;
      * &#15; "valueDomain" - список возможных значений для ActionProperty;
      * &#15; "specialities" - справочник специальностей;
-     * &#15; "contactTypes" - справочник типов контактов;</pre>
+     * &#15; "quotaStatus" - Справочник статусов квот</pre>
+     * &#15; "quotaType" - Справочник типов квот</pre>
+     * &#15; "contactTypes" - справочник типов контактов;
      * @param headId   Фильтр для справочника "insurance". Идентификатор родительской компании. (В url: filter[headId]=...)
      * @param groupId  Фильтр для справочника "clientDocument". Идентификатор группы типов документов. (В url: filter[groupId]=...)
      * @param name     Фильтр для справочника "policyTypes". Идентификатор обозначения полиса. (В url: filter[name]=...)
@@ -1895,6 +1897,64 @@ public class PatientRegistryRESTImpl implements Serializable {
         RlsDataListFilter filter = new RlsDataListFilter(code, name, dosage, form);
         RlsDataListRequestData request = new RlsDataListRequestData(sortingField, sortingMethod, limit, page, filter);
         Object oip = wsImpl.getFilteredRlsList(request);
+        JSONWithPadding returnValue = new JSONWithPadding(oip, callback);
+        return returnValue;
+    }
+
+    /**
+     * Сервис по получению списка обращений <br>
+     * Путь: ../tms-registry/eventTypes
+     * @param limit Максимальное количество выводимых элементов на странице.
+     * @param page Номер выводимой страницы.
+     * @param sortingField Наименование поля для сортировки.<pre>
+     * &#15; Возможные значения:
+     * &#15; "id" - по торговому наименованию препората (значение по умолчанию);
+     * &#15; "name" - по коду препората;</pre>
+     * @param sortingMethod Метод сортировки.<pre>
+     * &#15; Возможные значения:
+     * &#15; "asc" - по возрастанию (значение по умолчанию);
+     * &#15; "desc" - по убыванию;</pre>
+     * @param requestType Идентификатор типа стационара rbRequestType.id
+     * @param finance  Идентификатор типа оплаты rbFinance.id
+     * @param callback  callback запроса.
+     * @param servRequest Контекст запроса с клиента.
+     * @return com.sun.jersey.api.json.JSONWithPadding как Object
+     * @throws CoreException
+     */
+    @GET
+    @Path("/eventTypes")
+    @Produces("application/x-javascript")
+    public Object getEventTypes(@QueryParam("limit")int limit,
+                                @QueryParam("page")int  page,
+                                @QueryParam("sortingField")String sortingField,      //сортировки вкл.
+                                @QueryParam("sortingMethod")String sortingMethod,
+                                @QueryParam("filter[requestType]")int requestType,
+                                @QueryParam("filter[finance]")int finance,
+                                @QueryParam("callback") String callback,
+                                @Context HttpServletRequest servRequest) {
+        AuthData auth = wsImpl.checkTokenCookies(servRequest);
+
+        EventTypesListRequestDataFilter filter = new EventTypesListRequestDataFilter(finance, requestType);
+        ListDataRequest request = new ListDataRequest(sortingField, sortingMethod, limit, page, filter);
+
+        Object oip = wsImpl.getEventTypes(request, auth);
+        JSONWithPadding returnValue = new JSONWithPadding(oip, callback);
+        return returnValue;
+    }
+
+    @POST
+    @Path("/events/{eventId}/quota")
+    @Produces("application/x-javascript")
+    public Object createQuota(QuotaData data,
+                              @PathParam("eventId")int eventId,
+                              @QueryParam("token") String token,
+                              @QueryParam("callback") String callback,
+                              @Context HttpServletRequest servRequest) {
+        //AuthData auth = wsImpl.checkTokenCookies(servRequest);
+        AuthToken authToken = new AuthToken(token);
+        AuthData auth = wsImpl.getStorageAuthData(authToken);
+
+        Object oip = wsImpl.insertOrUpdateQuota(data.getData(), eventId, auth);
         JSONWithPadding returnValue = new JSONWithPadding(oip, callback);
         return returnValue;
     }

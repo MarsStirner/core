@@ -59,6 +59,9 @@ class PatientBean
   var dbClientIntoleranceMedicament: DbClientIntoleranceMedicamentBeanLocal = _
 
   @EJB
+  var actionBean: DbActionBeanLocal = _
+
+  @EJB
   var dbActionProperty: DbActionPropertyBeanLocal = _
 
   @EJB
@@ -84,6 +87,12 @@ class PatientBean
 
   @EJB
   var dbStaff: DbStaffBeanLocal = _
+
+  @EJB
+  private var dbRbCoreActionPropertyBean: DbRbCoreActionPropertyBeanLocal = _
+
+  @EJB
+  private var dbDiagnocticsBean: DbDiagnosticBeanLocal = _
   //////////////////////////////////////////////////////////////////////////////
 
   def getCurrentPatientsForDoctor(userData: AuthData) = {
@@ -97,6 +106,10 @@ class PatientBean
       throw new CoreException(i18n("error.user.noOrgStructureFound"))
     }
 
+    buildCommonData(customQuery.getActiveEventsForDepartment(id))
+  }
+
+  def getCurrentPatientsByDepartmentId(id: Int) = {
     buildCommonData(customQuery.getActiveEventsForDepartment(id))
   }
 
@@ -350,30 +363,6 @@ class PatientBean
                                                                     requestData.sortingFieldInternal,
                                                                     requestData.sortingMethod,
                                                                     requestData.filter)
-    //дозаполним структуру данными о палате\койке
-    val hospitalBeds = customQuery.getHospitalBedsByEvents(events)    //проверить что каунт эвентов до и после равны
-    val hospitalInfo: Map[Event, OrgStructureHospitalBed]  =
-    hospitalBeds.foldLeft(Map.empty[Event, OrgStructureHospitalBed])(
-    (key, element) => {
-      var (event,  ap) = element
-      var value: OrgStructureHospitalBed =
-      ap match {
-        case null => {null}
-        case bed: ActionProperty => {
-          var value_x: OrgStructureHospitalBed = null
-          val apvs = dbActionProperty.getActionPropertyValue(bed)
-          apvs.foreach(
-            (apv)=> {
-              if (apv.getValue.isInstanceOf[OrgStructureHospitalBed]) {
-                value_x  = apv.getValue.asInstanceOf[OrgStructureHospitalBed]
-              }
-            }
-          )
-          value_x
-        }
-      }
-      key + (event -> value)
-    })
 
     var conditionsInfo = new java.util.HashMap[Event, java.util.Map[ActionProperty, java.util.List[APValue]]]
     if(role == 1) {  //Для сестры отделения только
@@ -384,11 +373,18 @@ class PatientBean
           conditionsInfo.put(c._1, apList)
         }
       )
-      mapper.getSerializationConfig().setSerializationView(classOf[PatientsListDataViews.NurseView]);
+      mapper.getSerializationConfig().setSerializationView(classOf[PatientsListDataViews.NurseView])
     }
-    else
-      mapper.getSerializationConfig().setSerializationView(classOf[PatientsListDataViews.AttendingDoctorView]);
-    mapper.writeValueAsString(new PatientsListData(events, hospitalInfo, conditionsInfo,  requestData))
+    else mapper.getSerializationConfig().setSerializationView(classOf[PatientsListDataViews.AttendingDoctorView])
+
+    mapper.writeValueAsString(new PatientsListData(events,
+                                                   requestData,
+                                                   role,
+                                                   conditionsInfo,
+                                                   actionBean.getLastActionByActionTypeIdAndEventId _,
+                                                   dbActionProperty.getActionPropertiesByActionIdAndRbCoreActionPropertyIds _,
+                                                   dbRbCoreActionPropertyBean.getRbCoreActionPropertiesByIds _,
+                                                   dbDiagnocticsBean.getDiagnosticsByEventId _))
   }
 
   def getPatientById(id: Int) = {
@@ -522,6 +518,9 @@ class PatientBean
         usver,
         patientVersion
       )
+
+      //create or update quota
+
 
       //create or update document data
       var docStartDate = new Date();

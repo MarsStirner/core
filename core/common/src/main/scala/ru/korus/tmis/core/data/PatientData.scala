@@ -23,7 +23,7 @@ class PatientData {
 
   def this(patients: java.util.List[Patient], requestData: PatientRequestData) = {
     this ()
-    patients.foreach(p => this.data.add(new PatientEntry(p, null, null))) //TODO: подключить мапу с кладром! (по аналогии с картой пациента)
+    patients.foreach(p => this.data.add(new PatientEntry(p, null, null)))
     this.requestData = requestData
   }
 }
@@ -883,6 +883,112 @@ class KladrNameContainer {
   def this( code : String, name : String, socr: String, index: String) = {
     this(code, name, socr)
     this.index = index
+  }
+}
+
+@XmlType(name = "quotaData")
+@XmlRootElement(name = "quotaData")
+@JsonIgnoreProperties(ignoreUnknown = true)
+class QuotaData {
+
+  @BeanProperty
+  var requestData: QuotaRequestData = _
+  @BeanProperty
+  var data: QuotaEntry = _
+
+  def this(clientQuoting: ClientQuoting,
+           requestData: QuotaRequestData) = {
+    this()
+    this.requestData = requestData
+    this.data = new QuotaEntry(clientQuoting)
+  }
+}
+
+@XmlType(name = "quotaRequestData")
+@XmlRootElement(name = "quotaRequestData")
+@JsonIgnoreProperties(ignoreUnknown = true)
+class QuotaRequestData {
+  @BeanProperty
+  var filter: RequestDataFilter = _
+  @BeanProperty
+  var sortingField: String = _
+  @BeanProperty
+  var sortingMethod: String = _
+  @BeanProperty
+  var limit: String = _
+  @BeanProperty
+  var page: String = _
+  @BeanProperty
+  var recordsCount: String = _
+  @BeanProperty
+  var coreVersion: String = _
+
+  def this(patientCode: String,
+           fullName: String,
+           birthDate: Date,
+           document: String,
+           sortingField: String,
+           sortingMethod: String,
+           limit: String,
+           page: String) = {
+    this()
+    this.filter = new RequestDataFilter(patientCode, fullName, birthDate, document)
+    this.sortingField = sortingField
+    this.sortingMethod = sortingMethod
+    this.limit = limit
+    this.page = page
+    this.coreVersion = ConfigManager.Messages("misCore.assembly.version")
+  }
+
+}
+
+@XmlType(name = "quotaEntry")
+@XmlRootElement(name = "quotaEntry")
+@JsonIgnoreProperties(ignoreUnknown = true)
+class QuotaEntry  {
+  @BeanProperty
+  var id : Int = _
+  @BeanProperty
+  var appealNumber : String = _
+  @BeanProperty
+  var talonNumber : String = _
+  @BeanProperty
+  var stage : Int = _
+  @BeanProperty
+  var request: Int = _
+  @BeanProperty
+  var mkb : MKBContainer = _
+  @BeanProperty
+  var quotaType : IdNameContainer = _
+  @BeanProperty
+  var department : IdNameContainer = _
+  @BeanProperty
+  var status : IdNameContainer = _
+
+  def this(id: Int, appealNumber: String, talonNumber: String, stage: Int, request: Int, mkb: Mkb, quotaType: Int, department: Int, status: Int) = {
+    this()
+    this.id = id
+    this.appealNumber = appealNumber
+    this.talonNumber = talonNumber
+    this.stage = stage
+    this.request = request
+    this.mkb = new MKBContainer(mkb)
+    this.quotaType = new IdNameContainer(quotaType, "")
+    this.department = new IdNameContainer(department, "")
+    this.status = new IdNameContainer(status, "")
+  }
+
+  def this(clientQuoting: ClientQuoting) = {
+    this()
+    this.id = clientQuoting.getId.intValue()
+    this.appealNumber = clientQuoting.getIdentifier
+    this.talonNumber = clientQuoting.getQuotaTicket
+    this.stage = clientQuoting.getStage.intValue()
+    this.request = clientQuoting.getRequest.intValue()
+    this.mkb = new MKBContainer(clientQuoting.getMkb)
+    this.quotaType = new IdNameContainer(clientQuoting.getQuotaType.getId.intValue(), clientQuoting.getQuotaType.getName)
+    this.department = new IdNameContainer(clientQuoting.getOrgStructure.getId.intValue(), clientQuoting.getOrgStructure.getName)
+    this.status = new IdNameContainer(clientQuoting.getStatus.getId.intValue(), clientQuoting.getStatus.getName)
   }
 }
 

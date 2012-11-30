@@ -108,6 +108,9 @@ class CommonDataProcessorBean
           val action = dbAction.createAction(eventId,
             entity.id.intValue,
             userData)
+          if (entity.id.intValue == 139 || entity.id.intValue == 112 || entity.id.intValue == 2456) {
+            action.setStatus(ActionStatus.FINISHED.getCode)   //TODO: Материть Александра!
+          }
           //Если пришли значения Даты начала и дата конца, то перепишем дефолтные
           if (beginDate != null) action.setBegDate(beginDate)
           if (endDate != null) action.setEndDate(endDate)

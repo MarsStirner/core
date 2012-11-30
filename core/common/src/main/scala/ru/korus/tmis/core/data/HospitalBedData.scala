@@ -237,7 +237,7 @@ class HospitalBedEntry {
       val action = actionNVal._1
       val apValues = actionNVal._2
 
-      this.moves.add(new MovesListHospitalBedContainer(28, "Приемное отделение", action.getBegDate, null))
+      this.moves.add(new MovesListHospitalBedContainer(action.getId.intValue(), 28, "Приемное отделение", action.getBegDate, null))
 
       //ищу, куда направлен
       val coreAPT = corrMap.get(action.getActionType.getId.toString)
@@ -255,6 +255,7 @@ class HospitalBedEntry {
         val aType = moving._1.getActionType.getId
         if (aType.compareTo(ConfigManager.Messages("db.actionType.moving").toInt)==0){
           val mlhbc = new MovesListHospitalBedContainer()
+          mlhbc.id = moving._1.getId.intValue()
           val flgClose = if (moving._1.getEndDate!=null)true else false
           val list = List(ConfigManager.Messages("db.rbCAP.moving.id.beginTime").toInt,
                           ConfigManager.Messages("db.rbCAP.moving.id.located").toInt,
@@ -356,6 +357,8 @@ class HospitalBedEntry {
 @JsonIgnoreProperties(ignoreUnknown = true)
 class MoveHospitalBedContainer {
   @BeanProperty
+  var id: Int = _
+  @BeanProperty
   var clientId: Int = _
   @BeanProperty
   var unitId: Int = _
@@ -385,6 +388,7 @@ class MoveHospitalBedContainer {
            values: java.util.Map[ActionProperty, java.util.List[APValue]],
            corrMap: java.util.HashMap[String, java.util.List[RbCoreActionProperty]]){
     this()
+    this.id = action.getId.intValue()
     this.clientId = action.getEvent.getPatient.getId.intValue()
     val flgAction = if(action.getActionType.getId.compareTo(ConfigManager.Messages("db.actionType.moving").toInt)==0)
                       movingInDepartment
@@ -445,6 +449,8 @@ class MoveHospitalBedContainer {
 class MovesListHospitalBedContainer {
 
   @BeanProperty
+  var id: Int = _
+  @BeanProperty
   var unitId: Int = _
   @BeanProperty
   var unit: String = _
@@ -484,8 +490,9 @@ class MovesListHospitalBedContainer {
    * @param leave Дата выбытия.
    * @since 1.0.0.45
    */
-  def this(unitId: Int, unit: String, admission: Date, leave: Date){
+  def this(id: Int, unitId: Int, unit: String, admission: Date, leave: Date){
     this()
+    this.id = id
     this.unitId = unitId
     this.unit = unit
     this.admission = admission

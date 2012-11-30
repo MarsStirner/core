@@ -332,8 +332,8 @@ class RlsContainer {
   }
 }
 
-@XmlType(name = "personNameContainer")
-@XmlRootElement(name = "personNameContainer")
+@XmlType(name = "personIdNameContainer")
+@XmlRootElement(name = "personIdNameContainer")
 @JsonIgnoreProperties(ignoreUnknown = true)
 class PersonIdNameContainer {
 
