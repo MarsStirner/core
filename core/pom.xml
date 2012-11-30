@@ -6,7 +6,7 @@
     <groupId>ru.korus.tmis</groupId>
     <artifactId>tmis-nexus</artifactId>
     <packaging>pom</packaging>
-    <version>0.9.3</version>
+    <version>0.9.4</version>
     <name>TMIS Root Project</name>
 
     <modules>
@@ -185,6 +185,21 @@
                     <encoding>UTF-8</encoding>
                     <debug>true</debug>
                 </configuration>
+            </plugin>
+
+
+            <!-- генерация jar с исходниками для репозитория -->
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-source-plugin</artifactId>
+                <executions>
+                    <execution>
+                        <id>attach-sources</id>
+                        <goals>
+                            <goal>jar</goal>
+                        </goals>
+                    </execution>
+                </executions>
             </plugin>
 
             <!--
