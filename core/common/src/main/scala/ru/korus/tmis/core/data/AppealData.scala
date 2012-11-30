@@ -17,7 +17,9 @@ import collection.mutable.LinkedHashSet
 import java.util
 import collection.JavaConversions
 
-//Dynamic Filters
+/**
+ * Dynamic Filters
+ */
 object Views {
   class DynamicFieldsStandartForm {
   }
@@ -26,6 +28,10 @@ object Views {
 }
 class Views {}
 
+/**
+ * Контейнер для хранения данных об обращении на госпитализацию<br>
+ * С данными из запроса с клиента.
+ */
 @XmlType(name = "appealData")
 @XmlRootElement(name = "appealData")
 @JsonIgnoreProperties(ignoreUnknown = true)
@@ -35,15 +41,23 @@ class AppealData {
   @BeanProperty
   var data: AppealEntry = _
 
-  def this(appeal: Action, requestData: AppealRequestData) = {
-    this ()
-    this.requestData = requestData
-    this.data = new AppealEntry(appeal)
-  }
-
+  /**
+   * Конструктор класса AppealData
+   * @param event Обращение на госпитализацию
+   * @param appeal Первичный осмотр при поступлении
+   * @param values Значения свойств действий
+   * @param typeOfResponse Тип запроса.<pre>
+   * &#15;Возможные значения:
+   * &#15;"standart" - (по умолчанию) Данные об госпитализации.
+   * &#15;"print_form" - Печатная форма госпитализации. Данные об госпитализации + данные об пациенте</pre>
+   * @param map Информация об адресах КЛАДР
+   * @param street Информация об адресах Street
+   * @param requestData Данные из запроса с клиента как AppealRequestData
+   * @param postProcessing Делегируемый метод по поиску идентификатора первичного осмотра по идентификатору обращения.
+   * @param mRelationByRelativeId Делегируемый метод по поиску связи пациента и представителя по идентификатору представителя.
+   */
   def this(event: Event,
            appeal: Action,
-           //appType: Object,
            values: java.util.Map[java.lang.Integer, java.util.List[Object]],
            typeOfResponse: String,
            map: java.util.LinkedHashMap[java.lang.Integer, java.util.LinkedList[Kladr]],
@@ -57,31 +71,31 @@ class AppealData {
                                                  ConfigManager.Messages("db.actionType.secondary").toInt :java.lang.Integer))
     val havePrimary = if (postProcessing != null && postProcessing(event.getId.intValue(), setATIds)>0) true
                       else false
-    this.data = new AppealEntry(event, appeal,/* appType,*/ values, typeOfResponse, map, street, havePrimary, mRelationByRelativeId)
+    this.data = new AppealEntry(event, appeal, values, typeOfResponse, map, street, havePrimary, mRelationByRelativeId)
   }
 
-  /*def this(event: Event,
-           appeal: Action,
-           //appType: Object,
-           values: java.util.Map[String, java.util.List[Object]],
-           aps: java.util.Map[ActionProperty, java.util.List[APValue]],
-           typeOfResponse: String,
-           map: java.util.LinkedHashMap[java.lang.Integer, java.util.LinkedList[Kladr]],
-           street: java.util.LinkedHashMap[java.lang.Integer, Street],
-           requestData: AppealRequestData,
-           postProcessing: (Int, java.util.Set[java.lang.Integer]) => Int){
-    this ()
-    this.requestData = requestData
-    val setATIds = JavaConversions.asJavaSet(Set(ConfigManager.Messages("db.actionType.primary").toInt :java.lang.Integer,
-                                                 ConfigManager.Messages("db.actionType.secondary").toInt :java.lang.Integer))
-    val havePrimary = if (postProcessing != null && postProcessing(event.getId.intValue(), setATIds)>0) true
-    else false
-    this.data = new AppealEntry(event, appeal, /*appType,*/ values, aps, typeOfResponse, map, street, havePrimary)
-  }*/
+  /**
+   * Конструктор класса AppealData
+   * @param event Обращение на госпитализацию
+   * @param appeal Первичный осмотр при поступлении
+   * @param values Значения свойств действий
+   * @param aps Информация о движении пациента (куда переведен, сколько времени провел)
+   * @param typeOfResponse Тип запроса.<pre>
+   * &#15;Возможные значения:
+   * &#15;"standart" - (по умолчанию) Данные об госпитализации.
+   * &#15;"print_form" - Печатная форма госпитализации. Данные об госпитализации + данные об пациенте</pre>
+   * @param map Информация об адресах КЛАДР
+   * @param street Информация об адресах Street
+   * @param requestData Данные из запроса с клиента как AppealRequestData
+   * @param postProcessing Делегируемый метод по поиску идентификатора первичного осмотра по идентификатору обращения.
+   * @param mRelationByRelativeId Делегируемый метод по поиску связи пациента и представителя по идентификатору представителя.
+   * @param mAdmissionDiagnosis Делегируемый метод, который возвращает список свойств для выбранного действия по списку идентификаторов искомых полей в rbCoreActionProperty<br>
+   * (Используется для получения admission диагнозов)
+   * @param mCorrList Делегируемый метод, предоставляющий список соответствий идентификаторов ActionPropertyType и rbCoreActionProperty
+   */
 
   def this(event: Event,
            appeal: Action,
-           //appType: Object,
            values: java.util.Map[java.lang.Integer, java.util.List[Object]],
            aps: java.util.Map[ActionProperty, java.util.List[APValue]],
            typeOfResponse: String,
@@ -107,13 +121,16 @@ class AppealData {
         havePrimary = true
         val admissions = if (mAdmissionDiagnosis!=null) mAdmissionDiagnosis(primaryId, setAdmissionIds) else null
         val corrMap = if(mCorrList!=null) mCorrList(setAdmissionIds) else null
-        this.data = new AppealEntry(event, appeal, /*appType,*/ values, aps, typeOfResponse, map, street, havePrimary, mRelationByRelativeId, admissions, corrMap)
+        this.data = new AppealEntry(event, appeal, values, aps, typeOfResponse, map, street, havePrimary, mRelationByRelativeId, admissions, corrMap)
     } else {
-      this.data = new AppealEntry(event, appeal, /*appType,*/ values, aps, typeOfResponse, map, street, mRelationByRelativeId)
+      this.data = new AppealEntry(event, appeal,  values, aps, typeOfResponse, map, street, mRelationByRelativeId)
     }
   }
 }
 
+/**
+ * Контейнер для хранения данных запроса с клиента
+ */
 @XmlType(name = "appealRequestData")
 @XmlRootElement(name = "appealRequestData")
 @JsonIgnoreProperties(ignoreUnknown = true)
@@ -131,6 +148,17 @@ class AppealRequestData {
   @BeanProperty
   var recordsCount: String = _
 
+  /**
+   * Конструктор AppealRequestData
+   * @param eventId   Идентификатор обращения.
+   * @param fullName  Значение фильтра по ФИО пациента.
+   * @param birthDate Значение фильтра по дате рождения пациента.
+   * @param externalId Значение фильтра по номеру истории болезни (НИБ)
+   * @param sortingField Поле для сортировки
+   * @param sortingMethod Метод сортировки
+   * @param limit Количество записей на странице
+   * @param page Порядковый номер страницы
+   */
   def this(eventId: String,
            fullName: String,
            birthDate: Date,
@@ -148,6 +176,9 @@ class AppealRequestData {
   }
 }
 
+/**
+ * Контейнер с данными фильтрации поискового запроса с клиента
+ */
 class AppealRequestDataFilter {
   @BeanProperty
   var eventId: String = _ // — Номер обращения
@@ -158,6 +189,13 @@ class AppealRequestDataFilter {
   @BeanProperty
   var externalId: String = _ // — номер карточки пациента
 
+  /**
+   * Конструктор AppealRequestDataFilter
+   * @param eventId Идентификатор обращения
+   * @param fullName ФИО пациента
+   * @param birthDate Дата рождения
+   * @param externalId Номер истории болезни(НИБ)
+   */
   def this(eventId: String,
            fullName: String,
            birthDate: Date,
@@ -170,6 +208,9 @@ class AppealRequestDataFilter {
   }
 }
 
+/**
+ * Контейнер для хранения данных об госпитализации
+ */
 @XmlType(name = "appealEntry")
 @XmlRootElement(name = "appealEntry")
 @JsonIgnoreProperties(ignoreUnknown = true)
@@ -241,10 +282,19 @@ class AppealEntry {
   @BeanProperty
   var totalDays: String = _                                       //Diff with AppealData
 
-  def this(appeal: Action) {
-    this()
-  }
-
+  /**
+   * Конструктор класса AppealEntry
+   * @param event Обращение на госпитализацию
+   * @param action Первичный осмотр при поступлении
+   * @param values Значения свойств действий
+   * @param typeOfResponse Тип запроса.<pre>
+   * &#15;Возможные значения:
+   * &#15;"standart" - (по умолчанию) Данные об госпитализации.
+   * &#15;"print_form" - Печатная форма госпитализации. Данные об госпитализации + данные об пациенте</pre>
+   * @param map Информация об адресах КЛАДР
+   * @param street Информация об адресах Street
+   * @param mRelationByRelativeId Делегируемый метод по поиску связи пациента и представителя по идентификатору представителя.
+   */
   def this(event: Event,
            action: Action,
            values: java.util.Map[java.lang.Integer, java.util.List[Object]],
@@ -254,7 +304,6 @@ class AppealEntry {
            mRelationByRelativeId: (Int)=> ClientRelation) {
 
     this()
-
     var exValue: java.util.List[Object] = null
 
     //Обращение и Действие
@@ -405,6 +454,20 @@ class AppealEntry {
 
 }
 
+  /**
+   * Конструктор класса AppealEntry
+   * @param event Обращение на госпитализацию
+   * @param action Первичный осмотр при поступлении
+   * @param values Значения свойств действий
+   * @param aps Информация о движении пациента (куда переведен, сколько времени провел)
+   * @param typeOfResponse Тип запроса.<pre>
+   * &#15;Возможные значения:
+   * &#15;"standart" - (по умолчанию) Данные об госпитализации.
+   * &#15;"print_form" - Печатная форма госпитализации. Данные об госпитализации + данные об пациенте</pre>
+   * @param map Информация об адресах КЛАДР
+   * @param street Информация об адресах Street
+   * @param mRelationByRelativeId Делегируемый метод по поиску связи пациента и представителя по идентификатору представителя.
+   */
   def this(event: Event,
            action: Action,
            values: java.util.Map[java.lang.Integer, java.util.List[Object]],
@@ -441,6 +504,20 @@ class AppealEntry {
     }
   }
 
+  /**
+   * Конструктор класса AppealEntry
+   * @param event Обращение на госпитализацию
+   * @param action Первичный осмотр при поступлении
+   * @param values Значения свойств действий
+   * @param typeOfResponse Тип запроса.<pre>
+   * &#15;Возможные значения:
+   * &#15;"standart" - (по умолчанию) Данные об госпитализации.
+   * &#15;"print_form" - Печатная форма госпитализации. Данные об госпитализации + данные об пациенте</pre>
+   * @param map Информация об адресах КЛАДР
+   * @param street Информация об адресах Street
+   * @param havePrimary Флаг, имеется ли в текущей госпитализации первичный осмотр
+   * @param mRelationByRelativeId Делегируемый метод по поиску связи пациента и представителя по идентификатору представителя.
+   */
   def this(event: Event,
            action: Action,
            values: java.util.Map[java.lang.Integer, java.util.List[Object]],
@@ -453,6 +530,21 @@ class AppealEntry {
     this.havePrimary = havePrimary
   }
 
+  /**
+   * Конструктор класса AppealEntry
+   * @param event Обращение на госпитализацию
+   * @param action Первичный осмотр при поступлении
+   * @param values Значения свойств действий
+   * @param aps Информация о движении пациента (куда переведен, сколько времени провел)
+   * @param typeOfResponse Тип запроса.<pre>
+   * &#15;Возможные значения:
+   * &#15;"standart" - (по умолчанию) Данные об госпитализации.
+   * &#15;"print_form" - Печатная форма госпитализации. Данные об госпитализации + данные об пациенте</pre>
+   * @param map Информация об адресах КЛАДР
+   * @param street Информация об адресах Street
+   * @param havePrimary Флаг, имеется ли в текущей госпитализации первичный осмотр
+   * @param mRelationByRelativeId Делегируемый метод по поиску связи пациента и представителя по идентификатору представителя.
+   */
   def this(event: Event,
            action: Action,
            values: java.util.Map[java.lang.Integer, java.util.List[Object]],
@@ -462,10 +554,27 @@ class AppealEntry {
            street: java.util.LinkedHashMap[java.lang.Integer, Street],
            havePrimary: Boolean,
            mRelationByRelativeId: (Int)=> ClientRelation) {
-    this(event, action, /*appType,*/ values, aps, typeOfResponse, map, street, mRelationByRelativeId)
+    this(event, action, values, aps, typeOfResponse, map, street, mRelationByRelativeId)
     this.havePrimary = havePrimary
   }
 
+  /**
+   * Конструктор класса AppealEntry
+   * @param event Обращение на госпитализацию
+   * @param action Первичный осмотр при поступлении
+   * @param values Значения свойств действий
+   * @param aps Информация о движении пациента (куда переведен, сколько времени провел)
+   * @param typeOfResponse Тип запроса.<pre>
+   * &#15;Возможные значения:
+   * &#15;"standart" - (по умолчанию) Данные об госпитализации.
+   * &#15;"print_form" - Печатная форма госпитализации. Данные об госпитализации + данные об пациенте</pre>
+   * @param map Информация об адресах КЛАДР
+   * @param street Информация об адресах Street
+   * @param havePrimary Флаг, имеется ли в текущей госпитализации первичный осмотр
+   * @param mRelationByRelativeId Делегируемый метод по поиску связи пациента и представителя по идентификатору представителя.
+   * @param admissions Список свойств действия с диагнозами
+   * @param corrList Список RbCoreActionProperty для поиска соответствия идентификаторов
+   */
   def this(event: Event,
            action: Action,
            values: java.util.Map[java.lang.Integer, java.util.List[Object]],
@@ -501,7 +610,12 @@ class AppealEntry {
     this.diagnoses += new DiagnosisContainer("supply", description, "", diagnosis)
   }
 
-  //Достаем мапу значений под контейнер
+  /**
+   * Внутренний метод, возвращает нумерованный список значений в контейнер из набора свойств
+   * @param set Набор искомых свойств действия
+   * @param values Все значения свойств действия
+   * @return Список значений для свойств действия из искомого списка
+   */
   private def extractValuesInNumberedMap(set: java.util.Set[java.lang.Integer], values: java.util.Map[java.lang.Integer, java.util.List[Object]]) = {
 
     var map: java.util.Map[String, java.util.List[Object]] = new HashMap[String, java.util.List[Object]]
@@ -540,6 +654,9 @@ class AppealEntry {
   }
 }
 
+/**
+ * Контейнер для хранения данных о диагнозе
+ */
 @XmlType(name = "diagnosisContainer")
 @XmlRootElement(name = "diagnosisContainer")
 @JsonIgnoreProperties(ignoreUnknown = true)
@@ -553,6 +670,14 @@ class DiagnosisContainer {
   @BeanProperty
   var mkb: MKBContainer = new MKBContainer()
 
+  /**
+   * Конструктор DiagnosisContainer
+   * @param diagnosisKind Мнемоника диагноза (описание типа)
+   * @param description Примечание
+   * @param injury  Травма
+   * @param mkb Данные о диагнозе как MKB
+   * @see MKBContainer
+   */
   def this(diagnosisKind: String, description: String, injury: String, mkb: Mkb){
     this()
     this.diagnosisKind = diagnosisKind
@@ -562,6 +687,13 @@ class DiagnosisContainer {
       this.mkb = new MKBContainer(mkb)
   }
 
+  /**
+   * Конструктор DiagnosisContainer
+   * @param diagnosis Данные о диагнозе как Diagnostic entity
+   * @param mkb Данные о диагнозе как MKB
+   * @see MKBContainer
+   * @deprecated Использовать след. конструктор {@link #this(Diagnostic)}
+   */
   def this(diagnosis: Diagnostic, mkb: Mkb){
     this()
     if(diagnosis!=null) {
@@ -573,6 +705,11 @@ class DiagnosisContainer {
       this.mkb = new MKBContainer(mkb)
     }
   }
+
+  /**
+   * Конструктор DiagnosisContainer
+   * @param diagnosis Данные о диагнозе как Diagnostic entity
+   */
   def this(diagnosis: Diagnostic){
     this()
     if(diagnosis!=null) {
@@ -583,6 +720,12 @@ class DiagnosisContainer {
     }
   }
 
+  /**
+   * Конструктор DiagnosisContainer с анализом типа diagnosis и типа mkb
+   * @param diagnosis Данные о диагнозе в виде Diagnostic или в виде ActionProperty как Object
+   * @param mkb Данные о диагнозе в виде MKB или String как Object
+   * @see MKBContainer
+   */
   def this(diagnosis: Object, mkb: Object){
     this()
     if(diagnosis!=null) {
@@ -609,6 +752,10 @@ class DiagnosisContainer {
     }
   }
 
+  /**
+   * Метод представляет контейнер в виде Map
+   * @return Возвращает список свойств контейнера  как Map[String, Object]
+   */
   def toMap = {
     var map = new java.util.HashMap[String, Object]
     map.put("diagnosisKind", this.diagnosisKind)
@@ -619,6 +766,9 @@ class DiagnosisContainer {
   }
 }
 
+/**
+ * Контейнер для данных о физических характеристиках пациента
+ */
 @XmlType(name = "physicalParametersContainer")
 @XmlRootElement(name = "physicalParametersContainer")
 @JsonIgnoreProperties(ignoreUnknown = true)
@@ -632,6 +782,16 @@ class PhysicalParametersContainer {
   @BeanProperty
   var bloodPressure: RangeLeftRightContainer = new RangeLeftRightContainer()
 
+  /**
+   * Конструктор для PhysicalParametersContainer
+   * @param height Рост
+   * @param weight Вес
+   * @param temperature Температура тела
+   * @param bloodPressureLeftDiast Артериальное давление. Левая рука: АД диаст.
+   * @param bloodPressureLeftSyst  Артериальное давление. Левая рука: АД сист.
+   * @param bloodPressureRightDiast Артериальное давление. Правая рука: АД диаст.
+   * @param bloodPressureRightSyst Артериальное давление. Правая рука: АД сист.
+   */
   def this(height: Double,
            weight: Double,
            temperature: Double,
@@ -648,6 +808,11 @@ class PhysicalParametersContainer {
                                                       bloodPressureRightDiast,
                                                       bloodPressureRightSyst)
   }
+
+  /**
+   * Метод представляет контейнер в виде Map
+   * @return Возвращает список свойств контейнера  как Map[String, Object]
+   */
   def toMap = {
     var map = new java.util.HashMap[String, Object]
     map.put("height", this.height.toString)
@@ -658,6 +823,9 @@ class PhysicalParametersContainer {
   }
 }
 
+/**
+ * Контейнер с информацией о назначениях
+ */
 @XmlType(name = "appealAssignmentContainer")
 @XmlRootElement(name = "appealAssignmentContainer")
 @JsonIgnoreProperties(ignoreUnknown = true)
@@ -671,6 +839,13 @@ class AppealAssignmentContainer {
   @BeanProperty
   var doctor: String = _//DoctorContainer = new DoctorContainer()
 
+  /**
+   * Конструктор AppealAssignmentContainer
+   * @param assignmentDate Дата назначения
+   * @param number Количество
+   * @param directedName Наименование
+   * @param doctor Назначивший врач как Staff
+   */
   def this(assignmentDate: Date,
            number: String,
            directedName: String,
@@ -684,6 +859,13 @@ class AppealAssignmentContainer {
     //}
   }
 
+  /**
+   * Конструктор AppealAssignmentContainer
+   * @param assignmentDate Дата назначения
+   * @param number Количество
+   * @param directedName Наименование
+   * @param doctor ФИО врача
+   */
   def this(assignmentDate: Date,
            number: String,
            directedName: String,
@@ -695,6 +877,10 @@ class AppealAssignmentContainer {
     this.doctor =  doctor
   }
 
+  /**
+   * Метод представляет контейнер в виде Map
+   * @return Возвращает список свойств контейнера  как Map[String, Object]
+   */
   def toMap = {
     var map = new java.util.HashMap[String, Object]
     map.put("assignmentDate", this.assignmentDate)
@@ -705,6 +891,9 @@ class AppealAssignmentContainer {
   }
 }
 
+/**
+ * Контейнер с информацией о докторе
+ */
 @XmlType(name = "doctorContainer")
 @XmlRootElement(name = "doctorContainer")
 @JsonIgnoreProperties(ignoreUnknown = true)
@@ -714,6 +903,10 @@ class DoctorContainer {
   @BeanProperty
   var name: PersonNameContainer = new PersonNameContainer()
 
+  /**
+   * Конструктор DoctorContainer
+   * @param staff Врач как Staff entity
+   */
   def this(staff: Staff){
     this()
     if(staff!=null)  {
@@ -722,12 +915,20 @@ class DoctorContainer {
     }
   }
 
+  /**
+   * Конструктор DoctorContainer
+   * @param fullName ФИО врача
+   */
   def this(fullName: String){
     this()
     this.id = 0
     this.name = new PersonNameContainer(fullName)
   }
 
+  /**
+   * Метод представляет контейнер в виде Map
+   * @return Возвращает список свойств контейнера  как Map[String, Object]
+   */
   def toMap = {
     var map = new java.util.HashMap[String, Object]
     map.put("id", this.id.toString)
@@ -736,6 +937,9 @@ class DoctorContainer {
   }
 }
 
+/**
+ * Контейнер для МКВ диагнозов
+ */
 @XmlType(name = "mKBContainer")
 @XmlRootElement(name = "mKBContainer")
 @JsonIgnoreProperties(ignoreUnknown = true)
@@ -747,12 +951,21 @@ class MKBContainer {
   @BeanProperty
   var diagnosis: String = _
 
+  /**
+   * Конструктор MKBContainer
+   * @param code Код диагноза по МКВ
+   * @param diagnosis Расшифровка диагноза
+   */
   def this(code: String, diagnosis: String){
     this()
     this.code = code
     this.diagnosis = diagnosis
   }
 
+  /**
+   * Конструктор MKBContainer
+   * @param mkb ЬКВ диагноз как Mkb entity
+   */
   def this(mkb: Mkb){
     this()
     this.id = mkb.getId.intValue()
@@ -760,6 +973,10 @@ class MKBContainer {
     this.diagnosis = mkb.getDiagName
   }
 
+  /**
+   * Метод представляет контейнер в виде Map
+   * @return Возвращает список свойств контейнера  как Map[String, Object]
+   */
   def toMap = {
     var map = new java.util.HashMap[String, Object]
     //map.put("id", this.id)
@@ -769,6 +986,12 @@ class MKBContainer {
   }
 }
 
+/**
+ * Контейнер для хранения данных о типе обращения
+ */
+@XmlType(name = "appealTypeContainer")
+@XmlRootElement(name = "appealTypeContainer")
+@JsonIgnoreProperties(ignoreUnknown = true)
 class AppealTypeContainer {
   @BeanProperty
   var eventType: IdNameContainer = _
@@ -779,6 +1002,10 @@ class AppealTypeContainer {
   @BeanProperty
   var finance: IdNameContainer = _
 
+  /**
+   * Конструктор AppealTypeContainer
+   * @param eventType Тип обращения как EventType
+   */
   def this(eventType: EventType){
     this()
     this.eventType = new IdNameContainer(eventType.getId.intValue(), eventType.getName)
@@ -787,6 +1014,12 @@ class AppealTypeContainer {
   }
 }
 
+/**
+ * Контейнер для представления информации о законном представителе
+ */
+@XmlType(name = "legalRepresentativeContainer")
+@XmlRootElement(name = "legalRepresentativeContainer")
+@JsonIgnoreProperties(ignoreUnknown = true)
 class LegalRepresentativeContainer {
 
   @BeanProperty
@@ -798,6 +1031,11 @@ class LegalRepresentativeContainer {
   @BeanProperty
   var note: String = ""                      //Комментарий
 
+  /**
+   * Конструктор LegalRepresentativeContainer
+   * @param relation Связь пациента с законным представителем как ClientRelation
+   * @param note Примечание к законному представителю
+   */
   def this(relation: ClientRelation,
            note: String){
     this()

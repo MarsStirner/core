@@ -313,9 +313,27 @@ public interface MedipadWebService extends Serializable {
     @WebMethod
     FlatDirectoryData getFlatDirectories(FlatDirectoryRequestData request) throws CoreException;
 
+    /**
+     * Получение справочников MKB
+     * @param request Данные из запроса как ListDataRequest.
+     * @param auth Авторизационные данные как AuthData.
+     * @return Справочник МКВ в виде JSON-строки как String
+     * @throws CoreException
+     * @see ListDataRequest
+     * @see AuthData
+     */
     @WebMethod
     String getAllMkbs(ListDataRequest request, AuthData auth) throws CoreException;
 
+    /**
+     * Получения справочников Thesaurus
+     * @param request Данные из запроса как ListDataRequest.
+     * @param auth Авторизационные данные как AuthData.
+     * @return Справочник Thesaurus как ThesaurusListData
+     * @throws CoreException
+     * @see ListDataRequest
+     * @see ThesaurusListData
+     */
     @WebMethod
     ThesaurusListData getThesaurusList(ListDataRequest request, AuthData auth) throws CoreException;
 

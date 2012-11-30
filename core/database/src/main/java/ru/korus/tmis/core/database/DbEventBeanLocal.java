@@ -13,9 +13,19 @@ import java.util.Date;
 import java.util.List;
 import java.util.Set;
 
+/**
+ * Методы для работы с таблицей s11r64.Event
+ */
 @Local
 public interface DbEventBeanLocal {
 
+    /**
+     * Получение данных о обращении по идентификатору
+     * @param id Идентификатор обращения.
+     * @return Данные о обращении как Event entity
+     * @throws CoreException
+     * @see Event
+     */
     Event getEventById(int id)
             throws CoreException;
 
