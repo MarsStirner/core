@@ -88,6 +88,12 @@ class DbClientQuotingBean
       cq.setCreatePerson(sessionUser)
       cq.setCreateDatetime(now)
       cq.setMaster(patient)
+      //нотнул йопта
+      cq.setDateEnd(now)  //узнать
+      cq.setDateRegistration(now)
+      cq.setDirectionDate(now)
+      cq.setPacientModelId(0)
+      cq.setTreatmentId(0)
     }
 
     cq.setIdentifier(appealNumber)

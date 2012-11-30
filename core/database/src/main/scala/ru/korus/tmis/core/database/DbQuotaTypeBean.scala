@@ -28,10 +28,11 @@ class DbQuotaTypeBean
   var em: EntityManager = _
 
   def getQuotaTypeById(id: Int) = {
-    val result = em.createQuery(QuotaTypeFindQuery,
-      classOf[Array[AnyRef]])
+    val query = em.createQuery(QuotaTypeFindQuery,
+      classOf[QuotaType])
       .setParameter("id", id)
-      .getResultList
+
+    val result = query.getResultList
 
     result.size match {
       case 0 => {
@@ -43,7 +44,7 @@ class DbQuotaTypeBean
         result.foreach(rbType => {
           em.detach(rbType)
         })
-        result(0).asInstanceOf[QuotaType]
+        result(0)
       }
     }
   }

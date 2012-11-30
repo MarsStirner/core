@@ -38,12 +38,12 @@ public class QuotaType implements Serializable {
     private String name;
 
     @ManyToOne
-    @JoinColumn(name = "MKB")
+    @JoinColumn(name = "MKB", referencedColumnName = "DiagID")
     private Mkb mkb;
 
     @Basic(optional = false)
     @Column(name = "class")
-    private int quotaClass = 0;
+    private boolean quotaClass;
 
     @Basic(optional = false)
     @Column(name = "createDatetime")
@@ -73,7 +73,7 @@ public class QuotaType implements Serializable {
 
     @Basic(optional = false)
     @Column(name = "teenOlder")
-    private int teenOlder = 0;
+    private boolean teenOlder;
 
     public Integer getId() {
         return id;
@@ -107,11 +107,11 @@ public class QuotaType implements Serializable {
         this.mkb = mkb;
     }
 
-    public int getQuotaClass() {
+    public boolean isQuotaClass() {
         return quotaClass;
     }
 
-    public void setQuotaClass(int quotaClass) {
+    public void setQuotaClass(boolean quotaClass) {
         this.quotaClass = quotaClass;
     }
 
@@ -163,11 +163,11 @@ public class QuotaType implements Serializable {
         this.modifyPerson = modifyPerson;
     }
 
-    public int getTeenOlder() {
+    public boolean isTeenOlder() {
         return teenOlder;
     }
 
-    public void setTeenOlder(int teenOlder) {
+    public void setTeenOlder(boolean teenOlder) {
         this.teenOlder = teenOlder;
     }
 

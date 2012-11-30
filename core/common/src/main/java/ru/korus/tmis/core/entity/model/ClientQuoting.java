@@ -12,7 +12,7 @@ import java.util.Date;
  * @since 1.0.0.48
  */
 @Entity
-@Table(name = "ClientQuoting", catalog = "", schema = "s11r64")
+@Table(name = "Client_Quoting", catalog = "", schema = "s11r64")
 @NamedQueries(
         {
                 @NamedQuery(name = "ClientQuoting.findAll", query = "SELECT cq FROM ClientQuoting cq")
@@ -116,7 +116,7 @@ public class ClientQuoting implements Serializable {
     @Column(name = "stage")
     private int stage;
 
-    @Column(name = "statement")
+    @Column(name = "statment")
     private String statement;
 
     @ManyToOne

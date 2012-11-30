@@ -202,6 +202,9 @@ class AuthStorageBean
             i18n("error.tokenExceeded"));
         } else {
           info("Token is valid");
+          val tokenEndTimeNew = new Date(new Date().getTime + ConfigManager.TmisAuth.AuthTokenPeriod)
+          authMap.remove(authToken)
+          authMap.put(authToken, (authData, tokenEndTimeNew))
         }
       } else {
         error("Token end date not found");
