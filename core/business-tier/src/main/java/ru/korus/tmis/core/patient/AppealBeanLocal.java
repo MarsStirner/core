@@ -36,7 +36,7 @@ public interface AppealBeanLocal {
      * @return Данные об обращении на госпитализацию.
      * @throws CoreException
      */
-    java.util.HashMap<Event, java.util.Map<Action, java.util.Map<String,java.util.List<Object>>>> getAppealById(int id)
+    java.util.HashMap<Event, java.util.Map<Action, java.util.Map<Integer,java.util.List<Object>>>> getAppealById(int id)
         throws CoreException;
 
     /**
@@ -125,4 +125,15 @@ public interface AppealBeanLocal {
      * @since 1.0.0.43
      */
     String getPatientsHospitalizedStatus(int eventId) throws CoreException;
+
+    /**
+     * Метод создает или редактирует талон ВМП (квота)
+     * @param dataEntry Данные о квоте как ClientQuoting
+     * @param eventId Идентификатор обращения на госпитализацию.
+     * @param auth Авторизационные данные.
+     * @return талом ВМП (квота)
+     * @throws CoreException
+     * @since 1.0.0.48
+     */
+    ClientQuoting insertOrUpdateClientQuoting(QuotaEntry dataEntry, int eventId, AuthData auth) throws CoreException;
 }

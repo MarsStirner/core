@@ -102,7 +102,7 @@ public interface DbCustomQueryLocal {
     List<Mkb> getAllMkbsWithFilter(int page, int limit, String sortingField, String sortingMethod, Object filter)
             throws CoreException;
 
-    Map<String, Map<String, String>> getDistinctMkbsWithFilter(String sortingField, String sortingMethod, Object filter)
+    Map<String, Map<String, Mkb>> getDistinctMkbsWithFilter(String sortingField, String sortingMethod, Object filter)
             throws CoreException;
 
     long getCountOfMkbsWithFilter(Object filter)

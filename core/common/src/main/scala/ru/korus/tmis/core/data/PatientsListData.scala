@@ -8,6 +8,7 @@ import ru.korus.tmis.core.entity.model._
 import ru.korus.tmis.util.ConfigManager
 import org.codehaus.jackson.map.annotate.JsonView
 import collection.JavaConversions
+import java.util
 
 object PatientsListDataViews {
   class AttendingDoctorView {}
@@ -56,7 +57,8 @@ class PatientsListData {
            condInfo: java.util.Map[Event, java.util.Map[ActionProperty, java.util.List[APValue]]],
            mLastAction: (Int, java.util.Set[java.lang.Integer]) => Int,
            mActionPropertiesWithValues: (Int, java.util.List[java.lang.Integer]) =>  java.util.Map[ActionProperty, java.util.List[APValue]],
-           mCorrList: (java.util.List[java.lang.Integer])=> java.util.List[RbCoreActionProperty]) = {
+           mCorrList: (java.util.List[java.lang.Integer])=> java.util.List[RbCoreActionProperty],
+           mDiagnostics: (Int) => java.util.List[Diagnostic]) = {
     this ()
     this.requestData = requestData
 
@@ -96,7 +98,7 @@ class PatientsListData {
         }
         this.data.add(new PatientsListEntry(event, bed, begDate, condition))
       } else {
-        this.data.add(new PatientsListEntry(event, bed, begDate, null))
+        this.data.add(new PatientsListEntry(event, bed, begDate, null, mDiagnostics))
       }
     })
   }
@@ -290,7 +292,7 @@ class PatientsListEntry {
 
   @JsonView(Array(classOf[PatientsListDataViews.AttendingDoctorView]))
   @BeanProperty
-  var dignoses: String = _               //Диагнозы
+  var diagnoses: LinkedList[DiagnosisContainer] = new LinkedList[DiagnosisContainer]               //Диагнозы
 
   @JsonView(Array(classOf[PatientsListDataViews.NurseView]))
   @BeanProperty
@@ -312,7 +314,10 @@ class PatientsListEntry {
         this.condition = new PersonConditionContainer(condition)
   }
 
-  def this(event: Event, bed: OrgStructureHospitalBed, begDate: Date, condition: java.util.Map[ActionProperty, java.util.List[APValue]]) {
+  def this(event: Event,
+           bed: OrgStructureHospitalBed,
+           begDate: Date,
+           condition: java.util.Map[ActionProperty, java.util.List[APValue]]) {
     this(event, bed, condition)
     val eType = event.getEventType
     if (eType.getFinance!=null)
@@ -329,7 +334,19 @@ class PatientsListEntry {
         case _ => ""
       }
     }
-
+  }
+  def this(event: Event,
+           bed: OrgStructureHospitalBed,
+           begDate: Date,
+           condition: java.util.Map[ActionProperty, java.util.List[APValue]],
+           mDiagnostics: (Int)=> java.util.List[Diagnostic]) {
+    this(event, bed, begDate, condition)
+    if (mDiagnostics!=null){
+       val diagnostics = mDiagnostics(event.getId.intValue())
+       if (diagnostics!=null && diagnostics.size()>0) {
+          diagnostics.foreach(dia => this.diagnoses.add(new DiagnosisContainer(dia)))
+       }
+    }
   }
 }
 

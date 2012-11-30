@@ -82,6 +82,10 @@ object ConfigManager extends Configuration {
     var ClientSocStatusClassNotFound = 0x124
     var ClientSocStatusTypeAssocNotFound = 0x125
     var RbCounterNotFound = 0x126
+    var RbQuotaStatusNotFound = 0x127
+    var ClientQuotingNotFound = 0x128
+    var QuotaTypeNotFound = 0x129
+    var OrgStructureNotFound = 0x130
   }
 
   val Drugstore = new Configuration {
@@ -213,8 +217,29 @@ object ConfigManager extends Configuration {
     }
   }
 
+  val RbCAPIds = new Logging {
+    val bundle = ResourceBundle.getBundle("rbcap",
+      Utf8ResourceBundleControl.Singleton)
+
+    def apply(msg: String, params: Any*) = {
+      bundle.getString(msg) match {
+        case null => "<EMPTY>"
+        case result => if (params.isEmpty) result
+        else try {
+          result.format(params: _*)
+        } catch {
+          case e: Throwable => error("Could not format pattern " + msg + ". Using it as-is."); msg
+        }
+      }
+    }
+  }
+
 }
 
 trait I18nable {
   val i18n = ConfigManager.Messages
+}
+
+trait CAPids {
+  val iCapIds = ConfigManager.RbCAPIds
 }
