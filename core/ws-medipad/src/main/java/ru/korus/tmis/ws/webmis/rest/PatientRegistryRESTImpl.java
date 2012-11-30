@@ -1722,7 +1722,9 @@ public class PatientRegistryRESTImpl implements Serializable {
      * &#15; "KLADR" - КЛАДР;
      * &#15; "valueDomain" - список возможных значений для ActionProperty;
      * &#15; "specialities" - справочник специальностей;
-     * &#15; "contactTypes" - справочник типов контактов;</pre>
+     * &#15; "quotaStatus" - Справочник статусов квот</pre>
+     * &#15; "quotaType" - Справочник типов квот</pre>
+     * &#15; "contactTypes" - справочник типов контактов;
      * @param headId   Фильтр для справочника "insurance". Идентификатор родительской компании. (В url: filter[headId]=...)
      * @param groupId  Фильтр для справочника "clientDocument". Идентификатор группы типов документов. (В url: filter[groupId]=...)
      * @param name     Фильтр для справочника "policyTypes". Идентификатор обозначения полиса. (В url: filter[name]=...)
@@ -1936,6 +1938,23 @@ public class PatientRegistryRESTImpl implements Serializable {
         ListDataRequest request = new ListDataRequest(sortingField, sortingMethod, limit, page, filter);
 
         Object oip = wsImpl.getEventTypes(request, auth);
+        JSONWithPadding returnValue = new JSONWithPadding(oip, callback);
+        return returnValue;
+    }
+
+    @POST
+    @Path("/events/{eventId}/quota")
+    @Produces("application/x-javascript")
+    public Object createQuota(QuotaData data,
+                              @PathParam("eventId")int eventId,
+                              @QueryParam("token") String token,
+                              @QueryParam("callback") String callback,
+                              @Context HttpServletRequest servRequest) {
+        //AuthData auth = wsImpl.checkTokenCookies(servRequest);
+        AuthToken authToken = new AuthToken(token);
+        AuthData auth = wsImpl.getStorageAuthData(authToken);
+
+        Object oip = wsImpl.insertOrUpdateQuota(data.getData(), eventId, auth);
         JSONWithPadding returnValue = new JSONWithPadding(oip, callback);
         return returnValue;
     }

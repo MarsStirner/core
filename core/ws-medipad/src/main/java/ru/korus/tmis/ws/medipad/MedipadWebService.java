@@ -397,4 +397,7 @@ public interface MedipadWebService extends Serializable {
      */
     @WebMethod
     CommonData getPatientsFromOpenAppealWhatHasBedByDepartmentId (int departmentId, AuthData authData) throws CoreException;
+
+    @WebMethod
+    QuotaData insertOrUpdateQuota(QuotaEntry dataEntry, int eventId, AuthData auth) throws CoreException;
 }

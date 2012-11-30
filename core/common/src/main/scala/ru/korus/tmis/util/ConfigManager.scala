@@ -82,6 +82,10 @@ object ConfigManager extends Configuration {
     var ClientSocStatusClassNotFound = 0x124
     var ClientSocStatusTypeAssocNotFound = 0x125
     var RbCounterNotFound = 0x126
+    var RbQuotaStatusNotFound = 0x127
+    var ClientQuotingNotFound = 0x128
+    var QuotaTypeNotFound = 0x129
+    var OrgStructureNotFound = 0x130
   }
 
   val Drugstore = new Configuration {

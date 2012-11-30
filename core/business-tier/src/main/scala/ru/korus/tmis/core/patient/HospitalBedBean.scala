@@ -435,17 +435,13 @@ with TmisLogging{
           map.put(action, apv_map)
         })
       } else {
-        /*
+
         val debugLogger = LoggerFactory.getLogger("ru.korus.tmis.core.logging._LoggingInterceptor_Serializable")
-        debugLogger.warn("=================!!!!!!!!!!!!!!!!!===================")
-        val claaassic = this.getClass.toString
-        val methodic = this.getClass.getEnclosingMethod
-        val methodic = this.get
-        logTmis.setValueForKey(logTmis.LoggingKeys.Called, " " + this.getClass.toString + "." + this.getClass.getEnclosingMethod.toString, logTmis.StatusKeys.Success)
-        logger.info(logTmis.getLogStringByValues(false))
-        logger.info("Не найдено ни одного действия для выбранного обращения")
-        */
-        //TODO: Варнинг, что не найдена экшны для этого обращения
+        val methodicStack = Thread.currentThread().getStackTrace
+        val meeeet = methodicStack(1).getMethodName
+        logTmis.setValueForKey(logTmis.LoggingKeys.Called, " " + this.getClass.toString + "." + meeeet, logTmis.StatusKeys.Success)
+        debugLogger.warn(logTmis.getLogStringByValues(false) + "Не найдено ни одного действия для выбранного обращения. ")
+        //TODO: Варнинг, что не найдена экшны для этого обращения    Добавить коды ошибок.
       }
       return new HospitalBedData(map, corrMap, null)
     }

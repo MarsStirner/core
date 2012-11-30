@@ -164,6 +164,12 @@ class MedipadWSImpl
 
   @EJB
   private var dbClientRelation: DbClientRelationBeanLocal = _
+
+  @EJB
+  private var dbRbQuotaStatus: DbRbQuotaStatusBeanLocal = _
+
+  @EJB
+  private var dbQuotaTypeBean: DbQuotaTypeBeanLocal = _
   //////////////////////////////////////////////////////////////////////////////
 
   def checkTokenCookies(srvletRequest: HttpServletRequest): AuthData = {
@@ -575,7 +581,7 @@ class MedipadWSImpl
 
      val mapper: ObjectMapper = new ObjectMapper()
      requestData.filter.asInstanceOf[ReceivedRequestDataFilter].role match {
-       //case 29 => mapper.getSerializationConfig().setSerializationView(classOf[ReceivedPatientsDataViews.AdmissionDepartmentsNurseView]) //Сестра приемного отделения
+       case 29 => mapper.getSerializationConfig().setSerializationView(classOf[ReceivedPatientsDataViews.AdmissionDepartmentsNurseView]) //Сестра приемного отделения
        case _ =>  mapper.getSerializationConfig().setSerializationView(classOf[ReceivedPatientsDataViews.AdmissionDepartmentsDoctorView]) //Доктор
      }
 
@@ -775,6 +781,11 @@ class MedipadWSImpl
     mapper.writeValueAsString(hospitalBedBean.getRegistryOriginalForm(action, authData))
   }
 
+  def insertOrUpdateQuota(dataEntry: QuotaEntry, eventId: Int, auth: AuthData) = {
+    val quota = appealBean.insertOrUpdateClientQuoting(dataEntry, eventId, auth)
+    new QuotaData(quota, null)
+  }
+
   /*
   def insertTalonSPOForPatient(data: Object) = {
 
@@ -813,7 +824,6 @@ class MedipadWSImpl
   }
 
   def getAllDepartments(requestData: ListDataRequest) = {
-
     //TODO: подключить анализ авторизационных данных и доступных ролей
     requestData.setRecordsCount(dbOrgStructureBean.getCountAllOrgStructuresWithFilter(requestData.filter))
     val list = new AllDepartmentsListData(dbOrgStructureBean.getAllOrgStructuresByRequest(requestData.limit,
@@ -1135,6 +1145,24 @@ class MedipadWSImpl
                                               request.sortingMethod,
                                               request.filter,
                                               request.rewriteRecordsCount _)
+      }
+      case "quotaStatus" => { //   Статусы квот
+        mapper.getSerializationConfig().setSerializationView(classOf[DictionaryDataViews.DefaultView])
+        dbRbQuotaStatus.getAllRbQuotaStatusWithFilter(request.page,
+                                                      request.limit,
+                                                      request.sortingFieldInternal,
+                                                      request.sortingMethod,
+                                                      request.filter,
+                                                      request.rewriteRecordsCount _)
+      }
+      case "quotaType" => { //   Типы квот
+        mapper.getSerializationConfig().setSerializationView(classOf[DictionaryDataViews.DefaultView])
+        dbQuotaTypeBean.getAllQuotaTypesWithFilter(request.page,
+                                                   request.limit,
+                                                   request.sortingFieldInternal,
+                                                   request.sortingMethod,
+                                                   request.filter,
+                                                   request.rewriteRecordsCount _)
       }
     }
     mapper.writeValueAsString(new DictionaryListData(list, request))
