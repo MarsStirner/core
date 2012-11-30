@@ -109,6 +109,10 @@ class PatientBean
     buildCommonData(customQuery.getActiveEventsForDepartment(id))
   }
 
+  def getCurrentPatientsByDepartmentId(id: Int) = {
+    buildCommonData(customQuery.getActiveEventsForDepartment(id))
+  }
+
   def buildCommonData(events: java.util.List[Event]) = {
     val admissions = customQuery.getAdmissionsByEvents(events)
     val hospitalBeds = customQuery.getHospitalBedsByEvents(events)
@@ -359,30 +363,7 @@ class PatientBean
                                                                     requestData.sortingFieldInternal,
                                                                     requestData.sortingMethod,
                                                                     requestData.filter)
-    //дозаполним структуру данными о палате\койке
-    /*val hospitalBeds = customQuery.getHospitalBedsByEvents(events)    //проверить что каунт эвентов до и после равны
-    val hospitalInfo: Map[Event, OrgStructureHospitalBed]  =
-    hospitalBeds.foldLeft(Map.empty[Event, OrgStructureHospitalBed])(
-    (key, element) => {
-      var (event,  ap) = element
-      var value: OrgStructureHospitalBed =
-      ap match {
-        case null => {null}
-        case bed: ActionProperty => {
-          var value_x: OrgStructureHospitalBed = null
-          val apvs = dbActionProperty.getActionPropertyValue(bed)
-          apvs.foreach(
-            (apv)=> {
-              if (apv.getValue.isInstanceOf[OrgStructureHospitalBed]) {
-                value_x  = apv.getValue.asInstanceOf[OrgStructureHospitalBed]
-              }
-            }
-          )
-          value_x
-        }
-      }
-      key + (event -> value)
-    })*/
+
     var conditionsInfo = new java.util.HashMap[Event, java.util.Map[ActionProperty, java.util.List[APValue]]]
     if(role == 1) {  //Для сестры отделения только
       val conditions = customQuery.getLastAssessmentByEvents(events)

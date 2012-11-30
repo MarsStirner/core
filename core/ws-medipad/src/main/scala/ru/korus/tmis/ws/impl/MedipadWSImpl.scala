@@ -32,6 +32,7 @@ import ru.korus.tmis.core.patient._
 import java.util._
 import ru.korus.tmis.util.StringId
 import java.util
+import javax.swing.JList
 
 @Named
 @WebService(
@@ -751,7 +752,7 @@ class MedipadWSImpl
     val action = hospitalBedBean.modifyPatientToHospitalBed(actionId, data, authData)
 
     val mapper: ObjectMapper = new ObjectMapper()
-    mapper.getSerializationConfig().setSerializationView(classOf[HospitalBedViews.RegistrationView]);
+    mapper.getSerializationConfig().setSerializationView(classOf[HospitalBedViews.RegistrationView])
     mapper.writeValueAsString(hospitalBedBean.getRegistryOriginalForm(action, authData))
   }
 
@@ -1173,6 +1174,10 @@ class MedipadWSImpl
                                                                     request.rewriteRecordsCount _)
 
     mapper.writeValueAsString(new EventTypesListData(list, request))
+  }
+
+  def getPatientsFromOpenAppealWhatHasBedByDepartmentId(departmentId: Int, authData: AuthData) = {
+    patientBean.getCurrentPatientsByDepartmentId(departmentId)
   }
 
 }
