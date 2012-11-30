@@ -170,6 +170,9 @@ class MedipadWSImpl
 
   @EJB
   private var dbQuotaTypeBean: DbQuotaTypeBeanLocal = _
+
+  @EJB
+  private var dbClientQuoting: DbClientQuotingBeanLocal = _
   //////////////////////////////////////////////////////////////////////////////
 
   def checkTokenCookies(srvletRequest: HttpServletRequest): AuthData = {
@@ -781,9 +784,19 @@ class MedipadWSImpl
     mapper.writeValueAsString(hospitalBedBean.getRegistryOriginalForm(action, authData))
   }
 
-  def insertOrUpdateQuota(dataEntry: QuotaEntry, eventId: Int, auth: AuthData) = {
-    val quota = appealBean.insertOrUpdateClientQuoting(dataEntry, eventId, auth)
-    new QuotaData(quota, null)
+  def insertOrUpdateQuota(quotaData: QuotaData, eventId: Int, auth: AuthData) = {
+    val quota = appealBean.insertOrUpdateClientQuoting(quotaData.getData.asInstanceOf[QuotaEntry], eventId, auth)
+    val mapper: ObjectMapper = new ObjectMapper()
+    mapper.getSerializationConfig().setSerializationView(classOf[QuotaViews.DynamicFieldsQuotaCreate])
+    mapper.writeValueAsString(new QuotaData(new QuotaEntry(quota, classOf[QuotaViews.DynamicFieldsQuotaCreate]), quotaData.getRequestData))
+  }
+
+  def getQuotaHistory(patientId: Int) = {
+    val quotaList = dbClientQuoting.getAllClientQuotingForPatient(patientId)
+
+    val mapper: ObjectMapper = new ObjectMapper()
+    mapper.getSerializationConfig().setSerializationView(classOf[QuotaViews.DynamicFieldsQuotaHistory])
+    mapper.writeValueAsString(new QuotaData(quotaList, null))
   }
 
   /*

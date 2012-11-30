@@ -1954,7 +1954,37 @@ public class PatientRegistryRESTImpl implements Serializable {
         AuthToken authToken = new AuthToken(token);
         AuthData auth = wsImpl.getStorageAuthData(authToken);
 
-        Object oip = wsImpl.insertOrUpdateQuota(data.getData(), eventId, auth);
+        Object oip = wsImpl.insertOrUpdateQuota(data, eventId, auth);
+        JSONWithPadding returnValue = new JSONWithPadding(oip, callback);
+        return returnValue;
+    }
+
+    @PUT
+    @Path("/appeals/{eventId}/quota")
+    @Produces("application/x-javascript")
+    public Object modifyQuota(QuotaData data,
+                              @PathParam("eventId")int eventId,
+                              @QueryParam("token") String token,
+                              @QueryParam("callback") String callback,
+                              @Context HttpServletRequest servRequest) {
+        //AuthData auth = wsImpl.checkTokenCookies(servRequest);
+        AuthToken authToken = new AuthToken(token);
+        AuthData auth = wsImpl.getStorageAuthData(authToken);
+
+        Object oip = wsImpl.insertOrUpdateQuota(data, eventId, auth);
+        JSONWithPadding returnValue = new JSONWithPadding(oip, callback);
+        return returnValue;
+    }
+
+    @GET
+    @Path("/appeals/quotaHistory")
+    @Produces("application/x-javascript")
+    public Object getQuotaHistory(@QueryParam("patientId") int patientId,
+                                  @QueryParam("callback") String callback,
+                                  @Context HttpServletRequest servRequest) {
+        AuthData auth = wsImpl.checkTokenCookies(servRequest);
+
+        Object oip = wsImpl.getQuotaHistory(patientId);
         JSONWithPadding returnValue = new JSONWithPadding(oip, callback);
         return returnValue;
     }

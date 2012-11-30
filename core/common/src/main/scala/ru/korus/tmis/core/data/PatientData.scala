@@ -11,6 +11,17 @@ import reflect.BeanProperty
 import scala.Predef._
 import ru.korus.tmis.util.ConfigManager
 import org.codehaus.jackson.annotate.JsonIgnoreProperties._
+import org.codehaus.jackson.map.annotate.JsonView
+import java.util
+
+//Dynamic Filters
+object QuotaViews {
+  class DynamicFieldsQuotaCreate {
+  }
+  class DynamicFieldsQuotaHistory {
+  }
+}
+class QuotaViews {}
 
 @XmlType(name = "patientData")
 @XmlRootElement(name = "patientData")
@@ -161,6 +172,8 @@ class PatientEntry {
   var occupations = new LinkedList[OccupationContainer]
   @BeanProperty
   var citizenship: CitizenshipContainer = _
+  //@BeanProperty
+  //var quotaHistory = new LinkedList[QuotaEntry]
 
 def this(patient: Patient,
          map: java.util.LinkedHashMap[java.lang.Integer, java.util.LinkedList[Kladr]],
@@ -894,14 +907,32 @@ class QuotaData {
   @BeanProperty
   var requestData: QuotaRequestData = _
   @BeanProperty
-  var data: QuotaEntry = _
+  var data: AnyRef = _
 
-  def this(clientQuoting: ClientQuoting,
+  def this(quotaEntry: QuotaEntry,
            requestData: QuotaRequestData) = {
     this()
     this.requestData = requestData
-    this.data = new QuotaEntry(clientQuoting)
+    this.data = quotaEntry
   }
+
+  def this(quotaEntries: util.List[ClientQuoting],
+           requestData: QuotaRequestData) = {
+    this()
+    this.requestData = requestData
+    this.data = new util.LinkedList[QuotaEntry]
+    quotaEntries.foreach(f => data.asInstanceOf[util.List[QuotaEntry]].add(new QuotaEntry(f, classOf[QuotaViews.DynamicFieldsQuotaHistory])))
+  }
+
+  /*
+  def this(clientQuoting: ClientQuoting,
+           requestData: QuotaRequestData,
+           classic: Class[_]) = {
+    this()
+    this.requestData = requestData
+    this.data = new QuotaEntry(clientQuoting, classic)
+  }
+  */
 }
 
 @XmlType(name = "quotaRequestData")
@@ -948,20 +979,28 @@ class QuotaRequestData {
 class QuotaEntry  {
   @BeanProperty
   var id : Int = _
+  @JsonView(Array(classOf[QuotaViews.DynamicFieldsQuotaCreate]))
   @BeanProperty
   var appealNumber : String = _
   @BeanProperty
   var talonNumber : String = _
+  @JsonView(Array(classOf[QuotaViews.DynamicFieldsQuotaCreate]))
   @BeanProperty
   var stage : Int = _
+  @JsonView(Array(classOf[QuotaViews.DynamicFieldsQuotaHistory]))
+  @BeanProperty
+  var stageSum : Int = _
   @BeanProperty
   var request: Int = _
   @BeanProperty
   var mkb : MKBContainer = _
+  @JsonView(Array(classOf[QuotaViews.DynamicFieldsQuotaCreate]))
   @BeanProperty
   var quotaType : IdNameContainer = _
+  @JsonView(Array(classOf[QuotaViews.DynamicFieldsQuotaCreate]))
   @BeanProperty
   var department : IdNameContainer = _
+  @JsonView(Array(classOf[QuotaViews.DynamicFieldsQuotaCreate]))
   @BeanProperty
   var status : IdNameContainer = _
 
@@ -978,17 +1017,23 @@ class QuotaEntry  {
     this.status = new IdNameContainer(status, "")
   }
 
-  def this(clientQuoting: ClientQuoting) = {
+  def this(clientQuoting: ClientQuoting, classic: Class[_]) = {
     this()
     this.id = clientQuoting.getId.intValue()
-    this.appealNumber = clientQuoting.getIdentifier
     this.talonNumber = clientQuoting.getQuotaTicket
-    this.stage = clientQuoting.getStage.intValue()
     this.request = clientQuoting.getRequest.intValue()
     this.mkb = new MKBContainer(clientQuoting.getMkb)
-    this.quotaType = new IdNameContainer(clientQuoting.getQuotaType.getId.intValue(), clientQuoting.getQuotaType.getName)
-    this.department = new IdNameContainer(clientQuoting.getOrgStructure.getId.intValue(), clientQuoting.getOrgStructure.getName)
-    this.status = new IdNameContainer(clientQuoting.getStatus.getId.intValue(), clientQuoting.getStatus.getName)
+
+    if (classic == classOf[QuotaViews.DynamicFieldsQuotaCreate]) {
+      this.appealNumber = clientQuoting.getIdentifier
+      this.stage = clientQuoting.getStage.intValue()
+      this.quotaType = new IdNameContainer(clientQuoting.getQuotaType.getId.intValue(), clientQuoting.getQuotaType.getName)
+      this.department = new IdNameContainer(clientQuoting.getOrgStructure.getId.intValue(), clientQuoting.getOrgStructure.getName)
+      this.status = new IdNameContainer(clientQuoting.getStatus.getId.intValue(), clientQuoting.getStatus.getName)
+    }
+    else if (classic == classOf[QuotaViews.DynamicFieldsQuotaHistory]) {
+      this.stageSum = clientQuoting.getAmount + 1
+    }
   }
 }
 
