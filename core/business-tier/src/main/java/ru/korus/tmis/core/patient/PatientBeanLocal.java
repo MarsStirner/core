@@ -25,6 +25,16 @@ public interface PatientBeanLocal {
     CommonData getCurrentPatientsForDepartment(AuthData userData)
             throws CoreException;
 
+    /**
+     * Сервис для получения списка пациентов по идентификатору отделения (для MediPad)
+     * @param id Идентификатор отделения
+     * @return Возвращает список данных о пациента в виде CommonData
+     * @throws CoreException
+     * @see CommonData
+     */
+    CommonData getCurrentPatientsByDepartmentId( int id)
+            throws CoreException;
+
     Patient getPatientById(int id)
             throws CoreException;
 

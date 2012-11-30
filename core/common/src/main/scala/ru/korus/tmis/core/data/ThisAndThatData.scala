@@ -12,6 +12,7 @@ import org.codehaus.jackson.annotate.JsonIgnoreProperties
 import org.codehaus.jackson.annotate.JsonIgnoreProperties._
 import org.codehaus.jackson.map.annotate.JsonView
 import ru.korus.tmis.auxiliary.AuxiliaryFunctions
+import java.util
 
 @XmlType(name = "listRequestData")
 @XmlRootElement(name = "listRequestData")
@@ -73,7 +74,7 @@ class ListDataRequest {
       case _ => {sortingMethod}
     }
     this.limit = limit
-    this.page = page
+    this.page = if(page>1)page else 1
     this.coreVersion = ConfigManager.Messages("misCore.assembly.version")
   }
 
@@ -289,108 +290,141 @@ class AllMKBListData {
   def this(mkbs: java.util.List[Mkb],
            mkbs_display: Object,
            requestData: ListDataRequest) = {
-    this ()
-    this.requestData = requestData
+   this ()
+   this.requestData = requestData
 
-    //Предобработка в структуру дерева
-    var mapSubGroupValue: java.util.Map[String, String] = new java.util.HashMap[String, String]
-    val mkbTree = mkbs.foldLeft(new java.util.LinkedHashMap[String, java.util.Map[String, java.util.Map[String, java.util.List[Mkb]]]])(
-      (map, f) => {
-        var map2: java.util.Map[String, java.util.Map[String, java.util.List[Mkb]]] = null
-        var map3: java.util.Map[String, java.util.List[Mkb]] = null
-        var list: java.util.List[Mkb] = null
+   //Анализ формы вывода
+   requestData.filter.asInstanceOf[MKBListRequestDataFilter].view match {
+     case "class" => {
+       val classMap = getGroupedValuesByLevel(mkbs, CLASS_LEVEL)
+       this.requestData.setRecordsCount(classMap.size)
+       this.data = new java.util.LinkedList[ClassMKBContainer]
+       classMap.foreach(f => this.data.asInstanceOf[java.util.LinkedList[ClassMKBContainer]].add(new ClassMKBContainer(f._1, f._2.getClassName)))
+     }
+     case "group" => {
+       val groupMap = getGroupedValuesByLevel(mkbs, GROUP_LEVEL)
+       this.requestData.setRecordsCount(groupMap.size)
+       this.data = new java.util.LinkedList[GroupMKBContainer]
+       groupMap.foreach(f => this.data.asInstanceOf[java.util.LinkedList[GroupMKBContainer]].add(new GroupMKBContainer(f._1, f._2.getBlockName)))
+     }
+     case "subgroup" => {
+       val subgroupMap = getGroupedValuesByLevel(mkbs, SUBGROUP_LEVEL)
+       this.requestData.setRecordsCount(subgroupMap.size)
+       this.data = new java.util.LinkedList[SubGroupMKBContainer]
+       subgroupMap.foreach(f => this.data.asInstanceOf[java.util.LinkedList[SubGroupMKBContainer]].add(new SubGroupMKBContainer(f._1, f._2.getDiagName)))
+     }
+     case "mkb" => {
+       val mkbMap = getGroupedValuesByLevel(mkbs, MKB_LEVEL)
+       this.requestData.setRecordsCount(mkbMap.size)
+       this.data = new java.util.LinkedList[MKBContainer]
+       mkbMap.foreach(f => this.data.asInstanceOf[java.util.LinkedList[MKBContainer]].add(new MKBContainer(f._1, f._2.getDiagName)))
+     }
+     case _ => {  //дерево тогда анализируем дисплей
+       this.data = new java.util.LinkedList[ClassMKBContainer]
+       val classMap = getGroupedValuesByLevel(mkbs, CLASS_LEVEL)
 
-        if(!map.containsKey(f.getClassID)) {
-          var map2 = new java.util.LinkedHashMap[String, java.util.Map[String, java.util.List[Mkb]]]
-          map.put(f.getClassID, map2)
-        }
+       if (requestData.filter.asInstanceOf[MKBListRequestDataFilter].display) {
+         val rolled = getRolledBrunch(mkbs_display.asInstanceOf[java.util.Map[String, java.util.Map[String, Mkb]]], CLASS_LEVEL)
+         if (rolled!=null){
+           rolled.foreach(f => {
+             if (!classMap.containsKey(f._1)){
+               this.data.asInstanceOf[java.util.LinkedList[ClassMKBContainer]]
+                 .add(new ClassMKBContainer(f._1, f._2.getClassName))
+             }
+             else {
+               val filtredMkbs = getFilteredValuesByLevel(mkbs, classMap.get(f._1), CLASS_LEVEL)
+               this.data.asInstanceOf[java.util.LinkedList[ClassMKBContainer]]
+                 .add(new ClassMKBContainer( f._1,
+                                             f._2.getClassName,
+                                             filtredMkbs,
+                                             mkbs_display.asInstanceOf[java.util.Map[String, java.util.Map[String, Mkb]]],
+                                             getGroupedValuesByLevel,
+                                             getFilteredValuesByLevel,
+                                             getRolledBrunch))
+             }
+           })
+         }
+         else {
+           classMap.foreach(f => {
+             val filtredMkbs = getFilteredValuesByLevel(mkbs, f._2, CLASS_LEVEL)
+             this.data.asInstanceOf[java.util.LinkedList[ClassMKBContainer]]
+               .add(new ClassMKBContainer(f._1, f._2.getClassName, filtredMkbs, null, getGroupedValuesByLevel _, getFilteredValuesByLevel _, null))
+           })
+         }
+       }
+       else {
+         classMap.foreach(f => {
+           val filtredMkbs = getFilteredValuesByLevel(mkbs, f._2, CLASS_LEVEL)
+           this.data.asInstanceOf[java.util.LinkedList[ClassMKBContainer]]
+                    .add(new ClassMKBContainer(f._1, f._2.getClassName, filtredMkbs, null, getGroupedValuesByLevel _, getFilteredValuesByLevel _, null))
+         })
+       }
+     }
+   }
+ }
 
-        map2 = map.get(f.getClassID)
-        if(!map2.containsKey(f.getBlockID)) {
-          map3 = new java.util.LinkedHashMap[String, java.util.List[Mkb]]
-          map2.put(f.getBlockID, map3)
-        }
+ private val CLASS_LEVEL = 0
+ private val GROUP_LEVEL = 1
+ private val SUBGROUP_LEVEL = 2
+ private val MKB_LEVEL = 3
 
-        map3 = map2.get(f.getBlockID)
-        var lexem: String = null
-        if(f.getDiagID.indexOf(".")>0){
-          lexem = f.getDiagID.substring(0, f.getDiagID.indexOf("."))
-        } else {
-          lexem = f.getDiagID
-        }
-        if(!map3.containsKey(lexem)) {
-          list = new java.util.LinkedList[Mkb]
-          map3.put(lexem, list)
-        }
-        if(f.getDiagID.compareTo(lexem)!=0) {
-          map3.get(lexem).add(f)
-        } else {
-          mapSubGroupValue.put(f.getDiagID, f.getDiagName)
-        }
-        map
-      })
+ private def getGroupedValuesByLevel(mkbs: java.util.List[Mkb], level: Int) = {
 
-    //Анализ формы вывода
-    requestData.filter.asInstanceOf[MKBListRequestDataFilter].view match {
-      case "class" => {
-        this.data = new java.util.LinkedList[ClassMKBContainer]
-        mkbTree.foreach(mkbClass => this.data.asInstanceOf[java.util.LinkedList[ClassMKBContainer]].add(new ClassMKBContainer(mkbClass, mkbs_display, mapSubGroupValue)))
-      }
-      case "group" => {
-        this.data = new java.util.LinkedList[GroupMKBContainer]
-        mkbTree.foreach(mkbClass => {
-          mkbClass._2.foreach(mkbGroup =>{
-            this.data.asInstanceOf[java.util.LinkedList[GroupMKBContainer]].add(new GroupMKBContainer(mkbGroup, mkbs_display, mapSubGroupValue))
-          })
-        })
-      }
-      case "subgroup" => {
-        this.data = new java.util.LinkedList[SubGroupMKBContainer]
-        mkbTree.foreach(mkbClass => {
-          mkbClass._2.foreach(mkbGroup =>{
-            mkbGroup._2.foreach(subGroup =>{
-              this.data.asInstanceOf[java.util.LinkedList[SubGroupMKBContainer]].add(new SubGroupMKBContainer(subGroup, mkbs_display, mapSubGroupValue))
-            })
-          })
-        })
-      }
-      case "mkb" => {
-        this.data = new java.util.LinkedList[MKBContainer]
-        mkbTree.foreach(mkbClass => {
-          mkbClass._2.foreach(mkbGroup =>{
-            mkbGroup._2.foreach(subGroup =>{
-              subGroup._2.foreach(mkb =>{
-                this.data.asInstanceOf[java.util.LinkedList[MKBContainer]].add(new MKBContainer(mkb))
-              })
-            })
-          })
-        })
-      }
-      case _ => {  //дерево тогда анализируем дисплей
-        this.data = new java.util.LinkedList[ClassMKBContainer]
+   mkbs.foldLeft(new java.util.LinkedHashMap[String, Mkb])(
+     (map, f) => {
+       if ((level == SUBGROUP_LEVEL && f.getDiagID.indexOf(".")<=0) ||
+           (level != SUBGROUP_LEVEL)){
+         val levelId = levelConstruct(f, level)
+         if (!map.contains(levelId))
+           map.put(levelId, f)
+         map
+       }
+       else map
+     })
+ }
 
-        if(mkbs_display!= null &&
-          mkbs_display.asInstanceOf[java.util.Map[String, java.util.Map[String, String]]].containsKey("class")) {
-          val map = mkbs_display.asInstanceOf[java.util.Map[String, java.util.Map[String, String]]].get("class")
-          map.foreach(ss => {
-            if(!mkbTree.containsKey(ss._1)){
-              this.data.asInstanceOf[java.util.LinkedList[ClassMKBContainer]].add(new ClassMKBContainer(ss._1, ss._2))
-            }
-            else {
-              this.data.asInstanceOf[java.util.LinkedList[ClassMKBContainer]].add(new ClassMKBContainer((ss._1,mkbTree.get(ss._1)), mkbs_display, mapSubGroupValue))
-            }
-          })
-        } else {
-          mkbTree.foreach(mkbClass => this.data.asInstanceOf[java.util.LinkedList[ClassMKBContainer]].add(new ClassMKBContainer(mkbClass, mkbs_display, mapSubGroupValue)))
-        }
-      }
-    }
+ private def getFilteredValuesByLevel(mkbs: java.util.List[Mkb], compared: Mkb, level: Int) = {
 
-    //mkbTree.foreach(mkbClass => this.data.add(new ClassMKBContainer(mkbClass)))
+   mkbs.foldLeft(new java.util.LinkedList[Mkb])(
+    (list, p) => {
+      if((levelConstruct(p, level) == levelConstruct(compared, level) && (level != SUBGROUP_LEVEL)) ||
+         ((level == SUBGROUP_LEVEL)&&(levelConstruct(p, level).contains(levelConstruct(compared, level))) && (levelConstruct(p, level) != levelConstruct(compared, level)))) {
+        list.add(p)
+        list
+      } else list
+    })
+ }
 
-    //mkbs.foreach(mkb => this.data.add(new MKBContainer(mkb)))
+ private def levelConstruct(mkb: Mkb, level: Int) = {
+   level match {
+     case CLASS_LEVEL => mkb.getClassID
+     case GROUP_LEVEL => mkb.getBlockID
+     case SUBGROUP_LEVEL => mkb.getDiagID
+     case MKB_LEVEL => mkb.getDiagID
+     case _ => ""
+   }
+ }
 
-  }
+ private def getRolledBrunch(mkbs_display: java.util.Map[String, java.util.Map[String, Mkb]], level: Int) = {
+   if(mkbs_display!= null && mkbs_display.size()>0 && mkbs_display.containsKey(levelRolledBrunchesKey(level))) {
+     val mkbs = mkbs_display.get(levelRolledBrunchesKey(level))
+     if (mkbs.size()>0)
+       mkbs
+     else
+       null: java.util.Map[String, Mkb]
+   }
+   else
+     null: java.util.Map[String, Mkb]
+ }
+
+ private def levelRolledBrunchesKey(level: Int) = {
+     level match {
+       case CLASS_LEVEL => "class"
+       case GROUP_LEVEL => "block"
+       case SUBGROUP_LEVEL => "code"
+       case _ => ""
+     }
+ }
 }
 
 @XmlType(name = "mkbListRequestDataFilter")
@@ -503,37 +537,59 @@ class ClassMKBContainer {
   @BeanProperty
   var groups: java.util.LinkedList[GroupMKBContainer] = new java.util.LinkedList[GroupMKBContainer]
 
-  def this(mkbClass: (String, java.util.Map[String, java.util.Map[String, java.util.List[Mkb]]]),
-           mkbs_display: Object,
-           subGroupTitleValue: java.util.Map[String, String]){
-    this()
-    if (mkbClass._2.iterator.next()._2.iterator.next()._2!= null &&
-        mkbClass._2.iterator.next()._2.iterator.next()._2.size()>0) {
-      this.id = mkbClass._2.iterator.next()._2.iterator.next()._2.iterator().next().getClassID
-      this.code = mkbClass._2.iterator.next()._2.iterator.next()._2.iterator().next().getClassName
-      if(mkbs_display!= null &&
-        mkbs_display.asInstanceOf[java.util.Map[String, java.util.Map[String, String]]].containsKey("block")) {
-        val map = mkbs_display.asInstanceOf[java.util.Map[String, java.util.Map[String, String]]].get("block")
-        map.foreach(ss => {
-          if(!mkbClass._2.containsKey(ss._1)){
-            this.groups.add(new GroupMKBContainer(ss._1, ss._2))
-          }
-          else {
-            this.groups.add(new GroupMKBContainer((ss._1,mkbClass._2.get(ss._1)), mkbs_display, subGroupTitleValue))
-          }
-        })
-      }
-      else {
-        mkbClass._2.foreach(mkbGroup =>this.groups.add(new GroupMKBContainer(mkbGroup, mkbs_display, subGroupTitleValue)))
-      }
-    }
-  }
-
   def this (id: String, code: String){
     this()
     this.id = id
     this.code = code
   }
+
+  def this (id: String,
+            code: String,
+            mkbs: java.util.List[Mkb],
+            mkbs_display: java.util.Map[String, java.util.Map[String, Mkb]],
+            mGroupedValuesByLevel: (java.util.List[Mkb], Int) => java.util.LinkedHashMap[String, Mkb],
+            mFilteredValuesByLevel: (java.util.List[Mkb], Mkb, Int) => java.util.LinkedList[Mkb],
+            mRolledBrunch: (java.util.Map[String, java.util.Map[String, Mkb]], Int) => java.util.Map[String, Mkb]){
+    this(id, code)
+
+    if (mkbs!=null && mGroupedValuesByLevel!=null && mFilteredValuesByLevel!= null) {
+      val groupMap = mGroupedValuesByLevel(mkbs, LEVEL)
+      if (mkbs_display!=null && mRolledBrunch!=null) {
+        val rolled = mRolledBrunch(mkbs_display, LEVEL)
+        if (rolled!=null){
+          rolled.foreach(f => {
+            if (!groupMap.containsKey(f._1)){
+              this.groups.add(new GroupMKBContainer(f._1, f._2.getBlockName))
+            }
+            else {
+              val filtredMkbs = mFilteredValuesByLevel(mkbs, groupMap.get(f._1), LEVEL)
+              this.groups.add(new GroupMKBContainer( f._1,
+                                              f._2.getBlockName,
+                                              filtredMkbs,
+                                              mkbs_display,
+                                              mGroupedValuesByLevel,
+                                              mFilteredValuesByLevel,
+                                              mRolledBrunch))
+            }
+          })
+        }
+        else {
+          groupMap.foreach(f => {
+            val filtredMkbs = mFilteredValuesByLevel(mkbs, f._2, LEVEL)
+            this.groups.add(new GroupMKBContainer(f._1, f._2.getBlockName, filtredMkbs, null, mGroupedValuesByLevel, mFilteredValuesByLevel, null))
+          })
+        }
+      }
+      else {
+        groupMap.foreach(f => {
+          val filtredMkbs = mFilteredValuesByLevel(mkbs, f._2, LEVEL)
+          this.groups.add(new GroupMKBContainer(f._1, f._2.getBlockName, filtredMkbs, null, mGroupedValuesByLevel, mFilteredValuesByLevel, null))
+        })
+      }
+    }
+  }
+
+  private val LEVEL = 1
 }
 
 @XmlType(name = "groupMkbContainer")
@@ -551,36 +607,57 @@ class GroupMKBContainer {
   @BeanProperty
   var subGroups: java.util.LinkedList[SubGroupMKBContainer] = new java.util.LinkedList[SubGroupMKBContainer]
 
-  def this(mkbGroup: (String, java.util.Map[String, java.util.List[Mkb]]),
-           mkbs_display: Object,
-           subGroupTitleValue: java.util.Map[String, String]){
-    this()
-    if (mkbGroup._2.iterator.next()._2!= null && mkbGroup._2.iterator.next()._2.size()>0) {
-      this.id = mkbGroup._2.iterator.next()._2.iterator().next().getBlockID
-      this.code = mkbGroup._2.iterator.next()._2.iterator().next().getBlockName
-
-      if(mkbs_display!= null &&
-        mkbs_display.asInstanceOf[java.util.Map[String, java.util.Map[String, String]]].containsKey("code")) {
-        val map = mkbs_display.asInstanceOf[java.util.Map[String, java.util.Map[String, String]]].get("code")
-        map.foreach(ss => {
-          if(!mkbGroup._2.containsKey(ss._1)){
-            this.subGroups.add(new SubGroupMKBContainer(ss._1, ss._2))
-          }
-          else {
-            this.subGroups.add(new SubGroupMKBContainer((ss._1,mkbGroup._2.get(ss._1)), null, subGroupTitleValue))
-          }
-        })
-      } else {
-        mkbGroup._2.foreach(mkbSubGroup =>this.subGroups.add(new SubGroupMKBContainer(mkbSubGroup, mkbs_display, subGroupTitleValue)))
-      }
-    }
-  }
-
   def this (id: String, code: String){
     this()
     this.id = id
     this.code = code
   }
+
+  def this (id: String,
+            code: String,
+            mkbs: java.util.LinkedList[Mkb],
+            mkbs_display: java.util.Map[String, java.util.Map[String, Mkb]],
+            mGroupedValuesByLevel: (java.util.List[Mkb], Int) => java.util.LinkedHashMap[String, Mkb],
+            mFilteredValuesByLevel: (java.util.List[Mkb], Mkb, Int) => java.util.LinkedList[Mkb],
+            mRolledBrunch: (java.util.Map[String, java.util.Map[String, Mkb]], Int) => java.util.Map[String, Mkb]){
+    this(id, code)
+
+    if (mkbs!=null && mGroupedValuesByLevel!=null && mFilteredValuesByLevel!= null) {
+      val subgroupMap = mGroupedValuesByLevel(mkbs, LEVEL)
+      if (mkbs_display!=null && mRolledBrunch!=null) {
+        val rolled = mRolledBrunch(mkbs_display, LEVEL)
+        if (rolled!=null){
+          rolled.foreach(f => {
+            if (!subgroupMap.containsKey(f._1)){
+              this.subGroups.add(new SubGroupMKBContainer(f._1, f._2.getDiagName))
+            }
+            else {
+              val filtredMkbs = mFilteredValuesByLevel(mkbs, subgroupMap.get(f._1), LEVEL)
+              this.subGroups.add(new SubGroupMKBContainer( f._1,
+                                                 f._2.getDiagName,
+                                                 filtredMkbs,
+                                                 mGroupedValuesByLevel
+                                                 ))
+            }
+          })
+        }
+        else {
+          subgroupMap.foreach(f => {
+            val filtredMkbs = mFilteredValuesByLevel(mkbs, f._2, LEVEL)
+            this.subGroups.add(new SubGroupMKBContainer(f._1, f._2.getDiagName, filtredMkbs, mGroupedValuesByLevel))
+          })
+        }
+      }
+      else {
+        subgroupMap.foreach(f => {
+          val filtredMkbs = mFilteredValuesByLevel(mkbs, f._2, LEVEL)
+          this.subGroups.add(new SubGroupMKBContainer(f._1, f._2.getDiagName, filtredMkbs, mGroupedValuesByLevel))
+        })
+      }
+    }
+  }
+
+  private val LEVEL = 2
 }
 
 @XmlType(name = "subGroupMkbContainer")
@@ -614,6 +691,18 @@ class SubGroupMKBContainer {
     this.id = id
     this.code = code
   }
+
+  def this (id: String,
+            code: String,
+            mkbs: java.util.LinkedList[Mkb],
+            mGroupedValuesByLevel: (java.util.List[Mkb], Int) => java.util.LinkedHashMap[String, Mkb]) {
+    this(id, code)
+
+    val mkbMap = mGroupedValuesByLevel(mkbs, LEVEL)
+    mkbMap.foreach(f => this.mkbs.add(new MKBContainer(f._2)))
+  }
+
+  private val LEVEL = 3
 }
 
 @XmlType(name = "thesaurusListData")

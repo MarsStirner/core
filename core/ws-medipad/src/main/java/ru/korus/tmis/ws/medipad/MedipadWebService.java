@@ -304,6 +304,12 @@ public interface MedipadWebService extends Serializable {
     @WebMethod
     JSONCommonData insertLaboratoryStudies(int eventId, CommonData data) throws CoreException;
 
+    /**
+     * Получение справочника FlatDirectory
+     * @param request Данные из запроса как FlatDirectoryRequestData
+     * @return Информация справочника FlatDirectory как FlatDirectoryData
+     * @throws CoreException
+     */
     @WebMethod
     FlatDirectoryData getFlatDirectories(FlatDirectoryRequestData request) throws CoreException;
 
@@ -313,20 +319,84 @@ public interface MedipadWebService extends Serializable {
     @WebMethod
     ThesaurusListData getThesaurusList(ListDataRequest request, AuthData auth) throws CoreException;
 
+    /**
+     * Запрос на список персонала
+     * @param requestData Данные из запроса как ListDataRequest.
+     * @return Список персонала как AllPersonsListData
+     * @throws CoreException
+     * @see ListDataRequest
+     * @see AllPersonsListData
+     */
     @WebMethod
     AllPersonsListData getAllPersons(ListDataRequest requestData) throws CoreException;
 
+    /**
+     * Универсальный сервис на получение справочников простой структуры
+     * @param request  Данные из запроса как ListDataRequest.
+     * @param dictName Наименование запрашиваемого справочника.
+     * @return JSON - строка как String
+     * @throws CoreException
+     * @see ListDataRequest
+     */
     @WebMethod
     String getDictionary(ListDataRequest request, String dictName) throws CoreException;
 
-    //@WebMethod
-    //AssignmentData insertAssignment(AssignmentData assignmentData, int eventId, AuthData auth) throws CoreException;
+    /**
+     * Создание нового назначения
+     * @param assignmentData Информация о назначении как контейнер AssignmentData
+     * @param eventId Идентификатор обращения, в рамках которого создается назначение.
+     * @param auth Авторизационные данные как AuthData.
+     * @return Информацию о созданном назначении как контейнер AssignmentData.
+     * @throws CoreException
+     */
+    @WebMethod
+    AssignmentData insertAssignment(AssignmentData assignmentData, int eventId, AuthData auth) throws CoreException;
 
-    //@WebMethod
-    //AssignmentData getAssignmentById(int actionId, AuthData auth) throws CoreException;
+    /**
+     * Получение информации о назначении по идентификатору.
+     * @param actionId Идентификатор назначения.
+     * @param auth Авторизационные данные как AuthData.
+     * @return Информацию о назначении как контейнер AssignmentData.
+     * @throws CoreException
+     * @see AssignmentData
+     * @see AuthData
+     */
+    @WebMethod
+    AssignmentData getAssignmentById(int actionId, AuthData auth) throws CoreException;
 
-    //@WebMethod
-    //RlsDataList getFilteredRlsList(RlsDataListRequestData request) throws CoreException;
+    /**
+     * Получение справочника Rls
+     * @param request Данные из запроса как RlsDataListRequestData
+     * @return Список Rls как RlsDataList
+     * @throws CoreException
+     * @see RlsDataList
+     */
+    @WebMethod
+    RlsDataList getFilteredRlsList(RlsDataListRequestData request) throws CoreException;
+
+    /**
+     * Сервис на получения списка типов обращений.
+     * @param request Данные из запроса как ListDataRequest.
+     * @param authData Авторизационные данные как AuthData
+     * @return JSON - строка как String
+     * @throws CoreException
+     * @see ListDataRequest
+     * @see AuthData
+     */
+    @WebMethod
+    String getEventTypes(ListDataRequest request, AuthData authData) throws CoreException;
+
+    /**
+     * Сервис на получении списка пациентов из открытых госпитализаций, которые лежат на койке
+     * @param departmentId Идентификатор отделения
+     * @param authData Авторизационные данные как AuthData
+     * @return Список текущих пациентов отделения как CommonData
+     * @throws CoreException
+     * @see CommonData
+     * @see AuthData
+     */
+    @WebMethod
+    CommonData getPatientsFromOpenAppealWhatHasBedByDepartmentId (int departmentId, AuthData authData) throws CoreException;
 
     @WebMethod
     QuotaData insertOrUpdateQuota(QuotaEntry dataEntry, int eventId, AuthData auth) throws CoreException;
