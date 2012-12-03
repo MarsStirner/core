@@ -420,5 +420,5 @@ public interface MedipadWebService extends Serializable {
     String insertOrUpdateQuota(QuotaData quotaData, int eventId, AuthData auth) throws CoreException;
 
     @WebMethod
-    String getQuotaHistory(int patientId) throws CoreException;
+    String getQuotaHistory(int appealId) throws CoreException;
 }

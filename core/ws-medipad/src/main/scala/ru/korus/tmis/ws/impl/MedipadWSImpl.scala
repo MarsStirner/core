@@ -791,8 +791,10 @@ class MedipadWSImpl
     mapper.writeValueAsString(new QuotaData(new QuotaEntry(quota, classOf[QuotaViews.DynamicFieldsQuotaCreate]), quotaData.getRequestData))
   }
 
-  def getQuotaHistory(patientId: Int) = {
-    val quotaList = dbClientQuoting.getAllClientQuotingForPatient(patientId)
+  def getQuotaHistory(appealId: Int) = {
+    val result = appealBean.getAppealById(appealId)
+    val appeal = result.iterator.next()._1
+    val quotaList = dbClientQuoting.getAllClientQuotingForPatient(appeal.getPatient.getId.intValue())
 
     val mapper: ObjectMapper = new ObjectMapper()
     mapper.getSerializationConfig().setSerializationView(classOf[QuotaViews.DynamicFieldsQuotaHistory])

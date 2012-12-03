@@ -129,9 +129,10 @@ class DbClientQuotingBean
 
     result.size match {
       case 0 => {
-        //throw new CoreException(
-        //  ConfigManager.ErrorCodes.ClientQuotingNotFound,
-        //  i18n("error.clientDocumentNotFound").format(id))
+        throw new CoreException(
+          ConfigManager.ErrorCodes.ClientQuotingAllNotFound,
+          i18n("error.clientQuotingAllNotFound").format(id))
+        //TODO Добавить ворнинг Не найдено ни одного обращения
       }
       case size => {
         result.foreach(rbType => {
