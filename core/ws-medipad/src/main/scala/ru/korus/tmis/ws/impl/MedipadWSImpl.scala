@@ -170,6 +170,9 @@ class MedipadWSImpl
 
   @EJB
   private var dbQuotaTypeBean: DbQuotaTypeBeanLocal = _
+
+  @EJB
+  private var dbClientQuoting: DbClientQuotingBeanLocal = _
   //////////////////////////////////////////////////////////////////////////////
 
   def checkTokenCookies(srvletRequest: HttpServletRequest): AuthData = {
@@ -781,9 +784,21 @@ class MedipadWSImpl
     mapper.writeValueAsString(hospitalBedBean.getRegistryOriginalForm(action, authData))
   }
 
-  def insertOrUpdateQuota(dataEntry: QuotaEntry, eventId: Int, auth: AuthData) = {
-    val quota = appealBean.insertOrUpdateClientQuoting(dataEntry, eventId, auth)
-    new QuotaData(quota, null)
+  def insertOrUpdateQuota(quotaData: QuotaData, eventId: Int, auth: AuthData) = {
+    val quota = appealBean.insertOrUpdateClientQuoting(quotaData.getData.asInstanceOf[QuotaEntry], eventId, auth)
+    val mapper: ObjectMapper = new ObjectMapper()
+    mapper.getSerializationConfig().setSerializationView(classOf[QuotaViews.DynamicFieldsQuotaCreate])
+    mapper.writeValueAsString(new QuotaData(new QuotaEntry(quota, classOf[QuotaViews.DynamicFieldsQuotaCreate]), quotaData.getRequestData))
+  }
+
+  def getQuotaHistory(appealId: Int) = {
+    val result = appealBean.getAppealById(appealId)
+    val appeal = result.iterator.next()._1
+    val quotaList = dbClientQuoting.getAllClientQuotingForPatient(appeal.getPatient.getId.intValue())
+
+    val mapper: ObjectMapper = new ObjectMapper()
+    mapper.getSerializationConfig().setSerializationView(classOf[QuotaViews.DynamicFieldsQuotaHistory])
+    mapper.writeValueAsString(new QuotaData(quotaList, null))
   }
 
   /*
@@ -994,7 +1009,7 @@ class MedipadWSImpl
         mapper.getSerializationConfig().setSerializationView(classOf[DictionaryDataViews.DefaultView]);
         request.setRecordsCount(dbBloodTypeBean.getCountOfBloodTypesWithFilter(request.filter))
         dbBloodTypeBean.getAllBloodTypesWithFilter(
-          request.page,
+          request.page-1,
           request.limit,
           request.sortingFieldInternal,
           request.sortingMethod,
@@ -1004,7 +1019,7 @@ class MedipadWSImpl
         mapper.getSerializationConfig().setSerializationView(classOf[DictionaryDataViews.DefaultView]);
         request.setRecordsCount(dbRelationTypeBean.getCountOfRelationsWithFilter(request.filter))
         dbRelationTypeBean.getAllRelationsWithFilter(
-          request.page,
+          request.page-1,
           request.limit,
           request.sortingFieldInternal,
           request.sortingMethod,
@@ -1014,7 +1029,7 @@ class MedipadWSImpl
         mapper.getSerializationConfig().setSerializationView(classOf[DictionaryDataViews.DefaultView]);
         request.setRecordsCount(dbRbSocTypeBean.getCountOfSocStatusTypesWithFilter(request.filter))
         dbRbSocTypeBean.getAllSocStatusTypesWithFilter(
-          request.page,
+          request.page-1,
           request.limit,
           request.sortingFieldInternal,
           request.sortingMethod,
@@ -1024,7 +1039,7 @@ class MedipadWSImpl
         mapper.getSerializationConfig().setSerializationView(classOf[DictionaryDataViews.DefaultView]);
         request.setRecordsCount(dbRbSocTypeBean.getCountOfSocStatusTypesWithFilter(request.filter))
         dbRbSocTypeBean.getAllSocStatusTypesWithFilter(
-          request.page,
+          request.page-1,
           request.limit,
           request.sortingFieldInternal,
           request.sortingMethod,
@@ -1034,7 +1049,7 @@ class MedipadWSImpl
         mapper.getSerializationConfig().setSerializationView(classOf[DictionaryDataViews.DefaultView]);
         request.setRecordsCount(dbRbSocTypeBean.getCountOfSocStatusTypesWithFilter(request.filter))
         dbRbSocTypeBean.getAllSocStatusTypesWithFilter(
-          request.page,
+          request.page-1,
           request.limit,
           request.sortingFieldInternal,
           request.sortingMethod,
@@ -1044,7 +1059,7 @@ class MedipadWSImpl
         mapper.getSerializationConfig().setSerializationView(classOf[DictionaryDataViews.TFOMSView]);
         request.setRecordsCount(dbOrganizationBean.getCountOfOrganizationWithFilter(request.filter))
         dbOrganizationBean.getAllOrganizationWithFilter(
-          request.page,
+          request.page-1,
           request.limit,
           request.sortingFieldInternal,
           request.sortingMethod,
@@ -1054,7 +1069,7 @@ class MedipadWSImpl
         mapper.getSerializationConfig().setSerializationView(classOf[DictionaryDataViews.ClientDocumentView]);
         request.setRecordsCount(dbDocumentTypeBean.getCountOfDocumentTypesWithFilter(request.filter))
         dbDocumentTypeBean.getAllDocumentTypesWithFilter(
-          request.page,
+          request.page-1,
           request.limit,
           request.sortingFieldInternal,
           request.sortingMethod,
@@ -1064,7 +1079,7 @@ class MedipadWSImpl
         mapper.getSerializationConfig().setSerializationView(classOf[DictionaryDataViews.InsuranceView]);
         request.setRecordsCount(dbOrganizationBean.getCountOfOrganizationWithFilter(request.filter))
         dbOrganizationBean.getAllOrganizationWithFilter(
-          request.page,
+          request.page-1,
           request.limit,
           request.sortingFieldInternal,
           request.sortingMethod,
@@ -1074,7 +1089,7 @@ class MedipadWSImpl
         mapper.getSerializationConfig().setSerializationView(classOf[DictionaryDataViews.PolicyTypeView]);
         request.setRecordsCount(dbRbPolicyTypeBean.getCountOfRbPolicyTypeWithFilter(request.filter))
         dbRbPolicyTypeBean.getAllRbPolicyTypeWithFilter(
-          request.page,
+          request.page-1,
           request.limit,
           request.sortingFieldInternal,
           request.sortingMethod,
@@ -1084,7 +1099,7 @@ class MedipadWSImpl
         mapper.getSerializationConfig().setSerializationView(classOf[DictionaryDataViews.DefaultView]);
         request.setRecordsCount(dbRbSocTypeBean.getCountOfSocStatusTypesWithFilter(request.filter))
         dbRbSocTypeBean.getAllSocStatusTypesWithFilter(
-          request.page,
+          request.page-1,
           request.limit,
           request.sortingFieldInternal,
           request.sortingMethod,
@@ -1094,7 +1109,7 @@ class MedipadWSImpl
         mapper.getSerializationConfig().setSerializationView(classOf[DictionaryDataViews.KLADRView]);
         request.setRecordsCount(dbSchemeKladrBean.getCountOfKladrRecordsWithFilter(request.filter))
         dbSchemeKladrBean.getAllKladrRecordsWithFilter(
-          request.page,
+          request.page-1,
           request.limit,
           request.sortingFieldInternal,
           request.sortingMethod,
@@ -1104,7 +1119,7 @@ class MedipadWSImpl
         mapper.getSerializationConfig().setSerializationView(classOf[DictionaryDataViews.ValueDomainView]);
         //request.setRecordsCount(dbSchemeKladrBean.getCountOfKladrRecordsWithFilter(request.filter))
         actionPropertyTypeBean.getActionPropertyTypeValueDomainsWithFilter(
-          request.page,
+          request.page-1,
           request.limit,
           request.sortingFieldInternal,
           request.sortingMethod,
@@ -1148,7 +1163,7 @@ class MedipadWSImpl
       }
       case "quotaStatus" => { //   Статусы квот
         mapper.getSerializationConfig().setSerializationView(classOf[DictionaryDataViews.DefaultView])
-        dbRbQuotaStatus.getAllRbQuotaStatusWithFilter(request.page,
+        dbRbQuotaStatus.getAllRbQuotaStatusWithFilter(request.page-1,
                                                       request.limit,
                                                       request.sortingFieldInternal,
                                                       request.sortingMethod,
@@ -1157,7 +1172,7 @@ class MedipadWSImpl
       }
       case "quotaType" => { //   Типы квот
         mapper.getSerializationConfig().setSerializationView(classOf[DictionaryDataViews.DefaultView])
-        dbQuotaTypeBean.getAllQuotaTypesWithFilter(request.page,
+        dbQuotaTypeBean.getAllQuotaTypesWithFilter(request.page-1,
                                                    request.limit,
                                                    request.sortingFieldInternal,
                                                    request.sortingMethod,

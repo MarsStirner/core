@@ -120,6 +120,38 @@ class DbClientQuotingBean
     cq.setModifyPerson(sessionUser)
     cq.setModifyDatetime(now)
   }
+
+  def getAllClientQuotingForPatient (patientId: Int) = {
+    val result = em.createQuery(AllClientQuotingForPatientFindQuery,
+      classOf[ClientQuoting])
+      .setParameter("patientId", patientId)
+      .getResultList
+
+    result.size match {
+      case 0 => {
+        throw new CoreException(
+          ConfigManager.ErrorCodes.ClientQuotingAllNotFound,
+          i18n("error.clientQuotingAllNotFound").format(id))
+        //TODO Добавить ворнинг Не найдено ни одного обращения
+      }
+      case size => {
+        result.foreach(rbType => {
+          em.detach(rbType)
+        })
+      }
+    }
+    result
+  }
+
+  val AllClientQuotingForPatientFindQuery = """
+    SELECT cq
+    FROM
+      ClientQuoting cq
+    WHERE
+      cq.master.id = :patientId
+    AND
+      cq.deleted = 0
+                                            """
 }
 
 

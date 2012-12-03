@@ -7,6 +7,7 @@ import ru.korus.tmis.core.entity.model.Staff;
 import ru.korus.tmis.core.exception.CoreException;
 
 import javax.ejb.Local;
+import java.util.List;
 
 /**
  * Класс с методами для работы с таблицей s11r64.Client_Quoting
@@ -66,4 +67,6 @@ public interface DbClientQuotingBeanLocal {
      */
     void deleteClientQuoting(int id, Staff sessionUser)
             throws CoreException;
+
+    List<ClientQuoting> getAllClientQuotingForPatient (int patientId) throws CoreException;
 }

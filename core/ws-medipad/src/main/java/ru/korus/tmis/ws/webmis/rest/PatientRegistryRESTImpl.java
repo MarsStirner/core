@@ -1943,10 +1943,10 @@ public class PatientRegistryRESTImpl implements Serializable {
     }
 
     @POST
-    @Path("/events/{eventId}/quota")
+    @Path("/appeals/{appealId}/quotes")
     @Produces("application/x-javascript")
     public Object createQuota(QuotaData data,
-                              @PathParam("eventId")int eventId,
+                              @PathParam("appealId")int appealId,
                               @QueryParam("token") String token,
                               @QueryParam("callback") String callback,
                               @Context HttpServletRequest servRequest) {
@@ -1954,7 +1954,37 @@ public class PatientRegistryRESTImpl implements Serializable {
         AuthToken authToken = new AuthToken(token);
         AuthData auth = wsImpl.getStorageAuthData(authToken);
 
-        Object oip = wsImpl.insertOrUpdateQuota(data.getData(), eventId, auth);
+        Object oip = wsImpl.insertOrUpdateQuota(data, appealId, auth);
+        JSONWithPadding returnValue = new JSONWithPadding(oip, callback);
+        return returnValue;
+    }
+
+    @PUT
+    @Path("/appeals/{appealId}/quotes")
+    @Produces("application/x-javascript")
+    public Object modifyQuota(QuotaData data,
+                              @PathParam("appealId")int appealId,
+                              @QueryParam("token") String token,
+                              @QueryParam("callback") String callback,
+                              @Context HttpServletRequest servRequest) {
+        //AuthData auth = wsImpl.checkTokenCookies(servRequest);
+        AuthToken authToken = new AuthToken(token);
+        AuthData auth = wsImpl.getStorageAuthData(authToken);
+
+        Object oip = wsImpl.insertOrUpdateQuota(data, appealId, auth);
+        JSONWithPadding returnValue = new JSONWithPadding(oip, callback);
+        return returnValue;
+    }
+
+    @GET
+    @Path("/appeals/{appealId}/quotes")
+    @Produces("application/x-javascript")
+    public Object getQuotaHistory(@QueryParam("appealId") int appealId,
+                                  @QueryParam("callback") String callback,
+                                  @Context HttpServletRequest servRequest) {
+        AuthData auth = wsImpl.checkTokenCookies(servRequest);
+
+        Object oip = wsImpl.getQuotaHistory(appealId);
         JSONWithPadding returnValue = new JSONWithPadding(oip, callback);
         return returnValue;
     }
