@@ -5,16 +5,21 @@
     <modelVersion>4.0.0</modelVersion>
     <groupId>ru.korus.tmis.core</groupId>
     <artifactId>tmis-core-common</artifactId>
-    <version>0.9.3</version>
+    <version>0.9.4</version>
     <packaging>jar</packaging>
     <name>TMIS Core Common API JAR</name>
 
     <parent>
         <groupId>ru.korus.tmis</groupId>
         <artifactId>tmis-nexus</artifactId>
-        <version>0.9.3</version>
+        <version>0.9.4</version>
         <relativePath>../</relativePath>
     </parent>
+
+    <properties>
+        <mysql.login>root</mysql.login>
+        <mysql.password>root</mysql.password>
+    </properties>
 
     <build>
         <resources>

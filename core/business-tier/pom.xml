@@ -4,14 +4,14 @@
     <modelVersion>4.0.0</modelVersion>
     <groupId>ru.korus.tmis.core</groupId>
     <artifactId>tmis-core-business</artifactId>
-    <version>0.9.3</version>
+    <version>0.9.4</version>
     <packaging>ejb</packaging>
     <name>TMIS Core Business Tier EJBs</name>
 
     <parent>
         <groupId>ru.korus.tmis</groupId>
         <artifactId>tmis-nexus</artifactId>
-        <version>0.9.3</version>
+        <version>0.9.4</version>
         <relativePath>../</relativePath>
     </parent>
 
@@ -20,14 +20,14 @@
         <dependency>
             <groupId>ru.korus.tmis.core</groupId>
             <artifactId>tmis-core-common</artifactId>
-            <version>0.9.3</version>
+            <version>0.9.4</version>
             <type>jar</type>
         </dependency>
 
         <dependency>
             <groupId>ru.korus.tmis.core</groupId>
             <artifactId>tmis-core-database</artifactId>
-            <version>0.9.3</version>
+            <version>0.9.4</version>
             <type>ejb</type>
         </dependency>
 
