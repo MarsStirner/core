@@ -317,7 +317,7 @@ class AllMKBListData {
        val mkbMap = getGroupedValuesByLevel(mkbs, MKB_LEVEL)
        this.requestData.setRecordsCount(mkbMap.size)
        this.data = new java.util.LinkedList[MKBContainer]
-       mkbMap.foreach(f => this.data.asInstanceOf[java.util.LinkedList[MKBContainer]].add(new MKBContainer(f._1, f._2.getDiagName)))
+       mkbMap.foreach(f => this.data.asInstanceOf[java.util.LinkedList[MKBContainer]].add(new MKBContainer(f._2)))
      }
      case _ => {  //дерево тогда анализируем дисплей
        this.data = new java.util.LinkedList[ClassMKBContainer]
