@@ -16,6 +16,9 @@ class LoggingInterceptor extends Logging with TmisLogging {
 
   @AroundInvoke
   def logMethodCall(ctx: InvocationContext): Object = {
+
+    val loggerType = logTmis.LoggingTypes.Debug
+
     val className = ctx.getMethod.getDeclaringClass.getSimpleName
     val methodName = ctx.getMethod.getName
 
@@ -32,7 +35,7 @@ class LoggingInterceptor extends Logging with TmisLogging {
     } catch {
       case ex: CoreException => {
         logTmis.setValueForKey(logTmis.LoggingKeys.Error,
-          ex.getClass.getSimpleName + " -> " + ex.getId + ": " + ex.getMessage + "/n" + ex.getStackTraceString,
+          ex.getClass.getSimpleName + " -> " + ex.getId + ": " + ex.getMessage + "\n" + ex.getStackTraceString,
           logTmis.StatusKeys.Failed)
         throw ex
       }
@@ -45,11 +48,11 @@ class LoggingInterceptor extends Logging with TmisLogging {
       }
     } finally {
       val endTime = System.nanoTime
-      trace("Called: " + className + "." + methodName +
-        " -> " + ((endTime - startTime) / 1000000000.0).toString)
-      logTmis.setValueForKey(logTmis.LoggingKeys.Called,
-        " " + className + "." + methodName + " -> " + ((endTime - startTime) / 1000000000.0).toString,
-        logTmis.StatusKeys.Success)
+      trace("Called: " + className + "." + methodName + " -> " + ((endTime - startTime) / 1000000000.0).toString)
+      logTmis.setValueForKey(logTmis.LoggingKeys.ClassCalled, className, logTmis.StatusKeys.Success)
+      logTmis.setValueForKey(logTmis.LoggingKeys.MethodCalled, methodName, logTmis.StatusKeys.Success)
+      logTmis.setValueForKey(logTmis.LoggingKeys.WorkTime, ((endTime - startTime) / 1000000000.0).toString, logTmis.StatusKeys.Success)
+
       val currStatus = logTmis.getStatus()
 
       var needAllParams = false
@@ -57,13 +60,15 @@ class LoggingInterceptor extends Logging with TmisLogging {
         logTmis.removeValueForKey(logTmis.LoggingKeys.FirstCall)
         needAllParams = true
       }
+
+      logTmis.setLoggerType(loggerType)
       if (currStatus==null || currStatus.compareTo(logTmis.StatusKeys.Success.toString)==0) {
-        logger.info(logTmis.getLogStringByValues(needAllParams))
+        logTmis.info()//(logTmis.getLogStringByValues(needAllParams))
       }
       else if(currStatus.compareTo(logTmis.StatusKeys.Warning.toString)==0)
-        logger.warn(logTmis.getLogStringByValues(needAllParams))
+        logTmis.warning()//(logTmis.getLogStringByValues(needAllParams))
       else
-        logger.error(logTmis.getLogStringByValues(needAllParams))
+        logTmis.error()//(logTmis.getLogStringByValues(needAllParams))
       //logTmis.clearLog()
 
 
@@ -83,7 +88,12 @@ class LoggingInterceptor extends Logging with TmisLogging {
   }
 
   def logMessage(className: String, methodName: String, message: String) {
-    logTmis.setValueForKey(logTmis.LoggingKeys.Called, " " + className + "." + methodName, logTmis.StatusKeys.Success)
-    logger.info(logTmis.getLogStringByValues(false))
+    //logTmis.setValueForKey(logTmis.LoggingKeys.Called, " " + className + "." + methodName, logTmis.StatusKeys.Success)
+    //logger.info(logTmis.getLogStringByValues(false))
+    val loggerType = logTmis.LoggingTypes.Debug
+    logTmis.setValueForKey(logTmis.LoggingKeys.ClassCalled, className, logTmis.StatusKeys.Success)
+    logTmis.setValueForKey(logTmis.LoggingKeys.MethodCalled, methodName, logTmis.StatusKeys.Success)
+    logTmis.setLoggerType(loggerType)
+    logTmis.info()
   }
 }

@@ -12,6 +12,8 @@ import ru.korus.tmis.core.exception.AuthenticationException
  */
 class AuthLoggingInterceptor extends Logging with TmisLogging {
 
+  val loggerType = logTmis.LoggingTypes.Auth
+
   @AroundInvoke
   def logMethodCall(ctx: InvocationContext): Object = {
 
@@ -38,16 +40,18 @@ class AuthLoggingInterceptor extends Logging with TmisLogging {
       }
     } finally {
       val endTime = System.nanoTime
-      logTmis.setValueForKey(logTmis.LoggingKeys.Called,
-                            " " + className + "." + methodName + " -> " + ((endTime - startTime) / 1000000000.0).toString,
-                            logTmis.StatusKeys.Success)
+      logTmis.setValueForKey(logTmis.LoggingKeys.ClassCalled, className, logTmis.StatusKeys.Success)
+      logTmis.setValueForKey(logTmis.LoggingKeys.MethodCalled, methodName, logTmis.StatusKeys.Success)
+      logTmis.setValueForKey(logTmis.LoggingKeys.WorkTime, ((endTime - startTime) / 1000000000.0).toString, logTmis.StatusKeys.Success)
       val currStatus = logTmis.getStatus()
+
+      logTmis.setLoggerType(loggerType)
       if (currStatus==null || currStatus.compareTo(logTmis.StatusKeys.Success.toString)==0)
-        logger.info(logTmis.getLogStringByValues(true))
+        logTmis.info()
       else if(currStatus.compareTo(logTmis.StatusKeys.Warning.toString)==0)
-        logger.warn(logTmis.getLogStringByValues(true))
+        logTmis.warning()
       else
-        logger.error(logTmis.getLogStringByValues(true))
+        logTmis.error()
       //logTmis.clearLog()
     }
   }
