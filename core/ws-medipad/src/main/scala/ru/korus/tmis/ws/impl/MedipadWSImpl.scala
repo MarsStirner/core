@@ -1144,7 +1144,7 @@ class MedipadWSImpl
                                                         request.filter)
       }
       case "requestTypes" => {  //  Типы обращений
-        mapper.getSerializationConfig().setSerializationView(classOf[DictionaryDataViews.DefaultView])
+        mapper.getSerializationConfig().setSerializationView(classOf[DictionaryDataViews.RequestTypesView])
         dbRbRequestTypes.getAllRbRequestTypesWithFilter(request.page-1,
                                                         request.limit,
                                                         request.sortingFieldInternal,
@@ -1170,17 +1170,18 @@ class MedipadWSImpl
                                                       request.filter,
                                                       request.rewriteRecordsCount _)
       }
-      case "quotaType" => { //   Типы квот
-        mapper.getSerializationConfig().setSerializationView(classOf[DictionaryDataViews.DefaultView])
-        dbQuotaTypeBean.getAllQuotaTypesWithFilter(request.page-1,
-                                                   request.limit,
-                                                   request.sortingFieldInternal,
-                                                   request.sortingMethod,
-                                                   request.filter,
-                                                   request.rewriteRecordsCount _)
-      }
     }
     mapper.writeValueAsString(new DictionaryListData(list, request))
+  }
+
+  def getQuotaTypes(request: ListDataRequest) = {
+    val quotaTypes = dbQuotaTypeBean.getAllQuotaTypesWithFilter(request.page-1,
+      request.limit,
+      request.sortingFieldInternal,
+      request.sortingMethod,
+      request.filter,
+      request.rewriteRecordsCount _)
+    new GroupTypesListData(quotaTypes, request)
   }
 
   //Сервисы по назначениям

@@ -1694,6 +1694,49 @@ public class PatientRegistryRESTImpl implements Serializable {
         JSONWithPadding returnValue = new JSONWithPadding(oip, callback);
         return returnValue;
     }
+    /**
+     * Получение типов квот.
+     * @param limit Максимальное количество выводимых элементов на странице.
+     * @param page Номер выводимой страницы.
+     * @param sortingField Наименование поля для сортировки.<pre>
+     * &#15; Возможные значения:
+     * &#15; "id" - по идентификатору записи (значение по умолчанию);
+     * &#15; "groupId" - по идентификатору группы;
+     * &#15; "code" - по коду;</pre>
+     * @param sortingMethod Метод сортировки.<pre>
+     * &#15; Возможные значения:
+     * &#15; "asc" - по возрастанию (значение по умолчанию);
+     * &#15; "desc" - по убыванию;</pre>
+     * @param typeId Идентификатор типа квоты  (В url: filter[id]=...)
+     * @param groupId Фильтр по идентификатору группы типов квот. (В url: filter[groupId]=...)
+     * @param code Фильтр по коду типа квоты. (В url: filter[code]=...)
+     * @param callback  callback запроса.
+     * @param servRequest Контекст запроса с клиента.
+     * @return com.sun.jersey.api.json.JSONWithPadding как Object
+     * @throws CoreException
+     * @see CoreException
+     */
+    @GET
+    @Path("/quotaTypes")
+    @Produces("application/x-javascript")
+    public Object getQuotaTypes(@QueryParam("limit")int limit,
+                                @QueryParam("page")int  page,
+                                @QueryParam("sortingField")String sortingField,     //сортировки вкл.
+                                @QueryParam("sortingMethod")String sortingMethod,
+                                @QueryParam("filter[id]")int typeId,
+                                @QueryParam("filter[code]")String code,
+                                @QueryParam("filter[groupId]")String groupId,
+                                @QueryParam("callback") String callback,
+                                @Context HttpServletRequest servRequest) {
+        AuthData auth = wsImpl.checkTokenCookies(servRequest);
+
+        QuotaTypesListRequestDataFilter filter = new QuotaTypesListRequestDataFilter(typeId, code, groupId);
+        ListDataRequest request = new ListDataRequest(sortingField, sortingMethod, limit, page, filter);
+
+        Object oip = wsImpl.getQuotaTypes(request);
+        JSONWithPadding returnValue = new JSONWithPadding(oip, callback);
+        return returnValue;
+    }
 
     /**
      * Сервис возвращает указанный справочник.

@@ -421,4 +421,7 @@ public interface MedipadWebService extends Serializable {
 
     @WebMethod
     String getQuotaHistory(int appealId) throws CoreException;
+
+    @WebMethod
+    GroupTypesListData getQuotaTypes(ListDataRequest request) throws CoreException;
 }
