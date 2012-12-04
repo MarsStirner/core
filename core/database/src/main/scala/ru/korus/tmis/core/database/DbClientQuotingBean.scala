@@ -131,7 +131,7 @@ class DbClientQuotingBean
       case 0 => {
         throw new CoreException(
           ConfigManager.ErrorCodes.ClientQuotingAllNotFound,
-          i18n("error.clientQuotingAllNotFound").format(id))
+          i18n("error.clientQuotingAllNotFound"))
         //TODO Добавить ворнинг Не найдено ни одного обращения
       }
       case size => {
