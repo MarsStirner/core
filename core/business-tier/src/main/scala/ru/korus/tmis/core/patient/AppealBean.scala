@@ -865,8 +865,8 @@ with CAPids{
                                                                       dataEntry.getDepartment.getId,
                                                                       dataEntry.getAppealNumber,
                                                                       dataEntry.getTalonNumber,
-                                                                      dataEntry.getStage.intValue(),
-                                                                      dataEntry.getRequest,
+                                                                      dataEntry.getStage.getId,
+                                                                      dataEntry.getRequest.getId,
                                                                       mkb,
                                                                       patient,
                                                                       auth.getUser)
