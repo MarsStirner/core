@@ -843,7 +843,15 @@ with CAPids{
   }
 
   def insertOrUpdateClientQuoting(dataEntry: QuotaEntry, eventId: Int, auth: AuthData) = {
-    //try {
+    var lockId: Int = -1
+    var oldQuota : ClientQuoting = null
+    var quotaVersion : Int = 0
+    if (dataEntry.getId() > 0) {
+      quotaVersion = dataEntry.getVersion
+      oldQuota = ClientQuoting.clone(dbClientQuoting.getClientQuotingById(dataEntry.getId))
+      lockId = appLock.acquireLock("Client_Quoting", oldQuota.getId.intValue(), oldQuota.getId.intValue(), auth)
+    }
+    try {
       val patient = eventBean.getEventById(eventId).getPatient
       val mkb = dbMkbBean.getMkbByCode(dataEntry.getMkb.getCode)
       var isPersist = true
@@ -851,6 +859,7 @@ with CAPids{
         isPersist = false
       }
       val clientQuoting = dbClientQuoting.insertOrUpdateClientQuoting(dataEntry.getId,
+                                                                      dataEntry.getVersion,
                                                                       dataEntry.getQuotaType.getId,
                                                                       dataEntry.getStatus.getId,
                                                                       dataEntry.getDepartment.getId,
@@ -862,11 +871,9 @@ with CAPids{
                                                                       patient,
                                                                       auth.getUser)
       if (isPersist) dbManager.persist(clientQuoting) else dbManager.merge(clientQuoting)
-      clientQuoting
-    //} catch {
-    //  case e: CoreException => null
-    //  case e: Exception => throw new CoreException("Ошибка при сохранении квоты")
-    //}
+    } finally {
+      if (lockId > 0) appLock.releaseLock(lockId)
+    }
   }
 
   /*

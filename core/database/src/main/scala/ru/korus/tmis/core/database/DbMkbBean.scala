@@ -44,7 +44,7 @@ class DbMkbBean
 
     result.size match {
       case 0 => {
-        null
+        null      //нужен ексепшен
       }
       case size => {
         result.foreach(em.detach(_))

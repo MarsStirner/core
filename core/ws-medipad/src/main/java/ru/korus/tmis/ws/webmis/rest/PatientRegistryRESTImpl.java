@@ -1990,12 +1990,12 @@ public class PatientRegistryRESTImpl implements Serializable {
     @Produces("application/x-javascript")
     public Object createQuota(QuotaData data,
                               @PathParam("appealId")int appealId,
-                              @QueryParam("token") String token,
+                              //@QueryParam("token") String token,
                               @QueryParam("callback") String callback,
                               @Context HttpServletRequest servRequest) {
-        //AuthData auth = wsImpl.checkTokenCookies(servRequest);
-        AuthToken authToken = new AuthToken(token);
-        AuthData auth = wsImpl.getStorageAuthData(authToken);
+        AuthData auth = wsImpl.checkTokenCookies(servRequest);
+        //AuthToken authToken = new AuthToken(token);
+        //AuthData auth = wsImpl.getStorageAuthData(authToken);
 
         Object oip = wsImpl.insertOrUpdateQuota(data, appealId, auth);
         JSONWithPadding returnValue = new JSONWithPadding(oip, callback);
@@ -2007,12 +2007,12 @@ public class PatientRegistryRESTImpl implements Serializable {
     @Produces("application/x-javascript")
     public Object modifyQuota(QuotaData data,
                               @PathParam("appealId")int appealId,
-                              @QueryParam("token") String token,
+                              //@QueryParam("token") String token,
                               @QueryParam("callback") String callback,
                               @Context HttpServletRequest servRequest) {
-        //AuthData auth = wsImpl.checkTokenCookies(servRequest);
-        AuthToken authToken = new AuthToken(token);
-        AuthData auth = wsImpl.getStorageAuthData(authToken);
+        AuthData auth = wsImpl.checkTokenCookies(servRequest);
+        //AuthToken authToken = new AuthToken(token);
+        //AuthData auth = wsImpl.getStorageAuthData(authToken);
 
         Object oip = wsImpl.insertOrUpdateQuota(data, appealId, auth);
         JSONWithPadding returnValue = new JSONWithPadding(oip, callback);
@@ -2022,7 +2022,7 @@ public class PatientRegistryRESTImpl implements Serializable {
     @GET
     @Path("/appeals/{appealId}/quotes")
     @Produces("application/x-javascript")
-    public Object getQuotaHistory(@QueryParam("appealId") int appealId,
+    public Object getQuotaHistory(@PathParam("appealId") int appealId,
                                   @QueryParam("callback") String callback,
                                   @Context HttpServletRequest servRequest) {
         AuthData auth = wsImpl.checkTokenCookies(servRequest);
