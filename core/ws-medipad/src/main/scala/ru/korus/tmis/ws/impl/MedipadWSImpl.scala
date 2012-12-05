@@ -785,10 +785,11 @@ class MedipadWSImpl
   }
 
   def insertOrUpdateQuota(quotaData: QuotaData, eventId: Int, auth: AuthData) = {
-    val quota = appealBean.insertOrUpdateClientQuoting(quotaData.getData.asInstanceOf[QuotaEntry], eventId, auth)
+    appealBean.insertOrUpdateClientQuoting(quotaData.getData, eventId, auth)
     val mapper: ObjectMapper = new ObjectMapper()
     mapper.getSerializationConfig().setSerializationView(classOf[QuotaViews.DynamicFieldsQuotaCreate])
-    mapper.writeValueAsString(new QuotaData(new QuotaEntry(quota, classOf[QuotaViews.DynamicFieldsQuotaCreate]), quotaData.getRequestData))
+    val cq = dbClientQuoting.getClientQuotingById(quotaData.getData.getId)
+    mapper.writeValueAsString(new QuotaData(new QuotaEntry(cq, classOf[QuotaViews.DynamicFieldsQuotaCreate]), quotaData.getRequestData))
   }
 
   def getQuotaHistory(appealId: Int) = {
@@ -798,7 +799,7 @@ class MedipadWSImpl
 
     val mapper: ObjectMapper = new ObjectMapper()
     mapper.getSerializationConfig().setSerializationView(classOf[QuotaViews.DynamicFieldsQuotaHistory])
-    mapper.writeValueAsString(new QuotaData(quotaList, null))
+    mapper.writeValueAsString(new QuotaListData(quotaList, null))
   }
 
   /*

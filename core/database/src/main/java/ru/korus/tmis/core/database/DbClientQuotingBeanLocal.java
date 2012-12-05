@@ -21,7 +21,7 @@ public interface DbClientQuotingBeanLocal {
     /**
      * Запрос на квоту по идентификатору.
      * @param id идентификатор записи.
-     * @return возвращает квоту как ClientQuoting
+     * @return возвращает квоту как ClientQuoting Entity
      * @see ClientQuoting
      * @throws CoreException
      */
@@ -45,6 +45,7 @@ public interface DbClientQuotingBeanLocal {
      * @throws CoreException
      */
     ClientQuoting insertOrUpdateClientQuoting(int id,
+                                              int version,
                                               int rbQuotaTypeId,
                                               int quotaStatusId,
                                               int orgStructureId,
@@ -68,5 +69,12 @@ public interface DbClientQuotingBeanLocal {
     void deleteClientQuoting(int id, Staff sessionUser)
             throws CoreException;
 
+    /**
+     * Метод получения списа квот для пациента
+     * @param patientId идентификатор пациента.
+     * @return возвращает список квот как List<ClientQuoting>
+     * @see ClientQuoting
+     * @throws CoreException
+     */
     List<ClientQuoting> getAllClientQuotingForPatient (int patientId) throws CoreException;
 }

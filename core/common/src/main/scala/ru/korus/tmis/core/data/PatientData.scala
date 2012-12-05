@@ -899,6 +899,25 @@ class KladrNameContainer {
   }
 }
 
+@XmlType(name = "quotaListData")
+@XmlRootElement(name = "quotaListData")
+@JsonIgnoreProperties(ignoreUnknown = true)
+class QuotaListData {
+
+  @BeanProperty
+  var requestData: QuotaRequestData = _
+  @BeanProperty
+  var data: util.List[QuotaEntry] = _
+
+  def this(quotaEntries: util.List[ClientQuoting],
+           requestData: QuotaRequestData) = {
+    this()
+    this.requestData = requestData
+    this.data = new util.LinkedList[QuotaEntry]
+    quotaEntries.foreach(f => data.add(new QuotaEntry(f, classOf[QuotaViews.DynamicFieldsQuotaHistory])))
+  }
+}
+
 @XmlType(name = "quotaData")
 @XmlRootElement(name = "quotaData")
 @JsonIgnoreProperties(ignoreUnknown = true)
@@ -907,7 +926,7 @@ class QuotaData {
   @BeanProperty
   var requestData: QuotaRequestData = _
   @BeanProperty
-  var data: AnyRef = _
+  var data: QuotaEntry = _
 
   def this(quotaEntry: QuotaEntry,
            requestData: QuotaRequestData) = {
@@ -915,24 +934,6 @@ class QuotaData {
     this.requestData = requestData
     this.data = quotaEntry
   }
-
-  def this(quotaEntries: util.List[ClientQuoting],
-           requestData: QuotaRequestData) = {
-    this()
-    this.requestData = requestData
-    this.data = new util.LinkedList[QuotaEntry]
-    quotaEntries.foreach(f => data.asInstanceOf[util.List[QuotaEntry]].add(new QuotaEntry(f, classOf[QuotaViews.DynamicFieldsQuotaHistory])))
-  }
-
-  /*
-  def this(clientQuoting: ClientQuoting,
-           requestData: QuotaRequestData,
-           classic: Class[_]) = {
-    this()
-    this.requestData = requestData
-    this.data = new QuotaEntry(clientQuoting, classic)
-  }
-  */
 }
 
 @XmlType(name = "quotaRequestData")
@@ -979,6 +980,8 @@ class QuotaRequestData {
 class QuotaEntry  {
   @BeanProperty
   var id : Int = _
+  @BeanProperty
+  var version : Int = _
   @JsonView(Array(classOf[QuotaViews.DynamicFieldsQuotaCreate]))
   @BeanProperty
   var appealNumber : String = _
@@ -986,12 +989,12 @@ class QuotaEntry  {
   var talonNumber : String = _
   @JsonView(Array(classOf[QuotaViews.DynamicFieldsQuotaCreate]))
   @BeanProperty
-  var stage : Int = _
+  var stage : IdNameContainer = _
   @JsonView(Array(classOf[QuotaViews.DynamicFieldsQuotaHistory]))
   @BeanProperty
   var stageSum : Int = _
   @BeanProperty
-  var request: Int = _
+  var request: IdNameContainer = _
   @BeanProperty
   var mkb : MKBContainer = _
   @JsonView(Array(classOf[QuotaViews.DynamicFieldsQuotaCreate]))
@@ -1004,13 +1007,14 @@ class QuotaEntry  {
   @BeanProperty
   var status : IdNameContainer = _
 
-  def this(id: Int, appealNumber: String, talonNumber: String, stage: Int, request: Int, mkb: Mkb, quotaType: Int, department: Int, status: Int) = {
+  def this(id: Int, version: Int, appealNumber: String, talonNumber: String, stage: Int, request: Int, mkb: Mkb, quotaType: Int, department: Int, status: Int) = {
     this()
     this.id = id
+    this.version = version
     this.appealNumber = appealNumber
     this.talonNumber = talonNumber
-    this.stage = stage
-    this.request = request
+    this.stage = new IdNameContainer(stage, "")
+    this.request = new IdNameContainer(request, "")
     this.mkb = new MKBContainer(mkb)
     this.quotaType = new IdNameContainer(quotaType, "")
     this.department = new IdNameContainer(department, "")
@@ -1020,13 +1024,14 @@ class QuotaEntry  {
   def this(clientQuoting: ClientQuoting, classic: Class[_]) = {
     this()
     this.id = clientQuoting.getId.intValue()
+    this.version = clientQuoting.getVersion
     this.talonNumber = clientQuoting.getQuotaTicket
-    this.request = clientQuoting.getRequest.intValue()
+    this.request = new IdNameContainer(clientQuoting.getRequest.intValue(), "")
     this.mkb = new MKBContainer(clientQuoting.getMkb)
 
     if (classic == classOf[QuotaViews.DynamicFieldsQuotaCreate]) {
       this.appealNumber = clientQuoting.getIdentifier
-      this.stage = clientQuoting.getStage.intValue()
+      this.stage = new IdNameContainer(clientQuoting.getStage.intValue(), "")
       this.quotaType = new IdNameContainer(clientQuoting.getQuotaType.getId.intValue(), clientQuoting.getQuotaType.getName)
       this.department = new IdNameContainer(clientQuoting.getOrgStructure.getId.intValue(), clientQuoting.getOrgStructure.getName)
       this.status = new IdNameContainer(clientQuoting.getStatus.getId.intValue(), clientQuoting.getStatus.getName)

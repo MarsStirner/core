@@ -135,5 +135,5 @@ public interface AppealBeanLocal {
      * @throws CoreException
      * @since 1.0.0.48
      */
-    ClientQuoting insertOrUpdateClientQuoting(QuotaEntry dataEntry, int eventId, AuthData auth) throws CoreException;
+    void insertOrUpdateClientQuoting(QuotaEntry dataEntry, int eventId, AuthData auth) throws CoreException;
 }
