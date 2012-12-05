@@ -20,9 +20,8 @@ import org.codehaus.jackson.map.ObjectMapper
 import javax.ejb._
 import scala.util.control.Breaks._
 import ru.korus.tmis.core.logging.LoggingInterceptor
-import ru.korus.tmis.core.logging.slf4j.interceptor.DebugLoggingInterceptor
 
-@Interceptors(Array(classOf[LoggingInterceptor], classOf[DebugLoggingInterceptor]))
+@Interceptors(Array(classOf[LoggingInterceptor]))
 @Stateless
 class PatientBean
   extends PatientBeanLocal
