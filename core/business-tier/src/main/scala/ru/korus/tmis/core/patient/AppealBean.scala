@@ -98,12 +98,12 @@ with CAPids{
                     iCapIds("db.rbCAP.hosp.primary.id.deliveredType").toInt,                     //Кем доставлен
                     iCapIds("db.rbCAP.hosp.primary.id.diagnosis.assigment.code").toInt,          //Диагноз направившего учреждения
                     iCapIds("db.rbCAP.hosp.primary.id.deliveredAfterType").toInt,                //Доставлен в стационар от начала заболевания
-                    iCapIds("db.rbCAP.hosp.primary.id.sentTo").toInt,                        //Направлен в отделение
-                    iCapIds("db.rbCAP.hosp.primary.id.cancel").toInt,                //Причина отказа в госпитализации
+                    iCapIds("db.rbCAP.hosp.primary.id.sentTo").toInt,                            //Направлен в отделение
+                    iCapIds("db.rbCAP.hosp.primary.id.cancel").toInt,                            //Причина отказа в госпитализации
                     iCapIds("db.rbCAP.hosp.primary.id.appealWithDeseaseThisYear").toInt,         //Госпитализирован по поводу данного заболевания в текущем году
                     iCapIds("db.rbCAP.hosp.primary.id.transportationType").toInt,                //Вид транспортировки
                     iCapIds("db.rbCAP.hosp.primary.id.placeType").toInt,                         //Профиль койки
-                    iCapIds("db.rbCAP.hosp.primary.id.drugsType").toString,                      //Доставлен в состоянии опьянения
+                    iCapIds("db.rbCAP.hosp.primary.id.drugsType").toInt,                         //Доставлен в состоянии опьянения
                     iCapIds("db.rbCAP.hosp.primary.id.injury").toInt,                            //Травма
                     iCapIds("db.rbCAP.hosp.primary.id.assignmentDate").toInt,                    //Дата направления
                     iCapIds("db.rbCAP.hosp.primary.id.hospitalizationChannelType").toInt,        //Канал госпитализации
