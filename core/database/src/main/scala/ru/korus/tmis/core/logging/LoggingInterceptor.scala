@@ -93,6 +93,6 @@ class LoggingInterceptor extends Logging with TmisLogging {
     logTmis.setValueForKey(logTmis.LoggingKeys.ClassCalled, className, logTmis.StatusKeys.Success)
     logTmis.setValueForKey(logTmis.LoggingKeys.MethodCalled, methodName, logTmis.StatusKeys.Success)
     logTmis.setLoggerType(loggerType)
-    logTmis.info()
+    logTmis.info(message)
   }
 }

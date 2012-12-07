@@ -286,6 +286,15 @@ public interface MedipadWebService extends Serializable {
     @WebMethod
     AllDepartmentsListData getAllDepartments(ListDataRequest requestData) throws CoreException;
 
+    /**
+     * Возвращаем все отделения  (Для mediPad)
+     * @param hasBeds Фильтр имеет(true) или не имеет(false) койки
+     * @return Список отделений как AllDepartmentsListData
+     * @throws CoreException
+     */
+    @WebMethod
+    AllDepartmentsListData getAllDepartmentsByHasBeds(String hasBeds) throws CoreException;
+
     @WebMethod
     DiagnosticsListData getListOfDiagnosticsForPatientByEvent(DiagnosticsListRequestData requestData) throws CoreException;
 
@@ -407,14 +416,13 @@ public interface MedipadWebService extends Serializable {
     /**
      * Сервис на получении списка пациентов из открытых госпитализаций, которые лежат на койке
      * @param departmentId Идентификатор отделения
-     * @param authData Авторизационные данные как AuthData
      * @return Список текущих пациентов отделения как CommonData
      * @throws CoreException
      * @see CommonData
      * @see AuthData
      */
     @WebMethod
-    CommonData getPatientsFromOpenAppealWhatHasBedByDepartmentId (int departmentId, AuthData authData) throws CoreException;
+    CommonData getPatientsFromOpenAppealsWhatHasBedsByDepartmentId (int departmentId) throws CoreException;
 
     /**
      * Сервис на создание/редактирование квоты

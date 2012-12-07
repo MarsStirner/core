@@ -852,6 +852,13 @@ class MedipadWSImpl
     list
   }
 
+  def getAllDepartmentsByHasBeds(hasBeds: String) = { //Для медипада
+    val flgBeds =  if (hasBeds!=null && hasBeds.indexOf("true")>=0) true else false
+    val request = new ListDataRequest("id", "asc", 100, 1, new DepartmentsDataFilter(flgBeds))
+    this.getAllDepartments(request)
+  }
+
+
   def getListOfDiagnosticsForPatientByEvent(requestData: DiagnosticsListRequestData) = {
 
     //TODO: подключить анализ авторизационных данных и доступных ролей
@@ -1221,7 +1228,7 @@ class MedipadWSImpl
     mapper.writeValueAsString(new EventTypesListData(list, request))
   }
 
-  def getPatientsFromOpenAppealWhatHasBedByDepartmentId(departmentId: Int, authData: AuthData) = {
+  def getPatientsFromOpenAppealsWhatHasBedsByDepartmentId(departmentId: Int) = {
     patientBean.getCurrentPatientsByDepartmentId(departmentId)
   }
 
