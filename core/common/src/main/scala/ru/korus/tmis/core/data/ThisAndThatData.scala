@@ -13,6 +13,7 @@ import org.codehaus.jackson.annotate.JsonIgnoreProperties._
 import org.codehaus.jackson.map.annotate.JsonView
 import ru.korus.tmis.auxiliary.AuxiliaryFunctions
 import java.util
+import ru.korus.tmis.core.exception.CoreException
 
 @XmlType(name = "listRequestData")
 @XmlRootElement(name = "listRequestData")
@@ -995,38 +996,30 @@ class DictionaryListRequestDataFilter {
       qs.query += ("AND ssc.code = '5'\n")
     }
     else if(this.level!=null && !this.level.isEmpty && dictName.compare("KLADR") == 0){
-
-      var isParent = 0
-
+      //Спецификация алгоритма: https://docs.google.com/document/d/15HtJdZ1OwP0TaeyWB1R0MOjluaEQcpO3U7w8g2hssgA/edit#heading=h.jwlb9dw58lw6
       val res =this.level match {
-        case "republic" => {
-          isParent = 2
-          "AND socr.level = '1'\n"}       //республика
-        case "district" => {"AND socr.level = '2'\n"}       //район
-        case "city" => {"AND socr.level = '3'\n"}           //город
-        case "locality" => {"AND socr.level = '4'\n"}       //населенный пункт
-        case "street" => {isParent = 1
-          ""}       //улица
-        case _ => {
-          isParent = 3
-          ""}
+        case "republic" => {  //республика
+          "AND kl.parent = ''\n " +
+          "AND socr.level = '1'\n"
+        }
+        case "district" => { //район
+          "AND kl.parent = '%s'\n ".format(substringWithZeroInput(this.parent, 0, 3)) +
+          "AND socr.level = '2'\n"
+        }
+        case "city" => { //город
+          "AND kl.parent = '%s'\n ".format(substringWithZeroInput(this.parent, 0, 5)) +
+          "AND socr.level = '3'\n"
+        }
+        case "locality" => { //населенный пункт
+          "AND kl.parent = '%s'\n ".format(substringWithZeroInput(this.parent, 0, 3)) +
+          "AND socr.level = '4'\n"
+        }
+        case "street" => { //улица
+          "AND str.code LIKE '%s%%'\n ".format(substringWithZeroInput(this.parent, 0, 8))
+        }
+        case _ => ""
       }
       qs.query += res
-
-      val res2 =isParent match {
-        case 0 => {if(this.parent!=null && !this.parent.isEmpty ){
-          var lexem = AuxiliaryFunctions.trimRight(this.parent, '0')
-          while(lexem.size<3){lexem = lexem + "0"}
-          "AND kl.parent = '%s'".format(lexem)
-          } else {""}
-        }
-        case 1 => {if(this.parent!=null && !this.parent.isEmpty ){
-          "AND str.index IN (SELECT kl.index FROM Kladr kl WHERE kl.code = '%s')".format(this.parent)
-        } else {""}}
-        case 2 => {"AND kl.parent = ''"}
-        case _ => {""}
-      }
-      qs.query += res2
     }
     else if(this.capId>=0 && dictName.compare("valueDomain") == 0){
       val res = ("AND (at.id = (SELECT cap.actionType.id FROM RbCoreActionProperty cap WHERE cap.id = '%s'))\n" +
@@ -1048,6 +1041,23 @@ class DictionaryListRequestDataFilter {
                     dictName.compare("socStatus") == 0) {"sst.id"} else{"r.id"}}
     }
     sortingFieldInternal
+  }
+
+  private def substringWithZeroInput(code: String, pos: Int, count: Int) = {
+
+    if(code!=null && !code.isEmpty) {
+      val len = code.length
+      val diff = pos + count - len
+      if (diff<0){
+        code.substring(pos, pos + count)
+      } else {
+        var code1 = code.substring(pos)
+        while(code1.length<count) code1 = code1 + "0"
+        code1
+      }
+    }
+    else
+      throw new CoreException(ConfigManager.Messages("error.invalidKladrRequest").format("Для filter[level] = %s Не задан обязательный непустой параметр filter[parent]".format(this.level)))
   }
 }
 

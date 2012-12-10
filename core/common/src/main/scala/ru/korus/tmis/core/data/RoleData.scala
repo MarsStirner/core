@@ -12,6 +12,9 @@ import ru.korus.tmis.core.auth.AuthData
 import javax.xml.bind.annotation.XmlType._
 import ru.korus.tmis.core.entity.model.{Staff, Role}
 
+/**
+ * Контейнер с данными о пользователе и его ролях в системе tmis
+ */
 @XmlType(name = "roles")
 @XmlRootElement(name = "roles")
 class RoleData {
@@ -23,6 +26,11 @@ class RoleData {
   @BeanProperty
   var roles = new LinkedList[RoleEntry]
 
+  /**
+   * Конструктор RoleData
+   * @param staffEn Специалист как Staff entity
+   * @param roles Набор ролей
+   */
   def this(staffEn: Staff, roles: Set[Role]) = {
     this()
     this.doctor = new DoctorSpecsContainer(staffEn)
@@ -30,6 +38,9 @@ class RoleData {
   }
 }
 
+/**
+ * Контейнер с данными о роли
+ */
 @XmlType(name = "role")
 @XmlRootElement(name = "role")
 class RoleEntry {
@@ -46,6 +57,10 @@ class RoleEntry {
   @BeanProperty
   var right = new LinkedList[UserRightEntry]()
 
+  /**
+   * Конструктор RoleEntry
+   * @param role Роль как Role entity
+   */
   def this(role: Role) = {
     this()
     this.id = role.getId.intValue()
@@ -60,6 +75,9 @@ class RoleEntry {
   }
 }
 
+/**
+ * Контейнер с данными о правах
+ */
 @XmlType(name = "right")
 @XmlRootElement(name = "right")
 class UserRightEntry {
@@ -70,6 +88,11 @@ class UserRightEntry {
   @BeanProperty
   var isPermitted: Boolean = _
 
+  /**
+   * Конструктор UserRightEntry
+   * @param code Код права
+   * @param isPermitted Флаг допуска (да/нет)
+   */
   def this(code: String, isPermitted: Boolean) = {
     this()
     this.code = code
@@ -77,6 +100,9 @@ class UserRightEntry {
   }
 }
 
+/**
+ * Контейнер с данными о пользователе
+ */
 @XmlType(name = "staffEntity")
 @XmlRootElement(name = "staffEntity")
 class StaffEntity {
@@ -96,6 +122,14 @@ class StaffEntity {
   @BeanProperty
   var userSpecs: String = _
 
+  /**
+   * Конструктор StaffEntity
+   * @param userId Идентификатор пользователя
+   * @param userFirstName Имя
+   * @param userLastName  Фамилия
+   * @param userPatronymicName Отчество
+   * @param userSpecs Специальность
+   */
   def this(userId: Int,
            userFirstName: String,
            userLastName: String,

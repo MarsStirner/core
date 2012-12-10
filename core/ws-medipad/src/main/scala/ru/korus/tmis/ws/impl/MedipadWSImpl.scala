@@ -854,7 +854,8 @@ class MedipadWSImpl
 
   def getAllDepartmentsByHasBeds(hasBeds: String) = { //Для медипада
     val flgBeds =  if (hasBeds!=null && hasBeds.indexOf("true")>=0) true else false
-    val request = new ListDataRequest("id", "asc", 100, 1, new DepartmentsDataFilter(flgBeds))
+    val filter =  new DepartmentsDataFilter(flgBeds)
+    val request = new ListDataRequest("id", "asc", 100, 1, filter)
     this.getAllDepartments(request)
   }
 

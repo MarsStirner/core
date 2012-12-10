@@ -32,7 +32,7 @@ import ru.korus.tmis.ws.impl.MedipadWSImpl;
 import com.sun.jersey.api.json.JSONWithPadding;
 
 /**
- * Description: Сервисы для работы с ядром TMIS посредством Web-клиента
+ * Сервисы для работы с ядром TMIS посредством Web-клиента
  */
 @Interceptors(ServicesLoggingInterceptor.class)
 @Singleton

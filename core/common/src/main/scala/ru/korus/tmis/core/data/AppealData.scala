@@ -269,11 +269,6 @@ class AppealEntry {
   @BeanProperty
   var havePrimary: Boolean = false
 
-  //TODO: временно, до выяснения судьбы поля relations
-  @BeanProperty
-  @JsonView(Array(classOf[Views.DynamicFieldsStandartForm]))
-  var relations: LinkedList[RelationEntryContainer] = new LinkedList[RelationEntryContainer]
-
   @JsonView(Array(classOf[Views.DynamicFieldsPrintForm]))
   @BeanProperty
   var ward: String = _                                            //Diff with AppealData
@@ -1023,7 +1018,7 @@ class AppealTypeContainer {
 class LegalRepresentativeContainer {
 
   @BeanProperty
-  var relativeId: Int = _                   //Ид законного представителя
+  var relative: IdNameContainer = _                   //Законный представитель (ИД + ФИО)
 
   @BeanProperty
   var relativeType: IdNameContainer = _     //Тип связи
@@ -1041,7 +1036,14 @@ class LegalRepresentativeContainer {
     this()
 
     if (relation!=null){
-      this.relativeId = if(relation.getRelative!=null) relation.getRelative.getId.intValue() else 0
+      val rel = relation.getRelative
+      this.relative =
+        if(rel!=null)
+          new IdNameContainer(rel.getId.intValue(),
+            "%s %s %s".format(rel.getLastName, rel.getFirstName, rel.getPatrName))
+        else
+          new IdNameContainer()
+
       this.relativeType =
         if(relation.getRelativeType!=null)
           new IdNameContainer(relation.getRelativeType.getId.intValue(),"%s(%s)".format(relation.getRelativeType.getLeftName, relation.getRelativeType.getRightName))
