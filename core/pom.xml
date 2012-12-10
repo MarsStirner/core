@@ -6,7 +6,7 @@
     <groupId>ru.korus.tmis</groupId>
     <artifactId>tmis-nexus</artifactId>
     <packaging>pom</packaging>
-    <version>0.9.4</version>
+    <version>0.9.5</version>
     <name>TMIS Root Project</name>
 
     <modules>
@@ -21,6 +21,12 @@
         <module>ws-drugstore</module>
         <!--<module>hl7</module>-->
     </modules>
+
+    <properties>
+        <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+        <targetJdk>1.6</targetJdk>
+        <my.build.directory>target</my.build.directory>
+    </properties>
 
     <profiles>
         <profile>
@@ -89,6 +95,7 @@
             <artifactId>slf4j-api</artifactId>
             <version>1.7.2</version>
         </dependency>
+
         <dependency>
             <groupId>ch.qos.logback</groupId>
             <artifactId>logback-classic</artifactId>
@@ -192,6 +199,7 @@
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-source-plugin</artifactId>
+                <version>2.2.1</version>
                 <executions>
                     <execution>
                         <id>attach-sources</id>
@@ -225,15 +233,51 @@
                 </configuration>
             </plugin>
 
+
             <plugin>
+                <groupId>org.glassfish</groupId>
+                <artifactId>maven-embedded-glassfish-plugin</artifactId>
+                <version>3.1.1</version>
+                <configuration>
+                    <app>${project.build.directory}/${project.build.finalName}.ear</app>
+                    <port>8080</port>
+                    <contextRoot>${project.build.finalName}</contextRoot>
+                    <name>${project.build.finalName}</name>
+                </configuration>
+            </plugin>
+            <!--  <plugin>
                 <groupId>org.glassfish.maven.plugin</groupId>
                 <artifactId>maven-glassfish-plugin</artifactId>
                 <version>2.1</version>
                 <configuration>
                     <glassfishDirectory>${glassfish.home}</glassfishDirectory>
 
-                    <user>${domain.user}</user>
-                    <passwordFile>${domain.passwdFile}</passwordFile>
+                    <user>${<profiles>
+                        <profile>
+                            <id>misCore</id>
+                            <properties>
+                                <my.build.directory>
+                                    /Users/rednekis/Documents/work/projects/misCore/build/${project.groupId}-${project.artifactId}
+                                </my.build.directory>
+                                <glassfish.home>/usr/local/glassfish3</glassfish.home>
+                                <glassfish.domain.name>testdomain</glassfish.domain.name>
+                                <glassfish.domain.adminPort>4848</glassfish.domain.adminPort>
+                                <glassfish.domain.httpPort>8080</glassfish.domain.httpPort>
+                                <glassfish.domain.httpsPort>8443</glassfish.domain.httpsPort>
+                                <glassfish.domain.iiopPort>3700</glassfish.domain.iiopPort>
+                                <glassfish.domain.jmsPort>7676</glassfish.domain.jmsPort>
+                                <glassfish.domain.host>localhost</glassfish.domain.host>
+                                <glassfish.domain.user>admin</glassfish.domain.user>
+                                <glassfish.domain.password>adminpassword</glassfish.domain.password>
+                                <glassfish.domain.passwordFile>${domain.dir}/${domain.name}/master-password
+                                </glassfish.domain.passwordFile>
+                            </properties>
+                        </profile>
+                    </profiles>
+                        <activeProfiles>
+                            <activeProfile>misCore</activeProfile>
+                        </activeProfiles>${glassfish.domain.user}</user>
+                    <passwordFile>${domain.passwordFile}</passwordFile>
 
                     <debug>true</debug>
                     <echo>true</echo>
@@ -262,7 +306,7 @@
                         </component>
                     </components>
                 </configuration>
-            </plugin>
+            </plugin>-->
 
             <!--
                 Release management
@@ -290,11 +334,6 @@
         </plugins>
     </build>
 
-    <properties>
-        <targetJdk>1.6</targetJdk>
-        <my.build.directory>target</my.build.directory>
-    </properties>
-
     <reporting>
         <plugins>
             <plugin>
@@ -308,9 +347,8 @@
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-pmd-plugin</artifactId>
-                <version>2.5</version>
+                <version>2.7.1</version>
                 <configuration>
-                    <sourceEncoding>utf-8</sourceEncoding>
                     <targetJdk>1.6</targetJdk>
                     <sourceEncoding>UTF-8</sourceEncoding>
                 </configuration>
@@ -319,6 +357,17 @@
     </reporting>
 
     <repositories>
+
+        <repository>
+            <id>central</id>
+            <name>Central Repository</name>
+            <url>http://repo.maven.apache.org/maven2</url>
+            <layout>default</layout>
+            <snapshots>
+                <enabled>false</enabled>
+            </snapshots>
+        </repository>
+
         <repository>
             <id>scala-tools-releases</id>
             <name>Scala-Tools Releases</name>
@@ -351,34 +400,55 @@
             <name>java.net Glassfish Repo</name>
             <url>http://download.java.net/maven/glassfish</url>
         </repository>
+
+
     </repositories>
 
     <pluginRepositories>
+
+        <pluginRepository>
+            <id>central</id>
+            <name>Central Repository</name>
+            <url>http://repo.maven.apache.org/maven2</url>
+            <layout>default</layout>
+            <snapshots>
+                <enabled>false</enabled>
+            </snapshots>
+            <releases>
+                <updatePolicy>never</updatePolicy>
+            </releases>
+        </pluginRepository>
+
         <pluginRepository>
             <id>scala-tools.org</id>
             <name>Scala-tools Maven2 Repository</name>
             <url>http://scala-tools.org/repo-releases</url>
         </pluginRepository>
+
         <pluginRepository>
             <id>java.net-m2</id>
             <name>java.net Repo</name>
             <url>http://download.java.net/maven/2</url>
         </pluginRepository>
+
         <pluginRepository>
             <id>glassfish</id>
             <name>java.net Glassfish Repo</name>
             <url>http://download.java.net/maven/glassfish</url>
         </pluginRepository>
+
         <pluginRepository>
             <id>codehaus</id>
             <name>Codehaus Repo</name>
             <url>http://repository.codehaus.org/</url>
         </pluginRepository>
+
         <pluginRepository>
             <id>javabuilders</id>
             <name>Javabuilders Repo</name>
             <url>http://javabuilders.googlecode.com/svn/repo</url>
         </pluginRepository>
+
         <pluginRepository>
             <id>sonarsource</id>
             <name>Sonarsource Repo</name>
@@ -407,8 +477,8 @@
     -->
 
     <scm>
-        <connection>scm:git:https://github.com/SkyFox/tmis-core.git</connection>
-        <developerConnection>scm:git:https://github.com/SkyFox/tmis-core.git</developerConnection>
+        <connection>scm:git:https://github.com/KorusConsulting/tmis-core.git</connection>
+        <developerConnection>scm:git:https://github.com/KorusConsulting/tmis-core.git</developerConnection>
     </scm>
 
 </project>

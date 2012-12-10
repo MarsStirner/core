@@ -14,10 +14,10 @@ import javax.xml.bind.annotation.XmlType;
  * <pre>
  * &lt;simpleType name="StorareType">
  *   &lt;restriction base="{http://www.w3.org/2001/XMLSchema}string">
- *     &lt;enumeration value="����������������"/>
- *     &lt;enumeration value="���������"/>
- *     &lt;enumeration value="�������������������������������"/>
- *     &lt;enumeration value="������"/>
+ *     &lt;enumeration value=""/>
+ *     &lt;enumeration value=""/>
+ *     &lt;enumeration value=""/>
+ *     &lt;enumeration value=""/>
  *   &lt;/restriction>
  * &lt;/simpleType>
  * </pre>
@@ -27,14 +27,14 @@ import javax.xml.bind.annotation.XmlType;
 @XmlEnum
 public enum StorareType {
 
-    @XmlEnumValue("БольничнаяАптека")
-    PHARMACY("БольничнаяАптека"),
-    @XmlEnumValue("Отделение")
-    DIVISION("Отделение"),
-    @XmlEnumValue("РецептурноПроизводственныйОтдел")
-    PRODUCTION_DIVISION("РецептурноПроизводственныйОтдел"),
-    @XmlEnumValue("Прочее")
-    OTHER("Прочее");
+    @XmlEnumValue("PHARMACY")
+    PHARMACY("PHARMACY"),
+    @XmlEnumValue("DIVISION")
+    DIVISION("DIVISION"),
+    @XmlEnumValue("PRODUCTION_DIVISION")
+    PRODUCTION_DIVISION("PRODUCTION_DIVISION"),
+    @XmlEnumValue("OTHER")
+    OTHER("OTHER");
 
     private final String value;
 

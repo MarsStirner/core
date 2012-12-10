@@ -44,4 +44,15 @@
         <appender-ref ref="DEBUGLOG" />
     </root>
     -->
+    <appender name="TMIS" class="ch.qos.logback.core.FileAppender" >
+        <file>${com.sun.aas.instanceRoot}/logs/tmis-core.log</file>
+        <encoder>
+            <pattern>%d{HH:mm:ss.SSS} [%thread] %-5level %msg%n</pattern>
+            <charset>UTF8</charset>
+        </encoder>
+    </appender>
+    <logger name="ru.korus.tmis" level="INFO" additivity="false">
+        <appender-ref ref="TMIS"/>
+    </logger>
+
 </configuration>
