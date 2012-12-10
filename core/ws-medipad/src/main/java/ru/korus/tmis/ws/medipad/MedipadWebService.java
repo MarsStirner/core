@@ -416,9 +416,36 @@ public interface MedipadWebService extends Serializable {
     @WebMethod
     CommonData getPatientsFromOpenAppealWhatHasBedByDepartmentId (int departmentId, AuthData authData) throws CoreException;
 
+    /**
+     * Сервис на создание/редактирование квоты
+     * @param quotaData Данные о сохраняемой/редактируемой квоте как QuotaData
+     * @param eventId Идентификатор обращения
+     * @param auth Авторизационные данные как AuthData
+     * @return JSON - строка как String
+     * @throws CoreException
+     * @see QuotaData
+     * @see AuthData
+     */
     @WebMethod
     String insertOrUpdateQuota(QuotaData quotaData, int eventId, AuthData auth) throws CoreException;
 
+    /**
+     * Сервис на получение истории квот
+     * @param appealId Идентификатор обращения
+     * @return JSON - строка как String
+     * @throws CoreException
+     */
     @WebMethod
     String getQuotaHistory(int appealId) throws CoreException;
+
+    /**
+     * Сервис на получение списка справочника типов квот
+     * @param request Данные из запроса как ListDataRequest
+     * @return Список типов квот как GroupTypesListData
+     * @throws CoreException
+     * @see ListDataRequest
+     * @see GroupTypesListData
+     */
+    @WebMethod
+    GroupTypesListData getQuotaTypes(ListDataRequest request) throws CoreException;
 }

@@ -317,7 +317,7 @@ class AllMKBListData {
        val mkbMap = getGroupedValuesByLevel(mkbs, MKB_LEVEL)
        this.requestData.setRecordsCount(mkbMap.size)
        this.data = new java.util.LinkedList[MKBContainer]
-       mkbMap.foreach(f => this.data.asInstanceOf[java.util.LinkedList[MKBContainer]].add(new MKBContainer(f._1, f._2.getDiagName)))
+       mkbMap.foreach(f => this.data.asInstanceOf[java.util.LinkedList[MKBContainer]].add(new MKBContainer(f._2)))
      }
      case _ => {  //дерево тогда анализируем дисплей
        this.data = new java.util.LinkedList[ClassMKBContainer]
@@ -780,6 +780,7 @@ object DictionaryDataViews {
   class TFOMSView{}
   class KLADRView {}
   class ValueDomainView {}
+  class RequestTypesView {}
 }
 class DictionaryDataViews {}
 
@@ -818,11 +819,17 @@ class DictionaryListData {
                 elem._2))
             } else if(dict.isInstanceOf[(java.lang.Integer, java.lang.String, java.lang.Integer)]) {  //Insurance
               var elem = dict.asInstanceOf[(java.lang.Integer, java.lang.String, java.lang.Integer)]
-              this.data.add(new DictionaryContainer(elem._1.intValue(),
-                elem._2, elem._3.intValue()))
+              if (elem._3.isInstanceOf[java.lang.Integer]) {
+                this.data.add(new DictionaryContainer(elem._1.intValue(), elem._2, elem._3.intValue()))
+              } else if (elem._3.isInstanceOf[java.lang.String]) {
+                this.data.add(new DictionaryContainer(elem._1.intValue, elem._2, elem._3.asInstanceOf[java.lang.String]))
+              }
             } else if(dict.isInstanceOf[java.lang.String]) {
               var elem = dict.asInstanceOf[java.lang.String]
               this.data.add(new DictionaryContainer(-1, elem))
+            } else if (dict.isInstanceOf[(java.lang.Integer, java.lang.String, java.lang.String)]) {  //requestTypes
+              //var elem = dict.asInstanceOf[(java.lang.Integer, java.lang.String, java.lang.String)]
+              //this.data.add(new DictionaryContainer(elem._1.intValue, elem._2, elem._3))
             }
             else {
               this.data.add(new DictionaryContainer(0, ""))
@@ -845,12 +852,13 @@ class DictionaryContainer {
     classOf[DictionaryDataViews.DefaultView],
     classOf[DictionaryDataViews.PolicyTypeView],
     classOf[DictionaryDataViews.ClientDocumentView],
-    classOf[DictionaryDataViews.TFOMSView]
+    classOf[DictionaryDataViews.TFOMSView],
+    classOf[DictionaryDataViews.RequestTypesView]
   ))
   @BeanProperty
   var id: Int = _
 
-  @JsonView(Array(classOf[DictionaryDataViews.KLADRView]))
+  @JsonView(Array(classOf[DictionaryDataViews.KLADRView], classOf[DictionaryDataViews.RequestTypesView]))
   @BeanProperty
   var code: String = _
 
@@ -881,6 +889,16 @@ class DictionaryContainer {
            groupId: Int) {
     this(id, value)
     this.headId = groupId
+  }
+
+  def this(id: Int,
+           value: String,
+           code: String) {
+    this()
+    this.id = id
+    this.value = value
+    this.code = code
+    this.index = "12"
   }
 
   def this(code: String,
@@ -1132,5 +1150,138 @@ class EventTypesListData {
   def this(types: java.util.List[EventType], requestData: ListDataRequest) {
     this (requestData)
     types.foreach(eType => this.data.add(new DictionaryContainer(eType.getId.intValue(), eType.getName)))
+  }
+}
+
+@XmlType(name = "groupTypesListData")
+@XmlRootElement(name = "groupTypesListData")
+class GroupTypesListData {
+
+  @BeanProperty
+  var requestData: ListDataRequest = _
+
+  @BeanProperty
+  var data: AnyRef = _
+
+
+  def this(quotaTypes: java.util.List[QuotaType],
+           requestData: ListDataRequest) = {
+    this ()
+    this.requestData = requestData
+
+    if (requestData.getFilter.asInstanceOf[QuotaTypesListRequestDataFilter].getId > 0 ||
+        requestData.getFilter.asInstanceOf[QuotaTypesListRequestDataFilter].getCode != null &&
+        requestData.getFilter.asInstanceOf[QuotaTypesListRequestDataFilter].getCode.compareTo("") != 0 ||
+        requestData.getFilter.asInstanceOf[QuotaTypesListRequestDataFilter].getGroupCode != null &&
+        requestData.getFilter.asInstanceOf[QuotaTypesListRequestDataFilter].getGroupCode.compareTo("") != 0 ) {
+      //this.requestData.setRecordsCount(classMap.size)
+      this.data = new java.util.LinkedList[QuotaTypeContainer]
+      quotaTypes.foreach(f => this.data.asInstanceOf[java.util.LinkedList[QuotaTypeContainer]].add(new QuotaTypeContainer(f)))
+    } else {
+      this.data = new java.util.LinkedList[GroupQuotaTypeContainer]
+      quotaTypes.foreach(f => {
+        if (f.getGroupCode == null) {
+          val temp = new GroupQuotaTypeContainer(f, quotaTypes)
+          this.data.asInstanceOf[java.util.LinkedList[GroupQuotaTypeContainer]].add(temp)
+        }
+      })
+    }
+  }
+}
+
+@XmlType(name = "groupQuotaTypeContainer")
+@XmlRootElement(name = "groupQuotaTypeContainer")
+@JsonIgnoreProperties(ignoreUnknown = true)
+class GroupQuotaTypeContainer {
+
+  @BeanProperty
+  var id: Int = _
+
+  @BeanProperty
+  var code: String = _
+
+  @BeanProperty
+  var types: java.util.List[QuotaTypeContainer] = new java.util.LinkedList[QuotaTypeContainer]
+
+  def this (groupQuotaType: QuotaType,
+            quotaTypes: java.util.List[QuotaType]) {
+    this()
+    this.id = groupQuotaType.getId.intValue()
+    this.code = groupQuotaType.getCode
+    quotaTypes.foreach(f => {
+      if (f.getGroupCode != null && f.getGroupCode.compareTo(groupQuotaType.getCode) == 0) {
+        this.types.add(new QuotaTypeContainer(f))
+      }
+    })
+  }
+}
+
+@XmlType(name = "quotaTypeContainer")
+@XmlRootElement(name = "quotaTypeContainer")
+@JsonIgnoreProperties(ignoreUnknown = true)
+class QuotaTypeContainer {
+
+  @BeanProperty
+  var id: Int = _
+
+  @BeanProperty
+  var code: String = _
+
+  @BeanProperty
+  var name: String = _
+
+  def this (id: Int, code: String, name: String){
+    this()
+    this.id = id
+    this.code = code
+    this.name = name
+  }
+
+  def this (quotaType: QuotaType) {
+    this()
+    this.id = quotaType.getId.intValue()
+    this.code = quotaType.getCode
+    this.name = quotaType.getName
+  }
+}
+
+@XmlType(name = "quotaTypesListRequestDataFilter")
+@XmlRootElement(name = "quotaTypesListRequestDataFilter")
+class QuotaTypesListRequestDataFilter {
+  @BeanProperty
+  var id: Int = _
+
+  @BeanProperty
+  var code: String = _
+
+  @BeanProperty
+  var groupCode: String = _
+
+  def this(id_x: Int,
+           code_x: String,
+           groupCode_x: String) {
+    this()
+    this.id = id_x
+    this.code = if (code_x!=null && code_x!="") code_x else ""
+    this.groupCode = if (groupCode_x!=null && groupCode_x!="") groupCode_x else ""
+  }
+
+  def toQueryStructure() = {
+    var qs = new QueryDataStructure()
+    qs.query += ("WHERE r.deleted = 0\n")
+
+    if (this.id > 0) {
+      qs.query += ("AND r.id = :id\n")
+      qs.add("id", this.id:java.lang.Integer)
+    }
+    else if(this.code!=null && !this.code.isEmpty){
+      qs.query += ("AND r.code = :code\n")
+      qs.add("code",this.code)
+    }
+    else if(this.groupCode!=null && !this.groupCode.isEmpty){
+      qs.query += ("AND r.groupCode =  :groupCode\n")
+      qs.add("groupCode", this.groupCode)
+    }
+    qs
   }
 }

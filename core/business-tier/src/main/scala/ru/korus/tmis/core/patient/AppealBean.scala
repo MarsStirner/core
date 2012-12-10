@@ -98,12 +98,12 @@ with CAPids{
                     iCapIds("db.rbCAP.hosp.primary.id.deliveredType").toInt,                     //Кем доставлен
                     iCapIds("db.rbCAP.hosp.primary.id.diagnosis.assigment.code").toInt,          //Диагноз направившего учреждения
                     iCapIds("db.rbCAP.hosp.primary.id.deliveredAfterType").toInt,                //Доставлен в стационар от начала заболевания
-                    iCapIds("db.rbCAP.hosp.primary.id.sentTo").toInt,                        //Направлен в отделение
-                    iCapIds("db.rbCAP.hosp.primary.id.cancel").toInt,                //Причина отказа в госпитализации
+                    iCapIds("db.rbCAP.hosp.primary.id.sentTo").toInt,                            //Направлен в отделение
+                    iCapIds("db.rbCAP.hosp.primary.id.cancel").toInt,                            //Причина отказа в госпитализации
                     iCapIds("db.rbCAP.hosp.primary.id.appealWithDeseaseThisYear").toInt,         //Госпитализирован по поводу данного заболевания в текущем году
                     iCapIds("db.rbCAP.hosp.primary.id.transportationType").toInt,                //Вид транспортировки
                     iCapIds("db.rbCAP.hosp.primary.id.placeType").toInt,                         //Профиль койки
-                    iCapIds("db.rbCAP.hosp.primary.id.drugsType").toString,                      //Доставлен в состоянии опьянения
+                    iCapIds("db.rbCAP.hosp.primary.id.drugsType").toInt,                         //Доставлен в состоянии опьянения
                     iCapIds("db.rbCAP.hosp.primary.id.injury").toInt,                            //Травма
                     iCapIds("db.rbCAP.hosp.primary.id.assignmentDate").toInt,                    //Дата направления
                     iCapIds("db.rbCAP.hosp.primary.id.hospitalizationChannelType").toInt,        //Канал госпитализации
@@ -843,7 +843,15 @@ with CAPids{
   }
 
   def insertOrUpdateClientQuoting(dataEntry: QuotaEntry, eventId: Int, auth: AuthData) = {
-    //try {
+    var lockId: Int = -1
+    var oldQuota : ClientQuoting = null
+    var quotaVersion : Int = 0
+    if (dataEntry.getId() > 0) {
+      quotaVersion = dataEntry.getVersion
+      oldQuota = ClientQuoting.clone(dbClientQuoting.getClientQuotingById(dataEntry.getId))
+      lockId = appLock.acquireLock("Client_Quoting", oldQuota.getId.intValue(), oldQuota.getId.intValue(), auth)
+    }
+    try {
       val patient = eventBean.getEventById(eventId).getPatient
       val mkb = dbMkbBean.getMkbByCode(dataEntry.getMkb.getCode)
       var isPersist = true
@@ -851,22 +859,21 @@ with CAPids{
         isPersist = false
       }
       val clientQuoting = dbClientQuoting.insertOrUpdateClientQuoting(dataEntry.getId,
+                                                                      dataEntry.getVersion,
                                                                       dataEntry.getQuotaType.getId,
                                                                       dataEntry.getStatus.getId,
                                                                       dataEntry.getDepartment.getId,
                                                                       dataEntry.getAppealNumber,
                                                                       dataEntry.getTalonNumber,
-                                                                      dataEntry.getStage.intValue(),
-                                                                      dataEntry.getRequest,
+                                                                      dataEntry.getStage.getId,
+                                                                      dataEntry.getRequest.getId,
                                                                       mkb,
                                                                       patient,
                                                                       auth.getUser)
       if (isPersist) dbManager.persist(clientQuoting) else dbManager.merge(clientQuoting)
-      clientQuoting
-    //} catch {
-    //  case e: CoreException => null
-    //  case e: Exception => throw new CoreException("Ошибка при сохранении квоты")
-    //}
+    } finally {
+      if (lockId > 0) appLock.releaseLock(lockId)
+    }
   }
 
   /*

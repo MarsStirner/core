@@ -785,10 +785,11 @@ class MedipadWSImpl
   }
 
   def insertOrUpdateQuota(quotaData: QuotaData, eventId: Int, auth: AuthData) = {
-    val quota = appealBean.insertOrUpdateClientQuoting(quotaData.getData.asInstanceOf[QuotaEntry], eventId, auth)
+    appealBean.insertOrUpdateClientQuoting(quotaData.getData, eventId, auth)
     val mapper: ObjectMapper = new ObjectMapper()
     mapper.getSerializationConfig().setSerializationView(classOf[QuotaViews.DynamicFieldsQuotaCreate])
-    mapper.writeValueAsString(new QuotaData(new QuotaEntry(quota, classOf[QuotaViews.DynamicFieldsQuotaCreate]), quotaData.getRequestData))
+    val cq = dbClientQuoting.getClientQuotingById(quotaData.getData.getId)
+    mapper.writeValueAsString(new QuotaData(new QuotaEntry(cq, classOf[QuotaViews.DynamicFieldsQuotaCreate]), quotaData.getRequestData))
   }
 
   def getQuotaHistory(appealId: Int) = {
@@ -798,7 +799,7 @@ class MedipadWSImpl
 
     val mapper: ObjectMapper = new ObjectMapper()
     mapper.getSerializationConfig().setSerializationView(classOf[QuotaViews.DynamicFieldsQuotaHistory])
-    mapper.writeValueAsString(new QuotaData(quotaList, null))
+    mapper.writeValueAsString(new QuotaListData(quotaList, null))
   }
 
   /*
@@ -1144,7 +1145,7 @@ class MedipadWSImpl
                                                         request.filter)
       }
       case "requestTypes" => {  //  Типы обращений
-        mapper.getSerializationConfig().setSerializationView(classOf[DictionaryDataViews.DefaultView])
+        mapper.getSerializationConfig().setSerializationView(classOf[DictionaryDataViews.RequestTypesView])
         dbRbRequestTypes.getAllRbRequestTypesWithFilter(request.page-1,
                                                         request.limit,
                                                         request.sortingFieldInternal,
@@ -1170,17 +1171,18 @@ class MedipadWSImpl
                                                       request.filter,
                                                       request.rewriteRecordsCount _)
       }
-      case "quotaType" => { //   Типы квот
-        mapper.getSerializationConfig().setSerializationView(classOf[DictionaryDataViews.DefaultView])
-        dbQuotaTypeBean.getAllQuotaTypesWithFilter(request.page-1,
-                                                   request.limit,
-                                                   request.sortingFieldInternal,
-                                                   request.sortingMethod,
-                                                   request.filter,
-                                                   request.rewriteRecordsCount _)
-      }
     }
     mapper.writeValueAsString(new DictionaryListData(list, request))
+  }
+
+  def getQuotaTypes(request: ListDataRequest) = {
+    val quotaTypes = dbQuotaTypeBean.getAllQuotaTypesWithFilter(request.page-1,
+      request.limit,
+      request.sortingFieldInternal,
+      request.sortingMethod,
+      request.filter,
+      request.rewriteRecordsCount _)
+    new GroupTypesListData(quotaTypes, request)
   }
 
   //Сервисы по назначениям
