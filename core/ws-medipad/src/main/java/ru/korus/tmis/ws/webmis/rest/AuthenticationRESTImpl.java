@@ -7,7 +7,6 @@ import javax.ws.rs.*;
 
 import com.sun.jersey.api.json.JSONWithPadding;
 import ru.korus.tmis.core.auth.*;
-import ru.korus.tmis.core.data.ConsultationRequestData;
 import ru.korus.tmis.core.logging.slf4j.interceptor.AuthLoggingInterceptor;
 import ru.korus.tmis.ws.impl.AuthenticationWSImpl;
 import  ru.korus.tmis.core.data.RoleData;
@@ -69,7 +68,7 @@ public class AuthenticationRESTImpl   {
      * @return ru.korus.tmis.core.data.RoleData как Object. Контейнер с данными о пользователе и списком доступных ролей.
      * @throws AuthenticationException
      * @see AuthenticationException
-     * @see RoleData
+     * @see ru.korus.tmis.core.data.RoleData
      * @see AuthEntry
      */
     @POST
