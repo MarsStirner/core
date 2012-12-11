@@ -37,18 +37,24 @@ public class HL7PacketBuilder {
      * Формирование и отправка сообщения о госпитализации PRPA_IN402001UV02
      */
     public static void processReceived(
-            Action action, String externalId, String externalUUID, String orgUUID, Patient client, String clientUUID) {
+            final Action action,
+            final String externalId,
+            final String externalUUID,
+            final String orgUUID,
+            final Patient client,
+            final String clientUUID) {
 
         final String uuidDocument = UUID.randomUUID().toString();
         logger.info("process RECEIVED document {}, action {}, orgStrucUUID {}, client {}", uuidDocument, action, orgUUID, client);
-        final ObjectFactory factory = new ObjectFactory();
+        final ObjectFactory factoryMis = new ObjectFactory();
+        final org.hl7.v3.ObjectFactory factoryHL7 = new org.hl7.v3.ObjectFactory();
 
         final SimpleDateFormat sdf = new SimpleDateFormat("yyyyMMddHHmmss");
 
         try {
-            final Request msg = factory.createPRPAIN402001UV02();
+            final Request msg = factoryMis.createPRPAIN402001UV02();
 
-            final PRPAIN402001UV022 prpain402001UV022 = new PRPAIN402001UV022();
+            final PRPAIN402001UV022 prpain402001UV022 = factoryHL7.createPRPAIN402001UV022();
             prpain402001UV022.setITSVersion("XML_1.0");
 
             final TS ts = new TS();
@@ -147,12 +153,9 @@ public class HL7PacketBuilder {
             typeId2.setCode(clientUUID);
             patient.getId().add(typeId2);
 
-            final COCTMT050002UV07Person uv07Person = new COCTMT050002UV07Person();
-            final JAXBElement<COCTMT050002UV07Person> patientPerson = new JAXBElement<COCTMT050002UV07Person>(
-                    new QName("urn:hl7-org:v3", "patientPerson"),
-                    COCTMT050002UV07Person.class,
-                    COCTMT050002UV07Patient.class,
-                    uv07Person);
+            final COCTMT050002UV07Person uv07Person = factoryHL7.createCOCTMT050002UV07Person();
+            final JAXBElement<COCTMT050002UV07Person>
+                    patientPerson = factoryHL7.createCOCTMT050002UV07PatientPatientPerson(uv07Person);
 
             uv07Person.setClassCode(EntityClass.PSN);
             uv07Person.setDeterminerCode(EntityDeterminer.INSTANCE);
@@ -162,30 +165,20 @@ public class HL7PacketBuilder {
 
             final PN pn = new PN();
             final EnGiven enGiven = new EnGiven();
-            enGiven.setRepresentation(BinaryDataEncoding.TXT);
-            enGiven.setPartType(EntityNamePartType.FAM);
-
-
-
-            JAXBElement<EnGiven> givenJAXBElement = new JAXBElement<EnGiven>(
-                    new QName("urn:hl7-org:v3", "given"), EnGiven.class, enGiven);
-            givenJAXBElement.setValue(enGiven);
+            enGiven.getContent().add(client.getFirstName());
+            JAXBElement<EnGiven> givenJAXBElement = factoryHL7.createENGiven(enGiven);
             pn.getContent().add(givenJAXBElement);
 
-
-
             final EnGiven enGiven2 = new EnGiven();
-            JAXBElement<EnGiven> givenJAXBElement2 = new JAXBElement<EnGiven>(
-                    new QName("urn:hl7-org:v3", "given"), EnGiven.class, enGiven2);
+            enGiven2.getContent().add(client.getPatrName());
+            JAXBElement<EnGiven> givenJAXBElement2 = factoryHL7.createENGiven(enGiven2);
             givenJAXBElement2.setValue(enGiven2);
             pn.getContent().add(givenJAXBElement2);
 
 
-
-            final EnFamily enFamily = new EnFamily();
-            JAXBElement<EnFamily> enFamilyJAXBElement = new JAXBElement<EnFamily>(
-                    new QName("urn:hl7-org:v3", "family"), EnFamily.class, /*EN.class,*/ enFamily);
-
+            final EnFamily enFamily = factoryHL7.createEnFamily();
+            enFamily.getContent().add(client.getLastName());
+            JAXBElement<EnFamily> enFamilyJAXBElement = factoryHL7.createENFamily(enFamily);
             pn.getContent().add(enFamilyJAXBElement);
 
             uv07Person.getName().add(pn);
@@ -205,7 +198,7 @@ public class HL7PacketBuilder {
             event.setSubject(subject);
 
 
-            final PRPAMT402001UV02Admitter admitter = new PRPAMT402001UV02Admitter();
+            final PRPAMT402001UV02Admitter admitter = factoryHL7.createPRPAMT402001UV02Admitter();
             admitter.setNullFlavor(NullFlavor.NI);
             admitter.setTypeCode(ParticipationAdmitter.ADM);
             final IVLTS time = new IVLTS();
@@ -252,9 +245,7 @@ public class HL7PacketBuilder {
             e.printStackTrace();
             logger.error("throwable", e);
         }
-
     }
-
 
     /**
      * Формирование и отправка сообщения об отмене предыдущего сообщения о госпитализации
@@ -586,7 +577,6 @@ public class HL7PacketBuilder {
 
     /**
      * Формирование и отправка сообщения о переводе пациента между отделениями стационара PRPA_IN302011UV02
-     *
      */
     public static void processMoving(Action action, String uuidExternal, String externalId, String uuidClient,
                                      String uuidLocationOut, String uuidLocationIn) {

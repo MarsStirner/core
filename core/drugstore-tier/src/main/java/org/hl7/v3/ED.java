@@ -1,20 +1,19 @@
 
 package org.hl7.v3;
 
-import javax.xml.bind.annotation.XmlAccessType;
-import javax.xml.bind.annotation.XmlAccessorType;
-import javax.xml.bind.annotation.XmlAttribute;
-import javax.xml.bind.annotation.XmlSeeAlso;
-import javax.xml.bind.annotation.XmlType;
+import javax.xml.bind.JAXBElement;
+import javax.xml.bind.annotation.*;
 import javax.xml.bind.annotation.adapters.CollapsedStringAdapter;
 import javax.xml.bind.annotation.adapters.XmlJavaTypeAdapter;
+import java.util.ArrayList;
+import java.util.List;
 
 
 /**
  * <p>Java class for ED complex type.
- * 
+ *
  * <p>The following schema fragment specifies the expected content contained within this class.
- * 
+ *
  * <pre>
  * &lt;complexType name="ED">
  *   &lt;complexContent>
@@ -32,20 +31,21 @@ import javax.xml.bind.annotation.adapters.XmlJavaTypeAdapter;
  *   &lt;/complexContent>
  * &lt;/complexType>
  * </pre>
- * 
- * 
+ *
+ *
  */
 @XmlAccessorType(XmlAccessType.FIELD)
 @XmlType(name = "ED", propOrder = {
-    "reference",
-    "thumbnail"
+        "reference",
+        "thumbnail" ,
+        "content"
 })
 @XmlSeeAlso({
-    Thumbnail.class,
-    ST.class
+        Thumbnail.class,
+        ST.class
 })
 public class ED
-    extends BIN
+        extends BIN
 {
 
     protected TEL reference;
@@ -63,13 +63,16 @@ public class ED
     @XmlAttribute(name = "integrityCheckAlgorithm")
     protected IntegrityCheckAlgorithm integrityCheckAlgorithm;
 
+    @XmlMixed
+    List<Object> content;
+
     /**
      * Gets the value of the reference property.
-     * 
+     *
      * @return
      *     possible object is
      *     {@link TEL }
-     *     
+     *
      */
     public TEL getReference() {
         return reference;
@@ -77,11 +80,11 @@ public class ED
 
     /**
      * Sets the value of the reference property.
-     * 
+     *
      * @param value
      *     allowed object is
      *     {@link TEL }
-     *     
+     *
      */
     public void setReference(TEL value) {
         this.reference = value;
@@ -89,11 +92,11 @@ public class ED
 
     /**
      * Gets the value of the thumbnail property.
-     * 
+     *
      * @return
      *     possible object is
      *     {@link Thumbnail }
-     *     
+     *
      */
     public Thumbnail getThumbnail() {
         return thumbnail;
@@ -101,11 +104,11 @@ public class ED
 
     /**
      * Sets the value of the thumbnail property.
-     * 
+     *
      * @param value
      *     allowed object is
      *     {@link Thumbnail }
-     *     
+     *
      */
     public void setThumbnail(Thumbnail value) {
         this.thumbnail = value;
@@ -113,11 +116,11 @@ public class ED
 
     /**
      * Gets the value of the mediaType property.
-     * 
+     *
      * @return
      *     possible object is
      *     {@link String }
-     *     
+     *
      */
     public String getMediaType() {
         if (mediaType == null) {
@@ -129,11 +132,11 @@ public class ED
 
     /**
      * Sets the value of the mediaType property.
-     * 
+     *
      * @param value
      *     allowed object is
      *     {@link String }
-     *     
+     *
      */
     public void setMediaType(String value) {
         this.mediaType = value;
@@ -141,11 +144,11 @@ public class ED
 
     /**
      * Gets the value of the language property.
-     * 
+     *
      * @return
      *     possible object is
      *     {@link String }
-     *     
+     *
      */
     public String getLanguage() {
         return language;
@@ -153,11 +156,11 @@ public class ED
 
     /**
      * Sets the value of the language property.
-     * 
+     *
      * @param value
      *     allowed object is
      *     {@link String }
-     *     
+     *
      */
     public void setLanguage(String value) {
         this.language = value;
@@ -165,11 +168,11 @@ public class ED
 
     /**
      * Gets the value of the compression property.
-     * 
+     *
      * @return
      *     possible object is
      *     {@link CompressionAlgorithm }
-     *     
+     *
      */
     public CompressionAlgorithm getCompression() {
         return compression;
@@ -177,11 +180,11 @@ public class ED
 
     /**
      * Sets the value of the compression property.
-     * 
+     *
      * @param value
      *     allowed object is
      *     {@link CompressionAlgorithm }
-     *     
+     *
      */
     public void setCompression(CompressionAlgorithm value) {
         this.compression = value;
@@ -189,7 +192,7 @@ public class ED
 
     /**
      * Gets the value of the integrityCheck property.
-     * 
+     *
      * @return
      *     possible object is
      *     byte[]
@@ -200,7 +203,7 @@ public class ED
 
     /**
      * Sets the value of the integrityCheck property.
-     * 
+     *
      * @param value
      *     allowed object is
      *     byte[]
@@ -211,11 +214,11 @@ public class ED
 
     /**
      * Gets the value of the integrityCheckAlgorithm property.
-     * 
+     *
      * @return
      *     possible object is
      *     {@link IntegrityCheckAlgorithm }
-     *     
+     *
      */
     public IntegrityCheckAlgorithm getIntegrityCheckAlgorithm() {
         if (integrityCheckAlgorithm == null) {
@@ -227,14 +230,20 @@ public class ED
 
     /**
      * Sets the value of the integrityCheckAlgorithm property.
-     * 
+     *
      * @param value
      *     allowed object is
      *     {@link IntegrityCheckAlgorithm }
-     *     
+     *
      */
     public void setIntegrityCheckAlgorithm(IntegrityCheckAlgorithm value) {
         this.integrityCheckAlgorithm = value;
+    }
+
+    public List<Object> getContent() {
+        if(content==null)
+            content = new ArrayList<Object>();
+        return content;
     }
 
 }
