@@ -1985,6 +1985,16 @@ public class PatientRegistryRESTImpl implements Serializable {
         return returnValue;
     }
 
+    /**
+     * Сервис сохранения квоты <br>
+     * url: /appeals/{appealId}/quotes
+     * @param data Json с данными о квоте как QuotaData
+     * @param appealId Идентификатор госпитализации.
+     * @param callback callback запроса.
+     * @param servRequest Контекст запроса с клиента.
+     * @return com.sun.jersey.api.json.JSONWithPadding как Object
+     * @throws CoreException
+     */
     @POST
     @Path("/appeals/{appealId}/quotes")
     @Produces("application/x-javascript")
@@ -2002,6 +2012,16 @@ public class PatientRegistryRESTImpl implements Serializable {
         return returnValue;
     }
 
+    /**
+     * Сервис редактирования квоты <br>
+     * url: /appeals/{appealId}/quotes
+     * @param data Json с данными о квоте как QuotaData
+     * @param appealId Идентификатор госпитализации.
+     * @param callback callback запроса.
+     * @param servRequest Контекст запроса с клиента.
+     * @return com.sun.jersey.api.json.JSONWithPadding как Object
+     * @throws CoreException
+     */
     @PUT
     @Path("/appeals/{appealId}/quotes")
     @Produces("application/x-javascript")
@@ -2019,6 +2039,15 @@ public class PatientRegistryRESTImpl implements Serializable {
         return returnValue;
     }
 
+    /**
+     * Сервис получения данных о квоте <br>
+     * url: /appeals/{appealId}/quotes
+     * @param appealId Идентификатор госпитализации.
+     * @param callback callback запроса.
+     * @param servRequest Контекст запроса с клиента.
+     * @return com.sun.jersey.api.json.JSONWithPadding как Object
+     * @throws CoreException
+     */
     @GET
     @Path("/appeals/{appealId}/quotes")
     @Produces("application/x-javascript")

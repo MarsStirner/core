@@ -85,7 +85,10 @@ class DbOrgStructureBean
       filter.asInstanceOf[DepartmentsDataFilter].toQueryStructure()
     } else  new QueryDataStructure()
 
-    val sorting = "ORDER BY %s %s".format(sortField, sortMethod)
+    var sorting = "ORDER BY %s %s".format(sortField, sortMethod)
+    if (sortField==null || sortField.compareTo("")==0 || sortMethod == null || sortMethod.compareTo("")==0) {
+      sorting = "ORDER BY os.id asc"
+    }
 
     var typed = em.createQuery(OrgStructuresAndCountRecordsWithFilterQuery.format("os", queryStr.query, sorting), classOf[OrgStructure])
                   .setMaxResults(limit)

@@ -239,7 +239,7 @@ class CommonDataProcessorBean
         i18n("error.invalidCommonData"))
     }
 
-    var result = List[Action]();
+    var result = List[Action]()
     var entities = Set[AnyRef]()
 
     val oldAction = Action.clone(dbAction.getActionById(actionId))
@@ -247,7 +247,7 @@ class CommonDataProcessorBean
     val lockId = appLock.acquireLock("Action",
       actionId,
       oldAction.getIdx,
-      userData);
+      userData)
 
     try {
       data.entity.filter(_.id == actionId).foreach(entity => {
