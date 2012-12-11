@@ -1018,7 +1018,7 @@ class AppealTypeContainer {
 class LegalRepresentativeContainer {
 
   @BeanProperty
-  var relative: IdNameContainer = _                   //Законный представитель (ИД + ФИО)
+  var relative: IdNameDateContainer = _                   //Законный представитель (ИД + ФИО)
 
   @BeanProperty
   var relativeType: IdNameContainer = _     //Тип связи
@@ -1039,16 +1039,44 @@ class LegalRepresentativeContainer {
       val rel = relation.getRelative
       this.relative =
         if(rel!=null)
-          new IdNameContainer(rel.getId.intValue(),
-            "%s %s %s".format(rel.getLastName, rel.getFirstName, rel.getPatrName))
+          new IdNameDateContainer(rel.getId.intValue(),
+                                  "%s %s %s".format(rel.getLastName, rel.getFirstName, rel.getPatrName),
+                                  relation.getRelative.getBirthDate)
         else
-          new IdNameContainer()
+          new IdNameDateContainer()
 
       this.relativeType =
         if(relation.getRelativeType!=null)
-          new IdNameContainer(relation.getRelativeType.getId.intValue(),"%s(%s)".format(relation.getRelativeType.getLeftName, relation.getRelativeType.getRightName))
+          new IdNameContainer(relation.getRelativeType.getId.intValue(),
+                              "%s(%s)".format(relation.getRelativeType.getLeftName, relation.getRelativeType.getRightName))
         else null
     }
     this.note = note
   }
+}
+
+/**
+ * Контейнер для представления информации в виде: Идентификатор, Имя, Дата рождения
+ */
+@XmlType(name = "idNameDateContainer")
+@XmlRootElement(name = "idNameDateContainer")
+@JsonIgnoreProperties(ignoreUnknown = true)
+class IdNameDateContainer {
+
+  @BeanProperty
+  var id : Int = _         //ИД
+
+  @BeanProperty
+  var name : String = _    //ФИО
+
+  @BeanProperty
+  var birthDate: Date = _  // — Дата рождения
+
+  def this( id : Int, name : String, birthDate : Date) = {
+    this()
+    this.id = id;
+    this.name = name
+    this.birthDate = birthDate
+  }
+
 }
