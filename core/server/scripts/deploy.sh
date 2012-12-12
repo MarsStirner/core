@@ -13,8 +13,8 @@
 
 # Настроечные параметры
 GF_ADMIN_USER=admin
-GF_ADMIN_PASSWD=admin
-GF_MASTER_PASSWD=admin
+GF_ADMIN_PASSWD=admin1234
+GF_MASTER_PASSWD=admin1234
 GF_DOMAIN_NAME=$3
 GF_DOMAIN_DIR=/usr/local/glassfish3/glassfish/domains
 GF_ADMIN_PORT=4848
@@ -26,9 +26,9 @@ GF_PASSWD_FILE=./password
 echo "AS_ADMIN_PASSWORD="$GF_ADMIN_PASSWD > $GF_PASSWD_FILE                                                                                                     
 echo "AS_ADMIN_MASTERPASSWORD="$GF_MASTER_PASSWD >> $GF_PASSWD_FILE                                                                                             
 
-export PATH=~/usr/local/glassfish3/bin/:$PATH
-#asadmin stop-domain --domaindir ~/glassfish3/glassfish/domains korus-domain
-#asadmin start-domain --domaindir ~/glassfish3/glassfish/domains korus-domain
+export PATH=/usr/local/glassfish3/bin/:$PATH
+asadmin stop-domain --domaindir /usr/local/glassfish3/glassfish/domains domain1
+asadmin start-domain --domaindir /usr/local/glassfish3/glassfish/domains domain1
 
 # Установка приложения
 /usr/local/glassfish3/bin/asadmin --host localhost \

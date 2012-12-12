@@ -53,5 +53,5 @@ class YDrugTimeTS(@XmlTransient hour: AssignmentHour) extends SXCMTS {
 }
 
 class YNullTimeTS extends IVLTS {
-  getNullFlavor.add("NI")
+  setNullFlavor(NullFlavor.NI)
 }

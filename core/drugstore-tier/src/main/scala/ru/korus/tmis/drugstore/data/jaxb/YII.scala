@@ -1,6 +1,6 @@
 package ru.korus.tmis.drugstore.data.jaxb
 
-import org.hl7.v3.II
+import org.hl7.v3.{NullFlavor, II}
 import ru.korus.tmis.core.entity.model.{Action, Patient, Event, Staff}
 import ru.korus.tmis.drugstore.data.{YUUID, YClinicalDocument}
 
@@ -39,5 +39,5 @@ class YCustomId(@XmlTransient s: String) extends II {
 }
 
 class YNullFlavorId extends II {
-  getNullFlavor.add("NI")
+  setNullFlavor(NullFlavor.NI)
 }
