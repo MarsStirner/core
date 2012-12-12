@@ -4,13 +4,13 @@ import misexchange.*;
 import misexchange.ObjectFactory;
 import misexchange.PRPAIN302011UV02;
 import misexchange.PRPAIN302012UV02;
+import misexchange.RCMRIN000002UV02;
 import org.hl7.v3.*;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import ru.korus.tmis.core.entity.model.Action;
-import ru.korus.tmis.core.entity.model.Event;
-import ru.korus.tmis.core.entity.model.OrgStructure;
 import ru.korus.tmis.core.entity.model.Patient;
+import ru.korus.tmis.pharmacy.exception.SoapConnectionException;
 
 import javax.xml.bind.JAXBContext;
 import javax.xml.bind.JAXBElement;
@@ -18,6 +18,7 @@ import javax.xml.bind.Marshaller;
 import javax.xml.namespace.QName;
 import java.io.IOException;
 import java.io.StringWriter;
+import java.math.BigInteger;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.UUID;
@@ -36,13 +37,13 @@ public class HL7PacketBuilder {
     /**
      * Формирование и отправка сообщения о госпитализации PRPA_IN402001UV02
      */
-    public static void processReceived(
+    public static MCCIIN000002UV01 processReceived(
             final Action action,
             final String externalId,
             final String externalUUID,
             final String orgUUID,
             final Patient client,
-            final String clientUUID) {
+            final String clientUUID) throws SoapConnectionException {
 
         final String uuidDocument = UUID.randomUUID().toString();
         logger.info("process RECEIVED document {}, action {}, orgStrucUUID {}, client {}", uuidDocument, action, orgUUID, client);
@@ -133,8 +134,7 @@ public class HL7PacketBuilder {
             final IVLTS effectiveTime = new IVLTS();
             final SimpleDateFormat effectiveDateFormat = new SimpleDateFormat("yyyyMMdd");
             final IVXBTS dateBegin = new IVXBTS();
-            dateBegin.setValue(effectiveDateFormat.format(action.getCreateDatetime()));
-            effectiveTime.setCenter(dateBegin);
+            effectiveTime.setValue(effectiveDateFormat.format(action.getCreateDatetime()));
 
 
             event.setEffectiveTime(effectiveTime);
@@ -233,29 +233,36 @@ public class HL7PacketBuilder {
 
             ((misexchange.PRPAIN402001UV02) msg).setMessage(prpain402001UV022);
 
-            printMessage(msg, "misexchange");
-
-            logger.info("message is prepared, sending now...");
+            logger.info("prepare message... \n\n {}", marshallMessage(msg, "misexchange"));
             final MCCIIN000002UV01 mcciin000002UV01 = new MISExchange().getMISExchangeSoap().processHL7V3Message(msg);
-            logger.info("message sended, result " + mcciin000002UV01);
+            logger.info("Connection successful. Result: {} \n\n {}", mcciin000002UV01, marshallMessage(mcciin000002UV01, "org.hl7.v3"));
 
-            printMessage(mcciin000002UV01, "org.hl7.v3");
 
-        } catch (Throwable e) {
+            return mcciin000002UV01;
+        } catch (Exception e) {
             e.printStackTrace();
             logger.error("throwable", e);
+
         }
+        throw new SoapConnectionException("Bad connection to 1C Pharmacy");
     }
 
     /**
      * Формирование и отправка сообщения об отмене предыдущего сообщения о госпитализации
      * PRPA_IN402006UV02
      */
-    public static void processDelReceived(Action action, String uuidExternalId, String externalId, String uuidClient, Patient client) {
+    public static MCCIIN000002UV01 processDelReceived(
+            final Action action,
+            final String uuidExternalId,
+            final String externalId,
+            final String uuidClient,
+            final Patient client) throws SoapConnectionException {
+
         final String uuidDocument = UUID.randomUUID().toString();
         logger.info("process DEL_RECEIVED document {}, action {}, uuidExternalId {}, externalId {}, uuidClient {}, client {}",
                 action, uuidExternalId, externalId, uuidClient, client);
         final ObjectFactory factory = new ObjectFactory();
+        final org.hl7.v3.ObjectFactory factoryHL7 = new org.hl7.v3.ObjectFactory();
         final SimpleDateFormat sdf = new SimpleDateFormat("yyyyMMddHHmmss");
         try {
             final Request msg = factory.createPRPAIN402006UV02();
@@ -303,6 +310,7 @@ public class HL7PacketBuilder {
 
             // sender
             final MCCIMT000100UV01Sender sender = new MCCIMT000100UV01Sender();
+            sender.setTypeCode(CommunicationFunctionType.SND);
             final MCCIMT000100UV01Device device1 = new MCCIMT000100UV01Device();
             device1.setClassCode(EntityClassDevice.DEV);
             device1.setDeterminerCode(EntityDeterminerSpecific.INSTANCE);
@@ -314,7 +322,8 @@ public class HL7PacketBuilder {
 
             // control act process
             final PRPAIN402006UV02MCAIMT700201UV01ControlActProcess controlActProcess = new PRPAIN402006UV02MCAIMT700201UV01ControlActProcess();
-
+            controlActProcess.setClassCode(ActClassControlAct.CACT);
+            controlActProcess.setMoodCode(XActMoodIntentEvent.EVN);
             //  subject
             final PRPAIN402006UV02MCAIMT700201UV01Subject2 uv01Subject2 = new PRPAIN402006UV02MCAIMT700201UV01Subject2();
             uv01Subject2.setTypeCode(ActRelationshipHasSubject.SUBJ);
@@ -353,23 +362,22 @@ public class HL7PacketBuilder {
 
             final PN pn = new PN();
             final EnGiven enGiven = new EnGiven();
-            enGiven.setRepresentation(BinaryDataEncoding.TXT);
-            enGiven.setMediaType("123333333333333333333333333333333");
-            JAXBElement<EnGiven> givenJAXBElement = new JAXBElement<EnGiven>(
-                    new QName("urn:hl7-org:v3", "given"), EnGiven.class, EN.class, enGiven);
-
+            enGiven.getContent().add(client.getFirstName());
+            JAXBElement<EnGiven> givenJAXBElement = factoryHL7.createENGiven(enGiven);
             pn.getContent().add(givenJAXBElement);
 
             final EnGiven enGiven2 = new EnGiven();
-            JAXBElement<EnGiven> givenJAXBElement2 = new JAXBElement<EnGiven>(
-                    new QName("urn:hl7-org:v3", "given"), EnGiven.class, EN.class, enGiven2);
+            enGiven2.getContent().add(client.getPatrName());
+            JAXBElement<EnGiven> givenJAXBElement2 = factoryHL7.createENGiven(enGiven2);
+            givenJAXBElement2.setValue(enGiven2);
             pn.getContent().add(givenJAXBElement2);
 
-            final EnFamily enFamily = new EnFamily();
-            JAXBElement<EnFamily> enFamilyJAXBElement = new JAXBElement<EnFamily>(
-                    new QName("urn:hl7-org:v3", "family"), EnFamily.class, EN.class, enFamily);
 
+            final EnFamily enFamily = factoryHL7.createEnFamily();
+            enFamily.getContent().add(client.getLastName());
+            JAXBElement<EnFamily> enFamilyJAXBElement = factoryHL7.createENFamily(enFamily);
             pn.getContent().add(enFamilyJAXBElement);
+
             uv09Person.getName().add(pn);
 
             patient.setPatientPerson(patientPerson);
@@ -384,29 +392,32 @@ public class HL7PacketBuilder {
 
 
             ((misexchange.PRPAIN402006UV02) msg).setMessage(prpain402006UV02);
-            printMessage(msg, "misexchange");
-            logger.info("message is prepared, sending now...");
+            logger.info("prepare message... \n\n {}", marshallMessage(msg, "misexchange"));
+
             final MCCIIN000002UV01 mcciin000002UV01 = new MISExchange().getMISExchangeSoap().processHL7V3Message(msg);
-            logger.info("message sended, result " + mcciin000002UV01);
-            printMessage(mcciin000002UV01, "org.hl7.v3");
+            logger.info("Connection successful. Result: {} \n\n {}", mcciin000002UV01, marshallMessage(mcciin000002UV01, "org.hl7.v3"));
+
+            return mcciin000002UV01;
         } catch (Exception e) {
             e.printStackTrace();
             logger.error("throwable", e);
         }
+        throw new SoapConnectionException("Bad connection to 1C Pharmacy");
     }
 
 
     /**
      * Формирование и отправка сообщения о выписке пациента со стационара PRPA_IN402003UV02
-     *
-     * @param action
-     * @param evt
-     * @param orgStructure
-     * @param client
      */
-    public static void processLeaved(Action action, Event evt, OrgStructure orgStructure, Patient client) {
-        logger.info("process LEAVED action {}, event {}, orgStruc {}", action, evt, orgStructure);
+    public static MCCIIN000002UV01 processLeaved(
+            final Action action,
+            final String externalId,
+            final String clientUUID,
+            final Patient client, String displayName) throws SoapConnectionException {
+
+        logger.info("process LEAVED action {}, externalId {}, client {}, clientUUID {}", action, externalId, client, clientUUID);
         final ObjectFactory factory = new ObjectFactory();
+        final org.hl7.v3.ObjectFactory factoryHL7 = new org.hl7.v3.ObjectFactory();
         try {
             final Request msg = factory.createPRPAIN402003UV02();
 
@@ -472,14 +483,14 @@ public class HL7PacketBuilder {
             event.setMoodCode(ActMoodEventOccurrence.EVN);
             final II typeId1 = new II();
             typeId1.setRoot(UUID.randomUUID().toString());
-            typeId1.setExtension("123"); //
+            typeId1.setExtension(externalId); //
             event.getId().add(typeId1);
 
             final CD code = new CD();
             code.setCodeSystem("2.16.840.1.113883.5.4");
             code.setCodeSystemName("actCode");
             code.setCode("IMP");
-            code.setDisplayName("abc");
+            code.setDisplayName(displayName);
             event.setCode(code);
 
             final CS statusCode = new CS();
@@ -487,30 +498,22 @@ public class HL7PacketBuilder {
             event.setStatusCode(statusCode);
 
             final IVLTS effectiveTime = new IVLTS();
-            final SimpleDateFormat effectiveDateFormat = new SimpleDateFormat("yyyyMMdd");
-            final IVXBTS low = new IVXBTS();
-            low.setValue(effectiveDateFormat.format(new Date()));
-            effectiveTime.setLow(low);
-
-            final IVXBTS high = new IVXBTS();
-            high.setValue(effectiveDateFormat.format(new Date()));
-            effectiveTime.setHigh(high);
-
+            effectiveTime.setNullFlavor(NullFlavor.NI);
             event.setEffectiveTime(effectiveTime);
 
-            final PQ lengthOfStayQuantity = new PQ();
-            lengthOfStayQuantity.setValue("5");
-            lengthOfStayQuantity.setUnit("d");
-            event.setLengthOfStayQuantity(lengthOfStayQuantity);
+//            final PQ lengthOfStayQuantity = new PQ();
+//            lengthOfStayQuantity.setValue("5");
+//            lengthOfStayQuantity.setUnit("d");
+//            event.setLengthOfStayQuantity(lengthOfStayQuantity);
 
 
             final PRPAMT402003UV02Subject subject = new PRPAMT402003UV02Subject();
             subject.setTypeCode(ParticipationTargetSubject.SBJ);
-            subject.setContextControlCode(ContextControl.OP);
+//            subject.setContextControlCode(ContextControl.OP);
             final COCTMT050002UV07Patient patient = new COCTMT050002UV07Patient();
             patient.setClassCode(RoleClassPatient.PAT);
             final CS typeId2 = new CS();
-            typeId2.setCode("123");
+            typeId2.setCode(clientUUID);
             patient.getId().add(typeId2);
 
             final COCTMT050002UV07Person uv07Person = new COCTMT050002UV07Person();
@@ -520,23 +523,25 @@ public class HL7PacketBuilder {
             uv07Person.setClassCode(EntityClass.PSN);
             uv07Person.setDeterminerCode(EntityDeterminer.INSTANCE);
             final II typeId3 = new II();
-            typeId3.setExtension("00001");
+            typeId3.setExtension(client.getSnils());
             uv07Person.getId().add(typeId3);
 
             final PN pn = new PN();
             final EnGiven enGiven = new EnGiven();
-            JAXBElement<EnGiven> givenJAXBElement = new JAXBElement<EnGiven>(
-                    new QName("urn:hl7-org:v3", "given"), EnGiven.class, EN.class, enGiven);
+            enGiven.getContent().add(client.getFirstName());
+            JAXBElement<EnGiven> givenJAXBElement = factoryHL7.createENGiven(enGiven);
             pn.getContent().add(givenJAXBElement);
 
             final EnGiven enGiven2 = new EnGiven();
-            JAXBElement<EnGiven> givenJAXBElement2 = new JAXBElement<EnGiven>(
-                    new QName("urn:hl7-org:v3", "given"), EnGiven.class, EN.class, enGiven2);
+            enGiven2.getContent().add(client.getPatrName());
+            JAXBElement<EnGiven> givenJAXBElement2 = factoryHL7.createENGiven(enGiven2);
+            givenJAXBElement2.setValue(enGiven2);
             pn.getContent().add(givenJAXBElement2);
 
-            final EnFamily enFamily = new EnFamily();
-            JAXBElement<EnFamily> enFamilyJAXBElement = new JAXBElement<EnFamily>(
-                    new QName("urn:hl7-org:v3", "family"), EnFamily.class, EN.class, enFamily);
+
+            final EnFamily enFamily = factoryHL7.createEnFamily();
+            enFamily.getContent().add(client.getLastName());
+            JAXBElement<EnFamily> enFamilyJAXBElement = factoryHL7.createENFamily(enFamily);
             pn.getContent().add(enFamilyJAXBElement);
 
             uv07Person.getName().add(pn);
@@ -561,25 +566,33 @@ public class HL7PacketBuilder {
 
             ((misexchange.PRPAIN402003UV02) msg).setMessage(prpain402003UV02);
 
-            printMessage(msg, "misexchange");
+            logger.info("prepare message... \n\n {}", marshallMessage(msg, "misexchange"));
 
-            logger.info("message is prepared, sending now...");
+
             final MCCIIN000002UV01 mcciin000002UV01 = new MISExchange().getMISExchangeSoap().processHL7V3Message(msg);
-            logger.info("message sended, result " + mcciin000002UV01);
+            logger.info("Connection successful. Result: {} \n\n {}", mcciin000002UV01, marshallMessage(mcciin000002UV01, "org.hl7.v3"));
 
-            printMessage(mcciin000002UV01, "org.hl7.v3");
+
+            return mcciin000002UV01;
         } catch (Exception e) {
             e.printStackTrace();
             logger.error("throwable", e);
         }
+        throw new SoapConnectionException("Bad connection to 1C Pharmacy");
     }
 
 
     /**
      * Формирование и отправка сообщения о переводе пациента между отделениями стационара PRPA_IN302011UV02
      */
-    public static void processMoving(Action action, String uuidExternal, String externalId, String uuidClient,
-                                     String uuidLocationOut, String uuidLocationIn) {
+    public static MCCIIN000002UV01 processMoving(
+            final Action action,
+            final String uuidExternal,
+            final String externalId,
+            final String uuidClient,
+            final String uuidLocationOut,
+            final String uuidLocationIn) throws SoapConnectionException {
+
         final String uuidDocument = UUID.randomUUID().toString();
         logger.info("process MOVING document {}, action {}", uuidDocument, action);
         final ObjectFactory factory = new ObjectFactory();
@@ -631,6 +644,7 @@ public class HL7PacketBuilder {
 
             // sender
             final MCCIMT000100UV01Sender sender = new MCCIMT000100UV01Sender();
+            sender.setTypeCode(CommunicationFunctionType.SND);
             final MCCIMT000100UV01Device device1 = new MCCIMT000100UV01Device();
             device1.setClassCode(EntityClassDevice.DEV);
             device1.setDeterminerCode(EntityDeterminerSpecific.INSTANCE);
@@ -642,6 +656,8 @@ public class HL7PacketBuilder {
 
             // control act process
             final PRPAIN302011UV02MCAIMT700201UV01ControlActProcess controlActProcess = new PRPAIN302011UV02MCAIMT700201UV01ControlActProcess();
+            controlActProcess.setClassCode(ActClassControlAct.CACT);
+            controlActProcess.setMoodCode(XActMoodIntentEvent.EVN);
 
             final PRPAIN302011UV02MCAIMT700201UV01Subject2 subject2 = new PRPAIN302011UV02MCAIMT700201UV01Subject2();
             subject2.setTypeCode(ActRelationshipHasSubject.SUBJ);
@@ -661,6 +677,8 @@ public class HL7PacketBuilder {
             final II patientIdRoot = new II();
             patientIdRoot.setRoot(uuidClient);
             patient.getId().add(patientIdRoot);
+
+            patient.setClassCode(RoleClassPatient.PAT);
             subjectPatient.setPatient(patient);
             encounterEvent.setSubject(subjectPatient);
 
@@ -711,23 +729,32 @@ public class HL7PacketBuilder {
             prpain302011UV022.setControlActProcess(controlActProcess);
 
             ((PRPAIN302011UV02) msg).setMessage(prpain302011UV022);
-            printMessage(msg, "misexchange");
-            logger.info("message is prepared, sending now...");
+            logger.info("prepare message... \n\n {}", marshallMessage(msg, "misexchange"));
+
             final MCCIIN000002UV01 mcciin000002UV01 = new MISExchange().getMISExchangeSoap().processHL7V3Message(msg);
-            logger.info("message sended, result " + mcciin000002UV01);
-            printMessage(mcciin000002UV01, "org.hl7.v3");
+            logger.info("Connection successful. Result: {} \n\n {}", mcciin000002UV01, marshallMessage(mcciin000002UV01, "org.hl7.v3"));
+
+            return mcciin000002UV01;
         } catch (Exception e) {
             e.printStackTrace();
             logger.error("throwable", e);
+
         }
+        throw new SoapConnectionException("Bad connection to 1C Pharmacy");
     }
 
     /**
      * Формирование и отправка сообщения об отмене предыдущего сообщения о переводе пациента между отделениями стационара
      * PRPA_IN302012UV02
      */
-    public static void processDelMoving(Action action, String uuidExternal, String externalId, String uuidClient,
-                                        String uuidLocationOut, String uuidLocationIn) {
+    public static MCCIIN000002UV01 processDelMoving(
+            final Action action,
+            final String uuidExternal,
+            final String externalId,
+            final String uuidClient,
+            final String uuidLocationOut,
+            final String uuidLocationIn) throws SoapConnectionException {
+
         final String uuidDocument = UUID.randomUUID().toString();
         logger.info("process DEL_MOVING document {}, action {}", uuidDocument, action);
         final ObjectFactory factory = new ObjectFactory();
@@ -780,6 +807,7 @@ public class HL7PacketBuilder {
 
             // sender
             final MCCIMT000100UV01Sender sender = new MCCIMT000100UV01Sender();
+            sender.setTypeCode(CommunicationFunctionType.SND);
             final MCCIMT000100UV01Device device1 = new MCCIMT000100UV01Device();
             device1.setClassCode(EntityClassDevice.DEV);
             device1.setDeterminerCode(EntityDeterminerSpecific.INSTANCE);
@@ -791,7 +819,8 @@ public class HL7PacketBuilder {
 
             // control act process
             final PRPAIN302012UV02MCAIMT700201UV01ControlActProcess controlActProcess = new PRPAIN302012UV02MCAIMT700201UV01ControlActProcess();
-
+            controlActProcess.setClassCode(ActClassControlAct.CACT);
+            controlActProcess.setMoodCode(XActMoodIntentEvent.EVN);
             final PRPAIN302012UV02MCAIMT700201UV01Subject2 subject2 = new PRPAIN302012UV02MCAIMT700201UV01Subject2();
             subject2.setTypeCode(ActRelationshipHasSubject.SUBJ);
 
@@ -807,6 +836,7 @@ public class HL7PacketBuilder {
             final PRPAMT302012UV02Subject subjectPatient = new PRPAMT302012UV02Subject();
             subjectPatient.setTypeCode(ParticipationTargetSubject.SBJ);
             final COCTMT050001UV07Patient patient = new COCTMT050001UV07Patient();
+            patient.setClassCode(RoleClassPatient.PAT);
             final II patientIdRoot = new II();
             patientIdRoot.setRoot(uuidClient);
             patient.getId().add(patientIdRoot);
@@ -861,32 +891,461 @@ public class HL7PacketBuilder {
 
 
             ((PRPAIN302012UV02) msg).setMessage(prpain302012UV022);
-            printMessage(msg, "misexchange");
-            logger.info("message is prepared, sending now...");
+            logger.info("prepare message... \n\n {}", marshallMessage(msg, "misexchange"));
             final MCCIIN000002UV01 mcciin000002UV01 = new MISExchange().getMISExchangeSoap().processHL7V3Message(msg);
-            logger.info("message sended, result " + mcciin000002UV01);
-            printMessage(mcciin000002UV01, "org.hl7.v3");
+            logger.info("Connection successful. Result: {} \n\n {}", mcciin000002UV01, marshallMessage(mcciin000002UV01, "org.hl7.v3"));
+
+
+            return mcciin000002UV01;
+
         } catch (Exception e) {
             e.printStackTrace();
             logger.error("throwable", e);
         }
+        throw new SoapConnectionException("Bad connection to 1C Pharmacy");
     }
 
-
     /**
-     * Вывод сообщения в лог
-     *
-     * @param msg
-     * @param contextPath
+     * Назначения врача
      */
-    private static void printMessage(Object msg, String contextPath) {
+    public static MCCIIN000002UV01 processRCMRIN000002UV02(
+            final Action action,
+            final String clientUUID,
+            final String externalId,
+            final Patient client,
+            final Patient au,
+            final String organizationName
+    ) throws SoapConnectionException {
+        try {
+            final String uuidDocument = UUID.randomUUID().toString();
+            logger.info("process RCMRIN000002UV02 document {}, action {}", uuidDocument, action);
+
+            final SimpleDateFormat sdf = new SimpleDateFormat("yyyyMMddHHmmss");
+
+            ObjectFactory factory = new ObjectFactory();
+            org.hl7.v3.ObjectFactory f = new org.hl7.v3.ObjectFactory();
+
+            final POCDMT000040ClinicalDocument clinicalDocument = getClinicalDocument(f,
+                    clientUUID, externalId, client, au, organizationName);
+            final String innerDocument = marshallMessage(clinicalDocument, "org.hl7.v3");
+            logger.info("prepare inner document... \n\n{}", innerDocument);
+
+
+            final Request request = factory.createRCMRIN000002UV02();
+            final RCMRIN000002UV022 message = f.createRCMRIN000002UV022();
+
+            message.setITSVersion("XML_1.0");
+            final II idRoot = f.createII();
+            idRoot.setRoot(UUID.randomUUID().toString());
+            message.setId(idRoot);
+
+            final TS creationTime = f.createTS();
+            creationTime.setValue(sdf.format(/*action.getCreateDatetime()*/new Date()));
+            message.setCreationTime(creationTime);
+
+            final II interactionId = f.createII();
+            interactionId.setRoot("2.16.840.1.113883.1.18");
+            interactionId.setExtension("RCMR_IN000002UV02");
+            message.setInteractionId(interactionId);
+
+            final CS processCode = new CS();
+            processCode.setCode("P");
+            message.setProcessingCode(processCode);
+
+            final CS processingModeCode = new CS();
+            processingModeCode.setCode("T");
+            message.setProcessingModeCode(processingModeCode);
+
+            final CS acceptAckCode = new CS();
+            acceptAckCode.setCode("AL");
+            message.setAcceptAckCode(acceptAckCode);
+
+            // receiver
+            final MCCIMT000100UV01Receiver uv01Receiver = new MCCIMT000100UV01Receiver();
+            uv01Receiver.setTypeCode(CommunicationFunctionType.RCV);
+            final MCCIMT000100UV01Device device = new MCCIMT000100UV01Device();
+            device.setClassCode(EntityClassDevice.DEV);
+            device.setDeterminerCode(EntityDeterminerSpecific.INSTANCE);
+            final II ii = new II();
+            ii.setNullFlavor(NullFlavor.NI);
+            device.getId().add(ii);
+            uv01Receiver.setDevice(device);
+            message.getReceiver().add(uv01Receiver);
+
+            // sender
+            final MCCIMT000100UV01Sender sender = new MCCIMT000100UV01Sender();
+            sender.setTypeCode(CommunicationFunctionType.SND);
+            final MCCIMT000100UV01Device device1 = new MCCIMT000100UV01Device();
+            device1.setClassCode(EntityClassDevice.DEV);
+            device1.setDeterminerCode(EntityDeterminerSpecific.INSTANCE);
+            final II ii1 = new II();
+            ii1.setNullFlavor(NullFlavor.NI);
+            device1.getId().add(ii1);
+            sender.setDevice(device1);
+            message.setSender(sender);
+
+            final RCMRIN000002UV02MCAIMT700201UV01ControlActProcess
+                    controlActProcess = new RCMRIN000002UV02MCAIMT700201UV01ControlActProcess();
+            controlActProcess.setClassCode(ActClassControlAct.CACT);
+            controlActProcess.setMoodCode(XActMoodIntentEvent.EVN);
+
+            final ED text = f.createED();
+            text.setMediaType("multipart/related");
+            text.setRepresentation(BinaryDataEncoding.B_64);
+
+            text.getContent().add("MIME-Version: 1.0\n");
+            text.getContent().add("Content-Type: multipart/related; boundary=\"HL7-CDA-boundary\"; type=\"text/xml\";\n");
+            text.getContent().add("Content-Transfer-Encoding: BASE64\n\n");
+            text.getContent().add("--HL7-CDA-boundary \n");
+            text.getContent().add("Content-Type: text/xml; charset=UTF-8\n\n");
+            text.getContent().add(javax.xml.bind.DatatypeConverter.printBase64Binary(innerDocument.getBytes()));
+            text.getContent().add("\n\n--HL7-CDA-boundary-- ");
+
+            controlActProcess.setText(text);
+            message.setControlActProcess(controlActProcess);
+
+            // ------------------------------------
+
+            ((RCMRIN000002UV02) request).setMessage(message);
+            logger.info("prepare message... \n\n {}", marshallMessage(request, "misexchange"));
+            final MCCIIN000002UV01 mcciin000002UV01 = new MISExchange().getMISExchangeSoap().processHL7V3Message(request);
+            logger.info("Connection successful. Result: {} \n\n {}", mcciin000002UV01, marshallMessage(mcciin000002UV01, "org.hl7.v3"));
+
+
+            return mcciin000002UV01;
+        } catch (Exception e) {
+            logger.error("Exception: " + e, e);
+        }
+        throw new SoapConnectionException("Connection error");
+    }
+
+    private static POCDMT000040ClinicalDocument getClinicalDocument(
+            final org.hl7.v3.ObjectFactory f,
+            final String clientUUID,
+            final String externalId,
+            final Patient client,
+            final Patient au,
+            final String organizationName) {
+
+        final POCDMT000040ClinicalDocument clinicalDocument = f.createPOCDMT000040ClinicalDocument();
+
+        final CS realmCode = f.createCS();
+        realmCode.setCode("RU");
+        clinicalDocument.getRealmCode().add(realmCode);
+
+
+        //       final II typeId = new II();
+        final POCDMT000040InfrastructureRootTypeId rootTypeId = new POCDMT000040InfrastructureRootTypeId();
+
+        rootTypeId.setExtension("POCD_HD000040");
+        rootTypeId.setRoot("2.16.840.1.113883.1.3");
+        clinicalDocument.setTypeId(rootTypeId);
+
+        final II idRoot = f.createII();
+        idRoot.setRoot(UUID.randomUUID().toString());
+        clinicalDocument.setId(idRoot);
+
+        final CE processingCode = new CE();
+        processingCode.setCode("18610-6");
+        processingCode.setDisplayName("MEDICATION ADMINISTERED");
+        processingCode.setCodeSystem("2.16.840.1.113883.6.1");
+        processingCode.setCodeSystemName("LOINC");
+        clinicalDocument.setCode(processingCode);
+
+        final TS creationTime = new TS();
+        SimpleDateFormat sdf = new SimpleDateFormat("yyyyMMddHHmmss");
+        creationTime.setValue(sdf.format(new Date()));
+        clinicalDocument.setEffectiveTime(creationTime);
+
+
+        final CE confidentialityCode = new CE();
+        confidentialityCode.setCode("N");
+        confidentialityCode.setCodeSystem("2.16.840.1.113883.5.25");
+        clinicalDocument.setConfidentialityCode(confidentialityCode);
+
+
+        final CS languageCode = new CS();
+        languageCode.setCode("ru-RU");
+        clinicalDocument.setLanguageCode(languageCode);
+
+
+        final II setId = new II();
+        setId.setRoot(UUID.randomUUID().toString());
+        clinicalDocument.setSetId(setId);
+
+
+        final INT versionNumber = new INT();
+        versionNumber.setValue(new BigInteger("1"));
+        clinicalDocument.setVersionNumber(versionNumber);
+
+        // --- record target
+        final POCDMT000040RecordTarget recordTarget = new POCDMT000040RecordTarget();
+        final POCDMT000040PatientRole patientRole = new POCDMT000040PatientRole();
+
+        final II idRootPatient = new II();
+        idRootPatient.setRoot(clientUUID);
+        idRootPatient.setExtension(externalId);
+        patientRole.getId().add(idRootPatient);
+
+        final POCDMT000040Patient patient = new POCDMT000040Patient();
+        final PN pn = new PN();
+        final EnGiven enGiven = new EnGiven();
+        enGiven.getContent().add(client.getFirstName());
+        JAXBElement<EnGiven> givenJAXBElement = f.createENGiven(enGiven);
+        pn.getContent().add(givenJAXBElement);
+
+        final EnGiven enGiven2 = new EnGiven();
+        enGiven2.getContent().add(client.getPatrName());
+        JAXBElement<EnGiven> givenJAXBElement2 = f.createENGiven(enGiven2);
+        givenJAXBElement2.setValue(enGiven2);
+        pn.getContent().add(givenJAXBElement2);
+
+        final EnFamily enFamily = f.createEnFamily();
+        enFamily.getContent().add(client.getLastName());
+        JAXBElement<EnFamily> enFamilyJAXBElement = f.createENFamily(enFamily);
+        pn.getContent().add(enFamilyJAXBElement);
+        patient.getName().add(pn);
+
+
+        final CE administrativeGenderCode = new CE();
+        administrativeGenderCode.setCode("M");
+        administrativeGenderCode.setCodeSystem("2.16.840.1.113883.5.1");
+        patient.setAdministrativeGenderCode(administrativeGenderCode);
+
+        final TS birthTime = new TS();
+        SimpleDateFormat sdfBirthday = new SimpleDateFormat("yyyyMMdd");
+        birthTime.setValue(sdfBirthday.format(client.getBirthDate()));
+        patient.setBirthTime(birthTime);
+
+        patientRole.setPatient(patient);
+        recordTarget.setPatientRole(patientRole);
+        clinicalDocument.getRecordTarget().add(recordTarget);
+
+        // --- author
+        final POCDMT000040Author author = new POCDMT000040Author();
+        final TS time = new TS();
+        time.setValue(sdf.format(new Date())); //todo
+        author.setTime(time);
+
+        final POCDMT000040AssignedAuthor assignedAuthor = new POCDMT000040AssignedAuthor();
+        final II idRootAuthor = new II();
+        idRootAuthor.setRoot(UUID.randomUUID().toString()); //todo
+        assignedAuthor.getId().add(idRootAuthor);
+
+        final POCDMT000040Person assignedPerson = new POCDMT000040Person();
+        final PN authorPerson = new PN();
+
+        final EnGiven enGivenAuthor = new EnGiven();
+        enGivenAuthor.getContent().add(au.getFirstName());  // todo
+        JAXBElement<EnGiven> givenJAXBElementAuthor = f.createENGiven(enGivenAuthor);
+        authorPerson.getContent().add(givenJAXBElementAuthor);
+
+        final EnGiven enGivenAuthor2 = new EnGiven();
+        enGivenAuthor2.getContent().add(au.getPatrName());     //todo
+        JAXBElement<EnGiven> givenJAXBElementAuthor2 = f.createENGiven(enGivenAuthor2);
+        givenJAXBElementAuthor2.setValue(enGivenAuthor2);
+        authorPerson.getContent().add(givenJAXBElementAuthor2);
+
+        final EnFamily enFamilyAuthor = f.createEnFamily();
+        enFamilyAuthor.getContent().add(au.getLastName());   //todo
+        JAXBElement<EnFamily> enFamilyJAXBElementAuthor = f.createENFamily(enFamilyAuthor);
+        authorPerson.getContent().add(enFamilyJAXBElementAuthor);
+
+        assignedPerson.getName().add(authorPerson);
+        assignedAuthor.setAssignedPerson(assignedPerson);
+        author.setAssignedAuthor(assignedAuthor);
+        clinicalDocument.getAuthor().add(author);
+
+
+        // --- custodian
+        final POCDMT000040Custodian custodian = new POCDMT000040Custodian();
+
+        final POCDMT000040AssignedCustodian assignedCustodian = new POCDMT000040AssignedCustodian();
+
+        final POCDMT000040CustodianOrganization representedCustodianOrganization = new POCDMT000040CustodianOrganization();
+        final II idRootCustodian = new II();
+        idRootCustodian.setRoot(UUID.randomUUID().toString());
+
+        final ON name = new ON();
+        name.getContent().add(organizationName); //todo
+        representedCustodianOrganization.setName(name);
+        representedCustodianOrganization.getId().add(idRootCustodian);
+        assignedCustodian.setRepresentedCustodianOrganization(representedCustodianOrganization);
+        custodian.setAssignedCustodian(assignedCustodian);
+        clinicalDocument.setCustodian(custodian);
+
+
+        // -- componentOf
+        final POCDMT000040Component1 componentOf = new POCDMT000040Component1();
+        final POCDMT000040EncompassingEncounter encompassingEncounter = new POCDMT000040EncompassingEncounter();
+
+        final II idRootEncounter = new II();
+        idRootEncounter.setRoot(UUID.randomUUID().toString()); //todo
+        idRootEncounter.setExtension(externalId);  //todo
+        encompassingEncounter.getId().add(idRootEncounter);
+
+        final CE code = new CE();
+        code.setCode("IMP");
+        code.setCodeSystem("2.16.840.1.113883.5.4");
+        code.setCodeSystemName("actCode");
+        code.setDisplayName("Inpatient encounter");
+        encompassingEncounter.setCode(code);
+
+        final IVLTS value = new IVLTS();
+        value.setNullFlavor(NullFlavor.NI);
+        encompassingEncounter.setEffectiveTime(value);
+
+        componentOf.setEncompassingEncounter(encompassingEncounter);
+        clinicalDocument.setComponentOf(componentOf);
+
+        // --- component
+        final POCDMT000040Component2 component = new POCDMT000040Component2();
+
+        final POCDMT000040StructuredBody structuredBody = new POCDMT000040StructuredBody();
+        final POCDMT000040Component3 component3 = new POCDMT000040Component3();
+        final POCDMT000040Section section = new POCDMT000040Section();
+        final StrucDocText text = f.createStrucDocText();
+        text.getContent().add("Take captopril 25mg PO every 12 hours, starting on Jan 01, 2002, ending on Feb 01, 2002");
+        section.setText(text);
+
+
+        final POCDMT000040Entry entry = new POCDMT000040Entry();
+        //----------------
+        final POCDMT000040SubstanceAdministration substanceAdministration = new POCDMT000040SubstanceAdministration();
+        substanceAdministration.setClassCode(ActClass.SBADM);
+        substanceAdministration.setMoodCode(XDocumentSubstanceMood.EVN);
+        final II idRoot2 = new II();
+        idRoot2.setRoot(UUID.randomUUID().toString());
+        substanceAdministration.getId().add(idRoot2);
+
+        final II idRootEx = new II();
+        idRootEx.setExtension("OMC");
+        substanceAdministration.getId().add(idRootEx);
+
+
+        final IVLTS ivlts = new IVLTS();
+        final IVXBTS low = new IVXBTS();
+        low.setValue("20121010");  // todo
+        ivlts.setLow(low);
+
+        final IVXBTS high = new IVXBTS();
+        high.setValue("20121020"); //todo
+        ivlts.setHigh(high);
+        substanceAdministration.getEffectiveTime().add(ivlts);
+
+
+        final PIVLTS pivlts = new PIVLTS();
+        pivlts.setOperator(SetOperator.A);
+        final PQ period = new PQ();
+        period.setValue("12"); // todo
+        period.setUnit("h");
+        pivlts.setPeriod(period);
+        substanceAdministration.getEffectiveTime().add(pivlts);
+
+
+        final CE priorityCode = new CE();
+        priorityCode.setCode("R");
+        priorityCode.setCodeSystem("2.16.840.1.113883.5.7");
+        priorityCode.setCodeSystemName("ActPriority");
+        priorityCode.setDisplayName("Планово");
+        substanceAdministration.setPriorityCode(priorityCode);
+
+
+        final CE routeCode = new CE();
+        routeCode.setCode("IV");
+        routeCode.setCodeSystem("2.16.840.1.113883.5.112");
+        routeCode.setCodeSystemName("RouteOfAdministration");
+        substanceAdministration.setRouteCode(routeCode);
+
+
+        final IVLPQ doseQuantity = new IVLPQ();
+        final PQ center = new PQ();
+        center.setUnit("mg"); //todo
+        center.setValue("25");
+        final PQR pqr = new PQR();
+        pqr.setCodeSystemName("RLS");
+        final ED originalText = new ED();
+        originalText.getContent().add("мг"); //todo
+        pqr.setOriginalText(originalText);
+        center.getTranslation().add(pqr);
+        doseQuantity.setCenter(center);
+        substanceAdministration.setDoseQuantity(doseQuantity);
+
+
+        // -consumable
+        final POCDMT000040Consumable consumable = new POCDMT000040Consumable();
+        final POCDMT000040ManufacturedProduct manufacturedProduct = new POCDMT000040ManufacturedProduct();
+        final POCDMT000040LabeledDrug manufacturedLabeledDrug = new POCDMT000040LabeledDrug();
+
+        final CE code1 = new CE();
+        code1.setCodeSystem("1.2.643.2.0");
+        code1.setCodeSystemName("RLS");
+
+
+        final CD cd = new CD();
+        final CD cdTrans = new CD();
+        cdTrans.setCode("Анальгин");
+        cdTrans.setDisplayName("Анальгин");
+        cdTrans.setCodeSystemName("RLS_ACTMATTERS");
+        cd.getTranslation().add(cdTrans);
+        code1.getTranslation().add(cd);
+
+
+        final CD cdTrans2 = new CD();
+
+        cdTrans2.setCode("р-р");
+        cdTrans2.setDisplayName("р-р");
+        cdTrans2.setCodeSystemName("RLS_CLSDRUGFORMS");
+
+        final CR cr = new CR();
+        final CV cv = new CV();
+        cv.setCode("DFMASS");
+        cv.setCodeSystemName("RLS");
+        cr.setName(cv);
+
+        final CD cdValue = new CD();
+        cdValue.setCode("мл");
+        cdValue.setDisplayName("мл");
+        cdValue.setCodeSystemName("RLS_MASSUNITS");
+        final ED originalText1 = new ED();
+        originalText1.getContent().add("5");
+        cdValue.setOriginalText(originalText1);
+        cr.setValue(cdValue);
+
+        cdTrans2.getQualifier().add(cr);
+        code1.getTranslation().add(cdTrans2);
+
+        manufacturedLabeledDrug.setCode(code1);
+
+
+        manufacturedProduct.setManufacturedLabeledDrug(manufacturedLabeledDrug);
+        consumable.setManufacturedProduct(manufacturedProduct);
+        substanceAdministration.setConsumable(consumable);
+
+
+        entry.setSubstanceAdministration(substanceAdministration);
+
+        //-----------------
+        section.getEntry().add(entry);
+
+        component3.setSection(section);
+
+        structuredBody.getComponent().add(component3);
+
+        component.setStructuredBody(structuredBody);
+        clinicalDocument.setComponent(component);
+
+
+        return clinicalDocument;
+    }
+
+    private static String marshallMessage(Object msg, String contextPath) {
         final StringWriter writer = new StringWriter();
         try {
             JAXBContext jaxbContext = JAXBContext.newInstance(contextPath);
             final Marshaller marshaller = jaxbContext.createMarshaller();
             marshaller.setProperty(Marshaller.JAXB_FORMATTED_OUTPUT, true);
-            marshaller.marshal(msg, writer/*System.out*/);
-            logger.info("marchall message: {}", writer.toString());
+            marshaller.marshal(msg, writer);
         } catch (Exception e) {
             logger.error("jaxb exception", e);
         } finally {
@@ -896,6 +1355,7 @@ public class HL7PacketBuilder {
                 //skip
             }
         }
+        return writer.toString();
     }
 
 

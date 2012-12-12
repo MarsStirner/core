@@ -1,10 +1,8 @@
 
 package misexchange;
 
-import javax.xml.bind.annotation.XmlAccessType;
-import javax.xml.bind.annotation.XmlAccessorType;
-import javax.xml.bind.annotation.XmlElement;
-import javax.xml.bind.annotation.XmlType;
+import javax.xml.bind.annotation.*;
+
 import org.hl7.v3.PRPAIN302011UV022;
 
 
@@ -31,6 +29,7 @@ import org.hl7.v3.PRPAIN302011UV022;
 @XmlType(name = "PRPA_IN302011UV02", propOrder = {
     "message"
 })
+@XmlRootElement
 public class PRPAIN302011UV02
     extends Request
 {

@@ -13,6 +13,7 @@ import ru.korus.tmis.core.hl7db.DbPharmacyBeanLocal;
 import ru.korus.tmis.core.hl7db.DbUUIDBeanLocal;
 import ru.korus.tmis.core.logging.LoggingInterceptor;
 import ru.korus.tmis.drugstore.event.ExternalEventFacadeBeanLocal;
+import ru.korus.tmis.pharmacy.exception.SoapConnectionException;
 
 import javax.annotation.PostConstruct;
 import javax.ejb.EJB;
@@ -81,12 +82,11 @@ public class PharmacyBean implements PharmacyBeanLocal {
     }
 
     private Date updateLastDate(Date date, Date lastDate) {
-        if(lastDate == null) {
+        if (lastDate == null) {
             return date;
         }
-        return  date.before(lastDate) ? lastDate : date;
+        return date.before(lastDate) ? lastDate : date;
     }
-
 
 
     @Schedule(minute = "*/2", hour = "*")
@@ -155,11 +155,13 @@ public class PharmacyBean implements PharmacyBeanLocal {
                 // выписка из стационара
                 logger.info("--- found leaved ---");
                 final Event event = action.getEvent();
-                final OrgStructure orgStructure = getOrgStructure(event);
+//                final OrgStructure orgStructure = getOrgStructure(event);
                 final Patient client = action.getEvent().getPatient();
                 final Pharmacy pharmacy = dbPharmacy.getOrCreate(action);
+                final String displayName = "Стационар";
+                final String clientUUID = java.util.UUID.randomUUID().toString();
 
-                HL7PacketBuilder.processLeaved(action, event, orgStructure, client);
+                HL7PacketBuilder.processLeaved(action, event.getExternalId(), clientUUID, client, displayName);
                 dbPharmacy.markComplete(pharmacy);
 
             } else if (actionType.getFlatCode().equals("del_received")) {
@@ -212,7 +214,8 @@ public class PharmacyBean implements PharmacyBeanLocal {
                 logger.info("--- actionType flatCode is not found. Skip ---");
             }
         } catch (CoreException e) {
-
+            logger.error("core error", e);
+        } catch (SoapConnectionException e) {
             logger.error("core error", e);
         }
         return action.getCreateDatetime();
