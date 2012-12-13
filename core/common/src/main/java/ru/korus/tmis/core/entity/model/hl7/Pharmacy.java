@@ -24,7 +24,7 @@ public class Pharmacy implements Serializable {
 
     @Id
     @Basic(optional = false)
-    @Column(name = "actionId", unique = true)
+    @Column(name = "actionId")
     private Integer actionId;
 
     @Basic(optional = false)
@@ -35,13 +35,16 @@ public class Pharmacy implements Serializable {
     @Column(name = "status")
     private String status;
 
+    @Basic(optional = false)
+    @Column(name = "uuid")
+    private String documentUUID;
+
+    @Basic(optional = false)
+    @Column(name = "result")
+    private String result;
 
     public Pharmacy() {
     }
-
-//    public Integer getId() {
-//        return id;
-//    }
 
     public int getActionId() {
         return actionId;
@@ -55,9 +58,13 @@ public class Pharmacy implements Serializable {
         return status;
     }
 
-//    public void setId(Integer id) {
-//        this.id = id;
-//    }
+    public String getDocumentUUID() {
+        return documentUUID;
+    }
+
+    public void setDocumentUUID(String documentUUID) {
+        this.documentUUID = documentUUID;
+    }
 
     public void setActionId(int actionId) {
         this.actionId = actionId;
@@ -71,13 +78,22 @@ public class Pharmacy implements Serializable {
         this.status = status;
     }
 
+    public String getResult() {
+        return result;
+    }
+
+    public void setResult(String result) {
+        this.result = result;
+    }
+
     @Override
     public String toString() {
         return "Pharmacy{" +
-//                "id=" + id +
-                ", actionId=" + actionId +
+                "actionId=" + actionId +
                 ", flatCode='" + flatCode + '\'' +
                 ", status='" + status + '\'' +
+                ", documentUUID='" + documentUUID + '\'' +
+                ", result='" + result + '\'' +
                 '}';
     }
 }

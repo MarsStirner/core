@@ -1,5 +1,8 @@
 package ru.korus.tmis.pharmacy;
 
+import org.hl7.v3.AcknowledgementType;
+import org.hl7.v3.MCCIIN000002UV01;
+import org.hl7.v3.MCCIMT000200UV01Acknowledgement;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import ru.korus.tmis.core.database.DbActionBeanLocal;
@@ -11,6 +14,7 @@ import ru.korus.tmis.core.event.CreateActionNotification;
 import ru.korus.tmis.core.exception.CoreException;
 import ru.korus.tmis.core.hl7db.DbPharmacyBeanLocal;
 import ru.korus.tmis.core.hl7db.DbUUIDBeanLocal;
+import ru.korus.tmis.core.hl7db.PharmacyStatus;
 import ru.korus.tmis.core.logging.LoggingInterceptor;
 import ru.korus.tmis.drugstore.event.ExternalEventFacadeBeanLocal;
 import ru.korus.tmis.pharmacy.exception.SoapConnectionException;
@@ -89,7 +93,7 @@ public class PharmacyBean implements PharmacyBeanLocal {
     }
 
 
-    @Schedule(minute = "*/2", hour = "*")
+    //@Schedule(minute = "*/2", hour = "*")
     public void pooling() {
         logger.info("pooling...last date update {}", lastDateUpdate);
         try {
@@ -102,13 +106,17 @@ public class PharmacyBean implements PharmacyBeanLocal {
                     for (Action action : actionList) {
 
                         Pharmacy checkPharmacy = dbPharmacy.getPharmacyByAction(action);
-                        logger.info("check pharmacy [{}] action {}, date {}", checkPharmacy, action, action.getCreateDatetime());
-                        if (checkPharmacy != null && !checkPharmacy.getStatus().equals("complete")) {
-                            // повторная отправка в 1с
-                            logger.info("repeate send message Pharmacy {}", checkPharmacy);
+                        logger.info("check pharmacy [{}] action [{}], date [{}], flatCode [{}]",
+                                checkPharmacy, action, action.getCreateDatetime(), action.getActionType().getFlatCode());
+                        if (checkPharmacy != null) {
+                            if (!checkPharmacy.getStatus().equals(PharmacyStatus.COMPLETE.toString())) {
+                                // повторная отправка в 1с
+                                logger.info("repeate send message Pharmacy {}", checkPharmacy);
+                                checkMessageAndSend(action);
+                            }
+                        } else {
                             checkMessageAndSend(action);
                         }
-
                         lastDateUpdate = updateLastDate(action.getCreateDatetime(), lastDateUpdate);
                     }
 
@@ -147,9 +155,8 @@ public class PharmacyBean implements PharmacyBeanLocal {
                 final String externalUUID = java.util.UUID.randomUUID().toString();//dbUUIDBeanLocal.getUUIDById(event.getUUID());
                 final String orgUUID = java.util.UUID.randomUUID().toString();//dbUUIDBeanLocal.getUUIDById(orgStructure.getUUID());
                 final String clientUUID = java.util.UUID.randomUUID().toString();//dbUUIDBeanLocal.getUUIDById(client.getUUID());
-                HL7PacketBuilder.processReceived(action, event.getExternalId(), externalUUID, orgUUID, client, clientUUID);
-                dbPharmacy.markComplete(pharmacy);
-                logger.info("-----------------------------------------------------");
+
+                processResult(pharmacy, HL7PacketBuilder.processReceived(action, event.getExternalId(), externalUUID, orgUUID, client, clientUUID));
 
             } else if (actionType.getFlatCode().equals("leaved")) {
                 // выписка из стационара
@@ -161,8 +168,7 @@ public class PharmacyBean implements PharmacyBeanLocal {
                 final String displayName = "Стационар";
                 final String clientUUID = java.util.UUID.randomUUID().toString();
 
-                HL7PacketBuilder.processLeaved(action, event.getExternalId(), clientUUID, client, displayName);
-                dbPharmacy.markComplete(pharmacy);
+                processResult(pharmacy, HL7PacketBuilder.processLeaved(action, event.getExternalId(), clientUUID, client, displayName));
 
             } else if (actionType.getFlatCode().equals("del_received")) {
                 // отмена сообщения о госпитализации
@@ -175,8 +181,7 @@ public class PharmacyBean implements PharmacyBeanLocal {
                 final String externalId = java.util.UUID.randomUUID().toString();//dbUUIDBeanLocal.getUUIDById(event.getUUID());
                 final String uuidClient = java.util.UUID.randomUUID().toString();//dbUUIDBeanLocal.getUUIDById(event.getUUID());
 
-                HL7PacketBuilder.processDelReceived(action, uuidExternalId, externalId, uuidClient, client);
-                dbPharmacy.markComplete(pharmacy);
+                processResult(pharmacy, HL7PacketBuilder.processDelReceived(action, uuidExternalId, externalId, uuidClient, client));
 
             } else if (actionType.getFlatCode().equals("moving")) {
                 // перевод пациента между отделениями
@@ -191,8 +196,7 @@ public class PharmacyBean implements PharmacyBeanLocal {
                 final String uuidLocationOut = java.util.UUID.randomUUID().toString();//dbUUIDBeanLocal.getUUIDById(event.getUUID());
                 final String uuidLocationIn = java.util.UUID.randomUUID().toString();//dbUUIDBeanLocal.getUUIDById(event.getUUID());
 
-                HL7PacketBuilder.processMoving(action, uuidExternalId, externalId, uuidClient, uuidLocationOut, uuidLocationIn);
-                dbPharmacy.markComplete(pharmacy);
+                processResult(pharmacy, HL7PacketBuilder.processMoving(action, uuidExternalId, externalId, uuidClient, uuidLocationOut, uuidLocationIn));
 
             } else if (actionType.getFlatCode().equals("del_moving")) {
                 // отмена сообщения о переводе пациента между отделениями
@@ -207,18 +211,47 @@ public class PharmacyBean implements PharmacyBeanLocal {
                 final String uuidLocationOut = java.util.UUID.randomUUID().toString();//dbUUIDBeanLocal.getUUIDById(event.getUUID());
                 final String uuidLocationIn = java.util.UUID.randomUUID().toString();//dbUUIDBeanLocal.getUUIDById(event.getUUID());
 
-                HL7PacketBuilder.processDelMoving(action, uuidExternalId, externalId, uuidClient, uuidLocationOut, uuidLocationIn);
-                dbPharmacy.markComplete(pharmacy);
+                processResult(pharmacy, HL7PacketBuilder.processDelMoving(action, uuidExternalId, externalId, uuidClient, uuidLocationOut, uuidLocationIn));
 
             } else {
                 logger.info("--- actionType flatCode is not found. Skip ---");
             }
+
+            // фильтруем все назначения
+            if (actionType.getTypeClass() == 1 && actionType.getCode().equals("3_1_05")) {
+                logger.info("--- found clinical document (code:{}) ---", actionType.getCode());
+
+                final Pharmacy pharmacy = dbPharmacy.getOrCreate(action);
+                final Patient client = action.getEvent().getPatient();
+                final Staff createPerson = action.getCreatePerson();
+                final String externalId = java.util.UUID.randomUUID().toString();//dbUUIDBeanLocal.getUUIDById(event.getUUID());
+                final String uuidClient = java.util.UUID.randomUUID().toString();//dbUUIDBeanLocal.getUUIDById(event.getUUID());
+                final OrgStructure orgStructure = getOrgStructure(action.getEvent());
+                final String organizationName = orgStructure.getName();
+
+                processResult(pharmacy, HL7PacketBuilder.processRCMRIN000002UV02(
+                        action, uuidClient, externalId, client, createPerson, organizationName));
+            }
+
         } catch (CoreException e) {
             logger.error("core error", e);
         } catch (SoapConnectionException e) {
             logger.error("core error", e);
         }
         return action.getCreateDatetime();
+    }
+
+    private void processResult(Pharmacy pharmacy, MCCIIN000002UV01 result) throws CoreException {
+        if (result != null && !result.getAcknowledgement().isEmpty()) {
+            final MCCIMT000200UV01Acknowledgement ack = result.getAcknowledgement().get(0);
+            pharmacy.setDocumentUUID(ack.getTargetMessage().getId().getRoot());
+            pharmacy.setResult(ack.getTypeCode().value());
+            if (ack.getTypeCode().equals(AcknowledgementType.AA)) {
+                pharmacy.setStatus(PharmacyStatus.COMPLETE.toString());
+            }
+        }
+        logger.info("---update message {} ", pharmacy);
+        dbPharmacy.updateMessage(pharmacy);
     }
 
 
@@ -228,6 +261,7 @@ public class PharmacyBean implements PharmacyBeanLocal {
             orgStructure = dbOrgStructureBeanLocal.getOrgStructureById(event.getOrgId());
         } catch (Exception e) {
             orgStructure = new OrgStructure();
+            orgStructure.setName("none");
         }
         logger.info("getOrgStructure {}, by Event {}", orgStructure, event);
         return orgStructure;

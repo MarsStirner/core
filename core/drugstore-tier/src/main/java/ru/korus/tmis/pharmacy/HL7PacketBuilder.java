@@ -10,6 +10,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import ru.korus.tmis.core.entity.model.Action;
 import ru.korus.tmis.core.entity.model.Patient;
+import ru.korus.tmis.core.entity.model.Staff;
 import ru.korus.tmis.pharmacy.exception.SoapConnectionException;
 
 import javax.xml.bind.JAXBContext;
@@ -913,7 +914,7 @@ public class HL7PacketBuilder {
             final String clientUUID,
             final String externalId,
             final Patient client,
-            final Patient au,
+            final Staff createPerson,
             final String organizationName
     ) throws SoapConnectionException {
         try {
@@ -926,7 +927,7 @@ public class HL7PacketBuilder {
             org.hl7.v3.ObjectFactory f = new org.hl7.v3.ObjectFactory();
 
             final POCDMT000040ClinicalDocument clinicalDocument = getClinicalDocument(f,
-                    clientUUID, externalId, client, au, organizationName);
+                    clientUUID, externalId, client, createPerson, organizationName);
             final String innerDocument = marshallMessage(clinicalDocument, "org.hl7.v3");
             logger.info("prepare inner document... \n\n{}", innerDocument);
 
@@ -1024,7 +1025,7 @@ public class HL7PacketBuilder {
             final String clientUUID,
             final String externalId,
             final Patient client,
-            final Patient au,
+            final Staff createPerson,
             final String organizationName) {
 
         final POCDMT000040ClinicalDocument clinicalDocument = f.createPOCDMT000040ClinicalDocument();
@@ -1136,18 +1137,18 @@ public class HL7PacketBuilder {
         final PN authorPerson = new PN();
 
         final EnGiven enGivenAuthor = new EnGiven();
-        enGivenAuthor.getContent().add(au.getFirstName());  // todo
+        enGivenAuthor.getContent().add(createPerson.getFirstName());  // todo
         JAXBElement<EnGiven> givenJAXBElementAuthor = f.createENGiven(enGivenAuthor);
         authorPerson.getContent().add(givenJAXBElementAuthor);
 
         final EnGiven enGivenAuthor2 = new EnGiven();
-        enGivenAuthor2.getContent().add(au.getPatrName());     //todo
+        enGivenAuthor2.getContent().add(createPerson.getPatrName());     //todo
         JAXBElement<EnGiven> givenJAXBElementAuthor2 = f.createENGiven(enGivenAuthor2);
         givenJAXBElementAuthor2.setValue(enGivenAuthor2);
         authorPerson.getContent().add(givenJAXBElementAuthor2);
 
         final EnFamily enFamilyAuthor = f.createEnFamily();
-        enFamilyAuthor.getContent().add(au.getLastName());   //todo
+        enFamilyAuthor.getContent().add(createPerson.getLastName());   //todo
         JAXBElement<EnFamily> enFamilyJAXBElementAuthor = f.createENFamily(enFamilyAuthor);
         authorPerson.getContent().add(enFamilyJAXBElementAuthor);
 

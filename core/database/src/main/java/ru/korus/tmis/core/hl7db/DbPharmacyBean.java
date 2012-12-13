@@ -35,33 +35,11 @@ public class DbPharmacyBean implements DbPharmacyBeanLocal {
     private EntityManager em = null;
 
     @EJB
-    private DbEventBeanLocal dbEvent = null;
-
-    @EJB
-    private DbActionTypeBeanLocal dbActionType = null;
-
-
-    @EJB
-    private DbActionBeanLocal dbAction = null;
-
-    @EJB
     private DbManagerBeanLocal dbManager = null;
 
     @EJB
     private DbPatientBeanLocal dbPatientBeanLocal = null;
 
-//    @Override
-//    public Pharmacy createMessage(Action action, String flatCode) throws CoreException {
-//
-//        Pharmacy pharmacy = new Pharmacy();
-//        pharmacy.setActionId(action.getId());
-//        pharmacy.setFlatCode(flatCode);
-//        pharmacy.setStatus("added");
-//
-//        dbManager.persist(pharmacy);
-//
-//        return pharmacy;
-//    }
 
     @Override
     public Pharmacy getOrCreate(Action action) throws CoreException {
@@ -73,7 +51,7 @@ public class DbPharmacyBean implements DbPharmacyBeanLocal {
             pharmacy = new Pharmacy();
             pharmacy.setActionId(action.getId());
             pharmacy.setFlatCode(actionType.getFlatCode());
-            pharmacy.setStatus("added");
+            pharmacy.setStatus(PharmacyStatus.ADDED.toString());
             dbManager.persist(pharmacy);
             logger.info("create pharmacy {}", pharmacy);
         } else {
@@ -82,14 +60,16 @@ public class DbPharmacyBean implements DbPharmacyBeanLocal {
         return pharmacy;
     }
 
-    public int updateMessage(int pharmacyId, String status) throws CoreException {
-        Pharmacy pharmacy = em.find(Pharmacy.class, pharmacyId);
-        if (pharmacy != null) {
-            pharmacy.setStatus(status);
-            dbManager.merge(pharmacy);
-            return pharmacy.getActionId();
+    public Pharmacy updateMessage(Pharmacy pharmacy) throws CoreException {
+        Pharmacy findPharmacy = em.find(Pharmacy.class, pharmacy.getActionId());
+        if (findPharmacy != null) {
+            findPharmacy.setStatus(pharmacy.getStatus());
+            findPharmacy.setDocumentUUID(pharmacy.getDocumentUUID());
+            findPharmacy.setResult(pharmacy.getResult());
+            dbManager.merge(findPharmacy);
+            return findPharmacy;
         }
-        return 0;
+        return null;
     }
 
 
@@ -111,14 +91,6 @@ public class DbPharmacyBean implements DbPharmacyBeanLocal {
         return em.createQuery("SELECT a FROM Action a WHERE a.createDatetime > :createDatetime", Action.class)
                 .setParameter("createDatetime", after)
                 .getResultList();
-    }
-
-    @Override
-    public Pharmacy markComplete(Pharmacy pharmacy) throws CoreException {
-        pharmacy.setStatus("complete");
-        //updateMessage(pharmacy.getId(), "complete");
-        //em.refresh(pharmacy);
-        return pharmacy;
     }
 
     @Override

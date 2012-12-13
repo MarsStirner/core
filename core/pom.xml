@@ -6,7 +6,7 @@
     <groupId>ru.korus.tmis</groupId>
     <artifactId>tmis-nexus</artifactId>
     <packaging>pom</packaging>
-    <version>0.9.5</version>
+    <version>0.9.6</version>
     <name>TMIS Root Project</name>
 
     <modules>
