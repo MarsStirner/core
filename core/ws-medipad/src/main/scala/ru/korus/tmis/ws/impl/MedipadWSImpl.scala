@@ -852,6 +852,11 @@ class MedipadWSImpl
     list
   }
 
+  def getAllDepartmentsByHasBeds(hasBeds: String) = { //Для медипада
+    new AllDepartmentsListDataMP(dbOrgStructureBean.getAllOrgStructuresByRequest(0, 0, "", "", null), null)
+  }
+
+
   def getListOfDiagnosticsForPatientByEvent(requestData: DiagnosticsListRequestData) = {
 
     //TODO: подключить анализ авторизационных данных и доступных ролей
@@ -1221,7 +1226,7 @@ class MedipadWSImpl
     mapper.writeValueAsString(new EventTypesListData(list, request))
   }
 
-  def getPatientsFromOpenAppealWhatHasBedByDepartmentId(departmentId: Int, authData: AuthData) = {
+  def getPatientsFromOpenAppealsWhatHasBedsByDepartmentId(departmentId: Int) = {
     patientBean.getCurrentPatientsByDepartmentId(departmentId)
   }
 

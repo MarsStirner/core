@@ -269,11 +269,6 @@ class AppealEntry {
   @BeanProperty
   var havePrimary: Boolean = false
 
-  //TODO: временно, до выяснения судьбы поля relations
-  @BeanProperty
-  @JsonView(Array(classOf[Views.DynamicFieldsStandartForm]))
-  var relations: LinkedList[RelationEntryContainer] = new LinkedList[RelationEntryContainer]
-
   @JsonView(Array(classOf[Views.DynamicFieldsPrintForm]))
   @BeanProperty
   var ward: String = _                                            //Diff with AppealData
@@ -1023,7 +1018,7 @@ class AppealTypeContainer {
 class LegalRepresentativeContainer {
 
   @BeanProperty
-  var relativeId: Int = _                   //Ид законного представителя
+  var relative: IdNameDateContainer = _                   //Законный представитель (ИД + ФИО)
 
   @BeanProperty
   var relativeType: IdNameContainer = _     //Тип связи
@@ -1041,12 +1036,47 @@ class LegalRepresentativeContainer {
     this()
 
     if (relation!=null){
-      this.relativeId = if(relation.getRelative!=null) relation.getRelative.getId.intValue() else 0
+      val rel = relation.getRelative
+      this.relative =
+        if(rel!=null)
+          new IdNameDateContainer(rel.getId.intValue(),
+                                  "%s %s %s".format(rel.getLastName, rel.getFirstName, rel.getPatrName),
+                                  relation.getRelative.getBirthDate)
+        else
+          new IdNameDateContainer()
+
       this.relativeType =
         if(relation.getRelativeType!=null)
-          new IdNameContainer(relation.getRelativeType.getId.intValue(),"%s(%s)".format(relation.getRelativeType.getLeftName, relation.getRelativeType.getRightName))
+          new IdNameContainer(relation.getRelativeType.getId.intValue(),
+                              "%s(%s)".format(relation.getRelativeType.getLeftName, relation.getRelativeType.getRightName))
         else null
     }
     this.note = note
   }
+}
+
+/**
+ * Контейнер для представления информации в виде: Идентификатор, Имя, Дата рождения
+ */
+@XmlType(name = "idNameDateContainer")
+@XmlRootElement(name = "idNameDateContainer")
+@JsonIgnoreProperties(ignoreUnknown = true)
+class IdNameDateContainer {
+
+  @BeanProperty
+  var id : Int = _         //ИД
+
+  @BeanProperty
+  var name : String = _    //ФИО
+
+  @BeanProperty
+  var birthDate: Date = _  // — Дата рождения
+
+  def this( id : Int, name : String, birthDate : Date) = {
+    this()
+    this.id = id;
+    this.name = name
+    this.birthDate = birthDate
+  }
+
 }

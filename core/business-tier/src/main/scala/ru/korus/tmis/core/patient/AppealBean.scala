@@ -321,9 +321,9 @@ with CAPids{
       val serverRelations = patient.getActiveClientRelatives()
 
       clientRelations.foreach(f => {
-        val serverRelation = serverRelations.find(element => element.getRelative.getId().intValue() == f.getRelativeId).getOrElse(null)
+        val serverRelation = serverRelations.find(element => element.getRelative.getId().intValue() == f.getRelative.getId).getOrElse(null)
         if (serverRelation==null){
-          val parent = dbPatientBean.getPatientById(f.getRelativeId)
+          val parent = dbPatientBean.getPatientById(f.getRelative.getId)
           val tempServerRelation = dbClientRelation.insertOrUpdateClientRelationByRelativePerson( -1,
                                                                                     f.getRelativeType.getId(),
                                                                                     parent,
@@ -611,11 +611,11 @@ with CAPids{
     else if (that.isInstanceOf[LinkedList[/*IdValueContainer*/LegalRepresentativeContainer]]) {
       var hospWith = Set.empty[String]
       that.asInstanceOf[LinkedList[LegalRepresentativeContainer]].foreach(e => {
-        if(e.getRelativeId().toInt>0) {
+        if(e.getRelative.getId>0) {
           sec match {
-            case "relative" => hospWith += e.getRelativeId().toString
-            case "note" => hospWith += e.getNote().toString
-            case _ => hospWith += e.getRelativeId().toString
+            case "relative" => hospWith += e.getRelative.getId.toString
+            case "note" => hospWith += e.getNote.toString
+            case _ => hospWith += e.getRelative.getId.toString
           }
         }
       })
@@ -624,7 +624,7 @@ with CAPids{
     else if (that.isInstanceOf[IdNameContainer]) {
 
       return if(that.asInstanceOf[IdNameContainer].getId>0)
-                Set(that.asInstanceOf[IdNameContainer].getId().toString)
+                Set(that.asInstanceOf[IdNameContainer].getId.toString)
              else Set.empty[String]
     }
     else {
