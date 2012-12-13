@@ -5,14 +5,14 @@
     <modelVersion>4.0.0</modelVersion>
     <groupId>ru.korus.tmis.drugstore</groupId>
     <artifactId>tmis-drugstore-tier</artifactId>
-    <version>0.9.5</version>
+    <version>0.9.6</version>
     <packaging>ejb</packaging>
     <name>TMIS Drugstore Business Tier EJBs</name>
 
     <parent>
         <groupId>ru.korus.tmis</groupId>
         <artifactId>tmis-nexus</artifactId>
-        <version>0.9.5</version>
+        <version>0.9.6</version>
         <relativePath>../</relativePath>
     </parent>
 
@@ -20,13 +20,13 @@
         <dependency>
             <groupId>ru.korus.tmis.core</groupId>
             <artifactId>tmis-core-common</artifactId>
-            <version>0.9.5</version>
+            <version>0.9.6</version>
             <type>jar</type>
         </dependency>
         <dependency>
             <groupId>ru.korus.tmis.core</groupId>
             <artifactId>tmis-core-database</artifactId>
-            <version>0.9.5</version>
+            <version>0.9.6</version>
             <type>ejb</type>
         </dependency>
 
@@ -37,6 +37,8 @@
             <scope>test</scope>
             <!--<classifier>jdk15</classifier>-->
         </dependency>
+
+
     </dependencies>
 
     <build>

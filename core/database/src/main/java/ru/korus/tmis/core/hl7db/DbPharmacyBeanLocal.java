@@ -26,7 +26,7 @@ public interface DbPharmacyBeanLocal {
 
     Pharmacy getOrCreate(Action action) throws CoreException;
 
-    int updateMessage(int pharmacyId, String status) throws CoreException;
+    Pharmacy updateMessage(Pharmacy pharmacy) throws CoreException;
 
     Action getMaxAction();
 
@@ -39,8 +39,6 @@ public interface DbPharmacyBeanLocal {
 
 
     List<Action> getActionAfterDate(Date after);
-
-    Pharmacy markComplete(Pharmacy pharmacy) throws CoreException;
 
     List<Pharmacy> getAllPharmacy();
 

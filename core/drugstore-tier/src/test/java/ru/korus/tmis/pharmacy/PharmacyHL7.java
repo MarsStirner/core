@@ -5,6 +5,7 @@ import org.testng.annotations.BeforeSuite;
 import org.testng.annotations.Test;
 import ru.korus.tmis.core.entity.model.Action;
 import ru.korus.tmis.core.entity.model.Patient;
+import ru.korus.tmis.core.entity.model.Staff;
 import ru.korus.tmis.pharmacy.exception.SoapConnectionException;
 
 import javax.xml.bind.JAXBContext;
@@ -26,11 +27,12 @@ public class PharmacyHL7 {
 
     private final Action action = new Action(1);
     private final Patient client = new Patient(2);
-    private final Patient au = new Patient(2);
-    private final String externalId = "2012/55555";
+    private final Patient au = new Patient(3);
+    private final Staff createPerson = new Staff(11);
+    private final String externalId = "2012/4251";
     private final String externalUUID = UUID.randomUUID().toString();
-    private final String orgUUID = UUID.randomUUID().toString();
-    private final String orgUUID2 = UUID.randomUUID().toString();
+    private final String orgUUID = "50c965c7-7422-11e1-b47f-005056a41f97";
+    private final String orgUUID2 = "8db3a054-41c3-11e1-b38c-005056a46489";
     private final String clientUUID = UUID.randomUUID().toString();
 
     @BeforeSuite
@@ -49,6 +51,9 @@ public class PharmacyHL7 {
         au.setLastName("Администраторов");
         au.setSnils("99-199-999");
 
+        createPerson.setFirstName("Доктор");
+        createPerson.setPatrName("Докторович");
+        createPerson.setLastName("Айболит");
     }
 
 
@@ -153,7 +158,7 @@ public class PharmacyHL7 {
                     clientUUID,
                     externalId,
                     client,
-                    au,
+                    createPerson,
                     "ФНКЦ");
 
             final String docUUID = result.getId().getRoot();

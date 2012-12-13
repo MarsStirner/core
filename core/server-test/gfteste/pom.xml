@@ -201,19 +201,19 @@
         <dependency>
             <groupId>ru.korus.tmis.core</groupId>
             <artifactId>tmis-core-business</artifactId>
-            <version>0.9.5</version>
+            <version>0.9.6</version>
             <type>ejb</type>
         </dependency>
         <dependency>
             <groupId>ru.korus.tmis.core</groupId>
             <artifactId>tmis-core-common</artifactId>
-            <version>0.9.5</version>
+            <version>0.9.6</version>
             <type>jar</type>
         </dependency>
         <dependency>
             <groupId>ru.korus.tmis</groupId>
             <artifactId>tmis-ws-medipad</artifactId>
-            <version>0.9.5</version>
+            <version>0.9.6</version>
             <type>war</type>
             <!--
             <classifier>classes</classifier>
