@@ -823,11 +823,11 @@ class DbCustomQueryBean
    * @throws CoreException
    */
   def getFinanceId(e: Event) = {
-    val result = em.createQuery(finance, classOf[Int])
+    val result = em.createQuery(finance, classOf[RbFinance])
       //      .setParameter("eventTypeId", e.getEventType.getId)
       .setParameter("eventId", e.getId)
       .getSingleResult
-    result
+    result.getId
   }
 
 
@@ -837,9 +837,9 @@ class DbCustomQueryBean
    * Запрос кода источника финансирования
    */
   val finance = """
-      SELECT et.financeId
+      SELECT et.finance
       FROM EventType et, Event e, RbFinance rf
-              WHERE e.id = :eventId AND e.eventType.id = et.id AND et.financeId = rf.id
+              WHERE e.id = :eventId AND e.eventType.id = et.id AND et.finance = rf
                    AND et.deleted = 0
                    AND e.deleted = 0
                 """
