@@ -62,12 +62,13 @@ public class PatientRegistryRESTImpl implements Serializable {
                                   @QueryParam("filter[fullName]")String fullName,
                                   @QueryParam("filter[birthDate]")Long birthDate,
                                   @QueryParam("filter[document]")String document,
+                                  @QueryParam("filter[withRelations]")String withRelations,
                                   @QueryParam("callback") String callback,
                                   @Context HttpServletRequest servRequest) {
         AuthData auth = wsImpl.checkTokenCookies(servRequest);
 
         Date bDate = birthDate == null ? null : new Date(birthDate);
-        PatientRequestData requestData = new PatientRequestData(patientCode, fullName, bDate, document, sortingField, sortingMethod, limit, page);
+        PatientRequestData requestData = new PatientRequestData(patientCode, fullName, bDate, document, withRelations, sortingField, sortingMethod, limit, page);
         JSONWithPadding returnValue = new JSONWithPadding(wsImpl.getAllPatients(requestData, auth), callback);
     	return returnValue;
     }
