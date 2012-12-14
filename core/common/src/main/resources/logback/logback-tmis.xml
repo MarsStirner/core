@@ -1,0 +1,29 @@
+<included>
+
+    <!--Общий логгер для всего проекта-->
+
+    <appender name="TMIS" class="ch.qos.logback.core.rolling.RollingFileAppender">
+        <file>${com.sun.aas.instanceRoot}/logs/tmis-core/core.log</file>
+        <encoder>
+            <pattern>%5p [%d][%thread][%logger{0}] %msg%n</pattern>
+            <charset>UTF-8</charset>
+        </encoder>
+
+        <rollingPolicy class="ch.qos.logback.core.rolling.TimeBasedRollingPolicy">
+            <!-- rollover daily -->
+            <fileNamePattern>${com.sun.aas.instanceRoot}/logs/tmis-core/core.%d{yyyy-MM-dd}.%i.log.gz</fileNamePattern>
+            <timeBasedFileNamingAndTriggeringPolicy
+                    class="ch.qos.logback.core.rolling.SizeAndTimeBasedFNATP">
+                <!-- or whenever the file size reaches 200MB -->
+                <maxFileSize>200MB</maxFileSize>
+            </timeBasedFileNamingAndTriggeringPolicy>
+        </rollingPolicy>
+    </appender>
+
+    <logger name="ru.korus.tmis" level="INFO" additivity="false">
+        <appender-ref ref="TMIS"/>
+        <appender-ref ref="STDOUT_ERROR"/>
+        <appender-ref ref="EXCEPTIONS"/>
+    </logger>
+
+</included>

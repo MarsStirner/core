@@ -321,11 +321,15 @@ with CAPids{
       val serverRelations = patient.getActiveClientRelatives()
 
       clientRelations.foreach(f => {
-        val serverRelation = serverRelations.find(element => element.getRelative.getId().intValue() == f.getRelative.getId).getOrElse(null)
+        val serverRelation = serverRelations.find(element => ((element.getRelative.getId.intValue() == f.getRelative.getId) &&
+                                                              (element.getRelativeType.getId.intValue()==f.getRelativeType.getId)))
+                                            .getOrElse(null)
         if (serverRelation==null){
+          val updateRelation = serverRelations.find(element => element.getRelative.getId.intValue() == f.getRelative.getId).getOrElse(null)
+          val relationId = if(updateRelation==null) -1 else updateRelation.getId.intValue()
           val parent = dbPatientBean.getPatientById(f.getRelative.getId)
-          val tempServerRelation = dbClientRelation.insertOrUpdateClientRelationByRelativePerson( -1,
-                                                                                    f.getRelativeType.getId(),
+          val tempServerRelation = dbClientRelation.insertOrUpdateClientRelationByRelativePerson(relationId,
+                                                                                    f.getRelativeType.getId,
                                                                                     parent,
                                                                                     patient,
                                                                                     authData.user)

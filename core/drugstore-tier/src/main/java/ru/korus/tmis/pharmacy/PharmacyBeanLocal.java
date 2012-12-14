@@ -12,10 +12,9 @@ import javax.ejb.Local;
 
 @Local
 public interface PharmacyBeanLocal {
-    /**
-     * Произошло событие, создан Action
-     * @param actionId идентификатор события
-     */
-    void eventActionCreated(int actionId);
 
+    /**
+     * Полинг базы в поисках событий для 1С Аптеки
+     */
+    void pooling();
 }

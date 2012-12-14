@@ -20,6 +20,7 @@ import ru.korus.tmis.drugstore.event.ExternalEventFacadeBeanLocal;
 import ru.korus.tmis.pharmacy.exception.SoapConnectionException;
 
 import javax.annotation.PostConstruct;
+import javax.annotation.PreDestroy;
 import javax.ejb.EJB;
 import javax.ejb.Schedule;
 import javax.ejb.Stateless;
@@ -52,9 +53,6 @@ public class PharmacyBean implements PharmacyBeanLocal {
     private DbActionPropertyBeanLocal dbActionProperty = null;
 
     @EJB
-    private ExternalEventFacadeBeanLocal externalEventFacade = null;
-
-    @EJB
     private DbPharmacyBeanLocal dbPharmacy = null;
 
     @EJB
@@ -63,26 +61,14 @@ public class PharmacyBean implements PharmacyBeanLocal {
 
     private Date lastDateUpdate = null;
 
-    /**
-     * Произошло событие, создан Action
-     */
-    @Override
-
-    public void eventActionCreated(int actionId) {
-        logger.info("eventActionCreated, actionId {}", actionId);
-        try {
-            Action action = dbAction.getActionById(actionId);
-            Map<ActionProperty, List<APValue>> values = dbActionProperty.getActionPropertiesByActionId(action.getId());
-            externalEventFacade.triggerCreateActionNotification(new CreateActionNotification(action, values));
-        } catch (CoreException e) {
-            e.printStackTrace();
-        }
-    }
 
     @PostConstruct
     public void init() {
-
-
+       logger.info("====== start {} ======", Pharmacy.class.getName());
+    }
+    @PreDestroy
+    public void stop() {
+       logger.info("====== stop {} ======", Pharmacy.class.getName());
     }
 
     private Date updateLastDate(Date date, Date lastDate) {
@@ -93,6 +79,7 @@ public class PharmacyBean implements PharmacyBeanLocal {
     }
 
 
+    @Override
     //@Schedule(minute = "*/2", hour = "*")
     public void pooling() {
         logger.info("pooling...last date update {}", lastDateUpdate);
