@@ -35,7 +35,7 @@ import org.hl7.v3.MCCIIN000002UV01;
 @XmlRootElement(name = "ProcessHL7v3MessageResponse")
 public class ProcessHL7V3MessageResponse {
 
-    @XmlElement(name = "return", required = true, nillable = true)
+    @XmlElement(name = "return", required = true)
     protected MCCIIN000002UV01 _return;
 
     /**

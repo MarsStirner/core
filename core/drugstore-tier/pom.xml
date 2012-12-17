@@ -29,16 +29,6 @@
             <version>0.9.8-SNAPSHOT</version>
             <type>ejb</type>
         </dependency>
-
-        <dependency>
-            <groupId>org.testng</groupId>
-            <artifactId>testng</artifactId>
-            <version>6.8</version>
-            <scope>test</scope>
-            <!--<classifier>jdk15</classifier>-->
-        </dependency>
-
-
     </dependencies>
 
     <build>

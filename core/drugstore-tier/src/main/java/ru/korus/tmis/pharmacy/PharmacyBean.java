@@ -10,13 +10,11 @@ import ru.korus.tmis.core.database.DbActionPropertyBeanLocal;
 import ru.korus.tmis.core.database.DbOrgStructureBeanLocal;
 import ru.korus.tmis.core.entity.model.*;
 import ru.korus.tmis.core.entity.model.hl7.Pharmacy;
-import ru.korus.tmis.core.event.CreateActionNotification;
 import ru.korus.tmis.core.exception.CoreException;
 import ru.korus.tmis.core.hl7db.DbPharmacyBeanLocal;
 import ru.korus.tmis.core.hl7db.DbUUIDBeanLocal;
 import ru.korus.tmis.core.hl7db.PharmacyStatus;
 import ru.korus.tmis.core.logging.LoggingInterceptor;
-import ru.korus.tmis.drugstore.event.ExternalEventFacadeBeanLocal;
 import ru.korus.tmis.pharmacy.exception.SoapConnectionException;
 
 import javax.annotation.PostConstruct;
@@ -27,7 +25,6 @@ import javax.ejb.Stateless;
 import javax.interceptor.Interceptors;
 import java.util.Date;
 import java.util.List;
-import java.util.Map;
 
 /**
  * Author:      Dmitriy E. Nosov <br>
@@ -64,11 +61,20 @@ public class PharmacyBean implements PharmacyBeanLocal {
 
     @PostConstruct
     public void init() {
-       logger.info("====== start {} ======", Pharmacy.class.getName());
+        logger.info("");
+        logger.info("-------------------------------");
+        logger.info("====== start {} ======", this.getClass().getName());
+        logger.info("-------------------------------");
+        logger.info("");
     }
+
     @PreDestroy
-    public void stop() {
-       logger.info("====== stop {} ======", Pharmacy.class.getName());
+    public void destroy() {
+        logger.info("");
+        logger.info("-------------------------------");
+        logger.info("====== stop {} ======", this.getClass().getName());
+        logger.info("-------------------------------");
+        logger.info("");
     }
 
     private Date updateLastDate(Date date, Date lastDate) {
@@ -80,7 +86,7 @@ public class PharmacyBean implements PharmacyBeanLocal {
 
 
     @Override
-    //@Schedule(minute = "*/2", hour = "*")
+    @Schedule(minute = "*/2", hour = "*")
     public void pooling() {
         logger.info("pooling...last date update {}", lastDateUpdate);
         try {
@@ -106,7 +112,6 @@ public class PharmacyBean implements PharmacyBeanLocal {
                         }
                         lastDateUpdate = updateLastDate(action.getCreateDatetime(), lastDateUpdate);
                     }
-
                 } else {
                     lastDateUpdate = new Date();
                     logger.info("last date update {}", lastDateUpdate);
@@ -143,7 +148,10 @@ public class PharmacyBean implements PharmacyBeanLocal {
                 final String orgUUID = java.util.UUID.randomUUID().toString();//dbUUIDBeanLocal.getUUIDById(orgStructure.getUUID());
                 final String clientUUID = java.util.UUID.randomUUID().toString();//dbUUIDBeanLocal.getUUIDById(client.getUUID());
 
-                processResult(pharmacy, HL7PacketBuilder.processReceived(action, event.getExternalId(), externalUUID, orgUUID, client, clientUUID));
+                processResult(
+                        pharmacy,
+                        HL7PacketBuilder.processReceived(
+                                action, event.getExternalId(), externalUUID, orgUUID, client, clientUUID));
 
             } else if (actionType.getFlatCode().equals("leaved")) {
                 // выписка из стационара
@@ -155,7 +163,10 @@ public class PharmacyBean implements PharmacyBeanLocal {
                 final String displayName = "Стационар";
                 final String clientUUID = java.util.UUID.randomUUID().toString();
 
-                processResult(pharmacy, HL7PacketBuilder.processLeaved(action, event.getExternalId(), clientUUID, client, displayName));
+                processResult(
+                        pharmacy,
+                        HL7PacketBuilder.processLeaved(
+                                action, event.getExternalId(), clientUUID, client, displayName));
 
             } else if (actionType.getFlatCode().equals("del_received")) {
                 // отмена сообщения о госпитализации
@@ -168,7 +179,10 @@ public class PharmacyBean implements PharmacyBeanLocal {
                 final String externalId = java.util.UUID.randomUUID().toString();//dbUUIDBeanLocal.getUUIDById(event.getUUID());
                 final String uuidClient = java.util.UUID.randomUUID().toString();//dbUUIDBeanLocal.getUUIDById(event.getUUID());
 
-                processResult(pharmacy, HL7PacketBuilder.processDelReceived(action, uuidExternalId, externalId, uuidClient, client));
+                processResult(
+                        pharmacy,
+                        HL7PacketBuilder.processDelReceived(
+                                action, uuidExternalId, externalId, uuidClient, client));
 
             } else if (actionType.getFlatCode().equals("moving")) {
                 // перевод пациента между отделениями
@@ -183,7 +197,10 @@ public class PharmacyBean implements PharmacyBeanLocal {
                 final String uuidLocationOut = java.util.UUID.randomUUID().toString();//dbUUIDBeanLocal.getUUIDById(event.getUUID());
                 final String uuidLocationIn = java.util.UUID.randomUUID().toString();//dbUUIDBeanLocal.getUUIDById(event.getUUID());
 
-                processResult(pharmacy, HL7PacketBuilder.processMoving(action, uuidExternalId, externalId, uuidClient, uuidLocationOut, uuidLocationIn));
+                processResult(
+                        pharmacy,
+                        HL7PacketBuilder.processMoving(
+                                action, uuidExternalId, externalId, uuidClient, uuidLocationOut, uuidLocationIn));
 
             } else if (actionType.getFlatCode().equals("del_moving")) {
                 // отмена сообщения о переводе пациента между отделениями
@@ -198,7 +215,10 @@ public class PharmacyBean implements PharmacyBeanLocal {
                 final String uuidLocationOut = java.util.UUID.randomUUID().toString();//dbUUIDBeanLocal.getUUIDById(event.getUUID());
                 final String uuidLocationIn = java.util.UUID.randomUUID().toString();//dbUUIDBeanLocal.getUUIDById(event.getUUID());
 
-                processResult(pharmacy, HL7PacketBuilder.processDelMoving(action, uuidExternalId, externalId, uuidClient, uuidLocationOut, uuidLocationIn));
+                processResult(
+                        pharmacy,
+                        HL7PacketBuilder.processDelMoving(
+                                action, uuidExternalId, externalId, uuidClient, uuidLocationOut, uuidLocationIn));
 
             } else {
                 logger.info("--- actionType flatCode is not found. Skip ---");
@@ -216,14 +236,15 @@ public class PharmacyBean implements PharmacyBeanLocal {
                 final OrgStructure orgStructure = getOrgStructure(action.getEvent());
                 final String organizationName = orgStructure.getName();
 
-                processResult(pharmacy, HL7PacketBuilder.processRCMRIN000002UV02(
-                        action, uuidClient, externalId, client, createPerson, organizationName));
+                processResult(pharmacy,
+                        HL7PacketBuilder.processRCMRIN000002UV02(
+                                action, uuidClient, externalId, client, createPerson, organizationName));
             }
 
         } catch (CoreException e) {
-            logger.error("core error", e);
+            logger.error("core error " + e, e);
         } catch (SoapConnectionException e) {
-            logger.error("core error", e);
+            logger.error("core error " + e, e);
         }
         return action.getCreateDatetime();
     }
@@ -241,12 +262,11 @@ public class PharmacyBean implements PharmacyBeanLocal {
         dbPharmacy.updateMessage(pharmacy);
     }
 
-
     private OrgStructure getOrgStructure(Event event) {
         OrgStructure orgStructure = null;
         try {
             orgStructure = dbOrgStructureBeanLocal.getOrgStructureById(event.getOrgId());
-        } catch (Exception e) {
+        } catch (CoreException e) {
             orgStructure = new OrgStructure();
             orgStructure.setName("none");
         }

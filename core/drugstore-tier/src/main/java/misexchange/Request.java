@@ -28,14 +28,14 @@ import javax.xml.bind.annotation.XmlType;
 @XmlSeeAlso({
     PRPAIN402006UV02 .class,
     PRPAIN402002UV02 .class,
-    PRPAIN201304UV02 .class,
     PRPAIN402003UV02 .class,
     PRPAIN402007UV02 .class,
     PRPAIN402001UV02 .class,
     RCMRIN000002UV02 .class,
     PRPAIN402004UV02 .class,
     PRPAIN302012UV02 .class,
-    PRPAIN302011UV02 .class
+    PRPAIN302011UV02 .class,
+    PRPAIN201304UV02 .class
 })
 public abstract class Request {
 

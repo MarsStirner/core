@@ -124,6 +124,14 @@
             <version>4.8.2</version>
         </dependency>
 
+        <dependency>
+            <groupId>org.testng</groupId>
+            <artifactId>testng</artifactId>
+            <version>6.8</version>
+            <scope>test</scope>
+            <!--<classifier>jdk15</classifier>-->
+        </dependency>
+
         <!--
             Javax inject
         -->
@@ -134,20 +142,20 @@
         </dependency>
 
 
-        <dependency>
-            <groupId>javax.xml.bind</groupId>
-            <artifactId>jaxb-api</artifactId>
-            <version>2.2.7</version>
-            <scope>compile</scope>
-        </dependency>
+        <!--<dependency>-->
+            <!--<groupId>javax.xml.bind</groupId>-->
+            <!--<artifactId>jaxb-api</artifactId>-->
+            <!--<version>2.2.7</version>-->
+            <!--<scope>compile</scope>-->
+        <!--</dependency>-->
 
 
-        <dependency>
-            <groupId>com.sun.xml.bind</groupId>
-            <artifactId>jaxb-impl</artifactId>
-            <version>2.2.7-b41</version>
-            <scope>compile</scope>
-        </dependency>
+        <!--<dependency>-->
+            <!--<groupId>com.sun.xml.bind</groupId>-->
+            <!--<artifactId>jaxb-impl</artifactId>-->
+            <!--<version>2.2.7-b41</version>-->
+            <!--<scope>compile</scope>-->
+        <!--</dependency>-->
     </dependencies>
 
     <build>
@@ -219,7 +227,7 @@
                     <source>1.6</source>
                     <target>1.6</target>
                     <encoding>UTF-8</encoding>
-                    <debug>true</debug>
+                    <debug>false</debug>
                 </configuration>
             </plugin>
 
@@ -239,6 +247,67 @@
                 </executions>
             </plugin>
 
+
+            <!-- checkstyle -->
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-checkstyle-plugin</artifactId>
+                <version>2.8</version>
+                <configuration>
+                    <consoleOutput>true</consoleOutput>
+                    <encoding>UTF-8</encoding>
+                    <configLocation>checkstyle-minimal.xml</configLocation>
+                    <detail>true</detail>
+                </configuration>
+                <executions>
+                    <execution>
+                        <!--<phase>package</phase>-->
+                        <!--<goals>-->
+                            <!--<goal>check</goal>-->
+                        <!--</goals>-->
+                    </execution>
+                </executions>
+            </plugin>
+
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-pmd-plugin</artifactId>
+                <version>2.7.1</version>
+                <configuration>
+                    <targetJdk>1.6</targetJdk>
+                    <verbose>true</verbose>
+                </configuration>
+            </plugin>
+
+            <!--<plugin>-->
+                <!--<groupId>org.apache.maven.plugins</groupId>-->
+                <!--<artifactId>maven-dependency-plugin</artifactId>-->
+                <!--<version>2.6</version>-->
+                <!--<executions>-->
+                    <!--<execution>-->
+                        <!--<id>copy</id>-->
+                        <!--<phase>package</phase>-->
+                        <!--<goals>-->
+                            <!--<goal>copy</goal>-->
+                        <!--</goals>-->
+                        <!--<configuration>-->
+                            <!--<artifactItems>-->
+                                <!--<artifactItem>-->
+                                    <!--<groupId>[ groupId ]</groupId>-->
+                                    <!--<artifactId>[ artifactId ]</artifactId>-->
+                                    <!--<version>[ version ]</version>-->
+                                    <!--<type>[ packaging ]</type>-->
+                                    <!--<classifier> [classifier - optional] </classifier>-->
+                                    <!--<overWrite>[ true or false ]</overWrite>-->
+                                    <!--<outputDirectory>[ output directory ]</outputDirectory>-->
+                                    <!--<destFileName>[ filename ]</destFileName>-->
+                                <!--</artifactItem>-->
+                            <!--</artifactItems>-->
+                            <!--&lt;!&ndash; other configurations here &ndash;&gt;-->
+                        <!--</configuration>-->
+                    <!--</execution>-->
+                <!--</executions>-->
+            <!--</plugin>-->
             <!--
                 Glassfish Maven support
             -->
