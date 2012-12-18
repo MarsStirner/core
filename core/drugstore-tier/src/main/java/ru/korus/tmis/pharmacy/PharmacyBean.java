@@ -22,7 +22,6 @@ import javax.annotation.PreDestroy;
 import javax.ejb.EJB;
 import javax.ejb.Schedule;
 import javax.ejb.Stateless;
-import javax.inject.Inject;
 import javax.interceptor.Interceptors;
 import java.util.Date;
 import java.util.List;
@@ -152,7 +151,12 @@ public class PharmacyBean implements PharmacyBeanLocal {
                 processResult(
                         pharmacy,
                         HL7PacketBuilder.processReceived(
-                                action, event.getExternalId(), externalUUID, orgUUID, client, clientUUID));
+                                action,
+                                event.getExternalId(),
+                                externalUUID,
+                                orgUUID,
+                                client,
+                                clientUUID));
 
             } else if (actionType.getFlatCode().equals("leaved")) {
                 // выписка из стационара
@@ -163,11 +167,17 @@ public class PharmacyBean implements PharmacyBeanLocal {
                 final Pharmacy pharmacy = dbPharmacy.getOrCreate(action);
                 final String displayName = "Стационар";
                 final String clientUUID = java.util.UUID.randomUUID().toString();
+                final String externalUUID = java.util.UUID.randomUUID().toString();//dbUUIDBeanLocal.getUUIDById(event.getUUID());
 
                 processResult(
                         pharmacy,
                         HL7PacketBuilder.processLeaved(
-                                action, event.getExternalId(), clientUUID, client, displayName));
+                                action,
+                                event.getExternalId(),
+                                externalUUID,
+                                clientUUID,
+                                client,
+                                displayName));
 
             } else if (actionType.getFlatCode().equals("del_received")) {
                 // отмена сообщения о госпитализации
@@ -183,7 +193,11 @@ public class PharmacyBean implements PharmacyBeanLocal {
                 processResult(
                         pharmacy,
                         HL7PacketBuilder.processDelReceived(
-                                action, uuidExternalId, externalId, uuidClient, client));
+                                action,
+                                uuidExternalId,
+                                externalId,
+                                uuidClient,
+                                client));
 
             } else if (actionType.getFlatCode().equals("moving")) {
                 // перевод пациента между отделениями
@@ -201,7 +215,12 @@ public class PharmacyBean implements PharmacyBeanLocal {
                 processResult(
                         pharmacy,
                         HL7PacketBuilder.processMoving(
-                                action, uuidExternalId, externalId, uuidClient, uuidLocationOut, uuidLocationIn));
+                                action,
+                                uuidExternalId,
+                                externalId,
+                                uuidClient,
+                                uuidLocationOut,
+                                uuidLocationIn));
 
             } else if (actionType.getFlatCode().equals("del_moving")) {
                 // отмена сообщения о переводе пациента между отделениями
@@ -219,7 +238,12 @@ public class PharmacyBean implements PharmacyBeanLocal {
                 processResult(
                         pharmacy,
                         HL7PacketBuilder.processDelMoving(
-                                action, uuidExternalId, externalId, uuidClient, uuidLocationOut, uuidLocationIn));
+                                action,
+                                uuidExternalId,
+                                externalId,
+                                uuidClient,
+                                uuidLocationOut,
+                                uuidLocationIn));
 
             } else {
                 logger.info("--- actionType flatCode is not found. Skip ---");
@@ -233,13 +257,23 @@ public class PharmacyBean implements PharmacyBeanLocal {
                 final Patient client = action.getEvent().getPatient();
                 final Staff createPerson = action.getCreatePerson();
                 final String externalId = java.util.UUID.randomUUID().toString();//dbUUIDBeanLocal.getUUIDById(event.getUUID());
+                final String externalUUID = java.util.UUID.randomUUID().toString();//dbUUIDBeanLocal.getUUIDById(event.getUUID());
+                final String custodianUUID = java.util.UUID.randomUUID().toString();//dbUUIDBeanLocal.getUUIDById(event.getUUID());
                 final String uuidClient = java.util.UUID.randomUUID().toString();//dbUUIDBeanLocal.getUUIDById(event.getUUID());
                 final OrgStructure orgStructure = getOrgStructure(action.getEvent());
                 final String organizationName = orgStructure.getName();
+                 final Staff doctorPerson = new Staff(11);
 
                 processResult(pharmacy,
                         HL7PacketBuilder.processRCMRIN000002UV02(
-                                action, uuidClient, externalId, client, createPerson, organizationName));
+                                action,
+                                uuidClient,
+                                externalId,
+                                client,
+                                createPerson,
+                                organizationName,
+                                externalUUID,
+                                custodianUUID, doctorPerson));
             }
 
         } catch (CoreException e) {

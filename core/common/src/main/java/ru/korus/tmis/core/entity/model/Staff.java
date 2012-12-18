@@ -198,6 +198,9 @@ public class Staff implements Serializable {
     @JoinColumn(name = "speciality_id")
     private Speciality speciality;
 
+    @ManyToOne
+    @JoinColumn(name = "uuid_id")
+    private UUID uuid;
     ////////////////////////////////////////////////////////////////////////////
     // Custom mappings
     ////////////////////////////////////////////////////////////////////////////
@@ -624,6 +627,14 @@ public class Staff implements Serializable {
 
     public void setSpeciality(Speciality speciality) {
         this.speciality = speciality;
+    }
+
+    public UUID getUuid() {
+        return uuid;
+    }
+
+    public void setUuid(UUID uuid) {
+        this.uuid = uuid;
     }
 
     @Override
