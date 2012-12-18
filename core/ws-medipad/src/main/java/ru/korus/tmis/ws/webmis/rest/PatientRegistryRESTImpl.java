@@ -32,7 +32,7 @@ import ru.korus.tmis.ws.impl.MedipadWSImpl;
 import com.sun.jersey.api.json.JSONWithPadding;
 
 /**
- * Description: Сервисы для работы с ядром TMIS посредством Web-клиента
+ * Сервисы для работы с ядром TMIS посредством Web-клиента
  */
 @Interceptors(ServicesLoggingInterceptor.class)
 @Singleton
@@ -62,12 +62,13 @@ public class PatientRegistryRESTImpl implements Serializable {
                                   @QueryParam("filter[fullName]")String fullName,
                                   @QueryParam("filter[birthDate]")Long birthDate,
                                   @QueryParam("filter[document]")String document,
+                                  @QueryParam("filter[withRelations]")String withRelations,
                                   @QueryParam("callback") String callback,
                                   @Context HttpServletRequest servRequest) {
         AuthData auth = wsImpl.checkTokenCookies(servRequest);
 
         Date bDate = birthDate == null ? null : new Date(birthDate);
-        PatientRequestData requestData = new PatientRequestData(patientCode, fullName, bDate, document, sortingField, sortingMethod, limit, page);
+        PatientRequestData requestData = new PatientRequestData(patientCode, fullName, bDate, document, withRelations, sortingField, sortingMethod, limit, page);
         JSONWithPadding returnValue = new JSONWithPadding(wsImpl.getAllPatients(requestData, auth), callback);
     	return returnValue;
     }
@@ -1985,6 +1986,16 @@ public class PatientRegistryRESTImpl implements Serializable {
         return returnValue;
     }
 
+    /**
+     * Сервис сохранения квоты <br>
+     * url: /appeals/{appealId}/quotes
+     * @param data Json с данными о квоте как QuotaData
+     * @param appealId Идентификатор госпитализации.
+     * @param callback callback запроса.
+     * @param servRequest Контекст запроса с клиента.
+     * @return com.sun.jersey.api.json.JSONWithPadding как Object
+     * @throws CoreException
+     */
     @POST
     @Path("/appeals/{appealId}/quotes")
     @Produces("application/x-javascript")
@@ -2002,6 +2013,16 @@ public class PatientRegistryRESTImpl implements Serializable {
         return returnValue;
     }
 
+    /**
+     * Сервис редактирования квоты <br>
+     * url: /appeals/{appealId}/quotes
+     * @param data Json с данными о квоте как QuotaData
+     * @param appealId Идентификатор госпитализации.
+     * @param callback callback запроса.
+     * @param servRequest Контекст запроса с клиента.
+     * @return com.sun.jersey.api.json.JSONWithPadding как Object
+     * @throws CoreException
+     */
     @PUT
     @Path("/appeals/{appealId}/quotes")
     @Produces("application/x-javascript")
@@ -2019,6 +2040,15 @@ public class PatientRegistryRESTImpl implements Serializable {
         return returnValue;
     }
 
+    /**
+     * Сервис получения данных о квоте <br>
+     * url: /appeals/{appealId}/quotes
+     * @param appealId Идентификатор госпитализации.
+     * @param callback callback запроса.
+     * @param servRequest Контекст запроса с клиента.
+     * @return com.sun.jersey.api.json.JSONWithPadding как Object
+     * @throws CoreException
+     */
     @GET
     @Path("/appeals/{appealId}/quotes")
     @Produces("application/x-javascript")

@@ -6,6 +6,9 @@ import reflect.BeanProperty
 import javax.xml.bind.annotation.{XmlType, XmlRootElement, XmlTransient}
 import ru.korus.tmis.core.data.DoctorSpecsContainer
 
+/**
+ * Контейнер с данным о авторизации
+ */
 @XmlType(name = "authData")
 @XmlRootElement(name = "authData")
 class AuthData() {
@@ -33,26 +36,53 @@ class AuthData() {
 
   var userRole: Role = _
 
+  /**
+   * Получение Роли как Role entity
+   * @return Role entity
+   */
   @XmlTransient
   def getUserRole = {
     userRole
   }
 
+  /**
+   * Установить роль пользователю
+   * @param userRole  Роль пользователя как Role
+   */
   def setUserRole(userRole: Role) = {
     this.userRole = userRole
   }
 
   var user: Staff = _
 
+  /**
+   * Получение пользователя
+   * @return Данные о пользователе как Staff entity
+   */
   @XmlTransient
   def getUser = {
     user
   }
 
-  def setUser(user: Staff) = {
+  /**
+   * Задать пользователя
+   * @param user Пользователь как Staff entity
+   */
+  def setUser(user: Staff) {
     this.user = user
   }
 
+  /**
+   * Конструктор AuthData
+   * @param token Токен как AuthToken
+   * @param user Пользователь как Staff
+   * @param userId Идентификатор пользователя (для mediPad)
+   * @param userRole Роль пользователя (для mediPad)
+   * @param userFirstName Имя пользователя (для mediPad)
+   * @param userLastName Фамилия пользователя (для mediPad)
+   * @param userPatronymicName Отчество пользователя (для mediPad)
+   * @param userSpecs Специальность пользователя (для mediPad)
+   */
   def this(token: AuthToken,
            user: Staff,
            userId: Int,

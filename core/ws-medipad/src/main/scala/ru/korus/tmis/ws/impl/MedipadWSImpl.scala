@@ -531,6 +531,9 @@ class MedipadWSImpl
     val positionA = positionE._2.iterator.next()
     val values = positionA._2.asInstanceOf[java.util.Map[java.lang.Integer, java.util.List[Object]]]
 
+    //TODO: Проверить первичный осмотр ("Направлен в") Реализовать по аналогии с HospetalBedBean.getRegistryOriginalForm
+    //TODO: Или по аналогии с ReceivedPatientData делег. метод mIntake (этот вариант предпочтительнее)
+    //TODO: ставить вместо aps!!!!!
     val ward = dbCustomQueryBean.getLastActionByTypeCodeAndAPTypeName(id, "4202", "Переведен в отделение")
     var aps: java.util.Map[ActionProperty, java.util.List[APValue]] = null
     if(ward!=null){
@@ -851,6 +854,11 @@ class MedipadWSImpl
                                       requestData)
     list
   }
+
+  def getAllDepartmentsByHasBeds(hasBeds: String) = { //Для медипада
+    new AllDepartmentsListDataMP(dbOrgStructureBean.getAllOrgStructuresByRequest(0, 0, "", "", null), null)
+  }
+
 
   def getListOfDiagnosticsForPatientByEvent(requestData: DiagnosticsListRequestData) = {
 
@@ -1221,7 +1229,7 @@ class MedipadWSImpl
     mapper.writeValueAsString(new EventTypesListData(list, request))
   }
 
-  def getPatientsFromOpenAppealWhatHasBedByDepartmentId(departmentId: Int, authData: AuthData) = {
+  def getPatientsFromOpenAppealsWhatHasBedsByDepartmentId(departmentId: Int) = {
     patientBean.getCurrentPatientsByDepartmentId(departmentId)
   }
 

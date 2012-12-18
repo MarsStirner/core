@@ -21,7 +21,6 @@ class DbSchemeKladrBean
   @PersistenceContext(unitName = "kladr")
   var em: EntityManager = _
 
-  //kl.code, kl.name, kl.sock
   val KladrByFilterQuery = """
      SELECT %s
      FROM
@@ -29,6 +28,8 @@ class DbSchemeKladrBean
       SocrBase socr
      WHERE
       kl.socr = socr.scName
+     AND
+      kl.code LIKE '%%00'
      %s
      %s
                            """
@@ -92,12 +93,7 @@ class DbSchemeKladrBean
 
     var query = ""
     if (optional) {
-      if (queryStr.data.size() > 0 || queryStr.query.size > 0) {
-        if (queryStr.query.indexOf("AND ") == 0) {
-          queryStr.query = "WHERE " + queryStr.query.substring("AND ".length())
-        }
-      }
-      query = StreetByFilterQuery.format("count(str.code)", queryStr.query, "")
+      query = StreetByFilterQuery.format("count(str.code)", "WHERE str.code LIKE '%%00'\n" + queryStr.query, "")
     } else {
       query = KladrByFilterQuery.format("count(kl.code)", queryStr.query, "")
     }
@@ -125,14 +121,9 @@ class DbSchemeKladrBean
 
     var query = ""
     if (optional) {
-      if (queryStr.data.size() > 0 || queryStr.query.size > 0) {
-        if (queryStr.query.indexOf("AND ") == 0) {
-          queryStr.query = "WHERE " + queryStr.query.substring("AND ".length())
-        }
-      }
-      query = StreetByFilterQuery.format("str.code, str.name, str.socr, str.index", queryStr.query, "" /*sorting*/)
+      query = StreetByFilterQuery.format("str.code, str.name, str.socr, str.index", "WHERE str.code LIKE '%%00'\n"+ queryStr.query, "ORDER BY str.name asc, str.socr asc, str.code asc")
     } else {
-      query = KladrByFilterQuery.format("kl.code, kl.name, kl.socr, kl.index", queryStr.query, "" /*sorting*/)
+      query = KladrByFilterQuery.format("kl.code, kl.name, kl.socr, kl.index", queryStr.query, "ORDER BY kl.name asc, kl.socr asc, kl.code asc")
     }
 
     var typed = em.createQuery(query, classOf[Array[AnyRef]])

@@ -94,12 +94,16 @@ class PatientRequestData {
            fullName: String, 
            birthDate: Date,
            document: String,
+           withRelations: String,
            sortingField: String,
            sortingMethod: String,
            limit: String,
            page: String) = {
     this()
-    this.filter = new RequestDataFilter(patientCode, fullName, birthDate, document)
+    val flgRelations = !((withRelations!=null) &&
+                       (!withRelations.isEmpty) &&
+                       ((withRelations.toLowerCase.compareTo("no")==0) || (withRelations.toLowerCase.compareTo("false")==0)))
+    this.filter = new RequestDataFilter(patientCode, fullName, birthDate, document, flgRelations)
     this.sortingField = sortingField
     this.sortingMethod = sortingMethod
     this.limit = limit
@@ -121,6 +125,8 @@ class RequestDataFilter {
   var birthDate: Date = _  // — Дата рождения
   @BeanProperty
   var document: String = _ // — Фильтр по любому документу
+  @BeanProperty
+  var withRelations: Boolean = false  //Фильтр по ClientRelation
 
   def this(patientCode: String,
            fullName: String,
@@ -131,6 +137,15 @@ class RequestDataFilter {
     this.fullName = fullName
     this.birthDate = birthDate
     this.document = document
+  }
+
+  def this(patientCode: String,
+           fullName: String,
+           birthDate: Date,
+           document: String,
+           withRelations: Boolean) = {
+    this(patientCode, fullName, birthDate, document)
+    this.withRelations = withRelations
   }
 }
 
