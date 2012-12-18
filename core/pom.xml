@@ -6,7 +6,7 @@
     <groupId>ru.korus.tmis</groupId>
     <artifactId>tmis-nexus</artifactId>
     <packaging>pom</packaging>
-    <version>0.9.8-SNAPSHOT</version>
+    <version>0.9.9-SNAPSHOT</version>
     <name>TMIS Root Project</name>
 
     <modules>
@@ -28,7 +28,7 @@
         <my.build.directory>target</my.build.directory>
         <!-- LOGGER -->
         <!--<log.root>${com.sun.aas.instanceRoot}/logs/</log.root>-->
-        <log.format>%5p [%d][%thread][%logger{0}] %msg%n</log.format>
+        <!--<log.format>%5p [%d][%thread][%logger{0}] %msg%n</log.format>-->
     </properties>
 
     <profiles>
@@ -90,15 +90,15 @@
         <dependency>
             <groupId>org.clapper</groupId>
             <artifactId>grizzled-slf4j_2.8.1</artifactId>
-            <version>0.4</version>
+            <version>0.6.10</version>
         </dependency>
 
         <dependency>
             <groupId>org.slf4j</groupId>
             <artifactId>slf4j-api</artifactId>
             <version>1.7.2</version>
-            <type>jar</type>
-            <scope>compile</scope>
+            <!--<type>jar</type>-->
+            <!--<scope>compile</scope>-->
         </dependency>
 
         <dependency>
@@ -327,6 +327,12 @@
                     <files>
                         <file>${basedir}/gf.properties</file>
                     </files>
+                    <outputFile>
+                        <file>${basedir}/gfout.properties</file>
+                    </outputFile>
+                    <properties>
+
+                    </properties>
                     <quiet>true</quiet>
                 </configuration>
             </plugin>
@@ -437,7 +443,7 @@
             <plugin>
                 <groupId>org.codehaus.mojo</groupId>
                 <artifactId>findbugs-maven-plugin</artifactId>
-                <version>2.3.2</version>
+                <version>2.4.0</version>
                 <configuration>
                     <findbugsXmlOutput>true</findbugsXmlOutput>
                 </configuration>

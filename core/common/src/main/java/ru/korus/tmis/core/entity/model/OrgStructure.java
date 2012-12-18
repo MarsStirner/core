@@ -116,6 +116,12 @@ public class OrgStructure implements Serializable {
     @Column(name = "inheritGaps")
     private boolean inheritGaps;
 
+
+    @ManyToOne
+    @JoinColumn(name = "uuid_id")
+    private UUID uuid;
+
+
     public OrgStructure() {
     }
 
@@ -313,6 +319,14 @@ public class OrgStructure implements Serializable {
 
     public void setInheritGaps(boolean inheritGaps) {
         this.inheritGaps = inheritGaps;
+    }
+
+    public UUID getUuid() {
+        return uuid;
+    }
+
+    public void setUuid(UUID uuid) {
+        this.uuid = uuid;
     }
 
     @Override

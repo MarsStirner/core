@@ -22,6 +22,7 @@ import javax.annotation.PreDestroy;
 import javax.ejb.EJB;
 import javax.ejb.Schedule;
 import javax.ejb.Stateless;
+import javax.inject.Inject;
 import javax.interceptor.Interceptors;
 import java.util.Date;
 import java.util.List;
@@ -61,20 +62,20 @@ public class PharmacyBean implements PharmacyBeanLocal {
 
     @PostConstruct
     public void init() {
-        logger.info("");
-        logger.info("-------------------------------");
-        logger.info("====== start {} ======", this.getClass().getName());
-        logger.info("-------------------------------");
-        logger.info("");
+//        logger.info("");
+//        logger.info("-------------------------------");
+//        logger.info("====== start {} ======", this.getClass().getName());
+//        logger.info("-------------------------------");
+//        logger.info("");
     }
 
     @PreDestroy
     public void destroy() {
-        logger.info("");
-        logger.info("-------------------------------");
-        logger.info("====== stop {} ======", this.getClass().getName());
-        logger.info("-------------------------------");
-        logger.info("");
+//        logger.info("");
+//        logger.info("-------------------------------");
+//        logger.info("====== stop {} ======", this.getClass().getName());
+//        logger.info("-------------------------------");
+//        logger.info("");
     }
 
     private Date updateLastDate(Date date, Date lastDate) {

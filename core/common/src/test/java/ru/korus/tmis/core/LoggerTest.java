@@ -18,7 +18,7 @@ public class LoggerTest {
 
 
 
-    @Test(enabled = true)
+    @Test(enabled = false)
     public void test() throws Exception {
         for (int i = 0; i < 1000; i++) {
             logger.info("iiiiiiiiiiiiiiiiiiiiiiiiiii " + Math.random());

@@ -5,15 +5,15 @@ import org.testng.annotations.Test;
 import java.util.Date;
 
 /**
- * Created with IntelliJ IDEA.
- * User: nde
- * Date: 10.12.12
- * Time: 11:17
- * To change this template use File | Settings | File Templates.
+ * @Author:      Dmitriy E. Nosov <br>
+ * @Date:        10.12.12, 11:17 <br>
+ * @Company:     Korus Consulting IT<br>
+ * Revision:    \$Id$ <br>
+ * @Description: <br>
  */
 public class DateTest {
 
-    @Test
+    @Test(enabled = false)
     public void test() {
         Date date = new Date(2011, 10, 11);
         Date lastDate = new Date(2012, 10, 11);

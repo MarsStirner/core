@@ -8,64 +8,6 @@
     <property name="log.format" value="%5p [%d][%thread][%logger{0}] %msg%n"/>
 
 
-    <!-- Основные настройки для консоли, для эксепшен лога-->
-    <appender name="STDOUT" class="ch.qos.logback.core.ConsoleAppender">
-        <filter class="ch.qos.logback.classic.filter.LevelFilter">
-            <level>ERROR</level>
-            <onMatch>DENY</onMatch>
-            <onMismatch>NEUTRAL</onMismatch>
-        </filter>
-        <filter class="ch.qos.logback.classic.filter.LevelFilter">
-            <level>WARN</level>
-            <onMatch>DENY</onMatch>
-            <onMismatch>ACCEPT</onMismatch>
-        </filter>
-        <encoder>
-            <pattern>${root.log}</pattern>
-        </encoder>
-        <param name="target" value="System.out"/>
-        <target>System.out</target>
-    </appender>
-
-    <appender name="STDOUT_ERROR" class="ch.qos.logback.core.ConsoleAppender">
-        <filter class="ch.qos.logback.classic.filter.LevelFilter">
-            <level>ERROR</level>
-            <onMatch>ACCEPT</onMatch>
-            <onMismatch>NEUTRAL</onMismatch>
-        </filter>
-        <filter class="ch.qos.logback.classic.filter.LevelFilter">
-            <level>WARN</level>
-            <onMatch>ACCEPT</onMatch>
-            <onMismatch>DENY</onMismatch>
-        </filter>
-
-        <encoder>
-            <pattern>${root.log}</pattern>
-        </encoder>
-        <param name="target" value="System.err"/>
-        <target>System.err</target>
-    </appender>
-
-    <appender name="EXCEPTIONS" class="ch.qos.logback.core.rolling.RollingFileAppender">
-        <file>${root.log}exceptions/exceptions.log</file>
-        <filter class="ch.qos.logback.core.filter.EvaluatorFilter">
-            <evaluator>
-                <expression>return throwable != null;</expression>
-            </evaluator>
-            <OnMismatch>DENY</OnMismatch>
-            <OnMatch>ACCEPT</OnMatch>
-        </filter>
-
-        <rollingPolicy class="ch.qos.logback.core.rolling.TimeBasedRollingPolicy">
-            <FileNamePattern>${root.log}exceptions/exceptions.%d{yyyy-MM-dd}.log.gz</FileNamePattern>
-            <MaxHistory>365</MaxHistory>
-        </rollingPolicy>
-
-        <encoder>
-            <pattern>${root.log}</pattern>
-        </encoder>
-    </appender>
-
     <!--Настройки для tmis-->
     <!--Общий логгер для всего проекта-->
     <appender name="TMIS" class="ch.qos.logback.core.rolling.RollingFileAppender">
@@ -86,10 +28,8 @@
         </rollingPolicy>
     </appender>
 
-    <logger name="ru.korus.tmis" level="INFO" additivity="false">
+    <logger name="ru.korus" level="INFO" additivity="false">
         <appender-ref ref="TMIS"/>
-        <appender-ref ref="STDOUT_ERROR"/>
-        <appender-ref ref="EXCEPTIONS"/>
     </logger>
 
 
@@ -141,9 +81,7 @@
     -->
 
     <root level="INFO">
-        <appender-ref ref="STDOUT"/>
-        <appender-ref ref="STDOUT_ERROR"/>
-        <appender-ref ref="EXCEPTIONS"/>
+        <appender-ref ref="TMIS"/>
     </root>
 
 </configuration>
