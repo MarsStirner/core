@@ -138,6 +138,10 @@ public class Event implements Serializable {
     @Column(name = "version")
     private int version;
 
+
+    @ManyToOne
+    @JoinColumn(name = "uuid_id")
+    private UUID uuid;
     ////////////////////////////////////////////////////////////////////////////
     // Custom mappings
     ////////////////////////////////////////////////////////////////////////////
@@ -404,6 +408,14 @@ public class Event implements Serializable {
 
     public void setVersion(int version) {
         this.version = version;
+    }
+
+    public UUID getUuid() {
+        return uuid;
+    }
+
+    public void setUuid(UUID uuid) {
+        this.uuid = uuid;
     }
 
     @Override

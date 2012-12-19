@@ -168,6 +168,9 @@ public class Action
             inverseJoinColumns = {@JoinColumn(name = "tissue_id")})
     private Set<Tissue> tissue = new LinkedHashSet<Tissue>();
 
+    @ManyToOne
+    @JoinColumn(name = "uuid_id")
+    private UUID uuid;
     ////////////////////////////////////////////////////////////////////////////
     // Custom mappings
     ////////////////////////////////////////////////////////////////////////////
@@ -491,6 +494,14 @@ public class Action
 
     public void setCoordText(String coordText) {
         this.coordText = coordText;
+    }
+
+    public UUID getUuid() {
+        return uuid;
+    }
+
+    public void setUuid(UUID uuid) {
+        this.uuid = uuid;
     }
 
     @Override

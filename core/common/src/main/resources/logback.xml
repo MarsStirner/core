@@ -1,8 +1,42 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <configuration>
+    <jmxConfigurator/>
+    <contextName>tmis</contextName>
+
+
+    <property name="root.log" value="${com.sun.aas.instanceRoot}/logs/"/>
+    <property name="log.format" value="%5p [%d][%thread][%logger{0}] %msg%n"/>
+
+
+    <!--Настройки для tmis-->
+    <!--Общий логгер для всего проекта-->
+    <appender name="TMIS" class="ch.qos.logback.core.rolling.RollingFileAppender">
+        <file>${root.log}tmis-core/core.log</file>
+        <encoder>
+            <pattern>${root.log}</pattern>
+            <charset>UTF-8</charset>
+        </encoder>
+
+        <rollingPolicy class="ch.qos.logback.core.rolling.TimeBasedRollingPolicy">
+            <!-- rollover daily -->
+            <fileNamePattern>${root.log}tmis-core/core.%d{yyyy-MM-dd}.%i.log.gz</fileNamePattern>
+            <timeBasedFileNamingAndTriggeringPolicy
+                    class="ch.qos.logback.core.rolling.SizeAndTimeBasedFNATP">
+                <!-- or whenever the file size reaches 200MB -->
+                <maxFileSize>200MB</maxFileSize>
+            </timeBasedFileNamingAndTriggeringPolicy>
+        </rollingPolicy>
+    </appender>
+
+    <logger name="ru.korus" level="INFO" additivity="false">
+        <appender-ref ref="TMIS"/>
+    </logger>
+
+
+
 
     <appender name="AUTH" class="ch.qos.logback.core.FileAppender">
-        <file>${com.sun.aas.instanceRoot}/logs/auth.log</file>
+        <file>${root.log}auth/auth.log</file>
         <encoder>
             <pattern>%d{HH:mm:ss.SSS} %-5level %msg%n</pattern>
             <charset>UTF8</charset>
@@ -13,19 +47,20 @@
     </logger>
 
     <appender name="SERVICES" class="ch.qos.logback.core.FileAppender">
-        <file>${com.sun.aas.instanceRoot}/logs/services.log</file>
+        <file>${root.log}services/services.log</file>
         <encoder>
             <pattern>%d{HH:mm:ss.SSS} %-5level %msg%n</pattern>
             <charset>UTF8</charset>
         </encoder>
     </appender>
     <!-- additivity=false ensures analytics data only goes to the analytics log -->
-    <logger name="ru.korus.tmis.core.logging.slf4j.interceptor.ServicesLoggingInterceptor" level="INFO" additivity="false">
+    <logger name="ru.korus.tmis.core.logging.slf4j.interceptor.ServicesLoggingInterceptor" level="INFO"
+            additivity="false">
         <appender-ref ref="SERVICES"/>
     </logger>
 
     <appender name="DEBUGLOG" class="ch.qos.logback.core.FileAppender">
-        <file>${com.sun.aas.instanceRoot}/logs/debug.log</file>
+        <file>${root.log}debug/debug.log</file>
         <encoder>
             <pattern>%d{HH:mm:ss.SSS} [%thread] %-5level %msg%n</pattern>
             <charset>UTF8</charset>
@@ -44,15 +79,9 @@
         <appender-ref ref="DEBUGLOG" />
     </root>
     -->
-    <appender name="TMIS" class="ch.qos.logback.core.FileAppender" >
-        <file>${com.sun.aas.instanceRoot}/logs/tmis-core.log</file>
-        <encoder>
-            <pattern>%d{HH:mm:ss.SSS} [%thread] %-5level %msg%n</pattern>
-            <charset>UTF8</charset>
-        </encoder>
-    </appender>
-    <logger name="ru.korus.tmis" level="INFO" additivity="false">
+
+    <root level="INFO">
         <appender-ref ref="TMIS"/>
-    </logger>
+    </root>
 
 </configuration>

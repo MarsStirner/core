@@ -5,14 +5,14 @@
     <modelVersion>4.0.0</modelVersion>
     <groupId>ru.korus.tmis</groupId>
     <artifactId>tmis-server</artifactId>
-    <version>0.9.6</version>
+    <version>0.9.9-SNAPSHOT</version>
     <packaging>ear</packaging>
     <name>TMIS Server EAR</name>
 
     <parent>
         <groupId>ru.korus.tmis</groupId>
         <artifactId>tmis-nexus</artifactId>
-        <version>0.9.6</version>
+        <version>0.9.9-SNAPSHOT</version>
         <relativePath>../</relativePath>
     </parent>
 
@@ -20,51 +20,51 @@
         <dependency>
             <groupId>ru.korus.tmis.core</groupId>
             <artifactId>tmis-core-business</artifactId>
-            <version>0.9.6</version>
+            <version>0.9.9-SNAPSHOT</version>
             <type>ejb</type>
         </dependency>
         <dependency>
             <groupId>ru.korus.tmis.core</groupId>
             <artifactId>tmis-core-common</artifactId>
-            <version>0.9.6</version>
+            <version>0.9.9-SNAPSHOT</version>
             <type>jar</type>
         </dependency>
         <dependency>
             <groupId>ru.korus.tmis.core</groupId>
             <artifactId>tmis-core-database</artifactId>
-            <version>0.9.6</version>
+            <version>0.9.9-SNAPSHOT</version>
             <type>ejb</type>
         </dependency>
         <dependency>
             <groupId>ru.korus.tmis</groupId>
             <artifactId>tmis-ws-medipad</artifactId>
-            <version>0.9.6</version>
+            <version>0.9.9-SNAPSHOT</version>
             <type>war</type>
         </dependency>
 
         <dependency>
             <groupId>ru.korus.tmis.laboratory</groupId>
             <artifactId>tmis-laboratory-tier</artifactId>
-            <version>0.9.6</version>
+            <version>0.9.9-SNAPSHOT</version>
             <type>ejb</type>
         </dependency>
         <dependency>
             <groupId>ru.korus.tmis.laboratory</groupId>
             <artifactId>tmis-ws-laboratory</artifactId>
-            <version>0.9.6</version>
+            <version>0.9.9-SNAPSHOT</version>
             <type>war</type>
         </dependency>
 
         <dependency>
             <groupId>ru.korus.tmis.drugstore</groupId>
             <artifactId>tmis-drugstore-tier</artifactId>
-            <version>0.9.6</version>
+            <version>0.9.9-SNAPSHOT</version>
             <type>ejb</type>
         </dependency>
         <dependency>
             <groupId>ru.korus.tmis.drugstore</groupId>
             <artifactId>tmis-ws-drugstore</artifactId>
-            <version>0.9.6</version>
+            <version>0.9.9-SNAPSHOT</version>
             <type>war</type>
         </dependency>
     </dependencies>
