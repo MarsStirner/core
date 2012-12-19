@@ -139,8 +139,9 @@ public class Event implements Serializable {
     private int version;
 
 
-    @ManyToOne
-    @JoinColumn(name = "uuid_id")
+//    @ManyToOne
+//    @JoinColumn(name = "uuid_id")
+@Transient
     private UUID uuid;
     ////////////////////////////////////////////////////////////////////////////
     // Custom mappings

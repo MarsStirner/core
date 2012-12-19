@@ -4,6 +4,7 @@ import org.hl7.v3.MCCIIN000002UV01;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.testng.annotations.BeforeSuite;
+import org.testng.annotations.DataProvider;
 import org.testng.annotations.Test;
 import ru.korus.tmis.core.entity.model.*;
 import ru.korus.tmis.pharmacy.exception.SoapConnectionException;
@@ -26,26 +27,35 @@ public class PharmacyHL7 {
 
     private final Action action = new Action(1);
     private final Patient client = new Patient(2);
-   // private final Patient au = new Patient(3);
     private final Staff doctor = new Staff(11);
     private final Staff doctorAssigPerson = new Staff(11);
-    private final String externalId = "2012/4251";
-    private final String externalUUID = "9b564840-d258-4b34-89fd-2f6b355dfa91";
-    private final String orgUUID = "9a8d8f2a-57d7-11e1-b43a-005056a41f97";
+    private final String externalId = "2012/11782";  // номер карты в мис
+    private final String externalUUID = "1b264840-5555-4444-89fd-1f6b355dfa91";  // UUID карты
+    private final String orgUUID = "0eea8235-1c12-11e1-7085-000c29d5ecf8";   // дневной стационар
     private final String orgUUID2 = "0eea8235-1c12-11e1-7085-000c29d5ecf8";
-    private final String clientUUID = "59d8db7d-a211-43b8-9617-e2d2f229dac3";
+    private final String clientUUID = "5128db7d-4444-43b8-9617-e2d2f229dac3";  // UUID пациента
     private final String custodianUUID = "1111822f-2222-11e1-7085-000c29d5ecf8";
-    private final String doctorUUID = "4444822f-2222-11e1-7085-000c29d5ecf8";
+
+
+    @DataProvider(name = "test1")
+    public Object[][] createData1() {
+        return new Object[][] {
+                { "Cedric", new Integer(36) },
+                { "Anne", new Integer(37)},
+        };
+    }
+
+
 
     @BeforeSuite
     private void init() throws ParseException {
         SimpleDateFormat format = new SimpleDateFormat("dd.MM.yyyy");
 
         action.setCreateDatetime(new Date());
-        client.setBirthDate(format.parse("06.05.2005"));
-        client.setFirstName("Елена");
-        client.setPatrName("Игоревна");
-        client.setLastName("Абдикаримова");
+        client.setBirthDate(format.parse("12.05.2005"));
+        client.setFirstName("Данил");
+        client.setPatrName("Матвеевич");
+        client.setLastName("Агафонов");
         client.setSnils("1122-111-222");
 
         doctorAssigPerson.setFirstName("Медсестра");
@@ -67,8 +77,8 @@ public class PharmacyHL7 {
     }
 
 
-    @Test(enabled = true, priority = 1)
-    public void processReceived() {
+    @Test(enabled = true, priority = 1, dataProvider = "test1")
+    public void processReceived(Action action) {
         try {
             final MCCIIN000002UV01 result = HL7PacketBuilder.processReceived(
                     action,

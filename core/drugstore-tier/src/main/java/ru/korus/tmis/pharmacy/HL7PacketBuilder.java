@@ -23,6 +23,8 @@ import java.io.StringWriter;
 import java.math.BigInteger;
 import java.text.SimpleDateFormat;
 import java.util.Date;
+import java.util.List;
+import java.util.Random;
 import java.util.UUID;
 
 /**
@@ -948,7 +950,8 @@ public class HL7PacketBuilder {
                             custodianUUID,
                             externalUUID,
                             orgStruct,
-                            doctorPerson);
+                            doctorPerson,
+                            getRandomDrug());
             final String innerDocument = marshallMessage(clinicalDocument, "org.hl7.v3");
             logger.info("prepare inner document... \n\n{}", innerDocument);
 
@@ -1047,12 +1050,12 @@ public class HL7PacketBuilder {
             final String clientUUID,
             final String externalId,
             final Patient client,
-
             final String organizationName,
             final String custodianUUID,
             final String externalUUID,
             final OrgStructure orgStructure,
-            final Staff doctor) {
+            final Staff doctor,
+            POCDMT000040LabeledDrug drug) {
 
         final String uuidDocument = UUID.randomUUID().toString();
         // Версия документа, должна инкрементироваться при повторной передаче
@@ -1261,7 +1264,7 @@ public class HL7PacketBuilder {
         //----------------
         final POCDMT000040SubstanceAdministration substanceAdministration = new POCDMT000040SubstanceAdministration();
         substanceAdministration.setClassCode(ActClass.SBADM);
-        substanceAdministration.setMoodCode(XDocumentSubstanceMood.EVN);
+        substanceAdministration.setMoodCode(XDocumentSubstanceMood.EVN);  // назначение
         final II idRoot2 = new II();
         idRoot2.setRoot(UUID.randomUUID().toString()); // UUID назначения
         substanceAdministration.getId().add(idRoot2);
@@ -1332,8 +1335,8 @@ public class HL7PacketBuilder {
 
         final CD cd = new CD();
         final CD cdTrans = new CD();
-        cdTrans.setCode("Анальгин");
-        cdTrans.setDisplayName("Анальгин");
+        cdTrans.setCode("Фенистил");
+        cdTrans.setDisplayName("Фенистил");
         cdTrans.setCodeSystemName("RLS_ACTMATTERS");
         cd.getTranslation().add(cdTrans);
         code1.getTranslation().add(cd);
@@ -1341,8 +1344,8 @@ public class HL7PacketBuilder {
 
         final CD cdTrans2 = new CD();
 
-        cdTrans2.setCode("р-р");
-        cdTrans2.setDisplayName("р-р");
+        cdTrans2.setCode("капли");
+        cdTrans2.setDisplayName("капли");
         cdTrans2.setCodeSystemName("RLS_CLSDRUGFORMS");
 
         final CR cr = new CR();
@@ -1352,8 +1355,8 @@ public class HL7PacketBuilder {
         cr.setName(cv);
 
         final CD cdValue = new CD();
-        cdValue.setCode("мл");
-        cdValue.setDisplayName("мл");
+        cdValue.setCode("мг");
+        cdValue.setDisplayName("мг");
         cdValue.setCodeSystemName("RLS_MASSUNITS");
         final ED originalText1 = new ED();
         originalText1.getContent().add("5");
@@ -1366,7 +1369,7 @@ public class HL7PacketBuilder {
         manufacturedLabeledDrug.setCode(code1);
 
 
-        manufacturedProduct.setManufacturedLabeledDrug(manufacturedLabeledDrug);
+        manufacturedProduct.setManufacturedLabeledDrug(/*manufacturedLabeledDrug*/drug);
         consumable.setManufacturedProduct(manufacturedProduct);
         substanceAdministration.setConsumable(consumable);
 
@@ -1386,6 +1389,28 @@ public class HL7PacketBuilder {
 
         return clinicalDocument;
     }
+
+
+    public static POCDMT000040LabeledDrug getRandomDrug() {
+
+
+        //logger.info("prepare message... \n\n {}", marshallMessage(request, "misexchange"));
+        final DrugList drugList = new MISExchange().getMISExchangeSoap().getDrugList();
+        final List<POCDMT000040LabeledDrug> drug = drugList.getDrug();
+        logger.info("Connection successful...");
+
+        Random rnd = new Random();
+
+   //     final POCDMT000040LabeledDrug randomDrug = drug.get(rnd.nextInt(drug.size()));
+        for (POCDMT000040LabeledDrug d : drug) {
+            if (d.getCode().getCode().equals("20044")) {
+                logger.info("Fetch random drug {}", marshallMessage(d, "org.hl7.v3"));
+                return d;
+            }
+        }
+        return null;
+    }
+
 
     private static String marshallMessage(Object msg, String contextPath) {
         final StringWriter writer = new StringWriter();
