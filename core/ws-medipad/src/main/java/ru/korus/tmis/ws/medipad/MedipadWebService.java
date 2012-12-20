@@ -5,7 +5,9 @@ import ru.korus.tmis.core.data.*;
 import ru.korus.tmis.core.exception.CoreException;
 
 import java.io.Serializable;
+import java.util.ArrayList;
 import java.util.Date;
+import java.util.LinkedList;
 import javax.jws.WebMethod;
 import javax.jws.WebParam;
 import javax.jws.WebService;
@@ -286,6 +288,15 @@ public interface MedipadWebService extends Serializable {
     @WebMethod
     AllDepartmentsListData getAllDepartments(ListDataRequest requestData) throws CoreException;
 
+    /**
+     * Возвращаем все отделения  (Для mediPad)
+     * @param hasBeds Фильтр имеет(true) или не имеет(false) койки
+     * @return Список отделений как AllDepartmentsListData
+     * @throws CoreException
+     */
+    @WebMethod
+    AllDepartmentsListDataMP getAllDepartmentsByHasBeds(String hasBeds) throws CoreException;
+
     @WebMethod
     DiagnosticsListData getListOfDiagnosticsForPatientByEvent(DiagnosticsListRequestData requestData) throws CoreException;
 
@@ -313,9 +324,27 @@ public interface MedipadWebService extends Serializable {
     @WebMethod
     FlatDirectoryData getFlatDirectories(FlatDirectoryRequestData request) throws CoreException;
 
+    /**
+     * Получение справочников MKB
+     * @param request Данные из запроса как ListDataRequest.
+     * @param auth Авторизационные данные как AuthData.
+     * @return Справочник МКВ в виде JSON-строки как String
+     * @throws CoreException
+     * @see ListDataRequest
+     * @see AuthData
+     */
     @WebMethod
     String getAllMkbs(ListDataRequest request, AuthData auth) throws CoreException;
 
+    /**
+     * Получения справочников Thesaurus
+     * @param request Данные из запроса как ListDataRequest.
+     * @param auth Авторизационные данные как AuthData.
+     * @return Справочник Thesaurus как ThesaurusListData
+     * @throws CoreException
+     * @see ListDataRequest
+     * @see ThesaurusListData
+     */
     @WebMethod
     ThesaurusListData getThesaurusList(ListDataRequest request, AuthData auth) throws CoreException;
 
@@ -389,15 +418,44 @@ public interface MedipadWebService extends Serializable {
     /**
      * Сервис на получении списка пациентов из открытых госпитализаций, которые лежат на койке
      * @param departmentId Идентификатор отделения
-     * @param authData Авторизационные данные как AuthData
      * @return Список текущих пациентов отделения как CommonData
      * @throws CoreException
      * @see CommonData
      * @see AuthData
      */
     @WebMethod
-    CommonData getPatientsFromOpenAppealWhatHasBedByDepartmentId (int departmentId, AuthData authData) throws CoreException;
+    CommonData getPatientsFromOpenAppealsWhatHasBedsByDepartmentId (int departmentId) throws CoreException;
 
+    /**
+     * Сервис на создание/редактирование квоты
+     * @param quotaData Данные о сохраняемой/редактируемой квоте как QuotaData
+     * @param eventId Идентификатор обращения
+     * @param auth Авторизационные данные как AuthData
+     * @return JSON - строка как String
+     * @throws CoreException
+     * @see QuotaData
+     * @see AuthData
+     */
     @WebMethod
-    QuotaData insertOrUpdateQuota(QuotaEntry dataEntry, int eventId, AuthData auth) throws CoreException;
+    String insertOrUpdateQuota(QuotaData quotaData, int eventId, AuthData auth) throws CoreException;
+
+    /**
+     * Сервис на получение истории квот
+     * @param appealId Идентификатор обращения
+     * @return JSON - строка как String
+     * @throws CoreException
+     */
+    @WebMethod
+    String getQuotaHistory(int appealId) throws CoreException;
+
+    /**
+     * Сервис на получение списка справочника типов квот
+     * @param request Данные из запроса как ListDataRequest
+     * @return Список типов квот как GroupTypesListData
+     * @throws CoreException
+     * @see ListDataRequest
+     * @see GroupTypesListData
+     */
+    @WebMethod
+    GroupTypesListData getQuotaTypes(ListDataRequest request) throws CoreException;
 }

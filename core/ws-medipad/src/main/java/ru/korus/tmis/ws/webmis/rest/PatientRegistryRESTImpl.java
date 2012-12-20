@@ -32,7 +32,7 @@ import ru.korus.tmis.ws.impl.MedipadWSImpl;
 import com.sun.jersey.api.json.JSONWithPadding;
 
 /**
- * Description: Сервисы для работы с ядром TMIS посредством Web-клиента
+ * Сервисы для работы с ядром TMIS посредством Web-клиента
  */
 @Interceptors(ServicesLoggingInterceptor.class)
 @Singleton
@@ -62,12 +62,13 @@ public class PatientRegistryRESTImpl implements Serializable {
                                   @QueryParam("filter[fullName]")String fullName,
                                   @QueryParam("filter[birthDate]")Long birthDate,
                                   @QueryParam("filter[document]")String document,
+                                  @QueryParam("filter[withRelations]")String withRelations,
                                   @QueryParam("callback") String callback,
                                   @Context HttpServletRequest servRequest) {
         AuthData auth = wsImpl.checkTokenCookies(servRequest);
 
         Date bDate = birthDate == null ? null : new Date(birthDate);
-        PatientRequestData requestData = new PatientRequestData(patientCode, fullName, bDate, document, sortingField, sortingMethod, limit, page);
+        PatientRequestData requestData = new PatientRequestData(patientCode, fullName, bDate, document, withRelations, sortingField, sortingMethod, limit, page);
         JSONWithPadding returnValue = new JSONWithPadding(wsImpl.getAllPatients(requestData, auth), callback);
     	return returnValue;
     }
@@ -1694,6 +1695,49 @@ public class PatientRegistryRESTImpl implements Serializable {
         JSONWithPadding returnValue = new JSONWithPadding(oip, callback);
         return returnValue;
     }
+    /**
+     * Получение типов квот.
+     * @param limit Максимальное количество выводимых элементов на странице.
+     * @param page Номер выводимой страницы.
+     * @param sortingField Наименование поля для сортировки.<pre>
+     * &#15; Возможные значения:
+     * &#15; "id" - по идентификатору записи (значение по умолчанию);
+     * &#15; "groupId" - по идентификатору группы;
+     * &#15; "code" - по коду;</pre>
+     * @param sortingMethod Метод сортировки.<pre>
+     * &#15; Возможные значения:
+     * &#15; "asc" - по возрастанию (значение по умолчанию);
+     * &#15; "desc" - по убыванию;</pre>
+     * @param typeId Идентификатор типа квоты  (В url: filter[id]=...)
+     * @param groupId Фильтр по идентификатору группы типов квот. (В url: filter[groupId]=...)
+     * @param code Фильтр по коду типа квоты. (В url: filter[code]=...)
+     * @param callback  callback запроса.
+     * @param servRequest Контекст запроса с клиента.
+     * @return com.sun.jersey.api.json.JSONWithPadding как Object
+     * @throws CoreException
+     * @see CoreException
+     */
+    @GET
+    @Path("/quotaTypes")
+    @Produces("application/x-javascript")
+    public Object getQuotaTypes(@QueryParam("limit")int limit,
+                                @QueryParam("page")int  page,
+                                @QueryParam("sortingField")String sortingField,     //сортировки вкл.
+                                @QueryParam("sortingMethod")String sortingMethod,
+                                @QueryParam("filter[id]")int typeId,
+                                @QueryParam("filter[code]")String code,
+                                @QueryParam("filter[groupId]")String groupId,
+                                @QueryParam("callback") String callback,
+                                @Context HttpServletRequest servRequest) {
+        AuthData auth = wsImpl.checkTokenCookies(servRequest);
+
+        QuotaTypesListRequestDataFilter filter = new QuotaTypesListRequestDataFilter(typeId, code, groupId);
+        ListDataRequest request = new ListDataRequest(sortingField, sortingMethod, limit, page, filter);
+
+        Object oip = wsImpl.getQuotaTypes(request);
+        JSONWithPadding returnValue = new JSONWithPadding(oip, callback);
+        return returnValue;
+    }
 
     /**
      * Сервис возвращает указанный справочник.
@@ -1942,19 +1986,78 @@ public class PatientRegistryRESTImpl implements Serializable {
         return returnValue;
     }
 
+    /**
+     * Сервис сохранения квоты <br>
+     * url: /appeals/{appealId}/quotes
+     * @param data Json с данными о квоте как QuotaData
+     * @param appealId Идентификатор госпитализации.
+     * @param callback callback запроса.
+     * @param servRequest Контекст запроса с клиента.
+     * @return com.sun.jersey.api.json.JSONWithPadding как Object
+     * @throws CoreException
+     */
     @POST
-    @Path("/events/{eventId}/quota")
+    @Path("/appeals/{appealId}/quotes")
     @Produces("application/x-javascript")
     public Object createQuota(QuotaData data,
-                              @PathParam("eventId")int eventId,
-                              @QueryParam("token") String token,
+                              @PathParam("appealId")int appealId,
+                              //@QueryParam("token") String token,
                               @QueryParam("callback") String callback,
                               @Context HttpServletRequest servRequest) {
-        //AuthData auth = wsImpl.checkTokenCookies(servRequest);
-        AuthToken authToken = new AuthToken(token);
-        AuthData auth = wsImpl.getStorageAuthData(authToken);
+        AuthData auth = wsImpl.checkTokenCookies(servRequest);
+        //AuthToken authToken = new AuthToken(token);
+        //AuthData auth = wsImpl.getStorageAuthData(authToken);
 
-        Object oip = wsImpl.insertOrUpdateQuota(data.getData(), eventId, auth);
+        Object oip = wsImpl.insertOrUpdateQuota(data, appealId, auth);
+        JSONWithPadding returnValue = new JSONWithPadding(oip, callback);
+        return returnValue;
+    }
+
+    /**
+     * Сервис редактирования квоты <br>
+     * url: /appeals/{appealId}/quotes
+     * @param data Json с данными о квоте как QuotaData
+     * @param appealId Идентификатор госпитализации.
+     * @param callback callback запроса.
+     * @param servRequest Контекст запроса с клиента.
+     * @return com.sun.jersey.api.json.JSONWithPadding как Object
+     * @throws CoreException
+     */
+    @PUT
+    @Path("/appeals/{appealId}/quotes")
+    @Produces("application/x-javascript")
+    public Object modifyQuota(QuotaData data,
+                              @PathParam("appealId")int appealId,
+                              //@QueryParam("token") String token,
+                              @QueryParam("callback") String callback,
+                              @Context HttpServletRequest servRequest) {
+        AuthData auth = wsImpl.checkTokenCookies(servRequest);
+        //AuthToken authToken = new AuthToken(token);
+        //AuthData auth = wsImpl.getStorageAuthData(authToken);
+
+        Object oip = wsImpl.insertOrUpdateQuota(data, appealId, auth);
+        JSONWithPadding returnValue = new JSONWithPadding(oip, callback);
+        return returnValue;
+    }
+
+    /**
+     * Сервис получения данных о квоте <br>
+     * url: /appeals/{appealId}/quotes
+     * @param appealId Идентификатор госпитализации.
+     * @param callback callback запроса.
+     * @param servRequest Контекст запроса с клиента.
+     * @return com.sun.jersey.api.json.JSONWithPadding как Object
+     * @throws CoreException
+     */
+    @GET
+    @Path("/appeals/{appealId}/quotes")
+    @Produces("application/x-javascript")
+    public Object getQuotaHistory(@PathParam("appealId") int appealId,
+                                  @QueryParam("callback") String callback,
+                                  @Context HttpServletRequest servRequest) {
+        AuthData auth = wsImpl.checkTokenCookies(servRequest);
+
+        Object oip = wsImpl.getQuotaHistory(appealId);
         JSONWithPadding returnValue = new JSONWithPadding(oip, callback);
         return returnValue;
     }

@@ -29,14 +29,14 @@ class YDrugDosagePQ(@XmlTransient drug: Nomenclature,
     case _ => {
       val dosageString = d._2.head.getValueAsString
 
-      ed.getContent.add(drug.getForm)
+  //    ed.getContent.add(drug.getForm)
 
       pqr.setCodeSystemName("RLS")
       pqr.setOriginalText(ed)
       pq.setValue(getDosageValue(dosageString))
       pq.getTranslation.add(pqr)
 
-      getRest.add(factory.createIVLPQCenter(pq))
+    //  getRest.add(factory.createIVLPQCenter(pq))
     }
   }
 

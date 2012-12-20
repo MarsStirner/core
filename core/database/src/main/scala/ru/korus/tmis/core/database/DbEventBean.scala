@@ -66,7 +66,7 @@ class DbEventBean
 
     result.size() match {
       case 0 => {
-        null
+        null        //ексепшн нужен
       }
       case size => {
         val e = result.get(0)

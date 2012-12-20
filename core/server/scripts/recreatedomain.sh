@@ -18,8 +18,8 @@ MIS_DB_NAME=s11r64
 RLS_DB_NAME=rls
 
 GF_ADMIN_USER=admin                                                                                                                                             
-GF_ADMIN_PASSWD=admin                                                                                                                                           
-GF_MASTER_PASSWD=admin                                                                                                                                          
+GF_ADMIN_PASSWD=admin1234                                                                                                                                           
+GF_MASTER_PASSWD=admin1234                                                                                                                                          
 GF_DOMAIN_NAME=$2
                                                                                                                                      
 GF_DOMAIN_DIR=/usr/local/glassfish3/glassfish/domains

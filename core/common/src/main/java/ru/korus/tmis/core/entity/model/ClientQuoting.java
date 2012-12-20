@@ -12,7 +12,7 @@ import java.util.Date;
  * @since 1.0.0.48
  */
 @Entity
-@Table(name = "Client_Quoting", catalog = "", schema = "s11r64")
+@Table(name = "Client_Quoting", catalog = "", schema = "")
 @NamedQueries(
         {
                 @NamedQuery(name = "ClientQuoting.findAll", query = "SELECT cq FROM ClientQuoting cq")
@@ -28,6 +28,11 @@ public class ClientQuoting implements Serializable {
     @Basic(optional = false)
     @Column(name = "id")
     private Integer id;
+
+    @Version
+    @Basic(optional = false)
+    @Column(name = "version")
+    private int version;
 
     @ManyToOne
     @JoinColumn(name = "MKB")
@@ -129,6 +134,14 @@ public class ClientQuoting implements Serializable {
 
     public void setId(Integer id) {
         this.id = id;
+    }
+
+    public int getVersion() {
+        return version;
+    }
+
+    public void setVersion(int version) {
+        this.version = version;
     }
 
     public Mkb getMkb() {
@@ -364,5 +377,15 @@ public class ClientQuoting implements Serializable {
     @Override
     public String toString() {
         return "ru.korus.tmis.core.entity.model.ClientQuoting[id=" + id + "]";
+    }
+
+    @Override
+    public Object clone() throws CloneNotSupportedException {
+        return super.clone();
+    }
+
+    public static ClientQuoting clone(ClientQuoting self) throws CloneNotSupportedException {
+        ClientQuoting newClientQuoting = (ClientQuoting) self.clone();
+        return newClientQuoting;
     }
 }

@@ -17,6 +17,7 @@ import scala.collection.JavaConversions._
 import javax.servlet.http.HttpServletRequest
 import scala.None
 import ru.korus.tmis.core.exception.{AuthenticationException, NoSuchUserException}
+import ru.korus.tmis.util.reflect.TmisLogging
 
 @Interceptors(Array(classOf[LoggingInterceptor]))
 @ConcurrencyManagement(ConcurrencyManagementType.CONTAINER)
@@ -24,6 +25,7 @@ import ru.korus.tmis.core.exception.{AuthenticationException, NoSuchUserExceptio
 class AuthStorageBean
   extends AuthStorageBeanLocal
   with Logging
+  with TmisLogging
   with I18nable {
 
   @EJB
@@ -47,7 +49,11 @@ class AuthStorageBean
 
   @Lock(LockType.WRITE)
   def createToken(login: String, password: String, roleId: Int): AuthData = {
-    // Пытаемся получить сотрудника по логину
+
+    logTmis.setValueForKey(logTmis.LoggingKeys.Login, login, logTmis.StatusKeys.Success)
+    logTmis.setValueForKey(logTmis.LoggingKeys.Password, password, logTmis.StatusKeys.Success)
+    logTmis.setValueForKey(logTmis.LoggingKeys.Role, roleId.toString, logTmis.StatusKeys.Success)
+    // Пытаемся получить сотрудника по л огину
     val staff = dbStaff.getStaffByLogin(login)
 
     // Получаем роли сотрудника
@@ -162,57 +168,62 @@ class AuthStorageBean
 
   def checkTokenCookies(srvletRequest: HttpServletRequest): AuthData = {
     //проверим, пришли ли куки
-    val cookiesArray = srvletRequest.getCookies(); //srvletRequest
+    val cookiesArray = srvletRequest.getCookies //srvletRequest
     if (cookiesArray == null) {
-      error("No authentication data found");
+      error("No authentication data found")
       throw new AuthenticationException(
         ConfigManager.TmisAuth.ErrorCodes.InvalidToken,
-        i18n("error.invalidToken"));
+        i18n("error.invalidToken"))
     }
 
-    var token: String = null;
+    var token: String = null
     for (i <- 0 to cookiesArray.length - 1) {
-      val cookieName = cookiesArray(i).getName()
+      val cookieName = cookiesArray(i).getName
       if (cookieName.compareTo("authToken") == 0) {
-        token = cookiesArray(i).getValue();
+        token = cookiesArray(i).getValue
       }
     }
-    var authData: AuthData = null;
+    var authData: AuthData = null
     if (token != null) {
       var authToken: AuthToken = new AuthToken(token)
       //данные об авторизации
 
-      authData = this.getAuthData(authToken);
+      authData = this.getAuthData(authToken)
       if (authData != null) {
-        info("Authentication data found: " + authData);
+        info("Authentication data found: " + authData)
       } else {
-        error("No authentication data found");
+        error("No authentication data found")
         throw new AuthenticationException(
           ConfigManager.TmisAuth.ErrorCodes.InvalidToken,
-          i18n("error.invalidToken"));
+          i18n("error.invalidToken"))
       }
       //валидность сертификата по времени
-      var tokenEndDate: Date = null;
-      tokenEndDate = this.getAuthDateTime(authToken);
+      var tokenEndDate: Date = null
+      tokenEndDate = this.getAuthDateTime(authToken)
       if (tokenEndDate != null) {
         if (tokenEndDate.before(new Date())) {
-          error("Token period exceeded");
+          error("Token period exceeded")
           throw new AuthenticationException(
             ConfigManager.TmisAuth.ErrorCodes.InvalidToken,
-            i18n("error.tokenExceeded"));
+            i18n("error.tokenExceeded"))
         } else {
-          info("Token is valid");
+          info("Token is valid")
           val tokenEndTimeNew = new Date(new Date().getTime + ConfigManager.TmisAuth.AuthTokenPeriod)
           authMap.remove(authToken)
           authMap.put(authToken, (authData, tokenEndTimeNew))
         }
       } else {
-        error("Token end date not found");
+        error("Token end date not found")
         throw new AuthenticationException(
           ConfigManager.TmisAuth.ErrorCodes.InvalidToken,
-          i18n("error.invalidToken"));
+          i18n("error.invalidToken"))
       }
       //currentUser.login(new TmisShiroToken(authData))
+      logTmis.setValueForKey(logTmis.LoggingKeys.User, authData.getUser.getId, logTmis.StatusKeys.Success)
+      logTmis.setValueForKey(logTmis.LoggingKeys.Role, authData.getUserRole.getId, logTmis.StatusKeys.Success)
+    }
+    else {
+      throw new AuthenticationException(ConfigManager.TmisAuth.ErrorCodes.InvalidToken, i18n("error.invalidToken"))
     }
     authData
   }

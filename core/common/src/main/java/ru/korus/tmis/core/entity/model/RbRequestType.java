@@ -11,7 +11,7 @@ import java.io.Serializable;
  * @since 1.0.0.45
  */
 @Entity
-@Table(name = "rbRequestType", catalog = "", schema = "s11r64")
+@Table(name = "rbRequestType", catalog = "", schema = "")
 @NamedQueries(
         {
           @NamedQuery(name = "RbRequestType.findAll", query = "SELECT rt FROM RbRequestType rt")

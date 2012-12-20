@@ -164,7 +164,7 @@ public class Test2 {
             uv07Person.setClassCode(EntityClass.PSN);
             uv07Person.setDeterminerCode(EntityDeterminer.INSTANCE);
             final II typeId3 = new II();
-            typeId3.setExtension("00001"); // снилс
+            typeId3.setExtension("00001");
             uv07Person.getId().add(typeId3);
 
             final PN pn = new PN();
@@ -190,7 +190,7 @@ public class Test2 {
             uv07Person.setAdministrativeGenderCode(administrativeGenderCode);
 
             final TS birthTime = new TS();
-            birthTime.setValue("1221223"); // день рождения
+            birthTime.setValue("1221223");
             uv07Person.setBirthTime(birthTime);
 
             patientPerson.setValue(uv07Person);

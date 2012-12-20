@@ -10,6 +10,8 @@ import java.util.Date
 import ru.korus.tmis.core.entity.model.{Mkb, Patient, Staff, ClientQuoting}
 import scala.collection.JavaConversions._
 import ru.korus.tmis.core.exception.CoreException
+import javax.swing.table.TableModel
+import ru.korus.tmis.util.reflect.TmisLogging
 
 /**
  * Класс с методами для работы с таблицей s11r64.Client_Quoting
@@ -23,7 +25,8 @@ import ru.korus.tmis.core.exception.CoreException
 class DbClientQuotingBean
   extends DbClientQuotingBeanLocal
   with Logging
-  with I18nable {
+  with I18nable
+  with TmisLogging {
 
   @PersistenceContext(unitName = "s11r64")
   var em: EntityManager = _
@@ -67,6 +70,7 @@ class DbClientQuotingBean
   }
 
   def insertOrUpdateClientQuoting(id: Int,
+                                  version: Int,
                                   rbQuotaTypeId: Int,
                                   quotaStatusId: Int,
                                   orgStructureId: Int,
@@ -82,6 +86,7 @@ class DbClientQuotingBean
     val now = new Date
     if (id > 0) {
       cq = getClientQuotingById(id)
+      cq.setVersion(version)
     }
     else {
       cq = new ClientQuoting
@@ -89,7 +94,7 @@ class DbClientQuotingBean
       cq.setCreateDatetime(now)
       cq.setMaster(patient)
       //нотнул йопта
-      cq.setDateEnd(now)  //узнать
+      cq.setDateEnd(now)
       cq.setDateRegistration(now)
       cq.setDirectionDate(now)
       cq.setPacientModelId(0)
@@ -120,6 +125,36 @@ class DbClientQuotingBean
     cq.setModifyPerson(sessionUser)
     cq.setModifyDatetime(now)
   }
+
+  def getAllClientQuotingForPatient (patientId: Int) = {
+    val result = em.createQuery(AllClientQuotingForPatientFindQuery,
+      classOf[ClientQuoting])
+      .setParameter("patientId", patientId)
+      .getResultList
+
+    result.size match {
+      case 0 => {
+        logTmis.setLoggerType(logTmis.LoggingTypes.Debug)
+        logTmis.warning("code " + ConfigManager.ErrorCodes.ClientQuotingAllNotFound + ": " + i18n("error.clientQuotingAllNotFound"))
+      }
+      case size => {
+        result.foreach(rbType => {
+          em.detach(rbType)
+        })
+      }
+    }
+    result
+  }
+
+  val AllClientQuotingForPatientFindQuery = """
+    SELECT cq
+    FROM
+      ClientQuoting cq
+    WHERE
+      cq.master.id = :patientId
+    AND
+      cq.deleted = 0
+                                            """
 }
 
 

@@ -43,18 +43,12 @@ class DbPatientBean
                          """
 
   val PatientFindAllActiveQuery = """
-     SELECT %s
+   SELECT %s
    FROM
      Patient p
    WHERE
-   NOT exists (
-     SELECT r
-       FROM ClientRelation r
-       WHERE r.relative.id != '0'
-       AND r.relative.id = p.id
-     )
-   AND
-     p.deleted = 0
+    p.deleted = 0
+   %s
    ORDER BY p.%s %s
                                   """
 
@@ -232,10 +226,13 @@ class DbPatientBean
 
   def getAllPatients(limit: Int, page: Int, sortField: String, sortMethod: String,
                      requestData: PatientRequestData): Iterable[Patient] = {
-    requestData.setRecordsCount(getCountRecordsOrPagesQuery(PatientFindAllActiveQuery)
+    val query = if (!requestData.filter.withRelations) {
+      " AND NOT exists (SELECT r FROM ClientRelation r WHERE r.relative.id != '0' AND r.relative.id = p.id)"
+    } else ""
+    requestData.setRecordsCount(getCountRecordsOrPagesQuery(PatientFindAllActiveQuery.format("%s", query, "%s", "%s"))
       .getSingleResult
       .toString)
-    em.createQuery(PatientFindAllActiveQuery.format("p", sortField, sortMethod), classOf[Patient])
+    em.createQuery(PatientFindAllActiveQuery.format("p", query, sortField, sortMethod), classOf[Patient])
       .setMaxResults(limit)
       .setFirstResult(limit * page)
       .getResultList

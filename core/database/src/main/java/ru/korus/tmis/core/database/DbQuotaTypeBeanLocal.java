@@ -42,6 +42,6 @@ public interface DbQuotaTypeBeanLocal {
      * @return
      * @throws CoreException
      */
-    java.util.LinkedList<Object> getAllQuotaTypesWithFilter(int page, int limit, String sortingField, String sortingMethod, Object filter, Function1<Long, Boolean> setRecCount)
+    java.util.List<QuotaType> getAllQuotaTypesWithFilter(int page, int limit, String sortingField, String sortingMethod, Object filter, Function1<Long, Boolean> setRecCount)
             throws CoreException;
 }

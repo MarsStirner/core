@@ -6,7 +6,7 @@ import javax.persistence.{EntityManager, PersistenceContext}
 import ru.korus.tmis.core.entity.model.QuotaType
 import ru.korus.tmis.core.exception.CoreException
 import scala.collection.JavaConversions._
-import ru.korus.tmis.core.data.{DictionaryListRequestDataFilter, QueryDataStructure}
+import ru.korus.tmis.core.data.{QuotaTypesListRequestDataFilter, DictionaryListRequestDataFilter, QueryDataStructure}
 import javax.interceptor.Interceptors
 import ru.korus.tmis.core.logging.LoggingInterceptor
 import javax.ejb.Stateless
@@ -72,30 +72,32 @@ class DbQuotaTypeBean
   }
 
   def getAllQuotaTypesWithFilter(page: Int, limit: Int, sortingField: String, sortingMethod: String, filter: Object, records: (java.lang.Long) => java.lang.Boolean) = {
-    val queryStr: QueryDataStructure = if (filter.isInstanceOf[DictionaryListRequestDataFilter])
-      filter.asInstanceOf[DictionaryListRequestDataFilter].toQueryStructure()
+    val queryStr: QueryDataStructure = if (filter.isInstanceOf[QuotaTypesListRequestDataFilter])
+      filter.asInstanceOf[QuotaTypesListRequestDataFilter].toQueryStructure()
     else new QueryDataStructure()
 
-    val sorting = "ORDER BY %s %s".format(sortingField, sortingMethod)
+    val sorting = "ORDER BY %s %s".format("r."+sortingField, sortingMethod)
     if (queryStr.data.size() > 0) {
       if (queryStr.query.indexOf("AND ") == 0) {
         queryStr.query = "WHERE " + queryStr.query.substring("AND ".length())
       }
     }
 
-    if (records!=null) records(em.createQuery(AllQuotaTypesWithFilterQuery.format("count(r)", queryStr.query, ""), classOf[Long]).getSingleResult)//Перепишем количество записей для структуры
+    //Перепишем количество записей для структуры
+    var countTyped = em.createQuery(AllQuotaTypesWithFilterQuery.format("count(r)", queryStr.query, ""), classOf[Long])
+    if (queryStr.data.size() > 0) queryStr.data.foreach(qdp => countTyped.setParameter(qdp.name, qdp.value))
+    if (records!=null) records(countTyped.getSingleResult)
 
-    var typed = em.createQuery(AllQuotaTypesWithFilterQuery.format("r.id, r.name", queryStr.query, sorting), classOf[Array[AnyRef]])
+    var typed = em.createQuery(AllQuotaTypesWithFilterQuery.format("r", queryStr.query, sorting), classOf[QuotaType])
       .setMaxResults(limit)
       .setFirstResult(limit * page)
     if (queryStr.data.size() > 0) queryStr.data.foreach(qdp => typed.setParameter(qdp.name, qdp.value))
 
     val result = typed.getResultList
-    val list = new java.util.LinkedList[Object]
     result.foreach(f => {
-      list.add((f(0).asInstanceOf[java.lang.Integer], f(1).asInstanceOf[java.lang.String]))
+      em.detach(f)
     })
-    list
+    result
   }
 
   val QuotaTypeFindByCodeQuery = """
@@ -119,5 +121,5 @@ class DbQuotaTypeBean
   FROM QuotaType r
   %s
   %s
-                                        """
+                                     """
 }

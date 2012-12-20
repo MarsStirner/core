@@ -18,24 +18,24 @@ class YClinicalDocument extends Xmlable {
   val hl7Factory = new ObjectFactory
 
   @BeanProperty
-  var inner = new PocdClinicalDocument()
+  var inner = new POCDMT000040ClinicalDocument()
 
   inner.setId(new YClinicalDocumentId(this))
   inner.getRealmCode.add(new YRealmCodeCS)
-  inner.setTypeId(new YClinicalDocumentTypeId)
+  inner.setTypeId(new POCDMT000040InfrastructureRootTypeId)
   inner.setCode(new YAdministrationCodeCE)
   inner.setEffectiveTime(new YGenericTimeTS)
   inner.setConfidentialityCode(new YConfidentialityCodeCE)
   inner.setLanguageCode(new YLanguageCodeCS)
 
   def setOrgRef(orgRef: String) = {
-    inner.setCustodian(new YPocdCustodian(orgRef))
+    inner.setCustodian(new POCDMT000040Custodian(/*orgRef*/))
   }
 
   def setPatient(patient: Patient) = {
-    val rt = new PocdRecordTarget
-    val pr = new PocdPatientRole
-    val p = new PocdPatient
+    val rt = new POCDMT000040RecordTarget
+    val pr = new POCDMT000040PatientRole
+    val p = new POCDMT000040Patient
 
     p.getName.add(new YPatientPN(patient))
     p.setAdministrativeGenderCode(new YGenderCodeCE(patient))
@@ -50,9 +50,9 @@ class YClinicalDocument extends Xmlable {
   }
 
   def setAuthor(doctor: Staff) = {
-    val a = new PocdAuthor
-    val aa = new PocdAssignedAuthor
-    val p = new PocdPerson
+    val a = new POCDMT000040Author
+    val aa = new POCDMT000040AssignedAuthor
+    val p = new POCDMT000040Person
 
     p.getName.add(new YStaffPN(doctor))
 
@@ -66,8 +66,8 @@ class YClinicalDocument extends Xmlable {
   }
 
   def setEvent(event: Event) = {
-    val c1 = new PocdComponent1
-    val enc = new PocdEncompassingEncounter
+    val c1 = new POCDMT000040Component1
+    val enc = new POCDMT000040EncompassingEncounter
 
     enc.getId.add(new YEventId(event))
     enc.setEffectiveTime(new YNullTimeTS)
@@ -131,15 +131,15 @@ class YClinicalDocument extends Xmlable {
               timing: Iterable[AssignmentHour],
               moodCode: XDocumentSubstanceMood,
               negation: Boolean): Unit = {
-    val c = new PocdComponent3
-    val s = new PocdSection
-    val e = new PocdEntry
-    val administration = new PocdSubstanceAdministration
-    val consumable = new PocdConsumable
-    val mp = new PocdManufacturedProduct
-    val mld = new PocdLabeledDrug
+    val c = new POCDMT000040Component3
+    val s = new POCDMT000040Section
+    val e = new POCDMT000040Entry
+    val administration = new POCDMT000040SubstanceAdministration
+    val consumable = new POCDMT000040Consumable
+    val mp = new POCDMT000040ManufacturedProduct
+    val mld = new POCDMT000040LabeledDrug
 
-    administration.getClassCode.add("SBADM")
+    administration.setClassCode(ActClass.valueOf("SBADM"))
     administration.setMoodCode(moodCode)
     administration.setNegationInd(negation)
     administration.getId.add(new YDrugId(treatment))
@@ -168,8 +168,8 @@ class YClinicalDocument extends Xmlable {
     s.getEntry.add(e)
     c.setSection(s)
 
-    val rootComponent = new PocdComponent2
-    val sBody = new PocdStructuredBody
+    val rootComponent = new POCDMT000040Component2
+    val sBody = new POCDMT000040StructuredBody
     sBody.getComponent.add(c)
     rootComponent.setStructuredBody(sBody)
 
