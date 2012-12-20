@@ -1,18 +1,17 @@
 package ru.korus.tmis.pharmacy;
 
 import org.hl7.v3.MCCIIN000002UV01;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.testng.annotations.BeforeSuite;
+import org.testng.annotations.DataProvider;
 import org.testng.annotations.Test;
-import ru.korus.tmis.core.entity.model.Action;
-import ru.korus.tmis.core.entity.model.Patient;
-import ru.korus.tmis.core.entity.model.Staff;
+import ru.korus.tmis.core.entity.model.*;
 import ru.korus.tmis.pharmacy.exception.SoapConnectionException;
 
-import javax.xml.bind.JAXBContext;
-import javax.xml.bind.Marshaller;
-import javax.xml.bind.Unmarshaller;
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
 import java.util.Date;
-import java.util.UUID;
 
 /**
  * Author:      Dmitriy E. Nosov <br>
@@ -24,41 +23,62 @@ import java.util.UUID;
 
 public class PharmacyHL7 {
 
+    final static Logger logger = LoggerFactory.getLogger(PharmacyHL7.class);
 
     private final Action action = new Action(1);
     private final Patient client = new Patient(2);
-    private final Patient au = new Patient(3);
-    private final Staff createPerson = new Staff(11);
-    private final String externalId = "2012/4251";
-    private final String externalUUID = UUID.randomUUID().toString();
-    private final String orgUUID = "50c965c7-7422-11e1-b47f-005056a41f97";
-    private final String orgUUID2 = "8db3a054-41c3-11e1-b38c-005056a46489";
-    private final String clientUUID = UUID.randomUUID().toString();
+    private final Staff doctor = new Staff(11);
+    private final Staff doctorAssigPerson = new Staff(11);
+    private final String externalId = "2012/11782";  // номер карты в мис
+    private final String externalUUID = "1b264840-5555-4444-89fd-1f6b355dfa91";  // UUID карты
+    private final String orgUUID = "0eea8235-1c12-11e1-7085-000c29d5ecf8";   // дневной стационар
+    private final String orgUUID2 = "0eea8235-1c12-11e1-7085-000c29d5ecf8";
+    private final String clientUUID = "5128db7d-4444-43b8-9617-e2d2f229dac3";  // UUID пациента
+    private final String custodianUUID = "1111822f-2222-11e1-7085-000c29d5ecf8";
 
-    @BeforeSuite
-    private void init() {
 
-        action.setCreateDatetime(new Date());
-        client.setBirthDate(new Date(10, 1, 1));
-        client.setFirstName("Григорий");
-        client.setPatrName("Петрович");
-        client.setLastName("Иванов");
-        client.setSnils("1122-111-222");
-
-        au.setBirthDate(new Date(300, 9, 9));
-        au.setFirstName("Сидор");
-        au.setPatrName("Сидорович");
-        au.setLastName("Администраторов");
-        au.setSnils("99-199-999");
-
-        createPerson.setFirstName("Доктор");
-        createPerson.setPatrName("Докторович");
-        createPerson.setLastName("Айболит");
+    @DataProvider(name = "test1")
+    public Object[][] createData1() {
+        return new Object[][] {
+                { "Cedric", new Integer(36) },
+                { "Anne", new Integer(37)},
+        };
     }
 
 
-    @Test(enabled = true, priority = 1)
-    public void processReceived() {
+
+    @BeforeSuite
+    private void init() throws ParseException {
+        SimpleDateFormat format = new SimpleDateFormat("dd.MM.yyyy");
+
+        action.setCreateDatetime(new Date());
+        client.setBirthDate(format.parse("12.05.2005"));
+        client.setFirstName("Данил");
+        client.setPatrName("Матвеевич");
+        client.setLastName("Агафонов");
+        client.setSnils("1122-111-222");
+
+        doctorAssigPerson.setFirstName("Медсестра");
+        doctorAssigPerson.setPatrName("Владимировна");
+        doctorAssigPerson.setLastName("Регистраторова");
+
+        doctor.setFirstName("Медсестра");
+        doctor.setPatrName("Владимировна");
+        doctor.setLastName("Регистраторова");
+        doctor.setUuid(new UUID("5555db7d-5555-43b8-9617-e2d2f229dac3"));
+        final Speciality speciality = new Speciality(1);
+        speciality.setName("нейрохирург");
+        doctor.setSpeciality(speciality);
+
+        logger.info("Start test 1C Pharmacy integration with patameter: " +
+                "Action {}, Patient {}, clientUUID {}, externalId {}, externalUUUID {}, " +
+                "orgUUID {}, org2UUID {}, staff {}",
+                action, client, clientUUID, externalId, externalUUID, orgUUID, orgUUID2, doctor);
+    }
+
+
+    @Test(enabled = true, priority = 1, dataProvider = "test1")
+    public void processReceived(Action action) {
         try {
             final MCCIIN000002UV01 result = HL7PacketBuilder.processReceived(
                     action,
@@ -69,12 +89,11 @@ public class PharmacyHL7 {
                     clientUUID);
 
             final String docUUID = result.getId().getRoot();
-            System.out.println("docUUID = " + docUUID);
+            logger.info("docUUID = " + docUUID);
 
         } catch (SoapConnectionException e) {
-            e.printStackTrace();
+            logger.error("SoapConnectionException: " + e, e);
         }
-
     }
 
     @Test(enabled = true, priority = 2)
@@ -89,10 +108,10 @@ public class PharmacyHL7 {
                     orgUUID2);
 
             final String docUUID = result.getId().getRoot();
-            System.out.println("docUUID = " + docUUID);
+            logger.info("docUUID = " + docUUID);
 
         } catch (SoapConnectionException e) {
-            e.printStackTrace();
+            logger.error("SoapConnectionException: " + e, e);
         }
     }
 
@@ -108,10 +127,10 @@ public class PharmacyHL7 {
                     orgUUID2);
 
             final String docUUID = result.getId().getRoot();
-            System.out.println("docUUID = " + docUUID);
+            logger.info("docUUID = " + docUUID);
 
         } catch (SoapConnectionException e) {
-            e.printStackTrace();
+            logger.error("SoapConnectionException: " + e, e);
         }
     }
 
@@ -121,14 +140,15 @@ public class PharmacyHL7 {
             final MCCIIN000002UV01 result = HL7PacketBuilder.processLeaved(
                     action,
                     externalId,
+                    externalUUID,
                     clientUUID,
                     client, "Стационар");
 
             final String docUUID = result.getId().getRoot();
-            System.out.println("docUUID = " + docUUID);
+            logger.info("docUUID = " + docUUID);
 
         } catch (SoapConnectionException e) {
-            e.printStackTrace();
+            logger.error("SoapConnectionException: " + e, e);
         }
     }
 
@@ -143,10 +163,10 @@ public class PharmacyHL7 {
                     client);
 
             final String docUUID = result.getId().getRoot();
-            System.out.println("docUUID = " + docUUID);
+            logger.info("docUUID = " + docUUID);
 
         } catch (SoapConnectionException e) {
-            e.printStackTrace();
+            logger.error("SoapConnectionException: " + e, e);
         }
     }
 
@@ -158,30 +178,16 @@ public class PharmacyHL7 {
                     clientUUID,
                     externalId,
                     client,
-                    createPerson,
-                    "ФНКЦ");
+                    doctor,
+                    "ФНКЦ",
+                    externalUUID,
+                    custodianUUID, doctor);
 
             final String docUUID = result.getId().getRoot();
-            System.out.println("docUUID = " + docUUID);
+            logger.info("docUUID = " + docUUID);
 
         } catch (SoapConnectionException e) {
-            e.printStackTrace();
+            logger.error("SoapConnectionException: " + e, e);
         }
-    }
-
-
-    private void demarshalling(MCCIIN000002UV01 response) {
-        try {
-            JAXBContext jaxbContext = JAXBContext.newInstance("org.hl7.v3");
-            final Marshaller marshaller = jaxbContext.createMarshaller();
-            final Unmarshaller unmarshaller = jaxbContext.createUnmarshaller();
-            marshaller.setProperty(Marshaller.JAXB_FORMATTED_OUTPUT, true);
-//            marshaller.setProperty(Marshaller.JAXB_SCHEMA_LOCATION, "urn:hl7-org:v3 PRPA_IN302011UV02.xsd");
-//            marshaller.setProperty(Marshaller.JAXB_ENCODING, "windows-1251");
-            marshaller.marshal(response, System.out);
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
-
     }
 }

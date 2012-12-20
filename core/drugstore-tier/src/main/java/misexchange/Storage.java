@@ -19,7 +19,7 @@ import javax.xml.bind.annotation.XmlType;
  *       &lt;sequence>
  *         &lt;element name="Ref" type="{MISExchange}uuid"/>
  *         &lt;element name="Description" type="{http://www.w3.org/2001/XMLSchema}string"/>
- *         &lt;element name="Type" type="{MISExchange}StorareType"/>
+ *         &lt;element name="Type" type="{MISExchange}StorageType"/>
  *       &lt;/sequence>
  *     &lt;/restriction>
  *   &lt;/complexContent>
@@ -41,7 +41,7 @@ public class Storage {
     @XmlElement(name = "Description", required = true)
     protected String description;
     @XmlElement(name = "Type", required = true)
-    protected StorareType type;
+    protected StorageType type;
 
     /**
      * Gets the value of the ref property.
@@ -96,10 +96,10 @@ public class Storage {
      * 
      * @return
      *     possible object is
-     *     {@link StorareType }
+     *     {@link StorageType }
      *     
      */
-    public StorareType getType() {
+    public StorageType getType() {
         return type;
     }
 
@@ -108,10 +108,10 @@ public class Storage {
      * 
      * @param value
      *     allowed object is
-     *     {@link StorareType }
+     *     {@link StorageType }
      *     
      */
-    public void setType(StorareType value) {
+    public void setType(StorageType value) {
         this.type = value;
     }
 

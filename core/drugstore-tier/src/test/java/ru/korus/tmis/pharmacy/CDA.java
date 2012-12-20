@@ -16,11 +16,11 @@ import java.util.Date;
 import java.util.UUID;
 
 /**
- * Created with IntelliJ IDEA.
- * User: nde
- * Date: 10.12.12
- * Time: 17:42
- * To change this template use File | Settings | File Templates.
+ * @Author:      Dmitriy E. Nosov <br>
+ * @Date:        10.12.12, 17:42 <br>
+ * @Company:     Korus Consulting IT<br>
+ * Revision:    \$Id$ <br>
+ * @Description: <br>
  */
 public class CDA {
 
@@ -44,7 +44,7 @@ public class CDA {
         }
     }
 
-    @Test
+    @Test(enabled = false)
     public void cdaTest() {
 
         final SimpleDateFormat sdf = new SimpleDateFormat("yyyyMMddHHmmss");
