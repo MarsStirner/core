@@ -79,12 +79,6 @@ class DbPatientBean
         FROM
           Patient p
         WHERE
-          NOT exists (
-           SELECT r
-             FROM ClientRelation r
-             WHERE r.relative.id = p.id
-           )
-        AND
           exists (
             SELECT d FROM ClientDocument d
             WHERE upper(d.serial) LIKE upper(:documentPattern) OR upper(d.number) LIKE upper(:documentPattern)
@@ -100,29 +94,26 @@ class DbPatientBean
       FROM
         Patient p
       WHERE
-        NOT exists (
-         SELECT r
-           FROM ClientRelation r
-           WHERE r.relative.id = p.id
-         )
-      AND
         upper(p.lastName) LIKE upper(:fullNamePattern)
       AND
         p.deleted = 0
       ORDER BY p.%s %s
                                                 """
 
-  val PatientFindActiveByBirthDateQuery = """
-      SELECT %s
-      FROM
-        Patient p
-      WHERE
-        NOT exists (
+  /*
+  NOT exists (
          SELECT r
            FROM ClientRelation r
            WHERE r.relative.id = p.id
          )
       AND
+   */
+
+  val PatientFindActiveByBirthDateQuery = """
+      SELECT %s
+      FROM
+        Patient p
+      WHERE
         p.birthDate = :birthDate
       AND
         p.deleted = 0
@@ -135,12 +126,6 @@ class DbPatientBean
       FROM
         Patient p
       WHERE
-        NOT exists (
-         SELECT r
-           FROM ClientRelation r
-           WHERE r.relative.id = p.id
-         )
-      AND
         p.birthDate = :birthDate AND upper(p.lastName) LIKE upper(:fullNamePattern)
       AND
         p.deleted = 0
@@ -152,12 +137,6 @@ class DbPatientBean
     FROM
       Patient p
     WHERE
-      NOT exists (
-         SELECT r
-           FROM ClientRelation r
-           WHERE r.relative.id = p.id
-         )
-     AND
       %s
                                """
 
@@ -166,12 +145,6 @@ class DbPatientBean
       FROM
         Patient p
       WHERE
-        NOT exists (
-         SELECT r
-           FROM ClientRelation r
-           WHERE r.relative.id = p.id
-         )
-      AND
         p.createDatetime BETWEEN :beginDate AND :endDate
       AND
         p.deleted = 0
@@ -183,12 +156,6 @@ class DbPatientBean
       FROM
         Patient p
       WHERE
-        NOT exists (
-         SELECT r
-           FROM ClientRelation r
-           WHERE r.relative.id = p.id
-         )
-      AND
         p.events = :events
       AND
         p.deleted = 0

@@ -55,6 +55,9 @@ class RoleEntry {
   var name: String = _
 
   @BeanProperty
+  var withDep: Int = _
+
+  @BeanProperty
   var right = new LinkedList[UserRightEntry]()
 
   /**
@@ -66,6 +69,7 @@ class RoleEntry {
     this.id = role.getId.intValue()
     this.code = role.getCode
     this.name = role.getName
+    this.withDep = role.getWithDep
 
     val rolePermissions = role.getRights.map(_.getCode)
     ConfigManager.TmisAuth.SupportedPermissions.foreach(
