@@ -111,7 +111,7 @@ public class Patient implements Serializable, Cloneable {
 
 //    @ManyToOne
 //    @JoinColumn(name = "uuid_id")
-    @Transient
+@Transient
     private UUID uuid;
 
     ////////////////////////////////////////////////////////////////////////////

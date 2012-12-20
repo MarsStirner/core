@@ -133,7 +133,6 @@ public class Action
     @Column(name = "prescription_id")
     private Integer prescriptionId;
 
-
     @ManyToOne
     @JoinColumn(name = "takenTissueJournal_id")
     private TakenTissue takenTissue;
@@ -170,7 +169,7 @@ public class Action
 
 //    @ManyToOne
 //    @JoinColumn(name = "uuid_id")
-@Transient
+    @Transient
     private UUID uuid;
     ////////////////////////////////////////////////////////////////////////////
     // Custom mappings
