@@ -10,8 +10,6 @@ import javax.persistence.*;
 import javax.xml.bind.annotation.XmlRootElement;
 import javax.xml.bind.annotation.XmlType;
 
-import ru.korus.tmis.util.PublicClonable;
-
 @Entity
 @Table(name = "ActionType", catalog = "", schema = "")
 @NamedQueries(
@@ -115,8 +113,9 @@ public class ActionType implements Serializable {
     @Column(name = "genTimetable")
     private boolean genTimetable;
 
-    @Column(name = "service_id")
-    private Integer serviceId;
+    @ManyToOne
+    @JoinColumn(name = "service_id")
+    private RbService service;
 
     @Column(name = "quotaType_id")
     private Integer quotaTypeId;
@@ -369,12 +368,12 @@ public class ActionType implements Serializable {
         this.genTimetable = genTimetable;
     }
 
-    public Integer getServiceId() {
-        return serviceId;
+    public RbService getService() {
+        return service;
     }
 
-    public void setServiceId(Integer serviceId) {
-        this.serviceId = serviceId;
+    public void setService(RbService service) {
+        this.service = service;
     }
 
     public Integer getQuotaTypeId() {
