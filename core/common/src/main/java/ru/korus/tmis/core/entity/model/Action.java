@@ -133,7 +133,6 @@ public class Action
     @Column(name = "prescription_id")
     private Integer prescriptionId;
 
-
     @ManyToOne
     @JoinColumn(name = "takenTissueJournal_id")
     private TakenTissue takenTissue;
@@ -168,8 +167,9 @@ public class Action
             inverseJoinColumns = {@JoinColumn(name = "tissue_id")})
     private Set<Tissue> tissue = new LinkedHashSet<Tissue>();
 
-    @ManyToOne
-    @JoinColumn(name = "uuid_id")
+//    @ManyToOne
+//    @JoinColumn(name = "uuid_id")
+    @Transient
     private UUID uuid;
     ////////////////////////////////////////////////////////////////////////////
     // Custom mappings

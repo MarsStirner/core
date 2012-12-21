@@ -19,11 +19,11 @@ import java.util.Date;
 import java.util.List;
 
 /**
- * Created with IntelliJ IDEA.
- * User: nde
- * Date: 04.12.12
- * Time: 18:56
- * To change this template use File | Settings | File Templates.
+ * @Author:      Dmitriy E. Nosov <br>
+ * @Date:        04.12.12, 18:56 <br>
+ * @Company:     Korus Consulting IT<br>
+ * Revision:    \$Id$ <br>
+ * @Description: <br>
  */
 @Interceptors(LoggingInterceptor.class)
 @Stateless
@@ -34,10 +34,10 @@ public class DbPharmacyBean implements DbPharmacyBeanLocal {
     @PersistenceContext(unitName = "s11r64")
     private EntityManager em = null;
 
-    @EJB
+    @EJB(beanName = "DbManagerBean")
     private DbManagerBeanLocal dbManager = null;
 
-    @EJB
+    @EJB(beanName = "DbPatientBean")
     private DbPatientBeanLocal dbPatientBeanLocal = null;
 
 

@@ -1,10 +1,10 @@
 package ru.korus.tmis.core.entity.model;
 
-import java.io.Serializable;
-import java.util.Date;
 import javax.persistence.*;
 import javax.xml.bind.annotation.XmlRootElement;
 import javax.xml.bind.annotation.XmlType;
+import java.io.Serializable;
+import java.util.Date;
 
 @Entity
 @Table(name = "OrgStructure", catalog = "", schema = "")
@@ -117,8 +117,9 @@ public class OrgStructure implements Serializable {
     private boolean inheritGaps;
 
 
-    @ManyToOne
-    @JoinColumn(name = "uuid_id")
+//    @ManyToOne
+//    @JoinColumn(name = "uuid_id")
+@Transient
     private UUID uuid;
 
 
