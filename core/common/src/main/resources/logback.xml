@@ -13,7 +13,7 @@
     <appender name="TMIS" class="ch.qos.logback.core.rolling.RollingFileAppender">
         <file>${root.log}tmis-core/core.log</file>
         <encoder>
-            <pattern>${root.log}</pattern>
+            <pattern>${log.format}</pattern>
             <charset>UTF-8</charset>
         </encoder>
 
