@@ -842,8 +842,11 @@ class MedipadWSImpl
     list
   }
 
-  def getAllDepartmentsByHasBeds(hasBeds: String) = { //Для медипада
-    new AllDepartmentsListDataMP(dbOrgStructureBean.getAllOrgStructuresByRequest(0, 0, "", "", null), null)
+  def getAllDepartmentsByHasBeds(hasBeds: String, hasPatients: String) = { //Для медипада
+    val flgBeds = hasBeds.toLowerCase.compareTo("true")==0 || hasBeds.toLowerCase.compareTo("yes")==0
+    val flgPatients = hasPatients.toLowerCase.compareTo("true")==0 || hasPatients.toLowerCase.compareTo("yes")==0
+    val filter = new DepartmentsDataFilter(flgBeds, flgPatients)
+    new AllDepartmentsListDataMP(dbOrgStructureBean.getAllOrgStructuresByRequest(0, 0, "", "", filter), null)
   }
 
 
