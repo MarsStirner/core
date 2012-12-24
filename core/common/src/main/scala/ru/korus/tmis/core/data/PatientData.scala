@@ -223,8 +223,7 @@ def this(patient: Patient,
           case "2" => { //086
             this.disabilities.add(new TempInvalidContainer(t))
           }
-          case "3" => {//087
-
+          case "1" | "3"  => {//087   //TODO: Сейчас берется два типа Соц. статус и занятость (запись ведется как соц.статус)
             this.occupations.add(new OccupationContainer(t, patient.getActiveClientWorks))       //32 - инвалидность
           }
           case _ => {}

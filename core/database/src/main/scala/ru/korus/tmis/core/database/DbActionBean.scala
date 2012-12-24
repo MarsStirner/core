@@ -309,6 +309,7 @@ class DbActionBean
       at.id = :atId
     AND
       a.deleted = 0
+    ORDER BY a.createDatetime DESC
                                           """
 
   val ActionByEventExternalIdQuery = """

@@ -79,7 +79,7 @@ class AppealData {
    * @param event Обращение на госпитализацию
    * @param appeal Первичный осмотр при поступлении
    * @param values Значения свойств действий
-   * @param aps Информация о движении пациента (куда переведен, сколько времени провел)
+   * @param mMovingProperties Делегируемый метод поиска  указанных свойств последних действий указанного типа для заданного Event.
    * @param typeOfResponse Тип запроса.<pre>
    * &#15;Возможные значения:
    * &#15;"standart" - (по умолчанию) Данные об госпитализации.
@@ -97,7 +97,8 @@ class AppealData {
   def this(event: Event,
            appeal: Action,
            values: java.util.Map[java.lang.Integer, java.util.List[Object]],
-           aps: java.util.Map[ActionProperty, java.util.List[APValue]],
+           //aps: java.util.Map[ActionProperty, java.util.List[APValue]],
+           mMovingProperties: (Int, java.util.Set[java.lang.Integer], java.util.Set[java.lang.Integer]) => java.util.Map[ActionProperty, java.util.List[APValue]],
            typeOfResponse: String,
            map: java.util.LinkedHashMap[java.lang.Integer, java.util.LinkedList[Kladr]],
            street: java.util.LinkedHashMap[java.lang.Integer, Street],
@@ -114,16 +115,18 @@ class AppealData {
     val setAdmissionIds = JavaConversions.asJavaList(List(ConfigManager.Messages("db.rbCAP.primary.admission").toInt :java.lang.Integer,
                                                           ConfigManager.Messages("db.rbCAP.primary.description").toInt :java.lang.Integer,
                                                           ConfigManager.Messages("db.rbCAP.secondary.admission").toInt :java.lang.Integer,
-                                                          ConfigManager.Messages("db.rbCAP.secondary.description").toInt :java.lang.Integer))
+                                                          ConfigManager.Messages("db.rbCAP.secondary.description").toInt :java.lang.Integer,
+                                                          ConfigManager.RbCAPIds("db.rbCAP.hosp.primary.id.sentTo").toInt :java.lang.Integer,
+                                                          ConfigManager.RbCAPIds("db.rbCAP.moving.id.movedIn").toInt :java.lang.Integer))
     var havePrimary: Boolean = false
+    val corrMap = if(mCorrList!=null) mCorrList(setAdmissionIds) else null
     val primaryId = if (postProcessing != null) postProcessing(event.getId.intValue(), setATIds) else 0
     if (primaryId>0){
         havePrimary = true
         val admissions = if (mAdmissionDiagnosis!=null) mAdmissionDiagnosis(primaryId, setAdmissionIds) else null
-        val corrMap = if(mCorrList!=null) mCorrList(setAdmissionIds) else null
-        this.data = new AppealEntry(event, appeal, values, aps, typeOfResponse, map, street, havePrimary, mRelationByRelativeId, admissions, corrMap)
+        this.data = new AppealEntry(event, appeal, values, mMovingProperties, typeOfResponse, map, street, havePrimary, mRelationByRelativeId, admissions, corrMap)
     } else {
-      this.data = new AppealEntry(event, appeal,  values, aps, typeOfResponse, map, street, mRelationByRelativeId)
+      this.data = new AppealEntry(event, appeal,  values, mMovingProperties, typeOfResponse, map, street, mRelationByRelativeId, corrMap)
     }
   }
 }
@@ -454,7 +457,7 @@ class AppealEntry {
    * @param event Обращение на госпитализацию
    * @param action Первичный осмотр при поступлении
    * @param values Значения свойств действий
-   * @param aps Информация о движении пациента (куда переведен, сколько времени провел)
+   * @param mMovingProperties Делегируемый метод поиска  указанных свойств последних действий указанного типа для заданного Event.
    * @param typeOfResponse Тип запроса.<pre>
    * &#15;Возможные значения:
    * &#15;"standart" - (по умолчанию) Данные об госпитализации.
@@ -466,13 +469,51 @@ class AppealEntry {
   def this(event: Event,
            action: Action,
            values: java.util.Map[java.lang.Integer, java.util.List[Object]],
-           aps: java.util.Map[ActionProperty, java.util.List[APValue]],
+           //aps: java.util.Map[ActionProperty, java.util.List[APValue]],
+           mMovingProperties: (Int, java.util.Set[java.lang.Integer], java.util.Set[java.lang.Integer]) => java.util.Map[ActionProperty, java.util.List[APValue]],
            typeOfResponse: String,
            map: java.util.LinkedHashMap[java.lang.Integer, java.util.LinkedList[Kladr]],
            street: java.util.LinkedHashMap[java.lang.Integer, Street],
-           mRelationByRelativeId: (Int)=> ClientRelation) = {
+           mRelationByRelativeId: (Int)=> ClientRelation,
+           corrList: java.util.List[RbCoreActionProperty]) = {
     this(event, action, values, typeOfResponse, map, street, mRelationByRelativeId)
-    if(aps!=null && aps.size>0){
+
+    val setATIds = JavaConversions.asJavaSet(Set(ConfigManager.Messages("db.actionType.hospitalization.primary").toInt :java.lang.Integer,
+                                                 ConfigManager.Messages("db.actionType.moving").toInt :java.lang.Integer))
+    val setCoreIds = JavaConversions.asJavaSet(Set(ConfigManager.RbCAPIds("db.rbCAP.hosp.primary.id.sentTo").toInt :java.lang.Integer,
+                                                   ConfigManager.RbCAPIds("db.rbCAP.moving.id.movedIn").toInt :java.lang.Integer))
+
+    if (mMovingProperties!=null){
+      val move = mMovingProperties(event.getId.intValue(), setATIds, setCoreIds)
+      if (move!=null && move.size>0) {
+        val filtred = move.filter(element=>element._2.size>0)
+        if (filtred.size>0){
+          var res = filtred.find(element => {
+            val result = corrList.find(p=> p.getId.compareTo(ConfigManager.RbCAPIds("db.rbCAP.moving.id.movedIn").toInt)==0).getOrElse(null)
+            if (result!=null) {
+              element._1.getType.getId.compareTo(result.getActionPropertyType.getId)==0
+            } else false
+          }).getOrElse(null)
+
+          if (res==null) {
+            res = filtred.find(element => {
+              val result = corrList.find(p=> p.getId.compareTo(ConfigManager.RbCAPIds("db.rbCAP.hosp.primary.id.sentTo").toInt)==0).getOrElse(null)
+              if (result!=null) {
+                element._1.getType.getId.compareTo(result.getActionPropertyType.getId)==0
+              } else false
+            }).getOrElse(null)
+          }
+
+          if (res!=null) {   //Запись
+            this.ward = res._2.get(0).getValue.asInstanceOf[OrgStructure].getName
+            val diffOfDays = ((new Date()).getTime - res._1.getAction.getBegDate.getTime)/(1000 * 60 * 60 * 24) + 1
+            this.totalDays = "Проведено %d койко-дней".format(diffOfDays)
+          }
+        }
+      }
+    }
+
+    /*if(aps!=null && aps.size>0){
       aps.foreach(c =>  {
         val (ap,  apvs) = c
         ap.getType.getName match {
@@ -496,7 +537,7 @@ class AppealEntry {
         case _ => {}
         }
       })
-    }
+    }*/
   }
 
   /**
@@ -530,7 +571,7 @@ class AppealEntry {
    * @param event Обращение на госпитализацию
    * @param action Первичный осмотр при поступлении
    * @param values Значения свойств действий
-   * @param aps Информация о движении пациента (куда переведен, сколько времени провел)
+   * @param mMovingProperties Делегируемый метод поиска  указанных свойств последних действий указанного типа для заданного Event.
    * @param typeOfResponse Тип запроса.<pre>
    * &#15;Возможные значения:
    * &#15;"standart" - (по умолчанию) Данные об госпитализации.
@@ -543,13 +584,15 @@ class AppealEntry {
   def this(event: Event,
            action: Action,
            values: java.util.Map[java.lang.Integer, java.util.List[Object]],
-           aps: java.util.Map[ActionProperty, java.util.List[APValue]],
+           //aps: java.util.Map[ActionProperty, java.util.List[APValue]],
+           mMovingProperties: (Int, java.util.Set[java.lang.Integer], java.util.Set[java.lang.Integer]) => java.util.Map[ActionProperty, java.util.List[APValue]],
            typeOfResponse: String,
            map: java.util.LinkedHashMap[java.lang.Integer, java.util.LinkedList[Kladr]],
            street: java.util.LinkedHashMap[java.lang.Integer, Street],
            havePrimary: Boolean,
-           mRelationByRelativeId: (Int)=> ClientRelation) {
-    this(event, action, values, aps, typeOfResponse, map, street, mRelationByRelativeId)
+           mRelationByRelativeId: (Int)=> ClientRelation,
+           corrList: java.util.List[RbCoreActionProperty]) {
+    this(event, action, values, mMovingProperties, typeOfResponse, map, street, mRelationByRelativeId, corrList)
     this.havePrimary = havePrimary
   }
 
@@ -558,7 +601,7 @@ class AppealEntry {
    * @param event Обращение на госпитализацию
    * @param action Первичный осмотр при поступлении
    * @param values Значения свойств действий
-   * @param aps Информация о движении пациента (куда переведен, сколько времени провел)
+   * @param mMovingProperties Делегируемый метод поиска  указанных свойств последних действий указанного типа для заданного Event.
    * @param typeOfResponse Тип запроса.<pre>
    * &#15;Возможные значения:
    * &#15;"standart" - (по умолчанию) Данные об госпитализации.
@@ -573,7 +616,8 @@ class AppealEntry {
   def this(event: Event,
            action: Action,
            values: java.util.Map[java.lang.Integer, java.util.List[Object]],
-           aps: java.util.Map[ActionProperty, java.util.List[APValue]],
+           //aps: java.util.Map[ActionProperty, java.util.List[APValue]],
+           mMovingProperties: (Int, java.util.Set[java.lang.Integer], java.util.Set[java.lang.Integer]) => java.util.Map[ActionProperty, java.util.List[APValue]],
            typeOfResponse: String,
            map: java.util.LinkedHashMap[java.lang.Integer, java.util.LinkedList[Kladr]],
            street: java.util.LinkedHashMap[java.lang.Integer, Street],
@@ -581,7 +625,7 @@ class AppealEntry {
            mRelationByRelativeId: (Int)=> ClientRelation,
            admissions: java.util.Map[ActionProperty, java.util.List[APValue]],
            corrList: java.util.List[RbCoreActionProperty]) {
-    this(event, action, /*appType,*/ values, aps, typeOfResponse, map, street, havePrimary, mRelationByRelativeId)
+    this(event, action, values, mMovingProperties, typeOfResponse, map, street, havePrimary, mRelationByRelativeId, corrList)
     var description: String = ""
     var diagnosis: Mkb = null
     if (admissions!=null && corrList!=null) {

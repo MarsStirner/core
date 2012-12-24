@@ -295,7 +295,7 @@ public interface MedipadWebService extends Serializable {
      * @throws CoreException
      */
     @WebMethod
-    AllDepartmentsListDataMP getAllDepartmentsByHasBeds(String hasBeds) throws CoreException;
+    AllDepartmentsListDataMP getAllDepartmentsByHasBeds(String hasBeds, String hasPatients) throws CoreException;
 
     @WebMethod
     DiagnosticsListData getListOfDiagnosticsForPatientByEvent(DiagnosticsListRequestData requestData) throws CoreException;

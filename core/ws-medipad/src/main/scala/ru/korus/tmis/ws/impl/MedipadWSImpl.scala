@@ -526,33 +526,20 @@ class MedipadWSImpl
 
   def getAppealPrintFormById(id: Int, auth: AuthData) = {
     val result = appealBean.getAppealById(id)
-
     val positionE = result.iterator.next()
     val positionA = positionE._2.iterator.next()
     val values = positionA._2.asInstanceOf[java.util.Map[java.lang.Integer, java.util.List[Object]]]
-
-    //TODO: Проверить первичный осмотр ("Направлен в") Реализовать по аналогии с HospetalBedBean.getRegistryOriginalForm
-    //TODO: Или по аналогии с ReceivedPatientData делег. метод mIntake (этот вариант предпочтительнее)
-    //TODO: ставить вместо aps!!!!!
-    val ward = dbCustomQueryBean.getLastActionByTypeCodeAndAPTypeName(id, "4202", "Переведен в отделение")
-    var aps: java.util.Map[ActionProperty, java.util.List[APValue]] = null
-    if(ward!=null){
-      aps = actionPropertyBean.getActionPropertiesByActionId(ward.getId.intValue())
-    }
-
     val mapper: ObjectMapper = new ObjectMapper()
+
     mapper.getSerializationConfig().setSerializationView(classOf[Views.DynamicFieldsPrintForm])
 
     val map = patientBean.getKLADRAddressMapForPatient(positionE._1.getPatient)
     val street = patientBean.getKLADRStreetForPatient(positionE._1.getPatient)
 
-    //val appType = dbFDRecordBean.getIdValueFDRecordByEventTypeId(i18n("db.flatDirectory.eventType.hospitalization").toInt,
-    //                                                             positionE._1.getEventType.getId.intValue())
     mapper.writeValueAsString(new AppealData( positionE._1,
                                               positionA._1,
-                                              //appType,
                                               values,
-                                              aps,
+                                              actionPropertyBean.getActionPropertiesForEventByActionTypes _,
                                               "print_form",
                                               map,
                                               street,
@@ -855,8 +842,11 @@ class MedipadWSImpl
     list
   }
 
-  def getAllDepartmentsByHasBeds(hasBeds: String) = { //Для медипада
-    new AllDepartmentsListDataMP(dbOrgStructureBean.getAllOrgStructuresByRequest(0, 0, "", "", null), null)
+  def getAllDepartmentsByHasBeds(hasBeds: String, hasPatients: String) = { //Для медипада
+    val flgBeds = hasBeds.toLowerCase.compareTo("true")==0 || hasBeds.toLowerCase.compareTo("yes")==0
+    val flgPatients = hasPatients.toLowerCase.compareTo("true")==0 || hasPatients.toLowerCase.compareTo("yes")==0
+    val filter = new DepartmentsDataFilter(flgBeds, flgPatients)
+    new AllDepartmentsListDataMP(dbOrgStructureBean.getAllOrgStructuresByRequest(0, 0, "", "", filter), null)
   }
 
 
