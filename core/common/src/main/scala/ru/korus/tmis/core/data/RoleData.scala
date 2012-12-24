@@ -20,6 +20,9 @@ import ru.korus.tmis.core.entity.model.{Staff, Role}
 class RoleData {
 
   @BeanProperty
+  var version: String = _
+
+  @BeanProperty
   //var user: StaffEntity = _
   var doctor: DoctorSpecsContainer = _
 
@@ -33,6 +36,7 @@ class RoleData {
    */
   def this(staffEn: Staff, roles: Set[Role]) = {
     this()
+    this.version = ConfigManager.Messages("misCore.assembly.version")
     this.doctor = new DoctorSpecsContainer(staffEn)
     roles.foreach(r => this.roles.add(new RoleEntry(r)))
   }
