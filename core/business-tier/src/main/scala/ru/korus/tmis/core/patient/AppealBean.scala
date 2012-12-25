@@ -483,15 +483,55 @@ with CAPids{
     val event = eventBean.getEventById(eventId)
     val execDate = event.getExecDate
 
-    var setATIds = JavaConversions.asJavaSet(Set(i18n("db.actionType.primary").toInt :java.lang.Integer,
-      i18n("db.actionType.secondary").toInt :java.lang.Integer))
-    val primaryId = actionBean.getLastActionByActionTypeIdAndEventId (eventId, setATIds)
+    var setATIds = JavaConversions.asJavaSet(Set(i18n("db.actionType.hospitalization.primary").toInt :java.lang.Integer))
+    val hospId = actionBean.getLastActionByActionTypeIdAndEventId (eventId, setATIds)
+    if(hospId>0) { //Есть экшн - поступление
+      val lstSentToIds = JavaConversions.asJavaList(scala.List(i18n("db.rbCAP.hosp.primary.id.sentTo").toInt :java.lang.Integer))
+      val lstCancelIds = JavaConversions.asJavaList(scala.List(i18n("db.rbCAP.hosp.primary.id.cancel").toInt :java.lang.Integer))
+      val apSentToWithValues = actionPropertyBean.getActionPropertiesByActionIdAndRbCoreActionPropertyIds(hospId, lstSentToIds)
+      val apCancelWithValues = actionPropertyBean.getActionPropertiesByActionIdAndRbCoreActionPropertyIds(hospId, lstCancelIds)
+      if (execDate!= null){
+        if (apCancelWithValues!=null &&
+          apCancelWithValues.size()>0 &&
+          apCancelWithValues.filter(element => element._2.size()>0).size>0){
+          status = i18n("patient.status.canceled").toString + ": " + apCancelWithValues.iterator.next()._2.get(0).getValueAsString
+        } else {
+          status = i18n("patient.status.discharged").toString + ": " + ConfigManager.DateFormatter.format(execDate)
+        }
+      } else {
+        if (apSentToWithValues!=null &&
+          apSentToWithValues.size()>0 &&
+          apSentToWithValues.filter(element => element._2.size()>0).size>0){
+          //Проверяем наличие экшна - Движение
+          setATIds = JavaConversions.asJavaSet(Set(i18n("db.actionType.moving").toInt :java.lang.Integer))
+          val movingId = actionBean.getLastActionByActionTypeIdAndEventId(eventId, setATIds)
+          status = if (movingId>0) i18n("patient.status.regToBed").toString
+          else i18n("patient.status.sentTo").toString
+        } else {
+          if (execDate!= null)
+            status = i18n("patient.status.discharged").toString
+          else {
+            setATIds = JavaConversions.asJavaSet(Set(i18n("db.actionType.primary").toInt :java.lang.Integer,
+                                                     i18n("db.actionType.secondary").toInt :java.lang.Integer))
+            val primaryId = actionBean.getLastActionByActionTypeIdAndEventId (eventId, setATIds)
+            status = if(primaryId>0) i18n("patient.status.hospitalized").toString
+                     else i18n("patient.status.require").toString
+          }
+        }
+      }
+    } else {
+      status = if (execDate!= null) i18n("patient.status.discharged").toString
+               else i18n("patient.status.require").toString
+    }
 
+ /*   var setATIds = JavaConversions.asJavaSet(Set(i18n("db.actionType.primary").toInt :java.lang.Integer,
+                                                 i18n("db.actionType.secondary").toInt :java.lang.Integer))
+    val primaryId = actionBean.getLastActionByActionTypeIdAndEventId (eventId, setATIds)
     if(primaryId>0) { //Есть осмотр врача приемного отделения (первичный или повторный)
       setATIds = JavaConversions.asJavaSet(Set(i18n("db.actionType.hospitalization.primary").toInt :java.lang.Integer))
       val hospId = actionBean.getLastActionByActionTypeIdAndEventId (eventId, setATIds)
       if(hospId>0) { //Есть экшн - поступление
-      var lstSentToIds = JavaConversions.asJavaList(scala.List(i18n("db.rbCAP.hosp.primary.id.sentTo").toInt :java.lang.Integer))
+        var lstSentToIds = JavaConversions.asJavaList(scala.List(i18n("db.rbCAP.hosp.primary.id.sentTo").toInt :java.lang.Integer))
         var lstCancelIds = JavaConversions.asJavaList(scala.List(i18n("db.rbCAP.hosp.primary.id.cancel").toInt :java.lang.Integer))
         val apSentToWithValues = actionPropertyBean.getActionPropertiesByActionIdAndRbCoreActionPropertyIds(hospId, lstSentToIds)
         val apCancelWithValues = actionPropertyBean.getActionPropertiesByActionIdAndRbCoreActionPropertyIds(hospId, lstCancelIds)
@@ -527,7 +567,7 @@ with CAPids{
       status = if(execDate!= null)
         i18n("patient.status.discharged").toString + ": " + ConfigManager.DateFormatter.format(execDate)
       else i18n("patient.status.require").toString
-    }
+    } */
     status
   }
 
