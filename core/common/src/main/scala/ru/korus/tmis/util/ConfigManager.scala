@@ -87,6 +87,7 @@ object ConfigManager extends Configuration {
     var ClientQuotingAllNotFound = 0x129
     var QuotaTypeNotFound = 0x130
     var OrgStructureNotFound = 0x131
+    var EventPersonNotFound = 0x132
   }
 
   val Drugstore = new Configuration {

@@ -1068,17 +1068,74 @@ class DepartmentsDataFilter {
   @BeanProperty
   var hasBeds: Boolean = _
 
+  @BeanProperty
+  var hasPatients: Boolean = _
+
   def this(hasBeds: Boolean) {
     this()
     this.hasBeds = hasBeds//if (hasBeds) 1 else 0
   }
 
+  def this(hasBeds: Boolean,
+           hasPatients: Boolean) {
+    this(hasBeds)
+    this.hasPatients = hasPatients
+  }
+
   def toQueryStructure() = {
     var qs = new QueryDataStructure()
 
-    if(hasBeds){
+    if(hasBeds) {
       qs.query += ("AND os.hasHospitalBeds = :hasBeds\n")
       qs.add("hasBeds", this.hasBeds: java.lang.Boolean)
+    }
+    if(hasPatients) {
+      val res = """ AND exists(
+          SELECT e
+          FROM
+            Event e,
+            Action a,
+            ActionProperty ap,
+            APValueHospitalBed bed,
+            OrgStructureHospitalBed org
+          WHERE
+            e.execDate is NULL AND
+            e.id = a.event.id AND
+            a.id = ap.action.id AND
+            ap.id = bed.id.id AND
+            bed.value.id = org.id AND
+            org.masterDepartment.id = os.id
+          AND
+            a.actionType.id IN
+            (
+              SELECT actionType.id
+              FROM
+                ActionType actionType
+              WHERE
+                actionType.flatCode = '%s'
+            )
+          AND
+            e.id NOT IN
+            (
+              SELECT leaved.event.id
+              FROM
+                Action leaved
+              WHERE
+                leaved.actionType.id IN
+                (
+                  SELECT at.id
+                  FROM
+                    ActionType at
+                  WHERE
+                    at.flatCode = '%s'
+                )
+              AND
+                leaved.event.id = e.id
+            )
+          AND
+            e.deleted = 0)
+          """.format(ConfigManager.Messages("db.action.movingFlatCode"), ConfigManager.Messages("db.action.leavingFlatCode"))
+      qs.query += res
     }
     qs
   }
