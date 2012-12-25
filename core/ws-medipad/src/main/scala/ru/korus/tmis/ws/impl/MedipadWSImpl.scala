@@ -629,7 +629,7 @@ class MedipadWSImpl
    def getStructOfPrimaryMedExamWithCopy(actionTypeId: Int, authData: AuthData, eventId: Int) = {
     var lastActionId = actionBean.getActionIdWithCopyByEventId(eventId, actionTypeId)
     try {
-      primaryAssessmentBean.getPrimaryAssessmentById(lastActionId, "Assessment", authData, postProcessing _)
+      primaryAssessmentBean.getPrimaryAssessmentById(lastActionId, "Assessment", authData, postProcessing _, true)
     }
     catch {
       case e: Exception => {
@@ -697,7 +697,7 @@ class MedipadWSImpl
      val json_data = primaryAssessmentBean.getPrimaryAssessmentById(assessmentId,
                                                                      "Assessment",
                                                                      authData,
-                                                                     postProcessing _)
+                                                                     postProcessing _, false)
 
      json_data
    }
@@ -870,7 +870,7 @@ class MedipadWSImpl
     //TODO: подключить анализ авторизационных данных и доступных ролей
     val authData:AuthData = null
 
-    val json_data = primaryAssessmentBean.getPrimaryAssessmentById(actionId, "Diagnostic", authData, null)
+    val json_data = primaryAssessmentBean.getPrimaryAssessmentById(actionId, "Diagnostic", authData, null, false)
     json_data
   }
 

@@ -314,13 +314,21 @@ class AppealEntry {
     exValue = this.extractValuesInNumberedMap(Set(ConfigManager.RbCAPIds("db.rbCAP.hosp.primary.id.ambulanceNumber").toInt :java.lang.Integer), values).get("0")
     this.ambulanceNumber = exValue.get(0).asInstanceOf[String]
 
-    this.rangeAppealDateTime = new DatePeriodContainer(action.getBegDate, action.getEndDate)//(action.getBegDate, action.getEndDate) //event.getSetDate, event.getExecDate
+    //this.rangeAppealDateTime = new DatePeriodContainer(action.getBegDate, action.getEndDate)//(action.getBegDate, action.getEndDate) //event.getSetDate, event.getExecDate
 
-    this.patient = typeOfResponse match {
-      case "standart"  => {new IdValueContainer(event.getPatient.getId.toString)}
+    typeOfResponse match {
+      case "standart"  => {
+        this.patient = new IdValueContainer(event.getPatient.getId.toString)
+        this.rangeAppealDateTime = new DatePeriodContainer(action.getBegDate, action.getEndDate)
+      }
       case "print_form" => {
-        new PatientEntry(event.getPatient, map, street)}
-      case _ => {new IdValueContainer(event.getPatient.getId.toString)}
+        this.patient = new PatientEntry(event.getPatient, map, street)
+        this.rangeAppealDateTime = new DatePeriodContainer(event.getSetDate, event.getExecDate)
+      }
+      case _ => {
+        this.patient = new IdValueContainer(event.getPatient.getId.toString)
+        this.rangeAppealDateTime = new DatePeriodContainer(action.getBegDate, action.getEndDate)
+      }
     }
 
     this.appealType = new AppealTypeContainer(event.getEventType)
