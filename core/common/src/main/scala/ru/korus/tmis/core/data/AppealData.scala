@@ -513,39 +513,13 @@ class AppealEntry {
           }
 
           if (res!=null) {   //Запись
-            this.ward = res._2.get(0).getValue.asInstanceOf[OrgStructure].getName
+            this.ward = "%s(%s)".format(res._2.get(0).getValue.asInstanceOf[OrgStructure].getName, res._2.get(0).getValue.asInstanceOf[OrgStructure].getAddress)
             val diffOfDays = ((new Date()).getTime - res._1.getAction.getBegDate.getTime)/(1000 * 60 * 60 * 24) + 1
             this.totalDays = "Проведено %d койко-дней".format(diffOfDays)
           }
         }
       }
     }
-
-    /*if(aps!=null && aps.size>0){
-      aps.foreach(c =>  {
-        val (ap,  apvs) = c
-        ap.getType.getName match {
-          case "Переведен в отделение" =>  {
-            this.ward = apvs.size() match {
-              case 0 => ""
-              case size => {
-                val place = apvs.get(0).getValue
-                if(place.isInstanceOf[OrgStructure]){
-                  place.asInstanceOf[OrgStructure].getName
-                }
-                else ""
-              }
-            }
-            val msecInDay = 1000 * 60 * 60 * 24
-            val beginDate = ap.getAction.getBegDate.getTime
-            val nowDate = (new Date()).getTime
-            val diffOfDays = (nowDate - beginDate)/msecInDay + 1
-            this.totalDays = "Проведено %d койко-дней".format(diffOfDays)
-          }
-        case _ => {}
-        }
-      })
-    }*/
   }
 
   /**
