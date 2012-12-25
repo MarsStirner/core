@@ -211,7 +211,7 @@ def this(patient: Patient,
     patient.getActiveClientPolicies().foreach(p => this.payments.add(new PolicyEntryContainer (p)))
     patient.getActiveClientRelatives().foreach(r => this.relations.add(new RelationEntryContainer(r))) // getClientRelatives
     patient.getActiveClientDocuments().foreach(d =>
-      if (d.getDocumentType.getDocumentTypeGroup.getId.intValue() == 1) {  //getDocumentTypeGroup == 1 - тип документа удостоверяющего личность    //d.getDocumentType.getId != 20 &&
+      if (d.getDocumentType != null && d.getDocumentType.getDocumentTypeGroup.getId.intValue() == 1) {  //getDocumentTypeGroup == 1 - тип документа удостоверяющего личность    //d.getDocumentType.getId != 20 &&
         this.idCards.add(new DocumentEntryContainer(d))
       }
     )
