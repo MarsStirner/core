@@ -117,9 +117,8 @@ public class OrgStructure implements Serializable {
     private boolean inheritGaps;
 
 
-//    @ManyToOne
-//    @JoinColumn(name = "uuid_id")
-@Transient
+    @ManyToOne
+    @JoinColumn(name = "uuid_id")
     private UUID uuid;
 
 
