@@ -7,7 +7,7 @@ struct OrgStructure{
 1:required i32 id,
 2:optional i32 parent_id=0,
 3:required string code,
-4:optional string name="",
+4:requred string name="",
 5:optional string adress="",
 6:optional string sexFilter="",
 7:optional string ageFilter=""
