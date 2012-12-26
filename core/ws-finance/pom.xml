@@ -25,7 +25,7 @@
     <build>
         <!-- Set the name of the war, used as the context root when the app is
             deployed -->
-        <finalName>tmis-ws-finance</finalName>
+        <!--<finalName>tmis-ws-finance</finalName>-->
 
         <plugins>
             <plugin>
