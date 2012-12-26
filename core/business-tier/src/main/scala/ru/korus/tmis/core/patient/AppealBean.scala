@@ -185,17 +185,17 @@ with CAPids{
                                          authData)
         list = actionPropertyBean.getActionPropertiesByActionId(temp.getId.intValue).keySet.toList
 
-        var list2 = actionPropertyTypeBean.getActionPropertyTypesByActionTypeId(i18n("db.actionType.hospitalization.primary").toInt)
+        val list2 = actionPropertyTypeBean.getActionPropertyTypesByActionTypeId(i18n("db.actionType.hospitalization.primary").toInt)
                                           .toList
                                           .filter(p => {
-          val sadasd = list.filter(pp => pp.asInstanceOf[ActionProperty].getType.getId == p.getId)
-          if (sadasd ==null || sadasd.size == 0) true else false
+          val filtred = list.filter(pp => pp.asInstanceOf[ActionProperty].getType.getId == p.getId)
+          if (filtred == null || filtred.size == 0) true else false
         })
         list2.foreach(ff => { //создание недостающих акшен пропертей
-          val res = actionPropertyBean.createActionProperty(action, ff.asInstanceOf[ActionPropertyType].getId.intValue(), authData)
+          val res = actionPropertyBean.createActionProperty(action, ff.getId.intValue(), authData)
           em.persist(res)
         })
-        //пересобираем листь акшенПропертей
+        //пересобираем лист акшенПропертей
         list = actionPropertyBean.getActionPropertiesByActionId(temp.getId.intValue).keySet.toList
       }
 
@@ -225,45 +225,47 @@ with CAPids{
           entities = entities + ap
 
         val values = this.getValueByCase(ap.getType.getId.intValue(), appealData, authData)
-        values.size match {
-          case 0 => {
-            if (flgCreate) {
-              //В случае, если на приходит значение для ActionProperty, то записываем значение по умолчанию.
-              val defValue = ap.getType.getDefaultValue
-              if (defValue!=null && !defValue.trim.isEmpty) {
-                val apv = actionPropertyBean.setActionPropertyValue(ap, defValue, 0)
+        if (values!=null){
+          values.size match {
+            case 0 => {
+              if (flgCreate) {
+                //В случае, если на приходит значение для ActionProperty, то записываем значение по умолчанию.
+                val defValue = ap.getType.getDefaultValue
+                if (defValue!=null && !defValue.trim.isEmpty) {
+                  val apv = actionPropertyBean.setActionPropertyValue(ap, defValue, 0)
+                  if (apv!=null)
+                    entities = entities + apv.unwrap
+                }
+              } else { //Если пришел пустой список, а старые значения есть, то зачистим их
+                val apvs = actionPropertyBean.getActionPropertyValue(ap)
+                if (apvs!=null && apvs.size()>0) {
+                  for(i <- 0 until apvs.size){
+                    var apv = apvs(i).unwrap()
+                    apv = em.merge(apv)
+                    em.remove(apv)
+                  }
+                }
+              }
+            }
+            case _ => {
+              if(ap.getType.getIsVector) { //Если вектор, то сперва зачищаем старый список
+              val apvs = actionPropertyBean.getActionPropertyValue(ap)
+                if (apvs!=null && apvs.size()>values.size){
+                  for(i <- values.size to apvs.size-1) { //если новых значений меньше тем старых, то хвост зачистим
+                    var apv = apvs(i).unwrap()
+                    apv = em.merge(apv)
+                    em.remove(apv)
+                  }
+                }
+              }
+              var it = 0
+              values.foreach(value => {
+                val apv = actionPropertyBean.setActionPropertyValue(ap, value, it)
                 if (apv!=null)
                   entities = entities + apv.unwrap
-              }
-            } else { //Если пришел пустой список, а старые значения есть, то зачистим их
-              val apvs = actionPropertyBean.getActionPropertyValue(ap)
-              if (apvs!=null && apvs.size()>0) {
-                for(i <- 0 until apvs.size){
-                  var apv = apvs(i).unwrap()
-                  apv = em.merge(apv)
-                  em.remove(apv)
-                }
-              }
+                it = it + 1
+              })
             }
-          }
-          case _ => {
-            if(ap.getType.getIsVector) { //Если вектор, то сперва зачищаем старый список
-            val apvs = actionPropertyBean.getActionPropertyValue(ap)
-              if (apvs!=null && apvs.size()>values.size){
-                for(i <- values.size to apvs.size-1) { //если новых значений меньше тем старых, то хвост зачистим
-                  var apv = apvs(i).unwrap()
-                  apv = em.merge(apv)
-                  em.remove(apv)
-                }
-              }
-            }
-            var it = 0
-            values.foreach(value => {
-              val apv = actionPropertyBean.setActionPropertyValue(ap, value, it)
-              if (apv!=null)
-                entities = entities + apv.unwrap
-              it = it + 1
-            })
           }
         }
       })
@@ -481,15 +483,55 @@ with CAPids{
     val event = eventBean.getEventById(eventId)
     val execDate = event.getExecDate
 
-    var setATIds = JavaConversions.asJavaSet(Set(i18n("db.actionType.primary").toInt :java.lang.Integer,
-      i18n("db.actionType.secondary").toInt :java.lang.Integer))
-    val primaryId = actionBean.getLastActionByActionTypeIdAndEventId (eventId, setATIds)
+    var setATIds = JavaConversions.asJavaSet(Set(i18n("db.actionType.hospitalization.primary").toInt :java.lang.Integer))
+    val hospId = actionBean.getLastActionByActionTypeIdAndEventId (eventId, setATIds)
+    if(hospId>0) { //Есть экшн - поступление
+      val lstSentToIds = JavaConversions.asJavaList(scala.List(i18n("db.rbCAP.hosp.primary.id.sentTo").toInt :java.lang.Integer))
+      val lstCancelIds = JavaConversions.asJavaList(scala.List(i18n("db.rbCAP.hosp.primary.id.cancel").toInt :java.lang.Integer))
+      val apSentToWithValues = actionPropertyBean.getActionPropertiesByActionIdAndRbCoreActionPropertyIds(hospId, lstSentToIds)
+      val apCancelWithValues = actionPropertyBean.getActionPropertiesByActionIdAndRbCoreActionPropertyIds(hospId, lstCancelIds)
+      if (execDate!= null){
+        if (apCancelWithValues!=null &&
+          apCancelWithValues.size()>0 &&
+          apCancelWithValues.filter(element => element._2.size()>0).size>0){
+          status = i18n("patient.status.canceled").toString + ": " + apCancelWithValues.iterator.next()._2.get(0).getValueAsString
+        } else {
+          status = i18n("patient.status.discharged").toString + ": " + ConfigManager.DateFormatter.format(execDate)
+        }
+      } else {
+        if (apSentToWithValues!=null &&
+          apSentToWithValues.size()>0 &&
+          apSentToWithValues.filter(element => element._2.size()>0).size>0){
+          //Проверяем наличие экшна - Движение
+          setATIds = JavaConversions.asJavaSet(Set(i18n("db.actionType.moving").toInt :java.lang.Integer))
+          val movingId = actionBean.getLastActionByActionTypeIdAndEventId(eventId, setATIds)
+          status = if (movingId>0) i18n("patient.status.regToBed").toString
+          else i18n("patient.status.sentTo").toString
+        } else {
+          if (execDate!= null)
+            status = i18n("patient.status.discharged").toString
+          else {
+            setATIds = JavaConversions.asJavaSet(Set(i18n("db.actionType.primary").toInt :java.lang.Integer,
+                                                     i18n("db.actionType.secondary").toInt :java.lang.Integer))
+            val primaryId = actionBean.getLastActionByActionTypeIdAndEventId (eventId, setATIds)
+            status = if(primaryId>0) i18n("patient.status.hospitalized").toString
+                     else i18n("patient.status.require").toString
+          }
+        }
+      }
+    } else {
+      status = if (execDate!= null) i18n("patient.status.discharged").toString
+               else i18n("patient.status.require").toString
+    }
 
+ /*   var setATIds = JavaConversions.asJavaSet(Set(i18n("db.actionType.primary").toInt :java.lang.Integer,
+                                                 i18n("db.actionType.secondary").toInt :java.lang.Integer))
+    val primaryId = actionBean.getLastActionByActionTypeIdAndEventId (eventId, setATIds)
     if(primaryId>0) { //Есть осмотр врача приемного отделения (первичный или повторный)
       setATIds = JavaConversions.asJavaSet(Set(i18n("db.actionType.hospitalization.primary").toInt :java.lang.Integer))
       val hospId = actionBean.getLastActionByActionTypeIdAndEventId (eventId, setATIds)
       if(hospId>0) { //Есть экшн - поступление
-      var lstSentToIds = JavaConversions.asJavaList(scala.List(i18n("db.rbCAP.hosp.primary.id.sentTo").toInt :java.lang.Integer))
+        var lstSentToIds = JavaConversions.asJavaList(scala.List(i18n("db.rbCAP.hosp.primary.id.sentTo").toInt :java.lang.Integer))
         var lstCancelIds = JavaConversions.asJavaList(scala.List(i18n("db.rbCAP.hosp.primary.id.cancel").toInt :java.lang.Integer))
         val apSentToWithValues = actionPropertyBean.getActionPropertiesByActionIdAndRbCoreActionPropertyIds(hospId, lstSentToIds)
         val apCancelWithValues = actionPropertyBean.getActionPropertiesByActionIdAndRbCoreActionPropertyIds(hospId, lstCancelIds)
@@ -525,7 +567,7 @@ with CAPids{
       status = if(execDate!= null)
         i18n("patient.status.discharged").toString + ": " + ConfigManager.DateFormatter.format(execDate)
       else i18n("patient.status.require").toString
-    }
+    } */
     status
   }
 
@@ -607,7 +649,7 @@ with CAPids{
 
   private def AnyToSetOfString(that: AnyRef, sec: String): Set[String] = {
     if(that==null)
-      return Set.empty[String]
+      return null //Set.empty[String]     //В случае если не обрабатываем проперти вернем нулл (чтобы не переписывать значения)
 
     if (that.isInstanceOf[Date]) {
       return Set(ConfigManager.DateFormatter.format(that))

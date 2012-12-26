@@ -11,11 +11,11 @@ import javax.persistence.EntityManager;
 import javax.persistence.PersistenceContext;
 
 /**
- * Created with IntelliJ IDEA.
- * User: nde
- * Date: 09.12.12
- * Time: 15:49
- * To change this template use File | Settings | File Templates.
+ * @Author:      Dmitriy E. Nosov <br>
+ * @Date:        09.12.12, 15:49 <br>
+ * @Company:     Korus Consulting IT<br>
+ * Revision:    \$Id$ <br>
+ * @Description: <br>
  */
 @Interceptors(LoggingInterceptor.class)
 @Stateless

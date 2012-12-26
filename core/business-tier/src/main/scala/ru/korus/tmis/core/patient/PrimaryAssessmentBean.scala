@@ -218,7 +218,8 @@ class PrimaryAssessmentBean
   def getPrimaryAssessmentById(assessmentId: Int,
                                title: String,
                                userData: AuthData,
-                               postProcessing: (JSONCommonData, java.lang.Boolean) => JSONCommonData) = {
+                               postProcessing: (JSONCommonData, java.lang.Boolean) => JSONCommonData,
+                               reId: java.lang.Boolean) = {
     val action = actionBean.getActionById(assessmentId)
     var actions: java.util.List[Action] = new LinkedList[Action]
     actions.add(action)
@@ -231,7 +232,7 @@ class PrimaryAssessmentBean
     var json_data = new JSONCommonData()
     json_data.data = com_data.entity
     if (postProcessing != null) {
-      json_data =  postProcessing(json_data, false)
+      json_data =  postProcessing(json_data, reId)
     }
     json_data
   }
@@ -302,7 +303,7 @@ class PrimaryAssessmentBean
 
     dbManager.mergeAll(apSet)
 
-    var json = this.getPrimaryAssessmentById(action.getId.intValue(), "Consultation", userData, null)
+    var json = this.getPrimaryAssessmentById(action.getId.intValue(), "Consultation", userData, null, false)
     json.setRequestData(request) //по идее эта штука должна быть в конструкторе вызываемая в методе гет
     json
   }

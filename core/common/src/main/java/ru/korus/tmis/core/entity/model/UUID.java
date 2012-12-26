@@ -28,6 +28,10 @@ public class UUID {
     public UUID() {
     }
 
+    public UUID(String uuid) {
+        this.uuid = uuid;
+    }
+
     public int getId() {
         return id;
     }

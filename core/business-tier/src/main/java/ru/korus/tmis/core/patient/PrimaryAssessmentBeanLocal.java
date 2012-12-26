@@ -29,7 +29,7 @@ public interface PrimaryAssessmentBeanLocal {
     void deletePreviousAssessmentById(int assessmentId, AuthData userData)
             throws CoreException;
 
-    JSONCommonData getPrimaryAssessmentById(int assessmentId, String title, AuthData userData, Function2<JSONCommonData, Boolean, JSONCommonData> postProcessing)
+    JSONCommonData getPrimaryAssessmentById(int assessmentId, String title, AuthData userData, Function2<JSONCommonData, Boolean, JSONCommonData> postProcessing, Boolean reId)
             throws CoreException;
 
     boolean updateStatusById(int eventId, int actionId, short status)

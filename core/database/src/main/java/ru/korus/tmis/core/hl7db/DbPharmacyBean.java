@@ -2,10 +2,9 @@ package ru.korus.tmis.core.hl7db;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import ru.korus.tmis.core.database.*;
+import ru.korus.tmis.core.database.DbManagerBeanLocal;
 import ru.korus.tmis.core.entity.model.Action;
 import ru.korus.tmis.core.entity.model.ActionType;
-import ru.korus.tmis.core.entity.model.Patient;
 import ru.korus.tmis.core.entity.model.hl7.Pharmacy;
 import ru.korus.tmis.core.exception.CoreException;
 import ru.korus.tmis.core.logging.LoggingInterceptor;
@@ -19,11 +18,10 @@ import java.util.Date;
 import java.util.List;
 
 /**
- * Created with IntelliJ IDEA.
- * User: nde
- * Date: 04.12.12
- * Time: 18:56
- * To change this template use File | Settings | File Templates.
+ * @author Dmitriy E. Nosov <br>
+ *         Date: 04.12.12, 18:56 <br>
+ *         Company: Korus Consulting IT<br>
+ *         Description: Работа с таблицей Pharmacy<br>
  */
 @Interceptors(LoggingInterceptor.class)
 @Stateless
@@ -34,12 +32,8 @@ public class DbPharmacyBean implements DbPharmacyBeanLocal {
     @PersistenceContext(unitName = "s11r64")
     private EntityManager em = null;
 
-    @EJB
+    @EJB(beanName = "DbManagerBean")
     private DbManagerBeanLocal dbManager = null;
-
-    @EJB
-    private DbPatientBeanLocal dbPatientBeanLocal = null;
-
 
     @Override
     public Pharmacy getOrCreate(Action action) throws CoreException {
@@ -73,11 +67,11 @@ public class DbPharmacyBean implements DbPharmacyBeanLocal {
     }
 
 
-    public Action getMaxAction() {
-        final Action action = em.createQuery("SELECT a FROM Action a ORDER BY a.id DESC", Action.class).setMaxResults(1).getSingleResult();
-        logger.info("Get max action {}", action);
-        return action;
-    }
+//    public Action getMaxAction() {
+//        final Action action = em.createQuery("SELECT a FROM Action a ORDER BY a.id DESC", Action.class).setMaxResults(1).getSingleResult();
+//        logger.info("Get max action {}", action);
+//        return action;
+//    }
 
     @Override
     public List<Action> getLastMaxAction(int limit) {
@@ -93,11 +87,10 @@ public class DbPharmacyBean implements DbPharmacyBeanLocal {
                 .getResultList();
     }
 
-    @Override
-    public List<Pharmacy> getAllPharmacy() {
-        return em.createQuery("SELECT p FROM Pharmacy p", Pharmacy.class).getResultList();
-
-    }
+//    @Override
+//    public List<Pharmacy> getAllPharmacy() {
+//        return em.createQuery("SELECT p FROM Pharmacy p", Pharmacy.class).getResultList();
+//    }
 
     @Override
     public Pharmacy getPharmacyByAction(Action action) {
@@ -107,9 +100,4 @@ public class DbPharmacyBean implements DbPharmacyBeanLocal {
 
         return !pharmacyList.isEmpty() ? pharmacyList.get(0) : null;
     }
-
-    public Patient getClient(Patient patient) throws CoreException {
-        return dbPatientBeanLocal.getPatientById(patient.getId());
-    }
-
 }

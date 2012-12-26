@@ -36,6 +36,10 @@ public class Role implements Serializable {
     @Column(name = "name")
     private String name;
 
+    @Basic(optional = false)
+    @Column(name = "withDep")
+    private int withDep;
+
     ////////////////////////////////////////////////////////////////////////////
     // Custom mappings
     ////////////////////////////////////////////////////////////////////////////
@@ -87,6 +91,14 @@ public class Role implements Serializable {
 
     public void setName(String name) {
         this.name = name;
+    }
+
+    public int getWithDep() {
+        return withDep;
+    }
+
+    public void setWithDep(int withDep) {
+        this.withDep = withDep;
     }
 
     @Override

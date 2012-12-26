@@ -9,6 +9,7 @@ import org.hl7.v3.*;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import ru.korus.tmis.core.entity.model.Action;
+import ru.korus.tmis.core.entity.model.OrgStructure;
 import ru.korus.tmis.core.entity.model.Patient;
 import ru.korus.tmis.core.entity.model.Staff;
 import ru.korus.tmis.pharmacy.exception.SoapConnectionException;
@@ -22,14 +23,15 @@ import java.io.StringWriter;
 import java.math.BigInteger;
 import java.text.SimpleDateFormat;
 import java.util.Date;
+import java.util.List;
+import java.util.Random;
 import java.util.UUID;
 
 /**
- * Created with IntelliJ IDEA.
- * User: nde
- * Date: 05.12.12
- * Time: 17:41
- * To change this template use File | Settings | File Templates.
+ * @Author: Dmitriy E. Nosov <br>
+ * @Date: 05.12.12, 17:41 <br>
+ * @Company: Korus Consulting IT<br>
+ * @Description: <br>
  */
 public class HL7PacketBuilder {
 
@@ -413,10 +415,11 @@ public class HL7PacketBuilder {
     public static MCCIIN000002UV01 processLeaved(
             final Action action,
             final String externalId,
+            final String externalUUID,
             final String clientUUID,
             final Patient client, String displayName) throws SoapConnectionException {
 
-        logger.info("process LEAVED action {}, externalId {}, client {}, clientUUID {}", action, externalId, client, clientUUID);
+        logger.info("process LEAVED action {}, externalId {}, externalUUID {}, client {}, clientUUID {}", action, externalId, externalUUID, client, clientUUID);
         final ObjectFactory factory = new ObjectFactory();
         final org.hl7.v3.ObjectFactory factoryHL7 = new org.hl7.v3.ObjectFactory();
         try {
@@ -483,7 +486,7 @@ public class HL7PacketBuilder {
             event.setClassCode(ActClassEncounter.ENC);
             event.setMoodCode(ActMoodEventOccurrence.EVN);
             final II typeId1 = new II();
-            typeId1.setRoot(UUID.randomUUID().toString());
+            typeId1.setRoot(externalUUID);
             typeId1.setExtension(externalId); //
             event.getId().add(typeId1);
 
@@ -915,10 +918,19 @@ public class HL7PacketBuilder {
             final String externalId,
             final Patient client,
             final Staff createPerson,
-            final String organizationName
+            final String organizationName,
+            final String externalUUID,
+            final String custodianUUID,
+            final Staff doctorPerson
     ) throws SoapConnectionException {
         try {
             final String uuidDocument = UUID.randomUUID().toString();
+            OrgStructure orgStruct = new OrgStructure(1);
+            orgStruct.setName("ФНКЦ");
+            final ru.korus.tmis.core.entity.model.UUID uuidStruct = new ru.korus.tmis.core.entity.model.UUID();
+            uuidStruct.setUuid("5555db7d-5555-43b8-9617-e2d2f229dac3");
+            orgStruct.setUuid(uuidStruct);
+
             logger.info("process RCMRIN000002UV02 document {}, action {}", uuidDocument, action);
 
             final SimpleDateFormat sdf = new SimpleDateFormat("yyyyMMddHHmmss");
@@ -926,8 +938,19 @@ public class HL7PacketBuilder {
             ObjectFactory factory = new ObjectFactory();
             org.hl7.v3.ObjectFactory f = new org.hl7.v3.ObjectFactory();
 
-            final POCDMT000040ClinicalDocument clinicalDocument = getClinicalDocument(f,
-                    clientUUID, externalId, client, createPerson, organizationName);
+            final POCDMT000040ClinicalDocument clinicalDocument =
+                    getClinicalDocument(
+                            f,
+                            action,
+                            clientUUID,
+                            externalId,
+                            client,
+                            organizationName,
+                            custodianUUID,
+                            externalUUID,
+                            orgStruct,
+                            doctorPerson,
+                            getRandomDrug());
             final String innerDocument = marshallMessage(clinicalDocument, "org.hl7.v3");
             logger.info("prepare inner document... \n\n{}", innerDocument);
 
@@ -937,11 +960,11 @@ public class HL7PacketBuilder {
 
             message.setITSVersion("XML_1.0");
             final II idRoot = f.createII();
-            idRoot.setRoot(UUID.randomUUID().toString());
+            idRoot.setRoot(uuidDocument);
             message.setId(idRoot);
 
             final TS creationTime = f.createTS();
-            creationTime.setValue(sdf.format(/*action.getCreateDatetime()*/new Date()));
+            creationTime.setValue(sdf.format(action.getCreateDatetime()));
             message.setCreationTime(creationTime);
 
             final II interactionId = f.createII();
@@ -1022,11 +1045,20 @@ public class HL7PacketBuilder {
 
     private static POCDMT000040ClinicalDocument getClinicalDocument(
             final org.hl7.v3.ObjectFactory f,
+            final Action action,
             final String clientUUID,
             final String externalId,
             final Patient client,
-            final Staff createPerson,
-            final String organizationName) {
+            final String organizationName,
+            final String custodianUUID,
+            final String externalUUID,
+            final OrgStructure orgStructure,
+            final Staff doctor,
+            POCDMT000040LabeledDrug drug) {
+
+        final String uuidDocument = UUID.randomUUID().toString();
+        // Версия документа, должна инкрементироваться при повторной передаче
+        final String versionOfDocument = "1";
 
         final POCDMT000040ClinicalDocument clinicalDocument = f.createPOCDMT000040ClinicalDocument();
 
@@ -1034,8 +1066,6 @@ public class HL7PacketBuilder {
         realmCode.setCode("RU");
         clinicalDocument.getRealmCode().add(realmCode);
 
-
-        //       final II typeId = new II();
         final POCDMT000040InfrastructureRootTypeId rootTypeId = new POCDMT000040InfrastructureRootTypeId();
 
         rootTypeId.setExtension("POCD_HD000040");
@@ -1043,9 +1073,9 @@ public class HL7PacketBuilder {
         clinicalDocument.setTypeId(rootTypeId);
 
         final II idRoot = f.createII();
-        idRoot.setRoot(UUID.randomUUID().toString());
-        clinicalDocument.setId(idRoot);
 
+        idRoot.setRoot(uuidDocument);
+        clinicalDocument.setId(idRoot);
         final CE processingCode = new CE();
         processingCode.setCode("18610-6");
         processingCode.setDisplayName("MEDICATION ADMINISTERED");
@@ -1055,7 +1085,7 @@ public class HL7PacketBuilder {
 
         final TS creationTime = new TS();
         SimpleDateFormat sdf = new SimpleDateFormat("yyyyMMddHHmmss");
-        creationTime.setValue(sdf.format(new Date()));
+        creationTime.setValue(sdf.format(action.getCreateDatetime()));
         clinicalDocument.setEffectiveTime(creationTime);
 
 
@@ -1071,12 +1101,12 @@ public class HL7PacketBuilder {
 
 
         final II setId = new II();
-        setId.setRoot(UUID.randomUUID().toString());
+        setId.setRoot(uuidDocument);
         clinicalDocument.setSetId(setId);
 
 
         final INT versionNumber = new INT();
-        versionNumber.setValue(new BigInteger("1"));
+        versionNumber.setValue(new BigInteger(versionOfDocument));
         clinicalDocument.setVersionNumber(versionNumber);
 
         // --- record target
@@ -1130,27 +1160,23 @@ public class HL7PacketBuilder {
 
         final POCDMT000040AssignedAuthor assignedAuthor = new POCDMT000040AssignedAuthor();
         final II idRootAuthor = new II();
-        idRootAuthor.setRoot(UUID.randomUUID().toString()); //todo
+        idRootAuthor.setRoot(doctor.getUuid().getUuid()); //todo
         assignedAuthor.getId().add(idRootAuthor);
 
         final POCDMT000040Person assignedPerson = new POCDMT000040Person();
         final PN authorPerson = new PN();
 
-        final EnGiven enGivenAuthor = new EnGiven();
-        enGivenAuthor.getContent().add(createPerson.getFirstName());  // todo
-        JAXBElement<EnGiven> givenJAXBElementAuthor = f.createENGiven(enGivenAuthor);
-        authorPerson.getContent().add(givenJAXBElementAuthor);
+        final EnPrefix enPrefix = new EnPrefix();
+        enPrefix.getContent().add(doctor.getSpeciality().getName());
+        authorPerson.getContent().add(f.createENPrefix(enPrefix));
 
-        final EnGiven enGivenAuthor2 = new EnGiven();
-        enGivenAuthor2.getContent().add(createPerson.getPatrName());     //todo
-        JAXBElement<EnGiven> givenJAXBElementAuthor2 = f.createENGiven(enGivenAuthor2);
-        givenJAXBElementAuthor2.setValue(enGivenAuthor2);
-        authorPerson.getContent().add(givenJAXBElementAuthor2);
+        final EnGiven enGivenAuthor = new EnGiven();
+        enGivenAuthor.getContent().add(doctor.getFirstName() + " " + doctor.getPatrName());  // todo
+        authorPerson.getContent().add(f.createENGiven(enGivenAuthor));
 
         final EnFamily enFamilyAuthor = f.createEnFamily();
-        enFamilyAuthor.getContent().add(createPerson.getLastName());   //todo
-        JAXBElement<EnFamily> enFamilyJAXBElementAuthor = f.createENFamily(enFamilyAuthor);
-        authorPerson.getContent().add(enFamilyJAXBElementAuthor);
+        enFamilyAuthor.getContent().add(doctor.getLastName());   //todo
+        authorPerson.getContent().add(f.createENFamily(enFamilyAuthor));
 
         assignedPerson.getName().add(authorPerson);
         assignedAuthor.setAssignedPerson(assignedPerson);
@@ -1160,15 +1186,13 @@ public class HL7PacketBuilder {
 
         // --- custodian
         final POCDMT000040Custodian custodian = new POCDMT000040Custodian();
-
         final POCDMT000040AssignedCustodian assignedCustodian = new POCDMT000040AssignedCustodian();
-
         final POCDMT000040CustodianOrganization representedCustodianOrganization = new POCDMT000040CustodianOrganization();
         final II idRootCustodian = new II();
-        idRootCustodian.setRoot(UUID.randomUUID().toString());
+        idRootCustodian.setRoot(orgStructure.getUuid().getUuid());
 
         final ON name = new ON();
-        name.getContent().add(organizationName); //todo
+        name.getContent().add(orgStructure.getName()); //todo
         representedCustodianOrganization.setName(name);
         representedCustodianOrganization.getId().add(idRootCustodian);
         assignedCustodian.setRepresentedCustodianOrganization(representedCustodianOrganization);
@@ -1181,7 +1205,7 @@ public class HL7PacketBuilder {
         final POCDMT000040EncompassingEncounter encompassingEncounter = new POCDMT000040EncompassingEncounter();
 
         final II idRootEncounter = new II();
-        idRootEncounter.setRoot(UUID.randomUUID().toString()); //todo
+        idRootEncounter.setRoot(externalUUID); //todo
         idRootEncounter.setExtension(externalId);  //todo
         encompassingEncounter.getId().add(idRootEncounter);
 
@@ -1207,6 +1231,31 @@ public class HL7PacketBuilder {
         final POCDMT000040Section section = new POCDMT000040Section();
         final StrucDocText text = f.createStrucDocText();
         text.getContent().add("Take captopril 25mg PO every 12 hours, starting on Jan 01, 2002, ending on Feb 01, 2002");
+
+        JAXBElement<StrucDocList> docItemList = f.createStrucDocItemList(f.createStrucDocList());
+        final StrucDocList docList = f.createStrucDocList();
+
+        final StrucDocItem item = new StrucDocItem();
+        item.getContent().add("Анальгин");
+        docList.getItem().add(item);
+
+        final StrucDocItem item2 = new StrucDocItem();
+        item2.getContent().add("Esidrix");
+
+        docList.getItem().add(item2);
+
+        docItemList.setValue(docList);
+
+        text.getContent().add(docItemList);
+
+
+        final JAXBElement<StrucDocContent> strucDocItemContent = f.createStrucDocItemContent(f.createStrucDocContent());
+        final StrucDocContent content = f.createStrucDocContent();
+        content.getContent().add("Во время еды");
+        content.setID1("patient-instruction");
+        strucDocItemContent.setValue(content);
+        text.getContent().add(strucDocItemContent);
+
         section.setText(text);
 
 
@@ -1214,13 +1263,13 @@ public class HL7PacketBuilder {
         //----------------
         final POCDMT000040SubstanceAdministration substanceAdministration = new POCDMT000040SubstanceAdministration();
         substanceAdministration.setClassCode(ActClass.SBADM);
-        substanceAdministration.setMoodCode(XDocumentSubstanceMood.EVN);
+        substanceAdministration.setMoodCode(XDocumentSubstanceMood.EVN);  // назначение
         final II idRoot2 = new II();
-        idRoot2.setRoot(UUID.randomUUID().toString());
+        idRoot2.setRoot(UUID.randomUUID().toString()); // UUID назначения
         substanceAdministration.getId().add(idRoot2);
 
         final II idRootEx = new II();
-        idRootEx.setExtension("OMC");
+        idRootEx.setExtension("ОМС");
         substanceAdministration.getId().add(idRootEx);
 
 
@@ -1285,8 +1334,8 @@ public class HL7PacketBuilder {
 
         final CD cd = new CD();
         final CD cdTrans = new CD();
-        cdTrans.setCode("Анальгин");
-        cdTrans.setDisplayName("Анальгин");
+        cdTrans.setCode("Фенистил");
+        cdTrans.setDisplayName("Фенистил");
         cdTrans.setCodeSystemName("RLS_ACTMATTERS");
         cd.getTranslation().add(cdTrans);
         code1.getTranslation().add(cd);
@@ -1294,8 +1343,8 @@ public class HL7PacketBuilder {
 
         final CD cdTrans2 = new CD();
 
-        cdTrans2.setCode("р-р");
-        cdTrans2.setDisplayName("р-р");
+        cdTrans2.setCode("капли");
+        cdTrans2.setDisplayName("капли");
         cdTrans2.setCodeSystemName("RLS_CLSDRUGFORMS");
 
         final CR cr = new CR();
@@ -1305,8 +1354,8 @@ public class HL7PacketBuilder {
         cr.setName(cv);
 
         final CD cdValue = new CD();
-        cdValue.setCode("мл");
-        cdValue.setDisplayName("мл");
+        cdValue.setCode("мг");
+        cdValue.setDisplayName("мг");
         cdValue.setCodeSystemName("RLS_MASSUNITS");
         final ED originalText1 = new ED();
         originalText1.getContent().add("5");
@@ -1319,7 +1368,7 @@ public class HL7PacketBuilder {
         manufacturedLabeledDrug.setCode(code1);
 
 
-        manufacturedProduct.setManufacturedLabeledDrug(manufacturedLabeledDrug);
+        manufacturedProduct.setManufacturedLabeledDrug(/*manufacturedLabeledDrug*/drug);
         consumable.setManufacturedProduct(manufacturedProduct);
         substanceAdministration.setConsumable(consumable);
 
@@ -1339,6 +1388,28 @@ public class HL7PacketBuilder {
 
         return clinicalDocument;
     }
+
+
+    public static POCDMT000040LabeledDrug getRandomDrug() {
+
+
+        //logger.info("prepare message... \n\n {}", marshallMessage(request, "misexchange"));
+        final DrugList drugList = new MISExchange().getMISExchangeSoap().getDrugList();
+        final List<POCDMT000040LabeledDrug> drug = drugList.getDrug();
+        logger.info("Connection successful...");
+
+        Random rnd = new Random();
+
+   //     final POCDMT000040LabeledDrug randomDrug = drug.get(rnd.nextInt(drug.size()));
+        for (POCDMT000040LabeledDrug d : drug) {
+            if (d.getCode().getCode().equals("20044")) {
+                logger.info("Fetch random drug {}", marshallMessage(d, "org.hl7.v3"));
+                return d;
+            }
+        }
+        return null;
+    }
+
 
     private static String marshallMessage(Object msg, String contextPath) {
         final StringWriter writer = new StringWriter();
