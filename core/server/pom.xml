@@ -93,6 +93,8 @@
                 <configuration>
                     <version>6</version>
                     <defaultLibBundleDir>lib</defaultLibBundleDir>
+                    <earSourceDirectory>${basedir}/src/main/resources/</earSourceDirectory>
+                    <earSourceIncludes>logback.xml</earSourceIncludes>
                 </configuration>
             </plugin>
             <!--
