@@ -160,7 +160,7 @@ public class Action
             inverseJoinColumns = {@JoinColumn(name = "tissue_id")})
     private Set<Tissue> tissue = new LinkedHashSet<Tissue>();
 
-    @ManyToOne
+    @ManyToOne(cascade = CascadeType.ALL)
     @JoinColumn(name = "uuid_id")
     private UUID uuid;
     ////////////////////////////////////////////////////////////////////////////

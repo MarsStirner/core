@@ -49,14 +49,14 @@ class DbEventPersonBean
     ep
   }
 
-  def deleteEventPerson(id: Int,
+  /*def deleteEventPerson(id: Int,
                         sessionUser: Staff) = {
     val d = getClientRelationById(id)
     val now = new Date
     d.setDeleted(true)
     d.setModifyPerson(sessionUser)
     d.setModifyDatetime(now)
-  }
+  }*/
 
   def getEventPersonById(id: Int) = {
     val query = em.createQuery(EventPersonFindQuery,

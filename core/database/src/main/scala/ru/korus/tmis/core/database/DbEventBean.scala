@@ -20,6 +20,7 @@ import fd.FDRecord
 import ru.korus.tmis.core.data._
 import ru.korus.tmis.core.exception.CoreException
 import scala.Some
+import ru.korus.tmis.core.hl7db.DbUUIDBeanLocal
 
 @Interceptors(Array(classOf[LoggingInterceptor]))
 @Stateless
@@ -39,6 +40,9 @@ class DbEventBean
 
   @EJB
   private var actionTypeBean: DbActionTypeBeanLocal = _
+
+  @EJB
+  private var dbUUIDBeanLocal: DbUUIDBeanLocal = _
 
   def getCountRecordsOrPagesQuery(enterPosition: String): TypedQuery[Long] = {
 
@@ -116,7 +120,6 @@ class DbEventBean
     val result = em.merge(rbCounterBean.setRbCounterValue(rbCounter, rbCounter.getValue.intValue() + 1))
 
     //берем коунтер и получаем НИБ
-    //val count =  rbCounterBean.getRbCounterById(eventType.getCounterId.intValue())
     val externalId = Calendar.getInstance()
       .get(Calendar.YEAR).toString
       .concat(rbCounter.getSeparator)
@@ -137,6 +140,7 @@ class DbEventBean
       newEvent.setAssigner(authData.user)
       newEvent.setNote(" ")
       newEvent.setSetDate(begDate)
+      newEvent.setUuid(dbUUIDBeanLocal.createUUID())
       //newEvent.setExecDate(endDate)
     }
     catch {
