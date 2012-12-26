@@ -17,24 +17,29 @@
     </parent>
 
     <dependencies>
+
+        <!-- Korus dependency -->
         <dependency>
             <groupId>ru.korus.tmis.core</groupId>
             <artifactId>tmis-core-business</artifactId>
             <version>${tmis-core-version}</version>
             <type>ejb</type>
         </dependency>
+
         <dependency>
             <groupId>ru.korus.tmis.core</groupId>
             <artifactId>tmis-core-common</artifactId>
             <version>${tmis-core-version}</version>
             <type>jar</type>
         </dependency>
+
         <dependency>
             <groupId>ru.korus.tmis.core</groupId>
             <artifactId>tmis-core-database</artifactId>
             <version>${tmis-core-version}</version>
             <type>ejb</type>
         </dependency>
+
         <dependency>
             <groupId>ru.korus.tmis</groupId>
             <artifactId>tmis-ws-medipad</artifactId>
@@ -48,6 +53,7 @@
             <version>${tmis-core-version}</version>
             <type>ejb</type>
         </dependency>
+
         <dependency>
             <groupId>ru.korus.tmis.laboratory</groupId>
             <artifactId>tmis-ws-laboratory</artifactId>
@@ -61,12 +67,21 @@
             <version>${tmis-core-version}</version>
             <type>ejb</type>
         </dependency>
+
         <dependency>
             <groupId>ru.korus.tmis.drugstore</groupId>
             <artifactId>tmis-ws-drugstore</artifactId>
             <version>${tmis-core-version}</version>
             <type>war</type>
         </dependency>
+
+        <dependency>
+            <groupId>ru.korus.tmis.ws.finance</groupId>
+            <artifactId>tmis-ws-finance</artifactId>
+            <version>${tmis-core-version}</version>
+            <type>war</type>
+        </dependency>
+
     </dependencies>
 
     <build>
