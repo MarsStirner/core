@@ -19,8 +19,10 @@
         <module>ws-medipad</module>
         <module>ws-laboratory</module>
         <module>ws-drugstore</module>
-        <!--<module>hl7</module>-->
+        <module>hl7</module>
         <module>ws-finance</module>
+        <module>ws-transfusion</module>
+        <module>communication</module>
     </modules>
 
     <properties>
@@ -145,19 +147,26 @@
 
 
         <!--<dependency>-->
-            <!--<groupId>javax.xml.bind</groupId>-->
-            <!--<artifactId>jaxb-api</artifactId>-->
-            <!--<version>2.2.7</version>-->
-            <!--<scope>compile</scope>-->
+        <!--<groupId>javax.xml.bind</groupId>-->
+        <!--<artifactId>jaxb-api</artifactId>-->
+        <!--<version>2.2.7</version>-->
+        <!--<scope>compile</scope>-->
         <!--</dependency>-->
 
 
         <!--<dependency>-->
-            <!--<groupId>com.sun.xml.bind</groupId>-->
-            <!--<artifactId>jaxb-impl</artifactId>-->
-            <!--<version>2.2.7-b41</version>-->
-            <!--<scope>compile</scope>-->
+        <!--<groupId>com.sun.xml.bind</groupId>-->
+        <!--<artifactId>jaxb-impl</artifactId>-->
+        <!--<version>2.2.7-b41</version>-->
+        <!--<scope>compile</scope>-->
         <!--</dependency>-->
+
+        <!--Apache Thrift-->
+        <dependency>
+            <groupId>org.apache.thrift</groupId>
+            <artifactId>libthrift</artifactId>
+            <version>0.9.0</version>
+        </dependency>
     </dependencies>
 
     <build>
@@ -265,7 +274,7 @@
                     <execution>
                         <!--<phase>package</phase>-->
                         <!--<goals>-->
-                            <!--<goal>check</goal>-->
+                        <!--<goal>check</goal>-->
                         <!--</goals>-->
                     </execution>
                 </executions>
@@ -283,33 +292,33 @@
             </plugin>
 
             <!--<plugin>-->
-                <!--<groupId>org.apache.maven.plugins</groupId>-->
-                <!--<artifactId>maven-dependency-plugin</artifactId>-->
-                <!--<version>2.6</version>-->
-                <!--<executions>-->
-                    <!--<execution>-->
-                        <!--<id>copy</id>-->
-                        <!--<phase>package</phase>-->
-                        <!--<goals>-->
-                            <!--<goal>copy</goal>-->
-                        <!--</goals>-->
-                        <!--<configuration>-->
-                            <!--<artifactItems>-->
-                                <!--<artifactItem>-->
-                                    <!--<groupId>[ groupId ]</groupId>-->
-                                    <!--<artifactId>[ artifactId ]</artifactId>-->
-                                    <!--<version>[ version ]</version>-->
-                                    <!--<type>[ packaging ]</type>-->
-                                    <!--<classifier> [classifier - optional] </classifier>-->
-                                    <!--<overWrite>[ true or false ]</overWrite>-->
-                                    <!--<outputDirectory>[ output directory ]</outputDirectory>-->
-                                    <!--<destFileName>[ filename ]</destFileName>-->
-                                <!--</artifactItem>-->
-                            <!--</artifactItems>-->
-                            <!--&lt;!&ndash; other configurations here &ndash;&gt;-->
-                        <!--</configuration>-->
-                    <!--</execution>-->
-                <!--</executions>-->
+            <!--<groupId>org.apache.maven.plugins</groupId>-->
+            <!--<artifactId>maven-dependency-plugin</artifactId>-->
+            <!--<version>2.6</version>-->
+            <!--<executions>-->
+            <!--<execution>-->
+            <!--<id>copy</id>-->
+            <!--<phase>package</phase>-->
+            <!--<goals>-->
+            <!--<goal>copy</goal>-->
+            <!--</goals>-->
+            <!--<configuration>-->
+            <!--<artifactItems>-->
+            <!--<artifactItem>-->
+            <!--<groupId>[ groupId ]</groupId>-->
+            <!--<artifactId>[ artifactId ]</artifactId>-->
+            <!--<version>[ version ]</version>-->
+            <!--<type>[ packaging ]</type>-->
+            <!--<classifier> [classifier - optional] </classifier>-->
+            <!--<overWrite>[ true or false ]</overWrite>-->
+            <!--<outputDirectory>[ output directory ]</outputDirectory>-->
+            <!--<destFileName>[ filename ]</destFileName>-->
+            <!--</artifactItem>-->
+            <!--</artifactItems>-->
+            <!--&lt;!&ndash; other configurations here &ndash;&gt;-->
+            <!--</configuration>-->
+            <!--</execution>-->
+            <!--</executions>-->
             <!--</plugin>-->
             <!--
                 Glassfish Maven support

@@ -76,8 +76,29 @@
         </dependency>
 
         <dependency>
+            <groupId>ru.korus.tmis.hl7</groupId>
+            <artifactId>tmis-hl7</artifactId>
+            <version>${tmis-core-version}</version>
+            <type>war</type>
+        </dependency>
+
+        <dependency>
             <groupId>ru.korus.tmis.ws.finance</groupId>
             <artifactId>tmis-ws-finance</artifactId>
+            <version>${tmis-core-version}</version>
+            <type>war</type>
+        </dependency>
+
+        <dependency>
+            <groupId>ru.korus.tmis.ws.transfusion</groupId>
+            <artifactId>tmis-ws-transfusion</artifactId>
+            <version>${tmis-core-version}</version>
+            <type>war</type>
+        </dependency>
+
+        <dependency>
+            <groupId>ru.korus.tmis.communication</groupId>
+            <artifactId>tmis-communication</artifactId>
             <version>${tmis-core-version}</version>
             <type>war</type>
         </dependency>

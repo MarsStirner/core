@@ -176,7 +176,30 @@
         <appender-ref ref="EXCEPTIONS"/>
     </logger>
 
+    <!--Логер для конмоненты связи-->
+    <appender name="COMMUNICATION" class="ch.qos.logback.core.rolling.RollingFileAppender">
+        <file>${root.log}communication/communication.log</file>
+        <encoder>
+            <pattern>${log.format}</pattern>
+            <charset>UTF-8</charset>
+        </encoder>
 
+        <rollingPolicy class="ch.qos.logback.core.rolling.TimeBasedRollingPolicy">
+            <!-- rollover daily -->
+            <fileNamePattern>${root.log}communication/communication.%d{yyyy-MM-dd}.%i.log.gz</fileNamePattern>
+            <timeBasedFileNamingAndTriggeringPolicy
+                    class="ch.qos.logback.core.rolling.SizeAndTimeBasedFNATP">
+                <!-- or whenever the file size reaches 200MB -->
+                <maxFileSize>200MB</maxFileSize>
+            </timeBasedFileNamingAndTriggeringPolicy>
+        </rollingPolicy>
+    </appender>
+
+    <logger name="ru.korus.tmis.communication" level="INFO" additivity="false">
+        <appender-ref ref="COMMUNICATION"/>
+        <appender-ref ref="STDOUT_ERROR"/>
+        <appender-ref ref="EXCEPTIONS"/>
+    </logger>
 
 
     <appender name="AUTH" class="ch.qos.logback.core.FileAppender">

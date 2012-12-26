@@ -3,11 +3,11 @@
          xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
 
     <modelVersion>4.0.0</modelVersion>
-    <groupId>ru.korus.tmis.ws.finance</groupId>
-    <artifactId>tmis-ws-finance</artifactId>
+    <groupId>ru.korus.tmis.ws.transfusion</groupId>
+    <artifactId>tmis-ws-transfusion</artifactId>
     <version>${tmis-core-version}</version>
     <packaging>war</packaging>
-    <name>TMIS WS Finance Report</name>
+    <name>TMIS WS Transfusion</name>
 
     <parent>
         <groupId>ru.korus.tmis</groupId>
@@ -23,10 +23,6 @@
     </properties>
 
     <build>
-        <!-- Set the name of the war, used as the context root when the app is
-            deployed -->
-        <!--<finalName>tmis-ws-finance</finalName>-->
-
         <plugins>
             <plugin>
                 <artifactId>maven-war-plugin</artifactId>
@@ -36,18 +32,6 @@
                     <failOnMissingWebXml>false</failOnMissingWebXml>
                 </configuration>
             </plugin>
-
-            <!-- Compiler plugin enforces Java 1.6 compatibility and activates annotation
-                processors -->
-            <!--<plugin>-->
-                <!--<artifactId>maven-compiler-plugin</artifactId>-->
-                <!--<version>2.3.1</version>-->
-                <!--<configuration>-->
-                    <!--<source>1.6</source>-->
-                    <!--<target>1.6</target>-->
-                    <!--<encoding>UTF-8</encoding>-->
-                <!--</configuration>-->
-            <!--</plugin>-->
 
         </plugins>
     </build>
