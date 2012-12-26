@@ -18,7 +18,7 @@ import ru.korus.tmis.drugstore.util.SoapAcknowlegement
 import ru.korus.tmis.util.StringUtils
 
 
-@Startup
+//@Startup
 @Interceptors(Array(classOf[LoggingInterceptor]))
 @ConcurrencyManagement(ConcurrencyManagementType.CONTAINER)
 @Singleton

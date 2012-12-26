@@ -14,10 +14,9 @@ import java.text.SimpleDateFormat;
 import java.util.Date;
 
 /**
- * Author:      Dmitriy E. Nosov <br>
+ * @author      Dmitriy E. Nosov <br>
  * Date:        08.11.12, 11:38 <br>
  * Company:     Korus Consulting IT<br>
- * Revision:    \$Id$ <br>
  * Description: <br>
  */
 
@@ -77,8 +76,8 @@ public class PharmacyHL7 {
     }
 
 
-    @Test(enabled = true, priority = 1, dataProvider = "test1")
-    public void processReceived(Action action) {
+    @Test(enabled = true, priority = 1)
+    public void processReceived() {
         try {
             final MCCIIN000002UV01 result = HL7PacketBuilder.processReceived(
                     action,

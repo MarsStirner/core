@@ -17,8 +17,6 @@ import ru.korus.tmis.core.hl7db.PharmacyStatus;
 import ru.korus.tmis.core.logging.LoggingInterceptor;
 import ru.korus.tmis.pharmacy.exception.SoapConnectionException;
 
-import javax.annotation.PostConstruct;
-import javax.annotation.PreDestroy;
 import javax.ejb.EJB;
 import javax.ejb.Schedule;
 import javax.ejb.Stateless;
@@ -30,8 +28,7 @@ import java.util.List;
  * Author:      Dmitriy E. Nosov <br>
  * Date:        29.10.12, 17:30 <br>
  * Company:     Korus Consulting IT<br>
- * Revision:    \$Id$ <br>
- * Description: <br>
+ * Description: Работа по отправке сообщений в сторону 1С Аптеки<br>
  */
 @Interceptors(LoggingInterceptor.class)
 @Stateless
@@ -40,49 +37,23 @@ public class PharmacyBean implements PharmacyBeanLocal {
     final static Logger logger = LoggerFactory.getLogger(PharmacyBean.class);
     public static final int LAST_ACTIONS = 10;
 
-    @EJB
+    @EJB(beanName = "DbActionBean")
     private DbActionBeanLocal dbAction = null;
 
-    @EJB
+    @EJB(beanName = "DbOrgStructureBean")
     private DbOrgStructureBeanLocal dbOrgStructureBeanLocal = null;
 
-    @EJB
+    @EJB(beanName = "DbActionPropertyBean")
     private DbActionPropertyBeanLocal dbActionProperty = null;
 
-    @EJB
+    @EJB(beanName = "DbPharmacyBean")
     private DbPharmacyBeanLocal dbPharmacy = null;
 
-    @EJB
+    @EJB(beanName = "DbUUIDBean")
     private DbUUIDBeanLocal dbUUIDBeanLocal = null;
 
 
     private Date lastDateUpdate = null;
-
-
-    @PostConstruct
-    public void init() {
-//        logger.info("");
-//        logger.info("-------------------------------");
-//        logger.info("====== start {} ======", this.getClass().getName());
-//        logger.info("-------------------------------");
-//        logger.info("");
-    }
-
-    @PreDestroy
-    public void destroy() {
-//        logger.info("");
-//        logger.info("-------------------------------");
-//        logger.info("====== stop {} ======", this.getClass().getName());
-//        logger.info("-------------------------------");
-//        logger.info("");
-    }
-
-    private Date updateLastDate(Date date, Date lastDate) {
-        if (lastDate == null) {
-            return date;
-        }
-        return date.before(lastDate) ? lastDate : date;
-    }
 
 
     @Override
@@ -134,19 +105,20 @@ public class PharmacyBean implements PharmacyBeanLocal {
     }
 
     private Date checkMessageAndSend(Action action) {
-        logger.info("------------check message-------------");
+        logger.info("check message...");
         try {
             final ActionType actionType = action.getActionType();
-            if (actionType.getFlatCode().equals("received")) {
+            if (actionType.getFlatCode().equals(FlatCode.RECEIVED.getCode())) {
                 // госпитализация в стационар
+                logger.info("---------------------");
                 logger.info("--- found received ---");
                 final Event event = action.getEvent();
                 final OrgStructure orgStructure = getOrgStructure(event);
                 final Patient client = action.getEvent().getPatient();
                 final Pharmacy pharmacy = dbPharmacy.getOrCreate(action);
-                final String externalUUID = java.util.UUID.randomUUID().toString();//dbUUIDBeanLocal.getUUIDById(event.getUUID());
-                final String orgUUID = java.util.UUID.randomUUID().toString();//dbUUIDBeanLocal.getUUIDById(orgStructure.getUUID());
-                final String clientUUID = java.util.UUID.randomUUID().toString();//dbUUIDBeanLocal.getUUIDById(client.getUUID());
+                final String externalUUID = event.getUuid().getUuid();
+                final String orgUUID = orgStructure.getUuid().getUuid();
+                final String clientUUID = client.getUuid().getUuid();
 
                 processResult(
                         pharmacy,
@@ -158,92 +130,80 @@ public class PharmacyBean implements PharmacyBeanLocal {
                                 client,
                                 clientUUID));
 
-            } else if (actionType.getFlatCode().equals("leaved")) {
+            } else if (actionType.getFlatCode().equals(FlatCode.LEAVED.getCode())) {
                 // выписка из стационара
+                logger.info("---------------------");
                 logger.info("--- found leaved ---");
                 final Event event = action.getEvent();
-//                final OrgStructure orgStructure = getOrgStructure(event);
                 final Patient client = action.getEvent().getPatient();
                 final Pharmacy pharmacy = dbPharmacy.getOrCreate(action);
                 final String displayName = "Стационар";
-                final String clientUUID = java.util.UUID.randomUUID().toString();
-                final String externalUUID = java.util.UUID.randomUUID().toString();//dbUUIDBeanLocal.getUUIDById(event.getUUID());
 
                 processResult(
                         pharmacy,
                         HL7PacketBuilder.processLeaved(
                                 action,
                                 event.getExternalId(),
-                                externalUUID,
-                                clientUUID,
+                                event.getUuid().getUuid(),
+                                client.getUuid().getUuid(),
                                 client,
                                 displayName));
 
-            } else if (actionType.getFlatCode().equals("del_received")) {
+            } else if (actionType.getFlatCode().equals(FlatCode.DEL_RECEIVED.getCode())) {
                 // отмена сообщения о госпитализации
+                logger.info("--------------------------");
                 logger.info("--- found del_received ---");
                 final Event event = action.getEvent();
                 final OrgStructure orgStructure = getOrgStructure(event);
                 final Patient client = action.getEvent().getPatient();
                 final Pharmacy pharmacy = dbPharmacy.getOrCreate(action);
-                final String uuidExternalId = java.util.UUID.randomUUID().toString();//dbUUIDBeanLocal.getUUIDById(event.getUUID());
-                final String externalId = java.util.UUID.randomUUID().toString();//dbUUIDBeanLocal.getUUIDById(event.getUUID());
-                final String uuidClient = java.util.UUID.randomUUID().toString();//dbUUIDBeanLocal.getUUIDById(event.getUUID());
 
                 processResult(
                         pharmacy,
                         HL7PacketBuilder.processDelReceived(
                                 action,
-                                uuidExternalId,
-                                externalId,
-                                uuidClient,
+                                event.getUuid().getUuid(),
+                                event.getExternalId(),
+                                client.getUuid().getUuid(),
                                 client));
 
-            } else if (actionType.getFlatCode().equals("moving")) {
+            } else if (actionType.getFlatCode().equals(FlatCode.MOVING.getCode())) {
                 // перевод пациента между отделениями
+                logger.info("---------------------");
                 logger.info("--- found moving ---");
                 final Event event = action.getEvent();
                 final OrgStructure orgStructure = getOrgStructure(event);
                 final Patient client = action.getEvent().getPatient();
                 final Pharmacy pharmacy = dbPharmacy.getOrCreate(action);
-                final String uuidExternalId = java.util.UUID.randomUUID().toString();//dbUUIDBeanLocal.getUUIDById(event.getUUID());
-                final String externalId = java.util.UUID.randomUUID().toString();//dbUUIDBeanLocal.getUUIDById(event.getUUID());
-                final String uuidClient = java.util.UUID.randomUUID().toString();//dbUUIDBeanLocal.getUUIDById(event.getUUID());
-                final String uuidLocationOut = java.util.UUID.randomUUID().toString();//dbUUIDBeanLocal.getUUIDById(event.getUUID());
-                final String uuidLocationIn = java.util.UUID.randomUUID().toString();//dbUUIDBeanLocal.getUUIDById(event.getUUID());
 
                 processResult(
                         pharmacy,
                         HL7PacketBuilder.processMoving(
                                 action,
-                                uuidExternalId,
-                                externalId,
-                                uuidClient,
-                                uuidLocationOut,
-                                uuidLocationIn));
+                                event.getUuid().getUuid(),
+                                event.getExternalId(),
+                                client.getUuid().getUuid(),
+                                orgStructure.getUuid().getUuid(),
+                                orgStructure.getUuid().getUuid()));
 
-            } else if (actionType.getFlatCode().equals("del_moving")) {
+            } else if (actionType.getFlatCode().equals(FlatCode.DEL_MOVING.getCode())) {
                 // отмена сообщения о переводе пациента между отделениями
+                logger.info("-------------------------");
                 logger.info("--- found del_moving ---");
                 final Event event = action.getEvent();
                 final OrgStructure orgStructure = getOrgStructure(event);
                 final Patient client = action.getEvent().getPatient();
                 final Pharmacy pharmacy = dbPharmacy.getOrCreate(action);
-                final String uuidExternalId = java.util.UUID.randomUUID().toString();//dbUUIDBeanLocal.getUUIDById(event.getUUID());
-                final String externalId = java.util.UUID.randomUUID().toString();//dbUUIDBeanLocal.getUUIDById(event.getUUID());
-                final String uuidClient = java.util.UUID.randomUUID().toString();//dbUUIDBeanLocal.getUUIDById(event.getUUID());
-                final String uuidLocationOut = java.util.UUID.randomUUID().toString();//dbUUIDBeanLocal.getUUIDById(event.getUUID());
-                final String uuidLocationIn = java.util.UUID.randomUUID().toString();//dbUUIDBeanLocal.getUUIDById(event.getUUID());
 
                 processResult(
                         pharmacy,
                         HL7PacketBuilder.processDelMoving(
                                 action,
-                                uuidExternalId,
-                                externalId,
-                                uuidClient,
-                                uuidLocationOut,
-                                uuidLocationIn));
+                                event.getUuid().getUuid(),
+                                event.getExternalId(),
+                                client.getUuid().getUuid(),
+                                orgStructure.getUuid().getUuid(),
+                                orgStructure.getUuid().getUuid()));
 
             } else {
                 logger.info("--- actionType flatCode is not found. Skip ---");
@@ -262,7 +222,7 @@ public class PharmacyBean implements PharmacyBeanLocal {
                 final String uuidClient = java.util.UUID.randomUUID().toString();//dbUUIDBeanLocal.getUUIDById(event.getUUID());
                 final OrgStructure orgStructure = getOrgStructure(action.getEvent());
                 final String organizationName = orgStructure.getName();
-                 final Staff doctorPerson = new Staff(11);
+                final Staff doctorPerson = new Staff(11);
 
                 processResult(pharmacy,
                         HL7PacketBuilder.processRCMRIN000002UV02(
@@ -273,7 +233,8 @@ public class PharmacyBean implements PharmacyBeanLocal {
                                 createPerson,
                                 organizationName,
                                 externalUUID,
-                                custodianUUID, doctorPerson));
+                                custodianUUID,
+                                doctorPerson));
             }
 
         } catch (CoreException e) {
@@ -303,10 +264,19 @@ public class PharmacyBean implements PharmacyBeanLocal {
             orgStructure = dbOrgStructureBeanLocal.getOrgStructureById(event.getOrgId());
         } catch (CoreException e) {
             orgStructure = new OrgStructure();
-            orgStructure.setName("none");
+            orgStructure.setName("Дневной стационар");
+            orgStructure.setUuid(new UUID("0eea8235-1c12-11e1-7085-000c29d5ecf8"));
+            logger.info("getOrgStructure FAKE ORGSTRUCTURE!!! {}", orgStructure);
         }
         logger.info("getOrgStructure {}, by Event {}", orgStructure, event);
         return orgStructure;
+    }
+
+    private Date updateLastDate(Date date, Date lastDate) {
+        if (lastDate == null) {
+            return date;
+        }
+        return date.before(lastDate) ? lastDate : date;
     }
 
 }

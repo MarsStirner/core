@@ -31,7 +31,6 @@ import java.util.UUID;
  * @Author: Dmitriy E. Nosov <br>
  * @Date: 05.12.12, 17:41 <br>
  * @Company: Korus Consulting IT<br>
- * Revision:    \$Id$ <br>
  * @Description: <br>
  */
 public class HL7PacketBuilder {
