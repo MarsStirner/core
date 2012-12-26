@@ -31,31 +31,44 @@ class DbEventPersonBean
   def insertOrUpdateEventPerson(id: Int,
                                 event: Event,
                                 sessionUser: Staff): EventPerson = {
-    var ep: EventPerson = null
+    //var ep: EventPerson = null
     val now = new Date
     if (id > 0) {
-      ep = getEventPersonById(id)
+      var ep2 = getEventPersonById(id)
+      ep2.setEndDate(now)
+      em.merge(ep2)
     }
-    else {
-      ep = new EventPerson
-      ep.setPerson(sessionUser)
-      if (event != null) {
-        ep.setEvent(event)
-        ep.setBegDate(event.getCreateDatetime)
-      }
+    var ep = new EventPerson
+    ep.setPerson(sessionUser)
+    if (event != null) {
+      ep.setEvent(event)
+      ep.setBegDate(event.getCreateDatetime)
     }
-
     //ep.setDeleted(false)
+    em.persist(ep)
+    em.flush()
     ep
   }
 
-  def deleteEventPerson(id: Int,
-                        sessionUser: Staff) = {
-    val d = getClientRelationById(id)
-    val now = new Date
-    d.setDeleted(true)
-    d.setModifyPerson(sessionUser)
-    d.setModifyDatetime(now)
+  def getLastEventPersonForEventId(eventId: Int) = {
+    val query = em.createQuery(LastEventPersonByEventIdFindQuery,
+      classOf[EventPerson])
+      .setParameter("eventId", eventId)
+
+    val result = query.getResultList
+    result.size match {
+      case 0 => {
+        throw new CoreException(
+          ConfigManager.ErrorCodes.EventPersonNotFound,
+          i18n("error.eventPersonNotFound").format(eventId))
+      }
+      case size => {
+        result.foreach(rbType => {
+          em.detach(rbType)
+        })
+        result(0)
+      }
+    }
   }
 
   def getEventPersonById(id: Int) = {
@@ -86,6 +99,17 @@ class DbEventPersonBean
     WHERE
       r.id = :id
                            """
+
+  val LastEventPersonByEventIdFindQuery = """
+    SELECT r
+    FROM
+      EventPerson r
+    WHERE
+      r.eventId = :eventId
+    AND
+      r.endDate IS NULL
+    ORDER BY r.begDate DESC
+                                          """
 
   val AllEventPersonsWithFilterQuery = """
   SELECT %s

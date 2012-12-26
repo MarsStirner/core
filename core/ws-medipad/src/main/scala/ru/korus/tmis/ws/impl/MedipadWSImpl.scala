@@ -173,6 +173,9 @@ class MedipadWSImpl
 
   @EJB
   private var dbClientQuoting: DbClientQuotingBeanLocal = _
+
+  @EJB
+  var dbEventPerson: DbEventPersonBeanLocal = _
   //////////////////////////////////////////////////////////////////////////////
 
   def checkTokenCookies(srvletRequest: HttpServletRequest): AuthData = {
@@ -670,23 +673,29 @@ class MedipadWSImpl
    //создание первичного мед. осмотра
    def insertPrimaryMedExamForPatient(eventId: Int, data: JSONCommonData, authData: AuthData)  = {
      //TODO: подключить анализ авторизационных данных и доступных ролей
-     primaryAssessmentBean.createPrimaryAssessmentForEventId(eventId,
-                                                             data,
-                                                             "Assessment",
-                                                             authData,
-                                                             preProcessing _,
-                                                             postProcessing _)
+     val returnValue = primaryAssessmentBean.createPrimaryAssessmentForEventId(eventId,
+                                                                               data,
+                                                                               "Assessment",
+                                                                               authData,
+                                                                               preProcessing _,
+                                                                               postProcessing _)
+     val eventPerson = dbEventPerson.getLastEventPersonForEventId(eventId)
+     dbEventPerson.insertOrUpdateEventPerson(eventPerson.getId.intValue(), dbEventBean.getEventById(eventId), authData.getUser)
+     returnValue
    }
 
    //редактирование первичного мед. осмотра
    def modifyPrimaryMedExamForPatient(actionId: Int, data: JSONCommonData, authData: AuthData)  = {
      //TODO: подключить анализ авторизационных данных и доступных ролей
-     primaryAssessmentBean.modifyPrimaryAssessmentById(actionId,
-                                                       data,
-                                                       "Assessment",
-                                                       authData,
-                                                       preProcessing _,
-                                                       postProcessing _)
+     val returnValue = primaryAssessmentBean.modifyPrimaryAssessmentById(actionId,
+                                                                         data,
+                                                                         "Assessment",
+                                                                         authData,
+                                                                         preProcessing _,
+                                                                         postProcessing _)
+     val eventPerson = dbEventPerson.getLastEventPersonForEventId(actionBean.getActionById(actionId).getEvent.getId.intValue())
+     dbEventPerson.insertOrUpdateEventPerson(eventPerson.getId.intValue(), actionBean.getActionById(actionId).getEvent, authData.getUser)
+     returnValue
    }
 
    def getPrimaryAssessmentById (assessmentId: Int, authData: AuthData) = {

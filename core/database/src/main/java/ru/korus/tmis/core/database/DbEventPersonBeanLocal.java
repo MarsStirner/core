@@ -1,6 +1,8 @@
 package ru.korus.tmis.core.database;
 
+import ru.korus.tmis.core.entity.model.Event;
 import ru.korus.tmis.core.entity.model.EventPerson;
+import ru.korus.tmis.core.entity.model.Staff;
 import ru.korus.tmis.core.exception.CoreException;
 
 import javax.ejb.Local;
@@ -22,4 +24,22 @@ public interface DbEventPersonBeanLocal {
      * @throws CoreException
      */
     EventPerson getEventPersonById(int id) throws CoreException;
+
+    /**
+     * Создание/редактирование ответственного за ивент.
+     * @param id идентификатор записи.
+     * @param event идентификатор записи.
+     * @param sessionUser пользователь, создающий EventPerson.
+     * @return
+     * @throws CoreException
+     */
+    EventPerson insertOrUpdateEventPerson(int id, Event event, Staff sessionUser) throws CoreException;
+
+    /**
+     * Запрос на тип EventPerson по идентификатору ивента.
+     * @param eventId идентификатор ивента.
+     * @return
+     * @throws CoreException
+     */
+    EventPerson getLastEventPersonForEventId(int eventId) throws CoreException;
 }
