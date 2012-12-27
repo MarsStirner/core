@@ -138,7 +138,7 @@ public class Event implements Serializable {
     private int version;
 
 
-    @ManyToOne
+    @ManyToOne(cascade = CascadeType.ALL)
     @JoinColumn(name = "uuid_id")
     private UUID uuid;
     ////////////////////////////////////////////////////////////////////////////

@@ -78,10 +78,10 @@ class DbEventPersonBean
 
     val result = query.getResultList
     result.size match {
-      case 0 => {
-        throw new CoreException(
-          ConfigManager.ErrorCodes.EventPersonNotFound,
-          i18n("error.eventPersonNotFound").format(id))
+      case 0 => {  null
+        //throw new CoreException(
+        //  ConfigManager.ErrorCodes.EventPersonNotFound,
+        //  i18n("error.eventPersonNotFound").format(id))
       }
       case size => {
         result.foreach(rbType => {
@@ -105,7 +105,7 @@ class DbEventPersonBean
     FROM
       EventPerson r
     WHERE
-      r.eventId = :eventId
+      r.event.id = :eventId
     AND
       r.endDate IS NULL
     ORDER BY r.begDate DESC

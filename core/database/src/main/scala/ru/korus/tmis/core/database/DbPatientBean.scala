@@ -17,6 +17,7 @@ import javax.persistence.{TypedQuery, EntityManager, PersistenceContext}
 import ru.korus.tmis.core.data.{PatientRequestData}
 import javax.ejb.{EJB, Stateless}
 import scala.collection.JavaConversions._
+import ru.korus.tmis.core.hl7db.DbUUIDBeanLocal
 
 @Interceptors(Array(classOf[LoggingInterceptor]))
 @Stateless
@@ -33,6 +34,9 @@ class DbPatientBean
 
   @EJB
   var customQueryBean: DbCustomQueryLocal = _
+
+  @EJB
+  private var dbUUIDBeanLocal: DbUUIDBeanLocal = _
 
   val PatientFindQuery = """
       SELECT p
@@ -324,6 +328,7 @@ class DbPatientBean
       p = new Patient
       p.setCreatePerson(sessionUser)
       p.setCreateDatetime(now)
+      p.setUuid(dbUUIDBeanLocal.createUUID())
     }
 
     p.setBirthPlace("")

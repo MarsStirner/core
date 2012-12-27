@@ -14,6 +14,7 @@ import ru.korus.tmis.core.entity.model.{ActionType, ActionStatus, Action, Staff}
 import scala.collection.JavaConversions._
 import javax.persistence.{TypedQuery, PersistenceContext, EntityManager}
 import ru.korus.tmis.core.data.{AssessmentsListRequestDataFilter, AssessmentsListRequestData}
+import ru.korus.tmis.core.hl7db.DbUUIDBeanLocal
 
 @Interceptors(Array(classOf[LoggingInterceptor]))
 @Stateless
@@ -30,6 +31,9 @@ class DbActionBean
 
   @EJB
   var dbActionType: DbActionTypeBeanLocal = _
+
+  @EJB
+  private var dbUUIDBeanLocal: DbUUIDBeanLocal = _
 
   def getCountRecordsOrPagesQuery(enterPosition: String, filterQuery: String): TypedQuery[Long] = {
 
@@ -104,6 +108,7 @@ class DbActionBean
     a.setActionType(at)
 
     a.setStatus(ActionStatus.STARTED.getCode)
+    a.setUuid(dbUUIDBeanLocal.createUUID())
 
     a
   }
