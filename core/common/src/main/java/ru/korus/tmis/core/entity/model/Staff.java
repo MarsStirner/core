@@ -198,9 +198,9 @@ public class Staff implements Serializable {
     @JoinColumn(name = "speciality_id")
     private Speciality speciality;
 
-    /*@ManyToOne
+    @ManyToOne
     @JoinColumn(name = "uuid_id")
-    private UUID uuid; */
+    private UUID uuid;
     ////////////////////////////////////////////////////////////////////////////
     // Custom mappings
     ////////////////////////////////////////////////////////////////////////////
