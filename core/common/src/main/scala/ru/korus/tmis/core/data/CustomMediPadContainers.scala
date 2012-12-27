@@ -26,7 +26,7 @@ class AllDepartmentsListDataMP {
 
   def this(departments: java.util.List[OrgStructure], requestData: ListDataRequest) = {
     this ()
-    departments.foreach(org => this.department.add(new IdNameContainerMP(org.getId.intValue(), org.getName)))
+    departments.foreach(org => this.department.add(new IdNameContainerMP(org.getId.intValue(), org.getCode)))
   }
 }
 

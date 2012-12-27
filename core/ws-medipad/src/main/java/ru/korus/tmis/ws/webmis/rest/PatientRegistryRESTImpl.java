@@ -165,12 +165,12 @@ public class PatientRegistryRESTImpl implements Serializable {
     @Produces("application/x-javascript")
     public Object insertPatientAppeal(AppealData data,
                                          @PathParam("id")int patientId,
-                                         @QueryParam("token") String token,
+                                         //@QueryParam("token") String token,
                                          @QueryParam("callback") String callback,
                                          @Context HttpServletRequest servRequest) {
-        //AuthData auth = wsImpl.checkTokenCookies(servRequest);
-        AuthToken authToken = new AuthToken(token);
-        AuthData auth = wsImpl.getStorageAuthData(authToken);
+        AuthData auth = wsImpl.checkTokenCookies(servRequest);
+        //AuthToken authToken = new AuthToken(token);
+        //AuthData auth = wsImpl.getStorageAuthData(authToken);
 
         String oip = wsImpl.insertAppealForPatient(data, patientId, auth);
         JSONWithPadding returnValue = new JSONWithPadding(oip, callback);
@@ -193,12 +193,12 @@ public class PatientRegistryRESTImpl implements Serializable {
     @Produces("application/x-javascript")
     public Object updatePatientAppeal(AppealData data,
                                                @PathParam("id")int patientId,
-                                               @QueryParam("token") String token,
+                                               //@QueryParam("token") String token,
                                                @QueryParam("callback") String callback,
                                                @Context HttpServletRequest servRequest) {
-        //AuthData auth = wsImpl.checkTokenCookies(servRequest);
-        AuthToken authToken = new AuthToken(token);
-        AuthData auth = wsImpl.getStorageAuthData(authToken);
+        AuthData auth = wsImpl.checkTokenCookies(servRequest);
+        //AuthToken authToken = new AuthToken(token);
+        //AuthData auth = wsImpl.getStorageAuthData(authToken);
 
         String oip = wsImpl.insertAppealForPatient(data, patientId, auth);
         JSONWithPadding returnValue = new JSONWithPadding(oip, callback);
@@ -581,11 +581,11 @@ public class PatientRegistryRESTImpl implements Serializable {
     public  Object insertPrimaryMedExamForPatient(JSONCommonData data,
                                                   @PathParam("eventId") int eventId,
                                                   @QueryParam("callback") String callback,
-                                                  @QueryParam("token") String token,
+                                                  //@QueryParam("token") String token,
                                                   @Context HttpServletRequest servRequest) {
-        //AuthData auth = wsImpl.checkTokenCookies(servRequest);
-        AuthToken authToken = new AuthToken(token);
-        AuthData auth = wsImpl.getStorageAuthData(authToken);
+        AuthData auth = wsImpl.checkTokenCookies(servRequest);
+        //AuthToken authToken = new AuthToken(token);
+        //AuthData auth = wsImpl.getStorageAuthData(authToken);
 
         JSONWithPadding returnValue = new JSONWithPadding(wsImpl.insertPrimaryMedExamForPatient(eventId, data, auth), callback);
         return returnValue;
@@ -612,11 +612,11 @@ public class PatientRegistryRESTImpl implements Serializable {
                                                   @PathParam("eventId") int eventId,
                                                   @PathParam("actionId") int actionId,
                                                   @QueryParam("callback") String callback,
-                                                  @QueryParam("token") String token,
+                                                  //@QueryParam("token") String token,
                                                   @Context HttpServletRequest servRequest) {
-        //AuthData auth = wsImpl.checkTokenCookies(servRequest);
-        AuthToken authToken = new AuthToken(token);
-        AuthData auth = wsImpl.getStorageAuthData(authToken);
+        AuthData auth = wsImpl.checkTokenCookies(servRequest);
+        //AuthToken authToken = new AuthToken(token);
+        //AuthData auth = wsImpl.getStorageAuthData(authToken);
 
         JSONWithPadding returnValue = new JSONWithPadding(wsImpl.modifyPrimaryMedExamForPatient(actionId, data, auth), callback);
         return returnValue;

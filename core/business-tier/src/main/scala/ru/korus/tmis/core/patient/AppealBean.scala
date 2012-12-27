@@ -345,7 +345,8 @@ with CAPids{
     if (setRel!=null && setRel.size>0) dbManager.mergeAll(setRel)
     //*****
     //Создание/редактирование записи для Event_Persons
-    dbEventPerson.insertOrUpdateEventPerson(0, newEvent, authData.getUser) //в ивенте только создание
+    if (flgCreate)
+      dbEventPerson.insertOrUpdateEventPerson(0, newEvent, authData.getUser) //в ивенте только создание
     //*****
 
     newEvent.getId.intValue()
