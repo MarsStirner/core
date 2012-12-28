@@ -204,6 +204,9 @@ public class ServiceFinanceInfoImpl implements ServiceFinanceInfo {
         if (nameOfStructure == null) {
             return true;
         }
+        if (nameOfStructure.length() == 0) {
+            return false;
+        }
         // Получаем описание подразделения
         final List<OrgStructure> orgStructure = em.createQuery("SELECT s FROM OrgStructure s WHERE s.name = :nameOfStruct", OrgStructure.class)
                 .setParameter("nameOfStruct", nameOfStructure).getResultList();
