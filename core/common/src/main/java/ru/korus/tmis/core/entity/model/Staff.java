@@ -629,13 +629,13 @@ public class Staff implements Serializable {
         this.speciality = speciality;
     }
 
-    /*public UUID getUuid() {
+    public UUID getUuid() {
         return uuid;
     }
 
     public void setUuid(UUID uuid) {
         this.uuid = uuid;
-    } */
+    }
 
     @Override
     public int hashCode() {
