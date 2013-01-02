@@ -5,15 +5,14 @@
     <modelVersion>4.0.0</modelVersion>
     <groupId>ru.korus.tmis.communication</groupId>
     <artifactId>tmis-communication</artifactId>
-    <version>${tmis-core-version}</version>
+    <version>${parent.version}</version>
     <packaging>war</packaging>
     <name>TMIS Communication Component</name>
 
     <parent>
         <groupId>ru.korus.tmis</groupId>
         <artifactId>tmis-nexus</artifactId>
-        <version>${tmis-core-version}</version>
-        <relativePath>../</relativePath>
+        <version>${version}</version>
     </parent>
 
     <build>
@@ -118,14 +117,14 @@
         <dependency>
             <groupId>ru.korus.tmis.core</groupId>
             <artifactId>tmis-core-common</artifactId>
-            <version>${tmis-core-version}</version>
+            <version>${version}</version>
             <type>jar</type>
         </dependency>
 
         <dependency>
             <groupId>ru.korus.tmis.core</groupId>
             <artifactId>tmis-core-database</artifactId>
-            <version>${tmis-core-version}</version>
+            <version>${version}</version>
             <type>ejb</type>
         </dependency>
 
