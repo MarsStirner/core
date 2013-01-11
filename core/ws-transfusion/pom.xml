@@ -5,14 +5,14 @@
     <modelVersion>4.0.0</modelVersion>
     <groupId>ru.korus.tmis.ws.transfusion</groupId>
     <artifactId>tmis-ws-transfusion</artifactId>
-    <version>${tmis-core-version}</version>
+    <version>${version.tmis.core}</version>
     <packaging>war</packaging>
     <name>TMIS WS Transfusion</name>
 
     <parent>
         <groupId>ru.korus.tmis</groupId>
         <artifactId>tmis-nexus</artifactId>
-        <version>${tmis-core-version}</version>
+        <version>${version.tmis.core}</version>
         <relativePath>../</relativePath>
     </parent>
 
@@ -40,7 +40,7 @@
         <dependency>
             <groupId>ru.korus.tmis.core</groupId>
             <artifactId>tmis-core-common</artifactId>
-            <version>${tmis-core-version}</version>
+            <version>${version.tmis.core}</version>
             <type>jar</type>
         </dependency>
     </dependencies>

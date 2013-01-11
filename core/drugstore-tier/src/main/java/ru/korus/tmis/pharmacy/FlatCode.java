@@ -1,10 +1,10 @@
 package ru.korus.tmis.pharmacy;
 
 /**
- * @author Dmitriy E. Nosov <br>
- *         Date:        25.12.12, 18:06 <br>
- *         Company:     Korus Consulting IT<br>
- *         Description:  <br>
+ * Author:      Dmitriy E. Nosov <br>
+ * Date:        25.12.12, 18:06 <br>
+ * Company:     Korus Consulting IT<br>
+ * Description:  <br>
  */
 public enum FlatCode {
     /**

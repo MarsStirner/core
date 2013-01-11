@@ -5,14 +5,14 @@
     <modelVersion>4.0.0</modelVersion>
     <groupId>ru.korus.tmis.hl7</groupId>
     <artifactId>tmis-hl7</artifactId>
-    <version>${tmis-core-version}</version>
+    <version>${version.tmis.core}</version>
     <packaging>war</packaging>
     <name>TMIS HL7</name>
 
     <parent>
         <groupId>ru.korus.tmis</groupId>
         <artifactId>tmis-nexus</artifactId>
-        <version>${tmis-core-version}</version>
+        <version>${version.tmis.core}</version>
         <relativePath>../</relativePath>
     </parent>
 

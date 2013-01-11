@@ -55,7 +55,9 @@ public class PharmacyBean implements PharmacyBeanLocal {
 
     private Date lastDateUpdate = null;
 
-
+    /**
+     * Полинг базы данных для поиска событий по движениям пациентов
+     */
     @Override
     @Schedule(minute = "*/2", hour = "*")
     public void pooling() {
@@ -104,6 +106,12 @@ public class PharmacyBean implements PharmacyBeanLocal {
         }
     }
 
+    /**
+     * Проверка action на присутствие flatCode и обработка если это сообщение по движению пациентов
+     *
+     * @param action событие
+     * @return время последнего обработанного сообщения
+     */
     private Date checkMessageAndSend(Action action) {
         logger.info("check message...");
         try {
@@ -206,7 +214,7 @@ public class PharmacyBean implements PharmacyBeanLocal {
                                 orgStructure.getUuid().getUuid()));
 
             } else {
-                logger.info("--- actionType flatCode is not found. Skip ---");
+                logger.info("--- actionType.flatCode is not found. Skip ---");
             }
 
             // фильтруем все назначения
@@ -245,6 +253,9 @@ public class PharmacyBean implements PharmacyBeanLocal {
         return action.getCreateDatetime();
     }
 
+    /**
+     * Обработка результата от 1С
+     */
     private void processResult(Pharmacy pharmacy, MCCIIN000002UV01 result) throws CoreException {
         if (result != null && !result.getAcknowledgement().isEmpty()) {
             final MCCIMT000200UV01Acknowledgement ack = result.getAcknowledgement().get(0);
@@ -258,6 +269,12 @@ public class PharmacyBean implements PharmacyBeanLocal {
         dbPharmacy.updateMessage(pharmacy);
     }
 
+    /**
+     * Получение OrgStructure
+     *
+     * @param event событие
+     * @return подразделение
+     */
     private OrgStructure getOrgStructure(Event event) {
         OrgStructure orgStructure = null;
         try {

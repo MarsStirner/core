@@ -89,10 +89,10 @@ class PatientBean
   var dbStaff: DbStaffBeanLocal = _
 
   @EJB
-  private var dbRbCoreActionPropertyBean: DbRbCoreActionPropertyBeanLocal = _
+  var dbRbCoreActionPropertyBean: DbRbCoreActionPropertyBeanLocal = _
 
   @EJB
-  private var dbDiagnocticsBean: DbDiagnosticBeanLocal = _
+  var dbDiagnocticsBean: DbDiagnosticBeanLocal = _
   //////////////////////////////////////////////////////////////////////////////
 
   def getCurrentPatientsForDoctor(userData: AuthData) = {

@@ -5,14 +5,14 @@
     <modelVersion>4.0.0</modelVersion>
     <groupId>ru.korus.tmis.drugstore</groupId>
     <artifactId>tmis-ws-drugstore</artifactId>
-    <version>${tmis-core-version}</version>
+    <version>${version.tmis.core}</version>
     <packaging>war</packaging>
     <name>TMIS 1C Drugstore Webservice</name>
 
     <parent>
         <groupId>ru.korus.tmis</groupId>
         <artifactId>tmis-nexus</artifactId>
-        <version>${tmis-core-version}</version>
+        <version>${version.tmis.core}</version>
         <relativePath>../</relativePath>
     </parent>
 
@@ -20,20 +20,20 @@
         <dependency>
             <groupId>ru.korus.tmis.core</groupId>
             <artifactId>tmis-core-database</artifactId>
-            <version>${tmis-core-version}</version>
+            <version>${version.tmis.core}</version>
             <type>ejb</type>
         </dependency>
         <dependency>
             <groupId>ru.korus.tmis.core</groupId>
             <artifactId>tmis-core-common</artifactId>
-            <version>${tmis-core-version}</version>
+            <version>${version.tmis.core}</version>
             <type>jar</type>
         </dependency>
 
         <dependency>
             <groupId>ru.korus.tmis.drugstore</groupId>
             <artifactId>tmis-drugstore-tier</artifactId>
-            <version>${tmis-core-version}</version>
+            <version>${version.tmis.core}</version>
             <type>ejb</type>
         </dependency>
     </dependencies>
