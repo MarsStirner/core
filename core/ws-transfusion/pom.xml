@@ -12,11 +12,12 @@
  <!--   <parent>
         <groupId>ru.korus.tmis</groupId>
         <artifactId>tmis-nexus</artifactId>
-        <version>${version}</version>
-        <relativePath>../pom.xml</relativePath>
+        <version>${tmis-core-version}</version>
+        <relativePath>../</relativePath>
     </parent>-->
 
     <properties>
+        <tmis-core-version>0.9.11-SNAPSHOT</tmis-core-version>
         <maven.test.skip>false</maven.test.skip>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
         <jaxws.plugin.version>2.1</jaxws.plugin.version>
@@ -49,7 +50,7 @@
        <!--   <dependency>
               <groupId>ru.korus.tmis.core</groupId>
               <artifactId>tmis-core-common</artifactId>
-              <version>${version}</version>
+              <version>${tmis-core-version}</version>
               <type>jar</type>
           </dependency>-->
     </dependencies>
