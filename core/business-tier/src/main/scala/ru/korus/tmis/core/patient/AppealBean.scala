@@ -85,6 +85,9 @@ with CAPids{
   @EJB
   var dbClientQuoting: DbClientQuotingBeanLocal = _
 
+  @EJB
+  var dbEventPerson: DbEventPersonBeanLocal = _
+
   @Inject
   @Any
   var actionEvent: javax.enterprise.event.Event[Notification] = _
@@ -340,6 +343,10 @@ with CAPids{
       })
     }
     if (setRel!=null && setRel.size>0) dbManager.mergeAll(setRel)
+    //*****
+    //Создание/редактирование записи для Event_Persons
+    if (flgCreate)
+      dbEventPerson.insertOrUpdateEventPerson(0, newEvent, authData.getUser) //в ивенте только создание
     //*****
 
     newEvent.getId.intValue()

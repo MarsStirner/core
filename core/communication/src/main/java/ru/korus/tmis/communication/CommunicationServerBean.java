@@ -18,7 +18,6 @@ import java.util.List;
  * Date: 25.12.12 at 14:35
  */
 @Startup
-@Stateless(name = "CommunicationServerEJB")
 @Singleton
 @LocalBean
 public class CommunicationServerBean {
