@@ -7,7 +7,6 @@
 package ru.korus.tmis.communication.thriftgen;
 
 import org.apache.thrift.EncodingUtils;
-import org.apache.thrift.TException;
 import org.apache.thrift.protocol.TTupleProtocol;
 import org.apache.thrift.scheme.IScheme;
 import org.apache.thrift.scheme.SchemeFactory;
@@ -16,28 +15,28 @@ import org.apache.thrift.scheme.TupleScheme;
 
 import java.util.*;
 
-public class SQLException extends TException implements org.apache.thrift.TBase<SQLException, SQLException._Fields>, java.io.Serializable, Cloneable {
-    private static final org.apache.thrift.protocol.TStruct STRUCT_DESC = new org.apache.thrift.protocol.TStruct("SQLException");
+public class DequeuePatientStatus implements org.apache.thrift.TBase<DequeuePatientStatus, DequeuePatientStatus._Fields>, java.io.Serializable, Cloneable {
+    private static final org.apache.thrift.protocol.TStruct STRUCT_DESC = new org.apache.thrift.protocol.TStruct("DequeuePatientStatus");
 
-    private static final org.apache.thrift.protocol.TField ERROR_CODE_FIELD_DESC = new org.apache.thrift.protocol.TField("error_code", org.apache.thrift.protocol.TType.I32, (short) 1);
-    private static final org.apache.thrift.protocol.TField ERROR_MSG_FIELD_DESC = new org.apache.thrift.protocol.TField("error_msg", org.apache.thrift.protocol.TType.STRING, (short) 2);
+    private static final org.apache.thrift.protocol.TField SUCCESS_FIELD_DESC = new org.apache.thrift.protocol.TField("success", org.apache.thrift.protocol.TType.BOOL, (short) 1);
+    private static final org.apache.thrift.protocol.TField MESSAGE_FIELD_DESC = new org.apache.thrift.protocol.TField("message", org.apache.thrift.protocol.TType.STRING, (short) 2);
 
     private static final Map<Class<? extends IScheme>, SchemeFactory> schemes = new HashMap<Class<? extends IScheme>, SchemeFactory>();
 
     static {
-        schemes.put(StandardScheme.class, new SQLExceptionStandardSchemeFactory());
-        schemes.put(TupleScheme.class, new SQLExceptionTupleSchemeFactory());
+        schemes.put(StandardScheme.class, new DequeuePatientStatusStandardSchemeFactory());
+        schemes.put(TupleScheme.class, new DequeuePatientStatusTupleSchemeFactory());
     }
 
-    public int error_code; // required
-    public String error_msg; // required
+    public boolean success; // required
+    public String message; // optional
 
     /**
      * The set of fields this struct contains, along with convenience methods for finding and manipulating them.
      */
     public enum _Fields implements org.apache.thrift.TFieldIdEnum {
-        ERROR_CODE((short) 1, "error_code"),
-        ERROR_MSG((short) 2, "error_msg");
+        SUCCESS((short) 1, "success"),
+        MESSAGE((short) 2, "message");
 
         private static final Map<String, _Fields> byName = new HashMap<String, _Fields>();
 
@@ -52,10 +51,10 @@ public class SQLException extends TException implements org.apache.thrift.TBase<
          */
         public static _Fields findByThriftId(int fieldId) {
             switch (fieldId) {
-                case 1: // ERROR_CODE
-                    return ERROR_CODE;
-                case 2: // ERROR_MSG
-                    return ERROR_MSG;
+                case 1: // SUCCESS
+                    return SUCCESS;
+                case 2: // MESSAGE
+                    return MESSAGE;
                 default:
                     return null;
             }
@@ -96,120 +95,119 @@ public class SQLException extends TException implements org.apache.thrift.TBase<
     }
 
     // isset id assignments
-    private static final int __ERROR_CODE_ISSET_ID = 0;
+    private static final int __SUCCESS_ISSET_ID = 0;
     private byte __isset_bitfield = 0;
+    private _Fields optionals[] = {_Fields.MESSAGE};
     public static final Map<_Fields, org.apache.thrift.meta_data.FieldMetaData> metaDataMap;
 
     static {
         Map<_Fields, org.apache.thrift.meta_data.FieldMetaData> tmpMap = new EnumMap<_Fields, org.apache.thrift.meta_data.FieldMetaData>(_Fields.class);
-        tmpMap.put(_Fields.ERROR_CODE, new org.apache.thrift.meta_data.FieldMetaData("error_code", org.apache.thrift.TFieldRequirementType.DEFAULT,
-                new org.apache.thrift.meta_data.FieldValueMetaData(org.apache.thrift.protocol.TType.I32)));
-        tmpMap.put(_Fields.ERROR_MSG, new org.apache.thrift.meta_data.FieldMetaData("error_msg", org.apache.thrift.TFieldRequirementType.DEFAULT,
+        tmpMap.put(_Fields.SUCCESS, new org.apache.thrift.meta_data.FieldMetaData("success", org.apache.thrift.TFieldRequirementType.REQUIRED,
+                new org.apache.thrift.meta_data.FieldValueMetaData(org.apache.thrift.protocol.TType.BOOL)));
+        tmpMap.put(_Fields.MESSAGE, new org.apache.thrift.meta_data.FieldMetaData("message", org.apache.thrift.TFieldRequirementType.OPTIONAL,
                 new org.apache.thrift.meta_data.FieldValueMetaData(org.apache.thrift.protocol.TType.STRING)));
         metaDataMap = Collections.unmodifiableMap(tmpMap);
-        org.apache.thrift.meta_data.FieldMetaData.addStructMetaDataMap(SQLException.class, metaDataMap);
+        org.apache.thrift.meta_data.FieldMetaData.addStructMetaDataMap(DequeuePatientStatus.class, metaDataMap);
     }
 
-    public SQLException() {
+    public DequeuePatientStatus() {
     }
 
-    public SQLException(
-            int error_code,
-            String error_msg) {
+    public DequeuePatientStatus(
+            boolean success) {
         this();
-        this.error_code = error_code;
-        setError_codeIsSet(true);
-        this.error_msg = error_msg;
+        this.success = success;
+        setSuccessIsSet(true);
     }
 
     /**
      * Performs a deep copy on <i>other</i>.
      */
-    public SQLException(SQLException other) {
+    public DequeuePatientStatus(DequeuePatientStatus other) {
         __isset_bitfield = other.__isset_bitfield;
-        this.error_code = other.error_code;
-        if (other.isSetError_msg()) {
-            this.error_msg = other.error_msg;
+        this.success = other.success;
+        if (other.isSetMessage()) {
+            this.message = other.message;
         }
     }
 
-    public SQLException deepCopy() {
-        return new SQLException(this);
+    public DequeuePatientStatus deepCopy() {
+        return new DequeuePatientStatus(this);
     }
 
     @Override
     public void clear() {
-        setError_codeIsSet(false);
-        this.error_code = 0;
-        this.error_msg = null;
+        setSuccessIsSet(false);
+        this.success = false;
+        this.message = null;
     }
 
-    public int getError_code() {
-        return this.error_code;
+    public boolean isSuccess() {
+        return this.success;
     }
 
-    public SQLException setError_code(int error_code) {
-        this.error_code = error_code;
-        setError_codeIsSet(true);
+    public DequeuePatientStatus setSuccess(boolean success) {
+        this.success = success;
+        setSuccessIsSet(true);
         return this;
     }
 
-    public void unsetError_code() {
-        __isset_bitfield = EncodingUtils.clearBit(__isset_bitfield, __ERROR_CODE_ISSET_ID);
+    public void unsetSuccess() {
+        __isset_bitfield = EncodingUtils.clearBit(__isset_bitfield, __SUCCESS_ISSET_ID);
     }
 
     /**
-     * Returns true if field error_code is set (has been assigned a value) and false otherwise
+     * Returns true if field success is set (has been assigned a value) and false otherwise
      */
-    public boolean isSetError_code() {
-        return EncodingUtils.testBit(__isset_bitfield, __ERROR_CODE_ISSET_ID);
+    public boolean isSetSuccess() {
+        return EncodingUtils.testBit(__isset_bitfield, __SUCCESS_ISSET_ID);
     }
 
-    public void setError_codeIsSet(boolean value) {
-        __isset_bitfield = EncodingUtils.setBit(__isset_bitfield, __ERROR_CODE_ISSET_ID, value);
+    public void setSuccessIsSet(boolean value) {
+        __isset_bitfield = EncodingUtils.setBit(__isset_bitfield, __SUCCESS_ISSET_ID, value);
     }
 
-    public String getError_msg() {
-        return this.error_msg;
+    public String getMessage() {
+        return this.message;
     }
 
-    public SQLException setError_msg(String error_msg) {
-        this.error_msg = error_msg;
+    public DequeuePatientStatus setMessage(String message) {
+        this.message = message;
         return this;
     }
 
-    public void unsetError_msg() {
-        this.error_msg = null;
+    public void unsetMessage() {
+        this.message = null;
     }
 
     /**
-     * Returns true if field error_msg is set (has been assigned a value) and false otherwise
+     * Returns true if field message is set (has been assigned a value) and false otherwise
      */
-    public boolean isSetError_msg() {
-        return this.error_msg != null;
+    public boolean isSetMessage() {
+        return this.message != null;
     }
 
-    public void setError_msgIsSet(boolean value) {
+    public void setMessageIsSet(boolean value) {
         if (!value) {
-            this.error_msg = null;
+            this.message = null;
         }
     }
 
     public void setFieldValue(_Fields field, Object value) {
         switch (field) {
-            case ERROR_CODE:
+            case SUCCESS:
                 if (value == null) {
-                    unsetError_code();
+                    unsetSuccess();
                 } else {
-                    setError_code((Integer) value);
+                    setSuccess((Boolean) value);
                 }
                 break;
 
-            case ERROR_MSG:
+            case MESSAGE:
                 if (value == null) {
-                    unsetError_msg();
+                    unsetMessage();
                 } else {
-                    setError_msg((String) value);
+                    setMessage((String) value);
                 }
                 break;
 
@@ -218,11 +216,11 @@ public class SQLException extends TException implements org.apache.thrift.TBase<
 
     public Object getFieldValue(_Fields field) {
         switch (field) {
-            case ERROR_CODE:
-                return Integer.valueOf(getError_code());
+            case SUCCESS:
+                return Boolean.valueOf(isSuccess());
 
-            case ERROR_MSG:
-                return getError_msg();
+            case MESSAGE:
+                return getMessage();
 
         }
         throw new IllegalStateException();
@@ -237,10 +235,10 @@ public class SQLException extends TException implements org.apache.thrift.TBase<
         }
 
         switch (field) {
-            case ERROR_CODE:
-                return isSetError_code();
-            case ERROR_MSG:
-                return isSetError_msg();
+            case SUCCESS:
+                return isSetSuccess();
+            case MESSAGE:
+                return isSetMessage();
         }
         throw new IllegalStateException();
     }
@@ -249,30 +247,30 @@ public class SQLException extends TException implements org.apache.thrift.TBase<
     public boolean equals(Object that) {
         if (that == null)
             return false;
-        if (that instanceof SQLException)
-            return this.equals((SQLException) that);
+        if (that instanceof DequeuePatientStatus)
+            return this.equals((DequeuePatientStatus) that);
         return false;
     }
 
-    public boolean equals(SQLException that) {
+    public boolean equals(DequeuePatientStatus that) {
         if (that == null)
             return false;
 
-        boolean this_present_error_code = true;
-        boolean that_present_error_code = true;
-        if (this_present_error_code || that_present_error_code) {
-            if (!(this_present_error_code && that_present_error_code))
+        boolean this_present_success = true;
+        boolean that_present_success = true;
+        if (this_present_success || that_present_success) {
+            if (!(this_present_success && that_present_success))
                 return false;
-            if (this.error_code != that.error_code)
+            if (this.success != that.success)
                 return false;
         }
 
-        boolean this_present_error_msg = true && this.isSetError_msg();
-        boolean that_present_error_msg = true && that.isSetError_msg();
-        if (this_present_error_msg || that_present_error_msg) {
-            if (!(this_present_error_msg && that_present_error_msg))
+        boolean this_present_message = true && this.isSetMessage();
+        boolean that_present_message = true && that.isSetMessage();
+        if (this_present_message || that_present_message) {
+            if (!(this_present_message && that_present_message))
                 return false;
-            if (!this.error_msg.equals(that.error_msg))
+            if (!this.message.equals(that.message))
                 return false;
         }
 
@@ -284,30 +282,30 @@ public class SQLException extends TException implements org.apache.thrift.TBase<
         return 0;
     }
 
-    public int compareTo(SQLException other) {
+    public int compareTo(DequeuePatientStatus other) {
         if (!getClass().equals(other.getClass())) {
             return getClass().getName().compareTo(other.getClass().getName());
         }
 
         int lastComparison = 0;
-        SQLException typedOther = (SQLException) other;
+        DequeuePatientStatus typedOther = (DequeuePatientStatus) other;
 
-        lastComparison = Boolean.valueOf(isSetError_code()).compareTo(typedOther.isSetError_code());
+        lastComparison = Boolean.valueOf(isSetSuccess()).compareTo(typedOther.isSetSuccess());
         if (lastComparison != 0) {
             return lastComparison;
         }
-        if (isSetError_code()) {
-            lastComparison = org.apache.thrift.TBaseHelper.compareTo(this.error_code, typedOther.error_code);
+        if (isSetSuccess()) {
+            lastComparison = org.apache.thrift.TBaseHelper.compareTo(this.success, typedOther.success);
             if (lastComparison != 0) {
                 return lastComparison;
             }
         }
-        lastComparison = Boolean.valueOf(isSetError_msg()).compareTo(typedOther.isSetError_msg());
+        lastComparison = Boolean.valueOf(isSetMessage()).compareTo(typedOther.isSetMessage());
         if (lastComparison != 0) {
             return lastComparison;
         }
-        if (isSetError_msg()) {
-            lastComparison = org.apache.thrift.TBaseHelper.compareTo(this.error_msg, typedOther.error_msg);
+        if (isSetMessage()) {
+            lastComparison = org.apache.thrift.TBaseHelper.compareTo(this.message, typedOther.message);
             if (lastComparison != 0) {
                 return lastComparison;
             }
@@ -329,26 +327,29 @@ public class SQLException extends TException implements org.apache.thrift.TBase<
 
     @Override
     public String toString() {
-        StringBuilder sb = new StringBuilder("SQLException(");
+        StringBuilder sb = new StringBuilder("DequeuePatientStatus(");
         boolean first = true;
 
-        sb.append("error_code:");
-        sb.append(this.error_code);
+        sb.append("success:");
+        sb.append(this.success);
         first = false;
-        if (!first) sb.append(", ");
-        sb.append("error_msg:");
-        if (this.error_msg == null) {
-            sb.append("null");
-        } else {
-            sb.append(this.error_msg);
+        if (isSetMessage()) {
+            if (!first) sb.append(", ");
+            sb.append("message:");
+            if (this.message == null) {
+                sb.append("null");
+            } else {
+                sb.append(this.message);
+            }
+            first = false;
         }
-        first = false;
         sb.append(")");
         return sb.toString();
     }
 
     public void validate() throws org.apache.thrift.TException {
         // check for required fields
+        // alas, we cannot check 'success' because it's a primitive and you chose the non-beans generator.
         // check for sub-struct validity
     }
 
@@ -370,15 +371,15 @@ public class SQLException extends TException implements org.apache.thrift.TBase<
         }
     }
 
-    private static class SQLExceptionStandardSchemeFactory implements SchemeFactory {
-        public SQLExceptionStandardScheme getScheme() {
-            return new SQLExceptionStandardScheme();
+    private static class DequeuePatientStatusStandardSchemeFactory implements SchemeFactory {
+        public DequeuePatientStatusStandardScheme getScheme() {
+            return new DequeuePatientStatusStandardScheme();
         }
     }
 
-    private static class SQLExceptionStandardScheme extends StandardScheme<SQLException> {
+    private static class DequeuePatientStatusStandardScheme extends StandardScheme<DequeuePatientStatus> {
 
-        public void read(org.apache.thrift.protocol.TProtocol iprot, SQLException struct) throws org.apache.thrift.TException {
+        public void read(org.apache.thrift.protocol.TProtocol iprot, DequeuePatientStatus struct) throws org.apache.thrift.TException {
             org.apache.thrift.protocol.TField schemeField;
             iprot.readStructBegin();
             while (true) {
@@ -387,18 +388,18 @@ public class SQLException extends TException implements org.apache.thrift.TBase<
                     break;
                 }
                 switch (schemeField.id) {
-                    case 1: // ERROR_CODE
-                        if (schemeField.type == org.apache.thrift.protocol.TType.I32) {
-                            struct.error_code = iprot.readI32();
-                            struct.setError_codeIsSet(true);
+                    case 1: // SUCCESS
+                        if (schemeField.type == org.apache.thrift.protocol.TType.BOOL) {
+                            struct.success = iprot.readBool();
+                            struct.setSuccessIsSet(true);
                         } else {
                             org.apache.thrift.protocol.TProtocolUtil.skip(iprot, schemeField.type);
                         }
                         break;
-                    case 2: // ERROR_MSG
+                    case 2: // MESSAGE
                         if (schemeField.type == org.apache.thrift.protocol.TType.STRING) {
-                            struct.error_msg = iprot.readString();
-                            struct.setError_msgIsSet(true);
+                            struct.message = iprot.readString();
+                            struct.setMessageIsSet(true);
                         } else {
                             org.apache.thrift.protocol.TProtocolUtil.skip(iprot, schemeField.type);
                         }
@@ -411,20 +412,25 @@ public class SQLException extends TException implements org.apache.thrift.TBase<
             iprot.readStructEnd();
 
             // check for required fields of primitive type, which can't be checked in the validate method
+            if (!struct.isSetSuccess()) {
+                throw new org.apache.thrift.protocol.TProtocolException("Required field 'success' was not found in serialized data! Struct: " + toString());
+            }
             struct.validate();
         }
 
-        public void write(org.apache.thrift.protocol.TProtocol oprot, SQLException struct) throws org.apache.thrift.TException {
+        public void write(org.apache.thrift.protocol.TProtocol oprot, DequeuePatientStatus struct) throws org.apache.thrift.TException {
             struct.validate();
 
             oprot.writeStructBegin(STRUCT_DESC);
-            oprot.writeFieldBegin(ERROR_CODE_FIELD_DESC);
-            oprot.writeI32(struct.error_code);
+            oprot.writeFieldBegin(SUCCESS_FIELD_DESC);
+            oprot.writeBool(struct.success);
             oprot.writeFieldEnd();
-            if (struct.error_msg != null) {
-                oprot.writeFieldBegin(ERROR_MSG_FIELD_DESC);
-                oprot.writeString(struct.error_msg);
-                oprot.writeFieldEnd();
+            if (struct.message != null) {
+                if (struct.isSetMessage()) {
+                    oprot.writeFieldBegin(MESSAGE_FIELD_DESC);
+                    oprot.writeString(struct.message);
+                    oprot.writeFieldEnd();
+                }
             }
             oprot.writeFieldStop();
             oprot.writeStructEnd();
@@ -432,44 +438,37 @@ public class SQLException extends TException implements org.apache.thrift.TBase<
 
     }
 
-    private static class SQLExceptionTupleSchemeFactory implements SchemeFactory {
-        public SQLExceptionTupleScheme getScheme() {
-            return new SQLExceptionTupleScheme();
+    private static class DequeuePatientStatusTupleSchemeFactory implements SchemeFactory {
+        public DequeuePatientStatusTupleScheme getScheme() {
+            return new DequeuePatientStatusTupleScheme();
         }
     }
 
-    private static class SQLExceptionTupleScheme extends TupleScheme<SQLException> {
+    private static class DequeuePatientStatusTupleScheme extends TupleScheme<DequeuePatientStatus> {
 
         @Override
-        public void write(org.apache.thrift.protocol.TProtocol prot, SQLException struct) throws org.apache.thrift.TException {
+        public void write(org.apache.thrift.protocol.TProtocol prot, DequeuePatientStatus struct) throws org.apache.thrift.TException {
             TTupleProtocol oprot = (TTupleProtocol) prot;
+            oprot.writeBool(struct.success);
             BitSet optionals = new BitSet();
-            if (struct.isSetError_code()) {
+            if (struct.isSetMessage()) {
                 optionals.set(0);
             }
-            if (struct.isSetError_msg()) {
-                optionals.set(1);
-            }
-            oprot.writeBitSet(optionals, 2);
-            if (struct.isSetError_code()) {
-                oprot.writeI32(struct.error_code);
-            }
-            if (struct.isSetError_msg()) {
-                oprot.writeString(struct.error_msg);
+            oprot.writeBitSet(optionals, 1);
+            if (struct.isSetMessage()) {
+                oprot.writeString(struct.message);
             }
         }
 
         @Override
-        public void read(org.apache.thrift.protocol.TProtocol prot, SQLException struct) throws org.apache.thrift.TException {
+        public void read(org.apache.thrift.protocol.TProtocol prot, DequeuePatientStatus struct) throws org.apache.thrift.TException {
             TTupleProtocol iprot = (TTupleProtocol) prot;
-            BitSet incoming = iprot.readBitSet(2);
+            struct.success = iprot.readBool();
+            struct.setSuccessIsSet(true);
+            BitSet incoming = iprot.readBitSet(1);
             if (incoming.get(0)) {
-                struct.error_code = iprot.readI32();
-                struct.setError_codeIsSet(true);
-            }
-            if (incoming.get(1)) {
-                struct.error_msg = iprot.readString();
-                struct.setError_msgIsSet(true);
+                struct.message = iprot.readString();
+                struct.setMessageIsSet(true);
             }
         }
     }

@@ -6,7 +6,7 @@
     <groupId>ru.korus.tmis.communication</groupId>
     <artifactId>tmis-communication</artifactId>
     <version>${tmis-core-version}</version>
-    <packaging>war</packaging>
+    <packaging>ejb</packaging>
     <name>TMIS Communication Component</name>
 
     <parent>
@@ -18,6 +18,17 @@
 
     <build>
         <plugins>
+
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-ejb-plugin</artifactId>
+                <version>2.3</version>
+                <configuration>
+                    <ejbVersion>3.1</ejbVersion>
+                    <generateClient>true</generateClient>
+                </configuration>
+            </plugin>
+
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-compiler-plugin</artifactId>
@@ -49,39 +60,7 @@
                     <useDefaultManifestFile>true</useDefaultManifestFile>
                 </configuration>
             </plugin>
-
-            <plugin>
-                <artifactId>maven-war-plugin</artifactId>
-                <!--<version>2.0.2</version>-->
-                <configuration>
-                    <!--<warSourceDirectory>war/files/</warSourceDirectory>-->
-                    <!-- Создаем jar-->
-                    <!--<archiveClasses>true</archiveClasses>-->
-                    <!--<warName>quiz</warName>-->
-                    <webResources>
-                        <resource>
-                            <directory>src/main/resources/</directory>
-                            <includes>
-                                <include>beans/**</include>
-                                <include>applicationContext.xml</include>
-                                <include>*.*</include>
-                            </includes>
-                            <targetPath>WEB-INF</targetPath>
-                            <filtering>true</filtering>
-                        </resource>
-                        <resource>
-                            <directory>src/main/webapp/WEB-INF/</directory>
-                            <includes>
-                                <include>web.xml</include>
-                            </includes>
-                            <targetPath>WEB-INF</targetPath>
-                            <filtering>true</filtering>
-                        </resource>
-                    </webResources>
-                </configuration>
-            </plugin>
-
-            <!--resources -->
+ <!--resources -->
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-resources-plugin</artifactId>
@@ -99,14 +78,14 @@
                     <configLocation>checkstyle-minimal.xml</configLocation>
                     <detail>true</detail>
                 </configuration>
-                <executions>
+                <!--<executions>-->
                     <!--<execution>-->
                         <!--<phase>package</phase>-->
                         <!--<goals>-->
                             <!--<goal>check</goal>-->
                         <!--</goals>-->
                     <!--</execution>-->
-                </executions>
+                <!--</executions>-->
 
             </plugin>
         </plugins>
