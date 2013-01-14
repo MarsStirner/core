@@ -165,7 +165,7 @@ throws (1:NotFoundException exc, 2:SQLException excsql);
 list<i32> findPatients(1:FindPatientParameters params)
 throws (1:NotFoundException exc, 2:SQLException excsql);
 
-list<PatientInfo> getPatientInfo(1:list<i32> patientIds)
+map<i32,PatientInfo> getPatientInfo(1:list<i32> patientIds)
 throws (1:NotFoundException exc, 2:SQLException excsql);
 
 EnqueuePatientStatus enqueuePatient(1:EnqueuePatientParameters params)

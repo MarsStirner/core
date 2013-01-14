@@ -13,8 +13,9 @@ import ru.korus.tmis.core.entity.model.Patient;
 import ru.korus.tmis.core.exception.CoreException;
 
 import java.util.ArrayList;
-import java.util.LinkedList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 /**
  * User: Upatov Egor
@@ -58,7 +59,7 @@ public class CommServer implements Communications.Iface {
         request_num++;
         logger.info("#{} Call method -> CommServer.getOrgStructures(id={}, recursive={})", request_num, parentId, recursive);
         //Список который будет возвращен
-        List<OrgStructure> resultList = new LinkedList<OrgStructure>();
+        List<OrgStructure> resultList = new ArrayList<OrgStructure>();
         //Список для хранения сущностей из БД
         List<ru.korus.tmis.core.entity.model.OrgStructure> allStructuresList = null;
         try {
@@ -175,28 +176,28 @@ public class CommServer implements Communications.Iface {
      * @throws TException
      */
     @Override
-    public List<PatientInfo> getPatientInfo(final List<Integer> patientIds) throws NotFoundException, SQLException, TException {
+    public Map<Integer, PatientInfo> getPatientInfo(final List<Integer> patientIds) throws NotFoundException, SQLException, TException {
         //Логика работы: по всему полученному массиву вызвать getByID у бина, если нет одного из пациентов, то вернуть всех кроме него.
         request_num++;
         logger.info("#{} Call method -> CommServer.getPatientInfo({}) total size={}", request_num, patientIds, patientIds.size());
-        if (patientIds.size() == 0) return new ArrayList<PatientInfo>(0);
-        List<PatientInfo> resultList = new ArrayList<PatientInfo>(patientIds.size());
+        if (patientIds.size() == 0) return new HashMap<Integer, PatientInfo>();
+        Map<Integer, PatientInfo> resultMap = new HashMap<Integer, PatientInfo>(patientIds.size());
         for (Integer current : patientIds) {
             if (current != null) {
                 try {
                     Patient requested = patientBean.getPatientById(current);
                     if (requested != null) {
-                        resultList.add(parsePatientToThriftStruct(requested));
+                        resultMap.put(current, parsePatientToThriftStruct(requested));
                         logger.debug("Add patient ID={},NAME={} {}", requested.getId(), requested.getFirstName(), requested.getLastName());
                     }
                 } catch (CoreException e) {
                     logger.warn("Missing patient with ID={}, No such patient in DB.", current);
-                    resultList.add(null); //Если по какому то ID не найдена запись в БД, то ему соответствует NULL в возвращаемом массиве.
+                    // resultMap.put(current,null); //Если по какому то ID не найдена запись в БД, то ему соответствует NULL в возвращаемом массиве.
                 }
             }
         }
-        logger.info("End of #{} getPatientInfo.Return {} patient info's.", request_num, resultList);
-        return resultList;
+        logger.info("End of #{} getPatientInfo.Return {} patient info's.", request_num, resultMap);
+        return resultMap;
     }
 
     @Override

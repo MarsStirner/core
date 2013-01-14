@@ -35,7 +35,7 @@ public class Communications {
 
         public List<Integer> findPatients(FindPatientParameters params) throws NotFoundException, SQLException, org.apache.thrift.TException;
 
-        public List<PatientInfo> getPatientInfo(List<Integer> patientIds) throws NotFoundException, SQLException, org.apache.thrift.TException;
+        public Map<Integer, PatientInfo> getPatientInfo(List<Integer> patientIds) throws NotFoundException, SQLException, org.apache.thrift.TException;
 
         public EnqueuePatientStatus enqueuePatient(EnqueuePatientParameters params) throws NotFoundException, SQLException, org.apache.thrift.TException;
 
@@ -274,7 +274,7 @@ public class Communications {
             throw new org.apache.thrift.TApplicationException(org.apache.thrift.TApplicationException.MISSING_RESULT, "findPatients failed: unknown result");
         }
 
-        public List<PatientInfo> getPatientInfo(List<Integer> patientIds) throws NotFoundException, SQLException, org.apache.thrift.TException {
+        public Map<Integer, PatientInfo> getPatientInfo(List<Integer> patientIds) throws NotFoundException, SQLException, org.apache.thrift.TException {
             send_getPatientInfo(patientIds);
             return recv_getPatientInfo();
         }
@@ -285,7 +285,7 @@ public class Communications {
             sendBase("getPatientInfo", args);
         }
 
-        public List<PatientInfo> recv_getPatientInfo() throws NotFoundException, SQLException, org.apache.thrift.TException {
+        public Map<Integer, PatientInfo> recv_getPatientInfo() throws NotFoundException, SQLException, org.apache.thrift.TException {
             getPatientInfo_result result = new getPatientInfo_result();
             receiveBase(result, "getPatientInfo");
             if (result.isSetSuccess()) {
@@ -660,7 +660,7 @@ public class Communications {
                 prot.writeMessageEnd();
             }
 
-            public List<PatientInfo> getResult() throws NotFoundException, SQLException, org.apache.thrift.TException {
+            public Map<Integer, PatientInfo> getResult() throws NotFoundException, SQLException, org.apache.thrift.TException {
                 if (getState() != org.apache.thrift.async.TAsyncMethodCall.State.RESPONSE_READ) {
                     throw new IllegalStateException("Method call not finished!");
                 }
@@ -8313,7 +8313,7 @@ public class Communications {
     public static class getPatientInfo_result implements org.apache.thrift.TBase<getPatientInfo_result, getPatientInfo_result._Fields>, java.io.Serializable, Cloneable {
         private static final org.apache.thrift.protocol.TStruct STRUCT_DESC = new org.apache.thrift.protocol.TStruct("getPatientInfo_result");
 
-        private static final org.apache.thrift.protocol.TField SUCCESS_FIELD_DESC = new org.apache.thrift.protocol.TField("success", org.apache.thrift.protocol.TType.LIST, (short) 0);
+        private static final org.apache.thrift.protocol.TField SUCCESS_FIELD_DESC = new org.apache.thrift.protocol.TField("success", org.apache.thrift.protocol.TType.MAP, (short) 0);
         private static final org.apache.thrift.protocol.TField EXC_FIELD_DESC = new org.apache.thrift.protocol.TField("exc", org.apache.thrift.protocol.TType.STRUCT, (short) 1);
         private static final org.apache.thrift.protocol.TField EXCSQL_FIELD_DESC = new org.apache.thrift.protocol.TField("excsql", org.apache.thrift.protocol.TType.STRUCT, (short) 2);
 
@@ -8324,7 +8324,7 @@ public class Communications {
             schemes.put(TupleScheme.class, new getPatientInfo_resultTupleSchemeFactory());
         }
 
-        public List<PatientInfo> success; // required
+        public Map<Integer, PatientInfo> success; // required
         public NotFoundException exc; // required
         public SQLException excsql; // required
 
@@ -8400,7 +8400,8 @@ public class Communications {
         static {
             Map<_Fields, org.apache.thrift.meta_data.FieldMetaData> tmpMap = new EnumMap<_Fields, org.apache.thrift.meta_data.FieldMetaData>(_Fields.class);
             tmpMap.put(_Fields.SUCCESS, new org.apache.thrift.meta_data.FieldMetaData("success", org.apache.thrift.TFieldRequirementType.DEFAULT,
-                    new org.apache.thrift.meta_data.ListMetaData(org.apache.thrift.protocol.TType.LIST,
+                    new org.apache.thrift.meta_data.MapMetaData(org.apache.thrift.protocol.TType.MAP,
+                            new org.apache.thrift.meta_data.FieldValueMetaData(org.apache.thrift.protocol.TType.I32),
                             new org.apache.thrift.meta_data.StructMetaData(org.apache.thrift.protocol.TType.STRUCT, PatientInfo.class))));
             tmpMap.put(_Fields.EXC, new org.apache.thrift.meta_data.FieldMetaData("exc", org.apache.thrift.TFieldRequirementType.DEFAULT,
                     new org.apache.thrift.meta_data.FieldValueMetaData(org.apache.thrift.protocol.TType.STRUCT)));
@@ -8414,7 +8415,7 @@ public class Communications {
         }
 
         public getPatientInfo_result(
-                List<PatientInfo> success,
+                Map<Integer, PatientInfo> success,
                 NotFoundException exc,
                 SQLException excsql) {
             this();
@@ -8428,9 +8429,17 @@ public class Communications {
          */
         public getPatientInfo_result(getPatientInfo_result other) {
             if (other.isSetSuccess()) {
-                List<PatientInfo> __this__success = new ArrayList<PatientInfo>();
-                for (PatientInfo other_element : other.success) {
-                    __this__success.add(new PatientInfo(other_element));
+                Map<Integer, PatientInfo> __this__success = new HashMap<Integer, PatientInfo>();
+                for (Map.Entry<Integer, PatientInfo> other_element : other.success.entrySet()) {
+
+                    Integer other_element_key = other_element.getKey();
+                    PatientInfo other_element_value = other_element.getValue();
+
+                    Integer __this__success_copy_key = other_element_key;
+
+                    PatientInfo __this__success_copy_value = new PatientInfo(other_element_value);
+
+                    __this__success.put(__this__success_copy_key, __this__success_copy_value);
                 }
                 this.success = __this__success;
             }
@@ -8457,22 +8466,18 @@ public class Communications {
             return (this.success == null) ? 0 : this.success.size();
         }
 
-        public java.util.Iterator<PatientInfo> getSuccessIterator() {
-            return (this.success == null) ? null : this.success.iterator();
-        }
-
-        public void addToSuccess(PatientInfo elem) {
+        public void putToSuccess(int key, PatientInfo val) {
             if (this.success == null) {
-                this.success = new ArrayList<PatientInfo>();
+                this.success = new HashMap<Integer, PatientInfo>();
             }
-            this.success.add(elem);
+            this.success.put(key, val);
         }
 
-        public List<PatientInfo> getSuccess() {
+        public Map<Integer, PatientInfo> getSuccess() {
             return this.success;
         }
 
-        public getPatientInfo_result setSuccess(List<PatientInfo> success) {
+        public getPatientInfo_result setSuccess(Map<Integer, PatientInfo> success) {
             this.success = success;
             return this;
         }
@@ -8552,7 +8557,7 @@ public class Communications {
                     if (value == null) {
                         unsetSuccess();
                     } else {
-                        setSuccess((List<PatientInfo>) value);
+                        setSuccess((Map<Integer, PatientInfo>) value);
                     }
                     break;
 
@@ -8781,17 +8786,19 @@ public class Communications {
                     }
                     switch (schemeField.id) {
                         case 0: // SUCCESS
-                            if (schemeField.type == org.apache.thrift.protocol.TType.LIST) {
+                            if (schemeField.type == org.apache.thrift.protocol.TType.MAP) {
                                 {
-                                    org.apache.thrift.protocol.TList _list48 = iprot.readListBegin();
-                                    struct.success = new ArrayList<PatientInfo>(_list48.size);
-                                    for (int _i49 = 0; _i49 < _list48.size; ++_i49) {
-                                        PatientInfo _elem50; // required
-                                        _elem50 = new PatientInfo();
-                                        _elem50.read(iprot);
-                                        struct.success.add(_elem50);
+                                    org.apache.thrift.protocol.TMap _map48 = iprot.readMapBegin();
+                                    struct.success = new HashMap<Integer, PatientInfo>(2 * _map48.size);
+                                    for (int _i49 = 0; _i49 < _map48.size; ++_i49) {
+                                        int _key50; // required
+                                        PatientInfo _val51; // required
+                                        _key50 = iprot.readI32();
+                                        _val51 = new PatientInfo();
+                                        _val51.read(iprot);
+                                        struct.success.put(_key50, _val51);
                                     }
-                                    iprot.readListEnd();
+                                    iprot.readMapEnd();
                                 }
                                 struct.setSuccessIsSet(true);
                             } else {
@@ -8834,11 +8841,12 @@ public class Communications {
                 if (struct.success != null) {
                     oprot.writeFieldBegin(SUCCESS_FIELD_DESC);
                     {
-                        oprot.writeListBegin(new org.apache.thrift.protocol.TList(org.apache.thrift.protocol.TType.STRUCT, struct.success.size()));
-                        for (PatientInfo _iter51 : struct.success) {
-                            _iter51.write(oprot);
+                        oprot.writeMapBegin(new org.apache.thrift.protocol.TMap(org.apache.thrift.protocol.TType.I32, org.apache.thrift.protocol.TType.STRUCT, struct.success.size()));
+                        for (Map.Entry<Integer, PatientInfo> _iter52 : struct.success.entrySet()) {
+                            oprot.writeI32(_iter52.getKey());
+                            _iter52.getValue().write(oprot);
                         }
-                        oprot.writeListEnd();
+                        oprot.writeMapEnd();
                     }
                     oprot.writeFieldEnd();
                 }
@@ -8883,8 +8891,9 @@ public class Communications {
                 if (struct.isSetSuccess()) {
                     {
                         oprot.writeI32(struct.success.size());
-                        for (PatientInfo _iter52 : struct.success) {
-                            _iter52.write(oprot);
+                        for (Map.Entry<Integer, PatientInfo> _iter53 : struct.success.entrySet()) {
+                            oprot.writeI32(_iter53.getKey());
+                            _iter53.getValue().write(oprot);
                         }
                     }
                 }
@@ -8902,13 +8911,15 @@ public class Communications {
                 BitSet incoming = iprot.readBitSet(3);
                 if (incoming.get(0)) {
                     {
-                        org.apache.thrift.protocol.TList _list53 = new org.apache.thrift.protocol.TList(org.apache.thrift.protocol.TType.STRUCT, iprot.readI32());
-                        struct.success = new ArrayList<PatientInfo>(_list53.size);
-                        for (int _i54 = 0; _i54 < _list53.size; ++_i54) {
-                            PatientInfo _elem55; // required
-                            _elem55 = new PatientInfo();
-                            _elem55.read(iprot);
-                            struct.success.add(_elem55);
+                        org.apache.thrift.protocol.TMap _map54 = new org.apache.thrift.protocol.TMap(org.apache.thrift.protocol.TType.I32, org.apache.thrift.protocol.TType.STRUCT, iprot.readI32());
+                        struct.success = new HashMap<Integer, PatientInfo>(2 * _map54.size);
+                        for (int _i55 = 0; _i55 < _map54.size; ++_i55) {
+                            int _key56; // required
+                            PatientInfo _val57; // required
+                            _key56 = iprot.readI32();
+                            _val57 = new PatientInfo();
+                            _val57.read(iprot);
+                            struct.success.put(_key56, _val57);
                         }
                     }
                     struct.setSuccessIsSet(true);
@@ -10697,13 +10708,13 @@ public class Communications {
                         case 0: // SUCCESS
                             if (schemeField.type == org.apache.thrift.protocol.TType.LIST) {
                                 {
-                                    org.apache.thrift.protocol.TList _list56 = iprot.readListBegin();
-                                    struct.success = new ArrayList<Queue>(_list56.size);
-                                    for (int _i57 = 0; _i57 < _list56.size; ++_i57) {
-                                        Queue _elem58; // required
-                                        _elem58 = new Queue();
-                                        _elem58.read(iprot);
-                                        struct.success.add(_elem58);
+                                    org.apache.thrift.protocol.TList _list58 = iprot.readListBegin();
+                                    struct.success = new ArrayList<Queue>(_list58.size);
+                                    for (int _i59 = 0; _i59 < _list58.size; ++_i59) {
+                                        Queue _elem60; // required
+                                        _elem60 = new Queue();
+                                        _elem60.read(iprot);
+                                        struct.success.add(_elem60);
                                     }
                                     iprot.readListEnd();
                                 }
@@ -10749,8 +10760,8 @@ public class Communications {
                     oprot.writeFieldBegin(SUCCESS_FIELD_DESC);
                     {
                         oprot.writeListBegin(new org.apache.thrift.protocol.TList(org.apache.thrift.protocol.TType.STRUCT, struct.success.size()));
-                        for (Queue _iter59 : struct.success) {
-                            _iter59.write(oprot);
+                        for (Queue _iter61 : struct.success) {
+                            _iter61.write(oprot);
                         }
                         oprot.writeListEnd();
                     }
@@ -10797,8 +10808,8 @@ public class Communications {
                 if (struct.isSetSuccess()) {
                     {
                         oprot.writeI32(struct.success.size());
-                        for (Queue _iter60 : struct.success) {
-                            _iter60.write(oprot);
+                        for (Queue _iter62 : struct.success) {
+                            _iter62.write(oprot);
                         }
                     }
                 }
@@ -10816,13 +10827,13 @@ public class Communications {
                 BitSet incoming = iprot.readBitSet(3);
                 if (incoming.get(0)) {
                     {
-                        org.apache.thrift.protocol.TList _list61 = new org.apache.thrift.protocol.TList(org.apache.thrift.protocol.TType.STRUCT, iprot.readI32());
-                        struct.success = new ArrayList<Queue>(_list61.size);
-                        for (int _i62 = 0; _i62 < _list61.size; ++_i62) {
-                            Queue _elem63; // required
-                            _elem63 = new Queue();
-                            _elem63.read(iprot);
-                            struct.success.add(_elem63);
+                        org.apache.thrift.protocol.TList _list63 = new org.apache.thrift.protocol.TList(org.apache.thrift.protocol.TType.STRUCT, iprot.readI32());
+                        struct.success = new ArrayList<Queue>(_list63.size);
+                        for (int _i64 = 0; _i64 < _list63.size; ++_i64) {
+                            Queue _elem65; // required
+                            _elem65 = new Queue();
+                            _elem65.read(iprot);
+                            struct.success.add(_elem65);
                         }
                     }
                     struct.setSuccessIsSet(true);
