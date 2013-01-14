@@ -17,7 +17,7 @@ import static org.junit.Assert.assertTrue;
  * Description:  <br>
  */
 public class TestTransfusionMedicalService {
-    @Test
+   // @Test
     public void test() {
         TransfusionMedicalService_Service service = new TransfusionMedicalService_Service();
         
