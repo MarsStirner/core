@@ -109,7 +109,7 @@ public class Patient implements Serializable, Cloneable {
     @Column(name = "version")
     private int version;
 
-    @ManyToOne
+    @ManyToOne(cascade = CascadeType.ALL)
     @JoinColumn(name = "uuid_id")
     private UUID uuid;
 

@@ -1,6 +1,7 @@
 package ru.korus.tmis.core.hl7db;
 
 
+import ru.korus.tmis.core.entity.model.UUID;
 import javax.ejb.Local;
 
 /**
@@ -20,4 +21,10 @@ public interface DbUUIDBeanLocal {
      * @return
      */
     String getUUIDById(int id);
+
+    /**
+     * Создает новую запись в s11r64.UUID
+     * @return UUID entity
+     */
+    UUID createUUID();
 }
