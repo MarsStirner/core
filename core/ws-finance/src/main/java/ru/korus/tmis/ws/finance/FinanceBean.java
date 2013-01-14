@@ -1,10 +1,12 @@
 package ru.korus.tmis.ws.finance;
 
-import java.util.Date;
-
 /**
- * Пакет выходной финансовой информации
+ * Author:      Sergey A. Zagrebelny <br>
+ * Date:        25.12.2012, 11:00:00 <br>
+ * Company:     Korus Consulting IT<br>
+ * Description: Пакет выходной финансовой информации<br>
  */
+
 public class FinanceBean {
 
     /**

@@ -13,7 +13,7 @@
         <groupId>ru.korus.tmis</groupId>
         <artifactId>tmis-nexus</artifactId>
         <version>${tmis-core-version}</version>
-        <relativePath>../</relativePath>
+        <relativePath>../pom.xml</relativePath>
     </parent>
 
     <properties>
@@ -26,8 +26,8 @@
         <!-- Set the name of the war, used as the context root when the app is
             deployed -->
         <!--<finalName>tmis-ws-finance</finalName>-->
-
         <plugins>
+
             <plugin>
                 <artifactId>maven-war-plugin</artifactId>
                 <version>2.1.1</version>
@@ -49,6 +49,11 @@
                 <!--</configuration>-->
             <!--</plugin>-->
 
+            <plugin>
+            	<groupId>org.codehaus.mojo</groupId>
+            	<artifactId>findbugs-maven-plugin</artifactId>
+            	<version>2.5.2</version>
+            </plugin>
         </plugins>
     </build>
 
@@ -58,6 +63,23 @@
             <artifactId>tmis-core-common</artifactId>
             <version>${tmis-core-version}</version>
             <type>jar</type>
+        </dependency>
+        <dependency>
+        	<groupId>com.sun.jersey</groupId>
+        	<artifactId>jersey-server</artifactId>
+        	<version>1.16</version>
+        	<scope>test</scope>
+        </dependency>
+
+        <dependency>
+        	<groupId>com.google.code.gson</groupId>
+        	<artifactId>gson</artifactId>
+        	<version>2.2.2</version>
+        </dependency>
+        <dependency>
+        	<groupId>joda-time</groupId>
+        	<artifactId>joda-time</artifactId>
+        	<version>2.1</version>
         </dependency>
     </dependencies>
 
