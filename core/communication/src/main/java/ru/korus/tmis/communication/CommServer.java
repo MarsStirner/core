@@ -9,7 +9,10 @@ import org.slf4j.LoggerFactory;
 import ru.korus.tmis.communication.thriftgen.*;
 import ru.korus.tmis.core.database.DbOrgStructureBeanLocal;
 import ru.korus.tmis.core.database.DbPatientBeanLocal;
+import ru.korus.tmis.core.database.DbStaffBeanLocal;
 import ru.korus.tmis.core.entity.model.Patient;
+import ru.korus.tmis.core.entity.model.Sex;
+import ru.korus.tmis.core.entity.model.Staff;
 import ru.korus.tmis.core.exception.CoreException;
 
 import java.util.ArrayList;
@@ -31,6 +34,7 @@ public class CommServer implements Communications.Iface {
     //Beans
     private static DbOrgStructureBeanLocal orgStructureBean = null;
     private static DbPatientBeanLocal patientBean = null;
+    private static DbStaffBeanLocal staffBean = null;
     //Singleton instance
     private static CommServer instance;
     //THREAD properties
@@ -61,7 +65,7 @@ public class CommServer implements Communications.Iface {
         //Список который будет возвращен
         List<OrgStructure> resultList = new ArrayList<OrgStructure>();
         //Список для хранения сущностей из БД
-        List<ru.korus.tmis.core.entity.model.OrgStructure> allStructuresList = null;
+        List<ru.korus.tmis.core.entity.model.OrgStructure> allStructuresList;
         try {
             //Получение нужных сущностей из бина
             allStructuresList = orgStructureBean.getRecursiveOrgStructures(parentId, recursive);
@@ -111,31 +115,43 @@ public class CommServer implements Communications.Iface {
 
     @Override
     public List<Person> getPersonnel(final int orgStructureId, final boolean recursive) throws NotFoundException, SQLException, TException {
-        logger.info("Call method -> CommServer.getPersonell(OrgStructureId={}, recursive={})", orgStructureId, recursive);
-        List<Person> personell = new ArrayList<Person>(10);
-        //TODO for orgstructure id=33 recursive false available for external=ignore
-        personell.add(new Person().setId(379).setOrgStructureId(33).setCode("793").setLastName("Григорьев").setFirstName("Алексей").setPatrName("Юрьевич").setSpeciality("сестринское дело").setSpecialityOKSOCode("040815").setSpecialityRegionalCode("63").setSexFilter("0").setPost("Медицинская сестра"));
-        personell.add(new Person().setId(539).setOrgStructureId(33).setCode("-").setLastName("Завистовский").setFirstName("Андрей").setPatrName("Валериевич").setSpeciality("радиолог").setSpecialityOKSOCode("040117").setSpecialityRegionalCode("0").setSexFilter("0").setPost("Врач-радиолог"));
-        personell.add(new Person().setId(196).setOrgStructureId(33).setCode("591").setLastName("Курганова").setFirstName("Ирина").setPatrName("Николаевна").setSpeciality("радиолог").setSpecialityOKSOCode("040117").setSpecialityRegionalCode("16").setSexFilter("0").setPost("Врач-радиолог"));
-        personell.add(new Person().setId(197).setOrgStructureId(33).setCode("540").setLastName("Нечеснюк").setFirstName("Алексей").setPatrName("Владимирович").setSpeciality("радиолог").setSpecialityOKSOCode("040117").setSpecialityRegionalCode("16").setSexFilter("0").setPost("Заведующий отделением"));
-        personell.add(new Person().setId(380).setOrgStructureId(33).setCode("791").setLastName("Никитина").setFirstName("Мария").setPatrName("Михайловна").setSpeciality("сестринское дело").setSpecialityOKSOCode("040815").setSpecialityRegionalCode("63").setSexFilter("0").setPost("Медицинская сестра"));
-        personell.add(new Person().setId(381).setOrgStructureId(33).setCode("216").setLastName("Никишова").setFirstName("Тамара").setPatrName("Геннадьевна").setSpeciality("лабораторное дело").setSpecialityOKSOCode("040813").setSpecialityRegionalCode("0").setSexFilter("0").setPost("Лаборант"));
-        personell.add(new Person().setId(382).setOrgStructureId(33).setCode("208").setLastName("Огурцова").setFirstName("Любовь").setPatrName("Денисовна").setSpeciality("лабораторное дело").setSpecialityOKSOCode("040813").setSpecialityRegionalCode("0").setSexFilter("0").setPost("Лаборант"));
-        personell.add(new Person().setId(383).setOrgStructureId(33).setCode("990").setLastName("Сахарова").setFirstName("Оксана").setPatrName("Михайловна").setSpeciality("сестринское дело").setSpecialityOKSOCode("040815").setSpecialityRegionalCode("63").setSexFilter("0").setPost("Медицинская сестра"));
-        personell.add(new Person().setId(199).setOrgStructureId(33).setCode("686").setLastName("Степанова").setFirstName("Ольга").setPatrName("Викторовна").setSpeciality("сестринское дело").setSpecialityOKSOCode("040815").setSpecialityRegionalCode("63").setSexFilter("0").setPost("Старшая медицинская сестра"));
-        personell.add(new Person().setId(384).setOrgStructureId(33).setCode("1048").setLastName("Тедеева").setFirstName("Анна").setPatrName("Хасановна").setSpeciality("радиолог").setSpecialityOKSOCode("040117").setSpecialityRegionalCode("16").setSexFilter("0").setPost("Врач-радиолог"));
-        return personell;
+        request_num++;
+        logger.info("#{} Call method -> CommServer.getPersonnel(OrgStructureId={}, recursive={})", request_num, orgStructureId, recursive);
+        List<Staff> personnelList;
+        try {
+            personnelList = orgStructureBean.getPersonnel(orgStructureId, recursive);
+        } catch (CoreException e) {
+            logger.error("#" + request_num + " COREException. Message=" + e.getMessage(), e);
+            throw new NotFoundException("not found");
+        } catch (Exception e) {
+            logger.error("#" + request_num + " Exception. Message=" + e.getMessage(), e);
+            throw new SQLException(request_num, "Not found");
+        }
+        List<Person> resultList = new ArrayList<Person>(personnelList.size());
+        for (Staff person : personnelList) {
+            resultList.add(parseStaffToThriftStruct(person));
+        }
+        logger.info("End of #{} getPersonnel. Return \"{}\" as result.", request_num, resultList);
+        return resultList;
 
     }
 
     @Override
     public Amb getWorkTimeAndStatus(final GetTimeWorkAndStatusParameters params) throws NotFoundException, SQLException, TException {
+        request_num++;
+        logger.info("#{} Call method -> CommServer.getWorkTimeAndStatus(personId={}, HospitalUID={}, DATE={})",
+                request_num, params.getPersonId(), params.getHospitalUidFrom(), params.getDate());
 
+        logger.info("End of #{} getWorkTimeAndStatus. Return \"{}\" as result.", request_num, null);
         return new Amb().setPlan("");  //To change body of implemented methods use File | Settings | File Templates.
     }
 
     @Override
     public PatientStatus addPatient(final AddPatientParameters params) throws SQLException, TException {
+        request_num++;
+        logger.info("#{} Call method -> CommServer.addPatient( Full name=\"{} {} {}\", HospitalUID={}, BirthDATE={})",
+                request_num, params.getLastName(), params.getFirstName(), params.getPatrName(), params.getBirthDate());
+        logger.info("End of #{} addPatient. Return \"{}\" as result.", request_num, null);
         return new PatientStatus().setMessage("На данный момент это заглушка[return false always] Was called with lastname=" + params.getLastName()).setSuccess(false);
     }
 
@@ -234,6 +250,26 @@ public class CommServer implements Communications.Iface {
         return result;
     }
 
+    private Person parseStaffToThriftStruct(final Staff item) {
+        Person result = new Person().setId(item.getId()).setCode(item.getCode()).setOffice(item.getOffice() + "\t" + item.getOffice2());
+        result.setLastName(item.getLastName()).setFirstName(item.getFirstName()).setPatrName(item.getPatrName());
+        ru.korus.tmis.core.entity.model.Speciality speciality = item.getSpeciality();
+        result.setSpeciality(speciality.getName()).setSpecialityRegionalCode(speciality.getRegionalCode()).setSpecialityOKSOCode(speciality.getOKSOCode());
+        switch (Sex.valueOf(item.getSex())) {
+            case MEN:
+                result.setSexFilter("М");
+                break;
+            case WOMEN:
+                result.setSexFilter("Ж");
+                break;
+            case UNDEFINED:
+                result.setSexFilter("");
+                break;
+        }
+        result.setPost(item.getPost().getName());
+        return result;
+    }
+
     public CommServer() {
         logger.info("Starting CommServer initialize.");
         communicationListener = new Thread(new Runnable() {
@@ -275,5 +311,10 @@ public class CommServer implements Communications.Iface {
     public static void setOrgStructureBean(DbOrgStructureBeanLocal dbOrgStructureBeanLocal) {
         CommServer.orgStructureBean = dbOrgStructureBeanLocal;
         logger.debug("OrgStructure Bean Link is {}", dbOrgStructureBeanLocal);
+    }
+
+    public static void setStaffBean(DbStaffBeanLocal staffBean) {
+        CommServer.staffBean = staffBean;
+        logger.debug("Staff (Personnel) Bean Link is {}", staffBean);
     }
 }

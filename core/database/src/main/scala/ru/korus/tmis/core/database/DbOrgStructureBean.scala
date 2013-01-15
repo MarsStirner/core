@@ -1,6 +1,6 @@
 package ru.korus.tmis.core.database
 
-import ru.korus.tmis.core.entity.model.{OrgStructure, ActionType}
+import ru.korus.tmis.core.entity.model.{Staff, OrgStructure, ActionType}
 import ru.korus.tmis.core.logging.LoggingInterceptor
 import grizzled.slf4j.Logging
 import javax.ejb.Stateless
@@ -10,6 +10,7 @@ import scala.collection.JavaConversions._
 import ru.korus.tmis.core.exception.CoreException
 import ru.korus.tmis.util.{I18nable, ConfigManager}
 import ru.korus.tmis.core.data.{DepartmentsDataFilter, QueryDataStructure}
+import java.util
 
 
 @Interceptors(Array(classOf[LoggingInterceptor]))
@@ -29,7 +30,7 @@ class DbOrgStructureBean
     WHERE
       os.id = :id
                               """
-  //Flag marks that OrgStructure is available for requests
+  //Flag marks that OrgStructure and Person is available for requests
   val AVAILABLE_FOR_EXTERNAL: Int = 1
 
   def getOrgStructureById(id: Int): OrgStructure = {
@@ -152,6 +153,27 @@ class DbOrgStructureBean
       .getResultList
     result
   }
+
+  def getPersonnel(orgStructureId: java.lang.Integer, recursive: Boolean): util.List[Staff] = {
+    val organisationIDList: util.List[java.lang.Integer] = new util.ArrayList[java.lang.Integer]()
+    organisationIDList.add(orgStructureId)
+    if (recursive) getRecursiveOrgStructures(orgStructureId, recursive).map((current: OrgStructure) => {
+      organisationIDList.add(current.getId)
+    })
+    em.createQuery(OrgStructureGetPersonnel.format(), classOf[Staff]).setParameter("ORGSTRUCTUREIDLIST", organisationIDList)
+      .getResultList
+  }
+
+  val OrgStructureGetPersonnel = """
+    SELECT person
+    FROM Staff person
+    WHERE person.orgStructure.id IN :ORGSTRUCTUREIDLIST
+    AND person.deleted = 0
+    AND person.retired = 0
+    AND person.speciality IS NOT NULL
+    AND person.availableForExternal = 1
+    ORDER BY person.lastName
+                                 """
 
   val OrgStructureIdByAdressQuery = """
     SELECT DISTINCT org_adr.master.id

@@ -4,6 +4,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import ru.korus.tmis.core.database.DbOrgStructureBeanLocal;
 import ru.korus.tmis.core.database.DbPatientBeanLocal;
+import ru.korus.tmis.core.database.DbStaffBeanLocal;
 
 import javax.annotation.PostConstruct;
 import javax.ejb.EJB;
@@ -24,6 +25,8 @@ public class CommunicationServerBean {
     private DbOrgStructureBeanLocal dbOrgStructureBeanLocal = null;
     @EJB
     private DbPatientBeanLocal dbPatientBeanLocal = null;
+    @EJB
+    private DbStaffBeanLocal dbStaffBeanLocal = null;
 
     private CommServer server = null;
 
@@ -36,6 +39,7 @@ public class CommunicationServerBean {
             server = CommServer.getInstance();
             CommServer.setOrgStructureBean(dbOrgStructureBeanLocal);
             CommServer.setPatientBean(dbPatientBeanLocal);
+            CommServer.setStaffBean(dbStaffBeanLocal);
             server.startService();
         } catch (Exception exception) {
             logger.error("Exception while initialize CommunicationBean", exception);
