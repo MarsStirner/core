@@ -9,9 +9,10 @@ import org.slf4j.LoggerFactory;
 import ru.korus.tmis.communication.thriftgen.*;
 import ru.korus.tmis.core.database.DbOrgStructureBeanLocal;
 import ru.korus.tmis.core.database.DbPatientBeanLocal;
+import ru.korus.tmis.core.database.DbQuotingBySpecialityBeanLocal;
 import ru.korus.tmis.core.database.DbStaffBeanLocal;
 import ru.korus.tmis.core.entity.model.Patient;
-import ru.korus.tmis.core.entity.model.Sex;
+import ru.korus.tmis.core.entity.model.QuotingBySpeciality;
 import ru.korus.tmis.core.entity.model.Staff;
 import ru.korus.tmis.core.exception.CoreException;
 
@@ -35,6 +36,7 @@ public class CommServer implements Communications.Iface {
     private static DbOrgStructureBeanLocal orgStructureBean = null;
     private static DbPatientBeanLocal patientBean = null;
     private static DbStaffBeanLocal staffBean = null;
+    private static DbQuotingBySpecialityBeanLocal quotingBySpecialityBean = null;
     //Singleton instance
     private static CommServer instance;
     //THREAD properties
@@ -78,7 +80,7 @@ public class CommServer implements Communications.Iface {
         }
         //Конвертация сущностей в возвращаемые структуры
         for (ru.korus.tmis.core.entity.model.OrgStructure current : allStructuresList) {
-            resultList.add(parseOrgStructureToThriftStruct(current));
+            resultList.add(ParserToThriftStruct.parseOrgStructure(current));
         }
         logger.info("End of #{} getOrgStructres (id={}, recursive={}). Return {} structures.", request_num, parentId, recursive, resultList.size());
         return resultList;
@@ -129,7 +131,7 @@ public class CommServer implements Communications.Iface {
         }
         List<Person> resultList = new ArrayList<Person>(personnelList.size());
         for (Staff person : personnelList) {
-            resultList.add(parseStaffToThriftStruct(person));
+            resultList.add(ParserToThriftStruct.parseStaff(person));
         }
         logger.info("End of #{} getPersonnel. Return \"{}\" as result.", request_num, resultList);
         return resultList;
@@ -203,7 +205,7 @@ public class CommServer implements Communications.Iface {
                 try {
                     Patient requested = patientBean.getPatientById(current);
                     if (requested != null) {
-                        resultMap.put(current, parsePatientToThriftStruct(requested));
+                        resultMap.put(current, ParserToThriftStruct.parsePatient(requested));
                         logger.debug("Add patient ID={},NAME={} {}", requested.getId(), requested.getFirstName(), requested.getLastName());
                     }
                 } catch (CoreException e) {
@@ -234,40 +236,38 @@ public class CommServer implements Communications.Iface {
         return new DequeuePatientStatus().setSuccess(false).setMessage("ЗАГЛУШКА, переданные параметры patientId=" + patientId + " queueId=" + queueId);
     }
 
-    private PatientInfo parsePatientToThriftStruct(final Patient item) {
-        if (item == null) return null;
-        PatientInfo result = new PatientInfo().setFirstName(item.getFirstName()).setLastName(item.getLastName()).setPatrName(item.getPatrName());
-        result.setSex(item.getSex()).setBirthDate(item.getBirthDate().getTime());
-        return result;
-    }
+    @Override
+    public List<Speciality> getSpecialities(final String hospitalUidFrom) throws NotFoundException, SQLException, TException {
+        request_num++;
+        logger.info("#{} Call method -> CommServer.getSpecialities({})", request_num, hospitalUidFrom);
 
-    private OrgStructure parseOrgStructureToThriftStruct(final ru.korus.tmis.core.entity.model.OrgStructure item) {
 
-        OrgStructure result = new OrgStructure().setId(item.getId()).setCode(item.getCode());
-        if (item.getAddress() != null) result.setAdress(item.getAddress());
-        if (item.getName() != null) result.setName(item.getName());
-        if (item.getParentId() != null) result.setParent_id(item.getParentId());
-        return result;
-    }
-
-    private Person parseStaffToThriftStruct(final Staff item) {
-        Person result = new Person().setId(item.getId()).setCode(item.getCode()).setOffice(item.getOffice() + "\t" + item.getOffice2());
-        result.setLastName(item.getLastName()).setFirstName(item.getFirstName()).setPatrName(item.getPatrName());
-        ru.korus.tmis.core.entity.model.Speciality speciality = item.getSpeciality();
-        result.setSpeciality(speciality.getName()).setSpecialityRegionalCode(speciality.getRegionalCode()).setSpecialityOKSOCode(speciality.getOKSOCode());
-        switch (Sex.valueOf(item.getSex())) {
-            case MEN:
-                result.setSexFilter("М");
-                break;
-            case WOMEN:
-                result.setSexFilter("Ж");
-                break;
-            case UNDEFINED:
-                result.setSexFilter("");
-                break;
+        List<QuotingBySpeciality> quotingBySpecialityList = null;
+        try {
+            quotingBySpecialityList = quotingBySpecialityBean.getQuotingByOrganisation(hospitalUidFrom);
+        } catch (CoreException e) {
+            logger.error("#" + request_num + " COREException. Message=" + e.getMessage(), e);
+            throw new NotFoundException("not found");
+        } catch (Exception e) {
+            logger.error("#" + request_num + " Exception. Message=" + e.getMessage(), e);
+            throw new SQLException(request_num, "Not found");
         }
-        result.setPost(item.getPost().getName());
-        return result;
+        List<Speciality> resultList = new ArrayList<Speciality>(quotingBySpecialityList.size());
+        for (QuotingBySpeciality item : quotingBySpecialityList) {
+            resultList.add(ParserToThriftStruct.parseQuotingBySpeciality(item));
+        }
+        logger.info("End of #{} getSpecialities. Return {} specialities.", request_num, resultList.size());
+        return resultList;
+    }
+
+    @Override
+    public List<Address> getAddresses(int orgStructureId, boolean recursive) throws SQLException, NotFoundException, TException {
+        return null;  //To change body of implemented methods use File | Settings | File Templates.
+    }
+
+    @Override
+    public List<Contact> getPatientContacts(int patientId) throws NotFoundException, TException {
+        return null;  //To change body of implemented methods use File | Settings | File Templates.
     }
 
     public CommServer() {
@@ -317,4 +317,10 @@ public class CommServer implements Communications.Iface {
         CommServer.staffBean = staffBean;
         logger.debug("Staff (Personnel) Bean Link is {}", staffBean);
     }
+
+    public static void setSpecialityBean(DbQuotingBySpecialityBeanLocal dbQuotingBySpecialityBeanLocal) {
+        CommServer.quotingBySpecialityBean = dbQuotingBySpecialityBeanLocal;
+        logger.debug("Speciality (DbRbSpecialityBean) Bean Link is {}", dbQuotingBySpecialityBeanLocal);
+    }
+
 }

@@ -87,6 +87,24 @@ struct Speciality{
 2:optional i32 ticketsAvailable;
 3:optional string speciality;
 }
+
+struct Address{
+1:required i32 orgStructureId;
+2:required string pointKLADR;
+3:required string streetKLADR;
+4:optional string number;
+5:optional string corpus;
+6:optional i32 firstFlat;
+7:optional i32 lastFlat;
+}
+
+struct Contact{
+1:optional string type;
+2:optional string code;
+3:optional string contact;
+4:optional string note;
+}
+
 //Type definitions for input params
 
 struct FindOrgStructureByAdressParameters{
@@ -176,5 +194,15 @@ throws (1:NotFoundException exc, 2:SQLException excsql);
 
 DequeuePatientStatus dequeuePatient(1:i32 patientId, 2:i32 queueId)
 throws (1:NotFoundException exc, 2:SQLException excsql);
+
+list<Speciality> getSpecialities(1:string hospitalUidFrom)
+throws (1:SQLException exc);
+
+list<Address> getAddresses(1:i32 orgStructureId, 2:bool recursive)
+throws (1:SQLException excsql, 2:NotFoundException exc);
+
+list<Contact> getPatientContacts(1:i32 patientId)
+throws (1:NotFoundException exc);
+
 
 }
