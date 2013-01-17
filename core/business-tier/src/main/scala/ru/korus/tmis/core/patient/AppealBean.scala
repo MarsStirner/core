@@ -898,6 +898,7 @@ with CAPids{
   def insertOrUpdateClientQuoting(dataEntry: QuotaEntry, eventId: Int, auth: AuthData) = {
     var lockId: Int = -1
     var oldQuota : ClientQuoting = null
+    var clientQuoting : ClientQuoting = null
     var quotaVersion : Int = 0
     if (dataEntry.getId() > 0) {
       quotaVersion = dataEntry.getVersion
@@ -911,7 +912,7 @@ with CAPids{
       if (dataEntry.getId > 0) {
         isPersist = false
       }
-      val clientQuoting = dbClientQuoting.insertOrUpdateClientQuoting(dataEntry.getId,
+      clientQuoting = dbClientQuoting.insertOrUpdateClientQuoting(dataEntry.getId,
                                                                       dataEntry.getVersion,
                                                                       dataEntry.getQuotaType.getId,
                                                                       dataEntry.getStatus.getId,
@@ -927,6 +928,7 @@ with CAPids{
     } finally {
       if (lockId > 0) appLock.releaseLock(lockId)
     }
+    clientQuoting
   }
 
   /*

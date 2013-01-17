@@ -5,6 +5,7 @@ import ru.korus.tmis.core.entity.model.Mkb;
 import ru.korus.tmis.core.entity.model.Patient;
 import ru.korus.tmis.core.entity.model.Staff;
 import ru.korus.tmis.core.exception.CoreException;
+import scala.Function1;
 
 import javax.ejb.Local;
 import java.util.List;
@@ -76,5 +77,6 @@ public interface DbClientQuotingBeanLocal {
      * @see ClientQuoting
      * @throws CoreException
      */
-    List<ClientQuoting> getAllClientQuotingForPatient (int patientId) throws CoreException;
+    List<ClientQuoting> getAllClientQuotingForPatient (int patientId, int page, int limit, String sortingField, String sortingMethod, Object filter, Function1<Long, Boolean> setRecCount)
+            throws CoreException;
 }
