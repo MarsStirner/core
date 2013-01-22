@@ -25,7 +25,7 @@ public final class ParserToThriftStruct {
 
     public static OrgStructure parseOrgStructure(final ru.korus.tmis.core.entity.model.OrgStructure item) {
         OrgStructure result = new OrgStructure().setId(item.getId()).setCode(item.getCode());
-        if (item.getAddress() != null) result.setAdress(item.getAddress());
+        if (item.getAddress() != null) result.setAddress(item.getAddress());
         if (item.getName() != null) result.setName(item.getName());
         if (item.getParentId() != null) result.setParent_id(item.getParentId());
         return result;

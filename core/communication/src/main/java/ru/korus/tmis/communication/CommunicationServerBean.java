@@ -8,6 +8,7 @@ import ru.korus.tmis.core.database.DbQuotingBySpecialityBeanLocal;
 import ru.korus.tmis.core.database.DbStaffBeanLocal;
 
 import javax.annotation.PostConstruct;
+import javax.annotation.PreDestroy;
 import javax.ejb.EJB;
 import javax.ejb.LocalBean;
 import javax.ejb.Singleton;
@@ -51,6 +52,14 @@ public class CommunicationServerBean {
         logger.info("CommunicationServerBean end of post construct");
     }
 
+    @PreDestroy
+    public void destroy() {
+        logger.warn("PreDestroy called around CommunicationServerBean.");
+        server.endWork();
+    }
+
+
     public CommunicationServerBean() {
+        logger.info("CommunicationServerBean simple constructor called.");
     }
 }

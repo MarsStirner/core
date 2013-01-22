@@ -138,9 +138,7 @@ class DbOrgStructureBean
       }
     }
     if (result.size == 0) {
-      throw new CoreException(
-        ConfigManager.ErrorCodes.ClientQuotingNotFound,
-        i18n("error.orgStructureNotFound recursive from").format(parentId))
+      throw new CoreException("Not Found OrgStructures");
     }
     result.toList
   }
@@ -157,10 +155,16 @@ class DbOrgStructureBean
   def getPersonnel(orgStructureId: java.lang.Integer, recursive: Boolean): util.List[Staff] = {
     val organisationIDList: util.List[java.lang.Integer] = new util.ArrayList[java.lang.Integer]()
     organisationIDList.add(orgStructureId)
-    if (recursive) getRecursiveOrgStructures(orgStructureId, recursive).map((current: OrgStructure) => {
-      organisationIDList.add(current.getId)
-    })
-    em.createQuery(OrgStructureGetPersonnel.format(), classOf[Staff]).setParameter("ORGSTRUCTUREIDLIST", organisationIDList)
+    if (recursive) try {
+      getRecursiveOrgStructures(orgStructureId, recursive).map((current: OrgStructure) => {
+        organisationIDList.add(current.getId)
+      })
+    } catch {
+      case coreExc: CoreException => {
+        logger.warn("Recursive search is not found any children for parentId=" + orgStructureId);
+      }
+    }
+    em.createQuery(OrgStructureGetPersonnel, classOf[Staff]).setParameter("ORGSTRUCTUREIDLIST", organisationIDList)
       .getResultList
   }
 
