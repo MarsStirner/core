@@ -488,14 +488,16 @@ class MedipadWSImpl
       //val appType = dbFDRecordBean.getIdValueFDRecordByEventTypeId(25, positionE._1.getEventType.getId.intValue())
       mapper.writeValueAsString(new AppealData( positionE._1,
                                                 positionA._1,
-                                                //appType,
                                                 values,
+                                                null,
                                                 "standart",
                                                 map,
                                                 street,
                                                 null,
                                                 actionBean.getLastActionByActionTypeIdAndEventId _,  //havePrimary
-                                                dbClientRelation.getClientRelationByRelativeId _
+                                                dbClientRelation.getClientRelationByRelativeId _,
+                                                null,
+                                                null
                                 ))
     } else {
       throw new CoreException("Не удачная попытка сохранения(изменения) обращения")
@@ -516,14 +518,16 @@ class MedipadWSImpl
     //val appType = dbFDRecordBean.getIdValueFDRecordByEventTypeId(25, positionE._1.getEventType.getId.intValue())
     mapper.writeValueAsString(new AppealData( positionE._1,
                                               positionA._1,
-                                              //appType,
                                               values,
+                                              null,
                                               "standart",
                                               null,
                                               null,
                                               null,
                                               actionBean.getLastActionByActionTypeIdAndEventId _,  //havePrimary
-                                              dbClientRelation.getClientRelationByRelativeId _
+                                              dbClientRelation.getClientRelationByRelativeId _,
+                                              actionPropertyBean.getActionPropertiesByActionIdAndRbCoreActionPropertyIds _,
+                                              dbRbCoreActionPropertyBean.getRbCoreActionPropertiesByIds _                    //таблица соответствия
                               ))
   }
 
@@ -549,7 +553,7 @@ class MedipadWSImpl
                                               null,
                                               actionBean.getLastActionByActionTypeIdAndEventId _, //havePrimary
                                               dbClientRelation.getClientRelationByRelativeId _,
-                                              actionPropertyBean.getActionPropertiesByActionIdAndRbCoreActionPropertyIds _,  //Admission Diagnosis
+                                              actionPropertyBean.getActionPropertiesByActionIdAndRbCoreActionPropertyIds _,  //в тч Admission Diagnosis
                                               dbRbCoreActionPropertyBean.getRbCoreActionPropertiesByIds _          //таблица соответствия
                               ))
   }
@@ -711,8 +715,8 @@ class MedipadWSImpl
      json_data
    }
 
-  def getAllPatientsForDepartmentIdAndDoctorIdByPeriod(requestData: PatientsListRequestData, role: Int, auth: AuthData) = {
-    patientBean.getAllPatientsForDepartmentIdAndDoctorIdByPeriod(requestData, role, auth)
+  def getAllPatientsForDepartmentIdAndDoctorIdByPeriod(requestData: PatientsListRequestData, auth: AuthData) = {
+    patientBean.getAllPatientsForDepartmentIdAndDoctorIdByPeriod(requestData, auth)
   }
 
   //Возвращает список осмотров по пациенту и обращению с фильтрацией по типу действия

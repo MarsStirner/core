@@ -44,7 +44,7 @@ public interface PatientBeanLocal {
     PatientEntry savePatient(PatientEntry patientEntry, AuthData userData)
             throws CoreException;
 
-    String getAllPatientsForDepartmentIdAndDoctorIdByPeriod(PatientsListRequestData requestData, int role, AuthData authData)
+    String getAllPatientsForDepartmentIdAndDoctorIdByPeriod(PatientsListRequestData requestData, AuthData authData)
             throws CoreException;
 
     LinkedHashMap<Integer, LinkedList<Kladr>> getKLADRAddressMapForPatient(Patient patient) throws CoreException;
