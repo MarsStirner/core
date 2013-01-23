@@ -2003,11 +2003,17 @@ public class PatientRegistryRESTImpl implements Serializable {
     @Path("/appeals/{appealId}/quotes")
     @Produces("application/x-javascript")
     public Object getQuotaHistory(@PathParam("appealId") int appealId,
+                                  @QueryParam("limit")int limit,
+                                  @QueryParam("page")int  page,
+                                  @QueryParam("sortingField")String sortingField,      //сортировки вкл.
+                                  @QueryParam("sortingMethod")String sortingMethod,
                                   @QueryParam("callback") String callback,
                                   @Context HttpServletRequest servRequest) {
         AuthData auth = wsImpl.checkTokenCookies(servRequest);
 
-        Object oip = wsImpl.getQuotaHistory(appealId);
+        QuotaRequestData request = new QuotaRequestData(null, sortingField, sortingMethod, limit, page);
+
+        Object oip = wsImpl.getQuotaHistory(appealId, request); //request
         JSONWithPadding returnValue = new JSONWithPadding(oip, callback);
         return returnValue;
     }

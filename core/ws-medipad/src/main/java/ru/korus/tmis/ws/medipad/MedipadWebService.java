@@ -446,7 +446,7 @@ public interface MedipadWebService extends Serializable {
      * @throws CoreException
      */
     @WebMethod
-    String getQuotaHistory(int appealId) throws CoreException;
+    String getQuotaHistory(int appealId, QuotaRequestData request) throws CoreException;
 
     /**
      * Сервис на получение списка справочника типов квот

@@ -788,21 +788,30 @@ class MedipadWSImpl
   }
 
   def insertOrUpdateQuota(quotaData: QuotaData, eventId: Int, auth: AuthData) = {
-    appealBean.insertOrUpdateClientQuoting(quotaData.getData, eventId, auth)
+    var quota = appealBean.insertOrUpdateClientQuoting(quotaData.getData, eventId, auth)
     val mapper: ObjectMapper = new ObjectMapper()
     mapper.getSerializationConfig().setSerializationView(classOf[QuotaViews.DynamicFieldsQuotaCreate])
-    val cq = dbClientQuoting.getClientQuotingById(quotaData.getData.getId)
-    mapper.writeValueAsString(new QuotaData(new QuotaEntry(cq, classOf[QuotaViews.DynamicFieldsQuotaCreate]), quotaData.getRequestData))
+    if (quotaData.getData.getId > 0) {
+      quota = dbClientQuoting.getClientQuotingById(quotaData.getData.getId)
+    }
+    mapper.writeValueAsString(new QuotaData(new QuotaEntry(quota, classOf[QuotaViews.DynamicFieldsQuotaCreate]), quotaData.getRequestData))
   }
 
-  def getQuotaHistory(appealId: Int) = {
-    val result = appealBean.getAppealById(appealId)
-    val appeal = result.iterator.next()._1
-    val quotaList = dbClientQuoting.getAllClientQuotingForPatient(appeal.getPatient.getId.intValue())
+  def getQuotaHistory(appealId: Int, request: QuotaRequestData) = {
+    val appeal = dbEventBean.getEventById(appealId)
+    //val result = appealBean.getAppealById(appealId)
+    //val appeal = result.iterator.next()._1
+    val quotaList = dbClientQuoting.getAllClientQuotingForPatient(appeal.getPatient.getId.intValue(),
+                                                                  request.page-1,
+                                                                  request.limit,
+                                                                  request.sortingFieldInternal,
+                                                                  request.sortingMethod,
+                                                                  request.filter,
+                                                                  request.rewriteRecordsCount _)
 
     val mapper: ObjectMapper = new ObjectMapper()
     mapper.getSerializationConfig().setSerializationView(classOf[QuotaViews.DynamicFieldsQuotaHistory])
-    mapper.writeValueAsString(new QuotaListData(quotaList, null))
+    mapper.writeValueAsString(new QuotaListData(quotaList, request))
   }
 
   /*
