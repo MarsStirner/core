@@ -110,18 +110,25 @@ class DbOrgStructureBean
     result
   }
 
-  def getRecursiveOrgStructures(parentId: java.lang.Integer, recursive: Boolean): java.util.List[OrgStructure] = {
+  def getRecursiveOrgStructures(parentId: Int, recursive: Boolean, infisCode: String): util.List[OrgStructure] = {
     val allEntitiesList = getAllOrgStructures()
     var parentIdsSet = Set[java.lang.Integer](parentId)
     var result = Set[OrgStructure]()
+
+    val infisCodeIsDefined: Boolean = infisCode.length > 0;
+    var parentIdIsDefined: Boolean = parentId.intValue() > 0;
+
     allEntitiesList.map((current: OrgStructure) => {
-      if (!current.getDeleted && current.getAvailableForExternal == AVAILABLE_FOR_EXTERNAL
-        && (current.getParentId == parentId || (parentId == 0 && current.getParentId == null))) {
+      if (!current.getDeleted && current.getAvailableForExternal == AVAILABLE_FOR_EXTERNAL &&
+        (current.getParentId == parentId || (!parentIdIsDefined && current.getParentId == null)) &&
+        (!infisCodeIsDefined || (current.getOrganization != null && current.getOrganization.getInfisCode == infisCode))) {
         result += current
-        if (recursive) parentIdsSet += current.getId
+        if (recursive.booleanValue()) parentIdsSet += current.getId
       }
     })
-    if (recursive) {
+
+
+    if (recursive.booleanValue()) {
       var previousSize: Int = 0
       val MAX_DEEP: Int = 7
       var currentDeep = 0
@@ -129,7 +136,9 @@ class DbOrgStructureBean
         //Get childrens from parentIdsSet
         previousSize = parentIdsSet.size
         allEntitiesList.map((current: OrgStructure) => {
-          if (!current.getDeleted && current.getAvailableForExternal == AVAILABLE_FOR_EXTERNAL && parentIdsSet(current.getParentId)) {
+          if (!current.getDeleted && current.getAvailableForExternal == AVAILABLE_FOR_EXTERNAL && parentIdsSet(current.getParentId)
+            && (!infisCodeIsDefined || (current.getOrganization != null && current.getOrganization.getInfisCode == infisCode))
+          ) {
             result += current
             parentIdsSet += current.getId
           }
@@ -143,8 +152,8 @@ class DbOrgStructureBean
     result.toList
   }
 
-  def getOrgStructureByAdress(KLADRCode: java.lang.String, KLADRStreetCode: java.lang.String, number: java.lang.String,
-                              corpus: java.lang.String, flat: java.lang.Integer) = {
+  def getOrgStructureByAddress(KLADRCode: java.lang.String, KLADRStreetCode: java.lang.String, number: java.lang.String,
+                               corpus: java.lang.String, flat: java.lang.Integer) = {
     val result = em.createQuery(OrgStructureIdByAdressQuery, classOf[java.lang.Integer])
       .setParameter("KLADRCode", KLADRCode).setParameter("KLADRStreetCode", KLADRStreetCode)
       .setParameter("NUMBER", number).setParameter("CORPUS", corpus).setParameter("FLAT", flat)
@@ -152,11 +161,11 @@ class DbOrgStructureBean
     result
   }
 
-  def getPersonnel(orgStructureId: java.lang.Integer, recursive: Boolean): util.List[Staff] = {
+  def getPersonnel(orgStructureId: java.lang.Integer, recursive: Boolean, infisCode: java.lang.String): util.List[Staff] = {
     val organisationIDList: util.List[java.lang.Integer] = new util.ArrayList[java.lang.Integer]()
     organisationIDList.add(orgStructureId)
     if (recursive) try {
-      getRecursiveOrgStructures(orgStructureId, recursive).map((current: OrgStructure) => {
+      getRecursiveOrgStructures(orgStructureId.intValue(), recursive, infisCode).map((current: OrgStructure) => {
         organisationIDList.add(current.getId)
       })
     } catch {

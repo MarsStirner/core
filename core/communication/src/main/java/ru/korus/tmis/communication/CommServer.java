@@ -8,10 +8,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import ru.korus.tmis.communication.thriftgen.*;
 import ru.korus.tmis.communication.thriftgen.Queue;
-import ru.korus.tmis.core.database.DbOrgStructureBeanLocal;
-import ru.korus.tmis.core.database.DbPatientBeanLocal;
-import ru.korus.tmis.core.database.DbQuotingBySpecialityBeanLocal;
-import ru.korus.tmis.core.database.DbStaffBeanLocal;
+import ru.korus.tmis.core.database.*;
 import ru.korus.tmis.core.entity.model.Patient;
 import ru.korus.tmis.core.entity.model.QuotingBySpeciality;
 import ru.korus.tmis.core.entity.model.Staff;
@@ -35,6 +32,7 @@ public class CommServer implements Communications.Iface {
     private static DbPatientBeanLocal patientBean = null;
     private static DbStaffBeanLocal staffBean = null;
     private static DbQuotingBySpecialityBeanLocal quotingBySpecialityBean = null;
+    private static DbOrganizationBeanLocal organisationBean = null;
     //Singleton instance
     private static CommServer instance;
     private static TServer server;
@@ -52,6 +50,7 @@ public class CommServer implements Communications.Iface {
     //Number of request
     private static int request_num = 0;
 
+
     /**
      * Получение оргструктур, которые входят в заданное подразделение. При установленном флаге рекурсии выводит все подразделения которые принадлежат запрошенному.
      *
@@ -63,14 +62,14 @@ public class CommServer implements Communications.Iface {
     @Override
     public List<OrgStructure> getOrgStructures(final int parentId, final boolean recursive, final String infisCode) throws TException {
         request_num++;
-        logger.info("#{} Call method -> CommServer.getOrgStructures(id={}, recursive={})", request_num, parentId, recursive);
+        logger.info("#{} Call method -> CommServer.getOrgStructures(id={}, recursive={}, infisCode={})", request_num, parentId, recursive, infisCode);
         //Список который будет возвращен
         List<OrgStructure> resultList = new ArrayList<OrgStructure>();
         //Список для хранения сущностей из БД
         List<ru.korus.tmis.core.entity.model.OrgStructure> allStructuresList;
         try {
             //Получение нужных сущностей из бина
-            allStructuresList = orgStructureBean.getRecursiveOrgStructures(parentId, recursive);
+            allStructuresList = orgStructureBean.getRecursiveOrgStructures(parentId, recursive, infisCode);
         } catch (CoreException e) {
             logger.error("Error while getRecursive from bean.", e);
             throw new SQLException().setError_code(e.getId()).setError_msg("Error while getRecursive from bean (CoreException)." + e.getMessage());
@@ -107,7 +106,7 @@ public class CommServer implements Communications.Iface {
                 request_num, params.getPointKLADR(), params.getStreetKLADR(), params.getNumber(), params.getCorpus(), params.getFlat());
         List<Integer> resultList = null;
         try {
-            resultList = orgStructureBean.getOrgStructureByAdress(params.getPointKLADR(), params.getStreetKLADR(), params.getNumber(), params.getCorpus(), params.getFlat());
+            resultList = orgStructureBean.getOrgStructureByAddress(params.getPointKLADR(), params.getStreetKLADR(), params.getNumber(), params.getCorpus(), params.getFlat());
         } catch (CoreException e) {
             logger.error("#" + request_num + " COREException. Message=" + e.getMessage(), e);
             throw new NotFoundException("not found");
@@ -130,7 +129,7 @@ public class CommServer implements Communications.Iface {
                 orgStructureId, recursive, infisCode);
         List<Staff> personnelList;
         try {
-            personnelList = orgStructureBean.getPersonnel(orgStructureId, recursive);
+            personnelList = orgStructureBean.getPersonnel(orgStructureId, recursive, infisCode);
         } catch (CoreException e) {
             logger.error("#" + request_num + " COREException. Message=" + e.getMessage(), e);
             throw new NotFoundException("No one Person related with this orgStructures (COREException)");
@@ -177,6 +176,7 @@ public class CommServer implements Communications.Iface {
         logger.info("#{} Call method -> CommServer.getWorkTimeAndStatus(personId={}, HospitalUID={}, DATE={})",
                 request_num, params.getPersonId(), params.getHospitalUidFrom(), params.getDate());
 
+
         Amb result = new Amb().setPlan("");
         logger.info("End of #{} getWorkTimeAndStatus. Return (TicketsSize={}) \"{}\" as result.", request_num, result.getTicketsSize(), result);
         return result;
@@ -185,10 +185,72 @@ public class CommServer implements Communications.Iface {
     @Override
     public PatientStatus addPatient(final AddPatientParameters params) throws TException {
         request_num++;
-        logger.info("#{} Call method -> CommServer.addPatient( Full name=\"{} {} {}\", BirthDATE={})",
-                request_num, params.getLastName(), params.getFirstName(), params.getPatrName(), new Date(params.getBirthDate()));
+        logger.info("#{} Call method -> CommServer.addPatient( Full name=\"{} {} {}\", BirthDATE={}, SEX={})",
+                request_num, params.getLastName(), params.getFirstName(), params.getPatrName(), new Date(params.getBirthDate()), params.getSex());
+        PatientStatus result = new PatientStatus();
 
-        PatientStatus result = new PatientStatus().setMessage("На данный момент это заглушка[return false always] Was called with lastname=" + params.getLastName()).setSuccess(false);
+        //CHECK PARAMS
+        String errorMessage = "";
+        boolean allParamsIsSet = true;
+        if (!params.isSetLastName() || params.getLastName().length() == 0) {
+            allParamsIsSet = false;
+            errorMessage += "Фамилия должна быть указана\n";
+        }
+        if (!params.isSetFirstName() || params.getFirstName().length() == 0) {
+            allParamsIsSet = false;
+            errorMessage += "Имя должно быть указано\n";
+        }
+        if (!params.isSetPatrName() || params.getPatrName().length() == 0) {
+            params.setPatrName("");
+        }
+        if (!allParamsIsSet) {
+            logger.error(errorMessage);
+            return result.setSuccess(false).setMessage(errorMessage).setPatientId(0);
+        }
+        //END OF CHECK PARAMS
+
+        Date birthDate = new Date();
+        birthDate.setTime(params.getBirthDate());
+        String sexType;
+
+        switch (params.getSex()) {
+            case 1:
+                sexType = "male";
+                break;
+            case 2:
+                sexType = "female";
+                break;
+            default:
+                sexType = "";
+                break;
+        }
+
+        Patient patient = null;
+        try {
+            patient = patientBean.insertOrUpdatePatient(0, params.firstName, params.patrName, params.lastName, birthDate, "", sexType, "0", "0", "", null, 0, "", "", null, 0);
+        } catch (Exception e) {
+            logger.error("Error while called insertOrUpdatePatient", e);
+            return result.setMessage(e.getMessage()).setSuccess(false);
+        }
+
+        logger.debug("Patient ={}", patient);
+
+        if (patient == null) {
+            logger.error("Error NULLPOINTER!!!");
+            return result.setMessage("Null pointer").setSuccess(false);
+        }
+
+        try {
+            patientBean.savePatientToDataBase(patient);
+            logger.debug("Patient ={}", patient);
+            if (patient.getId() == 0 || patient.getId() == null)
+                throw new CoreException("Something is wrong while saving");
+        } catch (Exception e) {
+            logger.error("Error while saving to database", e);
+            return result.setMessage("Error while saving to database. Message=" + e.getMessage()).setSuccess(false);
+        }
+
+        result = result.setMessage("Successfully added patient to database").setSuccess(true).setPatientId(patient.getId());
         logger.info("End of #{} addPatient. Return \"{}\"", request_num, result);
         return result;
     }
@@ -199,37 +261,120 @@ public class CommServer implements Communications.Iface {
         logger.info("#{} Call method -> CommServer.findPatient( Full name=\"{} {} {}\",Sex={}, BirthDATE={}, IDType={},ID={})",
                 request_num, params.getLastName(), params.getFirstName(), params.getPatrName(), params.getSex(),
                 new Date(params.getBirthDate()), params.getIdentifierType(), params.getIdentifier());
+        //Convert to patterns && MAP
+        Map<String, String> parameters = new HashMap<String, String>();
+        if (params.isSetLastName()) {
+            parameters.put("lastName", ParserToThriftStruct.convertDotPatternToSQLLikePattern(params.lastName));
+        }
+        if (params.isSetFirstName()) {
+            parameters.put("firstName", ParserToThriftStruct.convertDotPatternToSQLLikePattern(params.firstName));
+        }
+        if (params.isSetPatrName()) {
+            parameters.put("patrName", ParserToThriftStruct.convertDotPatternToSQLLikePattern(params.patrName));
+        }
+        if (params.isSetBirthDate()) {
+            parameters.put("birthDate", String.valueOf(params.getBirthDate()));
+        }
+        if (params.isSetIdentifier()) {
+            parameters.put("identifier", params.getIdentifier());
+        }
+        if (params.isSetIdentifierType()) {
+            parameters.put("identifierType", params.getIdentifierType());
+        }
+        if (params.isSetOmiPolicyNumber()) {
+            parameters.put("omiNumber", params.getOmiPolicyNumber());
+        }
+        if (params.isSetOmiPolicySerial()) {
+            parameters.put("omiSerial", params.getOmiPolicySerial());
+        }
+        if (params.isSetSex()) {
+            parameters.put("sex", String.valueOf(params.getSex()));
+        }
 
-        PatientStatus result = new PatientStatus().setMessage("На данный момент это заглушка[return false always].Was called with identifier " + params.getIdentifier()).setSuccess(false);
+        logger.info(parameters.toString());
+        List<Patient> patientsList = null;
+        try {
+            patientsList = patientBean.findPatient(parameters);
+        } catch (Exception e) {
+            logger.error("Failed to get patients because: {}", e.getMessage(), e.getCause());
+            throw new TException(e.getMessage());
+        }
+        if (logger.isDebugEnabled()) {
+            for (Patient pat : patientsList) {
+                logger.debug("Patent in result: ID={} FULLNAME={} {} {} SEX={}", pat.getId(),
+                        pat.getLastName(), pat.getFirstName(), pat.getPatrName(), pat.getSex());
+            }
+        }
+        PatientStatus result = null;
+        switch (patientsList.size()) {
+            case 0:
+                result = new PatientStatus().setSuccess(false).setMessage("msgNoSuchPatient");
+                break;
+            case 1:
+                result = new PatientStatus().setSuccess(true).setMessage("msgOk").setPatientId(patientsList.get(0).getId());
+                break;
+            default:
+                result = new PatientStatus().setSuccess(false).setMessage("msgTooManySuchPatients: " + patientsList.size());
+                break;
+        }
         logger.info("End of #{} addPatient. Return \"{}\" as result.", request_num, result);
         return result;
     }
 
     @Override
-    public List<Integer> findPatients(final FindPatientParameters params) throws TException {
+    public List<ru.korus.tmis.communication.thriftgen.Patient> findPatients(final FindPatientParameters params) throws TException {
         request_num++;
-        logger.info("#{} Call method -> CommServer.findPatient( Full name=\"{} {} {}\",Sex={}, BirthDATE={}, IDType={},ID={})",
+        logger.info("#{} Call method -> CommServer.findPatients( Full name=\"{} {} {}\",Sex={}, BirthDATE={}, IDType={},ID={})",
                 request_num, params.getLastName(), params.getFirstName(), params.getPatrName(), params.getSex(),
                 new Date(params.getBirthDate()), params.getIdentifierType(), params.getIdentifier());
+        //Convert to patterns && MAP
+        Map<String, String> parameters = new HashMap<String, String>();
+        if (params.isSetLastName()) {
+            parameters.put("lastName", ParserToThriftStruct.convertDotPatternToSQLLikePattern(params.lastName));
+        }
+        if (params.isSetFirstName()) {
+            parameters.put("firstName", ParserToThriftStruct.convertDotPatternToSQLLikePattern(params.firstName));
+        }
+        if (params.isSetPatrName()) {
+            parameters.put("patrName", ParserToThriftStruct.convertDotPatternToSQLLikePattern(params.patrName));
+        }
+        if (params.isSetBirthDate()) {
+            parameters.put("birthDate", String.valueOf(params.getBirthDate()));
+        }
+        if (params.isSetIdentifier()) {
+            parameters.put("identifier", params.getIdentifier());
+        }
+        if (params.isSetIdentifierType()) {
+            parameters.put("identifierType", params.getIdentifierType());
+        }
+        if (params.isSetOmiPolicyNumber()) {
+            parameters.put("omiNumber", params.getOmiPolicyNumber());
+        }
+        if (params.isSetOmiPolicySerial()) {
+            parameters.put("omiSerial", params.getOmiPolicySerial());
+        }
+        if (params.isSetSex()) {
+            parameters.put("sex", String.valueOf(params.getSex()));
+        }
 
-        List<Integer> resultList = new ArrayList<Integer>(5);
-        resultList.add(3280);
-        resultList.add(3882);
-        resultList.add(4594);
-        resultList.add(366);
-        resultList.add(2144);
-        resultList.add(799);
-        resultList.add(1173);
-        resultList.add(4844);
-        resultList.add(120);
-        resultList.add(2476);
-        resultList.add(237);
-        resultList.add(4379);
-        resultList.add(1508);
-        resultList.add(4666);
-        resultList.add(3);
-
-
+        logger.info(parameters.toString());
+        List<Patient> patientsList = null;
+        try {
+            patientsList = patientBean.findPatient(parameters);
+        } catch (Exception e) {
+            logger.error("Failed to get patients because: {}", e.getMessage(), e.getCause());
+            throw new TException(e.getMessage());
+        }
+        if (logger.isDebugEnabled()) {
+            for (Patient pat : patientsList) {
+                logger.debug("Patent in result: ID={} FULLNAME={} {} {} SEX={}", pat.getId(),
+                        pat.getLastName(), pat.getFirstName(), pat.getPatrName(), pat.getSex());
+            }
+        }
+        List<ru.korus.tmis.communication.thriftgen.Patient> resultList = new ArrayList<ru.korus.tmis.communication.thriftgen.Patient>();
+        for (Patient pat : patientsList) {
+            resultList.add(ParserToThriftStruct.parsePatient(pat));
+        }
         logger.info("End of #{} findPatients. Return (Size={}), DATA={})", request_num, resultList.size(), resultList);
         return resultList;
 
@@ -256,7 +401,7 @@ public class CommServer implements Communications.Iface {
                 try {
                     Patient requested = patientBean.getPatientById(current);
                     if (requested != null) {
-                        resultMap.put(current, ParserToThriftStruct.parsePatient(requested));
+                        resultMap.put(current, ParserToThriftStruct.parsePatientInfo(requested));
                         logger.debug("Add patient ID={},NAME={} {}", requested.getId(), requested.getFirstName(), requested.getLastName());
                     }
                 } catch (CoreException e) {
@@ -312,11 +457,18 @@ public class CommServer implements Communications.Iface {
     }
 
     @Override
-    public Organization getOrganisationInfo(final int id) throws TException {
+    public Organization getOrganisationInfo(final String infisCode) throws TException {
         request_num++;
-        logger.info("#{} Call method -> CommServer.getOrganisationInfo(id={})", request_num, id);
+        logger.info("#{} Call method -> CommServer.getOrganisationInfo(infisCode={})", request_num, infisCode);
 
         Organization result = null;
+        try {
+            result = ParserToThriftStruct.parseOrganisation(organisationBean.getOrganizationByInfisCode(infisCode));
+        } catch (CoreException e) {
+            logger.error("#" + request_num + " COREException. Message=" + e.getMessage(), e);
+            throw new NotFoundException("not found");
+        }
+        if (result == null) throw new NotFoundException("Organisation isn't founded in Database");
 
         logger.info("End of #{} getOrganisationInfo. Return ({})", request_num, result);
         return result;
@@ -407,6 +559,11 @@ public class CommServer implements Communications.Iface {
     public static void setSpecialityBean(DbQuotingBySpecialityBeanLocal dbQuotingBySpecialityBeanLocal) {
         CommServer.quotingBySpecialityBean = dbQuotingBySpecialityBeanLocal;
         logger.debug("Speciality (DbRbSpecialityBean) Bean Link is {}", dbQuotingBySpecialityBeanLocal);
+    }
+
+    public static void setOrganisationBean(DbOrganizationBeanLocal organisationBean) {
+        CommServer.organisationBean = organisationBean;
+        logger.debug("Organisation Bean Link is {}", organisationBean);
     }
 
     public void endWork() {

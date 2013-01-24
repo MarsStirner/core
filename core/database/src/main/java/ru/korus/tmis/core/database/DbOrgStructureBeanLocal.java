@@ -82,10 +82,11 @@ public interface DbOrgStructureBeanLocal {
      *
      * @param parentId  Идентификатор отделения для которго выводим все подотделения
      * @param recursive рекурсивно
+     * @param infisCode Принадлежащие одной структуре
      * @return Список под-отделений
      * @throws CoreException
      */
-    List<OrgStructure> getRecursiveOrgStructures(Integer parentId, boolean recursive) throws CoreException;
+    List<OrgStructure> getRecursiveOrgStructures(int parentId, boolean recursive, String infisCode) throws CoreException;
 
     /**
      * Запрос на получение ИД оргструктур по заданному адресу
@@ -93,7 +94,7 @@ public interface DbOrgStructureBeanLocal {
      * @return Список ИД оргутруктур удовлятворяющих заданному адресу
      * @throws CoreException
      */
-    List<Integer> getOrgStructureByAdress(String KLADRCode, String KLADRStreetCode, String number, String corpus, Integer flat) throws CoreException;
+    List<Integer> getOrgStructureByAddress(String KLADRCode, String KLADRStreetCode, String number, String corpus, Integer flat) throws CoreException;
 
     /**
      * Запрос на получение сотрудников по заданному подразделению
@@ -101,6 +102,6 @@ public interface DbOrgStructureBeanLocal {
      * @return Список сотрудников удовлятворяющих заданному адресу
      * @throws CoreException
      */
-    List<Staff> getPersonnel(Integer orgStructureId, boolean recursive) throws CoreException;
+    List<Staff> getPersonnel(Integer orgStructureId, boolean recursive, String infisCode) throws CoreException;
 
 }
