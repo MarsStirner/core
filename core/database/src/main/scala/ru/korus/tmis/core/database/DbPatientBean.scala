@@ -412,7 +412,7 @@ class DbPatientBean
     if (params.contains("birthDate")) {
       val calendar = new GregorianCalendar();
       calendar.setTimeInMillis(java.lang.Long.parseLong(params("birthDate")));
-      findPatientQuery += " AND patient.birthDate = '" + calendar.get(Calendar.YEAR) + "-" + calendar.get(Calendar.MONTH) + "-" + calendar.get(Calendar.DATE) + "'";
+      findPatientQuery += " AND patient.birthDate = '" + calendar.get(Calendar.YEAR) + "-" + (calendar.get(Calendar.MONTH) + 1) + "-" + calendar.get(Calendar.DATE) + "'";
     }
     if (params.contains("omiNumber")) {
       findPatientQuery += " AND policy.number= '" + params("omiNumber") + "'";
