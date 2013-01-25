@@ -80,6 +80,9 @@ class CommonDataProcessorBean
         var multiplicity: Int = 1
         var beginDate: Date = null
         var endDate: Date = null
+        var plannedEndDate: Date = null
+        var finance: Int = -1
+        var toOrder: Boolean = false
 
         aps.foreach(attribute => {
           if (attribute.name == AWI.Multiplicity.toString) {
@@ -100,6 +103,24 @@ class CommonDataProcessorBean
               case Some(x) => ConfigManager.DateFormatter.parse(x)
             }
           }
+          else if (attribute.name == AWI.finance.toString) {
+            finance = attribute.properties.get(APWI.Value.toString) match {
+              case None | Some("") => 0
+              case Some(x) => x.toInt
+            }
+          }
+          else if (attribute.name == AWI.plannedEndDate.toString) {
+            plannedEndDate = attribute.properties.get(APWI.Value.toString) match {
+              case None | Some("") => null
+              case Some(x) => ConfigManager.DateFormatter.parse(x)
+            }
+          }
+          else if (attribute.name == AWI.toOrder.toString) {
+            toOrder = attribute.properties.get(APWI.Value.toString) match {
+              case None | Some("") => false
+              case Some(x) => x.toBoolean
+            }
+          }
         })
 
         var i = 0
@@ -111,9 +132,13 @@ class CommonDataProcessorBean
           if (entity.id.intValue == 139 || entity.id.intValue == 112 || entity.id.intValue == 2456) {
             action.setStatus(ActionStatus.FINISHED.getCode)   //TODO: Материть Александра!
           }
+          //plannedEndDate
+          if (finance > 0) action.setFinanceId(finance)
+          action.setToOrder(toOrder)
           //Если пришли значения Даты начала и дата конца, то перепишем дефолтные
           if (beginDate != null) action.setBegDate(beginDate)
           if (endDate != null) action.setEndDate(endDate)
+          if (plannedEndDate != null) action.setPlannedEndDate(plannedEndDate)
 
           val actionType = dbActionType.getActionTypeById(entity.id.intValue)
           val aw = new ActionWrapper(action)
@@ -211,7 +236,7 @@ class CommonDataProcessorBean
 
           result = updatedAction :: result
 
-          i += 1
+          i = i+1
         }
 
       } catch {

@@ -57,7 +57,10 @@ class PrimaryAssessmentBean
       AWI.doctorFirstName,
       AWI.doctorMiddleName,
       AWI.doctorSpecs,
-      AWI.Status
+      AWI.Status,
+      AWI.Finance,
+      AWI.PlannedEndDate,
+      AWI.ToOrder
     )
 
     commonDataProcessor.addAttributes(

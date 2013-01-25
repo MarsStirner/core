@@ -188,6 +188,11 @@ public class ActionType implements Serializable {
     @Column(name = "isRequiredCoordination")
     private boolean isRequiredCoordination;
 
+    @Basic(optional = false)
+    @Column(name = "mnem")
+    private String mnemonic = "";
+
+
     ////////////////////////////////////////////////////////////////////////////
     // Custom mappings
     ////////////////////////////////////////////////////////////////////////////
@@ -536,7 +541,13 @@ public class ActionType implements Serializable {
         this.tissueTypes = tissueTypes;
     }
 
+    public String getMnemonic() {
+        return mnemonic;
+    }
 
+    public void setMnemonic(String mnemonic) {
+        this.mnemonic = mnemonic;
+    }
 
     @Override
     public int hashCode() {

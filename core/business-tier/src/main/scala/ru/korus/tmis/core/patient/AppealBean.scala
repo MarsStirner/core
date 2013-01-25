@@ -618,7 +618,7 @@ with CAPids{
       //val eventTypeId = eventBean.getEventTypeIdByFDRecordId(appealData.data.appealType.getId())
       val eventTypeId = appealData.data.appealType.eventType.getId//eventBean.getEventTypeIdByRequestTypeIdAndFinanceId(appealData.data.appealType.requestType.getId(), appealData.data.appealType.finance.getId())
       if(event.getEventType.getId.intValue()!=eventTypeId) {
-        throw new CoreException("Тип найденного обращения не соответствует типу в полученному в запросе (requestType = %s, finance = %s)".format(appealData.data.appealType.requestType.getId().toString, appealData.data.appealType.finance.getId().toString))
+        throw new CoreException("Тип найденного обращения не соответствует типу, полученному в запросе (requestType = %s, finance = %s)".format(appealData.data.appealType.requestType.getId().toString, appealData.data.appealType.finance.getId().toString))
         return null
       }
 

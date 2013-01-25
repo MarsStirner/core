@@ -42,4 +42,13 @@ public interface DbEventPersonBeanLocal {
      * @throws CoreException
      */
     EventPerson getLastEventPersonForEventId(int eventId) throws CoreException;
+
+    /**
+     * Проверка, является ли пользователь ответственным за ивент
+     * @param eventId идентификатор ивента.
+     * @param user пользователь как Staff.
+     * @return
+     * @throws CoreException
+     */
+    void checkEventPerson (int eventId, Staff user) throws CoreException;
 }

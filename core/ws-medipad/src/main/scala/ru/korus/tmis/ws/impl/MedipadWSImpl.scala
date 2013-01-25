@@ -933,6 +933,9 @@ class MedipadWSImpl
           listForSummary.add(ActionWrapperInfo.doctorSpecs)
           listForSummary.add(ActionWrapperInfo.urgent)
           listForSummary.add(ActionWrapperInfo.multiplicity)
+          listForSummary.add(ActionWrapperInfo.finance)
+          listForSummary.add(ActionWrapperInfo.plannedEndDate)
+          listForSummary.add(ActionWrapperInfo.toOrder)
 
           val json = primaryAssessmentBean.getEmptyStructure(actionType.getId.intValue(), "Action", listForConverter, listForSummary,  null, null)
           json
@@ -956,10 +959,10 @@ class MedipadWSImpl
     primaryAssessmentBean.insertAssessmentAsConsultation(request.eventId, request.actionTypeId, request.executorId, request.beginDate, request.endDate, request.urgent, request, authData)
   }
 
-  def insertLaboratoryStudies(eventId: Int, data: CommonData) = {
-    //TODO: подключить анализ авторизационных данных и доступных ролей
-    val authData:AuthData = null
-    primaryAssessmentBean.createAssessmentsForEventIdFromCommonData(eventId, data, "Diagnostic", null, authData)
+  def insertLaboratoryStudies(eventId: Int, data: CommonData, auth: AuthData) = {
+    // проверка пользователя на ответственного за ивент
+    dbEventPerson.checkEventPerson(eventId, auth.user)
+    primaryAssessmentBean.createAssessmentsForEventIdFromCommonData(eventId, data, "Diagnostic", null, auth)
   }
 
   def getFlatDirectories(request: FlatDirectoryRequestData) = {

@@ -197,9 +197,13 @@ class ActionTypesListRequestDataFilter {
   @BeanProperty
   var groupId: Int = _
 
+  @BeanProperty
+  var mnemonic: String = _
+
   def this(code_x: String,
            groupId: Int,
-           diaType_x: String) {
+           diaType_x: String,
+           mnemonic: String) {
     this()
     this.code = if(code_x!=null && code_x!="") {
                   code_x
@@ -212,20 +216,22 @@ class ActionTypesListRequestDataFilter {
                                         }
                 }
     this.groupId = groupId
+    this.mnemonic = mnemonic
   }
 
   def toQueryStructure() = {
     var qs = new QueryDataStructure()
-
+    if (this.mnemonic!=null && !this.mnemonic.isEmpty && this.mnemonic.compareTo("") != 0) {
+      qs.query += ("AND at.mnemonic =  :mnemonic\n")
+      qs.add("mnemonic",this.mnemonic)
+    }
     if(this.groupId>0){
       qs.query += ("AND at.groupId =  :groupId\n")
       qs.add("groupId", this.groupId:java.lang.Integer)
     }
-    else  {
-      if(this.code!=null && !this.code.isEmpty){
-        qs.query += ("AND at.groupId IN (SELECT at2.id FROM ActionType at2 WHERE at2.code = :code)\n")
-        qs.add("code",this.code)
-      }
+    else if(this.code!=null && !this.code.isEmpty){
+      qs.query += ("AND at.groupId IN (SELECT at2.id FROM ActionType at2 WHERE at2.code = :code)\n")
+      qs.add("code",this.code)
     }
     qs
   }
