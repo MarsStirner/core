@@ -9,6 +9,7 @@ import ru.korus.tmis.util.ConfigManager
 import org.codehaus.jackson.map.annotate.JsonView
 import collection.JavaConversions
 import java.util
+import java.text.SimpleDateFormat
 
 object PatientsListDataViews {
   class AttendingDoctorView {}
@@ -27,79 +28,90 @@ class PatientsListData {
   @BeanProperty
   var data: LinkedList[PatientsListEntry] = new LinkedList[PatientsListEntry]
 
-  def this(events: java.util.List[Event],
+  def this(events: java.util.Map[Event, Action],
            bedInfo: java.util.Map[Event, OrgStructureHospitalBed],
            condInfo: java.util.Map[Event, java.util.Map[ActionProperty, java.util.List[APValue]]],
            requestData: PatientsListRequestData) = {
     this ()
 
-    events.foreach(event => {
+    events.foreach(e => {
 
-      val bed = bedInfo.containsKey(event) match {
+      val bed = bedInfo.containsKey(e._1) match {
         case false => null
-        case bed => bedInfo.get(event)
+        case bed => bedInfo.get(e._1)
       }
 
-      val condition = condInfo.containsKey(event) match {
+      val condition = condInfo.containsKey(e._1) match {
         case false => null
         case condition => {
-          condInfo.get(event)
+          condInfo.get(e._1)
         }
       }
-      this.data.add(new PatientsListEntry(event, bed, condition))
+      this.data.add(new PatientsListEntry(e._1, bed, condition, null))
     })
     this.requestData = requestData
   }
 
-  def this(events: java.util.List[Event],
+  def this(events: java.util.Map[Event, Action],
            requestData: PatientsListRequestData,
            roleId: Int,
            condInfo: java.util.Map[Event, java.util.Map[ActionProperty, java.util.List[APValue]]],
-           mLastAction: (Int, java.util.Set[java.lang.Integer]) => Int,
+           mAdmissionDepartment: (Int) => OrgStructure,
            mActionPropertiesWithValues: (Int, java.util.List[java.lang.Integer]) =>  java.util.Map[ActionProperty, java.util.List[APValue]],
            mCorrList: (java.util.List[java.lang.Integer])=> java.util.List[RbCoreActionProperty],
            mDiagnostics: (Int) => java.util.List[Diagnostic]) = {
     this ()
     this.requestData = requestData
 
-    events.foreach(event => {
+    events.foreach(e => {
 
+      val event = e._1
+      val action = e._2
       var bed: OrgStructureHospitalBed = null
       var begDate: Date = null
-      var endDate: Date = null
+      var from : OrgStructure = null
 
-      val setATIds = JavaConversions.asJavaSet(Set(ConfigManager.Messages("db.actionType.moving").toInt :java.lang.Integer))
-      val lastMovingId = if (mLastAction != null) mLastAction(event.getId.intValue(), setATIds) else 0
-      if (lastMovingId>0 && mActionPropertiesWithValues!=null) {
-        val listMovAP = JavaConversions.asJavaList(List(ConfigManager.Messages("db.rbCAP.moving.id.beginTime").toInt :java.lang.Integer,
-                                                        ConfigManager.Messages("db.rbCAP.moving.id.bed").toInt :java.lang.Integer))
-        val apValues = mActionPropertiesWithValues(lastMovingId, listMovAP)
+      if (action!=null && action.getId.intValue()>0 && mActionPropertiesWithValues!=null) {
+        val listMovAP = JavaConversions.asJavaList(List(ConfigManager.RbCAPIds("db.rbCAP.moving.id.beginTime").toInt :java.lang.Integer,
+                                                        ConfigManager.RbCAPIds("db.rbCAP.moving.id.bed").toInt :java.lang.Integer,
+                                                        ConfigManager.RbCAPIds("db.rbCAP.moving.id.movedIn").toInt :java.lang.Integer,
+                                                        ConfigManager.RbCAPIds("db.rbCAP.hosp.primary.id.sentTo").toInt :java.lang.Integer))
+
+        val apValues = mActionPropertiesWithValues(action.getId.intValue(), listMovAP)
         val corrList = if(mCorrList!=null) mCorrList(listMovAP) else null
+
         if (apValues!=null && corrList!=null) {
-          //val listNdx = new IndexOf(listMovAP)
           apValues.foreach(prop => {
             val result = corrList.find(p=> p.getActionPropertyType.getId.intValue()==prop._1.getType.getId.intValue()).getOrElse(null)
             if (result!=null) {
-              if (result.getId.compareTo(ConfigManager.Messages("db.rbCAP.moving.id.beginTime").toInt :java.lang.Integer)==0) {
-                endDate = prop._1.getAction.getEndDate
-                begDate = this.getFormattedDate(prop._1.getAction.getBegDate, apValues, result.getActionPropertyType.getId.intValue())
-              } else if (result.getId.compareTo(ConfigManager.Messages("db.rbCAP.moving.id.bed").toInt :java.lang.Integer)==0) {
-                bed = prop._2.get(0).getValue.asInstanceOf[OrgStructureHospitalBed]
-              }
+
+                if (result.getId.compareTo(ConfigManager.RbCAPIds("db.rbCAP.moving.id.beginTime").toInt :java.lang.Integer)==0) {
+                  begDate = this.getFormattedDate(prop._1.getAction.getBegDate, apValues, result.getActionPropertyType.getId.intValue())
+                }
+                else if (result.getId.compareTo(ConfigManager.RbCAPIds("db.rbCAP.moving.id.bed").toInt :java.lang.Integer)==0) {
+                  bed = prop._2.get(0).getValue.asInstanceOf[OrgStructureHospitalBed]
+                }
+                else if (result.getId.compareTo(ConfigManager.RbCAPIds("db.rbCAP.moving.id.movedIn").toInt :java.lang.Integer)==0 &&
+                         prop._2.get(0).getValue.asInstanceOf[OrgStructure].getId.intValue() == requestData.filter.departmentId) {
+                  from = if(bed!=null)bed.getMasterDepartment else null
+                  bed = null
+                }
+                else if (result.getId.compareTo(ConfigManager.RbCAPIds("db.rbCAP.hosp.primary.id.sentTo").toInt :java.lang.Integer)==0) {
+                  from = if (mAdmissionDepartment!=null ) mAdmissionDepartment(28) else null // Приемное отделение
+                  bed = null
+                }
             }
           })
         }
       }
-      if (roleId == 1) {
+      val condition = if (roleId == 25) {
         //Состояние пациента (только для роли сестра отделения)
-        val condition = condInfo.containsKey(event) match {
+        condInfo.containsKey(event) match {
           case false => null
           case condition => condInfo.get(event)
         }
-        this.data.add(new PatientsListEntry(event, bed, begDate, condition))
-      } else {
-        this.data.add(new PatientsListEntry(event, bed, begDate, null, mDiagnostics))
-      }
+      } else null
+      this.data.add(new PatientsListEntry(event, bed, begDate, condition, from, mDiagnostics))
     })
   }
 
@@ -168,14 +180,14 @@ class PatientsListRequestData {
 
   def this(departmentId: Int,
            doctorId: Int,
-           beginDate: Long,
+           roleId: Int,
            endDate: Long,
            sortingField: String,
            sortingMethod: String,
            limit: Int,
            page: Int) = {
     this()
-    this.filter = new PatientsListRequestDataFilter(departmentId, doctorId, beginDate, endDate)
+    this.filter = new PatientsListRequestDataFilter(departmentId, doctorId, roleId, endDate)
     this.sortingField = sortingField match {
       case null => {"id"}
       case _ => {sortingField}
@@ -190,6 +202,11 @@ class PatientsListRequestData {
 
     this.sortingFieldInternal = this.filter.toSortingString(this.sortingField)
   }
+
+  def rewriteRecordsCount(recordsCount: java.lang.Long) = {
+    this.recordsCount = recordsCount.longValue()
+    true
+  }
 }
 
 @XmlType(name = "patientsListRequestDataFilter")
@@ -200,43 +217,39 @@ class PatientsListRequestDataFilter {
   @BeanProperty
   var doctorId: Int = _        // — Врач
   @BeanProperty
-  var beginDate: Date = _     // — Дата начала выборки
+  var roleId: Int = _         // — Авторизационная роль
   @BeanProperty
-  var endDate: Date = _       // — Дата конца  выборки
+  var endDate: Date = _       // — Дата до которой выборка
 
   def this(departmentId: Int,
            doctorId: Int,
-           beginDate: Long,
+           roleId: Int,
            endDate: Long) = {
 
     this()
     this.departmentId = departmentId
     this.doctorId = doctorId
-    this.beginDate  = new Date(beginDate)  //Нулевая дата
-    this.endDate =  if(endDate==0) { new Date() } //Дата на время запроса
-                    else new Date(endDate)
+    this.roleId = roleId
+    this.endDate =  if(endDate==0) new Date() else new Date(endDate)
   }
 
   def toQueryStructure() = {
     var qs = new QueryDataStructure()
     if(this.departmentId>0){
-      qs.query += ("AND org.masterDepartment.id = :departmentId\n")
       qs.add("departmentId", this.departmentId:java.lang.Integer)
     }
-    if(this.doctorId>0){
+    if(this.doctorId>0 && roleId!=25){  //Для сестры отделения выводим всех пациентов
       qs.query += ("AND e.executor.id = :doctorId\n")
       qs.add("doctorId", this.doctorId:java.lang.Integer)
     }
-    if(this.beginDate!=null && this.endDate!=null){
-      qs.query += ("AND e.createDatetime BETWEEN :beginDate AND :endDate\n")
-      qs.add("beginDate", this.beginDate)
+    if(this.endDate!=null){
       qs.add("endDate", this.endDate)
     }
     qs
   }
   def toSortingString (sortingField: String) = {
     val sortingFieldInternal = sortingField match {
-      case "createDatetime"| "start" | "begDate" => {"e.setDate"}
+      case "createDatetime"| "start" | "begDate" => {"a.begDate"}
       case "end" | "endDate" => {"e.execDate"}
       case "doctor" => {"e.executor.lastName, e.executor.firstName, e.executor.patrName"}
       case "department" => {"org.masterDepartment.name"}
@@ -273,6 +286,9 @@ class PatientsListEntry {
   var hospitalBed: HospitalBedContainer = _    //Палата/Койка
 
   @BeanProperty
+  var movingFrom: IdNameContainer = _    //Переведен из (Заполняется когда пациент не лежит на койке (т.е находится в процессе движения))
+
+  @BeanProperty
   var doctor: DoctorSpecsContainer = _   //Врач + Специальность + Отделение
 
   @BeanProperty
@@ -298,7 +314,10 @@ class PatientsListEntry {
   @BeanProperty
   var condition: PersonConditionContainer = _
 
-  def this(event: Event, bed: OrgStructureHospitalBed, condition: java.util.Map[ActionProperty, java.util.List[APValue]]) {
+  def this(event: Event,
+           bed: OrgStructureHospitalBed,
+           condition: java.util.Map[ActionProperty, java.util.List[APValue]],
+           from: OrgStructure) {
      this()
      val patient = event.getPatient
      this.id = event.getId.intValue()
@@ -312,21 +331,23 @@ class PatientsListEntry {
         this.hospitalBed = new HospitalBedContainer(bed)
      if(condition!=null)
         this.condition = new PersonConditionContainer(condition)
+     if(from!=null)
+        this.movingFrom = new IdNameContainer(from.getId.intValue(),from.getName)
   }
 
   def this(event: Event,
            bed: OrgStructureHospitalBed,
            begDate: Date,
-           condition: java.util.Map[ActionProperty, java.util.List[APValue]]) {
-    this(event, bed, condition)
+           condition: java.util.Map[ActionProperty, java.util.List[APValue]],
+           from: OrgStructure) {
+    this(event, bed, condition, from)
     val eType = event.getEventType
     if (eType.getFinance!=null)
       this.finance = new IdNameContainer(eType.getFinance.getId.intValue(), eType.getFinance.getName)
     if (eType.getRequestType!=null){
       val msecInDay = 1000 * 60 * 60 * 24
-      val beginDate = begDate.getTime
       val nowDate = (new Date()).getTime
-      val diffOfDays = (nowDate - beginDate)/msecInDay
+      val diffOfDays = if(begDate!=null)(nowDate - begDate.getTime)/msecInDay else 0
 
       this.totalDays = eType.getRequestType.getId.intValue() match {
         case 1 => "Проведено %d койко-дней".format(diffOfDays+1)
@@ -339,8 +360,9 @@ class PatientsListEntry {
            bed: OrgStructureHospitalBed,
            begDate: Date,
            condition: java.util.Map[ActionProperty, java.util.List[APValue]],
+           from: OrgStructure,
            mDiagnostics: (Int)=> java.util.List[Diagnostic]) {
-    this(event, bed, begDate, condition)
+    this(event, bed, begDate, condition, from)
     if (mDiagnostics!=null){
        val diagnostics = mDiagnostics(event.getId.intValue())
        if (diagnostics!=null && diagnostics.size()>0) {
@@ -385,6 +407,11 @@ class HospitalBedContainer {
     this.code = bed.getCode
     this.name = bed.getName
     this.raw =  ""
+  }
+
+  def this(raw: String) {  //Записываем отделение откуда переведен (если нет койки)
+    this()
+    this.raw =raw
   }
 }
 

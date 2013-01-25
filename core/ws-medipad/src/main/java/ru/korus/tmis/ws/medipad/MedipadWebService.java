@@ -256,7 +256,7 @@ public interface MedipadWebService extends Serializable {
     JSONCommonData getPrimaryAssessmentById (int assessmentId, AuthData authData) throws CoreException;
 
     @WebMethod
-    String getAllPatientsForDepartmentIdAndDoctorIdByPeriod(PatientsListRequestData requestData, int role, AuthData auth) throws CoreException;
+    String getAllPatientsForDepartmentIdAndDoctorIdByPeriod(PatientsListRequestData requestData, AuthData auth) throws CoreException;
 
     @WebMethod
     AssessmentsListData getListOfAssessmentsForPatientByEvent(AssessmentsListRequestData requestData, AuthData auth) throws CoreException;

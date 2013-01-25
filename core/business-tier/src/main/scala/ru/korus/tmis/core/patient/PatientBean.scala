@@ -93,6 +93,9 @@ class PatientBean
 
   @EJB
   private var dbDiagnocticsBean: DbDiagnosticBeanLocal = _
+
+  @EJB
+  private var dbOrgStructureBean: DbOrgStructureBeanLocal = _
   //////////////////////////////////////////////////////////////////////////////
 
   def getCurrentPatientsForDoctor(userData: AuthData) = {
@@ -353,20 +356,22 @@ class PatientBean
     })
   }
 
-  def getAllPatientsForDepartmentIdAndDoctorIdByPeriod(requestData: PatientsListRequestData, role: Int, authData: AuthData) = {
+  //!!!!!!!!!!!!!!!!!!!!
+  def getAllPatientsForDepartmentIdAndDoctorIdByPeriod(requestData: PatientsListRequestData, authData: AuthData) = {
 
+    val role = requestData.filter.roleId
     val mapper: ObjectMapper = new ObjectMapper()
 
-    requestData.setRecordsCount(customQuery.getCountActiveEventsForDepartmentAndDoctor(requestData.filter))
-    val events = customQuery.getActiveEventsForDepartmentAndDoctor( requestData.page-1,
-                                                                    requestData.limit,
-                                                                    requestData.sortingFieldInternal,
-                                                                    requestData.sortingMethod,
-                                                                    requestData.filter)
+    val eventsMap = customQuery.getActiveEventsForDepartmentAndDoctor(requestData.page-1,
+                                                                      requestData.limit,
+                                                                      requestData.sortingFieldInternal,
+                                                                      requestData.sortingMethod,
+                                                                      requestData.filter,
+                                                                      requestData.rewriteRecordsCount _)
 
     var conditionsInfo = new java.util.HashMap[Event, java.util.Map[ActionProperty, java.util.List[APValue]]]
-    if(role == 1) {  //Для сестры отделения только
-      val conditions = customQuery.getLastAssessmentByEvents(events)
+    if(role == 25) {  //Для сестры отделения только
+      val conditions = customQuery.getLastAssessmentByEvents(eventsMap.keySet().toList)   //Последний экшн осмотра
       conditions.foreach(
         c => {
           val apList = dbActionProperty.getActionPropertiesByActionIdAndTypeNames(c._2.getId.intValue,List("Состояние", "ЧСС", "АД нижн.","АД верхн."))
@@ -377,11 +382,11 @@ class PatientBean
     }
     else mapper.getSerializationConfig().setSerializationView(classOf[PatientsListDataViews.AttendingDoctorView])
 
-    mapper.writeValueAsString(new PatientsListData(events,
+    mapper.writeValueAsString(new PatientsListData(eventsMap,
                                                    requestData,
                                                    role,
                                                    conditionsInfo,
-                                                   actionBean.getLastActionByActionTypeIdAndEventId _,
+                                                   dbOrgStructureBean.getOrgStructureById _,
                                                    dbActionProperty.getActionPropertiesByActionIdAndRbCoreActionPropertyIds _,
                                                    dbRbCoreActionPropertyBean.getRbCoreActionPropertiesByIds _,
                                                    dbDiagnocticsBean.getDiagnosticsByEventId _))

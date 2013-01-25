@@ -3,7 +3,7 @@ package ru.korus.tmis.core.database
 import ru.korus.tmis.core.entity.model._
 import ru.korus.tmis.core.indicators.IndicatorValue
 import ru.korus.tmis.core.logging.LoggingInterceptor
-import ru.korus.tmis.util.I18nable
+import ru.korus.tmis.util.{CAPids, I18nable}
 
 import grizzled.slf4j.Logging
 import java.util.Date
@@ -32,7 +32,8 @@ import collection.immutable.ListMap
 class DbCustomQueryBean
   extends DbCustomQueryLocal
   with Logging
-  with I18nable {
+  with I18nable
+  with CAPids{
 
   @PersistenceContext(unitName = "s11r64")
   var em: EntityManager = _
@@ -74,7 +75,12 @@ class DbCustomQueryBean
     events
   }
 
-  def getActiveEventsForDepartmentAndDoctor(page: Int, limit: Int, sortingField: String, sortingMethod: String, filter: Object) = {
+  def getActiveEventsForDepartmentAndDoctor(page: Int,
+                                            limit: Int,
+                                            sortingField: String,
+                                            sortingMethod: String,
+                                            filter: Object,
+                                            records: (java.lang.Long) => java.lang.Boolean) = {
 
     val sorting = "ORDER BY %s %s".format(sortingField, sortingMethod)
     val queryStr: QueryDataStructure = if (filter.isInstanceOf[PatientsListRequestDataFilter]) {
@@ -84,36 +90,35 @@ class DbCustomQueryBean
       new QueryDataStructure()
     }
 
-    var typed = em.createQuery(ActiveEventsByDepartmentIdAndDoctorIdBetweenDatesQuery.format("e", queryStr.query, i18n("db.action.movingFlatCode"), "GROUP BY e", sorting), classOf[Array[AnyRef]])
-      .setMaxResults(limit)
-      .setFirstResult(limit * page)
+    val typed = em.createQuery(ActiveEventsByDepartmentIdAndDoctorIdBetweenDatesQuery.format("e, a, MAX(a.createDatetime)",
+                                                                                              queryStr.query,
+                                                                                              i18n("db.action.movingFlatCode"),
+                                                                                              i18n("db.actionType.hospitalization.primary"),
+                                                                                              iCapIds("db.rbCAP.moving.id.movedIn"),
+                                                                                              iCapIds("db.rbCAP.hosp.primary.id.sentTo"),
+                                                                                               "GROUP BY e, a", sorting), classOf[Array[AnyRef]])
+                  //.setMaxResults(limit)
+                  //.setFirstResult(limit * page)
 
     if (queryStr.data.size() > 0) {
       queryStr.data.foreach(qdp => typed.setParameter(qdp.name, qdp.value))
     }
-    val result = typed.getResultList
 
-    val events = result.map((e) => e(0).asInstanceOf[Event])
-    events.foreach((event) => em.detach(event))
-    events
-  }
+    val events = typed.getResultList.foldLeft(new java.util.LinkedHashMap[Event, Action])(
+                        (map, e) => {
+                                      map.put(e(0).asInstanceOf[Event], e(1).asInstanceOf[Action])
+                                      em.detach(e(0))
+                                      em.detach(e(1))
+                                      map
+                                    })
+    //Перепишем общее количество записей для запроса
+    if (records!=null) records(events.size)
 
-  def getCountActiveEventsForDepartmentAndDoctor(filter: Object) = {
-
-    val queryStr: QueryDataStructure = if (filter.isInstanceOf[PatientsListRequestDataFilter]) {
-      filter.asInstanceOf[PatientsListRequestDataFilter].toQueryStructure()
-    }
-    else {
-      new QueryDataStructure()
-    }
-
-    var typed = em.createQuery(ActiveEventsByDepartmentIdAndDoctorIdBetweenDatesQuery.format("count(e)", queryStr.query, i18n("db.action.movingFlatCode"), "", ""), classOf[Array[AnyRef]])
-
-    if (queryStr.data.size() > 0) {
-      queryStr.data.foreach(qdp => typed.setParameter(qdp.name, qdp.value))
-    }
-    val result = typed.getSingleResult
-    result(0).asInstanceOf[Long]
+    //проведем  разбиение на страницы вручную (необходимо чтобы не использовать отдельный запрос на recordcounts)
+    if((events.size - limit*(page+1))>0)
+      events.dropRight(events.size - limit*(page+1)).drop(page*limit)
+    else
+      events.drop(page*limit)
   }
 
   def getAdmissionsByEvents(events: java.util.List[Event]) = {
@@ -960,9 +965,9 @@ class DbCustomQueryBean
     GROUP BY e
                                         """.format(i18n("db.action.movingFlatCode"))
 
-
-  val ActiveEventsByDepartmentIdAndDoctorIdBetweenDatesQuery = """
-    SELECT %s, MAX(a.createDatetime), MAX(e.executor.id), MAX(org.masterDepartment.id)
+  //Спецификация https://docs.google.com/spreadsheet/ccc?key=0AgE0ILPv06JcdEE0ajBZdmk1a29ncjlteUp3VUI2MEE#gid=0
+  val ActiveEventsByDepartmentIdAndDoctorIdBetweenDatesQuery2 = """
+    SELECT %s, MAX(a.createDatetime)
     FROM
       Event e,
       Action a,
@@ -970,7 +975,7 @@ class DbCustomQueryBean
       APValueHospitalBed bed,
       OrgStructureHospitalBed org
     WHERE
-      e.execDate is NULL AND
+      (e.execDate IS NULL OR e.execDate > :endDate) AND
       e.id = a.event.id AND
       a.id = ap.action.id AND
       ap.id = bed.id.id AND
@@ -986,31 +991,225 @@ class DbCustomQueryBean
           actionType.flatCode = '%s'
       )
     AND
-      e.id NOT IN
-      (
-        SELECT leaved.event.id
-        FROM
-          Action leaved
-        WHERE
-          leaved.actionType.id IN
-          (
-            SELECT at.id
-            FROM
-              ActionType at
-            WHERE
-              at.flatCode = 'leaved'
-          )
-        AND
-          leaved.event.id = e.id
-      )
-    AND
       e.deleted = 0
     %s
     %s
                                                                """
+
+  //Спецификация https://docs.google.com/spreadsheet/ccc?key=0AgE0ILPv06JcdEE0ajBZdmk1a29ncjlteUp3VUI2MEE#gid=0
+  val ActiveEventsByDepartmentIdAndDoctorIdBetweenDatesQuery3 = """
+    SELECT %s, MAX(a.createDatetime)
+    FROM
+      Event e,
+      Action a,
+      ActionProperty ap,
+      APValueHospitalBed bed,
+      APValueOrgStructure valOrg,
+      OrgStructureHospitalBed orgBed,
+      OrgStructure org
+    WHERE
+      (e.execDate IS NULL OR e.execDate > :endDate) AND
+      e.id = a.event.id
+      %s
+      AND
+      a.id = ap.action.id AND
+      (
+        (
+          a.actionType.id IN (
+            SELECT actionType.id
+            FROM
+              ActionType actionType
+            WHERE
+              actionType.flatCode = '%s'
+          )
+          AND
+            a.begDate < :endDate AND
+            (
+              (
+                (a.endDate IS NULL OR a.endDate >= :endDate) AND
+                ap.id = bed.id.id AND
+                bed.value.id = orgBed.id AND
+                orgBed.masterDepartment.id = :departmentId
+              )
+              OR
+              (
+                (a.endDate IS NOT NULL OR a.endDate < :endDate) AND
+                ap.id = valOrg.id.id AND
+                valOrg.value.id = :departmentId AND
+                ap.actionPropertyType.id IN (
+                SELECT cap.actionPropertyType.id
+                FROM
+                   RbCoreActionProperty cap
+                   WHERE
+                    cap.actionType.id = a.actionType.id AND
+                    cap.id = '%s'
+                )
+              )
+            )
+        )
+        OR
+        (
+          a.actionType.id = '112' AND
+          ap.id = valOrg.id.id AND
+          valOrg.value.id = :departmentId AND
+          ap.actionPropertyType.id IN (
+            SELECT cap2.actionPropertyType.id
+            FROM
+              RbCoreActionProperty cap2
+            WHERE
+              cap2.actionType.id = a.actionType.id AND
+              cap2.id = '%s'
+          )
+        )
+      )
+      AND
+        e.deleted = 0
+    %s
+    %s
+                                                               """
+
+  val ActiveEventsByDepartmentIdAndDoctorIdBetweenDatesQuery = """
+  SELECT %s
+  FROM Event e,
+       Action a
+  WHERE
+    (e.execDate IS NULL OR e.execDate > :endDate)
+  AND
+    e.deleted = '0'
+  AND
+    e.id NOT IN
+    (
+      SELECT leaved.event.id
+      FROM
+        Action leaved
+      WHERE
+        leaved.actionType.id IN
+        (
+          SELECT at.id
+          FROM
+            ActionType at
+          WHERE
+            at.flatCode = 'leaved'
+        )
+      AND
+        leaved.event.id = e.id
+      AND
+        leaved.createDatetime < :endDate
+    )
+  %s
+  AND
+  (
+    a.actionType.id IN
+    (
+      SELECT actionType.id
+      FROM
+        ActionType actionType
+      WHERE
+        actionType.flatCode = '%s'
+    )
+    OR
+      a.actionType.id = '%s'
+  )
+  AND
+    a.event.id = e.id
+  AND
+    exists
+    (
+      SELECT ap.id
+      FROM
+        ActionProperty ap
+      WHERE
+          ap.action.id = a.id
+        AND
+        (
+          ap.action.begDate < :endDate
+          AND
+          (
+            (
+              (ap.action.endDate IS NULL OR ap.action.endDate >= :endDate)
+              AND
+              exists
+              (
+                SELECT orgBed.id
+                FROM
+                  APValueHospitalBed bed,
+                  OrgStructureHospitalBed orgBed
+                WHERE
+                  bed.id.id = ap.id
+                AND
+                  bed.value.id = orgBed.id
+                AND
+                  orgBed.masterDepartment.id = :departmentId
+              )
+            )
+            OR
+            (
+              ap.actionPropertyType.id IN
+              (
+                SELECT cap.actionPropertyType.id
+                FROM
+                  RbCoreActionProperty cap
+                WHERE
+                  cap.actionType.id = a.actionType.id
+                AND
+                (
+                  cap.id = '%s'
+                  AND
+                    (ap.action.endDate IS NOT NULL OR ap.action.endDate < :endDate)
+                )
+                OR
+                  cap.id = '%s'
+              )
+              AND
+                exists
+                (
+                  SELECT val.id
+                  FROM
+                    APValueOrgStructure val
+                  WHERE
+                    ap.id = val.id.id
+                  AND
+                    val.value.id = :departmentId
+                )
+            )
+          )
+        )
+    )
+    %s
+    %s
+                                                               """
+
   /*
-       %s
-    GROUP BY e
+  OR
+          (
+            ap.actionPropertyType.id IN
+            (
+              SELECT cap.actionPropertyType.id
+              FROM
+                RbCoreActionProperty cap
+              WHERE
+                cap.actionType.id = a.actionType.id
+              AND
+              (
+                cap.id = '%s'
+                AND
+                  (ap.action.endDate IS NOT NULL OR ap.action.endDate < :endDate)
+              )
+              OR
+                cap.id = '%s'
+            )
+            AND
+              exists
+              (
+                SELECT val.id
+                FROM
+                  APValueOrgStructure val
+                WHERE
+                  ap.id = val.id.id
+                AND
+                  val.value.id = :departmentId
+              )
+          )
    */
   val ActionsByEventIdsAndFlatCodeQuery = """
     SELECT e, a
