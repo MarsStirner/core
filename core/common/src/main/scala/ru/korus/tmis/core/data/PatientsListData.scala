@@ -88,11 +88,15 @@ class PatientsListData {
                 if (result.getId.compareTo(ConfigManager.RbCAPIds("db.rbCAP.moving.id.beginTime").toInt :java.lang.Integer)==0) {
                   begDate = this.getFormattedDate(prop._1.getAction.getBegDate, apValues, result.getActionPropertyType.getId.intValue())
                 }
-                else if (result.getId.compareTo(ConfigManager.RbCAPIds("db.rbCAP.moving.id.bed").toInt :java.lang.Integer)==0) {
+                else if (result.getId.compareTo(ConfigManager.RbCAPIds("db.rbCAP.moving.id.bed").toInt :java.lang.Integer)==0 &&
+                         prop._2!=null &&
+                         prop._2.size()>0) {
                   bed = prop._2.get(0).getValue.asInstanceOf[OrgStructureHospitalBed]
                 }
                 else if (result.getId.compareTo(ConfigManager.RbCAPIds("db.rbCAP.moving.id.movedIn").toInt :java.lang.Integer)==0 &&
-                         prop._2.get(0).getValue.asInstanceOf[OrgStructure].getId.intValue() == requestData.filter.departmentId) {
+                  prop._2!=null &&
+                  prop._2.size()>0 &&
+                  prop._2.get(0).getValue.asInstanceOf[OrgStructure].getId.intValue() == requestData.filter.departmentId) {
                   from = if(bed!=null)bed.getMasterDepartment else null
                   bed = null
                 }
@@ -312,7 +316,7 @@ class PatientsListEntry {
 
   @JsonView(Array(classOf[PatientsListDataViews.NurseView]))
   @BeanProperty
-  var condition: PersonConditionContainer = _
+  var condition: PersonConditionContainer = _       //Состояние пациента
 
   def this(event: Event,
            bed: OrgStructureHospitalBed,
