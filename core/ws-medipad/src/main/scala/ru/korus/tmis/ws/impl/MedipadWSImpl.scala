@@ -33,6 +33,7 @@ import java.util._
 import ru.korus.tmis.util.StringId
 import java.util
 import javax.swing.JList
+import scala.reflect.BeanProperty
 
 @Named
 @WebService(
@@ -773,9 +774,24 @@ class MedipadWSImpl
     hospitalBedBean.callOffHospitalBedForPatient(actionId, authData)
   }
 
+  //Список коек
+  def getVacantHospitalBeds(departmentId: Int, authData: AuthData) = {
+    new BedDataListContainer(hospitalBedBean.getCaseHospitalBedsByDepartmentId(departmentId), departmentId)
+  }
+
   def getFormOfAccountingMovementOfPatients(departmentId: Int) = {
     val linear = seventhFormBean.fillInSeventhForm(departmentId, null, null/*previousMedDate, currentMedDate*/)
     new FormOfAccountingMovementOfPatientsData(linear, null)
+  }
+
+  def getForm007(departmentId: Int,
+                 beginDate: Long,
+                 endDate: Long,
+                 authData: AuthData) = {
+    val begDate = new Date(beginDate)
+    val eDate = new Date(endDate)
+    val linear = seventhFormBean.getForm007LinearView(departmentId, begDate, eDate)
+    null
   }
 
   def movingPatientToDepartment(eventId: Int, data: HospitalBedData, authData: AuthData) = {

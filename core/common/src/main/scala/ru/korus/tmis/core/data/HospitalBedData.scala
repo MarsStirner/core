@@ -650,3 +650,52 @@ class BedDataContainer {
     this.busy = if(busy) "yes" else "no"
   }
 }
+
+@XmlType(name = "bedDataListContainer")
+@XmlRootElement(name = "bedDataListContainer")
+@JsonIgnoreProperties(ignoreUnknown = true)
+class BedDataListContainer {
+  @BeanProperty
+  var data: java.util.LinkedList[BedDataContainer] = new java.util.LinkedList[BedDataContainer]
+  @BeanProperty
+  var requestData: BedDataListRequest = _
+  /**
+   * Конструктор BedDataListContainer
+   * @param beds Список занятых/свободных коек.
+   */
+  def this(beds: java.util.Map[java.lang.Integer, java.lang.Boolean], departmentId: Int) {
+    this()
+    this.requestData = new BedDataListRequest(departmentId)
+    beds.foreach(bed=>{
+      this.data.add(new BedDataContainer(bed._1.intValue(), bed._2.booleanValue()))
+    })
+  }
+}
+
+@XmlType(name = "bedDataListRequest")
+@XmlRootElement(name = "bedDataListRequest")
+@JsonIgnoreProperties(ignoreUnknown = true)
+class BedDataListRequest {
+  @BeanProperty
+  var filter: BedDataListFilter = _
+
+  def this(departmentId: Int){
+    this()
+    this.filter = new BedDataListFilter(departmentId)
+  }
+}
+
+@XmlType(name = "bedDataListFilter")
+@XmlRootElement(name = "bedDataListFilter")
+@JsonIgnoreProperties(ignoreUnknown = true)
+class BedDataListFilter {
+
+  @BeanProperty
+  var departmentId: Int = _
+
+  def this(departmentId: Int){
+    this()
+    this.departmentId = departmentId
+  }
+
+}

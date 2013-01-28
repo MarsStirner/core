@@ -811,6 +811,30 @@ public class PatientRegistryRESTImpl implements Serializable {
     }
 
     /**
+     * Сервис на получение списка коек с меткой свободно/занято.
+     * Url: .../hospitalbed/vacant/{departmentId}
+     * Since: ver 1.0.0.57
+     * @param departmentId Идентификатор отделения.
+     * @param callback callback запроса.
+     * @param servRequest Контекст запроса.
+     * @return Список коек в json-формате.
+     */
+    @GET
+    @Path("/hospitalbed/vacant")
+    @Produces("application/x-javascript")
+    public Object getVacantHospitalBeds(@QueryParam("filter[departmentId]") int departmentId,
+                                        @QueryParam("callback") String callback,
+                                        @Context HttpServletRequest servRequest) {
+        AuthData auth = wsImpl.checkTokenCookies(servRequest);
+        //Отделение обязательное поле, если не задано в запросе, то берем из роли специалиста
+        int depId = (departmentId>0) ? departmentId : auth.getUser().getOrgStructure().getId().intValue();
+
+        Object oip = wsImpl.getVacantHospitalBeds(depId, auth);
+        JSONWithPadding returnValue = new JSONWithPadding(oip, callback);
+        return returnValue;
+    }
+
+    /**
      * Форма 007
      * @param departmentId Идентификатор отделения.
      * @param callback  callback запроса.
@@ -831,6 +855,38 @@ public class PatientRegistryRESTImpl implements Serializable {
         JSONWithPadding returnValue = new JSONWithPadding(oip, callback);
         return returnValue;
     }
+
+    /**
+     * Форма 007
+     * Specification: https://docs.google.com/document/d/1a0AYF8QVpEMl_pKRcFDnP2vQzRmO-IkcG5JNStEcjMI/edit#heading=h.6ll2qz4wdcfr
+     * URL: .../reports/f007
+     * Since: ver 1.0.0.57
+     * @param departmentId Идентификатор отделения, для которого отчет (задавать в url как QueryParam: "filter[departmentId]=...")
+     * @param beginDate Дата и время начала выборки (задавать в url как QueryParam: "filter[beginDate]=...")
+     *                Если не задан, то по умолчанию начало текущих медицинских суток (now 8:00).
+     * @param endDate Дата и время конца выборки (задавать в url как QueryParam: "filter[endDate]=...").
+     *                Если не задан, то по умолчанию конец текущих медицинских суток (today 7:59).
+     * @param callback  callback запроса.
+     * @param servRequest Контекст запроса.
+     * @return com.sun.jersey.api.json.JSONWithPadding как Object
+     * @throws CoreException
+     * @see CoreException
+     */
+    @GET
+    @Path("/reports/f007")
+    @Produces("application/x-javascript")
+    public Object getForm007( @QueryParam("filter[departmentId]") int departmentId,
+                              @QueryParam("filter[beginDate]")long beginDate,
+                              @QueryParam("filter[endDate]")long endDate,
+                              @QueryParam("callback") String callback,
+                              @Context HttpServletRequest servRequest) {
+
+        AuthData auth = wsImpl.checkTokenCookies(servRequest);
+        Object oip = wsImpl.getForm007(departmentId, beginDate, endDate, auth);
+        JSONWithPadding returnValue = new JSONWithPadding(oip, callback);
+        return returnValue;
+    }
+
 
     /**
      * Создание направления/перевода в отделение.
