@@ -5,7 +5,8 @@ import org.slf4j.LoggerFactory;
 import ru.korus.tmis.core.database.DbManagerBeanLocal;
 import ru.korus.tmis.core.entity.model.Action;
 import ru.korus.tmis.core.entity.model.ActionType;
-import ru.korus.tmis.core.entity.model.hl7.Pharmacy;
+import ru.korus.tmis.core.entity.model.pharmacy.Pharmacy;
+import ru.korus.tmis.core.entity.model.pharmacy.PharmacyStatus;
 import ru.korus.tmis.core.exception.CoreException;
 import ru.korus.tmis.core.logging.LoggingInterceptor;
 
@@ -45,7 +46,7 @@ public class DbPharmacyBean implements DbPharmacyBeanLocal {
             pharmacy = new Pharmacy();
             pharmacy.setActionId(action.getId());
             pharmacy.setFlatCode(actionType.getFlatCode());
-            pharmacy.setStatus(PharmacyStatus.ADDED.toString());
+            pharmacy.setStatus(PharmacyStatus.ADDED);
             dbManager.persist(pharmacy);
             logger.info("create pharmacy {}", pharmacy);
         } else {

@@ -1,7 +1,7 @@
 package ru.korus.tmis.util;
 
 /**
- * Created with IntelliJ IDEA.
+ * Author:
  * User: dnosov
  * Date: 27.09.12
  * Time: 14:57

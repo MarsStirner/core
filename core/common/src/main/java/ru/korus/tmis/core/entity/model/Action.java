@@ -163,6 +163,11 @@ public class Action
     @ManyToOne
     @JoinColumn(name = "uuid_id")
     private UUID uuid;
+
+
+    @Basic(optional = false)
+    @Column(name = "parentAction_id")
+    private int parentActionId = 0;
     ////////////////////////////////////////////////////////////////////////////
     // Custom mappings
     ////////////////////////////////////////////////////////////////////////////
@@ -518,6 +523,14 @@ public class Action
 
     public void setTissue(Set<Tissue> tissue) {
         this.tissue = tissue;
+    }
+
+    public int getParentActionId() {
+        return parentActionId;
+    }
+
+    public void setParentActionId(int parentActionId) {
+        this.parentActionId = parentActionId;
     }
 
     @Override

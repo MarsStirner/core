@@ -8,10 +8,7 @@ import misexchange.RCMRIN000002UV02;
 import org.hl7.v3.*;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import ru.korus.tmis.core.entity.model.Action;
-import ru.korus.tmis.core.entity.model.OrgStructure;
-import ru.korus.tmis.core.entity.model.Patient;
-import ru.korus.tmis.core.entity.model.Staff;
+import ru.korus.tmis.core.entity.model.*;
 import ru.korus.tmis.pharmacy.exception.SoapConnectionException;
 
 import javax.xml.bind.JAXBContext;
@@ -37,21 +34,27 @@ public class HL7PacketBuilder {
 
     final static Logger logger = LoggerFactory.getLogger(HL7PacketBuilder.class);
 
+
+    private static final ObjectFactory factoryMis = new ObjectFactory();
+    private static final org.hl7.v3.ObjectFactory factoryHL7 = new org.hl7.v3.ObjectFactory();
+
     /**
      * Формирование и отправка сообщения о госпитализации PRPA_IN402001UV02
      */
     public static MCCIIN000002UV01 processReceived(
             final Action action,
-            final String externalId,
-            final String externalUUID,
-            final String orgUUID,
-            final Patient client,
-            final String clientUUID) throws SoapConnectionException {
+            final OrgStructure orgStructure) throws SoapConnectionException {
 
+        final Event event = action.getEvent();
+        final Patient client = event.getPatient();
+        final String uuidExternalId = event.getUuid().getUuid();
+        final String externalId = event.getExternalId();
         final String uuidDocument = UUID.randomUUID().toString();
-        logger.info("process RECEIVED document {}, action {}, orgStrucUUID {}, client {}", uuidDocument, action, orgUUID, client);
-        final ObjectFactory factoryMis = new ObjectFactory();
-        final org.hl7.v3.ObjectFactory factoryHL7 = new org.hl7.v3.ObjectFactory();
+        final String uuidOrgStructure = orgStructure.getUuid().getUuid();
+        final String uuidClient = client.getUuid().getUuid();
+
+        logger.info("process RECEIVED document {}, action {}, event {}, orgStructure {}, client {}",
+                uuidDocument, action, event, orgStructure, client);
 
         final SimpleDateFormat sdf = new SimpleDateFormat("yyyyMMddHHmmss");
 
@@ -61,99 +64,99 @@ public class HL7PacketBuilder {
             final PRPAIN402001UV022 prpain402001UV022 = factoryHL7.createPRPAIN402001UV022();
             prpain402001UV022.setITSVersion("XML_1.0");
 
-            final TS ts = new TS();
+            final TS ts = factoryHL7.createTS();
             ts.setValue(sdf.format(action.getCreateDatetime()));
             prpain402001UV022.setCreationTime(ts);
 
-            final CS askCode = new CS();
+            final CS askCode = factoryHL7.createCS();
             askCode.setCode("AL");
             prpain402001UV022.setAcceptAckCode(askCode);
 
-            final II id = new II();
+            final II id = factoryHL7.createII();
             id.setRoot(uuidDocument);
             prpain402001UV022.setId(id);
 
-            final II interactionId = new II();
+            final II interactionId = factoryHL7.createII();
             interactionId.setRoot("2.16.840.1.113883.1.18");
             interactionId.setExtension("PRPA_IN402001UV02");
             prpain402001UV022.setInteractionId(interactionId);
 
-            final CS processingCode = new CS();
+            final CS processingCode = factoryHL7.createCS();
             processingCode.setCode("P");
             prpain402001UV022.setProcessingCode(processingCode);
 
-            final CS processingModeCode = new CS();
+            final CS processingModeCode = factoryHL7.createCS();
             processingModeCode.setCode("T");
             prpain402001UV022.setProcessingModeCode(processingModeCode);
 
-            final MCCIMT000100UV01Sender sender = new MCCIMT000100UV01Sender();
+            final MCCIMT000100UV01Sender sender = factoryHL7.createMCCIMT000100UV01Sender();
             sender.setTypeCode(CommunicationFunctionType.SND);
-            final MCCIMT000100UV01Device device = new MCCIMT000100UV01Device();
+            final MCCIMT000100UV01Device device = factoryHL7.createMCCIMT000100UV01Device();
             device.setClassCode(EntityClassDevice.DEV);
             device.setDeterminerCode(EntityDeterminerSpecific.INSTANCE);
-            final II typeId = new II();
+            final II typeId = factoryHL7.createII();
             typeId.setNullFlavor(NullFlavor.fromValue("NI"));
             device.getId().add(typeId);
             sender.setDevice(device);
             prpain402001UV022.setSender(sender);
 
-            final MCCIMT000100UV01Receiver receiver = new MCCIMT000100UV01Receiver();
+            final MCCIMT000100UV01Receiver receiver = factoryHL7.createMCCIMT000100UV01Receiver();
             receiver.setTypeCode(CommunicationFunctionType.RCV);
-            final MCCIMT000100UV01Device device1 = new MCCIMT000100UV01Device();
+            final MCCIMT000100UV01Device device1 = factoryHL7.createMCCIMT000100UV01Device();
             device1.setClassCode(EntityClassDevice.DEV);
             device1.setDeterminerCode(EntityDeterminerSpecific.INSTANCE);
-            final II idReceiver = new II();
+            final II idReceiver = factoryHL7.createII();
             idReceiver.setNullFlavor(NullFlavor.NI);
             device1.getId().add(idReceiver);
             receiver.setDevice(device1);
             prpain402001UV022.getReceiver().add(receiver);
 
-            final PRPAIN402001UV02MCAIMT700201UV01ControlActProcess controlActProcess = new PRPAIN402001UV02MCAIMT700201UV01ControlActProcess();
+            final PRPAIN402001UV02MCAIMT700201UV01ControlActProcess controlActProcess = factoryHL7.createPRPAIN402001UV02MCAIMT700201UV01ControlActProcess();
             controlActProcess.setClassCode(ActClassControlAct.CACT);
             controlActProcess.setMoodCode(XActMoodIntentEvent.EVN);
 
-            final PRPAIN402001UV02MCAIMT700201UV01Subject2 subject2 = new PRPAIN402001UV02MCAIMT700201UV01Subject2();
+            final PRPAIN402001UV02MCAIMT700201UV01Subject2 subject2 = factoryHL7.createPRPAIN402001UV02MCAIMT700201UV01Subject2();
             subject2.setTypeCode(ActRelationshipHasSubject.SUBJ);
 
-            final PRPAMT402001UV02InpatientEncounterEvent event = new PRPAMT402001UV02InpatientEncounterEvent();
-            event.setClassCode(ActClassEncounter.ENC);
-            event.setMoodCode(ActMoodEventOccurrence.EVN);
-            final II typeId1 = new II();
-            typeId1.setRoot(externalUUID);
+            final PRPAMT402001UV02InpatientEncounterEvent inpatientEncounterEvent = factoryHL7.createPRPAMT402001UV02InpatientEncounterEvent();
+            inpatientEncounterEvent.setClassCode(ActClassEncounter.ENC);
+            inpatientEncounterEvent.setMoodCode(ActMoodEventOccurrence.EVN);
+            final II typeId1 = factoryHL7.createII();
+            typeId1.setRoot(uuidExternalId);
             typeId1.setExtension(externalId); //
-            event.getId().add(typeId1);
+            inpatientEncounterEvent.getId().add(typeId1);
 
-            final CD code = new CD();
+            final CD code = factoryHL7.createCD();
             code.setCodeSystem("2.16.840.1.113883.5.4");
             code.setCodeSystemName("actCode");
             code.setCode("IMP");
             code.setDisplayName("abc");
-            event.setCode(code);
+            inpatientEncounterEvent.setCode(code);
 
-            final CS statusCode = new CS();
+            final CS statusCode = factoryHL7.createCS();
             statusCode.setCode("completed");
-            event.setStatusCode(statusCode);
+            inpatientEncounterEvent.setStatusCode(statusCode);
 
-            final IVLTS effectiveTime = new IVLTS();
+            final IVLTS effectiveTime = factoryHL7.createIVLTS();
             final SimpleDateFormat effectiveDateFormat = new SimpleDateFormat("yyyyMMdd");
-            final IVXBTS dateBegin = new IVXBTS();
+            // final IVXBTS dateBegin = factoryHL7.createIVXBTS();
             effectiveTime.setValue(effectiveDateFormat.format(action.getCreateDatetime()));
 
 
-            event.setEffectiveTime(effectiveTime);
+            inpatientEncounterEvent.setEffectiveTime(effectiveTime);
 
-            final PQ lengthOfStayQuantity = new PQ();
+            final PQ lengthOfStayQuantity = factoryHL7.createPQ();
             lengthOfStayQuantity.setValue("5");
             lengthOfStayQuantity.setUnit("d");
-            event.setLengthOfStayQuantity(lengthOfStayQuantity);
+            inpatientEncounterEvent.setLengthOfStayQuantity(lengthOfStayQuantity);
 
-            final PRPAMT402001UV02Subject subject = new PRPAMT402001UV02Subject();
+            final PRPAMT402001UV02Subject subject = factoryHL7.createPRPAMT402001UV02Subject();
             subject.setTypeCode(ParticipationTargetSubject.SBJ);
             subject.setContextControlCode(ContextControl.OP);
-            final COCTMT050002UV07Patient patient = new COCTMT050002UV07Patient();
+            final COCTMT050002UV07Patient patient = factoryHL7.createCOCTMT050002UV07Patient();
             patient.setClassCode(RoleClassPatient.PAT);
-            final CS typeId2 = new CS();
-            typeId2.setCode(clientUUID);
+            final CS typeId2 = factoryHL7.createCS();
+            typeId2.setCode(uuidClient);
             patient.getId().add(typeId2);
 
             final COCTMT050002UV07Person uv07Person = factoryHL7.createCOCTMT050002UV07Person();
@@ -162,17 +165,17 @@ public class HL7PacketBuilder {
 
             uv07Person.setClassCode(EntityClass.PSN);
             uv07Person.setDeterminerCode(EntityDeterminer.INSTANCE);
-            final II typeId3 = new II();
+            final II typeId3 = factoryHL7.createII();
             typeId3.setExtension(client.getSnils());
             uv07Person.getId().add(typeId3);
 
-            final PN pn = new PN();
-            final EnGiven enGiven = new EnGiven();
+            final PN pn = factoryHL7.createPN();
+            final EnGiven enGiven = factoryHL7.createEnGiven();
             enGiven.getContent().add(client.getFirstName());
             JAXBElement<EnGiven> givenJAXBElement = factoryHL7.createENGiven(enGiven);
             pn.getContent().add(givenJAXBElement);
 
-            final EnGiven enGiven2 = new EnGiven();
+            final EnGiven enGiven2 = factoryHL7.createEnGiven();
             enGiven2.getContent().add(client.getPatrName());
             JAXBElement<EnGiven> givenJAXBElement2 = factoryHL7.createENGiven(enGiven2);
             givenJAXBElement2.setValue(enGiven2);
@@ -186,51 +189,51 @@ public class HL7PacketBuilder {
 
             uv07Person.getName().add(pn);
 
-            final CE administrativeGenderCode = new CE();
+            final CE administrativeGenderCode = factoryHL7.createCE();
             administrativeGenderCode.setCode("M");
             administrativeGenderCode.setCodeSystem("2.16.840.1.113883.5.1");
             uv07Person.setAdministrativeGenderCode(administrativeGenderCode);
 
-            final TS birthTime = new TS();
+            final TS birthTime = factoryHL7.createTS();
             SimpleDateFormat sdfBirthday = new SimpleDateFormat("YYYYddMM");
             birthTime.setValue(sdfBirthday.format(client.getBirthDate()));
             uv07Person.setBirthTime(birthTime);
             patientPerson.setValue(uv07Person);
             patient.setPatientPerson(patientPerson);
             subject.setPatient(patient);
-            event.setSubject(subject);
+            inpatientEncounterEvent.setSubject(subject);
 
 
             final PRPAMT402001UV02Admitter admitter = factoryHL7.createPRPAMT402001UV02Admitter();
             admitter.setNullFlavor(NullFlavor.NI);
             admitter.setTypeCode(ParticipationAdmitter.ADM);
-            final IVLTS time = new IVLTS();
+            final IVLTS time = factoryHL7.createIVLTS();
             time.setNullFlavor(NullFlavor.NI);
             admitter.setTime(time);
 
-            final COCTMT090100UV01AssignedPerson assignedPerson = new COCTMT090100UV01AssignedPerson();
+            final COCTMT090100UV01AssignedPerson assignedPerson = factoryHL7.createCOCTMT090100UV01AssignedPerson();
             assignedPerson.setClassCode(RoleClassAssignedEntity.ASSIGNED);
             admitter.setAssignedPerson(assignedPerson);
 
-            event.setAdmitter(admitter);
+            inpatientEncounterEvent.setAdmitter(admitter);
 
-            final PRPAMT402001UV02Location1 uv02Location1 = new PRPAMT402001UV02Location1();
+            final PRPAMT402001UV02Location1 uv02Location1 = factoryHL7.createPRPAMT402001UV02Location1();
             uv02Location1.setTypeCode(ParticipationTargetLocation.LOC);
             uv02Location1.setTime(time);
-            final CS statusCode1 = new CS();
+            final CS statusCode1 = factoryHL7.createCS();
             statusCode1.setCode("active");
             uv02Location1.setStatusCode(statusCode1);
 
-            final PRPAMT402001UV02ServiceDeliveryLocation deliveryLocation = new PRPAMT402001UV02ServiceDeliveryLocation();
+            final PRPAMT402001UV02ServiceDeliveryLocation deliveryLocation = factoryHL7.createPRPAMT402001UV02ServiceDeliveryLocation();
             deliveryLocation.setClassCode(RoleClassServiceDeliveryLocation.SDLOC);
-            final II typeId4 = new II();
-            typeId4.setRoot(orgUUID);
+            final II typeId4 = factoryHL7.createII();
+            typeId4.setRoot(uuidOrgStructure);
             deliveryLocation.getId().add(typeId4);
             uv02Location1.setServiceDeliveryLocation(deliveryLocation);
 
-            event.getLocation().add(uv02Location1);
+            inpatientEncounterEvent.getLocation().add(uv02Location1);
 
-            subject2.setInpatientEncounterEvent(event);
+            subject2.setInpatientEncounterEvent(inpatientEncounterEvent);
             controlActProcess.getSubject().add(subject2);
             prpain402001UV022.setControlActProcess(controlActProcess);
 
@@ -254,122 +257,122 @@ public class HL7PacketBuilder {
      * Формирование и отправка сообщения об отмене предыдущего сообщения о госпитализации
      * PRPA_IN402006UV02
      */
-    public static MCCIIN000002UV01 processDelReceived(
-            final Action action,
-            final String uuidExternalId,
-            final String externalId,
-            final String uuidClient,
-            final Patient client) throws SoapConnectionException {
+    public static MCCIIN000002UV01 processDelReceived(final Action action) throws SoapConnectionException {
+
+        final Event event = action.getEvent();
+        final Patient client = event.getPatient();
+        final String uuidExternalId = event.getUuid().getUuid();
+        final String externalId = event.getExternalId();
+        final String uuidClient = client.getUuid().getUuid();
 
         final String uuidDocument = UUID.randomUUID().toString();
         logger.info("process DEL_RECEIVED document {}, action {}, uuidExternalId {}, externalId {}, uuidClient {}, client {}",
                 action, uuidExternalId, externalId, uuidClient, client);
-        final ObjectFactory factory = new ObjectFactory();
-        final org.hl7.v3.ObjectFactory factoryHL7 = new org.hl7.v3.ObjectFactory();
+
         final SimpleDateFormat sdf = new SimpleDateFormat("yyyyMMddHHmmss");
         try {
-            final Request msg = factory.createPRPAIN402006UV02();
-            final PRPAIN402006UV022 prpain402006UV02 = new PRPAIN402006UV022();
+            final Request msg = factoryMis.createPRPAIN402006UV02();
+            final PRPAIN402006UV022 prpain402006UV02 = factoryHL7.createPRPAIN402006UV022();
             prpain402006UV02.setITSVersion("XML_1.0");
 
-            final II id = new II();
+            final II id = factoryHL7.createII();
             id.setRoot(uuidDocument);
             prpain402006UV02.setId(id);
 
-            final TS ts = new TS();
+            final TS ts = factoryHL7.createTS();
             ts.setValue(sdf.format(action.getCreateDatetime()));
             prpain402006UV02.setCreationTime(ts);
 
-            final II interactionId = new II();
+            final II interactionId = factoryHL7.createII();
             interactionId.setRoot("2.16.840.1.11.3883.1.18");
             interactionId.setExtension("PRPA_IN402006UV02");
             prpain402006UV02.setInteractionId(interactionId);
 
-            final CS processCode = new CS();
+            final CS processCode = factoryHL7.createCS();
             processCode.setCode("P");
             prpain402006UV02.setProcessingCode(processCode);
 
 
-            final CS processingModeCode = new CS();
+            final CS processingModeCode = factoryHL7.createCS();
             processingModeCode.setCode("T");
             prpain402006UV02.setProcessingModeCode(processingModeCode);
 
 
-            final CS acceptAckCode = new CS();
+            final CS acceptAckCode = factoryHL7.createCS();
             acceptAckCode.setCode("AL");
             prpain402006UV02.setAcceptAckCode(acceptAckCode);
 
             // receiver
-            final MCCIMT000100UV01Receiver uv01Receiver = new MCCIMT000100UV01Receiver();
+            final MCCIMT000100UV01Receiver uv01Receiver = factoryHL7.createMCCIMT000100UV01Receiver();
             uv01Receiver.setTypeCode(CommunicationFunctionType.RCV);
-            final MCCIMT000100UV01Device device = new MCCIMT000100UV01Device();
+            final MCCIMT000100UV01Device device = factoryHL7.createMCCIMT000100UV01Device();
             device.setClassCode(EntityClassDevice.DEV);
             device.setDeterminerCode(EntityDeterminerSpecific.INSTANCE);
-            final II ii = new II();
+            final II ii = factoryHL7.createII();
             ii.setNullFlavor(NullFlavor.NI);
             device.getId().add(ii);
             uv01Receiver.setDevice(device);
             prpain402006UV02.getReceiver().add(uv01Receiver);
 
             // sender
-            final MCCIMT000100UV01Sender sender = new MCCIMT000100UV01Sender();
+            final MCCIMT000100UV01Sender sender = factoryHL7.createMCCIMT000100UV01Sender();
             sender.setTypeCode(CommunicationFunctionType.SND);
-            final MCCIMT000100UV01Device device1 = new MCCIMT000100UV01Device();
+            final MCCIMT000100UV01Device device1 = factoryHL7.createMCCIMT000100UV01Device();
             device1.setClassCode(EntityClassDevice.DEV);
             device1.setDeterminerCode(EntityDeterminerSpecific.INSTANCE);
-            final II ii1 = new II();
+            final II ii1 = factoryHL7.createII();
             ii1.setNullFlavor(NullFlavor.NI);
             device1.getId().add(ii1);
             sender.setDevice(device1);
             prpain402006UV02.setSender(sender);
 
             // control act process
-            final PRPAIN402006UV02MCAIMT700201UV01ControlActProcess controlActProcess = new PRPAIN402006UV02MCAIMT700201UV01ControlActProcess();
+            final PRPAIN402006UV02MCAIMT700201UV01ControlActProcess controlActProcess = factoryHL7.createPRPAIN402006UV02MCAIMT700201UV01ControlActProcess();
             controlActProcess.setClassCode(ActClassControlAct.CACT);
             controlActProcess.setMoodCode(XActMoodIntentEvent.EVN);
             //  subject
-            final PRPAIN402006UV02MCAIMT700201UV01Subject2 uv01Subject2 = new PRPAIN402006UV02MCAIMT700201UV01Subject2();
+            final PRPAIN402006UV02MCAIMT700201UV01Subject2 uv01Subject2 = factoryHL7.createPRPAIN402006UV02MCAIMT700201UV01Subject2();
             uv01Subject2.setTypeCode(ActRelationshipHasSubject.SUBJ);
-            final COMTMT001103UV01ActGenericStatus actGenericStatus = new COMTMT001103UV01ActGenericStatus();
+            final COMTMT001103UV01ActGenericStatus actGenericStatus = factoryHL7.createCOMTMT001103UV01ActGenericStatus();
             actGenericStatus.setClassCode(ActClassRoot.CACT);
             actGenericStatus.setMoodCode(ActMoodEventOccurrence.EVN);
-            final II idroot = new II();
+            final II idroot = factoryHL7.createII();
             idroot.setRoot(uuidExternalId);
             idroot.setExtension(externalId);
             actGenericStatus.getId().add(idroot);
-            final CS statusCode = new CS();
+            final CS statusCode = factoryHL7.createCS();
             statusCode.setCode("nullfield");
             actGenericStatus.setStatusCode(statusCode);
 
 
-            final COMTMT001103UV01RecordTarget recordTarget = new COMTMT001103UV01RecordTarget();
+            final COMTMT001103UV01RecordTarget recordTarget = factoryHL7.createCOMTMT001103UV01RecordTarget();
             recordTarget.setTypeCode(ParticipationRecordTarget.RCT);
-            final COCTMT050000UV01Patient patient = new COCTMT050000UV01Patient();
+            final COCTMT050000UV01Patient patient = factoryHL7.createCOCTMT050000UV01Patient();
             patient.setClassCode(RoleClassPatient.PAT);
-            final II patientIdRoot = new II();
+            final II patientIdRoot = factoryHL7.createII();
             patientIdRoot.setRoot(uuidClient);
             patient.getId().add(patientIdRoot);
 
-            final CS statusCode1 = new CS();
+            final CS statusCode1 = factoryHL7.createCS();
             statusCode1.setCode("active");
             patient.setStatusCode(statusCode1);
 
-            final COCTMT030000UV09Person uv09Person = new COCTMT030000UV09Person();
+            final COCTMT030000UV09Person uv09Person = factoryHL7.createCOCTMT030000UV09Person();
             final JAXBElement<COCTMT030000UV09Person> patientPerson =
                     new JAXBElement<COCTMT030000UV09Person>(new QName("urn:hl7-org:v3", "patientPerson"),
                             COCTMT030000UV09Person.class, uv09Person);
 
-            final II typeId3 = new II();
+            final II typeId3 = factoryHL7.createII();
             typeId3.setExtension(client.getSnils());
             uv09Person.getId().add(typeId3);
 
-            final PN pn = new PN();
-            final EnGiven enGiven = new EnGiven();
+            final PN pn = factoryHL7.createPN();
+            final EnGiven enGiven = factoryHL7.createEnGiven();
             enGiven.getContent().add(client.getFirstName());
             JAXBElement<EnGiven> givenJAXBElement = factoryHL7.createENGiven(enGiven);
             pn.getContent().add(givenJAXBElement);
 
-            final EnGiven enGiven2 = new EnGiven();
+            final EnGiven enGiven2 = factoryHL7.createEnGiven();
             enGiven2.getContent().add(client.getPatrName());
             JAXBElement<EnGiven> givenJAXBElement2 = factoryHL7.createENGiven(enGiven2);
             givenJAXBElement2.setValue(enGiven2);
@@ -412,131 +415,130 @@ public class HL7PacketBuilder {
     /**
      * Формирование и отправка сообщения о выписке пациента со стационара PRPA_IN402003UV02
      */
-    public static MCCIIN000002UV01 processLeaved(
-            final Action action,
-            final String externalId,
-            final String externalUUID,
-            final String clientUUID,
-            final Patient client, String displayName) throws SoapConnectionException {
+    public static MCCIIN000002UV01 processLeaved(final Action action, String displayName) throws SoapConnectionException {
+
+        final Event event = action.getEvent();
+        final Patient client = event.getPatient();
+        final String externalId = event.getExternalId();
+        final String externalUUID = event.getUuid().getUuid();
+        final String clientUUID = client.getUuid().getUuid();
+        final String rootUUID = UUID.randomUUID().toString();
 
         logger.info("process LEAVED action {}, externalId {}, externalUUID {}, client {}, clientUUID {}", action, externalId, externalUUID, client, clientUUID);
-        final ObjectFactory factory = new ObjectFactory();
-        final org.hl7.v3.ObjectFactory factoryHL7 = new org.hl7.v3.ObjectFactory();
         try {
-            final Request msg = factory.createPRPAIN402003UV02();
+            final Request msg = factoryMis.createPRPAIN402003UV02();
 
-            final PRPAIN402003UV022 prpain402003UV02 = new PRPAIN402003UV022();
+            final PRPAIN402003UV022 prpain402003UV02 = factoryHL7.createPRPAIN402003UV022();
             prpain402003UV02.setITSVersion("XML_1.0");
 
-            final TS ts = new TS();
+            final TS ts = factoryHL7.createTS();
             final SimpleDateFormat sdf = new SimpleDateFormat("yyyyMMddHHmmss");
             ts.setValue(sdf.format(new Date()));
             prpain402003UV02.setCreationTime(ts);
 
-            final CS askCode = new CS();
+            final CS askCode = factoryHL7.createCS();
             askCode.setCode("AL");
             prpain402003UV02.setAcceptAckCode(askCode);
 
-            final II id = new II();
-            id.setRoot(UUID.randomUUID().toString());
+            final II id = factoryHL7.createII();
+            id.setRoot(rootUUID);
             prpain402003UV02.setId(id);
 
-            final II interactionId = new II();
+            final II interactionId = factoryHL7.createII();
             interactionId.setRoot("2.16.840.1.113883.1.18");
             interactionId.setExtension("PRPA_IN402003UV02");
             prpain402003UV02.setInteractionId(interactionId);
 
-            final CS processingCode = new CS();
+            final CS processingCode = factoryHL7.createCS();
             processingCode.setCode("P");
             prpain402003UV02.setProcessingCode(processingCode);
 
-            final CS processingModeCode = new CS();
+            final CS processingModeCode = factoryHL7.createCS();
             processingModeCode.setCode("T");
             prpain402003UV02.setProcessingModeCode(processingModeCode);
 
-            final MCCIMT000100UV01Sender sender = new MCCIMT000100UV01Sender();
+            final MCCIMT000100UV01Sender sender = factoryHL7.createMCCIMT000100UV01Sender();
             sender.setTypeCode(CommunicationFunctionType.SND);
-            final MCCIMT000100UV01Device device = new MCCIMT000100UV01Device();
+            final MCCIMT000100UV01Device device = factoryHL7.createMCCIMT000100UV01Device();
             device.setClassCode(EntityClassDevice.DEV);
             device.setDeterminerCode(EntityDeterminerSpecific.INSTANCE);
-            final II typeId = new II();
+            final II typeId = factoryHL7.createII();
             typeId.setNullFlavor(NullFlavor.fromValue("NI"));
             device.getId().add(typeId);
             sender.setDevice(device);
             prpain402003UV02.setSender(sender);
-            final MCCIMT000100UV01Receiver receiver = new MCCIMT000100UV01Receiver();
+            final MCCIMT000100UV01Receiver receiver = factoryHL7.createMCCIMT000100UV01Receiver();
             receiver.setTypeCode(CommunicationFunctionType.RCV);
-            final MCCIMT000100UV01Device device1 = new MCCIMT000100UV01Device();
+            final MCCIMT000100UV01Device device1 = factoryHL7.createMCCIMT000100UV01Device();
             device1.setClassCode(EntityClassDevice.DEV);
             device1.setDeterminerCode(EntityDeterminerSpecific.INSTANCE);
-            final II idReceiver = new II();
+            final II idReceiver = factoryHL7.createII();
             idReceiver.setNullFlavor(NullFlavor.NI);
             device1.getId().add(idReceiver);
             receiver.setDevice(device1);
             prpain402003UV02.getReceiver().add(receiver);
 
-            final PRPAIN402003UV02MCAIMT700201UV01ControlActProcess controlActProcess = new PRPAIN402003UV02MCAIMT700201UV01ControlActProcess();
+            final PRPAIN402003UV02MCAIMT700201UV01ControlActProcess controlActProcess = factoryHL7.createPRPAIN402003UV02MCAIMT700201UV01ControlActProcess();
             controlActProcess.setClassCode(ActClassControlAct.CACT);
             controlActProcess.setMoodCode(XActMoodIntentEvent.EVN);
 
-            final PRPAIN402003UV02MCAIMT700201UV01Subject2 subject2 = new PRPAIN402003UV02MCAIMT700201UV01Subject2();
+            final PRPAIN402003UV02MCAIMT700201UV01Subject2 subject2 = factoryHL7.createPRPAIN402003UV02MCAIMT700201UV01Subject2();
             subject2.setTypeCode(ActRelationshipHasSubject.SUBJ);
 
-            final PRPAMT402003UV02InpatientEncounterEvent event = new PRPAMT402003UV02InpatientEncounterEvent();
-            event.setClassCode(ActClassEncounter.ENC);
-            event.setMoodCode(ActMoodEventOccurrence.EVN);
-            final II typeId1 = new II();
+            final PRPAMT402003UV02InpatientEncounterEvent inpatientEncounterEvent = factoryHL7.createPRPAMT402003UV02InpatientEncounterEvent();
+            inpatientEncounterEvent.setClassCode(ActClassEncounter.ENC);
+            inpatientEncounterEvent.setMoodCode(ActMoodEventOccurrence.EVN);
+            final II typeId1 = factoryHL7.createII();
             typeId1.setRoot(externalUUID);
             typeId1.setExtension(externalId); //
-            event.getId().add(typeId1);
+            inpatientEncounterEvent.getId().add(typeId1);
 
-            final CD code = new CD();
+            final CD code = factoryHL7.createCD();
             code.setCodeSystem("2.16.840.1.113883.5.4");
             code.setCodeSystemName("actCode");
             code.setCode("IMP");
             code.setDisplayName(displayName);
-            event.setCode(code);
+            inpatientEncounterEvent.setCode(code);
 
-            final CS statusCode = new CS();
+            final CS statusCode = factoryHL7.createCS();
             statusCode.setCode("completed");
-            event.setStatusCode(statusCode);
+            inpatientEncounterEvent.setStatusCode(statusCode);
 
-            final IVLTS effectiveTime = new IVLTS();
+            final IVLTS effectiveTime = factoryHL7.createIVLTS();
             effectiveTime.setNullFlavor(NullFlavor.NI);
-            event.setEffectiveTime(effectiveTime);
+            inpatientEncounterEvent.setEffectiveTime(effectiveTime);
 
-//            final PQ lengthOfStayQuantity = new PQ();
+//            final PQ lengthOfStayQuantity = factoryHL7.createPQ();
 //            lengthOfStayQuantity.setValue("5");
 //            lengthOfStayQuantity.setUnit("d");
 //            event.setLengthOfStayQuantity(lengthOfStayQuantity);
 
 
-            final PRPAMT402003UV02Subject subject = new PRPAMT402003UV02Subject();
+            final PRPAMT402003UV02Subject subject = factoryHL7.createPRPAMT402003UV02Subject();
             subject.setTypeCode(ParticipationTargetSubject.SBJ);
 //            subject.setContextControlCode(ContextControl.OP);
-            final COCTMT050002UV07Patient patient = new COCTMT050002UV07Patient();
+            final COCTMT050002UV07Patient patient = factoryHL7.createCOCTMT050002UV07Patient();
             patient.setClassCode(RoleClassPatient.PAT);
-            final CS typeId2 = new CS();
+            final CS typeId2 = factoryHL7.createCS();
             typeId2.setCode(clientUUID);
             patient.getId().add(typeId2);
 
-            final COCTMT050002UV07Person uv07Person = new COCTMT050002UV07Person();
-            final JAXBElement<COCTMT050002UV07Person> patientPerson = new JAXBElement<COCTMT050002UV07Person>(
-                    new QName("urn:hl7-org:v3", "patientPerson"), COCTMT050002UV07Person.class, COCTMT050002UV07Patient.class, uv07Person);
+            final COCTMT050002UV07Person uv07Person = factoryHL7.createCOCTMT050002UV07Person();
+            final JAXBElement<COCTMT050002UV07Person> patientPerson = factoryHL7.createCOCTMT050002UV07PatientPatientPerson(uv07Person);
 
             uv07Person.setClassCode(EntityClass.PSN);
             uv07Person.setDeterminerCode(EntityDeterminer.INSTANCE);
-            final II typeId3 = new II();
+            final II typeId3 = factoryHL7.createII();
             typeId3.setExtension(client.getSnils());
             uv07Person.getId().add(typeId3);
 
-            final PN pn = new PN();
-            final EnGiven enGiven = new EnGiven();
+            final PN pn = factoryHL7.createPN();
+            final EnGiven enGiven = factoryHL7.createEnGiven();
             enGiven.getContent().add(client.getFirstName());
             JAXBElement<EnGiven> givenJAXBElement = factoryHL7.createENGiven(enGiven);
             pn.getContent().add(givenJAXBElement);
 
-            final EnGiven enGiven2 = new EnGiven();
+            final EnGiven enGiven2 = factoryHL7.createEnGiven();
             enGiven2.getContent().add(client.getPatrName());
             JAXBElement<EnGiven> givenJAXBElement2 = factoryHL7.createENGiven(enGiven2);
             givenJAXBElement2.setValue(enGiven2);
@@ -550,12 +552,12 @@ public class HL7PacketBuilder {
 
             uv07Person.getName().add(pn);
 
-            final CE administrativeGenderCode = new CE();
+            final CE administrativeGenderCode = factoryHL7.createCE();
             administrativeGenderCode.setCode("M");
             administrativeGenderCode.setCodeSystem("2.16.840.1.113883.5.1");
             uv07Person.setAdministrativeGenderCode(administrativeGenderCode);
 
-            final TS birthTime = new TS();
+            final TS birthTime = factoryHL7.createTS();
             SimpleDateFormat sdfBirthday = new SimpleDateFormat("YYYYddMM");
             birthTime.setValue(sdfBirthday.format(client.getBirthDate()));
             uv07Person.setBirthTime(birthTime);
@@ -563,8 +565,8 @@ public class HL7PacketBuilder {
             patientPerson.setValue(uv07Person);
             patient.setPatientPerson(patientPerson);
             subject.setPatient(patient);
-            event.setSubject(subject);
-            subject2.setInpatientEncounterEvent(event);
+            inpatientEncounterEvent.setSubject(subject);
+            subject2.setInpatientEncounterEvent(inpatientEncounterEvent);
             controlActProcess.getSubject().add(subject2);
             prpain402003UV02.setControlActProcess(controlActProcess);
 
@@ -591,94 +593,99 @@ public class HL7PacketBuilder {
      */
     public static MCCIIN000002UV01 processMoving(
             final Action action,
-            final String uuidExternal,
-            final String externalId,
-            final String uuidClient,
-            final String uuidLocationOut,
-            final String uuidLocationIn) throws SoapConnectionException {
+            final OrgStructure orgStructureOut,
+            final OrgStructure orgStructureIn) throws SoapConnectionException {
+
+        final Event event = action.getEvent();
+        final Patient client = event.getPatient();
+        final String externalId = event.getExternalId();
+        final String uuidExternal = event.getUuid().getUuid();
+        final String uuidClient = client.getUuid().getUuid();
+        final String uuidLocationOut = orgStructureOut.getUuid().getUuid();
+        final String uuidLocationIn = orgStructureIn.getUuid().getUuid();
+
 
         final String uuidDocument = UUID.randomUUID().toString();
         logger.info("process MOVING document {}, action {}", uuidDocument, action);
-        final ObjectFactory factory = new ObjectFactory();
         final SimpleDateFormat sdf = new SimpleDateFormat("yyyyMMddHHmmss");
         final SimpleDateFormat sdfDate = new SimpleDateFormat("yyyyMMdd");
         try {
-            final Request msg = factory.createPRPAIN302011UV02();
-            final PRPAIN302011UV022 prpain302011UV022 = new PRPAIN302011UV022();
+            final Request msg = factoryMis.createPRPAIN302011UV02();
+            final PRPAIN302011UV022 prpain302011UV022 = factoryHL7.createPRPAIN302011UV022();
             prpain302011UV022.setITSVersion("XML_1.0");
 
-            final II id = new II();
+            final II id = factoryHL7.createII();
             id.setRoot(uuidDocument);
             prpain302011UV022.setId(id);
 
-            final TS ts = new TS();
+            final TS ts = factoryHL7.createTS();
             ts.setValue(sdf.format(action.getCreateDatetime()));
             prpain302011UV022.setCreationTime(ts);
 
-            final II interactionId = new II();
+            final II interactionId = factoryHL7.createII();
             interactionId.setRoot("2.16.840.1.113883.1.18");
             interactionId.setExtension("PRPA_IN302011UV02");
             prpain302011UV022.setInteractionId(interactionId);
 
-            final CS processCode = new CS();
+            final CS processCode = factoryHL7.createCS();
             processCode.setCode("P");
             prpain302011UV022.setProcessingCode(processCode);
 
 
-            final CS processingModeCode = new CS();
+            final CS processingModeCode = factoryHL7.createCS();
             processingModeCode.setCode("T");
             prpain302011UV022.setProcessingModeCode(processingModeCode);
 
 
-            final CS acceptAckCode = new CS();
+            final CS acceptAckCode = factoryHL7.createCS();
             acceptAckCode.setCode("AL");
             prpain302011UV022.setAcceptAckCode(acceptAckCode);
 
             // receiver
-            final MCCIMT000100UV01Receiver uv01Receiver = new MCCIMT000100UV01Receiver();
+            final MCCIMT000100UV01Receiver uv01Receiver = factoryHL7.createMCCIMT000100UV01Receiver();
             uv01Receiver.setTypeCode(CommunicationFunctionType.RCV);
-            final MCCIMT000100UV01Device device = new MCCIMT000100UV01Device();
+            final MCCIMT000100UV01Device device = factoryHL7.createMCCIMT000100UV01Device();
             device.setClassCode(EntityClassDevice.DEV);
             device.setDeterminerCode(EntityDeterminerSpecific.INSTANCE);
-            final II ii = new II();
+            final II ii = factoryHL7.createII();
             ii.setNullFlavor(NullFlavor.NI);
             device.getId().add(ii);
             uv01Receiver.setDevice(device);
             prpain302011UV022.getReceiver().add(uv01Receiver);
 
             // sender
-            final MCCIMT000100UV01Sender sender = new MCCIMT000100UV01Sender();
+            final MCCIMT000100UV01Sender sender = factoryHL7.createMCCIMT000100UV01Sender();
             sender.setTypeCode(CommunicationFunctionType.SND);
-            final MCCIMT000100UV01Device device1 = new MCCIMT000100UV01Device();
+            final MCCIMT000100UV01Device device1 = factoryHL7.createMCCIMT000100UV01Device();
             device1.setClassCode(EntityClassDevice.DEV);
             device1.setDeterminerCode(EntityDeterminerSpecific.INSTANCE);
-            final II ii1 = new II();
+            final II ii1 = factoryHL7.createII();
             ii1.setNullFlavor(NullFlavor.NI);
             device1.getId().add(ii1);
             sender.setDevice(device1);
             prpain302011UV022.setSender(sender);
 
             // control act process
-            final PRPAIN302011UV02MCAIMT700201UV01ControlActProcess controlActProcess = new PRPAIN302011UV02MCAIMT700201UV01ControlActProcess();
+            final PRPAIN302011UV02MCAIMT700201UV01ControlActProcess controlActProcess = factoryHL7.createPRPAIN302011UV02MCAIMT700201UV01ControlActProcess();
             controlActProcess.setClassCode(ActClassControlAct.CACT);
             controlActProcess.setMoodCode(XActMoodIntentEvent.EVN);
 
-            final PRPAIN302011UV02MCAIMT700201UV01Subject2 subject2 = new PRPAIN302011UV02MCAIMT700201UV01Subject2();
+            final PRPAIN302011UV02MCAIMT700201UV01Subject2 subject2 = factoryHL7.createPRPAIN302011UV02MCAIMT700201UV01Subject2();
             subject2.setTypeCode(ActRelationshipHasSubject.SUBJ);
 
-            final PRPAMT302011UV02EncounterEvent encounterEvent = new PRPAMT302011UV02EncounterEvent();
+            final PRPAMT302011UV02EncounterEvent encounterEvent = factoryHL7.createPRPAMT302011UV02EncounterEvent();
             encounterEvent.setClassCode(ActClassEncounter.ENC);
             encounterEvent.setMoodCode(ActMoodEventOccurrence.EVN);
 
-            final II idRoot = new II();
+            final II idRoot = factoryHL7.createII();
             idRoot.setRoot(uuidExternal);
             idRoot.setExtension(externalId);
             encounterEvent.getId().add(idRoot);
 
-            final PRPAMT302011UV02Subject subjectPatient = new PRPAMT302011UV02Subject();
+            final PRPAMT302011UV02Subject subjectPatient = factoryHL7.createPRPAMT302011UV02Subject();
             subjectPatient.setTypeCode(ParticipationTargetSubject.SBJ);
-            final COCTMT050001UV07Patient patient = new COCTMT050001UV07Patient();
-            final II patientIdRoot = new II();
+            final COCTMT050001UV07Patient patient = factoryHL7.createCOCTMT050001UV07Patient();
+            final II patientIdRoot = factoryHL7.createII();
             patientIdRoot.setRoot(uuidClient);
             patient.getId().add(patientIdRoot);
 
@@ -687,42 +694,42 @@ public class HL7PacketBuilder {
             encounterEvent.setSubject(subjectPatient);
 
             // location1
-            final PRPAMT302011UV02Location1 location1 = new PRPAMT302011UV02Location1();
+            final PRPAMT302011UV02Location1 location1 = factoryHL7.createPRPAMT302011UV02Location1();
             location1.setTypeCode(ParticipationTargetLocation.LOC);
-            final IVLTS timeOut = new IVLTS();
-            final TS ts1 = new TS();
+            final IVLTS timeOut = factoryHL7.createIVLTS();
+            final TS ts1 = factoryHL7.createTS();
             ts1.setValue(sdfDate.format(action.getCreateDatetime()));
             timeOut.setCenter(ts1);
             location1.setTime(timeOut);
 
-            final CS statusCode = new CS();
+            final CS statusCode = factoryHL7.createCS();
             statusCode.setCode("active");
             location1.setStatusCode(statusCode);
 
-            final PRPAMT302011UV02ServiceDeliveryLocation serviceDeliveryLocation = new PRPAMT302011UV02ServiceDeliveryLocation();
+            final PRPAMT302011UV02ServiceDeliveryLocation serviceDeliveryLocation = factoryHL7.createPRPAMT302011UV02ServiceDeliveryLocation();
             serviceDeliveryLocation.setClassCode(RoleClassServiceDeliveryLocation.SDLOC);
-            final II idRootLoc = new II();
+            final II idRootLoc = factoryHL7.createII();
             idRootLoc.setRoot(uuidLocationOut);
             serviceDeliveryLocation.getId().add(idRootLoc);
             location1.setServiceDeliveryLocation(serviceDeliveryLocation);
             encounterEvent.setLocation1(location1);
 
             // location2
-            final PRPAMT302011UV02Location2 location2 = new PRPAMT302011UV02Location2();
+            final PRPAMT302011UV02Location2 location2 = factoryHL7.createPRPAMT302011UV02Location2();
             location2.setTypeCode(ParticipationTargetLocation.LOC);
-            final IVLTS timeOut2 = new IVLTS();
-            final TS ts2 = new TS();
+            final IVLTS timeOut2 = factoryHL7.createIVLTS();
+            final TS ts2 = factoryHL7.createTS();
             ts2.setValue(sdfDate.format(action.getCreateDatetime()));
             timeOut2.setCenter(ts2);
             location2.setTime(timeOut2);
 
-            final CS statusCode2 = new CS();
+            final CS statusCode2 = factoryHL7.createCS();
             statusCode2.setCode("active");
             location2.setStatusCode(statusCode2);
 
-            final PRPAMT302011UV02ServiceDeliveryLocation serviceDeliveryLocation2 = new PRPAMT302011UV02ServiceDeliveryLocation();
+            final PRPAMT302011UV02ServiceDeliveryLocation serviceDeliveryLocation2 = factoryHL7.createPRPAMT302011UV02ServiceDeliveryLocation();
             serviceDeliveryLocation2.setClassCode(RoleClassServiceDeliveryLocation.SDLOC);
-            final II idRootLoc2 = new II();
+            final II idRootLoc2 = factoryHL7.createII();
             idRootLoc2.setRoot(uuidLocationIn);
             serviceDeliveryLocation2.getId().add(idRootLoc2);
             location2.setServiceDeliveryLocation(serviceDeliveryLocation2);
@@ -753,137 +760,142 @@ public class HL7PacketBuilder {
      */
     public static MCCIIN000002UV01 processDelMoving(
             final Action action,
-            final String uuidExternal,
-            final String externalId,
-            final String uuidClient,
-            final String uuidLocationOut,
-            final String uuidLocationIn) throws SoapConnectionException {
+            final OrgStructure orgStructureOut,
+            final OrgStructure orgStructureIn
+    ) throws SoapConnectionException {
+
+        final Event event = action.getEvent();
+        final Patient client = event.getPatient();
+        final String externalId = event.getExternalId();
+        final String uuidExternal = event.getUuid().getUuid();
+        final String uuidClient = client.getUuid().getUuid();
+        final String uuidLocationOut = orgStructureOut.getUuid().getUuid();
+        final String uuidLocationIn = orgStructureIn.getUuid().getUuid();
 
         final String uuidDocument = UUID.randomUUID().toString();
         logger.info("process DEL_MOVING document {}, action {}", uuidDocument, action);
-        final ObjectFactory factory = new ObjectFactory();
         final SimpleDateFormat sdf = new SimpleDateFormat("yyyyMMddHHmmss");
         final SimpleDateFormat sdfDate = new SimpleDateFormat("yyyyMMdd");
         try {
-            final Request msg = factory.createPRPAIN302012UV02();
-            final PRPAIN302012UV022 prpain302012UV022 = new PRPAIN302012UV022();
+            final Request msg = factoryMis.createPRPAIN302012UV02();
+            final PRPAIN302012UV022 prpain302012UV022 = factoryHL7.createPRPAIN302012UV022();
             prpain302012UV022.setITSVersion("XML_1.0");
 
 
-            final II id = new II();
+            final II id = factoryHL7.createII();
             id.setRoot(uuidDocument);
             prpain302012UV022.setId(id);
 
-            final TS ts = new TS();
+            final TS ts = factoryHL7.createTS();
             ts.setValue(sdf.format(action.getCreateDatetime()));
             prpain302012UV022.setCreationTime(ts);
 
-            final II interactionId = new II();
+            final II interactionId = factoryHL7.createII();
             interactionId.setRoot("2.16.840.1.113883.1.18");
             interactionId.setExtension("PRPA_IN302012UV02");
             prpain302012UV022.setInteractionId(interactionId);
 
-            final CS processCode = new CS();
+            final CS processCode = factoryHL7.createCS();
             processCode.setCode("P");
             prpain302012UV022.setProcessingCode(processCode);
 
 
-            final CS processingModeCode = new CS();
+            final CS processingModeCode = factoryHL7.createCS();
             processingModeCode.setCode("T");
             prpain302012UV022.setProcessingModeCode(processingModeCode);
 
 
-            final CS acceptAckCode = new CS();
+            final CS acceptAckCode = factoryHL7.createCS();
             acceptAckCode.setCode("AL");
             prpain302012UV022.setAcceptAckCode(acceptAckCode);
 
             // receiver
-            final MCCIMT000100UV01Receiver uv01Receiver = new MCCIMT000100UV01Receiver();
+            final MCCIMT000100UV01Receiver uv01Receiver = factoryHL7.createMCCIMT000100UV01Receiver();
             uv01Receiver.setTypeCode(CommunicationFunctionType.RCV);
-            final MCCIMT000100UV01Device device = new MCCIMT000100UV01Device();
+            final MCCIMT000100UV01Device device = factoryHL7.createMCCIMT000100UV01Device();
             device.setClassCode(EntityClassDevice.DEV);
             device.setDeterminerCode(EntityDeterminerSpecific.INSTANCE);
-            final II ii = new II();
+            final II ii = factoryHL7.createII();
             ii.setNullFlavor(NullFlavor.NI);
             device.getId().add(ii);
             uv01Receiver.setDevice(device);
             prpain302012UV022.getReceiver().add(uv01Receiver);
 
             // sender
-            final MCCIMT000100UV01Sender sender = new MCCIMT000100UV01Sender();
+            final MCCIMT000100UV01Sender sender = factoryHL7.createMCCIMT000100UV01Sender();
             sender.setTypeCode(CommunicationFunctionType.SND);
-            final MCCIMT000100UV01Device device1 = new MCCIMT000100UV01Device();
+            final MCCIMT000100UV01Device device1 = factoryHL7.createMCCIMT000100UV01Device();
             device1.setClassCode(EntityClassDevice.DEV);
             device1.setDeterminerCode(EntityDeterminerSpecific.INSTANCE);
-            final II ii1 = new II();
+            final II ii1 = factoryHL7.createII();
             ii1.setNullFlavor(NullFlavor.NI);
             device1.getId().add(ii1);
             sender.setDevice(device1);
             prpain302012UV022.setSender(sender);
 
             // control act process
-            final PRPAIN302012UV02MCAIMT700201UV01ControlActProcess controlActProcess = new PRPAIN302012UV02MCAIMT700201UV01ControlActProcess();
+            final PRPAIN302012UV02MCAIMT700201UV01ControlActProcess controlActProcess = factoryHL7.createPRPAIN302012UV02MCAIMT700201UV01ControlActProcess();
             controlActProcess.setClassCode(ActClassControlAct.CACT);
             controlActProcess.setMoodCode(XActMoodIntentEvent.EVN);
-            final PRPAIN302012UV02MCAIMT700201UV01Subject2 subject2 = new PRPAIN302012UV02MCAIMT700201UV01Subject2();
+            final PRPAIN302012UV02MCAIMT700201UV01Subject2 subject2 = factoryHL7.createPRPAIN302012UV02MCAIMT700201UV01Subject2();
             subject2.setTypeCode(ActRelationshipHasSubject.SUBJ);
 
-            final PRPAMT302012UV02EncounterEvent encounterEvent = new PRPAMT302012UV02EncounterEvent();
+            final PRPAMT302012UV02EncounterEvent encounterEvent = factoryHL7.createPRPAMT302012UV02EncounterEvent();
             encounterEvent.setClassCode(ActClassEncounter.ENC);
             encounterEvent.setMoodCode(ActMoodEventOccurrence.EVN);
 
-            final II idRoot = new II();
+            final II idRoot = factoryHL7.createII();
             idRoot.setRoot(uuidExternal);
             idRoot.setExtension(externalId);
             encounterEvent.getId().add(idRoot);
 
-            final PRPAMT302012UV02Subject subjectPatient = new PRPAMT302012UV02Subject();
+            final PRPAMT302012UV02Subject subjectPatient = factoryHL7.createPRPAMT302012UV02Subject();
             subjectPatient.setTypeCode(ParticipationTargetSubject.SBJ);
-            final COCTMT050001UV07Patient patient = new COCTMT050001UV07Patient();
+            final COCTMT050001UV07Patient patient = factoryHL7.createCOCTMT050001UV07Patient();
             patient.setClassCode(RoleClassPatient.PAT);
-            final II patientIdRoot = new II();
+            final II patientIdRoot = factoryHL7.createII();
             patientIdRoot.setRoot(uuidClient);
             patient.getId().add(patientIdRoot);
             subjectPatient.setPatient(patient);
             encounterEvent.setSubject(subjectPatient);
 
             // location1
-            final PRPAMT302012UV02Location1 location1 = new PRPAMT302012UV02Location1();
+            final PRPAMT302012UV02Location1 location1 = factoryHL7.createPRPAMT302012UV02Location1();
             location1.setTypeCode(ParticipationTargetLocation.LOC);
-            final IVLTS timeOut = new IVLTS();
-            final TS ts1 = new TS();
+            final IVLTS timeOut = factoryHL7.createIVLTS();
+            final TS ts1 = factoryHL7.createTS();
             ts1.setValue(sdfDate.format(action.getCreateDatetime()));
             timeOut.setCenter(ts1);
             location1.setTime(timeOut);
 
-            final CS statusCode = new CS();
+            final CS statusCode = factoryHL7.createCS();
             statusCode.setCode("active");
             location1.setStatusCode(statusCode);
 
-            final PRPAMT302012UV02ServiceDeliveryLocation serviceDeliveryLocation = new PRPAMT302012UV02ServiceDeliveryLocation();
+            final PRPAMT302012UV02ServiceDeliveryLocation serviceDeliveryLocation = factoryHL7.createPRPAMT302012UV02ServiceDeliveryLocation();
             serviceDeliveryLocation.setClassCode(RoleClassServiceDeliveryLocation.SDLOC);
-            final II idRootLoc = new II();
+            final II idRootLoc = factoryHL7.createII();
             idRootLoc.setRoot(uuidLocationOut);
             serviceDeliveryLocation.getId().add(idRootLoc);
             location1.setServiceDeliveryLocation(serviceDeliveryLocation);
             encounterEvent.setLocation1(location1);
 
             // location2
-            final PRPAMT302012UV02Location2 location2 = new PRPAMT302012UV02Location2();
+            final PRPAMT302012UV02Location2 location2 = factoryHL7.createPRPAMT302012UV02Location2();
             location2.setTypeCode(ParticipationTargetLocation.LOC);
-            final IVLTS timeOut2 = new IVLTS();
-            final TS ts2 = new TS();
+            final IVLTS timeOut2 = factoryHL7.createIVLTS();
+            final TS ts2 = factoryHL7.createTS();
             ts2.setValue(sdfDate.format(action.getCreateDatetime()));
             timeOut2.setCenter(ts2);
             location2.setTime(timeOut2);
 
-            final CS statusCode2 = new CS();
+            final CS statusCode2 = factoryHL7.createCS();
             statusCode2.setCode("active");
             location2.setStatusCode(statusCode2);
 
-            final PRPAMT302012UV02ServiceDeliveryLocation serviceDeliveryLocation2 = new PRPAMT302012UV02ServiceDeliveryLocation();
+            final PRPAMT302012UV02ServiceDeliveryLocation serviceDeliveryLocation2 = factoryHL7.createPRPAMT302012UV02ServiceDeliveryLocation();
             serviceDeliveryLocation2.setClassCode(RoleClassServiceDeliveryLocation.SDLOC);
-            final II idRootLoc2 = new II();
+            final II idRootLoc2 = factoryHL7.createII();
             idRootLoc2.setRoot(uuidLocationIn);
             serviceDeliveryLocation2.getId().add(idRootLoc2);
             location2.setServiceDeliveryLocation(serviceDeliveryLocation2);
@@ -935,12 +947,10 @@ public class HL7PacketBuilder {
 
             final SimpleDateFormat sdf = new SimpleDateFormat("yyyyMMddHHmmss");
 
-            ObjectFactory factory = new ObjectFactory();
-            org.hl7.v3.ObjectFactory f = new org.hl7.v3.ObjectFactory();
 
             final POCDMT000040ClinicalDocument clinicalDocument =
                     getClinicalDocument(
-                            f,
+                            factoryHL7,
                             action,
                             clientUUID,
                             externalId,
@@ -955,65 +965,65 @@ public class HL7PacketBuilder {
             logger.info("prepare inner document... \n\n{}", innerDocument);
 
 
-            final Request request = factory.createRCMRIN000002UV02();
-            final RCMRIN000002UV022 message = f.createRCMRIN000002UV022();
+            final Request request = factoryMis.createRCMRIN000002UV02();
+            final RCMRIN000002UV022 message = factoryHL7.createRCMRIN000002UV022();
 
             message.setITSVersion("XML_1.0");
-            final II idRoot = f.createII();
+            final II idRoot = factoryHL7.createII();
             idRoot.setRoot(uuidDocument);
             message.setId(idRoot);
 
-            final TS creationTime = f.createTS();
+            final TS creationTime = factoryHL7.createTS();
             creationTime.setValue(sdf.format(action.getCreateDatetime()));
             message.setCreationTime(creationTime);
 
-            final II interactionId = f.createII();
+            final II interactionId = factoryHL7.createII();
             interactionId.setRoot("2.16.840.1.113883.1.18");
             interactionId.setExtension("RCMR_IN000002UV02");
             message.setInteractionId(interactionId);
 
-            final CS processCode = new CS();
+            final CS processCode = factoryHL7.createCS();
             processCode.setCode("P");
             message.setProcessingCode(processCode);
 
-            final CS processingModeCode = new CS();
+            final CS processingModeCode = factoryHL7.createCS();
             processingModeCode.setCode("T");
             message.setProcessingModeCode(processingModeCode);
 
-            final CS acceptAckCode = new CS();
+            final CS acceptAckCode = factoryHL7.createCS();
             acceptAckCode.setCode("AL");
             message.setAcceptAckCode(acceptAckCode);
 
             // receiver
-            final MCCIMT000100UV01Receiver uv01Receiver = new MCCIMT000100UV01Receiver();
+            final MCCIMT000100UV01Receiver uv01Receiver = factoryHL7.createMCCIMT000100UV01Receiver();
             uv01Receiver.setTypeCode(CommunicationFunctionType.RCV);
-            final MCCIMT000100UV01Device device = new MCCIMT000100UV01Device();
+            final MCCIMT000100UV01Device device = factoryHL7.createMCCIMT000100UV01Device();
             device.setClassCode(EntityClassDevice.DEV);
             device.setDeterminerCode(EntityDeterminerSpecific.INSTANCE);
-            final II ii = new II();
+            final II ii = factoryHL7.createII();
             ii.setNullFlavor(NullFlavor.NI);
             device.getId().add(ii);
             uv01Receiver.setDevice(device);
             message.getReceiver().add(uv01Receiver);
 
             // sender
-            final MCCIMT000100UV01Sender sender = new MCCIMT000100UV01Sender();
+            final MCCIMT000100UV01Sender sender = factoryHL7.createMCCIMT000100UV01Sender();
             sender.setTypeCode(CommunicationFunctionType.SND);
-            final MCCIMT000100UV01Device device1 = new MCCIMT000100UV01Device();
+            final MCCIMT000100UV01Device device1 = factoryHL7.createMCCIMT000100UV01Device();
             device1.setClassCode(EntityClassDevice.DEV);
             device1.setDeterminerCode(EntityDeterminerSpecific.INSTANCE);
-            final II ii1 = new II();
+            final II ii1 = factoryHL7.createII();
             ii1.setNullFlavor(NullFlavor.NI);
             device1.getId().add(ii1);
             sender.setDevice(device1);
             message.setSender(sender);
 
             final RCMRIN000002UV02MCAIMT700201UV01ControlActProcess
-                    controlActProcess = new RCMRIN000002UV02MCAIMT700201UV01ControlActProcess();
+                    controlActProcess = factoryHL7.createRCMRIN000002UV02MCAIMT700201UV01ControlActProcess();
             controlActProcess.setClassCode(ActClassControlAct.CACT);
             controlActProcess.setMoodCode(XActMoodIntentEvent.EVN);
 
-            final ED text = f.createED();
+            final ED text = factoryHL7.createED();
             text.setMediaType("multipart/related");
             text.setRepresentation(BinaryDataEncoding.B_64);
 
@@ -1044,7 +1054,7 @@ public class HL7PacketBuilder {
     }
 
     private static POCDMT000040ClinicalDocument getClinicalDocument(
-            final org.hl7.v3.ObjectFactory f,
+            final org.hl7.v3.ObjectFactory factoryHL7,
             final Action action,
             final String clientUUID,
             final String externalId,
@@ -1060,90 +1070,90 @@ public class HL7PacketBuilder {
         // Версия документа, должна инкрементироваться при повторной передаче
         final String versionOfDocument = "1";
 
-        final POCDMT000040ClinicalDocument clinicalDocument = f.createPOCDMT000040ClinicalDocument();
+        final POCDMT000040ClinicalDocument clinicalDocument = factoryHL7.createPOCDMT000040ClinicalDocument();
 
-        final CS realmCode = f.createCS();
+        final CS realmCode = factoryHL7.createCS();
         realmCode.setCode("RU");
         clinicalDocument.getRealmCode().add(realmCode);
 
-        final POCDMT000040InfrastructureRootTypeId rootTypeId = new POCDMT000040InfrastructureRootTypeId();
+        final POCDMT000040InfrastructureRootTypeId rootTypeId = factoryHL7.createPOCDMT000040InfrastructureRootTypeId();
 
         rootTypeId.setExtension("POCD_HD000040");
         rootTypeId.setRoot("2.16.840.1.113883.1.3");
         clinicalDocument.setTypeId(rootTypeId);
 
-        final II idRoot = f.createII();
+        final II idRoot = factoryHL7.createII();
 
         idRoot.setRoot(uuidDocument);
         clinicalDocument.setId(idRoot);
-        final CE processingCode = new CE();
+        final CE processingCode = factoryHL7.createCE();
         processingCode.setCode("18610-6");
         processingCode.setDisplayName("MEDICATION ADMINISTERED");
         processingCode.setCodeSystem("2.16.840.1.113883.6.1");
         processingCode.setCodeSystemName("LOINC");
         clinicalDocument.setCode(processingCode);
 
-        final TS creationTime = new TS();
+        final TS creationTime = factoryHL7.createTS();
         SimpleDateFormat sdf = new SimpleDateFormat("yyyyMMddHHmmss");
         creationTime.setValue(sdf.format(action.getCreateDatetime()));
         clinicalDocument.setEffectiveTime(creationTime);
 
 
-        final CE confidentialityCode = new CE();
+        final CE confidentialityCode = factoryHL7.createCE();
         confidentialityCode.setCode("N");
         confidentialityCode.setCodeSystem("2.16.840.1.113883.5.25");
         clinicalDocument.setConfidentialityCode(confidentialityCode);
 
 
-        final CS languageCode = new CS();
+        final CS languageCode = factoryHL7.createCS();
         languageCode.setCode("ru-RU");
         clinicalDocument.setLanguageCode(languageCode);
 
 
-        final II setId = new II();
+        final II setId = factoryHL7.createII();
         setId.setRoot(uuidDocument);
         clinicalDocument.setSetId(setId);
 
 
-        final INT versionNumber = new INT();
+        final INT versionNumber = factoryHL7.createINT();
         versionNumber.setValue(new BigInteger(versionOfDocument));
         clinicalDocument.setVersionNumber(versionNumber);
 
         // --- record target
-        final POCDMT000040RecordTarget recordTarget = new POCDMT000040RecordTarget();
-        final POCDMT000040PatientRole patientRole = new POCDMT000040PatientRole();
+        final POCDMT000040RecordTarget recordTarget = factoryHL7.createPOCDMT000040RecordTarget();
+        final POCDMT000040PatientRole patientRole = factoryHL7.createPOCDMT000040PatientRole();
 
-        final II idRootPatient = new II();
+        final II idRootPatient = factoryHL7.createII();
         idRootPatient.setRoot(clientUUID);
         idRootPatient.setExtension(externalId);
         patientRole.getId().add(idRootPatient);
 
-        final POCDMT000040Patient patient = new POCDMT000040Patient();
-        final PN pn = new PN();
-        final EnGiven enGiven = new EnGiven();
+        final POCDMT000040Patient patient = factoryHL7.createPOCDMT000040Patient();
+        final PN pn = factoryHL7.createPN();
+        final EnGiven enGiven = factoryHL7.createEnGiven();
         enGiven.getContent().add(client.getFirstName());
-        JAXBElement<EnGiven> givenJAXBElement = f.createENGiven(enGiven);
+        JAXBElement<EnGiven> givenJAXBElement = factoryHL7.createENGiven(enGiven);
         pn.getContent().add(givenJAXBElement);
 
-        final EnGiven enGiven2 = new EnGiven();
+        final EnGiven enGiven2 = factoryHL7.createEnGiven();
         enGiven2.getContent().add(client.getPatrName());
-        JAXBElement<EnGiven> givenJAXBElement2 = f.createENGiven(enGiven2);
+        JAXBElement<EnGiven> givenJAXBElement2 = factoryHL7.createENGiven(enGiven2);
         givenJAXBElement2.setValue(enGiven2);
         pn.getContent().add(givenJAXBElement2);
 
-        final EnFamily enFamily = f.createEnFamily();
+        final EnFamily enFamily = factoryHL7.createEnFamily();
         enFamily.getContent().add(client.getLastName());
-        JAXBElement<EnFamily> enFamilyJAXBElement = f.createENFamily(enFamily);
+        JAXBElement<EnFamily> enFamilyJAXBElement = factoryHL7.createENFamily(enFamily);
         pn.getContent().add(enFamilyJAXBElement);
         patient.getName().add(pn);
 
 
-        final CE administrativeGenderCode = new CE();
+        final CE administrativeGenderCode = factoryHL7.createCE();
         administrativeGenderCode.setCode("M");
         administrativeGenderCode.setCodeSystem("2.16.840.1.113883.5.1");
         patient.setAdministrativeGenderCode(administrativeGenderCode);
 
-        final TS birthTime = new TS();
+        final TS birthTime = factoryHL7.createTS();
         SimpleDateFormat sdfBirthday = new SimpleDateFormat("yyyyMMdd");
         birthTime.setValue(sdfBirthday.format(client.getBirthDate()));
         patient.setBirthTime(birthTime);
@@ -1153,30 +1163,30 @@ public class HL7PacketBuilder {
         clinicalDocument.getRecordTarget().add(recordTarget);
 
         // --- author
-        final POCDMT000040Author author = new POCDMT000040Author();
-        final TS time = new TS();
+        final POCDMT000040Author author = factoryHL7.createPOCDMT000040Author();
+        final TS time = factoryHL7.createTS();
         time.setValue(sdf.format(new Date())); //todo
         author.setTime(time);
 
-        final POCDMT000040AssignedAuthor assignedAuthor = new POCDMT000040AssignedAuthor();
-        final II idRootAuthor = new II();
+        final POCDMT000040AssignedAuthor assignedAuthor = factoryHL7.createPOCDMT000040AssignedAuthor();
+        final II idRootAuthor = factoryHL7.createII();
         idRootAuthor.setRoot(doctor.getUuid().getUuid()); //todo
         assignedAuthor.getId().add(idRootAuthor);
 
-        final POCDMT000040Person assignedPerson = new POCDMT000040Person();
-        final PN authorPerson = new PN();
+        final POCDMT000040Person assignedPerson = factoryHL7.createPOCDMT000040Person();
+        final PN authorPerson = factoryHL7.createPN();
 
-        final EnPrefix enPrefix = new EnPrefix();
+        final EnPrefix enPrefix = factoryHL7.createEnPrefix();
         enPrefix.getContent().add(doctor.getSpeciality().getName());
-        authorPerson.getContent().add(f.createENPrefix(enPrefix));
+        authorPerson.getContent().add(factoryHL7.createENPrefix(enPrefix));
 
-        final EnGiven enGivenAuthor = new EnGiven();
+        final EnGiven enGivenAuthor = factoryHL7.createEnGiven();
         enGivenAuthor.getContent().add(doctor.getFirstName() + " " + doctor.getPatrName());  // todo
-        authorPerson.getContent().add(f.createENGiven(enGivenAuthor));
+        authorPerson.getContent().add(factoryHL7.createENGiven(enGivenAuthor));
 
-        final EnFamily enFamilyAuthor = f.createEnFamily();
+        final EnFamily enFamilyAuthor = factoryHL7.createEnFamily();
         enFamilyAuthor.getContent().add(doctor.getLastName());   //todo
-        authorPerson.getContent().add(f.createENFamily(enFamilyAuthor));
+        authorPerson.getContent().add(factoryHL7.createENFamily(enFamilyAuthor));
 
         assignedPerson.getName().add(authorPerson);
         assignedAuthor.setAssignedPerson(assignedPerson);
@@ -1185,13 +1195,13 @@ public class HL7PacketBuilder {
 
 
         // --- custodian
-        final POCDMT000040Custodian custodian = new POCDMT000040Custodian();
-        final POCDMT000040AssignedCustodian assignedCustodian = new POCDMT000040AssignedCustodian();
-        final POCDMT000040CustodianOrganization representedCustodianOrganization = new POCDMT000040CustodianOrganization();
-        final II idRootCustodian = new II();
+        final POCDMT000040Custodian custodian = factoryHL7.createPOCDMT000040Custodian();
+        final POCDMT000040AssignedCustodian assignedCustodian = factoryHL7.createPOCDMT000040AssignedCustodian();
+        final POCDMT000040CustodianOrganization representedCustodianOrganization = factoryHL7.createPOCDMT000040CustodianOrganization();
+        final II idRootCustodian = factoryHL7.createII();
         idRootCustodian.setRoot(orgStructure.getUuid().getUuid());
 
-        final ON name = new ON();
+        final ON name = factoryHL7.createON();
         name.getContent().add(orgStructure.getName()); //todo
         representedCustodianOrganization.setName(name);
         representedCustodianOrganization.getId().add(idRootCustodian);
@@ -1201,22 +1211,22 @@ public class HL7PacketBuilder {
 
 
         // -- componentOf
-        final POCDMT000040Component1 componentOf = new POCDMT000040Component1();
-        final POCDMT000040EncompassingEncounter encompassingEncounter = new POCDMT000040EncompassingEncounter();
+        final POCDMT000040Component1 componentOf = factoryHL7.createPOCDMT000040Component1();
+        final POCDMT000040EncompassingEncounter encompassingEncounter = factoryHL7.createPOCDMT000040EncompassingEncounter();
 
-        final II idRootEncounter = new II();
+        final II idRootEncounter = factoryHL7.createII();
         idRootEncounter.setRoot(externalUUID); //todo
         idRootEncounter.setExtension(externalId);  //todo
         encompassingEncounter.getId().add(idRootEncounter);
 
-        final CE code = new CE();
+        final CE code = factoryHL7.createCE();
         code.setCode("IMP");
         code.setCodeSystem("2.16.840.1.113883.5.4");
         code.setCodeSystemName("actCode");
         code.setDisplayName("Inpatient encounter");
         encompassingEncounter.setCode(code);
 
-        final IVLTS value = new IVLTS();
+        final IVLTS value = factoryHL7.createIVLTS();
         value.setNullFlavor(NullFlavor.NI);
         encompassingEncounter.setEffectiveTime(value);
 
@@ -1224,22 +1234,22 @@ public class HL7PacketBuilder {
         clinicalDocument.setComponentOf(componentOf);
 
         // --- component
-        final POCDMT000040Component2 component = new POCDMT000040Component2();
+        final POCDMT000040Component2 component = factoryHL7.createPOCDMT000040Component2();
 
-        final POCDMT000040StructuredBody structuredBody = new POCDMT000040StructuredBody();
-        final POCDMT000040Component3 component3 = new POCDMT000040Component3();
-        final POCDMT000040Section section = new POCDMT000040Section();
-        final StrucDocText text = f.createStrucDocText();
+        final POCDMT000040StructuredBody structuredBody = factoryHL7.createPOCDMT000040StructuredBody();
+        final POCDMT000040Component3 component3 = factoryHL7.createPOCDMT000040Component3();
+        final POCDMT000040Section section = factoryHL7.createPOCDMT000040Section();
+        final StrucDocText text = factoryHL7.createStrucDocText();
         text.getContent().add("Take captopril 25mg PO every 12 hours, starting on Jan 01, 2002, ending on Feb 01, 2002");
 
-        JAXBElement<StrucDocList> docItemList = f.createStrucDocItemList(f.createStrucDocList());
-        final StrucDocList docList = f.createStrucDocList();
+        JAXBElement<StrucDocList> docItemList = factoryHL7.createStrucDocItemList(factoryHL7.createStrucDocList());
+        final StrucDocList docList = factoryHL7.createStrucDocList();
 
-        final StrucDocItem item = new StrucDocItem();
+        final StrucDocItem item = factoryHL7.createStrucDocItem();
         item.getContent().add("Анальгин");
         docList.getItem().add(item);
 
-        final StrucDocItem item2 = new StrucDocItem();
+        final StrucDocItem item2 = factoryHL7.createStrucDocItem();
         item2.getContent().add("Esidrix");
 
         docList.getItem().add(item2);
@@ -1249,8 +1259,8 @@ public class HL7PacketBuilder {
         text.getContent().add(docItemList);
 
 
-        final JAXBElement<StrucDocContent> strucDocItemContent = f.createStrucDocItemContent(f.createStrucDocContent());
-        final StrucDocContent content = f.createStrucDocContent();
+        final JAXBElement<StrucDocContent> strucDocItemContent = factoryHL7.createStrucDocItemContent(factoryHL7.createStrucDocContent());
+        final StrucDocContent content = factoryHL7.createStrucDocContent();
         content.getContent().add("Во время еды");
         content.setID1("patient-instruction");
         strucDocItemContent.setValue(content);
@@ -1259,41 +1269,41 @@ public class HL7PacketBuilder {
         section.setText(text);
 
 
-        final POCDMT000040Entry entry = new POCDMT000040Entry();
+        final POCDMT000040Entry entry = factoryHL7.createPOCDMT000040Entry();
         //----------------
-        final POCDMT000040SubstanceAdministration substanceAdministration = new POCDMT000040SubstanceAdministration();
+        final POCDMT000040SubstanceAdministration substanceAdministration = factoryHL7.createPOCDMT000040SubstanceAdministration();
         substanceAdministration.setClassCode(ActClass.SBADM);
         substanceAdministration.setMoodCode(XDocumentSubstanceMood.EVN);  // назначение
-        final II idRoot2 = new II();
+        final II idRoot2 = factoryHL7.createII();
         idRoot2.setRoot(UUID.randomUUID().toString()); // UUID назначения
         substanceAdministration.getId().add(idRoot2);
 
-        final II idRootEx = new II();
+        final II idRootEx = factoryHL7.createII();
         idRootEx.setExtension("ОМС");
         substanceAdministration.getId().add(idRootEx);
 
 
-        final IVLTS ivlts = new IVLTS();
-        final IVXBTS low = new IVXBTS();
+        final IVLTS ivlts = factoryHL7.createIVLTS();
+        final IVXBTS low = factoryHL7.createIVXBTS();
         low.setValue("20121010");  // todo
         ivlts.setLow(low);
 
-        final IVXBTS high = new IVXBTS();
+        final IVXBTS high = factoryHL7.createIVXBTS();
         high.setValue("20121020"); //todo
         ivlts.setHigh(high);
         substanceAdministration.getEffectiveTime().add(ivlts);
 
 
-        final PIVLTS pivlts = new PIVLTS();
+        final PIVLTS pivlts = factoryHL7.createPIVLTS();
         pivlts.setOperator(SetOperator.A);
-        final PQ period = new PQ();
+        final PQ period = factoryHL7.createPQ();
         period.setValue("12"); // todo
         period.setUnit("h");
         pivlts.setPeriod(period);
         substanceAdministration.getEffectiveTime().add(pivlts);
 
 
-        final CE priorityCode = new CE();
+        final CE priorityCode = factoryHL7.createCE();
         priorityCode.setCode("R");
         priorityCode.setCodeSystem("2.16.840.1.113883.5.7");
         priorityCode.setCodeSystemName("ActPriority");
@@ -1301,20 +1311,20 @@ public class HL7PacketBuilder {
         substanceAdministration.setPriorityCode(priorityCode);
 
 
-        final CE routeCode = new CE();
+        final CE routeCode = factoryHL7.createCE();
         routeCode.setCode("IV");
         routeCode.setCodeSystem("2.16.840.1.113883.5.112");
         routeCode.setCodeSystemName("RouteOfAdministration");
         substanceAdministration.setRouteCode(routeCode);
 
 
-        final IVLPQ doseQuantity = new IVLPQ();
-        final PQ center = new PQ();
+        final IVLPQ doseQuantity = factoryHL7.createIVLPQ();
+        final PQ center = factoryHL7.createPQ();
         center.setUnit("mg"); //todo
         center.setValue("25");
-        final PQR pqr = new PQR();
+        final PQR pqr = factoryHL7.createPQR();
         pqr.setCodeSystemName("RLS");
-        final ED originalText = new ED();
+        final ED originalText = factoryHL7.createED();
         originalText.getContent().add("мг"); //todo
         pqr.setOriginalText(originalText);
         center.getTranslation().add(pqr);
@@ -1323,17 +1333,17 @@ public class HL7PacketBuilder {
 
 
         // -consumable
-        final POCDMT000040Consumable consumable = new POCDMT000040Consumable();
-        final POCDMT000040ManufacturedProduct manufacturedProduct = new POCDMT000040ManufacturedProduct();
-        final POCDMT000040LabeledDrug manufacturedLabeledDrug = new POCDMT000040LabeledDrug();
+        final POCDMT000040Consumable consumable = factoryHL7.createPOCDMT000040Consumable();
+        final POCDMT000040ManufacturedProduct manufacturedProduct = factoryHL7.createPOCDMT000040ManufacturedProduct();
+        final POCDMT000040LabeledDrug manufacturedLabeledDrug = factoryHL7.createPOCDMT000040LabeledDrug();
 
-        final CE code1 = new CE();
+        final CE code1 = factoryHL7.createCE();
         code1.setCodeSystem("1.2.643.2.0");
         code1.setCodeSystemName("RLS");
 
 
-        final CD cd = new CD();
-        final CD cdTrans = new CD();
+        final CD cd = factoryHL7.createCD();
+        final CD cdTrans = factoryHL7.createCD();
         cdTrans.setCode("Фенистил");
         cdTrans.setDisplayName("Фенистил");
         cdTrans.setCodeSystemName("RLS_ACTMATTERS");
@@ -1341,23 +1351,23 @@ public class HL7PacketBuilder {
         code1.getTranslation().add(cd);
 
 
-        final CD cdTrans2 = new CD();
+        final CD cdTrans2 = factoryHL7.createCD();
 
         cdTrans2.setCode("капли");
         cdTrans2.setDisplayName("капли");
         cdTrans2.setCodeSystemName("RLS_CLSDRUGFORMS");
 
-        final CR cr = new CR();
-        final CV cv = new CV();
+        final CR cr = factoryHL7.createCR();
+        final CV cv = factoryHL7.createCV();
         cv.setCode("DFMASS");
         cv.setCodeSystemName("RLS");
         cr.setName(cv);
 
-        final CD cdValue = new CD();
+        final CD cdValue = factoryHL7.createCD();
         cdValue.setCode("мг");
         cdValue.setDisplayName("мг");
         cdValue.setCodeSystemName("RLS_MASSUNITS");
-        final ED originalText1 = new ED();
+        final ED originalText1 = factoryHL7.createED();
         originalText1.getContent().add("5");
         cdValue.setOriginalText(originalText1);
         cr.setValue(cdValue);
@@ -1398,9 +1408,9 @@ public class HL7PacketBuilder {
         final List<POCDMT000040LabeledDrug> drug = drugList.getDrug();
         logger.info("Connection successful...");
 
-        Random rnd = new Random();
+        //   Random rnd = new Random();
 
-   //     final POCDMT000040LabeledDrug randomDrug = drug.get(rnd.nextInt(drug.size()));
+        //     final POCDMT000040LabeledDrug randomDrug = drug.get(rnd.nextInt(drug.size()));
         for (POCDMT000040LabeledDrug d : drug) {
             if (d.getCode().getCode().equals("20044")) {
                 logger.info("Fetch random drug {}", marshallMessage(d, "org.hl7.v3"));

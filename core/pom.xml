@@ -52,6 +52,7 @@
         <version.maven.plugin.pmd>2.7.1</version.maven.plugin.pmd>
         <version.maven.plugin.embedded.glassfish>3.1.1</version.maven.plugin.embedded.glassfish>
         <version.maven.plugin.release>2.2.1</version.maven.plugin.release>
+        <version.maven.plugin.resources>2.6</version.maven.plugin.resources>
 
 
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
@@ -59,6 +60,16 @@
         <project.build.debug>false</project.build.debug>
         <targetJdk>1.6</targetJdk>
         <my.build.directory>target</my.build.directory>
+
+        <!--Нотификация алармов по email-->
+        <alarm.smtpHost>smtp.gmail.com</alarm.smtpHost>
+        <alarm.from>nnm921@gmail.com</alarm.from>
+        <alarm.to>nnm921@gmail.com</alarm.to>
+        <alarm.count.message>10</alarm.count.message>
+
+        <!-- Формат для аппендеров логера-->
+        <root.log>${com.sun.aas.instanceRoot}/logs/</root.log>
+        <log.format>%5p [%d][%thread][%logger{0}] %msg%n</log.format>
     </properties>
 
     <profiles>
@@ -90,7 +101,13 @@
             <groupId>javax.mail</groupId>
             <artifactId>mail</artifactId>
             <version>${version.javax.mail}</version>
-            <scope>provided</scope>
+            <!--<scope>provided</scope>-->
+        </dependency>
+
+        <dependency>
+            <groupId>com.sun.mail</groupId>
+            <artifactId>smtp</artifactId>
+            <version>1.4.6-rc1</version>
         </dependency>
 
         <dependency>
@@ -195,6 +212,17 @@
         <defaultGoal>package</defaultGoal>
         <directory>${my.build.directory}</directory>
 
+        <resources>
+            <resource>
+                <directory>src/main/resources/</directory>
+                <targetPath>../</targetPath>
+                <filtering>true</filtering>
+                <includes>
+                    <include>**/*.*</include>
+                </includes>
+            </resource>
+        </resources>
+
         <plugins>
             <!--
                 Compiling support
@@ -253,6 +281,21 @@
                 </configuration>
             </plugin>
 
+            <plugin>
+                <artifactId>maven-resources-plugin</artifactId>
+                <version>${version.maven.plugin.resources}</version>
+                <configuration>
+                    <encoding>${project.build.sourceEncoding}</encoding>
+                </configuration>
+                <executions>
+                    <execution>
+                        <id>make-assembly</id>
+                        <!-- this is used for inheritance merges -->
+                        <phase>package</phase>
+                        <!-- append to the packaging phase. -->
+                    </execution>
+                </executions>
+            </plugin>
 
             <!-- генерация jar с исходниками для репозитория -->
             <plugin>
@@ -302,35 +345,12 @@
                 </configuration>
             </plugin>
 
-            <!--<plugin>-->
-            <!--<groupId>org.apache.maven.plugins</groupId>-->
-            <!--<artifactId>maven-dependency-plugin</artifactId>-->
-            <!--<version>2.6</version>-->
-            <!--<executions>-->
-            <!--<execution>-->
-            <!--<id>copy</id>-->
-            <!--<phase>package</phase>-->
-            <!--<goals>-->
-            <!--<goal>copy</goal>-->
-            <!--</goals>-->
-            <!--<configuration>-->
-            <!--<artifactItems>-->
-            <!--<artifactItem>-->
-            <!--<groupId>[ groupId ]</groupId>-->
-            <!--<artifactId>[ artifactId ]</artifactId>-->
-            <!--<version>[ version ]</version>-->
-            <!--<type>[ packaging ]</type>-->
-            <!--<classifier> [classifier - optional] </classifier>-->
-            <!--<overWrite>[ true or false ]</overWrite>-->
-            <!--<outputDirectory>[ output directory ]</outputDirectory>-->
-            <!--<destFileName>[ filename ]</destFileName>-->
-            <!--</artifactItem>-->
-            <!--</artifactItems>-->
-            <!--&lt;!&ndash; other configurations here &ndash;&gt;-->
-            <!--</configuration>-->
-            <!--</execution>-->
-            <!--</executions>-->
-            <!--</plugin>-->
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-dependency-plugin</artifactId>
+                <version>2.6</version>
+
+            </plugin>
 
             <!--
                 Glassfish Maven support

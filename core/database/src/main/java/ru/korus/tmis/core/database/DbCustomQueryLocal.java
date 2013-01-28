@@ -124,5 +124,7 @@ public interface DbCustomQueryLocal {
      * @return - код источника финансирования
      * @throws CoreException
      */
-    Integer getFinanceId(Event e) throws CoreException;
+    Integer getFinanceId(Event e);
+
+
 }

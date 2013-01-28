@@ -362,13 +362,13 @@ class DbCustomQueryBean
     var flgDepartmentSwitched: Boolean = false
     var sorting = "ORDER BY e.id %s".format(sortingMethod)
     var flgDepartmentSort: Boolean = false
-    if(sortingField.compareTo("department")!=0)
+    if (sortingField.compareTo("department") != 0)
       sorting = "ORDER BY %s %s".format(sortingField, sortingMethod)
     else
       flgDepartmentSort = true
-    if(sortingField.contains("%s"))sorting = "ORDER BY %s".format(sortingField.format(sortingMethod,sortingMethod,sortingMethod)) //костыль для докторв
+    if (sortingField.contains("%s")) sorting = "ORDER BY %s".format(sortingField.format(sortingMethod, sortingMethod, sortingMethod)) //костыль для докторв
 
-    val default_org = orgStructure.getAllOrgStructures.filter(element => element.getType == 4).toList.get(0)  //Приемное отделение
+    val default_org = orgStructure.getAllOrgStructures.filter(element => element.getType == 4).toList.get(0) //Приемное отделение
 
     val queryStr: QueryDataStructure = if (filter.isInstanceOf[TalonSPODataListFilter]) {
       filter.asInstanceOf[TalonSPODataListFilter].toQueryStructure()
@@ -381,7 +381,7 @@ class DbCustomQueryBean
         flgDiagnosesSwitched = true
       }
       if (filter.asInstanceOf[AppealSimplifiedRequestDataFilter].departmentId > 0 &&
-          filter.asInstanceOf[AppealSimplifiedRequestDataFilter].departmentId != default_org.getId.intValue()){
+        filter.asInstanceOf[AppealSimplifiedRequestDataFilter].departmentId != default_org.getId.intValue()) {
         department_filter = "AND apv.value.id = :departmentId"
         flgDepartmentSwitched = true
       }
@@ -394,8 +394,8 @@ class DbCustomQueryBean
     //Получаем список всех обращений (без диагнозов) (сортированный)
     val query = AllAppealsWithFilterExQuery.format("e", queryStr.query, "", sorting)
     var typed = em.createQuery(query, classOf[Event])
- //     .setMaxResults(limit)
- //     .setFirstResult(limit * page)
+    //     .setMaxResults(limit)
+    //     .setFirstResult(limit * page)
 
     if (queryStr.data.size() > 0) {
       queryStr.data.foreach(qdp => typed.setParameter(qdp.name, qdp.value))
@@ -412,10 +412,10 @@ class DbCustomQueryBean
 
       //Получение отделения из последнего из последнего экшена движения
       val depArrayTyped = em.createQuery(OrgStructureSubQuery.format(i18n("db.actionType.moving"),
-                                                                     i18n("db.rbCAP.moving.id.located"),
-                                                                     department_filter),
-                                      classOf[Array[AnyRef]])
-                            .setParameter("ids", asJavaCollection(ids))
+        i18n("db.rbCAP.moving.id.located"),
+        department_filter),
+        classOf[Array[AnyRef]])
+        .setParameter("ids", asJavaCollection(ids))
       if (flgDepartmentSwitched)
         depArrayTyped.setParameter("departmentId", filter.asInstanceOf[AppealSimplifiedRequestDataFilter].departmentId)
 
@@ -424,7 +424,7 @@ class DbCustomQueryBean
         (map, pair) => {
           val event = pair(0).asInstanceOf[Event]
           var department: OrgStructure = default_org
-          if(pair(1).isInstanceOf[OrgStructure]){
+          if (pair(1).isInstanceOf[OrgStructure]) {
             department = pair(1).asInstanceOf[OrgStructure]
             em.detach(department)
           }
@@ -446,7 +446,7 @@ class DbCustomQueryBean
       while (ids.size() > 0 && i <= 4) {
         val map_value = map.get(Integer.valueOf(i)).asInstanceOf[(String, String, String)]
         val typed2 = i match {
-          case 0 | 1 => em.createQuery(map_value._1.format(map_value._2,diagnostic_filter), classOf[Array[AnyRef]])
+          case 0 | 1 => em.createQuery(map_value._1.format(map_value._2, diagnostic_filter), classOf[Array[AnyRef]])
           case 2 => em.createQuery(map_value._1.format(map_value._2, map_value._3, ap_string_filter), classOf[Array[AnyRef]])
           case _ => em.createQuery(map_value._1.format(map_value._2, map_value._3, ap_mkb_filter), classOf[Array[AnyRef]])
         }
@@ -480,35 +480,36 @@ class DbCustomQueryBean
     val ret_value_sorted = LinkedHashMap.empty[Event, Object]
     res.foreach(e => {
       val pos = ret_value.get(e)
-      if (pos != null){
+      if (pos != null) {
         val pos_org = org_value.get(e)
-        if (pos_org != null){
+        if (pos_org != null) {
           if (filter.asInstanceOf[AppealSimplifiedRequestDataFilter].departmentId != default_org.getId.intValue() ||
-            pos_org.getId.intValue()==default_org.getId.intValue()) {
+            pos_org.getId.intValue() == default_org.getId.intValue()) {
             ret_value_sorted.put(e, (pos, pos_org))
           }
         }
-        else if(!flgDepartmentSwitched) {
+        else if (!flgDepartmentSwitched) {
           ret_value_sorted.put(e, (pos, default_org))
         }
       }
     })
     var ret_value_sorted_page = Map.empty[Event, Object]
-    val ret_value_sorted2 = if (flgDepartmentSort){  //Cортировка по department name
-        if (sortingMethod.compareTo("desc")==0)   //desc
-          ListMap(ret_value_sorted.toList.sortWith(_._2.asInstanceOf[(Map[Object,Object],OrgStructure)]._2.getName > _._2.asInstanceOf[(Map[Object,Object],OrgStructure)]._2.getName):_*)
-        else //asc
-          ListMap(ret_value_sorted.toList.sortBy(_._2.asInstanceOf[(Map[Object,Object],OrgStructure)]._2.getName):_*)
+    val ret_value_sorted2 = if (flgDepartmentSort) {
+      //Cортировка по department name
+      if (sortingMethod.compareTo("desc") == 0) //desc
+        ListMap(ret_value_sorted.toList.sortWith(_._2.asInstanceOf[(Map[Object, Object], OrgStructure)]._2.getName > _._2.asInstanceOf[(Map[Object, Object], OrgStructure)]._2.getName): _*)
+      else //asc
+        ListMap(ret_value_sorted.toList.sortBy(_._2.asInstanceOf[(Map[Object, Object], OrgStructure)]._2.getName): _*)
     } else {
-        ListMap(ret_value_sorted.toList:_*)
+      ListMap(ret_value_sorted.toList: _*)
     }
     //проведем ручной пэйджинг
-    ret_value_sorted_page = if((ret_value_sorted2.size - limit*(page+1))>0)
-      ret_value_sorted2.dropRight(ret_value_sorted2.size - limit*(page+1)).drop(page*limit)
-    else ret_value_sorted2.drop(page*limit)
+    ret_value_sorted_page = if ((ret_value_sorted2.size - limit * (page + 1)) > 0)
+      ret_value_sorted2.dropRight(ret_value_sorted2.size - limit * (page + 1)).drop(page * limit)
+    else ret_value_sorted2.drop(page * limit)
 
 
-    if (records!=null) records(ret_value_sorted.size)//Перепишем количество записей для структуры
+    if (records != null) records(ret_value_sorted.size) //Перепишем количество записей для структуры
 
     ret_value.clear()
     ret_value_sorted.clear()
@@ -581,7 +582,8 @@ class DbCustomQueryBean
       .foldLeft(new java.util.LinkedHashMap[String, Mkb])(
       (map, mkb) => {
         map.put(mkb(0).asInstanceOf[String], mkb(1).asInstanceOf[Mkb])
-        map})
+        map
+      })
     by.put(key, res1)
   }
 
@@ -823,26 +825,46 @@ class DbCustomQueryBean
    * @throws CoreException
    */
   def getFinanceId(e: Event) = {
-    val result = em.createQuery(finance, classOf[RbFinance])
+    val result = em.createQuery( """
+     SELECT et.finance
+     FROM   EventType et,
+            Event e,
+            RbFinance rf
+     WHERE  e.id = :eventId
+        AND e.eventType.id = et.id
+        AND et.finance = rf
+        AND et.deleted = 0
+        AND e.deleted = 0
+                                 """, classOf[RbFinance])
       //      .setParameter("eventTypeId", e.getEventType.getId)
       .setParameter("eventId", e.getId)
       .getSingleResult
     result.getId
   }
 
+  /**
+   * Получение uuid оргструктуры
+   */
+//  def getOrgStructureUuid(a: Action) = {
+//    em.createQuery(
+//      """
+//         SELECT u.uuid
+//         FROM   Action a, ActionType at, ActionProperty ap, APValueOrgStructure apos, OrgStructure os, UUID u
+//         WHERE  a.id = :action1
+//          AND a.actionType.id = at.id
+//          AND ap.action.id = :action2
+//          AND ap.id = apos.id
+//          AND apos.value.id = os.id
+//          AND os.uuid.id = u.id
+//
+//      """, classOf[String])
+//      .setParameter("action1", a.getId)
+//      .setParameter("action2", a.getId)
+//      .getSingleResult
+//  }
+
 
   // ---- Секция кастомных запросов
-
-  /**
-   * Запрос кода источника финансирования
-   */
-  val finance = """
-      SELECT et.finance
-      FROM EventType et, Event e, RbFinance rf
-              WHERE e.id = :eventId AND e.eventType.id = et.id AND et.finance = rf
-                   AND et.deleted = 0
-                   AND e.deleted = 0
-                """
 
   val HeightQuery = """
     SELECT apd.value, ap.action.begDate
@@ -1479,7 +1501,7 @@ class DbCustomQueryBean
   WHERE
     d.mkb = :mkb
                             """
-//
+  //
   val OrgStructureSubQuery = """
     SELECT e, apv.value, MAX(a.createDatetime)
     FROM

@@ -1,7 +1,7 @@
 package ru.korus.tmis.core.hl7db;
 
 import ru.korus.tmis.core.entity.model.Action;
-import ru.korus.tmis.core.entity.model.hl7.Pharmacy;
+import ru.korus.tmis.core.entity.model.pharmacy.Pharmacy;
 import ru.korus.tmis.core.exception.CoreException;
 
 import javax.ejb.Local;
