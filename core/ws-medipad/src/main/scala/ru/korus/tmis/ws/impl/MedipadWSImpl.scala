@@ -676,29 +676,41 @@ class MedipadWSImpl
 
    //создание первичного мед. осмотра
    def insertPrimaryMedExamForPatient(eventId: Int, data: JSONCommonData, authData: AuthData)  = {
-     //TODO: подключить анализ авторизационных данных и доступных ролей
+     //создаем ответственного, если до этого был другой
+     val eventPerson = dbEventPerson.getLastEventPersonForEventId(eventId)
+     if (eventPerson.getPerson != authData.getUser) {
+       dbEventPerson.insertOrUpdateEventPerson(if (eventPerson != null) {eventPerson.getId.intValue()} else 0,
+                                               dbEventBean.getEventById(eventId),
+                                               authData.getUser,
+                                               false) //параметр для флаша
+     }
+     //создаем осмотр. ЕвентПерсон не флашится!!!
      val returnValue = primaryAssessmentBean.createPrimaryAssessmentForEventId(eventId,
                                                                                data,
                                                                                "Assessment",
                                                                                authData,
                                                                                preProcessing _,
                                                                                postProcessing _)
-     val eventPerson = dbEventPerson.getLastEventPersonForEventId(eventId)
-     dbEventPerson.insertOrUpdateEventPerson(eventPerson.getId.intValue(), dbEventBean.getEventById(eventId), authData.getUser)
      returnValue
    }
 
    //редактирование первичного мед. осмотра
    def modifyPrimaryMedExamForPatient(actionId: Int, data: JSONCommonData, authData: AuthData)  = {
-     //TODO: подключить анализ авторизационных данных и доступных ролей
+     //создаем ответственного, если до этого был другой
+     val eventPerson = dbEventPerson.getLastEventPersonForEventId(actionBean.getActionById(actionId).getEvent.getId.intValue())
+     if (eventPerson.getPerson != authData.getUser) {
+       dbEventPerson.insertOrUpdateEventPerson(if (eventPerson != null) {eventPerson.getId.intValue()} else 0,
+                                               actionBean.getActionById(actionId).getEvent,
+                                               authData.getUser,
+                                               false)
+     }
+     //создаем осмотр. ЕвентПерсон не флашится!!!
      val returnValue = primaryAssessmentBean.modifyPrimaryAssessmentById(actionId,
                                                                          data,
                                                                          "Assessment",
                                                                          authData,
                                                                          preProcessing _,
                                                                          postProcessing _)
-     val eventPerson = dbEventPerson.getLastEventPersonForEventId(actionBean.getActionById(actionId).getEvent.getId.intValue())
-     dbEventPerson.insertOrUpdateEventPerson(eventPerson.getId.intValue(), actionBean.getActionById(actionId).getEvent, authData.getUser)
      returnValue
    }
 
@@ -965,7 +977,7 @@ class MedipadWSImpl
 
   def insertLaboratoryStudies(eventId: Int, data: CommonData, auth: AuthData) = {
     // проверка пользователя на ответственного за ивент
-    dbEventPerson.checkEventPerson(eventId, auth.user)
+
     primaryAssessmentBean.createAssessmentsForEventIdFromCommonData(eventId, data, "Diagnostic", null, auth)
   }
 

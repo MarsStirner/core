@@ -33,7 +33,7 @@ public interface DbEventPersonBeanLocal {
      * @return
      * @throws CoreException
      */
-    EventPerson insertOrUpdateEventPerson(int id, Event event, Staff sessionUser) throws CoreException;
+    EventPerson insertOrUpdateEventPerson(int id, Event event, Staff sessionUser, boolean withFlash) throws CoreException;
 
     /**
      * Запрос на тип EventPerson по идентификатору ивента.

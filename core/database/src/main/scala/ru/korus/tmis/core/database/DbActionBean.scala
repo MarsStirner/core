@@ -35,6 +35,9 @@ class DbActionBean
   @EJB
   private var dbUUIDBeanLocal: DbUUIDBeanLocal = _
 
+  @EJB
+  private var dbEventPerson: DbEventPersonBeanLocal = _
+
   def getCountRecordsOrPagesQuery(enterPosition: String, filterQuery: String): TypedQuery[Long] = {
 
     val cntMacroStr = "count(a)"
@@ -78,25 +81,21 @@ class DbActionBean
     val at = dbActionType.getActionTypeById(actionTypeId)
 
     val now = new Date
-
     val a = new Action
 
-    //TODO: временнр подсовываю пустой Staff когда нет AuthData
     if (userData != null) {
       a.setCreatePerson(userData.user)
       a.setCreateDatetime(now)
       a.setModifyPerson(userData.user)
       a.setModifyDatetime(now)
 
-      a.setAssigner(userData.user)
+      val eventPerson = dbEventPerson.getLastEventPersonForEventId(eventId)
+      if (eventPerson != null) {
+        a.setAssigner(eventPerson.getPerson)
+      } else {
+        a.setAssigner(userData.user)
+      }
       a.setExecutor(userData.user)
-    }
-    else {
-      //var staff = new Staff
-      //a.setCreatePerson(staff)
-      // a.setModifyPerson(staff)
-      // a.setAssigner(staff)
-      //a.setExecutor(staff)
     }
 
     a.setCreateDatetime(now)
