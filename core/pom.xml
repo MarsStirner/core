@@ -64,8 +64,8 @@
 
         <!--Нотификация алармов по email-->
         <alarm.smtpHost>smtp.gmail.com</alarm.smtpHost>
-        <alarm.from>nnm921@gmail.com</alarm.from>
-        <alarm.to>nnm921@gmail.com</alarm.to>
+        <alarm.from>****</alarm.from>
+        <alarm.to>****</alarm.to>
         <alarm.count.message>10</alarm.count.message>
 
         <!-- Формат для аппендеров логера-->
