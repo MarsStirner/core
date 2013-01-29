@@ -43,7 +43,7 @@ class HospitalBedData {
    */
   def this(action: Action,
            values: java.util.Map[ActionProperty, java.util.List[APValue]],
-           beds: java.util.Map[java.lang.Integer, java.lang.Boolean],
+           beds: java.util.Map[OrgStructureHospitalBed, java.lang.Boolean],
            corrMap: java.util.HashMap[String, java.util.List[RbCoreActionProperty]],
            requestData: HospitalBedDataRequest) = {
     this ()
@@ -210,7 +210,7 @@ class HospitalBedEntry {
    */
   def this(action: Action,
            values: java.util.Map[ActionProperty, java.util.List[APValue]],
-           beds: java.util.Map[java.lang.Integer, java.lang.Boolean],
+           beds: java.util.Map[OrgStructureHospitalBed, java.lang.Boolean],
            corrMap: java.util.HashMap[String, java.util.List[RbCoreActionProperty]]) = {
     this ()
     this.move = new MoveHospitalBedContainer(action, values, corrMap)
@@ -539,7 +539,7 @@ class RegistrationHospitalBedContainer {
    */
   def this(action: Action,
            values: java.util.Map[ActionProperty, java.util.List[APValue]],
-           beds: java.util.Map[java.lang.Integer, java.lang.Boolean],
+           beds: java.util.Map[OrgStructureHospitalBed, java.lang.Boolean],
            corrMap: java.util.HashMap[String, java.util.List[RbCoreActionProperty]]){
     this()
     this.clientId = action.getEvent.getPatient.getId.intValue()
@@ -619,10 +619,10 @@ class ChamberDataContainer {
    * Конструктор ChamberDataContainer
    * @param beds Список занятых/свободных коек.
    */
-  def this(beds: java.util.Map[java.lang.Integer, java.lang.Boolean]) {
+  def this(beds: java.util.Map[OrgStructureHospitalBed, java.lang.Boolean]) {
     this()
     beds.foreach(bed=>{
-      this.getBedList().add(new BedDataContainer(bed._1.intValue(), bed._2.booleanValue()))
+      this.getBedList().add(new BedDataContainer(bed._1, bed._2.booleanValue()))
     })
   }
 }
@@ -637,17 +637,25 @@ class BedDataContainer {
   @BeanProperty
   var bedId: Int = _
   @BeanProperty
+  var name: String = _
+  @BeanProperty
+  var code: String = _
+  @BeanProperty
   var busy: String = _
 
   /**
    * Конструктор BedDataContainer
-   * @param id Идентификатор койки
+   * @param bed Койка
    * @param busy Флаг статуса койки: занята("yes")/свободна("no")
    */
-  def this(id: Int, busy: Boolean){
+  def this(bed: OrgStructureHospitalBed, busy: Boolean){
     this()
-    this.bedId = id
-    this.busy = if(busy) "yes" else "no"
+    if(bed!=null){
+      this.bedId = bed.getId.intValue()
+      this.name = bed.getName
+      this.code = bed.getCode
+      this.busy = if(busy) "yes" else "no"
+    }
   }
 }
 
@@ -663,11 +671,11 @@ class BedDataListContainer {
    * Конструктор BedDataListContainer
    * @param beds Список занятых/свободных коек.
    */
-  def this(beds: java.util.Map[java.lang.Integer, java.lang.Boolean], departmentId: Int) {
+  def this(beds: java.util.Map[OrgStructureHospitalBed, java.lang.Boolean], departmentId: Int) {
     this()
     this.requestData = new BedDataListRequest(departmentId)
     beds.foreach(bed=>{
-      this.data.add(new BedDataContainer(bed._1.intValue(), bed._2.booleanValue()))
+      this.data.add(new BedDataContainer(bed._1, bed._2.booleanValue()))
     })
   }
 }

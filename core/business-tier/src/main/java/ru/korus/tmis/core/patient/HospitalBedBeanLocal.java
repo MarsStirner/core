@@ -5,6 +5,7 @@ import ru.korus.tmis.core.data.HospitalBedData;
 import ru.korus.tmis.core.entity.model.APValue;
 import ru.korus.tmis.core.entity.model.Action;
 import ru.korus.tmis.core.entity.model.ActionProperty;
+import ru.korus.tmis.core.entity.model.OrgStructureHospitalBed;
 import ru.korus.tmis.core.exception.CoreException;
 
 import javax.ejb.Local;
@@ -79,7 +80,7 @@ public interface HospitalBedBeanLocal {
      * @return Сортированный список идентификаторов коек и статусом их занятости.
      * @throws CoreException
      */
-    java.util.LinkedHashMap<Integer, Boolean> getCaseHospitalBedsByDepartmentId(int departmentId) throws CoreException;
+    java.util.LinkedHashMap<OrgStructureHospitalBed, Boolean> getCaseHospitalBedsByDepartmentId(int departmentId) throws CoreException;
 
     /**
      * Список движений пациента
