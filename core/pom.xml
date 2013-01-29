@@ -36,6 +36,7 @@
         <version.junit>4.8.2</version.junit>
         <version.logging.logback>1.0.9</version.logging.logback>
         <version.logging.logback.janino>2.6.1</version.logging.logback.janino>
+        <version.logging.jcl>1.7.2</version.logging.jcl>
         <version.logging.slf4j>1.7.2</version.logging.slf4j>
         <version.logging.grizzled-slf4j>0.6.10</version.logging.grizzled-slf4j>
 
@@ -105,12 +106,6 @@
         </dependency>
 
         <dependency>
-            <groupId>com.sun.mail</groupId>
-            <artifactId>smtp</artifactId>
-            <version>1.4.6-rc1</version>
-        </dependency>
-
-        <dependency>
             <groupId>javax</groupId>
             <artifactId>javaee-api</artifactId>
             <version>${version.javaee.api}</version>
@@ -153,13 +148,19 @@
             <version>${version.logging.logback}</version>
         </dependency>
 
+        <dependency>
+            <groupId>org.slf4j</groupId>
+            <artifactId>jcl-over-slf4j</artifactId>
+            <version>${version.logging.jcl}</version>
+        </dependency>
+
         <!-- The org.codehaus.janino:commons-compiler:2.6.1 dependency -->
         <!-- will be automatically pulled in by Maven's transitivity rules -->
-        <dependency>
-            <groupId>org.codehaus.janino</groupId>
-            <artifactId>janino</artifactId>
-            <version>${version.logging.logback.janino}</version>
-        </dependency>
+        <!--<dependency>-->
+            <!--<groupId>org.codehaus.janino</groupId>-->
+            <!--<artifactId>janino</artifactId>-->
+            <!--<version>${version.logging.logback.janino}</version>-->
+        <!--</dependency>-->
 
         <!--
             JUnit

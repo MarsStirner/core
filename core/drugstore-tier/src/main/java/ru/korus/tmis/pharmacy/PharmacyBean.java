@@ -69,6 +69,7 @@ public class PharmacyBean implements PharmacyBeanLocal {
     @Schedule(minute = "*/2", hour = "*")
     public void pooling() {
         logger.info("pooling...last date update {}", lastDateUpdate);
+//        logger.error("fake error", new Exception("ee"));
         try {
             if (lastDateUpdate == null) {
 

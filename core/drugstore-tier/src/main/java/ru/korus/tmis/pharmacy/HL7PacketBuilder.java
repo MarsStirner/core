@@ -44,21 +44,21 @@ public class HL7PacketBuilder {
     public static MCCIIN000002UV01 processReceived(
             final Action action,
             final OrgStructure orgStructure) throws SoapConnectionException {
-
-        final Event event = action.getEvent();
-        final Patient client = event.getPatient();
-        final String uuidExternalId = event.getUuid().getUuid();
-        final String externalId = event.getExternalId();
-        final String uuidDocument = UUID.randomUUID().toString();
-        final String uuidOrgStructure = orgStructure.getUuid().getUuid();
-        final String uuidClient = client.getUuid().getUuid();
-
-        logger.info("process RECEIVED document {}, action {}, event {}, orgStructure {}, client {}",
-                uuidDocument, action, event, orgStructure, client);
-
-        final SimpleDateFormat sdf = new SimpleDateFormat("yyyyMMddHHmmss");
-
         try {
+            final Event event = action.getEvent();
+            final Patient client = event.getPatient();
+            final String uuidExternalId = event.getUuid().getUuid();
+            final String externalId = event.getExternalId();
+            final String uuidDocument = UUID.randomUUID().toString();
+            final String uuidOrgStructure = orgStructure.getUuid().getUuid();
+            final String uuidClient = client.getUuid().getUuid();
+
+            logger.info("process RECEIVED document {}, action {}, event {}, orgStructure {}, client {}",
+                    uuidDocument, action, event, orgStructure, client);
+
+            final SimpleDateFormat sdf = new SimpleDateFormat("yyyyMMddHHmmss");
+
+
             final Request msg = factoryMis.createPRPAIN402001UV02();
 
             final PRPAIN402001UV022 prpain402001UV022 = factoryHL7.createPRPAIN402001UV022();
@@ -165,9 +165,11 @@ public class HL7PacketBuilder {
 
             uv07Person.setClassCode(EntityClass.PSN);
             uv07Person.setDeterminerCode(EntityDeterminer.INSTANCE);
-            final II typeId3 = factoryHL7.createII();
-            typeId3.setExtension(client.getSnils());
-            uv07Person.getId().add(typeId3);
+            if (client.getSnils() != null && !"".equals(client.getSnils())) {
+                final II typeId3 = factoryHL7.createII();
+                typeId3.setExtension(client.getSnils());
+                uv07Person.getId().add(typeId3);
+            }
 
             final PN pn = factoryHL7.createPN();
             final EnGiven enGiven = factoryHL7.createEnGiven();
@@ -243,11 +245,9 @@ public class HL7PacketBuilder {
             final MCCIIN000002UV01 mcciin000002UV01 = new MISExchange().getMISExchangeSoap().processHL7V3Message(msg);
             logger.info("Connection successful. Result: {} \n\n {}", mcciin000002UV01, marshallMessage(mcciin000002UV01, "org.hl7.v3"));
 
-
             return mcciin000002UV01;
         } catch (Exception e) {
-            e.printStackTrace();
-            logger.error("throwable", e);
+            logger.error("Exception e: " + e, e);
 
         }
         throw new SoapConnectionException("Bad connection to 1C Pharmacy");
@@ -255,22 +255,23 @@ public class HL7PacketBuilder {
 
     /**
      * Формирование и отправка сообщения об отмене предыдущего сообщения о госпитализации
+     * Формирование и отправка сообщения об отмене предыдущего сообщения о госпитализации
      * PRPA_IN402006UV02
      */
     public static MCCIIN000002UV01 processDelReceived(final Action action) throws SoapConnectionException {
-
-        final Event event = action.getEvent();
-        final Patient client = event.getPatient();
-        final String uuidExternalId = event.getUuid().getUuid();
-        final String externalId = event.getExternalId();
-        final String uuidClient = client.getUuid().getUuid();
-
-        final String uuidDocument = UUID.randomUUID().toString();
-        logger.info("process DEL_RECEIVED document {}, action {}, uuidExternalId {}, externalId {}, uuidClient {}, client {}",
-                action, uuidExternalId, externalId, uuidClient, client);
-
-        final SimpleDateFormat sdf = new SimpleDateFormat("yyyyMMddHHmmss");
         try {
+            final Event event = action.getEvent();
+            final Patient client = event.getPatient();
+            final String uuidExternalId = event.getUuid().getUuid();
+            final String externalId = event.getExternalId();
+            final String uuidClient = client.getUuid().getUuid();
+
+            final String uuidDocument = UUID.randomUUID().toString();
+            logger.info("process DEL_RECEIVED document {}, action {}, uuidExternalId {}, externalId {}, uuidClient {}, client {}",
+                    action, uuidExternalId, externalId, uuidClient, client);
+
+            final SimpleDateFormat sdf = new SimpleDateFormat("yyyyMMddHHmmss");
+
             final Request msg = factoryMis.createPRPAIN402006UV02();
             final PRPAIN402006UV022 prpain402006UV02 = factoryHL7.createPRPAIN402006UV022();
             prpain402006UV02.setITSVersion("XML_1.0");
@@ -405,8 +406,7 @@ public class HL7PacketBuilder {
 
             return mcciin000002UV01;
         } catch (Exception e) {
-            e.printStackTrace();
-            logger.error("throwable", e);
+            logger.error("Exception e: " + e, e);
         }
         throw new SoapConnectionException("Bad connection to 1C Pharmacy");
     }
@@ -416,16 +416,16 @@ public class HL7PacketBuilder {
      * Формирование и отправка сообщения о выписке пациента со стационара PRPA_IN402003UV02
      */
     public static MCCIIN000002UV01 processLeaved(final Action action, String displayName) throws SoapConnectionException {
-
-        final Event event = action.getEvent();
-        final Patient client = event.getPatient();
-        final String externalId = event.getExternalId();
-        final String externalUUID = event.getUuid().getUuid();
-        final String clientUUID = client.getUuid().getUuid();
-        final String rootUUID = UUID.randomUUID().toString();
-
-        logger.info("process LEAVED action {}, externalId {}, externalUUID {}, client {}, clientUUID {}", action, externalId, externalUUID, client, clientUUID);
         try {
+            final Event event = action.getEvent();
+            final Patient client = event.getPatient();
+            final String externalId = event.getExternalId();
+            final String externalUUID = event.getUuid().getUuid();
+            final String clientUUID = client.getUuid().getUuid();
+            final String rootUUID = UUID.randomUUID().toString();
+
+            logger.info("process LEAVED action {}, externalId {}, externalUUID {}, client {}, clientUUID {}", action, externalId, externalUUID, client, clientUUID);
+
             final Request msg = factoryMis.createPRPAIN402003UV02();
 
             final PRPAIN402003UV022 prpain402003UV02 = factoryHL7.createPRPAIN402003UV022();
@@ -574,15 +574,12 @@ public class HL7PacketBuilder {
 
             logger.info("prepare message... \n\n {}", marshallMessage(msg, "misexchange"));
 
-
             final MCCIIN000002UV01 mcciin000002UV01 = new MISExchange().getMISExchangeSoap().processHL7V3Message(msg);
             logger.info("Connection successful. Result: {} \n\n {}", mcciin000002UV01, marshallMessage(mcciin000002UV01, "org.hl7.v3"));
 
-
             return mcciin000002UV01;
         } catch (Exception e) {
-            e.printStackTrace();
-            logger.error("throwable", e);
+            logger.error("Exception e: " + e, e);
         }
         throw new SoapConnectionException("Bad connection to 1C Pharmacy");
     }
@@ -595,21 +592,20 @@ public class HL7PacketBuilder {
             final Action action,
             final OrgStructure orgStructureOut,
             final OrgStructure orgStructureIn) throws SoapConnectionException {
-
-        final Event event = action.getEvent();
-        final Patient client = event.getPatient();
-        final String externalId = event.getExternalId();
-        final String uuidExternal = event.getUuid().getUuid();
-        final String uuidClient = client.getUuid().getUuid();
-        final String uuidLocationOut = orgStructureOut.getUuid().getUuid();
-        final String uuidLocationIn = orgStructureIn.getUuid().getUuid();
-
-
-        final String uuidDocument = UUID.randomUUID().toString();
-        logger.info("process MOVING document {}, action {}", uuidDocument, action);
-        final SimpleDateFormat sdf = new SimpleDateFormat("yyyyMMddHHmmss");
-        final SimpleDateFormat sdfDate = new SimpleDateFormat("yyyyMMdd");
         try {
+            final Event event = action.getEvent();
+            final Patient client = event.getPatient();
+            final String externalId = event.getExternalId();
+            final String uuidExternal = event.getUuid().getUuid();
+            final String uuidClient = client.getUuid().getUuid();
+            final String uuidLocationOut = orgStructureOut.getUuid().getUuid();
+            final String uuidLocationIn = orgStructureIn.getUuid().getUuid();
+
+            final String uuidDocument = UUID.randomUUID().toString();
+            logger.info("process MOVING document {}, action {}", uuidDocument, action);
+            final SimpleDateFormat sdf = new SimpleDateFormat("yyyyMMddHHmmss");
+            final SimpleDateFormat sdfDate = new SimpleDateFormat("yyyyMMdd");
+
             final Request msg = factoryMis.createPRPAIN302011UV02();
             final PRPAIN302011UV022 prpain302011UV022 = factoryHL7.createPRPAIN302011UV022();
             prpain302011UV022.setITSVersion("XML_1.0");
@@ -747,9 +743,7 @@ public class HL7PacketBuilder {
 
             return mcciin000002UV01;
         } catch (Exception e) {
-            e.printStackTrace();
-            logger.error("throwable", e);
-
+            logger.error("Exception e: " + e, e);
         }
         throw new SoapConnectionException("Bad connection to 1C Pharmacy");
     }
@@ -763,20 +757,20 @@ public class HL7PacketBuilder {
             final OrgStructure orgStructureOut,
             final OrgStructure orgStructureIn
     ) throws SoapConnectionException {
-
-        final Event event = action.getEvent();
-        final Patient client = event.getPatient();
-        final String externalId = event.getExternalId();
-        final String uuidExternal = event.getUuid().getUuid();
-        final String uuidClient = client.getUuid().getUuid();
-        final String uuidLocationOut = orgStructureOut.getUuid().getUuid();
-        final String uuidLocationIn = orgStructureIn.getUuid().getUuid();
-
-        final String uuidDocument = UUID.randomUUID().toString();
-        logger.info("process DEL_MOVING document {}, action {}", uuidDocument, action);
-        final SimpleDateFormat sdf = new SimpleDateFormat("yyyyMMddHHmmss");
-        final SimpleDateFormat sdfDate = new SimpleDateFormat("yyyyMMdd");
         try {
+            final Event event = action.getEvent();
+            final Patient client = event.getPatient();
+            final String externalId = event.getExternalId();
+            final String uuidExternal = event.getUuid().getUuid();
+            final String uuidClient = client.getUuid().getUuid();
+            final String uuidLocationOut = orgStructureOut.getUuid().getUuid();
+            final String uuidLocationIn = orgStructureIn.getUuid().getUuid();
+
+            final String uuidDocument = UUID.randomUUID().toString();
+            logger.info("process DEL_MOVING document {}, action {}", uuidDocument, action);
+            final SimpleDateFormat sdf = new SimpleDateFormat("yyyyMMddHHmmss");
+            final SimpleDateFormat sdfDate = new SimpleDateFormat("yyyyMMdd");
+
             final Request msg = factoryMis.createPRPAIN302012UV02();
             final PRPAIN302012UV022 prpain302012UV022 = factoryHL7.createPRPAIN302012UV022();
             prpain302012UV022.setITSVersion("XML_1.0");
@@ -905,18 +899,14 @@ public class HL7PacketBuilder {
             controlActProcess.getSubject().add(subject2);
             prpain302012UV022.setControlActProcess(controlActProcess);
 
-
             ((PRPAIN302012UV02) msg).setMessage(prpain302012UV022);
             logger.info("prepare message... \n\n {}", marshallMessage(msg, "misexchange"));
             final MCCIIN000002UV01 mcciin000002UV01 = new MISExchange().getMISExchangeSoap().processHL7V3Message(msg);
             logger.info("Connection successful. Result: {} \n\n {}", mcciin000002UV01, marshallMessage(mcciin000002UV01, "org.hl7.v3"));
 
-
             return mcciin000002UV01;
-
         } catch (Exception e) {
-            e.printStackTrace();
-            logger.error("throwable", e);
+            logger.error("Exception e: " + e, e);
         }
         throw new SoapConnectionException("Bad connection to 1C Pharmacy");
     }

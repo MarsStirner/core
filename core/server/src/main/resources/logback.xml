@@ -1,15 +1,23 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <configuration scan="true" scanPeriod="30 seconds" debug="true">
-    <jmxConfigurator/>
+    <!--<jmxConfigurator/>-->
+    <contextName>tmis-core</contextName>
+
+    <!--<property name="root.log" value="${com.sun.aas.instanceRoot}/logs/"/>-->
+    <!--<property name="log.format" value="%5p [%d][%thread][%logger{0}] %msg%n"/>-->
 
     <!-- dump status message on the console as they arrive -->
-    <statusListener class="ch.qos.logback.core.status.OnConsoleStatusListener" />
+    <statusListener class="ch.qos.logback.core.status.OnConsoleStatusListener"/>
 
     <!-- Аппендер для отправки уведомлений об exceptions по e-mail -->
     <appender name="EMAIL" class="ch.qos.logback.classic.net.SMTPAppender">
-        <!--<filter class="ru.korus.tmis.util.ExceptionFilter">-->
-        <!--<exceptionClassName>java.lang.Exception</exceptionClassName>-->
-        <!--</filter>-->
+        <cyclicBufferTracker class="ch.qos.logback.core.spi.CyclicBufferTrackerImpl">
+            <bufferSize>${alarm.count.message}</bufferSize>
+        </cyclicBufferTracker>
+
+        <evaluator class="ru.korus.tmis.util.logs.CounterBasedEvaluator">
+            <countMessage>${alarm.count.message}</countMessage>
+        </evaluator>
 
         <!-- For example you can configure that only error messages are mailed -->
         <filter class="ch.qos.logback.classic.filter.LevelFilter">
@@ -18,31 +26,21 @@
             <onMismatch>DENY</onMismatch>
         </filter>
 
-        <layout class="ch.qos.logback.classic.PatternLayout">
-            <pattern>%d{HH:mm:ss.SSS} [%thread] %-5level %logger{1} - %msg%n</pattern>
+        <layout class="ch.qos.logback.classic.html.HTMLLayout">
+            <pattern>%relative%thread%mdc%level%logger%msg</pattern>
         </layout>
 
-        <!--<encoder class="ch.qos.logback.core.encoder.LayoutWrappingEncoder">-->
-            <!--<layout class="ch.qos.logback.classic.html.HTMLLayout">-->
-                <!--<pattern>%relative%thread%mdc%level%logger%msg</pattern>-->
-            <!--</layout>-->
-        <!--</encoder>-->
-
-        <!--<smtpPort>587</smtpPort>-->
-        <!--<STARTTLS>true</STARTTLS>-->
-        <!--<username></username>-->
-        <!--<password></password>-->
+        <!-- For GMAIL -->
+        <smtpPort>587</smtpPort>
+        <STARTTLS>true</STARTTLS>
+        <username>nnm921@gmail.com</username>
+        <password>dallas921</password>
+        <!-- - -->
 
         <SmtpHost>${alarm.smtpHost}</SmtpHost>
         <To>${alarm.to}</To>
         <From>${alarm.from}</From>
-        <subject>%logger{20} - %m</subject>
-
-
-        <cyclicBufferTracker class="ch.qos.logback.core.spi.CyclicBufferTrackerImpl">
-            <!-- send just X log entry per email -->
-            <bufferSize>${alarm.count.message}</bufferSize>
-        </cyclicBufferTracker>
+        <subject>TMIS CORE ALARM %logger{20} - %m</subject>
     </appender>
 
 
@@ -86,6 +84,7 @@
 
     <appender name="EXCEPTIONS" class="ch.qos.logback.core.rolling.RollingFileAppender">
         <file>${root.log}/exceptions/exceptions.log</file>
+
         <filter class="ru.korus.tmis.util.ExceptionFilter">
             <exceptionClassName>java.lang.Exception</exceptionClassName>
         </filter>
@@ -101,16 +100,11 @@
     </appender>
 
     <root level="INFO">
-        <appender-ref ref="EMAIL"/>
         <appender-ref ref="STDOUT"/>
         <appender-ref ref="STDOUT_ERROR"/>
         <appender-ref ref="EXCEPTIONS"/>
+        <appender-ref ref="EMAIL"/>
     </root>
-
-    <!--<property name="root.log" value="${com.sun.aas.instanceRoot}/logs/"/>-->
-    <!--<property name="log.format" value="%5p [%d][%thread][%logger{0}] %msg%n"/>-->
-
-    <!--Настройки для tmis-->
 
     <!--Общий логгер для всего проекта-->
     <appender name="TMIS" class="ch.qos.logback.core.rolling.RollingFileAppender">
@@ -133,6 +127,7 @@
 
     <logger name="ru.korus.tmis" level="INFO" additivity="false">
         <appender-ref ref="TMIS"/>
+        <appender-ref ref="EMAIL"/>
         <appender-ref ref="STDOUT_ERROR"/>
         <appender-ref ref="EXCEPTIONS"/>
     </logger>
@@ -194,6 +189,7 @@
             <charset>UTF8</charset>
         </encoder>
     </appender>
+
     <logger name="ru.korus.tmis.core.logging.slf4j.interceptor.AuthLoggingInterceptor" level="INFO" additivity="false">
         <appender-ref ref="AUTH"/>
     </logger>
