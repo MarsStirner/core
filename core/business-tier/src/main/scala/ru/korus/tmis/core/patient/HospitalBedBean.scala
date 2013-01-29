@@ -23,6 +23,7 @@ import ru.korus.tmis.core.common.CommonDataProcessorBeanLocal
 import java.util.Date
 import org.slf4j.LoggerFactory
 import ru.korus.tmis.util.reflect.TmisLogging
+import org.apache.commons.collections.{CollectionUtils, Transformer}
 
 @Interceptors(Array(classOf[LoggingInterceptor]))
 @Stateless
@@ -344,21 +345,25 @@ with TmisLogging{
   //Запрос на занятые койки в отделении
   def getCaseHospitalBedsByDepartmentId(departmentId: Int) = {
 
-    val ids = em.createQuery(AllHospitalBedsByDepartmentIdQuery, classOf[Int])
+    val allBeds = em.createQuery(AllHospitalBedsByDepartmentIdQuery, classOf[OrgStructureHospitalBed])
                 .setParameter("departmentId", departmentId)
                 .getResultList
 
+    val ids = CollectionUtils.collect(allBeds, new Transformer() {
+       def transform(orgBed: Object) = orgBed.asInstanceOf[OrgStructureHospitalBed].getId
+    })
+
     val result = em.createQuery(BusyHospitalBedsByDepartmentIdQuery.format(i18n("db.action.movingFlatCode"),
                                                                            i18n("db.actionPropertyType.moving.name.bed")),
-                                classOf[Int])
+                                classOf[OrgStructureHospitalBed])
       .setParameter("ids", asJavaCollection(ids))
       .getResultList
 
-    val map = new java.util.LinkedHashMap[java.lang.Integer, java.lang.Boolean]()
-    ids.foreach(bedId => {
-      val res = result.find(bedId==)
-      if(res==None) map.put(Integer.valueOf(bedId), false)
-      else map.put(Integer.valueOf(bedId), true)
+    val map = new java.util.LinkedHashMap[OrgStructureHospitalBed, java.lang.Boolean]()
+    allBeds.foreach(allBed => {
+      val res = result.find(bed => allBed.getId.intValue()==bed.getId.intValue())
+      if(res==None) map.put(allBed, false)
+      else map.put(allBed, true)
     })
     map
   }
@@ -504,7 +509,7 @@ with TmisLogging{
           else null
 
         if (bedId!=null){
-          val result2 = em.createQuery(BusyHospitalBedsByDepartmentIdQuery.format(i18n("db.action.movingFlatCode"),i18n("db.actionPropertyType.moving.name.bed")), classOf[Int])
+          val result2 = em.createQuery(BusyHospitalBedsByDepartmentIdQuery.format(i18n("db.action.movingFlatCode"),i18n("db.actionPropertyType.moving.name.bed")), classOf[OrgStructureHospitalBed])
             .setParameter("ids", asJavaCollection(Set(bedId)))
             .getResultList
 
@@ -661,7 +666,7 @@ with TmisLogging{
 
   val AllHospitalBedsByDepartmentIdQuery =
     """
-    SELECT DISTINCT bed.id
+    SELECT DISTINCT bed
     FROM
       OrgStructureHospitalBed bed
       WHERE
@@ -672,7 +677,7 @@ with TmisLogging{
 
   val BusyHospitalBedsByDepartmentIdQuery =
     """
-    SELECT DISTINCT bed.id
+    SELECT DISTINCT bed
     FROM
       APValueHospitalBed apval
         JOIN apval.value bed,
