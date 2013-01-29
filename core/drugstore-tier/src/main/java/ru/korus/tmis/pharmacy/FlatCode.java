@@ -30,7 +30,7 @@ public enum FlatCode {
 
     private String code;
 
-    private FlatCode(String code) {
+    private FlatCode(final String code) {
         this.code = code;
     }
 
