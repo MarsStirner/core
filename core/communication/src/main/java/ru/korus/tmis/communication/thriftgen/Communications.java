@@ -19,1222 +19,1240 @@ import java.util.*;
 
 public class Communications {
 
-  public interface Iface {
+    public interface Iface {
 
-    public List<OrgStructure> getOrgStructures(int id, boolean recursive) throws NotFoundException, SQLException, org.apache.thrift.TException;
+        public List<OrgStructure> getOrgStructures(int id, boolean recursive) throws NotFoundException, SQLException, org.apache.thrift.TException;
 
-  }
-
-  public interface AsyncIface {
-
-    public void getOrgStructures(int id, boolean recursive, org.apache.thrift.async.AsyncMethodCallback<AsyncClient.getOrgStructures_call> resultHandler) throws org.apache.thrift.TException;
-
-  }
-
-  public static class Client extends org.apache.thrift.TServiceClient implements Iface {
-    public static class Factory implements org.apache.thrift.TServiceClientFactory<Client> {
-      public Factory() {}
-      public Client getClient(org.apache.thrift.protocol.TProtocol prot) {
-        return new Client(prot);
-      }
-      public Client getClient(org.apache.thrift.protocol.TProtocol iprot, org.apache.thrift.protocol.TProtocol oprot) {
-        return new Client(iprot, oprot);
-      }
     }
 
-    public Client(org.apache.thrift.protocol.TProtocol prot)
-    {
-      super(prot, prot);
+    public interface AsyncIface {
+
+        public void getOrgStructures(int id, boolean recursive, org.apache.thrift.async.AsyncMethodCallback<AsyncClient.getOrgStructures_call> resultHandler) throws org.apache.thrift.TException;
+
     }
 
-    public Client(org.apache.thrift.protocol.TProtocol iprot, org.apache.thrift.protocol.TProtocol oprot) {
-      super(iprot, oprot);
-    }
+    public static class Client extends org.apache.thrift.TServiceClient implements Iface {
+        public static class Factory implements org.apache.thrift.TServiceClientFactory<Client> {
+            public Factory() {
+            }
 
-    public List<OrgStructure> getOrgStructures(int id, boolean recursive) throws NotFoundException, SQLException, org.apache.thrift.TException
-    {
-      send_getOrgStructures(id, recursive);
-      return recv_getOrgStructures();
-    }
+            public Client getClient(org.apache.thrift.protocol.TProtocol prot) {
+                return new Client(prot);
+            }
 
-    public void send_getOrgStructures(int id, boolean recursive) throws org.apache.thrift.TException
-    {
-      getOrgStructures_args args = new getOrgStructures_args();
-      args.setId(id);
-      args.setRecursive(recursive);
-      sendBase("getOrgStructures", args);
-    }
-
-    public List<OrgStructure> recv_getOrgStructures() throws NotFoundException, SQLException, org.apache.thrift.TException
-    {
-      getOrgStructures_result result = new getOrgStructures_result();
-      receiveBase(result, "getOrgStructures");
-      if (result.isSetSuccess()) {
-        return result.success;
-      }
-      if (result.exc != null) {
-        throw result.exc;
-      }
-      if (result.excsql != null) {
-        throw result.excsql;
-      }
-      throw new org.apache.thrift.TApplicationException(org.apache.thrift.TApplicationException.MISSING_RESULT, "getOrgStructures failed: unknown result");
-    }
-
-  }
-  public static class AsyncClient extends org.apache.thrift.async.TAsyncClient implements AsyncIface {
-    public static class Factory implements org.apache.thrift.async.TAsyncClientFactory<AsyncClient> {
-      private org.apache.thrift.async.TAsyncClientManager clientManager;
-      private org.apache.thrift.protocol.TProtocolFactory protocolFactory;
-      public Factory(org.apache.thrift.async.TAsyncClientManager clientManager, org.apache.thrift.protocol.TProtocolFactory protocolFactory) {
-        this.clientManager = clientManager;
-        this.protocolFactory = protocolFactory;
-      }
-      public AsyncClient getAsyncClient(org.apache.thrift.transport.TNonblockingTransport transport) {
-        return new AsyncClient(protocolFactory, clientManager, transport);
-      }
-    }
-
-    public AsyncClient(org.apache.thrift.protocol.TProtocolFactory protocolFactory, org.apache.thrift.async.TAsyncClientManager clientManager, org.apache.thrift.transport.TNonblockingTransport transport) {
-      super(protocolFactory, clientManager, transport);
-    }
-
-    public void getOrgStructures(int id, boolean recursive, org.apache.thrift.async.AsyncMethodCallback<getOrgStructures_call> resultHandler) throws org.apache.thrift.TException {
-      checkReady();
-      getOrgStructures_call method_call = new getOrgStructures_call(id, recursive, resultHandler, this, ___protocolFactory, ___transport);
-      this.___currentMethod = method_call;
-      ___manager.call(method_call);
-    }
-
-    public static class getOrgStructures_call extends org.apache.thrift.async.TAsyncMethodCall {
-      private int id;
-      private boolean recursive;
-      public getOrgStructures_call(int id, boolean recursive, org.apache.thrift.async.AsyncMethodCallback<getOrgStructures_call> resultHandler, org.apache.thrift.async.TAsyncClient client, org.apache.thrift.protocol.TProtocolFactory protocolFactory, org.apache.thrift.transport.TNonblockingTransport transport) throws org.apache.thrift.TException {
-        super(client, protocolFactory, transport, resultHandler, false);
-        this.id = id;
-        this.recursive = recursive;
-      }
-
-      public void write_args(org.apache.thrift.protocol.TProtocol prot) throws org.apache.thrift.TException {
-        prot.writeMessageBegin(new org.apache.thrift.protocol.TMessage("getOrgStructures", org.apache.thrift.protocol.TMessageType.CALL, 0));
-        getOrgStructures_args args = new getOrgStructures_args();
-        args.setId(id);
-        args.setRecursive(recursive);
-        args.write(prot);
-        prot.writeMessageEnd();
-      }
-
-      public List<OrgStructure> getResult() throws NotFoundException, SQLException, org.apache.thrift.TException {
-        if (getState() != org.apache.thrift.async.TAsyncMethodCall.State.RESPONSE_READ) {
-          throw new IllegalStateException("Method call not finished!");
+            public Client getClient(org.apache.thrift.protocol.TProtocol iprot, org.apache.thrift.protocol.TProtocol oprot) {
+                return new Client(iprot, oprot);
+            }
         }
-        org.apache.thrift.transport.TMemoryInputTransport memoryTransport = new org.apache.thrift.transport.TMemoryInputTransport(getFrameBuffer().array());
-        org.apache.thrift.protocol.TProtocol prot = client.getProtocolFactory().getProtocol(memoryTransport);
-        return (new Client(prot)).recv_getOrgStructures();
-      }
-    }
 
-  }
-
-  public static class Processor<I extends Iface> extends org.apache.thrift.TBaseProcessor<I> implements org.apache.thrift.TProcessor {
-    private static final Logger LOGGER = LoggerFactory.getLogger(Processor.class.getName());
-    public Processor(I iface) {
-      super(iface, getProcessMap(new HashMap<String, org.apache.thrift.ProcessFunction<I, ? extends org.apache.thrift.TBase>>()));
-    }
-
-    protected Processor(I iface, Map<String,  org.apache.thrift.ProcessFunction<I, ? extends  org.apache.thrift.TBase>> processMap) {
-      super(iface, getProcessMap(processMap));
-    }
-
-    private static <I extends Iface> Map<String,  org.apache.thrift.ProcessFunction<I, ? extends  org.apache.thrift.TBase>> getProcessMap(Map<String,  org.apache.thrift.ProcessFunction<I, ? extends  org.apache.thrift.TBase>> processMap) {
-      processMap.put("getOrgStructures", new getOrgStructures());
-      return processMap;
-    }
-
-    public static class getOrgStructures<I extends Iface> extends org.apache.thrift.ProcessFunction<I, getOrgStructures_args> {
-      public getOrgStructures() {
-        super("getOrgStructures");
-      }
-
-      public getOrgStructures_args getEmptyArgsInstance() {
-        return new getOrgStructures_args();
-      }
-
-      protected boolean isOneway() {
-        return false;
-      }
-
-      public getOrgStructures_result getResult(I iface, getOrgStructures_args args) throws org.apache.thrift.TException {
-        getOrgStructures_result result = new getOrgStructures_result();
-        try {
-          result.success = iface.getOrgStructures(args.id, args.recursive);
-        } catch (NotFoundException exc) {
-          result.exc = exc;
-        } catch (SQLException excsql) {
-          result.excsql = excsql;
+        public Client(org.apache.thrift.protocol.TProtocol prot) {
+            super(prot, prot);
         }
-        return result;
-      }
-    }
 
-  }
-
-  public static class getOrgStructures_args implements org.apache.thrift.TBase<getOrgStructures_args, getOrgStructures_args._Fields>, java.io.Serializable, Cloneable   {
-    private static final org.apache.thrift.protocol.TStruct STRUCT_DESC = new org.apache.thrift.protocol.TStruct("getOrgStructures_args");
-
-    private static final org.apache.thrift.protocol.TField ID_FIELD_DESC = new org.apache.thrift.protocol.TField("id", org.apache.thrift.protocol.TType.I32, (short)1);
-    private static final org.apache.thrift.protocol.TField RECURSIVE_FIELD_DESC = new org.apache.thrift.protocol.TField("recursive", org.apache.thrift.protocol.TType.BOOL, (short)2);
-
-    private static final Map<Class<? extends IScheme>, SchemeFactory> schemes = new HashMap<Class<? extends IScheme>, SchemeFactory>();
-    static {
-      schemes.put(StandardScheme.class, new getOrgStructures_argsStandardSchemeFactory());
-      schemes.put(TupleScheme.class, new getOrgStructures_argsTupleSchemeFactory());
-    }
-
-    public int id; // required
-    public boolean recursive; // required
-
-    /** The set of fields this struct contains, along with convenience methods for finding and manipulating them. */
-    public enum _Fields implements org.apache.thrift.TFieldIdEnum {
-      ID((short)1, "id"),
-      RECURSIVE((short)2, "recursive");
-
-      private static final Map<String, _Fields> byName = new HashMap<String, _Fields>();
-
-      static {
-        for (_Fields field : EnumSet.allOf(_Fields.class)) {
-          byName.put(field.getFieldName(), field);
+        public Client(org.apache.thrift.protocol.TProtocol iprot, org.apache.thrift.protocol.TProtocol oprot) {
+            super(iprot, oprot);
         }
-      }
 
-      /**
-       * Find the _Fields constant that matches fieldId, or null if its not found.
-       */
-      public static _Fields findByThriftId(int fieldId) {
-        switch(fieldId) {
-          case 1: // ID
-            return ID;
-          case 2: // RECURSIVE
-            return RECURSIVE;
-          default:
-            return null;
+        public List<OrgStructure> getOrgStructures(int id, boolean recursive) throws NotFoundException, SQLException, org.apache.thrift.TException {
+            send_getOrgStructures(id, recursive);
+            return recv_getOrgStructures();
         }
-      }
 
-      /**
-       * Find the _Fields constant that matches fieldId, throwing an exception
-       * if it is not found.
-       */
-      public static _Fields findByThriftIdOrThrow(int fieldId) {
-        _Fields fields = findByThriftId(fieldId);
-        if (fields == null) throw new IllegalArgumentException("Field " + fieldId + " doesn't exist!");
-        return fields;
-      }
-
-      /**
-       * Find the _Fields constant that matches name, or null if its not found.
-       */
-      public static _Fields findByName(String name) {
-        return byName.get(name);
-      }
-
-      private final short _thriftId;
-      private final String _fieldName;
-
-      _Fields(short thriftId, String fieldName) {
-        _thriftId = thriftId;
-        _fieldName = fieldName;
-      }
-
-      public short getThriftFieldId() {
-        return _thriftId;
-      }
-
-      public String getFieldName() {
-        return _fieldName;
-      }
-    }
-
-    // isset id assignments
-    private static final int __ID_ISSET_ID = 0;
-    private static final int __RECURSIVE_ISSET_ID = 1;
-    private byte __isset_bitfield = 0;
-    public static final Map<_Fields, org.apache.thrift.meta_data.FieldMetaData> metaDataMap;
-    static {
-      Map<_Fields, org.apache.thrift.meta_data.FieldMetaData> tmpMap = new EnumMap<_Fields, org.apache.thrift.meta_data.FieldMetaData>(_Fields.class);
-      tmpMap.put(_Fields.ID, new org.apache.thrift.meta_data.FieldMetaData("id", org.apache.thrift.TFieldRequirementType.DEFAULT, 
-          new org.apache.thrift.meta_data.FieldValueMetaData(org.apache.thrift.protocol.TType.I32)));
-      tmpMap.put(_Fields.RECURSIVE, new org.apache.thrift.meta_data.FieldMetaData("recursive", org.apache.thrift.TFieldRequirementType.DEFAULT, 
-          new org.apache.thrift.meta_data.FieldValueMetaData(org.apache.thrift.protocol.TType.BOOL)));
-      metaDataMap = Collections.unmodifiableMap(tmpMap);
-      org.apache.thrift.meta_data.FieldMetaData.addStructMetaDataMap(getOrgStructures_args.class, metaDataMap);
-    }
-
-    public getOrgStructures_args() {
-    }
-
-    public getOrgStructures_args(
-      int id,
-      boolean recursive)
-    {
-      this();
-      this.id = id;
-      setIdIsSet(true);
-      this.recursive = recursive;
-      setRecursiveIsSet(true);
-    }
-
-    /**
-     * Performs a deep copy on <i>other</i>.
-     */
-    public getOrgStructures_args(getOrgStructures_args other) {
-      __isset_bitfield = other.__isset_bitfield;
-      this.id = other.id;
-      this.recursive = other.recursive;
-    }
-
-    public getOrgStructures_args deepCopy() {
-      return new getOrgStructures_args(this);
-    }
-
-    @Override
-    public void clear() {
-      setIdIsSet(false);
-      this.id = 0;
-      setRecursiveIsSet(false);
-      this.recursive = false;
-    }
-
-    public int getId() {
-      return this.id;
-    }
-
-    public getOrgStructures_args setId(int id) {
-      this.id = id;
-      setIdIsSet(true);
-      return this;
-    }
-
-    public void unsetId() {
-      __isset_bitfield = EncodingUtils.clearBit(__isset_bitfield, __ID_ISSET_ID);
-    }
-
-    /** Returns true if field id is set (has been assigned a value) and false otherwise */
-    public boolean isSetId() {
-      return EncodingUtils.testBit(__isset_bitfield, __ID_ISSET_ID);
-    }
-
-    public void setIdIsSet(boolean value) {
-      __isset_bitfield = EncodingUtils.setBit(__isset_bitfield, __ID_ISSET_ID, value);
-    }
-
-    public boolean isRecursive() {
-      return this.recursive;
-    }
-
-    public getOrgStructures_args setRecursive(boolean recursive) {
-      this.recursive = recursive;
-      setRecursiveIsSet(true);
-      return this;
-    }
-
-    public void unsetRecursive() {
-      __isset_bitfield = EncodingUtils.clearBit(__isset_bitfield, __RECURSIVE_ISSET_ID);
-    }
-
-    /** Returns true if field recursive is set (has been assigned a value) and false otherwise */
-    public boolean isSetRecursive() {
-      return EncodingUtils.testBit(__isset_bitfield, __RECURSIVE_ISSET_ID);
-    }
-
-    public void setRecursiveIsSet(boolean value) {
-      __isset_bitfield = EncodingUtils.setBit(__isset_bitfield, __RECURSIVE_ISSET_ID, value);
-    }
-
-    public void setFieldValue(_Fields field, Object value) {
-      switch (field) {
-      case ID:
-        if (value == null) {
-          unsetId();
-        } else {
-          setId((Integer)value);
+        public void send_getOrgStructures(int id, boolean recursive) throws org.apache.thrift.TException {
+            getOrgStructures_args args = new getOrgStructures_args();
+            args.setId(id);
+            args.setRecursive(recursive);
+            sendBase("getOrgStructures", args);
         }
-        break;
 
-      case RECURSIVE:
-        if (value == null) {
-          unsetRecursive();
-        } else {
-          setRecursive((Boolean)value);
+        public List<OrgStructure> recv_getOrgStructures() throws NotFoundException, SQLException, org.apache.thrift.TException {
+            getOrgStructures_result result = new getOrgStructures_result();
+            receiveBase(result, "getOrgStructures");
+            if (result.isSetSuccess()) {
+                return result.success;
+            }
+            if (result.exc != null) {
+                throw result.exc;
+            }
+            if (result.excsql != null) {
+                throw result.excsql;
+            }
+            throw new org.apache.thrift.TApplicationException(org.apache.thrift.TApplicationException.MISSING_RESULT, "getOrgStructures failed: unknown result");
         }
-        break;
 
-      }
     }
 
-    public Object getFieldValue(_Fields field) {
-      switch (field) {
-      case ID:
-        return Integer.valueOf(getId());
+    public static class AsyncClient extends org.apache.thrift.async.TAsyncClient implements AsyncIface {
+        public static class Factory implements org.apache.thrift.async.TAsyncClientFactory<AsyncClient> {
+            private org.apache.thrift.async.TAsyncClientManager clientManager;
+            private org.apache.thrift.protocol.TProtocolFactory protocolFactory;
 
-      case RECURSIVE:
-        return Boolean.valueOf(isRecursive());
+            public Factory(org.apache.thrift.async.TAsyncClientManager clientManager, org.apache.thrift.protocol.TProtocolFactory protocolFactory) {
+                this.clientManager = clientManager;
+                this.protocolFactory = protocolFactory;
+            }
 
-      }
-      throw new IllegalStateException();
-    }
-
-    /** Returns true if field corresponding to fieldID is set (has been assigned a value) and false otherwise */
-    public boolean isSet(_Fields field) {
-      if (field == null) {
-        throw new IllegalArgumentException();
-      }
-
-      switch (field) {
-      case ID:
-        return isSetId();
-      case RECURSIVE:
-        return isSetRecursive();
-      }
-      throw new IllegalStateException();
-    }
-
-    @Override
-    public boolean equals(Object that) {
-      if (that == null)
-        return false;
-      if (that instanceof getOrgStructures_args)
-        return this.equals((getOrgStructures_args)that);
-      return false;
-    }
-
-    public boolean equals(getOrgStructures_args that) {
-      if (that == null)
-        return false;
-
-      boolean this_present_id = true;
-      boolean that_present_id = true;
-      if (this_present_id || that_present_id) {
-        if (!(this_present_id && that_present_id))
-          return false;
-        if (this.id != that.id)
-          return false;
-      }
-
-      boolean this_present_recursive = true;
-      boolean that_present_recursive = true;
-      if (this_present_recursive || that_present_recursive) {
-        if (!(this_present_recursive && that_present_recursive))
-          return false;
-        if (this.recursive != that.recursive)
-          return false;
-      }
-
-      return true;
-    }
-
-    @Override
-    public int hashCode() {
-      return 0;
-    }
-
-    public int compareTo(getOrgStructures_args other) {
-      if (!getClass().equals(other.getClass())) {
-        return getClass().getName().compareTo(other.getClass().getName());
-      }
-
-      int lastComparison = 0;
-      getOrgStructures_args typedOther = (getOrgStructures_args)other;
-
-      lastComparison = Boolean.valueOf(isSetId()).compareTo(typedOther.isSetId());
-      if (lastComparison != 0) {
-        return lastComparison;
-      }
-      if (isSetId()) {
-        lastComparison = org.apache.thrift.TBaseHelper.compareTo(this.id, typedOther.id);
-        if (lastComparison != 0) {
-          return lastComparison;
+            public AsyncClient getAsyncClient(org.apache.thrift.transport.TNonblockingTransport transport) {
+                return new AsyncClient(protocolFactory, clientManager, transport);
+            }
         }
-      }
-      lastComparison = Boolean.valueOf(isSetRecursive()).compareTo(typedOther.isSetRecursive());
-      if (lastComparison != 0) {
-        return lastComparison;
-      }
-      if (isSetRecursive()) {
-        lastComparison = org.apache.thrift.TBaseHelper.compareTo(this.recursive, typedOther.recursive);
-        if (lastComparison != 0) {
-          return lastComparison;
+
+        public AsyncClient(org.apache.thrift.protocol.TProtocolFactory protocolFactory, org.apache.thrift.async.TAsyncClientManager clientManager, org.apache.thrift.transport.TNonblockingTransport transport) {
+            super(protocolFactory, clientManager, transport);
         }
-      }
-      return 0;
-    }
 
-    public _Fields fieldForId(int fieldId) {
-      return _Fields.findByThriftId(fieldId);
-    }
-
-    public void read(org.apache.thrift.protocol.TProtocol iprot) throws org.apache.thrift.TException {
-      schemes.get(iprot.getScheme()).getScheme().read(iprot, this);
-    }
-
-    public void write(org.apache.thrift.protocol.TProtocol oprot) throws org.apache.thrift.TException {
-      schemes.get(oprot.getScheme()).getScheme().write(oprot, this);
-    }
-
-    @Override
-    public String toString() {
-      StringBuilder sb = new StringBuilder("getOrgStructures_args(");
-      boolean first = true;
-
-      sb.append("id:");
-      sb.append(this.id);
-      first = false;
-      if (!first) sb.append(", ");
-      sb.append("recursive:");
-      sb.append(this.recursive);
-      first = false;
-      sb.append(")");
-      return sb.toString();
-    }
-
-    public void validate() throws org.apache.thrift.TException {
-      // check for required fields
-      // check for sub-struct validity
-    }
-
-    private void writeObject(java.io.ObjectOutputStream out) throws java.io.IOException {
-      try {
-        write(new org.apache.thrift.protocol.TCompactProtocol(new org.apache.thrift.transport.TIOStreamTransport(out)));
-      } catch (org.apache.thrift.TException te) {
-        throw new java.io.IOException(te);
-      }
-    }
-
-    private void readObject(java.io.ObjectInputStream in) throws java.io.IOException, ClassNotFoundException {
-      try {
-        // it doesn't seem like you should have to do this, but java serialization is wacky, and doesn't call the default constructor.
-        __isset_bitfield = 0;
-        read(new org.apache.thrift.protocol.TCompactProtocol(new org.apache.thrift.transport.TIOStreamTransport(in)));
-      } catch (org.apache.thrift.TException te) {
-        throw new java.io.IOException(te);
-      }
-    }
-
-    private static class getOrgStructures_argsStandardSchemeFactory implements SchemeFactory {
-      public getOrgStructures_argsStandardScheme getScheme() {
-        return new getOrgStructures_argsStandardScheme();
-      }
-    }
-
-    private static class getOrgStructures_argsStandardScheme extends StandardScheme<getOrgStructures_args> {
-
-      public void read(org.apache.thrift.protocol.TProtocol iprot, getOrgStructures_args struct) throws org.apache.thrift.TException {
-        org.apache.thrift.protocol.TField schemeField;
-        iprot.readStructBegin();
-        while (true)
-        {
-          schemeField = iprot.readFieldBegin();
-          if (schemeField.type == org.apache.thrift.protocol.TType.STOP) { 
-            break;
-          }
-          switch (schemeField.id) {
-            case 1: // ID
-              if (schemeField.type == org.apache.thrift.protocol.TType.I32) {
-                struct.id = iprot.readI32();
-                struct.setIdIsSet(true);
-              } else { 
-                org.apache.thrift.protocol.TProtocolUtil.skip(iprot, schemeField.type);
-              }
-              break;
-            case 2: // RECURSIVE
-              if (schemeField.type == org.apache.thrift.protocol.TType.BOOL) {
-                struct.recursive = iprot.readBool();
-                struct.setRecursiveIsSet(true);
-              } else { 
-                org.apache.thrift.protocol.TProtocolUtil.skip(iprot, schemeField.type);
-              }
-              break;
-            default:
-              org.apache.thrift.protocol.TProtocolUtil.skip(iprot, schemeField.type);
-          }
-          iprot.readFieldEnd();
+        public void getOrgStructures(int id, boolean recursive, org.apache.thrift.async.AsyncMethodCallback<getOrgStructures_call> resultHandler) throws org.apache.thrift.TException {
+            checkReady();
+            getOrgStructures_call method_call = new getOrgStructures_call(id, recursive, resultHandler, this, ___protocolFactory, ___transport);
+            this.___currentMethod = method_call;
+            ___manager.call(method_call);
         }
-        iprot.readStructEnd();
 
-        // check for required fields of primitive type, which can't be checked in the validate method
-        struct.validate();
-      }
-
-      public void write(org.apache.thrift.protocol.TProtocol oprot, getOrgStructures_args struct) throws org.apache.thrift.TException {
-        struct.validate();
-
-        oprot.writeStructBegin(STRUCT_DESC);
-        oprot.writeFieldBegin(ID_FIELD_DESC);
-        oprot.writeI32(struct.id);
-        oprot.writeFieldEnd();
-        oprot.writeFieldBegin(RECURSIVE_FIELD_DESC);
-        oprot.writeBool(struct.recursive);
-        oprot.writeFieldEnd();
-        oprot.writeFieldStop();
-        oprot.writeStructEnd();
-      }
-
-    }
-
-    private static class getOrgStructures_argsTupleSchemeFactory implements SchemeFactory {
-      public getOrgStructures_argsTupleScheme getScheme() {
-        return new getOrgStructures_argsTupleScheme();
-      }
-    }
-
-    private static class getOrgStructures_argsTupleScheme extends TupleScheme<getOrgStructures_args> {
-
-      @Override
-      public void write(org.apache.thrift.protocol.TProtocol prot, getOrgStructures_args struct) throws org.apache.thrift.TException {
-        TTupleProtocol oprot = (TTupleProtocol) prot;
-        BitSet optionals = new BitSet();
-        if (struct.isSetId()) {
-          optionals.set(0);
-        }
-        if (struct.isSetRecursive()) {
-          optionals.set(1);
-        }
-        oprot.writeBitSet(optionals, 2);
-        if (struct.isSetId()) {
-          oprot.writeI32(struct.id);
-        }
-        if (struct.isSetRecursive()) {
-          oprot.writeBool(struct.recursive);
-        }
-      }
-
-      @Override
-      public void read(org.apache.thrift.protocol.TProtocol prot, getOrgStructures_args struct) throws org.apache.thrift.TException {
-        TTupleProtocol iprot = (TTupleProtocol) prot;
-        BitSet incoming = iprot.readBitSet(2);
-        if (incoming.get(0)) {
-          struct.id = iprot.readI32();
-          struct.setIdIsSet(true);
-        }
-        if (incoming.get(1)) {
-          struct.recursive = iprot.readBool();
-          struct.setRecursiveIsSet(true);
-        }
-      }
-    }
-
-  }
-
-  public static class getOrgStructures_result implements org.apache.thrift.TBase<getOrgStructures_result, getOrgStructures_result._Fields>, java.io.Serializable, Cloneable   {
-    private static final org.apache.thrift.protocol.TStruct STRUCT_DESC = new org.apache.thrift.protocol.TStruct("getOrgStructures_result");
-
-    private static final org.apache.thrift.protocol.TField SUCCESS_FIELD_DESC = new org.apache.thrift.protocol.TField("success", org.apache.thrift.protocol.TType.LIST, (short)0);
-    private static final org.apache.thrift.protocol.TField EXC_FIELD_DESC = new org.apache.thrift.protocol.TField("exc", org.apache.thrift.protocol.TType.STRUCT, (short)1);
-    private static final org.apache.thrift.protocol.TField EXCSQL_FIELD_DESC = new org.apache.thrift.protocol.TField("excsql", org.apache.thrift.protocol.TType.STRUCT, (short)2);
-
-    private static final Map<Class<? extends IScheme>, SchemeFactory> schemes = new HashMap<Class<? extends IScheme>, SchemeFactory>();
-    static {
-      schemes.put(StandardScheme.class, new getOrgStructures_resultStandardSchemeFactory());
-      schemes.put(TupleScheme.class, new getOrgStructures_resultTupleSchemeFactory());
-    }
-
-    public List<OrgStructure> success; // required
-    public NotFoundException exc; // required
-    public SQLException excsql; // required
-
-    /** The set of fields this struct contains, along with convenience methods for finding and manipulating them. */
-    public enum _Fields implements org.apache.thrift.TFieldIdEnum {
-      SUCCESS((short)0, "success"),
-      EXC((short)1, "exc"),
-      EXCSQL((short)2, "excsql");
-
-      private static final Map<String, _Fields> byName = new HashMap<String, _Fields>();
-
-      static {
-        for (_Fields field : EnumSet.allOf(_Fields.class)) {
-          byName.put(field.getFieldName(), field);
-        }
-      }
-
-      /**
-       * Find the _Fields constant that matches fieldId, or null if its not found.
-       */
-      public static _Fields findByThriftId(int fieldId) {
-        switch(fieldId) {
-          case 0: // SUCCESS
-            return SUCCESS;
-          case 1: // EXC
-            return EXC;
-          case 2: // EXCSQL
-            return EXCSQL;
-          default:
-            return null;
-        }
-      }
-
-      /**
-       * Find the _Fields constant that matches fieldId, throwing an exception
-       * if it is not found.
-       */
-      public static _Fields findByThriftIdOrThrow(int fieldId) {
-        _Fields fields = findByThriftId(fieldId);
-        if (fields == null) throw new IllegalArgumentException("Field " + fieldId + " doesn't exist!");
-        return fields;
-      }
-
-      /**
-       * Find the _Fields constant that matches name, or null if its not found.
-       */
-      public static _Fields findByName(String name) {
-        return byName.get(name);
-      }
-
-      private final short _thriftId;
-      private final String _fieldName;
-
-      _Fields(short thriftId, String fieldName) {
-        _thriftId = thriftId;
-        _fieldName = fieldName;
-      }
-
-      public short getThriftFieldId() {
-        return _thriftId;
-      }
-
-      public String getFieldName() {
-        return _fieldName;
-      }
-    }
-
-    // isset id assignments
-    public static final Map<_Fields, org.apache.thrift.meta_data.FieldMetaData> metaDataMap;
-    static {
-      Map<_Fields, org.apache.thrift.meta_data.FieldMetaData> tmpMap = new EnumMap<_Fields, org.apache.thrift.meta_data.FieldMetaData>(_Fields.class);
-      tmpMap.put(_Fields.SUCCESS, new org.apache.thrift.meta_data.FieldMetaData("success", org.apache.thrift.TFieldRequirementType.DEFAULT, 
-          new org.apache.thrift.meta_data.ListMetaData(org.apache.thrift.protocol.TType.LIST, 
-              new org.apache.thrift.meta_data.StructMetaData(org.apache.thrift.protocol.TType.STRUCT, OrgStructure.class))));
-      tmpMap.put(_Fields.EXC, new org.apache.thrift.meta_data.FieldMetaData("exc", org.apache.thrift.TFieldRequirementType.DEFAULT, 
-          new org.apache.thrift.meta_data.FieldValueMetaData(org.apache.thrift.protocol.TType.STRUCT)));
-      tmpMap.put(_Fields.EXCSQL, new org.apache.thrift.meta_data.FieldMetaData("excsql", org.apache.thrift.TFieldRequirementType.DEFAULT, 
-          new org.apache.thrift.meta_data.FieldValueMetaData(org.apache.thrift.protocol.TType.STRUCT)));
-      metaDataMap = Collections.unmodifiableMap(tmpMap);
-      org.apache.thrift.meta_data.FieldMetaData.addStructMetaDataMap(getOrgStructures_result.class, metaDataMap);
-    }
-
-    public getOrgStructures_result() {
-    }
-
-    public getOrgStructures_result(
-      List<OrgStructure> success,
-      NotFoundException exc,
-      SQLException excsql)
-    {
-      this();
-      this.success = success;
-      this.exc = exc;
-      this.excsql = excsql;
-    }
-
-    /**
-     * Performs a deep copy on <i>other</i>.
-     */
-    public getOrgStructures_result(getOrgStructures_result other) {
-      if (other.isSetSuccess()) {
-        List<OrgStructure> __this__success = new ArrayList<OrgStructure>();
-        for (OrgStructure other_element : other.success) {
-          __this__success.add(new OrgStructure(other_element));
-        }
-        this.success = __this__success;
-      }
-      if (other.isSetExc()) {
-        this.exc = new NotFoundException(other.exc);
-      }
-      if (other.isSetExcsql()) {
-        this.excsql = new SQLException(other.excsql);
-      }
-    }
-
-    public getOrgStructures_result deepCopy() {
-      return new getOrgStructures_result(this);
-    }
-
-    @Override
-    public void clear() {
-      this.success = null;
-      this.exc = null;
-      this.excsql = null;
-    }
-
-    public int getSuccessSize() {
-      return (this.success == null) ? 0 : this.success.size();
-    }
-
-    public java.util.Iterator<OrgStructure> getSuccessIterator() {
-      return (this.success == null) ? null : this.success.iterator();
-    }
-
-    public void addToSuccess(OrgStructure elem) {
-      if (this.success == null) {
-        this.success = new ArrayList<OrgStructure>();
-      }
-      this.success.add(elem);
-    }
-
-    public List<OrgStructure> getSuccess() {
-      return this.success;
-    }
-
-    public getOrgStructures_result setSuccess(List<OrgStructure> success) {
-      this.success = success;
-      return this;
-    }
-
-    public void unsetSuccess() {
-      this.success = null;
-    }
-
-    /** Returns true if field success is set (has been assigned a value) and false otherwise */
-    public boolean isSetSuccess() {
-      return this.success != null;
-    }
-
-    public void setSuccessIsSet(boolean value) {
-      if (!value) {
-        this.success = null;
-      }
-    }
-
-    public NotFoundException getExc() {
-      return this.exc;
-    }
-
-    public getOrgStructures_result setExc(NotFoundException exc) {
-      this.exc = exc;
-      return this;
-    }
-
-    public void unsetExc() {
-      this.exc = null;
-    }
-
-    /** Returns true if field exc is set (has been assigned a value) and false otherwise */
-    public boolean isSetExc() {
-      return this.exc != null;
-    }
-
-    public void setExcIsSet(boolean value) {
-      if (!value) {
-        this.exc = null;
-      }
-    }
-
-    public SQLException getExcsql() {
-      return this.excsql;
-    }
-
-    public getOrgStructures_result setExcsql(SQLException excsql) {
-      this.excsql = excsql;
-      return this;
-    }
-
-    public void unsetExcsql() {
-      this.excsql = null;
-    }
-
-    /** Returns true if field excsql is set (has been assigned a value) and false otherwise */
-    public boolean isSetExcsql() {
-      return this.excsql != null;
-    }
-
-    public void setExcsqlIsSet(boolean value) {
-      if (!value) {
-        this.excsql = null;
-      }
-    }
-
-    public void setFieldValue(_Fields field, Object value) {
-      switch (field) {
-      case SUCCESS:
-        if (value == null) {
-          unsetSuccess();
-        } else {
-          setSuccess((List<OrgStructure>)value);
-        }
-        break;
-
-      case EXC:
-        if (value == null) {
-          unsetExc();
-        } else {
-          setExc((NotFoundException)value);
-        }
-        break;
-
-      case EXCSQL:
-        if (value == null) {
-          unsetExcsql();
-        } else {
-          setExcsql((SQLException)value);
-        }
-        break;
-
-      }
-    }
-
-    public Object getFieldValue(_Fields field) {
-      switch (field) {
-      case SUCCESS:
-        return getSuccess();
-
-      case EXC:
-        return getExc();
-
-      case EXCSQL:
-        return getExcsql();
-
-      }
-      throw new IllegalStateException();
-    }
-
-    /** Returns true if field corresponding to fieldID is set (has been assigned a value) and false otherwise */
-    public boolean isSet(_Fields field) {
-      if (field == null) {
-        throw new IllegalArgumentException();
-      }
-
-      switch (field) {
-      case SUCCESS:
-        return isSetSuccess();
-      case EXC:
-        return isSetExc();
-      case EXCSQL:
-        return isSetExcsql();
-      }
-      throw new IllegalStateException();
-    }
-
-    @Override
-    public boolean equals(Object that) {
-      if (that == null)
-        return false;
-      if (that instanceof getOrgStructures_result)
-        return this.equals((getOrgStructures_result)that);
-      return false;
-    }
-
-    public boolean equals(getOrgStructures_result that) {
-      if (that == null)
-        return false;
-
-      boolean this_present_success = true && this.isSetSuccess();
-      boolean that_present_success = true && that.isSetSuccess();
-      if (this_present_success || that_present_success) {
-        if (!(this_present_success && that_present_success))
-          return false;
-        if (!this.success.equals(that.success))
-          return false;
-      }
-
-      boolean this_present_exc = true && this.isSetExc();
-      boolean that_present_exc = true && that.isSetExc();
-      if (this_present_exc || that_present_exc) {
-        if (!(this_present_exc && that_present_exc))
-          return false;
-        if (!this.exc.equals(that.exc))
-          return false;
-      }
-
-      boolean this_present_excsql = true && this.isSetExcsql();
-      boolean that_present_excsql = true && that.isSetExcsql();
-      if (this_present_excsql || that_present_excsql) {
-        if (!(this_present_excsql && that_present_excsql))
-          return false;
-        if (!this.excsql.equals(that.excsql))
-          return false;
-      }
-
-      return true;
-    }
-
-    @Override
-    public int hashCode() {
-      return 0;
-    }
-
-    public int compareTo(getOrgStructures_result other) {
-      if (!getClass().equals(other.getClass())) {
-        return getClass().getName().compareTo(other.getClass().getName());
-      }
-
-      int lastComparison = 0;
-      getOrgStructures_result typedOther = (getOrgStructures_result)other;
-
-      lastComparison = Boolean.valueOf(isSetSuccess()).compareTo(typedOther.isSetSuccess());
-      if (lastComparison != 0) {
-        return lastComparison;
-      }
-      if (isSetSuccess()) {
-        lastComparison = org.apache.thrift.TBaseHelper.compareTo(this.success, typedOther.success);
-        if (lastComparison != 0) {
-          return lastComparison;
-        }
-      }
-      lastComparison = Boolean.valueOf(isSetExc()).compareTo(typedOther.isSetExc());
-      if (lastComparison != 0) {
-        return lastComparison;
-      }
-      if (isSetExc()) {
-        lastComparison = org.apache.thrift.TBaseHelper.compareTo(this.exc, typedOther.exc);
-        if (lastComparison != 0) {
-          return lastComparison;
-        }
-      }
-      lastComparison = Boolean.valueOf(isSetExcsql()).compareTo(typedOther.isSetExcsql());
-      if (lastComparison != 0) {
-        return lastComparison;
-      }
-      if (isSetExcsql()) {
-        lastComparison = org.apache.thrift.TBaseHelper.compareTo(this.excsql, typedOther.excsql);
-        if (lastComparison != 0) {
-          return lastComparison;
-        }
-      }
-      return 0;
-    }
-
-    public _Fields fieldForId(int fieldId) {
-      return _Fields.findByThriftId(fieldId);
-    }
-
-    public void read(org.apache.thrift.protocol.TProtocol iprot) throws org.apache.thrift.TException {
-      schemes.get(iprot.getScheme()).getScheme().read(iprot, this);
-    }
-
-    public void write(org.apache.thrift.protocol.TProtocol oprot) throws org.apache.thrift.TException {
-      schemes.get(oprot.getScheme()).getScheme().write(oprot, this);
-      }
-
-    @Override
-    public String toString() {
-      StringBuilder sb = new StringBuilder("getOrgStructures_result(");
-      boolean first = true;
-
-      sb.append("success:");
-      if (this.success == null) {
-        sb.append("null");
-      } else {
-        sb.append(this.success);
-      }
-      first = false;
-      if (!first) sb.append(", ");
-      sb.append("exc:");
-      if (this.exc == null) {
-        sb.append("null");
-      } else {
-        sb.append(this.exc);
-      }
-      first = false;
-      if (!first) sb.append(", ");
-      sb.append("excsql:");
-      if (this.excsql == null) {
-        sb.append("null");
-      } else {
-        sb.append(this.excsql);
-      }
-      first = false;
-      sb.append(")");
-      return sb.toString();
-    }
-
-    public void validate() throws org.apache.thrift.TException {
-      // check for required fields
-      // check for sub-struct validity
-    }
-
-    private void writeObject(java.io.ObjectOutputStream out) throws java.io.IOException {
-      try {
-        write(new org.apache.thrift.protocol.TCompactProtocol(new org.apache.thrift.transport.TIOStreamTransport(out)));
-      } catch (org.apache.thrift.TException te) {
-        throw new java.io.IOException(te);
-      }
-    }
-
-    private void readObject(java.io.ObjectInputStream in) throws java.io.IOException, ClassNotFoundException {
-      try {
-        read(new org.apache.thrift.protocol.TCompactProtocol(new org.apache.thrift.transport.TIOStreamTransport(in)));
-      } catch (org.apache.thrift.TException te) {
-        throw new java.io.IOException(te);
-      }
-    }
-
-    private static class getOrgStructures_resultStandardSchemeFactory implements SchemeFactory {
-      public getOrgStructures_resultStandardScheme getScheme() {
-        return new getOrgStructures_resultStandardScheme();
-      }
-    }
-
-    private static class getOrgStructures_resultStandardScheme extends StandardScheme<getOrgStructures_result> {
-
-      public void read(org.apache.thrift.protocol.TProtocol iprot, getOrgStructures_result struct) throws org.apache.thrift.TException {
-        org.apache.thrift.protocol.TField schemeField;
-        iprot.readStructBegin();
-        while (true)
-        {
-          schemeField = iprot.readFieldBegin();
-          if (schemeField.type == org.apache.thrift.protocol.TType.STOP) { 
-            break;
-          }
-          switch (schemeField.id) {
-            case 0: // SUCCESS
-              if (schemeField.type == org.apache.thrift.protocol.TType.LIST) {
-                {
-                  org.apache.thrift.protocol.TList _list0 = iprot.readListBegin();
-                  struct.success = new ArrayList<OrgStructure>(_list0.size);
-                  for (int _i1 = 0; _i1 < _list0.size; ++_i1)
-                  {
-                    OrgStructure _elem2; // required
-                    _elem2 = new OrgStructure();
-                    _elem2.read(iprot);
-                    struct.success.add(_elem2);
-                  }
-                  iprot.readListEnd();
+        public static class getOrgStructures_call extends org.apache.thrift.async.TAsyncMethodCall {
+            private int id;
+            private boolean recursive;
+
+            public getOrgStructures_call(int id, boolean recursive, org.apache.thrift.async.AsyncMethodCallback<getOrgStructures_call> resultHandler, org.apache.thrift.async.TAsyncClient client, org.apache.thrift.protocol.TProtocolFactory protocolFactory, org.apache.thrift.transport.TNonblockingTransport transport) throws org.apache.thrift.TException {
+                super(client, protocolFactory, transport, resultHandler, false);
+                this.id = id;
+                this.recursive = recursive;
+            }
+
+            public void write_args(org.apache.thrift.protocol.TProtocol prot) throws org.apache.thrift.TException {
+                prot.writeMessageBegin(new org.apache.thrift.protocol.TMessage("getOrgStructures", org.apache.thrift.protocol.TMessageType.CALL, 0));
+                getOrgStructures_args args = new getOrgStructures_args();
+                args.setId(id);
+                args.setRecursive(recursive);
+                args.write(prot);
+                prot.writeMessageEnd();
+            }
+
+            public List<OrgStructure> getResult() throws NotFoundException, SQLException, org.apache.thrift.TException {
+                if (getState() != org.apache.thrift.async.TAsyncMethodCall.State.RESPONSE_READ) {
+                    throw new IllegalStateException("Method call not finished!");
                 }
-                struct.setSuccessIsSet(true);
-              } else { 
-                org.apache.thrift.protocol.TProtocolUtil.skip(iprot, schemeField.type);
-              }
-              break;
-            case 1: // EXC
-              if (schemeField.type == org.apache.thrift.protocol.TType.STRUCT) {
-                struct.exc = new NotFoundException();
-                struct.exc.read(iprot);
-                struct.setExcIsSet(true);
-              } else { 
-                org.apache.thrift.protocol.TProtocolUtil.skip(iprot, schemeField.type);
-              }
-              break;
-            case 2: // EXCSQL
-              if (schemeField.type == org.apache.thrift.protocol.TType.STRUCT) {
-                struct.excsql = new SQLException();
-                struct.excsql.read(iprot);
-                struct.setExcsqlIsSet(true);
-              } else { 
-                org.apache.thrift.protocol.TProtocolUtil.skip(iprot, schemeField.type);
-              }
-              break;
-            default:
-              org.apache.thrift.protocol.TProtocolUtil.skip(iprot, schemeField.type);
-          }
-          iprot.readFieldEnd();
-        }
-        iprot.readStructEnd();
-
-        // check for required fields of primitive type, which can't be checked in the validate method
-        struct.validate();
-      }
-
-      public void write(org.apache.thrift.protocol.TProtocol oprot, getOrgStructures_result struct) throws org.apache.thrift.TException {
-        struct.validate();
-
-        oprot.writeStructBegin(STRUCT_DESC);
-        if (struct.success != null) {
-          oprot.writeFieldBegin(SUCCESS_FIELD_DESC);
-          {
-            oprot.writeListBegin(new org.apache.thrift.protocol.TList(org.apache.thrift.protocol.TType.STRUCT, struct.success.size()));
-            for (OrgStructure _iter3 : struct.success)
-            {
-              _iter3.write(oprot);
+                org.apache.thrift.transport.TMemoryInputTransport memoryTransport = new org.apache.thrift.transport.TMemoryInputTransport(getFrameBuffer().array());
+                org.apache.thrift.protocol.TProtocol prot = client.getProtocolFactory().getProtocol(memoryTransport);
+                return (new Client(prot)).recv_getOrgStructures();
             }
-            oprot.writeListEnd();
-          }
-          oprot.writeFieldEnd();
         }
-        if (struct.exc != null) {
-          oprot.writeFieldBegin(EXC_FIELD_DESC);
-          struct.exc.write(oprot);
-          oprot.writeFieldEnd();
-        }
-        if (struct.excsql != null) {
-          oprot.writeFieldBegin(EXCSQL_FIELD_DESC);
-          struct.excsql.write(oprot);
-          oprot.writeFieldEnd();
-        }
-        oprot.writeFieldStop();
-        oprot.writeStructEnd();
-      }
 
     }
 
-    private static class getOrgStructures_resultTupleSchemeFactory implements SchemeFactory {
-      public getOrgStructures_resultTupleScheme getScheme() {
-        return new getOrgStructures_resultTupleScheme();
-      }
+    public static class Processor<I extends Iface> extends org.apache.thrift.TBaseProcessor<I> implements org.apache.thrift.TProcessor {
+        private static final Logger LOGGER = LoggerFactory.getLogger(Processor.class.getName());
+
+        public Processor(I iface) {
+            super(iface, getProcessMap(new HashMap<String, org.apache.thrift.ProcessFunction<I, ? extends org.apache.thrift.TBase>>()));
+        }
+
+        protected Processor(I iface, Map<String, org.apache.thrift.ProcessFunction<I, ? extends org.apache.thrift.TBase>> processMap) {
+            super(iface, getProcessMap(processMap));
+        }
+
+        private static <I extends Iface> Map<String, org.apache.thrift.ProcessFunction<I, ? extends org.apache.thrift.TBase>> getProcessMap(Map<String, org.apache.thrift.ProcessFunction<I, ? extends org.apache.thrift.TBase>> processMap) {
+            processMap.put("getOrgStructures", new getOrgStructures());
+            return processMap;
+        }
+
+        public static class getOrgStructures<I extends Iface> extends org.apache.thrift.ProcessFunction<I, getOrgStructures_args> {
+            public getOrgStructures() {
+                super("getOrgStructures");
+            }
+
+            public getOrgStructures_args getEmptyArgsInstance() {
+                return new getOrgStructures_args();
+            }
+
+            protected boolean isOneway() {
+                return false;
+            }
+
+            public getOrgStructures_result getResult(I iface, getOrgStructures_args args) throws org.apache.thrift.TException {
+                getOrgStructures_result result = new getOrgStructures_result();
+                try {
+                    result.success = iface.getOrgStructures(args.id, args.recursive);
+                } catch (NotFoundException exc) {
+                    result.exc = exc;
+                } catch (SQLException excsql) {
+                    result.excsql = excsql;
+                }
+                return result;
+            }
+        }
+
     }
 
-    private static class getOrgStructures_resultTupleScheme extends TupleScheme<getOrgStructures_result> {
+    public static class getOrgStructures_args implements org.apache.thrift.TBase<getOrgStructures_args, getOrgStructures_args._Fields>, java.io.Serializable, Cloneable {
+        private static final org.apache.thrift.protocol.TStruct STRUCT_DESC = new org.apache.thrift.protocol.TStruct("getOrgStructures_args");
 
-      @Override
-      public void write(org.apache.thrift.protocol.TProtocol prot, getOrgStructures_result struct) throws org.apache.thrift.TException {
-        TTupleProtocol oprot = (TTupleProtocol) prot;
-        BitSet optionals = new BitSet();
-        if (struct.isSetSuccess()) {
-          optionals.set(0);
-        }
-        if (struct.isSetExc()) {
-          optionals.set(1);
-        }
-        if (struct.isSetExcsql()) {
-          optionals.set(2);
-        }
-        oprot.writeBitSet(optionals, 3);
-        if (struct.isSetSuccess()) {
-          {
-            oprot.writeI32(struct.success.size());
-            for (OrgStructure _iter4 : struct.success)
-            {
-              _iter4.write(oprot);
-            }
-          }
-        }
-        if (struct.isSetExc()) {
-          struct.exc.write(oprot);
-        }
-        if (struct.isSetExcsql()) {
-          struct.excsql.write(oprot);
-        }
-      }
+        private static final org.apache.thrift.protocol.TField ID_FIELD_DESC = new org.apache.thrift.protocol.TField("id", org.apache.thrift.protocol.TType.I32, (short) 1);
+        private static final org.apache.thrift.protocol.TField RECURSIVE_FIELD_DESC = new org.apache.thrift.protocol.TField("recursive", org.apache.thrift.protocol.TType.BOOL, (short) 2);
 
-      @Override
-      public void read(org.apache.thrift.protocol.TProtocol prot, getOrgStructures_result struct) throws org.apache.thrift.TException {
-        TTupleProtocol iprot = (TTupleProtocol) prot;
-        BitSet incoming = iprot.readBitSet(3);
-        if (incoming.get(0)) {
-          {
-            org.apache.thrift.protocol.TList _list5 = new org.apache.thrift.protocol.TList(org.apache.thrift.protocol.TType.STRUCT, iprot.readI32());
-            struct.success = new ArrayList<OrgStructure>(_list5.size);
-            for (int _i6 = 0; _i6 < _list5.size; ++_i6)
-            {
-              OrgStructure _elem7; // required
-              _elem7 = new OrgStructure();
-              _elem7.read(iprot);
-              struct.success.add(_elem7);
+        private static final Map<Class<? extends IScheme>, SchemeFactory> schemes = new HashMap<Class<? extends IScheme>, SchemeFactory>();
+
+        static {
+            schemes.put(StandardScheme.class, new getOrgStructures_argsStandardSchemeFactory());
+            schemes.put(TupleScheme.class, new getOrgStructures_argsTupleSchemeFactory());
+        }
+
+        public int id; // required
+        public boolean recursive; // required
+
+        /**
+         * The set of fields this struct contains, along with convenience methods for finding and manipulating them.
+         */
+        public enum _Fields implements org.apache.thrift.TFieldIdEnum {
+            ID((short) 1, "id"),
+            RECURSIVE((short) 2, "recursive");
+
+            private static final Map<String, _Fields> byName = new HashMap<String, _Fields>();
+
+            static {
+                for (_Fields field : EnumSet.allOf(_Fields.class)) {
+                    byName.put(field.getFieldName(), field);
+                }
             }
-          }
-          struct.setSuccessIsSet(true);
+
+            /**
+             * Find the _Fields constant that matches fieldId, or null if its not found.
+             */
+            public static _Fields findByThriftId(int fieldId) {
+                switch (fieldId) {
+                    case 1: // ID
+                        return ID;
+                    case 2: // RECURSIVE
+                        return RECURSIVE;
+                    default:
+                        return null;
+                }
+            }
+
+            /**
+             * Find the _Fields constant that matches fieldId, throwing an exception
+             * if it is not found.
+             */
+            public static _Fields findByThriftIdOrThrow(int fieldId) {
+                _Fields fields = findByThriftId(fieldId);
+                if (fields == null) throw new IllegalArgumentException("Field " + fieldId + " doesn't exist!");
+                return fields;
+            }
+
+            /**
+             * Find the _Fields constant that matches name, or null if its not found.
+             */
+            public static _Fields findByName(String name) {
+                return byName.get(name);
+            }
+
+            private final short _thriftId;
+            private final String _fieldName;
+
+            _Fields(short thriftId, String fieldName) {
+                _thriftId = thriftId;
+                _fieldName = fieldName;
+            }
+
+            public short getThriftFieldId() {
+                return _thriftId;
+            }
+
+            public String getFieldName() {
+                return _fieldName;
+            }
         }
-        if (incoming.get(1)) {
-          struct.exc = new NotFoundException();
-          struct.exc.read(iprot);
-          struct.setExcIsSet(true);
+
+        // isset id assignments
+        private static final int __ID_ISSET_ID = 0;
+        private static final int __RECURSIVE_ISSET_ID = 1;
+        private byte __isset_bitfield = 0;
+        public static final Map<_Fields, org.apache.thrift.meta_data.FieldMetaData> metaDataMap;
+
+        static {
+            Map<_Fields, org.apache.thrift.meta_data.FieldMetaData> tmpMap = new EnumMap<_Fields, org.apache.thrift.meta_data.FieldMetaData>(_Fields.class);
+            tmpMap.put(_Fields.ID, new org.apache.thrift.meta_data.FieldMetaData("id", org.apache.thrift.TFieldRequirementType.DEFAULT,
+                    new org.apache.thrift.meta_data.FieldValueMetaData(org.apache.thrift.protocol.TType.I32)));
+            tmpMap.put(_Fields.RECURSIVE, new org.apache.thrift.meta_data.FieldMetaData("recursive", org.apache.thrift.TFieldRequirementType.DEFAULT,
+                    new org.apache.thrift.meta_data.FieldValueMetaData(org.apache.thrift.protocol.TType.BOOL)));
+            metaDataMap = Collections.unmodifiableMap(tmpMap);
+            org.apache.thrift.meta_data.FieldMetaData.addStructMetaDataMap(getOrgStructures_args.class, metaDataMap);
         }
-        if (incoming.get(2)) {
-          struct.excsql = new SQLException();
-          struct.excsql.read(iprot);
-          struct.setExcsqlIsSet(true);
+
+        public getOrgStructures_args() {
         }
-      }
+
+        public getOrgStructures_args(
+                int id,
+                boolean recursive) {
+            this();
+            this.id = id;
+            setIdIsSet(true);
+            this.recursive = recursive;
+            setRecursiveIsSet(true);
+        }
+
+        /**
+         * Performs a deep copy on <i>other</i>.
+         */
+        public getOrgStructures_args(getOrgStructures_args other) {
+            __isset_bitfield = other.__isset_bitfield;
+            this.id = other.id;
+            this.recursive = other.recursive;
+        }
+
+        public getOrgStructures_args deepCopy() {
+            return new getOrgStructures_args(this);
+        }
+
+        @Override
+        public void clear() {
+            setIdIsSet(false);
+            this.id = 0;
+            setRecursiveIsSet(false);
+            this.recursive = false;
+        }
+
+        public int getId() {
+            return this.id;
+        }
+
+        public getOrgStructures_args setId(int id) {
+            this.id = id;
+            setIdIsSet(true);
+            return this;
+        }
+
+        public void unsetId() {
+            __isset_bitfield = EncodingUtils.clearBit(__isset_bitfield, __ID_ISSET_ID);
+        }
+
+        /**
+         * Returns true if field id is set (has been assigned a value) and false otherwise
+         */
+        public boolean isSetId() {
+            return EncodingUtils.testBit(__isset_bitfield, __ID_ISSET_ID);
+        }
+
+        public void setIdIsSet(boolean value) {
+            __isset_bitfield = EncodingUtils.setBit(__isset_bitfield, __ID_ISSET_ID, value);
+        }
+
+        public boolean isRecursive() {
+            return this.recursive;
+        }
+
+        public getOrgStructures_args setRecursive(boolean recursive) {
+            this.recursive = recursive;
+            setRecursiveIsSet(true);
+            return this;
+        }
+
+        public void unsetRecursive() {
+            __isset_bitfield = EncodingUtils.clearBit(__isset_bitfield, __RECURSIVE_ISSET_ID);
+        }
+
+        /**
+         * Returns true if field recursive is set (has been assigned a value) and false otherwise
+         */
+        public boolean isSetRecursive() {
+            return EncodingUtils.testBit(__isset_bitfield, __RECURSIVE_ISSET_ID);
+        }
+
+        public void setRecursiveIsSet(boolean value) {
+            __isset_bitfield = EncodingUtils.setBit(__isset_bitfield, __RECURSIVE_ISSET_ID, value);
+        }
+
+        public void setFieldValue(_Fields field, Object value) {
+            switch (field) {
+                case ID:
+                    if (value == null) {
+                        unsetId();
+                    } else {
+                        setId((Integer) value);
+                    }
+                    break;
+
+                case RECURSIVE:
+                    if (value == null) {
+                        unsetRecursive();
+                    } else {
+                        setRecursive((Boolean) value);
+                    }
+                    break;
+
+            }
+        }
+
+        public Object getFieldValue(_Fields field) {
+            switch (field) {
+                case ID:
+                    return Integer.valueOf(getId());
+
+                case RECURSIVE:
+                    return Boolean.valueOf(isRecursive());
+
+            }
+            throw new IllegalStateException();
+        }
+
+        /**
+         * Returns true if field corresponding to fieldID is set (has been assigned a value) and false otherwise
+         */
+        public boolean isSet(_Fields field) {
+            if (field == null) {
+                throw new IllegalArgumentException();
+            }
+
+            switch (field) {
+                case ID:
+                    return isSetId();
+                case RECURSIVE:
+                    return isSetRecursive();
+            }
+            throw new IllegalStateException();
+        }
+
+        @Override
+        public boolean equals(Object that) {
+            if (that == null)
+                return false;
+            if (that instanceof getOrgStructures_args)
+                return this.equals((getOrgStructures_args) that);
+            return false;
+        }
+
+        public boolean equals(getOrgStructures_args that) {
+            if (that == null)
+                return false;
+
+            boolean this_present_id = true;
+            boolean that_present_id = true;
+            if (this_present_id || that_present_id) {
+                if (!(this_present_id && that_present_id))
+                    return false;
+                if (this.id != that.id)
+                    return false;
+            }
+
+            boolean this_present_recursive = true;
+            boolean that_present_recursive = true;
+            if (this_present_recursive || that_present_recursive) {
+                if (!(this_present_recursive && that_present_recursive))
+                    return false;
+                if (this.recursive != that.recursive)
+                    return false;
+            }
+
+            return true;
+        }
+
+        @Override
+        public int hashCode() {
+            return 0;
+        }
+
+        public int compareTo(getOrgStructures_args other) {
+            if (!getClass().equals(other.getClass())) {
+                return getClass().getName().compareTo(other.getClass().getName());
+            }
+
+            int lastComparison = 0;
+            getOrgStructures_args typedOther = (getOrgStructures_args) other;
+
+            lastComparison = Boolean.valueOf(isSetId()).compareTo(typedOther.isSetId());
+            if (lastComparison != 0) {
+                return lastComparison;
+            }
+            if (isSetId()) {
+                lastComparison = org.apache.thrift.TBaseHelper.compareTo(this.id, typedOther.id);
+                if (lastComparison != 0) {
+                    return lastComparison;
+                }
+            }
+            lastComparison = Boolean.valueOf(isSetRecursive()).compareTo(typedOther.isSetRecursive());
+            if (lastComparison != 0) {
+                return lastComparison;
+            }
+            if (isSetRecursive()) {
+                lastComparison = org.apache.thrift.TBaseHelper.compareTo(this.recursive, typedOther.recursive);
+                if (lastComparison != 0) {
+                    return lastComparison;
+                }
+            }
+            return 0;
+        }
+
+        public _Fields fieldForId(int fieldId) {
+            return _Fields.findByThriftId(fieldId);
+        }
+
+        public void read(org.apache.thrift.protocol.TProtocol iprot) throws org.apache.thrift.TException {
+            schemes.get(iprot.getScheme()).getScheme().read(iprot, this);
+        }
+
+        public void write(org.apache.thrift.protocol.TProtocol oprot) throws org.apache.thrift.TException {
+            schemes.get(oprot.getScheme()).getScheme().write(oprot, this);
+        }
+
+        @Override
+        public String toString() {
+            StringBuilder sb = new StringBuilder("getOrgStructures_args(");
+            boolean first = true;
+
+            sb.append("id:");
+            sb.append(this.id);
+            first = false;
+            if (!first) sb.append(", ");
+            sb.append("recursive:");
+            sb.append(this.recursive);
+            first = false;
+            sb.append(")");
+            return sb.toString();
+        }
+
+        public void validate() throws org.apache.thrift.TException {
+            // check for required fields
+            // check for sub-struct validity
+        }
+
+        private void writeObject(java.io.ObjectOutputStream out) throws java.io.IOException {
+            try {
+                write(new org.apache.thrift.protocol.TCompactProtocol(new org.apache.thrift.transport.TIOStreamTransport(out)));
+            } catch (org.apache.thrift.TException te) {
+                throw new java.io.IOException(te);
+            }
+        }
+
+        private void readObject(java.io.ObjectInputStream in) throws java.io.IOException, ClassNotFoundException {
+            try {
+                // it doesn't seem like you should have to do this, but java serialization is wacky, and doesn't call the default constructor.
+                __isset_bitfield = 0;
+                read(new org.apache.thrift.protocol.TCompactProtocol(new org.apache.thrift.transport.TIOStreamTransport(in)));
+            } catch (org.apache.thrift.TException te) {
+                throw new java.io.IOException(te);
+            }
+        }
+
+        private static class getOrgStructures_argsStandardSchemeFactory implements SchemeFactory {
+            public getOrgStructures_argsStandardScheme getScheme() {
+                return new getOrgStructures_argsStandardScheme();
+            }
+        }
+
+        private static class getOrgStructures_argsStandardScheme extends StandardScheme<getOrgStructures_args> {
+
+            public void read(org.apache.thrift.protocol.TProtocol iprot, getOrgStructures_args struct) throws org.apache.thrift.TException {
+                org.apache.thrift.protocol.TField schemeField;
+                iprot.readStructBegin();
+                while (true) {
+                    schemeField = iprot.readFieldBegin();
+                    if (schemeField.type == org.apache.thrift.protocol.TType.STOP) {
+                        break;
+                    }
+                    switch (schemeField.id) {
+                        case 1: // ID
+                            if (schemeField.type == org.apache.thrift.protocol.TType.I32) {
+                                struct.id = iprot.readI32();
+                                struct.setIdIsSet(true);
+                            } else {
+                                org.apache.thrift.protocol.TProtocolUtil.skip(iprot, schemeField.type);
+                            }
+                            break;
+                        case 2: // RECURSIVE
+                            if (schemeField.type == org.apache.thrift.protocol.TType.BOOL) {
+                                struct.recursive = iprot.readBool();
+                                struct.setRecursiveIsSet(true);
+                            } else {
+                                org.apache.thrift.protocol.TProtocolUtil.skip(iprot, schemeField.type);
+                            }
+                            break;
+                        default:
+                            org.apache.thrift.protocol.TProtocolUtil.skip(iprot, schemeField.type);
+                    }
+                    iprot.readFieldEnd();
+                }
+                iprot.readStructEnd();
+
+                // check for required fields of primitive type, which can't be checked in the validate method
+                struct.validate();
+            }
+
+            public void write(org.apache.thrift.protocol.TProtocol oprot, getOrgStructures_args struct) throws org.apache.thrift.TException {
+                struct.validate();
+
+                oprot.writeStructBegin(STRUCT_DESC);
+                oprot.writeFieldBegin(ID_FIELD_DESC);
+                oprot.writeI32(struct.id);
+                oprot.writeFieldEnd();
+                oprot.writeFieldBegin(RECURSIVE_FIELD_DESC);
+                oprot.writeBool(struct.recursive);
+                oprot.writeFieldEnd();
+                oprot.writeFieldStop();
+                oprot.writeStructEnd();
+            }
+
+        }
+
+        private static class getOrgStructures_argsTupleSchemeFactory implements SchemeFactory {
+            public getOrgStructures_argsTupleScheme getScheme() {
+                return new getOrgStructures_argsTupleScheme();
+            }
+        }
+
+        private static class getOrgStructures_argsTupleScheme extends TupleScheme<getOrgStructures_args> {
+
+            @Override
+            public void write(org.apache.thrift.protocol.TProtocol prot, getOrgStructures_args struct) throws org.apache.thrift.TException {
+                TTupleProtocol oprot = (TTupleProtocol) prot;
+                BitSet optionals = new BitSet();
+                if (struct.isSetId()) {
+                    optionals.set(0);
+                }
+                if (struct.isSetRecursive()) {
+                    optionals.set(1);
+                }
+                oprot.writeBitSet(optionals, 2);
+                if (struct.isSetId()) {
+                    oprot.writeI32(struct.id);
+                }
+                if (struct.isSetRecursive()) {
+                    oprot.writeBool(struct.recursive);
+                }
+            }
+
+            @Override
+            public void read(org.apache.thrift.protocol.TProtocol prot, getOrgStructures_args struct) throws org.apache.thrift.TException {
+                TTupleProtocol iprot = (TTupleProtocol) prot;
+                BitSet incoming = iprot.readBitSet(2);
+                if (incoming.get(0)) {
+                    struct.id = iprot.readI32();
+                    struct.setIdIsSet(true);
+                }
+                if (incoming.get(1)) {
+                    struct.recursive = iprot.readBool();
+                    struct.setRecursiveIsSet(true);
+                }
+            }
+        }
+
     }
 
-  }
+    public static class getOrgStructures_result implements org.apache.thrift.TBase<getOrgStructures_result, getOrgStructures_result._Fields>, java.io.Serializable, Cloneable {
+        private static final org.apache.thrift.protocol.TStruct STRUCT_DESC = new org.apache.thrift.protocol.TStruct("getOrgStructures_result");
+
+        private static final org.apache.thrift.protocol.TField SUCCESS_FIELD_DESC = new org.apache.thrift.protocol.TField("success", org.apache.thrift.protocol.TType.LIST, (short) 0);
+        private static final org.apache.thrift.protocol.TField EXC_FIELD_DESC = new org.apache.thrift.protocol.TField("exc", org.apache.thrift.protocol.TType.STRUCT, (short) 1);
+        private static final org.apache.thrift.protocol.TField EXCSQL_FIELD_DESC = new org.apache.thrift.protocol.TField("excsql", org.apache.thrift.protocol.TType.STRUCT, (short) 2);
+
+        private static final Map<Class<? extends IScheme>, SchemeFactory> schemes = new HashMap<Class<? extends IScheme>, SchemeFactory>();
+
+        static {
+            schemes.put(StandardScheme.class, new getOrgStructures_resultStandardSchemeFactory());
+            schemes.put(TupleScheme.class, new getOrgStructures_resultTupleSchemeFactory());
+        }
+
+        public List<OrgStructure> success; // required
+        public NotFoundException exc; // required
+        public SQLException excsql; // required
+
+        /**
+         * The set of fields this struct contains, along with convenience methods for finding and manipulating them.
+         */
+        public enum _Fields implements org.apache.thrift.TFieldIdEnum {
+            SUCCESS((short) 0, "success"),
+            EXC((short) 1, "exc"),
+            EXCSQL((short) 2, "excsql");
+
+            private static final Map<String, _Fields> byName = new HashMap<String, _Fields>();
+
+            static {
+                for (_Fields field : EnumSet.allOf(_Fields.class)) {
+                    byName.put(field.getFieldName(), field);
+                }
+            }
+
+            /**
+             * Find the _Fields constant that matches fieldId, or null if its not found.
+             */
+            public static _Fields findByThriftId(int fieldId) {
+                switch (fieldId) {
+                    case 0: // SUCCESS
+                        return SUCCESS;
+                    case 1: // EXC
+                        return EXC;
+                    case 2: // EXCSQL
+                        return EXCSQL;
+                    default:
+                        return null;
+                }
+            }
+
+            /**
+             * Find the _Fields constant that matches fieldId, throwing an exception
+             * if it is not found.
+             */
+            public static _Fields findByThriftIdOrThrow(int fieldId) {
+                _Fields fields = findByThriftId(fieldId);
+                if (fields == null) throw new IllegalArgumentException("Field " + fieldId + " doesn't exist!");
+                return fields;
+            }
+
+            /**
+             * Find the _Fields constant that matches name, or null if its not found.
+             */
+            public static _Fields findByName(String name) {
+                return byName.get(name);
+            }
+
+            private final short _thriftId;
+            private final String _fieldName;
+
+            _Fields(short thriftId, String fieldName) {
+                _thriftId = thriftId;
+                _fieldName = fieldName;
+            }
+
+            public short getThriftFieldId() {
+                return _thriftId;
+            }
+
+            public String getFieldName() {
+                return _fieldName;
+            }
+        }
+
+        // isset id assignments
+        public static final Map<_Fields, org.apache.thrift.meta_data.FieldMetaData> metaDataMap;
+
+        static {
+            Map<_Fields, org.apache.thrift.meta_data.FieldMetaData> tmpMap = new EnumMap<_Fields, org.apache.thrift.meta_data.FieldMetaData>(_Fields.class);
+            tmpMap.put(_Fields.SUCCESS, new org.apache.thrift.meta_data.FieldMetaData("success", org.apache.thrift.TFieldRequirementType.DEFAULT,
+                    new org.apache.thrift.meta_data.ListMetaData(org.apache.thrift.protocol.TType.LIST,
+                            new org.apache.thrift.meta_data.StructMetaData(org.apache.thrift.protocol.TType.STRUCT, OrgStructure.class))));
+            tmpMap.put(_Fields.EXC, new org.apache.thrift.meta_data.FieldMetaData("exc", org.apache.thrift.TFieldRequirementType.DEFAULT,
+                    new org.apache.thrift.meta_data.FieldValueMetaData(org.apache.thrift.protocol.TType.STRUCT)));
+            tmpMap.put(_Fields.EXCSQL, new org.apache.thrift.meta_data.FieldMetaData("excsql", org.apache.thrift.TFieldRequirementType.DEFAULT,
+                    new org.apache.thrift.meta_data.FieldValueMetaData(org.apache.thrift.protocol.TType.STRUCT)));
+            metaDataMap = Collections.unmodifiableMap(tmpMap);
+            org.apache.thrift.meta_data.FieldMetaData.addStructMetaDataMap(getOrgStructures_result.class, metaDataMap);
+        }
+
+        public getOrgStructures_result() {
+        }
+
+        public getOrgStructures_result(
+                List<OrgStructure> success,
+                NotFoundException exc,
+                SQLException excsql) {
+            this();
+            this.success = success;
+            this.exc = exc;
+            this.excsql = excsql;
+        }
+
+        /**
+         * Performs a deep copy on <i>other</i>.
+         */
+        public getOrgStructures_result(getOrgStructures_result other) {
+            if (other.isSetSuccess()) {
+                List<OrgStructure> __this__success = new ArrayList<OrgStructure>();
+                for (OrgStructure other_element : other.success) {
+                    __this__success.add(new OrgStructure(other_element));
+                }
+                this.success = __this__success;
+            }
+            if (other.isSetExc()) {
+                this.exc = new NotFoundException(other.exc);
+            }
+            if (other.isSetExcsql()) {
+                this.excsql = new SQLException(other.excsql);
+            }
+        }
+
+        public getOrgStructures_result deepCopy() {
+            return new getOrgStructures_result(this);
+        }
+
+        @Override
+        public void clear() {
+            this.success = null;
+            this.exc = null;
+            this.excsql = null;
+        }
+
+        public int getSuccessSize() {
+            return (this.success == null) ? 0 : this.success.size();
+        }
+
+        public java.util.Iterator<OrgStructure> getSuccessIterator() {
+            return (this.success == null) ? null : this.success.iterator();
+        }
+
+        public void addToSuccess(OrgStructure elem) {
+            if (this.success == null) {
+                this.success = new ArrayList<OrgStructure>();
+            }
+            this.success.add(elem);
+        }
+
+        public List<OrgStructure> getSuccess() {
+            return this.success;
+        }
+
+        public getOrgStructures_result setSuccess(List<OrgStructure> success) {
+            this.success = success;
+            return this;
+        }
+
+        public void unsetSuccess() {
+            this.success = null;
+        }
+
+        /**
+         * Returns true if field success is set (has been assigned a value) and false otherwise
+         */
+        public boolean isSetSuccess() {
+            return this.success != null;
+        }
+
+        public void setSuccessIsSet(boolean value) {
+            if (!value) {
+                this.success = null;
+            }
+        }
+
+        public NotFoundException getExc() {
+            return this.exc;
+        }
+
+        public getOrgStructures_result setExc(NotFoundException exc) {
+            this.exc = exc;
+            return this;
+        }
+
+        public void unsetExc() {
+            this.exc = null;
+        }
+
+        /**
+         * Returns true if field exc is set (has been assigned a value) and false otherwise
+         */
+        public boolean isSetExc() {
+            return this.exc != null;
+        }
+
+        public void setExcIsSet(boolean value) {
+            if (!value) {
+                this.exc = null;
+            }
+        }
+
+        public SQLException getExcsql() {
+            return this.excsql;
+        }
+
+        public getOrgStructures_result setExcsql(SQLException excsql) {
+            this.excsql = excsql;
+            return this;
+        }
+
+        public void unsetExcsql() {
+            this.excsql = null;
+        }
+
+        /**
+         * Returns true if field excsql is set (has been assigned a value) and false otherwise
+         */
+        public boolean isSetExcsql() {
+            return this.excsql != null;
+        }
+
+        public void setExcsqlIsSet(boolean value) {
+            if (!value) {
+                this.excsql = null;
+            }
+        }
+
+        public void setFieldValue(_Fields field, Object value) {
+            switch (field) {
+                case SUCCESS:
+                    if (value == null) {
+                        unsetSuccess();
+                    } else {
+                        setSuccess((List<OrgStructure>) value);
+                    }
+                    break;
+
+                case EXC:
+                    if (value == null) {
+                        unsetExc();
+                    } else {
+                        setExc((NotFoundException) value);
+                    }
+                    break;
+
+                case EXCSQL:
+                    if (value == null) {
+                        unsetExcsql();
+                    } else {
+                        setExcsql((SQLException) value);
+                    }
+                    break;
+
+            }
+        }
+
+        public Object getFieldValue(_Fields field) {
+            switch (field) {
+                case SUCCESS:
+                    return getSuccess();
+
+                case EXC:
+                    return getExc();
+
+                case EXCSQL:
+                    return getExcsql();
+
+            }
+            throw new IllegalStateException();
+        }
+
+        /**
+         * Returns true if field corresponding to fieldID is set (has been assigned a value) and false otherwise
+         */
+        public boolean isSet(_Fields field) {
+            if (field == null) {
+                throw new IllegalArgumentException();
+            }
+
+            switch (field) {
+                case SUCCESS:
+                    return isSetSuccess();
+                case EXC:
+                    return isSetExc();
+                case EXCSQL:
+                    return isSetExcsql();
+            }
+            throw new IllegalStateException();
+        }
+
+        @Override
+        public boolean equals(Object that) {
+            if (that == null)
+                return false;
+            if (that instanceof getOrgStructures_result)
+                return this.equals((getOrgStructures_result) that);
+            return false;
+        }
+
+        public boolean equals(getOrgStructures_result that) {
+            if (that == null)
+                return false;
+
+            boolean this_present_success = true && this.isSetSuccess();
+            boolean that_present_success = true && that.isSetSuccess();
+            if (this_present_success || that_present_success) {
+                if (!(this_present_success && that_present_success))
+                    return false;
+                if (!this.success.equals(that.success))
+                    return false;
+            }
+
+            boolean this_present_exc = true && this.isSetExc();
+            boolean that_present_exc = true && that.isSetExc();
+            if (this_present_exc || that_present_exc) {
+                if (!(this_present_exc && that_present_exc))
+                    return false;
+                if (!this.exc.equals(that.exc))
+                    return false;
+            }
+
+            boolean this_present_excsql = true && this.isSetExcsql();
+            boolean that_present_excsql = true && that.isSetExcsql();
+            if (this_present_excsql || that_present_excsql) {
+                if (!(this_present_excsql && that_present_excsql))
+                    return false;
+                if (!this.excsql.equals(that.excsql))
+                    return false;
+            }
+
+            return true;
+        }
+
+        @Override
+        public int hashCode() {
+            return 0;
+        }
+
+        public int compareTo(getOrgStructures_result other) {
+            if (!getClass().equals(other.getClass())) {
+                return getClass().getName().compareTo(other.getClass().getName());
+            }
+
+            int lastComparison = 0;
+            getOrgStructures_result typedOther = (getOrgStructures_result) other;
+
+            lastComparison = Boolean.valueOf(isSetSuccess()).compareTo(typedOther.isSetSuccess());
+            if (lastComparison != 0) {
+                return lastComparison;
+            }
+            if (isSetSuccess()) {
+                lastComparison = org.apache.thrift.TBaseHelper.compareTo(this.success, typedOther.success);
+                if (lastComparison != 0) {
+                    return lastComparison;
+                }
+            }
+            lastComparison = Boolean.valueOf(isSetExc()).compareTo(typedOther.isSetExc());
+            if (lastComparison != 0) {
+                return lastComparison;
+            }
+            if (isSetExc()) {
+                lastComparison = org.apache.thrift.TBaseHelper.compareTo(this.exc, typedOther.exc);
+                if (lastComparison != 0) {
+                    return lastComparison;
+                }
+            }
+            lastComparison = Boolean.valueOf(isSetExcsql()).compareTo(typedOther.isSetExcsql());
+            if (lastComparison != 0) {
+                return lastComparison;
+            }
+            if (isSetExcsql()) {
+                lastComparison = org.apache.thrift.TBaseHelper.compareTo(this.excsql, typedOther.excsql);
+                if (lastComparison != 0) {
+                    return lastComparison;
+                }
+            }
+            return 0;
+        }
+
+        public _Fields fieldForId(int fieldId) {
+            return _Fields.findByThriftId(fieldId);
+        }
+
+        public void read(org.apache.thrift.protocol.TProtocol iprot) throws org.apache.thrift.TException {
+            schemes.get(iprot.getScheme()).getScheme().read(iprot, this);
+        }
+
+        public void write(org.apache.thrift.protocol.TProtocol oprot) throws org.apache.thrift.TException {
+            schemes.get(oprot.getScheme()).getScheme().write(oprot, this);
+        }
+
+        @Override
+        public String toString() {
+            StringBuilder sb = new StringBuilder("getOrgStructures_result(");
+            boolean first = true;
+
+            sb.append("success:");
+            if (this.success == null) {
+                sb.append("null");
+            } else {
+                sb.append(this.success);
+            }
+            first = false;
+            if (!first) sb.append(", ");
+            sb.append("exc:");
+            if (this.exc == null) {
+                sb.append("null");
+            } else {
+                sb.append(this.exc);
+            }
+            first = false;
+            if (!first) sb.append(", ");
+            sb.append("excsql:");
+            if (this.excsql == null) {
+                sb.append("null");
+            } else {
+                sb.append(this.excsql);
+            }
+            first = false;
+            sb.append(")");
+            return sb.toString();
+        }
+
+        public void validate() throws org.apache.thrift.TException {
+            // check for required fields
+            // check for sub-struct validity
+        }
+
+        private void writeObject(java.io.ObjectOutputStream out) throws java.io.IOException {
+            try {
+                write(new org.apache.thrift.protocol.TCompactProtocol(new org.apache.thrift.transport.TIOStreamTransport(out)));
+            } catch (org.apache.thrift.TException te) {
+                throw new java.io.IOException(te);
+            }
+        }
+
+        private void readObject(java.io.ObjectInputStream in) throws java.io.IOException, ClassNotFoundException {
+            try {
+                read(new org.apache.thrift.protocol.TCompactProtocol(new org.apache.thrift.transport.TIOStreamTransport(in)));
+            } catch (org.apache.thrift.TException te) {
+                throw new java.io.IOException(te);
+            }
+        }
+
+        private static class getOrgStructures_resultStandardSchemeFactory implements SchemeFactory {
+            public getOrgStructures_resultStandardScheme getScheme() {
+                return new getOrgStructures_resultStandardScheme();
+            }
+        }
+
+        private static class getOrgStructures_resultStandardScheme extends StandardScheme<getOrgStructures_result> {
+
+            public void read(org.apache.thrift.protocol.TProtocol iprot, getOrgStructures_result struct) throws org.apache.thrift.TException {
+                org.apache.thrift.protocol.TField schemeField;
+                iprot.readStructBegin();
+                while (true) {
+                    schemeField = iprot.readFieldBegin();
+                    if (schemeField.type == org.apache.thrift.protocol.TType.STOP) {
+                        break;
+                    }
+                    switch (schemeField.id) {
+                        case 0: // SUCCESS
+                            if (schemeField.type == org.apache.thrift.protocol.TType.LIST) {
+                                {
+                                    org.apache.thrift.protocol.TList _list0 = iprot.readListBegin();
+                                    struct.success = new ArrayList<OrgStructure>(_list0.size);
+                                    for (int _i1 = 0; _i1 < _list0.size; ++_i1) {
+                                        OrgStructure _elem2; // required
+                                        _elem2 = new OrgStructure();
+                                        _elem2.read(iprot);
+                                        struct.success.add(_elem2);
+                                    }
+                                    iprot.readListEnd();
+                                }
+                                struct.setSuccessIsSet(true);
+                            } else {
+                                org.apache.thrift.protocol.TProtocolUtil.skip(iprot, schemeField.type);
+                            }
+                            break;
+                        case 1: // EXC
+                            if (schemeField.type == org.apache.thrift.protocol.TType.STRUCT) {
+                                struct.exc = new NotFoundException();
+                                struct.exc.read(iprot);
+                                struct.setExcIsSet(true);
+                            } else {
+                                org.apache.thrift.protocol.TProtocolUtil.skip(iprot, schemeField.type);
+                            }
+                            break;
+                        case 2: // EXCSQL
+                            if (schemeField.type == org.apache.thrift.protocol.TType.STRUCT) {
+                                struct.excsql = new SQLException();
+                                struct.excsql.read(iprot);
+                                struct.setExcsqlIsSet(true);
+                            } else {
+                                org.apache.thrift.protocol.TProtocolUtil.skip(iprot, schemeField.type);
+                            }
+                            break;
+                        default:
+                            org.apache.thrift.protocol.TProtocolUtil.skip(iprot, schemeField.type);
+                    }
+                    iprot.readFieldEnd();
+                }
+                iprot.readStructEnd();
+
+                // check for required fields of primitive type, which can't be checked in the validate method
+                struct.validate();
+            }
+
+            public void write(org.apache.thrift.protocol.TProtocol oprot, getOrgStructures_result struct) throws org.apache.thrift.TException {
+                struct.validate();
+
+                oprot.writeStructBegin(STRUCT_DESC);
+                if (struct.success != null) {
+                    oprot.writeFieldBegin(SUCCESS_FIELD_DESC);
+                    {
+                        oprot.writeListBegin(new org.apache.thrift.protocol.TList(org.apache.thrift.protocol.TType.STRUCT, struct.success.size()));
+                        for (OrgStructure _iter3 : struct.success) {
+                            _iter3.write(oprot);
+                        }
+                        oprot.writeListEnd();
+                    }
+                    oprot.writeFieldEnd();
+                }
+                if (struct.exc != null) {
+                    oprot.writeFieldBegin(EXC_FIELD_DESC);
+                    struct.exc.write(oprot);
+                    oprot.writeFieldEnd();
+                }
+                if (struct.excsql != null) {
+                    oprot.writeFieldBegin(EXCSQL_FIELD_DESC);
+                    struct.excsql.write(oprot);
+                    oprot.writeFieldEnd();
+                }
+                oprot.writeFieldStop();
+                oprot.writeStructEnd();
+            }
+
+        }
+
+        private static class getOrgStructures_resultTupleSchemeFactory implements SchemeFactory {
+            public getOrgStructures_resultTupleScheme getScheme() {
+                return new getOrgStructures_resultTupleScheme();
+            }
+        }
+
+        private static class getOrgStructures_resultTupleScheme extends TupleScheme<getOrgStructures_result> {
+
+            @Override
+            public void write(org.apache.thrift.protocol.TProtocol prot, getOrgStructures_result struct) throws org.apache.thrift.TException {
+                TTupleProtocol oprot = (TTupleProtocol) prot;
+                BitSet optionals = new BitSet();
+                if (struct.isSetSuccess()) {
+                    optionals.set(0);
+                }
+                if (struct.isSetExc()) {
+                    optionals.set(1);
+                }
+                if (struct.isSetExcsql()) {
+                    optionals.set(2);
+                }
+                oprot.writeBitSet(optionals, 3);
+                if (struct.isSetSuccess()) {
+                    {
+                        oprot.writeI32(struct.success.size());
+                        for (OrgStructure _iter4 : struct.success) {
+                            _iter4.write(oprot);
+                        }
+                    }
+                }
+                if (struct.isSetExc()) {
+                    struct.exc.write(oprot);
+                }
+                if (struct.isSetExcsql()) {
+                    struct.excsql.write(oprot);
+                }
+            }
+
+            @Override
+            public void read(org.apache.thrift.protocol.TProtocol prot, getOrgStructures_result struct) throws org.apache.thrift.TException {
+                TTupleProtocol iprot = (TTupleProtocol) prot;
+                BitSet incoming = iprot.readBitSet(3);
+                if (incoming.get(0)) {
+                    {
+                        org.apache.thrift.protocol.TList _list5 = new org.apache.thrift.protocol.TList(org.apache.thrift.protocol.TType.STRUCT, iprot.readI32());
+                        struct.success = new ArrayList<OrgStructure>(_list5.size);
+                        for (int _i6 = 0; _i6 < _list5.size; ++_i6) {
+                            OrgStructure _elem7; // required
+                            _elem7 = new OrgStructure();
+                            _elem7.read(iprot);
+                            struct.success.add(_elem7);
+                        }
+                    }
+                    struct.setSuccessIsSet(true);
+                }
+                if (incoming.get(1)) {
+                    struct.exc = new NotFoundException();
+                    struct.exc.read(iprot);
+                    struct.setExcIsSet(true);
+                }
+                if (incoming.get(2)) {
+                    struct.excsql = new SQLException();
+                    struct.excsql.read(iprot);
+                    struct.setExcsqlIsSet(true);
+                }
+            }
+        }
+
+    }
 
 }
