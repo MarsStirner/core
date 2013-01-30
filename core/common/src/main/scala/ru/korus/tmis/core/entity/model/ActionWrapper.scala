@@ -146,6 +146,37 @@ class ActionWrapper(a: Action)
           Map(APWI.Value.toString -> "1")
         )
       }
+      case AWI.Finance => {
+        if (this.a.getFinanceId != null) {
+          List(
+            Map(APWI.Value.toString -> this.a.getFinanceId.toString)
+          )
+        } else {
+          List(
+            Map(APWI.Value.toString -> "")
+          )
+        }
+      }
+
+      case AWI.PlannedEndDate => {
+        this.a.getPlannedEndDate match {
+          case null => {
+            List(
+              Map(APWI.Value.toString -> "")
+            )
+          }
+          case date => {
+            List(
+              Map(APWI.Value.toString -> CMDF.format(date))
+            )
+          }
+        }
+      }
+      case AWI.ToOrder => {
+        List(
+          Map(APWI.Value.toString -> this.a.getToOrder.toString)
+        )
+      }
 
       case _ => {
         debug("Cannot get <" + name + ">")

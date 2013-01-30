@@ -142,6 +142,9 @@ class DiagnosticsListRequestDataFilter {
   @BeanProperty
   var urgent: Int = _
 
+  @BeanProperty
+  var mnemonic: String = _
+
   var diagnosticType: String = _
 
   def this(code_x: String,
@@ -154,7 +157,8 @@ class DiagnosticsListRequestDataFilter {
            office: String,
            statusId: Int,
            urgent: Int,
-           diaType_x: String) {
+           diaType_x: String,
+           mnemonic: String) {
 
     this()
     this.diagnosticType = diaType_x
@@ -194,6 +198,7 @@ class DiagnosticsListRequestDataFilter {
     this.office = office
     this.statusId = statusId
     this.urgent = urgent
+    this.mnemonic = mnemonic
   }
 
   def toQueryStructure() = {
@@ -237,6 +242,10 @@ class DiagnosticsListRequestDataFilter {
     if (this.urgent != (-1)) {
       qs.query += "AND a.isUrgent = :urgent\n"
       qs.add("urgent", (this.urgent != 0): java.lang.Boolean)
+    }
+    if (this.mnemonic != null && !this.mnemonic.isEmpty) {
+      qs.query += "AND a.actionType.mnemonic = :mnemonic\n"
+      qs.add("mnemonic", this.mnemonic)
     }
     qs
   }
@@ -339,15 +348,19 @@ class LaboratoryDiagnosticsListEntry {
   @BeanProperty
   var status: IdNameContainer = _ //Статус
 
+  @BeanProperty
+  var toOrder: Boolean = _ //Дозаказ
+
   def this(action: Action) {
     this()
     this.id = action.getId.intValue()
     this.diagnosticDate = action.getEndDate
-    this.directionDate = action.getDirectionDate
+    this.directionDate = action.getBegDate //getDirectionDate
     this.diagnosticName = new IdNameContainer(action.getActionType.getId.intValue, action.getActionType.getName)
     this.assignPerson = new DoctorContainer(action.getAssigner)
     this.execPerson = new DoctorContainer(action.getExecutor)
     this.cito = action.getIsUrgent
     this.status = new IdNameContainer(action.getStatus, ActionStatus.fromShort(action.getStatus).getName)
+    this.toOrder = action.getToOrder
   }
 }

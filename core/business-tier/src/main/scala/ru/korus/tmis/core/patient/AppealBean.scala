@@ -346,7 +346,7 @@ with CAPids{
     //*****
     //Создание/редактирование записи для Event_Persons
     if (flgCreate)
-      dbEventPerson.insertOrUpdateEventPerson(0, newEvent, authData.getUser) //в ивенте только создание
+      dbEventPerson.insertOrUpdateEventPerson(0, newEvent, authData.getUser, true) //в ивенте только создание
     //*****
 
     newEvent.getId.intValue()

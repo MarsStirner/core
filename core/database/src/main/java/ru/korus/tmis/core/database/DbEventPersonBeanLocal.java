@@ -33,7 +33,7 @@ public interface DbEventPersonBeanLocal {
      * @return
      * @throws CoreException
      */
-    EventPerson insertOrUpdateEventPerson(int id, Event event, Staff sessionUser) throws CoreException;
+    EventPerson insertOrUpdateEventPerson(int id, Event event, Staff sessionUser, boolean withFlash) throws CoreException;
 
     /**
      * Запрос на тип EventPerson по идентификатору ивента.
@@ -42,4 +42,13 @@ public interface DbEventPersonBeanLocal {
      * @throws CoreException
      */
     EventPerson getLastEventPersonForEventId(int eventId) throws CoreException;
+
+    /**
+     * Проверка, является ли пользователь ответственным за ивент
+     * @param eventId идентификатор ивента.
+     * @param user пользователь как Staff.
+     * @return
+     * @throws CoreException
+     */
+    void checkEventPerson (int eventId, Staff user) throws CoreException;
 }

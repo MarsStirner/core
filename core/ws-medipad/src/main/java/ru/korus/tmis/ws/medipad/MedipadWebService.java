@@ -316,7 +316,7 @@ public interface MedipadWebService extends Serializable {
     JSONCommonData insertConsultation(ConsultationRequestData request) throws CoreException;
 
     @WebMethod
-    JSONCommonData insertLaboratoryStudies(int eventId, CommonData data) throws CoreException;
+    JSONCommonData insertLaboratoryStudies(int eventId, CommonData data, AuthData auth) throws CoreException;
 
     /**
      * Получение справочника FlatDirectory

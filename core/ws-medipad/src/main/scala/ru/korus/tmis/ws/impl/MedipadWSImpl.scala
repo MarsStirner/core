@@ -640,7 +640,7 @@ class MedipadWSImpl
    def getStructOfPrimaryMedExamWithCopy(actionTypeId: Int, authData: AuthData, eventId: Int) = {
     var lastActionId = actionBean.getActionIdWithCopyByEventId(eventId, actionTypeId)
     try {
-      primaryAssessmentBean.getPrimaryAssessmentById(lastActionId, "Assessment", authData, postProcessing _, true)
+      primaryAssessmentBean.getPrimaryAssessmentById(lastActionId, "Assessment", authData, postProcessing _, false) //postProcessingWithCopy _, true)
     }
     catch {
       case e: Exception => {
@@ -676,33 +676,56 @@ class MedipadWSImpl
      jData
    }
 
-
+  private def postProcessingWithCopy (jData: JSONCommonData, reWriteId: java.lang.Boolean) = {
+    //Постобработка (Сопоставление id APT c CoreAP в подветке details - id, typeId)
+    jData.data.get(0).group.get(1).attribute.foreach(ap => {
+      var value = if(ap.typeId!=null && ap.typeId.intValue()>0)
+                    ap.typeId.intValue()
+                  else
+                    actionPropertyBean.getActionPropertyById(ap.id.intValue()).getType.getId.intValue()
+      ap.typeId = dbRbCoreActionPropertyBean.getRbCoreActionPropertiesByActionPropertyTypeId(value).getId.intValue()
+      ap.id = ap.typeId
+    })
+    jData
+  }
 
    //создание первичного мед. осмотра
    def insertPrimaryMedExamForPatient(eventId: Int, data: JSONCommonData, authData: AuthData)  = {
-     //TODO: подключить анализ авторизационных данных и доступных ролей
+     //создаем ответственного, если до этого был другой
+     val eventPerson = dbEventPerson.getLastEventPersonForEventId(eventId)
+     if (eventPerson.getPerson != authData.getUser) {
+       dbEventPerson.insertOrUpdateEventPerson(if (eventPerson != null) {eventPerson.getId.intValue()} else 0,
+                                               dbEventBean.getEventById(eventId),
+                                               authData.getUser,
+                                               false) //параметр для флаша
+     }
+     //создаем осмотр. ЕвентПерсон не флашится!!!
      val returnValue = primaryAssessmentBean.createPrimaryAssessmentForEventId(eventId,
                                                                                data,
                                                                                "Assessment",
                                                                                authData,
                                                                                preProcessing _,
                                                                                postProcessing _)
-     val eventPerson = dbEventPerson.getLastEventPersonForEventId(eventId)
-     dbEventPerson.insertOrUpdateEventPerson(eventPerson.getId.intValue(), dbEventBean.getEventById(eventId), authData.getUser)
      returnValue
    }
 
    //редактирование первичного мед. осмотра
    def modifyPrimaryMedExamForPatient(actionId: Int, data: JSONCommonData, authData: AuthData)  = {
-     //TODO: подключить анализ авторизационных данных и доступных ролей
+     //создаем ответственного, если до этого был другой
+     val eventPerson = dbEventPerson.getLastEventPersonForEventId(actionBean.getActionById(actionId).getEvent.getId.intValue())
+     if (eventPerson.getPerson != authData.getUser) {
+       dbEventPerson.insertOrUpdateEventPerson(if (eventPerson != null) {eventPerson.getId.intValue()} else 0,
+                                               actionBean.getActionById(actionId).getEvent,
+                                               authData.getUser,
+                                               false)
+     }
+     //создаем осмотр. ЕвентПерсон не флашится!!!
      val returnValue = primaryAssessmentBean.modifyPrimaryAssessmentById(actionId,
                                                                          data,
                                                                          "Assessment",
                                                                          authData,
                                                                          preProcessing _,
                                                                          postProcessing _)
-     val eventPerson = dbEventPerson.getLastEventPersonForEventId(actionBean.getActionById(actionId).getEvent.getId.intValue())
-     dbEventPerson.insertOrUpdateEventPerson(eventPerson.getId.intValue(), actionBean.getActionById(actionId).getEvent, authData.getUser)
      returnValue
    }
 
@@ -956,6 +979,9 @@ class MedipadWSImpl
           listForSummary.add(ActionWrapperInfo.doctorSpecs)
           listForSummary.add(ActionWrapperInfo.urgent)
           listForSummary.add(ActionWrapperInfo.multiplicity)
+          listForSummary.add(ActionWrapperInfo.finance)
+          listForSummary.add(ActionWrapperInfo.plannedEndDate)
+          listForSummary.add(ActionWrapperInfo.toOrder)
 
           val json = primaryAssessmentBean.getEmptyStructure(actionType.getId.intValue(), "Action", listForConverter, listForSummary,  null, null)
           json
@@ -979,10 +1005,10 @@ class MedipadWSImpl
     primaryAssessmentBean.insertAssessmentAsConsultation(request.eventId, request.actionTypeId, request.executorId, request.beginDate, request.endDate, request.urgent, request, authData)
   }
 
-  def insertLaboratoryStudies(eventId: Int, data: CommonData) = {
-    //TODO: подключить анализ авторизационных данных и доступных ролей
-    val authData:AuthData = null
-    primaryAssessmentBean.createAssessmentsForEventIdFromCommonData(eventId, data, "Diagnostic", null, authData)
+  def insertLaboratoryStudies(eventId: Int, data: CommonData, auth: AuthData) = {
+    // проверка пользователя на ответственного за ивент
+
+    primaryAssessmentBean.createAssessmentsForEventIdFromCommonData(eventId, data, "Diagnostic", null, auth)
   }
 
   def getFlatDirectories(request: FlatDirectoryRequestData) = {

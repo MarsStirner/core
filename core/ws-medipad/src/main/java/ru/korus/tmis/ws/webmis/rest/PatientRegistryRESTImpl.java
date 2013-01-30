@@ -1105,7 +1105,8 @@ public class PatientRegistryRESTImpl implements Serializable {
                                                                                         "",
                                                                                         statusId,
                                                                                         (urgent==null) ? -1 : (urgent) ? 1 : 0,
-                                                                                        "laboratory");
+                                                                                        "laboratory",
+                                                                                        "LAB");
 
         DiagnosticsListRequestData requestData = new DiagnosticsListRequestData(sortingField,
                                                                                 sortingMethod,
@@ -1177,7 +1178,8 @@ public class PatientRegistryRESTImpl implements Serializable {
                                                                                         office,
                                                                                         statusId,
                                                                                         -1,
-                                                                                        "instrumental");
+                                                                                        "instrumental",
+                                                                                        "DI");
 
         DiagnosticsListRequestData requestData = new DiagnosticsListRequestData(sortingField,
                                                                                 sortingMethod,
@@ -1249,7 +1251,8 @@ public class PatientRegistryRESTImpl implements Serializable {
                                                                                         office,
                                                                                         statusId,
                                                                                         -1,
-                                                                                        "consultations");
+                                                                                        "consultations",
+                                                                                        "");
 
         DiagnosticsListRequestData requestData = new DiagnosticsListRequestData(sortingField,
                                                                                 sortingMethod,
@@ -1381,7 +1384,7 @@ public class PatientRegistryRESTImpl implements Serializable {
                                                  @Context HttpServletRequest servRequest) {
         AuthData auth = wsImpl.checkTokenCookies(servRequest);
 
-        ActionTypesListRequestDataFilter filter = new ActionTypesListRequestDataFilter(code, groupId, "laboratory");
+        ActionTypesListRequestDataFilter filter = new ActionTypesListRequestDataFilter(code, groupId, "laboratory", "LAB");
         ListDataRequest request = new ListDataRequest(sortingField, sortingMethod, limit, page, filter);
 
         Object oip = wsImpl.getListOfActionTypeIdNames(request);
@@ -1424,7 +1427,7 @@ public class PatientRegistryRESTImpl implements Serializable {
                                                   @Context HttpServletRequest servRequest) {
         AuthData auth = wsImpl.checkTokenCookies(servRequest);
 
-        ActionTypesListRequestDataFilter filter = new ActionTypesListRequestDataFilter(code, groupId, "instrumental");
+        ActionTypesListRequestDataFilter filter = new ActionTypesListRequestDataFilter(code, groupId, "instrumental", "DI");
         ListDataRequest request = new ListDataRequest(sortingField, sortingMethod, limit, page, filter);
 
         Object oip = wsImpl.getListOfActionTypeIdNames(request);
@@ -1467,7 +1470,7 @@ public class PatientRegistryRESTImpl implements Serializable {
                                         @Context HttpServletRequest servRequest) {
         AuthData auth = wsImpl.checkTokenCookies(servRequest);
 
-        ActionTypesListRequestDataFilter filter = new ActionTypesListRequestDataFilter(code, groupId, "all");
+        ActionTypesListRequestDataFilter filter = new ActionTypesListRequestDataFilter(code, groupId, "all", "");
         ListDataRequest request = new ListDataRequest(sortingField, sortingMethod, limit, page, filter);
 
         Object oip = wsImpl.getListOfActionTypeIdNames(request);
@@ -1492,10 +1495,13 @@ public class PatientRegistryRESTImpl implements Serializable {
     public Object insertLaboratoryStudies(CommonData data,
                                           @PathParam("eventId")int  eventId,
                                           @QueryParam("callback") String callback,
+                                          //@QueryParam("token") String token,
                                           @Context HttpServletRequest servRequest) {
         AuthData auth = wsImpl.checkTokenCookies(servRequest);
+        //AuthToken authToken = new AuthToken(token);
+        //AuthData auth = wsImpl.getStorageAuthData(authToken);
 
-        JSONCommonData oip = wsImpl.insertLaboratoryStudies(eventId, data);
+        JSONCommonData oip = wsImpl.insertLaboratoryStudies(eventId, data, auth);
         JSONWithPadding returnValue = new JSONWithPadding(oip, callback);
         return returnValue;
     }
@@ -1520,7 +1526,7 @@ public class PatientRegistryRESTImpl implements Serializable {
                                           @Context HttpServletRequest servRequest) {
         AuthData auth = wsImpl.checkTokenCookies(servRequest);
 
-        JSONCommonData oip = wsImpl.insertLaboratoryStudies(eventId, data);
+        JSONCommonData oip = wsImpl.insertLaboratoryStudies(eventId, data, auth);
         JSONWithPadding returnValue = new JSONWithPadding(oip, callback);
         return returnValue;
     }
