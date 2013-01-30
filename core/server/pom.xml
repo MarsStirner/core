@@ -82,26 +82,26 @@
             <!--<type>war</type>-->
         <!--</dependency>-->
 
-        <!--<dependency>-->
-            <!--<groupId>ru.korus.tmis.ws.finance</groupId>-->
-            <!--<artifactId>tmis-ws-finance</artifactId>-->
-            <!--<version>${version.tmis.core}</version>-->
-            <!--<type>war</type>-->
-        <!--</dependency>-->
+        <dependency>
+            <groupId>ru.korus.tmis.ws.finance</groupId>
+            <artifactId>tmis-ws-finance</artifactId>
+            <version>${version.tmis.core}</version>
+            <type>war</type>
+        </dependency>
 
-        <!--<dependency>-->
-            <!--<groupId>ru.korus.tmis.ws.transfusion</groupId>-->
-            <!--<artifactId>tmis-ws-transfusion</artifactId>-->
-            <!--<version>${version.tmis.core}</version>-->
-            <!--<type>war</type>-->
-        <!--</dependency>-->
+        <dependency>
+            <groupId>ru.korus.tmis.ws.transfusion</groupId>
+            <artifactId>tmis-ws-transfusion</artifactId>
+            <version>${version.tmis.core}</version>
+            <type>war</type>
+        </dependency>
 
-        <!--<dependency>-->
-            <!--<groupId>ru.korus.tmis.communication</groupId>-->
-            <!--<artifactId>tmis-communication</artifactId>-->
-            <!--<version>${version.tmis.core}</version>-->
-            <!--<type>war</type>-->
-        <!--</dependency>-->
+        <dependency>
+            <groupId>ru.korus.tmis.communication</groupId>
+            <artifactId>tmis-communication</artifactId>
+            <version>${version.tmis.core}</version>
+            <type>war</type>
+        </dependency>
 
     </dependencies>
 

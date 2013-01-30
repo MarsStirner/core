@@ -6,6 +6,8 @@ import misexchange.PRPAIN302011UV02;
 import misexchange.PRPAIN302012UV02;
 import misexchange.RCMRIN000002UV02;
 import org.hl7.v3.*;
+import org.joda.time.format.DateTimeFormat;
+import org.joda.time.format.DateTimeFormatter;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import ru.korus.tmis.core.entity.model.*;
@@ -58,6 +60,8 @@ public class HL7PacketBuilder {
 
             final SimpleDateFormat sdf = new SimpleDateFormat("yyyyMMddHHmmss");
 
+//            DateTimeFormatter fmt = DateTimeFormat.forPattern("yyyyMMddHHmmss");
+//            String str = fmt.print(dt);
 
             final Request msg = factoryMis.createPRPAIN402001UV02();
 

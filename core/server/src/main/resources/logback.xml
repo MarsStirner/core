@@ -3,9 +3,6 @@
     <!--<jmxConfigurator/>-->
     <contextName>tmis-core</contextName>
 
-    <!--<property name="root.log" value="${com.sun.aas.instanceRoot}/logs/"/>-->
-    <!--<property name="log.format" value="%5p [%d][%thread][%logger{0}] %msg%n"/>-->
-
     <!-- dump status message on the console as they arrive -->
     <statusListener class="ch.qos.logback.core.status.OnConsoleStatusListener"/>
 
@@ -83,14 +80,14 @@
     </appender>
 
     <appender name="EXCEPTIONS" class="ch.qos.logback.core.rolling.RollingFileAppender">
-        <file>${root.log}/exceptions/exceptions.log</file>
+        <file>${logs.path}/exceptions/exceptions.log</file>
 
         <filter class="ru.korus.tmis.util.ExceptionFilter">
             <exceptionClassName>java.lang.Exception</exceptionClassName>
         </filter>
 
         <rollingPolicy class="ch.qos.logback.core.rolling.TimeBasedRollingPolicy">
-            <FileNamePattern>${root.log}/exceptions/exceptions.%d{yyyy-MM-dd}.log.gz</FileNamePattern>
+            <FileNamePattern>${logs.path}/exceptions/exceptions.%d{yyyy-MM-dd}.log.gz</FileNamePattern>
             <MaxHistory>365</MaxHistory>
         </rollingPolicy>
 
@@ -99,7 +96,7 @@
         </encoder>
     </appender>
 
-    <root level="INFO">
+    <root level="${logs.level}">
         <appender-ref ref="STDOUT"/>
         <appender-ref ref="STDOUT_ERROR"/>
         <appender-ref ref="EXCEPTIONS"/>
@@ -108,7 +105,7 @@
 
     <!--Общий логгер для всего проекта-->
     <appender name="TMIS" class="ch.qos.logback.core.rolling.RollingFileAppender">
-        <file>${root.log}tmis-core/core.log</file>
+        <file>${logs.path}tmis-core/core.log</file>
         <encoder>
             <pattern>${log.format}</pattern>
             <charset>UTF-8</charset>
@@ -116,7 +113,7 @@
 
         <rollingPolicy class="ch.qos.logback.core.rolling.TimeBasedRollingPolicy">
             <!-- rollover daily -->
-            <fileNamePattern>${root.log}tmis-core/core.%d{yyyy-MM-dd}.%i.log.gz</fileNamePattern>
+            <fileNamePattern>${logs.path}tmis-core/core.%d{yyyy-MM-dd}.%i.log.gz</fileNamePattern>
             <timeBasedFileNamingAndTriggeringPolicy
                     class="ch.qos.logback.core.rolling.SizeAndTimeBasedFNATP">
                 <!-- or whenever the file size reaches 200MB -->
@@ -134,7 +131,7 @@
 
     <!--Логер для модуля WS-FINANCE-->
     <appender name="WS-FINANCE" class="ch.qos.logback.core.rolling.RollingFileAppender">
-        <file>${root.log}ws-finance/finance.log</file>
+        <file>${logs.path}ws-finance/finance.log</file>
         <encoder>
             <pattern>${log.format}</pattern>
             <charset>UTF-8</charset>
@@ -142,7 +139,7 @@
 
         <rollingPolicy class="ch.qos.logback.core.rolling.TimeBasedRollingPolicy">
             <!-- rollover daily -->
-            <fileNamePattern>${root.log}ws-finance/finance.%d{yyyy-MM-dd}.%i.log.gz</fileNamePattern>
+            <fileNamePattern>${logs.path}ws-finance/finance.%d{yyyy-MM-dd}.%i.log.gz</fileNamePattern>
             <timeBasedFileNamingAndTriggeringPolicy
                     class="ch.qos.logback.core.rolling.SizeAndTimeBasedFNATP">
                 <!-- or whenever the file size reaches 200MB -->
@@ -159,7 +156,7 @@
 
     <!--Логер для конмоненты связи-->
     <appender name="COMMUNICATION" class="ch.qos.logback.core.rolling.RollingFileAppender">
-        <file>${root.log}communication/communication.log</file>
+        <file>${logs.path}communication/communication.log</file>
         <encoder>
             <pattern>${log.format}</pattern>
             <charset>UTF-8</charset>
@@ -167,7 +164,7 @@
 
         <rollingPolicy class="ch.qos.logback.core.rolling.TimeBasedRollingPolicy">
             <!-- rollover daily -->
-            <fileNamePattern>${root.log}communication/communication.%d{yyyy-MM-dd}.%i.log.gz</fileNamePattern>
+            <fileNamePattern>${logs.path}communication/communication.%d{yyyy-MM-dd}.%i.log.gz</fileNamePattern>
             <timeBasedFileNamingAndTriggeringPolicy
                     class="ch.qos.logback.core.rolling.SizeAndTimeBasedFNATP">
                 <!-- or whenever the file size reaches 200MB -->
@@ -183,7 +180,7 @@
     </logger>
 
     <appender name="AUTH" class="ch.qos.logback.core.FileAppender">
-        <file>${root.log}auth/auth.log</file>
+        <file>${logs.path}auth/auth.log</file>
         <encoder>
             <pattern>%d{HH:mm:ss.SSS} %-5level %msg%n</pattern>
             <charset>UTF8</charset>
@@ -195,7 +192,7 @@
     </logger>
 
     <appender name="SERVICES" class="ch.qos.logback.core.FileAppender">
-        <file>${root.log}services/services.log</file>
+        <file>${logs.path}services/services.log</file>
         <encoder>
             <pattern>%d{HH:mm:ss.SSS} %-5level %msg%n</pattern>
             <charset>UTF8</charset>
@@ -208,7 +205,7 @@
     </logger>
 
     <appender name="DEBUGLOG" class="ch.qos.logback.core.FileAppender">
-        <file>${root.log}debug/debug.log</file>
+        <file>${logs.path}debug/debug.log</file>
         <encoder>
             <pattern>%d{HH:mm:ss.SSS} [%thread] %-5level %msg%n</pattern>
             <charset>UTF8</charset>

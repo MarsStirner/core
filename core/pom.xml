@@ -28,7 +28,7 @@
     <properties>
         <!-- Версия ядра-->
         <version.tmis.core>0.9.12-SNAPSHOT</version.tmis.core>
-
+        <com.sun.aas.instanceRoot>/usr/local/opt/</com.sun.aas.instanceRoot>
 
         <version.joda.time>2.1</version.joda.time>
         <version.apache.thrift>0.9.0</version.apache.thrift>
@@ -44,6 +44,8 @@
         <version.javax.inject>1</version.javax.inject>
         <version.javaee.api>6.0</version.javaee.api>
         <version.javax.mail>1.4.5</version.javax.mail>
+        <version.groovy>2.1.0</version.groovy>
+        <version.gmaven.runtime>1.4</version.gmaven.runtime>
 
 
         <version.maven.plugin.scala>2.15.2</version.maven.plugin.scala>
@@ -54,6 +56,7 @@
         <version.maven.plugin.embedded.glassfish>3.1.1</version.maven.plugin.embedded.glassfish>
         <version.maven.plugin.release>2.2.1</version.maven.plugin.release>
         <version.maven.plugin.resources>2.6</version.maven.plugin.resources>
+        <version.maven.gmaven.plugin>1.4</version.maven.gmaven.plugin>
 
 
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
@@ -63,18 +66,29 @@
         <my.build.directory>target</my.build.directory>
 
         <!--Нотификация алармов по email-->
+        <!-- Хост SMTP сервера -->
         <alarm.smtpHost>smtp.gmail.com</alarm.smtpHost>
+        <!-- Адрес email от кого отправлять письмо -->
         <alarm.from>****</alarm.from>
+        <!-- Адрес email кому отправлять письмо -->
         <alarm.to>****</alarm.to>
+        <!-- Кол-во эксепшенов отправляемых в одном письме -->
         <alarm.count.message>10</alarm.count.message>
 
-        <!-- Формат для аппендеров логера-->
-        <root.log>${com.sun.aas.instanceRoot}/logs/</root.log>
+        <!-- Путь для логов в тестовом окружжении-->
+        <logs.test.path>core/server/target/logs-test/</logs.test.path>
+        <!-- Уровень записи лога по умолчанию -->
+        <logs.level>INFO</logs.level>
+        <!-- Переменная glassfish, указывающая на путь к домену -->
+        <!-- Путь куда будут записываться лог-файлы -->
+        <logs.path>${com.sun.aas.instanceRoot}/logs/</logs.path>
+        <!-- Формат записи в лог -->
         <log.format>%5p [%d][%thread][%logger{0}] %msg%n</log.format>
     </properties>
 
     <profiles>
         <profile>
+            <!-- Профиль для установки на сервер -->
             <id>production</id>
             <properties>
                 <mysql.login>root</mysql.login>
@@ -86,6 +100,7 @@
         </profile>
 
         <profile>
+            <!-- Пользовательский профиль -->
             <id>nde</id>
             <properties>
                 <mysql.login>root</mysql.login>
@@ -128,6 +143,15 @@
         </dependency>
 
         <!--
+            Groovy
+        -->
+        <dependency>
+            <groupId>org.codehaus.groovy</groupId>
+            <artifactId>groovy-all</artifactId>
+            <version>${version.groovy}</version>
+        </dependency>
+
+        <!--
             Logging
         -->
         <dependency>
@@ -157,9 +181,9 @@
         <!-- The org.codehaus.janino:commons-compiler:2.6.1 dependency -->
         <!-- will be automatically pulled in by Maven's transitivity rules -->
         <!--<dependency>-->
-            <!--<groupId>org.codehaus.janino</groupId>-->
-            <!--<artifactId>janino</artifactId>-->
-            <!--<version>${version.logging.logback.janino}</version>-->
+        <!--<groupId>org.codehaus.janino</groupId>-->
+        <!--<artifactId>janino</artifactId>-->
+        <!--<version>${version.logging.logback.janino}</version>-->
         <!--</dependency>-->
 
         <!--
@@ -212,7 +236,7 @@
     <build>
         <defaultGoal>package</defaultGoal>
         <directory>${my.build.directory}</directory>
-
+        <!-- Ресурсы для рабочих исходников-->
         <resources>
             <resource>
                 <directory>src/main/resources/</directory>
@@ -224,21 +248,45 @@
             </resource>
         </resources>
 
+        <!-- Ресурсы для тестового окружения -->
+        <testResources>
+            <testResource>
+                <directory>src/test/resources/</directory>
+                <!--<targetPath>./</targetPath>-->
+                <filtering>true</filtering>
+                <includes>
+                    <include>**/*.*</include>
+                </includes>
+            </testResource>
+        </testResources>
+
         <plugins>
             <!--
                 Compiling support
             -->
-            <!--
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-compiler-plugin</artifactId>
-                <version>2.3.2</version>
+                <version>${version.maven.plugin.compiler}</version>
+                <executions>
+                    <execution>
+                        <phase>compile</phase>
+                        <goals>
+                            <goal>compile</goal>
+                        </goals>
+                    </execution>
+                </executions>
                 <configuration>
-                    <source>1.6</source>
+                    <source>${project.build.jdk}</source>
+                    <target>${project.build.jdk}</target>
+                    <encoding>${project.build.sourceEncoding}</encoding>
+                    <debug>${project.build.debug}</debug>
                 </configuration>
             </plugin>
-            -->
 
+            <!--
+               Scala
+            -->
             <plugin>
                 <groupId>org.scala-tools</groupId>
                 <artifactId>maven-scala-plugin</artifactId>
@@ -260,27 +308,57 @@
                         </goals>
                     </execution>
                 </executions>
+                <configuration>
+                    <sourceDir>src/main/scala</sourceDir>
+                    <jvmArgs>
+                        <jvmArg>-Xms64m</jvmArg>
+                        <jvmArg>-Xmx1024m</jvmArg>
+                    </jvmArgs>
+                    <scalaVersion>${version.scala}</scalaVersion>
+                </configuration>
             </plugin>
 
+            <!--
+               Groovy
+            -->
             <plugin>
-                <groupId>org.apache.maven.plugins</groupId>
-                <artifactId>maven-compiler-plugin</artifactId>
-                <version>${version.maven.plugin.compiler}</version>
+                <groupId>org.codehaus.gmaven</groupId>
+                <artifactId>gmaven-plugin</artifactId>
+                <version>${version.maven.gmaven.plugin}</version>
+                <configuration>
+                    <source>src/main/groovy</source>
+                    <providerSelection>2.0</providerSelection>
+                </configuration>
                 <executions>
                     <execution>
-                        <phase>compile</phase>
                         <goals>
+                            <goal>generateStubs</goal>
                             <goal>compile</goal>
+                            <goal>generateTestStubs</goal>
+                            <goal>testCompile</goal>
                         </goals>
                     </execution>
                 </executions>
-                <configuration>
-                    <source>${project.build.jdk}</source>
-                    <target>${project.build.jdk}</target>
-                    <encoding>${project.build.sourceEncoding}</encoding>
-                    <debug>${project.build.debug}</debug>
-                </configuration>
+                <dependencies>
+                    <dependency>
+                        <groupId>org.codehaus.gmaven.runtime</groupId>
+                        <artifactId>gmaven-runtime-2.0</artifactId>
+                        <version>${version.gmaven.runtime}</version>
+                        <exclusions>
+                            <exclusion>
+                                <groupId>org.codehaus.groovy</groupId>
+                                <artifactId>groovy-all</artifactId>
+                            </exclusion>
+                        </exclusions>
+                    </dependency>
+                    <dependency>
+                        <groupId>org.codehaus.groovy</groupId>
+                        <artifactId>groovy-all</artifactId>
+                        <version>${version.groovy}</version>
+                    </dependency>
+                </dependencies>
             </plugin>
+
 
             <plugin>
                 <artifactId>maven-resources-plugin</artifactId>
@@ -324,8 +402,21 @@
                     <encoding>${project.build.sourceEncoding}</encoding>
                     <configLocation>checkstyle-minimal.xml</configLocation>
                     <detail>true</detail>
-                    <excludes>org/hl7/v3/*,ru\korus\tmis\auxiliary\*,ru\korus\tmis\core\entity\,ru\korus\tmis\lis\,ru\korus\tmis\core\exception\,ru\korus\tmis\util\,ru\korus\tmis\core\database\,
-                        ru\korus\tmis\core\patient\,ru\korus\tmis\core\auth\,ru\korus\tmis\drugstore\data\</excludes>
+                    <includes>
+
+                    </includes>
+                    <excludes>
+                        org/hl7/v3/*,
+                        ru\korus\tmis\auxiliary\*,
+                        ru\korus\tmis\core\entity\,
+                        ru\korus\tmis\lis\,
+                        ru\korus\tmis\core\exception\,
+                        ru\korus\tmis\util\,
+                        ru\korus\tmis\core\database\,
+                        ru\korus\tmis\core\patient\,
+                        ru\korus\tmis\core\auth\,
+                        ru\korus\tmis\drugstore\data\
+                    </excludes>
                 </configuration>
                 <executions>
                     <execution>
@@ -486,6 +577,8 @@
                     </execution>
                 </executions>
             </plugin>
+
+
         </plugins>
     </build>
 
