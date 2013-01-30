@@ -637,7 +637,7 @@ class MedipadWSImpl
    def getStructOfPrimaryMedExamWithCopy(actionTypeId: Int, authData: AuthData, eventId: Int) = {
     var lastActionId = actionBean.getActionIdWithCopyByEventId(eventId, actionTypeId)
     try {
-      primaryAssessmentBean.getPrimaryAssessmentById(lastActionId, "Assessment", authData, postProcessing _, true)
+      primaryAssessmentBean.getPrimaryAssessmentById(lastActionId, "Assessment", authData, postProcessing _, false) //postProcessingWithCopy _, true)
     }
     catch {
       case e: Exception => {
@@ -673,7 +673,18 @@ class MedipadWSImpl
      jData
    }
 
-
+  private def postProcessingWithCopy (jData: JSONCommonData, reWriteId: java.lang.Boolean) = {
+    //Постобработка (Сопоставление id APT c CoreAP в подветке details - id, typeId)
+    jData.data.get(0).group.get(1).attribute.foreach(ap => {
+      var value = if(ap.typeId!=null && ap.typeId.intValue()>0)
+                    ap.typeId.intValue()
+                  else
+                    actionPropertyBean.getActionPropertyById(ap.id.intValue()).getType.getId.intValue()
+      ap.typeId = dbRbCoreActionPropertyBean.getRbCoreActionPropertiesByActionPropertyTypeId(value).getId.intValue()
+      ap.id = ap.typeId
+    })
+    jData
+  }
 
    //создание первичного мед. осмотра
    def insertPrimaryMedExamForPatient(eventId: Int, data: JSONCommonData, authData: AuthData)  = {
