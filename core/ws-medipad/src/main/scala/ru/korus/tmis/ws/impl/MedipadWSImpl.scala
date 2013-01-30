@@ -177,6 +177,9 @@ class MedipadWSImpl
 
   @EJB
   var dbEventPerson: DbEventPersonBeanLocal = _
+
+  @EJB
+  var dbEventTypeBean: DbEventTypeBeanLocal = _
   //////////////////////////////////////////////////////////////////////////////
 
   def checkTokenCookies(srvletRequest: HttpServletRequest): AuthData = {
@@ -1247,7 +1250,7 @@ class MedipadWSImpl
     val mapper: ObjectMapper = new ObjectMapper()
     mapper.getSerializationConfig().setSerializationView(classOf[DictionaryDataViews.DefaultView])
 
-    val list = dbEventBean.getEventTypesByRequestTypeIdAndFinanceId(request.page-1,
+    val list = dbEventTypeBean.getEventTypesByRequestTypeIdAndFinanceId(request.page-1,
                                                                     request.limit,
                                                                     request.sortingFieldInternal,
                                                                     request.sortingMethod,

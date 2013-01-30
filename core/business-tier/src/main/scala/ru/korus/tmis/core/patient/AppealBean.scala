@@ -59,9 +59,6 @@ with CAPids{
   private var actionPropertyTypeBean: DbActionPropertyTypeBeanLocal = _
 
   @EJB
-  private var rbCounterBean: DbRbCounterBeanLocal = _
-
-  @EJB
   private var dbManager: DbManagerBeanLocal = _
 
   @EJB
@@ -87,6 +84,9 @@ with CAPids{
 
   @EJB
   var dbEventPerson: DbEventPersonBeanLocal = _
+
+  @EJB
+  var dbEventTypeBean: DbEventTypeBeanLocal = _
 
   @Inject
   @Any
@@ -615,18 +615,20 @@ with CAPids{
         return null
       }
 
-      //val eventTypeId = eventBean.getEventTypeIdByFDRecordId(appealData.data.appealType.getId())
-      val eventTypeId = appealData.data.appealType.eventType.getId//eventBean.getEventTypeIdByRequestTypeIdAndFinanceId(appealData.data.appealType.requestType.getId(), appealData.data.appealType.finance.getId())
-      if(event.getEventType.getId.intValue()!=eventTypeId) {
-        throw new CoreException("Тип найденного обращения не соответствует типу в полученному в запросе (requestType = %s, finance = %s)".format(appealData.data.appealType.requestType.getId().toString, appealData.data.appealType.finance.getId().toString))
-        return null
-      }
+ //   Закомментировано согласно пожеланиям Александра
+ //   Мотивация - хотят редактировать эвент тайп и финанс айди! (как бы потом не было бо-бо от этого)
+ //     val eventTypeId = appealData.data.appealType.eventType.getId//eventBean.getEventTypeIdByRequestTypeIdAndFinanceId(appealData.data.appealType.requestType.getId(), appealData.data.appealType.finance.getId())
+ //     if(event.getEventType.getId.intValue()!=eventTypeId) {
+ //       throw new CoreException("Тип найденного обращения не соответствует типу в полученному в запросе (requestType = %s, finance = %s)".format(appealData.data.appealType.requestType.getId().toString, appealData.data.appealType.finance.getId().toString))
+ //       return null
+ //     }
 
       val now = new Date()
       event.setModifyDatetime(now)
       event.setModifyPerson(authData.user)
       event.setSetDate(appealData.data.rangeAppealDateTime.getStart())
       //event.setExecDate(appealData.data.rangeAppealDateTime.getEnd())
+      event.setEventType(dbEventTypeBean.getEventTypeById(appealData.data.appealType.eventType.getId))
       event.setVersion(appealData.getData().getVersion())
     }
 
