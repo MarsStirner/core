@@ -9,9 +9,8 @@ import javax.ejb.Stateless
 import javax.interceptor.Interceptors
 import scala.collection.JavaConversions._
 import java.util.Date
-import java.text.{DateFormat, SimpleDateFormat}
-import javax.persistence.{TypedQuery, EntityManager, PersistenceContext}
-import ru.korus.tmis.core.entity.model.Staff
+import javax.persistence.{TemporalType, EntityManager, PersistenceContext}
+import ru.korus.tmis.core.entity.model.{Action, Staff}
 import ru.korus.tmis.core.data.{FreePersonsListDataFilter, QueryDataStructure}
 
 @Interceptors(Array(classOf[LoggingInterceptor]))
@@ -188,6 +187,7 @@ class DbStaffBean
     retList
   }
 
+
   val StaffByIdQuery = """
   SELECT s
   FROM Staff s
@@ -279,4 +279,28 @@ class DbStaffBean
   AND
     s.consultancyQuota > 0
                                        """
+
+  def getPersonActionsByDateAndType(personId: Int, date: Date, actionType: String): Action = {
+    em.createQuery(getPersonActionsByDateAndTypeQuery, classOf[Action]).setParameter("ACTIONTYPECODE", actionType)
+      .setParameter("PERSONID", personId).setParameter("SETDATE", date, TemporalType.DATE).getSingleResult
+  }
+
+  val getPersonActionsByDateAndTypeQuery = """
+    SELECT action
+    FROM Action action
+    LEFT JOIN action.actionType actiontype
+    LEFT JOIN action.event event
+    LEFT JOIN event.eventType eventtype
+    LEFT JOIN event.executor  pers
+    WHERE event.deleted=0
+    AND action.deleted=0
+    AND eventtype.code = '0'
+    AND actiontype.code= :ACTIONTYPECODE
+    AND pers.id = :PERSONID
+    AND ( pers.lastAccessibleTimelineDate IS NULL OR pers.lastAccessibleTimelineDate = '0000-00-00' OR event.setDate <= pers.lastAccessibleTimelineDate )
+    AND event.setDate = :SETDATE
+                                           """
 }
+
+//AND ( ( pers.lastAccessibleTimelineDate = '0000-00-00') OR (DATE(event.setDate)<=pers.lastAccessibleTimelineDate))
+//AND ( ( pers.timelineAccessibleDays = 0) OR (pers.timelineAccessibleDays <= 0) OR (DATE(event.setDate)<=ADDDATE(CURRENT_DATE(), pers.timelineAccessibleDays)))

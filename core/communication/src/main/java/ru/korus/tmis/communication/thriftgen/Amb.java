@@ -21,7 +21,7 @@ public class Amb implements org.apache.thrift.TBase<Amb, Amb._Fields>, java.io.S
     private static final org.apache.thrift.protocol.TField BEG_TIME_FIELD_DESC = new org.apache.thrift.protocol.TField("begTime", org.apache.thrift.protocol.TType.I64, (short) 1);
     private static final org.apache.thrift.protocol.TField END_TIME_FIELD_DESC = new org.apache.thrift.protocol.TField("endTime", org.apache.thrift.protocol.TType.I64, (short) 2);
     private static final org.apache.thrift.protocol.TField OFFICE_FIELD_DESC = new org.apache.thrift.protocol.TField("office", org.apache.thrift.protocol.TType.STRING, (short) 3);
-    private static final org.apache.thrift.protocol.TField PLAN_FIELD_DESC = new org.apache.thrift.protocol.TField("plan", org.apache.thrift.protocol.TType.STRING, (short) 4);
+    private static final org.apache.thrift.protocol.TField PLAN_FIELD_DESC = new org.apache.thrift.protocol.TField("plan", org.apache.thrift.protocol.TType.I32, (short) 4);
     private static final org.apache.thrift.protocol.TField TICKETS_FIELD_DESC = new org.apache.thrift.protocol.TField("tickets", org.apache.thrift.protocol.TType.LIST, (short) 5);
     private static final org.apache.thrift.protocol.TField AVAILABLE_FIELD_DESC = new org.apache.thrift.protocol.TField("available", org.apache.thrift.protocol.TType.I32, (short) 6);
 
@@ -35,7 +35,7 @@ public class Amb implements org.apache.thrift.TBase<Amb, Amb._Fields>, java.io.S
     public long begTime; // optional
     public long endTime; // optional
     public String office; // optional
-    public String plan; // optional
+    public int plan; // optional
     public List<Ticket> tickets; // optional
     public int available; // optional
 
@@ -117,7 +117,8 @@ public class Amb implements org.apache.thrift.TBase<Amb, Amb._Fields>, java.io.S
     // isset id assignments
     private static final int __BEGTIME_ISSET_ID = 0;
     private static final int __ENDTIME_ISSET_ID = 1;
-    private static final int __AVAILABLE_ISSET_ID = 2;
+    private static final int __PLAN_ISSET_ID = 2;
+    private static final int __AVAILABLE_ISSET_ID = 3;
     private byte __isset_bitfield = 0;
     private _Fields optionals[] = {_Fields.BEG_TIME, _Fields.END_TIME, _Fields.OFFICE, _Fields.PLAN, _Fields.TICKETS, _Fields.AVAILABLE};
     public static final Map<_Fields, org.apache.thrift.meta_data.FieldMetaData> metaDataMap;
@@ -131,7 +132,7 @@ public class Amb implements org.apache.thrift.TBase<Amb, Amb._Fields>, java.io.S
         tmpMap.put(_Fields.OFFICE, new org.apache.thrift.meta_data.FieldMetaData("office", org.apache.thrift.TFieldRequirementType.OPTIONAL,
                 new org.apache.thrift.meta_data.FieldValueMetaData(org.apache.thrift.protocol.TType.STRING)));
         tmpMap.put(_Fields.PLAN, new org.apache.thrift.meta_data.FieldMetaData("plan", org.apache.thrift.TFieldRequirementType.OPTIONAL,
-                new org.apache.thrift.meta_data.FieldValueMetaData(org.apache.thrift.protocol.TType.STRING)));
+                new org.apache.thrift.meta_data.FieldValueMetaData(org.apache.thrift.protocol.TType.I32)));
         tmpMap.put(_Fields.TICKETS, new org.apache.thrift.meta_data.FieldMetaData("tickets", org.apache.thrift.TFieldRequirementType.OPTIONAL,
                 new org.apache.thrift.meta_data.ListMetaData(org.apache.thrift.protocol.TType.LIST,
                         new org.apache.thrift.meta_data.StructMetaData(org.apache.thrift.protocol.TType.STRUCT, Ticket.class))));
@@ -154,9 +155,7 @@ public class Amb implements org.apache.thrift.TBase<Amb, Amb._Fields>, java.io.S
         if (other.isSetOffice()) {
             this.office = other.office;
         }
-        if (other.isSetPlan()) {
-            this.plan = other.plan;
-        }
+        this.plan = other.plan;
         if (other.isSetTickets()) {
             List<Ticket> __this__tickets = new ArrayList<Ticket>();
             for (Ticket other_element : other.tickets) {
@@ -178,7 +177,8 @@ public class Amb implements org.apache.thrift.TBase<Amb, Amb._Fields>, java.io.S
         setEndTimeIsSet(false);
         this.endTime = 0;
         this.office = null;
-        this.plan = null;
+        setPlanIsSet(false);
+        this.plan = 0;
         this.tickets = null;
         setAvailableIsSet(false);
         this.available = 0;
@@ -260,30 +260,29 @@ public class Amb implements org.apache.thrift.TBase<Amb, Amb._Fields>, java.io.S
         }
     }
 
-    public String getPlan() {
+    public int getPlan() {
         return this.plan;
     }
 
-    public Amb setPlan(String plan) {
+    public Amb setPlan(int plan) {
         this.plan = plan;
+        setPlanIsSet(true);
         return this;
     }
 
     public void unsetPlan() {
-        this.plan = null;
+        __isset_bitfield = EncodingUtils.clearBit(__isset_bitfield, __PLAN_ISSET_ID);
     }
 
     /**
      * Returns true if field plan is set (has been assigned a value) and false otherwise
      */
     public boolean isSetPlan() {
-        return this.plan != null;
+        return EncodingUtils.testBit(__isset_bitfield, __PLAN_ISSET_ID);
     }
 
     public void setPlanIsSet(boolean value) {
-        if (!value) {
-            this.plan = null;
-        }
+        __isset_bitfield = EncodingUtils.setBit(__isset_bitfield, __PLAN_ISSET_ID, value);
     }
 
     public int getTicketsSize() {
@@ -382,7 +381,7 @@ public class Amb implements org.apache.thrift.TBase<Amb, Amb._Fields>, java.io.S
                 if (value == null) {
                     unsetPlan();
                 } else {
-                    setPlan((String) value);
+                    setPlan((Integer) value);
                 }
                 break;
 
@@ -417,7 +416,7 @@ public class Amb implements org.apache.thrift.TBase<Amb, Amb._Fields>, java.io.S
                 return getOffice();
 
             case PLAN:
-                return getPlan();
+                return Integer.valueOf(getPlan());
 
             case TICKETS:
                 return getTickets();
@@ -499,7 +498,7 @@ public class Amb implements org.apache.thrift.TBase<Amb, Amb._Fields>, java.io.S
         if (this_present_plan || that_present_plan) {
             if (!(this_present_plan && that_present_plan))
                 return false;
-            if (!this.plan.equals(that.plan))
+            if (this.plan != that.plan)
                 return false;
         }
 
@@ -641,11 +640,7 @@ public class Amb implements org.apache.thrift.TBase<Amb, Amb._Fields>, java.io.S
         if (isSetPlan()) {
             if (!first) sb.append(", ");
             sb.append("plan:");
-            if (this.plan == null) {
-                sb.append("null");
-            } else {
-                sb.append(this.plan);
-            }
+            sb.append(this.plan);
             first = false;
         }
         if (isSetTickets()) {
@@ -733,8 +728,8 @@ public class Amb implements org.apache.thrift.TBase<Amb, Amb._Fields>, java.io.S
                         }
                         break;
                     case 4: // PLAN
-                        if (schemeField.type == org.apache.thrift.protocol.TType.STRING) {
-                            struct.plan = iprot.readString();
+                        if (schemeField.type == org.apache.thrift.protocol.TType.I32) {
+                            struct.plan = iprot.readI32();
                             struct.setPlanIsSet(true);
                         } else {
                             org.apache.thrift.protocol.TProtocolUtil.skip(iprot, schemeField.type);
@@ -798,12 +793,10 @@ public class Amb implements org.apache.thrift.TBase<Amb, Amb._Fields>, java.io.S
                     oprot.writeFieldEnd();
                 }
             }
-            if (struct.plan != null) {
-                if (struct.isSetPlan()) {
-                    oprot.writeFieldBegin(PLAN_FIELD_DESC);
-                    oprot.writeString(struct.plan);
-                    oprot.writeFieldEnd();
-                }
+            if (struct.isSetPlan()) {
+                oprot.writeFieldBegin(PLAN_FIELD_DESC);
+                oprot.writeI32(struct.plan);
+                oprot.writeFieldEnd();
             }
             if (struct.tickets != null) {
                 if (struct.isSetTickets()) {
@@ -870,7 +863,7 @@ public class Amb implements org.apache.thrift.TBase<Amb, Amb._Fields>, java.io.S
                 oprot.writeString(struct.office);
             }
             if (struct.isSetPlan()) {
-                oprot.writeString(struct.plan);
+                oprot.writeI32(struct.plan);
             }
             if (struct.isSetTickets()) {
                 {
@@ -902,7 +895,7 @@ public class Amb implements org.apache.thrift.TBase<Amb, Amb._Fields>, java.io.S
                 struct.setOfficeIsSet(true);
             }
             if (incoming.get(3)) {
-                struct.plan = iprot.readString();
+                struct.plan = iprot.readI32();
                 struct.setPlanIsSet(true);
             }
             if (incoming.get(4)) {

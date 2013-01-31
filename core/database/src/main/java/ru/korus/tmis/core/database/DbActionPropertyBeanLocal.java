@@ -4,12 +4,13 @@ import ru.korus.tmis.core.auth.AuthData;
 import ru.korus.tmis.core.entity.model.APValue;
 import ru.korus.tmis.core.entity.model.Action;
 import ru.korus.tmis.core.entity.model.ActionProperty;
+import ru.korus.tmis.core.entity.model.ActionPropertyType;
 import ru.korus.tmis.core.exception.CoreException;
 
+import javax.ejb.Local;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
-import javax.ejb.Local;
 
 @Local
 public interface DbActionPropertyBeanLocal {
@@ -27,8 +28,9 @@ public interface DbActionPropertyBeanLocal {
 
     /**
      * Возвращает список свойств со значениями по идентификаторам из таблицы rbCoreActionProperty
+     *
      * @param actionId Идентификатор записи в таблице Action
-     * @param coreIds Список значений идентификаторов из таблицы rbCoreActionProperty
+     * @param coreIds  Список значений идентификаторов из таблицы rbCoreActionProperty
      * @return Список значений ActionProperty
      * @throws CoreException
      * @see ActionProperty
@@ -42,8 +44,9 @@ public interface DbActionPropertyBeanLocal {
 
     /**
      * Возвращает список свойств со значениями из последнего Action внутри выбранного Event по идентификаторам из таблицы rbCoreActionProperty
+     *
      * @param eventId Идентификатор обращения.
-     * @param atIds Список идентификаторов ActionType внутри данного обращения
+     * @param atIds   Список идентификаторов ActionType внутри данного обращения
      * @param coreIds Список значений идентификаторов из таблицы rbCoreActionProperty
      * @return
      * @throws CoreException
@@ -96,4 +99,6 @@ public interface DbActionPropertyBeanLocal {
                                       String value,
                                       int index)
             throws CoreException;
+
+    ActionProperty createActionProperty(Action doctorAction, ActionPropertyType queueAPType) throws CoreException;
 }

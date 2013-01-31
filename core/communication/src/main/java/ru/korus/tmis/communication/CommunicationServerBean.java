@@ -30,6 +30,16 @@ public class CommunicationServerBean {
     private DbQuotingBySpecialityBeanLocal dbQuotingBySpecialityBeanLocal = null;
     @EJB(beanName = "DbOrganizationBean")
     private DbOrganizationBeanLocal dbOrganizationBeanLocal = null;
+    @EJB(beanName = "DbActionPropertyBean")
+    private DbActionPropertyBeanLocal dbActionPropertyBeanLocal = null;
+    @EJB(beanName = "DbQuotingByTimeBean")
+    private DbQuotingByTimeBeanLocal dbQuotingByTimeBeanLocal = null;
+    @EJB(beanName = "DbManagerBean")
+    private DbManagerBeanLocal dbManagerBeanLocal = null;
+    @EJB(beanName = "DbEventBean")
+    private DbEventBeanLocal dbEventBeanLocal = null;
+    @EJB(beanName = "DbActionBean")
+    private DbActionBeanLocal dbActionBeanLocal = null;
 
     private CommServer server = null;
 
@@ -39,6 +49,8 @@ public class CommunicationServerBean {
         logger.debug("Link to OrgStructureBean = {}", dbOrgStructureBeanLocal);
         logger.debug("Link to PatientBean = {}", dbPatientBeanLocal);
         logger.debug("Link to OrganizationBean = {}", dbOrganizationBeanLocal);
+        logger.debug("Link to ActionPropertyBean = {}", dbActionPropertyBeanLocal);
+        logger.debug("Link to QuotingByTimeBean = {}", dbQuotingByTimeBeanLocal);
         try {
             server = CommServer.getInstance();
             CommServer.setOrgStructureBean(dbOrgStructureBeanLocal);
@@ -46,6 +58,11 @@ public class CommunicationServerBean {
             CommServer.setStaffBean(dbStaffBeanLocal);
             CommServer.setSpecialityBean(dbQuotingBySpecialityBeanLocal);
             CommServer.setOrganisationBean(dbOrganizationBeanLocal);
+            CommServer.setActionPropertyBean(dbActionPropertyBeanLocal);
+            CommServer.setQuotingByTimeBean(dbQuotingByTimeBeanLocal);
+            CommServer.setManagerBean(dbManagerBeanLocal);
+            CommServer.setEventBean(dbEventBeanLocal);
+            CommServer.setActionBean(dbActionBeanLocal);
             server.startService();
         } catch (Exception exception) {
             logger.error("Exception while initialize CommunicationBean", exception);
