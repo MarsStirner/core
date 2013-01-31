@@ -1,11 +1,14 @@
 
-package ru.korus.tmis.ws.transfusion;
+package ru.korus.tmis.ws.transfusion.efive;
 
 import javax.xml.bind.annotation.XmlAccessType;
 import javax.xml.bind.annotation.XmlAccessorType;
 import javax.xml.bind.annotation.XmlSchemaType;
 import javax.xml.bind.annotation.XmlType;
 import javax.xml.datatype.XMLGregorianCalendar;
+import java.lang.Override;
+import java.lang.String;
+import java.lang.StringBuilder;
 
 
 /**
@@ -81,6 +84,30 @@ public class OrderInformation {
     protected String attendingPhysicianLastName;
     protected String attendingPhysicianFirstName;
     protected String attendingPhysicianMiddleName;
+
+    @Override
+    public String toString() {
+        final StringBuilder sb = new StringBuilder();
+        sb.append("OrderInformation");
+        sb.append("{id=").append(id);
+        sb.append(", number=").append(number);
+        sb.append(", divisionId=").append(divisionId);
+        sb.append(", ibNumber=").append(ibNumber);
+        sb.append(", diagnosis=").append(diagnosis);
+        sb.append(", componentTypeId=").append(componentTypeId);
+        sb.append(", volume=").append(volume);
+        sb.append(", doseCount=").append(doseCount);
+        sb.append(", indication=").append(indication);
+        sb.append(", transfusionType=").append(transfusionType);
+        sb.append(", planDate=").append(planDate);
+        sb.append(", registrationDate=").append(registrationDate);
+        sb.append(", attendingPhysicianId=").append(attendingPhysicianId);
+        sb.append(", attendingPhysicianLastName=").append(attendingPhysicianLastName);
+        sb.append(", attendingPhysicianFirstName=").append(attendingPhysicianFirstName);
+        sb.append(", attendingPhysicianMiddleName=").append(attendingPhysicianMiddleName);
+        sb.append('}');
+        return sb.toString();
+    }
 
     /**
      * Gets the value of the id property.
