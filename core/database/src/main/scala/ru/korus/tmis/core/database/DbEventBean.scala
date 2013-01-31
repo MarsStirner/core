@@ -42,6 +42,9 @@ class DbEventBean
   private var actionTypeBean: DbActionTypeBeanLocal = _
 
   @EJB
+  private var contractBean: DbContractBeanLocal = _
+
+  @EJB
   private var dbUUIDBeanLocal: DbUUIDBeanLocal = _
 
   def getCountRecordsOrPagesQuery(enterPosition: String): TypedQuery[Long] = {
@@ -140,6 +143,7 @@ class DbEventBean
       newEvent.setAssigner(authData.user)
       newEvent.setNote(" ")
       newEvent.setSetDate(begDate)
+      newEvent.setContract(contractBean.getContractForEventType(eventType))
       newEvent.setUuid(dbUUIDBeanLocal.createUUID())
       //newEvent.setExecDate(endDate)
     }

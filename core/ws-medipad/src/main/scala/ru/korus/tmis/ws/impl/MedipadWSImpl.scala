@@ -504,7 +504,7 @@ class MedipadWSImpl
                                                 null
                                 ))
     } else {
-      throw new CoreException("Не удачная попытка сохранения(изменения) обращения")
+      throw new CoreException("Неудачная попытка сохранения(изменения) обращения")
     }
   }
 

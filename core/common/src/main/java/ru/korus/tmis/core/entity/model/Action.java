@@ -130,8 +130,9 @@ public class Action
     @JoinColumn(name = "takenTissueJournal_id")
     private TakenTissue takenTissue;
 
-    @Column(name = "contract_id")
-    private Integer contractId;
+    @ManyToOne
+    @JoinColumn(name = "contract_id")
+    private Contract contract;
 
     @Column(name = "coordDate")
     @Temporal(TemporalType.TIMESTAMP)
@@ -460,12 +461,12 @@ public class Action
         this.takenTissue = takenTissue;
     }
 
-    public Integer getContractId() {
-        return contractId;
+    public Contract getContract() {
+        return contract;
     }
 
-    public void setContractId(Integer contractId) {
-        this.contractId = contractId;
+    public void setContract(Contract contract) {
+        this.contract = contract;
     }
 
     public Date getCoordDate() {

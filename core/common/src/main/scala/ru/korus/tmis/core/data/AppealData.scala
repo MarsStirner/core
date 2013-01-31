@@ -294,6 +294,8 @@ class AppealEntry {
   var appealWithDeseaseThisYear: String =_       //Госпитализирован по поводу данного заболевания в текущем году
   @BeanProperty
   var havePrimary: Boolean = false
+  @BeanProperty
+  var contract: ContractContainer = _            //Контракт
 
   @JsonView(Array(classOf[Views.DynamicFieldsPrintForm]))
   @BeanProperty
@@ -341,6 +343,7 @@ class AppealEntry {
     this.number = event.getExternalId
     this.setPerson = if (event.getAssigner != null) {new ComplexPersonContainer(event.getAssigner)} else {new ComplexPersonContainer}
     this.urgent = action.getIsUrgent
+    this.contract = new ContractContainer(event.getContract)
 
     exValue = this.extractValuesInNumberedMap(Set(ConfigManager.RbCAPIds("db.rbCAP.hosp.primary.id.ambulanceNumber").toInt :java.lang.Integer), values).get("0")
     this.ambulanceNumber = exValue.get(0).asInstanceOf[String]
@@ -1185,4 +1188,29 @@ class IdNameDateContainer {
     this.birthDate = birthDate
   }
 
+}
+
+/**
+ * Контейнер для представления информации о контракте
+ */
+@XmlType(name = "contractContainer")
+@XmlRootElement(name = "contractContainer")
+@JsonIgnoreProperties(ignoreUnknown = true)
+class ContractContainer {
+
+  @BeanProperty
+  var number : String = _    //Номер контракта
+
+  @BeanProperty
+  var begDate: Date = _      // Дата открытия договора
+
+  @BeanProperty
+  var finance : IdNameContainer = _      //ИД
+
+  def this(contract: Contract) = {
+    this()
+    this.number = contract.getNumber
+    this.begDate = contract.getBegDate
+    this.finance = new IdNameContainer(contract.getFinance.getId.intValue(), contract.getFinance.getName)
+  }
 }
