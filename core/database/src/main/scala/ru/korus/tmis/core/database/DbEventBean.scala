@@ -143,14 +143,17 @@ class DbEventBean
       newEvent.setAssigner(authData.user)
       newEvent.setNote(" ")
       newEvent.setSetDate(begDate)
-      newEvent.setContract(contractBean.getContractForEventType(eventType))
+      //val contract = contractBean.getContractForEventType(eventType)
+      //if (contract != null) {
+      //  newEvent.setContractId(contract.getId)
+      //}
       newEvent.setUuid(dbUUIDBeanLocal.createUUID())
       //newEvent.setExecDate(endDate)
     }
     catch {
       case ex: Exception => {
       }
-      em.refresh(newEvent)
+      //em.refresh(newEvent)
     }
     return newEvent
   }

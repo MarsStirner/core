@@ -10,6 +10,7 @@ import ru.korus.tmis.core.entity.model.{EventType, Contract}
 import ru.korus.tmis.core.exception.NoSuchEntityException
 import scala.collection.JavaConversions._
 import java.util.Date
+import ru.korus.tmis.util.reflect.TmisLogging
 
 /**
  * Created with IntelliJ IDEA.
@@ -24,7 +25,8 @@ import java.util.Date
 class DbContractBean
   extends DbContractBeanLocal
   with Logging
-  with I18nable {
+  with I18nable
+  with TmisLogging {
 
   @PersistenceContext(unitName = "s11r64")
   var em: EntityManager = _
@@ -92,10 +94,14 @@ class DbContractBean
 
     result.size match {
       case 0 => {
+        logTmis.warning(i18n("error.ContractNotFound").format(eventType.getId.intValue()))
+        null
+        /*
         throw new NoSuchEntityException(
           ConfigManager.ErrorCodes.ContractNotFound,
-          -1,                                          //сделать ошибочку йопт
+          eventType.getId.intValue(),
           i18n("error.ContractNotFound"))
+        */
       }
       case size => {
         result.foreach((r) => {

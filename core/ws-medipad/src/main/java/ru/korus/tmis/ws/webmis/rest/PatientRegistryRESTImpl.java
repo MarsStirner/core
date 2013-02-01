@@ -165,12 +165,12 @@ public class PatientRegistryRESTImpl implements Serializable {
     @Produces("application/x-javascript")
     public Object insertPatientAppeal(AppealData data,
                                          @PathParam("id")int patientId,
-                                         //@QueryParam("token") String token,
+                                         @QueryParam("token") String token,
                                          @QueryParam("callback") String callback,
                                          @Context HttpServletRequest servRequest) {
-        AuthData auth = wsImpl.checkTokenCookies(servRequest);
-        //AuthToken authToken = new AuthToken(token);
-        //AuthData auth = wsImpl.getStorageAuthData(authToken);
+        //AuthData auth = wsImpl.checkTokenCookies(servRequest);
+        AuthToken authToken = new AuthToken(token);
+        AuthData auth = wsImpl.getStorageAuthData(authToken);
 
         String oip = wsImpl.insertAppealForPatient(data, patientId, auth);
         JSONWithPadding returnValue = new JSONWithPadding(oip, callback);
