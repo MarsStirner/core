@@ -3,7 +3,7 @@ package ru.korus.tmis.core.patient
 import javax.interceptor.Interceptors
 import ru.korus.tmis.core.logging.LoggingInterceptor
 import grizzled.slf4j.Logging
-import ru.korus.tmis.util.I18nable
+import ru.korus.tmis.util.{CAPids, I18nable}
 import javax.persistence.{EntityManager, PersistenceContext}
 import scala.collection.JavaConversions._
 import javax.ejb.{TransactionAttribute, TransactionAttributeType, EJB, Stateless}
@@ -16,10 +16,10 @@ import ru.korus.tmis.core.data.{FormOfAccountingMovementOfPatientsData, SeventhF
 
 @Interceptors(Array(classOf[LoggingInterceptor]))
 @Stateless
-//@TransactionAttribute(TransactionAttributeType.REQUIRES_NEW)
 class SeventhFormBean extends SeventhFormBeanLocal
 with Logging
-with I18nable {
+with I18nable
+with CAPids {
 
   @PersistenceContext(unitName = "s11r64")
   var em: EntityManager = _
@@ -902,4 +902,248 @@ with I18nable {
       )
     )
                             """
+
+  //**************************** Новая реализация формы 007 ****************************
+  //https://docs.google.com/document/d/1a0AYF8QVpEMl_pKRcFDnP2vQzRmO-IkcG5JNStEcjMI/edit#heading=h.a2hialy1qshb
+  def getForm007LinearView(departmentId: Int, beginDate: Date, endDate: Date) = {
+
+    //1. Количество развернутых коек в отделении
+    val cntOfPermanentBeds = this.getCountOfPermanentBeds(departmentId)
+
+    //2. Количество пациентов состоящих в отделении на начало периода выборки (Состояло на начало суток)
+    val cntOfPatientsFromBegDate = this.getCountOfPatientsForBeginDate(departmentId, beginDate)
+
+    //-------Поступление больных
+    val RECEIVED_ALL = 0
+    val RECEIVED_DAY_HOSPITAL = 1
+    val RECEIVED_VILLAGERS = 2
+
+    //3. Всего поступило больных
+    val cntOfAllReceivedPatients = this.getCountOfReceivedPatients(departmentId, beginDate, endDate, RECEIVED_ALL)   //????
+
+    //4. В том числе из дневного стационара
+    val cntOfReceivedPatientsFromDayHospital = this.getCountOfReceivedPatients(departmentId, beginDate, endDate, RECEIVED_DAY_HOSPITAL)    //????
+
+    //5. Кол-во сельских жителей
+    val cntOfVillagers = this.getCountOfReceivedPatients(departmentId, beginDate, endDate, RECEIVED_VILLAGERS)
+
+    null
+  }
+
+  /**
+  * Получение количества развернутых коек по идентификатору отделения
+  * @author idmitriev Sistema-Soft
+  * @since 1.0.0.57
+  * @param departmentId
+  * @return Количество развернутых коек в отделении как Long
+  */
+  private def getCountOfPermanentBeds(departmentId: Int) = {
+    em.createQuery(countOfPermanentBedsQuery, classOf[Long])
+      .setParameter("departmentId", departmentId)
+      .getSingleResult
+  }
+
+  /**
+   * Получение количества пациентов в отделении на начало мед.суток
+   * @author idmitriev Sistema-Soft
+   * @since 1.0.0.57
+   * @param departmentId Идентификатор отделения
+   * @param beginDate Дата начала мед.суток
+   * @return Количество пациентов в отделении на начало мед.суток
+   */
+  private def getCountOfPatientsForBeginDate(departmentId: Int, beginDate: Date) = {
+    em.createQuery(countOfPatientForBeginDateQuery.format(i18n("db.action.movingFlatCode")), classOf[Long])
+      .setParameter("beginDate", beginDate)
+      .setParameter("departmentId", departmentId)
+      .getSingleResult
+  }
+
+  private def getCountOfReceivedPatients(departmentId: Int, beginDate: Date, endDate: Date, status: Int) = {
+    var inLex: String = ""
+    var mergeLex: String = ""
+    var selectAdditionalLex: String = ""
+    var conditionAdditionalLex: String = ""
+
+    status match {
+       case 0 => {  //Всего поступило больных
+         inLex = "NOT IN"
+         mergeLex = "<>"
+       }
+       case 1 => {  //В том числе из дневного стационара
+         inLex = "IN"
+         mergeLex = "="
+       }
+       case 2 => {  //Кол-во сельских жителей
+         inLex = "NOT IN"
+         mergeLex = "<>"
+         selectAdditionalLex = villagersSelectSubquery
+         conditionAdditionalLex = villagersConditionsSubquery
+       }
+       case _ => {
+         inLex = "NOT IN"
+         mergeLex = "<>"
+       }
+    }
+
+    em.createQuery(countOfAllReceivedPatientsQuery.format(selectAdditionalLex,
+                                                          inLex,
+                                                          i18n("db.action.movingFlatCode"),
+                                                          iCapIds("db.rbCAP.moving.id.movedFrom"),
+                                                          mergeLex,
+                                                          i18n("db.dayHospital.id"),
+                                                          i18n("db.action.movingFlatCode"),
+                                                          conditionAdditionalLex), classOf[Long])
+      .setParameter("beginDate", beginDate)
+      .setParameter("endDate", endDate)
+      .setParameter("departmentId", departmentId)
+      .getSingleResult
+  }
+
+  //Количество развернутых коек
+  val countOfPermanentBedsQuery = """
+  SELECT count(orghb.id)
+  FROM
+    OrgStructureHospitalBed orghb
+  WHERE
+    orghb.masterDepartment.id = :departmentId
+  AND
+    orghb.isPermanent = '0'
+                                  """
+
+  //Состояло на начало суток
+  val countOfPatientForBeginDateQuery = """
+  SELECT count(a.id)
+  FROM
+    ActionProperty ap
+      JOIN ap.action a
+      JOIN a.actionType at
+      JOIN a.event e,
+    APValueHospitalBed bed
+      JOIN bed.value orghb
+  WHERE
+    ap.id = bed.id.id
+  AND
+  (
+    (
+      a.begDate <= :beginDate
+      AND
+        a.endDate  >= :beginDate
+    )
+    OR
+    (
+      a.begDate <= :beginDate
+      AND
+        a.endDate IS NULL
+    )
+  )
+  AND
+    at.flatCode = '%s'
+  AND
+    orghb.masterDepartment.id = :departmentId
+  AND
+    a.deleted = '0'
+  AND
+    ap.deleted = '0'
+  AND
+    e.deleted = '0'
+                                        """
+
+  // Всего поступило больных
+  // В том числе из дневного стационара
+  val countOfAllReceivedPatientsQuery = """
+  SELECT count(a.id)
+  FROM
+  Action a
+    JOIN a.actionType at
+    JOIN a.event e,
+  ActionProperty ap,
+  APValueHospitalBed bed
+    JOIN bed.value orghb
+  %s
+  WHERE
+    a.id %s
+    (
+      SELECT a2.id
+      FROM
+        Action a2
+          JOIN a2.actionType at2
+          JOIN a2.event e2,
+        ActionProperty ap2
+          JOIN ap2.actionPropertyType apt2,
+        APValueOrgStructure apv
+          JOIN apv.value org,
+        RbCoreActionProperty cap
+      WHERE
+        ap2.action.id = a2.id
+      AND
+        ap2.id = apv.id.id
+      AND
+        at2.flatCode = '%s'
+      AND
+        apt2.id = cap.actionPropertyType.id
+      AND
+        cap.id = '%s'
+      AND
+        org.id %s '%s'
+      AND
+      (
+        a2.begDate >= :beginDate
+        AND
+          a2.begDate <= :endDate
+      )
+      AND
+        a2.deleted = '0'
+      AND
+        ap2.deleted = '0'
+      AND
+        e2.deleted = '0'
+    )
+  AND
+  (
+    a.begDate >= :beginDate
+    AND
+      a.begDate <= :endDate
+  )
+  AND
+    at.flatCode = '%s'
+  AND
+    ap.action.id = a.id
+  AND
+    ap.id = bed.id.id
+  AND
+    orghb.masterDepartment.id = :departmentId
+  AND
+    a.deleted = '0'
+  AND
+    ap.deleted = '0'
+  AND
+    e.deleted = '0'
+  %s
+                                        """
+
+  //Кол-во сельских жителей
+  val villagersSelectSubquery =
+    """
+    ,
+    ClientAddress ca
+      LEFT JOIN ca.address address
+      LEFT JOIN ca.patient client
+      LEFT JOIN address.house house
+    """
+
+  val villagersConditionsSubquery =
+    """
+    AND
+      client.id = e.patient.id
+    AND
+      ca.localityType = '2'
+    AND
+      ca.addressType = '0'
+    AND
+      house.deleted = '0'
+    AND
+      address.deleted = '0'
+    AND
+      ca.deleted = '0'
+    """
 }

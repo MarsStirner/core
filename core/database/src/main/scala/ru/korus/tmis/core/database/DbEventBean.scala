@@ -42,6 +42,9 @@ class DbEventBean
   private var actionTypeBean: DbActionTypeBeanLocal = _
 
   @EJB
+  private var contractBean: DbContractBeanLocal = _
+
+  @EJB
   private var dbUUIDBeanLocal: DbUUIDBeanLocal = _
 
   def getCountRecordsOrPagesQuery(enterPosition: String): TypedQuery[Long] = {
@@ -140,13 +143,17 @@ class DbEventBean
       newEvent.setAssigner(authData.user)
       newEvent.setNote(" ")
       newEvent.setSetDate(begDate)
+      //val contract = contractBean.getContractForEventType(eventType)
+      //if (contract != null) {
+      //  newEvent.setContractId(contract.getId)
+      //}
       newEvent.setUuid(dbUUIDBeanLocal.createUUID())
       //newEvent.setExecDate(endDate)
     }
     catch {
       case ex: Exception => {
       }
-      em.refresh(newEvent)
+      //em.refresh(newEvent)
     }
     return newEvent
   }
@@ -192,28 +199,6 @@ class DbEventBean
     result
   }
 
-  def getEventTypesByRequestTypeIdAndFinanceId(page: Int, limit: Int, sortingField: String, sortingMethod: String, filter: Object, records: (java.lang.Long) => java.lang.Boolean) = {
-    val queryStr: QueryDataStructure = if (filter.isInstanceOf[EventTypesListRequestDataFilter])
-      filter.asInstanceOf[EventTypesListRequestDataFilter].toQueryStructure()
-    else new QueryDataStructure()
-
-    val sorting = "ORDER BY %s %s".format(sortingField, sortingMethod)
-
-    if (records!=null) { //Перепишем количество записей для структуры
-      val recC = em.createQuery(EventTypeIdByRequestTypeIdAndFinanceIdQuery.format("count(et)", queryStr.query, ""), classOf[Long])
-      if (queryStr.data.size() > 0) queryStr.data.foreach(qdp => recC.setParameter(qdp.name, qdp.value))
-      records(recC.getSingleResult)
-    }
-
-    var typed = em.createQuery(EventTypeIdByRequestTypeIdAndFinanceIdQuery.format("et", queryStr.query, sorting), classOf[EventType])
-                  .setMaxResults(limit)
-                  .setFirstResult(limit * page)
-    if (queryStr.data.size() > 0) queryStr.data.foreach(qdp => typed.setParameter(qdp.name, qdp.value))
-
-    val result = typed.getResultList
-    result.foreach(em.detach(_))
-    result
-  }
 
   val EventGetCountRecords = """
   SELECT count(e)
@@ -471,15 +456,4 @@ class DbEventBean
   AND
     et.code = fdfv.value
                                      """
-
-  val EventTypeIdByRequestTypeIdAndFinanceIdQuery =
-    """
-    SELECT %s
-    FROM
-      EventType et
-    WHERE
-      et.deleted = '0'
-      %s
-      %s
-    """
 }

@@ -48,6 +48,10 @@ public class ActionPropertyType implements Serializable, PublicClonable<ActionPr
     @Column(name = "descr")
     private String descr;
 
+    @Basic(optional = false)
+    @Column(name = "code")
+    private String code;
+
     @ManyToOne
     @JoinColumn(name = "unit_id")
     private RbUnit unit;
@@ -180,6 +184,14 @@ public class ActionPropertyType implements Serializable, PublicClonable<ActionPr
 
     public void setDescr(String descr) {
         this.descr = descr;
+    }
+
+    public String getCode() {
+        return code;
+    }
+
+    public void setCode(String code) {
+        this.code = code;
     }
 
     public RbUnit getUnit() {

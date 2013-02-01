@@ -30,7 +30,8 @@ class DbEventPersonBean
 
   def insertOrUpdateEventPerson(id: Int,
                                 event: Event,
-                                sessionUser: Staff): EventPerson = {
+                                sessionUser: Staff,
+                                withFlash: Boolean): EventPerson = {
     //var ep: EventPerson = null
     val now = new Date
     if (id > 0) {
@@ -46,7 +47,9 @@ class DbEventPersonBean
     }
     //ep.setDeleted(false)
     em.persist(ep)
-    em.flush()
+    if (withFlash) {
+      em.flush()
+    }
     ep
   }
 
@@ -57,10 +60,10 @@ class DbEventPersonBean
 
     val result = query.getResultList
     result.size match {
-      case 0 => {
-        throw new CoreException(
-          ConfigManager.ErrorCodes.EventPersonNotFound,
-          i18n("error.eventPersonNotFound").format(eventId))
+      case 0 => {  null
+      //  throw new CoreException(
+      //    ConfigManager.ErrorCodes.EventPersonNotFound,
+      //    i18n("error.eventPersonNotFound").format(eventId))
       }
       case size => {
         result.foreach(rbType => {
@@ -92,6 +95,30 @@ class DbEventPersonBean
     }
   }
 
+  // проверка на ответственного за госпитализацию (евент). Если юзер не ответственен за евент, для которого он создает акшен, то выдадим ошибку.
+  def checkEventPerson (eventId: Int, user: Staff) {
+    val query = em.createQuery(EventPersonByEventIdAndUserFindQuery,
+      classOf[EventPerson])
+      .setParameter("eventId", eventId)
+      .setParameter("user", user)
+      .setParameter("date", new Date())
+
+    val result = query.getResultList
+    result.size match {
+      case 0 => {  null
+        throw new CoreException(
+          ConfigManager.ErrorCodes.EventPersonForEventAndUserNotFound,
+          i18n("error.eventPersonForEventAndUserNotFound").format(eventId))
+      }
+      case size => {
+        result.foreach(rbType => {
+          em.detach(rbType)
+        })
+        result(0)
+      }
+    }
+  }
+
   val EventPersonFindQuery = """
     SELECT r
     FROM
@@ -110,6 +137,18 @@ class DbEventPersonBean
       r.endDate IS NULL
     ORDER BY r.begDate DESC
                                           """
+
+  val EventPersonByEventIdAndUserFindQuery = """
+    SELECT r
+    FROM
+      EventPerson r
+    WHERE
+      r.event.id = :eventId
+    AND
+      r.person = :user
+    AND
+      (:date BETWEEN r.begDate AND r.endDate)
+                                             """
 
   val AllEventPersonsWithFilterQuery = """
   SELECT %s
