@@ -15,5 +15,5 @@ public interface DbContractBeanLocal {
 
     Contract getContractById(int id) throws CoreException;
 
-    Contract getContractForEventType(EventType eventType);
+    Contract getContractForEventType(int eventTypeId, int financeId);
 }

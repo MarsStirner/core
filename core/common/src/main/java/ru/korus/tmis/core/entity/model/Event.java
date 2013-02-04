@@ -61,7 +61,7 @@ public class Event implements Serializable {
     private Integer orgId;
 
     @Column(name = "contract_id")
-    private Integer contractId;
+    private int contractId;
 
     @Column(name = "prevEventDate")
     @Temporal(TemporalType.TIMESTAMP)
@@ -257,11 +257,11 @@ public class Event implements Serializable {
         this.orgId = orgId;
     }
 
-    public Integer getContractId() {
+    public int getContractId() {
         return contractId;
     }
 
-    public void setContractId(Integer contractId) {
+    public void setContractId(int contractId) {
         this.contractId = contractId;
     }
 
