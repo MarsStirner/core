@@ -63,4 +63,6 @@ public interface DbPatientBeanLocal {
     List<Patient> findPatient(Map<String, String> params) throws CoreException;
 
     Integer savePatientToDataBase(Patient patient) throws CoreException;
+
+    List<Object> getPatientQueue(Patient patient) throws CoreException;
 }

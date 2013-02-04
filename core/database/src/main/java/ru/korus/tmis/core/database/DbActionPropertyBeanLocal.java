@@ -1,10 +1,7 @@
 package ru.korus.tmis.core.database;
 
 import ru.korus.tmis.core.auth.AuthData;
-import ru.korus.tmis.core.entity.model.APValue;
-import ru.korus.tmis.core.entity.model.Action;
-import ru.korus.tmis.core.entity.model.ActionProperty;
-import ru.korus.tmis.core.entity.model.ActionPropertyType;
+import ru.korus.tmis.core.entity.model.*;
 import ru.korus.tmis.core.exception.CoreException;
 
 import javax.ejb.Local;
@@ -101,4 +98,12 @@ public interface DbActionPropertyBeanLocal {
             throws CoreException;
 
     ActionProperty createActionProperty(Action doctorAction, ActionPropertyType queueAPType) throws CoreException;
+
+    /**
+     * Получение своства действия по значению действия  (ActionProperty_Action by ActionProperty_Action.value)
+     *
+     * @param action действие,  которое указано как значение в ActionProperty_Action (VALUE)
+     * @return
+     */
+    APValueAction getActionProperty_ActionByValue(Action action) throws CoreException;
 }

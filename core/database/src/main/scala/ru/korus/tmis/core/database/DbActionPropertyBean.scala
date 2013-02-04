@@ -382,4 +382,14 @@ class DbActionPropertyBean
     }
     newActionProperty
   }
+
+  val ActionProperty_ActionByValue = """
+    SELECT ap_act
+    FROM APValueAction ap_act
+    WHERE ap_act.value = :VALUE
+                                     """
+
+  def getActionProperty_ActionByValue(action: Action): APValueAction = {
+    em.createQuery(ActionProperty_ActionByValue, classOf[APValueAction]).setParameter("VALUE", action).getSingleResult
+  }
 }

@@ -17,6 +17,7 @@ import java.util
 import org.slf4j.{LoggerFactory, Logger}
 import util.{Date, Calendar, GregorianCalendar}
 
+
 @Interceptors(Array(classOf[LoggingInterceptor]))
 @Stateless
 class DbPatientBean
@@ -445,5 +446,38 @@ class DbPatientBean
     }
     else
       return 0;
+  }
+
+  val PatientQueueQuery = """
+  SELECT queueEvent, queueAction, time, indexProperty, ambAction
+  FROM Action queueAction,  APValueAction indexProperty
+  LEFT JOIN queueAction.actionType QueueActionType
+  LEFT JOIN queueAction.event QueueEvent
+  LEFT JOIN queueEvent.eventType QueueEventType
+  LEFT JOIN ActionProperty ON ActionProperty.id = ActionProperty_Action.id
+  LEFT JOIN Action AS ambAction ON ambAction.id = ActionProperty.action_id
+  LEFT JOIN ActionType  ON ActionType.id = Action.actionType_id
+  LEFT JOIN ActionPropertyType AS APTTime ON APTTime.actionType_id = ActionType.id AND APTTime.name='times'
+  LEFT JOIN ActionProperty AS APTime ON APTime.type_id = APTTime.id AND APTime.action_id = Action.id
+  LEFT JOIN ActionProperty_Time AS time ON time.id = APTime.id AND time.index = indexProperty.index
+  LEFT JOIN Event ON Event.id = Action.event_id
+  LEFT JOIN EventType ON EventType.id = Event.eventType_id
+
+  WHERE  queueAction.deleted = 0
+  AND indexProperty.value = queueAction
+  AND QueueActionType.code = 'queue'
+  AND queueEvent.deleted = 0
+  AND QueueEventType.code = 'queue'
+  AND ambAction.deleted = 0
+  AND ActionType.code = 'amb'
+  AND Event.deleted = 0
+  AND EventType.code = '0'
+  AND queueEvent.client = :PATIENT
+  ORDER BY QueueEvent.setDate
+  LIMIT 100
+                          """
+
+  def getPatientQueue(patient: Patient): util.List[AnyRef] = {
+    em.createQuery(PatientQueueQuery).setParameter("PATIENT", patient).getResultList.toArray.toList
   }
 }
