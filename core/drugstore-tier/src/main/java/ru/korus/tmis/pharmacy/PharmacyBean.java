@@ -66,7 +66,7 @@ public class PharmacyBean implements PharmacyBeanLocal {
      * Полинг базы данных для поиска событий по движениям пациентов
      */
     @Override
-    @Schedule(minute = "*/2", hour = "*")
+//    @Schedule(minute = "*/2", hour = "*")
     public void pooling() {
         logger.info("pooling...last date update {}", lastDateUpdate);
 //        logger.error("fake error", new Exception("ee"));
