@@ -10,6 +10,7 @@ import javax.interceptor.Interceptors;
 import javax.persistence.EntityManager;
 import javax.persistence.PersistenceContext;
 import javax.persistence.TemporalType;
+import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 
@@ -36,6 +37,9 @@ public class DbQuotingByTimeBean implements DbQuotingByTimeBeanLocal {
     public List<QuotingByTime> getQuotingByTimeConstraints(int personId, Date date, int quotingType) {
         List<QuotingByTime> result = em.createQuery(getQuotingByTimeConstraintsQuery, QuotingByTime.class).setParameter("PERSONID", personId)
                 .setParameter("DATE", date, TemporalType.DATE).setParameter("QUOTINGTYPE", quotingType).getResultList();
+        if (result == null) {
+            result = new ArrayList<QuotingByTime>(0);
+        }
         logger.debug("quotingByTimeConstraints list.size()={}", result.size());
         return result;
     }
