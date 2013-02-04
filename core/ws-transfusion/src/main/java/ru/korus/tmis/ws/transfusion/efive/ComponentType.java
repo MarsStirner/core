@@ -111,7 +111,7 @@ public class ComponentType {
         this.code = value;
     }
 
-    /* (non-Javadoc)
+    /**
      * @see java.lang.Object#toString()
      */
     @Override

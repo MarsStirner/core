@@ -6,6 +6,11 @@ import java.util.Map;
 
 import javax.persistence.EntityManager;
 
+import ru.korus.tmis.core.entity.model.APValueDate;
+import ru.korus.tmis.core.entity.model.APValueDouble;
+import ru.korus.tmis.core.entity.model.APValueInteger;
+import ru.korus.tmis.core.entity.model.APValueString;
+import ru.korus.tmis.core.entity.model.APValueTime;
 import ru.korus.tmis.core.entity.model.ActionPropertyType;
 import ru.korus.tmis.core.entity.model.ActionType;
 import ru.korus.tmis.core.exception.CoreException;
@@ -29,30 +34,60 @@ public class TrfuActionProp {
      * Наименования типов свойства действия "Гемотрансфузионная терапия"
      */
     public enum PropType {
-        DIAGNOSIS("Основной клинический диагноз"),
-        BLOOD_COMP_TYPE("Требуемый компонент крови"),
-        TYPE("Вид трансфузии"),
-        VOLUME("Объем требуемого компонента крови (все, кроме тромбоцитов)"),
-        DOSE_COUNT("Количество требуемых донорских доз (тромбоциты)"),
-        INDICATION("Показания к проведению трансфузии"),
-        ORDER_REQUEST_ID("Результат передачи требования в систему ТРФУ");
+        DIAGNOSIS("Основной клинический диагноз", APValueString.class),
+        BLOOD_COMP_TYPE("Требуемый компонент крови", APValueInteger.class),
+        TYPE("Вид трансфузии", APValueString.class),
+        VOLUME("Объем требуемого компонента крови (все, кроме тромбоцитов)", APValueInteger.class),
+        DOSE_COUNT("Количество требуемых донорских доз (тромбоциты)",  APValueDouble.class),
+        INDICATION("Показания к проведению трансфузии", APValueString.class),
+        ORDER_REQUEST_ID("Результат передачи требования в систему ТРФУ", APValueString.class),
+        ORDER_ISSUE_RES_DATE("Дата выдачи КК",APValueDate.class),
+        ORDER_ISSUE_RES_TIME("Время выдачи КК",APValueTime.class),
+        ORDER_ISSUE_RES_BLOOD_ID("Идентификатор компонента крови",APValueInteger.class),
+        ORDER_ISSUE_RES_BLOOD_NUMBER("Паспортные данные компонента крови, №",APValueString.class),
+        ORDER_ISSUE_RES_BLOOD_TYPE_ID("Выданный компонент крови", APValueString.class),
+        ORDER_ISSUE_RES_DONOR_BLOOD_GROUP("Группа крови донора", APValueString.class),
+        ORDER_ISSUE_RES_DONOR_BLOOD_RHESUS("Резус-фактор донора", APValueString.class),
+        ORDER_ISSUE_RES_DONOR_VALUE("Объем выданного компонента крови", APValueInteger.class),
+        ORDER_ISSUE_RES_DONOR_COUNT("Количество выданных донорских доз", APValueDouble.class),
+        ORDER_ISSUE_RES_DONOR_CODE("Код донора", APValueString.class),
+        ORDER_ISSUE_RES_COMMENT("Комментарий ТРФУ", APValueString.class);
 
-        private final String name;
+        @SuppressWarnings("rawtypes")
+        private final Class valueClass;
 
-        PropType(final String name) {
+        final String name;
+        
+        PropType(final String name, @SuppressWarnings("rawtypes") Class valueClass) {
             this.name = name;
+            this.valueClass = valueClass;
         }
 
         String getName() {
             return name;
         }
+        @SuppressWarnings("rawtypes")
+        Class getValueClass() {
+            return valueClass;
+        }
+
+        
     }
 
+    private static TrfuActionProp instance;
+    
     private final int typeId;
 
     private final Map<PropType, Integer> propIds;
 
-    TrfuActionProp(EntityManager em) throws CoreException {
+    public static synchronized TrfuActionProp getInstance(EntityManager em) throws CoreException {
+        if (instance == null) {
+            instance = new TrfuActionProp(em);
+        }
+        return instance;
+    }
+    
+    private TrfuActionProp(EntityManager em) throws CoreException {
         final List<ActionType> actionType = em.createQuery("SELECT at FROM ActionType at WHERE at.flatCode = :flatCode AND at.deleted = 0", ActionType.class)
                 .setParameter("flatCode", TRANSFUSION_ACTION_FLAT_CODE).getResultList();
         if (actionType.size() != 1) {
@@ -77,7 +112,7 @@ public class TrfuActionProp {
                 }
             }
             if (!isFound) {
-                msgError.append(" " + propType.getName());
+                msgError.append("'" + propType.getName() + "'; ");
             }
         }
 
@@ -93,11 +128,12 @@ public class TrfuActionProp {
         return typeId;
     }
     
-    public String getPropString(EntityManager em, Integer actionId, PropType propType) throws CoreException {
+    public <T> T getProp(EntityManager em, Integer actionId, PropType propType) throws CoreException {
         try {
-            return Database.getSinglePropString(em, actionId, propIds.get(propType));
+            return Database.getSingleProp(propType.getValueClass(), em, actionId, propIds.get(propType));
         } catch (CoreException ex) {
-            Database.addSinglePropBasic(em, actionId, propIds.get(PropType.ORDER_REQUEST_ID), String.format("Не задано: '%s'", propType.getName()), true);
+            final String value = String.format("Не задано: '%s'", propType.getName());
+            Database.addSinglePropBasic(value, propType.getValueClass(), em, actionId, propIds.get(PropType.ORDER_REQUEST_ID), true);
             throw ex;
         } 
     }
@@ -110,20 +146,11 @@ public class TrfuActionProp {
         return  propIds.get(propType);
     }
 
-    /**
-     * @param em
-     * @param id
-     * @param volume
-     * @param i
-     * @return
-     */
-    public Integer getPropInteger(EntityManager em, Integer actionId, PropType propType, Integer defaultValue) {
-        return Database.getSinglePropInteger(em, actionId, propIds.get(propType), defaultValue);
-
+    public <T> T getProp(EntityManager em, Integer actionId, PropType propType, T defaultValue) {
+        return Database.getSingleProp(propType.getValueClass(), em, actionId, propIds.get(propType), defaultValue);
     }
     
-    public Double getPropDouble(EntityManager em, Integer actionId, PropType propType, Double defaultValue) {
-        return Database.getSinglePropDouble(em, actionId, propIds.get(propType), defaultValue);
-
+    public <T> void setProp(T value, EntityManager em, Integer actionId, PropType propType, boolean update) throws CoreException {
+        Database.addSinglePropBasic(value, propType.getValueClass(), em, actionId, propIds.get(propType), update);
     }
 }
