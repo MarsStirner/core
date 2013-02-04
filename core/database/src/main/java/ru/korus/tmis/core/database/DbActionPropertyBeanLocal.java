@@ -23,6 +23,10 @@ public interface DbActionPropertyBeanLocal {
     getActionPropertiesByActionIdAndTypeNames(int actionId, List<String> names)
             throws CoreException;
 
+    Map<ActionProperty, List<APValue>>
+    getActionPropertiesByActionIdAndTypeCodes(int actionId, List<String> codes)
+            throws CoreException;
+
     /**
      * Возвращает список свойств со значениями по идентификаторам из таблицы rbCoreActionProperty
      *

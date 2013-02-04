@@ -14,6 +14,7 @@ import scala.collection.JavaConversions._
 import javax.persistence.{TypedQuery, PersistenceContext, EntityManager}
 import ru.korus.tmis.core.data.{AssessmentsListRequestDataFilter, AssessmentsListRequestData}
 import ru.korus.tmis.core.hl7db.DbUUIDBeanLocal
+import java.util
 
 @Interceptors(Array(classOf[LoggingInterceptor]))
 @Stateless
@@ -424,5 +425,15 @@ class DbActionBean
       case ex: Exception => throw new CoreException("error while creating action ");
     }
     newAction
+  }
+
+  def getActionsByTypeCode(code: String, userData: AuthData) = {
+    val result = em.createQuery(ActionsByCodeQuery,
+      classOf[Action])
+      .setParameter("code", code)
+      .getResultList
+
+    result.foreach(a => em.detach(a))
+    result
   }
 }
