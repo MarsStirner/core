@@ -6,7 +6,6 @@ import org.apache.thrift.server.TThreadPoolServer;
 import org.apache.thrift.transport.TServerSocket;
 import org.joda.time.DateMidnight;
 import org.joda.time.DateTime;
-import org.joda.time.DateTimeZone;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import ru.korus.tmis.communication.thriftgen.*;
@@ -26,7 +25,7 @@ import java.util.*;
  * Date: 17.12.12 at 14:55
  * Company:     Korus Consulting IT
  * Description:  Класс содержит в себе ссылки на EJB с помощью которых тянет инфу из базы и реализует методы, сгенеренные thrift.
- * Также методом startService запускает сервер, который слушает с порта в отдельном потоке.
+ * Также методом startService запускается сервер, который слушает с заданного порта в отдельном потоке.
  */
 
 public class CommServer implements Communications.Iface {
@@ -334,7 +333,7 @@ public class CommServer implements Communications.Iface {
                     free = 1;
                 }
                 Ticket newTicket = new Ticket();
-                newTicket.setTime(new DateTime(current_time.getValue(), DateTimeZone.forOffsetHours(current_time.getValue().getTimezoneOffset() / 60)).getMillis());
+                newTicket.setTime(new DateTime(current_time.getValue()).getMillis());
                 newTicket.setFree(free).setAvailable(free);
 
                 if (free == 0) {
@@ -729,7 +728,7 @@ public class CommServer implements Communications.Iface {
             ActionType queueActionType = actionBean.getActionTypeByCode("queue");
             logger.debug("ActionType = {}", queueActionType);
             for (Event currentEvent : patient.getEvents()) {
-                if (currentEvent.getEventType().getId() == queueEventType.getId() && !currentEvent.getDeleted()) {
+                if (currentEvent.getEventType().getId().equals(queueEventType.getId()) && !currentEvent.getDeleted()) {
                     logger.debug("EVENT={}", currentEvent);
                     Queue ticket = new Queue();
                     ticket.setDateTime(currentEvent.getSetDate().getTime());
