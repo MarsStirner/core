@@ -11,6 +11,7 @@ import org.slf4j.LoggerFactory;
 
 import ru.korus.tmis.ws.transfusion.efive.PatientCredentials;
 import ru.korus.tmis.ws.transfusion.order.OrderIssueInfo;
+import ru.korus.tmis.ws.transfusion.order.RegOrderIssueResult;
 import ru.korus.tmis.ws.transfusion.procedure.EritrocyteMass;
 import ru.korus.tmis.ws.transfusion.procedure.FinalVolume;
 import ru.korus.tmis.ws.transfusion.procedure.LaboratoryMeasure;
@@ -36,8 +37,7 @@ public class ServiceTransfusionImpl implements ServiceTransfusion {
     public IssueResult
             setOrderIssueResult(@WebParam(name = "orderIssueInfo", targetNamespace = "http://korus.ru/tmis/ws/transfusion") OrderIssueInfo orderIssueInfo) {
         logger.info("Entered in transfusion service 'setOrderIssueResult' with parameter: {}", orderIssueInfo);
-        // TODO Auto-generated method stub
-        return new IssueResult();
+        return (new RegOrderIssueResult()).save(orderIssueInfo);
     }
 
     /**

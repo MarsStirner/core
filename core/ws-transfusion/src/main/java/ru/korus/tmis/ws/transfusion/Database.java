@@ -12,8 +12,7 @@ import javax.xml.ws.WebServiceException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import ru.korus.tmis.core.entity.model.APValueDate;
-import ru.korus.tmis.core.entity.model.APValueDouble;
+import ru.korus.tmis.core.entity.model.APValue;
 import ru.korus.tmis.core.entity.model.APValueInteger;
 import ru.korus.tmis.core.entity.model.APValueString;
 import ru.korus.tmis.core.entity.model.AbstractAPValue;
@@ -53,73 +52,32 @@ public class Database {
         }
     }
 
-    public static String getSinglePropString(final EntityManager em, final int actionId, final int propTypeId) throws CoreException {
+    @SuppressWarnings("unchecked")
+    public static <T> T getSingleProp(Class classType, final EntityManager em, final int actionId, final int propTypeId) throws CoreException {
 
         final List<ActionProperty> prop = getActionProp(em, actionId, propTypeId);
 
         checkCountProp(actionId, propTypeId, prop.size());
 
-        List<APValueString> propRes = em.createQuery("SELECT p FROM APValueString p WHERE p.id = :id", APValueString.class)
+        final String className = classType.getName();
+        List<Object> propRes = em.createQuery("SELECT p FROM " + className.substring(className.lastIndexOf('.') + 1) + " p WHERE p.id = :id", classType)
                 .setParameter("id", new IndexedId(prop.get(0).getId(), 0)).getResultList();
 
         checkCountProp(actionId, propTypeId, propRes.size());
 
-        return propRes.get(0).getValue();
+        return (T) ((APValue) propRes.get(0)).getValue();
     }
 
-    public static Double getSinglePropDouble(final EntityManager em, final int actionId, final int propTypeId, Double defaultVal) {
+    public static <T> T getSingleProp(@SuppressWarnings("rawtypes") Class classType,
+            final EntityManager em,
+            final int actionId,
+            final int propTypeId,
+            T defaultVal) {
         try {
-            return getSinglePropDouble(em, actionId, propTypeId);
+            return getSingleProp(classType, em, actionId, propTypeId);
         } catch (CoreException e) {
             return defaultVal;
         }
-    }
-
-    public static Integer getSinglePropInteger(final EntityManager em, final int actionId, final int propTypeId, Integer defaultVal) {
-        try {
-            return getSinglePropInteger(em, actionId, propTypeId);
-        } catch (CoreException e) {
-            return defaultVal;
-        }
-    }
-
-    public static Double getSinglePropDouble(final EntityManager em, final int actionId, final int propTypeId) throws CoreException {
-
-        final List<ActionProperty> prop = getActionProp(em, actionId, propTypeId);
-        checkCountProp(actionId, propTypeId, prop.size());
-
-        final List<APValueDouble> propRes = em.createQuery("SELECT p FROM APValueDouble p WHERE p.id = :id", APValueDouble.class)
-                .setParameter("id", new IndexedId(prop.get(0).getId(), 0)).getResultList();
-
-        checkCountProp(actionId, propTypeId, propRes.size());
-
-        return propRes.get(0).getValue();
-    }
-
-    public static Date getSinglePropDate(final EntityManager em, final int actionId, final int propTypeId) throws CoreException {
-
-        final List<ActionProperty> prop = getActionProp(em, actionId, propTypeId);
-        checkCountProp(actionId, propTypeId, prop.size());
-
-        List<APValueDate> propRes = em.createQuery("SELECT p FROM APValueDate p WHERE p.id = :id", APValueDate.class)
-                .setParameter("id", new IndexedId(prop.get(0).getId(), 0)).getResultList();
-
-        checkCountProp(actionId, propTypeId, propRes.size());
-
-        return propRes.get(0).getValue();
-    }
-
-    public static Integer getSinglePropInteger(EntityManager em, int actionId, int propTypeId) throws CoreException {
-
-        List<ActionProperty> prop = getActionProp(em, actionId, propTypeId);
-        checkCountProp(actionId, propTypeId, prop.size());
-
-        List<APValueInteger> propRes = em.createQuery("SELECT p FROM APValueInteger p WHERE p.id = :id", APValueInteger.class)
-                .setParameter("id", new IndexedId(prop.get(0).getId(), 0)).getResultList();
-
-        checkCountProp(actionId, propTypeId, propRes.size());
-
-        return propRes.get(0).getValue();
     }
 
     /**
@@ -130,8 +88,7 @@ public class Database {
      */
     private static List<ActionProperty> getActionProp(EntityManager em, int actionId, int propTypeId) {
         List<ActionProperty> prop = em
-                .createQuery(
-                        "SELECT p FROM ActionProperty p WHERE p.action.id = :curAction_id AND p.deleted = 0 AND p.actionPropertyType.id = :propTypeId",
+                .createQuery("SELECT p FROM ActionProperty p WHERE p.action.id = :curAction_id AND p.deleted = 0 AND p.actionPropertyType.id = :propTypeId",
                         ActionProperty.class).setParameter("curAction_id", actionId).setParameter("propTypeId", propTypeId).getResultList();
         return prop;
     }
@@ -150,7 +107,7 @@ public class Database {
         }
     }
 
-    public static <T> int addSinglePropBasic(EntityManager em, int actionId, int propTypeId, T value, boolean update) throws CoreException {
+    public static <T> int addSinglePropBasic(T value, @SuppressWarnings("rawtypes") Class classType, EntityManager em, int actionId, int propTypeId, boolean update) throws CoreException {
         Integer newPropId = null;
         final List<ActionProperty> prop = getActionProp(em, actionId, propTypeId);
         if (prop.size() > 0) {
@@ -167,19 +124,21 @@ public class Database {
         actionPropId.setId(newPropId);
         actionPropId.setIndex(0);
         AbstractAPValue actionProp = null;
-        if (value instanceof Integer) {
-            actionProp = setPropValue(em, newPropId, new APValueInteger());
-        } else if (value instanceof String) {
-            actionProp = setPropValue(em, newPropId, new APValueString());
-        } else if (value instanceof Double) {
-            actionProp = setPropValue(em, newPropId, new APValueInteger());
-        } else {
-            final String msg = String.format("Internal error: The type %s is supproted by Database.addSinglePropBasic", value.getClass().getName());
+        
+        final String msg = String.format("Internal error: The type %s is supproted by Database.addSinglePropBasic", value.getClass().getName());
+        try {
+            actionProp = setPropValue(em, newPropId, (AbstractAPValue) classType.newInstance());
+        } catch (InstantiationException e) {
             logger.error(msg);
+            e.printStackTrace();
             throw new Error(msg);
+        } catch (IllegalAccessException e) {
+            logger.error(msg);
+            e.printStackTrace();
+            e.printStackTrace();
         }
 
-        actionProp.setValueFromString(value.toString()); 
+        actionProp.setValueFromString(value.toString());
         actionProp.setId(actionPropId);
         em.persist(actionProp);
         return newPropId;
@@ -195,12 +154,10 @@ public class Database {
         String template = "SELECT p FROM %s p WHERE p.id.id = :curProp_id";
         final String className = propInteger.getClass().getName();
         @SuppressWarnings("unchecked")
-        List<T> curProp = (List<T>)em.createQuery(String.format(template, className.substring(className.lastIndexOf('.') + 1)), propInteger.getClass())
+        List<T> curProp = (List<T>) em.createQuery(String.format(template, className.substring(className.lastIndexOf('.') + 1)), propInteger.getClass())
                 .setParameter("curProp_id", newPropId).getResultList();
         return curProp.size() > 0 ? curProp.get(0) : propInteger;
     }
-    
-    
 
     /**
      * @param em
@@ -235,7 +192,7 @@ public class Database {
      * @return
      */
     public static List<DivisionInfo> getDivisions() {
-        List<DivisionInfo> res = new LinkedList<DivisionInfo>(); 
+        List<DivisionInfo> res = new LinkedList<DivisionInfo>();
         try {
             EntityManager em = EntityMgr.getEntityManagerForS11r64(logger);
             List<OrgStructure> structs = em.createQuery("SELECT s FROM OrgStructure s WHERE s.deleted = 0", OrgStructure.class).getResultList();
@@ -246,9 +203,9 @@ public class Database {
                 res.add(info);
             }
         } catch (CoreException ex) {
-           logger.error("Cannot create entety manager. Error description: '{}'", ex.getMessage());
+            logger.error("Cannot create entety manager. Error description: '{}'", ex.getMessage());
         }
-        
+
         return res;
     }
 

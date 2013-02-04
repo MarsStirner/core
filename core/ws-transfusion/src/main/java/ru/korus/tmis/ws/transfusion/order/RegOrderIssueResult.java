@@ -1,5 +1,18 @@
 package ru.korus.tmis.ws.transfusion.order;
 
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
+import java.util.Date;
+import java.util.List;
+
+import javax.persistence.EntityManager;
+
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
+import ru.korus.tmis.core.entity.model.Action;
+import ru.korus.tmis.core.exception.CoreException;
+import ru.korus.tmis.util.EntityMgr;
 import ru.korus.tmis.ws.transfusion.IssueResult;
 
 /**
@@ -14,21 +27,6 @@ import ru.korus.tmis.ws.transfusion.IssueResult;
  */
 public class RegOrderIssueResult {
 
-    enum BloodCompError {
-        OK(""), ERR_TYPE_ID("blood type id"), ERR_GROUP_ID("blood group"), ERR_RHESUS_FACTOR("rhesus factor");
-        String descr;
-
-        BloodCompError(String descr) {
-            this.descr = descr;
-        }
-
-        @Override
-        public String toString() {
-            return descr;
-        }
-
-    }
-
     /**
      * Регистрация извещения о резульатах выполнения требования КК
      * 
@@ -36,58 +34,89 @@ public class RegOrderIssueResult {
      *            - входные данные от подсистемы ТРФУ
      * @return результат регистрации
      */
-    public IssueResult save(OrderIssueInfo orderIssue) {
+    
+    private static final Logger logger = LoggerFactory.getLogger(SendOrderBloodComponents.class);
+    
+    public IssueResult save(OrderIssueInfo orderIssueInfo) {
+        
         IssueResult res = new IssueResult();
-        if (orderIssue == null) {
+        res.setResult(false);
+        EntityManager em = null; 
+        try {
+            em = EntityMgr.getEntityManagerForS11r64(logger);
+        } catch (CoreException ex) {
+            logger.error("Cannot create entety manager. Error description: '{}'", ex.getMessage());            
+            ex.printStackTrace();
+            res.setDescription("MIS Internal error");
+            return res;
+        }
+
+        if (orderIssueInfo == null) {
             res.setDescription("illegal input argument");
             return res;
         }
 
-        res.setRequestId(orderIssue.getRequestId());
-        Integer actionId = getAction(orderIssue.getRequestId());
+        res.setRequestId(orderIssueInfo.getRequestId());
+        Integer actionId = getAction(em, orderIssueInfo.getRequestId());
 
         if (actionId == null) { // требование КК не найдено в базе данных
-            res.setDescription(String.format("The issue for requestId %i has been not found in MIS", orderIssue.getRequestId()));
+            res.setDescription(String.format("The issue for requestId '%s' has been not found in MIS", "" + orderIssueInfo.getRequestId()));
+            res.setResult(false);
             return res;
         }
 
-        BloodCompError er = checkBloodComponentProp(orderIssue);
-        if (er != BloodCompError.OK) { // некорректные паспортные данные
-                                       // выданных
-                                       // компонентов крови
-            res.setDescription(String.format("Incorrect value for blood component '%s'", er.toString()));
+        try {
+            update(em, actionId, orderIssueInfo);
+        } catch (CoreException ex) {
+            logger.error("Cannot update action {} property. Error description: '{}'", actionId, ex.getMessage());            
+            ex.printStackTrace();
+            res.setDescription("MIS Internal error");
             return res;
         }
-
-        update(actionId, orderIssue);
 
         return res;
     }
 
     /**
+     * @param em 
      * @param actionId
      * @param orderIssue
+     * @throws CoreException 
      */
-    private void update(Integer actionId, OrderIssueInfo orderIssue) {
-        // TODO Auto-generated method stub
+    private void update(EntityManager em, Integer actionId, OrderIssueInfo orderIssue) throws CoreException {
         
-    }
-
-    /**
-     * @param orderIssue
-     * @return
-     */
-    private BloodCompError checkBloodComponentProp(OrderIssueInfo orderIssue) {
-        // TODO Auto-generated method stub
-        return null;
+        TrfuActionProp  trfuActionProp = TrfuActionProp.getInstance(em);
+        
+        SimpleDateFormat formatter = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
+        Date facDate;
+        final boolean update = true;
+        try {
+            facDate = formatter.parse(orderIssue.getFactDate());
+            trfuActionProp.setProp(facDate, em, actionId, TrfuActionProp.PropType.ORDER_ISSUE_RES_TIME, update);
+            trfuActionProp.setProp(facDate, em, actionId, TrfuActionProp.PropType.ORDER_ISSUE_RES_DATE, update);
+        } catch (ParseException e) {
+            logger.error("Wrong date format for factDate: input factDate = {}", orderIssue.getFactDate());
+            e.printStackTrace();
+        }
+        trfuActionProp.setProp(orderIssue.getComponentId(), em, actionId, TrfuActionProp.PropType.ORDER_ISSUE_RES_BLOOD_ID, update);
+        trfuActionProp.setProp(orderIssue.getNumber(), em, actionId, TrfuActionProp.PropType.ORDER_ISSUE_RES_BLOOD_NUMBER, update);
+        trfuActionProp.setProp(orderIssue.getComponentId(), em, actionId, TrfuActionProp.PropType.ORDER_ISSUE_RES_BLOOD_TYPE_ID, update);
+        trfuActionProp.setProp(orderIssue.getBloodGroupId(), em, actionId, TrfuActionProp.PropType.ORDER_ISSUE_RES_DONOR_BLOOD_GROUP, update);
+        trfuActionProp.setProp(orderIssue.getRhesusFactorId(), em, actionId, TrfuActionProp.PropType.ORDER_ISSUE_RES_DONOR_BLOOD_RHESUS, update);
+        trfuActionProp.setProp(orderIssue.getVolume(), em, actionId, TrfuActionProp.PropType.ORDER_ISSUE_RES_DONOR_VALUE, update);
+        trfuActionProp.setProp(orderIssue.getDoseCount(), em, actionId, TrfuActionProp.PropType.ORDER_ISSUE_RES_DONOR_COUNT, update);
+        trfuActionProp.setProp(orderIssue.getDonorId(), em, actionId, TrfuActionProp.PropType.ORDER_ISSUE_RES_DONOR_CODE, update);
+        trfuActionProp.setProp(orderIssue.getOrderComment(), em, actionId, TrfuActionProp.PropType.ORDER_ISSUE_RES_COMMENT, update);
     }
 
     /**
      * @param requestId
+     * @param em 
      * @return
      */
-    private Integer getAction(Integer requestId) {
-        // TODO Auto-generated method stub
-        return null;
+    private Integer getAction( EntityManager em, Integer requestId) {
+        final List<Action> actions = em.createQuery("SELECT a FROM Action a WHERE a.id = :requestId", Action.class)
+                .setParameter("requestId", requestId).getResultList();
+        return actions.isEmpty() ? null : actions.get(0).getId();
     }
 }

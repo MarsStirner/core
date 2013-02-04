@@ -2,9 +2,8 @@ package ru.korus.tmis.ws.transfusion.order;
 
 import java.util.Date;
 import java.util.GregorianCalendar;
-import java.util.HashMap;
+import java.util.LinkedList;
 import java.util.List;
-import java.util.Map;
 
 import javax.persistence.EntityManager;
 import javax.xml.datatype.DatatypeConfigurationException;
@@ -14,12 +13,13 @@ import javax.xml.datatype.XMLGregorianCalendar;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import ru.korus.tmis.core.entity.model.*;
 import ru.korus.tmis.core.entity.model.Action;
 import ru.korus.tmis.core.entity.model.Event;
 import ru.korus.tmis.core.entity.model.OrgStructure;
 import ru.korus.tmis.core.entity.model.Patient;
+import ru.korus.tmis.core.entity.model.RbBloodComponentType;
 import ru.korus.tmis.core.entity.model.RbBloodType;
-import ru.korus.tmis.core.entity.model.Rbbloodcomponenttype;
 import ru.korus.tmis.core.entity.model.Staff;
 import ru.korus.tmis.core.exception.CoreException;
 import ru.korus.tmis.util.EntityMgr;
@@ -89,7 +89,7 @@ public class SendOrderBloodComponents {
      * @throws CoreException
      * @throws DatatypeConfigurationException
      */
-   public void pullDB(TransfusionMedicalService trfuService) {
+    public void pullDB(TransfusionMedicalService trfuService) {
         EntityManager em = null;
         try {
             logger.info("Periodic check new TRFU order...");
@@ -97,7 +97,7 @@ public class SendOrderBloodComponents {
                 em = EntityMgr.getEntityManagerForS11r64(logger);
 
                 if (trfuActionProp == null) {
-                    trfuActionProp = new TrfuActionProp(em);
+                    trfuActionProp = TrfuActionProp.getInstance(em);
                 }
             } catch (CoreException ex) {
                 logger.error("Cannot create entety manager. Error description: '{}'", ex.getMessage());
@@ -178,8 +178,7 @@ public class SendOrderBloodComponents {
      * @throws CoreException
      */
     private void setRequestState(EntityManager em, Integer actionId, final String state) throws CoreException {
-        Database.addSinglePropBasic(em, actionId, trfuActionProp.getPropertyId(TrfuActionProp.PropType.ORDER_REQUEST_ID),
-                state, true);
+        trfuActionProp.setProp(state, em, actionId, TrfuActionProp.PropType.ORDER_REQUEST_ID, true);
     }
 
     /**
@@ -204,13 +203,14 @@ public class SendOrderBloodComponents {
         res.setDivisionId(orgStructIt);
         final Event event = EntityMgr.getSafe(action.getEvent());
         res.setIbNumber(event.getExternalId());
-        res.setDiagnosis(trfuActionProp.getPropString(em, action.getId(), TrfuActionProp.PropType.DIAGNOSIS));
-        final String compType = trfuActionProp.getPropString(em, action.getId(), TrfuActionProp.PropType.BLOOD_COMP_TYPE);
-        res.setComponentTypeId(convertComponentType(em, action.getId(), compType, trfuService));
-        res.setVolume(trfuActionProp.getPropInteger(em, action.getId(), TrfuActionProp.PropType.VOLUME, 0));
-        res.setDoseCount(trfuActionProp.getPropDouble(em, action.getId(), TrfuActionProp.PropType.DOSE_COUNT, 0.0));
-        res.setIndication(trfuActionProp.getPropString(em, action.getId(), TrfuActionProp.PropType.INDICATION));
-        res.setTransfusionType(convertTrfuType(trfuActionProp.getPropString(em, action.getId(), TrfuActionProp.PropType.TYPE)));
+        res.setDiagnosis((String) trfuActionProp.getProp(em, action.getId(), TrfuActionProp.PropType.DIAGNOSIS));
+        final Integer compTypeId = trfuActionProp.getProp(em, action.getId(), TrfuActionProp.PropType.BLOOD_COMP_TYPE);
+        updateBloodCompTable(em, trfuService);
+        res.setComponentTypeId(convertComponentType(em, action.getId(), compTypeId));
+        res.setVolume((Integer) trfuActionProp.getProp(em, action.getId(), TrfuActionProp.PropType.VOLUME, 0));
+        res.setDoseCount((Double) trfuActionProp.getProp(em, action.getId(), TrfuActionProp.PropType.DOSE_COUNT, 0.0));
+        res.setIndication((String) trfuActionProp.getProp(em, action.getId(), TrfuActionProp.PropType.INDICATION));
+        res.setTransfusionType(convertTrfuType((String) trfuActionProp.getProp(em, action.getId(), TrfuActionProp.PropType.TYPE)));
         res.setPlanDate(getGregorianCalendar(action.getPlannedEndDate()));
         res.setRegistrationDate(getGregorianCalendar(new Date()));
         res.setAttendingPhysicianId(createPerson.getId());
@@ -231,52 +231,52 @@ public class SendOrderBloodComponents {
         return DatatypeFactory.newInstance().newXMLGregorianCalendar(planedDateCalendar);
     }
 
-    private Integer convertComponentType(EntityManager em, Integer actionId, String compTypeName, TransfusionMedicalService trfuService) throws CoreException {
-        Map<String, Integer> compTypes = updateBloodCompTable(em, trfuService);
-        Integer res = compTypes.get(compTypeName);
-        if (res == null) {
-            setRequestState(em, actionId, String.format("Недопустимое значение компонента крови:'%s'",compTypeName));
-            throw new CoreException(String.format("The blood component '%s' has been not found", compTypeName));
+    private Integer convertComponentType(EntityManager em, Integer actionId, int compTypeId) throws CoreException {
+        List<RbBloodComponentType> compTypes = em
+                .createQuery("SELECT c FROM RbBloodComponentType c WHERE c.id = :compTypeId AND c.unused = 0", RbBloodComponentType.class)
+                .setParameter("compTypeId", compTypeId).getResultList();
+        if (compTypes.size() != 1) {
+            setRequestState(em, actionId, String.format("Недопустимое значение идентификатора компонента крови:'%d'", compTypeId));
+            throw new CoreException(String.format("The blood component id=%d has been not found or unused", compTypeId));
         }
-        return res;
+        return compTypes.get(0).getTrfuId();
     }
 
-    private Map<String, Integer> updateBloodCompTable(EntityManager em, TransfusionMedicalService trfuService) {
-        List<ComponentType> compBloodTypesTRFU = trfuService.getComponentTypes();
-        List<Rbbloodcomponenttype> compBloodTypesDB = em.createQuery("SELECT c FROM Rbbloodcomponenttype c", Rbbloodcomponenttype.class).getResultList();
-        logger.info("The Reference book for components blood has been received from TRFU. The count of blood component: {}", compBloodTypesDB.size());
-        Map<Integer, String> compBloodMapTRFU = new HashMap<Integer, String>();
-        Map<String, Integer> res = new HashMap<String, Integer>();
-        for (ComponentType compBloodType : compBloodTypesTRFU) {
-            compBloodMapTRFU.put(compBloodType.getId(), compBloodType.getCode() + compBloodType.getValue());
-            res.put(compBloodType.getValue(), compBloodType.getId());
-
+    private void updateBloodCompTable(EntityManager em, TransfusionMedicalService trfuService) {
+        List<ComponentType> compTypesTrfu = trfuService.getComponentTypes();
+        List<RbBloodComponentType> compBloodTypesDb = em.createQuery("SELECT c FROM RbBloodComponentType c", RbBloodComponentType.class).getResultList();
+        logger.info("The Reference book for blood components has been received from TRFU. The count of blood component: {}", compBloodTypesDb.size());
+        List<RbBloodComponentType> compBloodTypesTrfu = covertToDb(compTypesTrfu);
+        for (RbBloodComponentType compDb : compBloodTypesDb) {
+            if (compBloodTypesTrfu.remove(compDb) && compDb.getUnused()) {
+                compDb.setUnused(false);
+            } else {
+                compDb.setUnused(true);
+                logger.info("The blood components unused in TRFU. The component: {}", compDb);
+            }
         }
-        Map<Integer, String> compBloodMapDB = new HashMap<Integer, String>();
-        for (Rbbloodcomponenttype comp : compBloodTypesDB) {
-            compBloodMapDB.put(comp.getId(), comp.getCode() + comp.getName());
+        for (RbBloodComponentType compTrfu : compBloodTypesTrfu) {
+            em.persist(compTrfu);
         }
-
-        if (!compBloodMapDB.equals(compBloodMapTRFU)) {
-            saveNewCompTable(em, compBloodTypesTRFU);
-        }
-
-        return res;
+        em.flush();
 
     }
 
-    private void saveNewCompTable(final EntityManager em, final List<ComponentType> compBloodTypesTRFU) {
-        logger.info("Update the Reference book for components blood...");
-        int deletedCount = em.createQuery("DELETE FROM Rbbloodcomponenttype c", Rbbloodcomponenttype.class).executeUpdate();
-        logger.info("The Reference book for components blood has been cleared. The count of deleted records form RbBloodComponentType: {}", deletedCount);
-        for (ComponentType compBloodType : compBloodTypesTRFU) {
-            final Rbbloodcomponenttype curComp = new Rbbloodcomponenttype();
-            curComp.setId(compBloodType.getId());
-            curComp.setCode(compBloodType.getCode());
-            curComp.setName(compBloodType.getValue());
-            em.persist(curComp);
-            logger.info("Added the blood component: {}", compBloodType.toString() );
+    /**
+     * @param compBloodTypesTrfu
+     * @return
+     */
+    private List<RbBloodComponentType> covertToDb(List<ComponentType> compBloodTypesTrfu) {
+        List<RbBloodComponentType> res = new LinkedList<RbBloodComponentType>();
+        for (ComponentType compTrfu : compBloodTypesTrfu) {
+            RbBloodComponentType compDb = new RbBloodComponentType();
+            compDb.setTrfuId(compTrfu.getId());
+            compDb.setCode(compTrfu.getCode());
+            compDb.setName(compTrfu.getValue());
+            compDb.setUnused(false);
+            res.add(compDb);
         }
+        return res;
     }
 
     private Integer convertTrfuType(String trfuType) throws CoreException {
