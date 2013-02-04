@@ -84,17 +84,17 @@ class DbContractBean
     }
   }
 
-  def getContractForEventType(eventType: EventType) = {
+  def getContractForEventType(eventTypeId: Int, financeId: Int) = {
     val result = em.createQuery(FindContractForEventQuery,
       classOf[Contract])
       .setParameter("date", new Date)
-      .setParameter("financeId", eventType.getFinance.getId.intValue())
-      .setParameter("eventTypeId", eventType.getId.intValue())
+      .setParameter("financeId", financeId)
+      .setParameter("eventTypeId", eventTypeId)
       .getResultList
 
     result.size match {
       case 0 => {
-        logTmis.warning(i18n("error.ContractNotFound").format(eventType.getId.intValue()))
+        logTmis.warning(i18n("error.ContractNotFound").format(eventTypeId))
         null
         /*
         throw new NoSuchEntityException(
