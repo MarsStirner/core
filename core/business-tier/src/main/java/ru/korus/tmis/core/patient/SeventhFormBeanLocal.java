@@ -14,6 +14,9 @@ import ru.korus.tmis.core.exception.CoreException;
 @Local
 public interface SeventhFormBeanLocal {
 
+    SeventhFormLinearView getForm007LinearView( int departmentId,
+                                                Date beginDate,
+                                                Date endDate) throws CoreException;
 
     SeventhFormLinearView fillInSeventhForm(int departmentId,
                                             Date beginDate,

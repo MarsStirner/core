@@ -14,6 +14,7 @@ import ru.korus.tmis.core.entity.model.{ActionType, ActionStatus, Action, Staff}
 import scala.collection.JavaConversions._
 import javax.persistence.{TypedQuery, PersistenceContext, EntityManager}
 import ru.korus.tmis.core.data.{AssessmentsListRequestDataFilter, AssessmentsListRequestData}
+import ru.korus.tmis.core.hl7db.DbUUIDBeanLocal
 
 @Interceptors(Array(classOf[LoggingInterceptor]))
 @Stateless
@@ -30,6 +31,12 @@ class DbActionBean
 
   @EJB
   var dbActionType: DbActionTypeBeanLocal = _
+
+  @EJB
+  private var dbUUIDBeanLocal: DbUUIDBeanLocal = _
+
+  @EJB
+  private var dbEventPerson: DbEventPersonBeanLocal = _
 
   def getCountRecordsOrPagesQuery(enterPosition: String, filterQuery: String): TypedQuery[Long] = {
 
@@ -74,25 +81,21 @@ class DbActionBean
     val at = dbActionType.getActionTypeById(actionTypeId)
 
     val now = new Date
-
     val a = new Action
 
-    //TODO: временнр подсовываю пустой Staff когда нет AuthData
     if (userData != null) {
       a.setCreatePerson(userData.user)
       a.setCreateDatetime(now)
       a.setModifyPerson(userData.user)
       a.setModifyDatetime(now)
 
-      a.setAssigner(userData.user)
+      val eventPerson = dbEventPerson.getLastEventPersonForEventId(eventId)
+      if (eventPerson != null) {
+        a.setAssigner(eventPerson.getPerson)
+      } else {
+        a.setAssigner(userData.user)
+      }
       a.setExecutor(userData.user)
-    }
-    else {
-      //var staff = new Staff
-      //a.setCreatePerson(staff)
-      // a.setModifyPerson(staff)
-      // a.setAssigner(staff)
-      //a.setExecutor(staff)
     }
 
     a.setCreateDatetime(now)
@@ -104,6 +107,7 @@ class DbActionBean
     a.setActionType(at)
 
     a.setStatus(ActionStatus.STARTED.getCode)
+    a.setUuid(dbUUIDBeanLocal.createUUID())
 
     a
   }

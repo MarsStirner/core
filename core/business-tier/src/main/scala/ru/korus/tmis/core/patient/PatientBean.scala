@@ -89,10 +89,13 @@ class PatientBean
   var dbStaff: DbStaffBeanLocal = _
 
   @EJB
-  var dbRbCoreActionPropertyBean: DbRbCoreActionPropertyBeanLocal = _
+  private var dbRbCoreActionPropertyBean: DbRbCoreActionPropertyBeanLocal = _
 
   @EJB
-  var dbDiagnocticsBean: DbDiagnosticBeanLocal = _
+  private var dbDiagnocticsBean: DbDiagnosticBeanLocal = _
+
+  @EJB
+  private var dbOrgStructureBean: DbOrgStructureBeanLocal = _
   //////////////////////////////////////////////////////////////////////////////
 
   def getCurrentPatientsForDoctor(userData: AuthData) = {
@@ -353,23 +356,26 @@ class PatientBean
     })
   }
 
-  def getAllPatientsForDepartmentIdAndDoctorIdByPeriod(requestData: PatientsListRequestData, role: Int, authData: AuthData) = {
+  //https://docs.google.com/spreadsheet/ccc?key=0AgE0ILPv06JcdEE0ajBZdmk1a29ncjlteUp3VUI2MEE#gid=0
+  def getAllPatientsForDepartmentIdAndDoctorIdByPeriod(requestData: PatientsListRequestData, authData: AuthData) = {
 
+    val role = requestData.filter.roleId
     val mapper: ObjectMapper = new ObjectMapper()
 
-    requestData.setRecordsCount(customQuery.getCountActiveEventsForDepartmentAndDoctor(requestData.filter))
-    val events = customQuery.getActiveEventsForDepartmentAndDoctor( requestData.page-1,
-                                                                    requestData.limit,
-                                                                    requestData.sortingFieldInternal,
-                                                                    requestData.sortingMethod,
-                                                                    requestData.filter)
+    val eventsMap = customQuery.getActiveEventsForDepartmentAndDoctor(requestData.page-1,
+                                                                      requestData.limit,
+                                                                      requestData.sortingFieldInternal,
+                                                                      requestData.sortingMethod,
+                                                                      requestData.filter,
+                                                                      requestData.rewriteRecordsCount _)
 
     var conditionsInfo = new java.util.HashMap[Event, java.util.Map[ActionProperty, java.util.List[APValue]]]
-    if(role == 1) {  //Для сестры отделения только
-      val conditions = customQuery.getLastAssessmentByEvents(events)
+    if(role == 25) {  //Для сестры отделения только
+      val conditions = customQuery.getLastAssessmentByEvents(eventsMap.keySet().toList)   //Последний экшн осмотра
       conditions.foreach(
         c => {
-          val apList = dbActionProperty.getActionPropertiesByActionIdAndTypeNames(c._2.getId.intValue,List("Состояние", "ЧСС", "АД нижн.","АД верхн."))
+          //val apList = dbActionProperty.getActionPropertiesByActionIdAndTypeNames(c._2.getId.intValue,List("Состояние", "ЧСС", "АД нижн.","АД верхн."))
+          val apList = dbActionProperty.getActionPropertiesByActionIdAndTypeCodes(c._2.getId.intValue,List("STATE", "PULS", "BPRAS","BPRAD"))
           conditionsInfo.put(c._1, apList)
         }
       )
@@ -377,11 +383,11 @@ class PatientBean
     }
     else mapper.getSerializationConfig().setSerializationView(classOf[PatientsListDataViews.AttendingDoctorView])
 
-    mapper.writeValueAsString(new PatientsListData(events,
+    mapper.writeValueAsString(new PatientsListData(eventsMap,
                                                    requestData,
                                                    role,
                                                    conditionsInfo,
-                                                   actionBean.getLastActionByActionTypeIdAndEventId _,
+                                                   dbOrgStructureBean.getOrgStructureById _,
                                                    dbActionProperty.getActionPropertiesByActionIdAndRbCoreActionPropertyIds _,
                                                    dbRbCoreActionPropertyBean.getRbCoreActionPropertiesByIds _,
                                                    dbDiagnocticsBean.getDiagnosticsByEventId _))

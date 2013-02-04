@@ -68,4 +68,20 @@ public interface DbOrgStructureBeanLocal {
      * @throws CoreException
      */
     OrgStructure getOrgStructureByHospitalBedId(int bedId) throws CoreException;
+
+    /**
+     * Запрос на под-отделения начиная с указаного parentId.
+     * @param parentId Идентификатор отделения для которго выводим все подотделения
+     * @param recursive  рекурсивно
+     * @return Список под-отделений
+     * @throws CoreException
+     */
+    List<OrgStructure> getRecursiveOrgStructures(Integer parentId, boolean recursive) throws CoreException;
+
+    /**
+     * Запрос на получение ИД оргструктур по заданному адресу
+     * @return Список ИД оргутруктур удовлятворяющих заданному адресу
+     * @throws CoreException
+     */
+    List<Integer> getOrgStructureByAdress(String KLADRCode, String KLADRStreetCode, String number, String corpus,Integer flat) throws CoreException;
 }

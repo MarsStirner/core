@@ -1,6 +1,6 @@
 package ru.korus.tmis.core.patient
 
-import ru.korus.tmis.util.{ConfigManager, I18nable}
+import ru.korus.tmis.util.{CAPids, ConfigManager, I18nable}
 import grizzled.slf4j.Logging
 import javax.ejb.{TransactionAttributeType, TransactionAttribute, EJB, Stateless}
 import ru.korus.tmis.core.logging.LoggingInterceptor
@@ -23,12 +23,14 @@ import ru.korus.tmis.core.common.CommonDataProcessorBeanLocal
 import java.util.Date
 import org.slf4j.LoggerFactory
 import ru.korus.tmis.util.reflect.TmisLogging
+import org.apache.commons.collections.{CollectionUtils, Transformer}
 
 @Interceptors(Array(classOf[LoggingInterceptor]))
 @Stateless
 class HospitalBedBean extends HospitalBedBeanLocal
 with Logging
 with I18nable
+with CAPids
 with TmisLogging{
 
   @PersistenceContext(unitName = "s11r64")
@@ -69,15 +71,15 @@ with TmisLogging{
     def unapply(pos: T) = seq find (pos ==) map (seq indexOf _)
   }
 
-  private val list = List(i18n("db.actionPropertyType.moving.name.movedFrom").toString,
-                          i18n("db.actionPropertyType.moving.name.beginTime").toString,
-                          i18n("db.actionPropertyType.moving.name.located").toString,
-                          i18n("db.actionPropertyType.moving.name.bed").toString,
-                          i18n("db.actionPropertyType.moving.name.patronage").toString,
-                          i18n("db.actionPropertyType.moving.name.endTime").toString,
-                          i18n("db.actionPropertyType.moving.name.movedIn").toString)
+  private val list = List(iCapIds("db.rbCAP.moving.id.movedFrom").toInt,
+                          iCapIds("db.rbCAP.moving.id.beginTime").toInt,
+                          iCapIds("db.rbCAP.moving.id.located").toInt,
+                          iCapIds("db.rbCAP.moving.id.bed").toInt,
+                          iCapIds("db.rbCAP.moving.id.patronage").toInt,
+                          iCapIds("db.rbCAP.moving.id.endTime").toInt,
+                          iCapIds("db.rbCAP.moving.id.movedIn").toInt)
 
-  private val list2 = List(i18n("db.actionPropertyType.hospitalization.name.movedIn").toString)
+  private val list2 = List(iCapIds("db.rbCAP.hosp.primary.id.sentTo").toInt)
 
   private val unknownOperation = 0
   private val directionInDepartment = 1    //Направление в отделение
@@ -88,11 +90,12 @@ with TmisLogging{
 
     if(!this.verificationData(eventId, -1, hbData, 0)) return null
 
-    val actionType = actionTypeBean.getActionTypeByCode("4202") //Движение
+    //val actionType = actionTypeBean.getActionTypeByCode("4202") //Движение
 
     //Инициализируем новый action
     val action: Action = actionBean.createAction(eventId.intValue(),
-                                                 actionType.getId.intValue(),
+                                                 i18n("db.actionType.moving").toInt,
+                                                 //actionType.getId.intValue(),
                                                  authData)
     action.setBegDate(hbData.data.bedRegistration.moveDatetime)
     action.setEndDate(null:java.util.Date)
@@ -105,7 +108,7 @@ with TmisLogging{
       val cap = dbRbCoreActionPropertyBean.getRbCoreActionPropertiesByActionTypeId(i18n("db.actionType.moving").toInt)
 
       cap.foreach((coreAPT) => {
-        coreAPT.getName match {
+        coreAPT.getId.intValue() match {
             case listNdx(0) => {   //Переведен из отделения
               propertyValueSet += this.createActionPropertyWithValue(action, coreAPT.getActionPropertyType.getId.intValue(), Integer.valueOf(hbData.data.bedRegistration.movedFromUnitId), authData)
             }
@@ -149,7 +152,7 @@ with TmisLogging{
     val oldValues = actionPropertyBean.getActionPropertiesByActionId(oldAction.getId.intValue)
     val lockId = appLock.acquireLock("Action", actionId, oldAction.getIdx, authData)
 
-    var result = List[Action]();
+    var result = List[Action]()
     var entities = Set.empty[AnyRef]
 
     try {
@@ -173,7 +176,7 @@ with TmisLogging{
           val listNdx = new IndexOf(list)
           val cap = dbRbCoreActionPropertyBean.getRbCoreActionPropertiesByActionPropertyTypeId(ap.getType.getId.intValue())
 
-          cap.getName match {
+          cap.getId.intValue() match {
             case listNdx(0) => {    //Переведен из отделения
               if(hbData.data.bedRegistration.movedFromUnitId>0){
                 val apv = actionPropertyBean.setActionPropertyValue(ap, hbData.data.bedRegistration.movedFromUnitId.toString, 0)
@@ -286,7 +289,7 @@ with TmisLogging{
           flgOption match {
             case this.movingInDepartment => {
               val listNdx = new IndexOf(list)
-              cap.getName match {
+              cap.getId.intValue() match {
                 case listNdx(0) => {    //Переведен из отделения
                   val apv = actionPropertyBean.setActionPropertyValue(ap, from.toString, 0)
                   entities = entities + apv.unwrap
@@ -305,7 +308,7 @@ with TmisLogging{
             }
             case this.directionInDepartment => {
               val listNdx = new IndexOf(list2)
-              cap.getName match {
+              cap.getId.intValue() match {
                 case listNdx(0) => {    //Направлен в отделение
                   if(hbData.data.move.unitId>0){
                     val apv = actionPropertyBean.setActionPropertyValue(ap, hbData.data.move.unitId.toString, 0)
@@ -342,19 +345,25 @@ with TmisLogging{
   //Запрос на занятые койки в отделении
   def getCaseHospitalBedsByDepartmentId(departmentId: Int) = {
 
-    val ids = em.createQuery(AllHospitalBedsByDepartmentIdQuery, classOf[Int])
+    val allBeds = em.createQuery(AllHospitalBedsByDepartmentIdQuery, classOf[OrgStructureHospitalBed])
                 .setParameter("departmentId", departmentId)
                 .getResultList
 
-    val result = em.createQuery(BusyHospitalBedsByDepartmentIdQuery.format(i18n("db.action.movingFlatCode"),i18n("db.actionPropertyType.moving.name.bed")), classOf[Int])
+    val ids = CollectionUtils.collect(allBeds, new Transformer() {
+       def transform(orgBed: Object) = orgBed.asInstanceOf[OrgStructureHospitalBed].getId
+    })
+
+    val result = em.createQuery(BusyHospitalBedsByDepartmentIdQuery.format(i18n("db.action.movingFlatCode"),
+                                                                           i18n("db.actionPropertyType.moving.name.bed")),
+                                classOf[OrgStructureHospitalBed])
       .setParameter("ids", asJavaCollection(ids))
       .getResultList
 
-    val map = new java.util.LinkedHashMap[java.lang.Integer, java.lang.Boolean]()
-    ids.foreach(bedId => {
-      val res = result.find(bedId==)
-      if(res==None) map.put(Integer.valueOf(bedId), false)
-      else map.put(Integer.valueOf(bedId), true)
+    val map = new java.util.LinkedHashMap[OrgStructureHospitalBed, java.lang.Boolean]()
+    allBeds.foreach(allBed => {
+      val res = result.find(bed => allBed.getId.intValue()==bed.getId.intValue())
+      if(res==None) map.put(allBed, false)
+      else map.put(allBed, true)
     })
     map
   }
@@ -500,7 +509,7 @@ with TmisLogging{
           else null
 
         if (bedId!=null){
-          val result2 = em.createQuery(BusyHospitalBedsByDepartmentIdQuery.format(i18n("db.action.movingFlatCode"),i18n("db.actionPropertyType.moving.name.bed")), classOf[Int])
+          val result2 = em.createQuery(BusyHospitalBedsByDepartmentIdQuery.format(i18n("db.action.movingFlatCode"),i18n("db.actionPropertyType.moving.name.bed")), classOf[OrgStructureHospitalBed])
             .setParameter("ids", asJavaCollection(Set(bedId)))
             .getResultList
 
@@ -657,7 +666,7 @@ with TmisLogging{
 
   val AllHospitalBedsByDepartmentIdQuery =
     """
-    SELECT DISTINCT bed.id
+    SELECT DISTINCT bed
     FROM
       OrgStructureHospitalBed bed
       WHERE
@@ -668,7 +677,7 @@ with TmisLogging{
 
   val BusyHospitalBedsByDepartmentIdQuery =
     """
-    SELECT DISTINCT bed.id
+    SELECT DISTINCT bed
     FROM
       APValueHospitalBed apval
         JOIN apval.value bed,

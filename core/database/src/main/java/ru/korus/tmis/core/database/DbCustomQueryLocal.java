@@ -22,10 +22,7 @@ public interface DbCustomQueryLocal {
     List<Event> getActiveEventsForDepartment(int id)
             throws CoreException;
 
-    List<Event> getActiveEventsForDepartmentAndDoctor(int page, int limit, String sortField, String sortMethod, Object filter)
-            throws CoreException;
-
-    long getCountActiveEventsForDepartmentAndDoctor(Object filter)
+    Map<Event, Action> getActiveEventsForDepartmentAndDoctor(int page, int limit, String sortField, String sortMethod, Object filter, Function1<Long, Boolean> postProcessing)
             throws CoreException;
 
     Map<Event, Action> getAdmissionsByEvents(List<Event> events)

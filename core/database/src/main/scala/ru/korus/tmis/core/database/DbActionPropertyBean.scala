@@ -34,6 +34,10 @@ class DbActionPropertyBean
   @EJB
   var dbActionPropertyType: DbActionPropertyTypeBeanLocal = _
 
+  private val FILTER_ID = 0
+  private val FILTER_NAME = 1
+  private val FILTER_CODE = 2
+
   @TransactionAttribute(TransactionAttributeType.REQUIRES_NEW)
   def getActionPropertyById(id: Int) = {
     val result = em.createQuery(ActionPropertyFindQuery,
@@ -203,19 +207,12 @@ class DbActionPropertyBean
 
   @TransactionAttribute(TransactionAttributeType.REQUIRES_NEW)
   def getActionPropertiesByActionIdAndTypeNames(actionId: Int, names: java.util.List[String]) = {
-    val result = em.createQuery(ActionPropertiesByActionIdAndNamesQuery,
-      classOf[ActionProperty])
-      .setParameter("actionId", actionId)
-      .setParameter("names", asJavaCollection(names))
-      .getResultList
+    this.getActionPropertiesByActionIdAndCustomParameters(actionId, names, FILTER_NAME)
+  }
 
-    result.foldLeft(LinkedHashMap.empty[ActionProperty, java.util.List[APValue]])(
-      (map, ap) => {
-        em.detach(ap)
-        map.put(ap, getActionPropertyValue(ap))
-        map
-      }
-    )
+  @TransactionAttribute(TransactionAttributeType.REQUIRES_NEW)
+  def getActionPropertiesByActionIdAndTypeCodes(actionId: Int, codes: java.util.List[String]) = {
+    this.getActionPropertiesByActionIdAndCustomParameters(actionId, codes, FILTER_CODE)
   }
 
   @TransactionAttribute(TransactionAttributeType.REQUIRES_NEW)
@@ -263,6 +260,28 @@ class DbActionPropertyBean
     )
   }
 
+  private def getActionPropertiesByActionIdAndCustomParameters (actionId: Int, parameters: java.util.List[String], filterMode: Int) = {
+    val result = em.createQuery(
+      ActionPropertiesByActionIdAndNamesQuery.format(filterMode match {
+        case FILTER_ID => "id"
+        case FILTER_NAME =>  "name"
+        case FILTER_CODE =>  "code"
+        case _ => "id"
+      }
+    ), classOf[ActionProperty])
+      .setParameter("actionId", actionId)
+      .setParameter("names", asJavaCollection(parameters))
+      .getResultList
+
+    result.foldLeft(LinkedHashMap.empty[ActionProperty, java.util.List[APValue]])(
+      (map, ap) => {
+        em.detach(ap)
+        map.put(ap, getActionPropertyValue(ap))
+        map
+      }
+    )
+  }
+
   val ActionPropertyFindQuery = """
     SELECT ap
     FROM
@@ -302,7 +321,7 @@ class DbActionPropertyBean
     WHERE
       ap.action.id = :actionId
     AND
-      ap.actionPropertyType.name IN :names
+      ap.actionPropertyType.%s IN :names
     AND
       ap.deleted = 0
     ORDER BY

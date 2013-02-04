@@ -40,4 +40,9 @@ public class DbUUIDBean implements DbUUIDBeanLocal {
                 .setParameter("id", id)
                 .getSingleResult();
     }
+
+    @Override
+    public UUID createUUID() {
+      return new UUID(java.util.UUID.randomUUID().toString());
+    }
 }

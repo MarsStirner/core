@@ -6,7 +6,7 @@
     <groupId>ru.korus.tmis.communication</groupId>
     <artifactId>tmis-communication</artifactId>
     <version>${version.tmis.core}</version>
-    <packaging>war</packaging>
+    <packaging>ejb</packaging>
     <name>TMIS Communication Component</name>
 
     <parent>

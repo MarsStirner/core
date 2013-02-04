@@ -1,11 +1,13 @@
 
 package ru.korus.tmis.ws.finance;
 
-import java.util.Arrays;
-
 /**
- * Возвращаемые данные
+ * Author:      Sergey A. Zagrebelny <br>
+ * Date:        25.12.2012, 11:00:00 <br>
+ * Company:     Korus Consulting IT<br>
+ * Description:  Пакет выходной финансовой информации<br>
  */
+
 //TODO удалить, если новый формат прочитает .net
 public class OutputFinanceInfo {
 

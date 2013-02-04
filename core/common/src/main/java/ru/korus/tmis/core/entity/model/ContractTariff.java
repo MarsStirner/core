@@ -158,6 +158,14 @@ public class ContractTariff
         this.begDate = begDate;
     }
 
+    public Date getEndDate() {
+        return endDate;
+    }
+
+    public void setEndDate(Date endDate) {
+        this.endDate = endDate;
+    }
+
     public short getSex() {
         return sex;
     }

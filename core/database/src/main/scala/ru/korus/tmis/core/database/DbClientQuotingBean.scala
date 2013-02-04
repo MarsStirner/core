@@ -58,7 +58,7 @@ class DbClientQuotingBean
       case 0 => {
         throw new CoreException(
           ConfigManager.ErrorCodes.ClientQuotingNotFound,
-          i18n("error.clientDocumentNotFound").format(id))
+          i18n("error.clientQuotingNotFound").format(id))
       }
       case size => {
         result.foreach(rbType => {
@@ -126,11 +126,20 @@ class DbClientQuotingBean
     cq.setModifyDatetime(now)
   }
 
-  def getAllClientQuotingForPatient (patientId: Int) = {
-    val result = em.createQuery(AllClientQuotingForPatientFindQuery,
-      classOf[ClientQuoting])
+  def getAllClientQuotingForPatient (patientId: Int, page: Int, limit: Int, sortingField: String, sortingMethod: String, filter: Object, records: (java.lang.Long) => java.lang.Boolean) = {
+    //var sortField = ""
+    //if (sortingField.compareTo("eventId") == 0) {sortField = "event.id"} else {sortField = sortingField}
+    val sorting = "ORDER BY %s %s".format(sortingField, sortingMethod)
+
+    if (records!=null) records(em.createQuery(AllClientQuotingForPatientFindQuery.format("count(cq)", ""), classOf[Long])
       .setParameter("patientId", patientId)
-      .getResultList
+      .getSingleResult)//Перепишем количество записей для структуры
+
+    var typed = em.createQuery(AllClientQuotingForPatientFindQuery.format("cq", sorting), classOf[ClientQuoting])
+      .setParameter("patientId", patientId)
+      .setMaxResults(limit)
+      .setFirstResult(limit * page)
+    val result = typed.getResultList
 
     result.size match {
       case 0 => {
@@ -147,13 +156,14 @@ class DbClientQuotingBean
   }
 
   val AllClientQuotingForPatientFindQuery = """
-    SELECT cq
+    SELECT DISTINCT %s
     FROM
       ClientQuoting cq
     WHERE
       cq.master.id = :patientId
     AND
       cq.deleted = 0
+    %s
                                             """
 }
 

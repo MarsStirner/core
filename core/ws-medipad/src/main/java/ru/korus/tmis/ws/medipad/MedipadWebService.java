@@ -256,7 +256,7 @@ public interface MedipadWebService extends Serializable {
     JSONCommonData getPrimaryAssessmentById (int assessmentId, AuthData authData) throws CoreException;
 
     @WebMethod
-    String getAllPatientsForDepartmentIdAndDoctorIdByPeriod(PatientsListRequestData requestData, int role, AuthData auth) throws CoreException;
+    String getAllPatientsForDepartmentIdAndDoctorIdByPeriod(PatientsListRequestData requestData, AuthData auth) throws CoreException;
 
     @WebMethod
     AssessmentsListData getListOfAssessmentsForPatientByEvent(AssessmentsListRequestData requestData, AuthData auth) throws CoreException;
@@ -275,6 +275,9 @@ public interface MedipadWebService extends Serializable {
 
     @WebMethod
     boolean callOffHospitalBedForPatient(int actionId, AuthData authData) throws CoreException;
+
+    @WebMethod
+    BedDataListContainer getVacantHospitalBeds(int departmentId, AuthData authData) throws CoreException;
 
     @WebMethod
     FormOfAccountingMovementOfPatientsData getFormOfAccountingMovementOfPatients(int departmentId) throws CoreException;
@@ -313,7 +316,7 @@ public interface MedipadWebService extends Serializable {
     JSONCommonData insertConsultation(ConsultationRequestData request) throws CoreException;
 
     @WebMethod
-    JSONCommonData insertLaboratoryStudies(int eventId, CommonData data) throws CoreException;
+    JSONCommonData insertLaboratoryStudies(int eventId, CommonData data, AuthData auth) throws CoreException;
 
     /**
      * Получение справочника FlatDirectory
@@ -446,7 +449,7 @@ public interface MedipadWebService extends Serializable {
      * @throws CoreException
      */
     @WebMethod
-    String getQuotaHistory(int appealId) throws CoreException;
+    String getQuotaHistory(int appealId, QuotaRequestData request) throws CoreException;
 
     /**
      * Сервис на получение списка справочника типов квот
