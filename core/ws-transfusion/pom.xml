@@ -16,14 +16,13 @@
         <relativePath>../</relativePath>
     </parent>
 
-    <properties>
-        <maven.test.skip>false</maven.test.skip>
-        <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
-        <jaxws.plugin.version>2.1</jaxws.plugin.version>
-    </properties>
+	<!--<properties> <tmis-core-version>0.9.11-SNAPSHOT</tmis-core-version> 
+		<maven.test.skip>false</maven.test.skip> <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding> 
+		<jaxws.plugin.version>2.1</jaxws.plugin.version> </properties> -->
 
-    <build>
-        <plugins>
+	<build>
+		<plugins>
+
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-war-plugin</artifactId>
@@ -41,15 +40,29 @@
             </plugin>
 
         </plugins>
-    </build>
+	</build>
 
-    <dependencies>
-        <dependency>
-            <groupId>ru.korus.tmis.core</groupId>
-            <artifactId>tmis-core-common</artifactId>
-            <version>${version.tmis.core}</version>
-            <type>jar</type>
-        </dependency>
+
+
+   <dependencies>
+       <dependency>
+           <groupId>junit</groupId>
+           <artifactId>junit</artifactId>
+           <version>4.11</version>
+       </dependency>
+
+       <dependency>
+           <groupId>ru.korus.tmis.core</groupId>
+           <artifactId>tmis-core-common</artifactId>
+           <version>${version.tmis.core}</version>
+           <type>jar</type>
+       </dependency>
+       <!--   <dependency>
+              <groupId>ru.korus.tmis.core</groupId>
+              <artifactId>tmis-core-common</artifactId>
+              <version>${tmis-core-version}</version>
+              <type>jar</type>
+          </dependency>-->
     </dependencies>
 
 </project>

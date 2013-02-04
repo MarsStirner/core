@@ -1,5 +1,5 @@
 
-package ru.korus.tmis.ws.transfusion;
+package ru.korus.tmis.ws.transfusion.efive;
 
 import javax.xml.bind.annotation.XmlAccessType;
 import javax.xml.bind.annotation.XmlAccessorType;
