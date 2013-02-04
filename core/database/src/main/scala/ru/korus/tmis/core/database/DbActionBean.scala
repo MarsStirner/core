@@ -207,7 +207,7 @@ class DbActionBean
     result
   }
 
-  def getActionsByTypeCode(code: String, userData: AuthData) = {
+  def getActionsByTypeCode(code: String) = {
     val result = em.createQuery(ActionsByCodeQuery,
       classOf[Action])
       .setParameter("code", code)

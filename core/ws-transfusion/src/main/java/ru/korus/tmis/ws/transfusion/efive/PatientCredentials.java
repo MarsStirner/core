@@ -1,11 +1,14 @@
 
-package ru.korus.tmis.ws.transfusion;
+package ru.korus.tmis.ws.transfusion.efive;
 
 import javax.xml.bind.annotation.XmlAccessType;
 import javax.xml.bind.annotation.XmlAccessorType;
 import javax.xml.bind.annotation.XmlSchemaType;
 import javax.xml.bind.annotation.XmlType;
 import javax.xml.datatype.XMLGregorianCalendar;
+import java.lang.Override;
+import java.lang.String;
+import java.lang.StringBuilder;
 
 
 /**
@@ -49,6 +52,22 @@ public class PatientCredentials {
     protected String lastName;
     protected String firstName;
     protected String middleName;
+
+    @Override
+    public String toString() {
+        final StringBuilder sb = new StringBuilder();
+        sb.append("PatientCredentials");
+        sb.append("{id=").append(id);
+        sb.append(", lastName=").append(lastName);
+        sb.append(", firstName=").append(firstName);
+        sb.append(", middleName=").append(middleName);
+        sb.append(", birth=").append(birth);
+        sb.append(", bloodGroupId=").append(bloodGroupId);
+        sb.append(", rhesusFactorId=").append(rhesusFactorId);
+        sb.append('}');
+        return sb.toString();
+    }
+
     @XmlSchemaType(name = "dateTime")
     protected XMLGregorianCalendar birth;
     protected Integer bloodGroupId;

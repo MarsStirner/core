@@ -104,12 +104,11 @@ public interface DbActionBeanLocal {
     /**
      * Получение списка действий по коду типа действия.
      * @param code Код типа действия s11r64.ActionType.code.
-     * @param userData Авторизационные данные как AuthData.
      * @return Список действий (Action).
      * @throws CoreException
      * @deprecated Использовать {@link #getActionsByTypeCodeAndEventId(java.util.Set, int, String, ru.korus.tmis.core.auth.AuthData)}
      */
-    List<Action> getActionsByTypeCode(String code, AuthData userData)
+    List<Action> getActionsByTypeCode(String code)
             throws CoreException;
 
     /**

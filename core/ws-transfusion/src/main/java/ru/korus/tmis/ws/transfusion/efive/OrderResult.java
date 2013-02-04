@@ -1,9 +1,12 @@
 
-package ru.korus.tmis.ws.transfusion;
+package ru.korus.tmis.ws.transfusion.efive;
 
 import javax.xml.bind.annotation.XmlAccessType;
 import javax.xml.bind.annotation.XmlAccessorType;
 import javax.xml.bind.annotation.XmlType;
+import java.lang.Override;
+import java.lang.String;
+import java.lang.StringBuilder;
 
 
 /**
@@ -138,4 +141,15 @@ public class OrderResult {
         this.description = value;
     }
 
+    @Override
+    public String toString() {
+        final StringBuilder sb = new StringBuilder();
+        sb.append("OrderResult");
+        sb.append("{requestId=").append(requestId);
+        sb.append(", result=").append(result);
+        sb.append(", number=").append(number);
+        sb.append(", description=").append(description);
+        sb.append('}');
+        return sb.toString();
+    }
 }

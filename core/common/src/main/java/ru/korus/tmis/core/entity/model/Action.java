@@ -164,9 +164,14 @@ public class Action
     @Column(name = "toOrder")
     private boolean toOrder = false;
 
-    @ManyToOne(cascade = CascadeType.ALL)
-    @JoinColumn(name = "uuid_id")
+//    @ManyToOne(cascade = CascadeType.ALL)
+//    @JoinColumn(name = "uuid_id")
+    @Transient
     private UUID uuid;
+
+    @Basic(optional = false)
+    @Column(name = "parentAction_id")
+    private int parentActionId = 0;
     ////////////////////////////////////////////////////////////////////////////
     // Custom mappings
     ////////////////////////////////////////////////////////////////////////////
@@ -530,6 +535,14 @@ public class Action
 
     public void setTissue(Set<Tissue> tissue) {
         this.tissue = tissue;
+    }
+
+    public int getParentActionId() {
+        return parentActionId;
+    }
+
+    public void setParentActionId(int parentActionId) {
+        this.parentActionId = parentActionId;
     }
 
     @Override

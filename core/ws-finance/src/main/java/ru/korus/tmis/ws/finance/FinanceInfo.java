@@ -1,4 +1,3 @@
-
 package ru.korus.tmis.ws.finance;
 
 /**
@@ -14,8 +13,6 @@ import java.util.LinkedList;
 import java.util.List;
 
 import javax.persistence.EntityManager;
-import javax.persistence.EntityManagerFactory;
-import javax.persistence.Persistence;
 
 import org.joda.time.Interval;
 import org.slf4j.Logger;
@@ -30,20 +27,17 @@ import ru.korus.tmis.core.entity.model.OrgStructure;
 import ru.korus.tmis.core.entity.model.RbFinance;
 import ru.korus.tmis.core.entity.model.RbService;
 import ru.korus.tmis.core.entity.model.Staff;
+import ru.korus.tmis.util.EntityMgr;
+import ru.korus.tmis.core.exception.CoreException;
 
 public class FinanceInfo {
-
-    /**
-     * Имя ресурса JDBC для доступа к БД s11r64
-     */
-    private static final String JNDI_NAME = "s11r64";
 
     /**
      * Текст сообщения об ошибки о неправильном имени подразделения
      */
     final private static String ILLEGAL_NAME_OF_STRUCT = "illegal name of structure";
 
-    final private static Logger logger = LoggerFactory.getLogger(ServiceFinanceInfoImpl.class);
+    final private static Logger logger = LoggerFactory.getLogger(FinanceInfo.class);
 
     /**
      * Тип финансирования "Платные услуги"
@@ -54,37 +48,36 @@ public class FinanceInfo {
      * @see ServiceFinanceInfo#getFinanceInfo(String)
      */
     public FinanceBean[] getFinanceInfo(final String nameOfStructure) {
-        logger.info("Input parameters are equals to: nameOfStructure = '{}' ", nameOfStructure);
+        try {
+            logger.info("Input parameters are equals to: nameOfStructure = '{}' ", nameOfStructure);
 
-        EntityManagerFactory entityManagerFactory = Persistence.createEntityManagerFactory(JNDI_NAME);
-        if (entityManagerFactory == null) {
-            logger.error("The persistence unit '{}' is not found. Probably corresponding JDBC resource is not available", JNDI_NAME);
-            throw new RuntimeException("configuration error: entityManagerFactory == null!");
+            EntityManager em = EntityMgr.getEntityManagerForS11r64(logger);
+
+            if (isNameOfStructureNotValid(nameOfStructure, em)) {
+                // если null или подразделения нет в БД
+                logger.info("Return error:Illegal name of structure: nameOfStruct = '{}'", nameOfStructure);
+                final OutputFinanceInfo res = new OutputFinanceInfo();
+                res.initErrorMsg(ILLEGAL_NAME_OF_STRUCT);
+                return res.getFinanceData();
+            }
+
+            // получаем платные услуги из Action с установленным типом
+            // финансирования
+            List<Action> actions = getPaidActions(em);
+            logger.info("The count of paid action is equal to '{}'", actions.size());
+            // добавляем платные услуги с неустановленным типом финансирования и
+            // вызванными платными Event
+            actions.addAll(getPaidActionsByEvent(em));
+            // фильтруем по имени подразделения
+            actions = filterByStruct(actions, nameOfStructure);
+
+            logger.info("The count of paid action with by event is equal to '{}'", actions.size());
+            logger.debug("The count of paid action by event is equal to '{}'", actions);
+
+            return initOutputData(actions, em).getFinanceData();
+        } catch (CoreException ex) {
+            throw new RuntimeException("configuration error: em == null!");
         }
-        EntityManager em = entityManagerFactory.createEntityManager();
-
-        if (isNameOfStructureNotValid(nameOfStructure, em)) {
-            // если null или подразделения нет в БД
-            logger.info("Return error:Illegal name of structure: nameOfStruct = '{}'", nameOfStructure);
-            final OutputFinanceInfo res = new OutputFinanceInfo();
-            res.initErrorMsg(ILLEGAL_NAME_OF_STRUCT);
-            return res.getFinanceData();
-        }
-
-        // получаем платные услуги из Action с установленным типом
-        // финансирования
-        List<Action> actions = getPaidActions(em);
-        logger.info("The count of paid action is equal to '{}'", actions.size());
-        // добавляем платные услуги с неустановленным типом финансирования и
-        // вызванными платными Event
-        actions.addAll(getPaidActionsByEvent(em));
-        // фильтруем по имени подразделения
-        actions = filterByStruct(actions, nameOfStructure);
-
-        logger.info("The count of paid action with by event is equal to '{}'", actions.size());
-        logger.debug("The count of paid action by event is equal to '{}'", actions);
-
-        return initOutputData(actions, em).getFinanceData();
     }
 
     /**
@@ -145,7 +138,7 @@ public class FinanceInfo {
 
         return result;
     }
-    
+
     private List<Action> filterByStruct(final List<Action> actions, final String nameOfStructure) {
         final List<Action> result = new LinkedList<Action>();
         for (final Action action : actions) {
@@ -165,10 +158,14 @@ public class FinanceInfo {
     /**
      * Получиение стоимости услуги
      * 
-     * @param serviceId - ID услуги
-     * @param em - доступ к БД s11r64
-     * @param endDate - дата оказания услуги
-     * @return стоимость услуги на указанную дату, либо первую найденную если дата не установлена (endData == null) 
+     * @param serviceId
+     *            - ID услуги
+     * @param em
+     *            - доступ к БД s11r64
+     * @param endDate
+     *            - дата оказания услуги
+     * @return стоимость услуги на указанную дату, либо первую найденную если
+     *         дата не установлена (endData == null)
      */
     private double getPriceForService(final Integer serviceId, final EntityManager em, final Date endDate) {
         double res = 0;
@@ -185,8 +182,14 @@ public class FinanceInfo {
                 final Date tariffBegDate = curTariff.getBegDate();
                 final Date tariffEndDate = curTariff.getEndDate();
                 Interval curInterval = new Interval(tariffBegDate != null ? tariffBegDate.getTime() : 0, tariffEndDate != null
-                        ? tariffEndDate.getTime() : Long.MAX_VALUE); // строим интервал [begData, endData]
-                if (curInterval.contains(endDate.getTime())) { // стоимость услуги на заданнyю дату найдена
+                        ? tariffEndDate.getTime() : Long.MAX_VALUE); // строим
+                                                                     // интервал
+                                                                     // [begData,
+                                                                     // endData]
+                if (curInterval.contains(endDate.getTime())) { // стоимость
+                                                               // услуги на
+                                                               // заданнyю дату
+                                                               // найдена
                     tariffForService = curTariff;
                     break;
                 }
@@ -207,38 +210,31 @@ public class FinanceInfo {
         logger.info("The array for output has been allocated. (size = '{}')", actions.size());
         int index = 0;
         for (final Action action : actions) {
-            final FinanceBean cur = result.getFinanceData()[index] = new FinanceBean();
-            ++index;
-            final Event event = action.getEvent();
-            if (event != null) {
+            try {
+                final FinanceBean cur = result.getFinanceData()[index] = new FinanceBean();
+                ++index;
+                final Event event = EntityMgr.getSafe(action.getEvent());
                 cur.setExternalId(event.getExternalId());
-            }
+                final Date endDate = action.getEndDate();
+                final ActionType actionType =  EntityMgr.getSafe(action.getActionType());
+                final RbService service = EntityMgr.getSafe(actionType.getService());
+                cur.setCodeOfService(service.getCode());
+                cur.setNameOfService(service.getName());
+                cur.setPrice(getPriceForService(service.getId(), em, endDate));
 
-            final Date endDate = action.getEndDate();
-            final ActionType actionType = action.getActionType();
-            if (actionType != null) {
-                final RbService service = actionType.getService();
-                if (service != null) {
-                    cur.setCodeOfService(service.getCode());
-                    cur.setNameOfService(service.getName());
-                    cur.setPrice(getPriceForService(service.getId(), em, endDate));
+                final Staff executor = EntityMgr.getSafe(action.getExecutor());
+                final OrgStructure orgStructure = EntityMgr.getSafe(executor.getOrgStructure());
+                cur.setCodeOfStruct(orgStructure.getCode());
+                cur.setNameOfStruct(orgStructure.getName());
+
+                if (endDate != null) {
+                    final SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd");
+                    cur.setEndDate(dateFormat.format(endDate));
                 }
+                cur.setAmount(action.getAmount());
+            } catch (CoreException ex) {
+                logger.info("Cannot prepare input data for action {}. Error description: {}", action.getId(), ex.getMessage());
             }
-
-            final Staff executor = action.getExecutor();
-            if (executor != null) {
-                final OrgStructure orgStructure = executor.getOrgStructure();
-                if (orgStructure != null) {
-                    cur.setCodeOfStruct(orgStructure.getCode());
-                    cur.setNameOfStruct(orgStructure.getName());
-                }
-            }
-
-            if (endDate != null) {
-                final SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd");
-                cur.setEndDate(dateFormat.format(endDate));
-            }
-            cur.setAmount(action.getAmount());
         }
         logger.info("Exit from OutputFinanceInfo.initOutputData");
         return result;

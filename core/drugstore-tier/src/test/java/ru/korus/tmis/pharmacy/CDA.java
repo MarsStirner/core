@@ -16,11 +16,11 @@ import java.util.Date;
 import java.util.UUID;
 
 /**
- * @Author:      Dmitriy E. Nosov <br>
- * @Date:        10.12.12, 17:42 <br>
- * @Company:     Korus Consulting IT<br>
+ * Author:      Dmitriy E. Nosov <br>
+ * Date:        10.12.12, 17:42 <br>
+ * Company:     Korus Consulting IT<br>
  * Revision:    \$Id$ <br>
- * @Description: <br>
+ * Description: <br>
  */
 public class CDA {
 

@@ -1,9 +1,9 @@
-package ru.korus.tmis.core.hl7db;
+package ru.korus.tmis.core.entity.model.pharmacy;
 
 /**
- * @author Dmitriy E. Nosov <br>
- * Date: 13.12.12, 12:21 <br>
- * Company: Korus Consulting IT<br>
+ * Author:      Dmitriy E. Nosov <br>
+ * Date:        13.12.12, 12:21 <br>
+ * Company:     Korus Consulting IT<br>
  * Description: Статусы в которых может находится пакет предназначенный для отправки в 1С<br>
  */
 public enum PharmacyStatus {

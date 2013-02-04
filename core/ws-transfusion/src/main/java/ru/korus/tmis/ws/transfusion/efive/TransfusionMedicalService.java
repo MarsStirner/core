@@ -1,15 +1,16 @@
 
-package ru.korus.tmis.ws.transfusion;
+package ru.korus.tmis.ws.transfusion.efive;
 
 import java.util.List;
+
 import javax.jws.WebMethod;
 import javax.jws.WebParam;
 import javax.jws.WebResult;
 import javax.jws.WebService;
-import javax.xml.bind.annotation.XmlSeeAlso;
 import javax.xml.ws.Action;
 import javax.xml.ws.RequestWrapper;
 import javax.xml.ws.ResponseWrapper;
+
 
 
 /**
@@ -19,9 +20,9 @@ import javax.xml.ws.ResponseWrapper;
  * 
  */
 @WebService(name = "transfusionMedicalService", targetNamespace = "http://www.korusconsulting.ru")
-@XmlSeeAlso({
-    ObjectFactory.class
-})
+//@XmlSeeAlso({
+//    ObjectFactory.class
+//})
 public interface TransfusionMedicalService {
 
 
