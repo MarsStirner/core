@@ -13,7 +13,7 @@ rem Удаление домена GF
 asadmin delete-domain fccho
 
 rem Создание домена GF
-asadmin create-domain --user admin1234 --passwordfile PASSWD_FILE --instanceport 8080 --adminport 4848 --savemasterpassword --domaindir C:\Winprog\glassfish3\glassfish\domains\ fccho
+asadmin create-domain --user admin --passwordfile PASSWD_FILE --instanceport 8080 --adminport 4848 --savemasterpassword --domaindir C:\Winprog\glassfish3\glassfish\domains\ fccho
 
 rem Копирование библиотек
 copy lib\*.* C:\Winprog\glassfish3\glassfish\domains\fccho\lib\ext\
@@ -23,16 +23,16 @@ asadmin stop-domain --domaindir C:\Winprog\glassfish3\glassfish\domains\ fccho
 asadmin start-domain --domaindir C:\Winprog\glassfish3\glassfish\domains\ fccho
 
 rem Создание пулов соединений и ресурсов для необходимых ядру БД
-asadmin --user admin1234 --passwordfile PASSWD_FILE create-jdbc-connection-pool --datasourceclassname com.mysql.jdbc.jdbc2.optional.MysqlDataSource --property user=root:password=root:DatabaseName=s11r64:ServerName=localhost:port=3306:useUnicode=true:characterEncoding=UTF-8:characterSetResults=UTF-8:datasourceName=s11r64:zeroDateTimeBehavior=convertToNull s11r64-pool
+asadmin --user admin1234 --passwordfile PASSWD_FILE create-jdbc-connection-pool --datasourceclassname com.mysql.jdbc.jdbc2.optional.MysqlDataSource --property user=root:password=root:DatabaseName=s11r64:ServerName=localhost:port=3306:useUnicode=true:characterEncoding=UTF-8:characterSetResults=UTF-8:datasourceName=s11r64:zeroDateTimeBehavior=convertToNull --validateatmostonceperiod=60 --creationretryattempts=3 --creationretryinterval=10 --isconnectvalidatereq=true --validationmethod=auto-commit --ping=true  s11r64-pool
 
-asadmin --user admin1234 --passwordfile PASSWD_FILE create-jdbc-resource --connectionpoolid s11r64-pool s11r64
+asadmin --user admin --passwordfile PASSWD_FILE create-jdbc-resource --connectionpoolid s11r64-pool s11r64
 
-asadmin --user admin1234 --passwordfile PASSWD_FILE create-jdbc-connection-pool --datasourceclassname com.mysql.jdbc.jdbc2.optional.MysqlDataSource --property user=root:password=root:DatabaseName=rls:ServerName=localhost:port=3306:useUnicode=true:characterEncoding=UTF-8:characterSetResults=UTF-8:datasourceName=rls:zeroDateTimeBehavior=convertToNull rls-pool
+asadmin --user admin --passwordfile PASSWD_FILE create-jdbc-connection-pool --datasourceclassname com.mysql.jdbc.jdbc2.optional.MysqlDataSource --property user=root:password=root:DatabaseName=rls:ServerName=localhost:port=3306:useUnicode=true:characterEncoding=UTF-8:characterSetResults=UTF-8:datasourceName=rls:zeroDateTimeBehavior=convertToNull rls-pool
 
-asadmin --user admin1234 --passwordfile PASSWD_FILE create-jdbc-resource --connectionpoolid rls-pool rls
+asadmin --user admin --passwordfile PASSWD_FILE create-jdbc-resource --connectionpoolid rls-pool rls
 
-asadmin --user admin1234 --passwordfile PASSWD_FILE create-jdbc-connection-pool --datasourceclassname com.mysql.jdbc.jdbc2.optional.MysqlDataSource --property user=root:password=root:DatabaseName=tmis_core:ServerName=localhost:port=3306:useUnicode=true:characterEncoding=UTF-8:characterSetResults=UTF-8:datasourceName=tmis_core:zeroDateTimeBehavior=convertToNull tmis_core-pool
+asadmin --user admin --passwordfile PASSWD_FILE create-jdbc-connection-pool --datasourceclassname com.mysql.jdbc.jdbc2.optional.MysqlDataSource --property user=root:password=root:DatabaseName=tmis_core:ServerName=localhost:port=3306:useUnicode=true:characterEncoding=UTF-8:characterSetResults=UTF-8:datasourceName=tmis_core:zeroDateTimeBehavior=convertToNull  tmis_core-pool
 
-asadmin --user admin1234 --passwordfile PASSWD_FILE create-jdbc-resource --connectionpoolid tmis_core-pool tmis_core
+asadmin --user admin --passwordfile PASSWD_FILE create-jdbc-resource --connectionpoolid tmis_core-pool tmis_core
 
 

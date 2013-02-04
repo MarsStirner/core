@@ -22,7 +22,7 @@ GF_ADMIN_PASSWD=admin1234
 GF_MASTER_PASSWD=admin1234                                                                                                                                          
 GF_DOMAIN_NAME=$2
                                                                                                                                      
-GF_DOMAIN_DIR=/usr/local/glassfish3/glassfish/domains
+GF_DOMAIN_DIR=/usr/local/opt/glassfish/libexec/glassfish/domains
 GF_INSTANCE_PORT=8080                                                                                                           
 GF_ADMIN_PORT=4848                                                                                                                                              
 APP=$1
@@ -32,7 +32,7 @@ GF_PASSWD_FILE=./password
 echo "AS_ADMIN_PASSWORD="$GF_ADMIN_PASSWD > $GF_PASSWD_FILE                                                                                                     
 echo "AS_ADMIN_MASTERPASSWORD="$GF_MASTER_PASSWD >> $GF_PASSWD_FILE                                                                                             
 
-export PATH=/usr/local/glassfish3/bin/:$PATH
+export PATH=/usr/local/opt/glassfish/bin/:$PATH
 asadmin stop-domain
 
 # Удаление домена GF
@@ -65,3 +65,4 @@ asadmin --user $GF_ADMIN_USER --passwordfile $GF_PASSWD_FILE create-jdbc-connect
 asadmin --user $GF_ADMIN_USER --passwordfile $GF_PASSWD_FILE create-jdbc-resource --connectionpoolid tmis_core-pool tmis_core
 
 rm -f $GF_PASSWD_FILE
+

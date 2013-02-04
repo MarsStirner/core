@@ -11,9 +11,9 @@ import javax.persistence.EntityManager;
 import javax.persistence.PersistenceContext;
 
 /**
- * @Author:      Dmitriy E. Nosov <br>
- * @Date:        09.12.12, 15:49 <br>
- * @Company:     Korus Consulting IT<br>
+ * @Author: Dmitriy E. Nosov <br>
+ * @Date: 09.12.12, 15:49 <br>
+ * @Company: Korus Consulting IT<br>
  * Revision:    \$Id$ <br>
  * @Description: <br>
  */
@@ -30,14 +30,15 @@ public class DbUUIDBean implements DbUUIDBeanLocal {
 
     /**
      * Возвращает UUID по идентификатору id
+     *
      * @param id
      * @return
      */
     @Override
-    public String getUUIDById(int id) {
+    public String getUUIDById(final int id) {
         return em.createQuery("SELECT u.uuid FROM UUID u WHERE u.id = :id", String.class)
-                 .setParameter("id",id)
-                 .getSingleResult();
+                .setParameter("id", id)
+                .getSingleResult();
     }
 
     @Override

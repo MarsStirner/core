@@ -1,14 +1,13 @@
-package ru.korus.tmis.core.entity.model.hl7;
+package ru.korus.tmis.core.entity.model.pharmacy;
 
 import javax.persistence.*;
 import java.io.Serializable;
 
 /**
- * Created with IntelliJ IDEA.
- * User: nde
- * Date: 04.12.12
- * Time: 19:51
- * To change this template use File | Settings | File Templates.
+ * Author:      Dmitriy E. Nosov <br>
+ * Date:        04.12.12, 19:51 <br>
+ * Company:     Korus Consulting IT<br>
+ * Description:  <br>
  */
 @Entity
 @Table(name = "Pharmacy", catalog = "", schema = "")
@@ -32,8 +31,9 @@ public class Pharmacy implements Serializable {
     private String flatCode;
 
     @Basic(optional = false)
+    @Enumerated(EnumType.STRING)
     @Column(name = "status")
-    private String status;
+    private PharmacyStatus status;
 
     @Basic(optional = false)
     @Column(name = "uuid")
@@ -42,6 +42,11 @@ public class Pharmacy implements Serializable {
     @Basic(optional = false)
     @Column(name = "result")
     private String result;
+
+    @Basic(optional = false)
+    @Column(name = "attempts")
+    private int attempts = 0;
+
 
     public Pharmacy() {
     }
@@ -54,7 +59,7 @@ public class Pharmacy implements Serializable {
         return flatCode;
     }
 
-    public String getStatus() {
+    public PharmacyStatus getStatus() {
         return status;
     }
 
@@ -74,7 +79,7 @@ public class Pharmacy implements Serializable {
         this.flatCode = flatCode;
     }
 
-    public void setStatus(String status) {
+    public void setStatus(PharmacyStatus status) {
         this.status = status;
     }
 
@@ -86,14 +91,23 @@ public class Pharmacy implements Serializable {
         this.result = result;
     }
 
+    public int getAttempts() {
+        return attempts;
+    }
+
+    public void incAttempts() {
+        this.attempts++;
+    }
+
     @Override
     public String toString() {
         return "Pharmacy{" +
                 "actionId=" + actionId +
                 ", flatCode='" + flatCode + '\'' +
-                ", status='" + status + '\'' +
+                ", status=" + status +
                 ", documentUUID='" + documentUUID + '\'' +
                 ", result='" + result + '\'' +
+                ", attempts=" + attempts +
                 '}';
     }
 }
