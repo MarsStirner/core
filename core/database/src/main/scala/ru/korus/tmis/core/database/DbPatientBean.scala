@@ -17,6 +17,7 @@ import java.util
 import org.slf4j.{LoggerFactory, Logger}
 import util.{Date, Calendar, GregorianCalendar}
 
+
 @Interceptors(Array(classOf[LoggingInterceptor]))
 @Stateless
 class DbPatientBean
@@ -446,4 +447,5 @@ class DbPatientBean
     else
       return 0;
   }
+
 }

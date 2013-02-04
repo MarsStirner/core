@@ -1,9 +1,11 @@
 package ru.korus.tmis.core.database;
 
+import ru.korus.tmis.core.entity.model.Action;
 import ru.korus.tmis.core.entity.model.Staff;
 import ru.korus.tmis.core.exception.CoreException;
 
 import javax.ejb.Local;
+import java.util.Date;
 import java.util.List;
 
 /**
@@ -38,4 +40,8 @@ public interface DbStaffBeanLocal {
 
     long getCountAllPersonsWithFilter(Object filter)
             throws CoreException;
+
+    Action getPersonActionsByDateAndType(int personId, Date date, String actionType)
+            throws CoreException;
+
 }

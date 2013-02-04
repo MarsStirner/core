@@ -149,6 +149,10 @@ public class Action
     @Column(name = "coordText")
     private String coordText = "";
 
+    @Basic(optional = false)
+    @Column(name = "hospitalUidFrom")
+    private String hospitalUidFrom = "";
+
     @Version
     @Basic(optional = false)
     @Column(name = "version")
@@ -503,6 +507,14 @@ public class Action
 
     public void setCoordText(String coordText) {
         this.coordText = coordText;
+    }
+
+    public String getHospitalUidFrom() {
+        return hospitalUidFrom;
+    }
+
+    public void setHospitalUidFrom(String hospitalUidFrom) {
+        this.hospitalUidFrom = hospitalUidFrom;
     }
 
     public UUID getUuid() {
