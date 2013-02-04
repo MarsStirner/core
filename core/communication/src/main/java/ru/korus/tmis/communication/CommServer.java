@@ -219,7 +219,7 @@ public class CommServer implements Communications.Iface {
             //2. Проверяем есть ли «причина отсутствия» этого врача в указанную дату _getReasonOfAbsence
             timelineAction = staffBean.getPersonActionsByDateAndType(params.getPersonId(), paramsDate, "timeline");
             if (timelineAction != null && actionPropertyBean.getActionPropertyValue(timelineAction.getActionProperties().get(0)).get(0) != null) {
-                if (logger.isDebugEnabled() && timelineAction != null) {
+                if (logger.isDebugEnabled()) {
                     logger.debug("TIMELINE ACTION [ ID={}, ACT_TYPE={}, EVENT={}, NOTE={}]", timelineAction.getId(),
                             timelineAction.getActionType().getName(), timelineAction.getEvent().getId(), timelineAction.getNote());
                 }
@@ -870,7 +870,7 @@ public class CommServer implements Communications.Iface {
     /**
      * Получение списка специальностей работников ЛПУ
      *
-     * @param hospitalUidFrom
+     * @param hospitalUidFrom ИД ЛПУ
      * @return Список специальностей
      * @throws TException
      */
@@ -901,7 +901,7 @@ public class CommServer implements Communications.Iface {
      * Получение информации об Организации по её Инфис-коду
      *
      * @param infisCode
-     * @return
+     * @return информация об Организации
      * @throws TException
      */
     @Override
@@ -927,10 +927,26 @@ public class CommServer implements Communications.Iface {
     public List<Address> getAddresses(final int orgStructureId, final boolean recursive) throws TException {
         int currentRequestNum = request_num++;
         logger.info("#{} Call method -> CommServer.getAddresses(orgStructureId={},recursive={})", currentRequestNum, orgStructureId, recursive);
-
-        List<Address> resultList = new ArrayList<Address>();
-
-
+        //Список для хранения сущностей из БД
+        List<ru.korus.tmis.core.entity.model.OrgStructure> orgStructureList;
+        try {
+            //Получение нужных сущностей из бина
+            orgStructureList = orgStructureBean.getRecursiveOrgStructures(orgStructureId, recursive, "");
+        } catch (CoreException e) {
+            logger.error("Error while getRecursive from bean.", e);
+            throw new SQLException().setError_code(e.getId()).setError_msg("Error while getRecursive from bean (CoreException)." + e.getMessage());
+        } catch (Exception e) {
+            logger.error("#" + currentRequestNum + " Exception. Message=" + e.getMessage(), e);
+            throw new TException("Error while getRecursive from bean (Unknown exception)", e);
+        }
+        if (orgStructureList.size() == 0) {
+            logger.warn("#{} throw new NotFoundException.", currentRequestNum);
+            throw new NotFoundException().setError_msg("None of the OrgStructure contain any such parent =" + orgStructureId);
+        }
+        List<Address> resultList = new ArrayList<Address>(orgStructureList.size());
+        for (ru.korus.tmis.core.entity.model.OrgStructure currentOrgStructure : orgStructureList) {
+            // resultList.add(new Address().setCorpus(currentOrgStructure.getOrganization().get))
+        }
         logger.info("End of #{} getAddresses. Return (Size={}), DATA={})", currentRequestNum, resultList.size(), resultList);
         return resultList;
     }
@@ -947,7 +963,7 @@ public class CommServer implements Communications.Iface {
         int currentRequestNum = request_num++;
         logger.info("#{} Call method -> CommServer.getPatientContacts(patientId={})", currentRequestNum, patientId);
         List<Contact> resultList = new ArrayList<Contact>();
-        Patient patient = null;
+        Patient patient;
         try {
             patient = patientBean.getPatientById(patientId);
         } catch (CoreException e) {
