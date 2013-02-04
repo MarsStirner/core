@@ -1,0 +1,28 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<configuration>
+    <jmxConfigurator/>
+    <contextName>communication-test</contextName>
+
+    <property name="test.log" value="communication-test.log"/>
+    <property name="log.format" value="%5p [%d][%thread][%logger{0}] %msg%n"/>
+
+    <!-- Основные настройки для консоли, для эксепшен лога-->
+    <appender name="STDOUT" class="ch.qos.logback.core.ConsoleAppender">
+        <encoder>
+            <pattern>${log.format}</pattern>
+        </encoder>
+        <param name="target" value="System.out"/>
+        <!--<target>System.out</target>-->
+    </appender>
+
+    <logger name="ru.korus.tmis" level="DEBUG" additivity="false">
+        <appender-ref ref="STDOUT"/>
+    </logger>
+
+    <!--<root level="DEBUG">-->
+    <!--<appender-ref ref="STDOUT"/>-->
+    <!--<appender-ref ref="STDOUT_ERROR"/>-->
+    <!--<appender-ref ref="EXCEPTIONS"/>-->
+    <!--</root>-->
+
+</configuration>

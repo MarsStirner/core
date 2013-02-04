@@ -22,7 +22,7 @@ public class OrgStructure implements org.apache.thrift.TBase<OrgStructure, OrgSt
     private static final org.apache.thrift.protocol.TField PARENT_ID_FIELD_DESC = new org.apache.thrift.protocol.TField("parent_id", org.apache.thrift.protocol.TType.I32, (short) 2);
     private static final org.apache.thrift.protocol.TField CODE_FIELD_DESC = new org.apache.thrift.protocol.TField("code", org.apache.thrift.protocol.TType.STRING, (short) 3);
     private static final org.apache.thrift.protocol.TField NAME_FIELD_DESC = new org.apache.thrift.protocol.TField("name", org.apache.thrift.protocol.TType.STRING, (short) 4);
-    private static final org.apache.thrift.protocol.TField ADRESS_FIELD_DESC = new org.apache.thrift.protocol.TField("adress", org.apache.thrift.protocol.TType.STRING, (short) 5);
+    private static final org.apache.thrift.protocol.TField ADDRESS_FIELD_DESC = new org.apache.thrift.protocol.TField("address", org.apache.thrift.protocol.TType.STRING, (short) 5);
     private static final org.apache.thrift.protocol.TField SEX_FILTER_FIELD_DESC = new org.apache.thrift.protocol.TField("sexFilter", org.apache.thrift.protocol.TType.STRING, (short) 6);
     private static final org.apache.thrift.protocol.TField AGE_FILTER_FIELD_DESC = new org.apache.thrift.protocol.TField("ageFilter", org.apache.thrift.protocol.TType.STRING, (short) 7);
 
@@ -37,7 +37,7 @@ public class OrgStructure implements org.apache.thrift.TBase<OrgStructure, OrgSt
     public int parent_id; // optional
     public String code; // required
     public String name; // required
-    public String adress; // optional
+    public String address; // optional
     public String sexFilter; // optional
     public String ageFilter; // optional
 
@@ -49,7 +49,7 @@ public class OrgStructure implements org.apache.thrift.TBase<OrgStructure, OrgSt
         PARENT_ID((short) 2, "parent_id"),
         CODE((short) 3, "code"),
         NAME((short) 4, "name"),
-        ADRESS((short) 5, "adress"),
+        ADDRESS((short) 5, "address"),
         SEX_FILTER((short) 6, "sexFilter"),
         AGE_FILTER((short) 7, "ageFilter");
 
@@ -74,8 +74,8 @@ public class OrgStructure implements org.apache.thrift.TBase<OrgStructure, OrgSt
                     return CODE;
                 case 4: // NAME
                     return NAME;
-                case 5: // ADRESS
-                    return ADRESS;
+                case 5: // ADDRESS
+                    return ADDRESS;
                 case 6: // SEX_FILTER
                     return SEX_FILTER;
                 case 7: // AGE_FILTER
@@ -123,7 +123,7 @@ public class OrgStructure implements org.apache.thrift.TBase<OrgStructure, OrgSt
     private static final int __ID_ISSET_ID = 0;
     private static final int __PARENT_ID_ISSET_ID = 1;
     private byte __isset_bitfield = 0;
-    private _Fields optionals[] = {_Fields.PARENT_ID, _Fields.ADRESS, _Fields.SEX_FILTER, _Fields.AGE_FILTER};
+    private _Fields optionals[] = {_Fields.PARENT_ID, _Fields.ADDRESS, _Fields.SEX_FILTER, _Fields.AGE_FILTER};
     public static final Map<_Fields, org.apache.thrift.meta_data.FieldMetaData> metaDataMap;
 
     static {
@@ -136,7 +136,7 @@ public class OrgStructure implements org.apache.thrift.TBase<OrgStructure, OrgSt
                 new org.apache.thrift.meta_data.FieldValueMetaData(org.apache.thrift.protocol.TType.STRING)));
         tmpMap.put(_Fields.NAME, new org.apache.thrift.meta_data.FieldMetaData("name", org.apache.thrift.TFieldRequirementType.REQUIRED,
                 new org.apache.thrift.meta_data.FieldValueMetaData(org.apache.thrift.protocol.TType.STRING)));
-        tmpMap.put(_Fields.ADRESS, new org.apache.thrift.meta_data.FieldMetaData("adress", org.apache.thrift.TFieldRequirementType.OPTIONAL,
+        tmpMap.put(_Fields.ADDRESS, new org.apache.thrift.meta_data.FieldMetaData("address", org.apache.thrift.TFieldRequirementType.OPTIONAL,
                 new org.apache.thrift.meta_data.FieldValueMetaData(org.apache.thrift.protocol.TType.STRING)));
         tmpMap.put(_Fields.SEX_FILTER, new org.apache.thrift.meta_data.FieldMetaData("sexFilter", org.apache.thrift.TFieldRequirementType.OPTIONAL,
                 new org.apache.thrift.meta_data.FieldValueMetaData(org.apache.thrift.protocol.TType.STRING)));
@@ -151,7 +151,7 @@ public class OrgStructure implements org.apache.thrift.TBase<OrgStructure, OrgSt
 
         this.name = "";
 
-        this.adress = "";
+        this.address = "";
 
         this.sexFilter = "";
 
@@ -183,8 +183,8 @@ public class OrgStructure implements org.apache.thrift.TBase<OrgStructure, OrgSt
         if (other.isSetName()) {
             this.name = other.name;
         }
-        if (other.isSetAdress()) {
-            this.adress = other.adress;
+        if (other.isSetAddress()) {
+            this.address = other.address;
         }
         if (other.isSetSexFilter()) {
             this.sexFilter = other.sexFilter;
@@ -207,7 +207,7 @@ public class OrgStructure implements org.apache.thrift.TBase<OrgStructure, OrgSt
         this.code = null;
         this.name = "";
 
-        this.adress = "";
+        this.address = "";
 
         this.sexFilter = "";
 
@@ -317,29 +317,29 @@ public class OrgStructure implements org.apache.thrift.TBase<OrgStructure, OrgSt
         }
     }
 
-    public String getAdress() {
-        return this.adress;
+    public String getAddress() {
+        return this.address;
     }
 
-    public OrgStructure setAdress(String adress) {
-        this.adress = adress;
+    public OrgStructure setAddress(String address) {
+        this.address = address;
         return this;
     }
 
-    public void unsetAdress() {
-        this.adress = null;
+    public void unsetAddress() {
+        this.address = null;
     }
 
     /**
-     * Returns true if field adress is set (has been assigned a value) and false otherwise
+     * Returns true if field address is set (has been assigned a value) and false otherwise
      */
-    public boolean isSetAdress() {
-        return this.adress != null;
+    public boolean isSetAddress() {
+        return this.address != null;
     }
 
-    public void setAdressIsSet(boolean value) {
+    public void setAddressIsSet(boolean value) {
         if (!value) {
-            this.adress = null;
+            this.address = null;
         }
     }
 
@@ -429,11 +429,11 @@ public class OrgStructure implements org.apache.thrift.TBase<OrgStructure, OrgSt
                 }
                 break;
 
-            case ADRESS:
+            case ADDRESS:
                 if (value == null) {
-                    unsetAdress();
+                    unsetAddress();
                 } else {
-                    setAdress((String) value);
+                    setAddress((String) value);
                 }
                 break;
 
@@ -470,8 +470,8 @@ public class OrgStructure implements org.apache.thrift.TBase<OrgStructure, OrgSt
             case NAME:
                 return getName();
 
-            case ADRESS:
-                return getAdress();
+            case ADDRESS:
+                return getAddress();
 
             case SEX_FILTER:
                 return getSexFilter();
@@ -500,8 +500,8 @@ public class OrgStructure implements org.apache.thrift.TBase<OrgStructure, OrgSt
                 return isSetCode();
             case NAME:
                 return isSetName();
-            case ADRESS:
-                return isSetAdress();
+            case ADDRESS:
+                return isSetAddress();
             case SEX_FILTER:
                 return isSetSexFilter();
             case AGE_FILTER:
@@ -559,12 +559,12 @@ public class OrgStructure implements org.apache.thrift.TBase<OrgStructure, OrgSt
                 return false;
         }
 
-        boolean this_present_adress = true && this.isSetAdress();
-        boolean that_present_adress = true && that.isSetAdress();
-        if (this_present_adress || that_present_adress) {
-            if (!(this_present_adress && that_present_adress))
+        boolean this_present_address = true && this.isSetAddress();
+        boolean that_present_address = true && that.isSetAddress();
+        if (this_present_address || that_present_address) {
+            if (!(this_present_address && that_present_address))
                 return false;
-            if (!this.adress.equals(that.adress))
+            if (!this.address.equals(that.address))
                 return false;
         }
 
@@ -642,12 +642,12 @@ public class OrgStructure implements org.apache.thrift.TBase<OrgStructure, OrgSt
                 return lastComparison;
             }
         }
-        lastComparison = Boolean.valueOf(isSetAdress()).compareTo(typedOther.isSetAdress());
+        lastComparison = Boolean.valueOf(isSetAddress()).compareTo(typedOther.isSetAddress());
         if (lastComparison != 0) {
             return lastComparison;
         }
-        if (isSetAdress()) {
-            lastComparison = org.apache.thrift.TBaseHelper.compareTo(this.adress, typedOther.adress);
+        if (isSetAddress()) {
+            lastComparison = org.apache.thrift.TBaseHelper.compareTo(this.address, typedOther.address);
             if (lastComparison != 0) {
                 return lastComparison;
             }
@@ -717,13 +717,13 @@ public class OrgStructure implements org.apache.thrift.TBase<OrgStructure, OrgSt
             sb.append(this.name);
         }
         first = false;
-        if (isSetAdress()) {
+        if (isSetAddress()) {
             if (!first) sb.append(", ");
-            sb.append("adress:");
-            if (this.adress == null) {
+            sb.append("address:");
+            if (this.address == null) {
                 sb.append("null");
             } else {
-                sb.append(this.adress);
+                sb.append(this.address);
             }
             first = false;
         }
@@ -830,10 +830,10 @@ public class OrgStructure implements org.apache.thrift.TBase<OrgStructure, OrgSt
                             org.apache.thrift.protocol.TProtocolUtil.skip(iprot, schemeField.type);
                         }
                         break;
-                    case 5: // ADRESS
+                    case 5: // ADDRESS
                         if (schemeField.type == org.apache.thrift.protocol.TType.STRING) {
-                            struct.adress = iprot.readString();
-                            struct.setAdressIsSet(true);
+                            struct.address = iprot.readString();
+                            struct.setAddressIsSet(true);
                         } else {
                             org.apache.thrift.protocol.TProtocolUtil.skip(iprot, schemeField.type);
                         }
@@ -890,10 +890,10 @@ public class OrgStructure implements org.apache.thrift.TBase<OrgStructure, OrgSt
                 oprot.writeString(struct.name);
                 oprot.writeFieldEnd();
             }
-            if (struct.adress != null) {
-                if (struct.isSetAdress()) {
-                    oprot.writeFieldBegin(ADRESS_FIELD_DESC);
-                    oprot.writeString(struct.adress);
+            if (struct.address != null) {
+                if (struct.isSetAddress()) {
+                    oprot.writeFieldBegin(ADDRESS_FIELD_DESC);
+                    oprot.writeString(struct.address);
                     oprot.writeFieldEnd();
                 }
             }
@@ -935,7 +935,7 @@ public class OrgStructure implements org.apache.thrift.TBase<OrgStructure, OrgSt
             if (struct.isSetParent_id()) {
                 optionals.set(0);
             }
-            if (struct.isSetAdress()) {
+            if (struct.isSetAddress()) {
                 optionals.set(1);
             }
             if (struct.isSetSexFilter()) {
@@ -948,8 +948,8 @@ public class OrgStructure implements org.apache.thrift.TBase<OrgStructure, OrgSt
             if (struct.isSetParent_id()) {
                 oprot.writeI32(struct.parent_id);
             }
-            if (struct.isSetAdress()) {
-                oprot.writeString(struct.adress);
+            if (struct.isSetAddress()) {
+                oprot.writeString(struct.address);
             }
             if (struct.isSetSexFilter()) {
                 oprot.writeString(struct.sexFilter);
@@ -974,8 +974,8 @@ public class OrgStructure implements org.apache.thrift.TBase<OrgStructure, OrgSt
                 struct.setParent_idIsSet(true);
             }
             if (incoming.get(1)) {
-                struct.adress = iprot.readString();
-                struct.setAdressIsSet(true);
+                struct.address = iprot.readString();
+                struct.setAddressIsSet(true);
             }
             if (incoming.get(2)) {
                 struct.sexFilter = iprot.readString();
