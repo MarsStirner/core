@@ -104,7 +104,7 @@
             <id>nde</id>
             <properties>
 
-                <com.sun.aas.instanceRoot>/usr/local/opt/</com.sun.aas.instanceRoot>
+                <com.sun.aas.instanceRoot>/usr/local/opt/glassfish/libexec/glassfish/domains/domain1/</com.sun.aas.instanceRoot>
 
                 <mysql.login>root</mysql.login>
                 <mysql.password>root</mysql.password>
