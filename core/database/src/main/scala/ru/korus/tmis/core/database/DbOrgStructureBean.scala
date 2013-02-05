@@ -1,6 +1,6 @@
 package ru.korus.tmis.core.database
 
-import ru.korus.tmis.core.entity.model.{OrgStructure, ActionType}
+import ru.korus.tmis.core.entity.model.{Staff, OrgStructure, ActionType}
 import ru.korus.tmis.core.logging.LoggingInterceptor
 import grizzled.slf4j.Logging
 import javax.ejb.Stateless
@@ -10,6 +10,7 @@ import scala.collection.JavaConversions._
 import ru.korus.tmis.core.exception.CoreException
 import ru.korus.tmis.util.{I18nable, ConfigManager}
 import ru.korus.tmis.core.data.{DepartmentsDataFilter, QueryDataStructure}
+import java.util
 
 
 @Interceptors(Array(classOf[LoggingInterceptor]))
@@ -29,7 +30,7 @@ class DbOrgStructureBean
     WHERE
       os.id = :id
                               """
-  //Flag marks that OrgStructure is available for requests
+  //Flag marks that OrgStructure and Person is available for requests
   val AVAILABLE_FOR_EXTERNAL: Int = 1
 
   def getOrgStructureById(id: Int): OrgStructure = {
@@ -109,18 +110,25 @@ class DbOrgStructureBean
     result
   }
 
-  def getRecursiveOrgStructures(parentId: java.lang.Integer, recursive: Boolean): java.util.List[OrgStructure] = {
+  def getRecursiveOrgStructures(parentId: Int, recursive: Boolean, infisCode: String): util.List[OrgStructure] = {
     val allEntitiesList = getAllOrgStructures()
     var parentIdsSet = Set[java.lang.Integer](parentId)
     var result = Set[OrgStructure]()
+
+    val infisCodeIsDefined: Boolean = infisCode.length > 0;
+    var parentIdIsDefined: Boolean = parentId.intValue() > 0;
+
     allEntitiesList.map((current: OrgStructure) => {
-      if (!current.getDeleted && current.getAvailableForExternal == AVAILABLE_FOR_EXTERNAL
-        && (current.getParentId == parentId || (parentId == 0 && current.getParentId == null))) {
+      if (!current.getDeleted && current.getAvailableForExternal == AVAILABLE_FOR_EXTERNAL &&
+        (current.getParentId == parentId || (!parentIdIsDefined && current.getParentId == null)) &&
+        (!infisCodeIsDefined || (current.getOrganization != null && current.getOrganization.getInfisCode == infisCode))) {
         result += current
-        if (recursive) parentIdsSet += current.getId
+        if (recursive.booleanValue()) parentIdsSet += current.getId
       }
     })
-    if (recursive) {
+
+
+    if (recursive.booleanValue()) {
       var previousSize: Int = 0
       val MAX_DEEP: Int = 7
       var currentDeep = 0
@@ -128,7 +136,9 @@ class DbOrgStructureBean
         //Get childrens from parentIdsSet
         previousSize = parentIdsSet.size
         allEntitiesList.map((current: OrgStructure) => {
-          if (!current.getDeleted && current.getAvailableForExternal == AVAILABLE_FOR_EXTERNAL && parentIdsSet(current.getParentId)) {
+          if (!current.getDeleted && current.getAvailableForExternal == AVAILABLE_FOR_EXTERNAL && parentIdsSet(current.getParentId)
+            && (!infisCodeIsDefined || (current.getOrganization != null && current.getOrganization.getInfisCode == infisCode))
+          ) {
             result += current
             parentIdsSet += current.getId
           }
@@ -137,21 +147,46 @@ class DbOrgStructureBean
       }
     }
     if (result.size == 0) {
-      throw new CoreException(
-        ConfigManager.ErrorCodes.ClientQuotingNotFound,
-        i18n("error.orgStructureNotFound recursive from").format(parentId))
+      throw new CoreException("Not Found OrgStructures");
     }
     result.toList
   }
 
-  def getOrgStructureByAdress(KLADRCode: java.lang.String, KLADRStreetCode: java.lang.String, number: java.lang.String,
-                              corpus: java.lang.String, flat: java.lang.Integer) = {
+  def getOrgStructureByAddress(KLADRCode: java.lang.String, KLADRStreetCode: java.lang.String, number: java.lang.String,
+                               corpus: java.lang.String, flat: java.lang.Integer) = {
     val result = em.createQuery(OrgStructureIdByAdressQuery, classOf[java.lang.Integer])
       .setParameter("KLADRCode", KLADRCode).setParameter("KLADRStreetCode", KLADRStreetCode)
       .setParameter("NUMBER", number).setParameter("CORPUS", corpus).setParameter("FLAT", flat)
       .getResultList
     result
   }
+
+  def getPersonnel(orgStructureId: java.lang.Integer, recursive: Boolean, infisCode: java.lang.String): util.List[Staff] = {
+    val organisationIDList: util.List[java.lang.Integer] = new util.ArrayList[java.lang.Integer]()
+    organisationIDList.add(orgStructureId)
+    if (recursive) try {
+      getRecursiveOrgStructures(orgStructureId.intValue(), recursive, infisCode).map((current: OrgStructure) => {
+        organisationIDList.add(current.getId)
+      })
+    } catch {
+      case coreExc: CoreException => {
+        logger.warn("Recursive search is not found any children for parentId=" + orgStructureId);
+      }
+    }
+    em.createQuery(OrgStructureGetPersonnel, classOf[Staff]).setParameter("ORGSTRUCTUREIDLIST", organisationIDList)
+      .getResultList
+  }
+
+  val OrgStructureGetPersonnel = """
+    SELECT person
+    FROM Staff person
+    WHERE person.orgStructure.id IN :ORGSTRUCTUREIDLIST
+    AND person.deleted = 0
+    AND person.retired = 0
+    AND person.speciality IS NOT NULL
+    AND person.availableForExternal = 1
+    ORDER BY person.lastName
+                                 """
 
   val OrgStructureIdByAdressQuery = """
     SELECT DISTINCT org_adr.master.id

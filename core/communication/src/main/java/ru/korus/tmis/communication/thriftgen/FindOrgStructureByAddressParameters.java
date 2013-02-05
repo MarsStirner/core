@@ -15,8 +15,8 @@ import org.apache.thrift.scheme.TupleScheme;
 
 import java.util.*;
 
-public class FindOrgStructureByAdressParameters implements org.apache.thrift.TBase<FindOrgStructureByAdressParameters, FindOrgStructureByAdressParameters._Fields>, java.io.Serializable, Cloneable {
-    private static final org.apache.thrift.protocol.TStruct STRUCT_DESC = new org.apache.thrift.protocol.TStruct("FindOrgStructureByAdressParameters");
+public class FindOrgStructureByAddressParameters implements org.apache.thrift.TBase<FindOrgStructureByAddressParameters, FindOrgStructureByAddressParameters._Fields>, java.io.Serializable, Cloneable {
+    private static final org.apache.thrift.protocol.TStruct STRUCT_DESC = new org.apache.thrift.protocol.TStruct("FindOrgStructureByAddressParameters");
 
     private static final org.apache.thrift.protocol.TField POINT_KLADR_FIELD_DESC = new org.apache.thrift.protocol.TField("pointKLADR", org.apache.thrift.protocol.TType.STRING, (short) 1);
     private static final org.apache.thrift.protocol.TField STREET_KLADR_FIELD_DESC = new org.apache.thrift.protocol.TField("streetKLADR", org.apache.thrift.protocol.TType.STRING, (short) 2);
@@ -27,8 +27,8 @@ public class FindOrgStructureByAdressParameters implements org.apache.thrift.TBa
     private static final Map<Class<? extends IScheme>, SchemeFactory> schemes = new HashMap<Class<? extends IScheme>, SchemeFactory>();
 
     static {
-        schemes.put(StandardScheme.class, new FindOrgStructureByAdressParametersStandardSchemeFactory());
-        schemes.put(TupleScheme.class, new FindOrgStructureByAdressParametersTupleSchemeFactory());
+        schemes.put(StandardScheme.class, new FindOrgStructureByAddressParametersStandardSchemeFactory());
+        schemes.put(TupleScheme.class, new FindOrgStructureByAddressParametersTupleSchemeFactory());
     }
 
     public String pointKLADR; // required
@@ -128,10 +128,10 @@ public class FindOrgStructureByAdressParameters implements org.apache.thrift.TBa
         tmpMap.put(_Fields.FLAT, new org.apache.thrift.meta_data.FieldMetaData("flat", org.apache.thrift.TFieldRequirementType.OPTIONAL,
                 new org.apache.thrift.meta_data.FieldValueMetaData(org.apache.thrift.protocol.TType.I32)));
         metaDataMap = Collections.unmodifiableMap(tmpMap);
-        org.apache.thrift.meta_data.FieldMetaData.addStructMetaDataMap(FindOrgStructureByAdressParameters.class, metaDataMap);
+        org.apache.thrift.meta_data.FieldMetaData.addStructMetaDataMap(FindOrgStructureByAddressParameters.class, metaDataMap);
     }
 
-    public FindOrgStructureByAdressParameters() {
+    public FindOrgStructureByAddressParameters() {
         this.streetKLADR = "";
 
         this.number = "";
@@ -142,7 +142,7 @@ public class FindOrgStructureByAdressParameters implements org.apache.thrift.TBa
 
     }
 
-    public FindOrgStructureByAdressParameters(
+    public FindOrgStructureByAddressParameters(
             String pointKLADR) {
         this();
         this.pointKLADR = pointKLADR;
@@ -151,7 +151,7 @@ public class FindOrgStructureByAdressParameters implements org.apache.thrift.TBa
     /**
      * Performs a deep copy on <i>other</i>.
      */
-    public FindOrgStructureByAdressParameters(FindOrgStructureByAdressParameters other) {
+    public FindOrgStructureByAddressParameters(FindOrgStructureByAddressParameters other) {
         __isset_bitfield = other.__isset_bitfield;
         if (other.isSetPointKLADR()) {
             this.pointKLADR = other.pointKLADR;
@@ -168,8 +168,8 @@ public class FindOrgStructureByAdressParameters implements org.apache.thrift.TBa
         this.flat = other.flat;
     }
 
-    public FindOrgStructureByAdressParameters deepCopy() {
-        return new FindOrgStructureByAdressParameters(this);
+    public FindOrgStructureByAddressParameters deepCopy() {
+        return new FindOrgStructureByAddressParameters(this);
     }
 
     @Override
@@ -189,7 +189,7 @@ public class FindOrgStructureByAdressParameters implements org.apache.thrift.TBa
         return this.pointKLADR;
     }
 
-    public FindOrgStructureByAdressParameters setPointKLADR(String pointKLADR) {
+    public FindOrgStructureByAddressParameters setPointKLADR(String pointKLADR) {
         this.pointKLADR = pointKLADR;
         return this;
     }
@@ -215,7 +215,7 @@ public class FindOrgStructureByAdressParameters implements org.apache.thrift.TBa
         return this.streetKLADR;
     }
 
-    public FindOrgStructureByAdressParameters setStreetKLADR(String streetKLADR) {
+    public FindOrgStructureByAddressParameters setStreetKLADR(String streetKLADR) {
         this.streetKLADR = streetKLADR;
         return this;
     }
@@ -241,7 +241,7 @@ public class FindOrgStructureByAdressParameters implements org.apache.thrift.TBa
         return this.number;
     }
 
-    public FindOrgStructureByAdressParameters setNumber(String number) {
+    public FindOrgStructureByAddressParameters setNumber(String number) {
         this.number = number;
         return this;
     }
@@ -267,7 +267,7 @@ public class FindOrgStructureByAdressParameters implements org.apache.thrift.TBa
         return this.corpus;
     }
 
-    public FindOrgStructureByAdressParameters setCorpus(String corpus) {
+    public FindOrgStructureByAddressParameters setCorpus(String corpus) {
         this.corpus = corpus;
         return this;
     }
@@ -293,7 +293,7 @@ public class FindOrgStructureByAdressParameters implements org.apache.thrift.TBa
         return this.flat;
     }
 
-    public FindOrgStructureByAdressParameters setFlat(int flat) {
+    public FindOrgStructureByAddressParameters setFlat(int flat) {
         this.flat = flat;
         setFlatIsSet(true);
         return this;
@@ -407,12 +407,12 @@ public class FindOrgStructureByAdressParameters implements org.apache.thrift.TBa
     public boolean equals(Object that) {
         if (that == null)
             return false;
-        if (that instanceof FindOrgStructureByAdressParameters)
-            return this.equals((FindOrgStructureByAdressParameters) that);
+        if (that instanceof FindOrgStructureByAddressParameters)
+            return this.equals((FindOrgStructureByAddressParameters) that);
         return false;
     }
 
-    public boolean equals(FindOrgStructureByAdressParameters that) {
+    public boolean equals(FindOrgStructureByAddressParameters that) {
         if (that == null)
             return false;
 
@@ -469,13 +469,13 @@ public class FindOrgStructureByAdressParameters implements org.apache.thrift.TBa
         return 0;
     }
 
-    public int compareTo(FindOrgStructureByAdressParameters other) {
+    public int compareTo(FindOrgStructureByAddressParameters other) {
         if (!getClass().equals(other.getClass())) {
             return getClass().getName().compareTo(other.getClass().getName());
         }
 
         int lastComparison = 0;
-        FindOrgStructureByAdressParameters typedOther = (FindOrgStructureByAdressParameters) other;
+        FindOrgStructureByAddressParameters typedOther = (FindOrgStructureByAddressParameters) other;
 
         lastComparison = Boolean.valueOf(isSetPointKLADR()).compareTo(typedOther.isSetPointKLADR());
         if (lastComparison != 0) {
@@ -544,7 +544,7 @@ public class FindOrgStructureByAdressParameters implements org.apache.thrift.TBa
 
     @Override
     public String toString() {
-        StringBuilder sb = new StringBuilder("FindOrgStructureByAdressParameters(");
+        StringBuilder sb = new StringBuilder("FindOrgStructureByAddressParameters(");
         boolean first = true;
 
         sb.append("pointKLADR:");
@@ -620,15 +620,15 @@ public class FindOrgStructureByAdressParameters implements org.apache.thrift.TBa
         }
     }
 
-    private static class FindOrgStructureByAdressParametersStandardSchemeFactory implements SchemeFactory {
-        public FindOrgStructureByAdressParametersStandardScheme getScheme() {
-            return new FindOrgStructureByAdressParametersStandardScheme();
+    private static class FindOrgStructureByAddressParametersStandardSchemeFactory implements SchemeFactory {
+        public FindOrgStructureByAddressParametersStandardScheme getScheme() {
+            return new FindOrgStructureByAddressParametersStandardScheme();
         }
     }
 
-    private static class FindOrgStructureByAdressParametersStandardScheme extends StandardScheme<FindOrgStructureByAdressParameters> {
+    private static class FindOrgStructureByAddressParametersStandardScheme extends StandardScheme<FindOrgStructureByAddressParameters> {
 
-        public void read(org.apache.thrift.protocol.TProtocol iprot, FindOrgStructureByAdressParameters struct) throws org.apache.thrift.TException {
+        public void read(org.apache.thrift.protocol.TProtocol iprot, FindOrgStructureByAddressParameters struct) throws org.apache.thrift.TException {
             org.apache.thrift.protocol.TField schemeField;
             iprot.readStructBegin();
             while (true) {
@@ -688,7 +688,7 @@ public class FindOrgStructureByAdressParameters implements org.apache.thrift.TBa
             struct.validate();
         }
 
-        public void write(org.apache.thrift.protocol.TProtocol oprot, FindOrgStructureByAdressParameters struct) throws org.apache.thrift.TException {
+        public void write(org.apache.thrift.protocol.TProtocol oprot, FindOrgStructureByAddressParameters struct) throws org.apache.thrift.TException {
             struct.validate();
 
             oprot.writeStructBegin(STRUCT_DESC);
@@ -729,16 +729,16 @@ public class FindOrgStructureByAdressParameters implements org.apache.thrift.TBa
 
     }
 
-    private static class FindOrgStructureByAdressParametersTupleSchemeFactory implements SchemeFactory {
-        public FindOrgStructureByAdressParametersTupleScheme getScheme() {
-            return new FindOrgStructureByAdressParametersTupleScheme();
+    private static class FindOrgStructureByAddressParametersTupleSchemeFactory implements SchemeFactory {
+        public FindOrgStructureByAddressParametersTupleScheme getScheme() {
+            return new FindOrgStructureByAddressParametersTupleScheme();
         }
     }
 
-    private static class FindOrgStructureByAdressParametersTupleScheme extends TupleScheme<FindOrgStructureByAdressParameters> {
+    private static class FindOrgStructureByAddressParametersTupleScheme extends TupleScheme<FindOrgStructureByAddressParameters> {
 
         @Override
-        public void write(org.apache.thrift.protocol.TProtocol prot, FindOrgStructureByAdressParameters struct) throws org.apache.thrift.TException {
+        public void write(org.apache.thrift.protocol.TProtocol prot, FindOrgStructureByAddressParameters struct) throws org.apache.thrift.TException {
             TTupleProtocol oprot = (TTupleProtocol) prot;
             oprot.writeString(struct.pointKLADR);
             BitSet optionals = new BitSet();
@@ -770,7 +770,7 @@ public class FindOrgStructureByAdressParameters implements org.apache.thrift.TBa
         }
 
         @Override
-        public void read(org.apache.thrift.protocol.TProtocol prot, FindOrgStructureByAdressParameters struct) throws org.apache.thrift.TException {
+        public void read(org.apache.thrift.protocol.TProtocol prot, FindOrgStructureByAddressParameters struct) throws org.apache.thrift.TException {
             TTupleProtocol iprot = (TTupleProtocol) prot;
             struct.pointKLADR = iprot.readString();
             struct.setPointKLADRIsSet(true);

@@ -73,7 +73,7 @@ class DbEventBean
 
     result.size() match {
       case 0 => {
-        null        //ексепшн нужен
+        null //ексепшн нужен
       }
       case size => {
         val e = result.get(0)
@@ -158,6 +158,46 @@ class DbEventBean
     return newEvent
   }
 
+  /**
+   * Создает и записывает в БД новый event с указанными значениями и   (CreatePerson & ModifyPerson = null )
+   * @param patient Пациент для которого создается Event
+   * @param eventType Тип события
+   * @param person Врач, которому назначено событие                  
+   * @param begDate Время начала события
+   * @param endDate Время окончания события
+   * @return Новый экземпляр события, сохраненный в БД и не открепленный (without  em.detach())
+   */
+  def createEvent(patient: Patient, eventType: EventType, person: Staff, begDate: Date, endDate: Date): Event = {
+    val now = new Date
+    var newEvent = new Event
+    //Инициализируем структуру Event
+    try {
+      newEvent.setIsPrimary(1);
+      newEvent.setCreateDatetime(now);
+      newEvent.setCreatePerson(null);
+      newEvent.setModifyPerson(null);
+      newEvent.setEventType(eventType);
+      newEvent.setOrgId(0);
+      newEvent.setPatient(patient);
+      newEvent.setSetDate(begDate);
+      newEvent.setExternalId("");
+      newEvent.setModifyDatetime(now);
+      newEvent.setNote("");
+      newEvent.setOrder(0);
+      newEvent.setDeleted(false);
+      newEvent.setPayStatus(0);
+      newEvent.setExecutor(person)
+      newEvent.setAssigner(person)
+      newEvent.setUuid(dbUUIDBeanLocal.createUUID());
+      //1. Инсертим
+      em.persist(newEvent);
+    }
+    catch {
+      case ex: Exception => throw new CoreException("error while creating event ");
+    }
+    newEvent
+  }
+
   def getEventTypeById(eventTypeId: Int): EventType = {
 
     val result = em.createQuery(EventTypeByIdQuery, classOf[EventType])
@@ -199,6 +239,28 @@ class DbEventBean
     result
   }
 
+  def getEventTypesByRequestTypeIdAndFinanceId(page: Int, limit: Int, sortingField: String, sortingMethod: String, filter: Object, records: (java.lang.Long) => java.lang.Boolean) = {
+    val queryStr: QueryDataStructure = if (filter.isInstanceOf[EventTypesListRequestDataFilter])
+      filter.asInstanceOf[EventTypesListRequestDataFilter].toQueryStructure()
+    else new QueryDataStructure()
+
+    val sorting = "ORDER BY %s %s".format(sortingField, sortingMethod)
+
+    if (records!=null) { //Перепишем количество записей для структуры
+      val recC = em.createQuery(EventTypeIdByRequestTypeIdAndFinanceIdQuery.format("count(et)", queryStr.query, ""), classOf[Long])
+      if (queryStr.data.size() > 0) queryStr.data.foreach(qdp => recC.setParameter(qdp.name, qdp.value))
+      records(recC.getSingleResult)
+    }
+
+    var typed = em.createQuery(EventTypeIdByRequestTypeIdAndFinanceIdQuery.format("et", queryStr.query, sorting), classOf[EventType])
+                  .setMaxResults(limit)
+                  .setFirstResult(limit * page)
+    if (queryStr.data.size() > 0) queryStr.data.foreach(qdp => typed.setParameter(qdp.name, qdp.value))
+
+    val result = typed.getResultList
+    result.foreach(em.detach(_))
+    result
+  }
 
   val EventGetCountRecords = """
   SELECT count(e)
@@ -407,6 +469,16 @@ class DbEventBean
     AND
       et.deleted = 0
                            """
+  val EventTypeByCodeQuery = """
+    SELECT et
+    FROM
+      EventType et
+    WHERE
+      et.code = :code
+    AND
+      et.deleted = 0
+                             """
+
   val RbCounterByEventTypeCntQuery = """
     SELECT
       rbc.id
@@ -456,4 +528,24 @@ class DbEventBean
   AND
     et.code = fdfv.value
                                      """
+
+  val EventTypeIdByRequestTypeIdAndFinanceIdQuery =
+    """
+    SELECT %s
+    FROM
+      EventType et
+    WHERE
+      et.deleted = '0'
+      %s
+      %s
+    """
+
+  def getEventTypeByCode(code: String): EventType = {
+    val result = em.createQuery(EventTypeByCodeQuery, classOf[EventType])
+      .setParameter("code", code)
+      .getResultList
+    val et = result(0)
+    result.foreach(em.detach(_))
+    et
+  }
 }

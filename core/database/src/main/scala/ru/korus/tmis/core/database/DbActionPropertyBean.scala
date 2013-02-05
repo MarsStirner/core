@@ -146,7 +146,7 @@ class DbActionPropertyBean
         // Если не нашли значение, то создаем новое, если не флатДиректори
         if (ap.getType.getTypeName.compareTo("FlatDirectory") != 0 && ap.getType.getTypeName.compareTo("FlatDictionary") != 0) {
           createActionPropertyValue(ap, value, index)
-        } else if(value !=null && value.compareTo("") != 0) {
+        } else if (value != null && value.compareTo("") != 0) {
           createActionPropertyValue(ap, value, index)
         }
         else null
@@ -229,10 +229,10 @@ class DbActionPropertyBean
 
   @TransactionAttribute(TransactionAttributeType.REQUIRES_NEW)
   def getActionPropertiesByActionIdAndRbCoreActionPropertyIds(actionId: Int, ids: java.util.List[java.lang.Integer]) = {
-    val result =  em.createQuery(ActionPropertiesByActionIdAndRbCoreActionPropertyIds, classOf[ActionProperty])
-                    .setParameter("actionId", actionId)
-                    .setParameter("ids", asJavaCollection(ids))
-                    .getResultList
+    val result = em.createQuery(ActionPropertiesByActionIdAndRbCoreActionPropertyIds, classOf[ActionProperty])
+      .setParameter("actionId", actionId)
+      .setParameter("ids", asJavaCollection(ids))
+      .getResultList
 
     result.foldLeft(LinkedHashMap.empty[ActionProperty, java.util.List[APValue]])(
       (map, ap) => {
@@ -244,8 +244,8 @@ class DbActionPropertyBean
   }
 
   @TransactionAttribute(TransactionAttributeType.REQUIRES_NEW)
-  def getActionPropertiesForEventByActionTypes(eventId: Int, atIds: java.util.Set[java.lang.Integer], coreIds: java.util.Set[java.lang.Integer])  = {
-    val result =  em.createQuery(ActionPropertiesForEventByActionTypesQuery, classOf[Array[AnyRef]])
+  def getActionPropertiesForEventByActionTypes(eventId: Int, atIds: java.util.Set[java.lang.Integer], coreIds: java.util.Set[java.lang.Integer]) = {
+    val result = em.createQuery(ActionPropertiesForEventByActionTypesQuery, classOf[Array[AnyRef]])
       .setParameter("eventId", eventId)
       .setParameter("atIds", asJavaCollection(atIds))
       .setParameter("coreIds", asJavaCollection(coreIds))
@@ -379,4 +379,36 @@ class DbActionPropertyBean
         ap.deleted = 0
       GROUP BY ap
     """
+
+  def createActionProperty(action: Action, actionPropertyType: ActionPropertyType): ActionProperty = {
+    val now = new Date
+    val newActionProperty = new ActionProperty()
+    //Инициализируем структуру Event
+    try {
+      newActionProperty.setCreateDatetime(now);
+      newActionProperty.setCreatePerson(null);
+      newActionProperty.setModifyPerson(null);
+      newActionProperty.setModifyDatetime(now);
+      newActionProperty.setDeleted(false);
+      newActionProperty.setAction(action);
+      newActionProperty.setType(actionPropertyType)
+      newActionProperty.setNorm("");
+      //1. Инсертим
+      em.persist(newActionProperty);
+    }
+    catch {
+      case ex: Exception => throw new CoreException("error while creating action ");
+    }
+    newActionProperty
+  }
+
+  val ActionProperty_ActionByValue = """
+    SELECT ap_act
+    FROM APValueAction ap_act
+    WHERE ap_act.value = :VALUE
+                                     """
+
+  def getActionProperty_ActionByValue(action: Action): APValueAction = {
+    em.createQuery(ActionProperty_ActionByValue, classOf[APValueAction]).setParameter("VALUE", action).getSingleResult
+  }
 }
