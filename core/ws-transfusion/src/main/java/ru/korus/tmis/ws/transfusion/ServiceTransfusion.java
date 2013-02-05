@@ -1,5 +1,6 @@
 package ru.korus.tmis.ws.transfusion;
 
+import java.util.Date;
 import java.util.List;
 
 import javax.jws.WebMethod;
@@ -27,8 +28,18 @@ import ru.korus.tmis.ws.transfusion.procedure.ProcedureInfo;
 @WebService(targetNamespace = "http://korus.ru/tmis/ws/transfusion", name = "TransfusionService")
 public interface ServiceTransfusion {
     @WebMethod()
+    /**
+     * 
+     * @param requestId - Идентификатор требования на выдачу КК (Action.id)
+     * @param factDate - Фактическая дата/время выдачи КК в формате "yyyy-MM-dd"
+     * @param orderIssueInfo
+     * @return
+     */
     public IssueResult
-            setOrderIssueResult(@WebParam(name = "orderIssueInfo", targetNamespace = "http://korus.ru/tmis/ws/transfusion") OrderIssueInfo orderIssueInfo);
+            setOrderIssueResult(
+                    @WebParam(name = "requestId", targetNamespace = "http://korus.ru/tmis/ws/transfusion") Integer requestId,
+                    @WebParam(name = "factDate", targetNamespace = "http://korus.ru/tmis/ws/transfusion") Date factDate, 
+                    @WebParam(name = "orderIssueInfo", targetNamespace = "http://korus.ru/tmis/ws/transfusion") List<OrderIssueInfo> orderIssueInfo);
 
     @WebMethod()
     public List<DivisionInfo> getDivisions();

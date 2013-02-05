@@ -10,6 +10,7 @@ package ru.korus.tmis.util;
 import javax.persistence.EntityManager;
 import javax.persistence.EntityManagerFactory;
 import javax.persistence.Persistence;
+import javax.persistence.PersistenceContext;
 
 import org.slf4j.Logger;
 
@@ -21,6 +22,8 @@ public class EntityMgr {
      */
     private static final String JNDI_NAME = "s11r64";
 
+
+    
     private static EntityManagerFactory entityManagerFactory = null;
     
     public static EntityManager getEntityManagerForS11r64(final Logger logger) throws CoreException {

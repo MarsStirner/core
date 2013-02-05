@@ -1,7 +1,9 @@
 package ru.korus.tmis.ws.transfusion;
 
+import java.util.Date;
 import java.util.List;
 
+import javax.ejb.EJB;
 import javax.jws.WebMethod;
 import javax.jws.WebParam;
 import javax.jws.WebService;
@@ -29,15 +31,25 @@ import ru.korus.tmis.ws.transfusion.procedure.ProcedureInfo;
 public class ServiceTransfusionImpl implements ServiceTransfusion {
 
     private static final Logger logger = LoggerFactory.getLogger(ServiceTransfusionImpl.class);
+    
+    @EJB
+    RegOrderIssueResult regOrderIssueResult;
 
     /**
      * @see ru.korus.tmis.ws.transfusion.ServiceTransfusion#setOrderIssueResult(ru.korus.tmis.ws.transfusion.order.OrderIssueInfo)
      */
     @Override
     public IssueResult
-            setOrderIssueResult(@WebParam(name = "orderIssueInfo", targetNamespace = "http://korus.ru/tmis/ws/transfusion") OrderIssueInfo orderIssueInfo) {
-        logger.info("Entered in transfusion service 'setOrderIssueResult' with parameter: {}", orderIssueInfo);
-        return (new RegOrderIssueResult()).save(orderIssueInfo);
+            setOrderIssueResult(
+                    @WebParam(name = "requestId", targetNamespace = "http://korus.ru/tmis/ws/transfusion") Integer requestId,
+                    @WebParam(name = "factDate", targetNamespace = "http://korus.ru/tmis/ws/transfusion") Date factDate, 
+                    @WebParam(name = "listOrderIssueInfo", targetNamespace = "http://korus.ru/tmis/ws/transfusion") List<OrderIssueInfo> listOrderIssueInfo) {
+        IssueResult res = new IssueResult();
+        if(requestId == null || factDate == null || listOrderIssueInfo == null || listOrderIssueInfo.isEmpty()) {
+            res.setDescription("Error: illegal arguments for setOrderIssueResult" );
+        }
+        logger.info("Entered in transfusion service 'setOrderIssueResult' with parameters: requestId: {}, factDate: {}, listOrderIssueInfo.size: {}", listOrderIssueInfo.size());
+        return res;//regOrderIssueResult.save(orderIssueInfo);
     }
 
     /**

@@ -4,6 +4,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import javax.ejb.Singleton;
 import javax.persistence.EntityManager;
 
 import ru.korus.tmis.core.entity.model.APValueDate;
@@ -26,6 +27,7 @@ import ru.korus.tmis.ws.transfusion.Database;
 /**
  * 
  */
+
 public class TrfuActionProp {
 
     private static final String TRANSFUSION_ACTION_FLAT_CODE = "TransfusionTherapy";
@@ -81,9 +83,9 @@ public class TrfuActionProp {
     private final Map<PropType, Integer> propIds;
 
     public static synchronized TrfuActionProp getInstance(EntityManager em) throws CoreException {
-        if (instance == null) {
+      //  if (instance == null) {
             instance = new TrfuActionProp(em);
-        }
+    //    }
         return instance;
     }
     

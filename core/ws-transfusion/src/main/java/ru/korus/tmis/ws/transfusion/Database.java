@@ -7,14 +7,13 @@ import java.util.List;
 import javax.ejb.Schedule;
 import javax.ejb.Singleton;
 import javax.persistence.EntityManager;
+import javax.persistence.PersistenceContext;
 import javax.xml.ws.WebServiceException;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import ru.korus.tmis.core.entity.model.APValue;
-import ru.korus.tmis.core.entity.model.APValueInteger;
-import ru.korus.tmis.core.entity.model.APValueString;
 import ru.korus.tmis.core.entity.model.AbstractAPValue;
 import ru.korus.tmis.core.entity.model.Action;
 import ru.korus.tmis.core.entity.model.ActionProperty;
@@ -38,6 +37,7 @@ import ru.korus.tmis.ws.transfusion.order.SendOrderBloodComponents;
 @Singleton
 public class Database {
     private static final Logger logger = LoggerFactory.getLogger(SendOrderBloodComponents.class);
+    
 
     @Schedule(hour = "*", minute = "*")
     public void pullDB() {
@@ -53,7 +53,7 @@ public class Database {
     }
 
     @SuppressWarnings("unchecked")
-    public static <T> T getSingleProp(Class classType, final EntityManager em, final int actionId, final int propTypeId) throws CoreException {
+    public static <T> T getSingleProp(@SuppressWarnings("rawtypes") Class classType, final EntityManager em, final int actionId, final int propTypeId) throws CoreException {
 
         final List<ActionProperty> prop = getActionProp(em, actionId, propTypeId);
 

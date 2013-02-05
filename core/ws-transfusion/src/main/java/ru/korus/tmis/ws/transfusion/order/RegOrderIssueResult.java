@@ -5,14 +5,16 @@ import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.List;
 
+import javax.ejb.Stateless;
 import javax.persistence.EntityManager;
+import javax.persistence.PersistenceContext;
+import javax.persistence.PersistenceContextType;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import ru.korus.tmis.core.entity.model.Action;
 import ru.korus.tmis.core.exception.CoreException;
-import ru.korus.tmis.util.EntityMgr;
 import ru.korus.tmis.ws.transfusion.IssueResult;
 
 /**
@@ -25,6 +27,7 @@ import ru.korus.tmis.ws.transfusion.IssueResult;
 /**
  * Регистрация извещения о резульатах выполнения требования КК
  */
+@Stateless
 public class RegOrderIssueResult {
 
     /**
@@ -34,39 +37,33 @@ public class RegOrderIssueResult {
      *            - входные данные от подсистемы ТРФУ
      * @return результат регистрации
      */
+    @PersistenceContext(unitName = "s11r64", type=PersistenceContextType.TRANSACTION)
+    EntityManager em = null;
+
     
     private static final Logger logger = LoggerFactory.getLogger(SendOrderBloodComponents.class);
     
-    public IssueResult save(OrderIssueInfo orderIssueInfo) {
+    public IssueResult save(Integer requestId, Date factDate, OrderIssueInfo orderIssueInfo) {
         
         IssueResult res = new IssueResult();
         res.setResult(false);
-        EntityManager em = null; 
-        try {
-            em = EntityMgr.getEntityManagerForS11r64(logger);
-        } catch (CoreException ex) {
-            logger.error("Cannot create entety manager. Error description: '{}'", ex.getMessage());            
-            ex.printStackTrace();
-            res.setDescription("MIS Internal error");
-            return res;
-        }
 
         if (orderIssueInfo == null) {
             res.setDescription("illegal input argument");
             return res;
         }
 
-        res.setRequestId(orderIssueInfo.getRequestId());
-        Integer actionId = getAction(em, orderIssueInfo.getRequestId());
+        res.setRequestId(requestId);
+        Integer actionId = getAction(em, requestId);
 
         if (actionId == null) { // требование КК не найдено в базе данных
-            res.setDescription(String.format("The issue for requestId '%s' has been not found in MIS", "" + orderIssueInfo.getRequestId()));
+            res.setDescription(String.format("The issue for requestId '%s' has been not found in MIS", "" + requestId));
             res.setResult(false);
             return res;
         }
 
         try {
-            update(em, actionId, orderIssueInfo);
+            update(em, actionId, requestId, factDate, orderIssueInfo);
         } catch (CoreException ex) {
             logger.error("Cannot update action {} property. Error description: '{}'", actionId, ex.getMessage());            
             ex.printStackTrace();
@@ -83,21 +80,14 @@ public class RegOrderIssueResult {
      * @param orderIssue
      * @throws CoreException 
      */
-    private void update(EntityManager em, Integer actionId, OrderIssueInfo orderIssue) throws CoreException {
+    private void update(EntityManager em, Integer actionId, Integer requestId, Date factDate, OrderIssueInfo orderIssue) throws CoreException {
         
         TrfuActionProp  trfuActionProp = TrfuActionProp.getInstance(em);
         
         SimpleDateFormat formatter = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
-        Date facDate;
         final boolean update = true;
-        try {
-            facDate = formatter.parse(orderIssue.getFactDate());
-            trfuActionProp.setProp(facDate, em, actionId, TrfuActionProp.PropType.ORDER_ISSUE_RES_TIME, update);
-            trfuActionProp.setProp(facDate, em, actionId, TrfuActionProp.PropType.ORDER_ISSUE_RES_DATE, update);
-        } catch (ParseException e) {
-            logger.error("Wrong date format for factDate: input factDate = {}", orderIssue.getFactDate());
-            e.printStackTrace();
-        }
+        trfuActionProp.setProp(factDate, em, actionId, TrfuActionProp.PropType.ORDER_ISSUE_RES_TIME, update);
+        trfuActionProp.setProp(factDate, em, actionId, TrfuActionProp.PropType.ORDER_ISSUE_RES_DATE, update);
         trfuActionProp.setProp(orderIssue.getComponentId(), em, actionId, TrfuActionProp.PropType.ORDER_ISSUE_RES_BLOOD_ID, update);
         trfuActionProp.setProp(orderIssue.getNumber(), em, actionId, TrfuActionProp.PropType.ORDER_ISSUE_RES_BLOOD_NUMBER, update);
         trfuActionProp.setProp(orderIssue.getComponentId(), em, actionId, TrfuActionProp.PropType.ORDER_ISSUE_RES_BLOOD_TYPE_ID, update);

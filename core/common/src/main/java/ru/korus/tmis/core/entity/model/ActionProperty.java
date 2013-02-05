@@ -41,7 +41,7 @@ public class ActionProperty
     @Temporal(TemporalType.TIMESTAMP)
     private Date modifyDatetime;
 
-    @ManyToOne(cascade = CascadeType.ALL)
+    @ManyToOne
     @JoinColumn(name = "modifyPerson_id")
     private Staff modifyPerson;
 
@@ -49,11 +49,11 @@ public class ActionProperty
     @Column(name = "deleted")
     private boolean deleted = false;
 
-    @ManyToOne(cascade = CascadeType.ALL)
+    @ManyToOne
     @JoinColumn(name = "type_id")
     private ActionPropertyType actionPropertyType;
 
-    @ManyToOne(cascade = CascadeType.ALL)
+    @ManyToOne
     @JoinColumn(name = "unit_id")
     private RbUnit unit;
 
@@ -77,7 +77,7 @@ public class ActionProperty
     // Custom mappings
     ////////////////////////////////////////////////////////////////////////////
 
-    @ManyToOne(cascade = CascadeType.ALL)
+    @ManyToOne
     @JoinColumn(name = "action_id")
     private Action action;
 

@@ -246,9 +246,9 @@ public class SendOrderBloodComponents {
         List<ComponentType> compTypesTrfu = trfuService.getComponentTypes();
         List<RbBloodComponentType> compBloodTypesDb = em.createQuery("SELECT c FROM RbBloodComponentType c", RbBloodComponentType.class).getResultList();
         logger.info("The Reference book for blood components has been received from TRFU. The count of blood component: {}", compBloodTypesDb.size());
-        List<RbBloodComponentType> compBloodTypesTrfu = covertToDb(compTypesTrfu);
+        List<RbBloodComponentType> compBloodTypesTrfu = convertToDb(compTypesTrfu);
         for (RbBloodComponentType compDb : compBloodTypesDb) {
-            if (compBloodTypesTrfu.remove(compDb) && compDb.getUnused()) {
+            if (compBloodTypesTrfu.remove(compDb)) {
                 compDb.setUnused(false);
             } else {
                 compDb.setUnused(true);
@@ -266,7 +266,7 @@ public class SendOrderBloodComponents {
      * @param compBloodTypesTrfu
      * @return
      */
-    private List<RbBloodComponentType> covertToDb(List<ComponentType> compBloodTypesTrfu) {
+    private List<RbBloodComponentType> convertToDb(List<ComponentType> compBloodTypesTrfu) {
         List<RbBloodComponentType> res = new LinkedList<RbBloodComponentType>();
         for (ComponentType compTrfu : compBloodTypesTrfu) {
             RbBloodComponentType compDb = new RbBloodComponentType();
