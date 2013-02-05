@@ -900,7 +900,7 @@ public class CommServer implements Communications.Iface {
     /**
      * Получение информации об Организации по её Инфис-коду
      *
-     * @param infisCode
+     * @param infisCode инфис-код организации
      * @return информация об Организации
      * @throws TException
      */
@@ -922,7 +922,14 @@ public class CommServer implements Communications.Iface {
         return result;
     }
 
-    //TODO не реализованно
+    /**
+     * Получение адресов организаций
+     *
+     * @param orgStructureId ид организации
+     * @param recursive      флаг рекурсивной выборки организаций
+     * @return Список (адрес и ид организации, которой этот адрес принадлежит)
+     * @throws TException
+     */
     @Override
     public List<Address> getAddresses(final int orgStructureId, final boolean recursive) throws TException {
         int currentRequestNum = request_num++;
@@ -943,9 +950,26 @@ public class CommServer implements Communications.Iface {
             logger.warn("#{} throw new NotFoundException.", currentRequestNum);
             throw new NotFoundException().setError_msg("None of the OrgStructure contain any such parent =" + orgStructureId);
         }
+
         List<Address> resultList = new ArrayList<Address>(orgStructureList.size());
         for (ru.korus.tmis.core.entity.model.OrgStructure currentOrgStructure : orgStructureList) {
-            // resultList.add(new Address().setCorpus(currentOrgStructure.getOrganization().get))
+            logger.debug("OrgStructure={}", currentOrgStructure);
+            for (OrgStructureAddress currentOrgStructureAddress : orgStructureBean.getOrgStructureAddressByOrgStructure(currentOrgStructure)) {
+                logger.debug("OrgStructureAddress ={}", currentOrgStructureAddress);
+                if (currentOrgStructureAddress != null) {
+                    AddressHouse adrHouse = currentOrgStructureAddress.getAddressHouseList();
+                    logger.debug("AddressHouse={}", adrHouse);
+                    if (adrHouse != null) {
+                        resultList.add(
+                                new Address().setOrgStructureId(currentOrgStructure.getId())
+                                        .setPointKLADR(adrHouse.getKLADRCode())
+                                        .setStreetKLADR(adrHouse.getKLADRStreetCode())
+                                        .setCorpus(adrHouse.getCorpus()).setNumber(adrHouse.getNumber())
+                                        .setFirstFlat(currentOrgStructureAddress.getFirstFlat())
+                                        .setLastFlat(currentOrgStructureAddress.getLastFlat()));
+                    }
+                }
+            }
         }
         logger.info("End of #{} getAddresses. Return (Size={}), DATA={})", currentRequestNum, resultList.size(), resultList);
         return resultList;

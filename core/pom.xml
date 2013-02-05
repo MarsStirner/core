@@ -104,8 +104,19 @@
             <id>nde</id>
             <properties>
 
-                <com.sun.aas.instanceRoot>/usr/local/opt/glassfish/libexec/glassfish/domains/domain1/</com.sun.aas.instanceRoot>
+                <com.sun.aas.instanceRoot>/usr/local/opt/glassfish/libexec/glassfish/domains/domain1/
+                </com.sun.aas.instanceRoot>
 
+                <mysql.login>root</mysql.login>
+                <mysql.password>root</mysql.password>
+            </properties>
+        </profile>
+
+        <profile>
+            <!-- Пользовательский профиль -->
+            <id>ueg</id>
+            <properties>
+                <com.sun.aas.instanceRoot>C:\Winprog\glassfish3\glassfish\domains\domain\</com.sun.aas.instanceRoot>
                 <mysql.login>root</mysql.login>
                 <mysql.password>root</mysql.password>
             </properties>
@@ -285,8 +296,8 @@
                     <encoding>${project.build.sourceEncoding}</encoding>
                     <debug>${project.build.debug}</debug>
                     <!--<jvmArgs>-->
-                        <!--<jvmArg>-Xms64m</jvmArg>-->
-                        <!--<jvmArg>-Xmx1024m</jvmArg>-->
+                    <!--<jvmArg>-Xms64m</jvmArg>-->
+                    <!--<jvmArg>-Xmx1024m</jvmArg>-->
                     <!--</jvmArgs>-->
                 </configuration>
             </plugin>
@@ -333,7 +344,7 @@
                 <artifactId>gmaven-plugin</artifactId>
                 <version>${version.maven.gmaven.plugin}</version>
                 <configuration>
-                    <source>src/main/groovy</source>
+                    <source>src / main / groovy</source>
                     <providerSelection>2.0</providerSelection>
                 </configuration>
                 <executions>

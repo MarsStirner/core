@@ -2,6 +2,7 @@ package ru.korus.tmis.core.database;
 
 import ru.korus.tmis.core.entity.model.ActionType;
 import ru.korus.tmis.core.entity.model.OrgStructure;
+import ru.korus.tmis.core.entity.model.OrgStructureAddress;
 import ru.korus.tmis.core.entity.model.Staff;
 import ru.korus.tmis.core.exception.CoreException;
 
@@ -104,4 +105,11 @@ public interface DbOrgStructureBeanLocal {
      */
     List<Staff> getPersonnel(Integer orgStructureId, boolean recursive, String infisCode) throws CoreException;
 
+    /**
+     * Получение адресов Оргсруктуры
+     *
+     * @param currentOrgStructure оргструктура, для которой получаем имена
+     * @return Список адресов оргструктуры
+     */
+    List<OrgStructureAddress> getOrgStructureAddressByOrgStructure(OrgStructure currentOrgStructure);
 }

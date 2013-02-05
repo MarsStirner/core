@@ -1,6 +1,6 @@
 package ru.korus.tmis.core.database
 
-import ru.korus.tmis.core.entity.model.{Staff, OrgStructure, ActionType}
+import ru.korus.tmis.core.entity.model.{OrgStructureAddress, Staff, OrgStructure, ActionType}
 import ru.korus.tmis.core.logging.LoggingInterceptor
 import grizzled.slf4j.Logging
 import javax.ejb.Stateless
@@ -224,5 +224,13 @@ class DbOrgStructureBean
     %s
                                                     """
 
+  val OrgStructuresAddressesByOrgStructureQuery = """
+    SELECT orgAdr
+    FROM OrgStructureAddress orgAdr
+    WHERE orgAdr.master= :ORGSTRUCTURE
+                                                  """
 
+  def getOrgStructureAddressByOrgStructure(orgStructure: OrgStructure): util.List[OrgStructureAddress] = {
+    em.createQuery(OrgStructuresAddressesByOrgStructureQuery, classOf[OrgStructureAddress]).setParameter("ORGSTRUCTURE", orgStructure).getResultList
+  }
 }

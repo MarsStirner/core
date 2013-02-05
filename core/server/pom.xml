@@ -100,7 +100,7 @@
             <groupId>ru.korus.tmis.communication</groupId>
             <artifactId>tmis-communication</artifactId>
             <version>${version.tmis.core}</version>
-            <type>war</type>
+            <type>ejb</type>
         </dependency>
 
     </dependencies>
