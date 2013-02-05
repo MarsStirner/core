@@ -434,7 +434,8 @@
                         ru\korus\tmis\core\database\,
                         ru\korus\tmis\core\patient\,
                         ru\korus\tmis\core\auth\,
-                        ru\korus\tmis\drugstore\data\
+                        ru\korus\tmis\drugstore\data\,
+                        ru/korus/tmis/communication/thriftgen/*
                     </excludes>
                 </configuration>
                 <executions>
