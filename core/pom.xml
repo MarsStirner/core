@@ -281,6 +281,10 @@
                     <target>${project.build.jdk}</target>
                     <encoding>${project.build.sourceEncoding}</encoding>
                     <debug>${project.build.debug}</debug>
+                    <!--<jvmArgs>-->
+                        <!--<jvmArg>-Xms64m</jvmArg>-->
+                        <!--<jvmArg>-Xmx1024m</jvmArg>-->
+                    <!--</jvmArgs>-->
                 </configuration>
             </plugin>
 
@@ -311,8 +315,8 @@
                 <configuration>
                     <sourceDir>src/main/scala</sourceDir>
                     <jvmArgs>
-                        <jvmArg>-Xms64m</jvmArg>
-                        <jvmArg>-Xmx1024m</jvmArg>
+                        <!--<jvmArg>-Xms128m</jvmArg>-->
+                        <!--<jvmArg>-Xmx256m</jvmArg>-->
                     </jvmArgs>
                     <scalaVersion>${version.scala}</scalaVersion>
                 </configuration>
