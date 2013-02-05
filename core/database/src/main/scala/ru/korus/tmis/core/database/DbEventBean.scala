@@ -143,9 +143,9 @@ class DbEventBean
       newEvent.setAssigner(authData.user)
       newEvent.setNote(" ")
       newEvent.setSetDate(begDate)
-      //val contract = contractBean.getContractForEventType(eventType.getId.intValue(), eventType.getFinance.getId.intValue())
+      //val contract = contractBean.getContractForEventType(eventType)
       //if (contract != null) {
-      //  newEvent.setContractId(contract.getId.intValue())
+        newEvent.setContract(contractBean.getContractForEventType(eventType))
       //}
       newEvent.setUuid(dbUUIDBeanLocal.createUUID())
       //newEvent.setExecDate(endDate)

@@ -1,7 +1,7 @@
 package ru.korus.tmis.core.database
 
 import javax.interceptor.Interceptors
-import javax.ejb.Stateless
+import javax.ejb.{TransactionAttributeType, TransactionAttribute, Stateless}
 import ru.korus.tmis.core.logging.LoggingInterceptor
 import ru.korus.tmis.util.{ConfigManager, I18nable}
 import javax.persistence.{EntityManager, PersistenceContext}
@@ -84,17 +84,18 @@ class DbContractBean
     }
   }
 
-  def getContractForEventType(eventTypeId: Int, financeId: Int) = {
+  @TransactionAttribute(TransactionAttributeType.REQUIRES_NEW)
+  def getContractForEventType(eventType: EventType) = {
     val result = em.createQuery(FindContractForEventQuery,
       classOf[Contract])
       .setParameter("date", new Date)
-      .setParameter("financeId", financeId)
-      .setParameter("eventTypeId", eventTypeId)
+      .setParameter("financeId", eventType.getFinance.getId.intValue())
+      .setParameter("eventTypeId", eventType.getId.intValue())
       .getResultList
 
     result.size match {
       case 0 => {
-        logTmis.warning(i18n("error.ContractNotFound").format(eventTypeId))
+        logTmis.warning(i18n("error.ContractNotFound").format(eventType.getId.intValue()))
         null
         /*
         throw new NoSuchEntityException(
