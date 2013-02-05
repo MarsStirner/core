@@ -28,7 +28,7 @@
     <properties>
         <!-- Версия ядра-->
         <version.tmis.core>0.9.12-SNAPSHOT</version.tmis.core>
-        <com.sun.aas.instanceRoot>/usr/local/opt/</com.sun.aas.instanceRoot>
+
 
         <version.joda.time>2.1</version.joda.time>
         <version.apache.thrift>0.9.0</version.apache.thrift>
@@ -103,6 +103,9 @@
             <!-- Пользовательский профиль -->
             <id>nde</id>
             <properties>
+
+                <com.sun.aas.instanceRoot>/usr/local/opt/</com.sun.aas.instanceRoot>
+
                 <mysql.login>root</mysql.login>
                 <mysql.password>root</mysql.password>
             </properties>
