@@ -75,7 +75,7 @@
         <!-- Кол-во эксепшенов отправляемых в одном письме -->
         <alarm.count.message>10</alarm.count.message>
 
-        <!-- Путь для логов в тестовом окружжении-->
+        <!-- Путь для логов в тестовом окружении-->
         <logs.test.path>core/server/target/logs-test/</logs.test.path>
         <!-- Уровень записи лога по умолчанию -->
         <logs.level>INFO</logs.level>
@@ -101,10 +101,22 @@
 
         <profile>
             <!-- Пользовательский профиль -->
-            <id>nde</id>
+            <id>nde-mac</id>
             <properties>
-
+                <!-- Путь к директории домена (нужен для того, чтобы валидировался pom.xml -->
                 <com.sun.aas.instanceRoot>/usr/local/opt/glassfish/libexec/glassfish/domains/domain1/</com.sun.aas.instanceRoot>
+
+                <mysql.login>root</mysql.login>
+                <mysql.password>root</mysql.password>
+            </properties>
+        </profile>
+
+        <profile>
+            <!-- Пользовательский профиль -->
+            <id>nde-win</id>
+            <properties>
+                <!-- Путь к директории домена (нужен для того, чтобы валидировался pom.xml -->
+                <com.sun.aas.instanceRoot>C:/Winprog/glassfish3/glassfish/domains/domain1/</com.sun.aas.instanceRoot>
 
                 <mysql.login>root</mysql.login>
                 <mysql.password>root</mysql.password>
