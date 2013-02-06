@@ -229,7 +229,7 @@ public class PharmacyBean implements PharmacyBeanLocal {
             }
         }
 
-        final Action parentAction = dbAction.getActionById(action.getParentActionId());
+        final Action parentAction = dbAction.getActionByIdWithIgnoreDeleted(action.getParentActionId());
         if (parentAction != null) {
             return getOrgStructure(parentAction);
         }

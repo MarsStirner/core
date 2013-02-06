@@ -1,7 +1,10 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<configuration>
+<configuration debug="true">
     <jmxConfigurator/>
     <contextName>tmis-test</contextName>
+
+    <!-- dump status message on the console as they arrive -->
+    <statusListener class="ch.qos.logback.core.status.OnConsoleStatusListener"/>
 
     <!-- Основные настройки для консоли, для эксепшен лога-->
     <appender name="STDOUT" class="ch.qos.logback.core.ConsoleAppender">
@@ -20,7 +23,7 @@
             <pattern>${log.format}</pattern>
         </encoder>
         <param name="target" value="System.out"/>
-        <!--<target>System.out</target>-->
+        <target>System.out</target>
     </appender>
 
     <appender name="STDOUT_ERROR" class="ch.qos.logback.core.ConsoleAppender">
@@ -39,17 +42,13 @@
             <pattern>${log.format}</pattern>
         </encoder>
         <param name="target" value="System.err"/>
-        <!--<target>System.err</target>-->
+        <target>System.err</target>
     </appender>
 
     <appender name="EXCEPTIONS" class="ch.qos.logback.core.rolling.RollingFileAppender">
         <file>${logs.test.path}/exceptions/exceptions.log</file>
-        <filter class="ch.qos.logback.core.filter.EvaluatorFilter">
-            <evaluator>
-                <expression>return throwable != null;</expression>
-            </evaluator>
-            <OnMismatch>DENY</OnMismatch>
-            <OnMatch>ACCEPT</OnMatch>
+        <filter class="ru.korus.tmis.util.ExceptionFilter">
+            <exceptionClassName>java.lang.Exception</exceptionClassName>
         </filter>
 
         <rollingPolicy class="ch.qos.logback.core.rolling.TimeBasedRollingPolicy">

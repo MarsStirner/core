@@ -31,6 +31,17 @@ public interface DbActionBeanLocal {
             throws CoreException;
 
     /**
+     * Получение записи Action по идентификатору c любым статусом deleted
+     *
+     * @param id Идентификатор действия.
+     * @return Action.
+     * @throws CoreException
+     * @see Action
+     */
+    Action getActionByIdWithIgnoreDeleted(int id)
+            throws CoreException;
+
+    /**
      * Создание нового действия
      *
      * @param eventId      Идентификатор обращения.

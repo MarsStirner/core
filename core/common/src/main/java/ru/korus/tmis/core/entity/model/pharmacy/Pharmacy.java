@@ -45,6 +45,7 @@ public class Pharmacy implements Serializable {
 
 //    @Basic(optional = false)
 //    @Column(name = "attempts")
+    @Transient
     private int attempts = 0;
 
 

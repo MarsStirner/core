@@ -76,6 +76,34 @@ class DbActionBean
     }
   }
 
+  @TransactionAttribute(TransactionAttributeType.REQUIRES_NEW)
+  def getActionByIdWithIgnoreDeleted(id: Int) = {
+    info("Requested action id[" + id + "]")
+    val result = em.createQuery( """
+                                  SELECT a
+                                  FROM
+                                    Action a
+                                  WHERE
+                                    a.id = :id
+                                 """,
+      classOf[Action])
+      .setParameter("id", id)
+      .getResultList
+
+    result.size match {
+      case 0 => {
+        throw new CoreException(
+          ConfigManager.ErrorCodes.ActionNotFound,
+          i18n("error.actionNotFound"))
+      }
+      case size => {
+        val action = result.iterator.next()
+        em.detach(action)
+        action
+      }
+    }
+  }
+
   def createAction(eventId: Int, actionTypeId: Int, userData: AuthData) = {
     val e = dbEvent.getEventById(eventId)
     val at = dbActionType.getActionTypeById(actionTypeId)
