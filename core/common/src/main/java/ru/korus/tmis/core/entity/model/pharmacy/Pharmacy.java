@@ -43,8 +43,8 @@ public class Pharmacy implements Serializable {
     @Column(name = "result")
     private String result;
 
-    @Basic(optional = false)
-    @Column(name = "attempts")
+//    @Basic(optional = false)
+//    @Column(name = "attempts")
     private int attempts = 0;
 
 
