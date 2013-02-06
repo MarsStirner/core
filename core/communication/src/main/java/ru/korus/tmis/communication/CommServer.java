@@ -655,7 +655,7 @@ public class CommServer implements Communications.Iface {
         ActionProperty queueAP = null;
         final Event queueEvent;
         final EventType queueEventType;
-        final Action queueAction;
+        Action queueAction = null;
         final ActionType queueActionType;
         try {
             for (ActionProperty currentProperty : doctorAction.getActionProperties()) {

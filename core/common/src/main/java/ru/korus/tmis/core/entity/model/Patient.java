@@ -109,9 +109,9 @@ public class Patient implements Serializable, Cloneable {
     @Column(name = "version")
     private int version;
 
-    //    @ManyToOne(cascade = CascadeType.ALL)
-//    @JoinColumn(name = "uuid_id")
-    @Transient
+    @ManyToOne(cascade = CascadeType.ALL)
+    @JoinColumn(name = "uuid_id")
+//    @Transient
     private UUID uuid;
 
     ////////////////////////////////////////////////////////////////////////////

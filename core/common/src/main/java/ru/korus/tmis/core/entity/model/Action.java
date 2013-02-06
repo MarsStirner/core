@@ -168,9 +168,9 @@ public class Action
     @Column(name = "toOrder")
     private boolean toOrder = false;
 
-//    @ManyToOne(cascade = CascadeType.ALL)
-//    @JoinColumn(name = "uuid_id")
-    @Transient
+    @ManyToOne(cascade = CascadeType.ALL)
+    @JoinColumn(name = "uuid_id")
+//    @Transient
     private UUID uuid;
 
     @Basic(optional = false)
