@@ -19,7 +19,7 @@
         <module>ws-medipad</module>
         <module>ws-laboratory</module>
         <module>ws-drugstore</module>
-        <module>hl7</module>
+        <!--<module>hl7</module>-->
         <module>ws-finance</module>
         <module>ws-transfusion</module>
         <module>communication</module>
@@ -117,6 +117,18 @@
             <properties>
                 <!-- Путь к директории домена (нужен для того, чтобы валидировался pom.xml -->
                 <com.sun.aas.instanceRoot>C:/Winprog/glassfish3/glassfish/domains/domain1/</com.sun.aas.instanceRoot>
+
+                <mysql.login>root</mysql.login>
+                <mysql.password>root</mysql.password>
+            </properties>
+        </profile>
+
+        <profile>
+            <!-- Пользовательский профиль -->
+            <id>nde-lin</id>
+            <properties>
+                <!-- Путь к директории домена (нужен для того, чтобы валидировался pom.xml -->
+                <com.sun.aas.instanceRoot>/opt/glassfish3/glassfish/domains/domain1/</com.sun.aas.instanceRoot>
 
                 <mysql.login>root</mysql.login>
                 <mysql.password>root</mysql.password>

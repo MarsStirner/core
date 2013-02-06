@@ -116,6 +116,7 @@
                     <defaultLibBundleDir>lib</defaultLibBundleDir>
                     <!--<earSourceDirectory>${basedir}/src/main/resources/</earSourceDirectory>-->
                     <earSourceExcludes>logback.xml</earSourceExcludes>
+                    <!--<earSourceIncludes>logback.xml</earSourceIncludes>-->
                 </configuration>
             </plugin>
             <!--
