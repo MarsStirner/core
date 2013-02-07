@@ -38,4 +38,4 @@ echo "--------------------------------------------------------------------"
 
 
 # Показать последние строки лога
-# tail -n 5000 ${glassfish.domain.dir}/${glassfish.domain}/logs/server.log
+echo tail -n 5000 ${glassfish.domain.dir}/${glassfish.domain}/logs/server.log
