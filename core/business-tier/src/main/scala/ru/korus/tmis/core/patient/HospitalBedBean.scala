@@ -219,6 +219,7 @@ with TmisLogging{
       }
       result = dbManager.mergeAll(entities).filter(result.contains(_)).map(_.asInstanceOf[Action]).toList
       val r = dbManager.detachAll[Action](result).toList
+      /*
       r.foreach(newAction => {
       val newValues = actionPropertyBean.getActionPropertiesByActionId(newAction.getId.intValue)
       actionEvent.fire(new ModifyActionNotification(oldAction,
@@ -226,6 +227,7 @@ with TmisLogging{
                                                     newAction,
                                                     newValues))
       })
+      */
       return r.get(0)
     }
     finally {
@@ -328,13 +330,16 @@ with TmisLogging{
 
       result = dbManager.mergeAll(entities).filter(result.contains(_)).map(_.asInstanceOf[Action]).toList
       val r = dbManager.detachAll[Action](result).toList
+      /*
       r.foreach(newAction => {
         val newValues = actionPropertyBean.getActionPropertiesByActionId(newAction.getId.intValue)
-        actionEvent.fire(new ModifyActionNotification(oldAction,
-          oldValues,
-          newAction,
-          newValues))
+        val hren = new ModifyActionNotification(null,       //oldAction
+          null, //oldValues
+          null, //newAction
+          null)//newValues
+        actionEvent.fire(hren)
       })
+      */
       return r.get(0)
     }
     finally {
@@ -365,6 +370,7 @@ with TmisLogging{
       if(res==None) map.put(allBed, false)
       else map.put(allBed, true)
     })
+    result.foreach(em.detach(_))
     map
   }
 
@@ -478,11 +484,13 @@ with TmisLogging{
 
        dbManager.merge(action)
        dbManager.detach(action)
+       /*
        val newValues = actionPropertyBean.getActionPropertiesByActionId(action.getId.intValue)
        actionEvent.fire( new ModifyActionNotification(oldAction,
                          oldValues,
                          action,
                          newValues))
+                         */
     }
     finally {
       appLock.releaseLock(lockId)
@@ -512,7 +520,7 @@ with TmisLogging{
           val result2 = em.createQuery(BusyHospitalBedsByDepartmentIdQuery.format(i18n("db.action.movingFlatCode"),i18n("db.actionPropertyType.moving.name.bed")), classOf[OrgStructureHospitalBed])
             .setParameter("ids", asJavaCollection(Set(bedId)))
             .getResultList
-
+          result2.foreach(em.detach(_))
           flgBusyBed = if (result2!=null) true else false
         } else {
           flgBusyBed = true
@@ -541,6 +549,7 @@ with TmisLogging{
 
         result = dbManager.mergeAll(entities).filter(result.contains(_)).map(_.asInstanceOf[Action]).toList
         val r = dbManager.detachAll[Action](result).toList
+        /*
         r.foreach(newAction => {
           val newValues = actionPropertyBean.getActionPropertiesByActionId(newAction.getId.intValue)
           actionEvent.fire(new ModifyActionNotification(oldLastAction,
@@ -548,6 +557,7 @@ with TmisLogging{
             newAction,
             newValues))
         })
+        */
       }
       finally {
         appLock.releaseLock(lockLastId)
