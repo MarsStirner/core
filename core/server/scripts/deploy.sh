@@ -56,4 +56,4 @@ echo "--------------------------------------------------------------------"
 
 
 # Показать лог
-#tail -f -n 5000 ${glassfish.domain.dir}/${glassfish.domain}/logs/server.log
+echo tail -f -n 5000 ${glassfish.domain.dir}/${glassfish.domain}/logs/server.log
