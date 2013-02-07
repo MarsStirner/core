@@ -275,7 +275,7 @@ with CAPids{
 
       if (!flgCreate) dbManager.mergeAll(entities) else dbManager.persistAll(entities)
       dbManager.detach(action)
-
+       /*
       if (!flgCreate) {
         val newValues = actionPropertyBean.getActionPropertiesByActionId(action.getId.intValue)
         actionEvent.fire(new ModifyActionNotification(oldAction,
@@ -283,6 +283,7 @@ with CAPids{
           action,
           newValues))
       }
+      */
     }
     finally {
       if (lockId>0) appLock.releaseLock(lockId)

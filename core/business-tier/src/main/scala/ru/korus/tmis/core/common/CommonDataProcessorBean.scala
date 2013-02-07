@@ -248,10 +248,12 @@ class CommonDataProcessorBean
     })
 
     val r = dbManager.detachAll[Action](result).toList
+    /*
     r.foreach(a => {
       val values = dbActionProperty.getActionPropertiesByActionId(a.getId.intValue)
       actionEvent.fire(new CreateActionNotification(a, values))
     })
+    */
     return r
   }
 
@@ -369,6 +371,7 @@ class CommonDataProcessorBean
         .toList
 
       val r = dbManager.detachAll[Action](result).toList
+      /*
       r.foreach(newAction => {
         val newValues = dbActionProperty.getActionPropertiesByActionId(newAction.getId.intValue)
         actionEvent.fire(new ModifyActionNotification(oldAction,
@@ -376,6 +379,7 @@ class CommonDataProcessorBean
           newAction,
           newValues))
       })
+      */
       return r
 
     } finally {
@@ -393,10 +397,12 @@ class CommonDataProcessorBean
 
     status match {
       case ActionStatus.Canceled => {
+        /*
         r.foreach(a => {
           val values = dbActionProperty.getActionPropertiesByActionId(a.getId.intValue)
           actionEvent.fire(new CancelActionNotification(a, values))
         })
+        */
       }
       case _ => {
 

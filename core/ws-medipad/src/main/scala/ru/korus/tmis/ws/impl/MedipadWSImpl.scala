@@ -704,7 +704,7 @@ class MedipadWSImpl
    def insertPrimaryMedExamForPatient(eventId: Int, data: JSONCommonData, authData: AuthData)  = {
      //создаем ответственного, если до этого был другой
      val eventPerson = dbEventPerson.getLastEventPersonForEventId(eventId)
-     if (eventPerson.getPerson != authData.getUser) {
+     if (eventPerson == null || eventPerson.getPerson != authData.getUser) {
        dbEventPerson.insertOrUpdateEventPerson(if (eventPerson != null) {eventPerson.getId.intValue()} else 0,
                                                dbEventBean.getEventById(eventId),
                                                authData.getUser,
