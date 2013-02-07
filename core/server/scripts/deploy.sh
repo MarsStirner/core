@@ -1,17 +1,27 @@
 #!/bin/bash
 #
-# Скрипт редеплоя приложения
+# Скрипт деплоя приложения
 #
 
 GF_PASSWD_FILE=./password
 
-# Создание файла с паролями                                                                                                                                     
+# Создание файла с паролями
 echo "AS_ADMIN_PASSWORD="${glassfish.admin.password} > $GF_PASSWD_FILE
 echo "AS_ADMIN_MASTERPASSWORD="${glassfish.admin.password} >> $GF_PASSWD_FILE
 
 export PATH=${glassfish.home}/bin/:$PATH
 
-# Удаление приложения
+# Список доменов
+asadmin list-domains
+
+# Рестарт
+#asadmin stop-domain --domaindir ${glassfish.domain.dir} ${glassfish.domain}
+#asadmin start-domain --domaindir ${glassfish.domain.dir} ${glassfish.domain}
+
+# Копирование конфига logback.xml
+cp ./logback.xml ${glassfish.domain.dir}/${glassfish.domain}/config
+
+# Установка приложения
 asadmin --host localhost \
         --port ${glassfish.port.admin} \
         --user ${glassfish.admin.login} \
@@ -19,12 +29,20 @@ asadmin --host localhost \
         --interactive=false \
         --echo=true \
         --terse=true \
-        undeploy \
+        deploy \
         --name ${glassfish.application.name} \
-        --force=true
-
-asadmin stop-domain --domaindir ${glassfish.domain.dir} ${glassfish.domain}
-asadmin start-domain --domaindir ${glassfish.domain.dir} ${glassfish.domain}
+        --force=true \
+        --precompilejsp=false \
+        --verify=false \
+        --generatermistubs=false \
+        --availabilityenabled=false \
+        --asyncreplication=true \
+        --keepreposdir=false \
+        --keepfailedstubs=false \
+        --isredeploy=false \
+        --logreportederrors=true \
+        --upload=true \
+        ${glassfish.application.name}.ear
 
 rm -f $GF_PASSWD_FILE
 
@@ -38,5 +56,5 @@ echo "Create alias 'ss' -> 'tail server.log'"
 echo "--------------------------------------------------------------------"
 alias ss="tail -f -n 5000 ${glassfish.domain.dir}/${glassfish.domain}/logs/server.log"
 
-# Показать последние строки лога
-# tail -n 5000 ${glassfish.domain.dir}/${glassfish.domain}/logs/server.log
+# Показать лог
+#tail -f -n 5000 ${glassfish.domain.dir}/${glassfish.domain}/logs/server.log

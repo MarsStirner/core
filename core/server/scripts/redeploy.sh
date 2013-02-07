@@ -1,13 +1,16 @@
 #!/bin/bash
 #
-# Скрипт деплоя приложения
+# Скрипт редеплоя приложения
 #
 
 GF_PASSWD_FILE=./password
 
-# Создание файла с паролями
+# Создание файла с паролями                                                                                                                                     
 echo "AS_ADMIN_PASSWORD="${glassfish.admin.password} > $GF_PASSWD_FILE
 echo "AS_ADMIN_MASTERPASSWORD="${glassfish.admin.password} >> $GF_PASSWD_FILE
+
+# Копирование конфига logback.xml
+cp ./logback.xml ${glassfish.domain.dir}/${glassfish.domain}/config
 
 export PATH=${glassfish.home}/bin/:$PATH
 
@@ -15,11 +18,8 @@ export PATH=${glassfish.home}/bin/:$PATH
 asadmin list-domains
 
 # Рестарт
-asadmin stop-domain --domaindir ${glassfish.domain.dir} ${glassfish.domain}
-asadmin start-domain --domaindir ${glassfish.domain.dir} ${glassfish.domain}
-
-# Копирование конфига logback.xml
-cp ./logback.xml ${glassfish.domain.dir}/${glassfish.domain}/config
+#asadmin stop-domain --domaindir ${glassfish.domain.dir} ${glassfish.domain}
+#asadmin start-domain --domaindir ${glassfish.domain.dir} ${glassfish.domain}
 
 # Установка приложения
 asadmin --host localhost \
@@ -29,7 +29,7 @@ asadmin --host localhost \
         --interactive=false \
         --echo=true \
         --terse=true \
-        deploy \
+        redeploy \
         --name ${glassfish.application.name} \
         --force=true \
         --precompilejsp=false \
@@ -39,7 +39,7 @@ asadmin --host localhost \
         --asyncreplication=true \
         --keepreposdir=false \
         --keepfailedstubs=false \
-        --isredeploy=false \
+        --isredeploy=true \
         --logreportederrors=true \
         --upload=true \
         ${glassfish.application.name}.ear

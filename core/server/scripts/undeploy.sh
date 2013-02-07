@@ -9,19 +9,9 @@ GF_PASSWD_FILE=./password
 echo "AS_ADMIN_PASSWORD="${glassfish.admin.password} > $GF_PASSWD_FILE
 echo "AS_ADMIN_MASTERPASSWORD="${glassfish.admin.password} >> $GF_PASSWD_FILE
 
-# Копирование конфига logback.xml
-cp ./logback.xml ${glassfish.domain.dir}/${glassfish.domain}/config
-
 export PATH=${glassfish.home}/bin/:$PATH
 
-# Список доменов
-asadmin list-domains
-
-# Рестарт
-asadmin stop-domain --domaindir ${glassfish.domain.dir} ${glassfish.domain}
-asadmin start-domain --domaindir ${glassfish.domain.dir} ${glassfish.domain}
-
-# Установка приложения
+# Удаление приложения
 asadmin --host localhost \
         --port ${glassfish.port.admin} \
         --user ${glassfish.admin.login} \
@@ -29,20 +19,12 @@ asadmin --host localhost \
         --interactive=false \
         --echo=true \
         --terse=true \
-        redeploy \
+        undeploy \
         --name ${glassfish.application.name} \
-        --force=true \
-        --precompilejsp=false \
-        --verify=false \
-        --generatermistubs=false \
-        --availabilityenabled=false \
-        --asyncreplication=true \
-        --keepreposdir=false \
-        --keepfailedstubs=false \
-        --isredeploy=true \
-        --logreportederrors=true \
-        --upload=true \
-        ${glassfish.application.name}.ear
+        --force=true
+
+#asadmin stop-domain --domaindir ${glassfish.domain.dir} ${glassfish.domain}
+#asadmin start-domain --domaindir ${glassfish.domain.dir} ${glassfish.domain}
 
 rm -f $GF_PASSWD_FILE
 
@@ -56,5 +38,5 @@ echo "Create alias 'ss' -> 'tail server.log'"
 echo "--------------------------------------------------------------------"
 alias ss="tail -f -n 5000 ${glassfish.domain.dir}/${glassfish.domain}/logs/server.log"
 
-# Показать лог
-# tail -f -n 5000 ${glassfish.domain.dir}/${glassfish.domain}/logs/server.log
+# Показать последние строки лога
+# tail -n 5000 ${glassfish.domain.dir}/${glassfish.domain}/logs/server.log
