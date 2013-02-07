@@ -47,14 +47,13 @@ asadmin --host ${glassfish.host} \
 rm -f $GF_PASSWD_FILE
 
 echo "--------------------------------------------------------------------"
-echo "Create alias 'tt' -> 'tail TMIS-CORE'"
+echo "tail -f -n 5000 ${com.sun.aas.instanceRoot}/logs/tmis-core/core.log"
 echo "--------------------------------------------------------------------"
-alias tt="tail -f -n 5000 ${com.sun.aas.instanceRoot}/logs/tmis-core/core.log"
 
 echo "--------------------------------------------------------------------"
-echo "Create alias 'ss' -> 'tail server.log'"
+echo "tail -f -n 5000 ${glassfish.domain.dir}/${glassfish.domain}/logs/server.log"
 echo "--------------------------------------------------------------------"
-alias ss="tail -f -n 5000 ${glassfish.domain.dir}/${glassfish.domain}/logs/server.log"
+
 
 # Показать лог
 #tail -f -n 5000 ${glassfish.domain.dir}/${glassfish.domain}/logs/server.log
