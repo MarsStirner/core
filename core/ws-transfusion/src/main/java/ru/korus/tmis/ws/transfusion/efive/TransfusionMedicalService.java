@@ -2,15 +2,14 @@
 package ru.korus.tmis.ws.transfusion.efive;
 
 import java.util.List;
-
 import javax.jws.WebMethod;
 import javax.jws.WebParam;
 import javax.jws.WebResult;
 import javax.jws.WebService;
+import javax.xml.bind.annotation.XmlSeeAlso;
 import javax.xml.ws.Action;
 import javax.xml.ws.RequestWrapper;
 import javax.xml.ws.ResponseWrapper;
-
 
 
 /**
@@ -20,9 +19,9 @@ import javax.xml.ws.ResponseWrapper;
  * 
  */
 @WebService(name = "transfusionMedicalService", targetNamespace = "http://www.korusconsulting.ru")
-//@XmlSeeAlso({
-//    ObjectFactory.class
-//})
+@XmlSeeAlso({
+    ObjectFactory.class
+})
 public interface TransfusionMedicalService {
 
 
@@ -31,12 +30,12 @@ public interface TransfusionMedicalService {
      * @param patientCredentials
      * @param orderInformation
      * @return
-     *     returns ru.korus.tmis.ws.transfusion.OrderResult
+     *     returns ru.korus.tmis.ws.transfusion.efive.OrderResult
      */
     @WebMethod(action = "urn:orderBloodComponents")
     @WebResult(targetNamespace = "")
-    @RequestWrapper(localName = "orderBloodComponents", targetNamespace = "http://www.korusconsulting.ru", className = "ru.korus.tmis.ws.transfusion.OrderBloodComponents")
-    @ResponseWrapper(localName = "orderBloodComponentsResponse", targetNamespace = "http://www.korusconsulting.ru", className = "ru.korus.tmis.ws.transfusion.OrderBloodComponentsResponse")
+    @RequestWrapper(localName = "orderBloodComponents", targetNamespace = "http://www.korusconsulting.ru", className = "ru.korus.tmis.ws.transfusion.efive.OrderBloodComponents")
+    @ResponseWrapper(localName = "orderBloodComponentsResponse", targetNamespace = "http://www.korusconsulting.ru", className = "ru.korus.tmis.ws.transfusion.efive.OrderBloodComponentsResponse")
     @Action(input = "urn:orderBloodComponents", output = "http://www.korusconsulting.ru/transfusionMedicalService/orderBloodComponentsResponse")
     public OrderResult orderBloodComponents(
         @WebParam(name = "patientCredentials", targetNamespace = "")
@@ -46,37 +45,58 @@ public interface TransfusionMedicalService {
 
     /**
      * 
+     * @param donorInfo
+     * @param patientCredentials
+     * @param procedureInfo
      * @return
-     *     returns java.util.List<ru.korus.tmis.ws.transfusion.ProcedureType>
+     *     returns ru.korus.tmis.ws.transfusion.efive.OrderResult
+     */
+    @WebMethod(action = "urn:orderMedicalProcedure")
+    @WebResult(targetNamespace = "")
+    @RequestWrapper(localName = "orderMedicalProcedure", targetNamespace = "http://www.korusconsulting.ru", className = "ru.korus.tmis.ws.transfusion.efive.OrderMedicalProcedure")
+    @ResponseWrapper(localName = "orderMedicalProcedureResponse", targetNamespace = "http://www.korusconsulting.ru", className = "ru.korus.tmis.ws.transfusion.efive.OrderMedicalProcedureResponse")
+    @Action(input = "urn:orderMedicalProcedure", output = "http://www.korusconsulting.ru/transfusionMedicalService/orderMedicalProcedureResponse")
+    public OrderResult orderMedicalProcedure(
+        @WebParam(name = "donorInfo", targetNamespace = "")
+        DonorInfo donorInfo,
+        @WebParam(name = "patientCredentials", targetNamespace = "")
+        PatientCredentials patientCredentials,
+        @WebParam(name = "procedureInfo", targetNamespace = "")
+        ProcedureInfo procedureInfo);
+
+    /**
+     * 
+     * @return
+     *     returns java.util.List<ru.korus.tmis.ws.transfusion.efive.ProcedureType>
      */
     @WebMethod(action = "urn:getProcedureTypes")
     @WebResult(targetNamespace = "")
-    @RequestWrapper(localName = "getProcedureTypes", targetNamespace = "http://www.korusconsulting.ru", className = "ru.korus.tmis.ws.transfusion.GetProcedureTypes")
-    @ResponseWrapper(localName = "getProcedureTypesResponse", targetNamespace = "http://www.korusconsulting.ru", className = "ru.korus.tmis.ws.transfusion.GetProcedureTypesResponse")
+    @RequestWrapper(localName = "getProcedureTypes", targetNamespace = "http://www.korusconsulting.ru", className = "ru.korus.tmis.ws.transfusion.efive.GetProcedureTypes")
+    @ResponseWrapper(localName = "getProcedureTypesResponse", targetNamespace = "http://www.korusconsulting.ru", className = "ru.korus.tmis.ws.transfusion.efive.GetProcedureTypesResponse")
     @Action(input = "urn:getProcedureTypes", output = "http://www.korusconsulting.ru/transfusionMedicalService/getProcedureTypesResponse")
     public List<ProcedureType> getProcedureTypes();
 
     /**
      * 
      * @return
-     *     returns java.util.List<ru.korus.tmis.ws.transfusion.LaboratoryMeasureType>
+     *     returns java.util.List<ru.korus.tmis.ws.transfusion.efive.LaboratoryMeasureType>
      */
     @WebMethod(action = "urn:getLaboratoryMeasureTypes")
     @WebResult(targetNamespace = "")
-    @RequestWrapper(localName = "getLaboratoryMeasureTypes", targetNamespace = "http://www.korusconsulting.ru", className = "ru.korus.tmis.ws.transfusion.GetLaboratoryMeasureTypes")
-    @ResponseWrapper(localName = "getLaboratoryMeasureTypesResponse", targetNamespace = "http://www.korusconsulting.ru", className = "ru.korus.tmis.ws.transfusion.GetLaboratoryMeasureTypesResponse")
+    @RequestWrapper(localName = "getLaboratoryMeasureTypes", targetNamespace = "http://www.korusconsulting.ru", className = "ru.korus.tmis.ws.transfusion.efive.GetLaboratoryMeasureTypes")
+    @ResponseWrapper(localName = "getLaboratoryMeasureTypesResponse", targetNamespace = "http://www.korusconsulting.ru", className = "ru.korus.tmis.ws.transfusion.efive.GetLaboratoryMeasureTypesResponse")
     @Action(input = "urn:getLaboratoryMeasureTypes", output = "http://www.korusconsulting.ru/transfusionMedicalService/getLaboratoryMeasureTypesResponse")
     public List<LaboratoryMeasureType> getLaboratoryMeasureTypes();
 
     /**
      * 
      * @return
-     *     returns java.util.List<ru.korus.tmis.ws.transfusion.ComponentType>
+     *     returns java.util.List<ru.korus.tmis.ws.transfusion.efive.ComponentType>
      */
     @WebMethod(action = "urn:getComponentTypes")
     @WebResult(targetNamespace = "")
-    @RequestWrapper(localName = "getComponentTypes", targetNamespace = "http://www.korusconsulting.ru", className = "ru.korus.tmis.ws.transfusion.GetComponentTypes")
-    @ResponseWrapper(localName = "getComponentTypesResponse", targetNamespace = "http://www.korusconsulting.ru", className = "ru.korus.tmis.ws.transfusion.GetComponentTypesResponse")
+    @RequestWrapper(localName = "getComponentTypes", targetNamespace = "http://www.korusconsulting.ru", className = "ru.korus.tmis.ws.transfusion.efive.GetComponentTypes")
+    @ResponseWrapper(localName = "getComponentTypesResponse", targetNamespace = "http://www.korusconsulting.ru", className = "ru.korus.tmis.ws.transfusion.efive.GetComponentTypesResponse")
     @Action(input = "urn:getComponentTypes", output = "http://www.korusconsulting.ru/transfusionMedicalService/getComponentTypesResponse")
     public List<ComponentType> getComponentTypes();
 

@@ -51,11 +51,6 @@ public class OrderIssueInfo {
     private Integer donorId;
     
     /**
-     * произвольный текстовый комментарий
-     */
-    private String orderComment;
-    
-    /**
      * @return the componentId
      */
     public Integer getComponentId() {
@@ -166,20 +161,5 @@ public class OrderIssueInfo {
     public void setDonorId(Integer donorId) {
         this.donorId = donorId;
     }
-
-    /**
-     * @return the orderComment
-     */
-    public String getOrderComment() {
-        return orderComment;
-    }
-
-    /**
-     * @param orderComment the orderComment to set
-     */
-    public void setOrderComment(String orderComment) {
-        this.orderComment = orderComment;
-    }
-
     
 }

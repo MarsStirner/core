@@ -7,7 +7,6 @@ import java.util.List;
 import javax.ejb.Schedule;
 import javax.ejb.Singleton;
 import javax.persistence.EntityManager;
-import javax.persistence.PersistenceContext;
 import javax.xml.ws.WebServiceException;
 
 import org.slf4j.Logger;
@@ -138,7 +137,7 @@ public class Database {
             e.printStackTrace();
         }
 
-        actionProp.setValueFromString(value.toString());
+        actionProp.setValue(value);
         actionProp.setId(actionPropId);
         em.persist(actionProp);
         return newPropId;

@@ -29,17 +29,19 @@ import ru.korus.tmis.ws.transfusion.procedure.ProcedureInfo;
 public interface ServiceTransfusion {
     @WebMethod()
     /**
-     * 
+     * произвольный текстовый комментарий
      * @param requestId - Идентификатор требования на выдачу КК (Action.id)
      * @param factDate - Фактическая дата/время выдачи КК в формате "yyyy-MM-dd"
      * @param orderIssueInfo
+     *  @param orderComment
      * @return
      */
     public IssueResult
             setOrderIssueResult(
                     @WebParam(name = "requestId", targetNamespace = "http://korus.ru/tmis/ws/transfusion") Integer requestId,
                     @WebParam(name = "factDate", targetNamespace = "http://korus.ru/tmis/ws/transfusion") Date factDate, 
-                    @WebParam(name = "orderIssueInfo", targetNamespace = "http://korus.ru/tmis/ws/transfusion") List<OrderIssueInfo> orderIssueInfo);
+                    @WebParam(name = "components", targetNamespace = "http://korus.ru/tmis/ws/transfusion") List<OrderIssueInfo> components,
+                    @WebParam(name = "orderComment", targetNamespace = "http://korus.ru/tmis/ws/transfusion") String orderComment);
 
     @WebMethod()
     public List<DivisionInfo> getDivisions();

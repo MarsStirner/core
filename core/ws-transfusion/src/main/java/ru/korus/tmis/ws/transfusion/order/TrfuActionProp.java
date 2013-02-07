@@ -44,16 +44,7 @@ public class TrfuActionProp {
         INDICATION("Показания к проведению трансфузии", APValueString.class),
         ORDER_REQUEST_ID("Результат передачи требования в систему ТРФУ", APValueString.class),
         ORDER_ISSUE_RES_DATE("Дата выдачи КК",APValueDate.class),
-        ORDER_ISSUE_RES_TIME("Время выдачи КК",APValueTime.class),
-        ORDER_ISSUE_RES_BLOOD_ID("Идентификатор компонента крови",APValueInteger.class),
-        ORDER_ISSUE_RES_BLOOD_NUMBER("Паспортные данные компонента крови, №",APValueString.class),
-        ORDER_ISSUE_RES_BLOOD_TYPE_ID("Выданный компонент крови", APValueString.class),
-        ORDER_ISSUE_RES_DONOR_BLOOD_GROUP("Группа крови донора", APValueString.class),
-        ORDER_ISSUE_RES_DONOR_BLOOD_RHESUS("Резус-фактор донора", APValueString.class),
-        ORDER_ISSUE_RES_DONOR_VALUE("Объем выданного компонента крови", APValueInteger.class),
-        ORDER_ISSUE_RES_DONOR_COUNT("Количество выданных донорских доз", APValueDouble.class),
-        ORDER_ISSUE_RES_DONOR_CODE("Код донора", APValueString.class),
-        ORDER_ISSUE_RES_COMMENT("Комментарий ТРФУ", APValueString.class);
+        ORDER_ISSUE_RES_TIME("Время выдачи КК",APValueTime.class);
 
         @SuppressWarnings("rawtypes")
         private final Class valueClass;

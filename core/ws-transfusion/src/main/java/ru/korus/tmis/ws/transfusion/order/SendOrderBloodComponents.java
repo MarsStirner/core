@@ -42,6 +42,15 @@ import ru.korus.tmis.ws.transfusion.efive.TransfusionMedicalService;
  */
 public class SendOrderBloodComponents {
 
+    /**
+     * 
+     */
+    public static final short ACTION_STATE_STARTED = 0;
+    public static final short ACTION_STATE_WAIT = 1;
+    public static final short ACTION_STATE_FINISHED = 2;
+    public static final short SIZE_OF_BLOOD_CANSELED = 3;
+    public static final short SIZE_OF_BLOOD_NO_RESULT = 4;
+    
     private static final int SIZE_OF_BLOOD_CODE = 2;
     /**
      * ID типа действия запроса КК
@@ -143,6 +152,7 @@ public class SendOrderBloodComponents {
                     } else {
                         logger.error("The order {} was not registrate in TRFU. TRFU service return the error satatus. Error description: '{}'", action.getId(),
                                 orderResult.getDescription());
+                        setRequestState(em, action.getId(), "Ошибкаю Информация системы ТРФУ: " + orderResult.getDescription());
                     }
                 } catch (DatatypeConfigurationException e) {
                     logger.error("The order {} was not registrate in TRFU. Cannot create the date information. Error description: '{}'", action.getId(),
@@ -168,7 +178,7 @@ public class SendOrderBloodComponents {
      */
     private void orderResult2DB(EntityManager em, Action action, Integer requestId) throws CoreException {
         setRequestState(em, action.getId(), "Получен идентификатор в системе ТРФУ: " + requestId);
-        action.setStatus((short) 1);
+        action.setStatus(ACTION_STATE_WAIT);
     }
 
     /**
@@ -194,13 +204,13 @@ public class SendOrderBloodComponents {
         OrderInformation res = new OrderInformation();
         res.setNumber(""); // TODO Remove!
         res.setId(action.getId());
-        Integer orgStructIt = new Integer(0);
+        Integer orgStructItd = new Integer(0);
         final Staff createPerson = EntityMgr.getSafe(action.getAssigner());
         final OrgStructure orgStructure = createPerson.getOrgStructure();
         if (orgStructure != null) {
-            orgStructIt = orgStructure.getId();
+            orgStructItd = orgStructure.getId();
         }
-        res.setDivisionId(orgStructIt);
+        res.setDivisionId(orgStructItd);
         final Event event = EntityMgr.getSafe(action.getEvent());
         res.setIbNumber(event.getExternalId());
         res.setDiagnosis((String) trfuActionProp.getProp(em, action.getId(), TrfuActionProp.PropType.DIAGNOSIS));

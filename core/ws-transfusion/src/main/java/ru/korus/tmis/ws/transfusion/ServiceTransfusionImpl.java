@@ -43,13 +43,18 @@ public class ServiceTransfusionImpl implements ServiceTransfusion {
             setOrderIssueResult(
                     @WebParam(name = "requestId", targetNamespace = "http://korus.ru/tmis/ws/transfusion") Integer requestId,
                     @WebParam(name = "factDate", targetNamespace = "http://korus.ru/tmis/ws/transfusion") Date factDate, 
-                    @WebParam(name = "listOrderIssueInfo", targetNamespace = "http://korus.ru/tmis/ws/transfusion") List<OrderIssueInfo> listOrderIssueInfo) {
+                    @WebParam(name = "components", targetNamespace = "http://korus.ru/tmis/ws/transfusion") List<OrderIssueInfo> components,
+                    @WebParam(name = "orderComment", targetNamespace = "http://korus.ru/tmis/ws/transfusion") String orderComment) {
         IssueResult res = new IssueResult();
-        if(requestId == null || factDate == null || listOrderIssueInfo == null || listOrderIssueInfo.isEmpty()) {
+        logger.info("Entered in transfusion service 'setOrderIssueResult' with parameters: requestId: {}, factDate: {}, listOrderIssueInfo.size: {}", requestId, factDate, 
+                components == null ? null : components.size());
+        if(requestId == null || components == null || components.isEmpty()) {
             res.setDescription("Error: illegal arguments for setOrderIssueResult" );
+            res.setResult(false);
+            return res;
+            
         }
-        logger.info("Entered in transfusion service 'setOrderIssueResult' with parameters: requestId: {}, factDate: {}, listOrderIssueInfo.size: {}", listOrderIssueInfo.size());
-        return res;//regOrderIssueResult.save(orderIssueInfo);
+        return regOrderIssueResult.save(requestId, factDate, components, orderComment);
     }
 
     /**
