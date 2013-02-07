@@ -3,17 +3,23 @@
 # Скрипт деплоя приложения
 #
 
-GF_APP_NAME=$2
-APP=$1
 GF_PASSWD_FILE=./password
 
-# Создание файла с паролями                                                                                                                                     
+# Создание файла с паролями
 echo "AS_ADMIN_PASSWORD="${glassfish.admin.password} > $GF_PASSWD_FILE
 echo "AS_ADMIN_MASTERPASSWORD="${glassfish.admin.password} >> $GF_PASSWD_FILE
 
 export PATH=${glassfish.home}/bin/:$PATH
+
+# Список доменов
+asadmin list-domains
+
+# Рестарт
 asadmin stop-domain --domaindir ${glassfish.domain.dir} ${glassfish.domain}
 asadmin start-domain --domaindir ${glassfish.domain.dir} ${glassfish.domain}
+
+# Копирование конфига logback.xml
+cp ./logback.xml ${glassfish.domain.dir}/${glassfish.domain}/config
 
 # Установка приложения
 asadmin --host localhost \
@@ -23,7 +29,8 @@ asadmin --host localhost \
         --interactive=false \
         --echo=true \
         --terse=true \
-        deploy --name ${glassfish.application.name} \
+        deploy \
+        --name ${glassfish.application.name} \
         --force=true \
         --precompilejsp=false \
         --verify=false \
@@ -38,3 +45,16 @@ asadmin --host localhost \
         ${glassfish.application.name}.ear
 
 rm -f $GF_PASSWD_FILE
+
+echo "--------------------------------------------------------------------"
+echo "Create alias 'tt' -> 'tail TMIS-CORE'"
+echo "--------------------------------------------------------------------"
+alias tt="tail -f -n 5000 ${com.sun.aas.instanceRoot}/logs/tmis-core/core.log"
+
+echo "--------------------------------------------------------------------"
+echo "Create alias 'ss' -> 'tail server.log'"
+echo "--------------------------------------------------------------------"
+alias ss="tail -f -n 5000 ${glassfish.domain.dir}/${glassfish.domain}/logs/server.log"
+
+# Показать лог
+#tail -f -n 5000 ${glassfish.domain.dir}/${glassfish.domain}/logs/server.log

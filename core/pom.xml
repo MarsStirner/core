@@ -131,7 +131,7 @@
                 <!-- Пароль администратора-->
                 <glassfish.admin.password>admin1234</glassfish.admin.password>
                 <!-- Название приложения, которое будет отображаться в интерфейсе -->
-                <glassfish.application.name>${version.tmis.core}</glassfish.application.name>
+                <glassfish.application.name>${project.build.finalName}</glassfish.application.name>
                 <!-- Путь к директории домена (нужен для того, чтобы валидировался pom.xml -->
                 <com.sun.aas.instanceRoot>${glassfish.domain.dir}/${glassfish.domain}/</com.sun.aas.instanceRoot>
 

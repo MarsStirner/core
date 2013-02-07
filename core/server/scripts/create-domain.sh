@@ -22,8 +22,15 @@ asadmin delete-domain ${glassfish.domain}
 asadmin create-domain --user ${glassfish.admin.login} --passwordfile $GF_PASSWD_FILE --instanceport ${glassfish.port.instance} \
  --adminport ${glassfish.port.admin} --profile developer --savemasterpassword --domaindir ${glassfish.domain.dir} ${glassfish.domain}
 
+# Копирование конфига logback.xml
+cp ./logback.xml ${glassfish.domain.dir}/${glassfish.domain}/config
+
 # Копирование библиотек
 cp ../scripts/lib/* ${glassfish.domain.dir}/${glassfish.domain}/lib/ext/
+
+# Прописываем конфигурацию логера
+asadmin create-jvm-options --target server-config --'-Dlogback.configurationFile=${com.sun.aas.instanceRoot}/config/logback.xml'
+asadmin create-jvm-options --target default-config --'-Dlogback.configurationFile=${com.sun.aas.instanceRoot}/config/logback.xml'
 
 # Перезапуск домена
 asadmin stop-domain --domaindir ${glassfish.domain.dir} ${glassfish.domain}
