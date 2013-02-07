@@ -22,7 +22,7 @@ asadmin list-domains
 #asadmin start-domain --domaindir ${glassfish.domain.dir} ${glassfish.domain}
 
 # Установка приложения
-asadmin --host localhost \
+asadmin --host ${glassfish.host} \
         --port ${glassfish.port.admin} \
         --user ${glassfish.admin.login} \
         --passwordfile $GF_PASSWD_FILE \

@@ -29,8 +29,51 @@ cp ./logback.xml ${glassfish.domain.dir}/${glassfish.domain}/config
 cp ../scripts/lib/* ${glassfish.domain.dir}/${glassfish.domain}/lib/ext/
 
 # Прописываем конфигурацию логера
-asadmin create-jvm-options --target server-config --'-Dlogback.configurationFile=${com.sun.aas.instanceRoot}/config/logback.xml'
-asadmin create-jvm-options --target default-config --'-Dlogback.configurationFile=${com.sun.aas.instanceRoot}/config/logback.xml'
+asadmin --user ${glassfish.admin.login} \
+        --passwordfile $GF_PASSWD_FILE \
+        create-jvm-options --target server-config --'-Dlogback.configurationFile=${com.sun.aas.instanceRoot}/config/logback.xml'
+asadmin --user ${glassfish.admin.login} \
+        --passwordfile $GF_PASSWD_FILE \
+        create-jvm-options --target default-config --'-Dlogback.configurationFile=${com.sun.aas.instanceRoot}/config/logback.xml'
+
+#Настройки JVM
+asadmin --user ${glassfish.admin.login} \
+        --passwordfile $GF_PASSWD_FILE \
+        create-jvm-options --target server-config --'-XX\:+UnlockExperimentalVMOptions'
+asadmin --user ${glassfish.admin.login} \
+        --passwordfile $GF_PASSWD_FILE \
+        create-jvm-options --target server-config --'-XX\:+UseG1GC'
+asadmin --user ${glassfish.admin.login} \
+        --passwordfile $GF_PASSWD_FILE \
+        delete-jvm-options --target server-config --'-Xmx512m'
+asadmin --user ${glassfish.admin.login} \
+        --passwordfile $GF_PASSWD_FILE \
+        create-jvm-options --target server-config --'-Xmx1024m'
+asadmin --user ${glassfish.admin.login} \
+        --passwordfile $GF_PASSWD_FILE \
+        delete-jvm-options --target server-config --'-XX\:MaxPermSize=192m'
+asadmin --user ${glassfish.admin.login} \
+        --passwordfile $GF_PASSWD_FILE \
+        create-jvm-options --target server-config --'-XX\:MaxPermSize=256m'
+
+asadmin --user ${glassfish.admin.login} \
+        --passwordfile $GF_PASSWD_FILE \
+        create-jvm-options --target default-config --'-XX\:+UnlockExperimentalVMOptions'
+asadmin --user ${glassfish.admin.login} \
+        --passwordfile $GF_PASSWD_FILE \
+        create-jvm-options --target default-config --'-XX\:+UseG1GC'
+asadmin --user ${glassfish.admin.login} \
+        --passwordfile $GF_PASSWD_FILE \
+        delete-jvm-options --target default-config --'-Xmx512m'
+asadmin --user ${glassfish.admin.login} \
+        --passwordfile $GF_PASSWD_FILE \
+        create-jvm-options --target default-config --'-Xmx1024m'
+asadmin --user ${glassfish.admin.login} \
+        --passwordfile $GF_PASSWD_FILE \
+        delete-jvm-options --target default-config --'-XX\:MaxPermSize=192m'
+asadmin --user ${glassfish.admin.login} \
+        --passwordfile $GF_PASSWD_FILE \
+        create-jvm-options --target default-config --'-XX\:MaxPermSize=256m'
 
 # Перезапуск домена
 asadmin stop-domain --domaindir ${glassfish.domain.dir} ${glassfish.domain}

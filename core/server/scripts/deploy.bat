@@ -29,7 +29,7 @@ rem asadmin stop-domain --domaindir ~/glassfish3/glassfish/domains korus-domain
 rem asadmin start-domain --domaindir ~/glassfish3/glassfish/domains korus-domain
 
 rem  Установка приложения
-asadmin --host localhost \
+call asadmin --host localhost \
         --port $GF_ADMIN_PORT \
         --user $GF_ADMIN_USER \
         --passwordfile $GF_PASSWD_FILE \
@@ -50,4 +50,4 @@ asadmin --host localhost \
     --upload=true \
     $APP
 
-rm -f $GF_PASSWD_FILE
+call remove -f $GF_PASSWD_FILE

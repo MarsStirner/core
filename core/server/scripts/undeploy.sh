@@ -12,7 +12,7 @@ echo "AS_ADMIN_MASTERPASSWORD="${glassfish.admin.password} >> $GF_PASSWD_FILE
 export PATH=${glassfish.home}/bin/:$PATH
 
 # Удаление приложения
-asadmin --host localhost \
+asadmin --host ${glassfish.host} \
         --port ${glassfish.port.admin} \
         --user ${glassfish.admin.login} \
         --passwordfile $GF_PASSWD_FILE \

@@ -22,7 +22,7 @@ asadmin list-domains
 cp ./logback.xml ${glassfish.domain.dir}/${glassfish.domain}/config
 
 # Установка приложения
-asadmin --host localhost \
+asadmin --host ${glassfish.host} \
         --port ${glassfish.port.admin} \
         --user ${glassfish.admin.login} \
         --passwordfile $GF_PASSWD_FILE \

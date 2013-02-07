@@ -120,6 +120,8 @@
                 <glassfish.domain.dir>/usr/local/opt/glassfish/libexec/glassfish/domains/</glassfish.domain.dir>
                 <!-- Домашняя директория Glassfish -->
                 <glassfish.home>/usr/local/opt/glassfish/</glassfish.home>
+                <!-- Хост сервера Glassfish -->
+                <glassfish.host>localhost</glassfish.host>
                 <!-- Порт инстанса приложения -->
                 <glassfish.port.instance>8080</glassfish.port.instance>
                 <!-- Порт админского Web IF -->
@@ -172,6 +174,8 @@
                 <glassfish.domain.dir>/opt/glassfish3/glassfish/domains/</glassfish.domain.dir>
                 <!-- Домашняя директория Glassfish -->
                 <glassfish.home>/opt/glassfish3/</glassfish.home>
+                <!-- Хост сервера Glassfish -->
+                <glassfish.host>localhost</glassfish.host>
                 <!-- Порт инстанса приложения -->
                 <glassfish.port.instance>8080</glassfish.port.instance>
                 <!-- Порт админского Web IF -->
@@ -183,7 +187,7 @@
                 <!-- Пароль администратора-->
                 <glassfish.admin.password>admin1234</glassfish.admin.password>
                 <!-- Название приложения, которое будет отображаться в интерфейсе -->
-                <glassfish.application.name>${version.tmis.core}</glassfish.application.name>
+                <glassfish.application.name>${project.build.finalName}</glassfish.application.name>
                 <!-- Путь к директории домена (нужен для того, чтобы валидировался pom.xml -->
                 <com.sun.aas.instanceRoot>${glassfish.domain.dir}/${glassfish.domain}/</com.sun.aas.instanceRoot>
 
