@@ -739,6 +739,8 @@ public class CommServer implements Communications.Iface {
         //Проверяем существование пациента по ID:
         try {
             patient = patientBean.getPatientById(params.getPatientId());
+            //TODO теперь можно проверит жив ли пациент
+            //
             person = staffBean.getStaffById(params.getPersonId());
             doctorAction = staffBean.getPersonActionsByDateAndType(params.getPersonId(), paramsDateTime.toDate(), "amb");
         } catch (Exception e) {

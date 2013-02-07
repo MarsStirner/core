@@ -419,7 +419,7 @@ class DbPatientBean
     if (params.contains("omiSerial")) {
       findPatientQuery += " AND policy.serial= '" + params("omiSerial") + "'";
       if (params.contains("omiNumber")) {
-        findPatientQuery += " AND rbtype.name LIKE ('%ОМС%') AND policy.deleted=0"
+        findPatientQuery += " AND rbtype.name LIKE '%ОМС%' AND policy.deleted=0"
       }
     }
     if (params.contains("sex")) {
