@@ -513,13 +513,14 @@
                 <configuration>
                     <consoleOutput>true</consoleOutput>
                     <encoding>${project.build.sourceEncoding}</encoding>
-                    <configLocation>checkstyle-minimal.xml</configLocation>
+                    <configLocation>server/checkstyle/checkstyle-micro.xml</configLocation>
                     <detail>true</detail>
                     <includes>
 
                     </includes>
                     <excludes>
                         org/hl7/v3/*,
+                        misexchange/*,
                         ru\korus\tmis\auxiliary\*,
                         ru\korus\tmis\core\entity\,
                         ru\korus\tmis\lis\,
