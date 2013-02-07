@@ -228,7 +228,7 @@ public class PharmacyBean implements PharmacyBeanLocal {
                 }
             }
         }
-
+        logger.info("try recursive call by actionParentId");
         final Action parentAction = dbAction.getActionByIdWithIgnoreDeleted(action.getParentActionId());
         if (parentAction != null) {
             return getOrgStructure(parentAction);
