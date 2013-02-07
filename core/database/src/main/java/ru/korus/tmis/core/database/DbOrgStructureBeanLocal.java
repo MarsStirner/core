@@ -79,13 +79,13 @@ public interface DbOrgStructureBeanLocal {
     OrgStructure getOrgStructureByHospitalBedId(int bedId) throws CoreException;
 
     /**
-     * Запрос на под-отделения начиная с указаного parentId.
+     * Запрос на получение под-отделений начиная с указаного parentId.
      *
      * @param parentId  Идентификатор отделения для которго выводим все подотделения
-     * @param recursive рекурсивно
+     * @param recursive рекурсивно (выбираем все под-отделения, входящие в одно из выбраных под-отделений)
      * @param infisCode Принадлежащие одной структуре
      * @return Список под-отделений
-     * @throws CoreException
+     * @throws CoreException Если не найдено ни одной оргструктуры
      */
     List<OrgStructure> getRecursiveOrgStructures(int parentId, boolean recursive, String infisCode) throws CoreException;
 
@@ -98,9 +98,12 @@ public interface DbOrgStructureBeanLocal {
     List<Integer> getOrgStructureByAddress(String KLADRCode, String KLADRStreetCode, String number, String corpus, Integer flat) throws CoreException;
 
     /**
-     * Запрос на получение сотрудников по заданному подразделению
+     * Получение списка работников заданной оргструктуры
      *
-     * @return Список сотрудников удовлятворяющих заданному адресу
+     * @param orgStructureId Оргструктура, в которой ищем работников
+     * @param recursive      флаг рекурсии (при true- выборка работников еще и из подчиненных оргструктур)
+     * @param infisCode      инфис-код организации
+     * @return Список работников
      * @throws CoreException
      */
     List<Staff> getPersonnel(Integer orgStructureId, boolean recursive, String infisCode) throws CoreException;

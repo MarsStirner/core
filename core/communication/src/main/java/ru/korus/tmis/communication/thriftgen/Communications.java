@@ -6,16 +6,31 @@
  */
 package ru.korus.tmis.communication.thriftgen;
 
-import org.apache.thrift.EncodingUtils;
-import org.apache.thrift.protocol.TTupleProtocol;
 import org.apache.thrift.scheme.IScheme;
 import org.apache.thrift.scheme.SchemeFactory;
 import org.apache.thrift.scheme.StandardScheme;
+
 import org.apache.thrift.scheme.TupleScheme;
+import org.apache.thrift.protocol.TTupleProtocol;
+import org.apache.thrift.protocol.TProtocolException;
+import org.apache.thrift.EncodingUtils;
+import org.apache.thrift.TException;
+
+import java.util.List;
+import java.util.ArrayList;
+import java.util.Map;
+import java.util.HashMap;
+import java.util.EnumMap;
+import java.util.Set;
+import java.util.HashSet;
+import java.util.EnumSet;
+import java.util.Collections;
+import java.util.BitSet;
+import java.nio.ByteBuffer;
+import java.util.Arrays;
+
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-
-import java.util.*;
 
 public class Communications {
 
@@ -25,7 +40,7 @@ public class Communications {
 
         public List<OrgStructure> getOrgStructures(int parent_id, boolean recursive, String infisCode) throws NotFoundException, SQLException, org.apache.thrift.TException;
 
-        public List<Address> getAddresses(int orgStructureId, boolean recursive) throws SQLException, NotFoundException, org.apache.thrift.TException;
+        public List<Address> getAddresses(int orgStructureId, boolean recursive, String infisCode) throws SQLException, NotFoundException, org.apache.thrift.TException;
 
         public List<Integer> findOrgStructureByAddress(FindOrgStructureByAddressParameters params) throws NotFoundException, SQLException, org.apache.thrift.TException;
 
@@ -65,7 +80,7 @@ public class Communications {
 
         public void getOrgStructures(int parent_id, boolean recursive, String infisCode, org.apache.thrift.async.AsyncMethodCallback<AsyncClient.getOrgStructures_call> resultHandler) throws org.apache.thrift.TException;
 
-        public void getAddresses(int orgStructureId, boolean recursive, org.apache.thrift.async.AsyncMethodCallback<AsyncClient.getAddresses_call> resultHandler) throws org.apache.thrift.TException;
+        public void getAddresses(int orgStructureId, boolean recursive, String infisCode, org.apache.thrift.async.AsyncMethodCallback<AsyncClient.getAddresses_call> resultHandler) throws org.apache.thrift.TException;
 
         public void findOrgStructureByAddress(FindOrgStructureByAddressParameters params, org.apache.thrift.async.AsyncMethodCallback<AsyncClient.findOrgStructureByAddress_call> resultHandler) throws org.apache.thrift.TException;
 
@@ -172,15 +187,16 @@ public class Communications {
             throw new org.apache.thrift.TApplicationException(org.apache.thrift.TApplicationException.MISSING_RESULT, "getOrgStructures failed: unknown result");
         }
 
-        public List<Address> getAddresses(int orgStructureId, boolean recursive) throws SQLException, NotFoundException, org.apache.thrift.TException {
-            send_getAddresses(orgStructureId, recursive);
+        public List<Address> getAddresses(int orgStructureId, boolean recursive, String infisCode) throws SQLException, NotFoundException, org.apache.thrift.TException {
+            send_getAddresses(orgStructureId, recursive, infisCode);
             return recv_getAddresses();
         }
 
-        public void send_getAddresses(int orgStructureId, boolean recursive) throws org.apache.thrift.TException {
+        public void send_getAddresses(int orgStructureId, boolean recursive, String infisCode) throws org.apache.thrift.TException {
             getAddresses_args args = new getAddresses_args();
             args.setOrgStructureId(orgStructureId);
             args.setRecursive(recursive);
+            args.setInfisCode(infisCode);
             sendBase("getAddresses", args);
         }
 
@@ -673,9 +689,9 @@ public class Communications {
             }
         }
 
-        public void getAddresses(int orgStructureId, boolean recursive, org.apache.thrift.async.AsyncMethodCallback<getAddresses_call> resultHandler) throws org.apache.thrift.TException {
+        public void getAddresses(int orgStructureId, boolean recursive, String infisCode, org.apache.thrift.async.AsyncMethodCallback<getAddresses_call> resultHandler) throws org.apache.thrift.TException {
             checkReady();
-            getAddresses_call method_call = new getAddresses_call(orgStructureId, recursive, resultHandler, this, ___protocolFactory, ___transport);
+            getAddresses_call method_call = new getAddresses_call(orgStructureId, recursive, infisCode, resultHandler, this, ___protocolFactory, ___transport);
             this.___currentMethod = method_call;
             ___manager.call(method_call);
         }
@@ -683,11 +699,13 @@ public class Communications {
         public static class getAddresses_call extends org.apache.thrift.async.TAsyncMethodCall {
             private int orgStructureId;
             private boolean recursive;
+            private String infisCode;
 
-            public getAddresses_call(int orgStructureId, boolean recursive, org.apache.thrift.async.AsyncMethodCallback<getAddresses_call> resultHandler, org.apache.thrift.async.TAsyncClient client, org.apache.thrift.protocol.TProtocolFactory protocolFactory, org.apache.thrift.transport.TNonblockingTransport transport) throws org.apache.thrift.TException {
+            public getAddresses_call(int orgStructureId, boolean recursive, String infisCode, org.apache.thrift.async.AsyncMethodCallback<getAddresses_call> resultHandler, org.apache.thrift.async.TAsyncClient client, org.apache.thrift.protocol.TProtocolFactory protocolFactory, org.apache.thrift.transport.TNonblockingTransport transport) throws org.apache.thrift.TException {
                 super(client, protocolFactory, transport, resultHandler, false);
                 this.orgStructureId = orgStructureId;
                 this.recursive = recursive;
+                this.infisCode = infisCode;
             }
 
             public void write_args(org.apache.thrift.protocol.TProtocol prot) throws org.apache.thrift.TException {
@@ -695,6 +713,7 @@ public class Communications {
                 getAddresses_args args = new getAddresses_args();
                 args.setOrgStructureId(orgStructureId);
                 args.setRecursive(recursive);
+                args.setInfisCode(infisCode);
                 args.write(prot);
                 prot.writeMessageEnd();
             }
@@ -1314,7 +1333,7 @@ public class Communications {
             public getAddresses_result getResult(I iface, getAddresses_args args) throws org.apache.thrift.TException {
                 getAddresses_result result = new getAddresses_result();
                 try {
-                    result.success = iface.getAddresses(args.orgStructureId, args.recursive);
+                    result.success = iface.getAddresses(args.orgStructureId, args.recursive, args.infisCode);
                 } catch (SQLException excsql) {
                     result.excsql = excsql;
                 } catch (NotFoundException exc) {
@@ -3716,6 +3735,7 @@ public class Communications {
 
         private static final org.apache.thrift.protocol.TField ORG_STRUCTURE_ID_FIELD_DESC = new org.apache.thrift.protocol.TField("orgStructureId", org.apache.thrift.protocol.TType.I32, (short) 1);
         private static final org.apache.thrift.protocol.TField RECURSIVE_FIELD_DESC = new org.apache.thrift.protocol.TField("recursive", org.apache.thrift.protocol.TType.BOOL, (short) 2);
+        private static final org.apache.thrift.protocol.TField INFIS_CODE_FIELD_DESC = new org.apache.thrift.protocol.TField("infisCode", org.apache.thrift.protocol.TType.STRING, (short) 3);
 
         private static final Map<Class<? extends IScheme>, SchemeFactory> schemes = new HashMap<Class<? extends IScheme>, SchemeFactory>();
 
@@ -3726,13 +3746,15 @@ public class Communications {
 
         public int orgStructureId; // required
         public boolean recursive; // required
+        public String infisCode; // required
 
         /**
          * The set of fields this struct contains, along with convenience methods for finding and manipulating them.
          */
         public enum _Fields implements org.apache.thrift.TFieldIdEnum {
             ORG_STRUCTURE_ID((short) 1, "orgStructureId"),
-            RECURSIVE((short) 2, "recursive");
+            RECURSIVE((short) 2, "recursive"),
+            INFIS_CODE((short) 3, "infisCode");
 
             private static final Map<String, _Fields> byName = new HashMap<String, _Fields>();
 
@@ -3751,6 +3773,8 @@ public class Communications {
                         return ORG_STRUCTURE_ID;
                     case 2: // RECURSIVE
                         return RECURSIVE;
+                    case 3: // INFIS_CODE
+                        return INFIS_CODE;
                     default:
                         return null;
                 }
@@ -3802,6 +3826,8 @@ public class Communications {
                     new org.apache.thrift.meta_data.FieldValueMetaData(org.apache.thrift.protocol.TType.I32)));
             tmpMap.put(_Fields.RECURSIVE, new org.apache.thrift.meta_data.FieldMetaData("recursive", org.apache.thrift.TFieldRequirementType.DEFAULT,
                     new org.apache.thrift.meta_data.FieldValueMetaData(org.apache.thrift.protocol.TType.BOOL)));
+            tmpMap.put(_Fields.INFIS_CODE, new org.apache.thrift.meta_data.FieldMetaData("infisCode", org.apache.thrift.TFieldRequirementType.DEFAULT,
+                    new org.apache.thrift.meta_data.FieldValueMetaData(org.apache.thrift.protocol.TType.STRING)));
             metaDataMap = Collections.unmodifiableMap(tmpMap);
             org.apache.thrift.meta_data.FieldMetaData.addStructMetaDataMap(getAddresses_args.class, metaDataMap);
         }
@@ -3811,12 +3837,14 @@ public class Communications {
 
         public getAddresses_args(
                 int orgStructureId,
-                boolean recursive) {
+                boolean recursive,
+                String infisCode) {
             this();
             this.orgStructureId = orgStructureId;
             setOrgStructureIdIsSet(true);
             this.recursive = recursive;
             setRecursiveIsSet(true);
+            this.infisCode = infisCode;
         }
 
         /**
@@ -3826,6 +3854,9 @@ public class Communications {
             __isset_bitfield = other.__isset_bitfield;
             this.orgStructureId = other.orgStructureId;
             this.recursive = other.recursive;
+            if (other.isSetInfisCode()) {
+                this.infisCode = other.infisCode;
+            }
         }
 
         public getAddresses_args deepCopy() {
@@ -3838,6 +3869,7 @@ public class Communications {
             this.orgStructureId = 0;
             setRecursiveIsSet(false);
             this.recursive = false;
+            this.infisCode = null;
         }
 
         public int getOrgStructureId() {
@@ -3890,6 +3922,32 @@ public class Communications {
             __isset_bitfield = EncodingUtils.setBit(__isset_bitfield, __RECURSIVE_ISSET_ID, value);
         }
 
+        public String getInfisCode() {
+            return this.infisCode;
+        }
+
+        public getAddresses_args setInfisCode(String infisCode) {
+            this.infisCode = infisCode;
+            return this;
+        }
+
+        public void unsetInfisCode() {
+            this.infisCode = null;
+        }
+
+        /**
+         * Returns true if field infisCode is set (has been assigned a value) and false otherwise
+         */
+        public boolean isSetInfisCode() {
+            return this.infisCode != null;
+        }
+
+        public void setInfisCodeIsSet(boolean value) {
+            if (!value) {
+                this.infisCode = null;
+            }
+        }
+
         public void setFieldValue(_Fields field, Object value) {
             switch (field) {
                 case ORG_STRUCTURE_ID:
@@ -3908,6 +3966,14 @@ public class Communications {
                     }
                     break;
 
+                case INFIS_CODE:
+                    if (value == null) {
+                        unsetInfisCode();
+                    } else {
+                        setInfisCode((String) value);
+                    }
+                    break;
+
             }
         }
 
@@ -3918,6 +3984,9 @@ public class Communications {
 
                 case RECURSIVE:
                     return Boolean.valueOf(isRecursive());
+
+                case INFIS_CODE:
+                    return getInfisCode();
 
             }
             throw new IllegalStateException();
@@ -3936,6 +4005,8 @@ public class Communications {
                     return isSetOrgStructureId();
                 case RECURSIVE:
                     return isSetRecursive();
+                case INFIS_CODE:
+                    return isSetInfisCode();
             }
             throw new IllegalStateException();
         }
@@ -3968,6 +4039,15 @@ public class Communications {
                 if (!(this_present_recursive && that_present_recursive))
                     return false;
                 if (this.recursive != that.recursive)
+                    return false;
+            }
+
+            boolean this_present_infisCode = true && this.isSetInfisCode();
+            boolean that_present_infisCode = true && that.isSetInfisCode();
+            if (this_present_infisCode || that_present_infisCode) {
+                if (!(this_present_infisCode && that_present_infisCode))
+                    return false;
+                if (!this.infisCode.equals(that.infisCode))
                     return false;
             }
 
@@ -4007,6 +4087,16 @@ public class Communications {
                     return lastComparison;
                 }
             }
+            lastComparison = Boolean.valueOf(isSetInfisCode()).compareTo(typedOther.isSetInfisCode());
+            if (lastComparison != 0) {
+                return lastComparison;
+            }
+            if (isSetInfisCode()) {
+                lastComparison = org.apache.thrift.TBaseHelper.compareTo(this.infisCode, typedOther.infisCode);
+                if (lastComparison != 0) {
+                    return lastComparison;
+                }
+            }
             return 0;
         }
 
@@ -4033,6 +4123,14 @@ public class Communications {
             if (!first) sb.append(", ");
             sb.append("recursive:");
             sb.append(this.recursive);
+            first = false;
+            if (!first) sb.append(", ");
+            sb.append("infisCode:");
+            if (this.infisCode == null) {
+                sb.append("null");
+            } else {
+                sb.append(this.infisCode);
+            }
             first = false;
             sb.append(")");
             return sb.toString();
@@ -4094,6 +4192,14 @@ public class Communications {
                                 org.apache.thrift.protocol.TProtocolUtil.skip(iprot, schemeField.type);
                             }
                             break;
+                        case 3: // INFIS_CODE
+                            if (schemeField.type == org.apache.thrift.protocol.TType.STRING) {
+                                struct.infisCode = iprot.readString();
+                                struct.setInfisCodeIsSet(true);
+                            } else {
+                                org.apache.thrift.protocol.TProtocolUtil.skip(iprot, schemeField.type);
+                            }
+                            break;
                         default:
                             org.apache.thrift.protocol.TProtocolUtil.skip(iprot, schemeField.type);
                     }
@@ -4115,6 +4221,11 @@ public class Communications {
                 oprot.writeFieldBegin(RECURSIVE_FIELD_DESC);
                 oprot.writeBool(struct.recursive);
                 oprot.writeFieldEnd();
+                if (struct.infisCode != null) {
+                    oprot.writeFieldBegin(INFIS_CODE_FIELD_DESC);
+                    oprot.writeString(struct.infisCode);
+                    oprot.writeFieldEnd();
+                }
                 oprot.writeFieldStop();
                 oprot.writeStructEnd();
             }
@@ -4139,19 +4250,25 @@ public class Communications {
                 if (struct.isSetRecursive()) {
                     optionals.set(1);
                 }
-                oprot.writeBitSet(optionals, 2);
+                if (struct.isSetInfisCode()) {
+                    optionals.set(2);
+                }
+                oprot.writeBitSet(optionals, 3);
                 if (struct.isSetOrgStructureId()) {
                     oprot.writeI32(struct.orgStructureId);
                 }
                 if (struct.isSetRecursive()) {
                     oprot.writeBool(struct.recursive);
                 }
+                if (struct.isSetInfisCode()) {
+                    oprot.writeString(struct.infisCode);
+                }
             }
 
             @Override
             public void read(org.apache.thrift.protocol.TProtocol prot, getAddresses_args struct) throws org.apache.thrift.TException {
                 TTupleProtocol iprot = (TTupleProtocol) prot;
-                BitSet incoming = iprot.readBitSet(2);
+                BitSet incoming = iprot.readBitSet(3);
                 if (incoming.get(0)) {
                     struct.orgStructureId = iprot.readI32();
                     struct.setOrgStructureIdIsSet(true);
@@ -4159,6 +4276,10 @@ public class Communications {
                 if (incoming.get(1)) {
                     struct.recursive = iprot.readBool();
                     struct.setRecursiveIsSet(true);
+                }
+                if (incoming.get(2)) {
+                    struct.infisCode = iprot.readString();
+                    struct.setInfisCodeIsSet(true);
                 }
             }
         }

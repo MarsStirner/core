@@ -26,6 +26,12 @@ public interface DbOrganizationBeanLocal {
     java.util.LinkedList<Object> getAllOrganizationWithFilter(int page, int limit, String sortingField, String sortingMethod, Object filter)
             throws CoreException;
 
-    Organisation getOrganizationByInfisCode(String infisCode)
+    /**
+     * Получение организации по ее инфис-коду, если не найдено вообще ни одной, то CoreException
+     *
+     * @param infisCode инфис-код организации, для поиска
+     * @return Организация
+     */
+    Organisation getOrganizationByInfisCode(final String infisCode)
             throws CoreException;
 }

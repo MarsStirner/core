@@ -396,9 +396,7 @@ class DbPatientBean
     FROM Patient patient
     INNER JOIN patient.clientPolicies policy
     LEFT  JOIN policy.policyType rbtype
-    WHERE policy.deleted = 0
-    AND   patient.deleted = 0
-    AND  rbtype.name LIKE '%ОМС%'
+    WHERE patient.deleted = 0
                            """
     //TODO SQLInjects
     if (params.contains("lastName")) {
@@ -420,6 +418,9 @@ class DbPatientBean
     }
     if (params.contains("omiSerial")) {
       findPatientQuery += " AND policy.serial= '" + params("omiSerial") + "'";
+      if (params.contains("omiNumber")) {
+        findPatientQuery += " AND rbtype.name LIKE ('%ОМС%') AND policy.deleted=0"
+      }
     }
     if (params.contains("sex")) {
       findPatientQuery += " AND patient.sex = " + params("sex");
@@ -433,8 +434,9 @@ class DbPatientBean
       )
       AND identifier='%s'
         AND ClientIdentification.deleted=0
-      )""".format(params.getOrElse("identifierType", ""), params.getOrElse("identifier", ""));
+      )""".format(params.get("identifierType"), params.get("identifier"));
     }
+
     commlogger.info(findPatientQuery);
     em.createQuery(findPatientQuery, classOf[Patient]).getResultList
   }

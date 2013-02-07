@@ -41,6 +41,15 @@ public interface DbStaffBeanLocal {
     long getCountAllPersonsWithFilter(Object filter)
             throws CoreException;
 
+    /**
+     * Получение действия(Action) по заданному типу, времени и владельцу
+     *
+     * @param personId   Владелец действия
+     * @param date       Дата на момент которой ищется действие
+     * @param actionType Тип искомого действия
+     * @return Найденое действие
+     * @throws CoreException Если действие не найдено
+     */
     Action getPersonActionsByDateAndType(int personId, Date date, String actionType)
             throws CoreException;
 

@@ -13,20 +13,20 @@ public final class ParserToThriftStruct {
 
     public static PatientInfo parsePatientInfo(final Patient item) {
         if (item == null) return null;
-        PatientInfo result = new PatientInfo().setFirstName(item.getFirstName()).setLastName(item.getLastName()).setPatrName(item.getPatrName());
+        final PatientInfo result = new PatientInfo().setFirstName(item.getFirstName()).setLastName(item.getLastName()).setPatrName(item.getPatrName());
         result.setSex(item.getSex()).setBirthDate(item.getBirthDate().getTime());
         return result;
     }
 
     public static ru.korus.tmis.communication.thriftgen.Patient parsePatient(final Patient item) {
         if (item == null) return null;
-        ru.korus.tmis.communication.thriftgen.Patient result = new ru.korus.tmis.communication.thriftgen.Patient().setFirstName(item.getFirstName()).setLastName(item.getLastName()).setPatrName(item.getPatrName());
+        final ru.korus.tmis.communication.thriftgen.Patient result = new ru.korus.tmis.communication.thriftgen.Patient().setFirstName(item.getFirstName()).setLastName(item.getLastName()).setPatrName(item.getPatrName());
         result.setSex(item.getSex()).setBirthDate(item.getBirthDate().getTime()).setId(item.getId());
         return result;
     }
 
     public static ru.korus.tmis.communication.thriftgen.OrgStructure parseOrgStructure(final ru.korus.tmis.core.entity.model.OrgStructure item) {
-        ru.korus.tmis.communication.thriftgen.OrgStructure result = new ru.korus.tmis.communication.thriftgen.OrgStructure()
+        final ru.korus.tmis.communication.thriftgen.OrgStructure result = new ru.korus.tmis.communication.thriftgen.OrgStructure()
                 .setId(item.getId()).setCode(item.getCode());
         if (item.getAddress() != null) result.setAddress(item.getAddress());
         if (item.getName() != null) result.setName(item.getName());
@@ -35,7 +35,7 @@ public final class ParserToThriftStruct {
     }
 
     public static ru.korus.tmis.communication.thriftgen.Person parseStaff(final Staff item) {
-        ru.korus.tmis.communication.thriftgen.Person result = new ru.korus.tmis.communication.thriftgen.Person()
+        final ru.korus.tmis.communication.thriftgen.Person result = new ru.korus.tmis.communication.thriftgen.Person()
                 .setId(item.getId()).setCode(item.getCode()).setOffice(item.getOffice() + "\t" + item.getOffice2());
         result.setLastName(item.getLastName()).setFirstName(item.getFirstName()).setPatrName(item.getPatrName());
         ru.korus.tmis.core.entity.model.Speciality speciality = item.getSpeciality();
@@ -56,13 +56,13 @@ public final class ParserToThriftStruct {
     }
 
     public static ru.korus.tmis.communication.thriftgen.Speciality parseQuotingBySpeciality(final QuotingBySpeciality item) {
-        ru.korus.tmis.communication.thriftgen.Speciality speciality = new ru.korus.tmis.communication.thriftgen.Speciality()
+        final ru.korus.tmis.communication.thriftgen.Speciality speciality = new ru.korus.tmis.communication.thriftgen.Speciality()
                 .setTicketsAvailable(item.getCouponsRemaining()).setTicketsPerMonths(item.getCouponsQuote()).setSpeciality(item.getSpeciality().getName());
         return speciality;
     }
 
-    public static ru.korus.tmis.communication.thriftgen.Organization parseOrganisation(Organisation item) {
-        ru.korus.tmis.communication.thriftgen.Organization result = new Organization()
+    public static ru.korus.tmis.communication.thriftgen.Organization parseOrganisation(final Organisation item) {
+        final ru.korus.tmis.communication.thriftgen.Organization result = new Organization()
                 .setFullName(item.getFullName()).setAddress(item.getAddress()).setInfisCode(item.getInfisCode())
                 .setShortName(item.getShortName());
         return result;
