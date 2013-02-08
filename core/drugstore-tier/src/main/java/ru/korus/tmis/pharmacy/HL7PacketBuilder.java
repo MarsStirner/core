@@ -28,13 +28,16 @@ import java.util.UUID;
  * Company: Korus Consulting IT<br>
  * Description: <br>
  */
-public class HL7PacketBuilder {
+public final class HL7PacketBuilder {
 
-    final static Logger logger = LoggerFactory.getLogger(HL7PacketBuilder.class);
+    static final Logger logger = LoggerFactory.getLogger(HL7PacketBuilder.class);
 
 
     private static final ObjectFactory FACTORY_MIS = new ObjectFactory();
     private static final org.hl7.v3.ObjectFactory FACTORY_HL7 = new org.hl7.v3.ObjectFactory();
+
+    private HL7PacketBuilder() {
+    }
 
     /**
      * Формирование и отправка сообщения о госпитализации PRPA_IN402001UV02
@@ -408,7 +411,7 @@ public class HL7PacketBuilder {
     /**
      * Формирование и отправка сообщения о выписке пациента со стационара PRPA_IN402003UV02
      */
-    public static MCCIIN000002UV01 processLeaved(final Action action, String displayName) throws SoapConnectionException {
+    public static MCCIIN000002UV01 processLeaved(final Action action, final String displayName) throws SoapConnectionException {
         try {
             final Event event = action.getEvent();
             final Patient client = event.getPatient();
@@ -417,7 +420,8 @@ public class HL7PacketBuilder {
             final String clientUUID = client.getUuid().getUuid();
             final String rootUUID = UUID.randomUUID().toString();
 
-            logger.info("process LEAVED action {}, externalId {}, externalUUID {}, client {}, clientUUID {}", action, externalId, externalUUID, client, clientUUID);
+            logger.info("process LEAVED action {}, externalId {}, externalUUID {}, client {}, clientUUID {}",
+                    action, externalId, externalUUID, client, clientUUID);
 
             final Request msg = FACTORY_MIS.createPRPAIN402003UV02();
 
@@ -1045,7 +1049,7 @@ public class HL7PacketBuilder {
             final String externalUUID,
             final OrgStructure orgStructure,
             final Staff doctor,
-            POCDMT000040LabeledDrug drug) {
+            final POCDMT000040LabeledDrug drug) {
 
         final String uuidDocument = UUID.randomUUID().toString();
         // Версия документа, должна инкрементироваться при повторной передаче
@@ -1400,7 +1404,7 @@ public class HL7PacketBuilder {
     }
 
 
-    private static String marshallMessage(Object msg, String contextPath) {
+    private static String marshallMessage(final Object msg, final String contextPath) {
         final StringWriter writer = new StringWriter();
         try {
             JAXBContext jaxbContext = JAXBContext.newInstance(contextPath);

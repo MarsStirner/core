@@ -37,14 +37,14 @@
         -->
 
         <!-- Checks for Naming Conventions.                  -->
-        <module name="ConstantName"/>
-        <module name="LocalFinalVariableName"/>
+        <!--<module name="ConstantName"/>-->
+        <!--<module name="LocalFinalVariableName"/>-->
         <module name="LocalVariableName"/>
         <module name="MemberName"/>
         <module name="MethodName"/>
         <module name="PackageName"/>
         <module name="ParameterName"/>
-        <!--<module name="StaticVariableName"/>-->
+        <module name="StaticVariableName"/>
         <module name="TypeName"/>
 
         <!-- Checks for imports                              -->
@@ -55,7 +55,9 @@
         <module name="LineLength">
             <property name="max" value="160"/>
         </module>
-        <module name="MethodLength"/>
+        <module name="MethodLength">
+            <property name="max" value="337"/>
+        </module>
         <module name="ParameterNumber">
             <property name="max" value="10"/>
         </module>
@@ -86,7 +88,7 @@
         <!-- See http://checkstyle.sf.net/config_blocks.html -->
         <!--<module name="AvoidNestedBlocks"/>-->
         <!--<module name="EmptyBlock">-->
-            <!--<property name="option" value="text"/>-->
+        <!--<property name="option" value="text"/>-->
         <!--</module>-->
         <!--<module name="LeftCurly"/>-->
         <!--<module name="NeedBraces"/>-->

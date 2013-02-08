@@ -1,5 +1,6 @@
 package ru.korus.tmis.core.hl7db;
 
+import org.joda.time.DateTime;
 import ru.korus.tmis.core.entity.model.Action;
 import ru.korus.tmis.core.entity.model.pharmacy.Pharmacy;
 import ru.korus.tmis.core.exception.CoreException;
@@ -50,7 +51,7 @@ public interface DbPharmacyBeanLocal {
      * @param after
      * @return
      */
-    List<Action> getActionAfterDate(Date after);
+    List<Action> getActionAfterDate(DateTime after);
 
     /**
      * Достает по Action строку из ранее сформированного Pharmacy

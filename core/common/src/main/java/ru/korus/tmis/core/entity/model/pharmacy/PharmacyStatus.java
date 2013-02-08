@@ -14,7 +14,11 @@ public enum PharmacyStatus {
     /**
      * Пакет только что добавлен или его передача не удалась
      */
-    ADDED("added");
+    ADDED("added"),
+    /**
+     * При передаче пакета случилась ошибка
+     */
+    ERROR("error");
 
     private String status;
 
