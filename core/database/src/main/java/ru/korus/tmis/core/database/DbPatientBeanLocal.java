@@ -63,4 +63,12 @@ public interface DbPatientBeanLocal {
     List<Patient> findPatient(Map<String, String> params) throws CoreException;
 
     Integer savePatientToDataBase(Patient patient) throws CoreException;
+
+    /**
+     * Проверяет жив ли пациент
+     *
+     * @param patient Пациент, факт смерти которого проверяется
+     * @return false=мертв, true=жив
+     */
+    boolean isAlive(Patient patient);
 }

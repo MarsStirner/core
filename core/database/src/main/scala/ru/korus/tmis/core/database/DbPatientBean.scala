@@ -409,8 +409,22 @@ class DbPatientBean
       findPatientQuery += " AND patient.patrName      LIKE      '" + params("patrName") + "'";
     }
     if (params.contains("birthDate")) {
+      //TODO date fix
+
       val calendar = new GregorianCalendar();
+      // calendar.setTimeInMillis(java.lang.Long.parseLong(params("birthDate")) - calendar.get(Calendar.ZONE_OFFSET));
+      // val calendar2=new GregorianCalendar();
       calendar.setTimeInMillis(java.lang.Long.parseLong(params("birthDate")));
+      commlogger.info("##FIXDATE LONG=" + java.lang.Long.parseLong(params("birthDate")));
+      commlogger.info("##FIXDATE DATE=" + new java.util.Date(java.lang.Long.parseLong(params("birthDate"))));
+      commlogger.info("##FIXDATE calendarDate=" + calendar.getTime);
+      commlogger.info("##FIXDATE calendarLONG=" + calendar.getTimeInMillis);
+      commlogger.info("##FIXDATE calendar YYYY-MM-DD=" + calendar.get(Calendar.YEAR) + "-" + (calendar.get(Calendar.MONTH) + 1) + "-" + calendar.get(Calendar.DATE));
+      //      commlogger.info("##FIXDATE 2calendarDate="+ calendar2.getTime);
+      //      commlogger.info("##FIXDATE 2calendarLONG="+ calendar2.getTimeInMillis);
+      //      commlogger.info("##FIXDATE2 calendar YYYY-MM-DD="+calendar2.get(Calendar.YEAR)+"-"+(calendar2.get(Calendar.MONTH)+1)+"-"+calendar2.get(Calendar.DATE));
+
+
       findPatientQuery += " AND patient.birthDate = '" + calendar.get(Calendar.YEAR) + "-" + (calendar.get(Calendar.MONTH) + 1) + "-" + calendar.get(Calendar.DATE) + "'";
     }
     if (params.contains("omiNumber")) {
@@ -450,4 +464,27 @@ class DbPatientBean
       return 0;
   }
 
+  val patientIsAliveQuery =
+    """
+      SELECT COUNT( attach )
+      FROM ClientAttach attach
+      JOIN attach.attachType attachtype
+      WHERE attachtype.code = 8
+      AND attach.deleted = 0
+      AND attach.client = :PATIENT
+    """
+
+  /**
+   * Проверяет жив ли пациент
+   * @param patient   Пациент, факт смерти которого проверяется
+   * @return   false=мертв, true=жив
+   */
+  def isAlive(patient: Patient): Boolean = {
+    if (em.createQuery(patientIsAliveQuery, classOf[Long]).setParameter("PATIENT", patient).getSingleResult > 0) {
+      false
+    }
+    else {
+      true
+    }
+  }
 }

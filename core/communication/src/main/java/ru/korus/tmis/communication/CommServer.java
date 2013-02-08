@@ -393,8 +393,9 @@ public class CommServer implements Communications.Iface {
                         logger.debug("CLIENT ACTIONEVENT={}", queue.get(i).getValue().getEvent());
                         logger.debug("CLIENT ACTIONEVENTPATIENT={}", queue.get(i).getValue().getEvent().getPatient());
                     }
-                    newTicket.setPatientId(queue.get(i).getValue().getEvent().getPatient().getId())
-                            .setPatientInfo(queue.get(i).getValue().getEvent().getPatient().getLastName());
+                    //TODO поговорить с Сергеем о тикетах
+                    // newTicket.setPatientId(queue.get(i).getValue().getEvent().getPatient().getId())
+                    //         .setPatientInfo(queue.get(i).getValue().getEvent().getPatient().getLastName());
                 }
                 tickets.add(newTicket);
             }
@@ -553,7 +554,7 @@ public class CommServer implements Communications.Iface {
         final int currentRequestNum = ++requestNum;
         logger.info("#{} Call method -> CommServer.findPatient( Full name=\"{} {} {}\",Sex={}, BirthDATE={}, IDType={},ID={})",
                 currentRequestNum, params.getLastName(), params.getFirstName(), params.getPatrName(), params.getSex(),
-                new DateTime(params.getBirthDate()), params.getIdentifierType(), params.getIdentifier());
+                params.getBirthDate(), params.getIdentifierType(), params.getIdentifier());
         //Convert to patterns && MAP
         //TODO передавать сразу map
         final Map<String, String> parameters = new HashMap<String, String>();
@@ -739,8 +740,12 @@ public class CommServer implements Communications.Iface {
         //Проверяем существование пациента по ID:
         try {
             patient = patientBean.getPatientById(params.getPatientId());
-            //TODO теперь можно проверит жив ли пациент
-            //
+            //проверить жив ли пациент
+            if (!patientBean.isAlive(patient)) {
+                logger.warn("Unfortunately this patient is dead.");
+                return new EnqueuePatientStatus().setSuccess(false)
+                        .setMessage("Пациент с указанным ID отмечен как умерший. Запись невозможна.");
+            }
             person = staffBean.getStaffById(params.getPersonId());
             doctorAction = staffBean.getPersonActionsByDateAndType(params.getPersonId(), paramsDateTime.toDate(), "amb");
         } catch (Exception e) {
