@@ -264,7 +264,8 @@ class PatientBean
                "doctorSpeciality",
                ConfigManager.Types.String,
                null,
-               doctor.getSpeciality.getName) ::
+               //doctor.getSpeciality.getName) ::
+               if (doctor.getSpeciality != null) {doctor.getSpeciality.getName} else {""}) ::
         Nil
 
       admissions.get(event) match {
