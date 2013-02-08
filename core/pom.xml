@@ -539,7 +539,13 @@
                         ru\korus\tmis\core\database\,
                         ru\korus\tmis\core\patient\,
                         ru\korus\tmis\core\auth\,
-                        ru\korus\tmis\drugstore\data\
+                        ru\korus\tmis\drugstore\data\,
+                        ru/korus/tmis/communication/thriftgen/,
+                        *.xml,
+                        ru/korus/tmis/laboratory/*,
+                        ru/korus/tmis/laboratory/data/lis2/accept/*,
+                        ru/korus/tmis/laboratory/data/lis/accept/*,
+                        ru/korus/tmis/laboratory/data/lis/mock/
                     </excludes>
                 </configuration>
                 <executions>

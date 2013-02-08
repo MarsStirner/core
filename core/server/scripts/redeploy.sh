@@ -16,8 +16,10 @@ export PATH=${glassfish.home}/bin/:$PATH
 
 # Список доменов
 asadmin list-domains
+echo "--------------------------------------------------------------------"
 
 # Рестарт
+asadmin restart-domain
 #asadmin stop-domain --domaindir ${glassfish.domain.dir} ${glassfish.domain}
 #asadmin start-domain --domaindir ${glassfish.domain.dir} ${glassfish.domain}
 

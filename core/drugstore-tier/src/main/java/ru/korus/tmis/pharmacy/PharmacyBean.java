@@ -3,6 +3,8 @@ package ru.korus.tmis.pharmacy;
 import org.hl7.v3.AcknowledgementType;
 import org.hl7.v3.MCCIIN000002UV01;
 import org.hl7.v3.MCCIMT000200UV01Acknowledgement;
+import org.joda.time.DateTime;
+import org.joda.time.format.DateTimeFormatter;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import ru.korus.tmis.core.database.DbActionBeanLocal;
@@ -36,7 +38,7 @@ import java.util.Map;
 @Stateless
 public class PharmacyBean implements PharmacyBeanLocal {
 
-    final static Logger logger = LoggerFactory.getLogger(PharmacyBean.class);
+    static final Logger logger = LoggerFactory.getLogger(PharmacyBean.class);
     public static final int LAST_ACTIONS = 10;
 
     @EJB(beanName = "DbActionBean")
@@ -60,7 +62,7 @@ public class PharmacyBean implements PharmacyBeanLocal {
     @EJB(beanName = "DbActionPropertyBean")
     private DbActionPropertyBeanLocal dbActionPropertyBeanLocal = null;
 
-    private Date lastDateUpdate = null;
+    private DateTime lastDateUpdate = null;
 
     /**
      * Полинг базы данных для поиска событий по движениям пациентов
@@ -68,7 +70,7 @@ public class PharmacyBean implements PharmacyBeanLocal {
     @Override
     @Schedule(minute = "*/2", hour = "*")
     public void pooling() {
-        logger.info("pooling...last date update {}", lastDateUpdate);
+        logger.info("pooling...last date update {}", getLastDate());
 //        logger.error("fake error", new Exception("ee"));
         try {
             if (lastDateUpdate == null) {
@@ -78,34 +80,39 @@ public class PharmacyBean implements PharmacyBeanLocal {
                     logger.info("Pooling db, fetch last {} actions. Size [{}]", LAST_ACTIONS, actionList.size());
 
                     for (Action action : actionList) {
+                        final DateTime actionDateTime = new DateTime(action.getCreateDatetime());
 
                         Pharmacy checkPharmacy = dbPharmacy.getPharmacyByAction(action);
                         logger.info("check pharmacy [{}] action [{}], date [{}], flatCode [{}]",
-                                checkPharmacy, action, action.getCreateDatetime(), action.getActionType().getFlatCode());
+                                checkPharmacy,
+                                action,
+                                actionDateTime.toString("yyyy-MM-dd hh:mm:ss"),
+                                action.getActionType().getFlatCode());
+
                         if (checkPharmacy != null) {
                             if (!checkPharmacy.getStatus().equals(PharmacyStatus.COMPLETE.toString())) {
                                 // повторная отправка в 1с
-                                logger.info("repeate send message Pharmacy {}", checkPharmacy);
+                                logger.info("...repeate send message Pharmacy {}", checkPharmacy);
                                 checkMessageAndSend(action);
                             }
                         } else {
                             checkMessageAndSend(action);
                         }
-                        lastDateUpdate = updateLastDate(action.getCreateDatetime(), lastDateUpdate);
+                        lastDateUpdate = updateLastDate(actionDateTime, lastDateUpdate);
                     }
                 } else {
-                    lastDateUpdate = new Date();
-                    logger.info("last date update {}", lastDateUpdate);
+                    lastDateUpdate = DateTime.now();
+                    logger.info("last date update {}", getLastDate());
                 }
             }
 
             final List<Action> actionList = dbPharmacy.getActionAfterDate(lastDateUpdate);
-            logger.info("Found {} newest actions after date {}", actionList.size(), lastDateUpdate);
+            logger.info("Found {} newest actions after date {}", actionList.size(), getLastDate());
 
             for (Action action : actionList) {
                 lastDateUpdate = checkMessageAndSend(action);
             }
-            logger.info("Update last date, new value {}", lastDateUpdate);
+            logger.info("Update last date, new value {}", getLastDate());
 
 
         } catch (Throwable e) {
@@ -114,13 +121,17 @@ public class PharmacyBean implements PharmacyBeanLocal {
         }
     }
 
+    private String getLastDate() {
+        return lastDateUpdate != null ? lastDateUpdate.toString("yyyy-MM-dd hh:mm:ss") : "null";
+    }
+
     /**
      * Проверка action на присутствие flatCode и обработка если это сообщение по движению пациентов
      *
      * @param action событие
      * @return время последнего обработанного сообщения
      */
-    private Date checkMessageAndSend(Action action) {
+    private DateTime checkMessageAndSend(final Action action) {
         logger.info("check message...");
         try {
             final ActionType actionType = action.getActionType();
@@ -181,10 +192,10 @@ public class PharmacyBean implements PharmacyBeanLocal {
                 final Pharmacy pharmacy = dbPharmacy.getOrCreate(action);
                 final Patient client = action.getEvent().getPatient();
                 final Staff createPerson = action.getCreatePerson();
-                final String externalId = java.util.UUID.randomUUID().toString();//dbUUIDBeanLocal.getUUIDById(event.getUUID());
-                final String externalUUID = java.util.UUID.randomUUID().toString();//dbUUIDBeanLocal.getUUIDById(event.getUUID());
-                final String custodianUUID = java.util.UUID.randomUUID().toString();//dbUUIDBeanLocal.getUUIDById(event.getUUID());
-                final String uuidClient = java.util.UUID.randomUUID().toString();//dbUUIDBeanLocal.getUUIDById(event.getUUID());
+                final String externalId = java.util.UUID.randomUUID().toString(); //dbUUIDBeanLocal.getUUIDById(event.getUUID());
+                final String externalUUID = java.util.UUID.randomUUID().toString(); //dbUUIDBeanLocal.getUUIDById(event.getUUID());
+                final String custodianUUID = java.util.UUID.randomUUID().toString(); //dbUUIDBeanLocal.getUUIDById(event.getUUID());
+                final String uuidClient = java.util.UUID.randomUUID().toString(); //dbUUIDBeanLocal.getUUIDById(event.getUUID());
                 final OrgStructure orgStructure = getOrgStructure(action);
                 final String organizationName = orgStructure.getName();
                 final Staff doctorPerson = new Staff(11);
@@ -203,11 +214,19 @@ public class PharmacyBean implements PharmacyBeanLocal {
             }
 
         } catch (CoreException e) {
+            try {    // todo переделать !!!!!!!
+                final Pharmacy pharmacy = dbPharmacy.getOrCreate(action);
+                pharmacy.setStatus(PharmacyStatus.ERROR);
+                dbPharmacy.updateMessage(pharmacy);
+                logger.info("update error status {}", pharmacy);
+            } catch (Exception e1) {
+                logger.error("core error " + e1, e1);
+            }
             logger.error("core error " + e, e);
         } catch (SoapConnectionException e) {
             logger.error("core error " + e, e);
         }
-        return action.getCreateDatetime();
+        return new DateTime(action.getCreateDatetime());
     }
 
     /**
@@ -217,7 +236,7 @@ public class PharmacyBean implements PharmacyBeanLocal {
      * @return
      * @throws CoreException
      */
-    private OrgStructure getOrgStructure(Action action) throws CoreException {
+    private OrgStructure getOrgStructure(final Action action) throws CoreException {
         final Map<ActionProperty, List<APValue>> actionPropertiesMap = dbActionPropertyBeanLocal.getActionPropertiesByActionId(action.getId());
         for (ActionProperty property : actionPropertiesMap.keySet()) {
             final List<APValue> apValues = actionPropertiesMap.get(property);
@@ -228,10 +247,14 @@ public class PharmacyBean implements PharmacyBeanLocal {
                 }
             }
         }
-        logger.info("try recursive call by actionParentId");
-        final Action parentAction = dbAction.getActionByIdWithIgnoreDeleted(action.getParentActionId());
-        if (parentAction != null) {
-            return getOrgStructure(parentAction);
+        if (action.getParentActionId() != 0) {
+            logger.info("try recursive call {} by actionParentId [{}]", action, action.getParentActionId());
+            final Action parentAction = dbAction.getActionByIdWithIgnoreDeleted(action.getParentActionId());
+            if (parentAction != null) {
+                return getOrgStructure(parentAction);
+            }
+        } else {
+            logger.info("OrgStructure is not found {} by actionParentId [{}]", action, action.getParentActionId());
         }
         throw new CoreException("OrgStructure for " + action + " is not found");
     }
@@ -239,13 +262,15 @@ public class PharmacyBean implements PharmacyBeanLocal {
     /**
      * Обработка результата от 1С
      */
-    private void processResult(Pharmacy pharmacy, MCCIIN000002UV01 result) throws CoreException {
+    private void processResult(final Pharmacy pharmacy, final MCCIIN000002UV01 result) throws CoreException {
         if (result != null && !result.getAcknowledgement().isEmpty()) {
             final MCCIMT000200UV01Acknowledgement ack = result.getAcknowledgement().get(0);
             pharmacy.setDocumentUUID(ack.getTargetMessage().getId().getRoot());
             pharmacy.setResult(ack.getTypeCode().value());
             if (ack.getTypeCode().equals(AcknowledgementType.AA)) {
                 pharmacy.setStatus(PharmacyStatus.COMPLETE);
+            } else {
+                pharmacy.setStatus(PharmacyStatus.ERROR);
             }
         }
         logger.info("---update message {} ", pharmacy);
@@ -253,11 +278,11 @@ public class PharmacyBean implements PharmacyBeanLocal {
     }
 
 
-    private Date updateLastDate(Date date, Date lastDate) {
+    private DateTime updateLastDate(final DateTime date, final DateTime lastDate) {
         if (lastDate == null) {
             return date;
         }
-        return date.before(lastDate) ? lastDate : date;
+        return date.toDate().before(lastDate.toDate()) ? lastDate : date;
     }
 
 }

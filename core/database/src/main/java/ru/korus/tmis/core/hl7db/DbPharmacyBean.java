@@ -1,5 +1,6 @@
 package ru.korus.tmis.core.hl7db;
 
+import org.joda.time.DateTime;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import ru.korus.tmis.core.database.DbManagerBeanLocal;
@@ -82,9 +83,9 @@ public class DbPharmacyBean implements DbPharmacyBeanLocal {
     }
 
     @Override
-    public List<Action> getActionAfterDate(final Date after) {
+    public List<Action> getActionAfterDate(final DateTime after) {
         return em.createQuery("SELECT a FROM Action a WHERE a.createDatetime > :createDatetime", Action.class)
-                .setParameter("createDatetime", after)
+                .setParameter("createDatetime", after.toDate())
                 .getResultList();
     }
 
