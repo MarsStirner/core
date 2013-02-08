@@ -75,7 +75,7 @@
         <!-- Кол-во эксепшенов отправляемых в одном письме -->
         <alarm.count.message>10</alarm.count.message>
 
-        <!-- Путь для логов в тестовом окружении-->
+        <!-- Путь для логов в тестовом окружжении-->
         <logs.test.path>core/server/target/logs-test/</logs.test.path>
         <!-- Уровень записи лога по умолчанию -->
         <logs.level>INFO</logs.level>
@@ -151,6 +151,16 @@
                 <mysql.db.rls>rls</mysql.db.rls>
                 <!-- Название базы данных для конфигурации ядра (пул к БД автоматом получит это имя + суффикс "-pool") -->
                 <mysql.db.tmis_core>tmis_core</mysql.db.tmis_core>
+            </properties>
+        </profile>
+
+        <profile>
+            <!-- Пользовательский профиль -->
+            <id>ueg</id>
+            <properties>
+                <com.sun.aas.instanceRoot>C:\Winprog\glassfish3\glassfish\domains\domain\</com.sun.aas.instanceRoot>
+                <mysql.login>root</mysql.login>
+                <mysql.password>root</mysql.password>
             </properties>
         </profile>
 
@@ -529,8 +539,7 @@
                         ru\korus\tmis\core\database\,
                         ru\korus\tmis\core\patient\,
                         ru\korus\tmis\core\auth\,
-                        ru\korus\tmis\drugstore\data\,
-                        ru/korus/tmis/communication/thriftgen/*
+                        ru\korus\tmis\drugstore\data\
                     </excludes>
                 </configuration>
                 <executions>

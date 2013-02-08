@@ -20,6 +20,7 @@ import javax.ejb.Startup;
 @LocalBean
 public class CommunicationServerBean {
     final static Logger logger = LoggerFactory.getLogger(CommunicationServerBean.class);
+
     @EJB(beanName = "DbOrgStructureBean")
     private DbOrgStructureBeanLocal dbOrgStructureBeanLocal = null;
     @EJB(beanName = "DbPatientBean")

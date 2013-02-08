@@ -33,6 +33,14 @@ public class DbQuotingByTimeBean implements DbQuotingByTimeBeanLocal {
                     " AND qbt.quotingDate = :DATE " +
                     " AND qbt.quotingType= :QUOTINGTYPE ";
 
+    /**
+     * Получение ограничений для врача
+     *
+     * @param personId    ИД врача
+     * @param date        Дата, на момент которой ищутся ограничения
+     * @param quotingType Тип квотирования
+     * @return Список ограничений
+     */
     @Override
     public List<QuotingByTime> getQuotingByTimeConstraints(int personId, Date date, int quotingType) {
         List<QuotingByTime> result = em.createQuery(getQuotingByTimeConstraintsQuery, QuotingByTime.class).setParameter("PERSONID", personId)

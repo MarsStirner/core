@@ -280,10 +280,29 @@ class DbStaffBean
     s.consultancyQuota > 0
                                        """
 
+  /**
+   * Получение действия(Action) по заданному типу, времени и владельцу
+   * @param personId  Владелец действия
+   * @param date      Дата на момент которой ищется действие
+   * @param actionType    Тип искомого действия
+   * @return  Найденое действие
+   * @throws CoreException   Если действие не найдено
+   */
   def getPersonActionsByDateAndType(personId: Int, date: Date, actionType: String): Action = {
-    em.createQuery(getPersonActionsByDateAndTypeQuery, classOf[Action]).setParameter("ACTIONTYPECODE", actionType)
-      .setParameter("PERSONID", personId).setParameter("SETDATE", date, TemporalType.DATE).getSingleResult
+    val resultList = em.createQuery(getPersonActionsByDateAndTypeQuery, classOf[Action]).setParameter("ACTIONTYPECODE", actionType)
+      .setParameter("PERSONID", personId).setParameter("SETDATE", date, TemporalType.DATE).getResultList
+    if (resultList.size() == 1) {
+      val timelineAccessibleDays = resultList.get(0).getEvent.getExecutor.getTimelineAccessibleDays;
+      val lastAccessibleDate = new java.util.GregorianCalendar();
+      lastAccessibleDate.add(java.util.Calendar.DATE, timelineAccessibleDays);
+      if (timelineAccessibleDays <= 0 || resultList.get(0).getEvent.getSetDate.before(lastAccessibleDate.getTime)) {
+        //AND (Person.timelineAccessibleDays IS NULL OR Person.timelineAccessibleDays <= 0 OR DATE(Event.setDate)<=ADDDATE(CURRENT_DATE(), Person.timelineAccessibleDays))
+        return resultList.get(0);
+      }
+    }
+    throw new CoreException("Not found any actual actions");
   }
+
 
   val getPersonActionsByDateAndTypeQuery = """
     SELECT action
@@ -302,5 +321,4 @@ class DbStaffBean
                                            """
 }
 
-//AND ( ( pers.lastAccessibleTimelineDate = '0000-00-00') OR (DATE(event.setDate)<=pers.lastAccessibleTimelineDate))
-//AND ( ( pers.timelineAccessibleDays = 0) OR (pers.timelineAccessibleDays <= 0) OR (DATE(event.setDate)<=ADDDATE(CURRENT_DATE(), pers.timelineAccessibleDays)))
+
