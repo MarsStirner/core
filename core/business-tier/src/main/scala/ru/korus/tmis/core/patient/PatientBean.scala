@@ -988,8 +988,20 @@ class PatientBean
             val result = clientWorks.find(cw => cw.getId.compareTo(sw.getId)==0)
             if (result==None) true else false
           }).foreach(f => dbClientWorks.deleteClientWork(f.getId.intValue(), usver))
+          //-------------- костыль для НТК (нужно создавать пустой клиентВорк если нет ни одного)
+          if (clientWorks != null || clientWorks.size() == 0) {
+            dbClientWorks.insertOrUpdateClientWork(0,
+              patient,
+              "",
+              "",
+              0,
+              0,
+              usver)
+          }
+          //--------------
         }
       })
+
       //Гражданства
       if(clientCitizenships!=null) {
         Set(clientCitizenships.getFirst, clientCitizenships.getSecond).foreach(f=> {

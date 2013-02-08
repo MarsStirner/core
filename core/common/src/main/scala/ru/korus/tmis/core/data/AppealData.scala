@@ -702,13 +702,13 @@ class AppealEntry {
       extractProperties.foreach(prop => {
         val result = corrList.find(p=> p.getActionPropertyType.getId.intValue()==prop._1.getType.getId.intValue()).getOrElse(null)
         if (result!=null) {
-          if (result.getId.compareTo(ConfigManager.Messages("db.rbCAP.extract.id.nextHospDate").toInt :java.lang.Integer)==0){
+          if (result.getId.compareTo(ConfigManager.RbCAPIds("db.rbCAP.extract.id.nextHospDate").toInt :java.lang.Integer)==0){
             this.nextHospDate = prop._2.get(0).getValueAsString
           }
-          else if (result.getId.compareTo(ConfigManager.Messages("db.rbCAP.extract.id.nextHospDepartment").toInt :java.lang.Integer)==0){
+          else if (result.getId.compareTo(ConfigManager.RbCAPIds("db.rbCAP.extract.id.nextHospDepartment").toInt :java.lang.Integer)==0){
             this.nextHospDepartment = "%s(%s)".format(prop._2.get(0).getValue.asInstanceOf[OrgStructure].getName, prop._2.get(0).getValue.asInstanceOf[OrgStructure].getAddress)
           }
-          else if (result.getId.compareTo(ConfigManager.Messages("db.rbCAP.extract.id.nextHospFinanceType").toInt :java.lang.Integer)==0){
+          else if (result.getId.compareTo(ConfigManager.RbCAPIds("db.rbCAP.extract.id.nextHospFinanceType").toInt :java.lang.Integer)==0){
             this.nextHospFinanceType= prop._2.get(0).getValueAsString
           }
         }

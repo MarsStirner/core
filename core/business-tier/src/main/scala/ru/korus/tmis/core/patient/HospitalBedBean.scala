@@ -274,7 +274,7 @@ with TmisLogging{
                                             authData)
       action.setStatus(ActionStatus.FINISHED.getCode)  //Добавлено в спеку по переводам
       action.setBegDate(oldAction.getBegDate)
-      if (flgOption == this.directionInDepartment)
+      if (flgOption != this.directionInDepartment)
         action.setEndDate(oldAction.getEndDate)
 
       entities = entities + action
