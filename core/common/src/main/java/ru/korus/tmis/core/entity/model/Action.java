@@ -149,6 +149,10 @@ public class Action
     @Column(name = "coordText")
     private String coordText = "";
 
+    @Basic(optional = false)
+    @Column(name = "hospitalUidFrom")
+    private String hospitalUidFrom = "";
+
     @Version
     @Basic(optional = false)
     @Column(name = "version")
@@ -164,9 +168,14 @@ public class Action
     @Column(name = "toOrder")
     private boolean toOrder = false;
 
-    @ManyToOne(cascade = CascadeType.ALL)
-    @JoinColumn(name = "uuid_id")
+//    @ManyToOne(cascade = CascadeType.ALL)
+//    @JoinColumn(name = "uuid_id")
+    @Transient
     private UUID uuid;
+
+    @Basic(optional = false)
+    @Column(name = "parentAction_id")
+    private int parentActionId = 0;
     ////////////////////////////////////////////////////////////////////////////
     // Custom mappings
     ////////////////////////////////////////////////////////////////////////////
@@ -500,6 +509,14 @@ public class Action
         this.coordText = coordText;
     }
 
+    public String getHospitalUidFrom() {
+        return hospitalUidFrom;
+    }
+
+    public void setHospitalUidFrom(String hospitalUidFrom) {
+        this.hospitalUidFrom = hospitalUidFrom;
+    }
+
     public UUID getUuid() {
         return uuid;
     }
@@ -530,6 +547,14 @@ public class Action
 
     public void setTissue(Set<Tissue> tissue) {
         this.tissue = tissue;
+    }
+
+    public int getParentActionId() {
+        return parentActionId;
+    }
+
+    public void setParentActionId(int parentActionId) {
+        this.parentActionId = parentActionId;
     }
 
     @Override

@@ -5,14 +5,14 @@
     <modelVersion>4.0.0</modelVersion>
     <groupId>ru.korus.tmis</groupId>
     <artifactId>tmis-server</artifactId>
-    <version>${tmis-core-version}</version>
+    <version>${version.tmis.core}</version>
     <packaging>ear</packaging>
     <name>TMIS Server EAR</name>
 
     <parent>
         <groupId>ru.korus.tmis</groupId>
         <artifactId>tmis-nexus</artifactId>
-        <version>${tmis-core-version}</version>
+        <version>${version.tmis.core}</version>
         <relativePath>../</relativePath>
     </parent>
 
@@ -22,85 +22,85 @@
         <dependency>
             <groupId>ru.korus.tmis.core</groupId>
             <artifactId>tmis-core-business</artifactId>
-            <version>${tmis-core-version}</version>
+            <version>${version.tmis.core}</version>
             <type>ejb</type>
         </dependency>
 
         <dependency>
             <groupId>ru.korus.tmis.core</groupId>
             <artifactId>tmis-core-common</artifactId>
-            <version>${tmis-core-version}</version>
+            <version>${version.tmis.core}</version>
             <type>jar</type>
         </dependency>
 
         <dependency>
             <groupId>ru.korus.tmis.core</groupId>
             <artifactId>tmis-core-database</artifactId>
-            <version>${tmis-core-version}</version>
+            <version>${version.tmis.core}</version>
             <type>ejb</type>
         </dependency>
 
         <dependency>
             <groupId>ru.korus.tmis</groupId>
             <artifactId>tmis-ws-medipad</artifactId>
-            <version>${tmis-core-version}</version>
+            <version>${version.tmis.core}</version>
             <type>war</type>
         </dependency>
 
         <dependency>
             <groupId>ru.korus.tmis.laboratory</groupId>
             <artifactId>tmis-laboratory-tier</artifactId>
-            <version>${tmis-core-version}</version>
+            <version>${version.tmis.core}</version>
             <type>ejb</type>
         </dependency>
 
         <dependency>
             <groupId>ru.korus.tmis.laboratory</groupId>
             <artifactId>tmis-ws-laboratory</artifactId>
-            <version>${tmis-core-version}</version>
+            <version>${version.tmis.core}</version>
             <type>war</type>
         </dependency>
 
         <dependency>
             <groupId>ru.korus.tmis.drugstore</groupId>
             <artifactId>tmis-drugstore-tier</artifactId>
-            <version>${tmis-core-version}</version>
+            <version>${version.tmis.core}</version>
             <type>ejb</type>
         </dependency>
 
         <dependency>
             <groupId>ru.korus.tmis.drugstore</groupId>
             <artifactId>tmis-ws-drugstore</artifactId>
-            <version>${tmis-core-version}</version>
+            <version>${version.tmis.core}</version>
             <type>war</type>
         </dependency>
 
         <!--<dependency>-->
-            <!--<groupId>ru.korus.tmis.hl7</groupId>-->
-            <!--<artifactId>tmis-hl7</artifactId>-->
-            <!--<version>${tmis-core-version}</version>-->
-            <!--<type>war</type>-->
+        <!--<groupId>ru.korus.tmis.hl7</groupId>-->
+        <!--<artifactId>tmis-hl7</artifactId>-->
+        <!--<version>${version.tmis.core}</version>-->
+        <!--<type>war</type>-->
         <!--</dependency>-->
 
         <dependency>
             <groupId>ru.korus.tmis.ws.finance</groupId>
             <artifactId>tmis-ws-finance</artifactId>
-            <version>${tmis-core-version}</version>
+            <version>${version.tmis.core}</version>
             <type>war</type>
         </dependency>
 
-        <!--<dependency>-->
-            <!--<groupId>ru.korus.tmis.ws.transfusion</groupId>-->
-            <!--<artifactId>tmis-ws-transfusion</artifactId>-->
-            <!--<version>${tmis-core-version}</version>-->
-            <!--<type>war</type>-->
-        <!--</dependency>-->
+        <dependency>
+            <groupId>ru.korus.tmis.ws.transfusion</groupId>
+            <artifactId>tmis-ws-transfusion</artifactId>
+            <version>${version.tmis.core}</version>
+            <type>war</type>
+        </dependency>
 
         <dependency>
             <groupId>ru.korus.tmis.communication</groupId>
             <artifactId>tmis-communication</artifactId>
-            <version>${tmis-core-version}</version>
-            <type>ejb</type>
+            <version>${version.tmis.core}</version>
+            <type>war</type>
         </dependency>
 
     </dependencies>
@@ -114,8 +114,8 @@
                 <configuration>
                     <version>6</version>
                     <defaultLibBundleDir>lib</defaultLibBundleDir>
-                    <earSourceDirectory>${basedir}/src/main/resources/</earSourceDirectory>
-                    <earSourceIncludes>logback.xml</earSourceIncludes>
+                    <!--<earSourceDirectory>${basedir}/src/main/resources/</earSourceDirectory>-->
+                    <earSourceExcludes>logback.xml</earSourceExcludes>
                 </configuration>
             </plugin>
             <!--

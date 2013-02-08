@@ -53,7 +53,7 @@ class DbEventTypeBean
     if (records!=null) records(result.size)
 
     //проведем  разбиение на страницы вручную (необходимо чтобы не использовать отдельный запрос на recordcounts)
-    if (page>=0 && limit>=0) {
+    if (page>=0 && limit>0) {
       if((result.size - limit*(page+1))>0)
         result.dropRight(result.size - limit*(page+1)).drop(page*limit)
       else

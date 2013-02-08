@@ -23,9 +23,10 @@ public class FindPatientParameters implements org.apache.thrift.TBase<FindPatien
     private static final org.apache.thrift.protocol.TField PATR_NAME_FIELD_DESC = new org.apache.thrift.protocol.TField("patrName", org.apache.thrift.protocol.TType.STRING, (short) 3);
     private static final org.apache.thrift.protocol.TField BIRTH_DATE_FIELD_DESC = new org.apache.thrift.protocol.TField("birthDate", org.apache.thrift.protocol.TType.I64, (short) 4);
     private static final org.apache.thrift.protocol.TField SEX_FIELD_DESC = new org.apache.thrift.protocol.TField("sex", org.apache.thrift.protocol.TType.I32, (short) 5);
-    private static final org.apache.thrift.protocol.TField IDENTIFIER_TYPE_FIELD_DESC = new org.apache.thrift.protocol.TField("identifierType", org.apache.thrift.protocol.TType.I32, (short) 6);
-    private static final org.apache.thrift.protocol.TField IDENTIFIER_FIELD_DESC = new org.apache.thrift.protocol.TField("identifier", org.apache.thrift.protocol.TType.I32, (short) 7);
-    private static final org.apache.thrift.protocol.TField OMI_POLICY_FIELD_DESC = new org.apache.thrift.protocol.TField("omiPolicy", org.apache.thrift.protocol.TType.STRING, (short) 8);
+    private static final org.apache.thrift.protocol.TField IDENTIFIER_TYPE_FIELD_DESC = new org.apache.thrift.protocol.TField("identifierType", org.apache.thrift.protocol.TType.STRING, (short) 6);
+    private static final org.apache.thrift.protocol.TField IDENTIFIER_FIELD_DESC = new org.apache.thrift.protocol.TField("identifier", org.apache.thrift.protocol.TType.STRING, (short) 7);
+    private static final org.apache.thrift.protocol.TField OMI_POLICY_SERIAL_FIELD_DESC = new org.apache.thrift.protocol.TField("omiPolicySerial", org.apache.thrift.protocol.TType.STRING, (short) 8);
+    private static final org.apache.thrift.protocol.TField OMI_POLICY_NUMBER_FIELD_DESC = new org.apache.thrift.protocol.TField("omiPolicyNumber", org.apache.thrift.protocol.TType.STRING, (short) 9);
 
     private static final Map<Class<? extends IScheme>, SchemeFactory> schemes = new HashMap<Class<? extends IScheme>, SchemeFactory>();
 
@@ -39,9 +40,10 @@ public class FindPatientParameters implements org.apache.thrift.TBase<FindPatien
     public String patrName; // optional
     public long birthDate; // optional
     public int sex; // optional
-    public int identifierType; // optional
-    public int identifier; // required
-    public String omiPolicy; // optional
+    public String identifierType; // optional
+    public String identifier; // optional
+    public String omiPolicySerial; // optional
+    public String omiPolicyNumber; // optional
 
     /**
      * The set of fields this struct contains, along with convenience methods for finding and manipulating them.
@@ -54,7 +56,8 @@ public class FindPatientParameters implements org.apache.thrift.TBase<FindPatien
         SEX((short) 5, "sex"),
         IDENTIFIER_TYPE((short) 6, "identifierType"),
         IDENTIFIER((short) 7, "identifier"),
-        OMI_POLICY((short) 8, "omiPolicy");
+        OMI_POLICY_SERIAL((short) 8, "omiPolicySerial"),
+        OMI_POLICY_NUMBER((short) 9, "omiPolicyNumber");
 
         private static final Map<String, _Fields> byName = new HashMap<String, _Fields>();
 
@@ -83,8 +86,10 @@ public class FindPatientParameters implements org.apache.thrift.TBase<FindPatien
                     return IDENTIFIER_TYPE;
                 case 7: // IDENTIFIER
                     return IDENTIFIER;
-                case 8: // OMI_POLICY
-                    return OMI_POLICY;
+                case 8: // OMI_POLICY_SERIAL
+                    return OMI_POLICY_SERIAL;
+                case 9: // OMI_POLICY_NUMBER
+                    return OMI_POLICY_NUMBER;
                 default:
                     return null;
             }
@@ -127,10 +132,8 @@ public class FindPatientParameters implements org.apache.thrift.TBase<FindPatien
     // isset id assignments
     private static final int __BIRTHDATE_ISSET_ID = 0;
     private static final int __SEX_ISSET_ID = 1;
-    private static final int __IDENTIFIERTYPE_ISSET_ID = 2;
-    private static final int __IDENTIFIER_ISSET_ID = 3;
     private byte __isset_bitfield = 0;
-    private _Fields optionals[] = {_Fields.LAST_NAME, _Fields.FIRST_NAME, _Fields.PATR_NAME, _Fields.BIRTH_DATE, _Fields.SEX, _Fields.IDENTIFIER_TYPE, _Fields.OMI_POLICY};
+    private _Fields optionals[] = {_Fields.LAST_NAME, _Fields.FIRST_NAME, _Fields.PATR_NAME, _Fields.BIRTH_DATE, _Fields.SEX, _Fields.IDENTIFIER_TYPE, _Fields.IDENTIFIER, _Fields.OMI_POLICY_SERIAL, _Fields.OMI_POLICY_NUMBER};
     public static final Map<_Fields, org.apache.thrift.meta_data.FieldMetaData> metaDataMap;
 
     static {
@@ -146,23 +149,18 @@ public class FindPatientParameters implements org.apache.thrift.TBase<FindPatien
         tmpMap.put(_Fields.SEX, new org.apache.thrift.meta_data.FieldMetaData("sex", org.apache.thrift.TFieldRequirementType.OPTIONAL,
                 new org.apache.thrift.meta_data.FieldValueMetaData(org.apache.thrift.protocol.TType.I32)));
         tmpMap.put(_Fields.IDENTIFIER_TYPE, new org.apache.thrift.meta_data.FieldMetaData("identifierType", org.apache.thrift.TFieldRequirementType.OPTIONAL,
-                new org.apache.thrift.meta_data.FieldValueMetaData(org.apache.thrift.protocol.TType.I32)));
-        tmpMap.put(_Fields.IDENTIFIER, new org.apache.thrift.meta_data.FieldMetaData("identifier", org.apache.thrift.TFieldRequirementType.REQUIRED,
-                new org.apache.thrift.meta_data.FieldValueMetaData(org.apache.thrift.protocol.TType.I32)));
-        tmpMap.put(_Fields.OMI_POLICY, new org.apache.thrift.meta_data.FieldMetaData("omiPolicy", org.apache.thrift.TFieldRequirementType.OPTIONAL,
+                new org.apache.thrift.meta_data.FieldValueMetaData(org.apache.thrift.protocol.TType.STRING)));
+        tmpMap.put(_Fields.IDENTIFIER, new org.apache.thrift.meta_data.FieldMetaData("identifier", org.apache.thrift.TFieldRequirementType.OPTIONAL,
+                new org.apache.thrift.meta_data.FieldValueMetaData(org.apache.thrift.protocol.TType.STRING)));
+        tmpMap.put(_Fields.OMI_POLICY_SERIAL, new org.apache.thrift.meta_data.FieldMetaData("omiPolicySerial", org.apache.thrift.TFieldRequirementType.OPTIONAL,
+                new org.apache.thrift.meta_data.FieldValueMetaData(org.apache.thrift.protocol.TType.STRING)));
+        tmpMap.put(_Fields.OMI_POLICY_NUMBER, new org.apache.thrift.meta_data.FieldMetaData("omiPolicyNumber", org.apache.thrift.TFieldRequirementType.OPTIONAL,
                 new org.apache.thrift.meta_data.FieldValueMetaData(org.apache.thrift.protocol.TType.STRING)));
         metaDataMap = Collections.unmodifiableMap(tmpMap);
         org.apache.thrift.meta_data.FieldMetaData.addStructMetaDataMap(FindPatientParameters.class, metaDataMap);
     }
 
     public FindPatientParameters() {
-    }
-
-    public FindPatientParameters(
-            int identifier) {
-        this();
-        this.identifier = identifier;
-        setIdentifierIsSet(true);
     }
 
     /**
@@ -181,10 +179,17 @@ public class FindPatientParameters implements org.apache.thrift.TBase<FindPatien
         }
         this.birthDate = other.birthDate;
         this.sex = other.sex;
-        this.identifierType = other.identifierType;
-        this.identifier = other.identifier;
-        if (other.isSetOmiPolicy()) {
-            this.omiPolicy = other.omiPolicy;
+        if (other.isSetIdentifierType()) {
+            this.identifierType = other.identifierType;
+        }
+        if (other.isSetIdentifier()) {
+            this.identifier = other.identifier;
+        }
+        if (other.isSetOmiPolicySerial()) {
+            this.omiPolicySerial = other.omiPolicySerial;
+        }
+        if (other.isSetOmiPolicyNumber()) {
+            this.omiPolicyNumber = other.omiPolicyNumber;
         }
     }
 
@@ -201,11 +206,10 @@ public class FindPatientParameters implements org.apache.thrift.TBase<FindPatien
         this.birthDate = 0;
         setSexIsSet(false);
         this.sex = 0;
-        setIdentifierTypeIsSet(false);
-        this.identifierType = 0;
-        setIdentifierIsSet(false);
-        this.identifier = 0;
-        this.omiPolicy = null;
+        this.identifierType = null;
+        this.identifier = null;
+        this.omiPolicySerial = null;
+        this.omiPolicyNumber = null;
     }
 
     public String getLastName() {
@@ -336,79 +340,107 @@ public class FindPatientParameters implements org.apache.thrift.TBase<FindPatien
         __isset_bitfield = EncodingUtils.setBit(__isset_bitfield, __SEX_ISSET_ID, value);
     }
 
-    public int getIdentifierType() {
+    public String getIdentifierType() {
         return this.identifierType;
     }
 
-    public FindPatientParameters setIdentifierType(int identifierType) {
+    public FindPatientParameters setIdentifierType(String identifierType) {
         this.identifierType = identifierType;
-        setIdentifierTypeIsSet(true);
         return this;
     }
 
     public void unsetIdentifierType() {
-        __isset_bitfield = EncodingUtils.clearBit(__isset_bitfield, __IDENTIFIERTYPE_ISSET_ID);
+        this.identifierType = null;
     }
 
     /**
      * Returns true if field identifierType is set (has been assigned a value) and false otherwise
      */
     public boolean isSetIdentifierType() {
-        return EncodingUtils.testBit(__isset_bitfield, __IDENTIFIERTYPE_ISSET_ID);
+        return this.identifierType != null;
     }
 
     public void setIdentifierTypeIsSet(boolean value) {
-        __isset_bitfield = EncodingUtils.setBit(__isset_bitfield, __IDENTIFIERTYPE_ISSET_ID, value);
+        if (!value) {
+            this.identifierType = null;
+        }
     }
 
-    public int getIdentifier() {
+    public String getIdentifier() {
         return this.identifier;
     }
 
-    public FindPatientParameters setIdentifier(int identifier) {
+    public FindPatientParameters setIdentifier(String identifier) {
         this.identifier = identifier;
-        setIdentifierIsSet(true);
         return this;
     }
 
     public void unsetIdentifier() {
-        __isset_bitfield = EncodingUtils.clearBit(__isset_bitfield, __IDENTIFIER_ISSET_ID);
+        this.identifier = null;
     }
 
     /**
      * Returns true if field identifier is set (has been assigned a value) and false otherwise
      */
     public boolean isSetIdentifier() {
-        return EncodingUtils.testBit(__isset_bitfield, __IDENTIFIER_ISSET_ID);
+        return this.identifier != null;
     }
 
     public void setIdentifierIsSet(boolean value) {
-        __isset_bitfield = EncodingUtils.setBit(__isset_bitfield, __IDENTIFIER_ISSET_ID, value);
+        if (!value) {
+            this.identifier = null;
+        }
     }
 
-    public String getOmiPolicy() {
-        return this.omiPolicy;
+    public String getOmiPolicySerial() {
+        return this.omiPolicySerial;
     }
 
-    public FindPatientParameters setOmiPolicy(String omiPolicy) {
-        this.omiPolicy = omiPolicy;
+    public FindPatientParameters setOmiPolicySerial(String omiPolicySerial) {
+        this.omiPolicySerial = omiPolicySerial;
         return this;
     }
 
-    public void unsetOmiPolicy() {
-        this.omiPolicy = null;
+    public void unsetOmiPolicySerial() {
+        this.omiPolicySerial = null;
     }
 
     /**
-     * Returns true if field omiPolicy is set (has been assigned a value) and false otherwise
+     * Returns true if field omiPolicySerial is set (has been assigned a value) and false otherwise
      */
-    public boolean isSetOmiPolicy() {
-        return this.omiPolicy != null;
+    public boolean isSetOmiPolicySerial() {
+        return this.omiPolicySerial != null;
     }
 
-    public void setOmiPolicyIsSet(boolean value) {
+    public void setOmiPolicySerialIsSet(boolean value) {
         if (!value) {
-            this.omiPolicy = null;
+            this.omiPolicySerial = null;
+        }
+    }
+
+    public String getOmiPolicyNumber() {
+        return this.omiPolicyNumber;
+    }
+
+    public FindPatientParameters setOmiPolicyNumber(String omiPolicyNumber) {
+        this.omiPolicyNumber = omiPolicyNumber;
+        return this;
+    }
+
+    public void unsetOmiPolicyNumber() {
+        this.omiPolicyNumber = null;
+    }
+
+    /**
+     * Returns true if field omiPolicyNumber is set (has been assigned a value) and false otherwise
+     */
+    public boolean isSetOmiPolicyNumber() {
+        return this.omiPolicyNumber != null;
+    }
+
+    public void setOmiPolicyNumberIsSet(boolean value) {
+        if (!value) {
+            this.omiPolicyNumber = null;
         }
     }
 
@@ -458,7 +490,7 @@ public class FindPatientParameters implements org.apache.thrift.TBase<FindPatien
                 if (value == null) {
                     unsetIdentifierType();
                 } else {
-                    setIdentifierType((Integer) value);
+                    setIdentifierType((String) value);
                 }
                 break;
 
@@ -466,15 +498,23 @@ public class FindPatientParameters implements org.apache.thrift.TBase<FindPatien
                 if (value == null) {
                     unsetIdentifier();
                 } else {
-                    setIdentifier((Integer) value);
+                    setIdentifier((String) value);
                 }
                 break;
 
-            case OMI_POLICY:
+            case OMI_POLICY_SERIAL:
                 if (value == null) {
-                    unsetOmiPolicy();
+                    unsetOmiPolicySerial();
                 } else {
-                    setOmiPolicy((String) value);
+                    setOmiPolicySerial((String) value);
+                }
+                break;
+
+            case OMI_POLICY_NUMBER:
+                if (value == null) {
+                    unsetOmiPolicyNumber();
+                } else {
+                    setOmiPolicyNumber((String) value);
                 }
                 break;
 
@@ -499,13 +539,16 @@ public class FindPatientParameters implements org.apache.thrift.TBase<FindPatien
                 return Integer.valueOf(getSex());
 
             case IDENTIFIER_TYPE:
-                return Integer.valueOf(getIdentifierType());
+                return getIdentifierType();
 
             case IDENTIFIER:
-                return Integer.valueOf(getIdentifier());
+                return getIdentifier();
 
-            case OMI_POLICY:
-                return getOmiPolicy();
+            case OMI_POLICY_SERIAL:
+                return getOmiPolicySerial();
+
+            case OMI_POLICY_NUMBER:
+                return getOmiPolicyNumber();
 
         }
         throw new IllegalStateException();
@@ -534,8 +577,10 @@ public class FindPatientParameters implements org.apache.thrift.TBase<FindPatien
                 return isSetIdentifierType();
             case IDENTIFIER:
                 return isSetIdentifier();
-            case OMI_POLICY:
-                return isSetOmiPolicy();
+            case OMI_POLICY_SERIAL:
+                return isSetOmiPolicySerial();
+            case OMI_POLICY_NUMBER:
+                return isSetOmiPolicyNumber();
         }
         throw new IllegalStateException();
     }
@@ -603,25 +648,34 @@ public class FindPatientParameters implements org.apache.thrift.TBase<FindPatien
         if (this_present_identifierType || that_present_identifierType) {
             if (!(this_present_identifierType && that_present_identifierType))
                 return false;
-            if (this.identifierType != that.identifierType)
+            if (!this.identifierType.equals(that.identifierType))
                 return false;
         }
 
-        boolean this_present_identifier = true;
-        boolean that_present_identifier = true;
+        boolean this_present_identifier = true && this.isSetIdentifier();
+        boolean that_present_identifier = true && that.isSetIdentifier();
         if (this_present_identifier || that_present_identifier) {
             if (!(this_present_identifier && that_present_identifier))
                 return false;
-            if (this.identifier != that.identifier)
+            if (!this.identifier.equals(that.identifier))
                 return false;
         }
 
-        boolean this_present_omiPolicy = true && this.isSetOmiPolicy();
-        boolean that_present_omiPolicy = true && that.isSetOmiPolicy();
-        if (this_present_omiPolicy || that_present_omiPolicy) {
-            if (!(this_present_omiPolicy && that_present_omiPolicy))
+        boolean this_present_omiPolicySerial = true && this.isSetOmiPolicySerial();
+        boolean that_present_omiPolicySerial = true && that.isSetOmiPolicySerial();
+        if (this_present_omiPolicySerial || that_present_omiPolicySerial) {
+            if (!(this_present_omiPolicySerial && that_present_omiPolicySerial))
                 return false;
-            if (!this.omiPolicy.equals(that.omiPolicy))
+            if (!this.omiPolicySerial.equals(that.omiPolicySerial))
+                return false;
+        }
+
+        boolean this_present_omiPolicyNumber = true && this.isSetOmiPolicyNumber();
+        boolean that_present_omiPolicyNumber = true && that.isSetOmiPolicyNumber();
+        if (this_present_omiPolicyNumber || that_present_omiPolicyNumber) {
+            if (!(this_present_omiPolicyNumber && that_present_omiPolicyNumber))
+                return false;
+            if (!this.omiPolicyNumber.equals(that.omiPolicyNumber))
                 return false;
         }
 
@@ -711,12 +765,22 @@ public class FindPatientParameters implements org.apache.thrift.TBase<FindPatien
                 return lastComparison;
             }
         }
-        lastComparison = Boolean.valueOf(isSetOmiPolicy()).compareTo(typedOther.isSetOmiPolicy());
+        lastComparison = Boolean.valueOf(isSetOmiPolicySerial()).compareTo(typedOther.isSetOmiPolicySerial());
         if (lastComparison != 0) {
             return lastComparison;
         }
-        if (isSetOmiPolicy()) {
-            lastComparison = org.apache.thrift.TBaseHelper.compareTo(this.omiPolicy, typedOther.omiPolicy);
+        if (isSetOmiPolicySerial()) {
+            lastComparison = org.apache.thrift.TBaseHelper.compareTo(this.omiPolicySerial, typedOther.omiPolicySerial);
+            if (lastComparison != 0) {
+                return lastComparison;
+            }
+        }
+        lastComparison = Boolean.valueOf(isSetOmiPolicyNumber()).compareTo(typedOther.isSetOmiPolicyNumber());
+        if (lastComparison != 0) {
+            return lastComparison;
+        }
+        if (isSetOmiPolicyNumber()) {
+            lastComparison = org.apache.thrift.TBaseHelper.compareTo(this.omiPolicyNumber, typedOther.omiPolicyNumber);
             if (lastComparison != 0) {
                 return lastComparison;
             }
@@ -785,20 +849,40 @@ public class FindPatientParameters implements org.apache.thrift.TBase<FindPatien
         if (isSetIdentifierType()) {
             if (!first) sb.append(", ");
             sb.append("identifierType:");
-            sb.append(this.identifierType);
-            first = false;
-        }
-        if (!first) sb.append(", ");
-        sb.append("identifier:");
-        sb.append(this.identifier);
-        first = false;
-        if (isSetOmiPolicy()) {
-            if (!first) sb.append(", ");
-            sb.append("omiPolicy:");
-            if (this.omiPolicy == null) {
+            if (this.identifierType == null) {
                 sb.append("null");
             } else {
-                sb.append(this.omiPolicy);
+                sb.append(this.identifierType);
+            }
+            first = false;
+        }
+        if (isSetIdentifier()) {
+            if (!first) sb.append(", ");
+            sb.append("identifier:");
+            if (this.identifier == null) {
+                sb.append("null");
+            } else {
+                sb.append(this.identifier);
+            }
+            first = false;
+        }
+        if (isSetOmiPolicySerial()) {
+            if (!first) sb.append(", ");
+            sb.append("omiPolicySerial:");
+            if (this.omiPolicySerial == null) {
+                sb.append("null");
+            } else {
+                sb.append(this.omiPolicySerial);
+            }
+            first = false;
+        }
+        if (isSetOmiPolicyNumber()) {
+            if (!first) sb.append(", ");
+            sb.append("omiPolicyNumber:");
+            if (this.omiPolicyNumber == null) {
+                sb.append("null");
+            } else {
+                sb.append(this.omiPolicyNumber);
             }
             first = false;
         }
@@ -808,7 +892,6 @@ public class FindPatientParameters implements org.apache.thrift.TBase<FindPatien
 
     public void validate() throws org.apache.thrift.TException {
         // check for required fields
-        // alas, we cannot check 'identifier' because it's a primitive and you chose the non-beans generator.
         // check for sub-struct validity
     }
 
@@ -888,25 +971,33 @@ public class FindPatientParameters implements org.apache.thrift.TBase<FindPatien
                         }
                         break;
                     case 6: // IDENTIFIER_TYPE
-                        if (schemeField.type == org.apache.thrift.protocol.TType.I32) {
-                            struct.identifierType = iprot.readI32();
+                        if (schemeField.type == org.apache.thrift.protocol.TType.STRING) {
+                            struct.identifierType = iprot.readString();
                             struct.setIdentifierTypeIsSet(true);
                         } else {
                             org.apache.thrift.protocol.TProtocolUtil.skip(iprot, schemeField.type);
                         }
                         break;
                     case 7: // IDENTIFIER
-                        if (schemeField.type == org.apache.thrift.protocol.TType.I32) {
-                            struct.identifier = iprot.readI32();
+                        if (schemeField.type == org.apache.thrift.protocol.TType.STRING) {
+                            struct.identifier = iprot.readString();
                             struct.setIdentifierIsSet(true);
                         } else {
                             org.apache.thrift.protocol.TProtocolUtil.skip(iprot, schemeField.type);
                         }
                         break;
-                    case 8: // OMI_POLICY
+                    case 8: // OMI_POLICY_SERIAL
                         if (schemeField.type == org.apache.thrift.protocol.TType.STRING) {
-                            struct.omiPolicy = iprot.readString();
-                            struct.setOmiPolicyIsSet(true);
+                            struct.omiPolicySerial = iprot.readString();
+                            struct.setOmiPolicySerialIsSet(true);
+                        } else {
+                            org.apache.thrift.protocol.TProtocolUtil.skip(iprot, schemeField.type);
+                        }
+                        break;
+                    case 9: // OMI_POLICY_NUMBER
+                        if (schemeField.type == org.apache.thrift.protocol.TType.STRING) {
+                            struct.omiPolicyNumber = iprot.readString();
+                            struct.setOmiPolicyNumberIsSet(true);
                         } else {
                             org.apache.thrift.protocol.TProtocolUtil.skip(iprot, schemeField.type);
                         }
@@ -919,9 +1010,6 @@ public class FindPatientParameters implements org.apache.thrift.TBase<FindPatien
             iprot.readStructEnd();
 
             // check for required fields of primitive type, which can't be checked in the validate method
-            if (!struct.isSetIdentifier()) {
-                throw new org.apache.thrift.protocol.TProtocolException("Required field 'identifier' was not found in serialized data! Struct: " + toString());
-            }
             struct.validate();
         }
 
@@ -960,18 +1048,31 @@ public class FindPatientParameters implements org.apache.thrift.TBase<FindPatien
                 oprot.writeI32(struct.sex);
                 oprot.writeFieldEnd();
             }
-            if (struct.isSetIdentifierType()) {
-                oprot.writeFieldBegin(IDENTIFIER_TYPE_FIELD_DESC);
-                oprot.writeI32(struct.identifierType);
-                oprot.writeFieldEnd();
+            if (struct.identifierType != null) {
+                if (struct.isSetIdentifierType()) {
+                    oprot.writeFieldBegin(IDENTIFIER_TYPE_FIELD_DESC);
+                    oprot.writeString(struct.identifierType);
+                    oprot.writeFieldEnd();
+                }
             }
-            oprot.writeFieldBegin(IDENTIFIER_FIELD_DESC);
-            oprot.writeI32(struct.identifier);
-            oprot.writeFieldEnd();
-            if (struct.omiPolicy != null) {
-                if (struct.isSetOmiPolicy()) {
-                    oprot.writeFieldBegin(OMI_POLICY_FIELD_DESC);
-                    oprot.writeString(struct.omiPolicy);
+            if (struct.identifier != null) {
+                if (struct.isSetIdentifier()) {
+                    oprot.writeFieldBegin(IDENTIFIER_FIELD_DESC);
+                    oprot.writeString(struct.identifier);
+                    oprot.writeFieldEnd();
+                }
+            }
+            if (struct.omiPolicySerial != null) {
+                if (struct.isSetOmiPolicySerial()) {
+                    oprot.writeFieldBegin(OMI_POLICY_SERIAL_FIELD_DESC);
+                    oprot.writeString(struct.omiPolicySerial);
+                    oprot.writeFieldEnd();
+                }
+            }
+            if (struct.omiPolicyNumber != null) {
+                if (struct.isSetOmiPolicyNumber()) {
+                    oprot.writeFieldBegin(OMI_POLICY_NUMBER_FIELD_DESC);
+                    oprot.writeString(struct.omiPolicyNumber);
                     oprot.writeFieldEnd();
                 }
             }
@@ -992,7 +1093,6 @@ public class FindPatientParameters implements org.apache.thrift.TBase<FindPatien
         @Override
         public void write(org.apache.thrift.protocol.TProtocol prot, FindPatientParameters struct) throws org.apache.thrift.TException {
             TTupleProtocol oprot = (TTupleProtocol) prot;
-            oprot.writeI32(struct.identifier);
             BitSet optionals = new BitSet();
             if (struct.isSetLastName()) {
                 optionals.set(0);
@@ -1012,10 +1112,16 @@ public class FindPatientParameters implements org.apache.thrift.TBase<FindPatien
             if (struct.isSetIdentifierType()) {
                 optionals.set(5);
             }
-            if (struct.isSetOmiPolicy()) {
+            if (struct.isSetIdentifier()) {
                 optionals.set(6);
             }
-            oprot.writeBitSet(optionals, 7);
+            if (struct.isSetOmiPolicySerial()) {
+                optionals.set(7);
+            }
+            if (struct.isSetOmiPolicyNumber()) {
+                optionals.set(8);
+            }
+            oprot.writeBitSet(optionals, 9);
             if (struct.isSetLastName()) {
                 oprot.writeString(struct.lastName);
             }
@@ -1032,19 +1138,23 @@ public class FindPatientParameters implements org.apache.thrift.TBase<FindPatien
                 oprot.writeI32(struct.sex);
             }
             if (struct.isSetIdentifierType()) {
-                oprot.writeI32(struct.identifierType);
+                oprot.writeString(struct.identifierType);
             }
-            if (struct.isSetOmiPolicy()) {
-                oprot.writeString(struct.omiPolicy);
+            if (struct.isSetIdentifier()) {
+                oprot.writeString(struct.identifier);
+            }
+            if (struct.isSetOmiPolicySerial()) {
+                oprot.writeString(struct.omiPolicySerial);
+            }
+            if (struct.isSetOmiPolicyNumber()) {
+                oprot.writeString(struct.omiPolicyNumber);
             }
         }
 
         @Override
         public void read(org.apache.thrift.protocol.TProtocol prot, FindPatientParameters struct) throws org.apache.thrift.TException {
             TTupleProtocol iprot = (TTupleProtocol) prot;
-            struct.identifier = iprot.readI32();
-            struct.setIdentifierIsSet(true);
-            BitSet incoming = iprot.readBitSet(7);
+            BitSet incoming = iprot.readBitSet(9);
             if (incoming.get(0)) {
                 struct.lastName = iprot.readString();
                 struct.setLastNameIsSet(true);
@@ -1066,12 +1176,20 @@ public class FindPatientParameters implements org.apache.thrift.TBase<FindPatien
                 struct.setSexIsSet(true);
             }
             if (incoming.get(5)) {
-                struct.identifierType = iprot.readI32();
+                struct.identifierType = iprot.readString();
                 struct.setIdentifierTypeIsSet(true);
             }
             if (incoming.get(6)) {
-                struct.omiPolicy = iprot.readString();
-                struct.setOmiPolicyIsSet(true);
+                struct.identifier = iprot.readString();
+                struct.setIdentifierIsSet(true);
+            }
+            if (incoming.get(7)) {
+                struct.omiPolicySerial = iprot.readString();
+                struct.setOmiPolicySerialIsSet(true);
+            }
+            if (incoming.get(8)) {
+                struct.omiPolicyNumber = iprot.readString();
+                struct.setOmiPolicyNumberIsSet(true);
             }
         }
     }

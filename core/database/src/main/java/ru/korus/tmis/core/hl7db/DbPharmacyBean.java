@@ -5,7 +5,8 @@ import org.slf4j.LoggerFactory;
 import ru.korus.tmis.core.database.DbManagerBeanLocal;
 import ru.korus.tmis.core.entity.model.Action;
 import ru.korus.tmis.core.entity.model.ActionType;
-import ru.korus.tmis.core.entity.model.hl7.Pharmacy;
+import ru.korus.tmis.core.entity.model.pharmacy.Pharmacy;
+import ru.korus.tmis.core.entity.model.pharmacy.PharmacyStatus;
 import ru.korus.tmis.core.exception.CoreException;
 import ru.korus.tmis.core.logging.LoggingInterceptor;
 
@@ -27,7 +28,7 @@ import java.util.List;
 @Stateless
 public class DbPharmacyBean implements DbPharmacyBeanLocal {
 
-    final static Logger logger = LoggerFactory.getLogger(DbPharmacyBean.class);
+    private final Logger logger = LoggerFactory.getLogger(DbPharmacyBean.class);
 
     @PersistenceContext(unitName = "s11r64")
     private EntityManager em = null;
@@ -36,7 +37,7 @@ public class DbPharmacyBean implements DbPharmacyBeanLocal {
     private DbManagerBeanLocal dbManager = null;
 
     @Override
-    public Pharmacy getOrCreate(Action action) throws CoreException {
+    public Pharmacy getOrCreate(final Action action) throws CoreException {
 
         Pharmacy pharmacy = em.find(Pharmacy.class, action.getId());
         if (pharmacy == null) {
@@ -45,7 +46,7 @@ public class DbPharmacyBean implements DbPharmacyBeanLocal {
             pharmacy = new Pharmacy();
             pharmacy.setActionId(action.getId());
             pharmacy.setFlatCode(actionType.getFlatCode());
-            pharmacy.setStatus(PharmacyStatus.ADDED.toString());
+            pharmacy.setStatus(PharmacyStatus.ADDED);
             dbManager.persist(pharmacy);
             logger.info("create pharmacy {}", pharmacy);
         } else {
@@ -54,7 +55,7 @@ public class DbPharmacyBean implements DbPharmacyBeanLocal {
         return pharmacy;
     }
 
-    public Pharmacy updateMessage(Pharmacy pharmacy) throws CoreException {
+    public Pharmacy updateMessage(final Pharmacy pharmacy) throws CoreException {
         Pharmacy findPharmacy = em.find(Pharmacy.class, pharmacy.getActionId());
         if (findPharmacy != null) {
             findPharmacy.setStatus(pharmacy.getStatus());
@@ -74,14 +75,14 @@ public class DbPharmacyBean implements DbPharmacyBeanLocal {
 //    }
 
     @Override
-    public List<Action> getLastMaxAction(int limit) {
+    public List<Action> getLastMaxAction(final int limit) {
         return em.createQuery("SELECT a FROM Action a ORDER BY a.id DESC", Action.class)
                 .setMaxResults(limit)
                 .getResultList();
     }
 
     @Override
-    public List<Action> getActionAfterDate(Date after) {
+    public List<Action> getActionAfterDate(final Date after) {
         return em.createQuery("SELECT a FROM Action a WHERE a.createDatetime > :createDatetime", Action.class)
                 .setParameter("createDatetime", after)
                 .getResultList();
@@ -93,7 +94,7 @@ public class DbPharmacyBean implements DbPharmacyBeanLocal {
 //    }
 
     @Override
-    public Pharmacy getPharmacyByAction(Action action) {
+    public Pharmacy getPharmacyByAction(final Action action) {
         List<Pharmacy> pharmacyList = em.createQuery("SELECT p FROM Pharmacy p WHERE p.actionId = :actionId", Pharmacy.class)
                 .setParameter("actionId", action.getId())
                 .getResultList();

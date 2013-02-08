@@ -180,6 +180,9 @@ class MedipadWSImpl
 
   @EJB
   var dbEventTypeBean: DbEventTypeBeanLocal = _
+
+  @EJB
+  var dbContractBean: DbContractBeanLocal = _
   //////////////////////////////////////////////////////////////////////////////
 
   def checkTokenCookies(srvletRequest: HttpServletRequest): AuthData = {
@@ -501,10 +504,11 @@ class MedipadWSImpl
                                                 actionBean.getLastActionByActionTypeIdAndEventId _,  //havePrimary
                                                 dbClientRelation.getClientRelationByRelativeId _,
                                                 null,
-                                                null
+                                                null,
+      if (positionA._1.getContractId != null) {dbContractBean.getContractById(positionA._1.getContractId.intValue())} else {null}
                                 ))
     } else {
-      throw new CoreException("Не удачная попытка сохранения(изменения) обращения")
+      throw new CoreException("Неудачная попытка сохранения(изменения) обращения")
     }
   }
 
@@ -531,7 +535,8 @@ class MedipadWSImpl
                                               actionBean.getLastActionByActionTypeIdAndEventId _,  //havePrimary
                                               dbClientRelation.getClientRelationByRelativeId _,
                                               actionPropertyBean.getActionPropertiesByActionIdAndRbCoreActionPropertyIds _,
-                                              dbRbCoreActionPropertyBean.getRbCoreActionPropertiesByIds _                    //таблица соответствия
+                                              dbRbCoreActionPropertyBean.getRbCoreActionPropertiesByIds _,                    //таблица соответствия
+      if (positionA._1.getContractId != null) {dbContractBean.getContractById(positionA._1.getContractId.intValue())} else {null}
                               ))
   }
 
@@ -558,7 +563,8 @@ class MedipadWSImpl
                                               actionBean.getLastActionByActionTypeIdAndEventId _, //havePrimary
                                               dbClientRelation.getClientRelationByRelativeId _,
                                               actionPropertyBean.getActionPropertiesByActionIdAndRbCoreActionPropertyIds _,  //в тч Admission Diagnosis
-                                              dbRbCoreActionPropertyBean.getRbCoreActionPropertiesByIds _          //таблица соответствия
+                                              dbRbCoreActionPropertyBean.getRbCoreActionPropertiesByIds _,          //таблица соответствия
+      if (positionA._1.getContractId != null) {dbContractBean.getContractById(positionA._1.getContractId.intValue())} else {null}
                               ))
   }
 
@@ -627,6 +633,11 @@ class MedipadWSImpl
      listForSummary.add(ActionWrapperInfo.doctorFirstName)
      listForSummary.add(ActionWrapperInfo.doctorMiddleName)
      listForSummary.add(ActionWrapperInfo.doctorSpecs)
+     listForSummary.add(ActionWrapperInfo.urgent)
+     listForSummary.add(ActionWrapperInfo.multiplicity)
+     listForSummary.add(ActionWrapperInfo.finance)
+     listForSummary.add(ActionWrapperInfo.plannedEndDate)
+     listForSummary.add(ActionWrapperInfo.toOrder)
 
      primaryAssessmentBean.getEmptyStructure(actionTypeId,
                                              "PrimaryAssesment",

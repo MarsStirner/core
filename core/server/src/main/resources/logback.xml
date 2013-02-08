@@ -1,75 +1,48 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<configuration scan="true" scanPeriod="30 seconds">
-    <jmxConfigurator/>
-    <contextName>tmis</contextName>
+<configuration scan="true" scanPeriod="30 seconds" debug="true">
+    <!--<jmxConfigurator/>-->
+    <contextName>tmis-core</contextName>
 
+    <!-- dump status message on the console as they arrive -->
+    <statusListener class="ch.qos.logback.core.status.OnConsoleStatusListener"/>
 
-    <property name="root.log" value="${com.sun.aas.instanceRoot}/logs/"/>
-    <property name="log.format" value="%5p [%d][%thread][%logger{0}] %msg%n"/>
+    <!-- Аппендер для отправки уведомлений об exceptions по e-mail -->
+    <appender name="EMAIL" class="ch.qos.logback.classic.net.SMTPAppender">
+        <cyclicBufferTracker class="ch.qos.logback.core.spi.CyclicBufferTrackerImpl">
+            <bufferSize>${alarm.count.message}</bufferSize>
+        </cyclicBufferTracker>
 
+        <evaluator class="ru.korus.tmis.util.logs.CounterBasedEvaluator">
+            <countMessage>${alarm.count.message}</countMessage>
+        </evaluator>
 
-    <!-- Основные настройки для консоли, для эксепшен лога-->
-    <appender name="STDOUT" class="ch.qos.logback.core.ConsoleAppender">
+        <!-- For example you can configure that only error messages are mailed -->
         <filter class="ch.qos.logback.classic.filter.LevelFilter">
             <level>ERROR</level>
-            <onMatch>DENY</onMatch>
-            <onMismatch>NEUTRAL</onMismatch>
-        </filter>
-        <filter class="ch.qos.logback.classic.filter.LevelFilter">
-            <level>WARN</level>
-            <onMatch>DENY</onMatch>
-            <onMismatch>ACCEPT</onMismatch>
-        </filter>
-        <encoder>
-            <pattern>${log.format}</pattern>
-        </encoder>
-        <param name="target" value="System.out"/>
-        <target>System.out</target>
-    </appender>
-
-    <appender name="STDOUT_ERROR" class="ch.qos.logback.core.ConsoleAppender">
-        <filter class="ch.qos.logback.classic.filter.LevelFilter">
-            <level>ERROR</level>
-            <onMatch>ACCEPT</onMatch>
-            <onMismatch>NEUTRAL</onMismatch>
-        </filter>
-        <filter class="ch.qos.logback.classic.filter.LevelFilter">
-            <level>WARN</level>
             <onMatch>ACCEPT</onMatch>
             <onMismatch>DENY</onMismatch>
         </filter>
 
-        <encoder>
-            <pattern>${log.format}</pattern>
-        </encoder>
-        <param name="target" value="System.err"/>
-        <target>System.err</target>
+        <layout class="ch.qos.logback.classic.html.HTMLLayout">
+            <pattern>%relative%thread%mdc%level%logger%msg</pattern>
+        </layout>
+
+        <!-- For GMAIL -->
+        <smtpPort>587</smtpPort>
+        <STARTTLS>true</STARTTLS>
+        <username>******</username>
+        <password>*****</password>
+        <!-- - -->
+
+        <SmtpHost>${alarm.smtpHost}</SmtpHost>
+        <To>${alarm.to}</To>
+        <From>${alarm.from}</From>
+        <subject>TMIS CORE ALARM %logger{20} - %m</subject>
     </appender>
 
-    <appender name="EXCEPTIONS" class="ch.qos.logback.core.rolling.RollingFileAppender">
-        <file>${root.log}exceptions/exceptions.log</file>
-        <filter class="ch.qos.logback.core.filter.EvaluatorFilter">
-            <evaluator>
-                <expression>return throwable != null;</expression>
-            </evaluator>
-            <OnMismatch>DENY</OnMismatch>
-            <OnMatch>ACCEPT</OnMatch>
-        </filter>
 
-        <rollingPolicy class="ch.qos.logback.core.rolling.TimeBasedRollingPolicy">
-            <FileNamePattern>${root.log}exceptions/exceptions.%d{yyyy-MM-dd}.log.gz</FileNamePattern>
-            <MaxHistory>365</MaxHistory>
-        </rollingPolicy>
-
-        <encoder>
-            <pattern>${log.format}</pattern>
-        </encoder>
-    </appender>
-
-    <!--Настройки для tmis-->
     <!-- Основные настройки для консоли, для эксепшен лога-->
     <appender name="STDOUT" class="ch.qos.logback.core.ConsoleAppender">
-
         <filter class="ch.qos.logback.classic.filter.LevelFilter">
             <level>ERROR</level>
             <onMatch>DENY</onMatch>
@@ -107,17 +80,14 @@
     </appender>
 
     <appender name="EXCEPTIONS" class="ch.qos.logback.core.rolling.RollingFileAppender">
-        <file>${root.log}/exceptions/exceptions.log</file>
-        <filter class="ch.qos.logback.core.filter.EvaluatorFilter">
-            <evaluator>
-                <expression>return throwable != null;</expression>
-            </evaluator>
-            <OnMismatch>DENY</OnMismatch>
-            <OnMatch>ACCEPT</OnMatch>
+        <file>${logs.path}/exceptions/exceptions.log</file>
+
+        <filter class="ru.korus.tmis.util.ExceptionFilter">
+            <exceptionClassName>java.lang.Exception</exceptionClassName>
         </filter>
 
         <rollingPolicy class="ch.qos.logback.core.rolling.TimeBasedRollingPolicy">
-            <FileNamePattern>${root.log}/exceptions/exceptions.%d{yyyy-MM-dd}.log.gz</FileNamePattern>
+            <FileNamePattern>${logs.path}/exceptions/exceptions.%d{yyyy-MM-dd}.log.gz</FileNamePattern>
             <MaxHistory>365</MaxHistory>
         </rollingPolicy>
 
@@ -126,9 +96,16 @@
         </encoder>
     </appender>
 
+    <root level="${logs.level}">
+        <appender-ref ref="STDOUT"/>
+        <appender-ref ref="STDOUT_ERROR"/>
+        <appender-ref ref="EXCEPTIONS"/>
+        <appender-ref ref="EMAIL"/>
+    </root>
+
     <!--Общий логгер для всего проекта-->
     <appender name="TMIS" class="ch.qos.logback.core.rolling.RollingFileAppender">
-        <file>${root.log}tmis-core/core.log</file>
+        <file>${logs.path}tmis-core/core.log</file>
         <encoder>
             <pattern>${log.format}</pattern>
             <charset>UTF-8</charset>
@@ -136,7 +113,7 @@
 
         <rollingPolicy class="ch.qos.logback.core.rolling.TimeBasedRollingPolicy">
             <!-- rollover daily -->
-            <fileNamePattern>${root.log}tmis-core/core.%d{yyyy-MM-dd}.%i.log.gz</fileNamePattern>
+            <fileNamePattern>${logs.path}tmis-core/core.%d{yyyy-MM-dd}.%i.log.gz</fileNamePattern>
             <timeBasedFileNamingAndTriggeringPolicy
                     class="ch.qos.logback.core.rolling.SizeAndTimeBasedFNATP">
                 <!-- or whenever the file size reaches 200MB -->
@@ -147,13 +124,14 @@
 
     <logger name="ru.korus.tmis" level="INFO" additivity="false">
         <appender-ref ref="TMIS"/>
+        <appender-ref ref="EMAIL"/>
         <appender-ref ref="STDOUT_ERROR"/>
         <appender-ref ref="EXCEPTIONS"/>
     </logger>
 
     <!--Логер для модуля WS-FINANCE-->
     <appender name="WS-FINANCE" class="ch.qos.logback.core.rolling.RollingFileAppender">
-        <file>${root.log}ws-finance/finance.log</file>
+        <file>${logs.path}ws-finance/finance.log</file>
         <encoder>
             <pattern>${log.format}</pattern>
             <charset>UTF-8</charset>
@@ -161,7 +139,7 @@
 
         <rollingPolicy class="ch.qos.logback.core.rolling.TimeBasedRollingPolicy">
             <!-- rollover daily -->
-            <fileNamePattern>${root.log}ws-finance/finance.%d{yyyy-MM-dd}.%i.log.gz</fileNamePattern>
+            <fileNamePattern>${logs.path}ws-finance/finance.%d{yyyy-MM-dd}.%i.log.gz</fileNamePattern>
             <timeBasedFileNamingAndTriggeringPolicy
                     class="ch.qos.logback.core.rolling.SizeAndTimeBasedFNATP">
                 <!-- or whenever the file size reaches 200MB -->
@@ -178,7 +156,7 @@
 
     <!--Логер для конмоненты связи-->
     <appender name="COMMUNICATION" class="ch.qos.logback.core.rolling.RollingFileAppender">
-        <file>${root.log}communication/communication.log</file>
+        <file>${logs.path}communication/communication.log</file>
         <encoder>
             <pattern>${log.format}</pattern>
             <charset>UTF-8</charset>
@@ -186,7 +164,7 @@
 
         <rollingPolicy class="ch.qos.logback.core.rolling.TimeBasedRollingPolicy">
             <!-- rollover daily -->
-            <fileNamePattern>${root.log}communication/communication.%d{yyyy-MM-dd}.%i.log.gz</fileNamePattern>
+            <fileNamePattern>${logs.path}communication/communication.%d{yyyy-MM-dd}.%i.log.gz</fileNamePattern>
             <timeBasedFileNamingAndTriggeringPolicy
                     class="ch.qos.logback.core.rolling.SizeAndTimeBasedFNATP">
                 <!-- or whenever the file size reaches 200MB -->
@@ -201,20 +179,20 @@
         <appender-ref ref="EXCEPTIONS"/>
     </logger>
 
-
     <appender name="AUTH" class="ch.qos.logback.core.FileAppender">
-        <file>${root.log}auth/auth.log</file>
+        <file>${logs.path}auth/auth.log</file>
         <encoder>
             <pattern>%d{HH:mm:ss.SSS} %-5level %msg%n</pattern>
             <charset>UTF8</charset>
         </encoder>
     </appender>
+
     <logger name="ru.korus.tmis.core.logging.slf4j.interceptor.AuthLoggingInterceptor" level="INFO" additivity="false">
         <appender-ref ref="AUTH"/>
     </logger>
 
     <appender name="SERVICES" class="ch.qos.logback.core.FileAppender">
-        <file>${root.log}services/services.log</file>
+        <file>${logs.path}services/services.log</file>
         <encoder>
             <pattern>%d{HH:mm:ss.SSS} %-5level %msg%n</pattern>
             <charset>UTF8</charset>
@@ -227,7 +205,7 @@
     </logger>
 
     <appender name="DEBUGLOG" class="ch.qos.logback.core.FileAppender">
-        <file>${root.log}debug/debug.log</file>
+        <file>${logs.path}debug/debug.log</file>
         <encoder>
             <pattern>%d{HH:mm:ss.SSS} [%thread] %-5level %msg%n</pattern>
             <charset>UTF8</charset>
@@ -246,11 +224,4 @@
         <appender-ref ref="DEBUGLOG" />
     </root>
     -->
-
-    <root level="INFO">
-        <appender-ref ref="STDOUT"/>
-        <appender-ref ref="STDOUT_ERROR"/>
-        <appender-ref ref="EXCEPTIONS"/>
-    </root>
-
 </configuration>

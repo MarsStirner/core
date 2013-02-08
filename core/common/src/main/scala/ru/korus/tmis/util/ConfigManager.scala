@@ -90,6 +90,8 @@ object ConfigManager extends Configuration {
     var EventPersonNotFound = 0x132
     var EventTypeNotFound = 0x133
     var EventPersonForEventAndUserNotFound = 0x134
+    var ContractNotFound = 0x135
+
   }
 
   val Drugstore = new Configuration {

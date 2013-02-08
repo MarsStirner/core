@@ -1,7 +1,7 @@
 package ru.korus.tmis.core.database
 
 import ru.korus.tmis.core.auth.AuthData
-import ru.korus.tmis.core.entity.model.{ActionStatus, Action}
+import ru.korus.tmis.core.entity.model._
 import ru.korus.tmis.core.exception.CoreException
 import ru.korus.tmis.core.logging.LoggingInterceptor
 import ru.korus.tmis.util.{ConfigManager, I18nable}
@@ -10,11 +10,11 @@ import grizzled.slf4j.Logging
 import java.util.Date
 import javax.ejb.{TransactionAttributeType, TransactionAttribute, EJB, Stateless}
 import javax.interceptor.Interceptors
-import ru.korus.tmis.core.entity.model.{ActionType, ActionStatus, Action, Staff}
 import scala.collection.JavaConversions._
 import javax.persistence.{TypedQuery, PersistenceContext, EntityManager}
 import ru.korus.tmis.core.data.{AssessmentsListRequestDataFilter, AssessmentsListRequestData}
 import ru.korus.tmis.core.hl7db.DbUUIDBeanLocal
+import java.util
 
 @Interceptors(Array(classOf[LoggingInterceptor]))
 @Stateless
@@ -207,7 +207,7 @@ class DbActionBean
     result
   }
 
-  def getActionsByTypeCode(code: String, userData: AuthData) = {
+  def getActionsByTypeCode(code: String) = {
     val result = em.createQuery(ActionsByCodeQuery,
       classOf[Action])
       .setParameter("code", code)
@@ -250,7 +250,7 @@ class DbActionBean
   def getLastActionByActionTypeIdAndEventId(eventId: Int, actionTypeIds: java.util.Set[java.lang.Integer]) = {
     val result = em.createQuery(ActionsByATypeIdAndEventId, classOf[Int])
       .setParameter("id", eventId)
-      .setParameter("atIds", asJavaCollection(actionTypeIds) )
+      .setParameter("atIds", asJavaCollection(actionTypeIds))
       .getResultList
 
     result.size match {
@@ -274,7 +274,7 @@ class DbActionBean
     AND
       at.id IN :atIds
     ORDER BY a.createDatetime DESC
-  """
+                                   """
 
   val ActionsIdFindQuery = """
     SELECT a.id
@@ -380,4 +380,60 @@ class DbActionBean
     ORDER BY
       %s
                                    """
+
+  val ActionTypeByCodeQuery = """
+    SELECT at
+    FROM
+      ActionType at
+    WHERE
+      at.code = :code
+    AND
+      at.deleted = 0
+                              """
+
+  def getActionTypeByCode(code: String): ActionType = {
+    val result = em.createQuery(ActionTypeByCodeQuery, classOf[ActionType]).setParameter("code", code)
+      .getResultList
+    val et = result(0)
+    result.foreach(em.detach(_))
+    et
+  }
+
+  def createAction(actionType: ActionType, event: Event, person: Staff, date: Date, hospitalUidFrom: String): Action = {
+    val now = new Date
+    var newAction = new Action()
+    //Инициализируем структуру Event
+    try {
+      newAction.setCreateDatetime(now);
+      newAction.setCreatePerson(null);
+      newAction.setModifyPerson(null);
+      newAction.setActionType(actionType);
+      newAction.setModifyDatetime(now);
+      newAction.setEvent(event);
+      newAction.setNote("");
+      newAction.setBegDate(date);
+      newAction.setEndDate(date);
+      newAction.setDeleted(false);
+      newAction.setPayStatus(0);
+      newAction.setExecutor(person)
+      newAction.setAssigner(person)
+      newAction.setUuid(dbUUIDBeanLocal.createUUID());
+      //1. Инсертим
+      em.persist(newAction);
+    }
+    catch {
+      case ex: Exception => throw new CoreException("error while creating action ");
+    }
+    newAction
+  }
+
+  def getActionsByTypeCode(code: String, userData: AuthData) = {
+    val result = em.createQuery(ActionsByCodeQuery,
+      classOf[Action])
+      .setParameter("code", code)
+      .getResultList
+
+    result.foreach(a => em.detach(a))
+    result
+  }
 }

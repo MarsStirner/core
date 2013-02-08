@@ -1,6 +1,5 @@
 package ru.korus.tmis.core.database
 
-import ru.korus.tmis.core.entity.model.Organisation
 import ru.korus.tmis.core.logging.LoggingInterceptor
 
 import javax.ejb.Stateless
@@ -9,8 +8,6 @@ import javax.persistence.{EntityManager, PersistenceContext}
 
 import grizzled.slf4j.Logging
 import ru.korus.tmis.core.entity.model.Organisation
-import ru.korus.tmis.core.exception.NoSuchOrganisationException
-import ru.korus.tmis.util.{I18nable, ConfigManager}
 import scala.collection.JavaConversions._
 import ru.korus.tmis.core.data.{QueryDataStructure, DictionaryListRequestDataFilter}
 
@@ -65,6 +62,11 @@ class DbOrganizationBean
   %s
                                         """
 
+  val OrganisationFindQueryByInfisCode = """
+  SELECT org
+  FROM Organisation org
+  WHERE org.infisCode =                 :INFISCODE
+                                         """
 
   def getCountOfOrganizationWithFilter(filter: Object) = {
     var queryStr: QueryDataStructure = if (filter.isInstanceOf[DictionaryListRequestDataFilter]) {
@@ -186,5 +188,9 @@ class DbOrganizationBean
         result(0)
       }
     }
+  }
+
+  def getOrganizationByInfisCode(infisCode: String): Organisation = {
+    em.createQuery(OrganisationFindQueryByInfisCode, classOf[Organisation]).setParameter("INFISCODE", infisCode).getSingleResult;
   }
 }

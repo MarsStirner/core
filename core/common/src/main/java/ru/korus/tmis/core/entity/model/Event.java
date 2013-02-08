@@ -60,8 +60,8 @@ public class Event implements Serializable {
     @Column(name = "org_id")
     private Integer orgId;
 
-    @Column(name = "contract_id")
-    private Integer contractId;
+    @JoinColumn(name = "contract_id")
+    private Contract contract;
 
     @Column(name = "prevEventDate")
     @Temporal(TemporalType.TIMESTAMP)
@@ -138,8 +138,9 @@ public class Event implements Serializable {
     private int version;
 
 
-    @ManyToOne(cascade = CascadeType.ALL)
-    @JoinColumn(name = "uuid_id")
+//    @ManyToOne(cascade = CascadeType.ALL)
+//    @JoinColumn(name = "uuid_id")
+    @Transient
     private UUID uuid;
     ////////////////////////////////////////////////////////////////////////////
     // Custom mappings
@@ -257,12 +258,12 @@ public class Event implements Serializable {
         this.orgId = orgId;
     }
 
-    public Integer getContractId() {
-        return contractId;
+    public Contract getContract() {
+        return contract;
     }
 
-    public void setContractId(Integer contractId) {
-        this.contractId = contractId;
+    public void setContract(Contract contract) {
+        this.contract = contract;
     }
 
     public Date getPrevEventDate() {

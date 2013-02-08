@@ -22,6 +22,7 @@ public class AddPatientParameters implements org.apache.thrift.TBase<AddPatientP
     private static final org.apache.thrift.protocol.TField FIRST_NAME_FIELD_DESC = new org.apache.thrift.protocol.TField("firstName", org.apache.thrift.protocol.TType.STRING, (short) 2);
     private static final org.apache.thrift.protocol.TField PATR_NAME_FIELD_DESC = new org.apache.thrift.protocol.TField("patrName", org.apache.thrift.protocol.TType.STRING, (short) 3);
     private static final org.apache.thrift.protocol.TField BIRTH_DATE_FIELD_DESC = new org.apache.thrift.protocol.TField("birthDate", org.apache.thrift.protocol.TType.I64, (short) 4);
+    private static final org.apache.thrift.protocol.TField SEX_FIELD_DESC = new org.apache.thrift.protocol.TField("sex", org.apache.thrift.protocol.TType.I32, (short) 5);
 
     private static final Map<Class<? extends IScheme>, SchemeFactory> schemes = new HashMap<Class<? extends IScheme>, SchemeFactory>();
 
@@ -34,6 +35,7 @@ public class AddPatientParameters implements org.apache.thrift.TBase<AddPatientP
     public String firstName; // optional
     public String patrName; // optional
     public long birthDate; // optional
+    public int sex; // optional
 
     /**
      * The set of fields this struct contains, along with convenience methods for finding and manipulating them.
@@ -42,7 +44,8 @@ public class AddPatientParameters implements org.apache.thrift.TBase<AddPatientP
         LAST_NAME((short) 1, "lastName"),
         FIRST_NAME((short) 2, "firstName"),
         PATR_NAME((short) 3, "patrName"),
-        BIRTH_DATE((short) 4, "birthDate");
+        BIRTH_DATE((short) 4, "birthDate"),
+        SEX((short) 5, "sex");
 
         private static final Map<String, _Fields> byName = new HashMap<String, _Fields>();
 
@@ -65,6 +68,8 @@ public class AddPatientParameters implements org.apache.thrift.TBase<AddPatientP
                     return PATR_NAME;
                 case 4: // BIRTH_DATE
                     return BIRTH_DATE;
+                case 5: // SEX
+                    return SEX;
                 default:
                     return null;
             }
@@ -106,8 +111,9 @@ public class AddPatientParameters implements org.apache.thrift.TBase<AddPatientP
 
     // isset id assignments
     private static final int __BIRTHDATE_ISSET_ID = 0;
+    private static final int __SEX_ISSET_ID = 1;
     private byte __isset_bitfield = 0;
-    private _Fields optionals[] = {_Fields.LAST_NAME, _Fields.FIRST_NAME, _Fields.PATR_NAME, _Fields.BIRTH_DATE};
+    private _Fields optionals[] = {_Fields.LAST_NAME, _Fields.FIRST_NAME, _Fields.PATR_NAME, _Fields.BIRTH_DATE, _Fields.SEX};
     public static final Map<_Fields, org.apache.thrift.meta_data.FieldMetaData> metaDataMap;
 
     static {
@@ -120,6 +126,8 @@ public class AddPatientParameters implements org.apache.thrift.TBase<AddPatientP
                 new org.apache.thrift.meta_data.FieldValueMetaData(org.apache.thrift.protocol.TType.STRING)));
         tmpMap.put(_Fields.BIRTH_DATE, new org.apache.thrift.meta_data.FieldMetaData("birthDate", org.apache.thrift.TFieldRequirementType.OPTIONAL,
                 new org.apache.thrift.meta_data.FieldValueMetaData(org.apache.thrift.protocol.TType.I64, "timestamp")));
+        tmpMap.put(_Fields.SEX, new org.apache.thrift.meta_data.FieldMetaData("sex", org.apache.thrift.TFieldRequirementType.OPTIONAL,
+                new org.apache.thrift.meta_data.FieldValueMetaData(org.apache.thrift.protocol.TType.I32)));
         metaDataMap = Collections.unmodifiableMap(tmpMap);
         org.apache.thrift.meta_data.FieldMetaData.addStructMetaDataMap(AddPatientParameters.class, metaDataMap);
     }
@@ -142,6 +150,7 @@ public class AddPatientParameters implements org.apache.thrift.TBase<AddPatientP
             this.patrName = other.patrName;
         }
         this.birthDate = other.birthDate;
+        this.sex = other.sex;
     }
 
     public AddPatientParameters deepCopy() {
@@ -155,6 +164,8 @@ public class AddPatientParameters implements org.apache.thrift.TBase<AddPatientP
         this.patrName = null;
         setBirthDateIsSet(false);
         this.birthDate = 0;
+        setSexIsSet(false);
+        this.sex = 0;
     }
 
     public String getLastName() {
@@ -260,6 +271,31 @@ public class AddPatientParameters implements org.apache.thrift.TBase<AddPatientP
         __isset_bitfield = EncodingUtils.setBit(__isset_bitfield, __BIRTHDATE_ISSET_ID, value);
     }
 
+    public int getSex() {
+        return this.sex;
+    }
+
+    public AddPatientParameters setSex(int sex) {
+        this.sex = sex;
+        setSexIsSet(true);
+        return this;
+    }
+
+    public void unsetSex() {
+        __isset_bitfield = EncodingUtils.clearBit(__isset_bitfield, __SEX_ISSET_ID);
+    }
+
+    /**
+     * Returns true if field sex is set (has been assigned a value) and false otherwise
+     */
+    public boolean isSetSex() {
+        return EncodingUtils.testBit(__isset_bitfield, __SEX_ISSET_ID);
+    }
+
+    public void setSexIsSet(boolean value) {
+        __isset_bitfield = EncodingUtils.setBit(__isset_bitfield, __SEX_ISSET_ID, value);
+    }
+
     public void setFieldValue(_Fields field, Object value) {
         switch (field) {
             case LAST_NAME:
@@ -294,6 +330,14 @@ public class AddPatientParameters implements org.apache.thrift.TBase<AddPatientP
                 }
                 break;
 
+            case SEX:
+                if (value == null) {
+                    unsetSex();
+                } else {
+                    setSex((Integer) value);
+                }
+                break;
+
         }
     }
 
@@ -310,6 +354,9 @@ public class AddPatientParameters implements org.apache.thrift.TBase<AddPatientP
 
             case BIRTH_DATE:
                 return Long.valueOf(getBirthDate());
+
+            case SEX:
+                return Integer.valueOf(getSex());
 
         }
         throw new IllegalStateException();
@@ -332,6 +379,8 @@ public class AddPatientParameters implements org.apache.thrift.TBase<AddPatientP
                 return isSetPatrName();
             case BIRTH_DATE:
                 return isSetBirthDate();
+            case SEX:
+                return isSetSex();
         }
         throw new IllegalStateException();
     }
@@ -382,6 +431,15 @@ public class AddPatientParameters implements org.apache.thrift.TBase<AddPatientP
             if (!(this_present_birthDate && that_present_birthDate))
                 return false;
             if (this.birthDate != that.birthDate)
+                return false;
+        }
+
+        boolean this_present_sex = true && this.isSetSex();
+        boolean that_present_sex = true && that.isSetSex();
+        if (this_present_sex || that_present_sex) {
+            if (!(this_present_sex && that_present_sex))
+                return false;
+            if (this.sex != that.sex)
                 return false;
         }
 
@@ -441,6 +499,16 @@ public class AddPatientParameters implements org.apache.thrift.TBase<AddPatientP
                 return lastComparison;
             }
         }
+        lastComparison = Boolean.valueOf(isSetSex()).compareTo(typedOther.isSetSex());
+        if (lastComparison != 0) {
+            return lastComparison;
+        }
+        if (isSetSex()) {
+            lastComparison = org.apache.thrift.TBaseHelper.compareTo(this.sex, typedOther.sex);
+            if (lastComparison != 0) {
+                return lastComparison;
+            }
+        }
         return 0;
     }
 
@@ -494,6 +562,12 @@ public class AddPatientParameters implements org.apache.thrift.TBase<AddPatientP
             if (!first) sb.append(", ");
             sb.append("birthDate:");
             sb.append(this.birthDate);
+            first = false;
+        }
+        if (isSetSex()) {
+            if (!first) sb.append(", ");
+            sb.append("sex:");
+            sb.append(this.sex);
             first = false;
         }
         sb.append(")");
@@ -572,6 +646,14 @@ public class AddPatientParameters implements org.apache.thrift.TBase<AddPatientP
                             org.apache.thrift.protocol.TProtocolUtil.skip(iprot, schemeField.type);
                         }
                         break;
+                    case 5: // SEX
+                        if (schemeField.type == org.apache.thrift.protocol.TType.I32) {
+                            struct.sex = iprot.readI32();
+                            struct.setSexIsSet(true);
+                        } else {
+                            org.apache.thrift.protocol.TProtocolUtil.skip(iprot, schemeField.type);
+                        }
+                        break;
                     default:
                         org.apache.thrift.protocol.TProtocolUtil.skip(iprot, schemeField.type);
                 }
@@ -613,6 +695,11 @@ public class AddPatientParameters implements org.apache.thrift.TBase<AddPatientP
                 oprot.writeI64(struct.birthDate);
                 oprot.writeFieldEnd();
             }
+            if (struct.isSetSex()) {
+                oprot.writeFieldBegin(SEX_FIELD_DESC);
+                oprot.writeI32(struct.sex);
+                oprot.writeFieldEnd();
+            }
             oprot.writeFieldStop();
             oprot.writeStructEnd();
         }
@@ -643,7 +730,10 @@ public class AddPatientParameters implements org.apache.thrift.TBase<AddPatientP
             if (struct.isSetBirthDate()) {
                 optionals.set(3);
             }
-            oprot.writeBitSet(optionals, 4);
+            if (struct.isSetSex()) {
+                optionals.set(4);
+            }
+            oprot.writeBitSet(optionals, 5);
             if (struct.isSetLastName()) {
                 oprot.writeString(struct.lastName);
             }
@@ -656,12 +746,15 @@ public class AddPatientParameters implements org.apache.thrift.TBase<AddPatientP
             if (struct.isSetBirthDate()) {
                 oprot.writeI64(struct.birthDate);
             }
+            if (struct.isSetSex()) {
+                oprot.writeI32(struct.sex);
+            }
         }
 
         @Override
         public void read(org.apache.thrift.protocol.TProtocol prot, AddPatientParameters struct) throws org.apache.thrift.TException {
             TTupleProtocol iprot = (TTupleProtocol) prot;
-            BitSet incoming = iprot.readBitSet(4);
+            BitSet incoming = iprot.readBitSet(5);
             if (incoming.get(0)) {
                 struct.lastName = iprot.readString();
                 struct.setLastNameIsSet(true);
@@ -677,6 +770,10 @@ public class AddPatientParameters implements org.apache.thrift.TBase<AddPatientP
             if (incoming.get(3)) {
                 struct.birthDate = iprot.readI64();
                 struct.setBirthDateIsSet(true);
+            }
+            if (incoming.get(4)) {
+                struct.sex = iprot.readI32();
+                struct.setSexIsSet(true);
             }
         }
     }

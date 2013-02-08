@@ -105,7 +105,8 @@ class AppealData {
            postProcessing: (Int, java.util.Set[java.lang.Integer]) => Int,
            mRelationByRelativeId: (Int)=> ClientRelation,
            mAdmissionDiagnosis: (Int, java.util.List[java.lang.Integer]) => java.util.Map[ActionProperty, java.util.List[APValue]],
-           mCorrList: (java.util.List[java.lang.Integer])=> java.util.List[RbCoreActionProperty]){
+           mCorrList: (java.util.List[java.lang.Integer])=> java.util.List[RbCoreActionProperty],
+           contract: Contract){
     this ()
     this.requestData = requestData
 
@@ -146,10 +147,10 @@ class AppealData {
       val extractId = postProcessing(event.getId.intValue(), setExtractATIds)
       val extractProperties = if (mAdmissionDiagnosis!=null && extractId>0) mAdmissionDiagnosis(extractId, setExtractIds) else null
 
-      new AppealEntry(event, appeal, values, mMovingProperties, typeOfResponse, map, street, (primaryId>0), mRelationByRelativeId, admissions, extractProperties, corrMap)
+      new AppealEntry(event, appeal, values, mMovingProperties, typeOfResponse, map, street, (primaryId>0), mRelationByRelativeId, admissions, extractProperties, corrMap, contract)
     } else {
       val corrMap = if(mCorrList!=null) mCorrList(setMovingIds) else null
-      new AppealEntry(event, appeal, values, mMovingProperties, typeOfResponse, map, street, false, mRelationByRelativeId, null, null, corrMap)
+      new AppealEntry(event, appeal, values, mMovingProperties, typeOfResponse, map, street, false, mRelationByRelativeId, null, null, corrMap, contract)
      }
   }
 }
@@ -294,6 +295,8 @@ class AppealEntry {
   var appealWithDeseaseThisYear: String =_       //Госпитализирован по поводу данного заболевания в текущем году
   @BeanProperty
   var havePrimary: Boolean = false
+  @BeanProperty
+  var contract: ContractContainer = _            //Контракт
 
   @JsonView(Array(classOf[Views.DynamicFieldsPrintForm]))
   @BeanProperty
@@ -692,7 +695,8 @@ class AppealEntry {
            mRelationByRelativeId: (Int)=> ClientRelation,
            admissions: java.util.Map[ActionProperty, java.util.List[APValue]],
            extractProperties: java.util.Map[ActionProperty, java.util.List[APValue]],
-           corrList: java.util.List[RbCoreActionProperty]) {
+           corrList: java.util.List[RbCoreActionProperty]
+           ) {
     this(event, action, values, mMovingProperties, typeOfResponse, map, street, havePrimary, mRelationByRelativeId, admissions, corrList)
     if (extractProperties!=null && corrList!=null) {
       extractProperties.foreach(prop => {
@@ -709,6 +713,43 @@ class AppealEntry {
           }
         }
       })
+    }
+  }
+
+  /**
+   * Конструктор класса AppealEntry
+   * @param event Обращение на госпитализацию
+   * @param action Первичный осмотр при поступлении
+   * @param values Значения свойств действий
+   * @param mMovingProperties Делегируемый метод поиска  указанных свойств последних действий указанного типа для заданного Event.
+   * @param typeOfResponse Тип запроса.<pre>
+   * &#15;Возможные значения:
+   * &#15;"standart" - (по умолчанию) Данные об госпитализации.
+   * &#15;"print_form" - Печатная форма госпитализации. Данные об госпитализации + данные об пациенте</pre>
+   * @param map Информация об адресах КЛАДР
+   * @param street Информация об адресах Street
+   * @param havePrimary Флаг, имеется ли в текущей госпитализации первичный осмотр
+   * @param mRelationByRelativeId Делегируемый метод по поиску связи пациента и представителя по идентификатору представителя.
+   * @param admissions Список свойств действия с диагнозами
+   * @param extractProperties Список свойств действия с данными из выписки
+   * @param corrList Список RbCoreActionProperty для поиска соответствия идентификаторов
+   */
+  def this(event: Event,
+           action: Action,
+           values: java.util.Map[java.lang.Integer, java.util.List[Object]],
+           mMovingProperties: (Int, java.util.Set[java.lang.Integer], java.util.Set[java.lang.Integer]) => java.util.Map[ActionProperty, java.util.List[APValue]],
+           typeOfResponse: String,
+           map: java.util.LinkedHashMap[java.lang.Integer, java.util.LinkedList[Kladr]],
+           street: java.util.LinkedHashMap[java.lang.Integer, Street],
+           havePrimary: Boolean,
+           mRelationByRelativeId: (Int)=> ClientRelation,
+           admissions: java.util.Map[ActionProperty, java.util.List[APValue]],
+           extractProperties: java.util.Map[ActionProperty, java.util.List[APValue]],
+           corrList: java.util.List[RbCoreActionProperty],
+           contract: Contract) {
+    this(event, action, values, mMovingProperties, typeOfResponse, map, street, havePrimary, mRelationByRelativeId, admissions, extractProperties, corrList)
+    if (contract != null) {
+      this.contract = new ContractContainer(contract)
     }
   }
   /**
@@ -1185,4 +1226,29 @@ class IdNameDateContainer {
     this.birthDate = birthDate
   }
 
+}
+
+/**
+ * Контейнер для представления информации о контракте
+ */
+@XmlType(name = "contractContainer")
+@XmlRootElement(name = "contractContainer")
+@JsonIgnoreProperties(ignoreUnknown = true)
+class ContractContainer {
+
+  @BeanProperty
+  var number : String = _    //Номер контракта
+
+  @BeanProperty
+  var begDate: Date = _      // Дата открытия договора
+
+  @BeanProperty
+  var finance : IdNameContainer = _      //ИД
+
+  def this(contract: Contract) = {
+    this()
+    this.number = contract.getNumber
+    this.begDate = contract.getBegDate
+    this.finance = new IdNameContainer(contract.getFinance.getId.intValue(), contract.getFinance.getName)
+  }
 }

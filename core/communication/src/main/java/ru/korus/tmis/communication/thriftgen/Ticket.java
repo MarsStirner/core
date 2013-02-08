@@ -21,6 +21,8 @@ public class Ticket implements org.apache.thrift.TBase<Ticket, Ticket._Fields>, 
     private static final org.apache.thrift.protocol.TField TIME_FIELD_DESC = new org.apache.thrift.protocol.TField("time", org.apache.thrift.protocol.TType.I64, (short) 1);
     private static final org.apache.thrift.protocol.TField FREE_FIELD_DESC = new org.apache.thrift.protocol.TField("free", org.apache.thrift.protocol.TType.I32, (short) 2);
     private static final org.apache.thrift.protocol.TField AVAILABLE_FIELD_DESC = new org.apache.thrift.protocol.TField("available", org.apache.thrift.protocol.TType.I32, (short) 3);
+    private static final org.apache.thrift.protocol.TField PATIENT_ID_FIELD_DESC = new org.apache.thrift.protocol.TField("patientId", org.apache.thrift.protocol.TType.I32, (short) 4);
+    private static final org.apache.thrift.protocol.TField PATIENT_INFO_FIELD_DESC = new org.apache.thrift.protocol.TField("patientInfo", org.apache.thrift.protocol.TType.STRING, (short) 5);
 
     private static final Map<Class<? extends IScheme>, SchemeFactory> schemes = new HashMap<Class<? extends IScheme>, SchemeFactory>();
 
@@ -32,6 +34,8 @@ public class Ticket implements org.apache.thrift.TBase<Ticket, Ticket._Fields>, 
     public long time; // optional
     public int free; // optional
     public int available; // optional
+    public int patientId; // optional
+    public String patientInfo; // optional
 
     /**
      * The set of fields this struct contains, along with convenience methods for finding and manipulating them.
@@ -39,7 +43,9 @@ public class Ticket implements org.apache.thrift.TBase<Ticket, Ticket._Fields>, 
     public enum _Fields implements org.apache.thrift.TFieldIdEnum {
         TIME((short) 1, "time"),
         FREE((short) 2, "free"),
-        AVAILABLE((short) 3, "available");
+        AVAILABLE((short) 3, "available"),
+        PATIENT_ID((short) 4, "patientId"),
+        PATIENT_INFO((short) 5, "patientInfo");
 
         private static final Map<String, _Fields> byName = new HashMap<String, _Fields>();
 
@@ -60,6 +66,10 @@ public class Ticket implements org.apache.thrift.TBase<Ticket, Ticket._Fields>, 
                     return FREE;
                 case 3: // AVAILABLE
                     return AVAILABLE;
+                case 4: // PATIENT_ID
+                    return PATIENT_ID;
+                case 5: // PATIENT_INFO
+                    return PATIENT_INFO;
                 default:
                     return null;
             }
@@ -103,8 +113,9 @@ public class Ticket implements org.apache.thrift.TBase<Ticket, Ticket._Fields>, 
     private static final int __TIME_ISSET_ID = 0;
     private static final int __FREE_ISSET_ID = 1;
     private static final int __AVAILABLE_ISSET_ID = 2;
+    private static final int __PATIENTID_ISSET_ID = 3;
     private byte __isset_bitfield = 0;
-    private _Fields optionals[] = {_Fields.TIME, _Fields.FREE, _Fields.AVAILABLE};
+    private _Fields optionals[] = {_Fields.TIME, _Fields.FREE, _Fields.AVAILABLE, _Fields.PATIENT_ID, _Fields.PATIENT_INFO};
     public static final Map<_Fields, org.apache.thrift.meta_data.FieldMetaData> metaDataMap;
 
     static {
@@ -115,6 +126,10 @@ public class Ticket implements org.apache.thrift.TBase<Ticket, Ticket._Fields>, 
                 new org.apache.thrift.meta_data.FieldValueMetaData(org.apache.thrift.protocol.TType.I32)));
         tmpMap.put(_Fields.AVAILABLE, new org.apache.thrift.meta_data.FieldMetaData("available", org.apache.thrift.TFieldRequirementType.OPTIONAL,
                 new org.apache.thrift.meta_data.FieldValueMetaData(org.apache.thrift.protocol.TType.I32)));
+        tmpMap.put(_Fields.PATIENT_ID, new org.apache.thrift.meta_data.FieldMetaData("patientId", org.apache.thrift.TFieldRequirementType.OPTIONAL,
+                new org.apache.thrift.meta_data.FieldValueMetaData(org.apache.thrift.protocol.TType.I32)));
+        tmpMap.put(_Fields.PATIENT_INFO, new org.apache.thrift.meta_data.FieldMetaData("patientInfo", org.apache.thrift.TFieldRequirementType.OPTIONAL,
+                new org.apache.thrift.meta_data.FieldValueMetaData(org.apache.thrift.protocol.TType.STRING)));
         metaDataMap = Collections.unmodifiableMap(tmpMap);
         org.apache.thrift.meta_data.FieldMetaData.addStructMetaDataMap(Ticket.class, metaDataMap);
     }
@@ -130,6 +145,10 @@ public class Ticket implements org.apache.thrift.TBase<Ticket, Ticket._Fields>, 
         this.time = other.time;
         this.free = other.free;
         this.available = other.available;
+        this.patientId = other.patientId;
+        if (other.isSetPatientInfo()) {
+            this.patientInfo = other.patientInfo;
+        }
     }
 
     public Ticket deepCopy() {
@@ -144,6 +163,9 @@ public class Ticket implements org.apache.thrift.TBase<Ticket, Ticket._Fields>, 
         this.free = 0;
         setAvailableIsSet(false);
         this.available = 0;
+        setPatientIdIsSet(false);
+        this.patientId = 0;
+        this.patientInfo = null;
     }
 
     public long getTime() {
@@ -221,6 +243,57 @@ public class Ticket implements org.apache.thrift.TBase<Ticket, Ticket._Fields>, 
         __isset_bitfield = EncodingUtils.setBit(__isset_bitfield, __AVAILABLE_ISSET_ID, value);
     }
 
+    public int getPatientId() {
+        return this.patientId;
+    }
+
+    public Ticket setPatientId(int patientId) {
+        this.patientId = patientId;
+        setPatientIdIsSet(true);
+        return this;
+    }
+
+    public void unsetPatientId() {
+        __isset_bitfield = EncodingUtils.clearBit(__isset_bitfield, __PATIENTID_ISSET_ID);
+    }
+
+    /**
+     * Returns true if field patientId is set (has been assigned a value) and false otherwise
+     */
+    public boolean isSetPatientId() {
+        return EncodingUtils.testBit(__isset_bitfield, __PATIENTID_ISSET_ID);
+    }
+
+    public void setPatientIdIsSet(boolean value) {
+        __isset_bitfield = EncodingUtils.setBit(__isset_bitfield, __PATIENTID_ISSET_ID, value);
+    }
+
+    public String getPatientInfo() {
+        return this.patientInfo;
+    }
+
+    public Ticket setPatientInfo(String patientInfo) {
+        this.patientInfo = patientInfo;
+        return this;
+    }
+
+    public void unsetPatientInfo() {
+        this.patientInfo = null;
+    }
+
+    /**
+     * Returns true if field patientInfo is set (has been assigned a value) and false otherwise
+     */
+    public boolean isSetPatientInfo() {
+        return this.patientInfo != null;
+    }
+
+    public void setPatientInfoIsSet(boolean value) {
+        if (!value) {
+            this.patientInfo = null;
+        }
+    }
+
     public void setFieldValue(_Fields field, Object value) {
         switch (field) {
             case TIME:
@@ -247,6 +320,22 @@ public class Ticket implements org.apache.thrift.TBase<Ticket, Ticket._Fields>, 
                 }
                 break;
 
+            case PATIENT_ID:
+                if (value == null) {
+                    unsetPatientId();
+                } else {
+                    setPatientId((Integer) value);
+                }
+                break;
+
+            case PATIENT_INFO:
+                if (value == null) {
+                    unsetPatientInfo();
+                } else {
+                    setPatientInfo((String) value);
+                }
+                break;
+
         }
     }
 
@@ -260,6 +349,12 @@ public class Ticket implements org.apache.thrift.TBase<Ticket, Ticket._Fields>, 
 
             case AVAILABLE:
                 return Integer.valueOf(getAvailable());
+
+            case PATIENT_ID:
+                return Integer.valueOf(getPatientId());
+
+            case PATIENT_INFO:
+                return getPatientInfo();
 
         }
         throw new IllegalStateException();
@@ -280,6 +375,10 @@ public class Ticket implements org.apache.thrift.TBase<Ticket, Ticket._Fields>, 
                 return isSetFree();
             case AVAILABLE:
                 return isSetAvailable();
+            case PATIENT_ID:
+                return isSetPatientId();
+            case PATIENT_INFO:
+                return isSetPatientInfo();
         }
         throw new IllegalStateException();
     }
@@ -321,6 +420,24 @@ public class Ticket implements org.apache.thrift.TBase<Ticket, Ticket._Fields>, 
             if (!(this_present_available && that_present_available))
                 return false;
             if (this.available != that.available)
+                return false;
+        }
+
+        boolean this_present_patientId = true && this.isSetPatientId();
+        boolean that_present_patientId = true && that.isSetPatientId();
+        if (this_present_patientId || that_present_patientId) {
+            if (!(this_present_patientId && that_present_patientId))
+                return false;
+            if (this.patientId != that.patientId)
+                return false;
+        }
+
+        boolean this_present_patientInfo = true && this.isSetPatientInfo();
+        boolean that_present_patientInfo = true && that.isSetPatientInfo();
+        if (this_present_patientInfo || that_present_patientInfo) {
+            if (!(this_present_patientInfo && that_present_patientInfo))
+                return false;
+            if (!this.patientInfo.equals(that.patientInfo))
                 return false;
         }
 
@@ -370,6 +487,26 @@ public class Ticket implements org.apache.thrift.TBase<Ticket, Ticket._Fields>, 
                 return lastComparison;
             }
         }
+        lastComparison = Boolean.valueOf(isSetPatientId()).compareTo(typedOther.isSetPatientId());
+        if (lastComparison != 0) {
+            return lastComparison;
+        }
+        if (isSetPatientId()) {
+            lastComparison = org.apache.thrift.TBaseHelper.compareTo(this.patientId, typedOther.patientId);
+            if (lastComparison != 0) {
+                return lastComparison;
+            }
+        }
+        lastComparison = Boolean.valueOf(isSetPatientInfo()).compareTo(typedOther.isSetPatientInfo());
+        if (lastComparison != 0) {
+            return lastComparison;
+        }
+        if (isSetPatientInfo()) {
+            lastComparison = org.apache.thrift.TBaseHelper.compareTo(this.patientInfo, typedOther.patientInfo);
+            if (lastComparison != 0) {
+                return lastComparison;
+            }
+        }
         return 0;
     }
 
@@ -405,6 +542,22 @@ public class Ticket implements org.apache.thrift.TBase<Ticket, Ticket._Fields>, 
             if (!first) sb.append(", ");
             sb.append("available:");
             sb.append(this.available);
+            first = false;
+        }
+        if (isSetPatientId()) {
+            if (!first) sb.append(", ");
+            sb.append("patientId:");
+            sb.append(this.patientId);
+            first = false;
+        }
+        if (isSetPatientInfo()) {
+            if (!first) sb.append(", ");
+            sb.append("patientInfo:");
+            if (this.patientInfo == null) {
+                sb.append("null");
+            } else {
+                sb.append(this.patientInfo);
+            }
             first = false;
         }
         sb.append(")");
@@ -475,6 +628,22 @@ public class Ticket implements org.apache.thrift.TBase<Ticket, Ticket._Fields>, 
                             org.apache.thrift.protocol.TProtocolUtil.skip(iprot, schemeField.type);
                         }
                         break;
+                    case 4: // PATIENT_ID
+                        if (schemeField.type == org.apache.thrift.protocol.TType.I32) {
+                            struct.patientId = iprot.readI32();
+                            struct.setPatientIdIsSet(true);
+                        } else {
+                            org.apache.thrift.protocol.TProtocolUtil.skip(iprot, schemeField.type);
+                        }
+                        break;
+                    case 5: // PATIENT_INFO
+                        if (schemeField.type == org.apache.thrift.protocol.TType.STRING) {
+                            struct.patientInfo = iprot.readString();
+                            struct.setPatientInfoIsSet(true);
+                        } else {
+                            org.apache.thrift.protocol.TProtocolUtil.skip(iprot, schemeField.type);
+                        }
+                        break;
                     default:
                         org.apache.thrift.protocol.TProtocolUtil.skip(iprot, schemeField.type);
                 }
@@ -505,6 +674,18 @@ public class Ticket implements org.apache.thrift.TBase<Ticket, Ticket._Fields>, 
                 oprot.writeI32(struct.available);
                 oprot.writeFieldEnd();
             }
+            if (struct.isSetPatientId()) {
+                oprot.writeFieldBegin(PATIENT_ID_FIELD_DESC);
+                oprot.writeI32(struct.patientId);
+                oprot.writeFieldEnd();
+            }
+            if (struct.patientInfo != null) {
+                if (struct.isSetPatientInfo()) {
+                    oprot.writeFieldBegin(PATIENT_INFO_FIELD_DESC);
+                    oprot.writeString(struct.patientInfo);
+                    oprot.writeFieldEnd();
+                }
+            }
             oprot.writeFieldStop();
             oprot.writeStructEnd();
         }
@@ -532,7 +713,13 @@ public class Ticket implements org.apache.thrift.TBase<Ticket, Ticket._Fields>, 
             if (struct.isSetAvailable()) {
                 optionals.set(2);
             }
-            oprot.writeBitSet(optionals, 3);
+            if (struct.isSetPatientId()) {
+                optionals.set(3);
+            }
+            if (struct.isSetPatientInfo()) {
+                optionals.set(4);
+            }
+            oprot.writeBitSet(optionals, 5);
             if (struct.isSetTime()) {
                 oprot.writeI64(struct.time);
             }
@@ -542,12 +729,18 @@ public class Ticket implements org.apache.thrift.TBase<Ticket, Ticket._Fields>, 
             if (struct.isSetAvailable()) {
                 oprot.writeI32(struct.available);
             }
+            if (struct.isSetPatientId()) {
+                oprot.writeI32(struct.patientId);
+            }
+            if (struct.isSetPatientInfo()) {
+                oprot.writeString(struct.patientInfo);
+            }
         }
 
         @Override
         public void read(org.apache.thrift.protocol.TProtocol prot, Ticket struct) throws org.apache.thrift.TException {
             TTupleProtocol iprot = (TTupleProtocol) prot;
-            BitSet incoming = iprot.readBitSet(3);
+            BitSet incoming = iprot.readBitSet(5);
             if (incoming.get(0)) {
                 struct.time = iprot.readI64();
                 struct.setTimeIsSet(true);
@@ -559,6 +752,14 @@ public class Ticket implements org.apache.thrift.TBase<Ticket, Ticket._Fields>, 
             if (incoming.get(2)) {
                 struct.available = iprot.readI32();
                 struct.setAvailableIsSet(true);
+            }
+            if (incoming.get(3)) {
+                struct.patientId = iprot.readI32();
+                struct.setPatientIdIsSet(true);
+            }
+            if (incoming.get(4)) {
+                struct.patientInfo = iprot.readString();
+                struct.setPatientInfoIsSet(true);
             }
         }
     }
