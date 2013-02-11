@@ -1,5 +1,7 @@
 package ru.korus.tmis.ws.transfusion.procedure;
 
+import java.util.Date;
+
 /**
  * Author:      Sergey A. Zagrebelny <br>
  * Date:        30.01.2013, 15:36:31 <br>
@@ -34,11 +36,11 @@ public class EritrocyteMass {
     /**
      * дата изготовления
      */
-    private String productionDate;
+    private Date productionDate;
     /**
      * срок годности
      */
-    private String expirationDate;
+    private Date expirationDate;
     /**
      * гематокрит эритроцитарной массы
      */
@@ -114,25 +116,25 @@ public class EritrocyteMass {
     /**
      * @return the productionDate
      */
-    public String getProductionDate() {
+    public Date getProductionDate() {
         return productionDate;
     }
     /**
      * @param productionDate the productionDate to set
      */
-    public void setProductionDate(String productionDate) {
+    public void setProductionDate(Date productionDate) {
         this.productionDate = productionDate;
     }
     /**
      * @return the expirationDate
      */
-    public String getExpirationDate() {
+    public Date getExpirationDate() {
         return expirationDate;
     }
     /**
      * @param expirationDate the expirationDate to set
      */
-    public void setExpirationDate(String expirationDate) {
+    public void setExpirationDate(Date expirationDate) {
         this.expirationDate = expirationDate;
     }
     /**

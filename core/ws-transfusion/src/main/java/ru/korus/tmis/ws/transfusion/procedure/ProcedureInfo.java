@@ -1,5 +1,7 @@
 package ru.korus.tmis.ws.transfusion.procedure;
 
+import java.util.Date;
+
 /**
  * Author:      Sergey A. Zagrebelny <br>
  * Date:        30.01.2013, 15:19:40 <br>
@@ -20,7 +22,7 @@ public class ProcedureInfo {
     /**
      * время окончания лечебной процедуры
      */
-    private String factDate;
+    private Date factDate;
 
     /**
      * противопоказания к проведению процедуры
@@ -169,14 +171,14 @@ public class ProcedureInfo {
     /**
      * @return the factDate
      */
-    public String getFactDate() {
+    public Date getFactDate() {
         return factDate;
     }
 
     /**
      * @param factDate the factDate to set
      */
-    public void setFactDate(String factDate) {
+    public void setFactDate(Date factDate) {
         this.factDate = factDate;
     }
 

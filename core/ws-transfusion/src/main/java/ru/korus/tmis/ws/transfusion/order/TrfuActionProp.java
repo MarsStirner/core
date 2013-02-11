@@ -4,12 +4,12 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import javax.ejb.Singleton;
 import javax.persistence.EntityManager;
 
 import ru.korus.tmis.core.entity.model.APValueDate;
 import ru.korus.tmis.core.entity.model.APValueDouble;
 import ru.korus.tmis.core.entity.model.APValueInteger;
+import ru.korus.tmis.core.entity.model.APValueRbBloodComponentType;
 import ru.korus.tmis.core.entity.model.APValueString;
 import ru.korus.tmis.core.entity.model.APValueTime;
 import ru.korus.tmis.core.entity.model.ActionPropertyType;
@@ -36,29 +36,36 @@ public class TrfuActionProp {
      * Наименования типов свойства действия "Гемотрансфузионная терапия"
      */
     public enum PropType {
-        DIAGNOSIS("Основной клинический диагноз", APValueString.class),
-        BLOOD_COMP_TYPE("Требуемый компонент крови", APValueInteger.class),
-        TYPE("Вид трансфузии", APValueString.class),
-        VOLUME("Объем требуемого компонента крови (все, кроме тромбоцитов)", APValueInteger.class),
-        DOSE_COUNT("Количество требуемых донорских доз (тромбоциты)",  APValueDouble.class),
-        INDICATION("Показания к проведению трансфузии", APValueString.class),
-        ORDER_REQUEST_ID("Результат передачи требования в систему ТРФУ", APValueString.class),
-        ORDER_ISSUE_RES_DATE("Дата выдачи КК",APValueDate.class),
-        ORDER_ISSUE_RES_TIME("Время выдачи КК",APValueTime.class);
+        DIAGNOSIS("trfuReqBloodCompDiagnosis", APValueString.class, "Основной клинический диагноз"),
+        BLOOD_COMP_TYPE("trfuReqBloodCompId", APValueRbBloodComponentType.class, "Требуемый компонент крови"),
+        TYPE("trfuReqBloodCompType", APValueString.class, "Вид трансфузии"),
+        VOLUME("trfuReqBloodCompValue", APValueInteger.class, "Объем требуемого компонента крови (все, кроме тромбоцитов)"),
+        DOSE_COUNT("trfuReqBloodCompDose",  APValueDouble.class, "Количество требуемых донорских доз (тромбоциты)"),
+        ROOT_CAUSE("trfuReqBloodCompRootCause", APValueString.class, "Показания к проведению трансфузии"),
+        ORDER_REQUEST_ID("trfuReqBloodCompResult", APValueString.class, "Результат передачи требования в систему ТРФУ"),
+        ORDER_ISSUE_RES_DATE("trfuReqBloodCompDate",APValueDate.class, "Дата выдачи КК"),
+        ORDER_ISSUE_RES_TIME("trfuReqBloodCompTime",APValueTime.class, "Время выдачи КК");
 
         @SuppressWarnings("rawtypes")
         private final Class valueClass;
 
-        final String name;
+        final private String code;
+        final private String name;
         
-        PropType(final String name, @SuppressWarnings("rawtypes") Class valueClass) {
-            this.name = name;
+        PropType(final String code, @SuppressWarnings("rawtypes") Class valueClass, String name) {
+            this.code = code;
             this.valueClass = valueClass;
+            this.name = name;
         }
 
         String getName() {
-            return name;
+            return code;
         }
+        
+        String getCode() {
+            return code;
+        }
+        
         @SuppressWarnings("rawtypes")
         Class getValueClass() {
             return valueClass;
@@ -99,13 +106,13 @@ public class TrfuActionProp {
         for (PropType propType : propConstants) {
             boolean isFound = false;
             for (ActionPropertyType curActionPropType : actionPropTypes) {
-                if (propType.getName().equals(curActionPropType.getName())) {
+                if (propType.getCode().equals(curActionPropType.getCode())) {
                     propIds.put(propType, curActionPropType.getId());
                     isFound = true;
                 }
             }
             if (!isFound) {
-                msgError.append("'" + propType.getName() + "'; ");
+                msgError.append("'" + propType.getCode() + "'; ");
             }
         }
 
