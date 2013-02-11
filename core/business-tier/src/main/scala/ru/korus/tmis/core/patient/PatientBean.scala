@@ -988,17 +988,6 @@ class PatientBean
             val result = clientWorks.find(cw => cw.getId.compareTo(sw.getId)==0)
             if (result==None) true else false
           }).foreach(f => dbClientWorks.deleteClientWork(f.getId.intValue(), usver))
-          //-------------- костыль для НТК (нужно создавать пустой клиентВорк если нет ни одного)
-          if (clientWorks != null || clientWorks.size() == 0) {
-            dbClientWorks.insertOrUpdateClientWork(0,
-              patient,
-              "",
-              "",
-              0,
-              0,
-              usver)
-          }
-          //--------------
         }
       })
 
@@ -1034,9 +1023,24 @@ class PatientBean
         dbSocStatus.deleteClientSocStatus(f.getId.intValue(), usver)
         val serverWorks = patient.getActiveClientWorks
         serverWorks.foreach(serverWork => {
-          dbClientWorks.deleteClientWork(serverWork.getId.intValue(), usver)
+          if (serverWork != null && serverWork.getId != null) {
+            dbClientWorks.deleteClientWork(serverWork.getId.intValue(), usver)
+          }
         })
       })
+
+      //-------------- костыль для НТК (нужно создавать пустой клиентВорк если нет ни одного)
+      val serverWorks2 = patient.getActiveClientWorks
+      if (serverWorks2 == null || serverWorks2.size() <= 0) {
+        dbClientWorks.insertOrUpdateClientWork(0,
+          patient,
+          "",
+          "",
+          0,
+          0,
+          usver)
+      }
+      //--------------
 
       serverSocScatuses.filter(sw => {
         if (sw.getSocStatusType.getId.compareTo(35)==0) {
