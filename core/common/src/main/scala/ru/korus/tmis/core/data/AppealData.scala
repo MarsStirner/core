@@ -701,7 +701,7 @@ class AppealEntry {
     if (extractProperties!=null && corrList!=null) {
       extractProperties.foreach(prop => {
         val result = corrList.find(p=> p.getActionPropertyType.getId.intValue()==prop._1.getType.getId.intValue()).getOrElse(null)
-        if (result!=null) {
+        if (result!=null && prop._2 != null && prop._2.size() > 0) {
           if (result.getId.compareTo(ConfigManager.RbCAPIds("db.rbCAP.extract.id.nextHospDate").toInt :java.lang.Integer)==0){
             this.nextHospDate = prop._2.get(0).getValueAsString
           }

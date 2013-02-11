@@ -886,11 +886,11 @@ public class PatientRegistryRESTImpl implements Serializable {
     public  Object movingPatientToDepartment(  HospitalBedData data,
                                                 @PathParam("eventId") int eventId,
                                                 @QueryParam("callback") String callback,
-                                                @QueryParam("token") String token,
+                                                //@QueryParam("token") String token,
                                                 @Context HttpServletRequest servRequest) {
-        //AuthData auth = wsImpl.checkTokenCookies(servRequest);
-        AuthToken authToken = new AuthToken(token);
-        AuthData auth = wsImpl.getStorageAuthData(authToken);
+        AuthData auth = wsImpl.checkTokenCookies(servRequest);
+        //AuthToken authToken = new AuthToken(token);
+        //AuthData auth = wsImpl.getStorageAuthData(authToken);
 
         Object oip = wsImpl.movingPatientToDepartment(eventId, data, auth);
         JSONWithPadding returnValue = new JSONWithPadding(oip, callback);
