@@ -23,6 +23,7 @@ import java.lang.StringBuilder;
  *         &lt;element name="result" type="{http://www.w3.org/2001/XMLSchema}boolean" minOccurs="0"/>
  *         &lt;element name="number" type="{http://www.w3.org/2001/XMLSchema}string" minOccurs="0"/>
  *         &lt;element name="description" type="{http://www.w3.org/2001/XMLSchema}string" minOccurs="0"/>
+ *         &lt;element name="orderComment" type="{http://www.w3.org/2001/XMLSchema}string" minOccurs="0"/>
  *       &lt;/sequence>
  *     &lt;/restriction>
  *   &lt;/complexContent>
@@ -36,7 +37,8 @@ import java.lang.StringBuilder;
     "requestId",
     "result",
     "number",
-    "description"
+    "description",
+    "orderComment"
 })
 public class OrderResult {
 
@@ -44,6 +46,7 @@ public class OrderResult {
     protected Boolean result;
     protected String number;
     protected String description;
+    protected String orderComment;
 
     /**
      * Gets the value of the requestId property.
@@ -139,6 +142,30 @@ public class OrderResult {
      */
     public void setDescription(String value) {
         this.description = value;
+    }
+
+    /**
+     * Gets the value of the orderComment property.
+     * 
+     * @return
+     *     possible object is
+     *     {@link String }
+     *     
+     */
+    public String getOrderComment() {
+        return orderComment;
+    }
+
+    /**
+     * Sets the value of the orderComment property.
+     * 
+     * @param value
+     *     allowed object is
+     *     {@link String }
+     *     
+     */
+    public void setOrderComment(String value) {
+        this.orderComment = value;
     }
 
     @Override

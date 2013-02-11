@@ -1,82 +1,79 @@
 package ru.korus.tmis.core.entity.model;
 
-import ru.korus.tmis.core.exception.CoreException;
-
 import java.io.Serializable;
-import java.text.DateFormat;
-import java.text.ParseException;
-import java.text.SimpleDateFormat;
-import java.util.Date;
+
+import javax.persistence.Basic;
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.NamedQueries;
 import javax.persistence.NamedQuery;
 import javax.persistence.Table;
-import javax.persistence.Temporal;
-import javax.persistence.TemporalType;
 import javax.xml.bind.annotation.XmlRootElement;
 import javax.xml.bind.annotation.XmlType;
 
+import ru.korus.tmis.core.exception.CoreException;
+import ru.korus.tmis.util.TextUtils;
+
+/**
+ * Author:      Sergey A. Zagrebelny <br>
+ * Date:        07.02.2013, 17:37:02 <br>
+ * Company:     Korus Consulting IT<br>
+ * Description:  <br>
+ */
+
 @Entity
-@Table(name = "ActionProperty_Date", catalog = "", schema = "")
+@Table(name = "ActionProperty_Reference", catalog = "", schema = "")
 @NamedQueries(
         {
-                @NamedQuery(name = "APValueDate.findAll", query = "SELECT a FROM APValueDate a")
+                @NamedQuery(name = "APValueReference.findAll", query = "SELECT a FROM APValueReference a")
         })
-@XmlType(name = "actionPropertyValueDate")
-@XmlRootElement(name = "actionPropertyValueDate")
-public class APValueDate extends AbstractAPValue implements Serializable, APValue {
-
-    private static final DateFormat df =
-            new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
+@XmlType(name = "actionPropertyValueInteger")
+@XmlRootElement(name = "actionPropertyValueInteger")
+public class APValueReference extends AbstractAPValue implements Serializable, APValue {
 
     private static final long serialVersionUID = 1L;
 
+    @Basic(optional = false)
     @Column(name = "value")
-    @Temporal(TemporalType.DATE)
-    private Date value;
+    private Integer value;
 
-    public APValueDate() {
+    public APValueReference() {
     }
 
-    public APValueDate(IndexedId id) {
+    public APValueReference(IndexedId id) {
         this.id = id;
     }
 
-    public APValueDate(int id, int index) {
+    public APValueReference(int id, int index) {
         this.id = new IndexedId(id, index);
     }
 
-    public Date getValue() {
+    @Override
+    public Integer getValue() {
         return value;
     }
 
-    public void setValue(Date value) {
+    public void setValue(Integer value) {
         this.value = value;
     }
 
     @Override
     public String getValueAsString() {
-        return value != null ? df.format(value) : "";
-    }
-    
-    @Override
-    public void setValue(Object value) throws CoreException {
-        this.value = (Date)value;
+        return value.toString();
     }
 
     @Override
     public boolean setValueFromString(final String value)
             throws CoreException {
         if ("".equals(value)) {
-            this.value = new Date();
+            this.value = 0;
             return true;
         }
 
         try {
-            this.value = df.parse(value);
+            this.value = TextUtils.getRobustInt(value);
             return true;
-        } catch (ParseException ex) {
+        } catch (NumberFormatException ex) {
             throw new CoreException(
                     0x0106, // TODO: Fix me!
                     "Не могу установить " +
@@ -96,10 +93,10 @@ public class APValueDate extends AbstractAPValue implements Serializable, APValu
     @Override
     public boolean equals(Object object) {
         // TODO: Warning - this method won't work in the case the id fields are not set
-        if (!(object instanceof APValueDate)) {
+        if (!(object instanceof APValueReference)) {
             return false;
         }
-        APValueDate other = (APValueDate) object;
+        APValueReference other = (APValueReference) object;
 
         if (this.id == null && other.id == null && this != other) {
             return false;
@@ -114,6 +111,6 @@ public class APValueDate extends AbstractAPValue implements Serializable, APValu
 
     @Override
     public String toString() {
-        return "ru.korus.tmis.core.entity.model.APValueDate[id=" + id + "]";
+        return "ru.korus.tmis.core.entity.model.APValueReference[id=" + id + "]";
     }
 }

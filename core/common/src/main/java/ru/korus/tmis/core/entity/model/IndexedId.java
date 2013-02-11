@@ -5,6 +5,8 @@ import javax.persistence.Embeddable;
 
 @Embeddable
 public class IndexedId implements Serializable {
+
+    private static final long serialVersionUID = 1L;
     private int id;
     private int index;
 

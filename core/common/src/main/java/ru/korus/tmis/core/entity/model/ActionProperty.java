@@ -94,9 +94,11 @@ public class ActionProperty
 
     ////////////////////////////////////////////////////////////////////////////
 
+    @SuppressWarnings("rawtypes")
     @Transient
     private Class valueClass;
 
+    @SuppressWarnings("rawtypes")
     @Transient
     private static Map<String, Class> valueTypeMap =
             new HashMap<String, Class>();
@@ -130,11 +132,12 @@ public class ActionProperty
 
     }
 
+    @SuppressWarnings("rawtypes")
     public Class getValueClass() {
         return valueClass;
     }
 
-    public void setValueClass(final Class valueClass) {
+    public void setValueClass(@SuppressWarnings("rawtypes") final Class valueClass) {
         this.valueClass = valueClass;
     }
 

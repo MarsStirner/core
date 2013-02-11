@@ -4,6 +4,7 @@ import java.io.Serializable;
 
 public class APValueRLSWrapper implements Serializable, APValue {
 
+    private static final long serialVersionUID = 1L;
     protected APValueRLS rlsValue;
     protected final Nomenclature nomenclature;
 

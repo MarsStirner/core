@@ -69,6 +69,9 @@ public class ActionPropertyType implements Serializable, PublicClonable<ActionPr
     @Column(name = "defaultValue")
     private String defaultValue;
 
+    @Column(name = "code")
+    private String code;
+
     @Basic(optional = false)
     @Column(name = "isVector")
     private boolean isVector;
@@ -230,6 +233,15 @@ public class ActionPropertyType implements Serializable, PublicClonable<ActionPr
         this.defaultValue = defaultValue;
     }
 
+    public String getCode() {
+        return code;
+    }
+
+    public void setCode(String code) {
+        this.code = code;
+    }
+
+    
     public boolean getIsVector() {
         return isVector;
     }

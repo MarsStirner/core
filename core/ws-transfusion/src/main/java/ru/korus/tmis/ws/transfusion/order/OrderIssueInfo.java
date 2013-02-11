@@ -10,17 +10,6 @@ package ru.korus.tmis.ws.transfusion.order;
  * Сообщение о результатах выполнения требования 
  */
 public class OrderIssueInfo {
-    
-    /**
-     * Идентификатор требования на выдачу КК (Action.id)
-     */
-    private Integer requestId;
-    
-    /**
-     * Фактическая дата/время выдачи КК в формате "yyyy-MM-dd" 
-     */
-    private String factDate; 
-    
     /**
      * Идентификатор компонента крови
      */
@@ -61,40 +50,6 @@ public class OrderIssueInfo {
      */
     private Integer donorId;
     
-    /**
-     * произвольный текстовый комментарий
-     */
-    private String orderComment;
-    
-
-    /**
-     * @return the requestId
-     */
-    public Integer getRequestId() {
-        return requestId;
-    }
-
-    /**
-     * @param requestId the requestId to set
-     */
-    public void setRequestId(Integer requestId) {
-        this.requestId = requestId;
-    }
-
-    /**
-     * @return the factDate
-     */
-    public String getFactDate() {
-        return factDate;
-    }
-
-    /**
-     * @param factDate the factDate to set
-     */
-    public void setFactDate(String factDate) {
-        this.factDate = factDate;
-    }
-
     /**
      * @return the componentId
      */
@@ -206,52 +161,5 @@ public class OrderIssueInfo {
     public void setDonorId(Integer donorId) {
         this.donorId = donorId;
     }
-
-    /**
-     * @return the orderComment
-     */
-    public String getOrderComment() {
-        return orderComment;
-    }
-
-    /**
-     * @param orderComment the orderComment to set
-     */
-    public void setOrderComment(String orderComment) {
-        this.orderComment = orderComment;
-    }
-
-    /**
-     * @see java.lang.Object#toString()
-     */
-    @Override
-    public String toString() {
-        StringBuilder builder = new StringBuilder();
-        builder.append("OrderIssueInfo [requestId=");
-        builder.append(requestId);
-        builder.append(", factDate=");
-        builder.append(factDate);
-        builder.append(", componentId=");
-        builder.append(componentId);
-        builder.append(", number=");
-        builder.append(number);
-        builder.append(", componentTypeId=");
-        builder.append(componentTypeId);
-        builder.append(", bloodGroupId=");
-        builder.append(bloodGroupId);
-        builder.append(", rhesusFactorId=");
-        builder.append(rhesusFactorId);
-        builder.append(", volume=");
-        builder.append(volume);
-        builder.append(", doseCount=");
-        builder.append(doseCount);
-        builder.append(", donorId=");
-        builder.append(donorId);
-        builder.append(", orderComment=");
-        builder.append(orderComment);
-        builder.append("]");
-        return builder.toString();
-    }
-  
-
+    
 }
