@@ -32,7 +32,6 @@ public class ClientQuoting implements Serializable {
     @Version
     @Basic(optional = false)
     @Column(name = "version")
-
     private int version;
 
     @ManyToOne
