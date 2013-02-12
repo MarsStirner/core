@@ -27,6 +27,7 @@ import ru.korus.tmis.core.auth.AuthToken;
 import ru.korus.tmis.core.data.*;
 import ru.korus.tmis.core.exception.CoreException;
 import ru.korus.tmis.core.logging.slf4j.interceptor.ServicesLoggingInterceptor;
+import ru.korus.tmis.lis.data.BiomaterialInfo;
 import ru.korus.tmis.ws.impl.MedipadWSImpl;
 
 import com.sun.jersey.api.json.JSONWithPadding;
@@ -2076,6 +2077,62 @@ public class PatientRegistryRESTImpl implements Serializable {
         QuotaRequestData request = new QuotaRequestData(null, sortingField, sortingMethod, limit, page);
 
         Object oip = wsImpl.getQuotaHistory(appealId, request); //request
+        JSONWithPadding returnValue = new JSONWithPadding(oip, callback);
+        return returnValue;
+    }
+
+    /**
+     * Забор биоматериала
+     * URL: ../biomaterial/info
+     * Спецификация: https://docs.google.com/spreadsheet/ccc?key=0AgE0ILPv06JcdEE0ajBZdmk1a29ncjlteUp3VUI2MEE&pli=1#gid=5
+     * @since 1.0.0.64
+     * @param departmentId Фильтр по идентификатору отделения (В url: filter[departmentId]=...)<pre>
+     * &#15; По умолчанию значение достается из авторизационной роли</pre>
+     * @param beginDate Фильтр по дате начала выборки (В url: filter[beginDate]=...)<pre>
+     * &#15; По умолчанию - начало текущих суток (Dd.Mm.Year 00:00).</pre>
+     * @param endDate  Фильтр по дате окончания выборки (В url: filter[endDate]=...)<pre>
+     * &#15; По умолчанию - начало текущих суток (Dd.Mm.Year 23:59).</pre>
+     * @param status Фильтр по статусу забора (В url: filter[status]=...)<pre>
+     * &#15; По умолчанию - 0.</pre>
+     * @param biomaterial  Фильтр биоматериал (В url: filter[biomaterial]=...)
+     * @param limit Максимальное количество выводимых элементов на странице.
+     * @param page Номер выводимой страницы.
+     * @param sortingField Наименование поля для сортировки.<pre>
+     * &#15; Возможные значения:
+     * &#15; </pre>
+     * @param sortingMethod Метод сортировки.<pre>
+     * &#15; Возможные значения:
+     * &#15; "asc" - по возрастанию (значение по умолчанию);
+     * &#15; "desc" - по убыванию;</pre>
+     * @param callback callback запроса.
+     * @param servRequest Контекст запроса с клиента.
+     * @return com.sun.jersey.api.json.JSONWithPadding как Object
+     * @throws CoreException
+     */
+    @GET
+    @Path("/biomaterial/info")
+    @Produces("application/x-javascript")
+    public Object getTakingOfBiomaterial(@QueryParam("filter[departmentId]")int departmentId,
+                                         @QueryParam("filter[beginDate]")long beginDate,
+                                         @QueryParam("filter[endDate]")long endDate,
+                                         @QueryParam("filter[status]") short status,
+                                         @QueryParam("filter[biomaterial]") String biomaterial,
+                                         @QueryParam("limit")int limit,
+                                         @QueryParam("page")int  page,
+                                         @QueryParam("sortingField")String sortingField,
+                                         @QueryParam("sortingMethod")String sortingMethod,
+                                         @QueryParam("callback") String callback,
+                                         @Context HttpServletRequest servRequest)   {
+
+        AuthData auth = wsImpl.checkTokenCookies(servRequest);
+
+        TakingOfBiomaterialRequesDataFilter filter = new TakingOfBiomaterialRequesDataFilter(departmentId,
+                                                                                             beginDate,
+                                                                                             endDate,
+                                                                                             status,
+                                                                                             biomaterial);
+        TakingOfBiomaterialRequesData request = new TakingOfBiomaterialRequesData(sortingField, sortingMethod, limit, page, filter);
+        Object oip = null;//wsImpl.getTakingOfBiomaterial(request);
         JSONWithPadding returnValue = new JSONWithPadding(oip, callback);
         return returnValue;
     }
