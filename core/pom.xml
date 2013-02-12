@@ -637,7 +637,9 @@
                         ru/korus/tmis/laboratory/*,
                         ru/korus/tmis/laboratory/data/lis2/accept/*,
                         ru/korus/tmis/laboratory/data/lis/accept/*,
-                        ru/korus/tmis/laboratory/data/lis/mock/
+                        ru/korus/tmis/laboratory/data/lis/mock/,
+                        ru/korus/tmis/ws/webmis/rest/,
+                        ru/korus/tmis/ws/medipad/
                     </excludes>
                 </configuration>
                 <executions>
