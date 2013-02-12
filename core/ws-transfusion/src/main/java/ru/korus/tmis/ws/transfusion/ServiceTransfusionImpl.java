@@ -54,7 +54,7 @@ public class ServiceTransfusionImpl implements ServiceTransfusion {
             return res;
             
         }
-        return res; //regOrderIssueResult.save(requestId, factDate, components, orderComment);
+        return regOrderIssueResult.save(requestId, factDate, components, orderComment);
     }
 
     /**
