@@ -54,7 +54,7 @@ public class FinanceBean {
      */
     private String errorMsg;
 
-    public void setErrorMsg(String errorMsg) {
+    public void setErrorMsg(final String errorMsg) {
         this.errorMsg = errorMsg;
     }
 
@@ -66,7 +66,7 @@ public class FinanceBean {
         return codeOfService;
     }
 
-    public void setCodeOfService(String codeOfService) {
+    public void setCodeOfService(final String codeOfService) {
         this.codeOfService = codeOfService;
     }
 
@@ -74,7 +74,7 @@ public class FinanceBean {
         return externalId;
     }
 
-    public void setExternalId(String externalId) {
+    public void setExternalId(final String externalId) {
         this.externalId = externalId;
     }
 
@@ -82,7 +82,7 @@ public class FinanceBean {
         return nameOfService;
     }
 
-    public void setNameOfService(String nameOfService) {
+    public void setNameOfService(final String nameOfService) {
         this.nameOfService = nameOfService;
     }
 
@@ -90,7 +90,7 @@ public class FinanceBean {
         return codeOfStruct;
     }
 
-    public void setCodeOfStruct(String codeOfStruct) {
+    public void setCodeOfStruct(final String codeOfStruct) {
         this.codeOfStruct = codeOfStruct;
     }
 
@@ -98,7 +98,7 @@ public class FinanceBean {
         return nameOfStruct;
     }
 
-    public void setNameOfStruct(String nameOfStruct) {
+    public void setNameOfStruct(final String nameOfStruct) {
         this.nameOfStruct = nameOfStruct;
     }
 
@@ -106,7 +106,7 @@ public class FinanceBean {
         return endDate;
     }
 
-    public void setEndDate(String endDate) {
+    public void setEndDate(final String endDate) {
         this.endDate = endDate;
     }
 
@@ -114,7 +114,7 @@ public class FinanceBean {
         return price;
     }
 
-    public void setPrice(double price) {
+    public void setPrice(final double price) {
         this.price = price;
     }
 
@@ -122,7 +122,7 @@ public class FinanceBean {
         return amount;
     }
 
-    public void setAmount(double amount) {
+    public void setAmount(final double amount) {
         this.amount = amount;
     }
 

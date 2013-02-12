@@ -17,9 +17,9 @@ import javax.jws.WebService;
 public interface ServiceFinanceInfo {
 
     /**
-     * Имя параметра запроса, содержащего наименование подразделения 
+     * Имя параметра запроса, содержащего наименование подразделения
      */
-    public static final String WEB_PARAM_STRUCT = "struct";
+    String WEB_PARAM_STRUCT = "struct";
 
     /**
      * Получить информацию по платным услугам в разрезе подразделений
