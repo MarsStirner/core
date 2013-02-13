@@ -29,7 +29,7 @@ public class TrfuOrderIssueResult implements Serializable {
 	@Column(name="comp_number", length=40)
 	private String compNumber;
 
-	@Column(name="trfu_comp_id")
+	@Column(name="trfu_blood_comp")
 	private Integer trfuCompId;
 
 	@Column(name="trfu_donor_id")
@@ -45,7 +45,7 @@ public class TrfuOrderIssueResult implements Serializable {
 	private Action action;
 
 	@ManyToOne
-	@JoinColumn(name="comp_type")
+	@JoinColumn(name="comp_type_id")
 	private RbBloodComponentType rbBloodComponentType;
 
 	@ManyToOne
