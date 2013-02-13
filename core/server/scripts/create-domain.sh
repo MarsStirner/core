@@ -28,6 +28,10 @@ cp ./logback.xml ${glassfish.domain.dir}/${glassfish.domain}/config
 # Копирование библиотек
 cp ../scripts/lib/* ${glassfish.domain.dir}/${glassfish.domain}/lib/ext/
 
+# Перезапуск домена
+asadmin start-domain --domaindir ${glassfish.domain.dir} ${glassfish.domain}
+
+
 # Прописываем конфигурацию логера
 asadmin --user ${glassfish.admin.login} \
         --passwordfile $GF_PASSWD_FILE \
@@ -75,9 +79,6 @@ asadmin --user ${glassfish.admin.login} \
         --passwordfile $GF_PASSWD_FILE \
         create-jvm-options --target default-config --'-XX\:MaxPermSize=256m'
 
-# Перезапуск домена
-asadmin stop-domain --domaindir ${glassfish.domain.dir} ${glassfish.domain}
-asadmin start-domain --domaindir ${glassfish.domain.dir} ${glassfish.domain}
 
 # Создание пулов соединений и ресурсов для необходимых ядру БД
 asadmin --user ${glassfish.admin.login} \
@@ -120,3 +121,6 @@ asadmin --user ${glassfish.admin.login} \
 
 rm -f $GF_PASSWD_FILE
 
+# Перезапуск домена
+asadmin stop-domain --domaindir ${glassfish.domain.dir} ${glassfish.domain}
+asadmin start-domain --domaindir ${glassfish.domain.dir} ${glassfish.domain}
