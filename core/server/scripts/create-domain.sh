@@ -46,9 +46,6 @@ asadmin --user ${glassfish.admin.login} \
         create-jvm-options --target server-config --'-XX\:+UnlockExperimentalVMOptions'
 asadmin --user ${glassfish.admin.login} \
         --passwordfile $GF_PASSWD_FILE \
-        create-jvm-options --target server-config --'-XX\:+UseG1GC'
-asadmin --user ${glassfish.admin.login} \
-        --passwordfile $GF_PASSWD_FILE \
         delete-jvm-options --target server-config --'-Xmx512m'
 asadmin --user ${glassfish.admin.login} \
         --passwordfile $GF_PASSWD_FILE \
@@ -59,13 +56,9 @@ asadmin --user ${glassfish.admin.login} \
 asadmin --user ${glassfish.admin.login} \
         --passwordfile $GF_PASSWD_FILE \
         create-jvm-options --target server-config --'-XX\:MaxPermSize=256m'
-
 asadmin --user ${glassfish.admin.login} \
         --passwordfile $GF_PASSWD_FILE \
         create-jvm-options --target default-config --'-XX\:+UnlockExperimentalVMOptions'
-asadmin --user ${glassfish.admin.login} \
-        --passwordfile $GF_PASSWD_FILE \
-        create-jvm-options --target default-config --'-XX\:+UseG1GC'
 asadmin --user ${glassfish.admin.login} \
         --passwordfile $GF_PASSWD_FILE \
         delete-jvm-options --target default-config --'-Xmx512m'
