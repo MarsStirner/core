@@ -81,13 +81,13 @@ public class PharmacyBean implements PharmacyBeanLocal {
                     logger.info("Pooling db, fetch last {} actions. Size [{}]", LAST_ACTIONS, actionList.size());
 
                     for (Action action : actionList) {
-                        final DateTime actionDateTime = new DateTime(action.getModifyDatetime());
+                        final DateTime modifyDateTime = new DateTime(action.getModifyDatetime());
 
-                        Pharmacy checkPharmacy = dbPharmacy.getPharmacyByAction(action);
+                        final Pharmacy checkPharmacy = dbPharmacy.getPharmacyByAction(action);
                         logger.info("check pharmacy [{}] action [{}], date [{}], flatCode [{}]",
                                 checkPharmacy,
                                 action,
-                                actionDateTime.toString(DATE_TIME_FORMAT),
+                                modifyDateTime.toString(DATE_TIME_FORMAT),
                                 action.getActionType().getFlatCode());
 
                         if (checkPharmacy != null) {
@@ -99,7 +99,7 @@ public class PharmacyBean implements PharmacyBeanLocal {
                         } else {
                             checkMessageAndSend(action);
                         }
-                        lastDateUpdate = updateLastDate(actionDateTime, lastDateUpdate);
+                        lastDateUpdate = updateLastDate(modifyDateTime, lastDateUpdate);
                     }
                 } else {
                     lastDateUpdate = DateTime.now();
@@ -107,10 +107,10 @@ public class PharmacyBean implements PharmacyBeanLocal {
                 }
             }
 
-            final List<Action> actionList = dbPharmacy.getActionAfterDate(lastDateUpdate);
-            logger.info("Found {} newest actions after date {}", actionList.size(), getLastDate());
+            final List<Action> actionAfterDate = dbPharmacy.getActionAfterDate(lastDateUpdate);
+            logger.info("Found {} newest actions after date {}", actionAfterDate.size(), getLastDate());
 
-            for (Action action : actionList) {
+            for (Action action : actionAfterDate) {
                 lastDateUpdate = checkMessageAndSend(action);
             }
             logger.info("Update last date, new value {}", getLastDate());
@@ -136,7 +136,7 @@ public class PharmacyBean implements PharmacyBeanLocal {
         logger.info("check message...");
         try {
             final ActionType actionType = action.getActionType();
-            if (actionType.getFlatCode().equals(FlatCode.RECEIVED.getCode())) {
+            if (FlatCode.RECEIVED.getCode().equals(actionType.getFlatCode())) {
                 // госпитализация в стационар
                 logger.info("--- found received ---");
 
@@ -145,7 +145,7 @@ public class PharmacyBean implements PharmacyBeanLocal {
 
                 processResult(pharmacy, HL7PacketBuilder.processReceived(action, orgStructure));
 
-            } else if (actionType.getFlatCode().equals(FlatCode.LEAVED.getCode())) {
+            } else if (FlatCode.LEAVED.getCode().equals(actionType.getFlatCode())) {
                 // выписка из стационара
                 logger.info("--- found leaved ---");
 
@@ -154,7 +154,7 @@ public class PharmacyBean implements PharmacyBeanLocal {
 
                 processResult(pharmacy, HL7PacketBuilder.processLeaved(action, displayName));
 
-            } else if (actionType.getFlatCode().equals(FlatCode.DEL_RECEIVED.getCode())) {
+            } else if (FlatCode.DEL_RECEIVED.getCode().equals(actionType.getFlatCode())) {
                 // отмена сообщения о госпитализации
                 logger.info("--- found del_received ---");
 
@@ -162,7 +162,7 @@ public class PharmacyBean implements PharmacyBeanLocal {
 
                 processResult(pharmacy, HL7PacketBuilder.processDelReceived(action));
 
-            } else if (actionType.getFlatCode().equals(FlatCode.MOVING.getCode())) {
+            } else if (FlatCode.MOVING.getCode().equals(actionType.getFlatCode())) {
                 // перевод пациента между отделениями
                 logger.info("--- found moving ---");
 
@@ -172,7 +172,7 @@ public class PharmacyBean implements PharmacyBeanLocal {
 
                 processResult(pharmacy, HL7PacketBuilder.processMoving(action, orgStructureOut, orgStructureIn));
 
-            } else if (actionType.getFlatCode().equals(FlatCode.DEL_MOVING.getCode())) {
+            } else if (FlatCode.DEL_MOVING.getCode().equals(actionType.getFlatCode())) {
                 // отмена сообщения о переводе пациента между отделениями
                 logger.info("--- found del_moving ---");
 
