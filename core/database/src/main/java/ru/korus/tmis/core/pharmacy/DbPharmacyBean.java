@@ -85,7 +85,7 @@ public class DbPharmacyBean implements DbPharmacyBeanLocal {
 
     public List<Action> getVirtualActions(final int limit) {
         return em.createQuery(
-                "SELECT a FROM Action a WHERE a.actionType.flatCode IN (:flatCode) ORDER BY a.id DESC", Action.class)
+                "SELECT a FROM Action a WHERE a.actionType.flatCode IN :flatCode ORDER BY a.id DESC", Action.class)
                 .setParameter("flatCode", getFlatCodeStrings())
                 .setMaxResults(limit)
                 .getResultList();
@@ -105,7 +105,7 @@ public class DbPharmacyBean implements DbPharmacyBeanLocal {
 
     public List<Action> getVirtualActionsAfterDate(final DateTime after) {
         return em.createQuery(
-                "SELECT a FROM Action a WHERE a.actionType.flatCode IN (:flatCode) AND a.modifyDatetime > :modifyDatetime", Action.class)
+                "SELECT a FROM Action a WHERE a.actionType.flatCode IN :flatCode AND a.modifyDatetime > :modifyDatetime", Action.class)
                 .setParameter("flatCode", getFlatCodeStrings())
                 .setParameter("modifyDatetime", after.toDate())
                 .getResultList();

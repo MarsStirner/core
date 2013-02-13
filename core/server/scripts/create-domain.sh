@@ -31,6 +31,10 @@ cp ../scripts/lib/* ${glassfish.domain.dir}/${glassfish.domain}/lib/ext/
 # Перезапуск домена
 asadmin start-domain --domaindir ${glassfish.domain.dir} ${glassfish.domain}
 
+# Разрешение на подключение с другой машины
+asadmin --user ${glassfish.admin.login} \
+        --passwordfile $GF_PASSWD_FILE \
+        enable-secure-admin
 
 # Прописываем конфигурацию логера
 asadmin --user ${glassfish.admin.login} \
