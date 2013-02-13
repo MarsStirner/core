@@ -836,36 +836,16 @@ public class PatientRegistryRESTImpl implements Serializable {
 
     /**
      * Форма 007
-     * @param departmentId Идентификатор отделения.
-     * @param callback  callback запроса.
-     * @param servRequest Контекст запроса.
-     * @return com.sun.jersey.api.json.JSONWithPadding как Object
-     * @throws CoreException
-     * @see CoreException
-     */
-    @GET
-    @Path("/seventhform/{departmentId}")
-    @Produces("application/x-javascript")
-    public Object getSeventhFormForDepartment(
-                                                @PathParam("departmentId") int departmentId,
-                                                @QueryParam("callback") String callback,
-                                                @Context HttpServletRequest servRequest) {
-        //AuthData auth = wsImpl.checkTokenCookies(servRequest);
-        FormOfAccountingMovementOfPatientsData oip = wsImpl.getFormOfAccountingMovementOfPatients(departmentId);
-        JSONWithPadding returnValue = new JSONWithPadding(oip, callback);
-        return returnValue;
-    }
-
-    /**
-     * Форма 007
      * Specification: https://docs.google.com/document/d/1a0AYF8QVpEMl_pKRcFDnP2vQzRmO-IkcG5JNStEcjMI/edit#heading=h.6ll2qz4wdcfr
      * URL: .../reports/f007
      * Since: ver 1.0.0.57
      * @param departmentId Идентификатор отделения, для которого отчет (задавать в url как QueryParam: "filter[departmentId]=...")
      * @param beginDate Дата и время начала выборки (задавать в url как QueryParam: "filter[beginDate]=...")
-     *                Если не задан, то по умолчанию начало текущих медицинских суток (now 8:00).
+     *                Если не задан, то по умолчанию начало текущих медицинских суток (вчера 8:00) или,
+     *                если задан endDate, то endDate минус сутки.
      * @param endDate Дата и время конца выборки (задавать в url как QueryParam: "filter[endDate]=...").
-     *                Если не задан, то по умолчанию конец текущих медицинских суток (today 7:59).
+     *                Если не задан, то по умолчанию конец текущих медицинских суток (сегодня 7:59) или,
+     *                если задан beginDate, то beginDate плюс сутки.
      * @param callback  callback запроса.
      * @param servRequest Контекст запроса.
      * @return com.sun.jersey.api.json.JSONWithPadding как Object
