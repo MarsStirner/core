@@ -20,7 +20,7 @@ import fd.FDRecord
 import ru.korus.tmis.core.data._
 import ru.korus.tmis.core.exception.CoreException
 import scala.Some
-import ru.korus.tmis.core.hl7db.DbUUIDBeanLocal
+import ru.korus.tmis.core.pharmacy.DbUUIDBeanLocal
 
 @Interceptors(Array(classOf[LoggingInterceptor]))
 @Stateless

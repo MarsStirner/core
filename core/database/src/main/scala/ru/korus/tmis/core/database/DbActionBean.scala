@@ -13,7 +13,7 @@ import javax.interceptor.Interceptors
 import scala.collection.JavaConversions._
 import javax.persistence.{TypedQuery, PersistenceContext, EntityManager}
 import ru.korus.tmis.core.data.{AssessmentsListRequestDataFilter, AssessmentsListRequestData}
-import ru.korus.tmis.core.hl7db.DbUUIDBeanLocal
+import ru.korus.tmis.core.pharmacy.DbUUIDBeanLocal
 import java.util
 
 @Interceptors(Array(classOf[LoggingInterceptor]))

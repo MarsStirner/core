@@ -492,10 +492,9 @@
                     <target>${project.build.jdk}</target>
                     <encoding>${project.build.sourceEncoding}</encoding>
                     <debug>${project.build.debug}</debug>
-                    <!--<jvmArgs>-->
-                    <!--<jvmArg>-Xms64m</jvmArg>-->
-                    <!--<jvmArg>-Xmx1024m</jvmArg>-->
-                    <!--</jvmArgs>-->
+                    <fork>true</fork>
+                    <meminitial>128m</meminitial>
+                    <maxmem>512m</maxmem>
                 </configuration>
             </plugin>
 

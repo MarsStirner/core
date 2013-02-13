@@ -1,4 +1,4 @@
-package ru.korus.tmis.core.hl7db;
+package ru.korus.tmis.core.pharmacy;
 
 import org.joda.time.DateTime;
 import org.slf4j.Logger;
@@ -16,7 +16,6 @@ import javax.ejb.Stateless;
 import javax.interceptor.Interceptors;
 import javax.persistence.EntityManager;
 import javax.persistence.PersistenceContext;
-import java.util.Date;
 import java.util.List;
 
 /**
@@ -43,7 +42,7 @@ public class DbPharmacyBean implements DbPharmacyBeanLocal {
         Pharmacy pharmacy = em.find(Pharmacy.class, action.getId());
         if (pharmacy == null) {
 
-            ActionType actionType = action.getActionType();
+            final ActionType actionType = action.getActionType();
             pharmacy = new Pharmacy();
             pharmacy.setActionId(action.getId());
             pharmacy.setFlatCode(actionType.getFlatCode());
@@ -57,7 +56,7 @@ public class DbPharmacyBean implements DbPharmacyBeanLocal {
     }
 
     public Pharmacy updateMessage(final Pharmacy pharmacy) throws CoreException {
-        Pharmacy findPharmacy = em.find(Pharmacy.class, pharmacy.getActionId());
+        final Pharmacy findPharmacy = em.find(Pharmacy.class, pharmacy.getActionId());
         if (findPharmacy != null) {
             findPharmacy.setStatus(pharmacy.getStatus());
             findPharmacy.setDocumentUUID(pharmacy.getDocumentUUID());
@@ -79,6 +78,22 @@ public class DbPharmacyBean implements DbPharmacyBeanLocal {
     public List<Action> getLastMaxAction(final int limit) {
         return em.createQuery("SELECT a FROM Action a ORDER BY a.id DESC", Action.class)
                 .setMaxResults(limit)
+                .getResultList();
+    }
+
+    public List<Action> getVirtualActions(final int limit) {
+        return em.createQuery(
+                "SELECT a FROM Action a WHERE a.actionType.flatCode IN (:flatCode) ORDER BY a.id DESC", Action.class)
+                .setParameter("flatCode", FlatCode.values())
+                .setMaxResults(limit)
+                .getResultList();
+    }
+
+    public List<Action> getVirtualActionsAfterDate(final DateTime after) {
+        return em.createQuery(
+                "SELECT a FROM Action a WHERE a.actionType.flatCode IN (:flatCode) AND a.modifyDatetime > :modifyDatetime", Action.class)
+                .setParameter("flatCode", FlatCode.values())
+                .setParameter("modifyDatetime", after.toDate())
                 .getResultList();
     }
 

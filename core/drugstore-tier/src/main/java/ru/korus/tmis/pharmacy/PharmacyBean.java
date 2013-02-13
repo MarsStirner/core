@@ -13,9 +13,10 @@ import ru.korus.tmis.core.database.DbOrgStructureBeanLocal;
 import ru.korus.tmis.core.entity.model.*;
 import ru.korus.tmis.core.entity.model.pharmacy.Pharmacy;
 import ru.korus.tmis.core.exception.CoreException;
-import ru.korus.tmis.core.hl7db.DbPharmacyBeanLocal;
-import ru.korus.tmis.core.hl7db.DbUUIDBeanLocal;
+import ru.korus.tmis.core.pharmacy.DbPharmacyBeanLocal;
+import ru.korus.tmis.core.pharmacy.DbUUIDBeanLocal;
 import ru.korus.tmis.core.entity.model.pharmacy.PharmacyStatus;
+import ru.korus.tmis.core.pharmacy.FlatCode;
 import ru.korus.tmis.core.logging.LoggingInterceptor;
 import ru.korus.tmis.pharmacy.exception.SoapConnectionException;
 
@@ -76,7 +77,7 @@ public class PharmacyBean implements PharmacyBeanLocal {
         try {
             if (lastDateUpdate == null) {
 
-                final List<Action> actionList = dbPharmacy.getLastMaxAction(LAST_ACTIONS);
+                final List<Action> actionList = dbPharmacy.getVirtualActions(LAST_ACTIONS);
                 if (!actionList.isEmpty()) {
                     logger.info("Pooling db, fetch last {} actions. Size [{}]", LAST_ACTIONS, actionList.size());
 
@@ -107,7 +108,7 @@ public class PharmacyBean implements PharmacyBeanLocal {
                 }
             }
 
-            final List<Action> actionAfterDate = dbPharmacy.getActionAfterDate(lastDateUpdate);
+            final List<Action> actionAfterDate = dbPharmacy.getVirtualActionsAfterDate(lastDateUpdate);
             logger.info("Found {} newest actions after date {}", actionAfterDate.size(), getLastDate());
 
             for (Action action : actionAfterDate) {
