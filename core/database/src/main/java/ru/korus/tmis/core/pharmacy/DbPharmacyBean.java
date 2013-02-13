@@ -16,6 +16,8 @@ import javax.ejb.Stateless;
 import javax.interceptor.Interceptors;
 import javax.persistence.EntityManager;
 import javax.persistence.PersistenceContext;
+import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 
 /**
@@ -82,9 +84,13 @@ public class DbPharmacyBean implements DbPharmacyBeanLocal {
     }
 
     public List<Action> getVirtualActions(final int limit) {
+        final List<String> flatCodeList = new ArrayList<String>(10);
+        for (FlatCode fc : FlatCode.values()) {
+            flatCodeList.add(fc.getCode());
+        }
         return em.createQuery(
                 "SELECT a FROM Action a WHERE a.actionType.flatCode IN (:flatCode) ORDER BY a.id DESC", Action.class)
-                .setParameter("flatCode", FlatCode.values())
+                .setParameter("flatCode", flatCodeList)
                 .setMaxResults(limit)
                 .getResultList();
     }
