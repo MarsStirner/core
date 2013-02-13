@@ -84,21 +84,29 @@ public class DbPharmacyBean implements DbPharmacyBeanLocal {
     }
 
     public List<Action> getVirtualActions(final int limit) {
+        return em.createQuery(
+                "SELECT a FROM Action a WHERE a.actionType.flatCode IN (:flatCode) ORDER BY a.id DESC", Action.class)
+                .setParameter("flatCode", getFlatCodeStrings())
+                .setMaxResults(limit)
+                .getResultList();
+    }
+
+    /**
+     * Получение значений Flat Code в виде списка строк
+     * @return
+     */
+    private List<String> getFlatCodeStrings() {
         final List<String> flatCodeList = new ArrayList<String>(10);
         for (FlatCode fc : FlatCode.values()) {
             flatCodeList.add(fc.getCode());
         }
-        return em.createQuery(
-                "SELECT a FROM Action a WHERE a.actionType.flatCode IN (:flatCode) ORDER BY a.id DESC", Action.class)
-                .setParameter("flatCode", flatCodeList)
-                .setMaxResults(limit)
-                .getResultList();
+        return flatCodeList;
     }
 
     public List<Action> getVirtualActionsAfterDate(final DateTime after) {
         return em.createQuery(
                 "SELECT a FROM Action a WHERE a.actionType.flatCode IN (:flatCode) AND a.modifyDatetime > :modifyDatetime", Action.class)
-                .setParameter("flatCode", FlatCode.values())
+                .setParameter("flatCode", getFlatCodeStrings())
                 .setParameter("modifyDatetime", after.toDate())
                 .getResultList();
     }
