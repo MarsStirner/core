@@ -4,7 +4,6 @@ import org.hl7.v3.AcknowledgementType;
 import org.hl7.v3.MCCIIN000002UV01;
 import org.hl7.v3.MCCIMT000200UV01Acknowledgement;
 import org.joda.time.DateTime;
-import org.joda.time.format.DateTimeFormatter;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import ru.korus.tmis.core.database.DbActionBeanLocal;
@@ -24,7 +23,6 @@ import javax.ejb.EJB;
 import javax.ejb.Schedule;
 import javax.ejb.Stateless;
 import javax.interceptor.Interceptors;
-import java.util.Date;
 import java.util.List;
 import java.util.Map;
 
@@ -38,8 +36,11 @@ import java.util.Map;
 @Stateless
 public class PharmacyBean implements PharmacyBeanLocal {
 
-    static final Logger logger = LoggerFactory.getLogger(PharmacyBean.class);
+    private static final Logger logger = LoggerFactory.getLogger(PharmacyBean.class);
+
     public static final int LAST_ACTIONS = 10;
+
+    public static final String DATE_TIME_FORMAT = "yyyy-MM-dd hh:mm:ss";
 
     @EJB(beanName = "DbActionBean")
     private DbActionBeanLocal dbAction = null;
@@ -80,13 +81,13 @@ public class PharmacyBean implements PharmacyBeanLocal {
                     logger.info("Pooling db, fetch last {} actions. Size [{}]", LAST_ACTIONS, actionList.size());
 
                     for (Action action : actionList) {
-                        final DateTime actionDateTime = new DateTime(action.getCreateDatetime());
+                        final DateTime actionDateTime = new DateTime(action.getModifyDatetime());
 
                         Pharmacy checkPharmacy = dbPharmacy.getPharmacyByAction(action);
                         logger.info("check pharmacy [{}] action [{}], date [{}], flatCode [{}]",
                                 checkPharmacy,
                                 action,
-                                actionDateTime.toString("yyyy-MM-dd hh:mm:ss"),
+                                actionDateTime.toString(DATE_TIME_FORMAT),
                                 action.getActionType().getFlatCode());
 
                         if (checkPharmacy != null) {
@@ -122,7 +123,7 @@ public class PharmacyBean implements PharmacyBeanLocal {
     }
 
     private String getLastDate() {
-        return lastDateUpdate != null ? lastDateUpdate.toString("yyyy-MM-dd hh:mm:ss") : "null";
+        return lastDateUpdate != null ? lastDateUpdate.toString(DATE_TIME_FORMAT) : "null";
     }
 
     /**

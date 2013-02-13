@@ -76,7 +76,7 @@
         <alarm.count.message>10</alarm.count.message>
 
         <!-- Путь для логов в тестовом окружжении-->
-        <logs.test.path>core/server/target/logs-test/</logs.test.path>
+        <logs.test.path>target/logs-test/</logs.test.path>
         <!-- Уровень записи лога по умолчанию -->
         <logs.level>INFO</logs.level>
         <!-- Переменная glassfish, указывающая на путь к домену -->
