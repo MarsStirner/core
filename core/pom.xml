@@ -46,6 +46,7 @@
         <version.javax.mail>1.4.5</version.javax.mail>
         <version.groovy>2.1.0</version.groovy>
         <version.gmaven.runtime>1.4</version.gmaven.runtime>
+        <version.mysql.connector>5.1.15</version.mysql.connector>
 
 
         <version.maven.plugin.scala>2.15.2</version.maven.plugin.scala>
@@ -56,6 +57,7 @@
         <version.maven.plugin.embedded.glassfish>3.1.1</version.maven.plugin.embedded.glassfish>
         <version.maven.plugin.release>2.2.1</version.maven.plugin.release>
         <version.maven.plugin.resources>2.6</version.maven.plugin.resources>
+        <version.maven.plugin.ejb>2.3</version.maven.plugin.ejb>
         <version.maven.gmaven.plugin>1.4</version.maven.gmaven.plugin>
 
 
