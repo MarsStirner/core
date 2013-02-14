@@ -279,8 +279,13 @@ public interface MedipadWebService extends Serializable {
     @WebMethod
     BedDataListContainer getVacantHospitalBeds(int departmentId, AuthData authData) throws CoreException;
 
+    //@WebMethod
+    //FormOfAccountingMovementOfPatientsData getFormOfAccountingMovementOfPatients(int departmentId) throws CoreException;
     @WebMethod
-    FormOfAccountingMovementOfPatientsData getFormOfAccountingMovementOfPatients(int departmentId) throws CoreException;
+    FormOfAccountingMovementOfPatientsData getForm007( int departmentId,
+                                                       long beginDate,
+                                                       long endDate,
+                                                       AuthData authData) throws CoreException;
 
     @WebMethod
     String movingPatientToDepartment(int eventId, HospitalBedData data, AuthData authData) throws CoreException;

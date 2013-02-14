@@ -819,20 +819,17 @@ class MedipadWSImpl
     new BedDataListContainer(hospitalBedBean.getCaseHospitalBedsByDepartmentId(departmentId), departmentId)
   }
 
-  def getFormOfAccountingMovementOfPatients(departmentId: Int) = {
+/*  def getFormOfAccountingMovementOfPatients(departmentId: Int) = {
     val linear = seventhFormBean.fillInSeventhForm(departmentId, null, null/*previousMedDate, currentMedDate*/)
     new FormOfAccountingMovementOfPatientsData(linear, null)
-  }
+  }*/
 
+  //форма 007
   def getForm007(departmentId: Int,
                  beginDate: Long,
                  endDate: Long,
-                 authData: AuthData) = {
-    val begDate = new Date(beginDate)
-    val eDate = new Date(endDate)
-    val linear = seventhFormBean.getForm007LinearView(departmentId, begDate, eDate)
-    null
-  }
+                 authData: AuthData) = seventhFormBean.getForm007LinearView(departmentId, beginDate, endDate)
+
 
   def movingPatientToDepartment(eventId: Int, data: HospitalBedData, authData: AuthData) = {
 
