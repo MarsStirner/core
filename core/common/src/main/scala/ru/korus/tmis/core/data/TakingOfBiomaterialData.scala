@@ -39,24 +39,16 @@ class TakingOfBiomaterialRequesData {
   @BeanProperty
   var sortingMethod: String = _
   @BeanProperty
-  var limit: Int = 10
-  @BeanProperty
-  var page: Int = 1
-  @BeanProperty
   var recordsCount: Int = 0
   @BeanProperty
   var coreVersion: String = _
 
   def this(sortingField: String,
            sortingMethod: String,
-           limit: Int,
-           page: Int,
            filter: TakingOfBiomaterialRequesDataFilter){
     this()
     this.sortingField = sortingField
     this.sortingMethod = sortingMethod
-    this.limit = if(limit>0)limit else 10
-    this.page = if(page>1) page else 1
     this.filter = filter
   }
 }
@@ -126,7 +118,7 @@ class TakingOfBiomaterialEntry {
 @XmlType(name = "patientInfoDataContainer")
 @XmlRootElement(name = "patientInfoDataContainer")
 class PatientInfoDataContainer extends TmisLogging
-                                  with I18nable {
+                               with I18nable {
 
   @BeanProperty
   var id: Int = -1
@@ -156,7 +148,7 @@ class PatientInfoDataContainer extends TmisLogging
     } else {
       logTmis.setLoggerType(logTmis.LoggingTypes.Debug)
       logTmis.warning("code " + ConfigManager.ErrorCodes.PatientIsNull +
-                      "PatientInfoDataContainer не заполнен данными: " + i18n("error.patientIsNull"))
+        "PatientInfoDataContainer не заполнен данными: " + i18n("error.patientIsNull"))
     }
 
   }
@@ -165,7 +157,7 @@ class PatientInfoDataContainer extends TmisLogging
 @XmlType(name = "testTubeTypeInfoContainer")
 @XmlRootElement(name = "testTubeTypeInfoContainer")
 class TestTubeTypeInfoContainer extends TmisLogging
-                                   with I18nable {
+                                with I18nable {
   @BeanProperty
   var id: Int = -1
   @BeanProperty
@@ -190,7 +182,7 @@ class TestTubeTypeInfoContainer extends TmisLogging
     } else {
       logTmis.setLoggerType(logTmis.LoggingTypes.Debug)
       logTmis.warning("code " + ConfigManager.ErrorCodes.RbTestTubeTypeIsNull +
-                      "TestTubeTypeInfoContainer не заполнен данными: " + i18n("error.rbTestTubeTypeIsNull"))
+        "TestTubeTypeInfoContainer не заполнен данными: " + i18n("error.rbTestTubeTypeIsNull"))
     }
   }
 }

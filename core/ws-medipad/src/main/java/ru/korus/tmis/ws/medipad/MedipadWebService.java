@@ -461,4 +461,14 @@ public interface MedipadWebService extends Serializable {
      */
     @WebMethod
     GroupTypesListData getQuotaTypes(ListDataRequest request) throws CoreException;
+
+    /**
+     * Сервис на получение данных о заборе биоматериала
+     * @param request Данные из запроса как TakingOfBiomaterialRequesData
+     * @param authData Авторизационные данные как AuthData
+     * @return TakingOfBiomaterialData
+     * @throws CoreException
+     */
+    @WebMethod
+    TakingOfBiomaterialData getTakingOfBiomaterial(TakingOfBiomaterialRequesData request, AuthData authData) throws CoreException;
 }

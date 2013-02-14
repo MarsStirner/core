@@ -837,36 +837,16 @@ public class PatientRegistryRESTImpl implements Serializable {
 
     /**
      * Форма 007
-     * @param departmentId Идентификатор отделения.
-     * @param callback  callback запроса.
-     * @param servRequest Контекст запроса.
-     * @return com.sun.jersey.api.json.JSONWithPadding как Object
-     * @throws CoreException
-     * @see CoreException
-     */
-    @GET
-    @Path("/seventhform/{departmentId}")
-    @Produces("application/x-javascript")
-    public Object getSeventhFormForDepartment(
-                                                @PathParam("departmentId") int departmentId,
-                                                @QueryParam("callback") String callback,
-                                                @Context HttpServletRequest servRequest) {
-        //AuthData auth = wsImpl.checkTokenCookies(servRequest);
-        FormOfAccountingMovementOfPatientsData oip = wsImpl.getFormOfAccountingMovementOfPatients(departmentId);
-        JSONWithPadding returnValue = new JSONWithPadding(oip, callback);
-        return returnValue;
-    }
-
-    /**
-     * Форма 007
      * Specification: https://docs.google.com/document/d/1a0AYF8QVpEMl_pKRcFDnP2vQzRmO-IkcG5JNStEcjMI/edit#heading=h.6ll2qz4wdcfr
      * URL: .../reports/f007
      * Since: ver 1.0.0.57
      * @param departmentId Идентификатор отделения, для которого отчет (задавать в url как QueryParam: "filter[departmentId]=...")
      * @param beginDate Дата и время начала выборки (задавать в url как QueryParam: "filter[beginDate]=...")
-     *                Если не задан, то по умолчанию начало текущих медицинских суток (now 8:00).
+     *                Если не задан, то по умолчанию начало текущих медицинских суток (вчера 8:00) или,
+     *                если задан endDate, то endDate минус сутки.
      * @param endDate Дата и время конца выборки (задавать в url как QueryParam: "filter[endDate]=...").
-     *                Если не задан, то по умолчанию конец текущих медицинских суток (today 7:59).
+     *                Если не задан, то по умолчанию конец текущих медицинских суток (сегодня 7:59) или,
+     *                если задан beginDate, то beginDate плюс сутки.
      * @param callback  callback запроса.
      * @param servRequest Контекст запроса.
      * @return com.sun.jersey.api.json.JSONWithPadding как Object
@@ -2094,20 +2074,12 @@ public class PatientRegistryRESTImpl implements Serializable {
      * &#15; По умолчанию - начало текущих суток (Dd.Mm.Year 23:59).</pre>
      * @param status Фильтр по статусу забора (В url: filter[status]=...)<pre>
      * &#15; По умолчанию - 0.</pre>
-     * @param biomaterial  Фильтр биоматериал (В url: filter[biomaterial]=...)
-     * @param limit Максимальное количество выводимых элементов на странице.
-     * @param page Номер выводимой страницы.
-     * @param sortingField Наименование поля для сортировки.<pre>
-     * &#15; Возможные значения:
-     * &#15; </pre>
-     * @param sortingMethod Метод сортировки.<pre>
-     * &#15; Возможные значения:
-     * &#15; "asc" - по возрастанию (значение по умолчанию);
-     * &#15; "desc" - по убыванию;</pre>
-     * @param callback callback запроса.
-     * @param servRequest Контекст запроса с клиента.
-     * @return com.sun.jersey.api.json.JSONWithPadding как Object
-     * @throws CoreException
+     * @param biomaterial  Фильтр по статусу забора (В url: filter[status]=...)
+     * @param sortingField
+     * @param sortingMethod
+     * @param callback
+     * @param servRequest
+     * @return
      */
     @GET
     @Path("/biomaterial/info")
@@ -2117,8 +2089,6 @@ public class PatientRegistryRESTImpl implements Serializable {
                                          @QueryParam("filter[endDate]")long endDate,
                                          @QueryParam("filter[status]") short status,
                                          @QueryParam("filter[biomaterial]") String biomaterial,
-                                         @QueryParam("limit")int limit,
-                                         @QueryParam("page")int  page,
                                          @QueryParam("sortingField")String sortingField,
                                          @QueryParam("sortingMethod")String sortingMethod,
                                          @QueryParam("callback") String callback,
@@ -2131,8 +2101,8 @@ public class PatientRegistryRESTImpl implements Serializable {
                                                                                              endDate,
                                                                                              status,
                                                                                              biomaterial);
-        TakingOfBiomaterialRequesData request = new TakingOfBiomaterialRequesData(sortingField, sortingMethod, limit, page, filter);
-        Object oip = null;//wsImpl.getTakingOfBiomaterial(request);
+        TakingOfBiomaterialRequesData request = new TakingOfBiomaterialRequesData(sortingField, sortingMethod, filter);
+        Object oip = wsImpl.getTakingOfBiomaterial(request, auth);
         JSONWithPadding returnValue = new JSONWithPadding(oip, callback);
         return returnValue;
     }

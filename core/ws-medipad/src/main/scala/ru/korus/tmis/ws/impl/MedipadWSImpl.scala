@@ -183,6 +183,9 @@ class MedipadWSImpl
 
   @EJB
   var dbContractBean: DbContractBeanLocal = _
+
+  @EJB
+  var dbJobTicketBean: DbJobTicketBeanLocal = _
   //////////////////////////////////////////////////////////////////////////////
 
   def checkTokenCookies(srvletRequest: HttpServletRequest): AuthData = {
@@ -1299,6 +1302,13 @@ class MedipadWSImpl
 
   def getPatientsFromOpenAppealsWhatHasBedsByDepartmentId(departmentId: Int) = {
     patientBean.getCurrentPatientsByDepartmentId(departmentId)
+  }
+
+  def getTakingOfBiomaterial(request: TakingOfBiomaterialRequesData, authData: AuthData) = {
+
+    val res = dbJobTicketBean.getDirectionsWithJobTicketsBetweenDate(request.filter.beginDate, request.filter.endDate)
+    val size = res.size()
+    null
   }
 
 }
