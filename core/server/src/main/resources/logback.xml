@@ -82,7 +82,7 @@
     <appender name="EXCEPTIONS" class="ch.qos.logback.core.rolling.RollingFileAppender">
         <file>${logs.path}/exceptions/exceptions.log</file>
 
-        <filter class="ru.korus.tmis.util.ExceptionFilter">
+        <filter class="ru.korus.tmis.util.logs.filter.ExceptionFilter">
             <exceptionClassName>java.lang.Exception</exceptionClassName>
         </filter>
 

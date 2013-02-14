@@ -20,6 +20,7 @@ import ru.korus.tmis.core.pharmacy.FlatCode;
 import ru.korus.tmis.core.logging.LoggingInterceptor;
 import ru.korus.tmis.pharmacy.exception.NoSuchOrgStructureException;
 import ru.korus.tmis.pharmacy.exception.SoapConnectionException;
+import ru.korus.tmis.util.logs.ToLog;
 
 import javax.ejb.EJB;
 import javax.ejb.Schedule;
@@ -40,9 +41,9 @@ public class PharmacyBean implements PharmacyBeanLocal {
 
     private static final Logger logger = LoggerFactory.getLogger(PharmacyBean.class);
 
-    public static final int LAST_ACTIONS = 50;
+    private static final int LAST_ACTIONS = 10;
 
-    public static final String DATE_TIME_FORMAT = "yyyy-MM-dd hh:mm:ss";
+    private static final String DATE_TIME_FORMAT = "yyyy-MM-dd hh:mm:ss";
 
     @EJB(beanName = "DbActionBean")
     private DbActionBeanLocal dbAction = null;
@@ -71,7 +72,7 @@ public class PharmacyBean implements PharmacyBeanLocal {
      * Полинг базы данных для поиска событий по движениям пациентов
      */
     @Override
-    @Schedule(minute = "*/2", hour = "*")
+    @Schedule(minute = "*/1", hour = "*")
     public void pooling() {
         logger.info("");
         logger.info("pooling... last modify date {}", getLastDate());
@@ -89,46 +90,43 @@ public class PharmacyBean implements PharmacyBeanLocal {
                 }
             }
         } catch (Throwable e) {
-            logger.error("exception e: " + e, e);
+            logger.error("Exception e: " + e, e);
         }
     }
 
     /**
      * Поллинг запустился первый раз, производится поиск подходящих сообщений по движению пациентов
      *
-     * @return
+     * @return - дата и время последеней просмотренной записи
      */
     private DateTime firstPolling() {
         final DateTime modifyDate = DateTime.now();
-        logger.info("First start polling. Get last {} actions", LAST_ACTIONS);
-        final List<Action> actionList = dbPharmacy.getVirtualActions(LAST_ACTIONS);
-        if (!actionList.isEmpty()) {
-            logger.info("Fetch last actions with size [{}]", actionList.size());
+        final ToLog toLog = new ToLog("First pooling");
+        try {
+            final List<Action> actionList = dbPharmacy.getVirtualActions(LAST_ACTIONS);
+            if (!actionList.isEmpty()) {
+                toLog.add("Fetch last actions with size [" + actionList.size() + "]");
+                for (Action action : actionList) {
+                    final DateTime modifyDateTime = new DateTime(action.getModifyDatetime());
 
-            for (Action action : actionList) {
-                final DateTime modifyDateTime = new DateTime(action.getModifyDatetime());
+                    final Pharmacy checkPharmacy = dbPharmacy.getPharmacyByAction(action);
+                    toLog.add("Found [" + checkPharmacy + "], flatCode [" + action.getActionType().getFlatCode() + "]");
 
-                final Pharmacy checkPharmacy = dbPharmacy.getPharmacyByAction(action);
-                logger.info("check pharmacy [{}] action [{}], date [{}], flatCode [{}]",
-                        checkPharmacy,
-                        action,
-                        modifyDateTime.toString(DATE_TIME_FORMAT),
-                        action.getActionType().getFlatCode());
-
-                if (checkPharmacy != null) {
-                    if (!PharmacyStatus.COMPLETE.toString().equals(checkPharmacy.getStatus())) {
-                        // повторная отправка в 1с
-                        logger.info("...repeate send message Pharmacy {}", checkPharmacy);
+                    if (checkPharmacy != null) {
+                        if (!PharmacyStatus.COMPLETE.toString().equals(checkPharmacy.getStatus())) {
+                            // повторная отправка в 1с
+                            toLog.add("...repeate send message");
+                            lastDateUpdate = checkMessageAndSend(action, modifyDateTime);
+                        }
+                    } else {
                         lastDateUpdate = checkMessageAndSend(action, modifyDateTime);
                     }
-                } else {
-                    lastDateUpdate = checkMessageAndSend(action, modifyDateTime);
+                    lastDateUpdate = updateLastDate(modifyDateTime, lastDateUpdate);
                 }
-                lastDateUpdate = updateLastDate(modifyDateTime, lastDateUpdate);
             }
+        } finally {
+            logger.info(toLog.releaseString());
         }
-
-        logger.info("last date update {}", getLastDate());
         return modifyDate;
     }
 
@@ -248,7 +246,7 @@ public class PharmacyBean implements PharmacyBeanLocal {
         } catch (SoapConnectionException e) {
             logger.error("core error " + e, e);
         }
-        return new DateTime(action.getModifyDatetime());
+        return lastDateModify;
     }
 
     /**
@@ -294,7 +292,7 @@ public class PharmacyBean implements PharmacyBeanLocal {
             final MCCIMT000200UV01Acknowledgement ack = result.getAcknowledgement().get(0);
             pharmacy.setDocumentUUID(ack.getTargetMessage().getId().getRoot());
             pharmacy.setResult(ack.getTypeCode().value());
-            if (ack.getTypeCode().equals(AcknowledgementType.AA)) {
+            if (AcknowledgementType.AA.equals(ack.getTypeCode())) {
                 pharmacy.setStatus(PharmacyStatus.COMPLETE);
             } else {
                 pharmacy.setStatus(PharmacyStatus.ERROR);

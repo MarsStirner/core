@@ -10,41 +10,72 @@ echo "AS_ADMIN_PASSWORD="${glassfish.admin.password} > $GF_PASSWD_FILE
 echo "AS_ADMIN_MASTERPASSWORD="${glassfish.admin.password} >> $GF_PASSWD_FILE
 
 export PATH=${glassfish.home}/bin/:$PATH
-asadmin stop-domain
-
-# Список доменов
+echo ""
+echo ""
+echo ""
+echo ""
+echo "--------------------------------------------------------------------"
+echo "List domains"
+echo ""
 asadmin list-domains
-
-# Удаление домена GF
+echo "--------------------------------------------------------------------"
+echo "Stop domains"
+echo ""
+asadmin stop-domain
+echo "--------------------------------------------------------------------"
+echo "Delete domain ${glassfish.domain}"
+echo ""
 asadmin delete-domain ${glassfish.domain}
-
-# Создание домена GF
-asadmin create-domain --user ${glassfish.admin.login} --passwordfile $GF_PASSWD_FILE --instanceport ${glassfish.port.instance} \
- --adminport ${glassfish.port.admin} --profile developer --savemasterpassword --domaindir ${glassfish.domain.dir} ${glassfish.domain}
-
-# Копирование конфига logback.xml
+echo "--------------------------------------------------------------------"
+echo "Create domain ${glassfish.domain}"
+echo ""
+asadmin --user ${glassfish.admin.login} --passwordfile $GF_PASSWD_FILE \
+ create-domain \
+ --instanceport ${glassfish.port.instance} \
+ --adminport ${glassfish.port.admin} --savemasterpassword --domaindir ${glassfish.domain.dir} ${glassfish.domain}
+echo ""
+echo "--------------------------------------------------------------------"
+echo ""
+echo "Copy config file to ${glassfish.domain.dir}/${glassfish.domain}/config/logback.xml"
 cp ./logback.xml ${glassfish.domain.dir}/${glassfish.domain}/config
-
-# Копирование библиотек
+echo "Copy library to ${glassfish.domain.dir}/${glassfish.domain}/lib/ext/"
 cp ../scripts/lib/* ${glassfish.domain.dir}/${glassfish.domain}/lib/ext/
-
-# Перезапуск домена
+echo ""
+echo "--------------------------------------------------------------------"
+echo "Start domain ${glassfish.domain}"
 asadmin start-domain --domaindir ${glassfish.domain.dir} ${glassfish.domain}
-
-# Разрешение на подключение с другой машины
+echo "--------------------------------------------------------------------"
+echo "Enable secure admin"
+echo ""
 asadmin --user ${glassfish.admin.login} \
         --passwordfile $GF_PASSWD_FILE \
         enable-secure-admin
-
-# Прописываем конфигурацию логера
+echo "--------------------------------------------------------------------"
+echo "Add JVM options"
+echo ""
+echo "for logback.xml"
+echo ""
+# Создаем настройку для logbak.xml
 asadmin --user ${glassfish.admin.login} \
         --passwordfile $GF_PASSWD_FILE \
         create-jvm-options --target server-config '-Dlogback.configurationFile=${com.sun.aas.instanceRoot}/config/logback.xml'
 asadmin --user ${glassfish.admin.login} \
         --passwordfile $GF_PASSWD_FILE \
         create-jvm-options --target default-config '-Dlogback.configurationFile=${com.sun.aas.instanceRoot}/config/logback.xml'
-
-#Настройки JVM
+echo ""
+echo "for remote debug on 5005 port"
+echo ""
+# Создаем ключи для дебага
+asadmin --user ${glassfish.admin.login} \
+        --passwordfile $GF_PASSWD_FILE \
+        create-jvm-options --target server-config "-agentlib\:jdwp=transport=dt_socket,server=y,suspend=n,address=5005"
+asadmin --user ${glassfish.admin.login} \
+        --passwordfile $GF_PASSWD_FILE \
+        create-jvm-options --target default-config "-agentlib\:jdwp=transport=dt_socket,server=y,suspend=n,address=5005"
+echo ""
+echo "for JVM"
+echo ""
+# Выставляем переменные по памяти для JVM
 asadmin --user ${glassfish.admin.login} \
         --passwordfile $GF_PASSWD_FILE \
         create-jvm-options --target server-config '-XX\:+UnlockExperimentalVMOptions'
@@ -78,8 +109,9 @@ asadmin --user ${glassfish.admin.login} \
         --passwordfile $GF_PASSWD_FILE \
         create-jvm-options --target default-config '-XX\:MaxPermSize=256m'
 
-
-# Создание пулов соединений и ресурсов для необходимых ядру БД
+echo "--------------------------------------------------------------------"
+echo "Create DB pools"
+echo ""
 asadmin --user ${glassfish.admin.login} \
         --passwordfile $GF_PASSWD_FILE \
         create-jdbc-connection-pool \
@@ -120,6 +152,9 @@ asadmin --user ${glassfish.admin.login} \
 
 rm -f $GF_PASSWD_FILE
 
-# Перезапуск домена
+echo "--------------------------------------------------------------------"
+echo "Stop&Start domain ${glassfish.domain}"
+echo ""
 asadmin stop-domain --domaindir ${glassfish.domain.dir} ${glassfish.domain}
 asadmin start-domain --domaindir ${glassfish.domain.dir} ${glassfish.domain}
+echo "--------------------------------------------------------------------"
