@@ -64,6 +64,13 @@ class DbEventBean
     em.createQuery(curentRequest.toString(), classOf[Long])
   }
 
+  def setExecPersonForEventWithId(eventId: Int, execPerson: Staff) {
+    val event = this.getEventById(eventId)
+    event.setExecutor(execPerson)
+    em.merge(event)
+    em.flush()
+  }
+
   @TransactionAttribute(TransactionAttributeType.REQUIRES_NEW)
   def getEventById(id: Int) = {
     val result = em.createQuery(EventByIdQuery,
