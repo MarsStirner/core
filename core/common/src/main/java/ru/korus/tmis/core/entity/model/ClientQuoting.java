@@ -35,7 +35,7 @@ public class ClientQuoting implements Serializable {
     private int version;
 
     @ManyToOne
-    @JoinColumn(name = "MKB")
+    @JoinColumn(name = "MKB", referencedColumnName = "DiagID")
     private Mkb mkb;
 
     @Basic(optional = false)
