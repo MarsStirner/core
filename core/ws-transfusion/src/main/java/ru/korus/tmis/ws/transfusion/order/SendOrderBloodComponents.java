@@ -13,17 +13,15 @@ import javax.xml.datatype.XMLGregorianCalendar;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import ru.korus.tmis.core.entity.model.*;
 import ru.korus.tmis.core.entity.model.Action;
 import ru.korus.tmis.core.entity.model.Event;
 import ru.korus.tmis.core.entity.model.OrgStructure;
 import ru.korus.tmis.core.entity.model.Patient;
-import ru.korus.tmis.core.entity.model.RbBloodComponentType;
+import ru.korus.tmis.core.entity.model.RbTrfuBloodComponentType;
 import ru.korus.tmis.core.entity.model.RbBloodType;
 import ru.korus.tmis.core.entity.model.Staff;
 import ru.korus.tmis.core.exception.CoreException;
 import ru.korus.tmis.util.EntityMgr;
-import ru.korus.tmis.ws.transfusion.Database;
 import ru.korus.tmis.ws.transfusion.efive.ComponentType;
 import ru.korus.tmis.ws.transfusion.efive.OrderInformation;
 import ru.korus.tmis.ws.transfusion.efive.OrderResult;
@@ -80,12 +78,12 @@ public class SendOrderBloodComponents {
     /**
      * Тип трансфузии - Плановая
      */
-    public static final String TRANSFUSION_TYPE_PLANED = "<span style=\" margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;\">Плановая</span>";
+    public static final String TRANSFUSION_TYPE_PLANED = "Плановая";
 
     /**
      * Тип трансфузии - Экстренная
      */
-    public static final String TRANSFUSION_TYPE_EMERGENCY = "<span style=\" margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;\">Экстренная</span>";
+    public static final String TRANSFUSION_TYPE_EMERGENCY = "Экстренная";
 
     private static final Logger logger = LoggerFactory.getLogger(SendOrderBloodComponents.class);
 
@@ -216,7 +214,7 @@ public class SendOrderBloodComponents {
         final Event event = EntityMgr.getSafe(action.getEvent());
         res.setIbNumber(event.getExternalId());
         res.setDiagnosis((String) trfuActionProp.getProp(em, action.getId(), TrfuActionProp.PropType.DIAGNOSIS));
-        final RbBloodComponentType compType = trfuActionProp.getProp(em, action.getId(), TrfuActionProp.PropType.BLOOD_COMP_TYPE);
+        final RbTrfuBloodComponentType compType = trfuActionProp.getProp(em, action.getId(), TrfuActionProp.PropType.BLOOD_COMP_TYPE);
         Integer compTypeId = compType != null ? compType.getId() : null;
         updateBloodCompTable(em, trfuService);
         res.setComponentTypeId(convertComponentType(em, action.getId(), compTypeId));
@@ -245,8 +243,8 @@ public class SendOrderBloodComponents {
     }
 
     private Integer convertComponentType(EntityManager em, Integer actionId, Integer compTypeId) throws CoreException {
-        List<RbBloodComponentType> compTypes = em
-                .createQuery("SELECT c FROM RbBloodComponentType c WHERE c.id = :compTypeId AND c.unused = 0", RbBloodComponentType.class)
+        List<RbTrfuBloodComponentType> compTypes = em
+                .createQuery("SELECT c FROM RbTrfuBloodComponentType c WHERE c.id = :compTypeId AND c.unused = 0", RbTrfuBloodComponentType.class)
                 .setParameter("compTypeId", compTypeId).getResultList();
         if (compTypes.size() != 1) {
             setRequestState(em, actionId, String.format("Недопустимое значение идентификатора компонента крови:'%d'", compTypeId));
@@ -257,10 +255,10 @@ public class SendOrderBloodComponents {
 
     private void updateBloodCompTable(EntityManager em, TransfusionMedicalService trfuService) {
         List<ComponentType> compTypesTrfu = trfuService.getComponentTypes();
-        List<RbBloodComponentType> compBloodTypesDb = em.createQuery("SELECT c FROM RbBloodComponentType c", RbBloodComponentType.class).getResultList();
+        List<RbTrfuBloodComponentType> compBloodTypesDb = em.createQuery("SELECT c FROM RbTrfuBloodComponentType c", RbTrfuBloodComponentType.class).getResultList();
         logger.info("The Reference book for blood components has been received from TRFU. The count of blood component: {}", compBloodTypesDb.size());
-        List<RbBloodComponentType> compBloodTypesTrfu = convertToDb(compTypesTrfu);
-        for (RbBloodComponentType compDb : compBloodTypesDb) {
+        List<RbTrfuBloodComponentType> compBloodTypesTrfu = convertToDb(compTypesTrfu);
+        for (RbTrfuBloodComponentType compDb : compBloodTypesDb) {
             if (compBloodTypesTrfu.remove(compDb)) {
                 compDb.setUnused(false);
             } else {
@@ -268,7 +266,7 @@ public class SendOrderBloodComponents {
                 logger.info("The blood components unused in TRFU. The component: {}", compDb);
             }
         }
-        for (RbBloodComponentType compTrfu : compBloodTypesTrfu) {
+        for (RbTrfuBloodComponentType compTrfu : compBloodTypesTrfu) {
             em.persist(compTrfu);
         }
         em.flush();
@@ -278,10 +276,10 @@ public class SendOrderBloodComponents {
      * @param compBloodTypesTrfu
      * @return
      */
-    private List<RbBloodComponentType> convertToDb(List<ComponentType> compBloodTypesTrfu) {
-        List<RbBloodComponentType> res = new LinkedList<RbBloodComponentType>();
+    private List<RbTrfuBloodComponentType> convertToDb(List<ComponentType> compBloodTypesTrfu) {
+        List<RbTrfuBloodComponentType> res = new LinkedList<RbTrfuBloodComponentType>();
         for (ComponentType compTrfu : compBloodTypesTrfu) {
-            RbBloodComponentType compDb = new RbBloodComponentType();
+            RbTrfuBloodComponentType compDb = new RbTrfuBloodComponentType();
             compDb.setTrfuId(compTrfu.getId());
             compDb.setCode(compTrfu.getCode());
             compDb.setName(compTrfu.getValue());
@@ -292,13 +290,29 @@ public class SendOrderBloodComponents {
     }
 
     private Integer convertTrfuType(String trfuType) throws CoreException {
-        if (TRANSFUSION_TYPE_PLANED.equals(trfuType)) {
+        String type = convertFromXml(trfuType);
+        if (TRANSFUSION_TYPE_PLANED.equals(type)) {
             return 0;
-        } else if (TRANSFUSION_TYPE_EMERGENCY.equals(trfuType)) {
+        } else if (TRANSFUSION_TYPE_EMERGENCY.equals(type)) {
             return 1;
         }
 
-        throw new CoreException(String.format("Wrong transfusion type: '%s'", trfuType));
+        throw new CoreException(String.format("Wrong transfusion type: '%s'", type));
+    }
+
+    /**
+     * @param trfuType
+     * @return
+     */
+    private String convertFromXml(String trfuType) {
+        String res = trfuType.substring(trfuType.indexOf('>') + 1);
+        int endIndex = res.indexOf('<');
+        if (endIndex > 0) {
+            res = res.substring(0, endIndex);
+        }
+        
+        return res;
+            
     }
 
     private class BloodType {

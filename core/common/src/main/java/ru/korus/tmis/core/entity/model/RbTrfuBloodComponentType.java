@@ -4,12 +4,12 @@ import java.io.Serializable;
 import javax.persistence.*;
 
 /**
- * The persistent class for the rbbloodcomponenttype database table.
+ * The persistent class for the RbTrfuBloodComponentType database table.
  * 
  */
 @Entity
-@Table(name = "rbBloodComponentType")
-public class RbBloodComponentType implements Serializable {
+@Table(name = "rbTrfuBloodComponentType")
+public class RbTrfuBloodComponentType implements Serializable {
     private static final long serialVersionUID = 1L;
 
     @Id
@@ -28,7 +28,7 @@ public class RbBloodComponentType implements Serializable {
     @Column(nullable = false)
     private boolean unused;
 
-    public RbBloodComponentType() {
+    public RbTrfuBloodComponentType() {
     }
 
     public int getId() {
@@ -77,7 +77,7 @@ public class RbBloodComponentType implements Serializable {
     @Override
     public String toString() {
         StringBuilder builder = new StringBuilder();
-        builder.append("RbBloodComponentType [id=");
+        builder.append("RbTrfuBloodComponentType [id=");
         builder.append(id);
         builder.append(", code=");
         builder.append(code);
@@ -119,7 +119,7 @@ public class RbBloodComponentType implements Serializable {
         if (getClass() != obj.getClass()) {
             return false;
         }
-        RbBloodComponentType other = (RbBloodComponentType) obj;
+        RbTrfuBloodComponentType other = (RbTrfuBloodComponentType) obj;
         if (code == null) {
             if (other.code != null) {
                 return false;

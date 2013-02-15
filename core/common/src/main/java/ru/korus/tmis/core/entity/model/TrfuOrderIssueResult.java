@@ -46,7 +46,7 @@ public class TrfuOrderIssueResult implements Serializable {
 
 	@ManyToOne
 	@JoinColumn(name="comp_type_id")
-	private RbBloodComponentType rbBloodComponentType;
+	private RbTrfuBloodComponentType rbBloodComponentType;
 
 	@ManyToOne
 	@JoinColumn(name="blood_type_id")
@@ -103,11 +103,11 @@ public class TrfuOrderIssueResult implements Serializable {
 		this.action = action;
 	}
 
-	public RbBloodComponentType getRbBloodComponentType() {
+	public RbTrfuBloodComponentType getRbBloodComponentType() {
 		return this.rbBloodComponentType;
 	}
 
-	public void setRbBloodComponentType(RbBloodComponentType rbBloodComponentType) {
+	public void setRbBloodComponentType(RbTrfuBloodComponentType rbBloodComponentType) {
 		this.rbBloodComponentType = rbBloodComponentType;
 	}
 

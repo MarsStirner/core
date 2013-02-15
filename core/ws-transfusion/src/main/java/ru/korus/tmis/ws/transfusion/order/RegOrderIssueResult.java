@@ -1,19 +1,17 @@
 package ru.korus.tmis.ws.transfusion.order;
 
-import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.List;
 
 import javax.ejb.Stateless;
 import javax.persistence.EntityManager;
 import javax.persistence.PersistenceContext;
-import javax.persistence.PersistenceContextType;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import ru.korus.tmis.core.entity.model.Action;
-import ru.korus.tmis.core.entity.model.RbBloodComponentType;
+import ru.korus.tmis.core.entity.model.RbTrfuBloodComponentType;
 import ru.korus.tmis.core.entity.model.RbBloodType;
 import ru.korus.tmis.core.entity.model.TrfuOrderIssueResult;
 import ru.korus.tmis.core.exception.CoreException;
@@ -92,7 +90,7 @@ public class RegOrderIssueResult {
             trfuOrderIssueResult.setAction(action);
             trfuOrderIssueResult.setTrfuCompId(orderIssue.getComponentId());
             trfuOrderIssueResult.setCompNumber(orderIssue.getNumber());
-            final RbBloodComponentType rbBloodComponentType = toRbBloodComponentType(orderIssue.getComponentId());
+            final RbTrfuBloodComponentType rbBloodComponentType = toRbBloodComponentType(orderIssue.getComponentId());
             if (rbBloodComponentType == null) {
                 errMsg += "; Неизвестный компонент крови: " + orderIssue.getComponentId() + " паспорт №" + orderIssue.getNumber();
             }
@@ -109,6 +107,7 @@ public class RegOrderIssueResult {
             em.persist(trfuOrderIssueResult);
         }
         String res = trfuActionProp.getProp(em, actionId, TrfuActionProp.PropType.ORDER_REQUEST_ID) + errMsg + "; Зарегистрирован результат от ТРФУ";
+        trfuActionProp.setProp(actionId, em, actionId, TrfuActionProp.PropType.ORDER_ISSUE_BLOOD_COMP_PASPORT, true);
         trfuActionProp.setProp(res, em, actionId, TrfuActionProp.PropType.ORDER_REQUEST_ID, true);
         em.flush();
     }
@@ -137,9 +136,9 @@ public class RegOrderIssueResult {
      * @param componentId
      * @return
      */
-    private RbBloodComponentType toRbBloodComponentType(Integer componentId) {
-        final List<RbBloodComponentType> rbBloodComponentTypes = em
-                .createQuery("SELECT c FROM RbBloodComponentType c WHERE c.trfuId = :trfuId", RbBloodComponentType.class).setParameter("trfuId", componentId)
+    private RbTrfuBloodComponentType toRbBloodComponentType(Integer componentId) {
+        final List<RbTrfuBloodComponentType> rbBloodComponentTypes = em
+                .createQuery("SELECT c FROM RbTrfuBloodComponentType c WHERE c.trfuId = :trfuId", RbTrfuBloodComponentType.class).setParameter("trfuId", componentId)
                 .getResultList();
         return rbBloodComponentTypes.isEmpty() ? null : rbBloodComponentTypes.get(0);
     }

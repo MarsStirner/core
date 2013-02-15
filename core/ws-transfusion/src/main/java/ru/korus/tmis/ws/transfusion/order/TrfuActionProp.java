@@ -44,7 +44,8 @@ public class TrfuActionProp {
         ROOT_CAUSE("trfuReqBloodCompRootCause", APValueString.class, "Показания к проведению трансфузии"),
         ORDER_REQUEST_ID("trfuReqBloodCompResult", APValueString.class, "Результат передачи требования в систему ТРФУ"),
         ORDER_ISSUE_RES_DATE("trfuReqBloodCompDate",APValueDate.class, "Дата выдачи КК"),
-        ORDER_ISSUE_RES_TIME("trfuReqBloodCompTime",APValueTime.class, "Время выдачи КК");
+        ORDER_ISSUE_RES_TIME("trfuReqBloodCompTime",APValueTime.class, "Время выдачи КК"),
+        ORDER_ISSUE_BLOOD_COMP_PASPORT("trfuReqBloodCompPasport",APValueInteger.class, "Паспортные данные выданных компонентов крови");
 
         @SuppressWarnings("rawtypes")
         private final Class valueClass;
