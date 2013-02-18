@@ -6,9 +6,8 @@
     <groupId>ru.korus.tmis</groupId>
     <artifactId>integration-tests</artifactId>
     <version>${version.tmis.core}</version>
-    <packaging>war</packaging>
+    <packaging>jar</packaging>
     <name>TMIS Integration Tests</name>
-
 
 
     <parent>
@@ -19,9 +18,6 @@
     </parent>
 
 
-
-
-
     <dependencies>
 
         <dependency>
@@ -30,7 +26,73 @@
             <version>${version.mokito}</version>
             <scope>test</scope>
         </dependency>
-
+        <dependency>
+            <groupId>ru.korus.tmis</groupId>
+            <artifactId>tmis-server</artifactId>
+            <version>${version.tmis.core}</version>
+            <scope>test</scope>
+            <type>ear</type>
+        </dependency>
+        <!--For communication testing-->
+        <dependency>
+            <groupId>ru.korus.tmis.communication</groupId>
+            <artifactId>tmis-communication</artifactId>
+            <version>${version.tmis.core}</version>
+            <scope>test</scope>
+        </dependency>
 
     </dependencies>
+
+
+    <build>
+        <plugins>
+            <!--Glassfish plugin-->
+            <plugin>
+                <groupId>org.glassfish.maven.plugin</groupId>
+                <artifactId>maven-glassfish-plugin</artifactId>
+                <version>2.1</version>
+                <configuration>
+                    <glassfishDirectory>${glassfish.home}</glassfishDirectory>
+                    <autoCreate>false</autoCreate>
+                    <passwordFile>${glassfish.home}/passwordFile.txt</passwordFile>
+                    <user>${glassfish.admin.login}</user>
+                    <domainDirectory>${glassfish.domain.dir}</domainDirectory>
+                    <echo>true</echo>
+                    <debug>true</debug>
+                    <terse>true</terse>
+                    <domain>
+                        <name>${glassfish.domain}</name>
+                        <adminPort>4848</adminPort>
+                        <httpPort>8080</httpPort>
+                        <httpsPort>8443</httpsPort>
+                        <iiopPort>3700</iiopPort>
+                        <jmsPort>7676</jmsPort>
+                    </domain>
+                    <components>
+                        <component>
+                            <name>${ear.name}</name>
+                            <artifact>${ear.name}</artifact>
+                        </component>
+                    </components>
+                </configuration>
+                <executions>
+                    <!--<execution>-->
+                    <!--<id>Start and deploy server</id>-->
+                    <!--<phase>process-resources</phase>-->
+                    <!--<goals>-->
+                    <!--<goal>deploy</goal>-->
+                    <!--</goals>-->
+                    <!--</execution>-->
+                    <execution>
+                        <id>Undeploy and stop server</id>
+                        <phase>prepare-package</phase>
+                        <goals>
+                            <goal>undeploy</goal>
+                            <goal>stop-domain</goal>
+                        </goals>
+                    </execution>
+                </executions>
+            </plugin>
+        </plugins>
+    </build>
 </project>
