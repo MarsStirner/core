@@ -20,6 +20,7 @@
         <module>ws-laboratory</module>
         <module>ws-drugstore</module>
         <!--<module>hl7</module>-->
+        <module>integration-tests</module>
         <module>ws-finance</module>
         <module>ws-transfusion</module>
         <module>communication</module>
@@ -33,6 +34,7 @@
         <version.joda.time>2.1</version.joda.time>
         <version.apache.thrift>0.9.0</version.apache.thrift>
         <version.testng>6.8</version.testng>
+        <version.mokito>1.9.5</version.mokito>
         <version.junit>4.8.2</version.junit>
         <version.logging.logback>1.0.9</version.logging.logback>
         <version.logging.logback.janino>2.6.1</version.logging.logback.janino>
