@@ -359,7 +359,7 @@ with TmisLogging{
     })
 
     val result = em.createQuery(BusyHospitalBedsByDepartmentIdQuery.format(i18n("db.action.movingFlatCode"),
-                                                                           i18n("db.actionPropertyType.moving.name.bed")),
+                                                                           iCapIds("db.rbCAP.moving.id.bed")),
                                 classOf[OrgStructureHospitalBed])
       .setParameter("ids", asJavaCollection(ids))
       .getResultList
@@ -517,7 +517,7 @@ with TmisLogging{
           else null
 
         if (bedId!=null){
-          val result2 = em.createQuery(BusyHospitalBedsByDepartmentIdQuery.format(i18n("db.action.movingFlatCode"),i18n("db.actionPropertyType.moving.name.bed")), classOf[OrgStructureHospitalBed])
+          val result2 = em.createQuery(BusyHospitalBedsByDepartmentIdQuery.format(i18n("db.action.movingFlatCode"),iCapIds("db.rbCAP.moving.id.bed")), classOf[OrgStructureHospitalBed])
             .setParameter("ids", asJavaCollection(Set(bedId)))
             .getResultList
           result2.foreach(em.detach(_))
@@ -706,9 +706,7 @@ with TmisLogging{
           SELECT cap.actionPropertyType.id
           FROM RbCoreActionProperty cap
           WHERE
-            cap.actionType.id = at.id
-          AND
-            cap.name = '%s'
+            cap.id = '%s'
         )
       AND
         a.endDate IS NULL

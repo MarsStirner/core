@@ -476,4 +476,14 @@ public interface MedipadWebService extends Serializable {
      */
     @WebMethod
     TakingOfBiomaterialData getTakingOfBiomaterial(TakingOfBiomaterialRequesData request, AuthData authData) throws CoreException;
+
+    /**
+     * Сервис по обновлению статусов JobTicket
+     * @param data Список статусов JobTicket как JobTicketStatusDataList
+     * @param authData Авторизационные данные как AuthData
+     * @return true - редактирование прошло успешно или false - при редактировании возникли ошибки (см. лог)
+     * @throws CoreException
+     */
+    @WebMethod
+    boolean updateJobTicketsStatuses(JobTicketStatusDataList data, AuthData authData) throws CoreException;
 }

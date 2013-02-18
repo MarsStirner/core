@@ -181,4 +181,9 @@ public class JobTicket implements Serializable {
     public String toString() {
         return "ru.korus.tmis.core.entity.model.JobTicket[id=" + id + "]";
     }
+
+    public static JobTicket clone(JobTicket self) throws CloneNotSupportedException {
+        JobTicket newJobTicket = (JobTicket) self.clone();
+        return newJobTicket;
+    }
 }

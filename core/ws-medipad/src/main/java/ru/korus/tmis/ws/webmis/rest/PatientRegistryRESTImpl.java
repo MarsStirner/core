@@ -1759,9 +1759,10 @@ public class PatientRegistryRESTImpl implements Serializable {
      * &#15; "KLADR" - КЛАДР;
      * &#15; "valueDomain" - список возможных значений для ActionProperty;
      * &#15; "specialities" - справочник специальностей;
-     * &#15; "quotaStatus" - Справочник статусов квот</pre>
-     * &#15; "quotaType" - Справочник типов квот</pre>
+     * &#15; "quotaStatus" - Справочник статусов квот;
+     * &#15; "quotaType" - Справочник типов квот;
      * &#15; "contactTypes" - справочник типов контактов;
+     * &#15; "tissueTypes"  - справочник типов исследования;</pre>
      * @param headId   Фильтр для справочника "insurance". Идентификатор родительской компании. (В url: filter[headId]=...)
      * @param groupId  Фильтр для справочника "clientDocument". Идентификатор группы типов документов. (В url: filter[groupId]=...)
      * @param name     Фильтр для справочника "policyTypes". Идентификатор обозначения полиса. (В url: filter[name]=...)
@@ -2088,7 +2089,7 @@ public class PatientRegistryRESTImpl implements Serializable {
                                          @QueryParam("filter[beginDate]")long beginDate,
                                          @QueryParam("filter[endDate]")long endDate,
                                          @QueryParam("filter[status]") short status,
-                                         @QueryParam("filter[biomaterial]") String biomaterial,
+                                         @QueryParam("filter[biomaterial]") int biomaterial,
                                          @QueryParam("sortingField")String sortingField,
                                          @QueryParam("sortingMethod")String sortingMethod,
                                          @QueryParam("callback") String callback,
@@ -2096,13 +2097,39 @@ public class PatientRegistryRESTImpl implements Serializable {
 
         AuthData auth = wsImpl.checkTokenCookies(servRequest);
 
-        TakingOfBiomaterialRequesDataFilter filter = new TakingOfBiomaterialRequesDataFilter(departmentId,
+        //Отделение обязательное поле, если не задано в запросе, то берем из роли специалиста
+        int depId = (departmentId>0) ? departmentId : auth.getUser().getOrgStructure().getId().intValue();
+
+        TakingOfBiomaterialRequesDataFilter filter = new TakingOfBiomaterialRequesDataFilter(depId,
                                                                                              beginDate,
                                                                                              endDate,
                                                                                              status,
                                                                                              biomaterial);
         TakingOfBiomaterialRequesData request = new TakingOfBiomaterialRequesData(sortingField, sortingMethod, filter);
-        Object oip = wsImpl.getTakingOfBiomaterial(request, auth);
+        Object oip = wsImpl.getTakingOfBiomaterial(request, null/*auth*/);
+        JSONWithPadding returnValue = new JSONWithPadding(oip, callback);
+        return returnValue;
+    }
+
+    /**
+     * Метод проставляет статус для тиккетов
+     * @param data Список статусов для JobTicket
+     * @param callback callback запроса.
+     * @param servRequest Контекст запроса с клиента.
+     * @return true - завершено успешно, false - завершено с ошибками
+     */
+    @PUT
+    @Path("/jobTickets/status")
+    @Produces("application/x-javascript")
+    public Object setStatusesForJobTickets(JobTicketStatusDataList data,
+                                           //@QueryParam("token") String token,
+                                           @QueryParam("callback") String callback,
+                                           @Context HttpServletRequest servRequest) {
+        AuthData auth = wsImpl.checkTokenCookies(servRequest);
+        //AuthToken authToken = new AuthToken(token);
+        //AuthData auth = wsImpl.getStorageAuthData(authToken);
+
+        Object oip = wsImpl.updateJobTicketsStatuses(data, auth);
         JSONWithPadding returnValue = new JSONWithPadding(oip, callback);
         return returnValue;
     }

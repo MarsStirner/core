@@ -93,6 +93,8 @@ object ConfigManager extends Configuration {
     var ContractNotFound = 0x135
     var PatientIsNull = 0x136
     var RbTestTubeTypeIsNull = 0x137
+    var JobTicketIsNull = 0x138
+    var JobTicketNotFound = 0x139
   }
 
   val Drugstore = new Configuration {
