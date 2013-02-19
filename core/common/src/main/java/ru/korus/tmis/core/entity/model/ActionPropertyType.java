@@ -86,6 +86,22 @@ public class ActionPropertyType implements Serializable, PublicClonable<ActionPr
     private String age;
 
     @Basic(optional = false)
+    @Column(name = "age_bu")
+    private int age_bu;
+
+    @Basic(optional = false)
+    @Column(name = "age_bc")
+    private int age_bc;
+
+    @Basic(optional = false)
+    @Column(name = "age_eu")
+    private int age_eu;
+
+    @Basic(optional = false)
+    @Column(name = "age_ec")
+    private int age_ec;
+
+    @Basic(optional = false)
     @Column(name = "penalty")
     private int penalty;
 
@@ -261,6 +277,38 @@ public class ActionPropertyType implements Serializable, PublicClonable<ActionPr
 
     public void setAge(String age) {
         this.age = age;
+    }
+
+    public int getAge_bu() {
+        return age_bu;
+    }
+
+    public void setAge_bu(int age_bu) {
+        this.age_bu = age_bu;
+    }
+
+    public int getAge_bc() {
+        return age_bc;
+    }
+
+    public void setAge_bc(int age_bc) {
+        this.age_bc = age_bc;
+    }
+
+    public int getAge_eu() {
+        return age_eu;
+    }
+
+    public void setAge_eu(int age_eu) {
+        this.age_eu = age_eu;
+    }
+
+    public int getAge_ec() {
+        return age_ec;
+    }
+
+    public void setAge_ec(int age_ec) {
+        this.age_ec = age_ec;
     }
 
     public int getPenalty() {

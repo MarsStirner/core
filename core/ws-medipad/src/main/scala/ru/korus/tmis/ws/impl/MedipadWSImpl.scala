@@ -644,7 +644,8 @@ class MedipadWSImpl
                                              listForConverter,
                                              listForSummary,
                                              authData,
-                                             postProcessing _)
+                                             postProcessing _,
+                                             null)
    }
 
   //запрос на структуру первичного мед. осмотра с копированием данных из предыдущего осмотра
@@ -959,7 +960,7 @@ class MedipadWSImpl
     list
   }
 
-  def getListOfActionTypeIdNames(request: ListDataRequest) = {
+  def getListOfActionTypeIdNames(request: ListDataRequest, patientId: Int) = {
 
     //TODO: подключить анализ авторизационных данных и доступных ролей
     val count = actionTypeBean.getCountAllActionTypeWithFilter(request.filter)
@@ -991,7 +992,7 @@ class MedipadWSImpl
           listForSummary.add(ActionWrapperInfo.plannedEndDate)
           listForSummary.add(ActionWrapperInfo.toOrder)
 
-          val json = primaryAssessmentBean.getEmptyStructure(actionType.getId.intValue(), "Action", listForConverter, listForSummary,  null, null)
+          val json = primaryAssessmentBean.getEmptyStructure(actionType.getId.intValue(), "Action", listForConverter, listForSummary,  null, null, patientBean.getPatientById(patientId))
           json
         }
         case _  => {
@@ -1016,7 +1017,7 @@ class MedipadWSImpl
   def insertLaboratoryStudies(eventId: Int, data: CommonData, auth: AuthData) = {
     // проверка пользователя на ответственного за ивент
 
-    primaryAssessmentBean.createAssessmentsForEventIdFromCommonData(eventId, data, "Diagnostic", null, auth)
+    primaryAssessmentBean.createAssessmentsForEventIdFromCommonData(eventId, data, "Diagnostic", null, auth, postProcessing _)
   }
 
   def getFlatDirectories(request: FlatDirectoryRequestData) = {
