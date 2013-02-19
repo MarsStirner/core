@@ -150,24 +150,24 @@
                         </component>
                     </components>
                 </configuration>
-                <executions>
-                    <execution>
-                        <id>Start and deploy server</id>
-                        <phase>package</phase>
-                        <goals>
-                            <goal>stop-domain</goal>
-                            <goal>deploy</goal>
-                        </goals>
-                    </execution>
-                    <!--<execution>-->
-                    <!--<id>Undeploy and stop server</id>-->
-                    <!--<phase>prepare-package</phase>-->
-                    <!--<goals>-->
-                    <!--<goal>undeploy</goal>-->
-                    <!--<goal>stop-domain</goal>-->
-                    <!--</goals>-->
-                    <!--</execution>-->
-                </executions>
+                <!--<executions>-->
+                <!--<execution>-->
+                <!--<id>Start and deploy server</id>-->
+                <!--<phase>package</phase>-->
+                <!--<goals>-->
+                <!--<goal>stop-domain</goal>-->
+                <!--<goal>deploy</goal>-->
+                <!--</goals>-->
+                <!--</execution>-->
+                <!--&lt;!&ndash;<execution>&ndash;&gt;-->
+                <!--&lt;!&ndash;<id>Undeploy and stop server</id>&ndash;&gt;-->
+                <!--&lt;!&ndash;<phase>prepare-package</phase>&ndash;&gt;-->
+                <!--&lt;!&ndash;<goals>&ndash;&gt;-->
+                <!--&lt;!&ndash;<goal>undeploy</goal>&ndash;&gt;-->
+                <!--&lt;!&ndash;<goal>stop-domain</goal>&ndash;&gt;-->
+                <!--&lt;!&ndash;</goals>&ndash;&gt;-->
+                <!--&lt;!&ndash;</execution>&ndash;&gt;-->
+                <!--</executions>-->
             </plugin>
         </plugins>
     </build>

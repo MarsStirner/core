@@ -54,7 +54,7 @@
                 <configuration>
                     <glassfishDirectory>${glassfish.home}</glassfishDirectory>
                     <autoCreate>false</autoCreate>
-                    <passwordFile>${glassfish.home}/passwordFile.txt</passwordFile>
+                    <adminPassword>${glassfish.admin.password}</adminPassword>
                     <user>${glassfish.admin.login}</user>
                     <domainDirectory>${glassfish.domain.dir}</domainDirectory>
                     <echo>true</echo>
@@ -75,23 +75,23 @@
                         </component>
                     </components>
                 </configuration>
-                <executions>
-                    <!--<execution>-->
-                    <!--<id>Start and deploy server</id>-->
-                    <!--<phase>process-resources</phase>-->
-                    <!--<goals>-->
-                    <!--<goal>deploy</goal>-->
-                    <!--</goals>-->
-                    <!--</execution>-->
-                    <execution>
-                        <id>Undeploy and stop server</id>
-                        <phase>prepare-package</phase>
-                        <goals>
-                            <goal>undeploy</goal>
-                            <goal>stop-domain</goal>
-                        </goals>
-                    </execution>
-                </executions>
+                <!--<executions>-->
+                <!--&lt;!&ndash;<execution>&ndash;&gt;-->
+                <!--&lt;!&ndash;<id>Start and deploy server</id>&ndash;&gt;-->
+                <!--&lt;!&ndash;<phase>process-resources</phase>&ndash;&gt;-->
+                <!--&lt;!&ndash;<goals>&ndash;&gt;-->
+                <!--&lt;!&ndash;<goal>deploy</goal>&ndash;&gt;-->
+                <!--&lt;!&ndash;</goals>&ndash;&gt;-->
+                <!--&lt;!&ndash;</execution>&ndash;&gt;-->
+                <!--<execution>-->
+                <!--<id>Undeploy and stop server</id>-->
+                <!--<phase>prepare-package</phase>-->
+                <!--<goals>-->
+                <!--<goal>undeploy</goal>-->
+                <!--<goal>stop-domain</goal>-->
+                <!--</goals>-->
+                <!--</execution>-->
+                <!--</executions>-->
             </plugin>
         </plugins>
     </build>
