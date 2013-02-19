@@ -20,8 +20,8 @@ import java.util.Date;
         {
                 @NamedQuery(name = "JobTicket.findAll", query = "SELECT jt FROM JobTicket jt")
         })
-@XmlType(name = "JobTicket")
-@XmlRootElement(name = "JobTicket")
+@XmlType(name = "jobTicket")
+@XmlRootElement(name = "jobTicket")
 public class JobTicket implements Serializable {
 
     private static final long serialVersionUID = 1L;
@@ -31,13 +31,10 @@ public class JobTicket implements Serializable {
     @Basic(optional = false)
     @Column(name = "id")
     private Integer id;
-    /*
+
     @ManyToOne
     @JoinColumn(name = "master_id")
-    private Job job;    //TODO узнать верно ли?
-    */
-    @Column(name = "master_id")
-    private int master_id;
+    private Job job;
 
     @Basic(optional = false)
     @Column(name = "idx")
@@ -51,7 +48,7 @@ public class JobTicket implements Serializable {
     @Basic(optional = false)
     @Column(name = "resTimestamp")
     @Temporal(TemporalType.TIMESTAMP)
-    private Date resTimestamp;             //   TIMESTAMP????
+    private Date resTimestamp;
 
     @Basic(optional = false)
     @Column(name = "resConnectionId")
@@ -75,5 +72,118 @@ public class JobTicket implements Serializable {
     @Column(name = "note")
     private String note;
 
+    public Integer getId() {
+        return id;
+    }
 
+    public void setId(Integer id) {
+        this.id = id;
+    }
+
+    public Job getJob() {
+        return job;
+    }
+
+    public void setJob(Job job) {
+        this.job = job;
+    }
+
+    public int getIdx() {
+        return idx;
+    }
+
+    public void setIdx(int idx) {
+        this.idx = idx;
+    }
+
+    public Date getDatetime() {
+        return datetime;
+    }
+
+    public void setDatetime(Date datetime) {
+        this.datetime = datetime;
+    }
+
+    public Date getResTimestamp() {
+        return resTimestamp;
+    }
+
+    public void setResTimestamp(Date resTimestamp) {
+        this.resTimestamp = resTimestamp;
+    }
+
+    public int getResConnectionId() {
+        return resConnectionId;
+    }
+
+    public void setResConnectionId(int resConnectionId) {
+        this.resConnectionId = resConnectionId;
+    }
+
+    public int getStatus() {
+        return status;
+    }
+
+    public void setStatus(int status) {
+        this.status = status;
+    }
+
+    public Date getBegDateTime() {
+        return begDateTime;
+    }
+
+    public void setBegDateTime(Date begDateTime) {
+        this.begDateTime = begDateTime;
+    }
+
+    public Date getEndDateTime() {
+        return endDateTime;
+    }
+
+    public void setEndDateTime(Date endDateTime) {
+        this.endDateTime = endDateTime;
+    }
+
+    public String getLabel() {
+        return label;
+    }
+
+    public void setLabel(String label) {
+        this.label = label;
+    }
+
+    public String getNote() {
+        return note;
+    }
+
+    public void setNote(String note) {
+        this.note = note;
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+
+        JobTicket jobTicket = (JobTicket) o;
+
+        if (id != null ? !id.equals(jobTicket.id) : jobTicket.id != null) return false;
+
+        return true;
+    }
+
+    @Override
+    public int hashCode() {
+        return id != null ? id.hashCode() : 0;
+    }
+
+    @Override
+    public String toString() {
+        return "ru.korus.tmis.core.entity.model.JobTicket[id=" + id + "]";
+    }
+
+    public static JobTicket clone(JobTicket self) throws CloneNotSupportedException {
+        JobTicket newJobTicket = (JobTicket) self.clone();
+        return newJobTicket;
+    }
 }

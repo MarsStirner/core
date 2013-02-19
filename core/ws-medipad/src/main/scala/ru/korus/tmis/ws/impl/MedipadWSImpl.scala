@@ -183,6 +183,12 @@ class MedipadWSImpl
 
   @EJB
   var dbContractBean: DbContractBeanLocal = _
+
+  @EJB
+  var dbJobTicketBean: DbJobTicketBeanLocal = _
+
+  @EJB
+  var dbRbTissueType: DbRbTissueTypeBeanLocal = _
   //////////////////////////////////////////////////////////////////////////////
 
   def checkTokenCookies(srvletRequest: HttpServletRequest): AuthData = {
@@ -1244,6 +1250,15 @@ class MedipadWSImpl
                                                       request.filter,
                                                       request.rewriteRecordsCount _)
       }
+      case "tissueTypes" => {  //Типы исследования
+        mapper.getSerializationConfig().setSerializationView(classOf[DictionaryDataViews.DefaultView])
+        dbRbTissueType.getAllRbTissueTypeWithFilter(request.page-1,
+                                                    request.limit,
+                                                    request.sortingFieldInternal,
+                                                    request.sortingMethod,
+                                                    request.filter,
+                                                    request.rewriteRecordsCount _)
+      }
     }
     mapper.writeValueAsString(new DictionaryListData(list, request))
   }
@@ -1296,6 +1311,24 @@ class MedipadWSImpl
 
   def getPatientsFromOpenAppealsWhatHasBedsByDepartmentId(departmentId: Int) = {
     patientBean.getCurrentPatientsByDepartmentId(departmentId)
+  }
+
+  def getTakingOfBiomaterial(request: TakingOfBiomaterialRequesData, authData: AuthData) = {
+
+    val res = dbJobTicketBean.getDirectionsWithJobTicketsBetweenDate(request.sortingFieldInternal, request.filter)
+    request.rewriteRecordsCount(res.size())
+    new TakingOfBiomaterialData(res, request)
+  }
+
+  def updateJobTicketsStatuses(data: JobTicketStatusDataList, authData: AuthData) = {
+
+    var isSuccess: Boolean = true
+    data.getData.foreach(f=> {
+      val res = dbJobTicketBean.modifyJobTicketStatus(f.getId, f.getStatus, authData)
+      if(!res)
+        isSuccess = res
+    })
+    isSuccess
   }
 
 }
