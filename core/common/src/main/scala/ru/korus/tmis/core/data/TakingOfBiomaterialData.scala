@@ -88,9 +88,9 @@ class TakingOfBiomaterialRequesDataFilter {
   @BeanProperty
   var endDate: Date = _
   @BeanProperty
-  var status: Short = _
+  var status: Short = -1
   @BeanProperty
-  var biomaterial: Int = _
+  var biomaterial: Int = -1
 
   def this( departmentId: Int,
             beginDate: Long,
@@ -189,7 +189,7 @@ class TakingOfBiomaterialRequesDataFilter {
 
   def toQueryStructure() = {
     val qs = new QueryDataStructure()
-    if(this.status>0){
+    if(this.status>=0){
       qs.query += "AND jt.status = :status\n"
       qs.add("status",this.status:java.lang.Integer)
     }

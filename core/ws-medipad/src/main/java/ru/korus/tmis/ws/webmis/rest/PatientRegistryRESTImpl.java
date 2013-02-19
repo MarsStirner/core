@@ -2088,7 +2088,7 @@ public class PatientRegistryRESTImpl implements Serializable {
     public Object getTakingOfBiomaterial(@QueryParam("filter[departmentId]")int departmentId,
                                          @QueryParam("filter[beginDate]")long beginDate,
                                          @QueryParam("filter[endDate]")long endDate,
-                                         @QueryParam("filter[status]") short status,
+                                         @QueryParam("filter[status]") String status,
                                          @QueryParam("filter[biomaterial]") int biomaterial,
                                          @QueryParam("sortingField")String sortingField,
                                          @QueryParam("sortingMethod")String sortingMethod,
@@ -2099,11 +2099,12 @@ public class PatientRegistryRESTImpl implements Serializable {
 
         //Отделение обязательное поле, если не задано в запросе, то берем из роли специалиста
         int depId = (departmentId>0) ? departmentId : auth.getUser().getOrgStructure().getId().intValue();
+        short statusS = (status!=null && !status.isEmpty()) ? Short.parseShort(status): -1;
 
         TakingOfBiomaterialRequesDataFilter filter = new TakingOfBiomaterialRequesDataFilter(depId,
                                                                                              beginDate,
                                                                                              endDate,
-                                                                                             status,
+                                                                                             statusS,
                                                                                              biomaterial);
         TakingOfBiomaterialRequesData request = new TakingOfBiomaterialRequesData(sortingField, sortingMethod, filter);
         Object oip = wsImpl.getTakingOfBiomaterial(request, null/*auth*/);
