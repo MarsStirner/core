@@ -439,17 +439,17 @@ class PersonConditionContainer {
          case 0 => ""
          case size => c._2.get(0).getValueAsString
        }
-       c._1.getType.getName match {
-         case "Состояние" =>  {
+       c._1.getType.getCode match {
+         case "STATE" =>  {    //"Состояние"
            this.state = value
          }
-         case "ЧСС" =>  {
+         case "PULS" =>  {         //"ЧСС"
            this.breathingRate = value
          }
-         case "АД нижн." =>  {
+         case "BPRAS" =>  {    //"АД нижн."
            this.arterialBloodPressure.low = value
          }
-         case "АД верхн." =>  {
+         case "BPRAD" =>  {   //"АД верхн."
            this.arterialBloodPressure.high = value
          }
          case _ => {}

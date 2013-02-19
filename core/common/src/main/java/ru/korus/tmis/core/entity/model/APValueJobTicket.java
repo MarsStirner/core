@@ -1,5 +1,8 @@
 package ru.korus.tmis.core.entity.model;
 
+import ru.korus.tmis.core.exception.CoreException;
+import ru.korus.tmis.util.TextUtils;
+
 import java.io.Serializable;
 import javax.persistence.Column;
 import javax.persistence.Entity;
@@ -50,8 +53,20 @@ public class APValueJobTicket extends AbstractAPValue implements Serializable, A
     }
 
     @Override
-    public boolean setValueFromString(final String value) {
-        return false;
+    public boolean setValueFromString(final String value) throws CoreException {
+        if ("".equals(value)) {
+            return true;
+        }
+
+        try {
+            this.value = TextUtils.getRobustInt(value);
+            return true;
+        } catch (NumberFormatException ex) {
+            throw new CoreException(
+                    0x0106,
+                    "Не могу установить " + this.getClass().getSimpleName() + " в значение <" + value + ">"
+            );
+        }
     }
 
     @Override

@@ -315,7 +315,7 @@ public interface MedipadWebService extends Serializable {
     AllPersonsListData getFreePersons(ListDataRequest requestData) throws CoreException;
 
     @WebMethod
-    Object getListOfActionTypeIdNames(ListDataRequest request) throws CoreException;
+    Object getListOfActionTypeIdNames(ListDataRequest request, int patientId) throws CoreException;
 
     @WebMethod
     JSONCommonData insertConsultation(ConsultationRequestData request) throws CoreException;

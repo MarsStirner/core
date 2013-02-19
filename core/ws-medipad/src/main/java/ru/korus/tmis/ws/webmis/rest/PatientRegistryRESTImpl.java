@@ -1086,7 +1086,7 @@ public class PatientRegistryRESTImpl implements Serializable {
                                                                                         "",
                                                                                         statusId,
                                                                                         (urgent==null) ? -1 : (urgent) ? 1 : 0,
-                                                                                        "laboratory",
+                                                                                        "",//"laboratory"  //теперь не ищем по коду!
                                                                                         "LAB");
 
         DiagnosticsListRequestData requestData = new DiagnosticsListRequestData(sortingField,
@@ -1353,9 +1353,10 @@ public class PatientRegistryRESTImpl implements Serializable {
      * @see CoreException
      */
     @GET
-    @Path("/actionTypes/laboratory")
+    @Path("/actionTypes/laboratory/{patientId}")
     @Produces("application/x-javascript")
-    public Object getActionTypeNamesForLaboratory(@QueryParam("limit")int limit,
+    public Object getActionTypeNamesForLaboratory(@PathParam("patientId")int patientId,
+                                                 @QueryParam("limit")int limit,
                                                  @QueryParam("page")int  page,
                                                  @QueryParam("sortingField")String sortingField,      //сортировки вкл.
                                                  @QueryParam("sortingMethod")String sortingMethod,
@@ -1368,7 +1369,7 @@ public class PatientRegistryRESTImpl implements Serializable {
         ActionTypesListRequestDataFilter filter = new ActionTypesListRequestDataFilter(code, groupId, "laboratory", "LAB");
         ListDataRequest request = new ListDataRequest(sortingField, sortingMethod, limit, page, filter);
 
-        Object oip = wsImpl.getListOfActionTypeIdNames(request);
+        Object oip = wsImpl.getListOfActionTypeIdNames(request, patientId);
         JSONWithPadding returnValue = new JSONWithPadding(oip, callback);
         return returnValue;
     }
@@ -1396,9 +1397,10 @@ public class PatientRegistryRESTImpl implements Serializable {
      * @see CoreException
      */
     @GET
-    @Path("/actionTypes/instrumental")
+    @Path("/actionTypes/instrumental/{patientId}")
     @Produces("application/x-javascript")
-    public Object getActionTypeNamesForInstrumentalDiagnostics(@QueryParam("limit")int limit,
+    public Object getActionTypeNamesForInstrumentalDiagnostics(@PathParam("patientId")int patientId,
+                                                  @QueryParam("limit")int limit,
                                                   @QueryParam("page")int  page,
                                                   @QueryParam("sortingField")String sortingField,    //сортировки вкл.
                                                   @QueryParam("sortingMethod")String sortingMethod,
@@ -1411,7 +1413,7 @@ public class PatientRegistryRESTImpl implements Serializable {
         ActionTypesListRequestDataFilter filter = new ActionTypesListRequestDataFilter(code, groupId, "instrumental", "DI");
         ListDataRequest request = new ListDataRequest(sortingField, sortingMethod, limit, page, filter);
 
-        Object oip = wsImpl.getListOfActionTypeIdNames(request);
+        Object oip = wsImpl.getListOfActionTypeIdNames(request, patientId);
         JSONWithPadding returnValue = new JSONWithPadding(oip, callback);
         return returnValue;
     }
@@ -1439,9 +1441,10 @@ public class PatientRegistryRESTImpl implements Serializable {
      * @see CoreException
      */
     @GET
-    @Path("/actionTypes")
+    @Path("/actionTypes/{patientId}")
     @Produces("application/x-javascript")
-    public Object getAllActionTypeNames(@QueryParam("limit")int limit,
+    public Object getAllActionTypeNames(@PathParam("patientId")int patientId,
+                                        @QueryParam("limit")int limit,
                                         @QueryParam("page")int  page,
                                         @QueryParam("sortingField")String sortingField,          //сортировки вкл.
                                         @QueryParam("sortingMethod")String sortingMethod,
@@ -1454,7 +1457,7 @@ public class PatientRegistryRESTImpl implements Serializable {
         ActionTypesListRequestDataFilter filter = new ActionTypesListRequestDataFilter(code, groupId, "all", "");
         ListDataRequest request = new ListDataRequest(sortingField, sortingMethod, limit, page, filter);
 
-        Object oip = wsImpl.getListOfActionTypeIdNames(request);
+        Object oip = wsImpl.getListOfActionTypeIdNames(request, patientId);
         JSONWithPadding returnValue = new JSONWithPadding(oip, callback);
         return returnValue;
     }

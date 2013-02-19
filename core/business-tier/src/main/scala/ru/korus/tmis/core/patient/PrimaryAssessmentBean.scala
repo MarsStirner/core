@@ -9,7 +9,7 @@ import javax.ejb.{EJB, Stateless}
 import scala.collection.JavaConversions._
 import ru.korus.tmis.core.entity.model._
 import ru.korus.tmis.util.ConfigManager.APWI
-import java.util.{LinkedList, HashSet, Date}
+import java.util.{Calendar, LinkedList, HashSet, Date}
 import ru.korus.tmis.core.database._
 import ru.korus.tmis.core.data._
 import collection.immutable.HashMap
@@ -99,6 +99,37 @@ class PrimaryAssessmentBean
     group
   }
 
+  def detailsWithAge(assessment: Action) = {
+    val propertiesMap = actionPropertyBean.getActionPropertiesByActionId(assessment.getId.intValue)
+    val group = new CommonGroup(1, "Details")
+
+    val age = commonDataProcessor.defineAgeOfPatient(assessment.getEvent.getPatient)
+
+    propertiesMap.foreach(
+      (p) => {
+        val (ap, apvs) = p
+        val apw = new ActionPropertyWrapper(ap)
+        if (commonDataProcessor.checkActionPropertyTypeForPatientAge(age, ap.getType)) {
+          apvs.size match {
+            case 0 => {
+              group add apw.get(null, List(APWI.Unit,
+                APWI.Norm))
+            }
+            case _ => {
+              apvs.foreach((apv) => {
+                group add apw.get(apv, List(APWI.Value,
+                  APWI.ValueId,
+                  APWI.Unit,
+                  APWI.Norm))
+              })
+            }
+          }
+        }
+      })
+
+    group
+  }
+
   def converterFromList(list: java.util.List[String], apt: ActionPropertyType) = {
 
     var map = list.foldLeft(Map.empty[String,String])(
@@ -127,14 +158,16 @@ class PrimaryAssessmentBean
                         listForConverter: java.util.List[String],
                         listForSummary: java.util.List[StringId],
                         userData: AuthData,
-                        postProcessing: (JSONCommonData, java.lang.Boolean) => JSONCommonData) = {
+                        postProcessing: (JSONCommonData, java.lang.Boolean) => JSONCommonData,
+                        patient: Patient) = {
 
     var json_data = new JSONCommonData()
     val cd = commonDataProcessor.fromActionTypesForWebClient(Set(actionTypeBean.getActionTypeById(atId)),
                                                              title,
                                                              listForSummary,
                                                              listForConverter,
-                                                             converterFromList)
+                                                             converterFromList,
+                                                             patient)
     json_data.data = cd.entity
     if (postProcessing != null) {
       json_data =  postProcessing(json_data, true)
@@ -142,12 +175,20 @@ class PrimaryAssessmentBean
     json_data
   }
 
-  def  createAssessmentsForEventIdFromCommonData(eventId: Int, assessments: CommonData, title: String, request: Object, userData: AuthData) = {
+  def  createAssessmentsForEventIdFromCommonData(eventId: Int,
+                                                 assessments: CommonData,
+                                                 title: String,
+                                                 request: Object,
+                                                 userData: AuthData,
+                                                 postProcessing: (JSONCommonData, java.lang.Boolean) => JSONCommonData) = {
 
      val actions: java.util.List[Action] = commonDataProcessor.createActionForEventFromCommonData(eventId, assessments, userData)
-     val com_data = commonDataProcessor.fromActions( actions, title, List(summary _, details _))
+     val com_data = commonDataProcessor.fromActions( actions, title, List(summary _, detailsWithAge _))
 
      var json_data = new JSONCommonData(request, com_data)
+     if (postProcessing != null) {
+       json_data =  postProcessing(json_data, false)
+     }
      json_data
   }
 
