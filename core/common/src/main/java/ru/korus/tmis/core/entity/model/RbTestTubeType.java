@@ -50,6 +50,9 @@ public class RbTestTubeType implements Serializable {
     @Column(name = "image")
     private String image;
 
+    @Column(name = "color")
+    private String color;
+
     public Integer getId() {
         return id;
     }
@@ -104,6 +107,14 @@ public class RbTestTubeType implements Serializable {
 
     public void setImage(String image) {
         this.image = image;
+    }
+
+    public String getColor() {
+        return color;
+    }
+
+    public void setColor(String color) {
+        this.color = color;
     }
 
     @Override

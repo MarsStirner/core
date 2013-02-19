@@ -4,15 +4,13 @@ import ru.korus.tmis.core.auth.AuthData;
 import ru.korus.tmis.core.data.CommonAttribute;
 import ru.korus.tmis.core.data.CommonData;
 import ru.korus.tmis.core.data.CommonGroup;
-import ru.korus.tmis.core.entity.model.Action;
-import ru.korus.tmis.core.entity.model.ActionPropertyType;
-import ru.korus.tmis.core.entity.model.ActionType;
-import ru.korus.tmis.core.entity.model.ActionWrapper;
+import ru.korus.tmis.core.entity.model.*;
 import ru.korus.tmis.core.exception.CoreException;
 import ru.korus.tmis.util.StringId;
 import scala.Function1;
 import scala.Function2;
 
+import java.util.Calendar;
 import java.util.List;
 import java.util.Set;
 import javax.ejb.Local;
@@ -43,7 +41,8 @@ public interface CommonDataProcessorBeanLocal {
             String typeName,
             List<StringId> listForSummary,
             List<String> listForConverter,
-            Function2<List<String>, ActionPropertyType, CommonAttribute> converter)
+            Function2<List<String>, ActionPropertyType, CommonAttribute> converter,
+            Patient patient)
             throws CoreException;
 
     CommonData fromActions(
@@ -56,4 +55,8 @@ public interface CommonDataProcessorBeanLocal {
                               ActionWrapper wrapper,
                               List<StringId> attributeNames)
             throws CoreException;
+
+    Calendar defineAgeOfPatient(Patient patient) throws CoreException;
+
+    boolean checkActionPropertyTypeForPatientAge(Calendar age, ActionPropertyType apt) throws CoreException;
 }

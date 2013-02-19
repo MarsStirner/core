@@ -315,7 +315,7 @@ public interface MedipadWebService extends Serializable {
     AllPersonsListData getFreePersons(ListDataRequest requestData) throws CoreException;
 
     @WebMethod
-    Object getListOfActionTypeIdNames(ListDataRequest request) throws CoreException;
+    Object getListOfActionTypeIdNames(ListDataRequest request, int patientId) throws CoreException;
 
     @WebMethod
     JSONCommonData insertConsultation(ConsultationRequestData request) throws CoreException;
@@ -466,4 +466,24 @@ public interface MedipadWebService extends Serializable {
      */
     @WebMethod
     GroupTypesListData getQuotaTypes(ListDataRequest request) throws CoreException;
+
+    /**
+     * Сервис на получение данных о заборе биоматериала
+     * @param request Данные из запроса как TakingOfBiomaterialRequesData
+     * @param authData Авторизационные данные как AuthData
+     * @return TakingOfBiomaterialData
+     * @throws CoreException
+     */
+    @WebMethod
+    TakingOfBiomaterialData getTakingOfBiomaterial(TakingOfBiomaterialRequesData request, AuthData authData) throws CoreException;
+
+    /**
+     * Сервис по обновлению статусов JobTicket
+     * @param data Список статусов JobTicket как JobTicketStatusDataList
+     * @param authData Авторизационные данные как AuthData
+     * @return true - редактирование прошло успешно или false - при редактировании возникли ошибки (см. лог)
+     * @throws CoreException
+     */
+    @WebMethod
+    boolean updateJobTicketsStatuses(JobTicketStatusDataList data, AuthData authData) throws CoreException;
 }

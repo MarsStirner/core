@@ -27,6 +27,7 @@ import ru.korus.tmis.core.auth.AuthToken;
 import ru.korus.tmis.core.data.*;
 import ru.korus.tmis.core.exception.CoreException;
 import ru.korus.tmis.core.logging.slf4j.interceptor.ServicesLoggingInterceptor;
+import ru.korus.tmis.lis.data.BiomaterialInfo;
 import ru.korus.tmis.ws.impl.MedipadWSImpl;
 
 import com.sun.jersey.api.json.JSONWithPadding;
@@ -1085,7 +1086,7 @@ public class PatientRegistryRESTImpl implements Serializable {
                                                                                         "",
                                                                                         statusId,
                                                                                         (urgent==null) ? -1 : (urgent) ? 1 : 0,
-                                                                                        "laboratory",
+                                                                                        "",//"laboratory"  //теперь не ищем по коду!
                                                                                         "LAB");
 
         DiagnosticsListRequestData requestData = new DiagnosticsListRequestData(sortingField,
@@ -1352,9 +1353,10 @@ public class PatientRegistryRESTImpl implements Serializable {
      * @see CoreException
      */
     @GET
-    @Path("/actionTypes/laboratory")
+    @Path("/actionTypes/laboratory/{patientId}")
     @Produces("application/x-javascript")
-    public Object getActionTypeNamesForLaboratory(@QueryParam("limit")int limit,
+    public Object getActionTypeNamesForLaboratory(@PathParam("patientId")int patientId,
+                                                 @QueryParam("limit")int limit,
                                                  @QueryParam("page")int  page,
                                                  @QueryParam("sortingField")String sortingField,      //сортировки вкл.
                                                  @QueryParam("sortingMethod")String sortingMethod,
@@ -1367,7 +1369,7 @@ public class PatientRegistryRESTImpl implements Serializable {
         ActionTypesListRequestDataFilter filter = new ActionTypesListRequestDataFilter(code, groupId, "laboratory", "LAB");
         ListDataRequest request = new ListDataRequest(sortingField, sortingMethod, limit, page, filter);
 
-        Object oip = wsImpl.getListOfActionTypeIdNames(request);
+        Object oip = wsImpl.getListOfActionTypeIdNames(request, patientId);
         JSONWithPadding returnValue = new JSONWithPadding(oip, callback);
         return returnValue;
     }
@@ -1395,9 +1397,10 @@ public class PatientRegistryRESTImpl implements Serializable {
      * @see CoreException
      */
     @GET
-    @Path("/actionTypes/instrumental")
+    @Path("/actionTypes/instrumental/{patientId}")
     @Produces("application/x-javascript")
-    public Object getActionTypeNamesForInstrumentalDiagnostics(@QueryParam("limit")int limit,
+    public Object getActionTypeNamesForInstrumentalDiagnostics(@PathParam("patientId")int patientId,
+                                                  @QueryParam("limit")int limit,
                                                   @QueryParam("page")int  page,
                                                   @QueryParam("sortingField")String sortingField,    //сортировки вкл.
                                                   @QueryParam("sortingMethod")String sortingMethod,
@@ -1410,7 +1413,7 @@ public class PatientRegistryRESTImpl implements Serializable {
         ActionTypesListRequestDataFilter filter = new ActionTypesListRequestDataFilter(code, groupId, "instrumental", "DI");
         ListDataRequest request = new ListDataRequest(sortingField, sortingMethod, limit, page, filter);
 
-        Object oip = wsImpl.getListOfActionTypeIdNames(request);
+        Object oip = wsImpl.getListOfActionTypeIdNames(request, patientId);
         JSONWithPadding returnValue = new JSONWithPadding(oip, callback);
         return returnValue;
     }
@@ -1438,9 +1441,10 @@ public class PatientRegistryRESTImpl implements Serializable {
      * @see CoreException
      */
     @GET
-    @Path("/actionTypes")
+    @Path("/actionTypes/{patientId}")
     @Produces("application/x-javascript")
-    public Object getAllActionTypeNames(@QueryParam("limit")int limit,
+    public Object getAllActionTypeNames(@PathParam("patientId")int patientId,
+                                        @QueryParam("limit")int limit,
                                         @QueryParam("page")int  page,
                                         @QueryParam("sortingField")String sortingField,          //сортировки вкл.
                                         @QueryParam("sortingMethod")String sortingMethod,
@@ -1453,7 +1457,7 @@ public class PatientRegistryRESTImpl implements Serializable {
         ActionTypesListRequestDataFilter filter = new ActionTypesListRequestDataFilter(code, groupId, "all", "");
         ListDataRequest request = new ListDataRequest(sortingField, sortingMethod, limit, page, filter);
 
-        Object oip = wsImpl.getListOfActionTypeIdNames(request);
+        Object oip = wsImpl.getListOfActionTypeIdNames(request, patientId);
         JSONWithPadding returnValue = new JSONWithPadding(oip, callback);
         return returnValue;
     }
@@ -1758,9 +1762,10 @@ public class PatientRegistryRESTImpl implements Serializable {
      * &#15; "KLADR" - КЛАДР;
      * &#15; "valueDomain" - список возможных значений для ActionProperty;
      * &#15; "specialities" - справочник специальностей;
-     * &#15; "quotaStatus" - Справочник статусов квот</pre>
-     * &#15; "quotaType" - Справочник типов квот</pre>
+     * &#15; "quotaStatus" - Справочник статусов квот;
+     * &#15; "quotaType" - Справочник типов квот;
      * &#15; "contactTypes" - справочник типов контактов;
+     * &#15; "tissueTypes"  - справочник типов исследования;</pre>
      * @param headId   Фильтр для справочника "insurance". Идентификатор родительской компании. (В url: filter[headId]=...)
      * @param groupId  Фильтр для справочника "clientDocument". Идентификатор группы типов документов. (В url: filter[groupId]=...)
      * @param name     Фильтр для справочника "policyTypes". Идентификатор обозначения полиса. (В url: filter[name]=...)
@@ -2056,6 +2061,79 @@ public class PatientRegistryRESTImpl implements Serializable {
         QuotaRequestData request = new QuotaRequestData(null, sortingField, sortingMethod, limit, page);
 
         Object oip = wsImpl.getQuotaHistory(appealId, request); //request
+        JSONWithPadding returnValue = new JSONWithPadding(oip, callback);
+        return returnValue;
+    }
+
+    /**
+     * Забор биоматериала
+     * URL: ../biomaterial/info
+     * Спецификация: https://docs.google.com/spreadsheet/ccc?key=0AgE0ILPv06JcdEE0ajBZdmk1a29ncjlteUp3VUI2MEE&pli=1#gid=5
+     * @since 1.0.0.64
+     * @param departmentId Фильтр по идентификатору отделения (В url: filter[departmentId]=...)<pre>
+     * &#15; По умолчанию значение достается из авторизационной роли</pre>
+     * @param beginDate Фильтр по дате начала выборки (В url: filter[beginDate]=...)<pre>
+     * &#15; По умолчанию - начало текущих суток (Dd.Mm.Year 00:00).</pre>
+     * @param endDate  Фильтр по дате окончания выборки (В url: filter[endDate]=...)<pre>
+     * &#15; По умолчанию - начало текущих суток (Dd.Mm.Year 23:59).</pre>
+     * @param status Фильтр по статусу забора (В url: filter[status]=...)<pre>
+     * &#15; По умолчанию - 0.</pre>
+     * @param biomaterial  Фильтр по статусу забора (В url: filter[status]=...)
+     * @param sortingField
+     * @param sortingMethod
+     * @param callback
+     * @param servRequest
+     * @return
+     */
+    @GET
+    @Path("/biomaterial/info")
+    @Produces("application/x-javascript")
+    public Object getTakingOfBiomaterial(@QueryParam("filter[departmentId]")int departmentId,
+                                         @QueryParam("filter[beginDate]")long beginDate,
+                                         @QueryParam("filter[endDate]")long endDate,
+                                         @QueryParam("filter[status]") String status,
+                                         @QueryParam("filter[biomaterial]") int biomaterial,
+                                         @QueryParam("sortingField")String sortingField,
+                                         @QueryParam("sortingMethod")String sortingMethod,
+                                         @QueryParam("callback") String callback,
+                                         @Context HttpServletRequest servRequest)   {
+
+        AuthData auth = wsImpl.checkTokenCookies(servRequest);
+
+        //Отделение обязательное поле, если не задано в запросе, то берем из роли специалиста
+        int depId = (departmentId>0) ? departmentId : auth.getUser().getOrgStructure().getId().intValue();
+        short statusS = (status!=null && !status.isEmpty()) ? Short.parseShort(status): -1;
+
+        TakingOfBiomaterialRequesDataFilter filter = new TakingOfBiomaterialRequesDataFilter(depId,
+                                                                                             beginDate,
+                                                                                             endDate,
+                                                                                             statusS,
+                                                                                             biomaterial);
+        TakingOfBiomaterialRequesData request = new TakingOfBiomaterialRequesData(sortingField, sortingMethod, filter);
+        Object oip = wsImpl.getTakingOfBiomaterial(request, null/*auth*/);
+        JSONWithPadding returnValue = new JSONWithPadding(oip, callback);
+        return returnValue;
+    }
+
+    /**
+     * Метод проставляет статус для тиккетов
+     * @param data Список статусов для JobTicket
+     * @param callback callback запроса.
+     * @param servRequest Контекст запроса с клиента.
+     * @return true - завершено успешно, false - завершено с ошибками
+     */
+    @PUT
+    @Path("/jobTickets/status")
+    @Produces("application/x-javascript")
+    public Object setStatusesForJobTickets(JobTicketStatusDataList data,
+                                           //@QueryParam("token") String token,
+                                           @QueryParam("callback") String callback,
+                                           @Context HttpServletRequest servRequest) {
+        AuthData auth = wsImpl.checkTokenCookies(servRequest);
+        //AuthToken authToken = new AuthToken(token);
+        //AuthData auth = wsImpl.getStorageAuthData(authToken);
+
+        Object oip = wsImpl.updateJobTicketsStatuses(data, auth);
         JSONWithPadding returnValue = new JSONWithPadding(oip, callback);
         return returnValue;
     }

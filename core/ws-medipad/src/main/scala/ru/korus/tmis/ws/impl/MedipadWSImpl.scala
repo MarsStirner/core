@@ -183,6 +183,12 @@ class MedipadWSImpl
 
   @EJB
   var dbContractBean: DbContractBeanLocal = _
+
+  @EJB
+  var dbJobTicketBean: DbJobTicketBeanLocal = _
+
+  @EJB
+  var dbRbTissueType: DbRbTissueTypeBeanLocal = _
   //////////////////////////////////////////////////////////////////////////////
 
   def checkTokenCookies(srvletRequest: HttpServletRequest): AuthData = {
@@ -644,7 +650,8 @@ class MedipadWSImpl
                                              listForConverter,
                                              listForSummary,
                                              authData,
-                                             postProcessing _)
+                                             postProcessing _,
+                                             null)
    }
 
   //запрос на структуру первичного мед. осмотра с копированием данных из предыдущего осмотра
@@ -959,7 +966,7 @@ class MedipadWSImpl
     list
   }
 
-  def getListOfActionTypeIdNames(request: ListDataRequest) = {
+  def getListOfActionTypeIdNames(request: ListDataRequest, patientId: Int) = {
 
     //TODO: подключить анализ авторизационных данных и доступных ролей
     val count = actionTypeBean.getCountAllActionTypeWithFilter(request.filter)
@@ -991,7 +998,7 @@ class MedipadWSImpl
           listForSummary.add(ActionWrapperInfo.plannedEndDate)
           listForSummary.add(ActionWrapperInfo.toOrder)
 
-          val json = primaryAssessmentBean.getEmptyStructure(actionType.getId.intValue(), "Action", listForConverter, listForSummary,  null, null)
+          val json = primaryAssessmentBean.getEmptyStructure(actionType.getId.intValue(), "Action", listForConverter, listForSummary,  null, null, patientBean.getPatientById(patientId))
           json
         }
         case _  => {
@@ -1016,7 +1023,7 @@ class MedipadWSImpl
   def insertLaboratoryStudies(eventId: Int, data: CommonData, auth: AuthData) = {
     // проверка пользователя на ответственного за ивент
 
-    primaryAssessmentBean.createAssessmentsForEventIdFromCommonData(eventId, data, "Diagnostic", null, auth)
+    primaryAssessmentBean.createAssessmentsForEventIdFromCommonData(eventId, data, "Diagnostic", null, auth, postProcessing _)
   }
 
   def getFlatDirectories(request: FlatDirectoryRequestData) = {
@@ -1244,6 +1251,15 @@ class MedipadWSImpl
                                                       request.filter,
                                                       request.rewriteRecordsCount _)
       }
+      case "tissueTypes" => {  //Типы исследования
+        mapper.getSerializationConfig().setSerializationView(classOf[DictionaryDataViews.DefaultView])
+        dbRbTissueType.getAllRbTissueTypeWithFilter(request.page-1,
+                                                    request.limit,
+                                                    request.sortingFieldInternal,
+                                                    request.sortingMethod,
+                                                    request.filter,
+                                                    request.rewriteRecordsCount _)
+      }
     }
     mapper.writeValueAsString(new DictionaryListData(list, request))
   }
@@ -1296,6 +1312,24 @@ class MedipadWSImpl
 
   def getPatientsFromOpenAppealsWhatHasBedsByDepartmentId(departmentId: Int) = {
     patientBean.getCurrentPatientsByDepartmentId(departmentId)
+  }
+
+  def getTakingOfBiomaterial(request: TakingOfBiomaterialRequesData, authData: AuthData) = {
+
+    val res = dbJobTicketBean.getDirectionsWithJobTicketsBetweenDate(request.sortingFieldInternal, request.filter)
+    request.rewriteRecordsCount(res.size())
+    new TakingOfBiomaterialData(res, request)
+  }
+
+  def updateJobTicketsStatuses(data: JobTicketStatusDataList, authData: AuthData) = {
+
+    var isSuccess: Boolean = true
+    data.getData.foreach(f=> {
+      val res = dbJobTicketBean.modifyJobTicketStatus(f.getId, f.getStatus, authData)
+      if(!res)
+        isSuccess = res
+    })
+    isSuccess
   }
 
 }
