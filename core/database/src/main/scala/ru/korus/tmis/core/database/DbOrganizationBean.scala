@@ -1,6 +1,5 @@
 package ru.korus.tmis.core.database
 
-import ru.korus.tmis.core.entity.model.Organisation
 import ru.korus.tmis.core.logging.LoggingInterceptor
 
 import javax.ejb.Stateless
@@ -9,10 +8,9 @@ import javax.persistence.{EntityManager, PersistenceContext}
 
 import grizzled.slf4j.Logging
 import ru.korus.tmis.core.entity.model.Organisation
-import ru.korus.tmis.core.exception.NoSuchOrganisationException
-import ru.korus.tmis.util.{I18nable, ConfigManager}
 import scala.collection.JavaConversions._
 import ru.korus.tmis.core.data.{QueryDataStructure, DictionaryListRequestDataFilter}
+import ru.korus.tmis.core.exception.CoreException
 
 @Interceptors(Array(classOf[LoggingInterceptor]))
 @Stateless
@@ -65,6 +63,11 @@ class DbOrganizationBean
   %s
                                         """
 
+  val OrganisationFindQueryByInfisCode = """
+  SELECT org
+  FROM Organisation org
+  WHERE org.infisCode =                 :INFISCODE
+                                         """
 
   def getCountOfOrganizationWithFilter(filter: Object) = {
     var queryStr: QueryDataStructure = if (filter.isInstanceOf[DictionaryListRequestDataFilter]) {
@@ -185,6 +188,22 @@ class DbOrganizationBean
         })
         result(0)
       }
+    }
+  }
+
+  /**
+   * Получение организации по ее инфис-коду, если не найдено вообще ни одной, то CoreException
+   * @param infisCode   инфис-код организации, для поиска
+   * @return  Организация
+   */
+  def getOrganizationByInfisCode(infisCode: String): Organisation = {
+    val resultList = em.createQuery(OrganisationFindQueryByInfisCode, classOf[Organisation])
+      .setParameter("INFISCODE", infisCode).setMaxResults(20).getResultList;
+    if (resultList.size() != 0) {
+      return resultList.get(0);
+    }
+    else {
+      throw new CoreException("No organisation found by \"".concat(infisCode).concat("\" infisCode."));
     }
   }
 }

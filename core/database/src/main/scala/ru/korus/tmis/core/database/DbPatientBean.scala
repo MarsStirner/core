@@ -1,22 +1,22 @@
 package ru.korus.tmis.core.database
 
-import ru.korus.tmis.core.entity.model.Patient
-import ru.korus.tmis.core.exception.NoSuchPatientException
 import ru.korus.tmis.core.logging.LoggingInterceptor
 import ru.korus.tmis.util.{ConfigManager, I18nable}
 
 import grizzled.slf4j.Logging
 import java.lang.Iterable
-import javax.ejb.Stateless
 import javax.interceptor.Interceptors
-import ru.korus.tmis.core.exception.{NoSuchPatientException}
+import ru.korus.tmis.core.exception.NoSuchPatientException
 import ru.korus.tmis.core.entity.model.{Staff, Patient}
-import java.util.{Date}
-import scala.Predef._
 import javax.persistence.{TypedQuery, EntityManager, PersistenceContext}
-import ru.korus.tmis.core.data.{PatientRequestData}
+import ru.korus.tmis.core.data.PatientRequestData
 import javax.ejb.{EJB, Stateless}
 import scala.collection.JavaConversions._
+import ru.korus.tmis.core.hl7db.DbUUIDBeanLocal
+import java.util
+import org.slf4j.{LoggerFactory, Logger}
+import util.{Date, Calendar, GregorianCalendar}
+
 
 @Interceptors(Array(classOf[LoggingInterceptor]))
 @Stateless
@@ -27,12 +27,16 @@ class DbPatientBean
 
   @PersistenceContext(unitName = "s11r64")
   var em: EntityManager = _
+  private final val commlogger: Logger = LoggerFactory.getLogger("ru.korus.tmis.communication");
 
   @EJB
   var dbRbBloodType: DbRbBloodTypeBeanLocal = _
 
   @EJB
   var customQueryBean: DbCustomQueryLocal = _
+
+  @EJB
+  private var dbUUIDBeanLocal: DbUUIDBeanLocal = _
 
   val PatientFindQuery = """
       SELECT p
@@ -74,17 +78,11 @@ class DbPatientBean
     ORDER BY p.%s %s
                                      """
 
-      val PatientFindActiveByDocumentPatternQuery = """
+  val PatientFindActiveByDocumentPatternQuery = """
         SELECT %s
         FROM
           Patient p
         WHERE
-          NOT exists (
-           SELECT r
-             FROM ClientRelation r
-             WHERE r.relative.id = p.id
-           )
-        AND
           exists (
             SELECT d FROM ClientDocument d
             WHERE upper(d.serial) LIKE upper(:documentPattern) OR upper(d.number) LIKE upper(:documentPattern)
@@ -92,7 +90,7 @@ class DbPatientBean
         AND
           p.deleted = 0
         ORDER BY p.%s %s
-      """
+                                                """
 
   //TODO: решить, как лучше искать по ФИО
   val PatientFindActiveByFullNamePatternQuery = """
@@ -100,29 +98,26 @@ class DbPatientBean
       FROM
         Patient p
       WHERE
-        NOT exists (
-         SELECT r
-           FROM ClientRelation r
-           WHERE r.relative.id = p.id
-         )
-      AND
         upper(p.lastName) LIKE upper(:fullNamePattern)
       AND
         p.deleted = 0
       ORDER BY p.%s %s
                                                 """
 
-  val PatientFindActiveByBirthDateQuery = """
-      SELECT %s
-      FROM
-        Patient p
-      WHERE
-        NOT exists (
+  /*
+  NOT exists (
          SELECT r
            FROM ClientRelation r
            WHERE r.relative.id = p.id
          )
       AND
+   */
+
+  val PatientFindActiveByBirthDateQuery = """
+      SELECT %s
+      FROM
+        Patient p
+      WHERE
         p.birthDate = :birthDate
       AND
         p.deleted = 0
@@ -135,12 +130,6 @@ class DbPatientBean
       FROM
         Patient p
       WHERE
-        NOT exists (
-         SELECT r
-           FROM ClientRelation r
-           WHERE r.relative.id = p.id
-         )
-      AND
         p.birthDate = :birthDate AND upper(p.lastName) LIKE upper(:fullNamePattern)
       AND
         p.deleted = 0
@@ -152,12 +141,6 @@ class DbPatientBean
     FROM
       Patient p
     WHERE
-      NOT exists (
-         SELECT r
-           FROM ClientRelation r
-           WHERE r.relative.id = p.id
-         )
-     AND
       %s
                                """
 
@@ -166,12 +149,6 @@ class DbPatientBean
       FROM
         Patient p
       WHERE
-        NOT exists (
-         SELECT r
-           FROM ClientRelation r
-           WHERE r.relative.id = p.id
-         )
-      AND
         p.createDatetime BETWEEN :beginDate AND :endDate
       AND
         p.deleted = 0
@@ -183,12 +160,6 @@ class DbPatientBean
       FROM
         Patient p
       WHERE
-        NOT exists (
-         SELECT r
-           FROM ClientRelation r
-           WHERE r.relative.id = p.id
-         )
-      AND
         p.events = :events
       AND
         p.deleted = 0
@@ -357,6 +328,7 @@ class DbPatientBean
       p = new Patient
       p.setCreatePerson(sessionUser)
       p.setCreateDatetime(now)
+      p.setUuid(dbUUIDBeanLocal.createUUID())
     }
 
     p.setBirthPlace("")
@@ -416,4 +388,103 @@ class DbPatientBean
     AND
       p.deleted = 0
                             """
+
+  def findPatient(params: util.Map[String, String]): util.List[Patient] = {
+    // def findPatient(lastName: String, firstName: String, patrName: String, birthDate: Long, sex: Int, identifierType: String, identifier: String, omiPolicySerial: String, omiPolicyNumber: String): util.List[Patient] = {
+    var findPatientQuery = """
+    SELECT DISTINCT patient
+    FROM Patient patient
+    INNER JOIN patient.clientPolicies policy
+    LEFT  JOIN policy.policyType rbtype
+    WHERE patient.deleted = 0
+                           """
+    //TODO SQLInjects
+    if (params.contains("lastName")) {
+      findPatientQuery += " AND patient.lastName LIKE '" + params("lastName") + "'";
+    }
+    if (params.contains("firstName")) {
+      findPatientQuery += " AND patient.firstName      LIKE       '" + params("firstName") + "'";
+    }
+    if (params.contains("patrName")) {
+      findPatientQuery += " AND patient.patrName      LIKE      '" + params("patrName") + "'";
+    }
+    if (params.contains("birthDate")) {
+      //TODO date fix
+
+      val calendar = new GregorianCalendar();
+      // calendar.setTimeInMillis(java.lang.Long.parseLong(params("birthDate")) - calendar.get(Calendar.ZONE_OFFSET));
+      // val calendar2=new GregorianCalendar();
+      calendar.setTimeInMillis(java.lang.Long.parseLong(params("birthDate")));
+      commlogger.info("##FIXDATE LONG=" + java.lang.Long.parseLong(params("birthDate")));
+      commlogger.info("##FIXDATE DATE=" + new java.util.Date(java.lang.Long.parseLong(params("birthDate"))));
+      commlogger.info("##FIXDATE calendarDate=" + calendar.getTime);
+      commlogger.info("##FIXDATE calendarLONG=" + calendar.getTimeInMillis);
+      commlogger.info("##FIXDATE calendar YYYY-MM-DD=" + calendar.get(Calendar.YEAR) + "-" + (calendar.get(Calendar.MONTH) + 1) + "-" + calendar.get(Calendar.DATE));
+      //      commlogger.info("##FIXDATE 2calendarDate="+ calendar2.getTime);
+      //      commlogger.info("##FIXDATE 2calendarLONG="+ calendar2.getTimeInMillis);
+      //      commlogger.info("##FIXDATE2 calendar YYYY-MM-DD="+calendar2.get(Calendar.YEAR)+"-"+(calendar2.get(Calendar.MONTH)+1)+"-"+calendar2.get(Calendar.DATE));
+
+
+      findPatientQuery += " AND patient.birthDate = '" + calendar.get(Calendar.YEAR) + "-" + (calendar.get(Calendar.MONTH) + 1) + "-" + calendar.get(Calendar.DATE) + "'";
+    }
+    if (params.contains("omiNumber")) {
+      findPatientQuery += " AND policy.number= '" + params("omiNumber") + "'";
+    }
+    if (params.contains("omiSerial")) {
+      findPatientQuery += " AND policy.serial= '" + params("omiSerial") + "'";
+      if (params.contains("omiNumber")) {
+        findPatientQuery += " AND rbtype.name LIKE '%ОМС%' AND policy.deleted=0"
+      }
+    }
+    if (params.contains("sex")) {
+      findPatientQuery += " AND patient.sex = " + params("sex");
+    }
+    if (params.contains("identifier") && params.contains("identifierType")) {
+      findPatientQuery += """ AND EXISTS(
+      SELECT clientident FROM ClientIdentification clientident
+      WHERE clientident.client = patient
+      AND clientident.accountingSystem = (
+      SELECT rbaccount FROM rbAccountingSystem rbaccount WHERE rbaccount.code= '%s'
+      )
+      AND identifier='%s'
+        AND ClientIdentification.deleted=0
+      )""".format(params.get("identifierType"), params.get("identifier"));
+    }
+
+    commlogger.info(findPatientQuery);
+    em.createQuery(findPatientQuery, classOf[Patient]).getResultList
+  }
+
+  def savePatientToDataBase(patient: Patient): java.lang.Integer = {
+    if (patient != null) {
+      em.persist(patient);
+      return patient.getId
+    }
+    else
+      return 0;
+  }
+
+  val patientIsAliveQuery =
+    """
+      SELECT COUNT( attach )
+      FROM ClientAttach attach
+      JOIN attach.attachType attachtype
+      WHERE attachtype.code = 8
+      AND attach.deleted = 0
+      AND attach.client = :PATIENT
+    """
+
+  /**
+   * Проверяет жив ли пациент
+   * @param patient   Пациент, факт смерти которого проверяется
+   * @return   false=мертв, true=жив
+   */
+  def isAlive(patient: Patient): Boolean = {
+    if (em.createQuery(patientIsAliveQuery, classOf[Long]).setParameter("PATIENT", patient).getSingleResult > 0) {
+      false
+    }
+    else {
+      true
+    }
+  }
 }

@@ -5,22 +5,28 @@
     <modelVersion>4.0.0</modelVersion>
     <groupId>ru.korus.tmis.core</groupId>
     <artifactId>tmis-core-database</artifactId>
-    <version>0.9.10-SNAPSHOT</version>
+    <version>${version.tmis.core}</version>
     <packaging>ejb</packaging>
     <name>TMIS Core Database EJBs</name>
 
     <parent>
         <groupId>ru.korus.tmis</groupId>
         <artifactId>tmis-nexus</artifactId>
-        <version>0.9.10-SNAPSHOT</version>
+        <version>${version.tmis.core}</version>
         <relativePath>../</relativePath>
     </parent>
 
     <dependencies>
         <dependency>
+            <groupId>junit</groupId>
+            <artifactId>junit</artifactId>
+            <version>4.11</version>
+        </dependency>
+
+        <dependency>
             <groupId>ru.korus.tmis.core</groupId>
             <artifactId>tmis-core-common</artifactId>
-            <version>0.9.10-SNAPSHOT</version>
+            <version>${version.tmis.core}</version>
             <type>jar</type>
         </dependency>
 

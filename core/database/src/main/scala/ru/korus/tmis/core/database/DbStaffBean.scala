@@ -9,9 +9,8 @@ import javax.ejb.Stateless
 import javax.interceptor.Interceptors
 import scala.collection.JavaConversions._
 import java.util.Date
-import java.text.{DateFormat, SimpleDateFormat}
-import javax.persistence.{TypedQuery, EntityManager, PersistenceContext}
-import ru.korus.tmis.core.entity.model.Staff
+import javax.persistence.{TemporalType, EntityManager, PersistenceContext}
+import ru.korus.tmis.core.entity.model.{Action, Staff}
 import ru.korus.tmis.core.data.{FreePersonsListDataFilter, QueryDataStructure}
 
 @Interceptors(Array(classOf[LoggingInterceptor]))
@@ -188,6 +187,7 @@ class DbStaffBean
     retList
   }
 
+
   val StaffByIdQuery = """
   SELECT s
   FROM Staff s
@@ -279,4 +279,46 @@ class DbStaffBean
   AND
     s.consultancyQuota > 0
                                        """
+
+  /**
+   * Получение действия(Action) по заданному типу, времени и владельцу
+   * @param personId  Владелец действия
+   * @param date      Дата на момент которой ищется действие
+   * @param actionType    Тип искомого действия
+   * @return  Найденое действие
+   * @throws CoreException   Если действие не найдено
+   */
+  def getPersonActionsByDateAndType(personId: Int, date: Date, actionType: String): Action = {
+    val resultList = em.createQuery(getPersonActionsByDateAndTypeQuery, classOf[Action]).setParameter("ACTIONTYPECODE", actionType)
+      .setParameter("PERSONID", personId).setParameter("SETDATE", date, TemporalType.DATE).getResultList
+    if (resultList.size() == 1) {
+      val timelineAccessibleDays = resultList.get(0).getEvent.getExecutor.getTimelineAccessibleDays;
+      val lastAccessibleDate = new java.util.GregorianCalendar();
+      lastAccessibleDate.add(java.util.Calendar.DATE, timelineAccessibleDays);
+      if (timelineAccessibleDays <= 0 || resultList.get(0).getEvent.getSetDate.before(lastAccessibleDate.getTime)) {
+        //AND (Person.timelineAccessibleDays IS NULL OR Person.timelineAccessibleDays <= 0 OR DATE(Event.setDate)<=ADDDATE(CURRENT_DATE(), Person.timelineAccessibleDays))
+        return resultList.get(0);
+      }
+    }
+    throw new CoreException("Not found any actual actions");
+  }
+
+
+  val getPersonActionsByDateAndTypeQuery = """
+    SELECT action
+    FROM Action action
+    LEFT JOIN action.actionType actiontype
+    LEFT JOIN action.event event
+    LEFT JOIN event.eventType eventtype
+    LEFT JOIN event.executor  pers
+    WHERE event.deleted=0
+    AND action.deleted=0
+    AND eventtype.code = '0'
+    AND actiontype.code= :ACTIONTYPECODE
+    AND pers.id = :PERSONID
+    AND ( pers.lastAccessibleTimelineDate IS NULL OR pers.lastAccessibleTimelineDate = '0000-00-00' OR event.setDate <= pers.lastAccessibleTimelineDate )
+    AND event.setDate = :SETDATE
+                                           """
 }
+
+

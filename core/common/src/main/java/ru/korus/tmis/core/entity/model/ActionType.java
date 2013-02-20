@@ -10,8 +10,6 @@ import javax.persistence.*;
 import javax.xml.bind.annotation.XmlRootElement;
 import javax.xml.bind.annotation.XmlType;
 
-import ru.korus.tmis.util.PublicClonable;
-
 @Entity
 @Table(name = "ActionType", catalog = "", schema = "")
 @NamedQueries(
@@ -115,8 +113,9 @@ public class ActionType implements Serializable {
     @Column(name = "genTimetable")
     private boolean genTimetable;
 
-    @Column(name = "service_id")
-    private Integer serviceId;
+    @ManyToOne
+    @JoinColumn(name = "service_id")
+    private RbService service;
 
     @Column(name = "quotaType_id")
     private Integer quotaTypeId;
@@ -188,6 +187,18 @@ public class ActionType implements Serializable {
     @Basic(optional = false)
     @Column(name = "isRequiredCoordination")
     private boolean isRequiredCoordination;
+
+    @Basic(optional = false)
+    @Column(name = "mnem")
+    private String mnemonic = "";
+
+    @ManyToOne
+    @JoinColumn(name = "testTubeType_id")
+    private RbTestTubeType testTubeType;
+
+    @ManyToOne
+    @JoinColumn(name = "jobType_id")
+    private RbJobType jobType;
 
     ////////////////////////////////////////////////////////////////////////////
     // Custom mappings
@@ -369,12 +380,12 @@ public class ActionType implements Serializable {
         this.genTimetable = genTimetable;
     }
 
-    public Integer getServiceId() {
-        return serviceId;
+    public RbService getService() {
+        return service;
     }
 
-    public void setServiceId(Integer serviceId) {
-        this.serviceId = serviceId;
+    public void setService(RbService service) {
+        this.service = service;
     }
 
     public Integer getQuotaTypeId() {
@@ -537,7 +548,29 @@ public class ActionType implements Serializable {
         this.tissueTypes = tissueTypes;
     }
 
+    public String getMnemonic() {
+        return mnemonic;
+    }
 
+    public void setMnemonic(String mnemonic) {
+        this.mnemonic = mnemonic;
+    }
+
+    public RbTestTubeType getTestTubeType() {
+        return testTubeType;
+    }
+
+    public void setTestTubeType(RbTestTubeType testTubeType) {
+        this.testTubeType = testTubeType;
+    }
+
+    public RbJobType getJobType() {
+        return jobType;
+    }
+
+    public void setJobType(RbJobType jobType) {
+        this.jobType = jobType;
+    }
 
     @Override
     public int hashCode() {

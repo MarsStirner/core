@@ -187,7 +187,7 @@ with I18nable {
       //if (!flgCreate) dbManager.mergeAll(entities) else dbManager.persistAll(entities)
       em.flush()
       em.detach(action)
-
+      /*
       if (!flgCreate) {
         val newValues = actionPropertyBean.getActionPropertiesByActionId(action.getId.intValue)
         actionEvent.fire(new ModifyActionNotification(oldAction,
@@ -195,6 +195,7 @@ with I18nable {
           action,
           newValues))
       }
+      */
     }
     finally {
       if (lockId > 0) appLock.releaseLock(lockId)

@@ -27,6 +27,7 @@ import ru.korus.tmis.core.auth.AuthToken;
 import ru.korus.tmis.core.data.*;
 import ru.korus.tmis.core.exception.CoreException;
 import ru.korus.tmis.core.logging.slf4j.interceptor.ServicesLoggingInterceptor;
+import ru.korus.tmis.lis.data.BiomaterialInfo;
 import ru.korus.tmis.ws.impl.MedipadWSImpl;
 
 import com.sun.jersey.api.json.JSONWithPadding;
@@ -433,10 +434,8 @@ public class PatientRegistryRESTImpl implements Serializable {
      * &#15; Возможные значения:
      * &#15; "asc" - по возрастанию (значение по умолчанию);
      * &#15; "desc" - по убыванию;</pre>
-     * @param beginDate Фильтр значений по дате начала госпитализации.
      * @param endDate Фильтр значений по дате закрытия госпитализации.
-     * @param departmentId Фильтр значений по идентификатору отделеления.
-     * @param doctorId Фильтр значений по идентификатору доктора.
+     * @param departmentId Фильтр значений по отделению (по умолчанию берется из данных авторизации).
      * @param callback  callback запроса.
      * @param servRequest Контекст запроса.
      * @return com.sun.jersey.api.json.JSONWithPadding как Object
@@ -450,71 +449,23 @@ public class PatientRegistryRESTImpl implements Serializable {
                                                             @QueryParam("page")int  page,
                                                             @QueryParam("sortingField")String sortingField,     //сортировки вкл
                                                             @QueryParam("sortingMethod")String sortingMethod,
-                                                            @QueryParam("filter[beginDate]")long beginDate,
-                                                            @QueryParam("filter[endDate]")long endDate,
+                                                            @QueryParam("filter[date]")long endDate,
                                                             @QueryParam("filter[departmentId]") int departmentId,
-                                                            @QueryParam("filter[doctorId]") int doctorId,
                                                             @QueryParam("callback") String callback,
                                                             @Context HttpServletRequest servRequest) {
+
         AuthData auth = wsImpl.checkTokenCookies(servRequest);
+        int depId = (departmentId>0) ? departmentId : auth.getUser().getOrgStructure().getId().intValue();
 
-        PatientsListRequestData requestData = new PatientsListRequestData(departmentId, doctorId, beginDate, endDate,
-                                                                          sortingField, sortingMethod, limit, page);
-        Object rpd = wsImpl.getAllPatientsForDepartmentIdAndDoctorIdByPeriod(requestData, 0, auth);
-        JSONWithPadding returnValue = new JSONWithPadding(rpd, callback);
-        return returnValue;
-    }
-
-    //TODO: В будущем определять отделение по авторизационной роли
-    /**
-     * Запрос на список обращений пациентов для отделения и/или врача.<br>
-     * Роль: сестра отделения
-     * @param limit Максимальное количество выводимых элементов в списке.
-     * @param page Номер выводимой страницы.
-     * @param sortingField Наименование поля для сортировки.<pre>
-     * &#15; Возможные значения:
-     * &#15; "id" - по идентификатору (значение по умолчанию);
-     * &#15; "createDatetime" | "start" | "begDate" - по дате начала госпитализации;
-     * &#15; "end" | "endDate" - по дате конца госпитализации;
-     * &#15; "doctor" - по ФИО доктора;
-     * &#15; "department" - по наименованию отделения;
-     * &#15; "bed" - по обозначению койки;
-     * &#15; "number" - по номеру истории болезни(НИБ);
-     * &#15; "fullName" - по ФИО пациента;
-     * &#15; "birthDate" - по дате рождения пациента;</pre>
-     * @param sortingMethod Метод сортировки.<pre>
-     * &#15; Возможные значения:
-     * &#15; "asc" - по возрастанию (значение по умолчанию);
-     * &#15; "desc" - по убыванию;</pre>
-     * @param beginDate Фильтр значений по дате начала госпитализации.
-     * @param endDate Фильтр значений по дате закрытия госпитализации.
-     * @param departmentId Фильтр значений по идентификатору отделеления.
-     * @param doctorId Фильтр значений по идентификатору доктора.
-     * @param callback  callback запроса.
-     * @param servRequest Контекст запроса.
-     * @return com.sun.jersey.api.json.JSONWithPadding как Object
-     * @throws CoreException
-     * @see CoreException
-     */
-    @GET
-    @Path("/departments/patients/nurse")
-    @Produces("application/x-javascript")
-    public Object getAllPatientsForDepartmentOrUserByPeriodDepartmentNurseRole(
-                                                            @QueryParam("limit")int limit,
-                                                            @QueryParam("page")int  page,
-                                                            @QueryParam("sortingField")String sortingField,   //сортировки вкл
-                                                            @QueryParam("sortingMethod")String sortingMethod,
-                                                            @QueryParam("filter[beginDate]")long beginDate,
-                                                            @QueryParam("filter[endDate]")long endDate,
-                                                            @QueryParam("filter[departmentId]") int departmentId,
-                                                            @QueryParam("filter[doctorId]") int doctorId,
-                                                            @QueryParam("callback") String callback,
-                                                            @Context HttpServletRequest servRequest) {
-        AuthData auth = wsImpl.checkTokenCookies(servRequest);
-
-        PatientsListRequestData requestData = new PatientsListRequestData(departmentId, doctorId, beginDate, endDate,
-                sortingField, sortingMethod, limit, page);
-        Object rpd = wsImpl.getAllPatientsForDepartmentIdAndDoctorIdByPeriod(requestData, 1, auth);
+        PatientsListRequestData requestData = new PatientsListRequestData (depId,
+                                                                           auth.getUser().getId().intValue(),
+                                                                           auth.getUserRole().getId().intValue(),
+                                                                           endDate,
+                                                                           sortingField,
+                                                                           sortingMethod,
+                                                                           limit,
+                                                                           page);
+        Object rpd = wsImpl.getAllPatientsForDepartmentIdAndDoctorIdByPeriod(requestData, auth);
         JSONWithPadding returnValue = new JSONWithPadding(rpd, callback);
         return returnValue;
     }
@@ -861,8 +812,41 @@ public class PatientRegistryRESTImpl implements Serializable {
     }
 
     /**
-     * Форма 007
+     * Сервис на получение списка коек с меткой свободно/занято.
+     * Url: .../hospitalbed/vacant/{departmentId}
+     * Since: ver 1.0.0.57
      * @param departmentId Идентификатор отделения.
+     * @param callback callback запроса.
+     * @param servRequest Контекст запроса.
+     * @return Список коек в json-формате.
+     */
+    @GET
+    @Path("/hospitalbed/vacant")
+    @Produces("application/x-javascript")
+    public Object getVacantHospitalBeds(@QueryParam("filter[departmentId]") int departmentId,
+                                        @QueryParam("callback") String callback,
+                                        @Context HttpServletRequest servRequest) {
+        AuthData auth = wsImpl.checkTokenCookies(servRequest);
+        //Отделение обязательное поле, если не задано в запросе, то берем из роли специалиста
+        int depId = (departmentId>0) ? departmentId : auth.getUser().getOrgStructure().getId().intValue();
+
+        Object oip = wsImpl.getVacantHospitalBeds(depId, auth);
+        JSONWithPadding returnValue = new JSONWithPadding(oip, callback);
+        return returnValue;
+    }
+
+    /**
+     * Форма 007
+     * Specification: https://docs.google.com/document/d/1a0AYF8QVpEMl_pKRcFDnP2vQzRmO-IkcG5JNStEcjMI/edit#heading=h.6ll2qz4wdcfr
+     * URL: .../reports/f007
+     * Since: ver 1.0.0.57
+     * @param departmentId Идентификатор отделения, для которого отчет (задавать в url как QueryParam: "filter[departmentId]=...")
+     * @param beginDate Дата и время начала выборки (задавать в url как QueryParam: "filter[beginDate]=...")
+     *                Если не задан, то по умолчанию начало текущих медицинских суток (вчера 8:00) или,
+     *                если задан endDate, то endDate минус сутки.
+     * @param endDate Дата и время конца выборки (задавать в url как QueryParam: "filter[endDate]=...").
+     *                Если не задан, то по умолчанию конец текущих медицинских суток (сегодня 7:59) или,
+     *                если задан beginDate, то beginDate плюс сутки.
      * @param callback  callback запроса.
      * @param servRequest Контекст запроса.
      * @return com.sun.jersey.api.json.JSONWithPadding как Object
@@ -870,17 +854,20 @@ public class PatientRegistryRESTImpl implements Serializable {
      * @see CoreException
      */
     @GET
-    @Path("/seventhform/{departmentId}")
+    @Path("/reports/f007")
     @Produces("application/x-javascript")
-    public Object getSeventhFormForDepartment(
-                                                @PathParam("departmentId") int departmentId,
-                                                @QueryParam("callback") String callback,
-                                                @Context HttpServletRequest servRequest) {
-        //AuthData auth = wsImpl.checkTokenCookies(servRequest);
-        FormOfAccountingMovementOfPatientsData oip = wsImpl.getFormOfAccountingMovementOfPatients(departmentId);
+    public Object getForm007( @QueryParam("filter[departmentId]") int departmentId,
+                              @QueryParam("filter[beginDate]")long beginDate,
+                              @QueryParam("filter[endDate]")long endDate,
+                              @QueryParam("callback") String callback,
+                              @Context HttpServletRequest servRequest) {
+
+        AuthData auth = wsImpl.checkTokenCookies(servRequest);
+        Object oip = wsImpl.getForm007(departmentId, beginDate, endDate, auth);
         JSONWithPadding returnValue = new JSONWithPadding(oip, callback);
         return returnValue;
     }
+
 
     /**
      * Создание направления/перевода в отделение.
@@ -1099,7 +1086,8 @@ public class PatientRegistryRESTImpl implements Serializable {
                                                                                         "",
                                                                                         statusId,
                                                                                         (urgent==null) ? -1 : (urgent) ? 1 : 0,
-                                                                                        "laboratory");
+                                                                                        "",//"laboratory"  //теперь не ищем по коду!
+                                                                                        "LAB");
 
         DiagnosticsListRequestData requestData = new DiagnosticsListRequestData(sortingField,
                                                                                 sortingMethod,
@@ -1171,7 +1159,8 @@ public class PatientRegistryRESTImpl implements Serializable {
                                                                                         office,
                                                                                         statusId,
                                                                                         -1,
-                                                                                        "instrumental");
+                                                                                        "instrumental",
+                                                                                        "DI");
 
         DiagnosticsListRequestData requestData = new DiagnosticsListRequestData(sortingField,
                                                                                 sortingMethod,
@@ -1243,7 +1232,8 @@ public class PatientRegistryRESTImpl implements Serializable {
                                                                                         office,
                                                                                         statusId,
                                                                                         -1,
-                                                                                        "consultations");
+                                                                                        "consultations",
+                                                                                        "");
 
         DiagnosticsListRequestData requestData = new DiagnosticsListRequestData(sortingField,
                                                                                 sortingMethod,
@@ -1363,9 +1353,10 @@ public class PatientRegistryRESTImpl implements Serializable {
      * @see CoreException
      */
     @GET
-    @Path("/actionTypes/laboratory")
+    @Path("/actionTypes/laboratory/{patientId}")
     @Produces("application/x-javascript")
-    public Object getActionTypeNamesForLaboratory(@QueryParam("limit")int limit,
+    public Object getActionTypeNamesForLaboratory(@PathParam("patientId")int patientId,
+                                                 @QueryParam("limit")int limit,
                                                  @QueryParam("page")int  page,
                                                  @QueryParam("sortingField")String sortingField,      //сортировки вкл.
                                                  @QueryParam("sortingMethod")String sortingMethod,
@@ -1375,10 +1366,10 @@ public class PatientRegistryRESTImpl implements Serializable {
                                                  @Context HttpServletRequest servRequest) {
         AuthData auth = wsImpl.checkTokenCookies(servRequest);
 
-        ActionTypesListRequestDataFilter filter = new ActionTypesListRequestDataFilter(code, groupId, "laboratory");
+        ActionTypesListRequestDataFilter filter = new ActionTypesListRequestDataFilter(code, groupId, "laboratory", "LAB");
         ListDataRequest request = new ListDataRequest(sortingField, sortingMethod, limit, page, filter);
 
-        Object oip = wsImpl.getListOfActionTypeIdNames(request);
+        Object oip = wsImpl.getListOfActionTypeIdNames(request, patientId);
         JSONWithPadding returnValue = new JSONWithPadding(oip, callback);
         return returnValue;
     }
@@ -1406,9 +1397,10 @@ public class PatientRegistryRESTImpl implements Serializable {
      * @see CoreException
      */
     @GET
-    @Path("/actionTypes/instrumental")
+    @Path("/actionTypes/instrumental/{patientId}")
     @Produces("application/x-javascript")
-    public Object getActionTypeNamesForInstrumentalDiagnostics(@QueryParam("limit")int limit,
+    public Object getActionTypeNamesForInstrumentalDiagnostics(@PathParam("patientId")int patientId,
+                                                  @QueryParam("limit")int limit,
                                                   @QueryParam("page")int  page,
                                                   @QueryParam("sortingField")String sortingField,    //сортировки вкл.
                                                   @QueryParam("sortingMethod")String sortingMethod,
@@ -1418,10 +1410,10 @@ public class PatientRegistryRESTImpl implements Serializable {
                                                   @Context HttpServletRequest servRequest) {
         AuthData auth = wsImpl.checkTokenCookies(servRequest);
 
-        ActionTypesListRequestDataFilter filter = new ActionTypesListRequestDataFilter(code, groupId, "instrumental");
+        ActionTypesListRequestDataFilter filter = new ActionTypesListRequestDataFilter(code, groupId, "instrumental", "DI");
         ListDataRequest request = new ListDataRequest(sortingField, sortingMethod, limit, page, filter);
 
-        Object oip = wsImpl.getListOfActionTypeIdNames(request);
+        Object oip = wsImpl.getListOfActionTypeIdNames(request, patientId);
         JSONWithPadding returnValue = new JSONWithPadding(oip, callback);
         return returnValue;
     }
@@ -1449,9 +1441,10 @@ public class PatientRegistryRESTImpl implements Serializable {
      * @see CoreException
      */
     @GET
-    @Path("/actionTypes")
+    @Path("/actionTypes/{patientId}")
     @Produces("application/x-javascript")
-    public Object getAllActionTypeNames(@QueryParam("limit")int limit,
+    public Object getAllActionTypeNames(@PathParam("patientId")int patientId,
+                                        @QueryParam("limit")int limit,
                                         @QueryParam("page")int  page,
                                         @QueryParam("sortingField")String sortingField,          //сортировки вкл.
                                         @QueryParam("sortingMethod")String sortingMethod,
@@ -1461,10 +1454,10 @@ public class PatientRegistryRESTImpl implements Serializable {
                                         @Context HttpServletRequest servRequest) {
         AuthData auth = wsImpl.checkTokenCookies(servRequest);
 
-        ActionTypesListRequestDataFilter filter = new ActionTypesListRequestDataFilter(code, groupId, "all");
+        ActionTypesListRequestDataFilter filter = new ActionTypesListRequestDataFilter(code, groupId, "all", "");
         ListDataRequest request = new ListDataRequest(sortingField, sortingMethod, limit, page, filter);
 
-        Object oip = wsImpl.getListOfActionTypeIdNames(request);
+        Object oip = wsImpl.getListOfActionTypeIdNames(request, patientId);
         JSONWithPadding returnValue = new JSONWithPadding(oip, callback);
         return returnValue;
     }
@@ -1486,10 +1479,13 @@ public class PatientRegistryRESTImpl implements Serializable {
     public Object insertLaboratoryStudies(CommonData data,
                                           @PathParam("eventId")int  eventId,
                                           @QueryParam("callback") String callback,
+                                          //@QueryParam("token") String token,
                                           @Context HttpServletRequest servRequest) {
         AuthData auth = wsImpl.checkTokenCookies(servRequest);
+        //AuthToken authToken = new AuthToken(token);
+        //AuthData auth = wsImpl.getStorageAuthData(authToken);
 
-        JSONCommonData oip = wsImpl.insertLaboratoryStudies(eventId, data);
+        JSONCommonData oip = wsImpl.insertLaboratoryStudies(eventId, data, auth);
         JSONWithPadding returnValue = new JSONWithPadding(oip, callback);
         return returnValue;
     }
@@ -1514,7 +1510,7 @@ public class PatientRegistryRESTImpl implements Serializable {
                                           @Context HttpServletRequest servRequest) {
         AuthData auth = wsImpl.checkTokenCookies(servRequest);
 
-        JSONCommonData oip = wsImpl.insertLaboratoryStudies(eventId, data);
+        JSONCommonData oip = wsImpl.insertLaboratoryStudies(eventId, data, auth);
         JSONWithPadding returnValue = new JSONWithPadding(oip, callback);
         return returnValue;
     }
@@ -1766,9 +1762,10 @@ public class PatientRegistryRESTImpl implements Serializable {
      * &#15; "KLADR" - КЛАДР;
      * &#15; "valueDomain" - список возможных значений для ActionProperty;
      * &#15; "specialities" - справочник специальностей;
-     * &#15; "quotaStatus" - Справочник статусов квот</pre>
-     * &#15; "quotaType" - Справочник типов квот</pre>
+     * &#15; "quotaStatus" - Справочник статусов квот;
+     * &#15; "quotaType" - Справочник типов квот;
      * &#15; "contactTypes" - справочник типов контактов;
+     * &#15; "tissueTypes"  - справочник типов исследования;</pre>
      * @param headId   Фильтр для справочника "insurance". Идентификатор родительской компании. (В url: filter[headId]=...)
      * @param groupId  Фильтр для справочника "clientDocument". Идентификатор группы типов документов. (В url: filter[groupId]=...)
      * @param name     Фильтр для справочника "policyTypes". Идентификатор обозначения полиса. (В url: filter[name]=...)
@@ -2053,11 +2050,90 @@ public class PatientRegistryRESTImpl implements Serializable {
     @Path("/appeals/{appealId}/quotes")
     @Produces("application/x-javascript")
     public Object getQuotaHistory(@PathParam("appealId") int appealId,
+                                  @QueryParam("limit")int limit,
+                                  @QueryParam("page")int  page,
+                                  @QueryParam("sortingField")String sortingField,      //сортировки вкл.
+                                  @QueryParam("sortingMethod")String sortingMethod,
                                   @QueryParam("callback") String callback,
                                   @Context HttpServletRequest servRequest) {
         AuthData auth = wsImpl.checkTokenCookies(servRequest);
 
-        Object oip = wsImpl.getQuotaHistory(appealId);
+        QuotaRequestData request = new QuotaRequestData(null, sortingField, sortingMethod, limit, page);
+
+        Object oip = wsImpl.getQuotaHistory(appealId, request); //request
+        JSONWithPadding returnValue = new JSONWithPadding(oip, callback);
+        return returnValue;
+    }
+
+    /**
+     * Забор биоматериала
+     * URL: ../biomaterial/info
+     * Спецификация: https://docs.google.com/spreadsheet/ccc?key=0AgE0ILPv06JcdEE0ajBZdmk1a29ncjlteUp3VUI2MEE&pli=1#gid=5
+     * @since 1.0.0.64
+     * @param departmentId Фильтр по идентификатору отделения (В url: filter[departmentId]=...)<pre>
+     * &#15; По умолчанию значение достается из авторизационной роли</pre>
+     * @param beginDate Фильтр по дате начала выборки (В url: filter[beginDate]=...)<pre>
+     * &#15; По умолчанию - начало текущих суток (Dd.Mm.Year 00:00).</pre>
+     * @param endDate  Фильтр по дате окончания выборки (В url: filter[endDate]=...)<pre>
+     * &#15; По умолчанию - начало текущих суток (Dd.Mm.Year 23:59).</pre>
+     * @param status Фильтр по статусу забора (В url: filter[status]=...)<pre>
+     * &#15; По умолчанию - 0.</pre>
+     * @param biomaterial  Фильтр по статусу забора (В url: filter[status]=...)
+     * @param sortingField
+     * @param sortingMethod
+     * @param callback
+     * @param servRequest
+     * @return
+     */
+    @GET
+    @Path("/biomaterial/info")
+    @Produces("application/x-javascript")
+    public Object getTakingOfBiomaterial(@QueryParam("filter[departmentId]")int departmentId,
+                                         @QueryParam("filter[beginDate]")long beginDate,
+                                         @QueryParam("filter[endDate]")long endDate,
+                                         @QueryParam("filter[status]") String status,
+                                         @QueryParam("filter[biomaterial]") int biomaterial,
+                                         @QueryParam("sortingField")String sortingField,
+                                         @QueryParam("sortingMethod")String sortingMethod,
+                                         @QueryParam("callback") String callback,
+                                         @Context HttpServletRequest servRequest)   {
+
+        AuthData auth = wsImpl.checkTokenCookies(servRequest);
+
+        //Отделение обязательное поле, если не задано в запросе, то берем из роли специалиста
+        int depId = (departmentId>0) ? departmentId : auth.getUser().getOrgStructure().getId().intValue();
+        short statusS = (status!=null && !status.isEmpty()) ? Short.parseShort(status): -1;
+
+        TakingOfBiomaterialRequesDataFilter filter = new TakingOfBiomaterialRequesDataFilter(depId,
+                                                                                             beginDate,
+                                                                                             endDate,
+                                                                                             statusS,
+                                                                                             biomaterial);
+        TakingOfBiomaterialRequesData request = new TakingOfBiomaterialRequesData(sortingField, sortingMethod, filter);
+        Object oip = wsImpl.getTakingOfBiomaterial(request, null/*auth*/);
+        JSONWithPadding returnValue = new JSONWithPadding(oip, callback);
+        return returnValue;
+    }
+
+    /**
+     * Метод проставляет статус для тиккетов
+     * @param data Список статусов для JobTicket
+     * @param callback callback запроса.
+     * @param servRequest Контекст запроса с клиента.
+     * @return true - завершено успешно, false - завершено с ошибками
+     */
+    @PUT
+    @Path("/jobTickets/status")
+    @Produces("application/x-javascript")
+    public Object setStatusesForJobTickets(JobTicketStatusDataList data,
+                                           //@QueryParam("token") String token,
+                                           @QueryParam("callback") String callback,
+                                           @Context HttpServletRequest servRequest) {
+        AuthData auth = wsImpl.checkTokenCookies(servRequest);
+        //AuthToken authToken = new AuthToken(token);
+        //AuthData auth = wsImpl.getStorageAuthData(authToken);
+
+        Object oip = wsImpl.updateJobTicketsStatuses(data, auth);
         JSONWithPadding returnValue = new JSONWithPadding(oip, callback);
         return returnValue;
     }

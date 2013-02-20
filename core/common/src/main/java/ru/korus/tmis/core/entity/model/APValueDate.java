@@ -59,6 +59,11 @@ public class APValueDate extends AbstractAPValue implements Serializable, APValu
     public String getValueAsString() {
         return value != null ? df.format(value) : "";
     }
+    
+    @Override
+    public void setValue(Object value) throws CoreException {
+        this.value = (Date)value;
+    }
 
     @Override
     public boolean setValueFromString(final String value)

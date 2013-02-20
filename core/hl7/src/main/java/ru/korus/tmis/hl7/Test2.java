@@ -1,18 +1,5 @@
 package ru.korus.tmis.hl7;
 
-import org.hl7.v3.*;
-
-import javax.xml.bind.JAXBContext;
-import javax.xml.bind.JAXBElement;
-import javax.xml.bind.JAXBException;
-import javax.xml.bind.Marshaller;
-import javax.xml.namespace.QName;
-import java.net.MalformedURLException;
-import java.net.URL;
-import java.text.SimpleDateFormat;
-import java.util.Date;
-import java.util.UUID;
-
 /**
  * Author:      Dmitriy E. Nosov <br>
  * Date:        23.10.12, 12:39 <br>

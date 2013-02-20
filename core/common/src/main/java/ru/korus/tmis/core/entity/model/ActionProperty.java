@@ -1,12 +1,12 @@
 package ru.korus.tmis.core.entity.model;
 
+import javax.persistence.*;
+import javax.xml.bind.annotation.XmlRootElement;
+import javax.xml.bind.annotation.XmlType;
 import java.io.Serializable;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
-import javax.persistence.*;
-import javax.xml.bind.annotation.XmlRootElement;
-import javax.xml.bind.annotation.XmlType;
 
 @Entity
 @Table(name = "ActionProperty", catalog = "", schema = "")
@@ -94,9 +94,11 @@ public class ActionProperty
 
     ////////////////////////////////////////////////////////////////////////////
 
+    @SuppressWarnings("rawtypes")
     @Transient
     private Class valueClass;
 
+    @SuppressWarnings("rawtypes")
     @Transient
     private static Map<String, Class> valueTypeMap =
             new HashMap<String, Class>();
@@ -126,13 +128,16 @@ public class ActionProperty
         valueTypeMap.put("FlatDictionary", APValueFlatDirectory.class);
         valueTypeMap.put("FlatDirectory", APValueFlatDirectory.class);
         valueTypeMap.put("Legal_representative_id", APValueInteger.class);//че за тип такой?
+        valueTypeMap.put("rbReasonOfAbsence", APValueRbReasonOfAbsence.class); //Причина отсутствия
+
     }
 
+    @SuppressWarnings("rawtypes")
     public Class getValueClass() {
         return valueClass;
     }
 
-    public void setValueClass(final Class valueClass) {
+    public void setValueClass(@SuppressWarnings("rawtypes") final Class valueClass) {
         this.valueClass = valueClass;
     }
 

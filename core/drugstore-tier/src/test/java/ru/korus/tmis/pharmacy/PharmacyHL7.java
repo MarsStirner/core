@@ -14,10 +14,9 @@ import java.text.SimpleDateFormat;
 import java.util.Date;
 
 /**
- * Author:      Dmitriy E. Nosov <br>
+ * Author Dmitriy E. Nosov <br>
  * Date:        08.11.12, 11:38 <br>
  * Company:     Korus Consulting IT<br>
- * Revision:    \$Id$ <br>
  * Description: <br>
  */
 
@@ -26,9 +25,13 @@ public class PharmacyHL7 {
     final static Logger logger = LoggerFactory.getLogger(PharmacyHL7.class);
 
     private final Action action = new Action(1);
+    private final Event event = new Event(22);
     private final Patient client = new Patient(2);
     private final Staff doctor = new Staff(11);
     private final Staff doctorAssigPerson = new Staff(11);
+    private final OrgStructure orgStructure = new OrgStructure(333);
+    private final OrgStructure orgStructureIn = new OrgStructure(999);
+
     private final String externalId = "2012/11782";  // номер карты в мис
     private final String externalUUID = "1b264840-5555-4444-89fd-1f6b355dfa91";  // UUID карты
     private final String orgUUID = "0eea8235-1c12-11e1-7085-000c29d5ecf8";   // дневной стационар
@@ -39,12 +42,11 @@ public class PharmacyHL7 {
 
     @DataProvider(name = "test1")
     public Object[][] createData1() {
-        return new Object[][] {
-                { "Cedric", new Integer(36) },
-                { "Anne", new Integer(37)},
+        return new Object[][]{
+                {"Cedric", new Integer(36)},
+                {"Anne", new Integer(37)},
         };
     }
-
 
 
     @BeforeSuite
@@ -52,11 +54,19 @@ public class PharmacyHL7 {
         SimpleDateFormat format = new SimpleDateFormat("dd.MM.yyyy");
 
         action.setCreateDatetime(new Date());
+        orgStructure.setUuid(new UUID(orgUUID));
+        orgStructureIn.setUuid(new UUID(orgUUID2));
+
         client.setBirthDate(format.parse("12.05.2005"));
         client.setFirstName("Данил");
         client.setPatrName("Матвеевич");
         client.setLastName("Агафонов");
         client.setSnils("1122-111-222");
+        client.setUuid(new UUID(clientUUID));
+        event.setPatient(client);
+
+        event.setUuid(new UUID(externalUUID));
+        action.setEvent(event);
 
         doctorAssigPerson.setFirstName("Медсестра");
         doctorAssigPerson.setPatrName("Владимировна");
@@ -77,20 +87,11 @@ public class PharmacyHL7 {
     }
 
 
-    @Test(enabled = true, priority = 1, dataProvider = "test1")
-    public void processReceived(Action action) {
+    @Test(enabled = true, priority = 1)
+    public void processReceived() {
         try {
-            final MCCIIN000002UV01 result = HL7PacketBuilder.processReceived(
-                    action,
-                    externalId,
-                    externalUUID,
-                    orgUUID,
-                    client,
-                    clientUUID);
-
-            final String docUUID = result.getId().getRoot();
-            logger.info("docUUID = " + docUUID);
-
+            final MCCIIN000002UV01 result = HL7PacketBuilder.processReceived(action, orgStructure);
+            logger.info("docUUID = " + result.getId().getRoot());
         } catch (SoapConnectionException e) {
             logger.error("SoapConnectionException: " + e, e);
         }
@@ -99,17 +100,8 @@ public class PharmacyHL7 {
     @Test(enabled = true, priority = 2)
     public void processMoving() {
         try {
-            final MCCIIN000002UV01 result = HL7PacketBuilder.processMoving(
-                    action,
-                    externalUUID,
-                    externalId,
-                    clientUUID,
-                    orgUUID,
-                    orgUUID2);
-
-            final String docUUID = result.getId().getRoot();
-            logger.info("docUUID = " + docUUID);
-
+            final MCCIIN000002UV01 result = HL7PacketBuilder.processMoving(action, orgStructure, orgStructureIn);
+            logger.info("docUUID = " + result.getId().getRoot());
         } catch (SoapConnectionException e) {
             logger.error("SoapConnectionException: " + e, e);
         }
@@ -118,17 +110,8 @@ public class PharmacyHL7 {
     @Test(enabled = true, priority = 3)
     public void processDelMoving() {
         try {
-            final MCCIIN000002UV01 result = HL7PacketBuilder.processDelMoving(
-                    action,
-                    externalUUID,
-                    externalId,
-                    clientUUID,
-                    orgUUID,
-                    orgUUID2);
-
-            final String docUUID = result.getId().getRoot();
-            logger.info("docUUID = " + docUUID);
-
+            final MCCIIN000002UV01 result = HL7PacketBuilder.processDelMoving(action, orgStructure, orgStructureIn);
+            logger.info("docUUID = " + result.getId().getRoot());
         } catch (SoapConnectionException e) {
             logger.error("SoapConnectionException: " + e, e);
         }
@@ -137,16 +120,8 @@ public class PharmacyHL7 {
     @Test(enabled = true, priority = 4)
     public void processLeaved() {
         try {
-            final MCCIIN000002UV01 result = HL7PacketBuilder.processLeaved(
-                    action,
-                    externalId,
-                    externalUUID,
-                    clientUUID,
-                    client, "Стационар");
-
-            final String docUUID = result.getId().getRoot();
-            logger.info("docUUID = " + docUUID);
-
+            final MCCIIN000002UV01 result = HL7PacketBuilder.processLeaved(action, "Стационар");
+            logger.info("docUUID = " + result.getId().getRoot());
         } catch (SoapConnectionException e) {
             logger.error("SoapConnectionException: " + e, e);
         }
@@ -155,16 +130,8 @@ public class PharmacyHL7 {
     @Test(enabled = true, priority = 5)
     public void processDelReceived() {
         try {
-            final MCCIIN000002UV01 result = HL7PacketBuilder.processDelReceived(
-                    action,
-                    externalUUID,
-                    externalId,
-                    clientUUID,
-                    client);
-
-            final String docUUID = result.getId().getRoot();
-            logger.info("docUUID = " + docUUID);
-
+            final MCCIIN000002UV01 result = HL7PacketBuilder.processDelReceived(action);
+            logger.info("docUUID = " + result.getId().getRoot());
         } catch (SoapConnectionException e) {
             logger.error("SoapConnectionException: " + e, e);
         }

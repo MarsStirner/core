@@ -1,16 +1,14 @@
 package ru.korus.tmis.core.database;
 
 import ru.korus.tmis.core.data.PatientRequestData;
-import ru.korus.tmis.core.data.PatientsListRequestData;
-import ru.korus.tmis.core.entity.model.Event;
 import ru.korus.tmis.core.entity.model.Patient;
 import ru.korus.tmis.core.entity.model.Staff;
 import ru.korus.tmis.core.exception.CoreException;
 
 import javax.ejb.Local;
-import javax.persistence.TypedQuery;
 import java.util.Date;
 import java.util.List;
+import java.util.Map;
 
 @Local
 public interface DbPatientBeanLocal {
@@ -61,4 +59,16 @@ public interface DbPatientBeanLocal {
             throws CoreException;
 
     Boolean checkSNILSNumber(String number) throws CoreException;
+
+    List<Patient> findPatient(Map<String, String> params) throws CoreException;
+
+    Integer savePatientToDataBase(Patient patient) throws CoreException;
+
+    /**
+     * Проверяет жив ли пациент
+     *
+     * @param patient Пациент, факт смерти которого проверяется
+     * @return false=мертв, true=жив
+     */
+    boolean isAlive(Patient patient);
 }

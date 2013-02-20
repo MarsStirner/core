@@ -1,0 +1,98 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
+
+    <modelVersion>4.0.0</modelVersion>
+    <groupId>ru.korus.tmis</groupId>
+    <artifactId>integration-tests</artifactId>
+    <version>${version.tmis.core}</version>
+    <packaging>jar</packaging>
+    <name>TMIS Integration Tests</name>
+
+
+    <parent>
+        <groupId>ru.korus.tmis</groupId>
+        <artifactId>tmis-nexus</artifactId>
+        <version>${version.tmis.core}</version>
+        <relativePath>../</relativePath>
+    </parent>
+
+
+    <dependencies>
+
+        <dependency>
+            <groupId>org.mockito</groupId>
+            <artifactId>mockito-all</artifactId>
+            <version>${version.mokito}</version>
+            <scope>test</scope>
+        </dependency>
+        <dependency>
+            <groupId>ru.korus.tmis</groupId>
+            <artifactId>tmis-server</artifactId>
+            <version>${version.tmis.core}</version>
+            <scope>test</scope>
+            <type>ear</type>
+        </dependency>
+        <!--For communication testing-->
+        <dependency>
+            <groupId>ru.korus.tmis.communication</groupId>
+            <artifactId>tmis-communication</artifactId>
+            <version>${version.tmis.core}</version>
+            <scope>test</scope>
+        </dependency>
+
+    </dependencies>
+
+
+    <build>
+        <plugins>
+            <!--Glassfish plugin-->
+            <plugin>
+                <groupId>org.glassfish.maven.plugin</groupId>
+                <artifactId>maven-glassfish-plugin</artifactId>
+                <version>2.1</version>
+                <configuration>
+                    <glassfishDirectory>${glassfish.home}</glassfishDirectory>
+                    <autoCreate>false</autoCreate>
+                    <adminPassword>${glassfish.admin.password}</adminPassword>
+                    <user>${glassfish.admin.login}</user>
+                    <domainDirectory>${glassfish.domain.dir}</domainDirectory>
+                    <echo>true</echo>
+                    <debug>true</debug>
+                    <terse>true</terse>
+                    <domain>
+                        <name>${glassfish.domain}</name>
+                        <adminPort>4848</adminPort>
+                        <httpPort>8080</httpPort>
+                        <httpsPort>8443</httpsPort>
+                        <iiopPort>3700</iiopPort>
+                        <jmsPort>7676</jmsPort>
+                    </domain>
+                    <components>
+                        <component>
+                            <name>${ear.name}</name>
+                            <artifact>${ear.name}</artifact>
+                        </component>
+                    </components>
+                </configuration>
+                <!--<executions>-->
+                <!--&lt;!&ndash;<execution>&ndash;&gt;-->
+                <!--&lt;!&ndash;<id>Start and deploy server</id>&ndash;&gt;-->
+                <!--&lt;!&ndash;<phase>process-resources</phase>&ndash;&gt;-->
+                <!--&lt;!&ndash;<goals>&ndash;&gt;-->
+                <!--&lt;!&ndash;<goal>deploy</goal>&ndash;&gt;-->
+                <!--&lt;!&ndash;</goals>&ndash;&gt;-->
+                <!--&lt;!&ndash;</execution>&ndash;&gt;-->
+                <!--<execution>-->
+                <!--<id>Undeploy and stop server</id>-->
+                <!--<phase>prepare-package</phase>-->
+                <!--<goals>-->
+                <!--<goal>undeploy</goal>-->
+                <!--<goal>stop-domain</goal>-->
+                <!--</goals>-->
+                <!--</execution>-->
+                <!--</executions>-->
+            </plugin>
+        </plugins>
+    </build>
+</project>

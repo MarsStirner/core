@@ -72,7 +72,7 @@ public class ClientQuoting implements Serializable {
 
     @ManyToOne
     @JoinColumn(name = "event_id")
-    private Event eventId;
+    private Event event;
 
     @Basic(optional = false)
     @Column(name = "freeInput")
@@ -208,12 +208,12 @@ public class ClientQuoting implements Serializable {
         this.directionDate = directionDate;
     }
 
-    public Event getEventId() {
-        return eventId;
+    public Event getEvent() {
+        return event;
     }
 
-    public void setEventId(Event eventId) {
-        this.eventId = eventId;
+    public void setEvent(Event event) {
+        this.event = event;
     }
 
     public String getFreeInput() {

@@ -34,6 +34,10 @@ class DbActionPropertyBean
   @EJB
   var dbActionPropertyType: DbActionPropertyTypeBeanLocal = _
 
+  private val FILTER_ID = 0
+  private val FILTER_NAME = 1
+  private val FILTER_CODE = 2
+
   @TransactionAttribute(TransactionAttributeType.REQUIRES_NEW)
   def getActionPropertyById(id: Int) = {
     val result = em.createQuery(ActionPropertyFindQuery,
@@ -142,7 +146,7 @@ class DbActionPropertyBean
         // Если не нашли значение, то создаем новое, если не флатДиректори
         if (ap.getType.getTypeName.compareTo("FlatDirectory") != 0 && ap.getType.getTypeName.compareTo("FlatDictionary") != 0) {
           createActionPropertyValue(ap, value, index)
-        } else if(value !=null && value.compareTo("") != 0) {
+        } else if (value != null && value.compareTo("") != 0) {
           createActionPropertyValue(ap, value, index)
         }
         else null
@@ -203,19 +207,12 @@ class DbActionPropertyBean
 
   @TransactionAttribute(TransactionAttributeType.REQUIRES_NEW)
   def getActionPropertiesByActionIdAndTypeNames(actionId: Int, names: java.util.List[String]) = {
-    val result = em.createQuery(ActionPropertiesByActionIdAndNamesQuery,
-      classOf[ActionProperty])
-      .setParameter("actionId", actionId)
-      .setParameter("names", asJavaCollection(names))
-      .getResultList
+    this.getActionPropertiesByActionIdAndCustomParameters(actionId, names, FILTER_NAME)
+  }
 
-    result.foldLeft(LinkedHashMap.empty[ActionProperty, java.util.List[APValue]])(
-      (map, ap) => {
-        em.detach(ap)
-        map.put(ap, getActionPropertyValue(ap))
-        map
-      }
-    )
+  @TransactionAttribute(TransactionAttributeType.REQUIRES_NEW)
+  def getActionPropertiesByActionIdAndTypeCodes(actionId: Int, codes: java.util.List[String]) = {
+    this.getActionPropertiesByActionIdAndCustomParameters(actionId, codes, FILTER_CODE)
   }
 
   @TransactionAttribute(TransactionAttributeType.REQUIRES_NEW)
@@ -232,10 +229,10 @@ class DbActionPropertyBean
 
   @TransactionAttribute(TransactionAttributeType.REQUIRES_NEW)
   def getActionPropertiesByActionIdAndRbCoreActionPropertyIds(actionId: Int, ids: java.util.List[java.lang.Integer]) = {
-    val result =  em.createQuery(ActionPropertiesByActionIdAndRbCoreActionPropertyIds, classOf[ActionProperty])
-                    .setParameter("actionId", actionId)
-                    .setParameter("ids", asJavaCollection(ids))
-                    .getResultList
+    val result = em.createQuery(ActionPropertiesByActionIdAndRbCoreActionPropertyIds, classOf[ActionProperty])
+      .setParameter("actionId", actionId)
+      .setParameter("ids", asJavaCollection(ids))
+      .getResultList
 
     result.foldLeft(LinkedHashMap.empty[ActionProperty, java.util.List[APValue]])(
       (map, ap) => {
@@ -247,8 +244,8 @@ class DbActionPropertyBean
   }
 
   @TransactionAttribute(TransactionAttributeType.REQUIRES_NEW)
-  def getActionPropertiesForEventByActionTypes(eventId: Int, atIds: java.util.Set[java.lang.Integer], coreIds: java.util.Set[java.lang.Integer])  = {
-    val result =  em.createQuery(ActionPropertiesForEventByActionTypesQuery, classOf[Array[AnyRef]])
+  def getActionPropertiesForEventByActionTypes(eventId: Int, atIds: java.util.Set[java.lang.Integer], coreIds: java.util.Set[java.lang.Integer]) = {
+    val result = em.createQuery(ActionPropertiesForEventByActionTypesQuery, classOf[Array[AnyRef]])
       .setParameter("eventId", eventId)
       .setParameter("atIds", asJavaCollection(atIds))
       .setParameter("coreIds", asJavaCollection(coreIds))
@@ -258,6 +255,28 @@ class DbActionPropertyBean
       (map, ap) => {
         em.detach(ap(0).asInstanceOf[ActionProperty])
         map.put(ap(0).asInstanceOf[ActionProperty], getActionPropertyValue(ap(0).asInstanceOf[ActionProperty]))
+        map
+      }
+    )
+  }
+
+  private def getActionPropertiesByActionIdAndCustomParameters (actionId: Int, parameters: java.util.List[String], filterMode: Int) = {
+    val result = em.createQuery(
+      ActionPropertiesByActionIdAndNamesQuery.format(filterMode match {
+        case FILTER_ID => "id"
+        case FILTER_NAME =>  "name"
+        case FILTER_CODE =>  "code"
+        case _ => "id"
+      }
+    ), classOf[ActionProperty])
+      .setParameter("actionId", actionId)
+      .setParameter("names", asJavaCollection(parameters))
+      .getResultList
+
+    result.foldLeft(LinkedHashMap.empty[ActionProperty, java.util.List[APValue]])(
+      (map, ap) => {
+        em.detach(ap)
+        map.put(ap, getActionPropertyValue(ap))
         map
       }
     )
@@ -302,7 +321,7 @@ class DbActionPropertyBean
     WHERE
       ap.action.id = :actionId
     AND
-      ap.actionPropertyType.name IN :names
+      ap.actionPropertyType.%s IN :names
     AND
       ap.deleted = 0
     ORDER BY
@@ -360,4 +379,36 @@ class DbActionPropertyBean
         ap.deleted = 0
       GROUP BY ap
     """
+
+  def createActionProperty(action: Action, actionPropertyType: ActionPropertyType): ActionProperty = {
+    val now = new Date
+    val newActionProperty = new ActionProperty()
+    //Инициализируем структуру Event
+    try {
+      newActionProperty.setCreateDatetime(now);
+      newActionProperty.setCreatePerson(null);
+      newActionProperty.setModifyPerson(null);
+      newActionProperty.setModifyDatetime(now);
+      newActionProperty.setDeleted(false);
+      newActionProperty.setAction(action);
+      newActionProperty.setType(actionPropertyType)
+      newActionProperty.setNorm("");
+      //1. Инсертим
+      em.persist(newActionProperty);
+    }
+    catch {
+      case ex: Exception => throw new CoreException("error while creating action ");
+    }
+    newActionProperty
+  }
+
+  val ActionProperty_ActionByValue = """
+    SELECT ap_act
+    FROM APValueAction ap_act
+    WHERE ap_act.value = :VALUE
+                                     """
+
+  def getActionProperty_ActionByValue(action: Action): APValueAction = {
+    em.createQuery(ActionProperty_ActionByValue, classOf[APValueAction]).setParameter("VALUE", action).getSingleResult
+  }
 }

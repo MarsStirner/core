@@ -256,7 +256,7 @@ public interface MedipadWebService extends Serializable {
     JSONCommonData getPrimaryAssessmentById (int assessmentId, AuthData authData) throws CoreException;
 
     @WebMethod
-    String getAllPatientsForDepartmentIdAndDoctorIdByPeriod(PatientsListRequestData requestData, int role, AuthData auth) throws CoreException;
+    String getAllPatientsForDepartmentIdAndDoctorIdByPeriod(PatientsListRequestData requestData, AuthData auth) throws CoreException;
 
     @WebMethod
     AssessmentsListData getListOfAssessmentsForPatientByEvent(AssessmentsListRequestData requestData, AuthData auth) throws CoreException;
@@ -277,7 +277,15 @@ public interface MedipadWebService extends Serializable {
     boolean callOffHospitalBedForPatient(int actionId, AuthData authData) throws CoreException;
 
     @WebMethod
-    FormOfAccountingMovementOfPatientsData getFormOfAccountingMovementOfPatients(int departmentId) throws CoreException;
+    BedDataListContainer getVacantHospitalBeds(int departmentId, AuthData authData) throws CoreException;
+
+    //@WebMethod
+    //FormOfAccountingMovementOfPatientsData getFormOfAccountingMovementOfPatients(int departmentId) throws CoreException;
+    @WebMethod
+    FormOfAccountingMovementOfPatientsData getForm007( int departmentId,
+                                                       long beginDate,
+                                                       long endDate,
+                                                       AuthData authData) throws CoreException;
 
     @WebMethod
     String movingPatientToDepartment(int eventId, HospitalBedData data, AuthData authData) throws CoreException;
@@ -295,7 +303,7 @@ public interface MedipadWebService extends Serializable {
      * @throws CoreException
      */
     @WebMethod
-    AllDepartmentsListDataMP getAllDepartmentsByHasBeds(String hasBeds) throws CoreException;
+    AllDepartmentsListDataMP getAllDepartmentsByHasBeds(String hasBeds, String hasPatients) throws CoreException;
 
     @WebMethod
     DiagnosticsListData getListOfDiagnosticsForPatientByEvent(DiagnosticsListRequestData requestData) throws CoreException;
@@ -307,13 +315,13 @@ public interface MedipadWebService extends Serializable {
     AllPersonsListData getFreePersons(ListDataRequest requestData) throws CoreException;
 
     @WebMethod
-    Object getListOfActionTypeIdNames(ListDataRequest request) throws CoreException;
+    Object getListOfActionTypeIdNames(ListDataRequest request, int patientId) throws CoreException;
 
     @WebMethod
     JSONCommonData insertConsultation(ConsultationRequestData request) throws CoreException;
 
     @WebMethod
-    JSONCommonData insertLaboratoryStudies(int eventId, CommonData data) throws CoreException;
+    JSONCommonData insertLaboratoryStudies(int eventId, CommonData data, AuthData auth) throws CoreException;
 
     /**
      * Получение справочника FlatDirectory
@@ -446,7 +454,7 @@ public interface MedipadWebService extends Serializable {
      * @throws CoreException
      */
     @WebMethod
-    String getQuotaHistory(int appealId) throws CoreException;
+    String getQuotaHistory(int appealId, QuotaRequestData request) throws CoreException;
 
     /**
      * Сервис на получение списка справочника типов квот
@@ -458,4 +466,24 @@ public interface MedipadWebService extends Serializable {
      */
     @WebMethod
     GroupTypesListData getQuotaTypes(ListDataRequest request) throws CoreException;
+
+    /**
+     * Сервис на получение данных о заборе биоматериала
+     * @param request Данные из запроса как TakingOfBiomaterialRequesData
+     * @param authData Авторизационные данные как AuthData
+     * @return TakingOfBiomaterialData
+     * @throws CoreException
+     */
+    @WebMethod
+    TakingOfBiomaterialData getTakingOfBiomaterial(TakingOfBiomaterialRequesData request, AuthData authData) throws CoreException;
+
+    /**
+     * Сервис по обновлению статусов JobTicket
+     * @param data Список статусов JobTicket как JobTicketStatusDataList
+     * @param authData Авторизационные данные как AuthData
+     * @return true - редактирование прошло успешно или false - при редактировании возникли ошибки (см. лог)
+     * @throws CoreException
+     */
+    @WebMethod
+    boolean updateJobTicketsStatuses(JobTicketStatusDataList data, AuthData authData) throws CoreException;
 }

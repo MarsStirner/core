@@ -500,6 +500,9 @@ class LaboratoryBean
         var res = pair.getValueAsString.replaceAll("<(.)+?>", "")
         res = res.replaceAll("<(\n)+?>", "")
         res = res.replaceAll("\\&.*?\\;", "")
+        if (res.length > 150) {
+          res = res.take(147) + "..."
+        }
         ("", res)
       }
     }

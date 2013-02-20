@@ -1,7 +1,7 @@
 package ru.korus.tmis.core.database
 
 import ru.korus.tmis.core.auth.AuthData
-import ru.korus.tmis.core.entity.model.{ActionStatus, Action}
+import ru.korus.tmis.core.entity.model._
 import ru.korus.tmis.core.exception.CoreException
 import ru.korus.tmis.core.logging.LoggingInterceptor
 import ru.korus.tmis.util.{ConfigManager, I18nable}
@@ -10,10 +10,11 @@ import grizzled.slf4j.Logging
 import java.util.Date
 import javax.ejb.{TransactionAttributeType, TransactionAttribute, EJB, Stateless}
 import javax.interceptor.Interceptors
-import ru.korus.tmis.core.entity.model.{ActionType, ActionStatus, Action, Staff}
 import scala.collection.JavaConversions._
 import javax.persistence.{TypedQuery, PersistenceContext, EntityManager}
 import ru.korus.tmis.core.data.{AssessmentsListRequestDataFilter, AssessmentsListRequestData}
+import ru.korus.tmis.core.hl7db.DbUUIDBeanLocal
+import java.util
 
 @Interceptors(Array(classOf[LoggingInterceptor]))
 @Stateless
@@ -30,6 +31,12 @@ class DbActionBean
 
   @EJB
   var dbActionType: DbActionTypeBeanLocal = _
+
+  @EJB
+  private var dbUUIDBeanLocal: DbUUIDBeanLocal = _
+
+  @EJB
+  private var dbEventPerson: DbEventPersonBeanLocal = _
 
   def getCountRecordsOrPagesQuery(enterPosition: String, filterQuery: String): TypedQuery[Long] = {
 
@@ -69,30 +76,54 @@ class DbActionBean
     }
   }
 
+  @TransactionAttribute(TransactionAttributeType.REQUIRES_NEW)
+  def getActionByIdWithIgnoreDeleted(id: Int) = {
+    info("Requested action id[" + id + "]")
+    val result = em.createQuery( """
+                                  SELECT a
+                                  FROM
+                                    Action a
+                                  WHERE
+                                    a.id = :id
+                                 """,
+      classOf[Action])
+      .setParameter("id", id)
+      .getResultList
+
+    result.size match {
+      case 0 => {
+        throw new CoreException(
+          ConfigManager.ErrorCodes.ActionNotFound,
+          i18n("error.actionNotFound"))
+      }
+      case size => {
+        val action = result.iterator.next()
+        em.detach(action)
+        action
+      }
+    }
+  }
+
   def createAction(eventId: Int, actionTypeId: Int, userData: AuthData) = {
     val e = dbEvent.getEventById(eventId)
     val at = dbActionType.getActionTypeById(actionTypeId)
 
     val now = new Date
-
     val a = new Action
 
-    //TODO: временнр подсовываю пустой Staff когда нет AuthData
     if (userData != null) {
       a.setCreatePerson(userData.user)
       a.setCreateDatetime(now)
       a.setModifyPerson(userData.user)
       a.setModifyDatetime(now)
 
-      a.setAssigner(userData.user)
+      val eventPerson = dbEventPerson.getLastEventPersonForEventId(eventId)
+      if (eventPerson != null) {
+        a.setAssigner(eventPerson.getPerson)
+      } else {
+        a.setAssigner(userData.user)
+      }
       a.setExecutor(userData.user)
-    }
-    else {
-      //var staff = new Staff
-      //a.setCreatePerson(staff)
-      // a.setModifyPerson(staff)
-      // a.setAssigner(staff)
-      //a.setExecutor(staff)
     }
 
     a.setCreateDatetime(now)
@@ -104,6 +135,7 @@ class DbActionBean
     a.setActionType(at)
 
     a.setStatus(ActionStatus.STARTED.getCode)
+    a.setUuid(dbUUIDBeanLocal.createUUID())
 
     a
   }
@@ -203,7 +235,7 @@ class DbActionBean
     result
   }
 
-  def getActionsByTypeCode(code: String, userData: AuthData) = {
+  def getActionsByTypeCode(code: String) = {
     val result = em.createQuery(ActionsByCodeQuery,
       classOf[Action])
       .setParameter("code", code)
@@ -246,7 +278,7 @@ class DbActionBean
   def getLastActionByActionTypeIdAndEventId(eventId: Int, actionTypeIds: java.util.Set[java.lang.Integer]) = {
     val result = em.createQuery(ActionsByATypeIdAndEventId, classOf[Int])
       .setParameter("id", eventId)
-      .setParameter("atIds", asJavaCollection(actionTypeIds) )
+      .setParameter("atIds", asJavaCollection(actionTypeIds))
       .getResultList
 
     result.size match {
@@ -270,7 +302,7 @@ class DbActionBean
     AND
       at.id IN :atIds
     ORDER BY a.createDatetime DESC
-  """
+                                   """
 
   val ActionsIdFindQuery = """
     SELECT a.id
@@ -309,6 +341,7 @@ class DbActionBean
       at.id = :atId
     AND
       a.deleted = 0
+    ORDER BY a.createDatetime DESC
                                           """
 
   val ActionByEventExternalIdQuery = """
@@ -375,4 +408,60 @@ class DbActionBean
     ORDER BY
       %s
                                    """
+
+  val ActionTypeByCodeQuery = """
+    SELECT at
+    FROM
+      ActionType at
+    WHERE
+      at.code = :code
+    AND
+      at.deleted = 0
+                              """
+
+  def getActionTypeByCode(code: String): ActionType = {
+    val result = em.createQuery(ActionTypeByCodeQuery, classOf[ActionType]).setParameter("code", code)
+      .getResultList
+    val et = result(0)
+    result.foreach(em.detach(_))
+    et
+  }
+
+  def createAction(actionType: ActionType, event: Event, person: Staff, date: Date, hospitalUidFrom: String): Action = {
+    val now = new Date
+    var newAction = new Action()
+    //Инициализируем структуру Event
+    try {
+      newAction.setCreateDatetime(now);
+      newAction.setCreatePerson(null);
+      newAction.setModifyPerson(null);
+      newAction.setActionType(actionType);
+      newAction.setModifyDatetime(now);
+      newAction.setEvent(event);
+      newAction.setNote("");
+      newAction.setBegDate(date);
+      newAction.setEndDate(date);
+      newAction.setDeleted(false);
+      newAction.setPayStatus(0);
+      newAction.setExecutor(person)
+      newAction.setAssigner(person)
+      newAction.setUuid(dbUUIDBeanLocal.createUUID());
+      //1. Инсертим
+      em.persist(newAction);
+    }
+    catch {
+      case ex: Exception => throw new CoreException("error while creating action ");
+    }
+    newAction
+  }
+
+  def getActionsByTypeCode(code: String, userData: AuthData) = {
+    val result = em.createQuery(ActionsByCodeQuery,
+      classOf[Action])
+      .setParameter("code", code)
+      .getResultList
+
+    result.foreach(a => em.detach(a))
+    result
+  }
 }

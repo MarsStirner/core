@@ -20,6 +20,7 @@ import org.codehaus.jackson.map.ObjectMapper
 import javax.ejb._
 import scala.util.control.Breaks._
 import ru.korus.tmis.core.logging.LoggingInterceptor
+import java.util
 
 @Interceptors(Array(classOf[LoggingInterceptor]))
 @Stateless
@@ -92,6 +93,9 @@ class PatientBean
 
   @EJB
   private var dbDiagnocticsBean: DbDiagnosticBeanLocal = _
+
+  @EJB
+  private var dbOrgStructureBean: DbOrgStructureBeanLocal = _
   //////////////////////////////////////////////////////////////////////////////
 
   def getCurrentPatientsForDoctor(userData: AuthData) = {
@@ -260,7 +264,8 @@ class PatientBean
                "doctorSpeciality",
                ConfigManager.Types.String,
                null,
-               doctor.getSpeciality.getName) ::
+               //doctor.getSpeciality.getName) ::
+               if (doctor.getSpeciality != null) {doctor.getSpeciality.getName} else {""}) ::
         Nil
 
       admissions.get(event) match {
@@ -352,23 +357,26 @@ class PatientBean
     })
   }
 
-  def getAllPatientsForDepartmentIdAndDoctorIdByPeriod(requestData: PatientsListRequestData, role: Int, authData: AuthData) = {
+  //https://docs.google.com/spreadsheet/ccc?key=0AgE0ILPv06JcdEE0ajBZdmk1a29ncjlteUp3VUI2MEE#gid=0
+  def getAllPatientsForDepartmentIdAndDoctorIdByPeriod(requestData: PatientsListRequestData, authData: AuthData) = {
 
+    val role = requestData.filter.roleId
     val mapper: ObjectMapper = new ObjectMapper()
 
-    requestData.setRecordsCount(customQuery.getCountActiveEventsForDepartmentAndDoctor(requestData.filter))
-    val events = customQuery.getActiveEventsForDepartmentAndDoctor( requestData.page-1,
-                                                                    requestData.limit,
-                                                                    requestData.sortingFieldInternal,
-                                                                    requestData.sortingMethod,
-                                                                    requestData.filter)
+    val eventsMap = customQuery.getActiveEventsForDepartmentAndDoctor(requestData.page-1,
+                                                                      requestData.limit,
+                                                                      requestData.sortingFieldInternal,
+                                                                      requestData.sortingMethod,
+                                                                      requestData.filter,
+                                                                      requestData.rewriteRecordsCount _)
 
     var conditionsInfo = new java.util.HashMap[Event, java.util.Map[ActionProperty, java.util.List[APValue]]]
-    if(role == 1) {  //Для сестры отделения только
-      val conditions = customQuery.getLastAssessmentByEvents(events)
+    if(role == 25) {  //Для сестры отделения только
+      val conditions = customQuery.getLastAssessmentByEvents(eventsMap.keySet().toList)   //Последний экшн осмотра
       conditions.foreach(
         c => {
-          val apList = dbActionProperty.getActionPropertiesByActionIdAndTypeNames(c._2.getId.intValue,List("Состояние", "ЧСС", "АД нижн.","АД верхн."))
+          //val apList = dbActionProperty.getActionPropertiesByActionIdAndTypeNames(c._2.getId.intValue,List("Состояние", "ЧСС", "АД нижн.","АД верхн."))
+          val apList = dbActionProperty.getActionPropertiesByActionIdAndTypeCodes(c._2.getId.intValue,List("STATE", "PULS", "BPRAS","BPRAD"))
           conditionsInfo.put(c._1, apList)
         }
       )
@@ -376,11 +384,11 @@ class PatientBean
     }
     else mapper.getSerializationConfig().setSerializationView(classOf[PatientsListDataViews.AttendingDoctorView])
 
-    mapper.writeValueAsString(new PatientsListData(events,
+    mapper.writeValueAsString(new PatientsListData(eventsMap,
                                                    requestData,
                                                    role,
                                                    conditionsInfo,
-                                                   actionBean.getLastActionByActionTypeIdAndEventId _,
+                                                   dbOrgStructureBean.getOrgStructureById _,
                                                    dbActionProperty.getActionPropertiesByActionIdAndRbCoreActionPropertyIds _,
                                                    dbRbCoreActionPropertyBean.getRbCoreActionPropertiesByIds _,
                                                    dbDiagnocticsBean.getDiagnosticsByEventId _))
@@ -911,308 +919,136 @@ class PatientBean
       //
 
       //SocStatuses
-      var disabSet = Set.empty[Int]
-      var occupSet = Set.empty[Int]
-      var clientOccupations = patientEntry.getOccupations();
-      var clientCitizenships = patientEntry.getCitizenship();
-      var clientDisabilities = patientEntry.getDisabilities()
-      var serverSocScatuses = patient.getActiveClientSocStatuses();
-      serverSocScatuses.foreach(serverStatus => {
-        serverStatus.getSocStatusClass.getId.intValue() match {
-          case 32 => { //Инвалидности
-            val result = clientDisabilities.find {element => element.getId() == serverStatus.getId().intValue()}
-            val clientDisability = result.getOrElse(null)
-            if (clientDisability != null) {
-              var socStatusTypeId = clientDisability.getDisabilityType() match {
-                case null => {0}
-                case socialStatus => {socialStatus.getId()}
-              }
-              if (socStatusTypeId > 0) {
-                disabSet = disabSet + clientDisability.getId().intValue()
-                var tempServerStatus = serverStatus
-                tempServerStatus = dbSocStatus.insertOrUpdateClientSocStatus(
-                  clientDisability.getId(),
-                  32,
-                  socStatusTypeId,
-                  clientDisability.getDocument(),//if (clientDisability.getDocument() != null) {clientDisability.getDocument().getId()} else {0},
-                  clientDisability.getRangeDisabilityDate().getStart(),
-                  clientDisability.getRangeDisabilityDate().getEnd(),
-                  patient,
-                  if (clientDisability.getBenefitsCategory() != null) {clientDisability.getBenefitsCategory().getId()} else {0},
-                  clientDisability.getComment(),
-                  usver
-                )
-              } else {
-                dbSocStatus.deleteClientSocStatus(serverStatus.getId().intValue(), usver)
-              }
-            }
-          }
-          case 33 => {}
-          case 34 => {//Занятость
-          val result = clientOccupations.find {element => element.getId() == serverStatus.getId().intValue()}
-            val clientOccupation = result.getOrElse(null)
-            if (clientOccupation != null) {
-              var socStatusTypeId = clientOccupation.getSocialStatus() match {
-                case null => {0}
-                case socialStatus => {socialStatus.getId()}
-              }
-              if (socStatusTypeId>0) {
-                occupSet = occupSet + clientOccupation.getId().intValue()
-                var tempServerStatus = serverStatus
-                tempServerStatus = dbSocStatus.insertOrUpdateClientSocStatus(
-                  clientOccupation.getId(),
-                  34,
-                  socStatusTypeId,
-                  null,
-                  new Date,
-                  null,
-                  patient,
-                  0,
-                  clientOccupation.getComment(),
-                  usver
-                )
-              }
-              //работа
-              var workSet = Set.empty[Int]
-              var clientWorks = clientOccupation.getWorks()
-              var serverWorks = patient.getActiveClientWorks();
-              serverWorks.foreach(serverWork => {
-                //занятости
-                val result = clientWorks.find {element => element.getId() == serverWork.getId().intValue()}
-                val clientWork = result.getOrElse(null)
-                if (clientWork != null) {
-                  workSet = workSet + clientWork.getId().intValue()
-                  var tempServerWork = serverWork
-                  tempServerWork = dbClientWorks.insertOrUpdateClientWork(
-                    clientWork.getId(),
-                    patient,
-                    if(clientWork.getMilitaryUnit()!=null && !clientWork.getMilitaryUnit.isEmpty)
-                    {
-                      clientWork.getMilitaryUnit
-                    }else if(clientWork.getWorkingPlace()!=null && !clientWork.getWorkingPlace.isEmpty)
-                    {
-                      clientWork.getWorkingPlace
-                    }else if (clientWork.getSchoolNumber()!=null && !clientWork.getSchoolNumber().isEmpty) {
-                      clientWork.getSchoolNumber()
-                    } else if (clientWork.getPreschoolNumber()!=null && !clientWork.getPreschoolNumber().isEmpty) {
-                      clientWork.getPreschoolNumber()
-                    } else {""},
-                    if (clientWork.getClassNumber()!=null && !clientWork.getClassNumber().isEmpty) {
-                      clientWork.getClassNumber()
-                    } else {
-                      clientWork.getPosition()
-                    },
-                    if (clientWork.getRank() != null) {clientWork.getRank().getId()} else {0},
-                    if (clientWork.getForceBranch() != null) {clientWork.getForceBranch().getId()} else {0},
-                    usver
-                  )
-                } else {
-                  dbClientWorks.deleteClientWork(serverWork.getId().intValue(), usver)
-                }
-              })
-              clientWorks.foreach((clientWork) => {
-                var j = 0
-                breakable{
-                  workSet.foreach(i => {
-                    if (i == clientWork.getId()) {
-                      j = j+1
-                      break
-                    }
-                  })
-                }
-                if (j == 0) {
-                  dbClientWorks.insertOrUpdateClientWork(
-                    clientWork.getId(),
-                    patient,
-                    if(clientWork.getMilitaryUnit()!=null && !clientWork.getMilitaryUnit.isEmpty)
-                    {
-                      clientWork.getMilitaryUnit
-                    }else if(clientWork.getWorkingPlace()!=null && !clientWork.getWorkingPlace.isEmpty)
-                    {
-                      clientWork.getWorkingPlace
-                    }else if (clientWork.getSchoolNumber()!=null && !clientWork.getSchoolNumber().isEmpty) {
-                      clientWork.getSchoolNumber()
-                    } else if (clientWork.getPreschoolNumber()!=null && !clientWork.getPreschoolNumber().isEmpty) {
-                      clientWork.getPreschoolNumber()
-                    } else {""},
-                    if (clientWork.getClassNumber()!=null && !clientWork.getClassNumber().isEmpty) {
-                      clientWork.getClassNumber()
-                    } else {
-                      clientWork.getPosition()
-                    },
-                    if (clientWork.getRank() != null) {clientWork.getRank().getId()} else {0},
-                    if (clientWork.getForceBranch() != null) {clientWork.getForceBranch().getId()} else {0},
-                    usver
-                  )
-                }
-              })
-            } else {
-              dbSocStatus.deleteClientSocStatus(serverStatus.getId().intValue(), usver)
-              var serverWorks = patient.getActiveClientWorks();
-              serverWorks.foreach(serverWork => {
-                dbClientWorks.deleteClientWork(serverWork.getId().intValue(), usver)
-              })
-            }
-          }
-          case 35 => {//Гражданства
-            if (clientCitizenships != null) {
-              if (clientCitizenships.getFirst() != null && clientCitizenships.getFirst().getId() == serverStatus.getId().intValue()) {
-                var tempServerStatus = serverStatus
-                tempServerStatus = dbSocStatus.insertOrUpdateClientSocStatus(
-                  clientCitizenships.getFirst().getId(),
-                  35, //гражданство
-                  clientCitizenships.getFirst().getSocStatusType().getId(),  //первое
-                  null,
-                  new Date,
-                  null,
-                  patient,
-                  0,
-                  clientCitizenships.getFirst().getComment(),
-                  usver
-                )
-              }
-              else if (clientCitizenships.getSecond() != null && clientCitizenships.getSecond().getId() == serverStatus.getId().intValue()) {
-                var tempServerStatus = serverStatus
-                tempServerStatus = dbSocStatus.insertOrUpdateClientSocStatus(
-                  clientCitizenships.getSecond().getId(),
-                  35, //гражданство
-                  clientCitizenships.getSecond().getSocStatusType().getId(),  //второе
-                  null,
-                  new Date,
-                  null,
-                  patient,
-                  0,
-                  clientCitizenships.getSecond().getComment(),
-                  usver
-                )
-              } else {
-                dbSocStatus.deleteClientSocStatus(serverStatus.getId().intValue(), usver)
-              }
-            }
-          }
-        }
-      })
-      //Создание новых
-      if (clientCitizenships.getFirst() != null && clientCitizenships.getFirst().getId() < 1 &&
-          clientCitizenships.getFirst().getSocStatusType() != null && clientCitizenships.getFirst().getSocStatusType().getId() > 0) {
-        dbSocStatus.insertOrUpdateClientSocStatus(
-          clientCitizenships.getFirst().getId(),
-          35, //гражданство
-          clientCitizenships.getFirst().getSocStatusType().getId(),  //первое
-          null,
-          new Date,
-          null,
-          patient,
-          0,
-          clientCitizenships.getFirst().getComment(),
-          usver
-        )
-      }
-      if (clientCitizenships.getSecond() != null && clientCitizenships.getSecond().getId() < 1 &&
-          clientCitizenships.getSecond().getSocStatusType() != null && clientCitizenships.getSecond().getSocStatusType().getId() > 0) {
-        dbSocStatus.insertOrUpdateClientSocStatus(
-          clientCitizenships.getSecond().getId(),
-          35, //гражданство
-          clientCitizenships.getSecond().getSocStatusType().getId(),  //первое
-          null,
-          new Date,
-          null,
-          patient,
-          0,
-          clientCitizenships.getSecond().getComment(),
-          usver
-        )
-      }
-      clientDisabilities.foreach((clientDisability) => {
-        var j = 0
-        breakable{
-          disabSet.foreach(i => {
-            if (i == clientDisability.getId()) {
-              j = j+1
-              break
-            }
-          })
-        }
-        if (j == 0) {
-          var socStatusTypeId = clientDisability.getDisabilityType() match {
-            case null => {0}
-            case socialStatus => {socialStatus.getId()}
-          }
-          if (socStatusTypeId>0) {
-            dbSocStatus.insertOrUpdateClientSocStatus(
-              clientDisability.getId(),
+      val serverSocScatuses = patient.getActiveClientSocStatuses
+      val serverWorks = patient.getActiveClientWorks
+
+      val clientDisabilities = patientEntry.getDisabilities
+      var clientOccupations = patientEntry.getOccupations
+      var clientCitizenships = patientEntry.getCitizenship
+
+      //---Добавление + обновление---
+      //Инвалидности
+      clientDisabilities.foreach(clientDisability => {
+        if(clientDisability.getDisabilityType!=null && clientDisability.getDisabilityType.getId>0) {
+          dbSocStatus.insertOrUpdateClientSocStatus(
+              clientDisability.getId,
               32,
-              socStatusTypeId,
-              clientDisability.getDocument(),
-              clientDisability.getRangeDisabilityDate().getStart(),
-              clientDisability.getRangeDisabilityDate().getEnd(),
+              clientDisability.getDisabilityType.getId,
+              clientDisability.getDocument,
+              clientDisability.getRangeDisabilityDate.getStart,
+              clientDisability.getRangeDisabilityDate.getEnd,
               patient,
-              if (clientDisability.getBenefitsCategory() != null) {clientDisability.getBenefitsCategory().getId()} else {0},
-              clientDisability.getComment(),
+              if (clientDisability.getBenefitsCategory != null) {clientDisability.getBenefitsCategory.getId} else {0},
+              clientDisability.getComment,
               usver
-            )
-          }
+          )
         }
       })
-      clientOccupations.foreach((clientOccupation) => {
-        var j = 0
-        breakable{
-          occupSet.foreach(i => {
-            if (i == clientOccupation.getId()) {
-              j = j+1
-              break
-            }
-          })
-        }
-        if (j == 0) {
-          var socStatusTypeId = clientOccupation.getSocialStatus() match {
-            case null => {0}
-            case socialStatus => {socialStatus.getId()}
-          }
-          if (socStatusTypeId>0) {
-            dbSocStatus.insertOrUpdateClientSocStatus(
-              clientOccupation.getId(),
-              34,
-              socStatusTypeId,
+
+      //Социальный статус
+      clientOccupations.foreach(clientOccupation => {
+        if(clientOccupation.getSocialStatus!=null && clientOccupation.getSocialStatus.getId>0) {
+          dbSocStatus.insertOrUpdateClientSocStatus(
+              clientOccupation.getId,
+              33,
+              clientOccupation.getSocialStatus.getId,
               null,
               new Date,
               null,
               patient,
               0,
-              clientOccupation.getComment(),
+              clientOccupation.getComment,
               usver
-            )
-          }
-          //работа
-          var clientWorks = clientOccupation.getWorks()
+          )
+          //Работа
+          val clientWorks = clientOccupation.getWorks
           clientWorks.foreach(clientWork => {
-            if (clientWork != null) {
-              dbClientWorks.insertOrUpdateClientWork(
-                clientWork.getId().intValue(),
-                patient,
-                if(clientWork.getMilitaryUnit()!=null && !clientWork.getMilitaryUnit.isEmpty) {
-                  clientWork.getMilitaryUnit
-                } else if(clientWork.getWorkingPlace()!=null && !clientWork.getWorkingPlace.isEmpty) {
-                  clientWork.getWorkingPlace
-                } else if (clientWork.getSchoolNumber()!=null && !clientWork.getSchoolNumber().isEmpty) {
-                  clientWork.getSchoolNumber()
-                } else if (clientWork.getPreschoolNumber()!=null && !clientWork.getPreschoolNumber().isEmpty) {
-                  clientWork.getPreschoolNumber()
-                } else {""},
-                if (clientWork.getClassNumber()!=null && !clientWork.getClassNumber().isEmpty) {
-                  clientWork.getClassNumber()
-                } else {
-                  clientWork.getPosition()
-                },
-                if (clientWork.getRank() != null) {clientWork.getRank().getId()} else {0},
-                if (clientWork.getForceBranch() != null) {clientWork.getForceBranch().getId()} else {0},
-                usver
-              )
+            val freeInput = clientOccupation.getSocialStatus.getId match {
+              case 310 => clientWork.getWorkingPlace    //Работающий
+              case 313 => clientWork.getPreschoolNumber //Дошкольник
+              case 314 => clientWork.getSchoolNumber    //Учащийся
+              case 315 => clientWork.getMilitaryUnit    //Военнослужащий
+              case _ => ""
             }
+            val post = clientOccupation.getSocialStatus.getId match {
+              case 310 => clientWork.getPosition        //Работающий
+              case 314 => clientWork.getClassNumber     //Учащийся
+              case _ => ""
+            }
+            dbClientWorks.insertOrUpdateClientWork( clientWork.getId,
+              patient,
+              freeInput,
+              post,
+              if (clientWork.getRank != null) clientWork.getRank.getId else 0,
+              if (clientWork.getForceBranch!=null) clientWork.getForceBranch.getId else 0,
+              usver)
           })
+          //Удаление
+          serverWorks.filter(sw => {
+            val result = clientWorks.find(cw => cw.getId.compareTo(sw.getId)==0)
+            if (result==None) true else false
+          }).foreach(f => dbClientWorks.deleteClientWork(f.getId.intValue(), usver))
         }
       })
-      //
+
+      //Гражданства
+      if(clientCitizenships!=null) {
+        Set(clientCitizenships.getFirst, clientCitizenships.getSecond).foreach(f=> {
+          if (f!=null && f.getSocStatusType!=null && f.getSocStatusType.getId>0){
+            dbSocStatus.insertOrUpdateClientSocStatus(
+              f.getId,
+              35,
+              f.getSocStatusType.getId,
+              null,
+              new Date,
+              null,
+              patient,
+              0,
+              f.getComment,
+              usver)
+          }
+        })
+      }
+
+      //---Удаление---
+      serverSocScatuses.filter(sw => {
+        val result = clientDisabilities.find(cw => cw.getId.compareTo(sw.getId)==0)
+        if (result==None) true else false
+      }).foreach(f => dbSocStatus.deleteClientSocStatus(f.getId.intValue(), usver))
+
+      serverSocScatuses.filter(sw => {
+        val result = clientOccupations.find(cw => cw.getId.compareTo(sw.getId)==0)
+        if (result==None) true else false
+      }).foreach(f => {
+        dbSocStatus.deleteClientSocStatus(f.getId.intValue(), usver)
+        val serverWorks = patient.getActiveClientWorks
+        serverWorks.foreach(serverWork => {
+          if (serverWork != null && serverWork.getId != null) {
+            dbClientWorks.deleteClientWork(serverWork.getId.intValue(), usver)
+          }
+        })
+      })
+
+      //-------------- костыль для НТК (нужно создавать пустой клиентВорк если нет ни одного)
+      val serverWorks2 = patient.getActiveClientWorks
+      if (serverWorks2 == null || serverWorks2.size() <= 0) {
+        dbClientWorks.insertOrUpdateClientWork(0,
+          patient,
+          "",
+          "",
+          0,
+          0,
+          usver)
+      }
+      //--------------
+
+      serverSocScatuses.filter(sw => {
+        if (sw.getSocStatusType.getId.compareTo(35)==0) {
+          val first = if(clientCitizenships.getFirst!=null) clientCitizenships.getFirst.getId else 0
+          val second = if(clientCitizenships.getSecond!=null) clientCitizenships.getSecond.getId else 0
+          if (sw.getId.compareTo(first)==0 || sw.getId.compareTo(second)==0) false else true
+        } else false
+      }).foreach(f => dbSocStatus.deleteClientSocStatus(f.getId.intValue(), usver))
 
       if (patientEntry.getId() > 0) {
         patient = dbManager.merge(patient)

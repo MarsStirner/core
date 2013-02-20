@@ -33,6 +33,7 @@ import java.util._
 import ru.korus.tmis.util.StringId
 import java.util
 import javax.swing.JList
+import scala.reflect.BeanProperty
 
 @Named
 @WebService(
@@ -173,6 +174,21 @@ class MedipadWSImpl
 
   @EJB
   private var dbClientQuoting: DbClientQuotingBeanLocal = _
+
+  @EJB
+  var dbEventPerson: DbEventPersonBeanLocal = _
+
+  @EJB
+  var dbEventTypeBean: DbEventTypeBeanLocal = _
+
+  @EJB
+  var dbContractBean: DbContractBeanLocal = _
+
+  @EJB
+  var dbJobTicketBean: DbJobTicketBeanLocal = _
+
+  @EJB
+  var dbRbTissueType: DbRbTissueTypeBeanLocal = _
   //////////////////////////////////////////////////////////////////////////////
 
   def checkTokenCookies(srvletRequest: HttpServletRequest): AuthData = {
@@ -485,17 +501,20 @@ class MedipadWSImpl
       //val appType = dbFDRecordBean.getIdValueFDRecordByEventTypeId(25, positionE._1.getEventType.getId.intValue())
       mapper.writeValueAsString(new AppealData( positionE._1,
                                                 positionA._1,
-                                                //appType,
                                                 values,
+                                                null,
                                                 "standart",
                                                 map,
                                                 street,
                                                 null,
                                                 actionBean.getLastActionByActionTypeIdAndEventId _,  //havePrimary
-                                                dbClientRelation.getClientRelationByRelativeId _
+                                                dbClientRelation.getClientRelationByRelativeId _,
+                                                null,
+                                                null,
+      if (positionA._1.getContractId != null) {dbContractBean.getContractById(positionA._1.getContractId.intValue())} else {null}
                                 ))
     } else {
-      throw new CoreException("Не удачная попытка сохранения(изменения) обращения")
+      throw new CoreException("Неудачная попытка сохранения(изменения) обращения")
     }
   }
 
@@ -513,54 +532,45 @@ class MedipadWSImpl
     //val appType = dbFDRecordBean.getIdValueFDRecordByEventTypeId(25, positionE._1.getEventType.getId.intValue())
     mapper.writeValueAsString(new AppealData( positionE._1,
                                               positionA._1,
-                                              //appType,
                                               values,
+                                              null,
                                               "standart",
                                               null,
                                               null,
                                               null,
                                               actionBean.getLastActionByActionTypeIdAndEventId _,  //havePrimary
-                                              dbClientRelation.getClientRelationByRelativeId _
+                                              dbClientRelation.getClientRelationByRelativeId _,
+                                              actionPropertyBean.getActionPropertiesByActionIdAndRbCoreActionPropertyIds _,
+                                              dbRbCoreActionPropertyBean.getRbCoreActionPropertiesByIds _,                    //таблица соответствия
+      if (positionA._1.getContractId != null) {dbContractBean.getContractById(positionA._1.getContractId.intValue())} else {null}
                               ))
   }
 
   def getAppealPrintFormById(id: Int, auth: AuthData) = {
     val result = appealBean.getAppealById(id)
-
     val positionE = result.iterator.next()
     val positionA = positionE._2.iterator.next()
     val values = positionA._2.asInstanceOf[java.util.Map[java.lang.Integer, java.util.List[Object]]]
-
-    //TODO: Проверить первичный осмотр ("Направлен в") Реализовать по аналогии с HospetalBedBean.getRegistryOriginalForm
-    //TODO: Или по аналогии с ReceivedPatientData делег. метод mIntake (этот вариант предпочтительнее)
-    //TODO: ставить вместо aps!!!!!
-    val ward = dbCustomQueryBean.getLastActionByTypeCodeAndAPTypeName(id, "4202", "Переведен в отделение")
-    var aps: java.util.Map[ActionProperty, java.util.List[APValue]] = null
-    if(ward!=null){
-      aps = actionPropertyBean.getActionPropertiesByActionId(ward.getId.intValue())
-    }
-
     val mapper: ObjectMapper = new ObjectMapper()
+
     mapper.getSerializationConfig().setSerializationView(classOf[Views.DynamicFieldsPrintForm])
 
     val map = patientBean.getKLADRAddressMapForPatient(positionE._1.getPatient)
     val street = patientBean.getKLADRStreetForPatient(positionE._1.getPatient)
 
-    //val appType = dbFDRecordBean.getIdValueFDRecordByEventTypeId(i18n("db.flatDirectory.eventType.hospitalization").toInt,
-    //                                                             positionE._1.getEventType.getId.intValue())
     mapper.writeValueAsString(new AppealData( positionE._1,
                                               positionA._1,
-                                              //appType,
                                               values,
-                                              aps,
+                                              actionPropertyBean.getActionPropertiesForEventByActionTypes _,
                                               "print_form",
                                               map,
                                               street,
                                               null,
                                               actionBean.getLastActionByActionTypeIdAndEventId _, //havePrimary
                                               dbClientRelation.getClientRelationByRelativeId _,
-                                              actionPropertyBean.getActionPropertiesByActionIdAndRbCoreActionPropertyIds _,  //Admission Diagnosis
-                                              dbRbCoreActionPropertyBean.getRbCoreActionPropertiesByIds _          //таблица соответствия
+                                              actionPropertyBean.getActionPropertiesByActionIdAndRbCoreActionPropertyIds _,  //в тч Admission Diagnosis
+                                              dbRbCoreActionPropertyBean.getRbCoreActionPropertiesByIds _,          //таблица соответствия
+      if (positionA._1.getContractId != null) {dbContractBean.getContractById(positionA._1.getContractId.intValue())} else {null}
                               ))
   }
 
@@ -629,20 +639,26 @@ class MedipadWSImpl
      listForSummary.add(ActionWrapperInfo.doctorFirstName)
      listForSummary.add(ActionWrapperInfo.doctorMiddleName)
      listForSummary.add(ActionWrapperInfo.doctorSpecs)
+     listForSummary.add(ActionWrapperInfo.urgent)
+     listForSummary.add(ActionWrapperInfo.multiplicity)
+     listForSummary.add(ActionWrapperInfo.finance)
+     listForSummary.add(ActionWrapperInfo.plannedEndDate)
+     listForSummary.add(ActionWrapperInfo.toOrder)
 
      primaryAssessmentBean.getEmptyStructure(actionTypeId,
                                              "PrimaryAssesment",
                                              listForConverter,
                                              listForSummary,
                                              authData,
-                                             postProcessing _)
+                                             postProcessing _,
+                                             null)
    }
 
   //запрос на структуру первичного мед. осмотра с копированием данных из предыдущего осмотра
    def getStructOfPrimaryMedExamWithCopy(actionTypeId: Int, authData: AuthData, eventId: Int) = {
     var lastActionId = actionBean.getActionIdWithCopyByEventId(eventId, actionTypeId)
     try {
-      primaryAssessmentBean.getPrimaryAssessmentById(lastActionId, "Assessment", authData, postProcessing _)
+      primaryAssessmentBean.getPrimaryAssessmentById(lastActionId, "Assessment", authData, postProcessing _, false) //postProcessingWithCopy _, true)
     }
     catch {
       case e: Exception => {
@@ -678,28 +694,57 @@ class MedipadWSImpl
      jData
    }
 
-
+  private def postProcessingWithCopy (jData: JSONCommonData, reWriteId: java.lang.Boolean) = {
+    //Постобработка (Сопоставление id APT c CoreAP в подветке details - id, typeId)
+    jData.data.get(0).group.get(1).attribute.foreach(ap => {
+      var value = if(ap.typeId!=null && ap.typeId.intValue()>0)
+                    ap.typeId.intValue()
+                  else
+                    actionPropertyBean.getActionPropertyById(ap.id.intValue()).getType.getId.intValue()
+      ap.typeId = dbRbCoreActionPropertyBean.getRbCoreActionPropertiesByActionPropertyTypeId(value).getId.intValue()
+      ap.id = ap.typeId
+    })
+    jData
+  }
 
    //создание первичного мед. осмотра
    def insertPrimaryMedExamForPatient(eventId: Int, data: JSONCommonData, authData: AuthData)  = {
-     //TODO: подключить анализ авторизационных данных и доступных ролей
-     primaryAssessmentBean.createPrimaryAssessmentForEventId(eventId,
-                                                             data,
-                                                             "Assessment",
-                                                             authData,
-                                                             preProcessing _,
-                                                             postProcessing _)
+     //создаем ответственного, если до этого был другой
+     val eventPerson = dbEventPerson.getLastEventPersonForEventId(eventId)
+     if (eventPerson == null || eventPerson.getPerson != authData.getUser) {
+       dbEventPerson.insertOrUpdateEventPerson(if (eventPerson != null) {eventPerson.getId.intValue()} else 0,
+                                               dbEventBean.getEventById(eventId),
+                                               authData.getUser,
+                                               false) //параметр для флаша
+     }
+     //создаем осмотр. ЕвентПерсон не флашится!!!
+     val returnValue = primaryAssessmentBean.createPrimaryAssessmentForEventId(eventId,
+                                                                               data,
+                                                                               "Assessment",
+                                                                               authData,
+                                                                               preProcessing _,
+                                                                               postProcessing _)
+     returnValue
    }
 
    //редактирование первичного мед. осмотра
    def modifyPrimaryMedExamForPatient(actionId: Int, data: JSONCommonData, authData: AuthData)  = {
-     //TODO: подключить анализ авторизационных данных и доступных ролей
-     primaryAssessmentBean.modifyPrimaryAssessmentById(actionId,
-                                                       data,
-                                                       "Assessment",
-                                                       authData,
-                                                       preProcessing _,
-                                                       postProcessing _)
+     //создаем ответственного, если до этого был другой
+     val eventPerson = dbEventPerson.getLastEventPersonForEventId(actionBean.getActionById(actionId).getEvent.getId.intValue())
+     if (eventPerson.getPerson != authData.getUser) {
+       dbEventPerson.insertOrUpdateEventPerson(if (eventPerson != null) {eventPerson.getId.intValue()} else 0,
+                                               actionBean.getActionById(actionId).getEvent,
+                                               authData.getUser,
+                                               false)
+     }
+     //создаем осмотр. ЕвентПерсон не флашится!!!
+     val returnValue = primaryAssessmentBean.modifyPrimaryAssessmentById(actionId,
+                                                                         data,
+                                                                         "Assessment",
+                                                                         authData,
+                                                                         preProcessing _,
+                                                                         postProcessing _)
+     returnValue
    }
 
    def getPrimaryAssessmentById (assessmentId: Int, authData: AuthData) = {
@@ -710,13 +755,13 @@ class MedipadWSImpl
      val json_data = primaryAssessmentBean.getPrimaryAssessmentById(assessmentId,
                                                                      "Assessment",
                                                                      authData,
-                                                                     postProcessing _)
+                                                                     postProcessing _, false)
 
      json_data
    }
 
-  def getAllPatientsForDepartmentIdAndDoctorIdByPeriod(requestData: PatientsListRequestData, role: Int, auth: AuthData) = {
-    patientBean.getAllPatientsForDepartmentIdAndDoctorIdByPeriod(requestData, role, auth)
+  def getAllPatientsForDepartmentIdAndDoctorIdByPeriod(requestData: PatientsListRequestData, auth: AuthData) = {
+    patientBean.getAllPatientsForDepartmentIdAndDoctorIdByPeriod(requestData, auth)
   }
 
   //Возвращает список осмотров по пациенту и обращению с фильтрацией по типу действия
@@ -773,10 +818,22 @@ class MedipadWSImpl
     hospitalBedBean.callOffHospitalBedForPatient(actionId, authData)
   }
 
-  def getFormOfAccountingMovementOfPatients(departmentId: Int) = {
+  //Список коек
+  def getVacantHospitalBeds(departmentId: Int, authData: AuthData) = {
+    new BedDataListContainer(hospitalBedBean.getCaseHospitalBedsByDepartmentId(departmentId), departmentId)
+  }
+
+/*  def getFormOfAccountingMovementOfPatients(departmentId: Int) = {
     val linear = seventhFormBean.fillInSeventhForm(departmentId, null, null/*previousMedDate, currentMedDate*/)
     new FormOfAccountingMovementOfPatientsData(linear, null)
-  }
+  }*/
+
+  //форма 007
+  def getForm007(departmentId: Int,
+                 beginDate: Long,
+                 endDate: Long,
+                 authData: AuthData) = seventhFormBean.getForm007LinearView(departmentId, beginDate, endDate)
+
 
   def movingPatientToDepartment(eventId: Int, data: HospitalBedData, authData: AuthData) = {
 
@@ -788,21 +845,30 @@ class MedipadWSImpl
   }
 
   def insertOrUpdateQuota(quotaData: QuotaData, eventId: Int, auth: AuthData) = {
-    appealBean.insertOrUpdateClientQuoting(quotaData.getData, eventId, auth)
+    var quota = appealBean.insertOrUpdateClientQuoting(quotaData.getData, eventId, auth)
     val mapper: ObjectMapper = new ObjectMapper()
     mapper.getSerializationConfig().setSerializationView(classOf[QuotaViews.DynamicFieldsQuotaCreate])
-    val cq = dbClientQuoting.getClientQuotingById(quotaData.getData.getId)
-    mapper.writeValueAsString(new QuotaData(new QuotaEntry(cq, classOf[QuotaViews.DynamicFieldsQuotaCreate]), quotaData.getRequestData))
+    if (quotaData.getData.getId > 0) {
+      quota = dbClientQuoting.getClientQuotingById(quotaData.getData.getId)
+    }
+    mapper.writeValueAsString(new QuotaData(new QuotaEntry(quota, classOf[QuotaViews.DynamicFieldsQuotaCreate]), quotaData.getRequestData))
   }
 
-  def getQuotaHistory(appealId: Int) = {
-    val result = appealBean.getAppealById(appealId)
-    val appeal = result.iterator.next()._1
-    val quotaList = dbClientQuoting.getAllClientQuotingForPatient(appeal.getPatient.getId.intValue())
+  def getQuotaHistory(appealId: Int, request: QuotaRequestData) = {
+    val appeal = dbEventBean.getEventById(appealId)
+    //val result = appealBean.getAppealById(appealId)
+    //val appeal = result.iterator.next()._1
+    val quotaList = dbClientQuoting.getAllClientQuotingForPatient(appeal.getPatient.getId.intValue(),
+                                                                  request.page-1,
+                                                                  request.limit,
+                                                                  request.sortingFieldInternal,
+                                                                  request.sortingMethod,
+                                                                  request.filter,
+                                                                  request.rewriteRecordsCount _)
 
     val mapper: ObjectMapper = new ObjectMapper()
     mapper.getSerializationConfig().setSerializationView(classOf[QuotaViews.DynamicFieldsQuotaHistory])
-    mapper.writeValueAsString(new QuotaListData(quotaList, null))
+    mapper.writeValueAsString(new QuotaListData(quotaList, request))
   }
 
   /*
@@ -855,8 +921,11 @@ class MedipadWSImpl
     list
   }
 
-  def getAllDepartmentsByHasBeds(hasBeds: String) = { //Для медипада
-    new AllDepartmentsListDataMP(dbOrgStructureBean.getAllOrgStructuresByRequest(0, 0, "", "", null), null)
+  def getAllDepartmentsByHasBeds(hasBeds: String, hasPatients: String) = { //Для медипада
+    val flgBeds = hasBeds.toLowerCase.compareTo("true")==0 || hasBeds.toLowerCase.compareTo("yes")==0
+    val flgPatients = hasPatients.toLowerCase.compareTo("true")==0 || hasPatients.toLowerCase.compareTo("yes")==0
+    val filter = new DepartmentsDataFilter(flgBeds, flgPatients)
+    new AllDepartmentsListDataMP(dbOrgStructureBean.getAllOrgStructuresByRequest(0, 0, "", "", filter), null)
   }
 
 
@@ -880,7 +949,7 @@ class MedipadWSImpl
     //TODO: подключить анализ авторизационных данных и доступных ролей
     val authData:AuthData = null
 
-    val json_data = primaryAssessmentBean.getPrimaryAssessmentById(actionId, "Diagnostic", authData, null)
+    val json_data = primaryAssessmentBean.getPrimaryAssessmentById(actionId, "Diagnostic", authData, null, false)
     json_data
   }
 
@@ -897,7 +966,7 @@ class MedipadWSImpl
     list
   }
 
-  def getListOfActionTypeIdNames(request: ListDataRequest) = {
+  def getListOfActionTypeIdNames(request: ListDataRequest, patientId: Int) = {
 
     //TODO: подключить анализ авторизационных данных и доступных ролей
     val count = actionTypeBean.getCountAllActionTypeWithFilter(request.filter)
@@ -925,8 +994,11 @@ class MedipadWSImpl
           listForSummary.add(ActionWrapperInfo.doctorSpecs)
           listForSummary.add(ActionWrapperInfo.urgent)
           listForSummary.add(ActionWrapperInfo.multiplicity)
+          listForSummary.add(ActionWrapperInfo.finance)
+          listForSummary.add(ActionWrapperInfo.plannedEndDate)
+          listForSummary.add(ActionWrapperInfo.toOrder)
 
-          val json = primaryAssessmentBean.getEmptyStructure(actionType.getId.intValue(), "Action", listForConverter, listForSummary,  null, null)
+          val json = primaryAssessmentBean.getEmptyStructure(actionType.getId.intValue(), "Action", listForConverter, listForSummary,  null, null, patientBean.getPatientById(patientId))
           json
         }
         case _  => {
@@ -948,10 +1020,10 @@ class MedipadWSImpl
     primaryAssessmentBean.insertAssessmentAsConsultation(request.eventId, request.actionTypeId, request.executorId, request.beginDate, request.endDate, request.urgent, request, authData)
   }
 
-  def insertLaboratoryStudies(eventId: Int, data: CommonData) = {
-    //TODO: подключить анализ авторизационных данных и доступных ролей
-    val authData:AuthData = null
-    primaryAssessmentBean.createAssessmentsForEventIdFromCommonData(eventId, data, "Diagnostic", null, authData)
+  def insertLaboratoryStudies(eventId: Int, data: CommonData, auth: AuthData) = {
+    // проверка пользователя на ответственного за ивент
+
+    primaryAssessmentBean.createAssessmentsForEventIdFromCommonData(eventId, data, "Diagnostic", null, auth, postProcessing _)
   }
 
   def getFlatDirectories(request: FlatDirectoryRequestData) = {
@@ -1179,6 +1251,15 @@ class MedipadWSImpl
                                                       request.filter,
                                                       request.rewriteRecordsCount _)
       }
+      case "tissueTypes" => {  //Типы исследования
+        mapper.getSerializationConfig().setSerializationView(classOf[DictionaryDataViews.DefaultView])
+        dbRbTissueType.getAllRbTissueTypeWithFilter(request.page-1,
+                                                    request.limit,
+                                                    request.sortingFieldInternal,
+                                                    request.sortingMethod,
+                                                    request.filter,
+                                                    request.rewriteRecordsCount _)
+      }
     }
     mapper.writeValueAsString(new DictionaryListData(list, request))
   }
@@ -1219,7 +1300,7 @@ class MedipadWSImpl
     val mapper: ObjectMapper = new ObjectMapper()
     mapper.getSerializationConfig().setSerializationView(classOf[DictionaryDataViews.DefaultView])
 
-    val list = dbEventBean.getEventTypesByRequestTypeIdAndFinanceId(request.page-1,
+    val list = dbEventTypeBean.getEventTypesByRequestTypeIdAndFinanceId(request.page-1,
                                                                     request.limit,
                                                                     request.sortingFieldInternal,
                                                                     request.sortingMethod,
@@ -1231,6 +1312,24 @@ class MedipadWSImpl
 
   def getPatientsFromOpenAppealsWhatHasBedsByDepartmentId(departmentId: Int) = {
     patientBean.getCurrentPatientsByDepartmentId(departmentId)
+  }
+
+  def getTakingOfBiomaterial(request: TakingOfBiomaterialRequesData, authData: AuthData) = {
+
+    val res = dbJobTicketBean.getDirectionsWithJobTicketsBetweenDate(request.sortingFieldInternal, request.filter)
+    request.rewriteRecordsCount(res.size())
+    new TakingOfBiomaterialData(res, request)
+  }
+
+  def updateJobTicketsStatuses(data: JobTicketStatusDataList, authData: AuthData) = {
+
+    var isSuccess: Boolean = true
+    data.getData.foreach(f=> {
+      val res = dbJobTicketBean.modifyJobTicketStatus(f.getId, f.getStatus, authData)
+      if(!res)
+        isSuccess = res
+    })
+    isSuccess
   }
 
 }

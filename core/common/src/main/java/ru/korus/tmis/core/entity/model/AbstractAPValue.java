@@ -20,6 +20,10 @@ public abstract class AbstractAPValue implements APValue {
     public String getValueAsId() {
         return "";
     }
+    
+    public void setValue(Object value) throws CoreException {
+        setValueFromString(value.toString());
+    }
 
     @Override
     public abstract boolean setValueFromString(String value)

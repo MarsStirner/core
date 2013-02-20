@@ -11,11 +11,11 @@ import javax.persistence.EntityManager;
 import javax.persistence.PersistenceContext;
 
 /**
- * Created with IntelliJ IDEA.
- * User: nde
- * Date: 09.12.12
- * Time: 15:49
- * To change this template use File | Settings | File Templates.
+ * @Author: Dmitriy E. Nosov <br>
+ * @Date: 09.12.12, 15:49 <br>
+ * @Company: Korus Consulting IT<br>
+ * Revision:    \$Id$ <br>
+ * @Description: <br>
  */
 @Interceptors(LoggingInterceptor.class)
 @Stateless
@@ -30,13 +30,19 @@ public class DbUUIDBean implements DbUUIDBeanLocal {
 
     /**
      * Возвращает UUID по идентификатору id
+     *
      * @param id
      * @return
      */
     @Override
-    public String getUUIDById(int id) {
+    public String getUUIDById(final int id) {
         return em.createQuery("SELECT u.uuid FROM UUID u WHERE u.id = :id", String.class)
-                 .setParameter("id",id)
-                 .getSingleResult();
+                .setParameter("id", id)
+                .getSingleResult();
+    }
+
+    @Override
+    public UUID createUUID() {
+      return new UUID(java.util.UUID.randomUUID().toString());
     }
 }

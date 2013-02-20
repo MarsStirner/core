@@ -3,8 +3,8 @@ package ru.korus.tmis.core.database;
 import ru.korus.tmis.core.entity.model.Organisation;
 import ru.korus.tmis.core.exception.CoreException;
 
-import java.util.List;
 import javax.ejb.Local;
+import java.util.List;
 
 @Local
 public interface DbOrganizationBeanLocal {
@@ -24,5 +24,14 @@ public interface DbOrganizationBeanLocal {
             throws CoreException;
 
     java.util.LinkedList<Object> getAllOrganizationWithFilter(int page, int limit, String sortingField, String sortingMethod, Object filter)
+            throws CoreException;
+
+    /**
+     * Получение организации по ее инфис-коду, если не найдено вообще ни одной, то CoreException
+     *
+     * @param infisCode инфис-код организации, для поиска
+     * @return Организация
+     */
+    Organisation getOrganizationByInfisCode(final String infisCode)
             throws CoreException;
 }

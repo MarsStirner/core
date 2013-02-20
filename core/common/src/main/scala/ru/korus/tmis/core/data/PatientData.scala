@@ -211,7 +211,7 @@ def this(patient: Patient,
     patient.getActiveClientPolicies().foreach(p => this.payments.add(new PolicyEntryContainer (p)))
     patient.getActiveClientRelatives().foreach(r => this.relations.add(new RelationEntryContainer(r))) // getClientRelatives
     patient.getActiveClientDocuments().foreach(d =>
-      if (d.getDocumentType.getDocumentTypeGroup.getId.intValue() == 1) {  //getDocumentTypeGroup == 1 - тип документа удостоверяющего личность    //d.getDocumentType.getId != 20 &&
+      if (d.getDocumentType != null && d.getDocumentType.getDocumentTypeGroup.getId.intValue() == 1) {  //getDocumentTypeGroup == 1 - тип документа удостоверяющего личность    //d.getDocumentType.getId != 20 &&
         this.idCards.add(new DocumentEntryContainer(d))
       }
     )
@@ -223,8 +223,7 @@ def this(patient: Patient,
           case "2" => { //086
             this.disabilities.add(new TempInvalidContainer(t))
           }
-          case "3" => {//087
-
+          case "1" | "3"  => {//087   //TODO: Сейчас берется два типа Соц. статус и занятость (запись ведется как соц.статус)
             this.occupations.add(new OccupationContainer(t, patient.getActiveClientWorks))       //32 - инвалидность
           }
           case _ => {}
@@ -962,22 +961,51 @@ class QuotaRequestData {
   @BeanProperty
   var sortingMethod: String = _
   @BeanProperty
-  var limit: String = _
+  var limit: Int = _
   @BeanProperty
-  var page: String = _
+  var page: Int = _
   @BeanProperty
-  var recordsCount: String = _
+  var recordsCount: Long = _
   @BeanProperty
   var coreVersion: String = _
 
-  def this(patientCode: String,
-           fullName: String,
-           birthDate: Date,
-           document: String,
+  var sortingFieldInternal: String = _
+
+  def this(filter: RequestDataFilter,
            sortingField: String,
            sortingMethod: String,
-           limit: String,
-           page: String) = {
+           limit: Int,
+           page: Int) = {
+    this()
+    this.filter = if(filter!=null) {filter} else {null}
+    this.sortingField = sortingField match {
+      case null => {"id"}
+      case _ => {sortingField}
+    }
+    this.sortingFieldInternal = this.toSortingString(this.sortingField)
+
+    this.sortingMethod = sortingMethod match {
+      case null => {"asc"}
+      case _ => {sortingMethod}
+    }
+    this.limit = limit
+    this.page = if(page>1)page else 1
+    this.coreVersion = ConfigManager.Messages("misCore.assembly.version")
+  }
+
+  def rewriteRecordsCount(recordsCount: java.lang.Long) = {
+    this.recordsCount = recordsCount.longValue()
+    true
+  }
+
+  def this(patientCode: String,
+    fullName: String,
+    birthDate: Date,
+    document: String,
+    sortingField: String,
+    sortingMethod: String,
+    limit: Int,
+    page: Int) = {
     this()
     this.filter = new RequestDataFilter(patientCode, fullName, birthDate, document)
     this.sortingField = sortingField
@@ -987,6 +1015,16 @@ class QuotaRequestData {
     this.coreVersion = ConfigManager.Messages("misCore.assembly.version")
   }
 
+  def toSortingString (sortingField: String) = {
+    sortingField match {
+      case "quotaTicket" => {"cq.quotaTicket"}
+      case "request" => {"cq.request"}
+      case "amount" => {"cq.amount"}
+      case "diagnosis" => {"cq.mkb.diagID"}
+      case "quotaType" => {"cq.quotaType.code"}
+      case _ => {"cq.id"}
+    }
+  }
 }
 
 @XmlType(name = "quotaEntry")
@@ -997,28 +1035,28 @@ class QuotaEntry  {
   var id : Int = _
   @BeanProperty
   var version : Int = _
-  @JsonView(Array(classOf[QuotaViews.DynamicFieldsQuotaCreate]))
+  //@JsonView(Array(classOf[QuotaViews.DynamicFieldsQuotaCreate]))
   @BeanProperty
   var appealNumber : String = _
   @BeanProperty
   var talonNumber : String = _
-  @JsonView(Array(classOf[QuotaViews.DynamicFieldsQuotaCreate]))
+  //@JsonView(Array(classOf[QuotaViews.DynamicFieldsQuotaCreate]))
   @BeanProperty
   var stage : IdNameContainer = _
-  @JsonView(Array(classOf[QuotaViews.DynamicFieldsQuotaHistory]))
+  //@JsonView(Array(classOf[QuotaViews.DynamicFieldsQuotaHistory]))
   @BeanProperty
   var stageSum : Int = _
   @BeanProperty
   var request: IdNameContainer = _
   @BeanProperty
   var mkb : MKBContainer = _
-  @JsonView(Array(classOf[QuotaViews.DynamicFieldsQuotaCreate]))
+  //@JsonView(Array(classOf[QuotaViews.DynamicFieldsQuotaCreate]))
   @BeanProperty
-  var quotaType : IdNameContainer = _
-  @JsonView(Array(classOf[QuotaViews.DynamicFieldsQuotaCreate]))
+  var quotaType : QuotaTypeContainer = _
+  //@JsonView(Array(classOf[QuotaViews.DynamicFieldsQuotaCreate]))
   @BeanProperty
   var department : IdNameContainer = _
-  @JsonView(Array(classOf[QuotaViews.DynamicFieldsQuotaCreate]))
+  //@JsonView(Array(classOf[QuotaViews.DynamicFieldsQuotaCreate]))
   @BeanProperty
   var status : IdNameContainer = _
 
@@ -1031,7 +1069,7 @@ class QuotaEntry  {
     this.stage = new IdNameContainer(stage, "")
     this.request = new IdNameContainer(request, "")
     this.mkb = new MKBContainer(mkb)
-    this.quotaType = new IdNameContainer(quotaType, "")
+    this.quotaType = new QuotaTypeContainer(quotaType, "", "")
     this.department = new IdNameContainer(department, "")
     this.status = new IdNameContainer(status, "")
   }
@@ -1044,19 +1082,15 @@ class QuotaEntry  {
     this.request = new IdNameContainer(clientQuoting.getRequest.intValue(), "")
     this.mkb = new MKBContainer(clientQuoting.getMkb)
 
-    if (classic == classOf[QuotaViews.DynamicFieldsQuotaCreate]) {
+    //if (classic == classOf[QuotaViews.DynamicFieldsQuotaCreate]) {
       this.appealNumber = clientQuoting.getIdentifier
       this.stage = new IdNameContainer(clientQuoting.getStage.intValue(), "")
-      this.quotaType = new IdNameContainer(clientQuoting.getQuotaType.getId.intValue(), clientQuoting.getQuotaType.getName)
+      this.quotaType = new QuotaTypeContainer(clientQuoting.getQuotaType)
       this.department = new IdNameContainer(clientQuoting.getOrgStructure.getId.intValue(), clientQuoting.getOrgStructure.getName)
       this.status = new IdNameContainer(clientQuoting.getStatus.getId.intValue(), clientQuoting.getStatus.getName)
-    }
-    else if (classic == classOf[QuotaViews.DynamicFieldsQuotaHistory]) {
+    //}
+    //else if (classic == classOf[QuotaViews.DynamicFieldsQuotaHistory]) {
       this.stageSum = clientQuoting.getAmount + 1
-    }
+    //}
   }
 }
-
-
-
-
