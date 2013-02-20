@@ -154,7 +154,7 @@
                 <executions>
                 <execution>
                 <id>Start and deploy server</id>
-                <phase>package</phase>
+                <phase>install</phase>
                 <goals>
                 <goal>stop-domain</goal>
                 <goal>deploy</goal>
