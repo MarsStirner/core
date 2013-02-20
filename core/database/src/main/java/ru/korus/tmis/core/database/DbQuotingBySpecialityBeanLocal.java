@@ -1,6 +1,8 @@
 package ru.korus.tmis.core.database;
 
+import ru.korus.tmis.core.entity.model.Organisation;
 import ru.korus.tmis.core.entity.model.QuotingBySpeciality;
+import ru.korus.tmis.core.entity.model.Speciality;
 import ru.korus.tmis.core.exception.CoreException;
 
 import javax.ejb.Local;
@@ -15,4 +17,8 @@ import java.util.List;
 public interface DbQuotingBySpecialityBeanLocal {
 
     public List<QuotingBySpeciality> getQuotingByOrganisation(String organisationUid) throws CoreException;
+
+    public List<QuotingBySpeciality> getQuotingBySpecialityAndOrganisation
+            (Speciality speciality, String organisationInfisCode);
+
 }

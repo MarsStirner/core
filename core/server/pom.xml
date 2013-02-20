@@ -151,15 +151,15 @@
                         </component>
                     </components>
                 </configuration>
-                <!--<executions>-->
-                <!--<execution>-->
-                <!--<id>Start and deploy server</id>-->
-                <!--<phase>package</phase>-->
-                <!--<goals>-->
-                <!--<goal>stop-domain</goal>-->
-                <!--<goal>deploy</goal>-->
-                <!--</goals>-->
-                <!--</execution>-->
+                <executions>
+                <execution>
+                <id>Start and deploy server</id>
+                <phase>package</phase>
+                <goals>
+                <goal>stop-domain</goal>
+                <goal>deploy</goal>
+                </goals>
+                </execution>
                 <!--&lt;!&ndash;<execution>&ndash;&gt;-->
                 <!--&lt;!&ndash;<id>Undeploy and stop server</id>&ndash;&gt;-->
                 <!--&lt;!&ndash;<phase>prepare-package</phase>&ndash;&gt;-->
@@ -168,7 +168,7 @@
                 <!--&lt;!&ndash;<goal>stop-domain</goal>&ndash;&gt;-->
                 <!--&lt;!&ndash;</goals>&ndash;&gt;-->
                 <!--&lt;!&ndash;</execution>&ndash;&gt;-->
-                <!--</executions>-->
+                </executions>
             </plugin>
         </plugins>
     </build>

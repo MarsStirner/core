@@ -15,7 +15,6 @@ import org.apache.thrift.protocol.TTupleProtocol;
 import org.apache.thrift.protocol.TProtocolException;
 import org.apache.thrift.EncodingUtils;
 import org.apache.thrift.TException;
-
 import java.util.List;
 import java.util.ArrayList;
 import java.util.Map;
@@ -28,952 +27,932 @@ import java.util.Collections;
 import java.util.BitSet;
 import java.nio.ByteBuffer;
 import java.util.Arrays;
-
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 public class Queue implements org.apache.thrift.TBase<Queue, Queue._Fields>, java.io.Serializable, Cloneable {
-    private static final org.apache.thrift.protocol.TStruct STRUCT_DESC = new org.apache.thrift.protocol.TStruct("Queue");
+  private static final org.apache.thrift.protocol.TStruct STRUCT_DESC = new org.apache.thrift.protocol.TStruct("Queue");
 
-    private static final org.apache.thrift.protocol.TField DATE_TIME_FIELD_DESC = new org.apache.thrift.protocol.TField("dateTime", org.apache.thrift.protocol.TType.I64, (short) 1);
-    private static final org.apache.thrift.protocol.TField INDEX_FIELD_DESC = new org.apache.thrift.protocol.TField("index", org.apache.thrift.protocol.TType.I32, (short) 2);
-    private static final org.apache.thrift.protocol.TField PERSON_ID_FIELD_DESC = new org.apache.thrift.protocol.TField("personId", org.apache.thrift.protocol.TType.I32, (short) 3);
-    private static final org.apache.thrift.protocol.TField NOTE_FIELD_DESC = new org.apache.thrift.protocol.TField("note", org.apache.thrift.protocol.TType.STRING, (short) 4);
-    private static final org.apache.thrift.protocol.TField QUEUE_ID_FIELD_DESC = new org.apache.thrift.protocol.TField("queueId", org.apache.thrift.protocol.TType.I32, (short) 5);
-    private static final org.apache.thrift.protocol.TField ENQUEUE_PERSON_ID_FIELD_DESC = new org.apache.thrift.protocol.TField("enqueuePersonId", org.apache.thrift.protocol.TType.I32, (short) 6);
-    private static final org.apache.thrift.protocol.TField ENQUEUE_DATE_TIME_FIELD_DESC = new org.apache.thrift.protocol.TField("enqueueDateTime", org.apache.thrift.protocol.TType.I64, (short) 7);
+  private static final org.apache.thrift.protocol.TField DATE_TIME_FIELD_DESC = new org.apache.thrift.protocol.TField("dateTime", org.apache.thrift.protocol.TType.I64, (short)1);
+  private static final org.apache.thrift.protocol.TField INDEX_FIELD_DESC = new org.apache.thrift.protocol.TField("index", org.apache.thrift.protocol.TType.I32, (short)2);
+  private static final org.apache.thrift.protocol.TField PERSON_ID_FIELD_DESC = new org.apache.thrift.protocol.TField("personId", org.apache.thrift.protocol.TType.I32, (short)3);
+  private static final org.apache.thrift.protocol.TField NOTE_FIELD_DESC = new org.apache.thrift.protocol.TField("note", org.apache.thrift.protocol.TType.STRING, (short)4);
+  private static final org.apache.thrift.protocol.TField QUEUE_ID_FIELD_DESC = new org.apache.thrift.protocol.TField("queueId", org.apache.thrift.protocol.TType.I32, (short)5);
+  private static final org.apache.thrift.protocol.TField ENQUEUE_PERSON_ID_FIELD_DESC = new org.apache.thrift.protocol.TField("enqueuePersonId", org.apache.thrift.protocol.TType.I32, (short)6);
+  private static final org.apache.thrift.protocol.TField ENQUEUE_DATE_TIME_FIELD_DESC = new org.apache.thrift.protocol.TField("enqueueDateTime", org.apache.thrift.protocol.TType.I64, (short)7);
 
-    private static final Map<Class<? extends IScheme>, SchemeFactory> schemes = new HashMap<Class<? extends IScheme>, SchemeFactory>();
+  private static final Map<Class<? extends IScheme>, SchemeFactory> schemes = new HashMap<Class<? extends IScheme>, SchemeFactory>();
+  static {
+    schemes.put(StandardScheme.class, new QueueStandardSchemeFactory());
+    schemes.put(TupleScheme.class, new QueueTupleSchemeFactory());
+  }
 
-    static {
-        schemes.put(StandardScheme.class, new QueueStandardSchemeFactory());
-        schemes.put(TupleScheme.class, new QueueTupleSchemeFactory());
-    }
+  public long dateTime; // optional
+  public int index; // optional
+  public int personId; // optional
+  public String note; // optional
+  public int queueId; // optional
+  public int enqueuePersonId; // optional
+  public long enqueueDateTime; // optional
 
-    public long dateTime; // optional
-    public int index; // optional
-    public int personId; // optional
-    public String note; // optional
-    public int queueId; // optional
-    public int enqueuePersonId; // optional
-    public long enqueueDateTime; // optional
+  /** The set of fields this struct contains, along with convenience methods for finding and manipulating them. */
+  public enum _Fields implements org.apache.thrift.TFieldIdEnum {
+    DATE_TIME((short)1, "dateTime"),
+    INDEX((short)2, "index"),
+    PERSON_ID((short)3, "personId"),
+    NOTE((short)4, "note"),
+    QUEUE_ID((short)5, "queueId"),
+    ENQUEUE_PERSON_ID((short)6, "enqueuePersonId"),
+    ENQUEUE_DATE_TIME((short)7, "enqueueDateTime");
 
-    /**
-     * The set of fields this struct contains, along with convenience methods for finding and manipulating them.
-     */
-    public enum _Fields implements org.apache.thrift.TFieldIdEnum {
-        DATE_TIME((short) 1, "dateTime"),
-        INDEX((short) 2, "index"),
-        PERSON_ID((short) 3, "personId"),
-        NOTE((short) 4, "note"),
-        QUEUE_ID((short) 5, "queueId"),
-        ENQUEUE_PERSON_ID((short) 6, "enqueuePersonId"),
-        ENQUEUE_DATE_TIME((short) 7, "enqueueDateTime");
-
-        private static final Map<String, _Fields> byName = new HashMap<String, _Fields>();
-
-        static {
-            for (_Fields field : EnumSet.allOf(_Fields.class)) {
-                byName.put(field.getFieldName(), field);
-            }
-        }
-
-        /**
-         * Find the _Fields constant that matches fieldId, or null if its not found.
-         */
-        public static _Fields findByThriftId(int fieldId) {
-            switch (fieldId) {
-                case 1: // DATE_TIME
-                    return DATE_TIME;
-                case 2: // INDEX
-                    return INDEX;
-                case 3: // PERSON_ID
-                    return PERSON_ID;
-                case 4: // NOTE
-                    return NOTE;
-                case 5: // QUEUE_ID
-                    return QUEUE_ID;
-                case 6: // ENQUEUE_PERSON_ID
-                    return ENQUEUE_PERSON_ID;
-                case 7: // ENQUEUE_DATE_TIME
-                    return ENQUEUE_DATE_TIME;
-                default:
-                    return null;
-            }
-        }
-
-        /**
-         * Find the _Fields constant that matches fieldId, throwing an exception
-         * if it is not found.
-         */
-        public static _Fields findByThriftIdOrThrow(int fieldId) {
-            _Fields fields = findByThriftId(fieldId);
-            if (fields == null) throw new IllegalArgumentException("Field " + fieldId + " doesn't exist!");
-            return fields;
-        }
-
-        /**
-         * Find the _Fields constant that matches name, or null if its not found.
-         */
-        public static _Fields findByName(String name) {
-            return byName.get(name);
-        }
-
-        private final short _thriftId;
-        private final String _fieldName;
-
-        _Fields(short thriftId, String fieldName) {
-            _thriftId = thriftId;
-            _fieldName = fieldName;
-        }
-
-        public short getThriftFieldId() {
-            return _thriftId;
-        }
-
-        public String getFieldName() {
-            return _fieldName;
-        }
-    }
-
-    // isset id assignments
-    private static final int __DATETIME_ISSET_ID = 0;
-    private static final int __INDEX_ISSET_ID = 1;
-    private static final int __PERSONID_ISSET_ID = 2;
-    private static final int __QUEUEID_ISSET_ID = 3;
-    private static final int __ENQUEUEPERSONID_ISSET_ID = 4;
-    private static final int __ENQUEUEDATETIME_ISSET_ID = 5;
-    private byte __isset_bitfield = 0;
-    private _Fields optionals[] = {_Fields.DATE_TIME, _Fields.INDEX, _Fields.PERSON_ID, _Fields.NOTE, _Fields.QUEUE_ID, _Fields.ENQUEUE_PERSON_ID, _Fields.ENQUEUE_DATE_TIME};
-    public static final Map<_Fields, org.apache.thrift.meta_data.FieldMetaData> metaDataMap;
+    private static final Map<String, _Fields> byName = new HashMap<String, _Fields>();
 
     static {
-        Map<_Fields, org.apache.thrift.meta_data.FieldMetaData> tmpMap = new EnumMap<_Fields, org.apache.thrift.meta_data.FieldMetaData>(_Fields.class);
-        tmpMap.put(_Fields.DATE_TIME, new org.apache.thrift.meta_data.FieldMetaData("dateTime", org.apache.thrift.TFieldRequirementType.OPTIONAL,
-                new org.apache.thrift.meta_data.FieldValueMetaData(org.apache.thrift.protocol.TType.I64, "timestamp")));
-        tmpMap.put(_Fields.INDEX, new org.apache.thrift.meta_data.FieldMetaData("index", org.apache.thrift.TFieldRequirementType.OPTIONAL,
-                new org.apache.thrift.meta_data.FieldValueMetaData(org.apache.thrift.protocol.TType.I32)));
-        tmpMap.put(_Fields.PERSON_ID, new org.apache.thrift.meta_data.FieldMetaData("personId", org.apache.thrift.TFieldRequirementType.OPTIONAL,
-                new org.apache.thrift.meta_data.FieldValueMetaData(org.apache.thrift.protocol.TType.I32)));
-        tmpMap.put(_Fields.NOTE, new org.apache.thrift.meta_data.FieldMetaData("note", org.apache.thrift.TFieldRequirementType.OPTIONAL,
-                new org.apache.thrift.meta_data.FieldValueMetaData(org.apache.thrift.protocol.TType.STRING)));
-        tmpMap.put(_Fields.QUEUE_ID, new org.apache.thrift.meta_data.FieldMetaData("queueId", org.apache.thrift.TFieldRequirementType.OPTIONAL,
-                new org.apache.thrift.meta_data.FieldValueMetaData(org.apache.thrift.protocol.TType.I32)));
-        tmpMap.put(_Fields.ENQUEUE_PERSON_ID, new org.apache.thrift.meta_data.FieldMetaData("enqueuePersonId", org.apache.thrift.TFieldRequirementType.OPTIONAL,
-                new org.apache.thrift.meta_data.FieldValueMetaData(org.apache.thrift.protocol.TType.I32)));
-        tmpMap.put(_Fields.ENQUEUE_DATE_TIME, new org.apache.thrift.meta_data.FieldMetaData("enqueueDateTime", org.apache.thrift.TFieldRequirementType.OPTIONAL,
-                new org.apache.thrift.meta_data.FieldValueMetaData(org.apache.thrift.protocol.TType.I64, "timestamp")));
-        metaDataMap = Collections.unmodifiableMap(tmpMap);
-        org.apache.thrift.meta_data.FieldMetaData.addStructMetaDataMap(Queue.class, metaDataMap);
-    }
-
-    public Queue() {
+      for (_Fields field : EnumSet.allOf(_Fields.class)) {
+        byName.put(field.getFieldName(), field);
+      }
     }
 
     /**
-     * Performs a deep copy on <i>other</i>.
+     * Find the _Fields constant that matches fieldId, or null if its not found.
      */
-    public Queue(Queue other) {
-        __isset_bitfield = other.__isset_bitfield;
-        this.dateTime = other.dateTime;
-        this.index = other.index;
-        this.personId = other.personId;
-        if (other.isSetNote()) {
-            this.note = other.note;
-        }
-        this.queueId = other.queueId;
-        this.enqueuePersonId = other.enqueuePersonId;
-        this.enqueueDateTime = other.enqueueDateTime;
-    }
-
-    public Queue deepCopy() {
-        return new Queue(this);
-    }
-
-    @Override
-    public void clear() {
-        setDateTimeIsSet(false);
-        this.dateTime = 0;
-        setIndexIsSet(false);
-        this.index = 0;
-        setPersonIdIsSet(false);
-        this.personId = 0;
-        this.note = null;
-        setQueueIdIsSet(false);
-        this.queueId = 0;
-        setEnqueuePersonIdIsSet(false);
-        this.enqueuePersonId = 0;
-        setEnqueueDateTimeIsSet(false);
-        this.enqueueDateTime = 0;
-    }
-
-    public long getDateTime() {
-        return this.dateTime;
-    }
-
-    public Queue setDateTime(long dateTime) {
-        this.dateTime = dateTime;
-        setDateTimeIsSet(true);
-        return this;
-    }
-
-    public void unsetDateTime() {
-        __isset_bitfield = EncodingUtils.clearBit(__isset_bitfield, __DATETIME_ISSET_ID);
+    public static _Fields findByThriftId(int fieldId) {
+      switch(fieldId) {
+        case 1: // DATE_TIME
+          return DATE_TIME;
+        case 2: // INDEX
+          return INDEX;
+        case 3: // PERSON_ID
+          return PERSON_ID;
+        case 4: // NOTE
+          return NOTE;
+        case 5: // QUEUE_ID
+          return QUEUE_ID;
+        case 6: // ENQUEUE_PERSON_ID
+          return ENQUEUE_PERSON_ID;
+        case 7: // ENQUEUE_DATE_TIME
+          return ENQUEUE_DATE_TIME;
+        default:
+          return null;
+      }
     }
 
     /**
-     * Returns true if field dateTime is set (has been assigned a value) and false otherwise
+     * Find the _Fields constant that matches fieldId, throwing an exception
+     * if it is not found.
      */
-    public boolean isSetDateTime() {
-        return EncodingUtils.testBit(__isset_bitfield, __DATETIME_ISSET_ID);
-    }
-
-    public void setDateTimeIsSet(boolean value) {
-        __isset_bitfield = EncodingUtils.setBit(__isset_bitfield, __DATETIME_ISSET_ID, value);
-    }
-
-    public int getIndex() {
-        return this.index;
-    }
-
-    public Queue setIndex(int index) {
-        this.index = index;
-        setIndexIsSet(true);
-        return this;
-    }
-
-    public void unsetIndex() {
-        __isset_bitfield = EncodingUtils.clearBit(__isset_bitfield, __INDEX_ISSET_ID);
+    public static _Fields findByThriftIdOrThrow(int fieldId) {
+      _Fields fields = findByThriftId(fieldId);
+      if (fields == null) throw new IllegalArgumentException("Field " + fieldId + " doesn't exist!");
+      return fields;
     }
 
     /**
-     * Returns true if field index is set (has been assigned a value) and false otherwise
+     * Find the _Fields constant that matches name, or null if its not found.
      */
-    public boolean isSetIndex() {
-        return EncodingUtils.testBit(__isset_bitfield, __INDEX_ISSET_ID);
+    public static _Fields findByName(String name) {
+      return byName.get(name);
     }
 
-    public void setIndexIsSet(boolean value) {
-        __isset_bitfield = EncodingUtils.setBit(__isset_bitfield, __INDEX_ISSET_ID, value);
+    private final short _thriftId;
+    private final String _fieldName;
+
+    _Fields(short thriftId, String fieldName) {
+      _thriftId = thriftId;
+      _fieldName = fieldName;
     }
 
-    public int getPersonId() {
-        return this.personId;
+    public short getThriftFieldId() {
+      return _thriftId;
     }
 
-    public Queue setPersonId(int personId) {
-        this.personId = personId;
-        setPersonIdIsSet(true);
-        return this;
+    public String getFieldName() {
+      return _fieldName;
+    }
+  }
+
+  // isset id assignments
+  private static final int __DATETIME_ISSET_ID = 0;
+  private static final int __INDEX_ISSET_ID = 1;
+  private static final int __PERSONID_ISSET_ID = 2;
+  private static final int __QUEUEID_ISSET_ID = 3;
+  private static final int __ENQUEUEPERSONID_ISSET_ID = 4;
+  private static final int __ENQUEUEDATETIME_ISSET_ID = 5;
+  private byte __isset_bitfield = 0;
+  private _Fields optionals[] = {_Fields.DATE_TIME,_Fields.INDEX,_Fields.PERSON_ID,_Fields.NOTE,_Fields.QUEUE_ID,_Fields.ENQUEUE_PERSON_ID,_Fields.ENQUEUE_DATE_TIME};
+  public static final Map<_Fields, org.apache.thrift.meta_data.FieldMetaData> metaDataMap;
+  static {
+    Map<_Fields, org.apache.thrift.meta_data.FieldMetaData> tmpMap = new EnumMap<_Fields, org.apache.thrift.meta_data.FieldMetaData>(_Fields.class);
+    tmpMap.put(_Fields.DATE_TIME, new org.apache.thrift.meta_data.FieldMetaData("dateTime", org.apache.thrift.TFieldRequirementType.OPTIONAL, 
+        new org.apache.thrift.meta_data.FieldValueMetaData(org.apache.thrift.protocol.TType.I64        , "timestamp")));
+    tmpMap.put(_Fields.INDEX, new org.apache.thrift.meta_data.FieldMetaData("index", org.apache.thrift.TFieldRequirementType.OPTIONAL, 
+        new org.apache.thrift.meta_data.FieldValueMetaData(org.apache.thrift.protocol.TType.I32)));
+    tmpMap.put(_Fields.PERSON_ID, new org.apache.thrift.meta_data.FieldMetaData("personId", org.apache.thrift.TFieldRequirementType.OPTIONAL, 
+        new org.apache.thrift.meta_data.FieldValueMetaData(org.apache.thrift.protocol.TType.I32)));
+    tmpMap.put(_Fields.NOTE, new org.apache.thrift.meta_data.FieldMetaData("note", org.apache.thrift.TFieldRequirementType.OPTIONAL, 
+        new org.apache.thrift.meta_data.FieldValueMetaData(org.apache.thrift.protocol.TType.STRING)));
+    tmpMap.put(_Fields.QUEUE_ID, new org.apache.thrift.meta_data.FieldMetaData("queueId", org.apache.thrift.TFieldRequirementType.OPTIONAL, 
+        new org.apache.thrift.meta_data.FieldValueMetaData(org.apache.thrift.protocol.TType.I32)));
+    tmpMap.put(_Fields.ENQUEUE_PERSON_ID, new org.apache.thrift.meta_data.FieldMetaData("enqueuePersonId", org.apache.thrift.TFieldRequirementType.OPTIONAL, 
+        new org.apache.thrift.meta_data.FieldValueMetaData(org.apache.thrift.protocol.TType.I32)));
+    tmpMap.put(_Fields.ENQUEUE_DATE_TIME, new org.apache.thrift.meta_data.FieldMetaData("enqueueDateTime", org.apache.thrift.TFieldRequirementType.OPTIONAL, 
+        new org.apache.thrift.meta_data.FieldValueMetaData(org.apache.thrift.protocol.TType.I64        , "timestamp")));
+    metaDataMap = Collections.unmodifiableMap(tmpMap);
+    org.apache.thrift.meta_data.FieldMetaData.addStructMetaDataMap(Queue.class, metaDataMap);
+  }
+
+  public Queue() {
+  }
+
+  /**
+   * Performs a deep copy on <i>other</i>.
+   */
+  public Queue(Queue other) {
+    __isset_bitfield = other.__isset_bitfield;
+    this.dateTime = other.dateTime;
+    this.index = other.index;
+    this.personId = other.personId;
+    if (other.isSetNote()) {
+      this.note = other.note;
+    }
+    this.queueId = other.queueId;
+    this.enqueuePersonId = other.enqueuePersonId;
+    this.enqueueDateTime = other.enqueueDateTime;
+  }
+
+  public Queue deepCopy() {
+    return new Queue(this);
+  }
+
+  @Override
+  public void clear() {
+    setDateTimeIsSet(false);
+    this.dateTime = 0;
+    setIndexIsSet(false);
+    this.index = 0;
+    setPersonIdIsSet(false);
+    this.personId = 0;
+    this.note = null;
+    setQueueIdIsSet(false);
+    this.queueId = 0;
+    setEnqueuePersonIdIsSet(false);
+    this.enqueuePersonId = 0;
+    setEnqueueDateTimeIsSet(false);
+    this.enqueueDateTime = 0;
+  }
+
+  public long getDateTime() {
+    return this.dateTime;
+  }
+
+  public Queue setDateTime(long dateTime) {
+    this.dateTime = dateTime;
+    setDateTimeIsSet(true);
+    return this;
+  }
+
+  public void unsetDateTime() {
+    __isset_bitfield = EncodingUtils.clearBit(__isset_bitfield, __DATETIME_ISSET_ID);
+  }
+
+  /** Returns true if field dateTime is set (has been assigned a value) and false otherwise */
+  public boolean isSetDateTime() {
+    return EncodingUtils.testBit(__isset_bitfield, __DATETIME_ISSET_ID);
+  }
+
+  public void setDateTimeIsSet(boolean value) {
+    __isset_bitfield = EncodingUtils.setBit(__isset_bitfield, __DATETIME_ISSET_ID, value);
+  }
+
+  public int getIndex() {
+    return this.index;
+  }
+
+  public Queue setIndex(int index) {
+    this.index = index;
+    setIndexIsSet(true);
+    return this;
+  }
+
+  public void unsetIndex() {
+    __isset_bitfield = EncodingUtils.clearBit(__isset_bitfield, __INDEX_ISSET_ID);
+  }
+
+  /** Returns true if field index is set (has been assigned a value) and false otherwise */
+  public boolean isSetIndex() {
+    return EncodingUtils.testBit(__isset_bitfield, __INDEX_ISSET_ID);
+  }
+
+  public void setIndexIsSet(boolean value) {
+    __isset_bitfield = EncodingUtils.setBit(__isset_bitfield, __INDEX_ISSET_ID, value);
+  }
+
+  public int getPersonId() {
+    return this.personId;
+  }
+
+  public Queue setPersonId(int personId) {
+    this.personId = personId;
+    setPersonIdIsSet(true);
+    return this;
+  }
+
+  public void unsetPersonId() {
+    __isset_bitfield = EncodingUtils.clearBit(__isset_bitfield, __PERSONID_ISSET_ID);
+  }
+
+  /** Returns true if field personId is set (has been assigned a value) and false otherwise */
+  public boolean isSetPersonId() {
+    return EncodingUtils.testBit(__isset_bitfield, __PERSONID_ISSET_ID);
+  }
+
+  public void setPersonIdIsSet(boolean value) {
+    __isset_bitfield = EncodingUtils.setBit(__isset_bitfield, __PERSONID_ISSET_ID, value);
+  }
+
+  public String getNote() {
+    return this.note;
+  }
+
+  public Queue setNote(String note) {
+    this.note = note;
+    return this;
+  }
+
+  public void unsetNote() {
+    this.note = null;
+  }
+
+  /** Returns true if field note is set (has been assigned a value) and false otherwise */
+  public boolean isSetNote() {
+    return this.note != null;
+  }
+
+  public void setNoteIsSet(boolean value) {
+    if (!value) {
+      this.note = null;
+    }
+  }
+
+  public int getQueueId() {
+    return this.queueId;
+  }
+
+  public Queue setQueueId(int queueId) {
+    this.queueId = queueId;
+    setQueueIdIsSet(true);
+    return this;
+  }
+
+  public void unsetQueueId() {
+    __isset_bitfield = EncodingUtils.clearBit(__isset_bitfield, __QUEUEID_ISSET_ID);
+  }
+
+  /** Returns true if field queueId is set (has been assigned a value) and false otherwise */
+  public boolean isSetQueueId() {
+    return EncodingUtils.testBit(__isset_bitfield, __QUEUEID_ISSET_ID);
+  }
+
+  public void setQueueIdIsSet(boolean value) {
+    __isset_bitfield = EncodingUtils.setBit(__isset_bitfield, __QUEUEID_ISSET_ID, value);
+  }
+
+  public int getEnqueuePersonId() {
+    return this.enqueuePersonId;
+  }
+
+  public Queue setEnqueuePersonId(int enqueuePersonId) {
+    this.enqueuePersonId = enqueuePersonId;
+    setEnqueuePersonIdIsSet(true);
+    return this;
+  }
+
+  public void unsetEnqueuePersonId() {
+    __isset_bitfield = EncodingUtils.clearBit(__isset_bitfield, __ENQUEUEPERSONID_ISSET_ID);
+  }
+
+  /** Returns true if field enqueuePersonId is set (has been assigned a value) and false otherwise */
+  public boolean isSetEnqueuePersonId() {
+    return EncodingUtils.testBit(__isset_bitfield, __ENQUEUEPERSONID_ISSET_ID);
+  }
+
+  public void setEnqueuePersonIdIsSet(boolean value) {
+    __isset_bitfield = EncodingUtils.setBit(__isset_bitfield, __ENQUEUEPERSONID_ISSET_ID, value);
+  }
+
+  public long getEnqueueDateTime() {
+    return this.enqueueDateTime;
+  }
+
+  public Queue setEnqueueDateTime(long enqueueDateTime) {
+    this.enqueueDateTime = enqueueDateTime;
+    setEnqueueDateTimeIsSet(true);
+    return this;
+  }
+
+  public void unsetEnqueueDateTime() {
+    __isset_bitfield = EncodingUtils.clearBit(__isset_bitfield, __ENQUEUEDATETIME_ISSET_ID);
+  }
+
+  /** Returns true if field enqueueDateTime is set (has been assigned a value) and false otherwise */
+  public boolean isSetEnqueueDateTime() {
+    return EncodingUtils.testBit(__isset_bitfield, __ENQUEUEDATETIME_ISSET_ID);
+  }
+
+  public void setEnqueueDateTimeIsSet(boolean value) {
+    __isset_bitfield = EncodingUtils.setBit(__isset_bitfield, __ENQUEUEDATETIME_ISSET_ID, value);
+  }
+
+  public void setFieldValue(_Fields field, Object value) {
+    switch (field) {
+    case DATE_TIME:
+      if (value == null) {
+        unsetDateTime();
+      } else {
+        setDateTime((Long)value);
+      }
+      break;
+
+    case INDEX:
+      if (value == null) {
+        unsetIndex();
+      } else {
+        setIndex((Integer)value);
+      }
+      break;
+
+    case PERSON_ID:
+      if (value == null) {
+        unsetPersonId();
+      } else {
+        setPersonId((Integer)value);
+      }
+      break;
+
+    case NOTE:
+      if (value == null) {
+        unsetNote();
+      } else {
+        setNote((String)value);
+      }
+      break;
+
+    case QUEUE_ID:
+      if (value == null) {
+        unsetQueueId();
+      } else {
+        setQueueId((Integer)value);
+      }
+      break;
+
+    case ENQUEUE_PERSON_ID:
+      if (value == null) {
+        unsetEnqueuePersonId();
+      } else {
+        setEnqueuePersonId((Integer)value);
+      }
+      break;
+
+    case ENQUEUE_DATE_TIME:
+      if (value == null) {
+        unsetEnqueueDateTime();
+      } else {
+        setEnqueueDateTime((Long)value);
+      }
+      break;
+
+    }
+  }
+
+  public Object getFieldValue(_Fields field) {
+    switch (field) {
+    case DATE_TIME:
+      return Long.valueOf(getDateTime());
+
+    case INDEX:
+      return Integer.valueOf(getIndex());
+
+    case PERSON_ID:
+      return Integer.valueOf(getPersonId());
+
+    case NOTE:
+      return getNote();
+
+    case QUEUE_ID:
+      return Integer.valueOf(getQueueId());
+
+    case ENQUEUE_PERSON_ID:
+      return Integer.valueOf(getEnqueuePersonId());
+
+    case ENQUEUE_DATE_TIME:
+      return Long.valueOf(getEnqueueDateTime());
+
+    }
+    throw new IllegalStateException();
+  }
+
+  /** Returns true if field corresponding to fieldID is set (has been assigned a value) and false otherwise */
+  public boolean isSet(_Fields field) {
+    if (field == null) {
+      throw new IllegalArgumentException();
     }
 
-    public void unsetPersonId() {
-        __isset_bitfield = EncodingUtils.clearBit(__isset_bitfield, __PERSONID_ISSET_ID);
+    switch (field) {
+    case DATE_TIME:
+      return isSetDateTime();
+    case INDEX:
+      return isSetIndex();
+    case PERSON_ID:
+      return isSetPersonId();
+    case NOTE:
+      return isSetNote();
+    case QUEUE_ID:
+      return isSetQueueId();
+    case ENQUEUE_PERSON_ID:
+      return isSetEnqueuePersonId();
+    case ENQUEUE_DATE_TIME:
+      return isSetEnqueueDateTime();
     }
+    throw new IllegalStateException();
+  }
 
-    /**
-     * Returns true if field personId is set (has been assigned a value) and false otherwise
-     */
-    public boolean isSetPersonId() {
-        return EncodingUtils.testBit(__isset_bitfield, __PERSONID_ISSET_ID);
-    }
+  @Override
+  public boolean equals(Object that) {
+    if (that == null)
+      return false;
+    if (that instanceof Queue)
+      return this.equals((Queue)that);
+    return false;
+  }
 
-    public void setPersonIdIsSet(boolean value) {
-        __isset_bitfield = EncodingUtils.setBit(__isset_bitfield, __PERSONID_ISSET_ID, value);
-    }
+  public boolean equals(Queue that) {
+    if (that == null)
+      return false;
 
-    public String getNote() {
-        return this.note;
-    }
-
-    public Queue setNote(String note) {
-        this.note = note;
-        return this;
-    }
-
-    public void unsetNote() {
-        this.note = null;
-    }
-
-    /**
-     * Returns true if field note is set (has been assigned a value) and false otherwise
-     */
-    public boolean isSetNote() {
-        return this.note != null;
-    }
-
-    public void setNoteIsSet(boolean value) {
-        if (!value) {
-            this.note = null;
-        }
-    }
-
-    public int getQueueId() {
-        return this.queueId;
-    }
-
-    public Queue setQueueId(int queueId) {
-        this.queueId = queueId;
-        setQueueIdIsSet(true);
-        return this;
-    }
-
-    public void unsetQueueId() {
-        __isset_bitfield = EncodingUtils.clearBit(__isset_bitfield, __QUEUEID_ISSET_ID);
-    }
-
-    /**
-     * Returns true if field queueId is set (has been assigned a value) and false otherwise
-     */
-    public boolean isSetQueueId() {
-        return EncodingUtils.testBit(__isset_bitfield, __QUEUEID_ISSET_ID);
-    }
-
-    public void setQueueIdIsSet(boolean value) {
-        __isset_bitfield = EncodingUtils.setBit(__isset_bitfield, __QUEUEID_ISSET_ID, value);
-    }
-
-    public int getEnqueuePersonId() {
-        return this.enqueuePersonId;
-    }
-
-    public Queue setEnqueuePersonId(int enqueuePersonId) {
-        this.enqueuePersonId = enqueuePersonId;
-        setEnqueuePersonIdIsSet(true);
-        return this;
-    }
-
-    public void unsetEnqueuePersonId() {
-        __isset_bitfield = EncodingUtils.clearBit(__isset_bitfield, __ENQUEUEPERSONID_ISSET_ID);
-    }
-
-    /**
-     * Returns true if field enqueuePersonId is set (has been assigned a value) and false otherwise
-     */
-    public boolean isSetEnqueuePersonId() {
-        return EncodingUtils.testBit(__isset_bitfield, __ENQUEUEPERSONID_ISSET_ID);
-    }
-
-    public void setEnqueuePersonIdIsSet(boolean value) {
-        __isset_bitfield = EncodingUtils.setBit(__isset_bitfield, __ENQUEUEPERSONID_ISSET_ID, value);
-    }
-
-    public long getEnqueueDateTime() {
-        return this.enqueueDateTime;
-    }
-
-    public Queue setEnqueueDateTime(long enqueueDateTime) {
-        this.enqueueDateTime = enqueueDateTime;
-        setEnqueueDateTimeIsSet(true);
-        return this;
-    }
-
-    public void unsetEnqueueDateTime() {
-        __isset_bitfield = EncodingUtils.clearBit(__isset_bitfield, __ENQUEUEDATETIME_ISSET_ID);
-    }
-
-    /**
-     * Returns true if field enqueueDateTime is set (has been assigned a value) and false otherwise
-     */
-    public boolean isSetEnqueueDateTime() {
-        return EncodingUtils.testBit(__isset_bitfield, __ENQUEUEDATETIME_ISSET_ID);
-    }
-
-    public void setEnqueueDateTimeIsSet(boolean value) {
-        __isset_bitfield = EncodingUtils.setBit(__isset_bitfield, __ENQUEUEDATETIME_ISSET_ID, value);
-    }
-
-    public void setFieldValue(_Fields field, Object value) {
-        switch (field) {
-            case DATE_TIME:
-                if (value == null) {
-                    unsetDateTime();
-                } else {
-                    setDateTime((Long) value);
-                }
-                break;
-
-            case INDEX:
-                if (value == null) {
-                    unsetIndex();
-                } else {
-                    setIndex((Integer) value);
-                }
-                break;
-
-            case PERSON_ID:
-                if (value == null) {
-                    unsetPersonId();
-                } else {
-                    setPersonId((Integer) value);
-                }
-                break;
-
-            case NOTE:
-                if (value == null) {
-                    unsetNote();
-                } else {
-                    setNote((String) value);
-                }
-                break;
-
-            case QUEUE_ID:
-                if (value == null) {
-                    unsetQueueId();
-                } else {
-                    setQueueId((Integer) value);
-                }
-                break;
-
-            case ENQUEUE_PERSON_ID:
-                if (value == null) {
-                    unsetEnqueuePersonId();
-                } else {
-                    setEnqueuePersonId((Integer) value);
-                }
-                break;
-
-            case ENQUEUE_DATE_TIME:
-                if (value == null) {
-                    unsetEnqueueDateTime();
-                } else {
-                    setEnqueueDateTime((Long) value);
-                }
-                break;
-
-        }
-    }
-
-    public Object getFieldValue(_Fields field) {
-        switch (field) {
-            case DATE_TIME:
-                return Long.valueOf(getDateTime());
-
-            case INDEX:
-                return Integer.valueOf(getIndex());
-
-            case PERSON_ID:
-                return Integer.valueOf(getPersonId());
-
-            case NOTE:
-                return getNote();
-
-            case QUEUE_ID:
-                return Integer.valueOf(getQueueId());
-
-            case ENQUEUE_PERSON_ID:
-                return Integer.valueOf(getEnqueuePersonId());
-
-            case ENQUEUE_DATE_TIME:
-                return Long.valueOf(getEnqueueDateTime());
-
-        }
-        throw new IllegalStateException();
-    }
-
-    /**
-     * Returns true if field corresponding to fieldID is set (has been assigned a value) and false otherwise
-     */
-    public boolean isSet(_Fields field) {
-        if (field == null) {
-            throw new IllegalArgumentException();
-        }
-
-        switch (field) {
-            case DATE_TIME:
-                return isSetDateTime();
-            case INDEX:
-                return isSetIndex();
-            case PERSON_ID:
-                return isSetPersonId();
-            case NOTE:
-                return isSetNote();
-            case QUEUE_ID:
-                return isSetQueueId();
-            case ENQUEUE_PERSON_ID:
-                return isSetEnqueuePersonId();
-            case ENQUEUE_DATE_TIME:
-                return isSetEnqueueDateTime();
-        }
-        throw new IllegalStateException();
-    }
-
-    @Override
-    public boolean equals(Object that) {
-        if (that == null)
-            return false;
-        if (that instanceof Queue)
-            return this.equals((Queue) that);
+    boolean this_present_dateTime = true && this.isSetDateTime();
+    boolean that_present_dateTime = true && that.isSetDateTime();
+    if (this_present_dateTime || that_present_dateTime) {
+      if (!(this_present_dateTime && that_present_dateTime))
+        return false;
+      if (this.dateTime != that.dateTime)
         return false;
     }
 
-    public boolean equals(Queue that) {
-        if (that == null)
-            return false;
+    boolean this_present_index = true && this.isSetIndex();
+    boolean that_present_index = true && that.isSetIndex();
+    if (this_present_index || that_present_index) {
+      if (!(this_present_index && that_present_index))
+        return false;
+      if (this.index != that.index)
+        return false;
+    }
 
-        boolean this_present_dateTime = true && this.isSetDateTime();
-        boolean that_present_dateTime = true && that.isSetDateTime();
-        if (this_present_dateTime || that_present_dateTime) {
-            if (!(this_present_dateTime && that_present_dateTime))
-                return false;
-            if (this.dateTime != that.dateTime)
-                return false;
+    boolean this_present_personId = true && this.isSetPersonId();
+    boolean that_present_personId = true && that.isSetPersonId();
+    if (this_present_personId || that_present_personId) {
+      if (!(this_present_personId && that_present_personId))
+        return false;
+      if (this.personId != that.personId)
+        return false;
+    }
+
+    boolean this_present_note = true && this.isSetNote();
+    boolean that_present_note = true && that.isSetNote();
+    if (this_present_note || that_present_note) {
+      if (!(this_present_note && that_present_note))
+        return false;
+      if (!this.note.equals(that.note))
+        return false;
+    }
+
+    boolean this_present_queueId = true && this.isSetQueueId();
+    boolean that_present_queueId = true && that.isSetQueueId();
+    if (this_present_queueId || that_present_queueId) {
+      if (!(this_present_queueId && that_present_queueId))
+        return false;
+      if (this.queueId != that.queueId)
+        return false;
+    }
+
+    boolean this_present_enqueuePersonId = true && this.isSetEnqueuePersonId();
+    boolean that_present_enqueuePersonId = true && that.isSetEnqueuePersonId();
+    if (this_present_enqueuePersonId || that_present_enqueuePersonId) {
+      if (!(this_present_enqueuePersonId && that_present_enqueuePersonId))
+        return false;
+      if (this.enqueuePersonId != that.enqueuePersonId)
+        return false;
+    }
+
+    boolean this_present_enqueueDateTime = true && this.isSetEnqueueDateTime();
+    boolean that_present_enqueueDateTime = true && that.isSetEnqueueDateTime();
+    if (this_present_enqueueDateTime || that_present_enqueueDateTime) {
+      if (!(this_present_enqueueDateTime && that_present_enqueueDateTime))
+        return false;
+      if (this.enqueueDateTime != that.enqueueDateTime)
+        return false;
+    }
+
+    return true;
+  }
+
+  @Override
+  public int hashCode() {
+    return 0;
+  }
+
+  public int compareTo(Queue other) {
+    if (!getClass().equals(other.getClass())) {
+      return getClass().getName().compareTo(other.getClass().getName());
+    }
+
+    int lastComparison = 0;
+    Queue typedOther = (Queue)other;
+
+    lastComparison = Boolean.valueOf(isSetDateTime()).compareTo(typedOther.isSetDateTime());
+    if (lastComparison != 0) {
+      return lastComparison;
+    }
+    if (isSetDateTime()) {
+      lastComparison = org.apache.thrift.TBaseHelper.compareTo(this.dateTime, typedOther.dateTime);
+      if (lastComparison != 0) {
+        return lastComparison;
+      }
+    }
+    lastComparison = Boolean.valueOf(isSetIndex()).compareTo(typedOther.isSetIndex());
+    if (lastComparison != 0) {
+      return lastComparison;
+    }
+    if (isSetIndex()) {
+      lastComparison = org.apache.thrift.TBaseHelper.compareTo(this.index, typedOther.index);
+      if (lastComparison != 0) {
+        return lastComparison;
+      }
+    }
+    lastComparison = Boolean.valueOf(isSetPersonId()).compareTo(typedOther.isSetPersonId());
+    if (lastComparison != 0) {
+      return lastComparison;
+    }
+    if (isSetPersonId()) {
+      lastComparison = org.apache.thrift.TBaseHelper.compareTo(this.personId, typedOther.personId);
+      if (lastComparison != 0) {
+        return lastComparison;
+      }
+    }
+    lastComparison = Boolean.valueOf(isSetNote()).compareTo(typedOther.isSetNote());
+    if (lastComparison != 0) {
+      return lastComparison;
+    }
+    if (isSetNote()) {
+      lastComparison = org.apache.thrift.TBaseHelper.compareTo(this.note, typedOther.note);
+      if (lastComparison != 0) {
+        return lastComparison;
+      }
+    }
+    lastComparison = Boolean.valueOf(isSetQueueId()).compareTo(typedOther.isSetQueueId());
+    if (lastComparison != 0) {
+      return lastComparison;
+    }
+    if (isSetQueueId()) {
+      lastComparison = org.apache.thrift.TBaseHelper.compareTo(this.queueId, typedOther.queueId);
+      if (lastComparison != 0) {
+        return lastComparison;
+      }
+    }
+    lastComparison = Boolean.valueOf(isSetEnqueuePersonId()).compareTo(typedOther.isSetEnqueuePersonId());
+    if (lastComparison != 0) {
+      return lastComparison;
+    }
+    if (isSetEnqueuePersonId()) {
+      lastComparison = org.apache.thrift.TBaseHelper.compareTo(this.enqueuePersonId, typedOther.enqueuePersonId);
+      if (lastComparison != 0) {
+        return lastComparison;
+      }
+    }
+    lastComparison = Boolean.valueOf(isSetEnqueueDateTime()).compareTo(typedOther.isSetEnqueueDateTime());
+    if (lastComparison != 0) {
+      return lastComparison;
+    }
+    if (isSetEnqueueDateTime()) {
+      lastComparison = org.apache.thrift.TBaseHelper.compareTo(this.enqueueDateTime, typedOther.enqueueDateTime);
+      if (lastComparison != 0) {
+        return lastComparison;
+      }
+    }
+    return 0;
+  }
+
+  public _Fields fieldForId(int fieldId) {
+    return _Fields.findByThriftId(fieldId);
+  }
+
+  public void read(org.apache.thrift.protocol.TProtocol iprot) throws org.apache.thrift.TException {
+    schemes.get(iprot.getScheme()).getScheme().read(iprot, this);
+  }
+
+  public void write(org.apache.thrift.protocol.TProtocol oprot) throws org.apache.thrift.TException {
+    schemes.get(oprot.getScheme()).getScheme().write(oprot, this);
+  }
+
+  @Override
+  public String toString() {
+    StringBuilder sb = new StringBuilder("Queue(");
+    boolean first = true;
+
+    if (isSetDateTime()) {
+      sb.append("dateTime:");
+      sb.append(this.dateTime);
+      first = false;
+    }
+    if (isSetIndex()) {
+      if (!first) sb.append(", ");
+      sb.append("index:");
+      sb.append(this.index);
+      first = false;
+    }
+    if (isSetPersonId()) {
+      if (!first) sb.append(", ");
+      sb.append("personId:");
+      sb.append(this.personId);
+      first = false;
+    }
+    if (isSetNote()) {
+      if (!first) sb.append(", ");
+      sb.append("note:");
+      if (this.note == null) {
+        sb.append("null");
+      } else {
+        sb.append(this.note);
+      }
+      first = false;
+    }
+    if (isSetQueueId()) {
+      if (!first) sb.append(", ");
+      sb.append("queueId:");
+      sb.append(this.queueId);
+      first = false;
+    }
+    if (isSetEnqueuePersonId()) {
+      if (!first) sb.append(", ");
+      sb.append("enqueuePersonId:");
+      sb.append(this.enqueuePersonId);
+      first = false;
+    }
+    if (isSetEnqueueDateTime()) {
+      if (!first) sb.append(", ");
+      sb.append("enqueueDateTime:");
+      sb.append(this.enqueueDateTime);
+      first = false;
+    }
+    sb.append(")");
+    return sb.toString();
+  }
+
+  public void validate() throws org.apache.thrift.TException {
+    // check for required fields
+    // check for sub-struct validity
+  }
+
+  private void writeObject(java.io.ObjectOutputStream out) throws java.io.IOException {
+    try {
+      write(new org.apache.thrift.protocol.TCompactProtocol(new org.apache.thrift.transport.TIOStreamTransport(out)));
+    } catch (org.apache.thrift.TException te) {
+      throw new java.io.IOException(te);
+    }
+  }
+
+  private void readObject(java.io.ObjectInputStream in) throws java.io.IOException, ClassNotFoundException {
+    try {
+      // it doesn't seem like you should have to do this, but java serialization is wacky, and doesn't call the default constructor.
+      __isset_bitfield = 0;
+      read(new org.apache.thrift.protocol.TCompactProtocol(new org.apache.thrift.transport.TIOStreamTransport(in)));
+    } catch (org.apache.thrift.TException te) {
+      throw new java.io.IOException(te);
+    }
+  }
+
+  private static class QueueStandardSchemeFactory implements SchemeFactory {
+    public QueueStandardScheme getScheme() {
+      return new QueueStandardScheme();
+    }
+  }
+
+  private static class QueueStandardScheme extends StandardScheme<Queue> {
+
+    public void read(org.apache.thrift.protocol.TProtocol iprot, Queue struct) throws org.apache.thrift.TException {
+      org.apache.thrift.protocol.TField schemeField;
+      iprot.readStructBegin();
+      while (true)
+      {
+        schemeField = iprot.readFieldBegin();
+        if (schemeField.type == org.apache.thrift.protocol.TType.STOP) { 
+          break;
         }
-
-        boolean this_present_index = true && this.isSetIndex();
-        boolean that_present_index = true && that.isSetIndex();
-        if (this_present_index || that_present_index) {
-            if (!(this_present_index && that_present_index))
-                return false;
-            if (this.index != that.index)
-                return false;
+        switch (schemeField.id) {
+          case 1: // DATE_TIME
+            if (schemeField.type == org.apache.thrift.protocol.TType.I64) {
+              struct.dateTime = iprot.readI64();
+              struct.setDateTimeIsSet(true);
+            } else { 
+              org.apache.thrift.protocol.TProtocolUtil.skip(iprot, schemeField.type);
+            }
+            break;
+          case 2: // INDEX
+            if (schemeField.type == org.apache.thrift.protocol.TType.I32) {
+              struct.index = iprot.readI32();
+              struct.setIndexIsSet(true);
+            } else { 
+              org.apache.thrift.protocol.TProtocolUtil.skip(iprot, schemeField.type);
+            }
+            break;
+          case 3: // PERSON_ID
+            if (schemeField.type == org.apache.thrift.protocol.TType.I32) {
+              struct.personId = iprot.readI32();
+              struct.setPersonIdIsSet(true);
+            } else { 
+              org.apache.thrift.protocol.TProtocolUtil.skip(iprot, schemeField.type);
+            }
+            break;
+          case 4: // NOTE
+            if (schemeField.type == org.apache.thrift.protocol.TType.STRING) {
+              struct.note = iprot.readString();
+              struct.setNoteIsSet(true);
+            } else { 
+              org.apache.thrift.protocol.TProtocolUtil.skip(iprot, schemeField.type);
+            }
+            break;
+          case 5: // QUEUE_ID
+            if (schemeField.type == org.apache.thrift.protocol.TType.I32) {
+              struct.queueId = iprot.readI32();
+              struct.setQueueIdIsSet(true);
+            } else { 
+              org.apache.thrift.protocol.TProtocolUtil.skip(iprot, schemeField.type);
+            }
+            break;
+          case 6: // ENQUEUE_PERSON_ID
+            if (schemeField.type == org.apache.thrift.protocol.TType.I32) {
+              struct.enqueuePersonId = iprot.readI32();
+              struct.setEnqueuePersonIdIsSet(true);
+            } else { 
+              org.apache.thrift.protocol.TProtocolUtil.skip(iprot, schemeField.type);
+            }
+            break;
+          case 7: // ENQUEUE_DATE_TIME
+            if (schemeField.type == org.apache.thrift.protocol.TType.I64) {
+              struct.enqueueDateTime = iprot.readI64();
+              struct.setEnqueueDateTimeIsSet(true);
+            } else { 
+              org.apache.thrift.protocol.TProtocolUtil.skip(iprot, schemeField.type);
+            }
+            break;
+          default:
+            org.apache.thrift.protocol.TProtocolUtil.skip(iprot, schemeField.type);
         }
+        iprot.readFieldEnd();
+      }
+      iprot.readStructEnd();
 
-        boolean this_present_personId = true && this.isSetPersonId();
-        boolean that_present_personId = true && that.isSetPersonId();
-        if (this_present_personId || that_present_personId) {
-            if (!(this_present_personId && that_present_personId))
-                return false;
-            if (this.personId != that.personId)
-                return false;
+      // check for required fields of primitive type, which can't be checked in the validate method
+      struct.validate();
+    }
+
+    public void write(org.apache.thrift.protocol.TProtocol oprot, Queue struct) throws org.apache.thrift.TException {
+      struct.validate();
+
+      oprot.writeStructBegin(STRUCT_DESC);
+      if (struct.isSetDateTime()) {
+        oprot.writeFieldBegin(DATE_TIME_FIELD_DESC);
+        oprot.writeI64(struct.dateTime);
+        oprot.writeFieldEnd();
+      }
+      if (struct.isSetIndex()) {
+        oprot.writeFieldBegin(INDEX_FIELD_DESC);
+        oprot.writeI32(struct.index);
+        oprot.writeFieldEnd();
+      }
+      if (struct.isSetPersonId()) {
+        oprot.writeFieldBegin(PERSON_ID_FIELD_DESC);
+        oprot.writeI32(struct.personId);
+        oprot.writeFieldEnd();
+      }
+      if (struct.note != null) {
+        if (struct.isSetNote()) {
+          oprot.writeFieldBegin(NOTE_FIELD_DESC);
+          oprot.writeString(struct.note);
+          oprot.writeFieldEnd();
         }
+      }
+      if (struct.isSetQueueId()) {
+        oprot.writeFieldBegin(QUEUE_ID_FIELD_DESC);
+        oprot.writeI32(struct.queueId);
+        oprot.writeFieldEnd();
+      }
+      if (struct.isSetEnqueuePersonId()) {
+        oprot.writeFieldBegin(ENQUEUE_PERSON_ID_FIELD_DESC);
+        oprot.writeI32(struct.enqueuePersonId);
+        oprot.writeFieldEnd();
+      }
+      if (struct.isSetEnqueueDateTime()) {
+        oprot.writeFieldBegin(ENQUEUE_DATE_TIME_FIELD_DESC);
+        oprot.writeI64(struct.enqueueDateTime);
+        oprot.writeFieldEnd();
+      }
+      oprot.writeFieldStop();
+      oprot.writeStructEnd();
+    }
 
-        boolean this_present_note = true && this.isSetNote();
-        boolean that_present_note = true && that.isSetNote();
-        if (this_present_note || that_present_note) {
-            if (!(this_present_note && that_present_note))
-                return false;
-            if (!this.note.equals(that.note))
-                return false;
-        }
+  }
 
-        boolean this_present_queueId = true && this.isSetQueueId();
-        boolean that_present_queueId = true && that.isSetQueueId();
-        if (this_present_queueId || that_present_queueId) {
-            if (!(this_present_queueId && that_present_queueId))
-                return false;
-            if (this.queueId != that.queueId)
-                return false;
-        }
+  private static class QueueTupleSchemeFactory implements SchemeFactory {
+    public QueueTupleScheme getScheme() {
+      return new QueueTupleScheme();
+    }
+  }
 
-        boolean this_present_enqueuePersonId = true && this.isSetEnqueuePersonId();
-        boolean that_present_enqueuePersonId = true && that.isSetEnqueuePersonId();
-        if (this_present_enqueuePersonId || that_present_enqueuePersonId) {
-            if (!(this_present_enqueuePersonId && that_present_enqueuePersonId))
-                return false;
-            if (this.enqueuePersonId != that.enqueuePersonId)
-                return false;
-        }
+  private static class QueueTupleScheme extends TupleScheme<Queue> {
 
-        boolean this_present_enqueueDateTime = true && this.isSetEnqueueDateTime();
-        boolean that_present_enqueueDateTime = true && that.isSetEnqueueDateTime();
-        if (this_present_enqueueDateTime || that_present_enqueueDateTime) {
-            if (!(this_present_enqueueDateTime && that_present_enqueueDateTime))
-                return false;
-            if (this.enqueueDateTime != that.enqueueDateTime)
-                return false;
-        }
-
-        return true;
+    @Override
+    public void write(org.apache.thrift.protocol.TProtocol prot, Queue struct) throws org.apache.thrift.TException {
+      TTupleProtocol oprot = (TTupleProtocol) prot;
+      BitSet optionals = new BitSet();
+      if (struct.isSetDateTime()) {
+        optionals.set(0);
+      }
+      if (struct.isSetIndex()) {
+        optionals.set(1);
+      }
+      if (struct.isSetPersonId()) {
+        optionals.set(2);
+      }
+      if (struct.isSetNote()) {
+        optionals.set(3);
+      }
+      if (struct.isSetQueueId()) {
+        optionals.set(4);
+      }
+      if (struct.isSetEnqueuePersonId()) {
+        optionals.set(5);
+      }
+      if (struct.isSetEnqueueDateTime()) {
+        optionals.set(6);
+      }
+      oprot.writeBitSet(optionals, 7);
+      if (struct.isSetDateTime()) {
+        oprot.writeI64(struct.dateTime);
+      }
+      if (struct.isSetIndex()) {
+        oprot.writeI32(struct.index);
+      }
+      if (struct.isSetPersonId()) {
+        oprot.writeI32(struct.personId);
+      }
+      if (struct.isSetNote()) {
+        oprot.writeString(struct.note);
+      }
+      if (struct.isSetQueueId()) {
+        oprot.writeI32(struct.queueId);
+      }
+      if (struct.isSetEnqueuePersonId()) {
+        oprot.writeI32(struct.enqueuePersonId);
+      }
+      if (struct.isSetEnqueueDateTime()) {
+        oprot.writeI64(struct.enqueueDateTime);
+      }
     }
 
     @Override
-    public int hashCode() {
-        return 0;
+    public void read(org.apache.thrift.protocol.TProtocol prot, Queue struct) throws org.apache.thrift.TException {
+      TTupleProtocol iprot = (TTupleProtocol) prot;
+      BitSet incoming = iprot.readBitSet(7);
+      if (incoming.get(0)) {
+        struct.dateTime = iprot.readI64();
+        struct.setDateTimeIsSet(true);
+      }
+      if (incoming.get(1)) {
+        struct.index = iprot.readI32();
+        struct.setIndexIsSet(true);
+      }
+      if (incoming.get(2)) {
+        struct.personId = iprot.readI32();
+        struct.setPersonIdIsSet(true);
+      }
+      if (incoming.get(3)) {
+        struct.note = iprot.readString();
+        struct.setNoteIsSet(true);
+      }
+      if (incoming.get(4)) {
+        struct.queueId = iprot.readI32();
+        struct.setQueueIdIsSet(true);
+      }
+      if (incoming.get(5)) {
+        struct.enqueuePersonId = iprot.readI32();
+        struct.setEnqueuePersonIdIsSet(true);
+      }
+      if (incoming.get(6)) {
+        struct.enqueueDateTime = iprot.readI64();
+        struct.setEnqueueDateTimeIsSet(true);
+      }
     }
-
-    public int compareTo(Queue other) {
-        if (!getClass().equals(other.getClass())) {
-            return getClass().getName().compareTo(other.getClass().getName());
-        }
-
-        int lastComparison = 0;
-        Queue typedOther = (Queue) other;
-
-        lastComparison = Boolean.valueOf(isSetDateTime()).compareTo(typedOther.isSetDateTime());
-        if (lastComparison != 0) {
-            return lastComparison;
-        }
-        if (isSetDateTime()) {
-            lastComparison = org.apache.thrift.TBaseHelper.compareTo(this.dateTime, typedOther.dateTime);
-            if (lastComparison != 0) {
-                return lastComparison;
-            }
-        }
-        lastComparison = Boolean.valueOf(isSetIndex()).compareTo(typedOther.isSetIndex());
-        if (lastComparison != 0) {
-            return lastComparison;
-        }
-        if (isSetIndex()) {
-            lastComparison = org.apache.thrift.TBaseHelper.compareTo(this.index, typedOther.index);
-            if (lastComparison != 0) {
-                return lastComparison;
-            }
-        }
-        lastComparison = Boolean.valueOf(isSetPersonId()).compareTo(typedOther.isSetPersonId());
-        if (lastComparison != 0) {
-            return lastComparison;
-        }
-        if (isSetPersonId()) {
-            lastComparison = org.apache.thrift.TBaseHelper.compareTo(this.personId, typedOther.personId);
-            if (lastComparison != 0) {
-                return lastComparison;
-            }
-        }
-        lastComparison = Boolean.valueOf(isSetNote()).compareTo(typedOther.isSetNote());
-        if (lastComparison != 0) {
-            return lastComparison;
-        }
-        if (isSetNote()) {
-            lastComparison = org.apache.thrift.TBaseHelper.compareTo(this.note, typedOther.note);
-            if (lastComparison != 0) {
-                return lastComparison;
-            }
-        }
-        lastComparison = Boolean.valueOf(isSetQueueId()).compareTo(typedOther.isSetQueueId());
-        if (lastComparison != 0) {
-            return lastComparison;
-        }
-        if (isSetQueueId()) {
-            lastComparison = org.apache.thrift.TBaseHelper.compareTo(this.queueId, typedOther.queueId);
-            if (lastComparison != 0) {
-                return lastComparison;
-            }
-        }
-        lastComparison = Boolean.valueOf(isSetEnqueuePersonId()).compareTo(typedOther.isSetEnqueuePersonId());
-        if (lastComparison != 0) {
-            return lastComparison;
-        }
-        if (isSetEnqueuePersonId()) {
-            lastComparison = org.apache.thrift.TBaseHelper.compareTo(this.enqueuePersonId, typedOther.enqueuePersonId);
-            if (lastComparison != 0) {
-                return lastComparison;
-            }
-        }
-        lastComparison = Boolean.valueOf(isSetEnqueueDateTime()).compareTo(typedOther.isSetEnqueueDateTime());
-        if (lastComparison != 0) {
-            return lastComparison;
-        }
-        if (isSetEnqueueDateTime()) {
-            lastComparison = org.apache.thrift.TBaseHelper.compareTo(this.enqueueDateTime, typedOther.enqueueDateTime);
-            if (lastComparison != 0) {
-                return lastComparison;
-            }
-        }
-        return 0;
-    }
-
-    public _Fields fieldForId(int fieldId) {
-        return _Fields.findByThriftId(fieldId);
-    }
-
-    public void read(org.apache.thrift.protocol.TProtocol iprot) throws org.apache.thrift.TException {
-        schemes.get(iprot.getScheme()).getScheme().read(iprot, this);
-    }
-
-    public void write(org.apache.thrift.protocol.TProtocol oprot) throws org.apache.thrift.TException {
-        schemes.get(oprot.getScheme()).getScheme().write(oprot, this);
-    }
-
-    @Override
-    public String toString() {
-        StringBuilder sb = new StringBuilder("Queue(");
-        boolean first = true;
-
-        if (isSetDateTime()) {
-            sb.append("dateTime:");
-            sb.append(this.dateTime);
-            first = false;
-        }
-        if (isSetIndex()) {
-            if (!first) sb.append(", ");
-            sb.append("index:");
-            sb.append(this.index);
-            first = false;
-        }
-        if (isSetPersonId()) {
-            if (!first) sb.append(", ");
-            sb.append("personId:");
-            sb.append(this.personId);
-            first = false;
-        }
-        if (isSetNote()) {
-            if (!first) sb.append(", ");
-            sb.append("note:");
-            if (this.note == null) {
-                sb.append("null");
-            } else {
-                sb.append(this.note);
-            }
-            first = false;
-        }
-        if (isSetQueueId()) {
-            if (!first) sb.append(", ");
-            sb.append("queueId:");
-            sb.append(this.queueId);
-            first = false;
-        }
-        if (isSetEnqueuePersonId()) {
-            if (!first) sb.append(", ");
-            sb.append("enqueuePersonId:");
-            sb.append(this.enqueuePersonId);
-            first = false;
-        }
-        if (isSetEnqueueDateTime()) {
-            if (!first) sb.append(", ");
-            sb.append("enqueueDateTime:");
-            sb.append(this.enqueueDateTime);
-            first = false;
-        }
-        sb.append(")");
-        return sb.toString();
-    }
-
-    public void validate() throws org.apache.thrift.TException {
-        // check for required fields
-        // check for sub-struct validity
-    }
-
-    private void writeObject(java.io.ObjectOutputStream out) throws java.io.IOException {
-        try {
-            write(new org.apache.thrift.protocol.TCompactProtocol(new org.apache.thrift.transport.TIOStreamTransport(out)));
-        } catch (org.apache.thrift.TException te) {
-            throw new java.io.IOException(te);
-        }
-    }
-
-    private void readObject(java.io.ObjectInputStream in) throws java.io.IOException, ClassNotFoundException {
-        try {
-            // it doesn't seem like you should have to do this, but java serialization is wacky, and doesn't call the default constructor.
-            __isset_bitfield = 0;
-            read(new org.apache.thrift.protocol.TCompactProtocol(new org.apache.thrift.transport.TIOStreamTransport(in)));
-        } catch (org.apache.thrift.TException te) {
-            throw new java.io.IOException(te);
-        }
-    }
-
-    private static class QueueStandardSchemeFactory implements SchemeFactory {
-        public QueueStandardScheme getScheme() {
-            return new QueueStandardScheme();
-        }
-    }
-
-    private static class QueueStandardScheme extends StandardScheme<Queue> {
-
-        public void read(org.apache.thrift.protocol.TProtocol iprot, Queue struct) throws org.apache.thrift.TException {
-            org.apache.thrift.protocol.TField schemeField;
-            iprot.readStructBegin();
-            while (true) {
-                schemeField = iprot.readFieldBegin();
-                if (schemeField.type == org.apache.thrift.protocol.TType.STOP) {
-                    break;
-                }
-                switch (schemeField.id) {
-                    case 1: // DATE_TIME
-                        if (schemeField.type == org.apache.thrift.protocol.TType.I64) {
-                            struct.dateTime = iprot.readI64();
-                            struct.setDateTimeIsSet(true);
-                        } else {
-                            org.apache.thrift.protocol.TProtocolUtil.skip(iprot, schemeField.type);
-                        }
-                        break;
-                    case 2: // INDEX
-                        if (schemeField.type == org.apache.thrift.protocol.TType.I32) {
-                            struct.index = iprot.readI32();
-                            struct.setIndexIsSet(true);
-                        } else {
-                            org.apache.thrift.protocol.TProtocolUtil.skip(iprot, schemeField.type);
-                        }
-                        break;
-                    case 3: // PERSON_ID
-                        if (schemeField.type == org.apache.thrift.protocol.TType.I32) {
-                            struct.personId = iprot.readI32();
-                            struct.setPersonIdIsSet(true);
-                        } else {
-                            org.apache.thrift.protocol.TProtocolUtil.skip(iprot, schemeField.type);
-                        }
-                        break;
-                    case 4: // NOTE
-                        if (schemeField.type == org.apache.thrift.protocol.TType.STRING) {
-                            struct.note = iprot.readString();
-                            struct.setNoteIsSet(true);
-                        } else {
-                            org.apache.thrift.protocol.TProtocolUtil.skip(iprot, schemeField.type);
-                        }
-                        break;
-                    case 5: // QUEUE_ID
-                        if (schemeField.type == org.apache.thrift.protocol.TType.I32) {
-                            struct.queueId = iprot.readI32();
-                            struct.setQueueIdIsSet(true);
-                        } else {
-                            org.apache.thrift.protocol.TProtocolUtil.skip(iprot, schemeField.type);
-                        }
-                        break;
-                    case 6: // ENQUEUE_PERSON_ID
-                        if (schemeField.type == org.apache.thrift.protocol.TType.I32) {
-                            struct.enqueuePersonId = iprot.readI32();
-                            struct.setEnqueuePersonIdIsSet(true);
-                        } else {
-                            org.apache.thrift.protocol.TProtocolUtil.skip(iprot, schemeField.type);
-                        }
-                        break;
-                    case 7: // ENQUEUE_DATE_TIME
-                        if (schemeField.type == org.apache.thrift.protocol.TType.I64) {
-                            struct.enqueueDateTime = iprot.readI64();
-                            struct.setEnqueueDateTimeIsSet(true);
-                        } else {
-                            org.apache.thrift.protocol.TProtocolUtil.skip(iprot, schemeField.type);
-                        }
-                        break;
-                    default:
-                        org.apache.thrift.protocol.TProtocolUtil.skip(iprot, schemeField.type);
-                }
-                iprot.readFieldEnd();
-            }
-            iprot.readStructEnd();
-
-            // check for required fields of primitive type, which can't be checked in the validate method
-            struct.validate();
-        }
-
-        public void write(org.apache.thrift.protocol.TProtocol oprot, Queue struct) throws org.apache.thrift.TException {
-            struct.validate();
-
-            oprot.writeStructBegin(STRUCT_DESC);
-            if (struct.isSetDateTime()) {
-                oprot.writeFieldBegin(DATE_TIME_FIELD_DESC);
-                oprot.writeI64(struct.dateTime);
-                oprot.writeFieldEnd();
-            }
-            if (struct.isSetIndex()) {
-                oprot.writeFieldBegin(INDEX_FIELD_DESC);
-                oprot.writeI32(struct.index);
-                oprot.writeFieldEnd();
-            }
-            if (struct.isSetPersonId()) {
-                oprot.writeFieldBegin(PERSON_ID_FIELD_DESC);
-                oprot.writeI32(struct.personId);
-                oprot.writeFieldEnd();
-            }
-            if (struct.note != null) {
-                if (struct.isSetNote()) {
-                    oprot.writeFieldBegin(NOTE_FIELD_DESC);
-                    oprot.writeString(struct.note);
-                    oprot.writeFieldEnd();
-                }
-            }
-            if (struct.isSetQueueId()) {
-                oprot.writeFieldBegin(QUEUE_ID_FIELD_DESC);
-                oprot.writeI32(struct.queueId);
-                oprot.writeFieldEnd();
-            }
-            if (struct.isSetEnqueuePersonId()) {
-                oprot.writeFieldBegin(ENQUEUE_PERSON_ID_FIELD_DESC);
-                oprot.writeI32(struct.enqueuePersonId);
-                oprot.writeFieldEnd();
-            }
-            if (struct.isSetEnqueueDateTime()) {
-                oprot.writeFieldBegin(ENQUEUE_DATE_TIME_FIELD_DESC);
-                oprot.writeI64(struct.enqueueDateTime);
-                oprot.writeFieldEnd();
-            }
-            oprot.writeFieldStop();
-            oprot.writeStructEnd();
-        }
-
-    }
-
-    private static class QueueTupleSchemeFactory implements SchemeFactory {
-        public QueueTupleScheme getScheme() {
-            return new QueueTupleScheme();
-        }
-    }
-
-    private static class QueueTupleScheme extends TupleScheme<Queue> {
-
-        @Override
-        public void write(org.apache.thrift.protocol.TProtocol prot, Queue struct) throws org.apache.thrift.TException {
-            TTupleProtocol oprot = (TTupleProtocol) prot;
-            BitSet optionals = new BitSet();
-            if (struct.isSetDateTime()) {
-                optionals.set(0);
-            }
-            if (struct.isSetIndex()) {
-                optionals.set(1);
-            }
-            if (struct.isSetPersonId()) {
-                optionals.set(2);
-            }
-            if (struct.isSetNote()) {
-                optionals.set(3);
-            }
-            if (struct.isSetQueueId()) {
-                optionals.set(4);
-            }
-            if (struct.isSetEnqueuePersonId()) {
-                optionals.set(5);
-            }
-            if (struct.isSetEnqueueDateTime()) {
-                optionals.set(6);
-            }
-            oprot.writeBitSet(optionals, 7);
-            if (struct.isSetDateTime()) {
-                oprot.writeI64(struct.dateTime);
-            }
-            if (struct.isSetIndex()) {
-                oprot.writeI32(struct.index);
-            }
-            if (struct.isSetPersonId()) {
-                oprot.writeI32(struct.personId);
-            }
-            if (struct.isSetNote()) {
-                oprot.writeString(struct.note);
-            }
-            if (struct.isSetQueueId()) {
-                oprot.writeI32(struct.queueId);
-            }
-            if (struct.isSetEnqueuePersonId()) {
-                oprot.writeI32(struct.enqueuePersonId);
-            }
-            if (struct.isSetEnqueueDateTime()) {
-                oprot.writeI64(struct.enqueueDateTime);
-            }
-        }
-
-        @Override
-        public void read(org.apache.thrift.protocol.TProtocol prot, Queue struct) throws org.apache.thrift.TException {
-            TTupleProtocol iprot = (TTupleProtocol) prot;
-            BitSet incoming = iprot.readBitSet(7);
-            if (incoming.get(0)) {
-                struct.dateTime = iprot.readI64();
-                struct.setDateTimeIsSet(true);
-            }
-            if (incoming.get(1)) {
-                struct.index = iprot.readI32();
-                struct.setIndexIsSet(true);
-            }
-            if (incoming.get(2)) {
-                struct.personId = iprot.readI32();
-                struct.setPersonIdIsSet(true);
-            }
-            if (incoming.get(3)) {
-                struct.note = iprot.readString();
-                struct.setNoteIsSet(true);
-            }
-            if (incoming.get(4)) {
-                struct.queueId = iprot.readI32();
-                struct.setQueueIdIsSet(true);
-            }
-            if (incoming.get(5)) {
-                struct.enqueuePersonId = iprot.readI32();
-                struct.setEnqueuePersonIdIsSet(true);
-            }
-            if (incoming.get(6)) {
-                struct.enqueueDateTime = iprot.readI64();
-                struct.setEnqueueDateTimeIsSet(true);
-            }
-        }
-    }
+  }
 
 }
 
