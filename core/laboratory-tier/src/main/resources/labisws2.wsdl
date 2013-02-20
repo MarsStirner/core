@@ -117,7 +117,7 @@
     <service name="IAcrossIntf_FNKCservice">
         <port name="IAcrossIntf_FNKCPort" binding="tns:IAcrossIntf_FNKCbinding">
             <address xmlns="http://schemas.xmlsoap.org/wsdl/soap/"
-                     location="http://10.0.227.10/ws_acl/Acrosswebserv.exe/soap/IAcrossIntf_FNKC"/>
+                     location="http://node1-lis.fccho-moscow.ru/ws_acl/Acrosswebserv.exe/soap/IAcrossIntf_FNKC"/>
         </port>
     </service>
 </definitions>

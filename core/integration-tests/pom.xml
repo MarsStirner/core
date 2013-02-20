@@ -97,21 +97,21 @@
                     </components>
                 </configuration>
                 <executions>
-                <!--<execution>-->
-                <!--<id>Start and deploy server</id>-->
-                <!--<phase>process-resources</phase>-->
-                <!--<goals>-->
-                <!--<goal>deploy</goal>-->
-                <!--</goals>-->
-                <!--</execution>-->
-                <execution>
-                <id>Undeploy and stop server</id>
-                <phase>post-integration-test</phase>
-                <goals>
-                <goal>undeploy</goal>
-                <goal>stop-domain</goal>
-                </goals>
-                </execution>
+                    <!--<execution>-->
+                    <!--<id>Start and deploy server</id>-->
+                    <!--<phase>process-resources</phase>-->
+                    <!--<goals>-->
+                    <!--<goal>deploy</goal>-->
+                    <!--</goals>-->
+                    <!--</execution>-->
+                    <execution>
+                        <id>Undeploy and stop server</id>
+                        <phase>post-integration-test</phase>
+                        <goals>
+                            <goal>undeploy</goal>
+                            <goal>stop-domain</goal>
+                        </goals>
+                    </execution>
                 </executions>
             </plugin>
         </plugins>

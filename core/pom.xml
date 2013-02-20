@@ -118,6 +118,8 @@
             <!-- Пользовательский профиль -->
             <id>nde-mac</id>
             <properties>
+                <!-- Название приложения, которое будет отображаться в интерфейсе -->
+                <ear.name>tmis-server-${version.tmis.core}</ear.name>
                 <!-- Путь к директории доменов -->
                 <glassfish.domain.dir>/usr/local/opt/glassfish/libexec/glassfish/domains/</glassfish.domain.dir>
                 <!-- Домашняя директория Glassfish -->
@@ -199,6 +201,8 @@
             <!-- Пользовательский профиль -->
             <id>nde-lin</id>
             <properties>
+                <!-- Название приложения, которое будет отображаться в интерфейсе -->
+                <ear.name>tmis-server-${version.tmis.core}</ear.name>
                 <!-- Путь к директории доменов -->
                 <glassfish.domain.dir>/opt/glassfish3/glassfish/domains/</glassfish.domain.dir>
                 <!-- Домашняя директория Glassfish -->
