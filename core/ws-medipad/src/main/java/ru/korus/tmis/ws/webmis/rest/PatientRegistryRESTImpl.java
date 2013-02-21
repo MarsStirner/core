@@ -1333,6 +1333,7 @@ public class PatientRegistryRESTImpl implements Serializable {
     /**
      * Получение списка типа действий (ActionType's) по коду и/или идентификатору группы<br>
      * Для лабораторных исследований.
+     * @param patientId Идентификатор пациента
      * @param limit Максимальное количество выводимых элементов на странице.
      * @param page Номер выводимой страницы.
      * @param sortingField Наименование поля для сортировки.<pre>
@@ -1346,6 +1347,10 @@ public class PatientRegistryRESTImpl implements Serializable {
      * &#15; "desc" - по убыванию;</pre>
      * @param groupId Фильтр по идентификатору группы типа действия (s11r64.ActionType.group_id). (В url: filter[groupId]=...)
      * @param code  Фильтр по коду типа действия (s11r64.ActionType.code). (В url: filter[code]=...)
+     * @param view  Фильтр по коду типа отображения информации. (В url: filter[view]=...)
+     * &#15; Возможные значения:
+     * &#15; "tree" - в виде дерева;
+     * &#15; "flat" - в виде плоской структуры;</pre>
      * @param callback  callback запроса.
      * @param servRequest Контекст запроса с клиента.
      * @return com.sun.jersey.api.json.JSONWithPadding как Object
@@ -1353,30 +1358,37 @@ public class PatientRegistryRESTImpl implements Serializable {
      * @see CoreException
      */
     @GET
-    @Path("/actionTypes/laboratory/{patientId}")
+    @Path("/actionTypes/laboratory")
     @Produces("application/x-javascript")
-    public Object getActionTypeNamesForLaboratory(@PathParam("patientId")int patientId,
+    public Object getActionTypeNamesForLaboratory(@QueryParam("patientId")int patientId,
                                                  @QueryParam("limit")int limit,
                                                  @QueryParam("page")int  page,
                                                  @QueryParam("sortingField")String sortingField,      //сортировки вкл.
                                                  @QueryParam("sortingMethod")String sortingMethod,
                                                  @QueryParam("filter[groupId]")int groupId,
                                                  @QueryParam("filter[code]")String code,
+                                                 @QueryParam("filter[view]")String view,
                                                  @QueryParam("callback") String callback,
                                                  @Context HttpServletRequest servRequest) {
         AuthData auth = wsImpl.checkTokenCookies(servRequest);
 
-        ActionTypesListRequestDataFilter filter = new ActionTypesListRequestDataFilter(code, groupId, "laboratory", "LAB");
+        ActionTypesListRequestDataFilter filter = new ActionTypesListRequestDataFilter(code, groupId, "laboratory", "LAB", view);
         ListDataRequest request = new ListDataRequest(sortingField, sortingMethod, limit, page, filter);
-
-        Object oip = wsImpl.getListOfActionTypeIdNames(request, patientId);
+        Object oip = null;
+        if (view != null && view.compareTo("tree") == 0) {
+          oip = wsImpl.getListOfActionTypes(request);
+        } else {
+          oip = wsImpl.getListOfActionTypeIdNames(request, patientId);
+        }
         JSONWithPadding returnValue = new JSONWithPadding(oip, callback);
         return returnValue;
     }
+    ///laboratory/tests/{testId}?filter[birthDate]={birthDate}
 
     /**
      * Получение списка типа действий (ActionType's) по коду и/или идентификатору группы<br>
      * Для инструментальных исследований.
+     * @param patientId Идентификатор пациента
      * @param limit Максимальное количество выводимых элементов на странице.
      * @param page Номер выводимой страницы.
      * @param sortingField Наименование поля для сортировки.<pre>
@@ -1390,6 +1402,10 @@ public class PatientRegistryRESTImpl implements Serializable {
      * &#15; "desc" - по убыванию;</pre>
      * @param groupId Фильтр по идентификатору группы типа действия (s11r64.ActionType.group_id). (В url: filter[groupId]=...)
      * @param code  Фильтр по коду типа действия (s11r64.ActionType.code). (В url: filter[code]=...)
+     * @param view  Фильтр по коду типа отображения информации. (В url: filter[view]=...)
+     * &#15; Возможные значения:
+     * &#15; "tree" - в виде дерева;
+     * &#15; "flat" - в виде плоской структуры;</pre>
      * @param callback  callback запроса.
      * @param servRequest Контекст запроса с клиента.
      * @return com.sun.jersey.api.json.JSONWithPadding как Object
@@ -1397,20 +1413,21 @@ public class PatientRegistryRESTImpl implements Serializable {
      * @see CoreException
      */
     @GET
-    @Path("/actionTypes/instrumental/{patientId}")
+    @Path("/actionTypes/instrumental")
     @Produces("application/x-javascript")
-    public Object getActionTypeNamesForInstrumentalDiagnostics(@PathParam("patientId")int patientId,
+    public Object getActionTypeNamesForInstrumentalDiagnostics(@QueryParam("patientId")int patientId,
                                                   @QueryParam("limit")int limit,
                                                   @QueryParam("page")int  page,
                                                   @QueryParam("sortingField")String sortingField,    //сортировки вкл.
                                                   @QueryParam("sortingMethod")String sortingMethod,
                                                   @QueryParam("filter[groupId]")int groupId,
                                                   @QueryParam("filter[code]")String code,
+                                                  @QueryParam("filter[view]")String view,
                                                   @QueryParam("callback") String callback,
                                                   @Context HttpServletRequest servRequest) {
         AuthData auth = wsImpl.checkTokenCookies(servRequest);
 
-        ActionTypesListRequestDataFilter filter = new ActionTypesListRequestDataFilter(code, groupId, "instrumental", "DI");
+        ActionTypesListRequestDataFilter filter = new ActionTypesListRequestDataFilter(code, groupId, "instrumental", "DI", view);
         ListDataRequest request = new ListDataRequest(sortingField, sortingMethod, limit, page, filter);
 
         Object oip = wsImpl.getListOfActionTypeIdNames(request, patientId);
@@ -1421,6 +1438,7 @@ public class PatientRegistryRESTImpl implements Serializable {
     /**
      * Получение списка типа действий (ActionType's) по коду и/или идентификатору группы</br>
      * Для всех исследований.
+     * @param patientId Идентификатор пациента
      * @param limit Максимальное количество выводимых элементов на странице.
      * @param page Номер выводимой страницы.
      * @param sortingField Наименование поля для сортировки.<pre>
@@ -1434,6 +1452,10 @@ public class PatientRegistryRESTImpl implements Serializable {
      * &#15; "desc" - по убыванию;</pre>
      * @param groupId Фильтр по идентификатору группы типа действия (s11r64.ActionType.group_id). (В url: filter[groupId]=...)
      * @param code  Фильтр по коду типа действия (s11r64.ActionType.code). (В url: filter[code]=...)
+     * @param view  Фильтр по коду типа отображения информации. (В url: filter[view]=...)
+     * &#15; Возможные значения:
+     * &#15; "tree" - в виде дерева;
+     * &#15; "flat" - в виде плоской структуры;</pre>
      * @param callback  callback запроса.
      * @param servRequest Контекст запроса с клиента.
      * @return com.sun.jersey.api.json.JSONWithPadding как Object
@@ -1441,20 +1463,21 @@ public class PatientRegistryRESTImpl implements Serializable {
      * @see CoreException
      */
     @GET
-    @Path("/actionTypes/{patientId}")
+    @Path("/actionTypes")
     @Produces("application/x-javascript")
-    public Object getAllActionTypeNames(@PathParam("patientId")int patientId,
+    public Object getAllActionTypeNames(@QueryParam("patientId")int patientId,
                                         @QueryParam("limit")int limit,
                                         @QueryParam("page")int  page,
                                         @QueryParam("sortingField")String sortingField,          //сортировки вкл.
                                         @QueryParam("sortingMethod")String sortingMethod,
                                         @QueryParam("filter[groupId]")int groupId,
                                         @QueryParam("filter[code]")String code,
+                                        @QueryParam("filter[view]")String view,
                                         @QueryParam("callback") String callback,
                                         @Context HttpServletRequest servRequest) {
         AuthData auth = wsImpl.checkTokenCookies(servRequest);
 
-        ActionTypesListRequestDataFilter filter = new ActionTypesListRequestDataFilter(code, groupId, "all", "");
+        ActionTypesListRequestDataFilter filter = new ActionTypesListRequestDataFilter(code, groupId, "all", "", view);
         ListDataRequest request = new ListDataRequest(sortingField, sortingMethod, limit, page, filter);
 
         Object oip = wsImpl.getListOfActionTypeIdNames(request, patientId);
@@ -1476,7 +1499,7 @@ public class PatientRegistryRESTImpl implements Serializable {
     @Path("/diagnostics/{eventId}/laboratory")
     @Consumes("application/json")
     @Produces("application/x-javascript")
-    public Object insertLaboratoryStudies(CommonData data,
+    public Object insertLaboratoryStudies(JSONCommonData data,
                                           @PathParam("eventId")int  eventId,
                                           @QueryParam("callback") String callback,
                                           //@QueryParam("token") String token,
@@ -1485,7 +1508,41 @@ public class PatientRegistryRESTImpl implements Serializable {
         //AuthToken authToken = new AuthToken(token);
         //AuthData auth = wsImpl.getStorageAuthData(authToken);
 
-        JSONCommonData oip = wsImpl.insertLaboratoryStudies(eventId, data, auth);
+        CommonData com_data = new CommonData();
+        com_data.setEntity(data.getData());
+
+        JSONCommonData oip = wsImpl.insertLaboratoryStudies(eventId, com_data, auth);
+        JSONWithPadding returnValue = new JSONWithPadding(oip, callback);
+        return returnValue;
+    }
+
+    /**
+     * Редактирование направления на лабораторные исследования
+     * @param data Json с данными о лабораторном исследовании как CommonData
+     * @param eventId Идентификатор обращения на госпитализацию, в рамках которой создается исследование.
+     * @param callback  callback запроса.
+     * @param servRequest Контекст запроса с клиента.
+     * @return com.sun.jersey.api.json.JSONWithPadding как Object
+     * @throws CoreException
+     * @see CoreException
+     */
+    @PUT
+    @Path("/diagnostics/{eventId}/laboratory")
+    @Consumes("application/json")
+    @Produces("application/x-javascript")
+    public Object modifyLaboratoryStudies(JSONCommonData data,
+                                          @PathParam("eventId")int  eventId,
+                                          @QueryParam("callback") String callback,
+                                          //@QueryParam("token") String token,
+                                          @Context HttpServletRequest servRequest) {
+        AuthData auth = wsImpl.checkTokenCookies(servRequest);
+        //AuthToken authToken = new AuthToken(token);
+        //AuthData auth = wsImpl.getStorageAuthData(authToken);
+
+        CommonData com_data = new CommonData();
+        com_data.setEntity(data.getData());
+
+        JSONCommonData oip = wsImpl.modifyLaboratoryStudies(eventId, com_data, auth);
         JSONWithPadding returnValue = new JSONWithPadding(oip, callback);
         return returnValue;
     }

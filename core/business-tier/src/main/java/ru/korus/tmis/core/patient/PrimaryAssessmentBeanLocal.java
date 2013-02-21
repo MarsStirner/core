@@ -39,6 +39,9 @@ public interface PrimaryAssessmentBeanLocal {
     JSONCommonData insertAssessmentAsConsultation(int eventId, int actionTypeId, int executorId, Date bDate, Date eDate, boolean urgent, Object request, AuthData userData)
             throws CoreException;
 
-    JSONCommonData createAssessmentsForEventIdFromCommonData(int eventId, CommonData assessments, String title, Object request, AuthData userData, Function2<JSONCommonData, Boolean, JSONCommonData> postProcessing)
+    JSONCommonData createAssessmentsForEventIdFromCommonData(int eventId, CommonData assessments, String title, Object request, AuthData userData, Function2<JSONCommonData, Boolean, JSONCommonData>  postProcessingForDiagnosis)
+            throws CoreException;
+
+    JSONCommonData modifyAssessmentsForEventIdFromCommonData(int eventId, CommonData assessments, String title, Object request, AuthData userData, Function2<JSONCommonData, Boolean, JSONCommonData>  postProcessingForDiagnosis)
             throws CoreException;
 }
