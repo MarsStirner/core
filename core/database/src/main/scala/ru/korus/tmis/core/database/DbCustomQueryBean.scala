@@ -104,7 +104,7 @@ class DbCustomQueryBean
       queryStr.data.foreach(qdp => typed.setParameter(qdp.name, qdp.value))
     }
 
-    val events = typed.getResultList.foldLeft(new java.util.LinkedHashMap[Event, Action])(
+    val events = typed.getResultList.foldLeft(LinkedHashMap.empty[Event, Action])(
                         (map, e) => {
                                       map.put(e(0).asInstanceOf[Event], e(1).asInstanceOf[Action])
                                       em.detach(e(0))
@@ -115,8 +115,9 @@ class DbCustomQueryBean
     if (records!=null) records(events.size)
 
     //проведем  разбиение на страницы вручную (необходимо чтобы не использовать отдельный запрос на recordcounts)
-    if((events.size - limit*(page+1))>0)
+    if((events.size - limit*(page+1))>0) {
       events.dropRight(events.size - limit*(page+1)).drop(page*limit)
+    }
     else
       events.drop(page*limit)
   }

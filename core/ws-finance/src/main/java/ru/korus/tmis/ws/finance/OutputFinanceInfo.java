@@ -21,9 +21,9 @@ public class OutputFinanceInfo {
      */
     private String errorMsg;
 
-    public void initErrorMsg(String errorMsg) {
-        setErrorMsg(errorMsg);
-        if(financeData == null || financeData.length == 0) {
+    public void initErrorMsg(final String errorMessage) {
+        this.errorMsg = errorMessage;
+        if (financeData == null || financeData.length == 0) {
             setFinanceData(new FinanceBean[1]);
         }
         financeData[0] = new FinanceBean();
@@ -34,7 +34,7 @@ public class OutputFinanceInfo {
         return errorMsg;
     }
 
-    public void setErrorMsg(String errorMsg) {
+    public void setErrorMsg(final String errorMsg) {
         this.errorMsg = errorMsg;
     }
 
@@ -42,7 +42,7 @@ public class OutputFinanceInfo {
         return financeData;
     }
 
-    public void setFinanceData(FinanceBean[] financeData) {
+    public void setFinanceData(final FinanceBean[] financeData) {
         this.financeData = financeData;
     }
 

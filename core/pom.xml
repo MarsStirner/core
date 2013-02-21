@@ -118,6 +118,8 @@
             <!-- Пользовательский профиль -->
             <id>nde-mac</id>
             <properties>
+                <!-- Название приложения, которое будет отображаться в интерфейсе -->
+                <ear.name>tmis-server-${version.tmis.core}</ear.name>
                 <!-- Путь к директории доменов -->
                 <glassfish.domain.dir>/usr/local/opt/glassfish/libexec/glassfish/domains/</glassfish.domain.dir>
                 <!-- Домашняя директория Glassfish -->
@@ -202,6 +204,8 @@
             <!-- Пользовательский профиль -->
             <id>nde-lin</id>
             <properties>
+                <!-- Название приложения, которое будет отображаться в интерфейсе -->
+                <ear.name>tmis-server-${version.tmis.core}</ear.name>
                 <!-- Путь к директории доменов -->
                 <glassfish.domain.dir>/opt/glassfish3/glassfish/domains/</glassfish.domain.dir>
                 <!-- Домашняя директория Glassfish -->
@@ -443,15 +447,18 @@
                         ru/korus/tmis/laboratory/*,
                         ru/korus/tmis/laboratory/data/lis2/accept/*,
                         ru/korus/tmis/laboratory/data/lis/accept/*,
-                        ru/korus/tmis/laboratory/data/lis/mock/
+                        ru/korus/tmis/laboratory/data/lis/mock/,
+                        ru/korus/tmis/ws/webmis/rest/,
+                        ru/korus/tmis/ws/medipad/,
+                        ru/korus/tmis/ws/transfusion/
                     </excludes>
                 </configuration>
                 <executions>
                     <execution>
-                        <!--<phase>package</phase>-->
-                        <!--<goals>-->
-                        <!--<goal>check</goal>-->
-                        <!--</goals>-->
+                        <phase>package</phase>
+                        <goals>
+                            <goal>check</goal>
+                        </goals>
                     </execution>
                 </executions>
 

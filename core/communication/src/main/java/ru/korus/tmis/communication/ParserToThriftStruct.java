@@ -11,6 +11,9 @@ import ru.korus.tmis.core.entity.model.*;
  */
 public final class ParserToThriftStruct {
 
+    private ParserToThriftStruct() {
+    }
+
     public static PatientInfo parsePatientInfo(final Patient item) {
         if (item == null) return null;
         final PatientInfo result = new PatientInfo().setFirstName(item.getFirstName()).setLastName(item.getLastName()).setPatrName(item.getPatrName());
@@ -20,7 +23,9 @@ public final class ParserToThriftStruct {
 
     public static ru.korus.tmis.communication.thriftgen.Patient parsePatient(final Patient item) {
         if (item == null) return null;
-        final ru.korus.tmis.communication.thriftgen.Patient result = new ru.korus.tmis.communication.thriftgen.Patient().setFirstName(item.getFirstName()).setLastName(item.getLastName()).setPatrName(item.getPatrName());
+        final ru.korus.tmis.communication.thriftgen.Patient result =
+                new ru.korus.tmis.communication.thriftgen.Patient().setFirstName(
+                        item.getFirstName()).setLastName(item.getLastName()).setPatrName(item.getPatrName());
         result.setSex(item.getSex()).setBirthDate(item.getBirthDate().getTime()).setId(item.getId());
         return result;
     }
@@ -50,6 +55,9 @@ public final class ParserToThriftStruct {
             case UNDEFINED:
                 result.setSexFilter("");
                 break;
+            default:
+                result.setSexFilter("");
+                break;
         }
         result.setPost(item.getPost().getName());
         return result;
@@ -72,7 +80,7 @@ public final class ParserToThriftStruct {
     }
 
 
-    public static String convertDotPatternToSQLLikePattern(String dotPattern) {
+    public static String convertDotPatternToSQLLikePattern(final String dotPattern) {
         if (dotPattern != null && dotPattern.length() > 0)
             return dotPattern.replaceAll("(\\.{3})|(\\*)", "%").replaceAll("\\.", "_");
         else return "";

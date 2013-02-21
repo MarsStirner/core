@@ -6,11 +6,12 @@ import grizzled.slf4j.Logging
 import ru.korus.tmis.util.{CAPids, I18nable}
 import javax.persistence.{EntityManager, PersistenceContext}
 import scala.collection.JavaConversions._
-import javax.ejb.Stateless
+import javax.ejb.{EJB, Stateless}
 import java.text.SimpleDateFormat
 import java.util.{Calendar, Date}
 import ru.korus.tmis.core.entity.model.Event
 import ru.korus.tmis.core.data.{SeventhFormRequestData, FormOfAccountingMovementOfPatientsData}
+import ru.korus.tmis.core.database.DbOrgStructureBeanLocal
 
 /**
  * Класс для работы с формой 007
@@ -24,6 +25,9 @@ with CAPids {
 
   @PersistenceContext(unitName = "s11r64")
   var em: EntityManager = _
+
+  @EJB
+  private var dbOrgStructureBean: DbOrgStructureBeanLocal = _
 
   private val msecInDay: Long = 1000 * 60 * 60 * 24
   private val msecInMinute: Long = 1000 * 60
@@ -68,11 +72,12 @@ with CAPids {
       eDate = this.getDefaultEndDate(bDate.getTime)
     }
 
+    //Получение инфо об отделении
+    val department = dbOrgStructureBean.getOrgStructureById(departmentId)
     //Получение данных
     ru.korus.tmis.core.data.Form007QueryStatuses.values.foreach(status => this.addDataToLinearMapByCellNumber(departmentId, bDate, eDate, status))
-
     //Заполнение Entity
-    new FormOfAccountingMovementOfPatientsData(this.linear, new SeventhFormRequestData(departmentId, bDate, eDate))
+    new FormOfAccountingMovementOfPatientsData(department, this.linear, new SeventhFormRequestData(departmentId, bDate, eDate))
   }
 
   /**

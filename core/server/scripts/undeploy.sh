@@ -11,17 +11,15 @@ echo "AS_ADMIN_MASTERPASSWORD="${glassfish.admin.password} >> $GF_PASSWD_FILE
 
 export PATH=${glassfish.home}/bin/:$PATH
 
-# Удаление приложения
+echo "Undeploy ${glassfish.application.name}"
+echo ""
 asadmin --host ${glassfish.host} \
         --port ${glassfish.port.admin} \
         --user ${glassfish.admin.login} \
         --passwordfile $GF_PASSWD_FILE \
         --interactive=false \
-        --echo=true \
-        --terse=true \
         undeploy \
-        --name ${glassfish.application.name} \
-        --force=true
+        ${glassfish.application.name}
 
 #asadmin stop-domain --domaindir ${glassfish.domain.dir} ${glassfish.domain}
 #asadmin start-domain --domaindir ${glassfish.domain.dir} ${glassfish.domain}

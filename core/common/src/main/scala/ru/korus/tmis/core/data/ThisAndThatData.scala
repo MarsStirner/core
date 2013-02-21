@@ -180,10 +180,15 @@ class ActionTypesListData {
   @BeanProperty
   var data: ArrayList[ActionTypesListEntry] = new ArrayList[ActionTypesListEntry]
 
-  def this(actionTypes: java.util.List[ActionType], requestData: ListDataRequest) = {
+  def this(requestData: ListDataRequest, getAllActionTypeWithFilter: (Int, Int, String, String, AnyRef) => java.util.List[ActionType]) = {
     this ()
     this.requestData = requestData
-    actionTypes.foreach(at => this.data.add(new ActionTypesListEntry(at)))
+    getAllActionTypeWithFilter(0,0,this.requestData.sortingField,this.requestData.sortingMethod,this.requestData.filter).foreach(at => {
+      requestData.setFilter(new ActionTypesListRequestDataFilter("", at.getId.intValue(), "",
+                                                                  this.requestData.filter.asInstanceOf[ActionTypesListRequestDataFilter].mnemonic,
+                                                                  this.requestData.filter.asInstanceOf[ActionTypesListRequestDataFilter].view))
+      this.data.add(new ActionTypesListEntry(at, requestData, getAllActionTypeWithFilter))
+    })
   }
 }
 
@@ -200,10 +205,14 @@ class ActionTypesListRequestDataFilter {
   @BeanProperty
   var mnemonic: String = _
 
+  @BeanProperty
+  var view: String = "all"
+
   def this(code_x: String,
            groupId: Int,
            diaType_x: String,
-           mnemonic: String) {
+           mnemonic: String,
+           view: String) {
     this()
     this.code = if(code_x!=null && code_x!="") {
                   code_x
@@ -217,6 +226,9 @@ class ActionTypesListRequestDataFilter {
                 }
     this.groupId = groupId
     this.mnemonic = mnemonic
+    if (view!=null && !view.isEmpty){
+      this.view = view
+    }
   }
 
   def toQueryStructure() = {
@@ -246,6 +258,14 @@ class ActionTypesListRequestDataFilter {
   }
 }
 
+object ActionTypesListDataViews {
+  class OneLevelView {
+  }
+  class DefaultView {
+  }
+}
+class ActionTypesListDataViews {}
+
 @XmlType(name = "actionTypesListEntry")
 @XmlRootElement(name = "actionTypesListEntry")
 class ActionTypesListEntry {
@@ -262,15 +282,26 @@ class ActionTypesListEntry {
   @BeanProperty
   var name: String = _
 
+  @JsonView(Array(classOf[ActionTypesListDataViews.DefaultView]))
+  @BeanProperty
+  var groups: java.util.LinkedList[ActionTypesListEntry] = new java.util.LinkedList[ActionTypesListEntry]
+
   //@BeanProperty
   //var childrenCount: Long = _
 
-  def this(actionType: ActionType) {
+  def this(actionType: ActionType, requestData: ListDataRequest, getAllActionTypeWithFilter: (Int, Int, String, String, AnyRef) => java.util.List[ActionType]) {
     this()
     this.id = actionType.getId.intValue()
     this.groupId = if(actionType.getGroupId!=null) {actionType.getGroupId.intValue()} else{0}
     this.code = actionType.getCode
     this.name = actionType.getName
+    getAllActionTypeWithFilter(0,0,requestData.sortingField,requestData.sortingMethod,requestData.filter).foreach(f => {
+      val filter = new ActionTypesListRequestDataFilter("", f.getId.intValue(), "",
+                                                        requestData.filter.asInstanceOf[ActionTypesListRequestDataFilter].mnemonic,
+                                                        requestData.filter.asInstanceOf[ActionTypesListRequestDataFilter].view);
+      val request = new ListDataRequest(requestData.sortingField, requestData.sortingMethod, requestData.limit, requestData.page, filter);
+      this.groups.add(new ActionTypesListEntry(f, request, getAllActionTypeWithFilter))
+    })
     //this.childrenCount = actionType
   }
 }

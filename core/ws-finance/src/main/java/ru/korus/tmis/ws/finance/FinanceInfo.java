@@ -35,14 +35,14 @@ public class FinanceInfo {
     /**
      * Текст сообщения об ошибки о неправильном имени подразделения
      */
-    final private static String ILLEGAL_NAME_OF_STRUCT = "illegal name of structure";
+    private static final String ILLEGAL_NAME_OF_STRUCT = "illegal name of structure";
 
-    final private static Logger logger = LoggerFactory.getLogger(FinanceInfo.class);
+    private static final Logger logger = LoggerFactory.getLogger(FinanceInfo.class);
 
     /**
      * Тип финансирования "Платные услуги"
      */
-    final private static Integer PAID_PATIENT = 4;
+    private static final Integer PAID_PATIENT = 4;
 
     /**
      * @see ServiceFinanceInfo#getFinanceInfo(String)
@@ -83,13 +83,12 @@ public class FinanceInfo {
     /**
      * Получить все платные услуги с заданным типом финансирования в
      * ActionType.finance_id
-     * 
+     *
      * @param em
-     * 
      * @return список платных услуг с заданным типом финансирования в
      *         ActionType.finance_id
      */
-    private List<Action> getPaidActions(EntityManager em) {
+    private List<Action> getPaidActions(final EntityManager em) {
         // Получаем все платные действия (ActionType.finance_id = PAID_PATIENT)
         // с заданным типом услуги (ActionType.srvice_id is not null)
         // TODO
@@ -100,17 +99,14 @@ public class FinanceInfo {
     /**
      * Получить все платные услуги с заданным типом финансирования в
      * EventType.finance_id
-     * 
+     *
      * @param em
-     * 
      * @return список платных услуг с заданным типом финансирования в
      *         EventType.finance_id
-     * @throws IllegalAccessException
-     *             - см. Class..newInstance()
-     * @throws InstantiationException
-     *             - см. Class..newInstance()
+     * @throws IllegalAccessException - см. Class..newInstance()
+     * @throws InstantiationException - см. Class..newInstance()
      */
-    private List<Action> getPaidActionsByEvent(EntityManager em) {
+    private List<Action> getPaidActionsByEvent(final EntityManager em) {
         // Получаем все действия с неиницализировнным ActionType.finance_id и
         // с заданным типом услуги (ActionType.srvice_id is not null)
         final List<Action> actions = em.createQuery("SELECT a FROM Action a JOIN a.actionType at WHERE at.service IS NOT NULL AND a.financeId IS NULL",
@@ -157,13 +153,10 @@ public class FinanceInfo {
 
     /**
      * Получиение стоимости услуги
-     * 
-     * @param serviceId
-     *            - ID услуги
-     * @param em
-     *            - доступ к БД s11r64
-     * @param endDate
-     *            - дата оказания услуги
+     *
+     * @param serviceId - ID услуги
+     * @param em        - доступ к БД s11r64
+     * @param endDate   - дата оказания услуги
      * @return стоимость услуги на указанную дату, либо первую найденную если
      *         дата не установлена (endData == null)
      */
@@ -183,13 +176,13 @@ public class FinanceInfo {
                 final Date tariffEndDate = curTariff.getEndDate();
                 Interval curInterval = new Interval(tariffBegDate != null ? tariffBegDate.getTime() : 0, tariffEndDate != null
                         ? tariffEndDate.getTime() : Long.MAX_VALUE); // строим
-                                                                     // интервал
-                                                                     // [begData,
-                                                                     // endData]
+                // интервал
+                // [begData,
+                // endData]
                 if (curInterval.contains(endDate.getTime())) { // стоимость
-                                                               // услуги на
-                                                               // заданнyю дату
-                                                               // найдена
+                    // услуги на
+                    // заданнyю дату
+                    // найдена
                     tariffForService = curTariff;
                     break;
                 }
@@ -204,19 +197,20 @@ public class FinanceInfo {
         return res;
     }
 
-    private OutputFinanceInfo initOutputData(final List<Action> actions, EntityManager em) {
+    private OutputFinanceInfo initOutputData(final List<Action> actions, final EntityManager em) {
         final OutputFinanceInfo result = new OutputFinanceInfo();
         result.setFinanceData(new FinanceBean[actions.size()]);
         logger.info("The array for output has been allocated. (size = '{}')", actions.size());
         int index = 0;
         for (final Action action : actions) {
             try {
-                final FinanceBean cur = result.getFinanceData()[index] = new FinanceBean();
+                result.getFinanceData()[index] = new FinanceBean();
+                final FinanceBean cur = result.getFinanceData()[index];
                 ++index;
                 final Event event = EntityMgr.getSafe(action.getEvent());
                 cur.setExternalId(event.getExternalId());
                 final Date endDate = action.getEndDate();
-                final ActionType actionType =  EntityMgr.getSafe(action.getActionType());
+                final ActionType actionType = EntityMgr.getSafe(action.getActionType());
                 final RbService service = EntityMgr.getSafe(actionType.getService());
                 cur.setCodeOfService(service.getCode());
                 cur.setNameOfService(service.getName());
@@ -240,7 +234,7 @@ public class FinanceInfo {
         return result;
     }
 
-    private boolean isNameOfStructureNotValid(final String nameOfStructure, EntityManager em) {
+    private boolean isNameOfStructureNotValid(final String nameOfStructure, final EntityManager em) {
         if (nameOfStructure == null) {
             return true;
         }

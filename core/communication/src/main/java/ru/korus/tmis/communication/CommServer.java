@@ -30,7 +30,7 @@ import java.util.*;
 
 public class CommServer implements Communications.Iface {
     //Logger
-    final static Logger logger = LoggerFactory.getLogger(CommServer.class);
+    static final Logger logger = LoggerFactory.getLogger(CommServer.class);
     //Beans
     private static DbOrgStructureBeanLocal orgStructureBean = null;
     private static DbPatientBeanLocal patientBean = null;
@@ -169,8 +169,8 @@ public class CommServer implements Communications.Iface {
     public TicketsAvailability getTotalTicketsAvailability(final GetTicketsAvailabilityParameters params)
             throws TException {
         final int currentRequestNum = ++requestNum;
-        logger.info("#{} Call method -> CommServer.getTotalTicketsAvailability(OrgStructureId={}, " +
-                "PersonId={}, Speciality={} [Notation={}], BeginDate={} EndDate={})",
+        logger.info("#{} Call method -> CommServer.getTotalTicketsAvailability(OrgStructureId={}, "
+                + "PersonId={}, Speciality={} [Notation={}], BeginDate={} EndDate={})",
                 currentRequestNum, params.getOrgStructureId(), params.getPersonId(), params.getSpeciality(),
                 params.getSpecialityNotation(), new DateTime(params.getBegDate()), new DateTime(params.getEndDate()));
 
@@ -184,8 +184,8 @@ public class CommServer implements Communications.Iface {
     public List<ExtendedTicketsAvailability> getTicketsAvailability(final GetTicketsAvailabilityParameters params)
             throws TException {
         final int currentRequestNum = ++requestNum;
-        logger.info("#{} Call method -> CommServer.getTicketsAvailability(OrgStructureId={}, PersonId={}, " +
-                "Speciality={} [Notation={}], BeginDate={} EndDate={})",
+        logger.info("#{} Call method -> CommServer.getTicketsAvailability(OrgStructureId={}, PersonId={}, "
+                + "Speciality={} [Notation={}], BeginDate={} EndDate={})",
                 currentRequestNum, params.getOrgStructureId(), params.getPersonId(), params.getSpeciality(),
                 params.getSpecialityNotation(), new DateTime(params.getBegDate()), new DateTime(params.getEndDate()));
 
@@ -294,7 +294,7 @@ public class CommServer implements Communications.Iface {
      * @param hospitalUidFrom ИД ЛПУ
      * @return список ограничений
      */
-    private List<QuotingByTime> getPersonConstraints(final Staff person, final Date constraintDate, final String hospitalUidFrom) {
+    private List<QuotingByTime> getPersonConstraints(final Staff person, final Date constraintDate, final int hospitalUidFrom) {
         //2. Проверяем есть ли «причина отсутствия» этого врача в указанную дату _getReasonOfAbsence
         Action timelineAction = null;
         try {
@@ -310,7 +310,7 @@ public class CommServer implements Communications.Iface {
         }
         if (timelineAction == null) {
             final QuotingType quotingType;
-            if (!hospitalUidFrom.equals("")) quotingType = QuotingType.FROM_OTHER_LPU;
+            if (hospitalUidFrom != 0) quotingType = QuotingType.FROM_OTHER_LPU;
             else quotingType = QuotingType.FROM_PORTAL;
 
             final List<QuotingByTime> constraints = quotingByTimeBean.getQuotingByTimeConstraints(person.getId(), constraintDate, quotingType.getValue());
@@ -504,7 +504,7 @@ public class CommServer implements Communications.Iface {
      * @param sex 1="male", 2="male", X=""
      * @return строковое представление пола
      */
-    private String getSexAsString(int sex) {
+    private String getSexAsString(final int sex) {
         switch (sex) {
             case 1:
                 return "male";
@@ -522,7 +522,7 @@ public class CommServer implements Communications.Iface {
      * @param result в случае ошибки будет заполнена
      * @return флажок корректности ( false = некорректно )
      */
-    private boolean checkAddPatientParams(AddPatientParameters params, PatientStatus result) {
+    private boolean checkAddPatientParams(final AddPatientParameters params, final PatientStatus result) {
         boolean allParamsIsSet = true;
         String errorMessage = "";
         if (!params.isSetLastName() || params.getLastName().length() == 0) {
@@ -679,7 +679,8 @@ public class CommServer implements Communications.Iface {
                         pat.getLastName(), pat.getFirstName(), pat.getPatrName(), pat.getSex());
             }
         }
-        final List<ru.korus.tmis.communication.thriftgen.Patient> resultList = new ArrayList<ru.korus.tmis.communication.thriftgen.Patient>(patientsList.size());
+        final List<ru.korus.tmis.communication.thriftgen.Patient> resultList =
+                new ArrayList<ru.korus.tmis.communication.thriftgen.Patient>(patientsList.size());
         for (ru.korus.tmis.core.entity.model.Patient pat : patientsList) {
             resultList.add(ParserToThriftStruct.parsePatient(pat));
         }
@@ -753,7 +754,7 @@ public class CommServer implements Communications.Iface {
                         .setMessage("Пациент с указанным ID отмечен как умерший. Запись невозможна.");
             }
             person = staffBean.getStaffById(params.getPersonId());
-            if (!сheckApplicable(patient, person.getSpeciality())) {
+            if (!checkApplicable(patient, person.getSpeciality())) {
                 logger.warn("Doctor speciality is not applicable to patient.");
                 return new EnqueuePatientStatus().setSuccess(false)
                         .setMessage("Пациент не подходит под специальность этого врача(по полу или возрасту). Запись невозможна.");
@@ -807,13 +808,13 @@ public class CommServer implements Communications.Iface {
                             paramsDateTime);
                     try {
                         //0 проверяем квоты!
-                        if (!params.getHospitalUidFrom().equals("")) {
-                            if (!checkQuotingBySpeciality(person.getSpeciality(), params.getHospitalUidFrom())) {
-                                logger.info("Нет талончиков, доступных для записи (по квотам на специальность)");
-                                return new EnqueuePatientStatus().setMessage(
-                                        "Нет талончиков, доступных для записи")
-                                        .setSuccess(false);
-                            }
+                        if(!"".equals(params.getHospitalUidFrom())){
+                          if(!checkQuotingBySpeciality(person.getSpeciality(),params.getHospitalUidFrom())){
+                             logger.info("Нет талончиков, доступных для записи (по квотам на специальность)");
+                              return new EnqueuePatientStatus().setMessage(
+                                      "Нет талончиков, доступных для записи")
+                                      .setSuccess(false);
+                          }
                         }
                         //1) Создаем событие  (Event)
                         //1.a)Получаем тип события (EventType)
@@ -867,8 +868,8 @@ public class CommServer implements Communications.Iface {
         return result;
     }
 
-    private boolean checkQuotingBySpeciality
-            (ru.korus.tmis.core.entity.model.Speciality speciality, String organisationInfisCode) {
+    private boolean checkQuotingBySpeciality(
+            final ru.korus.tmis.core.entity.model.Speciality speciality, final String organisationInfisCode) {
         List<QuotingBySpeciality> quotingBySpecialityList =
                 quotingBySpecialityBean.getQuotingBySpecialityAndOrganisation(speciality, organisationInfisCode);
         switch (quotingBySpecialityList.size()) {
@@ -901,12 +902,14 @@ public class CommServer implements Communications.Iface {
      * @param speciality специальность врача
      * @return результат проверки
      */
-    private boolean сheckApplicable(Patient patient, ru.korus.tmis.core.entity.model.Speciality speciality) {
+    private boolean checkApplicable(
+            final Patient patient, final ru.korus.tmis.core.entity.model.Speciality speciality) {
         logger.debug("####SPECIALITY age=\"{}\" sex=\"{}\"", speciality.getAge(), speciality.getSex());
+
         if (speciality.getSex() != (short) 0 && speciality.getSex() != patient.getSex()) {
             return false;
         } else {
-            if (!speciality.getAge().equals("")) {
+            if (!"".equals(speciality.getAge())) {
                 return checkAge(speciality.getAge(), patient.getBirthDate());
             } else {
                 return true;
@@ -923,7 +926,7 @@ public class CommServer implements Communications.Iface {
      * @param birthDate дата рождения пациента
      * @return Подходит ли пациент под ограничения, если строка неверна синтаксически, то вернет true
      */
-    private boolean checkAge(String age, Date birthDate) {
+    private boolean checkAge(final String age, final Date birthDate) {
         //Parse age
         String[] ageArray = age.split("-", 2);
         if (ageArray.length > 2) {
@@ -954,18 +957,18 @@ public class CommServer implements Communications.Iface {
      * @param agePart строка с указанием возраста
      * @return Дата рождения, соответствующая этому возрасту (от сейчас)
      */
-    private Date convertPartOfAgeStringToDate(String agePart) throws NumberFormatException {
+    private Date convertPartOfAgeStringToDate(final String agePart) throws NumberFormatException {
         try {
             if (agePart.contains("Д") || agePart.contains("д")) {
                 int days = Integer.parseInt(agePart.substring(0, agePart.length() - 1));
                 return new DateTime().minusDays(days).toDate();
             }
-            if (agePart.contains("Г") || agePart.contains("г")) {
-                int years = Integer.parseInt(agePart.substring(0, agePart.length() - 1));
+            if(agePart.contains("Г") ||  agePart.contains("г")){
+                int years = Integer.parseInt(agePart.substring(0,agePart.length()-1));
                 return new DateTime().minusYears(years).toDate();
             }
-            if (agePart.contains("Н") || agePart.contains("н")) {
-                int weeks = Integer.parseInt(agePart.substring(0, agePart.length() - 1));
+            if(agePart.contains("Н") ||  agePart.contains("н")){
+                int weeks = Integer.parseInt(agePart.substring(0,agePart.length()-1));
                 return new DateTime().minusWeeks(weeks).toDate();
             }
             if (agePart.contains("М") || agePart.contains("м")) {
@@ -991,10 +994,17 @@ public class CommServer implements Communications.Iface {
      * @param index        Номер временного отрезка на которое происходит запись
      * @throws CoreException Ошибка сохранения действия в БД
      */
-    private void addActionToQueuePropertyValue(Action doctorAction, List<APValueTime> timesAMB, List<APValueAction> queueAMB, Action queueAction, ActionProperty queueAP, int index) throws CoreException {
+    private void addActionToQueuePropertyValue(
+            final Action doctorAction,
+            final List<APValueTime> timesAMB,
+            final List<APValueAction> queueAMB,
+            final Action queueAction,
+            final ActionProperty queueAP,
+            final int index) throws CoreException {
         if (timesAMB.size() != queueAMB.size()) {
             //Наша запись к врачу первая, заполняем все null'ами
             //Создаем ActionProperty
+            final ActionProperty newActionProperty;
             if (queueAP == null) {
                 //Выбираем ActionPropertyType
                 ActionPropertyType queueAPType = null;
@@ -1004,21 +1014,23 @@ public class CommServer implements Communications.Iface {
                     }
                 }
                 if (queueAPType != null) {
-                    queueAP = actionPropertyBean.createActionProperty(doctorAction, queueAPType);
+                    newActionProperty = actionPropertyBean.createActionProperty(doctorAction, queueAPType);
                 } else {
-                    queueAP = actionPropertyBean.createActionProperty(doctorAction, 14, null);
+                    newActionProperty = actionPropertyBean.createActionProperty(doctorAction, 14, null);
                 }
+            } else {
+                newActionProperty = queueAP;
             }
             for (int j = 0; j < timesAMB.size(); j++) {
-                APValueAction newActionProperty_Action = new APValueAction(queueAP.getId(), j);
-                if (index != j) newActionProperty_Action.setValue(null);
-                else newActionProperty_Action.setValue(queueAction);
-                managerBean.persist(newActionProperty_Action);
+                APValueAction newActionPropertyAction = new APValueAction(newActionProperty.getId(), j);
+                if (index != j) newActionPropertyAction.setValue(null);
+                else newActionPropertyAction.setValue(queueAction);
+                managerBean.persist(newActionPropertyAction);
             }
         } else {
-            APValueAction newActionProperty_Action = new APValueAction(queueAP.getId(), index);
-            newActionProperty_Action.setValue(queueAction);
-            managerBean.merge(newActionProperty_Action);
+            APValueAction newActionPropertyAction = new APValueAction(queueAP.getId(), index);
+            newActionPropertyAction.setValue(queueAction);
+            managerBean.merge(newActionPropertyAction);
         }
     }
 
@@ -1030,7 +1042,8 @@ public class CommServer implements Communications.Iface {
      * @param queueAMB     список очереди
      * @return свойство действия, отвечающее за запись пациента, если уже имеются. иначе null;
      */
-    private ActionProperty getAmbTimesAndQueues(Action doctorAction, List<APValueTime> timesAMB, List<APValueAction> queueAMB) {
+    private ActionProperty getAmbTimesAndQueues(
+            final Action doctorAction, final List<APValueTime> timesAMB, final List<APValueAction> queueAMB) {
         ActionProperty queueAP = null;
         try {
             for (ActionProperty currentProperty : doctorAction.getActionProperties()) {
@@ -1135,7 +1148,7 @@ public class CommServer implements Communications.Iface {
                 currentRequestNum, patientId, queueId);
         Action queueAction = null;
         final DequeuePatientStatus result = new DequeuePatientStatus();
-        APValueAction AMBActionProperty_Action = null;
+        APValueAction ambActionPropertyAction = null;
         try {
             queueAction = actionBean.getActionById(queueId);
             //Проверка тот ли пациент имеет данный талончик
@@ -1145,21 +1158,21 @@ public class CommServer implements Communications.Iface {
                 return result;
             }
             //Получение ActionProperty_Action соответствующего записи пациента к врачу (queue)
-            AMBActionProperty_Action = actionPropertyBean.getActionProperty_ActionByValue(queueAction);
+            ambActionPropertyAction = actionPropertyBean.getActionProperty_ActionByValue(queueAction);
             //Обнуление поля = отмена очереди
-            AMBActionProperty_Action.setValue(null);
-            managerBean.merge(AMBActionProperty_Action);
+            ambActionPropertyAction.setValue(null);
+            managerBean.merge(ambActionPropertyAction);
         } catch (Exception e) {
             if (queueAction == null) {
                 logger.error("Cannot get queueAction for this ID=" + queueId, e);
                 result.setMessage("Нету записи к врачу с данным ID").setSuccess(false);
             }
-            if (AMBActionProperty_Action == null) {
+            if (ambActionPropertyAction == null) {
                 logger.error("Cannot get queueActionProperty for this ID=" + queueId, e);
                 result.setMessage("Нету записи к врачу с данным ID").setSuccess(false);
             }
         }
-        if (AMBActionProperty_Action != null && AMBActionProperty_Action.getValue() == null) {
+        if (ambActionPropertyAction != null && ambActionPropertyAction.getValue() == null) {
             result.setMessage("Запись отменена").setSuccess(true);
         }
 
