@@ -300,7 +300,7 @@ class AppealEntry {
 
   @JsonView(Array(classOf[Views.DynamicFieldsPrintForm]))
   @BeanProperty
-  var ward: String = _                                            //Отделение
+  var ward: OrgStructureContainer = _                                            //Отделение
   @JsonView(Array(classOf[Views.DynamicFieldsPrintForm]))
   @BeanProperty
   var totalDays: String = _                                       //Проведено койко-дней
@@ -546,7 +546,7 @@ class AppealEntry {
           }
 
           if (res!=null) {   //Запись
-            this.ward = "%s(%s)".format(res._2.get(0).getValue.asInstanceOf[OrgStructure].getName, res._2.get(0).getValue.asInstanceOf[OrgStructure].getAddress)
+            this.ward = new OrgStructureContainer(res._2.get(0).getValue.asInstanceOf[OrgStructure])
             val diffOfDays = ((new Date()).getTime - res._1.getAction.getBegDate.getTime)/(1000 * 60 * 60 * 24) + 1
             this.totalDays = "Проведено %d койко-дней".format(diffOfDays)
           }

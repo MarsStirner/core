@@ -863,7 +863,10 @@ public class PatientRegistryRESTImpl implements Serializable {
                               @Context HttpServletRequest servRequest) {
 
         AuthData auth = wsImpl.checkTokenCookies(servRequest);
-        Object oip = wsImpl.getForm007(departmentId, beginDate, endDate, auth);
+        //Отделение обязательное поле, если не задано в запросе, то берем из роли специалиста
+        int depId = (departmentId>0) ? departmentId : auth.getUser().getOrgStructure().getId().intValue();
+
+        Object oip = wsImpl.getForm007(depId, beginDate, endDate, auth);
         JSONWithPadding returnValue = new JSONWithPadding(oip, callback);
         return returnValue;
     }
@@ -2110,7 +2113,7 @@ public class PatientRegistryRESTImpl implements Serializable {
                                                                                              statusS,
                                                                                              biomaterial);
         TakingOfBiomaterialRequesData request = new TakingOfBiomaterialRequesData(sortingField, sortingMethod, filter);
-        Object oip = wsImpl.getTakingOfBiomaterial(request, null/*auth*/);
+        Object oip = wsImpl.getTakingOfBiomaterial(request, auth);
         JSONWithPadding returnValue = new JSONWithPadding(oip, callback);
         return returnValue;
     }

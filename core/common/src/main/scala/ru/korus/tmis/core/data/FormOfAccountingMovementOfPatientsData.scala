@@ -49,11 +49,12 @@ class FormOfAccountingMovementOfPatientsData {
   @BeanProperty
   var data: FormOfAccountingMovementOfPatientsEntry = _
 
-  def this(that: Map[Form007QueryStatuses.Form007QueryStatuses, (Long, List[Event])],
+  def this(department: OrgStructure,
+           that: Map[Form007QueryStatuses.Form007QueryStatuses, (Long, List[Event])],
            request: SeventhFormRequestData) {
     this()
     this.requestData = request
-    this.data = new FormOfAccountingMovementOfPatientsEntry(that)
+    this.data = new FormOfAccountingMovementOfPatientsEntry(department, that)
   }
 }
 
@@ -87,12 +88,16 @@ class SeventhFormRequestData {
 class FormOfAccountingMovementOfPatientsEntry {
 
   @BeanProperty
+  var department: OrgStructureContainer = _
+
+  @BeanProperty
   var counts: java.util.LinkedList[SeventhFormFrontPage] = new java.util.LinkedList[SeventhFormFrontPage]
 
   @BeanProperty
   var patients: SeventhFormReversePage = new SeventhFormReversePage()
 
-  def this(that: Map[Form007QueryStatuses.Form007QueryStatuses, (Long, List[Event])]) {
+  def this(department: OrgStructure,
+           that: Map[Form007QueryStatuses.Form007QueryStatuses, (Long, List[Event])]) {
     this()
     var cnt = Map.empty[Form007QueryStatuses.Form007QueryStatuses, Long]
     var pat = Map.empty[Form007QueryStatuses.Form007QueryStatuses, List[Event]]
@@ -104,6 +109,7 @@ class FormOfAccountingMovementOfPatientsEntry {
     })
     this.counts.add(new SeventhFormFrontPage(0, null, cnt)) //Всего
     this.patients = new SeventhFormReversePage(pat)
+    this.department = new OrgStructureContainer(department)
   }
 }
 
@@ -433,6 +439,24 @@ class PatientInfoContainer {
     this.appealId = event.getId.intValue()
     this.externalId = event.getExternalId
     this.patient = new PersonNameContainer(event.getPatient)
+  }
+}
+
+class OrgStructureContainer {
+  @BeanProperty
+  var id : Int = _
+  @BeanProperty
+  var name : String = _
+  @BeanProperty
+  var address : String = _
+
+  def this(department: OrgStructure){
+    this()
+    if (department!=null){
+      this.id = department.getId.intValue()
+      this.name = department.getName
+      this.address = department.getAddress
+    }
   }
 }
 
