@@ -189,7 +189,7 @@ public class CommServer implements Communications.Iface {
                 currentRequestNum, params.getOrgStructureId(), params.getPersonId(), params.getSpeciality(),
                 params.getSpecialityNotation(), new DateTime(params.getBegDate()), new DateTime(params.getEndDate()));
 
-        final List<ExtendedTicketsAvailability> result = null;
+        final List<ExtendedTicketsAvailability> result = new ArrayList<ExtendedTicketsAvailability>(0);
         logger.info("End of #{} getTicketsAvailability. Return (Size={}), DATA={})", currentRequestNum, result.size(), result);
         return result;
     }
@@ -747,6 +747,11 @@ public class CommServer implements Communications.Iface {
                         .setMessage("Пациент с указанным ID отмечен как умерший. Запись невозможна.");
             }
             person = staffBean.getStaffById(params.getPersonId());
+            if(!сheckApplicable(patient, person.getSpeciality())){
+                logger.warn("Doctor speciality is not applicable to patient.");
+                return new EnqueuePatientStatus().setSuccess(false)
+                        .setMessage("Пациент не подходит под специальность этого врача(по полу или возрасту). Запись невозможна.");
+            }
             doctorAction = staffBean.getPersonActionsByDateAndType(params.getPersonId(), paramsDateTime.toDate(), "amb");
         } catch (Exception e) {
             if (patient == null) {
@@ -795,6 +800,15 @@ public class CommServer implements Communications.Iface {
                             new DateTime(currentTimeAMB.getValue()),
                             paramsDateTime);
                     try {
+                        //0 проверяем квоты!
+                        if(params.getHospitalUidFrom()!=""){
+                          if(!checkQuotingBySpeciality(person.getSpeciality(),params.getHospitalUidFrom())){
+                             logger.info("Нет талончиков, доступных для записи (по квотам на специальность)");
+                              return new EnqueuePatientStatus().setMessage(
+                                      "Нет талончиков, доступных для записи")
+                                      .setSuccess(false);
+                          }
+                        }
                         //1) Создаем событие  (Event)
                         //1.a)Получаем тип события (EventType)
                         queueEventType = eventBean.getEventTypeByCode("queue");
@@ -802,7 +816,8 @@ public class CommServer implements Communications.Iface {
                                 queueEventType, queueEventType.getId(), queueEventType.getName());
                         //1.b)Сохраняем событие  (Event)
                         queueEvent = eventBean.createEvent(
-                                patient, queueEventType, person, paramsDateTime.toDate(), paramsDateTime.plusWeeks(1).toDate());
+                                patient, queueEventType, person,
+                                paramsDateTime.toDate(), paramsDateTime.plusWeeks(1).toDate());
                         logger.debug("Event is {} ID={} UUID={}",
                                 queueEvent, queueEvent.getId(), queueEvent.getUuid().getUuid());
                         //2) Создаем действие (Action)
@@ -845,6 +860,122 @@ public class CommServer implements Communications.Iface {
         logger.info("End of #{} enqueuePatient. Return \"{}\" as result.", currentRequestNum, result);
         return result;
     }
+
+    private boolean checkQuotingBySpeciality
+            (ru.korus.tmis.core.entity.model.Speciality speciality, String organisationInfisCode) {
+      List<QuotingBySpeciality> quotingBySpecialityList =
+              quotingBySpecialityBean.getQuotingBySpecialityAndOrganisation(speciality, organisationInfisCode);
+        switch (quotingBySpecialityList.size()){
+            case 0:{
+                return true;
+            }
+            case 1:{
+                QuotingBySpeciality current= quotingBySpecialityList.get(0);
+                if(current.getCouponsRemaining()>0){
+                    current.setCouponsRemaining(current.getCouponsRemaining()-1);
+                    try {
+                        managerBean.merge(current);
+                        return true;
+                    } catch (CoreException e) {
+                        logger.error("Error while changing coupons_remaining. Message:", e);
+                    }
+                }
+                return false;
+            }
+            default:{
+                return false;
+            }
+        }
+    }
+
+    /**
+     * подходит ли пол и возраст для данного врача
+     * @param patient  пациент
+     * @param speciality  специальность врача
+     * @return      результат проверки
+     */
+    private boolean сheckApplicable(Patient patient, ru.korus.tmis.core.entity.model.Speciality speciality) {
+        logger.debug("####SPECIALITY age=\"{}\" sex=\"{}\"",speciality.getAge(),speciality.getSex());
+        if(speciality.getSex() != (short)0 && speciality.getSex() != patient.getSex()){
+            return false;
+        }
+        else {
+            if(speciality.getAge()!=""){
+                return checkAge(speciality.getAge(),patient.getBirthDate());
+            }
+            else{
+                return true;
+            }
+        }
+    }
+
+    /**
+     * фильтрации возрастов
+     * @param age   возрастные ограничения ("{NNN{д|н|м|г}-{MMM{д|н|м|г}}" -
+         с NNN дней/недель/месяцев/лет по MMM дней/недель/месяцев/лет;
+         пустая нижняя или верхняя граница - нет ограничения снизу или сверху)
+     * @param birthDate  дата рождения пациента
+     * @return   Подходит ли пациент под ограничения, если строка неверна синтаксически, то вернет true
+     */
+    private boolean checkAge(String age, Date birthDate) {
+        //Parse age
+        String[] ageArray = age.split("-",2);
+        if(ageArray.length>2){
+            logger.warn("Value of age=\"{}\" in rbSpeciality table is strange, return true for check.",age);
+            return true;
+        }
+        Date[] ageDateArray=new Date[ageArray.length];
+        for(int i=0;i<ageArray.length;i++){
+            ageDateArray[i]=convertPartOfAgeStringToDate(ageArray[i]);
+            logger.debug("DATE ={}",ageDateArray[i]);
+        }
+        switch (ageDateArray.length){
+            case 1: {
+                return birthDate.before(ageDateArray[0]);
+            }
+            case 2:{
+                return (birthDate.before(ageDateArray[0])&&birthDate.after(ageDateArray[1]));
+            }
+            default:{
+                return true;
+            }
+        }
+    }
+
+    /**
+     * Конвертация строки с указанием возраста в Дату
+     * @param agePart  строка с указанием возраста
+     * @return   Дата рождения, соответствующая этому возрасту (от сейчас)
+     */
+    private Date convertPartOfAgeStringToDate(String agePart) throws NumberFormatException{
+        try{
+            if(agePart.contains("Д") ||  agePart.contains("д")){
+                int days=Integer.parseInt(agePart.substring(0,agePart.length()-1));
+                return new DateTime().minusDays(days).toDate();
+            }
+            if(agePart.contains("Г") ||  agePart.contains("г")){
+                int years=Integer.parseInt(agePart.substring(0,agePart.length()-1));
+                return new DateTime().minusYears(years).toDate();
+            }
+            if(agePart.contains("Н") ||  agePart.contains("н")){
+                int weeks=Integer.parseInt(agePart.substring(0,agePart.length()-1));
+                return new DateTime().minusWeeks(weeks).toDate();
+            }
+            if(agePart.contains("М") ||  agePart.contains("м")){
+                int months=Integer.parseInt(agePart.substring(0,agePart.length()-1));
+                return new DateTime().minusMonths(months).toDate();
+            }
+            throw new NumberFormatException("Неопознаный отрезок времени");
+        }
+        catch (NumberFormatException e){
+            logger.warn("Некорректное преобразование строки в число. Возвращаем текущую дату.");
+        }
+        return new Date();
+    }
+
+
+
+
 
     /**
      * Внесение действия( состояние в очереди пациента ) в БД
@@ -1179,7 +1310,7 @@ public class CommServer implements Communications.Iface {
         final int currentRequestNum = ++requestNum;
         logger.info("#{} Call method -> CommServer.getPatientOrgStructures(parentId={})", currentRequestNum, parentId);
 
-        final List<OrgStructuresProperties> resultList = null;
+        final List<OrgStructuresProperties> resultList = new ArrayList<OrgStructuresProperties>(0);
 
         logger.info("End of #{} getPatientOrgStructures. Return (Size={}), DATA={})",
                 currentRequestNum, resultList.size(), resultList);

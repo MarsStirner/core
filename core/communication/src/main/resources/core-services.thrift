@@ -182,7 +182,7 @@ struct EnqueuePatientParameters{
 2:required i32 personId;
 3:optional timestamp dateTime;
 4:optional string note;
-5:optional i32 hospitalUidFrom;
+5:optional string hospitalUidFrom;
 }
 
 struct FindPatientParameters{
