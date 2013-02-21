@@ -1,4 +1,4 @@
-package ru.korus.tmis.core.communucation;
+package ru.korus.tmis.communication;
 
 import org.apache.thrift.TException;
 import org.apache.thrift.protocol.TBinaryProtocol;
@@ -14,9 +14,11 @@ import org.testng.annotations.AfterClass;
 import org.testng.annotations.BeforeClass;
 import org.testng.annotations.Test;
 import ru.korus.tmis.communication.thriftgen.*;
-import ru.korus.tmis.communication.thriftgen.Queue;
 
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Date;
+import java.util.HashMap;
+import java.util.List;
 
 import static org.testng.Assert.assertTrue;
 
@@ -64,7 +66,7 @@ public class CommunicationServiceTest {
         Organization result;
         try {
             result = client.getOrganisationInfo(infisCodeParam);
-            logger.info("Send and recieve is successfully done. Result is {}",result.toString());
+            logger.info("Send and recieve is successfully done. Result is {}", result.toString());
             logger.warn("Successful end of getOrganisationInfoTest");
         } catch (NotFoundException e) {
             logger.error("None of organisation found by this infisCode =" + infisCodeParam, e);

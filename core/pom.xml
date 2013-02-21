@@ -20,7 +20,7 @@
         <module>ws-laboratory</module>
         <module>ws-drugstore</module>
         <!--<module>hl7</module>-->
-        <!--<module>integration-tests</module>-->
+        <module>integration-tests</module>
         <module>ws-finance</module>
         <module>ws-transfusion</module>
         <module>communication</module>
@@ -78,7 +78,7 @@
         <alarm.count.message>10</alarm.count.message>
 
         <!-- Путь для логов в тестовом окружжении-->
-        <logs.test.path>core/server/target/logs-test/</logs.test.path>
+        <logs.test.path>${project.build.directory}/logs-test/</logs.test.path>
         <!-- Уровень записи лога по умолчанию -->
         <logs.level>INFO</logs.level>
         <!-- Переменная glassfish, указывающая на путь к домену -->
@@ -118,6 +118,8 @@
             <!-- Пользовательский профиль -->
             <id>nde-mac</id>
             <properties>
+                <!-- Название приложения, которое будет отображаться в интерфейсе -->
+                <ear.name>tmis-server-${version.tmis.core}</ear.name>
                 <!-- Путь к директории доменов -->
                 <glassfish.domain.dir>/usr/local/opt/glassfish/libexec/glassfish/domains/</glassfish.domain.dir>
                 <!-- Домашняя директория Glassfish -->
@@ -199,6 +201,8 @@
             <!-- Пользовательский профиль -->
             <id>nde-lin</id>
             <properties>
+                <!-- Название приложения, которое будет отображаться в интерфейсе -->
+                <ear.name>tmis-server-${version.tmis.core}</ear.name>
                 <!-- Путь к директории доменов -->
                 <glassfish.domain.dir>/opt/glassfish3/glassfish/domains/</glassfish.domain.dir>
                 <!-- Домашняя директория Glassfish -->
@@ -237,130 +241,6 @@
             </properties>
         </profile>
     </profiles>
-
-    <dependencies>
-        <!--
-            Java EE
-        -->
-        <dependency>
-            <groupId>javax.mail</groupId>
-            <artifactId>mail</artifactId>
-            <version>${version.javax.mail}</version>
-            <!--<scope>provided</scope>-->
-        </dependency>
-
-        <dependency>
-            <groupId>javax</groupId>
-            <artifactId>javaee-api</artifactId>
-            <version>${version.javaee.api}</version>
-            <scope>provided</scope>
-        </dependency>
-
-        <!--
-            Scala
-        -->
-        <dependency>
-            <groupId>org.scala-lang</groupId>
-            <artifactId>scala-library</artifactId>
-            <version>${version.scala}</version>
-        </dependency>
-
-        <dependency>
-            <groupId>org.scala-lang</groupId>
-            <artifactId>scala-compiler</artifactId>
-            <version>${version.scala}</version>
-        </dependency>
-
-        <!--
-            Groovy
-        -->
-        <dependency>
-            <groupId>org.codehaus.groovy</groupId>
-            <artifactId>groovy-all</artifactId>
-            <version>${version.groovy}</version>
-        </dependency>
-
-        <!--
-            Logging
-        -->
-        <dependency>
-            <groupId>org.clapper</groupId>
-            <artifactId>grizzled-slf4j_2.8.1</artifactId>
-            <version>${version.logging.grizzled-slf4j}</version>
-        </dependency>
-
-        <dependency>
-            <groupId>org.slf4j</groupId>
-            <artifactId>slf4j-api</artifactId>
-            <version>${version.logging.slf4j}</version>
-        </dependency>
-
-        <dependency>
-            <groupId>ch.qos.logback</groupId>
-            <artifactId>logback-classic</artifactId>
-            <version>${version.logging.logback}</version>
-        </dependency>
-
-        <dependency>
-            <groupId>org.slf4j</groupId>
-            <artifactId>jcl-over-slf4j</artifactId>
-            <version>${version.logging.jcl}</version>
-        </dependency>
-
-        <!-- The org.codehaus.janino:commons-compiler:2.6.1 dependency -->
-        <!-- will be automatically pulled in by Maven's transitivity rules -->
-        <!--<dependency>-->
-        <!--<groupId>org.codehaus.janino</groupId>-->
-        <!--<artifactId>janino</artifactId>-->
-        <!--<version>${version.logging.logback.janino}</version>-->
-        <!--</dependency>-->
-
-        <!--
-            JUnit
-        -->
-        <dependency>
-            <groupId>junit</groupId>
-            <artifactId>junit</artifactId>
-            <version>${version.junit}</version>
-        </dependency>
-
-        <dependency>
-            <groupId>org.testng</groupId>
-            <artifactId>testng</artifactId>
-            <version>${version.testng}</version>
-            <scope>test</scope>
-            <!--<classifier>jdk15</classifier>-->
-        </dependency>
-
-        <!--
-            Javax inject
-        -->
-        <dependency>
-            <groupId>javax.inject</groupId>
-            <artifactId>javax.inject</artifactId>
-            <version>${version.javax.inject}</version>
-        </dependency>
-
-        <!--
-        Apache Thrift
-        -->
-        <dependency>
-            <groupId>org.apache.thrift</groupId>
-            <artifactId>libthrift</artifactId>
-            <version>${version.apache.thrift}</version>
-        </dependency>
-
-        <!--
-        Joda Time
-        -->
-        <dependency>
-            <groupId>joda-time</groupId>
-            <artifactId>joda-time</artifactId>
-            <version>${version.joda.time}</version>
-        </dependency>
-
-
-    </dependencies>
 
     <build>
         <defaultGoal>package</defaultGoal>
@@ -564,15 +444,17 @@
                         ru/korus/tmis/laboratory/*,
                         ru/korus/tmis/laboratory/data/lis2/accept/*,
                         ru/korus/tmis/laboratory/data/lis/accept/*,
-                        ru/korus/tmis/laboratory/data/lis/mock/
+                        ru/korus/tmis/laboratory/data/lis/mock/,
+                        ru/korus/tmis/ws/webmis/rest/,
+                        ru/korus/tmis/ws/medipad/
                     </excludes>
                 </configuration>
                 <executions>
                     <execution>
-                        <!--<phase>package</phase>-->
-                        <!--<goals>-->
-                        <!--<goal>check</goal>-->
-                        <!--</goals>-->
+                        <phase>package</phase>
+                        <goals>
+                            <goal>check</goal>
+                        </goals>
                     </execution>
                 </executions>
 
@@ -877,5 +759,127 @@
         <connection>scm:git:https://github.com/KorusConsulting/tmis-core.git</connection>
         <developerConnection>scm:git:https://github.com/KorusConsulting/tmis-core.git</developerConnection>
     </scm>
+    <!--<dependencyManagement>-->
+    <dependencies>
+        <!--
+            Java EE
+        -->
+        <dependency>
+            <groupId>javax.mail</groupId>
+            <artifactId>mail</artifactId>
+            <version>${version.javax.mail}</version>
+            <!--<scope>provided</scope>-->
+        </dependency>
 
+        <dependency>
+            <groupId>javax</groupId>
+            <artifactId>javaee-api</artifactId>
+            <version>${version.javaee.api}</version>
+            <scope>provided</scope>
+        </dependency>
+
+        <!--
+            Scala
+        -->
+        <dependency>
+            <groupId>org.scala-lang</groupId>
+            <artifactId>scala-library</artifactId>
+            <version>${version.scala}</version>
+        </dependency>
+
+        <dependency>
+            <groupId>org.scala-lang</groupId>
+            <artifactId>scala-compiler</artifactId>
+            <version>${version.scala}</version>
+        </dependency>
+
+        <!--
+            Groovy
+        -->
+        <dependency>
+            <groupId>org.codehaus.groovy</groupId>
+            <artifactId>groovy-all</artifactId>
+            <version>${version.groovy}</version>
+        </dependency>
+
+        <!--
+            Logging
+        -->
+        <dependency>
+            <groupId>org.clapper</groupId>
+            <artifactId>grizzled-slf4j_2.8.1</artifactId>
+            <version>${version.logging.grizzled-slf4j}</version>
+        </dependency>
+
+        <dependency>
+            <groupId>org.slf4j</groupId>
+            <artifactId>slf4j-api</artifactId>
+            <version>${version.logging.slf4j}</version>
+        </dependency>
+
+        <dependency>
+            <groupId>ch.qos.logback</groupId>
+            <artifactId>logback-classic</artifactId>
+            <version>${version.logging.logback}</version>
+        </dependency>
+
+        <dependency>
+            <groupId>org.slf4j</groupId>
+            <artifactId>jcl-over-slf4j</artifactId>
+            <version>${version.logging.jcl}</version>
+        </dependency>
+
+        <!-- The org.codehaus.janino:commons-compiler:2.6.1 dependency -->
+        <!-- will be automatically pulled in by Maven's transitivity rules -->
+        <!--<dependency>-->
+        <!--<groupId>org.codehaus.janino</groupId>-->
+        <!--<artifactId>janino</artifactId>-->
+        <!--<version>${version.logging.logback.janino}</version>-->
+        <!--</dependency>-->
+
+        <!--
+            JUnit
+        -->
+        <dependency>
+            <groupId>junit</groupId>
+            <artifactId>junit</artifactId>
+            <version>${version.junit}</version>
+        </dependency>
+
+        <dependency>
+            <groupId>org.testng</groupId>
+            <artifactId>testng</artifactId>
+            <version>${version.testng}</version>
+            <scope>test</scope>
+            <!--<classifier>jdk15</classifier>-->
+        </dependency>
+
+        <!--
+            Javax inject
+        -->
+        <dependency>
+            <groupId>javax.inject</groupId>
+            <artifactId>javax.inject</artifactId>
+            <version>${version.javax.inject}</version>
+        </dependency>
+
+        <!--
+        Apache Thrift
+        -->
+        <dependency>
+            <groupId>org.apache.thrift</groupId>
+            <artifactId>libthrift</artifactId>
+            <version>${version.apache.thrift}</version>
+        </dependency>
+
+        <!--
+        Joda Time
+        -->
+        <dependency>
+            <groupId>joda-time</groupId>
+            <artifactId>joda-time</artifactId>
+            <version>${version.joda.time}</version>
+        </dependency>
+    </dependencies>
+    <!--</dependencyManagement>-->
 </project>

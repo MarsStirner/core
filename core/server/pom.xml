@@ -16,6 +16,7 @@
         <relativePath>../</relativePath>
     </parent>
 
+
     <dependencies>
 
         <!-- Korus dependency -->
@@ -132,7 +133,7 @@
                     <user>${glassfish.admin.login}</user>
                     <domainDirectory>${glassfish.domain.dir}</domainDirectory>
                     <echo>true</echo>
-                    <debug>true</debug>
+                    <debug>false</debug>
                     <terse>true</terse>
                     <domain>
                         <name>${glassfish.domain}</name>
@@ -150,24 +151,24 @@
                         </component>
                     </components>
                 </configuration>
-                <!--<executions>-->
-                <!--<execution>-->
-                <!--<id>Start and deploy server</id>-->
-                <!--<phase>package</phase>-->
-                <!--<goals>-->
-                <!--<goal>stop-domain</goal>-->
-                <!--<goal>deploy</goal>-->
-                <!--</goals>-->
-                <!--</execution>-->
-                <!--&lt;!&ndash;<execution>&ndash;&gt;-->
-                <!--&lt;!&ndash;<id>Undeploy and stop server</id>&ndash;&gt;-->
-                <!--&lt;!&ndash;<phase>prepare-package</phase>&ndash;&gt;-->
-                <!--&lt;!&ndash;<goals>&ndash;&gt;-->
-                <!--&lt;!&ndash;<goal>undeploy</goal>&ndash;&gt;-->
-                <!--&lt;!&ndash;<goal>stop-domain</goal>&ndash;&gt;-->
-                <!--&lt;!&ndash;</goals>&ndash;&gt;-->
-                <!--&lt;!&ndash;</execution>&ndash;&gt;-->
-                <!--</executions>-->
+                <executions>
+                    <execution>
+                        <id>Start and deploy server</id>
+                        <phase>install</phase>
+                        <goals>
+                            <goal>stop-domain</goal>
+                            <goal>deploy</goal>
+                        </goals>
+                    </execution>
+                    <!--&lt;!&ndash;<execution>&ndash;&gt;-->
+                    <!--&lt;!&ndash;<id>Undeploy and stop server</id>&ndash;&gt;-->
+                    <!--&lt;!&ndash;<phase>prepare-package</phase>&ndash;&gt;-->
+                    <!--&lt;!&ndash;<goals>&ndash;&gt;-->
+                    <!--&lt;!&ndash;<goal>undeploy</goal>&ndash;&gt;-->
+                    <!--&lt;!&ndash;<goal>stop-domain</goal>&ndash;&gt;-->
+                    <!--&lt;!&ndash;</goals>&ndash;&gt;-->
+                    <!--&lt;!&ndash;</execution>&ndash;&gt;-->
+                </executions>
             </plugin>
         </plugins>
     </build>

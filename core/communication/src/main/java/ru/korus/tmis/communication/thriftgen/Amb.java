@@ -15,7 +15,6 @@ import org.apache.thrift.protocol.TTupleProtocol;
 import org.apache.thrift.protocol.TProtocolException;
 import org.apache.thrift.EncodingUtils;
 import org.apache.thrift.TException;
-
 import java.util.List;
 import java.util.ArrayList;
 import java.util.Map;
@@ -28,912 +27,898 @@ import java.util.Collections;
 import java.util.BitSet;
 import java.nio.ByteBuffer;
 import java.util.Arrays;
-
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 public class Amb implements org.apache.thrift.TBase<Amb, Amb._Fields>, java.io.Serializable, Cloneable {
-    private static final org.apache.thrift.protocol.TStruct STRUCT_DESC = new org.apache.thrift.protocol.TStruct("Amb");
+  private static final org.apache.thrift.protocol.TStruct STRUCT_DESC = new org.apache.thrift.protocol.TStruct("Amb");
 
-    private static final org.apache.thrift.protocol.TField BEG_TIME_FIELD_DESC = new org.apache.thrift.protocol.TField("begTime", org.apache.thrift.protocol.TType.I64, (short) 1);
-    private static final org.apache.thrift.protocol.TField END_TIME_FIELD_DESC = new org.apache.thrift.protocol.TField("endTime", org.apache.thrift.protocol.TType.I64, (short) 2);
-    private static final org.apache.thrift.protocol.TField OFFICE_FIELD_DESC = new org.apache.thrift.protocol.TField("office", org.apache.thrift.protocol.TType.STRING, (short) 3);
-    private static final org.apache.thrift.protocol.TField PLAN_FIELD_DESC = new org.apache.thrift.protocol.TField("plan", org.apache.thrift.protocol.TType.I32, (short) 4);
-    private static final org.apache.thrift.protocol.TField TICKETS_FIELD_DESC = new org.apache.thrift.protocol.TField("tickets", org.apache.thrift.protocol.TType.LIST, (short) 5);
-    private static final org.apache.thrift.protocol.TField AVAILABLE_FIELD_DESC = new org.apache.thrift.protocol.TField("available", org.apache.thrift.protocol.TType.I32, (short) 6);
+  private static final org.apache.thrift.protocol.TField BEG_TIME_FIELD_DESC = new org.apache.thrift.protocol.TField("begTime", org.apache.thrift.protocol.TType.I64, (short)1);
+  private static final org.apache.thrift.protocol.TField END_TIME_FIELD_DESC = new org.apache.thrift.protocol.TField("endTime", org.apache.thrift.protocol.TType.I64, (short)2);
+  private static final org.apache.thrift.protocol.TField OFFICE_FIELD_DESC = new org.apache.thrift.protocol.TField("office", org.apache.thrift.protocol.TType.STRING, (short)3);
+  private static final org.apache.thrift.protocol.TField PLAN_FIELD_DESC = new org.apache.thrift.protocol.TField("plan", org.apache.thrift.protocol.TType.I32, (short)4);
+  private static final org.apache.thrift.protocol.TField TICKETS_FIELD_DESC = new org.apache.thrift.protocol.TField("tickets", org.apache.thrift.protocol.TType.LIST, (short)5);
+  private static final org.apache.thrift.protocol.TField AVAILABLE_FIELD_DESC = new org.apache.thrift.protocol.TField("available", org.apache.thrift.protocol.TType.I32, (short)6);
 
-    private static final Map<Class<? extends IScheme>, SchemeFactory> schemes = new HashMap<Class<? extends IScheme>, SchemeFactory>();
+  private static final Map<Class<? extends IScheme>, SchemeFactory> schemes = new HashMap<Class<? extends IScheme>, SchemeFactory>();
+  static {
+    schemes.put(StandardScheme.class, new AmbStandardSchemeFactory());
+    schemes.put(TupleScheme.class, new AmbTupleSchemeFactory());
+  }
 
-    static {
-        schemes.put(StandardScheme.class, new AmbStandardSchemeFactory());
-        schemes.put(TupleScheme.class, new AmbTupleSchemeFactory());
-    }
+  public long begTime; // optional
+  public long endTime; // optional
+  public String office; // optional
+  public int plan; // optional
+  public List<Ticket> tickets; // optional
+  public int available; // optional
 
-    public long begTime; // optional
-    public long endTime; // optional
-    public String office; // optional
-    public int plan; // optional
-    public List<Ticket> tickets; // optional
-    public int available; // optional
+  /** The set of fields this struct contains, along with convenience methods for finding and manipulating them. */
+  public enum _Fields implements org.apache.thrift.TFieldIdEnum {
+    BEG_TIME((short)1, "begTime"),
+    END_TIME((short)2, "endTime"),
+    OFFICE((short)3, "office"),
+    PLAN((short)4, "plan"),
+    TICKETS((short)5, "tickets"),
+    AVAILABLE((short)6, "available");
 
-    /**
-     * The set of fields this struct contains, along with convenience methods for finding and manipulating them.
-     */
-    public enum _Fields implements org.apache.thrift.TFieldIdEnum {
-        BEG_TIME((short) 1, "begTime"),
-        END_TIME((short) 2, "endTime"),
-        OFFICE((short) 3, "office"),
-        PLAN((short) 4, "plan"),
-        TICKETS((short) 5, "tickets"),
-        AVAILABLE((short) 6, "available");
-
-        private static final Map<String, _Fields> byName = new HashMap<String, _Fields>();
-
-        static {
-            for (_Fields field : EnumSet.allOf(_Fields.class)) {
-                byName.put(field.getFieldName(), field);
-            }
-        }
-
-        /**
-         * Find the _Fields constant that matches fieldId, or null if its not found.
-         */
-        public static _Fields findByThriftId(int fieldId) {
-            switch (fieldId) {
-                case 1: // BEG_TIME
-                    return BEG_TIME;
-                case 2: // END_TIME
-                    return END_TIME;
-                case 3: // OFFICE
-                    return OFFICE;
-                case 4: // PLAN
-                    return PLAN;
-                case 5: // TICKETS
-                    return TICKETS;
-                case 6: // AVAILABLE
-                    return AVAILABLE;
-                default:
-                    return null;
-            }
-        }
-
-        /**
-         * Find the _Fields constant that matches fieldId, throwing an exception
-         * if it is not found.
-         */
-        public static _Fields findByThriftIdOrThrow(int fieldId) {
-            _Fields fields = findByThriftId(fieldId);
-            if (fields == null) throw new IllegalArgumentException("Field " + fieldId + " doesn't exist!");
-            return fields;
-        }
-
-        /**
-         * Find the _Fields constant that matches name, or null if its not found.
-         */
-        public static _Fields findByName(String name) {
-            return byName.get(name);
-        }
-
-        private final short _thriftId;
-        private final String _fieldName;
-
-        _Fields(short thriftId, String fieldName) {
-            _thriftId = thriftId;
-            _fieldName = fieldName;
-        }
-
-        public short getThriftFieldId() {
-            return _thriftId;
-        }
-
-        public String getFieldName() {
-            return _fieldName;
-        }
-    }
-
-    // isset id assignments
-    private static final int __BEGTIME_ISSET_ID = 0;
-    private static final int __ENDTIME_ISSET_ID = 1;
-    private static final int __PLAN_ISSET_ID = 2;
-    private static final int __AVAILABLE_ISSET_ID = 3;
-    private byte __isset_bitfield = 0;
-    private _Fields optionals[] = {_Fields.BEG_TIME, _Fields.END_TIME, _Fields.OFFICE, _Fields.PLAN, _Fields.TICKETS, _Fields.AVAILABLE};
-    public static final Map<_Fields, org.apache.thrift.meta_data.FieldMetaData> metaDataMap;
+    private static final Map<String, _Fields> byName = new HashMap<String, _Fields>();
 
     static {
-        Map<_Fields, org.apache.thrift.meta_data.FieldMetaData> tmpMap = new EnumMap<_Fields, org.apache.thrift.meta_data.FieldMetaData>(_Fields.class);
-        tmpMap.put(_Fields.BEG_TIME, new org.apache.thrift.meta_data.FieldMetaData("begTime", org.apache.thrift.TFieldRequirementType.OPTIONAL,
-                new org.apache.thrift.meta_data.FieldValueMetaData(org.apache.thrift.protocol.TType.I64, "timestamp")));
-        tmpMap.put(_Fields.END_TIME, new org.apache.thrift.meta_data.FieldMetaData("endTime", org.apache.thrift.TFieldRequirementType.OPTIONAL,
-                new org.apache.thrift.meta_data.FieldValueMetaData(org.apache.thrift.protocol.TType.I64, "timestamp")));
-        tmpMap.put(_Fields.OFFICE, new org.apache.thrift.meta_data.FieldMetaData("office", org.apache.thrift.TFieldRequirementType.OPTIONAL,
-                new org.apache.thrift.meta_data.FieldValueMetaData(org.apache.thrift.protocol.TType.STRING)));
-        tmpMap.put(_Fields.PLAN, new org.apache.thrift.meta_data.FieldMetaData("plan", org.apache.thrift.TFieldRequirementType.OPTIONAL,
-                new org.apache.thrift.meta_data.FieldValueMetaData(org.apache.thrift.protocol.TType.I32)));
-        tmpMap.put(_Fields.TICKETS, new org.apache.thrift.meta_data.FieldMetaData("tickets", org.apache.thrift.TFieldRequirementType.OPTIONAL,
-                new org.apache.thrift.meta_data.ListMetaData(org.apache.thrift.protocol.TType.LIST,
-                        new org.apache.thrift.meta_data.StructMetaData(org.apache.thrift.protocol.TType.STRUCT, Ticket.class))));
-        tmpMap.put(_Fields.AVAILABLE, new org.apache.thrift.meta_data.FieldMetaData("available", org.apache.thrift.TFieldRequirementType.OPTIONAL,
-                new org.apache.thrift.meta_data.FieldValueMetaData(org.apache.thrift.protocol.TType.I32)));
-        metaDataMap = Collections.unmodifiableMap(tmpMap);
-        org.apache.thrift.meta_data.FieldMetaData.addStructMetaDataMap(Amb.class, metaDataMap);
-    }
-
-    public Amb() {
+      for (_Fields field : EnumSet.allOf(_Fields.class)) {
+        byName.put(field.getFieldName(), field);
+      }
     }
 
     /**
-     * Performs a deep copy on <i>other</i>.
+     * Find the _Fields constant that matches fieldId, or null if its not found.
      */
-    public Amb(Amb other) {
-        __isset_bitfield = other.__isset_bitfield;
-        this.begTime = other.begTime;
-        this.endTime = other.endTime;
-        if (other.isSetOffice()) {
-            this.office = other.office;
-        }
-        this.plan = other.plan;
-        if (other.isSetTickets()) {
-            List<Ticket> __this__tickets = new ArrayList<Ticket>();
-            for (Ticket other_element : other.tickets) {
-                __this__tickets.add(new Ticket(other_element));
-            }
-            this.tickets = __this__tickets;
-        }
-        this.available = other.available;
-    }
-
-    public Amb deepCopy() {
-        return new Amb(this);
-    }
-
-    @Override
-    public void clear() {
-        setBegTimeIsSet(false);
-        this.begTime = 0;
-        setEndTimeIsSet(false);
-        this.endTime = 0;
-        this.office = null;
-        setPlanIsSet(false);
-        this.plan = 0;
-        this.tickets = null;
-        setAvailableIsSet(false);
-        this.available = 0;
-    }
-
-    public long getBegTime() {
-        return this.begTime;
-    }
-
-    public Amb setBegTime(long begTime) {
-        this.begTime = begTime;
-        setBegTimeIsSet(true);
-        return this;
-    }
-
-    public void unsetBegTime() {
-        __isset_bitfield = EncodingUtils.clearBit(__isset_bitfield, __BEGTIME_ISSET_ID);
+    public static _Fields findByThriftId(int fieldId) {
+      switch(fieldId) {
+        case 1: // BEG_TIME
+          return BEG_TIME;
+        case 2: // END_TIME
+          return END_TIME;
+        case 3: // OFFICE
+          return OFFICE;
+        case 4: // PLAN
+          return PLAN;
+        case 5: // TICKETS
+          return TICKETS;
+        case 6: // AVAILABLE
+          return AVAILABLE;
+        default:
+          return null;
+      }
     }
 
     /**
-     * Returns true if field begTime is set (has been assigned a value) and false otherwise
+     * Find the _Fields constant that matches fieldId, throwing an exception
+     * if it is not found.
      */
-    public boolean isSetBegTime() {
-        return EncodingUtils.testBit(__isset_bitfield, __BEGTIME_ISSET_ID);
-    }
-
-    public void setBegTimeIsSet(boolean value) {
-        __isset_bitfield = EncodingUtils.setBit(__isset_bitfield, __BEGTIME_ISSET_ID, value);
-    }
-
-    public long getEndTime() {
-        return this.endTime;
-    }
-
-    public Amb setEndTime(long endTime) {
-        this.endTime = endTime;
-        setEndTimeIsSet(true);
-        return this;
-    }
-
-    public void unsetEndTime() {
-        __isset_bitfield = EncodingUtils.clearBit(__isset_bitfield, __ENDTIME_ISSET_ID);
+    public static _Fields findByThriftIdOrThrow(int fieldId) {
+      _Fields fields = findByThriftId(fieldId);
+      if (fields == null) throw new IllegalArgumentException("Field " + fieldId + " doesn't exist!");
+      return fields;
     }
 
     /**
-     * Returns true if field endTime is set (has been assigned a value) and false otherwise
+     * Find the _Fields constant that matches name, or null if its not found.
      */
-    public boolean isSetEndTime() {
-        return EncodingUtils.testBit(__isset_bitfield, __ENDTIME_ISSET_ID);
+    public static _Fields findByName(String name) {
+      return byName.get(name);
     }
 
-    public void setEndTimeIsSet(boolean value) {
-        __isset_bitfield = EncodingUtils.setBit(__isset_bitfield, __ENDTIME_ISSET_ID, value);
+    private final short _thriftId;
+    private final String _fieldName;
+
+    _Fields(short thriftId, String fieldName) {
+      _thriftId = thriftId;
+      _fieldName = fieldName;
     }
 
-    public String getOffice() {
-        return this.office;
+    public short getThriftFieldId() {
+      return _thriftId;
     }
 
-    public Amb setOffice(String office) {
-        this.office = office;
-        return this;
+    public String getFieldName() {
+      return _fieldName;
+    }
+  }
+
+  // isset id assignments
+  private static final int __BEGTIME_ISSET_ID = 0;
+  private static final int __ENDTIME_ISSET_ID = 1;
+  private static final int __PLAN_ISSET_ID = 2;
+  private static final int __AVAILABLE_ISSET_ID = 3;
+  private byte __isset_bitfield = 0;
+  private _Fields optionals[] = {_Fields.BEG_TIME,_Fields.END_TIME,_Fields.OFFICE,_Fields.PLAN,_Fields.TICKETS,_Fields.AVAILABLE};
+  public static final Map<_Fields, org.apache.thrift.meta_data.FieldMetaData> metaDataMap;
+  static {
+    Map<_Fields, org.apache.thrift.meta_data.FieldMetaData> tmpMap = new EnumMap<_Fields, org.apache.thrift.meta_data.FieldMetaData>(_Fields.class);
+    tmpMap.put(_Fields.BEG_TIME, new org.apache.thrift.meta_data.FieldMetaData("begTime", org.apache.thrift.TFieldRequirementType.OPTIONAL, 
+        new org.apache.thrift.meta_data.FieldValueMetaData(org.apache.thrift.protocol.TType.I64        , "timestamp")));
+    tmpMap.put(_Fields.END_TIME, new org.apache.thrift.meta_data.FieldMetaData("endTime", org.apache.thrift.TFieldRequirementType.OPTIONAL, 
+        new org.apache.thrift.meta_data.FieldValueMetaData(org.apache.thrift.protocol.TType.I64        , "timestamp")));
+    tmpMap.put(_Fields.OFFICE, new org.apache.thrift.meta_data.FieldMetaData("office", org.apache.thrift.TFieldRequirementType.OPTIONAL, 
+        new org.apache.thrift.meta_data.FieldValueMetaData(org.apache.thrift.protocol.TType.STRING)));
+    tmpMap.put(_Fields.PLAN, new org.apache.thrift.meta_data.FieldMetaData("plan", org.apache.thrift.TFieldRequirementType.OPTIONAL, 
+        new org.apache.thrift.meta_data.FieldValueMetaData(org.apache.thrift.protocol.TType.I32)));
+    tmpMap.put(_Fields.TICKETS, new org.apache.thrift.meta_data.FieldMetaData("tickets", org.apache.thrift.TFieldRequirementType.OPTIONAL, 
+        new org.apache.thrift.meta_data.ListMetaData(org.apache.thrift.protocol.TType.LIST, 
+            new org.apache.thrift.meta_data.StructMetaData(org.apache.thrift.protocol.TType.STRUCT, Ticket.class))));
+    tmpMap.put(_Fields.AVAILABLE, new org.apache.thrift.meta_data.FieldMetaData("available", org.apache.thrift.TFieldRequirementType.OPTIONAL, 
+        new org.apache.thrift.meta_data.FieldValueMetaData(org.apache.thrift.protocol.TType.I32)));
+    metaDataMap = Collections.unmodifiableMap(tmpMap);
+    org.apache.thrift.meta_data.FieldMetaData.addStructMetaDataMap(Amb.class, metaDataMap);
+  }
+
+  public Amb() {
+  }
+
+  /**
+   * Performs a deep copy on <i>other</i>.
+   */
+  public Amb(Amb other) {
+    __isset_bitfield = other.__isset_bitfield;
+    this.begTime = other.begTime;
+    this.endTime = other.endTime;
+    if (other.isSetOffice()) {
+      this.office = other.office;
+    }
+    this.plan = other.plan;
+    if (other.isSetTickets()) {
+      List<Ticket> __this__tickets = new ArrayList<Ticket>();
+      for (Ticket other_element : other.tickets) {
+        __this__tickets.add(new Ticket(other_element));
+      }
+      this.tickets = __this__tickets;
+    }
+    this.available = other.available;
+  }
+
+  public Amb deepCopy() {
+    return new Amb(this);
+  }
+
+  @Override
+  public void clear() {
+    setBegTimeIsSet(false);
+    this.begTime = 0;
+    setEndTimeIsSet(false);
+    this.endTime = 0;
+    this.office = null;
+    setPlanIsSet(false);
+    this.plan = 0;
+    this.tickets = null;
+    setAvailableIsSet(false);
+    this.available = 0;
+  }
+
+  public long getBegTime() {
+    return this.begTime;
+  }
+
+  public Amb setBegTime(long begTime) {
+    this.begTime = begTime;
+    setBegTimeIsSet(true);
+    return this;
+  }
+
+  public void unsetBegTime() {
+    __isset_bitfield = EncodingUtils.clearBit(__isset_bitfield, __BEGTIME_ISSET_ID);
+  }
+
+  /** Returns true if field begTime is set (has been assigned a value) and false otherwise */
+  public boolean isSetBegTime() {
+    return EncodingUtils.testBit(__isset_bitfield, __BEGTIME_ISSET_ID);
+  }
+
+  public void setBegTimeIsSet(boolean value) {
+    __isset_bitfield = EncodingUtils.setBit(__isset_bitfield, __BEGTIME_ISSET_ID, value);
+  }
+
+  public long getEndTime() {
+    return this.endTime;
+  }
+
+  public Amb setEndTime(long endTime) {
+    this.endTime = endTime;
+    setEndTimeIsSet(true);
+    return this;
+  }
+
+  public void unsetEndTime() {
+    __isset_bitfield = EncodingUtils.clearBit(__isset_bitfield, __ENDTIME_ISSET_ID);
+  }
+
+  /** Returns true if field endTime is set (has been assigned a value) and false otherwise */
+  public boolean isSetEndTime() {
+    return EncodingUtils.testBit(__isset_bitfield, __ENDTIME_ISSET_ID);
+  }
+
+  public void setEndTimeIsSet(boolean value) {
+    __isset_bitfield = EncodingUtils.setBit(__isset_bitfield, __ENDTIME_ISSET_ID, value);
+  }
+
+  public String getOffice() {
+    return this.office;
+  }
+
+  public Amb setOffice(String office) {
+    this.office = office;
+    return this;
+  }
+
+  public void unsetOffice() {
+    this.office = null;
+  }
+
+  /** Returns true if field office is set (has been assigned a value) and false otherwise */
+  public boolean isSetOffice() {
+    return this.office != null;
+  }
+
+  public void setOfficeIsSet(boolean value) {
+    if (!value) {
+      this.office = null;
+    }
+  }
+
+  public int getPlan() {
+    return this.plan;
+  }
+
+  public Amb setPlan(int plan) {
+    this.plan = plan;
+    setPlanIsSet(true);
+    return this;
+  }
+
+  public void unsetPlan() {
+    __isset_bitfield = EncodingUtils.clearBit(__isset_bitfield, __PLAN_ISSET_ID);
+  }
+
+  /** Returns true if field plan is set (has been assigned a value) and false otherwise */
+  public boolean isSetPlan() {
+    return EncodingUtils.testBit(__isset_bitfield, __PLAN_ISSET_ID);
+  }
+
+  public void setPlanIsSet(boolean value) {
+    __isset_bitfield = EncodingUtils.setBit(__isset_bitfield, __PLAN_ISSET_ID, value);
+  }
+
+  public int getTicketsSize() {
+    return (this.tickets == null) ? 0 : this.tickets.size();
+  }
+
+  public java.util.Iterator<Ticket> getTicketsIterator() {
+    return (this.tickets == null) ? null : this.tickets.iterator();
+  }
+
+  public void addToTickets(Ticket elem) {
+    if (this.tickets == null) {
+      this.tickets = new ArrayList<Ticket>();
+    }
+    this.tickets.add(elem);
+  }
+
+  public List<Ticket> getTickets() {
+    return this.tickets;
+  }
+
+  public Amb setTickets(List<Ticket> tickets) {
+    this.tickets = tickets;
+    return this;
+  }
+
+  public void unsetTickets() {
+    this.tickets = null;
+  }
+
+  /** Returns true if field tickets is set (has been assigned a value) and false otherwise */
+  public boolean isSetTickets() {
+    return this.tickets != null;
+  }
+
+  public void setTicketsIsSet(boolean value) {
+    if (!value) {
+      this.tickets = null;
+    }
+  }
+
+  public int getAvailable() {
+    return this.available;
+  }
+
+  public Amb setAvailable(int available) {
+    this.available = available;
+    setAvailableIsSet(true);
+    return this;
+  }
+
+  public void unsetAvailable() {
+    __isset_bitfield = EncodingUtils.clearBit(__isset_bitfield, __AVAILABLE_ISSET_ID);
+  }
+
+  /** Returns true if field available is set (has been assigned a value) and false otherwise */
+  public boolean isSetAvailable() {
+    return EncodingUtils.testBit(__isset_bitfield, __AVAILABLE_ISSET_ID);
+  }
+
+  public void setAvailableIsSet(boolean value) {
+    __isset_bitfield = EncodingUtils.setBit(__isset_bitfield, __AVAILABLE_ISSET_ID, value);
+  }
+
+  public void setFieldValue(_Fields field, Object value) {
+    switch (field) {
+    case BEG_TIME:
+      if (value == null) {
+        unsetBegTime();
+      } else {
+        setBegTime((Long)value);
+      }
+      break;
+
+    case END_TIME:
+      if (value == null) {
+        unsetEndTime();
+      } else {
+        setEndTime((Long)value);
+      }
+      break;
+
+    case OFFICE:
+      if (value == null) {
+        unsetOffice();
+      } else {
+        setOffice((String)value);
+      }
+      break;
+
+    case PLAN:
+      if (value == null) {
+        unsetPlan();
+      } else {
+        setPlan((Integer)value);
+      }
+      break;
+
+    case TICKETS:
+      if (value == null) {
+        unsetTickets();
+      } else {
+        setTickets((List<Ticket>)value);
+      }
+      break;
+
+    case AVAILABLE:
+      if (value == null) {
+        unsetAvailable();
+      } else {
+        setAvailable((Integer)value);
+      }
+      break;
+
+    }
+  }
+
+  public Object getFieldValue(_Fields field) {
+    switch (field) {
+    case BEG_TIME:
+      return Long.valueOf(getBegTime());
+
+    case END_TIME:
+      return Long.valueOf(getEndTime());
+
+    case OFFICE:
+      return getOffice();
+
+    case PLAN:
+      return Integer.valueOf(getPlan());
+
+    case TICKETS:
+      return getTickets();
+
+    case AVAILABLE:
+      return Integer.valueOf(getAvailable());
+
+    }
+    throw new IllegalStateException();
+  }
+
+  /** Returns true if field corresponding to fieldID is set (has been assigned a value) and false otherwise */
+  public boolean isSet(_Fields field) {
+    if (field == null) {
+      throw new IllegalArgumentException();
     }
 
-    public void unsetOffice() {
-        this.office = null;
+    switch (field) {
+    case BEG_TIME:
+      return isSetBegTime();
+    case END_TIME:
+      return isSetEndTime();
+    case OFFICE:
+      return isSetOffice();
+    case PLAN:
+      return isSetPlan();
+    case TICKETS:
+      return isSetTickets();
+    case AVAILABLE:
+      return isSetAvailable();
     }
+    throw new IllegalStateException();
+  }
 
-    /**
-     * Returns true if field office is set (has been assigned a value) and false otherwise
-     */
-    public boolean isSetOffice() {
-        return this.office != null;
-    }
+  @Override
+  public boolean equals(Object that) {
+    if (that == null)
+      return false;
+    if (that instanceof Amb)
+      return this.equals((Amb)that);
+    return false;
+  }
 
-    public void setOfficeIsSet(boolean value) {
-        if (!value) {
-            this.office = null;
-        }
-    }
+  public boolean equals(Amb that) {
+    if (that == null)
+      return false;
 
-    public int getPlan() {
-        return this.plan;
-    }
-
-    public Amb setPlan(int plan) {
-        this.plan = plan;
-        setPlanIsSet(true);
-        return this;
-    }
-
-    public void unsetPlan() {
-        __isset_bitfield = EncodingUtils.clearBit(__isset_bitfield, __PLAN_ISSET_ID);
-    }
-
-    /**
-     * Returns true if field plan is set (has been assigned a value) and false otherwise
-     */
-    public boolean isSetPlan() {
-        return EncodingUtils.testBit(__isset_bitfield, __PLAN_ISSET_ID);
-    }
-
-    public void setPlanIsSet(boolean value) {
-        __isset_bitfield = EncodingUtils.setBit(__isset_bitfield, __PLAN_ISSET_ID, value);
-    }
-
-    public int getTicketsSize() {
-        return (this.tickets == null) ? 0 : this.tickets.size();
-    }
-
-    public java.util.Iterator<Ticket> getTicketsIterator() {
-        return (this.tickets == null) ? null : this.tickets.iterator();
-    }
-
-    public void addToTickets(Ticket elem) {
-        if (this.tickets == null) {
-            this.tickets = new ArrayList<Ticket>();
-        }
-        this.tickets.add(elem);
-    }
-
-    public List<Ticket> getTickets() {
-        return this.tickets;
-    }
-
-    public Amb setTickets(List<Ticket> tickets) {
-        this.tickets = tickets;
-        return this;
-    }
-
-    public void unsetTickets() {
-        this.tickets = null;
-    }
-
-    /**
-     * Returns true if field tickets is set (has been assigned a value) and false otherwise
-     */
-    public boolean isSetTickets() {
-        return this.tickets != null;
-    }
-
-    public void setTicketsIsSet(boolean value) {
-        if (!value) {
-            this.tickets = null;
-        }
-    }
-
-    public int getAvailable() {
-        return this.available;
-    }
-
-    public Amb setAvailable(int available) {
-        this.available = available;
-        setAvailableIsSet(true);
-        return this;
-    }
-
-    public void unsetAvailable() {
-        __isset_bitfield = EncodingUtils.clearBit(__isset_bitfield, __AVAILABLE_ISSET_ID);
-    }
-
-    /**
-     * Returns true if field available is set (has been assigned a value) and false otherwise
-     */
-    public boolean isSetAvailable() {
-        return EncodingUtils.testBit(__isset_bitfield, __AVAILABLE_ISSET_ID);
-    }
-
-    public void setAvailableIsSet(boolean value) {
-        __isset_bitfield = EncodingUtils.setBit(__isset_bitfield, __AVAILABLE_ISSET_ID, value);
-    }
-
-    public void setFieldValue(_Fields field, Object value) {
-        switch (field) {
-            case BEG_TIME:
-                if (value == null) {
-                    unsetBegTime();
-                } else {
-                    setBegTime((Long) value);
-                }
-                break;
-
-            case END_TIME:
-                if (value == null) {
-                    unsetEndTime();
-                } else {
-                    setEndTime((Long) value);
-                }
-                break;
-
-            case OFFICE:
-                if (value == null) {
-                    unsetOffice();
-                } else {
-                    setOffice((String) value);
-                }
-                break;
-
-            case PLAN:
-                if (value == null) {
-                    unsetPlan();
-                } else {
-                    setPlan((Integer) value);
-                }
-                break;
-
-            case TICKETS:
-                if (value == null) {
-                    unsetTickets();
-                } else {
-                    setTickets((List<Ticket>) value);
-                }
-                break;
-
-            case AVAILABLE:
-                if (value == null) {
-                    unsetAvailable();
-                } else {
-                    setAvailable((Integer) value);
-                }
-                break;
-
-        }
-    }
-
-    public Object getFieldValue(_Fields field) {
-        switch (field) {
-            case BEG_TIME:
-                return Long.valueOf(getBegTime());
-
-            case END_TIME:
-                return Long.valueOf(getEndTime());
-
-            case OFFICE:
-                return getOffice();
-
-            case PLAN:
-                return Integer.valueOf(getPlan());
-
-            case TICKETS:
-                return getTickets();
-
-            case AVAILABLE:
-                return Integer.valueOf(getAvailable());
-
-        }
-        throw new IllegalStateException();
-    }
-
-    /**
-     * Returns true if field corresponding to fieldID is set (has been assigned a value) and false otherwise
-     */
-    public boolean isSet(_Fields field) {
-        if (field == null) {
-            throw new IllegalArgumentException();
-        }
-
-        switch (field) {
-            case BEG_TIME:
-                return isSetBegTime();
-            case END_TIME:
-                return isSetEndTime();
-            case OFFICE:
-                return isSetOffice();
-            case PLAN:
-                return isSetPlan();
-            case TICKETS:
-                return isSetTickets();
-            case AVAILABLE:
-                return isSetAvailable();
-        }
-        throw new IllegalStateException();
-    }
-
-    @Override
-    public boolean equals(Object that) {
-        if (that == null)
-            return false;
-        if (that instanceof Amb)
-            return this.equals((Amb) that);
+    boolean this_present_begTime = true && this.isSetBegTime();
+    boolean that_present_begTime = true && that.isSetBegTime();
+    if (this_present_begTime || that_present_begTime) {
+      if (!(this_present_begTime && that_present_begTime))
+        return false;
+      if (this.begTime != that.begTime)
         return false;
     }
 
-    public boolean equals(Amb that) {
-        if (that == null)
-            return false;
+    boolean this_present_endTime = true && this.isSetEndTime();
+    boolean that_present_endTime = true && that.isSetEndTime();
+    if (this_present_endTime || that_present_endTime) {
+      if (!(this_present_endTime && that_present_endTime))
+        return false;
+      if (this.endTime != that.endTime)
+        return false;
+    }
 
-        boolean this_present_begTime = true && this.isSetBegTime();
-        boolean that_present_begTime = true && that.isSetBegTime();
-        if (this_present_begTime || that_present_begTime) {
-            if (!(this_present_begTime && that_present_begTime))
-                return false;
-            if (this.begTime != that.begTime)
-                return false;
+    boolean this_present_office = true && this.isSetOffice();
+    boolean that_present_office = true && that.isSetOffice();
+    if (this_present_office || that_present_office) {
+      if (!(this_present_office && that_present_office))
+        return false;
+      if (!this.office.equals(that.office))
+        return false;
+    }
+
+    boolean this_present_plan = true && this.isSetPlan();
+    boolean that_present_plan = true && that.isSetPlan();
+    if (this_present_plan || that_present_plan) {
+      if (!(this_present_plan && that_present_plan))
+        return false;
+      if (this.plan != that.plan)
+        return false;
+    }
+
+    boolean this_present_tickets = true && this.isSetTickets();
+    boolean that_present_tickets = true && that.isSetTickets();
+    if (this_present_tickets || that_present_tickets) {
+      if (!(this_present_tickets && that_present_tickets))
+        return false;
+      if (!this.tickets.equals(that.tickets))
+        return false;
+    }
+
+    boolean this_present_available = true && this.isSetAvailable();
+    boolean that_present_available = true && that.isSetAvailable();
+    if (this_present_available || that_present_available) {
+      if (!(this_present_available && that_present_available))
+        return false;
+      if (this.available != that.available)
+        return false;
+    }
+
+    return true;
+  }
+
+  @Override
+  public int hashCode() {
+    return 0;
+  }
+
+  public int compareTo(Amb other) {
+    if (!getClass().equals(other.getClass())) {
+      return getClass().getName().compareTo(other.getClass().getName());
+    }
+
+    int lastComparison = 0;
+    Amb typedOther = (Amb)other;
+
+    lastComparison = Boolean.valueOf(isSetBegTime()).compareTo(typedOther.isSetBegTime());
+    if (lastComparison != 0) {
+      return lastComparison;
+    }
+    if (isSetBegTime()) {
+      lastComparison = org.apache.thrift.TBaseHelper.compareTo(this.begTime, typedOther.begTime);
+      if (lastComparison != 0) {
+        return lastComparison;
+      }
+    }
+    lastComparison = Boolean.valueOf(isSetEndTime()).compareTo(typedOther.isSetEndTime());
+    if (lastComparison != 0) {
+      return lastComparison;
+    }
+    if (isSetEndTime()) {
+      lastComparison = org.apache.thrift.TBaseHelper.compareTo(this.endTime, typedOther.endTime);
+      if (lastComparison != 0) {
+        return lastComparison;
+      }
+    }
+    lastComparison = Boolean.valueOf(isSetOffice()).compareTo(typedOther.isSetOffice());
+    if (lastComparison != 0) {
+      return lastComparison;
+    }
+    if (isSetOffice()) {
+      lastComparison = org.apache.thrift.TBaseHelper.compareTo(this.office, typedOther.office);
+      if (lastComparison != 0) {
+        return lastComparison;
+      }
+    }
+    lastComparison = Boolean.valueOf(isSetPlan()).compareTo(typedOther.isSetPlan());
+    if (lastComparison != 0) {
+      return lastComparison;
+    }
+    if (isSetPlan()) {
+      lastComparison = org.apache.thrift.TBaseHelper.compareTo(this.plan, typedOther.plan);
+      if (lastComparison != 0) {
+        return lastComparison;
+      }
+    }
+    lastComparison = Boolean.valueOf(isSetTickets()).compareTo(typedOther.isSetTickets());
+    if (lastComparison != 0) {
+      return lastComparison;
+    }
+    if (isSetTickets()) {
+      lastComparison = org.apache.thrift.TBaseHelper.compareTo(this.tickets, typedOther.tickets);
+      if (lastComparison != 0) {
+        return lastComparison;
+      }
+    }
+    lastComparison = Boolean.valueOf(isSetAvailable()).compareTo(typedOther.isSetAvailable());
+    if (lastComparison != 0) {
+      return lastComparison;
+    }
+    if (isSetAvailable()) {
+      lastComparison = org.apache.thrift.TBaseHelper.compareTo(this.available, typedOther.available);
+      if (lastComparison != 0) {
+        return lastComparison;
+      }
+    }
+    return 0;
+  }
+
+  public _Fields fieldForId(int fieldId) {
+    return _Fields.findByThriftId(fieldId);
+  }
+
+  public void read(org.apache.thrift.protocol.TProtocol iprot) throws org.apache.thrift.TException {
+    schemes.get(iprot.getScheme()).getScheme().read(iprot, this);
+  }
+
+  public void write(org.apache.thrift.protocol.TProtocol oprot) throws org.apache.thrift.TException {
+    schemes.get(oprot.getScheme()).getScheme().write(oprot, this);
+  }
+
+  @Override
+  public String toString() {
+    StringBuilder sb = new StringBuilder("Amb(");
+    boolean first = true;
+
+    if (isSetBegTime()) {
+      sb.append("begTime:");
+      sb.append(this.begTime);
+      first = false;
+    }
+    if (isSetEndTime()) {
+      if (!first) sb.append(", ");
+      sb.append("endTime:");
+      sb.append(this.endTime);
+      first = false;
+    }
+    if (isSetOffice()) {
+      if (!first) sb.append(", ");
+      sb.append("office:");
+      if (this.office == null) {
+        sb.append("null");
+      } else {
+        sb.append(this.office);
+      }
+      first = false;
+    }
+    if (isSetPlan()) {
+      if (!first) sb.append(", ");
+      sb.append("plan:");
+      sb.append(this.plan);
+      first = false;
+    }
+    if (isSetTickets()) {
+      if (!first) sb.append(", ");
+      sb.append("tickets:");
+      if (this.tickets == null) {
+        sb.append("null");
+      } else {
+        sb.append(this.tickets);
+      }
+      first = false;
+    }
+    if (isSetAvailable()) {
+      if (!first) sb.append(", ");
+      sb.append("available:");
+      sb.append(this.available);
+      first = false;
+    }
+    sb.append(")");
+    return sb.toString();
+  }
+
+  public void validate() throws org.apache.thrift.TException {
+    // check for required fields
+    // check for sub-struct validity
+  }
+
+  private void writeObject(java.io.ObjectOutputStream out) throws java.io.IOException {
+    try {
+      write(new org.apache.thrift.protocol.TCompactProtocol(new org.apache.thrift.transport.TIOStreamTransport(out)));
+    } catch (org.apache.thrift.TException te) {
+      throw new java.io.IOException(te);
+    }
+  }
+
+  private void readObject(java.io.ObjectInputStream in) throws java.io.IOException, ClassNotFoundException {
+    try {
+      // it doesn't seem like you should have to do this, but java serialization is wacky, and doesn't call the default constructor.
+      __isset_bitfield = 0;
+      read(new org.apache.thrift.protocol.TCompactProtocol(new org.apache.thrift.transport.TIOStreamTransport(in)));
+    } catch (org.apache.thrift.TException te) {
+      throw new java.io.IOException(te);
+    }
+  }
+
+  private static class AmbStandardSchemeFactory implements SchemeFactory {
+    public AmbStandardScheme getScheme() {
+      return new AmbStandardScheme();
+    }
+  }
+
+  private static class AmbStandardScheme extends StandardScheme<Amb> {
+
+    public void read(org.apache.thrift.protocol.TProtocol iprot, Amb struct) throws org.apache.thrift.TException {
+      org.apache.thrift.protocol.TField schemeField;
+      iprot.readStructBegin();
+      while (true)
+      {
+        schemeField = iprot.readFieldBegin();
+        if (schemeField.type == org.apache.thrift.protocol.TType.STOP) { 
+          break;
         }
-
-        boolean this_present_endTime = true && this.isSetEndTime();
-        boolean that_present_endTime = true && that.isSetEndTime();
-        if (this_present_endTime || that_present_endTime) {
-            if (!(this_present_endTime && that_present_endTime))
-                return false;
-            if (this.endTime != that.endTime)
-                return false;
+        switch (schemeField.id) {
+          case 1: // BEG_TIME
+            if (schemeField.type == org.apache.thrift.protocol.TType.I64) {
+              struct.begTime = iprot.readI64();
+              struct.setBegTimeIsSet(true);
+            } else { 
+              org.apache.thrift.protocol.TProtocolUtil.skip(iprot, schemeField.type);
+            }
+            break;
+          case 2: // END_TIME
+            if (schemeField.type == org.apache.thrift.protocol.TType.I64) {
+              struct.endTime = iprot.readI64();
+              struct.setEndTimeIsSet(true);
+            } else { 
+              org.apache.thrift.protocol.TProtocolUtil.skip(iprot, schemeField.type);
+            }
+            break;
+          case 3: // OFFICE
+            if (schemeField.type == org.apache.thrift.protocol.TType.STRING) {
+              struct.office = iprot.readString();
+              struct.setOfficeIsSet(true);
+            } else { 
+              org.apache.thrift.protocol.TProtocolUtil.skip(iprot, schemeField.type);
+            }
+            break;
+          case 4: // PLAN
+            if (schemeField.type == org.apache.thrift.protocol.TType.I32) {
+              struct.plan = iprot.readI32();
+              struct.setPlanIsSet(true);
+            } else { 
+              org.apache.thrift.protocol.TProtocolUtil.skip(iprot, schemeField.type);
+            }
+            break;
+          case 5: // TICKETS
+            if (schemeField.type == org.apache.thrift.protocol.TType.LIST) {
+              {
+                org.apache.thrift.protocol.TList _list0 = iprot.readListBegin();
+                struct.tickets = new ArrayList<Ticket>(_list0.size);
+                for (int _i1 = 0; _i1 < _list0.size; ++_i1)
+                {
+                  Ticket _elem2; // required
+                  _elem2 = new Ticket();
+                  _elem2.read(iprot);
+                  struct.tickets.add(_elem2);
+                }
+                iprot.readListEnd();
+              }
+              struct.setTicketsIsSet(true);
+            } else { 
+              org.apache.thrift.protocol.TProtocolUtil.skip(iprot, schemeField.type);
+            }
+            break;
+          case 6: // AVAILABLE
+            if (schemeField.type == org.apache.thrift.protocol.TType.I32) {
+              struct.available = iprot.readI32();
+              struct.setAvailableIsSet(true);
+            } else { 
+              org.apache.thrift.protocol.TProtocolUtil.skip(iprot, schemeField.type);
+            }
+            break;
+          default:
+            org.apache.thrift.protocol.TProtocolUtil.skip(iprot, schemeField.type);
         }
+        iprot.readFieldEnd();
+      }
+      iprot.readStructEnd();
 
-        boolean this_present_office = true && this.isSetOffice();
-        boolean that_present_office = true && that.isSetOffice();
-        if (this_present_office || that_present_office) {
-            if (!(this_present_office && that_present_office))
-                return false;
-            if (!this.office.equals(that.office))
-                return false;
+      // check for required fields of primitive type, which can't be checked in the validate method
+      struct.validate();
+    }
+
+    public void write(org.apache.thrift.protocol.TProtocol oprot, Amb struct) throws org.apache.thrift.TException {
+      struct.validate();
+
+      oprot.writeStructBegin(STRUCT_DESC);
+      if (struct.isSetBegTime()) {
+        oprot.writeFieldBegin(BEG_TIME_FIELD_DESC);
+        oprot.writeI64(struct.begTime);
+        oprot.writeFieldEnd();
+      }
+      if (struct.isSetEndTime()) {
+        oprot.writeFieldBegin(END_TIME_FIELD_DESC);
+        oprot.writeI64(struct.endTime);
+        oprot.writeFieldEnd();
+      }
+      if (struct.office != null) {
+        if (struct.isSetOffice()) {
+          oprot.writeFieldBegin(OFFICE_FIELD_DESC);
+          oprot.writeString(struct.office);
+          oprot.writeFieldEnd();
         }
-
-        boolean this_present_plan = true && this.isSetPlan();
-        boolean that_present_plan = true && that.isSetPlan();
-        if (this_present_plan || that_present_plan) {
-            if (!(this_present_plan && that_present_plan))
-                return false;
-            if (this.plan != that.plan)
-                return false;
+      }
+      if (struct.isSetPlan()) {
+        oprot.writeFieldBegin(PLAN_FIELD_DESC);
+        oprot.writeI32(struct.plan);
+        oprot.writeFieldEnd();
+      }
+      if (struct.tickets != null) {
+        if (struct.isSetTickets()) {
+          oprot.writeFieldBegin(TICKETS_FIELD_DESC);
+          {
+            oprot.writeListBegin(new org.apache.thrift.protocol.TList(org.apache.thrift.protocol.TType.STRUCT, struct.tickets.size()));
+            for (Ticket _iter3 : struct.tickets)
+            {
+              _iter3.write(oprot);
+            }
+            oprot.writeListEnd();
+          }
+          oprot.writeFieldEnd();
         }
+      }
+      if (struct.isSetAvailable()) {
+        oprot.writeFieldBegin(AVAILABLE_FIELD_DESC);
+        oprot.writeI32(struct.available);
+        oprot.writeFieldEnd();
+      }
+      oprot.writeFieldStop();
+      oprot.writeStructEnd();
+    }
 
-        boolean this_present_tickets = true && this.isSetTickets();
-        boolean that_present_tickets = true && that.isSetTickets();
-        if (this_present_tickets || that_present_tickets) {
-            if (!(this_present_tickets && that_present_tickets))
-                return false;
-            if (!this.tickets.equals(that.tickets))
-                return false;
+  }
+
+  private static class AmbTupleSchemeFactory implements SchemeFactory {
+    public AmbTupleScheme getScheme() {
+      return new AmbTupleScheme();
+    }
+  }
+
+  private static class AmbTupleScheme extends TupleScheme<Amb> {
+
+    @Override
+    public void write(org.apache.thrift.protocol.TProtocol prot, Amb struct) throws org.apache.thrift.TException {
+      TTupleProtocol oprot = (TTupleProtocol) prot;
+      BitSet optionals = new BitSet();
+      if (struct.isSetBegTime()) {
+        optionals.set(0);
+      }
+      if (struct.isSetEndTime()) {
+        optionals.set(1);
+      }
+      if (struct.isSetOffice()) {
+        optionals.set(2);
+      }
+      if (struct.isSetPlan()) {
+        optionals.set(3);
+      }
+      if (struct.isSetTickets()) {
+        optionals.set(4);
+      }
+      if (struct.isSetAvailable()) {
+        optionals.set(5);
+      }
+      oprot.writeBitSet(optionals, 6);
+      if (struct.isSetBegTime()) {
+        oprot.writeI64(struct.begTime);
+      }
+      if (struct.isSetEndTime()) {
+        oprot.writeI64(struct.endTime);
+      }
+      if (struct.isSetOffice()) {
+        oprot.writeString(struct.office);
+      }
+      if (struct.isSetPlan()) {
+        oprot.writeI32(struct.plan);
+      }
+      if (struct.isSetTickets()) {
+        {
+          oprot.writeI32(struct.tickets.size());
+          for (Ticket _iter4 : struct.tickets)
+          {
+            _iter4.write(oprot);
+          }
         }
-
-        boolean this_present_available = true && this.isSetAvailable();
-        boolean that_present_available = true && that.isSetAvailable();
-        if (this_present_available || that_present_available) {
-            if (!(this_present_available && that_present_available))
-                return false;
-            if (this.available != that.available)
-                return false;
-        }
-
-        return true;
+      }
+      if (struct.isSetAvailable()) {
+        oprot.writeI32(struct.available);
+      }
     }
 
     @Override
-    public int hashCode() {
-        return 0;
+    public void read(org.apache.thrift.protocol.TProtocol prot, Amb struct) throws org.apache.thrift.TException {
+      TTupleProtocol iprot = (TTupleProtocol) prot;
+      BitSet incoming = iprot.readBitSet(6);
+      if (incoming.get(0)) {
+        struct.begTime = iprot.readI64();
+        struct.setBegTimeIsSet(true);
+      }
+      if (incoming.get(1)) {
+        struct.endTime = iprot.readI64();
+        struct.setEndTimeIsSet(true);
+      }
+      if (incoming.get(2)) {
+        struct.office = iprot.readString();
+        struct.setOfficeIsSet(true);
+      }
+      if (incoming.get(3)) {
+        struct.plan = iprot.readI32();
+        struct.setPlanIsSet(true);
+      }
+      if (incoming.get(4)) {
+        {
+          org.apache.thrift.protocol.TList _list5 = new org.apache.thrift.protocol.TList(org.apache.thrift.protocol.TType.STRUCT, iprot.readI32());
+          struct.tickets = new ArrayList<Ticket>(_list5.size);
+          for (int _i6 = 0; _i6 < _list5.size; ++_i6)
+          {
+            Ticket _elem7; // required
+            _elem7 = new Ticket();
+            _elem7.read(iprot);
+            struct.tickets.add(_elem7);
+          }
+        }
+        struct.setTicketsIsSet(true);
+      }
+      if (incoming.get(5)) {
+        struct.available = iprot.readI32();
+        struct.setAvailableIsSet(true);
+      }
     }
-
-    public int compareTo(Amb other) {
-        if (!getClass().equals(other.getClass())) {
-            return getClass().getName().compareTo(other.getClass().getName());
-        }
-
-        int lastComparison = 0;
-        Amb typedOther = (Amb) other;
-
-        lastComparison = Boolean.valueOf(isSetBegTime()).compareTo(typedOther.isSetBegTime());
-        if (lastComparison != 0) {
-            return lastComparison;
-        }
-        if (isSetBegTime()) {
-            lastComparison = org.apache.thrift.TBaseHelper.compareTo(this.begTime, typedOther.begTime);
-            if (lastComparison != 0) {
-                return lastComparison;
-            }
-        }
-        lastComparison = Boolean.valueOf(isSetEndTime()).compareTo(typedOther.isSetEndTime());
-        if (lastComparison != 0) {
-            return lastComparison;
-        }
-        if (isSetEndTime()) {
-            lastComparison = org.apache.thrift.TBaseHelper.compareTo(this.endTime, typedOther.endTime);
-            if (lastComparison != 0) {
-                return lastComparison;
-            }
-        }
-        lastComparison = Boolean.valueOf(isSetOffice()).compareTo(typedOther.isSetOffice());
-        if (lastComparison != 0) {
-            return lastComparison;
-        }
-        if (isSetOffice()) {
-            lastComparison = org.apache.thrift.TBaseHelper.compareTo(this.office, typedOther.office);
-            if (lastComparison != 0) {
-                return lastComparison;
-            }
-        }
-        lastComparison = Boolean.valueOf(isSetPlan()).compareTo(typedOther.isSetPlan());
-        if (lastComparison != 0) {
-            return lastComparison;
-        }
-        if (isSetPlan()) {
-            lastComparison = org.apache.thrift.TBaseHelper.compareTo(this.plan, typedOther.plan);
-            if (lastComparison != 0) {
-                return lastComparison;
-            }
-        }
-        lastComparison = Boolean.valueOf(isSetTickets()).compareTo(typedOther.isSetTickets());
-        if (lastComparison != 0) {
-            return lastComparison;
-        }
-        if (isSetTickets()) {
-            lastComparison = org.apache.thrift.TBaseHelper.compareTo(this.tickets, typedOther.tickets);
-            if (lastComparison != 0) {
-                return lastComparison;
-            }
-        }
-        lastComparison = Boolean.valueOf(isSetAvailable()).compareTo(typedOther.isSetAvailable());
-        if (lastComparison != 0) {
-            return lastComparison;
-        }
-        if (isSetAvailable()) {
-            lastComparison = org.apache.thrift.TBaseHelper.compareTo(this.available, typedOther.available);
-            if (lastComparison != 0) {
-                return lastComparison;
-            }
-        }
-        return 0;
-    }
-
-    public _Fields fieldForId(int fieldId) {
-        return _Fields.findByThriftId(fieldId);
-    }
-
-    public void read(org.apache.thrift.protocol.TProtocol iprot) throws org.apache.thrift.TException {
-        schemes.get(iprot.getScheme()).getScheme().read(iprot, this);
-    }
-
-    public void write(org.apache.thrift.protocol.TProtocol oprot) throws org.apache.thrift.TException {
-        schemes.get(oprot.getScheme()).getScheme().write(oprot, this);
-    }
-
-    @Override
-    public String toString() {
-        StringBuilder sb = new StringBuilder("Amb(");
-        boolean first = true;
-
-        if (isSetBegTime()) {
-            sb.append("begTime:");
-            sb.append(this.begTime);
-            first = false;
-        }
-        if (isSetEndTime()) {
-            if (!first) sb.append(", ");
-            sb.append("endTime:");
-            sb.append(this.endTime);
-            first = false;
-        }
-        if (isSetOffice()) {
-            if (!first) sb.append(", ");
-            sb.append("office:");
-            if (this.office == null) {
-                sb.append("null");
-            } else {
-                sb.append(this.office);
-            }
-            first = false;
-        }
-        if (isSetPlan()) {
-            if (!first) sb.append(", ");
-            sb.append("plan:");
-            sb.append(this.plan);
-            first = false;
-        }
-        if (isSetTickets()) {
-            if (!first) sb.append(", ");
-            sb.append("tickets:");
-            if (this.tickets == null) {
-                sb.append("null");
-            } else {
-                sb.append(this.tickets);
-            }
-            first = false;
-        }
-        if (isSetAvailable()) {
-            if (!first) sb.append(", ");
-            sb.append("available:");
-            sb.append(this.available);
-            first = false;
-        }
-        sb.append(")");
-        return sb.toString();
-    }
-
-    public void validate() throws org.apache.thrift.TException {
-        // check for required fields
-        // check for sub-struct validity
-    }
-
-    private void writeObject(java.io.ObjectOutputStream out) throws java.io.IOException {
-        try {
-            write(new org.apache.thrift.protocol.TCompactProtocol(new org.apache.thrift.transport.TIOStreamTransport(out)));
-        } catch (org.apache.thrift.TException te) {
-            throw new java.io.IOException(te);
-        }
-    }
-
-    private void readObject(java.io.ObjectInputStream in) throws java.io.IOException, ClassNotFoundException {
-        try {
-            // it doesn't seem like you should have to do this, but java serialization is wacky, and doesn't call the default constructor.
-            __isset_bitfield = 0;
-            read(new org.apache.thrift.protocol.TCompactProtocol(new org.apache.thrift.transport.TIOStreamTransport(in)));
-        } catch (org.apache.thrift.TException te) {
-            throw new java.io.IOException(te);
-        }
-    }
-
-    private static class AmbStandardSchemeFactory implements SchemeFactory {
-        public AmbStandardScheme getScheme() {
-            return new AmbStandardScheme();
-        }
-    }
-
-    private static class AmbStandardScheme extends StandardScheme<Amb> {
-
-        public void read(org.apache.thrift.protocol.TProtocol iprot, Amb struct) throws org.apache.thrift.TException {
-            org.apache.thrift.protocol.TField schemeField;
-            iprot.readStructBegin();
-            while (true) {
-                schemeField = iprot.readFieldBegin();
-                if (schemeField.type == org.apache.thrift.protocol.TType.STOP) {
-                    break;
-                }
-                switch (schemeField.id) {
-                    case 1: // BEG_TIME
-                        if (schemeField.type == org.apache.thrift.protocol.TType.I64) {
-                            struct.begTime = iprot.readI64();
-                            struct.setBegTimeIsSet(true);
-                        } else {
-                            org.apache.thrift.protocol.TProtocolUtil.skip(iprot, schemeField.type);
-                        }
-                        break;
-                    case 2: // END_TIME
-                        if (schemeField.type == org.apache.thrift.protocol.TType.I64) {
-                            struct.endTime = iprot.readI64();
-                            struct.setEndTimeIsSet(true);
-                        } else {
-                            org.apache.thrift.protocol.TProtocolUtil.skip(iprot, schemeField.type);
-                        }
-                        break;
-                    case 3: // OFFICE
-                        if (schemeField.type == org.apache.thrift.protocol.TType.STRING) {
-                            struct.office = iprot.readString();
-                            struct.setOfficeIsSet(true);
-                        } else {
-                            org.apache.thrift.protocol.TProtocolUtil.skip(iprot, schemeField.type);
-                        }
-                        break;
-                    case 4: // PLAN
-                        if (schemeField.type == org.apache.thrift.protocol.TType.I32) {
-                            struct.plan = iprot.readI32();
-                            struct.setPlanIsSet(true);
-                        } else {
-                            org.apache.thrift.protocol.TProtocolUtil.skip(iprot, schemeField.type);
-                        }
-                        break;
-                    case 5: // TICKETS
-                        if (schemeField.type == org.apache.thrift.protocol.TType.LIST) {
-                            {
-                                org.apache.thrift.protocol.TList _list0 = iprot.readListBegin();
-                                struct.tickets = new ArrayList<Ticket>(_list0.size);
-                                for (int _i1 = 0; _i1 < _list0.size; ++_i1) {
-                                    Ticket _elem2; // required
-                                    _elem2 = new Ticket();
-                                    _elem2.read(iprot);
-                                    struct.tickets.add(_elem2);
-                                }
-                                iprot.readListEnd();
-                            }
-                            struct.setTicketsIsSet(true);
-                        } else {
-                            org.apache.thrift.protocol.TProtocolUtil.skip(iprot, schemeField.type);
-                        }
-                        break;
-                    case 6: // AVAILABLE
-                        if (schemeField.type == org.apache.thrift.protocol.TType.I32) {
-                            struct.available = iprot.readI32();
-                            struct.setAvailableIsSet(true);
-                        } else {
-                            org.apache.thrift.protocol.TProtocolUtil.skip(iprot, schemeField.type);
-                        }
-                        break;
-                    default:
-                        org.apache.thrift.protocol.TProtocolUtil.skip(iprot, schemeField.type);
-                }
-                iprot.readFieldEnd();
-            }
-            iprot.readStructEnd();
-
-            // check for required fields of primitive type, which can't be checked in the validate method
-            struct.validate();
-        }
-
-        public void write(org.apache.thrift.protocol.TProtocol oprot, Amb struct) throws org.apache.thrift.TException {
-            struct.validate();
-
-            oprot.writeStructBegin(STRUCT_DESC);
-            if (struct.isSetBegTime()) {
-                oprot.writeFieldBegin(BEG_TIME_FIELD_DESC);
-                oprot.writeI64(struct.begTime);
-                oprot.writeFieldEnd();
-            }
-            if (struct.isSetEndTime()) {
-                oprot.writeFieldBegin(END_TIME_FIELD_DESC);
-                oprot.writeI64(struct.endTime);
-                oprot.writeFieldEnd();
-            }
-            if (struct.office != null) {
-                if (struct.isSetOffice()) {
-                    oprot.writeFieldBegin(OFFICE_FIELD_DESC);
-                    oprot.writeString(struct.office);
-                    oprot.writeFieldEnd();
-                }
-            }
-            if (struct.isSetPlan()) {
-                oprot.writeFieldBegin(PLAN_FIELD_DESC);
-                oprot.writeI32(struct.plan);
-                oprot.writeFieldEnd();
-            }
-            if (struct.tickets != null) {
-                if (struct.isSetTickets()) {
-                    oprot.writeFieldBegin(TICKETS_FIELD_DESC);
-                    {
-                        oprot.writeListBegin(new org.apache.thrift.protocol.TList(org.apache.thrift.protocol.TType.STRUCT, struct.tickets.size()));
-                        for (Ticket _iter3 : struct.tickets) {
-                            _iter3.write(oprot);
-                        }
-                        oprot.writeListEnd();
-                    }
-                    oprot.writeFieldEnd();
-                }
-            }
-            if (struct.isSetAvailable()) {
-                oprot.writeFieldBegin(AVAILABLE_FIELD_DESC);
-                oprot.writeI32(struct.available);
-                oprot.writeFieldEnd();
-            }
-            oprot.writeFieldStop();
-            oprot.writeStructEnd();
-        }
-
-    }
-
-    private static class AmbTupleSchemeFactory implements SchemeFactory {
-        public AmbTupleScheme getScheme() {
-            return new AmbTupleScheme();
-        }
-    }
-
-    private static class AmbTupleScheme extends TupleScheme<Amb> {
-
-        @Override
-        public void write(org.apache.thrift.protocol.TProtocol prot, Amb struct) throws org.apache.thrift.TException {
-            TTupleProtocol oprot = (TTupleProtocol) prot;
-            BitSet optionals = new BitSet();
-            if (struct.isSetBegTime()) {
-                optionals.set(0);
-            }
-            if (struct.isSetEndTime()) {
-                optionals.set(1);
-            }
-            if (struct.isSetOffice()) {
-                optionals.set(2);
-            }
-            if (struct.isSetPlan()) {
-                optionals.set(3);
-            }
-            if (struct.isSetTickets()) {
-                optionals.set(4);
-            }
-            if (struct.isSetAvailable()) {
-                optionals.set(5);
-            }
-            oprot.writeBitSet(optionals, 6);
-            if (struct.isSetBegTime()) {
-                oprot.writeI64(struct.begTime);
-            }
-            if (struct.isSetEndTime()) {
-                oprot.writeI64(struct.endTime);
-            }
-            if (struct.isSetOffice()) {
-                oprot.writeString(struct.office);
-            }
-            if (struct.isSetPlan()) {
-                oprot.writeI32(struct.plan);
-            }
-            if (struct.isSetTickets()) {
-                {
-                    oprot.writeI32(struct.tickets.size());
-                    for (Ticket _iter4 : struct.tickets) {
-                        _iter4.write(oprot);
-                    }
-                }
-            }
-            if (struct.isSetAvailable()) {
-                oprot.writeI32(struct.available);
-            }
-        }
-
-        @Override
-        public void read(org.apache.thrift.protocol.TProtocol prot, Amb struct) throws org.apache.thrift.TException {
-            TTupleProtocol iprot = (TTupleProtocol) prot;
-            BitSet incoming = iprot.readBitSet(6);
-            if (incoming.get(0)) {
-                struct.begTime = iprot.readI64();
-                struct.setBegTimeIsSet(true);
-            }
-            if (incoming.get(1)) {
-                struct.endTime = iprot.readI64();
-                struct.setEndTimeIsSet(true);
-            }
-            if (incoming.get(2)) {
-                struct.office = iprot.readString();
-                struct.setOfficeIsSet(true);
-            }
-            if (incoming.get(3)) {
-                struct.plan = iprot.readI32();
-                struct.setPlanIsSet(true);
-            }
-            if (incoming.get(4)) {
-                {
-                    org.apache.thrift.protocol.TList _list5 = new org.apache.thrift.protocol.TList(org.apache.thrift.protocol.TType.STRUCT, iprot.readI32());
-                    struct.tickets = new ArrayList<Ticket>(_list5.size);
-                    for (int _i6 = 0; _i6 < _list5.size; ++_i6) {
-                        Ticket _elem7; // required
-                        _elem7 = new Ticket();
-                        _elem7.read(iprot);
-                        struct.tickets.add(_elem7);
-                    }
-                }
-                struct.setTicketsIsSet(true);
-            }
-            if (incoming.get(5)) {
-                struct.available = iprot.readI32();
-                struct.setAvailableIsSet(true);
-            }
-        }
-    }
+  }
 
 }
 
