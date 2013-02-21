@@ -20,7 +20,7 @@
         <module>ws-laboratory</module>
         <module>ws-drugstore</module>
         <!--<module>hl7</module>-->
-        <module>integration-tests</module>
+        <!--<module>integration-tests</module>-->
         <module>ws-finance</module>
         <module>ws-transfusion</module>
         <module>communication</module>
@@ -159,6 +159,9 @@
         <profile>
             <!-- Пользовательский профиль -->
             <id>ueg</id>
+            <modules>
+                <module>integration-tests</module>
+            </modules>
             <properties>
                 <!-- Название приложения, которое будет отображаться в интерфейсе -->
                 <ear.name>tmis-server-${version.tmis.core}</ear.name>
@@ -754,126 +757,126 @@
         <developerConnection>scm:git:https://github.com/KorusConsulting/tmis-core.git</developerConnection>
     </scm>
     <!--<dependencyManagement>-->
-        <dependencies>
-            <!--
-                Java EE
-            -->
-            <dependency>
-                <groupId>javax.mail</groupId>
-                <artifactId>mail</artifactId>
-                <version>${version.javax.mail}</version>
-                <!--<scope>provided</scope>-->
-            </dependency>
+    <dependencies>
+        <!--
+            Java EE
+        -->
+        <dependency>
+            <groupId>javax.mail</groupId>
+            <artifactId>mail</artifactId>
+            <version>${version.javax.mail}</version>
+            <!--<scope>provided</scope>-->
+        </dependency>
 
-            <dependency>
-                <groupId>javax</groupId>
-                <artifactId>javaee-api</artifactId>
-                <version>${version.javaee.api}</version>
-                <scope>provided</scope>
-            </dependency>
+        <dependency>
+            <groupId>javax</groupId>
+            <artifactId>javaee-api</artifactId>
+            <version>${version.javaee.api}</version>
+            <scope>provided</scope>
+        </dependency>
 
-            <!--
-                Scala
-            -->
-            <dependency>
-                <groupId>org.scala-lang</groupId>
-                <artifactId>scala-library</artifactId>
-                <version>${version.scala}</version>
-            </dependency>
+        <!--
+            Scala
+        -->
+        <dependency>
+            <groupId>org.scala-lang</groupId>
+            <artifactId>scala-library</artifactId>
+            <version>${version.scala}</version>
+        </dependency>
 
-            <dependency>
-                <groupId>org.scala-lang</groupId>
-                <artifactId>scala-compiler</artifactId>
-                <version>${version.scala}</version>
-            </dependency>
+        <dependency>
+            <groupId>org.scala-lang</groupId>
+            <artifactId>scala-compiler</artifactId>
+            <version>${version.scala}</version>
+        </dependency>
 
-            <!--
-                Groovy
-            -->
-            <dependency>
-                <groupId>org.codehaus.groovy</groupId>
-                <artifactId>groovy-all</artifactId>
-                <version>${version.groovy}</version>
-            </dependency>
+        <!--
+            Groovy
+        -->
+        <dependency>
+            <groupId>org.codehaus.groovy</groupId>
+            <artifactId>groovy-all</artifactId>
+            <version>${version.groovy}</version>
+        </dependency>
 
-            <!--
-                Logging
-            -->
-            <dependency>
-                <groupId>org.clapper</groupId>
-                <artifactId>grizzled-slf4j_2.8.1</artifactId>
-                <version>${version.logging.grizzled-slf4j}</version>
-            </dependency>
+        <!--
+            Logging
+        -->
+        <dependency>
+            <groupId>org.clapper</groupId>
+            <artifactId>grizzled-slf4j_2.8.1</artifactId>
+            <version>${version.logging.grizzled-slf4j}</version>
+        </dependency>
 
-            <dependency>
-                <groupId>org.slf4j</groupId>
-                <artifactId>slf4j-api</artifactId>
-                <version>${version.logging.slf4j}</version>
-            </dependency>
+        <dependency>
+            <groupId>org.slf4j</groupId>
+            <artifactId>slf4j-api</artifactId>
+            <version>${version.logging.slf4j}</version>
+        </dependency>
 
-            <dependency>
-                <groupId>ch.qos.logback</groupId>
-                <artifactId>logback-classic</artifactId>
-                <version>${version.logging.logback}</version>
-            </dependency>
+        <dependency>
+            <groupId>ch.qos.logback</groupId>
+            <artifactId>logback-classic</artifactId>
+            <version>${version.logging.logback}</version>
+        </dependency>
 
-            <dependency>
-                <groupId>org.slf4j</groupId>
-                <artifactId>jcl-over-slf4j</artifactId>
-                <version>${version.logging.jcl}</version>
-            </dependency>
+        <dependency>
+            <groupId>org.slf4j</groupId>
+            <artifactId>jcl-over-slf4j</artifactId>
+            <version>${version.logging.jcl}</version>
+        </dependency>
 
-            <!-- The org.codehaus.janino:commons-compiler:2.6.1 dependency -->
-            <!-- will be automatically pulled in by Maven's transitivity rules -->
-            <!--<dependency>-->
-            <!--<groupId>org.codehaus.janino</groupId>-->
-            <!--<artifactId>janino</artifactId>-->
-            <!--<version>${version.logging.logback.janino}</version>-->
-            <!--</dependency>-->
+        <!-- The org.codehaus.janino:commons-compiler:2.6.1 dependency -->
+        <!-- will be automatically pulled in by Maven's transitivity rules -->
+        <!--<dependency>-->
+        <!--<groupId>org.codehaus.janino</groupId>-->
+        <!--<artifactId>janino</artifactId>-->
+        <!--<version>${version.logging.logback.janino}</version>-->
+        <!--</dependency>-->
 
-            <!--
-                JUnit
-            -->
-            <dependency>
-                <groupId>junit</groupId>
-                <artifactId>junit</artifactId>
-                <version>${version.junit}</version>
-            </dependency>
+        <!--
+            JUnit
+        -->
+        <dependency>
+            <groupId>junit</groupId>
+            <artifactId>junit</artifactId>
+            <version>${version.junit}</version>
+        </dependency>
 
-            <dependency>
-                <groupId>org.testng</groupId>
-                <artifactId>testng</artifactId>
-                <version>${version.testng}</version>
-                <scope>test</scope>
-                <!--<classifier>jdk15</classifier>-->
-            </dependency>
+        <dependency>
+            <groupId>org.testng</groupId>
+            <artifactId>testng</artifactId>
+            <version>${version.testng}</version>
+            <scope>test</scope>
+            <!--<classifier>jdk15</classifier>-->
+        </dependency>
 
-            <!--
-                Javax inject
-            -->
-            <dependency>
-                <groupId>javax.inject</groupId>
-                <artifactId>javax.inject</artifactId>
-                <version>${version.javax.inject}</version>
-            </dependency>
+        <!--
+            Javax inject
+        -->
+        <dependency>
+            <groupId>javax.inject</groupId>
+            <artifactId>javax.inject</artifactId>
+            <version>${version.javax.inject}</version>
+        </dependency>
 
-            <!--
-            Apache Thrift
-            -->
-            <dependency>
-                <groupId>org.apache.thrift</groupId>
-                <artifactId>libthrift</artifactId>
-                <version>${version.apache.thrift}</version>
-            </dependency>
+        <!--
+        Apache Thrift
+        -->
+        <dependency>
+            <groupId>org.apache.thrift</groupId>
+            <artifactId>libthrift</artifactId>
+            <version>${version.apache.thrift}</version>
+        </dependency>
 
-            <!--
-            Joda Time
-            -->
-            <dependency>
-                <groupId>joda-time</groupId>
-                <artifactId>joda-time</artifactId>
-                <version>${version.joda.time}</version>
-            </dependency>
-        </dependencies>
+        <!--
+        Joda Time
+        -->
+        <dependency>
+            <groupId>joda-time</groupId>
+            <artifactId>joda-time</artifactId>
+            <version>${version.joda.time}</version>
+        </dependency>
+    </dependencies>
     <!--</dependencyManagement>-->
 </project>

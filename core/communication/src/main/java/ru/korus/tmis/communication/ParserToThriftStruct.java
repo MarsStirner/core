@@ -57,7 +57,10 @@ public final class ParserToThriftStruct {
 
     public static ru.korus.tmis.communication.thriftgen.Speciality parseQuotingBySpeciality(final QuotingBySpeciality item) {
         final ru.korus.tmis.communication.thriftgen.Speciality speciality = new ru.korus.tmis.communication.thriftgen.Speciality()
-                .setTicketsAvailable(item.getCouponsRemaining()).setTicketsPerMonths(item.getCouponsQuote()).setSpeciality(item.getSpeciality().getName());
+                .setTicketsAvailable(item.getCouponsRemaining())
+                .setTicketsPerMonths(item.getCouponsQuote())
+                .setSpeciality(item.getSpeciality().getName())
+                .setId(item.getSpeciality().getId());
         return speciality;
     }
 

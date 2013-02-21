@@ -8,6 +8,7 @@ import org.apache.thrift.transport.TTransport;
 import org.apache.thrift.transport.TTransportException;
 import org.joda.time.DateMidnight;
 import org.joda.time.DateTime;
+import org.joda.time.DateTimeZone;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.testng.annotations.AfterClass;
@@ -35,7 +36,7 @@ public class CommunicationServiceTest {
 
     @BeforeClass
     public void initConnection() {
-        transport = new TSocket(hosts[0], CommunicationServiceTest.port, CommunicationServiceTest.timeout);
+        transport = new TSocket(hosts[1], CommunicationServiceTest.port, CommunicationServiceTest.timeout);
         logger.debug("Transport success");
         TProtocol protocol = new TBinaryProtocol(transport);
         logger.debug("Protocol success");
@@ -64,7 +65,7 @@ public class CommunicationServiceTest {
         Organization result;
         try {
             result = client.getOrganisationInfo(infisCodeParam);
-            logger.info("Send and recieve is successfully done. Result is {}",result.toString());
+            logger.info("Send and recieve is successfully done. Result is {}", result.toString());
             logger.warn("Successful end of getOrganisationInfoTest");
         } catch (NotFoundException e) {
             logger.error("None of organisation found by this infisCode =" + infisCodeParam, e);
@@ -139,10 +140,22 @@ public class CommunicationServiceTest {
     @Test(enabled = true)
     public void findPatient() {
         logger.warn("Start of findPatient test:");
+
+        HashMap<String, String> documents = new HashMap<String, String>();
+        documents.put("policy_type", "1");
+        documents.put("serial", "57Р");
+        documents.put("number", "055001");
+
+        final long birthDate = new DateMidnight(2005, 5, 6, DateTimeZone.UTC).getMillis();
+
+
         FindPatientParameters parameters = new FindPatientParameters()
-                .setLastName("Ив...")
-                .setFirstName("Арина")
-                .setSex(2);
+                .setLastName("Абдикаримова")
+                .setFirstName("Елена")
+                .setPatrName("Игоревна")
+                .setSex(2)
+                .setDocument(documents)
+                .setBirthDate(birthDate);
         PatientStatus status;
         try {
             status = client.findPatient(parameters);
@@ -156,10 +169,10 @@ public class CommunicationServiceTest {
     @Test(enabled = true)
     public void findPatients() {
         logger.warn("Start of findPatientS test:");
-        FindPatientParameters parameters = new FindPatientParameters()
+        FindMultiplePatientsParameters parameters = new FindMultiplePatientsParameters()
                 .setLastName("Ив...")
                 .setFirstName("*")
-                .setBirthDate(473040000000l)
+                .setPatrName("*")
                 .setSex(2);
         List<Patient> result;
         try {
@@ -235,9 +248,9 @@ public class CommunicationServiceTest {
     public void getOrgStructures() {
         logger.warn("Start of getOrgStructures test:");
         List<OrgStructure> result;
-        Integer parentOrgStructureId=3;
-        boolean recursive=true;
-        String infisCode="";
+        Integer parentOrgStructureId = 3;
+        boolean recursive = true;
+        String infisCode = "";
         try {
             result = client.getOrgStructures(parentOrgStructureId, recursive, infisCode);
             logger.info("Send and recieve is successfully done.");
@@ -260,9 +273,9 @@ public class CommunicationServiceTest {
     public void getPersonnel() {
         logger.warn("Start of getPersonnel test:");
         List<Person> result;
-        Integer orgStructureId=0;
-        boolean  recursive=true;
-        String infisCode="";
+        Integer orgStructureId = 0;
+        boolean recursive = true;
+        String infisCode = "";
         try {
             result = client.getPersonnel(orgStructureId, recursive, infisCode);
             logger.info("Send and recieve is successfully done.");
@@ -283,10 +296,10 @@ public class CommunicationServiceTest {
     public void getWorkTimeAndStatus() {
         logger.warn("Start of getWorkTimeAndStatus test:");
         Amb result;
-        GetTimeWorkAndStatusParameters parameters=new GetTimeWorkAndStatusParameters()
+        GetTimeWorkAndStatusParameters parameters = new GetTimeWorkAndStatusParameters()
                 .setPersonId(242)
                 .setDate(new DateMidnight().getMillis())
-                .setHospitalUidFrom(0);
+                .setHospitalUidFrom("");
         try {
             result = client.getWorkTimeAndStatus(parameters);
             logger.info("Send and recieve is successfully done.");
@@ -302,13 +315,13 @@ public class CommunicationServiceTest {
     public void enqueuePatient() {
         logger.warn("Start of enqueuePatient test:");
         EnqueuePatientStatus result;
-        EnqueuePatientParameters parameters= new EnqueuePatientParameters()
+        EnqueuePatientParameters parameters = new EnqueuePatientParameters()
                 .setDateTime(new DateTime(2013, 1, 31, 15, 30, 0, 0).getMillis())
                 .setPatientId(6226)
                 .setPersonId(242);
         try {
             result = client.enqueuePatient(parameters);
-            logger.info("Send and recieve is successfully done. Result is {}",result.toString());
+            logger.info("Send and recieve is successfully done. Result is {}", result.toString());
             logger.warn("Successful end of enqueuePatient test.");
         } catch (TException e) {
             logger.error("Fail of enqueuePatient test. Exception stacktrace:", e);
@@ -319,10 +332,10 @@ public class CommunicationServiceTest {
     public void getPatientQueue() {
         logger.warn("Start getPatientQueue test:");
         List<Queue> result;
-        Integer patientId=6226;
+        Integer patientId = 6226;
         try {
             result = client.getPatientQueue(patientId);
-            logger.info("Send and recieve is successfully done. Result is {}",result.toString());
+            logger.info("Send and recieve is successfully done. Result is {}", result.toString());
             logger.warn("Successful end of getpatientQueue test.");
         } catch (TException e) {
             logger.error("Fail of getPatientQueue test. Exception stacktrace:", e);
@@ -333,13 +346,58 @@ public class CommunicationServiceTest {
     public void getPatientContacts() {
         logger.warn("Start getPatientContacts test:");
         List<Contact> result;
-        Integer patientId=6226;
+        Integer patientId = 6226;
         try {
             result = client.getPatientContacts(patientId);
-            logger.info("Send and recieve is successfully done. Result is {}",result.toString());
+            logger.info("Send and recieve is successfully done. Result is {}", result.toString());
             logger.warn("Successful end of getPatientContacts test.");
         } catch (TException e) {
             logger.error("getPatientContacts Failed.", e);
         }
+    }
+
+    @Test(enabled = true)
+    public void linkedTest() {
+        logger.warn(
+                "Start of linked test. Try to add patient, get patientInfo on him and check enqueue/dequeue to doctor");
+        final String lastName = "Фамилия";
+        final String firstName = "Имя";
+        final String patrName = "Отчество";
+        final long birthDate = new DateMidnight(1991, 9, 19).getMillis();
+        Integer id = 0;
+        try {
+            final AddPatientParameters patient = new AddPatientParameters()
+                    .setLastName(lastName)
+                    .setLastName(firstName)
+                    .setPatrName(patrName)
+                    .setBirthDate(birthDate);
+            logger.info("First step is try to addPatient: {}", patient);
+            final PatientStatus addStatus;
+
+            addStatus = client.addPatient(patient);
+
+            assertTrue(addStatus != null, "Добавление пациента не удалось");
+            assertTrue(addStatus.isSuccess(), "Пациент не добавлен");
+
+            id = addStatus.getPatientId();
+            logger.debug("Patient successfully added, ID={}", id);
+
+            logger.info("Second step is try to find Patient [{}] by multiple ways:", patient);
+            HashMap<String, String> documents = new HashMap<String, String>();
+            documents.put("client_id", id.toString());
+
+            client.findPatient(new FindPatientParameters()
+                    .setLastName(lastName)
+                    .setFirstName(firstName)
+                    .setPatrName(patrName)
+                    .setBirthDate(birthDate)
+                    .setDocument(documents)
+            );
+
+        } catch (TException e) {
+            logger.error("Cannot add Patient", e);
+        }
+
+
     }
 }

@@ -158,7 +158,7 @@ public class CommunicationServiceTest {
     @Test(enabled = true)
     public void findPatients() {
         logger.warn("Start of findPatientS test:");
-        FindPatientParameters parameters = new FindPatientParameters()
+        FindMultiplePatientsParameters parameters = new FindMultiplePatientsParameters()
                 .setLastName("Ив...")
                 .setFirstName("*")
                 .setBirthDate(473040000000l)
@@ -237,9 +237,9 @@ public class CommunicationServiceTest {
     public void getOrgStructures() {
         logger.warn("Start of getOrgStructures test:");
         List<OrgStructure> result;
-        Integer parentOrgStructureId=3;
-        boolean recursive=true;
-        String infisCode="";
+        Integer parentOrgStructureId = 3;
+        boolean recursive = true;
+        String infisCode = "";
         try {
             result = client.getOrgStructures(parentOrgStructureId, recursive, infisCode);
             logger.info("Send and recieve is successfully done.");
@@ -262,9 +262,9 @@ public class CommunicationServiceTest {
     public void getPersonnel() {
         logger.warn("Start of getPersonnel test:");
         List<Person> result;
-        Integer orgStructureId=0;
-        boolean  recursive=true;
-        String infisCode="";
+        Integer orgStructureId = 0;
+        boolean recursive = true;
+        String infisCode = "";
         try {
             result = client.getPersonnel(orgStructureId, recursive, infisCode);
             logger.info("Send and recieve is successfully done.");
@@ -285,10 +285,10 @@ public class CommunicationServiceTest {
     public void getWorkTimeAndStatus() {
         logger.warn("Start of getWorkTimeAndStatus test:");
         Amb result;
-        GetTimeWorkAndStatusParameters parameters=new GetTimeWorkAndStatusParameters()
+        GetTimeWorkAndStatusParameters parameters = new GetTimeWorkAndStatusParameters()
                 .setPersonId(242)
                 .setDate(new DateMidnight().getMillis())
-                .setHospitalUidFrom(0);
+                .setHospitalUidFrom("");
         try {
             result = client.getWorkTimeAndStatus(parameters);
             logger.info("Send and recieve is successfully done.");
@@ -304,13 +304,13 @@ public class CommunicationServiceTest {
     public void enqueuePatient() {
         logger.warn("Start of enqueuePatient test:");
         EnqueuePatientStatus result;
-        EnqueuePatientParameters parameters= new EnqueuePatientParameters()
+        EnqueuePatientParameters parameters = new EnqueuePatientParameters()
                 .setDateTime(new DateTime(2013, 1, 31, 15, 30, 0, 0).getMillis())
                 .setPatientId(6226)
                 .setPersonId(242);
         try {
             result = client.enqueuePatient(parameters);
-            logger.info("Send and recieve is successfully done. Result is {}",result.toString());
+            logger.info("Send and recieve is successfully done. Result is {}", result.toString());
             logger.warn("Successful end of enqueuePatient test.");
         } catch (TException e) {
             logger.error("Fail of enqueuePatient test. Exception stacktrace:", e);
@@ -321,10 +321,10 @@ public class CommunicationServiceTest {
     public void getPatientQueue() {
         logger.warn("Start getPatientQueue test:");
         List<Queue> result;
-        Integer patientId=6226;
+        Integer patientId = 6226;
         try {
             result = client.getPatientQueue(patientId);
-            logger.info("Send and recieve is successfully done. Result is {}",result.toString());
+            logger.info("Send and recieve is successfully done. Result is {}", result.toString());
             logger.warn("Successful end of getpatientQueue test.");
         } catch (TException e) {
             logger.error("Fail of getPatientQueue test. Exception stacktrace:", e);
@@ -335,10 +335,10 @@ public class CommunicationServiceTest {
     public void getPatientContacts() {
         logger.warn("Start getPatientContacts test:");
         List<Contact> result;
-        Integer patientId=6226;
+        Integer patientId = 6226;
         try {
             result = client.getPatientContacts(patientId);
-            logger.info("Send and recieve is successfully done. Result is {}",result.toString());
+            logger.info("Send and recieve is successfully done. Result is {}", result.toString());
             logger.warn("Successful end of getPatientContacts test.");
         } catch (TException e) {
             logger.error("getPatientContacts Failed.", e);
