@@ -314,14 +314,33 @@ public interface MedipadWebService extends Serializable {
     @WebMethod
     AllPersonsListData getFreePersons(ListDataRequest requestData) throws CoreException;
 
+    /**
+     * Получение справочника типов действий плоской структурой либо структуры CommonData для нужного ActionType
+     * @param request Данные из запроса как Object (JSONCommonData либо String)
+     * @param patientId Идентификатор пациента, из которого достанем пол и возраст
+     * @return Информация справочника ActionType как String
+     * @throws CoreException
+     */
     @WebMethod
     Object getListOfActionTypeIdNames(ListDataRequest request, int patientId) throws CoreException;
+
+    /**
+     * Получение справочника типов действий в виде дерева
+     * @param request Данные из запроса как ListDataRequest
+     * @return Информация справочника ActionType как String
+     * @throws CoreException
+     */
+    @WebMethod
+    String getListOfActionTypes(ListDataRequest request) throws CoreException;
 
     @WebMethod
     JSONCommonData insertConsultation(ConsultationRequestData request) throws CoreException;
 
     @WebMethod
     JSONCommonData insertLaboratoryStudies(int eventId, CommonData data, AuthData auth) throws CoreException;
+
+    @WebMethod
+    JSONCommonData modifyLaboratoryStudies(int eventId, CommonData data, AuthData auth) throws CoreException;
 
     /**
      * Получение справочника FlatDirectory

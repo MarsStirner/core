@@ -304,7 +304,7 @@ class TestTubeTypeInfoContainer {
       this.name = tubeType.getName
       this.volume = tubeType.getVolume
       this.covCol = tubeType.getCovCol
-      this.covCol = tubeType.getColor
+      this.color = tubeType.getColor
     } else {
       LoggingManager.setLoggerType(LoggingManager.LoggingTypes.Debug)
       LoggingManager.warning("code " + ConfigManager.ErrorCodes.RbTestTubeTypeIsNull +

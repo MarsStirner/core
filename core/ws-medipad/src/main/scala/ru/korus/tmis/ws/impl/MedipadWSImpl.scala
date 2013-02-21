@@ -542,7 +542,7 @@ class MedipadWSImpl
                                               dbClientRelation.getClientRelationByRelativeId _,
                                               actionPropertyBean.getActionPropertiesByActionIdAndRbCoreActionPropertyIds _,
                                               dbRbCoreActionPropertyBean.getRbCoreActionPropertiesByIds _,                    //таблица соответствия
-      if (positionA._1.getContractId != null) {dbContractBean.getContractById(positionA._1.getContractId.intValue())} else {null}
+      if (positionE._1.getContract != null) {dbContractBean.getContractById(positionE._1.getContract.getId.intValue())} else {null}
                               ))
   }
 
@@ -694,15 +694,13 @@ class MedipadWSImpl
      jData
    }
 
-  private def postProcessingWithCopy (jData: JSONCommonData, reWriteId: java.lang.Boolean) = {
-    //Постобработка (Сопоставление id APT c CoreAP в подветке details - id, typeId)
+  private def postProcessingForDiagnosis (jData: JSONCommonData, reWriteId: java.lang.Boolean) = {
     jData.data.get(0).group.get(1).attribute.foreach(ap => {
-      var value = if(ap.typeId!=null && ap.typeId.intValue()>0)
+      val value = if(ap.typeId!=null && ap.typeId.intValue()>0)
                     ap.typeId.intValue()
                   else
                     actionPropertyBean.getActionPropertyById(ap.id.intValue()).getType.getId.intValue()
-      ap.typeId = dbRbCoreActionPropertyBean.getRbCoreActionPropertiesByActionPropertyTypeId(value).getId.intValue()
-      ap.id = ap.typeId
+      ap.typeId = value //Integer.valueOf(value).intValue()
     })
     jData
   }
@@ -1007,11 +1005,26 @@ class MedipadWSImpl
             request.sortingField,
             request.sortingMethod,
             request.filter)
-          val list = new ActionTypesListData(atList, request)
-          list
+          //val list = new ActionTypesListData(atList, request, actionTypeBean.getAllActionTypeWithFilter _)
+
+          val mapper: ObjectMapper = new ObjectMapper()
+          mapper.getSerializationConfig().setSerializationView(classOf[ActionTypesListDataViews.OneLevelView]);  //плоская структурв
+          mapper.writeValueAsString(new ActionTypesListData(request, actionTypeBean.getAllActionTypeWithFilter _))
+
+          //list
         }
     }
     result
+  }
+
+  def getListOfActionTypes(request: ListDataRequest) = {
+    val mapper: ObjectMapper = new ObjectMapper()
+    if (request.filter.asInstanceOf[ActionTypesListRequestDataFilter].view.compareTo("tree") == 0) {
+      mapper.getSerializationConfig().setSerializationView(classOf[ActionTypesListDataViews.DefaultView]);   //дерево
+    } else {
+      mapper.getSerializationConfig().setSerializationView(classOf[ActionTypesListDataViews.OneLevelView]);  //плоская структурв
+    }
+    mapper.writeValueAsString(new ActionTypesListData(request, actionTypeBean.getAllActionTypeWithFilter _))
   }
 
   def insertConsultation(request: ConsultationRequestData) = {
@@ -1023,7 +1036,13 @@ class MedipadWSImpl
   def insertLaboratoryStudies(eventId: Int, data: CommonData, auth: AuthData) = {
     // проверка пользователя на ответственного за ивент
 
-    primaryAssessmentBean.createAssessmentsForEventIdFromCommonData(eventId, data, "Diagnostic", null, auth, postProcessing _)
+    primaryAssessmentBean.createAssessmentsForEventIdFromCommonData(eventId, data, "Diagnostic", null, auth,  postProcessingForDiagnosis _)// postProcessingForDiagnosis
+  }
+
+  def modifyLaboratoryStudies(eventId: Int, data: CommonData, auth: AuthData) = {
+    // проверка пользователя на ответственного за ивент
+
+    primaryAssessmentBean.modifyAssessmentsForEventIdFromCommonData(eventId, data, "Diagnostic", null, auth,  postProcessingForDiagnosis _)// postProcessingForDiagnosis
   }
 
   def getFlatDirectories(request: FlatDirectoryRequestData) = {
