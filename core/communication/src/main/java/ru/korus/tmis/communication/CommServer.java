@@ -6,6 +6,7 @@ import org.apache.thrift.server.TThreadPoolServer;
 import org.apache.thrift.transport.TServerSocket;
 import org.joda.time.DateMidnight;
 import org.joda.time.DateTime;
+import org.joda.time.DateTimeZone;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import ru.korus.tmis.communication.thriftgen.*;
@@ -294,7 +295,7 @@ public class CommServer implements Communications.Iface {
      * @param hospitalUidFrom ИД ЛПУ
      * @return список ограничений
      */
-    private List<QuotingByTime> getPersonConstraints(final Staff person, final Date constraintDate, final int hospitalUidFrom) {
+    private List<QuotingByTime> getPersonConstraints(final Staff person, final Date constraintDate, final String hospitalUidFrom) {
         //2. Проверяем есть ли «причина отсутствия» этого врача в указанную дату _getReasonOfAbsence
         Action timelineAction = null;
         try {
@@ -310,7 +311,7 @@ public class CommServer implements Communications.Iface {
         }
         if (timelineAction == null) {
             final QuotingType quotingType;
-            if (hospitalUidFrom != 0) quotingType = QuotingType.FROM_OTHER_LPU;
+            if (!"".equals(hospitalUidFrom)) quotingType = QuotingType.FROM_OTHER_LPU;
             else quotingType = QuotingType.FROM_PORTAL;
 
             final List<QuotingByTime> constraints = quotingByTimeBean.getQuotingByTimeConstraints(person.getId(), constraintDate, quotingType.getValue());
@@ -394,8 +395,11 @@ public class CommServer implements Communications.Iface {
                         logger.debug("CLIENT ACTIONEVENTPATIENT={}", queue.get(i).getValue().getEvent().getPatient());
                     }
                     //TODO поговорить с Сергеем о тикетах
-                    // newTicket.setPatientId(queue.get(i).getValue().getEvent().getPatient().getId())
-                    //         .setPatientInfo(queue.get(i).getValue().getEvent().getPatient().getLastName());
+                    final Patient queuePatient = queue.get(i).getValue().getEvent().getPatient();
+                    newTicket.setPatientId(queuePatient.getId())
+                            .setPatientInfo(new StringBuilder(queuePatient.getLastName())
+                                    .append(" ").append(queuePatient.getFirstName())
+                                    .append(" ").append(queuePatient.getPatrName()).toString());
                 }
                 tickets.add(newTicket);
             }
@@ -473,18 +477,21 @@ public class CommServer implements Communications.Iface {
         final int currentRequestNum = ++requestNum;
         logger.info("#{} Call method -> CommServer.addPatient( Full name=\"{} {} {}\", BirthDATE={}, SEX={})",
                 currentRequestNum, params.getLastName(), params.getFirstName(), params.getPatrName(),
-                new DateMidnight(params.getBirthDate()), params.getSex());
+                new DateTime(params.getBirthDate(), DateTimeZone.UTC), params.getSex());
         final PatientStatus result = new PatientStatus();
         //CHECK PARAMS
         if (!checkAddPatientParams(params, result)) {
             logger.warn("End of #{} addPatient.Error message=\"{}\"", currentRequestNum, result.getMessage());
             return result.setSuccess(false).setPatientId(0);
         }
-        final DateTime birthDate = new DateTime(params.getBirthDate());
+        final DateTime birthDate = new DateTime(params.getBirthDate(), DateTimeZone.UTC);
+        logger.debug("PLUS TIMEZONE OFFSET = {}", birthDate.plus(-TimeZone.getDefault().getRawOffset()));
+        logger.debug("PLUSS OFFSET util.DATE = {}", birthDate.plus(-TimeZone.getDefault().getRawOffset()).toDate());
         final ru.korus.tmis.core.entity.model.Patient patient;
         try {
             patient = patientBean.insertOrUpdatePatient(0, params.firstName, params.patrName, params.lastName,
-                    birthDate.toDate(), "", getSexAsString(params.getSex()), "0", "0", "", null, 0, "", "", null, 0);
+                    birthDate.plus(-TimeZone.getDefault().getRawOffset()).toDate(), "",
+                    getSexAsString(params.getSex()), "0", "0", "", null, 0, "", "", null, 0);
             patientBean.savePatientToDataBase(patient);
             logger.debug("Patient ={}", patient);
             if (patient.getId() == 0 || patient.getId() == null)
@@ -589,12 +596,12 @@ public class CommServer implements Communications.Iface {
                 String number = document.get("number");
                 String serial = document.get("serial");
                 if (document.containsKey("document_code")) {
-                    patientsList = patientBean.findPatientByDocument
-                            (parameters, serial, number, Integer.parseInt(document.get("document_code")));
+                    patientsList = patientBean.findPatientByDocument(
+                            parameters, serial, number, Integer.parseInt(document.get("document_code")));
                 } else {
                     if (document.containsKey("policy_type")) {
-                        patientsList = patientBean.findPatientByPolicy
-                                (parameters, serial, number, Integer.parseInt(document.get("policy_type")));
+                        patientsList = patientBean.findPatientByPolicy(
+                                parameters, serial, number, Integer.parseInt(document.get("policy_type")));
                     } else {
                         logger.error("В карте документов не передан ни client_id, ни policy_type, ни document_code ");
                         throw new NotFoundException("Некорректные входные данные");
@@ -808,13 +815,13 @@ public class CommServer implements Communications.Iface {
                             paramsDateTime);
                     try {
                         //0 проверяем квоты!
-                        if(!"".equals(params.getHospitalUidFrom())){
-                          if(!checkQuotingBySpeciality(person.getSpeciality(),params.getHospitalUidFrom())){
-                             logger.info("Нет талончиков, доступных для записи (по квотам на специальность)");
-                              return new EnqueuePatientStatus().setMessage(
-                                      "Нет талончиков, доступных для записи")
-                                      .setSuccess(false);
-                          }
+                        if (!"".equals(params.getHospitalUidFrom())) {
+                            if (!checkQuotingBySpeciality(person.getSpeciality(), params.getHospitalUidFrom())) {
+                                logger.info("Нет талончиков, доступных для записи (по квотам на специальность)");
+                                return new EnqueuePatientStatus().setMessage(
+                                        "Нет талончиков, доступных для записи")
+                                        .setSuccess(false);
+                            }
                         }
                         //1) Создаем событие  (Event)
                         //1.a)Получаем тип события (EventType)
@@ -963,12 +970,12 @@ public class CommServer implements Communications.Iface {
                 int days = Integer.parseInt(agePart.substring(0, agePart.length() - 1));
                 return new DateTime().minusDays(days).toDate();
             }
-            if(agePart.contains("Г") ||  agePart.contains("г")){
-                int years = Integer.parseInt(agePart.substring(0,agePart.length()-1));
+            if (agePart.contains("Г") || agePart.contains("г")) {
+                int years = Integer.parseInt(agePart.substring(0, agePart.length() - 1));
                 return new DateTime().minusYears(years).toDate();
             }
-            if(agePart.contains("Н") ||  agePart.contains("н")){
-                int weeks = Integer.parseInt(agePart.substring(0,agePart.length()-1));
+            if (agePart.contains("Н") || agePart.contains("н")) {
+                int weeks = Integer.parseInt(agePart.substring(0, agePart.length() - 1));
                 return new DateTime().minusWeeks(weeks).toDate();
             }
             if (agePart.contains("М") || agePart.contains("м")) {

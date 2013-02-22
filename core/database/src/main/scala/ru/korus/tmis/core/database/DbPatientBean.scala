@@ -8,15 +8,14 @@ import java.lang.Iterable
 import javax.interceptor.Interceptors
 import ru.korus.tmis.core.exception.NoSuchPatientException
 import ru.korus.tmis.core.entity.model.{Staff, Patient}
-import javax.persistence.{TypedQuery, EntityManager, PersistenceContext}
+import javax.persistence.{TemporalType, TypedQuery, EntityManager, PersistenceContext}
 import ru.korus.tmis.core.data.PatientRequestData
 import javax.ejb.{EJB, Stateless}
 import scala.collection.JavaConversions._
 import ru.korus.tmis.core.hl7db.DbUUIDBeanLocal
 import java.util
 import org.slf4j.{LoggerFactory, Logger}
-import util.{Date, Calendar, GregorianCalendar}
-import javax.persistence.criteria.{Root, CriteriaBuilder, CriteriaQuery}
+import util.{TimeZone, Date, Calendar, GregorianCalendar}
 
 
 @Interceptors(Array(classOf[LoggingInterceptor]))
@@ -401,20 +400,24 @@ class DbPatientBean
     AND patient.lastName LIKE :LASTNAME
     AND patient.firstName LIKE      :FIRSTNAME
     AND patient.patrName      LIKE      :PATRNAME
-    AND patient.birthDate =   :BIRTHDATE
+    AND patient.birthDate =   '%s'
     AND patient.id = :CLIENTID
     AND patient.sex = :SEX
                            """
 
-    val calendar = new GregorianCalendar();
+    val calendar = new GregorianCalendar(TimeZone.getTimeZone("UTC"));
+    calendar.setTimeInMillis(java.lang.Long.parseLong(params("birthDate")))
     // calendar.setTimeInMillis(java.lang.Long.parseLong(params("birthDate")) - calendar.get(Calendar.ZONE_OFFSET));
-    calendar.setTimeInMillis(java.lang.Long.parseLong(params("birthDate")) - calendar.get(Calendar.ZONE_OFFSET))
     commlogger.info("##FIXDATE LONG=" + java.lang.Long.parseLong(params("birthDate")));
     commlogger.info("##FIXDATE DATE=" + new java.util.Date(java.lang.Long.parseLong(params("birthDate"))));
     commlogger.info("##FIXDATE calendarDate=" + calendar.getTime);
     commlogger.info("##FIXDATE calendarLONG=" + calendar.getTimeInMillis);
     commlogger.info("##FIXDATE calendar YYYY-MM-DD=" + calendar.get(Calendar.YEAR)
       + "-" + (calendar.get(Calendar.MONTH) + 1) + "-" + calendar.get(Calendar.DATE));
+
+    val birthDateStringRepresentation: String =
+      calendar.get(Calendar.YEAR) + "-" + (calendar.get(Calendar.MONTH) + 1) + "-" + calendar.get(Calendar.DATE);
+
     // findPatientQuery += " AND patient.birthDate = '" + calendar.get(Calendar.YEAR)
     // + "-" + (calendar.get(Calendar.MONTH) + 1) + "-" + calendar.get(Calendar.DATE) + "'";
 
@@ -430,15 +433,16 @@ class DbPatientBean
       )""".format(params.get("identifierType"), params.get("identifier"));
     }
 
-    commlogger.info(findPatientQuery);
-    em.createQuery(findPatientQuery, classOf[Patient])
+    commlogger.info(findPatientQuery.format(birthDateStringRepresentation));
+    val resultQuery = em.createQuery(findPatientQuery.format(birthDateStringRepresentation), classOf[Patient])
       .setParameter("LASTNAME", params.get("lastName"))
       .setParameter("FIRSTNAME", params.get("firstName"))
       .setParameter("PATRNAME", params.get("patrName"))
       .setParameter("SEX", java.lang.Short.parseShort(params.get("sex")))
-      .setParameter("BIRTHDATE", calendar.getTime)
-      .setParameter("CLIENTID", clientId)
-      .getResultList
+      //.setParameter("BIRTHDATE", calendar.getTime)
+      .setParameter("CLIENTID", clientId);
+    commlogger.debug("SQL =" + resultQuery.toString)
+    resultQuery.getResultList
   }
 
   def savePatientToDataBase(patient: Patient): java.lang.Integer = {
@@ -485,7 +489,7 @@ class DbPatientBean
     AND patient.lastName LIKE :LASTNAME
     AND patient.firstName LIKE      :FIRSTNAME
     AND patient.patrName      LIKE      :PATRNAME
-    AND patient.birthDate =   :BIRTHDATE
+    AND patient.birthDate =   '%s'
     AND patient.sex = :SEX
     AND policy.number = :POLICYNUMBER
     AND policy.serial = :POLICYSERIAL
@@ -493,15 +497,18 @@ class DbPatientBean
     AND policy.deleted = 0
                            """
 
-    val calendar = new GregorianCalendar();
+    val calendar = new GregorianCalendar(TimeZone.getTimeZone("UTC"));
+    calendar.setTimeInMillis(java.lang.Long.parseLong(params("birthDate")))
     // calendar.setTimeInMillis(java.lang.Long.parseLong(params("birthDate")) - calendar.get(Calendar.ZONE_OFFSET));
-    calendar.setTimeInMillis(java.lang.Long.parseLong(params("birthDate")) - calendar.get(Calendar.ZONE_OFFSET));
     commlogger.info("##FIXDATE LONG=" + java.lang.Long.parseLong(params("birthDate")));
     commlogger.info("##FIXDATE DATE=" + new java.util.Date(java.lang.Long.parseLong(params("birthDate"))));
     commlogger.info("##FIXDATE calendarDate=" + calendar.getTime);
     commlogger.info("##FIXDATE calendarLONG=" + calendar.getTimeInMillis);
-    commlogger.info("##FIXDATE calendar YYYY-MM-DD=" + calendar.get(Calendar.YEAR) + "-" + (calendar.get(Calendar.MONTH) + 1) + "-" + calendar.get(Calendar.DATE));
-    // findPatientQuery += " AND patient.birthDate = '" + calendar.get(Calendar.YEAR) + "-" + (calendar.get(Calendar.MONTH) + 1) + "-" + calendar.get(Calendar.DATE) + "'";
+    commlogger.info("##FIXDATE calendar YYYY-MM-DD=" + calendar.get(Calendar.YEAR)
+      + "-" + (calendar.get(Calendar.MONTH) + 1) + "-" + calendar.get(Calendar.DATE));
+
+    val birthDateStringRepresentation: String =
+      calendar.get(Calendar.YEAR) + "-" + (calendar.get(Calendar.MONTH) + 1) + "-" + calendar.get(Calendar.DATE);
 
     if (params.contains("identifier") && params.contains("identifierType")) {
       findPatientQuery += """ AND EXISTS(
@@ -515,13 +522,13 @@ class DbPatientBean
       )""".format(params.get("identifierType"), params.get("identifier"));
     }
 
-    commlogger.info(findPatientQuery);
-    em.createQuery(findPatientQuery, classOf[Patient])
+    commlogger.info(findPatientQuery.format(birthDateStringRepresentation));
+    em.createQuery(findPatientQuery.format(birthDateStringRepresentation), classOf[Patient])
       .setParameter("LASTNAME", params.get("lastName"))
       .setParameter("FIRSTNAME", params.get("firstName"))
       .setParameter("PATRNAME", params.get("patrName"))
       .setParameter("SEX", java.lang.Short.parseShort(params.get("sex")))
-      .setParameter("BIRTHDATE", calendar.getTime)
+      //.setParameter("BIRTHDATE", calendar.getTime)
       .setParameter("POLICYNUMBER", policyNumber)
       .setParameter("POLICYSERIAL", policySerial)
       .setParameter("POLICYTYPEID", policyType)
@@ -538,7 +545,7 @@ class DbPatientBean
     AND patient.lastName LIKE :LASTNAME
     AND patient.firstName LIKE      :FIRSTNAME
     AND patient.patrName      LIKE      :PATRNAME
-    AND patient.birthDate =   :BIRTHDATE
+    AND patient.birthDate =   '%s'
     AND patient.sex = :SEX
     AND document.number = :DOCNUMBER
     AND document.serial = :DOCSERIAL
@@ -546,15 +553,18 @@ class DbPatientBean
     AND document.deleted = 0
                            """
 
-    val calendar = new GregorianCalendar();
+    val calendar = new GregorianCalendar(TimeZone.getTimeZone("UTC"));
+    calendar.setTimeInMillis(java.lang.Long.parseLong(params("birthDate")))
     // calendar.setTimeInMillis(java.lang.Long.parseLong(params("birthDate")) - calendar.get(Calendar.ZONE_OFFSET));
-    calendar.setTimeInMillis(java.lang.Long.parseLong(params("birthDate")) - calendar.get(Calendar.ZONE_OFFSET));
     commlogger.info("##FIXDATE LONG=" + java.lang.Long.parseLong(params("birthDate")));
     commlogger.info("##FIXDATE DATE=" + new java.util.Date(java.lang.Long.parseLong(params("birthDate"))));
     commlogger.info("##FIXDATE calendarDate=" + calendar.getTime);
     commlogger.info("##FIXDATE calendarLONG=" + calendar.getTimeInMillis);
-    commlogger.info("##FIXDATE calendar YYYY-MM-DD=" + calendar.get(Calendar.YEAR) + "-" + (calendar.get(Calendar.MONTH) + 1) + "-" + calendar.get(Calendar.DATE));
-    // findPatientQuery += " AND patient.birthDate = '" + calendar.get(Calendar.YEAR) + "-" + (calendar.get(Calendar.MONTH) + 1) + "-" + calendar.get(Calendar.DATE) + "'";
+    commlogger.info("##FIXDATE calendar YYYY-MM-DD=" + calendar.get(Calendar.YEAR)
+      + "-" + (calendar.get(Calendar.MONTH) + 1) + "-" + calendar.get(Calendar.DATE));
+
+    val birthDateStringRepresentation: String =
+      calendar.get(Calendar.YEAR) + "-" + (calendar.get(Calendar.MONTH) + 1) + "-" + calendar.get(Calendar.DATE);
 
     if (params.contains("identifier") && params.contains("identifierType")) {
       findPatientQuery += """ AND EXISTS(
@@ -568,13 +578,13 @@ class DbPatientBean
       )""".format(params.get("identifierType"), params.get("identifier"));
     }
 
-    commlogger.info(findPatientQuery);
-    em.createQuery(findPatientQuery, classOf[Patient])
+    commlogger.info(findPatientQuery.format(birthDateStringRepresentation));
+    em.createQuery(findPatientQuery.format(birthDateStringRepresentation), classOf[Patient])
       .setParameter("LASTNAME", params.get("lastName"))
       .setParameter("FIRSTNAME", params.get("firstName"))
       .setParameter("PATRNAME", params.get("patrName"))
       .setParameter("SEX", java.lang.Short.parseShort(params.get("sex")))
-      .setParameter("BIRTHDATE", calendar.getTime)
+      // .setParameter("BIRTHDATE", calendar.getTime)
       .setParameter("DOCNUMBER", documentNumber)
       .setParameter("DOCSERIAL", documentSerial)
       .setParameter("DOCTYPEID", documentCode)
@@ -619,7 +629,18 @@ class DbPatientBean
       query.append(" AND pat.patrName LIKE :PATRNAME");
     }
     if (params.contains("birthDate")) {
-      query.append(" AND pat.birthDate = :BIRTHDATE");
+      val calendar = new GregorianCalendar(TimeZone.getTimeZone("UTC"));
+      calendar.setTimeInMillis(java.lang.Long.parseLong(params("birthDate")))
+      // calendar.setTimeInMillis(java.lang.Long.parseLong(params("birthDate")) - calendar.get(Calendar.ZONE_OFFSET));
+      commlogger.info("##FIXDATE LONG=" + java.lang.Long.parseLong(params("birthDate")));
+      commlogger.info("##FIXDATE DATE=" + new java.util.Date(java.lang.Long.parseLong(params("birthDate"))));
+      commlogger.info("##FIXDATE calendarDate=" + calendar.getTime);
+      commlogger.info("##FIXDATE calendarLONG=" + calendar.getTimeInMillis);
+      commlogger.info("##FIXDATE calendar YYYY-MM-DD=" + calendar.get(Calendar.YEAR)
+        + "-" + (calendar.get(Calendar.MONTH) + 1) + "-" + calendar.get(Calendar.DATE));
+
+      query.append(" AND pat.birthDate = '" + calendar.get(Calendar.YEAR) + "-"
+        + (calendar.get(Calendar.MONTH) + 1) + "-" + calendar.get(Calendar.DATE) + "'");
     }
     if (params.contains("sex")) {
       query.append(" AND pat.sex = :SEX");
@@ -660,7 +681,14 @@ class DbPatientBean
       typedQuery.setParameter("PATRNAME", params.get("patrName"));
     }
     if (params.contains("birthDate")) {
-      typedQuery.setParameter("BIRTHDATE", params.get("birthDate"));
+      val calendar = new GregorianCalendar();
+      calendar.setTimeInMillis(java.lang.Long.parseLong(params("birthDate")) - calendar.get(Calendar.ZONE_OFFSET));
+      commlogger.info("##FIXDATE LONG=" + java.lang.Long.parseLong(params("birthDate")));
+      commlogger.info("##FIXDATE DATE=" + new java.util.Date(java.lang.Long.parseLong(params("birthDate"))));
+      commlogger.info("##FIXDATE calendarDate=" + calendar.getTime);
+      commlogger.info("##FIXDATE calendarLONG=" + calendar.getTimeInMillis);
+      commlogger.info("##FIXDATE calendar YYYY-MM-DD=" + calendar.get(Calendar.YEAR) + "-" + (calendar.get(Calendar.MONTH) + 1) + "-" + calendar.get(Calendar.DATE));
+      // typedQuery.setParameter("BIRTHDATE", calendar.getTime);
     }
     if (params.contains("sex")) {
       typedQuery.setParameter("SEX", java.lang.Short.parseShort(params.get("sex")));
