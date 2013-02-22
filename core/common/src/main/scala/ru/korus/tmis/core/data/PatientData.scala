@@ -433,10 +433,15 @@ class AddressEntryContainer {
             val list = map.get(house.getId.intValue())
             list.size() match{
               case 0 => {}
-              case 1 => { if(this.localityType == 0){
-                             this.city = new KladrNameContainer(list.get(0).getCode, list.get(0).getName, list.get(0).getSocr, list.get(0).getIndex)
+              case 1 => { if (list.get(0).getCode.compareTo("7800000000000") == 0 || list.get(0).getCode.compareTo("7700000000000") == 0) {
+                            //костылик, чтобы Питер и Москва возвращались в поле репаблик
+                            this.republic = new KladrNameContainer(list.get(0).getCode, list.get(0).getName, list.get(0).getSocr, list.get(0).getIndex)
                           } else {
-                            this.locality = new KladrNameContainer(list.get(0).getCode, list.get(0).getName, list.get(0).getSocr, list.get(0).getIndex)
+                            if(this.localityType == 0){
+                              this.city = new KladrNameContainer(list.get(0).getCode, list.get(0).getName, list.get(0).getSocr, list.get(0).getIndex)
+                            } else {
+                              this.locality = new KladrNameContainer(list.get(0).getCode, list.get(0).getName, list.get(0).getSocr, list.get(0).getIndex)
+                            }
                           }
                         }
               case 2 => { if(this.localityType == 0){
