@@ -12,7 +12,7 @@ import javax.persistence.{TypedQuery, EntityManager, PersistenceContext}
 import ru.korus.tmis.core.data.PatientRequestData
 import javax.ejb.{EJB, Stateless}
 import scala.collection.JavaConversions._
-import ru.korus.tmis.core.hl7db.DbUUIDBeanLocal
+import ru.korus.tmis.core.pharmacy.DbUUIDBeanLocal
 import java.util
 import org.slf4j.{LoggerFactory, Logger}
 import util.{Date, Calendar, GregorianCalendar}

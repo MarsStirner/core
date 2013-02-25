@@ -1,10 +1,11 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
 
     <modelVersion>4.0.0</modelVersion>
     <groupId>ru.korus.tmis.laboratory</groupId>
     <artifactId>tmis-laboratory-tier</artifactId>
-  <version>${version.tmis.core}</version>
+    <version>${version.tmis.core}</version>
     <packaging>ejb</packaging>
     <name>TMIS Laboratory Business Tier EJBs</name>
 
@@ -69,6 +70,7 @@
     </dependencies>
 
     <build>
+
         <plugins>
             <plugin>
                 <groupId>org.codehaus.mojo</groupId>
@@ -131,10 +133,13 @@
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-ejb-plugin</artifactId>
-                <version>2.3</version>
+                <version>${version.maven.plugin.ejb}</version>
                 <configuration>
                     <ejbVersion>3.1</ejbVersion>
                     <generateClient>true</generateClient>
+                    <clientIncludes>
+                        <include>*.wsdl</include>
+                    </clientIncludes>
                 </configuration>
             </plugin>
         </plugins>

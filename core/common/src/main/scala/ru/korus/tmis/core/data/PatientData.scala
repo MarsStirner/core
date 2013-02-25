@@ -1080,13 +1080,18 @@ class QuotaEntry  {
     this.version = clientQuoting.getVersion
     this.talonNumber = clientQuoting.getQuotaTicket
     this.request = new IdNameContainer(clientQuoting.getRequest.intValue(), "")
-    this.mkb = new MKBContainer(clientQuoting.getMkb)
+    if (clientQuoting.getMkb != null) {
+      this.mkb = new MKBContainer(clientQuoting.getMkb)
+    }
 
     //if (classic == classOf[QuotaViews.DynamicFieldsQuotaCreate]) {
       this.appealNumber = clientQuoting.getIdentifier
       this.stage = new IdNameContainer(clientQuoting.getStage.intValue(), "")
       this.quotaType = new QuotaTypeContainer(clientQuoting.getQuotaType)
+    if (clientQuoting.getOrgStructure != null) {
       this.department = new IdNameContainer(clientQuoting.getOrgStructure.getId.intValue(), clientQuoting.getOrgStructure.getName)
+    }
+      //this.department = new IdNameContainer(clientQuoting.getOrgStructure.getId.intValue(), clientQuoting.getOrgStructure.getName)
       this.status = new IdNameContainer(clientQuoting.getStatus.getId.intValue(), clientQuoting.getStatus.getName)
     //}
     //else if (classic == classOf[QuotaViews.DynamicFieldsQuotaHistory]) {

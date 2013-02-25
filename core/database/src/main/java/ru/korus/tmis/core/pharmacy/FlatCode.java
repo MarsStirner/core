@@ -1,4 +1,4 @@
-package ru.korus.tmis.pharmacy;
+package ru.korus.tmis.core.pharmacy;
 
 /**
  * Author:      Dmitriy E. Nosov <br>

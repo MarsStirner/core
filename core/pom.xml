@@ -46,6 +46,7 @@
         <version.javax.mail>1.4.5</version.javax.mail>
         <version.groovy>2.1.0</version.groovy>
         <version.gmaven.runtime>1.4</version.gmaven.runtime>
+        <version.mysql.connector>5.1.15</version.mysql.connector>
 
 
         <version.maven.plugin.scala>2.15.2</version.maven.plugin.scala>
@@ -56,6 +57,7 @@
         <version.maven.plugin.embedded.glassfish>3.1.1</version.maven.plugin.embedded.glassfish>
         <version.maven.plugin.release>2.2.1</version.maven.plugin.release>
         <version.maven.plugin.resources>2.6</version.maven.plugin.resources>
+        <version.maven.plugin.ejb>2.3</version.maven.plugin.ejb>
         <version.maven.gmaven.plugin>1.4</version.maven.gmaven.plugin>
 
 
@@ -110,7 +112,7 @@
                 <!-- Название приложения, которое будет отображаться в интерфейсе -->
                 <glassfish.application.name>${project.build.finalName}</glassfish.application.name>
                 <!-- Путь к директории домена (нужен для того, чтобы валидировался pom.xml -->
-                <com.sun.aas.instanceRoot>${glassfish.domain.dir}/${glassfish.domain}/</com.sun.aas.instanceRoot>
+                <!--<com.sun.aas.instanceRoot>${glassfish.domain.dir}/${glassfish.domain}/</com.sun.aas.instanceRoot>-->
 
                 <!-- Адрес базы данных -->
                 <mysql.db.host>127.0.0.1</mysql.db.host>
@@ -120,12 +122,18 @@
                 <mysql.login>root</mysql.login>
                 <!-- Пароль к базе данных -->
                 <mysql.password>root</mysql.password>
-                <!-- Название базы данных МИС (пул к БД, автоматом получит это имя + суффикс "-pool") -->
+                <!-- Название базы данных МИС -->
                 <mysql.db.mis>s11r64</mysql.db.mis>
-                <!-- Название базы данных RLS (пул к БД, автоматом получит это имя + суффикс "-pool") -->
+                <!-- Название пула для базы данных МИС -->
+                <mysql.db.mis.pool>s11r64-pool</mysql.db.mis.pool>
+                <!-- Название базы данных RLS -->
                 <mysql.db.rls>rls</mysql.db.rls>
+                <!-- Название пула для базы данных RLS -->
+                <mysql.db.rls.pool>rls-pool</mysql.db.rls.pool>
                 <!-- Название базы данных для конфигурации ядра (пул к БД автоматом получит это имя + суффикс "-pool") -->
                 <mysql.db.tmis_core>tmis_core</mysql.db.tmis_core>
+                <!-- Название пула для базы данных - конфигурации ядра -->
+                <mysql.db.tmis_core.pool>tmis_core-pool</mysql.db.tmis_core.pool>
             </properties>
             <activation>
                 <activeByDefault>true</activeByDefault>
@@ -165,12 +173,18 @@
                 <mysql.login>root</mysql.login>
                 <!-- Пароль к базе данных -->
                 <mysql.password>root</mysql.password>
-                <!-- Название базы данных МИС (пул к БД, автоматом получит это имя + суффикс "-pool") -->
-                <mysql.db.mis>s11r64</mysql.db.mis>
-                <!-- Название базы данных RLS (пул к БД, автоматом получит это имя + суффикс "-pool") -->
+                <!-- Название базы данных МИС -->
+                <mysql.db.mis>s11r64_test</mysql.db.mis>
+                <!-- Название пула для базы данных МИС -->
+                <mysql.db.mis.pool>s11r64-pool</mysql.db.mis.pool>
+                <!-- Название базы данных RLS -->
                 <mysql.db.rls>rls</mysql.db.rls>
+                <!-- Название пула для базы данных RLS -->
+                <mysql.db.rls.pool>rls-pool</mysql.db.rls.pool>
                 <!-- Название базы данных для конфигурации ядра (пул к БД автоматом получит это имя + суффикс "-pool") -->
                 <mysql.db.tmis_core>tmis_core</mysql.db.tmis_core>
+                <!-- Название пула для базы данных - конфигурации ядра -->
+                <mysql.db.tmis_core.pool>tmis_core-pool</mysql.db.tmis_core.pool>
             </properties>
         </profile>
 
@@ -207,12 +221,18 @@
                 <mysql.login>root</mysql.login>
                 <!-- Пароль к базе данных -->
                 <mysql.password>root</mysql.password>
-                <!-- Название базы данных МИС (пул к БД, автоматом получит это имя + суффикс "-pool") -->
+                <!-- Название базы данных МИС -->
                 <mysql.db.mis>s11r64</mysql.db.mis>
-                <!-- Название базы данных RLS (пул к БД, автоматом получит это имя + суффикс "-pool") -->
+                <!-- Название пула для базы данных МИС -->
+                <mysql.db.mis.pool>s11r64-pool</mysql.db.mis.pool>
+                <!-- Название базы данных RLS -->
                 <mysql.db.rls>rls</mysql.db.rls>
+                <!-- Название пула для базы данных RLS -->
+                <mysql.db.rls.pool>rls-pool</mysql.db.rls.pool>
                 <!-- Название базы данных для конфигурации ядра (пул к БД автоматом получит это имя + суффикс "-pool") -->
                 <mysql.db.tmis_core>tmis_core</mysql.db.tmis_core>
+                <!-- Название пула для базы данных - конфигурации ядра -->
+                <mysql.db.tmis_core.pool>tmis_core-pool</mysql.db.tmis_core.pool>
             </properties>
         </profile>
 
@@ -249,12 +269,18 @@
                 <mysql.login>root</mysql.login>
                 <!-- Пароль к базе данных -->
                 <mysql.password>root</mysql.password>
-                <!-- Название базы данных МИС (пул к БД, автоматом получит это имя + суффикс "-pool") -->
+                <!-- Название базы данных МИС -->
                 <mysql.db.mis>s11r64</mysql.db.mis>
-                <!-- Название базы данных RLS (пул к БД, автоматом получит это имя + суффикс "-pool") -->
+                <!-- Название пула для базы данных МИС -->
+                <mysql.db.mis.pool>s11r64-pool</mysql.db.mis.pool>
+                <!-- Название базы данных RLS -->
                 <mysql.db.rls>rls</mysql.db.rls>
+                <!-- Название пула для базы данных RLS -->
+                <mysql.db.rls.pool>rls-pool</mysql.db.rls.pool>
                 <!-- Название базы данных для конфигурации ядра (пул к БД автоматом получит это имя + суффикс "-pool") -->
                 <mysql.db.tmis_core>tmis_core</mysql.db.tmis_core>
+                <!-- Название пула для базы данных - конфигурации ядра -->
+                <mysql.db.tmis_core.pool>tmis_core-pool</mysql.db.tmis_core.pool>
             </properties>
         </profile>
 
@@ -291,12 +317,18 @@
                 <mysql.login>root</mysql.login>
                 <!-- Пароль к базе данных -->
                 <mysql.password>root</mysql.password>
-                <!-- Название базы данных МИС (пул к БД, автоматом получит это имя + суффикс "-pool") -->
+                <!-- Название базы данных МИС -->
                 <mysql.db.mis>s11r64</mysql.db.mis>
-                <!-- Название базы данных RLS (пул к БД, автоматом получит это имя + суффикс "-pool") -->
+                <!-- Название пула для базы данных МИС -->
+                <mysql.db.mis.pool>s11r64-pool</mysql.db.mis.pool>
+                <!-- Название базы данных RLS -->
                 <mysql.db.rls>rls</mysql.db.rls>
+                <!-- Название пула для базы данных RLS -->
+                <mysql.db.rls.pool>rls-pool</mysql.db.rls.pool>
                 <!-- Название базы данных для конфигурации ядра (пул к БД автоматом получит это имя + суффикс "-pool") -->
                 <mysql.db.tmis_core>tmis_core</mysql.db.tmis_core>
+                <!-- Название пула для базы данных - конфигурации ядра -->
+                <mysql.db.tmis_core.pool>tmis_core-pool</mysql.db.tmis_core.pool>
             </properties>
         </profile>
 
@@ -442,19 +474,9 @@
         <resources>
             <resource>
                 <directory>src/main/resources/</directory>
-                <targetPath>../</targetPath>
                 <filtering>true</filtering>
                 <includes>
                     <include>**/*.*</include>
-                </includes>
-            </resource>
-            <resource>
-                <directory>scripts/</directory>
-                <targetPath>../</targetPath>
-                <filtering>true</filtering>
-                <includes>
-                    <include>**/*.sh</include>
-                    <include>**/*.bat</include>
                 </includes>
             </resource>
         </resources>
@@ -492,10 +514,11 @@
                     <target>${project.build.jdk}</target>
                     <encoding>${project.build.sourceEncoding}</encoding>
                     <debug>${project.build.debug}</debug>
-                    <!--<jvmArgs>-->
-                    <!--<jvmArg>-Xms64m</jvmArg>-->
-                    <!--<jvmArg>-Xmx1024m</jvmArg>-->
-                    <!--</jvmArgs>-->
+                    <showDeprecation>true</showDeprecation>
+                    <showWarnings>true</showWarnings>
+                    <fork>true</fork>
+                    <meminitial>128m</meminitial>
+                    <maxmem>512m</maxmem>
                 </configuration>
             </plugin>
 

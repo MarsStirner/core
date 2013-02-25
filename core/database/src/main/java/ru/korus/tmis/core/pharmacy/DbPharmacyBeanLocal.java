@@ -1,4 +1,4 @@
-package ru.korus.tmis.core.hl7db;
+package ru.korus.tmis.core.pharmacy;
 
 import org.joda.time.DateTime;
 import ru.korus.tmis.core.entity.model.Action;
@@ -6,7 +6,6 @@ import ru.korus.tmis.core.entity.model.pharmacy.Pharmacy;
 import ru.korus.tmis.core.exception.CoreException;
 
 import javax.ejb.Local;
-import java.util.Date;
 import java.util.List;
 
 /**
@@ -60,4 +59,9 @@ public interface DbPharmacyBeanLocal {
      * @return
      */
     Pharmacy getPharmacyByAction(Action action);
+
+
+
+    public List<Action> getVirtualActions(final int limit);
+    public List<Action> getVirtualActionsAfterDate(final DateTime after);
 }

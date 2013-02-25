@@ -106,6 +106,28 @@
     </dependencies>
 
     <build>
+
+        <!-- Ресурсы для рабочих исходников-->
+        <resources>
+            <resource>
+                <directory>src/main/resources/</directory>
+                <targetPath>../</targetPath>
+                <filtering>true</filtering>
+                <includes>
+                    <include>logback.xml</include>
+                </includes>
+            </resource>
+            <resource>
+                <directory>scripts/</directory>
+                <targetPath>../</targetPath>
+                <filtering>true</filtering>
+                <includes>
+                    <include>**/*.sh</include>
+                    <include>**/*.bat</include>
+                </includes>
+            </resource>
+        </resources>
+
         <plugins>
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
