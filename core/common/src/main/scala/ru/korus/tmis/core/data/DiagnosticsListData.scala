@@ -166,7 +166,8 @@ class DiagnosticsListRequestDataFilter {
       code_x
     }
     else {
-      diaType_x match {
+      diaType_x match {  //больше не ищем по коду
+          /*
         case "laboratory" => {
           "2_"
         }
@@ -175,7 +176,7 @@ class DiagnosticsListRequestDataFilter {
         }
         case "consultations" => {
           "1_3_"
-        }
+        }         */
         case _ => {
           ""
         }

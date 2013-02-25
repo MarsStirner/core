@@ -437,20 +437,20 @@ class AddressEntryContainer {
                             //костылик, чтобы Питер и Москва возвращались в поле репаблик
                             this.republic = new KladrNameContainer(list.get(0).getCode, list.get(0).getName, list.get(0).getSocr, list.get(0).getIndex)
                           } else {
-                            if(this.localityType == 0){
+                            if(this.localityType != 0){
                               this.city = new KladrNameContainer(list.get(0).getCode, list.get(0).getName, list.get(0).getSocr, list.get(0).getIndex)
                             } else {
                               this.locality = new KladrNameContainer(list.get(0).getCode, list.get(0).getName, list.get(0).getSocr, list.get(0).getIndex)
                             }
                           }
                         }
-              case 2 => { if(this.localityType == 0){
+              case 2 => { if(this.localityType != 0){
                             this.city = new KladrNameContainer(list.get(0).getCode, list.get(0).getName, list.get(0).getSocr, list.get(0).getIndex)
                           } else {
                             this.locality = new KladrNameContainer(list.get(0).getCode, list.get(0).getName, list.get(0).getSocr, list.get(0).getIndex)
                           }
                          this.republic = new KladrNameContainer(list.get(1).getCode, list.get(1).getName, list.get(1).getSocr, list.get(1).getIndex)}
-              case 3 => { if(this.localityType == 0){
+              case 3 => { if(this.localityType != 0){
                             this.city = new KladrNameContainer(list.get(0).getCode, list.get(0).getName, list.get(0).getSocr, list.get(0).getIndex)
                           } else {
                             this.locality = new KladrNameContainer(list.get(0).getCode, list.get(0).getName, list.get(0).getSocr, list.get(0).getIndex)
