@@ -102,6 +102,14 @@
         </profile>
 
         <profile>
+            <!-- Профиль для интеграционных тестов -->
+            <id>intergarion-tests</id>
+            <modules>
+                <module>integration-tests</module>
+            </modules>
+        </profile>
+
+        <profile>
             <!-- Профиль для MacMini -->
             <id>macmini</id>
             <properties>
@@ -450,6 +458,7 @@
                         ru/korus/tmis/laboratory/data/lis/mock/,
                         ru/korus/tmis/ws/webmis/rest/,
                         ru/korus/tmis/ws/medipad/,
+                        ru/korus/tmis/ws/transfusion/efive/,
                         ru/korus/tmis/ws/transfusion/
                     </excludes>
                 </configuration>
