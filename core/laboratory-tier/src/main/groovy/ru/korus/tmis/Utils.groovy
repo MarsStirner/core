@@ -6,7 +6,7 @@ package ru.korus.tmis
  * Company:     Korus Consulting IT<br>
  * Description:  <br>
  */
-class Utils {
+public class Utils {
     def first = {
 
     }
