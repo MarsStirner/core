@@ -549,8 +549,8 @@
                 <configuration>
                     <sourceDir>src/main/scala</sourceDir>
                     <jvmArgs>
-                        <!--<jvmArg>-Xms128m</jvmArg>-->
-                        <!--<jvmArg>-Xmx256m</jvmArg>-->
+                        <jvmArg>-Xms64m</jvmArg>
+                        <jvmArg>-Xmx800m</jvmArg>
                     </jvmArgs>
                     <scalaVersion>${version.scala}</scalaVersion>
                 </configuration>
@@ -662,19 +662,45 @@
                         ru/korus/tmis/laboratory/data/lis/accept/*,
                         ru/korus/tmis/laboratory/data/lis/mock/,
                         ru/korus/tmis/ws/webmis/rest/,
-                        ru/korus/tmis/ws/medipad/
+                        ru/korus/tmis/ws/medipad/,
+                        ru/korus/tmis/ws/transfusion/,
+                        ru/korus/tmis/communication/
                     </excludes>
                 </configuration>
                 <executions>
                     <execution>
-                        <!--<phase>package</phase>-->
-                        <!--<goals>-->
-                        <!--<goal>check</goal>-->
-                        <!--</goals>-->
+                        <phase>package</phase>
+                        <goals>
+                            <goal>check</goal>
+                        </goals>
                     </execution>
                 </executions>
 
             </plugin>
+
+            <!--&lt;!&ndash; Checkstyle для классов на Scala &ndash;&gt;-->
+            <!--<plugin>-->
+            <!--<groupId>org.scalastyle</groupId>-->
+            <!--<artifactId>scalastyle-maven-plugin</artifactId>-->
+            <!--<version>0.2.0</version>-->
+            <!--<configuration>-->
+            <!--<verbose>false</verbose>-->
+            <!--<failOnViolation>true</failOnViolation>-->
+            <!--<includeTestSourceDirectory>true</includeTestSourceDirectory>-->
+            <!--<failOnWarning>false</failOnWarning>-->
+            <!--<sourceDirectory>src/main/scala</sourceDirectory>-->
+            <!--<testSourceDirectory>src/test/scala</testSourceDirectory>-->
+            <!--<configLocation>${basedir}/server/checkstyle/scalastyle_config.xml</configLocation>-->
+            <!--</configuration>-->
+            <!--&lt;!&ndash;<executions>&ndash;&gt;-->
+            <!--&lt;!&ndash;<execution>&ndash;&gt;-->
+            <!--&lt;!&ndash;<phase>package</phase>&ndash;&gt;-->
+            <!--&lt;!&ndash;<goals>&ndash;&gt;-->
+            <!--&lt;!&ndash;<goal>check</goal>&ndash;&gt;-->
+            <!--&lt;!&ndash;</goals>&ndash;&gt;-->
+            <!--&lt;!&ndash;</execution>&ndash;&gt;-->
+            <!--&lt;!&ndash;</executions>&ndash;&gt;-->
+            <!--</plugin>-->
 
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>

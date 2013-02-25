@@ -40,32 +40,22 @@ import java.util.Map;
 public class PharmacyBean implements PharmacyBeanLocal {
 
     private static final Logger logger = LoggerFactory.getLogger(PharmacyBean.class);
-
     private static final int LAST_ACTIONS = 10;
-
     private static final String DATE_TIME_FORMAT = "yyyy-MM-dd hh:mm:ss";
-
     @EJB(beanName = "DbActionBean")
     private DbActionBeanLocal dbAction = null;
-
     @EJB(beanName = "DbOrgStructureBean")
     private DbOrgStructureBeanLocal dbOrgStructureBeanLocal = null;
-
     @EJB(beanName = "DbActionPropertyBean")
     private DbActionPropertyBeanLocal dbActionProperty = null;
-
     @EJB(beanName = "DbPharmacyBean")
     private DbPharmacyBeanLocal dbPharmacy = null;
-
     @EJB(beanName = "DbUUIDBean")
     private DbUUIDBeanLocal dbUUIDBeanLocal = null;
-
     @EJB(beanName = "DbCustomQueryBean")
     private DbCustomQueryLocal dbCustomQueryLocal = null;
-
     @EJB(beanName = "DbActionPropertyBean")
     private DbActionPropertyBeanLocal dbActionPropertyBeanLocal = null;
-
     private DateTime lastDateUpdate = null;
 
     /**
@@ -113,9 +103,9 @@ public class PharmacyBean implements PharmacyBeanLocal {
                     toLog.add("Found [" + checkPharmacy + "], flatCode [" + action.getActionType().getFlatCode() + "]");
 
                     if (checkPharmacy != null) {
-                        if (!PharmacyStatus.COMPLETE.toString().equals(checkPharmacy.getStatus())) {
+                        if (!PharmacyStatus.COMPLETE.equals(checkPharmacy.getStatus())) {
                             // повторная отправка в 1с
-                            toLog.add("...repeate send message");
+                            toLog.add("...re-sends messages");
                             lastDateUpdate = checkMessageAndSend(action, modifyDateTime);
                         }
                     } else {
@@ -142,9 +132,26 @@ public class PharmacyBean implements PharmacyBeanLocal {
      * @return время последнего обработанного сообщения
      */
     private DateTime checkMessageAndSend(final Action action, final DateTime lastDateModify) {
-        logger.info("");
+        final ActionType actionType = action.getActionType();
+
+        if (isPatientMoving(actionType)) {
+            processPatientMoving(action, actionType);
+        }
+
+        if (isEventOfDrugs(actionType)) {
+            processUseOfDrugs(action, actionType);
+        }
+        return lastDateModify;
+    }
+
+    /**
+     * Обработка данных по движению пациентов
+     *
+     * @param action
+     * @param actionType
+     */
+    private void processPatientMoving(final Action action, final ActionType actionType) {
         try {
-            final ActionType actionType = action.getActionType();
             if (FlatCode.RECEIVED.getCode().equals(actionType.getFlatCode())) {
                 // госпитализация в стационар
                 logger.info("--- found received ---");
@@ -198,42 +205,9 @@ public class PharmacyBean implements PharmacyBeanLocal {
                 } catch (NoSuchOrgStructureException e) {
                     logger.info("OrgStructure not found");
                 }
-            } else {
-                logger.info("flatCode not found, skip...");
             }
-
-            // фильтруем все назначения
-            if (actionType.getTypeClass() == 1 && actionType.getCode().equals("3_1_05")) {
-                logger.info("--- found clinical document (code:{}) ---", actionType.getCode());
-                try {
-                    final Pharmacy pharmacy = dbPharmacy.getOrCreate(action);
-                    final Patient client = action.getEvent().getPatient();
-                    final Staff createPerson = action.getCreatePerson();
-                    final String externalId = java.util.UUID.randomUUID().toString(); //dbUUIDBeanLocal.getUUIDById(event.getUUID());
-                    final String externalUUID = java.util.UUID.randomUUID().toString(); //dbUUIDBeanLocal.getUUIDById(event.getUUID());
-                    final String custodianUUID = java.util.UUID.randomUUID().toString(); //dbUUIDBeanLocal.getUUIDById(event.getUUID());
-                    final String uuidClient = java.util.UUID.randomUUID().toString(); //dbUUIDBeanLocal.getUUIDById(event.getUUID());
-                    final OrgStructure orgStructure = getOrgStructure(action);
-                    final String organizationName = orgStructure.getName();
-                    final Staff doctorPerson = new Staff(11);
-
-                    processResult(pharmacy,
-                            HL7PacketBuilder.processRCMRIN000002UV02(
-                                    action,
-                                    uuidClient,
-                                    externalId,
-                                    client,
-                                    createPerson,
-                                    organizationName,
-                                    externalUUID,
-                                    custodianUUID,
-                                    doctorPerson));
-                } catch (NoSuchOrgStructureException e) {
-                    logger.info("OrgStructure not found");
-                }
-            }
-
-        } catch (CoreException e) {
+        } catch (Exception e) {
+            logger.error("core error " + e, e);
             try {    // todo переделать !!!!!!!
                 final Pharmacy pharmacy = dbPharmacy.getOrCreate(action);
                 pharmacy.setStatus(PharmacyStatus.ERROR);
@@ -243,18 +217,79 @@ public class PharmacyBean implements PharmacyBeanLocal {
                 logger.error("core error " + e1, e1);
             }
             logger.error("core error " + e, e);
-        } catch (SoapConnectionException e) {
-            logger.error("core error " + e, e);
         }
-        return lastDateModify;
+    }
+
+    /**
+     * Событие по назначению пациенту
+     *
+     * @param actionType
+     * @return
+     */
+    private boolean isEventOfDrugs(final ActionType actionType) {
+        return actionType.getTypeClass() == 2 && actionType.getCode().equals("3_1_05");
+    }
+
+    /**
+     * Событие по движению пациента
+     *
+     * @param actionType
+     * @return
+     */
+    private boolean isPatientMoving(final ActionType actionType) {
+        if (FlatCode.RECEIVED.getCode().equals(actionType.getFlatCode())) {
+            return true;
+        } else if (FlatCode.LEAVED.getCode().equals(actionType.getFlatCode())) {
+            return true;
+        } else if (FlatCode.DEL_RECEIVED.getCode().equals(actionType.getFlatCode())) {
+            return true;
+        } else if (FlatCode.MOVING.getCode().equals(actionType.getFlatCode())) {
+            return true;
+        } else if (FlatCode.DEL_MOVING.getCode().equals(actionType.getFlatCode())) {
+            return true;
+        }
+        return false;
+    }
+
+    /**
+     * Назначение препарата
+     */
+    private void processUseOfDrugs(final Action action, final ActionType actionType) {
+        logger.info("--- found clinical document (code:{}) ---", actionType.getCode());
+        try {
+            final Pharmacy pharmacy = dbPharmacy.getOrCreate(action);
+            final Patient client = action.getEvent().getPatient();
+            final Staff createPerson = action.getCreatePerson();
+            final String externalId = java.util.UUID.randomUUID().toString(); //dbUUIDBeanLocal.getUUIDById(event.getUUID());
+            final String externalUUID = java.util.UUID.randomUUID().toString(); //dbUUIDBeanLocal.getUUIDById(event.getUUID());
+            final String custodianUUID = java.util.UUID.randomUUID().toString(); //dbUUIDBeanLocal.getUUIDById(event.getUUID());
+            final String uuidClient = java.util.UUID.randomUUID().toString(); //dbUUIDBeanLocal.getUUIDById(event.getUUID());
+            final OrgStructure orgStructure = getOrgStructure(action);
+            final String organizationName = orgStructure.getName();
+            final Staff doctorPerson = new Staff(11);
+
+            processResult(pharmacy,
+                    HL7PacketBuilder.processRCMRIN000002UV02(
+                            action,
+                            uuidClient,
+                            externalId,
+                            client,
+                            createPerson,
+                            organizationName,
+                            externalUUID,
+                            custodianUUID,
+                            doctorPerson));
+        } catch (NoSuchOrgStructureException e) {
+            logger.info("OrgStructure not found");
+        } catch (CoreException e) {
+            e.printStackTrace();
+        } catch (SoapConnectionException e) {
+            e.printStackTrace();
+        }
     }
 
     /**
      * Поиск OrgStructure для конкретного Action
-     *
-     * @param action
-     * @return
-     * @throws CoreException
      */
     private OrgStructure getOrgStructure(final Action action) throws NoSuchOrgStructureException {
         try {
@@ -301,7 +336,6 @@ public class PharmacyBean implements PharmacyBeanLocal {
         logger.info("---update message {} ", pharmacy);
         dbPharmacy.updateMessage(pharmacy);
     }
-
 
     private DateTime updateLastDate(final DateTime date, final DateTime lastDate) {
         if (lastDate == null) {

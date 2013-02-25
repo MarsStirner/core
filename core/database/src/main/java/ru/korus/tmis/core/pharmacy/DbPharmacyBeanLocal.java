@@ -10,10 +10,10 @@ import java.util.List;
 
 /**
  * @author Dmitriy E. Nosov <br>
- * Date: 04.12.12, 18:53 <br>
- * Company: Korus Consulting IT<br>
- * Revision:    \$Id$ <br>
- * Description: Методы для работы с данными таблицы БД s11r64.Pharmacy<br>
+ *         Date: 04.12.12, 18:53 <br>
+ *         Company: Korus Consulting IT<br>
+ *         Revision:    \$Id$ <br>
+ *         Description: Методы для работы с данными таблицы БД s11r64.Pharmacy<br>
  */
 @Local
 public interface DbPharmacyBeanLocal {
@@ -60,8 +60,19 @@ public interface DbPharmacyBeanLocal {
      */
     Pharmacy getPharmacyByAction(Action action);
 
+    /**
+     * Получение action с флагом deleted
+     *
+     * @param limit
+     * @return
+     */
+    List<Action> getVirtualActions(int limit);
 
-
-    public List<Action> getVirtualActions(final int limit);
-    public List<Action> getVirtualActionsAfterDate(final DateTime after);
+    /**
+     * Получение action после указанной даты с флагом deleted
+     *
+     * @param after
+     * @return
+     */
+    List<Action> getVirtualActionsAfterDate(DateTime after);
 }
