@@ -797,7 +797,7 @@ public final class HL7PacketBuilder {
      * @param unit
      * @return
      */
-    private static PIVLTS createPIVLTS(String value, String unit) {
+    private static PIVLTS createPIVLTS(final String value, final String unit) {
         final PIVLTS pivlts = FACTORY_HL7.createPIVLTS();
         pivlts.setOperator(SetOperator.A);
         pivlts.setPeriod(createPQ(value, unit));
@@ -809,7 +809,7 @@ public final class HL7PacketBuilder {
      * @param hi
      * @return
      */
-    private static IVLTS getIVLTSHiLo(String lo, String hi) {
+    private static IVLTS getIVLTSHiLo(final String lo, final String hi) {
         final IVLTS ivlts = FACTORY_HL7.createIVLTS();
         final IVXBTS low = FACTORY_HL7.createIVXBTS();
         low.setValue(lo);

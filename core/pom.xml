@@ -663,7 +663,7 @@
                         ru/korus/tmis/laboratory/data/lis/mock/,
                         ru/korus/tmis/ws/webmis/rest/,
                         ru/korus/tmis/ws/medipad/,
-                        ru/korus/tmis/ws/transfusion/,
+                        ru/korus/tmis/ws/transfusion/efive/,
                         ru/korus/tmis/communication/
                     </excludes>
                 </configuration>
