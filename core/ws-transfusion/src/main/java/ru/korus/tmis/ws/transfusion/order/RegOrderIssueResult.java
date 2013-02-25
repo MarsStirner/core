@@ -1,5 +1,6 @@
 package ru.korus.tmis.ws.transfusion.order;
 
+import java.util.Arrays;
 import java.util.Date;
 import java.util.List;
 
@@ -11,11 +12,13 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import ru.korus.tmis.core.entity.model.Action;
-import ru.korus.tmis.core.entity.model.RbTrfuBloodComponentType;
 import ru.korus.tmis.core.entity.model.RbBloodType;
+import ru.korus.tmis.core.entity.model.RbTrfuBloodComponentType;
 import ru.korus.tmis.core.entity.model.TrfuOrderIssueResult;
 import ru.korus.tmis.core.exception.CoreException;
+import ru.korus.tmis.ws.transfusion.Database;
 import ru.korus.tmis.ws.transfusion.IssueResult;
+import ru.korus.tmis.ws.transfusion.PropType;
 
 /**
  * Author:      Sergey A. Zagrebelny <br>
@@ -38,17 +41,17 @@ public class RegOrderIssueResult {
      * @return результат регистрации
      */
     @PersistenceContext(unitName = "s11r64")
-    EntityManager em = null;
+    private EntityManager em = null;
 
     private static final Logger logger = LoggerFactory.getLogger(SendOrderBloodComponents.class);
 
-    public IssueResult save(Integer requestId, Date factDate, List<OrderIssueInfo> components, String orderComment) {
+    public IssueResult save(final Integer requestId, final Date factDate, final List<OrderIssueInfo> components, final String orderComment) {
 
-        IssueResult res = new IssueResult();
+        final IssueResult res = new IssueResult();
         res.setResult(false);
 
         res.setRequestId(requestId);
-        Action action = getAction(requestId);
+        final Action action = Database.getAction(em, requestId);
 
         if (action == null) { // требование КК не найдено в базе данных
             res.setDescription(String.format("The issue for requestId '%s' has been not found in MIS", "" + requestId));
@@ -57,14 +60,14 @@ public class RegOrderIssueResult {
         }
 
         try {
-            update(action, requestId, factDate, components, orderComment);
-        } catch (CoreException ex) {
+            update(action, factDate, components, orderComment);
+        } catch (final CoreException ex) {
             logger.error("Cannot update action {} property. Error description: '{}'", action.getId(), ex.getMessage());
             ex.printStackTrace();
             res.setDescription("MIS Internal error");
             return res;
         }
-        action.setStatus(SendOrderBloodComponents.ACTION_STATE_FINISHED);
+        action.setStatus(Database.ACTION_STATE_FINISHED);
         res.setResult(true);
         return res;
     }
@@ -75,18 +78,19 @@ public class RegOrderIssueResult {
      * @param orderIssue
      * @throws CoreException
      */
-    private void update(Action action, Integer requestId, Date factDate, List<OrderIssueInfo> components, String orderComment) throws CoreException {
-
-        TrfuActionProp trfuActionProp = TrfuActionProp.getInstance(em);
+    private void update(final Action action, final Date factDate, final List<OrderIssueInfo> components, final String orderComment)
+            throws CoreException {
+        final TrfuActionProp trfuActionProp =
+                new TrfuActionProp(em, SendOrderBloodComponents.TRANSFUSION_ACTION_FLAT_CODE, Arrays.asList(SendOrderBloodComponents.propConstants));
         final Integer actionId = action.getId();
         final boolean update = true;
         if (factDate != null) {
-            trfuActionProp.setProp(factDate, em, actionId, TrfuActionProp.PropType.ORDER_ISSUE_RES_TIME, update);
-            trfuActionProp.setProp(factDate, em, actionId, TrfuActionProp.PropType.ORDER_ISSUE_RES_DATE, update);
+            trfuActionProp.setProp(factDate, em, actionId, PropType.ORDER_ISSUE_RES_TIME, update);
+            trfuActionProp.setProp(factDate, em, actionId, PropType.ORDER_ISSUE_RES_DATE, update);
         }
         String errMsg = "";
-        for (OrderIssueInfo orderIssue : components) {
-            TrfuOrderIssueResult trfuOrderIssueResult = new TrfuOrderIssueResult();
+        for (final OrderIssueInfo orderIssue : components) {
+            final TrfuOrderIssueResult trfuOrderIssueResult = new TrfuOrderIssueResult();
             trfuOrderIssueResult.setAction(action);
             trfuOrderIssueResult.setTrfuCompId(orderIssue.getComponentId());
             trfuOrderIssueResult.setCompNumber(orderIssue.getNumber());
@@ -106,9 +110,9 @@ public class RegOrderIssueResult {
             trfuOrderIssueResult.setTrfuDonorId(orderIssue.getDonorId());
             em.persist(trfuOrderIssueResult);
         }
-        String res = trfuActionProp.getProp(em, actionId, TrfuActionProp.PropType.ORDER_REQUEST_ID) + errMsg + "; Зарегистрирован результат от ТРФУ";
-        trfuActionProp.setProp(actionId, em, actionId, TrfuActionProp.PropType.ORDER_ISSUE_BLOOD_COMP_PASPORT, true);
-        trfuActionProp.setProp(res, em, actionId, TrfuActionProp.PropType.ORDER_REQUEST_ID, true);
+        final String res = trfuActionProp.getProp(em, actionId, PropType.ORDER_REQUEST_ID) + errMsg + "; Зарегистрирован результат от ТРФУ";
+        trfuActionProp.setProp(actionId, em, actionId, PropType.ORDER_ISSUE_BLOOD_COMP_PASPORT, true);
+        trfuActionProp.setProp(res, em, actionId, PropType.ORDER_REQUEST_ID, true);
         em.flush();
     }
 
@@ -117,9 +121,11 @@ public class RegOrderIssueResult {
      * @param rhesusFactorId
      * @return
      */
-    private RbBloodType toRbBloodType(Integer bloodGroupId, Integer rhesusFactorId) {
-        final String bloodGroups[] = { "0(I)Rh", "A(II)Rh", "B(III)Rh", "AB(IV)Rh" };
-        final String rhesusFoctors[] = { "+", "-" };
+    private RbBloodType toRbBloodType(final Integer bloodGroupId, final Integer rhesusFactorId) {
+        final String[] bloodGroups = {
+                "0(I)Rh", "A(II)Rh", "B(III)Rh", "AB(IV)Rh" };
+        final String[] rhesusFoctors = {
+                "+", "-" };
         RbBloodType res = null;
         if (bloodGroupId != null && bloodGroupId > 0 && bloodGroupId <= bloodGroups.length && rhesusFactorId != null && rhesusFactorId >= 0
                 && rhesusFactorId < rhesusFoctors.length) {
@@ -136,21 +142,13 @@ public class RegOrderIssueResult {
      * @param componentId
      * @return
      */
-    private RbTrfuBloodComponentType toRbBloodComponentType(Integer componentId) {
-        final List<RbTrfuBloodComponentType> rbBloodComponentTypes = em
-                .createQuery("SELECT c FROM RbTrfuBloodComponentType c WHERE c.trfuId = :trfuId", RbTrfuBloodComponentType.class).setParameter("trfuId", componentId)
-                .getResultList();
+    private RbTrfuBloodComponentType toRbBloodComponentType(final Integer componentId) {
+        final List<RbTrfuBloodComponentType> rbBloodComponentTypes =
+                em
+                        .createQuery("SELECT c FROM RbTrfuBloodComponentType c WHERE c.trfuId = :trfuId", RbTrfuBloodComponentType.class)
+                        .setParameter("trfuId", componentId)
+                        .getResultList();
         return rbBloodComponentTypes.isEmpty() ? null : rbBloodComponentTypes.get(0);
     }
 
-    /**
-     * @param requestId
-     * @param em
-     * @return
-     */
-    private Action getAction(Integer requestId) {
-        final List<Action> actions = em.createQuery("SELECT a FROM Action a WHERE a.id = :requestId", Action.class).setParameter("requestId", requestId)
-                .getResultList();
-        return actions.isEmpty() ? null : actions.get(0);
-    }
 }

@@ -36,19 +36,18 @@ public interface ServiceTransfusion {
      *  @param orderComment
      * @return
      */
-    public IssueResult
-            setOrderIssueResult(
-                    @WebParam(name = "requestId", targetNamespace = "http://korus.ru/tmis/ws/transfusion") Integer requestId,
-                    @WebParam(name = "factDate", targetNamespace = "http://korus.ru/tmis/ws/transfusion") Date factDate, 
-                    @WebParam(name = "components", targetNamespace = "http://korus.ru/tmis/ws/transfusion") List<OrderIssueInfo> components,
-                    @WebParam(name = "orderComment", targetNamespace = "http://korus.ru/tmis/ws/transfusion") String orderComment);
+    IssueResult setOrderIssueResult(@WebParam(name = "requestId", targetNamespace = "http://korus.ru/tmis/ws/transfusion") Integer requestId, @WebParam(
+            name = "factDate", targetNamespace = "http://korus.ru/tmis/ws/transfusion") Date factDate, @WebParam(name = "components",
+            targetNamespace = "http://korus.ru/tmis/ws/transfusion") List<OrderIssueInfo> components, @WebParam(name = "orderComment",
+            targetNamespace = "http://korus.ru/tmis/ws/transfusion") String orderComment);
 
     @WebMethod()
-    public List<DivisionInfo> getDivisions();
+    List<DivisionInfo> getDivisions();
 
     @WebMethod()
-    public IssueResult
-            setProcedureResult(@WebParam(name = "patientCredentials", targetNamespace = "http://korus.ru/tmis/ws/transfusion") PatientCredentials patientCredentials,
+    IssueResult
+            setProcedureResult(
+                    @WebParam(name = "patientCredentials", targetNamespace = "http://korus.ru/tmis/ws/transfusion") PatientCredentials patientCredentials,
                     @WebParam(name = "ProcedureInfo", targetNamespace = "http://korus.ru/tmis/ws/transfusion") ProcedureInfo procedureInfo,
                     @WebParam(name = "EritrocyteMass", targetNamespace = "http://korus.ru/tmis/ws/transfusion") EritrocyteMass eritrocyteMass,
                     @WebParam(name = "Measures", targetNamespace = "http://korus.ru/tmis/ws/transfusion") List<LaboratoryMeasure> measures,

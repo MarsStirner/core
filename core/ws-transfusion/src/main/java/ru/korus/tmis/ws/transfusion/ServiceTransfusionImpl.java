@@ -18,6 +18,7 @@ import ru.korus.tmis.ws.transfusion.procedure.EritrocyteMass;
 import ru.korus.tmis.ws.transfusion.procedure.FinalVolume;
 import ru.korus.tmis.ws.transfusion.procedure.LaboratoryMeasure;
 import ru.korus.tmis.ws.transfusion.procedure.ProcedureInfo;
+import ru.korus.tmis.ws.transfusion.procedure.RegProcedureResult;
 
 /**
  * Author: Sergey A. Zagrebelny <br>
@@ -31,28 +32,29 @@ import ru.korus.tmis.ws.transfusion.procedure.ProcedureInfo;
 public class ServiceTransfusionImpl implements ServiceTransfusion {
 
     private static final Logger logger = LoggerFactory.getLogger(ServiceTransfusionImpl.class);
-    
+
     @EJB
-    RegOrderIssueResult regOrderIssueResult;
+    private RegOrderIssueResult regOrderIssueResult;
+
+    @EJB
+    private RegProcedureResult regProcedureResult;
 
     /**
      * @see ru.korus.tmis.ws.transfusion.ServiceTransfusion#setOrderIssueResult(ru.korus.tmis.ws.transfusion.order.OrderIssueInfo)
      */
     @Override
-    public IssueResult
-            setOrderIssueResult(
-                    @WebParam(name = "requestId", targetNamespace = "http://korus.ru/tmis/ws/transfusion") Integer requestId,
-                    @WebParam(name = "factDate", targetNamespace = "http://korus.ru/tmis/ws/transfusion") Date factDate, 
-                    @WebParam(name = "components", targetNamespace = "http://korus.ru/tmis/ws/transfusion") List<OrderIssueInfo> components,
-                    @WebParam(name = "orderComment", targetNamespace = "http://korus.ru/tmis/ws/transfusion") String orderComment) {
-        IssueResult res = new IssueResult();
-        logger.info("Entered in transfusion service 'setOrderIssueResult' with parameters: requestId: {}, factDate: {}, listOrderIssueInfo.size: {}", requestId, factDate, 
-                components == null ? null : components.size());
-        if(requestId == null || components == null || components.isEmpty()) {
-            res.setDescription("Error: illegal arguments for setOrderIssueResult" );
+    public IssueResult setOrderIssueResult(@WebParam(name = "requestId", targetNamespace = "http://korus.ru/tmis/ws/transfusion") final Integer requestId,
+            @WebParam(name = "factDate", targetNamespace = "http://korus.ru/tmis/ws/transfusion") final Date factDate,
+            @WebParam(name = "components", targetNamespace = "http://korus.ru/tmis/ws/transfusion") final List<OrderIssueInfo> components,
+            @WebParam(name = "orderComment", targetNamespace = "http://korus.ru/tmis/ws/transfusion") final String orderComment) {
+        final IssueResult res = new IssueResult();
+        logger.info("Entered in transfusion service 'setOrderIssueResult' with parameters: requestId: {}, factDate: {}, listOrderIssueInfo.size: {}",
+                requestId, factDate, components == null ? null : components.size());
+        if (requestId == null || components == null || components.isEmpty()) {
+            res.setDescription("Error: illegal arguments for setOrderIssueResult");
             res.setResult(false);
             return res;
-            
+
         }
         return regOrderIssueResult.save(requestId, factDate, components, orderComment);
     }
@@ -68,22 +70,21 @@ public class ServiceTransfusionImpl implements ServiceTransfusion {
 
     /**
      * @see ru.korus.tmis.ws.transfusion.ServiceTransfusion#setProcedureResult(ru.korus.tmis.ws.transfusion.efive.PatientCredentials,
-     * ru.korus.tmis.ws.transfusion.procedure.ProcedureInfo, ru.korus.tmis.ws.transfusion.procedure.EritrocyteMass, java.util.List,
-     * ru.korus.tmis.ws.transfusion.procedure.FinalVolumeList)
+     *      ru.korus.tmis.ws.transfusion.procedure.ProcedureInfo, ru.korus.tmis.ws.transfusion.procedure.EritrocyteMass, java.util.List,
+     *      ru.korus.tmis.ws.transfusion.procedure.FinalVolumeList)
      */
     @Override
     @WebMethod
     public IssueResult
-            setProcedureResult(@WebParam(name = "patientCredentials", targetNamespace = "http://korus.ru/tmis/ws/transfusion") PatientCredentials patientCredentials,
-                    @WebParam(name = "ProcedureInfo", targetNamespace = "http://korus.ru/tmis/ws/transfusion") ProcedureInfo procedureInfo,
-                    @WebParam(name = "EritrocyteMass", targetNamespace = "http://korus.ru/tmis/ws/transfusion") EritrocyteMass eritrocyteMass,
-                    @WebParam(name = "Measures", targetNamespace = "http://korus.ru/tmis/ws/transfusion") List<LaboratoryMeasure> measures,
-                    @WebParam(name = "finalVolumeList", targetNamespace = "http://korus.ru/tmis/ws/transfusion") List<FinalVolume> finalVolume) {
+            setProcedureResult(
+                    @WebParam(name = "patientCredentials", targetNamespace = "http://korus.ru/tmis/ws/transfusion") final PatientCredentials patientCredentials,
+                    @WebParam(name = "ProcedureInfo", targetNamespace = "http://korus.ru/tmis/ws/transfusion") final ProcedureInfo procedureInfo,
+                    @WebParam(name = "EritrocyteMass", targetNamespace = "http://korus.ru/tmis/ws/transfusion") final EritrocyteMass eritrocyteMass,
+                    @WebParam(name = "Measures", targetNamespace = "http://korus.ru/tmis/ws/transfusion") final List<LaboratoryMeasure> measures,
+                    @WebParam(name = "finalVolumeList", targetNamespace = "http://korus.ru/tmis/ws/transfusion") final List<FinalVolume> finalVolume) {
         logger.info("Entered in transfusion service 'setProcedureResult' with parameters: {}; {}; {}; measures.size = {}; finalVolume.size = {}",
-                patientCredentials, procedureInfo, eritrocyteMass, measures != null ? measures.size() : null, finalVolume != null
-                        ? finalVolume.size() : null);
-        // TODO Auto-generated method stub
-        return new IssueResult();
+                patientCredentials, procedureInfo, eritrocyteMass, measures != null ? measures.size() : null, finalVolume != null ? finalVolume.size() : null);
+        return regProcedureResult.save(patientCredentials, procedureInfo, eritrocyteMass, measures, finalVolume);
     }
 
 }
