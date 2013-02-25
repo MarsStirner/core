@@ -60,7 +60,17 @@ public interface DbPatientBeanLocal {
 
     Boolean checkSNILSNumber(String number) throws CoreException;
 
-    List<Patient> findPatient(Map<String, String> params) throws CoreException;
+    List<Patient> findPatient(Map<String, String> params, int clientId) throws CoreException;
+
+    List<Patient> findPatientByPolicy
+            (Map<String, String> params, String policySerial, String policyNumber, int policyType)
+            throws CoreException;
+
+    List<Patient> findPatientByDocument
+            (Map<String, String> params, String documentSerial, String documentNumber, int documentCode)
+            throws CoreException;
+
+    List<Patient> findPatientsByParams(Map<String, String> params, Map<String, String> documents);
 
     Integer savePatientToDataBase(Patient patient) throws CoreException;
 

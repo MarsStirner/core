@@ -20,7 +20,7 @@
         <module>ws-laboratory</module>
         <module>ws-drugstore</module>
         <!--<module>hl7</module>-->
-        <module>integration-tests</module>
+        <!--<module>integration-tests</module>-->
         <module>ws-finance</module>
         <module>ws-transfusion</module>
         <module>communication</module>
@@ -102,6 +102,14 @@
         </profile>
 
         <profile>
+            <!-- Профиль для интеграционных тестов -->
+            <id>intergarion-tests</id>
+            <modules>
+                <module>integration-tests</module>
+            </modules>
+        </profile>
+
+        <profile>
             <!-- Профиль для MacMini -->
             <id>macmini</id>
             <properties>
@@ -161,6 +169,9 @@
         <profile>
             <!-- Пользовательский профиль -->
             <id>ueg</id>
+            <modules>
+                <module>integration-tests</module>
+            </modules>
             <properties>
                 <!-- Название приложения, которое будет отображаться в интерфейсе -->
                 <ear.name>tmis-server-${version.tmis.core}</ear.name>
@@ -447,6 +458,7 @@
                         ru/korus/tmis/laboratory/data/lis/mock/,
                         ru/korus/tmis/ws/webmis/rest/,
                         ru/korus/tmis/ws/medipad/,
+                        ru/korus/tmis/ws/transfusion/efive/,
                         ru/korus/tmis/ws/transfusion/
                     </excludes>
                 </configuration>

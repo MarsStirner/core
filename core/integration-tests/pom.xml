@@ -40,7 +40,6 @@
             <version>${version.tmis.core}</version>
             <scope>test</scope>
         </dependency>
-
     </dependencies>
 
 
@@ -83,8 +82,8 @@
                     <terse>true</terse>
                     <domain>
                         <name>${glassfish.domain}</name>
-                        <adminPort>4848</adminPort>
-                        <httpPort>8080</httpPort>
+                        <adminPort>${glassfish.port.admin}</adminPort>
+                        <httpPort>${glassfish.port.instance}</httpPort>
                         <httpsPort>8443</httpsPort>
                         <iiopPort>3700</iiopPort>
                         <jmsPort>7676</jmsPort>
@@ -92,18 +91,19 @@
                     <components>
                         <component>
                             <name>${ear.name}</name>
-                            <artifact>${ear.name}</artifact>
+                            <artifact>${project.basedir}/../server/target/${ear.name}.ear</artifact>
                         </component>
                     </components>
                 </configuration>
                 <executions>
-                    <!--<execution>-->
-                    <!--<id>Start and deploy server</id>-->
-                    <!--<phase>process-resources</phase>-->
-                    <!--<goals>-->
-                    <!--<goal>deploy</goal>-->
-                    <!--</goals>-->
-                    <!--</execution>-->
+                    <execution>
+                        <id>Start and deploy server</id>
+                        <phase>process-resources</phase>
+                        <goals>
+                            <goal>stop-domain</goal>
+                            <goal>deploy</goal>
+                        </goals>
+                    </execution>
                     <execution>
                         <id>Undeploy and stop server</id>
                         <phase>post-integration-test</phase>
