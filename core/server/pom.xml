@@ -120,56 +120,6 @@
                     <!--<earSourceIncludes>logback.xml</earSourceIncludes>-->
                 </configuration>
             </plugin>
-            <!--Glassfish plugin-->
-            <plugin>
-                <groupId>org.glassfish.maven.plugin</groupId>
-                <artifactId>maven-glassfish-plugin</artifactId>
-                <version>2.1</version>
-                <configuration>
-                    <glassfishDirectory>${glassfish.home}</glassfishDirectory>
-                    <autoCreate>false</autoCreate>
-                    <!--<passwordFile>${glassfish.home}/passwordFile.txt</passwordFile>-->
-                    <adminPassword>${glassfish.admin.password}</adminPassword>
-                    <user>${glassfish.admin.login}</user>
-                    <domainDirectory>${glassfish.domain.dir}</domainDirectory>
-                    <echo>true</echo>
-                    <debug>false</debug>
-                    <terse>true</terse>
-                    <domain>
-                        <name>${glassfish.domain}</name>
-                        <adminPort>${glassfish.port.admin}</adminPort>
-                        <httpPort>${glassfish.port.instance}</httpPort>
-                        <httpsPort>8443</httpsPort>
-                        <iiopPort>3700</iiopPort>
-                        <jmsPort>7676</jmsPort>
-                    </domain>
-                    <components>
-                        <component>
-                            <name>${project.build.finalName}</name>
-                            <artifact>${project.build.directory}/${project.build.finalName}.${project.packaging}
-                            </artifact>
-                        </component>
-                    </components>
-                </configuration>
-                <executions>
-                    <execution>
-                        <id>Start and deploy server</id>
-                        <phase>install</phase>
-                        <goals>
-                            <goal>stop-domain</goal>
-                            <goal>deploy</goal>
-                        </goals>
-                    </execution>
-                    <!--&lt;!&ndash;<execution>&ndash;&gt;-->
-                    <!--&lt;!&ndash;<id>Undeploy and stop server</id>&ndash;&gt;-->
-                    <!--&lt;!&ndash;<phase>prepare-package</phase>&ndash;&gt;-->
-                    <!--&lt;!&ndash;<goals>&ndash;&gt;-->
-                    <!--&lt;!&ndash;<goal>undeploy</goal>&ndash;&gt;-->
-                    <!--&lt;!&ndash;<goal>stop-domain</goal>&ndash;&gt;-->
-                    <!--&lt;!&ndash;</goals>&ndash;&gt;-->
-                    <!--&lt;!&ndash;</execution>&ndash;&gt;-->
-                </executions>
-            </plugin>
         </plugins>
     </build>
 

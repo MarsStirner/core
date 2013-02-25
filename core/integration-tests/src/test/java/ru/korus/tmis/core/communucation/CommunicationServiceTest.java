@@ -385,19 +385,23 @@ public class CommunicationServiceTest {
             logger.debug("Patient successfully added, ID={}", id);
 
             logger.info("Second step is try to find Patient [{}] by multiple ways:", patient);
-            HashMap<String, String> documents = new HashMap<String, String>();
-            documents.put("client_id", id.toString());
+            logger.info("1) Call findPatient method with document, contains \"client_id\"  param.");
+            findPatientByDocument(lastName, firstName, patrName, birthDate, id);
 
-            PatientStatus findStatus = client.findPatient(new FindPatientParameters()
-                    .setLastName(lastName)
-                    .setFirstName(firstName)
-                    .setPatrName(patrName)
-                    .setBirthDate(birthDate)
-                    .setDocument(documents)
-            );
-            logger.debug("Find patient by id result is {}", findStatus);
-            assertTrue(findStatus.isSuccess());
-            assertTrue(findStatus.getPatientId() == id, "Не тот пациент!!!");
+            logger.info("2) Call findPatients method with \"lastName\" param.");
+            findPatientsByLastNameOnly(lastName, id);
+
+            logger.info("3) Call findPatients method with \"FirstName\" param.");
+            findPatientsByFirstNameOnly(firstName, id);
+
+            logger.info("4) Call findPatients method with \"birthDate\" param.");
+            findPatientsByBirthFateOnly(birthDate, id);
+
+            logger.info("5) Call findPatients method with same param as findPatient.");
+            findPatient(lastName, firstName, patrName, birthDate, id);
+
+            logger.info("6) Send another parameters to findPatient(-s) method to avoid recieve our patient.");
+            incorrectParamsTest(lastName, firstName, patrName, birthDate, id);
 
 
         } catch (TException e) {
@@ -405,5 +409,108 @@ public class CommunicationServiceTest {
         }
 
 
+    }
+
+    private void incorrectParamsTest(String lastName, String firstName, String patrName, long birthDate, Integer id) throws TException {
+        logger.info("6.1) Send another parameters to findPatient method.");
+        HashMap<String, String> documents = new HashMap<String, String>();
+        documents.put("client_id", String.valueOf(id - 1));
+        PatientStatus findStatus = client.findPatient(new FindPatientParameters()
+                .setLastName(lastName)
+                .setFirstName(firstName)
+                .setPatrName(patrName)
+                .setBirthDate(birthDate)
+                .setDocument(documents)
+        );
+        logger.debug("1) Find patient by id result is {}", findStatus);
+        assertTrue(findStatus.isSuccess());
+        assertTrue(findStatus.getPatientId() == id, "Не тот пациент!!!");
+    }
+
+    private void findPatientsByLastNameOnly(String lastName, Integer id) throws TException {
+        List<Patient> patientList = client.findPatients(new FindMultiplePatientsParameters()
+                .setLastName(lastName)
+        );
+        boolean findIsSuccessfull = false;
+        for (Patient currentPatient : patientList) {
+            if (currentPatient.getId() == id) {
+                logger.debug("2) Result contains requested patient: It is \"{}\"", currentPatient);
+                findIsSuccessfull = true;
+            }
+        }
+        assertTrue(findIsSuccessfull,
+                "2) In recieved list there are no requested patient. Method findPatients failed");
+        logger.debug("2) Find patient by id result is {}", patientList);
+    }
+
+    private void findPatientsByFirstNameOnly(String firstName, Integer id) throws TException {
+        List<Patient> patientList = client.findPatients(new FindMultiplePatientsParameters()
+                .setFirstName(firstName)
+        );
+        boolean findIsSuccessfull = false;
+        for (Patient currentPatient : patientList) {
+            if (currentPatient.getId() == id) {
+                logger.debug("3) Result contains requested patient: It is \"{}\"", currentPatient);
+                findIsSuccessfull = true;
+            }
+        }
+        assertTrue(findIsSuccessfull,
+                "3) In recieved list there are no requested patient. Method findPatients failed");
+        logger.debug("3) Find patient by id result is {}", patientList);
+    }
+
+    private void findPatientByDocument(String lastName, String firstName, String patrName, long birthDate, Integer id) throws TException {
+        HashMap<String, String> documents = new HashMap<String, String>();
+        documents.put("client_id", id.toString());
+        PatientStatus findStatus = client.findPatient(new FindPatientParameters()
+                .setLastName(lastName)
+                .setFirstName(firstName)
+                .setPatrName(patrName)
+                .setBirthDate(birthDate)
+                .setDocument(documents)
+        );
+        logger.debug("1) Find patient by id result is {}", findStatus);
+        assertTrue(findStatus.isSuccess());
+        assertTrue(findStatus.getPatientId() == id, "Не тот пациент!!!");
+    }
+
+
+    private void findPatient(String lastName, String firstName, String patrName, long birthDate, Integer id) throws TException {
+        HashMap<String, String> documents = new HashMap<String, String>();
+        documents.put("client_id", id.toString());
+        List<Patient> patientList = client.findPatients(new FindMultiplePatientsParameters()
+                .setLastName(lastName)
+                .setFirstName(firstName)
+                .setPatrName(patrName)
+                .setBirthDate(birthDate)
+                .setDocument(documents)
+        );
+        boolean findIsSuccessfull = false;
+        for (Patient currentPatient : patientList) {
+            if (currentPatient.getId() == id) {
+                logger.debug("6) Result contains requested patient: It is \"{}\"", currentPatient);
+                findIsSuccessfull = true;
+            }
+        }
+        assertTrue(findIsSuccessfull,
+                "6) In recieved list there are no requested patient. Method findPatients failed");
+        logger.debug("6) Find patient by id result is {}", patientList);
+
+    }
+
+    private void findPatientsByBirthFateOnly(long birthDate, Integer id) throws TException {
+        List<Patient> patientList = client.findPatients(new FindMultiplePatientsParameters()
+                .setBirthDate(birthDate)
+        );
+        boolean findIsSuccessfull = false;
+        for (Patient currentPatient : patientList) {
+            if (currentPatient.getId() == id) {
+                logger.debug("4) Result contains requested patient: It is \"{}\"", currentPatient);
+                findIsSuccessfull = true;
+            }
+        }
+        assertTrue(findIsSuccessfull,
+                "4) In recieved list there are no requested patient. Method findPatients failed");
+        logger.debug("4) Find patient by id result is {}", patientList);
     }
 }
