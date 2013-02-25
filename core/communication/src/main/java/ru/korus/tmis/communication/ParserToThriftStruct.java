@@ -1,8 +1,13 @@
 package ru.korus.tmis.communication;
 
+import org.joda.time.DateMidnight;
+import org.joda.time.DateTime;
+import org.joda.time.DateTimeZone;
 import ru.korus.tmis.communication.thriftgen.Organization;
 import ru.korus.tmis.communication.thriftgen.PatientInfo;
 import ru.korus.tmis.core.entity.model.*;
+
+import java.util.TimeZone;
 
 /**
  * User: EUpatov<br>
@@ -17,7 +22,7 @@ public final class ParserToThriftStruct {
     public static PatientInfo parsePatientInfo(final Patient item) {
         if (item == null) return null;
         final PatientInfo result = new PatientInfo().setFirstName(item.getFirstName()).setLastName(item.getLastName()).setPatrName(item.getPatrName());
-        result.setSex(item.getSex()).setBirthDate(item.getBirthDate().getTime());
+        result.setSex(item.getSex()).setBirthDate(item.getBirthDate().getTime() + TimeZone.getDefault().getOffset(item.getBirthDate().getTime()));
         return result;
     }
 
@@ -78,7 +83,6 @@ public final class ParserToThriftStruct {
                 .setShortName(item.getShortName());
         return result;
     }
-
 
     public static String convertDotPatternToSQLLikePattern(final String dotPattern) {
         if (dotPattern != null && dotPattern.length() > 0)
