@@ -34,6 +34,7 @@ import ru.korus.tmis.util.StringId
 import java.util
 import javax.swing.JList
 import scala.reflect.BeanProperty
+import collection.mutable
 
 @Named
 @WebService(
@@ -1337,7 +1338,22 @@ class MedipadWSImpl
 
     val res = dbJobTicketBean.getDirectionsWithJobTicketsBetweenDate(request.sortingFieldInternal, request.filter)
     request.rewriteRecordsCount(res.size())
-    new TakingOfBiomaterialData(res, request)
+    //пересоберем мапу и сгруппируем по жобТикету
+    var actions = new java.util.LinkedList[Action]()
+    var map = new mutable.LinkedHashMap[JobTicket, LinkedList[Action]]
+    var firstJobTicket = res.iterator.next()._2
+    res.foreach(f => {
+      if (firstJobTicket.getId.intValue() == f._2.getId.intValue()) {
+        actions += f._1
+      } else {
+        map += (firstJobTicket -> actions)
+        actions = new java.util.LinkedList[Action]()
+        actions += f._1
+        firstJobTicket = f._2
+      }
+    })
+    if (actions.size() == 1) map += (firstJobTicket -> actions)   //добавляем последний жобТикет, если для него есть только один акшен. Если акшенов больше, он добавится в цикле.
+    new TakingOfBiomaterialData(map, request)
   }
 
   def updateJobTicketsStatuses(data: JobTicketStatusDataList, authData: AuthData) = {
