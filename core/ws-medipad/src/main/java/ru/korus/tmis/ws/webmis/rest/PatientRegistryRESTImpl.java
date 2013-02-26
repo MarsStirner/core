@@ -1089,7 +1089,7 @@ public class PatientRegistryRESTImpl implements Serializable {
                                                                                         "",
                                                                                         statusId,
                                                                                         (urgent==null) ? -1 : (urgent) ? 1 : 0,
-                                                                                        "",//"laboratory"  //теперь не ищем по коду!
+                                                                                        "laboratory",  //теперь не ищем по коду!
                                                                                         "LAB");
 
         DiagnosticsListRequestData requestData = new DiagnosticsListRequestData(sortingField,

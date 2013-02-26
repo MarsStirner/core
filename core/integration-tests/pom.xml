@@ -78,7 +78,7 @@
                     <user>${glassfish.admin.login}</user>
                     <domainDirectory>${glassfish.domain.dir}</domainDirectory>
                     <echo>true</echo>
-                    <debug>true</debug>
+                    <debug>false</debug>
                     <terse>true</terse>
                     <domain>
                         <name>${glassfish.domain}</name>
