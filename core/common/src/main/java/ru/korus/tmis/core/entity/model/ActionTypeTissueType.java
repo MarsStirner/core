@@ -1,8 +1,4 @@
-package ru.korus.tmis.core.entity.model.fd;
-
-import ru.korus.tmis.core.entity.model.ActionType;
-import ru.korus.tmis.core.entity.model.RbTissueType;
-import ru.korus.tmis.core.entity.model.RbUnit;
+package ru.korus.tmis.core.entity.model;
 
 import javax.persistence.*;
 import javax.xml.bind.annotation.XmlRootElement;

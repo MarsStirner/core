@@ -3,6 +3,7 @@ package ru.korus.tmis.core.database;
 import ru.korus.tmis.core.auth.AuthData;
 import ru.korus.tmis.core.data.TakingOfBiomaterialRequesDataFilter;
 import ru.korus.tmis.core.entity.model.Action;
+import ru.korus.tmis.core.entity.model.ActionTypeTissueType;
 import ru.korus.tmis.core.entity.model.JobTicket;
 import ru.korus.tmis.core.exception.CoreException;
 
@@ -21,7 +22,7 @@ public interface DbJobTicketBeanLocal {
 
     JobTicket getJobTicketById(int id) throws CoreException;
 
-    Map<Action,JobTicket> getDirectionsWithJobTicketsBetweenDate(String sortQuery, TakingOfBiomaterialRequesDataFilter filter) throws CoreException;
+    Object getDirectionsWithJobTicketsBetweenDate(String sortQuery, TakingOfBiomaterialRequesDataFilter filter) throws CoreException;
 
     boolean modifyJobTicketStatus(int id, int status, AuthData auth) throws CoreException;
 }

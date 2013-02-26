@@ -4,7 +4,7 @@ import javax.xml.bind.annotation.{XmlRootElement, XmlType}
 import org.codehaus.jackson.annotate.JsonIgnoreProperties
 import reflect.BeanProperty
 import java.util.{Calendar, Date}
-import ru.korus.tmis.core.entity.model.{Action, JobTicket, RbTestTubeType, Patient}
+import ru.korus.tmis.core.entity.model._
 import ru.korus.tmis.util.reflect.{LoggingManager, TmisLogging}
 import ru.korus.tmis.util.{I18nable, ConfigManager}
 import java.text.SimpleDateFormat
@@ -28,7 +28,7 @@ class TakingOfBiomaterialData {
   @BeanProperty
   var data: LinkedList[JobTicketInfoContainer] = new LinkedList[JobTicketInfoContainer]
 
-  def this(values: java.util.Map[JobTicket, LinkedList[Action]],
+  def this(values: java.util.Map[JobTicket, java.util.LinkedList[(Action, ActionTypeTissueType)]],
            request: TakingOfBiomaterialRequesData) {
     this()
     this.requestData = request
@@ -221,8 +221,10 @@ class ActionInfoDataContainer {
   var tubeType: TestTubeTypeInfoContainer = _   //Тип пробирки
   @BeanProperty
   var assigner: DoctorContainer = _             //Основная информация о назначевшем забор враче
+  @BeanProperty
+  var biomaterial: TissueTypeContainer = _                      //биоматериал
 
-  def this(action: Action) {
+  def this(action: Action, tissueType: ActionTypeTissueType) {
     this()
     this.id = action.getId.intValue()
     this.actionType = new IdNameContainer(action.getActionType.getId.intValue(),
@@ -231,6 +233,36 @@ class ActionInfoDataContainer {
     this.urgent = action.getIsUrgent
     this.tubeType = new TestTubeTypeInfoContainer(action.getActionType.getTestTubeType)
     this.assigner = new DoctorContainer(action.getAssigner)
+    if (tissueType != null) {
+      this.biomaterial = new TissueTypeContainer(tissueType)
+    }
+  }
+}
+
+@XmlType(name = "tissueTypeContainer")
+@XmlRootElement(name = "tissueTypeContainer")
+@JsonIgnoreProperties(ignoreUnknown = true)
+class TissueTypeContainer {
+
+  @BeanProperty
+  var id: Int = _                              //ActionTypeTissueType.id
+  @BeanProperty
+  var tissueType: IdNameContainer = _           //RbTissueType.id + RbTissueType.name
+  @BeanProperty
+  var amount: Int = _                           //объем материала   ActionTypeTissueType.amount
+  @BeanProperty
+  var unit: IdNameContainer = _                 //Единицы измерения    rbUnit.id + rbUnit.name
+
+  def this(tissueType: ActionTypeTissueType) {
+    this()
+    this.id = tissueType.getId.intValue()
+    if (tissueType.getTissueType != null) {
+      this.tissueType = new IdNameContainer(tissueType.getTissueType.getId, tissueType.getTissueType.getName)
+    }
+    this.amount = tissueType.getAmount
+    if (tissueType.getUnit != null) {
+      this.unit = new IdNameContainer(tissueType.getUnit.getId.intValue(), tissueType.getUnit.getName)
+    }
   }
 }
 
@@ -332,7 +364,7 @@ class JobTicketInfoContainer {
   @BeanProperty
   var actions: LinkedList[ActionInfoDataContainer] = new LinkedList[ActionInfoDataContainer]  //Список акшенов для этого тикета
 
-  def this(ticket: JobTicket, actionValues: LinkedList[Action]){
+  def this(ticket: JobTicket, actionValues: LinkedList[(Action, ActionTypeTissueType)]){
     this()
     if(ticket!=null) {
       this.id = ticket.getId.intValue()
@@ -345,7 +377,7 @@ class JobTicketInfoContainer {
           ticket.getJob.getOrgStructure.getName)
       else
         new IdNameContainer()
-      actionValues.foreach(a => this.actions += new ActionInfoDataContainer(a))
+      actionValues.foreach(a => this.actions += new ActionInfoDataContainer(a._1, a._2))
     } else {
       LoggingManager.setLoggerType(LoggingManager.LoggingTypes.Debug)
       LoggingManager.warning("code " + ConfigManager.ErrorCodes.JobTicketIsNull +
