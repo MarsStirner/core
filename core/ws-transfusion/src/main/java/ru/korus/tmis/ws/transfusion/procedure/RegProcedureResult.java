@@ -3,6 +3,7 @@ package ru.korus.tmis.ws.transfusion.procedure;
 import java.util.LinkedList;
 import java.util.List;
 
+import javax.ejb.EJB;
 import javax.ejb.Stateless;
 import javax.persistence.EntityManager;
 import javax.persistence.PersistenceContext;
@@ -35,6 +36,9 @@ import ru.korus.tmis.ws.transfusion.order.TrfuActionProp;
 @Stateless
 public class RegProcedureResult {
 
+    @EJB
+    private Database database;
+
     @PersistenceContext(unitName = "s11r64")
     private EntityManager em = null;
 
@@ -46,7 +50,7 @@ public class RegProcedureResult {
         res.setResult(false);
         final Integer requestId = procedureInfo.getId();
         res.setRequestId(requestId);
-        final Action action = Database.getAction(em, requestId);
+        final Action action = database.getAction(requestId);
 
         if (action == null) { // требование КК не найдено в базе данных
             res.setDescription(String.format("The TRFU procedure for ID '%s' has been not found in MIS", "" + requestId));
@@ -127,86 +131,86 @@ public class RegProcedureResult {
     private void updateProp(final Action action, final ProcedureInfo procedureInfo, final EritrocyteMass eritrocyteMass) throws CoreException {
         final List<PropType> propType = new LinkedList<PropType>();
         propType.addAll(SendProcedureRequest.ProcedurePropType.getPropTypes());
-        final TrfuActionProp trfuActionProp = new TrfuActionProp(em, action.getActionType().getFlatCode(), propType);
+        final TrfuActionProp trfuActionProp = new TrfuActionProp(database, action.getActionType().getFlatCode(), propType);
         final Integer actionId = action.getId();
         final boolean update = true;
 
         if (procedureInfo.getFactDate() != null) {
-            trfuActionProp.setProp(procedureInfo.getFactDate(), em, actionId, PropType.ORDER_ISSUE_RES_TIME, update);
-            trfuActionProp.setProp(procedureInfo.getFactDate(), em, actionId, PropType.ORDER_ISSUE_RES_DATE, update);
+            trfuActionProp.setProp(procedureInfo.getFactDate(), actionId, PropType.ORDER_ISSUE_RES_TIME, update);
+            trfuActionProp.setProp(procedureInfo.getFactDate(), actionId, PropType.ORDER_ISSUE_RES_DATE, update);
         }
 
-        trfuActionProp.setProp(procedureInfo.getContraindication(), em, actionId, PropType.COMPLICATIONS, update);
+        trfuActionProp.setProp(procedureInfo.getContraindication(), actionId, PropType.COMPLICATIONS, update);
 
-        trfuActionProp.setProp(procedureInfo.getBeforeHemodynamicsPulse(), em, actionId, PropType.BEFORE_HEMODYNAMICS_PULSE, update);
+        trfuActionProp.setProp(procedureInfo.getBeforeHemodynamicsPulse(), actionId, PropType.BEFORE_HEMODYNAMICS_PULSE, update);
 
-        trfuActionProp.setProp(procedureInfo.getAfterHemodynamicsPulse(), em, actionId, PropType.AFTER_HEMODYNAMICS_PULSE, update);
+        trfuActionProp.setProp(procedureInfo.getAfterHemodynamicsPulse(), actionId, PropType.AFTER_HEMODYNAMICS_PULSE, update);
 
-        trfuActionProp.setProp(procedureInfo.getBeforeHemodynamicsArterialPressure(), em, actionId, PropType.BEFORE_HEMODYNAMICS_ARTERIAL_PRESSURE, update);
+        trfuActionProp.setProp(procedureInfo.getBeforeHemodynamicsArterialPressure(), actionId, PropType.BEFORE_HEMODYNAMICS_ARTERIAL_PRESSURE, update);
 
-        trfuActionProp.setProp(procedureInfo.getAfterHemodynamicsArterialPressure(), em, actionId, PropType.AFTER_HEMODYNAMICS_ARTERIAL_PRESSURE, update);
+        trfuActionProp.setProp(procedureInfo.getAfterHemodynamicsArterialPressure(), actionId, PropType.AFTER_HEMODYNAMICS_ARTERIAL_PRESSURE, update);
 
-        trfuActionProp.setProp(procedureInfo.getBeforeHemodynamicsTemperature(), em, actionId, PropType.BEFORE_HEMODYNAMICS_TEMPERATURE, update);
+        trfuActionProp.setProp(procedureInfo.getBeforeHemodynamicsTemperature(), actionId, PropType.BEFORE_HEMODYNAMICS_TEMPERATURE, update);
 
-        trfuActionProp.setProp(procedureInfo.getAfterHemodynamicsTemperature(), em, actionId, PropType.AFTER_HEMODYNAMICS_TEMPERATURE, update);
+        trfuActionProp.setProp(procedureInfo.getAfterHemodynamicsTemperature(), actionId, PropType.AFTER_HEMODYNAMICS_TEMPERATURE, update);
 
-        trfuActionProp.setProp(procedureInfo.getComplications(), em, actionId, PropType.COMPLICATIONS, update);
+        trfuActionProp.setProp(procedureInfo.getComplications(), actionId, PropType.COMPLICATIONS, update);
 
-        trfuActionProp.setProp(procedureInfo.getInitialVolume(), em, actionId, PropType.INITIAL_VOLUME, update);
+        trfuActionProp.setProp(procedureInfo.getInitialVolume(), actionId, PropType.INITIAL_VOLUME, update);
 
-        trfuActionProp.setProp(procedureInfo.getChangeVolume(), em, actionId, PropType.CHANGE_VOLUME, update);
+        trfuActionProp.setProp(procedureInfo.getChangeVolume(), actionId, PropType.CHANGE_VOLUME, update);
 
-        trfuActionProp.setProp(procedureInfo.getInitialTbv(), em, actionId, PropType.INITIAL_TBV, update);
+        trfuActionProp.setProp(procedureInfo.getInitialTbv(), actionId, PropType.INITIAL_TBV, update);
 
-        trfuActionProp.setProp(procedureInfo.getChangeTbv(), em, actionId, PropType.CHANGE_TBV, update);
+        trfuActionProp.setProp(procedureInfo.getChangeTbv(), actionId, PropType.CHANGE_TBV, update);
 
-        trfuActionProp.setProp(procedureInfo.getInitialSpeed(), em, actionId, PropType.INITIAL_SPEED, update);
+        trfuActionProp.setProp(procedureInfo.getInitialSpeed(), actionId, PropType.INITIAL_SPEED, update);
 
-        trfuActionProp.setProp(procedureInfo.getChangeSpeed(), em, actionId, PropType.CHANGE_SPEED, update);
+        trfuActionProp.setProp(procedureInfo.getChangeSpeed(), actionId, PropType.CHANGE_SPEED, update);
 
-        trfuActionProp.setProp(procedureInfo.getInitialInletAcRatio(), em, actionId, PropType.INITIAL_INLETACRATIO, update);
+        trfuActionProp.setProp(procedureInfo.getInitialInletAcRatio(), actionId, PropType.INITIAL_INLETACRATIO, update);
 
-        trfuActionProp.setProp(procedureInfo.getChangeInletAcRatio(), em, actionId, PropType.CHANGE_INLETACRATIO, update);
+        trfuActionProp.setProp(procedureInfo.getChangeInletAcRatio(), actionId, PropType.CHANGE_INLETACRATIO, update);
 
-        trfuActionProp.setProp(procedureInfo.getInitialTime(), em, actionId, PropType.INITIAL_TIME, update);
+        trfuActionProp.setProp(procedureInfo.getInitialTime(), actionId, PropType.INITIAL_TIME, update);
 
-        trfuActionProp.setProp(procedureInfo.getChangeTime(), em, actionId, PropType.CHANGE_TIME, update);
+        trfuActionProp.setProp(procedureInfo.getChangeTime(), actionId, PropType.CHANGE_TIME, update);
 
-        trfuActionProp.setProp(procedureInfo.getInitialProductVolume(), em, actionId, PropType.INITIAL_PRODUCT_VOLUME, update);
+        trfuActionProp.setProp(procedureInfo.getInitialProductVolume(), actionId, PropType.INITIAL_PRODUCT_VOLUME, update);
 
-        trfuActionProp.setProp(procedureInfo.getChangeProductVolume(), em, actionId, PropType.CHANGE_PRODUCT_VOLUME, update);
+        trfuActionProp.setProp(procedureInfo.getChangeProductVolume(), actionId, PropType.CHANGE_PRODUCT_VOLUME, update);
 
-        trfuActionProp.setProp(procedureInfo.getAcdLoad(), em, actionId, PropType.ACD_LOAD, update);
+        trfuActionProp.setProp(procedureInfo.getAcdLoad(), actionId, PropType.ACD_LOAD, update);
 
-        trfuActionProp.setProp(procedureInfo.getNaClLoad(), em, actionId, PropType.NACL_LOAD, update);
+        trfuActionProp.setProp(procedureInfo.getNaClLoad(), actionId, PropType.NACL_LOAD, update);
 
-        trfuActionProp.setProp(procedureInfo.getCaLoad(), em, actionId, PropType.CA_LOAD, update);
+        trfuActionProp.setProp(procedureInfo.getCaLoad(), actionId, PropType.CA_LOAD, update);
 
-        trfuActionProp.setProp(procedureInfo.getOtherLoad(), em, actionId, PropType.OTHER_LOAD, update);
+        trfuActionProp.setProp(procedureInfo.getOtherLoad(), actionId, PropType.OTHER_LOAD, update);
 
-        trfuActionProp.setProp(procedureInfo.getTotalLoad(), em, actionId, PropType.TOTAL_LOAD, update);
+        trfuActionProp.setProp(procedureInfo.getTotalLoad(), actionId, PropType.TOTAL_LOAD, update);
 
-        trfuActionProp.setProp(procedureInfo.getPackRemove(), em, actionId, PropType.PACK_REMOVE, update);
+        trfuActionProp.setProp(procedureInfo.getPackRemove(), actionId, PropType.PACK_REMOVE, update);
 
-        trfuActionProp.setProp(eritrocyteMass.getMaker(), em, actionId, PropType.MAKER, update);
+        trfuActionProp.setProp(eritrocyteMass.getMaker(), actionId, PropType.MAKER, update);
 
-        trfuActionProp.setProp(eritrocyteMass.getNumber(), em, actionId, PropType.NUMBER, update);
+        trfuActionProp.setProp(eritrocyteMass.getNumber(), actionId, PropType.NUMBER, update);
 
-        trfuActionProp.setProp(eritrocyteMass.getBloodGroupId(), em, actionId, PropType.BLOOD_GROUP_ID, update);
+        trfuActionProp.setProp(eritrocyteMass.getBloodGroupId(), actionId, PropType.BLOOD_GROUP_ID, update);
 
-        trfuActionProp.setProp(eritrocyteMass.getRhesusFactorId(), em, actionId, PropType.RHESUS_FACTOR_ID, update);
+        trfuActionProp.setProp(eritrocyteMass.getRhesusFactorId(), actionId, PropType.RHESUS_FACTOR_ID, update);
 
-        trfuActionProp.setProp(eritrocyteMass.getVolume(), em, actionId, PropType.VOLUME_PROC_RES, update);
+        trfuActionProp.setProp(eritrocyteMass.getVolume(), actionId, PropType.VOLUME_PROC_RES, update);
 
-        trfuActionProp.setProp(eritrocyteMass.getProductionDate(), em, actionId, PropType.PRODUCTION_DATE, update);
+        trfuActionProp.setProp(eritrocyteMass.getProductionDate(), actionId, PropType.PRODUCTION_DATE, update);
 
-        trfuActionProp.setProp(eritrocyteMass.getExpirationDate(), em, actionId, PropType.EXPIRATION_DATE, update);
+        trfuActionProp.setProp(eritrocyteMass.getExpirationDate(), actionId, PropType.EXPIRATION_DATE, update);
 
-        trfuActionProp.setProp(eritrocyteMass.getHt(), em, actionId, PropType.HT, update);
+        trfuActionProp.setProp(eritrocyteMass.getHt(), actionId, PropType.HT, update);
 
-        trfuActionProp.setProp(eritrocyteMass.getSalineVolume(), em, actionId, PropType.SALINE_VOLUME, update);
+        trfuActionProp.setProp(eritrocyteMass.getSalineVolume(), actionId, PropType.SALINE_VOLUME, update);
 
-        trfuActionProp.setProp(eritrocyteMass.getFinalHt(), em, actionId, PropType.FINAL_HT, update);
+        trfuActionProp.setProp(eritrocyteMass.getFinalHt(), actionId, PropType.FINAL_HT, update);
 
     }
 }

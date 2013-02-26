@@ -5,13 +5,12 @@ import java.util.GregorianCalendar;
 import java.util.LinkedList;
 import java.util.List;
 
-import javax.ejb.Schedule;
-import javax.ejb.Singleton;
+import javax.ejb.Stateless;
 import javax.persistence.EntityManager;
+import javax.persistence.PersistenceContext;
 import javax.xml.datatype.DatatypeConfigurationException;
 import javax.xml.datatype.DatatypeFactory;
 import javax.xml.datatype.XMLGregorianCalendar;
-import javax.xml.ws.WebServiceException;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -30,12 +29,6 @@ import ru.korus.tmis.core.entity.model.RbUnit;
 import ru.korus.tmis.core.exception.CoreException;
 import ru.korus.tmis.util.EntityMgr;
 import ru.korus.tmis.ws.transfusion.efive.PatientCredentials;
-import ru.korus.tmis.ws.transfusion.efive.TransfusionMedicalService;
-import ru.korus.tmis.ws.transfusion.efive.TransfusionMedicalService_Service;
-import ru.korus.tmis.ws.transfusion.order.SendOrderBloodComponents;
-import ru.korus.tmis.ws.transfusion.order.TrfuActionProp;
-import ru.korus.tmis.ws.transfusion.order.TrfuPullable;
-import ru.korus.tmis.ws.transfusion.procedure.SendProcedureRequest;
 
 /**
  * Author: Sergey A. Zagrebelny <br>
@@ -44,13 +37,35 @@ import ru.korus.tmis.ws.transfusion.procedure.SendProcedureRequest;
  * Description: <br>
  */
 
-@Singleton
+@Stateless
 public class Database {
 
+    @PersistenceContext(unitName = "s11r64")
+    private EntityManager em = null;
+
+    /**
+     * Статус действия: Начато {Action.status}
+     */
     public static final short ACTION_STATE_STARTED = 0;
+
+    /**
+     * Статус действия: Ожидание {Action.status}
+     */
     public static final short ACTION_STATE_WAIT = 1;
+
+    /**
+     * Статус действия: Закончено {Action.status}
+     */
     public static final short ACTION_STATE_FINISHED = 2;
+
+    /**
+     * Статус действия: Отменено {Action.status}
+     */
     public static final short SIZE_OF_BLOOD_CANSELED = 3;
+
+    /**
+     * Статус действия: Без результата {Action.status}
+     */
     public static final short SIZE_OF_BLOOD_NO_RESULT = 4;
 
     /**
@@ -73,31 +88,31 @@ public class Database {
      */
     private static final char RHESUS_FACTOR_NEGATIVE = '-';
 
-    private static final int SIZE_OF_BLOOD_CODE = 2;
+    /**
+     * Размер кода группы крови ("1+", "1-", и т.д.)
+     */
+    private static final int BLOOD_CODE_LENGHT = 2;
 
-    private static final Logger logger = LoggerFactory.getLogger(SendOrderBloodComponents.class);
+    private static final Logger logger = LoggerFactory.getLogger(Database.class);
 
-    @Schedule(hour = "*", minute = "*")
-    public void pullDB() {
-        try {
-            final TransfusionMedicalService_Service service = new TransfusionMedicalService_Service();
-            final TransfusionMedicalService transfusionMedicalService = service.getTransfusionMedicalService();
-            final TrfuPullable[] pulls = {
-                    new SendOrderBloodComponents(), new SendProcedureRequest() };
-            for (final TrfuPullable pull : pulls) {
-                pull.pullDB(transfusionMedicalService);
-            }
-        } catch (final WebServiceException ex) {
-            logger.error("The TRFU service is not available. Exception description: {}", ex.getMessage());
-            ex.printStackTrace();
-        }
-    }
-
+    /**
+     * Получить из БД значение свойства действия {ActionProperty_<Type>.value}
+     * 
+     * @param classType
+     *            - энтити таблицы значений свойств (например APIntegerValue)
+     * @param actionId
+     *            - ID действия {Action.Id}
+     * @param propTypeId
+     *            - тип свойства действия {ActionPropertyType.Id}
+     * @return значение свойства дейсвия типа <code>propTypeId</code> для действия <code>actionId</code>
+     * @throws CoreException
+     *             - если свойсво не найдено или найдено более чем одно значение
+     */
     @SuppressWarnings("unchecked")
-    public static <T> T getSingleProp(@SuppressWarnings("rawtypes") final Class classType,
-            final EntityManager em, final int actionId, final int propTypeId) throws CoreException {
+    public <T> T getSingleProp(@SuppressWarnings("rawtypes") final Class classType,
+            final int actionId, final int propTypeId) throws CoreException {
 
-        final List<ActionProperty> prop = getActionProp(em, actionId, propTypeId);
+        final List<ActionProperty> prop = getActionProp(actionId, propTypeId);
 
         checkCountProp(actionId, propTypeId, prop.size());
 
@@ -111,13 +126,16 @@ public class Database {
         return (T) ((APValue) propRes.get(0)).getValue();
     }
 
-    public static <T> T getSingleProp(@SuppressWarnings("rawtypes") final Class classType,
-            final EntityManager em,
+    public EntityManager getEntityMgr() {
+        return em;
+    }
+
+    public <T> T getSingleProp(@SuppressWarnings("rawtypes") final Class classType,
             final int actionId,
             final int propTypeId,
             final T defaultVal) {
         try {
-            return getSingleProp(classType, em, actionId, propTypeId);
+            return getSingleProp(classType, actionId, propTypeId);
         } catch (final CoreException e) {
             return defaultVal;
         }
@@ -129,7 +147,7 @@ public class Database {
      * @param propTypeId
      * @return
      */
-    private static List<ActionProperty> getActionProp(final EntityManager em, final int actionId, final int propTypeId) {
+    private List<ActionProperty> getActionProp(final int actionId, final int propTypeId) {
         final List<ActionProperty> prop =
                 em.createQuery("SELECT p FROM ActionProperty p WHERE p.action.id = :curAction_id AND p.deleted = 0 AND p.actionPropertyType.id = :propTypeId",
                         ActionProperty.class).setParameter("curAction_id", actionId).setParameter("propTypeId", propTypeId).getResultList();
@@ -142,7 +160,7 @@ public class Database {
      * @param size
      * @throws CoreException
      */
-    private static void checkCountProp(final int actionId, final int propTypeId, final int size) throws CoreException {
+    private void checkCountProp(final int actionId, final int propTypeId, final int size) throws CoreException {
         if (size == 0) {
             throw new CoreException(String.format("The property %d for action %d has been not found", propTypeId, actionId));
         } else if (size > 1) {
@@ -150,14 +168,13 @@ public class Database {
         }
     }
 
-    public static <T> int addSinglePropBasic(final T value,
+    public <T> int addSinglePropBasic(final T value,
             @SuppressWarnings("rawtypes") final Class classType,
-            final EntityManager em,
             final int actionId,
             final int propTypeId,
             final boolean update) throws CoreException {
         Integer newPropId = null;
-        final List<ActionProperty> prop = getActionProp(em, actionId, propTypeId);
+        final List<ActionProperty> prop = getActionProp(actionId, propTypeId);
         if (prop.size() > 0) {
             if (update) {
                 newPropId = prop.get(0).getId();
@@ -165,7 +182,7 @@ public class Database {
                 new CoreException(String.format("The property %i for action %i has been alredy set", propTypeId, actionId)); // свойство уже установленно
             }
         } else {
-            newPropId = addActionProp(em, actionId, propTypeId);
+            newPropId = addActionProp(actionId, propTypeId);
         }
 
         final IndexedId actionPropId = new IndexedId();
@@ -175,7 +192,7 @@ public class Database {
 
         final String msg = String.format("Internal error: The type %s is supproted by Database.addSinglePropBasic", value.getClass().getName());
         try {
-            actionProp = setPropValue(em, newPropId, (AbstractAPValue) classType.newInstance());
+            actionProp = setPropValue(newPropId, (AbstractAPValue) classType.newInstance());
         } catch (final InstantiationException e) {
             logger.error(msg);
             e.printStackTrace();
@@ -193,12 +210,7 @@ public class Database {
 
     }
 
-    /**
-     * @param em
-     * @param newPropId
-     * @return
-     */
-    private static <T> T setPropValue(final EntityManager em, final Integer newPropId, final T propInteger) {
+    private <T> T setPropValue(final Integer newPropId, final T propInteger) {
         final String template = "SELECT p FROM %s p WHERE p.id.id = :curProp_id";
         final String className = propInteger.getClass().getName();
         @SuppressWarnings("unchecked")
@@ -208,14 +220,7 @@ public class Database {
         return curProp.size() > 0 ? curProp.get(0) : propInteger;
     }
 
-    /**
-     * @param em
-     * @param actionId
-     * @param propTypeId
-     * @return
-     * @throws CoreException
-     */
-    private static Integer addActionProp(final EntityManager em, final int actionId, final int propTypeId) throws CoreException {
+    private Integer addActionProp(final int actionId, final int propTypeId) throws CoreException {
         final Action action = EntityMgr.getSafe(em.find(Action.class, new Integer(actionId)));
         final ActionPropertyType actionPropType = EntityMgr.getSafe(em.find(ActionPropertyType.class, new Integer(propTypeId)));
         final ActionProperty actionProp = new ActionProperty();
@@ -240,33 +245,26 @@ public class Database {
     /**
      * @return
      */
-    public static List<DivisionInfo> getDivisions() {
+    public List<DivisionInfo> getDivisions() {
         final List<DivisionInfo> res = new LinkedList<DivisionInfo>();
-        try {
-            final EntityManager em = EntityMgr.getEntityManagerForS11r64(logger);
-            final List<OrgStructure> structs = em.createQuery("SELECT s FROM OrgStructure s WHERE s.deleted = 0", OrgStructure.class).getResultList();
-            for (final OrgStructure struct : structs) {
-                final DivisionInfo info = new DivisionInfo();
-                info.setId(struct.getId());
-                info.setName(struct.getName());
-                res.add(info);
-            }
-        } catch (final CoreException ex) {
-            logger.error("Cannot create entety manager. Error description: '{}'", ex.getMessage());
+        final List<OrgStructure> structs = em.createQuery("SELECT s FROM OrgStructure s WHERE s.deleted = 0", OrgStructure.class).getResultList();
+        for (final OrgStructure struct : structs) {
+            final DivisionInfo info = new DivisionInfo();
+            info.setId(struct.getId());
+            info.setName(struct.getName());
+            res.add(info);
         }
 
         return res;
     }
 
     /**
-     * Поиск новых требований КК
+     * Поиск новых действий
      * 
-     * @param em
-     *            - достуб к БД
-     * @return - список действий с типом, соответсвующим требованию КК и статусом 0 - Начато
-     * @throws CoreException
+     * @flatCode - код типа действия
+     * @return - список действий с типом, соответсвующим flatCode и статусом 0 - Начато
      */
-    public static List<Action> getNewActionByFlatCode(final EntityManager em, final String flatCode) throws CoreException {
+    public List<Action> getNewActionByFlatCode(final String flatCode) {
         final List<Action> actions =
                 em.createQuery("SELECT a FROM Action a WHERE a.status = 0 AND a.actionType.flatCode = :flatCode AND a.deleted = 0 ", Action.class)
                         .setParameter("flatCode", flatCode).getResultList();
@@ -274,21 +272,9 @@ public class Database {
     }
 
     /**
-     * @param em
-     * @param action
-     * @param state
-     * @throws CoreException
-     */
-    public static void
-            setRequestState(final EntityManager em, final Integer actionId, final String state, final TrfuActionProp trfuActionProp) throws CoreException {
-        trfuActionProp.setProp(state, em, actionId, PropType.ORDER_REQUEST_ID, true);
-    }
-
-    /**
      * Информация о пациенте для предачи требования КК в ТРФУ
      * 
-     * @param em
-     *            - достуб к БД
+     * 
      * @param action
      *            - действие, соответсвующее новому требованию КК
      * @return - информацию о пациенте для передачи в ТРФУ
@@ -296,7 +282,7 @@ public class Database {
      *             - при отсутвии доступа к БД или при отсутвии необходимой информации в БД
      * @throws DatatypeConfigurationException
      */
-    public static PatientCredentials getPatientCredentials(final EntityManager em, final Action action) throws CoreException, DatatypeConfigurationException {
+    public static PatientCredentials getPatientCredentials(final Action action) throws CoreException, DatatypeConfigurationException {
         final PatientCredentials res = new PatientCredentials();
         final Event event = EntityMgr.getSafe(action.getEvent());
         final Patient client = EntityMgr.getSafe(event.getPatient());
@@ -312,11 +298,6 @@ public class Database {
         return res;
     }
 
-    /**
-     * @param date
-     * @return
-     * @throws DatatypeConfigurationException
-     */
     public static XMLGregorianCalendar getGregorianCalendar(final Date date) throws DatatypeConfigurationException {
         final GregorianCalendar planedDateCalendar = new GregorianCalendar();
         planedDateCalendar.setTime(date);
@@ -339,7 +320,7 @@ public class Database {
     private static BloodType convertBloodId(final String code) throws CoreException {
         // TODO add check that blood type is set in CLient Info
         final String errorMsg = String.format("Incorrect blood group code: '%s'", code);
-        if (code == null || code.length() != SIZE_OF_BLOOD_CODE) {
+        if (code == null || code.length() != BLOOD_CODE_LENGHT) {
             throw new CoreException(errorMsg);
         }
 
@@ -366,24 +347,7 @@ public class Database {
         return res;
     }
 
-    /**
-     * @param em
-     * @param id
-     * @param requestId
-     * @throws CoreException
-     */
-    public static void
-            orderResult2DB(final EntityManager em, final Action action, final Integer requestId, final TrfuActionProp trfuActionProp) throws CoreException {
-        Database.setRequestState(em, action.getId(), "Получен идентификатор в системе ТРФУ: " + requestId, trfuActionProp);
-        action.setStatus(ACTION_STATE_WAIT);
-    }
-
-    /**
-     * @param requestId
-     * @param em
-     * @return
-     */
-    public static Action getAction(final EntityManager em, final Integer requestId) {
+    public Action getAction(final Integer requestId) {
         final List<Action> actions =
                 em.createQuery("SELECT a FROM Action a WHERE a.id = :requestId", Action.class).setParameter("requestId", requestId).getResultList();
         return actions.isEmpty() ? null : actions.get(0);

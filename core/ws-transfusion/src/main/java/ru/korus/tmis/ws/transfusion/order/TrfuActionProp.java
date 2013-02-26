@@ -4,8 +4,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import javax.persistence.EntityManager;
-
+import ru.korus.tmis.core.entity.model.Action;
 import ru.korus.tmis.core.entity.model.ActionPropertyType;
 import ru.korus.tmis.core.entity.model.ActionType;
 import ru.korus.tmis.core.exception.CoreException;
@@ -13,28 +12,28 @@ import ru.korus.tmis.ws.transfusion.Database;
 import ru.korus.tmis.ws.transfusion.PropType;
 
 /**
- * Author:      Sergey A. Zagrebelny <br>
- * Date:        25.01.2013, 11:39:30 <br>
- * Company:     Korus Consulting IT<br>
- * Description:  <br>
- */
-
-/**
- * 
+ * Author: Sergey A. Zagrebelny <br>
+ * Date: 16.01.2013, 11:45:31 <br>
+ * Company: Korus Consulting IT<br>
+ * Description: <br>
  */
 
 public class TrfuActionProp {
 
+    private final Database database;
+
     private final Map<PropType, Integer> propIds;
 
-    public TrfuActionProp(final EntityManager em, final String actionTypeFlatCode, final List<PropType> propConstants) throws CoreException {
-        final List<ActionType> actionType = em.createQuery("SELECT at FROM ActionType at WHERE at.flatCode = :flatCode AND at.deleted = 0", ActionType.class)
-                .setParameter("flatCode", actionTypeFlatCode).getResultList();
+    public TrfuActionProp(final Database databaseBean, final String actionTypeFlatCode, final List<PropType> propConstants) throws CoreException {
+        database = databaseBean;
+        final List<ActionType> actionType =
+                database.getEntityMgr().createQuery("SELECT at FROM ActionType at WHERE at.flatCode = :flatCode AND at.deleted = 0", ActionType.class)
+                        .setParameter("flatCode", actionTypeFlatCode).getResultList();
         if (actionType.size() != 1) {
             throw new CoreException(String.format("The Action 'Transfusion Therapy' has been not found. flatCode '%s'", actionTypeFlatCode));
         }
 
-        final List<ActionPropertyType> actionPropTypes = em
+        final List<ActionPropertyType> actionPropTypes = database.getEntityMgr()
                 .createQuery("SELECT atp FROM ActionPropertyType atp WHERE atp.actionType.id = :typeId AND atp.deleted = 0", ActionPropertyType.class)
                 .setParameter("typeId", actionType.get(0).getId()).getResultList();
 
@@ -58,12 +57,12 @@ public class TrfuActionProp {
         }
     }
 
-    public <T> T getProp(final EntityManager em, final Integer actionId, final PropType propType) throws CoreException {
+    public <T> T getProp(final Integer actionId, final PropType propType) throws CoreException {
         try {
-            return Database.getSingleProp(propType.getValueClass(), em, actionId, propIds.get(propType));
+            return database.getSingleProp(propType.getValueClass(), actionId, propIds.get(propType));
         } catch (final CoreException ex) {
             final String value = String.format("Не задано: '%s'", propType.getName());
-            Database.addSinglePropBasic(value, propType.getValueClass(), em, actionId, propIds.get(PropType.ORDER_REQUEST_ID), true);
+            database.addSinglePropBasic(value, propType.getValueClass(), actionId, propIds.get(PropType.ORDER_REQUEST_ID), true);
             throw ex;
         }
     }
@@ -76,11 +75,21 @@ public class TrfuActionProp {
         return propIds.get(propType);
     }
 
-    public <T> T getProp(final EntityManager em, final Integer actionId, final PropType propType, final T defaultValue) {
-        return Database.getSingleProp(propType.getValueClass(), em, actionId, propIds.get(propType), defaultValue);
+    public <T> T getProp(final Integer actionId, final PropType propType, final T defaultValue) {
+        return database.getSingleProp(propType.getValueClass(), actionId, propIds.get(propType), defaultValue);
     }
 
-    public <T> void setProp(final T value, final EntityManager em, final Integer actionId, final PropType propType, final boolean update) throws CoreException {
-        Database.addSinglePropBasic(value, propType.getValueClass(), em, actionId, propIds.get(propType), update);
+    public <T> void setProp(final T value, final Integer actionId, final PropType propType, final boolean update) throws CoreException {
+        database.addSinglePropBasic(value, propType.getValueClass(), actionId, propIds.get(propType), update);
+    }
+
+    public void setRequestState(final Integer actionId, final String state) throws CoreException {
+        setProp(state, actionId, PropType.ORDER_REQUEST_ID, true);
+
+    }
+
+    public void orderResult2DB(final Action action, final Integer requestId) throws CoreException {
+        setRequestState(action.getId(), "Получен идентификатор в системе ТРФУ: " + requestId);
+        action.setStatus(database.ACTION_STATE_WAIT);
     }
 }

@@ -1,5 +1,6 @@
 package ru.korus.tmis.ws.transfusion.order;
 
+import javax.ejb.Local;
 import javax.xml.datatype.DatatypeConfigurationException;
 
 import ru.korus.tmis.core.exception.CoreException;
@@ -15,6 +16,7 @@ import ru.korus.tmis.ws.transfusion.efive.TransfusionMedicalService;
 /**
  * 
  */
+@Local
 public interface TrfuPullable {
 
     /**
@@ -24,5 +26,5 @@ public interface TrfuPullable {
      * @throws CoreException
      * @throws DatatypeConfigurationException
      */
-     void pullDB(TransfusionMedicalService trfuService);
+    void pullDB(TransfusionMedicalService trfuService);
 }

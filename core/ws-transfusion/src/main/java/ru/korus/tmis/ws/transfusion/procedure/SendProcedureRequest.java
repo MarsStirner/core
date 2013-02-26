@@ -9,6 +9,8 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
+import javax.ejb.EJB;
+import javax.ejb.Stateless;
 import javax.persistence.EntityManager;
 import javax.xml.datatype.DatatypeConfigurationException;
 
@@ -36,7 +38,6 @@ import ru.korus.tmis.ws.transfusion.efive.PatientCredentials;
 import ru.korus.tmis.ws.transfusion.efive.ProcedureType;
 import ru.korus.tmis.ws.transfusion.efive.TransfusionMedicalService;
 import ru.korus.tmis.ws.transfusion.order.TrfuActionProp;
-import ru.korus.tmis.ws.transfusion.order.TrfuPullable;
 
 /**
  * Author:      Sergey A. Zagrebelny <br>
@@ -48,7 +49,11 @@ import ru.korus.tmis.ws.transfusion.order.TrfuPullable;
 /**
  * 
  */
-public class SendProcedureRequest implements TrfuPullable {
+@Stateless
+public class SendProcedureRequest {
+
+    @EJB
+    private Database database;
 
     /**
      * 
@@ -120,15 +125,12 @@ public class SendProcedureRequest implements TrfuPullable {
      * 
      * @see ru.korus.tmis.ws.transfusion.order.Pullable#pullDB(ru.korus.tmis.ws.transfusion.efive.TransfusionMedicalService)
      */
-    @Override
+
     public void pullDB(final TransfusionMedicalService trfuService) {
-        EntityManager em = null;
-        // TODO Remove! (use EJB)
         try {
-            em = EntityMgr.getEntityManagerForS11r64(logger);
-            updateProcedureType(em, trfuService);
-            updateLaboratoryMeasure(em, trfuService);
-            sendNewProcedure(em, trfuService);
+            updateProcedureType(trfuService);
+            updateLaboratoryMeasure(trfuService);
+            sendNewProcedure(trfuService);
         } catch (final CoreException ex) {
             logger.error("Cannot create entety manager in SendProcedureRequest. Error description: '{}'", ex.getMessage());
             ex.printStackTrace();
@@ -141,21 +143,21 @@ public class SendProcedureRequest implements TrfuPullable {
      * @throws CoreException
      * @throws DatatypeConfigurationException
      */
-    private void sendNewProcedure(final EntityManager em, final TransfusionMedicalService trfuService) throws CoreException {
-        final List<Action> actions = getNewActions(em);
+    private void sendNewProcedure(final TransfusionMedicalService trfuService) throws CoreException {
+        final List<Action> actions = getNewActions(database.getEntityMgr());
         final Map<String, TrfuActionProp> actionProp = new HashMap<String, TrfuActionProp>();
 
         for (final Action action : actions) {
             try {
                 final String curFlatCode = action.getActionType().getFlatCode();
                 if (actionProp.get(action.getActionType().getId()) == null) {
-                    actionProp.put(curFlatCode, new TrfuActionProp(em, curFlatCode, new ArrayList<PropType>(ProcedurePropType.propTypes)));
+                    actionProp.put(curFlatCode, new TrfuActionProp(database, curFlatCode, new ArrayList<PropType>(ProcedurePropType.propTypes)));
                 }
                 OrderResult orderResult = new OrderResult();
-                Database.setRequestState(em, action.getId(), "", actionProp.get(curFlatCode));
-                final PatientCredentials patientCredentials = Database.getPatientCredentials(em, action);
-                final DonorInfo donorInfo = getDonorInfo(em, action, actionProp.get(curFlatCode));
-                final ru.korus.tmis.ws.transfusion.efive.ProcedureInfo procedureInfo = getProcedureInfo(em, action);
+                actionProp.get(curFlatCode).setRequestState(action.getId(), "");
+                final PatientCredentials patientCredentials = Database.getPatientCredentials(action);
+                final DonorInfo donorInfo = getDonorInfo(database.getEntityMgr(), action, actionProp.get(curFlatCode));
+                final ru.korus.tmis.ws.transfusion.efive.ProcedureInfo procedureInfo = getProcedureInfo(database.getEntityMgr(), action);
                 try {
                     orderResult = trfuService.orderMedicalProcedure(donorInfo, patientCredentials, procedureInfo);
                 } catch (final Exception ex) {
@@ -167,7 +169,7 @@ public class SendProcedureRequest implements TrfuPullable {
                 }
                 if (orderResult.isResult()) { // если подситема ТРФУ зарегистрировала требование КК
                     try {
-                        Database.orderResult2DB(em, action, orderResult.getRequestId(), actionProp.get(curFlatCode));
+                        actionProp.get(curFlatCode).orderResult2DB(action, orderResult.getRequestId());
                         logger.info("Processing transfusion procedure action {}... The order has been successfully registered in TRFU. TRFU id: {}",
                                 action.getId(), orderResult.getRequestId());
                     } catch (final CoreException ex) {
@@ -177,7 +179,7 @@ public class SendProcedureRequest implements TrfuPullable {
                 } else {
                     logger.error("The procedure {} was not registrate in TRFU. TRFU service return the error satatus. Error description: '{}'", action.getId(),
                             orderResult.getDescription());
-                    Database.setRequestState(em, action.getId(), "Ответ системы ТРФУ: " + orderResult.getDescription(), actionProp.get(curFlatCode));
+                    actionProp.get(curFlatCode).setRequestState(action.getId(), "Ответ системы ТРФУ: " + orderResult.getDescription());
                 }
             } catch (final CoreException ex) {
                 logger.error("Error in SendProcedureRequest. Error description: '{}'", ex.getMessage());
@@ -230,7 +232,7 @@ public class SendProcedureRequest implements TrfuPullable {
         final DonorInfo res = new DonorInfo();
         Integer donorId;
         try {
-            donorId = trfuActionProp.getProp(em, action.getId(), PropType.DONOR_ID);
+            donorId = trfuActionProp.getProp(action.getId(), PropType.DONOR_ID);
             final Patient client = em.find(Patient.class, donorId);
             res.setId(donorId);
             if (client != null) {
@@ -254,7 +256,7 @@ public class SendProcedureRequest implements TrfuPullable {
                 em.createQuery("SELECT p FROM RbTrfuProcedureTypes p WHERE p.unused = 0", RbTrfuProcedureTypes.class).getResultList();
         final List<Action> actions = new LinkedList<Action>();
         for (final RbTrfuProcedureTypes proc : procedureTypesDb) {
-            actions.addAll(Database.getNewActionByFlatCode(em, getFlatCode(proc)));
+            actions.addAll(database.getNewActionByFlatCode(getFlatCode(proc)));
         }
         return actions;
     }
@@ -262,8 +264,9 @@ public class SendProcedureRequest implements TrfuPullable {
     /**
      * @param trfuService
      */
-    private void updateProcedureType(final EntityManager em, final TransfusionMedicalService trfuService) {
+    private void updateProcedureType(final TransfusionMedicalService trfuService) {
         final List<ProcedureType> procedureTypes = trfuService.getProcedureTypes();
+        final EntityManager em = database.getEntityMgr();
         logger.info("The Reference book for TRFU procedure types has been received from TRFU. The count of procedure: {}", procedureTypes.size());
         final List<RbTrfuProcedureTypes> procedureTypesDb = em.createQuery("SELECT p FROM RbTrfuProcedureTypes p", RbTrfuProcedureTypes.class).getResultList();
         final List<RbTrfuProcedureTypes> procedureTypesTrfu = convertToDb(procedureTypes);
@@ -286,7 +289,8 @@ public class SendProcedureRequest implements TrfuPullable {
      * @param em
      * @param trfuService
      */
-    private void updateLaboratoryMeasure(final EntityManager em, final TransfusionMedicalService trfuService) {
+    private void updateLaboratoryMeasure(final TransfusionMedicalService trfuService) {
+        final EntityManager em = database.getEntityMgr();
         final List<LaboratoryMeasureType> measureTypes = trfuService.getLaboratoryMeasureTypes();
         logger.info("The Reference book for TRFU laboratory measure has been received from TRFU. The count of procedure: {}", measureTypes.size());
         final List<RbTrfuLaboratoryMeasureTypes> measureTypesDb =

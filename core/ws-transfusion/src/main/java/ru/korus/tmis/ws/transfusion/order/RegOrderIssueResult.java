@@ -4,6 +4,7 @@ import java.util.Arrays;
 import java.util.Date;
 import java.util.List;
 
+import javax.ejb.EJB;
 import javax.ejb.Stateless;
 import javax.persistence.EntityManager;
 import javax.persistence.PersistenceContext;
@@ -33,6 +34,14 @@ import ru.korus.tmis.ws.transfusion.PropType;
 @Stateless
 public class RegOrderIssueResult {
 
+    @EJB
+    private Database database;
+
+    @PersistenceContext(unitName = "s11r64")
+    private EntityManager em = null;
+
+    private static final Logger logger = LoggerFactory.getLogger(SendOrderBloodComponents.class);
+
     /**
      * Регистрация извещения о резульатах выполнения требования КК
      * 
@@ -40,18 +49,13 @@ public class RegOrderIssueResult {
      *            - входные данные от подсистемы ТРФУ
      * @return результат регистрации
      */
-    @PersistenceContext(unitName = "s11r64")
-    private EntityManager em = null;
-
-    private static final Logger logger = LoggerFactory.getLogger(SendOrderBloodComponents.class);
-
     public IssueResult save(final Integer requestId, final Date factDate, final List<OrderIssueInfo> components, final String orderComment) {
 
         final IssueResult res = new IssueResult();
         res.setResult(false);
 
         res.setRequestId(requestId);
-        final Action action = Database.getAction(em, requestId);
+        final Action action = database.getAction(requestId);
 
         if (action == null) { // требование КК не найдено в базе данных
             res.setDescription(String.format("The issue for requestId '%s' has been not found in MIS", "" + requestId));
@@ -81,12 +85,12 @@ public class RegOrderIssueResult {
     private void update(final Action action, final Date factDate, final List<OrderIssueInfo> components, final String orderComment)
             throws CoreException {
         final TrfuActionProp trfuActionProp =
-                new TrfuActionProp(em, SendOrderBloodComponents.TRANSFUSION_ACTION_FLAT_CODE, Arrays.asList(SendOrderBloodComponents.propConstants));
+                new TrfuActionProp(database, SendOrderBloodComponents.TRANSFUSION_ACTION_FLAT_CODE, Arrays.asList(SendOrderBloodComponents.propConstants));
         final Integer actionId = action.getId();
         final boolean update = true;
         if (factDate != null) {
-            trfuActionProp.setProp(factDate, em, actionId, PropType.ORDER_ISSUE_RES_TIME, update);
-            trfuActionProp.setProp(factDate, em, actionId, PropType.ORDER_ISSUE_RES_DATE, update);
+            trfuActionProp.setProp(factDate, actionId, PropType.ORDER_ISSUE_RES_TIME, update);
+            trfuActionProp.setProp(factDate, actionId, PropType.ORDER_ISSUE_RES_DATE, update);
         }
         String errMsg = "";
         for (final OrderIssueInfo orderIssue : components) {
@@ -110,9 +114,9 @@ public class RegOrderIssueResult {
             trfuOrderIssueResult.setTrfuDonorId(orderIssue.getDonorId());
             em.persist(trfuOrderIssueResult);
         }
-        final String res = trfuActionProp.getProp(em, actionId, PropType.ORDER_REQUEST_ID) + errMsg + "; Зарегистрирован результат от ТРФУ";
-        trfuActionProp.setProp(actionId, em, actionId, PropType.ORDER_ISSUE_BLOOD_COMP_PASPORT, true);
-        trfuActionProp.setProp(res, em, actionId, PropType.ORDER_REQUEST_ID, true);
+        final String res = trfuActionProp.getProp(actionId, PropType.ORDER_REQUEST_ID) + errMsg + "; Зарегистрирован результат от ТРФУ";
+        trfuActionProp.setProp(actionId, actionId, PropType.ORDER_ISSUE_BLOOD_COMP_PASPORT, true);
+        trfuActionProp.setProp(res, actionId, PropType.ORDER_REQUEST_ID, true);
         em.flush();
     }
 

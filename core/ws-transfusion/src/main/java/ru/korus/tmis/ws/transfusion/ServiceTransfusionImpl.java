@@ -31,6 +31,9 @@ import ru.korus.tmis.ws.transfusion.procedure.RegProcedureResult;
         serviceName = "TransfusionServiceImpl", portName = "portTransfusion", name = "nameTransfusion")
 public class ServiceTransfusionImpl implements ServiceTransfusion {
 
+    @EJB
+    private Database database;
+
     private static final Logger logger = LoggerFactory.getLogger(ServiceTransfusionImpl.class);
 
     @EJB
@@ -65,7 +68,7 @@ public class ServiceTransfusionImpl implements ServiceTransfusion {
     @Override
     public List<DivisionInfo> getDivisions() {
         logger.info("Entered in transfusion service 'getDivisions()'");
-        return Database.getDivisions();
+        return database.getDivisions();
     }
 
     /**
