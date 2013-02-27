@@ -19,9 +19,7 @@ import ru.korus.tmis.communication.thriftgen.Queue;
 
 import java.util.*;
 
-import static org.testng.Assert.assertEquals;
-import static org.testng.Assert.assertFalse;
-import static org.testng.Assert.assertTrue;
+import static org.testng.Assert.*;
 
 /**
  * User: eupatov
@@ -49,6 +47,7 @@ public class CommunicationServiceTest {
         } catch (TTransportException e) {
             logger.error("Cannot open transport: " + e.getMessage());
             e.printStackTrace();
+            fail("Cannot open transport: " + e.getMessage());
         }
         logger.info("Transport opened successfully");
     }
@@ -409,10 +408,18 @@ public class CommunicationServiceTest {
             logger.info("6) Send another parameters to findPatient(-s) method to avoid recieve our patient.");
             incorrectParamsTest(lastName, firstName, patrName, birthDate, id);
 
+            logger.info("Fourth step is to find free ticket to a doctor and find a doctor too.");
+            Map<Integer, DateTime> enqueueParam = checkAvailableDoctors();
+            if (enqueueParam.isEmpty()) {
+                fail("No one pair doctorId, dateTime");
+            }
+            Map.Entry<Integer, DateTime> iterator = enqueueParam.entrySet().iterator().next();
+            Integer doctorId = iterator.getKey();
+            DateTime requestedDateTime = iterator.getValue();
             logger.info("Fourth step is to check empty queue (for patient and for doctor timeline).");
-            final int doctorId = 242;
-            final long queueDate = new DateMidnight().getMillis();
-            final long queueTime = checkEmptyQueue(id);
+            final long queueDate = requestedDateTime.toDateMidnight().getMillis();
+            final long queueTime = requestedDateTime.getMillisOfDay();
+            logger.info("ID={} DATE={}", doctorId, requestedDateTime);
 
             logger.info("Fifth step is to enqueuePatient and check this(for patient and for doctor timeline).");
             final int queueId = checkEnqueue(id, doctorId, queueDate + queueTime, queueTime);
@@ -428,6 +435,76 @@ public class CommunicationServiceTest {
 
     }
 
+    private Map<Integer, DateTime> checkAvailableDoctors() {
+        Map<Integer, DateTime> result = new HashMap<Integer, DateTime>(1);
+        try {
+            logger.info("1) Get all doctors from top-level LPU recursively");
+            List<Person> allDoctorsList = client.getPersonnel(0, true, "");
+            logger.info("1)Result is {}", allDoctorsList);
+            List<Person> doctorsWhoHasAvailableTickets = new ArrayList<Person>();
+            logger.info("2) Start search for available tickets from today");
+            final int searchIntervalInDays = 7;
+            DateMidnight requestDate = new DateMidnight(DateTimeZone.UTC);
+            int currentDay = 0;
+            while (doctorsWhoHasAvailableTickets.isEmpty() && currentDay < searchIntervalInDays) {
+                logger.info("Search available tickets for {}", requestDate);
+                for (Person currentDoctor : allDoctorsList) {
+                    Amb currentAmb;
+                    try {
+                        currentAmb = client.getWorkTimeAndStatus(new GetTimeWorkAndStatusParameters()
+                                .setDate(requestDate.getMillis())
+                                .setPersonId(currentDoctor.getId())
+                                .setHospitalUidFrom("")
+                        );
+                    } catch (NotFoundException exc) {
+                        continue;
+                    }
+                    if (!currentAmb.getTickets().isEmpty()) {
+                        for (Ticket currentTicket : currentAmb.getTickets()) {
+                            if (currentTicket.getFree() == 1 && currentTicket.getAvailable() == 1) {
+                                doctorsWhoHasAvailableTickets.add(currentDoctor);
+                                logger.info("Doctor {} has amb={}", currentDoctor, currentAmb);
+                                break;
+                            }
+                        }
+                    }
+                }
+                requestDate.plusDays(1);
+                currentDay++;
+            }
+            if (doctorsWhoHasAvailableTickets.isEmpty()) {
+                fail("No one doctor has available tickets in next week");
+            }
+            logger.info("2) Doctors is {}", doctorsWhoHasAvailableTickets);
+            Random random = new Random();
+            Person selectedDoctor = doctorsWhoHasAvailableTickets
+                    .get(random.nextInt(doctorsWhoHasAvailableTickets.size()));
+            logger.info("Selected doctor is {}", selectedDoctor);
+            Amb selectedAmb = client.getWorkTimeAndStatus(new GetTimeWorkAndStatusParameters()
+                    .setDate(requestDate.getMillis())
+                    .setPersonId(selectedDoctor.getId())
+                    .setHospitalUidFrom("")
+            );
+            if (!selectedAmb.getTickets().isEmpty()) {
+                for (Ticket currentTicket : selectedAmb.getTickets()) {
+                    if (currentTicket.getFree() == 1 && currentTicket.getAvailable() == 1) {
+                        logger.info("Requested dateTime={}",
+                                new DateTime(requestDate.getMillis() + currentTicket.getTime(), DateTimeZone.UTC));
+                        result.put(selectedDoctor.getId(),
+                                new DateTime(requestDate.getMillis() + currentTicket.getTime(), DateTimeZone.UTC));
+                    }
+                }
+            }
+
+            return result;
+        } catch (TException e) {
+            logger.error("Невозможно получить врачей рекурсивно начиная с топ-уровня", e);
+            fail("Error message", e);
+        }
+        fail("Unreacheable point");
+        return null;
+    }
+
     private void checkDequeuePatient(Integer id, int doctorId, long queueDate, long queueTime, int queueId) throws TException {
         logger.info("1) Call dequeuePatient method");
         final DequeuePatientStatus dequeuePatientStatus = client.dequeuePatient(id, queueId);
@@ -440,7 +517,7 @@ public class CommunicationServiceTest {
         assertFalse(incorrectDequeuePatientStatus.isSuccess(), "2) повторная отзыв записи на то-же время прошел успешно");
 
         logger.info("After dequeue patient must have empty queue");
-        checkEmptyQueue(id);
+        checkEmptyQueue(id, doctorId, queueTime + queueDate);
     }
 
     private int checkEnqueue(Integer id, int doctorId, long dateTime, long queueTime) throws TException {
@@ -472,8 +549,8 @@ public class CommunicationServiceTest {
 
         logger.info("3) Call getWorkTimeAndStatus");
         final Amb amb = client.getWorkTimeAndStatus(new GetTimeWorkAndStatusParameters()
-                .setPersonId(242)
-                .setDate(new DateMidnight().getMillis())
+                .setPersonId(doctorId)
+                .setDate(dateTime)
                 .setHospitalUidFrom("")
         );
         logger.info("3)Result is {}", amb);
@@ -499,7 +576,7 @@ public class CommunicationServiceTest {
         return queueId;
     }
 
-    private long checkEmptyQueue(Integer id) throws TException {
+    private long checkEmptyQueue(Integer id, Integer doctorId, long dateTime) throws TException {
         long queueTime = 0;
         logger.info("1) Call getPatientQueue.");
         final List<Queue> patientQueue = client.getPatientQueue(id);
@@ -507,15 +584,15 @@ public class CommunicationServiceTest {
         assertTrue(patientQueue.isEmpty(), "1) Вновь созданный пациент не должен быть никуда записан");
         logger.info("2) Call getWorkTimeAndStatus");
         final Amb amb = client.getWorkTimeAndStatus(new GetTimeWorkAndStatusParameters()
-                .setPersonId(242)
-                .setDate(new DateMidnight().getMillis())
+                .setPersonId(doctorId)
+                .setDate(dateTime)
                 .setHospitalUidFrom("")
         );
         logger.info("2)Result is {}", amb);
         for (Ticket currentTicket : amb.getTickets()) {
             if (currentTicket.getAvailable() == 1 && currentTicket.getFree() == 1) {
                 queueTime = currentTicket.getTime();
-                logger.info("Assigned time is {}", new DateTime(currentTicket.getTime(), DateTimeZone.UTC));
+                logger.info("Assigned time is {}", new DateTime(dateTime, DateTimeZone.UTC));
                 break;
             }
         }
