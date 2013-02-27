@@ -1337,19 +1337,19 @@ class MedipadWSImpl
   def getTakingOfBiomaterial(request: TakingOfBiomaterialRequesData, authData: AuthData) = {
 
     val res = dbJobTicketBean.getDirectionsWithJobTicketsBetweenDate(request.sortingFieldInternal, request.filter)
-    request.rewriteRecordsCount(res.size())
+    request.rewriteRecordsCount(res.asInstanceOf[java.util.LinkedList[(Action, ActionTypeTissueType, JobTicket)]].size())
     //пересоберем мапу и сгруппируем по жобТикету
-    var actions = new java.util.LinkedList[Action]()
-    var map = new mutable.LinkedHashMap[JobTicket, LinkedList[Action]]
-    var firstJobTicket = res.iterator.next()._2
-    res.foreach(f => {
-      if (firstJobTicket.getId.intValue() == f._2.getId.intValue()) {
-        actions += f._1
+    var actions = new java.util.LinkedList[(Action, ActionTypeTissueType)]()
+    var map = new mutable.LinkedHashMap[JobTicket, LinkedList[(Action, ActionTypeTissueType)]]
+    var firstJobTicket = res.asInstanceOf[java.util.LinkedList[(Action, ActionTypeTissueType, JobTicket)]].iterator.next()._3
+    res.asInstanceOf[java.util.LinkedList[(Action, ActionTypeTissueType, JobTicket)]].foreach(f => {
+      if (firstJobTicket.getId.intValue() == f._3.getId.intValue()) {
+        actions.add((f._1, f._2))
       } else {
         map += (firstJobTicket -> actions)
-        actions = new java.util.LinkedList[Action]()
-        actions += f._1
-        firstJobTicket = f._2
+        actions = new java.util.LinkedList[(Action, ActionTypeTissueType)]()
+        actions.add((f._1, f._2))
+        firstJobTicket = f._3
       }
     })
     if (actions.size() == 1) map += (firstJobTicket -> actions)   //добавляем последний жобТикет, если для него есть только один акшен. Если акшенов больше, он добавится в цикле.
