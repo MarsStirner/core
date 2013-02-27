@@ -4,12 +4,13 @@ import javax.xml.bind.annotation.{XmlRootElement, XmlType}
 import org.codehaus.jackson.annotate.JsonIgnoreProperties
 import reflect.BeanProperty
 import java.util.{Calendar, Date}
-import ru.korus.tmis.core.entity.model.{Action, JobTicket, RbTestTubeType, Patient}
+import ru.korus.tmis.core.entity.model._
 import ru.korus.tmis.util.reflect.{LoggingManager, TmisLogging}
 import ru.korus.tmis.util.{I18nable, ConfigManager}
 import java.text.SimpleDateFormat
 import java.util.LinkedList
 import scala.collection.JavaConversions._
+import java.util
 
 /**
  * Контейнер с данными о заборе биоматериала
@@ -25,13 +26,15 @@ class TakingOfBiomaterialData {
   @BeanProperty
   var requestData: TakingOfBiomaterialRequesData = _
   @BeanProperty
-  var data: LinkedList[TakingOfBiomaterialEntry] = new LinkedList[TakingOfBiomaterialEntry]
+  var data: LinkedList[JobTicketInfoContainer] = new LinkedList[JobTicketInfoContainer]
 
-  def this(values: java.util.Map[Action, JobTicket],
+  def this(values: java.util.Map[JobTicket, java.util.LinkedList[(Action, ActionTypeTissueType)]],
            request: TakingOfBiomaterialRequesData) {
     this()
     this.requestData = request
-    values.foreach(f => this.data += new TakingOfBiomaterialEntry(f._1, f._2))
+    values.foreach(f => {
+      this.data += new JobTicketInfoContainer(f._1, f._2)
+    })
   }
 }
 
@@ -201,10 +204,10 @@ class TakingOfBiomaterialRequesDataFilter {
   }
 }
 
-@XmlType(name = "takingOfBiomaterialEntry")
-@XmlRootElement(name = "takingOfBiomaterialEntry")
+@XmlType(name = "actionInfoDataContainer")
+@XmlRootElement(name = "actionInfoDataContainer")
 @JsonIgnoreProperties(ignoreUnknown = true)
-class TakingOfBiomaterialEntry {
+class ActionInfoDataContainer {
 
   @BeanProperty
   var id: Int = _                              //Action.id
@@ -219,19 +222,47 @@ class TakingOfBiomaterialEntry {
   @BeanProperty
   var assigner: DoctorContainer = _             //Основная информация о назначевшем забор враче
   @BeanProperty
-  var jobTicket: JobTicketInfoContainer = _     //JobTicket
+  var biomaterial: TissueTypeContainer = _                      //биоматериал
 
-  def this(action: Action,
-           ticket: JobTicket) {
+  def this(action: Action, tissueType: ActionTypeTissueType) {
     this()
     this.id = action.getId.intValue()
     this.actionType = new IdNameContainer(action.getActionType.getId.intValue(),
-                                          action.getActionType.getName)
+      action.getActionType.getName)
     this.patient = new PatientInfoDataContainer(action.getEvent.getPatient)
     this.urgent = action.getIsUrgent
     this.tubeType = new TestTubeTypeInfoContainer(action.getActionType.getTestTubeType)
     this.assigner = new DoctorContainer(action.getAssigner)
-    this.jobTicket = new JobTicketInfoContainer(ticket)
+    if (tissueType != null) {
+      this.biomaterial = new TissueTypeContainer(tissueType)
+    }
+  }
+}
+
+@XmlType(name = "tissueTypeContainer")
+@XmlRootElement(name = "tissueTypeContainer")
+@JsonIgnoreProperties(ignoreUnknown = true)
+class TissueTypeContainer {
+
+  @BeanProperty
+  var id: Int = _                              //ActionTypeTissueType.id
+  @BeanProperty
+  var tissueType: IdNameContainer = _           //RbTissueType.id + RbTissueType.name
+  @BeanProperty
+  var amount: Int = _                           //объем материала   ActionTypeTissueType.amount
+  @BeanProperty
+  var unit: IdNameContainer = _                 //Единицы измерения    rbUnit.id + rbUnit.name
+
+  def this(tissueType: ActionTypeTissueType) {
+    this()
+    this.id = tissueType.getId.intValue()
+    if (tissueType.getTissueType != null) {
+      this.tissueType = new IdNameContainer(tissueType.getTissueType.getId, tissueType.getTissueType.getName)
+    }
+    this.amount = tissueType.getAmount
+    if (tissueType.getUnit != null) {
+      this.unit = new IdNameContainer(tissueType.getUnit.getId.intValue(), tissueType.getUnit.getName)
+    }
   }
 }
 
@@ -330,8 +361,10 @@ class JobTicketInfoContainer {
   var note: String = _                          //Примечание
   @BeanProperty
   var laboratory: IdNameContainer = _           //Лаборатория
+  @BeanProperty
+  var actions: LinkedList[ActionInfoDataContainer] = new LinkedList[ActionInfoDataContainer]  //Список акшенов для этого тикета
 
-  def this(ticket: JobTicket){
+  def this(ticket: JobTicket, actionValues: LinkedList[(Action, ActionTypeTissueType)]){
     this()
     if(ticket!=null) {
       this.id = ticket.getId.intValue()
@@ -344,6 +377,7 @@ class JobTicketInfoContainer {
           ticket.getJob.getOrgStructure.getName)
       else
         new IdNameContainer()
+      actionValues.foreach(a => this.actions += new ActionInfoDataContainer(a._1, a._2))
     } else {
       LoggingManager.setLoggerType(LoggingManager.LoggingTypes.Debug)
       LoggingManager.warning("code " + ConfigManager.ErrorCodes.JobTicketIsNull +

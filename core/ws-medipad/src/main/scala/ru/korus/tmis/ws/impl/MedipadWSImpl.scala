@@ -34,6 +34,7 @@ import ru.korus.tmis.util.StringId
 import java.util
 import javax.swing.JList
 import scala.reflect.BeanProperty
+import collection.mutable
 
 @Named
 @WebService(
@@ -1336,8 +1337,23 @@ class MedipadWSImpl
   def getTakingOfBiomaterial(request: TakingOfBiomaterialRequesData, authData: AuthData) = {
 
     val res = dbJobTicketBean.getDirectionsWithJobTicketsBetweenDate(request.sortingFieldInternal, request.filter)
-    request.rewriteRecordsCount(res.size())
-    new TakingOfBiomaterialData(res, request)
+    request.rewriteRecordsCount(res.asInstanceOf[java.util.LinkedList[(Action, ActionTypeTissueType, JobTicket)]].size())
+    //пересоберем мапу и сгруппируем по жобТикету
+    var actions = new java.util.LinkedList[(Action, ActionTypeTissueType)]()
+    var map = new mutable.LinkedHashMap[JobTicket, LinkedList[(Action, ActionTypeTissueType)]]
+    var firstJobTicket = res.asInstanceOf[java.util.LinkedList[(Action, ActionTypeTissueType, JobTicket)]].iterator.next()._3
+    res.asInstanceOf[java.util.LinkedList[(Action, ActionTypeTissueType, JobTicket)]].foreach(f => {
+      if (firstJobTicket.getId.intValue() == f._3.getId.intValue()) {
+        actions.add((f._1, f._2))
+      } else {
+        map += (firstJobTicket -> actions)
+        actions = new java.util.LinkedList[(Action, ActionTypeTissueType)]()
+        actions.add((f._1, f._2))
+        firstJobTicket = f._3
+      }
+    })
+    if (actions.size() == 1) map += (firstJobTicket -> actions)   //добавляем последний жобТикет, если для него есть только один акшен. Если акшенов больше, он добавится в цикле.
+    new TakingOfBiomaterialData(map, request)
   }
 
   def updateJobTicketsStatuses(data: JobTicketStatusDataList, authData: AuthData) = {

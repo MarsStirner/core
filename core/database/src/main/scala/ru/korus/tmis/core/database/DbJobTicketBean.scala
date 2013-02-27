@@ -6,7 +6,7 @@ import javax.ejb.{EJB, Stateless}
 import grizzled.slf4j.Logging
 import ru.korus.tmis.util.{ConfigManager, CAPids, I18nable}
 import javax.persistence.{EntityManager, PersistenceContext}
-import ru.korus.tmis.core.entity.model.{Action, JobTicket}
+import ru.korus.tmis.core.entity.model.{ActionTypeTissueType, Action, JobTicket}
 import scala.collection.JavaConversions._
 import collection.mutable
 import ru.korus.tmis.core.data.TakingOfBiomaterialRequesDataFilter
@@ -73,13 +73,15 @@ class DbJobTicketBean extends DbJobTicketBeanLocal
                       .getResultList
 
     result.size() match {
-      case 0 => mutable.LinkedHashMap.empty[Action,JobTicket]
+      case 0 => new java.util.LinkedList[(Action, ActionTypeTissueType, JobTicket)]
       case size => {
-        val directions = result.foldLeft(mutable.LinkedHashMap.empty[Action,JobTicket])(
-          (map, aj) => {
+        val directions = result.foldLeft(new java.util.LinkedList[(Action, ActionTypeTissueType, JobTicket)])(
+          (list, aj) => {
             em.detach(aj(0))
             em.detach(aj(1))
-            map += (aj(0).asInstanceOf[Action] -> aj(1).asInstanceOf[JobTicket])
+            em.detach(aj(2))
+            list.add((aj(0).asInstanceOf[Action], aj(2).asInstanceOf[ActionTypeTissueType], aj(1).asInstanceOf[JobTicket]))
+            list
           }
         )
         directions
@@ -123,7 +125,7 @@ class DbJobTicketBean extends DbJobTicketBeanLocal
 
   val DirectionsWithJobTicketsBetweenDateQuery =
     """
-    SELECT a, jt
+    SELECT a, jt, attp
     FROM
       JobTicket jt,
       APValueJobTicket apval,
@@ -188,6 +190,8 @@ class DbJobTicketBean extends DbJobTicketBeanLocal
       a.actionType.mnemonic = 'LAB'
     AND
       e.deleted = 0
+    AND
+      attp.actionType.id = a.actionType.id
     %s
     %s
     """

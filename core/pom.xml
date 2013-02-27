@@ -310,10 +310,11 @@
                     <target>${project.build.jdk}</target>
                     <encoding>${project.build.sourceEncoding}</encoding>
                     <debug>${project.build.debug}</debug>
-                    <!--<jvmArgs>-->
-                    <!--<jvmArg>-Xms64m</jvmArg>-->
-                    <!--<jvmArg>-Xmx1024m</jvmArg>-->
-                    <!--</jvmArgs>-->
+                    <showDeprecation>true</showDeprecation>
+                    <showWarnings>true</showWarnings>
+                    <fork>true</fork>
+                    <meminitial>128m</meminitial>
+                    <maxmem>768m</maxmem>
                 </configuration>
             </plugin>
 
@@ -344,8 +345,8 @@
                 <configuration>
                     <sourceDir>src/main/scala</sourceDir>
                     <jvmArgs>
-                        <!--<jvmArg>-Xms128m</jvmArg>-->
-                        <!--<jvmArg>-Xmx256m</jvmArg>-->
+                        <jvmArg>-Xms128m</jvmArg>
+                        <jvmArg>-Xmx512m</jvmArg>
                     </jvmArgs>
                     <scalaVersion>${version.scala}</scalaVersion>
                 </configuration>
