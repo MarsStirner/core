@@ -62,10 +62,10 @@ public class SendProcedureRequest {
     private static final Logger logger = LoggerFactory.getLogger(SendProcedureRequest.class);
 
     public static class ProcedurePropType {
-        private PropType prop;
-        private String unitCode;
-        private String typeName;
-        private String valueDomain;
+        private final PropType prop;
+        private final String unitCode;
+        private final String typeName;
+        private final String valueDomain;
         private static final Set<PropType> propTypes = new HashSet<PropType>();
 
         /**
@@ -211,9 +211,9 @@ public class SendProcedureRequest {
         res.setIbNumber(event.getExternalId());
         final Date plannedEndDate = action.getPlannedEndDate();
         if (plannedEndDate != null) {
-            res.setPlanDate(Database.getGregorianCalendar(plannedEndDate));
+            res.setPlanDate(Database.toGregorianCalendar(plannedEndDate));
         }
-        res.setRegistrationDate(Database.getGregorianCalendar(new Date()));
+        res.setRegistrationDate(Database.toGregorianCalendar(new Date()));
         res.setAttendingPhysicianId(createPerson.getId());
         res.setAttendingPhysicianFirstName(createPerson.getFirstName());
         res.setAttendingPhysicianLastName(createPerson.getLastName());

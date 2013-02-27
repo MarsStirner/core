@@ -6,7 +6,6 @@ import java.util.List;
 import javax.ejb.EJB;
 import javax.ejb.Stateless;
 import javax.persistence.EntityManager;
-import javax.persistence.PersistenceContext;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -39,9 +38,6 @@ public class RegProcedureResult {
     @EJB
     private Database database;
 
-    @PersistenceContext(unitName = "s11r64")
-    private EntityManager em = null;
-
     private static final Logger logger = LoggerFactory.getLogger(SendOrderBloodComponents.class);
 
     public IssueResult save(final PatientCredentials patientCredentials, final ProcedureInfo procedureInfo, final EritrocyteMass eritrocyteMass,
@@ -50,7 +46,7 @@ public class RegProcedureResult {
         res.setResult(false);
         final Integer requestId = procedureInfo.getId();
         res.setRequestId(requestId);
-        final Action action = database.getAction(requestId);
+        final Action action = database.getEntityMgr().find(Action.class, requestId);
 
         if (action == null) { // требование КК не найдено в базе данных
             res.setDescription(String.format("The TRFU procedure for ID '%s' has been not found in MIS", "" + requestId));
@@ -88,9 +84,9 @@ public class RegProcedureResult {
             trfuFinalValume.setCollectVolume(finalVolume.getCollectVolume());
             trfuFinalValume.setAnticoagulantInCollect(finalVolume.getAnticoagulantInCollect());
             trfuFinalValume.setAnticoagulantInPlasma(finalVolume.getAnticoagulantInPlasma());
-            em.persist(trfuFinalValume);
+            database.getEntityMgr().persist(trfuFinalValume);
         }
-        em.flush();
+        database.getEntityMgr().flush();
     }
 
     /**
@@ -98,6 +94,7 @@ public class RegProcedureResult {
      * @param measures
      */
     private void updateMeasures(final Action action, final List<LaboratoryMeasure> measures) {
+        EntityManager em = database.getEntityMgr();
         for (final LaboratoryMeasure curMeasure : measures) {
             final TrfuLaboratoryMeasure trfuLaboratoryMeasure = new TrfuLaboratoryMeasure();
             trfuLaboratoryMeasure.setAction(action);

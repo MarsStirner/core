@@ -96,7 +96,7 @@ public class Database {
     private static final Logger logger = LoggerFactory.getLogger(Database.class);
 
     /**
-     * Получить из БД значение свойства действия {ActionProperty_<Type>.value}
+     * Получить значение свойства действия {ActionProperty_<Type>.value}
      * 
      * @param classType
      *            - энтити таблицы значений свойств (например APIntegerValue)
@@ -130,6 +130,20 @@ public class Database {
         return em;
     }
 
+    /**
+     * Получить из БД значение свойства действия {ActionProperty_<Type>.value} или значение по умолчанию
+     * 
+     * @param classType
+     *            - энтити таблицы значений свойств (например APIntegerValue)
+     * @param actionId
+     *            - ID действия {Action.Id}
+     * @param propTypeId
+     *            - тип свойства действия {ActionPropertyType.Id}
+     * @param defaultVal
+     *            - значение по умолчанию
+     * @return - значение свойства дейсвия типа <code>propTypeId</code> для действия <code>actionId</code>, <br>
+     *         - либо значение по умолчанию <code>defaultVal</code>, если свойсво не найдено или найдено более чем одно значение
+     */
     public <T> T getSingleProp(@SuppressWarnings("rawtypes") final Class classType,
             final int actionId,
             final int propTypeId,
@@ -142,19 +156,8 @@ public class Database {
     }
 
     /**
-     * @param em
-     * @param actionId
-     * @param propTypeId
-     * @return
-     */
-    private List<ActionProperty> getActionProp(final int actionId, final int propTypeId) {
-        final List<ActionProperty> prop =
-                em.createQuery("SELECT p FROM ActionProperty p WHERE p.action.id = :curAction_id AND p.deleted = 0 AND p.actionPropertyType.id = :propTypeId",
-                        ActionProperty.class).setParameter("curAction_id", actionId).setParameter("propTypeId", propTypeId).getResultList();
-        return prop;
-    }
-
-    /**
+     * Проверить количества найденных свойств для действия
+     * 
      * @param actionId
      * @param propTypeId
      * @param size
@@ -162,21 +165,40 @@ public class Database {
      */
     private void checkCountProp(final int actionId, final int propTypeId, final int size) throws CoreException {
         if (size == 0) {
-            throw new CoreException(String.format("The property %d for action %d has been not found", propTypeId, actionId));
+            throw new CoreException(0, String.format("The property %d for action %d has been not found", propTypeId, actionId));
         } else if (size > 1) {
-            throw new CoreException(String.format("More that one property %d for action %d has been found", propTypeId, actionId));
+            throw new CoreException(1, String.format("More that one property %d for action %d has been found", propTypeId, actionId));
         }
     }
 
+    /**
+     * Добавить свойство
+     * 
+     * @param value
+     *            - устанавлемое значение свойства
+     * @param classType
+     *            - энтити таблицы значений свойств (например APIntegerValue)
+     * @param actionId
+     *            - ID действия {Action.Id}
+     * @param propTypeId
+     *            - тип свойства действия {ActionPropertyType.Id}
+     * @param isUpdate
+     *            - флаг обновления значения для ранее заданных свойств
+     * @return - ID установленного свойства
+     * @throws CoreException
+     *             если згачение свойства уже задано и <code>isUpdate</code> равен <code>false</code>
+     * @throws Error
+     *             если невозможно создать экземпляр класса энтити таблицы classType (@see Class#newInstance())
+     */
     public <T> int addSinglePropBasic(final T value,
             @SuppressWarnings("rawtypes") final Class classType,
             final int actionId,
             final int propTypeId,
-            final boolean update) throws CoreException {
+            final boolean isUpdate) throws CoreException {
         Integer newPropId = null;
         final List<ActionProperty> prop = getActionProp(actionId, propTypeId);
         if (prop.size() > 0) {
-            if (update) {
+            if (isUpdate) {
                 newPropId = prop.get(0).getId();
             } else {
                 new CoreException(String.format("The property %i for action %i has been alredy set", propTypeId, actionId)); // свойство уже установленно
@@ -192,7 +214,7 @@ public class Database {
 
         final String msg = String.format("Internal error: The type %s is supproted by Database.addSinglePropBasic", value.getClass().getName());
         try {
-            actionProp = setPropValue(newPropId, (AbstractAPValue) classType.newInstance());
+            actionProp = getPropValue(newPropId, (AbstractAPValue) classType.newInstance());
         } catch (final InstantiationException e) {
             logger.error(msg);
             e.printStackTrace();
@@ -210,40 +232,10 @@ public class Database {
 
     }
 
-    private <T> T setPropValue(final Integer newPropId, final T propInteger) {
-        final String template = "SELECT p FROM %s p WHERE p.id.id = :curProp_id";
-        final String className = propInteger.getClass().getName();
-        @SuppressWarnings("unchecked")
-        final List<T> curProp =
-                (List<T>) em.createQuery(String.format(template, className.substring(className.lastIndexOf('.') + 1)), propInteger.getClass())
-                        .setParameter("curProp_id", newPropId).getResultList();
-        return curProp.size() > 0 ? curProp.get(0) : propInteger;
-    }
-
-    private Integer addActionProp(final int actionId, final int propTypeId) throws CoreException {
-        final Action action = EntityMgr.getSafe(em.find(Action.class, new Integer(actionId)));
-        final ActionPropertyType actionPropType = EntityMgr.getSafe(em.find(ActionPropertyType.class, new Integer(propTypeId)));
-        final ActionProperty actionProp = new ActionProperty();
-        final Date now = new Date();
-        actionProp.setCreateDatetime(now);
-        actionProp.setCreatePerson(action.getCreatePerson());
-        actionProp.setModifyDatetime(now);
-        actionProp.setModifyPerson(action.getCreatePerson());
-        actionProp.setType(actionPropType);
-        final RbUnit unit = actionPropType.getUnit();
-        actionProp.setUnit(unit == RbUnit.getEmptyUnit() ? null : unit);
-        actionProp.setNorm(actionPropType.getName());
-        actionProp.setNorm(null);
-        actionProp.setVersion(0);
-        actionProp.setAction(action);
-        em.persist(actionProp);
-        em.flush();
-        logger.info("The new property {} for action {} has been added. Property id: {}", propTypeId, actionId, actionProp.getId());
-        return actionProp.getId();
-    }
-
     /**
-     * @return
+     * Получит список подразделений {OrgStructure}
+     * 
+     * @return список подразделений
      */
     public List<DivisionInfo> getDivisions() {
         final List<DivisionInfo> res = new LinkedList<DivisionInfo>();
@@ -274,13 +266,13 @@ public class Database {
     /**
      * Информация о пациенте для предачи требования КК в ТРФУ
      * 
-     * 
      * @param action
      *            - действие, соответсвующее новому требованию КК
      * @return - информацию о пациенте для передачи в ТРФУ
      * @throws CoreException
      *             - при отсутвии доступа к БД или при отсутвии необходимой информации в БД
      * @throws DatatypeConfigurationException
+     *             - если не возможно преобразовать дату рождения пациента в XMLGregorianCalendar (@see {@link Database#toGregorianCalendar(Date)})
      */
     public static PatientCredentials getPatientCredentials(final Action action) throws CoreException, DatatypeConfigurationException {
         final PatientCredentials res = new PatientCredentials();
@@ -290,7 +282,7 @@ public class Database {
         res.setLastName(client.getLastName());
         res.setFirstName(client.getFirstName());
         res.setMiddleName(client.getPatrName());
-        res.setBirth(getGregorianCalendar(EntityMgr.getSafe(client.getBirthDate())));
+        res.setBirth(toGregorianCalendar(EntityMgr.getSafe(client.getBirthDate())));
         final RbBloodType clientBloodType = EntityMgr.getSafe(client.getBloodType());
         final BloodType bloodType = convertBloodId(clientBloodType.getCode());
         res.setBloodGroupId(bloodType.bloodGroupId);
@@ -298,14 +290,29 @@ public class Database {
         return res;
     }
 
-    public static XMLGregorianCalendar getGregorianCalendar(final Date date) throws DatatypeConfigurationException {
+    /**
+     * Преобразовать Date в XMLGregorianCalendar
+     * 
+     * @param date
+     * @return XMLGregorianCalendar соответсвующий <code>date</code>
+     * @throws DatatypeConfigurationException
+     *             если не возможно создать экземпляр XMLGregorianCalendar (@see {@link DatatypeFactory#newInstance()})
+     */
+    public static XMLGregorianCalendar toGregorianCalendar(final Date date) throws DatatypeConfigurationException {
         final GregorianCalendar planedDateCalendar = new GregorianCalendar();
         planedDateCalendar.setTime(date);
         return DatatypeFactory.newInstance().newXMLGregorianCalendar(planedDateCalendar);
     }
 
     private static class BloodType {
+        /**
+         * Резус-факиор
+         */
         private int rhesusFactorId;
+
+        /**
+         * Группа крови
+         */
         private int bloodGroupId;
     }
 
@@ -347,9 +354,62 @@ public class Database {
         return res;
     }
 
-    public Action getAction(final Integer requestId) {
-        final List<Action> actions =
-                em.createQuery("SELECT a FROM Action a WHERE a.id = :requestId", Action.class).setParameter("requestId", requestId).getResultList();
-        return actions.isEmpty() ? null : actions.get(0);
+    /**
+     * Получить список свойств для заданного действия {ActionProperty}
+     * 
+     * @param actionId
+     *            - ID действия {Action.Id}
+     * @param propTypeId
+     *            - тип свойства действия {ActionPropertyType.Id}
+     * @return список энтити {ActionProperty} соответвующий свойствам типа <code>propTypeId</code> для действия <code>actionId</code>
+     */
+    private List<ActionProperty> getActionProp(final int actionId, final int propTypeId) {
+        final List<ActionProperty> prop =
+                em.createQuery("SELECT p FROM ActionProperty p WHERE p.action.id = :curAction_id AND p.deleted = 0 AND p.actionPropertyType.id = :propTypeId",
+                        ActionProperty.class).setParameter("curAction_id", actionId).setParameter("propTypeId", propTypeId).getResultList();
+        return prop;
     }
+
+    /**
+     * Получить значение свойства по ID или значение по умолчанию
+     * 
+     * @param newPropId
+     * @param defaultValue
+     * @return
+     */
+    private <T> T getPropValue(final Integer newPropId, final T defaultValue) {
+        final String template = "SELECT p FROM %s p WHERE p.id.id = :curProp_id";
+        final String className = defaultValue.getClass().getName();
+        @SuppressWarnings("unchecked")
+        final List<T> curProp =
+                (List<T>) em.createQuery(String.format(template, className.substring(className.lastIndexOf('.') + 1)), defaultValue.getClass())
+                        .setParameter("curProp_id", newPropId).getResultList();
+        return curProp.size() > 0 ? curProp.get(0) : defaultValue;
+    }
+
+    /**
+     * @see {@link Database#addSinglePropBasic}
+     */
+    private Integer addActionProp(final int actionId, final int propTypeId) throws CoreException {
+        final Action action = EntityMgr.getSafe(em.find(Action.class, new Integer(actionId)));
+        final ActionPropertyType actionPropType = EntityMgr.getSafe(em.find(ActionPropertyType.class, new Integer(propTypeId)));
+        final ActionProperty actionProp = new ActionProperty();
+        final Date now = new Date();
+        actionProp.setCreateDatetime(now);
+        actionProp.setCreatePerson(action.getCreatePerson());
+        actionProp.setModifyDatetime(now);
+        actionProp.setModifyPerson(action.getCreatePerson());
+        actionProp.setType(actionPropType);
+        final RbUnit unit = actionPropType.getUnit();
+        actionProp.setUnit(unit == RbUnit.getEmptyUnit() ? null : unit);
+        actionProp.setNorm(actionPropType.getName());
+        actionProp.setNorm(null);
+        actionProp.setVersion(0);
+        actionProp.setAction(action);
+        em.persist(actionProp);
+        em.flush();
+        logger.info("The new property {} for action {} has been added. Property id: {}", propTypeId, actionId, actionProp.getId());
+        return actionProp.getId();
+    }
+
 }

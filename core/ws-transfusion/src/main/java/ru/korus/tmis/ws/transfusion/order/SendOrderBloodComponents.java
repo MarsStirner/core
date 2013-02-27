@@ -78,12 +78,6 @@ public class SendOrderBloodComponents {
 
     private TrfuActionProp trfuActionProp;
 
-    /*
-     * (non-Javadoc)
-     * 
-     * @see ru.korus.tmis.ws.transfusion.order.Pullable#pullDB(ru.korus.tmis.ws.transfusion.efive.TransfusionMedicalService)
-     */
-
     public void pullDB(final TransfusionMedicalService trfuService) {
         try {
             trfuActionProp = new TrfuActionProp(database, ACTION_TYPE_TRANSFUSION_ORDER, Arrays.asList(propConstants));
@@ -93,7 +87,7 @@ public class SendOrderBloodComponents {
         }
         logger.info("Periodic check new TRFU order...");
         updateBloodCompTable(trfuService);
-        List<Action> orderActions = database.getNewActionByFlatCode(ACTION_TYPE_TRANSFUSION_ORDER);
+        final List<Action> orderActions = database.getNewActionByFlatCode(ACTION_TYPE_TRANSFUSION_ORDER);
         logger.info("Periodic check new TRFU order... the count of new action: {}", orderActions.size());
 
         for (final Action action : orderActions) {
@@ -175,9 +169,9 @@ public class SendOrderBloodComponents {
         res.setTransfusionType(convertTrfuType((String) trfuActionProp.getProp(action.getId(), PropType.TYPE)));
         final Date plannedEndDate = action.getPlannedEndDate();
         if (plannedEndDate != null) {
-            res.setPlanDate(Database.getGregorianCalendar(plannedEndDate));
+            res.setPlanDate(Database.toGregorianCalendar(plannedEndDate));
         }
-        res.setRegistrationDate(Database.getGregorianCalendar(new Date()));
+        res.setRegistrationDate(Database.toGregorianCalendar(new Date()));
         res.setAttendingPhysicianId(createPerson.getId());
         res.setAttendingPhysicianFirstName(createPerson.getFirstName());
         res.setAttendingPhysicianLastName(createPerson.getLastName());

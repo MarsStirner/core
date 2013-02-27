@@ -7,7 +7,6 @@ import java.util.List;
 import javax.ejb.EJB;
 import javax.ejb.Stateless;
 import javax.persistence.EntityManager;
-import javax.persistence.PersistenceContext;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -37,9 +36,6 @@ public class RegOrderIssueResult {
     @EJB
     private Database database;
 
-    @PersistenceContext(unitName = "s11r64")
-    private EntityManager em = null;
-
     private static final Logger logger = LoggerFactory.getLogger(SendOrderBloodComponents.class);
 
     /**
@@ -55,7 +51,7 @@ public class RegOrderIssueResult {
         res.setResult(false);
 
         res.setRequestId(requestId);
-        final Action action = database.getAction(requestId);
+        final Action action = database.getEntityMgr().find(Action.class, requestId);
 
         if (action == null) { // требование КК не найдено в базе данных
             res.setDescription(String.format("The issue for requestId '%s' has been not found in MIS", "" + requestId));
@@ -88,6 +84,7 @@ public class RegOrderIssueResult {
                 new TrfuActionProp(database, SendOrderBloodComponents.TRANSFUSION_ACTION_FLAT_CODE, Arrays.asList(SendOrderBloodComponents.propConstants));
         final Integer actionId = action.getId();
         final boolean update = true;
+        final EntityManager em = database.getEntityMgr();
         if (factDate != null) {
             trfuActionProp.setProp(factDate, actionId, PropType.ORDER_ISSUE_RES_TIME, update);
             trfuActionProp.setProp(factDate, actionId, PropType.ORDER_ISSUE_RES_DATE, update);
@@ -126,6 +123,7 @@ public class RegOrderIssueResult {
      * @return
      */
     private RbBloodType toRbBloodType(final Integer bloodGroupId, final Integer rhesusFactorId) {
+        final EntityManager em = database.getEntityMgr();
         final String[] bloodGroups = {
                 "0(I)Rh", "A(II)Rh", "B(III)Rh", "AB(IV)Rh" };
         final String[] rhesusFoctors = {
@@ -147,6 +145,7 @@ public class RegOrderIssueResult {
      * @return
      */
     private RbTrfuBloodComponentType toRbBloodComponentType(final Integer componentId) {
+        final EntityManager em = database.getEntityMgr();
         final List<RbTrfuBloodComponentType> rbBloodComponentTypes =
                 em
                         .createQuery("SELECT c FROM RbTrfuBloodComponentType c WHERE c.trfuId = :trfuId", RbTrfuBloodComponentType.class)

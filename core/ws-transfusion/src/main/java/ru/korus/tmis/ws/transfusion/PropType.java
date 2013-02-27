@@ -18,12 +18,16 @@ import ru.korus.tmis.core.entity.model.APValueTime;
  * Типы свойств действий ТРФУ
  */
 public enum PropType {
-    // Общие свойства ТРФУ
+    /**
+     * Общие свойства ТРФУ
+     */
     ORDER_REQUEST_ID("trfuReqBloodCompResult", APValueString.class, "Результат передачи требования в систему ТРФУ"),
     ORDER_ISSUE_RES_DATE("trfuReqBloodCompDate", APValueDate.class, "Дата выдачи КК"),
     ORDER_ISSUE_RES_TIME("trfuReqBloodCompTime", APValueTime.class, "Время выдачи КК"),
 
-    // Свойства действия "Гемотрансфузионная терапия" (требование на выдачу КК)
+    /**
+     * Свойства действия "Гемотрансфузионная терапия" (требование на выдачу КК)
+     */
     DIAGNOSIS("trfuReqBloodCompDiagnosis", APValueString.class, "Основной клинический диагноз"),
     BLOOD_COMP_TYPE("trfuReqBloodCompId", APValueRbBloodComponentType.class, "Требуемый компонент крови"),
     TYPE("trfuReqBloodCompType", APValueString.class, "Вид трансфузии"),
@@ -32,7 +36,9 @@ public enum PropType {
     ROOT_CAUSE("trfuReqBloodCompRootCause", APValueString.class, "Показания к проведению трансфузии"),
     ORDER_ISSUE_BLOOD_COMP_PASPORT("trfuReqBloodCompPasport", APValueInteger.class, "Паспортные данные выданных компонентов крови"),
 
-    // Свойства лечебных процедур ТРФУ
+    /**
+     * Свойства лечебных процедур ТРФУ
+     */
     DONOR_ID("trfuProcedureDonor", APValueInteger.class, "Донор"),
     CONTRAINDICATION("trfuProcedureContraindication", APValueString.class, "Противопоказания к проведению процедуры"),
     BEFORE_HEMODYNAMICS_PULSE("trfuProcedureBeforeHemodynamicsPulse", APValueString.class, "Пульс до процедуры"),

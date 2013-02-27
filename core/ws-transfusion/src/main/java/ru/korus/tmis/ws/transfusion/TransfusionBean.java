@@ -2,7 +2,6 @@ package ru.korus.tmis.ws.transfusion;
 
 import javax.ejb.EJB;
 import javax.ejb.Schedule;
-import javax.ejb.Singleton;
 import javax.ejb.Stateless;
 import javax.xml.ws.WebServiceException;
 
@@ -11,9 +10,7 @@ import org.slf4j.LoggerFactory;
 
 import ru.korus.tmis.ws.transfusion.efive.TransfusionMedicalService;
 import ru.korus.tmis.ws.transfusion.efive.TransfusionMedicalService_Service;
-import ru.korus.tmis.ws.transfusion.order.RegOrderIssueResult;
 import ru.korus.tmis.ws.transfusion.order.SendOrderBloodComponents;
-import ru.korus.tmis.ws.transfusion.order.TrfuPullable;
 import ru.korus.tmis.ws.transfusion.procedure.SendProcedureRequest;
 
 /**
@@ -32,9 +29,6 @@ public class TransfusionBean {
     private static final Logger logger = LoggerFactory.getLogger(TransfusionBean.class);
 
     @EJB
-    private RegOrderIssueResult tmp;
-
-    @EJB
     private SendOrderBloodComponents sendOrderBloodComponents;
 
     @EJB
@@ -50,7 +44,6 @@ public class TransfusionBean {
             final TransfusionMedicalService transfusionMedicalService = service.getTransfusionMedicalService();
             sendOrderBloodComponents.pullDB(transfusionMedicalService);
             sendProcedureRequest.pullDB(transfusionMedicalService);
-
         } catch (final WebServiceException ex) {
             logger.error("The TRFU service is not available. Exception description: {}", ex.getMessage());
             ex.printStackTrace();
