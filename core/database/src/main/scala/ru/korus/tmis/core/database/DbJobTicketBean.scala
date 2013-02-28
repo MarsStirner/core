@@ -73,7 +73,7 @@ class DbJobTicketBean extends DbJobTicketBeanLocal
                       .getResultList
 
     result.size() match {
-      case 0 => new java.util.LinkedList[(Action, ActionTypeTissueType, JobTicket)]
+      case 0 => null
       case size => {
         val directions = result.foldLeft(new java.util.LinkedList[(Action, ActionTypeTissueType, JobTicket)])(
           (list, aj) => {

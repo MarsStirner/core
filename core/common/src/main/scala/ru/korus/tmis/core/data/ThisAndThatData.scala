@@ -1098,8 +1098,8 @@ class DictionaryListRequestDataFilter {
   }
 }
 
-@XmlType(name = "mkbListRequestDataFilter")
-@XmlRootElement(name = "mkbListRequestDataFilter")
+@XmlType(name = "departmentsDataFilter")
+@XmlRootElement(name = "departmentsDataFilter")
 class DepartmentsDataFilter {
 
   @BeanProperty
