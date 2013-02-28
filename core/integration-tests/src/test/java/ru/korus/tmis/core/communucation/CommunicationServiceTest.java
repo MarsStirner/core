@@ -19,7 +19,7 @@ import ru.korus.tmis.communication.thriftgen.Queue;
 
 import java.util.*;
 
-import static org.testng.Assert.assertTrue;
+import static org.testng.Assert.*;
 
 /**
  * User: eupatov
@@ -47,6 +47,7 @@ public class CommunicationServiceTest {
         } catch (TTransportException e) {
             logger.error("Cannot open transport: " + e.getMessage());
             e.printStackTrace();
+            fail("Cannot open transport: " + e.getMessage());
         }
         logger.info("Transport opened successfully");
     }
@@ -366,7 +367,7 @@ public class CommunicationServiceTest {
         final String patrName = "Отчество";
         final long birthDate = new DateMidnight(1999, 9, 19, DateTimeZone.UTC).getMillis();
 
-        Integer id = 0;
+        Integer id;
         try {
             final AddPatientParameters patient = new AddPatientParameters()
                     .setLastName(lastName)
@@ -384,20 +385,47 @@ public class CommunicationServiceTest {
             id = addStatus.getPatientId();
             logger.debug("Patient successfully added, ID={}", id);
 
-            logger.info("Second step is try to find Patient [{}] by multiple ways:", patient);
-            HashMap<String, String> documents = new HashMap<String, String>();
-            documents.put("client_id", id.toString());
+            logger.info("Second step is to call getPatientInfo(id={})", id);
+            getPatientInfoFromLinkedTest(lastName, firstName, patrName, birthDate, id);
 
-            PatientStatus findStatus = client.findPatient(new FindPatientParameters()
-                    .setLastName(lastName)
-                    .setFirstName(firstName)
-                    .setPatrName(patrName)
-                    .setBirthDate(birthDate)
-                    .setDocument(documents)
-            );
-            logger.debug("Find patient by id result is {}", findStatus);
-            assertTrue(findStatus.isSuccess());
-            assertTrue(findStatus.getPatientId() == id, "Не тот пациент!!!");
+            logger.info("Third step is try to find Patient [{}] by multiple ways:", patient);
+
+            logger.info("1) Call findPatient method with document, contains \"client_id\"  param.");
+            findPatientByDocument(lastName, firstName, patrName, birthDate, id);
+
+            logger.info("2) Call findPatients method with \"lastName\" param.");
+            findPatientsByLastNameOnly(lastName, id);
+
+            logger.info("3) Call findPatients method with \"FirstName\" param.");
+            findPatientsByFirstNameOnly(firstName, id);
+
+            logger.info("4) Call findPatients method with \"birthDate\" param.");
+            findPatientsByBirthFateOnly(birthDate, id);
+
+            logger.info("5) Call findPatients method with same param as findPatient.");
+            findPatient(lastName, firstName, patrName, birthDate, id);
+
+            logger.info("6) Send another parameters to findPatient(-s) method to avoid recieve our patient.");
+            incorrectParamsTest(lastName, firstName, patrName, birthDate, id);
+
+            logger.info("Fourth step is to find free ticket to a doctor and find a doctor too.");
+            Map<Integer, DateTime> enqueueParam = checkAvailableDoctors();
+            if (enqueueParam.isEmpty()) {
+                fail("No one pair doctorId, dateTime");
+            }
+            Map.Entry<Integer, DateTime> iterator = enqueueParam.entrySet().iterator().next();
+            Integer doctorId = iterator.getKey();
+            DateTime requestedDateTime = iterator.getValue();
+            logger.info("Fourth step is to check empty queue (for patient and for doctor timeline).");
+            final long queueDate = requestedDateTime.toDateMidnight().getMillis();
+            final long queueTime = requestedDateTime.getMillisOfDay();
+            logger.info("ID={} DATE={}", doctorId, requestedDateTime);
+
+            logger.info("Fifth step is to enqueuePatient and check this(for patient and for doctor timeline).");
+            final int queueId = checkEnqueue(id, doctorId, queueDate + queueTime, queueTime);
+
+            logger.info("Sixth step is to dequeuePatient and check this(for patient and for doctor timeline)");
+            checkDequeuePatient(id, doctorId, queueDate, queueTime, queueId);
 
 
         } catch (TException e) {
@@ -405,5 +433,285 @@ public class CommunicationServiceTest {
         }
 
 
+    }
+
+    private Map<Integer, DateTime> checkAvailableDoctors() {
+        Map<Integer, DateTime> result = new HashMap<Integer, DateTime>(1);
+        try {
+            logger.info("1) Get all doctors from top-level LPU recursively");
+            List<Person> allDoctorsList = client.getPersonnel(0, true, "");
+            logger.info("1)Result is {}", allDoctorsList);
+            List<Person> doctorsWhoHasAvailableTickets = new ArrayList<Person>();
+            logger.info("2) Start search for available tickets from today");
+            final int searchIntervalInDays = 7;
+            DateMidnight requestDate = new DateMidnight(DateTimeZone.UTC);
+            int currentDay = 0;
+            while (doctorsWhoHasAvailableTickets.isEmpty() && currentDay < searchIntervalInDays) {
+                logger.info("Search available tickets for {}", requestDate);
+                for (Person currentDoctor : allDoctorsList) {
+                    Amb currentAmb;
+                    try {
+                        currentAmb = client.getWorkTimeAndStatus(new GetTimeWorkAndStatusParameters()
+                                .setDate(requestDate.getMillis())
+                                .setPersonId(currentDoctor.getId())
+                                .setHospitalUidFrom("")
+                        );
+                    } catch (NotFoundException exc) {
+                        continue;
+                    }
+                    if (!currentAmb.getTickets().isEmpty()) {
+                        for (Ticket currentTicket : currentAmb.getTickets()) {
+                            if (currentTicket.getFree() == 1 && currentTicket.getAvailable() == 1) {
+                                doctorsWhoHasAvailableTickets.add(currentDoctor);
+                                logger.info("Doctor {} has amb={}", currentDoctor, currentAmb);
+                                break;
+                            }
+                        }
+                    }
+                }
+                requestDate.plusDays(1);
+                currentDay++;
+            }
+            if (doctorsWhoHasAvailableTickets.isEmpty()) {
+                fail("No one doctor has available tickets in next week");
+            }
+            logger.info("2) Doctors is {}", doctorsWhoHasAvailableTickets);
+            Random random = new Random();
+            Person selectedDoctor = doctorsWhoHasAvailableTickets
+                    .get(random.nextInt(doctorsWhoHasAvailableTickets.size()));
+            logger.info("Selected doctor is {}", selectedDoctor);
+            Amb selectedAmb = client.getWorkTimeAndStatus(new GetTimeWorkAndStatusParameters()
+                    .setDate(requestDate.getMillis())
+                    .setPersonId(selectedDoctor.getId())
+                    .setHospitalUidFrom("")
+            );
+            if (!selectedAmb.getTickets().isEmpty()) {
+                for (Ticket currentTicket : selectedAmb.getTickets()) {
+                    if (currentTicket.getFree() == 1 && currentTicket.getAvailable() == 1) {
+                        logger.info("Requested dateTime={}",
+                                new DateTime(requestDate.getMillis() + currentTicket.getTime(), DateTimeZone.UTC));
+                        result.put(selectedDoctor.getId(),
+                                new DateTime(requestDate.getMillis() + currentTicket.getTime(), DateTimeZone.UTC));
+                    }
+                }
+            }
+
+            return result;
+        } catch (TException e) {
+            logger.error("Невозможно получить врачей рекурсивно начиная с топ-уровня", e);
+            fail("Error message", e);
+        }
+        fail("Unreacheable point");
+        return null;
+    }
+
+    private void checkDequeuePatient(Integer id, int doctorId, long queueDate, long queueTime, int queueId) throws TException {
+        logger.info("1) Call dequeuePatient method");
+        final DequeuePatientStatus dequeuePatientStatus = client.dequeuePatient(id, queueId);
+        logger.info("1)Result is {}", dequeuePatientStatus);
+        assertTrue(dequeuePatientStatus.isSuccess(), "1) Статус отзыва записи - провал отзыва записи к врачу");
+
+        logger.info("2)  Call dequeuePatient method second time to get access denied");
+        final DequeuePatientStatus incorrectDequeuePatientStatus = client.dequeuePatient(id, queueId);
+        logger.info("2)Result is {}", incorrectDequeuePatientStatus);
+        assertFalse(incorrectDequeuePatientStatus.isSuccess(), "2) повторная отзыв записи на то-же время прошел успешно");
+
+        logger.info("After dequeue patient must have empty queue");
+        checkEmptyQueue(id, doctorId, queueTime + queueDate);
+    }
+
+    private int checkEnqueue(Integer id, int doctorId, long dateTime, long queueTime) throws TException {
+        final int queueId;
+        final int index;
+        logger.info("1) Call enqueuePatient method");
+        final EnqueuePatientStatus enqueuePatientStatus = client.enqueuePatient(new EnqueuePatientParameters()
+                .setHospitalUidFrom("")
+                .setNote("Абракадабра")
+                .setPatientId(id)
+                .setPersonId(doctorId)
+                .setDateTime(dateTime)
+        );
+        logger.info("1)Result is {}", enqueuePatientStatus);
+        queueId = enqueuePatientStatus.getQueueId();
+        index = enqueuePatientStatus.getIndex();
+        assertTrue(enqueuePatientStatus.isSuccess(), "1) Статус записи - провал записи к врачу");
+
+        logger.info("2)  Call enqueuePatient method second time to get access denied");
+        final EnqueuePatientStatus incorrectEnqueuePatientStatus = client.enqueuePatient(new EnqueuePatientParameters()
+                .setHospitalUidFrom("")
+                .setNote("Алагамуса")
+                .setPatientId(id)
+                .setPersonId(doctorId)
+                .setDateTime(dateTime)
+        );
+        logger.info("2)Result is {}", incorrectEnqueuePatientStatus);
+        assertFalse(incorrectEnqueuePatientStatus.isSuccess(), "2) повторная запись на то-же время прошла успешно");
+
+        logger.info("3) Call getWorkTimeAndStatus");
+        final Amb amb = client.getWorkTimeAndStatus(new GetTimeWorkAndStatusParameters()
+                .setPersonId(doctorId)
+                .setDate(dateTime)
+                .setHospitalUidFrom("")
+        );
+        logger.info("3)Result is {}", amb);
+        for (Ticket currentTicket : amb.getTickets()) {
+            if (currentTicket.getTime() == queueTime) {
+                assertTrue(currentTicket.free == 0 && currentTicket.getAvailable() == 0,
+                        "Талончик помечен как свободный даже после записи");
+                break;
+            }
+        }
+
+        logger.info("4) Call getPatientQueue.");
+        final List<Queue> patientQueue = client.getPatientQueue(id);
+        logger.info("4)Result is {}", patientQueue);
+        assertFalse(patientQueue.isEmpty(), "4) Никуда записан, хотя должен быть");
+        for (Queue currentQueue : patientQueue) {
+            if (currentQueue.getQueueId() == queueId) {
+                logger.info("OK");
+                assertEquals(currentQueue.getDateTime(), dateTime, "Запись не на то время");
+                assertEquals(index, currentQueue.getIndex(), "Индекс записи не совпадает");
+            }
+        }
+        return queueId;
+    }
+
+    private long checkEmptyQueue(Integer id, Integer doctorId, long dateTime) throws TException {
+        long queueTime = 0;
+        logger.info("1) Call getPatientQueue.");
+        final List<Queue> patientQueue = client.getPatientQueue(id);
+        logger.info("1)Result is {}", patientQueue);
+        assertTrue(patientQueue.isEmpty(), "1) Вновь созданный пациент не должен быть никуда записан");
+        logger.info("2) Call getWorkTimeAndStatus");
+        final Amb amb = client.getWorkTimeAndStatus(new GetTimeWorkAndStatusParameters()
+                .setPersonId(doctorId)
+                .setDate(dateTime)
+                .setHospitalUidFrom("")
+        );
+        logger.info("2)Result is {}", amb);
+        for (Ticket currentTicket : amb.getTickets()) {
+            if (currentTicket.getAvailable() == 1 && currentTicket.getFree() == 1) {
+                queueTime = currentTicket.getTime();
+                logger.info("Assigned time is {}", new DateTime(dateTime, DateTimeZone.UTC));
+                break;
+            }
+        }
+        return queueTime;
+    }
+
+    private void getPatientInfoFromLinkedTest(String lastName, String firstName, String patrName, long birthDate, Integer id) throws TException {
+        List<Integer> idPseudoList = new ArrayList<Integer>(1);
+        idPseudoList.add(id);
+        final Map<Integer, PatientInfo> patientInfoMap = client.getPatientInfo(idPseudoList);
+        logger.info("Recieved result from method \"getPatientInfo\" call = {}", patientInfoMap);
+        assertEquals(patientInfoMap.size(), 1, "В возвращаемой коллекциии не ровно один пациент");
+        assertTrue(patientInfoMap.containsKey(id), "Возвращаемая коллекция не имеет пациента с заданным ID");
+        PatientInfo patientInfo = patientInfoMap.get(id);
+        logger.info("Result is {}", patientInfo);
+        assertEquals(patientInfo.getFirstName(), firstName, "Имя несовпало");
+        assertEquals(patientInfo.getLastName(), lastName, "Фамилия несовпала");
+        assertEquals(patientInfo.getPatrName(), patrName, "Отчество несовпало");
+        assertEquals(patientInfo.getBirthDate(), birthDate, "Дата рождения несовпала");
+    }
+
+    private void incorrectParamsTest(String lastName, String firstName, String patrName, long birthDate, Integer id) throws TException {
+        logger.info("6.1) Send another parameters to findPatient method.");
+        Map<String, String> documents = new HashMap<String, String>();
+        documents.put("client_id", String.valueOf(id - 1));
+        PatientStatus findStatus = client.findPatient(new FindPatientParameters()
+                .setLastName(lastName)
+                .setFirstName(firstName)
+                .setPatrName(patrName)
+                .setBirthDate(birthDate)
+                .setDocument(documents)
+        );
+        logger.debug("6.1) Find patient by id result is {}", findStatus);
+        assertFalse(findStatus.getPatientId() == id, "В заведомо неправильной выборке наш пациент!!!");
+    }
+
+    private void findPatientsByLastNameOnly(String lastName, Integer id) throws TException {
+        List<Patient> patientList = client.findPatients(new FindMultiplePatientsParameters()
+                .setLastName(lastName)
+        );
+        boolean findIsSuccessfull = false;
+        for (Patient currentPatient : patientList) {
+            if (currentPatient.getId() == id) {
+                logger.debug("2) Result contains requested patient: It is \"{}\"", currentPatient);
+                findIsSuccessfull = true;
+            }
+        }
+        assertTrue(findIsSuccessfull,
+                "2) In recieved list there are no requested patient. Method findPatients failed");
+        logger.debug("2) Find patient by id result is {}", patientList);
+    }
+
+    private void findPatientsByFirstNameOnly(String firstName, Integer id) throws TException {
+        List<Patient> patientList = client.findPatients(new FindMultiplePatientsParameters()
+                .setFirstName(firstName)
+        );
+        boolean findIsSuccessfull = false;
+        for (Patient currentPatient : patientList) {
+            if (currentPatient.getId() == id) {
+                logger.debug("3) Result contains requested patient: It is \"{}\"", currentPatient);
+                findIsSuccessfull = true;
+            }
+        }
+        assertTrue(findIsSuccessfull,
+                "3) In recieved list there are no requested patient. Method findPatients failed");
+        logger.debug("3) Find patient by id result is {}", patientList);
+    }
+
+    private void findPatientByDocument(String lastName, String firstName, String patrName, long birthDate, Integer id) throws TException {
+        HashMap<String, String> documents = new HashMap<String, String>();
+        documents.put("client_id", id.toString());
+        PatientStatus findStatus = client.findPatient(new FindPatientParameters()
+                .setLastName(lastName)
+                .setFirstName(firstName)
+                .setPatrName(patrName)
+                .setBirthDate(birthDate)
+                .setDocument(documents)
+        );
+        logger.debug("1) Find patient by id result is {}", findStatus);
+        assertTrue(findStatus.isSuccess());
+        assertTrue(findStatus.getPatientId() == id, "Не тот пациент!!!");
+    }
+
+    private void findPatient(String lastName, String firstName, String patrName, long birthDate, Integer id) throws TException {
+        HashMap<String, String> documents = new HashMap<String, String>();
+        documents.put("client_id", id.toString());
+        List<Patient> patientList = client.findPatients(new FindMultiplePatientsParameters()
+                .setLastName(lastName)
+                .setFirstName(firstName)
+                .setPatrName(patrName)
+                .setBirthDate(birthDate)
+                .setDocument(documents)
+        );
+        boolean findIsSuccessfull = false;
+        for (Patient currentPatient : patientList) {
+            if (currentPatient.getId() == id) {
+                logger.debug("6) Result contains requested patient: It is \"{}\"", currentPatient);
+                findIsSuccessfull = true;
+            }
+        }
+        assertTrue(findIsSuccessfull,
+                "6) In recieved list there are no requested patient. Method findPatients failed");
+        logger.debug("6) Find patient by id result is {}", patientList);
+
+    }
+
+    private void findPatientsByBirthFateOnly(long birthDate, Integer id) throws TException {
+        List<Patient> patientList = client.findPatients(new FindMultiplePatientsParameters()
+                .setBirthDate(birthDate)
+        );
+        boolean findIsSuccessfull = false;
+        for (Patient currentPatient : patientList) {
+            if (currentPatient.getId() == id) {
+                logger.debug("4) Result contains requested patient: It is \"{}\"", currentPatient);
+                findIsSuccessfull = true;
+            }
+        }
+        assertTrue(findIsSuccessfull,
+                "4) In recieved list there are no requested patient. Method findPatients failed");
+        logger.debug("4) Find patient by id result is {}", patientList);
     }
 }

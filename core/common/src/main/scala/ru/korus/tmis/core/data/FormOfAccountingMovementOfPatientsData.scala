@@ -54,7 +54,7 @@ class FormOfAccountingMovementOfPatientsData {
            request: SeventhFormRequestData) {
     this()
     this.requestData = request
-    this.data = new FormOfAccountingMovementOfPatientsEntry(department, that)
+    this.data = new FormOfAccountingMovementOfPatientsEntry(request, department, that)
   }
 }
 
@@ -88,6 +88,9 @@ class SeventhFormRequestData {
 class FormOfAccountingMovementOfPatientsEntry {
 
   @BeanProperty
+  var rangeReportDateTime: DatePeriodContainer = _
+
+  @BeanProperty
   var department: OrgStructureContainer = _
 
   @BeanProperty
@@ -96,9 +99,11 @@ class FormOfAccountingMovementOfPatientsEntry {
   @BeanProperty
   var patients: SeventhFormReversePage = new SeventhFormReversePage()
 
-  def this(department: OrgStructure,
+  def this(request: SeventhFormRequestData,
+           department: OrgStructure,
            that: Map[Form007QueryStatuses.Form007QueryStatuses, (Long, List[Event])]) {
     this()
+    this.rangeReportDateTime = new DatePeriodContainer(request.getBeginDate, request.getEndDate)
     var cnt = Map.empty[Form007QueryStatuses.Form007QueryStatuses, Long]
     var pat = Map.empty[Form007QueryStatuses.Form007QueryStatuses, List[Event]]
     that.foreach(f=> {

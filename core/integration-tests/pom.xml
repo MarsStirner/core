@@ -78,7 +78,7 @@
                     <user>${glassfish.admin.login}</user>
                     <domainDirectory>${glassfish.domain.dir}</domainDirectory>
                     <echo>true</echo>
-                    <debug>true</debug>
+                    <debug>false</debug>
                     <terse>true</terse>
                     <domain>
                         <name>${glassfish.domain}</name>
@@ -91,18 +91,19 @@
                     <components>
                         <component>
                             <name>${ear.name}</name>
-                            <artifact>${ear.name}</artifact>
+                            <artifact>${project.basedir}/../server/target/${ear.name}.ear</artifact>
                         </component>
                     </components>
                 </configuration>
                 <executions>
-                    <!--<execution>-->
-                    <!--<id>Start and deploy server</id>-->
-                    <!--<phase>process-resources</phase>-->
-                    <!--<goals>-->
-                    <!--<goal>deploy</goal>-->
-                    <!--</goals>-->
-                    <!--</execution>-->
+                    <execution>
+                        <id>Start and deploy server</id>
+                        <phase>process-resources</phase>
+                        <goals>
+                            <goal>stop-domain</goal>
+                            <goal>deploy</goal>
+                        </goals>
+                    </execution>
                     <execution>
                         <id>Undeploy and stop server</id>
                         <phase>post-integration-test</phase>

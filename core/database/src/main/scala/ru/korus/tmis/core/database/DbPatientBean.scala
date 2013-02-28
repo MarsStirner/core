@@ -650,7 +650,7 @@ class DbPatientBean
     //SetParameters block
     if (documents != null && documents.size() > 0) {
       if (documents.containsKey("client_id")) {
-        typedQuery.setParameter("CLIENTID", documents.get("client_id"));
+        typedQuery.setParameter("CLIENTID", Integer.parseInt(documents.get("client_id")));
       }
       else {
         if (documents.containsKey("document_code")) {
