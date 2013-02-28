@@ -277,4 +277,8 @@ public class Diagnosis implements Serializable {
         return "ru.korus.tmis.core.entity.model.Diagnosis[id=" + id + "]";
     }
 
+    public static Diagnosis clone(Diagnosis self) throws CloneNotSupportedException {
+        Diagnosis newDiagnosis = (Diagnosis) self.clone();
+        return newDiagnosis;
+    }
 }

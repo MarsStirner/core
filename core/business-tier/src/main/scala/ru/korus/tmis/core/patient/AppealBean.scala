@@ -88,6 +88,9 @@ with CAPids{
   @EJB
   var dbEventTypeBean: DbEventTypeBeanLocal = _
 
+  @EJB
+  var diagnosisBean: DiagnosisBeanLocal = _
+
   @Inject
   @Any
   var actionEvent: javax.enterprise.event.Event[Notification] = _
@@ -348,8 +351,21 @@ with CAPids{
     //Создание/редактирование записи для Event_Persons
     if (flgCreate)
       dbEventPerson.insertOrUpdateEventPerson(0, newEvent, authData.getUser, true) //в ивенте только создание
-    //*****
 
+    //Создание/редактирование диагнозов (отд. записи)
+    val map = new java.util.HashMap[String, java.util.Set[java.lang.Integer]]
+    Set("assignment", "aftereffect", "attendant").foreach(flatCode=>{
+      val values = this.writeMKBDiagnosesFromAppealData(appealData.data.diagnoses, flatCode, false).map(Integer.valueOf(_))
+      map.put(flatCode, values)
+    })
+    if (flgCreate){
+      val diagnoses = diagnosisBean.insertDiagnoses(newEvent.getId.intValue(), map, authData)
+      dbManager.persistAll(diagnoses)
+    } /*else { //TODO: Временно закоментировано. Не доделано редактирование. Вопросы к Саше
+      val diagnoses = diagnosisBean.updateDiagnoses(newEvent.getId.intValue(), map, authData)
+      dbManager.mergeAll(diagnoses)
+    }*/
+    //
     newEvent.getId.intValue()
   }
 

@@ -95,6 +95,9 @@ object ConfigManager extends Configuration {
     var RbTestTubeTypeIsNull = 0x137
     var JobTicketIsNull = 0x138
     var JobTicketNotFound = 0x139
+    var RbDiagnosisTypeNotFound = 0x140
+    var DiagnosisNotFound = 0x141
+    var DiagnosticNotFound = 0x142
   }
 
   val Drugstore = new Configuration {
