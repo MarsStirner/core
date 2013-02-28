@@ -231,7 +231,7 @@ public class CommServer implements Communications.Iface {
                         .setError_msg("Ошибка во время получения действия связанного с осмотром заданного врача. ID врача="
                                 + params.getPersonId());
             }
-            logger.error("if reach this point, then all is too hard to understand why =(.", e);
+            logger.error("if reach this point, then all is too hard to understand why =(", e);
             throw new NotFoundException().setError_msg("UNKNOWN EXCEPTION.");
         }
         //3. Если есть actionId и отсутствует «Причина отсутствия» (т.е. врач на месте)
@@ -743,7 +743,7 @@ public class CommServer implements Communications.Iface {
     @Override
     public EnqueuePatientStatus enqueuePatient(final EnqueuePatientParameters params) throws TException {
         final int currentRequestNum = ++requestNum;
-        final DateTime paramsDateTime = new DateTime(params.getDateTime());
+        final DateTime paramsDateTime = new DateTime(params.getDateTime(), DateTimeZone.UTC);
         logger.info("#{} Call method -> CommServer.enqueuePatient( DOCTOR_ID={} PATIENT_ID={} DATE=[{}] MILLIS={})",
                 currentRequestNum, params.getPersonId(), params.getPatientId(), paramsDateTime, params.getDateTime());
 
@@ -809,6 +809,19 @@ public class CommServer implements Communications.Iface {
                             "Выбранное время:[" + paramsDateTime.toString() + "] к сожалению уже занято другим пациентом.")
                             .setSuccess(false);
                 } else {
+                    //TODO нельзя записать пациента на этот же день, если он уже был записан.
+                    //TODO
+                    //TODO
+                    //TODO
+                    //TODO
+                    //TODO
+                    //TODO
+                    //TODO
+                    //TODO
+                    //TODO
+                    //TODO
+                    //TODO
+                    //TODO
                     //Если ячейка времени свободна, то создаём записи в таблицах Event, Action, ActionProperty_Action:
                     logger.info("Ячейка времени:[{}] свободна (запрошеное время=[{}]). Начинаем запись пациента.",
                             new DateTime(currentTimeAMB.getValue()),
