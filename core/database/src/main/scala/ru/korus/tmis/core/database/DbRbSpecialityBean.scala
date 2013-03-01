@@ -9,6 +9,7 @@ import javax.persistence.{EntityManager, PersistenceContext}
 import ru.korus.tmis.core.entity.model.Speciality
 import scala.collection.JavaConversions._
 import ru.korus.tmis.core.data.{DictionaryListRequestDataFilter, QueryDataStructure}
+import ru.korus.tmis.core.filter.ListDataFilter
 
 /**
  * Created with IntelliJ IDEA.
@@ -65,22 +66,17 @@ with I18nable {
     typed.getSingleResult
   }
 
-  def getAllSpecialitiesWithFilter(page: Int, limit: Int, sortingField: String, sortingMethod: String, filter: Object): java.util.LinkedList[Object] = {
-    var queryStr: QueryDataStructure = if (filter.isInstanceOf[DictionaryListRequestDataFilter]) {
-      filter.asInstanceOf[DictionaryListRequestDataFilter].toQueryStructure()
-    }
-    else {
-      new QueryDataStructure()
-    }
-    val sorting = "ORDER BY %s %s".format(sortingField, sortingMethod)
+  def getAllSpecialitiesWithFilter(page: Int, limit: Int, sorting: String, filter: ListDataFilter): java.util.LinkedList[Object] = {
+
+    val queryStr = filter.toQueryStructure()
     if (queryStr.data.size() > 0) {
       if (queryStr.query.indexOf("AND ") == 0) {
         queryStr.query = "WHERE " + queryStr.query.substring("AND ".length())
       }
     }
-    var typed = em.createQuery(AllSpecialitiesWithFilterQuery.format("r.id, r.name", queryStr.query, sorting), classOf[Array[AnyRef]])
-      .setMaxResults(limit)
-      .setFirstResult(limit * page)
+    val typed = em.createQuery(AllSpecialitiesWithFilterQuery.format("r.id, r.name", queryStr.query, sorting), classOf[Array[AnyRef]])
+                  .setMaxResults(limit)
+                  .setFirstResult(limit * page)
     if (queryStr.data.size() > 0) {
       queryStr.data.foreach(qdp => typed.setParameter(qdp.name, qdp.value))
     }

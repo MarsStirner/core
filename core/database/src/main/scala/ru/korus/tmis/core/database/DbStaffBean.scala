@@ -12,6 +12,7 @@ import java.util.Date
 import javax.persistence.{TemporalType, EntityManager, PersistenceContext}
 import ru.korus.tmis.core.entity.model.{Action, Staff}
 import ru.korus.tmis.core.data.{FreePersonsListDataFilter, QueryDataStructure}
+import ru.korus.tmis.core.filter.ListDataFilter
 
 @Interceptors(Array(classOf[LoggingInterceptor]))
 @Stateless
@@ -99,19 +100,13 @@ class DbStaffBean
     result
   }
 
-  def getEmptyPersonsByRequest(limit: Int, page: Int, sortField: String, sortMethod: String, filter: Object) = {
+  def getEmptyPersonsByRequest(limit: Int, page: Int, sorting: String, filter: ListDataFilter) = {
 
     //TODO: как то надо подрубить пэйджинг, сортировки и общее кол-во
-    val queryStr: QueryDataStructure = if (filter.isInstanceOf[FreePersonsListDataFilter]) {
-      filter.asInstanceOf[FreePersonsListDataFilter].toQueryStructure()
-    }
-    else {
-      new QueryDataStructure()
-    }
+    val queryStr = filter.toQueryStructure()
 
-    //   val sorting = "ORDER BY at.%s %s".format(sortingField, sortingMethod)
     //Получение всех врачей по графику
-    val sqlRequest = AllEmptyStaffWithFilterQuery.format("s, apt.name, time.value", queryStr.query, /*sorting*/ "")
+    val sqlRequest = AllEmptyStaffWithFilterQuery.format("s, apt.name, time.value", queryStr.query, sorting)
     var typed = em.createQuery(sqlRequest, classOf[Array[AnyRef]])
 
     if (queryStr.data.size() > 0) {

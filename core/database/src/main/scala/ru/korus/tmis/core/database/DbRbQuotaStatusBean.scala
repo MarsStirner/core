@@ -10,6 +10,7 @@ import ru.korus.tmis.core.data.{DictionaryListRequestDataFilter, QueryDataStruct
 import scala.collection.JavaConversions._
 import ru.korus.tmis.core.entity.model.RbQuotaStatus
 import ru.korus.tmis.core.exception.CoreException
+import ru.korus.tmis.core.filter.ListDataFilter
 
 /**
  * Класс с методами для работы с таблицей s11r64.RbQuotaStatus
@@ -50,12 +51,9 @@ class DbRbQuotaStatusBean
     }
   }
 
-  def getAllRbQuotaStatusWithFilter(page: Int, limit: Int, sortingField: String, sortingMethod: String, filter: Object, records: (java.lang.Long) => java.lang.Boolean) = {
-    val queryStr: QueryDataStructure = if (filter.isInstanceOf[DictionaryListRequestDataFilter])
-      filter.asInstanceOf[DictionaryListRequestDataFilter].toQueryStructure()
-    else new QueryDataStructure()
+  def getAllRbQuotaStatusWithFilter(page: Int, limit: Int, sorting: String, filter: ListDataFilter, records: (java.lang.Long) => java.lang.Boolean) = {
 
-    val sorting = "ORDER BY %s %s".format(sortingField, sortingMethod)
+    val queryStr = filter.toQueryStructure()
     if (queryStr.data.size() > 0) {
       if (queryStr.query.indexOf("AND ") == 0) {
         queryStr.query = "WHERE " + queryStr.query.substring("AND ".length())
@@ -64,9 +62,9 @@ class DbRbQuotaStatusBean
 
     if (records!=null) records(em.createQuery(AllRbQuotaStatusWithFilterQuery.format("count(r)", queryStr.query, ""), classOf[Long]).getSingleResult)//Перепишем количество записей для структуры
 
-    var typed = em.createQuery(AllRbQuotaStatusWithFilterQuery.format("r.id, r.name", queryStr.query, sorting), classOf[Array[AnyRef]])
-      .setMaxResults(limit)
-      .setFirstResult(limit * page)
+    val typed = em.createQuery(AllRbQuotaStatusWithFilterQuery.format("r.id, r.name", queryStr.query, sorting), classOf[Array[AnyRef]])
+                  .setMaxResults(limit)
+                  .setFirstResult(limit * page)
     if (queryStr.data.size() > 0) queryStr.data.foreach(qdp => typed.setParameter(qdp.name, qdp.value))
 
     val result = typed.getResultList

@@ -1017,7 +1017,7 @@ public class PatientRegistryRESTImpl implements Serializable {
                                     @QueryParam("filter[hasBeds]")String hasBeds,
                                     @QueryParam("callback") String callback,
                                     @Context HttpServletRequest servRequest) {
-        AuthData auth = wsImpl.checkTokenCookies(servRequest);
+        //AuthData auth = wsImpl.checkTokenCookies(servRequest);
 
         Boolean flgBeds =  (hasBeds!=null && hasBeds.indexOf("true")>=0) ? true : false;
         DepartmentsDataFilter filter = new DepartmentsDataFilter(flgBeds);
@@ -1377,12 +1377,10 @@ public class PatientRegistryRESTImpl implements Serializable {
 
         ActionTypesListRequestDataFilter filter = new ActionTypesListRequestDataFilter(code, groupId, "laboratory", "LAB", view);
         ListDataRequest request = new ListDataRequest(sortingField, sortingMethod, limit, page, filter);
-        Object oip = null;
-        if (view != null && view.compareTo("tree") == 0) {
-          oip = wsImpl.getListOfActionTypes(request);
-        } else {
-          oip = wsImpl.getListOfActionTypeIdNames(request, patientId);
-        }
+
+        Object oip = (view != null && view.compareTo("tree") == 0) ? wsImpl.getListOfActionTypes(request)
+                                                                   : wsImpl.getListOfActionTypeIdNames(request, patientId);
+
         JSONWithPadding returnValue = new JSONWithPadding(oip, callback);
         return returnValue;
     }

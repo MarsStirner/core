@@ -8,6 +8,7 @@ import javax.interceptor.Interceptors
 import ru.korus.tmis.core.logging.LoggingInterceptor
 import javax.ejb.Stateless
 import scala.collection.JavaConversions._
+import ru.korus.tmis.core.filter.ListDataFilter
 
 /**
  * Методы для работы с таблицей s11r64.rbTissueType.
@@ -23,12 +24,9 @@ with I18nable {
   @PersistenceContext(unitName = "s11r64")
   var em: EntityManager = _
 
-  def getAllRbTissueTypeWithFilter(page: Int, limit: Int, sortingField: String, sortingMethod: String, filter: Object, records: (java.lang.Long) => java.lang.Boolean) = {
-    val queryStr: QueryDataStructure = if (filter.isInstanceOf[DictionaryListRequestDataFilter])
-      filter.asInstanceOf[DictionaryListRequestDataFilter].toQueryStructure()
-    else new QueryDataStructure()
+  def getAllRbTissueTypeWithFilter(page: Int, limit: Int, sorting: String, filter: ListDataFilter, records: (java.lang.Long) => java.lang.Boolean) = {
 
-    val sorting = "ORDER BY %s %s".format(sortingField, sortingMethod)
+    val queryStr = filter.toQueryStructure()
     if (queryStr.data.size() > 0) {
       if (queryStr.query.indexOf("AND ") == 0) {
         queryStr.query = "WHERE " + queryStr.query.substring("AND ".length())

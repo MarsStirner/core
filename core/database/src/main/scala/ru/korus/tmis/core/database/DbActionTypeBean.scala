@@ -12,6 +12,7 @@ import javax.persistence.{EntityManager, PersistenceContext}
 import scala.collection.JavaConversions._
 import ru.korus.tmis.core.exception.CoreException
 import ru.korus.tmis.core.data.{ActionTypesListRequestDataFilter, QueryDataStructure}
+import ru.korus.tmis.core.filter.ListDataFilter
 
 @Interceptors(Array(classOf[LoggingInterceptor]))
 @Stateless
@@ -114,20 +115,13 @@ class DbActionTypeBean
     result
   }
 
-  def getAllActionTypeWithFilter(page: Int, limit: Int, sortingField: String, sortingMethod: String, filter: Object) = {
+  def getAllActionTypeWithFilter(page: Int, limit: Int, sorting: String, filter: ListDataFilter) = {
 
-    val queryStr: QueryDataStructure = if (filter.isInstanceOf[ActionTypesListRequestDataFilter]) {
-      filter.asInstanceOf[ActionTypesListRequestDataFilter].toQueryStructure()
-    }
-    else {
-      new QueryDataStructure()
-    }
+    val queryStr = filter.toQueryStructure()
 
-    val sorting = "ORDER BY at.%s %s".format(sortingField, sortingMethod)
-
-    var typed = em.createQuery(AllActionTypeWithFilterQuery.format("at", queryStr.query, sorting), classOf[ActionType])
-      .setMaxResults(limit)
-      .setFirstResult(limit * page)
+    val typed = em.createQuery(AllActionTypeWithFilterQuery.format("at", queryStr.query, sorting), classOf[ActionType])
+                  .setMaxResults(limit)
+                  .setFirstResult(limit * page)
 
     if (queryStr.data.size() > 0) {
       queryStr.data.foreach(qdp => typed.setParameter(qdp.name, qdp.value))
