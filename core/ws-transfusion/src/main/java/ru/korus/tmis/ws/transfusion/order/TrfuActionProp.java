@@ -90,6 +90,6 @@ public class TrfuActionProp {
 
     public void orderResult2DB(final Action action, final Integer requestId) throws CoreException {
         setRequestState(action.getId(), "Получен идентификатор в системе ТРФУ: " + requestId);
-        action.setStatus(database.ACTION_STATE_WAIT);
+        action.setStatus(Database.ACTION_STATE_WAIT);
     }
 }

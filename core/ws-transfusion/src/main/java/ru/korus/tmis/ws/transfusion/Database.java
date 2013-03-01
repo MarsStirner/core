@@ -93,6 +93,11 @@ public class Database {
      */
     private static final int BLOOD_CODE_LENGHT = 2;
 
+    /**
+     * Код для миллилитров в табл. rbUnit
+     */
+    public static final String UNIT_MILILITER = "мл";
+
     private static final Logger logger = LoggerFactory.getLogger(Database.class);
 
     /**

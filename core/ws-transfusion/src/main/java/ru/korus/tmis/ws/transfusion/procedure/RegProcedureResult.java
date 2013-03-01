@@ -1,6 +1,6 @@
 package ru.korus.tmis.ws.transfusion.procedure;
 
-import java.util.LinkedList;
+import java.util.Arrays;
 import java.util.List;
 
 import javax.ejb.EJB;
@@ -126,9 +126,8 @@ public class RegProcedureResult {
      * @throws CoreException
      */
     private void updateProp(final Action action, final ProcedureInfo procedureInfo, final EritrocyteMass eritrocyteMass) throws CoreException {
-        final List<PropType> propType = new LinkedList<PropType>();
-        propType.addAll(SendProcedureRequest.ProcedurePropType.getPropTypes());
-        final TrfuActionProp trfuActionProp = new TrfuActionProp(database, action.getActionType().getFlatCode(), propType);
+        final TrfuActionProp trfuActionProp =
+                new TrfuActionProp(database, action.getActionType().getFlatCode(), Arrays.asList(SendProcedureRequest.propTypes));
         final Integer actionId = action.getId();
         final boolean update = true;
 

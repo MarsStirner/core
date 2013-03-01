@@ -1,13 +1,11 @@
 package ru.korus.tmis.ws.transfusion.procedure;
 
-import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Date;
 import java.util.HashMap;
-import java.util.HashSet;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
-import java.util.Set;
 
 import javax.ejb.EJB;
 import javax.ejb.Stateless;
@@ -52,8 +50,15 @@ import ru.korus.tmis.ws.transfusion.order.TrfuActionProp;
 @Stateless
 public class SendProcedureRequest {
 
+    /**
+     * 
+     */
+    private static final String AP_VALUE = "APValue";
+
     @EJB
     private Database database;
+
+    private Staff coreUser;
 
     /**
      * 
@@ -61,63 +66,50 @@ public class SendProcedureRequest {
     private static final String TRFU_PROCEDURE_TRFU_ID_BASE = "trfuProcedure_trfu_id_";
     private static final Logger logger = LoggerFactory.getLogger(SendProcedureRequest.class);
 
-    public static class ProcedurePropType {
-        private final PropType prop;
-        private final String unitCode;
-        private final String typeName;
-        private final String valueDomain;
-        private static final Set<PropType> propTypes = new HashSet<PropType>();
-
-        /**
-         * @param prop
-         * @param unitCode
-         * @param typeName
-         * @param valueDomain
-         */
-        public ProcedurePropType(final PropType prop, final String unitCode, final String typeName, final String valueDomain) {
-            this.prop = prop;
-            this.unitCode = unitCode;
-            this.typeName = typeName;
-            this.valueDomain = valueDomain;
-            propTypes.add(prop);
-        }
-
-        /**
-         * @return the propTypes
-         */
-        public static Set<PropType> getPropTypes() {
-            return propTypes;
-        }
-
-    }
-
-    // TODO calc typeName by PropType enum value
-    public static final ProcedurePropType[] propConstants = {
-            new ProcedurePropType(PropType.ORDER_REQUEST_ID, null, "String", ""),
-            new ProcedurePropType(PropType.DONOR_ID, null, "Integer", ""), new ProcedurePropType(PropType.ORDER_ISSUE_RES_DATE, null, "Date", ""),
-            new ProcedurePropType(PropType.ORDER_ISSUE_RES_TIME, null, "Time", ""), new ProcedurePropType(PropType.CONTRAINDICATION, null, "String", ""),
-            new ProcedurePropType(PropType.BEFORE_HEMODYNAMICS_PULSE, null, "String", ""),
-            new ProcedurePropType(PropType.AFTER_HEMODYNAMICS_PULSE, null, "String", ""),
-            new ProcedurePropType(PropType.BEFORE_HEMODYNAMICS_ARTERIAL_PRESSURE, null, "String", ""),
-            new ProcedurePropType(PropType.AFTER_HEMODYNAMICS_ARTERIAL_PRESSURE, null, "String", ""),
-            new ProcedurePropType(PropType.BEFORE_HEMODYNAMICS_TEMPERATURE, null, "String", ""),
-            new ProcedurePropType(PropType.AFTER_HEMODYNAMICS_TEMPERATURE, null, "String", ""),
-            new ProcedurePropType(PropType.COMPLICATIONS, null, "String", ""), new ProcedurePropType(PropType.INITIAL_VOLUME, null, "Double", ""),
-            new ProcedurePropType(PropType.CHANGE_VOLUME, null, "Double", ""), new ProcedurePropType(PropType.INITIAL_TBV, null, "String", ""),
-            new ProcedurePropType(PropType.CHANGE_TBV, null, "String", ""), new ProcedurePropType(PropType.INITIAL_SPEED, null, "String", ""),
-            new ProcedurePropType(PropType.CHANGE_SPEED, null, "String", ""), new ProcedurePropType(PropType.INITIAL_INLETACRATIO, null, "String", ""),
-            new ProcedurePropType(PropType.CHANGE_INLETACRATIO, null, "String", ""), new ProcedurePropType(PropType.INITIAL_TIME, null, "String", ""),
-            new ProcedurePropType(PropType.CHANGE_TIME, null, "String", ""), new ProcedurePropType(PropType.INITIAL_PRODUCT_VOLUME, null, "Double", ""),
-            new ProcedurePropType(PropType.CHANGE_PRODUCT_VOLUME, null, "Double", ""), new ProcedurePropType(PropType.ACD_LOAD, null, "String", ""),
-            new ProcedurePropType(PropType.NACL_LOAD, null, "String", ""), new ProcedurePropType(PropType.CA_LOAD, null, "String", ""),
-            new ProcedurePropType(PropType.OTHER_LOAD, null, "String", ""), new ProcedurePropType(PropType.TOTAL_LOAD, null, "String", ""),
-            new ProcedurePropType(PropType.PACK_REMOVE, null, "String", ""), new ProcedurePropType(PropType.OTHER_REMOVE, null, "String", ""),
-            new ProcedurePropType(PropType.TOTAL_REMOVE, null, "String", ""), new ProcedurePropType(PropType.BALANCE, null, "String", ""),
-            new ProcedurePropType(PropType.MAKER, null, "String", ""), new ProcedurePropType(PropType.NUMBER, null, "String", ""),
-            new ProcedurePropType(PropType.BLOOD_GROUP_ID, null, "Integer", ""), new ProcedurePropType(PropType.RHESUS_FACTOR_ID, null, "Integer", ""),
-            new ProcedurePropType(PropType.VOLUME_PROC_RES, null, "Double", ""), new ProcedurePropType(PropType.PRODUCTION_DATE, null, "Date", ""),
-            new ProcedurePropType(PropType.EXPIRATION_DATE, null, "Date", ""), new ProcedurePropType(PropType.HT, null, "Double", ""),
-            new ProcedurePropType(PropType.SALINE_VOLUME, null, "Double", ""), new ProcedurePropType(PropType.FINAL_HT, null, "Double", ""),
+    public static final PropType[] propTypes = {
+            PropType.ORDER_REQUEST_ID,
+            PropType.DONOR_ID,
+            PropType.ORDER_ISSUE_RES_DATE,
+            PropType.ORDER_ISSUE_RES_TIME,
+            PropType.CONTRAINDICATION,
+            PropType.BEFORE_HEMODYNAMICS_PULSE,
+            PropType.AFTER_HEMODYNAMICS_PULSE,
+            PropType.BEFORE_HEMODYNAMICS_ARTERIAL_PRESSURE,
+            PropType.AFTER_HEMODYNAMICS_ARTERIAL_PRESSURE,
+            PropType.BEFORE_HEMODYNAMICS_TEMPERATURE,
+            PropType.AFTER_HEMODYNAMICS_TEMPERATURE,
+            PropType.COMPLICATIONS,
+            PropType.INITIAL_VOLUME,
+            PropType.CHANGE_VOLUME,
+            PropType.INITIAL_TBV,
+            PropType.CHANGE_TBV,
+            PropType.INITIAL_SPEED,
+            PropType.CHANGE_SPEED,
+            PropType.INITIAL_INLETACRATIO,
+            PropType.CHANGE_INLETACRATIO,
+            PropType.INITIAL_TIME,
+            PropType.CHANGE_TIME,
+            PropType.INITIAL_PRODUCT_VOLUME,
+            PropType.CHANGE_PRODUCT_VOLUME,
+            PropType.ACD_LOAD,
+            PropType.NACL_LOAD,
+            PropType.CA_LOAD,
+            PropType.OTHER_LOAD,
+            PropType.TOTAL_LOAD,
+            PropType.PACK_REMOVE,
+            PropType.OTHER_REMOVE,
+            PropType.TOTAL_REMOVE,
+            PropType.BALANCE,
+            PropType.MAKER,
+            PropType.NUMBER,
+            PropType.BLOOD_GROUP_ID,
+            PropType.RHESUS_FACTOR_ID,
+            PropType.VOLUME_PROC_RES,
+            PropType.PRODUCTION_DATE,
+            PropType.EXPIRATION_DATE,
+            PropType.HT,
+            PropType.SALINE_VOLUME,
+            PropType.FINAL_HT,
     };
 
     /*
@@ -128,6 +120,7 @@ public class SendProcedureRequest {
 
     public void pullDB(final TransfusionMedicalService trfuService) {
         try {
+            initCoreUser();
             updateProcedureType(trfuService);
             updateLaboratoryMeasure(trfuService);
             sendNewProcedure(trfuService);
@@ -138,11 +131,28 @@ public class SendProcedureRequest {
     }
 
     /**
+     * 
+     */
+    private void initCoreUser() {
+
+        final String coreLogin = System.getProperty("tmis.core.user");
+        if (coreLogin != null) {
+            final List<Staff> coreUsers =
+                    database.getEntityMgr().createQuery("SELECT u FROM Staff u WHERE u.login = :login", Staff.class)
+                            .setParameter("login", coreLogin)
+                            .getResultList();
+            coreUser = coreUsers.isEmpty() ? null : coreUsers.get(0);
+        }
+
+    }
+
+    /**
      * @param em
      * @param trfuService
      * @throws CoreException
      * @throws DatatypeConfigurationException
      */
+
     private void sendNewProcedure(final TransfusionMedicalService trfuService) throws CoreException {
         final List<Action> actions = getNewActions(database.getEntityMgr());
         final Map<String, TrfuActionProp> actionProp = new HashMap<String, TrfuActionProp>();
@@ -151,7 +161,7 @@ public class SendProcedureRequest {
             try {
                 final String curFlatCode = action.getActionType().getFlatCode();
                 if (actionProp.get(action.getActionType().getId()) == null) {
-                    actionProp.put(curFlatCode, new TrfuActionProp(database, curFlatCode, new ArrayList<PropType>(ProcedurePropType.propTypes)));
+                    actionProp.put(curFlatCode, new TrfuActionProp(database, curFlatCode, Arrays.asList(propTypes)));
                 }
                 OrderResult orderResult = new OrderResult();
                 actionProp.get(curFlatCode).setRequestState(action.getId(), "");
@@ -356,6 +366,7 @@ public class SendProcedureRequest {
             at.setMaxOccursInEvent(0);
             at.setShowTime(false);
             at.setIsMES(0);
+            at.setCreatePerson(coreUser);
             em.persist(at);
             em.flush();
             createProperties(em, at);
@@ -392,17 +403,18 @@ public class SendProcedureRequest {
      */
     private void createProperties(final EntityManager em, final ActionType at) {
 
-        for (int idx = 0; idx < propConstants.length; ++idx) {
-            final ProcedurePropType curProp = propConstants[idx];
+        for (int idx = 0; idx < propTypes.length; ++idx) {
+            final PropType curProp = propTypes[idx];
             final ActionPropertyType apt = new ActionPropertyType();
             apt.setActionType(at);
             apt.setIdx(idx);
-            apt.setCode(curProp.prop.getCode());
-            apt.setName(curProp.prop.getName());
-            apt.setDescr(curProp.prop.getName());
-            apt.setUnit(getRbUnit(em, curProp.unitCode));
-            apt.setTypeName(curProp.typeName);
-            apt.setValueDomain(curProp.valueDomain);
+            apt.setCode(curProp.getCode());
+            apt.setName(curProp.getName());
+            apt.setDescr(curProp.getName());
+            apt.setUnit(getRbUnit(em, curProp.getUnitCode()));
+            final String canonicalName = curProp.getValueClass().getCanonicalName();
+            apt.setTypeName(canonicalName.substring(canonicalName.indexOf(AP_VALUE) + AP_VALUE.length()));
+            apt.setValueDomain("");
             apt.setNorm("");
             apt.setSex((short) 0);
             apt.setAge("");
