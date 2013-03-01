@@ -1279,7 +1279,7 @@ class MedipadWSImpl
                                                                     request.limit,
                                                                     request.sortingFieldInternal,
                                                                     request.sortingMethod,
-                                                                    request.filter,
+                                                                    request.filter.unwrap(),
                                                                     request.rewriteRecordsCount _)
 
     mapper.writeValueAsString(new EventTypesListData(list, request))
