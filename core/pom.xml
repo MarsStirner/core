@@ -238,10 +238,10 @@
 
         <profile>
             <!-- Пользовательский профиль -->
-            <id>nde-win</id>
+            <id>win-sg</id>
             <properties>
                 <!-- Путь к директории доменов -->
-                <glassfish.domain.dir>C:/Winprog/glassfish3/glassfish/domains/</glassfish.domain.dir>
+                <glassfish.domain.dir>C:/Winprog/glassfish3/glassfish/domains</glassfish.domain.dir>
                 <!-- Домашняя директория Glassfish -->
                 <glassfish.home>C:/Winprog/glassfish3/</glassfish.home>
                 <!-- Хост сервера Glassfish -->
@@ -251,9 +251,9 @@
                 <!-- Порт админского Web IF -->
                 <glassfish.port.admin>4848</glassfish.port.admin>
                 <!-- Название домена -->
-                <glassfish.domain>domain1</glassfish.domain>
+                <glassfish.domain>fccho</glassfish.domain>
                 <!-- Логин администратора -->
-                <glassfish.admin.login>admin</glassfish.admin.login>
+                <glassfish.admin.login>admin1234</glassfish.admin.login>
                 <!-- Пароль администратора-->
                 <glassfish.admin.password>admin1234</glassfish.admin.password>
                 <!-- Название приложения, которое будет отображаться в интерфейсе -->
@@ -284,8 +284,8 @@
             </properties>
         </profile>
 
-        <profile>
             <!-- Пользовательский профиль -->
+        <profile>
             <id>nde-lin</id>
             <properties>
                 <!-- Путь к директории доменов -->
