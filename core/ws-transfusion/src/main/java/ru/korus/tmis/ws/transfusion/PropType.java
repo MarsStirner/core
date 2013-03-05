@@ -23,9 +23,9 @@ public enum PropType {
      */
     ORDER_REQUEST_ID("trfuReqBloodCompResult", APValueString.class, "Результат передачи требования в систему ТРФУ"),
 
-    ORDER_ISSUE_RES_DATE("trfuReqBloodCompDate", APValueDate.class, "Дата выдачи КК"),
+    ORDER_ISSUE_RES_DATE("trfuReqBloodCompDate", APValueDate.class, "Дата"),
 
-    ORDER_ISSUE_RES_TIME("trfuReqBloodCompTime", APValueTime.class, "Время выдачи КК"),
+    ORDER_ISSUE_RES_TIME("trfuReqBloodCompTime", APValueTime.class, "Время"),
 
     /**
      * Свойства действия "Гемотрансфузионная терапия" (требование на выдачу КК)
