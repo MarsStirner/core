@@ -193,6 +193,9 @@ class MedipadWSImpl
 
   @EJB
   var directionBean: DirectionBeanLocal = _
+
+  @EJB
+  var dbDiagnosticBean: DbDiagnosticBeanLocal = _
   //////////////////////////////////////////////////////////////////////////////
 
   def checkTokenCookies(srvletRequest: HttpServletRequest): AuthData = {
@@ -515,7 +518,10 @@ class MedipadWSImpl
                                                 dbClientRelation.getClientRelationByRelativeId _,
                                                 null,
                                                 null,
-      if (positionA._1.getContractId != null) {dbContractBean.getContractById(positionA._1.getContractId.intValue())} else {null}
+                                                if (positionA._1.getContractId != null) {
+                                                  dbContractBean.getContractById(positionA._1.getContractId.intValue())
+                                                } else {null},
+                                                dbDiagnosticBean.getDiagnosticsByEventIdAndTypes _
                                 ))
     } else {
       throw new CoreException("Неудачная попытка сохранения(изменения) обращения")
@@ -546,7 +552,10 @@ class MedipadWSImpl
                                               dbClientRelation.getClientRelationByRelativeId _,
                                               actionPropertyBean.getActionPropertiesByActionIdAndRbCoreActionPropertyIds _,
                                               dbRbCoreActionPropertyBean.getRbCoreActionPropertiesByIds _,                    //таблица соответствия
-      if (positionE._1.getContract != null) {dbContractBean.getContractById(positionE._1.getContract.getId.intValue())} else {null}
+                                              if (positionE._1.getContract != null) {
+                                                dbContractBean.getContractById(positionE._1.getContract.getId.intValue())
+                                              } else {null},
+                                              dbDiagnosticBean.getDiagnosticsByEventIdAndTypes _
                               ))
   }
 
@@ -574,7 +583,10 @@ class MedipadWSImpl
                                               dbClientRelation.getClientRelationByRelativeId _,
                                               actionPropertyBean.getActionPropertiesByActionIdAndRbCoreActionPropertyIds _,  //в тч Admission Diagnosis
                                               dbRbCoreActionPropertyBean.getRbCoreActionPropertiesByIds _,          //таблица соответствия
-      if (positionA._1.getContractId != null) {dbContractBean.getContractById(positionA._1.getContractId.intValue())} else {null}
+                                              if (positionA._1.getContractId != null) {
+                                                dbContractBean.getContractById(positionA._1.getContractId.intValue())
+                                              } else {null},
+                                              dbDiagnosticBean.getDiagnosticsByEventIdAndTypes _
                               ))
   }
 
@@ -726,6 +738,7 @@ class MedipadWSImpl
                                                                                authData,
                                                                                preProcessing _,
                                                                                postProcessing _)
+     dbEventBean.setExecPersonForEventWithId(eventId, authData.getUser)
      returnValue
    }
 

@@ -1,4 +1,4 @@
-package ru.korus.tmis.util;
+package ru.korus.tmis.util.logs.filter;
 
 import ch.qos.logback.classic.spi.ILoggingEvent;
 import ch.qos.logback.classic.spi.IThrowableProxy;
@@ -10,7 +10,7 @@ import ch.qos.logback.core.spi.FilterReply;
  * Author:      Dmitriy E. Nosov <br>
  * Date:        25.01.13, 14:34 <br>
  * Company:     Korus Consulting IT<br>
- * Description:  <br>
+ * Description: Фильтр эксепшенов для аппедреров логбека <br>
  */
 public class ExceptionFilter extends Filter<ILoggingEvent> {
 
@@ -43,5 +43,4 @@ public class ExceptionFilter extends Filter<ILoggingEvent> {
             throw new IllegalArgumentException("Class is unavailable: " + exceptionClassName, e);
         }
     }
-
 }

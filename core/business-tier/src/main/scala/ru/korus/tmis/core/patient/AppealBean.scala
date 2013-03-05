@@ -24,18 +24,12 @@ import javax.enterprise.inject.Any
 import java.lang.Iterable
 ;
 
-//import ru.korus.tmis.core.common.CommonDataProcessorBeanLocal
-//import ru.korus.tmis.util.ConfigManager.APWI
-//import org.json.{JSONArray, JSONObject}
-
 @Interceptors(Array(classOf[LoggingInterceptor]))
 @Stateless
 class AppealBean extends AppealBeanLocal
-with Logging
-with I18nable
-with CAPids{
-
-//  val APPEALWI = ConfigManager.APPEALWI
+                    with Logging
+                    with I18nable
+                    with CAPids{
 
   @PersistenceContext(unitName = "s11r64")
   var em: EntityManager = _
@@ -133,13 +127,6 @@ with CAPids{
                     iCapIds("db.rbCAP.hosp.primary.id.bloodPressure.right.ADdiast").toInt,       //Правая рука: АД диаст.
                     iCapIds("db.rbCAP.hosp.primary.id.bloodPressure.right.ADsyst").toInt,        //Правая рука: АД сист.
                     iCapIds("db.rbCAP.hosp.primary.id.note").toInt)                              //Примечание
-    //              i18n("db.actionPropertyType.moving.name.beginTime").toString,                         //Время поступления
-    //              i18n("db.actionPropertyType.moving.name.bed").toString,                               //койка
-    //              i18n("db.actionPropertyType.moving.name.endTime").toString,                           //Время выбытия
-    //              i18n("db.actionPropertyType.moving.name.patronage").toString,                         //Патронаж
-    //              i18n("db.actionPropertyType.moving.name.located").toString,                           //Отделение пребывания
-    //              i18n("db.actionPropertyType.moving.name.movedIn").toString,                           //Переведен в отделение
-    //              i18n("db.actionPropertyType.moving.name.movedFrom").toString)                         //Переведен из отделения
 
   //Insert or modify appeal
   def insertAppealForPatient(appealData : AppealData, patientId: Int, authData: AuthData) = {
@@ -312,7 +299,16 @@ with CAPids{
       }
       if(appealData.data.refuseAppealReason!=null && !appealData.data.refuseAppealReason.isEmpty) {
         newEvent = this.revokeAppealById(newEvent, 15, authData)
-        this.insertCompleteDiagnoses(appealData.data.id, authData)
+        //this.insertCompleteDiagnoses(appealData.data.id, authData)   //Старый вариант (заменено кодом ниже)
+        //final диагноз
+        val admissionMkb = dbCustomQueryBean.getDiagnosisForMainDiagInAppeal(appealData.data.id)
+        if (admissionMkb != null) {
+          var map = Map.empty[String, java.util.Set[AnyRef]]
+          map += ("final" -> Set[AnyRef]((-1, "", Integer.valueOf(admissionMkb.getId.intValue))))
+          val diag = diagnosisBean.insertDiagnoses(appealData.data.id, asJavaMap(map), authData)
+          diag.filter(p=>p.isInstanceOf[Diagnostic]).toList.foreach(f=>f.asInstanceOf[Diagnostic].setResult(this.getRbResultById(15)))
+          dbManager.persistAll(diag)
+        }
 
         flgEventRewrite = true
       }
@@ -353,18 +349,35 @@ with CAPids{
       dbEventPerson.insertOrUpdateEventPerson(0, newEvent, authData.getUser, true) //в ивенте только создание
 
     //Создание/редактирование диагнозов (отд. записи)
-    val map = new java.util.HashMap[String, java.util.Set[java.lang.Integer]]
+    var map = Map.empty[String, java.util.Set[AnyRef]]
     Set("assignment", "aftereffect", "attendant").foreach(flatCode=>{
-      val values = this.writeMKBDiagnosesFromAppealData(appealData.data.diagnoses, flatCode, false).map(Integer.valueOf(_))
-      map.put(flatCode, values)
+      val values = appealData.data.diagnoses.filter(p=>p.getDiagnosisKind.compareTo(flatCode)==0)
+                                            .map(f=>{
+                                                      val mkb = dbMkbBean.getMkbByCode(f.getMkb.getCode)
+                                                      (Integer.valueOf(f.getDiagnosticId),
+                                                      f.getDescription,
+                                                      if(mkb!=null) Integer.valueOf(mkb.getId.intValue) else -1)
+                                                    })
+                                            .toSet[AnyRef]
+      map += (flatCode -> values)
     })
-    if (flgCreate){
-      val diagnoses = diagnosisBean.insertDiagnoses(newEvent.getId.intValue(), map, authData)
-      dbManager.persistAll(diagnoses)
-    } /*else { //TODO: Временно закоментировано. Не доделано редактирование. Вопросы к Саше
-      val diagnoses = diagnosisBean.updateDiagnoses(newEvent.getId.intValue(), map, authData)
-      dbManager.mergeAll(diagnoses)
-    }*/
+    val diagnoses = diagnosisBean.insertDiagnoses(newEvent.getId.intValue(), asJavaMap(map), authData)
+    val mergedItems = diagnoses.filter(p=> (p.isInstanceOf[Diagnosis] &&
+                                              p.asInstanceOf[Diagnosis].getId!=null &&
+                                              p.asInstanceOf[Diagnosis].getId.intValue()>0) ||
+                                             (p.isInstanceOf[Diagnostic] &&
+                                              p.asInstanceOf[Diagnostic].getId!=null &&
+                                              p.asInstanceOf[Diagnostic].getId.intValue()>0)
+                                        ).toList
+    val persistedItems = diagnoses.filter(p=> (p.isInstanceOf[Diagnosis] &&
+                                                (p.asInstanceOf[Diagnosis].getId==null ||
+                                                 p.asInstanceOf[Diagnosis].getId.intValue()<=0))||
+                                              (p.isInstanceOf[Diagnostic] &&
+                                                (p.asInstanceOf[Diagnostic].getId==null ||
+                                                 p.asInstanceOf[Diagnostic].getId.intValue()<=0))
+                                          ).toList
+    dbManager.mergeAll(mergedItems)
+    dbManager.persistAll(persistedItems)
     //
     newEvent.getId.intValue()
   }
@@ -547,51 +560,6 @@ with CAPids{
       status = if (execDate!= null) i18n("patient.status.discharged").toString
                else i18n("patient.status.require").toString
     }
-
- /*   var setATIds = JavaConversions.asJavaSet(Set(i18n("db.actionType.primary").toInt :java.lang.Integer,
-                                                 i18n("db.actionType.secondary").toInt :java.lang.Integer))
-    val primaryId = actionBean.getLastActionByActionTypeIdAndEventId (eventId, setATIds)
-    if(primaryId>0) { //Есть осмотр врача приемного отделения (первичный или повторный)
-      setATIds = JavaConversions.asJavaSet(Set(i18n("db.actionType.hospitalization.primary").toInt :java.lang.Integer))
-      val hospId = actionBean.getLastActionByActionTypeIdAndEventId (eventId, setATIds)
-      if(hospId>0) { //Есть экшн - поступление
-        var lstSentToIds = JavaConversions.asJavaList(scala.List(i18n("db.rbCAP.hosp.primary.id.sentTo").toInt :java.lang.Integer))
-        var lstCancelIds = JavaConversions.asJavaList(scala.List(i18n("db.rbCAP.hosp.primary.id.cancel").toInt :java.lang.Integer))
-        val apSentToWithValues = actionPropertyBean.getActionPropertiesByActionIdAndRbCoreActionPropertyIds(hospId, lstSentToIds)
-        val apCancelWithValues = actionPropertyBean.getActionPropertiesByActionIdAndRbCoreActionPropertyIds(hospId, lstCancelIds)
-        if (execDate!= null){
-          if (apCancelWithValues!=null &&
-            apCancelWithValues.size()>0 &&
-            apCancelWithValues.filter(element => element._2.size()>0).size>0){
-            status = i18n("patient.status.canceled").toString + ": " + apCancelWithValues.iterator.next()._2.get(0).getValueAsString
-          } else {
-            status = i18n("patient.status.discharged").toString + ": " + ConfigManager.DateFormatter.format(execDate)
-          }
-        } else {
-          if (apSentToWithValues!=null &&
-            apSentToWithValues.size()>0 &&
-            apSentToWithValues.filter(element => element._2.size()>0).size>0){
-            //Проверяем наличие экшна - Движение
-            setATIds = JavaConversions.asJavaSet(Set(i18n("db.actionType.moving").toInt :java.lang.Integer))
-            val movingId = actionBean.getLastActionByActionTypeIdAndEventId(eventId, setATIds)
-            status = if (movingId>0) i18n("patient.status.regToBed").toString
-            else i18n("patient.status.sentTo").toString
-          } else {
-            status = i18n("patient.status.hospitalized").toString
-          }
-        }
-      }
-      else {
-        status = if(execDate!= null)
-          i18n("patient.status.discharged").toString + ": " + ConfigManager.DateFormatter.format(execDate)
-        else "" //TODO: !не ясен статус для этого случая
-      }
-    }
-    else {
-      status = if(execDate!= null)
-        i18n("patient.status.discharged").toString + ": " + ConfigManager.DateFormatter.format(execDate)
-      else i18n("patient.status.require").toString
-    } */
     status
   }
 
@@ -828,7 +796,7 @@ with CAPids{
     map
   }
 
-  private def insertCompleteDiagnoses (eventId: Int, authData: AuthData) = {
+  /*private def insertCompleteDiagnoses (eventId: Int, authData: AuthData) = {
 
     val now = new Date()
 
@@ -879,7 +847,7 @@ with CAPids{
       dbManager.persist(diagnostic)
     }
     true
-  }
+  }*/
 
   private def getRbDiagnosisTypeById(id: Int): RbDiagnosisType = {
     val diagType = em.createQuery(DiagnosisTypeByIdQuery,classOf[RbDiagnosisType])

@@ -66,42 +66,13 @@ class DbDiagnosticBean  extends DbDiagnosticBeanLocal
     result
   }
 
-  def createDiagnostic(eventId: Int,
-                       diagnosis: Diagnosis,
-                       diagnosisTypeFlatCode: String,
-                       diseaseCharacterId: Int,
-                       userData: AuthData) = {
-
-    val now = new Date()
-    val event = dbEventBean.getEventById(eventId)
-    val diagnosisType = dbRbDiagnosisTypeBean.getRbDiagnosisTypeByFlatCode(diagnosisTypeFlatCode)
-
-    //Создание
-    val diagnostic = new Diagnostic()
-
-    diagnostic.setCreateDatetime(now)
-    diagnostic.setModifyDatetime(now)
-    diagnostic.setCreatePerson(userData.getUser)
-    diagnostic.setModifyPerson(userData.getUser)
-    diagnostic.setEvent(event)
-    diagnostic.setDiagnosisType(diagnosisType)
-    diagnostic.setDiagnosis(diagnosis)
-    diagnostic.setCharacterId(diseaseCharacterId)
-    diagnostic.setSanatorium(0)
-    diagnostic.setHospital(0)
-    diagnostic.setSpeciality(userData.getUser.getSpeciality)
-    diagnostic.setPerson(userData.getUser)
-    diagnostic.setSetDate(now)
-    diagnostic.setNotes("")
-
-    diagnostic
-  }
 
   def insertOrUpdateDiagnostic(id: Int,
                                eventId: Int,
                                diagnosis: Diagnosis,
                                diagnosisTypeFlatCode: String,
                                diseaseCharacterId: Int,
+                               note: String,
                                userData: AuthData) = {
     val now = new Date()
     var diagnostic: Diagnostic = null
@@ -120,7 +91,6 @@ class DbDiagnosticBean  extends DbDiagnosticBeanLocal
       diagnostic.setCreatePerson(userData.getUser)
       diagnostic.setSanatorium(0)
       diagnostic.setHospital(0)
-      diagnostic.setNotes("")
     }
 
     try {
@@ -131,11 +101,12 @@ class DbDiagnosticBean  extends DbDiagnosticBeanLocal
       diagnostic.setModifyPerson(userData.getUser)
       diagnostic.setEvent(event)
       diagnostic.setDiagnosisType(diagnosisType)
-      diagnostic.setDiagnosis(diagnosis)
       diagnostic.setCharacterId(diseaseCharacterId)
       diagnostic.setSpeciality(userData.getUser.getSpeciality)
       diagnostic.setPerson(userData.getUser)
       diagnostic.setSetDate(now)
+      diagnostic.setNotes(note)
+      diagnostic.setDiagnosis(diagnosis)
     }
     finally {
       if(lockId>0)

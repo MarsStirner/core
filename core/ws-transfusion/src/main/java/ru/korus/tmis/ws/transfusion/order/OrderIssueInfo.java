@@ -1,4 +1,5 @@
 package ru.korus.tmis.ws.transfusion.order;
+
 /**
  * Author:      Sergey A. Zagrebelny <br>
  * Date:        15.01.2013, 16:28:53 <br>
@@ -7,49 +8,49 @@ package ru.korus.tmis.ws.transfusion.order;
  */
 
 /**
- * Сообщение о результатах выполнения требования 
+ * Сообщение о результатах выполнения требования
  */
 public class OrderIssueInfo {
     /**
      * Идентификатор компонента крови
      */
     private Integer componentId;
-    
+
     /**
      * Номер компонента крови (номер, зашитый в ШК)
      */
-    private String number; 
-    
+    private String number;
+
     /**
      * идентификатор типа компонента крови
      */
     private Integer componentTypeId;
-    
+
     /**
      * идентификатор группы крови донора (1- первая 0 (I), 2 – вторая А (II), 3 – третья В (III), 4 – четвертая АВ (IV))
      */
     private Integer bloodGroupId;
-    
+
     /**
      * идентификатор резус-фактора донора (0 – Положительный, 1 - Отрицательный)
      */
     private Integer rhesusFactorId;
-    
+
     /**
      * объем компонента крови
      */
     private Integer volume;
-    
+
     /**
      * количество донорских доз
      */
     private Double doseCount;
-    
+
     /**
      * код донора
      */
     private Integer donorId;
-    
+
     /**
      * @return the componentId
      */
@@ -58,9 +59,10 @@ public class OrderIssueInfo {
     }
 
     /**
-     * @param componentId the componentId to set
+     * @param componentId
+     *            the componentId to set
      */
-    public void setComponentId(Integer componentId) {
+    public void setComponentId(final Integer componentId) {
         this.componentId = componentId;
     }
 
@@ -72,9 +74,10 @@ public class OrderIssueInfo {
     }
 
     /**
-     * @param number the number to set
+     * @param number
+     *            the number to set
      */
-    public void setNumber(String number) {
+    public void setNumber(final String number) {
         this.number = number;
     }
 
@@ -86,9 +89,10 @@ public class OrderIssueInfo {
     }
 
     /**
-     * @param componentTypeId the componentTypeId to set
+     * @param componentTypeId
+     *            the componentTypeId to set
      */
-    public void setComponentTypeId(Integer componentTypeId) {
+    public void setComponentTypeId(final Integer componentTypeId) {
         this.componentTypeId = componentTypeId;
     }
 
@@ -100,9 +104,10 @@ public class OrderIssueInfo {
     }
 
     /**
-     * @param bloodGroupId the bloodGroupId to set
+     * @param bloodGroupId
+     *            the bloodGroupId to set
      */
-    public void setBloodGroupId(Integer bloodGroupId) {
+    public void setBloodGroupId(final Integer bloodGroupId) {
         this.bloodGroupId = bloodGroupId;
     }
 
@@ -114,9 +119,10 @@ public class OrderIssueInfo {
     }
 
     /**
-     * @param rhesusFactorId the rhesusFactorId to set
+     * @param rhesusFactorId
+     *            the rhesusFactorId to set
      */
-    public void setRhesusFactorId(Integer rhesusFactorId) {
+    public void setRhesusFactorId(final Integer rhesusFactorId) {
         this.rhesusFactorId = rhesusFactorId;
     }
 
@@ -128,9 +134,10 @@ public class OrderIssueInfo {
     }
 
     /**
-     * @param volume the volume to set
+     * @param volume
+     *            the volume to set
      */
-    public void setVolume(Integer volume) {
+    public void setVolume(final Integer volume) {
         this.volume = volume;
     }
 
@@ -142,9 +149,10 @@ public class OrderIssueInfo {
     }
 
     /**
-     * @param doseCount the doseCount to set
+     * @param doseCount
+     *            the doseCount to set
      */
-    public void setDoseCount(Double doseCount) {
+    public void setDoseCount(final Double doseCount) {
         this.doseCount = doseCount;
     }
 
@@ -156,10 +164,11 @@ public class OrderIssueInfo {
     }
 
     /**
-     * @param donorId the donorId to set
+     * @param donorId
+     *            the donorId to set
      */
-    public void setDonorId(Integer donorId) {
+    public void setDonorId(final Integer donorId) {
         this.donorId = donorId;
     }
-    
+
 }

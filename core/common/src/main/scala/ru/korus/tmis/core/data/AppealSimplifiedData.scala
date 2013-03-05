@@ -207,9 +207,36 @@ class AppealSimplifiedData {
     this.number = event.getExternalId
     this.rangeAppealDateTime = new DatePeriodContainer(event.getSetDate, event.getExecDate)
     this.execPerson = if (event.getExecutor != null) {new ComplexPersonContainer(event.getExecutor)} else {new ComplexPersonContainer}
-    if(diagnoses!=null || diagnoses.size()>0)
-      diagnoses.foreach(d=>this.diagnoses += new DiagnosisContainer(d._1, d._2))
+    if(diagnoses!=null || diagnoses.size()>0){
+      diagnoses.foreach(d=> {
+        if(d._1!=null) {
+          if(d._1.isInstanceOf[Diagnostic]) {
+            this.diagnoses += new DiagnosisContainer(d._1.asInstanceOf[Diagnostic])
+          } else if(d._1.isInstanceOf[ActionProperty]) {
+            val diagnosisKind = d._1.asInstanceOf[ActionProperty].getAction.getActionType.getCode match {
+              case "4501" => "clinical"
+              case "1_1_01" => "admission"
+              case "4201" => "assignment"
+              case _ => ""
+            }
+            val mkbContainer =
+              if(d._2!=null) {
+                if(d._2.isInstanceOf[Mkb]) {
+                  new MKBContainer(d._2.asInstanceOf[Mkb])
+                } else if(d._2.isInstanceOf[String]){
+                  new MKBContainer("", d._2.asInstanceOf[String])
+                } else new MKBContainer()
+              } else new MKBContainer()
+            val diaFromAP = new DiagnosisContainer()
+            diaFromAP.setDiagnosisKind(diagnosisKind)
+            diaFromAP.setMkb(mkbContainer)
+            this.diagnoses += diaFromAP
+          }
+        }
+      })
+    }
   }
+
   def this(event: Event,
            diagnoses: java.util.Map[Object,  Object],
            department: OrgStructure) {
