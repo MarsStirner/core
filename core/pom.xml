@@ -147,6 +147,10 @@
             <modules>
                 <module>integration-tests</module>
             </modules>
+            <properties>
+                <!-- Имя ear, которое будет после package -->
+                <ear.name>tmis-server-${version.tmis.core}</ear.name>
+            </properties>
         </profile>
 
         <profile>
@@ -323,12 +327,11 @@
             </properties>
         </profile>
 
-            <!-- Пользовательский профиль -->
+        <!-- Пользовательский профиль -->
         <profile>
             <id>nde-lin</id>
             <properties>
-                <!-- Название приложения, которое будет отображаться в интерфейсе -->
-                <ear.name>tmis-server-${version.tmis.core}</ear.name>
+
                 <!-- Путь к директории доменов -->
                 <glassfish.domain.dir>/opt/glassfish3/glassfish/domains/</glassfish.domain.dir>
                 <!-- Домашняя директория Glassfish -->
