@@ -308,8 +308,10 @@ public class CommunicationServiceTest {
             assertTrue(result != null);
             logger.info(result.toString());
             logger.warn("Successful end of getWorkTimeAndStatus test.");
+        } catch (NotFoundException e) {
+            logger.error("getWorkTimeAndStatus test failed. #{}#", e.getError_msg());
         } catch (TException e) {
-            logger.error("getWorkTimeAndStatus test failed.", e);
+            logger.error("getWorkTimeAndStatus test failed. {} ", e.getMessage(), e);
         }
     }
 
@@ -409,23 +411,43 @@ public class CommunicationServiceTest {
             incorrectParamsTest(lastName, firstName, patrName, birthDate, id);
 
             logger.info("Fourth step is to find free ticket to a doctor and find a doctor too.");
-            Map<Integer, DateTime> enqueueParam = checkAvailableDoctors();
+            Map<Integer, List<DateTime>> enqueueParam = checkAvailableDoctors();
             if (enqueueParam.isEmpty()) {
                 fail("No one pair doctorId, dateTime");
             }
-            Map.Entry<Integer, DateTime> iterator = enqueueParam.entrySet().iterator().next();
-            Integer doctorId = iterator.getKey();
-            DateTime requestedDateTime = iterator.getValue();
-            logger.info("Fourth step is to check empty queue (for patient and for doctor timeline).");
-            final long queueDate = requestedDateTime.toDateMidnight().getMillis();
-            final long queueTime = requestedDateTime.getMillisOfDay();
-            logger.info("ID={} DATE={}", doctorId, requestedDateTime);
+            logger.info("1) Available tickets is {}", enqueueParam);
+            Iterator<Map.Entry<Integer, List<DateTime>>> iterator = enqueueParam.entrySet().iterator();
+            assertTrue(iterator.hasNext(), "Итератор не должен быть пустым");
+            logger.info("2)Randomly select available doctor");
+            //Рандомный индекс в списке (сначала врача, а затем и талончика)
+            int selectedIndex = new Random().nextInt(enqueueParam.keySet().size());
+            //Выбранный врач
+            Map.Entry<Integer, List<DateTime>> selectedDoctorWithFreeTickets = null;
+            int currentIndex = 0;
+            while (iterator.hasNext()) {
+                if (selectedIndex == currentIndex) {
+                    selectedDoctorWithFreeTickets = iterator.next();
+                    break;
+                }
+                currentIndex++;
+                iterator.next();
+            }
+            logger.info("Selected doctor with free tickets is {}", selectedDoctorWithFreeTickets);
+            final int doctorId = selectedDoctorWithFreeTickets.getKey();
+            final long queueDate =
+                    new DateMidnight(selectedDoctorWithFreeTickets.getValue().get(0).getMillis(), DateTimeZone.UTC)
+                            .getMillis();
 
-            logger.info("Fifth step is to enqueuePatient and check this(for patient and for doctor timeline).");
-            final int queueId = checkEnqueue(id, doctorId, queueDate + queueTime, queueTime);
+            logger.info("Fifth step is to check empty queue (for patient and for doctor timeline).");
+            assertTrue(checkEmptyQueue(id, selectedDoctorWithFreeTickets.getKey(), queueDate),
+                    "Вновь созданный пациент уже содержит запись к врачу");
 
-            logger.info("Sixth step is to dequeuePatient and check this(for patient and for doctor timeline)");
-            checkDequeuePatient(id, doctorId, queueDate, queueTime, queueId);
+
+            logger.info("Sixth step is to enqueuePatient and check this(for patient and for doctor timeline).");
+            final int queueId = checkEnqueue(id, doctorId, selectedDoctorWithFreeTickets.getValue());
+
+            logger.info("Seventh step is to dequeuePatient and check this(for patient and for doctor timeline)");
+            checkDequeuePatient(id, doctorId, queueId, queueDate);
 
 
         } catch (TException e) {
@@ -435,24 +457,30 @@ public class CommunicationServiceTest {
 
     }
 
-    private Map<Integer, DateTime> checkAvailableDoctors() {
-        Map<Integer, DateTime> result = new HashMap<Integer, DateTime>(1);
+    private Map<Integer, List<DateTime>> checkAvailableDoctors() {
+        //Id доктора-> Список свободных талоничков
+        Map<Integer, List<DateTime>> result = new HashMap<Integer, List<DateTime>>(1);
+
         try {
             logger.info("1) Get all doctors from top-level LPU recursively");
             List<Person> allDoctorsList = client.getPersonnel(0, true, "");
             logger.info("1)Result is {}", allDoctorsList);
-            List<Person> doctorsWhoHasAvailableTickets = new ArrayList<Person>();
             logger.info("2) Start search for available tickets from today");
+            //Поисковый интервал = неделя
             final int searchIntervalInDays = 7;
+            //Дата с которой мы ищем талончики
             DateMidnight requestDate = new DateMidnight(DateTimeZone.UTC);
+
             int currentDay = 0;
-            while (doctorsWhoHasAvailableTickets.isEmpty() && currentDay < searchIntervalInDays) {
-                logger.info("Search available tickets for {}", requestDate);
+            while (result.isEmpty() && currentDay < searchIntervalInDays) {
+                //Текущая поисковая дата
+                DateMidnight searchTime = requestDate.plusDays(currentDay);
+                logger.info("Search available tickets for {}", searchTime);
                 for (Person currentDoctor : allDoctorsList) {
                     Amb currentAmb;
                     try {
                         currentAmb = client.getWorkTimeAndStatus(new GetTimeWorkAndStatusParameters()
-                                .setDate(requestDate.getMillis())
+                                .setDate(searchTime.getMillis())
                                 .setPersonId(currentDoctor.getId())
                                 .setHospitalUidFrom("")
                         );
@@ -460,52 +488,35 @@ public class CommunicationServiceTest {
                         continue;
                     }
                     if (!currentAmb.getTickets().isEmpty()) {
+                        //Список свободных времен для записи
+                        List<DateTime> freeTicketsTime = new ArrayList<DateTime>(currentAmb.getTicketsSize());
+
                         for (Ticket currentTicket : currentAmb.getTickets()) {
                             if (currentTicket.getFree() == 1 && currentTicket.getAvailable() == 1) {
-                                doctorsWhoHasAvailableTickets.add(currentDoctor);
-                                logger.info("Doctor {} has amb={}", currentDoctor, currentAmb);
-                                break;
+                                freeTicketsTime.add(
+                                        new DateTime(searchTime.getMillis() + currentTicket.getTime(), DateTimeZone.UTC));
                             }
                         }
+                        //добавление записи вида {Id врача-> Список свободных талончиков}
+                        result.put(currentDoctor.getId(), freeTicketsTime);
                     }
                 }
-                requestDate.plusDays(1);
                 currentDay++;
             }
-            if (doctorsWhoHasAvailableTickets.isEmpty()) {
+
+            if (result.isEmpty()) {
                 fail("No one doctor has available tickets in next week");
             }
-            logger.info("2) Doctors is {}", doctorsWhoHasAvailableTickets);
-            Random random = new Random();
-            Person selectedDoctor = doctorsWhoHasAvailableTickets
-                    .get(random.nextInt(doctorsWhoHasAvailableTickets.size()));
-            logger.info("Selected doctor is {}", selectedDoctor);
-            Amb selectedAmb = client.getWorkTimeAndStatus(new GetTimeWorkAndStatusParameters()
-                    .setDate(requestDate.getMillis())
-                    .setPersonId(selectedDoctor.getId())
-                    .setHospitalUidFrom("")
-            );
-            if (!selectedAmb.getTickets().isEmpty()) {
-                for (Ticket currentTicket : selectedAmb.getTickets()) {
-                    if (currentTicket.getFree() == 1 && currentTicket.getAvailable() == 1) {
-                        logger.info("Requested dateTime={}",
-                                new DateTime(requestDate.getMillis() + currentTicket.getTime(), DateTimeZone.UTC));
-                        result.put(selectedDoctor.getId(),
-                                new DateTime(requestDate.getMillis() + currentTicket.getTime(), DateTimeZone.UTC));
-                    }
-                }
-            }
-
             return result;
         } catch (TException e) {
             logger.error("Невозможно получить врачей рекурсивно начиная с топ-уровня", e);
             fail("Error message", e);
         }
-        fail("Unreacheable point");
+        fail("Unreachable point");
         return null;
     }
 
-    private void checkDequeuePatient(Integer id, int doctorId, long queueDate, long queueTime, int queueId) throws TException {
+    private void checkDequeuePatient(Integer id, int doctorId, int queueId, long queueDate) throws TException {
         logger.info("1) Call dequeuePatient method");
         final DequeuePatientStatus dequeuePatientStatus = client.dequeuePatient(id, queueId);
         logger.info("1)Result is {}", dequeuePatientStatus);
@@ -517,19 +528,31 @@ public class CommunicationServiceTest {
         assertFalse(incorrectDequeuePatientStatus.isSuccess(), "2) повторная отзыв записи на то-же время прошел успешно");
 
         logger.info("After dequeue patient must have empty queue");
-        checkEmptyQueue(id, doctorId, queueTime + queueDate);
+        checkEmptyQueue(id, doctorId, queueDate);
     }
 
-    private int checkEnqueue(Integer id, int doctorId, long dateTime, long queueTime) throws TException {
+    private int checkEnqueue(Integer id, int doctorId, List<DateTime> freeTimes) throws TException {
+        //Случайным образом выбранное свободное время (selectedDateTime и следующее время nextSelectedDateTime)
+        Random random = new Random();
+        int randomIndex = random.nextInt(freeTimes.size());
+        int nextRandomIndex = random.nextInt(freeTimes.size());
+        while (randomIndex == nextRandomIndex) {
+            nextRandomIndex = random.nextInt(freeTimes.size());
+        }
+        final DateTime selectedDateTime = freeTimes.get(randomIndex);
+        final DateTime nextSelectedDateTime = freeTimes.get(nextRandomIndex);
+        assertNotEquals(selectedDateTime.getMillis(), nextSelectedDateTime.getMillis(), "Времена совпали");
+        logger.info("Selected {}, next {}", selectedDateTime, nextSelectedDateTime);
+
         final int queueId;
         final int index;
         logger.info("1) Call enqueuePatient method");
         final EnqueuePatientStatus enqueuePatientStatus = client.enqueuePatient(new EnqueuePatientParameters()
-                .setHospitalUidFrom("")
+                .setHospitalUidFrom("REALLY NOT OUR LPU")
                 .setNote("Абракадабра")
                 .setPatientId(id)
                 .setPersonId(doctorId)
-                .setDateTime(dateTime)
+                .setDateTime(selectedDateTime.getMillis())
         );
         logger.info("1)Result is {}", enqueuePatientStatus);
         queueId = enqueuePatientStatus.getQueueId();
@@ -542,20 +565,31 @@ public class CommunicationServiceTest {
                 .setNote("Алагамуса")
                 .setPatientId(id)
                 .setPersonId(doctorId)
-                .setDateTime(dateTime)
+                .setDateTime(selectedDateTime.getMillis())
         );
         logger.info("2)Result is {}", incorrectEnqueuePatientStatus);
         assertFalse(incorrectEnqueuePatientStatus.isSuccess(), "2) повторная запись на то-же время прошла успешно");
 
-        logger.info("3) Call getWorkTimeAndStatus");
+        logger.info("3) Call enqueuePatient method to next time at this day, to get access denied (Check repetition)");
+        final EnqueuePatientStatus repetitionEnqueuePatientStatus = client.enqueuePatient(new EnqueuePatientParameters()
+                .setHospitalUidFrom("")
+                .setNote("Запись на тот-же день не должна была пройти")
+                .setPatientId(id)
+                .setPersonId(doctorId)
+                .setDateTime(nextSelectedDateTime.getMillis())
+        );
+        logger.info("3)Result is {}", repetitionEnqueuePatientStatus);
+        assertFalse(repetitionEnqueuePatientStatus.isSuccess(), "3) Запись на тот-же день не должна была пройти");
+
+        logger.info("4) Call getWorkTimeAndStatus");
         final Amb amb = client.getWorkTimeAndStatus(new GetTimeWorkAndStatusParameters()
                 .setPersonId(doctorId)
-                .setDate(dateTime)
+                .setDate((selectedDateTime.toDateMidnight()).getMillis())
                 .setHospitalUidFrom("")
         );
-        logger.info("3)Result is {}", amb);
+        logger.info("4)Result is {}", amb);
         for (Ticket currentTicket : amb.getTickets()) {
-            if (currentTicket.getTime() == queueTime) {
+            if (currentTicket.getTime() == selectedDateTime.getMillis()) {
                 assertTrue(currentTicket.free == 0 && currentTicket.getAvailable() == 0,
                         "Талончик помечен как свободный даже после записи");
                 break;
@@ -569,19 +603,21 @@ public class CommunicationServiceTest {
         for (Queue currentQueue : patientQueue) {
             if (currentQueue.getQueueId() == queueId) {
                 logger.info("OK");
-                assertEquals(currentQueue.getDateTime(), dateTime, "Запись не на то время");
+                assertEquals(currentQueue.getDateTime(), selectedDateTime.getMillis(), "Запись не на то время");
                 assertEquals(index, currentQueue.getIndex(), "Индекс записи не совпадает");
             }
         }
         return queueId;
     }
 
-    private long checkEmptyQueue(Integer id, Integer doctorId, long dateTime) throws TException {
-        long queueTime = 0;
+    private boolean checkEmptyQueue(Integer id, Integer doctorId, long dateTime) throws TException {
         logger.info("1) Call getPatientQueue.");
         final List<Queue> patientQueue = client.getPatientQueue(id);
         logger.info("1)Result is {}", patientQueue);
-        assertTrue(patientQueue.isEmpty(), "1) Вновь созданный пациент не должен быть никуда записан");
+        if (!patientQueue.isEmpty()) {
+            logger.error("1) Вновь созданный пациент не должен быть никуда записан");
+            return false;
+        }
         logger.info("2) Call getWorkTimeAndStatus");
         final Amb amb = client.getWorkTimeAndStatus(new GetTimeWorkAndStatusParameters()
                 .setPersonId(doctorId)
@@ -590,13 +626,12 @@ public class CommunicationServiceTest {
         );
         logger.info("2)Result is {}", amb);
         for (Ticket currentTicket : amb.getTickets()) {
-            if (currentTicket.getAvailable() == 1 && currentTicket.getFree() == 1) {
-                queueTime = currentTicket.getTime();
-                logger.info("Assigned time is {}", new DateTime(dateTime, DateTimeZone.UTC));
-                break;
+            if (currentTicket.getPatientId() == id) {
+                //Если доктор содержит тикет на этого пациента, то это ошибка (return false)
+                return false;
             }
         }
-        return queueTime;
+        return true;
     }
 
     private void getPatientInfoFromLinkedTest(String lastName, String firstName, String patrName, long birthDate, Integer id) throws TException {

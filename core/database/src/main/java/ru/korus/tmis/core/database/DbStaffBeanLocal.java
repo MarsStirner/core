@@ -53,4 +53,5 @@ public interface DbStaffBeanLocal {
     Action getPersonActionsByDateAndType(int personId, Date date, String actionType)
             throws CoreException;
 
+    Staff getDoctorByClientAmbulatoryAction(Action queueAction);
 }

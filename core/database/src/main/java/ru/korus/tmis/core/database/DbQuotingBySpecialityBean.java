@@ -35,6 +35,7 @@ public class DbQuotingBySpecialityBean implements DbQuotingBySpecialityBeanLocal
         return em.createQuery(getQuotingByOrganizationQuery, QuotingBySpeciality.class)
                 .setParameter("HOSPITALUIDFROM", organisationUid).getResultList();
     }
+
     private String getQuotingByOrganizationQuery =
             "SELECT q FROM QuotingBySpeciality q where q.organisation.infisCode = :HOSPITALUIDFROM";
 
@@ -43,11 +44,22 @@ public class DbQuotingBySpecialityBean implements DbQuotingBySpecialityBeanLocal
             (final Speciality speciality, final String organisationInfisCode) {
         return em.createQuery(getQuotingBySpecialityAndOrganizationQuery, QuotingBySpeciality.class)
                 .setParameter("ORGINFISCODE", organisationInfisCode)
-                .setParameter("SPECIALITY",speciality)
+                .setParameter("SPECIALITY", speciality)
                 .getResultList();
     }
-    private String getQuotingBySpecialityAndOrganizationQuery=
+
+    private String getQuotingBySpecialityAndOrganizationQuery =
             "SELECT q FROM QuotingBySpeciality q where q.organisation.infisCode = :ORGINFISCODE " +
                     "AND q.speciality = :SPECIALITY";
+
+    @Override
+    public List<QuotingBySpeciality> getQuotingBySpeciality(final Speciality speciality) {
+        return em.createQuery(getQuotingBySpeciality, QuotingBySpeciality.class)
+                .setParameter("SPECIALITY", speciality)
+                .getResultList();
+    }
+
+    private String getQuotingBySpeciality =
+            "SELECT q FROM QuotingBySpeciality q where  q.speciality = :SPECIALITY";
 }
 
