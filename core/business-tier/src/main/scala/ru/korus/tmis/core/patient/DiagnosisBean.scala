@@ -33,75 +33,88 @@ class DiagnosisBean  extends DiagnosisBeanLocal
   @EJB
   var dbDiagnosisBean: DbDiagnosisBeanLocal = _
 
-  def insertOrUpdateDiagnosis(diagnosticId: Int,
-                              eventId: Int,
-                              diaTypeFlatCode: String,
-                              diseaseCharacterId: Int,
-                              mkbId: Int,
-                              userData: AuthData) = {
+  private val ID_CREATE = 0
+  private val ID_MODIFY = 1
+  private val ID_NONE = 2
+
+  def insertDiagnosis(diagnosticId: Int,
+                      eventId: Int,
+                      diaTypeFlatCode: String,
+                      diseaseCharacterId: Int,
+                      description: String,
+                      mkbId: Int,
+                      userData: AuthData) = {
 
     val event = dbEventBean.getEventById(eventId)
     val patient = event.getPatient
-    var diagnosis: Diagnosis = null
     var diagnostic: Diagnostic = null
+    var diagnosis: Diagnosis = null
+    var oldDiagnostic: Diagnostic = null
 
 
-    val diagnosisId = if(diagnosticId>0) {
-       dbDiagnosticBean.getDiagnosticById(diagnosticId).getDiagnosis.getId.intValue()
-    } else 0
+    val option =
+      if(diagnosticId>0) {
+        oldDiagnostic = dbDiagnosticBean.getDiagnosticById(diagnosticId)
+        if(oldDiagnostic!=null){
+          if (oldDiagnostic.getDiagnosis!=null){
+              if(oldDiagnostic.getDiagnosis.getMkb.getId.intValue()!=mkbId)   //МКБ разные (история назначений)
+                ID_CREATE
+              else {
+                if(oldDiagnostic.getNotes.compareTo(description)!=0) ID_MODIFY
+                else ID_NONE
+              }
+          }
+          else {
+            if(mkbId>0) ID_MODIFY
+            else {
+              if(oldDiagnostic.getNotes.compareTo(description)!=0) ID_MODIFY
+              else ID_NONE
+            }
+          }
+        } else ID_CREATE
+      } else ID_CREATE
 
-    diagnosis = dbDiagnosisBean.insertOrUpdateDiagnosis(diagnosisId,
-                                                        patient.getId.intValue(),
-                                                        diaTypeFlatCode,
-                                                        diseaseCharacterId,
-                                                        mkbId,
-                                                        userData
-                                                       )
-    if (diagnosis!=null){
-      diagnostic = dbDiagnosticBean.insertOrUpdateDiagnostic(diagnosticId,
-                                                             eventId,
-                                                             diagnosis,
-                                                             diaTypeFlatCode,
-                                                             diseaseCharacterId,
-                                                             userData
-                                                            )
+    option match {
+      case ID_CREATE => {
+        diagnosis = dbDiagnosisBean.insertOrUpdateDiagnosis(0,
+                                                            patient.getId.intValue(),
+                                                            diaTypeFlatCode,
+                                                            diseaseCharacterId,
+                                                            mkbId,
+                                                            userData)
+        diagnostic = dbDiagnosticBean.insertOrUpdateDiagnostic( 0,
+                                                                eventId,
+                                                                diagnosis,
+                                                                diaTypeFlatCode,
+                                                                diseaseCharacterId,
+                                                                description,
+                                                                userData)
+      }
+      case ID_MODIFY => {
+        diagnostic = dbDiagnosticBean.insertOrUpdateDiagnostic( diagnosticId,
+                                                                eventId,
+                                                                oldDiagnostic.getDiagnosis,
+                                                                diaTypeFlatCode,
+                                                                diseaseCharacterId,
+                                                                description,
+                                                                userData)
+      }
+      case _=> {}
     }
-    (diagnosis, diagnostic)
+    (diagnostic, diagnosis)
   }
 
-  def insertDiagnoses(eventId: Int, mkbs: java.util.Map[String, java.util.Set[java.lang.Integer]], userData: AuthData) = {
+  def insertDiagnoses(eventId: Int, mkbs: java.util.Map[String, java.util.Set[AnyRef]], userData: AuthData) = {
 
-    var entities = Set.empty[AnyRef]
-    mkbs.foreach(f=>f._2.foreach(mkb=>{
-      val value = insertOrUpdateDiagnosis(0, eventId, f._1, 3, mkb.intValue(), userData)
-      if(value._1!= null)
-        entities = entities + value._1
-      if(value._2!= null)
-        entities = entities + value._2
+    var entities = List.empty[AnyRef]
+    mkbs.foreach(f=>f._2.asInstanceOf[java.util.Set[(java.lang.Integer, String, java.lang.Integer)]]
+          .foreach(mkb=>{
+            val value = insertDiagnosis(mkb._1.intValue(), eventId, f._1, 3, mkb._2, mkb._3.intValue(), userData)
+            if(value._1!= null)
+              entities = value._1 :: entities
+            if(value._2!= null)
+              entities = value._2 :: entities
     }))
-    entities
-  }
-
-  //TODO: Недоделано. Вопросы по редактированию к Саше.
-  def updateDiagnoses(eventId: Int, mkbs: java.util.Map[String, java.util.Set[java.lang.Integer]], userData: AuthData) = {
-
-    var entities = Set.empty[AnyRef]
-    val diagnostics = dbDiagnosticBean.getDiagnosticsByEventIdAndTypes(eventId, mkbs.keySet())
-    mkbs.foreach(f=>{
-       //Получаем диагностики для этого эвента и rbDiagnosisType.flatCode = f._1
-       val list = diagnostics.filter(p=> p.getDiagnosisType.getFlatCode.compareTo(f._1)==0).toList
-       if (list.size == f._2.size){  //update diagnosis
-         f._2.foreach(mkb=>{
-
-         })
-       }
-       else if (list.size > f._2.size){ //update + delete diagnosis
-
-       }
-       else {  //update + insert diagnosis
-
-       }
-    })
     entities
   }
 

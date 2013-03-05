@@ -49,6 +49,7 @@ public interface DbDiagnosticBeanLocal {
                                 Diagnosis diagnosis,
                                 String diagnosisTypeFlatCode,
                                 int diseaseCharacterId,
+                                String note,
                                 AuthData userData) throws CoreException;
 
     /**

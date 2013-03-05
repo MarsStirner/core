@@ -84,18 +84,25 @@ class DbDiagnosisBean  extends DbDiagnosisBeanLocal
     }
 
     try {
+
+
       val client = dbPatientBean.getPatientById(clientId)
       val diagnosisType = dbRbDiagnosisTypeBean.getRbDiagnosisTypeByFlatCode(diagnosisTypeFlatCode)
       val mkb = dbMKBBean.getMkbById(mkbId)
 
-      diagnosis.setModifyDatetime(now)
-      diagnosis.setModifyPerson(userData.getUser)
-      diagnosis.setPatient(client)
-      diagnosis.setDiagnosisType(diagnosisType)
-      diagnosis.setCharacterId(diseaseCharacterId)
-      diagnosis.setMkb(mkb)
-      diagnosis.setPerson(userData.getUser)
-      diagnosis.setEndDate(now)
+      if (client==null || diagnosisType==null || mkb==null){
+        diagnosis = null
+      }
+      else {
+        diagnosis.setModifyDatetime(now)
+        diagnosis.setModifyPerson(userData.getUser)
+        diagnosis.setPatient(client)
+        diagnosis.setDiagnosisType(diagnosisType)
+        diagnosis.setCharacterId(diseaseCharacterId)
+        diagnosis.setMkb(mkb)
+        diagnosis.setPerson(userData.getUser)
+        diagnosis.setEndDate(now)
+      }
     }
     finally {
       if(lockId>0)
