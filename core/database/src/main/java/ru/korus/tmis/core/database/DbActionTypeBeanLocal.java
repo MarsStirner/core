@@ -3,6 +3,7 @@ package ru.korus.tmis.core.database;
 import ru.korus.tmis.core.entity.model.ActionPropertyType;
 import ru.korus.tmis.core.entity.model.ActionType;
 import ru.korus.tmis.core.exception.CoreException;
+import ru.korus.tmis.core.filter.ListDataFilter;
 
 import java.util.List;
 import java.util.Set;
@@ -34,7 +35,7 @@ public interface DbActionTypeBeanLocal {
     Set<ActionType> getActionTypesByCode(String code)
             throws CoreException;
 
-    List<ActionType> getAllActionTypeWithFilter(int page, int limit, String sortingField, String sortingMethod, Object filter)
+    List<ActionType> getAllActionTypeWithFilter(int page, int limit, String sorting, ListDataFilter filter)
             throws CoreException;
 
     long getCountAllActionTypeWithFilter(Object filter)

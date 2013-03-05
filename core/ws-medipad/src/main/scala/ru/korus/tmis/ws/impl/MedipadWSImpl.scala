@@ -190,6 +190,12 @@ class MedipadWSImpl
 
   @EJB
   var dbRbTissueType: DbRbTissueTypeBeanLocal = _
+
+  @EJB
+  var directionBean: DirectionBeanLocal = _
+
+  @EJB
+  var dbDiagnosticBean: DbDiagnosticBeanLocal = _
   //////////////////////////////////////////////////////////////////////////////
 
   def checkTokenCookies(srvletRequest: HttpServletRequest): AuthData = {
@@ -512,7 +518,10 @@ class MedipadWSImpl
                                                 dbClientRelation.getClientRelationByRelativeId _,
                                                 null,
                                                 null,
-      if (positionA._1.getContractId != null) {dbContractBean.getContractById(positionA._1.getContractId.intValue())} else {null}
+                                                if (positionA._1.getContractId != null) {
+                                                  dbContractBean.getContractById(positionA._1.getContractId.intValue())
+                                                } else {null},
+                                                dbDiagnosticBean.getDiagnosticsByEventIdAndTypes _
                                 ))
     } else {
       throw new CoreException("Неудачная попытка сохранения(изменения) обращения")
@@ -543,7 +552,10 @@ class MedipadWSImpl
                                               dbClientRelation.getClientRelationByRelativeId _,
                                               actionPropertyBean.getActionPropertiesByActionIdAndRbCoreActionPropertyIds _,
                                               dbRbCoreActionPropertyBean.getRbCoreActionPropertiesByIds _,                    //таблица соответствия
-      if (positionE._1.getContract != null) {dbContractBean.getContractById(positionE._1.getContract.getId.intValue())} else {null}
+                                              if (positionE._1.getContract != null) {
+                                                dbContractBean.getContractById(positionE._1.getContract.getId.intValue())
+                                              } else {null},
+                                              dbDiagnosticBean.getDiagnosticsByEventIdAndTypes _
                               ))
   }
 
@@ -571,7 +583,10 @@ class MedipadWSImpl
                                               dbClientRelation.getClientRelationByRelativeId _,
                                               actionPropertyBean.getActionPropertiesByActionIdAndRbCoreActionPropertyIds _,  //в тч Admission Diagnosis
                                               dbRbCoreActionPropertyBean.getRbCoreActionPropertiesByIds _,          //таблица соответствия
-      if (positionA._1.getContractId != null) {dbContractBean.getContractById(positionA._1.getContractId.intValue())} else {null}
+                                              if (positionA._1.getContractId != null) {
+                                                dbContractBean.getContractById(positionA._1.getContractId.intValue())
+                                              } else {null},
+                                              dbDiagnosticBean.getDiagnosticsByEventIdAndTypes _
                               ))
   }
 
@@ -723,6 +738,7 @@ class MedipadWSImpl
                                                                                authData,
                                                                                preProcessing _,
                                                                                postProcessing _)
+     dbEventBean.setExecPersonForEventWithId(eventId, authData.getUser)
      returnValue
    }
 
@@ -911,12 +927,11 @@ class MedipadWSImpl
     //TODO: подключить анализ авторизационных данных и доступных ролей
     requestData.setRecordsCount(dbOrgStructureBean.getCountAllOrgStructuresWithFilter(requestData.filter))
     val list = new AllDepartmentsListData(dbOrgStructureBean.getAllOrgStructuresByRequest(requestData.limit,
-                                                                                      requestData.page-1,
-                                                                                      requestData.sortingFieldInternal,
-                                                                                      requestData.sortingMethod,
-                                                                                      requestData.filter
-                                                                                     ),
-                                      requestData)
+                                                                                          requestData.page-1,
+                                                                                          requestData.sortingFieldInternal,
+                                                                                          requestData.filter.unwrap()
+                                                                                         ),
+                                          requestData)
     list
   }
 
@@ -924,7 +939,7 @@ class MedipadWSImpl
     val flgBeds = hasBeds.toLowerCase.compareTo("true")==0 || hasBeds.toLowerCase.compareTo("yes")==0
     val flgPatients = hasPatients.toLowerCase.compareTo("true")==0 || hasPatients.toLowerCase.compareTo("yes")==0
     val filter = new DepartmentsDataFilter(flgBeds, flgPatients)
-    new AllDepartmentsListDataMP(dbOrgStructureBean.getAllOrgStructuresByRequest(0, 0, "", "", filter), null)
+    new AllDepartmentsListDataMP(dbOrgStructureBean.getAllOrgStructuresByRequest(0, 0, "", filter.unwrap()), null)
   }
 
 
@@ -958,9 +973,8 @@ class MedipadWSImpl
     //requestData.setRecordsCount(dbStaff.getCountAllPersonsWithFilter(requestData.filter))
     val list = new AllPersonsListData(dbStaff.getEmptyPersonsByRequest( requestData.limit,
                                                                         requestData.page-1,
-                                                                        requestData.sortingField,
-                                                                        requestData.sortingMethod,
-                                                                        requestData.filter),
+                                                                        requestData.sortingFieldInternal,
+                                                                        requestData.filter.unwrap()),
                                       requestData)
     list
   }
@@ -979,11 +993,11 @@ class MedipadWSImpl
           }
 
           //empty action property
-          var listForConverter = new java.util.ArrayList[String]
+          val listForConverter = new java.util.ArrayList[String]
           listForConverter.add(ActionPropertyWrapperInfo.IsAssignable.toString)
           listForConverter.add(ActionPropertyWrapperInfo.IsAssigned.toString)
 
-          var listForSummary = new java.util.ArrayList[StringId]
+          val listForSummary = new java.util.ArrayList[StringId]
           listForSummary.add(ActionWrapperInfo.assessmentId)
           listForSummary.add(ActionWrapperInfo.assessmentName)
           listForSummary.add(ActionWrapperInfo.assessmentDate)
@@ -1001,18 +1015,9 @@ class MedipadWSImpl
           json
         }
         case _  => {
-          val atList = actionTypeBean.getAllActionTypeWithFilter( request.page-1,
-            request.limit,
-            request.sortingField,
-            request.sortingMethod,
-            request.filter)
-          //val list = new ActionTypesListData(atList, request, actionTypeBean.getAllActionTypeWithFilter _)
-
           val mapper: ObjectMapper = new ObjectMapper()
           mapper.getSerializationConfig().setSerializationView(classOf[ActionTypesListDataViews.OneLevelView]);  //плоская структурв
           mapper.writeValueAsString(new ActionTypesListData(request, actionTypeBean.getAllActionTypeWithFilter _))
-
-          //list
         }
     }
     result
@@ -1036,8 +1041,8 @@ class MedipadWSImpl
 
   def insertLaboratoryStudies(eventId: Int, data: CommonData, auth: AuthData) = {
     // проверка пользователя на ответственного за ивент
-
-    primaryAssessmentBean.createAssessmentsForEventIdFromCommonData(eventId, data, "Diagnostic", null, auth,  postProcessingForDiagnosis _)// postProcessingForDiagnosis
+    directionBean.createDirectionsForEventIdFromCommonData(eventId, data, "Diagnostic", null, auth,  postProcessingForDiagnosis _)
+    //primaryAssessmentBean.createAssessmentsForEventIdFromCommonData(eventId, data, "Diagnostic", null, auth,  postProcessingForDiagnosis _)// postProcessingForDiagnosis
   }
 
   def modifyLaboratoryStudies(eventId: Int, data: CommonData, auth: AuthData) = {
@@ -1066,14 +1071,12 @@ class MedipadWSImpl
   def getAllMkbs(request: ListDataRequest, auth: AuthData) = {
     request.setRecordsCount(dbCustomQueryBean.getCountOfMkbsWithFilter(request.filter))
     val mkbs = dbCustomQueryBean.getAllMkbsWithFilter(  request.page,
-                                            request.limit,
-                                            request.sortingFieldInternal,
-                                            request.sortingMethod,
-                                            request.filter)
+                                                        request.limit,
+                                                        request.sortingFieldInternal,
+                                                        request.filter.unwrap())
 
     val mkbs_display = dbCustomQueryBean.getDistinctMkbsWithFilter (request.sortingFieldInternal,
-                                                                    request.sortingMethod,
-                                                                    request.filter)
+                                                                    request.filter.unwrap())
 
     val mapper: ObjectMapper = new ObjectMapper()
     val set = new java.util.HashSet[String]
@@ -1093,10 +1096,9 @@ class MedipadWSImpl
   def getThesaurusList(request: ListDataRequest, auth: AuthData) = {
     request.setRecordsCount(dbCustomQueryBean.getCountOfThesaurusWithFilter(request.filter))
     val thesaurus = dbCustomQueryBean.getAllThesaurusWithFilter(request.page,
-      request.limit,
-      request.sortingFieldInternal,
-      request.sortingMethod,
-      request.filter)
+                                                                request.limit,
+                                                                request.sortingFieldInternal,
+                                                                request.filter.unwrap())
     new ThesaurusListData(thesaurus, request)
   }
 
@@ -1109,122 +1111,98 @@ class MedipadWSImpl
       case "bloodTypes" => { //Группы крови
         mapper.getSerializationConfig().setSerializationView(classOf[DictionaryDataViews.DefaultView]);
         request.setRecordsCount(dbBloodTypeBean.getCountOfBloodTypesWithFilter(request.filter))
-        dbBloodTypeBean.getAllBloodTypesWithFilter(
-          request.page-1,
-          request.limit,
-          request.sortingFieldInternal,
-          request.sortingMethod,
-          request.filter)
+        dbBloodTypeBean.getAllBloodTypesWithFilter( request.page-1,
+                                                    request.limit,
+                                                    request.sortingFieldInternal,
+                                                    request.filter.unwrap())
       }
       case "relationships" => { //Типы родственных связей
         mapper.getSerializationConfig().setSerializationView(classOf[DictionaryDataViews.DefaultView]);
         request.setRecordsCount(dbRelationTypeBean.getCountOfRelationsWithFilter(request.filter))
-        dbRelationTypeBean.getAllRelationsWithFilter(
-          request.page-1,
-          request.limit,
-          request.sortingFieldInternal,
-          request.sortingMethod,
-          request.filter)
+        dbRelationTypeBean.getAllRelationsWithFilter( request.page-1,
+                                                      request.limit,
+                                                      request.sortingFieldInternal,
+                                                      request.filter.unwrap())
       }
       case "citizenships" => { //Гражданство
         mapper.getSerializationConfig().setSerializationView(classOf[DictionaryDataViews.DefaultView]);
         request.setRecordsCount(dbRbSocTypeBean.getCountOfSocStatusTypesWithFilter(request.filter))
-        dbRbSocTypeBean.getAllSocStatusTypesWithFilter(
-          request.page-1,
-          request.limit,
-          request.sortingFieldInternal,
-          request.sortingMethod,
-          request.filter)
+        dbRbSocTypeBean.getAllSocStatusTypesWithFilter( request.page-1,
+                                                        request.limit,
+                                                        request.sortingFieldInternal,
+                                                        request.filter.unwrap())
       }
       case "citizenships2" => { //Второе гражданство
         mapper.getSerializationConfig().setSerializationView(classOf[DictionaryDataViews.DefaultView]);
         request.setRecordsCount(dbRbSocTypeBean.getCountOfSocStatusTypesWithFilter(request.filter))
-        dbRbSocTypeBean.getAllSocStatusTypesWithFilter(
-          request.page-1,
-          request.limit,
-          request.sortingFieldInternal,
-          request.sortingMethod,
-          request.filter)
+        dbRbSocTypeBean.getAllSocStatusTypesWithFilter( request.page-1,
+                                                        request.limit,
+                                                        request.sortingFieldInternal,
+                                                        request.filter.unwrap())
       }
       case "socStatus" => { //Соц статусы
         mapper.getSerializationConfig().setSerializationView(classOf[DictionaryDataViews.DefaultView]);
         request.setRecordsCount(dbRbSocTypeBean.getCountOfSocStatusTypesWithFilter(request.filter))
-        dbRbSocTypeBean.getAllSocStatusTypesWithFilter(
-          request.page-1,
-          request.limit,
-          request.sortingFieldInternal,
-          request.sortingMethod,
-          request.filter)
+        dbRbSocTypeBean.getAllSocStatusTypesWithFilter( request.page-1,
+                                                        request.limit,
+                                                        request.sortingFieldInternal,
+                                                        request.filter.unwrap())
       }
       case "TFOMS" => { //ТФОМС
         mapper.getSerializationConfig().setSerializationView(classOf[DictionaryDataViews.TFOMSView]);
         request.setRecordsCount(dbOrganizationBean.getCountOfOrganizationWithFilter(request.filter))
-        dbOrganizationBean.getAllOrganizationWithFilter(
-          request.page-1,
-          request.limit,
-          request.sortingFieldInternal,
-          request.sortingMethod,
-          request.filter)
+        dbOrganizationBean.getAllOrganizationWithFilter(request.page-1,
+                                                        request.limit,
+                                                        request.sortingFieldInternal,
+                                                        request.filter.unwrap())
       }
       case "clientDocument" => {  //Типы документов, удостоверяющих личность
         mapper.getSerializationConfig().setSerializationView(classOf[DictionaryDataViews.ClientDocumentView]);
         request.setRecordsCount(dbDocumentTypeBean.getCountOfDocumentTypesWithFilter(request.filter))
-        dbDocumentTypeBean.getAllDocumentTypesWithFilter(
-          request.page-1,
-          request.limit,
-          request.sortingFieldInternal,
-          request.sortingMethod,
-          request.filter)
+        dbDocumentTypeBean.getAllDocumentTypesWithFilter( request.page-1,
+                                                          request.limit,
+                                                          request.sortingFieldInternal,
+                                                          request.filter.unwrap())
       }
       case "insurance" => { //Страховые компании
         mapper.getSerializationConfig().setSerializationView(classOf[DictionaryDataViews.InsuranceView]);
         request.setRecordsCount(dbOrganizationBean.getCountOfOrganizationWithFilter(request.filter))
-        dbOrganizationBean.getAllOrganizationWithFilter(
-          request.page-1,
-          request.limit,
-          request.sortingFieldInternal,
-          request.sortingMethod,
-          request.filter)
+        dbOrganizationBean.getAllOrganizationWithFilter(request.page-1,
+                                                        request.limit,
+                                                        request.sortingFieldInternal,
+                                                        request.filter.unwrap())
       }
       case "policyTypes" => { //Тип полиса
         mapper.getSerializationConfig().setSerializationView(classOf[DictionaryDataViews.PolicyTypeView]);
         request.setRecordsCount(dbRbPolicyTypeBean.getCountOfRbPolicyTypeWithFilter(request.filter))
-        dbRbPolicyTypeBean.getAllRbPolicyTypeWithFilter(
-          request.page-1,
-          request.limit,
-          request.sortingFieldInternal,
-          request.sortingMethod,
-          request.filter)
+        dbRbPolicyTypeBean.getAllRbPolicyTypeWithFilter(request.page-1,
+                                                        request.limit,
+                                                        request.sortingFieldInternal,
+                                                        request.filter.unwrap())
       }
       case "disabilityTypes" => {   //Тип инвалидности
         mapper.getSerializationConfig().setSerializationView(classOf[DictionaryDataViews.DefaultView]);
         request.setRecordsCount(dbRbSocTypeBean.getCountOfSocStatusTypesWithFilter(request.filter))
-        dbRbSocTypeBean.getAllSocStatusTypesWithFilter(
-          request.page-1,
-          request.limit,
-          request.sortingFieldInternal,
-          request.sortingMethod,
-          request.filter)
+        dbRbSocTypeBean.getAllSocStatusTypesWithFilter( request.page-1,
+                                                        request.limit,
+                                                        request.sortingFieldInternal,
+                                                        request.filter.unwrap())
       }
       case "KLADR" => {    //адреса по кладру
         mapper.getSerializationConfig().setSerializationView(classOf[DictionaryDataViews.KLADRView]);
         request.setRecordsCount(dbSchemeKladrBean.getCountOfKladrRecordsWithFilter(request.filter))
-        dbSchemeKladrBean.getAllKladrRecordsWithFilter(
-          request.page-1,
-          request.limit,
-          request.sortingFieldInternal,
-          request.sortingMethod,
-          request.filter)
+        dbSchemeKladrBean.getAllKladrRecordsWithFilter( request.page-1,
+                                                        request.limit,
+                                                        request.sortingFieldInternal,
+                                                        request.filter.unwrap())
       }
       case "valueDomain" => {
         mapper.getSerializationConfig().setSerializationView(classOf[DictionaryDataViews.ValueDomainView]);
         //request.setRecordsCount(dbSchemeKladrBean.getCountOfKladrRecordsWithFilter(request.filter))
-        actionPropertyTypeBean.getActionPropertyTypeValueDomainsWithFilter(
-          request.page-1,
-          request.limit,
-          request.sortingFieldInternal,
-          request.sortingMethod,
-          request.filter)
+        actionPropertyTypeBean.getActionPropertyTypeValueDomainsWithFilter( request.page-1,
+                                                                            request.limit,
+                                                                            request.sortingFieldInternal,
+                                                                            request.filter.unwrap())
       }
       case "specialities" => {  //  Специальности
         mapper.getSerializationConfig().setSerializationView(classOf[DictionaryDataViews.DefaultView]);
@@ -1232,8 +1210,7 @@ class MedipadWSImpl
         dbSpeciality.getAllSpecialitiesWithFilter(request.page-1,
                                                   request.limit,
                                                   request.sortingFieldInternal,
-                                                  request.sortingMethod,
-                                                  request.filter)
+                                                  request.filter.unwrap())
       }
       case "contactTypes" => {  //  Типы контактов
         mapper.getSerializationConfig().setSerializationView(classOf[DictionaryDataViews.DefaultView])
@@ -1241,16 +1218,14 @@ class MedipadWSImpl
         dbRbContactType.getAllRbContactTypesWithFilter( request.page-1,
                                                         request.limit,
                                                         request.sortingFieldInternal,
-                                                        request.sortingMethod,
-                                                        request.filter)
+                                                        request.filter.unwrap())
       }
       case "requestTypes" => {  //  Типы обращений
         mapper.getSerializationConfig().setSerializationView(classOf[DictionaryDataViews.RequestTypesView])
         dbRbRequestTypes.getAllRbRequestTypesWithFilter(request.page-1,
                                                         request.limit,
                                                         request.sortingFieldInternal,
-                                                        request.sortingMethod,
-                                                        request.filter,
+                                                        request.filter.unwrap(),
                                                         request.rewriteRecordsCount _)
       }
       case "finance" => {  //  Типы оплаты
@@ -1258,8 +1233,7 @@ class MedipadWSImpl
         dbRbFinance.getAllRbFinanceWithFilter(request.page-1,
                                               request.limit,
                                               request.sortingFieldInternal,
-                                              request.sortingMethod,
-                                              request.filter,
+                                              request.filter.unwrap(),
                                               request.rewriteRecordsCount _)
       }
       case "quotaStatus" => { //   Статусы квот
@@ -1267,8 +1241,7 @@ class MedipadWSImpl
         dbRbQuotaStatus.getAllRbQuotaStatusWithFilter(request.page-1,
                                                       request.limit,
                                                       request.sortingFieldInternal,
-                                                      request.sortingMethod,
-                                                      request.filter,
+                                                      request.filter.unwrap(),
                                                       request.rewriteRecordsCount _)
       }
       case "tissueTypes" => {  //Типы исследования
@@ -1276,8 +1249,7 @@ class MedipadWSImpl
         dbRbTissueType.getAllRbTissueTypeWithFilter(request.page-1,
                                                     request.limit,
                                                     request.sortingFieldInternal,
-                                                    request.sortingMethod,
-                                                    request.filter,
+                                                    request.filter.unwrap(),
                                                     request.rewriteRecordsCount _)
       }
     }
@@ -1286,11 +1258,10 @@ class MedipadWSImpl
 
   def getQuotaTypes(request: ListDataRequest) = {
     val quotaTypes = dbQuotaTypeBean.getAllQuotaTypesWithFilter(request.page-1,
-      request.limit,
-      request.sortingFieldInternal,
-      request.sortingMethod,
-      request.filter,
-      request.rewriteRecordsCount _)
+                                                                request.limit,
+                                                                request.sortingFieldInternal,
+                                                                request.filter.unwrap(),
+                                                                request.rewriteRecordsCount _)
     new GroupTypesListData(quotaTypes, request)
   }
 
@@ -1323,8 +1294,7 @@ class MedipadWSImpl
     val list = dbEventTypeBean.getEventTypesByRequestTypeIdAndFinanceId(request.page-1,
                                                                     request.limit,
                                                                     request.sortingFieldInternal,
-                                                                    request.sortingMethod,
-                                                                    request.filter,
+                                                                    request.filter.unwrap(),
                                                                     request.rewriteRecordsCount _)
 
     mapper.writeValueAsString(new EventTypesListData(list, request))
@@ -1337,22 +1307,24 @@ class MedipadWSImpl
   def getTakingOfBiomaterial(request: TakingOfBiomaterialRequesData, authData: AuthData) = {
 
     val res = dbJobTicketBean.getDirectionsWithJobTicketsBetweenDate(request.sortingFieldInternal, request.filter)
-    request.rewriteRecordsCount(res.asInstanceOf[java.util.LinkedList[(Action, ActionTypeTissueType, JobTicket)]].size())
     //пересоберем мапу и сгруппируем по жобТикету
     var actions = new java.util.LinkedList[(Action, ActionTypeTissueType)]()
     var map = new mutable.LinkedHashMap[JobTicket, LinkedList[(Action, ActionTypeTissueType)]]
-    var firstJobTicket = res.asInstanceOf[java.util.LinkedList[(Action, ActionTypeTissueType, JobTicket)]].iterator.next()._3
-    res.asInstanceOf[java.util.LinkedList[(Action, ActionTypeTissueType, JobTicket)]].foreach(f => {
-      if (firstJobTicket.getId.intValue() == f._3.getId.intValue()) {
-        actions.add((f._1, f._2))
-      } else {
-        map += (firstJobTicket -> actions)
-        actions = new java.util.LinkedList[(Action, ActionTypeTissueType)]()
-        actions.add((f._1, f._2))
-        firstJobTicket = f._3
-      }
-    })
-    if (actions.size() == 1) map += (firstJobTicket -> actions)   //добавляем последний жобТикет, если для него есть только один акшен. Если акшенов больше, он добавится в цикле.
+    if (res != null) {
+      request.rewriteRecordsCount(res.asInstanceOf[java.util.LinkedList[(Action, ActionTypeTissueType, JobTicket)]].size())
+      var firstJobTicket = res.asInstanceOf[java.util.LinkedList[(Action, ActionTypeTissueType, JobTicket)]].iterator.next()._3
+      res.asInstanceOf[java.util.LinkedList[(Action, ActionTypeTissueType, JobTicket)]].foreach(f => {
+        if (firstJobTicket.getId.intValue() == f._3.getId.intValue()) {
+          actions.add((f._1, f._2))
+        } else {
+          map += (firstJobTicket -> actions)
+          actions = new java.util.LinkedList[(Action, ActionTypeTissueType)]()
+          actions.add((f._1, f._2))
+          firstJobTicket = f._3
+        }
+      })
+      if (actions.size() == 1) map += (firstJobTicket -> actions)   //добавляем последний жобТикет, если для него есть только один акшен. Если акшенов больше, он добавится в цикле.
+    }
     new TakingOfBiomaterialData(map, request)
   }
 

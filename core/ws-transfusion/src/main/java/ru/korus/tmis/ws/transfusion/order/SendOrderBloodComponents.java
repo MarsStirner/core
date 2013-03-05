@@ -1,29 +1,27 @@
 package ru.korus.tmis.ws.transfusion.order;
 
+import java.util.Arrays;
 import java.util.Date;
-import java.util.GregorianCalendar;
 import java.util.LinkedList;
 import java.util.List;
 
+import javax.ejb.EJB;
+import javax.ejb.Stateless;
 import javax.persistence.EntityManager;
 import javax.xml.datatype.DatatypeConfigurationException;
-import javax.xml.datatype.DatatypeFactory;
-import javax.xml.datatype.XMLGregorianCalendar;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import ru.korus.tmis.core.entity.model.*;
 import ru.korus.tmis.core.entity.model.Action;
 import ru.korus.tmis.core.entity.model.Event;
 import ru.korus.tmis.core.entity.model.OrgStructure;
-import ru.korus.tmis.core.entity.model.Patient;
-import ru.korus.tmis.core.entity.model.RbBloodComponentType;
-import ru.korus.tmis.core.entity.model.RbBloodType;
+import ru.korus.tmis.core.entity.model.RbTrfuBloodComponentType;
 import ru.korus.tmis.core.entity.model.Staff;
 import ru.korus.tmis.core.exception.CoreException;
 import ru.korus.tmis.util.EntityMgr;
 import ru.korus.tmis.ws.transfusion.Database;
+import ru.korus.tmis.ws.transfusion.PropType;
 import ru.korus.tmis.ws.transfusion.efive.ComponentType;
 import ru.korus.tmis.ws.transfusion.efive.OrderInformation;
 import ru.korus.tmis.ws.transfusion.efive.OrderResult;
@@ -40,155 +38,100 @@ import ru.korus.tmis.ws.transfusion.efive.TransfusionMedicalService;
 /**
  * Передача новых требований на выдачу КК в ТРФУ
  */
+@Stateless
 public class SendOrderBloodComponents {
 
-    /**
-     * 
-     */
-    public static final short ACTION_STATE_STARTED = 0;
-    public static final short ACTION_STATE_WAIT = 1;
-    public static final short ACTION_STATE_FINISHED = 2;
-    public static final short SIZE_OF_BLOOD_CANSELED = 3;
-    public static final short SIZE_OF_BLOOD_NO_RESULT = 4;
-    
-    private static final int SIZE_OF_BLOOD_CODE = 2;
+    static final String TRANSFUSION_ACTION_FLAT_CODE = "TransfusionTherapy";
+
+    @EJB
+    private Database database;
+
+    public static final PropType[] propConstants = {
+            PropType.DIAGNOSIS, // "Основной клинический диагноз"
+            PropType.BLOOD_COMP_TYPE, // "Требуемый компонент крови"
+            PropType.TYPE, // "Вид трансфузии"
+            PropType.VOLUME, // "Объем требуемого компонента крови (все, кроме тромбоцитов)"
+            PropType.DOSE_COUNT, // "Количество требуемых донорских доз (тромбоциты)"
+            PropType.ROOT_CAUSE, // "Показания к проведению трансфузии"
+            PropType.ORDER_REQUEST_ID, // "Результат передачи требования в систему ТРФУ"
+            PropType.ORDER_ISSUE_RES_DATE, // "Дата выдачи КК"
+            PropType.ORDER_ISSUE_RES_TIME, // "Время выдачи КК"
+            PropType.ORDER_ISSUE_BLOOD_COMP_PASPORT, // "Паспортные данные выданных компонентов крови"
+    };
+
     /**
      * ID типа действия запроса КК
      */
     private static final String ACTION_TYPE_TRANSFUSION_ORDER = "TransfusionTherapy";
 
     /**
-     * Идентификатор группы крови, соответсвующий группе 0(I)
-     */
-    private static final int BLOOD_GROUP_MIN = 1;
-
-    /**
-     * Идентификатор группы крови, соответсвующий группе AB(IV)
-     */
-    private static final int BLOOD_GROUP_MAX = 4;
-
-    /**
-     * Символ, соответсвующий положительному резус-фактору
-     */
-    private static final char RHESUS_FACTOR_POS = '+';
-
-    /**
-     * Символ, соответсвующий отрицательному резус-фактору
-     */
-    private static final char RHESUS_FACTOR_NEGATIVE = '-';
-
-    /**
      * Тип трансфузии - Плановая
      */
-    public static final String TRANSFUSION_TYPE_PLANED = "<span style=\" margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;\">Плановая</span>";
+    public static final String TRANSFUSION_TYPE_PLANED = "Плановая";
 
     /**
      * Тип трансфузии - Экстренная
      */
-    public static final String TRANSFUSION_TYPE_EMERGENCY = "<span style=\" margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;\">Экстренная</span>";
+    public static final String TRANSFUSION_TYPE_EMERGENCY = "Экстренная";
 
     private static final Logger logger = LoggerFactory.getLogger(SendOrderBloodComponents.class);
 
-    private static TrfuActionProp trfuActionProp;
+    private TrfuActionProp trfuActionProp;
 
-    /**
-     * Поиск новых требований КК и передача их в ТРФУ
-     * 
-     * @throws CoreException
-     * @throws CoreException
-     * @throws DatatypeConfigurationException
-     */
-    public void pullDB(TransfusionMedicalService trfuService) {
-        EntityManager em = null;
+    public void pullDB(final TransfusionMedicalService trfuService) {
         try {
-            logger.info("Periodic check new TRFU order...");
+            trfuActionProp = new TrfuActionProp(database, ACTION_TYPE_TRANSFUSION_ORDER, Arrays.asList(propConstants));
+        } catch (final CoreException ex) {
+            logger.error("Cannot create entety manager. Error description: '{}'", ex.getMessage());
+            return;
+        }
+        logger.info("Periodic check new TRFU order...");
+        updateBloodCompTable(trfuService);
+        final List<Action> orderActions = database.getNewActionByFlatCode(ACTION_TYPE_TRANSFUSION_ORDER);
+        logger.info("Periodic check new TRFU order... the count of new action: {}", orderActions.size());
+
+        for (final Action action : orderActions) {
+            logger.info("Processing transfusion action {}...", action.getId());
             try {
-                em = EntityMgr.getEntityManagerForS11r64(logger);
-
-                if (trfuActionProp == null) {
-                    trfuActionProp = TrfuActionProp.getInstance(em);
-                }
-            } catch (CoreException ex) {
-                logger.error("Cannot create entety manager. Error description: '{}'", ex.getMessage());
-                return;
-            }
-
-            List<Action> orderActions = null;
-            try {
-                orderActions = getOrders(em);
-                logger.info("Periodic check new TRFU order... the count of new action: {}", orderActions.size());
-            } catch (CoreException ex) {
-                logger.error("Cannot get new TRFU orders. Error description: '{}'", ex.getMessage());
-                return;
-            }
-
-            for (Action action : orderActions) {
-                logger.info("Processing transfusion action {}...", action.getId());
+                OrderResult orderResult = new OrderResult();
+                trfuActionProp.setRequestState(action.getId(), "");
+                final PatientCredentials patientCredentials = Database.getPatientCredentials(action);
+                logger.info("Processing transfusion action {}... Patient Credentials: {}", action.getId(), patientCredentials);
+                final OrderInformation orderInfo = getOrderInformation(database.getEntityMgr(), action, trfuService);
+                logger.info("Processing transfusion action {}... Order Information: {}", action.getId(), orderInfo);
                 try {
-                    OrderResult orderResult = new OrderResult();
-                    setRequestState(em, action.getId(), "");
-                    PatientCredentials patientCredentials = getPatientCredentials(em, action);
-                    logger.info("Processing transfusion action {}... Patient Credentials: {}", action.getId(), patientCredentials);
-                    OrderInformation orderInfo = getOrderInformation(em, action, trfuService);
-                    logger.info("Processing transfusion action {}... Order Information: {}", action.getId(), orderInfo);
-                    try {
-                        orderResult = trfuService.orderBloodComponents(patientCredentials, orderInfo);
-                        logger.info("Processing transfusion action {}... The response was recived from TRFU: {}", action.getId(), orderResult);
-                    } catch (Exception ex) {
-                        logger.error(
-                                "The order {} was not registrate in TRFU. TRFU web method 'orderBloodComponents' has thrown runtime exception.  Error description: '{}'",
-                                action.getId(), ex.getMessage());
-                        ex.printStackTrace();
-                    }
-                    if (orderResult.isResult()) { // если подситема ТРФУ зарегистрировала требование КК
-                        try {
-                            orderResult2DB(em, action, orderResult.getRequestId());
-                            logger.info("Processing transfusion action {}... The order has been successfully registered in TRFU. TRFU id: {}", action.getId(),
-                                    orderResult.getRequestId());
-                        } catch (CoreException ex) {
-                            logger.error("The order {} was not registrate in TRFU. Cannot save the result into DB. Error description: '{}'", action.getId(),
-                                    ex.getMessage());
-                        }
-                    } else {
-                        logger.error("The order {} was not registrate in TRFU. TRFU service return the error satatus. Error description: '{}'", action.getId(),
-                                orderResult.getDescription());
-                        setRequestState(em, action.getId(), "Ответ системы ТРФУ: " + orderResult.getDescription());
-                    }
-                } catch (DatatypeConfigurationException e) {
-                    logger.error("The order {} was not registrate in TRFU. Cannot create the date information. Error description: '{}'", action.getId(),
-                            e.getMessage());
-                } catch (CoreException e) {
-                    logger.error("The order {} was not registrate in TRFU. Internal core error. Error description: '{}'", action.getId(),
-                            e.getMessage());
-                    e.printStackTrace();
+                    orderResult = trfuService.orderBloodComponents(patientCredentials, orderInfo);
+                    logger.info("Processing transfusion action {}... The response was recived from TRFU: {}", action.getId(), orderResult);
+                } catch (final Exception ex) {
+                    logger.error(
+                            "The order {} was not registrate in TRFU. TRFU web method 'orderBloodComponents'"
+                                    + " has thrown runtime exception.  Error description: '{}'",
+                            action.getId(), ex.getMessage());
+                    ex.printStackTrace();
                 }
-            }
-        } finally {
-            if (em != null) {
-                EntityMgr.closeEntityManagerFactory();
+                if (orderResult.isResult()) { // если подситема ТРФУ зарегистрировала требование КК
+                    try {
+                        trfuActionProp.orderResult2DB(action, orderResult.getRequestId());
+                        logger.info("Processing transfusion action {}... The order has been successfully registered in TRFU. TRFU id: {}", action.getId(),
+                                orderResult.getRequestId());
+                    } catch (final CoreException ex) {
+                        logger.error("The order {} was not registrate in TRFU. Cannot save the result into DB. Error description: '{}'", action.getId(),
+                                ex.getMessage());
+                    }
+                } else {
+                    logger.error("The order {} was not registrate in TRFU. TRFU service return the error satatus. Error description: '{}'", action.getId(),
+                            orderResult.getDescription());
+                    trfuActionProp.setRequestState(action.getId(), "Ответ системы ТРФУ: " + orderResult.getDescription());
+                }
+            } catch (final DatatypeConfigurationException e) {
+                logger.error("The order {} was not registrate in TRFU. Cannot create the date information. Error description: '{}'", action.getId(),
+                        e.getMessage());
+            } catch (final CoreException e) {
+                logger.error("The order {} was not registrate in TRFU. Internal core error. Error description: '{}'", action.getId(),
+                        e.getMessage());
+                e.printStackTrace();
             }
         }
-    }
-
-    /**
-     * @param em
-     * @param id
-     * @param requestId
-     * @throws CoreException
-     */
-    private void orderResult2DB(EntityManager em, Action action, Integer requestId) throws CoreException {
-        setRequestState(em, action.getId(), "Получен идентификатор в системе ТРФУ: " + requestId);
-        action.setStatus(ACTION_STATE_WAIT);
-    }
-
-    /**
-     * @param em
-     * @param action
-     * @param state
-     * @throws CoreException
-     */
-    private void setRequestState(EntityManager em, Integer actionId, final String state) throws CoreException {
-        trfuActionProp.setProp(state, em, actionId, TrfuActionProp.PropType.ORDER_REQUEST_ID, true);
     }
 
     /**
@@ -199,10 +142,11 @@ public class SendOrderBloodComponents {
      * @throws CoreException
      * @throws DatatypeConfigurationException
      */
-    private OrderInformation getOrderInformation(EntityManager em, Action action, TransfusionMedicalService trfuService) throws CoreException,
-            DatatypeConfigurationException {
-        OrderInformation res = new OrderInformation();
-        res.setNumber(""); // TODO Remove!
+    private OrderInformation
+            getOrderInformation(final EntityManager em, final Action action, final TransfusionMedicalService trfuService) throws CoreException,
+                    DatatypeConfigurationException {
+        final OrderInformation res = new OrderInformation();
+        res.setNumber("");
         res.setId(action.getId());
         Integer orgStructItd = new Integer(0);
         final Staff createPerson = EntityMgr.getSafe(action.getAssigner());
@@ -215,17 +159,19 @@ public class SendOrderBloodComponents {
         res.setDivisionId(orgStructItd);
         final Event event = EntityMgr.getSafe(action.getEvent());
         res.setIbNumber(event.getExternalId());
-        res.setDiagnosis((String) trfuActionProp.getProp(em, action.getId(), TrfuActionProp.PropType.DIAGNOSIS));
-        final RbBloodComponentType compType = trfuActionProp.getProp(em, action.getId(), TrfuActionProp.PropType.BLOOD_COMP_TYPE);
-        Integer compTypeId = compType != null ? compType.getId() : null;
-        updateBloodCompTable(em, trfuService);
+        res.setDiagnosis((String) trfuActionProp.getProp(action.getId(), PropType.DIAGNOSIS));
+        final RbTrfuBloodComponentType compType = trfuActionProp.getProp(action.getId(), PropType.BLOOD_COMP_TYPE);
+        final Integer compTypeId = compType != null ? compType.getId() : null;
         res.setComponentTypeId(convertComponentType(em, action.getId(), compTypeId));
-        res.setVolume((Integer) trfuActionProp.getProp(em, action.getId(), TrfuActionProp.PropType.VOLUME, 0));
-        res.setDoseCount((Double) trfuActionProp.getProp(em, action.getId(), TrfuActionProp.PropType.DOSE_COUNT, 0.0));
-        res.setIndication((String) trfuActionProp.getProp(em, action.getId(), TrfuActionProp.PropType.ROOT_CAUSE));
-        res.setTransfusionType(convertTrfuType((String) trfuActionProp.getProp(em, action.getId(), TrfuActionProp.PropType.TYPE)));
-        res.setPlanDate(getGregorianCalendar(action.getPlannedEndDate()));
-        res.setRegistrationDate(getGregorianCalendar(new Date()));
+        res.setVolume(trfuActionProp.getProp(action.getId(), PropType.VOLUME, 0));
+        res.setDoseCount(trfuActionProp.getProp(action.getId(), PropType.DOSE_COUNT, 0.0));
+        res.setIndication((String) trfuActionProp.getProp(action.getId(), PropType.ROOT_CAUSE));
+        res.setTransfusionType(convertTrfuType((String) trfuActionProp.getProp(action.getId(), PropType.TYPE)));
+        final Date plannedEndDate = action.getPlannedEndDate();
+        if (plannedEndDate != null) {
+            res.setPlanDate(Database.toGregorianCalendar(plannedEndDate));
+        }
+        res.setRegistrationDate(Database.toGregorianCalendar(new Date()));
         res.setAttendingPhysicianId(createPerson.getId());
         res.setAttendingPhysicianFirstName(createPerson.getFirstName());
         res.setAttendingPhysicianLastName(createPerson.getLastName());
@@ -233,34 +179,24 @@ public class SendOrderBloodComponents {
         return res;
     }
 
-    /**
-     * @param date
-     * @return
-     * @throws DatatypeConfigurationException
-     */
-    private XMLGregorianCalendar getGregorianCalendar(final Date date) throws DatatypeConfigurationException {
-        final GregorianCalendar planedDateCalendar = new GregorianCalendar();
-        planedDateCalendar.setTime(date);
-        return DatatypeFactory.newInstance().newXMLGregorianCalendar(planedDateCalendar);
-    }
-
-    private Integer convertComponentType(EntityManager em, Integer actionId, Integer compTypeId) throws CoreException {
-        List<RbBloodComponentType> compTypes = em
-                .createQuery("SELECT c FROM RbBloodComponentType c WHERE c.id = :compTypeId AND c.unused = 0", RbBloodComponentType.class)
+    private Integer convertComponentType(final EntityManager em, final Integer actionId, final Integer compTypeId) throws CoreException {
+        final List<RbTrfuBloodComponentType> compTypes = em
+                .createQuery("SELECT c FROM RbTrfuBloodComponentType c WHERE c.id = :compTypeId AND c.unused = 0", RbTrfuBloodComponentType.class)
                 .setParameter("compTypeId", compTypeId).getResultList();
         if (compTypes.size() != 1) {
-            setRequestState(em, actionId, String.format("Недопустимое значение идентификатора компонента крови:'%d'", compTypeId));
+            trfuActionProp.setRequestState(actionId, String.format("Недопустимое значение идентификатора компонента крови:'%d'", compTypeId));
             throw new CoreException(String.format("The blood component id=%d has been not found or unused", compTypeId));
         }
         return compTypes.get(0).getTrfuId();
     }
 
-    private void updateBloodCompTable(EntityManager em, TransfusionMedicalService trfuService) {
-        List<ComponentType> compTypesTrfu = trfuService.getComponentTypes();
-        List<RbBloodComponentType> compBloodTypesDb = em.createQuery("SELECT c FROM RbBloodComponentType c", RbBloodComponentType.class).getResultList();
-        logger.info("The Reference book for blood components has been received from TRFU. The count of blood component: {}", compBloodTypesDb.size());
-        List<RbBloodComponentType> compBloodTypesTrfu = convertToDb(compTypesTrfu);
-        for (RbBloodComponentType compDb : compBloodTypesDb) {
+    private void updateBloodCompTable(final TransfusionMedicalService trfuService) {
+        final List<ComponentType> compTypesTrfu = trfuService.getComponentTypes();
+        final List<RbTrfuBloodComponentType> compBloodTypesDb =
+                database.getEntityMgr().createQuery("SELECT c FROM RbTrfuBloodComponentType c", RbTrfuBloodComponentType.class).getResultList();
+        logger.info("The Reference book for blood components has been received from TRFU. The count of blood component: {}", compTypesTrfu.size());
+        final List<RbTrfuBloodComponentType> compBloodTypesTrfu = convertToDb(compTypesTrfu);
+        for (final RbTrfuBloodComponentType compDb : compBloodTypesDb) {
             if (compBloodTypesTrfu.remove(compDb)) {
                 compDb.setUnused(false);
             } else {
@@ -268,20 +204,20 @@ public class SendOrderBloodComponents {
                 logger.info("The blood components unused in TRFU. The component: {}", compDb);
             }
         }
-        for (RbBloodComponentType compTrfu : compBloodTypesTrfu) {
-            em.persist(compTrfu);
+        for (final RbTrfuBloodComponentType compTrfu : compBloodTypesTrfu) {
+            database.getEntityMgr().persist(compTrfu);
         }
-        em.flush();
+        database.getEntityMgr().flush();
     }
 
     /**
      * @param compBloodTypesTrfu
      * @return
      */
-    private List<RbBloodComponentType> convertToDb(List<ComponentType> compBloodTypesTrfu) {
-        List<RbBloodComponentType> res = new LinkedList<RbBloodComponentType>();
-        for (ComponentType compTrfu : compBloodTypesTrfu) {
-            RbBloodComponentType compDb = new RbBloodComponentType();
+    private List<RbTrfuBloodComponentType> convertToDb(final List<ComponentType> compBloodTypesTrfu) {
+        final List<RbTrfuBloodComponentType> res = new LinkedList<RbTrfuBloodComponentType>();
+        for (final ComponentType compTrfu : compBloodTypesTrfu) {
+            final RbTrfuBloodComponentType compDb = new RbTrfuBloodComponentType();
             compDb.setTrfuId(compTrfu.getId());
             compDb.setCode(compTrfu.getCode());
             compDb.setName(compTrfu.getValue());
@@ -291,97 +227,30 @@ public class SendOrderBloodComponents {
         return res;
     }
 
-    private Integer convertTrfuType(String trfuType) throws CoreException {
-        if (TRANSFUSION_TYPE_PLANED.equals(trfuType)) {
+    private Integer convertTrfuType(final String trfuType) throws CoreException {
+        final String type = convertFromXml(trfuType);
+        if (TRANSFUSION_TYPE_PLANED.equals(type)) {
             return 0;
-        } else if (TRANSFUSION_TYPE_EMERGENCY.equals(trfuType)) {
+        } else if (TRANSFUSION_TYPE_EMERGENCY.equals(type)) {
             return 1;
         }
 
-        throw new CoreException(String.format("Wrong transfusion type: '%s'", trfuType));
-    }
-
-    private class BloodType {
-        int rhesusFactorId;
-        int bloodGroupId;
+        throw new CoreException(String.format("Wrong transfusion type: '%s'", type));
     }
 
     /**
-     * Информация о пациенте для предачи требования КК в ТРФУ
-     * 
-     * @param em
-     *            - достуб к БД
-     * @param action
-     *            - действие, соответсвующее новому требованию КК
-     * @return - информацию о пациенте для передачи в ТРФУ
-     * @throws CoreException
-     *             - при отсутвии доступа к БД или при отсутвии необходимой информации в БД
-     * @throws DatatypeConfigurationException
-     */
-    private PatientCredentials getPatientCredentials(EntityManager em, Action action) throws CoreException, DatatypeConfigurationException {
-        final PatientCredentials res = new PatientCredentials();
-        final Event event = EntityMgr.getSafe(action.getEvent());
-        final Patient client = EntityMgr.getSafe(event.getPatient());
-        res.setId(client.getId());
-        res.setLastName(client.getLastName());
-        res.setFirstName(client.getFirstName());
-        res.setMiddleName(client.getPatrName());
-        res.setBirth(getGregorianCalendar(EntityMgr.getSafe(client.getBirthDate())));
-        final RbBloodType clientBloodType = EntityMgr.getSafe(client.getBloodType());
-        BloodType bloodType = convertBloodId(clientBloodType.getCode());
-        res.setBloodGroupId(bloodType.bloodGroupId);
-        res.setRhesusFactorId(bloodType.rhesusFactorId);
-        return res;
-    }
-
-    /**
-     * Преобразование кода группы крови из формата БД МИС ("1+", "1-" ... "4+", "4-") в формат протоколоа обмена с ТРФУ (группа: 1- первая 0 (I), 2 – вторая А
-     * (II), 3 – третья В (III), 4 – четвертая АВ (IV); резус-фактора: 0 – Положительный, 1 -– Отрицательный)
-     * 
-     * @param code
+     * @param trfuType
      * @return
-     * @throws CoreException
      */
-    private BloodType convertBloodId(String code) throws CoreException {
-        final String errorMsg = String.format("Incorrect blood group code: '%s'", code);
-        if (code == null || code.length() != SIZE_OF_BLOOD_CODE) {
-            throw new CoreException(errorMsg);
-        }
-
-        BloodType res = new BloodType();
-
-        try {
-            res.bloodGroupId = Integer.parseInt(code.substring(0, 1));
-        } catch (NumberFormatException ex) {
-            throw new CoreException(errorMsg);
-        }
-
-        if (res.bloodGroupId < BLOOD_GROUP_MIN || res.bloodGroupId > BLOOD_GROUP_MAX) {
-            throw new CoreException(errorMsg);
-        }
-
-        if (code.charAt(1) == RHESUS_FACTOR_POS) {
-            res.rhesusFactorId = 0;
-        } else if (code.charAt(1) == RHESUS_FACTOR_NEGATIVE) {
-            res.rhesusFactorId = 1;
-        } else {
-            throw new CoreException(errorMsg);
+    private String convertFromXml(final String trfuType) {
+        String res = trfuType.substring(trfuType.indexOf('>') + 1);
+        final int endIndex = res.indexOf('<');
+        if (endIndex > 0) {
+            res = res.substring(0, endIndex);
         }
 
         return res;
+
     }
 
-    /**
-     * Поиск новых требований КК
-     * 
-     * @param em
-     *            - достуб к БД
-     * @return - список действий с типом, соответсвующим требованию КК и статусом 0 - Начато
-     * @throws CoreException
-     */
-    private List<Action> getOrders(EntityManager em) throws CoreException {
-        final List<Action> actions = em.createQuery("SELECT a FROM Action a WHERE a.status = 0 AND a.actionType.flatCode = :flatCode AND a.deleted = 0 ", Action.class)
-                .setParameter("flatCode", ACTION_TYPE_TRANSFUSION_ORDER).getResultList();
-        return actions;
-    }
 }

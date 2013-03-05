@@ -11,6 +11,7 @@ import ru.korus.tmis.core.exception.CoreException
 import ru.korus.tmis.util.{I18nable, ConfigManager}
 import ru.korus.tmis.core.data.{DepartmentsDataFilter, QueryDataStructure}
 import java.util
+import ru.korus.tmis.core.filter.{ListDataFilter, AbstractListDataFilter}
 
 
 @Interceptors(Array(classOf[LoggingInterceptor]))
@@ -83,20 +84,13 @@ class DbOrgStructureBean
     typed.getSingleResult
   }
 
-  def getAllOrgStructuresByRequest(limit: Int, page: Int, sortField: String, sortMethod: String, filter: Object) = {
+  def getAllOrgStructuresByRequest(limit: Int, page: Int, sorting: String, filter: ListDataFilter) = {
 
-    val queryStr: QueryDataStructure = if (filter.isInstanceOf[DepartmentsDataFilter]) {
-      filter.asInstanceOf[DepartmentsDataFilter].toQueryStructure()
-    } else new QueryDataStructure()
-
-    var sorting = "ORDER BY %s %s".format(sortField, sortMethod)
-    if (sortField == null || sortField.compareTo("") == 0 || sortMethod == null || sortMethod.compareTo("") == 0) {
-      sorting = "ORDER BY os.id asc"
-    }
+    val queryStr: QueryDataStructure = filter.toQueryStructure()
 
     val typed = em.createQuery(OrgStructuresAndCountRecordsWithFilterQuery.format("os", queryStr.query, sorting), classOf[OrgStructure])
-      .setMaxResults(limit)
-      .setFirstResult(limit * page)
+                  .setMaxResults(limit)
+                  .setFirstResult(limit * page)
     if (queryStr.data.size() > 0) {
       queryStr.data.foreach(qdp => typed.setParameter(qdp.name, qdp.value))
     }

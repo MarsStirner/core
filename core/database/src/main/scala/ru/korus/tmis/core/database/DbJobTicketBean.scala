@@ -6,19 +6,19 @@ import javax.ejb.{EJB, Stateless}
 import grizzled.slf4j.Logging
 import ru.korus.tmis.util.{ConfigManager, CAPids, I18nable}
 import javax.persistence.{EntityManager, PersistenceContext}
-import ru.korus.tmis.core.entity.model.{ActionTypeTissueType, Action, JobTicket}
+import ru.korus.tmis.core.entity.model.{Job, ActionTypeTissueType, Action, JobTicket}
 import scala.collection.JavaConversions._
 import collection.mutable
 import ru.korus.tmis.core.data.TakingOfBiomaterialRequesDataFilter
 import ru.korus.tmis.core.auth.AuthData
 import ru.korus.tmis.core.exception.CoreException
 import ru.korus.tmis.util.reflect.LoggingManager
+import java.util.Date
 
 /**
  * Методы для работы с JobTicket
- * Author: idmitriev Systema-Soft
- * Date: 2/13/13 2:30 PM
- * Since: 1.0.0.64
+ * @author idmitriev Systema-Soft
+ * @since 1.0.0.64
  */
 @Interceptors(Array(classOf[LoggingInterceptor]))
 @Stateless
@@ -54,6 +54,30 @@ class DbJobTicketBean extends DbJobTicketBeanLocal
     }
   }
 
+  def insertOrUpdateJobTicket(id: Int, action: Action, job: Job): JobTicket = {
+    //4) при создании нового Action надо проверять на возможное существование записи в Job и Job_Ticket для данного пациента,
+    // event, биоматериала, планируемой даты выполнения
+    //Получение нового JobTicket для действия с забором БМ
+    //Job_Ticket.master_id = Job.id
+    //Job_Ticket.datetime = action.plannedEndDate
+    //JT.status = 0
+
+    var jt: JobTicket = null
+    if (id > 0) {
+      jt = getJobTicketById(id)
+    }
+    else {
+      jt = new JobTicket
+      jt.setStatus(0)
+      jt.setJob(job)
+    }
+    jt.setDatetime(action.getPlannedEndDate)
+    jt.setLabel("")
+    jt.setNote("")
+    jt.setIdx(0)
+    jt
+  }
+
   def getDirectionsWithJobTicketsBetweenDate (sortQuery: String,
                                               filter: TakingOfBiomaterialRequesDataFilter) = {
 
@@ -73,7 +97,7 @@ class DbJobTicketBean extends DbJobTicketBeanLocal
                       .getResultList
 
     result.size() match {
-      case 0 => new java.util.LinkedList[(Action, ActionTypeTissueType, JobTicket)]
+      case 0 => null
       case size => {
         val directions = result.foldLeft(new java.util.LinkedList[(Action, ActionTypeTissueType, JobTicket)])(
           (list, aj) => {

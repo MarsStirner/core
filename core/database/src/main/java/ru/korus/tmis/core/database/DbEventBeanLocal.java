@@ -24,33 +24,25 @@ public interface DbEventBeanLocal {
      * @throws CoreException
      * @see Event
      */
-    Event getEventById(int id)
-            throws CoreException;
+    Event getEventById(int id) throws CoreException;
 
-    Set<ActionType> getActionTypeFilter(int eventId)
-            throws CoreException;
+    void setExecPersonForEventWithId(int eventId, Staff execPerson) throws CoreException;
 
-    OrgStructure getOrgStructureForEvent(int eventId)
-            throws CoreException;
+    Set<ActionType> getActionTypeFilter(int eventId) throws CoreException;
 
-    Event createEvent(int patientId, int appealTypeId, Date begDate, Date endDate, AuthData authData)
-            throws CoreException;
+    OrgStructure getOrgStructureForEvent(int eventId) throws CoreException;
 
-    Event createEvent(Patient patient, EventType eventType, Staff person, Date begDate, Date endDate)
-            throws CoreException;
+    Event createEvent(int patientId, int appealTypeId, Date begDate, Date endDate, AuthData authData) throws CoreException;
 
+    Event createEvent(Patient patient, EventType eventType, Staff person, Date begDate, Date endDate) throws CoreException;
 
-    EventType getEventTypeById(int eventTypeId)
-            throws CoreException;
+    EventType getEventTypeById(int eventTypeId) throws CoreException;
 
-    List<Event> getEventsForPatient(int patientId)
-            throws CoreException;
+    List<Event> getEventsForPatient(int patientId) throws CoreException;
 
-    List<Event> getEventsForPatientWithExistsActionByType(int patientId, String code)
-            throws CoreException;
+    List<Event> getEventsForPatientWithExistsActionByType(int patientId, String code) throws CoreException;
 
-    int getEventTypeIdByFDRecordId(int fdRecordId)
-            throws CoreException;
+    int getEventTypeIdByFDRecordId(int fdRecordId) throws CoreException;
 
     /**
      * Запрос на справочники типов обращений.

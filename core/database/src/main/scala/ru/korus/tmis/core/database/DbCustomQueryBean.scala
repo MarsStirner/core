@@ -25,6 +25,7 @@ import ru.korus.tmis.util.General._
 
 import java.lang.{Double => JDouble}
 import collection.immutable.ListMap
+import ru.korus.tmis.core.filter.ListDataFilter
 
 @Interceptors(Array(classOf[LoggingInterceptor]))
 @Stateless
@@ -613,17 +614,11 @@ class DbCustomQueryBean
     //.getOrElse{ throw new CoreException(i18n("error.noWeightForPatientFound").format(p.getId)) }
   }
 
-  def getDistinctMkbsWithFilter(sortingField: String, sortingMethod: String, filter: Object) = {
+  def getDistinctMkbsWithFilter(sorting: String, filter: ListDataFilter) = {
 
     val retValue = new java.util.HashMap[String, java.util.Map[String, Mkb]]
     if (filter.asInstanceOf[MKBListRequestDataFilter].display == true) {
-      var queryStr: QueryDataStructure = if (filter.isInstanceOf[MKBListRequestDataFilter]) {
-        filter.asInstanceOf[MKBListRequestDataFilter].toQueryStructure()
-      }
-      else {
-        new QueryDataStructure()
-      }
-      val sorting = "ORDER BY %s %s".format(sortingField, sortingMethod)
+      val queryStr = filter.toQueryStructure()
       if (queryStr.data.size() > 0) {
         var pos = 0
         var value: AnyRef = null
@@ -704,25 +699,19 @@ class DbCustomQueryBean
     retValue
   }
 
-  def getAllMkbsWithFilter(page: Int, limit: Int, sortingField: String, sortingMethod: String, filter: Object) = {
+  def getAllMkbsWithFilter(page: Int, limit: Int, sorting: String, filter: ListDataFilter) = {
 
-    var queryStr: QueryDataStructure = if (filter.isInstanceOf[MKBListRequestDataFilter]) {
-      filter.asInstanceOf[MKBListRequestDataFilter].toQueryStructure()
-    }
-    else {
-      new QueryDataStructure()
-    }
+    val queryStr = filter.toQueryStructure()
 
-    val sorting = "ORDER BY %s %s".format(sortingField, sortingMethod)
     if (queryStr.data.size() > 0) {
       if (queryStr.query.indexOf("AND ") == 0) {
         queryStr.query = "WHERE " + queryStr.query.substring("AND ".length())
       }
     }
 
-    var typed = em.createQuery(AllMkbWithFilterQuery.format("mkb", queryStr.query, sorting), classOf[Mkb])
-      .setMaxResults(limit)
-      .setFirstResult(limit * page)
+    val typed = em.createQuery(AllMkbWithFilterQuery.format("mkb", queryStr.query, sorting), classOf[Mkb])
+                  .setMaxResults(limit)
+                  .setFirstResult(limit * page)
 
     if (queryStr.data.size() > 0) {
       queryStr.data.foreach(qdp => typed.setParameter(qdp.name, qdp.value))
@@ -779,22 +768,17 @@ class DbCustomQueryBean
   }
 
 
-  def getAllThesaurusWithFilter(page: Int, limit: Int, sortingField: String, sortingMethod: String, filter: Object) = {
-    var queryStr: QueryDataStructure = if (filter.isInstanceOf[ThesaurusListRequestDataFilter]) {
-      filter.asInstanceOf[ThesaurusListRequestDataFilter].toQueryStructure()
-    }
-    else {
-      new QueryDataStructure()
-    }
-    val sorting = "ORDER BY %s %s".format(sortingField, sortingMethod)
+  def getAllThesaurusWithFilter(page: Int, limit: Int, sorting: String, filter: ListDataFilter) = {
+
+    val queryStr = filter.toQueryStructure()
     if (queryStr.data.size() > 0) {
       if (queryStr.query.indexOf("AND ") == 0) {
         queryStr.query = "WHERE " + queryStr.query.substring("AND ".length())
       }
     }
-    var typed = em.createQuery(AllThesaurusWithFilterQuery.format("r", queryStr.query, sorting), classOf[Thesaurus])
-      .setMaxResults(limit)
-      .setFirstResult(limit * page)
+    val typed = em.createQuery(AllThesaurusWithFilterQuery.format("r", queryStr.query, sorting), classOf[Thesaurus])
+                  .setMaxResults(limit)
+                  .setFirstResult(limit * page)
     if (queryStr.data.size() > 0) {
       queryStr.data.foreach(qdp => typed.setParameter(qdp.name, qdp.value))
     }

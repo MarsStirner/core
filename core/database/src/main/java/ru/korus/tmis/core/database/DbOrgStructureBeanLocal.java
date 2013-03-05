@@ -1,10 +1,13 @@
 package ru.korus.tmis.core.database;
 
+import ru.korus.tmis.core.data.DepartmentsDataFilter;
 import ru.korus.tmis.core.entity.model.ActionType;
 import ru.korus.tmis.core.entity.model.OrgStructure;
 import ru.korus.tmis.core.entity.model.OrgStructureAddress;
 import ru.korus.tmis.core.entity.model.Staff;
 import ru.korus.tmis.core.exception.CoreException;
+import ru.korus.tmis.core.filter.AbstractListDataFilter;
+import ru.korus.tmis.core.filter.ListDataFilter;
 
 import javax.ejb.Local;
 import java.util.List;
@@ -36,17 +39,15 @@ public interface DbOrgStructureBeanLocal {
      *
      * @param page          Выводимая страница.
      * @param limit         Максимальное количество типов оплаты в выводимом списке.
-     * @param sortingField  Поле для сортировки.
-     * @param sortingMethod Метод для сортировки.
+     * @param sorting  Для сортировки.
      * @param filter        Фильтр значений списка.
      * @return Список отделений как List<OrgStructure>
      * @throws CoreException
      */
     List<OrgStructure> getAllOrgStructuresByRequest(int limit,
                                                     int page,
-                                                    String sortingField,
-                                                    String sortingMethod,
-                                                    Object filter)
+                                                    String sorting,
+                                                    ListDataFilter filter)
             throws CoreException;
 
     /**

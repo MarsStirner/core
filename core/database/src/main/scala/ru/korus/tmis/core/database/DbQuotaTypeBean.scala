@@ -10,6 +10,7 @@ import ru.korus.tmis.core.data.{QuotaTypesListRequestDataFilter, DictionaryListR
 import javax.interceptor.Interceptors
 import ru.korus.tmis.core.logging.LoggingInterceptor
 import javax.ejb.Stateless
+import ru.korus.tmis.core.filter.ListDataFilter
 
 /**
  * Класс с методами для работы с таблицей s11r64.QuotaType
@@ -71,12 +72,9 @@ class DbQuotaTypeBean
     }
   }
 
-  def getAllQuotaTypesWithFilter(page: Int, limit: Int, sortingField: String, sortingMethod: String, filter: Object, records: (java.lang.Long) => java.lang.Boolean) = {
-    val queryStr: QueryDataStructure = if (filter.isInstanceOf[QuotaTypesListRequestDataFilter])
-      filter.asInstanceOf[QuotaTypesListRequestDataFilter].toQueryStructure()
-    else new QueryDataStructure()
+  def getAllQuotaTypesWithFilter(page: Int, limit: Int, sorting: String, filter: ListDataFilter, records: (java.lang.Long) => java.lang.Boolean) = {
 
-    val sorting = "ORDER BY %s %s".format("r."+sortingField, sortingMethod)
+    val queryStr = filter.toQueryStructure()
     if (queryStr.data.size() > 0) {
       if (queryStr.query.indexOf("AND ") == 0) {
         queryStr.query = "WHERE " + queryStr.query.substring("AND ".length())
@@ -84,11 +82,11 @@ class DbQuotaTypeBean
     }
 
     //Перепишем количество записей для структуры
-    var countTyped = em.createQuery(AllQuotaTypesWithFilterQuery.format("count(r)", queryStr.query, ""), classOf[Long])
+    val countTyped = em.createQuery(AllQuotaTypesWithFilterQuery.format("count(r)", queryStr.query, ""), classOf[Long])
     if (queryStr.data.size() > 0) queryStr.data.foreach(qdp => countTyped.setParameter(qdp.name, qdp.value))
     if (records!=null) records(countTyped.getSingleResult)
 
-    var typed = em.createQuery(AllQuotaTypesWithFilterQuery.format("r", queryStr.query, sorting), classOf[QuotaType])
+    val typed = em.createQuery(AllQuotaTypesWithFilterQuery.format("r", queryStr.query, sorting), classOf[QuotaType])
       .setMaxResults(limit)
       .setFirstResult(limit * page)
     if (queryStr.data.size() > 0) queryStr.data.foreach(qdp => typed.setParameter(qdp.name, qdp.value))

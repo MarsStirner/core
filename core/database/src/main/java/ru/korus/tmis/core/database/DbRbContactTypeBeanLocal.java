@@ -2,6 +2,7 @@ package ru.korus.tmis.core.database;
 
 import ru.korus.tmis.core.entity.model.RbContactType;
 import ru.korus.tmis.core.exception.CoreException;
+import ru.korus.tmis.core.filter.ListDataFilter;
 
 import javax.ejb.Local;
 
@@ -13,7 +14,7 @@ public interface DbRbContactTypeBeanLocal {
     long getCountOfAllRbContactTypesWithFilter(Object filter)
             throws CoreException;
 
-    java.util.LinkedList<Object> getAllRbContactTypesWithFilter(int page, int limit, String sortingField, String sortingMethod, Object filter)
+    java.util.LinkedList<Object> getAllRbContactTypesWithFilter(int page, int limit, String sorting, ListDataFilter filter)
             throws CoreException;
 
     RbContactType getRbContactTypeById(int id)

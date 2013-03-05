@@ -14,12 +14,13 @@ import org.codehaus.jackson.map.annotate.JsonView
 import ru.korus.tmis.auxiliary.AuxiliaryFunctions
 import java.util
 import ru.korus.tmis.core.exception.CoreException
+import ru.korus.tmis.core.filter.{ListDataFilter, AbstractListDataFilter}
 
 @XmlType(name = "listRequestData")
 @XmlRootElement(name = "listRequestData")
 class ListDataRequest {
   @BeanProperty
-  var filter:  AnyRef = _
+  var filter:  AbstractListDataFilter = _
   @BeanProperty
   var sortingField: String = _
   @BeanProperty
@@ -39,7 +40,7 @@ class ListDataRequest {
            sortingMethod: String,
            limit: Int,
            page: Int,
-           filter: AnyRef) = {
+           filter: AbstractListDataFilter) = {
     this()
     this.filter = if(filter!=null) {filter} else {null}
     this.sortingField = sortingField match {
@@ -47,7 +48,7 @@ class ListDataRequest {
       case _ => {sortingField}
     }
 
-    this.sortingFieldInternal =
+    /*this.sortingFieldInternal =
       if(this.filter.isInstanceOf[MKBListRequestDataFilter]) {
         this.filter.asInstanceOf[MKBListRequestDataFilter].toSortingString(this.sortingField)
       }
@@ -68,8 +69,7 @@ class ListDataRequest {
       }
       else {
         this.sortingField
-      }
-
+      } */
     this.sortingMethod = sortingMethod match {
       case null => {"asc"}
       case _ => {sortingMethod}
@@ -77,6 +77,7 @@ class ListDataRequest {
     this.limit = limit
     this.page = if(page>1)page else 1
     this.coreVersion = ConfigManager.Messages("misCore.assembly.version")
+    this.sortingFieldInternal = this.filter.toSortingString(this.sortingField, this.sortingMethod)
   }
 
   def rewriteRecordsCount(recordsCount: java.lang.Long) = {
@@ -104,7 +105,7 @@ class AllPersonsListData {
 
 @XmlType(name = "freePersonsListDataFilter")
 @XmlRootElement(name = "freePersonsListDataFilter")
-class FreePersonsListDataFilter {
+class FreePersonsListDataFilter  extends AbstractListDataFilter {
   @BeanProperty
   var speciality:  Int = _
   @BeanProperty
@@ -136,6 +137,7 @@ class FreePersonsListDataFilter {
     this.endOnlyTime = etime
   }
 
+  @Override
   def toQueryStructure() = {
     var qs = new QueryDataStructure()
     if(this.speciality>0){
@@ -151,6 +153,15 @@ class FreePersonsListDataFilter {
       qs.add("beginOnlyDate",this.beginOnlyDate)
     }
     qs
+  }
+
+  @Override
+  def toSortingString (sortingField: String, sortingMethod: String) = {
+    var sorting = sortingField match {
+      case _ => {"e.id %s"}
+    }
+    sorting = "ORDER BY " + sorting.format(sortingMethod)
+    sorting
   }
 }
 
@@ -180,11 +191,13 @@ class ActionTypesListData {
   @BeanProperty
   var data: ArrayList[ActionTypesListEntry] = new ArrayList[ActionTypesListEntry]
 
-  def this(requestData: ListDataRequest, getAllActionTypeWithFilter: (Int, Int, String, String, AnyRef) => java.util.List[ActionType]) = {
+  def this(requestData: ListDataRequest, getAllActionTypeWithFilter: (Int, Int, String, ListDataFilter) => java.util.List[ActionType]) = {
     this ()
     this.requestData = requestData
-    getAllActionTypeWithFilter(0,0,this.requestData.sortingField,this.requestData.sortingMethod,this.requestData.filter).foreach(at => {
-      requestData.setFilter(new ActionTypesListRequestDataFilter("", at.getId.intValue(), "",
+    getAllActionTypeWithFilter(0, 0, this.requestData.sortingFieldInternal, this.requestData.filter.unwrap()).foreach(at => {
+      requestData.setFilter( new ActionTypesListRequestDataFilter( "",
+                                                                  at.getId.intValue(),
+                                                                  "",
                                                                   this.requestData.filter.asInstanceOf[ActionTypesListRequestDataFilter].mnemonic,
                                                                   this.requestData.filter.asInstanceOf[ActionTypesListRequestDataFilter].view))
       this.data.add(new ActionTypesListEntry(at, requestData, getAllActionTypeWithFilter))
@@ -194,7 +207,7 @@ class ActionTypesListData {
 
 @XmlType(name = "actionTypesListRequestDataFilter")
 @XmlRootElement(name = "actionTypesListRequestDataFilter")
-class ActionTypesListRequestDataFilter {
+class ActionTypesListRequestDataFilter extends AbstractListDataFilter {
 
   @BeanProperty
   var code: String = _
@@ -231,6 +244,7 @@ class ActionTypesListRequestDataFilter {
     }
   }
 
+  @Override
   def toQueryStructure() = {
     var qs = new QueryDataStructure()
     if (this.mnemonic!=null && !this.mnemonic.isEmpty && this.mnemonic.compareTo("") != 0) {
@@ -248,13 +262,16 @@ class ActionTypesListRequestDataFilter {
     qs
   }
 
-  def toSortingString (sortingField: String) = {
-    sortingField match {
-      case "groupId" => {"at.groupId"}
-      case "code" => {"at.code"}
-      case "name" => {"at.name"}
-      case _ => {"at.id"}
+  @Override
+  def toSortingString (sortingField: String, sortingMethod: String) = {
+    var sorting = sortingField match {
+      case "groupId" => {"at.groupId %s"}
+      case "code" => {"at.code %s"}
+      case "name" => {"at.name %s"}
+      case _ => {"at.id %s"}
     }
+    sorting = "ORDER BY " + sorting.format(sortingMethod)
+    sorting
   }
 }
 
@@ -289,17 +306,17 @@ class ActionTypesListEntry {
   //@BeanProperty
   //var childrenCount: Long = _
 
-  def this(actionType: ActionType, requestData: ListDataRequest, getAllActionTypeWithFilter: (Int, Int, String, String, AnyRef) => java.util.List[ActionType]) {
+  def this(actionType: ActionType, requestData: ListDataRequest, getAllActionTypeWithFilter: (Int, Int, String, ListDataFilter) => java.util.List[ActionType]) {
     this()
     this.id = actionType.getId.intValue()
     this.groupId = if(actionType.getGroupId!=null) {actionType.getGroupId.intValue()} else{0}
     this.code = actionType.getCode
     this.name = actionType.getName
-    getAllActionTypeWithFilter(0,0,requestData.sortingField,requestData.sortingMethod,requestData.filter).foreach(f => {
+    getAllActionTypeWithFilter(0,0,requestData.sortingFieldInternal,requestData.filter.unwrap()).foreach(f => {
       val filter = new ActionTypesListRequestDataFilter("", f.getId.intValue(), "",
                                                         requestData.filter.asInstanceOf[ActionTypesListRequestDataFilter].mnemonic,
-                                                        requestData.filter.asInstanceOf[ActionTypesListRequestDataFilter].view);
-      val request = new ListDataRequest(requestData.sortingField, requestData.sortingMethod, requestData.limit, requestData.page, filter);
+                                                        requestData.filter.asInstanceOf[ActionTypesListRequestDataFilter].view)
+      val request = new ListDataRequest(requestData.sortingField, requestData.sortingMethod, requestData.limit, requestData.page, filter)
       this.groups.add(new ActionTypesListEntry(f, request, getAllActionTypeWithFilter))
     })
     //this.childrenCount = actionType
@@ -467,7 +484,7 @@ class AllMKBListData {
 
 @XmlType(name = "mkbListRequestDataFilter")
 @XmlRootElement(name = "mkbListRequestDataFilter")
-class MKBListRequestDataFilter {
+class MKBListRequestDataFilter extends AbstractListDataFilter {
 
   @BeanProperty
   var mkbId: Int = _
@@ -514,6 +531,7 @@ class MKBListRequestDataFilter {
     this.sex = sex
   }
 
+  @Override
   def toQueryStructure() = {
     var qs = new QueryDataStructure()
 
@@ -548,15 +566,17 @@ class MKBListRequestDataFilter {
     qs
   }
 
-  def toSortingString (sortingField: String) = {
-    val sortingFieldInternal = sortingField match {
-      case "classId" => {"mkb.classID"}
-      case "blockId" => {"mkb.blockID"}
-      case "code" => {"mkb.diagID"}
-      case "diagnosis" => {"mkb.diagName"}
-      case _ => {"mkb.id"}
+  @Override
+  def toSortingString (sortingField: String, sortingMethod: String) = {
+    var sorting = sortingField match {
+      case "classId" => {"mkb.classID %s"}
+      case "blockId" => {"mkb.blockID %s"}
+      case "code" => {"mkb.diagID %s"}
+      case "diagnosis" => {"mkb.diagName %s"}
+      case _ => {"mkb.id %s"}
     }
-    sortingFieldInternal
+    sorting = "ORDER BY " + sorting.format(sortingMethod)
+    sorting
   }
 }
 
@@ -761,7 +781,7 @@ class ThesaurusListData {
 
 @XmlType(name = "thesaurusListRequestDataFilter")
 @XmlRootElement(name = "thesaurusListRequestDataFilter")
-class ThesaurusListRequestDataFilter {
+class ThesaurusListRequestDataFilter extends AbstractListDataFilter{
   @BeanProperty
   var id: Int = _
 
@@ -780,6 +800,7 @@ class ThesaurusListRequestDataFilter {
     this.code = code
   }
 
+  @Override
   def toQueryStructure() = {
     var qs = new QueryDataStructure()
 
@@ -800,13 +821,15 @@ class ThesaurusListRequestDataFilter {
     qs
   }
 
-  def toSortingString (sortingField: String) = {
-    val sortingFieldInternal = sortingField match {
-      case "groupId" => {"r.groupID"}
-      case "code" => {"r.code"}
-      case _ => {"r.id"}
+  @Override
+  def toSortingString (sortingField: String, sortingMethod: String) = {
+    var sorting = sortingField match {
+      case "groupId" => {"r.groupID %s"}
+      case "code" => {"r.code %s"}
+      case _ => {"r.id %s"}
     }
-    sortingFieldInternal
+    sorting = "ORDER BY " + sorting.format(sortingMethod)
+    sorting
   }
 }
 
@@ -961,7 +984,7 @@ class DictionaryContainer {
 
 @XmlType(name = "dictionaryListRequestDataFilter")
 @XmlRootElement(name = "dictionaryListRequestDataFilter")
-class DictionaryListRequestDataFilter {
+class DictionaryListRequestDataFilter extends AbstractListDataFilter{
 
   @BeanProperty
   var dictName: String = _
@@ -1006,6 +1029,7 @@ class DictionaryListRequestDataFilter {
     this.capId = capId
   }
 
+  @Override
   def toQueryStructure() = {
     var qs = new QueryDataStructure()
     if(this.headId>0 && dictName.compare("insurance") == 0){
@@ -1066,18 +1090,20 @@ class DictionaryListRequestDataFilter {
     qs
   }
 
-  def toSortingString (sortingField: String) = {
-    val sortingFieldInternal = sortingField match {
+  @Override
+  def toSortingString (sortingField: String, sortingMethod: String) = {
+    var sorting = sortingField match {
       case "name" => {if(dictName.compare("disabilityTypes") == 0 ||
                          dictName.compare("citizenships") == 0 ||
                          dictName.compare("citizenships2") == 0 ||
-                         dictName.compare("socStatus") == 0) {"sst.name"} else{"r.name"}}
+                         dictName.compare("socStatus") == 0) {"sst.name %s"} else{"r.name %s"}}
       case _ => {if(dictName.compare("disabilityTypes") == 0 ||
                     dictName.compare("citizenships") == 0 ||
                     dictName.compare("citizenships2") == 0 ||
-                    dictName.compare("socStatus") == 0) {"sst.id"} else{"r.id"}}
+                    dictName.compare("socStatus") == 0) {"sst.id %s"} else{"r.id %s"}}
     }
-    sortingFieldInternal
+    sorting = "ORDER BY " + sorting.format(sortingMethod)
+    sorting
   }
 
   private def substringWithZeroInput(code: String, pos: Int, count: Int) = {
@@ -1098,9 +1124,9 @@ class DictionaryListRequestDataFilter {
   }
 }
 
-@XmlType(name = "mkbListRequestDataFilter")
-@XmlRootElement(name = "mkbListRequestDataFilter")
-class DepartmentsDataFilter {
+@XmlType(name = "departmentsDataFilter")
+@XmlRootElement(name = "departmentsDataFilter")
+class DepartmentsDataFilter extends AbstractListDataFilter{
 
   @BeanProperty
   var hasBeds: Boolean = _
@@ -1119,6 +1145,7 @@ class DepartmentsDataFilter {
     this.hasPatients = hasPatients
   }
 
+  @Override
   def toQueryStructure() = {
     var qs = new QueryDataStructure()
 
@@ -1177,12 +1204,14 @@ class DepartmentsDataFilter {
     qs
   }
 
-  def toSortingString (sortingField: String) = {
-    val sortingFieldInternal = sortingField match {
-      case "name" => {"os.name"}
-      case _ => {"os.id"}
+  @Override
+  def toSortingString (sortingField: String, sortingMethod: String) = {
+    var sorting = sortingField match {
+      case "name" => {"os.name %s"}
+      case _ => {"os.id %s"}
     }
-    sortingFieldInternal
+    sorting = "ORDER BY " + sorting.format(sortingMethod)
+    sorting
   }
 }
 
@@ -1200,7 +1229,7 @@ class TrueFalseContainer {
 
 @XmlType(name = "eventTypesListRequestDataFilter")
 @XmlRootElement(name = "eventTypesListRequestDataFilter")
-class EventTypesListRequestDataFilter {
+class EventTypesListRequestDataFilter extends AbstractListDataFilter {
 
   @BeanProperty
   var financeId: Int = _
@@ -1215,6 +1244,7 @@ class EventTypesListRequestDataFilter {
     this.requestTypeId = requestTypeId
   }
 
+  @Override
   def toQueryStructure() = {
     var qs = new QueryDataStructure()
 
@@ -1229,11 +1259,14 @@ class EventTypesListRequestDataFilter {
     qs
   }
 
-  def toSortingString (sortingField: String) = {
-    sortingField match {
-      case "name" => {"et.name"}
-      case _ => {"et.id"}
+  @Override
+  def toSortingString (sortingField: String, sortingMethod: String) = {
+    var sorting = sortingField match {
+      case "name" => {"et.name %s"}
+      case _ => {"et.id %s"}
     }
+    sorting = "ORDER BY " + sorting.format(sortingMethod)
+    sorting
   }
 }
 
@@ -1351,7 +1384,7 @@ class QuotaTypeContainer {
 
 @XmlType(name = "quotaTypesListRequestDataFilter")
 @XmlRootElement(name = "quotaTypesListRequestDataFilter")
-class QuotaTypesListRequestDataFilter {
+class QuotaTypesListRequestDataFilter extends AbstractListDataFilter {
   @BeanProperty
   var id: Int = _
 
@@ -1370,6 +1403,7 @@ class QuotaTypesListRequestDataFilter {
     this.groupCode = if (groupCode_x!=null && groupCode_x!="") groupCode_x else ""
   }
 
+  @Override
   def toQueryStructure() = {
     var qs = new QueryDataStructure()
     qs.query += ("WHERE r.deleted = 0\n")
@@ -1387,5 +1421,15 @@ class QuotaTypesListRequestDataFilter {
       qs.add("groupCode", this.groupCode)
     }
     qs
+  }
+
+  @Override
+  def toSortingString (sortingField: String, sortingMethod: String) = {
+    var sorting = sortingField match {
+      case "code" => {"r.code %s"}
+      case _ => {"r.id %s"}
+    }
+    sorting = "ORDER BY " + sorting.format(sortingMethod)
+    sorting
   }
 }

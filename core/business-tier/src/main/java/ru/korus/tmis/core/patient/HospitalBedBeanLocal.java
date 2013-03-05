@@ -102,4 +102,13 @@ public interface HospitalBedBeanLocal {
      * @throws CoreException
      */
     boolean callOffHospitalBedForPatient(int actionId, AuthData authData) throws CoreException;
+
+    /**
+     * Запрос на последнее по ивенту действие типа Движение
+     * @param eventId Идентификатор ивента.
+     * @see AuthData
+     * @return
+     * @throws CoreException
+     */
+    Action getLastMovingActionForEventId(int eventId) throws CoreException;
 }

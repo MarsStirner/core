@@ -693,7 +693,7 @@ with TmisLogging{
       null:java.lang.Integer
   }
 
-  private def getLastMovingActionForEventId(eventId: Int) = {
+  def getLastMovingActionForEventId(eventId: Int) = {
     val result = em.createQuery(LastMovingActionByEventIdQuery.format(i18n("db.action.movingFlatCode")),
                                 classOf[Action])
       .setParameter("id", eventId)

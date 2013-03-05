@@ -184,6 +184,8 @@ class TakingOfBiomaterialRequesDataFilter {
         case "status" => {"jt.status %s".format(lex)}
         case "fullname" | "fio" | "patient" => {"e.patient.lastName %s, e.patient.firstName %s, e.patient.patrName %s".format(lex,lex,lex)}
         case "birthdate" => {"e.patient.birthDate %s".format(lex)}
+        case "tissueType" => {"attp.tissueType.name %s".format(lex)}
+        case "date" => {"jt.datetime %s".format(lex)}
         case _ => {"e.patient.lastName %s, e.patient.firstName %s, e.patient.patrName %s".format(lex,lex,lex)}
       }
     query = "ORDER BY " + query
@@ -210,32 +212,31 @@ class TakingOfBiomaterialRequesDataFilter {
 class ActionInfoDataContainer {
 
   @BeanProperty
-  var id: Int = _                              //Action.id
+  var id: Int = _                               //Action.id
   @BeanProperty
   var actionType: IdNameContainer = _           //ActionType.id + ActionType.name
   @BeanProperty
-  var patient: PatientInfoDataContainer = _     //Основная информация о пациенте
+  var takenTissueJournal: Int = _            //номер истолии болезни
   @BeanProperty
   var urgent: Boolean = false                   //Срочность
   @BeanProperty
+  var biomaterial: TissueTypeContainer = _      //биоматериал
+  @BeanProperty
   var tubeType: TestTubeTypeInfoContainer = _   //Тип пробирки
   @BeanProperty
-  var assigner: DoctorContainer = _             //Основная информация о назначевшем забор враче
-  @BeanProperty
-  var biomaterial: TissueTypeContainer = _                      //биоматериал
+  var patient: PatientInfoDataContainer = _     //Основная информация о пациенте
 
   def this(action: Action, tissueType: ActionTypeTissueType) {
     this()
     this.id = action.getId.intValue()
     this.actionType = new IdNameContainer(action.getActionType.getId.intValue(),
       action.getActionType.getName)
-    this.patient = new PatientInfoDataContainer(action.getEvent.getPatient)
+    this.biomaterial = new TissueTypeContainer(tissueType)
     this.urgent = action.getIsUrgent
     this.tubeType = new TestTubeTypeInfoContainer(action.getActionType.getTestTubeType)
-    this.assigner = new DoctorContainer(action.getAssigner)
-    if (tissueType != null) {
-      this.biomaterial = new TissueTypeContainer(tissueType)
-    }
+    //this.assigner = new DoctorContainer(action.getAssigner)
+    this.patient = new PatientInfoDataContainer(action.getEvent.getPatient)
+    this.takenTissueJournal = action.getTakenTissue.getId.intValue()
   }
 }
 
@@ -360,7 +361,15 @@ class JobTicketInfoContainer {
   @BeanProperty
   var note: String = _                          //Примечание
   @BeanProperty
+  var appealNumber: String = _                  //номер истолии болезни
+  @BeanProperty
   var laboratory: IdNameContainer = _           //Лаборатория
+  @BeanProperty
+  var patient: PatientInfoDataContainer = _     //Основная информация о пациенте
+  @BeanProperty
+  var biomaterial: TissueTypeContainer = _      //биоматериал
+  @BeanProperty
+  var assigner: DoctorContainer = _             //Основная информация о назначевшем забор враче
   @BeanProperty
   var actions: LinkedList[ActionInfoDataContainer] = new LinkedList[ActionInfoDataContainer]  //Список акшенов для этого тикета
 
@@ -377,7 +386,21 @@ class JobTicketInfoContainer {
           ticket.getJob.getOrgStructure.getName)
       else
         new IdNameContainer()
-      actionValues.foreach(a => this.actions += new ActionInfoDataContainer(a._1, a._2))
+      actionValues.foreach(a => {
+        if (patient == null) {
+          this.patient = new PatientInfoDataContainer(a._1.getEvent.getPatient)
+        }
+        if (biomaterial == null) {
+          this.biomaterial = new TissueTypeContainer(a._2)
+        }
+        if (assigner == null) {
+          this.assigner = new DoctorContainer(a._1.getAssigner)
+        }
+        if (appealNumber == null || appealNumber.isEmpty) {
+          this.appealNumber = a._1.getEvent.getExternalId
+        }
+        this.actions += new ActionInfoDataContainer(a._1, a._2)
+      })
     } else {
       LoggingManager.setLoggerType(LoggingManager.LoggingTypes.Debug)
       LoggingManager.warning("code " + ConfigManager.ErrorCodes.JobTicketIsNull +
