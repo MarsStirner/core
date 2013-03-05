@@ -1,4 +1,4 @@
-package ru.korus.tmis.core.hl7db;
+package ru.korus.tmis.core.pharmacy;
 
 import org.joda.time.DateTime;
 import ru.korus.tmis.core.entity.model.Action;
@@ -6,15 +6,14 @@ import ru.korus.tmis.core.entity.model.pharmacy.Pharmacy;
 import ru.korus.tmis.core.exception.CoreException;
 
 import javax.ejb.Local;
-import java.util.Date;
 import java.util.List;
 
 /**
  * @author Dmitriy E. Nosov <br>
- * Date: 04.12.12, 18:53 <br>
- * Company: Korus Consulting IT<br>
- * Revision:    \$Id$ <br>
- * Description: Методы для работы с данными таблицы БД s11r64.Pharmacy<br>
+ *         Date: 04.12.12, 18:53 <br>
+ *         Company: Korus Consulting IT<br>
+ *         Revision:    \$Id$ <br>
+ *         Description: Методы для работы с данными таблицы БД s11r64.Pharmacy<br>
  */
 @Local
 public interface DbPharmacyBeanLocal {
@@ -60,4 +59,20 @@ public interface DbPharmacyBeanLocal {
      * @return
      */
     Pharmacy getPharmacyByAction(Action action);
+
+    /**
+     * Получение action с флагом deleted
+     *
+     * @param limit ограничение выборки
+     * @return список Action
+     */
+    List<Action> getVirtualActions(int limit);
+
+    /**
+     * Получение action после указанной даты с флагом deleted
+     *
+     * @param after дата последнего обработанного Action
+     * @return список Action
+     */
+    List<Action> getVirtualActionsAfterDate(DateTime after);
 }

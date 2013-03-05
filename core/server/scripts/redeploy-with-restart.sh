@@ -69,3 +69,8 @@ rm -f $GF_PASSWD_FILE
 echo "tail -f -n 5000 ${com.sun.aas.instanceRoot}/logs/tmis-core/core.log"
 echo "tail -f -n 5000 ${com.sun.aas.instanceRoot}/logs/pharmacy/pharmacy.log"
 echo "tail -f -n 5000 ${com.sun.aas.instanceRoot}/logs/server.log"
+echo ""
+echo ""
+tail -n 5000 ${com.sun.aas.instanceRoot}/logs/server.log | grep "${glassfish.application.name} was successfully deployed in"
+echo ""
+echo ""

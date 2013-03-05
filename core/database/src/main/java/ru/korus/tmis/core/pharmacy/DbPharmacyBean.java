@@ -1,4 +1,4 @@
-package ru.korus.tmis.core.hl7db;
+package ru.korus.tmis.core.pharmacy;
 
 import org.joda.time.DateTime;
 import org.slf4j.Logger;
@@ -16,14 +16,14 @@ import javax.ejb.Stateless;
 import javax.interceptor.Interceptors;
 import javax.persistence.EntityManager;
 import javax.persistence.PersistenceContext;
-import java.util.Date;
+import java.util.ArrayList;
 import java.util.List;
 
 /**
- * @author Dmitriy E. Nosov <br>
- *         Date: 04.12.12, 18:56 <br>
- *         Company: Korus Consulting IT<br>
- *         Description: Работа с таблицей Pharmacy<br>
+ * Author   Dmitriy E. Nosov <br>
+ * Date:    04.12.12, 18:56 <br>
+ * Company: Korus Consulting IT<br>
+ * Description: Работа с таблицей Pharmacy<br>
  */
 @Interceptors(LoggingInterceptor.class)
 @Stateless
@@ -37,13 +37,16 @@ public class DbPharmacyBean implements DbPharmacyBeanLocal {
     @EJB(beanName = "DbManagerBean")
     private DbManagerBeanLocal dbManager = null;
 
+    /**
+     * @see
+     */
     @Override
     public Pharmacy getOrCreate(final Action action) throws CoreException {
 
         Pharmacy pharmacy = em.find(Pharmacy.class, action.getId());
         if (pharmacy == null) {
 
-            ActionType actionType = action.getActionType();
+            final ActionType actionType = action.getActionType();
             pharmacy = new Pharmacy();
             pharmacy.setActionId(action.getId());
             pharmacy.setFlatCode(actionType.getFlatCode());
@@ -56,8 +59,12 @@ public class DbPharmacyBean implements DbPharmacyBeanLocal {
         return pharmacy;
     }
 
+    /**
+     * @see
+     */
+    @Override
     public Pharmacy updateMessage(final Pharmacy pharmacy) throws CoreException {
-        Pharmacy findPharmacy = em.find(Pharmacy.class, pharmacy.getActionId());
+        final Pharmacy findPharmacy = em.find(Pharmacy.class, pharmacy.getActionId());
         if (findPharmacy != null) {
             findPharmacy.setStatus(pharmacy.getStatus());
             findPharmacy.setDocumentUUID(pharmacy.getDocumentUUID());
@@ -68,13 +75,9 @@ public class DbPharmacyBean implements DbPharmacyBeanLocal {
         return null;
     }
 
-
-//    public Action getMaxAction() {
-//        final Action action = em.createQuery("SELECT a FROM Action a ORDER BY a.id DESC", Action.class).setMaxResults(1).getSingleResult();
-//        logger.info("Get max action {}", action);
-//        return action;
-//    }
-
+    /**
+     * @see
+     */
     @Override
     public List<Action> getLastMaxAction(final int limit) {
         return em.createQuery("SELECT a FROM Action a ORDER BY a.id DESC", Action.class)
@@ -82,6 +85,46 @@ public class DbPharmacyBean implements DbPharmacyBeanLocal {
                 .getResultList();
     }
 
+    /**
+     * @see
+     */
+    @Override
+    public List<Action> getVirtualActions(final int limit) {
+        return em.createQuery(
+                "SELECT a FROM Action a WHERE a.actionType.flatCode IN :flatCode ORDER BY a.id DESC", Action.class)
+                .setParameter("flatCode", getFlatCodeStrings())
+                .setMaxResults(limit)
+                .getResultList();
+    }
+
+    /**
+     * Получение значений Flat Code в виде списка строк
+     *
+     * @return
+     */
+    private List<String> getFlatCodeStrings() {
+        final List<String> flatCodeList = new ArrayList<String>(10);
+        for (FlatCode fc : FlatCode.values()) {
+            flatCodeList.add(fc.getCode());
+        }
+        return flatCodeList;
+    }
+
+    /**
+     * @see
+     */
+    @Override
+    public List<Action> getVirtualActionsAfterDate(final DateTime after) {
+        return em.createQuery(
+                "SELECT a FROM Action a WHERE a.actionType.flatCode IN :flatCode AND a.modifyDatetime > :modifyDatetime", Action.class)
+                .setParameter("flatCode", getFlatCodeStrings())
+                .setParameter("modifyDatetime", after.toDate())
+                .getResultList();
+    }
+
+    /**
+     * @see
+     */
     @Override
     public List<Action> getActionAfterDate(final DateTime after) {
         return em.createQuery("SELECT a FROM Action a WHERE a.createDatetime > :createDatetime", Action.class)
@@ -89,11 +132,9 @@ public class DbPharmacyBean implements DbPharmacyBeanLocal {
                 .getResultList();
     }
 
-//    @Override
-//    public List<Pharmacy> getAllPharmacy() {
-//        return em.createQuery("SELECT p FROM Pharmacy p", Pharmacy.class).getResultList();
-//    }
-
+    /**
+     * @see
+     */
     @Override
     public Pharmacy getPharmacyByAction(final Action action) {
         List<Pharmacy> pharmacyList = em.createQuery("SELECT p FROM Pharmacy p WHERE p.actionId = :actionId", Pharmacy.class)

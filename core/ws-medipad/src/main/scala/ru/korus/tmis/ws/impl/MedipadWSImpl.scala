@@ -735,6 +735,7 @@ class MedipadWSImpl
                                                                                authData,
                                                                                preProcessing _,
                                                                                postProcessing _)
+     dbEventBean.setExecPersonForEventWithId(eventId, authData.getUser)
      returnValue
    }
 
@@ -1291,7 +1292,7 @@ class MedipadWSImpl
                                                                     request.limit,
                                                                     request.sortingFieldInternal,
                                                                     request.sortingMethod,
-                                                                    request.filter,
+                                                                    request.filter.unwrap(),
                                                                     request.rewriteRecordsCount _)
 
     mapper.writeValueAsString(new EventTypesListData(list, request))

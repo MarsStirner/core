@@ -53,124 +53,154 @@ public class EritrocyteMass {
      * финальный гематокрит
      */
     private Double finalHt;
+
     /**
      * @return the maker
      */
     public String getMaker() {
         return maker;
     }
+
     /**
-     * @param maker the maker to set
+     * @param maker
+     *            the maker to set
      */
-    public void setMaker(String maker) {
+    public void setMaker(final String maker) {
         this.maker = maker;
     }
+
     /**
      * @return the number
      */
     public String getNumber() {
         return number;
     }
+
     /**
-     * @param number the number to set
+     * @param number
+     *            the number to set
      */
-    public void setNumber(String number) {
+    public void setNumber(final String number) {
         this.number = number;
     }
+
     /**
      * @return the bloodGroupId
      */
     public Integer getBloodGroupId() {
         return bloodGroupId;
     }
+
     /**
-     * @param bloodGroupId the bloodGroupId to set
+     * @param bloodGroupId
+     *            the bloodGroupId to set
      */
-    public void setBloodGroupId(Integer bloodGroupId) {
+    public void setBloodGroupId(final Integer bloodGroupId) {
         this.bloodGroupId = bloodGroupId;
     }
+
     /**
      * @return the rhesusFactorId
      */
     public Integer getRhesusFactorId() {
         return rhesusFactorId;
     }
+
     /**
-     * @param rhesusFactorId the rhesusFactorId to set
+     * @param rhesusFactorId
+     *            the rhesusFactorId to set
      */
-    public void setRhesusFactorId(Integer rhesusFactorId) {
+    public void setRhesusFactorId(final Integer rhesusFactorId) {
         this.rhesusFactorId = rhesusFactorId;
     }
+
     /**
      * @return the volume
      */
     public Double getVolume() {
         return volume;
     }
+
     /**
-     * @param volume the volume to set
+     * @param volume
+     *            the volume to set
      */
-    public void setVolume(Double volume) {
+    public void setVolume(final Double volume) {
         this.volume = volume;
     }
+
     /**
      * @return the productionDate
      */
     public Date getProductionDate() {
         return productionDate;
     }
+
     /**
-     * @param productionDate the productionDate to set
+     * @param productionDate
+     *            the productionDate to set
      */
-    public void setProductionDate(Date productionDate) {
+    public void setProductionDate(final Date productionDate) {
         this.productionDate = productionDate;
     }
+
     /**
      * @return the expirationDate
      */
     public Date getExpirationDate() {
         return expirationDate;
     }
+
     /**
-     * @param expirationDate the expirationDate to set
+     * @param expirationDate
+     *            the expirationDate to set
      */
-    public void setExpirationDate(Date expirationDate) {
+    public void setExpirationDate(final Date expirationDate) {
         this.expirationDate = expirationDate;
     }
+
     /**
      * @return the ht
      */
     public Double getHt() {
         return ht;
     }
+
     /**
-     * @param ht the ht to set
+     * @param ht
+     *            the ht to set
      */
-    public void setHt(Double ht) {
+    public void setHt(final Double ht) {
         this.ht = ht;
     }
+
     /**
      * @return the salineVolume
      */
     public Double getSalineVolume() {
         return salineVolume;
     }
+
     /**
-     * @param salineVolume the salineVolume to set
+     * @param salineVolume
+     *            the salineVolume to set
      */
-    public void setSalineVolume(Double salineVolume) {
+    public void setSalineVolume(final Double salineVolume) {
         this.salineVolume = salineVolume;
     }
+
     /**
      * @return the finalHt
      */
     public Double getFinalHt() {
         return finalHt;
     }
+
     /**
-     * @param finalHt the finalHt to set
+     * @param finalHt
+     *            the finalHt to set
      */
-    public void setFinalHt(Double finalHt) {
+    public void setFinalHt(final Double finalHt) {
         this.finalHt = finalHt;
     }
 

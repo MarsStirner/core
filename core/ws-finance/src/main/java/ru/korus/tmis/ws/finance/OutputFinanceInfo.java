@@ -27,7 +27,7 @@ public class OutputFinanceInfo {
             setFinanceData(new FinanceBean[1]);
         }
         financeData[0] = new FinanceBean();
-        financeData[0].setErrorMsg(errorMsg);
+        financeData[0].setErrorMsg(errorMessage);
     }
 
     public String getErrorMsg() {

@@ -44,9 +44,10 @@ public class LaboratoryMeasure {
     }
 
     /**
-     * @param id the id to set
+     * @param id
+     *            the id to set
      */
-    public void setId(Integer id) {
+    public void setId(final Integer id) {
         this.id = id;
     }
 
@@ -58,9 +59,10 @@ public class LaboratoryMeasure {
     }
 
     /**
-     * @param beforeOperation the beforeOperation to set
+     * @param beforeOperation
+     *            the beforeOperation to set
      */
-    public void setBeforeOperation(String beforeOperation) {
+    public void setBeforeOperation(final String beforeOperation) {
         this.beforeOperation = beforeOperation;
     }
 
@@ -72,9 +74,10 @@ public class LaboratoryMeasure {
     }
 
     /**
-     * @param duringOperation the duringOperation to set
+     * @param duringOperation
+     *            the duringOperation to set
      */
-    public void setDuringOperation(String duringOperation) {
+    public void setDuringOperation(final String duringOperation) {
         this.duringOperation = duringOperation;
     }
 
@@ -86,9 +89,10 @@ public class LaboratoryMeasure {
     }
 
     /**
-     * @param inProduct the inProduct to set
+     * @param inProduct
+     *            the inProduct to set
      */
-    public void setInProduct(String inProduct) {
+    public void setInProduct(final String inProduct) {
         this.inProduct = inProduct;
     }
 
@@ -100,12 +104,11 @@ public class LaboratoryMeasure {
     }
 
     /**
-     * @param afterOperation the afterOperation to set
+     * @param afterOperation
+     *            the afterOperation to set
      */
-    public void setAfterOperation(String afterOperation) {
+    public void setAfterOperation(final String afterOperation) {
         this.afterOperation = afterOperation;
     }
-    
-    
 
 }

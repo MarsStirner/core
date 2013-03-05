@@ -19,7 +19,7 @@ public class RestFinanceInfo {
     
     @GET
     @Path("/json")
-    public Response getFinanceInfo(@QueryParam(ServiceFinanceInfo.WEB_PARAM_STRUCT) final String nameOfStructure) {
+    public Response getFinanceInfo(@QueryParam(ServiceFinanceInfo.WEB_PARAM_STRUCT) final  String nameOfStructure) {
         Gson gson = new Gson();        
         final FinanceInfo financeInfo = new FinanceInfo();
         String res = gson.toJson(financeInfo.getFinanceInfo(nameOfStructure));

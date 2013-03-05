@@ -20,7 +20,7 @@ import fd.FDRecord
 import ru.korus.tmis.core.data._
 import ru.korus.tmis.core.exception.CoreException
 import scala.Some
-import ru.korus.tmis.core.hl7db.DbUUIDBeanLocal
+import ru.korus.tmis.core.pharmacy.DbUUIDBeanLocal
 
 @Interceptors(Array(classOf[LoggingInterceptor]))
 @Stateless
@@ -62,6 +62,13 @@ class DbEventBean
       curentRequest = curentRequest.substring(0, index)
     }
     em.createQuery(curentRequest.toString(), classOf[Long])
+  }
+
+  def setExecPersonForEventWithId(eventId: Int, execPerson: Staff) {
+    val event = this.getEventById(eventId)
+    event.setExecutor(execPerson)
+    em.merge(event)
+    em.flush()
   }
 
   @TransactionAttribute(TransactionAttributeType.REQUIRES_NEW)

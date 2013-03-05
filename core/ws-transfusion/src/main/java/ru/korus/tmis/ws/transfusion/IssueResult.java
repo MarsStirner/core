@@ -1,4 +1,5 @@
 package ru.korus.tmis.ws.transfusion;
+
 /**
  * Author:      Sergey A. Zagrebelny <br>
  * Date:        15.01.2013, 17:01:19 <br>
@@ -14,12 +15,12 @@ public class IssueResult {
      * результат регистрации итогов выполнения требования
      */
     private Boolean result = true;
-    
+
     /**
      * текстовое описание ошибки (только при отрицательном результате)
      */
     private String description;
-    
+
     /**
      * идентификатор требования на выдачу КК в МИС (Actoin.id)
      */
@@ -33,9 +34,10 @@ public class IssueResult {
     }
 
     /**
-     * @param result the result to set
+     * @param result
+     *            the result to set
      */
-    public void setResult(Boolean result) {
+    public void setResult(final Boolean result) {
         this.result = result;
     }
 
@@ -47,9 +49,10 @@ public class IssueResult {
     }
 
     /**
-     * @param description the description to set
+     * @param description
+     *            the description to set
      */
-    public void setDescription(String description) {
+    public void setDescription(final String description) {
         this.description = description;
     }
 
@@ -61,9 +64,10 @@ public class IssueResult {
     }
 
     /**
-     * @param requestId the requestId to set
+     * @param requestId
+     *            the requestId to set
      */
-    public void setRequestId(Integer requestId) {
+    public void setRequestId(final Integer requestId) {
         this.requestId = requestId;
     }
 

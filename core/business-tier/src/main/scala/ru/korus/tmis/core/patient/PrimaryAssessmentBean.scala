@@ -185,6 +185,7 @@ class PrimaryAssessmentBean
                                                  postProcessingForDiagnosis: (JSONCommonData, java.lang.Boolean) => JSONCommonData) = {
 
      val actions: java.util.List[Action] = commonDataProcessor.createActionForEventFromCommonData(eventId, assessments, userData)
+     //создание жоб тикета
      val com_data = commonDataProcessor.fromActions( actions, title, List(summary _, detailsWithAge _))
 
      var json_data = new JSONCommonData(request, com_data)
