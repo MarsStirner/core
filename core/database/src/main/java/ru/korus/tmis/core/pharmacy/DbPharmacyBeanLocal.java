@@ -63,16 +63,16 @@ public interface DbPharmacyBeanLocal {
     /**
      * Получение action с флагом deleted
      *
-     * @param limit
-     * @return
+     * @param limit ограничение выборки
+     * @return список Action
      */
     List<Action> getVirtualActions(int limit);
 
     /**
      * Получение action после указанной даты с флагом deleted
      *
-     * @param after
-     * @return
+     * @param after дата последнего обработанного Action
+     * @return список Action
      */
     List<Action> getVirtualActionsAfterDate(DateTime after);
 }
