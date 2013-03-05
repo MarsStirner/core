@@ -8,13 +8,13 @@ import grizzled.slf4j.Logging
 import ru.korus.tmis.util.{ConfigManager, CAPids, I18nable}
 import javax.persistence.{EntityManager, PersistenceContext}
 import ru.korus.tmis.core.exception.CoreException
-import ru.korus.tmis.core.entity.model.TakenTissue
+import ru.korus.tmis.core.entity.model.{ActionTypeTissueType, Action, Event, TakenTissue}
+import java.util.Date
 
 /**
  * Методы для работы с TakenTissueJournal
- * Author: mmakankov Systema-Soft
- * Date: 2/13/13 2:30 PM
- * Since: 1.0.0.69
+ * @author mmakankov Systema-Soft
+ * @since 1.0.0.70
  */
 
 @Interceptors(Array(classOf[LoggingInterceptor]))
@@ -32,6 +32,69 @@ class DbTakenTissueBean extends DbTakenTissueBeanLocal
 
     @EJB
     private var dbManager: DbManagerBeanLocal = _
+
+  def insertOrUpdateTakenTissue(id: Int, action: Action): TakenTissue = {
+    var tissue: TakenTissue = null
+    if (id > 0) {
+      tissue = getTakenTissueById(id)
+    }
+    else {
+      tissue = new TakenTissue
+      tissue.setPatient(action.getEvent.getPatient)
+      tissue.setExternalId(action.getEvent.getExternalId)
+
+      val lastBarcode = getLastTakenTissueJournalBarCode
+      if (lastBarcode > 0 && lastBarcode != 999999) {
+        tissue.setBarcode(lastBarcode + 1)
+      } else {
+        tissue.setBarcode(100000)
+      }
+    }
+    tissue.setNote("")
+    tissue.setAmount(0)
+    tissue.setPeriod(0)
+    tissue.setDatetimeTaken(action.getPlannedEndDate)
+    tissue.setType(getActionTypeTissueTypeByMasterId(action.getActionType.getId.intValue()).getTissueType)
+    tissue
+  }
+
+  def getActionTypeTissueTypeByMasterId(actionTypeId: Int) = {
+    val result = em.createQuery(ActionTypeTissueTypeByMasterIdQuery, classOf[ActionTypeTissueType])
+      .setParameter("actionTypeId", actionTypeId)
+      .getResultList
+
+    result.size match {
+      case 0 => {
+        throw new CoreException(
+          ConfigManager.ErrorCodes.ActionTypeNotFound,
+          i18n("error.actionTypeNotFound"))
+      }
+      case size => {
+        result.foreach(em.detach(_))
+        //em.detach(result(0))
+        result(0)
+      }
+    }
+  }
+
+  private def getLastTakenTissueJournalBarCode() = {
+    val result = em.createQuery(LastTakenTissueQuery, classOf[TakenTissue])
+      .getResultList
+
+    result.size match {
+      case 0 => {            -1
+        /*
+        throw new CoreException(
+          ConfigManager.ErrorCodes.TakenTissueNotFound,
+          i18n("error.TakenTissueNotFound").format(id))             */
+      }
+      case size => {
+        result.foreach(em.detach(_))
+        //em.detach(result(0))
+        result(0).getBarcode
+      }
+    }
+  }
 
   def getTakenTissueById(id: Int): TakenTissue = {
     val result = em.createQuery(TakenTissueByIdQuery, classOf[TakenTissue])
@@ -58,5 +121,22 @@ class DbTakenTissueBean extends DbTakenTissueBeanLocal
         TakenTissue tt
       WHERE
         tt.id = :id
+    """
+
+  val LastTakenTissueQuery =
+    """
+      SELECT tt
+      FROM
+        TakenTissue tt
+      ORDER BY tt.date desc
+    """
+
+  val ActionTypeTissueTypeByMasterIdQuery =
+    """
+      SELECT attt
+      FROM
+        ActionTypeTissueType attt
+      WHERE
+        attt.actionType.id = :actionTypeId
     """
 }

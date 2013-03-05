@@ -184,6 +184,8 @@ class TakingOfBiomaterialRequesDataFilter {
         case "status" => {"jt.status %s".format(lex)}
         case "fullname" | "fio" | "patient" => {"e.patient.lastName %s, e.patient.firstName %s, e.patient.patrName %s".format(lex,lex,lex)}
         case "birthdate" => {"e.patient.birthDate %s".format(lex)}
+        case "tissueType" => {"attp.tissueType.name %s".format(lex)}
+        case "date" => {"jt.datetime %s".format(lex)}
         case _ => {"e.patient.lastName %s, e.patient.firstName %s, e.patient.patrName %s".format(lex,lex,lex)}
       }
     query = "ORDER BY " + query

@@ -8,14 +8,13 @@ import grizzled.slf4j.Logging
 import ru.korus.tmis.util.{ConfigManager, CAPids, I18nable}
 import javax.persistence.{EntityManager, PersistenceContext}
 import ru.korus.tmis.core.exception.CoreException
-import ru.korus.tmis.core.entity.model.{Action, Job}
+import ru.korus.tmis.core.entity.model.{OrgStructure, Action, Job}
 import java.util.Date
 
 /**
  * Методы для работы с Job
- * Author: mmakankov Systema-Soft
- * Date: 2/13/13 2:30 PM
- * Since: 1.0.0.69
+ * @author mmakankov Systema-Soft
+ * @since 1.0.0.70
  */
 @Interceptors(Array(classOf[LoggingInterceptor]))
 @Stateless
@@ -30,30 +29,51 @@ class DbJobBean extends DbJobBeanLocal
   @EJB
   var appLock: AppLockBeanLocal = _
 
-  @EJB
-  private var dbManager: DbManagerBeanLocal = _
-
-  def insertOrUpdateJob(id: Int,
-                        action: Action): Job = {
+  def insertOrUpdateJob(id: Int, action: Action, department: OrgStructure): Job = {
 
     var job: Job = null
     val now = new Date
     if (id > 0) {
       job = getJobById(id)
+      job.setQuantity(job.getQuantity + 1)
     }
     else {
       job = new Job
       job.setCreatePerson(action.getAssigner)
       job.setCreateDatetime(now)
+      job.setQuantity(1)
     }
     job.setDate(action.getPlannedEndDate)
     job.setBegTime(action.getPlannedEndDate)
+    job.setEndTime(action.getPlannedEndDate) ///неправильно! нотнулл нужно убрать!
     job.setJobType(action.getActionType.getJobType)
-    job.setQuantity(1) /////
+    job.setOrgStructure(department)
+
     job.setDeleted(false)
     job.setModifyPerson(action.getAssigner)
     job.setModifyDatetime(now)
     job
+  }
+
+  def getJobForAction(action: Action): Job = {
+    val result = em.createQuery(JobForActionQuery, classOf[Job])
+      .setParameter("plannedEndDate", action.getPlannedEndDate)
+      .setParameter("eventId", action.getEvent.getId.intValue())
+      .setParameter("actionTypeId", action.getActionType.getId.intValue())
+      .getResultList
+
+    result.size match {
+      case 0 => {
+        null /*
+        throw new CoreException(
+          ConfigManager.ErrorCodes.JobNotFound,
+          i18n("error.jobNotFound").format(id))          */
+      }
+      case size => {
+        result.foreach(em.detach(_))
+        result(0)
+      }
+    }
   }
 
   def getJobById(id: Int): Job = {
@@ -81,5 +101,39 @@ class DbJobBean extends DbJobBeanLocal
         Job j
       WHERE
         j.id = :id
+    """
+
+  val JobForActionQuery =
+    """
+      SELECT j
+      FROM
+        Job j,
+        JobTicket jt,
+        APValueJobTicket apval,
+        ActionProperty ap,
+        ActionTypeTissueType attt
+        JOIN ap.action a
+      WHERE
+        j.begTime = :plannedEndDate
+      AND
+        jt.job.id = j.id
+      AND
+        apval.value = jt.id
+      AND
+        apval.id.id = ap.id
+      AND
+        a.event.id = :eventId
+      AND
+        a.actionType.id = :actionTypeId
+      AND
+        attt.actionType.id = a.actionType.id
+      AND
+        a.actionType.mnemonic = 'LAB'
+      AND
+        ap.deleted = 0
+      AND
+        a.deleted = 0
+      AND
+        j.deleted = 0
     """
 }

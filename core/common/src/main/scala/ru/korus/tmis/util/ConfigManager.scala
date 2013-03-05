@@ -100,6 +100,7 @@ object ConfigManager extends Configuration {
     var DiagnosticNotFound = 0x142
     var JobNotFound = 0x143
     var TakenTissueNotFound = 0x144
+    var ActionTypeNotFound = 0x145
   }
 
   val Drugstore = new Configuration {

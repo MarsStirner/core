@@ -190,6 +190,9 @@ class MedipadWSImpl
 
   @EJB
   var dbRbTissueType: DbRbTissueTypeBeanLocal = _
+
+  @EJB
+  var directionBean: DirectionBeanLocal = _
   //////////////////////////////////////////////////////////////////////////////
 
   def checkTokenCookies(srvletRequest: HttpServletRequest): AuthData = {
@@ -1025,8 +1028,8 @@ class MedipadWSImpl
 
   def insertLaboratoryStudies(eventId: Int, data: CommonData, auth: AuthData) = {
     // проверка пользователя на ответственного за ивент
-
-    primaryAssessmentBean.createAssessmentsForEventIdFromCommonData(eventId, data, "Diagnostic", null, auth,  postProcessingForDiagnosis _)// postProcessingForDiagnosis
+    directionBean.createDirectionsForEventIdFromCommonData(eventId, data, "Diagnostic", null, auth,  postProcessingForDiagnosis _)
+    //primaryAssessmentBean.createAssessmentsForEventIdFromCommonData(eventId, data, "Diagnostic", null, auth,  postProcessingForDiagnosis _)// postProcessingForDiagnosis
   }
 
   def modifyLaboratoryStudies(eventId: Int, data: CommonData, auth: AuthData) = {
@@ -1278,7 +1281,6 @@ class MedipadWSImpl
     val list = dbEventTypeBean.getEventTypesByRequestTypeIdAndFinanceId(request.page-1,
                                                                     request.limit,
                                                                     request.sortingFieldInternal,
-                                                                    request.sortingMethod,
                                                                     request.filter.unwrap(),
                                                                     request.rewriteRecordsCount _)
 
@@ -1292,11 +1294,11 @@ class MedipadWSImpl
   def getTakingOfBiomaterial(request: TakingOfBiomaterialRequesData, authData: AuthData) = {
 
     val res = dbJobTicketBean.getDirectionsWithJobTicketsBetweenDate(request.sortingFieldInternal, request.filter)
-    request.rewriteRecordsCount(res.asInstanceOf[java.util.LinkedList[(Action, ActionTypeTissueType, JobTicket)]].size())
     //пересоберем мапу и сгруппируем по жобТикету
     var actions = new java.util.LinkedList[(Action, ActionTypeTissueType)]()
     var map = new mutable.LinkedHashMap[JobTicket, LinkedList[(Action, ActionTypeTissueType)]]
     if (res != null) {
+      request.rewriteRecordsCount(res.asInstanceOf[java.util.LinkedList[(Action, ActionTypeTissueType, JobTicket)]].size())
       var firstJobTicket = res.asInstanceOf[java.util.LinkedList[(Action, ActionTypeTissueType, JobTicket)]].iterator.next()._3
       res.asInstanceOf[java.util.LinkedList[(Action, ActionTypeTissueType, JobTicket)]].foreach(f => {
         if (firstJobTicket.getId.intValue() == f._3.getId.intValue()) {
