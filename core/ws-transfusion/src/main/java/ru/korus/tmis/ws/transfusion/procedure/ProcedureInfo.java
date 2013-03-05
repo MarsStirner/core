@@ -162,9 +162,10 @@ public class ProcedureInfo {
     }
 
     /**
-     * @param id the id to set
+     * @param id
+     *            the id to set
      */
-    public void setId(Integer id) {
+    public void setId(final Integer id) {
         this.id = id;
     }
 
@@ -176,9 +177,10 @@ public class ProcedureInfo {
     }
 
     /**
-     * @param factDate the factDate to set
+     * @param factDate
+     *            the factDate to set
      */
-    public void setFactDate(Date factDate) {
+    public void setFactDate(final Date factDate) {
         this.factDate = factDate;
     }
 
@@ -190,9 +192,10 @@ public class ProcedureInfo {
     }
 
     /**
-     * @param contraindication the contraindication to set
+     * @param contraindication
+     *            the contraindication to set
      */
-    public void setContraindication(String contraindication) {
+    public void setContraindication(final String contraindication) {
         this.contraindication = contraindication;
     }
 
@@ -204,9 +207,10 @@ public class ProcedureInfo {
     }
 
     /**
-     * @param beforeHemodynamicsPulse the beforeHemodynamicsPulse to set
+     * @param beforeHemodynamicsPulse
+     *            the beforeHemodynamicsPulse to set
      */
-    public void setBeforeHemodynamicsPulse(String beforeHemodynamicsPulse) {
+    public void setBeforeHemodynamicsPulse(final String beforeHemodynamicsPulse) {
         this.beforeHemodynamicsPulse = beforeHemodynamicsPulse;
     }
 
@@ -218,9 +222,10 @@ public class ProcedureInfo {
     }
 
     /**
-     * @param afterHemodynamicsPulse the afterHemodynamicsPulse to set
+     * @param afterHemodynamicsPulse
+     *            the afterHemodynamicsPulse to set
      */
-    public void setAfterHemodynamicsPulse(String afterHemodynamicsPulse) {
+    public void setAfterHemodynamicsPulse(final String afterHemodynamicsPulse) {
         this.afterHemodynamicsPulse = afterHemodynamicsPulse;
     }
 
@@ -232,9 +237,10 @@ public class ProcedureInfo {
     }
 
     /**
-     * @param beforeHemodynamicsArterialPressure the beforeHemodynamicsArterialPressure to set
+     * @param beforeHemodynamicsArterialPressure
+     *            the beforeHemodynamicsArterialPressure to set
      */
-    public void setBeforeHemodynamicsArterialPressure(String beforeHemodynamicsArterialPressure) {
+    public void setBeforeHemodynamicsArterialPressure(final String beforeHemodynamicsArterialPressure) {
         this.beforeHemodynamicsArterialPressure = beforeHemodynamicsArterialPressure;
     }
 
@@ -246,9 +252,10 @@ public class ProcedureInfo {
     }
 
     /**
-     * @param afterHemodynamicsArterialPressure the afterHemodynamicsArterialPressure to set
+     * @param afterHemodynamicsArterialPressure
+     *            the afterHemodynamicsArterialPressure to set
      */
-    public void setAfterHemodynamicsArterialPressure(String afterHemodynamicsArterialPressure) {
+    public void setAfterHemodynamicsArterialPressure(final String afterHemodynamicsArterialPressure) {
         this.afterHemodynamicsArterialPressure = afterHemodynamicsArterialPressure;
     }
 
@@ -260,9 +267,10 @@ public class ProcedureInfo {
     }
 
     /**
-     * @param beforeHemodynamicsTemperature the beforeHemodynamicsTemperature to set
+     * @param beforeHemodynamicsTemperature
+     *            the beforeHemodynamicsTemperature to set
      */
-    public void setBeforeHemodynamicsTemperature(String beforeHemodynamicsTemperature) {
+    public void setBeforeHemodynamicsTemperature(final String beforeHemodynamicsTemperature) {
         this.beforeHemodynamicsTemperature = beforeHemodynamicsTemperature;
     }
 
@@ -274,9 +282,10 @@ public class ProcedureInfo {
     }
 
     /**
-     * @param afterHemodynamicsTemperature the afterHemodynamicsTemperature to set
+     * @param afterHemodynamicsTemperature
+     *            the afterHemodynamicsTemperature to set
      */
-    public void setAfterHemodynamicsTemperature(String afterHemodynamicsTemperature) {
+    public void setAfterHemodynamicsTemperature(final String afterHemodynamicsTemperature) {
         this.afterHemodynamicsTemperature = afterHemodynamicsTemperature;
     }
 
@@ -288,9 +297,10 @@ public class ProcedureInfo {
     }
 
     /**
-     * @param complications the complications to set
+     * @param complications
+     *            the complications to set
      */
-    public void setComplications(String complications) {
+    public void setComplications(final String complications) {
         this.complications = complications;
     }
 
@@ -302,9 +312,10 @@ public class ProcedureInfo {
     }
 
     /**
-     * @param initialVolume the initialVolume to set
+     * @param initialVolume
+     *            the initialVolume to set
      */
-    public void setInitialVolume(Double initialVolume) {
+    public void setInitialVolume(final Double initialVolume) {
         this.initialVolume = initialVolume;
     }
 
@@ -316,9 +327,10 @@ public class ProcedureInfo {
     }
 
     /**
-     * @param changeVolume the changeVolume to set
+     * @param changeVolume
+     *            the changeVolume to set
      */
-    public void setChangeVolume(Double changeVolume) {
+    public void setChangeVolume(final Double changeVolume) {
         this.changeVolume = changeVolume;
     }
 
@@ -330,9 +342,10 @@ public class ProcedureInfo {
     }
 
     /**
-     * @param initialTbv the initialTbv to set
+     * @param initialTbv
+     *            the initialTbv to set
      */
-    public void setInitialTbv(String initialTbv) {
+    public void setInitialTbv(final String initialTbv) {
         this.initialTbv = initialTbv;
     }
 
@@ -344,9 +357,10 @@ public class ProcedureInfo {
     }
 
     /**
-     * @param changeTbv the changeTbv to set
+     * @param changeTbv
+     *            the changeTbv to set
      */
-    public void setChangeTbv(String changeTbv) {
+    public void setChangeTbv(final String changeTbv) {
         this.changeTbv = changeTbv;
     }
 
@@ -358,9 +372,10 @@ public class ProcedureInfo {
     }
 
     /**
-     * @param initialSpeed the initialSpeed to set
+     * @param initialSpeed
+     *            the initialSpeed to set
      */
-    public void setInitialSpeed(String initialSpeed) {
+    public void setInitialSpeed(final String initialSpeed) {
         this.initialSpeed = initialSpeed;
     }
 
@@ -372,9 +387,10 @@ public class ProcedureInfo {
     }
 
     /**
-     * @param changeSpeed the changeSpeed to set
+     * @param changeSpeed
+     *            the changeSpeed to set
      */
-    public void setChangeSpeed(String changeSpeed) {
+    public void setChangeSpeed(final String changeSpeed) {
         this.changeSpeed = changeSpeed;
     }
 
@@ -386,9 +402,10 @@ public class ProcedureInfo {
     }
 
     /**
-     * @param initialInletAcRatio the initialInletAcRatio to set
+     * @param initialInletAcRatio
+     *            the initialInletAcRatio to set
      */
-    public void setInitialInletAcRatio(String initialInletAcRatio) {
+    public void setInitialInletAcRatio(final String initialInletAcRatio) {
         this.initialInletAcRatio = initialInletAcRatio;
     }
 
@@ -400,9 +417,10 @@ public class ProcedureInfo {
     }
 
     /**
-     * @param changeInletAcRatio the changeInletAcRatio to set
+     * @param changeInletAcRatio
+     *            the changeInletAcRatio to set
      */
-    public void setChangeInletAcRatio(String changeInletAcRatio) {
+    public void setChangeInletAcRatio(final String changeInletAcRatio) {
         this.changeInletAcRatio = changeInletAcRatio;
     }
 
@@ -414,9 +432,10 @@ public class ProcedureInfo {
     }
 
     /**
-     * @param initialTime the initialTime to set
+     * @param initialTime
+     *            the initialTime to set
      */
-    public void setInitialTime(String initialTime) {
+    public void setInitialTime(final String initialTime) {
         this.initialTime = initialTime;
     }
 
@@ -428,9 +447,10 @@ public class ProcedureInfo {
     }
 
     /**
-     * @param changeTime the changeTime to set
+     * @param changeTime
+     *            the changeTime to set
      */
-    public void setChangeTime(String changeTime) {
+    public void setChangeTime(final String changeTime) {
         this.changeTime = changeTime;
     }
 
@@ -442,9 +462,10 @@ public class ProcedureInfo {
     }
 
     /**
-     * @param initialProductVolume the initialProductVolume to set
+     * @param initialProductVolume
+     *            the initialProductVolume to set
      */
-    public void setInitialProductVolume(Double initialProductVolume) {
+    public void setInitialProductVolume(final Double initialProductVolume) {
         this.initialProductVolume = initialProductVolume;
     }
 
@@ -456,9 +477,10 @@ public class ProcedureInfo {
     }
 
     /**
-     * @param changeProductVolume the changeProductVolume to set
+     * @param changeProductVolume
+     *            the changeProductVolume to set
      */
-    public void setChangeProductVolume(Double changeProductVolume) {
+    public void setChangeProductVolume(final Double changeProductVolume) {
         this.changeProductVolume = changeProductVolume;
     }
 
@@ -470,9 +492,10 @@ public class ProcedureInfo {
     }
 
     /**
-     * @param acdLoad the acdLoad to set
+     * @param acdLoad
+     *            the acdLoad to set
      */
-    public void setAcdLoad(String acdLoad) {
+    public void setAcdLoad(final String acdLoad) {
         this.acdLoad = acdLoad;
     }
 
@@ -484,9 +507,10 @@ public class ProcedureInfo {
     }
 
     /**
-     * @param naClLoad the naClLoad to set
+     * @param naClLoad
+     *            the naClLoad to set
      */
-    public void setNaClLoad(String naClLoad) {
+    public void setNaClLoad(final String naClLoad) {
         this.naClLoad = naClLoad;
     }
 
@@ -498,9 +522,10 @@ public class ProcedureInfo {
     }
 
     /**
-     * @param caLoad the caLoad to set
+     * @param caLoad
+     *            the caLoad to set
      */
-    public void setCaLoad(String caLoad) {
+    public void setCaLoad(final String caLoad) {
         this.caLoad = caLoad;
     }
 
@@ -512,9 +537,10 @@ public class ProcedureInfo {
     }
 
     /**
-     * @param otherLoad the otherLoad to set
+     * @param otherLoad
+     *            the otherLoad to set
      */
-    public void setOtherLoad(String otherLoad) {
+    public void setOtherLoad(final String otherLoad) {
         this.otherLoad = otherLoad;
     }
 
@@ -526,9 +552,10 @@ public class ProcedureInfo {
     }
 
     /**
-     * @param totalLoad the totalLoad to set
+     * @param totalLoad
+     *            the totalLoad to set
      */
-    public void setTotalLoad(String totalLoad) {
+    public void setTotalLoad(final String totalLoad) {
         this.totalLoad = totalLoad;
     }
 
@@ -540,9 +567,10 @@ public class ProcedureInfo {
     }
 
     /**
-     * @param packRemove the packRemove to set
+     * @param packRemove
+     *            the packRemove to set
      */
-    public void setPackRemove(String packRemove) {
+    public void setPackRemove(final String packRemove) {
         this.packRemove = packRemove;
     }
 
@@ -554,9 +582,10 @@ public class ProcedureInfo {
     }
 
     /**
-     * @param otherRemove the otherRemove to set
+     * @param otherRemove
+     *            the otherRemove to set
      */
-    public void setOtherRemove(String otherRemove) {
+    public void setOtherRemove(final String otherRemove) {
         this.otherRemove = otherRemove;
     }
 
@@ -568,9 +597,10 @@ public class ProcedureInfo {
     }
 
     /**
-     * @param totalRemove the totalRemove to set
+     * @param totalRemove
+     *            the totalRemove to set
      */
-    public void setTotalRemove(String totalRemove) {
+    public void setTotalRemove(final String totalRemove) {
         this.totalRemove = totalRemove;
     }
 
@@ -582,9 +612,10 @@ public class ProcedureInfo {
     }
 
     /**
-     * @param balance the balance to set
+     * @param balance
+     *            the balance to set
      */
-    public void setBalance(String balance) {
+    public void setBalance(final String balance) {
         this.balance = balance;
     }
 

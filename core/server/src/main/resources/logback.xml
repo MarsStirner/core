@@ -82,7 +82,7 @@
     <appender name="EXCEPTIONS" class="ch.qos.logback.core.rolling.RollingFileAppender">
         <file>${logs.path}/exceptions/exceptions.log</file>
 
-        <filter class="ru.korus.tmis.util.ExceptionFilter">
+        <filter class="ru.korus.tmis.util.logs.filter.ExceptionFilter">
             <exceptionClassName>java.lang.Exception</exceptionClassName>
         </filter>
 
@@ -178,6 +178,32 @@
         <appender-ref ref="STDOUT_ERROR"/>
         <appender-ref ref="EXCEPTIONS"/>
     </logger>
+
+    <!--Логер для модуля WS-TRANCFUSION-->
+    <appender name="WS-TRANCFUSION" class="ch.qos.logback.core.rolling.RollingFileAppender">
+        <file>${logs.path}ws-transfusion/transfusion.log</file>
+        <encoder>
+            <pattern>${log.format}</pattern>
+            <charset>UTF-8</charset>
+        </encoder>
+
+        <rollingPolicy class="ch.qos.logback.core.rolling.TimeBasedRollingPolicy">
+            <!-- rollover daily -->
+            <fileNamePattern>${logs.path}ws-transfusion/transfusion.%d{yyyy-MM-dd}.%i.log.gz</fileNamePattern>
+            <timeBasedFileNamingAndTriggeringPolicy
+                    class="ch.qos.logback.core.rolling.SizeAndTimeBasedFNATP">
+                <!-- or whenever the file size reaches 200MB -->
+                <maxFileSize>200MB</maxFileSize>
+            </timeBasedFileNamingAndTriggeringPolicy>
+        </rollingPolicy>
+    </appender>
+
+    <logger name="ru.korus.tmis.ws.transfusion" level="INFO" additivity="false">
+        <appender-ref ref="WS-TRANCFUSION"/>
+        <appender-ref ref="STDOUT_ERROR"/>
+        <appender-ref ref="EXCEPTIONS"/>
+    </logger>
+
 
     <!--Логер для конмоненты связи-->
     <appender name="COMMUNICATION" class="ch.qos.logback.core.rolling.RollingFileAppender">

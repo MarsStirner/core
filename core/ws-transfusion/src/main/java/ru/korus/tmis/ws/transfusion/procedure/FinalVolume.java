@@ -54,9 +54,10 @@ public class FinalVolume {
     }
 
     /**
-     * @param time the time to set
+     * @param time
+     *            the time to set
      */
-    public void setTime(Double time) {
+    public void setTime(final Double time) {
         this.time = time;
     }
 
@@ -68,9 +69,10 @@ public class FinalVolume {
     }
 
     /**
-     * @param anticoagulantVolume the anticoagulantVolume to set
+     * @param anticoagulantVolume
+     *            the anticoagulantVolume to set
      */
-    public void setAnticoagulantVolume(Double anticoagulantVolume) {
+    public void setAnticoagulantVolume(final Double anticoagulantVolume) {
         this.anticoagulantVolume = anticoagulantVolume;
     }
 
@@ -82,9 +84,10 @@ public class FinalVolume {
     }
 
     /**
-     * @param inletVolume the inletVolume to set
+     * @param inletVolume
+     *            the inletVolume to set
      */
-    public void setInletVolume(Double inletVolume) {
+    public void setInletVolume(final Double inletVolume) {
         this.inletVolume = inletVolume;
     }
 
@@ -96,9 +99,10 @@ public class FinalVolume {
     }
 
     /**
-     * @param plasmaVolume the plasmaVolume to set
+     * @param plasmaVolume
+     *            the plasmaVolume to set
      */
-    public void setPlasmaVolume(Double plasmaVolume) {
+    public void setPlasmaVolume(final Double plasmaVolume) {
         this.plasmaVolume = plasmaVolume;
     }
 
@@ -110,9 +114,10 @@ public class FinalVolume {
     }
 
     /**
-     * @param collectVolume the collectVolume to set
+     * @param collectVolume
+     *            the collectVolume to set
      */
-    public void setCollectVolume(Double collectVolume) {
+    public void setCollectVolume(final Double collectVolume) {
         this.collectVolume = collectVolume;
     }
 
@@ -124,9 +129,10 @@ public class FinalVolume {
     }
 
     /**
-     * @param anticoagulantInCollect the anticoagulantInCollect to set
+     * @param anticoagulantInCollect
+     *            the anticoagulantInCollect to set
      */
-    public void setAnticoagulantInCollect(Double anticoagulantInCollect) {
+    public void setAnticoagulantInCollect(final Double anticoagulantInCollect) {
         this.anticoagulantInCollect = anticoagulantInCollect;
     }
 
@@ -138,11 +144,11 @@ public class FinalVolume {
     }
 
     /**
-     * @param anticoagulantInPlasma the anticoagulantInPlasma to set
+     * @param anticoagulantInPlasma
+     *            the anticoagulantInPlasma to set
      */
-    public void setAnticoagulantInPlasma(Double anticoagulantInPlasma) {
+    public void setAnticoagulantInPlasma(final Double anticoagulantInPlasma) {
         this.anticoagulantInPlasma = anticoagulantInPlasma;
     }
-    
 
 }

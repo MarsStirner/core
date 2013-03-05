@@ -1,4 +1,4 @@
-package ru.korus.tmis.core.hl7db;
+package ru.korus.tmis.core.pharmacy;
 
 
 import ru.korus.tmis.core.entity.model.UUID;

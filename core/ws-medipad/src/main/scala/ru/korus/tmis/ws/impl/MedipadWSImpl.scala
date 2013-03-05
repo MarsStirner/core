@@ -723,6 +723,7 @@ class MedipadWSImpl
                                                                                authData,
                                                                                preProcessing _,
                                                                                postProcessing _)
+     dbEventBean.setExecPersonForEventWithId(eventId, authData.getUser)
      returnValue
    }
 

@@ -20,7 +20,6 @@
         <module>ws-laboratory</module>
         <module>ws-drugstore</module>
         <!--<module>hl7</module>-->
-        <!--<module>integration-tests</module>-->
         <module>ws-finance</module>
         <module>ws-transfusion</module>
         <module>communication</module>
@@ -48,6 +47,7 @@
         <version.javax.mail>1.4.5</version.javax.mail>
         <version.groovy>2.1.0</version.groovy>
         <version.gmaven.runtime>1.4</version.gmaven.runtime>
+        <version.mysql.connector>5.1.15</version.mysql.connector>
 
 
         <version.maven.plugin.scala>2.15.2</version.maven.plugin.scala>
@@ -58,6 +58,7 @@
         <version.maven.plugin.embedded.glassfish>3.1.1</version.maven.plugin.embedded.glassfish>
         <version.maven.plugin.release>2.2.1</version.maven.plugin.release>
         <version.maven.plugin.resources>2.6</version.maven.plugin.resources>
+        <version.maven.plugin.ejb>2.3</version.maven.plugin.ejb>
         <version.maven.gmaven.plugin>1.4</version.maven.gmaven.plugin>
 
 
@@ -93,8 +94,47 @@
             <!-- Профиль для установки на сервер -->
             <id>production</id>
             <properties>
+                <!-- Путь к директории доменов -->
+                <glassfish.domain.dir>/usr/local/glassfish3/glassfish/domains/</glassfish.domain.dir>
+                <!-- Домашняя директория Glassfish -->
+                <glassfish.home>/usr/local/glassfish3/</glassfish.home>
+                <!-- Хост сервера Glassfish -->
+                <glassfish.host>localhost</glassfish.host>
+                <!-- Порт инстанса приложения -->
+                <glassfish.port.instance>8080</glassfish.port.instance>
+                <!-- Порт админского Web IF -->
+                <glassfish.port.admin>4848</glassfish.port.admin>
+                <!-- Название домена -->
+                <glassfish.domain>fccho-moscow</glassfish.domain>
+                <!-- Логин администратора -->
+                <glassfish.admin.login>admin</glassfish.admin.login>
+                <!-- Пароль администратора-->
+                <glassfish.admin.password>admin1234</glassfish.admin.password>
+                <!-- Название приложения, которое будет отображаться в интерфейсе -->
+                <glassfish.application.name>${project.build.finalName}</glassfish.application.name>
+                <!-- Путь к директории домена (нужен для того, чтобы валидировался pom.xml -->
+                <!--<com.sun.aas.instanceRoot>${glassfish.domain.dir}/${glassfish.domain}/</com.sun.aas.instanceRoot>-->
+
+                <!-- Адрес базы данных -->
+                <mysql.db.host>127.0.0.1</mysql.db.host>
+                <!-- Порт подключения к базе данных -->
+                <mysql.db.port>3306</mysql.db.port>
+                <!-- Логин к базе данных -->
                 <mysql.login>root</mysql.login>
+                <!-- Пароль к базе данных -->
                 <mysql.password>root</mysql.password>
+                <!-- Название базы данных МИС -->
+                <mysql.db.mis>s11r64</mysql.db.mis>
+                <!-- Название пула для базы данных МИС -->
+                <mysql.db.mis.pool>s11r64-pool</mysql.db.mis.pool>
+                <!-- Название базы данных RLS -->
+                <mysql.db.rls>rls</mysql.db.rls>
+                <!-- Название пула для базы данных RLS -->
+                <mysql.db.rls.pool>rls-pool</mysql.db.rls.pool>
+                <!-- Название базы данных для конфигурации ядра (пул к БД автоматом получит это имя + суффикс "-pool") -->
+                <mysql.db.tmis_core>tmis_core</mysql.db.tmis_core>
+                <!-- Название пула для базы данных - конфигурации ядра -->
+                <mysql.db.tmis_core.pool>tmis_core-pool</mysql.db.tmis_core.pool>
             </properties>
             <activation>
                 <activeByDefault>true</activeByDefault>
@@ -113,21 +153,6 @@
             <!-- Профиль для MacMini -->
             <id>macmini</id>
             <properties>
-                <!-- Путь к директории домена (нужен для того, чтобы валидировался pom.xml) -->
-                <com.sun.aas.instanceRoot>/usr/local/opt/glassfish/libexec/glassfish/domains/domain1/
-                </com.sun.aas.instanceRoot>
-
-                <mysql.login>root</mysql.login>
-                <mysql.password>root</mysql.password>
-            </properties>
-        </profile>
-
-        <profile>
-            <!-- Пользовательский профиль -->
-            <id>nde-mac</id>
-            <properties>
-                <!-- Название приложения, которое будет отображаться в интерфейсе -->
-                <ear.name>tmis-server-${version.tmis.core}</ear.name>
                 <!-- Путь к директории доменов -->
                 <glassfish.domain.dir>/usr/local/opt/glassfish/libexec/glassfish/domains/</glassfish.domain.dir>
                 <!-- Домашняя директория Glassfish -->
@@ -157,22 +182,95 @@
                 <mysql.login>root</mysql.login>
                 <!-- Пароль к базе данных -->
                 <mysql.password>root</mysql.password>
-                <!-- Название базы данных МИС (пул к БД, автоматом получит это имя + суффикс "-pool") -->
-                <mysql.db.mis>s11r64</mysql.db.mis>
-                <!-- Название базы данных RLS (пул к БД, автоматом получит это имя + суффикс "-pool") -->
+                <!-- Название базы данных МИС -->
+                <mysql.db.mis>s11r64_test</mysql.db.mis>
+                <!-- Название пула для базы данных МИС -->
+                <mysql.db.mis.pool>s11r64-pool</mysql.db.mis.pool>
+                <!-- Название базы данных RLS -->
                 <mysql.db.rls>rls</mysql.db.rls>
+                <!-- Название пула для базы данных RLS -->
+                <mysql.db.rls.pool>rls-pool</mysql.db.rls.pool>
                 <!-- Название базы данных для конфигурации ядра (пул к БД автоматом получит это имя + суффикс "-pool") -->
                 <mysql.db.tmis_core>tmis_core</mysql.db.tmis_core>
+                <!-- Название пула для базы данных - конфигурации ядра -->
+                <mysql.db.tmis_core.pool>tmis_core-pool</mysql.db.tmis_core.pool>
             </properties>
         </profile>
 
         <profile>
             <!-- Пользовательский профиль -->
+            <id>nde-mac</id>
+            <properties>
+                <!-- Путь к директории доменов -->
+                <glassfish.domain.dir>/usr/local/opt/glassfish/libexec/glassfish/domains/</glassfish.domain.dir>
+                <!-- Домашняя директория Glassfish -->
+                <glassfish.home>/usr/local/opt/glassfish/</glassfish.home>
+                <!-- Хост сервера Glassfish -->
+                <glassfish.host>localhost</glassfish.host>
+                <!-- Порт инстанса приложения -->
+                <glassfish.port.instance>8080</glassfish.port.instance>
+                <!-- Порт админского Web IF -->
+                <glassfish.port.admin>4848</glassfish.port.admin>
+                <!-- Название домена -->
+                <glassfish.domain>domain1</glassfish.domain>
+                <!-- Логин администратора -->
+                <glassfish.admin.login>admin</glassfish.admin.login>
+                <!-- Пароль администратора-->
+                <glassfish.admin.password>admin1234</glassfish.admin.password>
+                <!-- Название приложения, которое будет отображаться в интерфейсе -->
+                <glassfish.application.name>${project.build.finalName}</glassfish.application.name>
+                <!-- Путь к директории домена (нужен для того, чтобы валидировался pom.xml -->
+                <com.sun.aas.instanceRoot>${glassfish.domain.dir}/${glassfish.domain}/</com.sun.aas.instanceRoot>
+
+                <!-- Адрес базы данных -->
+                <mysql.db.host>127.0.0.1</mysql.db.host>
+                <!-- Порт подключения к базе данных -->
+                <mysql.db.port>3306</mysql.db.port>
+                <!-- Логин к базе данных -->
+                <mysql.login>root</mysql.login>
+                <!-- Пароль к базе данных -->
+                <mysql.password>root</mysql.password>
+                <!-- Название базы данных МИС -->
+                <mysql.db.mis>s11r64</mysql.db.mis>
+                <!-- Название пула для базы данных МИС -->
+                <mysql.db.mis.pool>s11r64-pool</mysql.db.mis.pool>
+                <!-- Название базы данных RLS -->
+                <mysql.db.rls>rls</mysql.db.rls>
+                <!-- Название пула для базы данных RLS -->
+                <mysql.db.rls.pool>rls-pool</mysql.db.rls.pool>
+                <!-- Название базы данных для конфигурации ядра (пул к БД автоматом получит это имя + суффикс "-pool") -->
+                <mysql.db.tmis_core>tmis_core</mysql.db.tmis_core>
+                <!-- Название пула для базы данных - конфигурации ядра -->
+                <mysql.db.tmis_core.pool>tmis_core-pool</mysql.db.tmis_core.pool>
+            </properties>
+        </profile>
+
+        <profile>
+            <!-- Пользовательский профиль -->
+            <id>win-sg</id>
             <id>ueg</id>
             <modules>
                 <module>integration-tests</module>
             </modules>
             <properties>
+                <!-- Путь к директории доменов -->
+                <glassfish.domain.dir>C:/Winprog/glassfish3/glassfish/domains</glassfish.domain.dir>
+                <!-- Домашняя директория Glassfish -->
+                <glassfish.home>C:/Winprog/glassfish3/</glassfish.home>
+                <!-- Хост сервера Glassfish -->
+                <glassfish.host>localhost</glassfish.host>
+                <!-- Порт инстанса приложения -->
+                <glassfish.port.instance>8080</glassfish.port.instance>
+                <!-- Порт админского Web IF -->
+                <glassfish.port.admin>4848</glassfish.port.admin>
+                <!-- Название домена -->
+                <glassfish.domain>fccho</glassfish.domain>
+                <!-- Логин администратора -->
+                <glassfish.admin.login>admin1234</glassfish.admin.login>
+                <!-- Пароль администратора-->
+                <glassfish.admin.password>admin1234</glassfish.admin.password>
+                <!-- Название приложения, которое будет отображаться в интерфейсе -->
+                <glassfish.application.name>${project.build.finalName}</glassfish.application.name>
                 <!-- Название приложения, которое будет отображаться в интерфейсе -->
                 <ear.name>tmis-server-${version.tmis.core}</ear.name>
                 <!-- Путь к директории доменов -->
@@ -201,15 +299,33 @@
             <id>nde-win</id>
             <properties>
                 <!-- Путь к директории домена (нужен для того, чтобы валидировался pom.xml -->
-                <com.sun.aas.instanceRoot>C:/Winprog/glassfish3/glassfish/domains/domain1/</com.sun.aas.instanceRoot>
+                <com.sun.aas.instanceRoot>${glassfish.domain.dir}/${glassfish.domain}/</com.sun.aas.instanceRoot>
 
+                <!-- Адрес базы данных -->
+                <mysql.db.host>127.0.0.1</mysql.db.host>
+                <!-- Порт подключения к базе данных -->
+                <mysql.db.port>3306</mysql.db.port>
+                <!-- Логин к базе данных -->
                 <mysql.login>root</mysql.login>
+                <!-- Пароль к базе данных -->
                 <mysql.password>root</mysql.password>
+                <!-- Название базы данных МИС -->
+                <mysql.db.mis>s11r64</mysql.db.mis>
+                <!-- Название пула для базы данных МИС -->
+                <mysql.db.mis.pool>s11r64-pool</mysql.db.mis.pool>
+                <!-- Название базы данных RLS -->
+                <mysql.db.rls>rls</mysql.db.rls>
+                <!-- Название пула для базы данных RLS -->
+                <mysql.db.rls.pool>rls-pool</mysql.db.rls.pool>
+                <!-- Название базы данных для конфигурации ядра (пул к БД автоматом получит это имя + суффикс "-pool") -->
+                <mysql.db.tmis_core>tmis_core</mysql.db.tmis_core>
+                <!-- Название пула для базы данных - конфигурации ядра -->
+                <mysql.db.tmis_core.pool>tmis_core-pool</mysql.db.tmis_core.pool>
             </properties>
         </profile>
 
-        <profile>
             <!-- Пользовательский профиль -->
+        <profile>
             <id>nde-lin</id>
             <properties>
                 <!-- Название приложения, которое будет отображаться в интерфейсе -->
@@ -243,15 +359,155 @@
                 <mysql.login>root</mysql.login>
                 <!-- Пароль к базе данных -->
                 <mysql.password>root</mysql.password>
-                <!-- Название базы данных МИС (пул к БД, автоматом получит это имя + суффикс "-pool") -->
+                <!-- Название базы данных МИС -->
                 <mysql.db.mis>s11r64</mysql.db.mis>
-                <!-- Название базы данных RLS (пул к БД, автоматом получит это имя + суффикс "-pool") -->
+                <!-- Название пула для базы данных МИС -->
+                <mysql.db.mis.pool>s11r64-pool</mysql.db.mis.pool>
+                <!-- Название базы данных RLS -->
                 <mysql.db.rls>rls</mysql.db.rls>
+                <!-- Название пула для базы данных RLS -->
+                <mysql.db.rls.pool>rls-pool</mysql.db.rls.pool>
                 <!-- Название базы данных для конфигурации ядра (пул к БД автоматом получит это имя + суффикс "-pool") -->
                 <mysql.db.tmis_core>tmis_core</mysql.db.tmis_core>
+                <!-- Название пула для базы данных - конфигурации ядра -->
+                <mysql.db.tmis_core.pool>tmis_core-pool</mysql.db.tmis_core.pool>
+            </properties>
+        </profile>
+
+        <profile>
+            <!-- Пользовательский профиль -->
+            <id>ueg</id>
+            <properties>
+                <com.sun.aas.instanceRoot>C:\Winprog\glassfish3\glassfish\domains\domain\</com.sun.aas.instanceRoot>
+                <mysql.login>root</mysql.login>
+                <mysql.password>root</mysql.password>
             </properties>
         </profile>
     </profiles>
+
+    <dependencies>
+        <!--
+            Java EE
+        -->
+        <dependency>
+            <groupId>javax.mail</groupId>
+            <artifactId>mail</artifactId>
+            <version>${version.javax.mail}</version>
+            <!--<scope>provided</scope>-->
+        </dependency>
+
+        <dependency>
+            <groupId>javax</groupId>
+            <artifactId>javaee-api</artifactId>
+            <version>${version.javaee.api}</version>
+            <scope>provided</scope>
+        </dependency>
+
+        <!--
+            Scala
+        -->
+        <dependency>
+            <groupId>org.scala-lang</groupId>
+            <artifactId>scala-library</artifactId>
+            <version>${version.scala}</version>
+        </dependency>
+
+        <dependency>
+            <groupId>org.scala-lang</groupId>
+            <artifactId>scala-compiler</artifactId>
+            <version>${version.scala}</version>
+        </dependency>
+
+        <!--
+            Groovy
+        -->
+        <dependency>
+            <groupId>org.codehaus.groovy</groupId>
+            <artifactId>groovy-all</artifactId>
+            <version>${version.groovy}</version>
+        </dependency>
+
+        <!--
+            Logging
+        -->
+        <dependency>
+            <groupId>org.clapper</groupId>
+            <artifactId>grizzled-slf4j_2.8.1</artifactId>
+            <version>${version.logging.grizzled-slf4j}</version>
+        </dependency>
+
+        <dependency>
+            <groupId>org.slf4j</groupId>
+            <artifactId>slf4j-api</artifactId>
+            <version>${version.logging.slf4j}</version>
+        </dependency>
+
+        <dependency>
+            <groupId>ch.qos.logback</groupId>
+            <artifactId>logback-classic</artifactId>
+            <version>${version.logging.logback}</version>
+        </dependency>
+
+        <dependency>
+            <groupId>org.slf4j</groupId>
+            <artifactId>jcl-over-slf4j</artifactId>
+            <version>${version.logging.jcl}</version>
+        </dependency>
+
+        <!-- The org.codehaus.janino:commons-compiler:2.6.1 dependency -->
+        <!-- will be automatically pulled in by Maven's transitivity rules -->
+        <!--<dependency>-->
+        <!--<groupId>org.codehaus.janino</groupId>-->
+        <!--<artifactId>janino</artifactId>-->
+        <!--<version>${version.logging.logback.janino}</version>-->
+        <!--</dependency>-->
+
+        <!--
+            JUnit
+        -->
+        <dependency>
+            <groupId>junit</groupId>
+            <artifactId>junit</artifactId>
+            <version>${version.junit}</version>
+        </dependency>
+
+        <dependency>
+            <groupId>org.testng</groupId>
+            <artifactId>testng</artifactId>
+            <version>${version.testng}</version>
+            <scope>test</scope>
+            <!--<classifier>jdk15</classifier>-->
+        </dependency>
+
+        <!--
+            Javax inject
+        -->
+        <dependency>
+            <groupId>javax.inject</groupId>
+            <artifactId>javax.inject</artifactId>
+            <version>${version.javax.inject}</version>
+        </dependency>
+
+        <!--
+        Apache Thrift
+        -->
+        <dependency>
+            <groupId>org.apache.thrift</groupId>
+            <artifactId>libthrift</artifactId>
+            <version>${version.apache.thrift}</version>
+        </dependency>
+
+        <!--
+        Joda Time
+        -->
+        <dependency>
+            <groupId>joda-time</groupId>
+            <artifactId>joda-time</artifactId>
+            <version>${version.joda.time}</version>
+        </dependency>
+
+
+    </dependencies>
 
     <build>
         <defaultGoal>package</defaultGoal>
@@ -260,19 +516,9 @@
         <resources>
             <resource>
                 <directory>src/main/resources/</directory>
-                <targetPath>../</targetPath>
                 <filtering>true</filtering>
                 <includes>
                     <include>**/*.*</include>
-                </includes>
-            </resource>
-            <resource>
-                <directory>scripts/</directory>
-                <targetPath>../</targetPath>
-                <filtering>true</filtering>
-                <includes>
-                    <include>**/*.sh</include>
-                    <include>**/*.bat</include>
                 </includes>
             </resource>
         </resources>
@@ -345,8 +591,8 @@
                 <configuration>
                     <sourceDir>src/main/scala</sourceDir>
                     <jvmArgs>
-                        <jvmArg>-Xms128m</jvmArg>
-                        <jvmArg>-Xmx512m</jvmArg>
+                        <!--<jvmArg>-Xms128m</jvmArg>-->
+                        <!--<jvmArg>-Xmx256m</jvmArg>-->
                     </jvmArgs>
                     <scalaVersion>${version.scala}</scalaVersion>
                 </configuration>
@@ -460,7 +706,7 @@
                         ru/korus/tmis/ws/webmis/rest/,
                         ru/korus/tmis/ws/medipad/,
                         ru/korus/tmis/ws/transfusion/efive/,
-                        ru/korus/tmis/ws/transfusion/
+                        ru/korus/tmis/communication/
                     </excludes>
                 </configuration>
                 <executions>
@@ -773,127 +1019,5 @@
         <connection>scm:git:https://github.com/KorusConsulting/tmis-core.git</connection>
         <developerConnection>scm:git:https://github.com/KorusConsulting/tmis-core.git</developerConnection>
     </scm>
-    <!--<dependencyManagement>-->
-    <dependencies>
-        <!--
-            Java EE
-        -->
-        <dependency>
-            <groupId>javax.mail</groupId>
-            <artifactId>mail</artifactId>
-            <version>${version.javax.mail}</version>
-            <!--<scope>provided</scope>-->
-        </dependency>
 
-        <dependency>
-            <groupId>javax</groupId>
-            <artifactId>javaee-api</artifactId>
-            <version>${version.javaee.api}</version>
-            <scope>provided</scope>
-        </dependency>
-
-        <!--
-            Scala
-        -->
-        <dependency>
-            <groupId>org.scala-lang</groupId>
-            <artifactId>scala-library</artifactId>
-            <version>${version.scala}</version>
-        </dependency>
-
-        <dependency>
-            <groupId>org.scala-lang</groupId>
-            <artifactId>scala-compiler</artifactId>
-            <version>${version.scala}</version>
-        </dependency>
-
-        <!--
-            Groovy
-        -->
-        <dependency>
-            <groupId>org.codehaus.groovy</groupId>
-            <artifactId>groovy-all</artifactId>
-            <version>${version.groovy}</version>
-        </dependency>
-
-        <!--
-            Logging
-        -->
-        <dependency>
-            <groupId>org.clapper</groupId>
-            <artifactId>grizzled-slf4j_2.8.1</artifactId>
-            <version>${version.logging.grizzled-slf4j}</version>
-        </dependency>
-
-        <dependency>
-            <groupId>org.slf4j</groupId>
-            <artifactId>slf4j-api</artifactId>
-            <version>${version.logging.slf4j}</version>
-        </dependency>
-
-        <dependency>
-            <groupId>ch.qos.logback</groupId>
-            <artifactId>logback-classic</artifactId>
-            <version>${version.logging.logback}</version>
-        </dependency>
-
-        <dependency>
-            <groupId>org.slf4j</groupId>
-            <artifactId>jcl-over-slf4j</artifactId>
-            <version>${version.logging.jcl}</version>
-        </dependency>
-
-        <!-- The org.codehaus.janino:commons-compiler:2.6.1 dependency -->
-        <!-- will be automatically pulled in by Maven's transitivity rules -->
-        <!--<dependency>-->
-        <!--<groupId>org.codehaus.janino</groupId>-->
-        <!--<artifactId>janino</artifactId>-->
-        <!--<version>${version.logging.logback.janino}</version>-->
-        <!--</dependency>-->
-
-        <!--
-            JUnit
-        -->
-        <dependency>
-            <groupId>junit</groupId>
-            <artifactId>junit</artifactId>
-            <version>${version.junit}</version>
-        </dependency>
-
-        <dependency>
-            <groupId>org.testng</groupId>
-            <artifactId>testng</artifactId>
-            <version>${version.testng}</version>
-            <scope>test</scope>
-            <!--<classifier>jdk15</classifier>-->
-        </dependency>
-
-        <!--
-            Javax inject
-        -->
-        <dependency>
-            <groupId>javax.inject</groupId>
-            <artifactId>javax.inject</artifactId>
-            <version>${version.javax.inject}</version>
-        </dependency>
-
-        <!--
-        Apache Thrift
-        -->
-        <dependency>
-            <groupId>org.apache.thrift</groupId>
-            <artifactId>libthrift</artifactId>
-            <version>${version.apache.thrift}</version>
-        </dependency>
-
-        <!--
-        Joda Time
-        -->
-        <dependency>
-            <groupId>joda-time</groupId>
-            <artifactId>joda-time</artifactId>
-            <version>${version.joda.time}</version>
-        </dependency>
-    </dependencies>
-    <!--</dependencyManagement>-->
 </project>

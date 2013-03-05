@@ -6,25 +6,25 @@ package ru.korus.tmis.pharmacy.exception;
  * Company:     Korus Consulting IT<br>
  * Description:  <br>
  */
-public class SoapConnectionException extends Exception {
+public class NoSuchOrgStructureException extends Exception {
 
-    public SoapConnectionException() {
+    public NoSuchOrgStructureException() {
         super();
     }
 
-    public SoapConnectionException(final String message) {
+    public NoSuchOrgStructureException(final String message) {
         super(message);
     }
 
-    public SoapConnectionException(final String message, final Throwable cause) {
+    public NoSuchOrgStructureException(final String message, final Throwable cause) {
         super(message, cause);
     }
 
-    public SoapConnectionException(final Throwable cause) {
+    public NoSuchOrgStructureException(final Throwable cause) {
         super(cause);
     }
 
-    protected SoapConnectionException(
+    protected NoSuchOrgStructureException(
             final String message, final Throwable cause, final boolean enableSuppression, final boolean writableStackTrace) {
         super(message, cause, enableSuppression, writableStackTrace);
     }

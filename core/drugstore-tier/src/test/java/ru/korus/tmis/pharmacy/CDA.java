@@ -40,7 +40,7 @@ public class CDA {
         try {
             jaxbContext = JAXBContext.newInstance("org.hl7.v3");
         } catch (JAXBException e) {
-            e.printStackTrace();  //To change body of catch statement use File | Settings | File Templates.
+            e.printStackTrace();
         }
     }
 
