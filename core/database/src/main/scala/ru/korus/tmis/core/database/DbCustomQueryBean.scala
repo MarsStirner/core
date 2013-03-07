@@ -535,15 +535,18 @@ class DbCustomQueryBean
     val ret_value = new java.util.LinkedHashMap[Event, java.util.Map[Object, Object]]
     val map = new java.util.LinkedHashMap[java.lang.Integer, Object]()
     //map.put(0, (MainDiagnosisQuery,"",""))
-    map.put(0, (ClinicalDiagnosisQuery, "4501", "Основной клинический диагноз"))
-    map.put(1, (AttendantDiagnosisQuery, "1_1_01", "Основной клинический диагноз"))
-    map.put(2, (AttendantDiagnosisQuery, "4201", "Диагноз направившего учреждения"))
+    map.put(0, (MainDiagnosisQuery, i18n("db.diagnostics.diagnosisType.id.clinical"), ""))   //этих двух диагнозов тут не было
+    map.put(1, (MainDiagnosisQuery, i18n("db.diagnostics.diagnosisType.id.main"), ""))       //
+    map.put(2, (ClinicalDiagnosisQuery, "4501", "Основной клинический диагноз"))
+    map.put(3, (AttendantDiagnosisQuery, "1_1_01", "Основной клинический диагноз"))
+    map.put(4, (AttendantDiagnosisQuery, "4201", "Диагноз направившего учреждения"))
 
     var i = 0
-    while (i <= 2) {
+    while (ids.size() > 0 && i <= 4) {
       val map_value = map.get(Integer.valueOf(i)).asInstanceOf[(String, String, String)]
       val typed2 = i match {
-        case 0 => em.createQuery(map_value._1.format(map_value._2, map_value._3, ap_string_filter), classOf[Array[AnyRef]])
+        case 0 | 1 => em.createQuery(map_value._1.format(map_value._2, diagnostic_filter), classOf[Array[AnyRef]])
+        case 2 => em.createQuery(map_value._1.format(map_value._2, map_value._3, ap_string_filter), classOf[Array[AnyRef]])
         case _ => em.createQuery(map_value._1.format(map_value._2, map_value._3, ap_mkb_filter), classOf[Array[AnyRef]])
       }
       val res2 = typed2.setParameter("ids", asJavaCollection(ids)).getResultList

@@ -71,29 +71,26 @@ class DbTakenTissueBean extends DbTakenTissueBeanLocal
       }
       case size => {
         result.foreach(em.detach(_))
-        //em.detach(result(0))
         result(0)
       }
     }
   }
 
   private def getLastTakenTissueJournalBarCode() = {
-    val result = em.createQuery(LastTakenTissueQuery, classOf[TakenTissue])
-      .getResultList
+     val result = em.createQuery(LastTakenTissueQuery, classOf[TakenTissue])
+      .getSingleResult
 
-    result.size match {
-      case 0 => {            -1
-        /*
-        throw new CoreException(
-          ConfigManager.ErrorCodes.TakenTissueNotFound,
-          i18n("error.TakenTissueNotFound").format(id))             */
-      }
-      case size => {
-        result.foreach(em.detach(_))
-        //em.detach(result(0))
-        result(0).getBarcode
-      }
+    if (result != null) {
+      em.detach(result)
+      result.getBarcode
+    } else {
+      -1
     }
+    /*
+        throw new CoreException(
+        ConfigManager.ErrorCodes.TakenTissueNotFound,
+        i18n("error.TakenTissueNotFound").format(id))
+    */
   }
 
   def getTakenTissueById(id: Int): TakenTissue = {
@@ -128,7 +125,9 @@ class DbTakenTissueBean extends DbTakenTissueBeanLocal
       SELECT tt
       FROM
         TakenTissue tt
-      ORDER BY tt.date desc
+      WHERE
+        tt.id = (SELECT MAX(tt2.id)
+          FROM TakenTissue tt2)
     """
 
   val ActionTypeTissueTypeByMasterIdQuery =
