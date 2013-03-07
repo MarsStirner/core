@@ -81,4 +81,6 @@ public interface DbPatientBeanLocal {
      * @return false=мертв, true=жив
      */
     boolean isAlive(Patient patient);
+
+    boolean deletePatient(int id ) throws CoreException;
 }

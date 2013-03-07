@@ -505,4 +505,13 @@ public interface MedipadWebService extends Serializable {
      */
     @WebMethod
     boolean updateJobTicketsStatuses(JobTicketStatusDataList data, AuthData authData) throws CoreException;
+
+    /**
+     * Удаление всей информации о пациенте  (для юнит-тестов)
+     * @param id Идентификатор пациента
+     * @return true/false
+     * @throws CoreException
+     */
+    @WebMethod
+    Boolean deletePatientInfo(int id) throws CoreException;
 }

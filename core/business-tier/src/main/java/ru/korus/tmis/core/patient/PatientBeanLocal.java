@@ -54,4 +54,13 @@ public interface PatientBeanLocal {
     Boolean checkSNILSNumber(String number) throws CoreException;
 
     Boolean checkPolicyNumber(String number, String serial, int typeId) throws CoreException;
+
+    /**
+     * Удаление всей информации о пациенте
+     * @param id Идентификатор пациента
+     * @return true/false
+     * @throws CoreException
+     */
+    Boolean deletePatientInfo(int id) throws CoreException;
+
 }

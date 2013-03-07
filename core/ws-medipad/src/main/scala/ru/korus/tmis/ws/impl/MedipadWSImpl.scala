@@ -1339,4 +1339,6 @@ class MedipadWSImpl
     isSuccess
   }
 
+  def deletePatientInfo(id: Int) = patientBean.deletePatientInfo(id)
+
 }

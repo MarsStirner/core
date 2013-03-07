@@ -1130,4 +1130,8 @@ class PatientBean
   def checkPolicyNumber(number: String, serial: String, typeId: Int) = {
     dbClientPolicy.checkPolicyNumber(number: String, serial: String, typeId: Int)
   }
+
+  def deletePatientInfo(id: Int) = {
+    dbPatient.deletePatient(id)
+  }
 }
