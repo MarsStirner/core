@@ -21,4 +21,6 @@ public interface DbQuotingBySpecialityBeanLocal {
     public List<QuotingBySpeciality> getQuotingBySpecialityAndOrganisation
             (Speciality speciality, String organisationInfisCode);
 
+    public List<QuotingBySpeciality> getQuotingBySpeciality(Speciality speciality);
+
 }

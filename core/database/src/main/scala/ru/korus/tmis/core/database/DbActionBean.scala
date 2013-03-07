@@ -446,6 +446,7 @@ class DbActionBean
       newAction.setExecutor(person)
       newAction.setAssigner(person)
       newAction.setUuid(dbUUIDBeanLocal.createUUID());
+      if (!hospitalUidFrom.isEmpty) newAction.setHospitalUidFrom(hospitalUidFrom);
       //1. Инсертим
       em.persist(newAction);
     }

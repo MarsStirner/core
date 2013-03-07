@@ -92,18 +92,20 @@ class DbCustomQueryBean
     }
 
     val typed = em.createQuery(ActiveEventsByDepartmentIdAndDoctorIdBetweenDatesQuery.format("e, a, MAX(a.createDatetime)",
+                                                                                              i18n("db.action.leavingFlatCode"),
                                                                                               queryStr.query,
                                                                                               i18n("db.action.movingFlatCode"),
                                                                                               i18n("db.actionType.hospitalization.primary"),
-                                                                                              iCapIds("db.rbCAP.moving.id.movedIn"),
                                                                                               iCapIds("db.rbCAP.hosp.primary.id.sentTo"),
-                                                                                               "GROUP BY e, a", sorting), classOf[Array[AnyRef]])
+                                                                                              i18n("db.action.movingFlatCode"),
+                                                                                              "GROUP BY e, a", sorting), classOf[Array[AnyRef]])
                   //.setMaxResults(limit)
                   //.setFirstResult(limit * page)
 
     if (queryStr.data.size() > 0) {
       queryStr.data.foreach(qdp => typed.setParameter(qdp.name, qdp.value))
     }
+    typed.setParameter("capIds", asJavaCollection(Set(iCapIds("db.rbCAP.moving.id.bed"),iCapIds("db.rbCAP.moving.id.movedIn"))))
 
     val events = typed.getResultList.foldLeft(LinkedHashMap.empty[Event, Action])(
                         (map, e) => {
@@ -975,181 +977,109 @@ class DbCustomQueryBean
     GROUP BY e
                                         """.format(i18n("db.action.movingFlatCode"))
 
+
   //Спецификация https://docs.google.com/spreadsheet/ccc?key=0AgE0ILPv06JcdEE0ajBZdmk1a29ncjlteUp3VUI2MEE#gid=0
-  val ActiveEventsByDepartmentIdAndDoctorIdBetweenDatesQuery2 = """
-    SELECT %s, MAX(a.createDatetime)
-    FROM
-      Event e,
-      Action a,
-      ActionProperty ap,
-      APValueHospitalBed bed,
-      OrgStructureHospitalBed org
+val ActiveEventsByDepartmentIdAndDoctorIdBetweenDatesQuery = """
+SELECT %s
+FROM
+  ActionProperty ap
+    JOIN ap.action a
+    JOIN ap.actionPropertyType apt
+    JOIN a.actionType at
+    JOIN a.event e
+WHERE
+  ( e.execDate IS NULL OR e.execDate > :endDate )
+AND
+  e.deleted = '0'
+AND
+  e.id NOT IN (
+    SELECT leaved.event.id
+    FROM Action leaved
     WHERE
-      (e.execDate IS NULL OR e.execDate > :endDate) AND
-      e.id = a.event.id AND
-      a.id = ap.action.id AND
-      ap.id = bed.id.id AND
-      bed.value.id = org.id
-      %s
+      leaved.actionType.flatCode = '%s'
     AND
-      a.actionType.id IN
-      (
-        SELECT actionType.id
-        FROM
-          ActionType actionType
-        WHERE
-          actionType.flatCode = '%s'
+      leaved.event.id = e.id
+    AND
+      leaved.createDatetime < :endDate
+  )
+%s
+AND
+  a.begDate <= :endDate
+AND
+(
+  (
+    (a.endDate IS NULL OR a.endDate >= :endDate)
+    AND
+      at.flatCode = '%s'
+    AND
+      apt.id IN (
+        SELECT cap.actionPropertyType.id
+        FROM RbCoreActionProperty cap
+        WHERE cap.id IN :capIds
       )
     AND
-      e.deleted = 0
-    %s
-    %s
-                                                               """
-
-  //Спецификация https://docs.google.com/spreadsheet/ccc?key=0AgE0ILPv06JcdEE0ajBZdmk1a29ncjlteUp3VUI2MEE#gid=0
-  val ActiveEventsByDepartmentIdAndDoctorIdBetweenDatesQuery = """
-  SELECT %s
-  FROM Event e,
-       Action a
-  WHERE
-    (e.execDate IS NULL OR e.execDate > :endDate)
-  AND
-    e.deleted = '0'
-  AND
-    e.id NOT IN
     (
-      SELECT leaved.event.id
-      FROM
-        Action leaved
-      WHERE
-        leaved.actionType.id IN
-        (
-          SELECT at.id
-          FROM
-            ActionType at
-          WHERE
-            at.flatCode = 'leaved'
-        )
-      AND
-        leaved.event.id = e.id
-      AND
-        leaved.createDatetime < :endDate
-    )
-  %s
-  AND
-  (
-    a.actionType.id IN
-    (
-      SELECT actionType.id
-      FROM
-        ActionType actionType
-      WHERE
-        actionType.flatCode = '%s'
-    )
-    OR
-      a.actionType.id = '%s'
-  )
-  AND
-    a.event.id = e.id
-  AND
-    exists
-    (
-      SELECT ap.id
-      FROM
-        ActionProperty ap
-      WHERE
-          ap.action.id = a.id
+      exists (
+        SELECT orgBed.id
+        FROM
+          APValueHospitalBed bed
+            JOIN bed.value orgBed
+        WHERE
+          bed.id.id = ap.id
         AND
-        (
-          ap.action.begDate < :endDate
+          orgBed.masterDepartment.id = :departmentId
+      )
+      OR
+        exists (
+          SELECT val.id
+          FROM APValueOrgStructure val
+            JOIN val.value orgVal
+          WHERE
+            val.id.id = ap.id
           AND
-          (
-            (
-              (ap.action.endDate IS NULL OR ap.action.endDate >= :endDate)
-              AND
-              exists
-              (
-                SELECT orgBed.id
-                FROM
-                  APValueHospitalBed bed,
-                  OrgStructureHospitalBed orgBed
-                WHERE
-                  bed.id.id = ap.id
-                AND
-                  bed.value.id = orgBed.id
-                AND
-                  orgBed.masterDepartment.id = :departmentId
-              )
-            )
-            OR
-            (
-              ap.actionPropertyType.id IN
-              (
-                SELECT cap.actionPropertyType.id
-                FROM
-                  RbCoreActionProperty cap
-                WHERE
-                  cap.actionType.id = a.actionType.id
-                AND
-                (
-                  cap.id = '%s'
-                  AND
-                    (ap.action.endDate IS NOT NULL OR ap.action.endDate < :endDate)
-                )
-                OR
-                  cap.id = '%s'
-              )
-              AND
-                exists
-                (
-                  SELECT val.id
-                  FROM
-                    APValueOrgStructure val
-                  WHERE
-                    ap.id = val.id.id
-                  AND
-                    val.value.id = :departmentId
-                )
-            )
-          )
+            orgVal.id = :departmentId
         )
     )
-    %s
-    %s
-                                                               """
+  )
+  OR (
+    at.id = '%s'
+    AND
+      apt.id IN (
+        SELECT cap2.actionPropertyType.id
+        FROM RbCoreActionProperty cap2
+        WHERE cap2.id = '%s'
+      )
+    AND
+      NOT exists (
+        SELECT moving
+        FROM Action moving
+        WHERE
+          moving.actionType.flatCode = '%s'
+        AND
+          moving.event.id = e.id
+        AND
+          moving.createDatetime < :endDate
+      )
+    AND
+      exists (
+        SELECT val2.id
+        FROM APValueOrgStructure val2
+          JOIN val2.value orgVal2
+        WHERE
+          val2.id.id = ap.id
+        AND
+          orgVal2.id = :departmentId
+      )
+  )
+)
+AND
+  a.deleted = '0'
+AND
+  ap.deleted = '0'
+%s
+%s
+                                                             """
 
-  /*
-  OR
-          (
-            ap.actionPropertyType.id IN
-            (
-              SELECT cap.actionPropertyType.id
-              FROM
-                RbCoreActionProperty cap
-              WHERE
-                cap.actionType.id = a.actionType.id
-              AND
-              (
-                cap.id = '%s'
-                AND
-                  (ap.action.endDate IS NOT NULL OR ap.action.endDate < :endDate)
-              )
-              OR
-                cap.id = '%s'
-            )
-            AND
-              exists
-              (
-                SELECT val.id
-                FROM
-                  APValueOrgStructure val
-                WHERE
-                  ap.id = val.id.id
-                AND
-                  val.value.id = :departmentId
-              )
-          )
-   */
   val ActionsByEventIdsAndFlatCodeQuery = """
     SELECT e, a
     FROM
