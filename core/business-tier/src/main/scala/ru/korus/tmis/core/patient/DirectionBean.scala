@@ -49,7 +49,7 @@ class DirectionBean extends DirectionBeanLocal
   private var hospitalBedBean: HospitalBedBeanLocal = _
 
   @EJB
-  private var dbActionPropertyBean: DbActionPropertyBeanLocal = _
+  private var dbCustomQueryBean: DbCustomQueryLocal = _
 
   @EJB
   private var dbOrgStructure: DbOrgStructureBeanLocal = _
@@ -151,26 +151,47 @@ class DirectionBean extends DirectionBeanLocal
     //создание жоб тикета тут должно быть
     val actions: java.util.List[Action] = commonDataProcessor.createActionForEventFromCommonData(eventId, directions, userData)
     val moving = hospitalBedBean.getLastMovingActionForEventId(eventId)
-    var department: OrgStructure = null
-    //dbActionPropertyBean.getActionPropertiesByActionIdAndTypeId(moving.getId.intValue(), 1616)
+    var department = dbOrgStructure.getOrgStructureById(28)//приемное отделение
+    //actionPropertyBean.getActionPropertiesByActionIdAndTypeId(moving.getId.intValue(), 1616)
     if (moving != null) {
       val listMovAP = JavaConversions.asJavaList(List(iCapIds("db.rbCAP.moving.id.bed").toInt: java.lang.Integer))
-      val bedValues = dbActionPropertyBean.getActionPropertiesByActionIdAndRbCoreActionPropertyIds(moving.getId.intValue(), listMovAP)
-
+      val bedValues = actionPropertyBean.getActionPropertiesByActionIdAndRbCoreActionPropertyIds(moving.getId.intValue(), listMovAP)
       if (bedValues!=null && bedValues!=0 && bedValues.size()>0) {
-        val templates = bedValues.get(0)
-        department = bedValues.get(0).get(0).getValue.asInstanceOf[OrgStructureHospitalBed].getMasterDepartment
+        if (bedValues.get(0) != null) {
+          department = bedValues.get(0).get(0).getValue.asInstanceOf[OrgStructureHospitalBed].getMasterDepartment
+        }
       }
-    } else {
-      department = dbOrgStructure.getOrgStructureById(28)//приемное отделение
     }
 
     var list = new java.util.LinkedList[(Job, JobTicket, TakenTissue)]
+    var apvList = new java.util.LinkedList[(ActionProperty, JobTicket)]
+    var apvMKBList = new java.util.LinkedList[(ActionProperty, Mkb)]
     var tissueType: RbTissueType = null
     actions.foreach((a) => {
-      val job = dbJobBean.getJobForAction(a)
-      if (job != null) {
-        em.merge(dbJobBean.insertOrUpdateJob(job.getId.intValue(), a, department))
+      val jobAndTicket = dbJobBean.getJobAndJobTicketForAction(a)
+      if (jobAndTicket != null) {
+        val (job, jobTicket) = jobAndTicket.asInstanceOf[(Job, JobTicket)]
+        if (job != null && jobTicket != null) {
+          var (lj, ljt, ltt) = if (list.size() > 0) list.get(list.size()-1) else (null, null, null)
+          if (lj == null || lj.getId.intValue() != job.getId.intValue()) {
+            val j = dbJobBean.insertOrUpdateJob(job.getId.intValue(), a, department)
+            val jt = dbJobTicketBean.insertOrUpdateJobTicket(jobTicket.getId.intValue(), a, j)
+            val tt = null//dbTakenTissue.insertOrUpdateTakenTissue(0, a)
+            a.getActionProperties.foreach((ap) => {
+              if (ap.getType.getTypeName.compareTo("JobTicket") == 0) {
+                apvList.add((ap, jt))
+              }
+            })
+            list.add(j, jt, tt)
+          } else {
+            lj.asInstanceOf[Job].setQuantity(lj.asInstanceOf[Job].getQuantity +1)
+            a.getActionProperties.foreach((ap) => {
+              if (ap.getType.getTypeName.compareTo("JobTicket") == 0) {
+                apvList.add((ap, ljt))
+              }
+            })
+          }
+        }
       } else {
         val nextTissueType = dbTakenTissue.getActionTypeTissueTypeByMasterId(a.getActionType.getId.intValue()).getTissueType
         if (nextTissueType != tissueType) {
@@ -182,18 +203,67 @@ class DirectionBean extends DirectionBeanLocal
           var (lj, ljt, ltt) = list.get(list.size()-1)
           lj.setQuantity(lj.getQuantity+1)
         }
+        var (lj, ljt, ltt) = list.get(list.size()-1)
+        a.getActionProperties.foreach((ap) => {
+          if (ap.getType.getTypeName.compareTo("JobTicket") == 0) {
+            apvList.add((ap, ljt))
+          }
+        })
         tissueType = nextTissueType
       }
+      //пропишем диагноз в пропертю, если не пришел с клиента
+      a.getActionProperties.foreach((ap) => {
+        if (ap.getType.getTypeName.compareTo("MKB") == 0) {
+          var props = actionPropertyBean.getActionPropertyValue(ap)
+          if (props.get(0).getValueAsString.compareTo("") == 0) {
+            val diagnosis = dbCustomQueryBean.getDiagnosisForMainDiagInAppeal(a.getEvent.getId.intValue())
+            if (diagnosis != null) {
+              apvMKBList.add((ap, diagnosis))
+            }
+          }
+        }
+      })
+    })
+    if (list != null && list.size() > 0) {
+      list.foreach((f) => {
+        val (j, jt, tt) = f
+        if (j != null) {
+          if (j.getId != null && j.getId.intValue() > 0) {
+            em.merge(j)
+          } else {
+            em.persist(j)
+          }
+        }
+        if (jt != null) {
+          if (jt.getId != null && jt.getId.intValue() > 0) {
+            em.merge(jt)
+          } else {
+            em.persist(jt)
+          }
+        }
+        if (tt != null) {
+          if (tt.getId != null && tt.getId.intValue() > 0) {
+            em.merge(tt)
+          } else {
+            em.persist(tt)
+          }
+        }
+      })
+      em.flush()
+      //сохраняем пропертиВалуе ЖобТикет
+      apvList.foreach((value) => {
+        var (ap, jt) = value
+        em.merge(actionPropertyBean.setActionPropertyValue(ap, jt.getId.intValue().toString, 0))
+      })
+      //сохраняем пропертиВалуе МКБ
+      apvMKBList.foreach((value) => {
+        var (ap, mkb) = value
+        em.merge(actionPropertyBean.setActionPropertyValue(ap, mkb.getId.intValue().toString, 0))
+      })
+      em.flush()
+    }
 
-    })
-    list.foreach((f) => {
-      val (j, jt, tt) = f
-      em.persist(j)
-      em.persist(jt)
-      em.persist(tt)
-    })
-    em.flush()
-    val com_data = commonDataProcessor.fromActions( actions, title, List(summary _, detailsWithAge _))
+    val com_data = commonDataProcessor.fromActions(actions, title, List(summary _, detailsWithAge _))
 
     var json_data = new JSONCommonData(request, com_data)
     if (postProcessingForDiagnosis != null) {
