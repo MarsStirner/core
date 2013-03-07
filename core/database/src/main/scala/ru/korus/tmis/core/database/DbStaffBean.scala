@@ -288,7 +288,7 @@ class DbStaffBean
    */
   def getPersonActionsByDateAndType(personId: Int, date: Date, actionType: String): Action = {
     // val resultList =
-    commlogger.debug("########## DATE is " + date);
+    commlogger.debug("DATE is " + date);
 
     val query = em.createQuery(getPersonActionsByDateAndTypeQuery, classOf[Action]).setParameter("ACTIONTYPECODE", actionType)
       .setParameter("PERSONID", personId).setParameter("SETDATE", date, TemporalType.DATE);

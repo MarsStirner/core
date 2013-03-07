@@ -47,11 +47,6 @@ public class CommunicationServerBean {
     @PostConstruct
     public void initialize() {
         logger.info("CommunicationServerBean starting post construct.");
-        logger.debug("Link to OrgStructureBean = {}", dbOrgStructureBeanLocal);
-        logger.debug("Link to PatientBean = {}", dbPatientBeanLocal);
-        logger.debug("Link to OrganizationBean = {}", dbOrganizationBeanLocal);
-        logger.debug("Link to ActionPropertyBean = {}", dbActionPropertyBeanLocal);
-        logger.debug("Link to QuotingByTimeBean = {}", dbQuotingByTimeBeanLocal);
         try {
             server = CommServer.getInstance();
             CommServer.setOrgStructureBean(dbOrgStructureBeanLocal);

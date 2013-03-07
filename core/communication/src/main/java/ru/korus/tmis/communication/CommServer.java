@@ -82,7 +82,7 @@ public class CommServer implements Communications.Iface {
             //Получение нужных сущностей из бина
             orgStructureList = orgStructureBean.getRecursiveOrgStructures(parentId, recursive, infisCode);
         } catch (CoreException e) {
-            logger.error("#" + currentRequestNum + " Error while getRecursive from bean.", e);
+            logger.error("#" + currentRequestNum + " CoreException while getRecursive from bean.", e);
             throw new NotFoundException().setError_msg("None of the OrgStructure contain any such parent =" + parentId);
         } catch (Exception e) {
             logger.error("#" + currentRequestNum + " Exception. Message=" + e.getMessage(), e);
@@ -118,13 +118,13 @@ public class CommServer implements Communications.Iface {
             resultList = orgStructureBean.getOrgStructureByAddress(
                     params.getPointKLADR(), params.getStreetKLADR(), params.getNumber(), params.getCorpus(), params.getFlat());
         } catch (CoreException e) {
-            logger.error("#" + currentRequestNum + " COREException. Message=" + e.getMessage(), e);
-            throw new NotFoundException().setError_msg("Не найдено ни одной структуры по заданному адресу.");
+            logger.error("#" + currentRequestNum + " CoreException. Message=" + e.getMessage(), e);
+            throw new NotFoundException().setError_msg("No one OrgStructure found.");
         } catch (Exception e) {
             logger.error("#" + currentRequestNum + " Exception. Message=" + e.getMessage(), e);
             throw new TException("Unknown Error", e);
         }
-        logger.info("End of #{} findOrgStructureByAddress.Return (size={} DATA=({})) as result.",
+        logger.info("End of #{} findOrgStructureByAddress. Return (size={} DATA=({})) as result.",
                 currentRequestNum, resultList.size(), resultList);
         return resultList;
     }
@@ -148,7 +148,7 @@ public class CommServer implements Communications.Iface {
         try {
             personnelList = orgStructureBean.getPersonnel(orgStructureId, recursive, infisCode);
         } catch (CoreException e) {
-            logger.error("#" + currentRequestNum + " COREException. Message=" + e.getMessage(), e);
+            logger.error("#" + currentRequestNum + " CoreException. Message=" + e.getMessage(), e);
             throw new NotFoundException().setError_msg("No one Person related with this orgStructures (COREException)");
         } catch (Exception e) {
             logger.error("#" + currentRequestNum + " Exception. Message=" + e.getMessage(), e);
@@ -205,7 +205,7 @@ public class CommServer implements Communications.Iface {
     @Override
     public Amb getWorkTimeAndStatus(final GetTimeWorkAndStatusParameters params) throws TException {
         final int currentRequestNum = ++requestNum;
-        final Date paramsDate = new DateMidnight(params.getDate()).toDate();
+        final Date paramsDate = DateConvertions.convertUTCMillisecondsToLocalDate(params.getDate());
         logger.info("#{} Call method -> CommServer.getWorkTimeAndStatus(personId={}, HospitalUID={}, DATE={})",
                 currentRequestNum, params.getPersonId(), params.getHospitalUidFrom(), paramsDate);
         Action personAction = null;
@@ -216,23 +216,27 @@ public class CommServer implements Communications.Iface {
             //1. Получаем actionId по id врача (personId) и дате(date)
             personAction = staffBean.getPersonActionsByDateAndType(params.getPersonId(), paramsDate, "amb");
             if (logger.isDebugEnabled()) {
-                logger.debug("ACTION [ ID={} DOCTOR={} {} {}, ACT_TYPE={}, EVENT={}, NOTE={}]", personAction.getId(),
+                logger.debug("ACTION [ ID={} DOCTOR={} {} {}, ACT_TYPE={}, EVENT={}, NOTE={}]",
+                        personAction.getId(),
                         doctor.getLastName(), doctor.getFirstName(), doctor.getPatrName(),
-                        personAction.getActionType().getName(), personAction.getEvent().getId(), personAction.getNote());
+                        personAction.getActionType().getName(),
+                        personAction.getEvent().getId(),
+                        personAction.getNote());
             }
-        } catch (Exception e) {
+        } catch (CoreException e) {
             if (doctor == null) {
                 logger.error("#" + currentRequestNum + " Doctor not found by ID=" + params.getPersonId(), e);
-                throw new NotFoundException().setError_msg("Заданный врач не найден ID=" + params.getPersonId());
+                throw new NotFoundException().setError_msg("Doctor not found by ID=" + params.getPersonId());
             }
             if (personAction == null) {
                 logger.error("#" + currentRequestNum + "Exception while getting actions for PersonID=" + params.getPersonId());
                 throw new NotFoundException()
-                        .setError_msg("Ошибка во время получения действия связанного с осмотром заданного врача. ID врача="
+                        .setError_msg("Error during the preparation of action associated with inspection by the doctor. Doctor ID ="
                                 + params.getPersonId());
             }
+            //На всякий случай, по идее этот код никогда не должен быть выполнен
             logger.error("if reach this point, then all is too hard to understand why =(", e);
-            throw new NotFoundException().setError_msg("UNKNOWN EXCEPTION.");
+            throw new TException("UNKNOWN EXCEPTION.");
         }
         //3. Если есть actionId и отсутствует «Причина отсутствия» (т.е. врач на месте)
         // [причина отсутствия выбирается внутри получения ограничений]
@@ -251,7 +255,7 @@ public class CommServer implements Communications.Iface {
                 result = getAmbInfo(personAction, (short) -1);
                 takeConstraintsOnTickets(constraints, result.getTickets());
             }
-        } catch (Exception e) {
+        } catch (CoreException e) {
             logger.error("getAmbInfo failed!", e);
         }
         logger.info("End of #{} getWorkTimeAndStatus. Return (TicketsSize={}) \"{}\" as result.",
@@ -345,10 +349,9 @@ public class CommServer implements Communications.Iface {
         final List<Ticket> tickets = new ArrayList<Ticket>();
         //fill Amb structure and lists
         final Amb result = getAmbulatoryProperties(action, times, queue);
-
         //COMPUTE TICKETS to list and evaluate externalCount
         final short externalCount = computeTickets(action, times, queue, tickets);
-        //??? http://miswiki.ru/   Получение талончиков _getTickets()
+        // http://miswiki.ru/   Получение талончиков _getTickets()
         final int available = Math.max(0, (int) (quota * tickets.size() * 0.01) - externalCount);
         if (quota != -1 && available < 1) {
             for (Ticket ticket : tickets) {
@@ -428,14 +431,12 @@ public class CommServer implements Communications.Iface {
             //Fill AMB params without tickets and fill arrays to compute tickets
             final APValue value = actionPropertyBean.getActionPropertyValue(currentProperty).get(0);
             if (fieldName.equals("begTime")) {
-                final GregorianCalendar time = new GregorianCalendar();
-                time.setTime(((APValueTime) value).getValue());
-                ambulatoryInfo.setBegTime((time.getTimeInMillis() + time.get(Calendar.ZONE_OFFSET)));
+                ambulatoryInfo.setBegTime(
+                        DateConvertions.convertDateToUTCMilliseconds((Date) value.getValue()));
             } else {
                 if (fieldName.equals("endTime")) {
-                    final GregorianCalendar time = new GregorianCalendar();
-                    time.setTime(((APValueTime) value).getValue());
-                    ambulatoryInfo.setEndTime((time.getTimeInMillis() + time.get(Calendar.ZONE_OFFSET)));
+                    ambulatoryInfo.setEndTime(
+                            DateConvertions.convertDateToUTCMilliseconds((Date) value.getValue()));
                 } else {
                     if (fieldName.equals("office")) {
                         ambulatoryInfo.setOffice(((APValueString) value).getValue());
@@ -445,6 +446,7 @@ public class CommServer implements Communications.Iface {
                         } else {
                             if (fieldName.equals("times")) {
                                 for (APValue timevalue : actionPropertyBean.getActionPropertyValue(currentProperty)) {
+                                    //Не преобразуем эти времена
                                     times.add((APValueTime) timevalue);
                                 }
                             } else {
@@ -489,19 +491,16 @@ public class CommServer implements Communications.Iface {
             logger.warn("End of #{} addPatient.Error message=\"{}\"", currentRequestNum, result.getMessage());
             return result.setSuccess(false).setPatientId(0);
         }
-        final DateTime birthDate = new DateTime(params.getBirthDate(), DateTimeZone.UTC);
-        logger.debug("PLUS TIMEZONE OFFSET = {}", birthDate.plus(-TimeZone.getDefault().getRawOffset()));
-        logger.debug("PLUSS OFFSET util.DATE = {}", birthDate.plus(-TimeZone.getDefault().getRawOffset()).toDate());
         final ru.korus.tmis.core.entity.model.Patient patient;
         try {
             patient = patientBean.insertOrUpdatePatient(0, params.firstName, params.patrName, params.lastName,
-                    birthDate.plus(-TimeZone.getDefault().getRawOffset()).toDate(), "",
+                    DateConvertions.convertUTCMillisecondsToLocalDate(params.getBirthDate()), "",
                     getSexAsString(params.getSex()), "0", "0", "", null, 0, "", "", null, 0);
             patientBean.savePatientToDataBase(patient);
             logger.debug("Patient ={}", patient);
             if (patient.getId() == 0 || patient.getId() == null)
                 throw new CoreException("Something is wrong while saving");
-        } catch (Exception e) {
+        } catch (CoreException e) {
             logger.error("Error while saving to database", e);
             return result.setMessage("Error while saving to database. Message=" + e.getMessage()).setSuccess(false);
         }
@@ -518,12 +517,15 @@ public class CommServer implements Communications.Iface {
      */
     private String getSexAsString(final int sex) {
         switch (sex) {
-            case 1:
+            case 1: {
                 return "male";
-            case 2:
-                return "male";
-            default:
+            }
+            case 2: {
+                return "female";
+            }
+            default: {
                 return "";
+            }
         }
     }
 
@@ -536,20 +538,20 @@ public class CommServer implements Communications.Iface {
      */
     private boolean checkAddPatientParams(final AddPatientParameters params, final PatientStatus result) {
         boolean allParamsIsSet = true;
-        String errorMessage = "";
+        final StringBuilder errorMessage = new StringBuilder();
         if (!params.isSetLastName() || params.getLastName().length() == 0) {
             allParamsIsSet = false;
-            errorMessage += "Фамилия должна быть указана\n";
+            errorMessage.append("Фамилия должна быть указана\n");
         }
         if (!params.isSetFirstName() || params.getFirstName().length() == 0) {
             allParamsIsSet = false;
-            errorMessage += "Имя должно быть указано\n";
+            errorMessage.append("Имя должно быть указано\n");
         }
         if (!params.isSetPatrName() || params.getPatrName().length() == 0) {
             params.setPatrName("");
         }
         if (!allParamsIsSet) {
-            result.setMessage(errorMessage);
+            result.setMessage(errorMessage.toString());
         }
         return allParamsIsSet;
     }
@@ -608,13 +610,13 @@ public class CommServer implements Communications.Iface {
                         patientsList = patientBean.findPatientByPolicy(
                                 parameters, serial, number, Integer.parseInt(document.get("policy_type")));
                     } else {
-                        logger.error("В карте документов не передан ни client_id, ни policy_type, ни document_code ");
+                        logger.error("In document map there no \"client_id\", or \"policy_type\", or \"document_code\"");
                         throw new NotFoundException(CommunicationErrors.msgNoDocumentsAttached.getMessage());
                         //"Некорректные входные данные");
                     }
                 }
             }
-        } catch (Exception e) {
+        } catch (CoreException e) {
             logger.error("Failed to get patients because: {} CAUSE={}", e.getMessage(), e.getCause());
             throw new TException(e.getMessage());
         }
@@ -626,18 +628,21 @@ public class CommServer implements Communications.Iface {
         }
         final PatientStatus result;
         switch (patientsList.size()) {
-            case 0:
+            case 0: {
                 result = new PatientStatus().setSuccess(false)
                         .setMessage(CommunicationErrors.msgNoSuchPatient.getMessage());
                 break;
-            case 1:
+            }
+            case 1: {
                 result = new PatientStatus().setSuccess(true)
                         .setMessage(CommunicationErrors.msgOk.getMessage()).setPatientId(patientsList.get(0).getId());
                 break;
-            default:
+            }
+            default: {
                 result = new PatientStatus().setSuccess(false)
                         .setMessage(CommunicationErrors.msgTooManySuchPatients.getMessage());
                 break;
+            }
         }
         logger.info("End of #{} findPatient. Return \"{}\" as result.", currentRequestNum, result);
         return result;
@@ -820,26 +825,26 @@ public class CommServer implements Communications.Iface {
                 logger.info("HIT!!!!");
                 //Проверка свободности найденной ячейки времени
                 if (queueAMB.size() > i && queueAMB.get(i).getValue() != null) {
-                    logger.info("Талончик занят");
+                    logger.info("#{} Ticket is busy.", currentRequestNum);
                     return new EnqueuePatientStatus().setSuccess(false)
                             .setMessage(CommunicationErrors.msgTicketIsBusy.getMessage());
                 } else {
-                    logger.debug("Талончик свободен.");
+                    logger.info("#{} Ticket is free.", currentRequestNum);
+                    ;
                     //Нельзя записывать пациента, если на этот же день к этому же врачу он уже записывался
                     if (checkRepetitionTicket(queueAMB, params.getPatientId())) {
-                        logger.info("Повторная запись на сегодня, в записи нужно отказать");
+                        logger.info("Repetition enqueue.");
                         return new EnqueuePatientStatus().setSuccess(false)
                                 .setMessage(CommunicationErrors.msgPatientAlreadyQueued.getMessage());
                     }
                     //Если ячейка времени свободна, то создаём записи в таблицах Event, Action, ActionProperty_Action:
-                    logger.info("Ячейка времени:[{}] свободна (запрошеное время=[{}]). Начинаем запись пациента.",
-                            new DateTime(currentTimeAMB.getValue()),
-                            paramsDateTime);
+                    logger.info("Time cell:[{}] is free. Starting to enqueue Patient",
+                            new DateTime(currentTimeAMB.getValue()));
                     try {
                         //0 проверяем квоты!
                         if (!params.getHospitalUidFrom().isEmpty()) {
                             if (!checkQuotingBySpeciality(person.getSpeciality(), params.getHospitalUidFrom())) {
-                                logger.info("Нет талончиков, доступных для записи (по квотам на специальность)");
+                                logger.info("No coupons available for recording (by quotes on specialty)");
                                 return new EnqueuePatientStatus().setSuccess(false)
                                         .setMessage(CommunicationErrors.msgNoTicketsAvailable.getMessage());
                             }
@@ -871,9 +876,8 @@ public class CommServer implements Communications.Iface {
                         // и добавлем наш запрос в эту очередь
                         // с нужным значением index, по которому будет происходить соответствие с ячейкой времени.
                         addActionToQueuePropertyValue(doctorAction, timesAMB, queueAMB, queueAction, queueAP, i);
-
-                    } catch (Exception e) {
-                        logger.error("Error while create new EVENT", e);
+                    } catch (CoreException e) {
+                        logger.error("CoreException while create new EVENT", e);
                         return new EnqueuePatientStatus().setSuccess(false)
                                 .setMessage(CommunicationErrors.msgUnknownError.getMessage());
                     }
@@ -882,10 +886,9 @@ public class CommServer implements Communications.Iface {
             }
             i++;
         }
-        logger.info("Hit? {}", timeHit);
         //У врача нету талончиков на запрошенную дату.
         if (!timeHit) {
-            logger.warn("У врача нету талончиков на запрошенную дату:[{}]", paramsDateTime);
+            logger.warn("Doctor has no tickets to this date:[{}]", paramsDateTime);
             return new EnqueuePatientStatus().setSuccess(false)
                     .setMessage(CommunicationErrors.msgTicketNotFound.getMessage() + "  [" + paramsDateTime.toString() + "]");
         }
@@ -908,19 +911,25 @@ public class CommServer implements Communications.Iface {
             return false;
         } else {
             for (APValueAction currentActionInQueueActions : queueAMB) {
-                if (currentActionInQueueActions.getValue() != null) {
+                final Action queueAction = currentActionInQueueActions.getValue();
+                if (queueAction != null) {
                     //Проверка на существование пациента при получении очереди
-                    if (currentActionInQueueActions.getValue().getEvent().getPatient() == null) {
-                        logger.warn("Нету ни одного пациента, владеющих этим действием: {}",
-                                currentActionInQueueActions);
-                        return false;
+                    final Event queueEvent = queueAction.getEvent();
+                    if (queueEvent != null) {
+                        if (queueEvent.getPatient() == null) {
+                            logger.warn("Not have any patient who own this action [{}] and this event [{}]",
+                                    queueAction, queueEvent);
+                        } else {
+                            if (queueEvent.getPatient().getId() == personId) {
+                                logger.info("Repetition queue detected. Reject enqueue.");
+                                return true;
+                            }
+                        }
+                    } else {
+                        logger.warn("Patient queue action [{}] hasn't event.", queueAction);
                     }
-                    if (currentActionInQueueActions.getValue().getEvent().getPatient().getId() == personId) {
-                        logger.info("Repetition queue detected. Reject enqueue");
-                        return true;
-                    }
-                }
-            }
+                } //END OF IF (action is not null)
+            } //END OF FOR
             return false;
         }
     }
@@ -929,6 +938,7 @@ public class CommServer implements Communications.Iface {
             final ru.korus.tmis.core.entity.model.Speciality speciality, final String organisationInfisCode) {
         List<QuotingBySpeciality> quotingBySpecialityList =
                 quotingBySpecialityBean.getQuotingBySpeciality(speciality);
+        //TODO IF
         switch (quotingBySpecialityList.size()) {
             case 0: {
                 return true;
@@ -941,11 +951,13 @@ public class CommServer implements Communications.Iface {
                 } catch (CoreException e) {
                     logger.info("It isn't our LPU.");
                 }
+                //TODO multithreading
                 QuotingBySpeciality current = quotingBySpecialityList.get(0);
                 if (current.getCouponsRemaining() > 0) {
                     current.setCouponsRemaining(current.getCouponsRemaining() - 1);
                     try {
                         logger.debug("QuotingBySpeciality coupons_remaining reduce by 1");
+                        //TODO merge
                         managerBean.merge(current);
                         return true;
                     } catch (CoreException e) {
@@ -969,7 +981,7 @@ public class CommServer implements Communications.Iface {
      */
     private boolean checkApplicable(
             final Patient patient, final ru.korus.tmis.core.entity.model.Speciality speciality) {
-        logger.debug("####SPECIALITY age=\"{}\" sex=\"{}\"", speciality.getAge(), speciality.getSex());
+        logger.debug("SPECIALITY age=\"{}\" sex=\"{}\"", speciality.getAge(), speciality.getSex());
 
         if (speciality.getSex() != (short) 0 && speciality.getSex() != patient.getSex()) {
             return false;
@@ -1042,7 +1054,7 @@ public class CommServer implements Communications.Iface {
             }
             throw new NumberFormatException("Неопознаный отрезок времени");
         } catch (NumberFormatException e) {
-            logger.warn("Некорректное преобразование строки в число. Возвращаем текущую дату.");
+            logger.warn("Incorrect conversion of a string to a number. Return current date.");
         }
         return new Date();
     }
@@ -1132,12 +1144,7 @@ public class CommServer implements Communications.Iface {
                     }
                 }
             }
-            if (queueAP == null) {
-
-            }
-
-
-        } catch (Exception e) {
+        } catch (CoreException e) {
             logger.error("PARSE ERROR", e);
         }
         return queueAP;
@@ -1183,7 +1190,7 @@ public class CommServer implements Communications.Iface {
                         try {
                             ticket.setIndex(actionPropertyBean.getActionProperty_ActionByValue(queueAction).getId().getIndex());
                         } catch (Exception e) {
-                            logger.warn("Запись скорее всего удалена");
+                            logger.warn("Record most likely deleted.");
                             continue;
                         }
                         logger.debug("TICKET={}", ticket);
@@ -1224,12 +1231,12 @@ public class CommServer implements Communications.Iface {
             queueAction = actionBean.getActionById(queueId);
             //Проверка тот ли пациент имеет данный талончик
             if (queueAction.getEvent().getPatient().getId() != patientId) {
-                logger.error("Заданный пациент не является владельцем этого талончика");
+                logger.error("A given patient is not the owner of the ticket");
                 result.setSuccess(false)
                         .setMessage(CommunicationErrors.msgTicketIsNotBelongToPatient.getMessage());
                 return result;
             }
-            //TODO квоты увеличить
+            //TODO multithreading
             String hospitalUidFrom = queueAction.getHospitalUidFrom();
             if (!"0".equals(queueAction.getHospitalUidFrom()) || !queueAction.getHospitalUidFrom().isEmpty()) {
                 try {
@@ -1441,7 +1448,7 @@ public class CommServer implements Communications.Iface {
 
         logger.info("End of #{} getPatientOrgStructures. Return (Size={}), DATA={})",
                 currentRequestNum, resultList.size(), resultList);
-        return resultList;
+        throw new TException(CommunicationErrors.msgNotImplemented.getMessage());
     }
 
     public CommServer() {
