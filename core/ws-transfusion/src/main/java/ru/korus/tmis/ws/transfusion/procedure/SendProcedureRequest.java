@@ -147,16 +147,16 @@ public class SendProcedureRequest {
     }
 
     /**
+     * Отправка запроса на проведелиен лечебной процедуры ТРФУ
+     * 
      * @param em
      * @param trfuService
      * @throws CoreException
      * @throws DatatypeConfigurationException
      */
-
     private void sendNewProcedure(final TransfusionMedicalService trfuService) throws CoreException {
         final List<Action> actions = getNewActions(database.getEntityMgr());
         final Map<String, TrfuActionProp> actionProp = new HashMap<String, TrfuActionProp>();
-
         for (final Action action : actions) {
             try {
                 final String curFlatCode = action.getActionType().getFlatCode();
