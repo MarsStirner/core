@@ -1325,7 +1325,10 @@ class MedipadWSImpl
       })
       if (actions.size() == 1) map += (firstJobTicket -> actions)   //добавляем последний жобТикет, если для него есть только один акшен. Если акшенов больше, он добавится в цикле.
     }
-    new TakingOfBiomaterialData(map, request)
+    new TakingOfBiomaterialData(map,
+                                hospitalBedBean.getLastMovingActionForEventId _,
+                                actionPropertyBean.getActionPropertiesByActionIdAndRbCoreActionPropertyIds _,
+                                request)
   }
 
   def updateJobTicketsStatuses(data: JobTicketStatusDataList, authData: AuthData) = {
