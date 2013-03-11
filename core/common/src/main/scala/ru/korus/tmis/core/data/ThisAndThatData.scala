@@ -1068,12 +1068,12 @@ class DictionaryListRequestDataFilter extends AbstractListDataFilter{
           "AND socr.level = '2'\n"
         }
         case "city" => { //город
-          "AND kl.parent = '%s'\n ".format(substringWithZeroInput(this.parent, 0, 5)) +
-          "AND socr.level = '3'\n"
+          "AND kl.parent = '%s'\n ".format(substringWithZeroInput(this.parent, 0, 3)) +
+          "AND socr.level = '3'\n"      //3
         }
         case "locality" => { //населенный пункт
-          "AND kl.parent = '%s'\n ".format(substringWithZeroInput(this.parent, 0, 3)) +
-          "AND socr.level = '4'\n"
+          "AND kl.parent = '%s'\n ".format(substringWithZeroInput(this.parent, 0, 5)) +
+          "AND socr.level = '4'\n"     //4
         }
         case "street" => { //улица
           "AND str.code LIKE '%s%%'\n ".format(substringWithZeroInput(this.parent, 0, 8))

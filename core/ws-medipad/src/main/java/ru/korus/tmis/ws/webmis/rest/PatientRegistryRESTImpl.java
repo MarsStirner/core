@@ -1549,6 +1549,34 @@ public class PatientRegistryRESTImpl implements Serializable {
     }
 
     /**
+     * Удаление направлений на лабораторные исследования
+     * @param data Json с данными о лабораторном исследовании как CommonData
+     * @param eventId Идентификатор обращения на госпитализацию, в рамках которой создается исследование.
+     * @param callback  callback запроса.
+     * @param servRequest Контекст запроса с клиента.
+     * @return com.sun.jersey.api.json.JSONWithPadding как Object
+     * @throws CoreException
+     * @see CoreException
+     */
+    @PUT
+    @Path("/diagnostics/{eventId}/laboratory/remove")
+    @Consumes("application/json")
+    @Produces("application/x-javascript")
+    public Object removeLaboratoryStudies(AssignmentsToRemoveDataList data,
+                                          @PathParam("eventId")int  eventId,
+                                          @QueryParam("callback") String callback,
+                                          //@QueryParam("token") String token,
+                                          @Context HttpServletRequest servRequest) {
+        AuthData auth = wsImpl.checkTokenCookies(servRequest);
+        //AuthToken authToken = new AuthToken(token);
+        //AuthData auth = wsImpl.getStorageAuthData(authToken);
+
+        Object oip = wsImpl.removeLaboratoryStudies(data, auth);
+        JSONWithPadding returnValue = new JSONWithPadding(oip, callback);
+        return returnValue;
+    }
+
+    /**
      * Создание направления на инструментальную диагностику
      * @param data Json с данными о инструментальном исследовании как CommonData
      * @param eventId Идентификатор обращения на госпитализацию, в рамках которой создается исследование.
@@ -2195,4 +2223,17 @@ public class PatientRegistryRESTImpl implements Serializable {
         JSONWithPadding returnValue = new JSONWithPadding(oip, callback);
         return returnValue;
     }
+
+    /*
+    @GET
+    @Path("/patient/{id}/delete")
+    @Produces("application/x-javascript")
+    public Object deletePatientInfo(@PathParam("id") int id,
+                                    @QueryParam("callback") String callback,
+                                    @Context HttpServletRequest servRequest)   {
+        Object oip = wsImpl.deletePatientInfo(id);
+        JSONWithPadding returnValue = new JSONWithPadding(oip, callback);
+        return returnValue;
+    }
+    */
 }

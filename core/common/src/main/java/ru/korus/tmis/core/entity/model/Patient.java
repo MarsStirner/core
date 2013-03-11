@@ -181,7 +181,7 @@ public class Patient implements Serializable, Cloneable {
         }
     }
 
-    @OneToMany(mappedBy = "patient", cascade = CascadeType.ALL)
+    @OneToMany(mappedBy = "patient", cascade = {CascadeType.ALL} )
     private List<ClientRelation> clientRelatives = new LinkedList<ClientRelation>();
 
     public List<ClientRelation> getClientRelatives() {

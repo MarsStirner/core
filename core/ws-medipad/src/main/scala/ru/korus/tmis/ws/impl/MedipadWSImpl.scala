@@ -1046,9 +1046,11 @@ class MedipadWSImpl
   }
 
   def modifyLaboratoryStudies(eventId: Int, data: CommonData, auth: AuthData) = {
-    // проверка пользователя на ответственного за ивент
+    directionBean.modifyDirectionsForEventIdFromCommonData(eventId, data, "Diagnostic", null, auth,  postProcessingForDiagnosis _)// postProcessingForDiagnosis
+  }
 
-    primaryAssessmentBean.modifyAssessmentsForEventIdFromCommonData(eventId, data, "Diagnostic", null, auth,  postProcessingForDiagnosis _)// postProcessingForDiagnosis
+  def removeLaboratoryStudies(data: AssignmentsToRemoveDataList, auth: AuthData) = {
+    directionBean.removeDirections(data, auth)
   }
 
   def getFlatDirectories(request: FlatDirectoryRequestData) = {
@@ -1325,7 +1327,10 @@ class MedipadWSImpl
       })
       if (actions.size() == 1) map += (firstJobTicket -> actions)   //добавляем последний жобТикет, если для него есть только один акшен. Если акшенов больше, он добавится в цикле.
     }
-    new TakingOfBiomaterialData(map, request)
+    new TakingOfBiomaterialData(map,
+                                hospitalBedBean.getLastMovingActionForEventId _,
+                                actionPropertyBean.getActionPropertiesByActionIdAndRbCoreActionPropertyIds _,
+                                request)
   }
 
   def updateJobTicketsStatuses(data: JobTicketStatusDataList, authData: AuthData) = {
@@ -1338,5 +1343,7 @@ class MedipadWSImpl
     })
     isSuccess
   }
+
+  def deletePatientInfo(id: Int) = patientBean.deletePatientInfo(id)
 
 }

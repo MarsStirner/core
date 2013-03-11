@@ -808,7 +808,7 @@ public class CommServer implements Communications.Iface {
         final ActionType queueActionType;
 
         ActionProperty queueAP = getAmbTimesAndQueues(doctorAction, timesAMB, queueAMB);
-        logger.debug(queueAP.toString());
+        logger.debug("Action property: {}", queueAP);
         //счетчик индекса для queue & times
         int i = 0;
         //Индикатор совпадения одного из времён приема врача и запрошенного времени
@@ -1132,6 +1132,11 @@ public class CommServer implements Communications.Iface {
                     }
                 }
             }
+            if (queueAP == null) {
+
+            }
+
+
         } catch (Exception e) {
             logger.error("PARSE ERROR", e);
         }

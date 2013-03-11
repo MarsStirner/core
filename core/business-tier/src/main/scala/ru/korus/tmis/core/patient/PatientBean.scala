@@ -375,7 +375,6 @@ class PatientBean
       val conditions = customQuery.getLastAssessmentByEvents(eventsMap.keySet().toList)   //Последний экшн осмотра
       conditions.foreach(
         c => {
-          //val apList = dbActionProperty.getActionPropertiesByActionIdAndTypeNames(c._2.getId.intValue,List("Состояние", "ЧСС", "АД нижн.","АД верхн."))
           val apList = dbActionProperty.getActionPropertiesByActionIdAndTypeCodes(c._2.getId.intValue,List("STATE", "PULS", "BPRAS","BPRAD"))
           conditionsInfo.put(c._1, apList)
         }
@@ -1130,5 +1129,9 @@ class PatientBean
 
   def checkPolicyNumber(number: String, serial: String, typeId: Int) = {
     dbClientPolicy.checkPolicyNumber(number: String, serial: String, typeId: Int)
+  }
+
+  def deletePatientInfo(id: Int) = {
+    dbPatient.deletePatient(id)
   }
 }

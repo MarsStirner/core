@@ -342,6 +342,9 @@ public interface MedipadWebService extends Serializable {
     @WebMethod
     JSONCommonData modifyLaboratoryStudies(int eventId, CommonData data, AuthData auth) throws CoreException;
 
+    @WebMethod
+    boolean removeLaboratoryStudies(AssignmentsToRemoveDataList data, AuthData auth) throws CoreException;
+
     /**
      * Получение справочника FlatDirectory
      * @param request Данные из запроса как FlatDirectoryRequestData
@@ -505,4 +508,13 @@ public interface MedipadWebService extends Serializable {
      */
     @WebMethod
     boolean updateJobTicketsStatuses(JobTicketStatusDataList data, AuthData authData) throws CoreException;
+
+    /**
+     * Удаление всей информации о пациенте  (для юнит-тестов)
+     * @param id Идентификатор пациента
+     * @return true/false
+     * @throws CoreException
+     */
+    @WebMethod
+    Boolean deletePatientInfo(int id) throws CoreException;
 }

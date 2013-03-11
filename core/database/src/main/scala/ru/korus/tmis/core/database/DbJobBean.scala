@@ -8,8 +8,9 @@ import grizzled.slf4j.Logging
 import ru.korus.tmis.util.{ConfigManager, CAPids, I18nable}
 import javax.persistence.{EntityManager, PersistenceContext}
 import ru.korus.tmis.core.exception.CoreException
-import ru.korus.tmis.core.entity.model.{OrgStructure, Action, Job}
-import java.util.Date
+import ru.korus.tmis.core.entity.model.{JobTicket, OrgStructure, Action, Job}
+import java.util.{Calendar, Date}
+import java.text.SimpleDateFormat
 
 /**
  * Методы для работы с Job
@@ -45,7 +46,7 @@ class DbJobBean extends DbJobBeanLocal
     }
     job.setDate(action.getPlannedEndDate)
     job.setBegTime(action.getPlannedEndDate)
-    job.setEndTime(action.getPlannedEndDate) ///неправильно! нотнулл нужно убрать!
+    job.setEndTime(action.getPlannedEndDate)
     job.setJobType(action.getActionType.getJobType)
     job.setOrgStructure(department)
 
@@ -55,12 +56,17 @@ class DbJobBean extends DbJobBeanLocal
     job
   }
 
-  def getJobForAction(action: Action): Job = {
-    val result = em.createQuery(JobForActionQuery, classOf[Job])
-      .setParameter("plannedEndDate", action.getPlannedEndDate)
+  def getJobAndJobTicketForAction(action: Action) = {
+    val formatter = new SimpleDateFormat("yyyy-MM-dd")
+    val strDate = formatter.format(action.getPlannedEndDate)
+    val date = formatter.parse(strDate)
+
+    val query = em.createQuery(JobForActionQuery, classOf[Array[AnyRef]])
+      .setParameter("plannedEndDate", date)
       .setParameter("eventId", action.getEvent.getId.intValue())
       .setParameter("actionTypeId", action.getActionType.getId.intValue())
-      .getResultList
+
+    val result = query.getResultList
 
     result.size match {
       case 0 => {
@@ -70,8 +76,15 @@ class DbJobBean extends DbJobBeanLocal
           i18n("error.jobNotFound").format(id))          */
       }
       case size => {
-        result.foreach(em.detach(_))
-        result(0)
+        val jobAndJobTicket = result.foldLeft(new java.util.LinkedList[(Job, JobTicket)])(
+          (list, aj) => {
+            em.detach(aj(0))
+            em.detach(aj(1))
+            list.add((aj(0).asInstanceOf[Job], aj(1).asInstanceOf[JobTicket]))
+            list
+          }
+        )
+        jobAndJobTicket.get(0).asInstanceOf[(Job, JobTicket)]
       }
     }
   }
@@ -105,7 +118,7 @@ class DbJobBean extends DbJobBeanLocal
 
   val JobForActionQuery =
     """
-      SELECT j
+      SELECT DISTINCT j, jt
       FROM
         Job j,
         JobTicket jt,
@@ -114,8 +127,6 @@ class DbJobBean extends DbJobBeanLocal
         ActionTypeTissueType attt
         JOIN ap.action a
       WHERE
-        j.begTime = :plannedEndDate
-      AND
         jt.job.id = j.id
       AND
         apval.value = jt.id
@@ -127,6 +138,8 @@ class DbJobBean extends DbJobBeanLocal
         a.actionType.id = :actionTypeId
       AND
         attt.actionType.id = a.actionType.id
+      AND
+        j.date = :plannedEndDate
       AND
         a.actionType.mnemonic = 'LAB'
       AND
