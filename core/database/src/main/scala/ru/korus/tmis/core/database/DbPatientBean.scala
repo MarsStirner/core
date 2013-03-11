@@ -6,7 +6,7 @@ import ru.korus.tmis.util.{ConfigManager, I18nable}
 import grizzled.slf4j.Logging
 import java.lang.Iterable
 import javax.interceptor.Interceptors
-import ru.korus.tmis.core.exception.NoSuchPatientException
+import ru.korus.tmis.core.exception.{CoreException, NoSuchPatientException}
 import ru.korus.tmis.core.entity.model.{Staff, Patient}
 import javax.persistence.{TemporalType, TypedQuery, EntityManager, PersistenceContext}
 import ru.korus.tmis.core.data.PatientRequestData
@@ -641,5 +641,20 @@ class DbPatientBean
     }
     typedQuery.getResultList
 
+  }
+
+  def deletePatient(id:Int) = {
+    try {
+      val patient = this.getPatientById(id)
+      val merged = em.merge(patient)
+      em.remove(merged)
+      em.flush()
+      true
+    }
+    catch {
+      case e: Exception => {
+        throw new CoreException("Ошибка при удалении пациента с id=%d: %s".format(id, e.getMessage))
+      }
+    }
   }
 }

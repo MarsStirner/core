@@ -363,7 +363,7 @@ class JobTicketInfoContainer {
   @BeanProperty
   var appealNumber: String = _                  //номер истолии болезни
   @BeanProperty
-  var laboratory: IdNameContainer = _           //Лаборатория
+  var department: IdNameContainer = _           //Лаборатория
   @BeanProperty
   var patient: PatientInfoDataContainer = _     //Основная информация о пациенте
   @BeanProperty
@@ -381,7 +381,7 @@ class JobTicketInfoContainer {
       this.status = ticket.getStatus
       this.label = ticket.getLabel
       this.note = ticket.getNote
-      this.laboratory = if (ticket.getJob!=null && ticket.getJob.getOrgStructure!=null)
+      this.department = if (ticket.getJob!=null && ticket.getJob.getOrgStructure!=null)
         new IdNameContainer(ticket.getJob.getOrgStructure.getId.intValue(),
           ticket.getJob.getOrgStructure.getName)
       else

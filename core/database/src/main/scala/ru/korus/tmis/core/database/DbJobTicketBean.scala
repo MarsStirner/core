@@ -68,7 +68,7 @@ class DbJobTicketBean extends DbJobTicketBeanLocal
     }
     else {
       jt = new JobTicket
-      jt.setStatus(0)
+      jt.setStatus(2)
       jt.setJob(job)
     }
     jt.setDatetime(action.getPlannedEndDate)

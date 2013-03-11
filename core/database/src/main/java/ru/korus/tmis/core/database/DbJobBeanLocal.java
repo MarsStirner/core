@@ -2,6 +2,7 @@ package ru.korus.tmis.core.database;
 
 import ru.korus.tmis.core.entity.model.Action;
 import ru.korus.tmis.core.entity.model.Job;
+import ru.korus.tmis.core.entity.model.JobTicket;
 import ru.korus.tmis.core.entity.model.OrgStructure;
 import ru.korus.tmis.core.exception.CoreException;
 
@@ -46,5 +47,5 @@ public interface DbJobBeanLocal {
      * @see Job
      * @see CoreException
      */
-    Job getJobForAction(Action action) throws CoreException;
+    Object getJobAndJobTicketForAction(Action action) throws CoreException;
 }

@@ -2195,4 +2195,17 @@ public class PatientRegistryRESTImpl implements Serializable {
         JSONWithPadding returnValue = new JSONWithPadding(oip, callback);
         return returnValue;
     }
+
+    /*
+    @GET
+    @Path("/patient/{id}/delete")
+    @Produces("application/x-javascript")
+    public Object deletePatientInfo(@PathParam("id") int id,
+                                    @QueryParam("callback") String callback,
+                                    @Context HttpServletRequest servRequest)   {
+        Object oip = wsImpl.deletePatientInfo(id);
+        JSONWithPadding returnValue = new JSONWithPadding(oip, callback);
+        return returnValue;
+    }
+    */
 }
