@@ -342,6 +342,9 @@ public interface MedipadWebService extends Serializable {
     @WebMethod
     JSONCommonData modifyLaboratoryStudies(int eventId, CommonData data, AuthData auth) throws CoreException;
 
+    @WebMethod
+    boolean removeLaboratoryStudies(AssignmentsToRemoveDataList data, AuthData auth) throws CoreException;
+
     /**
      * Получение справочника FlatDirectory
      * @param request Данные из запроса как FlatDirectoryRequestData

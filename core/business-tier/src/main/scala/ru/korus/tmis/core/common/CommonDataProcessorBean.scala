@@ -292,6 +292,9 @@ class CommonDataProcessorBean
         //Если пришли значения Даты начала и дата конца, то перепишем дефолтные
         var beginDate: Date = null
         var endDate: Date = null
+        var plannedEndDate: Date = null
+        var finance: Int = -1
+        var toOrder: Boolean = false
 
         var res = aps.find(p => p.name == AWI.assessmentBeginDate.toString).getOrElse(null)
         if (res != null) {
@@ -307,9 +310,33 @@ class CommonDataProcessorBean
             case Some(x) => ConfigManager.DateFormatter.parse(x)
           }
         }
+        res = aps.find(p => p.name == AWI.finance.toString).getOrElse(null)
+        if (res != null) {
+          finance = res.properties.get(APWI.Value.toString) match {
+            case None | Some("") => 0
+            case Some(x) => x.toInt
+          }
+        }
+        res = aps.find(p => p.name == AWI.plannedEndDate.toString).getOrElse(null)
+        if (res != null)  {
+          plannedEndDate = res.properties.get(APWI.Value.toString) match {
+            case None | Some("") => null
+            case Some(x) => ConfigManager.DateFormatter.parse(x)
+          }
+        }
+        res = aps.find(p => p.name == AWI.toOrder.toString).getOrElse(null)
+        if (res != null) {
+          toOrder = res.properties.get(APWI.Value.toString) match {
+            case None | Some("") => false
+            case Some(x) => x.toBoolean
+          }
+        }
 
         if (beginDate != null) a.setBegDate(beginDate)
         if (endDate != null) a.setEndDate(endDate)
+        if (finance > 0) a.setFinanceId(finance)
+        a.setToOrder(toOrder)
+        if (plannedEndDate != null) a.setPlannedEndDate(plannedEndDate)
 
         result = a :: result
         entities = entities + a

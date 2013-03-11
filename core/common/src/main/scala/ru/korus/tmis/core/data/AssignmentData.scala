@@ -6,7 +6,7 @@ import javax.xml.bind.annotation.XmlRootElement._
 import org.codehaus.jackson.annotate.JsonIgnoreProperties
 import reflect.BeanProperty
 import ru.korus.tmis.core.entity.model._
-import java.util.Date
+import java.util.{LinkedList, Date}
 import ru.korus.tmis.util.ConfigManager
 import scala.collection.JavaConversions._
 import ru.korus.tmis.core.entity.model.fd.{FDField, FDFieldValue, FDRecord}
@@ -355,5 +355,30 @@ class PersonIdNameContainer {
     this.last = person.getLastName()
     this.middle = person.getPatrName()
     this.raw = this.last + " " + this.first + " " + this.middle
+  }
+}
+
+@XmlType(name = "assignmentsToRemoveDataList")
+@XmlRootElement(name = "assignmentsToRemoveDataList")
+class AssignmentsToRemoveDataList {
+  @BeanProperty
+  var data: LinkedList[AssignmentToRemoveDataEntry] = new LinkedList[AssignmentToRemoveDataEntry]
+
+  def this(values: LinkedList[Int]) {
+    this()
+    values.foreach(f => this.data += new AssignmentToRemoveDataEntry(f))
+  }
+}
+
+@XmlType(name = "assignmentToRemoveDataEntry")
+@XmlRootElement(name = "assignmentToRemoveDataEntry")
+class AssignmentToRemoveDataEntry {
+
+  @BeanProperty
+  var id: Int = _
+
+  def this(assignmentId: Int) {
+    this()
+    this.id = assignmentId
   }
 }
