@@ -42,34 +42,11 @@ class ListDataRequest {
            page: Int,
            filter: AbstractListDataFilter) = {
     this()
-    this.filter = if(filter!=null) {filter} else {null}
+    this.filter = if(filter!=null) {filter} else {new DefaultListDataFilter()}
     this.sortingField = sortingField match {
       case null => {"id"}
       case _ => {sortingField}
     }
-
-    /*this.sortingFieldInternal =
-      if(this.filter.isInstanceOf[MKBListRequestDataFilter]) {
-        this.filter.asInstanceOf[MKBListRequestDataFilter].toSortingString(this.sortingField)
-      }
-      else if (this.filter.isInstanceOf[ThesaurusListRequestDataFilter]) {
-        this.filter.asInstanceOf[ThesaurusListRequestDataFilter].toSortingString(this.sortingField)
-      }
-      else if (this.filter.isInstanceOf[DictionaryListRequestDataFilter]) {
-        this.filter.asInstanceOf[DictionaryListRequestDataFilter].toSortingString(this.sortingField)
-      }
-      else if (this.filter.isInstanceOf[ActionTypesListRequestDataFilter]) {
-        this.filter.asInstanceOf[ActionTypesListRequestDataFilter].toSortingString(this.sortingField)
-      }
-      else if (this.filter.isInstanceOf[DepartmentsDataFilter]) {
-        this.filter.asInstanceOf[DepartmentsDataFilter].toSortingString(this.sortingField)
-      }
-      else if (this.filter.isInstanceOf[EventTypesListRequestDataFilter]) {
-        this.filter.asInstanceOf[EventTypesListRequestDataFilter].toSortingString(this.sortingField)
-      }
-      else {
-        this.sortingField
-      } */
     this.sortingMethod = sortingMethod match {
       case null => {"asc"}
       case _ => {sortingMethod}
@@ -1306,11 +1283,12 @@ class GroupTypesListData {
     this ()
     this.requestData = requestData
 
-    if (requestData.getFilter.asInstanceOf[QuotaTypesListRequestDataFilter].getId > 0 ||
-        requestData.getFilter.asInstanceOf[QuotaTypesListRequestDataFilter].getCode != null &&
-        requestData.getFilter.asInstanceOf[QuotaTypesListRequestDataFilter].getCode.compareTo("") != 0 ||
-        requestData.getFilter.asInstanceOf[QuotaTypesListRequestDataFilter].getGroupCode != null &&
-        requestData.getFilter.asInstanceOf[QuotaTypesListRequestDataFilter].getGroupCode.compareTo("") != 0 ) {
+    if ((requestData.getFilter.isInstanceOf[QuotaTypesListRequestDataFilter]) &&
+        (requestData.getFilter.asInstanceOf[QuotaTypesListRequestDataFilter].getId > 0 ||
+          requestData.getFilter.asInstanceOf[QuotaTypesListRequestDataFilter].getCode != null &&
+          requestData.getFilter.asInstanceOf[QuotaTypesListRequestDataFilter].getCode.compareTo("") != 0 ||
+          requestData.getFilter.asInstanceOf[QuotaTypesListRequestDataFilter].getGroupCode != null &&
+          requestData.getFilter.asInstanceOf[QuotaTypesListRequestDataFilter].getGroupCode.compareTo("") != 0)) {
       //this.requestData.setRecordsCount(classMap.size)
       this.data = new java.util.LinkedList[QuotaTypeContainer]
       quotaTypes.foreach(f => this.data.asInstanceOf[java.util.LinkedList[QuotaTypeContainer]].add(new QuotaTypeContainer(f)))
@@ -1432,4 +1410,15 @@ class QuotaTypesListRequestDataFilter extends AbstractListDataFilter {
     sorting = "ORDER BY " + sorting.format(sortingMethod)
     sorting
   }
+}
+
+@XmlType(name = "defaultListDataFilter")
+@XmlRootElement(name = "defaultListDataFilter")
+class DefaultListDataFilter  extends AbstractListDataFilter {
+
+  @Override
+  def toQueryStructure() = new QueryDataStructure()
+
+  @Override
+  def toSortingString (sortingField: String, sortingMethod: String) = ""
 }
