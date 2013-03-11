@@ -6,7 +6,7 @@ import javax.ejb.{EJB, Stateless}
 import grizzled.slf4j.Logging
 import ru.korus.tmis.util.{CAPids, I18nable}
 import javax.persistence.{EntityManager, PersistenceContext}
-import ru.korus.tmis.core.data.{CommonGroup, JSONCommonData, CommonData}
+import ru.korus.tmis.core.data.{AssignmentsToRemoveDataList, CommonGroup, JSONCommonData, CommonData}
 import ru.korus.tmis.core.auth.AuthData
 import ru.korus.tmis.core.entity.model._
 import scala.collection.JavaConversions._
@@ -53,6 +53,9 @@ class DirectionBean extends DirectionBeanLocal
 
   @EJB
   private var dbOrgStructure: DbOrgStructureBeanLocal = _
+
+  @EJB
+  private var actionBean: DbActionBeanLocal = _
 
   def summary(assessment: Action) = {
     val group = new CommonGroup(0, "Summary")
@@ -130,6 +133,8 @@ class DirectionBean extends DirectionBeanLocal
               apvs.foreach((apv) => {
                 group add apw.get(apv, List(APWI.Value,
                   APWI.ValueId,
+                  APWI.IsAssignable,
+                  APWI.IsAssigned,
                   APWI.Unit,
                   APWI.Norm))
               })
@@ -273,12 +278,12 @@ class DirectionBean extends DirectionBeanLocal
 
   }
 
-  def  modifyDirectionsForEventIdFromCommonData(directionId: Int,
-                                                directions: CommonData,
-                                                 title: String,
-                                                 request: Object,
-                                                 userData: AuthData,
-                                                 postProcessingForDiagnosis: (JSONCommonData, java.lang.Boolean) => JSONCommonData) = {
+  def modifyDirectionsForEventIdFromCommonData(directionId: Int,
+                                               directions: CommonData,
+                                               title: String,
+                                               request: Object,
+                                               userData: AuthData,
+                                               postProcessingForDiagnosis: (JSONCommonData, java.lang.Boolean) => JSONCommonData) = {
 
     //val actions: java.util.List[Action] = commonDataProcessor.createActionForEventFromCommonData(eventId, assessments, userData)
     var actions: java.util.List[Action] = null// commonDataProcessor.modifyActionFromCommonData(assessmentId, assessments, userData)
@@ -292,5 +297,21 @@ class DirectionBean extends DirectionBeanLocal
       json_data =  postProcessingForDiagnosis(json_data, false)
     }
     json_data
+  }
+
+  def removeDirections(directions: AssignmentsToRemoveDataList, userData: AuthData) = {
+    directions.getData.foreach((f) => {
+      var a = actionBean.getActionById(f.getId)
+      a.setDeleted(true)
+      val (j, jt) = dbJobBean.getJobAndJobTicketForAction(a).asInstanceOf[(Job, JobTicket)]
+      if (j.getQuantity == 1) {
+        j.setDeleted(true)
+      }
+      j.setQuantity(j.getQuantity - 1)
+      em.merge(a)
+      em.merge(j)
+    })
+    em.flush()
+    true
   }
 }

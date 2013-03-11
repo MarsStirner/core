@@ -57,30 +57,10 @@ class DbJobBean extends DbJobBeanLocal
   }
 
   def getJobAndJobTicketForAction(action: Action) = {
-    var intDate = action.getPlannedEndDate.getTime/1000/60/60/24
-    var date = new Date(intDate*1000*60*60*24)
-
     val formatter = new SimpleDateFormat("yyyy-MM-dd")
+    val strDate = formatter.format(action.getPlannedEndDate)
+    val date = formatter.parse(strDate)
 
-    var strDate = formatter.format(action.getPlannedEndDate)
-    date = formatter.parse(strDate)
-    /*
-      val today = Calendar.getInstance()
-      today.setTime(formatter.parse(formatter.format(new Date())))
-      today.set(Calendar.HOUR_OF_DAY, 8); //смещение между астрономическими и медицинскими сутками
-
-      today.getTime
-
-    if(fDate != null){
-      Calendar c = Calendar.getInstance();
-      c.setTime(fDate);
-      c.add(Calendar.DAY_OF_YEAR, 1);
-      Date fDate2 = c.getTime();
-      q.setDate("fdate", fDate2);
-    }
-    var sqlDate = new java.sql.Date(intDate)
-    sqlDate.g
-                            */
     val query = em.createQuery(JobForActionQuery, classOf[Array[AnyRef]])
       .setParameter("plannedEndDate", date)
       .setParameter("eventId", action.getEvent.getId.intValue())

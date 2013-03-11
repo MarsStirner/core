@@ -1046,9 +1046,11 @@ class MedipadWSImpl
   }
 
   def modifyLaboratoryStudies(eventId: Int, data: CommonData, auth: AuthData) = {
-    // проверка пользователя на ответственного за ивент
+    directionBean.modifyDirectionsForEventIdFromCommonData(eventId, data, "Diagnostic", null, auth,  postProcessingForDiagnosis _)// postProcessingForDiagnosis
+  }
 
-    primaryAssessmentBean.modifyAssessmentsForEventIdFromCommonData(eventId, data, "Diagnostic", null, auth,  postProcessingForDiagnosis _)// postProcessingForDiagnosis
+  def removeLaboratoryStudies(data: AssignmentsToRemoveDataList, auth: AuthData) = {
+    directionBean.removeDirections(data, auth)
   }
 
   def getFlatDirectories(request: FlatDirectoryRequestData) = {

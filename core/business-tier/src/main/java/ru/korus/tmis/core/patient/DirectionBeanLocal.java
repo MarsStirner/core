@@ -1,6 +1,7 @@
 package ru.korus.tmis.core.patient;
 
 import ru.korus.tmis.core.auth.AuthData;
+import ru.korus.tmis.core.data.AssignmentsToRemoveDataList;
 import ru.korus.tmis.core.data.CommonData;
 import ru.korus.tmis.core.data.JSONCommonData;
 import ru.korus.tmis.core.exception.CoreException;
@@ -52,4 +53,14 @@ public interface DirectionBeanLocal {
                                                              AuthData userData,
                                                              Function2<JSONCommonData, java.lang.Boolean, JSONCommonData> postProcessingForDiagnosis)
             throws CoreException;
+
+    /**
+     * Удаление направлений на лабораторные исследования
+     * @param directions Список идентификаторов лабораторных исследований
+     * @param userData Данные пользователя
+     * @return com.sun.jersey.api.json.JSONWithPadding как Object
+     * @throws CoreException
+     * @see CoreException
+     */
+    boolean removeDirections(AssignmentsToRemoveDataList directions, AuthData userData) throws CoreException;
 }
