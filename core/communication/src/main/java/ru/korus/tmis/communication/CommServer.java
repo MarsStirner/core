@@ -275,11 +275,8 @@ public class CommServer implements Communications.Iface {
             for (QuotingByTime qbt : constraints) {
 
                 if (qbt.getQuotingTimeStart().getTime() != 0 && qbt.getQuotingTimeEnd().getTime() != 0) {
-                    final GregorianCalendar time = new GregorianCalendar();
-                    time.setTime(qbt.getQuotingTimeStart());
-                    long qbtStartTime = (time.getTimeInMillis() + time.get(Calendar.ZONE_OFFSET));
-                    time.setTime(qbt.getQuotingTimeEnd());
-                    long qbtEndTime = (time.getTimeInMillis() + time.get(Calendar.ZONE_OFFSET));
+                    long qbtStartTime = DateConvertions.convertDateToUTCMilliseconds(qbt.getQuotingTimeStart());
+                    long qbtEndTime = DateConvertions.convertDateToUTCMilliseconds(qbt.getQuotingTimeEnd());
                     if (currentTicket.getTime() >= qbtStartTime && currentTicket.getTime() <= qbtEndTime
                             && currentTicket.available == 1) {
                         available = 1;
@@ -385,9 +382,7 @@ public class CommServer implements Communications.Iface {
                     free = 1;
                 }
                 final Ticket newTicket = new Ticket();
-                final GregorianCalendar time = new GregorianCalendar();
-                time.setTime(currentTime.getValue());
-                newTicket.setTime(time.getTimeInMillis() + time.get(Calendar.ZONE_OFFSET));
+                newTicket.setTime(DateConvertions.convertDateToUTCMilliseconds(currentTime.getValue()));
                 newTicket.setFree(free).setAvailable(free);
                 if (free == 0) {
                     //талончик занят, выясняем кем
@@ -397,7 +392,7 @@ public class CommServer implements Communications.Iface {
                         logger.debug("CLIENT ACTIONEVENT={}", queue.get(i).getValue().getEvent());
                         logger.debug("CLIENT ACTIONEVENTPATIENT={}", queue.get(i).getValue().getEvent().getPatient());
                     }
-                    //TODO поговорить с Сергеем о тикетах
+
                     final Patient queuePatient = queue.get(i).getValue().getEvent().getPatient();
                     if (queuePatient != null) {
                         newTicket.setPatientId(queuePatient.getId())
@@ -938,39 +933,36 @@ public class CommServer implements Communications.Iface {
             final ru.korus.tmis.core.entity.model.Speciality speciality, final String organisationInfisCode) {
         List<QuotingBySpeciality> quotingBySpecialityList =
                 quotingBySpecialityBean.getQuotingBySpeciality(speciality);
-        //TODO IF
-        switch (quotingBySpecialityList.size()) {
-            case 0: {
-                return true;
-            }
-            case 1: {
+        if (quotingBySpecialityList.isEmpty()) {
+            return true;
+        } else {
+            if (quotingBySpecialityList.size() == 1) {
                 try {
                     organisationBean.getOrganizationByInfisCode(organisationInfisCode);
                     logger.warn("Recieved infis-code is known, so let consider that it is our LPU");
                     return true;
                 } catch (CoreException e) {
                     logger.info("It isn't our LPU.");
-                }
-                //TODO multithreading
-                QuotingBySpeciality current = quotingBySpecialityList.get(0);
-                if (current.getCouponsRemaining() > 0) {
-                    current.setCouponsRemaining(current.getCouponsRemaining() - 1);
-                    try {
-                        logger.debug("QuotingBySpeciality coupons_remaining reduce by 1");
-                        //TODO merge
-                        managerBean.merge(current);
-                        return true;
-                    } catch (CoreException e) {
-                        logger.error("Error while changing coupons_remaining. Message:", e);
+                    //TODO multithreading
+                    QuotingBySpeciality current = quotingBySpecialityList.get(0);
+                    if (current.getCouponsRemaining() > 0) {
+                        current.setCouponsRemaining(current.getCouponsRemaining() - 1);
+                        try {
+                            logger.debug("QuotingBySpeciality coupons_remaining reduce by 1");
+                            //TODO merge
+                            managerBean.merge(current);
+                            return true;
+                        } catch (CoreException exc) {
+                            logger.error("Error while changing coupons_remaining. Message:", e);
+                        }
                     }
+                    return false;
                 }
-                return false;
-            }
-            default: {
-                return false;
             }
         }
+        return false;
     }
+
 
     /**
      * подходит ли пол и возраст для данного врача
@@ -1079,8 +1071,8 @@ public class CommServer implements Communications.Iface {
             final ActionProperty queueAP,
             final int index) throws CoreException {
         if (timesAMB.size() != queueAMB.size()) {
-            //Наша запись к врачу первая, заполняем все null'ами
-            //Создаем ActionProperty
+//Наша запись к врачу первая, заполняем все null'ами
+//Создаем ActionProperty
             final ActionProperty newActionProperty;
             if (queueAP == null) {
                 //Выбираем ActionPropertyType
@@ -1229,7 +1221,7 @@ public class CommServer implements Communications.Iface {
         APValueAction ambActionPropertyAction = null;
         try {
             queueAction = actionBean.getActionById(queueId);
-            //Проверка тот ли пациент имеет данный талончик
+//Проверка тот ли пациент имеет данный талончик
             if (queueAction.getEvent().getPatient().getId() != patientId) {
                 logger.error("A given patient is not the owner of the ticket");
                 result.setSuccess(false)
@@ -1364,7 +1356,7 @@ public class CommServer implements Communications.Iface {
         final int currentRequestNum = ++requestNum;
         logger.info("#{} Call method -> CommServer.getAddresses(orgStructureId={},recursive={})",
                 currentRequestNum, orgStructureId, recursive);
-        //Список для хранения сущностей из БД
+//Список для хранения сущностей из БД
         final List<ru.korus.tmis.core.entity.model.OrgStructure> orgStructureList = new ArrayList<ru.korus.tmis.core.entity.model.OrgStructure>();
         try {
             if (orgStructureId != 0) {

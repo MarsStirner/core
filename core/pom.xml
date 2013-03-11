@@ -360,9 +360,6 @@
         <profile>
             <!-- Пользовательский профиль -->
             <id>ueg</id>
-            <modules>
-                <module>integration-tests</module>
-            </modules>
             <properties>
                 <!-- Название приложения, которое будет отображаться в интерфейсе -->
                 <ear.name>tmis-server-${version.tmis.core}</ear.name>
