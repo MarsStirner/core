@@ -26,13 +26,13 @@ class ListDataRequest {
   @BeanProperty
   var sortingMethod: String = "asc"
   @BeanProperty
-  var limit: Int = 0
+  var limit: Int = ConfigManager.Messages("misCore.pages.limit.default").toInt
   @BeanProperty
   var page: Int = 1
   @BeanProperty
   var recordsCount: Long = 0
   @BeanProperty
-  var coreVersion: String = ""
+  var coreVersion: String = ConfigManager.Messages("misCore.assembly.version")
 
   var sortingFieldInternal: String = ""
 
@@ -331,7 +331,14 @@ class AllMKBListData {
        val classMap = getGroupedValuesByLevel(mkbs, CLASS_LEVEL)
        this.requestData.setRecordsCount(classMap.size)
        this.data = new java.util.LinkedList[ClassMKBContainer]
-       classMap.foreach(f => this.data.asInstanceOf[java.util.LinkedList[ClassMKBContainer]].add(new ClassMKBContainer(f._1, f._2.getClassName)))
+       classMap.foreach(f => {
+
+         val (minDiagId, maxDiagId) = this.getMinAndMaxDiagId(f._2.getClassName, mkbs)
+         this.data.asInstanceOf[java.util.LinkedList[ClassMKBContainer]].add(new ClassMKBContainer(f._1,
+                                                                                                   f._2.getClassName,
+                                                                                                   minDiagId,
+                                                                                                   maxDiagId))
+       })
      }
      case "group" => {
        val groupMap = getGroupedValuesByLevel(mkbs, GROUP_LEVEL)
@@ -359,15 +366,18 @@ class AllMKBListData {
          val rolled = getRolledBrunch(mkbs_display.asInstanceOf[java.util.Map[String, java.util.Map[String, Mkb]]], CLASS_LEVEL)
          if (rolled!=null){
            rolled.foreach(f => {
+             val (minDiagId, maxDiagId) = this.getMinAndMaxDiagId(f._2.getClassName, mkbs)
              if (!classMap.containsKey(f._1)){
                this.data.asInstanceOf[java.util.LinkedList[ClassMKBContainer]]
-                 .add(new ClassMKBContainer(f._1, f._2.getClassName))
+                 .add(new ClassMKBContainer(f._1, f._2.getClassName, minDiagId, maxDiagId))
              }
              else {
                val filtredMkbs = getFilteredValuesByLevel(mkbs, classMap.get(f._1), CLASS_LEVEL)
                this.data.asInstanceOf[java.util.LinkedList[ClassMKBContainer]]
                  .add(new ClassMKBContainer( f._1,
                                              f._2.getClassName,
+                                             minDiagId,
+                                             maxDiagId,
                                              filtredMkbs,
                                              mkbs_display.asInstanceOf[java.util.Map[String, java.util.Map[String, Mkb]]],
                                              getGroupedValuesByLevel,
@@ -378,17 +388,19 @@ class AllMKBListData {
          }
          else {
            classMap.foreach(f => {
+             val (minDiagId, maxDiagId) = this.getMinAndMaxDiagId(f._2.getClassName, mkbs)
              val filtredMkbs = getFilteredValuesByLevel(mkbs, f._2, CLASS_LEVEL)
              this.data.asInstanceOf[java.util.LinkedList[ClassMKBContainer]]
-               .add(new ClassMKBContainer(f._1, f._2.getClassName, filtredMkbs, null, getGroupedValuesByLevel _, getFilteredValuesByLevel _, null))
+               .add(new ClassMKBContainer(f._1, f._2.getClassName, minDiagId, maxDiagId, filtredMkbs, null, getGroupedValuesByLevel _, getFilteredValuesByLevel _, null))
            })
          }
        }
        else {
          classMap.foreach(f => {
+           val (minDiagId, maxDiagId) = this.getMinAndMaxDiagId(f._2.getClassName, mkbs)
            val filtredMkbs = getFilteredValuesByLevel(mkbs, f._2, CLASS_LEVEL)
            this.data.asInstanceOf[java.util.LinkedList[ClassMKBContainer]]
-                    .add(new ClassMKBContainer(f._1, f._2.getClassName, filtredMkbs, null, getGroupedValuesByLevel _, getFilteredValuesByLevel _, null))
+                    .add(new ClassMKBContainer(f._1, f._2.getClassName, minDiagId, maxDiagId, filtredMkbs, null, getGroupedValuesByLevel _, getFilteredValuesByLevel _, null))
          })
        }
      }
@@ -456,6 +468,16 @@ class AllMKBListData {
        case SUBGROUP_LEVEL => "code"
        case _ => ""
      }
+ }
+
+ private def getMinAndMaxDiagId(clsName: String, mkbs: java.util.List[Mkb]) = {
+   val clsMkbs = mkbs.filter(mkb => mkb.getClassName.compareTo(clsName)==0)
+   val minMkb =  clsMkbs.find(p=> p.getId.intValue()== clsMkbs.map(_.getId.intValue()).foldLeft(Int.MaxValue)((i,m)=>m.min(i))).getOrElse(null)
+   val maxMkb =  clsMkbs.find(p=> p.getId.intValue()== clsMkbs.map(_.getId.intValue()).foldLeft(Int.MinValue)((i,m)=>m.max(i))).getOrElse(null)
+   val minDiagId: String = if(minMkb!=null) minMkb.getDiagID else null
+   val maxDiagId: String = if(maxMkb!=null) maxMkb.getDiagID else null
+
+   (minDiagId, maxDiagId)
  }
 }
 
@@ -568,6 +590,12 @@ class ClassMKBContainer {
   @BeanProperty
   var code: String = _
 
+  @BeanProperty
+  var diagIdMin: String = _
+
+  @BeanProperty
+  var diagIdMax: String = _
+
   @JsonView(Array(classOf[AllMKBListDataViews.DefaultView]))
   @BeanProperty
   var groups: java.util.LinkedList[GroupMKBContainer] = new java.util.LinkedList[GroupMKBContainer]
@@ -578,14 +606,22 @@ class ClassMKBContainer {
     this.code = code
   }
 
+  def this (id: String, code: String, diagIdMin: String, diagIdMax: String){
+    this(id, code)
+    this.diagIdMin = diagIdMin
+    this.diagIdMax = diagIdMax
+  }
+
   def this (id: String,
             code: String,
+            diagIdMin: String,
+            diagIdMax: String,
             mkbs: java.util.List[Mkb],
             mkbs_display: java.util.Map[String, java.util.Map[String, Mkb]],
             mGroupedValuesByLevel: (java.util.List[Mkb], Int) => java.util.LinkedHashMap[String, Mkb],
             mFilteredValuesByLevel: (java.util.List[Mkb], Mkb, Int) => java.util.LinkedList[Mkb],
             mRolledBrunch: (java.util.Map[String, java.util.Map[String, Mkb]], Int) => java.util.Map[String, Mkb]){
-    this(id, code)
+    this(id, code, diagIdMin, diagIdMax)
 
     if (mkbs!=null && mGroupedValuesByLevel!=null && mFilteredValuesByLevel!= null) {
       val groupMap = mGroupedValuesByLevel(mkbs, LEVEL)
