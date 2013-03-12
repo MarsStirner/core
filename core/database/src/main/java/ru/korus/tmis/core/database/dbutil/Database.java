@@ -1,8 +1,7 @@
-package ru.korus.tmis.ws.transfusion;
+package ru.korus.tmis.core.database.dbutil;
 
 import java.util.Date;
 import java.util.GregorianCalendar;
-import java.util.LinkedList;
 import java.util.List;
 
 import javax.ejb.Stateless;
@@ -20,15 +19,10 @@ import ru.korus.tmis.core.entity.model.AbstractAPValue;
 import ru.korus.tmis.core.entity.model.Action;
 import ru.korus.tmis.core.entity.model.ActionProperty;
 import ru.korus.tmis.core.entity.model.ActionPropertyType;
-import ru.korus.tmis.core.entity.model.Event;
 import ru.korus.tmis.core.entity.model.IndexedId;
-import ru.korus.tmis.core.entity.model.OrgStructure;
-import ru.korus.tmis.core.entity.model.Patient;
-import ru.korus.tmis.core.entity.model.RbBloodType;
 import ru.korus.tmis.core.entity.model.RbUnit;
 import ru.korus.tmis.core.exception.CoreException;
 import ru.korus.tmis.util.EntityMgr;
-import ru.korus.tmis.ws.transfusion.efive.PatientCredentials;
 
 /**
  * Author: Sergey A. Zagrebelny <br>
@@ -58,45 +52,7 @@ public class Database {
      */
     public static final short ACTION_STATE_FINISHED = 2;
 
-    /**
-     * Статус действия: Отменено {Action.status}
-     */
-    public static final short SIZE_OF_BLOOD_CANSELED = 3;
 
-    /**
-     * Статус действия: Без результата {Action.status}
-     */
-    public static final short SIZE_OF_BLOOD_NO_RESULT = 4;
-
-    /**
-     * Идентификатор группы крови, соответсвующий группе 0(I)
-     */
-    private static final int BLOOD_GROUP_MIN = 1;
-
-    /**
-     * Идентификатор группы крови, соответсвующий группе AB(IV)
-     */
-    private static final int BLOOD_GROUP_MAX = 4;
-
-    /**
-     * Символ, соответсвующий положительному резус-фактору
-     */
-    private static final char RHESUS_FACTOR_POS = '+';
-
-    /**
-     * Символ, соответсвующий отрицательному резус-фактору
-     */
-    private static final char RHESUS_FACTOR_NEGATIVE = '-';
-
-    /**
-     * Размер кода группы крови ("1+", "1-", и т.д.)
-     */
-    private static final int BLOOD_CODE_LENGHT = 2;
-
-    /**
-     * Код для миллилитров в табл. rbUnit
-     */
-    public static final String UNIT_MILILITER = "мл";
 
     private static final Logger logger = LoggerFactory.getLogger(Database.class);
 
@@ -237,23 +193,7 @@ public class Database {
 
     }
 
-    /**
-     * Получит список подразделений {OrgStructure}
-     * 
-     * @return список подразделений
-     */
-    public List<DivisionInfo> getDivisions() {
-        final List<DivisionInfo> res = new LinkedList<DivisionInfo>();
-        final List<OrgStructure> structs = em.createQuery("SELECT s FROM OrgStructure s WHERE s.deleted = 0", OrgStructure.class).getResultList();
-        for (final OrgStructure struct : structs) {
-            final DivisionInfo info = new DivisionInfo();
-            info.setId(struct.getId());
-            info.setName(struct.getName());
-            res.add(info);
-        }
 
-        return res;
-    }
 
     /**
      * Поиск новых действий
@@ -266,33 +206,6 @@ public class Database {
                 em.createQuery("SELECT a FROM Action a WHERE a.status = 0 AND a.actionType.flatCode = :flatCode AND a.deleted = 0 ", Action.class)
                         .setParameter("flatCode", flatCode).getResultList();
         return actions;
-    }
-
-    /**
-     * Информация о пациенте для предачи требования КК в ТРФУ
-     * 
-     * @param action
-     *            - действие, соответсвующее новому требованию КК
-     * @return - информацию о пациенте для передачи в ТРФУ
-     * @throws CoreException
-     *             - при отсутвии доступа к БД или при отсутвии необходимой информации в БД
-     * @throws DatatypeConfigurationException
-     *             - если не возможно преобразовать дату рождения пациента в XMLGregorianCalendar (@see {@link Database#toGregorianCalendar(Date)})
-     */
-    public static PatientCredentials getPatientCredentials(final Action action) throws CoreException, DatatypeConfigurationException {
-        final PatientCredentials res = new PatientCredentials();
-        final Event event = EntityMgr.getSafe(action.getEvent());
-        final Patient client = EntityMgr.getSafe(event.getPatient());
-        res.setId(client.getId());
-        res.setLastName(client.getLastName());
-        res.setFirstName(client.getFirstName());
-        res.setMiddleName(client.getPatrName());
-        res.setBirth(toGregorianCalendar(EntityMgr.getSafe(client.getBirthDate())));
-        final RbBloodType clientBloodType = EntityMgr.getSafe(client.getBloodType());
-        final BloodType bloodType = convertBloodId(clientBloodType.getCode());
-        res.setBloodGroupId(bloodType.bloodGroupId);
-        res.setRhesusFactorId(bloodType.rhesusFactorId);
-        return res;
     }
 
     /**
@@ -309,55 +222,6 @@ public class Database {
         return DatatypeFactory.newInstance().newXMLGregorianCalendar(planedDateCalendar);
     }
 
-    private static class BloodType {
-        /**
-         * Резус-факиор
-         */
-        private int rhesusFactorId;
-
-        /**
-         * Группа крови
-         */
-        private int bloodGroupId;
-    }
-
-    /**
-     * Преобразование кода группы крови из формата БД МИС ("1+", "1-" ... "4+", "4-") в формат протоколоа обмена с ТРФУ (группа: 1- первая 0 (I), 2 – вторая А
-     * (II), 3 – третья В (III), 4 – четвертая АВ (IV); резус-фактора: 0 – Положительный, 1 -– Отрицательный)
-     * 
-     * @param code
-     * @return
-     * @throws CoreException
-     */
-    private static BloodType convertBloodId(final String code) throws CoreException {
-        // TODO add check that blood type is set in CLient Info
-        final String errorMsg = String.format("Incorrect blood group code: '%s'", code);
-        if (code == null || code.length() != BLOOD_CODE_LENGHT) {
-            throw new CoreException(errorMsg);
-        }
-
-        final BloodType res = new BloodType();
-
-        try {
-            res.bloodGroupId = Integer.parseInt(code.substring(0, 1));
-        } catch (final NumberFormatException ex) {
-            throw new CoreException(errorMsg);
-        }
-
-        if (res.bloodGroupId < BLOOD_GROUP_MIN || res.bloodGroupId > BLOOD_GROUP_MAX) {
-            throw new CoreException(errorMsg);
-        }
-
-        if (code.charAt(1) == RHESUS_FACTOR_POS) {
-            res.rhesusFactorId = 0;
-        } else if (code.charAt(1) == RHESUS_FACTOR_NEGATIVE) {
-            res.rhesusFactorId = 1;
-        } else {
-            throw new CoreException(errorMsg);
-        }
-
-        return res;
-    }
 
     /**
      * Получить список свойств для заданного действия {ActionProperty}

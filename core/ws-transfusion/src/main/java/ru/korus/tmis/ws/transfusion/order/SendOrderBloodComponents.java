@@ -1,32 +1,22 @@
 package ru.korus.tmis.ws.transfusion.order;
 
-import java.util.Arrays;
-import java.util.Date;
-import java.util.LinkedList;
-import java.util.List;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import ru.korus.tmis.core.database.dbutil.Database;
+import ru.korus.tmis.core.entity.model.*;
+import ru.korus.tmis.core.exception.CoreException;
+import ru.korus.tmis.util.EntityMgr;
+import ru.korus.tmis.ws.transfusion.PropType;
+import ru.korus.tmis.ws.transfusion.efive.*;
 
 import javax.ejb.EJB;
 import javax.ejb.Stateless;
 import javax.persistence.EntityManager;
 import javax.xml.datatype.DatatypeConfigurationException;
-
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-
-import ru.korus.tmis.core.entity.model.Action;
-import ru.korus.tmis.core.entity.model.Event;
-import ru.korus.tmis.core.entity.model.OrgStructure;
-import ru.korus.tmis.core.entity.model.RbTrfuBloodComponentType;
-import ru.korus.tmis.core.entity.model.Staff;
-import ru.korus.tmis.core.exception.CoreException;
-import ru.korus.tmis.util.EntityMgr;
-import ru.korus.tmis.ws.transfusion.Database;
-import ru.korus.tmis.ws.transfusion.PropType;
-import ru.korus.tmis.ws.transfusion.efive.ComponentType;
-import ru.korus.tmis.ws.transfusion.efive.OrderInformation;
-import ru.korus.tmis.ws.transfusion.efive.OrderResult;
-import ru.korus.tmis.ws.transfusion.efive.PatientCredentials;
-import ru.korus.tmis.ws.transfusion.efive.TransfusionMedicalService;
+import java.util.Arrays;
+import java.util.Date;
+import java.util.LinkedList;
+import java.util.List;
 
 /**
  * Author:      Sergey A. Zagrebelny <br>
@@ -42,6 +32,47 @@ import ru.korus.tmis.ws.transfusion.efive.TransfusionMedicalService;
 public class SendOrderBloodComponents {
 
     static final String TRANSFUSION_ACTION_FLAT_CODE = "TransfusionTherapy";
+
+    /**
+     * Размер кода группы крови ("1+", "1-", и т.д.)
+     */
+    private static final int BLOOD_CODE_LENGHT = 2;
+
+    /**
+     * Статус действия: Отменено {Action.status}
+     */
+    public static final short SIZE_OF_BLOOD_CANSELED = 3;
+
+    /**
+     * Статус действия: Без результата {Action.status}
+     */
+    public static final short SIZE_OF_BLOOD_NO_RESULT = 4;
+
+    /**
+     * Идентификатор группы крови, соответсвующий группе 0(I)
+     */
+    private static final int BLOOD_GROUP_MIN = 1;
+
+    /**
+     * Идентификатор группы крови, соответсвующий группе AB(IV)
+     */
+    private static final int BLOOD_GROUP_MAX = 4;
+
+    /**
+     * Символ, соответсвующий положительному резус-фактору
+     */
+    private static final char RHESUS_FACTOR_POS = '+';
+
+    /**
+     * Символ, соответсвующий отрицательному резус-фактору
+     */
+    private static final char RHESUS_FACTOR_NEGATIVE = '-';
+
+
+    /**
+     * Код для миллилитров в табл. rbUnit
+     */
+    public static final String UNIT_MILILITER = "мл";
 
     @EJB
     private Database database;
@@ -78,6 +109,33 @@ public class SendOrderBloodComponents {
 
     private TrfuActionProp trfuActionProp;
 
+    /**
+     * Информация о пациенте для предачи требования КК в ТРФУ
+     *
+     * @param action
+     *            - действие, соответсвующее новому требованию КК
+     * @return - информацию о пациенте для передачи в ТРФУ
+     * @throws CoreException
+     *             - при отсутвии доступа к БД или при отсутвии необходимой информации в БД
+     * @throws DatatypeConfigurationException
+     *             - если не возможно преобразовать дату рождения пациента в XMLGregorianCalendar (@see {@link Database#toGregorianCalendar(Date)})
+     */
+    public static PatientCredentials getPatientCredentials(final Action action) throws CoreException, DatatypeConfigurationException {
+        final PatientCredentials res = new PatientCredentials();
+        final Event event = EntityMgr.getSafe(action.getEvent());
+        final Patient client = EntityMgr.getSafe(event.getPatient());
+        res.setId(client.getId());
+        res.setLastName(client.getLastName());
+        res.setFirstName(client.getFirstName());
+        res.setMiddleName(client.getPatrName());
+        res.setBirth(Database.toGregorianCalendar(EntityMgr.getSafe(client.getBirthDate())));
+        final RbBloodType clientBloodType = EntityMgr.getSafe(client.getBloodType());
+        final BloodType bloodType = convertBloodId(clientBloodType.getCode());
+        res.setBloodGroupId(bloodType.bloodGroupId);
+        res.setRhesusFactorId(bloodType.rhesusFactorId);
+        return res;
+    }
+
     public void pullDB(final TransfusionMedicalService trfuService) {
         try {
             trfuActionProp = new TrfuActionProp(database, ACTION_TYPE_TRANSFUSION_ORDER, Arrays.asList(propConstants));
@@ -95,7 +153,7 @@ public class SendOrderBloodComponents {
             try {
                 OrderResult orderResult = new OrderResult();
                 trfuActionProp.setRequestState(action.getId(), "");
-                final PatientCredentials patientCredentials = Database.getPatientCredentials(action);
+                final PatientCredentials patientCredentials = getPatientCredentials(action);
                 logger.info("Processing transfusion action {}... Patient Credentials: {}", action.getId(), patientCredentials);
                 final OrderInformation orderInfo = getOrderInformation(database.getEntityMgr(), action, trfuService);
                 logger.info("Processing transfusion action {}... Order Information: {}", action.getId(), orderInfo);
@@ -252,5 +310,56 @@ public class SendOrderBloodComponents {
         return res;
 
     }
+
+    private static class BloodType {
+        /**
+         * Резус-факиор
+         */
+        private int rhesusFactorId;
+
+        /**
+         * Группа крови
+         */
+        private int bloodGroupId;
+    }
+
+    /**
+     * Преобразование кода группы крови из формата БД МИС ("1+", "1-" ... "4+", "4-") в формат протоколоа обмена с ТРФУ (группа: 1- первая 0 (I), 2 – вторая А
+     * (II), 3 – третья В (III), 4 – четвертая АВ (IV); резус-фактора: 0 – Положительный, 1 -– Отрицательный)
+     *
+     * @param code
+     * @return
+     * @throws CoreException
+     */
+    private static BloodType convertBloodId(final String code) throws CoreException {
+        // TODO add check that blood type is set in CLient Info
+        final String errorMsg = String.format("Incorrect blood group code: '%s'", code);
+        if (code == null || code.length() != BLOOD_CODE_LENGHT) {
+            throw new CoreException(errorMsg);
+        }
+
+        final BloodType res = new BloodType();
+
+        try {
+            res.bloodGroupId = Integer.parseInt(code.substring(0, 1));
+        } catch (final NumberFormatException ex) {
+            throw new CoreException(errorMsg);
+        }
+
+        if (res.bloodGroupId < BLOOD_GROUP_MIN || res.bloodGroupId > BLOOD_GROUP_MAX) {
+            throw new CoreException(errorMsg);
+        }
+
+        if (code.charAt(1) == RHESUS_FACTOR_POS) {
+            res.rhesusFactorId = 0;
+        } else if (code.charAt(1) == RHESUS_FACTOR_NEGATIVE) {
+            res.rhesusFactorId = 1;
+        } else {
+            throw new CoreException(errorMsg);
+        }
+
+        return res;
+    }
+
 
 }

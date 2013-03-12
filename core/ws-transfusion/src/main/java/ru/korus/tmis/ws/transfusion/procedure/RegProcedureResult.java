@@ -10,12 +10,12 @@ import javax.persistence.EntityManager;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import ru.korus.tmis.core.database.dbutil.Database;
 import ru.korus.tmis.core.entity.model.Action;
 import ru.korus.tmis.core.entity.model.RbTrfuLaboratoryMeasureTypes;
 import ru.korus.tmis.core.entity.model.TrfuFinalVolume;
 import ru.korus.tmis.core.entity.model.TrfuLaboratoryMeasure;
 import ru.korus.tmis.core.exception.CoreException;
-import ru.korus.tmis.ws.transfusion.Database;
 import ru.korus.tmis.ws.transfusion.IssueResult;
 import ru.korus.tmis.ws.transfusion.PropType;
 import ru.korus.tmis.ws.transfusion.efive.PatientCredentials;

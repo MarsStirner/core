@@ -390,7 +390,7 @@ class DbPatientBean
                             """
 
   def findPatient(params: util.Map[String, String]): util.List[Patient] = {
-    // def findPatient(lastName: String, firstName: String, patrName: String, birthDate: Long, sex: Int, identifierType: String, identifier: String, omiPolicySerial: String, omiPolicyNumber: String): util.List[Patient] = {
+    // def findPatient(lastName: String, firstName: String, patrName: String, birthDate: Long, sex: Int, identifierType: String, identifier: String, omiPolicySerial: String, omiPolicyNumber: String): dbutil.List[Patient] = {
     var findPatientQuery = """
     SELECT DISTINCT patient
     FROM Patient patient

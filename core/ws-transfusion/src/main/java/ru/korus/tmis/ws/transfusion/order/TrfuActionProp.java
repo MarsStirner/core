@@ -4,11 +4,11 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import ru.korus.tmis.core.database.dbutil.Database;
 import ru.korus.tmis.core.entity.model.Action;
 import ru.korus.tmis.core.entity.model.ActionPropertyType;
 import ru.korus.tmis.core.entity.model.ActionType;
 import ru.korus.tmis.core.exception.CoreException;
-import ru.korus.tmis.ws.transfusion.Database;
 import ru.korus.tmis.ws.transfusion.PropType;
 
 /**

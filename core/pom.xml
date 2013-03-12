@@ -260,6 +260,8 @@
                 <glassfish.application.name>${project.build.finalName}</glassfish.application.name>
                 <!-- Путь к директории домена (нужен для того, чтобы валидировался pom.xml -->
                 <com.sun.aas.instanceRoot>${glassfish.domain.dir}/${glassfish.domain}/</com.sun.aas.instanceRoot>
+                <!-- Вкл/Выкл отладочную информация-->
+                <project.build.debug>true</project.build.debug>
 
                 <!-- Адрес базы данных -->
                 <mysql.db.host>127.0.0.1</mysql.db.host>

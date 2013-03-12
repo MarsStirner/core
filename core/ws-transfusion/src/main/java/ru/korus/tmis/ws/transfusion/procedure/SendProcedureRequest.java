@@ -15,6 +15,7 @@ import javax.xml.datatype.DatatypeConfigurationException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import ru.korus.tmis.core.database.dbutil.Database;
 import ru.korus.tmis.core.entity.model.Action;
 import ru.korus.tmis.core.entity.model.ActionPropertyType;
 import ru.korus.tmis.core.entity.model.ActionType;
@@ -27,7 +28,6 @@ import ru.korus.tmis.core.entity.model.RbUnit;
 import ru.korus.tmis.core.entity.model.Staff;
 import ru.korus.tmis.core.exception.CoreException;
 import ru.korus.tmis.util.EntityMgr;
-import ru.korus.tmis.ws.transfusion.Database;
 import ru.korus.tmis.ws.transfusion.PropType;
 import ru.korus.tmis.ws.transfusion.efive.DonorInfo;
 import ru.korus.tmis.ws.transfusion.efive.LaboratoryMeasureType;
@@ -35,6 +35,7 @@ import ru.korus.tmis.ws.transfusion.efive.OrderResult;
 import ru.korus.tmis.ws.transfusion.efive.PatientCredentials;
 import ru.korus.tmis.ws.transfusion.efive.ProcedureType;
 import ru.korus.tmis.ws.transfusion.efive.TransfusionMedicalService;
+import ru.korus.tmis.ws.transfusion.order.SendOrderBloodComponents;
 import ru.korus.tmis.ws.transfusion.order.TrfuActionProp;
 
 /**
@@ -165,7 +166,7 @@ public class SendProcedureRequest {
                 }
                 OrderResult orderResult = new OrderResult();
                 actionProp.get(curFlatCode).setRequestState(action.getId(), "");
-                final PatientCredentials patientCredentials = Database.getPatientCredentials(action);
+                final PatientCredentials patientCredentials = SendOrderBloodComponents.getPatientCredentials(action);
                 final DonorInfo donorInfo = getDonorInfo(database.getEntityMgr(), action, actionProp.get(curFlatCode));
                 final ru.korus.tmis.ws.transfusion.efive.ProcedureInfo procedureInfo = getProcedureInfo(database.getEntityMgr(), action);
                 try {
