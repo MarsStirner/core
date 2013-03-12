@@ -20,21 +20,21 @@ import ru.korus.tmis.core.filter.{ListDataFilter, AbstractListDataFilter}
 @XmlRootElement(name = "listRequestData")
 class ListDataRequest {
   @BeanProperty
-  var filter:  AbstractListDataFilter = _
+  var filter:  AbstractListDataFilter = new DefaultListDataFilter()
   @BeanProperty
-  var sortingField: String = _
+  var sortingField: String = "id"
   @BeanProperty
-  var sortingMethod: String = _
+  var sortingMethod: String = "asc"
   @BeanProperty
-  var limit: Int = _
+  var limit: Int = 0
   @BeanProperty
-  var page: Int = _
+  var page: Int = 1
   @BeanProperty
-  var recordsCount: Long = _
+  var recordsCount: Long = 0
   @BeanProperty
-  var coreVersion: String = _
+  var coreVersion: String = ""
 
-  var sortingFieldInternal: String = _
+  var sortingFieldInternal: String = ""
 
   def this(sortingField: String,
            sortingMethod: String,
