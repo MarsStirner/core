@@ -11,6 +11,7 @@ import java.text.SimpleDateFormat
 import java.util.LinkedList
 import scala.collection.JavaConversions._
 import java.util
+import collection.JavaConversions
 
 /**
  * Контейнер с данными о заборе биоматериала
@@ -29,11 +30,13 @@ class TakingOfBiomaterialData {
   var data: LinkedList[JobTicketInfoContainer] = new LinkedList[JobTicketInfoContainer]
 
   def this(values: java.util.Map[JobTicket, java.util.LinkedList[(Action, ActionTypeTissueType)]],
+           mLastMovingAction: (Int) => Action,
+           mActionPropertiesWithValues: (Int, java.util.List[java.lang.Integer]) =>  java.util.Map[ActionProperty, java.util.List[APValue]],
            request: TakingOfBiomaterialRequesData) {
     this()
     this.requestData = request
     values.foreach(f => {
-      this.data += new JobTicketInfoContainer(f._1, f._2)
+      this.data += new JobTicketInfoContainer(f._1, f._2, mLastMovingAction, mActionPropertiesWithValues)
     })
   }
 }
@@ -129,7 +132,7 @@ class TakingOfBiomaterialRequesDataFilter {
     type TBDefaultDateKeys = Value
 
     val TBDDK_BEGIN_DATE,                  //Дата начала
-        TBDDK_END_DATE                     //Дата окончания
+    TBDDK_END_DATE                     //Дата окончания
     = Value
   }
 
@@ -184,7 +187,7 @@ class TakingOfBiomaterialRequesDataFilter {
         case "status" => {"jt.status %s".format(lex)}
         case "fullname" | "fio" | "patient" => {"e.patient.lastName %s, e.patient.firstName %s, e.patient.patrName %s".format(lex,lex,lex)}
         case "birthdate" => {"e.patient.birthDate %s".format(lex)}
-        case "tissueType" => {"attp.tissueType.name %s".format(lex)}
+        case "tissuetype" => {"attp.tissueType.name %s".format(lex)}
         case "date" => {"jt.datetime %s".format(lex)}
         case _ => {"e.patient.lastName %s, e.patient.firstName %s, e.patient.patrName %s".format(lex,lex,lex)}
       }
@@ -372,8 +375,13 @@ class JobTicketInfoContainer {
   var assigner: DoctorContainer = _             //Основная информация о назначевшем забор враче
   @BeanProperty
   var actions: LinkedList[ActionInfoDataContainer] = new LinkedList[ActionInfoDataContainer]  //Список акшенов для этого тикета
+  @BeanProperty
+  var bed: IdNameAndCodeContainer = _     //Палата/Койка
 
-  def this(ticket: JobTicket, actionValues: LinkedList[(Action, ActionTypeTissueType)]){
+  def this(ticket: JobTicket,
+           actionValues: LinkedList[(Action, ActionTypeTissueType)],
+           mLastMovingAction: (Int) => Action,
+           mActionPropertiesWithValues: (Int, java.util.List[java.lang.Integer]) =>  java.util.Map[ActionProperty, java.util.List[APValue]]){
     this()
     if(ticket!=null) {
       this.id = ticket.getId.intValue()
@@ -381,26 +389,36 @@ class JobTicketInfoContainer {
       this.status = ticket.getStatus
       this.label = ticket.getLabel
       this.note = ticket.getNote
-      this.department = if (ticket.getJob!=null && ticket.getJob.getOrgStructure!=null)
-        new IdNameContainer(ticket.getJob.getOrgStructure.getId.intValue(),
-          ticket.getJob.getOrgStructure.getName)
-      else
-        new IdNameContainer()
-      actionValues.foreach(a => {
-        if (patient == null) {
-          this.patient = new PatientInfoDataContainer(a._1.getEvent.getPatient)
+      this.department =
+        if (ticket.getJob!=null && ticket.getJob.getOrgStructure!=null)
+          new IdNameContainer(ticket.getJob.getOrgStructure.getId.intValue(), ticket.getJob.getOrgStructure.getName)
+        else new IdNameContainer()
+
+      if (actionValues!=null && actionValues.size()>0){
+        this.patient = new PatientInfoDataContainer(actionValues.get(0)._1.getEvent.getPatient)
+        this.biomaterial = new TissueTypeContainer(actionValues.get(0)._2)
+        this.assigner = new DoctorContainer(actionValues.get(0)._1.getAssigner)
+        this.appealNumber = actionValues.get(0)._1.getEvent.getExternalId
+        if (mLastMovingAction!=null && mActionPropertiesWithValues!=0){
+          val moving = mLastMovingAction(actionValues.get(0)._1.getEvent.getId.intValue())
+          if (moving!=null){
+            val listMovingAP = JavaConversions.asJavaList(List(ConfigManager.RbCAPIds("db.rbCAP.moving.id.bed").toInt :java.lang.Integer))
+            val apValues = mActionPropertiesWithValues(moving.getId.intValue(), listMovingAP)
+            if (apValues!=null && apValues.size>0){
+              val values = apValues.iterator.next()._2
+              if (values!=null && values.size()>0){
+                val bed = values.get(0).asInstanceOf[APValueHospitalBed].getValue
+                this.bed = new IdNameAndCodeContainer(bed.getId.intValue(),
+                                                      bed.getName,
+                                                      bed.getCode)
+                this.department = new IdNameContainer(bed.getMasterDepartment.getId.intValue(),
+                                                      bed.getMasterDepartment.getName)
+              }
+            }
+          }
         }
-        if (biomaterial == null) {
-          this.biomaterial = new TissueTypeContainer(a._2)
-        }
-        if (assigner == null) {
-          this.assigner = new DoctorContainer(a._1.getAssigner)
-        }
-        if (appealNumber == null || appealNumber.isEmpty) {
-          this.appealNumber = a._1.getEvent.getExternalId
-        }
-        this.actions += new ActionInfoDataContainer(a._1, a._2)
-      })
+        actionValues.foreach(a => this.actions += new ActionInfoDataContainer(a._1, a._2))
+      }
     } else {
       LoggingManager.setLoggerType(LoggingManager.LoggingTypes.Debug)
       LoggingManager.warning("code " + ConfigManager.ErrorCodes.JobTicketIsNull +

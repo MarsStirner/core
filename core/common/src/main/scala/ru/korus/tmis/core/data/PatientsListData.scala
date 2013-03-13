@@ -28,7 +28,7 @@ class PatientsListData {
   @BeanProperty
   var data: LinkedList[PatientsListEntry] = new LinkedList[PatientsListEntry]
 
-  def this(events: java.util.Map[Event, Action],
+ /* def this(events: java.util.Map[Event, Action],
            bedInfo: java.util.Map[Event, OrgStructureHospitalBed],
            condInfo: java.util.Map[Event, java.util.Map[ActionProperty, java.util.List[APValue]]],
            requestData: PatientsListRequestData) = {
@@ -50,7 +50,7 @@ class PatientsListData {
       this.data.add(new PatientsListEntry(e._1, bed, condition, null))
     })
     this.requestData = requestData
-  }
+  } */
 
   def this(events: java.util.Map[Event, Action],
            requestData: PatientsListRequestData,

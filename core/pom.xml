@@ -275,6 +275,27 @@
                 <ear.name>tmis-server-${version.tmis.core}</ear.name>
                 <!-- Путь к директории домена (нужен для того, чтобы валидировался pom.xml -->
                 <com.sun.aas.instanceRoot>${glassfish.domain.dir}/${glassfish.domain}/</com.sun.aas.instanceRoot>
+
+                <!-- Адрес базы данных -->
+                <mysql.db.host>127.0.0.1</mysql.db.host>
+                <!-- Порт подключения к базе данных -->
+                <mysql.db.port>3306</mysql.db.port>
+                <!-- Логин к базе данных -->
+                <mysql.login>root</mysql.login>
+                <!-- Пароль к базе данных -->
+                <mysql.password>root</mysql.password>
+                <!-- Название базы данных МИС -->
+                <mysql.db.mis>s11r64</mysql.db.mis>
+                <!-- Название пула для базы данных МИС -->
+                <mysql.db.mis.pool>s11r64-pool</mysql.db.mis.pool>
+                <!-- Название базы данных RLS -->
+                <mysql.db.rls>rls</mysql.db.rls>
+                <!-- Название пула для базы данных RLS -->
+                <mysql.db.rls.pool>rls-pool</mysql.db.rls.pool>
+                <!-- Название базы данных для конфигурации ядра (пул к БД автоматом получит это имя + суффикс "-pool") -->
+                <mysql.db.tmis_core>tmis_core</mysql.db.tmis_core>
+                <!-- Название пула для базы данных - конфигурации ядра -->
+                <mysql.db.tmis_core.pool>tmis_core-pool</mysql.db.tmis_core.pool>
             </properties>
         </profile>
 
@@ -525,7 +546,6 @@
             <artifactId>joda-time</artifactId>
             <version>${version.joda.time}</version>
         </dependency>
-
 
     </dependencies>
 
