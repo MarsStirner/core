@@ -13,6 +13,7 @@ import ru.korus.tmis.util.ConfigManager
 import org.codehaus.jackson.annotate.JsonIgnoreProperties._
 import org.codehaus.jackson.map.annotate.JsonView
 import java.util
+import ru.korus.tmis.core.filter.AbstractListDataFilter
 
 //Dynamic Filters
 object QuotaViews {
@@ -76,49 +77,62 @@ class EmptyObjectContainer {
 @JsonIgnoreProperties(ignoreUnknown = true)
 class PatientRequestData {
   @BeanProperty
-  var filter: RequestDataFilter = _
+  var filter: RequestDataFilter = new RequestDataFilter()
   @BeanProperty
-  var sortingField: String = _
+  var sortingField: String = "id"
   @BeanProperty
-  var sortingMethod: String = _
+  var sortingMethod: String = "asc"
   @BeanProperty
-  var limit: String = _
+  var limit: Int = ConfigManager.Messages("misCore.pages.limit.default").toInt
   @BeanProperty
-  var page: String = _
+  var page: Int = 1
   @BeanProperty
-  var recordsCount: String = _
+  var recordsCount: Long = 0
   @BeanProperty
-  var coreVersion: String = _
+  var coreVersion: String = ConfigManager.Messages("misCore.assembly.version")
 
-  def this(patientCode: String,
+  var sortingFieldInternal: String = ""
+
+  def this(patientCode: Int,
            fullName: String, 
            birthDate: Date,
            document: String,
            withRelations: String,
            sortingField: String,
            sortingMethod: String,
-           limit: String,
-           page: String) = {
+           limit: Int,
+           page: Int) = {
     this()
     val flgRelations = !((withRelations!=null) &&
                        (!withRelations.isEmpty) &&
                        ((withRelations.toLowerCase.compareTo("no")==0) || (withRelations.toLowerCase.compareTo("false")==0)))
     this.filter = new RequestDataFilter(patientCode, fullName, birthDate, document, flgRelations)
-    this.sortingField = sortingField
-    this.sortingMethod = sortingMethod
+    this.sortingField = sortingField match {
+      case null => {"id"}
+      case _ => {sortingField}
+    }
+    this.sortingMethod = sortingMethod match {
+      case null => {"asc"}
+      case _ => {sortingMethod}
+    }
     this.limit = limit
-    this.page = page
+    this.page = if(page>1)page else 1
     this.coreVersion = ConfigManager.Messages("misCore.assembly.version")
+    this.sortingFieldInternal = this.filter.toSortingString(this.sortingField, this.sortingMethod)
   }
 
+  def rewriteRecordsCount(recordsCount: java.lang.Long) = {
+    this.recordsCount = recordsCount.longValue()
+    true
+  }
 }
 
 @XmlType(name = "requestDataFilter")
 @XmlRootElement(name = "requestDataFilter")
 @JsonIgnoreProperties(ignoreUnknown = true)
-class RequestDataFilter {
+class RequestDataFilter extends AbstractListDataFilter {
   @BeanProperty
-  var patientCode: String = _ // — Код пациента
+  var patientCode: Int = _ // — Код пациента
   @BeanProperty
   var fullName: String = _ // — ФИО
   @BeanProperty
@@ -128,7 +142,7 @@ class RequestDataFilter {
   @BeanProperty
   var withRelations: Boolean = false  //Фильтр по ClientRelation
 
-  def this(patientCode: String,
+  def this(patientCode: Int,
            fullName: String,
            birthDate: Date,
            document: String) = {
@@ -139,13 +153,56 @@ class RequestDataFilter {
     this.document = document
   }
 
-  def this(patientCode: String,
+  def this(patientCode: Int,
            fullName: String,
            birthDate: Date,
            document: String,
            withRelations: Boolean) = {
     this(patientCode, fullName, birthDate, document)
     this.withRelations = withRelations
+  }
+
+  @Override
+  def toQueryStructure() = {
+    var qs = new QueryDataStructure()
+
+    if(this.patientCode>0){
+      qs.query += ("AND p.id = :patientCode\n")
+      qs.add("patientCode", this.patientCode:java.lang.Integer)
+    }
+    if(this.fullName!=null && !this.fullName.isEmpty){
+      qs.query += ("AND upper(CONCAT(p.lastName, ' ', p.firstName, ' ', p.patrName)) LIKE upper(:fullName)\n")
+      if(this.fullName.indexOf('%') > 0) {
+        qs.add("fullName", this.fullName)
+      } else {
+        qs.add("fullName", this.fullName + "%")
+      }
+    }
+    if(this.document!=null && !this.document.isEmpty){
+      qs.query += ("AND exists (SELECT d FROM ClientDocument d WHERE upper(d.serial) LIKE upper(:documentPattern) OR upper(d.number) LIKE upper(:documentPattern) AND d.patient = p)\n")
+      qs.add("documentPattern", "%" + this.document + "%")
+    }
+    if(this.birthDate!=null){
+      qs.query += ("AND p.birthDate = :birthDate\n")
+      qs.add("birthDate", this.birthDate)
+    }
+    if(!this.withRelations){
+      qs.query += ("AND NOT exists (SELECT r FROM ClientRelation r WHERE r.relative.id != '0' AND r.relative.id = p.id)\n")
+    }
+    qs
+  }
+
+  @Override
+  def toSortingString (sortingField: String, sortingMethod: String) = {
+    var sorting = sortingField.toLowerCase() match {
+      case "fio" | "fullname"=> {"p.lastName %s, p.firstName %s, p.patrName %s".format(sortingMethod,sortingMethod,sortingMethod)}
+      case "lastname" => {"p.lastName %s".format(sortingMethod)}
+      case "firstname" | "name" => {"p.firstName %s".format(sortingMethod)}
+      case "patrname" => {"p.patrName %s".format(sortingMethod)}
+      case _ => {"p.id %s".format(sortingMethod)}
+    }
+    sorting = "ORDER BY " + sorting.format(sortingMethod)
+    sorting
   }
 }
 
@@ -1012,7 +1069,7 @@ class QuotaRequestData {
     limit: Int,
     page: Int) = {
     this()
-    this.filter = new RequestDataFilter(patientCode, fullName, birthDate, document)
+    this.filter = new RequestDataFilter(patientCode.toInt, fullName, birthDate, document)
     this.sortingField = sortingField
     this.sortingMethod = sortingMethod
     this.limit = limit
