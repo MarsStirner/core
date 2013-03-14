@@ -239,7 +239,7 @@ class ActionInfoDataContainer {
     this.tubeType = new TestTubeTypeInfoContainer(action.getActionType.getTestTubeType)
     //this.assigner = new DoctorContainer(action.getAssigner)
     this.patient = new PatientInfoDataContainer(action.getEvent.getPatient)
-    this.takenTissueJournal = action.getTakenTissue.getId.intValue()
+    this.takenTissueJournal = action.getTakenTissue.getBarcode
   }
 }
 
