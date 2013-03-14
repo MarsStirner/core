@@ -81,29 +81,29 @@ class AppealData {
     val setMovingIds = JavaConversions.asJavaList(List(ConfigManager.RbCAPIds("db.rbCAP.hosp.primary.id.sentTo").toInt :java.lang.Integer,
                                                           ConfigManager.RbCAPIds("db.rbCAP.moving.id.movedIn").toInt :java.lang.Integer))
 
-    val diagnostics = if(mDiagnosticList!=null)mDiagnosticList(event.getId.intValue(), Set("assignment", "aftereffect", "attendant", "final")) else new java.util.ArrayList[Diagnostic]
+    val diagnostics = if(mDiagnosticList!=null)mDiagnosticList(event.getId.intValue(), Set("assignment", "aftereffect", "attendant", "final", "admission")) else new java.util.ArrayList[Diagnostic]
 
     this.data =
       if (postProcessing != null) {
       // Первичный и повторный осмотр
       // (список идентификаторов типов действий)
       val setATIds = JavaConversions.asJavaSet(Set(ConfigManager.Messages("db.actionType.primary").toInt :java.lang.Integer,
-        ConfigManager.Messages("db.actionType.secondary").toInt :java.lang.Integer))
+                                                   ConfigManager.Messages("db.actionType.secondary").toInt :java.lang.Integer))
       // (список рассматриваемых свойств действия)
       val setAdmissionIds = JavaConversions.asJavaList(List(ConfigManager.Messages("db.rbCAP.primary.admission").toInt :java.lang.Integer,
-        ConfigManager.Messages("db.rbCAP.primary.description").toInt :java.lang.Integer,
-        ConfigManager.Messages("db.rbCAP.secondary.admission").toInt :java.lang.Integer,
-        ConfigManager.Messages("db.rbCAP.secondary.description").toInt :java.lang.Integer,
-        ConfigManager.RbCAPIds("db.rbCAP.hosp.primary.id.sentTo").toInt :java.lang.Integer,
-        ConfigManager.RbCAPIds("db.rbCAP.moving.id.movedIn").toInt :java.lang.Integer))
+                                                            ConfigManager.Messages("db.rbCAP.primary.description").toInt :java.lang.Integer,
+                                                            ConfigManager.Messages("db.rbCAP.secondary.admission").toInt :java.lang.Integer,
+                                                            ConfigManager.Messages("db.rbCAP.secondary.description").toInt :java.lang.Integer,
+                                                            ConfigManager.RbCAPIds("db.rbCAP.hosp.primary.id.sentTo").toInt :java.lang.Integer,
+                                                            ConfigManager.RbCAPIds("db.rbCAP.moving.id.movedIn").toInt :java.lang.Integer))
 
       //Выписка
       // (список идентификаторов типов действий)
       val setExtractATIds = JavaConversions.asJavaSet(Set(ConfigManager.Messages("db.actionType.extract").toInt :java.lang.Integer))
       // (список рассматриваемых свойств действия)
       val setExtractIds = JavaConversions.asJavaList(List(ConfigManager.RbCAPIds("db.rbCAP.extract.id.nextHospDate").toInt :java.lang.Integer,
-        ConfigManager.RbCAPIds("db.rbCAP.extract.id.nextHospDepartment").toInt :java.lang.Integer,
-        ConfigManager.RbCAPIds("db.rbCAP.extract.id.nextHospFinanceType").toInt :java.lang.Integer))
+                                                          ConfigManager.RbCAPIds("db.rbCAP.extract.id.nextHospDepartment").toInt :java.lang.Integer,
+                                                          ConfigManager.RbCAPIds("db.rbCAP.extract.id.nextHospFinanceType").toInt :java.lang.Integer))
 
       val lstAllIds = new java.util.ArrayList[java.lang.Integer](setAdmissionIds)
       lstAllIds.addAll(setExtractIds)
@@ -112,15 +112,15 @@ class AppealData {
       val corrMap = if(mCorrList!=null) mCorrList(lstAllIds) else null
 
       val primaryId = postProcessing(event.getId.intValue(), setATIds)
-      //val admissions = if (mAdmissionDiagnosis!=null && primaryId>0) mAdmissionDiagnosis(primaryId, setAdmissionIds) else null
+      val admissions = if (mAdmissionDiagnosis!=null && primaryId>0) mAdmissionDiagnosis(primaryId, setAdmissionIds) else null
 
       val extractId = postProcessing(event.getId.intValue(), setExtractATIds)
       val extractProperties = if (mAdmissionDiagnosis!=null && extractId>0) mAdmissionDiagnosis(extractId, setExtractIds) else null
 
-      new AppealEntry(event, appeal, values, mMovingProperties, typeOfResponse, map, street, (primaryId>0), mRelationByRelativeId, /*admissions,*/ extractProperties, corrMap, contract, diagnostics)
+      new AppealEntry(event, appeal, values, mMovingProperties, typeOfResponse, map, street, (primaryId>0), mRelationByRelativeId, admissions, extractProperties, corrMap, contract, diagnostics)
     } else {
       val corrMap = if(mCorrList!=null) mCorrList(setMovingIds) else null
-      new AppealEntry(event, appeal, values, mMovingProperties, typeOfResponse, map, street, false, mRelationByRelativeId, /*null,*/ null, corrMap, contract, diagnostics)
+      new AppealEntry(event, appeal, values, mMovingProperties, typeOfResponse, map, street, false, mRelationByRelativeId, null, null, corrMap, contract, diagnostics)
      }
   }
 }
@@ -312,7 +312,7 @@ class AppealEntry {
            street: java.util.LinkedHashMap[java.lang.Integer, Street],
            havePrimary: Boolean,
            mRelationByRelativeId: (Int)=> ClientRelation,
-           //admissions: java.util.Map[ActionProperty, java.util.List[APValue]],
+           admissions: java.util.Map[ActionProperty, java.util.List[APValue]],
            extractProperties: java.util.Map[ActionProperty, java.util.List[APValue]],
            corrList: java.util.List[RbCoreActionProperty],
            contract: Contract,
@@ -438,59 +438,6 @@ class AppealEntry {
     if(exPhysical.get("6").get(0).isInstanceOf[Double]) {d7 = (exPhysical.get("6").get(0).asInstanceOf[Double])}
     this.physicalParameters= new PhysicalParametersContainer(d1,d2,d3,d4,d5,d6,d7)
 
-    /*
-    //Старая часть кода по диагнозам из экшн пропертей (переделал на из диагностик)
-    val exDiagnosis = this.extractValuesInNumberedMap(LinkedHashSet(
-        ConfigManager.RbCAPIds("db.rbCAP.hosp.primary.id.diagnosis.assigment.code").toInt :java.lang.Integer,
-        ConfigManager.RbCAPIds("db.rbCAP.hosp.primary.id.diagnosis.aftereffect.code").toInt :java.lang.Integer,
-        ConfigManager.RbCAPIds("db.rbCAP.hosp.primary.id.diagnosis.attendant.code").toInt :java.lang.Integer,
-        ConfigManager.RbCAPIds("db.rbCAP.hosp.primary.id.diagnosis.assignment.description").toInt :java.lang.Integer,
-        ConfigManager.RbCAPIds("db.rbCAP.hosp.primary.id.diagnosis.aftereffect.description").toInt :java.lang.Integer,
-        ConfigManager.RbCAPIds("db.rbCAP.hosp.primary.id.diagnosis.attendant.description").toInt :java.lang.Integer
-    ), values)
-
-    Set("assignment", "aftereffect", "attendant").foreach(pos => {
-      val key = "code_%s".format(pos)
-      val key_desc = "description_%s".format(pos)
-
-      val diagnoses = if(exDiagnosis.get(key)!=null) exDiagnosis.get(key).toList else List.empty[Object]
-      val descriptions = if(exDiagnosis.get(key_desc)!=null) exDiagnosis.get(key_desc).toList else List.empty[Object]
-
-      for(i <- 0 until math.max(diagnoses.size, descriptions.size)){
-        val diagnosis =  if(diagnoses.size>i && diagnoses.get(i).isInstanceOf[Mkb])
-                            diagnoses.get(i).asInstanceOf[Mkb]
-                         else null
-        val description = if(descriptions.size>i && descriptions.get(i).isInstanceOf[String])
-                            descriptions.get(i).asInstanceOf[String]
-                          else ""
-        this.diagnoses += new DiagnosisContainer(pos, description, "", diagnosis)
-      }
-    })
-    */
-    //Заключительный диагноз
-    //Старая часть кода по заключительному диагнозу из экшн пропертей (переделал на из диагностик см.выше "final")
-    /*if (admissions!=null && corrList!=null) {
-      var description: String = ""
-      var diagnosis: Mkb = null
-
-      admissions.foreach(prop => {
-        val result = corrList.find(p=> p.getActionPropertyType.getId.intValue()==prop._1.getType.getId.intValue()).getOrElse(null)
-        if (result!=null) {
-          if (result.getId.compareTo(ConfigManager.Messages("db.rbCAP.primary.admission").toInt :java.lang.Integer)==0 ||
-            result.getId.compareTo(ConfigManager.Messages("db.rbCAP.secondary.admission").toInt :java.lang.Integer)==0) {
-            if (prop._2 != null && prop._2.size() > 0) {
-              diagnosis = prop._2.get(0).getValue.asInstanceOf[Mkb]
-            }
-          } else if (result.getId.compareTo(ConfigManager.Messages("db.rbCAP.primary.description").toInt :java.lang.Integer)==0 ||
-            result.getId.compareTo(ConfigManager.Messages("db.rbCAP.secondary.description").toInt :java.lang.Integer)==0) {
-            if (prop._2 != null && prop._2.size() > 0) {
-              description = prop._2.get(0).getValueAsString
-            }
-          }
-        }
-      })
-      this.diagnoses += new DiagnosisContainer("final", description, "", diagnosis)
-    } */
     exValue = this.extractValuesInNumberedMap(Set(ConfigManager.RbCAPIds("db.rbCAP.hosp.primary.id.injury").toInt :java.lang.Integer), values).get("0")
     this.injury = exValue.get(0).asInstanceOf[String]
 
@@ -502,11 +449,75 @@ class AppealEntry {
 
     //Диагнозы по новому
     if (diagnostics.size()>0){
-      Set("assignment", "aftereffect", "attendant", "final").foreach( diaType => {
+      Set("assignment", "aftereffect", "attendant", "final", "admission").foreach( diaType => {
         val allByType = diagnostics.filter(p=>p.getDiagnosisType.getFlatCode.compareTo(diaType)==0)  //Все диагностики данного типа
         val diaByLastDate = allByType.find(p=> p.getCreateDatetime.getTime==allByType.map(_.getCreateDatetime.getTime).foldLeft(Long.MinValue)((i,m)=>m.max(i))).getOrElse(null) //Диагностика последняя по дате создания
         if (diaByLastDate!=null){
           this.diagnoses += new DiagnosisContainer(diaByLastDate)
+        }
+        else { //Достаем из ActionProperty осмотра  (Для старых госпитализации (когда не прописывалась история диагнозов Diagnostic + Diagnosis))
+          diaType match {
+            case "assignment" | "aftereffect" | "attendant" => {  //Старая часть кода по диагнозам из экшн пропертей
+              val exDiagnosis = this.extractValuesInNumberedMap(LinkedHashSet(
+                ConfigManager.RbCAPIds("db.rbCAP.hosp.primary.id.diagnosis.assigment.code").toInt :java.lang.Integer,
+                ConfigManager.RbCAPIds("db.rbCAP.hosp.primary.id.diagnosis.aftereffect.code").toInt :java.lang.Integer,
+                ConfigManager.RbCAPIds("db.rbCAP.hosp.primary.id.diagnosis.attendant.code").toInt :java.lang.Integer,
+                ConfigManager.RbCAPIds("db.rbCAP.hosp.primary.id.diagnosis.assignment.description").toInt :java.lang.Integer,
+                ConfigManager.RbCAPIds("db.rbCAP.hosp.primary.id.diagnosis.aftereffect.description").toInt :java.lang.Integer,
+                ConfigManager.RbCAPIds("db.rbCAP.hosp.primary.id.diagnosis.attendant.description").toInt :java.lang.Integer
+              ), values)
+
+              val key = "code_%s".format(diaType)
+              val key_desc = "description_%s".format(diaType)
+
+              val diagnoses = if(exDiagnosis.get(key)!=null) exDiagnosis.get(key).toList else List.empty[Object]
+              val descriptions = if(exDiagnosis.get(key_desc)!=null) exDiagnosis.get(key_desc).toList else List.empty[Object]
+
+              for(i <- 0 until math.max(diagnoses.size, descriptions.size)){
+                val diagnosis =  if(diagnoses.size>i && diagnoses.get(i).isInstanceOf[Mkb])
+                  diagnoses.get(i).asInstanceOf[Mkb]
+                else null
+                val description = if(descriptions.size>i && descriptions.get(i).isInstanceOf[String])
+                  descriptions.get(i).asInstanceOf[String]
+                else ""
+
+                val container = new DiagnosisContainer()
+                container.setDiagnosisKind(diaType)
+                container.setDescription(description)
+                container.setMkb(new MKBContainer(diagnosis))
+                this.diagnoses += container
+              }
+            }
+            case "admission" => { //Старая часть кода по диагнозу при поступлении из экшн пропертей
+              if (admissions!=null && corrList!=null) {
+                var description: String = ""
+                var diagnosis: Mkb = null
+
+                admissions.foreach(prop => {
+                  val result = corrList.find(p=> p.getActionPropertyType.getId.intValue()==prop._1.getType.getId.intValue()).getOrElse(null)
+                  if (result!=null) {
+                    if (result.getId.compareTo(ConfigManager.Messages("db.rbCAP.primary.admission").toInt :java.lang.Integer)==0 ||
+                      result.getId.compareTo(ConfigManager.Messages("db.rbCAP.secondary.admission").toInt :java.lang.Integer)==0) {
+                      if (prop._2 != null && prop._2.size() > 0) {
+                        diagnosis = prop._2.get(0).getValue.asInstanceOf[Mkb]
+                      }
+                    } else if (result.getId.compareTo(ConfigManager.Messages("db.rbCAP.primary.description").toInt :java.lang.Integer)==0 ||
+                      result.getId.compareTo(ConfigManager.Messages("db.rbCAP.secondary.description").toInt :java.lang.Integer)==0) {
+                      if (prop._2 != null && prop._2.size() > 0) {
+                        description = prop._2.get(0).getValueAsString
+                      }
+                    }
+                  }
+                })
+                val container = new DiagnosisContainer()
+                container.setDiagnosisKind("admission")
+                container.setDescription(description)
+                container.setMkb(new MKBContainer(diagnosis))
+                this.diagnoses += container
+              }
+            }
+            case _ => {}
+          }
         }
       })
     }
@@ -934,9 +945,11 @@ class MKBContainer {
    */
   def this(mkb: Mkb){
     this()
-    this.id = mkb.getId.intValue()
-    this.code = mkb.getDiagID
-    this.diagnosis = mkb.getDiagName
+    if (mkb!=null){
+      this.id = mkb.getId.intValue()
+      this.code = mkb.getDiagID
+      this.diagnosis = mkb.getDiagName
+    }
   }
 
   /**

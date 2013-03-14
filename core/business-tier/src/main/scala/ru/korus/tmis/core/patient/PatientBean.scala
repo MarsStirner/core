@@ -398,82 +398,11 @@ class PatientBean
   }
 
   def getAllPatients(requestData: PatientRequestData) = {
-    //
-    //  TODO: разобрать контейнер перед вызовом:
-    //
-    //  patientCode — Код пациента
-    //  document    — Фильтр по любому документу
-    //  fullName    — ФИО
-    //  birthDate   — Дата рождения (кстати, как передавать будем?)
-
-    // Если заполнен документ или код - ищем только по одному из них (по коду, думаю.
-    // то есть по всей видимости есть приоритеты:
-
-    val limit = requestData.limit match {
-      case null => {0}
-      case _ => {requestData.limit.toInt}
-    }
-
-    val page = requestData.page match {
-      case null => {0}
-      case _ => {requestData.page.toInt-1} //c клиента приходит номер страницы начиная с 1
-    }
-
-    val sortField = requestData.sortingField match {
-      case null => {"id"}
-      case "middleName" => {"patrName"}
-      case "patientCode"=> {"id"}         //TODO: в бд нет поля "код пациента"
-      case _ => {requestData.sortingField}
-    }
-
-    val sortMethod = requestData.sortingMethod match {
-      case null => {"asc"}
-      case _ => {requestData.sortingMethod}
-    }
-
-    if (requestData.filter.patientCode != null)
-    {
-      dbPatient.getPatientsWithCode(
-        limit, page, sortField, sortMethod,
-        requestData.filter.patientCode.toInt,
-        requestData)
-    }
-    else if (requestData.filter.document != null)
-    {
-      dbPatient.getPatientsWithDocumentPattern(
-        limit, page, sortField, sortMethod,
-        requestData.filter.document,
-        requestData)
-    }
-    else if (requestData.filter.fullName != null && requestData.filter.birthDate == null)
-    {
-      dbPatient.getPatientsWithFullNamePattern(
-        limit, page, sortField, sortMethod,
-        requestData.filter.fullName,
-        requestData)
-    }
-    else if (requestData.filter.fullName == null && requestData.filter.birthDate != null)
-    {
-      dbPatient.getPatientsWithBirthDate(
-        limit, page, sortField, sortMethod,
-        requestData.filter.birthDate,
-        requestData)
-    }
-    else if (requestData.filter.fullName != null && requestData.filter.birthDate != null)
-    {
-      dbPatient.getPatientsWithBirthDateAndFullNamePattern(
-        limit, page, sortField, sortMethod,
-        requestData.filter.birthDate,
-        requestData.filter.fullName,
-        requestData)
-    }
-    else
-    {
-      dbPatient.getAllPatients(
-        limit, page, sortField, sortMethod,
-        requestData
-      )
-    }
+      dbPatient.getAllPatients( requestData.page-1,
+                                requestData.limit,
+                                requestData.sortingFieldInternal,
+                                requestData.filter.unwrap(),
+                                requestData.rewriteRecordsCount _)
   }
 
   def savePatient(patientEntry: PatientEntry, userData: AuthData) : PatientEntry = {
