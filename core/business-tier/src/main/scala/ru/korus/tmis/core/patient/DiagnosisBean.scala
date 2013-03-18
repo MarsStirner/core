@@ -36,6 +36,7 @@ class DiagnosisBean  extends DiagnosisBeanLocal
   private val ID_CREATE = 0
   private val ID_MODIFY = 1
   private val ID_NONE = 2
+  private val ID_MODIFY_WITH_CREATE_DIAGNOSIS = 3
 
   def insertDiagnosis(diagnosticId: Int,
                       eventId: Int,
@@ -65,7 +66,7 @@ class DiagnosisBean  extends DiagnosisBeanLocal
               }
           }
           else {
-            if(mkbId>0) ID_MODIFY
+            if(mkbId>0) ID_MODIFY_WITH_CREATE_DIAGNOSIS
             else {
               if(oldDiagnostic.getNotes.compareTo(description)!=0) ID_MODIFY
               else ID_NONE
@@ -94,6 +95,21 @@ class DiagnosisBean  extends DiagnosisBeanLocal
         diagnostic = dbDiagnosticBean.insertOrUpdateDiagnostic( diagnosticId,
                                                                 eventId,
                                                                 oldDiagnostic.getDiagnosis,
+                                                                diaTypeFlatCode,
+                                                                diseaseCharacterId,
+                                                                description,
+                                                                userData)
+      }
+      case ID_MODIFY_WITH_CREATE_DIAGNOSIS => {
+        diagnosis = dbDiagnosisBean.insertOrUpdateDiagnosis(0,
+                                                            patient.getId.intValue(),
+                                                            diaTypeFlatCode,
+                                                            diseaseCharacterId,
+                                                            mkbId,
+                                                            userData)
+        diagnostic = dbDiagnosticBean.insertOrUpdateDiagnostic( diagnosticId,
+                                                                eventId,
+                                                                diagnosis,
                                                                 diaTypeFlatCode,
                                                                 diseaseCharacterId,
                                                                 description,

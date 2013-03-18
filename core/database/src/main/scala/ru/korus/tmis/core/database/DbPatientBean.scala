@@ -16,6 +16,7 @@ import ru.korus.tmis.core.pharmacy.DbUUIDBeanLocal
 import java.util
 import org.slf4j.{LoggerFactory, Logger}
 import util.{TimeZone, Date, Calendar, GregorianCalendar}
+import ru.korus.tmis.core.filter.ListDataFilter
 
 
 @Interceptors(Array(classOf[LoggingInterceptor]))
@@ -53,7 +54,7 @@ class DbPatientBean
    WHERE
     p.deleted = 0
    %s
-   ORDER BY p.%s %s
+   %s
                                   """
 
   val PatientFindActiveQuery = """
@@ -65,76 +66,6 @@ class DbPatientBean
     AND
       p.deleted = 0
                                """
-
-  //TODO: в таблице Client нет поля "код пациента"
-  val PatientFindActiveByCodeQuery = """
-    SELECT %s
-    FROM
-      Patient p
-    WHERE
-      p.id = :patientCode
-    AND
-      p.deleted = 0
-    ORDER BY p.%s %s
-                                     """
-
-  val PatientFindActiveByDocumentPatternQuery = """
-        SELECT %s
-        FROM
-          Patient p
-        WHERE
-          exists (
-            SELECT d FROM ClientDocument d
-            WHERE upper(d.serial) LIKE upper(:documentPattern) OR upper(d.number) LIKE upper(:documentPattern)
-            AND d.patient = p)
-        AND
-          p.deleted = 0
-        ORDER BY p.%s %s
-                                                """
-
-  //TODO: решить, как лучше искать по ФИО
-  val PatientFindActiveByFullNamePatternQuery = """
-      SELECT %s
-      FROM
-        Patient p
-      WHERE
-        upper(p.lastName) LIKE upper(:fullNamePattern)
-      AND
-        p.deleted = 0
-      ORDER BY p.%s %s
-                                                """
-
-  /*
-  NOT exists (
-         SELECT r
-           FROM ClientRelation r
-           WHERE r.relative.id = p.id
-         )
-      AND
-   */
-
-  val PatientFindActiveByBirthDateQuery = """
-      SELECT %s
-      FROM
-        Patient p
-      WHERE
-        p.birthDate = :birthDate
-      AND
-        p.deleted = 0
-      ORDER BY p.%s %s
-                                          """
-
-  //TODO: решить, как лучше искать по ФИО
-  val PatientFindActiveByBirthDateAndFullNamePatternQuery = """
-      SELECT %s
-      FROM
-        Patient p
-      WHERE
-        p.birthDate = :birthDate AND upper(p.lastName) LIKE upper(:fullNamePattern)
-      AND
-        p.deleted = 0
-      ORDER BY p.%s %s
-                                                            """
 
   val PatientGetCountRecords = """
     SELECT count(p)
@@ -166,14 +97,6 @@ class DbPatientBean
       ORDER BY p.%s %s
                                            """
 
-  /*
-     lastName
-     firstName
-     middleName
-     sex
-     patientCode
-     birthDate
- * */
   def getCountRecordsOrPagesQuery(enterPosition: String): TypedQuery[Long] = {
 
     val cntMacroStr = "count(p)"
@@ -195,85 +118,25 @@ class DbPatientBean
     em.createNamedQuery("Patient.findAll", classOf[Patient]).getResultList
   }
 
-  def getAllPatients(limit: Int, page: Int, sortField: String, sortMethod: String,
-                     requestData: PatientRequestData): Iterable[Patient] = {
-    val query = if (!requestData.filter.withRelations) {
-      " AND NOT exists (SELECT r FROM ClientRelation r WHERE r.relative.id != '0' AND r.relative.id = p.id)"
-    } else ""
-    requestData.setRecordsCount(getCountRecordsOrPagesQuery(PatientFindAllActiveQuery.format("%s", query, "%s", "%s"))
-      .getSingleResult
-      .toString)
-    em.createQuery(PatientFindAllActiveQuery.format("p", query, sortField, sortMethod), classOf[Patient])
-      .setMaxResults(limit)
-      .setFirstResult(limit * page)
-      .getResultList
-  }
+  def getAllPatients(page: Int, limit: Int, sorting: String, filter: ListDataFilter, records: (java.lang.Long) => java.lang.Boolean) = {
 
-  def getPatientsWithCode(limit: Int, page: Int, sortField: String, sortMethod: String, patientCode: Int,
-                          requestData: PatientRequestData): Iterable[Patient] = {
-    requestData.setRecordsCount(getCountRecordsOrPagesQuery(PatientFindActiveByCodeQuery)
-      .setParameter("patientCode", patientCode)
-      .getSingleResult
-      .toString)
-    em.createQuery(PatientFindActiveByCodeQuery.format("p", sortField, sortMethod), classOf[Patient])
-      .setMaxResults(limit)
-      .setFirstResult(limit * page)
-      .setParameter("patientCode", patientCode)
-      .getResultList
-  }
+    val queryStr = filter.toQueryStructure()
 
-  def getPatientsWithDocumentPattern(limit: Int, page: Int, sortField: String, sortMethod: String, documentPattern: String,
-                                     requestData: PatientRequestData): Iterable[Patient] = {
-    requestData.setRecordsCount(getCountRecordsOrPagesQuery(PatientFindActiveByDocumentPatternQuery)
-      .setParameter("documentPattern", "%" + documentPattern + "%")
-      .getSingleResult
-      .toString)
-    em.createQuery(PatientFindActiveByDocumentPatternQuery.format("p", sortField, sortMethod), classOf[Patient])
-      .setMaxResults(limit)
-      .setFirstResult(limit * page)
-      .setParameter("documentPattern", "%" + documentPattern + "%")
-      .getResultList
-  }
+    val countTyped = em.createQuery(PatientFindAllActiveQuery.format("count(p)", queryStr.query, ""), classOf[Long])
+    if (queryStr.data.size() > 0)
+      queryStr.data.foreach(qdp => countTyped.setParameter(qdp.name, qdp.value))
+    if (records!=null)
+      records(countTyped.getSingleResult)
 
-  def getPatientsWithFullNamePattern(limit: Int, page: Int, sortField: String, sortMethod: String, fullNamePattern: String,
-                                     requestData: PatientRequestData): Iterable[Patient] = {
-    requestData.setRecordsCount(getCountRecordsOrPagesQuery(PatientFindActiveByFullNamePatternQuery)
-      .setParameter("fullNamePattern", "%" + fullNamePattern + "%")
-      .getSingleResult
-      .toString)
-    em.createQuery(PatientFindActiveByFullNamePatternQuery.format("p", sortField, sortMethod), classOf[Patient])
-      .setMaxResults(limit)
-      .setFirstResult(limit * page)
-      .setParameter("fullNamePattern", "%" + fullNamePattern + "%")
-      .getResultList
-  }
+    val typed = em.createQuery(PatientFindAllActiveQuery.format("p", queryStr.query, sorting), classOf[Patient])
+                  .setMaxResults(limit)
+                  .setFirstResult(limit * page)
+    if (queryStr.data.size() > 0)
+      queryStr.data.foreach(qdp => typed.setParameter(qdp.name, qdp.value))
 
-  def getPatientsWithBirthDate(limit: Int, page: Int, sortField: String, sortMethod: String, birthDate: Date,
-                               requestData: PatientRequestData): Iterable[Patient] = {
-    requestData.setRecordsCount(getCountRecordsOrPagesQuery(PatientFindActiveByBirthDateQuery)
-      .setParameter("birthDate", birthDate)
-      .getSingleResult
-      .toString)
-    em.createQuery(PatientFindActiveByBirthDateQuery.format("p", sortField, sortMethod), classOf[Patient])
-      .setMaxResults(limit)
-      .setFirstResult(limit * page)
-      .setParameter("birthDate", birthDate)
-      .getResultList
-  }
-
-  def getPatientsWithBirthDateAndFullNamePattern(limit: Int, page: Int, sortField: String, sortMethod: String, birthDate: Date, fullNamePattern: String,
-                                                 requestData: PatientRequestData): Iterable[Patient] = {
-    requestData.setRecordsCount(getCountRecordsOrPagesQuery(PatientFindActiveByBirthDateAndFullNamePatternQuery)
-      .setParameter("birthDate", birthDate)
-      .setParameter("fullNamePattern", "%" + fullNamePattern + "%")
-      .getSingleResult
-      .toString)
-    em.createQuery(PatientFindActiveByBirthDateAndFullNamePatternQuery.format("p", sortField, sortMethod), classOf[Patient])
-      .setMaxResults(limit)
-      .setFirstResult(limit * page)
-      .setParameter("birthDate", birthDate)
-      .setParameter("fullNamePattern", "%" + fullNamePattern + "%")
-      .getResultList
+    val result = typed.getResultList
+    result.foreach(em.detach(_))
+    result
   }
 
   def getPatientById(id: Int): Patient = {

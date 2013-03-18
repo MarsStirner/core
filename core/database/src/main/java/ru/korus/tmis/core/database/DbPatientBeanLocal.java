@@ -4,6 +4,8 @@ import ru.korus.tmis.core.data.PatientRequestData;
 import ru.korus.tmis.core.entity.model.Patient;
 import ru.korus.tmis.core.entity.model.Staff;
 import ru.korus.tmis.core.exception.CoreException;
+import ru.korus.tmis.core.filter.ListDataFilter;
+import scala.Function1;
 
 import javax.ejb.Local;
 import java.util.Date;
@@ -13,28 +15,7 @@ import java.util.Map;
 @Local
 public interface DbPatientBeanLocal {
 
-    Iterable<Patient> getAllPatients(int limit, int page, String sortField, String sortMethod,
-                                     PatientRequestData requestData)
-            throws CoreException;
-
-    Iterable<Patient> getPatientsWithCode(int limit, int page, String sortField, String sortMethod,
-                                          int patientCode, PatientRequestData requestData)
-            throws CoreException;
-
-    Iterable<Patient> getPatientsWithDocumentPattern(int limit, int page, String sortField, String sortMethod,
-                                                     String documentPattern, PatientRequestData requestData)
-            throws CoreException;
-
-    Iterable<Patient> getPatientsWithFullNamePattern(int limit, int page, String sortField, String sortMethod,
-                                                     String fullNamePattern, PatientRequestData requestData)
-            throws CoreException;
-
-    Iterable<Patient> getPatientsWithBirthDate(int limit, int page, String sortField, String sortMethod,
-                                               Date birthDate, PatientRequestData requestData)
-            throws CoreException;
-
-    Iterable<Patient> getPatientsWithBirthDateAndFullNamePattern(int limit, int page, String sortField, String sortMethod,
-                                                                 Date birthDate, String fullNamePattern, PatientRequestData requestData)
+    Iterable<Patient> getAllPatients(int page, int limit, String sorting, ListDataFilter filter, Function1<Long, Boolean> setRecCount)
             throws CoreException;
 
     Patient getPatientById(int id)

@@ -55,11 +55,11 @@ public class PatientRegistryRESTImpl implements Serializable {
 	@GET
     @Path("/patients")
     @Produces("application/x-javascript")
-    public Object getAllPatientsP(@QueryParam("limit")String limit,
-                                  @QueryParam("page")String  page,
+    public Object getAllPatientsP(@QueryParam("limit")int limit,
+                                  @QueryParam("page")int  page,
                                   @QueryParam("sortingField")String sortingField,
                                   @QueryParam("sortingMethod")String sortingMethod,
-                                  @QueryParam("filter[patientCode]")String  patientCode,
+                                  @QueryParam("filter[patientCode]")int patientCode,
                                   @QueryParam("filter[fullName]")String fullName,
                                   @QueryParam("filter[birthDate]")Long birthDate,
                                   @QueryParam("filter[document]")String document,
