@@ -1,9 +1,9 @@
 @echo off
 SET PATH=${glassfish.home}/bin/;%PATH%
 
-SET GF_PASSWD_FILE=./password
-echo AS_ADMIN_PASSWORD=${glassfish.admin.password} > %GF_PASSWD_FILE%
-echo AS_ADMIN_MASTERPASSWORD=${glassfish.admin.password} >> %GF_PASSWD_FILE%
+SET GF_PASSWD_FILE=.\password
+echo AS_ADMIN_PASSWORD=${glassfish.admin.password}>%GF_PASSWD_FILE%
+echo AS_ADMIN_MASTERPASSWORD=${glassfish.admin.password}>>%GF_PASSWD_FILE%
 
 echo.
 echo.
@@ -29,9 +29,9 @@ echo.
 call asadmin stop-domain --domaindir ${glassfish.domain.dir} ${glassfish.domain}
 call asadmin start-domain --domaindir ${glassfish.domain.dir} ${glassfish.domain}
 echo --------------------------------------------------------------------
-echo Copy config file to ${glassfish.domain.dir}/${glassfish.domain}/config/logback.xml
+echo Copy config file to ${glassfish.domain.dir}\${glassfish.domain}\config\logback.xml
 echo.
-copy ./logback.xml ${glassfish.domain.dir}/${glassfish.domain}/config
+copy logback.xml ${glassfish.domain.dir}\${glassfish.domain}\config\
 echo --------------------------------------------------------------------
 echo Deploy ${glassfish.application.name}
 echo.
