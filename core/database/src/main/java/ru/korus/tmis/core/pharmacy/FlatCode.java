@@ -26,7 +26,9 @@ public enum FlatCode {
     /**
      * Отмена движения между отделениями внутри стационара
      */
-    DEL_MOVING("del_moving");
+    DEL_MOVING("del_moving"),
+
+    PRESCRIPTION("prescription");
 
     private String code;
 

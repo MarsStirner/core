@@ -15,4 +15,9 @@ public interface PharmacyBeanLocal {
      * Полинг базы в поисках событий для 1С Аптеки
      */
     void pooling();
+
+    /**
+     * Выгрузка данных по назначениям за текущие сутки
+     */
+    void flushAssignment();
 }

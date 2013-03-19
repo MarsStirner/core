@@ -41,7 +41,7 @@ public class UUID {
     }
 
     public String getUuid() {
-        return uuid;
+        return uuid != null ? uuid : "";
     }
 
     public void setUuid(String uuid) {

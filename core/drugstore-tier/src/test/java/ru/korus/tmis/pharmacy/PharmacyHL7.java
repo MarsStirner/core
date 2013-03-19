@@ -55,6 +55,8 @@ public class PharmacyHL7 {
 
         action.setCreateDatetime(new Date());
         orgStructure.setUuid(new UUID(orgUUID));
+        orgStructure.setName("ФНКЦ ДГОИ");
+
         orgStructureIn.setUuid(new UUID(orgUUID2));
 
         client.setBirthDate(format.parse("12.05.2005"));
@@ -66,6 +68,7 @@ public class PharmacyHL7 {
         event.setPatient(client);
 
         event.setUuid(new UUID(externalUUID));
+        event.setExternalId(externalId);
         action.setEvent(event);
 
         doctorAssigPerson.setFirstName("Медсестра");
@@ -89,72 +92,68 @@ public class PharmacyHL7 {
 
     @Test(enabled = true, priority = 1)
     public void processReceived() {
-        try {
-            final MCCIIN000002UV01 result = HL7PacketBuilder.processReceived(action, orgStructure);
-            logger.info("docUUID = " + result.getId().getRoot());
-        } catch (SoapConnectionException e) {
-            logger.error("SoapConnectionException: " + e, e);
-        }
+//        try {
+            //final MCCIIN000002UV01 result = HL7PacketBuilder.processReceived(action, orgStructure);
+           // logger.info("docUUID = " + result.getId().getRoot());
+//        } catch (SoapConnectionException e) {
+//            logger.error("SoapConnectionException: " + e, e);
+//        }
     }
 
     @Test(enabled = true, priority = 2)
     public void processMoving() {
-        try {
-            final MCCIIN000002UV01 result = HL7PacketBuilder.processMoving(action, orgStructure, orgStructureIn);
-            logger.info("docUUID = " + result.getId().getRoot());
-        } catch (SoapConnectionException e) {
-            logger.error("SoapConnectionException: " + e, e);
-        }
+//        try {
+//            final MCCIIN000002UV01 result = HL7PacketBuilder.processMoving(action, orgStructure, orgStructureIn);
+//            logger.info("docUUID = " + result.getId().getRoot());
+//        } catch (SoapConnectionException e) {
+//            logger.error("SoapConnectionException: " + e, e);
+//        }
     }
 
     @Test(enabled = true, priority = 3)
     public void processDelMoving() {
-        try {
-            final MCCIIN000002UV01 result = HL7PacketBuilder.processDelMoving(action, orgStructure, orgStructureIn);
-            logger.info("docUUID = " + result.getId().getRoot());
-        } catch (SoapConnectionException e) {
-            logger.error("SoapConnectionException: " + e, e);
-        }
+//        try {
+//            final MCCIIN000002UV01 result = HL7PacketBuilder.processDelMoving(action, orgStructure, orgStructureIn);
+//            logger.info("docUUID = " + result.getId().getRoot());
+//        } catch (SoapConnectionException e) {
+//            logger.error("SoapConnectionException: " + e, e);
+//        }
     }
 
     @Test(enabled = true, priority = 4)
     public void processLeaved() {
-        try {
-            final MCCIIN000002UV01 result = HL7PacketBuilder.processLeaved(action, "Стационар");
-            logger.info("docUUID = " + result.getId().getRoot());
-        } catch (SoapConnectionException e) {
-            logger.error("SoapConnectionException: " + e, e);
-        }
+//        try {
+//            final MCCIIN000002UV01 result = HL7PacketBuilder.processLeaved(action, "Стационар");
+//            logger.info("docUUID = " + result.getId().getRoot());
+//        } catch (SoapConnectionException e) {
+//            logger.error("SoapConnectionException: " + e, e);
+//        }
     }
 
     @Test(enabled = true, priority = 5)
     public void processDelReceived() {
-        try {
-            final MCCIIN000002UV01 result = HL7PacketBuilder.processDelReceived(action);
-            logger.info("docUUID = " + result.getId().getRoot());
-        } catch (SoapConnectionException e) {
-            logger.error("SoapConnectionException: " + e, e);
-        }
+//        try {
+//            final MCCIIN000002UV01 result = HL7PacketBuilder.processDelReceived(action);
+//            logger.info("docUUID = " + result.getId().getRoot());
+//        } catch (SoapConnectionException e) {
+//            logger.error("SoapConnectionException: " + e, e);
+//        }
     }
 
     @Test(enabled = true, priority = 6)
     public void processCDA() {
-        try {
-            final MCCIIN000002UV01 result = HL7PacketBuilder.processRCMRIN000002UV02(
-                    action,
-                    clientUUID,
-                    externalId,
-                    client,
-                    doctor,
-                    "ФНКЦ",
-                    externalUUID,
-                    custodianUUID, doctor);
+//        try {
+//            final MCCIIN000002UV01 result = HL7PacketBuilder.processPrescription(
+//                    action,
+//                    client,
+//                    doctor,
+//                    orgStructure);
 
-            final String docUUID = result.getId().getRoot();
-            logger.info("docUUID = " + docUUID);
+//            final String docUUID = result.getId().getRoot();
+//            logger.info("docUUID = " + docUUID);
 
-        } catch (SoapConnectionException e) {
-            logger.error("SoapConnectionException: " + e, e);
-        }
+//        } catch (SoapConnectionException e) {
+//            logger.error("SoapConnectionException: " + e, e);
+//        }
     }
 }
