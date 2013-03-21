@@ -300,8 +300,8 @@ public class CommunicationServiceTest {
         Amb result;
         GetTimeWorkAndStatusParameters parameters = new GetTimeWorkAndStatusParameters()
                 .setPersonId(242)
-                .setDate(new DateMidnight().getMillis())
-                .setHospitalUidFrom("");
+                .setDate(new DateMidnight().getMillis());
+        // .setHospitalUidFrom("");
         try {
             result = client.getWorkTimeAndStatus(parameters);
             logger.info("Send and recieve is successfully done.");

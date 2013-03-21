@@ -125,12 +125,12 @@ class DbPatientBean
     val countTyped = em.createQuery(PatientFindAllActiveQuery.format("count(p)", queryStr.query, ""), classOf[Long])
     if (queryStr.data.size() > 0)
       queryStr.data.foreach(qdp => countTyped.setParameter(qdp.name, qdp.value))
-    if (records!=null)
+    if (records != null)
       records(countTyped.getSingleResult)
 
     val typed = em.createQuery(PatientFindAllActiveQuery.format("p", queryStr.query, sorting), classOf[Patient])
-                  .setMaxResults(limit)
-                  .setFirstResult(limit * page)
+      .setMaxResults(limit)
+      .setFirstResult(limit * page)
     if (queryStr.data.size() > 0)
       queryStr.data.foreach(qdp => typed.setParameter(qdp.name, qdp.value))
 
@@ -506,7 +506,7 @@ class DbPatientBean
 
   }
 
-  def deletePatient(id:Int) = {
+  def deletePatient(id: Int) = {
     try {
       val patient = this.getPatientById(id)
       val merged = em.merge(patient)
@@ -519,5 +519,42 @@ class DbPatientBean
         throw new CoreException("Ошибка при удалении пациента с id=%d: %s".format(id, e.getMessage))
       }
     }
+  }
+
+  def findPatientWithoutDocuments(params: util.Map[String, String]): util.List[Patient] = {
+    var findPatientQuery = """
+    SELECT DISTINCT patient
+    FROM Patient patient
+    WHERE patient.deleted = 0
+    AND patient.lastName LIKE :LASTNAME
+    AND patient.firstName LIKE      :FIRSTNAME
+    AND patient.patrName      LIKE      :PATRNAME
+    AND patient.birthDate =   :BIRTHDATE
+    AND patient.sex = :SEX
+                           """
+
+    if (params.contains("identifier") && params.contains("identifierType")) {
+      findPatientQuery += """ AND EXISTS(
+      SELECT clientident FROM ClientIdentification clientident
+      WHERE clientident.client = patient
+      AND clientident.accountingSystem = (
+      SELECT rbaccount FROM rbAccountingSystem rbaccount WHERE rbaccount.code= '%s'
+      )
+      AND identifier='%s'
+        AND ClientIdentification.deleted=0
+      )""".format(params.get("identifierType"), params.get("identifier"));
+    }
+
+    val millisecondsCount: java.lang.Long = java.lang.Long.parseLong(params.get("birthDate"));
+    val resultQuery = em.createQuery(findPatientQuery, classOf[Patient])
+      .setParameter("LASTNAME", params.get("lastName"))
+      .setParameter("FIRSTNAME", params.get("firstName"))
+      .setParameter("PATRNAME", params.get("patrName"))
+      .setParameter("SEX", java.lang.Short.parseShort(params.get("sex")))
+      .setParameter("BIRTHDATE", new java.util.Date(
+      millisecondsCount.longValue() - TimeZone.getDefault.getOffset(millisecondsCount.longValue())))
+    commlogger.debug("SQL =" + resultQuery.toString)
+    commlogger.debug("BirthDate param is {}", resultQuery.getParameterValue("BIRTHDATE"))
+    resultQuery.getResultList
   }
 }

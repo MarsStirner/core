@@ -63,5 +63,7 @@ public interface DbPatientBeanLocal {
      */
     boolean isAlive(Patient patient);
 
-    boolean deletePatient(int id ) throws CoreException;
+    boolean deletePatient(int id) throws CoreException;
+
+    List<Patient> findPatientWithoutDocuments(Map<String, String> parameters);
 }
