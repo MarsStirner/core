@@ -97,23 +97,6 @@ class DbPatientBean
       ORDER BY p.%s %s
                                            """
 
-  def getCountRecordsOrPagesQuery(enterPosition: String): TypedQuery[Long] = {
-
-    val cntMacroStr = "count(p)"
-    val sortField = ""
-    val sortMethod = ""
-    //выберем нужный запрос
-
-    var curentRequest = enterPosition.format(cntMacroStr, sortField, sortMethod)
-
-    //уберем из запроса фильтрацию
-    val index = curentRequest.indexOf("ORDER BY")
-    if (index > 0) {
-      curentRequest = curentRequest.substring(0, index)
-    }
-    em.createQuery(curentRequest.toString(), classOf[Long])
-  }
-
   def getAllPatients(): Iterable[Patient] = {
     em.createNamedQuery("Patient.findAll", classOf[Patient]).getResultList
   }

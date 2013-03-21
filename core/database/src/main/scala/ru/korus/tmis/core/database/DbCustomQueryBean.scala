@@ -83,7 +83,7 @@ class DbCustomQueryBean
                                             filter: Object,
                                             records: (java.lang.Long) => java.lang.Boolean) = {
 
-    val sorting = "ORDER BY %s %s".format(sortingField, sortingMethod)
+    //val sorting = filter.asInstanceOf[PatientsListRequestDataFilter].toSortingString(sortingField, sortingMethod)//"ORDER BY %s %s".format(sortingField, sortingMethod)
     val queryStr: QueryDataStructure = if (filter.isInstanceOf[PatientsListRequestDataFilter]) {
       filter.asInstanceOf[PatientsListRequestDataFilter].toQueryStructure()
     }
@@ -98,7 +98,7 @@ class DbCustomQueryBean
                                                                                               i18n("db.actionType.hospitalization.primary"),
                                                                                               iCapIds("db.rbCAP.hosp.primary.id.sentTo"),
                                                                                               i18n("db.action.movingFlatCode"),
-                                                                                              "GROUP BY e, a", sorting), classOf[Array[AnyRef]])
+                                                                                              "GROUP BY e, a", sortingField), classOf[Array[AnyRef]])
                   //.setMaxResults(limit)
                   //.setFirstResult(limit * page)
 

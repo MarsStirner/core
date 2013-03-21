@@ -8,8 +8,8 @@ import ru.korus.tmis.core.entity.model._
 import ru.korus.tmis.util.ConfigManager
 import org.codehaus.jackson.map.annotate.JsonView
 import collection.JavaConversions
+import collection.immutable.ListMap
 import java.util
-import java.text.SimpleDateFormat
 
 object PatientsListDataViews {
   class AttendingDoctorView {}
@@ -117,6 +117,18 @@ class PatientsListData {
       } else null
       this.data.add(new PatientsListEntry(event, bed, begDate, condition, from, mDiagnostics))
     })
+    //Cортировка по койке name
+    if (requestData.getSortingField.compareTo("bed") == 0) {
+      if (requestData.getSortingMethod.compareTo("desc") == 0) { //desc
+        val temp = this.data.toList.sortWith(_.getHospitalBed.getBed.toInt > _.getHospitalBed.getBed.toInt)
+        this.data = new util.LinkedList[PatientsListEntry]()
+        temp.foreach((f) => this.data.add(f))
+      } else { //asc
+        val temp = this.data.toList.sortBy(_.getHospitalBed.getBed.toInt)
+        this.data = new util.LinkedList[PatientsListEntry]()
+        temp.foreach((f) => this.data.add(f))
+      }
+    }
   }
 
   /**
@@ -204,7 +216,7 @@ class PatientsListRequestData {
     this.page = if(page>1){page} else{1}
     this.coreVersion = ConfigManager.Messages("misCore.assembly.version")
 
-    this.sortingFieldInternal = this.filter.toSortingString(this.sortingField)
+    this.sortingFieldInternal = this.filter.toSortingString(this.sortingField, this.sortingMethod)
   }
 
   def rewriteRecordsCount(recordsCount: java.lang.Long) = {
@@ -251,19 +263,22 @@ class PatientsListRequestDataFilter {
     }
     qs
   }
-  def toSortingString (sortingField: String) = {
-    val sortingFieldInternal = sortingField match {
-      case "createDatetime"| "start" | "begDate" => {"a.begDate"}
-      case "end" | "endDate" => {"e.execDate"}
-      case "doctor" => {"e.executor.lastName, e.executor.firstName, e.executor.patrName"}
-      case "department" => {"org.masterDepartment.name"}
-      case "bed" => {"org.name"}
-      case "number" => {"e.externalId"}
-      case "fullName" => {"e.patient.lastName, e.patient.firstName, e.patient.patrName"}
-      case "birthDate" => {"e.patient.birthDate"}
-      case _ => {"e.id"}
+  @Override
+  def toSortingString (sortingField: String, sortingMethod: String) = {
+    var sorting = sortingField.toLowerCase match {
+      case "createDatetime"| "start" | "begDate" => {"a.begDate %s".format(sortingMethod)}
+      case "end" | "endDate" => {"e.execDate %s".format(sortingMethod)}
+      case "doctor" => {"e.executor.lastName %s, e.executor.firstName %s, e.executor.patrName %s".format(sortingMethod, sortingMethod, sortingMethod)}
+      case "department" => {"org.masterDepartment.name %s".format(sortingMethod)}
+      //case "bed" => {"org.name %s".format(sortingMethod)}
+      case "number" => {"e.externalId %s".format(sortingMethod)}
+      case "fullname" => {"e.patient.lastName %s, e.patient.firstName %s, e.patient.patrName %s".format(sortingMethod,sortingMethod,sortingMethod)}
+      case "birthdate" => {"e.patient.birthDate %s".format(sortingMethod)}
+      case _ => {"e.id %s".format(sortingMethod)}
     }
-    sortingFieldInternal
+    //sortingFieldInternal
+    sorting = "ORDER BY " + sorting.format(sortingMethod)
+    sorting
   }
 }
 

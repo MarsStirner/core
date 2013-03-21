@@ -15,6 +15,8 @@ import java.util.Map;
 @Local
 public interface DbPatientBeanLocal {
 
+    Iterable<Patient> getAllPatients() throws CoreException;
+
     Iterable<Patient> getAllPatients(int page, int limit, String sorting, ListDataFilter filter, Function1<Long, Boolean> setRecCount)
             throws CoreException;
 
