@@ -213,6 +213,8 @@ class DbJobTicketBean extends DbJobTicketBeanLocal
     AND
       a.actionType.mnemonic = 'LAB'
     AND
+      a.actionType.isRequiredTissue = 0
+    AND
       e.deleted = 0
     AND
       attp.actionType.id = a.actionType.id

@@ -235,9 +235,6 @@ class ActionTypesListRequestDataFilter extends AbstractListDataFilter {
     if (this.mnemonic!=null && !this.mnemonic.isEmpty && this.mnemonic.compareTo("") != 0) {
       qs.query += ("AND at.mnemonic =  :mnemonic\n")
       qs.add("mnemonic",this.mnemonic)
-      if (this.mnemonic.compareTo("LAB") == 0) {
-        qs.query += ("AND at.isRequiredTissue = 0\n")
-      }
     }
     qs
   }
