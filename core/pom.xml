@@ -27,7 +27,7 @@
 
     <properties>
         <!-- Версия ядра-->
-        <version.tmis.core>0.9.13-SNAPSHOT</version.tmis.core>
+        <version.tmis.core>0.9.14-SNAPSHOT</version.tmis.core>
 
 
         <version.joda.time>2.1</version.joda.time>
@@ -588,7 +588,6 @@
         <testResources>
             <testResource>
                 <directory>src/test/resources/</directory>
-                <!--<targetPath>./</targetPath>-->
                 <filtering>true</filtering>
                 <includes>
                     <include>**/*.*</include>
