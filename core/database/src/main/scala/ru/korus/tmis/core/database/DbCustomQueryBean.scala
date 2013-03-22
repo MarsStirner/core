@@ -371,7 +371,9 @@ class DbCustomQueryBean
     var flgDepartmentSwitched: Boolean = false
     var sorting = "ORDER BY e.id %s".format(sortingMethod)
     var flgDepartmentSort: Boolean = false
-    if (sortingField.compareTo("department") != 0)
+    if (sortingField.compareTo("e.externalId") == 0) {
+      //sorting = "ORDER BY CAST(LEFT(%s,LOCATE('/',%s)) AS int) %s, CAST(SUBSTRING(%s, LOCATE('/', %s)+1) AS int) %s".format(sortingField, sortingField, sortingMethod, sortingField, sortingField, sortingMethod)
+    } else if (sortingField.compareTo("department") != 0)
       sorting = "ORDER BY %s %s".format(sortingField, sortingMethod)
     else
       flgDepartmentSort = true

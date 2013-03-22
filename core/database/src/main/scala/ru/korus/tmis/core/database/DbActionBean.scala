@@ -117,7 +117,10 @@ class DbActionBean
       a.setModifyPerson(userData.user)
       a.setModifyDatetime(now)
 
-      val eventPerson = dbEventPerson.getLastEventPersonForEventId(eventId)
+      var eventPerson: EventPerson = null
+      if (userData.getUserRole.getCode.compareTo("admNurse") == 0 || userData.getUserRole.getCode.compareTo("strNurse") == 0) {
+        eventPerson = dbEventPerson.getLastEventPersonForEventId(eventId)
+      }
       if (eventPerson != null) {
         a.setAssigner(eventPerson.getPerson)
       } else {
