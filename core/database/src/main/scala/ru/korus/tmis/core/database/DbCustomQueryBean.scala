@@ -371,8 +371,12 @@ class DbCustomQueryBean
     var flgDepartmentSwitched: Boolean = false
     var sorting = "ORDER BY e.id %s".format(sortingMethod)
     var flgDepartmentSort: Boolean = false
+    var flgAppealNumberSort: Boolean = false
     if (sortingField.compareTo("e.externalId") == 0) {
       //sorting = "ORDER BY CAST(LEFT(%s,LOCATE('/',%s)) AS int) %s, CAST(SUBSTRING(%s, LOCATE('/', %s)+1) AS int) %s".format(sortingField, sortingField, sortingMethod, sortingField, sortingField, sortingMethod)
+      //sorting = "ORDER BY SUBSTRING(%s, LOCATE('/', %s)-1) %s, SUBSTRING(%s, LOCATE('/', %s)+1) %s".format(sortingField, sortingField, sortingMethod, sortingField, sortingField, sortingMethod)
+      //SUBSTRING_INDEX(%s, '/', -1) %s
+      flgAppealNumberSort = true
     } else if (sortingField.compareTo("department") != 0)
       sorting = "ORDER BY %s %s".format(sortingField, sortingMethod)
     else
@@ -511,6 +515,13 @@ class DbCustomQueryBean
         ListMap(ret_value_sorted.toList.sortWith(_._2.asInstanceOf[(Map[Object, Object], OrgStructure)]._2.getName > _._2.asInstanceOf[(Map[Object, Object], OrgStructure)]._2.getName): _*)
       else //asc
         ListMap(ret_value_sorted.toList.sortBy(_._2.asInstanceOf[(Map[Object, Object], OrgStructure)]._2.getName): _*)
+    } else if (flgAppealNumberSort) {
+      //Cортировка по AppealNumber (externalId) как int
+      if (sortingMethod.compareTo("desc") == 0) //desc
+        ListMap(ret_value_sorted.toList.sortWith(_._1.getExternalId.substring(5).toInt > _._1.getExternalId.substring(5).toInt)
+                                       .sortWith(_._1.getExternalId.substring(0, 4).toInt > _._1.getExternalId.substring(0, 4).toInt): _*)
+      else //asc
+        ListMap(ret_value_sorted.toList.sortBy(m => (m._1.getExternalId.substring(0, 4).toInt, m._1.getExternalId.substring(5).toInt)): _*)
     } else {
       ListMap(ret_value_sorted.toList: _*)
     }
