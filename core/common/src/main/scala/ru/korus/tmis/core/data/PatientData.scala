@@ -179,7 +179,7 @@ class RequestDataFilter extends AbstractListDataFilter {
       }
     }
     if(this.document!=null && !this.document.isEmpty){
-      qs.query += ("AND exists (SELECT d FROM ClientDocument d WHERE upper(d.serial) LIKE upper(:documentPattern) OR upper(d.number) LIKE upper(:documentPattern) AND d.patient = p)\n")
+      qs.query += ("AND exists (SELECT d FROM ClientDocument d WHERE d.patient = p AND (upper(d.serial) LIKE upper(:documentPattern) OR upper(d.number) LIKE upper(:documentPattern)))\n")
       qs.add("documentPattern", "%" + this.document + "%")
     }
     if(this.birthDate!=null){

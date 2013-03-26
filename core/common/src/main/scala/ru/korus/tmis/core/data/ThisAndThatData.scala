@@ -289,13 +289,15 @@ class ActionTypesListEntry {
     this.groupId = if(actionType.getGroupId!=null) {actionType.getGroupId.intValue()} else{0}
     this.code = actionType.getCode
     this.name = actionType.getName
-    getAllActionTypeWithFilter(0,0,requestData.sortingFieldInternal,requestData.filter.unwrap()).foreach(f => {
-      val filter = new ActionTypesListRequestDataFilter("", f.getId.intValue(), "",
-                                                        requestData.filter.asInstanceOf[ActionTypesListRequestDataFilter].mnemonic,
-                                                        requestData.filter.asInstanceOf[ActionTypesListRequestDataFilter].view)
-      val request = new ListDataRequest(requestData.sortingField, requestData.sortingMethod, requestData.limit, requestData.page, filter)
-      this.groups.add(new ActionTypesListEntry(f, request, getAllActionTypeWithFilter))
-    })
+    if (requestData.filter.asInstanceOf[ActionTypesListRequestDataFilter].view.compareTo("tree") == 0) {
+      getAllActionTypeWithFilter(0,0,requestData.sortingFieldInternal,requestData.filter.unwrap()).foreach(f => {
+        val filter = new ActionTypesListRequestDataFilter("", f.getId.intValue(), "",
+                                                          requestData.filter.asInstanceOf[ActionTypesListRequestDataFilter].mnemonic,
+                                                          requestData.filter.asInstanceOf[ActionTypesListRequestDataFilter].view)
+        val request = new ListDataRequest(requestData.sortingField, requestData.sortingMethod, requestData.limit, requestData.page, filter)
+        this.groups.add(new ActionTypesListEntry(f, request, getAllActionTypeWithFilter))
+      })
+    }
     //this.childrenCount = actionType
   }
 }

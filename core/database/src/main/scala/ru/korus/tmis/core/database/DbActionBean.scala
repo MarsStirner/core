@@ -132,7 +132,7 @@ class DbActionBean
     a.setCreateDatetime(now)
     a.setModifyDatetime(now)
     a.setBegDate(now)
-    a.setEndDate(now)
+    //a.setEndDate(now)
 
     a.setEvent(e)
     a.setActionType(at)

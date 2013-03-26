@@ -203,6 +203,7 @@ class DirectionBean extends DirectionBeanLocal
           val j = dbJobBean.insertOrUpdateJob(0, a, department)
           val jt = dbJobTicketBean.insertOrUpdateJobTicket(0, a, j)
           val tt = dbTakenTissue.insertOrUpdateTakenTissue(0, a)
+          if (tt != null) a.setTakenTissue(tt)
           list.add(j, jt, tt)
         } else {
           var (lj, ljt, ltt) = list.get(list.size()-1)
@@ -265,6 +266,8 @@ class DirectionBean extends DirectionBeanLocal
         var (ap, mkb) = value
         em.merge(actionPropertyBean.setActionPropertyValue(ap, mkb.getId.intValue().toString, 0))
       })
+      //сохраняем изменения в акшенах (setTakenTissue) (TakenTissueJournal)
+      actions.foreach((a) => em.merge(a))
       em.flush()
     }
 
