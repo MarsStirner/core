@@ -13,6 +13,14 @@ echo --------------------------------------------------------------------
 echo List domains
 echo.
 call asadmin list-domains
+echo.
+echo --------------------------------------------------------------------
+echo List applications
+echo.
+call asadmin --user ${glassfish.admin.login} ^
+             --passwordfile %GF_PASSWD_FILE% ^
+            list-applications
+echo.
 echo --------------------------------------------------------------------
 echo Undeploy ${glassfish.application.name}
 echo.
