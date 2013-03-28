@@ -707,7 +707,7 @@ class WebMisRESTImpl  extends WebMisREST
     //TODO: подключить анализ авторизационных данных и доступных ролей
     val authData:AuthData = null
 
-    val json_data = primaryAssessmentBean.getPrimaryAssessmentById(actionId, "Diagnostic", authData, null, false)
+    val json_data = directionBean.getDirectionById(actionId, "Diagnostic", authData, null)
     json_data
   }
 
