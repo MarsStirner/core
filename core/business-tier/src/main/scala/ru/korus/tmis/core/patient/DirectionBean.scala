@@ -173,15 +173,17 @@ class DirectionBean extends DirectionBeanLocal
     var apvMKBList = new java.util.LinkedList[(ActionProperty, Mkb)]
     var tissueType: RbTissueType = null
     actions.foreach((a) => {
-      val jobAndTicket = dbJobBean.getJobAndJobTicketForAction(a)
+      val jobAndTicket = dbJobTicketBean.getJobTicketAndTakenTissueForAction(a)
       if (jobAndTicket != null) {
-        val (job, jobTicket) = jobAndTicket.asInstanceOf[(Job, JobTicket)]
-        if (job != null && jobTicket != null) {
+        val (jobTicket, takenTissue) = jobAndTicket.asInstanceOf[(JobTicket, TakenTissue)]
+        if (jobTicket != null && jobTicket.getJob!=null) {
           var (lj, ljt, ltt) = if (list.size() > 0) list.get(list.size()-1) else (null, null, null)
-          if (lj == null || lj.getId.intValue() != job.getId.intValue()) {
-            val j = dbJobBean.insertOrUpdateJob(job.getId.intValue(), a, department)
+          if (lj == null || lj.getId.intValue() != jobTicket.getJob.getId.intValue()) {
+            val j = dbJobBean.insertOrUpdateJob(jobTicket.getJob.getId.intValue(), a, department)
             val jt = dbJobTicketBean.insertOrUpdateJobTicket(jobTicket.getId.intValue(), a, j)
-            val tt = null//dbTakenTissue.insertOrUpdateTakenTissue(0, a)
+            val tt = takenTissue
+            if (takenTissue != null)
+              a.setTakenTissue(takenTissue)
             a.getActionProperties.foreach((ap) => {
               if (ap.getType.getTypeName.compareTo("JobTicket") == 0) {
                 apvList.add((ap, jt))
@@ -306,13 +308,16 @@ class DirectionBean extends DirectionBeanLocal
     directions.getData.foreach((f) => {
       var a = actionBean.getActionById(f.getId)
       a.setDeleted(true)
-      val (j, jt) = dbJobBean.getJobAndJobTicketForAction(a).asInstanceOf[(Job, JobTicket)]
-      if (j.getQuantity == 1) {
-        j.setDeleted(true)
+      val res = dbJobTicketBean.getJobTicketAndTakenTissueForAction(a).asInstanceOf[(JobTicket, TakenTissue)]
+      if (res._1!=null && res._1.getJob!=null) {
+        val job = res._1.getJob
+        if (job.getQuantity == 1) {
+          job.setDeleted(true)
+        }
+        job.setQuantity(job.getQuantity - 1)
+        em.merge(job)
       }
-      j.setQuantity(j.getQuantity - 1)
       em.merge(a)
-      em.merge(j)
     })
     em.flush()
     true

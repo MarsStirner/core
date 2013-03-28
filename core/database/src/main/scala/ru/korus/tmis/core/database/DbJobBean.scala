@@ -56,39 +56,6 @@ class DbJobBean extends DbJobBeanLocal
     job
   }
 
-  def getJobAndJobTicketForAction(action: Action) = {
-    val formatter = new SimpleDateFormat("yyyy-MM-dd")
-    val strDate = formatter.format(action.getPlannedEndDate)
-    val date = formatter.parse(strDate)
-
-    val query = em.createQuery(JobForActionQuery, classOf[Array[AnyRef]])
-      .setParameter("plannedEndDate", date)
-      .setParameter("eventId", action.getEvent.getId.intValue())
-      .setParameter("actionTypeId", action.getActionType.getId.intValue())
-
-    val result = query.getResultList
-
-    result.size match {
-      case 0 => {
-        null /*
-        throw new CoreException(
-          ConfigManager.ErrorCodes.JobNotFound,
-          i18n("error.jobNotFound").format(id))          */
-      }
-      case size => {
-        val jobAndJobTicket = result.foldLeft(new java.util.LinkedList[(Job, JobTicket)])(
-          (list, aj) => {
-            em.detach(aj(0))
-            em.detach(aj(1))
-            list.add((aj(0).asInstanceOf[Job], aj(1).asInstanceOf[JobTicket]))
-            list
-          }
-        )
-        jobAndJobTicket.get(0).asInstanceOf[(Job, JobTicket)]
-      }
-    }
-  }
-
   def getJobById(id: Int): Job = {
     val result = em.createQuery(JobByIdQuery, classOf[Job])
       .setParameter("id", id)
@@ -114,39 +81,5 @@ class DbJobBean extends DbJobBeanLocal
         Job j
       WHERE
         j.id = :id
-    """
-
-  val JobForActionQuery =
-    """
-      SELECT DISTINCT j, jt
-      FROM
-        Job j,
-        JobTicket jt,
-        APValueJobTicket apval,
-        ActionProperty ap,
-        ActionTypeTissueType attt
-        JOIN ap.action a
-      WHERE
-        jt.job.id = j.id
-      AND
-        apval.value = jt.id
-      AND
-        apval.id.id = ap.id
-      AND
-        a.event.id = :eventId
-      AND
-        a.actionType.id = :actionTypeId
-      AND
-        attt.actionType.id = a.actionType.id
-      AND
-        j.date = :plannedEndDate
-      AND
-        a.actionType.mnemonic = 'LAB'
-      AND
-        ap.deleted = 0
-      AND
-        a.deleted = 0
-      AND
-        j.deleted = 0
     """
 }
