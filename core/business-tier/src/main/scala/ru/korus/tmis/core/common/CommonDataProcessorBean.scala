@@ -549,19 +549,19 @@ class CommonDataProcessorBean
     if (age == null || age.get(Calendar.YEAR) == 0 || (apt.getAge_bc == 0 && apt.getAge_ec == 0 && apt.getAge_bu == 0 && apt.getAge_eu == 0)) {
       apt.getAge_eu match {
         case 1 => {   //дней
-          if ((age.get(Calendar.DAY_OF_YEAR) > apt.getAge_bc || apt.getAge_bc == 0)  &&
+          if ((age.get(Calendar.DAY_OF_YEAR) >= apt.getAge_bc || apt.getAge_bc == 0)  &&
             (age.get(Calendar.DAY_OF_YEAR) < apt.getAge_ec || apt.getAge_ec == 0)) {
             needProp = true
           }
         }
         case 2 => {   //недель
-          if ((age.get(Calendar.WEEK_OF_YEAR) > apt.getAge_bc || apt.getAge_bc == 0) &&
+          if ((age.get(Calendar.WEEK_OF_YEAR) >= apt.getAge_bc || apt.getAge_bc == 0) &&
             (age.get(Calendar.WEEK_OF_YEAR) < apt.getAge_ec || apt.getAge_ec == 0)) {
             needProp = true
           }
         }
         case 3 => {   //месяцев
-          if ((age.get(Calendar.MONTH) > apt.getAge_bc || apt.getAge_bc == 0) &&
+          if ((age.get(Calendar.MONTH) >= apt.getAge_bc || apt.getAge_bc == 0) &&
             (age.get(Calendar.MONTH) < apt.getAge_ec || apt.getAge_ec == 0)) {
             needProp = true
           }
@@ -572,7 +572,7 @@ class CommonDataProcessorBean
       }
     } else {             //лет
       if ( apt.getAge_eu == 4 &&
-        (age.get(Calendar.YEAR) > apt.getAge_bc || apt.getAge_bc == 0) &&
+        (age.get(Calendar.YEAR) >= apt.getAge_bc || apt.getAge_bc == 0) &&
         (age.get(Calendar.YEAR) < apt.getAge_ec || apt.getAge_ec == 0)) {
         needProp = true
       }

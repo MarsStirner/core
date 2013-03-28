@@ -14,6 +14,7 @@ import ru.korus.tmis.core.common.CommonDataProcessorBeanLocal
 import ru.korus.tmis.util.ConfigManager._
 import ru.korus.tmis.core.database._
 import collection.JavaConversions
+import java.util
 
 /**
  * Методы для работы с Направлениями
@@ -57,7 +58,7 @@ class DirectionBean extends DirectionBeanLocal
   @EJB
   private var actionBean: DbActionBeanLocal = _
 
-  def summary(assessment: Action) = {
+  def summary(direction: Action) = {
     val group = new CommonGroup(0, "Summary")
 
     val attributes = List(
@@ -76,48 +77,14 @@ class DirectionBean extends DirectionBeanLocal
       AWI.PlannedEndDate,
       AWI.ToOrder
     )
-
-    commonDataProcessor.addAttributes(
-      group,
-      new ActionWrapper(assessment),
-      attributes)
+    commonDataProcessor.addAttributes(group, new ActionWrapper(direction), attributes)
   }
-       /*
-  def details(assessment: Action) = {
-    val propertiesMap =
-      actionPropertyBean.getActionPropertiesByActionId(assessment.getId.intValue)
 
+  def detailsWithAge(direction: Action) = {
+    val propertiesMap = actionPropertyBean.getActionPropertiesByActionId(direction.getId.intValue)
     val group = new CommonGroup(1, "Details")
 
-    propertiesMap.foreach(
-      (p) => {
-        val (ap, apvs) = p
-        val apw = new ActionPropertyWrapper(ap)
-
-        apvs.size match {
-          case 0 => {
-            group add apw.get(null, List(APWI.Unit,
-              APWI.Norm))
-          }
-          case _ => {
-            apvs.foreach((apv) => {
-              group add apw.get(apv, List(APWI.Value,
-                APWI.ValueId,
-                APWI.Unit,
-                APWI.Norm))
-            })
-          }
-        }
-      })
-
-    group
-  }
-           */
-  def detailsWithAge(assessment: Action) = {
-    val propertiesMap = actionPropertyBean.getActionPropertiesByActionId(assessment.getId.intValue)
-    val group = new CommonGroup(1, "Details")
-
-    val age = commonDataProcessor.defineAgeOfPatient(assessment.getEvent.getPatient)
+    val age = commonDataProcessor.defineAgeOfPatient(direction.getEvent.getPatient)
 
     propertiesMap.foreach(
       (p) => {
@@ -146,12 +113,34 @@ class DirectionBean extends DirectionBeanLocal
     group
   }
 
+  def getDirectionById(directionId: Int,
+                             title: String,
+                          userData: AuthData,
+        postProcessingForDiagnosis: (JSONCommonData, java.lang.Boolean) => JSONCommonData) = {
+
+    val action = actionBean.getActionById(directionId)
+    var actions: java.util.List[Action] = new util.LinkedList[Action]
+    actions.add(action)
+
+    val com_data = commonDataProcessor.fromActions(
+      actions,
+      title,
+      List(summary _, detailsWithAge _))
+
+    var json_data = new JSONCommonData()
+    json_data.data = com_data.entity
+    if (postProcessingForDiagnosis != null) {
+      json_data =  postProcessingForDiagnosis(json_data, false)
+    }
+    json_data
+  }
+
   def  createDirectionsForEventIdFromCommonData(eventId: Int,
-                                                 directions: CommonData,
-                                                 title: String,
-                                                 request: Object,
-                                                 userData: AuthData,
-                                                 postProcessingForDiagnosis: (JSONCommonData, java.lang.Boolean) => JSONCommonData) = {
+                                             directions: CommonData,
+                                                  title: String,
+                                                request: Object,
+                                               userData: AuthData,
+                             postProcessingForDiagnosis: (JSONCommonData, java.lang.Boolean) => JSONCommonData) = {
 
     //создание жоб тикета тут должно быть
     val actions: java.util.List[Action] = commonDataProcessor.createActionForEventFromCommonData(eventId, directions, userData)
@@ -284,14 +273,12 @@ class DirectionBean extends DirectionBeanLocal
   }
 
   def modifyDirectionsForEventIdFromCommonData(directionId: Int,
-                                               directions: CommonData,
-                                               title: String,
-                                               request: Object,
-                                               userData: AuthData,
-                                               postProcessingForDiagnosis: (JSONCommonData, java.lang.Boolean) => JSONCommonData) = {
-
-    //val actions: java.util.List[Action] = commonDataProcessor.createActionForEventFromCommonData(eventId, assessments, userData)
-    var actions: java.util.List[Action] = null// commonDataProcessor.modifyActionFromCommonData(assessmentId, assessments, userData)
+                                                directions: CommonData,
+                                                     title: String,
+                                                   request: Object,
+                                                  userData: AuthData,
+                                postProcessingForDiagnosis: (JSONCommonData, java.lang.Boolean) => JSONCommonData) = {
+    var actions: java.util.List[Action] = null
     directions.getEntity.foreach((action) => {
       actions = commonDataProcessor.modifyActionFromCommonData(action.getId().intValue(), directions, userData)
     })

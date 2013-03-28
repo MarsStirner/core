@@ -16,6 +16,22 @@ import javax.ejb.Local;
  */
 @Local
 public interface DirectionBeanLocal {
+
+    /**
+     * Метод получения направления на лабораторное исследование по идентификатору
+     * @param directionId id лабораторного исследования
+     * @param title  вспомогательный параметр название действия (Диагнозтика).
+     * @param userData Данные пользователя
+     * @return com.sun.jersey.api.json.JSONWithPadding как Object
+     * @throws CoreException
+     * @see CoreException
+     */
+    JSONCommonData getDirectionById(int directionId,
+                                    String title,
+                                    AuthData userData,
+                                    Function2<JSONCommonData, java.lang.Boolean, JSONCommonData> postProcessingForDiagnosis)
+           throws CoreException;
+
     /**
      * Метод создания направления на лабораторные исследования
      * @param directions Json с данными о лабораторных исследованиях как CommonData
