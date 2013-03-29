@@ -295,9 +295,12 @@ class DirectionBean extends DirectionBeanLocal
     directions.getData.foreach((f) => {
       var a = actionBean.getActionById(f.getId)
       a.setDeleted(true)
-      val res = dbJobTicketBean.getJobTicketAndTakenTissueForAction(a).asInstanceOf[(JobTicket, TakenTissue)]
-      if (res._1!=null && res._1.getJob!=null) {
-        val job = res._1.getJob
+      val res = dbJobTicketBean.getJobTicketAndTakenTissueForAction(a)
+      if (res!=null &&
+          res.isInstanceOf[(JobTicket, TakenTissue)] &&
+          res.asInstanceOf[(JobTicket, TakenTissue)]._1 != null &&
+          res.asInstanceOf[(JobTicket, TakenTissue)]._1.getJob != null) {
+        val job = res.asInstanceOf[(JobTicket, TakenTissue)]._1.getJob
         if (job.getQuantity == 1) {
           job.setDeleted(true)
         }

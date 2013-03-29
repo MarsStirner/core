@@ -68,7 +68,7 @@ public class HospitalBedsInfoRESTImpl {
     public Object getVacantHospitalBeds(@QueryParam("filter[departmentId]") int departmentId) {
         //Отделение обязательное поле, если не задано в запросе, то берем из роли специалиста
         int depId = (departmentId>0) ? departmentId : this.auth.getUser().getOrgStructure().getId().intValue();
-        return new JSONWithPadding(wsImpl.getVacantHospitalBeds(depId, this.auth));
+        return new JSONWithPadding(wsImpl.getVacantHospitalBeds(depId, this.auth), this.callback);
     }
 
 
