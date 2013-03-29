@@ -144,7 +144,6 @@ class DirectionBean extends DirectionBeanLocal
 
     //создание жоб тикета тут должно быть
     val actions: java.util.List[Action] = commonDataProcessor.createActionForEventFromCommonData(eventId, directions, userData)
-    var actions2 = new java.util.LinkedList[Action]
     val moving = hospitalBedBean.getLastMovingActionForEventId(eventId)
     var department = dbOrgStructure.getOrgStructureById(28)//приемное отделение
     //actionPropertyBean.getActionPropertiesByActionIdAndTypeId(moving.getId.intValue(), 1616)
@@ -263,6 +262,7 @@ class DirectionBean extends DirectionBeanLocal
       em.flush()
     }
 
+    val com_data = commonDataProcessor.fromActions(actions, title, List(summary _, detailsWithAge _))
     var json_data = new JSONCommonData(request, com_data)
     if (postProcessingForDiagnosis != null) {
       json_data =  postProcessingForDiagnosis(json_data, false)
