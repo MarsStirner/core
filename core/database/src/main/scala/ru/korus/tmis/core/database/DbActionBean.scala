@@ -120,12 +120,13 @@ class DbActionBean
       var eventPerson: EventPerson = null
       if (userData.getUserRole.getCode.compareTo("admNurse") == 0 || userData.getUserRole.getCode.compareTo("strNurse") == 0) {
         eventPerson = dbEventPerson.getLastEventPersonForEventId(eventId)
+        if (eventPerson != null) {
+          a.setAssigner(eventPerson.getPerson)
+        } else {
+          a.setAssigner(userData.user)
+        }
       }
-      if (eventPerson != null) {
-        a.setAssigner(eventPerson.getPerson)
-      } else {
-        a.setAssigner(userData.user)
-      }
+
       a.setExecutor(userData.user)
     }
 
@@ -145,17 +146,23 @@ class DbActionBean
 
   def updateAction(id: Int, version: Int, userData: AuthData) = {
     val a = getActionById(id)
-
     val now = new Date
 
-    a.setModifyPerson(userData.user)
+    if (userData != null) {
+      a.setModifyPerson(userData.user)
+      var eventPerson: EventPerson = null
+      if (userData.getUserRole.getCode.compareTo("admNurse") == 0 || userData.getUserRole.getCode.compareTo("strNurse") == 0) {
+        eventPerson = dbEventPerson.getLastEventPersonForEventId(a.getEvent.getId.intValue())
+        if (eventPerson != null) a.setAssigner(eventPerson.getPerson) else a.setAssigner(userData.user)
+      }
+
+      a.setExecutor(userData.user)
+    }
+
     a.setModifyDatetime(now)
     a.setVersion(version)
-
-    a.setAssigner(userData.user)
-    a.setExecutor(userData.user)
     a.setBegDate(now)
-    a.setEndDate(now)
+    //a.setEndDate(now)
 
     a
   }
