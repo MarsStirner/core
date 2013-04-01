@@ -118,11 +118,14 @@ class DiagnosticsListRequestDataFilter {
   @BeanProperty
   var eventId: Int = _
 
-  @BeanProperty
+ /* @BeanProperty
   var diagnosticDate: Date = _
 
   @BeanProperty
-  var directionDate: Date = _
+  var directionDate: Date = _ */
+
+  @BeanProperty
+  var plannedEndDate: Date = _
 
   @BeanProperty
   var diagnosticName: String = _
@@ -149,8 +152,9 @@ class DiagnosticsListRequestDataFilter {
 
   def this(code_x: String,
            eventId: Int,
-           diagnosticDate: Long,
-           directionDate: Long,
+           //diagnosticDate: Long,
+           //directionDate: Long,
+           plannedEndDate: Long,
            diagnosticName: String,
            assignPersonId: Int,
            execPersonId: Int,
@@ -183,16 +187,9 @@ class DiagnosticsListRequestDataFilter {
       }
     }
     this.eventId = eventId
-    this.diagnosticDate = if (diagnosticDate == 0) {
-      null
-    } else {
-      new Date(diagnosticDate)
-    }
-    this.directionDate = if (directionDate == 0) {
-      null
-    } else {
-      new Date(directionDate)
-    }
+    //this.diagnosticDate = if (diagnosticDate == 0) null else new Date(diagnosticDate)
+    //this.directionDate = if (directionDate == 0) null else new Date(directionDate)
+    this.plannedEndDate = if (plannedEndDate == 0) null else new Date(plannedEndDate)
     this.diagnosticName = diagnosticName
     this.assignPersonId = assignPersonId
     this.execPersonId = execPersonId
@@ -212,13 +209,18 @@ class DiagnosticsListRequestDataFilter {
       qs.query += ("AND a.event.id = :eventId\n")
       qs.add("eventId", this.eventId: java.lang.Integer)
     }
-    if (this.diagnosticDate != null) {
+    /*if (this.diagnosticDate != null) {
       qs.query += "AND a.createDatetime = :diagnosticDate\n"
       qs.add("diagnosticDate", this.diagnosticDate)
     }
     if (this.directionDate != null) {
       qs.query += "AND a.directionDate= :directionDate\n"
       qs.add("directionDate", this.directionDate)
+    } */
+
+    if (this.plannedEndDate != null) {
+      qs.query += "AND a.plannedEndDate= :plannedEndDate\n"
+      qs.add("plannedEndDate", this.plannedEndDate)
     }
     if (this.diagnosticName != null && !this.diagnosticName.isEmpty) {
       qs.query += "AND upper(a.actionType.name) LIKE upper(:diagnosticName)\n"
@@ -328,11 +330,14 @@ class LaboratoryDiagnosticsListEntry {
   @BeanProperty
   var id: Int = _ //Ид действия
 
-  @BeanProperty
-  var directionDate: Date = _ //Дата направления
+  //@BeanProperty
+  //var directionDate: Date = _ //Дата направления
+
+  //@BeanProperty
+  //var diagnosticDate: Date = _ //Дата диагностики   (выполнения)
 
   @BeanProperty
-  var diagnosticDate: Date = _ //Дата диагностики   (выполнения)
+  var plannedEndDate: Date = _ //Дата направления (Дата забора БМ)
 
   @BeanProperty
   var diagnosticName: IdNameContainer = _ //Направление лабораторных исследований
@@ -355,8 +360,9 @@ class LaboratoryDiagnosticsListEntry {
   def this(action: Action) {
     this()
     this.id = action.getId.intValue()
-    this.diagnosticDate = action.getEndDate
-    this.directionDate = action.getBegDate //getDirectionDate
+    //this.diagnosticDate = action.getEndDate
+    //this.directionDate = action.getBegDate //getDirectionDate
+    this.plannedEndDate = action.getPlannedEndDate
     this.diagnosticName = new IdNameContainer(action.getActionType.getId.intValue, action.getActionType.getName)
     this.assignPerson = new DoctorContainer(action.getAssigner)
     this.execPerson = new DoctorContainer(action.getExecutor)
