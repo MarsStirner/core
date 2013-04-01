@@ -134,6 +134,9 @@
                 <mysql.db.tmis_core>tmis_core</mysql.db.tmis_core>
                 <!-- Название пула для базы данных - конфигурации ядра -->
                 <mysql.db.tmis_core.pool>tmis_core-pool</mysql.db.tmis_core.pool>
+
+                <!-- Выключить дебаг -->
+                <project.build.debug>false</project.build.debug>
             </properties>
             <activation>
                 <activeByDefault>true</activeByDefault>

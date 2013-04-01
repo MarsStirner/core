@@ -85,13 +85,22 @@ public class PharmacyBean implements PharmacyBeanLocal {
             try {
                 final ActionType actionType = action.getActionType();
                 if (FlatCode.PRESCRIPTION.getCode().equalsIgnoreCase(actionType.getFlatCode())) {
-
                     send(action);
                 }
             } catch (Exception e) {
                 logger.error("Error");
             }
         }
+        logger.info("End flush assignment for today...");
+
+        // просмотреть назначения на сегодня и отправить исполненное
+        logger.info("Begin flush release assignment for today...");
+        for (Action action : dbPharmacy.getAssignmentForToday(DateTime.now())) {
+
+        }
+        logger.info("End flush release assignment for today...");
+
+
     }
 
     /**
@@ -176,6 +185,16 @@ public class PharmacyBean implements PharmacyBeanLocal {
                 logger.error("Error connection with 1C Pharmacy. Message is setup ERROR status");
                 pharmacy.setStatus(PharmacyStatus.ERROR);
             }
+        } catch (NoSuchOrgStructureException e) {
+            if (pharmacy != null) {
+                pharmacy.setStatus(PharmacyStatus.ERROR);
+            }
+            logger.info("OrgStructure not found. Skip message: " + e);
+        } catch (SkipMessageProcessException e) {
+            if (pharmacy != null) {
+                pharmacy.setStatus(PharmacyStatus.ERROR);
+            }
+            logger.info("Skip message: " + e);
         } catch (Exception e) {
             if (pharmacy != null) {
                 pharmacy.setStatus(PharmacyStatus.ERROR);
@@ -190,7 +209,6 @@ public class PharmacyBean implements PharmacyBeanLocal {
                 }
             }
         }
-
     }
 
     /**
@@ -237,7 +255,6 @@ public class PharmacyBean implements PharmacyBeanLocal {
         } else if (FlatCode.LEAVED.getCode().equalsIgnoreCase(actionType.getFlatCode())) {
             return HL7PacketBuilder.processLeaved(action);
         } else if (FlatCode.PRESCRIPTION.getCode().equalsIgnoreCase(actionType.getFlatCode())) {
-            logger.info("Found {}, flatCode {}", action, actionType.getFlatCode());
             // Пациент
             final Patient client = action.getEvent().getPatient();
             // Врач, сделавший обращение
@@ -247,7 +264,8 @@ public class PharmacyBean implements PharmacyBeanLocal {
             // Определяем код назначенного препарата
             final String drugCode = dbPharmacy.getDrugCode(action);
 
-            return HL7PacketBuilder.processPrescription(action, client, executorStaff, organisation, drugCode);
+            return HL7PacketBuilder.processPrescription(
+                    action, client, executorStaff, organisation, drugCode, AssignmentType.ASSIGNMENT);
         }
 
         throw new MessageProcessException();
