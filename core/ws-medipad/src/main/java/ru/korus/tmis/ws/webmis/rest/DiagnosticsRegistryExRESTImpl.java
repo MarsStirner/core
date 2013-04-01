@@ -50,8 +50,7 @@ public class DiagnosticsRegistryExRESTImpl {
      * &#15; "asc" - по возрастанию (значение по умолчанию);
      * &#15; "desc" - по убыванию;</pre>
      * @param diaTypeCode Фильтр по коду типа исследования.
-     * @param diagnosticDate Фильтр по дате исследования.
-     * @param directionDate Фильтр по дате назначения.
+     * @param date Фильтр по дате исследования.
      * @param diagnosticName Фильтр по наименованию исследования.
      * @param assignPersonId Фильтр по направившему на исследование специалисту.
      * @param execPersonId  Фильтр по проводившему исследование специалисту.
@@ -71,8 +70,9 @@ public class DiagnosticsRegistryExRESTImpl {
                                                                     @QueryParam("sortingField")String sortingField,           //сортировки вкл
                                                                     @QueryParam("sortingMethod")String sortingMethod,
                                                                     @QueryParam("filter[code]")String  diaTypeCode,
-                                                                    @QueryParam("filter[diagnosticDate]")long  diagnosticDate,
-                                                                    @QueryParam("filter[directionDate]")long  directionDate,
+                                                                    //@QueryParam("filter[diagnosticDate]")long  diagnosticDate,
+                                                                    //@QueryParam("filter[directionDate]")long  directionDate,
+                                                                    @QueryParam("filter[date]") long date,
                                                                     @QueryParam("filter[diagnosticName]")String  diagnosticName,
                                                                     @QueryParam("filter[assignPersonId]")int  assignPersonId,
                                                                     @QueryParam("filter[execPersonId]")int  execPersonId,
@@ -83,8 +83,9 @@ public class DiagnosticsRegistryExRESTImpl {
         DirectoryInfoRESTImpl.ActionTypesSubType atst = DirectoryInfoRESTImpl.ActionTypesSubType.getType(var);
         DiagnosticsListRequestDataFilter filter = new DiagnosticsListRequestDataFilter( diaTypeCode,
                 this.eventId,
-                diagnosticDate,
-                directionDate,
+                //diagnosticDate,
+                //directionDate,
+                date,
                 diagnosticName,
                 assignPersonId,
                 execPersonId,
