@@ -15,6 +15,7 @@ import ru.korus.tmis.util.ConfigManager._
 import ru.korus.tmis.core.database._
 import collection.JavaConversions
 import java.util
+import ru.korus.tmis.core.filter.ActionsListDataFilter
 
 /**
  * Методы для работы с Направлениями
@@ -173,6 +174,20 @@ class DirectionBean extends DirectionBeanLocal
             val tt = takenTissue
             if (takenTissue != null)
               a.setTakenTissue(takenTissue)
+
+            //*****
+            //Проверка, есть ли подобный action за текущие сутки c другим временем
+            //по коментарию Алехиной https://korusconsulting.atlassian.net/browse/WEBMIS-711
+            val filter = new ActionsListDataFilter(a.getEvent.getId.intValue(),        //ид обращения в теле запроса
+                                                   a.getActionType.getId.intValue(),   //действия только данного типа
+                                                   -1,
+                                                   -1,
+                                                   false,
+                                                   true)                              //за текущий день
+            val last = actionBean.getActionsWithFilter(0, 0, "", filter.unwrap(), null, null)
+            if(last!=null && last.size()>0 && jobTicket.getStatus==2 && !a.getIsUrgent())
+              a.setStatus(2)
+            //*****
             a.getActionProperties.foreach((ap) => {
               if (ap.getType.getTypeName.compareTo("JobTicket") == 0) {
                 apvList.add((ap, jt))

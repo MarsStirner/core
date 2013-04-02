@@ -525,8 +525,13 @@ class WebMisRESTImpl  extends WebMisREST
 
   //Возвращает список осмотров по пациенту и обращению с фильтрацией по типу действия
   def getListOfAssessmentsForPatientByEvent(requestData: AssessmentsListRequestData, auth: AuthData) = {
-
-    val action_list = actionBean.getActionsByEventIdWithFilter(requestData.eventId, auth, requestData)
+    val action_list = actionBean.getActionsWithFilter(requestData.limit,
+                                                      requestData.page-1,
+                                                      requestData.sortingFieldInternal,
+                                                      requestData.filter.unwrap(),
+                                                      requestData.rewriteRecordsCount _,
+                                                      auth)
+    //actionBean.getActionsByEventIdWithFilter(requestData.eventId, auth, requestData)
     val assessments: AssessmentsListData = new AssessmentsListData(action_list, requestData)
     assessments
   }
@@ -671,11 +676,11 @@ class WebMisRESTImpl  extends WebMisREST
     //TODO: подключить анализ авторизационных данных и доступных ролей
     requestData.setRecordsCount(dbOrgStructureBean.getCountAllOrgStructuresWithFilter(requestData.filter))
     val list = new AllDepartmentsListData(dbOrgStructureBean.getAllOrgStructuresByRequest(requestData.limit,
-      requestData.page-1,
-      requestData.sortingFieldInternal,
-      requestData.filter.unwrap()
-    ),
-      requestData)
+                                                                                          requestData.page-1,
+                                                                                          requestData.sortingFieldInternal,
+                                                                                          requestData.filter.unwrap()
+                                                                                        ),
+                                          requestData)
     list
   }
 

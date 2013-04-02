@@ -12,9 +12,10 @@ import javax.ejb.{TransactionAttributeType, TransactionAttribute, EJB, Stateless
 import javax.interceptor.Interceptors
 import scala.collection.JavaConversions._
 import javax.persistence.{TypedQuery, PersistenceContext, EntityManager}
-import ru.korus.tmis.core.data.{AssessmentsListRequestDataFilter, AssessmentsListRequestData}
+import ru.korus.tmis.core.data.{QueryDataStructure, AssessmentsListRequestDataFilter, AssessmentsListRequestData}
 import ru.korus.tmis.core.pharmacy.DbUUIDBeanLocal
 import java.util
+import ru.korus.tmis.core.filter.ListDataFilter
 
 @Interceptors(Array(classOf[LoggingInterceptor]))
 @Stateless
@@ -220,27 +221,28 @@ class DbActionBean
     result.iterator().next()
   }
 
-  def getActionsByEventIdWithFilter(eventId: Int, userData: AuthData, requestData: AssessmentsListRequestData) = {
+  def getActionsWithFilter(limit: Int,
+                                    page: Int,
+                                    sorting: String,
+                                    filter: ListDataFilter,
+                                    records: (java.lang.Long) => java.lang.Boolean,
+                                    userData: AuthData) = {
 
-    val queryStr = requestData.filter.asInstanceOf[AssessmentsListRequestDataFilter].toQueryStructure()
+    val queryStr: QueryDataStructure = filter.toQueryStructure()
 
-    var typed = getCountRecordsOrPagesQuery(ActionsForSwitchPatientByEventQuery, queryStr.query)
-      .setParameter("eventId", eventId)
+    if (records!=null) {
+      val countTyped = em.createQuery(ActionsForSwitchPatientByEventQuery.format("count(a)", queryStr.query, ""), classOf[Long])
+      if (queryStr.data.size() > 0)
+        queryStr.data.foreach(qdp => countTyped.setParameter(qdp.name, qdp.value))
+      records(countTyped.getSingleResult)
+    }
 
-    val sorting = "ORDER BY %s %s".format(requestData.sortingFieldInternal, requestData.sortingMethod)
-    var typed2 = em.createQuery(ActionsForSwitchPatientByEventQuery.format("a", queryStr.query, sorting), classOf[Action])
-      .setMaxResults(requestData.limit)
-      .setFirstResult(requestData.limit * (requestData.page - 1))
-      .setParameter("eventId", eventId)
+    val typed = em.createQuery(ActionsForSwitchPatientByEventQuery.format("a", queryStr.query, sorting), classOf[Action])
+                  .setMaxResults(limit)
+                  .setFirstResult(limit * page)
+    queryStr.data.foreach(qdp => typed.setParameter(qdp.name, qdp.value))
 
-    queryStr.data.foreach(qdp => {
-      //проставляем динамическую фильтрацию
-      typed.setParameter(qdp.name, qdp.value)
-      typed2.setParameter(qdp.name, qdp.value)
-    })
-    requestData.setRecordsCount(typed.getSingleResult)
-    val result = typed2.getResultList
-
+    val result = typed.getResultList
     result.foreach(a => em.detach(a))
     result
   }
@@ -384,10 +386,8 @@ class DbActionBean
     FROM
       Action a
     WHERE
-      a.event.id = :eventId
-    AND
       a.event.deleted = 0
-      %s
+    %s
     AND
       a.deleted = 0
     %s
