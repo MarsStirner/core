@@ -123,24 +123,10 @@ class PatientsListData {
       val temp = this.data.toList.sortWith((a, b)=>getSortingConditionByMethod(requestData.getSortingMethod, a, b))
       this.data = new util.LinkedList[PatientsListEntry]()
       temp.foreach((f) => this.data.add(f))
-
-      /*if (requestData.getSortingMethod.compareTo("desc") == 0) { //desc
-        val temp = this.data.toList.sortWith((a, b)=>(a.getHospitalBed==null ||
-          a.getHospitalBed.getBed==null ||
-          a.getHospitalBed.getBed.isEmpty ||
-          a.getHospitalBed.getBed.toInt > b.getHospitalBed.getBed.toInt))//(_.getHospitalBed.getBed.toInt > _.getHospitalBed.getBed.toInt)
-        this.data = new util.LinkedList[PatientsListEntry]()
-        temp.foreach((f) => this.data.add(f))
-      } else { //asc
-        val temp = this.data.toList.sortBy(_.getHospitalBed.getBed.toInt)
-        this.data = new util.LinkedList[PatientsListEntry]()
-        temp.foreach((f) => this.data.add(f))
-      }*/
     }
   }
 
   private def getSortingConditionByMethod(method: String, a: PatientsListEntry, b: PatientsListEntry) = {
-
       if (a.getHospitalBed==null || a.getHospitalBed.getBed==null || a.getHospitalBed.getBed.isEmpty)
         true
       else {
