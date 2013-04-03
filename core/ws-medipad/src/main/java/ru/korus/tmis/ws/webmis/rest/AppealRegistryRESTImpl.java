@@ -50,20 +50,6 @@ public class AppealRegistryRESTImpl {
     }
 
     /**
-     * Редактирование обращения на госпитализацию
-     * @param data структура AppealData c данными о госпитализации.
-     * @return com.sun.jersey.api.json.JSONWithPadding как Object
-     * @throws ru.korus.tmis.core.exception.CoreException
-     * @see ru.korus.tmis.core.exception.CoreException
-     */
-    @PUT
-    @Consumes("application/json")
-    @Produces("application/x-javascript")
-    public Object updatePatientAppeal(AppealData data) {
-        return new JSONWithPadding(wsImpl.insertAppealForPatient(data, this.patientId, this.auth), this.callback);
-    }
-
-    /**
      * Запрос перечня обращений по пациенту (История госпитализаций).
      * @param limit Максимальное количество выводимых элементов в списке.
      * @param page Номер выводимой страницы.

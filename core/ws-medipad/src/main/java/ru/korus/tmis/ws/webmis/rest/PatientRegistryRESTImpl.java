@@ -63,10 +63,12 @@ public class PatientRegistryRESTImpl {
      * @see PatientCardData
      */
     @PUT
+    @Path("/{patientId}")
     @Consumes("application/json")
     @Produces("application/x-javascript")
-    public Object updatePatient(PatientCardData patientData) {
-        return new JSONWithPadding(wsImpl.updatePatient(patientData, this.auth), this.callback);
+    public Object updatePatient(PatientCardData patientData,
+                                @PathParam("patientId")int patientId) {
+        return new JSONWithPadding(wsImpl.updatePatient(patientId, patientData, this.auth), this.callback);
     }
 
     /**

@@ -405,14 +405,14 @@ class PatientBean
                                 requestData.rewriteRecordsCount _)
   }
 
-  def savePatient(patientEntry: PatientEntry, userData: AuthData) : PatientEntry = {
+  def savePatient(id: Int, patientEntry: PatientEntry, userData: AuthData) : PatientEntry = {
     val usver = dbStaff.getStaffById(userData.doctor.id)
     var lockId: Int = -1
     var oldPatient : Patient = null
     var patientVersion : Int = 0
-    if (patientEntry.getId() > 0) {
+    if (id > 0) {
       patientVersion = patientEntry.getVersion()
-      oldPatient = Patient.clone(dbPatient.getPatientById(patientEntry.getId()))
+      oldPatient = Patient.clone(dbPatient.getPatientById(id))
       lockId = appLock.acquireLock("Client", oldPatient.getId.intValue(), oldPatient.getId.intValue(), userData)//oldAction.getIdx
     }
     var patient : Patient = null
@@ -436,7 +436,7 @@ class PatientBean
       }
 
       patient = dbPatient.insertOrUpdatePatient(
-        patientEntry.getId(),
+        id,
         patientEntry.getName().getFirst(),
         patientEntry.getName().getMiddle(),
         patientEntry.getName().getLast(),

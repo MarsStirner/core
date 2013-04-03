@@ -41,7 +41,7 @@ public interface PatientBeanLocal {
     Iterable<Patient> getAllPatients(PatientRequestData requestData)
             throws CoreException;
 
-    PatientEntry savePatient(PatientEntry patientEntry, AuthData userData)
+    PatientEntry savePatient(int id, PatientEntry patientEntry, AuthData userData)
             throws CoreException;
 
     String getAllPatientsForDepartmentIdAndDoctorIdByPeriod(PatientsListRequestData requestData, AuthData authData)

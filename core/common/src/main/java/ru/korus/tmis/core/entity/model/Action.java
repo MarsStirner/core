@@ -164,9 +164,9 @@ public class Action
             inverseJoinColumns = {@JoinColumn(name = "tissue_id")})
     private Set<Tissue> tissue = new LinkedHashSet<Tissue>();
 
-    @Basic(optional = false)
-    @Column(name = "toOrder")
-    private boolean toOrder = false;
+    //@Basic(optional = false)
+    //@Column(name = "toOrder")
+    //private boolean toOrder = false;
 
     @ManyToOne(cascade = CascadeType.ALL)
     @JoinColumn(name = "uuid_id")
@@ -349,13 +349,13 @@ public class Action
         this.isUrgent = isUrgent;
     }
 
-    public boolean getToOrder() {
+/*    public boolean getToOrder() {
         return toOrder;
     }
 
     public void setToOrder(boolean toOrder) {
         this.toOrder = toOrder;
-    }
+    }*/
 
     public Date getBegDate() {
         return begDate;

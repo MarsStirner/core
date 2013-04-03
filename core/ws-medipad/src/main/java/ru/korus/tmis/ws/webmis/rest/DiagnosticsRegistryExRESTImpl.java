@@ -192,11 +192,12 @@ public class DiagnosticsRegistryExRESTImpl {
      * @see ru.korus.tmis.core.exception.CoreException
      */
     @PUT
-    @Path("/{var}")
+    @Path("/{var}/{actionId}")
     @Consumes("application/json")
     @Produces("application/x-javascript")
     public Object modifyLaboratoryStudies(JSONCommonData data,
-                                          @PathParam("var") String var) {
+                                          @PathParam("var") String var,
+                                          @PathParam("actionId")int actionId) {   //TODO: insert actionId
 
         DirectoryInfoRESTImpl.ActionTypesSubType atst = DirectoryInfoRESTImpl.ActionTypesSubType.getType(var);
         switch (atst){
@@ -224,12 +225,13 @@ public class DiagnosticsRegistryExRESTImpl {
      * @throws ru.korus.tmis.core.exception.CoreException
      * @see ru.korus.tmis.core.exception.CoreException
      */
-    @PUT
-    @Path("/{var}/remove")
+    @DELETE
+    @Path("/{var}/{actionId}")
     @Consumes("application/json")
     @Produces("application/x-javascript")
     public Object removeLaboratoryStudies(AssignmentsToRemoveDataList data,
-                                          @PathParam("var") String var) {
+                                          @PathParam("var") String var,
+                                          @PathParam("actionId")int actionId) {          //TODO: insert actionId
 
         DirectoryInfoRESTImpl.ActionTypesSubType atst = DirectoryInfoRESTImpl.ActionTypesSubType.getType(var);
 
@@ -247,5 +249,19 @@ public class DiagnosticsRegistryExRESTImpl {
                 return null;
             }
         }
+    }
+
+    /**
+     * Просмотр результатов лабораторных исследований
+     * @param actionId идентификатор исследования.
+     * @return com.sun.jersey.api.json.JSONWithPadding как Object
+     * @throws ru.korus.tmis.core.exception.CoreException
+     * @see ru.korus.tmis.core.exception.CoreException
+     */
+    @GET
+    @Path("/laboratory/{actionId}")
+    @Produces("application/x-javascript")
+    public Object getInfoAboutDiagnosticsForPatientByEvent(@PathParam("actionId")int actionId) {
+        return new JSONWithPadding(wsImpl.getInfoAboutDiagnosticsForPatientByEvent(actionId), this.callback);
     }
 }

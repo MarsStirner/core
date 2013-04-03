@@ -61,8 +61,8 @@ class PrimaryAssessmentBean
       AWI.multiplicity,
       AWI.Status,
       AWI.Finance,
-      AWI.PlannedEndDate,
-      AWI.ToOrder
+      AWI.PlannedEndDate//,
+      //AWI.ToOrder
     )
 
     commonDataProcessor.addAttributes(

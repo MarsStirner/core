@@ -52,8 +52,10 @@ public class QuotesRegistryRESTImpl {
      * @throws ru.korus.tmis.core.exception.CoreException
      */
     @PUT
+    @Path("/{id}")
     @Produces("application/x-javascript")
-    public Object modifyQuota(QuotaData data) {
+    public Object modifyQuota(QuotaData data,
+                              @PathParam("id") int id) {        //TODO: insert quotes id
         return new JSONWithPadding(wsImpl.insertOrUpdateQuota(data, eventId, this.auth), this.callback);
     }
 

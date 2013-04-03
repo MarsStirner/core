@@ -194,7 +194,7 @@ class WebMisRESTImpl  extends WebMisREST
     val inPatientEntry = patientData.getData()
     if (inPatientEntry != null) {
       if (auth != null) {
-        val outPatientEntry: PatientEntry = patientBean.savePatient(inPatientEntry, auth)  //currentAuthData
+        val outPatientEntry: PatientEntry = patientBean.savePatient(-1, inPatientEntry, auth)  //currentAuthData
         patientData.setData(outPatientEntry)
         return patientData
       }
@@ -205,12 +205,12 @@ class WebMisRESTImpl  extends WebMisREST
     )
   }
 
-  def updatePatient(patientData: PatientCardData, auth: AuthData) : PatientCardData = {
+  def updatePatient(id: Int, patientData: PatientCardData, auth: AuthData) : PatientCardData = {
     //requiresPermissions(Array("clientAssessmentCreate"))
     val inPatientEntry = patientData.getData()
     if (inPatientEntry != null) {
       if (auth != null) {
-        val outPatientEntry: PatientEntry = patientBean.savePatient(inPatientEntry, auth)
+        val outPatientEntry: PatientEntry = patientBean.savePatient(id, inPatientEntry, auth)
         patientData.setData(outPatientEntry)
         return patientData
       }
@@ -236,7 +236,15 @@ class WebMisRESTImpl  extends WebMisREST
   def insertAppealForPatient(appealData : AppealData, patientId: Int, auth: AuthData) = {
 
     val ide = appealBean.insertAppealForPatient(appealData, patientId, auth)
+    constructAppealData(ide)
+  }
+  def updateAppeal(appealData : AppealData, eventId: Int, auth: AuthData) = {
 
+    val ide = appealBean.updateAppeal(appealData, eventId, auth)
+    constructAppealData(ide)
+  }
+
+  private def constructAppealData(ide: Int) = {
     if(ide>0) {
       val result = appealBean.getAppealById(ide)
 
@@ -246,7 +254,7 @@ class WebMisRESTImpl  extends WebMisREST
 
       val mapper: ObjectMapper = new ObjectMapper()
       mapper.getSerializationConfig().setSerializationView(classOf[Views.DynamicFieldsStandartForm]);
-      val patient = patientBean.getPatientById(patientId)
+      val patient = positionE._1.getPatient
       val map = patientBean.getKLADRAddressMapForPatient(patient)
       val street = patientBean.getKLADRStreetForPatient(patient)
       //val appType = dbFDRecordBean.getIdValueFDRecordByEventTypeId(25, positionE._1.getEventType.getId.intValue())
@@ -403,7 +411,7 @@ class WebMisRESTImpl  extends WebMisREST
     listForSummary.add(ActionWrapperInfo.multiplicity)
     listForSummary.add(ActionWrapperInfo.finance)
     listForSummary.add(ActionWrapperInfo.plannedEndDate)
-    listForSummary.add(ActionWrapperInfo.toOrder)
+    //listForSummary.add(ActionWrapperInfo.toOrder)
 
     primaryAssessmentBean.getEmptyStructure(actionTypeId,
       "PrimaryAssesment",
@@ -758,7 +766,7 @@ class WebMisRESTImpl  extends WebMisREST
         listForSummary.add(ActionWrapperInfo.multiplicity)
         listForSummary.add(ActionWrapperInfo.finance)
         listForSummary.add(ActionWrapperInfo.plannedEndDate)
-        listForSummary.add(ActionWrapperInfo.toOrder)
+        //listForSummary.add(ActionWrapperInfo.toOrder)
 
         val json = primaryAssessmentBean.getEmptyStructure(actionType.getId.intValue(), "Action", listForConverter, listForSummary,  null, null, patientBean.getPatientById(patientId))
         json

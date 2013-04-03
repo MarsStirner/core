@@ -26,18 +26,4 @@ public class DiagnosticsInfoRESTImpl {
         this.wsImpl = wsImpl;
         this.callback = callback;
     }
-
-    /**
-     * Просмотр результатов лабораторных исследований
-     * @param actionId идентификатор исследования.
-     * @return com.sun.jersey.api.json.JSONWithPadding как Object
-     * @throws ru.korus.tmis.core.exception.CoreException
-     * @see ru.korus.tmis.core.exception.CoreException
-     */
-    @GET
-    @Path("/laboratory/{actionId}")
-    @Produces("application/x-javascript")
-    public Object getInfoAboutDiagnosticsForPatientByEvent(@PathParam("actionId")int actionId) {
-        return new JSONWithPadding(wsImpl.getInfoAboutDiagnosticsForPatientByEvent(actionId), this.callback);
-    }
 }

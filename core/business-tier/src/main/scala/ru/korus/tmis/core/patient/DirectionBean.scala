@@ -75,8 +75,8 @@ class DirectionBean extends DirectionBeanLocal
       AWI.multiplicity,
       AWI.Status,
       AWI.Finance,
-      AWI.PlannedEndDate,
-      AWI.ToOrder
+      AWI.PlannedEndDate
+      //AWI.ToOrder
     )
     commonDataProcessor.addAttributes(group, new ActionWrapper(direction), attributes)
   }
