@@ -7,6 +7,8 @@ import ru.korus.tmis.core.entity.model.ActionType;
 import ru.korus.tmis.core.entity.model.Event;
 import ru.korus.tmis.core.entity.model.Staff;
 import ru.korus.tmis.core.exception.CoreException;
+import ru.korus.tmis.core.filter.ListDataFilter;
+import scala.Function1;
 
 import javax.ejb.Local;
 import java.util.Date;
@@ -110,16 +112,18 @@ public interface DbActionBeanLocal {
 
     /**
      * Получение списка действий с динамической фильтрацией результатов для заданного обращения
-     *
-     * @param eventId     Идентификатор обращения.
      * @param userData    Авторизационные данные как AuthData.
-     * @param requestData Фильтры значений списка из запроса клиента как AssessmentsListRequestData
      * @return Список действий (Action).
      * @throws CoreException
      * @see Action
      * @see AssessmentsListRequestData
      */
-    List<Action> getActionsByEventIdWithFilter(int eventId, AuthData userData, AssessmentsListRequestData requestData)
+    List<Action> getActionsWithFilter(int limit,
+                                      int page,
+                                      String sorting,
+                                      ListDataFilter filter,
+                                      Function1<Long, Boolean> setRecCount,
+                                      AuthData userData)
             throws CoreException;
 
     /**

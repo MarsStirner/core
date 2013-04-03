@@ -37,8 +37,17 @@ public class BaseRegistryRESTImpl implements Serializable {
 
     @Context
     HttpServletRequest servRequest;
-
     @Path("/")
+    public CustomInfoRESTImpl getCustomInfoRESTImpl(@QueryParam("token") String token,
+                                                    @QueryParam("callback") String callback,
+                                                          @QueryParam("limit") int limit,
+                                                          @QueryParam("page") int  page,
+                                                          @QueryParam("sortingField") String sortingField,
+                                                          @QueryParam("sortingMethod") String sortingMethod) {
+        return new CustomInfoRESTImpl(wsImpl, callback, limit, page, sortingField, sortingMethod, makeAuth(token));
+    }
+
+    @Path("/dir/")
     public DirectoryInfoRESTImpl getDirectoryInfoRESTImpl(@QueryParam("token") String token,
                                                           @QueryParam("callback") String callback,
                                                           @QueryParam("limit") int limit,

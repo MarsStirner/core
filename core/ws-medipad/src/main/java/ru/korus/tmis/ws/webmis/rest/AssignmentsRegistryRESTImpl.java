@@ -54,10 +54,12 @@ public class AssignmentsRegistryRESTImpl {
      * @see AssignmentData
      */
     @PUT
+    @Path("/{actionId}")
     @Consumes("application/json")
     @Produces("application/x-javascript")
-    public Object modifyAssignment(AssignmentData data) {
-        return new JSONWithPadding(wsImpl.insertAssignment(data, this.eventId, this.auth), this.callback);
+    public Object modifyAssignment(AssignmentData data,
+                                   @PathParam("actionId")int actionId) {
+        return new JSONWithPadding(wsImpl.insertAssignment(data, this.eventId, this.auth), this.callback);  //TODO: подкл actionId
     }
 
     //Получение назначения по идентификатору

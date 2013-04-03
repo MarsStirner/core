@@ -24,7 +24,7 @@ object ActionWrapperInfo extends Configuration {
   var Multiplicity = StringId("multiplicity")
   var Finance = StringId("finance")
   var PlannedEndDate = StringId("plannedEndDate")
-  var ToOrder = StringId("toOrder")
+  //var ToOrder = StringId("toOrder")
 
   // Typed internal Ids
   def TypedId = (Id, Types.Integer)
@@ -57,7 +57,7 @@ object ActionWrapperInfo extends Configuration {
 
   def TypedPlannedEndDate = (PlannedEndDate, Types.Datetime)
 
-  def TypedToOrder = (ToOrder, Types.Boolean)
+  //def TypedToOrder = (ToOrder, Types.Boolean)
 
   // External Ids
   var assessmentId = StringId("assessmentId")
@@ -85,7 +85,7 @@ object ActionWrapperInfo extends Configuration {
   var multiplicity = StringId("multiplicity")
   var finance = StringId("finance")
   var plannedEndDate = StringId("plannedEndDate")
-  var toOrder = StringId("toOrder")
+  //var toOrder = StringId("toOrder")
   //////////////////////////////////////////////////////////////////////////////
 
   def map = Map(
@@ -127,8 +127,8 @@ object ActionWrapperInfo extends Configuration {
     urgent -> TypedUrgent,
     multiplicity -> TypedMultiplicity,
     finance -> TypedFinance,
-    plannedEndDate -> TypedPlannedEndDate,
-    toOrder -> TypedToOrder
+    plannedEndDate -> TypedPlannedEndDate
+    //toOrder -> TypedToOrder
   )
 
   def apply(key: StringId) = {
@@ -155,7 +155,7 @@ object ActionWrapperInfo extends Configuration {
     val Multiplicity = awi.Multiplicity
     val Finance = awi.Finance
     val PlannedEndDate = awi.PlannedEndDate
-    val ToOrder = awi.ToOrder
+    //val ToOrder = awi.ToOrder
 
     def apply(key: StringId) = awi(key)
   }

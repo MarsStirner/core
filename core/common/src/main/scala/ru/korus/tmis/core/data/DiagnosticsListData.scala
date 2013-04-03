@@ -354,8 +354,8 @@ class LaboratoryDiagnosticsListEntry {
   @BeanProperty
   var status: IdNameContainer = _ //Статус
 
-  @BeanProperty
-  var toOrder: Boolean = _ //Дозаказ
+  //@BeanProperty
+  //var toOrder: Boolean = _ //Дозаказ  (не используется)
 
   def this(action: Action) {
     this()
@@ -368,6 +368,6 @@ class LaboratoryDiagnosticsListEntry {
     this.execPerson = new DoctorContainer(action.getExecutor)
     this.cito = action.getIsUrgent
     this.status = new IdNameContainer(action.getStatus, ActionStatus.fromShort(action.getStatus).getName)
-    this.toOrder = action.getToOrder
+    //this.toOrder = action.getToOrder
   }
 }

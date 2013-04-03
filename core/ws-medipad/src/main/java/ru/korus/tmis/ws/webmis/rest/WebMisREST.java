@@ -17,13 +17,15 @@ public interface WebMisREST extends Serializable {
 
     PatientCardData insertPatient(PatientCardData patientData, AuthData auth) throws CoreException;
 
-    PatientCardData updatePatient(PatientCardData patientData, AuthData auth) throws CoreException;
+    PatientCardData updatePatient(int id, PatientCardData patientData, AuthData auth) throws CoreException;
 
     PatientData getAllPatients(PatientRequestData requestData, AuthData auth)  throws CoreException;
 
     PatientCardData getPatientById(int id, AuthData auth)  throws CoreException;
 
     String insertAppealForPatient(AppealData appealData,  int patientId, AuthData auth) throws CoreException;
+
+    String updateAppeal(AppealData appealData,  int eventId, AuthData auth) throws CoreException;
 
     String getAppealById(int id, AuthData auth) throws CoreException;
 

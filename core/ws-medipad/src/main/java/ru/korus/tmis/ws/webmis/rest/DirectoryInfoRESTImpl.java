@@ -48,6 +48,65 @@ public class DirectoryInfoRESTImpl {
     //__________________________________________________________________________________________________________________
 
     /**
+     * Сервис возвращает указанный справочник.
+     * <pre>
+     * &#15; Возможные значения параметра для сортировки:
+     * &#15; "id" - по идентификатору записи (значение по умолчанию);
+     * &#15; "groupId" - по идентификатору группы тезауруса;
+     * &#15; "code" - по коду тезауруса;</pre>
+     * @param dictName Обозначение справочника, в котором идет выборка.<pre>
+     * &#15; Возможные ключи:
+     * &#15; "bloodTypes"  - справочник групп крови;
+     * &#15; "relationships" - справочник типов родственных связей;
+     * &#15; "citizenships" | "citizenships2" - справочник гражданств;
+     * &#15; "socStatus"  - справочник социальных статусов;
+     * &#15; "TFOMS" - справочник ТФОМС;
+     * &#15; "clientDocument" - справочник типов документов, удостоверяющих личность;
+     * &#15; "insurance" - справочник страховых компаний;
+     * &#15; "policyTypes" - справочник видов полисов;
+     * &#15; "disabilityTypes" - справочник типов инвалидностей;
+     * &#15; "KLADR" - КЛАДР;
+     * &#15; "valueDomain" - список возможных значений для ActionProperty;
+     * &#15; "specialities" - справочник специальностей;
+     * &#15; "quotaStatus" - Справочник статусов квот;
+     * &#15; "quotaType" - Справочник типов квот;
+     * &#15; "contactTypes" - справочник типов контактов;
+     * &#15; "tissueTypes"  - справочник типов исследования;</pre>
+     * @param headId   Фильтр для справочника "insurance". Идентификатор родительской компании. (В url: filter[headId]=...)
+     * @param groupId  Фильтр для справочника "clientDocument". Идентификатор группы типов документов. (В url: filter[groupId]=...)
+     * @param name     Фильтр для справочника "policyTypes". Идентификатор обозначения полиса. (В url: filter[name]=...)
+     * @param level    Фильтр для справочника "KLADR". Уровень кода по КЛАДР. (В url: filter[level]=...)<pre>
+     * &#15; Может принимать следующие значения:
+     * &#15; "republic" - код республики по КЛАДР;
+     * &#15; "district" - код района по КЛАДР;
+     * &#15; "city" - код города по КЛАДР;
+     * &#15; "locality" - код населенного пункта по КЛАДР;
+     * &#15; "street" - код улицы по КЛАДР;</pre>
+     * @param parent   Фильтр для справочника "KLADR". (В url: filter[parent]=...)<pre>
+     * &#15; КЛАДР-код элемента более высокого уровня, для которого происходит выборка дочерних элементов.</pre>
+     * @param type     Фильтр для справочника "valueDomain". Идентифиувтор типа действия (s11r64.ActionType.id). (В url: filter[typeIs]=...);
+     * @param capId    Фильтр для справочника "valueDomain". Идентификатору записи в s11r64.rbCoreActionPropertyType. (В url: filter[capId]=...)
+     * @return com.sun.jersey.api.json.JSONWithPadding как Object
+     * @throws CoreException
+     * @see CoreException
+     */
+    @GET
+    @Produces("application/x-javascript")
+    public Object getRecordsFromDictionary(@QueryParam("dictName")String dictName,
+                                           @QueryParam("filter[headId]")int headId,
+                                           @QueryParam("filter[groupId]")int groupId,
+                                           @QueryParam("filter[name]")String name,
+                                           @QueryParam("filter[level]")String level,      //KLADR
+                                           @QueryParam("filter[parent]")String parent,    //KLADR
+                                           @QueryParam("filter[typeIs]")String type,        //valueDomain
+                                           @QueryParam("filter[capId]")int capId  //valueDomain
+    ) {
+        DictionaryListRequestDataFilter filter = new DictionaryListRequestDataFilter(dictName, headId, groupId, name, level, parent, type, capId);
+        ListDataRequest request = new ListDataRequest(this.sortingField, this.sortingMethod, this.limit, this.page, filter);
+        return new JSONWithPadding(wsImpl.getDictionary(request, dictName),this.callback);
+    }
+
+    /**
      * Список персонала
      * <pre>
      * &#15; Возможные значения сортировки:
@@ -271,66 +330,6 @@ public class DirectoryInfoRESTImpl {
     }
 
     /**
-     * Сервис возвращает указанный справочник.
-     * <pre>
-     * &#15; Возможные значения параметра для сортировки:
-     * &#15; "id" - по идентификатору записи (значение по умолчанию);
-     * &#15; "groupId" - по идентификатору группы тезауруса;
-     * &#15; "code" - по коду тезауруса;</pre>
-     * @param dictName Обозначение справочника, в котором идет выборка.<pre>
-     * &#15; Возможные ключи:
-     * &#15; "bloodTypes"  - справочник групп крови;
-     * &#15; "relationships" - справочник типов родственных связей;
-     * &#15; "citizenships" | "citizenships2" - справочник гражданств;
-     * &#15; "socStatus"  - справочник социальных статусов;
-     * &#15; "TFOMS" - справочник ТФОМС;
-     * &#15; "clientDocument" - справочник типов документов, удостоверяющих личность;
-     * &#15; "insurance" - справочник страховых компаний;
-     * &#15; "policyTypes" - справочник видов полисов;
-     * &#15; "disabilityTypes" - справочник типов инвалидностей;
-     * &#15; "KLADR" - КЛАДР;
-     * &#15; "valueDomain" - список возможных значений для ActionProperty;
-     * &#15; "specialities" - справочник специальностей;
-     * &#15; "quotaStatus" - Справочник статусов квот;
-     * &#15; "quotaType" - Справочник типов квот;
-     * &#15; "contactTypes" - справочник типов контактов;
-     * &#15; "tissueTypes"  - справочник типов исследования;</pre>
-     * @param headId   Фильтр для справочника "insurance". Идентификатор родительской компании. (В url: filter[headId]=...)
-     * @param groupId  Фильтр для справочника "clientDocument". Идентификатор группы типов документов. (В url: filter[groupId]=...)
-     * @param name     Фильтр для справочника "policyTypes". Идентификатор обозначения полиса. (В url: filter[name]=...)
-     * @param level    Фильтр для справочника "KLADR". Уровень кода по КЛАДР. (В url: filter[level]=...)<pre>
-     * &#15; Может принимать следующие значения:
-     * &#15; "republic" - код республики по КЛАДР;
-     * &#15; "district" - код района по КЛАДР;
-     * &#15; "city" - код города по КЛАДР;
-     * &#15; "locality" - код населенного пункта по КЛАДР;
-     * &#15; "street" - код улицы по КЛАДР;</pre>
-     * @param parent   Фильтр для справочника "KLADR". (В url: filter[parent]=...)<pre>
-     * &#15; КЛАДР-код элемента более высокого уровня, для которого происходит выборка дочерних элементов.</pre>
-     * @param type     Фильтр для справочника "valueDomain". Идентифиувтор типа действия (s11r64.ActionType.id). (В url: filter[typeIs]=...);
-     * @param capId    Фильтр для справочника "valueDomain". Идентификатору записи в s11r64.rbCoreActionPropertyType. (В url: filter[capId]=...)
-     * @return com.sun.jersey.api.json.JSONWithPadding как Object
-     * @throws CoreException
-     * @see CoreException
-     */
-    @GET
-    @Path("/dictionary")
-    @Produces("application/x-javascript")
-    public Object getRecordsFromDictionary(@QueryParam("dictName")String dictName,
-                                           @QueryParam("filter[headId]")int headId,
-                                           @QueryParam("filter[groupId]")int groupId,
-                                           @QueryParam("filter[name]")String name,
-                                           @QueryParam("filter[level]")String level,      //KLADR
-                                           @QueryParam("filter[parent]")String parent,    //KLADR
-                                           @QueryParam("filter[typeIs]")String type,        //valueDomain
-                                           @QueryParam("filter[capId]")int capId  //valueDomain
-                                          ) {
-        DictionaryListRequestDataFilter filter = new DictionaryListRequestDataFilter(dictName, headId, groupId, name, level, parent, type, capId);
-        ListDataRequest request = new ListDataRequest(this.sortingField, this.sortingMethod, this.limit, this.page, filter);
-        return new JSONWithPadding(wsImpl.getDictionary(request, dictName),this.callback);
-    }
-
-    /**
      * Получение данных из справочника медицинских препоратов (rls).
      * <pre>
      * &#15; Возможные значения для сортировки:
@@ -421,158 +420,6 @@ public class DirectoryInfoRESTImpl {
                                                   @QueryParam("filter[view]")String view) {
         ActionTypesSubType atst = ActionTypesSubType.getType(var);
         return new JSONWithPadding(getAllActionTypeNamesEx(atst, patientId, this.limit, this.page, this.sortingField, this.sortingMethod, groupId, code, view, this.auth),this.callback);
-    }
-
-    //__________________________________________________________________________________________________________________
-    //***********************************   НЕФОРМАЛИЗОВАННЫЕ МЕТОДЫ И ЗАПРОСЫ  ***********************************
-    //__________________________________________________________________________________________________________________
-
-    /**
-     * Форма 007
-     * Specification: https://docs.google.com/document/d/1a0AYF8QVpEMl_pKRcFDnP2vQzRmO-IkcG5JNStEcjMI/edit#heading=h.6ll2qz4wdcfr
-     * URL: .../reports/f007
-     * Since: ver 1.0.0.57
-     * @param departmentId Идентификатор отделения, для которого отчет (задавать в url как QueryParam: "filter[departmentId]=...")
-     * @param beginDate Дата и время начала выборки (задавать в url как QueryParam: "filter[beginDate]=...")
-     *                Если не задан, то по умолчанию начало текущих медицинских суток (вчера 8:00) или,
-     *                если задан endDate, то endDate минус сутки.
-     * @param endDate Дата и время конца выборки (задавать в url как QueryParam: "filter[endDate]=...").
-     *                Если не задан, то по умолчанию конец текущих медицинских суток (сегодня 7:59) или,
-     *                если задан beginDate, то beginDate плюс сутки.
-     * @return com.sun.jersey.api.json.JSONWithPadding как Object
-     * @throws ru.korus.tmis.core.exception.CoreException
-     * @see ru.korus.tmis.core.exception.CoreException
-     */
-    @GET
-    @Path("/reports/f007")
-    @Produces("application/x-javascript")
-    public Object getForm007( @QueryParam("filter[departmentId]") int departmentId,
-                              @QueryParam("filter[beginDate]")long beginDate,
-                              @QueryParam("filter[endDate]")long endDate) {
-        //Отделение обязательное поле, если не задано в запросе, то берем из роли специалиста
-        int depId = (departmentId>0) ? departmentId : this.auth.getUser().getOrgStructure().getId().intValue();
-        return new JSONWithPadding(wsImpl.getForm007(depId, beginDate, endDate, this.auth),this.callback);
-    }
-
-    /**
-     * Проверка на наличие номера в базе данных.
-     * Используется для проверки номера обращения по госпитализации, полиса или СНИЛС.
-     * @param name Имя проверяемого номера.<pre>
-     * &#15; Возможные значения:
-     * &#15; appealNumber - номер госпитализации;
-     * &#15; SNILS - СНИЛС;
-     * &#15; policy - мед. полис;</pre>
-     * @param number Номер документа.
-     * @param serial Серия документа.<pre>
-     * &#15; Внимание! Параметр используется только для name = policy</pre>
-     * @param typeId Тип документа.<pre>
-     * &#15; Внимание! Параметр используется только для name = policy</pre>
-     * @return com.sun.jersey.api.json.JSONWithPadding как Object
-     * @throws ru.korus.tmis.core.exception.CoreException
-     * @see ru.korus.tmis.core.exception.CoreException
-     */
-    @GET
-    @Path("/checkExistance/{name}")
-    @Produces("application/x-javascript")
-    public Object checkAppealNumber(@PathParam("name") String name,
-                                    @QueryParam("typeId")int typeId,
-                                    @QueryParam("number")String number,
-                                    @QueryParam("serial")String serial) {
-        return new JSONWithPadding(wsImpl.checkExistanceNumber(name, typeId, number, serial),this.callback);
-    }
-
-    /**
-     * Забор биоматериала
-     * URL: ../biomaterial/info
-     * Спецификация: https://docs.google.com/spreadsheet/ccc?key=0AgE0ILPv06JcdEE0ajBZdmk1a29ncjlteUp3VUI2MEE&pli=1#gid=5
-     * @since 1.0.0.64
-     * @param departmentId Фильтр по идентификатору отделения (В url: filter[departmentId]=...)<pre>
-     * &#15; По умолчанию значение достается из авторизационной роли</pre>
-     * @param beginDate Фильтр по дате начала выборки (В url: filter[beginDate]=...)<pre>
-     * &#15; По умолчанию - начало текущих суток (Dd.Mm.Year 00:00).</pre>
-     * @param endDate  Фильтр по дате окончания выборки (В url: filter[endDate]=...)<pre>
-     * &#15; По умолчанию - начало текущих суток (Dd.Mm.Year 23:59).</pre>
-     * @param status Фильтр по статусу забора (В url: filter[status]=...)<pre>
-     * &#15; По умолчанию - 0.</pre>
-     * @param biomaterial  Фильтр по статусу забора (В url: filter[status]=...)
-     * @return
-     */
-    @GET
-    @Path("/biomaterial/info")
-    @Produces("application/x-javascript")
-    public Object getTakingOfBiomaterial(@QueryParam("filter[departmentId]")int departmentId,
-                                         @QueryParam("filter[beginDate]")long beginDate,
-                                         @QueryParam("filter[endDate]")long endDate,
-                                         @QueryParam("filter[status]") String status,
-                                         @QueryParam("filter[biomaterial]") int biomaterial)   {
-
-        //Отделение обязательное поле, если не задано в запросе, то берем из роли специалиста
-        int depId = (departmentId>0) ? departmentId : this.auth.getUser().getOrgStructure().getId().intValue();
-        short statusS = (status!=null && !status.isEmpty()) ? Short.parseShort(status): -1;
-
-        TakingOfBiomaterialRequesDataFilter filter = new TakingOfBiomaterialRequesDataFilter(depId,
-                                                                                            beginDate,
-                                                                                            endDate,
-                                                                                            statusS,
-                                                                                            biomaterial);
-        TakingOfBiomaterialRequesData request = new TakingOfBiomaterialRequesData(this.sortingField, this.sortingMethod, filter);
-        return new JSONWithPadding(wsImpl.getTakingOfBiomaterial(request, this.auth),this.callback);
-    }
-
-    /**
-     * Метод проставляет статус для тиккетов
-     * @param data Список статусов для JobTicket
-     * @return true - завершено успешно, false - завершено с ошибками
-     */
-    @PUT
-    @Path("/jobTickets/status")
-    @Produces("application/x-javascript")
-    public Object setStatusesForJobTickets(JobTicketStatusDataList data) {
-        return new JSONWithPadding(wsImpl.updateJobTicketsStatuses(data, this.auth),this.callback);
-    }
-
-    /**
-     * Запрос на список обращений пациентов для отделения и/или врача.
-     * Роль: врач отделения
-     * @param limit Максимальное количество выводимых элементов в списке.
-     * @param page Номер выводимой страницы.
-     * @param sortingField Наименование поля для сортировки.<pre>
-     * &#15; Возможные значения:
-     * &#15; "id" - по идентификатору (значение по умолчанию);
-     * &#15; "createDatetime" | "start" | "begDate" - по дате начала госпитализации;
-     * &#15; "end" | "endDate" - по дате конца госпитализации;
-     * &#15; "doctor" - по ФИО доктора;
-     * &#15; "department" - по наименованию отделения;
-     * &#15; "bed" - по обозначению койки;
-     * &#15; "number" - по номеру истории болезни(НИБ);
-     * &#15; "fullName" - по ФИО пациента;
-     * &#15; "birthDate" - по дате рождения пациента;</pre>
-     * @param sortingMethod Метод сортировки.<pre>
-     * &#15; Возможные значения:
-     * &#15; "asc" - по возрастанию (значение по умолчанию);
-     * &#15; "desc" - по убыванию;</pre>
-     * @param endDate Фильтр значений по дате закрытия госпитализации.
-     * @param departmentId Фильтр значений по отделению (по умолчанию берется из данных авторизации).
-     * @return com.sun.jersey.api.json.JSONWithPadding как Object
-     * @throws ru.korus.tmis.core.exception.CoreException
-     * @see ru.korus.tmis.core.exception.CoreException
-     */
-    @GET
-    @Path("/departments/patients")
-    @Produces("application/x-javascript")
-    public Object getAllPatientsForDepartmentOrUserByPeriod(@QueryParam("filter[date]")long endDate,
-                                                            @QueryParam("filter[departmentId]") int departmentId) {
-
-        int depId = (departmentId>0) ? departmentId : auth.getUser().getOrgStructure().getId().intValue();
-        PatientsListRequestData requestData = new PatientsListRequestData ( depId,
-                                                                            auth.getUser().getId().intValue(),
-                                                                            auth.getUserRole().getId().intValue(),
-                                                                            endDate,
-                                                                            sortingField,
-                                                                            sortingMethod,
-                                                                            limit,
-                                                                            page);
-        return new JSONWithPadding(wsImpl.getAllPatientsForDepartmentIdAndDoctorIdByPeriod(requestData, this.auth),this.callback);
     }
 
     //__________________________________________________________________________________________________________________

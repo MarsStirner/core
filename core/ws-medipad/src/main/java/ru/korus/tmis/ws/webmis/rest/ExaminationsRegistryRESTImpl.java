@@ -103,8 +103,8 @@ public class ExaminationsRegistryRESTImpl {
                                                         @QueryParam("filter[speciality]") String speciality,
                                                         @QueryParam("filter[assessmentName]") String assessmentName,
                                                         @QueryParam("filter[departmentName]") String departmentName) {
-        AssessmentsListRequestDataFilter filter = new AssessmentsListRequestDataFilter(assessmentTypeCode, assessmentDate, doctorName, speciality, assessmentName, departmentName);
-        AssessmentsListRequestData alrd= new AssessmentsListRequestData(sortingField, sortingMethod, limit, page, this.eventId, filter);
+        AssessmentsListRequestDataFilter filter = new AssessmentsListRequestDataFilter(this.eventId, assessmentTypeCode, assessmentDate, doctorName, speciality, assessmentName, departmentName);
+        AssessmentsListRequestData alrd= new AssessmentsListRequestData(sortingField, sortingMethod, limit, page, filter);
         return new JSONWithPadding(wsImpl.getListOfAssessmentsForPatientByEvent(alrd, this.auth), this.callback);
     }
 

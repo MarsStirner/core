@@ -82,7 +82,7 @@ class CommonDataProcessorBean
         var endDate: Date = null
         var plannedEndDate: Date = null
         var finance: Int = -1
-        var toOrder: Boolean = false
+        //var toOrder: Boolean = false
 
         aps.foreach(attribute => {
           if (attribute.name == AWI.Multiplicity.toString) {
@@ -115,12 +115,12 @@ class CommonDataProcessorBean
               case Some(x) => ConfigManager.DateFormatter.parse(x)
             }
           }
-          else if (attribute.name == AWI.toOrder.toString) {
+          /*else if (attribute.name == AWI.toOrder.toString) {
             toOrder = attribute.properties.get(APWI.Value.toString) match {
               case None | Some("") => false
               case Some(x) => x.toBoolean
             }
-          }
+          }*/
         })
 
         var i = 0
@@ -134,7 +134,7 @@ class CommonDataProcessorBean
           }
           //plannedEndDate
           if (finance > 0) action.setFinanceId(finance)
-          action.setToOrder(toOrder)
+          //action.setToOrder(toOrder)
           //Если пришли значения Даты начала и дата конца, то перепишем дефолтные
           if (beginDate != null) action.setBegDate(beginDate)
           if (endDate != null) action.setEndDate(endDate)
@@ -294,7 +294,7 @@ class CommonDataProcessorBean
         var endDate: Date = null
         var plannedEndDate: Date = null
         var finance: Int = -1
-        var toOrder: Boolean = false
+        //var toOrder: Boolean = false
 
         var res = aps.find(p => p.name == AWI.assessmentBeginDate.toString).getOrElse(null)
         if (res != null) {
@@ -324,18 +324,18 @@ class CommonDataProcessorBean
             case Some(x) => ConfigManager.DateFormatter.parse(x)
           }
         }
-        res = aps.find(p => p.name == AWI.toOrder.toString).getOrElse(null)
+        /*res = aps.find(p => p.name == AWI.toOrder.toString).getOrElse(null)
         if (res != null) {
           toOrder = res.properties.get(APWI.Value.toString) match {
             case None | Some("") => false
             case Some(x) => x.toBoolean
           }
-        }
+        }*/
 
         if (beginDate != null) a.setBegDate(beginDate)
         if (endDate != null) a.setEndDate(endDate)
         if (finance > 0) a.setFinanceId(finance)
-        a.setToOrder(toOrder)
+        //a.setToOrder(toOrder)
         if (plannedEndDate != null) a.setPlannedEndDate(plannedEndDate)
 
         result = a :: result

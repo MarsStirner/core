@@ -2,6 +2,7 @@ package ru.korus.tmis.ws.webmis.rest;
 
 import com.sun.jersey.api.json.JSONWithPadding;
 import ru.korus.tmis.core.auth.AuthData;
+import ru.korus.tmis.core.data.AppealData;
 import ru.korus.tmis.core.data.ReceivedRequestData;
 import ru.korus.tmis.core.data.ReceivedRequestDataFilter;
 import ru.korus.tmis.core.logging.slf4j.interceptor.ServicesLoggingInterceptor;
@@ -34,7 +35,7 @@ public class AppealsInfoRESTImpl {
         return new HospitalBedRegistryRESTImpl(wsImpl, eventId, callback, this.auth) ;
     }
 
-    @Path("/{eventId}/assignment/")
+    @Path("/{eventId}/assignments/")
     public AssignmentsRegistryRESTImpl getAssignmentsRegistryRESTImpl(@PathParam("eventId") int eventId) {
         return new AssignmentsRegistryRESTImpl(wsImpl, eventId, callback, this.auth) ;
     }
@@ -103,6 +104,22 @@ public class AppealsInfoRESTImpl {
         ReceivedRequestDataFilter filter = new ReceivedRequestDataFilter(eventId, fullName, birthDate, externalId, beginDate, endDate, mkbCode, role);
         ReceivedRequestData requestData = new ReceivedRequestData(sortingField, sortingMethod, limit, page, filter);
         return new JSONWithPadding(wsImpl.getAllAppealsForReceivedPatientByPeriod(requestData, this.auth), this.callback);
+    }
+
+    /**
+     * Редактирование обращения на госпитализацию
+     * @param data структура AppealData c данными о госпитализации.
+     * @return com.sun.jersey.api.json.JSONWithPadding как Object
+     * @throws ru.korus.tmis.core.exception.CoreException
+     * @see ru.korus.tmis.core.exception.CoreException
+     */
+    @PUT
+    @Path("{eventId}")
+    @Consumes("application/json")
+    @Produces("application/x-javascript")
+    public Object updatePatientAppeal(@PathParam("eventId")int eventId,
+                                      AppealData data) {
+        return new JSONWithPadding(wsImpl.updateAppeal(data, eventId, this.auth), this.callback);
     }
 
     /**

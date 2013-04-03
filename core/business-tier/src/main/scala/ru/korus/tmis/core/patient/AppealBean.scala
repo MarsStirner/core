@@ -132,16 +132,23 @@ class AppealBean extends AppealBeanLocal
   def insertAppealForPatient(appealData : AppealData, patientId: Int, authData: AuthData) = {
 
     //1. Event и проверка данных на валидность
+    var newEvent = this.verificationData(patientId, authData, appealData, true)
+    dbManager.persist(newEvent)
+    dbManager.detach(newEvent)
+    insertOrModifyAppeal(appealData, newEvent, true, authData)
+  }
+
+  def updateAppeal(appealData : AppealData, eventId: Int, authData: AuthData) = {
+
+    var newEvent = this.verificationData(eventId, authData, appealData, false)
+    insertOrModifyAppeal(appealData, newEvent, false, authData)
+  }
+
+  private def insertOrModifyAppeal(appealData : AppealData, event: Event, flgCreate: Boolean, authData: AuthData) = {
+
     var entities = Set.empty[AnyRef]
     val now = new Date()
-    val flgCreate = if (appealData.data.id > 0) false else true
-
-    var newEvent = this.verificationData(appealData.data.id, patientId, authData, appealData, flgCreate)
-    if(flgCreate){
-      dbManager.persist(newEvent)
-      dbManager.detach(newEvent)
-    } //else em.merge(newEvent)
-
+    var newEvent = event
     //2. Action
 
     var oldAction: Action = null// Action.clone(temp)
@@ -566,7 +573,7 @@ class AppealBean extends AppealBeanLocal
   //Внутренние методы
 
   @throws(classOf[CoreException])
-  private def verificationData(eventId: Int, patientId: Int, authData: AuthData, appealData: AppealData, flgCreate: Boolean): Event = {
+  private def verificationData(id: Int, authData: AuthData, appealData: AppealData, flgCreate: Boolean): Event = {   //для создания ид пациента, для редактирование ид обращения
 
     if (authData==null){
       throw new CoreException("Mетод для изменения обращения по госпитализации не доступен для неавторизованного пользователя.")
@@ -575,7 +582,7 @@ class AppealBean extends AppealBeanLocal
 
     var event: Event = null
     if (flgCreate) {            //Создаем новое
-      if (patientId <= 0) {
+      if (id <= 0) {
         throw new CoreException("Невозможно создать госпитализацию. Пациент не установлен.")
         return null
       }
@@ -585,7 +592,7 @@ class AppealBean extends AppealBeanLocal
         throw new CoreException("Невозможно создать госпитализацию. Не задан тип обращения.")
         return null
       }
-      event = eventBean.createEvent(patientId,
+      event = eventBean.createEvent(id,
                                     //eventBean.getEventTypeIdByFDRecordId(appealData.data.appealType.getId()),
                                     appealData.data.appealType.eventType.getId,
                                     //eventBean.getEventTypeIdByRequestTypeIdAndFinanceId(appealData.data.appealType.requestType.getId(), appealData.data.appealType.finance.getId()),
@@ -594,7 +601,7 @@ class AppealBean extends AppealBeanLocal
                                     authData)
     }
     else {                      //Редактирование
-      event = eventBean.getEventById(appealData.data.id)
+      event = eventBean.getEventById(id)
       if (event==null) {
         throw new CoreException("Обращение с id = %s не найдено в БД".format(appealData.data.id.toString))
         return null
