@@ -330,66 +330,6 @@ public class DirectoryInfoRESTImpl {
     }
 
     /**
-     * Сервис возвращает указанный справочник.
-     * <pre>
-     * &#15; Возможные значения параметра для сортировки:
-     * &#15; "id" - по идентификатору записи (значение по умолчанию);
-     * &#15; "groupId" - по идентификатору группы тезауруса;
-     * &#15; "code" - по коду тезауруса;</pre>
-     * @param dictName Обозначение справочника, в котором идет выборка.<pre>
-     * &#15; Возможные ключи:
-     * &#15; "bloodTypes"  - справочник групп крови;
-     * &#15; "relationships" - справочник типов родственных связей;
-     * &#15; "citizenships" | "citizenships2" - справочник гражданств;
-     * &#15; "socStatus"  - справочник социальных статусов;
-     * &#15; "TFOMS" - справочник ТФОМС;
-     * &#15; "clientDocument" - справочник типов документов, удостоверяющих личность;
-     * &#15; "insurance" - справочник страховых компаний;
-     * &#15; "policyTypes" - справочник видов полисов;
-     * &#15; "disabilityTypes" - справочник типов инвалидностей;
-     * &#15; "KLADR" - КЛАДР;
-     * &#15; "valueDomain" - список возможных значений для ActionProperty;
-     * &#15; "specialities" - справочник специальностей;
-     * &#15; "quotaStatus" - Справочник статусов квот;
-     * &#15; "quotaType" - Справочник типов квот;
-     * &#15; "contactTypes" - справочник типов контактов;
-     * &#15; "tissueTypes"  - справочник типов исследования;</pre>
-     * @param headId   Фильтр для справочника "insurance". Идентификатор родительской компании. (В url: filter[headId]=...)
-     * @param groupId  Фильтр для справочника "clientDocument". Идентификатор группы типов документов. (В url: filter[groupId]=...)
-     * @param name     Фильтр для справочника "policyTypes". Идентификатор обозначения полиса. (В url: filter[name]=...)
-     * @param level    Фильтр для справочника "KLADR". Уровень кода по КЛАДР. (В url: filter[level]=...)<pre>
-     * &#15; Может принимать следующие значения:
-     * &#15; "republic" - код республики по КЛАДР;
-     * &#15; "district" - код района по КЛАДР;
-     * &#15; "city" - код города по КЛАДР;
-     * &#15; "locality" - код населенного пункта по КЛАДР;
-     * &#15; "street" - код улицы по КЛАДР;</pre>
-     * @param parent   Фильтр для справочника "KLADR". (В url: filter[parent]=...)<pre>
-     * &#15; КЛАДР-код элемента более высокого уровня, для которого происходит выборка дочерних элементов.</pre>
-     * @param type     Фильтр для справочника "valueDomain". Идентифиувтор типа действия (s11r64.ActionType.id). (В url: filter[typeIs]=...);
-     * @param capId    Фильтр для справочника "valueDomain". Идентификатору записи в s11r64.rbCoreActionPropertyType. (В url: filter[capId]=...)
-     * @return com.sun.jersey.api.json.JSONWithPadding как Object
-     * @throws CoreException
-     * @see CoreException
-     */
-    @GET
-    @Path("/dictionary")
-    @Produces("application/x-javascript")
-    public Object getRecordsFromDictionary(@QueryParam("dictName")String dictName,
-                                           @QueryParam("filter[headId]")int headId,
-                                           @QueryParam("filter[groupId]")int groupId,
-                                           @QueryParam("filter[name]")String name,
-                                           @QueryParam("filter[level]")String level,      //KLADR
-                                           @QueryParam("filter[parent]")String parent,    //KLADR
-                                           @QueryParam("filter[typeIs]")String type,        //valueDomain
-                                           @QueryParam("filter[capId]")int capId  //valueDomain
-                                          ) {
-        DictionaryListRequestDataFilter filter = new DictionaryListRequestDataFilter(dictName, headId, groupId, name, level, parent, type, capId);
-        ListDataRequest request = new ListDataRequest(this.sortingField, this.sortingMethod, this.limit, this.page, filter);
-        return new JSONWithPadding(wsImpl.getDictionary(request, dictName),this.callback);
-    }
-
-    /**
      * Получение данных из справочника медицинских препоратов (rls).
      * <pre>
      * &#15; Возможные значения для сортировки:
