@@ -26,4 +26,20 @@ public class HospitalBedsInfoRESTImpl {
         this.wsImpl = wsImpl;
         this.callback = callback;
     }
+
+    /**
+     * Сервис на получение списка коек с меткой свободно/занято.
+     * Url: .../hospitalbed/vacant/{departmentId}
+     * Since: ver 1.0.0.57
+     * @param departmentId Идентификатор отделения.
+     * @return Список коек в json-формате.
+     */
+    @GET
+    @Path("/vacant/")
+    @Produces("application/x-javascript")
+    public Object getVacantHospitalBeds(@QueryParam("filter[departmentId]") int departmentId) {
+        //Отделение обязательное поле, если не задано в запросе, то берем из роли специалиста
+        int depId = (departmentId>0) ? departmentId : this.auth.getUser().getOrgStructure().getId().intValue();
+        return new JSONWithPadding(wsImpl.getVacantHospitalBeds(depId, this.auth), this.callback);
+    }
 }

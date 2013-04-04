@@ -185,19 +185,18 @@ public class DiagnosticsRegistryExRESTImpl {
    } */
 
     /**
-     * Редактирование направления на лабораторные исследования
+     * Редактирование списка направлений на лабораторные исследования
      * @param data Json с данными о лабораторном исследовании как CommonData
      * @return com.sun.jersey.api.json.JSONWithPadding как Object
      * @throws ru.korus.tmis.core.exception.CoreException
      * @see ru.korus.tmis.core.exception.CoreException
      */
     @PUT
-    @Path("/{var}/{actionId}")
+    @Path("/{var}/")
     @Consumes("application/json")
     @Produces("application/x-javascript")
     public Object modifyLaboratoryStudies(JSONCommonData data,
-                                          @PathParam("var") String var,
-                                          @PathParam("actionId")int actionId) {   //TODO: insert actionId
+                                          @PathParam("var") String var) {
 
         DirectoryInfoRESTImpl.ActionTypesSubType atst = DirectoryInfoRESTImpl.ActionTypesSubType.getType(var);
         switch (atst){
@@ -219,19 +218,18 @@ public class DiagnosticsRegistryExRESTImpl {
     }
 
     /**
-     * Удаление направлений на лабораторные исследования
+     * Удаление списка направлений на лабораторные исследования
      * @param data Json с данными о лабораторном исследовании как CommonData
      * @return com.sun.jersey.api.json.JSONWithPadding как Object
      * @throws ru.korus.tmis.core.exception.CoreException
      * @see ru.korus.tmis.core.exception.CoreException
      */
     @DELETE
-    @Path("/{var}/{actionId}")
+    @Path("/{var}/")
     @Consumes("application/json")
     @Produces("application/x-javascript")
     public Object removeLaboratoryStudies(AssignmentsToRemoveDataList data,
-                                          @PathParam("var") String var,
-                                          @PathParam("actionId")int actionId) {          //TODO: insert actionId
+                                          @PathParam("var") String var) {
 
         DirectoryInfoRESTImpl.ActionTypesSubType atst = DirectoryInfoRESTImpl.ActionTypesSubType.getType(var);
 
@@ -251,6 +249,56 @@ public class DiagnosticsRegistryExRESTImpl {
         }
     }
 
+    /**
+     * Удаление направления на лабораторные исследования
+     * @return com.sun.jersey.api.json.JSONWithPadding как Object
+     * @throws ru.korus.tmis.core.exception.CoreException
+     * @see ru.korus.tmis.core.exception.CoreException
+     */
+    @DELETE
+    @Path("/{var}/{actionId}")
+    @Produces("application/x-javascript")
+    public Object removeLaboratoryStudy(@PathParam("var") String var,
+                                        @PathParam("actionId")int actionId) {
+
+        DirectoryInfoRESTImpl.ActionTypesSubType atst = DirectoryInfoRESTImpl.ActionTypesSubType.getType(var);
+
+        switch (atst){
+            case LABORATORY: {
+                AssignmentsToRemoveDataList data = new AssignmentsToRemoveDataList();
+                data.getData().add(new AssignmentToRemoveDataEntry(actionId));
+                return new JSONWithPadding(wsImpl.removeLaboratoryStudies(data, this.auth), this.callback);
+            }
+            case INSTRUMENTAL: {
+                return null;
+            }
+            case CONSULTATIONS: {
+                return null;
+            }
+            default: {
+                return null;
+            }
+        }
+    }
+
+    /**
+     * Редактирование направления на лабораторные исследования
+     * @param data Json с данными о лабораторном исследовании как CommonData
+     * @return com.sun.jersey.api.json.JSONWithPadding как Object
+     * @throws ru.korus.tmis.core.exception.CoreException
+     * @see ru.korus.tmis.core.exception.CoreException
+     */
+    @PUT
+    @Path("/laboratory/{actionId}")
+    @Consumes("application/json")
+    @Produces("application/x-javascript")
+    public Object modifyLaboratoryStudies(JSONCommonData data,
+                                          @PathParam("actionId")int actionId) {   //TODO: insert actionId (сейчас из коммондаты)
+
+        CommonData com_data = new CommonData();
+        com_data.setEntity(data.getData());
+        return new JSONWithPadding(wsImpl.modifyLaboratoryStudies(eventId, com_data, this.auth), this.callback);
+    }
     /**
      * Просмотр результатов лабораторных исследований
      * @param actionId идентификатор исследования.
