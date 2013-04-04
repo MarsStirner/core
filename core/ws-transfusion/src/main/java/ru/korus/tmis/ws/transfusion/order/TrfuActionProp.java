@@ -62,7 +62,7 @@ public class TrfuActionProp {
             return database.getSingleProp(propType.getValueClass(), actionId, propIds.get(propType));
         } catch (final CoreException ex) {
             final String value = String.format("Не задано: '%s'", propType.getName());
-            database.addSinglePropBasic(value, propType.getValueClass(), actionId, propIds.get(PropType.ORDER_REQUEST_ID), true);
+            database.addSinglePropBasic(value, PropType.ORDER_REQUEST_ID.getValueClass(), actionId, propIds.get(PropType.ORDER_REQUEST_ID), true);
             throw ex;
         }
     }

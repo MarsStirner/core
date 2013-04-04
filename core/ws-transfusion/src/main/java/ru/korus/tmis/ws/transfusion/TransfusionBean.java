@@ -34,6 +34,8 @@ public class TransfusionBean {
     @EJB
     private SendProcedureRequest sendProcedureRequest;
 
+    private String tmp;
+
     /**
      * Полинг базы данных для поиска и передачи новых запросов в систему ТРФУ
      */
@@ -41,7 +43,11 @@ public class TransfusionBean {
     public void pullDB() {
         try {
             final TransfusionMedicalService_Service service = new TransfusionMedicalService_Service();
+            tmp = System.getProperty("java.security.policy", "MyApp.policy");
+            SecurityManager sm = System.getSecurityManager();
+            System.setSecurityManager(null);
             final TransfusionMedicalService transfusionMedicalService = service.getTransfusionMedicalService();
+            System.setSecurityManager(sm);
             sendOrderBloodComponents.pullDB(transfusionMedicalService);
             sendProcedureRequest.pullDB(transfusionMedicalService);
         } catch (final WebServiceException ex) {

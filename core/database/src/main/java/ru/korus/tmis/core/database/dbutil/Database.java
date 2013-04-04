@@ -52,8 +52,6 @@ public class Database {
      */
     public static final short ACTION_STATE_FINISHED = 2;
 
-
-
     private static final Logger logger = LoggerFactory.getLogger(Database.class);
 
     /**
@@ -85,6 +83,11 @@ public class Database {
         checkCountProp(actionId, propTypeId, propRes.size());
 
         return (T) ((APValue) propRes.get(0)).getValue();
+    }
+
+    public Database()
+    {
+        super();
     }
 
     public EntityManager getEntityMgr() {
@@ -173,27 +176,25 @@ public class Database {
         actionPropId.setIndex(0);
         AbstractAPValue actionProp = null;
 
-        final String msg = String.format("Internal error: The type %s is supproted by Database.addSinglePropBasic", value.getClass().getName());
+        final String msg = String.format("Internal error: The type %s is not supproted by Database.addSinglePropBasic", value.getClass().getName());
         try {
             actionProp = getPropValue(newPropId, (AbstractAPValue) classType.newInstance());
         } catch (final InstantiationException e) {
             logger.error(msg);
             e.printStackTrace();
-            throw new Error(msg);
+            throw new CoreException(msg);
         } catch (final IllegalAccessException e) {
             logger.error(msg);
-            e.printStackTrace();
             e.printStackTrace();
         }
 
         actionProp.setValue(value);
         actionProp.setId(actionPropId);
         em.persist(actionProp);
+        em.flush();
         return newPropId;
 
     }
-
-
 
     /**
      * Поиск новых действий
@@ -221,7 +222,6 @@ public class Database {
         planedDateCalendar.setTime(date);
         return DatatypeFactory.newInstance().newXMLGregorianCalendar(planedDateCalendar);
     }
-
 
     /**
      * Получить список свойств для заданного действия {ActionProperty}
