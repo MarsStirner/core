@@ -27,7 +27,7 @@
 
     <properties>
         <!-- Версия ядра-->
-        <version.tmis.core>0.9.13-SNAPSHOT</version.tmis.core>
+        <version.tmis.core>0.9.13-RC1</version.tmis.core>
 
 
         <version.joda.time>2.1</version.joda.time>
@@ -86,6 +86,9 @@
         <logs.path>${com.sun.aas.instanceRoot}/logs/</logs.path>
         <!-- Формат записи в лог -->
         <log.format>%5p [%d][%thread][%logger{0}] %msg%n</log.format>
+
+        <!-- Название ресурса к которому подсоединяется ядро (всегда должно быть s11r64) -->
+        <mysql.db.jdbc.resource>s11r64</mysql.db.jdbc.resource>
     </properties>
 
     <profiles>
@@ -124,6 +127,8 @@
                 <mysql.password>root</mysql.password>
                 <!-- Название базы данных МИС -->
                 <mysql.db.mis>s11r64</mysql.db.mis>
+                <!-- Название ресурса к которому подсоединяется ядро (всегда должно быть s11r64) -->
+                <mysql.db.jdbc.resource>s11r64</mysql.db.jdbc.resource>
                 <!-- Название пула для базы данных МИС -->
                 <mysql.db.mis.pool>s11r64-pool</mysql.db.mis.pool>
                 <!-- Название базы данных RLS -->
@@ -134,10 +139,66 @@
                 <mysql.db.tmis_core>tmis_core</mysql.db.tmis_core>
                 <!-- Название пула для базы данных - конфигурации ядра -->
                 <mysql.db.tmis_core.pool>tmis_core-pool</mysql.db.tmis_core.pool>
+
+                <!-- Выключить дебаг -->
+                <project.build.debug>false</project.build.debug>
             </properties>
             <activation>
                 <activeByDefault>true</activeByDefault>
             </activation>
+        </profile>
+
+        <profile>
+            <!-- Профиль для установки на стенд -->
+            <id>stand</id>
+            <properties>
+                <!-- Путь к директории доменов -->
+                <glassfish.domain.dir>/opt/glassfish3/glassfish/domains/</glassfish.domain.dir>
+                <!-- Домашняя директория Glassfish -->
+                <glassfish.home>/opt/glassfish3/</glassfish.home>
+                <!-- Хост сервера Glassfish -->
+                <glassfish.host>localhost</glassfish.host>
+                <!-- Порт инстанса приложения -->
+                <glassfish.port.instance>8080</glassfish.port.instance>
+                <!-- Порт админского Web IF -->
+                <glassfish.port.admin>4848</glassfish.port.admin>
+                <!-- Название домена -->
+                <glassfish.domain>mis</glassfish.domain>
+                <!-- Логин администратора -->
+                <glassfish.admin.login>admin</glassfish.admin.login>
+                <!-- Пароль администратора-->
+                <glassfish.admin.password>admin1234</glassfish.admin.password>
+                <!-- Название приложения, которое будет отображаться в интерфейсе -->
+                <glassfish.application.name>${project.build.finalName}</glassfish.application.name>
+                <!-- Путь к директории домена (нужен для того, чтобы валидировался pom.xml -->
+                <com.sun.aas.instanceRoot>${glassfish.domain.dir}/${glassfish.domain}/</com.sun.aas.instanceRoot>
+
+                <!-- Адрес базы данных -->
+                <mysql.db.host>127.0.0.1</mysql.db.host>
+                <!-- Порт подключения к базе данных -->
+                <mysql.db.port>3306</mysql.db.port>
+                <!-- Логин к базе данных -->
+                <mysql.login>root</mysql.login>
+                <!-- Пароль к базе данных -->
+                <mysql.password>root</mysql.password>
+                <!-- Название базы данных МИС -->
+                <mysql.db.mis>hospital</mysql.db.mis>
+                <!-- Название ресурса к которому подсоединяется ядро (всегда должно быть s11r64) -->
+                <mysql.db.jdbc.resource>s11r64</mysql.db.jdbc.resource>
+                <!-- Название пула для базы данных МИС -->
+                <mysql.db.mis.pool>s11r64-pool</mysql.db.mis.pool>
+                <!-- Название базы данных RLS -->
+                <mysql.db.rls>rls</mysql.db.rls>
+                <!-- Название пула для базы данных RLS -->
+                <mysql.db.rls.pool>rls-pool</mysql.db.rls.pool>
+                <!-- Название базы данных для конфигурации ядра (пул к БД автоматом получит это имя + суффикс "-pool") -->
+                <mysql.db.tmis_core>tmis_core</mysql.db.tmis_core>
+                <!-- Название пула для базы данных - конфигурации ядра -->
+                <mysql.db.tmis_core.pool>tmis_core-pool</mysql.db.tmis_core.pool>
+
+                <!-- Выключить дебаг -->
+                <project.build.debug>false</project.build.debug>
+            </properties>
         </profile>
 
         <profile>
@@ -175,6 +236,8 @@
                 <mysql.password>root</mysql.password>
                 <!-- Название базы данных МИС -->
                 <mysql.db.mis>s11r64_test</mysql.db.mis>
+                <!-- Название ресурса к которому подсоединяется ядро (всегда должно быть s11r64) -->
+                <mysql.db.jdbc.resource>s11r64</mysql.db.jdbc.resource>
                 <!-- Название пула для базы данных МИС -->
                 <mysql.db.mis.pool>s11r64-pool</mysql.db.mis.pool>
                 <!-- Название базы данных RLS -->
@@ -223,6 +286,8 @@
                 <mysql.password>root</mysql.password>
                 <!-- Название базы данных МИС -->
                 <mysql.db.mis>s11r64</mysql.db.mis>
+                <!-- Название ресурса к которому подсоединяется ядро (всегда должно быть s11r64) -->
+                <mysql.db.jdbc.resource>s11r64</mysql.db.jdbc.resource>
                 <!-- Название пула для базы данных МИС -->
                 <mysql.db.mis.pool>s11r64-pool</mysql.db.mis.pool>
                 <!-- Название базы данных RLS -->
@@ -275,6 +340,8 @@
                 <mysql.password>root</mysql.password>
                 <!-- Название базы данных МИС -->
                 <mysql.db.mis>s11r64</mysql.db.mis>
+                <!-- Название ресурса к которому подсоединяется ядро (всегда должно быть s11r64) -->
+                <mysql.db.jdbc.resource>s11r64</mysql.db.jdbc.resource>
                 <!-- Название пула для базы данных МИС -->
                 <mysql.db.mis.pool>s11r64-pool</mysql.db.mis.pool>
                 <!-- Название базы данных RLS -->
@@ -323,6 +390,8 @@
                 <mysql.password>root</mysql.password>
                 <!-- Название базы данных МИС -->
                 <mysql.db.mis>s11r64</mysql.db.mis>
+                <!-- Название ресурса к которому подсоединяется ядро (всегда должно быть s11r64) -->
+                <mysql.db.jdbc.resource>s11r64</mysql.db.jdbc.resource>
                 <!-- Название пула для базы данных МИС -->
                 <mysql.db.mis.pool>s11r64-pool</mysql.db.mis.pool>
                 <!-- Название базы данных RLS -->

@@ -84,7 +84,7 @@ public final class HL7PacketBuilder {
         inpatientEncounterEvent.setCode(createCD("IMP", "2.16.840.1.113883.5.4", "actCode", "abc"));
         inpatientEncounterEvent.setStatusCode(createCS("completed"));
         inpatientEncounterEvent.setEffectiveTime(createIVLTS(action.getCreateDatetime(), "yyyyMMdd"));
-        inpatientEncounterEvent.setLengthOfStayQuantity(createPQ("5", "d"));
+//        inpatientEncounterEvent.setLengthOfStayQuantity(createPQ("5", "d"));
 
         final PRPAMT402001UV02Subject subject = FACTORY_HL7.createPRPAMT402001UV02Subject();
         subject.setTypeCode(ParticipationTargetSubject.SBJ);
@@ -239,7 +239,7 @@ public final class HL7PacketBuilder {
         inpatientEncounterEvent.setClassCode(ActClassEncounter.ENC);
         inpatientEncounterEvent.setMoodCode(ActMoodEventOccurrence.EVN);
         inpatientEncounterEvent.getId().add(createII(externalUUID, externalId));
-        inpatientEncounterEvent.setCode(createCE("IMP", "2.16.840.1.113883.5.4", "actCode", "todo"));  //todo посмотреть что сюда писать
+        inpatientEncounterEvent.setCode(createCE("IMP", "2.16.840.1.113883.5.4", "actCode", "Стационар"));
         inpatientEncounterEvent.setStatusCode(createCS("completed"));
         inpatientEncounterEvent.setEffectiveTime(createIVLTS(NullFlavor.NI));
         final PRPAMT402003UV02Subject subject = FACTORY_HL7.createPRPAMT402003UV02Subject();
@@ -419,14 +419,15 @@ public final class HL7PacketBuilder {
             final Patient client,
             final Staff executorStaff,
             final Organisation organisation,
-            final String drugCode) {
+            final String drugCode,
+            final AssignmentType type) {
 
         final String uuidDocument = UUID.randomUUID().toString();
         logger.info("process RCMRIN000002UV02 document {}, action {}, patient {}, organisation {}, executor staff {}",
                 uuidDocument, action, client, organisation, executorStaff);
 
         final POCDMT000040ClinicalDocument clinicalDocument =
-                getClinicalDocument(action, client, organisation, executorStaff, drugCode);
+                getClinicalDocument(action, client, organisation, executorStaff, drugCode, type);
         final String innerDocument = marshallMessage(clinicalDocument, "org.hl7.v3");
         logger.info("prepare inner document... \n\n{}", innerDocument);
 
@@ -446,7 +447,7 @@ public final class HL7PacketBuilder {
         final RCMRIN000002UV02MCAIMT700201UV01ControlActProcess
                 controlActProcess = FACTORY_HL7.createRCMRIN000002UV02MCAIMT700201UV01ControlActProcess();
         controlActProcess.setClassCode(ActClassControlAct.CACT);
-        controlActProcess.setMoodCode(XActMoodIntentEvent.EVN);   // todo проверить мод-режим
+        controlActProcess.setMoodCode(getAssignmentType(type));
 
         final ED text = FACTORY_HL7.createED();
         text.setMediaType("multipart/related");
@@ -465,12 +466,36 @@ public final class HL7PacketBuilder {
         return request;
     }
 
+    /**
+     * Получить тип документа для HL7, EVN - назначение, RQO - исполенине назначения
+     *
+     * @param type
+     * @return
+     */
+    private static XActMoodIntentEvent getAssignmentType(final AssignmentType type) {
+        if (AssignmentType.ASSIGNMENT.equals(type)) {
+            return XActMoodIntentEvent.EVN;
+        }
+        return XActMoodIntentEvent.RQO;
+    }
+
+    private static XDocumentSubstanceMood getAssignmentType2(final AssignmentType type) {
+        if (AssignmentType.ASSIGNMENT.equals(type)) {
+            return XDocumentSubstanceMood.EVN;
+        }
+        return XDocumentSubstanceMood.RQO;
+    }
+
+    /**
+     * Создать документ по назначению
+     */
     private static POCDMT000040ClinicalDocument getClinicalDocument(
             final Action action,
             final Patient client,
             final Organisation organisation,
             final Staff executorStaff,
-            final String drugCode) {
+            final String drugCode,
+            final AssignmentType type) {
 
         final String uuidDocument = UUID.randomUUID().toString();
         final Event event = action.getEvent();
@@ -577,7 +602,7 @@ public final class HL7PacketBuilder {
         section.setText(text);
 
         //----------------- Создаем несколько лек.средств в нашем случае будет только одно
-        section.getEntry().add(createEntry(drugCode));
+        section.getEntry().add(createEntry(drugCode, type));
 //        section.getEntry().add(createEntry(drug));
         //-----------------
         component3.setSection(section);
@@ -594,13 +619,12 @@ public final class HL7PacketBuilder {
      * @param drugCode идентификатор лек.средства
      * @return товарное наименование
      */
-    private static POCDMT000040Entry createEntry(final String drugCode) {
+    private static POCDMT000040Entry createEntry(final String drugCode, final AssignmentType type) {
         final POCDMT000040Entry entry = FACTORY_HL7.createPOCDMT000040Entry();
         //----------------
         final POCDMT000040SubstanceAdministration substanceAdministration = FACTORY_HL7.createPOCDMT000040SubstanceAdministration();
         substanceAdministration.setClassCode(ActClass.SBADM);
-//        substanceAdministration.setMoodCode(XDocumentSubstanceMood.EVN);  // исполнение назначения
-        substanceAdministration.setMoodCode(XDocumentSubstanceMood.RQO);  // назначение
+        substanceAdministration.setMoodCode(getAssignmentType2(type));  // тип документа
 
         substanceAdministration.getId().add(createII(UUID.randomUUID().toString())); // UUID назначения
         substanceAdministration.getId().add(createIIEx("ОМС"));
@@ -720,7 +744,6 @@ public final class HL7PacketBuilder {
                 return d;
             }
         }
-
         return drugList.get(2); //todo для теста возвращаем любой drug
     }
 
