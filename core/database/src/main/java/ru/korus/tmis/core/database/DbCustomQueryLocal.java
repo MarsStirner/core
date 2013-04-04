@@ -56,7 +56,7 @@ public interface DbCustomQueryLocal {
     long getCountDiagnosticsWithFilter(Object filter)
             throws CoreException;
 
-    List<Action> getAllDiagnosticsWithFilter(int page, int limit, String sortField, String sortMethod, Object filter)
+    List<Action> getAllDiagnosticsWithFilter(int page, int limit, String sorting, Object filter)
             throws CoreException;
 
     List<IndicatorValue<Double>>

@@ -709,7 +709,6 @@ class WebMisRESTImpl  extends WebMisREST
       actions = dbCustomQueryBean.getAllDiagnosticsWithFilter(requestData.page-1,
         requestData.limit,
         requestData.sortingFieldInternal,
-        requestData.sortingMethod,
         requestData.filter)
     }
     val list = new DiagnosticsListData(actions, requestData)

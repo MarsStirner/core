@@ -79,12 +79,6 @@ class DiagnosticsListRequestData {
         sortingField
       }
     }
-    this.sortingFieldInternal =
-      if (filter.isInstanceOf[DiagnosticsListRequestDataFilter])
-        this.filter.asInstanceOf[DiagnosticsListRequestDataFilter].toSortingString(this.sortingField)
-      else
-        this.sortingField
-
     this.sortingMethod = sortingMethod match {
       case null => {
         "asc"
@@ -93,6 +87,13 @@ class DiagnosticsListRequestData {
         sortingMethod
       }
     }
+
+    this.sortingFieldInternal =
+      if (filter.isInstanceOf[DiagnosticsListRequestDataFilter])
+        this.filter.asInstanceOf[DiagnosticsListRequestDataFilter].toSortingString(this.sortingField, this.sortingMethod)
+      else
+        this.sortingField
+
     this.limit = if (limit > 0) {
       limit
     } else {
@@ -253,36 +254,21 @@ class DiagnosticsListRequestDataFilter {
     qs
   }
 
-  def toSortingString(sortingField: String) = {
-    sortingField match {
-      case "directionDate" => {
-        "a.directionDate"
-      }
-      case "diagnosticDate" => {
-        "a.endDate"
-      }
-      case "diagnosticName" => {
-        "a.actionType.name"
-      }
-      case "execPerson" => {
-        "a.executor.lastName, a.executor.firstName, a.executor.patrName"
-      }
-      case "assignPerson" => {
-        "a.assigner.lastName, a.assigner.firstName, a.assigner.patrName"
-      }
-      case "office" => {
-        "a.office"
-      }
-      case "status" => {
-        "a.status"
-      }
-      case "cito" => {
-        "a.isUrgent"
-      }
-      case _ => {
-        "a.id"
-      }
+  @Override
+  def toSortingString (sortingField: String, sortingMethod: String) = {
+    var sorting = sortingField match {
+      case "directionDate" => {"a.directionDate %s".format(sortingMethod)}
+      case "diagnosticDate" => {"a.endDate %s".format(sortingMethod)}
+      case "diagnosticName" => {"a.actionType.name %s".format(sortingMethod)}
+      case "execPerson" => {"a.executor.lastName %s, a.executor.firstName %s, a.executor.patrName %s".format(sortingMethod, sortingMethod, sortingMethod)}
+      case "assignPerson" => {"a.assigner.lastName %s, a.assigner.firstName %s, a.assigner.patrName %s".format(sortingMethod, sortingMethod, sortingMethod)}
+      case "office" => {"a.office %s".format(sortingMethod)}
+      case "status" => {"a.status %s".format(sortingMethod)}
+      case "cito" => {"a.isUrgent %s".format(sortingMethod)}
+      case _ => {"a.id %s".format(sortingMethod)}
     }
+    sorting = "ORDER BY " + sorting
+    sorting
   }
 }
 

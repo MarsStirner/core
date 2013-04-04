@@ -189,7 +189,7 @@ class DbCustomQueryBean
       eventId)
   }
 
-  def getAllDiagnosticsWithFilter(page: Int, limit: Int, sortingField: String, sortingMethod: String, filter: Object) = {
+  def getAllDiagnosticsWithFilter(page: Int, limit: Int, sorting: String, filter: Object) = {
 
     val queryStr: QueryDataStructure = if (filter.isInstanceOf[DiagnosticsListRequestDataFilter]) {
       filter.asInstanceOf[DiagnosticsListRequestDataFilter].toQueryStructure()
@@ -197,8 +197,6 @@ class DbCustomQueryBean
     else {
       new QueryDataStructure()
     }
-
-    val sorting = "ORDER BY %s %s".format(sortingField, sortingMethod)
 
     var typed = em.createQuery(AllDiagnosticsByEventIdAndFiltredByCodeQuery.format("a", i18n("db.action.diagnosticClass"), queryStr.query, sorting), classOf[Action])
       .setMaxResults(limit)
