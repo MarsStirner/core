@@ -122,7 +122,7 @@ asadmin --user ${glassfish.admin.login} \
 asadmin --user ${glassfish.admin.login} \
         --passwordfile $GF_PASSWD_FILE \
         create-jdbc-resource \
-        --connectionpoolid ${mysql.db.mis.pool} ${mysql.db.mis}
+        --connectionpoolid ${mysql.db.mis.pool} ${mysql.db.jdbc.resource}
 
 
 asadmin --user ${glassfish.admin.login} \

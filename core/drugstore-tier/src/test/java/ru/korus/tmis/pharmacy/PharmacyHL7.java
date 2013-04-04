@@ -1,5 +1,7 @@
 package ru.korus.tmis.pharmacy;
 
+import misexchange.MISExchange;
+import misexchange.Request;
 import org.hl7.v3.MCCIIN000002UV01;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -31,6 +33,9 @@ public class PharmacyHL7 {
     private final Staff doctorAssigPerson = new Staff(11);
     private final OrgStructure orgStructure = new OrgStructure(333);
     private final OrgStructure orgStructureIn = new OrgStructure(999);
+    private final Organisation organisation = new Organisation(555);
+
+
 
     private final String externalId = "2012/11782";  // номер карты в мис
     private final String externalUUID = "1b264840-5555-4444-89fd-1f6b355dfa91";  // UUID карты
@@ -56,6 +61,9 @@ public class PharmacyHL7 {
         action.setCreateDatetime(new Date());
         orgStructure.setUuid(new UUID(orgUUID));
         orgStructure.setName("ФНКЦ ДГОИ");
+
+        organisation.setFullName("ФНКЦ ДГОИ");
+        organisation.setUuid(new UUID("4e6594a0-7d35-11e0-962e-001c23a58dfc"));
 
         orgStructureIn.setUuid(new UUID(orgUUID2));
 
@@ -92,68 +100,47 @@ public class PharmacyHL7 {
 
     @Test(enabled = true, priority = 1)
     public void processReceived() {
-//        try {
-            //final MCCIIN000002UV01 result = HL7PacketBuilder.processReceived(action, orgStructure);
-           // logger.info("docUUID = " + result.getId().getRoot());
-//        } catch (SoapConnectionException e) {
-//            logger.error("SoapConnectionException: " + e, e);
-//        }
+        send(HL7PacketBuilder.processReceived(action, orgStructure));
     }
+
 
     @Test(enabled = true, priority = 2)
     public void processMoving() {
-//        try {
-//            final MCCIIN000002UV01 result = HL7PacketBuilder.processMoving(action, orgStructure, orgStructureIn);
-//            logger.info("docUUID = " + result.getId().getRoot());
-//        } catch (SoapConnectionException e) {
-//            logger.error("SoapConnectionException: " + e, e);
-//        }
+        send(HL7PacketBuilder.processMoving(action, orgStructure, orgStructureIn));
     }
 
     @Test(enabled = true, priority = 3)
     public void processDelMoving() {
-//        try {
-//            final MCCIIN000002UV01 result = HL7PacketBuilder.processDelMoving(action, orgStructure, orgStructureIn);
-//            logger.info("docUUID = " + result.getId().getRoot());
-//        } catch (SoapConnectionException e) {
-//            logger.error("SoapConnectionException: " + e, e);
-//        }
+        send(HL7PacketBuilder.processDelMoving(action, orgStructure, orgStructureIn));
     }
 
     @Test(enabled = true, priority = 4)
     public void processLeaved() {
-//        try {
-//            final MCCIIN000002UV01 result = HL7PacketBuilder.processLeaved(action, "Стационар");
-//            logger.info("docUUID = " + result.getId().getRoot());
-//        } catch (SoapConnectionException e) {
-//            logger.error("SoapConnectionException: " + e, e);
-//        }
+        send(HL7PacketBuilder.processLeaved(action));
     }
 
     @Test(enabled = true, priority = 5)
     public void processDelReceived() {
-//        try {
-//            final MCCIIN000002UV01 result = HL7PacketBuilder.processDelReceived(action);
-//            logger.info("docUUID = " + result.getId().getRoot());
-//        } catch (SoapConnectionException e) {
-//            logger.error("SoapConnectionException: " + e, e);
-//        }
+        send(HL7PacketBuilder.processDelReceived(action));
     }
 
     @Test(enabled = true, priority = 6)
     public void processCDA() {
-//        try {
-//            final MCCIIN000002UV01 result = HL7PacketBuilder.processPrescription(
-//                    action,
-//                    client,
-//                    doctor,
-//                    orgStructure);
+        send(HL7PacketBuilder.processPrescription(
+                action,
+                client,
+                doctor,
+                organisation,
+                "20044",
+                AssignmentType.ASSIGNMENT));
+    }
 
-//            final String docUUID = result.getId().getRoot();
-//            logger.info("docUUID = " + docUUID);
-
-//        } catch (SoapConnectionException e) {
-//            logger.error("SoapConnectionException: " + e, e);
-//        }
+    private void send(Request request) {
+        logger.info("prepare message... \n\n {}", HL7PacketBuilder.marshallMessage(request, "misexchange"));
+        final MCCIIN000002UV01 result = new MISExchange().getMISExchangeSoap().processHL7V3Message(request);
+        if (result != null) {
+            logger.info("Connection successful. Result: {} \n\n {}",
+                    result, HL7PacketBuilder.marshallMessage(result, "org.hl7.v3"));
+        }
     }
 }

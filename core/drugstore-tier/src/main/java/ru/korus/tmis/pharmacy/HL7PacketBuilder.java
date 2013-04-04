@@ -84,7 +84,7 @@ public final class HL7PacketBuilder {
         inpatientEncounterEvent.setCode(createCD("IMP", "2.16.840.1.113883.5.4", "actCode", "abc"));
         inpatientEncounterEvent.setStatusCode(createCS("completed"));
         inpatientEncounterEvent.setEffectiveTime(createIVLTS(action.getCreateDatetime(), "yyyyMMdd"));
-        inpatientEncounterEvent.setLengthOfStayQuantity(createPQ("5", "d"));
+//        inpatientEncounterEvent.setLengthOfStayQuantity(createPQ("5", "d"));
 
         final PRPAMT402001UV02Subject subject = FACTORY_HL7.createPRPAMT402001UV02Subject();
         subject.setTypeCode(ParticipationTargetSubject.SBJ);
@@ -239,7 +239,7 @@ public final class HL7PacketBuilder {
         inpatientEncounterEvent.setClassCode(ActClassEncounter.ENC);
         inpatientEncounterEvent.setMoodCode(ActMoodEventOccurrence.EVN);
         inpatientEncounterEvent.getId().add(createII(externalUUID, externalId));
-        inpatientEncounterEvent.setCode(createCE("IMP", "2.16.840.1.113883.5.4", "actCode", "todo"));  //todo посмотреть что сюда писать
+        inpatientEncounterEvent.setCode(createCE("IMP", "2.16.840.1.113883.5.4", "actCode", "Стационар"));
         inpatientEncounterEvent.setStatusCode(createCS("completed"));
         inpatientEncounterEvent.setEffectiveTime(createIVLTS(NullFlavor.NI));
         final PRPAMT402003UV02Subject subject = FACTORY_HL7.createPRPAMT402003UV02Subject();
