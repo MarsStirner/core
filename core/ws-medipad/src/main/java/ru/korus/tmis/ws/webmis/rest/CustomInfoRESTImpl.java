@@ -179,13 +179,13 @@ public class CustomInfoRESTImpl {
 
         int depId = (departmentId>0) ? departmentId : auth.getUser().getOrgStructure().getId().intValue();
         PatientsListRequestData requestData = new PatientsListRequestData ( depId,
-                auth.getUser().getId().intValue(),
-                auth.getUserRole().getId().intValue(),
-                endDate,
-                sortingField,
-                sortingMethod,
-                limit,
-                page);
+                                                                            auth.getUser().getId().intValue(),
+                                                                            auth.getUserRole().getId().intValue(),
+                                                                            endDate,
+                                                                            sortingField,
+                                                                            sortingMethod,
+                                                                            limit,
+                                                                            page);
         return new JSONWithPadding(wsImpl.getAllPatientsForDepartmentIdAndDoctorIdByPeriod(requestData, this.auth),this.callback);
     }
 }

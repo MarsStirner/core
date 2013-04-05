@@ -119,26 +119,41 @@ class PatientsListData {
     })
 
     //Cортировка по койке name
-    if (requestData.getSortingField.compareTo("bed") == 0) {
-      val temp = this.data.toList.sortWith((a, b)=>getSortingConditionByMethod(requestData.getSortingMethod, a, b))
+    if (requestData.getSortingField.compareTo("bed") == 0 ||
+        requestData.getSortingField.compareTo("number") == 0) {
+      val temp = this.data.toList.sortWith((a, b)=>getSortingConditionByMethod(requestData.getSortingField, requestData.getSortingMethod, a, b))
       this.data = new util.LinkedList[PatientsListEntry]()
       temp.foreach((f) => this.data.add(f))
     }
   }
 
-  private def getSortingConditionByMethod(method: String, a: PatientsListEntry, b: PatientsListEntry) = {
-      if (a.getHospitalBed==null || a.getHospitalBed.getBed==null || a.getHospitalBed.getBed.isEmpty)
-        true
-      else {
-        if (b.getHospitalBed==null || b.getHospitalBed.getBed==null || b.getHospitalBed.getBed.isEmpty)
-          false
+  private def getSortingConditionByMethod(field: String, method: String, a: PatientsListEntry, b: PatientsListEntry) = {
+
+    field match {
+      case "bed" => {
+        if (a.getHospitalBed==null || a.getHospitalBed.getBed==null || a.getHospitalBed.getBed.isEmpty)
+          true
         else {
-          if (method.compareTo("desc") == 0)
-            (a.getHospitalBed.getBed.toInt > b.getHospitalBed.getBed.toInt)
-          else
-            (b.getHospitalBed.getBed.toInt > a.getHospitalBed.getBed.toInt)
+          if (b.getHospitalBed==null || b.getHospitalBed.getBed==null || b.getHospitalBed.getBed.isEmpty)
+            false
+          else {
+            if (method.compareTo("desc") == 0)
+              (a.getHospitalBed.getBed.toInt > b.getHospitalBed.getBed.toInt)
+            else
+              (b.getHospitalBed.getBed.toInt > a.getHospitalBed.getBed.toInt)
+          }
         }
       }
+      case "number" => {
+        if (method.compareTo("desc") == 0)
+          (a.getNumber.substring(0, 4).toInt > b.getNumber.substring(0, 4).toInt) ||
+          (a.getNumber.substring(0, 4).toInt == b.getNumber.substring(0, 4).toInt && a.getNumber.substring(5).toInt > b.getNumber.substring(5).toInt)
+        else
+          (b.getNumber.substring(0, 4).toInt > a.getNumber.substring(0, 4).toInt) ||
+          (b.getNumber.substring(0, 4).toInt == a.getNumber.substring(0, 4).toInt && b.getNumber.substring(5).toInt > a.getNumber.substring(5).toInt)
+      }
+      case _ => false
+    }
   }
 
   /**
@@ -281,7 +296,7 @@ class PatientsListRequestDataFilter {
       case "doctor" => {"e.executor.lastName %s, e.executor.firstName %s, e.executor.patrName %s".format(sortingMethod, sortingMethod, sortingMethod)}
       case "department" => {"org.masterDepartment.name %s".format(sortingMethod)}
       //case "bed" => {"org.name %s".format(sortingMethod)}
-      case "number" => {"e.externalId %s".format(sortingMethod)}
+      //case "number" => "CAST(SUBSTRING(e.externalId, 1, 4) AS UNSIGNED) %s, CAST(SUBSTRING(e.externalId, 6) AS UNSIGNED) %s".format(sortingMethod,sortingMethod)//{"e.externalId %s".format(sortingMethod)}
       case "fullname" => {"e.patient.lastName %s, e.patient.firstName %s, e.patient.patrName %s".format(sortingMethod,sortingMethod,sortingMethod)}
       case "birthdate" => {"e.patient.birthDate %s".format(sortingMethod)}
       case _ => {"e.id %s".format(sortingMethod)}
