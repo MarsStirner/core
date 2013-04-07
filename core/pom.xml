@@ -95,9 +95,8 @@
     </properties>
 
     <profiles>
-
+        <!-- Профиль для установки на стандартный Linux-сервер -->
         <profile>
-            <!-- Профиль для установки на сервер -->
             <id>production</id>
             <properties>
                 <!-- Путь к директории доменов -->
@@ -152,8 +151,8 @@
             </activation>
         </profile>
 
+        <!-- Профиль для установки на клауд для Алтея -->
         <profile>
-            <!-- Профиль для установки на клауд для Алтея -->
             <id>production-altey</id>
             <properties>
                 <!-- Путь к директории доменов -->
@@ -205,8 +204,8 @@
             </properties>
         </profile>
 
+        <!-- Профиль для Пензы -->
         <profile>
-            <!-- Профиль для Пензы -->
             <id>production-penza</id>
             <properties>
                 <!-- Путь к директории доменов -->
@@ -257,8 +256,8 @@
             </properties>
         </profile>
 
+        <!-- Профиль для MacMini -->
         <profile>
-            <!-- Профиль для MacMini -->
             <id>macmini</id>
             <properties>
                 <!-- Путь к директории доменов -->
@@ -307,8 +306,8 @@
             </properties>
         </profile>
 
+        <!-- Пользовательский профиль nde-mac -->
         <profile>
-            <!-- Пользовательский профиль -->
             <id>nde-mac</id>
             <properties>
                 <!-- Путь к директории доменов -->
@@ -359,8 +358,58 @@
             </properties>
         </profile>
 
+        <!-- Пользовательский профиль nde-lin -->
         <profile>
-            <!-- Пользовательский профиль -->
+            <id>nde-lin</id>
+            <properties>
+                <!-- Путь к директории доменов -->
+                <glassfish.domain.dir>/opt/glassfish3/glassfish/domains/</glassfish.domain.dir>
+                <!-- Домашняя директория Glassfish -->
+                <glassfish.home>/opt/glassfish3/</glassfish.home>
+                <!-- Хост сервера Glassfish -->
+                <glassfish.host>localhost</glassfish.host>
+                <!-- Порт инстанса приложения -->
+                <glassfish.port.instance>8080</glassfish.port.instance>
+                <!-- Порт админского Web IF -->
+                <glassfish.port.admin>4848</glassfish.port.admin>
+                <!-- Название домена -->
+                <glassfish.domain>domain1</glassfish.domain>
+                <!-- Логин администратора -->
+                <glassfish.admin.login>admin</glassfish.admin.login>
+                <!-- Пароль администратора-->
+                <glassfish.admin.password>admin1234</glassfish.admin.password>
+                <!-- Название приложения, которое будет отображаться в интерфейсе -->
+                <glassfish.application.name>${project.build.finalName}</glassfish.application.name>
+                <!-- Путь к директории домена (нужен для того, чтобы валидировался pom.xml -->
+                <com.sun.aas.instanceRoot>${glassfish.domain.dir}/${glassfish.domain}/</com.sun.aas.instanceRoot>
+
+                <!-- Адрес базы данных -->
+                <mysql.db.host>127.0.0.1</mysql.db.host>
+                <!-- Порт подключения к базе данных -->
+                <mysql.db.port>3306</mysql.db.port>
+                <!-- Логин к базе данных -->
+                <mysql.login>root</mysql.login>
+                <!-- Пароль к базе данных -->
+                <mysql.password>root</mysql.password>
+                <!-- Название базы данных МИС -->
+                <mysql.db.mis>s11r64</mysql.db.mis>
+                <!-- Название ресурса к которому подсоединяется ядро (всегда должно быть s11r64) -->
+                <mysql.db.jdbc.resource>s11r64</mysql.db.jdbc.resource>
+                <!-- Название пула для базы данных МИС -->
+                <mysql.db.mis.pool>s11r64-pool</mysql.db.mis.pool>
+                <!-- Название базы данных RLS -->
+                <mysql.db.rls>rls</mysql.db.rls>
+                <!-- Название пула для базы данных RLS -->
+                <mysql.db.rls.pool>rls-pool</mysql.db.rls.pool>
+                <!-- Название базы данных для конфигурации ядра (пул к БД автоматом получит это имя + суффикс "-pool") -->
+                <mysql.db.tmis_core>tmis_core</mysql.db.tmis_core>
+                <!-- Название пула для базы данных - конфигурации ядра -->
+                <mysql.db.tmis_core.pool>tmis_core-pool</mysql.db.tmis_core.pool>
+            </properties>
+        </profile>
+
+        <!-- Пользовательский профиль win-sg -->
+        <profile>
             <id>win-sg</id>
             <properties>
                 <!-- Путь к директории доменов -->
@@ -411,59 +460,8 @@
             </properties>
         </profile>
 
-        <!-- Пользовательский профиль -->
+        <!-- Пользовательский профиль ueg -->
         <profile>
-            <id>nde-lin</id>
-            <properties>
-                <!-- Путь к директории доменов -->
-                <glassfish.domain.dir>/opt/glassfish3/glassfish/domains/</glassfish.domain.dir>
-                <!-- Домашняя директория Glassfish -->
-                <glassfish.home>/opt/glassfish3/</glassfish.home>
-                <!-- Хост сервера Glassfish -->
-                <glassfish.host>localhost</glassfish.host>
-                <!-- Порт инстанса приложения -->
-                <glassfish.port.instance>8080</glassfish.port.instance>
-                <!-- Порт админского Web IF -->
-                <glassfish.port.admin>4848</glassfish.port.admin>
-                <!-- Название домена -->
-                <glassfish.domain>domain1</glassfish.domain>
-                <!-- Логин администратора -->
-                <glassfish.admin.login>admin</glassfish.admin.login>
-                <!-- Пароль администратора-->
-                <glassfish.admin.password>admin1234</glassfish.admin.password>
-                <!-- Название приложения, которое будет отображаться в интерфейсе -->
-                <glassfish.application.name>${project.build.finalName}</glassfish.application.name>
-                <!-- Путь к директории домена (нужен для того, чтобы валидировался pom.xml -->
-                <com.sun.aas.instanceRoot>${glassfish.domain.dir}/${glassfish.domain}/</com.sun.aas.instanceRoot>
-
-                <!-- Адрес базы данных -->
-                <mysql.db.host>127.0.0.1</mysql.db.host>
-                <!-- Порт подключения к базе данных -->
-                <mysql.db.port>3306</mysql.db.port>
-                <!-- Логин к базе данных -->
-                <mysql.login>root</mysql.login>
-                <!-- Пароль к базе данных -->
-                <mysql.password>root</mysql.password>
-                <!-- Название базы данных МИС -->
-                <mysql.db.mis>s11r64</mysql.db.mis>
-                <!-- Название ресурса к которому подсоединяется ядро (всегда должно быть s11r64) -->
-                <mysql.db.jdbc.resource>s11r64</mysql.db.jdbc.resource>
-                <!-- Название пула для базы данных МИС -->
-                <mysql.db.mis.pool>s11r64-pool</mysql.db.mis.pool>
-                <!-- Название базы данных RLS -->
-                <mysql.db.rls>rls</mysql.db.rls>
-                <!-- Название пула для базы данных RLS -->
-                <mysql.db.rls.pool>rls-pool</mysql.db.rls.pool>
-                <!-- Название базы данных для конфигурации ядра (пул к БД автоматом получит это имя + суффикс "-pool") -->
-                <mysql.db.tmis_core>tmis_core</mysql.db.tmis_core>
-                <!-- Название пула для базы данных - конфигурации ядра -->
-                <mysql.db.tmis_core.pool>tmis_core-pool</mysql.db.tmis_core.pool>
-            </properties>
-        </profile>
-
-
-        <profile>
-            <!-- Пользовательский профиль -->
             <id>ueg</id>
             <properties>
                 <com.sun.aas.instanceRoot>C:\Winprog\glassfish3\glassfish\domains\domain\</com.sun.aas.instanceRoot>
