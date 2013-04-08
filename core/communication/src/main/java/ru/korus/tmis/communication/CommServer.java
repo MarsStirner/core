@@ -432,42 +432,45 @@ public class CommServer implements Communications.Iface {
         for (ActionProperty currentProperty : action.getActionProperties()) {
             fieldName = currentProperty.getType().getName();
             //Fill AMB params without tickets and fill arrays to compute tickets
-            final APValue value = actionPropertyBean.getActionPropertyValue(currentProperty).get(0);
-            if (fieldName.equals("begTime")) {
-                ambulatoryInfo.setBegTime(
-                        DateConvertions.convertDateToUTCMilliseconds((Date) value.getValue()));
-            } else {
-                if (fieldName.equals("endTime")) {
-                    ambulatoryInfo.setEndTime(
+            final List<APValue> apValueList = actionPropertyBean.getActionPropertyValue(currentProperty);
+            if (!apValueList.isEmpty()) {
+                final APValue value = apValueList.get(0);
+                if ("begTime".equals(fieldName)) {
+                    ambulatoryInfo.setBegTime(
                             DateConvertions.convertDateToUTCMilliseconds((Date) value.getValue()));
                 } else {
-                    if (fieldName.equals("office")) {
-                        ambulatoryInfo.setOffice(((APValueString) value).getValue());
+                    if ("endTime".equals(fieldName)) {
+                        ambulatoryInfo.setEndTime(
+                                DateConvertions.convertDateToUTCMilliseconds((Date) value.getValue()));
                     } else {
-                        if (fieldName.equals("plan")) {
-                            ambulatoryInfo.setPlan(((APValueInteger) value).getValue());
+                        if ("office".equals(fieldName)) {
+                            ambulatoryInfo.setOffice(((APValueString) value).getValue());
                         } else {
-                            if (fieldName.equals("times")) {
-                                for (APValue timevalue : actionPropertyBean.getActionPropertyValue(currentProperty)) {
-                                    //Не преобразуем эти времена
-                                    times.add((APValueTime) timevalue);
-                                }
+                            if ("plan".equals(fieldName)) {
+                                ambulatoryInfo.setPlan(((APValueInteger) value).getValue());
                             } else {
-                                if (fieldName.equals("queue")) {
-                                    for (APValue queuevalue : actionPropertyBean.getActionPropertyValue(currentProperty)) {
-                                        queue.add((APValueAction) queuevalue);
+                                if ("times".equals(fieldName)) {
+                                    for (APValue timevalue : apValueList) {
+                                        //Не преобразуем эти времена
+                                        times.add((APValueTime) timevalue);
+                                    }
+                                } else {
+                                    if ("queue".equals(fieldName)) {
+                                        for (APValue queuevalue : apValueList) {
+                                            queue.add((APValueAction) queuevalue);
+                                        }
                                     }
                                 }
                             }
                         }
                     }
-                    //Вывод всех свойств со значениями в лог
-                    if (logger.isDebugEnabled()) {
-                        for (APValue apValue : actionPropertyBean.getActionPropertyValue(currentProperty)) {
-                            logger.debug("ID={} NAME={} VALUE={}",
-                                    currentProperty.getId(), currentProperty.getType().getName(), apValue.getValue());
-                        }
-                    }
+                }
+            }
+            //Вывод всех свойств со значениями в лог
+            if (logger.isDebugEnabled()) {
+                for (APValue apValue : apValueList) {
+                    logger.debug("ID={} NAME={} VALUE={}",
+                            currentProperty.getId(), currentProperty.getType().getName(), apValue.getValue());
                 }
             }
         }
