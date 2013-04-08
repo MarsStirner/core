@@ -114,7 +114,7 @@ call asadmin --user ${glassfish.admin.login} ^
 call asadmin --user ${glassfish.admin.login} ^
         --passwordfile %GF_PASSWD_FILE% ^
         create-jdbc-resource ^
-        --connectionpoolid ${mysql.db.mis.pool} ${mysql.db.jdbc.resource}
+        --connectionpoolid ${mysql.db.mis.pool} ${mysql.db.jndi.mis}
 
 
 call asadmin --user ${glassfish.admin.login} ^
@@ -127,7 +127,7 @@ call asadmin --user ${glassfish.admin.login} ^
 call asadmin --user ${glassfish.admin.login} ^
         --passwordfile %GF_PASSWD_FILE% ^
         create-jdbc-resource ^
-        --connectionpoolid ${mysql.db.rls.pool} ${mysql.db.rls}
+        --connectionpoolid ${mysql.db.rls.pool} ${mysql.db.jndi.rls}
 
 
 call asadmin --user ${glassfish.admin.login} ^
@@ -140,7 +140,7 @@ call asadmin --user ${glassfish.admin.login} ^
 call asadmin --user ${glassfish.admin.login} ^
         --passwordfile %GF_PASSWD_FILE% ^
         create-jdbc-resource ^
-        --connectionpoolid ${mysql.db.tmis_core.pool} ${mysql.db.tmis_core}
+        --connectionpoolid ${mysql.db.tmis_core.pool} ${mysql.db.jndi.tmis_core}
 
 del -f %GF_PASSWD_FILE%
 

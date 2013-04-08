@@ -5,8 +5,8 @@
         xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
         xsi:schemaLocation="http://java.sun.com/xml/ns/persistence http://java.sun.com/xml/ns/persistence/persistence_2_0.xsd">
 
-    <persistence-unit name="${mysql.db.jdbc.resource}" transaction-type="JTA">
-        <jta-data-source>${mysql.db.jdbc.resource}</jta-data-source>
+    <persistence-unit name="${mysql.db.jndi.mis}" transaction-type="JTA">
+        <jta-data-source>${mysql.db.jndi.mis}</jta-data-source>
         <exclude-unlisted-classes>false</exclude-unlisted-classes>
         <shared-cache-mode>NONE</shared-cache-mode>
         <properties>
@@ -56,7 +56,7 @@
     </persistence-unit>
 
     <persistence-unit name="kladr" transaction-type="JTA">
-        <jta-data-source>${mysql.db.jdbc.resource}</jta-data-source>
+        <jta-data-source>${mysql.db.jndi.mis}</jta-data-source>
         <exclude-unlisted-classes>false</exclude-unlisted-classes>
         <shared-cache-mode>NONE</shared-cache-mode>
         <properties>

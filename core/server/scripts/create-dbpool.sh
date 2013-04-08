@@ -17,7 +17,7 @@ asadmin --user ${glassfish.admin.login} \
 asadmin --user ${glassfish.admin.login} \
         --passwordfile $GF_PASSWD_FILE \
         create-jdbc-resource \
-        --connectionpoolid ${mysql.db.mis.pool} ${mysql.db.jdbc.resource}
+        --connectionpoolid ${mysql.db.mis.pool} ${mysql.db.jndi.mis}
 
 
 rm -f ./password
