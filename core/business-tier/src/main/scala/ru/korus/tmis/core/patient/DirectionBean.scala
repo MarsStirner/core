@@ -4,7 +4,7 @@ import javax.interceptor.Interceptors
 import ru.korus.tmis.core.logging.LoggingInterceptor
 import javax.ejb.{EJB, Stateless}
 import grizzled.slf4j.Logging
-import ru.korus.tmis.util.{CAPids, I18nable}
+import ru.korus.tmis.util.{ConfigManager, CAPids, I18nable}
 import javax.persistence.{EntityManager, PersistenceContext}
 import ru.korus.tmis.core.data.{AssignmentsToRemoveDataList, CommonGroup, JSONCommonData, CommonData}
 import ru.korus.tmis.core.auth.AuthData
@@ -16,6 +16,7 @@ import ru.korus.tmis.core.database._
 import collection.JavaConversions
 import java.util
 import ru.korus.tmis.core.filter.ActionsListDataFilter
+import ru.korus.tmis.core.exception.CoreException
 
 /**
  * Методы для работы с Направлениями
@@ -293,8 +294,19 @@ class DirectionBean extends DirectionBeanLocal
                                                   userData: AuthData,
                                 postProcessingForDiagnosis: (JSONCommonData, java.lang.Boolean) => JSONCommonData) = {
     var actions: java.util.List[Action] = null
+    val userId = userData.getUser.getId
+    val userRole = userData.getUserRole.getCode
+
     directions.getEntity.foreach((action) => {
-      actions = commonDataProcessor.modifyActionFromCommonData(action.getId().intValue(), directions, userData)
+      //Проверка прав у пользователя на редактирование направления
+      val a = actionBean.getActionById(action.getId.intValue())
+      if ((a.getCreatePerson!=null && a.getCreatePerson.getId.compareTo(userId)==0) ||
+          (a.getAssigner!=null &&a.getAssigner.getId.compareTo(userId)==0) ||
+          userRole.compareTo("strHead")==0) {
+        actions = commonDataProcessor.modifyActionFromCommonData(action.getId().intValue(), directions, userData)
+      } else {
+        throw new CoreException(ConfigManager.ErrorCodes.noRightForAction, i18n("error.noRightForThisAction" + "\n Редактировать диагностику может только врач, создавший направление, или лечащий врач или заведующий отделением"))
+      }
     })
     val com_data = commonDataProcessor.fromActions( actions, title, List(summary _, detailsWithAge _))
 
@@ -306,22 +318,34 @@ class DirectionBean extends DirectionBeanLocal
   }
 
   def removeDirections(directions: AssignmentsToRemoveDataList, userData: AuthData) = {
+    val userId = userData.getUser.getId
+    val userRole = userData.getUserRole.getCode
+
     directions.getData.foreach((f) => {
       var a = actionBean.getActionById(f.getId)
-      a.setDeleted(true)
-      val res = dbJobTicketBean.getJobTicketAndTakenTissueForAction(a)
-      if (res!=null &&
+
+      if ((a.getCreatePerson!=null && a.getCreatePerson.getId.compareTo(userId)==0) ||
+          (a.getAssigner!=null &&a.getAssigner.getId.compareTo(userId)==0) ||
+          userRole.compareTo("strHead")==0) {
+
+        a.setDeleted(true)
+        val res = dbJobTicketBean.getJobTicketAndTakenTissueForAction(a)
+        if (res!=null &&
           res.isInstanceOf[(JobTicket, TakenTissue)] &&
           res.asInstanceOf[(JobTicket, TakenTissue)]._1 != null &&
           res.asInstanceOf[(JobTicket, TakenTissue)]._1.getJob != null) {
-        val job = res.asInstanceOf[(JobTicket, TakenTissue)]._1.getJob
-        if (job.getQuantity == 1) {
-          job.setDeleted(true)
+          val job = res.asInstanceOf[(JobTicket, TakenTissue)]._1.getJob
+          if (job.getQuantity == 1) {
+            job.setDeleted(true)
+          }
+          job.setQuantity(job.getQuantity - 1)
+          em.merge(job)
         }
-        job.setQuantity(job.getQuantity - 1)
-        em.merge(job)
+        em.merge(a)
       }
-      em.merge(a)
+      else {
+        throw new CoreException(ConfigManager.ErrorCodes.noRightForAction, i18n("error.noRightForThisAction" + "\n Удалить диагностику может только врач, создавший направление, или лечащий врач или заведующий отделением"));
+      }
     })
     em.flush()
     true
