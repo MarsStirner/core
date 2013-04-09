@@ -863,7 +863,6 @@ public class CommServer implements Communications.Iface {
                             .setMessage(CommunicationErrors.msgTicketIsBusy.getMessage());
                 } else {
                     logger.info("#{} Ticket is free.", currentRequestNum);
-                    ;
                     //Нельзя записывать пациента, если на этот же день к этому же врачу он уже записывался
                     if (checkRepetitionTicket(queueAMB, params.getPatientId())) {
                         logger.info("Repetition enqueue.");
@@ -1098,39 +1097,38 @@ public class CommServer implements Communications.Iface {
             final List<APValueTime> timesAMB,
             final List<APValueAction> queueAMB,
             final Action queueAction,
-            final ActionProperty queueAP,
+            ActionProperty queueAP,
             final int index) throws CoreException {
-        if (timesAMB.size() != queueAMB.size()) {
-//Наша запись к врачу первая, заполняем все null'ами
-//Создаем ActionProperty
-            final ActionProperty newActionProperty;
-            if (queueAP == null) {
-                //Выбираем ActionPropertyType
-                ActionPropertyType queueAPType = null;
-                for (ActionPropertyType apt : doctorAction.getActionType().getActionPropertyTypes()) {
-                    if (apt.getName().equals("queue")) {
-                        queueAPType = apt;
-                    }
+
+        if (queueAP == null) {
+            logger.warn("Our enqueue is first to this doctor. Because queueActionProperty for doctorAction is null" +
+                    " queueAMB.size()={}", queueAMB.size());
+            ActionPropertyType queueAPType = null;
+            for (ActionPropertyType apt : doctorAction.getActionType().getActionPropertyTypes()) {
+                if ("queue".equals(apt.getName())) {
+                    queueAPType = apt;
+                    break;
                 }
-                if (queueAPType != null) {
-                    newActionProperty = actionPropertyBean.createActionProperty(doctorAction, queueAPType);
-                } else {
-                    newActionProperty = actionPropertyBean.createActionProperty(doctorAction, 14, null);
-                }
+            }
+            if (queueAPType != null) {
+                queueAP = actionPropertyBean.createActionProperty(doctorAction, queueAPType);
             } else {
-                newActionProperty = queueAP;
+                queueAP = actionPropertyBean.createActionProperty(doctorAction, 14, null);
             }
-            for (int j = 0; j < timesAMB.size(); j++) {
-                APValueAction newActionPropertyAction = new APValueAction(newActionProperty.getId(), j);
-                if (index != j) newActionPropertyAction.setValue(null);
-                else newActionPropertyAction.setValue(queueAction);
-                managerBean.persist(newActionPropertyAction);
-            }
+        }
+        for (int j = queueAMB.size(); j < index; j++) {
+            APValueAction newActionPropertyAction = new APValueAction(queueAP.getId(), j);
+            newActionPropertyAction.setValue(null);
+            managerBean.persist(newActionPropertyAction);
+        }
+        APValueAction newActionPropertyAction = new APValueAction(queueAP.getId(), index);
+        newActionPropertyAction.setValue(queueAction);
+        if (queueAMB.size() < index) {
+            managerBean.persist(newActionPropertyAction);
         } else {
-            APValueAction newActionPropertyAction = new APValueAction(queueAP.getId(), index);
-            newActionPropertyAction.setValue(queueAction);
             managerBean.merge(newActionPropertyAction);
         }
+        logger.debug("All ActionProperty_Action's set successfully");
     }
 
     /**
