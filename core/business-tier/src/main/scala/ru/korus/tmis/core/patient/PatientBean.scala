@@ -365,14 +365,14 @@ class PatientBean
 
     val eventsMap = customQuery.getActiveEventsForDepartmentAndDoctor(requestData.page-1,
                                                                       requestData.limit,
-                                                                      requestData.sortingFieldInternal,
+                                                                      requestData.sortingField,
                                                                       requestData.sortingMethod,
                                                                       requestData.filter,
                                                                       requestData.rewriteRecordsCount _)
 
     var conditionsInfo = new java.util.HashMap[Event, java.util.Map[ActionProperty, java.util.List[APValue]]]
     if(role == 25) {  //Для сестры отделения только
-      val conditions = customQuery.getLastAssessmentByEvents(eventsMap.keySet().toList)   //Последний экшн осмотра
+      val conditions = customQuery.getLastAssessmentByEvents(eventsMap.map(p=>p._1.getEvent).toList)   //Последний экшн осмотра
       conditions.foreach(
         c => {
           val apList = dbActionProperty.getActionPropertiesByActionIdAndTypeCodes(c._2.getId.intValue,List("STATE", "PULS", "BPRAS","BPRAD"))
@@ -389,7 +389,7 @@ class PatientBean
                                                    conditionsInfo,
                                                    dbOrgStructureBean.getOrgStructureById _,
                                                    dbActionProperty.getActionPropertiesByActionIdAndRbCoreActionPropertyIds _,
-                                                   dbRbCoreActionPropertyBean.getRbCoreActionPropertiesByIds _,
+                                                   //dbRbCoreActionPropertyBean.getRbCoreActionPropertiesByIds _,
                                                    dbDiagnocticsBean.getDiagnosticsByEventId _))
   }
 
