@@ -24,8 +24,10 @@ import ru.korus.tmis.core.exception.CoreException
 import ru.korus.tmis.util.General._
 
 import java.lang.{Double => JDouble}
-import collection.immutable.ListMap
+import collection.immutable.{HashMap, ListMap}
 import ru.korus.tmis.core.filter.ListDataFilter
+import collection.JavaConversions
+import java.util
 
 @Interceptors(Array(classOf[LoggingInterceptor]))
 @Stateless
@@ -44,6 +46,9 @@ class DbCustomQueryBean
 
   @EJB
   private var orgStructure: DbOrgStructureBeanLocal = _
+
+  @EJB
+  private var dbActionPropertyBean: DbActionPropertyBeanLocal = _
 
   def getTakenTissueByBarcode(id: Int, period: Int) = {
     val result = em.createQuery(takenTissueByBarcodeQuery, classOf[TakenTissue])
@@ -83,7 +88,8 @@ class DbCustomQueryBean
                                             filter: Object,
                                             records: (java.lang.Long) => java.lang.Boolean) = {
 
-    //val sorting = filter.asInstanceOf[PatientsListRequestDataFilter].toSortingString(sortingField, sortingMethod)//"ORDER BY %s %s".format(sortingField, sortingMethod)
+    val sorting = if(sortingField.compareTo("bed")==0 || sortingField.compareTo("number")==0) ""
+                  else filter.asInstanceOf[PatientsListRequestDataFilter].toSortingString(sortingField, sortingMethod)
     val queryStr: QueryDataStructure = if (filter.isInstanceOf[PatientsListRequestDataFilter]) {
       filter.asInstanceOf[PatientsListRequestDataFilter].toQueryStructure()
     }
@@ -91,14 +97,14 @@ class DbCustomQueryBean
       new QueryDataStructure()
     }
 
-    val typed = em.createQuery(ActiveEventsByDepartmentIdAndDoctorIdBetweenDatesQuery.format("e, a, MAX(a.createDatetime)",
+    val typed = em.createQuery(ActiveEventsByDepartmentIdAndDoctorIdBetweenDatesQuery.format("e, a, ap, MAX(a.createDatetime)",
                                                                                               i18n("db.action.leavingFlatCode"),
                                                                                               queryStr.query,
                                                                                               i18n("db.action.movingFlatCode"),
                                                                                               i18n("db.actionType.hospitalization.primary"),
                                                                                               iCapIds("db.rbCAP.hosp.primary.id.sentTo"),
                                                                                               i18n("db.action.movingFlatCode"),
-                                                                                              "GROUP BY e, a", sortingField), classOf[Array[AnyRef]])
+                                                                                              "GROUP BY e, a", sorting), classOf[Array[AnyRef]])
                   //.setMaxResults(limit)
                   //.setFirstResult(limit * page)
 
@@ -107,22 +113,43 @@ class DbCustomQueryBean
     }
     typed.setParameter("capIds", asJavaCollection(Set(iCapIds("db.rbCAP.moving.id.bed"),iCapIds("db.rbCAP.moving.id.movedIn"))))
 
-    val events = typed.getResultList.foldLeft(LinkedHashMap.empty[Event, Action])(
-                        (map, e) => {
-                                      map.put(e(0).asInstanceOf[Event], e(1).asInstanceOf[Action])
-                                      em.detach(e(0))
-                                      em.detach(e(1))
-                                      map
-                                    })
+    var result = typed.getResultList
     //Перепишем общее количество записей для запроса
-    if (records!=null) records(events.size)
+    if (records!=null) records(result.size)
+    //проведем дополнительную сортировку
+/*    if (sortingField.compareTo("bed") == 0) {
+      //предобработка
+      //val apsForSorting = result.map(p=>p(2).asInstanceOf)
+      result = result.sortWith((a, b)=> getSortingConditionByMethod(sortingField, sortingMethod, a(2), b(2)))
+    } else if (sortingField.compareTo("number") == 0) {
+      result = result.sortWith((a, b)=> getSortingConditionByMethod(sortingField, sortingMethod, a(0), b(0)))
+    }*/
 
+    var actions = result.foldLeft(LinkedHashMap.empty[Action, java.util.Map[ActionProperty, List[APValue]]])(
+      (map, e) => {
+        var entryMap = Map.empty[ActionProperty, List[APValue]]
+        entryMap += (e(2).asInstanceOf[ActionProperty] -> dbActionPropertyBean.getActionPropertyValue(e(2).asInstanceOf[ActionProperty]))
+        map += (e(1).asInstanceOf[Action] -> entryMap)
+        em.detach(e(0))
+        em.detach(e(1))
+        em.detach(e(2))
+        map
+      })
+
+    if (sortingField.compareTo("bed") == 0) {
+      //предобработка
+      val sorted = actions.toList.sortWith((a, b)=> getSortingConditionByMethod(sortingField, sortingMethod, a._2, b._2))
+      actions = sorted.foldLeft(LinkedHashMap.empty[Action, java.util.Map[ActionProperty, List[APValue]]])((map, e) => map += (e._1 -> e._2))
+    } else if (sortingField.compareTo("number") == 0) {
+      val sorted = actions.toList.sortWith((a, b)=> getSortingConditionByMethod(sortingField, sortingMethod, a._1.getEvent, b._1.getEvent))
+      actions = sorted.foldLeft(LinkedHashMap.empty[Action, java.util.Map[ActionProperty, List[APValue]]])((map, e) => map += (e._1 -> e._2))
+    }
     //проведем  разбиение на страницы вручную (необходимо чтобы не использовать отдельный запрос на recordcounts)
-    if((events.size - limit*(page+1))>0) {
-      events.dropRight(events.size - limit*(page+1)).drop(page*limit)
+    if((actions.size - limit*(page+1))>0) {
+      actions.dropRight(actions.size - limit*(page+1)).drop(page*limit)
     }
     else
-      events.drop(page*limit)
+      actions.drop(page*limit)
   }
 
   def getAdmissionsByEvents(events: java.util.List[Event]) = {
@@ -869,6 +896,49 @@ class DbCustomQueryBean
 //      .getSingleResult
 //  }
 
+  /**
+   * Сложная сортировка
+   * @param field Поле сортировки
+   * @param method Метод сортировки
+   * @param a Первый параметр
+   * @param b Второй параметр
+   * @return
+   */
+  private def getSortingConditionByMethod(field: String, method: String, a: AnyRef, b: AnyRef) = {
+
+    field match {
+      case "bed" => {
+        val aVal = getBedValueForSortingCondition(a)
+        val bVal = getBedValueForSortingCondition(b)
+
+        if (method.compareTo("desc") == 0)
+              (aVal > bVal)
+            else
+              (bVal > aVal)
+      }
+      case "number" => {
+        if (method.compareTo("desc") == 0)
+          (a.asInstanceOf[Event].getExternalId.substring(0, 4).toInt > b.asInstanceOf[Event].getExternalId.substring(0, 4).toInt) ||
+            (a.asInstanceOf[Event].getExternalId.substring(0, 4).toInt == b.asInstanceOf[Event].getExternalId.substring(0, 4).toInt && a.asInstanceOf[Event].getExternalId.substring(5).toInt > b.asInstanceOf[Event].getExternalId.substring(5).toInt)
+        else
+          (b.asInstanceOf[Event].getExternalId.substring(0, 4).toInt > a.asInstanceOf[Event].getExternalId.substring(0, 4).toInt) ||
+            (b.asInstanceOf[Event].getExternalId.substring(0, 4).toInt == a.asInstanceOf[Event].getExternalId.substring(0, 4).toInt && b.asInstanceOf[Event].getExternalId.substring(5).toInt > a.asInstanceOf[Event].getExternalId.substring(5).toInt)
+      }
+      case _ => false
+    }
+  }
+
+  private def getBedValueForSortingCondition(a: AnyRef) = {
+    if(a.isInstanceOf[MapWrapper[ActionProperty, List[APValue]]]) {
+      val apvs = a.asInstanceOf[MapWrapper[ActionProperty, List[APValue]]]
+      if(apvs!=null && apvs.size>0){
+        val values = apvs.iterator.next()._2
+        if (values!=null && values.size()>0 && values.get(0).isInstanceOf[APValueHospitalBed])
+          values.get(0).asInstanceOf[APValueHospitalBed].getValue.getId.intValue()
+        else 0
+      } else 0
+    } else 0
+  }
 
   // ---- Секция кастомных запросов
 
