@@ -144,7 +144,6 @@ class DirectionBean extends DirectionBeanLocal
                                                userData: AuthData,
                              postProcessingForDiagnosis: (JSONCommonData, java.lang.Boolean) => JSONCommonData) = {
 
-    //создание жоб тикета тут должно быть
     val actions: java.util.List[Action] = commonDataProcessor.createActionForEventFromCommonData(eventId, directions, userData)
     val moving = hospitalBedBean.getLastMovingActionForEventId(eventId)
     var department = dbOrgStructure.getOrgStructureById(28)//приемное отделение
@@ -173,9 +172,7 @@ class DirectionBean extends DirectionBeanLocal
             val j = dbJobBean.insertOrUpdateJob(jobTicket.getJob.getId.intValue(), a, department)
             val jt = dbJobTicketBean.insertOrUpdateJobTicket(jobTicket.getId.intValue(), a, j)
             val tt = takenTissue
-            if (takenTissue != null)
-              a.setTakenTissue(takenTissue)
-
+            if (takenTissue != null) a.setTakenTissue(takenTissue)
             //*****
             //Проверка, есть ли подобный action за текущие сутки c другим временем
             //по коментарию Алехиной https://korusconsulting.atlassian.net/browse/WEBMIS-711
@@ -197,6 +194,7 @@ class DirectionBean extends DirectionBeanLocal
             list.add(j, jt, tt)
           } else {
             lj.asInstanceOf[Job].setQuantity(lj.asInstanceOf[Job].getQuantity +1)
+            if (ltt != null) a.setTakenTissue(ltt)
             a.getActionProperties.foreach((ap) => {
               if (ap.getType.getTypeName.compareTo("JobTicket") == 0) {
                 apvList.add((ap, ljt))
@@ -215,6 +213,7 @@ class DirectionBean extends DirectionBeanLocal
         } else {
           var (lj, ljt, ltt) = list.get(list.size()-1)
           lj.setQuantity(lj.getQuantity+1)
+          if (ltt != null) a.setTakenTissue(ltt)
         }
         var (lj, ljt, ltt) = list.get(list.size()-1)
         a.getActionProperties.foreach((ap) => {
