@@ -901,8 +901,10 @@ public class CommServer implements Communications.Iface {
                         logger.debug("ActionType is {} typeID={} typeName={}",
                                 queueActionType, queueActionType.getId(), queueActionType.getName());
                         //2.b)Сохраняем действие  (Action)
+
                         queueAction = actionBean.createAction(
-                                queueActionType, queueEvent, person, paramsDateTime.toDate(), String.valueOf(params.hospitalUidFrom));
+                                queueActionType, queueEvent, person,
+                                DateConvertions.convertUTCMillisecondsToLocalDate(paramsDateTime.getMillis()), String.valueOf(params.hospitalUidFrom));
                         logger.debug("Action is {} ID={} UUID={}",
                                 queueAction, queueAction.getId(), queueAction.getUuid().getUuid());
                         // Заполняем ActionProperty_Action для 'queue' из Action='amb'

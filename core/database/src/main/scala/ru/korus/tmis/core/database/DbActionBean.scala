@@ -222,15 +222,15 @@ class DbActionBean
   }
 
   def getActionsWithFilter(limit: Int,
-                                    page: Int,
-                                    sorting: String,
-                                    filter: ListDataFilter,
-                                    records: (java.lang.Long) => java.lang.Boolean,
-                                    userData: AuthData) = {
+                           page: Int,
+                           sorting: String,
+                           filter: ListDataFilter,
+                           records: (java.lang.Long) => java.lang.Boolean,
+                           userData: AuthData) = {
 
     val queryStr: QueryDataStructure = filter.toQueryStructure()
 
-    if (records!=null) {
+    if (records != null) {
       val countTyped = em.createQuery(ActionsForSwitchPatientByEventQuery.format("count(a)", queryStr.query, ""), classOf[Long])
       if (queryStr.data.size() > 0)
         queryStr.data.foreach(qdp => countTyped.setParameter(qdp.name, qdp.value))
@@ -238,8 +238,8 @@ class DbActionBean
     }
 
     val typed = em.createQuery(ActionsForSwitchPatientByEventQuery.format("a", queryStr.query, sorting), classOf[Action])
-                  .setMaxResults(limit)
-                  .setFirstResult(limit * page)
+      .setMaxResults(limit)
+      .setFirstResult(limit * page)
     queryStr.data.foreach(qdp => typed.setParameter(qdp.name, qdp.value))
 
     val result = typed.getResultList
@@ -450,7 +450,8 @@ class DbActionBean
       newAction.setEvent(event);
       newAction.setNote("");
       newAction.setBegDate(date);
-      newAction.setEndDate(date);
+      newAction.setEndDate(now);
+      newAction.setDirectionDate(date)
       newAction.setDeleted(false);
       newAction.setPayStatus(0);
       newAction.setExecutor(person)
