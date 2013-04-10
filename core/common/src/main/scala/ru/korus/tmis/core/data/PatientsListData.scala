@@ -52,22 +52,56 @@ class PatientsListData {
     this.requestData = requestData
   } */
 
-  def this(events: java.util.Map[Event, Action],
+  def this(actions: java.util.Map[Action, java.util.Map[ActionProperty, java.util.List[APValue]]],
            requestData: PatientsListRequestData,
            roleId: Int,
            condInfo: java.util.Map[Event, java.util.Map[ActionProperty, java.util.List[APValue]]],
            mAdmissionDepartment: (Int) => OrgStructure,
            mActionPropertiesWithValues: (Int, java.util.List[java.lang.Integer]) =>  java.util.Map[ActionProperty, java.util.List[APValue]],
-           mCorrList: (java.util.List[java.lang.Integer])=> java.util.List[RbCoreActionProperty],
+           //mCorrList: (java.util.List[java.lang.Integer])=> java.util.List[RbCoreActionProperty],
            mDiagnostics: (Int) => java.util.List[Diagnostic]) = {
     this ()
     this.requestData = requestData
 
-    events.foreach(e => {
+    actions.foreach(e => {
 
-      val event = e._1
-      val action = e._2
+      val action = e._1
+      val event = action.getEvent
+
       var bed: OrgStructureHospitalBed = null
+      var from : OrgStructure = null
+
+      val value: Object = if (e._2!=null && e._2.size()>0) {
+        val apvs = e._2.iterator.next()
+        if (apvs._2!=null && apvs._2.size()>0){
+          apvs._2.get(0).getValue
+        } else null
+      } else null
+
+      if (value.isInstanceOf[OrgStructureHospitalBed]){
+        bed = value.asInstanceOf[OrgStructureHospitalBed]
+      } else if (value.isInstanceOf[OrgStructure]){
+        if (action.getActionType.getId.compareTo(ConfigManager.Messages("db.actionType.hospitalization.primary").toInt :java.lang.Integer)==0){
+          from = if (mAdmissionDepartment!=null ) mAdmissionDepartment(28) else null // Приемное отделение
+          bed = null
+        } else if (action.getActionType.getId.compareTo(ConfigManager.Messages("db.actionType.moving").toInt :java.lang.Integer)==0){
+          if (mActionPropertiesWithValues!=null) {
+            val listMovAP = JavaConversions.asJavaList(List(ConfigManager.RbCAPIds("db.rbCAP.moving.id.bed").toInt :java.lang.Integer))
+            val apValues = mActionPropertiesWithValues(action.getId.intValue(), listMovAP)
+            if (apValues!=null && apValues.size()>0){
+              val bedvs = apValues.iterator.next()
+              if (bedvs._2!=null && bedvs._2.size()>0){
+                val bedVal = bedvs._2.get(0).getValue
+                if (bedVal.isInstanceOf[OrgStructureHospitalBed]){
+                  from = bedVal.asInstanceOf[OrgStructureHospitalBed].getMasterDepartment
+                  bed = null
+                }
+              }
+            }
+          }
+        }
+      }
+      /*var bed: OrgStructureHospitalBed = null
       var begDate: Date = null
       var from : OrgStructure = null
 
@@ -107,7 +141,7 @@ class PatientsListData {
             }
           })
         }
-      }
+      } */
       val condition = if (roleId == 25) {
         //Состояние пациента (только для роли сестра отделения)
         condInfo.containsKey(event) match {
@@ -115,45 +149,8 @@ class PatientsListData {
           case condition => condInfo.get(event)
         }
       } else null
-      this.data.add(new PatientsListEntry(event, bed, begDate, condition, from, mDiagnostics))
+      this.data.add(new PatientsListEntry(event, bed, action.getBegDate/*begDate*/, condition, from, mDiagnostics))
     })
-
-    //Cортировка по койке name
-    if (requestData.getSortingField.compareTo("bed") == 0 ||
-        requestData.getSortingField.compareTo("number") == 0) {
-      val temp = this.data.toList.sortWith((a, b)=>getSortingConditionByMethod(requestData.getSortingField, requestData.getSortingMethod, a, b))
-      this.data = new util.LinkedList[PatientsListEntry]()
-      temp.foreach((f) => this.data.add(f))
-    }
-  }
-
-  private def getSortingConditionByMethod(field: String, method: String, a: PatientsListEntry, b: PatientsListEntry) = {
-
-    field match {
-      case "bed" => {
-        if (a.getHospitalBed==null || a.getHospitalBed.getBed==null || a.getHospitalBed.getBed.isEmpty)
-          true
-        else {
-          if (b.getHospitalBed==null || b.getHospitalBed.getBed==null || b.getHospitalBed.getBed.isEmpty)
-            false
-          else {
-            if (method.compareTo("desc") == 0)
-              (a.getHospitalBed.getBed.toInt > b.getHospitalBed.getBed.toInt)
-            else
-              (b.getHospitalBed.getBed.toInt > a.getHospitalBed.getBed.toInt)
-          }
-        }
-      }
-      case "number" => {
-        if (method.compareTo("desc") == 0)
-          (a.getNumber.substring(0, 4).toInt > b.getNumber.substring(0, 4).toInt) ||
-          (a.getNumber.substring(0, 4).toInt == b.getNumber.substring(0, 4).toInt && a.getNumber.substring(5).toInt > b.getNumber.substring(5).toInt)
-        else
-          (b.getNumber.substring(0, 4).toInt > a.getNumber.substring(0, 4).toInt) ||
-          (b.getNumber.substring(0, 4).toInt == a.getNumber.substring(0, 4).toInt && b.getNumber.substring(5).toInt > a.getNumber.substring(5).toInt)
-      }
-      case _ => false
-    }
   }
 
   /**
@@ -230,7 +227,7 @@ class PatientsListRequestData {
     this()
     this.filter = new PatientsListRequestDataFilter(departmentId, doctorId, roleId, endDate)
     this.sortingField = sortingField match {
-      case null => {"id"}
+      case null => {"bed"}
       case _ => {sortingField}
     }
     this.sortingMethod = sortingMethod match {

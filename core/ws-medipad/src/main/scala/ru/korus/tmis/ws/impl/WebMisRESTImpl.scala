@@ -1081,7 +1081,10 @@ class WebMisRESTImpl  extends WebMisREST
           firstJobTicket = f._3
         }
       })
-      if (actions.size() == 1) map += (firstJobTicket -> actions)   //добавляем последний жобТикет, если для него есть только один акшен. Если акшенов больше, он добавится в цикле.
+      //добавляем последний жобТикет, если
+      // actions.size() == 1 --- для него есть только один акшен. Если акшенов больше, он добавится в цикле.
+      // map.size == 0 --- если нашли только один жоб тикет, так как мапа пустая и все акшены остались в actions
+      if (actions.size() == 1 || map.size == 0) map += (firstJobTicket -> actions)
     }
     new TakingOfBiomaterialData(map,
       hospitalBedBean.getLastMovingActionForEventId _,

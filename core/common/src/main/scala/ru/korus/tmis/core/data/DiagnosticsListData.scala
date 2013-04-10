@@ -257,8 +257,9 @@ class DiagnosticsListRequestDataFilter {
   @Override
   def toSortingString (sortingField: String, sortingMethod: String) = {
     var sorting = sortingField match {
-      case "directionDate" => {"a.directionDate %s".format(sortingMethod)}
-      case "diagnosticDate" => {"a.endDate %s".format(sortingMethod)}
+      case "plannedEndDate" => {"a.plannedEndDate %s".format(sortingMethod)}
+      //case "directionDate" => {"a.directionDate %s".format(sortingMethod)}
+      //case "diagnosticDate" => {"a.endDate %s".format(sortingMethod)}
       case "diagnosticName" => {"a.actionType.name %s".format(sortingMethod)}
       case "execPerson" => {"a.executor.lastName %s, a.executor.firstName %s, a.executor.patrName %s".format(sortingMethod, sortingMethod, sortingMethod)}
       case "assignPerson" => {"a.assigner.lastName %s, a.assigner.firstName %s, a.assigner.patrName %s".format(sortingMethod, sortingMethod, sortingMethod)}
