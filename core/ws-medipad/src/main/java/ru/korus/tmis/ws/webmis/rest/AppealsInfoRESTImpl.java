@@ -149,4 +149,11 @@ public class AppealsInfoRESTImpl {
     public Object getAppealPrintFormById(@PathParam("eventId")int eventId) {
         return new JSONWithPadding(wsImpl.getAppealPrintFormById(eventId, this.auth), this.callback);
     }
+
+    @GET
+    @Path("{eventId}/diagnoses")
+    @Produces("application/x-javascript")
+    public Object getDiagnosesByAppeal(@PathParam("eventId")int eventId) {
+        return new JSONWithPadding(wsImpl.getDiagnosesByAppeal(eventId, this.auth), this.callback);
+    }
 }

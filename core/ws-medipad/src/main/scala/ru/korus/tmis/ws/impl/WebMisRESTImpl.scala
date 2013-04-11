@@ -165,6 +165,9 @@ class WebMisRESTImpl  extends WebMisREST
   @EJB
   var dbDiagnosticBean: DbDiagnosticBeanLocal = _
 
+  @EJB
+  var diagnosisBean: DiagnosisBeanLocal = _
+
   def getAllPatients(requestData: PatientRequestData, auth: AuthData): PatientData = {
     if (auth != null) {
       val patients = patientBean.getAllPatients(requestData)
@@ -1105,6 +1108,10 @@ class WebMisRESTImpl  extends WebMisREST
 
   def deletePatientInfo(id: Int) = patientBean.deletePatientInfo(id)
 
+  def getDiagnosesByAppeal (appealId: Int, authData: AuthData) = {
+    val response = diagnosisBean.getDiagnosesByAppeal(appealId)
+    response
+  }
 
   //__________________________________________________________________________________________________
   //***************  AUTHDATA  *******************

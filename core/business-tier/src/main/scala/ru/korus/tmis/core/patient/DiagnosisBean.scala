@@ -10,6 +10,7 @@ import javax.persistence.{EntityManager, PersistenceContext}
 import ru.korus.tmis.core.entity.model.{Diagnostic, Diagnosis, Mkb}
 import ru.korus.tmis.core.auth.AuthData
 import scala.collection.JavaConversions._
+import ru.korus.tmis.core.data.DiagnosesListData
 
 /**
  * Методы для работы с диагнозами
@@ -134,4 +135,28 @@ class DiagnosisBean  extends DiagnosisBeanLocal
     entities
   }
 
+  //Спецификация: https://docs.google.com/spreadsheet/ccc?key=0Amfvj7P4xELWdFRJRnR1LVhTdG5BSFZKRnZnNWNlNHc#gid=1
+  def getDiagnosesByAppeal (eventId: Int) = {
+    val diagnostics = dbDiagnosticBean.getDiagnosticsByEventId(eventId)
+    if (diagnostics!=null && diagnostics.size()>0) {
+      //(Возможно понадобится)
+      //Вернем по одному последнему диагнозу для выбранных типов (согласно спецификации)
+      /*Set("assignment", "aftereffect", "attendant", "admission", "clinical", "final").foreach( diaType => {
+        val diagnosticsByType = diagnostics.filter(p => p.getDiagnosisType.getFlatCode.compareTo(diaType)==0)
+        if (diagnosticsByType!=null && diagnosticsByType.size>0) {
+          diagnostics.removeAll(diagnosticsByType)
+          val diagnosticByLastDate = diagnosticsByType.find(p => p.getCreateDatetime.getTime ==
+                                                                 diagnosticsByType.map(_.getCreateDatetime.getTime)
+                                                                                  .foldLeft(Long.MinValue)((i,m)=>m.max(i)))
+                                               .getOrElse(null) //Диагностика последняя по дате создания
+          if(diagnosticByLastDate!=null) {
+            diagnostics.add(diagnosticByLastDate)
+          }
+        }
+      })*/
+      //Вывод всех диагнозов с иными мнемониками
+      new DiagnosesListData(diagnostics)
+    }
+    else new DiagnosesListData()
+  }
 }

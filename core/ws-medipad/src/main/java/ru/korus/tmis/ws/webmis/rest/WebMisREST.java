@@ -281,4 +281,6 @@ public interface WebMisREST extends Serializable {
      * @throws CoreException
      */
     Boolean deletePatientInfo(int id) throws CoreException;
+
+    DiagnosesListData getDiagnosesByAppeal(int id, AuthData authData) throws CoreException;
 }
