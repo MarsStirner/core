@@ -437,7 +437,7 @@ class DbActionBean
     et
   }
 
-  def createAction(actionType: ActionType, event: Event, person: Staff, date: Date, hospitalUidFrom: String): Action = {
+  def createAction(actionType: ActionType, event: Event, person: Staff, date: Date, hospitalUidFrom: String, note: String): Action = {
     val now = new Date
     var newAction = new Action()
     //Инициализируем структуру Event
@@ -448,7 +448,7 @@ class DbActionBean
       newAction.setActionType(actionType);
       newAction.setModifyDatetime(now);
       newAction.setEvent(event);
-      newAction.setNote("");
+      newAction.setNote(note);
       newAction.setBegDate(date);
       newAction.setEndDate(now);
       newAction.setDirectionDate(date)
@@ -457,7 +457,9 @@ class DbActionBean
       newAction.setExecutor(person)
       newAction.setAssigner(person)
       newAction.setUuid(dbUUIDBeanLocal.createUUID());
-      if (!hospitalUidFrom.isEmpty) newAction.setHospitalUidFrom(hospitalUidFrom);
+      if (!hospitalUidFrom.isEmpty) {
+        newAction.setHospitalUidFrom(hospitalUidFrom);
+      }
       //1. Инсертим
       em.persist(newAction);
     }

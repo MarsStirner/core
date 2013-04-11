@@ -892,7 +892,7 @@ public class CommServer implements Communications.Iface {
                         //1.b)Сохраняем событие  (Event)
                         queueEvent = eventBean.createEvent(
                                 patient, queueEventType, person,
-                                paramsDateTime.toDate(), paramsDateTime.plusWeeks(1).toDate());
+                                DateConvertions.convertUTCMillisecondsToLocalDate(paramsDateTime.getMillis()), paramsDateTime.plusWeeks(1).toDate());
                         logger.debug("Event is {} ID={} UUID={}",
                                 queueEvent, queueEvent.getId(), queueEvent.getUuid().getUuid());
                         //2) Создаем действие (Action)
@@ -904,7 +904,7 @@ public class CommServer implements Communications.Iface {
 
                         queueAction = actionBean.createAction(
                                 queueActionType, queueEvent, person,
-                                DateConvertions.convertUTCMillisecondsToLocalDate(paramsDateTime.getMillis()), String.valueOf(params.hospitalUidFrom));
+                                DateConvertions.convertUTCMillisecondsToLocalDate(paramsDateTime.getMillis()), params.hospitalUidFrom, (params.getNote() == null ? "" : params.note));
                         logger.debug("Action is {} ID={} UUID={}",
                                 queueAction, queueAction.getId(), queueAction.getUuid().getUuid());
                         // Заполняем ActionProperty_Action для 'queue' из Action='amb'
@@ -1199,7 +1199,7 @@ public class CommServer implements Communications.Iface {
                 if (currentEvent.getEventType().getId().equals(queueEventType.getId()) && !currentEvent.getDeleted()) {
                     logger.debug("EVENT={}", currentEvent);
                     final Queue ticket = new Queue();
-                    ticket.setDateTime(currentEvent.getSetDate().getTime());
+                    ticket.setDateTime(DateConvertions.convertDateToUTCMilliseconds(currentEvent.getSetDate()));
                     final Action queueAction = actionBean.getAppealActionByEventId(currentEvent.getId(), queueActionType.getId());
                     logger.debug("ACTION={}", queueAction);
                     if (queueAction != null) {
