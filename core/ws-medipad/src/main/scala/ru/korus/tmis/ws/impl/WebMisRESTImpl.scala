@@ -790,13 +790,15 @@ class WebMisRESTImpl  extends WebMisREST
   }
 
   def insertConsultation(request: ConsultationRequestData) = {
-    //TODO: подключить анализ авторизационных данных и доступных ролей
     val authData:AuthData = null
     primaryAssessmentBean.insertAssessmentAsConsultation(request.eventId, request.actionTypeId, request.executorId, request.beginDate, request.endDate, request.urgent, request, authData)
   }
 
+  def insertInstrumentalStudies(eventId: Int, data: CommonData, auth: AuthData) = {
+    primaryAssessmentBean.createAssessmentsForEventIdFromCommonData(eventId, data, "Diagnostic", null, auth,  postProcessingForDiagnosis _)// postProcessingForDiagnosis
+  }
+
   def insertLaboratoryStudies(eventId: Int, data: CommonData, auth: AuthData) = {
-    // проверка пользователя на ответственного за ивент
     directionBean.createDirectionsForEventIdFromCommonData(eventId, data, "Diagnostic", null, auth,  postProcessingForDiagnosis _)
     //primaryAssessmentBean.createAssessmentsForEventIdFromCommonData(eventId, data, "Diagnostic", null, auth,  postProcessingForDiagnosis _)// postProcessingForDiagnosis
   }
@@ -810,7 +812,6 @@ class WebMisRESTImpl  extends WebMisREST
   }
 
   def getFlatDirectories(request: FlatDirectoryRequestData) = {
-    //TODO: подключить анализ авторизационных данных и доступных ролей
     val sorting = request.sortingFields.foldLeft(new java.util.LinkedHashMap[java.lang.Integer, java.lang.Integer])(
       (a, b) => {
         a.put(Integer.valueOf(b._1), Integer.valueOf(b._2))

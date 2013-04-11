@@ -28,6 +28,12 @@ class DiagnosticsListData {
           actions.foreach(action => this.data.asInstanceOf[LinkedList[LaboratoryDiagnosticsListEntry]].add(new LaboratoryDiagnosticsListEntry(action)))
         }
       }
+      case "instrumental" => {
+        this.data = new LinkedList[InstrumentalDiagnosticsListEntry]
+        if (actions != null && actions.size > 0) {
+          actions.foreach(action => this.data.asInstanceOf[LinkedList[InstrumentalDiagnosticsListEntry]].add(new InstrumentalDiagnosticsListEntry(action)))
+        }
+      }
       case _ => {
         this.data = new LinkedList[DiagnosticsListEntry]
         if (actions != null && actions.size > 0) {
@@ -336,6 +342,62 @@ class LaboratoryDiagnosticsListEntry {
   var execPerson: DoctorContainer = new DoctorContainer() //Исполнивший Врач
 
   @BeanProperty
+  var createPerson: DoctorContainer = new DoctorContainer() //Создавший направление Врач
+
+  @BeanProperty
+  var cito: Boolean = _ //Срочность исследования
+
+  @BeanProperty
+  var status: IdNameContainer = _ //Статус
+
+  //@BeanProperty
+  //var toOrder: Boolean = _ //Дозаказ  (не используется)
+
+  def this(action: Action) {
+    this()
+    this.id = action.getId.intValue()
+    //this.diagnosticDate = action.getEndDate
+    //this.directionDate = action.getBegDate //getDirectionDate
+    this.plannedEndDate = action.getPlannedEndDate
+    this.diagnosticName = new IdNameContainer(action.getActionType.getId.intValue, action.getActionType.getName)
+    this.assignPerson = new DoctorContainer(action.getAssigner)
+    this.createPerson = new DoctorContainer(action.getCreatePerson)
+    this.execPerson = new DoctorContainer(action.getExecutor)
+    this.cito = action.getIsUrgent
+    this.status = new IdNameContainer(action.getStatus, ActionStatus.fromShort(action.getStatus).getName)
+    //this.toOrder = action.getToOrder
+  }
+}
+
+@XmlType(name = "instrumentalDiagnosticsListEntry")
+@XmlRootElement(name = "instrumentalDiagnosticsListEntry")
+class InstrumentalDiagnosticsListEntry {
+
+  @BeanProperty
+  var id: Int = _ //Ид действия
+
+  //@BeanProperty
+  //var directionDate: Date = _ //Дата направления
+
+  //@BeanProperty
+  //var diagnosticDate: Date = _ //Дата диагностики   (выполнения)
+
+  @BeanProperty
+  var plannedEndDate: Date = _ //Дата направления (Дата забора БМ)
+
+  @BeanProperty
+  var diagnosticName: IdNameContainer = _ //Направление лабораторных исследований
+
+  @BeanProperty
+  var assignPerson: DoctorContainer = new DoctorContainer() //Направивший Врач
+
+  @BeanProperty
+  var execPerson: DoctorContainer = new DoctorContainer() //Исполнивший Врач
+
+  @BeanProperty
+  var createPerson: DoctorContainer = new DoctorContainer() //Создавший направление Врач
+
+  @BeanProperty
   var cito: Boolean = _ //Срочность исследования
 
   @BeanProperty
@@ -353,6 +415,7 @@ class LaboratoryDiagnosticsListEntry {
     this.diagnosticName = new IdNameContainer(action.getActionType.getId.intValue, action.getActionType.getName)
     this.assignPerson = new DoctorContainer(action.getAssigner)
     this.execPerson = new DoctorContainer(action.getExecutor)
+    this.createPerson = new DoctorContainer(action.getCreatePerson)
     this.cito = action.getIsUrgent
     this.status = new IdNameContainer(action.getStatus, ActionStatus.fromShort(action.getStatus).getName)
     //this.toOrder = action.getToOrder

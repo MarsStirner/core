@@ -103,7 +103,7 @@ class AssessmentsListRequestDataFilter extends AbstractListDataFilter{
     this.code = if (code_x != null && code_x != "") {
       code_x
     } else {
-      "1_"
+      ""   //Изменили спеку, теперь ищем акшены по мнемонике, а не по коду. было "1_"
     }
     this.assessmentDate = if (assessmentDate == 0) {
       null
@@ -147,6 +147,7 @@ class AssessmentsListRequestDataFilter extends AbstractListDataFilter{
       qs.query += "AND upper(a.createPerson.orgStructure.name) LIKE upper(:departmentName)\n"
       qs.add("departmentName", "%" + this.departmentName + "%")
     }
+    qs.query += "AND a.actionType.mnemonic = 'EXAM'\n"
     qs
   }
 
