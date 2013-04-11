@@ -30,6 +30,8 @@ public interface AppealBeanLocal {
      */
     int insertAppealForPatient(AppealData appealData, int patientId, AuthData authData) throws CoreException;
 
+    int updateAppeal(AppealData appealData, int eventId, AuthData authData) throws CoreException;
+
     /**
      * Получение данных об обращении на госпитализацию по идентификатору.
      * @param id Идентификатор обращения.

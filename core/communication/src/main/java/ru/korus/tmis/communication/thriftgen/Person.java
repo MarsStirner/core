@@ -15,7 +15,6 @@ import org.apache.thrift.protocol.TTupleProtocol;
 import org.apache.thrift.protocol.TProtocolException;
 import org.apache.thrift.EncodingUtils;
 import org.apache.thrift.TException;
-
 import java.util.List;
 import java.util.ArrayList;
 import java.util.Map;
@@ -28,1494 +27,1465 @@ import java.util.Collections;
 import java.util.BitSet;
 import java.nio.ByteBuffer;
 import java.util.Arrays;
-
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 public class Person implements org.apache.thrift.TBase<Person, Person._Fields>, java.io.Serializable, Cloneable {
-    private static final org.apache.thrift.protocol.TStruct STRUCT_DESC = new org.apache.thrift.protocol.TStruct("Person");
+  private static final org.apache.thrift.protocol.TStruct STRUCT_DESC = new org.apache.thrift.protocol.TStruct("Person");
 
-    private static final org.apache.thrift.protocol.TField ID_FIELD_DESC = new org.apache.thrift.protocol.TField("id", org.apache.thrift.protocol.TType.I32, (short) 1);
-    private static final org.apache.thrift.protocol.TField CODE_FIELD_DESC = new org.apache.thrift.protocol.TField("code", org.apache.thrift.protocol.TType.STRING, (short) 2);
-    private static final org.apache.thrift.protocol.TField ORG_STRUCTURE_ID_FIELD_DESC = new org.apache.thrift.protocol.TField("orgStructureId", org.apache.thrift.protocol.TType.I32, (short) 3);
-    private static final org.apache.thrift.protocol.TField LAST_NAME_FIELD_DESC = new org.apache.thrift.protocol.TField("lastName", org.apache.thrift.protocol.TType.STRING, (short) 4);
-    private static final org.apache.thrift.protocol.TField FIRST_NAME_FIELD_DESC = new org.apache.thrift.protocol.TField("firstName", org.apache.thrift.protocol.TType.STRING, (short) 5);
-    private static final org.apache.thrift.protocol.TField PATR_NAME_FIELD_DESC = new org.apache.thrift.protocol.TField("patrName", org.apache.thrift.protocol.TType.STRING, (short) 6);
-    private static final org.apache.thrift.protocol.TField OFFICE_FIELD_DESC = new org.apache.thrift.protocol.TField("office", org.apache.thrift.protocol.TType.STRING, (short) 7);
-    private static final org.apache.thrift.protocol.TField SPECIALITY_FIELD_DESC = new org.apache.thrift.protocol.TField("speciality", org.apache.thrift.protocol.TType.STRING, (short) 8);
-    private static final org.apache.thrift.protocol.TField SPECIALITY_OKSOCODE_FIELD_DESC = new org.apache.thrift.protocol.TField("specialityOKSOCode", org.apache.thrift.protocol.TType.STRING, (short) 9);
-    private static final org.apache.thrift.protocol.TField SPECIALITY_REGIONAL_CODE_FIELD_DESC = new org.apache.thrift.protocol.TField("specialityRegionalCode", org.apache.thrift.protocol.TType.STRING, (short) 10);
-    private static final org.apache.thrift.protocol.TField POST_FIELD_DESC = new org.apache.thrift.protocol.TField("post", org.apache.thrift.protocol.TType.STRING, (short) 11);
-    private static final org.apache.thrift.protocol.TField SEX_FILTER_FIELD_DESC = new org.apache.thrift.protocol.TField("SexFilter", org.apache.thrift.protocol.TType.STRING, (short) 12);
+  private static final org.apache.thrift.protocol.TField ID_FIELD_DESC = new org.apache.thrift.protocol.TField("id", org.apache.thrift.protocol.TType.I32, (short)1);
+  private static final org.apache.thrift.protocol.TField CODE_FIELD_DESC = new org.apache.thrift.protocol.TField("code", org.apache.thrift.protocol.TType.STRING, (short)2);
+  private static final org.apache.thrift.protocol.TField ORG_STRUCTURE_ID_FIELD_DESC = new org.apache.thrift.protocol.TField("orgStructureId", org.apache.thrift.protocol.TType.I32, (short)3);
+  private static final org.apache.thrift.protocol.TField LAST_NAME_FIELD_DESC = new org.apache.thrift.protocol.TField("lastName", org.apache.thrift.protocol.TType.STRING, (short)4);
+  private static final org.apache.thrift.protocol.TField FIRST_NAME_FIELD_DESC = new org.apache.thrift.protocol.TField("firstName", org.apache.thrift.protocol.TType.STRING, (short)5);
+  private static final org.apache.thrift.protocol.TField PATR_NAME_FIELD_DESC = new org.apache.thrift.protocol.TField("patrName", org.apache.thrift.protocol.TType.STRING, (short)6);
+  private static final org.apache.thrift.protocol.TField OFFICE_FIELD_DESC = new org.apache.thrift.protocol.TField("office", org.apache.thrift.protocol.TType.STRING, (short)7);
+  private static final org.apache.thrift.protocol.TField SPECIALITY_FIELD_DESC = new org.apache.thrift.protocol.TField("speciality", org.apache.thrift.protocol.TType.STRING, (short)8);
+  private static final org.apache.thrift.protocol.TField SPECIALITY_OKSOCODE_FIELD_DESC = new org.apache.thrift.protocol.TField("specialityOKSOCode", org.apache.thrift.protocol.TType.STRING, (short)9);
+  private static final org.apache.thrift.protocol.TField SPECIALITY_REGIONAL_CODE_FIELD_DESC = new org.apache.thrift.protocol.TField("specialityRegionalCode", org.apache.thrift.protocol.TType.STRING, (short)10);
+  private static final org.apache.thrift.protocol.TField POST_FIELD_DESC = new org.apache.thrift.protocol.TField("post", org.apache.thrift.protocol.TType.STRING, (short)11);
+  private static final org.apache.thrift.protocol.TField SEX_FILTER_FIELD_DESC = new org.apache.thrift.protocol.TField("SexFilter", org.apache.thrift.protocol.TType.STRING, (short)12);
 
-    private static final Map<Class<? extends IScheme>, SchemeFactory> schemes = new HashMap<Class<? extends IScheme>, SchemeFactory>();
+  private static final Map<Class<? extends IScheme>, SchemeFactory> schemes = new HashMap<Class<? extends IScheme>, SchemeFactory>();
+  static {
+    schemes.put(StandardScheme.class, new PersonStandardSchemeFactory());
+    schemes.put(TupleScheme.class, new PersonTupleSchemeFactory());
+  }
 
-    static {
-        schemes.put(StandardScheme.class, new PersonStandardSchemeFactory());
-        schemes.put(TupleScheme.class, new PersonTupleSchemeFactory());
-    }
+  public int id; // required
+  public String code; // required
+  public int orgStructureId; // optional
+  public String lastName; // optional
+  public String firstName; // optional
+  public String patrName; // optional
+  public String office; // optional
+  public String speciality; // optional
+  public String specialityOKSOCode; // optional
+  public String specialityRegionalCode; // optional
+  public String post; // optional
+  public String SexFilter; // optional
 
-    public int id; // required
-    public String code; // required
-    public int orgStructureId; // optional
-    public String lastName; // optional
-    public String firstName; // optional
-    public String patrName; // optional
-    public String office; // optional
-    public String speciality; // optional
-    public String specialityOKSOCode; // optional
-    public String specialityRegionalCode; // optional
-    public String post; // optional
-    public String SexFilter; // optional
+  /** The set of fields this struct contains, along with convenience methods for finding and manipulating them. */
+  public enum _Fields implements org.apache.thrift.TFieldIdEnum {
+    ID((short)1, "id"),
+    CODE((short)2, "code"),
+    ORG_STRUCTURE_ID((short)3, "orgStructureId"),
+    LAST_NAME((short)4, "lastName"),
+    FIRST_NAME((short)5, "firstName"),
+    PATR_NAME((short)6, "patrName"),
+    OFFICE((short)7, "office"),
+    SPECIALITY((short)8, "speciality"),
+    SPECIALITY_OKSOCODE((short)9, "specialityOKSOCode"),
+    SPECIALITY_REGIONAL_CODE((short)10, "specialityRegionalCode"),
+    POST((short)11, "post"),
+    SEX_FILTER((short)12, "SexFilter");
 
-    /**
-     * The set of fields this struct contains, along with convenience methods for finding and manipulating them.
-     */
-    public enum _Fields implements org.apache.thrift.TFieldIdEnum {
-        ID((short) 1, "id"),
-        CODE((short) 2, "code"),
-        ORG_STRUCTURE_ID((short) 3, "orgStructureId"),
-        LAST_NAME((short) 4, "lastName"),
-        FIRST_NAME((short) 5, "firstName"),
-        PATR_NAME((short) 6, "patrName"),
-        OFFICE((short) 7, "office"),
-        SPECIALITY((short) 8, "speciality"),
-        SPECIALITY_OKSOCODE((short) 9, "specialityOKSOCode"),
-        SPECIALITY_REGIONAL_CODE((short) 10, "specialityRegionalCode"),
-        POST((short) 11, "post"),
-        SEX_FILTER((short) 12, "SexFilter");
-
-        private static final Map<String, _Fields> byName = new HashMap<String, _Fields>();
-
-        static {
-            for (_Fields field : EnumSet.allOf(_Fields.class)) {
-                byName.put(field.getFieldName(), field);
-            }
-        }
-
-        /**
-         * Find the _Fields constant that matches fieldId, or null if its not found.
-         */
-        public static _Fields findByThriftId(int fieldId) {
-            switch (fieldId) {
-                case 1: // ID
-                    return ID;
-                case 2: // CODE
-                    return CODE;
-                case 3: // ORG_STRUCTURE_ID
-                    return ORG_STRUCTURE_ID;
-                case 4: // LAST_NAME
-                    return LAST_NAME;
-                case 5: // FIRST_NAME
-                    return FIRST_NAME;
-                case 6: // PATR_NAME
-                    return PATR_NAME;
-                case 7: // OFFICE
-                    return OFFICE;
-                case 8: // SPECIALITY
-                    return SPECIALITY;
-                case 9: // SPECIALITY_OKSOCODE
-                    return SPECIALITY_OKSOCODE;
-                case 10: // SPECIALITY_REGIONAL_CODE
-                    return SPECIALITY_REGIONAL_CODE;
-                case 11: // POST
-                    return POST;
-                case 12: // SEX_FILTER
-                    return SEX_FILTER;
-                default:
-                    return null;
-            }
-        }
-
-        /**
-         * Find the _Fields constant that matches fieldId, throwing an exception
-         * if it is not found.
-         */
-        public static _Fields findByThriftIdOrThrow(int fieldId) {
-            _Fields fields = findByThriftId(fieldId);
-            if (fields == null) throw new IllegalArgumentException("Field " + fieldId + " doesn't exist!");
-            return fields;
-        }
-
-        /**
-         * Find the _Fields constant that matches name, or null if its not found.
-         */
-        public static _Fields findByName(String name) {
-            return byName.get(name);
-        }
-
-        private final short _thriftId;
-        private final String _fieldName;
-
-        _Fields(short thriftId, String fieldName) {
-            _thriftId = thriftId;
-            _fieldName = fieldName;
-        }
-
-        public short getThriftFieldId() {
-            return _thriftId;
-        }
-
-        public String getFieldName() {
-            return _fieldName;
-        }
-    }
-
-    // isset id assignments
-    private static final int __ID_ISSET_ID = 0;
-    private static final int __ORGSTRUCTUREID_ISSET_ID = 1;
-    private byte __isset_bitfield = 0;
-    private _Fields optionals[] = {_Fields.ORG_STRUCTURE_ID, _Fields.LAST_NAME, _Fields.FIRST_NAME, _Fields.PATR_NAME, _Fields.OFFICE, _Fields.SPECIALITY, _Fields.SPECIALITY_OKSOCODE, _Fields.SPECIALITY_REGIONAL_CODE, _Fields.POST, _Fields.SEX_FILTER};
-    public static final Map<_Fields, org.apache.thrift.meta_data.FieldMetaData> metaDataMap;
+    private static final Map<String, _Fields> byName = new HashMap<String, _Fields>();
 
     static {
-        Map<_Fields, org.apache.thrift.meta_data.FieldMetaData> tmpMap = new EnumMap<_Fields, org.apache.thrift.meta_data.FieldMetaData>(_Fields.class);
-        tmpMap.put(_Fields.ID, new org.apache.thrift.meta_data.FieldMetaData("id", org.apache.thrift.TFieldRequirementType.REQUIRED,
-                new org.apache.thrift.meta_data.FieldValueMetaData(org.apache.thrift.protocol.TType.I32)));
-        tmpMap.put(_Fields.CODE, new org.apache.thrift.meta_data.FieldMetaData("code", org.apache.thrift.TFieldRequirementType.REQUIRED,
-                new org.apache.thrift.meta_data.FieldValueMetaData(org.apache.thrift.protocol.TType.STRING)));
-        tmpMap.put(_Fields.ORG_STRUCTURE_ID, new org.apache.thrift.meta_data.FieldMetaData("orgStructureId", org.apache.thrift.TFieldRequirementType.OPTIONAL,
-                new org.apache.thrift.meta_data.FieldValueMetaData(org.apache.thrift.protocol.TType.I32)));
-        tmpMap.put(_Fields.LAST_NAME, new org.apache.thrift.meta_data.FieldMetaData("lastName", org.apache.thrift.TFieldRequirementType.OPTIONAL,
-                new org.apache.thrift.meta_data.FieldValueMetaData(org.apache.thrift.protocol.TType.STRING)));
-        tmpMap.put(_Fields.FIRST_NAME, new org.apache.thrift.meta_data.FieldMetaData("firstName", org.apache.thrift.TFieldRequirementType.OPTIONAL,
-                new org.apache.thrift.meta_data.FieldValueMetaData(org.apache.thrift.protocol.TType.STRING)));
-        tmpMap.put(_Fields.PATR_NAME, new org.apache.thrift.meta_data.FieldMetaData("patrName", org.apache.thrift.TFieldRequirementType.OPTIONAL,
-                new org.apache.thrift.meta_data.FieldValueMetaData(org.apache.thrift.protocol.TType.STRING)));
-        tmpMap.put(_Fields.OFFICE, new org.apache.thrift.meta_data.FieldMetaData("office", org.apache.thrift.TFieldRequirementType.OPTIONAL,
-                new org.apache.thrift.meta_data.FieldValueMetaData(org.apache.thrift.protocol.TType.STRING)));
-        tmpMap.put(_Fields.SPECIALITY, new org.apache.thrift.meta_data.FieldMetaData("speciality", org.apache.thrift.TFieldRequirementType.OPTIONAL,
-                new org.apache.thrift.meta_data.FieldValueMetaData(org.apache.thrift.protocol.TType.STRING)));
-        tmpMap.put(_Fields.SPECIALITY_OKSOCODE, new org.apache.thrift.meta_data.FieldMetaData("specialityOKSOCode", org.apache.thrift.TFieldRequirementType.OPTIONAL,
-                new org.apache.thrift.meta_data.FieldValueMetaData(org.apache.thrift.protocol.TType.STRING)));
-        tmpMap.put(_Fields.SPECIALITY_REGIONAL_CODE, new org.apache.thrift.meta_data.FieldMetaData("specialityRegionalCode", org.apache.thrift.TFieldRequirementType.OPTIONAL,
-                new org.apache.thrift.meta_data.FieldValueMetaData(org.apache.thrift.protocol.TType.STRING)));
-        tmpMap.put(_Fields.POST, new org.apache.thrift.meta_data.FieldMetaData("post", org.apache.thrift.TFieldRequirementType.OPTIONAL,
-                new org.apache.thrift.meta_data.FieldValueMetaData(org.apache.thrift.protocol.TType.STRING)));
-        tmpMap.put(_Fields.SEX_FILTER, new org.apache.thrift.meta_data.FieldMetaData("SexFilter", org.apache.thrift.TFieldRequirementType.OPTIONAL,
-                new org.apache.thrift.meta_data.FieldValueMetaData(org.apache.thrift.protocol.TType.STRING)));
-        metaDataMap = Collections.unmodifiableMap(tmpMap);
-        org.apache.thrift.meta_data.FieldMetaData.addStructMetaDataMap(Person.class, metaDataMap);
-    }
-
-    public Person() {
-    }
-
-    public Person(
-            int id,
-            String code) {
-        this();
-        this.id = id;
-        setIdIsSet(true);
-        this.code = code;
+      for (_Fields field : EnumSet.allOf(_Fields.class)) {
+        byName.put(field.getFieldName(), field);
+      }
     }
 
     /**
-     * Performs a deep copy on <i>other</i>.
+     * Find the _Fields constant that matches fieldId, or null if its not found.
      */
-    public Person(Person other) {
-        __isset_bitfield = other.__isset_bitfield;
-        this.id = other.id;
-        if (other.isSetCode()) {
-            this.code = other.code;
-        }
-        this.orgStructureId = other.orgStructureId;
-        if (other.isSetLastName()) {
-            this.lastName = other.lastName;
-        }
-        if (other.isSetFirstName()) {
-            this.firstName = other.firstName;
-        }
-        if (other.isSetPatrName()) {
-            this.patrName = other.patrName;
-        }
-        if (other.isSetOffice()) {
-            this.office = other.office;
-        }
-        if (other.isSetSpeciality()) {
-            this.speciality = other.speciality;
-        }
-        if (other.isSetSpecialityOKSOCode()) {
-            this.specialityOKSOCode = other.specialityOKSOCode;
-        }
-        if (other.isSetSpecialityRegionalCode()) {
-            this.specialityRegionalCode = other.specialityRegionalCode;
-        }
-        if (other.isSetPost()) {
-            this.post = other.post;
-        }
-        if (other.isSetSexFilter()) {
-            this.SexFilter = other.SexFilter;
-        }
-    }
-
-    public Person deepCopy() {
-        return new Person(this);
-    }
-
-    @Override
-    public void clear() {
-        setIdIsSet(false);
-        this.id = 0;
-        this.code = null;
-        setOrgStructureIdIsSet(false);
-        this.orgStructureId = 0;
-        this.lastName = null;
-        this.firstName = null;
-        this.patrName = null;
-        this.office = null;
-        this.speciality = null;
-        this.specialityOKSOCode = null;
-        this.specialityRegionalCode = null;
-        this.post = null;
-        this.SexFilter = null;
-    }
-
-    public int getId() {
-        return this.id;
-    }
-
-    public Person setId(int id) {
-        this.id = id;
-        setIdIsSet(true);
-        return this;
-    }
-
-    public void unsetId() {
-        __isset_bitfield = EncodingUtils.clearBit(__isset_bitfield, __ID_ISSET_ID);
+    public static _Fields findByThriftId(int fieldId) {
+      switch(fieldId) {
+        case 1: // ID
+          return ID;
+        case 2: // CODE
+          return CODE;
+        case 3: // ORG_STRUCTURE_ID
+          return ORG_STRUCTURE_ID;
+        case 4: // LAST_NAME
+          return LAST_NAME;
+        case 5: // FIRST_NAME
+          return FIRST_NAME;
+        case 6: // PATR_NAME
+          return PATR_NAME;
+        case 7: // OFFICE
+          return OFFICE;
+        case 8: // SPECIALITY
+          return SPECIALITY;
+        case 9: // SPECIALITY_OKSOCODE
+          return SPECIALITY_OKSOCODE;
+        case 10: // SPECIALITY_REGIONAL_CODE
+          return SPECIALITY_REGIONAL_CODE;
+        case 11: // POST
+          return POST;
+        case 12: // SEX_FILTER
+          return SEX_FILTER;
+        default:
+          return null;
+      }
     }
 
     /**
-     * Returns true if field id is set (has been assigned a value) and false otherwise
+     * Find the _Fields constant that matches fieldId, throwing an exception
+     * if it is not found.
      */
-    public boolean isSetId() {
-        return EncodingUtils.testBit(__isset_bitfield, __ID_ISSET_ID);
-    }
-
-    public void setIdIsSet(boolean value) {
-        __isset_bitfield = EncodingUtils.setBit(__isset_bitfield, __ID_ISSET_ID, value);
-    }
-
-    public String getCode() {
-        return this.code;
-    }
-
-    public Person setCode(String code) {
-        this.code = code;
-        return this;
-    }
-
-    public void unsetCode() {
-        this.code = null;
+    public static _Fields findByThriftIdOrThrow(int fieldId) {
+      _Fields fields = findByThriftId(fieldId);
+      if (fields == null) throw new IllegalArgumentException("Field " + fieldId + " doesn't exist!");
+      return fields;
     }
 
     /**
-     * Returns true if field code is set (has been assigned a value) and false otherwise
+     * Find the _Fields constant that matches name, or null if its not found.
      */
-    public boolean isSetCode() {
-        return this.code != null;
+    public static _Fields findByName(String name) {
+      return byName.get(name);
     }
 
-    public void setCodeIsSet(boolean value) {
-        if (!value) {
-            this.code = null;
-        }
+    private final short _thriftId;
+    private final String _fieldName;
+
+    _Fields(short thriftId, String fieldName) {
+      _thriftId = thriftId;
+      _fieldName = fieldName;
     }
 
-    public int getOrgStructureId() {
-        return this.orgStructureId;
+    public short getThriftFieldId() {
+      return _thriftId;
     }
 
-    public Person setOrgStructureId(int orgStructureId) {
-        this.orgStructureId = orgStructureId;
-        setOrgStructureIdIsSet(true);
-        return this;
+    public String getFieldName() {
+      return _fieldName;
+    }
+  }
+
+  // isset id assignments
+  private static final int __ID_ISSET_ID = 0;
+  private static final int __ORGSTRUCTUREID_ISSET_ID = 1;
+  private byte __isset_bitfield = 0;
+  private _Fields optionals[] = {_Fields.ORG_STRUCTURE_ID,_Fields.LAST_NAME,_Fields.FIRST_NAME,_Fields.PATR_NAME,_Fields.OFFICE,_Fields.SPECIALITY,_Fields.SPECIALITY_OKSOCODE,_Fields.SPECIALITY_REGIONAL_CODE,_Fields.POST,_Fields.SEX_FILTER};
+  public static final Map<_Fields, org.apache.thrift.meta_data.FieldMetaData> metaDataMap;
+  static {
+    Map<_Fields, org.apache.thrift.meta_data.FieldMetaData> tmpMap = new EnumMap<_Fields, org.apache.thrift.meta_data.FieldMetaData>(_Fields.class);
+    tmpMap.put(_Fields.ID, new org.apache.thrift.meta_data.FieldMetaData("id", org.apache.thrift.TFieldRequirementType.REQUIRED, 
+        new org.apache.thrift.meta_data.FieldValueMetaData(org.apache.thrift.protocol.TType.I32)));
+    tmpMap.put(_Fields.CODE, new org.apache.thrift.meta_data.FieldMetaData("code", org.apache.thrift.TFieldRequirementType.REQUIRED, 
+        new org.apache.thrift.meta_data.FieldValueMetaData(org.apache.thrift.protocol.TType.STRING)));
+    tmpMap.put(_Fields.ORG_STRUCTURE_ID, new org.apache.thrift.meta_data.FieldMetaData("orgStructureId", org.apache.thrift.TFieldRequirementType.OPTIONAL, 
+        new org.apache.thrift.meta_data.FieldValueMetaData(org.apache.thrift.protocol.TType.I32)));
+    tmpMap.put(_Fields.LAST_NAME, new org.apache.thrift.meta_data.FieldMetaData("lastName", org.apache.thrift.TFieldRequirementType.OPTIONAL, 
+        new org.apache.thrift.meta_data.FieldValueMetaData(org.apache.thrift.protocol.TType.STRING)));
+    tmpMap.put(_Fields.FIRST_NAME, new org.apache.thrift.meta_data.FieldMetaData("firstName", org.apache.thrift.TFieldRequirementType.OPTIONAL, 
+        new org.apache.thrift.meta_data.FieldValueMetaData(org.apache.thrift.protocol.TType.STRING)));
+    tmpMap.put(_Fields.PATR_NAME, new org.apache.thrift.meta_data.FieldMetaData("patrName", org.apache.thrift.TFieldRequirementType.OPTIONAL, 
+        new org.apache.thrift.meta_data.FieldValueMetaData(org.apache.thrift.protocol.TType.STRING)));
+    tmpMap.put(_Fields.OFFICE, new org.apache.thrift.meta_data.FieldMetaData("office", org.apache.thrift.TFieldRequirementType.OPTIONAL, 
+        new org.apache.thrift.meta_data.FieldValueMetaData(org.apache.thrift.protocol.TType.STRING)));
+    tmpMap.put(_Fields.SPECIALITY, new org.apache.thrift.meta_data.FieldMetaData("speciality", org.apache.thrift.TFieldRequirementType.OPTIONAL, 
+        new org.apache.thrift.meta_data.FieldValueMetaData(org.apache.thrift.protocol.TType.STRING)));
+    tmpMap.put(_Fields.SPECIALITY_OKSOCODE, new org.apache.thrift.meta_data.FieldMetaData("specialityOKSOCode", org.apache.thrift.TFieldRequirementType.OPTIONAL, 
+        new org.apache.thrift.meta_data.FieldValueMetaData(org.apache.thrift.protocol.TType.STRING)));
+    tmpMap.put(_Fields.SPECIALITY_REGIONAL_CODE, new org.apache.thrift.meta_data.FieldMetaData("specialityRegionalCode", org.apache.thrift.TFieldRequirementType.OPTIONAL, 
+        new org.apache.thrift.meta_data.FieldValueMetaData(org.apache.thrift.protocol.TType.STRING)));
+    tmpMap.put(_Fields.POST, new org.apache.thrift.meta_data.FieldMetaData("post", org.apache.thrift.TFieldRequirementType.OPTIONAL, 
+        new org.apache.thrift.meta_data.FieldValueMetaData(org.apache.thrift.protocol.TType.STRING)));
+    tmpMap.put(_Fields.SEX_FILTER, new org.apache.thrift.meta_data.FieldMetaData("SexFilter", org.apache.thrift.TFieldRequirementType.OPTIONAL, 
+        new org.apache.thrift.meta_data.FieldValueMetaData(org.apache.thrift.protocol.TType.STRING)));
+    metaDataMap = Collections.unmodifiableMap(tmpMap);
+    org.apache.thrift.meta_data.FieldMetaData.addStructMetaDataMap(Person.class, metaDataMap);
+  }
+
+  public Person() {
+  }
+
+  public Person(
+    int id,
+    String code)
+  {
+    this();
+    this.id = id;
+    setIdIsSet(true);
+    this.code = code;
+  }
+
+  /**
+   * Performs a deep copy on <i>other</i>.
+   */
+  public Person(Person other) {
+    __isset_bitfield = other.__isset_bitfield;
+    this.id = other.id;
+    if (other.isSetCode()) {
+      this.code = other.code;
+    }
+    this.orgStructureId = other.orgStructureId;
+    if (other.isSetLastName()) {
+      this.lastName = other.lastName;
+    }
+    if (other.isSetFirstName()) {
+      this.firstName = other.firstName;
+    }
+    if (other.isSetPatrName()) {
+      this.patrName = other.patrName;
+    }
+    if (other.isSetOffice()) {
+      this.office = other.office;
+    }
+    if (other.isSetSpeciality()) {
+      this.speciality = other.speciality;
+    }
+    if (other.isSetSpecialityOKSOCode()) {
+      this.specialityOKSOCode = other.specialityOKSOCode;
+    }
+    if (other.isSetSpecialityRegionalCode()) {
+      this.specialityRegionalCode = other.specialityRegionalCode;
+    }
+    if (other.isSetPost()) {
+      this.post = other.post;
+    }
+    if (other.isSetSexFilter()) {
+      this.SexFilter = other.SexFilter;
+    }
+  }
+
+  public Person deepCopy() {
+    return new Person(this);
+  }
+
+  @Override
+  public void clear() {
+    setIdIsSet(false);
+    this.id = 0;
+    this.code = null;
+    setOrgStructureIdIsSet(false);
+    this.orgStructureId = 0;
+    this.lastName = null;
+    this.firstName = null;
+    this.patrName = null;
+    this.office = null;
+    this.speciality = null;
+    this.specialityOKSOCode = null;
+    this.specialityRegionalCode = null;
+    this.post = null;
+    this.SexFilter = null;
+  }
+
+  public int getId() {
+    return this.id;
+  }
+
+  public Person setId(int id) {
+    this.id = id;
+    setIdIsSet(true);
+    return this;
+  }
+
+  public void unsetId() {
+    __isset_bitfield = EncodingUtils.clearBit(__isset_bitfield, __ID_ISSET_ID);
+  }
+
+  /** Returns true if field id is set (has been assigned a value) and false otherwise */
+  public boolean isSetId() {
+    return EncodingUtils.testBit(__isset_bitfield, __ID_ISSET_ID);
+  }
+
+  public void setIdIsSet(boolean value) {
+    __isset_bitfield = EncodingUtils.setBit(__isset_bitfield, __ID_ISSET_ID, value);
+  }
+
+  public String getCode() {
+    return this.code;
+  }
+
+  public Person setCode(String code) {
+    this.code = code;
+    return this;
+  }
+
+  public void unsetCode() {
+    this.code = null;
+  }
+
+  /** Returns true if field code is set (has been assigned a value) and false otherwise */
+  public boolean isSetCode() {
+    return this.code != null;
+  }
+
+  public void setCodeIsSet(boolean value) {
+    if (!value) {
+      this.code = null;
+    }
+  }
+
+  public int getOrgStructureId() {
+    return this.orgStructureId;
+  }
+
+  public Person setOrgStructureId(int orgStructureId) {
+    this.orgStructureId = orgStructureId;
+    setOrgStructureIdIsSet(true);
+    return this;
+  }
+
+  public void unsetOrgStructureId() {
+    __isset_bitfield = EncodingUtils.clearBit(__isset_bitfield, __ORGSTRUCTUREID_ISSET_ID);
+  }
+
+  /** Returns true if field orgStructureId is set (has been assigned a value) and false otherwise */
+  public boolean isSetOrgStructureId() {
+    return EncodingUtils.testBit(__isset_bitfield, __ORGSTRUCTUREID_ISSET_ID);
+  }
+
+  public void setOrgStructureIdIsSet(boolean value) {
+    __isset_bitfield = EncodingUtils.setBit(__isset_bitfield, __ORGSTRUCTUREID_ISSET_ID, value);
+  }
+
+  public String getLastName() {
+    return this.lastName;
+  }
+
+  public Person setLastName(String lastName) {
+    this.lastName = lastName;
+    return this;
+  }
+
+  public void unsetLastName() {
+    this.lastName = null;
+  }
+
+  /** Returns true if field lastName is set (has been assigned a value) and false otherwise */
+  public boolean isSetLastName() {
+    return this.lastName != null;
+  }
+
+  public void setLastNameIsSet(boolean value) {
+    if (!value) {
+      this.lastName = null;
+    }
+  }
+
+  public String getFirstName() {
+    return this.firstName;
+  }
+
+  public Person setFirstName(String firstName) {
+    this.firstName = firstName;
+    return this;
+  }
+
+  public void unsetFirstName() {
+    this.firstName = null;
+  }
+
+  /** Returns true if field firstName is set (has been assigned a value) and false otherwise */
+  public boolean isSetFirstName() {
+    return this.firstName != null;
+  }
+
+  public void setFirstNameIsSet(boolean value) {
+    if (!value) {
+      this.firstName = null;
+    }
+  }
+
+  public String getPatrName() {
+    return this.patrName;
+  }
+
+  public Person setPatrName(String patrName) {
+    this.patrName = patrName;
+    return this;
+  }
+
+  public void unsetPatrName() {
+    this.patrName = null;
+  }
+
+  /** Returns true if field patrName is set (has been assigned a value) and false otherwise */
+  public boolean isSetPatrName() {
+    return this.patrName != null;
+  }
+
+  public void setPatrNameIsSet(boolean value) {
+    if (!value) {
+      this.patrName = null;
+    }
+  }
+
+  public String getOffice() {
+    return this.office;
+  }
+
+  public Person setOffice(String office) {
+    this.office = office;
+    return this;
+  }
+
+  public void unsetOffice() {
+    this.office = null;
+  }
+
+  /** Returns true if field office is set (has been assigned a value) and false otherwise */
+  public boolean isSetOffice() {
+    return this.office != null;
+  }
+
+  public void setOfficeIsSet(boolean value) {
+    if (!value) {
+      this.office = null;
+    }
+  }
+
+  public String getSpeciality() {
+    return this.speciality;
+  }
+
+  public Person setSpeciality(String speciality) {
+    this.speciality = speciality;
+    return this;
+  }
+
+  public void unsetSpeciality() {
+    this.speciality = null;
+  }
+
+  /** Returns true if field speciality is set (has been assigned a value) and false otherwise */
+  public boolean isSetSpeciality() {
+    return this.speciality != null;
+  }
+
+  public void setSpecialityIsSet(boolean value) {
+    if (!value) {
+      this.speciality = null;
+    }
+  }
+
+  public String getSpecialityOKSOCode() {
+    return this.specialityOKSOCode;
+  }
+
+  public Person setSpecialityOKSOCode(String specialityOKSOCode) {
+    this.specialityOKSOCode = specialityOKSOCode;
+    return this;
+  }
+
+  public void unsetSpecialityOKSOCode() {
+    this.specialityOKSOCode = null;
+  }
+
+  /** Returns true if field specialityOKSOCode is set (has been assigned a value) and false otherwise */
+  public boolean isSetSpecialityOKSOCode() {
+    return this.specialityOKSOCode != null;
+  }
+
+  public void setSpecialityOKSOCodeIsSet(boolean value) {
+    if (!value) {
+      this.specialityOKSOCode = null;
+    }
+  }
+
+  public String getSpecialityRegionalCode() {
+    return this.specialityRegionalCode;
+  }
+
+  public Person setSpecialityRegionalCode(String specialityRegionalCode) {
+    this.specialityRegionalCode = specialityRegionalCode;
+    return this;
+  }
+
+  public void unsetSpecialityRegionalCode() {
+    this.specialityRegionalCode = null;
+  }
+
+  /** Returns true if field specialityRegionalCode is set (has been assigned a value) and false otherwise */
+  public boolean isSetSpecialityRegionalCode() {
+    return this.specialityRegionalCode != null;
+  }
+
+  public void setSpecialityRegionalCodeIsSet(boolean value) {
+    if (!value) {
+      this.specialityRegionalCode = null;
+    }
+  }
+
+  public String getPost() {
+    return this.post;
+  }
+
+  public Person setPost(String post) {
+    this.post = post;
+    return this;
+  }
+
+  public void unsetPost() {
+    this.post = null;
+  }
+
+  /** Returns true if field post is set (has been assigned a value) and false otherwise */
+  public boolean isSetPost() {
+    return this.post != null;
+  }
+
+  public void setPostIsSet(boolean value) {
+    if (!value) {
+      this.post = null;
+    }
+  }
+
+  public String getSexFilter() {
+    return this.SexFilter;
+  }
+
+  public Person setSexFilter(String SexFilter) {
+    this.SexFilter = SexFilter;
+    return this;
+  }
+
+  public void unsetSexFilter() {
+    this.SexFilter = null;
+  }
+
+  /** Returns true if field SexFilter is set (has been assigned a value) and false otherwise */
+  public boolean isSetSexFilter() {
+    return this.SexFilter != null;
+  }
+
+  public void setSexFilterIsSet(boolean value) {
+    if (!value) {
+      this.SexFilter = null;
+    }
+  }
+
+  public void setFieldValue(_Fields field, Object value) {
+    switch (field) {
+    case ID:
+      if (value == null) {
+        unsetId();
+      } else {
+        setId((Integer)value);
+      }
+      break;
+
+    case CODE:
+      if (value == null) {
+        unsetCode();
+      } else {
+        setCode((String)value);
+      }
+      break;
+
+    case ORG_STRUCTURE_ID:
+      if (value == null) {
+        unsetOrgStructureId();
+      } else {
+        setOrgStructureId((Integer)value);
+      }
+      break;
+
+    case LAST_NAME:
+      if (value == null) {
+        unsetLastName();
+      } else {
+        setLastName((String)value);
+      }
+      break;
+
+    case FIRST_NAME:
+      if (value == null) {
+        unsetFirstName();
+      } else {
+        setFirstName((String)value);
+      }
+      break;
+
+    case PATR_NAME:
+      if (value == null) {
+        unsetPatrName();
+      } else {
+        setPatrName((String)value);
+      }
+      break;
+
+    case OFFICE:
+      if (value == null) {
+        unsetOffice();
+      } else {
+        setOffice((String)value);
+      }
+      break;
+
+    case SPECIALITY:
+      if (value == null) {
+        unsetSpeciality();
+      } else {
+        setSpeciality((String)value);
+      }
+      break;
+
+    case SPECIALITY_OKSOCODE:
+      if (value == null) {
+        unsetSpecialityOKSOCode();
+      } else {
+        setSpecialityOKSOCode((String)value);
+      }
+      break;
+
+    case SPECIALITY_REGIONAL_CODE:
+      if (value == null) {
+        unsetSpecialityRegionalCode();
+      } else {
+        setSpecialityRegionalCode((String)value);
+      }
+      break;
+
+    case POST:
+      if (value == null) {
+        unsetPost();
+      } else {
+        setPost((String)value);
+      }
+      break;
+
+    case SEX_FILTER:
+      if (value == null) {
+        unsetSexFilter();
+      } else {
+        setSexFilter((String)value);
+      }
+      break;
+
+    }
+  }
+
+  public Object getFieldValue(_Fields field) {
+    switch (field) {
+    case ID:
+      return Integer.valueOf(getId());
+
+    case CODE:
+      return getCode();
+
+    case ORG_STRUCTURE_ID:
+      return Integer.valueOf(getOrgStructureId());
+
+    case LAST_NAME:
+      return getLastName();
+
+    case FIRST_NAME:
+      return getFirstName();
+
+    case PATR_NAME:
+      return getPatrName();
+
+    case OFFICE:
+      return getOffice();
+
+    case SPECIALITY:
+      return getSpeciality();
+
+    case SPECIALITY_OKSOCODE:
+      return getSpecialityOKSOCode();
+
+    case SPECIALITY_REGIONAL_CODE:
+      return getSpecialityRegionalCode();
+
+    case POST:
+      return getPost();
+
+    case SEX_FILTER:
+      return getSexFilter();
+
+    }
+    throw new IllegalStateException();
+  }
+
+  /** Returns true if field corresponding to fieldID is set (has been assigned a value) and false otherwise */
+  public boolean isSet(_Fields field) {
+    if (field == null) {
+      throw new IllegalArgumentException();
     }
 
-    public void unsetOrgStructureId() {
-        __isset_bitfield = EncodingUtils.clearBit(__isset_bitfield, __ORGSTRUCTUREID_ISSET_ID);
+    switch (field) {
+    case ID:
+      return isSetId();
+    case CODE:
+      return isSetCode();
+    case ORG_STRUCTURE_ID:
+      return isSetOrgStructureId();
+    case LAST_NAME:
+      return isSetLastName();
+    case FIRST_NAME:
+      return isSetFirstName();
+    case PATR_NAME:
+      return isSetPatrName();
+    case OFFICE:
+      return isSetOffice();
+    case SPECIALITY:
+      return isSetSpeciality();
+    case SPECIALITY_OKSOCODE:
+      return isSetSpecialityOKSOCode();
+    case SPECIALITY_REGIONAL_CODE:
+      return isSetSpecialityRegionalCode();
+    case POST:
+      return isSetPost();
+    case SEX_FILTER:
+      return isSetSexFilter();
     }
-
-    /**
-     * Returns true if field orgStructureId is set (has been assigned a value) and false otherwise
-     */
-    public boolean isSetOrgStructureId() {
-        return EncodingUtils.testBit(__isset_bitfield, __ORGSTRUCTUREID_ISSET_ID);
-    }
-
-    public void setOrgStructureIdIsSet(boolean value) {
-        __isset_bitfield = EncodingUtils.setBit(__isset_bitfield, __ORGSTRUCTUREID_ISSET_ID, value);
-    }
-
-    public String getLastName() {
-        return this.lastName;
-    }
-
-    public Person setLastName(String lastName) {
-        this.lastName = lastName;
-        return this;
-    }
-
-    public void unsetLastName() {
-        this.lastName = null;
-    }
-
-    /**
-     * Returns true if field lastName is set (has been assigned a value) and false otherwise
-     */
-    public boolean isSetLastName() {
-        return this.lastName != null;
-    }
-
-    public void setLastNameIsSet(boolean value) {
-        if (!value) {
-            this.lastName = null;
-        }
-    }
-
-    public String getFirstName() {
-        return this.firstName;
-    }
-
-    public Person setFirstName(String firstName) {
-        this.firstName = firstName;
-        return this;
-    }
-
-    public void unsetFirstName() {
-        this.firstName = null;
-    }
-
-    /**
-     * Returns true if field firstName is set (has been assigned a value) and false otherwise
-     */
-    public boolean isSetFirstName() {
-        return this.firstName != null;
-    }
-
-    public void setFirstNameIsSet(boolean value) {
-        if (!value) {
-            this.firstName = null;
-        }
-    }
-
-    public String getPatrName() {
-        return this.patrName;
-    }
-
-    public Person setPatrName(String patrName) {
-        this.patrName = patrName;
-        return this;
-    }
-
-    public void unsetPatrName() {
-        this.patrName = null;
-    }
-
-    /**
-     * Returns true if field patrName is set (has been assigned a value) and false otherwise
-     */
-    public boolean isSetPatrName() {
-        return this.patrName != null;
-    }
-
-    public void setPatrNameIsSet(boolean value) {
-        if (!value) {
-            this.patrName = null;
-        }
-    }
-
-    public String getOffice() {
-        return this.office;
-    }
-
-    public Person setOffice(String office) {
-        this.office = office;
-        return this;
-    }
-
-    public void unsetOffice() {
-        this.office = null;
-    }
-
-    /**
-     * Returns true if field office is set (has been assigned a value) and false otherwise
-     */
-    public boolean isSetOffice() {
-        return this.office != null;
-    }
-
-    public void setOfficeIsSet(boolean value) {
-        if (!value) {
-            this.office = null;
-        }
-    }
-
-    public String getSpeciality() {
-        return this.speciality;
-    }
-
-    public Person setSpeciality(String speciality) {
-        this.speciality = speciality;
-        return this;
-    }
-
-    public void unsetSpeciality() {
-        this.speciality = null;
-    }
-
-    /**
-     * Returns true if field speciality is set (has been assigned a value) and false otherwise
-     */
-    public boolean isSetSpeciality() {
-        return this.speciality != null;
-    }
-
-    public void setSpecialityIsSet(boolean value) {
-        if (!value) {
-            this.speciality = null;
-        }
-    }
-
-    public String getSpecialityOKSOCode() {
-        return this.specialityOKSOCode;
-    }
-
-    public Person setSpecialityOKSOCode(String specialityOKSOCode) {
-        this.specialityOKSOCode = specialityOKSOCode;
-        return this;
-    }
-
-    public void unsetSpecialityOKSOCode() {
-        this.specialityOKSOCode = null;
-    }
-
-    /**
-     * Returns true if field specialityOKSOCode is set (has been assigned a value) and false otherwise
-     */
-    public boolean isSetSpecialityOKSOCode() {
-        return this.specialityOKSOCode != null;
-    }
-
-    public void setSpecialityOKSOCodeIsSet(boolean value) {
-        if (!value) {
-            this.specialityOKSOCode = null;
-        }
-    }
-
-    public String getSpecialityRegionalCode() {
-        return this.specialityRegionalCode;
-    }
-
-    public Person setSpecialityRegionalCode(String specialityRegionalCode) {
-        this.specialityRegionalCode = specialityRegionalCode;
-        return this;
-    }
-
-    public void unsetSpecialityRegionalCode() {
-        this.specialityRegionalCode = null;
-    }
-
-    /**
-     * Returns true if field specialityRegionalCode is set (has been assigned a value) and false otherwise
-     */
-    public boolean isSetSpecialityRegionalCode() {
-        return this.specialityRegionalCode != null;
-    }
-
-    public void setSpecialityRegionalCodeIsSet(boolean value) {
-        if (!value) {
-            this.specialityRegionalCode = null;
-        }
-    }
-
-    public String getPost() {
-        return this.post;
-    }
-
-    public Person setPost(String post) {
-        this.post = post;
-        return this;
-    }
-
-    public void unsetPost() {
-        this.post = null;
-    }
-
-    /**
-     * Returns true if field post is set (has been assigned a value) and false otherwise
-     */
-    public boolean isSetPost() {
-        return this.post != null;
-    }
-
-    public void setPostIsSet(boolean value) {
-        if (!value) {
-            this.post = null;
-        }
-    }
-
-    public String getSexFilter() {
-        return this.SexFilter;
-    }
-
-    public Person setSexFilter(String SexFilter) {
-        this.SexFilter = SexFilter;
-        return this;
-    }
-
-    public void unsetSexFilter() {
-        this.SexFilter = null;
-    }
-
-    /**
-     * Returns true if field SexFilter is set (has been assigned a value) and false otherwise
-     */
-    public boolean isSetSexFilter() {
-        return this.SexFilter != null;
-    }
-
-    public void setSexFilterIsSet(boolean value) {
-        if (!value) {
-            this.SexFilter = null;
-        }
-    }
-
-    public void setFieldValue(_Fields field, Object value) {
-        switch (field) {
-            case ID:
-                if (value == null) {
-                    unsetId();
-                } else {
-                    setId((Integer) value);
-                }
-                break;
-
-            case CODE:
-                if (value == null) {
-                    unsetCode();
-                } else {
-                    setCode((String) value);
-                }
-                break;
-
-            case ORG_STRUCTURE_ID:
-                if (value == null) {
-                    unsetOrgStructureId();
-                } else {
-                    setOrgStructureId((Integer) value);
-                }
-                break;
-
-            case LAST_NAME:
-                if (value == null) {
-                    unsetLastName();
-                } else {
-                    setLastName((String) value);
-                }
-                break;
-
-            case FIRST_NAME:
-                if (value == null) {
-                    unsetFirstName();
-                } else {
-                    setFirstName((String) value);
-                }
-                break;
-
-            case PATR_NAME:
-                if (value == null) {
-                    unsetPatrName();
-                } else {
-                    setPatrName((String) value);
-                }
-                break;
-
-            case OFFICE:
-                if (value == null) {
-                    unsetOffice();
-                } else {
-                    setOffice((String) value);
-                }
-                break;
-
-            case SPECIALITY:
-                if (value == null) {
-                    unsetSpeciality();
-                } else {
-                    setSpeciality((String) value);
-                }
-                break;
-
-            case SPECIALITY_OKSOCODE:
-                if (value == null) {
-                    unsetSpecialityOKSOCode();
-                } else {
-                    setSpecialityOKSOCode((String) value);
-                }
-                break;
-
-            case SPECIALITY_REGIONAL_CODE:
-                if (value == null) {
-                    unsetSpecialityRegionalCode();
-                } else {
-                    setSpecialityRegionalCode((String) value);
-                }
-                break;
-
-            case POST:
-                if (value == null) {
-                    unsetPost();
-                } else {
-                    setPost((String) value);
-                }
-                break;
-
-            case SEX_FILTER:
-                if (value == null) {
-                    unsetSexFilter();
-                } else {
-                    setSexFilter((String) value);
-                }
-                break;
-
-        }
-    }
-
-    public Object getFieldValue(_Fields field) {
-        switch (field) {
-            case ID:
-                return Integer.valueOf(getId());
-
-            case CODE:
-                return getCode();
-
-            case ORG_STRUCTURE_ID:
-                return Integer.valueOf(getOrgStructureId());
-
-            case LAST_NAME:
-                return getLastName();
-
-            case FIRST_NAME:
-                return getFirstName();
-
-            case PATR_NAME:
-                return getPatrName();
-
-            case OFFICE:
-                return getOffice();
-
-            case SPECIALITY:
-                return getSpeciality();
-
-            case SPECIALITY_OKSOCODE:
-                return getSpecialityOKSOCode();
-
-            case SPECIALITY_REGIONAL_CODE:
-                return getSpecialityRegionalCode();
-
-            case POST:
-                return getPost();
-
-            case SEX_FILTER:
-                return getSexFilter();
-
-        }
-        throw new IllegalStateException();
-    }
-
-    /**
-     * Returns true if field corresponding to fieldID is set (has been assigned a value) and false otherwise
-     */
-    public boolean isSet(_Fields field) {
-        if (field == null) {
-            throw new IllegalArgumentException();
-        }
-
-        switch (field) {
-            case ID:
-                return isSetId();
-            case CODE:
-                return isSetCode();
-            case ORG_STRUCTURE_ID:
-                return isSetOrgStructureId();
-            case LAST_NAME:
-                return isSetLastName();
-            case FIRST_NAME:
-                return isSetFirstName();
-            case PATR_NAME:
-                return isSetPatrName();
-            case OFFICE:
-                return isSetOffice();
-            case SPECIALITY:
-                return isSetSpeciality();
-            case SPECIALITY_OKSOCODE:
-                return isSetSpecialityOKSOCode();
-            case SPECIALITY_REGIONAL_CODE:
-                return isSetSpecialityRegionalCode();
-            case POST:
-                return isSetPost();
-            case SEX_FILTER:
-                return isSetSexFilter();
-        }
-        throw new IllegalStateException();
-    }
-
-    @Override
-    public boolean equals(Object that) {
-        if (that == null)
-            return false;
-        if (that instanceof Person)
-            return this.equals((Person) that);
+    throw new IllegalStateException();
+  }
+
+  @Override
+  public boolean equals(Object that) {
+    if (that == null)
+      return false;
+    if (that instanceof Person)
+      return this.equals((Person)that);
+    return false;
+  }
+
+  public boolean equals(Person that) {
+    if (that == null)
+      return false;
+
+    boolean this_present_id = true;
+    boolean that_present_id = true;
+    if (this_present_id || that_present_id) {
+      if (!(this_present_id && that_present_id))
+        return false;
+      if (this.id != that.id)
         return false;
     }
 
-    public boolean equals(Person that) {
-        if (that == null)
-            return false;
+    boolean this_present_code = true && this.isSetCode();
+    boolean that_present_code = true && that.isSetCode();
+    if (this_present_code || that_present_code) {
+      if (!(this_present_code && that_present_code))
+        return false;
+      if (!this.code.equals(that.code))
+        return false;
+    }
 
-        boolean this_present_id = true;
-        boolean that_present_id = true;
-        if (this_present_id || that_present_id) {
-            if (!(this_present_id && that_present_id))
-                return false;
-            if (this.id != that.id)
-                return false;
+    boolean this_present_orgStructureId = true && this.isSetOrgStructureId();
+    boolean that_present_orgStructureId = true && that.isSetOrgStructureId();
+    if (this_present_orgStructureId || that_present_orgStructureId) {
+      if (!(this_present_orgStructureId && that_present_orgStructureId))
+        return false;
+      if (this.orgStructureId != that.orgStructureId)
+        return false;
+    }
+
+    boolean this_present_lastName = true && this.isSetLastName();
+    boolean that_present_lastName = true && that.isSetLastName();
+    if (this_present_lastName || that_present_lastName) {
+      if (!(this_present_lastName && that_present_lastName))
+        return false;
+      if (!this.lastName.equals(that.lastName))
+        return false;
+    }
+
+    boolean this_present_firstName = true && this.isSetFirstName();
+    boolean that_present_firstName = true && that.isSetFirstName();
+    if (this_present_firstName || that_present_firstName) {
+      if (!(this_present_firstName && that_present_firstName))
+        return false;
+      if (!this.firstName.equals(that.firstName))
+        return false;
+    }
+
+    boolean this_present_patrName = true && this.isSetPatrName();
+    boolean that_present_patrName = true && that.isSetPatrName();
+    if (this_present_patrName || that_present_patrName) {
+      if (!(this_present_patrName && that_present_patrName))
+        return false;
+      if (!this.patrName.equals(that.patrName))
+        return false;
+    }
+
+    boolean this_present_office = true && this.isSetOffice();
+    boolean that_present_office = true && that.isSetOffice();
+    if (this_present_office || that_present_office) {
+      if (!(this_present_office && that_present_office))
+        return false;
+      if (!this.office.equals(that.office))
+        return false;
+    }
+
+    boolean this_present_speciality = true && this.isSetSpeciality();
+    boolean that_present_speciality = true && that.isSetSpeciality();
+    if (this_present_speciality || that_present_speciality) {
+      if (!(this_present_speciality && that_present_speciality))
+        return false;
+      if (!this.speciality.equals(that.speciality))
+        return false;
+    }
+
+    boolean this_present_specialityOKSOCode = true && this.isSetSpecialityOKSOCode();
+    boolean that_present_specialityOKSOCode = true && that.isSetSpecialityOKSOCode();
+    if (this_present_specialityOKSOCode || that_present_specialityOKSOCode) {
+      if (!(this_present_specialityOKSOCode && that_present_specialityOKSOCode))
+        return false;
+      if (!this.specialityOKSOCode.equals(that.specialityOKSOCode))
+        return false;
+    }
+
+    boolean this_present_specialityRegionalCode = true && this.isSetSpecialityRegionalCode();
+    boolean that_present_specialityRegionalCode = true && that.isSetSpecialityRegionalCode();
+    if (this_present_specialityRegionalCode || that_present_specialityRegionalCode) {
+      if (!(this_present_specialityRegionalCode && that_present_specialityRegionalCode))
+        return false;
+      if (!this.specialityRegionalCode.equals(that.specialityRegionalCode))
+        return false;
+    }
+
+    boolean this_present_post = true && this.isSetPost();
+    boolean that_present_post = true && that.isSetPost();
+    if (this_present_post || that_present_post) {
+      if (!(this_present_post && that_present_post))
+        return false;
+      if (!this.post.equals(that.post))
+        return false;
+    }
+
+    boolean this_present_SexFilter = true && this.isSetSexFilter();
+    boolean that_present_SexFilter = true && that.isSetSexFilter();
+    if (this_present_SexFilter || that_present_SexFilter) {
+      if (!(this_present_SexFilter && that_present_SexFilter))
+        return false;
+      if (!this.SexFilter.equals(that.SexFilter))
+        return false;
+    }
+
+    return true;
+  }
+
+  @Override
+  public int hashCode() {
+    return 0;
+  }
+
+  public int compareTo(Person other) {
+    if (!getClass().equals(other.getClass())) {
+      return getClass().getName().compareTo(other.getClass().getName());
+    }
+
+    int lastComparison = 0;
+    Person typedOther = (Person)other;
+
+    lastComparison = Boolean.valueOf(isSetId()).compareTo(typedOther.isSetId());
+    if (lastComparison != 0) {
+      return lastComparison;
+    }
+    if (isSetId()) {
+      lastComparison = org.apache.thrift.TBaseHelper.compareTo(this.id, typedOther.id);
+      if (lastComparison != 0) {
+        return lastComparison;
+      }
+    }
+    lastComparison = Boolean.valueOf(isSetCode()).compareTo(typedOther.isSetCode());
+    if (lastComparison != 0) {
+      return lastComparison;
+    }
+    if (isSetCode()) {
+      lastComparison = org.apache.thrift.TBaseHelper.compareTo(this.code, typedOther.code);
+      if (lastComparison != 0) {
+        return lastComparison;
+      }
+    }
+    lastComparison = Boolean.valueOf(isSetOrgStructureId()).compareTo(typedOther.isSetOrgStructureId());
+    if (lastComparison != 0) {
+      return lastComparison;
+    }
+    if (isSetOrgStructureId()) {
+      lastComparison = org.apache.thrift.TBaseHelper.compareTo(this.orgStructureId, typedOther.orgStructureId);
+      if (lastComparison != 0) {
+        return lastComparison;
+      }
+    }
+    lastComparison = Boolean.valueOf(isSetLastName()).compareTo(typedOther.isSetLastName());
+    if (lastComparison != 0) {
+      return lastComparison;
+    }
+    if (isSetLastName()) {
+      lastComparison = org.apache.thrift.TBaseHelper.compareTo(this.lastName, typedOther.lastName);
+      if (lastComparison != 0) {
+        return lastComparison;
+      }
+    }
+    lastComparison = Boolean.valueOf(isSetFirstName()).compareTo(typedOther.isSetFirstName());
+    if (lastComparison != 0) {
+      return lastComparison;
+    }
+    if (isSetFirstName()) {
+      lastComparison = org.apache.thrift.TBaseHelper.compareTo(this.firstName, typedOther.firstName);
+      if (lastComparison != 0) {
+        return lastComparison;
+      }
+    }
+    lastComparison = Boolean.valueOf(isSetPatrName()).compareTo(typedOther.isSetPatrName());
+    if (lastComparison != 0) {
+      return lastComparison;
+    }
+    if (isSetPatrName()) {
+      lastComparison = org.apache.thrift.TBaseHelper.compareTo(this.patrName, typedOther.patrName);
+      if (lastComparison != 0) {
+        return lastComparison;
+      }
+    }
+    lastComparison = Boolean.valueOf(isSetOffice()).compareTo(typedOther.isSetOffice());
+    if (lastComparison != 0) {
+      return lastComparison;
+    }
+    if (isSetOffice()) {
+      lastComparison = org.apache.thrift.TBaseHelper.compareTo(this.office, typedOther.office);
+      if (lastComparison != 0) {
+        return lastComparison;
+      }
+    }
+    lastComparison = Boolean.valueOf(isSetSpeciality()).compareTo(typedOther.isSetSpeciality());
+    if (lastComparison != 0) {
+      return lastComparison;
+    }
+    if (isSetSpeciality()) {
+      lastComparison = org.apache.thrift.TBaseHelper.compareTo(this.speciality, typedOther.speciality);
+      if (lastComparison != 0) {
+        return lastComparison;
+      }
+    }
+    lastComparison = Boolean.valueOf(isSetSpecialityOKSOCode()).compareTo(typedOther.isSetSpecialityOKSOCode());
+    if (lastComparison != 0) {
+      return lastComparison;
+    }
+    if (isSetSpecialityOKSOCode()) {
+      lastComparison = org.apache.thrift.TBaseHelper.compareTo(this.specialityOKSOCode, typedOther.specialityOKSOCode);
+      if (lastComparison != 0) {
+        return lastComparison;
+      }
+    }
+    lastComparison = Boolean.valueOf(isSetSpecialityRegionalCode()).compareTo(typedOther.isSetSpecialityRegionalCode());
+    if (lastComparison != 0) {
+      return lastComparison;
+    }
+    if (isSetSpecialityRegionalCode()) {
+      lastComparison = org.apache.thrift.TBaseHelper.compareTo(this.specialityRegionalCode, typedOther.specialityRegionalCode);
+      if (lastComparison != 0) {
+        return lastComparison;
+      }
+    }
+    lastComparison = Boolean.valueOf(isSetPost()).compareTo(typedOther.isSetPost());
+    if (lastComparison != 0) {
+      return lastComparison;
+    }
+    if (isSetPost()) {
+      lastComparison = org.apache.thrift.TBaseHelper.compareTo(this.post, typedOther.post);
+      if (lastComparison != 0) {
+        return lastComparison;
+      }
+    }
+    lastComparison = Boolean.valueOf(isSetSexFilter()).compareTo(typedOther.isSetSexFilter());
+    if (lastComparison != 0) {
+      return lastComparison;
+    }
+    if (isSetSexFilter()) {
+      lastComparison = org.apache.thrift.TBaseHelper.compareTo(this.SexFilter, typedOther.SexFilter);
+      if (lastComparison != 0) {
+        return lastComparison;
+      }
+    }
+    return 0;
+  }
+
+  public _Fields fieldForId(int fieldId) {
+    return _Fields.findByThriftId(fieldId);
+  }
+
+  public void read(org.apache.thrift.protocol.TProtocol iprot) throws org.apache.thrift.TException {
+    schemes.get(iprot.getScheme()).getScheme().read(iprot, this);
+  }
+
+  public void write(org.apache.thrift.protocol.TProtocol oprot) throws org.apache.thrift.TException {
+    schemes.get(oprot.getScheme()).getScheme().write(oprot, this);
+  }
+
+  @Override
+  public String toString() {
+    StringBuilder sb = new StringBuilder("Person(");
+    boolean first = true;
+
+    sb.append("id:");
+    sb.append(this.id);
+    first = false;
+    if (!first) sb.append(", ");
+    sb.append("code:");
+    if (this.code == null) {
+      sb.append("null");
+    } else {
+      sb.append(this.code);
+    }
+    first = false;
+    if (isSetOrgStructureId()) {
+      if (!first) sb.append(", ");
+      sb.append("orgStructureId:");
+      sb.append(this.orgStructureId);
+      first = false;
+    }
+    if (isSetLastName()) {
+      if (!first) sb.append(", ");
+      sb.append("lastName:");
+      if (this.lastName == null) {
+        sb.append("null");
+      } else {
+        sb.append(this.lastName);
+      }
+      first = false;
+    }
+    if (isSetFirstName()) {
+      if (!first) sb.append(", ");
+      sb.append("firstName:");
+      if (this.firstName == null) {
+        sb.append("null");
+      } else {
+        sb.append(this.firstName);
+      }
+      first = false;
+    }
+    if (isSetPatrName()) {
+      if (!first) sb.append(", ");
+      sb.append("patrName:");
+      if (this.patrName == null) {
+        sb.append("null");
+      } else {
+        sb.append(this.patrName);
+      }
+      first = false;
+    }
+    if (isSetOffice()) {
+      if (!first) sb.append(", ");
+      sb.append("office:");
+      if (this.office == null) {
+        sb.append("null");
+      } else {
+        sb.append(this.office);
+      }
+      first = false;
+    }
+    if (isSetSpeciality()) {
+      if (!first) sb.append(", ");
+      sb.append("speciality:");
+      if (this.speciality == null) {
+        sb.append("null");
+      } else {
+        sb.append(this.speciality);
+      }
+      first = false;
+    }
+    if (isSetSpecialityOKSOCode()) {
+      if (!first) sb.append(", ");
+      sb.append("specialityOKSOCode:");
+      if (this.specialityOKSOCode == null) {
+        sb.append("null");
+      } else {
+        sb.append(this.specialityOKSOCode);
+      }
+      first = false;
+    }
+    if (isSetSpecialityRegionalCode()) {
+      if (!first) sb.append(", ");
+      sb.append("specialityRegionalCode:");
+      if (this.specialityRegionalCode == null) {
+        sb.append("null");
+      } else {
+        sb.append(this.specialityRegionalCode);
+      }
+      first = false;
+    }
+    if (isSetPost()) {
+      if (!first) sb.append(", ");
+      sb.append("post:");
+      if (this.post == null) {
+        sb.append("null");
+      } else {
+        sb.append(this.post);
+      }
+      first = false;
+    }
+    if (isSetSexFilter()) {
+      if (!first) sb.append(", ");
+      sb.append("SexFilter:");
+      if (this.SexFilter == null) {
+        sb.append("null");
+      } else {
+        sb.append(this.SexFilter);
+      }
+      first = false;
+    }
+    sb.append(")");
+    return sb.toString();
+  }
+
+  public void validate() throws org.apache.thrift.TException {
+    // check for required fields
+    // alas, we cannot check 'id' because it's a primitive and you chose the non-beans generator.
+    if (code == null) {
+      throw new org.apache.thrift.protocol.TProtocolException("Required field 'code' was not present! Struct: " + toString());
+    }
+    // check for sub-struct validity
+  }
+
+  private void writeObject(java.io.ObjectOutputStream out) throws java.io.IOException {
+    try {
+      write(new org.apache.thrift.protocol.TCompactProtocol(new org.apache.thrift.transport.TIOStreamTransport(out)));
+    } catch (org.apache.thrift.TException te) {
+      throw new java.io.IOException(te);
+    }
+  }
+
+  private void readObject(java.io.ObjectInputStream in) throws java.io.IOException, ClassNotFoundException {
+    try {
+      // it doesn't seem like you should have to do this, but java serialization is wacky, and doesn't call the default constructor.
+      __isset_bitfield = 0;
+      read(new org.apache.thrift.protocol.TCompactProtocol(new org.apache.thrift.transport.TIOStreamTransport(in)));
+    } catch (org.apache.thrift.TException te) {
+      throw new java.io.IOException(te);
+    }
+  }
+
+  private static class PersonStandardSchemeFactory implements SchemeFactory {
+    public PersonStandardScheme getScheme() {
+      return new PersonStandardScheme();
+    }
+  }
+
+  private static class PersonStandardScheme extends StandardScheme<Person> {
+
+    public void read(org.apache.thrift.protocol.TProtocol iprot, Person struct) throws org.apache.thrift.TException {
+      org.apache.thrift.protocol.TField schemeField;
+      iprot.readStructBegin();
+      while (true)
+      {
+        schemeField = iprot.readFieldBegin();
+        if (schemeField.type == org.apache.thrift.protocol.TType.STOP) { 
+          break;
         }
-
-        boolean this_present_code = true && this.isSetCode();
-        boolean that_present_code = true && that.isSetCode();
-        if (this_present_code || that_present_code) {
-            if (!(this_present_code && that_present_code))
-                return false;
-            if (!this.code.equals(that.code))
-                return false;
+        switch (schemeField.id) {
+          case 1: // ID
+            if (schemeField.type == org.apache.thrift.protocol.TType.I32) {
+              struct.id = iprot.readI32();
+              struct.setIdIsSet(true);
+            } else { 
+              org.apache.thrift.protocol.TProtocolUtil.skip(iprot, schemeField.type);
+            }
+            break;
+          case 2: // CODE
+            if (schemeField.type == org.apache.thrift.protocol.TType.STRING) {
+              struct.code = iprot.readString();
+              struct.setCodeIsSet(true);
+            } else { 
+              org.apache.thrift.protocol.TProtocolUtil.skip(iprot, schemeField.type);
+            }
+            break;
+          case 3: // ORG_STRUCTURE_ID
+            if (schemeField.type == org.apache.thrift.protocol.TType.I32) {
+              struct.orgStructureId = iprot.readI32();
+              struct.setOrgStructureIdIsSet(true);
+            } else { 
+              org.apache.thrift.protocol.TProtocolUtil.skip(iprot, schemeField.type);
+            }
+            break;
+          case 4: // LAST_NAME
+            if (schemeField.type == org.apache.thrift.protocol.TType.STRING) {
+              struct.lastName = iprot.readString();
+              struct.setLastNameIsSet(true);
+            } else { 
+              org.apache.thrift.protocol.TProtocolUtil.skip(iprot, schemeField.type);
+            }
+            break;
+          case 5: // FIRST_NAME
+            if (schemeField.type == org.apache.thrift.protocol.TType.STRING) {
+              struct.firstName = iprot.readString();
+              struct.setFirstNameIsSet(true);
+            } else { 
+              org.apache.thrift.protocol.TProtocolUtil.skip(iprot, schemeField.type);
+            }
+            break;
+          case 6: // PATR_NAME
+            if (schemeField.type == org.apache.thrift.protocol.TType.STRING) {
+              struct.patrName = iprot.readString();
+              struct.setPatrNameIsSet(true);
+            } else { 
+              org.apache.thrift.protocol.TProtocolUtil.skip(iprot, schemeField.type);
+            }
+            break;
+          case 7: // OFFICE
+            if (schemeField.type == org.apache.thrift.protocol.TType.STRING) {
+              struct.office = iprot.readString();
+              struct.setOfficeIsSet(true);
+            } else { 
+              org.apache.thrift.protocol.TProtocolUtil.skip(iprot, schemeField.type);
+            }
+            break;
+          case 8: // SPECIALITY
+            if (schemeField.type == org.apache.thrift.protocol.TType.STRING) {
+              struct.speciality = iprot.readString();
+              struct.setSpecialityIsSet(true);
+            } else { 
+              org.apache.thrift.protocol.TProtocolUtil.skip(iprot, schemeField.type);
+            }
+            break;
+          case 9: // SPECIALITY_OKSOCODE
+            if (schemeField.type == org.apache.thrift.protocol.TType.STRING) {
+              struct.specialityOKSOCode = iprot.readString();
+              struct.setSpecialityOKSOCodeIsSet(true);
+            } else { 
+              org.apache.thrift.protocol.TProtocolUtil.skip(iprot, schemeField.type);
+            }
+            break;
+          case 10: // SPECIALITY_REGIONAL_CODE
+            if (schemeField.type == org.apache.thrift.protocol.TType.STRING) {
+              struct.specialityRegionalCode = iprot.readString();
+              struct.setSpecialityRegionalCodeIsSet(true);
+            } else { 
+              org.apache.thrift.protocol.TProtocolUtil.skip(iprot, schemeField.type);
+            }
+            break;
+          case 11: // POST
+            if (schemeField.type == org.apache.thrift.protocol.TType.STRING) {
+              struct.post = iprot.readString();
+              struct.setPostIsSet(true);
+            } else { 
+              org.apache.thrift.protocol.TProtocolUtil.skip(iprot, schemeField.type);
+            }
+            break;
+          case 12: // SEX_FILTER
+            if (schemeField.type == org.apache.thrift.protocol.TType.STRING) {
+              struct.SexFilter = iprot.readString();
+              struct.setSexFilterIsSet(true);
+            } else { 
+              org.apache.thrift.protocol.TProtocolUtil.skip(iprot, schemeField.type);
+            }
+            break;
+          default:
+            org.apache.thrift.protocol.TProtocolUtil.skip(iprot, schemeField.type);
         }
+        iprot.readFieldEnd();
+      }
+      iprot.readStructEnd();
 
-        boolean this_present_orgStructureId = true && this.isSetOrgStructureId();
-        boolean that_present_orgStructureId = true && that.isSetOrgStructureId();
-        if (this_present_orgStructureId || that_present_orgStructureId) {
-            if (!(this_present_orgStructureId && that_present_orgStructureId))
-                return false;
-            if (this.orgStructureId != that.orgStructureId)
-                return false;
+      // check for required fields of primitive type, which can't be checked in the validate method
+      if (!struct.isSetId()) {
+        throw new org.apache.thrift.protocol.TProtocolException("Required field 'id' was not found in serialized data! Struct: " + toString());
+      }
+      struct.validate();
+    }
+
+    public void write(org.apache.thrift.protocol.TProtocol oprot, Person struct) throws org.apache.thrift.TException {
+      struct.validate();
+
+      oprot.writeStructBegin(STRUCT_DESC);
+      oprot.writeFieldBegin(ID_FIELD_DESC);
+      oprot.writeI32(struct.id);
+      oprot.writeFieldEnd();
+      if (struct.code != null) {
+        oprot.writeFieldBegin(CODE_FIELD_DESC);
+        oprot.writeString(struct.code);
+        oprot.writeFieldEnd();
+      }
+      if (struct.isSetOrgStructureId()) {
+        oprot.writeFieldBegin(ORG_STRUCTURE_ID_FIELD_DESC);
+        oprot.writeI32(struct.orgStructureId);
+        oprot.writeFieldEnd();
+      }
+      if (struct.lastName != null) {
+        if (struct.isSetLastName()) {
+          oprot.writeFieldBegin(LAST_NAME_FIELD_DESC);
+          oprot.writeString(struct.lastName);
+          oprot.writeFieldEnd();
         }
-
-        boolean this_present_lastName = true && this.isSetLastName();
-        boolean that_present_lastName = true && that.isSetLastName();
-        if (this_present_lastName || that_present_lastName) {
-            if (!(this_present_lastName && that_present_lastName))
-                return false;
-            if (!this.lastName.equals(that.lastName))
-                return false;
+      }
+      if (struct.firstName != null) {
+        if (struct.isSetFirstName()) {
+          oprot.writeFieldBegin(FIRST_NAME_FIELD_DESC);
+          oprot.writeString(struct.firstName);
+          oprot.writeFieldEnd();
         }
-
-        boolean this_present_firstName = true && this.isSetFirstName();
-        boolean that_present_firstName = true && that.isSetFirstName();
-        if (this_present_firstName || that_present_firstName) {
-            if (!(this_present_firstName && that_present_firstName))
-                return false;
-            if (!this.firstName.equals(that.firstName))
-                return false;
+      }
+      if (struct.patrName != null) {
+        if (struct.isSetPatrName()) {
+          oprot.writeFieldBegin(PATR_NAME_FIELD_DESC);
+          oprot.writeString(struct.patrName);
+          oprot.writeFieldEnd();
         }
-
-        boolean this_present_patrName = true && this.isSetPatrName();
-        boolean that_present_patrName = true && that.isSetPatrName();
-        if (this_present_patrName || that_present_patrName) {
-            if (!(this_present_patrName && that_present_patrName))
-                return false;
-            if (!this.patrName.equals(that.patrName))
-                return false;
+      }
+      if (struct.office != null) {
+        if (struct.isSetOffice()) {
+          oprot.writeFieldBegin(OFFICE_FIELD_DESC);
+          oprot.writeString(struct.office);
+          oprot.writeFieldEnd();
         }
-
-        boolean this_present_office = true && this.isSetOffice();
-        boolean that_present_office = true && that.isSetOffice();
-        if (this_present_office || that_present_office) {
-            if (!(this_present_office && that_present_office))
-                return false;
-            if (!this.office.equals(that.office))
-                return false;
+      }
+      if (struct.speciality != null) {
+        if (struct.isSetSpeciality()) {
+          oprot.writeFieldBegin(SPECIALITY_FIELD_DESC);
+          oprot.writeString(struct.speciality);
+          oprot.writeFieldEnd();
         }
-
-        boolean this_present_speciality = true && this.isSetSpeciality();
-        boolean that_present_speciality = true && that.isSetSpeciality();
-        if (this_present_speciality || that_present_speciality) {
-            if (!(this_present_speciality && that_present_speciality))
-                return false;
-            if (!this.speciality.equals(that.speciality))
-                return false;
+      }
+      if (struct.specialityOKSOCode != null) {
+        if (struct.isSetSpecialityOKSOCode()) {
+          oprot.writeFieldBegin(SPECIALITY_OKSOCODE_FIELD_DESC);
+          oprot.writeString(struct.specialityOKSOCode);
+          oprot.writeFieldEnd();
         }
-
-        boolean this_present_specialityOKSOCode = true && this.isSetSpecialityOKSOCode();
-        boolean that_present_specialityOKSOCode = true && that.isSetSpecialityOKSOCode();
-        if (this_present_specialityOKSOCode || that_present_specialityOKSOCode) {
-            if (!(this_present_specialityOKSOCode && that_present_specialityOKSOCode))
-                return false;
-            if (!this.specialityOKSOCode.equals(that.specialityOKSOCode))
-                return false;
+      }
+      if (struct.specialityRegionalCode != null) {
+        if (struct.isSetSpecialityRegionalCode()) {
+          oprot.writeFieldBegin(SPECIALITY_REGIONAL_CODE_FIELD_DESC);
+          oprot.writeString(struct.specialityRegionalCode);
+          oprot.writeFieldEnd();
         }
-
-        boolean this_present_specialityRegionalCode = true && this.isSetSpecialityRegionalCode();
-        boolean that_present_specialityRegionalCode = true && that.isSetSpecialityRegionalCode();
-        if (this_present_specialityRegionalCode || that_present_specialityRegionalCode) {
-            if (!(this_present_specialityRegionalCode && that_present_specialityRegionalCode))
-                return false;
-            if (!this.specialityRegionalCode.equals(that.specialityRegionalCode))
-                return false;
+      }
+      if (struct.post != null) {
+        if (struct.isSetPost()) {
+          oprot.writeFieldBegin(POST_FIELD_DESC);
+          oprot.writeString(struct.post);
+          oprot.writeFieldEnd();
         }
-
-        boolean this_present_post = true && this.isSetPost();
-        boolean that_present_post = true && that.isSetPost();
-        if (this_present_post || that_present_post) {
-            if (!(this_present_post && that_present_post))
-                return false;
-            if (!this.post.equals(that.post))
-                return false;
+      }
+      if (struct.SexFilter != null) {
+        if (struct.isSetSexFilter()) {
+          oprot.writeFieldBegin(SEX_FILTER_FIELD_DESC);
+          oprot.writeString(struct.SexFilter);
+          oprot.writeFieldEnd();
         }
+      }
+      oprot.writeFieldStop();
+      oprot.writeStructEnd();
+    }
 
-        boolean this_present_SexFilter = true && this.isSetSexFilter();
-        boolean that_present_SexFilter = true && that.isSetSexFilter();
-        if (this_present_SexFilter || that_present_SexFilter) {
-            if (!(this_present_SexFilter && that_present_SexFilter))
-                return false;
-            if (!this.SexFilter.equals(that.SexFilter))
-                return false;
-        }
+  }
 
-        return true;
+  private static class PersonTupleSchemeFactory implements SchemeFactory {
+    public PersonTupleScheme getScheme() {
+      return new PersonTupleScheme();
+    }
+  }
+
+  private static class PersonTupleScheme extends TupleScheme<Person> {
+
+    @Override
+    public void write(org.apache.thrift.protocol.TProtocol prot, Person struct) throws org.apache.thrift.TException {
+      TTupleProtocol oprot = (TTupleProtocol) prot;
+      oprot.writeI32(struct.id);
+      oprot.writeString(struct.code);
+      BitSet optionals = new BitSet();
+      if (struct.isSetOrgStructureId()) {
+        optionals.set(0);
+      }
+      if (struct.isSetLastName()) {
+        optionals.set(1);
+      }
+      if (struct.isSetFirstName()) {
+        optionals.set(2);
+      }
+      if (struct.isSetPatrName()) {
+        optionals.set(3);
+      }
+      if (struct.isSetOffice()) {
+        optionals.set(4);
+      }
+      if (struct.isSetSpeciality()) {
+        optionals.set(5);
+      }
+      if (struct.isSetSpecialityOKSOCode()) {
+        optionals.set(6);
+      }
+      if (struct.isSetSpecialityRegionalCode()) {
+        optionals.set(7);
+      }
+      if (struct.isSetPost()) {
+        optionals.set(8);
+      }
+      if (struct.isSetSexFilter()) {
+        optionals.set(9);
+      }
+      oprot.writeBitSet(optionals, 10);
+      if (struct.isSetOrgStructureId()) {
+        oprot.writeI32(struct.orgStructureId);
+      }
+      if (struct.isSetLastName()) {
+        oprot.writeString(struct.lastName);
+      }
+      if (struct.isSetFirstName()) {
+        oprot.writeString(struct.firstName);
+      }
+      if (struct.isSetPatrName()) {
+        oprot.writeString(struct.patrName);
+      }
+      if (struct.isSetOffice()) {
+        oprot.writeString(struct.office);
+      }
+      if (struct.isSetSpeciality()) {
+        oprot.writeString(struct.speciality);
+      }
+      if (struct.isSetSpecialityOKSOCode()) {
+        oprot.writeString(struct.specialityOKSOCode);
+      }
+      if (struct.isSetSpecialityRegionalCode()) {
+        oprot.writeString(struct.specialityRegionalCode);
+      }
+      if (struct.isSetPost()) {
+        oprot.writeString(struct.post);
+      }
+      if (struct.isSetSexFilter()) {
+        oprot.writeString(struct.SexFilter);
+      }
     }
 
     @Override
-    public int hashCode() {
-        return 0;
+    public void read(org.apache.thrift.protocol.TProtocol prot, Person struct) throws org.apache.thrift.TException {
+      TTupleProtocol iprot = (TTupleProtocol) prot;
+      struct.id = iprot.readI32();
+      struct.setIdIsSet(true);
+      struct.code = iprot.readString();
+      struct.setCodeIsSet(true);
+      BitSet incoming = iprot.readBitSet(10);
+      if (incoming.get(0)) {
+        struct.orgStructureId = iprot.readI32();
+        struct.setOrgStructureIdIsSet(true);
+      }
+      if (incoming.get(1)) {
+        struct.lastName = iprot.readString();
+        struct.setLastNameIsSet(true);
+      }
+      if (incoming.get(2)) {
+        struct.firstName = iprot.readString();
+        struct.setFirstNameIsSet(true);
+      }
+      if (incoming.get(3)) {
+        struct.patrName = iprot.readString();
+        struct.setPatrNameIsSet(true);
+      }
+      if (incoming.get(4)) {
+        struct.office = iprot.readString();
+        struct.setOfficeIsSet(true);
+      }
+      if (incoming.get(5)) {
+        struct.speciality = iprot.readString();
+        struct.setSpecialityIsSet(true);
+      }
+      if (incoming.get(6)) {
+        struct.specialityOKSOCode = iprot.readString();
+        struct.setSpecialityOKSOCodeIsSet(true);
+      }
+      if (incoming.get(7)) {
+        struct.specialityRegionalCode = iprot.readString();
+        struct.setSpecialityRegionalCodeIsSet(true);
+      }
+      if (incoming.get(8)) {
+        struct.post = iprot.readString();
+        struct.setPostIsSet(true);
+      }
+      if (incoming.get(9)) {
+        struct.SexFilter = iprot.readString();
+        struct.setSexFilterIsSet(true);
+      }
     }
-
-    public int compareTo(Person other) {
-        if (!getClass().equals(other.getClass())) {
-            return getClass().getName().compareTo(other.getClass().getName());
-        }
-
-        int lastComparison = 0;
-        Person typedOther = (Person) other;
-
-        lastComparison = Boolean.valueOf(isSetId()).compareTo(typedOther.isSetId());
-        if (lastComparison != 0) {
-            return lastComparison;
-        }
-        if (isSetId()) {
-            lastComparison = org.apache.thrift.TBaseHelper.compareTo(this.id, typedOther.id);
-            if (lastComparison != 0) {
-                return lastComparison;
-            }
-        }
-        lastComparison = Boolean.valueOf(isSetCode()).compareTo(typedOther.isSetCode());
-        if (lastComparison != 0) {
-            return lastComparison;
-        }
-        if (isSetCode()) {
-            lastComparison = org.apache.thrift.TBaseHelper.compareTo(this.code, typedOther.code);
-            if (lastComparison != 0) {
-                return lastComparison;
-            }
-        }
-        lastComparison = Boolean.valueOf(isSetOrgStructureId()).compareTo(typedOther.isSetOrgStructureId());
-        if (lastComparison != 0) {
-            return lastComparison;
-        }
-        if (isSetOrgStructureId()) {
-            lastComparison = org.apache.thrift.TBaseHelper.compareTo(this.orgStructureId, typedOther.orgStructureId);
-            if (lastComparison != 0) {
-                return lastComparison;
-            }
-        }
-        lastComparison = Boolean.valueOf(isSetLastName()).compareTo(typedOther.isSetLastName());
-        if (lastComparison != 0) {
-            return lastComparison;
-        }
-        if (isSetLastName()) {
-            lastComparison = org.apache.thrift.TBaseHelper.compareTo(this.lastName, typedOther.lastName);
-            if (lastComparison != 0) {
-                return lastComparison;
-            }
-        }
-        lastComparison = Boolean.valueOf(isSetFirstName()).compareTo(typedOther.isSetFirstName());
-        if (lastComparison != 0) {
-            return lastComparison;
-        }
-        if (isSetFirstName()) {
-            lastComparison = org.apache.thrift.TBaseHelper.compareTo(this.firstName, typedOther.firstName);
-            if (lastComparison != 0) {
-                return lastComparison;
-            }
-        }
-        lastComparison = Boolean.valueOf(isSetPatrName()).compareTo(typedOther.isSetPatrName());
-        if (lastComparison != 0) {
-            return lastComparison;
-        }
-        if (isSetPatrName()) {
-            lastComparison = org.apache.thrift.TBaseHelper.compareTo(this.patrName, typedOther.patrName);
-            if (lastComparison != 0) {
-                return lastComparison;
-            }
-        }
-        lastComparison = Boolean.valueOf(isSetOffice()).compareTo(typedOther.isSetOffice());
-        if (lastComparison != 0) {
-            return lastComparison;
-        }
-        if (isSetOffice()) {
-            lastComparison = org.apache.thrift.TBaseHelper.compareTo(this.office, typedOther.office);
-            if (lastComparison != 0) {
-                return lastComparison;
-            }
-        }
-        lastComparison = Boolean.valueOf(isSetSpeciality()).compareTo(typedOther.isSetSpeciality());
-        if (lastComparison != 0) {
-            return lastComparison;
-        }
-        if (isSetSpeciality()) {
-            lastComparison = org.apache.thrift.TBaseHelper.compareTo(this.speciality, typedOther.speciality);
-            if (lastComparison != 0) {
-                return lastComparison;
-            }
-        }
-        lastComparison = Boolean.valueOf(isSetSpecialityOKSOCode()).compareTo(typedOther.isSetSpecialityOKSOCode());
-        if (lastComparison != 0) {
-            return lastComparison;
-        }
-        if (isSetSpecialityOKSOCode()) {
-            lastComparison = org.apache.thrift.TBaseHelper.compareTo(this.specialityOKSOCode, typedOther.specialityOKSOCode);
-            if (lastComparison != 0) {
-                return lastComparison;
-            }
-        }
-        lastComparison = Boolean.valueOf(isSetSpecialityRegionalCode()).compareTo(typedOther.isSetSpecialityRegionalCode());
-        if (lastComparison != 0) {
-            return lastComparison;
-        }
-        if (isSetSpecialityRegionalCode()) {
-            lastComparison = org.apache.thrift.TBaseHelper.compareTo(this.specialityRegionalCode, typedOther.specialityRegionalCode);
-            if (lastComparison != 0) {
-                return lastComparison;
-            }
-        }
-        lastComparison = Boolean.valueOf(isSetPost()).compareTo(typedOther.isSetPost());
-        if (lastComparison != 0) {
-            return lastComparison;
-        }
-        if (isSetPost()) {
-            lastComparison = org.apache.thrift.TBaseHelper.compareTo(this.post, typedOther.post);
-            if (lastComparison != 0) {
-                return lastComparison;
-            }
-        }
-        lastComparison = Boolean.valueOf(isSetSexFilter()).compareTo(typedOther.isSetSexFilter());
-        if (lastComparison != 0) {
-            return lastComparison;
-        }
-        if (isSetSexFilter()) {
-            lastComparison = org.apache.thrift.TBaseHelper.compareTo(this.SexFilter, typedOther.SexFilter);
-            if (lastComparison != 0) {
-                return lastComparison;
-            }
-        }
-        return 0;
-    }
-
-    public _Fields fieldForId(int fieldId) {
-        return _Fields.findByThriftId(fieldId);
-    }
-
-    public void read(org.apache.thrift.protocol.TProtocol iprot) throws org.apache.thrift.TException {
-        schemes.get(iprot.getScheme()).getScheme().read(iprot, this);
-    }
-
-    public void write(org.apache.thrift.protocol.TProtocol oprot) throws org.apache.thrift.TException {
-        schemes.get(oprot.getScheme()).getScheme().write(oprot, this);
-    }
-
-    @Override
-    public String toString() {
-        StringBuilder sb = new StringBuilder("Person(");
-        boolean first = true;
-
-        sb.append("id:");
-        sb.append(this.id);
-        first = false;
-        if (!first) sb.append(", ");
-        sb.append("code:");
-        if (this.code == null) {
-            sb.append("null");
-        } else {
-            sb.append(this.code);
-        }
-        first = false;
-        if (isSetOrgStructureId()) {
-            if (!first) sb.append(", ");
-            sb.append("orgStructureId:");
-            sb.append(this.orgStructureId);
-            first = false;
-        }
-        if (isSetLastName()) {
-            if (!first) sb.append(", ");
-            sb.append("lastName:");
-            if (this.lastName == null) {
-                sb.append("null");
-            } else {
-                sb.append(this.lastName);
-            }
-            first = false;
-        }
-        if (isSetFirstName()) {
-            if (!first) sb.append(", ");
-            sb.append("firstName:");
-            if (this.firstName == null) {
-                sb.append("null");
-            } else {
-                sb.append(this.firstName);
-            }
-            first = false;
-        }
-        if (isSetPatrName()) {
-            if (!first) sb.append(", ");
-            sb.append("patrName:");
-            if (this.patrName == null) {
-                sb.append("null");
-            } else {
-                sb.append(this.patrName);
-            }
-            first = false;
-        }
-        if (isSetOffice()) {
-            if (!first) sb.append(", ");
-            sb.append("office:");
-            if (this.office == null) {
-                sb.append("null");
-            } else {
-                sb.append(this.office);
-            }
-            first = false;
-        }
-        if (isSetSpeciality()) {
-            if (!first) sb.append(", ");
-            sb.append("speciality:");
-            if (this.speciality == null) {
-                sb.append("null");
-            } else {
-                sb.append(this.speciality);
-            }
-            first = false;
-        }
-        if (isSetSpecialityOKSOCode()) {
-            if (!first) sb.append(", ");
-            sb.append("specialityOKSOCode:");
-            if (this.specialityOKSOCode == null) {
-                sb.append("null");
-            } else {
-                sb.append(this.specialityOKSOCode);
-            }
-            first = false;
-        }
-        if (isSetSpecialityRegionalCode()) {
-            if (!first) sb.append(", ");
-            sb.append("specialityRegionalCode:");
-            if (this.specialityRegionalCode == null) {
-                sb.append("null");
-            } else {
-                sb.append(this.specialityRegionalCode);
-            }
-            first = false;
-        }
-        if (isSetPost()) {
-            if (!first) sb.append(", ");
-            sb.append("post:");
-            if (this.post == null) {
-                sb.append("null");
-            } else {
-                sb.append(this.post);
-            }
-            first = false;
-        }
-        if (isSetSexFilter()) {
-            if (!first) sb.append(", ");
-            sb.append("SexFilter:");
-            if (this.SexFilter == null) {
-                sb.append("null");
-            } else {
-                sb.append(this.SexFilter);
-            }
-            first = false;
-        }
-        sb.append(")");
-        return sb.toString();
-    }
-
-    public void validate() throws org.apache.thrift.TException {
-        // check for required fields
-        // alas, we cannot check 'id' because it's a primitive and you chose the non-beans generator.
-        if (code == null) {
-            throw new org.apache.thrift.protocol.TProtocolException("Required field 'code' was not present! Struct: " + toString());
-        }
-        // check for sub-struct validity
-    }
-
-    private void writeObject(java.io.ObjectOutputStream out) throws java.io.IOException {
-        try {
-            write(new org.apache.thrift.protocol.TCompactProtocol(new org.apache.thrift.transport.TIOStreamTransport(out)));
-        } catch (org.apache.thrift.TException te) {
-            throw new java.io.IOException(te);
-        }
-    }
-
-    private void readObject(java.io.ObjectInputStream in) throws java.io.IOException, ClassNotFoundException {
-        try {
-            // it doesn't seem like you should have to do this, but java serialization is wacky, and doesn't call the default constructor.
-            __isset_bitfield = 0;
-            read(new org.apache.thrift.protocol.TCompactProtocol(new org.apache.thrift.transport.TIOStreamTransport(in)));
-        } catch (org.apache.thrift.TException te) {
-            throw new java.io.IOException(te);
-        }
-    }
-
-    private static class PersonStandardSchemeFactory implements SchemeFactory {
-        public PersonStandardScheme getScheme() {
-            return new PersonStandardScheme();
-        }
-    }
-
-    private static class PersonStandardScheme extends StandardScheme<Person> {
-
-        public void read(org.apache.thrift.protocol.TProtocol iprot, Person struct) throws org.apache.thrift.TException {
-            org.apache.thrift.protocol.TField schemeField;
-            iprot.readStructBegin();
-            while (true) {
-                schemeField = iprot.readFieldBegin();
-                if (schemeField.type == org.apache.thrift.protocol.TType.STOP) {
-                    break;
-                }
-                switch (schemeField.id) {
-                    case 1: // ID
-                        if (schemeField.type == org.apache.thrift.protocol.TType.I32) {
-                            struct.id = iprot.readI32();
-                            struct.setIdIsSet(true);
-                        } else {
-                            org.apache.thrift.protocol.TProtocolUtil.skip(iprot, schemeField.type);
-                        }
-                        break;
-                    case 2: // CODE
-                        if (schemeField.type == org.apache.thrift.protocol.TType.STRING) {
-                            struct.code = iprot.readString();
-                            struct.setCodeIsSet(true);
-                        } else {
-                            org.apache.thrift.protocol.TProtocolUtil.skip(iprot, schemeField.type);
-                        }
-                        break;
-                    case 3: // ORG_STRUCTURE_ID
-                        if (schemeField.type == org.apache.thrift.protocol.TType.I32) {
-                            struct.orgStructureId = iprot.readI32();
-                            struct.setOrgStructureIdIsSet(true);
-                        } else {
-                            org.apache.thrift.protocol.TProtocolUtil.skip(iprot, schemeField.type);
-                        }
-                        break;
-                    case 4: // LAST_NAME
-                        if (schemeField.type == org.apache.thrift.protocol.TType.STRING) {
-                            struct.lastName = iprot.readString();
-                            struct.setLastNameIsSet(true);
-                        } else {
-                            org.apache.thrift.protocol.TProtocolUtil.skip(iprot, schemeField.type);
-                        }
-                        break;
-                    case 5: // FIRST_NAME
-                        if (schemeField.type == org.apache.thrift.protocol.TType.STRING) {
-                            struct.firstName = iprot.readString();
-                            struct.setFirstNameIsSet(true);
-                        } else {
-                            org.apache.thrift.protocol.TProtocolUtil.skip(iprot, schemeField.type);
-                        }
-                        break;
-                    case 6: // PATR_NAME
-                        if (schemeField.type == org.apache.thrift.protocol.TType.STRING) {
-                            struct.patrName = iprot.readString();
-                            struct.setPatrNameIsSet(true);
-                        } else {
-                            org.apache.thrift.protocol.TProtocolUtil.skip(iprot, schemeField.type);
-                        }
-                        break;
-                    case 7: // OFFICE
-                        if (schemeField.type == org.apache.thrift.protocol.TType.STRING) {
-                            struct.office = iprot.readString();
-                            struct.setOfficeIsSet(true);
-                        } else {
-                            org.apache.thrift.protocol.TProtocolUtil.skip(iprot, schemeField.type);
-                        }
-                        break;
-                    case 8: // SPECIALITY
-                        if (schemeField.type == org.apache.thrift.protocol.TType.STRING) {
-                            struct.speciality = iprot.readString();
-                            struct.setSpecialityIsSet(true);
-                        } else {
-                            org.apache.thrift.protocol.TProtocolUtil.skip(iprot, schemeField.type);
-                        }
-                        break;
-                    case 9: // SPECIALITY_OKSOCODE
-                        if (schemeField.type == org.apache.thrift.protocol.TType.STRING) {
-                            struct.specialityOKSOCode = iprot.readString();
-                            struct.setSpecialityOKSOCodeIsSet(true);
-                        } else {
-                            org.apache.thrift.protocol.TProtocolUtil.skip(iprot, schemeField.type);
-                        }
-                        break;
-                    case 10: // SPECIALITY_REGIONAL_CODE
-                        if (schemeField.type == org.apache.thrift.protocol.TType.STRING) {
-                            struct.specialityRegionalCode = iprot.readString();
-                            struct.setSpecialityRegionalCodeIsSet(true);
-                        } else {
-                            org.apache.thrift.protocol.TProtocolUtil.skip(iprot, schemeField.type);
-                        }
-                        break;
-                    case 11: // POST
-                        if (schemeField.type == org.apache.thrift.protocol.TType.STRING) {
-                            struct.post = iprot.readString();
-                            struct.setPostIsSet(true);
-                        } else {
-                            org.apache.thrift.protocol.TProtocolUtil.skip(iprot, schemeField.type);
-                        }
-                        break;
-                    case 12: // SEX_FILTER
-                        if (schemeField.type == org.apache.thrift.protocol.TType.STRING) {
-                            struct.SexFilter = iprot.readString();
-                            struct.setSexFilterIsSet(true);
-                        } else {
-                            org.apache.thrift.protocol.TProtocolUtil.skip(iprot, schemeField.type);
-                        }
-                        break;
-                    default:
-                        org.apache.thrift.protocol.TProtocolUtil.skip(iprot, schemeField.type);
-                }
-                iprot.readFieldEnd();
-            }
-            iprot.readStructEnd();
-
-            // check for required fields of primitive type, which can't be checked in the validate method
-            if (!struct.isSetId()) {
-                throw new org.apache.thrift.protocol.TProtocolException("Required field 'id' was not found in serialized data! Struct: " + toString());
-            }
-            struct.validate();
-        }
-
-        public void write(org.apache.thrift.protocol.TProtocol oprot, Person struct) throws org.apache.thrift.TException {
-            struct.validate();
-
-            oprot.writeStructBegin(STRUCT_DESC);
-            oprot.writeFieldBegin(ID_FIELD_DESC);
-            oprot.writeI32(struct.id);
-            oprot.writeFieldEnd();
-            if (struct.code != null) {
-                oprot.writeFieldBegin(CODE_FIELD_DESC);
-                oprot.writeString(struct.code);
-                oprot.writeFieldEnd();
-            }
-            if (struct.isSetOrgStructureId()) {
-                oprot.writeFieldBegin(ORG_STRUCTURE_ID_FIELD_DESC);
-                oprot.writeI32(struct.orgStructureId);
-                oprot.writeFieldEnd();
-            }
-            if (struct.lastName != null) {
-                if (struct.isSetLastName()) {
-                    oprot.writeFieldBegin(LAST_NAME_FIELD_DESC);
-                    oprot.writeString(struct.lastName);
-                    oprot.writeFieldEnd();
-                }
-            }
-            if (struct.firstName != null) {
-                if (struct.isSetFirstName()) {
-                    oprot.writeFieldBegin(FIRST_NAME_FIELD_DESC);
-                    oprot.writeString(struct.firstName);
-                    oprot.writeFieldEnd();
-                }
-            }
-            if (struct.patrName != null) {
-                if (struct.isSetPatrName()) {
-                    oprot.writeFieldBegin(PATR_NAME_FIELD_DESC);
-                    oprot.writeString(struct.patrName);
-                    oprot.writeFieldEnd();
-                }
-            }
-            if (struct.office != null) {
-                if (struct.isSetOffice()) {
-                    oprot.writeFieldBegin(OFFICE_FIELD_DESC);
-                    oprot.writeString(struct.office);
-                    oprot.writeFieldEnd();
-                }
-            }
-            if (struct.speciality != null) {
-                if (struct.isSetSpeciality()) {
-                    oprot.writeFieldBegin(SPECIALITY_FIELD_DESC);
-                    oprot.writeString(struct.speciality);
-                    oprot.writeFieldEnd();
-                }
-            }
-            if (struct.specialityOKSOCode != null) {
-                if (struct.isSetSpecialityOKSOCode()) {
-                    oprot.writeFieldBegin(SPECIALITY_OKSOCODE_FIELD_DESC);
-                    oprot.writeString(struct.specialityOKSOCode);
-                    oprot.writeFieldEnd();
-                }
-            }
-            if (struct.specialityRegionalCode != null) {
-                if (struct.isSetSpecialityRegionalCode()) {
-                    oprot.writeFieldBegin(SPECIALITY_REGIONAL_CODE_FIELD_DESC);
-                    oprot.writeString(struct.specialityRegionalCode);
-                    oprot.writeFieldEnd();
-                }
-            }
-            if (struct.post != null) {
-                if (struct.isSetPost()) {
-                    oprot.writeFieldBegin(POST_FIELD_DESC);
-                    oprot.writeString(struct.post);
-                    oprot.writeFieldEnd();
-                }
-            }
-            if (struct.SexFilter != null) {
-                if (struct.isSetSexFilter()) {
-                    oprot.writeFieldBegin(SEX_FILTER_FIELD_DESC);
-                    oprot.writeString(struct.SexFilter);
-                    oprot.writeFieldEnd();
-                }
-            }
-            oprot.writeFieldStop();
-            oprot.writeStructEnd();
-        }
-
-    }
-
-    private static class PersonTupleSchemeFactory implements SchemeFactory {
-        public PersonTupleScheme getScheme() {
-            return new PersonTupleScheme();
-        }
-    }
-
-    private static class PersonTupleScheme extends TupleScheme<Person> {
-
-        @Override
-        public void write(org.apache.thrift.protocol.TProtocol prot, Person struct) throws org.apache.thrift.TException {
-            TTupleProtocol oprot = (TTupleProtocol) prot;
-            oprot.writeI32(struct.id);
-            oprot.writeString(struct.code);
-            BitSet optionals = new BitSet();
-            if (struct.isSetOrgStructureId()) {
-                optionals.set(0);
-            }
-            if (struct.isSetLastName()) {
-                optionals.set(1);
-            }
-            if (struct.isSetFirstName()) {
-                optionals.set(2);
-            }
-            if (struct.isSetPatrName()) {
-                optionals.set(3);
-            }
-            if (struct.isSetOffice()) {
-                optionals.set(4);
-            }
-            if (struct.isSetSpeciality()) {
-                optionals.set(5);
-            }
-            if (struct.isSetSpecialityOKSOCode()) {
-                optionals.set(6);
-            }
-            if (struct.isSetSpecialityRegionalCode()) {
-                optionals.set(7);
-            }
-            if (struct.isSetPost()) {
-                optionals.set(8);
-            }
-            if (struct.isSetSexFilter()) {
-                optionals.set(9);
-            }
-            oprot.writeBitSet(optionals, 10);
-            if (struct.isSetOrgStructureId()) {
-                oprot.writeI32(struct.orgStructureId);
-            }
-            if (struct.isSetLastName()) {
-                oprot.writeString(struct.lastName);
-            }
-            if (struct.isSetFirstName()) {
-                oprot.writeString(struct.firstName);
-            }
-            if (struct.isSetPatrName()) {
-                oprot.writeString(struct.patrName);
-            }
-            if (struct.isSetOffice()) {
-                oprot.writeString(struct.office);
-            }
-            if (struct.isSetSpeciality()) {
-                oprot.writeString(struct.speciality);
-            }
-            if (struct.isSetSpecialityOKSOCode()) {
-                oprot.writeString(struct.specialityOKSOCode);
-            }
-            if (struct.isSetSpecialityRegionalCode()) {
-                oprot.writeString(struct.specialityRegionalCode);
-            }
-            if (struct.isSetPost()) {
-                oprot.writeString(struct.post);
-            }
-            if (struct.isSetSexFilter()) {
-                oprot.writeString(struct.SexFilter);
-            }
-        }
-
-        @Override
-        public void read(org.apache.thrift.protocol.TProtocol prot, Person struct) throws org.apache.thrift.TException {
-            TTupleProtocol iprot = (TTupleProtocol) prot;
-            struct.id = iprot.readI32();
-            struct.setIdIsSet(true);
-            struct.code = iprot.readString();
-            struct.setCodeIsSet(true);
-            BitSet incoming = iprot.readBitSet(10);
-            if (incoming.get(0)) {
-                struct.orgStructureId = iprot.readI32();
-                struct.setOrgStructureIdIsSet(true);
-            }
-            if (incoming.get(1)) {
-                struct.lastName = iprot.readString();
-                struct.setLastNameIsSet(true);
-            }
-            if (incoming.get(2)) {
-                struct.firstName = iprot.readString();
-                struct.setFirstNameIsSet(true);
-            }
-            if (incoming.get(3)) {
-                struct.patrName = iprot.readString();
-                struct.setPatrNameIsSet(true);
-            }
-            if (incoming.get(4)) {
-                struct.office = iprot.readString();
-                struct.setOfficeIsSet(true);
-            }
-            if (incoming.get(5)) {
-                struct.speciality = iprot.readString();
-                struct.setSpecialityIsSet(true);
-            }
-            if (incoming.get(6)) {
-                struct.specialityOKSOCode = iprot.readString();
-                struct.setSpecialityOKSOCodeIsSet(true);
-            }
-            if (incoming.get(7)) {
-                struct.specialityRegionalCode = iprot.readString();
-                struct.setSpecialityRegionalCodeIsSet(true);
-            }
-            if (incoming.get(8)) {
-                struct.post = iprot.readString();
-                struct.setPostIsSet(true);
-            }
-            if (incoming.get(9)) {
-                struct.SexFilter = iprot.readString();
-                struct.setSexFilterIsSet(true);
-            }
-        }
-    }
+  }
 
 }
 

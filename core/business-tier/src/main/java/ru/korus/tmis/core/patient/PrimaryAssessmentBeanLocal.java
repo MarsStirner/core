@@ -5,6 +5,7 @@ import ru.korus.tmis.core.data.CommonData;
 import ru.korus.tmis.core.data.ConsultationRequestData;
 import ru.korus.tmis.core.data.JSONCommonData;
 import ru.korus.tmis.core.entity.model.ActionPropertyType;
+import ru.korus.tmis.core.entity.model.Patient;
 import ru.korus.tmis.core.exception.CoreException;
 import ru.korus.tmis.util.StringId;
 import scala.Function2;
@@ -23,7 +24,7 @@ public interface PrimaryAssessmentBeanLocal {
     JSONCommonData modifyPrimaryAssessmentById(int assessmentId, JSONCommonData assessment, String title,AuthData userData, Function2<JSONCommonData, Boolean, JSONCommonData> preProcessing, Function2<JSONCommonData, Boolean, JSONCommonData> postProcessing)
             throws CoreException;
 
-    JSONCommonData getEmptyStructure(int actionTypeId, String title, List<String> listForConverter, List<StringId> listForSummary, AuthData userData, Function2<JSONCommonData, Boolean, JSONCommonData> postProcessing)
+    JSONCommonData getEmptyStructure(int actionTypeId, String title, List<String> listForConverter, List<StringId> listForSummary, AuthData userData, Function2<JSONCommonData, Boolean, JSONCommonData> postProcessing, Patient patient)
             throws CoreException;
 
     void deletePreviousAssessmentById(int assessmentId, AuthData userData)
@@ -38,6 +39,9 @@ public interface PrimaryAssessmentBeanLocal {
     JSONCommonData insertAssessmentAsConsultation(int eventId, int actionTypeId, int executorId, Date bDate, Date eDate, boolean urgent, Object request, AuthData userData)
             throws CoreException;
 
-    JSONCommonData createAssessmentsForEventIdFromCommonData(int eventId, CommonData assessments, String title, Object request, AuthData userData)
+    JSONCommonData createAssessmentsForEventIdFromCommonData(int eventId, CommonData assessments, String title, Object request, AuthData userData, Function2<JSONCommonData, Boolean, JSONCommonData>  postProcessingForDiagnosis)
+            throws CoreException;
+
+    JSONCommonData modifyAssessmentsForEventIdFromCommonData(int eventId, CommonData assessments, String title, Object request, AuthData userData, Function2<JSONCommonData, Boolean, JSONCommonData>  postProcessingForDiagnosis)
             throws CoreException;
 }

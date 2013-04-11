@@ -189,9 +189,20 @@ public class ActionType implements Serializable {
     private boolean isRequiredCoordination;
 
     @Basic(optional = false)
+    @Column(name = "isRequiredTissue")
+    private boolean isRequiredTissue;
+
+    @Basic(optional = false)
     @Column(name = "mnem")
     private String mnemonic = "";
 
+    @ManyToOne
+    @JoinColumn(name = "testTubeType_id")
+    private RbTestTubeType testTubeType;
+
+    @ManyToOne
+    @JoinColumn(name = "jobType_id")
+    private RbJobType jobType;
 
     ////////////////////////////////////////////////////////////////////////////
     // Custom mappings
@@ -533,6 +544,14 @@ public class ActionType implements Serializable {
         this.isRequiredCoordination = isRequiredCoordination;
     }
 
+    public boolean getIsRequiredTissue() {
+        return isRequiredTissue;
+    }
+
+    public void setIsRequiredTissue(boolean isRequiredTissue) {
+        this.isRequiredTissue = isRequiredTissue;
+    }
+
     public Set<RbTissueType> getTissueTypes() {
         return tissueTypes;
     }
@@ -547,6 +566,22 @@ public class ActionType implements Serializable {
 
     public void setMnemonic(String mnemonic) {
         this.mnemonic = mnemonic;
+    }
+
+    public RbTestTubeType getTestTubeType() {
+        return testTubeType;
+    }
+
+    public void setTestTubeType(RbTestTubeType testTubeType) {
+        this.testTubeType = testTubeType;
+    }
+
+    public RbJobType getJobType() {
+        return jobType;
+    }
+
+    public void setJobType(RbJobType jobType) {
+        this.jobType = jobType;
     }
 
     @Override

@@ -6,13 +6,28 @@ package ru.korus.tmis.communication;
  * Company Korus Consulting IT<br>
  */
 public enum QuotingType {
-    FROM_REGISTRY(1),//из регистратуры
-    SECOND_VISIT(2),//повторная запись врачем
-    BETWEEN_CABINET(3),//меж-кабинетная запись
-    FROM_OTHER_LPU(4),//другое ЛПУ
-    FROM_PORTAL(5);//с портала
+    /**
+     * из регистратуры
+     */
+    FROM_REGISTRY(1),
+    /**
+     * повторная запись врачем
+     */
+    SECOND_VISIT(2),
+    /**
+     * меж-кабинетная запись
+     */
+    BETWEEN_CABINET(3),
+    /**
+     * другое ЛПУ
+     */
+    FROM_OTHER_LPU(4),
+    /**
+     * с портала
+     */
+    FROM_PORTAL(5);
 
-    private QuotingType(int id) {
+    private QuotingType(final int id) {
         this.id = id;
     }
 

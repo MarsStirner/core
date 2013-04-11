@@ -42,8 +42,7 @@ public class FindPatientParameters implements org.apache.thrift.TBase<FindPatien
     private static final org.apache.thrift.protocol.TField SEX_FIELD_DESC = new org.apache.thrift.protocol.TField("sex", org.apache.thrift.protocol.TType.I32, (short) 5);
     private static final org.apache.thrift.protocol.TField IDENTIFIER_TYPE_FIELD_DESC = new org.apache.thrift.protocol.TField("identifierType", org.apache.thrift.protocol.TType.STRING, (short) 6);
     private static final org.apache.thrift.protocol.TField IDENTIFIER_FIELD_DESC = new org.apache.thrift.protocol.TField("identifier", org.apache.thrift.protocol.TType.STRING, (short) 7);
-    private static final org.apache.thrift.protocol.TField OMI_POLICY_SERIAL_FIELD_DESC = new org.apache.thrift.protocol.TField("omiPolicySerial", org.apache.thrift.protocol.TType.STRING, (short) 8);
-    private static final org.apache.thrift.protocol.TField OMI_POLICY_NUMBER_FIELD_DESC = new org.apache.thrift.protocol.TField("omiPolicyNumber", org.apache.thrift.protocol.TType.STRING, (short) 9);
+    private static final org.apache.thrift.protocol.TField DOCUMENT_FIELD_DESC = new org.apache.thrift.protocol.TField("document", org.apache.thrift.protocol.TType.MAP, (short) 8);
 
     private static final Map<Class<? extends IScheme>, SchemeFactory> schemes = new HashMap<Class<? extends IScheme>, SchemeFactory>();
 
@@ -52,15 +51,14 @@ public class FindPatientParameters implements org.apache.thrift.TBase<FindPatien
         schemes.put(TupleScheme.class, new FindPatientParametersTupleSchemeFactory());
     }
 
-    public String lastName; // optional
-    public String firstName; // optional
-    public String patrName; // optional
-    public long birthDate; // optional
-    public int sex; // optional
+    public String lastName; // required
+    public String firstName; // required
+    public String patrName; // required
+    public long birthDate; // required
+    public int sex; // required
     public String identifierType; // optional
     public String identifier; // optional
-    public String omiPolicySerial; // optional
-    public String omiPolicyNumber; // optional
+    public Map<String, String> document; // required
 
     /**
      * The set of fields this struct contains, along with convenience methods for finding and manipulating them.
@@ -73,8 +71,7 @@ public class FindPatientParameters implements org.apache.thrift.TBase<FindPatien
         SEX((short) 5, "sex"),
         IDENTIFIER_TYPE((short) 6, "identifierType"),
         IDENTIFIER((short) 7, "identifier"),
-        OMI_POLICY_SERIAL((short) 8, "omiPolicySerial"),
-        OMI_POLICY_NUMBER((short) 9, "omiPolicyNumber");
+        DOCUMENT((short) 8, "document");
 
         private static final Map<String, _Fields> byName = new HashMap<String, _Fields>();
 
@@ -103,10 +100,8 @@ public class FindPatientParameters implements org.apache.thrift.TBase<FindPatien
                     return IDENTIFIER_TYPE;
                 case 7: // IDENTIFIER
                     return IDENTIFIER;
-                case 8: // OMI_POLICY_SERIAL
-                    return OMI_POLICY_SERIAL;
-                case 9: // OMI_POLICY_NUMBER
-                    return OMI_POLICY_NUMBER;
+                case 8: // DOCUMENT
+                    return DOCUMENT;
                 default:
                     return null;
             }
@@ -150,34 +145,52 @@ public class FindPatientParameters implements org.apache.thrift.TBase<FindPatien
     private static final int __BIRTHDATE_ISSET_ID = 0;
     private static final int __SEX_ISSET_ID = 1;
     private byte __isset_bitfield = 0;
-    private _Fields optionals[] = {_Fields.LAST_NAME, _Fields.FIRST_NAME, _Fields.PATR_NAME, _Fields.BIRTH_DATE, _Fields.SEX, _Fields.IDENTIFIER_TYPE, _Fields.IDENTIFIER, _Fields.OMI_POLICY_SERIAL, _Fields.OMI_POLICY_NUMBER};
+    private _Fields optionals[] = {_Fields.IDENTIFIER_TYPE, _Fields.IDENTIFIER};
     public static final Map<_Fields, org.apache.thrift.meta_data.FieldMetaData> metaDataMap;
 
     static {
         Map<_Fields, org.apache.thrift.meta_data.FieldMetaData> tmpMap = new EnumMap<_Fields, org.apache.thrift.meta_data.FieldMetaData>(_Fields.class);
-        tmpMap.put(_Fields.LAST_NAME, new org.apache.thrift.meta_data.FieldMetaData("lastName", org.apache.thrift.TFieldRequirementType.OPTIONAL,
+        tmpMap.put(_Fields.LAST_NAME, new org.apache.thrift.meta_data.FieldMetaData("lastName", org.apache.thrift.TFieldRequirementType.REQUIRED,
                 new org.apache.thrift.meta_data.FieldValueMetaData(org.apache.thrift.protocol.TType.STRING)));
-        tmpMap.put(_Fields.FIRST_NAME, new org.apache.thrift.meta_data.FieldMetaData("firstName", org.apache.thrift.TFieldRequirementType.OPTIONAL,
+        tmpMap.put(_Fields.FIRST_NAME, new org.apache.thrift.meta_data.FieldMetaData("firstName", org.apache.thrift.TFieldRequirementType.REQUIRED,
                 new org.apache.thrift.meta_data.FieldValueMetaData(org.apache.thrift.protocol.TType.STRING)));
-        tmpMap.put(_Fields.PATR_NAME, new org.apache.thrift.meta_data.FieldMetaData("patrName", org.apache.thrift.TFieldRequirementType.OPTIONAL,
+        tmpMap.put(_Fields.PATR_NAME, new org.apache.thrift.meta_data.FieldMetaData("patrName", org.apache.thrift.TFieldRequirementType.REQUIRED,
                 new org.apache.thrift.meta_data.FieldValueMetaData(org.apache.thrift.protocol.TType.STRING)));
-        tmpMap.put(_Fields.BIRTH_DATE, new org.apache.thrift.meta_data.FieldMetaData("birthDate", org.apache.thrift.TFieldRequirementType.OPTIONAL,
+        tmpMap.put(_Fields.BIRTH_DATE, new org.apache.thrift.meta_data.FieldMetaData("birthDate", org.apache.thrift.TFieldRequirementType.REQUIRED,
                 new org.apache.thrift.meta_data.FieldValueMetaData(org.apache.thrift.protocol.TType.I64, "timestamp")));
-        tmpMap.put(_Fields.SEX, new org.apache.thrift.meta_data.FieldMetaData("sex", org.apache.thrift.TFieldRequirementType.OPTIONAL,
+        tmpMap.put(_Fields.SEX, new org.apache.thrift.meta_data.FieldMetaData("sex", org.apache.thrift.TFieldRequirementType.REQUIRED,
                 new org.apache.thrift.meta_data.FieldValueMetaData(org.apache.thrift.protocol.TType.I32)));
         tmpMap.put(_Fields.IDENTIFIER_TYPE, new org.apache.thrift.meta_data.FieldMetaData("identifierType", org.apache.thrift.TFieldRequirementType.OPTIONAL,
                 new org.apache.thrift.meta_data.FieldValueMetaData(org.apache.thrift.protocol.TType.STRING)));
         tmpMap.put(_Fields.IDENTIFIER, new org.apache.thrift.meta_data.FieldMetaData("identifier", org.apache.thrift.TFieldRequirementType.OPTIONAL,
                 new org.apache.thrift.meta_data.FieldValueMetaData(org.apache.thrift.protocol.TType.STRING)));
-        tmpMap.put(_Fields.OMI_POLICY_SERIAL, new org.apache.thrift.meta_data.FieldMetaData("omiPolicySerial", org.apache.thrift.TFieldRequirementType.OPTIONAL,
-                new org.apache.thrift.meta_data.FieldValueMetaData(org.apache.thrift.protocol.TType.STRING)));
-        tmpMap.put(_Fields.OMI_POLICY_NUMBER, new org.apache.thrift.meta_data.FieldMetaData("omiPolicyNumber", org.apache.thrift.TFieldRequirementType.OPTIONAL,
-                new org.apache.thrift.meta_data.FieldValueMetaData(org.apache.thrift.protocol.TType.STRING)));
+        tmpMap.put(_Fields.DOCUMENT, new org.apache.thrift.meta_data.FieldMetaData("document", org.apache.thrift.TFieldRequirementType.REQUIRED,
+                new org.apache.thrift.meta_data.MapMetaData(org.apache.thrift.protocol.TType.MAP,
+                        new org.apache.thrift.meta_data.FieldValueMetaData(org.apache.thrift.protocol.TType.STRING),
+                        new org.apache.thrift.meta_data.FieldValueMetaData(org.apache.thrift.protocol.TType.STRING))));
         metaDataMap = Collections.unmodifiableMap(tmpMap);
         org.apache.thrift.meta_data.FieldMetaData.addStructMetaDataMap(FindPatientParameters.class, metaDataMap);
     }
 
     public FindPatientParameters() {
+    }
+
+    public FindPatientParameters(
+            String lastName,
+            String firstName,
+            String patrName,
+            long birthDate,
+            int sex,
+            Map<String, String> document) {
+        this();
+        this.lastName = lastName;
+        this.firstName = firstName;
+        this.patrName = patrName;
+        this.birthDate = birthDate;
+        setBirthDateIsSet(true);
+        this.sex = sex;
+        setSexIsSet(true);
+        this.document = document;
     }
 
     /**
@@ -202,11 +215,20 @@ public class FindPatientParameters implements org.apache.thrift.TBase<FindPatien
         if (other.isSetIdentifier()) {
             this.identifier = other.identifier;
         }
-        if (other.isSetOmiPolicySerial()) {
-            this.omiPolicySerial = other.omiPolicySerial;
-        }
-        if (other.isSetOmiPolicyNumber()) {
-            this.omiPolicyNumber = other.omiPolicyNumber;
+        if (other.isSetDocument()) {
+            Map<String, String> __this__document = new HashMap<String, String>();
+            for (Map.Entry<String, String> other_element : other.document.entrySet()) {
+
+                String other_element_key = other_element.getKey();
+                String other_element_value = other_element.getValue();
+
+                String __this__document_copy_key = other_element_key;
+
+                String __this__document_copy_value = other_element_value;
+
+                __this__document.put(__this__document_copy_key, __this__document_copy_value);
+            }
+            this.document = __this__document;
         }
     }
 
@@ -225,8 +247,7 @@ public class FindPatientParameters implements org.apache.thrift.TBase<FindPatien
         this.sex = 0;
         this.identifierType = null;
         this.identifier = null;
-        this.omiPolicySerial = null;
-        this.omiPolicyNumber = null;
+        this.document = null;
     }
 
     public String getLastName() {
@@ -409,55 +430,40 @@ public class FindPatientParameters implements org.apache.thrift.TBase<FindPatien
         }
     }
 
-    public String getOmiPolicySerial() {
-        return this.omiPolicySerial;
+    public int getDocumentSize() {
+        return (this.document == null) ? 0 : this.document.size();
     }
 
-    public FindPatientParameters setOmiPolicySerial(String omiPolicySerial) {
-        this.omiPolicySerial = omiPolicySerial;
-        return this;
-    }
-
-    public void unsetOmiPolicySerial() {
-        this.omiPolicySerial = null;
-    }
-
-    /**
-     * Returns true if field omiPolicySerial is set (has been assigned a value) and false otherwise
-     */
-    public boolean isSetOmiPolicySerial() {
-        return this.omiPolicySerial != null;
-    }
-
-    public void setOmiPolicySerialIsSet(boolean value) {
-        if (!value) {
-            this.omiPolicySerial = null;
+    public void putToDocument(String key, String val) {
+        if (this.document == null) {
+            this.document = new HashMap<String, String>();
         }
+        this.document.put(key, val);
     }
 
-    public String getOmiPolicyNumber() {
-        return this.omiPolicyNumber;
+    public Map<String, String> getDocument() {
+        return this.document;
     }
 
-    public FindPatientParameters setOmiPolicyNumber(String omiPolicyNumber) {
-        this.omiPolicyNumber = omiPolicyNumber;
+    public FindPatientParameters setDocument(Map<String, String> document) {
+        this.document = document;
         return this;
     }
 
-    public void unsetOmiPolicyNumber() {
-        this.omiPolicyNumber = null;
+    public void unsetDocument() {
+        this.document = null;
     }
 
     /**
-     * Returns true if field omiPolicyNumber is set (has been assigned a value) and false otherwise
+     * Returns true if field document is set (has been assigned a value) and false otherwise
      */
-    public boolean isSetOmiPolicyNumber() {
-        return this.omiPolicyNumber != null;
+    public boolean isSetDocument() {
+        return this.document != null;
     }
 
-    public void setOmiPolicyNumberIsSet(boolean value) {
+    public void setDocumentIsSet(boolean value) {
         if (!value) {
-            this.omiPolicyNumber = null;
+            this.document = null;
         }
     }
 
@@ -519,19 +525,11 @@ public class FindPatientParameters implements org.apache.thrift.TBase<FindPatien
                 }
                 break;
 
-            case OMI_POLICY_SERIAL:
+            case DOCUMENT:
                 if (value == null) {
-                    unsetOmiPolicySerial();
+                    unsetDocument();
                 } else {
-                    setOmiPolicySerial((String) value);
-                }
-                break;
-
-            case OMI_POLICY_NUMBER:
-                if (value == null) {
-                    unsetOmiPolicyNumber();
-                } else {
-                    setOmiPolicyNumber((String) value);
+                    setDocument((Map<String, String>) value);
                 }
                 break;
 
@@ -561,11 +559,8 @@ public class FindPatientParameters implements org.apache.thrift.TBase<FindPatien
             case IDENTIFIER:
                 return getIdentifier();
 
-            case OMI_POLICY_SERIAL:
-                return getOmiPolicySerial();
-
-            case OMI_POLICY_NUMBER:
-                return getOmiPolicyNumber();
+            case DOCUMENT:
+                return getDocument();
 
         }
         throw new IllegalStateException();
@@ -594,10 +589,8 @@ public class FindPatientParameters implements org.apache.thrift.TBase<FindPatien
                 return isSetIdentifierType();
             case IDENTIFIER:
                 return isSetIdentifier();
-            case OMI_POLICY_SERIAL:
-                return isSetOmiPolicySerial();
-            case OMI_POLICY_NUMBER:
-                return isSetOmiPolicyNumber();
+            case DOCUMENT:
+                return isSetDocument();
         }
         throw new IllegalStateException();
     }
@@ -642,8 +635,8 @@ public class FindPatientParameters implements org.apache.thrift.TBase<FindPatien
                 return false;
         }
 
-        boolean this_present_birthDate = true && this.isSetBirthDate();
-        boolean that_present_birthDate = true && that.isSetBirthDate();
+        boolean this_present_birthDate = true;
+        boolean that_present_birthDate = true;
         if (this_present_birthDate || that_present_birthDate) {
             if (!(this_present_birthDate && that_present_birthDate))
                 return false;
@@ -651,8 +644,8 @@ public class FindPatientParameters implements org.apache.thrift.TBase<FindPatien
                 return false;
         }
 
-        boolean this_present_sex = true && this.isSetSex();
-        boolean that_present_sex = true && that.isSetSex();
+        boolean this_present_sex = true;
+        boolean that_present_sex = true;
         if (this_present_sex || that_present_sex) {
             if (!(this_present_sex && that_present_sex))
                 return false;
@@ -678,21 +671,12 @@ public class FindPatientParameters implements org.apache.thrift.TBase<FindPatien
                 return false;
         }
 
-        boolean this_present_omiPolicySerial = true && this.isSetOmiPolicySerial();
-        boolean that_present_omiPolicySerial = true && that.isSetOmiPolicySerial();
-        if (this_present_omiPolicySerial || that_present_omiPolicySerial) {
-            if (!(this_present_omiPolicySerial && that_present_omiPolicySerial))
+        boolean this_present_document = true && this.isSetDocument();
+        boolean that_present_document = true && that.isSetDocument();
+        if (this_present_document || that_present_document) {
+            if (!(this_present_document && that_present_document))
                 return false;
-            if (!this.omiPolicySerial.equals(that.omiPolicySerial))
-                return false;
-        }
-
-        boolean this_present_omiPolicyNumber = true && this.isSetOmiPolicyNumber();
-        boolean that_present_omiPolicyNumber = true && that.isSetOmiPolicyNumber();
-        if (this_present_omiPolicyNumber || that_present_omiPolicyNumber) {
-            if (!(this_present_omiPolicyNumber && that_present_omiPolicyNumber))
-                return false;
-            if (!this.omiPolicyNumber.equals(that.omiPolicyNumber))
+            if (!this.document.equals(that.document))
                 return false;
         }
 
@@ -782,22 +766,12 @@ public class FindPatientParameters implements org.apache.thrift.TBase<FindPatien
                 return lastComparison;
             }
         }
-        lastComparison = Boolean.valueOf(isSetOmiPolicySerial()).compareTo(typedOther.isSetOmiPolicySerial());
+        lastComparison = Boolean.valueOf(isSetDocument()).compareTo(typedOther.isSetDocument());
         if (lastComparison != 0) {
             return lastComparison;
         }
-        if (isSetOmiPolicySerial()) {
-            lastComparison = org.apache.thrift.TBaseHelper.compareTo(this.omiPolicySerial, typedOther.omiPolicySerial);
-            if (lastComparison != 0) {
-                return lastComparison;
-            }
-        }
-        lastComparison = Boolean.valueOf(isSetOmiPolicyNumber()).compareTo(typedOther.isSetOmiPolicyNumber());
-        if (lastComparison != 0) {
-            return lastComparison;
-        }
-        if (isSetOmiPolicyNumber()) {
-            lastComparison = org.apache.thrift.TBaseHelper.compareTo(this.omiPolicyNumber, typedOther.omiPolicyNumber);
+        if (isSetDocument()) {
+            lastComparison = org.apache.thrift.TBaseHelper.compareTo(this.document, typedOther.document);
             if (lastComparison != 0) {
                 return lastComparison;
             }
@@ -822,47 +796,37 @@ public class FindPatientParameters implements org.apache.thrift.TBase<FindPatien
         StringBuilder sb = new StringBuilder("FindPatientParameters(");
         boolean first = true;
 
-        if (isSetLastName()) {
-            sb.append("lastName:");
-            if (this.lastName == null) {
-                sb.append("null");
-            } else {
-                sb.append(this.lastName);
-            }
-            first = false;
+        sb.append("lastName:");
+        if (this.lastName == null) {
+            sb.append("null");
+        } else {
+            sb.append(this.lastName);
         }
-        if (isSetFirstName()) {
-            if (!first) sb.append(", ");
-            sb.append("firstName:");
-            if (this.firstName == null) {
-                sb.append("null");
-            } else {
-                sb.append(this.firstName);
-            }
-            first = false;
+        first = false;
+        if (!first) sb.append(", ");
+        sb.append("firstName:");
+        if (this.firstName == null) {
+            sb.append("null");
+        } else {
+            sb.append(this.firstName);
         }
-        if (isSetPatrName()) {
-            if (!first) sb.append(", ");
-            sb.append("patrName:");
-            if (this.patrName == null) {
-                sb.append("null");
-            } else {
-                sb.append(this.patrName);
-            }
-            first = false;
+        first = false;
+        if (!first) sb.append(", ");
+        sb.append("patrName:");
+        if (this.patrName == null) {
+            sb.append("null");
+        } else {
+            sb.append(this.patrName);
         }
-        if (isSetBirthDate()) {
-            if (!first) sb.append(", ");
-            sb.append("birthDate:");
-            sb.append(this.birthDate);
-            first = false;
-        }
-        if (isSetSex()) {
-            if (!first) sb.append(", ");
-            sb.append("sex:");
-            sb.append(this.sex);
-            first = false;
-        }
+        first = false;
+        if (!first) sb.append(", ");
+        sb.append("birthDate:");
+        sb.append(this.birthDate);
+        first = false;
+        if (!first) sb.append(", ");
+        sb.append("sex:");
+        sb.append(this.sex);
+        first = false;
         if (isSetIdentifierType()) {
             if (!first) sb.append(", ");
             sb.append("identifierType:");
@@ -883,32 +847,34 @@ public class FindPatientParameters implements org.apache.thrift.TBase<FindPatien
             }
             first = false;
         }
-        if (isSetOmiPolicySerial()) {
-            if (!first) sb.append(", ");
-            sb.append("omiPolicySerial:");
-            if (this.omiPolicySerial == null) {
-                sb.append("null");
-            } else {
-                sb.append(this.omiPolicySerial);
-            }
-            first = false;
+        if (!first) sb.append(", ");
+        sb.append("document:");
+        if (this.document == null) {
+            sb.append("null");
+        } else {
+            sb.append(this.document);
         }
-        if (isSetOmiPolicyNumber()) {
-            if (!first) sb.append(", ");
-            sb.append("omiPolicyNumber:");
-            if (this.omiPolicyNumber == null) {
-                sb.append("null");
-            } else {
-                sb.append(this.omiPolicyNumber);
-            }
-            first = false;
-        }
+        first = false;
         sb.append(")");
         return sb.toString();
     }
 
     public void validate() throws org.apache.thrift.TException {
         // check for required fields
+        if (lastName == null) {
+            throw new org.apache.thrift.protocol.TProtocolException("Required field 'lastName' was not present! Struct: " + toString());
+        }
+        if (firstName == null) {
+            throw new org.apache.thrift.protocol.TProtocolException("Required field 'firstName' was not present! Struct: " + toString());
+        }
+        if (patrName == null) {
+            throw new org.apache.thrift.protocol.TProtocolException("Required field 'patrName' was not present! Struct: " + toString());
+        }
+        // alas, we cannot check 'birthDate' because it's a primitive and you chose the non-beans generator.
+        // alas, we cannot check 'sex' because it's a primitive and you chose the non-beans generator.
+        if (document == null) {
+            throw new org.apache.thrift.protocol.TProtocolException("Required field 'document' was not present! Struct: " + toString());
+        }
         // check for sub-struct validity
     }
 
@@ -1003,18 +969,21 @@ public class FindPatientParameters implements org.apache.thrift.TBase<FindPatien
                             org.apache.thrift.protocol.TProtocolUtil.skip(iprot, schemeField.type);
                         }
                         break;
-                    case 8: // OMI_POLICY_SERIAL
-                        if (schemeField.type == org.apache.thrift.protocol.TType.STRING) {
-                            struct.omiPolicySerial = iprot.readString();
-                            struct.setOmiPolicySerialIsSet(true);
-                        } else {
-                            org.apache.thrift.protocol.TProtocolUtil.skip(iprot, schemeField.type);
-                        }
-                        break;
-                    case 9: // OMI_POLICY_NUMBER
-                        if (schemeField.type == org.apache.thrift.protocol.TType.STRING) {
-                            struct.omiPolicyNumber = iprot.readString();
-                            struct.setOmiPolicyNumberIsSet(true);
+                    case 8: // DOCUMENT
+                        if (schemeField.type == org.apache.thrift.protocol.TType.MAP) {
+                            {
+                                org.apache.thrift.protocol.TMap _map8 = iprot.readMapBegin();
+                                struct.document = new HashMap<String, String>(2 * _map8.size);
+                                for (int _i9 = 0; _i9 < _map8.size; ++_i9) {
+                                    String _key10; // required
+                                    String _val11; // required
+                                    _key10 = iprot.readString();
+                                    _val11 = iprot.readString();
+                                    struct.document.put(_key10, _val11);
+                                }
+                                iprot.readMapEnd();
+                            }
+                            struct.setDocumentIsSet(true);
                         } else {
                             org.apache.thrift.protocol.TProtocolUtil.skip(iprot, schemeField.type);
                         }
@@ -1027,6 +996,12 @@ public class FindPatientParameters implements org.apache.thrift.TBase<FindPatien
             iprot.readStructEnd();
 
             // check for required fields of primitive type, which can't be checked in the validate method
+            if (!struct.isSetBirthDate()) {
+                throw new org.apache.thrift.protocol.TProtocolException("Required field 'birthDate' was not found in serialized data! Struct: " + toString());
+            }
+            if (!struct.isSetSex()) {
+                throw new org.apache.thrift.protocol.TProtocolException("Required field 'sex' was not found in serialized data! Struct: " + toString());
+            }
             struct.validate();
         }
 
@@ -1035,36 +1010,26 @@ public class FindPatientParameters implements org.apache.thrift.TBase<FindPatien
 
             oprot.writeStructBegin(STRUCT_DESC);
             if (struct.lastName != null) {
-                if (struct.isSetLastName()) {
-                    oprot.writeFieldBegin(LAST_NAME_FIELD_DESC);
-                    oprot.writeString(struct.lastName);
-                    oprot.writeFieldEnd();
-                }
+                oprot.writeFieldBegin(LAST_NAME_FIELD_DESC);
+                oprot.writeString(struct.lastName);
+                oprot.writeFieldEnd();
             }
             if (struct.firstName != null) {
-                if (struct.isSetFirstName()) {
-                    oprot.writeFieldBegin(FIRST_NAME_FIELD_DESC);
-                    oprot.writeString(struct.firstName);
-                    oprot.writeFieldEnd();
-                }
+                oprot.writeFieldBegin(FIRST_NAME_FIELD_DESC);
+                oprot.writeString(struct.firstName);
+                oprot.writeFieldEnd();
             }
             if (struct.patrName != null) {
-                if (struct.isSetPatrName()) {
-                    oprot.writeFieldBegin(PATR_NAME_FIELD_DESC);
-                    oprot.writeString(struct.patrName);
-                    oprot.writeFieldEnd();
-                }
-            }
-            if (struct.isSetBirthDate()) {
-                oprot.writeFieldBegin(BIRTH_DATE_FIELD_DESC);
-                oprot.writeI64(struct.birthDate);
+                oprot.writeFieldBegin(PATR_NAME_FIELD_DESC);
+                oprot.writeString(struct.patrName);
                 oprot.writeFieldEnd();
             }
-            if (struct.isSetSex()) {
-                oprot.writeFieldBegin(SEX_FIELD_DESC);
-                oprot.writeI32(struct.sex);
-                oprot.writeFieldEnd();
-            }
+            oprot.writeFieldBegin(BIRTH_DATE_FIELD_DESC);
+            oprot.writeI64(struct.birthDate);
+            oprot.writeFieldEnd();
+            oprot.writeFieldBegin(SEX_FIELD_DESC);
+            oprot.writeI32(struct.sex);
+            oprot.writeFieldEnd();
             if (struct.identifierType != null) {
                 if (struct.isSetIdentifierType()) {
                     oprot.writeFieldBegin(IDENTIFIER_TYPE_FIELD_DESC);
@@ -1079,19 +1044,17 @@ public class FindPatientParameters implements org.apache.thrift.TBase<FindPatien
                     oprot.writeFieldEnd();
                 }
             }
-            if (struct.omiPolicySerial != null) {
-                if (struct.isSetOmiPolicySerial()) {
-                    oprot.writeFieldBegin(OMI_POLICY_SERIAL_FIELD_DESC);
-                    oprot.writeString(struct.omiPolicySerial);
-                    oprot.writeFieldEnd();
+            if (struct.document != null) {
+                oprot.writeFieldBegin(DOCUMENT_FIELD_DESC);
+                {
+                    oprot.writeMapBegin(new org.apache.thrift.protocol.TMap(org.apache.thrift.protocol.TType.STRING, org.apache.thrift.protocol.TType.STRING, struct.document.size()));
+                    for (Map.Entry<String, String> _iter12 : struct.document.entrySet()) {
+                        oprot.writeString(_iter12.getKey());
+                        oprot.writeString(_iter12.getValue());
+                    }
+                    oprot.writeMapEnd();
                 }
-            }
-            if (struct.omiPolicyNumber != null) {
-                if (struct.isSetOmiPolicyNumber()) {
-                    oprot.writeFieldBegin(OMI_POLICY_NUMBER_FIELD_DESC);
-                    oprot.writeString(struct.omiPolicyNumber);
-                    oprot.writeFieldEnd();
-                }
+                oprot.writeFieldEnd();
             }
             oprot.writeFieldStop();
             oprot.writeStructEnd();
@@ -1110,103 +1073,67 @@ public class FindPatientParameters implements org.apache.thrift.TBase<FindPatien
         @Override
         public void write(org.apache.thrift.protocol.TProtocol prot, FindPatientParameters struct) throws org.apache.thrift.TException {
             TTupleProtocol oprot = (TTupleProtocol) prot;
+            oprot.writeString(struct.lastName);
+            oprot.writeString(struct.firstName);
+            oprot.writeString(struct.patrName);
+            oprot.writeI64(struct.birthDate);
+            oprot.writeI32(struct.sex);
+            {
+                oprot.writeI32(struct.document.size());
+                for (Map.Entry<String, String> _iter13 : struct.document.entrySet()) {
+                    oprot.writeString(_iter13.getKey());
+                    oprot.writeString(_iter13.getValue());
+                }
+            }
             BitSet optionals = new BitSet();
-            if (struct.isSetLastName()) {
+            if (struct.isSetIdentifierType()) {
                 optionals.set(0);
             }
-            if (struct.isSetFirstName()) {
+            if (struct.isSetIdentifier()) {
                 optionals.set(1);
             }
-            if (struct.isSetPatrName()) {
-                optionals.set(2);
-            }
-            if (struct.isSetBirthDate()) {
-                optionals.set(3);
-            }
-            if (struct.isSetSex()) {
-                optionals.set(4);
-            }
-            if (struct.isSetIdentifierType()) {
-                optionals.set(5);
-            }
-            if (struct.isSetIdentifier()) {
-                optionals.set(6);
-            }
-            if (struct.isSetOmiPolicySerial()) {
-                optionals.set(7);
-            }
-            if (struct.isSetOmiPolicyNumber()) {
-                optionals.set(8);
-            }
-            oprot.writeBitSet(optionals, 9);
-            if (struct.isSetLastName()) {
-                oprot.writeString(struct.lastName);
-            }
-            if (struct.isSetFirstName()) {
-                oprot.writeString(struct.firstName);
-            }
-            if (struct.isSetPatrName()) {
-                oprot.writeString(struct.patrName);
-            }
-            if (struct.isSetBirthDate()) {
-                oprot.writeI64(struct.birthDate);
-            }
-            if (struct.isSetSex()) {
-                oprot.writeI32(struct.sex);
-            }
+            oprot.writeBitSet(optionals, 2);
             if (struct.isSetIdentifierType()) {
                 oprot.writeString(struct.identifierType);
             }
             if (struct.isSetIdentifier()) {
                 oprot.writeString(struct.identifier);
             }
-            if (struct.isSetOmiPolicySerial()) {
-                oprot.writeString(struct.omiPolicySerial);
-            }
-            if (struct.isSetOmiPolicyNumber()) {
-                oprot.writeString(struct.omiPolicyNumber);
-            }
         }
 
         @Override
         public void read(org.apache.thrift.protocol.TProtocol prot, FindPatientParameters struct) throws org.apache.thrift.TException {
             TTupleProtocol iprot = (TTupleProtocol) prot;
-            BitSet incoming = iprot.readBitSet(9);
+            struct.lastName = iprot.readString();
+            struct.setLastNameIsSet(true);
+            struct.firstName = iprot.readString();
+            struct.setFirstNameIsSet(true);
+            struct.patrName = iprot.readString();
+            struct.setPatrNameIsSet(true);
+            struct.birthDate = iprot.readI64();
+            struct.setBirthDateIsSet(true);
+            struct.sex = iprot.readI32();
+            struct.setSexIsSet(true);
+            {
+                org.apache.thrift.protocol.TMap _map14 = new org.apache.thrift.protocol.TMap(org.apache.thrift.protocol.TType.STRING, org.apache.thrift.protocol.TType.STRING, iprot.readI32());
+                struct.document = new HashMap<String, String>(2 * _map14.size);
+                for (int _i15 = 0; _i15 < _map14.size; ++_i15) {
+                    String _key16; // required
+                    String _val17; // required
+                    _key16 = iprot.readString();
+                    _val17 = iprot.readString();
+                    struct.document.put(_key16, _val17);
+                }
+            }
+            struct.setDocumentIsSet(true);
+            BitSet incoming = iprot.readBitSet(2);
             if (incoming.get(0)) {
-                struct.lastName = iprot.readString();
-                struct.setLastNameIsSet(true);
-            }
-            if (incoming.get(1)) {
-                struct.firstName = iprot.readString();
-                struct.setFirstNameIsSet(true);
-            }
-            if (incoming.get(2)) {
-                struct.patrName = iprot.readString();
-                struct.setPatrNameIsSet(true);
-            }
-            if (incoming.get(3)) {
-                struct.birthDate = iprot.readI64();
-                struct.setBirthDateIsSet(true);
-            }
-            if (incoming.get(4)) {
-                struct.sex = iprot.readI32();
-                struct.setSexIsSet(true);
-            }
-            if (incoming.get(5)) {
                 struct.identifierType = iprot.readString();
                 struct.setIdentifierTypeIsSet(true);
             }
-            if (incoming.get(6)) {
+            if (incoming.get(1)) {
                 struct.identifier = iprot.readString();
                 struct.setIdentifierIsSet(true);
-            }
-            if (incoming.get(7)) {
-                struct.omiPolicySerial = iprot.readString();
-                struct.setOmiPolicySerialIsSet(true);
-            }
-            if (incoming.get(8)) {
-                struct.omiPolicyNumber = iprot.readString();
-                struct.setOmiPolicyNumberIsSet(true);
             }
         }
     }

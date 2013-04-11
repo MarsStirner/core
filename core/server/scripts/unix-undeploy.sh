@@ -9,42 +9,20 @@ GF_PASSWD_FILE=./password
 echo "AS_ADMIN_PASSWORD="${glassfish.admin.password} > $GF_PASSWD_FILE
 echo "AS_ADMIN_MASTERPASSWORD="${glassfish.admin.password} >> $GF_PASSWD_FILE
 
-# Копирование конфига logback.xml
-cp ./logback.xml ${glassfish.domain.dir}/${glassfish.domain}/config
-
 export PATH=${glassfish.home}/bin/:$PATH
 
-# Список доменов
-asadmin list-domains
-echo "--------------------------------------------------------------------"
-
-# Рестарт
-asadmin restart-domain
-#asadmin stop-domain --domaindir ${glassfish.domain.dir} ${glassfish.domain}
-#asadmin start-domain --domaindir ${glassfish.domain.dir} ${glassfish.domain}
-
-# Установка приложения
+echo "Undeploy ${glassfish.application.name}"
+echo ""
 asadmin --host ${glassfish.host} \
         --port ${glassfish.port.admin} \
         --user ${glassfish.admin.login} \
         --passwordfile $GF_PASSWD_FILE \
         --interactive=false \
-        --echo=true \
-        --terse=true \
-        redeploy \
-        --name ${glassfish.application.name} \
-        --force=true \
-        --precompilejsp=false \
-        --verify=false \
-        --generatermistubs=false \
-        --availabilityenabled=false \
-        --asyncreplication=true \
-        --keepreposdir=false \
-        --keepfailedstubs=false \
-        --isredeploy=true \
-        --logreportederrors=true \
-        --upload=true \
-        ${glassfish.application.name}.ear
+        undeploy \
+        ${glassfish.application.name}
+
+#asadmin stop-domain --domaindir ${glassfish.domain.dir} ${glassfish.domain}
+#asadmin start-domain --domaindir ${glassfish.domain.dir} ${glassfish.domain}
 
 rm -f $GF_PASSWD_FILE
 
@@ -56,5 +34,6 @@ echo "--------------------------------------------------------------------"
 echo "tail -f -n 5000 ${glassfish.domain.dir}/${glassfish.domain}/logs/server.log"
 echo "--------------------------------------------------------------------"
 
-# Показать лог
-echo tail -f -n 5000 ${glassfish.domain.dir}/${glassfish.domain}/logs/server.log
+
+# Показать последние строки лога
+echo tail -n 5000 ${glassfish.domain.dir}/${glassfish.domain}/logs/server.log

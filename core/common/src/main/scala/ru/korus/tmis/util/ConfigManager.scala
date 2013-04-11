@@ -91,7 +91,17 @@ object ConfigManager extends Configuration {
     var EventTypeNotFound = 0x133
     var EventPersonForEventAndUserNotFound = 0x134
     var ContractNotFound = 0x135
-
+    var PatientIsNull = 0x136
+    var RbTestTubeTypeIsNull = 0x137
+    var JobTicketIsNull = 0x138
+    var JobTicketNotFound = 0x139
+    var RbDiagnosisTypeNotFound = 0x140
+    var DiagnosisNotFound = 0x141
+    var DiagnosticNotFound = 0x142
+    var JobNotFound = 0x143
+    var TakenTissueNotFound = 0x144
+    var ActionTypeNotFound = 0x145
+    var noRightForAction = 0x146
   }
 
   val Drugstore = new Configuration {

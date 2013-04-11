@@ -33,6 +33,9 @@ public class RbDiagnosisType implements Serializable {
     @Column(name = "replaceInDiagnosis")
     private String replaceInDiagnosis;
 
+    @Column(name = "flatCode")
+    private String flatCode;
+
     public RbDiagnosisType() {
     }
 
@@ -70,6 +73,14 @@ public class RbDiagnosisType implements Serializable {
 
     public void setReplaceInDiagnosis(String replaceInDiagnosis) {
         this.replaceInDiagnosis = replaceInDiagnosis;
+    }
+
+    public String getFlatCode() {
+        return flatCode;
+    }
+
+    public void setFlatCode(String flatCode) {
+        this.flatCode = flatCode;
     }
 
     @Override

@@ -2,6 +2,7 @@ package ru.korus.tmis.core.database;
 
 import ru.korus.tmis.core.entity.model.ActionPropertyType;
 import ru.korus.tmis.core.exception.CoreException;
+import ru.korus.tmis.core.filter.ListDataFilter;
 
 import java.util.LinkedList;
 import java.util.List;
@@ -42,7 +43,7 @@ public interface DbActionPropertyTypeBeanLocal {
             throws CoreException;
 
     LinkedList<Object> getActionPropertyTypeValueDomainsWithFilter(int page, int limit,
-                                                                   String sortingField, String sortingMethod,
-                                                                   Object filter)
+                                                                   String sorting,
+                                                                   ListDataFilter filter)
             throws CoreException;
 }

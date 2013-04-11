@@ -4,6 +4,7 @@ import ru.korus.tmis.core.data.DictionaryListData;
 import ru.korus.tmis.core.data.ListDataRequest;
 import ru.korus.tmis.core.entity.model.RbRelationType;
 import ru.korus.tmis.core.exception.CoreException;
+import ru.korus.tmis.core.filter.ListDataFilter;
 
 import javax.ejb.Local;
 
@@ -21,6 +22,6 @@ public interface DbRbRelationTypeBeanLocal {
     long getCountOfRelationsWithFilter(Object filter)
             throws CoreException;
 
-    java.util.LinkedList<Object> getAllRelationsWithFilter(int page, int limit, String sortingField, String sortingMethod, Object filter)
+    java.util.LinkedList<Object> getAllRelationsWithFilter(int page, int limit, String sorting, ListDataFilter filter)
             throws CoreException;
 }

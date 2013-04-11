@@ -365,17 +365,16 @@ class PatientBean
 
     val eventsMap = customQuery.getActiveEventsForDepartmentAndDoctor(requestData.page-1,
                                                                       requestData.limit,
-                                                                      requestData.sortingFieldInternal,
+                                                                      requestData.sortingField,
                                                                       requestData.sortingMethod,
                                                                       requestData.filter,
                                                                       requestData.rewriteRecordsCount _)
 
     var conditionsInfo = new java.util.HashMap[Event, java.util.Map[ActionProperty, java.util.List[APValue]]]
     if(role == 25) {  //Для сестры отделения только
-      val conditions = customQuery.getLastAssessmentByEvents(eventsMap.keySet().toList)   //Последний экшн осмотра
+      val conditions = customQuery.getLastAssessmentByEvents(eventsMap.map(p=>p._1.getEvent).toList)   //Последний экшн осмотра
       conditions.foreach(
         c => {
-          //val apList = dbActionProperty.getActionPropertiesByActionIdAndTypeNames(c._2.getId.intValue,List("Состояние", "ЧСС", "АД нижн.","АД верхн."))
           val apList = dbActionProperty.getActionPropertiesByActionIdAndTypeCodes(c._2.getId.intValue,List("STATE", "PULS", "BPRAS","BPRAD"))
           conditionsInfo.put(c._1, apList)
         }
@@ -390,7 +389,7 @@ class PatientBean
                                                    conditionsInfo,
                                                    dbOrgStructureBean.getOrgStructureById _,
                                                    dbActionProperty.getActionPropertiesByActionIdAndRbCoreActionPropertyIds _,
-                                                   dbRbCoreActionPropertyBean.getRbCoreActionPropertiesByIds _,
+                                                   //dbRbCoreActionPropertyBean.getRbCoreActionPropertiesByIds _,
                                                    dbDiagnocticsBean.getDiagnosticsByEventId _))
   }
 
@@ -399,92 +398,21 @@ class PatientBean
   }
 
   def getAllPatients(requestData: PatientRequestData) = {
-    //
-    //  TODO: разобрать контейнер перед вызовом:
-    //
-    //  patientCode — Код пациента
-    //  document    — Фильтр по любому документу
-    //  fullName    — ФИО
-    //  birthDate   — Дата рождения (кстати, как передавать будем?)
-
-    // Если заполнен документ или код - ищем только по одному из них (по коду, думаю.
-    // то есть по всей видимости есть приоритеты:
-
-    val limit = requestData.limit match {
-      case null => {0}
-      case _ => {requestData.limit.toInt}
-    }
-
-    val page = requestData.page match {
-      case null => {0}
-      case _ => {requestData.page.toInt-1} //c клиента приходит номер страницы начиная с 1
-    }
-
-    val sortField = requestData.sortingField match {
-      case null => {"id"}
-      case "middleName" => {"patrName"}
-      case "patientCode"=> {"id"}         //TODO: в бд нет поля "код пациента"
-      case _ => {requestData.sortingField}
-    }
-
-    val sortMethod = requestData.sortingMethod match {
-      case null => {"asc"}
-      case _ => {requestData.sortingMethod}
-    }
-
-    if (requestData.filter.patientCode != null)
-    {
-      dbPatient.getPatientsWithCode(
-        limit, page, sortField, sortMethod,
-        requestData.filter.patientCode.toInt,
-        requestData)
-    }
-    else if (requestData.filter.document != null)
-    {
-      dbPatient.getPatientsWithDocumentPattern(
-        limit, page, sortField, sortMethod,
-        requestData.filter.document,
-        requestData)
-    }
-    else if (requestData.filter.fullName != null && requestData.filter.birthDate == null)
-    {
-      dbPatient.getPatientsWithFullNamePattern(
-        limit, page, sortField, sortMethod,
-        requestData.filter.fullName,
-        requestData)
-    }
-    else if (requestData.filter.fullName == null && requestData.filter.birthDate != null)
-    {
-      dbPatient.getPatientsWithBirthDate(
-        limit, page, sortField, sortMethod,
-        requestData.filter.birthDate,
-        requestData)
-    }
-    else if (requestData.filter.fullName != null && requestData.filter.birthDate != null)
-    {
-      dbPatient.getPatientsWithBirthDateAndFullNamePattern(
-        limit, page, sortField, sortMethod,
-        requestData.filter.birthDate,
-        requestData.filter.fullName,
-        requestData)
-    }
-    else
-    {
-      dbPatient.getAllPatients(
-        limit, page, sortField, sortMethod,
-        requestData
-      )
-    }
+      dbPatient.getAllPatients( requestData.page-1,
+                                requestData.limit,
+                                requestData.sortingFieldInternal,
+                                requestData.filter.unwrap(),
+                                requestData.rewriteRecordsCount _)
   }
 
-  def savePatient(patientEntry: PatientEntry, userData: AuthData) : PatientEntry = {
+  def savePatient(id: Int, patientEntry: PatientEntry, userData: AuthData) : PatientEntry = {
     val usver = dbStaff.getStaffById(userData.doctor.id)
     var lockId: Int = -1
     var oldPatient : Patient = null
     var patientVersion : Int = 0
-    if (patientEntry.getId() > 0) {
+    if (id > 0) {
       patientVersion = patientEntry.getVersion()
-      oldPatient = Patient.clone(dbPatient.getPatientById(patientEntry.getId()))
+      oldPatient = Patient.clone(dbPatient.getPatientById(id))
       lockId = appLock.acquireLock("Client", oldPatient.getId.intValue(), oldPatient.getId.intValue(), userData)//oldAction.getIdx
     }
     var patient : Patient = null
@@ -508,7 +436,7 @@ class PatientBean
       }
 
       patient = dbPatient.insertOrUpdatePatient(
-        patientEntry.getId(),
+        id,
         patientEntry.getName().getFirst(),
         patientEntry.getName().getMiddle(),
         patientEntry.getName().getLast(),
@@ -1130,5 +1058,9 @@ class PatientBean
 
   def checkPolicyNumber(number: String, serial: String, typeId: Int) = {
     dbClientPolicy.checkPolicyNumber(number: String, serial: String, typeId: Int)
+  }
+
+  def deletePatientInfo(id: Int) = {
+    dbPatient.deletePatient(id)
   }
 }

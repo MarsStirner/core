@@ -2,6 +2,7 @@ package ru.korus.tmis.core.database;
 
 import ru.korus.tmis.core.entity.model.Organisation;
 import ru.korus.tmis.core.exception.CoreException;
+import ru.korus.tmis.core.filter.ListDataFilter;
 
 import javax.ejb.Local;
 import java.util.List;
@@ -23,7 +24,7 @@ public interface DbOrganizationBeanLocal {
     long getCountOfOrganizationWithFilter(Object filter)
             throws CoreException;
 
-    java.util.LinkedList<Object> getAllOrganizationWithFilter(int page, int limit, String sortingField, String sortingMethod, Object filter)
+    java.util.LinkedList<Object> getAllOrganizationWithFilter(int page, int limit, String sorting, ListDataFilter filter)
             throws CoreException;
 
     /**

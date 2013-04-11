@@ -212,7 +212,34 @@ class TalonSPOListEntry {
     this.id = event.getId.intValue()
     this.rangeTalonDateTime = new DatePeriodContainer(event.getSetDate, event.getExecDate)
     this.execPerson = new ComplexPersonContainer(event.getExecutor)
-    diagnoses.foreach(d=> this.diagnoses += new DiagnosisContainer(d._1, d._2))
+    if(diagnoses!=null || diagnoses.size()>0){
+      diagnoses.foreach(d=> {
+        if(d._1!=null) {
+          if(d._1.isInstanceOf[Diagnostic]) {
+            this.diagnoses += new DiagnosisContainer(d._1.asInstanceOf[Diagnostic])
+          } else if(d._1.isInstanceOf[ActionProperty]) {
+            val diagnosisKind = d._1.asInstanceOf[ActionProperty].getAction.getActionType.getCode match {
+              case "4501" => "clinical"
+              case "1_1_01" => "admission"
+              case "4201" => "assignment"
+              case _ => ""
+            }
+            val mkbContainer =
+              if(d._2!=null) {
+                if(d._2.isInstanceOf[Mkb]) {
+                  new MKBContainer(d._2.asInstanceOf[Mkb])
+                } else if(d._2.isInstanceOf[String]){
+                  new MKBContainer("", d._2.asInstanceOf[String])
+                } else new MKBContainer()
+              } else new MKBContainer()
+            val diaFromAP = new DiagnosisContainer()
+            diaFromAP.setDiagnosisKind(diagnosisKind)
+            diaFromAP.setMkb(mkbContainer)
+            this.diagnoses += diaFromAP
+          }
+        }
+      })
+    }
   }
 
 }
@@ -236,21 +263,3 @@ class ComplexPersonContainer {
                       else new IdNameContainer()
   }
 }
-
-/*
-@XmlType(name = "ComplexDiagnosisContainer")
-@XmlRootElement(name = "ComplexDiagnosisContainer")
-class ComplexDiagnosisContainer {
-
-  @BeanProperty                                          //диагноз
-  var diagnosis: DiagnosisContainer = _
-
-  @BeanProperty
-  var mes: IdNameContainer = _                          //МЭС
-
-  def this(){
-    this()
-    this.mes = mes_x
-    this.diagnosis = null   //!! заполнить контейнер
-  }
-}  */

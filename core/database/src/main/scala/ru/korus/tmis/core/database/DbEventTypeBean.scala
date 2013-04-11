@@ -10,6 +10,7 @@ import ru.korus.tmis.core.data.{EventTypesListRequestDataFilter, QueryDataStruct
 import ru.korus.tmis.core.entity.model.EventType
 import scala.collection.JavaConversions._
 import ru.korus.tmis.core.exception.CoreException
+import ru.korus.tmis.core.filter.ListDataFilter
 
 @Interceptors(Array(classOf[LoggingInterceptor]))
 @Stateless
@@ -36,13 +37,9 @@ class DbEventTypeBean
     }
   }
 
-  def getEventTypesByRequestTypeIdAndFinanceId(page: Int, limit: Int, sortingField: String, sortingMethod: String, filter: Object, records: (java.lang.Long) => java.lang.Boolean) = {
+  def getEventTypesByRequestTypeIdAndFinanceId(page: Int, limit: Int, sorting: String, filter: ListDataFilter, records: (java.lang.Long) => java.lang.Boolean) = {
 
-    val queryStr: QueryDataStructure = if (filter.isInstanceOf[EventTypesListRequestDataFilter])
-      filter.asInstanceOf[EventTypesListRequestDataFilter].toQueryStructure()
-    else new QueryDataStructure()
-
-    val sorting = "ORDER BY %s %s".format(sortingField, sortingMethod)
+    val queryStr = filter.toQueryStructure()
 
     val typed = em.createQuery(EventTypesByRequestTypeIdAndFinanceIdQuery.format("et", queryStr.query, sorting), classOf[EventType])
     if (queryStr.data.size() > 0) queryStr.data.foreach(qdp => typed.setParameter(qdp.name, qdp.value))

@@ -41,7 +41,7 @@ public interface PatientBeanLocal {
     Iterable<Patient> getAllPatients(PatientRequestData requestData)
             throws CoreException;
 
-    PatientEntry savePatient(PatientEntry patientEntry, AuthData userData)
+    PatientEntry savePatient(int id, PatientEntry patientEntry, AuthData userData)
             throws CoreException;
 
     String getAllPatientsForDepartmentIdAndDoctorIdByPeriod(PatientsListRequestData requestData, AuthData authData)
@@ -54,4 +54,13 @@ public interface PatientBeanLocal {
     Boolean checkSNILSNumber(String number) throws CoreException;
 
     Boolean checkPolicyNumber(String number, String serial, int typeId) throws CoreException;
+
+    /**
+     * Удаление всей информации о пациенте
+     * @param id Идентификатор пациента
+     * @return true/false
+     * @throws CoreException
+     */
+    Boolean deletePatientInfo(int id) throws CoreException;
+
 }

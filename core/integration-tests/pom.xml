@@ -1,0 +1,126 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
+
+    <modelVersion>4.0.0</modelVersion>
+    <groupId>ru.korus.tmis</groupId>
+    <artifactId>integration-tests</artifactId>
+    <version>${version.tmis.core}</version>
+    <packaging>jar</packaging>
+    <name>TMIS Integration Tests</name>
+
+
+    <parent>
+        <groupId>ru.korus.tmis</groupId>
+        <artifactId>tmis-nexus</artifactId>
+        <version>${version.tmis.core}</version>
+        <relativePath>../</relativePath>
+    </parent>
+
+
+    <dependencies>
+
+        <dependency>
+            <groupId>org.mockito</groupId>
+            <artifactId>mockito-all</artifactId>
+            <version>${version.mokito}</version>
+            <scope>test</scope>
+        </dependency>
+        <dependency>
+            <groupId>ru.korus.tmis</groupId>
+            <artifactId>tmis-server</artifactId>
+            <version>${version.tmis.core}</version>
+            <scope>test</scope>
+            <type>ear</type>
+        </dependency>
+        <!--For communication testing-->
+        <dependency>
+            <groupId>ru.korus.tmis.communication</groupId>
+            <artifactId>tmis-communication</artifactId>
+            <version>${version.tmis.core}</version>
+            <scope>test</scope>
+        </dependency>
+        <dependency>
+            <groupId>mysql</groupId>
+            <artifactId>mysql-connector-java</artifactId>
+            <version>5.1.17</version>
+            <type>jar</type>
+            <scope>compile</scope>
+        </dependency>
+    </dependencies>
+
+
+    <build>
+        <plugins>
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-surefire-plugin</artifactId>
+                <version>2.13</version>
+                <configuration>
+                    <skip>true</skip>
+                </configuration>
+                <executions>
+                    <execution>
+                        <id>surefire-it</id>
+                        <phase>integration-test</phase>
+                        <goals>
+                            <goal>test</goal>
+                        </goals>
+                        <configuration>
+                            <skip>false</skip>
+                        </configuration>
+                    </execution>
+                </executions>
+            </plugin>
+
+            <!--Glassfish plugin-->
+            <plugin>
+                <groupId>org.glassfish.maven.plugin</groupId>
+                <artifactId>maven-glassfish-plugin</artifactId>
+                <version>2.1</version>
+                <configuration>
+                    <glassfishDirectory>${glassfish.home}</glassfishDirectory>
+                    <autoCreate>false</autoCreate>
+                    <adminPassword>${glassfish.admin.password}</adminPassword>
+                    <user>${glassfish.admin.login}</user>
+                    <domainDirectory>${glassfish.domain.dir}</domainDirectory>
+                    <echo>true</echo>
+                    <debug>false</debug>
+                    <terse>true</terse>
+                    <domain>
+                        <name>${glassfish.domain}</name>
+                        <adminPort>${glassfish.port.admin}</adminPort>
+                        <httpPort>${glassfish.port.instance}</httpPort>
+                        <httpsPort>8443</httpsPort>
+                        <iiopPort>3700</iiopPort>
+                        <jmsPort>7676</jmsPort>
+                    </domain>
+                    <components>
+                        <component>
+                            <name>${ear.name}</name>
+                            <artifact>${project.basedir}/../server/target/${ear.name}.ear</artifact>
+                        </component>
+                    </components>
+                </configuration>
+                <executions>
+                    <execution>
+                        <id>Start and deploy server</id>
+                        <phase>process-resources</phase>
+                        <goals>
+                            <goal>stop-domain</goal>
+                            <goal>deploy</goal>
+                        </goals>
+                    </execution>
+                    <execution>
+                        <id>Undeploy and stop server</id>
+                        <phase>post-integration-test</phase>
+                        <goals>
+                            <goal>undeploy</goal>
+                            <goal>stop-domain</goal>
+                        </goals>
+                    </execution>
+                </executions>
+            </plugin>
+        </plugins>
+    </build>
+</project>

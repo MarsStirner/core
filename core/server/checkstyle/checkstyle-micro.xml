@@ -19,6 +19,7 @@
   Finally, it is worth reading the documentation.
 -->
 <module name="Checker">
+    <property name="severity" value="warning"/>
     <!-- Максимальный размер файла 2000 строк -->
     <module name="FileLength">
         <property name="max" value="2000"/>
@@ -30,6 +31,7 @@
     </module>
 
     <module name="TreeWalker">
+
         <property name="cacheFile" value="${checkstyle.cache.file}"/>
         <!--
                 <module name="JavadocType"/>
@@ -126,6 +128,68 @@
         <module name="ArrayTypeStyle"/>
         <module name="FinalParameters"/>
         <!--<module name="TodoComment"/>-->
+        <module name="TodoComment">
+            <property name="format" value="WARNING"/>
+        </module>
         <module name="UpperEll"/>
+
+
+        <!-- Секция по комментариям (включил пока только предупреждения) -->
+        <module name="JavadocType">
+            <property name="severity" value="warning"/>
+        </module>
+        <module name="JavadocMethod">
+            <property name="scope" value="public"/>
+            <property name="severity" value="warning"/>
+            <property name="allowUndeclaredRTE" value="true"/>
+            <property name="allowThrowsTagsForSubclasses" value="true"/>
+            <property name="suppressLoadErrors" value="true"/>
+        </module>
+        <module name="JavadocMethod">
+            <property name="scope" value="protected"/>
+            <property name="severity" value="warning"/>
+            <property name="allowUndeclaredRTE" value="true"/>
+            <property name="allowThrowsTagsForSubclasses" value="true"/>
+            <property name="suppressLoadErrors" value="true"/>
+        </module>
+        <module name="JavadocVariable">
+            <property name="scope" value="public"/>
+            <property name="severity" value="warning"/>
+        </module>
+        <module name="JavadocVariable">
+            <property name="scope" value="protected"/>
+            <property name="severity" value="warning"/>
+        </module>
+        <module name="ClassTypeParameterName">
+            <property name="severity" value="warning"/>
+        </module>
+        <module name="ConstantName">
+            <property name="severity" value="warning"/>
+        </module>
+        <module name="LocalVariableName">
+            <property name="severity" value="warning"/>
+        </module>
+        <module name="MemberName">
+            <property name="severity" value="warning"/>
+        </module>
+        <module name="MethodName">
+            <property name="severity" value="warning"/>
+        </module>
+        <module name="MethodTypeParameterName">
+            <property name="severity" value="warning"/>
+        </module>
+        <module name="PackageName">
+            <property name="severity" value="warning"/>
+        </module>
+        <module name="ParameterName">
+            <property name="severity" value="warning"/>
+        </module>
+        <module name="StaticVariableName">
+            <property name="severity" value="warning"/>
+        </module>
+        <module name="TypeName">
+            <property name="severity" value="warning"/>
+        </module>
+
     </module>
 </module>

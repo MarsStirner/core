@@ -40,39 +40,6 @@ class AppealData {
   var requestData: AppealRequestData = _
   @BeanProperty
   var data: AppealEntry = _
-  /*
-  /**
-   * Конструктор класса AppealData
-   * @param event Обращение на госпитализацию
-   * @param appeal Первичный осмотр при поступлении
-   * @param values Значения свойств действий
-   * @param typeOfResponse Тип запроса.<pre>
-   * &#15;Возможные значения:
-   * &#15;"standart" - (по умолчанию) Данные об госпитализации.
-   * &#15;"print_form" - Печатная форма госпитализации. Данные об госпитализации + данные об пациенте</pre>
-   * @param map Информация об адресах КЛАДР
-   * @param street Информация об адресах Street
-   * @param requestData Данные из запроса с клиента как AppealRequestData
-   * @param postProcessing Делегируемый метод по поиску идентификатора первичного осмотра по идентификатору обращения.
-   * @param mRelationByRelativeId Делегируемый метод по поиску связи пациента и представителя по идентификатору представителя.
-   */
-  def this(event: Event,
-           appeal: Action,
-           values: java.util.Map[java.lang.Integer, java.util.List[Object]],
-           typeOfResponse: String,
-           map: java.util.LinkedHashMap[java.lang.Integer, java.util.LinkedList[Kladr]],
-           street: java.util.LinkedHashMap[java.lang.Integer, Street],
-           requestData: AppealRequestData,
-           postProcessing: (Int, java.util.Set[java.lang.Integer]) => Int,
-           mRelationByRelativeId: (Int)=> ClientRelation){
-    this ()
-    this.requestData = requestData
-    val setATIds = JavaConversions.asJavaSet(Set(ConfigManager.Messages("db.actionType.primary").toInt :java.lang.Integer,
-                                                 ConfigManager.Messages("db.actionType.secondary").toInt :java.lang.Integer))
-    val havePrimary = if (postProcessing != null && postProcessing(event.getId.intValue(), setATIds)>0) true
-                      else false
-    this.data = new AppealEntry(event, appeal, values, typeOfResponse, map, street, havePrimary, mRelationByRelativeId)
-  }*/
 
   /**
    * Конструктор класса AppealData
@@ -89,9 +56,9 @@ class AppealData {
    * @param requestData Данные из запроса с клиента как AppealRequestData
    * @param postProcessing Делегируемый метод по поиску идентификатора первичного осмотра по идентификатору обращения.
    * @param mRelationByRelativeId Делегируемый метод по поиску связи пациента и представителя по идентификатору представителя.
-   * @param mAdmissionDiagnosis Делегируемый метод, который возвращает список свойств для выбранного действия по списку идентификаторов искомых полей в rbCoreActionProperty<br>
-   * (Используется для получения admission диагнозов)
    * @param mCorrList Делегируемый метод, предоставляющий список соответствий идентификаторов ActionPropertyType и rbCoreActionProperty
+   * @param contract Контракт
+   * @param mDiagnosticList Делегируемый метод по получению диагностик госпитализации
    */
 
   def this(event: Event,
@@ -106,34 +73,37 @@ class AppealData {
            mRelationByRelativeId: (Int)=> ClientRelation,
            mAdmissionDiagnosis: (Int, java.util.List[java.lang.Integer]) => java.util.Map[ActionProperty, java.util.List[APValue]],
            mCorrList: (java.util.List[java.lang.Integer])=> java.util.List[RbCoreActionProperty],
-           contract: Contract){
+           contract: Contract,
+           mDiagnosticList: (Int, java.util.Set[String]) => java.util.List[Diagnostic]){
     this ()
     this.requestData = requestData
 
     val setMovingIds = JavaConversions.asJavaList(List(ConfigManager.RbCAPIds("db.rbCAP.hosp.primary.id.sentTo").toInt :java.lang.Integer,
                                                           ConfigManager.RbCAPIds("db.rbCAP.moving.id.movedIn").toInt :java.lang.Integer))
 
+    val diagnostics = if(mDiagnosticList!=null)mDiagnosticList(event.getId.intValue(), Set("assignment", "aftereffect", "attendant", "final", "admission")) else new java.util.ArrayList[Diagnostic]
+
     this.data =
       if (postProcessing != null) {
       // Первичный и повторный осмотр
       // (список идентификаторов типов действий)
       val setATIds = JavaConversions.asJavaSet(Set(ConfigManager.Messages("db.actionType.primary").toInt :java.lang.Integer,
-        ConfigManager.Messages("db.actionType.secondary").toInt :java.lang.Integer))
+                                                   ConfigManager.Messages("db.actionType.secondary").toInt :java.lang.Integer))
       // (список рассматриваемых свойств действия)
       val setAdmissionIds = JavaConversions.asJavaList(List(ConfigManager.Messages("db.rbCAP.primary.admission").toInt :java.lang.Integer,
-        ConfigManager.Messages("db.rbCAP.primary.description").toInt :java.lang.Integer,
-        ConfigManager.Messages("db.rbCAP.secondary.admission").toInt :java.lang.Integer,
-        ConfigManager.Messages("db.rbCAP.secondary.description").toInt :java.lang.Integer,
-        ConfigManager.RbCAPIds("db.rbCAP.hosp.primary.id.sentTo").toInt :java.lang.Integer,
-        ConfigManager.RbCAPIds("db.rbCAP.moving.id.movedIn").toInt :java.lang.Integer))
+                                                            ConfigManager.Messages("db.rbCAP.primary.description").toInt :java.lang.Integer,
+                                                            ConfigManager.Messages("db.rbCAP.secondary.admission").toInt :java.lang.Integer,
+                                                            ConfigManager.Messages("db.rbCAP.secondary.description").toInt :java.lang.Integer,
+                                                            ConfigManager.RbCAPIds("db.rbCAP.hosp.primary.id.sentTo").toInt :java.lang.Integer,
+                                                            ConfigManager.RbCAPIds("db.rbCAP.moving.id.movedIn").toInt :java.lang.Integer))
 
       //Выписка
       // (список идентификаторов типов действий)
       val setExtractATIds = JavaConversions.asJavaSet(Set(ConfigManager.Messages("db.actionType.extract").toInt :java.lang.Integer))
       // (список рассматриваемых свойств действия)
       val setExtractIds = JavaConversions.asJavaList(List(ConfigManager.RbCAPIds("db.rbCAP.extract.id.nextHospDate").toInt :java.lang.Integer,
-        ConfigManager.RbCAPIds("db.rbCAP.extract.id.nextHospDepartment").toInt :java.lang.Integer,
-        ConfigManager.RbCAPIds("db.rbCAP.extract.id.nextHospFinanceType").toInt :java.lang.Integer))
+                                                          ConfigManager.RbCAPIds("db.rbCAP.extract.id.nextHospDepartment").toInt :java.lang.Integer,
+                                                          ConfigManager.RbCAPIds("db.rbCAP.extract.id.nextHospFinanceType").toInt :java.lang.Integer))
 
       val lstAllIds = new java.util.ArrayList[java.lang.Integer](setAdmissionIds)
       lstAllIds.addAll(setExtractIds)
@@ -147,10 +117,10 @@ class AppealData {
       val extractId = postProcessing(event.getId.intValue(), setExtractATIds)
       val extractProperties = if (mAdmissionDiagnosis!=null && extractId>0) mAdmissionDiagnosis(extractId, setExtractIds) else null
 
-      new AppealEntry(event, appeal, values, mMovingProperties, typeOfResponse, map, street, (primaryId>0), mRelationByRelativeId, admissions, extractProperties, corrMap, contract)
+      new AppealEntry(event, appeal, values, mMovingProperties, typeOfResponse, map, street, (primaryId>0), mRelationByRelativeId, admissions, extractProperties, corrMap, contract, diagnostics)
     } else {
       val corrMap = if(mCorrList!=null) mCorrList(setMovingIds) else null
-      new AppealEntry(event, appeal, values, mMovingProperties, typeOfResponse, map, street, false, mRelationByRelativeId, null, null, corrMap, contract)
+      new AppealEntry(event, appeal, values, mMovingProperties, typeOfResponse, map, street, false, mRelationByRelativeId, null, null, corrMap, contract, diagnostics)
      }
   }
 }
@@ -300,7 +270,7 @@ class AppealEntry {
 
   @JsonView(Array(classOf[Views.DynamicFieldsPrintForm]))
   @BeanProperty
-  var ward: String = _                                            //Отделение
+  var ward: OrgStructureContainer = _                                            //Отделение
   @JsonView(Array(classOf[Views.DynamicFieldsPrintForm]))
   @BeanProperty
   var totalDays: String = _                                       //Проведено койко-дней
@@ -319,22 +289,34 @@ class AppealEntry {
    * @param event Обращение на госпитализацию
    * @param action Первичный осмотр при поступлении
    * @param values Значения свойств действий
+   * @param mMovingProperties Делегируемый метод поиска  указанных свойств последних действий указанного типа для заданного Event.
    * @param typeOfResponse Тип запроса.<pre>
    * &#15;Возможные значения:
    * &#15;"standart" - (по умолчанию) Данные об госпитализации.
    * &#15;"print_form" - Печатная форма госпитализации. Данные об госпитализации + данные об пациенте</pre>
    * @param map Информация об адресах КЛАДР
    * @param street Информация об адресах Street
+   * @param havePrimary Флаг, имеется ли в текущей госпитализации первичный осмотр
    * @param mRelationByRelativeId Делегируемый метод по поиску связи пациента и представителя по идентификатору представителя.
+   * @param extractProperties Список свойств действия с данными из выписки
+   * @param corrList Список RbCoreActionProperty для поиска соответствия идентификаторов
+   * @param contract Контракт
+   * @param diagnostics Список диагнозов
    */
   def this(event: Event,
            action: Action,
            values: java.util.Map[java.lang.Integer, java.util.List[Object]],
+           mMovingProperties: (Int, java.util.Set[java.lang.Integer], java.util.Set[java.lang.Integer]) => java.util.Map[ActionProperty, java.util.List[APValue]],
            typeOfResponse: String,
            map: java.util.LinkedHashMap[java.lang.Integer, java.util.LinkedList[Kladr]],
            street: java.util.LinkedHashMap[java.lang.Integer, Street],
-           mRelationByRelativeId: (Int)=> ClientRelation) {
-
+           havePrimary: Boolean,
+           mRelationByRelativeId: (Int)=> ClientRelation,
+           admissions: java.util.Map[ActionProperty, java.util.List[APValue]],
+           extractProperties: java.util.Map[ActionProperty, java.util.List[APValue]],
+           corrList: java.util.List[RbCoreActionProperty],
+           contract: Contract,
+           diagnostics: java.util.List[Diagnostic]) {
     this()
     var exValue: java.util.List[Object] = null
 
@@ -456,33 +438,6 @@ class AppealEntry {
     if(exPhysical.get("6").get(0).isInstanceOf[Double]) {d7 = (exPhysical.get("6").get(0).asInstanceOf[Double])}
     this.physicalParameters= new PhysicalParametersContainer(d1,d2,d3,d4,d5,d6,d7)
 
-    val exDiagnosis = this.extractValuesInNumberedMap(LinkedHashSet(
-        ConfigManager.RbCAPIds("db.rbCAP.hosp.primary.id.diagnosis.assigment.code").toInt :java.lang.Integer,
-        ConfigManager.RbCAPIds("db.rbCAP.hosp.primary.id.diagnosis.aftereffect.code").toInt :java.lang.Integer,
-        ConfigManager.RbCAPIds("db.rbCAP.hosp.primary.id.diagnosis.attendant.code").toInt :java.lang.Integer,
-        ConfigManager.RbCAPIds("db.rbCAP.hosp.primary.id.diagnosis.assignment.description").toInt :java.lang.Integer,
-        ConfigManager.RbCAPIds("db.rbCAP.hosp.primary.id.diagnosis.aftereffect.description").toInt :java.lang.Integer,
-        ConfigManager.RbCAPIds("db.rbCAP.hosp.primary.id.diagnosis.attendant.description").toInt :java.lang.Integer
-    ), values)
-
-    Set("assignment", "aftereffect", "attendant").foreach(pos => {
-      val key = "code_%s".format(pos)
-      val key_desc = "description_%s".format(pos)
-
-      val diagnoses = if(exDiagnosis.get(key)!=null) exDiagnosis.get(key).toList else List.empty[Object]
-      val descriptions = if(exDiagnosis.get(key_desc)!=null) exDiagnosis.get(key_desc).toList else List.empty[Object]
-
-      for(i <- 0 until math.max(diagnoses.size, descriptions.size)){
-        val diagnosis =  if(diagnoses.size>i && diagnoses.get(i).isInstanceOf[Mkb])
-                            diagnoses.get(i).asInstanceOf[Mkb]
-                         else null
-        val description = if(descriptions.size>i && descriptions.get(i).isInstanceOf[String])
-                            descriptions.get(i).asInstanceOf[String]
-                          else ""
-        this.diagnoses += new DiagnosisContainer(pos, description, "", diagnosis)
-      }
-    })
-
     exValue = this.extractValuesInNumberedMap(Set(ConfigManager.RbCAPIds("db.rbCAP.hosp.primary.id.injury").toInt :java.lang.Integer), values).get("0")
     this.injury = exValue.get(0).asInstanceOf[String]
 
@@ -492,37 +447,86 @@ class AppealEntry {
     exValue = this.extractValuesInNumberedMap(Set(ConfigManager.RbCAPIds("db.rbCAP.hosp.primary.id.appealWithDeseaseThisYear").toInt :java.lang.Integer), values).get("0")
     this.appealWithDeseaseThisYear = exValue.get(0).asInstanceOf[String]
 
-}
+    //Диагнозы по новому
+    if (diagnostics.size()>0){
+      Set("assignment", "aftereffect", "attendant", "final", "admission").foreach( diaType => {
+        val allByType = diagnostics.filter(p=>p.getDiagnosisType.getFlatCode.compareTo(diaType)==0)  //Все диагностики данного типа
+        val diaByLastDate = allByType.find(p=> p.getCreateDatetime.getTime==allByType.map(_.getCreateDatetime.getTime).foldLeft(Long.MinValue)((i,m)=>m.max(i))).getOrElse(null) //Диагностика последняя по дате создания
+        if (diaByLastDate!=null){
+          this.diagnoses += new DiagnosisContainer(diaByLastDate)
+        }
+        else { //Достаем из ActionProperty осмотра  (Для старых госпитализации (когда не прописывалась история диагнозов Diagnostic + Diagnosis))
+          diaType match {
+            case "assignment" | "aftereffect" | "attendant" => {  //Старая часть кода по диагнозам из экшн пропертей
+              val exDiagnosis = this.extractValuesInNumberedMap(LinkedHashSet(
+                ConfigManager.RbCAPIds("db.rbCAP.hosp.primary.id.diagnosis.assigment.code").toInt :java.lang.Integer,
+                ConfigManager.RbCAPIds("db.rbCAP.hosp.primary.id.diagnosis.aftereffect.code").toInt :java.lang.Integer,
+                ConfigManager.RbCAPIds("db.rbCAP.hosp.primary.id.diagnosis.attendant.code").toInt :java.lang.Integer,
+                ConfigManager.RbCAPIds("db.rbCAP.hosp.primary.id.diagnosis.assignment.description").toInt :java.lang.Integer,
+                ConfigManager.RbCAPIds("db.rbCAP.hosp.primary.id.diagnosis.aftereffect.description").toInt :java.lang.Integer,
+                ConfigManager.RbCAPIds("db.rbCAP.hosp.primary.id.diagnosis.attendant.description").toInt :java.lang.Integer
+              ), values)
 
-  /**
-   * Конструктор класса AppealEntry
-   * @param event Обращение на госпитализацию
-   * @param action Первичный осмотр при поступлении
-   * @param values Значения свойств действий
-   * @param mMovingProperties Делегируемый метод поиска  указанных свойств последних действий указанного типа для заданного Event.
-   * @param typeOfResponse Тип запроса.<pre>
-   * &#15;Возможные значения:
-   * &#15;"standart" - (по умолчанию) Данные об госпитализации.
-   * &#15;"print_form" - Печатная форма госпитализации. Данные об госпитализации + данные об пациенте</pre>
-   * @param map Информация об адресах КЛАДР
-   * @param street Информация об адресах Street
-   * @param mRelationByRelativeId Делегируемый метод по поиску связи пациента и представителя по идентификатору представителя.
-   */
-  def this(event: Event,
-           action: Action,
-           values: java.util.Map[java.lang.Integer, java.util.List[Object]],
-           mMovingProperties: (Int, java.util.Set[java.lang.Integer], java.util.Set[java.lang.Integer]) => java.util.Map[ActionProperty, java.util.List[APValue]],
-           typeOfResponse: String,
-           map: java.util.LinkedHashMap[java.lang.Integer, java.util.LinkedList[Kladr]],
-           street: java.util.LinkedHashMap[java.lang.Integer, Street],
-           mRelationByRelativeId: (Int)=> ClientRelation,
-           corrList: java.util.List[RbCoreActionProperty]) = {
-    this(event, action, values, typeOfResponse, map, street, mRelationByRelativeId)
+              val key = "code_%s".format(diaType)
+              val key_desc = "description_%s".format(diaType)
 
+              val diagnoses = if(exDiagnosis.get(key)!=null) exDiagnosis.get(key).toList else List.empty[Object]
+              val descriptions = if(exDiagnosis.get(key_desc)!=null) exDiagnosis.get(key_desc).toList else List.empty[Object]
+
+              for(i <- 0 until math.max(diagnoses.size, descriptions.size)){
+                val diagnosis =  if(diagnoses.size>i && diagnoses.get(i).isInstanceOf[Mkb])
+                  diagnoses.get(i).asInstanceOf[Mkb]
+                else null
+                val description = if(descriptions.size>i && descriptions.get(i).isInstanceOf[String])
+                  descriptions.get(i).asInstanceOf[String]
+                else ""
+
+                val container = new DiagnosisContainer()
+                container.setDiagnosisKind(diaType)
+                container.setDescription(description)
+                container.setMkb(new MKBContainer(diagnosis))
+                this.diagnoses += container
+              }
+            }
+            case "admission" => { //Старая часть кода по диагнозу при поступлении из экшн пропертей
+              if (admissions!=null && corrList!=null) {
+                var description: String = ""
+                var diagnosis: Mkb = null
+
+                admissions.foreach(prop => {
+                  val result = corrList.find(p=> p.getActionPropertyType.getId.intValue()==prop._1.getType.getId.intValue()).getOrElse(null)
+                  if (result!=null) {
+                    if (result.getId.compareTo(ConfigManager.Messages("db.rbCAP.primary.admission").toInt :java.lang.Integer)==0 ||
+                      result.getId.compareTo(ConfigManager.Messages("db.rbCAP.secondary.admission").toInt :java.lang.Integer)==0) {
+                      if (prop._2 != null && prop._2.size() > 0) {
+                        diagnosis = prop._2.get(0).getValue.asInstanceOf[Mkb]
+                      }
+                    } else if (result.getId.compareTo(ConfigManager.Messages("db.rbCAP.primary.description").toInt :java.lang.Integer)==0 ||
+                      result.getId.compareTo(ConfigManager.Messages("db.rbCAP.secondary.description").toInt :java.lang.Integer)==0) {
+                      if (prop._2 != null && prop._2.size() > 0) {
+                        description = prop._2.get(0).getValueAsString
+                      }
+                    }
+                  }
+                })
+                val container = new DiagnosisContainer()
+                container.setDiagnosisKind("admission")
+                container.setDescription(description)
+                container.setMkb(new MKBContainer(diagnosis))
+                this.diagnoses += container
+              }
+            }
+            case _ => {}
+          }
+        }
+      })
+    }
+    //*******************Доп сведения***************
+    //Движения
     val setATIds = JavaConversions.asJavaSet(Set(ConfigManager.Messages("db.actionType.hospitalization.primary").toInt :java.lang.Integer,
-                                                 ConfigManager.Messages("db.actionType.moving").toInt :java.lang.Integer))
+      ConfigManager.Messages("db.actionType.moving").toInt :java.lang.Integer))
     val setCoreIds = JavaConversions.asJavaSet(Set(ConfigManager.RbCAPIds("db.rbCAP.hosp.primary.id.sentTo").toInt :java.lang.Integer,
-                                                   ConfigManager.RbCAPIds("db.rbCAP.moving.id.movedIn").toInt :java.lang.Integer))
+      ConfigManager.RbCAPIds("db.rbCAP.moving.id.movedIn").toInt :java.lang.Integer))
 
     if (mMovingProperties!=null){
       val move = mMovingProperties(event.getId.intValue(), setATIds, setCoreIds)
@@ -546,158 +550,16 @@ class AppealEntry {
           }
 
           if (res!=null) {   //Запись
-            this.ward = "%s(%s)".format(res._2.get(0).getValue.asInstanceOf[OrgStructure].getName, res._2.get(0).getValue.asInstanceOf[OrgStructure].getAddress)
+            this.ward = new OrgStructureContainer(res._2.get(0).getValue.asInstanceOf[OrgStructure])
             val diffOfDays = ((new Date()).getTime - res._1.getAction.getBegDate.getTime)/(1000 * 60 * 60 * 24) + 1
             this.totalDays = "Проведено %d койко-дней".format(diffOfDays)
           }
         }
       }
     }
-  }
-
-  /**
-   * Конструктор класса AppealEntry
-   * @param event Обращение на госпитализацию
-   * @param action Первичный осмотр при поступлении
-   * @param values Значения свойств действий
-   * @param typeOfResponse Тип запроса.<pre>
-   * &#15;Возможные значения:
-   * &#15;"standart" - (по умолчанию) Данные об госпитализации.
-   * &#15;"print_form" - Печатная форма госпитализации. Данные об госпитализации + данные об пациенте</pre>
-   * @param map Информация об адресах КЛАДР
-   * @param street Информация об адресах Street
-   * @param havePrimary Флаг, имеется ли в текущей госпитализации первичный осмотр
-   * @param mRelationByRelativeId Делегируемый метод по поиску связи пациента и представителя по идентификатору представителя.
-   */
-  def this(event: Event,
-           action: Action,
-           values: java.util.Map[java.lang.Integer, java.util.List[Object]],
-           typeOfResponse: String,
-           map: java.util.LinkedHashMap[java.lang.Integer, java.util.LinkedList[Kladr]],
-           street: java.util.LinkedHashMap[java.lang.Integer, Street],
-           havePrimary: Boolean,
-           mRelationByRelativeId: (Int)=> ClientRelation) {
-    this(event, action, /*appType,*/ values, typeOfResponse, map, street, mRelationByRelativeId)
+    //Имеет первичный осмотр
     this.havePrimary = havePrimary
-  }
-
-  /**
-   * Конструктор класса AppealEntry
-   * @param event Обращение на госпитализацию
-   * @param action Первичный осмотр при поступлении
-   * @param values Значения свойств действий
-   * @param mMovingProperties Делегируемый метод поиска  указанных свойств последних действий указанного типа для заданного Event.
-   * @param typeOfResponse Тип запроса.<pre>
-   * &#15;Возможные значения:
-   * &#15;"standart" - (по умолчанию) Данные об госпитализации.
-   * &#15;"print_form" - Печатная форма госпитализации. Данные об госпитализации + данные об пациенте</pre>
-   * @param map Информация об адресах КЛАДР
-   * @param street Информация об адресах Street
-   * @param havePrimary Флаг, имеется ли в текущей госпитализации первичный осмотр
-   * @param mRelationByRelativeId Делегируемый метод по поиску связи пациента и представителя по идентификатору представителя.
-   */
-  def this(event: Event,
-           action: Action,
-           values: java.util.Map[java.lang.Integer, java.util.List[Object]],
-           //aps: java.util.Map[ActionProperty, java.util.List[APValue]],
-           mMovingProperties: (Int, java.util.Set[java.lang.Integer], java.util.Set[java.lang.Integer]) => java.util.Map[ActionProperty, java.util.List[APValue]],
-           typeOfResponse: String,
-           map: java.util.LinkedHashMap[java.lang.Integer, java.util.LinkedList[Kladr]],
-           street: java.util.LinkedHashMap[java.lang.Integer, Street],
-           havePrimary: Boolean,
-           mRelationByRelativeId: (Int)=> ClientRelation,
-           corrList: java.util.List[RbCoreActionProperty]) {
-    this(event, action, values, mMovingProperties, typeOfResponse, map, street, mRelationByRelativeId, corrList)
-    this.havePrimary = havePrimary
-  }
-
-  /**
-   * Конструктор класса AppealEntry
-   * @param event Обращение на госпитализацию
-   * @param action Первичный осмотр при поступлении
-   * @param values Значения свойств действий
-   * @param mMovingProperties Делегируемый метод поиска  указанных свойств последних действий указанного типа для заданного Event.
-   * @param typeOfResponse Тип запроса.<pre>
-   * &#15;Возможные значения:
-   * &#15;"standart" - (по умолчанию) Данные об госпитализации.
-   * &#15;"print_form" - Печатная форма госпитализации. Данные об госпитализации + данные об пациенте</pre>
-   * @param map Информация об адресах КЛАДР
-   * @param street Информация об адресах Street
-   * @param havePrimary Флаг, имеется ли в текущей госпитализации первичный осмотр
-   * @param mRelationByRelativeId Делегируемый метод по поиску связи пациента и представителя по идентификатору представителя.
-   * @param admissions Список свойств действия с диагнозами
-   * @param corrList Список RbCoreActionProperty для поиска соответствия идентификаторов
-   */
-  def this(event: Event,
-           action: Action,
-           values: java.util.Map[java.lang.Integer, java.util.List[Object]],
-           //aps: java.util.Map[ActionProperty, java.util.List[APValue]],
-           mMovingProperties: (Int, java.util.Set[java.lang.Integer], java.util.Set[java.lang.Integer]) => java.util.Map[ActionProperty, java.util.List[APValue]],
-           typeOfResponse: String,
-           map: java.util.LinkedHashMap[java.lang.Integer, java.util.LinkedList[Kladr]],
-           street: java.util.LinkedHashMap[java.lang.Integer, Street],
-           havePrimary: Boolean,
-           mRelationByRelativeId: (Int)=> ClientRelation,
-           admissions: java.util.Map[ActionProperty, java.util.List[APValue]],
-           corrList: java.util.List[RbCoreActionProperty]) {
-    this(event, action, values, mMovingProperties, typeOfResponse, map, street, havePrimary, mRelationByRelativeId, corrList)
-
-    if (admissions!=null && corrList!=null) {
-      var description: String = ""
-      var diagnosis: Mkb = null
-
-      admissions.foreach(prop => {
-        val result = corrList.find(p=> p.getActionPropertyType.getId.intValue()==prop._1.getType.getId.intValue()).getOrElse(null)
-        if (result!=null) {
-          if (result.getId.compareTo(ConfigManager.Messages("db.rbCAP.primary.admission").toInt :java.lang.Integer)==0 ||
-              result.getId.compareTo(ConfigManager.Messages("db.rbCAP.secondary.admission").toInt :java.lang.Integer)==0) {
-            if (prop._2 != null && prop._2.size() > 0) {
-              diagnosis = prop._2.get(0).getValue.asInstanceOf[Mkb]
-            }
-          } else if (result.getId.compareTo(ConfigManager.Messages("db.rbCAP.primary.description").toInt :java.lang.Integer)==0 ||
-            result.getId.compareTo(ConfigManager.Messages("db.rbCAP.secondary.description").toInt :java.lang.Integer)==0) {
-            if (prop._2 != null && prop._2.size() > 0) {
-              description = prop._2.get(0).getValueAsString
-            }
-          }
-        }
-      })
-
-      this.diagnoses += new DiagnosisContainer("supply", description, "", diagnosis)
-    }
-  }
-  /**
-   * Конструктор класса AppealEntry
-   * @param event Обращение на госпитализацию
-   * @param action Первичный осмотр при поступлении
-   * @param values Значения свойств действий
-   * @param mMovingProperties Делегируемый метод поиска  указанных свойств последних действий указанного типа для заданного Event.
-   * @param typeOfResponse Тип запроса.<pre>
-   * &#15;Возможные значения:
-   * &#15;"standart" - (по умолчанию) Данные об госпитализации.
-   * &#15;"print_form" - Печатная форма госпитализации. Данные об госпитализации + данные об пациенте</pre>
-   * @param map Информация об адресах КЛАДР
-   * @param street Информация об адресах Street
-   * @param havePrimary Флаг, имеется ли в текущей госпитализации первичный осмотр
-   * @param mRelationByRelativeId Делегируемый метод по поиску связи пациента и представителя по идентификатору представителя.
-   * @param admissions Список свойств действия с диагнозами
-   * @param extractProperties Список свойств действия с данными из выписки
-   * @param corrList Список RbCoreActionProperty для поиска соответствия идентификаторов
-   */
-  def this(event: Event,
-           action: Action,
-           values: java.util.Map[java.lang.Integer, java.util.List[Object]],
-           mMovingProperties: (Int, java.util.Set[java.lang.Integer], java.util.Set[java.lang.Integer]) => java.util.Map[ActionProperty, java.util.List[APValue]],
-           typeOfResponse: String,
-           map: java.util.LinkedHashMap[java.lang.Integer, java.util.LinkedList[Kladr]],
-           street: java.util.LinkedHashMap[java.lang.Integer, Street],
-           havePrimary: Boolean,
-           mRelationByRelativeId: (Int)=> ClientRelation,
-           admissions: java.util.Map[ActionProperty, java.util.List[APValue]],
-           extractProperties: java.util.Map[ActionProperty, java.util.List[APValue]],
-           corrList: java.util.List[RbCoreActionProperty]
-           ) {
-    this(event, action, values, mMovingProperties, typeOfResponse, map, street, havePrimary, mRelationByRelativeId, admissions, corrList)
+    //Данные о последующей госпитализации
     if (extractProperties!=null && corrList!=null) {
       extractProperties.foreach(prop => {
         val result = corrList.find(p=> p.getActionPropertyType.getId.intValue()==prop._1.getType.getId.intValue()).getOrElse(null)
@@ -714,44 +576,11 @@ class AppealEntry {
         }
       })
     }
-  }
-
-  /**
-   * Конструктор класса AppealEntry
-   * @param event Обращение на госпитализацию
-   * @param action Первичный осмотр при поступлении
-   * @param values Значения свойств действий
-   * @param mMovingProperties Делегируемый метод поиска  указанных свойств последних действий указанного типа для заданного Event.
-   * @param typeOfResponse Тип запроса.<pre>
-   * &#15;Возможные значения:
-   * &#15;"standart" - (по умолчанию) Данные об госпитализации.
-   * &#15;"print_form" - Печатная форма госпитализации. Данные об госпитализации + данные об пациенте</pre>
-   * @param map Информация об адресах КЛАДР
-   * @param street Информация об адресах Street
-   * @param havePrimary Флаг, имеется ли в текущей госпитализации первичный осмотр
-   * @param mRelationByRelativeId Делегируемый метод по поиску связи пациента и представителя по идентификатору представителя.
-   * @param admissions Список свойств действия с диагнозами
-   * @param extractProperties Список свойств действия с данными из выписки
-   * @param corrList Список RbCoreActionProperty для поиска соответствия идентификаторов
-   */
-  def this(event: Event,
-           action: Action,
-           values: java.util.Map[java.lang.Integer, java.util.List[Object]],
-           mMovingProperties: (Int, java.util.Set[java.lang.Integer], java.util.Set[java.lang.Integer]) => java.util.Map[ActionProperty, java.util.List[APValue]],
-           typeOfResponse: String,
-           map: java.util.LinkedHashMap[java.lang.Integer, java.util.LinkedList[Kladr]],
-           street: java.util.LinkedHashMap[java.lang.Integer, Street],
-           havePrimary: Boolean,
-           mRelationByRelativeId: (Int)=> ClientRelation,
-           admissions: java.util.Map[ActionProperty, java.util.List[APValue]],
-           extractProperties: java.util.Map[ActionProperty, java.util.List[APValue]],
-           corrList: java.util.List[RbCoreActionProperty],
-           contract: Contract) {
-    this(event, action, values, mMovingProperties, typeOfResponse, map, street, havePrimary, mRelationByRelativeId, admissions, extractProperties, corrList)
-    if (contract != null) {
+    //Контракт
+    if (contract != null)
       this.contract = new ContractContainer(contract)
-    }
-  }
+}
+
   /**
    * Внутренний метод, возвращает нумерованный список значений в контейнер из набора свойств
    * @param set Набор искомых свойств действия
@@ -804,6 +633,8 @@ class AppealEntry {
 @JsonIgnoreProperties(ignoreUnknown = true)
 class DiagnosisContainer {
   @BeanProperty
+  var diagnosticId: Int = -1
+  @BeanProperty
   var diagnosisKind: String = _
   @BeanProperty
   var description: String = _
@@ -812,6 +643,24 @@ class DiagnosisContainer {
   @BeanProperty
   var mkb: MKBContainer = new MKBContainer()
 
+  /**
+   * Конструктор DiagnosisContainer
+   * @param diagnostic Данные о диагнозе как Diagnostic entity
+   */
+  def this(diagnostic: Diagnostic){
+    this()
+    if(diagnostic!=null) {
+      this.diagnosticId = diagnostic.getId.intValue()
+      this.diagnosisKind =
+        if(diagnostic.getDiagnosisType.getFlatCode.isEmpty)
+          diagnostic.getDiagnosisType.getName
+        else diagnostic.getDiagnosisType.getFlatCode
+      this.description = diagnostic.getNotes
+      this.injury = if(diagnostic.getTraumaType!=null) {diagnostic.getTraumaType.getName} else {""}
+      this.mkb =  if(diagnostic.getDiagnosis!=null && diagnostic.getDiagnosis.getMkb!=null) new MKBContainer(diagnostic.getDiagnosis.getMkb) else new MKBContainer()
+    }
+  }
+/*
   /**
    * Конструктор DiagnosisContainer
    * @param diagnosisKind Мнемоника диагноза (описание типа)
@@ -849,20 +698,6 @@ class DiagnosisContainer {
   }
 
   /**
-   * Конструктор DiagnosisContainer
-   * @param diagnosis Данные о диагнозе как Diagnostic entity
-   */
-  def this(diagnosis: Diagnostic){
-    this()
-    if(diagnosis!=null) {
-      this.diagnosisKind = diagnosis.getDiagnosisType.getName
-      this.description = diagnosis.getNotes
-      this.injury = if(diagnosis.getTraumaType!=null) {diagnosis.getTraumaType.getName} else {""}
-      this.mkb =  if(diagnosis.getDiagnosis!=null && diagnosis.getDiagnosis.getMkb!=null) new MKBContainer(diagnosis.getDiagnosis.getMkb) else null
-    }
-  }
-
-  /**
    * Конструктор DiagnosisContainer с анализом типа diagnosis и типа mkb
    * @param diagnosis Данные о диагнозе в виде Diagnostic или в виде ActionProperty как Object
    * @param mkb Данные о диагнозе в виде MKB или String как Object
@@ -893,7 +728,7 @@ class DiagnosisContainer {
       }
     }
   }
-
+  */
   /**
    * Метод представляет контейнер в виде Map
    * @return Возвращает список свойств контейнера  как Map[String, Object]
@@ -1087,7 +922,7 @@ class DoctorContainer {
 @JsonIgnoreProperties(ignoreUnknown = true)
 class MKBContainer {
   @BeanProperty
-  var id: Int = _
+  var id: Int = -1
   @BeanProperty
   var code: String = _
   @BeanProperty
@@ -1110,9 +945,11 @@ class MKBContainer {
    */
   def this(mkb: Mkb){
     this()
-    this.id = mkb.getId.intValue()
-    this.code = mkb.getDiagID
-    this.diagnosis = mkb.getDiagName
+    if (mkb!=null){
+      this.id = mkb.getId.intValue()
+      this.code = mkb.getDiagID
+      this.diagnosis = mkb.getDiagName
+    }
   }
 
   /**

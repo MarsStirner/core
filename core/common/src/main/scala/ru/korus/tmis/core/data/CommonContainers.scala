@@ -32,6 +32,23 @@ class IdNameContainer {
   }
 }
 
+class IdNameAndCodeContainer {
+
+  @BeanProperty
+  var id : Int = _
+  @BeanProperty
+  var name : String = _
+  @BeanProperty
+  var code : String = _
+
+  def this( id : Int, name : String, code : String) = {
+    this()
+    this.id = id
+    this.name = name
+    this.code = code
+  }
+}
+
 @XmlType(name = "idValContainer")
 @XmlRootElement(name = "idValContainer")
 @JsonIgnoreProperties(ignoreUnknown = true)

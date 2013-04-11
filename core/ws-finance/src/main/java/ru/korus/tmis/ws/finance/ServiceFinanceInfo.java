@@ -14,7 +14,7 @@ import javax.jws.WebService;
 
 @WebService(targetNamespace = "http://korus.ru/tmis/ws/finance",
         name = "FinanceInfo")
-public interface ServiceFinanceInfo {
+interface ServiceFinanceInfo {
 
     /**
      * Имя параметра запроса, содержащего наименование подразделения

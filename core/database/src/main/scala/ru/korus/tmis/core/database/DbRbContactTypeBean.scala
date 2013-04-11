@@ -11,6 +11,7 @@ import ru.korus.tmis.core.entity.model.{RbContactType}
 import java.lang.Iterable
 import ru.korus.tmis.core.data.{DictionaryListRequestDataFilter, QueryDataStructure}
 import scala.collection.JavaConversions._
+import ru.korus.tmis.core.filter.ListDataFilter
 
 @Interceptors(Array(classOf[LoggingInterceptor]))
 @Stateless
@@ -73,18 +74,15 @@ class DbRbContactTypeBean
     typed.getSingleResult
   }
 
-  def getAllRbContactTypesWithFilter(page: Int, limit: Int, sortingField: String, sortingMethod: String, filter: Object): java.util.LinkedList[Object] = {
-    val queryStr: QueryDataStructure = if (filter.isInstanceOf[DictionaryListRequestDataFilter])
-      filter.asInstanceOf[DictionaryListRequestDataFilter].toQueryStructure()
-    else new QueryDataStructure()
+  def getAllRbContactTypesWithFilter(page: Int, limit: Int, sorting: String, filter: ListDataFilter): java.util.LinkedList[Object] = {
 
-    val sorting = "ORDER BY %s %s".format(sortingField, sortingMethod)
+    val queryStr = filter.toQueryStructure()
     if (queryStr.data.size() > 0) {
       if (queryStr.query.indexOf("AND ") == 0) {
         queryStr.query = "WHERE " + queryStr.query.substring("AND ".length())
       }
     }
-    var typed = em.createQuery(AllRbContactTypesWithFilterQuery.format("r.id, r.name", queryStr.query, sorting), classOf[Array[AnyRef]])
+    val typed = em.createQuery(AllRbContactTypesWithFilterQuery.format("r.id, r.name", queryStr.query, sorting), classOf[Array[AnyRef]])
                   .setMaxResults(limit)
                   .setFirstResult(limit * page)
     if (queryStr.data.size() > 0) queryStr.data.foreach(qdp => typed.setParameter(qdp.name, qdp.value))

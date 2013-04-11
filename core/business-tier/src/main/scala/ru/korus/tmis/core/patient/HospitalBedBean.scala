@@ -18,7 +18,7 @@ import ru.korus.tmis.core.event.{Notification, ModifyActionNotification}
 import javax.inject.Inject
 import javax.enterprise.event.Event
 import javax.enterprise.inject.Any
-import collection.JavaConversions
+import collection.{mutable, JavaConversions}
 import ru.korus.tmis.core.common.CommonDataProcessorBeanLocal
 import java.util.Date
 import org.slf4j.LoggerFactory
@@ -274,8 +274,14 @@ with TmisLogging{
                                             authData)
       action.setStatus(ActionStatus.FINISHED.getCode)  //Добавлено в спеку по переводам
       action.setBegDate(oldAction.getBegDate)
-      if (flgOption != this.directionInDepartment)
+      if (flgOption == this.directionInDepartment)
         action.setEndDate(oldAction.getEndDate)
+      else {
+        if(hbData.data.move.moveDatetime!=null)
+          action.setEndDate(hbData.data.move.moveDatetime)
+        else
+          action.setEndDate(new Date())
+      }
 
       entities = entities + action
       result = action :: result
@@ -359,7 +365,7 @@ with TmisLogging{
     })
 
     val result = em.createQuery(BusyHospitalBedsByDepartmentIdQuery.format(i18n("db.action.movingFlatCode"),
-                                                                           i18n("db.actionPropertyType.moving.name.bed")),
+                                                                           iCapIds("db.rbCAP.moving.id.bed")),
                                 classOf[OrgStructureHospitalBed])
       .setParameter("ids", asJavaCollection(ids))
       .getResultList
@@ -471,7 +477,7 @@ with TmisLogging{
     }
 
     //1. Отменяем текущее действие
-    val oldValues = actionPropertyBean.getActionPropertiesByActionId(oldAction.getId.intValue)
+    //val oldValues = actionPropertyBean.getActionPropertiesByActionId(oldAction.getId.intValue)
     val lockId = appLock.acquireLock("Action", actionId, oldAction.getIdx, authData)
 
     try {
@@ -500,55 +506,106 @@ with TmisLogging{
     val temp = this.getLastMovingActionForEventId(oldAction.getEvent.getId.intValue())
     if (temp!=null) {
       val oldLastAction =  Action.clone(temp)
-      val oldLastValues = actionPropertyBean.getActionPropertiesByActionId(oldLastAction.getId.intValue)
       val lockLastId = appLock.acquireLock("Action", oldLastAction.getId.intValue(), oldLastAction.getIdx, authData)
 
-      var result = List[Action]()
+      //var flgBusyBed = false
+      var resultA = List[Action]()
       var entities = Set.empty[AnyRef]
+      var apvs_removed = List[APValue]()
+      //var apvs_merged = List[APValue]()
+      var bed: OrgStructureHospitalBed = null
+      var flgEdit: Short = 0 //0 - оставляем как есть, 1 - редактируем значения, 2 - удаляем значения
 
+      val listMovAP = JavaConversions.asJavaList(List(
+                                                    iCapIds("db.rbCAP.moving.id.bed").toInt: java.lang.Integer,
+                                                    iCapIds("db.rbCAP.moving.id.movedIn").toInt: java.lang.Integer,
+                                                    iCapIds("db.rbCAP.moving.id.endTime").toInt: java.lang.Integer
+                                                 ))
       try {
-        //поиск свободной койки
-        var flgBusyBed = false
-        val coreAP = dbRbCoreActionPropertyBean.getRbCoreActionPropertyByActionTypeIdAndCorePropertyName(i18n("db.actionType.moving").toInt,i18n("db.actionPropertyType.moving.name.bed").toString)
-        val values = oldLastValues.find(p => (p._1.getType.getId.intValue()==coreAP.getActionPropertyType.getId.intValue())).getOrElse(null)
-        val bedId: java.lang.Integer =
-          if (values!=null && values._2!=null && values._2.size>0)
-           values._2.iterator().next.getValue.asInstanceOf[OrgStructureHospitalBed].getId
-          else null
-
-        if (bedId!=null){
-          val result2 = em.createQuery(BusyHospitalBedsByDepartmentIdQuery.format(i18n("db.action.movingFlatCode"),i18n("db.actionPropertyType.moving.name.bed")), classOf[OrgStructureHospitalBed])
-            .setParameter("ids", asJavaCollection(Set(bedId)))
-            .getResultList
-          result2.foreach(em.detach(_))
-          flgBusyBed = if (result2!=null) true else false
-        } else {
-          flgBusyBed = true
-        }
 
         //Редактируем старое действие
-        val action =  actionBean.getActionById(oldLastAction.getId.intValue)
+        val action =  actionBean.getActionById(oldLastAction.getId.intValue())
         action.setModifyPerson(authData.user)
         action.setModifyDatetime(new Date())
         action.setVersion(oldLastAction.getVersion.intValue)
-        action.setEndDate(null)
 
-        entities = entities + action
-        result = action :: result
+        //Редактируем значения свойств действия
+        val oldLastValues = actionPropertyBean.getActionPropertiesByActionIdAndRbCoreActionPropertyIds(oldLastAction.getId.intValue,
+                                                                                                       listMovAP)
 
-        if (flgBusyBed && values!=null){  //Если койка занята затрем ее значение в ActionProperty
-          val ap = actionPropertyBean.updateActionProperty( values._1.getId.intValue,
-                                                            values._1.getVersion.intValue,
-                                                            authData)
+        val coreAPs = dbRbCoreActionPropertyBean.getRbCoreActionPropertiesByIds(listMovAP)
 
-          entities = entities + ap
+        val lstCoreAP = coreAPs.filter(p=>p.getId.compareTo(iCapIds("db.rbCAP.moving.id.bed").toInt: java.lang.Integer)==0).toList
+        val coreAP = if(lstCoreAP!=null&&lstCoreAP.size>0)lstCoreAP.get(0) else null
 
-          val apvs = actionPropertyBean.getActionPropertyValue(ap)
-          dbManager.removeAll(apvs)
+        if (oldLastValues!=null && coreAP!=null) {
+          val result = oldLastValues.find(p=> p._1.getType.getId.intValue()==coreAP.getActionPropertyType.getId.intValue()).getOrElse(null)
+          if (result!=null && result._2!=0 && result._2.size()>0) {
+            bed = result._2.get(0).getValue.asInstanceOf[OrgStructureHospitalBed]
+            val result2 = em.createQuery(BusyHospitalBedsByDepartmentIdQuery.format(i18n("db.action.movingFlatCode"),
+                                                                                    iCapIds("db.rbCAP.moving.id.bed")),
+                                                                                    classOf[OrgStructureHospitalBed])
+                                                                                    .setParameter("ids", asJavaCollection(Set(bed.getId.intValue())))
+                                                                                    .getResultList
+            result2.foreach(em.detach(_))
+            if(result2!=null && result2.size()>0) { //Койка уже занята, инициируем перевод в это же отделение (Редактируем значения Переведен в и Время выбытия)
+              flgEdit = 1
+            }
+            else { //Койка свободна - кладем на койку (Затираем значения Переведен в и время выбытия)
+              flgEdit = 2
+            }
+          }
+
+          if (flgEdit>0){
+            val lstCoreAPForEdit = coreAPs.filter(p=>p.getId.compareTo(iCapIds("db.rbCAP.moving.id.movedIn").toInt: java.lang.Integer)==0 ||
+                                                     p.getId.compareTo(iCapIds("db.rbCAP.moving.id.endTime").toInt: java.lang.Integer)==0).toList
+
+            lstCoreAPForEdit.foreach(cap => {
+              val ap_values = oldLastValues.find(p=> p._1.getType.getId.intValue()==cap.getActionPropertyType.getId.intValue()).getOrElse(null)
+              if(ap_values!=null){
+
+                //Обновим АР
+                val ap = actionPropertyBean.updateActionProperty( ap_values._1.getId.intValue,
+                                                                  ap_values._1.getVersion.intValue,
+                                                                  authData)
+                entities = entities + ap
+
+                //Обновим APVs
+                if (ap_values._2!=0 && ap_values._2.size()>0) {
+                  flgEdit match {
+                    case 1 => { //Редактируем значения "Переведен в" и "Время выбытия"
+                      if (cap.getId.compareTo(iCapIds("db.rbCAP.moving.id.movedIn").toInt: java.lang.Integer)==0) {
+                        val apv = actionPropertyBean.setActionPropertyValue(ap_values._1, bed.getMasterDepartment.getId.toString, 0)
+                        entities = entities + apv.unwrap
+                      }
+                      else if (cap.getId.compareTo(iCapIds("db.rbCAP.moving.id.endTime").toInt: java.lang.Integer)==0) {
+                        val now = new Date()
+                        val formatter: DateFormat = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss")
+                        val apv = actionPropertyBean.setActionPropertyValue(ap_values._1, formatter.format(now), 0)
+                        entities = entities + apv.unwrap
+                        action.setEndDate(now)
+                      }
+                      //apvs_merged = ap_values._2.toList ::: apvs_merged
+                    }
+                    case 2 => { //Затираем значения "Переведен в" и "Время выбытия"
+                      action.setEndDate(null)
+                      apvs_removed = ap_values._2.toList ::: apvs_removed
+                    }
+                    case _ => {}
+                  }
+                }
+              }
+            })
+          }
         }
 
-        result = dbManager.mergeAll(entities).filter(result.contains(_)).map(_.asInstanceOf[Action]).toList
-        val r = dbManager.detachAll[Action](result).toList
+        entities = entities + action
+        resultA = action :: resultA
+
+        dbManager.removeAll(apvs_removed)
+        resultA = dbManager.mergeAll(entities).filter(resultA.contains(_)).map(_.asInstanceOf[Action]).toList
+        val r = dbManager.detachAll[Action](resultA).toList
+
         /*
         r.foreach(newAction => {
           val newValues = actionPropertyBean.getActionPropertiesByActionId(newAction.getId.intValue)
@@ -636,20 +693,17 @@ with TmisLogging{
       null:java.lang.Integer
   }
 
-  private def getLastMovingActionForEventId(eventId: Int) = {
-    var result = em.createQuery(LastMovingActionByEventIdQuery.format(i18n("db.action.movingFlatCode")),
-                                classOf[Array[AnyRef]])
+  def getLastMovingActionForEventId(eventId: Int) = {
+    val result = em.createQuery(LastMovingActionByEventIdQuery.format(i18n("db.action.movingFlatCode")),
+                                classOf[Action])
       .setParameter("id", eventId)
       .getResultList
 
     result.size() match {
       case 0 => null
       case _ => {
-        val pos = result.iterator().next()(0)
-        if (pos.isInstanceOf[Action]) {
-          result.foreach(f=>em.detach(f(0)))
-          pos.asInstanceOf[Action]
-        } else null
+        result.foreach(em.detach(_))
+        result.iterator().next
       }
     }
   }
@@ -706,9 +760,7 @@ with TmisLogging{
           SELECT cap.actionPropertyType.id
           FROM RbCoreActionProperty cap
           WHERE
-            cap.actionType.id = at.id
-          AND
-            cap.name = '%s'
+            cap.id = '%s'
         )
       AND
         a.endDate IS NULL
@@ -723,6 +775,25 @@ with TmisLogging{
     """
 
   val LastMovingActionByEventIdQuery =
+    """
+    SELECT a
+    FROM
+      Action a
+        JOIN a.actionType at
+        JOIN a.event e
+    WHERE
+      e.id = :id
+    AND
+      at.flatCode = '%s'
+    AND
+      a.deleted = 0
+    AND
+      at.deleted = 0
+    AND
+      a.endDate IS NOT NULL
+    ORDER BY a.endDate desc, a.id desc
+    """
+  /*val LastMovingActionByEventIdQuery =
     """
     SELECT a, COALESCE(max(a.endDate),0)
     FROM
@@ -739,5 +810,5 @@ with TmisLogging{
       a.deleted = 0
     AND
       at.deleted = 0
-    """
+    """*/
 }

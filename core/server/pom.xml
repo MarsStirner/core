@@ -16,6 +16,7 @@
         <relativePath>../</relativePath>
     </parent>
 
+
     <dependencies>
 
         <!-- Korus dependency -->
@@ -141,33 +142,6 @@
                     <!--<earSourceIncludes>logback.xml</earSourceIncludes>-->
                 </configuration>
             </plugin>
-            <!--
-                        <plugin>
-                            <groupId>org.glassfish.maven.plugin</groupId>
-                            <artifactId>maven-glassfish-plugin</artifactId>
-                            <executions>
-                                <execution>
-                                    <phase>install</phase>
-                                    <goals>
-                                        <goal>redeploy</goal>
-                                    </goals>
-                                </execution>
-                            </executions>
-                        </plugin>
-                        <plugin>
-                            <groupId>maven-python-mojos</groupId>
-                            <artifactId>maven-bdd-plugin</artifactId>
-                            <version>1.0.1</version>
-                            <executions>
-                                <execution>
-                                    <phase>install</phase>
-                                    <goals>
-                                        <goal>nose</goal>
-                                    </goals>
-                                </execution>
-                            </executions>
-                        </plugin>
-            -->
         </plugins>
     </build>
 

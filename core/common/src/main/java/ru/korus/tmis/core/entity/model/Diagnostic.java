@@ -360,4 +360,9 @@ public class Diagnostic implements Serializable {
         return super.clone();
     }
 
+    public static Diagnostic clone(Diagnostic self) throws CloneNotSupportedException {
+        Diagnostic newDiagnostic = (Diagnostic) self.clone();
+        return newDiagnostic;
+    }
+
 }

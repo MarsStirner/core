@@ -11,6 +11,7 @@ import ru.korus.tmis.core.entity.model.Organisation
 import scala.collection.JavaConversions._
 import ru.korus.tmis.core.data.{QueryDataStructure, DictionaryListRequestDataFilter}
 import ru.korus.tmis.core.exception.CoreException
+import ru.korus.tmis.core.filter.ListDataFilter
 
 @Interceptors(Array(classOf[LoggingInterceptor]))
 @Stateless
@@ -98,20 +99,15 @@ class DbOrganizationBean
     typed.getSingleResult
   }
 
-  def getAllOrganizationWithFilter(page: Int, limit: Int, sortingField: String, sortingMethod: String, filter: Object): java.util.LinkedList[Object] = {
-    var queryStr: QueryDataStructure = if (filter.isInstanceOf[DictionaryListRequestDataFilter]) {
-      filter.asInstanceOf[DictionaryListRequestDataFilter].toQueryStructure()
-    }
-    else {
-      new QueryDataStructure()
-    }
+  def getAllOrganizationWithFilter(page: Int, limit: Int, sorting: String, filter: ListDataFilter): java.util.LinkedList[Object] = {
+
+    val queryStr = filter.toQueryStructure()
     queryStr.query += (if (filter.asInstanceOf[DictionaryListRequestDataFilter].getDictName().compare("TFOMS") == 0) {
       "AND r.headId IS NULL AND r.isHospital = 0"
     }
     else {
       "AND r.isInsurer = 1"
     })
-    val sorting = "ORDER BY %s %s".format(sortingField, sortingMethod)
     if (queryStr.data.size() > 0 || queryStr.query.size > 0) {
       if (queryStr.query.indexOf("AND ") == 0) {
         queryStr.query = "WHERE " + queryStr.query.substring("AND ".length())
@@ -123,9 +119,9 @@ class DbOrganizationBean
     } else {
       "r.id, r.fullName"
     }
-    var typed = em.createQuery(AllOrganizationsWithFilterQuery.format(handle, queryStr.query, sorting), classOf[Array[AnyRef]])
-      .setMaxResults(limit)
-      .setFirstResult(limit * page)
+    val typed = em.createQuery(AllOrganizationsWithFilterQuery.format(handle, queryStr.query, sorting), classOf[Array[AnyRef]])
+                  .setMaxResults(limit)
+                  .setFirstResult(limit * page)
     if (queryStr.data.size() > 0) {
       queryStr.data.foreach(qdp => typed.setParameter(qdp.name, qdp.value))
     }
