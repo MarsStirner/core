@@ -92,7 +92,7 @@
 
         <!-- Переменные по умолчанию, для тех кто не хочет их переносить в свои профили -->
 
-        <!-- Название ресурса к которому подсоединяется ядро (всегда должно быть s11r64) -->
+        <!-- Название ресурса к которому подсоединяется ядро (жестко прописаны в коде, всегда должны быть такими) -->
         <mysql.db.jndi.mis>s11r64</mysql.db.jndi.mis>
         <mysql.db.jndi.rls>rls</mysql.db.jndi.rls>
         <mysql.db.jndi.tmis_core>tmis_core</mysql.db.jndi.tmis_core>
@@ -113,12 +113,10 @@
         <mysql.db.rls>rls</mysql.db.rls>
         <!-- Название пула для базы данных RLS -->
         <mysql.db.rls.pool>rls-pool</mysql.db.rls.pool>
-        <!-- Название базы данных для конфигурации ядра (пул к БД автоматом получит это имя + суффикс "-pool") -->
+        <!-- Название базы данных для конфигурации ядра  -->
         <mysql.db.tmis_core>tmis_core</mysql.db.tmis_core>
         <!-- Название пула для базы данных - конфигурации ядра -->
         <mysql.db.tmis_core.pool>tmis_core-pool</mysql.db.tmis_core.pool>
-
-
     </properties>
 
     <profiles>
@@ -485,9 +483,9 @@
             <id>vk-win</id>
             <properties>
                 <!-- Путь к директории доменов -->
-                <glassfish.domain.dir>C:\glassfishv3\glassfish\domains</glassfish.domain.dir>
+                <glassfish.domain.dir>C:\glassfish3\glassfish\domains</glassfish.domain.dir>
                 <!-- Домашняя директория Glassfish -->
-                <glassfish.home>C:\glassfishv3\</glassfish.home>
+                <glassfish.home>C:\glassfish3\</glassfish.home>
                 <!-- Хост сервера Glassfish -->
                 <glassfish.host>localhost</glassfish.host>
                 <!-- Порт инстанса приложения -->
@@ -524,9 +522,9 @@
                 <!-- Название пула для базы данных RLS -->
                 <mysql.db.rls.pool>rls-pool</mysql.db.rls.pool>
                 <!-- Название базы данных для конфигурации ядра (пул к БД автоматом получит это имя + суффикс "-pool") -->
-                <mysql.db.tmis_core>tc</mysql.db.tmis_core>
+                <mysql.db.tmis_core>tmis_core</mysql.db.tmis_core>
                 <!-- Название пула для базы данных - конфигурации ядра -->
-                <mysql.db.tmis_core.pool>tc-pool</mysql.db.tmis_core.pool>
+                <mysql.db.tmis_core.pool>tmis_core-pool</mysql.db.tmis_core.pool>
             </properties>
         </profile>
     </profiles>
