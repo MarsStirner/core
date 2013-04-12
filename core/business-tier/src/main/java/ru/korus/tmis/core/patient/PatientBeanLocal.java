@@ -1,10 +1,7 @@
 package ru.korus.tmis.core.patient;
 
 import ru.korus.tmis.core.auth.AuthData;
-import ru.korus.tmis.core.data.CommonData;
-import ru.korus.tmis.core.data.PatientEntry;
-import ru.korus.tmis.core.data.PatientRequestData;
-import ru.korus.tmis.core.data.PatientsListRequestData;
+import ru.korus.tmis.core.data.*;
 import ru.korus.tmis.core.entity.model.Patient;
 import ru.korus.tmis.core.entity.model.kladr.Kladr;
 import ru.korus.tmis.core.entity.model.kladr.Street;
@@ -62,5 +59,15 @@ public interface PatientBeanLocal {
      * @throws CoreException
      */
     Boolean deletePatientInfo(int id) throws CoreException;
+
+    /**
+     * Получение истории измения групп крови у пациента
+     * @param id Идентификатор пациента
+     * @return BloodHistoryListData
+     * @throws CoreException
+     */
+    BloodHistoryListData getBloodHistory(int id) throws CoreException;
+
+    BloodHistoryData insertBloodTypeForPatient(int id, BloodHistoryData data, AuthData authData) throws CoreException;
 
 }

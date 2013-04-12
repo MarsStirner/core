@@ -1108,9 +1108,14 @@ class WebMisRESTImpl  extends WebMisREST
 
   def deletePatientInfo(id: Int) = patientBean.deletePatientInfo(id)
 
-  def getDiagnosesByAppeal (appealId: Int, authData: AuthData) = {
-    val response = diagnosisBean.getDiagnosesByAppeal(appealId)
-    response
+  def getDiagnosesByAppeal (appealId: Int, authData: AuthData) = diagnosisBean.getDiagnosesByAppeal(appealId)
+
+  def getBloodTypesHistory (patientId: Int, authData: AuthData) = patientBean.getBloodHistory(patientId)
+
+  def insertBloodTypeForPatient(patientId: Int, data: BloodHistoryData, authData: AuthData) = {
+    patientBean.insertBloodTypeForPatient(patientId,
+                                          data,
+                                          authData)
   }
 
   //__________________________________________________________________________________________________

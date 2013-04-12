@@ -139,10 +139,10 @@ public class PatientRegistryRESTImpl {
     }
 
     /*
-    @GET
+    @DELETE
     @Path("/{patientId}/delete")
     @Produces("application/x-javascript")
-    public Object deletePatientInfo(@PathParam("id") int id,
+    public Object deletePatientInfo(@PathParam("patientId") int id,
                                     @QueryParam("callback") String callback,
                                     @Context HttpServletRequest servRequest)   {
         Object oip = wsImpl.deletePatientInfo(id);
@@ -161,4 +161,31 @@ public class PatientRegistryRESTImpl {
        JSONWithPadding returnValue = new JSONWithPadding(wsImpl.insertTalonSPOForPatient(data), callback);
        return returnValue;
     } */
+
+    /**
+     * Добавить запись о группе крови
+     * @param data данные о группе крови
+     * @param patientId Идентификатор пациента
+     * @return Историю изменений группы крови для пациента в json-формате
+     */
+    @POST
+    @Path("/{patientId}/bloodtypes")
+    @Consumes("application/json")
+    @Produces("application/x-javascript")
+    public Object addBloodType( BloodHistoryData data,
+                                @PathParam("patientId") int patientId)   {
+        return new JSONWithPadding(wsImpl.insertBloodTypeForPatient(patientId, data, this.auth), callback);
+    }
+
+    /**
+     * Запрос на историю изменений групп крови
+     * @param patientId Идентификатор пациента
+     * @return Историю изменений группы крови для пациента в json-формате
+     */
+    @GET
+    @Path("/{patientId}/bloodtypes")
+    @Produces("application/x-javascript")
+    public Object getBloodTypesHistory(@PathParam("patientId") int patientId)   {
+        return new JSONWithPadding(wsImpl.getBloodTypesHistory(patientId, this.auth), callback);
+    }
 }

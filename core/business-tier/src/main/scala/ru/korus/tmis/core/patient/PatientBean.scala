@@ -88,14 +88,17 @@ class PatientBean
   @EJB
   var dbStaff: DbStaffBeanLocal = _
 
-  @EJB
-  private var dbRbCoreActionPropertyBean: DbRbCoreActionPropertyBeanLocal = _
+  //@EJB
+  //private var dbRbCoreActionPropertyBean: DbRbCoreActionPropertyBeanLocal = _
 
   @EJB
   private var dbDiagnocticsBean: DbDiagnosticBeanLocal = _
 
   @EJB
   private var dbOrgStructureBean: DbOrgStructureBeanLocal = _
+
+  @EJB
+  var dbBloodHistoryBean: DbBloodHistoryBeanLocal= _
   //////////////////////////////////////////////////////////////////////////////
 
   def getCurrentPatientsForDoctor(userData: AuthData) = {
@@ -1060,7 +1063,49 @@ class PatientBean
     dbClientPolicy.checkPolicyNumber(number: String, serial: String, typeId: Int)
   }
 
-  def deletePatientInfo(id: Int) = {
-    dbPatient.deletePatient(id)
+  def deletePatientInfo(id: Int) = dbPatient.deletePatient(id)
+
+  def getBloodHistory(id: Int) = new BloodHistoryListData(dbBloodHistoryBean.getBloodHistoryByPatient(id))
+
+  def insertBloodTypeForPatient(id: Int, data: BloodHistoryData, authData: AuthData) = {
+
+    var bloodTypeId:Int = -1
+    val now = new Date()
+    var bloodDate:Date = now
+    var lockId: Int = -1
+    var oldPatient : Patient = null
+    var version : Int = 0
+
+    if(data!=null && data.getData!=null) {
+      if(data.getData.getBloodType!=null)
+        bloodTypeId = data.getData.getBloodType.getId
+      if(data.getData.getBloodDate!=null)
+        bloodDate = data.getData.getBloodDate
+    }
+     //Создаем запись в BloodHistory
+    val bloodhistory = dbBloodHistoryBean.createBloodHistoryRecord(id, bloodTypeId, bloodDate, authData)
+    dbManager.persist(bloodhistory)
+
+    val patient = this.getPatientById(id)
+
+    version = patient.getVersion()
+    oldPatient = Patient.clone(patient)
+    lockId = appLock.acquireLock("Client", oldPatient.getId.intValue(), oldPatient.getId.intValue(), authData)
+    try {
+      patient.setVersion(version)
+      patient.setModifyPerson(authData.getUser)
+      patient.setModifyDatetime(now)
+      patient.setBloodDate(bloodDate)
+      patient.setBloodType(bloodhistory.getBloodType)
+
+      dbManager.merge(patient)
+
+      new BloodHistoryData(bloodhistory)
+    }
+    finally {
+      if (lockId > 0) {
+        appLock.releaseLock(lockId)
+      }
+    }
   }
 }
