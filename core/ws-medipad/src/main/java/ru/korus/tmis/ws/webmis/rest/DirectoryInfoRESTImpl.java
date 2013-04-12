@@ -457,7 +457,7 @@ public class DirectoryInfoRESTImpl {
         },
         INSTRUMENTAL("instrumental"){
             public String getSubType() { return "instrumental";}
-            public String getMnemonic() { return "DI";}
+            public String getMnemonic() { return "DIAG";}
         },
         CONSULTATIONS("consultations"){
             public String getSubType() { return "consultations";}

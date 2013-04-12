@@ -137,6 +137,16 @@ class DirectionBean extends DirectionBeanLocal
     json_data
   }
 
+  def  createInstrumentalDirectionsForEventIdFromCommonData(eventId: Int,
+                                                directions: CommonData,
+                                                title: String,
+                                                request: Object,
+                                                userData: AuthData,
+                                                postProcessingForDiagnosis: (JSONCommonData, java.lang.Boolean) => JSONCommonData) = {
+    val actions: java.util.List[Action] = commonDataProcessor.createActionForEventFromCommonData(eventId, directions, userData)
+
+  }
+
   def  createDirectionsForEventIdFromCommonData(eventId: Int,
                                              directions: CommonData,
                                                   title: String,
@@ -212,7 +222,13 @@ class DirectionBean extends DirectionBeanLocal
           list.add(j, jt, tt)
         } else {
           var (lj, ljt, ltt) = list.get(list.size()-1)
-          lj.setQuantity(lj.getQuantity+1)
+          if (ljt.getDatetime == a.getPlannedEndDate) {
+            lj.setQuantity(lj.getQuantity+1)
+          } else {
+            val j = dbJobBean.insertOrUpdateJob(0, a, department)
+            val jt = dbJobTicketBean.insertOrUpdateJobTicket(0, a, j)
+            list.add(j, jt, ltt)
+          }
           if (ltt != null) a.setTakenTissue(ltt)
         }
         var (lj, ljt, ltt) = list.get(list.size()-1)

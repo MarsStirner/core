@@ -112,7 +112,8 @@ public interface DbActionBeanLocal {
 
     /**
      * Получение списка действий с динамической фильтрацией результатов для заданного обращения
-     * @param userData    Авторизационные данные как AuthData.
+     *
+     * @param userData Авторизационные данные как AuthData.
      * @return Список действий (Action).
      * @throws CoreException
      * @see Action
@@ -174,5 +175,5 @@ public interface DbActionBeanLocal {
 
     ActionType getActionTypeByCode(String code) throws CoreException;
 
-    Action createAction(ActionType actionType, Event event, Staff person, Date date, String hospitalUidFrom);
+    Action createAction(ActionType actionType, Event event, Staff person, Date date, String hospitalUidFrom, String note);
 }

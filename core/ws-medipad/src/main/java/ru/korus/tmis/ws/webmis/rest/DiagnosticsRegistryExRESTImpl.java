@@ -124,7 +124,9 @@ public class DiagnosticsRegistryExRESTImpl {
                 return new JSONWithPadding(wsImpl.insertLaboratoryStudies(this.eventId, com_data, this.auth), this.callback);
             }
             case INSTRUMENTAL: {
-                return null;
+                CommonData com_data = new CommonData();
+                com_data.setEntity(data.getData());
+                return new JSONWithPadding(wsImpl.insertInstrumentalStudies(this.eventId, com_data, this.auth), this.callback);
             }
             case CONSULTATIONS: {
                 return null;

@@ -432,42 +432,45 @@ public class CommServer implements Communications.Iface {
         for (ActionProperty currentProperty : action.getActionProperties()) {
             fieldName = currentProperty.getType().getName();
             //Fill AMB params without tickets and fill arrays to compute tickets
-            final APValue value = actionPropertyBean.getActionPropertyValue(currentProperty).get(0);
-            if (fieldName.equals("begTime")) {
-                ambulatoryInfo.setBegTime(
-                        DateConvertions.convertDateToUTCMilliseconds((Date) value.getValue()));
-            } else {
-                if (fieldName.equals("endTime")) {
-                    ambulatoryInfo.setEndTime(
+            final List<APValue> apValueList = actionPropertyBean.getActionPropertyValue(currentProperty);
+            if (!apValueList.isEmpty()) {
+                final APValue value = apValueList.get(0);
+                if ("begTime".equals(fieldName)) {
+                    ambulatoryInfo.setBegTime(
                             DateConvertions.convertDateToUTCMilliseconds((Date) value.getValue()));
                 } else {
-                    if (fieldName.equals("office")) {
-                        ambulatoryInfo.setOffice(((APValueString) value).getValue());
+                    if ("endTime".equals(fieldName)) {
+                        ambulatoryInfo.setEndTime(
+                                DateConvertions.convertDateToUTCMilliseconds((Date) value.getValue()));
                     } else {
-                        if (fieldName.equals("plan")) {
-                            ambulatoryInfo.setPlan(((APValueInteger) value).getValue());
+                        if ("office".equals(fieldName)) {
+                            ambulatoryInfo.setOffice(((APValueString) value).getValue());
                         } else {
-                            if (fieldName.equals("times")) {
-                                for (APValue timevalue : actionPropertyBean.getActionPropertyValue(currentProperty)) {
-                                    //Не преобразуем эти времена
-                                    times.add((APValueTime) timevalue);
-                                }
+                            if ("plan".equals(fieldName)) {
+                                ambulatoryInfo.setPlan(((APValueInteger) value).getValue());
                             } else {
-                                if (fieldName.equals("queue")) {
-                                    for (APValue queuevalue : actionPropertyBean.getActionPropertyValue(currentProperty)) {
-                                        queue.add((APValueAction) queuevalue);
+                                if ("times".equals(fieldName)) {
+                                    for (APValue timevalue : apValueList) {
+                                        //Не преобразуем эти времена
+                                        times.add((APValueTime) timevalue);
+                                    }
+                                } else {
+                                    if ("queue".equals(fieldName)) {
+                                        for (APValue queuevalue : apValueList) {
+                                            queue.add((APValueAction) queuevalue);
+                                        }
                                     }
                                 }
                             }
                         }
                     }
-                    //Вывод всех свойств со значениями в лог
-                    if (logger.isDebugEnabled()) {
-                        for (APValue apValue : actionPropertyBean.getActionPropertyValue(currentProperty)) {
-                            logger.debug("ID={} NAME={} VALUE={}",
-                                    currentProperty.getId(), currentProperty.getType().getName(), apValue.getValue());
-                        }
-                    }
+                }
+            }
+            //Вывод всех свойств со значениями в лог
+            if (logger.isDebugEnabled()) {
+                for (APValue apValue : apValueList) {
+                    logger.debug("ID={} NAME={} VALUE={}",
+                            currentProperty.getId(), currentProperty.getType().getName(), apValue.getValue());
                 }
             }
         }
@@ -889,7 +892,7 @@ public class CommServer implements Communications.Iface {
                         //1.b)Сохраняем событие  (Event)
                         queueEvent = eventBean.createEvent(
                                 patient, queueEventType, person,
-                                paramsDateTime.toDate(), paramsDateTime.plusWeeks(1).toDate());
+                                DateConvertions.convertUTCMillisecondsToLocalDate(paramsDateTime.getMillis()), paramsDateTime.plusWeeks(1).toDate());
                         logger.debug("Event is {} ID={} UUID={}",
                                 queueEvent, queueEvent.getId(), queueEvent.getUuid().getUuid());
                         //2) Создаем действие (Action)
@@ -898,8 +901,10 @@ public class CommServer implements Communications.Iface {
                         logger.debug("ActionType is {} typeID={} typeName={}",
                                 queueActionType, queueActionType.getId(), queueActionType.getName());
                         //2.b)Сохраняем действие  (Action)
+
                         queueAction = actionBean.createAction(
-                                queueActionType, queueEvent, person, paramsDateTime.toDate(), String.valueOf(params.hospitalUidFrom));
+                                queueActionType, queueEvent, person,
+                                DateConvertions.convertUTCMillisecondsToLocalDate(paramsDateTime.getMillis()), params.hospitalUidFrom, (params.getNote() == null ? "" : params.note));
                         logger.debug("Action is {} ID={} UUID={}",
                                 queueAction, queueAction.getId(), queueAction.getUuid().getUuid());
                         // Заполняем ActionProperty_Action для 'queue' из Action='amb'
@@ -1194,7 +1199,7 @@ public class CommServer implements Communications.Iface {
                 if (currentEvent.getEventType().getId().equals(queueEventType.getId()) && !currentEvent.getDeleted()) {
                     logger.debug("EVENT={}", currentEvent);
                     final Queue ticket = new Queue();
-                    ticket.setDateTime(currentEvent.getSetDate().getTime());
+                    ticket.setDateTime(DateConvertions.convertDateToUTCMilliseconds(currentEvent.getSetDate()));
                     final Action queueAction = actionBean.getAppealActionByEventId(currentEvent.getId(), queueActionType.getId());
                     logger.debug("ACTION={}", queueAction);
                     if (queueAction != null) {
