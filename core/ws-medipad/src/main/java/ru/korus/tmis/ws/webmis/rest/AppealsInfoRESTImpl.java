@@ -156,4 +156,18 @@ public class AppealsInfoRESTImpl {
     public Object getDiagnosesByAppeal(@PathParam("eventId")int eventId) {
         return new JSONWithPadding(wsImpl.getDiagnosesByAppeal(eventId, this.auth), this.callback);
     }
+
+    @GET
+    @Path("{eventId}/monitoring")
+    @Produces("application/x-javascript")
+    public Object getMonitoringInfoByAppeal(@PathParam("eventId")int eventId) {
+        return new JSONWithPadding(wsImpl.getMonitoringInfoByAppeal(eventId, 0, this.auth), this.callback);
+    }
+
+    @GET
+    @Path("{eventId}/analyzes")
+    @Produces("application/x-javascript")
+    public Object getExpressAnalyzesInfoByAppeal(@PathParam("eventId")int eventId) {
+        return new JSONWithPadding(wsImpl.getMonitoringInfoByAppeal(eventId, 1, this.auth), this.callback);
+    }
 }

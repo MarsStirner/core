@@ -925,6 +925,16 @@ class AppealBean extends AppealBeanLocal
     clientQuoting
   }
 
+  def getMonitoringInfo(eventId: Int, condition: Int, authData: AuthData)  = {
+    val codes = asJavaSet(condition match {
+      case 0 => Set("TEMPERATURE", "BPRAS","BPRAD", "PULS", "SP02", "RR", "STATE", "WB")
+      case 1 => Set("K", "NA","CA", "GLUCOSE", "TP", "UREA", "TB", "CB")
+      case _ => Set("TEMPERATURE", "BPRAS","BPRAD", "PULS", "SP02", "RR", "STATE", "WB")
+    })
+    val map = actionPropertyBean.getActionPropertiesByEventIdAndActionPropertyTypeCodes(eventId, codes)
+    new MonitoringInfoListData(map, codes)
+  }
+
   /*
   def getBasicInfoOfDiseaseHistory(patientId: Int, externalId: String, authData: AuthData) = {
 

@@ -138,4 +138,6 @@ public interface AppealBeanLocal {
      * @since 1.0.0.48
      */
     ClientQuoting insertOrUpdateClientQuoting(QuotaEntry dataEntry, int eventId, AuthData auth) throws CoreException;
+
+    MonitoringInfoListData getMonitoringInfo(int eventId, int condition, AuthData authData) throws CoreException;
 }

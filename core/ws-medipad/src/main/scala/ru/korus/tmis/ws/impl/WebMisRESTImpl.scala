@@ -1119,6 +1119,10 @@ class WebMisRESTImpl  extends WebMisREST
                                           authData)
   }
 
+  def getMonitoringInfoByAppeal(eventId: Int, condition: Int, authData: AuthData) = {
+    appealBean.getMonitoringInfo(eventId, condition, authData)
+  }
+
   //__________________________________________________________________________________________________
   //***************  AUTHDATA  *******************
   //__________________________________________________________________________________________________

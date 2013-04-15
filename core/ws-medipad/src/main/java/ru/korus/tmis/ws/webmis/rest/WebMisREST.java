@@ -287,4 +287,6 @@ public interface WebMisREST extends Serializable {
     BloodHistoryListData getBloodTypesHistory (int patientId, AuthData authData) throws CoreException;
 
     BloodHistoryData insertBloodTypeForPatient(int patientId, BloodHistoryData data, AuthData authData) throws CoreException;
+
+    MonitoringInfoListData getMonitoringInfoByAppeal(int eventId, int condition, AuthData authData) throws CoreException;
 }
