@@ -85,6 +85,9 @@ class AppealBean extends AppealBeanLocal
   @EJB
   var diagnosisBean: DiagnosisBeanLocal = _
 
+  @EJB
+  private var dbStaff: DbStaffBeanLocal = _
+
   @Inject
   @Any
   var actionEvent: javax.enterprise.event.Event[Notification] = _
@@ -353,7 +356,8 @@ class AppealBean extends AppealBeanLocal
     //*****
     //Создание/редактирование записи для Event_Persons
     if (flgCreate)
-      dbEventPerson.insertOrUpdateEventPerson(0, newEvent, authData.getUser, true) //в ивенте только создание
+      setExecPersonForAppeal(newEvent.getId.intValue(), 0, authData, ExecPersonSetType.EP_CREATE_APPEAL)
+      //dbEventPerson.insertOrUpdateEventPerson(0, newEvent, authData.getUser, true) //в ивенте только создание
 
     //Создание/редактирование диагнозов (отд. записи)
     var map = Map.empty[String, java.util.Set[AnyRef]]
@@ -923,6 +927,44 @@ class AppealBean extends AppealBeanLocal
       if (lockId > 0) appLock.releaseLock(lockId)
     }
     clientQuoting
+  }
+
+  def getMonitoringInfo(eventId: Int, condition: Int, authData: AuthData)  = {
+    val codes = asJavaSet(condition match {
+      case 0 => Set("TEMPERATURE", "BPRAS","BPRAD", "PULS", "SP02", "RR", "STATE", "WB")
+      case 1 => Set("K", "NA","CA", "GLUCOSE", "TP", "UREA", "TB", "CB")
+      case _ => Set("TEMPERATURE", "BPRAS","BPRAD", "PULS", "SP02", "RR", "STATE", "WB")
+    })
+    val map = actionPropertyBean.getActionPropertiesByEventIdAndActionPropertyTypeCodes(eventId, codes)
+    new MonitoringInfoListData(map, codes)
+  }
+
+  def setExecPersonForAppeal(id: Int, personId: Int, authData: AuthData, epst: ExecPersonSetType) = {
+
+    var eventPerson : EventPerson = null
+    var execPerson: Staff = authData.getUser
+    var isCreate: Boolean = true
+
+    val event = epst.getVarId match {
+      case 1 => actionBean.getActionById(id).getEvent
+      case _ => eventBean.getEventById(id)
+    }
+
+    if (epst.isFindLast) {
+      eventPerson = dbEventPerson.getLastEventPersonForEventId(event.getId.intValue())
+      if(personId>0) execPerson = dbStaff.getStaffById(personId)
+      isCreate = (eventPerson==null || eventPerson.getPerson != execPerson)
+    }
+
+    if(isCreate){
+      dbEventPerson.insertOrUpdateEventPerson(epst.getEventPersonId(eventPerson),
+                                              event,
+                                              execPerson,
+                                              epst.getFlushFlag)
+      true
+    }
+    else
+      false
   }
 
   /*

@@ -260,6 +260,24 @@ class DbActionPropertyBean
     )
   }
 
+  @TransactionAttribute(TransactionAttributeType.REQUIRES_NEW)
+  def getActionPropertiesByEventIdAndActionPropertyTypeCodes(eventId: Int, codes: java.util.Set[String]) = {
+    val result = em.createQuery(ActionPropertiesByEventIdAndActionPropertyTypeCodesQuery, classOf[ActionProperty])
+                   .setParameter("codes", asJavaCollection(codes))
+                   .setParameter("eventId", eventId)
+                   .getResultList
+
+    result.foldLeft(LinkedHashMap.empty[ActionProperty, java.util.List[APValue]])(
+      (map, ap) => {
+        em.detach(ap)
+        val values = getActionPropertyValue(ap)
+        if (values!=null && values.size()>0)
+          map.put(ap, values)
+        map
+      }
+    )
+  }
+
   private def getActionPropertiesByActionIdAndCustomParameters (actionId: Int, parameters: java.util.List[String], filterMode: Int) = {
     val result = em.createQuery(
       ActionPropertiesByActionIdAndNamesQuery.format(filterMode match {
@@ -281,6 +299,27 @@ class DbActionPropertyBean
       }
     )
   }
+  val ActionPropertiesByEventIdAndActionPropertyTypeCodesQuery =
+    """
+      SELECT ap
+      FROM
+        ActionProperty ap
+          JOIN ap.action a
+          JOIN a.event e
+          JOIN ap.actionPropertyType apt
+      WHERE
+        e.id = :eventId
+      AND
+        a.deleted = 0
+      AND
+        a.status = 2
+      AND
+        apt.code IN :codes
+      AND
+        apt.deleted = 0
+      ORDER BY a.createDatetime DESC
+    """
+
 
   val ActionPropertyFindQuery = """
     SELECT ap

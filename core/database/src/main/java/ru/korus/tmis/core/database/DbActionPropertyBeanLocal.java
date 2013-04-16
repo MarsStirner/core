@@ -60,6 +60,10 @@ public interface DbActionPropertyBeanLocal {
     getActionPropertiesForEventByActionTypes(int eventId, Set<Integer> atIds, Set<Integer> coreIds)
             throws CoreException;
 
+    Map<ActionProperty, List<APValue>>
+    getActionPropertiesByEventIdAndActionPropertyTypeCodes(int eventId, java.util.Set<String> codes)
+            throws CoreException;
+
     List<APValue>
     getActionPropertyValue(ActionProperty actionProperty)
             throws CoreException;
