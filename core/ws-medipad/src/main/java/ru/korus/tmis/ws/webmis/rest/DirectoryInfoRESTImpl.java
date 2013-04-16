@@ -118,8 +118,9 @@ public class DirectoryInfoRESTImpl {
     @GET
     @Path("/persons")
     @Produces("application/x-javascript")
-    public Object getAllPersons() {
-        ListDataRequest request = new ListDataRequest(this.sortingField, this.sortingMethod, this.limit, this.page, null);
+    public Object getAllPersons(@QueryParam("filter[departmentId]")int departmentId) {
+        PersonsListDataFilter filter = new PersonsListDataFilter(departmentId);
+        ListDataRequest request = new ListDataRequest(this.sortingField, this.sortingMethod, this.limit, this.page, filter);
         return new JSONWithPadding(wsImpl.getAllPersons(request),this.callback);
     }
 

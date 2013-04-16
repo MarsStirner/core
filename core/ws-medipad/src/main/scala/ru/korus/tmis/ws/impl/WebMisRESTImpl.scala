@@ -479,13 +479,14 @@ class WebMisRESTImpl  extends WebMisREST
   //создание первичного мед. осмотра
   def insertPrimaryMedExamForPatient(eventId: Int, data: JSONCommonData, authData: AuthData)  = {
     //создаем ответственного, если до этого был другой
-    val eventPerson = dbEventPerson.getLastEventPersonForEventId(eventId)
+    /*val eventPerson = dbEventPerson.getLastEventPersonForEventId(eventId)
     if (eventPerson == null || eventPerson.getPerson != authData.getUser) {
       dbEventPerson.insertOrUpdateEventPerson(if (eventPerson != null) {eventPerson.getId.intValue()} else 0,
         dbEventBean.getEventById(eventId),
         authData.getUser,
         false) //параметр для флаша
-    }
+    }*/
+    appealBean.setExecPersonForAppeal(eventId, 0, authData, ExecPersonSetType.EP_CREATE_PRIMARY)
     //создаем осмотр. ЕвентПерсон не флашится!!!
     val returnValue = primaryAssessmentBean.createPrimaryAssessmentForEventId(eventId,
       data,
@@ -500,13 +501,15 @@ class WebMisRESTImpl  extends WebMisREST
   //редактирование первичного мед. осмотра
   def modifyPrimaryMedExamForPatient(actionId: Int, data: JSONCommonData, authData: AuthData)  = {
     //создаем ответственного, если до этого был другой
-    val eventPerson = dbEventPerson.getLastEventPersonForEventId(actionBean.getActionById(actionId).getEvent.getId.intValue())
+    /*val eventPerson = dbEventPerson.getLastEventPersonForEventId(actionBean.getActionById(actionId).getEvent.getId.intValue())
     if (eventPerson.getPerson != authData.getUser) {
       dbEventPerson.insertOrUpdateEventPerson(if (eventPerson != null) {eventPerson.getId.intValue()} else 0,
         actionBean.getActionById(actionId).getEvent,
         authData.getUser,
         false)
-    }
+    }*/
+    appealBean.setExecPersonForAppeal(actionId, 0, authData, ExecPersonSetType.EP_MODIFY_PRIMARY)
+
     //создаем осмотр. ЕвентПерсон не флашится!!!
     val returnValue = primaryAssessmentBean.modifyPrimaryAssessmentById(actionId,
       data,
@@ -672,7 +675,15 @@ class WebMisRESTImpl  extends WebMisREST
   def getAllPersons(requestData: ListDataRequest) = {
 
     //TODO: подключить анализ авторизационных данных и доступных ролей
-    requestData.setRecordsCount(dbStaff.getCountAllPersonsWithFilter(requestData.filter))
+    new AllPersonsListData(dbStaff.getAllPersonsByRequest(requestData.limit,
+                                                          requestData.page-1,
+                                                          requestData.sortingFieldInternal,
+                                                          requestData.filter.unwrap(),
+                                                          requestData.rewriteRecordsCount _),
+                           requestData)
+
+
+    /*requestData.setRecordsCount(dbStaff.getCountAllPersonsWithFilter(requestData.filter))
     val list = new AllPersonsListData(dbStaff.getAllPersonsByRequest(requestData.limit,
       requestData.page-1,
       requestData.sortingField,
@@ -680,7 +691,7 @@ class WebMisRESTImpl  extends WebMisREST
       requestData.filter
     ),
       requestData)
-    list
+    list */
   }
 
   def getAllDepartments(requestData: ListDataRequest) = {
@@ -1123,6 +1134,9 @@ class WebMisRESTImpl  extends WebMisREST
     appealBean.getMonitoringInfo(eventId, condition, authData)
   }
 
+  def setExecPersonForAppeal(eventId: Int, personId: Int, authData: AuthData) = {
+    appealBean.setExecPersonForAppeal(eventId, personId, authData, ExecPersonSetType.EP_SET_IN_LPU)
+  }
   //__________________________________________________________________________________________________
   //***************  AUTHDATA  *******************
   //__________________________________________________________________________________________________

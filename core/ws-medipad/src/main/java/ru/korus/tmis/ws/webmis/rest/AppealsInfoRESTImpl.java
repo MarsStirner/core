@@ -3,6 +3,7 @@ package ru.korus.tmis.ws.webmis.rest;
 import com.sun.jersey.api.json.JSONWithPadding;
 import ru.korus.tmis.core.auth.AuthData;
 import ru.korus.tmis.core.data.AppealData;
+import ru.korus.tmis.core.data.IdValueContainer;
 import ru.korus.tmis.core.data.ReceivedRequestData;
 import ru.korus.tmis.core.data.ReceivedRequestDataFilter;
 import ru.korus.tmis.core.logging.slf4j.interceptor.ServicesLoggingInterceptor;
@@ -169,5 +170,14 @@ public class AppealsInfoRESTImpl {
     @Produces("application/x-javascript")
     public Object getExpressAnalyzesInfoByAppeal(@PathParam("eventId")int eventId) {
         return new JSONWithPadding(wsImpl.getMonitoringInfoByAppeal(eventId, 1, this.auth), this.callback);
+    }
+
+    @PUT
+    @Path("{eventId}/execPerson")
+    @Consumes("application/json")
+    @Produces("application/x-javascript")
+    public Object setExecPersonForAppeal(IdValueContainer data,
+                                         @PathParam("eventId")int eventId) {
+        return new JSONWithPadding(wsImpl.setExecPersonForAppeal(eventId, Integer.valueOf(data.getId()).intValue(), this.auth), this.callback);
     }
 }

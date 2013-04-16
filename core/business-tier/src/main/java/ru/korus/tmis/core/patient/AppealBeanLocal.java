@@ -140,4 +140,6 @@ public interface AppealBeanLocal {
     ClientQuoting insertOrUpdateClientQuoting(QuotaEntry dataEntry, int eventId, AuthData auth) throws CoreException;
 
     MonitoringInfoListData getMonitoringInfo(int eventId, int condition, AuthData authData) throws CoreException;
+
+    Boolean setExecPersonForAppeal(int id, int personId, AuthData authData, ExecPersonSetType epst) throws CoreException;
 }
