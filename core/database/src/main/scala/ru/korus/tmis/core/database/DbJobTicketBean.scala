@@ -273,6 +273,8 @@ class DbJobTicketBean extends DbJobTicketBeanLocal
       AND
         a.actionType.mnemonic = 'LAB'
       AND
+        a.isUrgent = 0
+      AND
         apval.id.id = ap.id
       AND
         apval.value = jt.id
