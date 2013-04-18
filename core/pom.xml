@@ -386,11 +386,6 @@
                 <mysql.db.tmis_core>tmis_core</mysql.db.tmis_core>
                 <!-- Название пула для базы данных - конфигурации ядра -->
                 <mysql.db.tmis_core.pool>tmis_core-pool</mysql.db.tmis_core.pool>
-
-                <!-- 1C Аптека-->
-                <integration.pharmacy.url>http://pharmacy3.fccho-moscow.ru/ws/MISExchange</integration.pharmacy.url>
-
-
             </properties>
         </profile>
 
