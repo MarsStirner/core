@@ -100,6 +100,7 @@
         <mysql.db.jndi.mis>s11r64</mysql.db.jndi.mis>
         <mysql.db.jndi.rls>rls</mysql.db.jndi.rls>
         <mysql.db.jndi.tmis_core>tmis_core</mysql.db.jndi.tmis_core>
+        <mysql.db.jndi.kladr>kladr</mysql.db.jndi.kladr>
 
         <!-- Адрес базы данных -->
         <mysql.db.host>127.0.0.1</mysql.db.host>
@@ -121,6 +122,14 @@
         <mysql.db.tmis_core>tmis_core</mysql.db.tmis_core>
         <!-- Название пула для базы данных - конфигурации ядра -->
         <mysql.db.tmis_core.pool>tmis_core-pool</mysql.db.tmis_core.pool>
+
+        <!-- Настройки persistence.xml по умолчанию -->
+        <eclipselink.logging.level>WARNING</eclipselink.logging.level>
+        <eclipselink.logging.sql.level>OFF</eclipselink.logging.sql.level>
+        <eclipselink.logging.parameters>false</eclipselink.logging.parameters>
+        <eclipselink.logging.showsql>false</eclipselink.logging.showsql>
+
+        <eclipselink.ddl.generated>update</eclipselink.ddl.generated>
     </properties>
 
     <profiles>
@@ -375,7 +384,7 @@
                 <!-- Пароль к базе данных -->
                 <mysql.password>root</mysql.password>
                 <!-- Название базы данных МИС -->
-                <mysql.db.mis>s11r64</mysql.db.mis>
+                <mysql.db.mis>hospital</mysql.db.mis>
                 <!-- Название пула для базы данных МИС -->
                 <mysql.db.mis.pool>s11r64-pool</mysql.db.mis.pool>
                 <!-- Название базы данных RLS -->
