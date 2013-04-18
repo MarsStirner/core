@@ -1,12 +1,18 @@
 
 package misexchange;
 
+import ru.korus.tmis.core.database.DbSettingsBeanLocal;
+import ru.korus.tmis.util.ConfigManager;
+import ru.korus.tmis.util.reflect.Configuration;
+
+import javax.ejb.EJB;
 import javax.xml.namespace.QName;
 import javax.xml.ws.*;
 import java.net.Authenticator;
 import java.net.MalformedURLException;
 import java.net.PasswordAuthentication;
 import java.net.URL;
+import java.util.List;
 import java.util.Map;
 
 
@@ -15,7 +21,7 @@ import java.util.Map;
  * JAX-WS RI 2.2.4-b01
  * Generated source version: 2.2
  */
-@WebServiceClient(name = "MISExchange", targetNamespace = "MISExchange", wsdlLocation = "http://pharmacy3.fccho-moscow.ru/ws/MISExchange?wsdl")
+@WebServiceClient(name = "MISExchange", targetNamespace = "MISExchange", wsdlLocation = "../MISExchange.wsdl")
 public class MISExchange
         extends Service {
 
@@ -23,22 +29,26 @@ public class MISExchange
     private final static WebServiceException MISEXCHANGE_EXCEPTION;
     private final static QName MISEXCHANGE_QNAME = new QName("MISExchange", "MISExchange");
 
+    @EJB
+    private DbSettingsBeanLocal settingsBeanLocal;
+
     static {
+        final String login = ConfigManager.getDrugUser();
+        final String password = ConfigManager.getDrugPassword();
 
         Authenticator.setDefault(new Authenticator() {
             @Override
             protected PasswordAuthentication getPasswordAuthentication() {
                 return new PasswordAuthentication(
-                        "admin",
-                        "1234".toCharArray());
+                        login,
+                        password.toCharArray());
             }
         });
-
 
         URL url = null;
         WebServiceException e = null;
         try {
-            url = new URL("http://pharmacy3.fccho-moscow.ru/ws/MISExchange?wsdl");
+            url = new URL(MISExchange.class.getResource("."), "../MISExchange.wsdl");
         } catch (MalformedURLException ex) {
             e = new WebServiceException(ex);
         }
@@ -76,10 +86,12 @@ public class MISExchange
     @WebEndpoint(name = "MISExchangeSoap")
     public MISExchangePortType getMISExchangeSoap() {
         final MISExchangePortType port = super.getPort(new QName("MISExchange", "MISExchangeSoap"), MISExchangePortType.class);
+
+        final String serviceUrl = ConfigManager.getDrugUrl().toString();
         Map<String, Object> requestContext = ((BindingProvider) port).getRequestContext();
-        // requestContext.put(BindingProvider.ENDPOINT_ADDRESS_PROPERTY, "http://app1c-01.app.fccho-moscow.ru/pharmacy3/ws/MISExchange");
-        requestContext.put(BindingProvider.USERNAME_PROPERTY, "admin");
-        requestContext.put(BindingProvider.PASSWORD_PROPERTY, "1234");
+        requestContext.put(BindingProvider.ENDPOINT_ADDRESS_PROPERTY, serviceUrl);
+//        requestContext.put(BindingProvider.USERNAME_PROPERTY, login);
+//        requestContext.put(BindingProvider.PASSWORD_PROPERTY, password);
         return port;
     }
 

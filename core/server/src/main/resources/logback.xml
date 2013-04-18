@@ -148,7 +148,7 @@
         </rollingPolicy>
     </appender>
 
-    <logger name="ru.korus.tmis.pharmacy" level="INFO" additivity="false">
+    <logger name="ru.korus.tmis.pharmacy" level="INFO" additivity="true">
         <appender-ref ref="PHARMACY"/>
         <appender-ref ref="STDOUT_ERROR"/>
         <appender-ref ref="EXCEPTIONS"/>

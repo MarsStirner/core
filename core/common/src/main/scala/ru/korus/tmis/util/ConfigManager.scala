@@ -126,12 +126,28 @@ object ConfigManager extends Configuration {
     var GetDepList_SoapOperation = "GetDepartmentList"
     var GetDepList_RequestRootElement = "OrganizationRef"
 
-    var User = "admin"
-    var Password = "1234"
+    var User = ""
+    var Password = ""
 
     def HttpAuthToken = DatatypeConverter.printBase64Binary(
       (User + ":" + Password).getBytes)
   }
+
+  /**
+   * Метод хелпер, создан из-за невозможности вызвать класс-конфиг из джава кода
+   */
+  def getDrugUser: String = Drugstore.User
+
+  /**
+   * Метод хелпер, создан из-за невозможности вызвать класс-конфиг из джава кода
+   */
+  def getDrugPassword: String = Drugstore.Password
+
+  /**
+   * Метод хелпер, создан из-за невозможности вызвать класс-конфиг из джава кода
+   */
+  def getDrugUrl: URL = Drugstore.ServiceUrl
+
 
   val Laboratory = new Configuration {
     // LIS service URL
