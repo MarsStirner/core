@@ -29,9 +29,6 @@ public class MISExchange
     private final static WebServiceException MISEXCHANGE_EXCEPTION;
     private final static QName MISEXCHANGE_QNAME = new QName("MISExchange", "MISExchange");
 
-    @EJB
-    private DbSettingsBeanLocal settingsBeanLocal;
-
     static {
         final String login = ConfigManager.getDrugUser();
         final String password = ConfigManager.getDrugPassword();

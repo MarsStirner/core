@@ -129,7 +129,7 @@
         <eclipselink.logging.parameters>false</eclipselink.logging.parameters>
         <eclipselink.logging.showsql>false</eclipselink.logging.showsql>
 
-        <eclipselink.ddl.generated>update</eclipselink.ddl.generated>
+        <eclipselink.ddl.generated>create-table</eclipselink.ddl.generated>
     </properties>
 
     <profiles>
