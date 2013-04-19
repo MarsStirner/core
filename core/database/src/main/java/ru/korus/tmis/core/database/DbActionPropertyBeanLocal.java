@@ -5,6 +5,7 @@ import ru.korus.tmis.core.entity.model.*;
 import ru.korus.tmis.core.exception.CoreException;
 
 import javax.ejb.Local;
+import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
@@ -60,8 +61,8 @@ public interface DbActionPropertyBeanLocal {
     getActionPropertiesForEventByActionTypes(int eventId, Set<Integer> atIds, Set<Integer> coreIds)
             throws CoreException;
 
-    Map<ActionProperty, List<APValue>>
-    getActionPropertiesByEventIdAndActionPropertyTypeCodes(int eventId, java.util.Set<String> codes)
+    LinkedHashMap<Integer, LinkedHashMap<ActionProperty, List<APValue>>>
+    getActionPropertiesByEventIdsAndActionPropertyTypeCodes(java.util.List<Integer> eventId, java.util.Set<String> codes, int countInGroup)
             throws CoreException;
 
     List<APValue>

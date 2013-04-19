@@ -373,15 +373,17 @@ class PatientBean
                                                                       requestData.filter,
                                                                       requestData.rewriteRecordsCount _)
 
-    var conditionsInfo = new java.util.HashMap[Event, java.util.Map[ActionProperty, java.util.List[APValue]]]
+    var conditionsInfo: java.util.LinkedHashMap[java.lang.Integer, java.util.LinkedHashMap[ActionProperty, java.util.List[APValue]]]
+      = new java.util.LinkedHashMap[java.lang.Integer, java.util.LinkedHashMap[ActionProperty, java.util.List[APValue]]]
     if(role == 25) {  //Для сестры отделения только
-      val conditions = customQuery.getLastAssessmentByEvents(eventsMap.map(p=>p._1.getEvent).toList)   //Последний экшн осмотра
+      /*val conditions = customQuery.getLastAssessmentByEvents(eventsMap.map(p=>p._1.getEvent).toList)   //Последний экшн осмотра
       conditions.foreach(
         c => {
           val apList = dbActionProperty.getActionPropertiesByActionIdAndTypeCodes(c._2.getId.intValue,List("STATE", "PULS", "BPRAS","BPRAD"))
           conditionsInfo.put(c._1, apList)
         }
-      )
+      ) */
+      conditionsInfo = dbActionProperty.getActionPropertiesByEventIdsAndActionPropertyTypeCodes(eventsMap.map(p=> p._1.getEvent.getId).toList, asJavaSet(Set("STATE", "PULS", "BPRAS","BPRAD")),1)
       mapper.getSerializationConfig().setSerializationView(classOf[PatientsListDataViews.NurseView])
     }
     else mapper.getSerializationConfig().setSerializationView(classOf[PatientsListDataViews.AttendingDoctorView])
@@ -392,7 +394,7 @@ class PatientBean
                                                    conditionsInfo,
                                                    dbOrgStructureBean.getOrgStructureById _,
                                                    dbActionProperty.getActionPropertiesByActionIdAndRbCoreActionPropertyIds _,
-                                                   //dbRbCoreActionPropertyBean.getRbCoreActionPropertiesByIds _,
+                                                       //dbRbCoreActionPropertyBean.getRbCoreActionPropertiesByIds _,
                                                    dbDiagnocticsBean.getDiagnosticsByEventId _))
   }
 
