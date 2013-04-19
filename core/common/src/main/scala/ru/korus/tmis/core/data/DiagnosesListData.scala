@@ -62,18 +62,15 @@ class DiagnosisExContainer {
         if(diagnostic.getDiagnosisType.getFlatCode.isEmpty)
           diagnostic.getDiagnosisType.getName
         else diagnostic.getDiagnosisType.getFlatCode
+      this.datetime = diagnostic.getSetDate
       this.description = diagnostic.getNotes
       this.injury = if(diagnostic.getTraumaType!=null) {diagnostic.getTraumaType.getName} else {""}
-      if(diagnostic.getDiagnosis!=null && diagnostic.getDiagnosis.getMkb!=null){
-        this.datetime = diagnostic.getDiagnosis.getSetDate
-        this.doctor = new DoctorContainer(diagnostic.getDiagnosis.getPerson)
-        this.mkb =   new MKBContainer(diagnostic.getDiagnosis.getMkb)
-      }
-      else {
-        this.datetime = diagnostic.getSetDate
-        this.doctor = new DoctorContainer(diagnostic.getPerson)
-        this.mkb = new MKBContainer()
-      }
+      this.doctor = new DoctorContainer(diagnostic.getPerson)
+      this.mkb =
+        if(diagnostic.getDiagnosis!=null && diagnostic.getDiagnosis.getMkb!=null)
+           new MKBContainer(diagnostic.getDiagnosis.getMkb)
+        else new MKBContainer()
+
     }
   }
 }
