@@ -147,14 +147,8 @@ class DirectionBean extends DirectionBeanLocal
 
   }
 
-  def  createDirectionsForEventIdFromCommonData(eventId: Int,
-                                             directions: CommonData,
-                                                  title: String,
-                                                request: Object,
-                                               userData: AuthData,
-                             postProcessingForDiagnosis: (JSONCommonData, java.lang.Boolean) => JSONCommonData) = {
+  private def createJobTicketsForActions(actions: java.util.List[Action], eventId: Int) =  {
 
-    val actions: java.util.List[Action] = commonDataProcessor.createActionForEventFromCommonData(eventId, directions, userData)
     val moving = hospitalBedBean.getLastMovingActionForEventId(eventId)
     var department = dbOrgStructure.getOrgStructureById(28)//приемное отделение
     //actionPropertyBean.getActionPropertiesByActionIdAndTypeId(moving.getId.intValue(), 1616)
@@ -177,8 +171,8 @@ class DirectionBean extends DirectionBeanLocal
         val jobAndTicket = dbJobTicketBean.getJobTicketAndTakenTissueForAction(a)
         if (jobAndTicket == null) {
           var fromList = list.find((p) => p._1.getId == null &&
-                                          p._2.getDatetime == a.getPlannedEndDate &&
-                                          p._3.getType.getId == dbTakenTissue.getActionTypeTissueTypeByMasterId(a.getActionType.getId.intValue()).getTissueType.getId).getOrElse(null)
+            p._2.getDatetime == a.getPlannedEndDate &&
+            p._3.getType.getId == dbTakenTissue.getActionTypeTissueTypeByMasterId(a.getActionType.getId.intValue()).getTissueType.getId).getOrElse(null)
           if (fromList != null) {
             var (j, jt, tt) = fromList.asInstanceOf[(Job, JobTicket, TakenTissue)]
             j.setQuantity(j.getQuantity+1)
@@ -294,6 +288,18 @@ class DirectionBean extends DirectionBeanLocal
       actions.foreach((a) => em.merge(a))
       em.flush()
     }
+    actions
+  }
+
+  def  createDirectionsForEventIdFromCommonData(eventId: Int,
+                                             directions: CommonData,
+                                                  title: String,
+                                                request: Object,
+                                               userData: AuthData,
+                             postProcessingForDiagnosis: (JSONCommonData, java.lang.Boolean) => JSONCommonData) = {
+
+    var actions: java.util.List[Action] = commonDataProcessor.createActionForEventFromCommonData(eventId, directions, userData)
+    actions = createJobTicketsForActions(actions, eventId)
 
     val com_data = commonDataProcessor.fromActions(actions, title, List(summary _, detailsWithAge _))
     var json_data = new JSONCommonData(request, com_data)
@@ -303,7 +309,7 @@ class DirectionBean extends DirectionBeanLocal
     json_data
 
   }
-
+  //TODO: метод работает только с одним ашеном. со списком будет работать не корректно (возможно:)
   def modifyDirectionsForEventIdFromCommonData(directionId: Int,
                                                 directions: CommonData,
                                                      title: String,
@@ -317,14 +323,34 @@ class DirectionBean extends DirectionBeanLocal
     directions.getEntity.foreach((action) => {
       //Проверка прав у пользователя на редактирование направления
       val a = actionBean.getActionById(action.getId.intValue())
+      var oldjt = 0
+      a.getActionProperties.foreach((ap) => {
+        if (ap.getType.getTypeName.compareTo("JobTicket") == 0) {
+          oldjt = actionPropertyBean.getActionPropertyValue(ap).get(0).asInstanceOf[APValueJobTicket].getValue .intValue()
+        }
+      })
       if ((a.getCreatePerson!=null && a.getCreatePerson.getId.compareTo(userId)==0) ||
           (a.getAssigner!=null &&a.getAssigner.getId.compareTo(userId)==0) ||
           userRole.compareTo("strHead")==0) {
         actions = commonDataProcessor.modifyActionFromCommonData(action.getId().intValue(), directions, userData)
+        actions = createJobTicketsForActions(actions, a.getEvent.getId.intValue())
+        //редактирование или удаление старого жобТикета
+        val jobTicket = if (oldjt > 0) dbJobTicketBean.getJobTicketById(oldjt) else null
+        if (jobTicket != null) {
+          if (jobTicket != null && jobTicket.getJob!=null) {
+            val job = jobTicket.getJob
+            if (job.getQuantity == 1) {
+              job.setDeleted(true)
+            }
+            job.setQuantity(job.getQuantity - 1)
+            em.merge(job)
+          }
+        }
       } else {
         throw new CoreException(ConfigManager.ErrorCodes.noRightForAction, i18n("error.noRightForThisAction" + "\n Редактировать диагностику может только врач, создавший направление, или лечащий врач или заведующий отделением"))
       }
     })
+    em.flush()
     val com_data = commonDataProcessor.fromActions( actions, title, List(summary _, detailsWithAge _))
 
     var json_data = new JSONCommonData(request, com_data)
