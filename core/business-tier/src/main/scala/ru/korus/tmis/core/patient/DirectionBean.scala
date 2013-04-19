@@ -147,14 +147,8 @@ class DirectionBean extends DirectionBeanLocal
 
   }
 
-  def  createDirectionsForEventIdFromCommonData(eventId: Int,
-                                             directions: CommonData,
-                                                  title: String,
-                                                request: Object,
-                                               userData: AuthData,
-                             postProcessingForDiagnosis: (JSONCommonData, java.lang.Boolean) => JSONCommonData) = {
+  private def createJobTicketsForActions(actions: java.util.List[Action], eventId: Int) =  {
 
-    val actions: java.util.List[Action] = commonDataProcessor.createActionForEventFromCommonData(eventId, directions, userData)
     val moving = hospitalBedBean.getLastMovingActionForEventId(eventId)
     var department = dbOrgStructure.getOrgStructureById(28)//приемное отделение
     //actionPropertyBean.getActionPropertiesByActionIdAndTypeId(moving.getId.intValue(), 1616)
@@ -171,74 +165,76 @@ class DirectionBean extends DirectionBeanLocal
     var list = new java.util.LinkedList[(Job, JobTicket, TakenTissue)]
     var apvList = new java.util.LinkedList[(ActionProperty, JobTicket)]
     var apvMKBList = new java.util.LinkedList[(ActionProperty, Mkb)]
-    var tissueType: RbTissueType = null
+    var jtForAp: JobTicket = null
     actions.foreach((a) => {
-      val jobAndTicket = dbJobTicketBean.getJobTicketAndTakenTissueForAction(a)
-      if (jobAndTicket != null) {
-        val (jobTicket, takenTissue) = jobAndTicket.asInstanceOf[(JobTicket, TakenTissue)]
-        if (jobTicket != null && jobTicket.getJob!=null) {
-          var (lj, ljt, ltt) = if (list.size() > 0) list.get(list.size()-1) else (null, null, null)
-          if (lj == null || lj.getId.intValue() != jobTicket.getJob.getId.intValue()) {
-            val j = dbJobBean.insertOrUpdateJob(jobTicket.getJob.getId.intValue(), a, department)
-            val jt = dbJobTicketBean.insertOrUpdateJobTicket(jobTicket.getId.intValue(), a, j)
-            val tt = takenTissue
-            if (takenTissue != null) a.setTakenTissue(takenTissue)
-            //*****
-            //Проверка, есть ли подобный action за текущие сутки c другим временем
-            //по коментарию Алехиной https://korusconsulting.atlassian.net/browse/WEBMIS-711
-            val filter = new ActionsListDataFilter(a.getEvent.getId.intValue(),        //ид обращения в теле запроса
-                                                   a.getActionType.getId.intValue(),   //действия только данного типа
-                                                   -1,
-                                                   -1,
-                                                   false,
-                                                   true)                              //за текущий день
-            val last = actionBean.getActionsWithFilter(0, 0, "", filter.unwrap(), null, null)
-            if(last!=null && last.size()>0 && jobTicket.getStatus==2 && !a.getIsUrgent())
-              a.setStatus(2)
-            //*****
-            a.getActionProperties.foreach((ap) => {
-              if (ap.getType.getTypeName.compareTo("JobTicket") == 0) {
-                apvList.add((ap, jt))
-              }
-            })
-            list.add(j, jt, tt)
-          } else {
-            lj.asInstanceOf[Job].setQuantity(lj.asInstanceOf[Job].getQuantity +1)
-            if (ltt != null) a.setTakenTissue(ltt)
-            a.getActionProperties.foreach((ap) => {
-              if (ap.getType.getTypeName.compareTo("JobTicket") == 0) {
-                apvList.add((ap, ljt))
-              }
-            })
-          }
-        }
-      } else {
-        val nextTissueType = dbTakenTissue.getActionTypeTissueTypeByMasterId(a.getActionType.getId.intValue()).getTissueType
-        if (nextTissueType != tissueType) {
-          val j = dbJobBean.insertOrUpdateJob(0, a, department)
-          val jt = dbJobTicketBean.insertOrUpdateJobTicket(0, a, j)
-          val tt = dbTakenTissue.insertOrUpdateTakenTissue(0, a)
-          if (tt != null) a.setTakenTissue(tt)
-          list.add(j, jt, tt)
-        } else {
-          var (lj, ljt, ltt) = list.get(list.size()-1)
-          if (ljt.getDatetime == a.getPlannedEndDate) {
-            lj.setQuantity(lj.getQuantity+1)
+      if (!a.getIsUrgent) {
+        val jobAndTicket = dbJobTicketBean.getJobTicketAndTakenTissueForAction(a)
+        if (jobAndTicket == null) {
+          var fromList = list.find((p) => p._1.getId == null &&
+            p._2.getDatetime == a.getPlannedEndDate &&
+            p._3.getType.getId == dbTakenTissue.getActionTypeTissueTypeByMasterId(a.getActionType.getId.intValue()).getTissueType.getId).getOrElse(null)
+          if (fromList != null) {
+            var (j, jt, tt) = fromList.asInstanceOf[(Job, JobTicket, TakenTissue)]
+            j.setQuantity(j.getQuantity+1)
+            if (tt != null) a.setTakenTissue(tt)
+            jtForAp = jt
           } else {
             val j = dbJobBean.insertOrUpdateJob(0, a, department)
             val jt = dbJobTicketBean.insertOrUpdateJobTicket(0, a, j)
-            list.add(j, jt, ltt)
+            val tt = dbTakenTissue.insertOrUpdateTakenTissue(0, a)
+            if (list != null && list.size()>0) tt.setBarcode(list.getLast._3.getBarcode+1)
+            if (tt != null) a.setTakenTissue(tt)
+            list.add(j, jt, tt)
+            jtForAp = jt
           }
-          if (ltt != null) a.setTakenTissue(ltt)
+        } else {
+          val (jobTicket, takenTissue) = jobAndTicket.asInstanceOf[(JobTicket, TakenTissue)]
+          if (jobTicket != null && jobTicket.getJob!=null) {
+            var fromList = list.find((p) => p._1.getId != null && p._1.getId.intValue() == jobTicket.getJob.getId.intValue()).getOrElse(null)
+            if (fromList == null) {
+              val j = dbJobBean.insertOrUpdateJob(jobTicket.getJob.getId.intValue(), a, department)
+              val jt = dbJobTicketBean.insertOrUpdateJobTicket(jobTicket.getId.intValue(), a, j)
+              val tt = takenTissue
+              if (takenTissue != null) a.setTakenTissue(takenTissue)
+              list.add(j, jt, tt)
+              jtForAp = jt
+            } else {
+              var (j, jt, tt) = fromList.asInstanceOf[(Job, JobTicket, TakenTissue)]
+              j.setQuantity(j.getQuantity+1)
+              if (tt != null) a.setTakenTissue(tt)
+              jtForAp = jt
+            }
+          }
+          //*****
+          //Проверка, есть ли подобный action за текущие сутки c другим временем
+          //по коментарию Алехиной https://korusconsulting.atlassian.net/browse/WEBMIS-711
+          val filter = new ActionsListDataFilter(a.getEvent.getId.intValue(),        //ид обращения в теле запроса
+            a.getActionType.getId.intValue(),   //действия только данного типа
+            -1,
+            -1,
+            false,
+            true)                              //за текущий день
+          val last = actionBean.getActionsWithFilter(0, 0, "", filter.unwrap(), null, null)
+          if(last!=null && last.size()>0 && jobTicket.getStatus==2 && !a.getIsUrgent())
+            a.setStatus(2)
         }
-        var (lj, ljt, ltt) = list.get(list.size()-1)
-        a.getActionProperties.foreach((ap) => {
-          if (ap.getType.getTypeName.compareTo("JobTicket") == 0) {
-            apvList.add((ap, ljt))
-          }
-        })
-        tissueType = nextTissueType
+      } else {
+        val j = dbJobBean.insertOrUpdateJob(0, a, department)
+        val jt = dbJobTicketBean.insertOrUpdateJobTicket(0, a, j)
+        val tt = dbTakenTissue.insertOrUpdateTakenTissue(0, a)
+        if (list != null && list.size()>0) tt.setBarcode(list.getLast._3.getBarcode+1)
+        if (tt != null) a.setTakenTissue(tt)
+        list.add(j, jt, tt)
+        jtForAp = jt
       }
+
+      //*****
+      a.getActionProperties.foreach((ap) => {
+        if (ap.getType.getTypeName.compareTo("JobTicket") == 0) {
+          apvList.add((ap, jtForAp))
+        }
+      })
+
       //пропишем диагноз в пропертю, если не пришел с клиента
       a.getActionProperties.foreach((ap) => {
         if (ap.getType.getTypeName.compareTo("MKB") == 0) {
@@ -292,6 +288,18 @@ class DirectionBean extends DirectionBeanLocal
       actions.foreach((a) => em.merge(a))
       em.flush()
     }
+    actions
+  }
+
+  def  createDirectionsForEventIdFromCommonData(eventId: Int,
+                                             directions: CommonData,
+                                                  title: String,
+                                                request: Object,
+                                               userData: AuthData,
+                             postProcessingForDiagnosis: (JSONCommonData, java.lang.Boolean) => JSONCommonData) = {
+
+    var actions: java.util.List[Action] = commonDataProcessor.createActionForEventFromCommonData(eventId, directions, userData)
+    actions = createJobTicketsForActions(actions, eventId)
 
     val com_data = commonDataProcessor.fromActions(actions, title, List(summary _, detailsWithAge _))
     var json_data = new JSONCommonData(request, com_data)
@@ -301,7 +309,7 @@ class DirectionBean extends DirectionBeanLocal
     json_data
 
   }
-
+  //TODO: метод работает только с одним ашеном. со списком будет работать не корректно (возможно:)
   def modifyDirectionsForEventIdFromCommonData(directionId: Int,
                                                 directions: CommonData,
                                                      title: String,
@@ -315,14 +323,34 @@ class DirectionBean extends DirectionBeanLocal
     directions.getEntity.foreach((action) => {
       //Проверка прав у пользователя на редактирование направления
       val a = actionBean.getActionById(action.getId.intValue())
+      var oldjt = 0
+      a.getActionProperties.foreach((ap) => {
+        if (ap.getType.getTypeName.compareTo("JobTicket") == 0) {
+          oldjt = actionPropertyBean.getActionPropertyValue(ap).get(0).asInstanceOf[APValueJobTicket].getValue .intValue()
+        }
+      })
       if ((a.getCreatePerson!=null && a.getCreatePerson.getId.compareTo(userId)==0) ||
           (a.getAssigner!=null &&a.getAssigner.getId.compareTo(userId)==0) ||
           userRole.compareTo("strHead")==0) {
         actions = commonDataProcessor.modifyActionFromCommonData(action.getId().intValue(), directions, userData)
+        actions = createJobTicketsForActions(actions, a.getEvent.getId.intValue())
+        //редактирование или удаление старого жобТикета
+        val jobTicket = if (oldjt > 0) dbJobTicketBean.getJobTicketById(oldjt) else null
+        if (jobTicket != null) {
+          if (jobTicket != null && jobTicket.getJob!=null) {
+            val job = jobTicket.getJob
+            if (job.getQuantity == 1) {
+              job.setDeleted(true)
+            }
+            job.setQuantity(job.getQuantity - 1)
+            em.merge(job)
+          }
+        }
       } else {
         throw new CoreException(ConfigManager.ErrorCodes.noRightForAction, i18n("error.noRightForThisAction" + "\n Редактировать диагностику может только врач, создавший направление, или лечащий врач или заведующий отделением"))
       }
     })
+    em.flush()
     val com_data = commonDataProcessor.fromActions( actions, title, List(summary _, detailsWithAge _))
 
     var json_data = new JSONCommonData(request, com_data)
