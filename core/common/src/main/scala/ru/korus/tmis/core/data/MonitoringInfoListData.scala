@@ -22,26 +22,30 @@ class MonitoringInfoListData {
   @BeanProperty
   var data: java.util.LinkedList[MonitoringInfoContainer] = new java.util.LinkedList[MonitoringInfoContainer]
 
-  def this(records: java.util.Map[ActionProperty, java.util.List[APValue]], codes: java.util.Set[String]){
+  def this(records: java.util.LinkedHashMap[ActionProperty, java.util.List[APValue]]){
     this()
+    val map = new java.util.LinkedHashMap[String,(String, java.util.LinkedList[(Date, APValue)])]
     if (records!=null && records.size()>0){
-      codes.foreach(code => {
-        //Фильтруем все ActionProperty с ActionPropertyType.code = code
-        val filtred = records.filter(ap => (ap._2!=null && ap._2.size()>0 && ap._1.getType.getCode.compareTo(code)==0))
-        if (filtred!=null && filtred.size>0) {
-          val name = filtred.toList.get(0)._1.getType.getName
-          val values  = new java.util.LinkedList[(Date, APValue)]
-          try {
-            val iterator = filtred.iterator
-            for(line <- Iterator.continually(iterator.next()).takeWhile(_ != null && values.size()<5)) {
-              values.add((line._1.getAction.getCreateDatetime,line._2.get(0)))
+      try {
+        records.foreach(record => {
+          if (record._1!=null && record._2!=null && record._2.size()>0) {
+            val code = record._1.getType.getCode
+            val name = record._1.getType.getName
+            if (!map.contains(code)){
+              val values  = new java.util.LinkedList[(Date, APValue)]
+              map.put(code,(name, values))
             }
-            this.data.add(new MonitoringInfoContainer(code, name, values))
-          } finally {
-            values.clear()
+            map.get(code)._2.add((record._1.getCreateDatetime, record._2.get(0)))
           }
-        }
-      })
+        })
+
+        map.foreach(f=>{
+          if (f._2!=null)
+            this.data.add(new MonitoringInfoContainer(f._1, f._2._1, f._2._2))
+        })
+      } finally {
+        map.clear()
+      }
     }
   }
 }

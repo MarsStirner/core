@@ -931,12 +931,15 @@ class AppealBean extends AppealBeanLocal
 
   def getMonitoringInfo(eventId: Int, condition: Int, authData: AuthData)  = {
     val codes = asJavaSet(condition match {
-      case 0 => Set("TEMPERATURE", "BPRAS","BPRAD", "PULS", "SP02", "RR", "STATE", "WB")
-      case 1 => Set("K", "NA","CA", "GLUCOSE", "TP", "UREA", "TB", "CB")
+      case 0 => Set("TEMPERATURE", "BPRAS", "BPRAD", "PULS", "SP02", "RR", "STATE", "WB")
+      case 1 => Set("K", "NA", "CA", "GLUCOSE", "TP", "UREA", "TB", "CB")
       case _ => Set("TEMPERATURE", "BPRAS","BPRAD", "PULS", "SP02", "RR", "STATE", "WB")
     })
-    val map = actionPropertyBean.getActionPropertiesByEventIdAndActionPropertyTypeCodes(eventId, codes)
-    new MonitoringInfoListData(map, codes)
+    val map = actionPropertyBean.getActionPropertiesByEventIdsAndActionPropertyTypeCodes(List(Integer.valueOf(eventId)), codes, 5)
+    if (map!=null && map.contains(Integer.valueOf(eventId)))
+      new MonitoringInfoListData(map.get(Integer.valueOf(eventId)))
+    else
+      new MonitoringInfoListData()
   }
 
   def setExecPersonForAppeal(id: Int, personId: Int, authData: AuthData, epst: ExecPersonSetType) = {
@@ -961,6 +964,14 @@ class AppealBean extends AppealBeanLocal
                                               event,
                                               execPerson,
                                               epst.getFlushFlag)
+
+      //Изменим запись о назначевшем враче в ивенте
+      event.setExecutor(execPerson)
+      event.setModifyDatetime(new Date())
+      event.setModifyPerson(authData.getUser)
+      event.setVersion(event.getVersion)
+      dbManager.merge(event)
+
       true
     }
     else
