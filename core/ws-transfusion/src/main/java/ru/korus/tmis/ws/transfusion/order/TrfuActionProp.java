@@ -80,7 +80,9 @@ public class TrfuActionProp {
     }
 
     public <T> void setProp(final T value, final Integer actionId, final PropType propType, final boolean update) throws CoreException {
-        database.addSinglePropBasic(value, propType.getValueClass(), actionId, propIds.get(propType), update);
+        if (value != null) {
+            database.addSinglePropBasic(value, propType.getValueClass(), actionId, propIds.get(propType), update);
+        }
     }
 
     public void setRequestState(final Integer actionId, final String state) throws CoreException {

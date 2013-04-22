@@ -159,6 +159,9 @@ public class Database {
             final int actionId,
             final int propTypeId,
             final boolean isUpdate) throws CoreException {
+        if (value == null) {
+            throw new IllegalArgumentException("The param 'final T value' is null");
+        }
         Integer newPropId = null;
         final List<ActionProperty> prop = getActionProp(actionId, propTypeId);
         if (prop.size() > 0) {
