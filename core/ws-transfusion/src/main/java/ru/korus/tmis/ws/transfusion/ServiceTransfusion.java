@@ -29,7 +29,7 @@ import ru.korus.tmis.ws.transfusion.procedure.ProcedureInfo;
 public interface ServiceTransfusion {
     @WebMethod()
     /**
-     * Передача извещения о результатах выполнения требования
+     * Передача извещения о результатах выполнения требования КК
      * 
      * @param requestId - Идентификатор требования на выдачу КК (Action.id)
      * @param factDate - Фактическая дата/время выдачи КК в формате "yyyy-MM-dd"
