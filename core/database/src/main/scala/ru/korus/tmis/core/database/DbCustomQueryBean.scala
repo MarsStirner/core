@@ -909,9 +909,9 @@ class DbCustomQueryBean
         val aVal = getBedValueForSortingCondition(a)
         val bVal = getBedValueForSortingCondition(b)
 
-        if (a==0) true
+        if (aVal==0) true
         else {
-          if (b==0)false
+          if (bVal==0)false
           else {
             if (method.compareTo("desc") == 0)
               (aVal > bVal)
