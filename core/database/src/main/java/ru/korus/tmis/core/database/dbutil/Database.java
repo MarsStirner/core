@@ -177,7 +177,7 @@ public class Database {
         AbstractAPValue actionProp = null;
 
         final String msg =
-                String.format("Internal error: The type %s is not supproted by Database.addSinglePropBasic", value != null ? "null" : value.getClass()
+                String.format("Internal error: The type %s is not supproted by Database.addSinglePropBasic", value == null ? "null" : value.getClass()
                         .getName());
         try {
             actionProp = getPropValue(newPropId, (AbstractAPValue) classType.newInstance());
