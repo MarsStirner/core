@@ -57,6 +57,15 @@ call asadmin --user ${glassfish.admin.login} ^
         --passwordfile %GF_PASSWD_FILE% ^
         create-jvm-options --target default-config '-Dlogback.configurationFile=${com.sun.aas.instanceRoot}/config/logback.xml'
 echo.
+echo for encoding UTF-8
+echo.
+call asadmin --user ${glassfish.admin.login} ^
+        --passwordfile %GF_PASSWD_FILE% ^
+        create-jvm-options --target server-config '-Dfile.encoding=UTF8'
+call asadmin --user ${glassfish.admin.login} ^
+        --passwordfile %GF_PASSWD_FILE% ^
+        create-jvm-options --target default-config '-Dfile.encoding=UTF8'
+echo.
 echo for remote debug on 5005 port
 echo.
 call asadmin --user ${glassfish.admin.login} ^
