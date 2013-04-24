@@ -564,11 +564,11 @@ class WebMisRESTImpl  extends WebMisREST
     mapper.writeValueAsString(hospitalBedBean.getRegistryFormWithChamberList(action, authData))
   }
 
-  def getMovingListForEvent(request: HospitalBedDataRequest, authData: AuthData) = {
+  def getMovingListForEvent(filter: HospitalBedDataListFilter, authData: AuthData) = {
 
     val mapper: ObjectMapper = new ObjectMapper()
     mapper.getSerializationConfig().setSerializationView(classOf[HospitalBedViews.MovesListView])
-    mapper.writeValueAsString(hospitalBedBean.getMovingListByEventIdAndFilter(request.filter, authData))
+    mapper.writeValueAsString(hospitalBedBean.getMovingListByEventIdAndFilter(filter, authData))
   }
 
   //Регистрирует пациента на койке
