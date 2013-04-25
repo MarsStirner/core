@@ -115,4 +115,7 @@ public interface DbActionPropertyBeanLocal {
      * @return
      */
     APValueAction getActionProperty_ActionByValue(Action action) throws CoreException;
+
+    Map<ActionProperty, List<APValue>> getActionPropertiesByActionIdAndActionPropertyTypeCodes(int actionId, Set<String> codes)
+            throws CoreException;
 }
