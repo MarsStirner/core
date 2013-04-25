@@ -64,7 +64,6 @@ public class RegProcedureResult {
             res.setDescription("MIS Internal error");
             return res;
         }
-        action.setStatus(Database.ACTION_STATE_FINISHED);
         res.setResult(true);
         return res;
     }
@@ -136,7 +135,7 @@ public class RegProcedureResult {
             trfuActionProp.setProp(procedureInfo.getFactDate(), actionId, PropType.ORDER_ISSUE_RES_DATE, update);
         }
 
-        trfuActionProp.setProp(procedureInfo.getContraindication(), actionId, PropType.COMPLICATIONS, update);
+        trfuActionProp.setProp(procedureInfo.getContraindication(), actionId, PropType.CONTRAINDICATION, update);
 
         trfuActionProp.setProp(procedureInfo.getBeforeHemodynamicsPulse(), actionId, PropType.BEFORE_HEMODYNAMICS_PULSE, update);
 

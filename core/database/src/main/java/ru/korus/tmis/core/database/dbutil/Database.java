@@ -159,6 +159,9 @@ public class Database {
             final int actionId,
             final int propTypeId,
             final boolean isUpdate) throws CoreException {
+        if (value == null) {
+            throw new IllegalArgumentException("The param 'final T value' is null");
+        }
         Integer newPropId = null;
         final List<ActionProperty> prop = getActionProp(actionId, propTypeId);
         if (prop.size() > 0) {
@@ -176,7 +179,9 @@ public class Database {
         actionPropId.setIndex(0);
         AbstractAPValue actionProp = null;
 
-        final String msg = String.format("Internal error: The type %s is not supproted by Database.addSinglePropBasic", value.getClass().getName());
+        final String msg =
+                String.format("Internal error: The type %s is not supproted by Database.addSinglePropBasic", value == null ? "null" : value.getClass()
+                        .getName());
         try {
             actionProp = getPropValue(newPropId, (AbstractAPValue) classType.newInstance());
         } catch (final InstantiationException e) {
