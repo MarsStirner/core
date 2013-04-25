@@ -65,7 +65,7 @@ public interface WebMisREST extends Serializable {
 
     String registryPatientToHospitalBed(int eventId, HospitalBedData data, AuthData authData) throws CoreException;
 
-    String getMovingListForEvent(HospitalBedDataRequest request, AuthData authData) throws CoreException;
+    String getMovingListForEvent(HospitalBedDataListFilter filter, AuthData authData) throws CoreException;
 
     String modifyPatientToHospitalBed (int actionId, HospitalBedData data, AuthData authData) throws CoreException;
 

@@ -46,7 +46,7 @@ with TmisLogging{
   private var actionBean: DbActionBeanLocal = _
 
   @EJB
-  private var actionTypeBean: DbActionTypeBeanLocal = _
+  private var actionPropertyTypeBean: DbActionPropertyTypeBeanLocal = _
 
   @EJB
   private var actionPropertyBean: DbActionPropertyBeanLocal = _
@@ -79,8 +79,6 @@ with TmisLogging{
                           iCapIds("db.rbCAP.moving.id.endTime").toInt,
                           iCapIds("db.rbCAP.moving.id.movedIn").toInt)
 
-  private val list2 = List(iCapIds("db.rbCAP.hosp.primary.id.sentTo").toInt)
-
   private val unknownOperation = 0
   private val directionInDepartment = 1    //Направление в отделение
   private val movingInDepartment = 2       //Перевод в отделение
@@ -90,56 +88,88 @@ with TmisLogging{
 
     if(!this.verificationData(eventId, -1, hbData, 0)) return null
 
-    //val actionType = actionTypeBean.getActionTypeByCode("4202") //Движение
+    var date: Date = null
+    //Последний action (moving or received)
+    val filter = new HospitalBedDataListFilter(eventId)
+    val lastActions = actionBean.getActionsWithFilter(0, 0, filter.toSortingString("createDatetime", "desc"), filter.unwrap, null, authData)
+    val lastAction: Action = if(lastActions!=null && lastActions.size()>0) lastActions.get(0) else null
+
+    if(hbData.data.bedRegistration!=null && hbData.data.bedRegistration.moveDatetime!=null)
+      date = hbData.data.bedRegistration.moveDatetime
+    else if (lastAction!=null)//ищем дату выписки в последнем Action
+      date = lastAction.getEndDate
+
+    if(date==null) {
+      throw new CoreException("Регистрация пациента невозможна. \nНе заданы дата и время поступления")
+      return null
+    }
 
     //Инициализируем новый action
     val action: Action = actionBean.createAction(eventId.intValue(),
                                                  i18n("db.actionType.moving").toInt,
-                                                 //actionType.getId.intValue(),
                                                  authData)
-    action.setBegDate(hbData.data.bedRegistration.moveDatetime)
+    action.setBegDate(date)
     action.setEndDate(null:java.util.Date)
     dbManager.persist(action)
 
     if(hbData.data.bedRegistration!=null) {
 
-      val propertyValueSet = new HashSet[APValue]
-      val listNdx = new IndexOf(list)
-      val cap = dbRbCoreActionPropertyBean.getRbCoreActionPropertiesByActionTypeId(i18n("db.actionType.moving").toInt)
+      var entities = Set.empty[AnyRef]
+      val types = actionPropertyTypeBean.getActionPropertyTypesByActionTypeId(i18n("db.actionType.moving").toInt)
+      types.foreach(apt => {
+        val code = apt.getCode
 
-      cap.foreach((coreAPT) => {
-        coreAPT.getId.intValue() match {
-            case listNdx(0) => {   //Переведен из отделения
-              propertyValueSet += this.createActionPropertyWithValue(action, coreAPT.getActionPropertyType.getId.intValue(), Integer.valueOf(hbData.data.bedRegistration.movedFromUnitId), authData)
+        var value: AnyRef = null
+        if(code.compareTo(ConfigManager.Messages("db.apt.moving.codes.hospOrgStruct"))==0){
+          if(hbData.data.bedRegistration.bedId>0){ // достанем из профиля койки
+            val department = dbOrgStructureBean.getOrgStructureByHospitalBedId(hbData.data.bedRegistration.bedId.intValue())
+            if(department!=null) value = department.getId else null
+          }
+          if(value==null) { //берем значение по умолчанию - отделение, куда направили
+            val codes = Set[String](ConfigManager.Messages("db.apt.moving.codes.orgStructTransfer"))
+            val lastProperties = actionPropertyBean.getActionPropertiesByActionIdAndActionPropertyTypeCodes(lastAction.getId.intValue, codes)
+            if(lastProperties!=null && lastProperties.size()>0){
+              val apv = lastProperties.iterator.next()._2
+              if(apv!=null && apv.size()>0)
+                value = apv.get(0).asInstanceOf[APValueOrgStructure].getValue.getId
             }
-            case listNdx(1) => {   //Время поступления
-            val formatter: DateFormat = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss")
-              propertyValueSet += this.createActionPropertyWithValue(action, coreAPT.getActionPropertyType.getId.intValue(), formatter.format(hbData.data.bedRegistration.moveDatetime), authData)
+          }
+        }
+        else if(code.compareTo(ConfigManager.Messages("db.apt.moving.codes.timeArrival"))==0){
+          val formatter: DateFormat = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss")
+
+          if(hbData.data.bedRegistration.moveDatetime!=null) {
+            value = formatter.format(hbData.data.bedRegistration.moveDatetime)
+          }
+          else { //берем значение по умолчанию из предыдущего действия
+            if (lastAction.getActionType.getFlatCode.compareTo(ConfigManager.Messages("db.action.admissionFlatCode"))==0) {
+              value = formatter.format(lastAction.getBegDate)  //TODO: getBegDate???
             }
-            case listNdx(2) => {   //Отделение пребывания
-              if(hbData.data.bedRegistration.bedId>0){ // достанем из профиля койки
-              val department = dbOrgStructureBean.getOrgStructureByHospitalBedId(hbData.data.bedRegistration.bedId.intValue())
-                if(department!=null)
-                  propertyValueSet += this.createActionPropertyWithValue(action, coreAPT.getActionPropertyType.getId.intValue(), department.getId, authData)
-                else
-                  propertyValueSet += this.createActionPropertyWithValue(action, coreAPT.getActionPropertyType.getId.intValue(), null, authData)
+            else if(lastAction.getActionType.getFlatCode.compareTo(ConfigManager.Messages("db.action.movingFlatCode"))==0){
+              val codes = Set[String](ConfigManager.Messages("db.apt.moving.codes.timeLeaved"))
+              val lastProperties = actionPropertyBean.getActionPropertiesByActionIdAndActionPropertyTypeCodes(lastAction.getId.intValue, codes)
+              if(lastProperties!=null && lastProperties.size()>0){
+                val apv = lastProperties.iterator.next()._2
+                if(apv!=null && apv.size()>0)
+                  value = formatter.format(apv.get(0).asInstanceOf[APValueTime].getValue)
               }
             }
-            case listNdx(3) => {   //койка
-              propertyValueSet += this.createActionPropertyWithValue(action, coreAPT.getActionPropertyType.getId.intValue(), Integer.valueOf(hbData.data.bedRegistration.bedId), authData)
-            }
-            case listNdx(4) => {    //Патронаж
-              propertyValueSet += this.createActionPropertyWithValue(action, coreAPT.getActionPropertyType.getId.intValue(), hbData.data.bedRegistration.patronage, authData)
-            }
-            case _ => {
-              propertyValueSet += this.createActionPropertyWithValue(action, coreAPT.getActionPropertyType.getId.intValue(), null, authData)
-            }
-
           }
+        }
+        else if(code.compareTo(ConfigManager.Messages("db.apt.moving.codes.patronage"))==0){
+          value = hbData.data.bedRegistration.patronage
+        }
+        else if(code.compareTo(ConfigManager.Messages("db.apt.moving.codes.hospitalBed"))==0){
+          value = if(hbData.data.bedRegistration.bedId>0)
+            Integer.valueOf(hbData.data.bedRegistration.bedId)
+          else null
+        }
+
+        val apv = this.createActionPropertyWithValue(action, apt.getId.intValue(), value, authData)
+        if(apv!=null) entities += apv
       })
 
-      dbManager.persistAll(propertyValueSet)
-      propertyValueSet.clear()
+      dbManager.persistAll(entities)
     }
     action
   }
@@ -240,116 +270,94 @@ with TmisLogging{
 
     if(!this.verificationData(eventId, -1, hbData, 0)) return null
 
-    //Направление в отделение, если для данного эвента нету экшна 4202, в противном случае перевод в отделение
-    var flgOption: Int  = this.unknownOperation
-    var actionList = actionBean.getActionsByTypeCodeAndEventId(JavaConversions.asJavaSet(Set("4202")), eventId, "a.createDatetime desc", authData)
-    if(actionList!=null) {      //Перевод в отделение
-      flgOption = this.movingInDepartment
-    }
-    else {                      //Направление в отделение
-      actionList = actionBean.getActionsByTypeCodeAndEventId(JavaConversions.asJavaSet(Set("4201")), eventId, "a.createDatetime desc", authData)
-      if(actionList!=null) {
-        flgOption = this.directionInDepartment
-      }
-      else {
-        throw new CoreException("Невозможно направить пациента в отделение. \nДля госпитализации с id=%s не найден первичный осмотр".format(eventId.toString))
+    val filter = new HospitalBedDataListFilter(eventId)
+    val actions = actionBean.getActionsWithFilter(0, 0, filter.toSortingString("createDatetime", "desc"), filter.unwrap, null, authData)
+    if (actions!=null && actions.size()>0){
+
+      var action = actions.get(0)
+      var result = List[Action]()
+      var entities = Set.empty[AnyRef]
+      val date = if (hbData.data.move!=null && hbData.data.move.moveDatetime!=null) hbData.data.move.moveDatetime
+                 else new Date
+
+      val flgOption =
+        if (action.getActionType.getFlatCode.compareTo(i18n("db.action.movingFlatCode"))==0)
+          this.movingInDepartment
+        else if (action.getActionType.getFlatCode.compareTo(i18n("db.action.admissionFlatCode"))==0)
+          this.directionInDepartment
+        else
+          this.unknownOperation
+
+      if (flgOption==this.unknownOperation) {
+        throw new CoreException("Невозможно направить/перевести пациента в отделение. \nДля госпитализации с id=%s не найден осмотр при госпитализации".format(eventId.toString))
         return null
       }
-    }
 
-    val oldAction =  Action.clone(actionList.get(0))
-    val from: java.lang.Integer =
-      if(flgOption == this.movingInDepartment)
-          this.getLastDepartmentLocationByAction(actionList.get(0).getId.intValue()/*hbData.data.move.clientId.intValue*/)
-      else null
-    val oldValues = actionPropertyBean.getActionPropertiesByActionId(oldAction.getId.intValue)
-    val lockId = appLock.acquireLock("Action", actionList.get(0).getId.intValue(), oldAction.getIdx, authData)
-
-    var result = List[Action]()
-    var entities = Set.empty[AnyRef]
-
-    try {
-      val action = actionBean.updateAction (actionList.get(0).getId.intValue(),
-                                            oldAction.getVersion.intValue,
-                                            authData)
-      action.setStatus(ActionStatus.FINISHED.getCode)  //Добавлено в спеку по переводам
-      action.setBegDate(oldAction.getBegDate)
-      if (flgOption == this.directionInDepartment)
-        action.setEndDate(oldAction.getEndDate)
-      else {
-        if(hbData.data.move.moveDatetime!=null)
-          action.setEndDate(hbData.data.move.moveDatetime)
-        else
-          action.setEndDate(new Date())
+      val codes = flgOption match {
+        case this.directionInDepartment => Set[String](ConfigManager.Messages("db.apt.received.codes.orgStructDirection"))
+        case this.movingInDepartment =>  Set[String](ConfigManager.Messages("db.apt.moving.codes.orgStructTransfer"),
+                                                     ConfigManager.Messages("db.apt.moving.codes.timeLeaved"))
+        case _ => Set.empty[String]
       }
 
-      entities = entities + action
-      result = action :: result
+      val oldAction =  Action.clone(action)
+      val oldValues = actionPropertyBean.getActionPropertiesByActionIdAndActionPropertyTypeCodes(oldAction.getId.intValue, codes)
+      val lockId = appLock.acquireLock("Action", action.getId.intValue(), oldAction.getIdx, authData)
 
-      if(hbData.data.move!=null) {
-        oldValues.foreach(f => {
+      try{
+          //Action
+          action = actionBean.updateAction(action.getId.intValue(),
+                                           oldAction.getVersion.intValue,
+                                           authData)
 
-          val ap = actionPropertyBean.updateActionProperty( f._1.getId.intValue,
-                                                            f._1.getVersion.intValue,
-                                                            authData)
-          entities = entities + ap
-          val cap = dbRbCoreActionPropertyBean.getRbCoreActionPropertiesByActionPropertyTypeId(ap.getType.getId.intValue())
-          flgOption match {
-            case this.movingInDepartment => {
-              val listNdx = new IndexOf(list)
-              cap.getId.intValue() match {
-                case listNdx(0) => {    //Переведен из отделения
-                  val apv = actionPropertyBean.setActionPropertyValue(ap, from.toString, 0)
+          action.setBegDate(oldAction.getBegDate)
+          if (flgOption==movingInDepartment) {     //Движение
+            action.setStatus(ActionStatus.FINISHED.getCode)
+            action.setEndDate(date)
+          }
+
+          entities = entities + action
+          result = action :: result
+
+          //ActionProperty
+          if(hbData.data.move!=null) {
+            oldValues.foreach(f => {
+              val ap = actionPropertyBean.updateActionProperty( f._1.getId.intValue,
+                                                                f._1.getVersion.intValue,
+                                                                authData)
+              entities = entities + ap
+
+              val code = ap.getType.getCode
+              if (flgOption==movingInDepartment) {
+                if(code.compareTo(ConfigManager.Messages("db.apt.moving.codes.orgStructTransfer"))==0  && hbData.data.move.unitId>0){
+                  val apv = actionPropertyBean.setActionPropertyValue(ap, hbData.data.move.unitId.toString, 0)
                   entities = entities + apv.unwrap
                 }
-                case listNdx(5) => {   //Время выбытия
+                else if(code.compareTo(ConfigManager.Messages("db.apt.moving.codes.timeLeaved"))==0){
                   val formatter: DateFormat = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss")
-                    val apv = actionPropertyBean.setActionPropertyValue(ap, formatter.format(hbData.data.move.moveDatetime), 0)
-                    entities = entities + apv.unwrap
+                  val apv = actionPropertyBean.setActionPropertyValue(ap, formatter.format(date), 0)
+                  entities = entities + apv.unwrap
                 }
-                case listNdx(6) => {   //Переведен в отделение
+              }
+              else if(flgOption==directionInDepartment) {
+                if(code.compareTo(ConfigManager.Messages("db.apt.received.codes.orgStructDirection"))==0 && hbData.data.move.unitId>0) {
                   val apv = actionPropertyBean.setActionPropertyValue(ap, hbData.data.move.unitId.toString, 0)
-                    entities = entities + apv.unwrap
+                  entities = entities + apv.unwrap
                 }
-                case _ =>  null
               }
-            }
-            case this.directionInDepartment => {
-              val listNdx = new IndexOf(list2)
-              cap.getId.intValue() match {
-                case listNdx(0) => {    //Направлен в отделение
-                  if(hbData.data.move.unitId>0){
-                    val apv = actionPropertyBean.setActionPropertyValue(ap, hbData.data.move.unitId.toString, 0)
-                    entities = entities + apv.unwrap
-                  }
-                }
-                case _ => null
-              }
-            }
-            case _ => {
-              throw new CoreException("Невозможно направить пациента в отделение. \nДля госпитализации с id=%s не найден первичный осмотр".format(eventId.toString))
-              return null
-            }
+            })
           }
-        })
+          result = dbManager.mergeAll(entities).filter(result.contains(_)).map(_.asInstanceOf[Action]).toList
+          val r = dbManager.detachAll[Action](result).toList
+          return r.get(0)
       }
-
-      result = dbManager.mergeAll(entities).filter(result.contains(_)).map(_.asInstanceOf[Action]).toList
-      val r = dbManager.detachAll[Action](result).toList
-      /*
-      r.foreach(newAction => {
-        val newValues = actionPropertyBean.getActionPropertiesByActionId(newAction.getId.intValue)
-        val hren = new ModifyActionNotification(null,       //oldAction
-          null, //oldValues
-          null, //newAction
-          null)//newValues
-        actionEvent.fire(hren)
-      })
-      */
-      return r.get(0)
+      finally {
+        appLock.releaseLock(lockId)
+      }
     }
-    finally {
-      appLock.releaseLock(lockId)
+    else {
+      throw new CoreException("Невозможно направить/перевести пациента в отделение. \nДля госпитализации с id=%s не найден осмотр при госпитализации".format(eventId.toString))
+      return null
     }
   }
 
@@ -436,36 +444,11 @@ with TmisLogging{
     }
   }
 
-  def getMovingListByEventIdAndFilter(filter: AnyRef, authData: AuthData): HospitalBedData = {
-    if(filter.isInstanceOf[HospitalBedDataListFilter]) {
-      val map = new java.util.LinkedHashMap[Action, java.util.Map[ActionProperty, java.util.List[APValue]]]
-
-      //Список всех экшенов
-      val actionList = actionBean.getActionsByTypeCodeAndEventId(JavaConversions.asJavaSet(Set("4201","4202")),
-                                                            filter.asInstanceOf[HospitalBedDataListFilter].eventId,
-                                                            filter.asInstanceOf[HospitalBedDataListFilter].toSortingString("") + " asc",
-                                                            authData)
-      //Таблица соответствия id
-      val corrMap = new java.util.HashMap[String, java.util.List[RbCoreActionProperty]]()
-      corrMap.put(i18n("db.actionType.hospitalization.primary").toString, dbRbCoreActionPropertyBean.getRbCoreActionPropertiesByActionTypeId(i18n("db.actionType.hospitalization.primary").toInt))
-      corrMap.put(i18n("db.actionType.moving").toString, dbRbCoreActionPropertyBean.getRbCoreActionPropertiesByActionTypeId(i18n("db.actionType.moving").toInt))
-
-      if (actionList!=null) {
-        actionList.foreach(action=>{
-          val apv_map = actionPropertyBean.getActionPropertiesByActionId(action.getId.intValue)
-          map.put(action, apv_map)
-        })
-      } else {
-        logTmis.setLoggerType(logTmis.LoggingTypes.Debug)
-        logTmis.warning("Не найдено ни одного действия для выбранного обращения. ")
-        //TODO: Варнинг, что не найдена экшны для этого обращения    Добавить коды ошибок.
-      }
-      return new HospitalBedData(map, corrMap, null)
-    }
-    else {
-      throw new CoreException("Ошибка при получении списка движения пациента. Некорректный фильтр")
-      return null
-    }
+  def getMovingListByEventIdAndFilter(filter: HospitalBedDataListFilter, authData: AuthData): HospitalBedData = {
+      val actions = actionBean.getActionsWithFilter(0, 0, filter.toSortingString("createDatetime", "asc"), filter.unwrap, null, authData)
+      return new HospitalBedData(actions,
+                                 actionPropertyBean.getActionPropertiesByActionIdAndActionPropertyTypeCodes _,
+                                 null)
   }
 
   def callOffHospitalBedForPatient(actionId: Int, authData: AuthData): Boolean = {
