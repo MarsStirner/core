@@ -5,6 +5,7 @@ import ru.korus.tmis.core.entity.model.*;
 import ru.korus.tmis.core.exception.CoreException;
 
 import javax.ejb.Local;
+import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
@@ -60,6 +61,10 @@ public interface DbActionPropertyBeanLocal {
     getActionPropertiesForEventByActionTypes(int eventId, Set<Integer> atIds, Set<Integer> coreIds)
             throws CoreException;
 
+    LinkedHashMap<Integer, LinkedHashMap<ActionProperty, List<APValue>>>
+    getActionPropertiesByEventIdsAndActionPropertyTypeCodes(java.util.List<Integer> eventId, java.util.Set<String> codes, int countInGroup)
+            throws CoreException;
+
     List<APValue>
     getActionPropertyValue(ActionProperty actionProperty)
             throws CoreException;
@@ -104,7 +109,7 @@ public interface DbActionPropertyBeanLocal {
     ActionProperty createActionProperty(Action doctorAction, ActionPropertyType queueAPType) throws CoreException;
 
     /**
-     * Получение свойства действия по значению действия  (ActionProperty_Action by ActionProperty_Action.value)
+     * Получение своства действия по значению действия  (ActionProperty_Action by ActionProperty_Action.value)
      *
      * @param action действие,  которое указано как значение в ActionProperty_Action (VALUE)
      * @return

@@ -105,8 +105,6 @@ class DbCustomQueryBean
                                                                                               iCapIds("db.rbCAP.hosp.primary.id.sentTo"),
                                                                                               i18n("db.action.movingFlatCode"),
                                                                                               "GROUP BY e, a", sorting), classOf[Array[AnyRef]])
-                  //.setMaxResults(limit)
-                  //.setFirstResult(limit * page)
 
     if (queryStr.data.size() > 0) {
       queryStr.data.foreach(qdp => typed.setParameter(qdp.name, qdp.value))
@@ -911,10 +909,16 @@ class DbCustomQueryBean
         val aVal = getBedValueForSortingCondition(a)
         val bVal = getBedValueForSortingCondition(b)
 
-        if (method.compareTo("desc") == 0)
+        if (aVal==0) true
+        else {
+          if (bVal==0)false
+          else {
+            if (method.compareTo("desc") == 0)
               (aVal > bVal)
             else
               (bVal > aVal)
+          }
+        }
       }
       case "number" => {
         if (method.compareTo("desc") == 0)

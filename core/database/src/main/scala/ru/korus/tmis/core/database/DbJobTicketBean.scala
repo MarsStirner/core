@@ -269,15 +269,17 @@ class DbJobTicketBean extends DbJobTicketBeanLocal
       WHERE
         a.event.id = :eventId
       AND
-        a.actionType.id = :actionTypeId
-      AND
         a.actionType.mnemonic = 'LAB'
+      AND
+        a.isUrgent = 0
       AND
         apval.id.id = ap.id
       AND
         apval.value = jt.id
       AND
-        attt.actionType.id = a.actionType.id
+        attt.actionType.id = :actionTypeId
+      AND
+        tt.type.id = attt.tissueType.id
       AND
         j.date = :plannedEndDate
       AND

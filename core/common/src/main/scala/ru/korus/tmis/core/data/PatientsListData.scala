@@ -28,34 +28,10 @@ class PatientsListData {
   @BeanProperty
   var data: LinkedList[PatientsListEntry] = new LinkedList[PatientsListEntry]
 
- /* def this(events: java.util.Map[Event, Action],
-           bedInfo: java.util.Map[Event, OrgStructureHospitalBed],
-           condInfo: java.util.Map[Event, java.util.Map[ActionProperty, java.util.List[APValue]]],
-           requestData: PatientsListRequestData) = {
-    this ()
-
-    events.foreach(e => {
-
-      val bed = bedInfo.containsKey(e._1) match {
-        case false => null
-        case bed => bedInfo.get(e._1)
-      }
-
-      val condition = condInfo.containsKey(e._1) match {
-        case false => null
-        case condition => {
-          condInfo.get(e._1)
-        }
-      }
-      this.data.add(new PatientsListEntry(e._1, bed, condition, null))
-    })
-    this.requestData = requestData
-  } */
-
   def this(actions: java.util.Map[Action, java.util.Map[ActionProperty, java.util.List[APValue]]],
            requestData: PatientsListRequestData,
            roleId: Int,
-           condInfo: java.util.Map[Event, java.util.Map[ActionProperty, java.util.List[APValue]]],
+           condInfo: java.util.LinkedHashMap[java.lang.Integer, java.util.LinkedHashMap[ActionProperty, java.util.List[APValue]]],
            mAdmissionDepartment: (Int) => OrgStructure,
            mActionPropertiesWithValues: (Int, java.util.List[java.lang.Integer]) =>  java.util.Map[ActionProperty, java.util.List[APValue]],
            //mCorrList: (java.util.List[java.lang.Integer])=> java.util.List[RbCoreActionProperty],
@@ -144,9 +120,9 @@ class PatientsListData {
       } */
       val condition = if (roleId == 25) {
         //Состояние пациента (только для роли сестра отделения)
-        condInfo.containsKey(event) match {
+        condInfo.containsKey(event.getId) match {
           case false => null
-          case condition => condInfo.get(event)
+          case condition => condInfo.get(event.getId)
         }
       } else null
       this.data.add(new PatientsListEntry(event, bed, action.getBegDate/*begDate*/, condition, from, mDiagnostics))

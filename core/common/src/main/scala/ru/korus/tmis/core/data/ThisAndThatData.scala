@@ -142,6 +142,37 @@ class FreePersonsListDataFilter  extends AbstractListDataFilter {
   }
 }
 
+@XmlType(name = "personsListDataFilter")
+@XmlRootElement(name = "personsListDataFilter")
+class PersonsListDataFilter  extends AbstractListDataFilter {
+  @BeanProperty
+  var department:  Int = _
+
+  def this(departmentId:  Int){
+    this()
+    this.department = departmentId
+  }
+
+  @Override
+  def toQueryStructure() = {
+    var qs = new QueryDataStructure()
+    if(this.department>0){
+      qs.query += "AND s.orgStructure.id = :department\n"
+      qs.add("department",this.department:java.lang.Integer)
+    }
+    qs
+  }
+
+  @Override
+  def toSortingString (sortingField: String, sortingMethod: String) = {
+    var sorting = sortingField match {
+      case _ => {"s.id %s"}
+    }
+    sorting = "ORDER BY " + sorting.format(sortingMethod)
+    sorting
+  }
+}
+
 @XmlType(name = "allDepartmentsListData")
 @XmlRootElement(name = "allDepartmentsListData")
 class AllDepartmentsListData {

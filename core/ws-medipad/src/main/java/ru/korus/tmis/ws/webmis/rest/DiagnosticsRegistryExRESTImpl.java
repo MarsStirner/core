@@ -314,4 +314,18 @@ public class DiagnosticsRegistryExRESTImpl {
     public Object getInfoAboutDiagnosticsForPatientByEvent(@PathParam("actionId")int actionId) {
         return new JSONWithPadding(wsImpl.getInfoAboutDiagnosticsForPatientByEvent(actionId), this.callback);
     }
+
+    /**
+     * Просмотр результатов инструментальных исследований
+     * @param actionId идентификатор исследования.
+     * @return com.sun.jersey.api.json.JSONWithPadding как Object
+     * @throws ru.korus.tmis.core.exception.CoreException
+     * @see ru.korus.tmis.core.exception.CoreException
+     */
+    @GET
+    @Path("/instrumental/{actionId}")
+    @Produces("application/x-javascript")
+    public Object getInfoAboutInstrumentalDiagnosticsForPatientByEvent(@PathParam("actionId")int actionId) {
+        return new JSONWithPadding(wsImpl.getInfoAboutDiagnosticsForPatientByEvent(actionId), this.callback);
+    }
 }

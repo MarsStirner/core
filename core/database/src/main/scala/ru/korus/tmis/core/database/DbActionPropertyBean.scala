@@ -14,6 +14,7 @@ import javax.persistence.{EntityManager, PersistenceContext}
 import grizzled.slf4j.Logging
 import scala.collection.JavaConversions._
 import scala.collection.mutable.LinkedHashMap
+import java.util
 
 @Interceptors(Array(classOf[LoggingInterceptor]))
 @Stateless
@@ -260,6 +261,41 @@ class DbActionPropertyBean
     )
   }
 
+  @TransactionAttribute(TransactionAttributeType.REQUIRES_NEW)
+  def getActionPropertiesByEventIdsAndActionPropertyTypeCodes(eventIds: java.util.List[java.lang.Integer], codes: java.util.Set[String], cntRead: Int) = {
+
+    val sqlCodes = convertCollectionToSqlString(asJavaCollection(codes))
+    val sqlEventIds = convertCollectionToSqlString(asJavaCollection(eventIds))
+    val result = em.createNativeQuery(ActionPropertiesByEventIdAndActionPropertyTypeCodesQueryEx.format(sqlEventIds, sqlCodes))
+                   //.setParameter(1, new java.util.LinkedList(eventIds map(f => f.toString)))
+                   //.setParameter(2, sqlCodes)
+                   .setParameter(3, cntRead)
+                   .getResultList
+    val resulted = result.foldLeft(new java.util.LinkedHashMap[java.lang.Integer, java.util.LinkedHashMap[ActionProperty, java.util.List[APValue]]])(
+      (map, ap) => {
+        val eventId = ap.asInstanceOf[Array[Object]](0).asInstanceOf[java.lang.Integer]
+
+        if(!map.contains(eventId))
+          map.put(eventId, new java.util.LinkedHashMap[ActionProperty, java.util.List[APValue]])
+
+        val apId = ap.asInstanceOf[Array[Object]](1).asInstanceOf[java.lang.Integer]
+        val app = getActionPropertyById(apId.intValue())
+        val values = getActionPropertyValue(app)
+
+        val apvMap = map.get(eventId)
+        if(values!=null && values.size()>0)
+          apvMap.put(app, values)
+        map
+      })
+    resulted
+  }
+
+  private def convertCollectionToSqlString(collection: java.util.Collection[_]) = {
+    var sqlStr: String = ""
+    collection.foreach(el => sqlStr = if(sqlStr.isEmpty) "'" + el.toString + "'" else sqlStr + ",'" + el.toString + "'")
+    sqlStr
+  }
+
   private def getActionPropertiesByActionIdAndCustomParameters (actionId: Int, parameters: java.util.List[String], filterMode: Int) = {
     val result = em.createQuery(
       ActionPropertiesByActionIdAndNamesQuery.format(filterMode match {
@@ -281,6 +317,67 @@ class DbActionPropertyBean
       }
     )
   }
+
+  val ActionPropertiesByEventIdAndActionPropertyTypeCodesQueryEx =
+    """
+      SELECT counted.idd2, counted.apidd2
+      FROM
+      (
+        SELECT grouped.idd as idd2, grouped.apidd as apidd2,
+            if(
+                @typex=CONCAT(grouped.idd,grouped.codee),
+                @rownum:=@rownum+1,
+                @rownum:=1+LEAST(0,@typex:=CONCAT(grouped.idd,grouped.codee))
+            ) rown
+        FROM
+        (
+                    SELECT e.id as idd, apt.code as codee, ap.createDatetime as acr, ap.id as apidd
+                    FROM
+                      ActionProperty ap
+                        INNER JOIN Action a ON ap.action_id = a.id
+                        INNER JOIN Event e ON a.event_id = e.id
+                        INNER JOIN ActionPropertyType apt ON ap.type_id = apt.id,
+                        (SELECT @rownum:=1, @typex:='_') counter
+                    WHERE
+                      e.id IN (%s)
+                    AND
+                      a.deleted = 0
+                    AND
+                      a.status = 2
+                    AND
+                      apt.code IN (%s)
+                    AND
+                      apt.deleted = 0
+                    AND (
+                      exists (
+                          SELECT ap_d.id
+                          FROM
+                              ActionProperty_Double ap_d
+                          WHERE
+                              ap_d.id = ap.id
+                      )
+                      OR
+                      exists (
+                          SELECT ap_i.id
+                          FROM
+                              ActionProperty_Integer ap_i
+                          WHERE
+                              ap_i.id = ap.id
+                      )
+                      OR
+                      exists (
+                          SELECT ap_s.id
+                          FROM
+                              ActionProperty_String ap_s
+                          WHERE
+                              ap_s.id = ap.id
+                      )
+                    )
+                    GROUP BY idd, apt.code, ap.createDatetime DESC
+        ) grouped
+      ) counted
+      WHERE rown <= ?3
+    """
 
   val ActionPropertyFindQuery = """
     SELECT ap
