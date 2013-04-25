@@ -462,7 +462,7 @@ public class DirectoryInfoRESTImpl {
         },
         CONSULTATIONS("consultations"){
             public String getSubType() { return "consultations";}
-            public String getMnemonic() { return "";}
+            public String getMnemonic() { return "CONS";}
         };
 
         public abstract String getSubType();

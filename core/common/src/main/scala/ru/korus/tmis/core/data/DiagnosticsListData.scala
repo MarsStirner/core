@@ -6,6 +6,7 @@ import java.util.{LinkedList, Date}
 import scala.collection.JavaConversions._
 import ru.korus.tmis.util.ConfigManager
 import ru.korus.tmis.core.entity.model.{ActionStatus, Staff, Action}
+import ru.korus.tmis.core.filter.AbstractListDataFilter
 
 //Контейнер для списка диагностик
 @XmlType(name = "diagnosticsListData")
@@ -49,7 +50,7 @@ class DiagnosticsListData {
 class DiagnosticsListRequestData {
 
   @BeanProperty
-  var filter: AnyRef = _
+  var filter: AbstractListDataFilter = new DiagnosticsListRequestDataFilter()
   @BeanProperty
   var sortingField: String = _
   @BeanProperty
@@ -69,7 +70,7 @@ class DiagnosticsListRequestData {
            sortingMethod: String,
            limit: Int,
            page: Int,
-           filter: AnyRef) = {
+           filter: AbstractListDataFilter) = {
     this()
 
     this.filter = if (filter != null) {
@@ -116,7 +117,7 @@ class DiagnosticsListRequestData {
 
 @XmlType(name = "diagnosticsListRequestDataFilter")
 @XmlRootElement(name = "diagnosticsListRequestDataFilter")
-class DiagnosticsListRequestDataFilter {
+class DiagnosticsListRequestDataFilter extends AbstractListDataFilter {
 
   //   =>Фильтрация по коду типа действия<=
   @BeanProperty
@@ -206,6 +207,7 @@ class DiagnosticsListRequestDataFilter {
     this.mnemonic = mnemonic
   }
 
+  @Override
   def toQueryStructure() = {
     var qs = new QueryDataStructure()
     if (this.code != null && !this.code.isEmpty) {

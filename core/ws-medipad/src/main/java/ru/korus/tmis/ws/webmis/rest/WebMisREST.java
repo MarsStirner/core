@@ -65,7 +65,7 @@ public interface WebMisREST extends Serializable {
 
     String registryPatientToHospitalBed(int eventId, HospitalBedData data, AuthData authData) throws CoreException;
 
-    String getMovingListForEvent(HospitalBedDataRequest request, AuthData authData) throws CoreException;
+    String getMovingListForEvent(HospitalBedDataListFilter filter, AuthData authData) throws CoreException;
 
     String modifyPatientToHospitalBed (int actionId, HospitalBedData data, AuthData authData) throws CoreException;
 
@@ -123,7 +123,11 @@ public interface WebMisREST extends Serializable {
 
     JSONCommonData modifyLaboratoryStudies(int eventId, CommonData data, AuthData auth) throws CoreException;
 
-    boolean removeLaboratoryStudies(AssignmentsToRemoveDataList data, AuthData auth) throws CoreException;
+    JSONCommonData insertInstrumentalStudies(int eventId, CommonData data, AuthData auth) throws CoreException;
+
+    JSONCommonData modifyInstrumentalStudies(int eventId, CommonData data, AuthData auth) throws CoreException;
+
+    boolean removeDirection(AssignmentsToRemoveDataList data, String directionType, AuthData auth) throws CoreException;
 
     /**
      * Получение справочника FlatDirectory
