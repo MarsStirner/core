@@ -21,14 +21,12 @@ public interface DirectionBeanLocal {
      * Метод получения направления на лабораторное исследование по идентификатору
      * @param directionId id лабораторного исследования
      * @param title  вспомогательный параметр название действия (Диагнозтика).
-     * @param userData Данные пользователя
      * @return com.sun.jersey.api.json.JSONWithPadding как Object
      * @throws CoreException
      * @see CoreException
      */
     JSONCommonData getDirectionById(int directionId,
                                     String title,
-                                    AuthData userData,
                                     Function2<JSONCommonData, java.lang.Boolean, JSONCommonData> postProcessingForDiagnosis)
            throws CoreException;
 
@@ -78,5 +76,5 @@ public interface DirectionBeanLocal {
      * @throws CoreException
      * @see CoreException
      */
-    boolean removeDirections(AssignmentsToRemoveDataList directions, AuthData userData) throws CoreException;
+    boolean removeDirections(AssignmentsToRemoveDataList directions, String directionType, AuthData userData) throws CoreException;
 }
