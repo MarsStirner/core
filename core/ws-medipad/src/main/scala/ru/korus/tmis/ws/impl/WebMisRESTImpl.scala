@@ -723,17 +723,14 @@ class WebMisRESTImpl  extends WebMisREST
       actions = dbCustomQueryBean.getAllDiagnosticsWithFilter(requestData.page-1,
         requestData.limit,
         requestData.sortingFieldInternal,
-        requestData.filter)
+        requestData.filter.unwrap())
     }
     val list = new DiagnosticsListData(actions, requestData)
     list
   }
 
   def getInfoAboutDiagnosticsForPatientByEvent(actionId: Int) = {
-    //TODO: подключить анализ авторизационных данных и доступных ролей
-    val authData:AuthData = null
-
-    val json_data = directionBean.getDirectionById(actionId, "Diagnostic", authData, null)
+    val json_data = directionBean.getDirectionById(actionId, "Diagnostic", null)
     json_data
   }
 
@@ -803,15 +800,7 @@ class WebMisRESTImpl  extends WebMisREST
     mapper.writeValueAsString(new ActionTypesListData(request, actionTypeBean.getAllActionTypeWithFilter _))
   }
 
-  def insertConsultation(request: ConsultationRequestData) = {
-    val authData:AuthData = null
-    primaryAssessmentBean.insertAssessmentAsConsultation(request.eventId, request.actionTypeId, request.executorId, request.beginDate, request.endDate, request.urgent, request, authData)
-  }
-
-  def insertInstrumentalStudies(eventId: Int, data: CommonData, auth: AuthData) = {
-    primaryAssessmentBean.createAssessmentsForEventIdFromCommonData(eventId, data, "Diagnostic", null, auth,  postProcessingForDiagnosis _)// postProcessingForDiagnosis
-  }
-
+  //********* Диагнозтические исследования **********
   def insertLaboratoryStudies(eventId: Int, data: CommonData, auth: AuthData) = {
     directionBean.createDirectionsForEventIdFromCommonData(eventId, data, "Diagnostic", null, auth,  postProcessingForDiagnosis _)
     //primaryAssessmentBean.createAssessmentsForEventIdFromCommonData(eventId, data, "Diagnostic", null, auth,  postProcessingForDiagnosis _)// postProcessingForDiagnosis
@@ -821,9 +810,23 @@ class WebMisRESTImpl  extends WebMisREST
     directionBean.modifyDirectionsForEventIdFromCommonData(eventId, data, "Diagnostic", null, auth,  postProcessingForDiagnosis _)// postProcessingForDiagnosis
   }
 
-  def removeLaboratoryStudies(data: AssignmentsToRemoveDataList, auth: AuthData) = {
-    directionBean.removeDirections(data, auth)
+  def insertInstrumentalStudies(eventId: Int, data: CommonData, auth: AuthData) = {
+    primaryAssessmentBean.createAssessmentsForEventIdFromCommonData(eventId, data, "Diagnostic", null, auth,  postProcessingForDiagnosis _)// postProcessingForDiagnosis
   }
+
+  def modifyInstrumentalStudies(eventId: Int, data: CommonData, auth: AuthData) = {
+    primaryAssessmentBean.modifyAssessmentsForEventIdFromCommonData(eventId, data, "Diagnostic", null, auth,  postProcessingForDiagnosis _)// postProcessingForDiagnosis
+  }
+
+  def insertConsultation(request: ConsultationRequestData) = {
+    val authData:AuthData = null
+    primaryAssessmentBean.insertAssessmentAsConsultation(request.eventId, request.actionTypeId, request.executorId, request.beginDate, request.endDate, request.urgent, request, authData)
+  }
+
+  def removeDirection(data: AssignmentsToRemoveDataList, directionType: String, auth: AuthData) = {
+    directionBean.removeDirections(data, directionType, auth)
+  }
+  //*********  **********
 
   def getFlatDirectories(request: FlatDirectoryRequestData) = {
     val sorting = request.sortingFields.foldLeft(new java.util.LinkedHashMap[java.lang.Integer, java.lang.Integer])(

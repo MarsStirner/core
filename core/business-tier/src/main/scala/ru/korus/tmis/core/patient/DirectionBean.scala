@@ -117,7 +117,6 @@ class DirectionBean extends DirectionBeanLocal
 
   def getDirectionById(directionId: Int,
                              title: String,
-                          userData: AuthData,
         postProcessingForDiagnosis: (JSONCommonData, java.lang.Boolean) => JSONCommonData) = {
 
     val action = actionBean.getActionById(directionId)
@@ -136,7 +135,7 @@ class DirectionBean extends DirectionBeanLocal
     }
     json_data
   }
-
+  /*
   def  createInstrumentalDirectionsForEventIdFromCommonData(eventId: Int,
                                                 directions: CommonData,
                                                 title: String,
@@ -146,7 +145,7 @@ class DirectionBean extends DirectionBeanLocal
     val actions: java.util.List[Action] = commonDataProcessor.createActionForEventFromCommonData(eventId, directions, userData)
 
   }
-
+    */
   private def createJobTicketsForActions(actions: java.util.List[Action], eventId: Int) =  {
 
     val moving = hospitalBedBean.getLastMovingActionForEventId(eventId)
@@ -347,7 +346,7 @@ class DirectionBean extends DirectionBeanLocal
           }
         }
       } else {
-        throw new CoreException(ConfigManager.ErrorCodes.noRightForAction, i18n("error.noRightForThisAction" + "\n Редактировать диагностику может только врач, создавший направление, или лечащий врач или заведующий отделением"))
+        throw new CoreException(ConfigManager.ErrorCodes.noRightForAction, i18n("Редактировать диагностику может только врач, создавший направление, или лечащий врач, или заведующий отделением"))
       }
     })
     em.flush()
@@ -360,7 +359,7 @@ class DirectionBean extends DirectionBeanLocal
     json_data
   }
 
-  def removeDirections(directions: AssignmentsToRemoveDataList, userData: AuthData) = {
+  def removeDirections(directions: AssignmentsToRemoveDataList, directionType: String, userData: AuthData) = {
     val userId = userData.getUser.getId
     val userRole = userData.getUserRole.getCode
 
@@ -370,24 +369,30 @@ class DirectionBean extends DirectionBeanLocal
       if ((a.getCreatePerson!=null && a.getCreatePerson.getId.compareTo(userId)==0) ||
           (a.getAssigner!=null &&a.getAssigner.getId.compareTo(userId)==0) ||
           userRole.compareTo("strHead")==0) {
-
-        a.setDeleted(true)
-        val res = dbJobTicketBean.getJobTicketAndTakenTissueForAction(a)
-        if (res!=null &&
-          res.isInstanceOf[(JobTicket, TakenTissue)] &&
-          res.asInstanceOf[(JobTicket, TakenTissue)]._1 != null &&
-          res.asInstanceOf[(JobTicket, TakenTissue)]._1.getJob != null) {
-          val job = res.asInstanceOf[(JobTicket, TakenTissue)]._1.getJob
-          if (job.getQuantity == 1) {
-            job.setDeleted(true)
+        directionType match {
+          case "laboratory" => {
+            val res = dbJobTicketBean.getJobTicketAndTakenTissueForAction(a)
+            if (res!=null &&
+              res.isInstanceOf[(JobTicket, TakenTissue)] &&
+              res.asInstanceOf[(JobTicket, TakenTissue)]._1 != null &&
+              res.asInstanceOf[(JobTicket, TakenTissue)]._1.getJob != null) {
+              val job = res.asInstanceOf[(JobTicket, TakenTissue)]._1.getJob
+              if (job.getQuantity == 1) {
+                job.setDeleted(true)
+              }
+              job.setQuantity(job.getQuantity - 1)
+              em.merge(job)
+            }
           }
-          job.setQuantity(job.getQuantity - 1)
-          em.merge(job)
+          case _ => {
+
+          }
         }
+        a.setDeleted(true)
         em.merge(a)
       }
       else {
-        throw new CoreException(ConfigManager.ErrorCodes.noRightForAction, i18n("error.noRightForThisAction" + "\n Удалить диагностику может только врач, создавший направление, или лечащий врач или заведующий отделением"));
+        throw new CoreException(ConfigManager.ErrorCodes.noRightForAction, i18n("Удалять диагностику может только врач, создавший направление, или лечащий врач, или заведующий отделением"));
       }
     })
     em.flush()

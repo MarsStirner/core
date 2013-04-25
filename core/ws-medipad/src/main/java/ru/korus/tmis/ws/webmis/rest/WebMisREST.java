@@ -123,7 +123,11 @@ public interface WebMisREST extends Serializable {
 
     JSONCommonData modifyLaboratoryStudies(int eventId, CommonData data, AuthData auth) throws CoreException;
 
-    boolean removeLaboratoryStudies(AssignmentsToRemoveDataList data, AuthData auth) throws CoreException;
+    JSONCommonData insertInstrumentalStudies(int eventId, CommonData data, AuthData auth) throws CoreException;
+
+    JSONCommonData modifyInstrumentalStudies(int eventId, CommonData data, AuthData auth) throws CoreException;
+
+    boolean removeDirection(AssignmentsToRemoveDataList data, String directionType, AuthData auth) throws CoreException;
 
     /**
      * Получение справочника FlatDirectory
