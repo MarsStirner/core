@@ -97,19 +97,34 @@ class DbCustomQueryBean
       new QueryDataStructure()
     }
 
-    val typed = em.createQuery(ActiveEventsByDepartmentIdAndDoctorIdBetweenDatesQuery.format("e, a, ap, MAX(a.createDatetime)",
+    /*val typed = em.createQuery(ActiveEventsByDepartmentIdAndDoctorIdBetweenDatesQuery.format("e, a, ap, MAX(a.createDatetime)",
                                                                                               i18n("db.action.leavingFlatCode"),
                                                                                               queryStr.query,
                                                                                               i18n("db.action.movingFlatCode"),
                                                                                               i18n("db.actionType.hospitalization.primary"),
                                                                                               iCapIds("db.rbCAP.hosp.primary.id.sentTo"),
                                                                                               i18n("db.action.movingFlatCode"),
-                                                                                              "GROUP BY e, a", sorting), classOf[Array[AnyRef]])
+                                                                                              "GROUP BY e, a", sorting), classOf[Array[AnyRef]])*/
+    val typed = em.createQuery(ActiveEventsByDepartmentIdAndDoctorIdBetweenDatesQueryEx
+                               .format(
+                                       i18n("db.action.leavingFlatCode"),
+                                       queryStr.query,
+                                       sorting,
+                                       i18n("db.apt.moving.codes.hospitalBed"),
+                                       i18n("db.apt.moving.codes.hospOrgStruct"),
+                                       i18n("db.apt.moving.codes.orgStructTransfer")), classOf[ActionProperty])
 
     if (queryStr.data.size() > 0) {
       queryStr.data.foreach(qdp => typed.setParameter(qdp.name, qdp.value))
     }
-    typed.setParameter("capIds", asJavaCollection(Set(iCapIds("db.rbCAP.moving.id.bed"),iCapIds("db.rbCAP.moving.id.movedIn"))))
+    //typed.setParameter("capIds", asJavaCollection(Set(iCapIds("db.rbCAP.moving.id.bed"),iCapIds("db.rbCAP.moving.id.movedIn"))))
+    typed.setParameter("flatCodes", asJavaCollection(Set(i18n("db.action.admissionFlatCode"),
+                                                         i18n("db.action.movingFlatCode"))))
+    /*typed.setParameter("allCodes", asJavaCollection(Set(i18n("db.apt.received.codes.orgStructDirection"),
+                                                        i18n("db.apt.moving.codes.hospOrgStruct"),
+                                                        i18n("db.apt.moving.codes.orgStructTransfer"))))*/
+    typed.setParameter("gr1Codes", asJavaCollection(Set(i18n("db.apt.received.codes.orgStructDirection"),
+                                                        i18n("db.apt.moving.codes.orgStructTransfer"))))
 
     var result = typed.getResultList
     //Перепишем общее количество записей для запроса
@@ -126,11 +141,9 @@ class DbCustomQueryBean
     var actions = result.foldLeft(LinkedHashMap.empty[Action, java.util.Map[ActionProperty, List[APValue]]])(
       (map, e) => {
         var entryMap = Map.empty[ActionProperty, List[APValue]]
-        entryMap += (e(2).asInstanceOf[ActionProperty] -> dbActionPropertyBean.getActionPropertyValue(e(2).asInstanceOf[ActionProperty]))
-        map += (e(1).asInstanceOf[Action] -> entryMap)
-        em.detach(e(0))
-        em.detach(e(1))
-        em.detach(e(2))
+        entryMap += (e -> dbActionPropertyBean.getActionPropertyValue(e))
+        map += (e.getAction -> entryMap)
+        em.detach(e)
         map
       })
 
@@ -1164,6 +1177,129 @@ AND
 %s
 %s
                                                              """
+  val ActiveEventsByDepartmentIdAndDoctorIdBetweenDatesQueryEx = """
+    SELECT ap
+    FROM
+      ActionProperty ap
+        JOIN ap.actionPropertyType apt
+        JOIN ap.action mov
+    WHERE
+      mov.id IN (
+        SELECT a.id
+        FROM
+          Action a
+            JOIN a.actionType at
+            JOIN a.event e
+        WHERE
+          (e.execDate IS NULL OR e.execDate > :endDate )
+        AND
+          e.deleted = '0'
+        AND
+          e.id NOT IN (
+            SELECT leaved.event.id
+            FROM Action leaved
+            WHERE
+              leaved.actionType.flatCode = '%s'
+            AND
+              leaved.event.id = e.id
+            AND
+              leaved.createDatetime < :endDate
+          )
+        %s
+        AND
+          a.begDate <= :endDate
+        AND
+          at.flatCode IN :flatCodes
+        AND
+          a.deleted = '0'
+        AND
+          a.createDatetime = (
+            SELECT Max(a2.createDatetime)
+            FROM Action a2
+              JOIN a2.actionType at2
+            WHERE
+              a2.event.id = e.id
+            AND
+              a2.begDate <= :endDate
+            AND
+              at2.flatCode IN :flatCodes
+            AND
+              a2.deleted = '0'
+          )
+        %s
+      )
+    AND
+    (
+      (
+        apt.code IN :gr1Codes
+        AND
+          mov.endDate < :endDate
+        AND
+          exists (
+            SELECT sentTo.id
+            FROM APValueOrgStructure sentTo
+              JOIN sentTo.value orgSentTo
+            WHERE
+              sentTo.id.id = ap.id
+            AND
+              orgSentTo.id = :departmentId
+          )
+      )
+      OR
+      (
+        apt.code = '%s'
+        AND
+          exists (
+            SELECT bed.id
+            FROM
+              ActionProperty bed
+                JOIN bed.actionPropertyType aptBed
+            WHERE
+              bed.action.id = ap.action.id
+            AND
+              aptBed.code = '%s'
+            AND
+              exists (
+                SELECT hospOrg.id
+                FROM APValueOrgStructure hospOrg
+                  JOIN hospOrg.value orgHospOrg
+                WHERE
+                  hospOrg.id.id = bed.id
+                AND
+                  orgHospOrg.id = :departmentId
+              )
+            AND
+            (
+              (mov.endDate IS NULL OR  mov.endDate > :endDate)
+              OR
+              (
+                mov.endDate < :endDate
+                AND
+                  exists (
+                    SELECT ap2.id
+                    FROM ActionProperty ap2
+                      JOIN ap2.actionPropertyType apt2
+                    WHERE
+                      ap2.action.id = bed.action.id
+                    AND
+                      apt2.code = '%s'
+                    AND
+                      exists (
+                        SELECT val2.id
+                        FROM APValueOrgStructure val2
+                        WHERE
+                          val2.id.id = ap2.id
+                      )
+                  )
+              )
+            )
+          )
+
+      )
+    )
+    AND
+      ap.deleted = 0
+                                                                 """
 
   val ActionsByEventIdsAndFlatCodeQuery = """
     SELECT e, a
