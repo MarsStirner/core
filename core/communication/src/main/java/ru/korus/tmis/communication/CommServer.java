@@ -1582,11 +1582,18 @@ public class CommServer implements Communications.Iface {
         serverTransport.close();
         logger.warn("Transport closed.");
         communicationListener.interrupt();
-        if (communicationListener.isInterrupted()) logger.warn("ServerThread is interrupted successfully");
+        if (communicationListener.isInterrupted()) {
+            logger.warn("ServerThread is interrupted successfully");
+        }
         if (communicationListener.isAlive()) {
-            logger.error("ServerThread is ALIVE?!?!?!");
-            //noinspection deprecation
-            communicationListener.stop();
+            try {
+                logger.error("Wait for a second to Thread interrupt");
+                communicationListener.join(1000);
+            } catch (InterruptedException e) {}
+            if (communicationListener.isAlive()) {
+                logger.error("ServerThread is STILL ALIVE?! Setting MinimalPriority to the Thread");
+                communicationListener.setPriority(Thread.MIN_PRIORITY);
+            }
         }
         logger.info("All fully stopped.");
     }
