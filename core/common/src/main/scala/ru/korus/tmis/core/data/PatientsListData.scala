@@ -253,7 +253,7 @@ class PatientsListRequestDataFilter {
       qs.add("departmentId", this.departmentId:java.lang.Integer)
     }
     if(this.doctorId>0 && roleId!=25){  //Для сестры отделения выводим всех пациентов
-      qs.query += ("AND e.executor.id = :doctorId\n")
+      qs.query += ("AND a.event.executor.id = :doctorId\n")
       qs.add("doctorId", this.doctorId:java.lang.Integer)
     }
     if(this.endDate!=null){
@@ -265,14 +265,14 @@ class PatientsListRequestDataFilter {
   def toSortingString (sortingField: String, sortingMethod: String) = {
     var sorting = sortingField.toLowerCase match {
       case "createDatetime"| "start" | "begDate" => {"a.begDate %s".format(sortingMethod)}
-      case "end" | "endDate" => {"e.execDate %s".format(sortingMethod)}
-      case "doctor" => {"e.executor.lastName %s, e.executor.firstName %s, e.executor.patrName %s".format(sortingMethod, sortingMethod, sortingMethod)}
-      case "department" => {"org.masterDepartment.name %s".format(sortingMethod)}
+      case "end" | "endDate" => {"a.event.execDate %s".format(sortingMethod)}
+      case "doctor" => {"a.event.executor.lastName %s, a.event.executor.firstName %s, a.event.executor.patrName %s".format(sortingMethod, sortingMethod, sortingMethod)}
+      //case "department" => {"org.masterDepartment.name %s".format(sortingMethod)}
       //case "bed" => {"org.name %s".format(sortingMethod)}
       //case "number" => "CAST(SUBSTRING(e.externalId, 1, 4) AS UNSIGNED) %s, CAST(SUBSTRING(e.externalId, 6) AS UNSIGNED) %s".format(sortingMethod,sortingMethod)//{"e.externalId %s".format(sortingMethod)}
-      case "fullname" => {"e.patient.lastName %s, e.patient.firstName %s, e.patient.patrName %s".format(sortingMethod,sortingMethod,sortingMethod)}
-      case "birthdate" => {"e.patient.birthDate %s".format(sortingMethod)}
-      case _ => {"e.id %s".format(sortingMethod)}
+      case "fullname" => {"a.event.patient.lastName %s, a.event.patient.firstName %s, a.event.patient.patrName %s".format(sortingMethod,sortingMethod,sortingMethod)}
+      case "birthdate" => {"a.event.patient.birthDate %s".format(sortingMethod)}
+      case _ => {"a.event.id %s".format(sortingMethod)}
     }
     //sortingFieldInternal
     sorting = "ORDER BY " + sorting.format(sortingMethod)
