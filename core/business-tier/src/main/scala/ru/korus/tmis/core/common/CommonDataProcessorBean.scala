@@ -82,6 +82,7 @@ class CommonDataProcessorBean
         var endDate: Date = null
         var plannedEndDate: Date = null
         var finance: Int = -1
+        var now = new Date()
         //var toOrder: Boolean = false
 
         aps.foreach(attribute => {
@@ -129,16 +130,19 @@ class CommonDataProcessorBean
           val action = dbAction.createAction(eventId,
             entity.id.intValue,
             userData)
-          if (entity.id.intValue == 139 || entity.id.intValue == 112 || entity.id.intValue == 2456) {
+          val isPrimaryAction = (entity.id.intValue == 139 || entity.id.intValue == 112 || entity.id.intValue == 2456)
+          if (isPrimaryAction) {
             action.setStatus(ActionStatus.FINISHED.getCode)   //TODO: Материть Александра!
           }
           //plannedEndDate
           if (finance > 0) action.setFinanceId(finance)
           //action.setToOrder(toOrder)
           //Если пришли значения Даты начала и дата конца, то перепишем дефолтные
-          if (beginDate != null) action.setBegDate(beginDate)
-          if (endDate != null) action.setEndDate(endDate)
+          //Для первичного осмотра в качестве дефолтных значений вставим текущее время
+          if (beginDate != null) action.setBegDate(beginDate) else if (isPrimaryAction) action.setBegDate(now)
+          if (endDate != null) action.setEndDate(endDate) else if (isPrimaryAction) action.setEndDate(now)
           if (plannedEndDate != null) action.setPlannedEndDate(plannedEndDate)
+
 
           val actionType = dbActionType.getActionTypeById(entity.id.intValue)
           val aw = new ActionWrapper(action)

@@ -129,6 +129,8 @@ public class DiagnosticsRegistryExRESTImpl {
                 return new JSONWithPadding(wsImpl.insertInstrumentalStudies(this.eventId, com_data, this.auth), this.callback);
             }
             case CONSULTATIONS: {
+                //ConsultationRequestData request = new ConsultationRequestData(eventId, actionTypeId, executorId, patientId, beginDate, endDate, urgent);
+                //JSONWithPadding returnValue = new JSONWithPadding(wsImpl.insertConsultation(data.rewriteDefault(data)), callback);
                 return null;
             }
             default: {
@@ -138,53 +140,24 @@ public class DiagnosticsRegistryExRESTImpl {
     }
 
     /**
-     * Создание направления на инструментальную диагностику
-     * @param data Json с данными о инструментальном исследовании как CommonData
-     * @param eventId Идентификатор обращения на госпитализацию, в рамках которой создается исследование.
-     * @param callback  callback запроса.
-     * @param servRequest Контекст запроса с клиента.
-     * @return com.sun.jersey.api.json.JSONWithPadding как Object
-     * @throws ru.korus.tmis.core.exception.CoreException
-     * @see ru.korus.tmis.core.exception.CoreException
-     */
-    /*@POST
-    @Path("/instrumental")
-    @Consumes("application/json")
-    @Produces("application/x-javascript")
-    public Object insertInstrumentalDiagnostic(CommonData data,
-                                               @PathParam("eventId")int  eventId,
-                                               @QueryParam("callback") String callback,
-                                               @Context HttpServletRequest servRequest) {
-        AuthData auth = wsImpl.checkTokenCookies(servRequest);
-
-        JSONCommonData oip = wsImpl.insertLaboratoryStudies(eventId, data, auth);
-        JSONWithPadding returnValue = new JSONWithPadding(oip, callback);
-        return returnValue;
-    } */
-
-    /**
      * Создание направления на консультацию к врачу
      * @param data json данные о консультации как ConsultationRequestData.
-     * @param callback  callback запроса.
-     * @param servRequest Контекст запроса с клиента.
      * @return com.sun.jersey.api.json.JSONWithPadding как Object
      * @throws ru.korus.tmis.core.exception.CoreException
      * @see ru.korus.tmis.core.exception.CoreException
      */
-    /*  @POST
-   @Path("/consultations")
-   @Consumes("application/json")
-   @Produces("application/x-javascript")
-   public Object insertConsultation(ConsultationRequestData data,
-                                    @QueryParam("callback") String callback,
-                                    @Context HttpServletRequest servRequest) {
-       AuthData auth = wsImpl.checkTokenCookies(servRequest);
 
-       //
-       //ConsultationRequestData request = new ConsultationRequestData(eventId, actionTypeId, executorId, patientId, beginDate, endDate, urgent);
-       JSONWithPadding returnValue = new JSONWithPadding(wsImpl.insertConsultation(data.rewriteDefault(data)), callback);
-       return returnValue;
-   } */
+    @POST
+    @Path("/consultations")
+    @Consumes("application/json")
+    @Produces("application/x-javascript")
+    public Object insertConsultation(ConsultationRequestData data) {
+
+
+        //ConsultationRequestData request = new ConsultationRequestData(eventId, actionTypeId, executorId, patientId, beginDate, endDate, urgent);
+        JSONWithPadding returnValue = new JSONWithPadding(wsImpl.insertConsultation(data.rewriteDefault(data)), callback);
+        return returnValue;
+    }
 
     /**
      * Редактирование списка направлений на лабораторные исследования
@@ -212,11 +185,72 @@ public class DiagnosticsRegistryExRESTImpl {
             }
             case CONSULTATIONS: {
                 return null;
+                //ConsultationRequestData request = new ConsultationRequestData(eventId, actionTypeId, executorId, patientId, beginDate, endDate, urgent);
+                //JSONWithPadding returnValue = new JSONWithPadding(wsImpl.insertConsultation(data.rewriteDefault(data)), callback);
             }
             default: {
                 return null;
             }
         }
+    }
+
+
+
+    /**
+     * Редактирование направления на лабораторные исследование
+     * @param data Json с данными о лабораторном исследовании как CommonData
+     * @return com.sun.jersey.api.json.JSONWithPadding как Object
+     * @throws ru.korus.tmis.core.exception.CoreException
+     * @see ru.korus.tmis.core.exception.CoreException
+     */
+    @PUT
+    @Path("/laboratory/{actionId}")
+    @Consumes("application/json")
+    @Produces("application/x-javascript")
+    public Object modifyLaboratoryStudy(JSONCommonData data,
+                                          @PathParam("actionId")int actionId) {   //TODO: insert actionId (сейчас из коммондаты)
+
+        CommonData com_data = new CommonData();
+        com_data.setEntity(data.getData());
+        return new JSONWithPadding(wsImpl.modifyLaboratoryStudies(eventId, com_data, this.auth), this.callback);
+    }
+
+    /**
+     * Редактирование направления на инструментальное исследование
+     * @param data Json с данными о инструментальном исследовании как CommonData
+     * @return com.sun.jersey.api.json.JSONWithPadding как Object
+     * @throws ru.korus.tmis.core.exception.CoreException
+     * @see ru.korus.tmis.core.exception.CoreException
+     */
+    @PUT
+    @Path("/instrumental/{actionId}")
+    @Consumes("application/json")
+    @Produces("application/x-javascript")
+    public Object modifyInstrumentalStudy(JSONCommonData data,
+                                          @PathParam("actionId")int actionId) {
+
+        CommonData com_data = new CommonData();
+        com_data.setEntity(data.getData());
+        return new JSONWithPadding(wsImpl.modifyInstrumentalStudies(eventId, com_data, this.auth), this.callback);
+    }
+
+    /**
+     * Редактирование направления на констультацию
+     * @param data Json с данными о консультации как CommonData
+     * @return com.sun.jersey.api.json.JSONWithPadding как Object
+     * @throws ru.korus.tmis.core.exception.CoreException
+     * @see ru.korus.tmis.core.exception.CoreException
+     */
+    @PUT
+    @Path("/consultations/{actionId}")
+    @Consumes("application/json")
+    @Produces("application/x-javascript")
+    public Object modifyConsultationStudy(JSONCommonData data,
+                                          @PathParam("actionId")int actionId) {
+
+        CommonData com_data = new CommonData();
+        com_data.setEntity(data.getData());
+        return new JSONWithPadding(wsImpl.modifyInstrumentalStudies(eventId, com_data, this.auth), this.callback);
     }
 
     /**
@@ -237,7 +271,7 @@ public class DiagnosticsRegistryExRESTImpl {
 
         switch (atst){
             case LABORATORY: {
-                return new JSONWithPadding(wsImpl.removeLaboratoryStudies(data, this.auth), this.callback);
+                return new JSONWithPadding(wsImpl.removeDirection(data, "laboratory", this.auth), this.callback);
             }
             case INSTRUMENTAL: {
                 return null;
@@ -258,49 +292,44 @@ public class DiagnosticsRegistryExRESTImpl {
      * @see ru.korus.tmis.core.exception.CoreException
      */
     @DELETE
-    @Path("/{var}/{actionId}")
+    @Path("/laboratory/{actionId}")
     @Produces("application/x-javascript")
-    public Object removeLaboratoryStudy(@PathParam("var") String var,
-                                        @PathParam("actionId")int actionId) {
-
-        DirectoryInfoRESTImpl.ActionTypesSubType atst = DirectoryInfoRESTImpl.ActionTypesSubType.getType(var);
-
-        switch (atst){
-            case LABORATORY: {
-                AssignmentsToRemoveDataList data = new AssignmentsToRemoveDataList();
-                data.getData().add(new AssignmentToRemoveDataEntry(actionId));
-                return new JSONWithPadding(wsImpl.removeLaboratoryStudies(data, this.auth), this.callback);
-            }
-            case INSTRUMENTAL: {
-                return null;
-            }
-            case CONSULTATIONS: {
-                return null;
-            }
-            default: {
-                return null;
-            }
-        }
+    public Object removeLaboratoryStudy(@PathParam("actionId")int actionId) {
+        AssignmentsToRemoveDataList data = new AssignmentsToRemoveDataList();
+        data.getData().add(new AssignmentToRemoveDataEntry(actionId));
+        return new JSONWithPadding(wsImpl.removeDirection(data, "laboratory", this.auth), this.callback);
     }
 
     /**
-     * Редактирование направления на лабораторные исследования
-     * @param data Json с данными о лабораторном исследовании как CommonData
+     * Удаление направления на инструментальные исследования
      * @return com.sun.jersey.api.json.JSONWithPadding как Object
      * @throws ru.korus.tmis.core.exception.CoreException
      * @see ru.korus.tmis.core.exception.CoreException
      */
-    @PUT
-    @Path("/laboratory/{actionId}")
-    @Consumes("application/json")
+    @DELETE
+    @Path("/instrumental/{actionId}")
     @Produces("application/x-javascript")
-    public Object modifyLaboratoryStudies(JSONCommonData data,
-                                          @PathParam("actionId")int actionId) {   //TODO: insert actionId (сейчас из коммондаты)
-
-        CommonData com_data = new CommonData();
-        com_data.setEntity(data.getData());
-        return new JSONWithPadding(wsImpl.modifyLaboratoryStudies(eventId, com_data, this.auth), this.callback);
+    public Object removeInstrumentalStudy(@PathParam("actionId")int actionId) {
+        AssignmentsToRemoveDataList data = new AssignmentsToRemoveDataList();
+        data.getData().add(new AssignmentToRemoveDataEntry(actionId));
+        return new JSONWithPadding(wsImpl.removeDirection(data, "instrumental", this.auth), this.callback);
     }
+
+    /**
+     * Удаление направления на консультации
+     * @return com.sun.jersey.api.json.JSONWithPadding как Object
+     * @throws ru.korus.tmis.core.exception.CoreException
+     * @see ru.korus.tmis.core.exception.CoreException
+     */
+    @DELETE
+    @Path("/consultations/{actionId}")
+    @Produces("application/x-javascript")
+    public Object removeConsultationsStudy(@PathParam("actionId")int actionId) {
+        AssignmentsToRemoveDataList data = new AssignmentsToRemoveDataList();
+        data.getData().add(new AssignmentToRemoveDataEntry(actionId));
+        return new JSONWithPadding(wsImpl.removeDirection(data, "consultations", this.auth), this.callback);
+    }
+
     /**
      * Просмотр результатов лабораторных исследований
      * @param actionId идентификатор исследования.
@@ -312,6 +341,34 @@ public class DiagnosticsRegistryExRESTImpl {
     @Path("/laboratory/{actionId}")
     @Produces("application/x-javascript")
     public Object getInfoAboutDiagnosticsForPatientByEvent(@PathParam("actionId")int actionId) {
+        return new JSONWithPadding(wsImpl.getInfoAboutDiagnosticsForPatientByEvent(actionId), this.callback);
+    }
+
+    /**
+     * Просмотр результатов инструментальных исследований
+     * @param actionId идентификатор исследования.
+     * @return com.sun.jersey.api.json.JSONWithPadding как Object
+     * @throws ru.korus.tmis.core.exception.CoreException
+     * @see ru.korus.tmis.core.exception.CoreException
+     */
+    @GET
+    @Path("/instrumental/{actionId}")
+    @Produces("application/x-javascript")
+    public Object getInfoAboutInstrumentalDiagnosticsForPatientByEvent(@PathParam("actionId")int actionId) {
+        return new JSONWithPadding(wsImpl.getInfoAboutDiagnosticsForPatientByEvent(actionId), this.callback);
+    }
+
+    /**
+     * Просмотр результатов консультаций
+     * @param actionId идентификатор исследования.
+     * @return com.sun.jersey.api.json.JSONWithPadding как Object
+     * @throws ru.korus.tmis.core.exception.CoreException
+     * @see ru.korus.tmis.core.exception.CoreException
+     */
+    @GET
+    @Path("/consultations/{actionId}")
+    @Produces("application/x-javascript")
+    public Object getInfoAboutConsultationDiagnosticsForPatientByEvent(@PathParam("actionId")int actionId) {
         return new JSONWithPadding(wsImpl.getInfoAboutDiagnosticsForPatientByEvent(actionId), this.callback);
     }
 }

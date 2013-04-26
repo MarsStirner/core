@@ -127,6 +127,14 @@ class DbActionPropertyTypeBean
     result
   }
 
+  def getActionPropertyTypesByFlatCodes(codes: java.util.Set[String]) = {
+    val result = em.createQuery(ActionPropertyTypesByFlatCodesQuery,classOf[ActionPropertyType])
+                   .setParameter("codes", asJavaCollection(codes))
+                   .getResultList
+    result.foreach((apt) => em.detach((apt)))
+    result
+  }
+
   def getActionPropertyTypeValueDomainsWithFilter(page: Int, limit: Int, sorting: String, filter: ListDataFilter) = {
 
     val queryStr = filter.toQueryStructure()
@@ -223,6 +231,17 @@ class DbActionPropertyTypeBean
   WHERE apt.actionType.id = :rolesId
   AND apt.deleted = 0
                                                       """
+
+  val ActionPropertyTypesByFlatCodesQuery = """
+  SELECT apt
+  FROM
+    ActionPropertyType apt
+  WHERE
+    apt.flatCodes IN :codes
+  AND
+    apt.deleted = 0
+  """
+
   val ActionTypeByCode = """
    SELECT at
    FROM ActionType at

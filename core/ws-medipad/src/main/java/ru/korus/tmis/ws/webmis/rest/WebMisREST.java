@@ -65,7 +65,7 @@ public interface WebMisREST extends Serializable {
 
     String registryPatientToHospitalBed(int eventId, HospitalBedData data, AuthData authData) throws CoreException;
 
-    String getMovingListForEvent(HospitalBedDataRequest request, AuthData authData) throws CoreException;
+    String getMovingListForEvent(HospitalBedDataListFilter filter, AuthData authData) throws CoreException;
 
     String modifyPatientToHospitalBed (int actionId, HospitalBedData data, AuthData authData) throws CoreException;
 
@@ -123,7 +123,11 @@ public interface WebMisREST extends Serializable {
 
     JSONCommonData modifyLaboratoryStudies(int eventId, CommonData data, AuthData auth) throws CoreException;
 
-    boolean removeLaboratoryStudies(AssignmentsToRemoveDataList data, AuthData auth) throws CoreException;
+    JSONCommonData insertInstrumentalStudies(int eventId, CommonData data, AuthData auth) throws CoreException;
+
+    JSONCommonData modifyInstrumentalStudies(int eventId, CommonData data, AuthData auth) throws CoreException;
+
+    boolean removeDirection(AssignmentsToRemoveDataList data, String directionType, AuthData auth) throws CoreException;
 
     /**
      * Получение справочника FlatDirectory
@@ -281,4 +285,52 @@ public interface WebMisREST extends Serializable {
      * @throws CoreException
      */
     Boolean deletePatientInfo(int id) throws CoreException;
+
+    /**
+     * Сервис на получение списка диагнозов внутри госпитализации
+     * @param id Идентификатор обращения на госпитализацию
+     * @param authData Авторизационные данные как AuthData
+     * @return Список диагнозов как DiagnosesListData
+     * @throws CoreException
+     */
+    DiagnosesListData getDiagnosesByAppeal(int id, AuthData authData) throws CoreException;
+
+    /**
+     * История изменения группы крови у пациента
+     * @param patientId Идентификатор пациента
+     * @param authData Авторизационные данные
+     * @return Истории как BloodHistoryListData
+     * @throws CoreException
+     */
+    BloodHistoryListData getBloodTypesHistory (int patientId, AuthData authData) throws CoreException;
+
+    /**
+     * Внести запись о группе крови
+     * @param patientId Идентификатор пациента
+     * @param data json с информацией о группе крови
+     * @param authData Авторизационные данные
+     * @return Информация о группе крови
+     * @throws CoreException
+     */
+    BloodHistoryData insertBloodTypeForPatient(int patientId, BloodHistoryData data, AuthData authData) throws CoreException;
+
+    /**
+     * Список информации о иследованиях
+     * @param eventId Идентификатор обращения
+     * @param condition Условие выборки
+     * @param authData Авторизационные данные
+     * @return MonitoringInfoListData
+     * @throws CoreException
+     */
+    MonitoringInfoListData getMonitoringInfoByAppeal(int eventId, int condition, AuthData authData) throws CoreException;
+
+    /**
+     * Назначение ответственного врача
+     * @param eventId Идентификатор обращения
+     * @param personId Идентификатор пациента
+     * @param authData Авторизационные данные
+     * @return true - назначен, false - не назначен
+     * @throws CoreException
+     */
+    Boolean setExecPersonForAppeal(int eventId, int personId, AuthData authData) throws CoreException;
 }

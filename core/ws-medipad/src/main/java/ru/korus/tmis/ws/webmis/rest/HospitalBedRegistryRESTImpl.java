@@ -4,7 +4,7 @@ import com.sun.jersey.api.json.JSONWithPadding;
 import ru.korus.tmis.core.auth.AuthData;
 import ru.korus.tmis.core.data.HospitalBedData;
 import ru.korus.tmis.core.data.HospitalBedDataListFilter;
-import ru.korus.tmis.core.data.HospitalBedDataRequest;
+//import ru.korus.tmis.core.data.HospitalBedDataRequest;
 import ru.korus.tmis.core.logging.slf4j.interceptor.ServicesLoggingInterceptor;
 import ru.korus.tmis.ws.impl.WebMisRESTImpl;
 import javax.interceptor.Interceptors;
@@ -19,7 +19,6 @@ import javax.ws.rs.*;
 @Interceptors(ServicesLoggingInterceptor.class)
 public class HospitalBedRegistryRESTImpl {
 
-   // protected static final String PATH = AppealsInfoRESTImpl.PATH + "{eventId}/hospitalbed/";
     private WebMisRESTImpl wsImpl;
     private int eventId;
     private AuthData auth;
@@ -66,30 +65,17 @@ public class HospitalBedRegistryRESTImpl {
 
     /**
      * Список движения по отделениям
-     * @param limit Максимальное количество выводимых элементов в списке.
-     * @param page Номер выводимой страницы.
-     * @param sortingField Наименование поля для сортировки.<pre>
-     * &#15; Возможные значения:
-     * &#15; "createDatetime" - по идентификатору осмотра (значение по умолчанию);</pre>
-     * @param sortingMethod Метод сортировки.<pre>
-     * &#15; Возможные значения:
-     * &#15; "asc" - по возрастанию (значение по умолчанию);
-     * &#15; "desc" - по убыванию;</pre>
      * @return com.sun.jersey.api.json.JSONWithPadding как Object
      * @throws ru.korus.tmis.core.exception.CoreException
      * @see ru.korus.tmis.core.exception.CoreException
      */
     @GET
     @Produces("application/x-javascript")
-    public Object getMovingListForEvent(
-            @QueryParam("limit")int limit,
-            @QueryParam("page")int  page,
-            @QueryParam("sortingField")String sortingField,   //сортировки выкл.
-            @QueryParam("sortingMethod")String sortingMethod) {
+    public Object getMovingListForEvent() {
 
         HospitalBedDataListFilter filter = new HospitalBedDataListFilter(this.eventId);
-        HospitalBedDataRequest request= new HospitalBedDataRequest(sortingField, sortingMethod, limit, page, filter);
-        return new JSONWithPadding(wsImpl.getMovingListForEvent(request, this.auth), this.callback);
+        //HospitalBedDataRequest request= new HospitalBedDataRequest(sortingField, sortingMethod, limit, page, filter);
+        return new JSONWithPadding(wsImpl.getMovingListForEvent(filter, this.auth), this.callback);
     }
 
 
