@@ -44,7 +44,7 @@ public class ExaminationsRegistryRESTImpl {
     @Consumes("application/json")
     @Produces("application/x-javascript")
     public  Object insertPrimaryMedExamForPatient(JSONCommonData data) {
-        return new JSONWithPadding(wsImpl.insertPrimaryMedExamForPatient(eventId, data, this.auth), this.callback);
+        return new JSONWithPadding(wsImpl.insertPrimaryMedExamForPatient(this.eventId, data, this.auth), this.callback);
     }
 
     /**
