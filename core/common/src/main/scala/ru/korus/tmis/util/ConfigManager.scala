@@ -7,6 +7,8 @@ import javax.xml.bind.DatatypeConverter
 import javax.xml.namespace.QName
 import reflect.Configuration
 import grizzled.slf4j.Logging
+import ru.korus.tmis.core.entity.model.Staff
+
 
 object ConfigManager extends Configuration {
 
@@ -134,6 +136,17 @@ object ConfigManager extends Configuration {
     def HttpAuthToken = DatatypeConverter.printBase64Binary(
       (User + ":" + Password).getBytes)
   }
+
+  /**
+   * Параметры сервиса управления пользователями
+   */
+  class UsersMgr extends Configuration {
+    var CoreUserLogin: String = null
+  }
+
+  var usersMgr = new UsersMgr
+
+
 
   /**
    * Метод хелпер, создан из-за невозможности вызвать класс-конфиг из джава кода

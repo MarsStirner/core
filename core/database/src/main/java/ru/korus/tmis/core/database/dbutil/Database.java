@@ -14,14 +14,9 @@ import javax.xml.datatype.XMLGregorianCalendar;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import ru.korus.tmis.core.entity.model.APValue;
-import ru.korus.tmis.core.entity.model.AbstractAPValue;
-import ru.korus.tmis.core.entity.model.Action;
-import ru.korus.tmis.core.entity.model.ActionProperty;
-import ru.korus.tmis.core.entity.model.ActionPropertyType;
-import ru.korus.tmis.core.entity.model.IndexedId;
-import ru.korus.tmis.core.entity.model.RbUnit;
+import ru.korus.tmis.core.entity.model.*;
 import ru.korus.tmis.core.exception.CoreException;
+import ru.korus.tmis.util.ConfigManager;
 import ru.korus.tmis.util.EntityMgr;
 
 /**
@@ -286,4 +281,16 @@ public class Database {
         return actionProp.getId();
     }
 
+    public Staff getCoreUser() {
+        final String coreLogin = ConfigManager.usersMgr().CoreUserLogin();
+        //System.getProperty("tmis.core.user");
+        if (coreLogin != null) {
+            final List<Staff> coreUsers = em.createQuery("SELECT u FROM Staff u WHERE u.login = :login", Staff.class)
+                            .setParameter("login", coreLogin)
+                            .getResultList();
+            return coreUsers.isEmpty() ? null : coreUsers.get(0);
+        }
+        return null;
+    }
 }
+

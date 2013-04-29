@@ -135,16 +135,7 @@ public class SendProcedureRequest {
      * 
      */
     private void initCoreUser() {
-
-        final String coreLogin = System.getProperty("tmis.core.user");
-        if (coreLogin != null) {
-            final List<Staff> coreUsers =
-                    database.getEntityMgr().createQuery("SELECT u FROM Staff u WHERE u.login = :login", Staff.class)
-                            .setParameter("login", coreLogin)
-                            .getResultList();
-            coreUser = coreUsers.isEmpty() ? null : coreUsers.get(0);
-        }
-
+            coreUser = database.getCoreUser();
     }
 
     /**
