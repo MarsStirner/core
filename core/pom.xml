@@ -64,7 +64,7 @@
 
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
         <project.build.jdk>1.6</project.build.jdk>
-        <project.build.debug>false</project.build.debug>
+        <project.build.debug>true</project.build.debug>
         <targetJdk>1.6</targetJdk>
         <my.build.directory>target</my.build.directory>
 

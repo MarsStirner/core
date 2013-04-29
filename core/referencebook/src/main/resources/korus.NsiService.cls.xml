@@ -1,0 +1,3129 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<wsdl:definitions xmlns:wsdl="http://schemas.xmlsoap.org/wsdl/" xmlns:s="http://www.w3.org/2001/XMLSchema" xmlns:soap="http://schemas.xmlsoap.org/wsdl/soap/" xmlns:tns="urn:wsdl" targetNamespace="urn:wsdl" xmlns:nsi="urn:nsi">
+<wsdl:types>
+<s:schema xmlns:s01="urn:nsi" elementFormDefault="qualified" targetNamespace="urn:nsi">
+  <s:element name="F001">
+    <s:complexType>
+      <s:sequence>
+        <s:element maxOccurs="unbounded" minOccurs="0" name="rec" nillable="true" type="s01:F001Type"/>
+      </s:sequence>
+    </s:complexType>
+  </s:element>
+  <s:complexType name="ArrayOfF001TypeF001Type">
+    <s:sequence>
+      <s:element maxOccurs="unbounded" minOccurs="0" name="F001Type" nillable="true" type="s01:F001Type"/>
+    </s:sequence>
+  </s:complexType>
+  <s:complexType name="F001Type">
+    <s:annotation>
+      <s:documentation>Справочник территориальных фондов ОМС (TFOMS)</s:documentation>
+    </s:annotation>
+    <s:attribute name="tf_kod" use="required">
+      <s:annotation>
+        <s:documentation>Код ТФОМС заполняется из классификатора F010</s:documentation>
+      </s:annotation>
+      <s:simpleType>
+        <s:restriction base="s:string">
+          <s:maxLength value="2"/>
+          <s:minLength value="2"/>
+        </s:restriction>
+      </s:simpleType>
+    </s:attribute>
+    <s:attribute name="tf_okato" use="required">
+      <s:annotation>
+        <s:documentation>Код субъекта РФ по ОКАТО заполняется из классификатора О002</s:documentation>
+      </s:annotation>
+      <s:simpleType>
+        <s:restriction base="s:string">
+          <s:maxLength value="5"/>
+          <s:minLength value="5"/>
+        </s:restriction>
+      </s:simpleType>
+    </s:attribute>
+    <s:attribute name="tf_ogrn" use="required">
+      <s:annotation>
+        <s:documentation>ОГРН ТФОМС</s:documentation>
+      </s:annotation>
+      <s:simpleType>
+        <s:restriction base="s:string">
+          <s:maxLength value="15"/>
+        </s:restriction>
+      </s:simpleType>
+    </s:attribute>
+    <s:attribute name="name_tfp" use="required">
+      <s:annotation>
+        <s:documentation>Наименование ТФОМС (полное)</s:documentation>
+      </s:annotation>
+      <s:simpleType>
+        <s:restriction base="s:string">
+          <s:maxLength value="250"/>
+        </s:restriction>
+      </s:simpleType>
+    </s:attribute>
+    <s:attribute name="name_tfk" use="required">
+      <s:annotation>
+        <s:documentation>Наименование ТФОМС (краткое)</s:documentation>
+      </s:annotation>
+      <s:simpleType>
+        <s:restriction base="s:string">
+          <s:maxLength value="250"/>
+        </s:restriction>
+      </s:simpleType>
+    </s:attribute>
+    <s:attribute name="index">
+      <s:annotation>
+        <s:documentation>Почтовый индекс</s:documentation>
+      </s:annotation>
+      <s:simpleType>
+        <s:restriction base="s:string">
+          <s:maxLength value="6"/>
+          <s:minLength value="6"/>
+        </s:restriction>
+      </s:simpleType>
+    </s:attribute>
+    <s:attribute name="address" use="required">
+      <s:annotation>
+        <s:documentation>Адрес местонахождения ТФОМС (субъект, район, город, населенный пункт, улица, номер дома (владение), номер корпуса/строения)</s:documentation>
+      </s:annotation>
+      <s:simpleType>
+        <s:restriction base="s:string">
+          <s:maxLength value="250"/>
+        </s:restriction>
+      </s:simpleType>
+    </s:attribute>
+    <s:attribute name="fam_dir" use="required">
+      <s:annotation>
+        <s:documentation>Фамилия исполнительного директора. Фамилия, имя, отчество заполняется с документа, удостоверяющего личность.</s:documentation>
+      </s:annotation>
+      <s:simpleType>
+        <s:restriction base="s:string">
+          <s:maxLength value="40"/>
+        </s:restriction>
+      </s:simpleType>
+    </s:attribute>
+    <s:attribute name="im_dir" use="required">
+      <s:annotation>
+        <s:documentation>Имя</s:documentation>
+      </s:annotation>
+      <s:simpleType>
+        <s:restriction base="s:string">
+          <s:maxLength value="40"/>
+        </s:restriction>
+      </s:simpleType>
+    </s:attribute>
+    <s:attribute name="ot_dir" use="required">
+      <s:annotation>
+        <s:documentation>Отчество. В случае отсутствия отчества в поле вносится значение «Нет».</s:documentation>
+      </s:annotation>
+      <s:simpleType>
+        <s:restriction base="s:string">
+          <s:maxLength value="40"/>
+        </s:restriction>
+      </s:simpleType>
+    </s:attribute>
+    <s:attribute name="phone" use="required">
+      <s:annotation>
+        <s:documentation>Телефон (с кодом города)</s:documentation>
+      </s:annotation>
+      <s:simpleType>
+        <s:restriction base="s:string">
+          <s:maxLength value="40"/>
+        </s:restriction>
+      </s:simpleType>
+    </s:attribute>
+    <s:attribute name="fax" use="required">
+      <s:annotation>
+        <s:documentation>Факс (с кодом города)</s:documentation>
+      </s:annotation>
+      <s:simpleType>
+        <s:restriction base="s:string">
+          <s:maxLength value="40"/>
+        </s:restriction>
+      </s:simpleType>
+    </s:attribute>
+    <s:attribute name="e_mail" use="required">
+      <s:annotation>
+        <s:documentation>Адрес электронной почты</s:documentation>
+      </s:annotation>
+      <s:simpleType>
+        <s:restriction base="s:string">
+          <s:maxLength value="50"/>
+        </s:restriction>
+      </s:simpleType>
+    </s:attribute>
+    <s:attribute name="kf_tf" type="s:long" use="required">
+      <s:annotation>
+        <s:documentation>Количество филиалов ТФОМС</s:documentation>
+      </s:annotation>
+    </s:attribute>
+    <s:attribute name="www">
+      <s:annotation>
+        <s:documentation>Адрес официального сайта в сети Интернет	http://адрес_сайт</s:documentation>
+      </s:annotation>
+      <s:simpleType>
+        <s:restriction base="s:string">
+          <s:maxLength value="100"/>
+        </s:restriction>
+      </s:simpleType>
+    </s:attribute>
+    <s:attribute name="d_edit" type="s:dateTime">
+      <s:annotation>
+        <s:documentation>Дата последнего редактирования</s:documentation>
+      </s:annotation>
+    </s:attribute>
+    <s:attribute name="d_end" type="s:dateTime">
+      <s:annotation>
+        <s:documentation>Дата исключения из справочника</s:documentation>
+      </s:annotation>
+    </s:attribute>
+  </s:complexType>
+  <s:element name="F002">
+    <s:complexType>
+      <s:sequence>
+        <s:element maxOccurs="unbounded" minOccurs="0" name="rec" nillable="true" type="s01:F002Type"/>
+      </s:sequence>
+    </s:complexType>
+  </s:element>
+  <s:complexType name="ArrayOfF002TypeF002Type">
+    <s:sequence>
+      <s:element maxOccurs="unbounded" minOccurs="0" name="F002Type" nillable="true" type="s01:F002Type"/>
+    </s:sequence>
+  </s:complexType>
+  <s:complexType name="F002Type">
+    <s:annotation>
+      <s:documentation>Единый реестр страховых медицинских организаций, осуществляющих деятельность в сфере обязательного медицинского страхования (SMO)</s:documentation>
+    </s:annotation>
+    <s:attribute name="tf_okato" use="required">
+      <s:annotation>
+        <s:documentation>Код субъекта РФ по ОКАТО, где зарегистрирована СМО</s:documentation>
+      </s:annotation>
+      <s:simpleType>
+        <s:restriction base="s:string">
+          <s:maxLength value="5"/>
+          <s:minLength value="5"/>
+        </s:restriction>
+      </s:simpleType>
+    </s:attribute>
+    <s:attribute name="smocod">
+      <s:annotation>
+        <s:documentation>Код СМО в кодировке единого реестра СМО. Указывается реестровый номер: первые 2-а символа – код ТФОМС; последующие 3 символа – номер в ТФОМС. Реестровый номер остается неизменным для данной СМО, в том числе при перерегистрации в журнале регистрации при подаче нового уведомления об осуществлении деятельности в сфере ОМС.</s:documentation>
+      </s:annotation>
+      <s:simpleType>
+        <s:restriction base="s:string">
+          <s:maxLength value="5"/>
+          <s:minLength value="5"/>
+        </s:restriction>
+      </s:simpleType>
+    </s:attribute>
+    <s:attribute name="nam_smop" use="required">
+      <s:annotation>
+        <s:documentation>Наименование СМО (полное). Заполняется в соответствии с ЕГРЮЛ (для головных организаций)</s:documentation>
+      </s:annotation>
+      <s:simpleType>
+        <s:restriction base="s:string">
+          <s:maxLength value="254"/>
+        </s:restriction>
+      </s:simpleType>
+    </s:attribute>
+    <s:attribute name="nam_smok">
+      <s:annotation>
+        <s:documentation>Наименование СМО (краткое). Заполняется в соответствии с ЕГРЮЛ (для головных организаций)</s:documentation>
+      </s:annotation>
+      <s:simpleType>
+        <s:restriction base="s:string">
+          <s:maxLength value="250"/>
+        </s:restriction>
+      </s:simpleType>
+    </s:attribute>
+    <s:attribute name="inn" use="required">
+      <s:annotation>
+        <s:documentation>Идентификационный номер налогоплательщика</s:documentation>
+      </s:annotation>
+      <s:simpleType>
+        <s:restriction base="s:string">
+          <s:maxLength value="12"/>
+        </s:restriction>
+      </s:simpleType>
+    </s:attribute>
+    <s:attribute name="Ogrn">
+      <s:annotation>
+        <s:documentation>ОГРН СМО</s:documentation>
+      </s:annotation>
+      <s:simpleType>
+        <s:restriction base="s:string">
+          <s:maxLength value="15"/>
+        </s:restriction>
+      </s:simpleType>
+    </s:attribute>
+    <s:attribute name="KPP">
+      <s:annotation>
+        <s:documentation>Код причины постановки на учет налогоплательщика</s:documentation>
+      </s:annotation>
+      <s:simpleType>
+        <s:restriction base="s:string">
+          <s:maxLength value="9"/>
+        </s:restriction>
+      </s:simpleType>
+    </s:attribute>
+    <s:attribute name="index_j">
+      <s:annotation>
+        <s:documentation>Почтовый индекс юридического адреса</s:documentation>
+      </s:annotation>
+      <s:simpleType>
+        <s:restriction base="s:string">
+          <s:maxLength value="6"/>
+          <s:minLength value="6"/>
+        </s:restriction>
+      </s:simpleType>
+    </s:attribute>
+    <s:attribute name="addr_j" use="required">
+      <s:annotation>
+        <s:documentation>Юридический адрес СМО (субъект, район, город, населенный пункт, улица, номер дома (владение), номер корпуса/строения)</s:documentation>
+      </s:annotation>
+      <s:simpleType>
+        <s:restriction base="s:string">
+          <s:maxLength value="254"/>
+        </s:restriction>
+      </s:simpleType>
+    </s:attribute>
+    <s:attribute name="index_f">
+      <s:annotation>
+        <s:documentation>Почтовый индекс фактического адреса</s:documentation>
+      </s:annotation>
+      <s:simpleType>
+        <s:restriction base="s:string">
+          <s:maxLength value="6"/>
+          <s:minLength value="6"/>
+        </s:restriction>
+      </s:simpleType>
+    </s:attribute>
+    <s:attribute name="addr_f">
+      <s:annotation>
+        <s:documentation>Фактический адрес СМО (субъект, район, город, населенный пункт, улица, номер дома (владение), номер корпуса/строения)</s:documentation>
+      </s:annotation>
+      <s:simpleType>
+        <s:restriction base="s:string">
+          <s:maxLength value="254"/>
+        </s:restriction>
+      </s:simpleType>
+    </s:attribute>
+    <s:attribute name="okopf">
+      <s:annotation>
+        <s:documentation>Организационноправовая форма СМО по ОКОПФ (О005)</s:documentation>
+      </s:annotation>
+      <s:simpleType>
+        <s:restriction base="s:string">
+          <s:maxLength value="2"/>
+          <s:minLength value="2"/>
+        </s:restriction>
+      </s:simpleType>
+    </s:attribute>
+    <s:attribute name="fam_ruk" use="required">
+      <s:annotation>
+        <s:documentation>Фамилия руководителя. Фамилия, имя, отчество заполняется с документа, удостоверяющего личность.</s:documentation>
+      </s:annotation>
+      <s:simpleType>
+        <s:restriction base="s:string">
+          <s:maxLength value="40"/>
+        </s:restriction>
+      </s:simpleType>
+    </s:attribute>
+    <s:attribute name="im_ruk" use="required">
+      <s:annotation>
+        <s:documentation>Имя руководителя</s:documentation>
+      </s:annotation>
+      <s:simpleType>
+        <s:restriction base="s:string">
+          <s:maxLength value="40"/>
+        </s:restriction>
+      </s:simpleType>
+    </s:attribute>
+    <s:attribute name="ot_ruk" use="required">
+      <s:annotation>
+        <s:documentation>Отчество руководителя. В случае отсутствия отчества в поле вносится значение «нет».</s:documentation>
+      </s:annotation>
+      <s:simpleType>
+        <s:restriction base="s:string">
+          <s:maxLength value="40"/>
+        </s:restriction>
+      </s:simpleType>
+    </s:attribute>
+    <s:attribute name="phone">
+      <s:annotation>
+        <s:documentation>Телефон (с кодом города)</s:documentation>
+      </s:annotation>
+      <s:simpleType>
+        <s:restriction base="s:string">
+          <s:maxLength value="40"/>
+        </s:restriction>
+      </s:simpleType>
+    </s:attribute>
+    <s:attribute name="fax">
+      <s:annotation>
+        <s:documentation>Факс (с кодом города)</s:documentation>
+      </s:annotation>
+      <s:simpleType>
+        <s:restriction base="s:string">
+          <s:maxLength value="40"/>
+        </s:restriction>
+      </s:simpleType>
+    </s:attribute>
+    <s:attribute name="e_mail">
+      <s:annotation>
+        <s:documentation>Адрес электронной почты</s:documentation>
+      </s:annotation>
+      <s:simpleType>
+        <s:restriction base="s:string">
+          <s:maxLength value="30"/>
+        </s:restriction>
+      </s:simpleType>
+    </s:attribute>
+    <s:attribute name="www">
+      <s:annotation>
+        <s:documentation>Адрес официального сайта в сети Интернет	http://адрес_сайт</s:documentation>
+      </s:annotation>
+      <s:simpleType>
+        <s:restriction base="s:string">
+          <s:maxLength value="100"/>
+        </s:restriction>
+      </s:simpleType>
+    </s:attribute>
+    <s:attribute name="n_doc">
+      <s:annotation>
+        <s:documentation>Номер лицензии на осуществление деятельности</s:documentation>
+      </s:annotation>
+      <s:simpleType>
+        <s:restriction base="s:string">
+          <s:maxLength value="20"/>
+        </s:restriction>
+      </s:simpleType>
+    </s:attribute>
+    <s:attribute name="d_start" type="s:dateTime">
+      <s:annotation>
+        <s:documentation>Дата выдачи лицензии на осуществление деятельности</s:documentation>
+      </s:annotation>
+    </s:attribute>
+    <s:attribute name="data_e" type="s:dateTime">
+      <s:annotation>
+        <s:documentation>Дата окончания действия лицензии на осуществление деятельности</s:documentation>
+      </s:annotation>
+    </s:attribute>
+    <s:attribute name="org" type="s:long" use="required">
+      <s:annotation>
+        <s:documentation>Признак подчиненности (головная организация - 1, обособленное подразделение (филиал) - 2)</s:documentation>
+      </s:annotation>
+    </s:attribute>
+    <s:attribute name="d_begin" type="s:dateTime">
+      <s:annotation>
+        <s:documentation>Дата включения в реестр СМО</s:documentation>
+      </s:annotation>
+    </s:attribute>
+    <s:attribute name="d_end" type="s:dateTime">
+      <s:annotation>
+        <s:documentation>Дата исключения из реестра СМО</s:documentation>
+      </s:annotation>
+    </s:attribute>
+    <s:attribute name="name_e">
+      <s:annotation>
+        <s:documentation>Причина исключения СМО из реестра СМО. Выбирается номер из списка и указывается через запятую без пробела: 1 - Приостановление либо прекращение действия лицензии; 2 - Ликвидация страховой медицинской организации; 5 - По заявлению об исключении из реестра СМО, осуществляющих деятельность в сфере ОМС. Заполняется при наличии данных в поле d_end.</s:documentation>
+      </s:annotation>
+      <s:simpleType>
+        <s:restriction base="s:string">
+          <s:maxLength value="15"/>
+        </s:restriction>
+      </s:simpleType>
+    </s:attribute>
+    <s:attribute name="Nal_p">
+      <s:annotation>
+        <s:documentation>Наличие действующих полисов СМО. Выбирается номер из списка: 1 – имеет действующие полисы; 2 – не имеет действующих полисов. Заполняется, в том числе, в случае наличия у СМО, исключенной из регистра, действующих полисов.</s:documentation>
+      </s:annotation>
+      <s:simpleType>
+        <s:restriction base="s:string">
+          <s:maxLength value="1"/>
+          <s:minLength value="1"/>
+        </s:restriction>
+      </s:simpleType>
+    </s:attribute>
+    <s:attribute name="DUVED" type="s:dateTime">
+      <s:annotation>
+        <s:documentation>Дата уведомления об осуществлении деятельности в сфере ОМС</s:documentation>
+      </s:annotation>
+    </s:attribute>
+    <s:attribute name="kol_zl" type="s:long" use="required">
+      <s:annotation>
+        <s:documentation>Численность застрахованных лиц в СМО, осуществляющей деятельность в сфере ОМС, на дату подачи уведомления об осуществлении деятельности в сфере ОМС</s:documentation>
+      </s:annotation>
+    </s:attribute>
+    <s:attribute name="d_edit" type="s:dateTime" use="required">
+      <s:annotation>
+        <s:documentation>Дата последнего редактирования</s:documentation>
+      </s:annotation>
+    </s:attribute>
+  </s:complexType>
+  <s:element name="F003">
+    <s:complexType>
+      <s:sequence>
+        <s:element maxOccurs="unbounded" minOccurs="0" name="rec" nillable="true" type="s01:F003Type"/>
+      </s:sequence>
+    </s:complexType>
+  </s:element>
+  <s:complexType name="ArrayOfF003TypeF003Type">
+    <s:sequence>
+      <s:element maxOccurs="unbounded" minOccurs="0" name="F003Type" nillable="true" type="s01:F003Type"/>
+    </s:sequence>
+  </s:complexType>
+  <s:complexType name="F003Type">
+    <s:annotation>
+      <s:documentation>Единый реестр медицинских организаций, осуществляющих деятельность в сфере обязательного медицинского страхования (MO)</s:documentation>
+    </s:annotation>
+    <s:attribute name="tf_okato" use="required">
+      <s:annotation>
+        <s:documentation>Код субъекта РФ по ОКАТО, где расположена МО. Код субъекта РФ по ОКАТО заполняется из классификатора О002.</s:documentation>
+      </s:annotation>
+      <s:simpleType>
+        <s:restriction base="s:string">
+          <s:maxLength value="5"/>
+          <s:minLength value="5"/>
+        </s:restriction>
+      </s:simpleType>
+    </s:attribute>
+    <s:attribute name="mcod" use="required">
+      <s:annotation>
+        <s:documentation>Код МО в кодировке единого реестра МО. Указывается реестровый номер: первые два символа – код ТФОМС; последующие 4 символа – номер в реестровом журнале ТФОМС. Реестровый номер остается неизменным для данной МО, в том числе при перерегистрации в журнале регистрации при подаче нового уведомления об осуществлении деятельности в сфере ОМС.</s:documentation>
+      </s:annotation>
+      <s:simpleType>
+        <s:restriction base="s:string">
+          <s:maxLength value="6"/>
+          <s:minLength value="6"/>
+        </s:restriction>
+      </s:simpleType>
+    </s:attribute>
+    <s:attribute name="nam_mop" use="required">
+      <s:annotation>
+        <s:documentation>Наименование МО (полное). Заполняется в соответствии с ЕГРЮЛ и ЕРГИП (для головных организаций)</s:documentation>
+      </s:annotation>
+      <s:simpleType>
+        <s:restriction base="s:string">
+          <s:maxLength value="250"/>
+        </s:restriction>
+      </s:simpleType>
+    </s:attribute>
+    <s:attribute name="nam_mok" use="required">
+      <s:annotation>
+        <s:documentation>Наименование МО (краткое). Заполняется в соответствии с ЕГРЮЛ и ЕГРИП (для головных организаций)</s:documentation>
+      </s:annotation>
+      <s:simpleType>
+        <s:restriction base="s:string">
+          <s:maxLength value="250"/>
+        </s:restriction>
+      </s:simpleType>
+    </s:attribute>
+    <s:attribute name="inn">
+      <s:annotation>
+        <s:documentation>Идентификационный номер налогоплательщика. Заполняется в соответствии со Свидетельством о постановке на учет в налоговом органе</s:documentation>
+      </s:annotation>
+      <s:simpleType>
+        <s:restriction base="s:string">
+          <s:maxLength value="12"/>
+        </s:restriction>
+      </s:simpleType>
+    </s:attribute>
+    <s:attribute name="Ogrn">
+      <s:annotation>
+        <s:documentation>ОГРН МО</s:documentation>
+      </s:annotation>
+      <s:simpleType>
+        <s:restriction base="s:string">
+          <s:maxLength value="15"/>
+        </s:restriction>
+      </s:simpleType>
+    </s:attribute>
+    <s:attribute name="KPP">
+      <s:annotation>
+        <s:documentation>Код причины постановки на учет налогоплательщика</s:documentation>
+      </s:annotation>
+      <s:simpleType>
+        <s:restriction base="s:string">
+          <s:maxLength value="9"/>
+        </s:restriction>
+      </s:simpleType>
+    </s:attribute>
+    <s:attribute name="index_j">
+      <s:annotation>
+        <s:documentation>Почтовый индекс по адресу (месту) нахождения МО</s:documentation>
+      </s:annotation>
+      <s:simpleType>
+        <s:restriction base="s:string">
+          <s:maxLength value="6"/>
+        </s:restriction>
+      </s:simpleType>
+    </s:attribute>
+    <s:attribute name="addr_j">
+      <s:annotation>
+        <s:documentation>Адрес (место) нахождения МО (Субъект, район, город, населенный пункт, улица, номер дома (владение), номер корпуса/строения)</s:documentation>
+      </s:annotation>
+      <s:simpleType>
+        <s:restriction base="s:string">
+          <s:maxLength value="254"/>
+        </s:restriction>
+      </s:simpleType>
+    </s:attribute>
+    <s:attribute name="okopf">
+      <s:annotation>
+        <s:documentation>Организационноправовая форма МО по ОКОПФ (О005)</s:documentation>
+      </s:annotation>
+      <s:simpleType>
+        <s:restriction base="s:string">
+          <s:maxLength value="2"/>
+        </s:restriction>
+      </s:simpleType>
+    </s:attribute>
+    <s:attribute name="vedpri" type="s:long" use="required">
+      <s:annotation>
+        <s:documentation>Код ведомственной принадлежности МО. Заполняется в соответствии с классификатором ведомственной принадлежности (F007).</s:documentation>
+      </s:annotation>
+    </s:attribute>
+    <s:attribute name="org" type="s:long" use="required">
+      <s:annotation>
+        <s:documentation>Признак подчиненности (головная организация - 1, филиал - 2)</s:documentation>
+      </s:annotation>
+    </s:attribute>
+    <s:attribute name="fam_ruk">
+      <s:annotation>
+        <s:documentation>Фамилия руководителя. Фамилия, имя, отчество заполняется с документа, удостоверяющего личность.</s:documentation>
+      </s:annotation>
+      <s:simpleType>
+        <s:restriction base="s:string">
+          <s:maxLength value="40"/>
+        </s:restriction>
+      </s:simpleType>
+    </s:attribute>
+    <s:attribute name="im_ruk">
+      <s:annotation>
+        <s:documentation>Имя руководителя</s:documentation>
+      </s:annotation>
+      <s:simpleType>
+        <s:restriction base="s:string">
+          <s:maxLength value="40"/>
+        </s:restriction>
+      </s:simpleType>
+    </s:attribute>
+    <s:attribute name="ot_ruk">
+      <s:annotation>
+        <s:documentation>Отчество руководителя. В случае отсутствия отчества в поле вносится значение «нет».</s:documentation>
+      </s:annotation>
+      <s:simpleType>
+        <s:restriction base="s:string">
+          <s:maxLength value="40"/>
+        </s:restriction>
+      </s:simpleType>
+    </s:attribute>
+    <s:attribute name="phone">
+      <s:annotation>
+        <s:documentation>Телефон (с кодом города)</s:documentation>
+      </s:annotation>
+      <s:simpleType>
+        <s:restriction base="s:string">
+          <s:maxLength value="40"/>
+        </s:restriction>
+      </s:simpleType>
+    </s:attribute>
+    <s:attribute name="fax">
+      <s:annotation>
+        <s:documentation>Факс (с кодом города)</s:documentation>
+      </s:annotation>
+      <s:simpleType>
+        <s:restriction base="s:string">
+          <s:maxLength value="40"/>
+        </s:restriction>
+      </s:simpleType>
+    </s:attribute>
+    <s:attribute name="e_mail">
+      <s:annotation>
+        <s:documentation>Адрес электронной почты</s:documentation>
+      </s:annotation>
+      <s:simpleType>
+        <s:restriction base="s:string">
+          <s:maxLength value="50"/>
+        </s:restriction>
+      </s:simpleType>
+    </s:attribute>
+    <s:attribute name="n_doc">
+      <s:annotation>
+        <s:documentation>Номер документа, дающего право в соответствии с законодательством РФ на осуществление медицинской деятельности</s:documentation>
+      </s:annotation>
+      <s:simpleType>
+        <s:restriction base="s:string">
+          <s:maxLength value="30"/>
+        </s:restriction>
+      </s:simpleType>
+    </s:attribute>
+    <s:attribute name="d_start" type="s:dateTime">
+      <s:annotation>
+        <s:documentation>Дата выдачи документа, дающего право в соответствии с законодательством РФ на осуществление медицинской деятельности</s:documentation>
+      </s:annotation>
+    </s:attribute>
+    <s:attribute name="data_e" type="s:dateTime">
+      <s:annotation>
+        <s:documentation>Дата окончания срока действия документа, дающего право в соответствии с законодательством РФ на осуществление медицинской деятельности</s:documentation>
+      </s:annotation>
+    </s:attribute>
+    <s:attribute name="mp">
+      <s:annotation>
+        <s:documentation>Виды медицинской помощи, оказываемой медицинской организацией в рамках территориальной программы ОМС. Заполняется в соответствии с классификатором видов медицинской помощи (V008). При необходимости указать несколько значений, они перечисляются через запятую без пробела.</s:documentation>
+      </s:annotation>
+      <s:simpleType>
+        <s:restriction base="s:string">
+          <s:maxLength value="15"/>
+        </s:restriction>
+      </s:simpleType>
+    </s:attribute>
+    <s:attribute name="www">
+      <s:annotation>
+        <s:documentation>Адрес официального сайта в сети Интернет	htpp://адрес_сайта</s:documentation>
+      </s:annotation>
+      <s:simpleType>
+        <s:restriction base="s:string">
+          <s:maxLength value="100"/>
+        </s:restriction>
+      </s:simpleType>
+    </s:attribute>
+    <s:attribute name="d_begin" type="s:dateTime">
+      <s:annotation>
+        <s:documentation>Дата включения в реестр МО</s:documentation>
+      </s:annotation>
+    </s:attribute>
+    <s:attribute name="d_end" type="s:dateTime">
+      <s:annotation>
+        <s:documentation>Дата исключения из реестра МО</s:documentation>
+      </s:annotation>
+    </s:attribute>
+    <s:attribute name="name_e">
+      <s:annotation>
+        <s:documentation>Причина исключения МО из реестра МО. Выбирается номер из списка и указывается через запятую без пробела: 1 утрата (приостановление либо прекращение) права на осуществление медицинской деятельности; 2 ликвидация медицинской организации; 3 банкротство медицинской организации; 4 иные случаи, предусмотренные законодательством РФ, препятствующих осуществлению деятельности в сфере ОМС. Заполняется при наличии данных в поле d_end.</s:documentation>
+      </s:annotation>
+      <s:simpleType>
+        <s:restriction base="s:string">
+          <s:maxLength value="10"/>
+        </s:restriction>
+      </s:simpleType>
+    </s:attribute>
+    <s:attribute name="DUVED" type="s:dateTime">
+      <s:annotation>
+        <s:documentation>Дата уведомления об осуществлении деятельности в сфере ОМС</s:documentation>
+      </s:annotation>
+    </s:attribute>
+    <s:attribute name="d_edit" type="s:dateTime" use="required">
+      <s:annotation>
+        <s:documentation>Дата последнего редактирования</s:documentation>
+      </s:annotation>
+    </s:attribute>
+  </s:complexType>
+  <s:element name="F005">
+    <s:complexType>
+      <s:sequence>
+        <s:element maxOccurs="unbounded" minOccurs="0" name="rec" nillable="true" type="s01:F005Type"/>
+      </s:sequence>
+    </s:complexType>
+  </s:element>
+  <s:complexType name="ArrayOfF005TypeF005Type">
+    <s:sequence>
+      <s:element maxOccurs="unbounded" minOccurs="0" name="F005Type" nillable="true" type="s01:F005Type"/>
+    </s:sequence>
+  </s:complexType>
+  <s:complexType name="F005Type">
+    <s:annotation>
+      <s:documentation>Классификатор статусов оплаты медицинской помощи (StatOpl)</s:documentation>
+    </s:annotation>
+    <s:attribute name="IDIDST" type="s:long" use="required">
+      <s:annotation>
+        <s:documentation>Код статусов оплаты медицинской помощи</s:documentation>
+      </s:annotation>
+    </s:attribute>
+    <s:attribute name="STNAME">
+      <s:annotation>
+        <s:documentation>Наименование статусов оплаты медицинской помощи</s:documentation>
+      </s:annotation>
+      <s:simpleType>
+        <s:restriction base="s:string">
+          <s:maxLength value="254"/>
+        </s:restriction>
+      </s:simpleType>
+    </s:attribute>
+    <s:attribute name="DATEBEG" type="s:dateTime">
+      <s:annotation>
+        <s:documentation>Дата начала действия записи</s:documentation>
+      </s:annotation>
+    </s:attribute>
+    <s:attribute name="DATEEND" type="s:dateTime">
+      <s:annotation>
+        <s:documentation>Дата окончания действия записи</s:documentation>
+      </s:annotation>
+    </s:attribute>
+  </s:complexType>
+  <s:element name="F006">
+    <s:complexType>
+      <s:sequence>
+        <s:element maxOccurs="unbounded" minOccurs="0" name="rec" nillable="true" type="s01:F006Type"/>
+      </s:sequence>
+    </s:complexType>
+  </s:element>
+  <s:complexType name="ArrayOfF006TypeF006Type">
+    <s:sequence>
+      <s:element maxOccurs="unbounded" minOccurs="0" name="F006Type" nillable="true" type="s01:F006Type"/>
+    </s:sequence>
+  </s:complexType>
+  <s:complexType name="F006Type">
+    <s:annotation>
+      <s:documentation>Классификатор видов контроля (VidExp)</s:documentation>
+    </s:annotation>
+    <s:attribute name="IDVID" type="s:long" use="required">
+      <s:annotation>
+        <s:documentation>Код вида контроля</s:documentation>
+      </s:annotation>
+    </s:attribute>
+    <s:attribute name="VIDNAME">
+      <s:annotation>
+        <s:documentation>Наименование вида контроля</s:documentation>
+      </s:annotation>
+      <s:simpleType>
+        <s:restriction base="s:string">
+          <s:maxLength value="254"/>
+        </s:restriction>
+      </s:simpleType>
+    </s:attribute>
+    <s:attribute name="DATEBEG" type="s:dateTime">
+      <s:annotation>
+        <s:documentation>Дата начала действия записи</s:documentation>
+      </s:annotation>
+    </s:attribute>
+    <s:attribute name="DATEEND" type="s:dateTime">
+      <s:annotation>
+        <s:documentation>Дата окончания действия записи</s:documentation>
+      </s:annotation>
+    </s:attribute>
+  </s:complexType>
+  <s:element name="F007">
+    <s:complexType>
+      <s:sequence>
+        <s:element maxOccurs="unbounded" minOccurs="0" name="rec" nillable="true" type="s01:F007Type"/>
+      </s:sequence>
+    </s:complexType>
+  </s:element>
+  <s:complexType name="ArrayOfF007TypeF007Type">
+    <s:sequence>
+      <s:element maxOccurs="unbounded" minOccurs="0" name="F007Type" nillable="true" type="s01:F007Type"/>
+    </s:sequence>
+  </s:complexType>
+  <s:complexType name="F007Type">
+    <s:annotation>
+      <s:documentation>Классификатор ведомственной принадлежности медицинской организации (Vedom)</s:documentation>
+    </s:annotation>
+    <s:attribute name="IDVED" type="s:long" use="required">
+      <s:annotation>
+        <s:documentation>Код типа ведомства</s:documentation>
+      </s:annotation>
+    </s:attribute>
+    <s:attribute name="VEDNAME">
+      <s:annotation>
+        <s:documentation>Наименование ведомства</s:documentation>
+      </s:annotation>
+      <s:simpleType>
+        <s:restriction base="s:string">
+          <s:maxLength value="254"/>
+        </s:restriction>
+      </s:simpleType>
+    </s:attribute>
+    <s:attribute name="DATEBEG" type="s:dateTime">
+      <s:annotation>
+        <s:documentation>Дата начала действия записи</s:documentation>
+      </s:annotation>
+    </s:attribute>
+    <s:attribute name="DATEEND" type="s:dateTime">
+      <s:annotation>
+        <s:documentation>Дата окончания действия записи</s:documentation>
+      </s:annotation>
+    </s:attribute>
+  </s:complexType>
+  <s:element name="F008">
+    <s:complexType>
+      <s:sequence>
+        <s:element maxOccurs="unbounded" minOccurs="0" name="rec" nillable="true" type="s01:F008Type"/>
+      </s:sequence>
+    </s:complexType>
+  </s:element>
+  <s:complexType name="ArrayOfF008TypeF008Type">
+    <s:sequence>
+      <s:element maxOccurs="unbounded" minOccurs="0" name="F008Type" nillable="true" type="s01:F008Type"/>
+    </s:sequence>
+  </s:complexType>
+  <s:complexType name="F008Type">
+    <s:annotation>
+      <s:documentation>Классификатор типов документов, подтверждающих факт страхования по ОМС (TipOMS)</s:documentation>
+    </s:annotation>
+    <s:attribute name="IDDOC" type="s:long" use="required">
+      <s:annotation>
+        <s:documentation>Код типа документа, подтверждающего факт страхования по ОМС</s:documentation>
+      </s:annotation>
+    </s:attribute>
+    <s:attribute name="DOCNAME">
+      <s:annotation>
+        <s:documentation>Наименование документа, подтверждающего факт страхования по ОМС</s:documentation>
+      </s:annotation>
+      <s:simpleType>
+        <s:restriction base="s:string">
+          <s:maxLength value="254"/>
+        </s:restriction>
+      </s:simpleType>
+    </s:attribute>
+    <s:attribute name="DATEBEG" type="s:dateTime">
+      <s:annotation>
+        <s:documentation>Дата начала действия записи</s:documentation>
+      </s:annotation>
+    </s:attribute>
+    <s:attribute name="DATEEND" type="s:dateTime">
+      <s:annotation>
+        <s:documentation>Дата окончания действия записи</s:documentation>
+      </s:annotation>
+    </s:attribute>
+  </s:complexType>
+  <s:element name="F009">
+    <s:complexType>
+      <s:sequence>
+        <s:element maxOccurs="unbounded" minOccurs="0" name="rec" nillable="true" type="s01:F009Type"/>
+      </s:sequence>
+    </s:complexType>
+  </s:element>
+  <s:complexType name="ArrayOfF009TypeF009Type">
+    <s:sequence>
+      <s:element maxOccurs="unbounded" minOccurs="0" name="F009Type" nillable="true" type="s01:F009Type"/>
+    </s:sequence>
+  </s:complexType>
+  <s:complexType name="F009Type">
+    <s:annotation>
+      <s:documentation>Классификатор статуса застрахованного лица (StatZL)</s:documentation>
+    </s:annotation>
+    <s:attribute name="IDStatus" use="required">
+      <s:annotation>
+        <s:documentation>Код статус застрахованного лица</s:documentation>
+      </s:annotation>
+      <s:simpleType>
+        <s:restriction base="s:string">
+          <s:maxLength value="1"/>
+          <s:minLength value="1"/>
+        </s:restriction>
+      </s:simpleType>
+    </s:attribute>
+    <s:attribute name="StatusName">
+      <s:annotation>
+        <s:documentation>Наименование статуса застрахованного лица</s:documentation>
+      </s:annotation>
+      <s:simpleType>
+        <s:restriction base="s:string">
+          <s:maxLength value="254"/>
+        </s:restriction>
+      </s:simpleType>
+    </s:attribute>
+    <s:attribute name="DATEBEG" type="s:dateTime">
+      <s:annotation>
+        <s:documentation>Дата начала действия записи</s:documentation>
+      </s:annotation>
+    </s:attribute>
+    <s:attribute name="DATEEND" type="s:dateTime">
+      <s:annotation>
+        <s:documentation>Дата окончания действия записи</s:documentation>
+      </s:annotation>
+    </s:attribute>
+  </s:complexType>
+  <s:element name="F010">
+    <s:complexType>
+      <s:sequence>
+        <s:element maxOccurs="unbounded" minOccurs="0" name="rec" nillable="true" type="s01:F010Type"/>
+      </s:sequence>
+    </s:complexType>
+  </s:element>
+  <s:complexType name="ArrayOfF010TypeF010Type">
+    <s:sequence>
+      <s:element maxOccurs="unbounded" minOccurs="0" name="F010Type" nillable="true" type="s01:F010Type"/>
+    </s:sequence>
+  </s:complexType>
+  <s:complexType name="F010Type">
+    <s:annotation>
+      <s:documentation>Классификатор субъектов Российской Федерации (Subekti)</s:documentation>
+    </s:annotation>
+    <s:attribute name="KOD_TF">
+      <s:annotation>
+        <s:documentation>Код ТФОМС</s:documentation>
+      </s:annotation>
+      <s:simpleType>
+        <s:restriction base="s:string">
+          <s:maxLength value="2"/>
+          <s:minLength value="2"/>
+        </s:restriction>
+      </s:simpleType>
+    </s:attribute>
+    <s:attribute name="KOD_OKATO" use="required">
+      <s:annotation>
+        <s:documentation>Код по ОКАТО (O003)</s:documentation>
+      </s:annotation>
+      <s:simpleType>
+        <s:restriction base="s:string">
+          <s:maxLength value="5"/>
+          <s:minLength value="5"/>
+        </s:restriction>
+      </s:simpleType>
+    </s:attribute>
+    <s:attribute name="SUBNAME">
+      <s:annotation>
+        <s:documentation>Наименование субъекта РФ</s:documentation>
+      </s:annotation>
+      <s:simpleType>
+        <s:restriction base="s:string">
+          <s:maxLength value="254"/>
+        </s:restriction>
+      </s:simpleType>
+    </s:attribute>
+    <s:attribute name="OKRUG" type="s:long">
+      <s:annotation>
+        <s:documentation>Код федерального округа</s:documentation>
+      </s:annotation>
+    </s:attribute>
+    <s:attribute name="DATEBEG" type="s:dateTime">
+      <s:annotation>
+        <s:documentation>Дата начала действия записи</s:documentation>
+      </s:annotation>
+    </s:attribute>
+    <s:attribute name="DATEEND" type="s:dateTime">
+      <s:annotation>
+        <s:documentation>Дата окончания действия записи</s:documentation>
+      </s:annotation>
+    </s:attribute>
+  </s:complexType>
+  <s:element name="F011">
+    <s:complexType>
+      <s:sequence>
+        <s:element maxOccurs="unbounded" minOccurs="0" name="rec" nillable="true" type="s01:F011Type"/>
+      </s:sequence>
+    </s:complexType>
+  </s:element>
+  <s:complexType name="ArrayOfF011TypeF011Type">
+    <s:sequence>
+      <s:element maxOccurs="unbounded" minOccurs="0" name="F011Type" nillable="true" type="s01:F011Type"/>
+    </s:sequence>
+  </s:complexType>
+  <s:complexType name="F011Type">
+    <s:annotation>
+      <s:documentation>Классификатор типов документов, удостоверяющих личность(Tipdoc)</s:documentation>
+    </s:annotation>
+    <s:attribute name="IDDoc" type="s:long" use="required">
+      <s:annotation>
+        <s:documentation>Код типа документа</s:documentation>
+      </s:annotation>
+    </s:attribute>
+    <s:attribute name="DocName">
+      <s:annotation>
+        <s:documentation>Наименование типа документа</s:documentation>
+      </s:annotation>
+      <s:simpleType>
+        <s:restriction base="s:string">
+          <s:maxLength value="254"/>
+        </s:restriction>
+      </s:simpleType>
+    </s:attribute>
+    <s:attribute name="DocSer">
+      <s:annotation>
+        <s:documentation>Маска серии документа</s:documentation>
+      </s:annotation>
+      <s:simpleType>
+        <s:restriction base="s:string">
+          <s:maxLength value="10"/>
+        </s:restriction>
+      </s:simpleType>
+    </s:attribute>
+    <s:attribute name="DocNum">
+      <s:annotation>
+        <s:documentation>Маска номера документа</s:documentation>
+      </s:annotation>
+      <s:simpleType>
+        <s:restriction base="s:string">
+          <s:maxLength value="20"/>
+        </s:restriction>
+      </s:simpleType>
+    </s:attribute>
+    <s:attribute name="DATEBEG" type="s:dateTime">
+      <s:annotation>
+        <s:documentation>Дата начала действия записи</s:documentation>
+      </s:annotation>
+    </s:attribute>
+    <s:attribute name="DATEEND" type="s:dateTime">
+      <s:annotation>
+        <s:documentation>Дата окончания действия записи</s:documentation>
+      </s:annotation>
+    </s:attribute>
+  </s:complexType>
+  <s:element name="F012">
+    <s:complexType>
+      <s:sequence>
+        <s:element maxOccurs="unbounded" minOccurs="0" name="rec" nillable="true" type="s01:F012Type"/>
+      </s:sequence>
+    </s:complexType>
+  </s:element>
+  <s:complexType name="ArrayOfF012TypeF012Type">
+    <s:sequence>
+      <s:element maxOccurs="unbounded" minOccurs="0" name="F012Type" nillable="true" type="s01:F012Type"/>
+    </s:sequence>
+  </s:complexType>
+  <s:complexType name="F012Type">
+    <s:annotation>
+      <s:documentation>Справочник ошибок форматнологического контроля (FLK)</s:documentation>
+    </s:annotation>
+    <s:attribute name="Kod" type="s:long" use="required">
+      <s:annotation>
+        <s:documentation>Код ошибки</s:documentation>
+      </s:annotation>
+    </s:attribute>
+    <s:attribute name="Opis">
+      <s:annotation>
+        <s:documentation>Описание ошибки</s:documentation>
+      </s:annotation>
+      <s:simpleType>
+        <s:restriction base="s:string">
+          <s:maxLength value="254"/>
+        </s:restriction>
+      </s:simpleType>
+    </s:attribute>
+    <s:attribute name="DopInfo">
+      <s:annotation>
+        <s:documentation>Дополнительная информация</s:documentation>
+      </s:annotation>
+      <s:simpleType>
+        <s:restriction base="s:string">
+          <s:maxLength value="254"/>
+        </s:restriction>
+      </s:simpleType>
+    </s:attribute>
+    <s:attribute name="DATEBEG" type="s:dateTime">
+      <s:annotation>
+        <s:documentation>Дата начала действия записи</s:documentation>
+      </s:annotation>
+    </s:attribute>
+    <s:attribute name="DATEEND" type="s:dateTime">
+      <s:annotation>
+        <s:documentation>Дата окончания действия записи</s:documentation>
+      </s:annotation>
+    </s:attribute>
+  </s:complexType>
+  <s:element name="F013">
+    <s:complexType>
+      <s:sequence>
+        <s:element maxOccurs="unbounded" minOccurs="0" name="rec" nillable="true" type="s01:F013Type"/>
+      </s:sequence>
+    </s:complexType>
+  </s:element>
+  <s:complexType name="ArrayOfF013TypeF013Type">
+    <s:sequence>
+      <s:element maxOccurs="unbounded" minOccurs="0" name="F013Type" nillable="true" type="s01:F013Type"/>
+    </s:sequence>
+  </s:complexType>
+  <s:complexType name="F013Type">
+    <s:annotation>
+      <s:documentation>Реестр пунктов выдачи полисов (Punkt)</s:documentation>
+    </s:annotation>
+    <s:attribute name="smocod" use="required">
+      <s:annotation>
+        <s:documentation>Код СМО в кодировке единого реестра СМО. В соответствии с Единым реестром страховых медицинских организаций, осуществляющих деятельность в сфере обязательного медицинского страхования (F002)</s:documentation>
+      </s:annotation>
+      <s:simpleType>
+        <s:restriction base="s:string">
+          <s:maxLength value="5"/>
+          <s:minLength value="5"/>
+        </s:restriction>
+      </s:simpleType>
+    </s:attribute>
+    <s:attribute name="codpvp" type="s:long" use="required">
+      <s:annotation>
+        <s:documentation>Порядковый номер пункта выдачи полисов. Формируется ТФОМС. Уникален для данной страховой медицинской организации.</s:documentation>
+      </s:annotation>
+    </s:attribute>
+    <s:attribute name="Address" use="required">
+      <s:annotation>
+        <s:documentation>Фактический адрес пункта выдачи. Cубъект; район; город; населенный пункт; улица; номер дома (владение); номер корпуса/строения.</s:documentation>
+      </s:annotation>
+      <s:simpleType>
+        <s:restriction base="s:string">
+          <s:maxLength value="254"/>
+        </s:restriction>
+      </s:simpleType>
+    </s:attribute>
+    <s:attribute name="Phone" use="required">
+      <s:annotation>
+        <s:documentation>Номер телефона пункта выдачи полисов</s:documentation>
+      </s:annotation>
+      <s:simpleType>
+        <s:restriction base="s:string">
+          <s:maxLength value="40"/>
+        </s:restriction>
+      </s:simpleType>
+    </s:attribute>
+    <s:attribute name="DATEBEG" type="s:dateTime">
+      <s:annotation>
+        <s:documentation>Дата начала действия записи</s:documentation>
+      </s:annotation>
+    </s:attribute>
+    <s:attribute name="DATEEND" type="s:dateTime">
+      <s:annotation>
+        <s:documentation>Дата окончания действия записи</s:documentation>
+      </s:annotation>
+    </s:attribute>
+  </s:complexType>
+  <s:element name="F014">
+    <s:complexType>
+      <s:sequence>
+        <s:element maxOccurs="unbounded" minOccurs="0" name="rec" nillable="true" type="s01:F014Type"/>
+      </s:sequence>
+    </s:complexType>
+  </s:element>
+  <s:complexType name="ArrayOfF014TypeF014Type">
+    <s:sequence>
+      <s:element maxOccurs="unbounded" minOccurs="0" name="F014Type" nillable="true" type="s01:F014Type"/>
+    </s:sequence>
+  </s:complexType>
+  <s:complexType name="F014Type">
+    <s:annotation>
+      <s:documentation>Классификатор причин отказа в оплате медицинской помощи</s:documentation>
+    </s:annotation>
+    <s:attribute name="Kod" type="s:long" use="required">
+      <s:annotation>
+        <s:documentation>Код ошибки</s:documentation>
+      </s:annotation>
+    </s:attribute>
+    <s:attribute name="IDVID" type="s:long">
+      <s:annotation>
+        <s:documentation>Код вида контроля, резервное поле</s:documentation>
+      </s:annotation>
+    </s:attribute>
+    <s:attribute name="Naim">
+      <s:annotation>
+        <s:documentation>Наименование причины отказа</s:documentation>
+      </s:annotation>
+      <s:simpleType>
+        <s:restriction base="s:string">
+          <s:maxLength value="1000"/>
+        </s:restriction>
+      </s:simpleType>
+    </s:attribute>
+    <s:attribute name="Osn">
+      <s:annotation>
+        <s:documentation>Основание отказа</s:documentation>
+      </s:annotation>
+      <s:simpleType>
+        <s:restriction base="s:string">
+          <s:maxLength value="20"/>
+        </s:restriction>
+      </s:simpleType>
+    </s:attribute>
+    <s:attribute name="Komment">
+      <s:annotation>
+        <s:documentation>Служебный комментарий</s:documentation>
+      </s:annotation>
+      <s:simpleType>
+        <s:restriction base="s:string">
+          <s:maxLength value="100"/>
+        </s:restriction>
+      </s:simpleType>
+    </s:attribute>
+    <s:attribute name="KodPG">
+      <s:annotation>
+        <s:documentation>Форма PG</s:documentation>
+      </s:annotation>
+      <s:simpleType>
+        <s:restriction base="s:string">
+          <s:maxLength value="20"/>
+        </s:restriction>
+      </s:simpleType>
+    </s:attribute>
+    <s:attribute name="DATEBEG" type="s:dateTime">
+      <s:annotation>
+        <s:documentation>Дата начала действия записи</s:documentation>
+      </s:annotation>
+    </s:attribute>
+    <s:attribute name="DATEEND" type="s:dateTime">
+      <s:annotation>
+        <s:documentation>Дата окончания действия записи</s:documentation>
+      </s:annotation>
+    </s:attribute>
+  </s:complexType>
+  <s:element name="F015">
+    <s:complexType>
+      <s:sequence>
+        <s:element maxOccurs="unbounded" minOccurs="0" name="rec" nillable="true" type="s01:F015Type"/>
+      </s:sequence>
+    </s:complexType>
+  </s:element>
+  <s:complexType name="ArrayOfF015TypeF015Type">
+    <s:sequence>
+      <s:element maxOccurs="unbounded" minOccurs="0" name="F015Type" nillable="true" type="s01:F015Type"/>
+    </s:sequence>
+  </s:complexType>
+  <s:complexType name="F015Type">
+    <s:annotation>
+      <s:documentation>Классификатор федеральных округов</s:documentation>
+    </s:annotation>
+    <s:attribute name="KOD_OK" type="s:long" use="required">
+      <s:annotation>
+        <s:documentation>Код округа</s:documentation>
+      </s:annotation>
+    </s:attribute>
+    <s:attribute name="OKRNAME">
+      <s:annotation>
+        <s:documentation>Наименование округа РФ</s:documentation>
+      </s:annotation>
+      <s:simpleType>
+        <s:restriction base="s:string">
+          <s:maxLength value="254"/>
+        </s:restriction>
+      </s:simpleType>
+    </s:attribute>
+    <s:attribute name="DATEBEG" type="s:dateTime">
+      <s:annotation>
+        <s:documentation>Дата начала действия записи</s:documentation>
+      </s:annotation>
+    </s:attribute>
+    <s:attribute name="DATEEND" type="s:dateTime">
+      <s:annotation>
+        <s:documentation>Дата окончания действия записи</s:documentation>
+      </s:annotation>
+    </s:attribute>
+  </s:complexType>
+  <s:element name="M001">
+    <s:complexType>
+      <s:sequence>
+        <s:element maxOccurs="unbounded" minOccurs="0" name="rec" nillable="true" type="s01:M001Type"/>
+      </s:sequence>
+    </s:complexType>
+  </s:element>
+  <s:complexType name="ArrayOfM001TypeM001Type">
+    <s:sequence>
+      <s:element maxOccurs="unbounded" minOccurs="0" name="M001Type" nillable="true" type="s01:M001Type"/>
+    </s:sequence>
+  </s:complexType>
+  <s:complexType name="M001Type">
+    <s:annotation>
+      <s:documentation>Международный классификатор болезней (MKB10)</s:documentation>
+    </s:annotation>
+    <s:attribute name="IDDS" use="required">
+      <s:annotation>
+        <s:documentation>Код диагноза заболевания</s:documentation>
+      </s:annotation>
+      <s:simpleType>
+        <s:restriction base="s:string">
+          <s:maxLength value="10"/>
+        </s:restriction>
+      </s:simpleType>
+    </s:attribute>
+    <s:attribute name="DSNAME">
+      <s:annotation>
+        <s:documentation>Наименование диагноза</s:documentation>
+      </s:annotation>
+      <s:simpleType>
+        <s:restriction base="s:string">
+          <s:maxLength value="254"/>
+        </s:restriction>
+      </s:simpleType>
+    </s:attribute>
+    <s:attribute name="DATEBEG" type="s:dateTime">
+      <s:annotation>
+        <s:documentation>Дата начала действия записи</s:documentation>
+      </s:annotation>
+    </s:attribute>
+    <s:attribute name="DATEEND" type="s:dateTime">
+      <s:annotation>
+        <s:documentation>Дата окончания действия записи</s:documentation>
+      </s:annotation>
+    </s:attribute>
+  </s:complexType>
+  <s:element name="O001">
+    <s:complexType>
+      <s:sequence>
+        <s:element maxOccurs="unbounded" minOccurs="0" name="rec" nillable="true" type="s01:O001Type"/>
+      </s:sequence>
+    </s:complexType>
+  </s:element>
+  <s:complexType name="ArrayOfO001TypeO001Type">
+    <s:sequence>
+      <s:element maxOccurs="unbounded" minOccurs="0" name="O001Type" nillable="true" type="s01:O001Type"/>
+    </s:sequence>
+  </s:complexType>
+  <s:complexType name="O001Type">
+    <s:annotation>
+      <s:documentation>Общероссийский классификатор стран мира (OKSM)</s:documentation>
+    </s:annotation>
+    <s:attribute name="KOD" use="required">
+      <s:annotation>
+        <s:documentation>Цифровой код</s:documentation>
+      </s:annotation>
+      <s:simpleType>
+        <s:restriction base="s:string">
+          <s:maxLength value="3"/>
+          <s:minLength value="3"/>
+        </s:restriction>
+      </s:simpleType>
+    </s:attribute>
+    <s:attribute name="NAME11">
+      <s:annotation>
+        <s:documentation>наименование</s:documentation>
+      </s:annotation>
+      <s:simpleType>
+        <s:restriction base="s:string">
+          <s:maxLength value="250"/>
+        </s:restriction>
+      </s:simpleType>
+    </s:attribute>
+    <s:attribute name="NAME12">
+      <s:annotation>
+        <s:documentation>продолжение наименования</s:documentation>
+      </s:annotation>
+      <s:simpleType>
+        <s:restriction base="s:string">
+          <s:maxLength value="250"/>
+        </s:restriction>
+      </s:simpleType>
+    </s:attribute>
+    <s:attribute name="ALFA2">
+      <s:annotation>
+        <s:documentation>Буквенный код альфа-2</s:documentation>
+      </s:annotation>
+      <s:simpleType>
+        <s:restriction base="s:string">
+          <s:maxLength value="2"/>
+          <s:minLength value="2"/>
+        </s:restriction>
+      </s:simpleType>
+    </s:attribute>
+    <s:attribute name="ALFA3">
+      <s:annotation>
+        <s:documentation>Буквенный код альфа-3</s:documentation>
+      </s:annotation>
+      <s:simpleType>
+        <s:restriction base="s:string">
+          <s:maxLength value="3"/>
+          <s:minLength value="3"/>
+        </s:restriction>
+      </s:simpleType>
+    </s:attribute>
+    <s:attribute name="NOMDESCR">
+      <s:annotation>
+        <s:documentation>Описание (пояснение)</s:documentation>
+      </s:annotation>
+      <s:simpleType>
+        <s:restriction base="s:string">
+          <s:maxLength value="4000"/>
+        </s:restriction>
+      </s:simpleType>
+    </s:attribute>
+    <s:attribute name="NOMAKT">
+      <s:annotation>
+        <s:documentation>Номер последнего изменения</s:documentation>
+      </s:annotation>
+      <s:simpleType>
+        <s:restriction base="s:string">
+          <s:maxLength value="3"/>
+        </s:restriction>
+      </s:simpleType>
+    </s:attribute>
+    <s:attribute name="STATUS" type="s:long">
+      <s:annotation>
+        <s:documentation>Тип последнего изменения: 1 - аннулировать; 2 - изменить реквизит, кроме кода; 3 - включить; 0 - начальная загрузка</s:documentation>
+      </s:annotation>
+    </s:attribute>
+    <s:attribute name="DATA_UPD" type="s:dateTime">
+      <s:annotation>
+        <s:documentation>Дата последнего изменения</s:documentation>
+      </s:annotation>
+    </s:attribute>
+  </s:complexType>
+  <s:element name="O002">
+    <s:complexType>
+      <s:sequence>
+        <s:element maxOccurs="unbounded" minOccurs="0" name="rec" nillable="true" type="s01:O002Type"/>
+      </s:sequence>
+    </s:complexType>
+  </s:element>
+  <s:complexType name="ArrayOfO002TypeO002Type">
+    <s:sequence>
+      <s:element maxOccurs="unbounded" minOccurs="0" name="O002Type" nillable="true" type="s01:O002Type"/>
+    </s:sequence>
+  </s:complexType>
+  <s:complexType name="O002Type">
+    <s:annotation>
+      <s:documentation>Общероссийский классификатор административнотерриториального деления (OKATO)</s:documentation>
+    </s:annotation>
+    <s:attribute name="TER">
+      <s:annotation>
+        <s:documentation>Код территории</s:documentation>
+      </s:annotation>
+      <s:simpleType>
+        <s:restriction base="s:string">
+          <s:maxLength value="2"/>
+          <s:minLength value="2"/>
+        </s:restriction>
+      </s:simpleType>
+    </s:attribute>
+    <s:attribute name="KOD1">
+      <s:annotation>
+        <s:documentation>Код района/города</s:documentation>
+      </s:annotation>
+      <s:simpleType>
+        <s:restriction base="s:string">
+          <s:maxLength value="3"/>
+          <s:minLength value="3"/>
+        </s:restriction>
+      </s:simpleType>
+    </s:attribute>
+    <s:attribute name="KOD2">
+      <s:annotation>
+        <s:documentation>Код РП/сельсовета</s:documentation>
+      </s:annotation>
+      <s:simpleType>
+        <s:restriction base="s:string">
+          <s:maxLength value="3"/>
+          <s:minLength value="3"/>
+        </s:restriction>
+      </s:simpleType>
+    </s:attribute>
+    <s:attribute name="KOD3">
+      <s:annotation>
+        <s:documentation>Код сельского населенного пункта</s:documentation>
+      </s:annotation>
+      <s:simpleType>
+        <s:restriction base="s:string">
+          <s:maxLength value="3"/>
+          <s:minLength value="3"/>
+        </s:restriction>
+      </s:simpleType>
+    </s:attribute>
+    <s:attribute name="RAZDEL">
+      <s:annotation>
+        <s:documentation>Код раздела</s:documentation>
+      </s:annotation>
+      <s:simpleType>
+        <s:restriction base="s:string">
+          <s:maxLength value="1"/>
+          <s:minLength value="1"/>
+        </s:restriction>
+      </s:simpleType>
+    </s:attribute>
+    <s:attribute name="NAME1">
+      <s:annotation>
+        <s:documentation>Наименование</s:documentation>
+      </s:annotation>
+      <s:simpleType>
+        <s:restriction base="s:string">
+          <s:maxLength value="250"/>
+        </s:restriction>
+      </s:simpleType>
+    </s:attribute>
+    <s:attribute name="CENTRUM">
+      <s:annotation>
+        <s:documentation>Дополнительные данные</s:documentation>
+      </s:annotation>
+      <s:simpleType>
+        <s:restriction base="s:string">
+          <s:maxLength value="80"/>
+        </s:restriction>
+      </s:simpleType>
+    </s:attribute>
+    <s:attribute name="NOMDESCR">
+      <s:annotation>
+        <s:documentation>Описание (пояснение)</s:documentation>
+      </s:annotation>
+      <s:simpleType>
+        <s:restriction base="s:string">
+          <s:maxLength value="250"/>
+        </s:restriction>
+      </s:simpleType>
+    </s:attribute>
+    <s:attribute name="NOMAKT">
+      <s:annotation>
+        <s:documentation>Номер последнего изменения</s:documentation>
+      </s:annotation>
+      <s:simpleType>
+        <s:restriction base="s:string">
+          <s:maxLength value="3"/>
+          <s:minLength value="3"/>
+        </s:restriction>
+      </s:simpleType>
+    </s:attribute>
+    <s:attribute name="STATUS" type="s:long">
+      <s:annotation>
+        <s:documentation>Тип последнего изменения: 1 - аннулировать; 2 - изменить реквизит, кроме кода; 3 - включить; 0 - начальная загрузка</s:documentation>
+      </s:annotation>
+    </s:attribute>
+    <s:attribute name="DATA_UPD" type="s:dateTime">
+      <s:annotation>
+        <s:documentation>Дата последнего изменения</s:documentation>
+      </s:annotation>
+    </s:attribute>
+  </s:complexType>
+  <s:element name="O003">
+    <s:complexType>
+      <s:sequence>
+        <s:element maxOccurs="unbounded" minOccurs="0" name="rec" nillable="true" type="s01:O003Type"/>
+      </s:sequence>
+    </s:complexType>
+  </s:element>
+  <s:complexType name="ArrayOfO003TypeO003Type">
+    <s:sequence>
+      <s:element maxOccurs="unbounded" minOccurs="0" name="O003Type" nillable="true" type="s01:O003Type"/>
+    </s:sequence>
+  </s:complexType>
+  <s:complexType name="O003Type">
+    <s:annotation>
+      <s:documentation>Общероссийский классификатор видов экономической деятельности (OKVED)</s:documentation>
+    </s:annotation>
+    <s:attribute name="RAZDEL">
+      <s:annotation>
+        <s:documentation>Код раздела</s:documentation>
+      </s:annotation>
+      <s:simpleType>
+        <s:restriction base="s:string">
+          <s:maxLength value="1"/>
+          <s:minLength value="1"/>
+        </s:restriction>
+      </s:simpleType>
+    </s:attribute>
+    <s:attribute name="PRAZDEL">
+      <s:annotation>
+        <s:documentation>Код подраздела</s:documentation>
+      </s:annotation>
+      <s:simpleType>
+        <s:restriction base="s:string">
+          <s:maxLength value="2"/>
+          <s:minLength value="2"/>
+        </s:restriction>
+      </s:simpleType>
+    </s:attribute>
+    <s:attribute name="KOD" use="required">
+      <s:annotation>
+        <s:documentation>Код позиции</s:documentation>
+      </s:annotation>
+      <s:simpleType>
+        <s:restriction base="s:string">
+          <s:maxLength value="8"/>
+        </s:restriction>
+      </s:simpleType>
+    </s:attribute>
+    <s:attribute name="NAME11">
+      <s:annotation>
+        <s:documentation>наименование</s:documentation>
+      </s:annotation>
+      <s:simpleType>
+        <s:restriction base="s:string">
+          <s:maxLength value="250"/>
+        </s:restriction>
+      </s:simpleType>
+    </s:attribute>
+    <s:attribute name="NAME12">
+      <s:annotation>
+        <s:documentation>продолжение наименования</s:documentation>
+      </s:annotation>
+      <s:simpleType>
+        <s:restriction base="s:string">
+          <s:maxLength value="250"/>
+        </s:restriction>
+      </s:simpleType>
+    </s:attribute>
+    <s:attribute name="NOMDESCR">
+      <s:annotation>
+        <s:documentation>Описание (пояснение)</s:documentation>
+      </s:annotation>
+      <s:simpleType>
+        <s:restriction base="s:string">
+          <s:maxLength value="5000"/>
+        </s:restriction>
+      </s:simpleType>
+    </s:attribute>
+    <s:attribute name="NOMAKT">
+      <s:annotation>
+        <s:documentation>Номер последнего изменения</s:documentation>
+      </s:annotation>
+      <s:simpleType>
+        <s:restriction base="s:string">
+          <s:maxLength value="3"/>
+          <s:minLength value="3"/>
+        </s:restriction>
+      </s:simpleType>
+    </s:attribute>
+    <s:attribute name="STATUS" type="s:long">
+      <s:annotation>
+        <s:documentation>Тип последнего изменения: 1 - аннулировать; 2 - изменить реквизит, кроме кода; 3 - включить; 0 - начальная загрузка</s:documentation>
+      </s:annotation>
+    </s:attribute>
+    <s:attribute name="DATA_UPD" type="s:dateTime">
+      <s:annotation>
+        <s:documentation>Дата последнего изменения</s:documentation>
+      </s:annotation>
+    </s:attribute>
+  </s:complexType>
+  <s:element name="O004">
+    <s:complexType>
+      <s:sequence>
+        <s:element maxOccurs="unbounded" minOccurs="0" name="rec" nillable="true" type="s01:O004Type"/>
+      </s:sequence>
+    </s:complexType>
+  </s:element>
+  <s:complexType name="ArrayOfO004TypeO004Type">
+    <s:sequence>
+      <s:element maxOccurs="unbounded" minOccurs="0" name="O004Type" nillable="true" type="s01:O004Type"/>
+    </s:sequence>
+  </s:complexType>
+  <s:complexType name="O004Type">
+    <s:annotation>
+      <s:documentation>Общероссийский классификатор форм собственности (OKFS)</s:documentation>
+    </s:annotation>
+    <s:attribute name="KOD" use="required">
+      <s:annotation>
+        <s:documentation>Код позиции</s:documentation>
+      </s:annotation>
+      <s:simpleType>
+        <s:restriction base="s:string">
+          <s:maxLength value="2"/>
+          <s:minLength value="2"/>
+        </s:restriction>
+      </s:simpleType>
+    </s:attribute>
+    <s:attribute name="NAME1">
+      <s:annotation>
+        <s:documentation>Наименование</s:documentation>
+      </s:annotation>
+      <s:simpleType>
+        <s:restriction base="s:string">
+          <s:maxLength value="250"/>
+        </s:restriction>
+      </s:simpleType>
+    </s:attribute>
+    <s:attribute name="ALG">
+      <s:annotation>
+        <s:documentation>Алгоритм сбора</s:documentation>
+      </s:annotation>
+      <s:simpleType>
+        <s:restriction base="s:string">
+          <s:maxLength value="52"/>
+        </s:restriction>
+      </s:simpleType>
+    </s:attribute>
+    <s:attribute name="NOMAKT">
+      <s:annotation>
+        <s:documentation>Номер последнего изменения</s:documentation>
+      </s:annotation>
+      <s:simpleType>
+        <s:restriction base="s:string">
+          <s:maxLength value="3"/>
+          <s:minLength value="3"/>
+        </s:restriction>
+      </s:simpleType>
+    </s:attribute>
+    <s:attribute name="STATUS" type="s:long">
+      <s:annotation>
+        <s:documentation>Тип последнего изменения: 1 - аннулировать; 2 - изменить реквизит, кроме кода; 3 - включить; 0 - начальная загрузка</s:documentation>
+      </s:annotation>
+    </s:attribute>
+    <s:attribute name="DATA_UPD" type="s:dateTime">
+      <s:annotation>
+        <s:documentation>Дата последнего изменения</s:documentation>
+      </s:annotation>
+    </s:attribute>
+  </s:complexType>
+  <s:element name="O005">
+    <s:complexType>
+      <s:sequence>
+        <s:element maxOccurs="unbounded" minOccurs="0" name="rec" nillable="true" type="s01:O005Type"/>
+      </s:sequence>
+    </s:complexType>
+  </s:element>
+  <s:complexType name="ArrayOfO005TypeO005Type">
+    <s:sequence>
+      <s:element maxOccurs="unbounded" minOccurs="0" name="O005Type" nillable="true" type="s01:O005Type"/>
+    </s:sequence>
+  </s:complexType>
+  <s:complexType name="O005Type">
+    <s:annotation>
+      <s:documentation>Общероссийский классификатор организационно-правовых форм (OKOPF)</s:documentation>
+    </s:annotation>
+    <s:attribute name="KOD" use="required">
+      <s:annotation>
+        <s:documentation>Код позиции</s:documentation>
+      </s:annotation>
+      <s:simpleType>
+        <s:restriction base="s:string">
+          <s:maxLength value="2"/>
+          <s:minLength value="2"/>
+        </s:restriction>
+      </s:simpleType>
+    </s:attribute>
+    <s:attribute name="NAME1">
+      <s:annotation>
+        <s:documentation>Наименование</s:documentation>
+      </s:annotation>
+      <s:simpleType>
+        <s:restriction base="s:string">
+          <s:maxLength value="250"/>
+        </s:restriction>
+      </s:simpleType>
+    </s:attribute>
+    <s:attribute name="ALG">
+      <s:annotation>
+        <s:documentation>Алгоритм сбора</s:documentation>
+      </s:annotation>
+      <s:simpleType>
+        <s:restriction base="s:string">
+          <s:maxLength value="52"/>
+        </s:restriction>
+      </s:simpleType>
+    </s:attribute>
+    <s:attribute name="NOMAKT">
+      <s:annotation>
+        <s:documentation>Номер последнего изменения</s:documentation>
+      </s:annotation>
+      <s:simpleType>
+        <s:restriction base="s:string">
+          <s:maxLength value="3"/>
+          <s:minLength value="3"/>
+        </s:restriction>
+      </s:simpleType>
+    </s:attribute>
+    <s:attribute name="STATUS" type="s:long">
+      <s:annotation>
+        <s:documentation>Тип последнего изменения: 1 - аннулировать; 2 - изменить реквизит, кроме кода; 3 - включить; 0 - начальная загрузка</s:documentation>
+      </s:annotation>
+    </s:attribute>
+    <s:attribute name="DATA_UPD" type="s:dateTime">
+      <s:annotation>
+        <s:documentation>Дата последнего изменения</s:documentation>
+      </s:annotation>
+    </s:attribute>
+  </s:complexType>
+  <s:element name="R001">
+    <s:complexType>
+      <s:sequence>
+        <s:element maxOccurs="unbounded" minOccurs="0" name="rec" nillable="true" type="s01:R001Type"/>
+      </s:sequence>
+    </s:complexType>
+  </s:element>
+  <s:complexType name="ArrayOfR001TypeR001Type">
+    <s:sequence>
+      <s:element maxOccurs="unbounded" minOccurs="0" name="R001Type" nillable="true" type="s01:R001Type"/>
+    </s:sequence>
+  </s:complexType>
+  <s:complexType name="R001Type">
+    <s:annotation>
+      <s:documentation>Классификатор причин внесения изменений в РС ЕРЗ (PRICIN)</s:documentation>
+    </s:annotation>
+    <s:attribute name="Kod" use="required">
+      <s:annotation>
+        <s:documentation>Код причины внесения изменений в РС ЕРЗ</s:documentation>
+      </s:annotation>
+      <s:simpleType>
+        <s:restriction base="s:string">
+          <s:maxLength value="4"/>
+          <s:minLength value="4"/>
+        </s:restriction>
+      </s:simpleType>
+    </s:attribute>
+    <s:attribute name="Opis">
+      <s:annotation>
+        <s:documentation>Наименование причины внесения изменений в РС ЕРЗ</s:documentation>
+      </s:annotation>
+      <s:simpleType>
+        <s:restriction base="s:string">
+          <s:maxLength value="250"/>
+        </s:restriction>
+      </s:simpleType>
+    </s:attribute>
+    <s:attribute name="DATEBEG" type="s:dateTime">
+      <s:annotation>
+        <s:documentation>Дата начала действия записи</s:documentation>
+      </s:annotation>
+    </s:attribute>
+    <s:attribute name="DATEEND" type="s:dateTime">
+      <s:annotation>
+        <s:documentation>Дата окончания действия записи</s:documentation>
+      </s:annotation>
+    </s:attribute>
+  </s:complexType>
+  <s:element name="R002">
+    <s:complexType>
+      <s:sequence>
+        <s:element maxOccurs="unbounded" minOccurs="0" name="rec" nillable="true" type="s01:R002Type"/>
+      </s:sequence>
+    </s:complexType>
+  </s:element>
+  <s:complexType name="ArrayOfR002TypeR002Type">
+    <s:sequence>
+      <s:element maxOccurs="unbounded" minOccurs="0" name="R002Type" nillable="true" type="s01:R002Type"/>
+    </s:sequence>
+  </s:complexType>
+  <s:complexType name="R002Type">
+    <s:annotation>
+      <s:documentation>Классификатор форм изготовления полиса (FORM)</s:documentation>
+    </s:annotation>
+    <s:attribute name="Kod" type="s:long" use="required">
+      <s:annotation>
+        <s:documentation>Код формы изготовления полиса</s:documentation>
+      </s:annotation>
+    </s:attribute>
+    <s:attribute name="Opis">
+      <s:annotation>
+        <s:documentation>Наименование формы изготовления полиса</s:documentation>
+      </s:annotation>
+      <s:simpleType>
+        <s:restriction base="s:string">
+          <s:maxLength value="250"/>
+        </s:restriction>
+      </s:simpleType>
+    </s:attribute>
+    <s:attribute name="DATEBEG" type="s:dateTime">
+      <s:annotation>
+        <s:documentation>Дата начала действия записи</s:documentation>
+      </s:annotation>
+    </s:attribute>
+    <s:attribute name="DATEEND" type="s:dateTime">
+      <s:annotation>
+        <s:documentation>Дата окончания действия записи</s:documentation>
+      </s:annotation>
+    </s:attribute>
+  </s:complexType>
+  <s:element name="R003">
+    <s:complexType>
+      <s:sequence>
+        <s:element maxOccurs="unbounded" minOccurs="0" name="rec" nillable="true" type="s01:R003Type"/>
+      </s:sequence>
+    </s:complexType>
+  </s:element>
+  <s:complexType name="ArrayOfR003TypeR003Type">
+    <s:sequence>
+      <s:element maxOccurs="unbounded" minOccurs="0" name="R003Type" nillable="true" type="s01:R003Type"/>
+    </s:sequence>
+  </s:complexType>
+  <s:complexType name="R003Type">
+    <s:annotation>
+      <s:documentation>Классификатор способов подачи заявления (SPOS)</s:documentation>
+    </s:annotation>
+    <s:attribute name="Kod" type="s:long" use="required">
+      <s:annotation>
+        <s:documentation>Код способа подачи заявления</s:documentation>
+      </s:annotation>
+    </s:attribute>
+    <s:attribute name="Opis">
+      <s:annotation>
+        <s:documentation>Наименование способа подачи заявления</s:documentation>
+      </s:annotation>
+      <s:simpleType>
+        <s:restriction base="s:string">
+          <s:maxLength value="250"/>
+        </s:restriction>
+      </s:simpleType>
+    </s:attribute>
+    <s:attribute name="DATEBEG" type="s:dateTime">
+      <s:annotation>
+        <s:documentation>Дата начала действия записи</s:documentation>
+      </s:annotation>
+    </s:attribute>
+    <s:attribute name="DATEEND" type="s:dateTime">
+      <s:annotation>
+        <s:documentation>Дата окончания действия записи</s:documentation>
+      </s:annotation>
+    </s:attribute>
+  </s:complexType>
+  <s:element name="R004">
+    <s:complexType>
+      <s:sequence>
+        <s:element maxOccurs="unbounded" minOccurs="0" name="rec" nillable="true" type="s01:R004Type"/>
+      </s:sequence>
+    </s:complexType>
+  </s:element>
+  <s:complexType name="ArrayOfR004TypeR004Type">
+    <s:sequence>
+      <s:element maxOccurs="unbounded" minOccurs="0" name="R004Type" nillable="true" type="s01:R004Type"/>
+    </s:sequence>
+  </s:complexType>
+  <s:complexType name="R004Type">
+    <s:annotation>
+      <s:documentation>Классификатор результатов обработки заявки на внесение изменений в РС ЕРЗ (REZ)</s:documentation>
+    </s:annotation>
+    <s:attribute name="Kod" type="s:long" use="required">
+      <s:annotation>
+        <s:documentation>Код результата обработки заявки</s:documentation>
+      </s:annotation>
+    </s:attribute>
+    <s:attribute name="Opis">
+      <s:annotation>
+        <s:documentation>Наименование результата обработки заявки</s:documentation>
+      </s:annotation>
+      <s:simpleType>
+        <s:restriction base="s:string">
+          <s:maxLength value="250"/>
+        </s:restriction>
+      </s:simpleType>
+    </s:attribute>
+    <s:attribute name="DATEBEG" type="s:dateTime">
+      <s:annotation>
+        <s:documentation>Дата начала действия записи</s:documentation>
+      </s:annotation>
+    </s:attribute>
+    <s:attribute name="DATEEND" type="s:dateTime">
+      <s:annotation>
+        <s:documentation>Дата окончания действия записи</s:documentation>
+      </s:annotation>
+    </s:attribute>
+  </s:complexType>
+  <s:element name="V001">
+    <s:complexType>
+      <s:sequence>
+        <s:element maxOccurs="unbounded" minOccurs="0" name="rec" nillable="true" type="s01:V001Type"/>
+      </s:sequence>
+    </s:complexType>
+  </s:element>
+  <s:complexType name="ArrayOfV001TypeV001Type">
+    <s:sequence>
+      <s:element maxOccurs="unbounded" minOccurs="0" name="V001Type" nillable="true" type="s01:V001Type"/>
+    </s:sequence>
+  </s:complexType>
+  <s:complexType name="V001Type">
+    <s:annotation>
+      <s:documentation>Номенклатура работ и услуг в здравоохранении (NomeclR)</s:documentation>
+    </s:annotation>
+    <s:attribute name="IDRB" type="s:long" use="required">
+      <s:annotation>
+        <s:documentation>Код работы (услуги)</s:documentation>
+      </s:annotation>
+    </s:attribute>
+    <s:attribute name="RBNAME">
+      <s:annotation>
+        <s:documentation>Наименование работы (услуги)</s:documentation>
+      </s:annotation>
+      <s:simpleType>
+        <s:restriction base="s:string">
+          <s:maxLength value="254"/>
+        </s:restriction>
+      </s:simpleType>
+    </s:attribute>
+    <s:attribute name="DATEBEG" type="s:dateTime">
+      <s:annotation>
+        <s:documentation>Дата начала действия записи</s:documentation>
+      </s:annotation>
+    </s:attribute>
+    <s:attribute name="DATEEND" type="s:dateTime">
+      <s:annotation>
+        <s:documentation>Дата окончания действия записи</s:documentation>
+      </s:annotation>
+    </s:attribute>
+  </s:complexType>
+  <s:element name="V002">
+    <s:complexType>
+      <s:sequence>
+        <s:element maxOccurs="unbounded" minOccurs="0" name="rec" nillable="true" type="s01:V002Type"/>
+      </s:sequence>
+    </s:complexType>
+  </s:element>
+  <s:complexType name="ArrayOfV002TypeV002Type">
+    <s:sequence>
+      <s:element maxOccurs="unbounded" minOccurs="0" name="V002Type" nillable="true" type="s01:V002Type"/>
+    </s:sequence>
+  </s:complexType>
+  <s:complexType name="V002Type">
+    <s:annotation>
+      <s:documentation>Классификатор профилей оказанной медицинской помощи (ProfOt)</s:documentation>
+    </s:annotation>
+    <s:attribute name="IDPR" type="s:long" use="required">
+      <s:annotation>
+        <s:documentation>Код профильного отделения</s:documentation>
+      </s:annotation>
+    </s:attribute>
+    <s:attribute name="PRNAME">
+      <s:annotation>
+        <s:documentation>Наименование профильного отделения</s:documentation>
+      </s:annotation>
+      <s:simpleType>
+        <s:restriction base="s:string">
+          <s:maxLength value="254"/>
+        </s:restriction>
+      </s:simpleType>
+    </s:attribute>
+    <s:attribute name="DATEBEG" type="s:dateTime">
+      <s:annotation>
+        <s:documentation>Дата начала действия записи</s:documentation>
+      </s:annotation>
+    </s:attribute>
+    <s:attribute name="DATEEND" type="s:dateTime">
+      <s:annotation>
+        <s:documentation>Дата окончания действия записи</s:documentation>
+      </s:annotation>
+    </s:attribute>
+  </s:complexType>
+  <s:element name="V003">
+    <s:complexType>
+      <s:sequence>
+        <s:element maxOccurs="unbounded" minOccurs="0" name="rec" nillable="true" type="s01:V003Type"/>
+      </s:sequence>
+    </s:complexType>
+  </s:element>
+  <s:complexType name="ArrayOfV003TypeV003Type">
+    <s:sequence>
+      <s:element maxOccurs="unbounded" minOccurs="0" name="V003Type" nillable="true" type="s01:V003Type"/>
+    </s:sequence>
+  </s:complexType>
+  <s:complexType name="V003Type">
+    <s:annotation>
+      <s:documentation>Классификатор работ (услуг) при лицензировании медицинской помощи (LicUsl)</s:documentation>
+    </s:annotation>
+    <s:attribute name="IDRL" type="s:long" use="required">
+      <s:annotation>
+        <s:documentation>Код работ (услуг) при лицензировании медицинской помощи</s:documentation>
+      </s:annotation>
+    </s:attribute>
+    <s:attribute name="LICNAME">
+      <s:annotation>
+        <s:documentation>Наименование работ (услуг) при лицензировании медицинской помощи</s:documentation>
+      </s:annotation>
+      <s:simpleType>
+        <s:restriction base="s:string">
+          <s:maxLength value="254"/>
+        </s:restriction>
+      </s:simpleType>
+    </s:attribute>
+    <s:attribute name="IERARH" type="s:long">
+      <s:annotation>
+        <s:documentation>Код элемента верхнего уровня</s:documentation>
+      </s:annotation>
+    </s:attribute>
+    <s:attribute name="PRIM" type="s:long">
+      <s:annotation>
+        <s:documentation>Признак допустимости использования</s:documentation>
+      </s:annotation>
+    </s:attribute>
+    <s:attribute name="DATEBEG" type="s:dateTime">
+      <s:annotation>
+        <s:documentation>Дата начала действия записи</s:documentation>
+      </s:annotation>
+    </s:attribute>
+    <s:attribute name="DATEEND" type="s:dateTime">
+      <s:annotation>
+        <s:documentation>Дата окончания действия записи</s:documentation>
+      </s:annotation>
+    </s:attribute>
+  </s:complexType>
+  <s:element name="V004">
+    <s:complexType>
+      <s:sequence>
+        <s:element maxOccurs="unbounded" minOccurs="0" name="rec" nillable="true" type="s01:V004Type"/>
+      </s:sequence>
+    </s:complexType>
+  </s:element>
+  <s:complexType name="ArrayOfV004TypeV004Type">
+    <s:sequence>
+      <s:element maxOccurs="unbounded" minOccurs="0" name="V004Type" nillable="true" type="s01:V004Type"/>
+    </s:sequence>
+  </s:complexType>
+  <s:complexType name="V004Type">
+    <s:annotation>
+      <s:documentation>Классификатор медицинских специальностей (Medspeс)</s:documentation>
+    </s:annotation>
+    <s:attribute name="IDMSP" type="s:long" use="required">
+      <s:annotation>
+        <s:documentation>Код медицинской специальности</s:documentation>
+      </s:annotation>
+    </s:attribute>
+    <s:attribute name="MSPNAME">
+      <s:annotation>
+        <s:documentation>Наименование медицинской специальности</s:documentation>
+      </s:annotation>
+      <s:simpleType>
+        <s:restriction base="s:string">
+          <s:maxLength value="100"/>
+        </s:restriction>
+      </s:simpleType>
+    </s:attribute>
+    <s:attribute name="DATEBEG" type="s:dateTime">
+      <s:annotation>
+        <s:documentation>Дата начала действия записи</s:documentation>
+      </s:annotation>
+    </s:attribute>
+    <s:attribute name="DATEEND" type="s:dateTime">
+      <s:annotation>
+        <s:documentation>Дата окончания действия записи</s:documentation>
+      </s:annotation>
+    </s:attribute>
+  </s:complexType>
+  <s:element name="V005">
+    <s:complexType>
+      <s:sequence>
+        <s:element maxOccurs="unbounded" minOccurs="0" name="rec" nillable="true" type="s01:V005Type"/>
+      </s:sequence>
+    </s:complexType>
+  </s:element>
+  <s:complexType name="ArrayOfV005TypeV005Type">
+    <s:sequence>
+      <s:element maxOccurs="unbounded" minOccurs="0" name="V005Type" nillable="true" type="s01:V005Type"/>
+    </s:sequence>
+  </s:complexType>
+  <s:complexType name="V005Type">
+    <s:annotation>
+      <s:documentation>Классификатор пола застрахованного (Pol)</s:documentation>
+    </s:annotation>
+    <s:attribute name="IDPOL" type="s:long" use="required">
+      <s:annotation>
+        <s:documentation>Код пола застрахованного</s:documentation>
+      </s:annotation>
+    </s:attribute>
+    <s:attribute name="POLNAME">
+      <s:annotation>
+        <s:documentation>Наименование пола застрахованного</s:documentation>
+      </s:annotation>
+      <s:simpleType>
+        <s:restriction base="s:string">
+          <s:maxLength value="7"/>
+        </s:restriction>
+      </s:simpleType>
+    </s:attribute>
+  </s:complexType>
+  <s:element name="V006">
+    <s:complexType>
+      <s:sequence>
+        <s:element maxOccurs="unbounded" minOccurs="0" name="rec" nillable="true" type="s01:V006Type"/>
+      </s:sequence>
+    </s:complexType>
+  </s:element>
+  <s:complexType name="ArrayOfV006TypeV006Type">
+    <s:sequence>
+      <s:element maxOccurs="unbounded" minOccurs="0" name="V006Type" nillable="true" type="s01:V006Type"/>
+    </s:sequence>
+  </s:complexType>
+  <s:complexType name="V006Type">
+    <s:annotation>
+      <s:documentation>Классификатор условий оказания медицинской помощи (UslMp)</s:documentation>
+    </s:annotation>
+    <s:attribute name="IDUMP" type="s:long" use="required">
+      <s:annotation>
+        <s:documentation>Код условия оказания медицинской помощи</s:documentation>
+      </s:annotation>
+    </s:attribute>
+    <s:attribute name="UMPNAME">
+      <s:annotation>
+        <s:documentation>Наименование условия оказания медицинской помощи</s:documentation>
+      </s:annotation>
+      <s:simpleType>
+        <s:restriction base="s:string">
+          <s:maxLength value="254"/>
+        </s:restriction>
+      </s:simpleType>
+    </s:attribute>
+    <s:attribute name="DATEBEG" type="s:dateTime">
+      <s:annotation>
+        <s:documentation>Дата начала действия записи</s:documentation>
+      </s:annotation>
+    </s:attribute>
+    <s:attribute name="DATEEND" type="s:dateTime">
+      <s:annotation>
+        <s:documentation>Дата окончания действия записи</s:documentation>
+      </s:annotation>
+    </s:attribute>
+  </s:complexType>
+  <s:element name="V007">
+    <s:complexType>
+      <s:sequence>
+        <s:element maxOccurs="unbounded" minOccurs="0" name="rec" nillable="true" type="s01:V007Type"/>
+      </s:sequence>
+    </s:complexType>
+  </s:element>
+  <s:complexType name="ArrayOfV007TypeV007Type">
+    <s:sequence>
+      <s:element maxOccurs="unbounded" minOccurs="0" name="V007Type" nillable="true" type="s01:V007Type"/>
+    </s:sequence>
+  </s:complexType>
+  <s:complexType name="V007Type">
+    <s:annotation>
+      <s:documentation>Номенклатура МО (NomMO)</s:documentation>
+    </s:annotation>
+    <s:attribute name="IDNMO" type="s:long" use="required">
+      <s:annotation>
+        <s:documentation>Код типа медицинской организации</s:documentation>
+      </s:annotation>
+    </s:attribute>
+    <s:attribute name="NMONAME">
+      <s:annotation>
+        <s:documentation>Наименование типа медицинской организации</s:documentation>
+      </s:annotation>
+      <s:simpleType>
+        <s:restriction base="s:string">
+          <s:maxLength value="254"/>
+        </s:restriction>
+      </s:simpleType>
+    </s:attribute>
+    <s:attribute name="DATEBEG" type="s:dateTime">
+      <s:annotation>
+        <s:documentation>Дата начала действия записи</s:documentation>
+      </s:annotation>
+    </s:attribute>
+    <s:attribute name="DATEEND" type="s:dateTime">
+      <s:annotation>
+        <s:documentation>Дата окончания действия записи</s:documentation>
+      </s:annotation>
+    </s:attribute>
+  </s:complexType>
+  <s:element name="V008">
+    <s:complexType>
+      <s:sequence>
+        <s:element maxOccurs="unbounded" minOccurs="0" name="rec" nillable="true" type="s01:V008Type"/>
+      </s:sequence>
+    </s:complexType>
+  </s:element>
+  <s:complexType name="ArrayOfV008TypeV008Type">
+    <s:sequence>
+      <s:element maxOccurs="unbounded" minOccurs="0" name="V008Type" nillable="true" type="s01:V008Type"/>
+    </s:sequence>
+  </s:complexType>
+  <s:complexType name="V008Type">
+    <s:annotation>
+      <s:documentation>Классификатор видов медицинской помощи (VidMp)</s:documentation>
+    </s:annotation>
+    <s:attribute name="IDVMP" type="s:long" use="required">
+      <s:annotation>
+        <s:documentation>Код вида медицинской помощи</s:documentation>
+      </s:annotation>
+    </s:attribute>
+    <s:attribute name="VMPNAME">
+      <s:annotation>
+        <s:documentation>Наименование вида медицинской помощи</s:documentation>
+      </s:annotation>
+      <s:simpleType>
+        <s:restriction base="s:string">
+          <s:maxLength value="254"/>
+        </s:restriction>
+      </s:simpleType>
+    </s:attribute>
+    <s:attribute name="DATEBEG" type="s:dateTime">
+      <s:annotation>
+        <s:documentation>Дата начала действия записи</s:documentation>
+      </s:annotation>
+    </s:attribute>
+    <s:attribute name="DATEEND" type="s:dateTime">
+      <s:annotation>
+        <s:documentation>Дата окончания действия записи</s:documentation>
+      </s:annotation>
+    </s:attribute>
+  </s:complexType>
+  <s:element name="V009">
+    <s:complexType>
+      <s:sequence>
+        <s:element maxOccurs="unbounded" minOccurs="0" name="rec" nillable="true" type="s01:V009Type"/>
+      </s:sequence>
+    </s:complexType>
+  </s:element>
+  <s:complexType name="ArrayOfV009TypeV009Type">
+    <s:sequence>
+      <s:element maxOccurs="unbounded" minOccurs="0" name="V009Type" nillable="true" type="s01:V009Type"/>
+    </s:sequence>
+  </s:complexType>
+  <s:complexType name="V009Type">
+    <s:annotation>
+      <s:documentation>Классификатор результатов обращения за медицинской помощью (Rezult)</s:documentation>
+    </s:annotation>
+    <s:attribute name="IDRMP" type="s:long" use="required">
+      <s:annotation>
+        <s:documentation>Код результата обращения</s:documentation>
+      </s:annotation>
+    </s:attribute>
+    <s:attribute name="RMPNAME">
+      <s:annotation>
+        <s:documentation>Наименование результата обращения</s:documentation>
+      </s:annotation>
+      <s:simpleType>
+        <s:restriction base="s:string">
+          <s:maxLength value="254"/>
+        </s:restriction>
+      </s:simpleType>
+    </s:attribute>
+    <s:attribute name="ID_USLOV" type="s:long">
+      <s:annotation>
+        <s:documentation>Соответствует условиям оказания МП (V006)</s:documentation>
+      </s:annotation>
+    </s:attribute>
+    <s:attribute name="DATEBEG" type="s:dateTime">
+      <s:annotation>
+        <s:documentation>Дата начала действия записи</s:documentation>
+      </s:annotation>
+    </s:attribute>
+    <s:attribute name="DATEEND" type="s:dateTime">
+      <s:annotation>
+        <s:documentation>Дата окончания действия записи</s:documentation>
+      </s:annotation>
+    </s:attribute>
+  </s:complexType>
+  <s:element name="V010">
+    <s:complexType>
+      <s:sequence>
+        <s:element maxOccurs="unbounded" minOccurs="0" name="rec" nillable="true" type="s01:V010Type"/>
+      </s:sequence>
+    </s:complexType>
+  </s:element>
+  <s:complexType name="ArrayOfV010TypeV010Type">
+    <s:sequence>
+      <s:element maxOccurs="unbounded" minOccurs="0" name="V010Type" nillable="true" type="s01:V010Type"/>
+    </s:sequence>
+  </s:complexType>
+  <s:complexType name="V010Type">
+    <s:annotation>
+      <s:documentation>Классификатор способов оплаты медицинской помощи (Sposob)</s:documentation>
+    </s:annotation>
+    <s:attribute name="IDSP" type="s:long" use="required">
+      <s:annotation>
+        <s:documentation>Код способа оплаты медицинской помощи</s:documentation>
+      </s:annotation>
+    </s:attribute>
+    <s:attribute name="SPNAME">
+      <s:annotation>
+        <s:documentation>Наименование способа оплаты медицинской помощи</s:documentation>
+      </s:annotation>
+      <s:simpleType>
+        <s:restriction base="s:string">
+          <s:maxLength value="254"/>
+        </s:restriction>
+      </s:simpleType>
+    </s:attribute>
+    <s:attribute name="DATEBEG" type="s:dateTime">
+      <s:annotation>
+        <s:documentation>Дата начала действия записи</s:documentation>
+      </s:annotation>
+    </s:attribute>
+    <s:attribute name="DATEEND" type="s:dateTime">
+      <s:annotation>
+        <s:documentation>Дата окончания действия записи</s:documentation>
+      </s:annotation>
+    </s:attribute>
+  </s:complexType>
+  <s:element name="V012">
+    <s:complexType>
+      <s:sequence>
+        <s:element maxOccurs="unbounded" minOccurs="0" name="rec" nillable="true" type="s01:V012Type"/>
+      </s:sequence>
+    </s:complexType>
+  </s:element>
+  <s:complexType name="ArrayOfV012TypeV012Type">
+    <s:sequence>
+      <s:element maxOccurs="unbounded" minOccurs="0" name="V012Type" nillable="true" type="s01:V012Type"/>
+    </s:sequence>
+  </s:complexType>
+  <s:complexType name="V012Type">
+    <s:annotation>
+      <s:documentation>Классификатор исходов заболевания (Ishod)</s:documentation>
+    </s:annotation>
+    <s:attribute name="IDIZ" type="s:long" use="required">
+      <s:annotation>
+        <s:documentation>Код исхода заболевания</s:documentation>
+      </s:annotation>
+    </s:attribute>
+    <s:attribute name="IZNAME">
+      <s:annotation>
+        <s:documentation>Наименование исхода заболевания</s:documentation>
+      </s:annotation>
+      <s:simpleType>
+        <s:restriction base="s:string">
+          <s:maxLength value="254"/>
+        </s:restriction>
+      </s:simpleType>
+    </s:attribute>
+    <s:attribute name="ID_USLOV" type="s:long">
+      <s:annotation>
+        <s:documentation>Соответствует условиям оказания МП (V006)</s:documentation>
+      </s:annotation>
+    </s:attribute>
+    <s:attribute name="DATEBEG" type="s:dateTime">
+      <s:annotation>
+        <s:documentation>Дата начала действия записи</s:documentation>
+      </s:annotation>
+    </s:attribute>
+    <s:attribute name="DATEEND" type="s:dateTime">
+      <s:annotation>
+        <s:documentation>Дата окончания действия записи</s:documentation>
+      </s:annotation>
+    </s:attribute>
+  </s:complexType>
+</s:schema>
+</wsdl:types>
+<wsdl:message name="F001SoapIn">
+<wsdl:part name="parameters" element="nsi:F001"/>
+</wsdl:message>
+<wsdl:message name="F001SoapOut">
+<wsdl:part name="parameters" element="nsi:F001"/>
+</wsdl:message>
+<wsdl:message name="F002SoapIn">
+<wsdl:part name="parameters" element="nsi:F002"/>
+</wsdl:message>
+<wsdl:message name="F002SoapOut">
+<wsdl:part name="parameters" element="nsi:F002"/>
+</wsdl:message>
+<wsdl:message name="F003SoapIn">
+<wsdl:part name="parameters" element="nsi:F003"/>
+</wsdl:message>
+<wsdl:message name="F003SoapOut">
+<wsdl:part name="parameters" element="nsi:F003"/>
+</wsdl:message>
+<wsdl:message name="F005SoapIn">
+<wsdl:part name="parameters" element="nsi:F005"/>
+</wsdl:message>
+<wsdl:message name="F005SoapOut">
+<wsdl:part name="parameters" element="nsi:F005"/>
+</wsdl:message>
+<wsdl:message name="F006SoapIn">
+<wsdl:part name="parameters" element="nsi:F006"/>
+</wsdl:message>
+<wsdl:message name="F006SoapOut">
+<wsdl:part name="parameters" element="nsi:F006"/>
+</wsdl:message>
+<wsdl:message name="F007SoapIn">
+<wsdl:part name="parameters" element="nsi:F007"/>
+</wsdl:message>
+<wsdl:message name="F007SoapOut">
+<wsdl:part name="parameters" element="nsi:F007"/>
+</wsdl:message>
+<wsdl:message name="F008SoapIn">
+<wsdl:part name="parameters" element="nsi:F008"/>
+</wsdl:message>
+<wsdl:message name="F008SoapOut">
+<wsdl:part name="parameters" element="nsi:F008"/>
+</wsdl:message>
+<wsdl:message name="F009SoapIn">
+<wsdl:part name="parameters" element="nsi:F009"/>
+</wsdl:message>
+<wsdl:message name="F009SoapOut">
+<wsdl:part name="parameters" element="nsi:F009"/>
+</wsdl:message>
+<wsdl:message name="F010SoapIn">
+<wsdl:part name="parameters" element="nsi:F010"/>
+</wsdl:message>
+<wsdl:message name="F010SoapOut">
+<wsdl:part name="parameters" element="nsi:F010"/>
+</wsdl:message>
+<wsdl:message name="F011SoapIn">
+<wsdl:part name="parameters" element="nsi:F011"/>
+</wsdl:message>
+<wsdl:message name="F011SoapOut">
+<wsdl:part name="parameters" element="nsi:F011"/>
+</wsdl:message>
+<wsdl:message name="F012SoapIn">
+<wsdl:part name="parameters" element="nsi:F012"/>
+</wsdl:message>
+<wsdl:message name="F012SoapOut">
+<wsdl:part name="parameters" element="nsi:F012"/>
+</wsdl:message>
+<wsdl:message name="F013SoapIn">
+<wsdl:part name="parameters" element="nsi:F013"/>
+</wsdl:message>
+<wsdl:message name="F013SoapOut">
+<wsdl:part name="parameters" element="nsi:F013"/>
+</wsdl:message>
+<wsdl:message name="F014SoapIn">
+<wsdl:part name="parameters" element="nsi:F014"/>
+</wsdl:message>
+<wsdl:message name="F014SoapOut">
+<wsdl:part name="parameters" element="nsi:F014"/>
+</wsdl:message>
+<wsdl:message name="F015SoapIn">
+<wsdl:part name="parameters" element="nsi:F015"/>
+</wsdl:message>
+<wsdl:message name="F015SoapOut">
+<wsdl:part name="parameters" element="nsi:F015"/>
+</wsdl:message>
+<wsdl:message name="M001SoapIn">
+<wsdl:part name="parameters" element="nsi:M001"/>
+</wsdl:message>
+<wsdl:message name="M001SoapOut">
+<wsdl:part name="parameters" element="nsi:M001"/>
+</wsdl:message>
+<wsdl:message name="O001SoapIn">
+<wsdl:part name="parameters" element="nsi:O001"/>
+</wsdl:message>
+<wsdl:message name="O001SoapOut">
+<wsdl:part name="parameters" element="nsi:O001"/>
+</wsdl:message>
+<wsdl:message name="O002SoapIn">
+<wsdl:part name="parameters" element="nsi:O002"/>
+</wsdl:message>
+<wsdl:message name="O002SoapOut">
+<wsdl:part name="parameters" element="nsi:O002"/>
+</wsdl:message>
+<wsdl:message name="O003SoapIn">
+<wsdl:part name="parameters" element="nsi:O003"/>
+</wsdl:message>
+<wsdl:message name="O003SoapOut">
+<wsdl:part name="parameters" element="nsi:O003"/>
+</wsdl:message>
+<wsdl:message name="O004SoapIn">
+<wsdl:part name="parameters" element="nsi:O004"/>
+</wsdl:message>
+<wsdl:message name="O004SoapOut">
+<wsdl:part name="parameters" element="nsi:O004"/>
+</wsdl:message>
+<wsdl:message name="O005SoapIn">
+<wsdl:part name="parameters" element="nsi:O005"/>
+</wsdl:message>
+<wsdl:message name="O005SoapOut">
+<wsdl:part name="parameters" element="nsi:O005"/>
+</wsdl:message>
+<wsdl:message name="R001SoapIn">
+<wsdl:part name="parameters" element="nsi:R001"/>
+</wsdl:message>
+<wsdl:message name="R001SoapOut">
+<wsdl:part name="parameters" element="nsi:R001"/>
+</wsdl:message>
+<wsdl:message name="R002SoapIn">
+<wsdl:part name="parameters" element="nsi:R002"/>
+</wsdl:message>
+<wsdl:message name="R002SoapOut">
+<wsdl:part name="parameters" element="nsi:R002"/>
+</wsdl:message>
+<wsdl:message name="R003SoapIn">
+<wsdl:part name="parameters" element="nsi:R003"/>
+</wsdl:message>
+<wsdl:message name="R003SoapOut">
+<wsdl:part name="parameters" element="nsi:R003"/>
+</wsdl:message>
+<wsdl:message name="R004SoapIn">
+<wsdl:part name="parameters" element="nsi:R004"/>
+</wsdl:message>
+<wsdl:message name="R004SoapOut">
+<wsdl:part name="parameters" element="nsi:R004"/>
+</wsdl:message>
+<wsdl:message name="V001SoapIn">
+<wsdl:part name="parameters" element="nsi:V001"/>
+</wsdl:message>
+<wsdl:message name="V001SoapOut">
+<wsdl:part name="parameters" element="nsi:V001"/>
+</wsdl:message>
+<wsdl:message name="V002SoapIn">
+<wsdl:part name="parameters" element="nsi:V002"/>
+</wsdl:message>
+<wsdl:message name="V002SoapOut">
+<wsdl:part name="parameters" element="nsi:V002"/>
+</wsdl:message>
+<wsdl:message name="V003SoapIn">
+<wsdl:part name="parameters" element="nsi:V003"/>
+</wsdl:message>
+<wsdl:message name="V003SoapOut">
+<wsdl:part name="parameters" element="nsi:V003"/>
+</wsdl:message>
+<wsdl:message name="V004SoapIn">
+<wsdl:part name="parameters" element="nsi:V004"/>
+</wsdl:message>
+<wsdl:message name="V004SoapOut">
+<wsdl:part name="parameters" element="nsi:V004"/>
+</wsdl:message>
+<wsdl:message name="V005SoapIn">
+<wsdl:part name="parameters" element="nsi:V005"/>
+</wsdl:message>
+<wsdl:message name="V005SoapOut">
+<wsdl:part name="parameters" element="nsi:V005"/>
+</wsdl:message>
+<wsdl:message name="V006SoapIn">
+<wsdl:part name="parameters" element="nsi:V006"/>
+</wsdl:message>
+<wsdl:message name="V006SoapOut">
+<wsdl:part name="parameters" element="nsi:V006"/>
+</wsdl:message>
+<wsdl:message name="V007SoapIn">
+<wsdl:part name="parameters" element="nsi:V007"/>
+</wsdl:message>
+<wsdl:message name="V007SoapOut">
+<wsdl:part name="parameters" element="nsi:V007"/>
+</wsdl:message>
+<wsdl:message name="V008SoapIn">
+<wsdl:part name="parameters" element="nsi:V008"/>
+</wsdl:message>
+<wsdl:message name="V008SoapOut">
+<wsdl:part name="parameters" element="nsi:V008"/>
+</wsdl:message>
+<wsdl:message name="V009SoapIn">
+<wsdl:part name="parameters" element="nsi:V009"/>
+</wsdl:message>
+<wsdl:message name="V009SoapOut">
+<wsdl:part name="parameters" element="nsi:V009"/>
+</wsdl:message>
+<wsdl:message name="V010SoapIn">
+<wsdl:part name="parameters" element="nsi:V010"/>
+</wsdl:message>
+<wsdl:message name="V010SoapOut">
+<wsdl:part name="parameters" element="nsi:V010"/>
+</wsdl:message>
+<wsdl:message name="V012SoapIn">
+<wsdl:part name="parameters" element="nsi:V012"/>
+</wsdl:message>
+<wsdl:message name="V012SoapOut">
+<wsdl:part name="parameters" element="nsi:V012"/>
+</wsdl:message>
+<wsdl:portType name="NsiServiceSoap">
+<wsdl:operation name="F001">
+<wsdl:input message="tns:F001SoapIn"/>
+<wsdl:output message="tns:F001SoapOut"/>
+</wsdl:operation>
+<wsdl:operation name="F002">
+<wsdl:input message="tns:F002SoapIn"/>
+<wsdl:output message="tns:F002SoapOut"/>
+</wsdl:operation>
+<wsdl:operation name="F003">
+<wsdl:input message="tns:F003SoapIn"/>
+<wsdl:output message="tns:F003SoapOut"/>
+</wsdl:operation>
+<wsdl:operation name="F005">
+<wsdl:input message="tns:F005SoapIn"/>
+<wsdl:output message="tns:F005SoapOut"/>
+</wsdl:operation>
+<wsdl:operation name="F006">
+<wsdl:input message="tns:F006SoapIn"/>
+<wsdl:output message="tns:F006SoapOut"/>
+</wsdl:operation>
+<wsdl:operation name="F007">
+<wsdl:input message="tns:F007SoapIn"/>
+<wsdl:output message="tns:F007SoapOut"/>
+</wsdl:operation>
+<wsdl:operation name="F008">
+<wsdl:input message="tns:F008SoapIn"/>
+<wsdl:output message="tns:F008SoapOut"/>
+</wsdl:operation>
+<wsdl:operation name="F009">
+<wsdl:input message="tns:F009SoapIn"/>
+<wsdl:output message="tns:F009SoapOut"/>
+</wsdl:operation>
+<wsdl:operation name="F010">
+<wsdl:input message="tns:F010SoapIn"/>
+<wsdl:output message="tns:F010SoapOut"/>
+</wsdl:operation>
+<wsdl:operation name="F011">
+<wsdl:input message="tns:F011SoapIn"/>
+<wsdl:output message="tns:F011SoapOut"/>
+</wsdl:operation>
+<wsdl:operation name="F012">
+<wsdl:input message="tns:F012SoapIn"/>
+<wsdl:output message="tns:F012SoapOut"/>
+</wsdl:operation>
+<wsdl:operation name="F013">
+<wsdl:input message="tns:F013SoapIn"/>
+<wsdl:output message="tns:F013SoapOut"/>
+</wsdl:operation>
+<wsdl:operation name="F014">
+<wsdl:input message="tns:F014SoapIn"/>
+<wsdl:output message="tns:F014SoapOut"/>
+</wsdl:operation>
+<wsdl:operation name="F015">
+<wsdl:input message="tns:F015SoapIn"/>
+<wsdl:output message="tns:F015SoapOut"/>
+</wsdl:operation>
+<wsdl:operation name="M001">
+<wsdl:input message="tns:M001SoapIn"/>
+<wsdl:output message="tns:M001SoapOut"/>
+</wsdl:operation>
+<wsdl:operation name="O001">
+<wsdl:input message="tns:O001SoapIn"/>
+<wsdl:output message="tns:O001SoapOut"/>
+</wsdl:operation>
+<wsdl:operation name="O002">
+<wsdl:input message="tns:O002SoapIn"/>
+<wsdl:output message="tns:O002SoapOut"/>
+</wsdl:operation>
+<wsdl:operation name="O003">
+<wsdl:input message="tns:O003SoapIn"/>
+<wsdl:output message="tns:O003SoapOut"/>
+</wsdl:operation>
+<wsdl:operation name="O004">
+<wsdl:input message="tns:O004SoapIn"/>
+<wsdl:output message="tns:O004SoapOut"/>
+</wsdl:operation>
+<wsdl:operation name="O005">
+<wsdl:input message="tns:O005SoapIn"/>
+<wsdl:output message="tns:O005SoapOut"/>
+</wsdl:operation>
+<wsdl:operation name="R001">
+<wsdl:input message="tns:R001SoapIn"/>
+<wsdl:output message="tns:R001SoapOut"/>
+</wsdl:operation>
+<wsdl:operation name="R002">
+<wsdl:input message="tns:R002SoapIn"/>
+<wsdl:output message="tns:R002SoapOut"/>
+</wsdl:operation>
+<wsdl:operation name="R003">
+<wsdl:input message="tns:R003SoapIn"/>
+<wsdl:output message="tns:R003SoapOut"/>
+</wsdl:operation>
+<wsdl:operation name="R004">
+<wsdl:input message="tns:R004SoapIn"/>
+<wsdl:output message="tns:R004SoapOut"/>
+</wsdl:operation>
+<wsdl:operation name="V001">
+<wsdl:input message="tns:V001SoapIn"/>
+<wsdl:output message="tns:V001SoapOut"/>
+</wsdl:operation>
+<wsdl:operation name="V002">
+<wsdl:input message="tns:V002SoapIn"/>
+<wsdl:output message="tns:V002SoapOut"/>
+</wsdl:operation>
+<wsdl:operation name="V003">
+<wsdl:input message="tns:V003SoapIn"/>
+<wsdl:output message="tns:V003SoapOut"/>
+</wsdl:operation>
+<wsdl:operation name="V004">
+<wsdl:input message="tns:V004SoapIn"/>
+<wsdl:output message="tns:V004SoapOut"/>
+</wsdl:operation>
+<wsdl:operation name="V005">
+<wsdl:input message="tns:V005SoapIn"/>
+<wsdl:output message="tns:V005SoapOut"/>
+</wsdl:operation>
+<wsdl:operation name="V006">
+<wsdl:input message="tns:V006SoapIn"/>
+<wsdl:output message="tns:V006SoapOut"/>
+</wsdl:operation>
+<wsdl:operation name="V007">
+<wsdl:input message="tns:V007SoapIn"/>
+<wsdl:output message="tns:V007SoapOut"/>
+</wsdl:operation>
+<wsdl:operation name="V008">
+<wsdl:input message="tns:V008SoapIn"/>
+<wsdl:output message="tns:V008SoapOut"/>
+</wsdl:operation>
+<wsdl:operation name="V009">
+<wsdl:input message="tns:V009SoapIn"/>
+<wsdl:output message="tns:V009SoapOut"/>
+</wsdl:operation>
+<wsdl:operation name="V010">
+<wsdl:input message="tns:V010SoapIn"/>
+<wsdl:output message="tns:V010SoapOut"/>
+</wsdl:operation>
+<wsdl:operation name="V012">
+<wsdl:input message="tns:V012SoapIn"/>
+<wsdl:output message="tns:V012SoapOut"/>
+</wsdl:operation>
+</wsdl:portType>
+<wsdl:binding name="NsiServiceSoap" type="tns:NsiServiceSoap">
+<soap:binding style="document" transport="http://schemas.xmlsoap.org/soap/http"/>
+<wsdl:operation name="F001">
+<soap:operation soapAction="" style="document"/>
+<wsdl:input>
+<soap:body use="literal"/>
+</wsdl:input>
+<wsdl:output>
+<soap:body use="literal"/>
+</wsdl:output>
+</wsdl:operation>
+<wsdl:operation name="F002">
+<soap:operation soapAction="" style="document"/>
+<wsdl:input>
+<soap:body use="literal"/>
+</wsdl:input>
+<wsdl:output>
+<soap:body use="literal"/>
+</wsdl:output>
+</wsdl:operation>
+<wsdl:operation name="F003">
+<soap:operation soapAction="" style="document"/>
+<wsdl:input>
+<soap:body use="literal"/>
+</wsdl:input>
+<wsdl:output>
+<soap:body use="literal"/>
+</wsdl:output>
+</wsdl:operation>
+<wsdl:operation name="F005">
+<soap:operation soapAction="" style="document"/>
+<wsdl:input>
+<soap:body use="literal"/>
+</wsdl:input>
+<wsdl:output>
+<soap:body use="literal"/>
+</wsdl:output>
+</wsdl:operation>
+<wsdl:operation name="F006">
+<soap:operation soapAction="" style="document"/>
+<wsdl:input>
+<soap:body use="literal"/>
+</wsdl:input>
+<wsdl:output>
+<soap:body use="literal"/>
+</wsdl:output>
+</wsdl:operation>
+<wsdl:operation name="F007">
+<soap:operation soapAction="" style="document"/>
+<wsdl:input>
+<soap:body use="literal"/>
+</wsdl:input>
+<wsdl:output>
+<soap:body use="literal"/>
+</wsdl:output>
+</wsdl:operation>
+<wsdl:operation name="F008">
+<soap:operation soapAction="" style="document"/>
+<wsdl:input>
+<soap:body use="literal"/>
+</wsdl:input>
+<wsdl:output>
+<soap:body use="literal"/>
+</wsdl:output>
+</wsdl:operation>
+<wsdl:operation name="F009">
+<soap:operation soapAction="" style="document"/>
+<wsdl:input>
+<soap:body use="literal"/>
+</wsdl:input>
+<wsdl:output>
+<soap:body use="literal"/>
+</wsdl:output>
+</wsdl:operation>
+<wsdl:operation name="F010">
+<soap:operation soapAction="" style="document"/>
+<wsdl:input>
+<soap:body use="literal"/>
+</wsdl:input>
+<wsdl:output>
+<soap:body use="literal"/>
+</wsdl:output>
+</wsdl:operation>
+<wsdl:operation name="F011">
+<soap:operation soapAction="" style="document"/>
+<wsdl:input>
+<soap:body use="literal"/>
+</wsdl:input>
+<wsdl:output>
+<soap:body use="literal"/>
+</wsdl:output>
+</wsdl:operation>
+<wsdl:operation name="F012">
+<soap:operation soapAction="" style="document"/>
+<wsdl:input>
+<soap:body use="literal"/>
+</wsdl:input>
+<wsdl:output>
+<soap:body use="literal"/>
+</wsdl:output>
+</wsdl:operation>
+<wsdl:operation name="F013">
+<soap:operation soapAction="" style="document"/>
+<wsdl:input>
+<soap:body use="literal"/>
+</wsdl:input>
+<wsdl:output>
+<soap:body use="literal"/>
+</wsdl:output>
+</wsdl:operation>
+<wsdl:operation name="F014">
+<soap:operation soapAction="" style="document"/>
+<wsdl:input>
+<soap:body use="literal"/>
+</wsdl:input>
+<wsdl:output>
+<soap:body use="literal"/>
+</wsdl:output>
+</wsdl:operation>
+<wsdl:operation name="F015">
+<soap:operation soapAction="" style="document"/>
+<wsdl:input>
+<soap:body use="literal"/>
+</wsdl:input>
+<wsdl:output>
+<soap:body use="literal"/>
+</wsdl:output>
+</wsdl:operation>
+<wsdl:operation name="M001">
+<soap:operation soapAction="" style="document"/>
+<wsdl:input>
+<soap:body use="literal"/>
+</wsdl:input>
+<wsdl:output>
+<soap:body use="literal"/>
+</wsdl:output>
+</wsdl:operation>
+<wsdl:operation name="O001">
+<soap:operation soapAction="" style="document"/>
+<wsdl:input>
+<soap:body use="literal"/>
+</wsdl:input>
+<wsdl:output>
+<soap:body use="literal"/>
+</wsdl:output>
+</wsdl:operation>
+<wsdl:operation name="O002">
+<soap:operation soapAction="" style="document"/>
+<wsdl:input>
+<soap:body use="literal"/>
+</wsdl:input>
+<wsdl:output>
+<soap:body use="literal"/>
+</wsdl:output>
+</wsdl:operation>
+<wsdl:operation name="O003">
+<soap:operation soapAction="" style="document"/>
+<wsdl:input>
+<soap:body use="literal"/>
+</wsdl:input>
+<wsdl:output>
+<soap:body use="literal"/>
+</wsdl:output>
+</wsdl:operation>
+<wsdl:operation name="O004">
+<soap:operation soapAction="" style="document"/>
+<wsdl:input>
+<soap:body use="literal"/>
+</wsdl:input>
+<wsdl:output>
+<soap:body use="literal"/>
+</wsdl:output>
+</wsdl:operation>
+<wsdl:operation name="O005">
+<soap:operation soapAction="" style="document"/>
+<wsdl:input>
+<soap:body use="literal"/>
+</wsdl:input>
+<wsdl:output>
+<soap:body use="literal"/>
+</wsdl:output>
+</wsdl:operation>
+<wsdl:operation name="R001">
+<soap:operation soapAction="" style="document"/>
+<wsdl:input>
+<soap:body use="literal"/>
+</wsdl:input>
+<wsdl:output>
+<soap:body use="literal"/>
+</wsdl:output>
+</wsdl:operation>
+<wsdl:operation name="R002">
+<soap:operation soapAction="" style="document"/>
+<wsdl:input>
+<soap:body use="literal"/>
+</wsdl:input>
+<wsdl:output>
+<soap:body use="literal"/>
+</wsdl:output>
+</wsdl:operation>
+<wsdl:operation name="R003">
+<soap:operation soapAction="" style="document"/>
+<wsdl:input>
+<soap:body use="literal"/>
+</wsdl:input>
+<wsdl:output>
+<soap:body use="literal"/>
+</wsdl:output>
+</wsdl:operation>
+<wsdl:operation name="R004">
+<soap:operation soapAction="" style="document"/>
+<wsdl:input>
+<soap:body use="literal"/>
+</wsdl:input>
+<wsdl:output>
+<soap:body use="literal"/>
+</wsdl:output>
+</wsdl:operation>
+<wsdl:operation name="V001">
+<soap:operation soapAction="" style="document"/>
+<wsdl:input>
+<soap:body use="literal"/>
+</wsdl:input>
+<wsdl:output>
+<soap:body use="literal"/>
+</wsdl:output>
+</wsdl:operation>
+<wsdl:operation name="V002">
+<soap:operation soapAction="" style="document"/>
+<wsdl:input>
+<soap:body use="literal"/>
+</wsdl:input>
+<wsdl:output>
+<soap:body use="literal"/>
+</wsdl:output>
+</wsdl:operation>
+<wsdl:operation name="V003">
+<soap:operation soapAction="" style="document"/>
+<wsdl:input>
+<soap:body use="literal"/>
+</wsdl:input>
+<wsdl:output>
+<soap:body use="literal"/>
+</wsdl:output>
+</wsdl:operation>
+<wsdl:operation name="V004">
+<soap:operation soapAction="" style="document"/>
+<wsdl:input>
+<soap:body use="literal"/>
+</wsdl:input>
+<wsdl:output>
+<soap:body use="literal"/>
+</wsdl:output>
+</wsdl:operation>
+<wsdl:operation name="V005">
+<soap:operation soapAction="" style="document"/>
+<wsdl:input>
+<soap:body use="literal"/>
+</wsdl:input>
+<wsdl:output>
+<soap:body use="literal"/>
+</wsdl:output>
+</wsdl:operation>
+<wsdl:operation name="V006">
+<soap:operation soapAction="" style="document"/>
+<wsdl:input>
+<soap:body use="literal"/>
+</wsdl:input>
+<wsdl:output>
+<soap:body use="literal"/>
+</wsdl:output>
+</wsdl:operation>
+<wsdl:operation name="V007">
+<soap:operation soapAction="" style="document"/>
+<wsdl:input>
+<soap:body use="literal"/>
+</wsdl:input>
+<wsdl:output>
+<soap:body use="literal"/>
+</wsdl:output>
+</wsdl:operation>
+<wsdl:operation name="V008">
+<soap:operation soapAction="" style="document"/>
+<wsdl:input>
+<soap:body use="literal"/>
+</wsdl:input>
+<wsdl:output>
+<soap:body use="literal"/>
+</wsdl:output>
+</wsdl:operation>
+<wsdl:operation name="V009">
+<soap:operation soapAction="" style="document"/>
+<wsdl:input>
+<soap:body use="literal"/>
+</wsdl:input>
+<wsdl:output>
+<soap:body use="literal"/>
+</wsdl:output>
+</wsdl:operation>
+<wsdl:operation name="V010">
+<soap:operation soapAction="" style="document"/>
+<wsdl:input>
+<soap:body use="literal"/>
+</wsdl:input>
+<wsdl:output>
+<soap:body use="literal"/>
+</wsdl:output>
+</wsdl:operation>
+<wsdl:operation name="V012">
+<soap:operation soapAction="" style="document"/>
+<wsdl:input>
+<soap:body use="literal"/>
+</wsdl:input>
+<wsdl:output>
+<soap:body use="literal"/>
+</wsdl:output>
+</wsdl:operation>
+</wsdl:binding>
+<wsdl:service name="NsiService">
+<wsdl:port name="NsiServiceSoap" binding="tns:NsiServiceSoap">
+<soap:address location="http://188.127.249.29:57772/csp/healthshare/hsregistry/korus.NsiService.cls"/>
+</wsdl:port>
+</wsdl:service>
+</wsdl:definitions>
