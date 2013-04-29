@@ -4,11 +4,11 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import ru.korus.tmis.core.database.dbutil.Database;
 import ru.korus.tmis.core.entity.model.Action;
 import ru.korus.tmis.core.entity.model.ActionPropertyType;
 import ru.korus.tmis.core.entity.model.ActionType;
 import ru.korus.tmis.core.exception.CoreException;
-import ru.korus.tmis.ws.transfusion.Database;
 import ru.korus.tmis.ws.transfusion.PropType;
 
 /**
@@ -62,7 +62,7 @@ public class TrfuActionProp {
             return database.getSingleProp(propType.getValueClass(), actionId, propIds.get(propType));
         } catch (final CoreException ex) {
             final String value = String.format("Не задано: '%s'", propType.getName());
-            database.addSinglePropBasic(value, propType.getValueClass(), actionId, propIds.get(PropType.ORDER_REQUEST_ID), true);
+            database.addSinglePropBasic(value, PropType.ORDER_REQUEST_ID.getValueClass(), actionId, propIds.get(PropType.ORDER_REQUEST_ID), true);
             throw ex;
         }
     }
@@ -80,7 +80,9 @@ public class TrfuActionProp {
     }
 
     public <T> void setProp(final T value, final Integer actionId, final PropType propType, final boolean update) throws CoreException {
-        database.addSinglePropBasic(value, propType.getValueClass(), actionId, propIds.get(propType), update);
+        if (value != null) {
+            database.addSinglePropBasic(value, propType.getValueClass(), actionId, propIds.get(propType), update);
+        }
     }
 
     public void setRequestState(final Integer actionId, final String state) throws CoreException {

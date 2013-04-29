@@ -15,6 +15,7 @@ import javax.xml.datatype.DatatypeConfigurationException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import ru.korus.tmis.core.database.dbutil.Database;
 import ru.korus.tmis.core.entity.model.Action;
 import ru.korus.tmis.core.entity.model.ActionPropertyType;
 import ru.korus.tmis.core.entity.model.ActionType;
@@ -26,8 +27,8 @@ import ru.korus.tmis.core.entity.model.RbTrfuProcedureTypes;
 import ru.korus.tmis.core.entity.model.RbUnit;
 import ru.korus.tmis.core.entity.model.Staff;
 import ru.korus.tmis.core.exception.CoreException;
+import ru.korus.tmis.util.ConfigManager;
 import ru.korus.tmis.util.EntityMgr;
-import ru.korus.tmis.ws.transfusion.Database;
 import ru.korus.tmis.ws.transfusion.PropType;
 import ru.korus.tmis.ws.transfusion.efive.DonorInfo;
 import ru.korus.tmis.ws.transfusion.efive.LaboratoryMeasureType;
@@ -35,6 +36,7 @@ import ru.korus.tmis.ws.transfusion.efive.OrderResult;
 import ru.korus.tmis.ws.transfusion.efive.PatientCredentials;
 import ru.korus.tmis.ws.transfusion.efive.ProcedureType;
 import ru.korus.tmis.ws.transfusion.efive.TransfusionMedicalService;
+import ru.korus.tmis.ws.transfusion.order.SendOrderBloodComponents;
 import ru.korus.tmis.ws.transfusion.order.TrfuActionProp;
 
 /**
@@ -134,16 +136,7 @@ public class SendProcedureRequest {
      * 
      */
     private void initCoreUser() {
-
-        final String coreLogin = System.getProperty("tmis.core.user");
-        if (coreLogin != null) {
-            final List<Staff> coreUsers =
-                    database.getEntityMgr().createQuery("SELECT u FROM Staff u WHERE u.login = :login", Staff.class)
-                            .setParameter("login", coreLogin)
-                            .getResultList();
-            coreUser = coreUsers.isEmpty() ? null : coreUsers.get(0);
-        }
-
+            coreUser = database.getCoreUser();
     }
 
     /**
@@ -165,31 +158,35 @@ public class SendProcedureRequest {
                 }
                 OrderResult orderResult = new OrderResult();
                 actionProp.get(curFlatCode).setRequestState(action.getId(), "");
-                final PatientCredentials patientCredentials = Database.getPatientCredentials(action);
-                final DonorInfo donorInfo = getDonorInfo(database.getEntityMgr(), action, actionProp.get(curFlatCode));
-                final ru.korus.tmis.ws.transfusion.efive.ProcedureInfo procedureInfo = getProcedureInfo(database.getEntityMgr(), action);
-                try {
-                    orderResult = trfuService.orderMedicalProcedure(donorInfo, patientCredentials, procedureInfo);
-                } catch (final Exception ex) {
-                    logger.error(
-                            "The procedure {} was not registrate in TRFU. TRFU web method 'orderMedicalProcedure' has thrown runtime exception."
-                                    + "  Error description: '{}'",
-                            action.getId(), ex.getMessage());
-                    ex.printStackTrace();
-                }
-                if (orderResult.isResult()) { // если подситема ТРФУ зарегистрировала требование КК
+                final PatientCredentials patientCredentials = SendOrderBloodComponents.getPatientCredentials(action, actionProp.get(curFlatCode));
+                if (patientCredentials != null) {
+                    final DonorInfo donorInfo = getDonorInfo(database.getEntityMgr(), action, actionProp.get(curFlatCode));
+                    final ru.korus.tmis.ws.transfusion.efive.ProcedureInfo procedureInfo = getProcedureInfo(database.getEntityMgr(), action);
                     try {
-                        actionProp.get(curFlatCode).orderResult2DB(action, orderResult.getRequestId());
-                        logger.info("Processing transfusion procedure action {}... The order has been successfully registered in TRFU. TRFU id: {}",
-                                action.getId(), orderResult.getRequestId());
-                    } catch (final CoreException ex) {
-                        logger.error("The procedure {} was not registrate in TRFU. Cannot save the result into DB. Error description: '{}'", action.getId(),
-                                ex.getMessage());
+                        orderResult = trfuService.orderMedicalProcedure(donorInfo, patientCredentials, procedureInfo);
+                    } catch (final Exception ex) {
+                        logger.error(
+                                "The procedure {} was not registrate in TRFU. TRFU web method 'orderMedicalProcedure' has thrown runtime exception."
+                                        + "  Error description: '{}'",
+                                action.getId(), ex.getMessage());
+                        ex.printStackTrace();
                     }
-                } else {
-                    logger.error("The procedure {} was not registrate in TRFU. TRFU service return the error satatus. Error description: '{}'", action.getId(),
-                            orderResult.getDescription());
-                    actionProp.get(curFlatCode).setRequestState(action.getId(), "Ответ системы ТРФУ: " + orderResult.getDescription());
+                    if (orderResult.isResult()) { // если подситема ТРФУ зарегистрировала требование КК
+                        try {
+                            actionProp.get(curFlatCode).orderResult2DB(action, orderResult.getRequestId());
+                            logger.info("Processing transfusion procedure action {}... The order has been successfully registered in TRFU. TRFU id: {}",
+                                    action.getId(), orderResult.getRequestId());
+                        } catch (final CoreException ex) {
+                            logger.error("The procedure {} was not registrate in TRFU. Cannot save the result into DB. Error description: '{}'",
+                                    action.getId(),
+                                    ex.getMessage());
+                        }
+                    } else {
+                        logger.error("The procedure {} was not registrate in TRFU. TRFU service return the error satatus. Error description: '{}'",
+                                action.getId(),
+                                orderResult.getDescription());
+                        actionProp.get(curFlatCode).setRequestState(action.getId(), "Ответ системы ТРФУ: " + orderResult.getDescription());
+                    }
                 }
             } catch (final CoreException ex) {
                 logger.error("Error in SendProcedureRequest. Error description: '{}'", ex.getMessage());

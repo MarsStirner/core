@@ -1,16 +1,20 @@
 package ru.korus.tmis.ws.transfusion;
 
 import java.util.Date;
+import java.util.LinkedList;
 import java.util.List;
 
 import javax.ejb.EJB;
 import javax.jws.WebMethod;
 import javax.jws.WebParam;
 import javax.jws.WebService;
+import javax.persistence.EntityManager;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import ru.korus.tmis.core.database.dbutil.Database;
+import ru.korus.tmis.core.entity.model.OrgStructure;
 import ru.korus.tmis.ws.transfusion.efive.PatientCredentials;
 import ru.korus.tmis.ws.transfusion.order.OrderIssueInfo;
 import ru.korus.tmis.ws.transfusion.order.RegOrderIssueResult;
@@ -68,7 +72,7 @@ public class ServiceTransfusionImpl implements ServiceTransfusion {
     @Override
     public List<DivisionInfo> getDivisions() {
         logger.info("Entered in transfusion service 'getDivisions()'");
-        return database.getDivisions();
+        return getDivisionsFromDB();
     }
 
     /**
@@ -88,6 +92,25 @@ public class ServiceTransfusionImpl implements ServiceTransfusion {
         logger.info("Entered in transfusion service 'setProcedureResult' with parameters: {}; {}; {}; measures.size = {}; finalVolume.size = {}",
                 patientCredentials, procedureInfo, eritrocyteMass, measures != null ? measures.size() : null, finalVolume != null ? finalVolume.size() : null);
         return regProcedureResult.save(patientCredentials, procedureInfo, eritrocyteMass, measures, finalVolume);
+    }
+
+    /**
+     * Получит список подразделений {OrgStructure}
+     *
+     * @return список подразделений
+     */
+    public List<DivisionInfo> getDivisionsFromDB() {
+        final List<DivisionInfo> res = new LinkedList<DivisionInfo>();
+        EntityManager em = database.getEntityMgr();
+        final List<OrgStructure> structs = em.createQuery("SELECT s FROM OrgStructure s WHERE s.deleted = 0", OrgStructure.class).getResultList();
+        for (final OrgStructure struct : structs) {
+            final DivisionInfo info = new DivisionInfo();
+            info.setId(struct.getId());
+            info.setName(struct.getName());
+            res.add(info);
+        }
+
+        return res;
     }
 
 }

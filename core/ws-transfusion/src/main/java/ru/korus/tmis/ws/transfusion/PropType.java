@@ -6,6 +6,7 @@ import ru.korus.tmis.core.entity.model.APValueInteger;
 import ru.korus.tmis.core.entity.model.APValueRbBloodComponentType;
 import ru.korus.tmis.core.entity.model.APValueString;
 import ru.korus.tmis.core.entity.model.APValueTime;
+import ru.korus.tmis.ws.transfusion.order.SendOrderBloodComponents;
 
 /**
  * Author:      Sergey A. Zagrebelny <br>
@@ -65,9 +66,10 @@ public enum PropType {
 
     COMPLICATIONS("trfuProcedureComplications", APValueString.class, "Осложнения"),
 
-    INITIAL_VOLUME("trfuProcedureInitialVolume", APValueDouble.class, "объем афереза - Инициально (параметры процедуры)", Database.UNIT_MILILITER),
+    INITIAL_VOLUME("trfuProcedureInitialVolume", APValueDouble.class, "объем афереза - Инициально (параметры процедуры)",
+            SendOrderBloodComponents.UNIT_MILILITER),
 
-    CHANGE_VOLUME("trfuProcedureChangeVolume", APValueDouble.class, "объем афереза – Изменения (параметры процедуры)", Database.UNIT_MILILITER),
+    CHANGE_VOLUME("trfuProcedureChangeVolume", APValueDouble.class, "объем афереза – Изменения (параметры процедуры)", SendOrderBloodComponents.UNIT_MILILITER),
 
     INITIAL_TBV("trfuProcedureInitialTbv", APValueString.class, "обработанный TBV - Инициально (параметры процедуры)"),
 
@@ -86,10 +88,10 @@ public enum PropType {
     CHANGE_TIME("trfuProcedureChangeTime", APValueString.class, "время афереза – Изменения (параметры процедуры)"),
 
     INITIAL_PRODUCT_VOLUME("trfuProcedureInitialProductVolume", APValueDouble.class, "объем продукта афереза - Инициально (параметры процедуры)",
-            Database.UNIT_MILILITER),
+            SendOrderBloodComponents.UNIT_MILILITER),
 
     CHANGE_PRODUCT_VOLUME("trfuProcedureChangeProductVolume", APValueDouble.class, "объем продукта афереза – Изменения (параметры процедуры)",
-            Database.UNIT_MILILITER),
+            SendOrderBloodComponents.UNIT_MILILITER),
 
     ACD_LOAD("trfuProcedureAcdLoad", APValueString.class, "введено ACD (баланс жидкостей)"),
 
@@ -121,15 +123,15 @@ public enum PropType {
             APValueInteger.class,
             "идентификатор резус-фактора эритроцитарной массы (0 – Положительный, 1 - Отрицательный)"),
 
-    VOLUME_PROC_RES("trfuProcedureVolume", APValueDouble.class, "объем эритроцитарной массы", Database.UNIT_MILILITER),
+    VOLUME_PROC_RES("trfuProcedureVolume", APValueDouble.class, "объем эритроцитарной массы", SendOrderBloodComponents.UNIT_MILILITER),
 
     PRODUCTION_DATE("trfuProcedureProductionDate", APValueDate.class, "дата изготовления"),
 
     EXPIRATION_DATE("trfuProcedureExpirationDate", APValueDate.class, "срок годности"),
 
-    HT("trfuProcedureHt", APValueDouble.class, "гематокрит эритроцитарной массы", Database.UNIT_MILILITER),
+    HT("trfuProcedureHt", APValueDouble.class, "гематокрит эритроцитарной массы", SendOrderBloodComponents.UNIT_MILILITER),
 
-    SALINE_VOLUME("trfuProcedureSalineVolume", APValueDouble.class, "объем добавленного физ. раствора", Database.UNIT_MILILITER),
+    SALINE_VOLUME("trfuProcedureSalineVolume", APValueDouble.class, "объем добавленного физ. раствора", SendOrderBloodComponents.UNIT_MILILITER),
 
     FINAL_HT("trfuProcedureFinalHt", APValueDouble.class, "финальный гематокрит");
 

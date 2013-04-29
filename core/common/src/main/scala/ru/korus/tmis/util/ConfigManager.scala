@@ -8,7 +8,7 @@ import javax.xml.namespace.QName
 import reflect.Configuration
 import grizzled.slf4j.Logging
 
-object ConfigManager extends Configuration {
+object  ConfigManager extends Configuration {
 
   var DateFormatter = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss")
 
@@ -134,6 +134,16 @@ object ConfigManager extends Configuration {
     def HttpAuthToken = DatatypeConverter.printBase64Binary(
       (User + ":" + Password).getBytes)
   }
+
+  /**
+   * Параметры сервиса управления пользователями
+   */
+  class UsersMgr extends Configuration {
+    var CoreUserLogin: String = null
+  }
+
+  var usersMgr = new UsersMgr
+
 
   val Laboratory = new Configuration {
     // LIS service URL
