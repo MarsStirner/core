@@ -23,6 +23,7 @@
         <module>ws-finance</module>
         <module>ws-transfusion</module>
         <module>communication</module>
+        <module>ws-users-mgr</module>
     </modules>
 
     <properties>
