@@ -6,6 +6,7 @@ import java.util.{LinkedList, Date}
 import ru.korus.tmis.core.entity.model.{Staff, Action}
 import scala.collection.JavaConversions._
 import ru.korus.tmis.util.ConfigManager
+import ru.korus.tmis.core.filter.AbstractListDataFilter
 
 //Контейнер для списка осмотров
 @XmlType(name = "assessmentsListData")
@@ -29,7 +30,7 @@ class AssessmentsListData {
 class AssessmentsListRequestData {
 
   @BeanProperty
-  var filter: AnyRef = _
+  var filter: AbstractListDataFilter = new DefaultListDataFilter()
   @BeanProperty
   var sortingField: String = _
   @BeanProperty
@@ -41,8 +42,6 @@ class AssessmentsListRequestData {
   @BeanProperty
   var recordsCount: Long = _
   @BeanProperty
-  var eventId: Int = _
-  @BeanProperty
   var coreVersion: String = _
 
   var sortingFieldInternal: String = _
@@ -51,84 +50,60 @@ class AssessmentsListRequestData {
            sortingMethod: String,
            limit: Int,
            page: Int,
-           eventId: Int,
-           filter: AnyRef) = {
+           filter: AbstractListDataFilter) = {
     this()
-    this.filter = if (filter != null) {
-      filter
-    } else {
-      new AssessmentsListRequestDataFilter()
-    }
+    this.filter = if(filter!=null) {filter} else {new AssessmentsListRequestDataFilter()}
     this.sortingField = sortingField match {
-      case null => {
-        "id"
-      }
-      case _ => {
-        sortingField
-      }
+      case null => {"id"}
+      case _ => {sortingField}
     }
     this.sortingMethod = sortingMethod match {
-      case null => {
-        "asc"
-      }
-      case _ => {
-        sortingMethod
-      }
+      case null => {"asc"}
+      case _ => {sortingMethod}
     }
-    this.limit = if (limit > 0) {
-      limit
-    } else {
-      ConfigManager.Messages("misCore.pages.limit.default").toInt
-    }
-    this.page = if (page > 1) {
-      page
-    } else {
-      1
-    }
-    this.eventId = eventId
+    this.limit = if (limit > 0) limit else ConfigManager.Messages("misCore.pages.limit.default").toInt
+    this.page = if(page>1) page else 1
     this.coreVersion = ConfigManager.Messages("misCore.assembly.version")
+    this.sortingFieldInternal = this.filter.toSortingString(this.sortingField, this.sortingMethod)
+  }
 
-
-    this.sortingFieldInternal =
-      if (filter.isInstanceOf[AssessmentsListRequestDataFilter])
-        this.filter.asInstanceOf[AssessmentsListRequestDataFilter].toSortingString(this.sortingField)
-      else
-        this.sortingField
+  def rewriteRecordsCount(recordsCount: java.lang.Long) = {
+    this.recordsCount = recordsCount.longValue()
+    true
   }
 }
 
-class AssessmentsListRequestDataFilter {
+class AssessmentsListRequestDataFilter extends AbstractListDataFilter{
 
   //   =>Фильтрация по коду типа действия<=
   @BeanProperty
   var code: String = _
-
   @BeanProperty
   var assessmentDate: Date = _
-
   @BeanProperty
   var doctorName: String = _
-
   @BeanProperty
   var speciality: String = _
-
   @BeanProperty
   var assessmentName: String = _
-
   @BeanProperty
   var departmentName: String = _
+  @BeanProperty
+  var eventId: Int = _
 
-  def this(code_x: String,
+  def this(eventId: Int,
+           code_x: String,
            assessmentDate: Long,
            doctorName: String,
            speciality: String,
            assessmentName: String,
            departmentName: String) {
     this()
+    this.eventId = eventId
     this.code = if (code_x != null && code_x != "") {
       code_x
     } else {
-      "1_"
+      ""   //Изменили спеку, теперь ищем акшены по мнемонике, а не по коду. было "1_"
     }
     this.assessmentDate = if (assessmentDate == 0) {
       null
@@ -141,8 +116,13 @@ class AssessmentsListRequestDataFilter {
     this.departmentName = departmentName
   }
 
+  @Override
   def toQueryStructure() = {
     var qs = new QueryDataStructure()
+    if(this.eventId>0){
+      qs.query += "AND a.event.id = :eventId\n"
+      qs.add("eventId",this.eventId:java.lang.Integer)
+    }
     if (this.code != null && !this.code.isEmpty) {
       qs.query += "AND a.actionType.code LIKE :code\n"
       qs.add("code", this.code + "%")
@@ -167,31 +147,22 @@ class AssessmentsListRequestDataFilter {
       qs.query += "AND upper(a.createPerson.orgStructure.name) LIKE upper(:departmentName)\n"
       qs.add("departmentName", "%" + this.departmentName + "%")
     }
+    qs.query += "AND a.actionType.mnemonic = 'EXAM'\n"
     qs
   }
 
-  def toSortingString(sortingField: String) = {
-    val sortingFieldInternal = sortingField match {
-      case "assessmentDate" | "start" | "createDatetime" => {
-        "a.createDatetime"
-      }
-      case "assessmentName" | "name" => {
-        "a.actionType.name"
-      }
-      case "doctor" => {
-        "a.createPerson.lastName, a.createPerson.firstName, a.createPerson.patrName"
-      }
-      case "department" => {
-        "a.createPerson.orgStructure.name"
-      }
-      case "specs" => {
-        "a.createPerson.speciality.name"
-      }
-      case _ => {
-        "a.id"
-      }
+  @Override
+  def toSortingString (sortingField: String, sortingMethod: String) = {
+    var sorting = sortingField match {
+      case "assessmentDate" | "start" | "createDatetime" => {"a.createDatetime %s".format(sortingMethod)}
+      case "assessmentName" | "name" => {"a.actionType.name %s".format(sortingMethod)}
+      case "doctor" => {"a.createPerson.lastName %s, a.createPerson.firstName %s, a.createPerson.patrName %s".format(sortingMethod, sortingMethod, sortingMethod)}
+      case "department" => {"a.createPerson.orgStructure.name %s".format(sortingMethod)}
+      case "specs" => {"a.createPerson.speciality.name %s".format(sortingMethod)}
+      case _ => {"a.id %s".format(sortingMethod)}
     }
-    sortingFieldInternal
+    sorting = "ORDER BY " + sorting
+    sorting
   }
 }
 

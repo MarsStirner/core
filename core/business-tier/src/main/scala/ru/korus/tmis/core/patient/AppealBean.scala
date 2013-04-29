@@ -85,6 +85,9 @@ class AppealBean extends AppealBeanLocal
   @EJB
   var diagnosisBean: DiagnosisBeanLocal = _
 
+  @EJB
+  private var dbStaff: DbStaffBeanLocal = _
+
   @Inject
   @Any
   var actionEvent: javax.enterprise.event.Event[Notification] = _
@@ -132,16 +135,23 @@ class AppealBean extends AppealBeanLocal
   def insertAppealForPatient(appealData : AppealData, patientId: Int, authData: AuthData) = {
 
     //1. Event и проверка данных на валидность
+    var newEvent = this.verificationData(patientId, authData, appealData, true)
+    dbManager.persist(newEvent)
+    dbManager.detach(newEvent)
+    insertOrModifyAppeal(appealData, newEvent, true, authData)
+  }
+
+  def updateAppeal(appealData : AppealData, eventId: Int, authData: AuthData) = {
+
+    var newEvent = this.verificationData(eventId, authData, appealData, false)
+    insertOrModifyAppeal(appealData, newEvent, false, authData)
+  }
+
+  private def insertOrModifyAppeal(appealData : AppealData, event: Event, flgCreate: Boolean, authData: AuthData) = {
+
     var entities = Set.empty[AnyRef]
     val now = new Date()
-    val flgCreate = if (appealData.data.id > 0) false else true
-
-    var newEvent = this.verificationData(appealData.data.id, patientId, authData, appealData, flgCreate)
-    if(flgCreate){
-      dbManager.persist(newEvent)
-      dbManager.detach(newEvent)
-    } //else em.merge(newEvent)
-
+    var newEvent = event
     //2. Action
 
     var oldAction: Action = null// Action.clone(temp)
@@ -346,7 +356,8 @@ class AppealBean extends AppealBeanLocal
     //*****
     //Создание/редактирование записи для Event_Persons
     if (flgCreate)
-      dbEventPerson.insertOrUpdateEventPerson(0, newEvent, authData.getUser, true) //в ивенте только создание
+      setExecPersonForAppeal(newEvent.getId.intValue(), 0, authData, ExecPersonSetType.EP_CREATE_APPEAL)
+      //dbEventPerson.insertOrUpdateEventPerson(0, newEvent, authData.getUser, true) //в ивенте только создание
 
     //Создание/редактирование диагнозов (отд. записи)
     var map = Map.empty[String, java.util.Set[AnyRef]]
@@ -566,7 +577,7 @@ class AppealBean extends AppealBeanLocal
   //Внутренние методы
 
   @throws(classOf[CoreException])
-  private def verificationData(eventId: Int, patientId: Int, authData: AuthData, appealData: AppealData, flgCreate: Boolean): Event = {
+  private def verificationData(id: Int, authData: AuthData, appealData: AppealData, flgCreate: Boolean): Event = {   //для создания ид пациента, для редактирование ид обращения
 
     if (authData==null){
       throw new CoreException("Mетод для изменения обращения по госпитализации не доступен для неавторизованного пользователя.")
@@ -575,7 +586,7 @@ class AppealBean extends AppealBeanLocal
 
     var event: Event = null
     if (flgCreate) {            //Создаем новое
-      if (patientId <= 0) {
+      if (id <= 0) {
         throw new CoreException("Невозможно создать госпитализацию. Пациент не установлен.")
         return null
       }
@@ -585,7 +596,7 @@ class AppealBean extends AppealBeanLocal
         throw new CoreException("Невозможно создать госпитализацию. Не задан тип обращения.")
         return null
       }
-      event = eventBean.createEvent(patientId,
+      event = eventBean.createEvent(id,
                                     //eventBean.getEventTypeIdByFDRecordId(appealData.data.appealType.getId()),
                                     appealData.data.appealType.eventType.getId,
                                     //eventBean.getEventTypeIdByRequestTypeIdAndFinanceId(appealData.data.appealType.requestType.getId(), appealData.data.appealType.finance.getId()),
@@ -594,7 +605,7 @@ class AppealBean extends AppealBeanLocal
                                     authData)
     }
     else {                      //Редактирование
-      event = eventBean.getEventById(appealData.data.id)
+      event = eventBean.getEventById(id)
       if (event==null) {
         throw new CoreException("Обращение с id = %s не найдено в БД".format(appealData.data.id.toString))
         return null
@@ -916,6 +927,55 @@ class AppealBean extends AppealBeanLocal
       if (lockId > 0) appLock.releaseLock(lockId)
     }
     clientQuoting
+  }
+
+  def getMonitoringInfo(eventId: Int, condition: Int, authData: AuthData)  = {
+    val codes = asJavaSet(condition match {
+      case 0 => Set("TEMPERATURE", "BPRAS", "BPRAD", "PULS", "SP02", "RR", "STATE", "WB")
+      case 1 => Set("K", "NA", "CA", "GLUCOSE", "TP", "UREA", "TB", "CB")
+      case _ => Set("TEMPERATURE", "BPRAS","BPRAD", "PULS", "SP02", "RR", "STATE", "WB")
+    })
+    val map = actionPropertyBean.getActionPropertiesByEventIdsAndActionPropertyTypeCodes(List(Integer.valueOf(eventId)), codes, 5)
+    if (map!=null && map.contains(Integer.valueOf(eventId)))
+      new MonitoringInfoListData(map.get(Integer.valueOf(eventId)))
+    else
+      new MonitoringInfoListData()
+  }
+
+  def setExecPersonForAppeal(id: Int, personId: Int, authData: AuthData, epst: ExecPersonSetType) = {
+
+    var eventPerson : EventPerson = null
+    var execPerson: Staff = authData.getUser
+    var isCreate: Boolean = true
+
+    val event = epst.getVarId match {
+      case 1 => actionBean.getActionById(id).getEvent
+      case _ => eventBean.getEventById(id)
+    }
+
+    if (epst.isFindLast) {
+      eventPerson = dbEventPerson.getLastEventPersonForEventId(event.getId.intValue())
+      if(personId>0) execPerson = dbStaff.getStaffById(personId)
+      isCreate = (eventPerson==null || eventPerson.getPerson != execPerson)
+    }
+
+    if(isCreate){
+      dbEventPerson.insertOrUpdateEventPerson(epst.getEventPersonId(eventPerson),
+                                              event,
+                                              execPerson,
+                                              epst.getFlushFlag)
+
+      //Изменим запись о назначевшем враче в ивенте
+      event.setExecutor(execPerson)
+      event.setModifyDatetime(new Date())
+      event.setModifyPerson(authData.getUser)
+      event.setVersion(event.getVersion)
+      dbManager.merge(event)
+
+      true
+    }
+    else
+      false
   }
 
   /*

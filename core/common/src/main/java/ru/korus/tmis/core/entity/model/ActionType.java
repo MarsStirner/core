@@ -189,6 +189,10 @@ public class ActionType implements Serializable {
     private boolean isRequiredCoordination;
 
     @Basic(optional = false)
+    @Column(name = "isRequiredTissue")
+    private boolean isRequiredTissue;
+
+    @Basic(optional = false)
     @Column(name = "mnem")
     private String mnemonic = "";
 
@@ -538,6 +542,14 @@ public class ActionType implements Serializable {
 
     public void setIsRequiredCoordination(boolean isRequiredCoordination) {
         this.isRequiredCoordination = isRequiredCoordination;
+    }
+
+    public boolean getIsRequiredTissue() {
+        return isRequiredTissue;
+    }
+
+    public void setIsRequiredTissue(boolean isRequiredTissue) {
+        this.isRequiredTissue = isRequiredTissue;
     }
 
     public Set<RbTissueType> getTissueTypes() {

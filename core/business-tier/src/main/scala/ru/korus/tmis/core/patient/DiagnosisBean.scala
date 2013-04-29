@@ -10,6 +10,7 @@ import javax.persistence.{EntityManager, PersistenceContext}
 import ru.korus.tmis.core.entity.model.{Diagnostic, Diagnosis, Mkb}
 import ru.korus.tmis.core.auth.AuthData
 import scala.collection.JavaConversions._
+import ru.korus.tmis.core.data.DiagnosesListData
 
 /**
  * Методы для работы с диагнозами
@@ -36,6 +37,7 @@ class DiagnosisBean  extends DiagnosisBeanLocal
   private val ID_CREATE = 0
   private val ID_MODIFY = 1
   private val ID_NONE = 2
+  private val ID_MODIFY_WITH_CREATE_DIAGNOSIS = 3
 
   def insertDiagnosis(diagnosticId: Int,
                       eventId: Int,
@@ -65,7 +67,7 @@ class DiagnosisBean  extends DiagnosisBeanLocal
               }
           }
           else {
-            if(mkbId>0) ID_MODIFY
+            if(mkbId>0) ID_MODIFY_WITH_CREATE_DIAGNOSIS
             else {
               if(oldDiagnostic.getNotes.compareTo(description)!=0) ID_MODIFY
               else ID_NONE
@@ -99,6 +101,21 @@ class DiagnosisBean  extends DiagnosisBeanLocal
                                                                 description,
                                                                 userData)
       }
+      case ID_MODIFY_WITH_CREATE_DIAGNOSIS => {
+        diagnosis = dbDiagnosisBean.insertOrUpdateDiagnosis(0,
+                                                            patient.getId.intValue(),
+                                                            diaTypeFlatCode,
+                                                            diseaseCharacterId,
+                                                            mkbId,
+                                                            userData)
+        diagnostic = dbDiagnosticBean.insertOrUpdateDiagnostic( diagnosticId,
+                                                                eventId,
+                                                                diagnosis,
+                                                                diaTypeFlatCode,
+                                                                diseaseCharacterId,
+                                                                description,
+                                                                userData)
+      }
       case _=> {}
     }
     (diagnostic, diagnosis)
@@ -118,4 +135,28 @@ class DiagnosisBean  extends DiagnosisBeanLocal
     entities
   }
 
+  //Спецификация: https://docs.google.com/spreadsheet/ccc?key=0Amfvj7P4xELWdFRJRnR1LVhTdG5BSFZKRnZnNWNlNHc#gid=1
+  def getDiagnosesByAppeal (eventId: Int) = {
+    val diagnostics = dbDiagnosticBean.getDiagnosticsByEventId(eventId)
+    if (diagnostics!=null && diagnostics.size()>0) {
+      //(Возможно понадобится)
+      //Вернем по одному последнему диагнозу для выбранных типов (согласно спецификации)
+      /*Set("assignment", "aftereffect", "attendant", "admission", "clinical", "final").foreach( diaType => {
+        val diagnosticsByType = diagnostics.filter(p => p.getDiagnosisType.getFlatCode.compareTo(diaType)==0)
+        if (diagnosticsByType!=null && diagnosticsByType.size>0) {
+          diagnostics.removeAll(diagnosticsByType)
+          val diagnosticByLastDate = diagnosticsByType.find(p => p.getCreateDatetime.getTime ==
+                                                                 diagnosticsByType.map(_.getCreateDatetime.getTime)
+                                                                                  .foldLeft(Long.MinValue)((i,m)=>m.max(i)))
+                                               .getOrElse(null) //Диагностика последняя по дате создания
+          if(diagnosticByLastDate!=null) {
+            diagnostics.add(diagnosticByLastDate)
+          }
+        }
+      })*/
+      //Вывод всех диагнозов с иными мнемониками
+      new DiagnosesListData(diagnostics)
+    }
+    else new DiagnosesListData()
+  }
 }

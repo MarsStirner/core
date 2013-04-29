@@ -172,11 +172,11 @@ class ActionWrapper(a: Action)
           }
         }
       }
-      case AWI.ToOrder => {
+      /*case AWI.ToOrder => {
         List(
           Map(APWI.Value.toString -> this.a.getToOrder.toString)
         )
-      }
+      } */
 
       case _ => {
         debug("Cannot get <" + name + ">")

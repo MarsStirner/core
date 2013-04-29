@@ -14,72 +14,72 @@ public enum CommunicationErrors {
     /**
      * пациента искали - и не нашли
      */
-    msgNoSuchPatient(200, "no such patient."),
+    msgNoSuchPatient(200, "Нет такого пациента"),
 
     /**
      * пациента искали - и нашли более 1
      */
-    msgTooManySuchPatients(201, "too many such patients."),
+    msgTooManySuchPatients(201, "Слишком много похожих пациентов"),
 
     /**
      * указанного типа идентификатора пациента не существует
      */
-    msgNoSuchIdentifierType(202, "no such identifier type."),
+    msgNoSuchIdentifierType(202, "указанного типа идентификатора пациента не существует"),
 
     /**
      * передали id пациента - а такой записи нет (или она удалена)
      */
-    msgWrongPatientId(302, "wrong patient id."),
+    msgWrongPatientId(302, "Некорректный ID пациента"),
 
     /**
      * пациент отмечен как умерший
      */
-    msgPatientMarkedAsDead(303, "patient marked as dead."),
+    msgPatientMarkedAsDead(303, "пациент отмечен как умерший"),
 
     /**
      * пациент не подходит по полу или возрасту
      */
-    msgEnqueueNotApplicable(304, "enqueue not applicable."),
+    msgEnqueueNotApplicable(304, "пациент не подходит по полу или возрасту"),
 
     /**
      * очереди (записи) у указанного врача на указанную дату нет
      */
-    msgQueueNotFound(305, "queue not found."),
+    msgQueueNotFound(305, "очереди (записи) у указанного врача на указанную дату нет"),
 
     /**
      * в очереди нет приёма на это время
      */
-    msgTicketNotFound(306, "ticket not found."),
+    msgTicketNotFound(306, "в очереди нет приёма на это время"),
 
     /**
      * пациент уже записан
      */
-    msgPatientAlreadyQueued(307, "patient already queued."),
+    msgPatientAlreadyQueued(307, "Пациент уже записан"),
 
     /**
      * талон уже занят
      */
-    msgTicketIsBusy(308, "ticket is busy."),
+    msgTicketIsBusy(308, "Талончик занят"),
 
     /**
      * указанная запись на приём к врачу не найдена
      */
-    msgPatientQueueNotFound(309, "patient queue not found."),
+    msgPatientQueueNotFound(309, "указанная запись на приём к врачу не найдена"),
 
     /**
      * пациент не имеет прикрепления
      */
-    msgPatientNotAttached(310, "patient not attached."),
+    msgPatientNotAttached(310, "пациент не имеет прикрепления"),
 
     /**
      * постановка в очередь запрещена
      */
-    msgQueueingProhibited(400, "queueing prohibited."),
+    msgQueueingProhibited(400, "постановка в очередь запрещена"),
 
     /**
      * квота исчерпана
      */
-    msgNoTicketsAvailable(401, "queueing prohibited."),
+    msgNoTicketsAvailable(401, "квота исчерпана"),
 
     //////////////////////////////////////////////////////////////////////
     // New error messages
@@ -89,33 +89,33 @@ public enum CommunicationErrors {
     /**
      * Не  прикреплено ни одного документа
      */
-    msgNoDocumentsAttached(701, "no one document is attached."),
+    msgNoDocumentsAttached(701, "Не  прикреплено ни одного документа"),
 
     /**
      * Нет такого врача или он удален
      */
-    msgWrongDoctorId(702, "wrong doctor Id."),
+    msgWrongDoctorId(702, "Нет такого врача или он удален"),
 
     /**
      * Запрошенный талончик не принадлежит этому пациенту
      */
-    msgTicketIsNotBelongToPatient(703, "this ticket has another owner."),
+    msgTicketIsNotBelongToPatient(703, "Запрошенный талончик не принадлежит этому пациенту"),
 
     /**
      * Ничего не найдено
      */
-    msgItemNotFound(704, "no one item was found."),
+    msgItemNotFound(704, "Ничего не найдено"),
 
 
     /**
      * Метод не реализован (заглушка)
      */
-    msgNotImplemented(501, "this method is not implemented now."),
+    msgNotImplemented(501, "Метод не реализован (заглушка)"),
 
     /**
      * Неизвестная ошибка (смотреть логи сервера)
      */
-    msgUnknownError(666, "UnknownError, please watch server logs.");
+    msgUnknownError(666, "Неизвестная ошибка (смотреть логи сервера)");
 
 
     private final int id;

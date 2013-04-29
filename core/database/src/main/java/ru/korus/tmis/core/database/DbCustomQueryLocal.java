@@ -23,7 +23,7 @@ public interface DbCustomQueryLocal {
     List<Event> getActiveEventsForDepartment(int id)
             throws CoreException;
 
-    Map<Event, Action> getActiveEventsForDepartmentAndDoctor(int page, int limit, String sortField, String sortMethod, Object filter, Function1<Long, Boolean> postProcessing)
+    Map<Action, Map<ActionProperty, List<APValue>>> getActiveEventsForDepartmentAndDoctor(int page, int limit, String sortField, String sortMethod, Object filter, Function1<Long, Boolean> postProcessing)
             throws CoreException;
 
     Map<Event, Action> getAdmissionsByEvents(List<Event> events)
@@ -56,7 +56,7 @@ public interface DbCustomQueryLocal {
     long getCountDiagnosticsWithFilter(Object filter)
             throws CoreException;
 
-    List<Action> getAllDiagnosticsWithFilter(int page, int limit, String sortField, String sortMethod, Object filter)
+    List<Action> getAllDiagnosticsWithFilter(int page, int limit, String sorting, Object filter)
             throws CoreException;
 
     List<IndicatorValue<Double>>

@@ -40,22 +40,32 @@ import java.util.Map;
 public class PharmacyBean implements PharmacyBeanLocal {
 
     private static final Logger logger = LoggerFactory.getLogger(PharmacyBean.class);
+
     private static final int LAST_ACTIONS = 10;
+
     private static final String DATE_TIME_FORMAT = "yyyy-MM-dd hh:mm:ss";
+
     @EJB(beanName = "DbActionBean")
     private DbActionBeanLocal dbAction = null;
+
     @EJB(beanName = "DbOrgStructureBean")
     private DbOrgStructureBeanLocal dbOrgStructureBeanLocal = null;
+
     @EJB(beanName = "DbActionPropertyBean")
     private DbActionPropertyBeanLocal dbActionProperty = null;
+
     @EJB(beanName = "DbPharmacyBean")
     private DbPharmacyBeanLocal dbPharmacy = null;
+
     @EJB(beanName = "DbUUIDBean")
     private DbUUIDBeanLocal dbUUIDBeanLocal = null;
+
     @EJB(beanName = "DbCustomQueryBean")
     private DbCustomQueryLocal dbCustomQueryLocal = null;
+
     @EJB(beanName = "DbActionPropertyBean")
     private DbActionPropertyBeanLocal dbActionPropertyBeanLocal = null;
+
     private DateTime lastDateUpdate = null;
 
     /**

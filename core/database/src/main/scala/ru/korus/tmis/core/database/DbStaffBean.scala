@@ -82,21 +82,19 @@ class DbStaffBean
   }
 
 
-  def getAllPersonsByRequest(limit: Int, page: Int, sortField: String, sortMethod: String, filter: Object) = {
+  def getAllPersonsByRequest(limit: Int, page: Int, sorting: String, filter: ListDataFilter, records: (java.lang.Long) => java.lang.Boolean) = {
 
-    val sorting: String = "ORDER BY s.%s %s".format(sortField, sortMethod)
-
-    val queryStr: QueryDataStructure = if (filter.isInstanceOf[FreePersonsListDataFilter]) {
-      filter.asInstanceOf[FreePersonsListDataFilter].toQueryStructure()
+    val queryStr = filter.toQueryStructure()
+    if (records!=null){
+      val querytyped = em.createQuery(StaffsAndCountRecordsWithFilterQuery.format("count(s)", queryStr.query, ""), classOf[Long])
+      if (queryStr.data.size() > 0)
+        queryStr.data.foreach(qdp => querytyped.setParameter(qdp.name, qdp.value))
+      records(querytyped.getSingleResult)
     }
-    else {
-      new QueryDataStructure()
-    }
-
-    var typed = em.createQuery(StaffsAndCountRecordsWithFilterQuery.format("s", queryStr.query, sorting), classOf[Staff])
-    if (queryStr.data.size() > 0) {
+    val typed = em.createQuery(StaffsAndCountRecordsWithFilterQuery.format("s", queryStr.query, sorting), classOf[Staff])
+    if (queryStr.data.size() > 0)
       queryStr.data.foreach(qdp => typed.setParameter(qdp.name, qdp.value))
-    }
+
     val result = typed.setMaxResults(limit)
       .setFirstResult(limit * page)
       .getResultList
@@ -288,7 +286,7 @@ class DbStaffBean
    */
   def getPersonActionsByDateAndType(personId: Int, date: Date, actionType: String): Action = {
     // val resultList =
-    commlogger.debug("########## DATE is " + date);
+    commlogger.debug("DATE is " + date);
 
     val query = em.createQuery(getPersonActionsByDateAndTypeQuery, classOf[Action]).setParameter("ACTIONTYPECODE", actionType)
       .setParameter("PERSONID", personId).setParameter("SETDATE", date, TemporalType.DATE);

@@ -70,14 +70,16 @@ class DbClientContactBean
     val now = new Date
     if (id > 0) {
       c = getClientContactById(id)
+      if(rbContactTypeId>0)
+        c.setContactType(dbRbContactType.getRbContactTypeById(rbContactTypeId))
     }
     else {
       c = new ClientContact
       c.setCreatePerson(sessionUser)
       c.setCreateDatetime(now)
+      c.setContactType(dbRbContactType.getRbContactTypeById(rbContactTypeId))
     }
 
-    c.setContactType(dbRbContactType.getRbContactTypeById(rbContactTypeId))
     c.setContact(contact)
     c.setNotes(notes)
     c.setPatient(patient)

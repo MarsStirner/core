@@ -6,7 +6,7 @@ import javax.ejb.{EJB, Stateless}
 import grizzled.slf4j.Logging
 import ru.korus.tmis.util.{ConfigManager, CAPids, I18nable}
 import javax.persistence.{EntityManager, PersistenceContext}
-import ru.korus.tmis.core.entity.model.{Job, ActionTypeTissueType, Action, JobTicket}
+import ru.korus.tmis.core.entity.model._
 import scala.collection.JavaConversions._
 import collection.mutable
 import ru.korus.tmis.core.data.TakingOfBiomaterialRequesDataFilter
@@ -14,6 +14,7 @@ import ru.korus.tmis.core.auth.AuthData
 import ru.korus.tmis.core.exception.CoreException
 import ru.korus.tmis.util.reflect.LoggingManager
 import java.util.Date
+import java.text.SimpleDateFormat
 
 /**
  * Методы для работы с JobTicket
@@ -68,7 +69,7 @@ class DbJobTicketBean extends DbJobTicketBeanLocal
     }
     else {
       jt = new JobTicket
-      jt.setStatus(2)
+      //jt.setStatus(2)
       jt.setJob(job)
     }
     jt.setDatetime(action.getPlannedEndDate)
@@ -138,6 +139,40 @@ class DbJobTicketBean extends DbJobTicketBeanLocal
     }
     isComplete
   }
+
+  def getJobTicketAndTakenTissueForAction(action: Action) = {
+    val formatter = new SimpleDateFormat("yyyy-MM-dd")
+    val strDate = formatter.format(action.getPlannedEndDate)
+    val date = formatter.parse(strDate)
+
+    val query = em.createQuery(JobTicketAndTakenTissueForActionQuery, classOf[Array[AnyRef]])
+                  .setParameter("plannedEndDate", date)
+                  .setParameter("eventId", action.getEvent.getId.intValue())
+                  .setParameter("actionTypeId", action.getActionType.getId.intValue())
+
+    val result = query.getResultList
+
+    result.size match {
+      case 0 => {
+        null /*
+        throw new CoreException(
+          ConfigManager.ErrorCodes.JobNotFound,
+          i18n("error.jobNotFound").format(id))          */
+      }
+      case size => {
+        val jobAndJobTicket = result.foldLeft(new java.util.LinkedList[(JobTicket, TakenTissue)])(
+          (list, aj) => {
+            em.detach(aj(0))
+            em.detach(aj(1))
+            list.add((aj(0).asInstanceOf[JobTicket], aj(1).asInstanceOf[TakenTissue]))
+            list
+          }
+        )
+        jobAndJobTicket.get(0)
+      }
+    }
+  }
+
   val JobTicketByIdQuery =
     """
       SELECT jt
@@ -219,4 +254,43 @@ class DbJobTicketBean extends DbJobTicketBeanLocal
     %s
     %s
     """
+
+  val JobTicketAndTakenTissueForActionQuery =
+    """
+      SELECT DISTINCT jt, tt
+      FROM
+        JobTicket jt
+          JOIN jt.job j,
+        APValueJobTicket apval,
+        ActionProperty ap
+          JOIN ap.action a
+          JOIN a.takenTissue tt,
+        ActionTypeTissueType attt
+      WHERE
+        a.event.id = :eventId
+      AND
+        a.actionType.mnemonic = 'LAB'
+      AND
+        a.isUrgent = 0
+      AND
+        apval.id.id = ap.id
+      AND
+        apval.value = jt.id
+      AND
+        attt.actionType.id = :actionTypeId
+      AND
+        tt.type.id = attt.tissueType.id
+      AND
+        j.date = :plannedEndDate
+      AND
+        ap.deleted = 0
+      AND
+        a.deleted = 0
+      AND
+        j.deleted = 0
+    """
 }
+
+
+ //AND
+//a.actionType.isRequiredTissue = 1

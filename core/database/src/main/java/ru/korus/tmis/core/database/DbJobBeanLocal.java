@@ -37,15 +37,4 @@ public interface DbJobBeanLocal {
      * @see CoreException
      */
     Job insertOrUpdateJob(int id, Action action, OrgStructure department) throws CoreException;
-
-    /**
-     * Поиск работы для действия
-     * @param action Действие Action, для которого будет производиться поиск работы Job
-     * @return Работа как Job
-     * @throws CoreException
-     * @see Action
-     * @see Job
-     * @see CoreException
-     */
-    Object getJobAndJobTicketForAction(Action action) throws CoreException;
 }

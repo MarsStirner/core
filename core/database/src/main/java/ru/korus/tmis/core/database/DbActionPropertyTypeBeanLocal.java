@@ -42,6 +42,9 @@ public interface DbActionPropertyTypeBeanLocal {
     List<ActionPropertyType> getActionPropertyTypesByActionTypeId(int actionTypeId)
             throws CoreException;
 
+    List<ActionPropertyType> getActionPropertyTypesByFlatCodes(Set<String> codes)
+            throws CoreException;
+
     LinkedList<Object> getActionPropertyTypeValueDomainsWithFilter(int page, int limit,
                                                                    String sorting,
                                                                    ListDataFilter filter)
