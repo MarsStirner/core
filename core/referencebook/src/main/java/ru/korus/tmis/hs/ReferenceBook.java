@@ -7,6 +7,7 @@ import ru.korus.tmis.hs.wss.AuthentificationHeaderHandlerResolver;
 import wsdl.NsiService;
 
 import javax.xml.ws.Holder;
+import java.lang.reflect.Field;
 import java.util.List;
 
 /**
@@ -18,9 +19,7 @@ import java.util.List;
 public class ReferenceBook {
     private static final Logger logger = LoggerFactory.getLogger(ReferenceBook.class);
 
-    private ObjectFactory factory;
     private NsiService service;
-
 
     public ReferenceBook() {
         service = new NsiService();
@@ -28,240 +27,446 @@ public class ReferenceBook {
     }
 
     /**
+     * Загрузка справочника MKB10 - международный классификатор болезней
+     *
+     * @return
+     */
+    public List<M001Type> loadM001MKB10() {
+        final StringBuilder sb = new StringBuilder("loadM001MKB10");
+        final Holder<List<M001Type>> list = new Holder<List<M001Type>>();
+        service.getNsiServiceSoap().m001(list);
+        for (M001Type type : list.value) {
+            sb.append(getAllFields(type)).append("\n");
+        }
+        logger.info(sb.toString());
+        return list.value;
+    }
+
+    /**
+     * Загрузка справочника NomeclR - номенклатура работ и услуг в здравоохранении
+     *
+     * @return
+     */
+    public List<V001Type> loadV001NomeclR() {
+        final StringBuilder sb = new StringBuilder("loadV001NomeclR");
+        final Holder<List<V001Type>> list = new Holder<List<V001Type>>();
+        service.getNsiServiceSoap().v001(list);
+        for (V001Type type : list.value) {
+            sb.append(getAllFields(type)).append("\n");
+        }
+        logger.info(sb.toString());
+        return list.value;
+    }
+
+    /**
+     * Загрузка справочника ProfOt - классификатор профилей оказанной медицинской помощи
+     *
+     * @return
+     */
+    public List<V002Type> loadV002ProfOt() {
+        final StringBuilder sb = new StringBuilder("loadV002ProfOt");
+        final Holder<List<V002Type>> list = new Holder<List<V002Type>>();
+        service.getNsiServiceSoap().v002(list);
+        for (V002Type type : list.value) {
+            sb.append(getAllFields(type)).append("\n");
+        }
+        logger.info(sb.toString());
+        return list.value;
+    }
+
+    /**
+     * Загрузка справочника LicUsl - классификатор работ при лицензированной мед.помощи
+     *
+     * @return
+     */
+    public List<V003Type> loadV003LicUsl() {
+        final StringBuilder sb = new StringBuilder("loadV003LicUsl");
+        final Holder<List<V003Type>> list = new Holder<List<V003Type>>();
+        service.getNsiServiceSoap().v003(list);
+        for (V003Type type : list.value) {
+            sb.append(getAllFields(type)).append("\n");
+        }
+        logger.info(sb.toString());
+        return list.value;
+    }
+
+    /**
+     * Загрузка справочника Medspec - классификатор медицинских специальностей
+     *
+     * @return
+     */
+    public List<V004Type> loadV004Medspec() {
+        final StringBuilder sb = new StringBuilder("loadV004Medspec");
+        final Holder<List<V004Type>> list = new Holder<List<V004Type>>();
+        service.getNsiServiceSoap().v004(list);
+        for (V004Type type : list.value) {
+            sb.append(getAllFields(type)).append("\n");
+        }
+        logger.info(sb.toString());
+        return list.value;
+    }
+
+
+    /**
      * Загрузка справочника V005 - классификатор пола застрахованного
      *
      * @return
      */
-    public List<V005Type> loadPol() {
-        final StringBuilder sb = new StringBuilder();
+    public List<V005Type> loadV005Pol() {
+        final StringBuilder sb = new StringBuilder("loadV005Pol");
         final Holder<List<V005Type>> list = new Holder<List<V005Type>>();
         service.getNsiServiceSoap().v005(list);
         for (V005Type type : list.value) {
-            sb.append("loadPol[")
-                    .append(type.getIDPOL()).append(",")
-                    .append(type.getPOLNAME())
-                    .append("] \n");
+            sb.append(getAllFields(type)).append("\n");
         }
         logger.info(sb.toString());
         return list.value;
     }
 
     /**
-     * Загрузка справочника V007 - классификатор пола застрахованного
+     * Загрузка справочника V006 - классификатор условий оказания мед.помощи
      *
      * @return
      */
-    public List<V007Type> loadNomMO() {
-        final StringBuilder sb = new StringBuilder();
+    public List<V006Type> loadV006UslMp() {
+        final StringBuilder sb = new StringBuilder("loadV006UslMp");
+        final Holder<List<V006Type>> list = new Holder<List<V006Type>>();
+        service.getNsiServiceSoap().v006(list);
+        for (V006Type type : list.value) {
+            sb.append(getAllFields(type)).append("\n");
+        }
+        logger.info(sb.toString());
+        return list.value;
+    }
+
+    /**
+     * Загрузка справочника V007 - номенклатура МО
+     *
+     * @return
+     */
+    public List<V007Type> loadV007NomMO() {
+        final StringBuilder sb = new StringBuilder("loadV007NomMO");
         final Holder<List<V007Type>> list = new Holder<List<V007Type>>();
         service.getNsiServiceSoap().v007(list);
         for (V007Type type : list.value) {
-            sb.append("loadNomMO[")
-                    .append(type.getIDNMO()).append(",")
-                    .append(type.getNMONAME()).append(",")
-                    .append(type.getDATEBEG()).append(",")
-                    .append(type.getDATEEND()).append(",")
-                    .append("] \n");
+            sb.append(getAllFields(type)).append("\n");
         }
         logger.info(sb.toString());
         return list.value;
     }
 
     /**
-     * Загрузка справочника F001 - классификатор пола застрахованного
+     * Загрузка справочника V008 - классификатор видов мед.помощи
      *
      * @return
      */
-    public List<F001Type> loadTfoms() {
-        final StringBuilder sb = new StringBuilder();
+    public List<V008Type> loadV008VidMp() {
+        final StringBuilder sb = new StringBuilder("loadV008VidMp");
+        final Holder<List<V008Type>> list = new Holder<List<V008Type>>();
+        service.getNsiServiceSoap().v008(list);
+        for (V008Type type : list.value) {
+            sb.append(getAllFields(type)).append("\n");
+        }
+        logger.info(sb.toString());
+        return list.value;
+    }
+
+    /**
+     * Загрузка справочника V009 - классификатор результатов обращения за мед.помощью
+     *
+     * @return
+     */
+    public List<V009Type> loadV009Rezult() {
+        final StringBuilder sb = new StringBuilder("loadV009Rezult");
+        final Holder<List<V009Type>> list = new Holder<List<V009Type>>();
+        service.getNsiServiceSoap().v009(list);
+        for (V009Type type : list.value) {
+            sb.append(getAllFields(type)).append("\n");
+        }
+        logger.info(sb.toString());
+        return list.value;
+    }
+
+    /**
+     * Загрузка справочника V010 - классификатор способов оплаты мед.помощи
+     *
+     * @return
+     */
+    public List<V010Type> loadV010Sposob() {
+        final StringBuilder sb = new StringBuilder("loadV010Sposob");
+        final Holder<List<V010Type>> list = new Holder<List<V010Type>>();
+        service.getNsiServiceSoap().v010(list);
+        for (V010Type type : list.value) {
+            sb.append(getAllFields(type)).append("\n");
+        }
+        logger.info(sb.toString());
+        return list.value;
+    }
+
+    /**
+     * Загрузка справочника V012 - классификатор исходов заболевания
+     *
+     * @return
+     */
+    public List<V012Type> loadV012Ishod() {
+        final StringBuilder sb = new StringBuilder("loadV012Ishod");
+        final Holder<List<V012Type>> list = new Holder<List<V012Type>>();
+        service.getNsiServiceSoap().v012(list);
+        for (V012Type type : list.value) {
+            sb.append(getAllFields(type)).append("\n");
+        }
+        logger.info(sb.toString());
+        return list.value;
+    }
+
+    /**
+     * Загрузка справочника F001 - справочник территориальных фондов ОМС
+     *
+     * @return
+     */
+    public List<F001Type> loadF001Tfoms() {
+        final StringBuilder sb = new StringBuilder("loadF001Tfoms");
         final Holder<List<F001Type>> list = new Holder<List<F001Type>>();
         service.getNsiServiceSoap().f001(list);
         for (F001Type type : list.value) {
-            sb.append("loadTfoms[")
-                    .append(type.getTfKod()).append(",")
-                    .append(type.getTfOkato()).append(",")
-                    .append(type.getTfOgrn()).append(",")
-                    .append(type.getNameTfp()).append(",")
-                    .append("] \n");
+            sb.append(getAllFields(type)).append("\n");
         }
         logger.info(sb.toString());
         return list.value;
     }
 
     /**
-     * Загрузка справочника F002 - классификатор пола застрахованного
+     * Загрузка справочника F002 - единый реестр мед.организаций,
+     * осуществляющих деятельность в сфере обязательного мед.страхования
      *
      * @return
      */
-    public List<F002Type> loadSmo() {
-        final StringBuilder sb = new StringBuilder();
+    public List<F002Type> loadF002Smo() {
+        final StringBuilder sb = new StringBuilder("loadF002Smo");
         final Holder<List<F002Type>> list = new Holder<List<F002Type>>();
         service.getNsiServiceSoap().f002(list);
         for (F002Type type : list.value) {
-            sb.append("loadSmo[")
-                    .append(type.getTfOkato()).append(",")
-                    .append(type.getSmocod()).append(",")
-                    .append(type.getNamSmop()).append(",")
-                    .append(type.getNamSmok()).append(",")
-                    .append("] \n");
+            sb.append(getAllFields(type)).append("\n");
         }
         logger.info(sb.toString());
         return list.value;
     }
 
     /**
-     * Загрузка справочника F003 - классификатор пола застрахованного
+     * Загрузка справочника F003 - единый реестр мед.организаций,
+     * осуществляющих деятельность в сфере обязательного мед.страхования
      *
      * @return
      */
-    public List<F003Type> loadMo() {
-        final StringBuilder sb = new StringBuilder();
+    public List<F003Type> loadF003Mo() {
+        final StringBuilder sb = new StringBuilder("loadF003Mo");
         final Holder<List<F003Type>> list = new Holder<List<F003Type>>();
         service.getNsiServiceSoap().f003(list);
         for (F003Type type : list.value) {
-            sb.append("loadMo[")
-                    .append(type.getTfOkato()).append(",")
-                    .append(type.getMcod()).append(",")
-                    .append(type.getNamMop()).append(",")
-                    .append(type.getNamMok()).append(",")
-                    .append("] \n");
+            sb.append(getAllFields(type)).append("\n");
         }
         logger.info(sb.toString());
         return list.value;
     }
 
     /**
-     * Загрузка справочника F007 - классификатор пола застрахованного
+     * Загрузка справочника F007 - классификатор ведомственной принадлежности медицинской организации
      *
      * @return
      */
-    public List<F007Type> loadVedom() {
-        final StringBuilder sb = new StringBuilder();
+    public List<F007Type> loadF007Vedom() {
+        final StringBuilder sb = new StringBuilder("loadF007Vedom");
         final Holder<List<F007Type>> list = new Holder<List<F007Type>>();
         service.getNsiServiceSoap().f007(list);
         for (F007Type type : list.value) {
-            sb.append("loadVedom[")
-                    .append(type.getIDVED()).append(",")
-                    .append(type.getVEDNAME()).append(",")
-                    .append(type.getDATEBEG()).append(",")
-                    .append(type.getDATEEND()).append(",")
-                    .append("] \n");
+            sb.append(getAllFields(type)).append("\n");
         }
         logger.info(sb.toString());
         return list.value;
     }
 
     /**
-     * Загрузка справочника F008 - классификатор пола застрахованного
+     * Загрузка справочника F008 - классификатор типов документов, подтверждающих факт страхования по ОМС
      *
      * @return
      */
-    public List<F008Type> loadTipOMS() {
-        final StringBuilder sb = new StringBuilder();
+    public List<F008Type> loadF008TipOMS() {
+        final StringBuilder sb = new StringBuilder("loadF008TipOMS");
         final Holder<List<F008Type>> list = new Holder<List<F008Type>>();
         service.getNsiServiceSoap().f008(list);
         for (F008Type type : list.value) {
-            sb.append("loadTipOMS[")
-                    .append(type.getIDDOC()).append(",")
-                    .append(type.getDOCNAME()).append(",")
-                    .append(type.getDATEBEG()).append(",")
-                    .append(type.getDATEEND()).append(",")
-                    .append("] \n");
+            sb.append(getAllFields(type)).append("\n");
         }
         logger.info(sb.toString());
         return list.value;
     }
 
     /**
-     * Загрузка справочника F009 - классификатор пола застрахованного
+     * Загрузка справочника F009 - классификатор статуса застрахованного лица
      *
      * @return
      */
-    public List<F009Type> loadStatZL() {
-        final StringBuilder sb = new StringBuilder();
+    public List<F009Type> loadF009StatZL() {
+        final StringBuilder sb = new StringBuilder("loadF009StatZL");
         final Holder<List<F009Type>> list = new Holder<List<F009Type>>();
         service.getNsiServiceSoap().f009(list);
         for (F009Type type : list.value) {
-            sb.append("loadStatZL[")
-                    .append(type.getIDStatus()).append(",")
-                    .append(type.getStatusName()).append(",")
-                    .append(type.getDATEBEG()).append(",")
-                    .append(type.getDATEEND()).append(",")
-                    .append("] \n");
+            sb.append(getAllFields(type)).append("\n");
         }
         logger.info(sb.toString());
         return list.value;
     }
 
     /**
-     * Загрузка справочника F011 - классификатор пола застрахованного
+     * Загрузка справочника F010 - классификатор субъектов РФ
      *
      * @return
      */
-    public List<F011Type> loadTipdoc() {
-        final StringBuilder sb = new StringBuilder();
+    public List<F010Type> loadF010Subekti() {
+        final StringBuilder sb = new StringBuilder("loadF010Subekti");
+        final Holder<List<F010Type>> list = new Holder<List<F010Type>>();
+        service.getNsiServiceSoap().f010(list);
+        for (F010Type type : list.value) {
+            sb.append(getAllFields(type)).append("\n");
+        }
+        logger.info(sb.toString());
+        return list.value;
+    }
+
+    /**
+     * Загрузка справочника F011 - классификатор типов документов, удостоверяющих личность
+     *
+     * @return
+     */
+    public List<F011Type> loadF011Tipdoc() {
+        final StringBuilder sb = new StringBuilder("loadF011Tipdoc");
         final Holder<List<F011Type>> list = new Holder<List<F011Type>>();
         service.getNsiServiceSoap().f011(list);
         for (F011Type type : list.value) {
-            sb.append("loadTipdoc[")
-                    .append(type.getIDDoc()).append(",")
-                    .append(type.getDocName()).append(",")
-                    .append(type.getDocSer()).append(",")
-                    .append(type.getDocNum()).append(",")
-                    .append(type.getDATEBEG()).append(",")
-                    .append(type.getDATEEND()).append(",")
-                    .append("] \n");
+            sb.append(getAllFields(type)).append("\n");
         }
         logger.info(sb.toString());
         return list.value;
     }
 
     /**
-     * Загрузка справочника F015 - классификатор пола застрахованного
+     * Загрузка справочника F015 - классификатор федеральных округов
      *
      * @return
      */
-    public List<F015Type> loadFedOkrug() {
-        final StringBuilder sb = new StringBuilder();
+    public List<F015Type> loadF015FedOkrug() {
+        final StringBuilder sb = new StringBuilder("loadF015FedOkrug");
         final Holder<List<F015Type>> list = new Holder<List<F015Type>>();
         service.getNsiServiceSoap().f015(list);
         for (F015Type type : list.value) {
-            sb.append("loadFedOkrug[")
-                    .append(type.getKODOK()).append(",")
-                    .append(type.getOKRNAME()).append(",")
-                    .append(type.getDATEBEG()).append(",")
-                    .append(type.getDATEEND()).append(",")
-                    .append("] \n");
+            sb.append(getAllFields(type)).append("\n");
         }
         logger.info(sb.toString());
         return list.value;
     }
 
     /**
-     * Загрузка справочника O001 - классификатор пола застрахованного
+     * Загрузка справочника O001 - общероссийский классификатор стран мира
      *
      * @return
      */
-    public List<O001Type> loadOKSM() {
-        final StringBuilder sb = new StringBuilder();
+    public List<O001Type> loadO001OKSM() {
+        final StringBuilder sb = new StringBuilder("loadO001OKSM");
         final Holder<List<O001Type>> list = new Holder<List<O001Type>>();
         service.getNsiServiceSoap().o001(list);
         for (O001Type type : list.value) {
-            sb.append("loadOKSM[")
-                    .append(type.getKOD()).append(",")
-                    .append(type.getNAME11()).append(",")
-                    .append(type.getNAME12()).append(",")
-                    .append(type.getALFA2()).append(",")
-                    .append(type.getALFA3()).append(",")
-                    .append(type.getNOMDESCR()).append(",")
-                    .append(type.getNOMAKT()).append(",")
-                    .append(type.getSTATUS()).append(",")
-                    .append(type.getDATAUPD()).append(",")
-                    .append("] \n");
+            sb.append(getAllFields(type)).append("\n");
         }
         logger.info(sb.toString());
         return list.value;
     }
 
+    /**
+     * Загрузка справочника O002 - классификатор общероссийский административно-территориального деления
+     *
+     * @return
+     */
+    public List<O002Type> loadO002Okato() {
+        final StringBuilder sb = new StringBuilder("loadO002Okato");
+        final Holder<List<O002Type>> list = new Holder<List<O002Type>>();
+        service.getNsiServiceSoap().o002(list);
+        for (O002Type type : list.value) {
+            sb.append(getAllFields(type)).append("\n");
+        }
+        logger.info(sb.toString());
+        return list.value;
+    }
 
+    /**
+     * Загрузка справочника O003 - классификатор общероссийский видов экономической деятельности
+     *
+     * @return
+     */
+    public List<O003Type> loadO003Okved() {
+        final StringBuilder sb = new StringBuilder("loadO003Okved");
+        final Holder<List<O003Type>> list = new Holder<List<O003Type>>();
+        service.getNsiServiceSoap().o003(list);
+        for (O003Type type : list.value) {
+            sb.append(getAllFields(type)).append("\n");
+        }
+        logger.info(sb.toString());
+        return list.value;
+    }
+
+    /**
+     * Загрузка справочника O004 - классификатор общероссийский форм собственности
+     *
+     * @return
+     */
+    public List<O004Type> loadO004Okfs() {
+        final StringBuilder sb = new StringBuilder("loadO004Okfs");
+        final Holder<List<O004Type>> list = new Holder<List<O004Type>>();
+        service.getNsiServiceSoap().o004(list);
+        for (O004Type type : list.value) {
+            sb.append(getAllFields(type)).append("\n");
+        }
+        logger.info(sb.toString());
+        return list.value;
+    }
+
+    /**
+     * Загрузка справочника O005 - классификатор общероссийский организационных-правовых форм
+     *
+     * @return
+     */
+    public List<O005Type> loadO005Okopf() {
+        final StringBuilder sb = new StringBuilder("loadO005Okopf");
+        final Holder<List<O005Type>> list = new Holder<List<O005Type>>();
+        service.getNsiServiceSoap().o005(list);
+        for (O005Type type : list.value) {
+            sb.append(getAllFields(type)).append("\n");
+        }
+        logger.info(sb.toString());
+        return list.value;
+    }
+
+    private String getAllFields(final Object obj) {
+        StringBuilder sb = new StringBuilder("[");
+        if (obj != null) {
+            Class<?> c = obj.getClass();
+            try {
+                Field[] chap = c.getDeclaredFields();
+                for (Field f : chap) {
+                    f.setAccessible(true);
+                    final Object o = f.get(obj);
+                    if (o != null) {
+                        sb.append(o.toString()).append(", ");
+                    } else {
+                        sb.append("null, ");
+                    }
+                }
+            } catch (Exception x) {
+                x.printStackTrace();
+            }
+        } else {
+            sb.append("null");
+        }
+        sb.append("]");
+        return sb.toString();
+    }
 }
