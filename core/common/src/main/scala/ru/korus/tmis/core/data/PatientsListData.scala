@@ -264,15 +264,15 @@ class PatientsListRequestDataFilter {
   @Override
   def toSortingString (sortingField: String, sortingMethod: String) = {
     var sorting = sortingField.toLowerCase match {
-      case "createDatetime"| "start" | "begDate" => {"a.begDate %s".format(sortingMethod)}
-      case "end" | "endDate" => {"a.event.execDate %s".format(sortingMethod)}
-      case "doctor" => {"a.event.executor.lastName %s, a.event.executor.firstName %s, a.event.executor.patrName %s".format(sortingMethod, sortingMethod, sortingMethod)}
+      case "createDatetime"| "start" | "begDate" => {"ap.action.begDate %s".format(sortingMethod)}
+      case "end" | "endDate" => {"ap.action.event.execDate %s".format(sortingMethod)}
+      case "doctor" => {"ap.action.event.executor.lastName %s, ap.action.event.executor.firstName %s, ap.action.event.executor.patrName %s".format(sortingMethod, sortingMethod, sortingMethod)}
       //case "department" => {"org.masterDepartment.name %s".format(sortingMethod)}
       //case "bed" => {"org.name %s".format(sortingMethod)}
       //case "number" => "CAST(SUBSTRING(e.externalId, 1, 4) AS UNSIGNED) %s, CAST(SUBSTRING(e.externalId, 6) AS UNSIGNED) %s".format(sortingMethod,sortingMethod)//{"e.externalId %s".format(sortingMethod)}
-      case "fullname" => {"a.event.patient.lastName %s, a.event.patient.firstName %s, a.event.patient.patrName %s".format(sortingMethod,sortingMethod,sortingMethod)}
-      case "birthdate" => {"a.event.patient.birthDate %s".format(sortingMethod)}
-      case _ => {"a.event.id %s".format(sortingMethod)}
+      case "fullname" => {"ap.action.event.patient.lastName %s, ap.action.event.patient.firstName %s, ap.action.event.patient.patrName %s".format(sortingMethod,sortingMethod,sortingMethod)}
+      case "birthdate" => {"ap.action.event.patient.birthDate %s".format(sortingMethod)}
+      case _ => {"ap.action.event.id %s".format(sortingMethod)}
     }
     //sortingFieldInternal
     sorting = "ORDER BY " + sorting.format(sortingMethod)
