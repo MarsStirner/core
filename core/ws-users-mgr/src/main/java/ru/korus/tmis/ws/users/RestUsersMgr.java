@@ -11,9 +11,8 @@ import javax.ws.rs.Path;
 import javax.ws.rs.PathParam;
 import javax.ws.rs.core.Response;
 
-import ru.korus.tmis.core.entity.model.Staff;
-
 import com.google.gson.Gson;
+import ru.korus.tmis.core.entity.model.Staff;
 
 @Stateless
 @Path("/api")
@@ -93,16 +92,16 @@ public class RestUsersMgr {
                 && jsonNewPerson.getSubdivision() == null
                 && (jsonNewPerson.getRoles() == null || jsonNewPerson.getRoles().isEmpty())
                 )) {
-            Response.status(Response.Status.OK).entity(UsersMgr.error("At least 1 param required")).build();
+            return Response.status(Response.Status.OK).entity(UsersMgr.error("At least 1 param required")).build();
         }
 
         if (usersMgr.isLoginUsed(jsonNewPerson.getLogin())) {
-            Response.status(Response.Status.OK).entity(UsersMgr.error("The user's login already exists")).build();
+            return Response.status(Response.Status.OK).entity(UsersMgr.error("The user's login already exists")).build();
         }
 
         final Staff user = usersMgr.getStaffByUUID(token);
         if (user == null) {
-            Response.status(Response.Status.OK).entity(UsersMgr.error("User with selected UUID does not exist or disconnected")).build();
+            return Response.status(Response.Status.OK).entity(UsersMgr.error("User with selected UUID does not exist or disconnected")).build();
         }
 
         usersMgr.updateStaff(user, jsonNewPerson);
@@ -112,13 +111,13 @@ public class RestUsersMgr {
 
     @DELETE
     @Path("/users/{token}")
-    public Response create(@PathParam(value = "token") String token) {
+    public Response delete(@PathParam(value = "token") String token) {
         final Staff user = usersMgr.getStaffByUUID(token);
         if (user == null) {
-            Response.status(Response.Status.OK).entity(UsersMgr.error("User with selected UUID does not exist or disconnected")).build();
+            return Response.status(Response.Status.OK).entity(UsersMgr.error("User with selected UUID does not exist or disconnected")).build();
         }
 
-        usersMgr.deleteStaff(user);
+        usersMgr.deleteStaff(user, token);
 
         return Response.status(Response.Status.OK).entity(UsersMgr.ok()).build();
     }

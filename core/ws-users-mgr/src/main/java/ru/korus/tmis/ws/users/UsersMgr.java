@@ -70,7 +70,7 @@ public class UsersMgr {
                         .getResultList();
         if (users != null && !users.isEmpty()) {
             final String uuid = addToConnectionList(users.get(0));
-            res = String.format("{\"OK\":True, \"type\": \"Basic\", \"token\": \"%s\" }", uuid);
+            res = String.format("{\"OK\":\"True\", \"type\": \"Basic\", \"token\": \"%s\" }", uuid);
         }
         else {
             res = error("Username or password are incorrect");
@@ -236,9 +236,10 @@ public class UsersMgr {
 
     }
 
-    public void deleteStaff(Staff staff) {
+    public void deleteStaff(Staff staff, String token) {
         staff.setDeleted(true);
         database.getEntityMgr().flush();
+        connections.remove(token);
     }
 
     private UUID createNewUUID() {
@@ -294,6 +295,6 @@ public class UsersMgr {
     }
 
     public static String ok() {
-        return "{“OK”: True}";
+        return "{\"OK\": \"True\"}";
     }
 }
