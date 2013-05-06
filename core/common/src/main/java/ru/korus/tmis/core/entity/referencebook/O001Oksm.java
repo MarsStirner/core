@@ -1,9 +1,6 @@
 package ru.korus.tmis.core.entity.referencebook;
 
-import javax.persistence.Column;
-import javax.persistence.Entity;
-import javax.persistence.Id;
-import javax.persistence.Table;
+import javax.persistence.*;
 import java.util.Date;
 
 /**
@@ -72,6 +69,7 @@ public class O001Oksm {
     /**
      * Дата последнего изменения
      */
+    @Temporal(TemporalType.DATE)
     @Column(name = "DATA_UPD")
     private Date dataupd;
 
