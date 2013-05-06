@@ -6,7 +6,7 @@ import javax.xml.datatype.XMLGregorianCalendar;
 
 
 /**
- * Классификатор способов оплаты медицинской помощи (Sposob)
+ * Классификатор способов оплаты медицинской помощи (V010Sposob)
  * 
  * <p>Java class for V010Type complex type.
  * 

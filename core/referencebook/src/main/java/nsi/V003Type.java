@@ -6,7 +6,7 @@ import javax.xml.datatype.XMLGregorianCalendar;
 
 
 /**
- * Классификатор работ (услуг) при лицензировании медицинской помощи (LicUsl)
+ * Классификатор работ (услуг) при лицензировании медицинской помощи (V003LicUsl)
  * 
  * <p>Java class for V003Type complex type.
  * 

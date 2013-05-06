@@ -6,7 +6,7 @@ import javax.xml.datatype.XMLGregorianCalendar;
 
 
 /**
- * Классификатор профилей оказанной медицинской помощи (ProfOt)
+ * Классификатор профилей оказанной медицинской помощи (V002ProfOt)
  * 
  * <p>Java class for V002Type complex type.
  * 

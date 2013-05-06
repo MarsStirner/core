@@ -6,7 +6,7 @@ import javax.xml.datatype.XMLGregorianCalendar;
 
 
 /**
- * Классификатор статуса застрахованного лица (StatZL)
+ * Классификатор статуса застрахованного лица (F009StatZL)
  * 
  * <p>Java class for F009Type complex type.
  * 

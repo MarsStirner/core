@@ -6,7 +6,7 @@ import javax.xml.datatype.XMLGregorianCalendar;
 
 
 /**
- * Классификатор видов медицинской помощи (VidMp)
+ * Классификатор видов медицинской помощи (V008VidMp)
  * 
  * <p>Java class for V008Type complex type.
  * 

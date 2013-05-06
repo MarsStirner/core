@@ -6,7 +6,7 @@ import javax.xml.datatype.XMLGregorianCalendar;
 
 
 /**
- * Классификатор ведомственной принадлежности медицинской организации (Vedom)
+ * Классификатор ведомственной принадлежности медицинской организации (F007Vedom)
  * 
  * <p>Java class for F007Type complex type.
  * 

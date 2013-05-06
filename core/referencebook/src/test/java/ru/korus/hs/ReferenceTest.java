@@ -23,6 +23,86 @@ public class ReferenceTest {
     }
 
     @Test
+    public void loadM001MKB10() {
+        referenceBook.loadM001MKB10();
+    }
+
+    @Test
+    public void loadV001NomeclR() {
+        referenceBook.loadV001NomeclR();
+    }
+
+    @Test
+    public void loadV002ProfOt() {
+        referenceBook.loadV002ProfOt();
+    }
+
+    @Test
+    public void loadV003LicUsl() {
+        referenceBook.loadV003LicUsl();
+    }
+
+    @Test
+    public void loadV004Medspec() {
+        referenceBook.loadV004Medspec();
+    }
+
+    @Test
+    public void loadV005Pol() {
+        referenceBook.loadV005Pol();
+    }
+
+    @Test
+    public void loadV006UslMp() {
+        referenceBook.loadV006UslMp();
+    }
+
+    @Test
+    public void loadV007NomMO() {
+        referenceBook.loadV007NomMO();
+    }
+
+    @Test
+    public void loadV008VidMp() {
+        referenceBook.loadV008VidMp();
+    }
+
+    @Test
+    public void loadV009Rezult() {
+        referenceBook.loadV009Rezult();
+    }
+
+    @Test
+    public void loadF001Tfoms() {
+        referenceBook.loadF001Tfoms();
+    }
+
+    @Test
+    public void loadF002Smo() {
+        referenceBook.loadF002Smo();
+    }
+
+    @Test
+    public void loadF003Mo() {
+        referenceBook.loadF003Mo();
+    }
+
+    @Test
+    public void loadF007Vedom() {
+        referenceBook.loadF007Vedom();
+    }
+
+    @Test
+    public void loadF008TipOMS() {
+        referenceBook.loadF008TipOMS();
+    }
+
+    @Test
+    public void loadF009StatZL() {
+        referenceBook.loadF009StatZL();
+    }
+
+    @Test(enabled = false)
     public void loadV005() {
         referenceBook.loadF015FedOkrug();
         referenceBook.loadV012Ishod();

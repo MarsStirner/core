@@ -6,7 +6,7 @@ import javax.xml.datatype.XMLGregorianCalendar;
 
 
 /**
- * Номенклатура МО (NomMO)
+ * Номенклатура МО (V007NomMO)
  * 
  * <p>Java class for V007Type complex type.
  * 

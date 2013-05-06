@@ -6,7 +6,7 @@ import javax.xml.datatype.XMLGregorianCalendar;
 
 
 /**
- * Классификатор исходов заболевания (Ishod)
+ * Классификатор исходов заболевания (V012Ishod)
  * 
  * <p>Java class for V012Type complex type.
  * 

@@ -6,7 +6,7 @@ import javax.xml.datatype.XMLGregorianCalendar;
 
 
 /**
- * Классификатор результатов обращения за медицинской помощью (Rezult)
+ * Классификатор результатов обращения за медицинской помощью (V009Rezult)
  * 
  * <p>Java class for V009Type complex type.
  * 

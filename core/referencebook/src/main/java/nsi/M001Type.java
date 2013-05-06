@@ -6,7 +6,7 @@ import javax.xml.datatype.XMLGregorianCalendar;
 
 
 /**
- * Международный классификатор болезней (MKB10)
+ * Международный классификатор болезней (M001MKB10)
  * 
  * <p>Java class for M001Type complex type.
  * 

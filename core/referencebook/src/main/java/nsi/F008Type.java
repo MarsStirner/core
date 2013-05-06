@@ -6,7 +6,7 @@ import javax.xml.datatype.XMLGregorianCalendar;
 
 
 /**
- * Классификатор типов документов, подтверждающих факт страхования по ОМС (TipOMS)
+ * Классификатор типов документов, подтверждающих факт страхования по ОМС (F008TipOMS)
  * 
  * <p>Java class for F008Type complex type.
  * 

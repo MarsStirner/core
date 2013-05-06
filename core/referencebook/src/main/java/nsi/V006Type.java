@@ -6,7 +6,7 @@ import javax.xml.datatype.XMLGregorianCalendar;
 
 
 /**
- * Классификатор условий оказания медицинской помощи (UslMp)
+ * Классификатор условий оказания медицинской помощи (V006UslMp)
  * 
  * <p>Java class for V006Type complex type.
  * 
