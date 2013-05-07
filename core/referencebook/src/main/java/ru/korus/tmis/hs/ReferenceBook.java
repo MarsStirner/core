@@ -3,17 +3,18 @@ package ru.korus.tmis.hs;
 import nsi.*;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import ru.korus.tmis.core.entity.referencebook.V005Pol;
+import ru.korus.tmis.core.logging.LoggingInterceptor;
+import ru.korus.tmis.dao.*;
+import ru.korus.tmis.entity.*;
 import ru.korus.tmis.hs.wss.AuthentificationHeaderHandlerResolver;
 import wsdl.NsiService;
 
+import javax.ejb.EJB;
 import javax.ejb.Schedule;
 import javax.ejb.Stateless;
-import javax.persistence.EntityManager;
-import javax.persistence.PersistenceContext;
+import javax.interceptor.Interceptors;
 import javax.xml.ws.Holder;
 import java.lang.reflect.Field;
-import java.util.ArrayList;
 import java.util.List;
 
 /**
@@ -22,26 +23,54 @@ import java.util.List;
  * Company:     Korus Consulting IT<br>
  * Description:  <br>
  */
+@Interceptors(LoggingInterceptor.class)
 @Stateless
 public class ReferenceBook implements ReferenceBookLocal {
     private static final Logger logger = LoggerFactory.getLogger(ReferenceBook.class);
 
-    @PersistenceContext(unitName = "s11r64")
-    private EntityManager em = null;
-
     private NsiService service;
 
-    @Schedule(minute = "*/3", hour = "*")
+    @EJB
+    private V001DAOLocal v001DAO;
+
+    @EJB
+    private V005DAOLocal v005DAO;
+
+    @EJB
+    private V007DAOLocal v007DAO;
+
+    @EJB
+    private F001DAOLocal f001DAO;
+
+    @EJB
+    private F002DAOLocal f002DAO;
+
+    @EJB
+    private F003DAOLocal f003DAO;
+
+    @EJB
+    private F007DAOLocal f007DAO;
+
+
+    @Override
+    @Schedule(minute = "*/1", hour = "*")
     public void loadReferenceBooks() {
-        for (V005Pol pol : loadV005Pol()) {
-            em.persist(pol);
-        }
+        loadV001();
+        loadV005();
+        loadV007();
+        loadF001();
+        loadF002();
+        loadF003();
+        loadF007();
     }
 
-
     public ReferenceBook() {
-        service = new NsiService();
-        service.setHandlerResolver(new AuthentificationHeaderHandlerResolver());
+        try {
+            service = new NsiService();
+            service.setHandlerResolver(new AuthentificationHeaderHandlerResolver());
+        } catch (Exception e) {
+            logger.error("Error init ReferenceBook " + e, e);
+        }
     }
 
     /**
@@ -69,20 +98,24 @@ public class ReferenceBook implements ReferenceBookLocal {
      *
      * @return
      */
-    public List<V001Type> loadV001NomeclR() {
-        final StringBuilder sb = new StringBuilder("loadV001NomeclR");
+    public void loadV001() {
+        final StringBuilder sb = new StringBuilder("loadV001");
+
         final Holder<List<V001Type>> list = new Holder<List<V001Type>>();
         service.getNsiServiceSoap().v001(list);
-        if (logger.isDebugEnabled()) {
-            for (V001Type type : list.value) {
+
+        for (V001Type type : list.value) {
+            if (logger.isDebugEnabled()) {
                 sb.append(getAllFields(type)).append("\n");
             }
+            if (!v001DAO.isExist(type.getIDRB())) {
+                v001DAO.insert(V001Nomerclr.getInstance(type));
+            }
             logger.debug(sb.toString());
-        } else {
-            logger.info("loading {} V001NomeclR items", list.value != null ? list.value.size() : 0);
+            logger.info("loading {} V001NomeclR items", list.value.size());
         }
-        return list.value;
     }
+
 
     /**
      * Загрузка справочника V002ProfOt - классификатор профилей оказанной медицинской помощи
@@ -150,21 +183,23 @@ public class ReferenceBook implements ReferenceBookLocal {
      *
      * @return
      */
-    public List<V005Pol> loadV005Pol() {
-        final StringBuilder sb = new StringBuilder("loadV005Pol");
+    public void loadV005() {
+        final StringBuilder sb = new StringBuilder("loadV005");
+        int added = 0;
         final Holder<List<V005Type>> list = new Holder<List<V005Type>>();
         service.getNsiServiceSoap().v005(list);
-        final List<V005Pol> polList = new ArrayList<V005Pol>(list.value.size());
-        if (logger.isDebugEnabled()) {
-            for (V005Type type : list.value) {
+
+        for (V005Type type : list.value) {
+            if (logger.isDebugEnabled()) {
                 sb.append(getAllFields(type)).append("\n");
-                polList.add(new V005Pol(type.getIDPOL(), type.getPOLNAME()));
             }
-            logger.debug(sb.toString());
-        } else {
-            logger.info("loading {} V005Pol items", list.value.size());
+            if (!v005DAO.isExist(type.getIDPOL())) {
+                v005DAO.insert(V005Pol.getInstance(type));
+                added++;
+            }
         }
-        return polList;
+        logger.debug(sb.toString());
+        logger.info("loading {} V005 items, {} added", list.value.size(), added);
     }
 
     /**
@@ -192,19 +227,23 @@ public class ReferenceBook implements ReferenceBookLocal {
      *
      * @return
      */
-    public List<V007Type> loadV007NomMO() {
-        final StringBuilder sb = new StringBuilder("loadV007NomMO");
+    public void loadV007() {
+        final StringBuilder sb = new StringBuilder("loadV007");
+        int added = 0;
         final Holder<List<V007Type>> list = new Holder<List<V007Type>>();
         service.getNsiServiceSoap().v007(list);
-        if (logger.isDebugEnabled()) {
-            for (V007Type type : list.value) {
+
+        for (V007Type type : list.value) {
+            if (logger.isDebugEnabled()) {
                 sb.append(getAllFields(type)).append("\n");
             }
-            logger.debug(sb.toString());
-        } else {
-            logger.info("loading {} V007NomMO items", list.value != null ? list.value.size() : 0);
+            if (!v007DAO.isExist(type.getIDNMO())) {
+                v007DAO.insert(V007NomMO.getInstance(type));
+                added++;
+            }
         }
-        return list.value;
+        logger.debug(sb.toString());
+        logger.info("loading {} V007 items, {} added", list.value.size(), added);
     }
 
     /**
@@ -292,19 +331,24 @@ public class ReferenceBook implements ReferenceBookLocal {
      *
      * @return
      */
-    public List<F001Type> loadF001Tfoms() {
-        final StringBuilder sb = new StringBuilder("loadF001Tfoms");
+    public void loadF001() {
+        final StringBuilder sb = new StringBuilder("loadF001");
+        int added = 0;
         final Holder<List<F001Type>> list = new Holder<List<F001Type>>();
         service.getNsiServiceSoap().f001(list);
-        if (logger.isDebugEnabled()) {
-            for (F001Type type : list.value) {
+
+        for (F001Type type : list.value) {
+            if (logger.isDebugEnabled()) {
                 sb.append(getAllFields(type)).append("\n");
             }
-            logger.debug(sb.toString());
-        } else {
-            logger.info("loading {} F001Tfoms items", list.value != null ? list.value.size() : 0);
+            if (!f001DAO.isExist(type.getTfKod())) {
+                f001DAO.insert(F001Tfoms.getInstance(type));
+                added++;
+            }
+
         }
-        return list.value;
+        logger.debug(sb.toString());
+        logger.info("loading {} F001 items, {} added", list.value.size(), added);
     }
 
     /**
@@ -313,19 +357,23 @@ public class ReferenceBook implements ReferenceBookLocal {
      *
      * @return
      */
-    public List<F002Type> loadF002Smo() {
-        final StringBuilder sb = new StringBuilder("loadF002Smo");
+    public void loadF002() {
+        final StringBuilder sb = new StringBuilder("loadF002");
+        int added = 0;
         final Holder<List<F002Type>> list = new Holder<List<F002Type>>();
         service.getNsiServiceSoap().f002(list);
-        if (logger.isDebugEnabled()) {
-            for (F002Type type : list.value) {
+
+        for (F002Type type : list.value) {
+            if (logger.isDebugEnabled()) {
                 sb.append(getAllFields(type)).append("\n");
             }
-            logger.debug(sb.toString());
-        } else {
-            logger.info("loading {} F002Smo items", list.value != null ? list.value.size() : 0);
+            if (!f002DAO.isExist(type.getInn())) {   //todo
+                f002DAO.insert(F002Smo.getInstance(type));
+                added++;
+            }
         }
-        return list.value;
+        logger.debug(sb.toString());
+        logger.info("loading {} F002 items, {} added", list.value.size(), added);
     }
 
     /**
@@ -334,19 +382,23 @@ public class ReferenceBook implements ReferenceBookLocal {
      *
      * @return
      */
-    public List<F003Type> loadF003Mo() {
-        final StringBuilder sb = new StringBuilder("loadF003Mo");
+    public void loadF003() {
+        final StringBuilder sb = new StringBuilder("loadF003");
+        int added = 0;
         final Holder<List<F003Type>> list = new Holder<List<F003Type>>();
         service.getNsiServiceSoap().f003(list);
-        if (logger.isDebugEnabled()) {
-            for (F003Type type : list.value) {
+
+        for (F003Type type : list.value) {
+            if (logger.isDebugEnabled()) {
                 sb.append(getAllFields(type)).append("\n");
             }
-            logger.debug(sb.toString());
-        } else {
-            logger.info("loading {} F003Mo items", list.value != null ? list.value.size() : 0);
+            if (!f003DAO.isExist(type.getTfOkato())) {   //todo
+                f003DAO.insert(F003Mo.getInstance(type));
+                added++;
+            }
         }
-        return list.value;
+        logger.debug(sb.toString());
+        logger.info("loading {} F003 items, {} added", list.value.size(), added);
     }
 
     /**
@@ -354,19 +406,23 @@ public class ReferenceBook implements ReferenceBookLocal {
      *
      * @return
      */
-    public List<F007Type> loadF007Vedom() {
-        final StringBuilder sb = new StringBuilder("loadF007Vedom");
+    public void loadF007() {
+        final StringBuilder sb = new StringBuilder("loadF007");
+        int added = 0;
         final Holder<List<F007Type>> list = new Holder<List<F007Type>>();
         service.getNsiServiceSoap().f007(list);
-        if (logger.isDebugEnabled()) {
-            for (F007Type type : list.value) {
+
+        for (F007Type type : list.value) {
+            if (logger.isDebugEnabled()) {
                 sb.append(getAllFields(type)).append("\n");
             }
-            logger.debug(sb.toString());
-        } else {
-            logger.info("loading {} F007Vedom items", list.value != null ? list.value.size() : 0);
+            if (!f007DAO.isExist(type.getIDVED())) {
+                f007DAO.insert(F007Vedom.getInstance(type));
+                added++;
+            }
         }
-        return list.value;
+        logger.debug(sb.toString());
+        logger.info("loading {} F007 items, {} added", list.value.size(), added);
     }
 
     /**

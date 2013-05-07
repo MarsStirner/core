@@ -29,7 +29,7 @@ public class ReferenceTest {
 
     @Test
     public void loadV001NomeclR() {
-        referenceBook.loadV001NomeclR();
+        referenceBook.loadV001();
     }
 
     @Test
@@ -49,7 +49,7 @@ public class ReferenceTest {
 
     @Test
     public void loadV005Pol() {
-        referenceBook.loadV005Pol();
+        referenceBook.loadV005();
     }
 
     @Test
@@ -59,7 +59,7 @@ public class ReferenceTest {
 
     @Test
     public void loadV007NomMO() {
-        referenceBook.loadV007NomMO();
+        referenceBook.loadV007();
     }
 
     @Test
@@ -74,22 +74,22 @@ public class ReferenceTest {
 
     @Test
     public void loadF001Tfoms() {
-        referenceBook.loadF001Tfoms();
+        referenceBook.loadF001();
     }
 
     @Test
     public void loadF002Smo() {
-        referenceBook.loadF002Smo();
+        referenceBook.loadF002();
     }
 
     @Test
     public void loadF003Mo() {
-        referenceBook.loadF003Mo();
+        referenceBook.loadF003();
     }
 
     @Test
     public void loadF007Vedom() {
-        referenceBook.loadF007Vedom();
+        referenceBook.loadF007();
     }
 
     @Test
@@ -109,26 +109,26 @@ public class ReferenceTest {
         referenceBook.loadV003LicUsl();
         referenceBook.loadV004Medspec();
         referenceBook.loadM001MKB10();
-        referenceBook.loadF003Mo();
-        referenceBook.loadV001NomeclR();
-        referenceBook.loadV007NomMO();
+        referenceBook.loadF003();
+        referenceBook.loadV001();
+        referenceBook.loadV007();
         referenceBook.loadO002Okato();
         referenceBook.loadO004Okfs();
         referenceBook.loadO005Okopf();
         referenceBook.loadO001OKSM();
         referenceBook.loadO003Okved();
-        referenceBook.loadV005Pol();
+        referenceBook.loadV005();
         referenceBook.loadV002ProfOt();
         referenceBook.loadV009Rezult();
-        referenceBook.loadF002Smo();
+        referenceBook.loadF002();
         referenceBook.loadV010Sposob();
         referenceBook.loadF009StatZL();
         referenceBook.loadF010Subekti();
-        referenceBook.loadF001Tfoms();
+        referenceBook.loadF001();
         referenceBook.loadF011Tipdoc();
         referenceBook.loadF008TipOMS();
         referenceBook.loadV006UslMp();
-        referenceBook.loadF007Vedom();
+        referenceBook.loadF007();
         referenceBook.loadV008VidMp();
 
     }

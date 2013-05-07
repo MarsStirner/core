@@ -13,7 +13,7 @@ import java.net.URL;
  * Generated source version: 2.2
  * 
  */
-@WebServiceClient(name = "NsiService", targetNamespace = "urn:wsdl", wsdlLocation = "file:/Users/nde/Project/tmis-core-develop/core/referencebook/target/korus.NsiService.cls.xml")
+@WebServiceClient(name = "NsiService", targetNamespace = "urn:wsdl", wsdlLocation = "../korus.NsiService.cls.xml")
 public class NsiService
     extends Service
 {
@@ -26,7 +26,8 @@ public class NsiService
         URL url = null;
         WebServiceException e = null;
         try {
-            url = new URL("file:/Users/nde/Project/tmis-core-develop/core/referencebook/target/korus.NsiService.cls.xml");
+            final URL baseUrl = NsiService.class.getResource(".");
+            url = new URL(baseUrl, "../korus.NsiService.cls.xml");
         } catch (MalformedURLException ex) {
             e = new WebServiceException(ex);
         }

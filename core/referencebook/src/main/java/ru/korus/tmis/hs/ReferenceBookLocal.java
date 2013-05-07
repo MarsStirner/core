@@ -10,4 +10,6 @@ import javax.ejb.Local;
  */
 @Local
 public interface ReferenceBookLocal {
+
+    void loadReferenceBooks();
 }
