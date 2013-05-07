@@ -36,24 +36,6 @@ class HospitalBedData {
   @BeanProperty
   var data: HospitalBedEntry = _
 
-  /**
-   * Конструктор HospitalBedData для получения информации об действии 'движение' пациента.
-   * @param action Действие 'Движение'.
-   * @param values Список свойст движения со значениями.
-   * @param beds Список обозначений коек с меткой занято или нет.
-   * @param corrMap Список соответствия идентификаторов свойств действия с таблицей RbCoreActionProperty.
-   * @param requestData Данные из запроса.
-   */
-  /*def this(action: Action,
-           values: java.util.Map[ActionProperty, java.util.List[APValue]],
-           beds: java.util.Map[OrgStructureHospitalBed, java.lang.Boolean],
-           corrMap: java.util.HashMap[String, java.util.List[RbCoreActionProperty]],
-           requestData: HospitalBedDataRequest) = {
-    this ()
-    this.requestData = requestData
-    this.data = new HospitalBedEntry(action, values, beds, corrMap)
-  } */
-
   def this(actions: java.util.List[Action],
            mGetPropertiesWithValuesByCodes: (Int, java.util.Set[String]) => java.util.Map[ActionProperty, java.util.List[APValue]],
            requestData: HospitalBedDataRequest)  = {
@@ -193,23 +175,6 @@ class HospitalBedEntry {
   private class IndexOf[T] (seq: Seq[T]) {
     def unapply(pos: T) = seq find (pos ==) map (seq indexOf _)
   }
-
-  /**
-   * Конструктор класса HospitalBedEntry
-   * @param action Действие пациента.
-   * @param values Список свойств действия со значениями.
-   * @param beds  Список занятых/свободных коек.
-   * @param corrMap Список соответствия с s11r64.RbCoreActionProperty.
-   */
-  /*def this(action: Action,
-           values: java.util.Map[ActionProperty, java.util.List[APValue]],
-           beds: java.util.Map[OrgStructureHospitalBed, java.lang.Boolean],
-           corrMap: java.util.HashMap[String, java.util.List[RbCoreActionProperty]]) = {
-    this ()
-    this.move = new MoveHospitalBedContainer(action, values, corrMap)
-    this.bedRegistration = new RegistrationHospitalBedContainer(action, values, beds, corrMap)
-    this.registrationForm = new RegistrationHospitalBedContainer(action, values, beds, corrMap)
-  } */
 
   def this(action: Action,
            mGetPropertiesWithValuesByCodes: (Int, java.util.Set[String]) => java.util.Map[ActionProperty, java.util.List[APValue]],
@@ -513,8 +478,8 @@ class RegistrationHospitalBedContainer {
    * Конструктор класса RegistrationHospitalBedContainer
    * @param action Действие пациента типа 'движение'.
    * @param values Значения свойств действия в виде списка по ключам.
-   * @param beds Список занятых/свободных коек.
-   * @param corrMap Список соответствия с s11r64.RbCoreActionProperty.
+   * @param mGetCaseHospitalBedsByDepartment Делегируемый метод на получение списка занятых коек
+   * @param mFormattedDate Делегируемый метод по формированию даты.
    */
   def this(action: Action,
            values: java.util.Map[ActionProperty, java.util.List[APValue]],

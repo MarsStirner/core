@@ -389,15 +389,6 @@ with TmisLogging{
   }
 
   def getRegistryOriginalForm(action: Action, authData: AuthData) = {
-
-   /* val apv_map = actionPropertyBean.getActionPropertiesByActionId(action.getId.intValue)
-
-    //Таблица соответствия id
-    val corrMap = new java.util.HashMap[String, java.util.List[RbCoreActionProperty]]()
-    corrMap.put(i18n("db.actionType.moving").toString, dbRbCoreActionPropertyBean.getRbCoreActionPropertiesByActionTypeId(i18n("db.actionType.moving").toInt))
-    corrMap.put(i18n("db.actionType.hospitalization.primary").toString, dbRbCoreActionPropertyBean.getRbCoreActionPropertiesByActionTypeId(i18n("db.actionType.hospitalization.primary").toInt))
-    */
-    //new HospitalBedData(action, apv_map, null, corrMap, null)
     new HospitalBedData(action,
                         actionPropertyBean.getActionPropertiesByActionIdAndActionPropertyTypeCodes _,
                         null,
@@ -405,51 +396,10 @@ with TmisLogging{
   }
 
   def getRegistryFormWithChamberList(action: Action, authData: AuthData) = {
-
     new HospitalBedData(action,
                         actionPropertyBean.getActionPropertiesByActionIdAndActionPropertyTypeCodes _,
                         this.getCaseHospitalBedsByDepartmentId _,
                         null)
-    /*if (action.getActionType.getCode.compareTo("4202")!=0){
-      throw new CoreException("Action c id = %s не является действием 'Движение'".format(action.getId.toString))
-      null
-    }
-    else {
-      val apv_map = actionPropertyBean.getActionPropertiesByActionId(action.getId.intValue)
-
-      val core = dbRbCoreActionPropertyBean.getRbCoreActionPropertiesByActionTypeId(i18n("db.actionType.moving").toInt)
-      val listNdx = new IndexOf(list)
-      var departmentId: Int = - 1
-      val result =
-        if (action.getEndDate==null){
-          core.find(element => element.getName == i18n("db.actionPropertyType.moving.name.located").toString)
-        }
-        else {
-          core.find(element => element.getName == i18n("db.actionPropertyType.moving.name.movedIn").toString)
-        }
-      val res = result.getOrElse(null)
-      if(res!=null){
-        val result2 = apv_map.find {element => element._1.getType.getId.intValue() == res.getActionPropertyType.getId}
-        val res2 = result2.getOrElse(null)
-        if(res2!=null){
-            departmentId = res2._2.get(0).asInstanceOf[APValueOrgStructure].getValue.getId.intValue()
-        }
-      }
-
-      if (departmentId<0){
-        throw new CoreException("Для Action c id = %s не удалось найти отделение, где находится пациент".format(action.getId.toString))
-        null
-      }
-      else {
-        //Список коек отделения
-        val beds = this.getCaseHospitalBedsByDepartmentId(departmentId)
-        //Таблица соответствия id
-        val corrMap = new java.util.HashMap[String, java.util.List[RbCoreActionProperty]]()
-        corrMap.put(i18n("db.actionType.moving").toString, dbRbCoreActionPropertyBean.getRbCoreActionPropertiesByActionTypeId(i18n("db.actionType.moving").toInt))
-
-        new HospitalBedData(action, apv_map, beds, corrMap, null)
-      }
-    }*/
   }
 
   def getMovingListByEventIdAndFilter(filter: HospitalBedDataListFilter, authData: AuthData): HospitalBedData = {
