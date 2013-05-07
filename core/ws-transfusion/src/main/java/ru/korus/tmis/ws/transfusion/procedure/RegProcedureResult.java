@@ -107,7 +107,7 @@ public class RegProcedureResult {
                 if (types.isEmpty()) {
                     logger.error("Cannot find the TRFU laboratory measure type: {}. Action {}", curMeasure.getId(), action.getId());
                 } else {
-                    trfuLaboratoryMeasure.setRbTrfulaboratoryMeasureTypes(types.get(0));
+                    trfuLaboratoryMeasure.setRbTrfulaboratoryMeasureTypes(types.iterator().next());
                 }
             } else {
                 logger.error("The TRFU laboratory measure type is null for action {}", action.getId());

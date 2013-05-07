@@ -1,13 +1,18 @@
 package ru.korus.tmis.ws.users;
 
-import javax.xml.bind.annotation.XmlRootElement;
+import java.util.LinkedList;
 import java.util.List;
 
+import javax.xml.bind.annotation.XmlRootElement;
+
+import ru.korus.tmis.core.entity.model.Role;
+import ru.korus.tmis.core.entity.model.Staff;
+
 /**
- * Author:      Sergey A. Zagrebelny <br>
- * Date:        23.04.13, 15:10 <br>
- * Company:     Korus Consulting IT<br>
- * Description:  <br>
+ * Author: Sergey A. Zagrebelny <br>
+ * Date: 23.04.13, 15:10 <br>
+ * Company: Korus Consulting IT<br>
+ * Description: <br>
  */
 
 @XmlRootElement
@@ -20,6 +25,26 @@ public class JsonPerson {
     private List<String> roles;
     private String login;
     private String password;
+
+    static public JsonPerson create(Staff staff) {
+        JsonPerson res = new JsonPerson();
+        res.setFname(staff.getFirstName());
+        res.setPname(staff.getPatrName());
+        res.setLname(staff.getLastName());
+        if (staff.getPost() != null) {
+            res.setPosition(staff.getPost().getName());
+        }
+        if (staff.getOrgStructure() != null) {
+            res.setSubdivision(staff.getOrgStructure().getUuid().getUuid());
+        }
+        res.setLogin(staff.getLogin());
+        List<String> roleCodes = new LinkedList<String>();
+        for (Role role : staff.getRoles()) {
+            roleCodes.add(role.getCode());
+        }
+        res.setRoles(roleCodes);
+        return res;
+    }
 
     public String getFname() {
         return fname;
@@ -60,7 +85,6 @@ public class JsonPerson {
     public void setSubdivision(String subdivision) {
         this.subdivision = subdivision;
     }
-
 
     public String getLogin() {
         return login;

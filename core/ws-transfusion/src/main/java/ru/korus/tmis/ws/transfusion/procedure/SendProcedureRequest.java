@@ -387,11 +387,7 @@ public class SendProcedureRequest {
         final List<ActionType> actionTypes =
                 em.createQuery("SELECT at FROM ActionType at WHERE at.flatCode = :flatCode", ActionType.class).setParameter("flatCode", flatCode)
                         .getResultList();
-        if (actionTypes.isEmpty()) {
-            return null;
-        } else {
-            return actionTypes.get(0);
-        }
+        return actionTypes.iterator().next();
     }
 
     /**
@@ -429,7 +425,7 @@ public class SendProcedureRequest {
         if (unitCode != null) {
             final List<RbUnit> units =
                     em.createQuery("SELECT u FROM RbUnit u WHERE u.code = :code", RbUnit.class).setParameter("code", unitCode).getResultList();
-            return units.isEmpty() ? null : units.get(0);
+            return units.iterator().next();
         }
         return null;
     }

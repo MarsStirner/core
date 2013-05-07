@@ -24,6 +24,7 @@ import ru.korus.tmis.core.entity.model.Role;
 import ru.korus.tmis.core.entity.model.Speciality;
 import ru.korus.tmis.core.entity.model.Staff;
 import ru.korus.tmis.core.entity.model.UUID;
+import scala.actors.threadpool.Arrays;
 
 /**
  * Author: Sergey A. Zagrebelny <br>
@@ -34,6 +35,8 @@ import ru.korus.tmis.core.entity.model.UUID;
 
 @Stateless
 public class UsersMgr {
+
+    public static final String ROLE_GUEST = "guest";
 
     private int MAX_CONNECTIONS = 1024 * 256;
 
@@ -60,7 +63,7 @@ public class UsersMgr {
                 database.getEntityMgr().createQuery("SELECT s FROM Staff s WHERE s.login  = :login", Staff.class).setParameter("login", login).getResultList();
 
         if (users == null || users.isEmpty()) {
-            return error("User does not exists");
+            return errorUserNotFound();
         }
 
         users =
@@ -79,34 +82,21 @@ public class UsersMgr {
         return res;
     }
 
+    /**
+     * @param login
+     * @return
+     */
+    static public String errorUserNotFound() {
+        return error("User does not exists");
+    }
+
     public List<JsonPerson> getAll() {
         List<Staff> users = database.getEntityMgr().createQuery("SELECT s FROM Staff s WHERE s.deleted = 0", Staff.class)
                 .getResultList();
         List<JsonPerson> res = new LinkedList<JsonPerson>();
         for (Staff staff : users) {
-            JsonPerson newPers = getJsonPerson(staff);
-            res.add(newPers);
+            res.add(JsonPerson.create(staff));
         }
-        return res;
-    }
-
-    private JsonPerson getJsonPerson(Staff staff) {
-        JsonPerson res = new JsonPerson();
-        res.setFname(staff.getFirstName());
-        res.setPname(staff.getPatrName());
-        res.setLname(staff.getLastName());
-        if (staff.getPost() != null) {
-            res.setPosition(staff.getPost().getName());
-        }
-        if (staff.getOrgStructure() != null) {
-            res.setSubdivision(staff.getOrgStructure().getUuid().getUuid());
-        }
-        res.setLogin(staff.getLogin());
-        List<String> roleCodes = new LinkedList<String>();
-        for (Role role : staff.getRoles()) {
-            roleCodes.add(role.getCode());
-        }
-        res.setRoles(roleCodes);
         return res;
     }
 
@@ -114,7 +104,7 @@ public class UsersMgr {
         JsonPerson res = null;
         Staff user = getStaffByUUID(token);
         if (user != null) {
-            return getJsonPerson(user);
+            return JsonPerson.create(user);
         }
         return res;
     }
@@ -226,9 +216,16 @@ public class UsersMgr {
         if (jsonNewPerson.getPassword() != null) {
             newStaff.setPassword(getMD5(jsonNewPerson.getPassword()));
         }
+        @SuppressWarnings("unchecked")
+        Set<Role> roles = getRoles(Arrays.asList(new String[] { ROLE_GUEST }));
         if (jsonNewPerson.getRoles() != null && !jsonNewPerson.getRoles().isEmpty()) {
-            newStaff.setRoles(getRoles(jsonNewPerson.getRoles()));
+            final Set<Role> requestRoles = getRoles(jsonNewPerson.getRoles());
+            if (!requestRoles.isEmpty()) {
+                roles = requestRoles;
+            }
         }
+        newStaff.setRoles(roles);
+        newStaff.setUserProfileId(roles.iterator().next());
         if (jsonNewPerson.getLogin() != null && !isLoginUsed(jsonNewPerson.getLogin())) {
             newStaff.setLogin(jsonNewPerson.getLogin());
         }
@@ -264,7 +261,7 @@ public class UsersMgr {
     private String getMD5(final String pass) {
         try {
             byte[] md5sum = MessageDigest.getInstance("MD5").digest(pass.getBytes());
-            return (new HexBinaryAdapter()).marshal(md5sum);
+            return (new HexBinaryAdapter()).marshal(md5sum).toLowerCase();
         } catch (NoSuchAlgorithmException e) {
             e.printStackTrace();
         }

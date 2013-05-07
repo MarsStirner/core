@@ -124,11 +124,11 @@ public class Database {
         final String className = classType.getName();
         final List<Object> propRes =
                 em.createQuery("SELECT p FROM " + className.substring(className.lastIndexOf('.') + 1) + " p WHERE p.id = :id", classType)
-                        .setParameter("id", new IndexedId(prop.get(0).getId(), 0)).getResultList();
+                        .setParameter("id", new IndexedId(prop.iterator().next().getId(), 0)).getResultList();
 
         checkCountProp(actionId, propTypeId, propRes.size());
 
-        return (T) ((APValue) propRes.get(0)).getValue();
+        return (T) ((APValue) propRes.iterator().next()).getValue();
     }
 
     public EntityManager getEntityMgr() {
@@ -204,7 +204,7 @@ public class Database {
         final List<ActionProperty> prop = getActionProp(actionId, propTypeId);
         if (prop.size() > 0) {
             if (isUpdate) {
-                newPropId = prop.get(0).getId();
+                newPropId = prop.iterator().next().getId();
             } else {
                 new CoreException(String.format("The property %i for action %i has been alredy set", propTypeId, actionId)); // свойство уже установленно
             }
@@ -389,7 +389,7 @@ public class Database {
         final List<T> curProp =
                 (List<T>) em.createQuery(String.format(template, className.substring(className.lastIndexOf('.') + 1)), defaultValue.getClass())
                         .setParameter("curProp_id", newPropId).getResultList();
-        return curProp.size() > 0 ? curProp.get(0) : defaultValue;
+        return curProp.size() > 0 ? curProp.iterator().next() : defaultValue;
     }
 
     /**
