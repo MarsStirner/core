@@ -135,7 +135,7 @@ class FreePersonsListDataFilter  extends AbstractListDataFilter {
   @Override
   def toSortingString (sortingField: String, sortingMethod: String) = {
     var sorting = sortingField match {
-      case _ => {"e.id %s"}
+      case _ => {"s.id %s"}
     }
     sorting = "ORDER BY " + sorting.format(sortingMethod)
     sorting

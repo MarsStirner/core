@@ -209,7 +209,7 @@ class DbStaffBean
   AND
     s.deleted = 0
   AND
-    a.actionType.code = "amb"
+    a.actionType.code = 'amb'
   AND
     a.deleted = 0
   AND
@@ -220,9 +220,9 @@ class DbStaffBean
     OR
       apt.name = 'endTime'
     )
-  %s
-  GROUP BY s, apt.name
-                                     """
+
+  GROUP BY s.id, apt.name
+                                     """      //%s
 
   val AllStaffWithoutCurrentConsultancyQuery = """
     SELECT DISTINCT s
