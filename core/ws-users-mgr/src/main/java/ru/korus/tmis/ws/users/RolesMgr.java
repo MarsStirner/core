@@ -2,6 +2,7 @@ package ru.korus.tmis.ws.users;
 
 import java.util.LinkedList;
 import java.util.List;
+import java.util.NoSuchElementException;
 
 import javax.ejb.EJB;
 import javax.ejb.Stateless;
@@ -167,13 +168,17 @@ public class RolesMgr {
         if (UsersMgr.ROLE_GUEST.equals(code)) {
             return UsersMgr.error("The role 'guest' cannot be deleted");
         }
-        final Role role = getRoleByCode(code).iterator().next();
-        if (role == null) {
+        final Role role;
+        try {
+            role = getRoleByCode(code).iterator().next();
+        } catch (NoSuchElementException ex) {
             return errorRoleNotFound(code);
         }
 
-        final Role guest = getRoleByCode(UsersMgr.ROLE_GUEST).iterator().next();
-        if (guest == null) {
+        final Role guest;
+        try {
+            guest = getRoleByCode(UsersMgr.ROLE_GUEST).iterator().next();
+        } catch (NoSuchElementException ex) {
             return UsersMgr.error("The role 'guest' is not set");
         }
 
@@ -312,8 +317,10 @@ public class RolesMgr {
      * @return
      */
     public Object removeRolesForUser(String token, String code) {
-        final Role guest = getRoleByCode(UsersMgr.ROLE_GUEST).iterator().next();
-        if (guest == null) {
+        final Role guest;
+        try {
+            guest = getRoleByCode(UsersMgr.ROLE_GUEST).iterator().next();
+        } catch (NoSuchElementException ex) {
             return UsersMgr.error("The role 'guest' is not set");
         }
         final List<PersonProfile> personProfiles =
