@@ -373,7 +373,7 @@ with TmisLogging{
     })
 
     val result = em.createQuery(BusyHospitalBedsByDepartmentIdQuery.format(i18n("db.action.movingFlatCode"),
-                                                                           iCapIds("db.rbCAP.moving.id.bed")),
+                                                                           i18n("db.apt.moving.codes.hospitalBed")),
                                 classOf[OrgStructureHospitalBed])
       .setParameter("ids", asJavaCollection(ids))
       .getResultList
@@ -390,19 +390,27 @@ with TmisLogging{
 
   def getRegistryOriginalForm(action: Action, authData: AuthData) = {
 
-    val apv_map = actionPropertyBean.getActionPropertiesByActionId(action.getId.intValue)
+   /* val apv_map = actionPropertyBean.getActionPropertiesByActionId(action.getId.intValue)
 
     //Таблица соответствия id
     val corrMap = new java.util.HashMap[String, java.util.List[RbCoreActionProperty]]()
     corrMap.put(i18n("db.actionType.moving").toString, dbRbCoreActionPropertyBean.getRbCoreActionPropertiesByActionTypeId(i18n("db.actionType.moving").toInt))
     corrMap.put(i18n("db.actionType.hospitalization.primary").toString, dbRbCoreActionPropertyBean.getRbCoreActionPropertiesByActionTypeId(i18n("db.actionType.hospitalization.primary").toInt))
-
-    new HospitalBedData(action, apv_map, null, corrMap, null)
+    */
+    //new HospitalBedData(action, apv_map, null, corrMap, null)
+    new HospitalBedData(action,
+                        actionPropertyBean.getActionPropertiesByActionIdAndActionPropertyTypeCodes _,
+                        null,
+                        null)
   }
 
   def getRegistryFormWithChamberList(action: Action, authData: AuthData) = {
 
-    if (action.getActionType.getCode.compareTo("4202")!=0){
+    new HospitalBedData(action,
+                        actionPropertyBean.getActionPropertiesByActionIdAndActionPropertyTypeCodes _,
+                        this.getCaseHospitalBedsByDepartmentId _,
+                        null)
+    /*if (action.getActionType.getCode.compareTo("4202")!=0){
       throw new CoreException("Action c id = %s не является действием 'Движение'".format(action.getId.toString))
       null
     }
@@ -441,7 +449,7 @@ with TmisLogging{
 
         new HospitalBedData(action, apv_map, beds, corrMap, null)
       }
-    }
+    }*/
   }
 
   def getMovingListByEventIdAndFilter(filter: HospitalBedDataListFilter, authData: AuthData): HospitalBedData = {
