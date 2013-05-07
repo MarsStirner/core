@@ -1,5 +1,8 @@
 package ru.korus.tmis.entity;
 
+import nsi.V010Type;
+import ru.korus.tmis.utils.DateUtil;
+
 import javax.persistence.*;
 import java.io.Serializable;
 import java.util.Date;
@@ -41,6 +44,25 @@ public class V010Sposob implements Serializable {
     @Temporal(TemporalType.DATE)
     @Column(name = "dateend")
     private Date dateEnd;
+
+    public V010Sposob() {
+    }
+
+    private V010Sposob(long id, String spnName, Date dateBegin, Date dateEnd) {
+        this.id = id;
+        this.spnName = spnName;
+        this.dateBegin = dateBegin;
+        this.dateEnd = dateEnd;
+    }
+
+    public static V010Sposob getInstance(V010Type type) {
+        return new V010Sposob(
+                type.getIDSP(),
+                type.getSPNAME(),
+                DateUtil.getDate(type.getDATEBEG()),
+                DateUtil.getDate(type.getDATEEND())
+        );
+    }
 
     public long getId() {
         return id;

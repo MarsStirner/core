@@ -35,16 +35,15 @@ public class V005Pol implements Serializable {
     public V005Pol() {
     }
 
+    private V005Pol(long id, String polName) {
+        this.id = id;
+        this.polName = polName;
+    }
+
     public static V005Pol getInstance(V005Type type) {
         return new V005Pol(
                 type.getIDPOL(),
                 type.getPOLNAME());
-    }
-
-
-    private V005Pol(long id, String polName) {
-        this.id = id;
-        this.polName = polName;
     }
 
     public long getId() {

@@ -1,5 +1,8 @@
 package ru.korus.tmis.entity;
 
+import nsi.O002Type;
+import ru.korus.tmis.utils.DateUtil;
+
 import javax.persistence.*;
 import java.io.Serializable;
 import java.util.Date;
@@ -87,6 +90,39 @@ public class O002Okato implements Serializable {
     @Temporal(TemporalType.DATE)
     @Column(name = "DATA_UPD")
     private Date dataupd;
+
+    public O002Okato() {
+    }
+
+    private O002Okato(String ter, String kod1, String kod2, String kod3, String razdel, String name1, String centrum, String nomdescr, String nomakt, Long status, Date dataupd) {
+        this.ter = ter;
+        this.kod1 = kod1;
+        this.kod2 = kod2;
+        this.kod3 = kod3;
+        this.razdel = razdel;
+        this.name1 = name1;
+        this.centrum = centrum;
+        this.nomdescr = nomdescr;
+        this.nomakt = nomakt;
+        this.status = status;
+        this.dataupd = dataupd;
+    }
+
+    public static O002Okato getInstance(O002Type type) {
+        return new O002Okato(
+                type.getTER(),
+                type.getKOD1(),
+                type.getKOD2(),
+                type.getKOD3(),
+                type.getRAZDEL(),
+                type.getNAME1(),
+                type.getCENTRUM(),
+                type.getNOMDESCR(),
+                type.getNOMAKT(),
+                type.getSTATUS(),
+                DateUtil.getDate(type.getDATAUPD())
+        );
+    }
 
     public String getTer() {
         return ter;

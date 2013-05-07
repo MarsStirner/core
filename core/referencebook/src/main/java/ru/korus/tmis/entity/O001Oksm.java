@@ -1,5 +1,8 @@
 package ru.korus.tmis.entity;
 
+import nsi.O001Type;
+import ru.korus.tmis.utils.DateUtil;
+
 import javax.persistence.*;
 import java.io.Serializable;
 import java.util.Date;
@@ -75,6 +78,36 @@ public class O001Oksm implements Serializable {
     @Temporal(TemporalType.DATE)
     @Column(name = "DATA_UPD")
     private Date dataupd;
+
+    public O001Oksm() {
+    }
+
+    private O001Oksm(String kod, String name11, String name12, String alfa2, String alfa3, String nomdescr, String nomakt, Long status, Date dataupd) {
+        this.kod = kod;
+        this.name11 = name11;
+        this.name12 = name12;
+        this.alfa2 = alfa2;
+        this.alfa3 = alfa3;
+        this.nomdescr = nomdescr;
+        this.nomakt = nomakt;
+        this.status = status;
+        this.dataupd = dataupd;
+    }
+
+    public static O001Oksm getInstance(O001Type type) {
+        return new O001Oksm(
+                type.getKOD(),
+                type.getNAME11(),
+                type.getNAME12(),
+                type.getALFA2(),
+                type.getALFA3(),
+                type.getNOMDESCR(),
+                type.getNOMAKT(),
+                type.getSTATUS(),
+                DateUtil.getDate(type.getDATAUPD())
+        );
+    }
+
 
     public String getKod() {
         return kod;

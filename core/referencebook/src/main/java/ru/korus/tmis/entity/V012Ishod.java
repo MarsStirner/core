@@ -1,5 +1,8 @@
 package ru.korus.tmis.entity;
 
+import nsi.V012Type;
+import ru.korus.tmis.utils.DateUtil;
+
 import javax.persistence.*;
 import java.io.Serializable;
 import java.util.Date;
@@ -47,6 +50,27 @@ public class V012Ishod implements Serializable {
     @Temporal(TemporalType.DATE)
     @Column(name = "dateend")
     private Date dateEnd;
+
+    public V012Ishod() {
+    }
+
+    private V012Ishod(long id, String izName, long iduslov, Date dateBegin, Date dateEnd) {
+        this.id = id;
+        this.izName = izName;
+        this.iduslov = iduslov;
+        this.dateBegin = dateBegin;
+        this.dateEnd = dateEnd;
+    }
+
+    public static V012Ishod getInstance(V012Type type) {
+        return new V012Ishod(
+                type.getIDIZ(),
+                type.getIZNAME(),
+                type.getIDUSLOV(),
+                DateUtil.getDate(type.getDATEBEG()),
+                DateUtil.getDate(type.getDATEEND())
+        );
+    }
 
     public long getId() {
         return id;

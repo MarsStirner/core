@@ -1,5 +1,8 @@
 package ru.korus.tmis.entity;
 
+import nsi.F008Type;
+import ru.korus.tmis.utils.DateUtil;
+
 import javax.persistence.*;
 import java.io.Serializable;
 import java.util.Date;
@@ -41,6 +44,24 @@ public class F008TipOMS implements Serializable {
     @Temporal(TemporalType.DATE)
     @Column(name = "dateend")
     private Date dateEnd;
+
+    public F008TipOMS() {
+    }
+
+    private F008TipOMS(long id, String docName, Date dateBegin, Date dateEnd) {
+        this.id = id;
+        this.docName = docName;
+        this.dateBegin = dateBegin;
+        this.dateEnd = dateEnd;
+    }
+
+    public static F008TipOMS getInstance(F008Type type) {
+        return new F008TipOMS(
+                type.getIDDOC(),
+                type.getDOCNAME(),
+                DateUtil.getDate(type.getDATEBEG()),
+                DateUtil.getDate(type.getDATEEND()));
+    }
 
     public long getId() {
         return id;

@@ -1,5 +1,8 @@
 package ru.korus.tmis.entity;
 
+import nsi.V004Type;
+import ru.korus.tmis.utils.DateUtil;
+
 import javax.persistence.*;
 import java.io.Serializable;
 import java.util.Date;
@@ -41,6 +44,25 @@ public class V004Medspec implements Serializable {
     @Temporal(TemporalType.DATE)
     @Column(name = "dateend")
     private Date dateEnd;
+
+    public V004Medspec() {
+    }
+
+    private V004Medspec(String id, String mspName, Date dateBegin, Date dateEnd) {
+        this.id = id;
+        this.mspName = mspName;
+        this.dateBegin = dateBegin;
+        this.dateEnd = dateEnd;
+    }
+
+    public static V004Medspec getInstance(V004Type type) {
+        return new V004Medspec(
+                type.getMSPNAME(),
+                type.getMSPNAME(),
+                DateUtil.getDate(type.getDATEBEG()),
+                DateUtil.getDate(type.getDATEEND())
+        );
+    }
 
     public String getId() {
         return id;

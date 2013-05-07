@@ -240,7 +240,7 @@ public class F003Mo implements Serializable {
         return new F003Mo(
                 type.getTfOkato(),
                 type.getMcod(),
-                0,
+                0,  //todo
                 type.getNamMop(),
                 type.getNamMok(),
                 type.getInn(),
@@ -270,6 +270,13 @@ public class F003Mo implements Serializable {
         );
     }
 
+    public int getLpu() {
+        return lpu;
+    }
+
+    public void setLpu(int lpu) {
+        this.lpu = lpu;
+    }
 
     public String getTfOkato() {
         return tfOkato;

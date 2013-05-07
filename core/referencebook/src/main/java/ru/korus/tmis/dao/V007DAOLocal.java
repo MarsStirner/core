@@ -13,7 +13,7 @@ import javax.ejb.Local;
 @Local
 public interface V007DAOLocal {
 
-    boolean isExist(long id);
+    boolean isExist(final long id);
 
-    void insert(final V007NomMO v007NomMO);
+    void insert(final V007NomMO item);
 }

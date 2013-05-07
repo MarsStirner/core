@@ -1,5 +1,8 @@
 package ru.korus.tmis.entity;
 
+import nsi.V006Type;
+import ru.korus.tmis.utils.DateUtil;
+
 import javax.persistence.*;
 import java.io.Serializable;
 import java.util.Date;
@@ -41,6 +44,25 @@ public class V006UslMp implements Serializable {
     @Temporal(TemporalType.DATE)
     @Column(name = "dateend")
     private Date dateEnd;
+
+    public V006UslMp() {
+    }
+
+    private V006UslMp(long id, String umpName, Date dateBegin, Date dateEnd) {
+        this.id = id;
+        this.umpName = umpName;
+        this.dateBegin = dateBegin;
+        this.dateEnd = dateEnd;
+    }
+
+    public static V006UslMp getInstance(V006Type type) {
+        return new V006UslMp(
+                type.getIDUMP(),
+                type.getUMPNAME(),
+                DateUtil.getDate(type.getDATEBEG()),
+                DateUtil.getDate(type.getDATEEND())
+        );
+    }
 
     public long getId() {
         return id;

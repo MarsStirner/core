@@ -1,5 +1,8 @@
 package ru.korus.tmis.entity;
 
+import nsi.V009Type;
+import ru.korus.tmis.utils.DateUtil;
+
 import javax.persistence.*;
 import java.io.Serializable;
 import java.util.Date;
@@ -47,6 +50,27 @@ public class V009Rezult implements Serializable {
     @Temporal(TemporalType.DATE)
     @Column(name = "dateend")
     private Date dateEnd;
+
+    public V009Rezult() {
+    }
+
+    private V009Rezult(long id, String rmpName, long iduslov, Date dateBegin, Date dateEnd) {
+        this.id = id;
+        this.rmpName = rmpName;
+        this.iduslov = iduslov;
+        this.dateBegin = dateBegin;
+        this.dateEnd = dateEnd;
+    }
+
+    public static V009Rezult getInstance(V009Type type) {
+        return new V009Rezult(
+                type.getIDRMP(),
+                type.getRMPNAME(),
+                type.getIDUSLOV(),
+                DateUtil.getDate(type.getDATEBEG()),
+                DateUtil.getDate(type.getDATEEND())
+        );
+    }
 
     public long getId() {
         return id;

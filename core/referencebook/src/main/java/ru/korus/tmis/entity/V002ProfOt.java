@@ -1,5 +1,8 @@
 package ru.korus.tmis.entity;
 
+import nsi.V002Type;
+import ru.korus.tmis.utils.DateUtil;
+
 import javax.persistence.*;
 import java.io.Serializable;
 import java.util.Date;
@@ -45,11 +48,21 @@ public class V002ProfOt implements Serializable {
     public V002ProfOt() {
     }
 
-    public V002ProfOt(long id, String prName, Date dateBegin, Date dateEnd) {
+    private V002ProfOt(long id, String prName, Date dateBegin, Date dateEnd) {
         this.id = id;
         this.prName = prName;
         this.dateBegin = dateBegin;
         this.dateEnd = dateEnd;
+    }
+
+    public static V002ProfOt getInstance(V002Type type) {
+        return new V002ProfOt(
+                type.getIDPR(),
+                type.getPRNAME(),
+                DateUtil.getDate(type.getDATEBEG()),
+                DateUtil.getDate(type.getDATEEND())
+        );
+
     }
 
     public long getId() {

@@ -1,5 +1,8 @@
 package ru.korus.tmis.entity;
 
+import nsi.V008Type;
+import ru.korus.tmis.utils.DateUtil;
+
 import javax.persistence.*;
 import java.io.Serializable;
 import java.util.Date;
@@ -41,6 +44,25 @@ public class V008VidMp implements Serializable {
     @Temporal(TemporalType.DATE)
     @Column(name = "dateend")
     private Date dateEnd;
+
+    public V008VidMp() {
+    }
+
+    private V008VidMp(long id, String vmpName, Date dateBegin, Date dateEnd) {
+        this.id = id;
+        this.vmpName = vmpName;
+        this.dateBegin = dateBegin;
+        this.dateEnd = dateEnd;
+    }
+
+    public static V008VidMp getInstance(V008Type type) {
+        return new V008VidMp(
+                type.getIDVMP(),
+                type.getVMPNAME(),
+                DateUtil.getDate(type.getDATEBEG()),
+                DateUtil.getDate(type.getDATEEND())
+        );
+    }
 
     public long getId() {
         return id;

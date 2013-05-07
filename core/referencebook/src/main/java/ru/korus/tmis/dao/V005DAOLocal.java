@@ -15,5 +15,5 @@ public interface V005DAOLocal {
 
     boolean isExist(long id);
 
-    void insert(final V005Pol v005Pol);
+    void insert(final V005Pol item);
 }
