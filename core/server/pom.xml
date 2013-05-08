@@ -76,7 +76,7 @@
              <type>war</type>
          </dependency>     -->
 
-         <!--<dependency>-->
+        <!--<dependency>-->
         <!--<groupId>ru.korus.tmis.hl7</groupId>-->
         <!--<artifactId>tmis-hl7</artifactId>-->
         <!--<version>${version.tmis.core}</version>-->
@@ -100,6 +100,13 @@
         <dependency>
             <groupId>ru.korus.tmis.communication</groupId>
             <artifactId>tmis-communication</artifactId>
+            <version>${version.tmis.core}</version>
+            <type>ejb</type>
+        </dependency>
+
+        <dependency>
+            <groupId>ru.korus.tmis.referencebook</groupId>
+            <artifactId>referencebook</artifactId>
             <version>${version.tmis.core}</version>
             <type>ejb</type>
         </dependency>

@@ -129,6 +129,32 @@
         <appender-ref ref="EXCEPTIONS"/>
     </logger>
 
+    <!--Справочники -->
+    <appender name="REFERENCE_BOOK" class="ch.qos.logback.core.rolling.RollingFileAppender">
+        <file>${logs.path}reference-book/rb.log</file>
+        <encoder>
+            <pattern>${log.format}</pattern>
+            <charset>UTF-8</charset>
+        </encoder>
+
+        <rollingPolicy class="ch.qos.logback.core.rolling.TimeBasedRollingPolicy">
+            <!-- rollover daily -->
+            <fileNamePattern>${logs.path}reference-book/rb.%d{yyyy-MM-dd}.%i.log.gz</fileNamePattern>
+            <timeBasedFileNamingAndTriggeringPolicy
+                    class="ch.qos.logback.core.rolling.SizeAndTimeBasedFNATP">
+                <!-- or whenever the file size reaches 200MB -->
+                <maxFileSize>200MB</maxFileSize>
+            </timeBasedFileNamingAndTriggeringPolicy>
+        </rollingPolicy>
+    </appender>
+
+    <logger name="ru.korus.tmis.hs" level="DEBUG" additivity="false">
+        <appender-ref ref="REFERENCE_BOOK"/>
+        <appender-ref ref="EMAIL"/>
+        <appender-ref ref="STDOUT_ERROR"/>
+        <appender-ref ref="EXCEPTIONS"/>
+    </logger>
+
     <!-- Аппендер для 1С Аптека -->
     <appender name="PHARMACY" class="ch.qos.logback.core.rolling.RollingFileAppender">
         <file>${logs.path}pharmacy/pharmacy.log</file>
