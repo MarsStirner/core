@@ -254,7 +254,7 @@ public class ReferenceBook implements ReferenceBookLocal {
             }
         }
         logger.debug(sb.toString());
-        logger.info("loading {} V003 items, {} added", list.value.size(), added);
+        logger.info("V003 loading {} item(s), {} added", list.value.size(), added);
     }
 
     /**
@@ -279,7 +279,7 @@ public class ReferenceBook implements ReferenceBookLocal {
             }
         }
         logger.debug(sb.toString());
-        logger.info("loading {} V004 items, {} added", list.value.size(), added);
+        logger.info("V004 loading {} item(s), {} added", list.value.size(), added);
     }
 
 
@@ -304,7 +304,7 @@ public class ReferenceBook implements ReferenceBookLocal {
             }
         }
         logger.debug(sb.toString());
-        logger.info("loading {} V005 items, {} added", list.value.size(), added);
+        logger.info("V005 loading {} item(s), {} added", list.value.size(), added);
     }
 
     /**
@@ -328,7 +328,7 @@ public class ReferenceBook implements ReferenceBookLocal {
             }
         }
         logger.debug(sb.toString());
-        logger.info("loading {} V006 items, {} added", list.value.size(), added);
+        logger.info("V006 loading {} item(s), {} added", list.value.size(), added);
     }
 
     /**
@@ -352,7 +352,7 @@ public class ReferenceBook implements ReferenceBookLocal {
             }
         }
         logger.debug(sb.toString());
-        logger.info("loading {} V007 items, {} added", list.value.size(), added);
+        logger.info("V007 loading {} item(s), {} added", list.value.size(), added);
     }
 
     /**
@@ -376,7 +376,7 @@ public class ReferenceBook implements ReferenceBookLocal {
             }
         }
         logger.debug(sb.toString());
-        logger.info("loading {} V008 items, {} added", list.value.size(), added);
+        logger.info("V008 loading {} item(s), {} added", list.value.size(), added);
     }
 
     /**
@@ -400,7 +400,7 @@ public class ReferenceBook implements ReferenceBookLocal {
             }
         }
         logger.debug(sb.toString());
-        logger.info("loading {} V009 items, {} added", list.value.size(), added);
+        logger.info("V009 loading {} item(s), {} added", list.value.size(), added);
     }
 
     /**
@@ -424,7 +424,7 @@ public class ReferenceBook implements ReferenceBookLocal {
             }
         }
         logger.debug(sb.toString());
-        logger.info("loading {} V010 items, {} added", list.value.size(), added);
+        logger.info("V010 loading {} item(s), {} added", list.value.size(), added);
     }
 
     /**
@@ -448,7 +448,7 @@ public class ReferenceBook implements ReferenceBookLocal {
             }
         }
         logger.debug(sb.toString());
-        logger.info("loading {} V012 items, {} added", list.value.size(), added);
+        logger.info("V012 loading {} item(s), {} added", list.value.size(), added);
     }
 
     /**
@@ -472,7 +472,7 @@ public class ReferenceBook implements ReferenceBookLocal {
             }
         }
         logger.debug(sb.toString());
-        logger.info("loading {} F001 items, {} added", list.value.size(), added);
+        logger.info("F001 loading {} item(s), {} added", list.value.size(), added);
     }
 
     /**
@@ -497,7 +497,7 @@ public class ReferenceBook implements ReferenceBookLocal {
             }
         }
         logger.debug(sb.toString());
-        logger.info("loading {} F002 items, {} added", list.value.size(), added);
+        logger.info("F002 loading {} item(s), {} added", list.value.size(), added);
     }
 
     /**
@@ -522,7 +522,7 @@ public class ReferenceBook implements ReferenceBookLocal {
             }
         }
         logger.debug(sb.toString());
-        logger.info("loading {} F003 items, {} added", list.value.size(), added);
+        logger.info("F003 loading {} item(s), {} added", list.value.size(), added);
     }
 
     /**
@@ -546,7 +546,7 @@ public class ReferenceBook implements ReferenceBookLocal {
             }
         }
         logger.debug(sb.toString());
-        logger.info("loading {} F007 items, {} added", list.value.size(), added);
+        logger.info("F007 loading {} item(s), {} added", list.value.size(), added);
     }
 
     /**
@@ -570,7 +570,7 @@ public class ReferenceBook implements ReferenceBookLocal {
             }
         }
         logger.debug(sb.toString());
-        logger.info("loading {} F008 items, {} added", list.value.size(), added);
+        logger.info("F008 loading {} item(s), {} added", list.value.size(), added);
     }
 
     /**
@@ -594,7 +594,7 @@ public class ReferenceBook implements ReferenceBookLocal {
             }
         }
         logger.debug(sb.toString());
-        logger.info("loading {} F009 items, {} added", list.value.size(), added);
+        logger.info("F009 loading {} item(s), {} added", list.value.size(), added);
     }
 
     /**
@@ -618,7 +618,7 @@ public class ReferenceBook implements ReferenceBookLocal {
             }
         }
         logger.debug(sb.toString());
-        logger.info("loading {} F010 items, {} added", list.value.size(), added);
+        logger.info("F010 loading {} item(s), {} added", list.value.size(), added);
     }
 
     /**
@@ -642,7 +642,7 @@ public class ReferenceBook implements ReferenceBookLocal {
             }
         }
         logger.debug(sb.toString());
-        logger.info("loading {} F011 items, {} added", list.value.size(), added);
+        logger.info("F011 loading {} item(s), {} added", list.value.size(), added);
     }
 
     /**
@@ -666,7 +666,7 @@ public class ReferenceBook implements ReferenceBookLocal {
             }
         }
         logger.debug(sb.toString());
-        logger.info("loading {} F015 items, {} added", list.value.size(), added);
+        logger.info("F015 loading {} item(s), {} added", list.value.size(), added);
     }
 
     /**
@@ -690,7 +690,7 @@ public class ReferenceBook implements ReferenceBookLocal {
             }
         }
         logger.debug(sb.toString());
-        logger.info("loading {} O001 items, {} added", list.value.size(), added);
+        logger.info("O001 loading {} item(s), {} added", list.value.size(), added);
     }
 
     /**
@@ -714,7 +714,7 @@ public class ReferenceBook implements ReferenceBookLocal {
             }
         }
         logger.debug(sb.toString());
-        logger.info("loading {} O002 items, {} added", list.value.size(), added);
+        logger.info("O002 loading {} item(s), {} added", list.value.size(), added);
     }
 
     /**
@@ -738,7 +738,7 @@ public class ReferenceBook implements ReferenceBookLocal {
             }
         }
         logger.debug(sb.toString());
-        logger.info("loading {} O003 items, {} added", list.value.size(), added);
+        logger.info("O003 loading {} item(s), {} added", list.value.size(), added);
     }
 
     /**
@@ -762,7 +762,7 @@ public class ReferenceBook implements ReferenceBookLocal {
             }
         }
         logger.debug(sb.toString());
-        logger.info("loading {} O004 items, {} added", list.value.size(), added);
+        logger.info("O004 loading {} item(s), {} added", list.value.size(), added);
     }
 
     /**
@@ -786,7 +786,7 @@ public class ReferenceBook implements ReferenceBookLocal {
             }
         }
         logger.debug(sb.toString());
-        logger.info("loading {} O005 items, {} added", list.value.size(), added);
+        logger.info("O005 loading {} item(s), {} added", list.value.size(), added);
     }
 
 
