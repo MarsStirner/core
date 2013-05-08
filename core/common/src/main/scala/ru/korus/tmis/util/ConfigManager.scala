@@ -8,7 +8,7 @@ import javax.xml.namespace.QName
 import reflect.Configuration
 import grizzled.slf4j.Logging
 
-object  ConfigManager extends Configuration {
+object ConfigManager extends Configuration {
 
   var DateFormatter = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss")
 
@@ -138,12 +138,13 @@ object  ConfigManager extends Configuration {
   /**
    * Параметры сервиса управления пользователями
    */
-  class UsersMgr extends Configuration {
-    var CoreUserLogin: String = null
+  class UsersMgrClass extends Configuration {
+    var CoreUserLogin: String = "core"
+    var KeepAliveDays = 1
+    var MaxConnections = 10000
   }
 
-  var usersMgr = new UsersMgr
-
+  var UsersMgr = new UsersMgrClass
 
   val Laboratory = new Configuration {
     // LIS service URL
@@ -153,7 +154,6 @@ object  ConfigManager extends Configuration {
     var Password: String = null
 
     var RuntimeWSDLUrl: URL = null
-
 
     // WSDL url is a:
     // - RuntimeWSDLUrl if it's defined
@@ -177,7 +177,6 @@ object  ConfigManager extends Configuration {
     var Password: String = null
 
     var RuntimeWSDLUrl: URL = null
-
 
     // NB: Altey's LIS does not conform to 'url' + '?wsdl' convention
     // WSDL url is a:
@@ -224,8 +223,7 @@ object  ConfigManager extends Configuration {
       "clientTreatmentCreate",
       "clientTreatmentRead",
       "clientTreatmentUpdate",
-      "clientTreatmentDelete"
-    )
+      "clientTreatmentDelete")
   }
 
   val Messages = new Logging {

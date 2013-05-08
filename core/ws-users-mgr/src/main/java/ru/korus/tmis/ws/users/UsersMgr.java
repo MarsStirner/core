@@ -24,6 +24,7 @@ import ru.korus.tmis.core.entity.model.Role;
 import ru.korus.tmis.core.entity.model.Speciality;
 import ru.korus.tmis.core.entity.model.Staff;
 import ru.korus.tmis.core.entity.model.UUID;
+import ru.korus.tmis.util.ConfigManager;
 import scala.actors.threadpool.Arrays;
 
 /**
@@ -38,8 +39,13 @@ public class UsersMgr {
 
     public static final String ROLE_GUEST = "guest";
 
-    private int MAX_CONNECTIONS = 1024 * 256;
+    private final int MAX_CONNECTIONS;
+    private final int KEEPALIVE_DAYS;
 
+    {
+        MAX_CONNECTIONS = ConfigManager.UsersMgr().MaxConnections();
+        KEEPALIVE_DAYS = Math.max(0, ConfigManager.UsersMgr().KeepAliveDays() - 1);
+    }
     @EJB
     private Database database = null;
 
@@ -123,7 +129,7 @@ public class UsersMgr {
         connectionsTime.add(new Pair(uuid, new DateTime()));
         DateTime now = new DateTime();
         int days = Days.daysBetween(((Pair) connectionsTime.getFirst()).datetime, now).getDays();
-        if (days > 0 || connectionsTime.size() > MAX_CONNECTIONS) {
+        if (days > KEEPALIVE_DAYS || connectionsTime.size() > MAX_CONNECTIONS) {
             connections.remove(connectionsTime.getFirst().uuid);
             connectionsTime.pop();
         }
