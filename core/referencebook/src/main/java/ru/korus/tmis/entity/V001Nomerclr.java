@@ -16,7 +16,7 @@ import java.util.Date;
  * allows it to be passed by value through a remote interface.
  */
 @Entity
-@Table(name = "rb_V001_NomerclR", catalog = "", schema = "")
+@Table(name = "rb_V001_Nomerclr", catalog = "", schema = "")
 public class V001Nomerclr implements Serializable {
     /**
      * Код работы (услуги)
