@@ -23,7 +23,7 @@ public class V004Medspec implements Serializable {
      */
     @Id
     @Column(name = "idmsp")
-    private String id;
+    private long id;
 
     /**
      * Наименование медицинской специальности
@@ -48,7 +48,7 @@ public class V004Medspec implements Serializable {
     public V004Medspec() {
     }
 
-    private V004Medspec(String id, String mspName, Date dateBegin, Date dateEnd) {
+    private V004Medspec(long id, String mspName, Date dateBegin, Date dateEnd) {
         this.id = id;
         this.mspName = mspName;
         this.dateBegin = dateBegin;
@@ -57,14 +57,14 @@ public class V004Medspec implements Serializable {
 
     public static V004Medspec getInstance(V004Type type) {
         return new V004Medspec(
-                type.getMSPNAME(),
+                type.getIDMSP(),
                 type.getMSPNAME(),
                 DateUtil.getDate(type.getDATEBEG()),
                 DateUtil.getDate(type.getDATEEND())
         );
     }
 
-    public String getId() {
+    public long getId() {
         return id;
     }
 

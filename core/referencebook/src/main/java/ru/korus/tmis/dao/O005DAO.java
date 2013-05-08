@@ -5,6 +5,8 @@ import org.slf4j.LoggerFactory;
 import ru.korus.tmis.entity.O005Okopf;
 
 import javax.ejb.Stateless;
+import javax.ejb.TransactionAttribute;
+import javax.ejb.TransactionAttributeType;
 import javax.persistence.EntityManager;
 import javax.persistence.PersistenceContext;
 
@@ -27,6 +29,7 @@ public class O005DAO implements O005DAOLocal {
     }
 
     @Override
+    @TransactionAttribute(value = TransactionAttributeType.REQUIRES_NEW)
     public void insert(O005Okopf item) {
         em.persist(item);
     }

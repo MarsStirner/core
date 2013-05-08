@@ -101,7 +101,7 @@ public class O001Oksm implements Serializable {
                 type.getNAME12(),
                 type.getALFA2(),
                 type.getALFA3(),
-                type.getNOMDESCR(),
+                type.getNOMDESCR().length() > 255 ? type.getNOMDESCR().substring(0, 255) : type.getNOMDESCR(),
                 type.getNOMAKT(),
                 type.getSTATUS(),
                 DateUtil.getDate(type.getDATAUPD())

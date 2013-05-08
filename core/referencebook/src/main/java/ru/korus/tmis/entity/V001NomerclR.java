@@ -61,10 +61,8 @@ public class V001Nomerclr implements Serializable {
                 type.getIDRB(),
                 type.getRBNAME(),
                 DateUtil.getDate(type.getDATEBEG()),
-                DateUtil.getDate(type.getDATEEND())
-        );
+                DateUtil.getDate(type.getDATEEND()));
     }
-
 
     public long getId() {
         return id;

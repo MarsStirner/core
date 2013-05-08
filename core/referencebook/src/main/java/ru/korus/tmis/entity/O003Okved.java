@@ -21,7 +21,6 @@ public class O003Okved implements Serializable {
     /**
      * Код раздела
      */
-    @Id
     @Column(name = "RAZDEL")
     private String razdel;
 
@@ -34,6 +33,7 @@ public class O003Okved implements Serializable {
     /**
      * Код позиции
      */
+    @Id
     @Column(name = "KOD")
     private String kod;
 
@@ -101,7 +101,7 @@ public class O003Okved implements Serializable {
                 type.getKOD(),
                 type.getNAME11(),
                 type.getNAME12(),
-                type.getNOMDESCR(),
+                type.getNOMDESCR().length() > 255 ? type.getNOMDESCR().substring(0, 255) : type.getNOMDESCR(),
                 type.getNOMAKT(),
                 type.getSTATUS(),
                 DateUtil.getDate(type.getDATAUPD())

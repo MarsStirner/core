@@ -114,35 +114,41 @@ public class ReferenceBook implements ReferenceBookLocal {
     @Override
     @Schedule(minute = "*/1", hour = "*")
     public void loadReferenceBooks() {
-        loadV001();
-        loadV002();
-        loadV003();
-        loadV004();
-        loadV005();
-        loadV006();
-        loadV007();
-        loadV008();
-        loadV009();
-        loadV010();
-        loadV012();
+        logger.info("Start loading reference book...");
+        try {
+            loadV001();
+            loadV002();
+            loadV003();
+            loadV004();
+            loadV005();
+            loadV006();
+            loadV007();
+            loadV008();
+            loadV009();
+            loadV010();
+            loadV012();
 
-        loadF001();
-        loadF002();
-        loadF003();
-        loadF007();
-        loadF008();
-        loadF009();
-        loadF010();
-        loadF011();
-        loadF015();
+            loadF001();
+            loadF002();
+            loadF003();
+            loadF007();
+            loadF008();
+            loadF009();
+            loadF010();
+            loadF011();
+            loadF015();
 
-        loadM001();
+            loadM001();
 
-        loadO001();
-        loadO002();
-        loadO003();
-        loadO004();
-        loadO005();
+            loadO001();
+            loadO002();
+            loadO003();
+            loadO004();
+            loadO005();
+            logger.info("Stop loading reference book...");
+        } catch (Exception e) {
+            logger.warn("Failed loading!!! e: " + e);
+        }
     }
 
     public ReferenceBook() {
@@ -175,7 +181,7 @@ public class ReferenceBook implements ReferenceBookLocal {
             }
         }
         logger.debug(sb.toString());
-        logger.info("loading {} M001 items, {} added", list.value.size(), added);
+        logger.info("M001 loading {} item(s), {} added", list.value.size(), added);
     }
 
     /**
@@ -199,7 +205,7 @@ public class ReferenceBook implements ReferenceBookLocal {
             }
         }
         logger.debug(sb.toString());
-        logger.info("loading {} V001 items, {} added", list.value.size(), added);
+        logger.info("V001 loading {} item(s), {} added", list.value.size(), added);
     }
 
 
@@ -224,7 +230,7 @@ public class ReferenceBook implements ReferenceBookLocal {
             }
         }
         logger.debug(sb.toString());
-        logger.info("loading {} V002 items, {} added", list.value.size(), added);
+        logger.info("V002 loading {} item(s), {} added", list.value.size(), added);
     }
 
     /**
@@ -267,7 +273,8 @@ public class ReferenceBook implements ReferenceBookLocal {
                 sb.append(getAllFields(type)).append("\n");
             }
             if (!v004dao.isExist(type.getIDMSP())) {
-                v004dao.insert(V004Medspec.getInstance(type));
+                final V004Medspec item = V004Medspec.getInstance(type);
+                v004dao.insert(item);
                 added++;
             }
         }
@@ -781,6 +788,7 @@ public class ReferenceBook implements ReferenceBookLocal {
         logger.debug(sb.toString());
         logger.info("loading {} O005 items, {} added", list.value.size(), added);
     }
+
 
     private String getAllFields(final Object obj) {
         StringBuilder sb = new StringBuilder("[");

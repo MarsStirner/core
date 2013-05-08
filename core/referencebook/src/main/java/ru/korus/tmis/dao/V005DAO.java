@@ -5,6 +5,8 @@ import org.slf4j.LoggerFactory;
 import ru.korus.tmis.entity.V005Pol;
 
 import javax.ejb.Stateless;
+import javax.ejb.TransactionAttribute;
+import javax.ejb.TransactionAttributeType;
 import javax.persistence.EntityManager;
 import javax.persistence.PersistenceContext;
 
@@ -21,11 +23,13 @@ public class V005DAO implements V005DAOLocal {
     @PersistenceContext(unitName = "s11r64")
     private EntityManager em = null;
 
-
+    @Override
     public boolean isExist(long id) {
         return em.find(V005Pol.class, id) != null;
     }
 
+    @Override
+    @TransactionAttribute(value = TransactionAttributeType.REQUIRES_NEW)
     public void insert(final V005Pol item) {
         em.persist(item);
     }
