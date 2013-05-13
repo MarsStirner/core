@@ -12,13 +12,22 @@ import javax.xml.bind.annotation.XmlRootElement;
  * Description: <br>
  */
 
+/**
+ * Входные данные при авторизации пользователя POST /api/users/auth/
+ */
 @XmlRootElement
 @XmlAccessorType(XmlAccessType.FIELD)
 public class JsonAuthPerson {
 
+    /**
+     * Имя пользователя для авторизации системы управления пользователями
+     */
     @XmlElement(name = "login")
     private String login;
 
+    /**
+     * Пароль
+     */
     @XmlElement(name = "password")
     private String password;
 

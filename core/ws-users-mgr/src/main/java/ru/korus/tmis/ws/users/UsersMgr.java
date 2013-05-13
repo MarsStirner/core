@@ -220,7 +220,7 @@ public class UsersMgr {
             newStaff.setPatrName(jsonNewPerson.getPname());
         }
         if (jsonNewPerson.getPassword() != null) {
-            newStaff.setPassword(getMD5(jsonNewPerson.getPassword()));
+            newStaff.setPassword(getMD5(jsonNewPerson.getPassword().toLowerCase()));
         }
         @SuppressWarnings("unchecked")
         Set<Role> roles = getRoles(Arrays.asList(new String[] { ROLE_GUEST }));

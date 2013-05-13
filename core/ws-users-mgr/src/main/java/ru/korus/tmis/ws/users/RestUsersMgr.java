@@ -19,12 +19,22 @@ import com.google.gson.Gson;
 @Path("/api")
 public class RestUsersMgr {
 
+    /**
+     * CRUD-операции для управления пользователями
+     */
     @EJB
     private UsersMgr usersMgr;
 
     @EJB
     private RolesMgr rolesMgr;
 
+    /**
+     * Авторизация пользователя
+     * 
+     * @param jsonAuthPerson
+     *            - логин и пароль для входа
+     * @return В случае успеха {"OK": "True", "type": "Basic", "token": < UUID >}
+     */
     @POST
     @Consumes("application/json")
     @Path("/users/auth")

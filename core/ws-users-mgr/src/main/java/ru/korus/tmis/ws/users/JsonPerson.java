@@ -15,15 +15,49 @@ import ru.korus.tmis.core.entity.model.Staff;
  * Description: <br>
  */
 
+/**
+ * Персональные данные пользователя
+ */
 @XmlRootElement
 public class JsonPerson {
+    /**
+     * Имя
+     */
     private String fname;
+
+    /**
+     * Отчество
+     */
     private String pname;
+
+    /**
+     * Фамилия
+     */
     private String lname;
+
+    /**
+     * Должность
+     */
     private String position;
+
+    /**
+     * (UUID) подразделения (элемента организационной структуры, к которой привязан сотрудник)
+     */
     private String subdivision;
+
+    /**
+     * Роли, присваиваемые пользователю. Если параметр не указан, присвоить роль guest
+     */
     private List<String> roles;
+
+    /**
+     * Имя пользователя для входа в МИС
+     */
     private String login;
+
+    /**
+     * Md5-хэш пароля для входа в МИС
+     */
     private String password;
 
     static public JsonPerson create(Staff staff) {

@@ -10,11 +10,18 @@ import javax.xml.bind.annotation.XmlRootElement;
  */
 
 /**
- * 
+ * Входные данные при создании/изменении роли
  */
 @XmlRootElement
 public class JsonRole {
+    /**
+     * Код роли
+     */
     private String code;
+
+    /**
+     * Наименование роли
+     */
     private String title;
 
     /**
