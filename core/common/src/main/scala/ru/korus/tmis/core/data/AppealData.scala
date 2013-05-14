@@ -223,6 +223,8 @@ class AppealEntry {
   @BeanProperty
   var setPerson: ComplexPersonContainer = _            //Данные о враче и отделении
   @BeanProperty
+  var execPerson: DoctorContainer = _            //Лечащий врач
+  @BeanProperty
   var ambulanceNumber: String = _          //Номер наряда СП
   @BeanProperty
   var rangeAppealDateTime: DatePeriodContainer = _    //Дата начала и конца госпитализации
@@ -325,6 +327,7 @@ class AppealEntry {
     this.version = event.getVersion
     this.number = event.getExternalId
     this.setPerson = if (event.getAssigner != null) {new ComplexPersonContainer(event.getAssigner)} else {new ComplexPersonContainer}
+    this.execPerson = new DoctorContainer(event.getExecutor)
     this.urgent = action.getIsUrgent
 
     exValue = this.extractValuesInNumberedMap(Set(ConfigManager.RbCAPIds("db.rbCAP.hosp.primary.id.ambulanceNumber").toInt :java.lang.Integer), values).get("0")
