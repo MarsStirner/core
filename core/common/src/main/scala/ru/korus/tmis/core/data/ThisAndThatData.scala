@@ -15,6 +15,8 @@ import ru.korus.tmis.auxiliary.AuxiliaryFunctions
 import java.util
 import ru.korus.tmis.core.exception.CoreException
 import ru.korus.tmis.core.filter.{ListDataFilter, AbstractListDataFilter}
+import org.codehaus.jackson.map.ObjectMapper
+import java.io.IOException
 
 @XmlType(name = "listRequestData")
 @XmlRootElement(name = "listRequestData")
@@ -175,7 +177,7 @@ class PersonsListDataFilter  extends AbstractListDataFilter {
 
 @XmlType(name = "allDepartmentsListData")
 @XmlRootElement(name = "allDepartmentsListData")
-class AllDepartmentsListData {
+class AllDepartmentsListData extends AbstractDefaultData{
 
   @BeanProperty
   var requestData: ListDataRequest = _
@@ -186,6 +188,15 @@ class AllDepartmentsListData {
     this ()
     this.requestData = requestData
     departments.foreach(org => this.data.add(new IdNameContainer(org.getId.intValue(), org.getName)))
+  }
+
+  override def dataToString = {
+    val mapper= new ObjectMapper()
+    try {
+      mapper.writeValueAsString(this)
+    } catch {
+      case e: IOException => {throw e}
+    }
   }
 }
 

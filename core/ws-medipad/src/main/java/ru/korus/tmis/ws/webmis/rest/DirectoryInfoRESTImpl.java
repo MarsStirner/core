@@ -2,6 +2,7 @@ package ru.korus.tmis.ws.webmis.rest;
 
 import com.sun.jersey.api.json.JSONWithPadding;
 import ru.korus.tmis.auxiliary.AuxiliaryFunctions;
+import ru.korus.tmis.auxiliary.TestDataRestConstruct;
 import ru.korus.tmis.core.auth.AuthData;
 import ru.korus.tmis.core.data.*;
 import ru.korus.tmis.core.exception.CoreException;
@@ -25,23 +26,27 @@ public class DirectoryInfoRESTImpl {
 
     //protected static final String PATH = BaseRegistryRESTImpl.PATH;
     private WebMisRESTImpl wsImpl;
+    private HttpServletRequest servRequest;
     private int limit;
     private int  page;
     private String sortingField;
     private String sortingMethod;
     private AuthData auth;
     private String callback;
+    private Boolean test;
 
-    public DirectoryInfoRESTImpl(WebMisRESTImpl wsImpl, String callback,
+    public DirectoryInfoRESTImpl(WebMisRESTImpl wsImpl, HttpServletRequest servRequest, String callback,
                                   int limit, int  page, String sortingField, String sortingMethod,
-                                  AuthData auth) {
+                                  AuthData auth, Boolean test) {
         this.auth = auth;
         this.wsImpl = wsImpl;
+        this.servRequest = servRequest;
         this.callback = callback;
         this.limit = limit;
         this.page = page;
         this.sortingField = sortingField;
         this.sortingMethod = sortingMethod;
+        this.test = test;
     }
     //__________________________________________________________________________________________________________________
     //***********************************   СПРАВОЧНИКИ   ***********************************
@@ -156,8 +161,6 @@ public class DirectoryInfoRESTImpl {
      * &#15; "id" - по идентификатору отделения (значение по умолчанию);
      * &#15; "name" - по наименованию отделения </pre>
      * @param hasBeds Фильтр отделений имеющих развернутые койки.("true"/"false")
-     * @param callback  callback запроса.
-     * @param servRequest Контекст запроса с клиента.
      * @return com.sun.jersey.api.json.JSONWithPadding как Object
      * @throws ru.korus.tmis.core.exception.CoreException
      * @see ru.korus.tmis.core.exception.CoreException
@@ -165,14 +168,22 @@ public class DirectoryInfoRESTImpl {
     @GET
     @Path("/departments")
     @Produces("application/x-javascript")
-    public Object getAllDepartments(@QueryParam("filter[hasBeds]")String hasBeds,
-                                    @QueryParam("callback") String callback,
-                                    @Context HttpServletRequest servRequest) {
+    public Object getAllDepartments(@QueryParam("filter[hasBeds]")String hasBeds) {
 
         Boolean flgBeds =  (hasBeds!=null && hasBeds.indexOf("true")>=0) ? true : false;
         DepartmentsDataFilter filter = new DepartmentsDataFilter(flgBeds);
         ListDataRequest request = new ListDataRequest(this.sortingField, this.sortingMethod, this.limit, this.page, filter);
-        return new JSONWithPadding(wsImpl.getAllDepartments(request),this.callback);
+        AllDepartmentsListData data = wsImpl.getAllDepartments(request);
+
+        //TODO: Вставлен кэйс для тестов (нужно ли?)
+        if(this.test){
+            Exception ex = new Exception();
+            return TestDataRestConstruct.makeTestDataRestResponse(
+                                                           ex.getStackTrace()[0].getMethodName(),
+                                                           this.servRequest,
+                                                           data.dataToString());
+        } else
+            return new JSONWithPadding(data ,this.callback);
     }
 
     /**
