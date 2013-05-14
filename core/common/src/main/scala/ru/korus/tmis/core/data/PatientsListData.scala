@@ -57,35 +57,34 @@ class PatientsListData {
 
       if (value.isInstanceOf[OrgStructureHospitalBed]){
         bed = value.asInstanceOf[OrgStructureHospitalBed]
+        //куда переведен
+        if (mActionPropertiesWithValues!=null) {
+          val codes = Set[String](ConfigManager.Messages("db.apt.moving.codes.orgStructTransfer"))
+          val apValues = mActionPropertiesWithValues(action.getId.intValue(), asJavaSet(codes))
+          if (apValues!=null && apValues.size()>0){
+            val depart = apValues.iterator.next()
+            if (depart._2!=null && depart._2.size()>0){
+              toDep = depart._2.get(0).asInstanceOf[APValueOrgStructure].getValue
+            }
+          }
+        }
       } else if (value.isInstanceOf[OrgStructure]){
         if (action.getActionType.getId.compareTo(ConfigManager.Messages("db.actionType.hospitalization.primary").toInt :java.lang.Integer)==0){
           from = if (mAdmissionDepartment!=null ) mAdmissionDepartment(28) else null // Приемное отделение
           bed = null
         } else if (action.getActionType.getId.compareTo(ConfigManager.Messages("db.actionType.moving").toInt :java.lang.Integer)==0){
           if (mActionPropertiesWithValues!=null) {
-            val codes = Set[String](ConfigManager.Messages("db.apt.moving.codes.orgStructTransfer"),
-                                    ConfigManager.Messages("db.apt.moving.codes.hospitalBed"))
+            val codes = Set[String](ConfigManager.Messages("db.apt.moving.codes.hospitalBed"))
             val apValues = mActionPropertiesWithValues(action.getId.intValue(), asJavaSet(codes))
-
-            //val listMovAP = JavaConversions.asJavaList(List(ConfigManager.RbCAPIds("db.rbCAP.moving.id.bed").toInt :java.lang.Integer))
-            //val apValues = mActionPropertiesWithValues(action.getId.intValue(), listMovAP)
             if (apValues!=null && apValues.size()>0){
-              apValues.foreach(ap => {
-                val code = ap._1.getType.getCode
-                if(code.compareTo(ConfigManager.Messages("db.apt.received.codes.hospitalBed"))==0) {
-                  if (ap._2!=null && ap._2.size()>0){
-                    val bedVal = ap._2.get(0).getValue
-                    if (bedVal.isInstanceOf[OrgStructureHospitalBed]){
-                      from = bedVal.asInstanceOf[OrgStructureHospitalBed].getMasterDepartment
-                      bed = null
-                    }
-                  }
+              val bedvs = apValues.iterator.next()
+              if (bedvs._2!=null && bedvs._2.size()>0){
+                val bedVal = bedvs._2.get(0).getValue
+                if (bedVal.isInstanceOf[OrgStructureHospitalBed]){
+                  from = bedVal.asInstanceOf[OrgStructureHospitalBed].getMasterDepartment
+                  bed = null
                 }
-                else if(code.compareTo(ConfigManager.Messages("db.apt.moving.codes.orgStructTransfer"))==0){
-                  if (ap._2!=null && ap._2.size()>0)
-                    toDep = ap._2.get(0).asInstanceOf[APValueOrgStructure].getValue
-                }
-              })
+              }
             }
           }
         }
