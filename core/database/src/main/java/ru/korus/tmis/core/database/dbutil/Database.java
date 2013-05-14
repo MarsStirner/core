@@ -282,7 +282,7 @@ public class Database {
     }
 
     public Staff getCoreUser() {
-        final String coreLogin = ConfigManager.usersMgr().CoreUserLogin();
+        final String coreLogin = ConfigManager.UsersMgr().CoreUserLogin();
         //System.getProperty("tmis.core.user");
         if (coreLogin != null) {
             final List<Staff> coreUsers = em.createQuery("SELECT u FROM Staff u WHERE u.login = :login", Staff.class)
