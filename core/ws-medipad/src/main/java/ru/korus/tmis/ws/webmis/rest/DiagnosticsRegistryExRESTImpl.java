@@ -146,7 +146,7 @@ public class DiagnosticsRegistryExRESTImpl {
      * @throws ru.korus.tmis.core.exception.CoreException
      * @see ru.korus.tmis.core.exception.CoreException
      */
-
+     /*
     @POST
     @Path("/consultations")
     @Consumes("application/json")
@@ -158,7 +158,7 @@ public class DiagnosticsRegistryExRESTImpl {
         JSONWithPadding returnValue = new JSONWithPadding(wsImpl.insertConsultation(data.rewriteDefault(data)), callback);
         return returnValue;
     }
-
+       */
     /**
      * Редактирование списка направлений на лабораторные исследования
      * @param data Json с данными о лабораторном исследовании как CommonData
