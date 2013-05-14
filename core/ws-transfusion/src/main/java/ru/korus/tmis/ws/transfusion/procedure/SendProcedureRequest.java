@@ -111,6 +111,8 @@ public class SendProcedureRequest {
             PropType.HT,
             PropType.SALINE_VOLUME,
             PropType.FINAL_HT,
+            PropType.LAB_MEASURE,
+            PropType.FINAL_VOLUME,
     };
 
     /*
@@ -135,7 +137,7 @@ public class SendProcedureRequest {
      * 
      */
     private void initCoreUser() {
-            coreUser = database.getCoreUser();
+        coreUser = database.getCoreUser();
     }
 
     /**
@@ -285,9 +287,10 @@ public class SendProcedureRequest {
             }
         }
         for (final RbTrfuProcedureTypes procedure : procedureTypesTrfu) {
-            createActionType(em, procedure);
+            createActionType(procedure);
             em.persist(procedure);
         }
+
         em.flush();
     }
 
@@ -330,7 +333,8 @@ public class SendProcedureRequest {
     /**
      * @param procedure
      */
-    private void createActionType(final EntityManager em, final RbTrfuProcedureTypes procedure) {
+    private void createActionType(final RbTrfuProcedureTypes procedure) {
+        final EntityManager em = database.getEntityMgr();
         final String flatCode = getFlatCode(procedure);
         final ActionType actionType = getActionTypeByFlatCode(em, flatCode);
         if (actionType == null) {
@@ -365,7 +369,7 @@ public class SendProcedureRequest {
             at.setCreatePerson(coreUser);
             em.persist(at);
             em.flush();
-            createProperties(em, at);
+            createProperties(at);
         } else {
             final String name = actionType.getName();
             if (name != null && name.equals(procedure.getName())) {
@@ -397,8 +401,7 @@ public class SendProcedureRequest {
      * @param em
      * @param at
      */
-    private void createProperties(final EntityManager em, final ActionType at) {
-
+    private void createProperties(final ActionType at) {
         for (int idx = 0; idx < propTypes.length; ++idx) {
             final PropType curProp = propTypes[idx];
             final ActionPropertyType apt = new ActionPropertyType();
@@ -407,15 +410,18 @@ public class SendProcedureRequest {
             apt.setCode(curProp.getCode());
             apt.setName(curProp.getName());
             apt.setDescr(curProp.getName());
-            apt.setUnit(getRbUnit(em, curProp.getUnitCode()));
+            apt.setUnit(getRbUnit(database.getEntityMgr(), curProp.getUnitCode()));
             final String canonicalName = curProp.getValueClass().getCanonicalName();
-            apt.setTypeName(canonicalName.substring(canonicalName.indexOf(AP_VALUE) + AP_VALUE.length()));
-            apt.setValueDomain("");
+            final String typeName =
+                    curProp.getTypeName() == null ? canonicalName.substring(canonicalName.indexOf(AP_VALUE) + AP_VALUE.length()) : curProp.getTypeName();
+            apt.setTypeName(typeName);
+            final String valueDomain = curProp.getValueDomain() == null ? "" : curProp.getValueDomain();
+            apt.setValueDomain(valueDomain);
             apt.setNorm("");
             apt.setSex((short) 0);
             apt.setAge("");
             apt.setDefaultValue("");
-            em.persist(apt);
+            database.getEntityMgr().persist(apt);
         }
     }
 

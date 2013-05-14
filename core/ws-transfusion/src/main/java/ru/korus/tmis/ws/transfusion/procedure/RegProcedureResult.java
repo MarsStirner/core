@@ -207,5 +207,9 @@ public class RegProcedureResult {
 
         trfuActionProp.setProp(eritrocyteMass.getFinalHt(), actionId, PropType.FINAL_HT, update);
 
+        trfuActionProp.setProp(actionId, actionId, PropType.LAB_MEASURE, update);
+
+        trfuActionProp.setProp(actionId, actionId, PropType.FINAL_VOLUME, update);
+
     }
 }

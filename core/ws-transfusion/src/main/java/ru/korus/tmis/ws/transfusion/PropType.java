@@ -133,7 +133,11 @@ public enum PropType {
 
     SALINE_VOLUME("trfuProcedureSalineVolume", APValueDouble.class, "объем добавленного физ. раствора", SendOrderBloodComponents.UNIT_MILILITER),
 
-    FINAL_HT("trfuProcedureFinalHt", APValueDouble.class, "финальный гематокрит");
+    FINAL_HT("trfuProcedureFinalHt", APValueDouble.class, "финальный гематокрит"),
+
+    LAB_MEASURE("trfuLaboratoryMeasures", APValueInteger.class, "лабораторные измерения", null, "Table", "TRFU_LM"),
+
+    FINAL_VOLUME("trfuFinalVolumes", APValueInteger.class, "финальные объемы", null, "Table", "TRFU_FV");
 
     @SuppressWarnings("rawtypes")
     private final Class valueClass;
@@ -142,17 +146,28 @@ public enum PropType {
 
     private final String name;
 
+    private final String typeName;
+
+    private final String valueDomain;
+
     private final String unitCode;
 
     PropType(final String code, @SuppressWarnings("rawtypes") final Class valueClass, final String name) {
-        this(code, valueClass, name, null);
+        this(code, valueClass, name, null, null, null);
     }
 
     PropType(final String code, @SuppressWarnings("rawtypes") final Class valueClass, final String name, final String unitCode) {
+        this(code, valueClass, name, unitCode, null, null);
+    }
+
+    PropType(final String code, @SuppressWarnings("rawtypes") final Class valueClass, final String name, final String unitCode,
+            final String typeName, final String valueDomain) {
         this.code = code;
         this.valueClass = valueClass;
         this.name = name;
         this.unitCode = unitCode;
+        this.typeName = typeName;
+        this.valueDomain = valueDomain;
     }
 
     public String getName() {
@@ -166,6 +181,20 @@ public enum PropType {
     @SuppressWarnings("rawtypes")
     public Class getValueClass() {
         return valueClass;
+    }
+
+    /**
+     * @return the typeName
+     */
+    public String getTypeName() {
+        return typeName;
+    }
+
+    /**
+     * @return the valueDomain
+     */
+    public String getValueDomain() {
+        return valueDomain;
     }
 
     /**
