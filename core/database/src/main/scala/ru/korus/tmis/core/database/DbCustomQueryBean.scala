@@ -98,9 +98,8 @@ class DbCustomQueryBean
     }
 
     val typed = em.createQuery(ActiveEventsByDepartmentIdAndDoctorIdBetweenDatesQueryEx
-                               .format(
+                               .format(queryStr.query,
                                        i18n("db.action.leavingFlatCode"),
-                                       queryStr.query,
                                        i18n("db.apt.moving.codes.hospitalBed"),
                                        i18n("db.apt.moving.codes.hospOrgStruct"),
                                        i18n("db.apt.moving.codes.orgStructTransfer"),
@@ -1165,6 +1164,7 @@ WHERE ap.action.id IN (
     SELECT a.id
     FROM Action a
     WHERE (a.event.execDate IS NULL OR a.event.execDate > :endDate )
+    %s
     AND a.event.deleted = '0'
     AND a.event.id NOT IN (
         SELECT leaved.event.id
@@ -1173,7 +1173,6 @@ WHERE ap.action.id IN (
         AND leaved.event.id = a.event.id
         AND leaved.createDatetime < :endDate
     )
-    %s
     AND a.begDate <= :endDate
     AND a.actionType.flatCode IN :flatCodes
     AND a.deleted = '0'

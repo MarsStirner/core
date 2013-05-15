@@ -386,7 +386,7 @@ class PatientBean
                                                    role,
                                                    conditionsInfo,
                                                    dbOrgStructureBean.getOrgStructureById _,
-                                                   dbActionProperty.getActionPropertiesByActionIdAndRbCoreActionPropertyIds _,
+                                                   dbActionProperty.getActionPropertiesByActionIdAndActionPropertyTypeCodes _,
                                                    dbDiagnocticsBean.getDiagnosticsByEventId _))
   }
 
