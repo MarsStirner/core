@@ -173,7 +173,7 @@ public class SendOrderBloodComponents {
                 final PatientCredentials patientCredentials = getPatientCredentials(action, trfuActionProp);
                 if (patientCredentials != null) {
                     logger.info("Processing transfusion action {}... Patient Credentials: {}", action.getId(), patientCredentials);
-                    final OrderInformation orderInfo = getOrderInformation(database.getEntityMgr(), action, trfuService);
+                    final OrderInformation orderInfo = getOrderInformation(action, trfuService);
                     logger.info("Processing transfusion action {}... Order Information: {}", action.getId(), orderInfo);
                     try {
                         orderResult = trfuService.orderBloodComponents(patientCredentials, orderInfo);
@@ -212,7 +212,7 @@ public class SendOrderBloodComponents {
     }
 
     /**
-     * @param em
+     * 
      * @param action
      * @param trfuService
      * @return
@@ -220,18 +220,23 @@ public class SendOrderBloodComponents {
      * @throws DatatypeConfigurationException
      */
     private OrderInformation
-            getOrderInformation(final EntityManager em, final Action action, final TransfusionMedicalService trfuService) throws CoreException,
+            getOrderInformation(final Action action, final TransfusionMedicalService trfuService) throws CoreException,
                     DatatypeConfigurationException {
+        final EntityManager em = database.getEntityMgr();
         final OrderInformation res = new OrderInformation();
         res.setNumber("");
         res.setId(action.getId());
         Integer orgStructItd = new Integer(0);
+        if (action.getAssigner() == null) {
+            trfuActionProp.setRequestState(action.getId(), "Ошибка: Не задан врач, назначивший трансфузию");
+        }
         final Staff createPerson = EntityMgr.getSafe(action.getAssigner());
         final OrgStructure orgStructure = createPerson.getOrgStructure();
         if (orgStructure != null) {
             orgStructItd = orgStructure.getId();
         } else {
             logger.error("Wrong orgStriucture information for person {}, action id {}", createPerson.getId(), action.getId());
+            trfuActionProp.setRequestState(action.getId(), "Ошибка: Не задано подразделение у врача, назначившего трансфузию");
         }
         res.setDivisionId(orgStructItd);
         final Event event = EntityMgr.getSafe(action.getEvent());
@@ -242,7 +247,7 @@ public class SendOrderBloodComponents {
         res.setComponentTypeId(convertComponentType(em, action.getId(), compTypeId));
         res.setVolume(trfuActionProp.getProp(action.getId(), PropType.VOLUME, 0));
         res.setDoseCount(trfuActionProp.getProp(action.getId(), PropType.DOSE_COUNT, 0.0));
-        res.setIndication((String) trfuActionProp.getProp(action.getId(), PropType.ROOT_CAUSE));
+        res.setIndication(convertFromXml((String) trfuActionProp.getProp(action.getId(), PropType.ROOT_CAUSE)));
         res.setTransfusionType(convertTrfuType((String) trfuActionProp.getProp(action.getId(), PropType.TYPE)));
         final Date plannedEndDate = action.getPlannedEndDate();
         if (plannedEndDate != null) {
@@ -316,11 +321,14 @@ public class SendOrderBloodComponents {
     }
 
     /**
-     * @param trfuType
+     * @param value
      * @return
      */
-    private String convertFromXml(final String trfuType) {
-        String res = trfuType.substring(trfuType.indexOf('>') + 1);
+    private String convertFromXml(final String value) {
+        String res = value.substring(value.indexOf('>') + 1);
+        if ("".equals(res)) {
+            return value;
+        }
         final int endIndex = res.indexOf('<');
         if (endIndex > 0) {
             res = res.substring(0, endIndex);

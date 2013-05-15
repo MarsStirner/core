@@ -31,24 +31,24 @@ public enum PropType {
     /**
      * Свойства действия "Гемотрансфузионная терапия" (требование на выдачу КК)
      */
-    DIAGNOSIS("trfuReqBloodCompDiagnosis", APValueString.class, "Основной клинический диагноз"),
+    DIAGNOSIS("trfuReqBloodCompDiagnosis", APValueString.class, "Основной клинический диагноз", true),
 
-    BLOOD_COMP_TYPE("trfuReqBloodCompId", APValueRbBloodComponentType.class, "Требуемый компонент крови"),
+    BLOOD_COMP_TYPE("trfuReqBloodCompId", APValueRbBloodComponentType.class, "Требуемый компонент крови", true),
 
-    TYPE("trfuReqBloodCompType", APValueString.class, "Вид трансфузии"),
+    TYPE("trfuReqBloodCompType", APValueString.class, "Вид трансфузии", true),
 
-    VOLUME("trfuReqBloodCompValue", APValueInteger.class, "Объем требуемого компонента крови (все, кроме тромбоцитов)"),
+    VOLUME("trfuReqBloodCompValue", APValueInteger.class, "Объем требуемого компонента крови (все, кроме тромбоцитов)", false),
 
-    DOSE_COUNT("trfuReqBloodCompDose", APValueDouble.class, "Количество требуемых донорских доз (тромбоциты)"),
+    DOSE_COUNT("trfuReqBloodCompDose", APValueDouble.class, "Количество требуемых донорских доз (тромбоциты)", false),
 
-    ROOT_CAUSE("trfuReqBloodCompRootCause", APValueString.class, "Показания к проведению трансфузии"),
+    ROOT_CAUSE("trfuReqBloodCompRootCause", APValueString.class, "Показания к проведению трансфузии", true),
 
     ORDER_ISSUE_BLOOD_COMP_PASPORT("trfuReqBloodCompPasport", APValueInteger.class, "Паспортные данные выданных компонентов крови"),
 
     /**
      * Свойства лечебных процедур ТРФУ
      */
-    DONOR_ID("trfuProcedureDonor", APValueInteger.class, "Донор"),
+    DONOR_ID("trfuProcedureDonor", APValueInteger.class, "Донор", false),
 
     CONTRAINDICATION("trfuProcedureContraindication", APValueString.class, "Противопоказания к проведению процедуры"),
 
@@ -152,22 +152,58 @@ public enum PropType {
 
     private final String unitCode;
 
+    private boolean readOnly;
+
+    private final boolean mandatory;
+
     PropType(final String code, @SuppressWarnings("rawtypes") final Class valueClass, final String name) {
         this(code, valueClass, name, null, null, null);
     }
 
-    PropType(final String code, @SuppressWarnings("rawtypes") final Class valueClass, final String name, final String unitCode) {
+    /**
+     * @return the readOnly
+     */
+    public boolean isReadOnly() {
+        return readOnly;
+    }
+
+    /**
+     * @return the mandatory
+     */
+    public boolean isMandatory() {
+        return mandatory;
+    }
+
+    PropType(final String code, @SuppressWarnings("rawtypes") final Class valueClass, final String name, boolean mandatory) {
+        this(code, valueClass, name, mandatory, null, null, null);
+    }
+
+    PropType(final String code, @SuppressWarnings("rawtypes") final Class valueClass, final String name,
+            final String unitCode) {
         this(code, valueClass, name, unitCode, null, null);
     }
 
-    PropType(final String code, @SuppressWarnings("rawtypes") final Class valueClass, final String name, final String unitCode,
-            final String typeName, final String valueDomain) {
+    PropType(final String code, @SuppressWarnings("rawtypes") final Class valueClass, final String name, boolean mandatory,
+            final String unitCode) {
+        this(code, valueClass, name, mandatory, unitCode, null, null);
+    }
+
+    PropType(final String code, @SuppressWarnings("rawtypes") final Class valueClass, final String name,
+            final String unitCode, final String typeName, final String valueDomain) {
+        this(code, valueClass, name, false, null, null, null);
+        readOnly = true;
+    }
+
+    PropType(final String code, @SuppressWarnings("rawtypes") final Class valueClass, final String name, boolean mandatory,
+            final String unitCode, final String typeName, final String valueDomain) {
         this.code = code;
         this.valueClass = valueClass;
         this.name = name;
         this.unitCode = unitCode;
         this.typeName = typeName;
         this.valueDomain = valueDomain;
+        this.mandatory = mandatory;
+        readOnly = false;
     }
 
     public String getName() {

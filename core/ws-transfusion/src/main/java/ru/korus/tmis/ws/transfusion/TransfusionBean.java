@@ -35,8 +35,6 @@ public class TransfusionBean {
     @EJB
     private SendProcedureRequest sendProcedureRequest;
 
-    private String tmp;
-
     /**
      * Полинг базы данных для поиска и передачи новых запросов в систему ТРФУ
      */
@@ -45,7 +43,6 @@ public class TransfusionBean {
         try {
             if (ConfigManager.TrfuProp().ServiceUrl() != null && !"".equals(ConfigManager.TrfuProp().ServiceUrl().trim())) {
                 final TransfusionMedicalService_Service service = new TransfusionMedicalService_Service();
-                tmp = System.getProperty("java.security.policy", "MyApp.policy");
                 SecurityManager sm = System.getSecurityManager();
                 System.setSecurityManager(null);
                 final TransfusionMedicalService transfusionMedicalService = service.getTransfusionMedicalService();

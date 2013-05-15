@@ -187,6 +187,12 @@ public class RegProcedureResult {
 
         trfuActionProp.setProp(procedureInfo.getPackRemove(), actionId, PropType.PACK_REMOVE, update);
 
+        trfuActionProp.setProp(procedureInfo.getOtherRemove(), actionId, PropType.OTHER_REMOVE, update);
+
+        trfuActionProp.setProp(procedureInfo.getTotalRemove(), actionId, PropType.TOTAL_REMOVE, update);
+
+        trfuActionProp.setProp(procedureInfo.getBalance(), actionId, PropType.BALANCE, update);
+
         trfuActionProp.setProp(eritrocyteMass.getMaker(), actionId, PropType.MAKER, update);
 
         trfuActionProp.setProp(eritrocyteMass.getNumber(), actionId, PropType.NUMBER, update);

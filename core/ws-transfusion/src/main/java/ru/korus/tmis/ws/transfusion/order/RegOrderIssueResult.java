@@ -95,7 +95,7 @@ public class RegOrderIssueResult {
             trfuOrderIssueResult.setAction(action);
             trfuOrderIssueResult.setTrfuCompId(orderIssue.getComponentId());
             trfuOrderIssueResult.setCompNumber(orderIssue.getNumber());
-            final RbTrfuBloodComponentType rbBloodComponentType = toRbBloodComponentType(orderIssue.getComponentId());
+            final RbTrfuBloodComponentType rbBloodComponentType = toRbBloodComponentType(orderIssue.getComponentTypeId());
             if (rbBloodComponentType == null) {
                 errMsg += "; Неизвестный компонент крови: " + orderIssue.getComponentId() + " паспорт №" + orderIssue.getNumber();
             }

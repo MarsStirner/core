@@ -421,6 +421,8 @@ public class SendProcedureRequest {
             apt.setSex((short) 0);
             apt.setAge("");
             apt.setDefaultValue("");
+            apt.setReadOnly(curProp.isReadOnly());
+            apt.setMandatory(curProp.isMandatory());
             database.getEntityMgr().persist(apt);
         }
     }
