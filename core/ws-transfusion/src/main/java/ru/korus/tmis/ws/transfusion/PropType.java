@@ -190,7 +190,7 @@ public enum PropType {
 
     PropType(final String code, @SuppressWarnings("rawtypes") final Class valueClass, final String name,
             final String unitCode, final String typeName, final String valueDomain) {
-        this(code, valueClass, name, false, null, null, null);
+        this(code, valueClass, name, false, unitCode, typeName, valueDomain);
         readOnly = true;
     }
 

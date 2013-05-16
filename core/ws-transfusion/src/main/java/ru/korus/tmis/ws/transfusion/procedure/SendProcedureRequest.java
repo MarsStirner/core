@@ -20,7 +20,6 @@ import ru.korus.tmis.core.entity.model.Action;
 import ru.korus.tmis.core.entity.model.ActionPropertyType;
 import ru.korus.tmis.core.entity.model.ActionType;
 import ru.korus.tmis.core.entity.model.Event;
-import ru.korus.tmis.core.entity.model.OrgStructure;
 import ru.korus.tmis.core.entity.model.Patient;
 import ru.korus.tmis.core.entity.model.RbTrfuLaboratoryMeasureTypes;
 import ru.korus.tmis.core.entity.model.RbTrfuProcedureTypes;
@@ -29,6 +28,7 @@ import ru.korus.tmis.core.entity.model.Staff;
 import ru.korus.tmis.core.exception.CoreException;
 import ru.korus.tmis.util.EntityMgr;
 import ru.korus.tmis.ws.transfusion.PropType;
+import ru.korus.tmis.ws.transfusion.SenderUtils;
 import ru.korus.tmis.ws.transfusion.efive.DonorInfo;
 import ru.korus.tmis.ws.transfusion.efive.LaboratoryMeasureType;
 import ru.korus.tmis.ws.transfusion.efive.OrderResult;
@@ -60,6 +60,8 @@ public class SendProcedureRequest {
     private Database database;
 
     private Staff coreUser;
+
+    private SenderUtils senderUtils = new SenderUtils();
 
     /**
      * 
@@ -162,7 +164,8 @@ public class SendProcedureRequest {
                 final PatientCredentials patientCredentials = SendOrderBloodComponents.getPatientCredentials(action, actionProp.get(curFlatCode));
                 if (patientCredentials != null) {
                     final DonorInfo donorInfo = getDonorInfo(database.getEntityMgr(), action, actionProp.get(curFlatCode));
-                    final ru.korus.tmis.ws.transfusion.efive.ProcedureInfo procedureInfo = getProcedureInfo(database.getEntityMgr(), action);
+                    final ru.korus.tmis.ws.transfusion.efive.ProcedureInfo procedureInfo =
+                            getProcedureInfo(database.getEntityMgr(), action, actionProp.get(curFlatCode));
                     try {
                         orderResult = trfuService.orderMedicalProcedure(donorInfo, patientCredentials, procedureInfo);
                     } catch (final Exception ex) {
@@ -200,28 +203,20 @@ public class SendProcedureRequest {
         }
     }
 
-    private ru.korus.tmis.ws.transfusion.efive.ProcedureInfo getProcedureInfo(final EntityManager em, final Action action) throws CoreException,
-            DatatypeConfigurationException {
+    private ru.korus.tmis.ws.transfusion.efive.ProcedureInfo
+            getProcedureInfo(final EntityManager em, final Action action, TrfuActionProp trfuActionProp) throws CoreException,
+                    DatatypeConfigurationException {
         final ru.korus.tmis.ws.transfusion.efive.ProcedureInfo res = new ru.korus.tmis.ws.transfusion.efive.ProcedureInfo();
         res.setId(action.getId());
         final ActionType actionType = EntityMgr.getSafe(action.getActionType());
         res.setOperationType(getTrfuProcType(actionType.getFlatCode()));
-        Integer orgStructItd = new Integer(0);
-        final Staff createPerson = EntityMgr.getSafe(action.getAssigner());
-        final OrgStructure orgStructure = createPerson.getOrgStructure();
-        if (orgStructure != null) {
-            orgStructItd = orgStructure.getId();
-        } else {
-            logger.error("Wrong orgStriucture information for person {}, action id {}", createPerson.getId(), action.getId());
-        }
-        res.setDivisionId(orgStructItd);
+        final Staff assigner = senderUtils.getAssigner(action, trfuActionProp);
+        final Staff createPerson = EntityMgr.getSafe(assigner);
+        res.setDivisionId(senderUtils.getOrgStructure(action, createPerson, trfuActionProp));
         final Event event = EntityMgr.getSafe(action.getEvent());
-        res.setIbNumber(event.getExternalId());
-        final Date plannedEndDate = action.getPlannedEndDate();
-        if (plannedEndDate != null) {
-            res.setPlanDate(Database.toGregorianCalendar(plannedEndDate));
-        }
-        res.setRegistrationDate(Database.toGregorianCalendar(new Date()));
+        res.setIbNumber(senderUtils.getIbNumbre(action, event, trfuActionProp));
+        final Date plannedEndDate = senderUtils.getPlannedData(action, trfuActionProp);
+        res.setRegistrationDate(Database.toGregorianCalendar(plannedEndDate));
         res.setAttendingPhysicianId(createPerson.getId());
         res.setAttendingPhysicianFirstName(createPerson.getFirstName());
         res.setAttendingPhysicianLastName(createPerson.getLastName());
