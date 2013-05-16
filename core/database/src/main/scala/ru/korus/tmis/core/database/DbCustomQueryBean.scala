@@ -413,7 +413,7 @@ class DbCustomQueryBean
       }
       if (filter.asInstanceOf[AppealSimplifiedRequestDataFilter].departmentId > 0 &&
         filter.asInstanceOf[AppealSimplifiedRequestDataFilter].departmentId != default_org.getId.intValue()) {
-        department_filter = "AND apv.value.id = :departmentId"
+        department_filter = " AND exists ( SELECT val.id FROM APValueOrgStructure val WHERE val.id.id = ap.id AND val.value.id = :departmentId)"
         flgDepartmentSwitched = true
       }
       filter.asInstanceOf[AppealSimplifiedRequestDataFilter].toQueryStructure()
@@ -442,25 +442,25 @@ class DbCustomQueryBean
       res.foreach(e => ids.add(e.getId))
 
       //Получение отделения из последнего из последнего экшена движения
-      val depArrayTyped = em.createQuery(OrgStructureSubQuery.format(i18n("db.actionType.moving"),
-        i18n("db.rbCAP.moving.id.located"),
-        department_filter),
-        classOf[Array[AnyRef]])
-        .setParameter("ids", asJavaCollection(ids))
+      val depArrayTyped = em.createQuery(OrgStructureSubQuery.format(department_filter), classOf[ActionProperty])
+                            .setParameter("ids", asJavaCollection(ids))
+                            .setParameter("flatCode", i18n("db.action.movingFlatCode"))
+                            .setParameter("code", i18n("db.apt.moving.codes.hospOrgStruct"))
       if (flgDepartmentSwitched)
         depArrayTyped.setParameter("departmentId", filter.asInstanceOf[AppealSimplifiedRequestDataFilter].departmentId)
 
       val depArray = depArrayTyped.getResultList
+
+
       org_value = depArray.foldLeft(new java.util.HashMap[Event, OrgStructure])(
         (map, pair) => {
-          val event = pair(0).asInstanceOf[Event]
-          var department: OrgStructure = default_org
-          if (pair(1).isInstanceOf[OrgStructure]) {
-            department = pair(1).asInstanceOf[OrgStructure]
-            em.detach(department)
-          }
-          em.detach(event)
-          map.put(event, department)
+          em.detach(pair)
+          val ap_values = dbActionPropertyBean.getActionPropertyValue(pair)
+          val department: OrgStructure =
+            if(ap_values!=null && ap_values.size()>0)
+              ap_values.get(0).getValue.asInstanceOf[OrgStructure]
+            else null
+          map.put(pair.getAction.getEvent, department)
           map
         }
       )
@@ -1699,7 +1699,29 @@ AND ap.deleted = 0
     d.mkb = :mkb
                             """
   //
-  val OrgStructureSubQuery = """
+  val OrgStructureSubQuery =
+    """
+      SELECT ap
+      FROM ActionProperty ap
+      WHERE
+        ap.action.id IN (
+          SELECT a.id
+          FROM Action a
+          WHERE a.event.id IN :ids
+          AND a.actionType.flatCode = :flatCode
+          AND a.deleted = '0'
+          AND a.createDatetime = (
+            SELECT Max(a2.createDatetime)
+            FROM Action a2
+            WHERE a2.event.id = a.event.id
+            AND a2.actionType.flatCode = :flatCode
+            AND a2.deleted = '0'
+          )
+        )
+      AND ap.actionPropertyType.code = :code
+      %s
+    """
+    /*"""
     SELECT e, apv.value, MAX(a.createDatetime)
     FROM
       ActionProperty ap
@@ -1723,5 +1745,5 @@ AND ap.deleted = 0
     AND apv.value IS NOT NULL
     %s
     GROUP BY e
-                             """
+                             """ */
 }
