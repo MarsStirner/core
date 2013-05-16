@@ -24,6 +24,7 @@ import ru.korus.tmis.core.thesaurus.ThesaurusBeanLocal
 import ru.korus.tmis.core.treatment.TreatmentBeanLocal
 import com.google.common.collect.Lists
 import javax.servlet.http.HttpServletRequest
+import ru.korus.tmis.core.entity.model.layout.LayoutAttribute
 
 /**
  * Created with IntelliJ IDEA.
@@ -167,6 +168,9 @@ class WebMisRESTImpl  extends WebMisREST
 
   @EJB
   var diagnosisBean: DiagnosisBeanLocal = _
+
+  @EJB
+  var dbLayoutAttributeBean: DbLayoutAttributeBeanLocal = _
 
   def getAllPatients(requestData: PatientRequestData, auth: AuthData): PatientData = {
     if (auth != null) {
@@ -417,12 +421,12 @@ class WebMisRESTImpl  extends WebMisREST
     //listForSummary.add(ActionWrapperInfo.toOrder)
 
     primaryAssessmentBean.getEmptyStructure(actionTypeId,
-      "PrimaryAssesment",
-      listForConverter,
-      listForSummary,
-      authData,
-      postProcessing _,
-      null)
+                                            "PrimaryAssesment",
+                                            listForConverter,
+                                            listForSummary,
+                                            authData,
+                                            postProcessing _,
+                                            null)
   }
 
   //запрос на структуру первичного мед. осмотра с копированием данных из предыдущего осмотра
@@ -1140,6 +1144,10 @@ class WebMisRESTImpl  extends WebMisREST
   def setExecPersonForAppeal(eventId: Int, personId: Int, authData: AuthData) = {
     appealBean.setExecPersonForAppeal(eventId, personId, authData, ExecPersonSetType.EP_SET_IN_LPU)
   }
+
+  def getLayoutAttributes() = new LayoutAttributeListData(dbLayoutAttributeBean.getAllLayoutAttributes)
+
+
   //__________________________________________________________________________________________________
   //***************  AUTHDATA  *******************
   //__________________________________________________________________________________________________

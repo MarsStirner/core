@@ -8,6 +8,8 @@ import java.util.{Date, LinkedList}
 import javax.xml.bind.annotation._
 import javax.xml.bind.annotation.adapters.{XmlJavaTypeAdapter, XmlAdapter}
 import org.codehaus.jackson.annotate.JsonIgnoreProperties
+import java.util
+import ru.korus.tmis.core.entity.model.layout.LayoutAttributeValue
 
 @XmlType(name = "entities")
 @XmlRootElement(name = "entities")
@@ -253,7 +255,7 @@ class CommonGroup {
 @XmlType(name = "attribute")
 @XmlRootElement(name = "attribute")
 @JsonIgnoreProperties(ignoreUnknown = true)
-class CommonAttribute() {
+trait AbstractCommonAttribute {
 
   @XmlTransient
   var dateFormatter = ConfigManager.DateFormatter
@@ -323,6 +325,26 @@ class CommonAttribute() {
   def setTypeId(eTypeId: Integer) = {
     this.typeId = eTypeId
   }
+
+  @XmlJavaTypeAdapter(value = classOf[PropertyMapAdapter])
+  var properties: Map[String, String] = Map.empty[String, String]
+
+  def addProperty(key: String, value: String) = {
+    value match {
+      case null => {}
+      case _ => properties += (key -> value)
+    }
+  }
+
+  def apply(map: Map[String, String]) = {
+    map.foreach((property) => {
+      addProperty(property._1, property._2)
+    })
+    this
+  }
+}
+
+class CommonAttribute  extends AbstractCommonAttribute{
 
   private def this(id: Integer,
                    name: String,
@@ -406,22 +428,27 @@ class CommonAttribute() {
     this(id, version, name, aType, scope)
     this.apply(props)
   }
+}
 
-  @XmlJavaTypeAdapter(value = classOf[PropertyMapAdapter])
-  var properties: Map[String, String] = Map.empty[String, String]
+class CommonAttributeWithLayout(id: Integer,
+                                version: Integer,
+                                name: String,
+                                aType: String,
+                                scope: String,
+                                props: Map[String, String]) extends CommonAttribute (id, version, name, aType, scope, props){
 
-  def addProperty(key: String, value: String) = {
-    value match {
-      case null => {}
-      case _ => properties += (key -> value)
-    }
-  }
+  @BeanProperty
+  var layoutAttributeValues = new LinkedList[LayoutAttributeSimplifyDataContainer]
 
-  def apply(map: Map[String, String]) = {
-    map.foreach((property) => {
-      addProperty(property._1, property._2)
-    })
-    this
+  def this(id: Integer,
+           version: Integer,
+           name: String,
+           aType: String,
+           scope: String,
+           props: Map[String, String],
+           layout: List[LayoutAttributeValue]) = {
+    this(id, version, name, aType, scope, props)
+    layout.foreach(f=> this.layoutAttributeValues.add(new LayoutAttributeSimplifyDataContainer(f)))
   }
 }
 

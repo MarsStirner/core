@@ -333,4 +333,6 @@ public interface WebMisREST extends Serializable {
      * @throws CoreException
      */
     Boolean setExecPersonForAppeal(int eventId, int personId, AuthData authData) throws CoreException;
+
+    LayoutAttributeListData getLayoutAttributes() throws CoreException;
 }

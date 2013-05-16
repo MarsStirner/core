@@ -14,6 +14,7 @@ import ru.korus.tmis.core.database._
 import ru.korus.tmis.core.data._
 import collection.immutable.HashMap
 import ru.korus.tmis.util.{StringId, ConfigManager, ActionPropertyWrapperInfo, I18nable}
+import ru.korus.tmis.util.StringId
 
 @Interceptors(Array(classOf[LoggingInterceptor]))
 @Stateless
@@ -44,6 +45,9 @@ class PrimaryAssessmentBean
 
   @EJB
   private var dbManager: DbManagerBeanLocal = _
+
+  @EJB
+  var dbLayoutAttributeValueBean: DbLayoutAttributeValueBeanLocal = _
 
   def summary(assessment: Action) = {
     val group = new CommonGroup(0, "Summary")
@@ -134,7 +138,7 @@ class PrimaryAssessmentBean
 
   def converterFromList(list: java.util.List[String], apt: ActionPropertyType) = {
 
-    var map = list.foldLeft(Map.empty[String,String])(
+    val map = list.foldLeft(Map.empty[String,String])(
       (str_key, el) => {
         val key = el
         val value  =   if(key == APWI.Value.toString){apt.getDefaultValue}
@@ -147,12 +151,13 @@ class PrimaryAssessmentBean
         str_key + (key -> value)
       })
 
-    new CommonAttribute(apt.getId,
-      0,
-      apt.getName,
-      apt.getTypeName,
-      apt.getConstructorValueDomain,
-      map)
+    new CommonAttributeWithLayout(apt.getId,
+                                  0,
+                                  apt.getName,
+                                  apt.getTypeName,
+                                  apt.getConstructorValueDomain,
+                                  map,
+                                  dbLayoutAttributeValueBean.getLayoutAttributeValuesByActionPropertyTypeId(apt.getId.intValue()).toList)
   }
 
   def getEmptyStructure(atId: Int,

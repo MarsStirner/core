@@ -434,7 +434,17 @@ public class DirectoryInfoRESTImpl {
         return new JSONWithPadding(getAllActionTypeNamesEx(atst, patientId, this.limit, this.page, this.sortingField, this.sortingMethod, groupId, code, view, this.auth),this.callback);
     }
 
-    //__________________________________________________________________________________________________________________
+    /**
+     * Запрос на получение справочника разметки полей медицинского документа
+     * @return Справочник в json-формате
+     */
+    @GET
+    @Path("/layoutAttributes/")
+    @Produces("application/x-javascript")
+    public Object getLayoutAttributes() {
+        return new JSONWithPadding(wsImpl.getLayoutAttributes(),this.callback);
+    }
+            //__________________________________________________________________________________________________________________
     //***********************************   ВСПОМОГАТЕЛЬНЫЕ МЕТОДЫ   ***********************************
     //__________________________________________________________________________________________________________________
 
