@@ -87,11 +87,15 @@ public class TrfuActionProp {
 
     public void setRequestState(final Integer actionId, final String state) throws CoreException {
         setProp(state, actionId, PropType.ORDER_REQUEST_ID, true);
-
     }
 
     public void orderResult2DB(final Action action, final Integer requestId) throws CoreException {
         setRequestState(action.getId(), "Получен идентификатор в системе ТРФУ: " + requestId);
         action.setStatus(Database.ACTION_STATE_WAIT);
+    }
+
+    public void setErrorState(final Action action, final String errMsg) throws CoreException {
+        setRequestState(action.getId(), errMsg);
+        throw new CoreException(errMsg);
     }
 }

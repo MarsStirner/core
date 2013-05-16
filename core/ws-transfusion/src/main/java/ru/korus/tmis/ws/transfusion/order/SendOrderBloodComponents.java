@@ -16,7 +16,6 @@ import org.slf4j.LoggerFactory;
 import ru.korus.tmis.core.database.dbutil.Database;
 import ru.korus.tmis.core.entity.model.Action;
 import ru.korus.tmis.core.entity.model.Event;
-import ru.korus.tmis.core.entity.model.OrgStructure;
 import ru.korus.tmis.core.entity.model.Patient;
 import ru.korus.tmis.core.entity.model.RbBloodType;
 import ru.korus.tmis.core.entity.model.RbTrfuBloodComponentType;
@@ -24,6 +23,7 @@ import ru.korus.tmis.core.entity.model.Staff;
 import ru.korus.tmis.core.exception.CoreException;
 import ru.korus.tmis.util.EntityMgr;
 import ru.korus.tmis.ws.transfusion.PropType;
+import ru.korus.tmis.ws.transfusion.SenderUtils;
 import ru.korus.tmis.ws.transfusion.efive.ComponentType;
 import ru.korus.tmis.ws.transfusion.efive.OrderInformation;
 import ru.korus.tmis.ws.transfusion.efive.OrderResult;
@@ -87,6 +87,8 @@ public class SendOrderBloodComponents {
 
     @EJB
     private Database database;
+
+    private SenderUtils senderUtils = new SenderUtils();
 
     public static final PropType[] propConstants = {
             PropType.DIAGNOSIS, // "Основной клинический диагноз"
@@ -173,7 +175,7 @@ public class SendOrderBloodComponents {
                 final PatientCredentials patientCredentials = getPatientCredentials(action, trfuActionProp);
                 if (patientCredentials != null) {
                     logger.info("Processing transfusion action {}... Patient Credentials: {}", action.getId(), patientCredentials);
-                    final OrderInformation orderInfo = getOrderInformation(database.getEntityMgr(), action, trfuService);
+                    final OrderInformation orderInfo = getOrderInformation(action, trfuService);
                     logger.info("Processing transfusion action {}... Order Information: {}", action.getId(), orderInfo);
                     try {
                         orderResult = trfuService.orderBloodComponents(patientCredentials, orderInfo);
@@ -212,7 +214,7 @@ public class SendOrderBloodComponents {
     }
 
     /**
-     * @param em
+     * 
      * @param action
      * @param trfuService
      * @return
@@ -220,34 +222,28 @@ public class SendOrderBloodComponents {
      * @throws DatatypeConfigurationException
      */
     private OrderInformation
-            getOrderInformation(final EntityManager em, final Action action, final TransfusionMedicalService trfuService) throws CoreException,
+            getOrderInformation(final Action action, final TransfusionMedicalService trfuService) throws CoreException,
                     DatatypeConfigurationException {
+        final EntityManager em = database.getEntityMgr();
         final OrderInformation res = new OrderInformation();
         res.setNumber("");
         res.setId(action.getId());
-        Integer orgStructItd = new Integer(0);
-        final Staff createPerson = EntityMgr.getSafe(action.getAssigner());
-        final OrgStructure orgStructure = createPerson.getOrgStructure();
-        if (orgStructure != null) {
-            orgStructItd = orgStructure.getId();
-        } else {
-            logger.error("Wrong orgStriucture information for person {}, action id {}", createPerson.getId(), action.getId());
-        }
-        res.setDivisionId(orgStructItd);
+
+        final Staff assigner = senderUtils.getAssigner(action, trfuActionProp);
+        final Staff createPerson = EntityMgr.getSafe(assigner);
+        res.setDivisionId(senderUtils.getOrgStructure(action, createPerson, trfuActionProp));
         final Event event = EntityMgr.getSafe(action.getEvent());
-        res.setIbNumber(event.getExternalId());
+        res.setIbNumber(senderUtils.getIbNumbre(action, event, trfuActionProp));
         res.setDiagnosis((String) trfuActionProp.getProp(action.getId(), PropType.DIAGNOSIS));
         final RbTrfuBloodComponentType compType = trfuActionProp.getProp(action.getId(), PropType.BLOOD_COMP_TYPE);
         final Integer compTypeId = compType != null ? compType.getId() : null;
         res.setComponentTypeId(convertComponentType(em, action.getId(), compTypeId));
         res.setVolume(trfuActionProp.getProp(action.getId(), PropType.VOLUME, 0));
         res.setDoseCount(trfuActionProp.getProp(action.getId(), PropType.DOSE_COUNT, 0.0));
-        res.setIndication((String) trfuActionProp.getProp(action.getId(), PropType.ROOT_CAUSE));
+        res.setIndication(convertFromXml((String) trfuActionProp.getProp(action.getId(), PropType.ROOT_CAUSE)));
         res.setTransfusionType(convertTrfuType((String) trfuActionProp.getProp(action.getId(), PropType.TYPE)));
-        final Date plannedEndDate = action.getPlannedEndDate();
-        if (plannedEndDate != null) {
-            res.setPlanDate(Database.toGregorianCalendar(plannedEndDate));
-        }
+        final Date plannedEndDate = senderUtils.getPlannedData(action, trfuActionProp);
+        res.setPlanDate(Database.toGregorianCalendar(plannedEndDate));
         res.setRegistrationDate(Database.toGregorianCalendar(new Date()));
         res.setAttendingPhysicianId(createPerson.getId());
         res.setAttendingPhysicianFirstName(createPerson.getFirstName());
@@ -255,6 +251,8 @@ public class SendOrderBloodComponents {
         res.setAttendingPhysicianMiddleName(createPerson.getPatrName());
         return res;
     }
+
+
 
     private Integer convertComponentType(final EntityManager em, final Integer actionId, final Integer compTypeId) throws CoreException {
         final List<RbTrfuBloodComponentType> compTypes = em
@@ -316,11 +314,14 @@ public class SendOrderBloodComponents {
     }
 
     /**
-     * @param trfuType
+     * @param value
      * @return
      */
-    private String convertFromXml(final String trfuType) {
-        String res = trfuType.substring(trfuType.indexOf('>') + 1);
+    private String convertFromXml(final String value) {
+        String res = value.substring(value.indexOf('>') + 1);
+        if ("".equals(res)) {
+            return value;
+        }
         final int endIndex = res.indexOf('<');
         if (endIndex > 0) {
             res = res.substring(0, endIndex);
