@@ -451,7 +451,7 @@ with TmisLogging{
     }
 
     //2. Ищем последнее движение, находим старую койку и регистрируем на нее
-    val temp = this.getLastMovingActionForEventId(oldAction.getEvent.getId.intValue())
+    val temp = this.getLastCloseMovingActionForEventId(oldAction.getEvent.getId.intValue())
     if (temp!=null) {
       val oldLastAction =  Action.clone(temp)
       val lockLastId = appLock.acquireLock("Action", oldLastAction.getId.intValue(), oldLastAction.getIdx, authData)
@@ -623,19 +623,17 @@ with TmisLogging{
     null
   }
 
-  private def getLastDepartmentLocationByAction(actionId: Int):java.lang.Integer = {
-    var result = em.createQuery(LastDepartmentLocationByActionQuery, classOf[Int])
-      .setParameter("id", actionId)
-      .getResultList
-    if(result!=null&&result.size()>0)
-      Integer.valueOf(result.iterator().next.intValue())
-    else
-      null:java.lang.Integer
+  def getLastCloseMovingActionForEventId(eventId: Int) = {
+    this.getLastActionByCondition(eventId, "AND a.endDate IS NOT NULL ORDER BY a.endDate desc, a.id desc")
   }
 
   def getLastMovingActionForEventId(eventId: Int) = {
-    val result = em.createQuery(LastMovingActionByEventIdQuery.format(i18n("db.action.movingFlatCode")),
-                                classOf[Action])
+     this.getLastActionByCondition(eventId, "ORDER BY a.createDatetime desc")
+  }
+
+  private def getLastActionByCondition(eventId: Int, condition: String) = {
+    val result = em.createQuery(LastMovingActionByEventIdQuery.format(i18n("db.action.movingFlatCode"), condition),
+      classOf[Action])
       .setParameter("id", eventId)
       .getResultList
 
@@ -647,26 +645,6 @@ with TmisLogging{
       }
     }
   }
-
-  val LastDepartmentLocationByActionQuery =
-    """
-    SELECT apv.value.id
-    FROM
-      ActionProperty ap
-        JOIN ap.action a
-        JOIN ap.actionPropertyType apt,
-      APValueOrgStructure apv
-    WHERE
-      a.id = :id
-    AND
-      ap.id = apv.id.id
-    AND
-      apt.name = 'Отделение пребывания'
-    AND
-      a.deleted = 0
-    AND
-      apt.deleted = 0
-    """
 
   val AllHospitalBedsByDepartmentIdQuery =
     """
@@ -724,26 +702,6 @@ with TmisLogging{
       a.deleted = 0
     AND
       at.deleted = 0
-    AND
-      a.endDate IS NOT NULL
-    ORDER BY a.endDate desc, a.id desc
+    %s
     """
-  /*val LastMovingActionByEventIdQuery =
-    """
-    SELECT a, COALESCE(max(a.endDate),0)
-    FROM
-      Action a
-        JOIN a.actionType at
-        JOIN a.event e
-    WHERE
-      e.id = :id
-    AND
-      at.flatCode = '%s'
-    AND
-      a.endDate IS NOT NULL
-    AND
-      a.deleted = 0
-    AND
-      at.deleted = 0
-    """*/
 }

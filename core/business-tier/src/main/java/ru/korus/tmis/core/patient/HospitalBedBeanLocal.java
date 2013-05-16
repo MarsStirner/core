@@ -113,4 +113,13 @@ public interface HospitalBedBeanLocal {
      * @throws CoreException
      */
     Action getLastMovingActionForEventId(int eventId) throws CoreException;
+
+    /**
+     * Запрос на последнее по ивенту действие типа Движение
+     * @param eventId Идентификатор ивента.
+     * @see AuthData
+     * @return
+     * @throws CoreException
+     */
+    Action getLastCloseMovingActionForEventId(int eventId) throws CoreException;
 }

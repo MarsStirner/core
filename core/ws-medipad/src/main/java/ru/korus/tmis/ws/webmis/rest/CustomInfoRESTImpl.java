@@ -129,10 +129,10 @@ public class CustomInfoRESTImpl {
         short statusS = (status!=null && !status.isEmpty()) ? Short.parseShort(status): -1;
 
         TakingOfBiomaterialRequesDataFilter filter = new TakingOfBiomaterialRequesDataFilter(depId,
-                beginDate,
-                endDate,
-                statusS,
-                biomaterial);
+                                                                                            beginDate,
+                                                                                            endDate,
+                                                                                            statusS,
+                                                                                            biomaterial);
         TakingOfBiomaterialRequesData request = new TakingOfBiomaterialRequesData(this.sortingField, this.sortingMethod, filter);
         return new JSONWithPadding(wsImpl.getTakingOfBiomaterial(request, this.auth),this.callback);
     }
