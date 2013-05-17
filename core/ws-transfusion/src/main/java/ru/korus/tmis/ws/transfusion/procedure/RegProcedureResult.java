@@ -18,9 +18,9 @@ import ru.korus.tmis.core.entity.model.TrfuLaboratoryMeasure;
 import ru.korus.tmis.core.exception.CoreException;
 import ru.korus.tmis.ws.transfusion.IssueResult;
 import ru.korus.tmis.ws.transfusion.PropType;
+import ru.korus.tmis.ws.transfusion.TrfuActionProp;
 import ru.korus.tmis.ws.transfusion.efive.PatientCredentials;
 import ru.korus.tmis.ws.transfusion.order.SendOrderBloodComponents;
-import ru.korus.tmis.ws.transfusion.order.TrfuActionProp;
 
 /**
  * Author:      Sergey A. Zagrebelny <br>

@@ -139,21 +139,45 @@ public enum PropType {
 
     FINAL_VOLUME("trfuFinalVolumes", APValueInteger.class, "финальные объемы", null, "Table", "TRFU_FV");
 
+    /**
+     * Таблица для хранения значения свойства
+     */
     @SuppressWarnings("rawtypes")
     private final Class valueClass;
 
+    /**
+     * Уникальный код совйства
+     */
     private final String code;
 
+    /**
+     * Ниаменование сойства (используется при сообшениях об ошибках).
+     */
     private final String name;
 
+    /**
+     * Тип свойства (ActionPropertyType.typeName)
+     */
     private final String typeName;
 
+    /**
+     * Домен (ActionPropertyType.valueDomain)
+     */
     private final String valueDomain;
 
+    /**
+     * Единицы измерения
+     */
     private final String unitCode;
 
+    /**
+     * Признак "только для чтения"
+     */
     private boolean readOnly;
 
+    /**
+     * Признак "обязательный параметр"
+     */
     private final boolean mandatory;
 
     PropType(final String code, @SuppressWarnings("rawtypes") final Class valueClass, final String name) {

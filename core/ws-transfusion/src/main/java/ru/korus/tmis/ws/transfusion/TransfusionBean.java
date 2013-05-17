@@ -22,7 +22,7 @@ import ru.korus.tmis.ws.transfusion.procedure.SendProcedureRequest;
  */
 
 /**
- * 
+ * Периодический опрос БД
  */
 @Stateless
 public class TransfusionBean {

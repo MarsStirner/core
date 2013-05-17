@@ -19,6 +19,7 @@ import ru.korus.tmis.core.entity.model.TrfuOrderIssueResult;
 import ru.korus.tmis.core.exception.CoreException;
 import ru.korus.tmis.ws.transfusion.IssueResult;
 import ru.korus.tmis.ws.transfusion.PropType;
+import ru.korus.tmis.ws.transfusion.TrfuActionProp;
 
 /**
  * Author:      Sergey A. Zagrebelny <br>
@@ -28,7 +29,7 @@ import ru.korus.tmis.ws.transfusion.PropType;
  */
 
 /**
- * Регистрация извещения о резульатах выполнения требования КК
+ * Регистрация извещения о результатах выполнения требования КК
  */
 @Stateless
 public class RegOrderIssueResult {
@@ -73,10 +74,18 @@ public class RegOrderIssueResult {
     }
 
     /**
-     * @param em
-     * @param actionId
-     * @param orderIssue
+     * Сохранение извещения о результатах выполнения требования КК в БД
+     * 
+     * @param action
+     *            - действие, соответствующее требованию КК
+     * @param factDate
+     *            - фактическая дата/время выдачи КК
+     * @param components
+     *            - паспортные данные выданного(-ых) компонентов крови
+     * @param orderComment
+     *            - комментарий
      * @throws CoreException
+     *             - при кокой-либо ошибке во время работы с БД
      */
     private void update(final Action action, final Date factDate, final List<OrderIssueInfo> components, final String orderComment)
             throws CoreException {
@@ -117,11 +126,6 @@ public class RegOrderIssueResult {
         em.flush();
     }
 
-    /**
-     * @param bloodGroupId
-     * @param rhesusFactorId
-     * @return
-     */
     private RbBloodType toRbBloodType(final Integer bloodGroupId, final Integer rhesusFactorId) {
         final EntityManager em = database.getEntityMgr();
         final String[] bloodGroups = {
@@ -140,10 +144,6 @@ public class RegOrderIssueResult {
         return res;
     }
 
-    /**
-     * @param componentId
-     * @return
-     */
     private RbTrfuBloodComponentType toRbBloodComponentType(final Integer componentId) {
         final EntityManager em = database.getEntityMgr();
         final List<RbTrfuBloodComponentType> rbBloodComponentTypes =

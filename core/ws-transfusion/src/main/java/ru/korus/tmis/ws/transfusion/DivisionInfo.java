@@ -8,7 +8,7 @@ package ru.korus.tmis.ws.transfusion;
  */
 
 /**
- * 
+ * Описание подразделений ЛПУ
  */
 public class DivisionInfo {
 

@@ -1,4 +1,4 @@
-package ru.korus.tmis.ws.transfusion.order;
+package ru.korus.tmis.ws.transfusion;
 
 import java.util.HashMap;
 import java.util.List;
@@ -9,7 +9,6 @@ import ru.korus.tmis.core.entity.model.Action;
 import ru.korus.tmis.core.entity.model.ActionPropertyType;
 import ru.korus.tmis.core.entity.model.ActionType;
 import ru.korus.tmis.core.exception.CoreException;
-import ru.korus.tmis.ws.transfusion.PropType;
 
 /**
  * Author: Sergey A. Zagrebelny <br>
@@ -18,12 +17,25 @@ import ru.korus.tmis.ws.transfusion.PropType;
  * Description: <br>
  */
 
+/**
+ * Класс для работы со свойствами действия
+ */
 public class TrfuActionProp {
 
     private final Database database;
 
+    /**
+     * Таблица свойств действия. Key - тип свойства действия, Value - ActionPropertyType.Id
+     */
     private final Map<PropType, Integer> propIds;
 
+    /**
+     * 
+     * @param databaseBean
+     * @param actionTypeFlatCode
+     * @param propConstants
+     * @throws CoreException
+     */
     public TrfuActionProp(final Database databaseBean, final String actionTypeFlatCode, final List<PropType> propConstants) throws CoreException {
         database = databaseBean;
         final List<ActionType> actionType =

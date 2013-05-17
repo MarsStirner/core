@@ -22,9 +22,8 @@ import ru.korus.tmis.ws.transfusion.procedure.ProcedureInfo;
  */
 
 /**
- * 
+ * Интерфейс МИС для подсистемы ТРФУ
  */
-
 @WebService(targetNamespace = "http://korus.ru/tmis/ws/transfusion", name = "TransfusionService")
 public interface ServiceTransfusion {
     @WebMethod()

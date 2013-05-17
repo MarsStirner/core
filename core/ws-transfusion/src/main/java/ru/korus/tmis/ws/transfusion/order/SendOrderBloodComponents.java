@@ -24,6 +24,7 @@ import ru.korus.tmis.core.exception.CoreException;
 import ru.korus.tmis.util.EntityMgr;
 import ru.korus.tmis.ws.transfusion.PropType;
 import ru.korus.tmis.ws.transfusion.SenderUtils;
+import ru.korus.tmis.ws.transfusion.TrfuActionProp;
 import ru.korus.tmis.ws.transfusion.efive.ComponentType;
 import ru.korus.tmis.ws.transfusion.efive.OrderInformation;
 import ru.korus.tmis.ws.transfusion.efive.OrderResult;
@@ -130,9 +131,9 @@ public class SendOrderBloodComponents {
      * @param trfuActionProp
      * @return - информацию о пациенте для передачи в ТРФУ
      * @throws CoreException
-     *             - при отсутвии доступа к БД или при отсутвии необходимой информации в БД
+     *             - при ошибке во время работы с БД
      * @throws DatatypeConfigurationException
-     *             - если не возможно преобразовать дату рождения пациента в XMLGregorianCalendar (@see {@link Database#toGregorianCalendar(Date)})
+     *             - если невозможно преобразовать дату рождения пациента в XMLGregorianCalendar (@see {@link Database#toGregorianCalendar(Date)})
      */
     public static PatientCredentials getPatientCredentials(final Action action, final TrfuActionProp trfuActionProp) throws CoreException,
             DatatypeConfigurationException {
@@ -174,8 +175,7 @@ public class SendOrderBloodComponents {
                 trfuActionProp.setRequestState(action.getId(), "");
                 final PatientCredentials patientCredentials = getPatientCredentials(action, trfuActionProp);
                 if (patientCredentials != null) {
-                    logger.info("Processing transfusion action {}... Patient Credentials: {}", action.getId(), patientCredentials);
-                    final OrderInformation orderInfo = getOrderInformation(action, trfuService);
+                    final OrderInformation orderInfo = getOrderInformation(action);
                     logger.info("Processing transfusion action {}... Order Information: {}", action.getId(), orderInfo);
                     try {
                         orderResult = trfuService.orderBloodComponents(patientCredentials, orderInfo);
@@ -214,16 +214,18 @@ public class SendOrderBloodComponents {
     }
 
     /**
+     * Создание требования на выдачу КК
      * 
      * @param action
-     * @param trfuService
-     * @return
+     *            - действие, соответствующее требованию КК
+     * @return - параметры, заданные врачом для передаваемого требования на выдачу КК
      * @throws CoreException
+     *             - при ошибке во время работы с БД
      * @throws DatatypeConfigurationException
+     *             - если невозможно преобразовать дату рождения пациента в XMLGregorianCalendar (@see {@link Database#toGregorianCalendar(Date)})
      */
-    private OrderInformation
-            getOrderInformation(final Action action, final TransfusionMedicalService trfuService) throws CoreException,
-                    DatatypeConfigurationException {
+    private OrderInformation getOrderInformation(final Action action) throws CoreException,
+            DatatypeConfigurationException {
         final EntityManager em = database.getEntityMgr();
         final OrderInformation res = new OrderInformation();
         res.setNumber("");
@@ -251,8 +253,6 @@ public class SendOrderBloodComponents {
         res.setAttendingPhysicianMiddleName(createPerson.getPatrName());
         return res;
     }
-
-
 
     private Integer convertComponentType(final EntityManager em, final Integer actionId, final Integer compTypeId) throws CoreException {
         final List<RbTrfuBloodComponentType> compTypes = em
@@ -285,10 +285,6 @@ public class SendOrderBloodComponents {
         database.getEntityMgr().flush();
     }
 
-    /**
-     * @param compBloodTypesTrfu
-     * @return
-     */
     private List<RbTrfuBloodComponentType> convertToDb(final List<ComponentType> compBloodTypesTrfu) {
         final List<RbTrfuBloodComponentType> res = new LinkedList<RbTrfuBloodComponentType>();
         for (final ComponentType compTrfu : compBloodTypesTrfu) {
@@ -313,10 +309,6 @@ public class SendOrderBloodComponents {
         throw new CoreException(String.format("Wrong transfusion type: '%s'", type));
     }
 
-    /**
-     * @param value
-     * @return
-     */
     private String convertFromXml(final String value) {
         String res = value.substring(value.indexOf('>') + 1);
         if ("".equals(res)) {
