@@ -721,9 +721,9 @@ class WebMisRESTImpl  extends WebMisREST
     var actions: java.util.List[Action] = null
     if(requestData.getRecordsCount()>0) {
       actions = dbCustomQueryBean.getAllDiagnosticsWithFilter(requestData.page-1,
-        requestData.limit,
-        requestData.sortingFieldInternal,
-        requestData.filter.unwrap())
+                                                              requestData.limit,
+                                                              requestData.sortingFieldInternal,
+                                                              requestData.filter.unwrap())
     }
     val list = new DiagnosticsListData(actions, requestData)
     list
