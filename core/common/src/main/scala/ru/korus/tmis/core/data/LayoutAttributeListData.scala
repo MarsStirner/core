@@ -36,8 +36,8 @@ class LayoutAttributeDataContainer {
 
   @BeanProperty
   var id: Int = _                                           //Идентификатор атрибута
-  @BeanProperty
-  var name: String = ""                                     //Наименование атрибута
+  //@BeanProperty
+  //var name: String = ""                                     //Наименование атрибута
   @BeanProperty
   var title: String = _                                     //Название атрибута для отображения в интерфейсе
   @BeanProperty
@@ -54,7 +54,7 @@ class LayoutAttributeDataContainer {
   def this (attribute: LayoutAttribute) {
     this()
     this.id = attribute.getId.intValue()
-    this.name = attribute.getName
+    //this.name = attribute.getName
     this.title = attribute.getTitle
     this.description = attribute.getDescription
     this.code = attribute.getCode

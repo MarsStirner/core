@@ -398,8 +398,12 @@ public class DirectoryInfoRESTImpl {
     public Object getAllActionTypeNames(@QueryParam("patientId")int patientId,
                                         @QueryParam("filter[groupId]")int groupId,
                                         @QueryParam("filter[code]")String code,
-                                        @QueryParam("filter[view]")String view) {
-        ActionTypesSubType atst = ActionTypesSubType.getType("");
+                                        @QueryParam("filter[view]")String view,
+                                        @QueryParam("filter[mnem]")String mnem) {
+
+        ActionTypesSubType atst =
+                (mnem!=null && !mnem.isEmpty()) ? ActionTypesSubType.getType(mnem.toLowerCase())
+                                                : ActionTypesSubType.getType("");
         return new JSONWithPadding(getAllActionTypeNamesEx(atst, patientId, this.limit, this.page, this.sortingField, this.sortingMethod, groupId, code, view, this.auth),this.callback);
     }
 
@@ -430,7 +434,7 @@ public class DirectoryInfoRESTImpl {
                                                   @QueryParam("filter[groupId]")int groupId,
                                                   @QueryParam("filter[code]")String code,
                                                   @QueryParam("filter[view]")String view) {
-        ActionTypesSubType atst = ActionTypesSubType.getType(var);
+        ActionTypesSubType atst = ActionTypesSubType.getType(var.toLowerCase());
         return new JSONWithPadding(getAllActionTypeNamesEx(atst, patientId, this.limit, this.page, this.sortingField, this.sortingMethod, groupId, code, view, this.auth),this.callback);
     }
 
@@ -484,6 +488,34 @@ public class DirectoryInfoRESTImpl {
         CONSULTATIONS("consultations"){
             public String getSubType() { return "consultations";}
             public String getMnemonic() { return "CONS";}
+        },
+        LAB("lab"){
+            public String getSubType() { return "laboratory";}
+            public String getMnemonic() { return "LAB";}
+        },
+        DIAG("diag"){
+            public String getSubType() { return "instrumental";}
+            public String getMnemonic() { return "DIAG";}
+        },
+        CONS("cons"){
+            public String getSubType() { return "consultations";}
+            public String getMnemonic() { return "CONS";}
+        },
+        EXAM("exam"){
+            public String getSubType() { return "examinations";}
+            public String getMnemonic() { return "EXAM";}
+        },
+        JOUR("jour"){
+            public String getSubType() { return "journal";}
+            public String getMnemonic() { return "JOUR";}
+        },
+        ORD("ord"){
+            public String getSubType() { return "ordering";}
+            public String getMnemonic() { return "ORD";}
+        },
+        EPI("epi"){
+            public String getSubType() { return "epicrisis";}
+            public String getMnemonic() { return "EPI";}
         };
 
         public abstract String getSubType();

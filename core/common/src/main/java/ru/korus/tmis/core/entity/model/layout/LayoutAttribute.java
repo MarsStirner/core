@@ -31,11 +31,11 @@ public class LayoutAttribute implements Serializable {
     @Column(name = "id")
     private Integer id;
 
-    @Basic(optional = false)
+   /* @Basic(optional = false)
     @NotNull
     @Size(min = 0, max = 255)
     @Column(name = "name")
-    private String name;
+    private String name;*/
 
     @Basic(optional = false)
     @NotNull
@@ -78,13 +78,13 @@ public class LayoutAttribute implements Serializable {
         this.id = id;
     }
 
-    public String getName() {
+    /*public String getName() {
         return name;
     }
 
     public void setName(String name) {
         this.name = name;
-    }
+    }*/
 
     public String getTitle() {
         return title;

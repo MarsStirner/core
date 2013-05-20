@@ -105,6 +105,33 @@ class PrimaryAssessmentBean
     group
   }
 
+  def detailsWithLayouts(assessment: Action) = {
+    val propertiesMap =
+      actionPropertyBean.getActionPropertiesByActionId(assessment.getId.intValue)
+
+    val group = new CommonGroup(1, "Details")
+
+    propertiesMap.foreach(
+      (p) => {
+        val (ap, apvs) = p
+        val apw = new ActionPropertyWrapper(ap)
+
+        apvs.size match {
+          case 0 => {
+            group add apw.get(null, List(APWI.Unit, APWI.Norm))
+          }
+          case _ => {
+            apvs.foreach((apv) => {
+              val ca = apw.get(apv, List(APWI.Value, APWI.ValueId, APWI.Unit, APWI.Norm))
+              group add new CommonAttributeWithLayout(ca, dbLayoutAttributeValueBean.getLayoutAttributeValuesByActionPropertyTypeId(ap.getType.getId.intValue()).toList)
+            })
+          }
+        }
+      })
+
+    group
+  }
+
   def detailsWithAge(assessment: Action) = {
     val propertiesMap = actionPropertyBean.getActionPropertiesByActionId(assessment.getId.intValue)
     val group = new CommonGroup(1, "Details")
@@ -300,7 +327,7 @@ class PrimaryAssessmentBean
     val com_data = commonDataProcessor.fromActions(
       actions,
       title,
-      List(summary _, details _))
+      List(summary _, detailsWithLayouts _))
 
     var json_data = new JSONCommonData()
     json_data.data = com_data.entity

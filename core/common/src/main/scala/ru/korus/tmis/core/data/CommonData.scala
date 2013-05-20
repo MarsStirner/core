@@ -450,6 +450,12 @@ class CommonAttributeWithLayout(id: Integer,
     this(id, version, name, aType, scope, props)
     layout.foreach(f=> this.layoutAttributeValues.add(new LayoutAttributeSimplifyDataContainer(f)))
   }
+
+  def this (ca: CommonAttribute,
+            layout: List[LayoutAttributeValue] ) = {
+    this(ca.id, ca.version, ca.name, ca.aType, ca.scope, ca.properties)
+    layout.foreach(f=> this.layoutAttributeValues.add(new LayoutAttributeSimplifyDataContainer(f)))
+  }
 }
 
 @XmlType(name = "propertyMapAdapter")
