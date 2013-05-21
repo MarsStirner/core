@@ -482,37 +482,25 @@ class WebMisRESTImpl  extends WebMisREST
 
   //создание первичного мед. осмотра
   def insertPrimaryMedExamForPatient(eventId: Int, data: JSONCommonData, authData: AuthData)  = {
-    //создаем ответственного, если до этого был другой
-    /*val eventPerson = dbEventPerson.getLastEventPersonForEventId(eventId)
-    if (eventPerson == null || eventPerson.getPerson != authData.getUser) {
-      dbEventPerson.insertOrUpdateEventPerson(if (eventPerson != null) {eventPerson.getId.intValue()} else 0,
-        dbEventBean.getEventById(eventId),
-        authData.getUser,
-        false) //параметр для флаша
-    }*/
-    appealBean.setExecPersonForAppeal(eventId, 0, authData, ExecPersonSetType.EP_CREATE_PRIMARY)
+    if(data.getData.find(ce => ce.getTypeId().compareTo(i18n("db.actionType.primary").toInt)==0).getOrElse(null)!=null) //Врач прописывается только для первичного осмотра  (ид=139)
+      appealBean.setExecPersonForAppeal(eventId, 0, authData, ExecPersonSetType.EP_CREATE_PRIMARY)
+
     //создаем осмотр. ЕвентПерсон не флашится!!!
-    val returnValue = primaryAssessmentBean.createPrimaryAssessmentForEventId(eventId,
+    val returnValue = primaryAssessmentBean createPrimaryAssessmentForEventId(eventId,
       data,
       "Assessment",
       authData,
       preProcessing _,
       postProcessing _)
-    dbEventBean.setExecPersonForEventWithId(eventId, authData.getUser)
+    //dbEventBean.setExecPersonForEventWithId(eventId, authData.getUser)
     returnValue
   }
 
   //редактирование первичного мед. осмотра
   def modifyPrimaryMedExamForPatient(actionId: Int, data: JSONCommonData, authData: AuthData)  = {
     //создаем ответственного, если до этого был другой
-    /*val eventPerson = dbEventPerson.getLastEventPersonForEventId(actionBean.getActionById(actionId).getEvent.getId.intValue())
-    if (eventPerson.getPerson != authData.getUser) {
-      dbEventPerson.insertOrUpdateEventPerson(if (eventPerson != null) {eventPerson.getId.intValue()} else 0,
-        actionBean.getActionById(actionId).getEvent,
-        authData.getUser,
-        false)
-    }*/
-    appealBean.setExecPersonForAppeal(actionId, 0, authData, ExecPersonSetType.EP_MODIFY_PRIMARY)
+    if(data.getData.find(ce => ce.getTypeId().compareTo(i18n("db.actionType.primary").toInt)==0).getOrElse(null)!=null) //Врач прописывается только для первичного осмотра  (ид=139)
+      appealBean.setExecPersonForAppeal(actionId, 0, authData, ExecPersonSetType.EP_MODIFY_PRIMARY)
 
     //создаем осмотр. ЕвентПерсон не флашится!!!
     val returnValue = primaryAssessmentBean.modifyPrimaryAssessmentById(actionId,
