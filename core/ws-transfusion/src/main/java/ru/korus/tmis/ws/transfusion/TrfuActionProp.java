@@ -30,14 +30,16 @@ public class TrfuActionProp {
     private final Map<PropType, Integer> propIds;
 
     /**
-     * Создание класса для работы со свойствами дейсвия с типом actionTypeFlatCode
+     * Создание класса для работы со свойствами действия
      * 
      * @param databaseBean
      *            - доступ к БД
      * @param actionTypeFlatCode
-     *            -
+     *            - код типа действия для
      * @param propConstants
+     *            - список свойств дейсвия
      * @throws CoreException
+     *             - при ошибке во время работы с БД
      */
     public TrfuActionProp(final Database databaseBean, final String actionTypeFlatCode, final List<PropType> propConstants) throws CoreException {
         database = databaseBean;
