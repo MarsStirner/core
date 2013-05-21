@@ -49,7 +49,7 @@ public class RegUserMgrTest extends TestBase {
 
         try {
             String correctResponse =
-                    "{\"fname\":\"\",\"pname\":\"\",\"lname\":\"гость\",\"position\":\"Прочий персонал\",\"roles\":[],\"login\":\"гость\"}";
+                    "{\"fname\":\"\",\"pname\":\"\",\"lname\":\"гость\",\"position\":\"Прочий персонал\",\"code\":\"6\",\"roles\":[\"guest\"],\"login\":\"гость\"}";
 
             System.out.println("========= getAllUsers: GET /api/users: ");
             HttpsURLConnection conn = openConnection(new URL(BASE_URL + "/api/users"));
@@ -95,7 +95,7 @@ public class RegUserMgrTest extends TestBase {
     @Test(groups = "a")
     public void getUser() {
         String correctResponse =
-                "{\"fname\":\"корус\",\"pname\":\"\",\"lname\":\"корус\",\"position\":\"Прочий персонал\",\"roles\":[],\"login\":\"корус\"}";
+                "{\"fname\":\"корус\",\"pname\":\"\",\"lname\":\"корус\",\"position\":\"Прочий персонал\",\"code\":\"6\",\"roles\":[\"admin\"],\"login\":\"корус\"}";
 
         URL url;
         try {
@@ -141,9 +141,12 @@ public class RegUserMgrTest extends TestBase {
             conn.setRequestMethod("POST");
             conn.setRequestProperty("Content-Type", "application/json");
 
-            String input = "{\"fname\": \"Дмитрий\"," + "\"pname\": \"Сергеевич\"," + "\"lname\": \"Тимофеев\"," + "\"position\": \"Прочий персонал\"," +
-                    "\"subdivision\": \"c61f87ae-8786-41a0-b9ca-8fbe86e3c751\"," + "\"roles\": [\"operator\", \"statist\"]," + "\"login\": \"ДТимофеев\"," +
-                    "\"password\": \"363\"}";
+            String input =
+                    "{\"fname\": \"Дмитрий\"," + "\"pname\": \"Сергеевич\"," + "\"lname\": \"Тимофеев\"," + "\"position\": \"Прочий персонал\","
+                            + "\"code\": \"6\"," +
+                            "\"subdivision\": \"c61f87ae-8786-41a0-b9ca-8fbe86e3c751\"," + "\"roles\": [\"operator\", \"statist\"],"
+                            + "\"login\": \"ДТимофеев\"," +
+                            "\"password\": \"363\"}";
 
             OutputStream outputStream = conn.getOutputStream();
             outputStream.write(input.getBytes());
@@ -538,7 +541,8 @@ public class RegUserMgrTest extends TestBase {
     @Test(dependsOnGroups = "updateRole")
     public void getAllUsersByRole() {
         try {
-            String correctResponse = "{\"users\":[{\"fname\":\"Дмитрий\",\"pname\":\"Сергеевич\",\"lname\":\"Тимофеев\"";
+            String correctResponse =
+                    "{\"users\":[{\"fname\":\"\",\"pname\":\"\",\"lname\":\"гость\",\"position\":\"Прочий персонал\",\"code\":\"6\",\"roles\":[\"guest\"],\"login\":\"гость\"";
 
             System.out.println("========= getAllUsersByRole: GET /api/roles/<role_code>/user: ");
             HttpsURLConnection conn = openConnection(new URL(BASE_URL + "/api/roles/guest/users"));

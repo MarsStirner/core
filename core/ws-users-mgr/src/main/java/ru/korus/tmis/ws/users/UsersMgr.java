@@ -144,15 +144,7 @@ public class UsersMgr {
         }
 
         Staff newStaff = new Staff();
-        final RbPost post = getPost(jsonNewPerson.getPosition());
-        if (post == null) {
-            return error(String.format("The position '%s' is not exists", jsonNewPerson.getPosition()));
-        }
 
-        OrgStructure orgStruct = getOrgStrucureByUUID(jsonNewPerson.getSubdivision());
-        if (orgStruct == null) {
-            return error(String.format("The subdivision with UUID '%s' is not exists", jsonNewPerson.getSubdivision()));
-        }
         updateStaff(newStaff, jsonNewPerson);
 
         Date now = new Date();
@@ -165,9 +157,7 @@ public class UsersMgr {
         newStaff.setCode("code");
         newStaff.setFederalCode("");
         newStaff.setRegionalCode("");
-        newStaff.setPost(post);
         newStaff.setSpeciality(database.getEntityMgr().find(Speciality.class, 1));
-        newStaff.setOrgStructure(orgStruct);
         newStaff.setOffice("");
         newStaff.setOffice2("");
         newStaff.setAmbPlan((short) 0);
@@ -200,6 +190,19 @@ public class UsersMgr {
     }
 
     /**
+     * @param jsonNewPerson
+     * @return
+     */
+    protected RbPost createPost(JsonPerson jsonNewPerson) {
+        RbPost post;
+        post = new RbPost();
+        post.setName(jsonNewPerson.getPosition());
+        post.setCode(jsonNewPerson.getCode());
+        database.getEntityMgr().persist(post);
+        return post;
+    }
+
+    /**
      * @param login
      * @return
      */
@@ -209,7 +212,33 @@ public class UsersMgr {
         return users != null && !users.isEmpty();
     }
 
-    public void updateStaff(Staff newStaff, JsonPerson jsonNewPerson) {
+    public String updateStaff(Staff newStaff, JsonPerson jsonNewPerson) {
+
+        OrgStructure orgStruct = null;
+        if (jsonNewPerson.getSubdivision() != null) {
+            orgStruct = getOrgStrucureByUUID(jsonNewPerson.getSubdivision());
+            if (orgStruct == null) {
+                return error(String.format("The subdivision with UUID '%s' is not exists", jsonNewPerson.getSubdivision()));
+            }
+        }
+
+        RbPost post = null;
+        if (jsonNewPerson.getPosition() != null) {
+            post = getPost(jsonNewPerson.getPosition());
+            if (post == null) {
+                if (jsonNewPerson.getCode() == null) {
+                    return error("The position code required");
+                }
+                post = createPost(jsonNewPerson);
+            }
+        }
+
+        if (post != null) {
+            newStaff.setPost(post);
+        }
+        if (orgStruct != null) {
+            newStaff.setOrgStructure(orgStruct);
+        }
         if (jsonNewPerson.getLname() != null) {
             newStaff.setLastName(jsonNewPerson.getLname());
         }
@@ -220,7 +249,7 @@ public class UsersMgr {
             newStaff.setPatrName(jsonNewPerson.getPname());
         }
         if (jsonNewPerson.getPassword() != null) {
-            newStaff.setPassword(getMD5(jsonNewPerson.getPassword().toLowerCase()));
+            newStaff.setPassword(getMD5(jsonNewPerson.getPassword()).toLowerCase());
         }
         @SuppressWarnings("unchecked")
         Set<Role> roles = getRoles(Arrays.asList(new String[] { ROLE_GUEST }));
@@ -237,6 +266,7 @@ public class UsersMgr {
         }
         database.getEntityMgr().flush();
 
+        return UsersMgr.ok();
     }
 
     public void deleteStaff(Staff staff, String token) {

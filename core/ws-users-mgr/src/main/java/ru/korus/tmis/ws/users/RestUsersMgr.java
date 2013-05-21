@@ -15,6 +15,10 @@ import ru.korus.tmis.core.entity.model.Staff;
 
 import com.google.gson.Gson;
 
+/**
+ * Сервис управления пользователями
+ */
+
 @Stateless
 @Path("/api")
 public class RestUsersMgr {
@@ -25,6 +29,9 @@ public class RestUsersMgr {
     @EJB
     private UsersMgr usersMgr;
 
+    /**
+     * CRUD-операции для управления ролями пользователей
+     */
     @EJB
     private RolesMgr rolesMgr;
 
@@ -32,7 +39,8 @@ public class RestUsersMgr {
      * Авторизация пользователя
      * 
      * @param jsonAuthPerson
-     *            - логин и пароль для входа
+     *            - логин и пароль для входа: in = {“login”: “Вася”, “password”: “123456”}
+     * 
      * @return В случае успеха {"OK": "True", "type": "Basic", "token": < UUID >}
      */
     @POST
@@ -52,6 +60,12 @@ public class RestUsersMgr {
         return Response.status(status).entity(res).build();
     }
 
+    /**
+     * Создать сотрудника
+     * 
+     * @param jsonNewPerson
+     * @return
+     */
     @POST
     @Consumes("application/json")
     @Path("/users")
@@ -62,6 +76,7 @@ public class RestUsersMgr {
                 || jsonNewPerson.getPname() == null
                 || jsonNewPerson.getLname() == null
                 || jsonNewPerson.getPosition() == null
+                || jsonNewPerson.getCode() == null
                 || jsonNewPerson.getSubdivision() == null) {
             return errorParamMissing();
         }
@@ -76,12 +91,10 @@ public class RestUsersMgr {
     }
 
     /**
+     * Получить список всех сотрудников ЛПУ
+     * 
      * @return
      */
-    private Response errorParamMissing() {
-        return Response.status(Response.Status.BAD_REQUEST).entity(UsersMgr.error("Some mandatory parameters are missing")).build();
-    }
-
     @GET
     @Path("/users")
     public Response getAll() {
@@ -90,6 +103,12 @@ public class RestUsersMgr {
         return Response.status(Response.Status.OK).entity(res).build();
     }
 
+    /**
+     * Получить информацию о сотруднике {token}
+     * 
+     * @param token
+     * @return
+     */
     @GET
     @Path("/users/{token}")
     public Response get(@PathParam(value = "token") String token) {
@@ -99,6 +118,13 @@ public class RestUsersMgr {
         return Response.status(Response.Status.OK).entity(res).build();
     }
 
+    /**
+     * Изменить информацию о сотруднике {token}
+     * 
+     * @param token
+     * @param jsonNewPerson
+     * @return
+     */
     @PUT
     @Consumes("application/json")
     @Path("/users/{token}")
@@ -109,6 +135,7 @@ public class RestUsersMgr {
                 && jsonNewPerson.getPname() == null
                 && jsonNewPerson.getLname() == null
                 && jsonNewPerson.getPosition() == null
+                && jsonNewPerson.getCode() == null
                 && jsonNewPerson.getSubdivision() == null
                 && (jsonNewPerson.getRoles() == null || jsonNewPerson.getRoles().isEmpty())
                 )) {
@@ -124,11 +151,15 @@ public class RestUsersMgr {
             return Response.status(Response.Status.OK).entity(UsersMgr.error("User with selected UUID does not exist or disconnected")).build();
         }
 
-        usersMgr.updateStaff(user, jsonNewPerson);
-
-        return Response.status(Response.Status.OK).entity(UsersMgr.ok()).build();
+        return Response.status(Response.Status.OK).entity(usersMgr.updateStaff(user, jsonNewPerson)).build();
     }
 
+    /**
+     * Удалить сотрудника {token}
+     * 
+     * @param token
+     * @return
+     */
     @DELETE
     @Path("/users/{token}")
     public Response delete(@PathParam(value = "token") String token) {
@@ -142,6 +173,12 @@ public class RestUsersMgr {
         return Response.status(Response.Status.OK).entity(UsersMgr.ok()).build();
     }
 
+    /**
+     * Создать роль
+     * 
+     * @param jsonRole
+     * @return
+     */
     @POST
     @Consumes("application/json")
     @Path("/roles")
@@ -160,6 +197,11 @@ public class RestUsersMgr {
         return Response.status(status).entity(res).build();
     }
 
+    /**
+     * Получить список всех ролей ЛПУ
+     * 
+     * @return
+     */
     @GET
     @Path("/roles")
     public Response getRoles() {
@@ -167,12 +209,25 @@ public class RestUsersMgr {
         return Response.status(Response.Status.OK).entity(rolesMgr.getAll()).build();
     }
 
+    /**
+     * Получить информацию о роле {code}
+     * 
+     * @param code
+     * @return
+     */
     @GET
     @Path("/roles/{code}")
     public Response getRole(@PathParam(value = "code") String code) {
         return Response.status(Response.Status.OK).entity(rolesMgr.getRoleInfo(code)).build();
     }
 
+    /**
+     * Изменить информацию о роле {code}
+     * 
+     * @param code
+     * @param jsonRole
+     * @return
+     */
     @PUT
     @Consumes("application/json")
     @Path("/roles/{code}")
@@ -185,18 +240,36 @@ public class RestUsersMgr {
         return Response.status(Response.Status.OK).entity(rolesMgr.updateRoleInfo(code, jsonRole)).build();
     }
 
+    /**
+     * Удалить роль {code}
+     * 
+     * @param code
+     * @return
+     */
     @DELETE
     @Path("/roles/{code}")
     public Response deleteRole(@PathParam(value = "code") String code) {
         return Response.status(Response.Status.OK).entity(rolesMgr.deleteRole(code)).build();
     }
 
+    /**
+     * Список пользователей для заданной роли
+     * 
+     * @param code
+     * @return
+     */
     @GET
     @Path("/roles/{code}/users")
     public Response getUsersByRole(@PathParam(value = "code") String code) {
         return Response.status(Response.Status.OK).entity(rolesMgr.getUsersByCode(code)).build();
     }
 
+    /**
+     * Присвоить пользователю роль
+     * 
+     * @param jsonRoleMgr
+     * @return
+     */
     @POST
     @Consumes("application/json")
     @Path("/users/roles/")
@@ -210,15 +283,37 @@ public class RestUsersMgr {
 
     }
 
+    /**
+     * Получить список всех ролей пользователя
+     * 
+     * @param token
+     * @return
+     */
     @GET
     @Path("/users/{token}/roles/")
     public Response getRolesByUser(@PathParam(value = "token") String token) {
         return Response.status(Response.Status.OK).entity(rolesMgr.getRolesByUser(token)).build();
     }
 
+    /**
+     * Удалить пользователя из роли
+     * 
+     * @param token
+     * @param code
+     * @return
+     */
     @DELETE
     @Path("/users/{token}/roles/{code}")
     public Response getRolesByUser(@PathParam(value = "token") String token, @PathParam(value = "code") String code) {
         return Response.status(Response.Status.OK).entity(rolesMgr.removeRolesForUser(token, code)).build();
     }
+
+    /**
+     * 
+     * @return
+     */
+    private Response errorParamMissing() {
+        return Response.status(Response.Status.BAD_REQUEST).entity(UsersMgr.error("Some mandatory parameters are missing")).build();
+    }
+
 }

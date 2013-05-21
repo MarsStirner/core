@@ -41,6 +41,11 @@ public class JsonPerson {
     private String position;
 
     /**
+     * Код должность
+     */
+    private String code;
+
+    /**
      * (UUID) подразделения (элемента организационной структуры, к которой привязан сотрудник)
      */
     private String subdivision;
@@ -67,6 +72,7 @@ public class JsonPerson {
         res.setLname(staff.getLastName());
         if (staff.getPost() != null) {
             res.setPosition(staff.getPost().getName());
+            res.setCode(staff.getPost().getCode());
         }
         if (staff.getOrgStructure() != null) {
             res.setSubdivision(staff.getOrgStructure().getUuid().getUuid());
@@ -110,6 +116,14 @@ public class JsonPerson {
 
     public void setPosition(String position) {
         this.position = position;
+    }
+
+    public String getCode() {
+        return code;
+    }
+
+    public void setCode(String code) {
+        this.code = code;
     }
 
     public String getSubdivision() {
