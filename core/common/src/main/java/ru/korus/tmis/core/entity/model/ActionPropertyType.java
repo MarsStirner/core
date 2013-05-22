@@ -1,18 +1,31 @@
 package ru.korus.tmis.core.entity.model;
 
-import ru.korus.tmis.util.PublicClonable;
-
 import java.io.Serializable;
-import javax.persistence.*;
+
+import javax.persistence.Basic;
+import javax.persistence.Column;
+import javax.persistence.Entity;
+import javax.persistence.GeneratedValue;
+import javax.persistence.GenerationType;
+import javax.persistence.Id;
+import javax.persistence.JoinColumn;
+import javax.persistence.Lob;
+import javax.persistence.ManyToOne;
+import javax.persistence.NamedQueries;
+import javax.persistence.NamedQuery;
+import javax.persistence.Table;
+import javax.persistence.Transient;
 import javax.xml.bind.annotation.XmlRootElement;
 import javax.xml.bind.annotation.XmlType;
+
+import ru.korus.tmis.util.PublicClonable;
 
 @Entity
 @Table(name = "ActionPropertyType", catalog = "", schema = "")
 @NamedQueries(
-        {
-                @NamedQuery(name = "ActionPropertyType.findAll", query = "SELECT a FROM ActionPropertyType a")
-        })
+{
+        @NamedQuery(name = "ActionPropertyType.findAll", query = "SELECT a FROM ActionPropertyType a")
+})
 @XmlType(name = "actionPropertyType")
 @XmlRootElement(name = "actionPropertyType")
 public class ActionPropertyType implements Serializable, PublicClonable<ActionPropertyType> {
@@ -121,9 +134,47 @@ public class ActionPropertyType implements Serializable, PublicClonable<ActionPr
     @Column(name = "defaultEvaluation")
     private boolean defaultEvaluation;
 
-    ////////////////////////////////////////////////////////////////////////////
+    @Basic(optional = false)
+    @Column(name = "mandatory")
+    private boolean mandatory;
+
+    @Basic(optional = false)
+    @Column(name = "readOnly")
+    private boolean readOnly;
+
+    // //////////////////////////////////////////////////////////////////////////
     // Custom stuff
-    ////////////////////////////////////////////////////////////////////////////
+    // //////////////////////////////////////////////////////////////////////////
+
+    /**
+     * @return the mandatory
+     */
+    public boolean isMandatory() {
+        return mandatory;
+    }
+
+    /**
+     * @param mandatory
+     *            the mandatory to set
+     */
+    public void setMandatory(boolean mandatory) {
+        this.mandatory = mandatory;
+    }
+
+    /**
+     * @return the readOnly
+     */
+    public boolean isReadOnly() {
+        return readOnly;
+    }
+
+    /**
+     * @param readOnly
+     *            the readOnly to set
+     */
+    public void setReadOnly(boolean readOnly) {
+        this.readOnly = readOnly;
+    }
 
     @Transient
     public boolean isConstructor() {
@@ -135,9 +186,9 @@ public class ActionPropertyType implements Serializable, PublicClonable<ActionPr
         return isConstructor() ? valueDomain : null;
     }
 
-    ////////////////////////////////////////////////////////////////////////////
+    // //////////////////////////////////////////////////////////////////////////
     // End of custom stuff
-    ////////////////////////////////////////////////////////////////////////////
+    // //////////////////////////////////////////////////////////////////////////
 
     public ActionPropertyType() {
     }
@@ -245,7 +296,6 @@ public class ActionPropertyType implements Serializable, PublicClonable<ActionPr
     public void setCode(String code) {
         this.code = code;
     }
-
 
     public boolean getIsVector() {
         return isVector;
@@ -375,7 +425,6 @@ public class ActionPropertyType implements Serializable, PublicClonable<ActionPr
     public String toString() {
         return "ru.korus.tmis.core.entity.model.ActionPropertyType[id=" + id + "]";
     }
-
 
     public ActionPropertyType clone() {
         ActionPropertyType that = new ActionPropertyType(id);

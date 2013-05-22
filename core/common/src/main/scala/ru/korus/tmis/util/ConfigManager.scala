@@ -140,12 +140,22 @@ object ConfigManager extends Configuration {
   /**
    * Параметры сервиса управления пользователями
    */
-  class UsersMgr extends Configuration {
-    var CoreUserLogin: String = null
+  class UsersMgrClass extends Configuration {
+    var CoreUserLogin: String = "core"
+    var KeepAliveDays = 1
+    var MaxConnections = 10000
   }
 
-  var usersMgr = new UsersMgr
+  var UsersMgr = new UsersMgrClass
 
+  /**
+   * Параметры модуля интегрции с подсистемой ТРФУ
+   */
+  class TrfuPropClass extends Configuration {
+    var ServiceUrl = ""
+  }
+
+  var TrfuProp = new TrfuPropClass
 
 
   /**
@@ -284,9 +294,9 @@ object ConfigManager extends Configuration {
 }
 
 trait I18nable {
-  val i18n = ConfigManager.Messages
-}
+   val i18n = ConfigManager.Messages
+ }
 
 trait CAPids {
-  val iCapIds = ConfigManager.RbCAPIds
-}
+   val iCapIds = ConfigManager.RbCAPIds
+ }

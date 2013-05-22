@@ -721,9 +721,9 @@ class WebMisRESTImpl  extends WebMisREST
     var actions: java.util.List[Action] = null
     if(requestData.getRecordsCount()>0) {
       actions = dbCustomQueryBean.getAllDiagnosticsWithFilter(requestData.page-1,
-        requestData.limit,
-        requestData.sortingFieldInternal,
-        requestData.filter.unwrap())
+                                                              requestData.limit,
+                                                              requestData.sortingFieldInternal,
+                                                              requestData.filter.unwrap())
     }
     val list = new DiagnosticsListData(actions, requestData)
     list
@@ -1105,9 +1105,9 @@ class WebMisRESTImpl  extends WebMisREST
       if (actions.size() > 0 || map.size == 0) map += (firstJobTicket -> actions)
     }
     new TakingOfBiomaterialData(map,
-      hospitalBedBean.getLastMovingActionForEventId _,
-      actionPropertyBean.getActionPropertiesByActionIdAndRbCoreActionPropertyIds _,
-      request)
+                                hospitalBedBean.getLastMovingActionForEventId _,
+                                actionPropertyBean.getActionPropertiesByActionIdAndRbCoreActionPropertyIds _,
+                                request)
   }
 
   def updateJobTicketsStatuses(data: JobTicketStatusDataList, authData: AuthData) = {

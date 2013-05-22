@@ -18,9 +18,9 @@ import ru.korus.tmis.core.entity.model.TrfuLaboratoryMeasure;
 import ru.korus.tmis.core.exception.CoreException;
 import ru.korus.tmis.ws.transfusion.IssueResult;
 import ru.korus.tmis.ws.transfusion.PropType;
+import ru.korus.tmis.ws.transfusion.TrfuActionProp;
 import ru.korus.tmis.ws.transfusion.efive.PatientCredentials;
 import ru.korus.tmis.ws.transfusion.order.SendOrderBloodComponents;
-import ru.korus.tmis.ws.transfusion.order.TrfuActionProp;
 
 /**
  * Author:      Sergey A. Zagrebelny <br>
@@ -187,6 +187,12 @@ public class RegProcedureResult {
 
         trfuActionProp.setProp(procedureInfo.getPackRemove(), actionId, PropType.PACK_REMOVE, update);
 
+        trfuActionProp.setProp(procedureInfo.getOtherRemove(), actionId, PropType.OTHER_REMOVE, update);
+
+        trfuActionProp.setProp(procedureInfo.getTotalRemove(), actionId, PropType.TOTAL_REMOVE, update);
+
+        trfuActionProp.setProp(procedureInfo.getBalance(), actionId, PropType.BALANCE, update);
+
         trfuActionProp.setProp(eritrocyteMass.getMaker(), actionId, PropType.MAKER, update);
 
         trfuActionProp.setProp(eritrocyteMass.getNumber(), actionId, PropType.NUMBER, update);
@@ -206,6 +212,10 @@ public class RegProcedureResult {
         trfuActionProp.setProp(eritrocyteMass.getSalineVolume(), actionId, PropType.SALINE_VOLUME, update);
 
         trfuActionProp.setProp(eritrocyteMass.getFinalHt(), actionId, PropType.FINAL_HT, update);
+
+        trfuActionProp.setProp(actionId, actionId, PropType.LAB_MEASURE, update);
+
+        trfuActionProp.setProp(actionId, actionId, PropType.FINAL_VOLUME, update);
 
     }
 }

@@ -82,18 +82,18 @@ public class DiagnosticsRegistryExRESTImpl {
 
         DirectoryInfoRESTImpl.ActionTypesSubType atst = DirectoryInfoRESTImpl.ActionTypesSubType.getType(var);
         DiagnosticsListRequestDataFilter filter = new DiagnosticsListRequestDataFilter( diaTypeCode,
-                this.eventId,
-                //diagnosticDate,
-                //directionDate,
-                date,
-                diagnosticName,
-                assignPersonId,
-                execPersonId,
-                office,
-                statusId,
-                (urgent==null) ? -1 : (urgent) ? 1 : 0,
-                atst.getSubType(),
-                atst.getMnemonic());
+                                                                                        this.eventId,
+                                                                                        //diagnosticDate,
+                                                                                        //directionDate,
+                                                                                        date,
+                                                                                        diagnosticName,
+                                                                                        assignPersonId,
+                                                                                        execPersonId,
+                                                                                        office,
+                                                                                        statusId,
+                                                                                        (urgent==null) ? -1 : (urgent) ? 1 : 0,
+                                                                                        atst.getSubType(),
+                                                                                        atst.getMnemonic());
 
         DiagnosticsListRequestData requestData = new DiagnosticsListRequestData(sortingField, sortingMethod, limit, page, filter);
         return new JSONWithPadding(wsImpl.getListOfDiagnosticsForPatientByEvent(requestData),this.callback);

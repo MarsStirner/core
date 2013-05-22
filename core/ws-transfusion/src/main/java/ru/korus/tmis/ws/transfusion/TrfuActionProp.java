@@ -1,4 +1,4 @@
-package ru.korus.tmis.ws.transfusion.order;
+package ru.korus.tmis.ws.transfusion;
 
 import java.util.HashMap;
 import java.util.List;
@@ -9,7 +9,6 @@ import ru.korus.tmis.core.entity.model.Action;
 import ru.korus.tmis.core.entity.model.ActionPropertyType;
 import ru.korus.tmis.core.entity.model.ActionType;
 import ru.korus.tmis.core.exception.CoreException;
-import ru.korus.tmis.ws.transfusion.PropType;
 
 /**
  * Author: Sergey A. Zagrebelny <br>
@@ -18,12 +17,30 @@ import ru.korus.tmis.ws.transfusion.PropType;
  * Description: <br>
  */
 
+/**
+ * Класс для работы со свойствами действия
+ */
 public class TrfuActionProp {
 
     private final Database database;
 
+    /**
+     * Таблица свойств действия. Key - тип свойства действия, Value - ActionPropertyType.Id
+     */
     private final Map<PropType, Integer> propIds;
 
+    /**
+     * Создание класса для работы со свойствами действия
+     * 
+     * @param databaseBean
+     *            - доступ к БД
+     * @param actionTypeFlatCode
+     *            - код типа действия для
+     * @param propConstants
+     *            - список свойств дейсвия
+     * @throws CoreException
+     *             - при ошибке во время работы с БД
+     */
     public TrfuActionProp(final Database databaseBean, final String actionTypeFlatCode, final List<PropType> propConstants) throws CoreException {
         database = databaseBean;
         final List<ActionType> actionType =
@@ -87,11 +104,15 @@ public class TrfuActionProp {
 
     public void setRequestState(final Integer actionId, final String state) throws CoreException {
         setProp(state, actionId, PropType.ORDER_REQUEST_ID, true);
-
     }
 
     public void orderResult2DB(final Action action, final Integer requestId) throws CoreException {
         setRequestState(action.getId(), "Получен идентификатор в системе ТРФУ: " + requestId);
         action.setStatus(Database.ACTION_STATE_WAIT);
+    }
+
+    public void setErrorState(final Action action, final String errMsg) throws CoreException {
+        setRequestState(action.getId(), errMsg);
+        throw new CoreException(errMsg);
     }
 }
