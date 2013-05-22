@@ -104,6 +104,7 @@ object ConfigManager extends Configuration {
     var noRightForAction = 0x146
     var BloodTypeIsNull = 0x147
     var InvalidAuthData = 0x148
+    var MkbNotFound = 0x149
   }
 
   val Drugstore = new Configuration {

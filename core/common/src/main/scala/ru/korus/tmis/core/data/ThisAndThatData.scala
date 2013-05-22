@@ -77,7 +77,59 @@ class AllPersonsListData {
     this.requestData = requestData
     persons.foreach(p => this.data.add(new DoctorContainer(p)))
   }
+}
 
+@XmlType(name = "freePersonsListData")
+@XmlRootElement(name = "freePersonsListData")
+class FreePersonsListData {
+
+  @BeanProperty
+  var requestData: ListDataRequest = _
+  @BeanProperty
+  var data: ArrayList[DoctorWithScheduleContainer] = new ArrayList[DoctorWithScheduleContainer]
+
+  def this(personsWithSchedule: java.util.HashMap[Staff, java.util.LinkedList[APValueTime]], requestData: ListDataRequest) = {
+    this ()
+    this.requestData = requestData
+    personsWithSchedule.foreach(p => this.data.add(new DoctorWithScheduleContainer(p._1, p._2)))
+  }
+}
+
+@XmlType(name = "doctorWithScheduleContainer")
+@XmlRootElement(name = "doctorWithScheduleContainer")
+@JsonIgnoreProperties(ignoreUnknown = true)
+class DoctorWithScheduleContainer {
+  @BeanProperty
+  var doctor: DoctorContainer = _
+  @BeanProperty
+  var schedule: java.util.LinkedList[ScheduleContainer] = new java.util.LinkedList[ScheduleContainer]
+
+  def this(staff: Staff, times: java.util.LinkedList[APValueTime]) {                     //
+    this()
+    this.doctor = new DoctorContainer(staff)
+    times.foreach(t => this.schedule.add(new ScheduleContainer(t)))
+  }
+}
+
+@XmlType(name = "scheduleContainer")
+@XmlRootElement(name = "scheduleContainer")
+@JsonIgnoreProperties(ignoreUnknown = true)
+class ScheduleContainer {
+  @BeanProperty
+  var id: Int = _
+  @BeanProperty
+  var index: Int = _
+  @BeanProperty
+  var time: Date = _
+
+  def this(time: APValueTime){
+    this()
+    if(time!=null)  {
+      this.id = time.getId.getId
+      this.index = time.getId.getIndex
+      this.time = time.getValue
+    }
+  }
 }
 
 @XmlType(name = "freePersonsListDataFilter")
@@ -88,6 +140,8 @@ class FreePersonsListDataFilter  extends AbstractListDataFilter {
   @BeanProperty
   var doctorId:  Int = _
   @BeanProperty
+  var actionType:  Int = _
+  @BeanProperty
   var beginDate: Date = _
   @BeanProperty
   var endDate: Date = _
@@ -96,10 +150,11 @@ class FreePersonsListDataFilter  extends AbstractListDataFilter {
   var beginOnlyTime: Date = _
   var endOnlyTime: Date = _
 
-  def this(speciality:  Int, doctorId:  Int, beginDate: Long, endDate: Long){
+  def this(speciality:  Int, doctorId:  Int, actionType: Int, beginDate: Long, endDate: Long){
     this()
     this.speciality = speciality
     this.doctorId = doctorId
+    this.actionType = actionType
     this.beginDate = if(beginDate==0) {null} else {new Date(beginDate)}
     this.endDate = if(endDate==0) {null} else {new Date(endDate)}
 
@@ -120,6 +175,9 @@ class FreePersonsListDataFilter  extends AbstractListDataFilter {
     if(this.speciality>0){
       qs.query += "AND s.speciality.id = :speciality\n"
       qs.add("speciality",this.speciality:java.lang.Integer)
+    } else if (this.actionType>0) {
+      qs.query += "AND at.id = :actionType\n AND sProfile.service.id = at.service.id\n AND sProfile.speciality.id = s.speciality.id\n"
+      qs.add("actionType",this.actionType:java.lang.Integer)
     }
     if(this.doctorId>0){
       qs.query += ("AND s.id = :doctorId\n")

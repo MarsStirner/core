@@ -738,7 +738,8 @@ class WebMisRESTImpl  extends WebMisREST
 
     //<= Изменить запрос (ждем отклик)
     //requestData.setRecordsCount(dbStaff.getCountAllPersonsWithFilter(requestData.filter))
-    val list = new AllPersonsListData(dbStaff.getEmptyPersonsByRequest( requestData.limit,
+    new FreePersonsListDataFilter()
+    val list = new FreePersonsListData(dbStaff.getEmptyPersonsByRequest( requestData.limit,
       requestData.page-1,
       requestData.sortingFieldInternal,
       requestData.filter.unwrap()),
@@ -818,9 +819,11 @@ class WebMisRESTImpl  extends WebMisREST
     primaryAssessmentBean.modifyAssessmentsForEventIdFromCommonData(eventId, data, "Diagnostic", null, auth,  postProcessingForDiagnosis _)// postProcessingForDiagnosis
   }
 
-  def insertConsultation(request: ConsultationRequestData) = {
-    val authData:AuthData = null
-    primaryAssessmentBean.insertAssessmentAsConsultation(request.eventId, request.actionTypeId, request.executorId, request.beginDate, request.endDate, request.urgent, request, authData)
+  def insertConsultation(request: ConsultationRequestData, authData: AuthData) = {
+    val actionId = directionBean.createConsultation(request, authData)
+    var json = directionBean.getDirectionById(actionId, "Consultation", null)
+    json.setRequestData(request) //по идее эта штука должна быть в конструкторе вызываемая в методе гет
+    json
   }
 
   def removeDirection(data: AssignmentsToRemoveDataList, directionType: String, auth: AuthData) = {

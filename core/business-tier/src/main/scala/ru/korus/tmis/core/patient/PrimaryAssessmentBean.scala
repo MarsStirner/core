@@ -31,9 +31,6 @@ class PrimaryAssessmentBean
   private var actionPropertyBean: DbActionPropertyBeanLocal = _
 
   @EJB
-  private var actionPropertyTypeBean: DbActionPropertyTypeBeanLocal = _
-
-  @EJB
   private var actionTypeBean: DbActionTypeBeanLocal = _
 
   @EJB
@@ -335,44 +332,5 @@ class PrimaryAssessmentBean
         })
       dbManager.mergeAll(apSet)
     }
-  }
-
-  //временно расположим тут
-  def insertAssessmentAsConsultation(eventId: Int,
-                                     actionTypeId: Int,
-                                     executorId: Int,
-                                     bDate: Date,
-                                     eDate:Date,
-                                     urgent:Boolean,
-                                     request: Object,
-                                     userData: AuthData) = {
-
-    //action
-    var action: Action = actionBean.createAction(eventId.intValue(),
-                                                 actionTypeId.intValue(),
-                                                 userData)
-    action.setIsUrgent(urgent)
-    action.setExecutor(dbStaff.getStaffById(executorId))
-    action.setBegDate(bDate)
-    action.setPlannedEndDate(eDate)
-    dbManager.persist(action)
-
-    //empty action property
-    val apSet = new HashSet[ActionProperty]
-
-    actionPropertyTypeBean.getActionPropertyTypesByActionTypeId(actionTypeId.intValue())
-      .toList
-      .foreach((apt) => {
-        val property = actionPropertyBean.createActionProperty(action,
-                                                               apt.getId.intValue(),
-                                                               userData)
-        apSet += property
-    })
-
-    dbManager.mergeAll(apSet)
-
-    var json = this.getPrimaryAssessmentById(action.getId.intValue(), "Consultation", userData, null, false)
-    json.setRequestData(request) //по идее эта штука должна быть в конструкторе вызываемая в методе гет
-    json
   }
 }

@@ -10,10 +10,11 @@ import javax.interceptor.Interceptors
 import scala.collection.JavaConversions._
 import java.util.Date
 import javax.persistence.{TemporalType, EntityManager, PersistenceContext}
-import ru.korus.tmis.core.entity.model.{ActionProperty, Action, Staff}
+import ru.korus.tmis.core.entity.model.{APValueTime, ActionProperty, Action, Staff}
 import ru.korus.tmis.core.data.{FreePersonsListDataFilter, QueryDataStructure}
 import ru.korus.tmis.core.filter.ListDataFilter
 import org.slf4j.{LoggerFactory, Logger}
+import java.util
 
 @Interceptors(Array(classOf[LoggingInterceptor]))
 @Stateless
@@ -107,7 +108,7 @@ class DbStaffBean
     val queryStr = filter.toQueryStructure()
 
     //Получение всех врачей по графику
-    val sqlRequest = AllEmptyStaffWithFilterQuery.format("s, apt.name, time.value", queryStr.query, sorting)
+    val sqlRequest = AllEmptyStaffWithFilterQuery.format("s, time", queryStr.query, sorting)
     var typed = em.createQuery(sqlRequest, classOf[Array[AnyRef]])
 
     if (queryStr.data.size() > 0) {
@@ -119,46 +120,36 @@ class DbStaffBean
       throw new CoreException(i18n("error.staffsNotFound"))
     }
 
-    var retMap = new java.util.HashMap[Staff, (Date, Date)]
+    var retMap = new java.util.HashMap[Staff, java.util.LinkedList[APValueTime]]
     result.foreach(f => {
       if (f(0).isInstanceOf[Staff]) {
         val staff = f(0).asInstanceOf[Staff]
         if (retMap.containsKey(staff) == false) {
-          if (f(1).isInstanceOf[String] && f(2).isInstanceOf[Date]) {
-            val dates = f(1).asInstanceOf[String] match {
-              case "begTime" => {
-                (f(2).asInstanceOf[Date], null: java.util.Date)
-              }
-              case "endTime" => {
-                (null: java.util.Date, f(2).asInstanceOf[Date])
-              }
-            }
-            retMap.put(staff, dates)
+          if (f(1).isInstanceOf[APValueTime]) {
+            val time = f(1).asInstanceOf[APValueTime]
+            var timeList = new util.LinkedList[APValueTime]
+            timeList.add(time)
+            retMap.put(staff, timeList)
           }
         }
         else {
-          var curStaff = retMap.get(staff)
-          if (f(1).isInstanceOf[String] && f(2).isInstanceOf[Date]) {
-            val dates = f(1).asInstanceOf[String] match {
-              case "begTime" => {
-                (f(2).asInstanceOf[Date], curStaff._2)
-              }
-              case "endTime" => {
-                (curStaff._1, f(2).asInstanceOf[Date])
-              }
-            }
-            retMap.remove(staff)
-            retMap.put(staff, dates)
+          if (f(1).isInstanceOf[APValueTime]) {
+            val time = (f(1).asInstanceOf[APValueTime])
+            //retMap.remove(staff)
+            //retMap.put(staff, time)
+            var curList = retMap.get(staff)
+            curList.add(time)
           }
         }
         em.detach(staff)
         staff
       }
     })
+     /*
     var retList = new java.util.LinkedList[Staff]
     retMap.foreach(f => {
-      if (f._2._1.getTime <= filter.asInstanceOf[FreePersonsListDataFilter].beginOnlyTime.getTime &&
-        f._2._2.getTime >= filter.asInstanceOf[FreePersonsListDataFilter].endOnlyTime.getTime &&
+      if (f._2.getTime <= filter.asInstanceOf[FreePersonsListDataFilter].beginOnlyTime.getTime &&
+        f._2.getTime >= filter.asInstanceOf[FreePersonsListDataFilter].endOnlyTime.getTime &&
         filter.asInstanceOf[FreePersonsListDataFilter].beginOnlyTime.getTime < filter.asInstanceOf[FreePersonsListDataFilter].endOnlyTime.getTime) {
         retList.add(f._1)
       }
@@ -180,7 +171,8 @@ class DbStaffBean
       }
       em.detach(s)
     })
-    retList
+    */
+    retMap
   }
 
 
@@ -198,14 +190,15 @@ class DbStaffBean
       JOIN a.event e
       JOIN e.assigner s
       JOIN ap.actionPropertyType apt,
-    APValueTime time
+    APValueTime time,
+    RbServiceProfile sProfile,
+    ActionType at
   WHERE
     e.deleted = 0
   AND
     e.eventType.code = '0'
   %s
-  AND
-    s.consultancyQuota > 0
+
   AND
     s.deleted = 0
   AND
@@ -215,15 +208,35 @@ class DbStaffBean
   AND
     time.id.id = ap.id
   AND
-    (
+    apt.name = 'times'
+  AND
+    NOT exists (
+      SELECT ap2
+      FROM
+        ActionProperty ap2,
+        APValueAction apvAction
+      WHERE
+        ap2.action.id = a.id
+      AND
+        ap2.actionPropertyType.name = 'queue'
+      AND
+        apvAction.id.id = ap2.id
+      AND
+        apvAction.id.index = time.id.index
+      )
+
+  GROUP BY s.id, ap.id, time.value
+                                     """      //%s
+                                                        /*
+                                                        AND
+    s.consultancyQuota > 0
+
+        (
       apt.name = 'begTime'
     OR
       apt.name = 'endTime'
-    )
-
-  GROUP BY s.id, apt.name
-                                     """      //%s
-
+    OR
+                                                         */
   val AllStaffWithoutCurrentConsultancyQuery = """
     SELECT DISTINCT s
     FROM
