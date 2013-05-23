@@ -300,6 +300,40 @@ class DbActionBean
     }
   }
 
+  @TransactionAttribute(TransactionAttributeType.REQUIRES_NEW)
+  def getEvent29AndAction19ForAction(action: Action) = {
+    var typed = em.createQuery(GetEvent29AndAction19ForAction, classOf[Action])
+      .setParameter("externalId", action.getEvent.getExternalId)
+      .setParameter("directionDate", action.getPlannedEndDate)
+
+    val result = typed.getResultList
+    result.size match {
+      case 0 => null
+      case size => {
+        result.foreach(em.detach(_))
+        result(0)
+      }
+    }
+  }
+
+  val GetEvent29AndAction19ForAction = """
+  SELECT a
+  FROM
+    Action a
+  WHERE
+    a.event.externalId = :externalId
+  AND
+    a.event.eventType.id = '29'
+  AND
+    a.directionDate = :directionDate
+  AND
+    a.event.deleted = 0
+  AND
+    a.actionType.id = '19'
+  AND
+    a.deleted = '0'
+                                       """
+
   val ActionsByATypeIdAndEventId = """
     SELECT a.id
     FROM

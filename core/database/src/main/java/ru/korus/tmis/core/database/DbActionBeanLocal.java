@@ -176,4 +176,6 @@ public interface DbActionBeanLocal {
     ActionType getActionTypeByCode(String code) throws CoreException;
 
     Action createAction(ActionType actionType, Event event, Staff person, Date date, String hospitalUidFrom, String note);
+
+    Action getEvent29AndAction19ForAction (Action action) throws CoreException;
 }

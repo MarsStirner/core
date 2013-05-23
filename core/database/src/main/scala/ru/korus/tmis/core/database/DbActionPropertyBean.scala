@@ -108,9 +108,7 @@ class DbActionPropertyBean
 
   def createActionProperty(a: Action, aptId: Int, userData: AuthData) = {
     val apt = dbActionPropertyType.getActionPropertyTypeById(aptId)
-
     val now = new Date()
-
     val ap = new ActionProperty
 
     ap.setCreateDatetime(now)
@@ -332,6 +330,13 @@ class DbActionPropertyBean
         map
       }
     )
+  }
+
+  @TransactionAttribute(TransactionAttributeType.REQUIRES_NEW)
+  def getActionPropertyValue_ActionByValue(action: Action): APValueAction = {
+    val apv = em.createQuery(ActionProperty_ActionByValue, classOf[APValueAction]).setParameter("VALUE", action).getSingleResult
+    em.detach(apv)
+    apv
   }
 
   val ActionPropertiesByEventIdAndActionPropertyTypeCodesQueryEx =

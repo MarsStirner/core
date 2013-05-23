@@ -395,7 +395,7 @@ class DirectionBean extends DirectionBeanLocal
         apSet += ap
     })
     // Создаем ивент 29 и акшен 19 (по спеке)
-    var event29 = dbEventBean.createEvent(request.patientId, 29, request.plannedEndDate, null, userData)
+    var event29 = dbEventBean.createEvent(request.patientId, 29, new Date(request.plannedEndDate.getTime + request.plannedTime.getTime.getTime), null, userData)
     event29.setExecutor(dbStaffBean.getStaffById(request.executorId))
     event29.setExternalId(dbEventBean.getEventById(request.getEventId).getExternalId)
     em.persist(event29)
@@ -403,7 +403,26 @@ class DirectionBean extends DirectionBeanLocal
     var action19 = actionBean.createAction(event29.getId.intValue(), 19, userData)
     action19.setExecutor(dbStaffBean.getStaffById(request.executorId))
     action19.setDirectionDate(new Date(request.plannedEndDate.getTime + request.plannedTime.getTime.getTime))
+    action19.setEvent(event29)
     em.persist(action19)
+    em.flush()
+    // создаем и/или заполняем значение проперти 18
+    val a = actionPropertyBean.getActionPropertyById(request.plannedTime.getId).getAction
+    var aps = actionPropertyBean.getActionPropertiesByActionIdAndTypeId(a.getId.intValue(), 18) // 18 = queue
+    var ap18: ActionProperty = null
+    aps.size() match {
+      case 0 => {
+        ap18 = actionPropertyBean.createActionProperty(a, 18, userData)
+        em.persist(ap18)
+        em.flush()
+      }
+      case _ => {
+        ap18 = aps(0)
+      }
+    }
+    if (ap18 != null) {
+      em.merge(actionPropertyBean.setActionPropertyValue(ap18, action19.getId.toString, request.plannedTime.getIndex))
+    }
     // ****
     em.flush()
     action.getId.intValue()
@@ -432,6 +451,24 @@ class DirectionBean extends DirectionBeanLocal
               }
               job.setQuantity(job.getQuantity - 1)
               em.merge(job)
+            }
+          }
+          case "consultations" => {
+            var action19 = actionBean.getEvent29AndAction19ForAction(a)
+            if (action19 != null) {
+              val actionId = action19.getId.intValue()
+              var apv = actionPropertyBean.getActionPropertyValue_ActionByValue(action19)
+              if (apv != null) {
+                apv = em.merge(apv)
+                em.remove(apv)
+              }
+              //em.flush()
+              action19 = actionBean.getActionById(actionId)
+              val event29 = action19.getEvent
+              action19.setDeleted(true)
+              event29.setDeleted(true)
+              em.merge(event29)
+              //em.merge(action19)
             }
           }
           case _ => {
