@@ -105,12 +105,11 @@ public class ExaminationsRegistryRESTImpl {
                                                         @QueryParam("filter[departmentName]") String departmentName) {
         AssessmentsListRequestDataFilter filter = new AssessmentsListRequestDataFilter(this.eventId, assessmentTypeCode, assessmentDate, doctorName, speciality, assessmentName, departmentName);
         AssessmentsListRequestData alrd= new AssessmentsListRequestData(sortingField, sortingMethod, limit, page, filter);
-        return new JSONWithPadding(wsImpl.getListOfAssessmentsForPatientByEvent(alrd, this.auth), this.callback);
+        return new JSONWithPadding(this.wsImpl.getListOfAssessmentsForPatientByEvent(alrd, this.auth), this.callback);
     }
 
     /**
-     * Запрос на получение данных о первичном осмотре
-     * &#15; Внимание! В логике сервиса параметр не используется.</pre>
+     * Запрос на получение данных об осмотре
      * @param actionId Идентификатор первичного осмотра.
      * @return com.sun.jersey.api.json.JSONWithPadding как Object
      * @throws ru.korus.tmis.core.exception.CoreException
@@ -124,28 +123,13 @@ public class ExaminationsRegistryRESTImpl {
     }
 
     /**
-     * Запрос на структуру json для первичного осмотра.
-     * &#15; Внимание! В логике сервиса параметр не используется.</pre>
-     * @param actionTypeId Идентификатор типа действия
-     * @return com.sun.jersey.api.json.JSONWithPadding как Object
-     * @throws ru.korus.tmis.core.exception.CoreException
-     * @see ru.korus.tmis.core.exception.CoreException
-     */
-    @GET
-    @Path("/struct/{actionTypeId}")
-    @Produces("application/x-javascript")
-    public Object getStructOfPrimaryMedExam(@PathParam("actionTypeId") int actionTypeId) {
-        return new JSONWithPadding(wsImpl.getStructOfPrimaryMedExam(actionTypeId, this.auth), this.callback);
-    }
-
-    /**
      * Запрос на структуру для первичного осмотра с копированием данных из предыдущего первичного осмотра
      * @return com.sun.jersey.api.json.JSONWithPadding как Object
      * @throws ru.korus.tmis.core.exception.CoreException
      * @see ru.korus.tmis.core.exception.CoreException
      */
     @GET
-    @Path("/structWithCopy/{actionTypeId}")
+    @Path("/lastByType/{actionTypeId}")
     @Produces("application/x-javascript")
     public Object getStructOfPrimaryMedExamWithCopy(@PathParam("actionTypeId") int actionTypeId) {
         return new JSONWithPadding(wsImpl.getStructOfPrimaryMedExamWithCopy(actionTypeId, this.auth, this.eventId), this.callback);

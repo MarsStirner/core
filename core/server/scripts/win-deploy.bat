@@ -73,6 +73,6 @@ echo tail -f -n 5000 ${com.sun.aas.instanceRoot}/logs/pharmacy/pharmacy.log
 echo tail -f -n 5000 ${com.sun.aas.instanceRoot}/logs/server.log
 echo.
 echo.
-rem tail -n 5000 ${com.sun.aas.instanceRoot}/logs/server.log | grep "${glassfish.application.name} was successfully deployed in
+rem tail -n 1000 ${com.sun.aas.instanceRoot}/logs/server.log | grep "${glassfish.application.name} was successfully deployed in
 echo.
 echo.
