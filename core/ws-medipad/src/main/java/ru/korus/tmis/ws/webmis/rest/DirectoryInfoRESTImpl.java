@@ -14,6 +14,8 @@ import javax.ws.rs.*;
 import javax.ws.rs.core.Context;
 import javax.ws.rs.core.MultivaluedMap;
 import javax.ws.rs.core.UriInfo;
+import java.util.ArrayList;
+import java.util.LinkedList;
 
 /**
  * Список REST-сервисов для получения данных из справочников
@@ -392,21 +394,6 @@ public class DirectoryInfoRESTImpl {
         return new JSONWithPadding(wsImpl.getEventTypes(request, this.auth),this.callback);
     }
 
-    @GET
-    @Path("/actionTypes")
-    @Produces("application/x-javascript")
-    public Object getAllActionTypeNames(@QueryParam("patientId")int patientId,
-                                        @QueryParam("filter[groupId]")int groupId,
-                                        @QueryParam("filter[code]")String code,
-                                        @QueryParam("filter[view]")String view,
-                                        @QueryParam("filter[mnem]")String mnem) {
-
-        ActionTypesSubType atst =
-                (mnem!=null && !mnem.isEmpty()) ? ActionTypesSubType.getType(mnem.toLowerCase())
-                                                : ActionTypesSubType.getType("");
-        return new JSONWithPadding(getAllActionTypeNamesEx(atst, patientId, this.limit, this.page, this.sortingField, this.sortingMethod, groupId, code, view, this.auth),this.callback);
-    }
-
     /**
      * Получение списка типа действий (ActionType's) по коду и/или идентификатору группы<br>
      * @param patientId Идентификатор пациента
@@ -427,15 +414,48 @@ public class DirectoryInfoRESTImpl {
      * @see CoreException
      */
     @GET
-    @Path("/actionTypes/{var}")
+    @Path("/actionTypes")
     @Produces("application/x-javascript")
-    public Object getActionTypeNamesBySubTypes(   @PathParam("var") String var,
-                                                  @QueryParam("patientId")int patientId,
-                                                  @QueryParam("filter[groupId]")int groupId,
-                                                  @QueryParam("filter[code]")String code,
-                                                  @QueryParam("filter[view]")String view) {
-        ActionTypesSubType atst = ActionTypesSubType.getType(var.toLowerCase());
-        return new JSONWithPadding(getAllActionTypeNamesEx(atst, patientId, this.limit, this.page, this.sortingField, this.sortingMethod, groupId, code, view, this.auth),this.callback);
+    public Object getAllActionTypeNames(@Context UriInfo info,
+                                        @QueryParam("patientId")int patientId,
+                                        @QueryParam("filter[groupId]")int groupId,
+                                        @QueryParam("filter[code]")String code,
+                                        @QueryParam("filter[view]")String view/*,
+                                        @QueryParam("filter[mnem]")String mnem*/) {
+
+        java.util.List<String> mnems = info.getQueryParameters().get("filter[mnem]");
+
+        //java.util.List<String> subTypes = new LinkedList<String>();
+        java.util.List<String> mnemonics = new LinkedList<String>();
+
+        if(mnems!=null && mnems.size()>0) {
+            for(String mnem: mnems) {
+                ActionTypesSubType atst = (mnem!=null && !mnem.isEmpty()) ? ActionTypesSubType.getType(mnem.toLowerCase())
+                                                                          : ActionTypesSubType.getType("");
+                //subTypes.add(atst.getSubType());
+                mnemonics.add(atst.getMnemonic());
+            }
+        }
+
+        ActionTypesListRequestDataFilter filter = new ActionTypesListRequestDataFilter(code, groupId, /*subTypes,*/ mnemonics, view);
+        ListDataRequest request = new ListDataRequest(sortingField, sortingMethod, limit, page, filter);
+        return new JSONWithPadding((view != null && view.compareTo("tree") == 0) ? wsImpl.getListOfActionTypes(request)
+                                                                                 : wsImpl.getListOfActionTypeIdNames(request, patientId));
+    }
+
+    /**
+     * Запрос на структуру json для первичного осмотра.
+     * &#15; Внимание! В логике сервиса параметр не используется.</pre>
+     * @param actionTypeId Идентификатор типа действия
+     * @return com.sun.jersey.api.json.JSONWithPadding как Object
+     * @throws ru.korus.tmis.core.exception.CoreException
+     * @see ru.korus.tmis.core.exception.CoreException
+     */
+    @GET
+    @Path("/actionTypes/{id}")
+    @Produces("application/x-javascript")
+    public Object getStructOfPrimaryMedExam(@PathParam("id") int actionTypeId) {
+        return new JSONWithPadding(wsImpl.getStructOfPrimaryMedExam(actionTypeId, this.auth), this.callback);
     }
 
     /**
@@ -451,25 +471,6 @@ public class DirectoryInfoRESTImpl {
             //__________________________________________________________________________________________________________________
     //***********************************   ВСПОМОГАТЕЛЬНЫЕ МЕТОДЫ   ***********************************
     //__________________________________________________________________________________________________________________
-
-    private Object getAllActionTypeNamesEx(ActionTypesSubType val,
-                                           int patientId,
-                                           int limit,
-                                           int  page,
-                                           String sortingField,
-                                           String sortingMethod,
-                                           int groupId,
-                                           String code,
-                                           String view,
-                                           AuthData auth) {
-        ActionTypesListRequestDataFilter filter = new ActionTypesListRequestDataFilter(code, groupId, val.getSubType(), val.getMnemonic(), view);
-        ListDataRequest request = new ListDataRequest(sortingField, sortingMethod, limit, page, filter);
-
-        Object oip = (view != null && view.compareTo("tree") == 0) ? wsImpl.getListOfActionTypes(request)
-                                                                   : wsImpl.getListOfActionTypeIdNames(request, patientId);
-        return oip;
-    }
-
 
     public enum ActionTypesSubType  {
 

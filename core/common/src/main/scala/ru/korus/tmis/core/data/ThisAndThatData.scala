@@ -216,8 +216,7 @@ class ActionTypesListData {
     getAllActionTypeWithFilter(0, 0, this.requestData.sortingFieldInternal, this.requestData.filter.unwrap()).foreach(at => {
       requestData.setFilter( new ActionTypesListRequestDataFilter( "",
                                                                   at.getId.intValue(),
-                                                                  "",
-                                                                  this.requestData.filter.asInstanceOf[ActionTypesListRequestDataFilter].mnemonic,
+                                                                  this.requestData.filter.asInstanceOf[ActionTypesListRequestDataFilter].mnemonics,
                                                                   this.requestData.filter.asInstanceOf[ActionTypesListRequestDataFilter].view))
       this.data.add(new ActionTypesListEntry(at, requestData, getAllActionTypeWithFilter))
     })
@@ -235,29 +234,29 @@ class ActionTypesListRequestDataFilter extends AbstractListDataFilter {
   var groupId: Int = _
 
   @BeanProperty
-  var mnemonic: String = _
+  var mnemonics: java.util.List[String] = new java.util.LinkedList[String]
 
   @BeanProperty
   var view: String = "all"
 
   def this(code_x: String,
            groupId: Int,
-           diaType_x: String,
-           mnemonic: String,
+           //diaType_xs: java.util.List[String],
+           mnemonics: java.util.List[String],
            view: String) {
     this()
-    this.code = if(code_x!=null && code_x!="") {
-                  code_x
-                }
-                else {
-                        diaType_x match {
+    if(code_x!=null && code_x!="")
+      this.code = code_x
+
+                /*else {
+                        this.code = diaType_x match {
                                             case "laboratory" => {"2"}
                                             case "instrumental" => {"3"}
                                             case _ => {""}
                                         }
-                }
+                }*/
     this.groupId = groupId
-    this.mnemonic = mnemonic
+    this.mnemonics = mnemonics.filter(p=>(p!=null && !p.isEmpty))
     if (view!=null && !view.isEmpty){
       this.view = view
     }
@@ -274,9 +273,9 @@ class ActionTypesListRequestDataFilter extends AbstractListDataFilter {
       qs.query += ("AND at.groupId IN (SELECT at2.id FROM ActionType at2 WHERE at2.code = :code)\n")
       qs.add("code",this.code)
     }
-    if (this.mnemonic!=null && !this.mnemonic.isEmpty && this.mnemonic.compareTo("") != 0) {
-      qs.query += ("AND at.mnemonic =  :mnemonic\n")
-      qs.add("mnemonic",this.mnemonic)
+    if (this.mnemonics!=null && this.mnemonics.size() > 0) {
+      qs.query += ("AND at.mnemonic IN  :mnemonic\n")
+      qs.add("mnemonic",asJavaCollection(this.mnemonics))
     }
     qs
   }
@@ -333,8 +332,9 @@ class ActionTypesListEntry {
     this.name = actionType.getName
     if (requestData.filter.asInstanceOf[ActionTypesListRequestDataFilter].view.compareTo("tree") == 0) {
       getAllActionTypeWithFilter(0,0,requestData.sortingFieldInternal,requestData.filter.unwrap()).foreach(f => {
-        val filter = new ActionTypesListRequestDataFilter("", f.getId.intValue(), "",
-                                                          requestData.filter.asInstanceOf[ActionTypesListRequestDataFilter].mnemonic,
+        val filter = new ActionTypesListRequestDataFilter("",
+                                                          f.getId.intValue(),
+                                                          requestData.filter.asInstanceOf[ActionTypesListRequestDataFilter].mnemonics,
                                                           requestData.filter.asInstanceOf[ActionTypesListRequestDataFilter].view)
         val request = new ListDataRequest(requestData.sortingField, requestData.sortingMethod, requestData.limit, requestData.page, filter)
         this.groups.add(new ActionTypesListEntry(f, request, getAllActionTypeWithFilter))
