@@ -99,44 +99,40 @@ public class DiagnosticsRegistryExRESTImpl {
         return new JSONWithPadding(wsImpl.getListOfDiagnosticsForPatientByEvent(requestData),this.callback);
     }
 
-    //TODO: POST и PUT требуется привести к единому виду
-
     /**
-     * Создание направления на диагностику
+     * Создание направления на лабораторное исследование
      * @param data Json с данными о лабораторном исследовании как CommonData
      * @return com.sun.jersey.api.json.JSONWithPadding как Object
      * @throws ru.korus.tmis.core.exception.CoreException
      * @see ru.korus.tmis.core.exception.CoreException
      */
     @POST
-    @Path("/{var}")
+    @Path("/laboratory")
     @Consumes("application/json")
     @Produces("application/x-javascript")
-    public Object insertLaboratoryStudies(JSONCommonData data,
-                                          @PathParam("var") String var) {
+    public Object insertLaboratoryStudies(JSONCommonData data) {
+        //DirectoryInfoRESTImpl.ActionTypesSubType atst = DirectoryInfoRESTImpl.ActionTypesSubType.getType(var);
+        CommonData com_data = new CommonData();
+        com_data.setEntity(data.getData());
+        return new JSONWithPadding(wsImpl.insertLaboratoryStudies(this.eventId, com_data, this.auth), this.callback);
+    }
 
-        DirectoryInfoRESTImpl.ActionTypesSubType atst = DirectoryInfoRESTImpl.ActionTypesSubType.getType(var);
+    /**
+     * Создание направления на инструментальное исследование
+     * @param data json данные о инструментальном исследовании как JSONCommonData.
+     * @return com.sun.jersey.api.json.JSONWithPadding как Object
+     * @throws ru.korus.tmis.core.exception.CoreException
+     * @see ru.korus.tmis.core.exception.CoreException
+     */
 
-        switch (atst){
-            case LABORATORY: {
-                CommonData com_data = new CommonData();
-                com_data.setEntity(data.getData());
-                return new JSONWithPadding(wsImpl.insertLaboratoryStudies(this.eventId, com_data, this.auth), this.callback);
-            }
-            case INSTRUMENTAL: {
-                CommonData com_data = new CommonData();
-                com_data.setEntity(data.getData());
-                return new JSONWithPadding(wsImpl.insertInstrumentalStudies(this.eventId, com_data, this.auth), this.callback);
-            }
-            case CONSULTATIONS: {
-                //ConsultationRequestData request = new ConsultationRequestData(eventId, actionTypeId, executorId, patientId, beginDate, endDate, urgent);
-                //JSONWithPadding returnValue = new JSONWithPadding(wsImpl.insertConsultation(data.rewriteDefault(data)), callback);
-                return null;
-            }
-            default: {
-                return null;
-            }
-        }
+    @POST
+    @Path("/instrumental")
+    @Consumes("application/json")
+    @Produces("application/x-javascript")
+    public Object insertInstrumental(JSONCommonData data) {
+        CommonData com_data = new CommonData();
+        com_data.setEntity(data.getData());
+        return new JSONWithPadding(wsImpl.insertInstrumentalStudies(this.eventId, com_data, this.auth), this.callback);
     }
 
     /**
@@ -152,11 +148,8 @@ public class DiagnosticsRegistryExRESTImpl {
     @Consumes("application/json")
     @Produces("application/x-javascript")
     public Object insertConsultation(ConsultationRequestData data) {
-
-
         //ConsultationRequestData request = new ConsultationRequestData(eventId, actionTypeId, executorId, patientId, beginDate, endDate, urgent);
-        JSONWithPadding returnValue = new JSONWithPadding(wsImpl.insertConsultation(data.rewriteDefault(data)), callback);
-        return returnValue;
+        return new JSONWithPadding(wsImpl.insertConsultation(data.rewriteDefault(data), this.auth), callback);
     }
 
     /**

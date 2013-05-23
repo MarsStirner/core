@@ -135,6 +135,7 @@ public class DirectoryInfoRESTImpl {
      * Список свободных на выбранное время врачей по специальности
      * <pre>
      * &#15; Внимание! Сортировка выкл.</pre>
+     * @param actionType  Фильтр по типу действия.
      * @param speciality  Фильтр по специальности врача.
      * @param doctorId Фильтр по идентификатору специалиста.
      * @param beginDate Дата начала периода, по которому ищутся свободные специалисты.
@@ -146,12 +147,13 @@ public class DirectoryInfoRESTImpl {
     @GET
     @Path("/persons/free")
     @Produces("application/x-javascript")
-    public Object getFreePersons(@QueryParam("filter[speciality]")int speciality,
+    public Object getFreePersons(@QueryParam("filter[actionType]")int actionType,
+                                 @QueryParam("filter[speciality]")int speciality,
                                  @QueryParam("filter[doctorId]")int doctorId,
                                  @QueryParam("filter[beginDate]")long beginDate,
                                  @QueryParam("filter[endDate]")long endDate) {
 
-        FreePersonsListDataFilter filter = new FreePersonsListDataFilter(speciality, doctorId, beginDate, endDate);
+        FreePersonsListDataFilter filter = new FreePersonsListDataFilter(speciality, doctorId, actionType, beginDate, endDate);
         ListDataRequest request = new ListDataRequest(this.sortingField, this.sortingMethod, this.limit, this.page, filter);
         return new JSONWithPadding(wsImpl.getFreePersons(request),this.callback);
     }
