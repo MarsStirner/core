@@ -127,6 +127,8 @@ class DbActionBean
           a.setAssigner(userData.user)
         }
       }
+      else
+        a.setAssigner(userData.user)
       a.setExecutor(userData.user)
     }
 

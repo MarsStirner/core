@@ -1,31 +1,30 @@
 package ru.korus.tmis.pharmacy;
 
-import org.hl7.v3.AcknowledgementType;
-import org.hl7.v3.MCCIIN000002UV01;
-import org.hl7.v3.MCCIMT000200UV01Acknowledgement;
+import misexchange.MISExchange;
+import misexchange.Request;
+import org.hl7.v3.*;
 import org.joda.time.DateTime;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import ru.korus.tmis.core.database.DbActionBeanLocal;
-import ru.korus.tmis.core.database.DbActionPropertyBeanLocal;
-import ru.korus.tmis.core.database.DbCustomQueryLocal;
-import ru.korus.tmis.core.database.DbOrgStructureBeanLocal;
+import ru.korus.tmis.core.database.*;
 import ru.korus.tmis.core.entity.model.*;
 import ru.korus.tmis.core.entity.model.pharmacy.Pharmacy;
+import ru.korus.tmis.core.entity.model.pharmacy.PharmacyStatus;
 import ru.korus.tmis.core.exception.CoreException;
+import ru.korus.tmis.core.logging.LoggingInterceptor;
 import ru.korus.tmis.core.pharmacy.DbPharmacyBeanLocal;
 import ru.korus.tmis.core.pharmacy.DbUUIDBeanLocal;
-import ru.korus.tmis.core.entity.model.pharmacy.PharmacyStatus;
 import ru.korus.tmis.core.pharmacy.FlatCode;
-import ru.korus.tmis.core.logging.LoggingInterceptor;
+import ru.korus.tmis.pharmacy.exception.MessageProcessException;
 import ru.korus.tmis.pharmacy.exception.NoSuchOrgStructureException;
-import ru.korus.tmis.pharmacy.exception.SoapConnectionException;
+import ru.korus.tmis.pharmacy.exception.SkipMessageProcessException;
 import ru.korus.tmis.util.logs.ToLog;
 
 import javax.ejb.EJB;
 import javax.ejb.Schedule;
 import javax.ejb.Stateless;
 import javax.interceptor.Interceptors;
+import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
 
@@ -66,7 +65,43 @@ public class PharmacyBean implements PharmacyBeanLocal {
     @EJB(beanName = "DbActionPropertyBean")
     private DbActionPropertyBeanLocal dbActionPropertyBeanLocal = null;
 
+    @EJB(beanName = "DbActionPropertyTypeBean")
+    private DbActionPropertyTypeBeanLocal dbActionPropertyTypeBeanLocal = null;
+
+    @EJB(beanName = "DbOrganizationBean")
+    private DbOrganizationBeanLocal dbOrganizationBeanLocal = null;
+
     private DateTime lastDateUpdate = null;
+
+    /**
+     * Выгрузка данных по назначениям за текущие сутки
+     */
+    @Override
+    @Schedule(second = "59", minute = "59", hour = "23")
+    public void flushAssignment() {
+        logger.info("");
+        logger.info("Begin flush assignment for today...");
+        for (Action action : dbPharmacy.getAssignmentForToday(DateTime.now())) {
+            try {
+                final ActionType actionType = action.getActionType();
+                if (FlatCode.PRESCRIPTION.getCode().equalsIgnoreCase(actionType.getFlatCode())) {
+                    send(action);
+                }
+            } catch (Exception e) {
+                logger.error("Error");
+            }
+        }
+        logger.info("End flush assignment for today...");
+
+        // просмотреть назначения на сегодня и отправить исполненное
+        logger.info("Begin flush release assignment for today...");
+        for (Action action : dbPharmacy.getAssignmentForToday(DateTime.now())) {
+
+        }
+        logger.info("End flush release assignment for today...");
+
+
+    }
 
     /**
      * Полинг базы данных для поиска событий по движениям пациентов
@@ -74,9 +109,7 @@ public class PharmacyBean implements PharmacyBeanLocal {
     @Override
     @Schedule(minute = "*/1", hour = "*")
     public void pooling() {
-        logger.info("");
         logger.info("pooling... last modify date {}", getLastDate());
-//        logger.error("fake error", new Exception("ee"));
         try {
             if (lastDateUpdate == null) {
                 lastDateUpdate = firstPolling();
@@ -86,12 +119,156 @@ public class PharmacyBean implements PharmacyBeanLocal {
             if (!actionAfterDate.isEmpty()) {
                 logger.info("Found {} newest actions after date {}", actionAfterDate.size(), getLastDate());
                 for (Action action : actionAfterDate) {
-                    lastDateUpdate = checkMessageAndSend(action, lastDateUpdate);
+                    if (isMovingAction(action)) {
+                        send(action);
+                        lastDateUpdate = new DateTime(action.getModifyDatetime());
+                    }
                 }
             }
-        } catch (Throwable e) {
+            resendMessages();
+        } catch (Exception e) {
             logger.error("Exception e: " + e, e);
         }
+    }
+
+    /**
+     * Повторная отправка сообщений, которые имеют статус отличный от COMPETE
+     *
+     * @throws CoreException
+     */
+    private void resendMessages() throws CoreException {
+        // resend old messages
+        final List<Pharmacy> nonCompletedItems = dbPharmacy.getNonCompletedItems();
+        if (!nonCompletedItems.isEmpty()) {
+            logger.info("Resend old message....");
+            for (Pharmacy pharmacy : nonCompletedItems) {
+                final Action action = dbAction.getActionById(pharmacy.getActionId());
+                send(action);
+            }
+        }
+    }
+
+    /**
+     * Отправка события в 1С Аптеку по событию Action
+     */
+    private void send(final Action action) {
+        Pharmacy pharmacy = null;
+        try {
+            pharmacy = dbPharmacy.getOrCreate(action);
+            final Request request = createRequest(action);
+
+            logger.info("prepare message... \n\n {}", HL7PacketBuilder.marshallMessage(request, "misexchange"));
+            final MCCIIN000002UV01 result = new MISExchange().getMISExchangeSoap().processHL7V3Message(request);
+            if (result != null) {
+                logger.info("Connection successful. Result: {} \n\n {}",
+                        result, HL7PacketBuilder.marshallMessage(result, "org.hl7.v3"));
+
+                for (MCCIMT000200UV01Acknowledgement ack : result.getAcknowledgement()) {
+                    pharmacy.setDocumentUUID(ack.getTargetMessage().getId().getRoot());
+                    pharmacy.setResult(ack.getTypeCode().value());
+                    if (AcknowledgementType.AA.equals(ack.getTypeCode())) {
+                        pharmacy.setStatus(PharmacyStatus.COMPLETE);
+                    } else {
+                        final StringBuilder sb = new StringBuilder();
+                        final List<MCCIMT000200UV01AcknowledgementDetail> detailList = ack.getAcknowledgementDetail();
+                        for (MCCIMT000200UV01AcknowledgementDetail detail : detailList) {
+                            final ED text = detail.getText();
+                            for (Object o : text.getContent()) {
+                                sb.append(o);
+                            }
+                        }
+                        pharmacy.setErrorString(sb.toString());
+                        pharmacy.setStatus(PharmacyStatus.ERROR);
+                    }
+                }
+            } else {
+                logger.error("Error connection with 1C Pharmacy. Message is setup ERROR status");
+                pharmacy.setStatus(PharmacyStatus.ERROR);
+            }
+        } catch (NoSuchOrgStructureException e) {
+            if (pharmacy != null) {
+                pharmacy.setStatus(PharmacyStatus.ERROR);
+            }
+            logger.info("OrgStructure not found. Skip message: " + e);
+        } catch (SkipMessageProcessException e) {
+            if (pharmacy != null) {
+                pharmacy.setStatus(PharmacyStatus.ERROR);
+            }
+            logger.info("Skip message: " + e);
+        } catch (Exception e) {
+            if (pharmacy != null) {
+                pharmacy.setStatus(PharmacyStatus.ERROR);
+            }
+            logger.error("Exception: " + e, e);
+        } finally {
+            if (pharmacy != null) {
+                try {
+                    dbPharmacy.updateMessage(pharmacy);
+                } catch (CoreException ce) {
+                    logger.error("CoreException on set Pharmacy in error! " + ce, ce);
+                }
+            }
+        }
+    }
+
+    /**
+     * Проверка на код по движению пациентов
+     */
+    private boolean isMovingAction(final Action action) {
+        final ActionType actionType = action.getActionType();
+        return FlatCode.RECEIVED.getCode().equalsIgnoreCase(actionType.getFlatCode())
+                || FlatCode.DEL_RECEIVED.getCode().equalsIgnoreCase(actionType.getFlatCode())
+                || FlatCode.MOVING.getCode().equalsIgnoreCase(actionType.getFlatCode())
+                || FlatCode.DEL_MOVING.getCode().equalsIgnoreCase(actionType.getFlatCode())
+                || FlatCode.LEAVED.getCode().equalsIgnoreCase(actionType.getFlatCode());
+    }
+
+    /**
+     * Создание объектной модели сообщения для 1С Аптеки
+     *
+     * @param action событие на основе которого отправляется сообщение в 1С Аптеку
+     * @return возвращает класс готовый к отправке в 1С Аптеку
+     * @throws MessageProcessException проблемы при создании сообщения
+     */
+    public Request createRequest(final Action action)
+            throws MessageProcessException, SkipMessageProcessException, NoSuchOrgStructureException {
+
+        final ActionType actionType = action.getActionType();
+
+        if (FlatCode.RECEIVED.getCode().equalsIgnoreCase(actionType.getFlatCode())) {
+            // поступление в стационар
+            return HL7PacketBuilder.processReceived(action, getOrgStructure(action));
+        } else if (FlatCode.DEL_RECEIVED.getCode().equalsIgnoreCase(actionType.getFlatCode())) {
+            return HL7PacketBuilder.processDelReceived(action);
+        } else if (FlatCode.MOVING.getCode().equalsIgnoreCase(actionType.getFlatCode())) {
+
+            final OrgStructure orgStructureOut = getOrgStructureOut(action);
+            final OrgStructure orgStructureIn = getOrgStructureIn(action);
+
+            return HL7PacketBuilder.processMoving(action, orgStructureOut, orgStructureIn);
+        } else if (FlatCode.DEL_MOVING.getCode().equalsIgnoreCase(actionType.getFlatCode())) {
+
+            final OrgStructure orgStructureOut = getOrgStructureOut(action);
+            final OrgStructure orgStructureIn = getOrgStructureIn(action);
+
+            return HL7PacketBuilder.processDelMoving(action, orgStructureOut, orgStructureIn);
+        } else if (FlatCode.LEAVED.getCode().equalsIgnoreCase(actionType.getFlatCode())) {
+            return HL7PacketBuilder.processLeaved(action);
+        } else if (FlatCode.PRESCRIPTION.getCode().equalsIgnoreCase(actionType.getFlatCode())) {
+            // Пациент
+            final Patient client = action.getEvent().getPatient();
+            // Врач, сделавший обращение
+            final Staff executorStaff = action.getExecutor();
+            // Организация, которой принадлежит документ
+            final Organisation organisation = getCustodianOrgStructure(action);
+            // Определяем код назначенного препарата
+            final String drugCode = dbPharmacy.getDrugCode(action);
+
+            return HL7PacketBuilder.processPrescription(
+                    action, client, executorStaff, organisation, drugCode, AssignmentType.ASSIGNMENT);
+        }
+
+        throw new MessageProcessException();
     }
 
     /**
@@ -107,21 +284,12 @@ public class PharmacyBean implements PharmacyBeanLocal {
             if (!actionList.isEmpty()) {
                 toLog.add("Fetch last actions with size [" + actionList.size() + "]");
                 for (Action action : actionList) {
-                    final DateTime modifyDateTime = new DateTime(action.getModifyDatetime());
-
                     final Pharmacy checkPharmacy = dbPharmacy.getPharmacyByAction(action);
-                    toLog.add("Found [" + checkPharmacy + "], flatCode [" + action.getActionType().getFlatCode() + "]");
-
-                    if (checkPharmacy != null) {
-                        if (!PharmacyStatus.COMPLETE.equals(checkPharmacy.getStatus())) {
-                            // повторная отправка в 1с
-                            toLog.add("...re-sends messages");
-                            lastDateUpdate = checkMessageAndSend(action, modifyDateTime);
-                        }
-                    } else {
-                        lastDateUpdate = checkMessageAndSend(action, modifyDateTime);
+                    if (checkPharmacy == null) {
+                        toLog.add("Found non sending action " + action
+                                + ", flatCode [" + action.getActionType().getFlatCode() + "]");
+                        send(action);
                     }
-                    lastDateUpdate = updateLastDate(modifyDateTime, lastDateUpdate);
                 }
             }
         } finally {
@@ -131,178 +299,78 @@ public class PharmacyBean implements PharmacyBeanLocal {
     }
 
     private String getLastDate() {
-        return lastDateUpdate != null ? lastDateUpdate.toString(DATE_TIME_FORMAT) : "null";
+        return lastDateUpdate != null ? lastDateUpdate.toString(DATE_TIME_FORMAT) : "none";
     }
 
-    /**
-     * Проверка action на присутствие flatCode и обработка если это сообщение по движению пациентов
-     *
-     * @param action         событие
-     * @param lastDateModify
-     * @return время последнего обработанного сообщения
-     */
-    private DateTime checkMessageAndSend(final Action action, final DateTime lastDateModify) {
-        final ActionType actionType = action.getActionType();
 
-        if (isPatientMoving(actionType)) {
-            processPatientMoving(action, actionType);
-        }
-
-        if (isEventOfDrugs(actionType)) {
-            processUseOfDrugs(action, actionType);
-        }
-        return lastDateModify;
-    }
-
-    /**
-     * Обработка данных по движению пациентов
-     *
-     * @param action
-     * @param actionType
-     */
-    private void processPatientMoving(final Action action, final ActionType actionType) {
+    private Organisation getCustodianOrgStructure(final Action action) throws NoSuchOrgStructureException {
         try {
-            if (FlatCode.RECEIVED.getCode().equals(actionType.getFlatCode())) {
-                // госпитализация в стационар
-                logger.info("--- found received ---");
-                try {
-                    final OrgStructure orgStructure = getOrgStructure(action);
-                    final Pharmacy pharmacy = dbPharmacy.getOrCreate(action);
-
-                    processResult(pharmacy, HL7PacketBuilder.processReceived(action, orgStructure));
-                } catch (NoSuchOrgStructureException e) {
-                    logger.info("OrgStructure not found");
-                }
-
-            } else if (FlatCode.LEAVED.getCode().equals(actionType.getFlatCode())) {
-                // выписка из стационара
-                logger.info("--- found leaved ---");
-
-                final Pharmacy pharmacy = dbPharmacy.getOrCreate(action);
-                final String displayName = "Стационар";
-
-                processResult(pharmacy, HL7PacketBuilder.processLeaved(action, displayName));
-
-            } else if (FlatCode.DEL_RECEIVED.getCode().equals(actionType.getFlatCode())) {
-                // отмена сообщения о госпитализации
-                logger.info("--- found del_received ---");
-
-                final Pharmacy pharmacy = dbPharmacy.getOrCreate(action);
-
-                processResult(pharmacy, HL7PacketBuilder.processDelReceived(action));
-
-            } else if (FlatCode.MOVING.getCode().equals(actionType.getFlatCode())) {
-                // перевод пациента между отделениями
-                logger.info("--- found moving ---");
-                try {
-                    final OrgStructure orgStructureOut = getOrgStructure(action);
-                    final OrgStructure orgStructureIn = getOrgStructure(action);
-                    final Pharmacy pharmacy = dbPharmacy.getOrCreate(action);
-
-                    processResult(pharmacy, HL7PacketBuilder.processMoving(action, orgStructureOut, orgStructureIn));
-                } catch (NoSuchOrgStructureException e) {
-                    logger.info("OrgStructure not found");
-                }
-            } else if (FlatCode.DEL_MOVING.getCode().equals(actionType.getFlatCode())) {
-                // отмена сообщения о переводе пациента между отделениями
-                logger.info("--- found del_moving ---");
-                try {
-                    final OrgStructure orgStructureOut = getOrgStructure(action);
-                    final OrgStructure orgStructureIn = getOrgStructure(action);
-                    final Pharmacy pharmacy = dbPharmacy.getOrCreate(action);
-
-                    processResult(pharmacy, HL7PacketBuilder.processDelMoving(action, orgStructureOut, orgStructureIn));
-                } catch (NoSuchOrgStructureException e) {
-                    logger.info("OrgStructure not found");
-                }
-            }
-        } catch (Exception e) {
-            logger.error("core error " + e, e);
-            try {    // todo переделать !!!!!!!
-                final Pharmacy pharmacy = dbPharmacy.getOrCreate(action);
-                pharmacy.setStatus(PharmacyStatus.ERROR);
-                dbPharmacy.updateMessage(pharmacy);
-                logger.info("update error status {}", pharmacy);
-            } catch (Exception e1) {
-                logger.error("core error " + e1, e1);
-            }
-            logger.error("core error " + e, e);
-        }
-    }
-
-    /**
-     * Событие по назначению пациенту
-     *
-     * @param actionType
-     * @return
-     */
-    private boolean isEventOfDrugs(final ActionType actionType) {
-        return actionType.getTypeClass() == 2 && actionType.getCode().equals("3_1_05");
-    }
-
-    /**
-     * Событие по движению пациента
-     *
-     * @param actionType
-     * @return
-     */
-    private boolean isPatientMoving(final ActionType actionType) {
-        if (FlatCode.RECEIVED.getCode().equals(actionType.getFlatCode())) {
-            return true;
-        } else if (FlatCode.LEAVED.getCode().equals(actionType.getFlatCode())) {
-            return true;
-        } else if (FlatCode.DEL_RECEIVED.getCode().equals(actionType.getFlatCode())) {
-            return true;
-        } else if (FlatCode.MOVING.getCode().equals(actionType.getFlatCode())) {
-            return true;
-        } else if (FlatCode.DEL_MOVING.getCode().equals(actionType.getFlatCode())) {
-            return true;
-        }
-        return false;
-    }
-
-    /**
-     * Назначение препарата
-     */
-    private void processUseOfDrugs(final Action action, final ActionType actionType) {
-        logger.info("--- found clinical document (code:{}) ---", actionType.getCode());
-        try {
-            final Pharmacy pharmacy = dbPharmacy.getOrCreate(action);
-            final Patient client = action.getEvent().getPatient();
-            final Staff createPerson = action.getCreatePerson();
-            final String externalId = java.util.UUID.randomUUID().toString(); //dbUUIDBeanLocal.getUUIDById(event.getUUID());
-            final String externalUUID = java.util.UUID.randomUUID().toString(); //dbUUIDBeanLocal.getUUIDById(event.getUUID());
-            final String custodianUUID = java.util.UUID.randomUUID().toString(); //dbUUIDBeanLocal.getUUIDById(event.getUUID());
-            final String uuidClient = java.util.UUID.randomUUID().toString(); //dbUUIDBeanLocal.getUUIDById(event.getUUID());
-            final OrgStructure orgStructure = getOrgStructure(action);
-            final String organizationName = orgStructure.getName();
-            final Staff doctorPerson = new Staff(11);
-
-            processResult(pharmacy,
-                    HL7PacketBuilder.processRCMRIN000002UV02(
-                            action,
-                            uuidClient,
-                            externalId,
-                            client,
-                            createPerson,
-                            organizationName,
-                            externalUUID,
-                            custodianUUID,
-                            doctorPerson));
-        } catch (NoSuchOrgStructureException e) {
-            logger.info("OrgStructure not found");
+            final Event event = action.getEvent();
+            return dbOrganizationBeanLocal.getOrganizationById(event.getOrgId());
         } catch (CoreException e) {
-            e.printStackTrace();
-        } catch (SoapConnectionException e) {
-            e.printStackTrace();
+            throw new NoSuchOrgStructureException(e);
         }
     }
 
     /**
      * Поиск OrgStructure для конкретного Action
      */
-    private OrgStructure getOrgStructure(final Action action) throws NoSuchOrgStructureException {
+    private OrgStructure getOrgStructureOut(final Action action) throws SkipMessageProcessException {
         try {
+            final Map<ActionProperty, List<APValue>> names
+                    = dbActionPropertyBeanLocal.getActionPropertiesByActionIdAndTypeNames(
+                    action.getId(), Arrays.asList("Отделение пребывания"));
+            logger.info("getOrgStructureOut Action properties and type {}", names);
+            for (ActionProperty property : names.keySet()) {
+                final List<APValue> apValues = names.get(property);
+                for (APValue apValue : apValues) {
+                    if (apValue instanceof APValueOrgStructure) {
+                        final OrgStructure orgStructure = (OrgStructure) apValue.getValue();
+                        logger.info("Found OrgStructureOut: {}, {}", orgStructure, orgStructure.getName());
+                        return orgStructure;
+                    }
+                }
+            }
+        } catch (CoreException e) {
+        }
+        throw new SkipMessageProcessException();
+    }
+
+    /**
+     * Поиск OrgStructure для конкретного Action
+     */
+    private OrgStructure getOrgStructureIn(final Action action) throws SkipMessageProcessException {
+        try {
+            final Map<ActionProperty, List<APValue>> names
+                    = dbActionPropertyBeanLocal.getActionPropertiesByActionIdAndTypeNames(
+                    action.getId(), Arrays.asList("Переведен в отделение"));
+            logger.info("getOrgStructureIn Action properties and type {}", names);
+            for (ActionProperty property : names.keySet()) {
+                final List<APValue> apValues = names.get(property);
+                for (APValue apValue : apValues) {
+                    if (apValue instanceof APValueOrgStructure) {
+                        final OrgStructure orgStructure = (OrgStructure) apValue.getValue();
+                        logger.info("Found OrgStructureIn: {}, {}", orgStructure, orgStructure.getName());
+                        return orgStructure;
+                    }
+                }
+            }
+        } catch (CoreException e) {
+        }
+        throw new SkipMessageProcessException();
+    }
+
+    /**
+     * Поиск OrgStructure для конкретного Action
+     */
+    private OrgStructure getOrgStructure(final Action action) throws SkipMessageProcessException {
+        try {
+            final Map<ActionProperty, List<APValue>> names
+                    = dbActionPropertyBeanLocal.getActionPropertiesByActionIdAndTypeNames(
+                    action.getId(), Arrays.asList("Переведен в отделение", "Переведен из отделения", "Отделение пребывания"));
+            logger.info("Action properties and type {}", names);
+
+
             final Map<ActionProperty, List<APValue>> actionPropertiesMap = dbActionPropertyBeanLocal.getActionPropertiesByActionId(action.getId());
             for (ActionProperty property : actionPropertiesMap.keySet()) {
                 final List<APValue> apValues = actionPropertiesMap.get(property);
@@ -326,32 +394,8 @@ public class PharmacyBean implements PharmacyBeanLocal {
         } catch (CoreException e) {
             // skip
         }
-        throw new NoSuchOrgStructureException("OrgStructure for " + action + " is not found");
+        throw new SkipMessageProcessException("OrgStructure for " + action + " is not found");
     }
 
-    /**
-     * Обработка результата от 1С
-     */
-    private void processResult(final Pharmacy pharmacy, final MCCIIN000002UV01 result) throws CoreException {
-        if (result != null && !result.getAcknowledgement().isEmpty()) {
-            final MCCIMT000200UV01Acknowledgement ack = result.getAcknowledgement().get(0);
-            pharmacy.setDocumentUUID(ack.getTargetMessage().getId().getRoot());
-            pharmacy.setResult(ack.getTypeCode().value());
-            if (AcknowledgementType.AA.equals(ack.getTypeCode())) {
-                pharmacy.setStatus(PharmacyStatus.COMPLETE);
-            } else {
-                pharmacy.setStatus(PharmacyStatus.ERROR);
-            }
-        }
-        logger.info("---update message {} ", pharmacy);
-        dbPharmacy.updateMessage(pharmacy);
-    }
-
-    private DateTime updateLastDate(final DateTime date, final DateTime lastDate) {
-        if (lastDate == null) {
-            return date;
-        }
-        return date.toDate().before(lastDate.toDate()) ? lastDate : date;
-    }
 
 }

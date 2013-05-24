@@ -82,18 +82,18 @@ public class DiagnosticsRegistryExRESTImpl {
 
         DirectoryInfoRESTImpl.ActionTypesSubType atst = DirectoryInfoRESTImpl.ActionTypesSubType.getType(var);
         DiagnosticsListRequestDataFilter filter = new DiagnosticsListRequestDataFilter( diaTypeCode,
-                this.eventId,
-                //diagnosticDate,
-                //directionDate,
-                date,
-                diagnosticName,
-                assignPersonId,
-                execPersonId,
-                office,
-                statusId,
-                (urgent==null) ? -1 : (urgent) ? 1 : 0,
-                atst.getSubType(),
-                atst.getMnemonic());
+                                                                                        this.eventId,
+                                                                                        //diagnosticDate,
+                                                                                        //directionDate,
+                                                                                        date,
+                                                                                        diagnosticName,
+                                                                                        assignPersonId,
+                                                                                        execPersonId,
+                                                                                        office,
+                                                                                        statusId,
+                                                                                        (urgent==null) ? -1 : (urgent) ? 1 : 0,
+                                                                                        atst.getSubType(),
+                                                                                        atst.getMnemonic());
 
         DiagnosticsListRequestData requestData = new DiagnosticsListRequestData(sortingField, sortingMethod, limit, page, filter);
         return new JSONWithPadding(wsImpl.getListOfDiagnosticsForPatientByEvent(requestData),this.callback);
@@ -142,7 +142,7 @@ public class DiagnosticsRegistryExRESTImpl {
      * @throws ru.korus.tmis.core.exception.CoreException
      * @see ru.korus.tmis.core.exception.CoreException
      */
-
+     /*
     @POST
     @Path("/consultations")
     @Consumes("application/json")
@@ -151,7 +151,7 @@ public class DiagnosticsRegistryExRESTImpl {
         //ConsultationRequestData request = new ConsultationRequestData(eventId, actionTypeId, executorId, patientId, beginDate, endDate, urgent);
         return new JSONWithPadding(wsImpl.insertConsultation(data.rewriteDefault(data), this.auth), callback);
     }
-
+       */
     /**
      * Редактирование списка направлений на лабораторные исследования
      * @param data Json с данными о лабораторном исследовании как CommonData

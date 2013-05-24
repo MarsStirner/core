@@ -15,11 +15,11 @@ import javax.xml.datatype.DatatypeConfigurationException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import ru.korus.tmis.core.database.dbutil.Database;
 import ru.korus.tmis.core.entity.model.Action;
 import ru.korus.tmis.core.entity.model.ActionPropertyType;
 import ru.korus.tmis.core.entity.model.ActionType;
 import ru.korus.tmis.core.entity.model.Event;
-import ru.korus.tmis.core.entity.model.OrgStructure;
 import ru.korus.tmis.core.entity.model.Patient;
 import ru.korus.tmis.core.entity.model.RbTrfuLaboratoryMeasureTypes;
 import ru.korus.tmis.core.entity.model.RbTrfuProcedureTypes;
@@ -27,15 +27,16 @@ import ru.korus.tmis.core.entity.model.RbUnit;
 import ru.korus.tmis.core.entity.model.Staff;
 import ru.korus.tmis.core.exception.CoreException;
 import ru.korus.tmis.util.EntityMgr;
-import ru.korus.tmis.ws.transfusion.Database;
 import ru.korus.tmis.ws.transfusion.PropType;
+import ru.korus.tmis.ws.transfusion.SenderUtils;
+import ru.korus.tmis.ws.transfusion.TrfuActionProp;
 import ru.korus.tmis.ws.transfusion.efive.DonorInfo;
 import ru.korus.tmis.ws.transfusion.efive.LaboratoryMeasureType;
 import ru.korus.tmis.ws.transfusion.efive.OrderResult;
 import ru.korus.tmis.ws.transfusion.efive.PatientCredentials;
 import ru.korus.tmis.ws.transfusion.efive.ProcedureType;
 import ru.korus.tmis.ws.transfusion.efive.TransfusionMedicalService;
-import ru.korus.tmis.ws.transfusion.order.TrfuActionProp;
+import ru.korus.tmis.ws.transfusion.order.SendOrderBloodComponents;
 
 /**
  * Author:      Sergey A. Zagrebelny <br>
@@ -59,6 +60,8 @@ public class SendProcedureRequest {
     private Database database;
 
     private Staff coreUser;
+
+    private SenderUtils senderUtils = new SenderUtils();
 
     /**
      * 
@@ -110,6 +113,8 @@ public class SendProcedureRequest {
             PropType.HT,
             PropType.SALINE_VOLUME,
             PropType.FINAL_HT,
+            PropType.LAB_MEASURE,
+            PropType.FINAL_VOLUME,
     };
 
     /*
@@ -134,16 +139,7 @@ public class SendProcedureRequest {
      * 
      */
     private void initCoreUser() {
-
-        final String coreLogin = System.getProperty("tmis.core.user");
-        if (coreLogin != null) {
-            final List<Staff> coreUsers =
-                    database.getEntityMgr().createQuery("SELECT u FROM Staff u WHERE u.login = :login", Staff.class)
-                            .setParameter("login", coreLogin)
-                            .getResultList();
-            coreUser = coreUsers.isEmpty() ? null : coreUsers.get(0);
-        }
-
+        coreUser = database.getCoreUser();
     }
 
     /**
@@ -165,31 +161,36 @@ public class SendProcedureRequest {
                 }
                 OrderResult orderResult = new OrderResult();
                 actionProp.get(curFlatCode).setRequestState(action.getId(), "");
-                final PatientCredentials patientCredentials = Database.getPatientCredentials(action);
-                final DonorInfo donorInfo = getDonorInfo(database.getEntityMgr(), action, actionProp.get(curFlatCode));
-                final ru.korus.tmis.ws.transfusion.efive.ProcedureInfo procedureInfo = getProcedureInfo(database.getEntityMgr(), action);
-                try {
-                    orderResult = trfuService.orderMedicalProcedure(donorInfo, patientCredentials, procedureInfo);
-                } catch (final Exception ex) {
-                    logger.error(
-                            "The procedure {} was not registrate in TRFU. TRFU web method 'orderMedicalProcedure' has thrown runtime exception."
-                                    + "  Error description: '{}'",
-                            action.getId(), ex.getMessage());
-                    ex.printStackTrace();
-                }
-                if (orderResult.isResult()) { // если подситема ТРФУ зарегистрировала требование КК
+                final PatientCredentials patientCredentials = SendOrderBloodComponents.getPatientCredentials(action, actionProp.get(curFlatCode));
+                if (patientCredentials != null) {
+                    final DonorInfo donorInfo = getDonorInfo(database.getEntityMgr(), action, actionProp.get(curFlatCode));
+                    final ru.korus.tmis.ws.transfusion.efive.ProcedureInfo procedureInfo =
+                            getProcedureInfo(database.getEntityMgr(), action, actionProp.get(curFlatCode));
                     try {
-                        actionProp.get(curFlatCode).orderResult2DB(action, orderResult.getRequestId());
-                        logger.info("Processing transfusion procedure action {}... The order has been successfully registered in TRFU. TRFU id: {}",
-                                action.getId(), orderResult.getRequestId());
-                    } catch (final CoreException ex) {
-                        logger.error("The procedure {} was not registrate in TRFU. Cannot save the result into DB. Error description: '{}'", action.getId(),
-                                ex.getMessage());
+                        orderResult = trfuService.orderMedicalProcedure(donorInfo, patientCredentials, procedureInfo);
+                    } catch (final Exception ex) {
+                        logger.error(
+                                "The procedure {} was not registrate in TRFU. TRFU web method 'orderMedicalProcedure' has thrown runtime exception."
+                                        + "  Error description: '{}'",
+                                action.getId(), ex.getMessage());
+                        ex.printStackTrace();
                     }
-                } else {
-                    logger.error("The procedure {} was not registrate in TRFU. TRFU service return the error satatus. Error description: '{}'", action.getId(),
-                            orderResult.getDescription());
-                    actionProp.get(curFlatCode).setRequestState(action.getId(), "Ответ системы ТРФУ: " + orderResult.getDescription());
+                    if (orderResult.isResult()) { // если подситема ТРФУ зарегистрировала требование КК
+                        try {
+                            actionProp.get(curFlatCode).orderResult2DB(action, orderResult.getRequestId());
+                            logger.info("Processing transfusion procedure action {}... The order has been successfully registered in TRFU. TRFU id: {}",
+                                    action.getId(), orderResult.getRequestId());
+                        } catch (final CoreException ex) {
+                            logger.error("The procedure {} was not registrate in TRFU. Cannot save the result into DB. Error description: '{}'",
+                                    action.getId(),
+                                    ex.getMessage());
+                        }
+                    } else {
+                        logger.error("The procedure {} was not registrate in TRFU. TRFU service return the error satatus. Error description: '{}'",
+                                action.getId(),
+                                orderResult.getDescription());
+                        actionProp.get(curFlatCode).setRequestState(action.getId(), "Ответ системы ТРФУ: " + orderResult.getDescription());
+                    }
                 }
             } catch (final CoreException ex) {
                 logger.error("Error in SendProcedureRequest. Error description: '{}'", ex.getMessage());
@@ -202,28 +203,20 @@ public class SendProcedureRequest {
         }
     }
 
-    private ru.korus.tmis.ws.transfusion.efive.ProcedureInfo getProcedureInfo(final EntityManager em, final Action action) throws CoreException,
-            DatatypeConfigurationException {
+    private ru.korus.tmis.ws.transfusion.efive.ProcedureInfo
+            getProcedureInfo(final EntityManager em, final Action action, TrfuActionProp trfuActionProp) throws CoreException,
+                    DatatypeConfigurationException {
         final ru.korus.tmis.ws.transfusion.efive.ProcedureInfo res = new ru.korus.tmis.ws.transfusion.efive.ProcedureInfo();
         res.setId(action.getId());
         final ActionType actionType = EntityMgr.getSafe(action.getActionType());
         res.setOperationType(getTrfuProcType(actionType.getFlatCode()));
-        Integer orgStructItd = new Integer(0);
-        final Staff createPerson = EntityMgr.getSafe(action.getAssigner());
-        final OrgStructure orgStructure = createPerson.getOrgStructure();
-        if (orgStructure != null) {
-            orgStructItd = orgStructure.getId();
-        } else {
-            logger.error("Wrong orgStriucture information for person {}, action id {}", createPerson.getId(), action.getId());
-        }
-        res.setDivisionId(orgStructItd);
+        final Staff assigner = senderUtils.getAssigner(action, trfuActionProp);
+        final Staff createPerson = EntityMgr.getSafe(assigner);
+        res.setDivisionId(senderUtils.getOrgStructure(action, createPerson, trfuActionProp));
         final Event event = EntityMgr.getSafe(action.getEvent());
-        res.setIbNumber(event.getExternalId());
-        final Date plannedEndDate = action.getPlannedEndDate();
-        if (plannedEndDate != null) {
-            res.setPlanDate(Database.toGregorianCalendar(plannedEndDate));
-        }
-        res.setRegistrationDate(Database.toGregorianCalendar(new Date()));
+        res.setIbNumber(senderUtils.getIbNumbre(action, event, trfuActionProp));
+        final Date plannedEndDate = senderUtils.getPlannedData(action, trfuActionProp);
+        res.setRegistrationDate(Database.toGregorianCalendar(plannedEndDate));
         res.setAttendingPhysicianId(createPerson.getId());
         res.setAttendingPhysicianFirstName(createPerson.getFirstName());
         res.setAttendingPhysicianLastName(createPerson.getLastName());
@@ -289,9 +282,10 @@ public class SendProcedureRequest {
             }
         }
         for (final RbTrfuProcedureTypes procedure : procedureTypesTrfu) {
-            createActionType(em, procedure);
+            createActionType(procedure);
             em.persist(procedure);
         }
+
         em.flush();
     }
 
@@ -334,7 +328,8 @@ public class SendProcedureRequest {
     /**
      * @param procedure
      */
-    private void createActionType(final EntityManager em, final RbTrfuProcedureTypes procedure) {
+    private void createActionType(final RbTrfuProcedureTypes procedure) {
+        final EntityManager em = database.getEntityMgr();
         final String flatCode = getFlatCode(procedure);
         final ActionType actionType = getActionTypeByFlatCode(em, flatCode);
         if (actionType == null) {
@@ -369,7 +364,7 @@ public class SendProcedureRequest {
             at.setCreatePerson(coreUser);
             em.persist(at);
             em.flush();
-            createProperties(em, at);
+            createProperties(at);
         } else {
             final String name = actionType.getName();
             if (name != null && name.equals(procedure.getName())) {
@@ -401,8 +396,7 @@ public class SendProcedureRequest {
      * @param em
      * @param at
      */
-    private void createProperties(final EntityManager em, final ActionType at) {
-
+    private void createProperties(final ActionType at) {
         for (int idx = 0; idx < propTypes.length; ++idx) {
             final PropType curProp = propTypes[idx];
             final ActionPropertyType apt = new ActionPropertyType();
@@ -411,15 +405,20 @@ public class SendProcedureRequest {
             apt.setCode(curProp.getCode());
             apt.setName(curProp.getName());
             apt.setDescr(curProp.getName());
-            apt.setUnit(getRbUnit(em, curProp.getUnitCode()));
+            apt.setUnit(getRbUnit(database.getEntityMgr(), curProp.getUnitCode()));
             final String canonicalName = curProp.getValueClass().getCanonicalName();
-            apt.setTypeName(canonicalName.substring(canonicalName.indexOf(AP_VALUE) + AP_VALUE.length()));
-            apt.setValueDomain("");
+            final String typeName =
+                    curProp.getTypeName() == null ? canonicalName.substring(canonicalName.indexOf(AP_VALUE) + AP_VALUE.length()) : curProp.getTypeName();
+            apt.setTypeName(typeName);
+            final String valueDomain = curProp.getValueDomain() == null ? "" : curProp.getValueDomain();
+            apt.setValueDomain(valueDomain);
             apt.setNorm("");
             apt.setSex((short) 0);
             apt.setAge("");
             apt.setDefaultValue("");
-            em.persist(apt);
+            apt.setReadOnly(curProp.isReadOnly());
+            apt.setMandatory(curProp.isMandatory());
+            database.getEntityMgr().persist(apt);
         }
     }
 

@@ -11,6 +11,7 @@ import scala.collection.JavaConversions._
 import java.text.{DateFormat, SimpleDateFormat}
 import ru.korus.tmis.core.filter.AbstractListDataFilter
 import java.util
+import ru.korus.tmis.core.exception.CoreException
 
 /**
  * Набор View для сериализации HospitalBedEntry
@@ -35,44 +36,21 @@ class HospitalBedData {
   @BeanProperty
   var data: HospitalBedEntry = _
 
-  /**
-   * Конструктор HospitalBedData для получения информации об действии 'движение' пациента.
-   * @param action Действие 'Движение'.
-   * @param values Список свойст движения со значениями.
-   * @param beds Список обозначений коек с меткой занято или нет.
-   * @param corrMap Список соответствия идентификаторов свойств действия с таблицей RbCoreActionProperty.
-   * @param requestData Данные из запроса.
-   */
-  def this(action: Action,
-           values: java.util.Map[ActionProperty, java.util.List[APValue]],
-           beds: java.util.Map[OrgStructureHospitalBed, java.lang.Boolean],
-           corrMap: java.util.HashMap[String, java.util.List[RbCoreActionProperty]],
-           requestData: HospitalBedDataRequest) = {
-    this ()
-    this.requestData = requestData
-    this.data = new HospitalBedEntry(action, values, beds, corrMap)
-  }
-
-  /**
-   * Конструктор HospitalBedData для получения списка 'движений' пациента.
-   * @param map Упорядоченный список с данными о движении.
-   * @param corrMap Таблица соответствия с s11r64.RbCoreActionProperty.
-   * @param requestData Данные из запроса с клиента.
-   */
-  /*def this(map: java.util.LinkedHashMap[Action, java.util.Map[ActionProperty, java.util.List[APValue]]],
-           corrMap: java.util.HashMap[String, java.util.List[RbCoreActionProperty]],
-           requestData: HospitalBedDataRequest)  = {
-    this ()
-    this.requestData = requestData
-    this.data = new HospitalBedEntry(map, corrMap)
-  }*/
-
   def this(actions: java.util.List[Action],
            mGetPropertiesWithValuesByCodes: (Int, java.util.Set[String]) => java.util.Map[ActionProperty, java.util.List[APValue]],
            requestData: HospitalBedDataRequest)  = {
     this ()
     this.requestData = requestData
     this.data = new HospitalBedEntry(actions, mGetPropertiesWithValuesByCodes)
+  }
+
+  def this(action: Action,
+           mGetPropertiesWithValuesByCodes: (Int, java.util.Set[String]) => java.util.Map[ActionProperty, java.util.List[APValue]],
+           mGetCaseHospitalBedsByDepartment: (Int) => java.util.Map[OrgStructureHospitalBed, java.lang.Boolean],
+           requestData: HospitalBedDataRequest)  = {
+    this ()
+    this.requestData = requestData
+    this.data = new HospitalBedEntry(action, mGetPropertiesWithValuesByCodes, mGetCaseHospitalBedsByDepartment)
   }
 }
 
@@ -198,21 +176,27 @@ class HospitalBedEntry {
     def unapply(pos: T) = seq find (pos ==) map (seq indexOf _)
   }
 
-  /**
-   * Конструктор класса HospitalBedEntry
-   * @param action Действие пациента.
-   * @param values Список свойств действия со значениями.
-   * @param beds  Список занятых/свободных коек.
-   * @param corrMap Список соответствия с s11r64.RbCoreActionProperty.
-   */
   def this(action: Action,
-           values: java.util.Map[ActionProperty, java.util.List[APValue]],
-           beds: java.util.Map[OrgStructureHospitalBed, java.lang.Boolean],
-           corrMap: java.util.HashMap[String, java.util.List[RbCoreActionProperty]]) = {
+           mGetPropertiesWithValuesByCodes: (Int, java.util.Set[String]) => java.util.Map[ActionProperty, java.util.List[APValue]],
+           mGetCaseHospitalBedsByDepartment: (Int) => java.util.Map[OrgStructureHospitalBed, java.lang.Boolean]) = {
     this ()
-    this.move = new MoveHospitalBedContainer(action, values, corrMap)
-    this.bedRegistration = new RegistrationHospitalBedContainer(action, values, beds, corrMap)
-    this.registrationForm = new RegistrationHospitalBedContainer(action, values, beds, corrMap)
+
+    val values =
+      if(mGetPropertiesWithValuesByCodes!=null) {
+        val codes = Set[String](ConfigManager.Messages("db.apt.received.codes.orgStructDirection"),
+                                ConfigManager.Messages("db.apt.moving.codes.orgStructTransfer"),
+                                ConfigManager.Messages("db.apt.moving.codes.timeArrival"),
+                                ConfigManager.Messages("db.apt.moving.codes.patronage"),
+                                ConfigManager.Messages("db.apt.moving.codes.hospitalBed"),
+                                ConfigManager.Messages("db.apt.moving.codes.orgStructReceived"),
+                                ConfigManager.Messages("db.apt.moving.codes.hospOrgStruct"))
+        mGetPropertiesWithValuesByCodes(action.getId.intValue(), asJavaSet(codes))
+      }
+      else new java.util.LinkedHashMap[ActionProperty, java.util.List[APValue]]
+
+    this.move = new MoveHospitalBedContainer(action, values, getFormattedDate _)
+    this.bedRegistration = new RegistrationHospitalBedContainer(action, values, mGetCaseHospitalBedsByDepartment, getFormattedDate _)
+    this.registrationForm = new RegistrationHospitalBedContainer(action, values, mGetCaseHospitalBedsByDepartment, getFormattedDate _)
   }
 
   //https://docs.google.com/spreadsheet/ccc?key=0AgE0ILPv06JcdEE0ajBZdmk1a29ncjlteUp3VUI2MEE#gid=3
@@ -352,61 +336,32 @@ class MoveHospitalBedContainer {
    * Конструктор класса MoveHospitalBedContainer
    * @param action Действие.
    * @param values Список значений свойств действия со значениями.
-   * @param corrMap Список соответствия с s11r64.RbCoreActionProperty.
    */
   def this(action: Action,
            values: java.util.Map[ActionProperty, java.util.List[APValue]],
-           corrMap: java.util.HashMap[String, java.util.List[RbCoreActionProperty]]){
+           mFormattedDate: (Date, Date) => Date){
     this()
     this.id = action.getId.intValue()
     this.clientId = action.getEvent.getPatient.getId.intValue()
-    val flgAction = if(action.getActionType.getId.compareTo(ConfigManager.Messages("db.actionType.moving").toInt)==0)
-                      movingInDepartment
-                    else if(action.getActionType.getId.compareTo(ConfigManager.Messages("db.actionType.hospitalization.primary").toInt)==0)
-                      directionInDepartment
-                    else unknownOperation
 
-    if (values!=null && flgAction!=unknownOperation){
-      val list = if(flgAction == movingInDepartment) List(ConfigManager.Messages("db.rbCAP.moving.id.movedIn").toInt,
-                                                          ConfigManager.Messages("db.rbCAP.moving.id.beginTime").toInt)
-                 else List(ConfigManager.Messages("db.rbCAP.moving.id.movedIn").toInt)
+    var departmentTransfer: OrgStructure = null
+    var timeArrival: Date = null
 
-      val listNdx = new IndexOf(list)
+    values.foreach(ap => {
+      val code = ap._1.getType.getCode
+      if(code.compareTo(ConfigManager.Messages("db.apt.received.codes.orgStructDirection"))==0 ||
+         code.compareTo(ConfigManager.Messages("db.apt.moving.codes.orgStructTransfer"))==0) {
+        if (ap._2!=null && ap._2.size()>0)
+          departmentTransfer = ap._2.get(0).asInstanceOf[APValueOrgStructure].getValue
+      }
+      else if(code.compareTo(ConfigManager.Messages("db.apt.moving.codes.timeArrival"))==0){
+        if (ap._2!=null && ap._2.size()>0)
+          timeArrival = ap._2.get(0).asInstanceOf[APValueTime].getValue
+      }
+    })
 
-      corrMap.get(action.getActionType.getId.toString).foreach((coreAPT) => {
-        coreAPT.getId.intValue() match {
-          case listNdx(0) => {  //Переведен в отделение
-            val result = values.find {element => element._1.getType.getId.intValue() == coreAPT.getActionPropertyType.getId.intValue()}
-            val res = result.getOrElse(null)
-            if(res!=null && res._2!=null &&  res._2.size()>0){
-              this.unitId = res._2.get(0).asInstanceOf[APValueOrgStructure].getValue.getId.intValue()
-            }
-            if(flgAction != movingInDepartment) this.moveDatetime = action.getBegDate
-          }
-          case listNdx(1) => {  //Время поступления
-            if (action.getBegDate!=null) {
-              var tDate = Calendar.getInstance()
-              tDate.setTime(action.getBegDate)
-
-              val result = values.find {element => element._1.getType.getId.intValue() == coreAPT.getActionPropertyType.getId.intValue()}
-              val res = result.getOrElse(null)
-              val time = if(res!=null && res._2!=null &&  res._2.size()>0) res._2.get(0).asInstanceOf[APValueTime].getValue else null
-              if (time!=null){
-                var tTime = Calendar.getInstance()
-                tTime.setTime(time)
-                val hour = tTime.get(Calendar.HOUR_OF_DAY)
-                val minutes = tTime.get(Calendar.MINUTE)
-
-                tDate.set(Calendar.HOUR_OF_DAY, hour)
-                tDate.set(Calendar.MINUTE, minutes)
-              }
-              this.moveDatetime = tDate.getTime
-            }
-          }
-          case _ => null
-        }
-      })
-    }
+    this.unitId = if (departmentTransfer==null) 0 else departmentTransfer.getId.intValue()
+    this.moveDatetime = mFormattedDate(action.getBegDate, timeArrival)
   }
 }
 
@@ -523,70 +478,56 @@ class RegistrationHospitalBedContainer {
    * Конструктор класса RegistrationHospitalBedContainer
    * @param action Действие пациента типа 'движение'.
    * @param values Значения свойств действия в виде списка по ключам.
-   * @param beds Список занятых/свободных коек.
-   * @param corrMap Список соответствия с s11r64.RbCoreActionProperty.
+   * @param mGetCaseHospitalBedsByDepartment Делегируемый метод на получение списка занятых коек
+   * @param mFormattedDate Делегируемый метод по формированию даты.
    */
   def this(action: Action,
            values: java.util.Map[ActionProperty, java.util.List[APValue]],
-           beds: java.util.Map[OrgStructureHospitalBed, java.lang.Boolean],
-           corrMap: java.util.HashMap[String, java.util.List[RbCoreActionProperty]]){
+           mGetCaseHospitalBedsByDepartment: (Int) => java.util.Map[OrgStructureHospitalBed, java.lang.Boolean],
+           mFormattedDate: (Date, Date) => Date){
     this()
     this.clientId = action.getEvent.getPatient.getId.intValue()
 
-    val list = List(ConfigManager.Messages("db.rbCAP.moving.id.movedFrom").toInt,
-                    ConfigManager.Messages("db.rbCAP.moving.id.beginTime").toInt,
-                    ConfigManager.Messages("db.rbCAP.moving.id.bed").toInt,
-                    ConfigManager.Messages("db.rbCAP.moving.id.patronage").toInt)
-    val listNdx = new IndexOf(list)
+    var timeArrival: Date = null
+    var department: OrgStructure = null
 
-    if (values!=null){
-      corrMap.get(action.getActionType.getId.toString).foreach((coreAPT) => {
-        coreAPT.getId.intValue() match {
-          case listNdx(0) => {  //Переведен из отделения
-            val result = values.find {element => element._1.getType.getId.intValue() == coreAPT.getActionPropertyType.getId.intValue()}
-            val res = result.getOrElse(null)
-            if(res!=null && res._2!=null &&  res._2.size()>0){
-              this.movedFromUnitId = res._2.get(0).asInstanceOf[APValueOrgStructure].getValue.getId.intValue()
-            }
-          }
-          case listNdx(1) => {  //Время поступления
-            if (action.getBegDate!=null) {
-              var tDate = Calendar.getInstance()
-              tDate.setTime(action.getBegDate)
+    values.foreach(ap => {
+      val code = ap._1.getType.getCode
+      if(code.compareTo(ConfigManager.Messages("db.apt.moving.codes.orgStructReceived"))==0) {
+        if (ap._2!=null && ap._2.size()>0)
+          this.movedFromUnitId = ap._2.get(0).asInstanceOf[APValueOrgStructure].getValue.getId.intValue()
+      }
+      else if(code.compareTo(ConfigManager.Messages("db.apt.moving.codes.timeArrival"))==0){
+        if (ap._2!=null && ap._2.size()>0)
+          timeArrival = ap._2.get(0).asInstanceOf[APValueTime].getValue
+      }
+      else if(code.compareTo(ConfigManager.Messages("db.apt.moving.codes.hospitalBed"))==0){
+        if (ap._2!=null && ap._2.size()>0)
+          this.bedId  = ap._2.get(0).asInstanceOf[APValueHospitalBed].getValue.getId.intValue()
+      }
+      else if(code.compareTo(ConfigManager.Messages("db.apt.moving.codes.patronage"))==0){
+        if (ap._2!=null && ap._2.size()>0)
+          this.patronage = ap._2.get(0).asInstanceOf[APValueString].getValue
+      }
+      else if(code.compareTo(ConfigManager.Messages("db.apt.moving.codes.hospOrgStruct"))==0){
+        if (ap._2!=null && ap._2.size()>0 && action.getEndDate==null)
+          department = ap._2.get(0).asInstanceOf[APValueOrgStructure].getValue
+      }
+      else if(code.compareTo(ConfigManager.Messages("db.apt.received.codes.orgStructDirection"))==0 ||
+              code.compareTo(ConfigManager.Messages("db.apt.moving.codes.orgStructTransfer"))==0) {
+        if (ap._2!=null && ap._2.size()>0 && action.getEndDate!=null)
+          department = ap._2.get(0).asInstanceOf[APValueOrgStructure].getValue
+      }
+    })
 
-              val result = values.find {element => element._1.getType.getId.intValue() == coreAPT.getActionPropertyType.getId.intValue()}
-              val res = result.getOrElse(null)
-              val time = if(res!=null && res._2!=null &&  res._2.size()>0) res._2.get(0).asInstanceOf[APValueTime].getValue else null
-              if (time!=null){
-                var tTime = Calendar.getInstance()
-                tTime.setTime(time)
-                val hour = tTime.get(Calendar.HOUR_OF_DAY)
-                val minutes = tTime.get(Calendar.MINUTE)
+    this.moveDatetime = mFormattedDate(action.getBegDate, timeArrival)
 
-                tDate.set(Calendar.HOUR_OF_DAY, hour)
-                tDate.set(Calendar.MINUTE, minutes)
-              }
-              this.moveDatetime = tDate.getTime
-            }
-          }
-          case listNdx(2) => {   //Койка
-            val result = values.find {element => element._1.getType.getId.intValue() == coreAPT.getActionPropertyType.getId.intValue()}
-            val res = result.getOrElse(null)
-            if(res!=null && res._2!=null &&  res._2.size()>0l)
-              this.bedId = res._2.get(0).asInstanceOf[APValueHospitalBed].getValue.getId.intValue()
-          }
-          case listNdx(3) => {   //Патронаж
-            val result = values.find {element => element._1.getType.getId.intValue() == coreAPT.getActionPropertyType.getId.intValue()}
-            val res = result.getOrElse(null)
-            if(res!=null && res._2!=null &&  res._2.size()>0)
-              this.patronage = res._2.get(0).asInstanceOf[APValueString].getValue
-          }
-          case _ => null
-        }
-      })
+    if(mGetCaseHospitalBedsByDepartment!=null) { //TODO: В текущей реализации БД разбиения на палаты нету
+      if (department!=null)
+        this.chamberList.add(new ChamberDataContainer(mGetCaseHospitalBedsByDepartment(department.getId.intValue())))
+      else
+        throw new CoreException("Для Action c id = %s не удалось найти отделение, где находится пациент".format(action.getId.toString))
     }
-    if(beds!=null)  //TODO: В текущей реализации БД разбиения на палаты нету
-      this.chamberList.add(new ChamberDataContainer(beds))
   }
 }
 

@@ -11,14 +11,15 @@ import javax.persistence.EntityManager;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import ru.korus.tmis.core.database.dbutil.Database;
 import ru.korus.tmis.core.entity.model.Action;
 import ru.korus.tmis.core.entity.model.RbBloodType;
 import ru.korus.tmis.core.entity.model.RbTrfuBloodComponentType;
 import ru.korus.tmis.core.entity.model.TrfuOrderIssueResult;
 import ru.korus.tmis.core.exception.CoreException;
-import ru.korus.tmis.ws.transfusion.Database;
 import ru.korus.tmis.ws.transfusion.IssueResult;
 import ru.korus.tmis.ws.transfusion.PropType;
+import ru.korus.tmis.ws.transfusion.TrfuActionProp;
 
 /**
  * Author:      Sergey A. Zagrebelny <br>
@@ -28,7 +29,7 @@ import ru.korus.tmis.ws.transfusion.PropType;
  */
 
 /**
- * Регистрация извещения о резульатах выполнения требования КК
+ * Регистрация извещения о результатах выполнения требования КК
  */
 @Stateless
 public class RegOrderIssueResult {
@@ -73,10 +74,18 @@ public class RegOrderIssueResult {
     }
 
     /**
-     * @param em
-     * @param actionId
-     * @param orderIssue
+     * Сохранение извещения о результатах выполнения требования КК в БД
+     * 
+     * @param action
+     *            - действие, соответствующее требованию КК
+     * @param factDate
+     *            - фактическая дата/время выдачи КК
+     * @param components
+     *            - паспортные данные выданного(-ых) компонентов крови
+     * @param orderComment
+     *            - комментарий
      * @throws CoreException
+     *             - при кокой-либо ошибке во время работы с БД
      */
     private void update(final Action action, final Date factDate, final List<OrderIssueInfo> components, final String orderComment)
             throws CoreException {
@@ -95,7 +104,7 @@ public class RegOrderIssueResult {
             trfuOrderIssueResult.setAction(action);
             trfuOrderIssueResult.setTrfuCompId(orderIssue.getComponentId());
             trfuOrderIssueResult.setCompNumber(orderIssue.getNumber());
-            final RbTrfuBloodComponentType rbBloodComponentType = toRbBloodComponentType(orderIssue.getComponentId());
+            final RbTrfuBloodComponentType rbBloodComponentType = toRbBloodComponentType(orderIssue.getComponentTypeId());
             if (rbBloodComponentType == null) {
                 errMsg += "; Неизвестный компонент крови: " + orderIssue.getComponentId() + " паспорт №" + orderIssue.getNumber();
             }
@@ -117,11 +126,6 @@ public class RegOrderIssueResult {
         em.flush();
     }
 
-    /**
-     * @param bloodGroupId
-     * @param rhesusFactorId
-     * @return
-     */
     private RbBloodType toRbBloodType(final Integer bloodGroupId, final Integer rhesusFactorId) {
         final EntityManager em = database.getEntityMgr();
         final String[] bloodGroups = {
@@ -140,10 +144,6 @@ public class RegOrderIssueResult {
         return res;
     }
 
-    /**
-     * @param componentId
-     * @return
-     */
     private RbTrfuBloodComponentType toRbBloodComponentType(final Integer componentId) {
         final EntityManager em = database.getEntityMgr();
         final List<RbTrfuBloodComponentType> rbBloodComponentTypes =

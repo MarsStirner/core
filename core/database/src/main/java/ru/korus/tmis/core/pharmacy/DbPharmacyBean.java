@@ -3,8 +3,12 @@ package ru.korus.tmis.core.pharmacy;
 import org.joda.time.DateTime;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import ru.korus.tmis.core.database.DbActionPropertyBeanLocal;
+import ru.korus.tmis.core.database.DbActionPropertyTypeBeanLocal;
 import ru.korus.tmis.core.database.DbManagerBeanLocal;
+import ru.korus.tmis.core.entity.model.APValue;
 import ru.korus.tmis.core.entity.model.Action;
+import ru.korus.tmis.core.entity.model.ActionProperty;
 import ru.korus.tmis.core.entity.model.ActionType;
 import ru.korus.tmis.core.entity.model.pharmacy.Pharmacy;
 import ru.korus.tmis.core.entity.model.pharmacy.PharmacyStatus;
@@ -17,7 +21,9 @@ import javax.interceptor.Interceptors;
 import javax.persistence.EntityManager;
 import javax.persistence.PersistenceContext;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
+import java.util.Map;
 
 /**
  * Author   Dmitriy E. Nosov <br>
@@ -29,13 +35,63 @@ import java.util.List;
 @Stateless
 public class DbPharmacyBean implements DbPharmacyBeanLocal {
 
-    private final Logger logger = LoggerFactory.getLogger(DbPharmacyBean.class);
+    private static final Logger logger = LoggerFactory.getLogger(DbPharmacyBean.class);
 
     @PersistenceContext(unitName = "s11r64")
     private EntityManager em = null;
 
     @EJB(beanName = "DbManagerBean")
     private DbManagerBeanLocal dbManager = null;
+
+    @EJB(beanName = "DbActionPropertyBean")
+    private DbActionPropertyBeanLocal dbActionPropertyBeanLocal = null;
+
+    @EJB(beanName = "DbActionPropertyTypeBean")
+    private DbActionPropertyTypeBeanLocal dbActionPropertyTypeBeanLocal = null;
+
+    /**
+     * Полоучение списка сообщений, которые по разным причинам не были отправлены в 1С Аптеку (статус != COMPLETE)
+     *
+     * @return
+     */
+    @Override
+    public List<Pharmacy> getNonCompletedItems() {
+
+        final List<Pharmacy> nonCompleteList = em.createQuery("SELECT p FROM Pharmacy p WHERE p.status <> :status ORDER BY p.actionId DESC", Pharmacy.class)
+                .setParameter("status", PharmacyStatus.COMPLETE)
+                .getResultList();
+
+        return nonCompleteList;
+    }
+
+    /**
+     * Получение лекарственного средства назначенного пациенту. Метод требует переработки в дальнейшем.
+     *
+     * @param action связанное действие
+     * @return код (code) в формате ФОЛС из RLS
+     */
+    public String getDrugCode(final Action action) {
+        List result = em.createNativeQuery(
+                "SELECT api.value FROM ActionProperty ap "
+                        + "JOIN ActionProperty_Integer api  ON ap.id = api.id "
+                        + "JOIN ActionPropertyType apt ON ap.type_id = apt.id "
+                        + "WHERE ap.action_id = ? AND apt.typeName = ?")
+                .setParameter(1, action.getId())
+                .setParameter(2, "RLS")
+                .getResultList();
+        return String.valueOf(getResult(result));
+    }
+
+    private Integer getResult(final List input) {
+        if (!input.isEmpty()) {
+            for (Object o : input) {
+                if (o instanceof Integer) {
+                    return (Integer) o;
+                }
+            }
+        }
+        return 0;
+    }
 
     /**
      * @see
@@ -122,6 +178,18 @@ public class DbPharmacyBean implements DbPharmacyBeanLocal {
                 .getResultList();
     }
 
+    @Override
+    public List<Action> getAssignmentForToday(final DateTime dateTime) {
+
+        return em.createQuery(
+                "SELECT a FROM Action a WHERE a.actionType.flatCode IN :flatCode AND a.modifyDatetime BETWEEN :modifyDateStart AND :modifyDateStop",
+                Action.class)
+                .setParameter("flatCode", Arrays.asList(FlatCode.PRESCRIPTION.getCode()))
+                .setParameter("modifyDateStart", dateTime.withTimeAtStartOfDay().toDate())
+                .setParameter("modifyDateStop", dateTime.plusDays(1).withTimeAtStartOfDay().toDate())
+                .getResultList();
+    }
+
     /**
      * @see
      */
@@ -143,4 +211,6 @@ public class DbPharmacyBean implements DbPharmacyBeanLocal {
 
         return !pharmacyList.isEmpty() ? pharmacyList.get(0) : null;
     }
+
+
 }

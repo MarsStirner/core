@@ -26,7 +26,7 @@ public enum ExecPersonSetType  {
         }
         public boolean getFlushFlag() { return false;}  //Не флэшим
         public boolean isFindLast() { return true;}
-        public int getVarId(){return 1;}
+        public int getVarId(){return 0;}
     },
     EP_MODIFY_PRIMARY("MODIFY_PRIMARY"){
         public int getEventPersonId(Object data) {
@@ -36,7 +36,7 @@ public enum ExecPersonSetType  {
         }
         public boolean getFlushFlag() { return false;}  //Не флэшим
         public boolean isFindLast() { return true;}
-        public int getVarId(){return 0;}
+        public int getVarId(){return 1;}
     },
     EP_SET_IN_LPU("SET_IN_LPU"){
         public int getEventPersonId(Object data) {

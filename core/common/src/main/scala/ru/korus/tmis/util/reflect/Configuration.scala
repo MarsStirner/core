@@ -1,6 +1,6 @@
 package ru.korus.tmis.util.reflect
 
-import ru.korus.tmis.util.StringId
+import ru.korus.tmis.util.{ConfigManager, StringId}
 import java.net.URL
 import java.text.SimpleDateFormat
 import reflect.Manifest

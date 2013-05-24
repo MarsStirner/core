@@ -373,7 +373,7 @@ with TmisLogging{
     })
 
     val result = em.createQuery(BusyHospitalBedsByDepartmentIdQuery.format(i18n("db.action.movingFlatCode"),
-                                                                           iCapIds("db.rbCAP.moving.id.bed")),
+                                                                           i18n("db.apt.moving.codes.hospitalBed")),
                                 classOf[OrgStructureHospitalBed])
       .setParameter("ids", asJavaCollection(ids))
       .getResultList
@@ -389,59 +389,17 @@ with TmisLogging{
   }
 
   def getRegistryOriginalForm(action: Action, authData: AuthData) = {
-
-    val apv_map = actionPropertyBean.getActionPropertiesByActionId(action.getId.intValue)
-
-    //Таблица соответствия id
-    val corrMap = new java.util.HashMap[String, java.util.List[RbCoreActionProperty]]()
-    corrMap.put(i18n("db.actionType.moving").toString, dbRbCoreActionPropertyBean.getRbCoreActionPropertiesByActionTypeId(i18n("db.actionType.moving").toInt))
-    corrMap.put(i18n("db.actionType.hospitalization.primary").toString, dbRbCoreActionPropertyBean.getRbCoreActionPropertiesByActionTypeId(i18n("db.actionType.hospitalization.primary").toInt))
-
-    new HospitalBedData(action, apv_map, null, corrMap, null)
+    new HospitalBedData(action,
+                        actionPropertyBean.getActionPropertiesByActionIdAndActionPropertyTypeCodes _,
+                        null,
+                        null)
   }
 
   def getRegistryFormWithChamberList(action: Action, authData: AuthData) = {
-
-    if (action.getActionType.getCode.compareTo("4202")!=0){
-      throw new CoreException("Action c id = %s не является действием 'Движение'".format(action.getId.toString))
-      null
-    }
-    else {
-      val apv_map = actionPropertyBean.getActionPropertiesByActionId(action.getId.intValue)
-
-      val core = dbRbCoreActionPropertyBean.getRbCoreActionPropertiesByActionTypeId(i18n("db.actionType.moving").toInt)
-      val listNdx = new IndexOf(list)
-      var departmentId: Int = - 1
-      val result =
-        if (action.getEndDate==null){
-          core.find(element => element.getName == i18n("db.actionPropertyType.moving.name.located").toString)
-        }
-        else {
-          core.find(element => element.getName == i18n("db.actionPropertyType.moving.name.movedIn").toString)
-        }
-      val res = result.getOrElse(null)
-      if(res!=null){
-        val result2 = apv_map.find {element => element._1.getType.getId.intValue() == res.getActionPropertyType.getId}
-        val res2 = result2.getOrElse(null)
-        if(res2!=null){
-            departmentId = res2._2.get(0).asInstanceOf[APValueOrgStructure].getValue.getId.intValue()
-        }
-      }
-
-      if (departmentId<0){
-        throw new CoreException("Для Action c id = %s не удалось найти отделение, где находится пациент".format(action.getId.toString))
-        null
-      }
-      else {
-        //Список коек отделения
-        val beds = this.getCaseHospitalBedsByDepartmentId(departmentId)
-        //Таблица соответствия id
-        val corrMap = new java.util.HashMap[String, java.util.List[RbCoreActionProperty]]()
-        corrMap.put(i18n("db.actionType.moving").toString, dbRbCoreActionPropertyBean.getRbCoreActionPropertiesByActionTypeId(i18n("db.actionType.moving").toInt))
-
-        new HospitalBedData(action, apv_map, beds, corrMap, null)
-      }
-    }
+    new HospitalBedData(action,
+                        actionPropertyBean.getActionPropertiesByActionIdAndActionPropertyTypeCodes _,
+                        this.getCaseHospitalBedsByDepartmentId _,
+                        null)
   }
 
   def getMovingListByEventIdAndFilter(filter: HospitalBedDataListFilter, authData: AuthData): HospitalBedData = {
@@ -493,7 +451,7 @@ with TmisLogging{
     }
 
     //2. Ищем последнее движение, находим старую койку и регистрируем на нее
-    val temp = this.getLastMovingActionForEventId(oldAction.getEvent.getId.intValue())
+    val temp = this.getLastCloseMovingActionForEventId(oldAction.getEvent.getId.intValue())
     if (temp!=null) {
       val oldLastAction =  Action.clone(temp)
       val lockLastId = appLock.acquireLock("Action", oldLastAction.getId.intValue(), oldLastAction.getIdx, authData)
@@ -665,19 +623,17 @@ with TmisLogging{
     null
   }
 
-  private def getLastDepartmentLocationByAction(actionId: Int):java.lang.Integer = {
-    var result = em.createQuery(LastDepartmentLocationByActionQuery, classOf[Int])
-      .setParameter("id", actionId)
-      .getResultList
-    if(result!=null&&result.size()>0)
-      Integer.valueOf(result.iterator().next.intValue())
-    else
-      null:java.lang.Integer
+  def getLastCloseMovingActionForEventId(eventId: Int) = {
+    this.getLastActionByCondition(eventId, "AND a.endDate IS NOT NULL ORDER BY a.endDate desc, a.id desc")
   }
 
   def getLastMovingActionForEventId(eventId: Int) = {
-    val result = em.createQuery(LastMovingActionByEventIdQuery.format(i18n("db.action.movingFlatCode")),
-                                classOf[Action])
+     this.getLastActionByCondition(eventId, "ORDER BY a.createDatetime desc")
+  }
+
+  private def getLastActionByCondition(eventId: Int, condition: String) = {
+    val result = em.createQuery(LastMovingActionByEventIdQuery.format(i18n("db.action.movingFlatCode"), condition),
+      classOf[Action])
       .setParameter("id", eventId)
       .getResultList
 
@@ -689,26 +645,6 @@ with TmisLogging{
       }
     }
   }
-
-  val LastDepartmentLocationByActionQuery =
-    """
-    SELECT apv.value.id
-    FROM
-      ActionProperty ap
-        JOIN ap.action a
-        JOIN ap.actionPropertyType apt,
-      APValueOrgStructure apv
-    WHERE
-      a.id = :id
-    AND
-      ap.id = apv.id.id
-    AND
-      apt.name = 'Отделение пребывания'
-    AND
-      a.deleted = 0
-    AND
-      apt.deleted = 0
-    """
 
   val AllHospitalBedsByDepartmentIdQuery =
     """
@@ -766,26 +702,6 @@ with TmisLogging{
       a.deleted = 0
     AND
       at.deleted = 0
-    AND
-      a.endDate IS NOT NULL
-    ORDER BY a.endDate desc, a.id desc
+    %s
     """
-  /*val LastMovingActionByEventIdQuery =
-    """
-    SELECT a, COALESCE(max(a.endDate),0)
-    FROM
-      Action a
-        JOIN a.actionType at
-        JOIN a.event e
-    WHERE
-      e.id = :id
-    AND
-      at.flatCode = '%s'
-    AND
-      a.endDate IS NOT NULL
-    AND
-      a.deleted = 0
-    AND
-      at.deleted = 0
-    """*/
 }

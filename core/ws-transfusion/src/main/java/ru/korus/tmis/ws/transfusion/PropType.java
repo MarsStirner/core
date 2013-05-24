@@ -6,6 +6,7 @@ import ru.korus.tmis.core.entity.model.APValueInteger;
 import ru.korus.tmis.core.entity.model.APValueRbBloodComponentType;
 import ru.korus.tmis.core.entity.model.APValueString;
 import ru.korus.tmis.core.entity.model.APValueTime;
+import ru.korus.tmis.ws.transfusion.order.SendOrderBloodComponents;
 
 /**
  * Author:      Sergey A. Zagrebelny <br>
@@ -30,24 +31,24 @@ public enum PropType {
     /**
      * Свойства действия "Гемотрансфузионная терапия" (требование на выдачу КК)
      */
-    DIAGNOSIS("trfuReqBloodCompDiagnosis", APValueString.class, "Основной клинический диагноз"),
+    DIAGNOSIS("trfuReqBloodCompDiagnosis", APValueString.class, "Основной клинический диагноз", true),
 
-    BLOOD_COMP_TYPE("trfuReqBloodCompId", APValueRbBloodComponentType.class, "Требуемый компонент крови"),
+    BLOOD_COMP_TYPE("trfuReqBloodCompId", APValueRbBloodComponentType.class, "Требуемый компонент крови", true),
 
-    TYPE("trfuReqBloodCompType", APValueString.class, "Вид трансфузии"),
+    TYPE("trfuReqBloodCompType", APValueString.class, "Вид трансфузии", true),
 
-    VOLUME("trfuReqBloodCompValue", APValueInteger.class, "Объем требуемого компонента крови (все, кроме тромбоцитов)"),
+    VOLUME("trfuReqBloodCompValue", APValueInteger.class, "Объем требуемого компонента крови (все, кроме тромбоцитов)", false),
 
-    DOSE_COUNT("trfuReqBloodCompDose", APValueDouble.class, "Количество требуемых донорских доз (тромбоциты)"),
+    DOSE_COUNT("trfuReqBloodCompDose", APValueDouble.class, "Количество требуемых донорских доз (тромбоциты)", false),
 
-    ROOT_CAUSE("trfuReqBloodCompRootCause", APValueString.class, "Показания к проведению трансфузии"),
+    ROOT_CAUSE("trfuReqBloodCompRootCause", APValueString.class, "Показания к проведению трансфузии", true),
 
     ORDER_ISSUE_BLOOD_COMP_PASPORT("trfuReqBloodCompPasport", APValueInteger.class, "Паспортные данные выданных компонентов крови"),
 
     /**
      * Свойства лечебных процедур ТРФУ
      */
-    DONOR_ID("trfuProcedureDonor", APValueInteger.class, "Донор"),
+    DONOR_ID("trfuProcedureDonor", APValueInteger.class, "Донор", false),
 
     CONTRAINDICATION("trfuProcedureContraindication", APValueString.class, "Противопоказания к проведению процедуры"),
 
@@ -65,9 +66,10 @@ public enum PropType {
 
     COMPLICATIONS("trfuProcedureComplications", APValueString.class, "Осложнения"),
 
-    INITIAL_VOLUME("trfuProcedureInitialVolume", APValueDouble.class, "объем афереза - Инициально (параметры процедуры)", Database.UNIT_MILILITER),
+    INITIAL_VOLUME("trfuProcedureInitialVolume", APValueDouble.class, "объем афереза - Инициально (параметры процедуры)",
+            SendOrderBloodComponents.UNIT_MILILITER),
 
-    CHANGE_VOLUME("trfuProcedureChangeVolume", APValueDouble.class, "объем афереза – Изменения (параметры процедуры)", Database.UNIT_MILILITER),
+    CHANGE_VOLUME("trfuProcedureChangeVolume", APValueDouble.class, "объем афереза – Изменения (параметры процедуры)", SendOrderBloodComponents.UNIT_MILILITER),
 
     INITIAL_TBV("trfuProcedureInitialTbv", APValueString.class, "обработанный TBV - Инициально (параметры процедуры)"),
 
@@ -86,10 +88,10 @@ public enum PropType {
     CHANGE_TIME("trfuProcedureChangeTime", APValueString.class, "время афереза – Изменения (параметры процедуры)"),
 
     INITIAL_PRODUCT_VOLUME("trfuProcedureInitialProductVolume", APValueDouble.class, "объем продукта афереза - Инициально (параметры процедуры)",
-            Database.UNIT_MILILITER),
+            SendOrderBloodComponents.UNIT_MILILITER),
 
     CHANGE_PRODUCT_VOLUME("trfuProcedureChangeProductVolume", APValueDouble.class, "объем продукта афереза – Изменения (параметры процедуры)",
-            Database.UNIT_MILILITER),
+            SendOrderBloodComponents.UNIT_MILILITER),
 
     ACD_LOAD("trfuProcedureAcdLoad", APValueString.class, "введено ACD (баланс жидкостей)"),
 
@@ -121,36 +123,111 @@ public enum PropType {
             APValueInteger.class,
             "идентификатор резус-фактора эритроцитарной массы (0 – Положительный, 1 - Отрицательный)"),
 
-    VOLUME_PROC_RES("trfuProcedureVolume", APValueDouble.class, "объем эритроцитарной массы", Database.UNIT_MILILITER),
+    VOLUME_PROC_RES("trfuProcedureVolume", APValueDouble.class, "объем эритроцитарной массы", SendOrderBloodComponents.UNIT_MILILITER),
 
     PRODUCTION_DATE("trfuProcedureProductionDate", APValueDate.class, "дата изготовления"),
 
     EXPIRATION_DATE("trfuProcedureExpirationDate", APValueDate.class, "срок годности"),
 
-    HT("trfuProcedureHt", APValueDouble.class, "гематокрит эритроцитарной массы", Database.UNIT_MILILITER),
+    HT("trfuProcedureHt", APValueDouble.class, "гематокрит эритроцитарной массы", SendOrderBloodComponents.UNIT_MILILITER),
 
-    SALINE_VOLUME("trfuProcedureSalineVolume", APValueDouble.class, "объем добавленного физ. раствора", Database.UNIT_MILILITER),
+    SALINE_VOLUME("trfuProcedureSalineVolume", APValueDouble.class, "объем добавленного физ. раствора", SendOrderBloodComponents.UNIT_MILILITER),
 
-    FINAL_HT("trfuProcedureFinalHt", APValueDouble.class, "финальный гематокрит");
+    FINAL_HT("trfuProcedureFinalHt", APValueDouble.class, "финальный гематокрит"),
 
+    LAB_MEASURE("trfuLaboratoryMeasures", APValueInteger.class, "лабораторные измерения", null, "Table", "TRFU_LM"),
+
+    FINAL_VOLUME("trfuFinalVolumes", APValueInteger.class, "финальные объемы", null, "Table", "TRFU_FV");
+
+    /**
+     * Таблица для хранения значения свойства
+     */
     @SuppressWarnings("rawtypes")
     private final Class valueClass;
 
+    /**
+     * Уникальный код совйства
+     */
     private final String code;
 
+    /**
+     * Ниаменование сойства (используется при сообшениях об ошибках).
+     */
     private final String name;
 
+    /**
+     * Тип свойства (ActionPropertyType.typeName)
+     */
+    private final String typeName;
+
+    /**
+     * Домен (ActionPropertyType.valueDomain)
+     */
+    private final String valueDomain;
+
+    /**
+     * Единицы измерения
+     */
     private final String unitCode;
 
+    /**
+     * Признак "только для чтения"
+     */
+    private boolean readOnly;
+
+    /**
+     * Признак "обязательный параметр"
+     */
+    private final boolean mandatory;
+
     PropType(final String code, @SuppressWarnings("rawtypes") final Class valueClass, final String name) {
-        this(code, valueClass, name, null);
+        this(code, valueClass, name, null, null, null);
     }
 
-    PropType(final String code, @SuppressWarnings("rawtypes") final Class valueClass, final String name, final String unitCode) {
+    /**
+     * @return the readOnly
+     */
+    public boolean isReadOnly() {
+        return readOnly;
+    }
+
+    /**
+     * @return the mandatory
+     */
+    public boolean isMandatory() {
+        return mandatory;
+    }
+
+    PropType(final String code, @SuppressWarnings("rawtypes") final Class valueClass, final String name, boolean mandatory) {
+        this(code, valueClass, name, mandatory, null, null, null);
+    }
+
+    PropType(final String code, @SuppressWarnings("rawtypes") final Class valueClass, final String name,
+            final String unitCode) {
+        this(code, valueClass, name, unitCode, null, null);
+    }
+
+    PropType(final String code, @SuppressWarnings("rawtypes") final Class valueClass, final String name, boolean mandatory,
+            final String unitCode) {
+        this(code, valueClass, name, mandatory, unitCode, null, null);
+    }
+
+    PropType(final String code, @SuppressWarnings("rawtypes") final Class valueClass, final String name,
+            final String unitCode, final String typeName, final String valueDomain) {
+        this(code, valueClass, name, false, unitCode, typeName, valueDomain);
+        readOnly = true;
+    }
+
+    PropType(final String code, @SuppressWarnings("rawtypes") final Class valueClass, final String name, boolean mandatory,
+            final String unitCode, final String typeName, final String valueDomain) {
         this.code = code;
         this.valueClass = valueClass;
         this.name = name;
         this.unitCode = unitCode;
+        this.typeName = typeName;
+        this.valueDomain = valueDomain;
+        this.mandatory = mandatory;
+        readOnly = false;
     }
 
     public String getName() {
@@ -164,6 +241,20 @@ public enum PropType {
     @SuppressWarnings("rawtypes")
     public Class getValueClass() {
         return valueClass;
+    }
+
+    /**
+     * @return the typeName
+     */
+    public String getTypeName() {
+        return typeName;
+    }
+
+    /**
+     * @return the valueDomain
+     */
+    public String getValueDomain() {
+        return valueDomain;
     }
 
     /**
