@@ -342,7 +342,7 @@ def write_result(header, sqls):
 	f.close()
 
 def parse_xml(file_name):
-	return parse(file_name, XMLParser(encoding="utf-16"))
+	return parse(file_name, XMLParser(encoding="utf-8"))
 
 def aggregate(xml):
 	result = {}
