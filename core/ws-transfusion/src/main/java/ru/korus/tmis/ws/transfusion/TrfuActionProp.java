@@ -47,7 +47,9 @@ public class TrfuActionProp {
                 database.getEntityMgr().createQuery("SELECT at FROM ActionType at WHERE at.flatCode = :flatCode AND at.deleted = 0", ActionType.class)
                         .setParameter("flatCode", actionTypeFlatCode).getResultList();
         if (actionType.size() != 1) {
-            throw new CoreException(String.format("The Action 'Transfusion Therapy' has been not found. flatCode '%s'", actionTypeFlatCode));
+            throw new CoreException(String.format(
+                    "The Action 'Transfusion Therapy' has been not found or more that one has been found. flatCode '%s', count of action type: '%d'",
+                    actionTypeFlatCode, actionType.size()));
         }
 
         final List<ActionPropertyType> actionPropTypes = database.getEntityMgr()
