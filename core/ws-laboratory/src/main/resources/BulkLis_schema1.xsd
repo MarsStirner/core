@@ -1,0 +1,64 @@
+<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<xs:schema version="1.0" targetNamespace="http://www.korusconsulting.ru" xmlns:tns="http://www.korusconsulting.ru" xmlns:xs="http://www.w3.org/2001/XMLSchema">
+
+  <xs:element name="ExceptionFault" nillable="true" type="tns:faultBean"/>
+
+  <xs:element name="resultAnalyze" type="tns:resultAnalyze"/>
+
+  <xs:element name="setAnalysisResults" type="tns:setAnalysisResults"/>
+
+  <xs:element name="setAnalysisResultsResponse" type="tns:setAnalysisResultsResponse"/>
+
+  <xs:complexType name="setAnalysisResults">
+    <xs:sequence>
+      <xs:element name="orderMisId" type="xs:int" form="qualified" minOccurs="0"/>
+      <xs:element name="orderBarCode" type="xs:string" form="qualified" minOccurs="0"/>
+      <xs:element name="TakenTissueJournal" type="xs:string" form="qualified" minOccurs="0"/>
+      <xs:element name="referralIsFinished" type="xs:boolean" form="qualified" minOccurs="0"/>
+      <xs:element name="result" type="tns:resultAnalyze" form="qualified" minOccurs="0"/>
+      <xs:element name="biomaterialDefects" type="xs:string" form="qualified" minOccurs="0"/>
+      <xs:element name="ResultDoctorLisId" type="xs:int" form="qualified" minOccurs="0"/>
+      <xs:element name="ResultDoctorLisName" type="xs:string" form="qualified" minOccurs="0"/>
+      <xs:element name="CodeLIS" type="xs:string" form="qualified" minOccurs="0"/>
+    </xs:sequence>
+  </xs:complexType>
+
+  <xs:complexType name="resultAnalyze">
+    <xs:sequence>
+      <xs:element name="indicatorCode" type="xs:string" minOccurs="0"/>
+      <xs:element name="indicatorName" type="xs:string" minOccurs="0"/>
+      <xs:element name="deviceName" type="xs:string" minOccurs="0"/>
+      <xs:element name="valueType" type="tns:valueType" minOccurs="0"/>
+      <xs:element name="resultValueText" type="xs:string" minOccurs="0"/>
+      <xs:element name="resultNormString" type="xs:string" minOccurs="0"/>
+      <xs:element name="resultNormalityIndex" type="xs:float" minOccurs="0"/>
+      <xs:element name="resultSignDate" type="xs:anySimpleType" minOccurs="0"/>
+      <xs:element name="resultUnit" type="xs:string" minOccurs="0"/>
+      <xs:element name="resultStatus" type="xs:string" minOccurs="0"/>
+      <xs:element name="resultComment" type="xs:string" minOccurs="0"/>
+    </xs:sequence>
+  </xs:complexType>
+
+  <xs:complexType name="setAnalysisResultsResponse">
+    <xs:sequence>
+      <xs:element name="return" type="xs:int"/>
+    </xs:sequence>
+  </xs:complexType>
+
+  <xs:complexType name="faultBean">
+    <xs:sequence>
+      <xs:element name="id" type="xs:int"/>
+      <xs:element name="message" type="xs:string" minOccurs="0"/>
+    </xs:sequence>
+  </xs:complexType>
+
+  <xs:simpleType name="valueType">
+    <xs:restriction base="xs:int">
+      <xs:enumeration value="1"/>
+      <xs:enumeration value="2"/>
+      <xs:enumeration value="3"/>
+      <xs:enumeration value="4"/>
+    </xs:restriction>
+  </xs:simpleType>
+</xs:schema>
+
