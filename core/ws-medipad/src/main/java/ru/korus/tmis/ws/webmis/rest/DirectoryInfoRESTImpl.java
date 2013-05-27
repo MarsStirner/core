@@ -442,7 +442,7 @@ public class DirectoryInfoRESTImpl {
         ActionTypesListRequestDataFilter filter = new ActionTypesListRequestDataFilter(code, groupId, /*subTypes,*/ mnemonics, view);
         ListDataRequest request = new ListDataRequest(sortingField, sortingMethod, limit, page, filter);
         return new JSONWithPadding((view != null && view.compareTo("tree") == 0) ? wsImpl.getListOfActionTypes(request)
-                                                                                 : wsImpl.getListOfActionTypeIdNames(request, patientId));
+                                                                                 : wsImpl.getListOfActionTypeIdNames(request, patientId), this.callback);
     }
 
     /**
