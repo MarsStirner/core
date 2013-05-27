@@ -1,6 +1,6 @@
 #!/bin/bash
 #
-# Скрипт редеплоя приложения
+# Скрипт редеплоя приложения. Параметром передается название задеплоеного приложения
 #
 
 GF_PASSWD_FILE=./password
@@ -19,7 +19,7 @@ asadmin --host ${glassfish.host} \
         --passwordfile $GF_PASSWD_FILE \
         --interactive=false \
         undeploy \
-        ${glassfish.application.name}
+        $1
 
 #asadmin stop-domain --domaindir ${glassfish.domain.dir} ${glassfish.domain}
 #asadmin start-domain --domaindir ${glassfish.domain.dir} ${glassfish.domain}

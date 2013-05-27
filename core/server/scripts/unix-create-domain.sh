@@ -63,6 +63,16 @@ asadmin --user ${glassfish.admin.login} \
         --passwordfile $GF_PASSWD_FILE \
         create-jvm-options --target default-config '-Dlogback.configurationFile=${com.sun.aas.instanceRoot}/config/logback.xml'
 echo ""
+echo "for encoding UTF-8"
+echo ""
+# Настройка для кодировки по умолчанию UTF-8
+asadmin --user ${glassfish.admin.login} \
+        --passwordfile $GF_PASSWD_FILE \
+        create-jvm-options --target server-config '-Dfile.encoding=UTF8'
+asadmin --user ${glassfish.admin.login} \
+        --passwordfile $GF_PASSWD_FILE \
+        create-jvm-options --target default-config '-Dfile.encoding=UTF8'
+echo ""
 echo "for remote debug on 5005 port"
 echo ""
 # Создаем ключи для дебага
@@ -122,7 +132,7 @@ asadmin --user ${glassfish.admin.login} \
 asadmin --user ${glassfish.admin.login} \
         --passwordfile $GF_PASSWD_FILE \
         create-jdbc-resource \
-        --connectionpoolid ${mysql.db.mis.pool} ${mysql.db.mis}
+        --connectionpoolid ${mysql.db.mis.pool} ${mysql.db.jndi.mis}
 
 
 asadmin --user ${glassfish.admin.login} \
@@ -135,7 +145,7 @@ asadmin --user ${glassfish.admin.login} \
 asadmin --user ${glassfish.admin.login} \
         --passwordfile $GF_PASSWD_FILE \
         create-jdbc-resource \
-        --connectionpoolid ${mysql.db.rls.pool} ${mysql.db.rls}
+        --connectionpoolid ${mysql.db.rls.pool} ${mysql.db.jndi.rls}
 
 
 asadmin --user ${glassfish.admin.login} \
@@ -148,7 +158,7 @@ asadmin --user ${glassfish.admin.login} \
 asadmin --user ${glassfish.admin.login} \
         --passwordfile $GF_PASSWD_FILE \
         create-jdbc-resource \
-        --connectionpoolid ${mysql.db.tmis_core.pool} ${mysql.db.tmis_core}
+        --connectionpoolid ${mysql.db.tmis_core.pool} ${mysql.db.jndi.tmis_core}
 
 rm -f $GF_PASSWD_FILE
 

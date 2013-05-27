@@ -19,6 +19,20 @@ import java.util.List;
 public interface DbPharmacyBeanLocal {
 
     /**
+     * Полоучение списка сообщений, которые по разным причинам не были отправлены в 1С Аптеку (статус != COMPLETE)
+     * @return
+     */
+    List<Pharmacy> getNonCompletedItems();
+
+    /**
+     * Получение кода назначенного препарата
+     *
+     * @param action
+     * @return
+     */
+    String getDrugCode(Action action);
+
+    /**
      * Поиск или создание записи об обращении в таблице Pharmacy
      *
      * @param action
@@ -75,4 +89,6 @@ public interface DbPharmacyBeanLocal {
      * @return список Action
      */
     List<Action> getVirtualActionsAfterDate(DateTime after);
+
+    List<Action> getAssignmentForToday(DateTime dateTime);
 }

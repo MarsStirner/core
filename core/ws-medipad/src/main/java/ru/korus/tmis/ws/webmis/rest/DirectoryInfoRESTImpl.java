@@ -2,6 +2,7 @@ package ru.korus.tmis.ws.webmis.rest;
 
 import com.sun.jersey.api.json.JSONWithPadding;
 import ru.korus.tmis.auxiliary.AuxiliaryFunctions;
+import ru.korus.tmis.auxiliary.TestDataRestConstruct;
 import ru.korus.tmis.core.auth.AuthData;
 import ru.korus.tmis.core.data.*;
 import ru.korus.tmis.core.exception.CoreException;
@@ -13,6 +14,8 @@ import javax.ws.rs.*;
 import javax.ws.rs.core.Context;
 import javax.ws.rs.core.MultivaluedMap;
 import javax.ws.rs.core.UriInfo;
+import java.util.ArrayList;
+import java.util.LinkedList;
 
 /**
  * Список REST-сервисов для получения данных из справочников
@@ -25,23 +28,27 @@ public class DirectoryInfoRESTImpl {
 
     //protected static final String PATH = BaseRegistryRESTImpl.PATH;
     private WebMisRESTImpl wsImpl;
+    private HttpServletRequest servRequest;
     private int limit;
     private int  page;
     private String sortingField;
     private String sortingMethod;
     private AuthData auth;
     private String callback;
+    private Boolean test;
 
-    public DirectoryInfoRESTImpl(WebMisRESTImpl wsImpl, String callback,
+    public DirectoryInfoRESTImpl(WebMisRESTImpl wsImpl, HttpServletRequest servRequest, String callback,
                                   int limit, int  page, String sortingField, String sortingMethod,
-                                  AuthData auth) {
+                                  AuthData auth, Boolean test) {
         this.auth = auth;
         this.wsImpl = wsImpl;
+        this.servRequest = servRequest;
         this.callback = callback;
         this.limit = limit;
         this.page = page;
         this.sortingField = sortingField;
         this.sortingMethod = sortingMethod;
+        this.test = test;
     }
     //__________________________________________________________________________________________________________________
     //***********************************   СПРАВОЧНИКИ   ***********************************
@@ -128,6 +135,7 @@ public class DirectoryInfoRESTImpl {
      * Список свободных на выбранное время врачей по специальности
      * <pre>
      * &#15; Внимание! Сортировка выкл.</pre>
+     * @param actionType  Фильтр по типу действия.
      * @param speciality  Фильтр по специальности врача.
      * @param doctorId Фильтр по идентификатору специалиста.
      * @param beginDate Дата начала периода, по которому ищутся свободные специалисты.
@@ -139,12 +147,13 @@ public class DirectoryInfoRESTImpl {
     @GET
     @Path("/persons/free")
     @Produces("application/x-javascript")
-    public Object getFreePersons(@QueryParam("filter[speciality]")int speciality,
+    public Object getFreePersons(@QueryParam("filter[actionType]")int actionType,
+                                 @QueryParam("filter[speciality]")int speciality,
                                  @QueryParam("filter[doctorId]")int doctorId,
                                  @QueryParam("filter[beginDate]")long beginDate,
                                  @QueryParam("filter[endDate]")long endDate) {
 
-        FreePersonsListDataFilter filter = new FreePersonsListDataFilter(speciality, doctorId, beginDate, endDate);
+        FreePersonsListDataFilter filter = new FreePersonsListDataFilter(speciality, doctorId, actionType, beginDate, endDate);
         ListDataRequest request = new ListDataRequest(this.sortingField, this.sortingMethod, this.limit, this.page, filter);
         return new JSONWithPadding(wsImpl.getFreePersons(request),this.callback);
     }
@@ -156,8 +165,6 @@ public class DirectoryInfoRESTImpl {
      * &#15; "id" - по идентификатору отделения (значение по умолчанию);
      * &#15; "name" - по наименованию отделения </pre>
      * @param hasBeds Фильтр отделений имеющих развернутые койки.("true"/"false")
-     * @param callback  callback запроса.
-     * @param servRequest Контекст запроса с клиента.
      * @return com.sun.jersey.api.json.JSONWithPadding как Object
      * @throws ru.korus.tmis.core.exception.CoreException
      * @see ru.korus.tmis.core.exception.CoreException
@@ -165,14 +172,22 @@ public class DirectoryInfoRESTImpl {
     @GET
     @Path("/departments")
     @Produces("application/x-javascript")
-    public Object getAllDepartments(@QueryParam("filter[hasBeds]")String hasBeds,
-                                    @QueryParam("callback") String callback,
-                                    @Context HttpServletRequest servRequest) {
+    public Object getAllDepartments(@QueryParam("filter[hasBeds]")String hasBeds) {
 
         Boolean flgBeds =  (hasBeds!=null && hasBeds.indexOf("true")>=0) ? true : false;
         DepartmentsDataFilter filter = new DepartmentsDataFilter(flgBeds);
         ListDataRequest request = new ListDataRequest(this.sortingField, this.sortingMethod, this.limit, this.page, filter);
-        return new JSONWithPadding(wsImpl.getAllDepartments(request),this.callback);
+        AllDepartmentsListData data = wsImpl.getAllDepartments(request);
+
+        //TODO: Вставлен кэйс для тестов (нужно ли?)
+        if(this.test){
+            Exception ex = new Exception();
+            return TestDataRestConstruct.makeTestDataRestResponse(
+                                                           ex.getStackTrace()[0].getMethodName(),
+                                                           this.servRequest,
+                                                           data.dataToString());
+        } else
+            return new JSONWithPadding(data ,this.callback);
     }
 
     /**
@@ -381,17 +396,6 @@ public class DirectoryInfoRESTImpl {
         return new JSONWithPadding(wsImpl.getEventTypes(request, this.auth),this.callback);
     }
 
-    @GET
-    @Path("/actionTypes")
-    @Produces("application/x-javascript")
-    public Object getAllActionTypeNames(@QueryParam("patientId")int patientId,
-                                        @QueryParam("filter[groupId]")int groupId,
-                                        @QueryParam("filter[code]")String code,
-                                        @QueryParam("filter[view]")String view) {
-        ActionTypesSubType atst = ActionTypesSubType.getType("");
-        return new JSONWithPadding(getAllActionTypeNamesEx(atst, patientId, this.limit, this.page, this.sortingField, this.sortingMethod, groupId, code, view, this.auth),this.callback);
-    }
-
     /**
      * Получение списка типа действий (ActionType's) по коду и/или идентификатору группы<br>
      * @param patientId Идентификатор пациента
@@ -412,39 +416,63 @@ public class DirectoryInfoRESTImpl {
      * @see CoreException
      */
     @GET
-    @Path("/actionTypes/{var}")
+    @Path("/actionTypes")
     @Produces("application/x-javascript")
-    public Object getActionTypeNamesBySubTypes(   @PathParam("var") String var,
-                                                  @QueryParam("patientId")int patientId,
-                                                  @QueryParam("filter[groupId]")int groupId,
-                                                  @QueryParam("filter[code]")String code,
-                                                  @QueryParam("filter[view]")String view) {
-        ActionTypesSubType atst = ActionTypesSubType.getType(var);
-        return new JSONWithPadding(getAllActionTypeNamesEx(atst, patientId, this.limit, this.page, this.sortingField, this.sortingMethod, groupId, code, view, this.auth),this.callback);
+    public Object getAllActionTypeNames(@Context UriInfo info,
+                                        @QueryParam("patientId")int patientId,
+                                        @QueryParam("filter[groupId]")int groupId,
+                                        @QueryParam("filter[code]")String code,
+                                        @QueryParam("filter[view]")String view/*,
+                                        @QueryParam("filter[mnem]")String mnem*/) {
+
+        java.util.List<String> mnems = info.getQueryParameters().get("filter[mnem]");
+
+        //java.util.List<String> subTypes = new LinkedList<String>();
+        java.util.List<String> mnemonics = new LinkedList<String>();
+
+        if(mnems!=null && mnems.size()>0) {
+            for(String mnem: mnems) {
+                ActionTypesSubType atst = (mnem!=null && !mnem.isEmpty()) ? ActionTypesSubType.getType(mnem.toLowerCase())
+                                                                          : ActionTypesSubType.getType("");
+                //subTypes.add(atst.getSubType());
+                mnemonics.add(atst.getMnemonic());
+            }
+        }
+
+        ActionTypesListRequestDataFilter filter = new ActionTypesListRequestDataFilter(code, groupId, /*subTypes,*/ mnemonics, view);
+        ListDataRequest request = new ListDataRequest(sortingField, sortingMethod, limit, page, filter);
+        return new JSONWithPadding((view != null && view.compareTo("tree") == 0) ? wsImpl.getListOfActionTypes(request)
+                                                                                 : wsImpl.getListOfActionTypeIdNames(request, patientId), this.callback);
     }
 
-    //__________________________________________________________________________________________________________________
+    /**
+     * Запрос на структуру json для первичного осмотра.
+     * &#15; Внимание! В логике сервиса параметр не используется.</pre>
+     * @param actionTypeId Идентификатор типа действия
+     * @return com.sun.jersey.api.json.JSONWithPadding как Object
+     * @throws ru.korus.tmis.core.exception.CoreException
+     * @see ru.korus.tmis.core.exception.CoreException
+     */
+    @GET
+    @Path("/actionTypes/{id}")
+    @Produces("application/x-javascript")
+    public Object getStructOfPrimaryMedExam(@PathParam("id") int actionTypeId) {
+        return new JSONWithPadding(wsImpl.getStructOfPrimaryMedExam(actionTypeId, this.auth), this.callback);
+    }
+
+    /**
+     * Запрос на получение справочника разметки полей медицинского документа
+     * @return Справочник в json-формате
+     */
+    @GET
+    @Path("/layoutAttributes/")
+    @Produces("application/x-javascript")
+    public Object getLayoutAttributes() {
+        return new JSONWithPadding(wsImpl.getLayoutAttributes(),this.callback);
+    }
+            //__________________________________________________________________________________________________________________
     //***********************************   ВСПОМОГАТЕЛЬНЫЕ МЕТОДЫ   ***********************************
     //__________________________________________________________________________________________________________________
-
-    private Object getAllActionTypeNamesEx(ActionTypesSubType val,
-                                           int patientId,
-                                           int limit,
-                                           int  page,
-                                           String sortingField,
-                                           String sortingMethod,
-                                           int groupId,
-                                           String code,
-                                           String view,
-                                           AuthData auth) {
-        ActionTypesListRequestDataFilter filter = new ActionTypesListRequestDataFilter(code, groupId, val.getSubType(), val.getMnemonic(), view);
-        ListDataRequest request = new ListDataRequest(sortingField, sortingMethod, limit, page, filter);
-
-        Object oip = (view != null && view.compareTo("tree") == 0) ? wsImpl.getListOfActionTypes(request)
-                                                                   : wsImpl.getListOfActionTypeIdNames(request, patientId);
-        return oip;
-    }
-
 
     public enum ActionTypesSubType  {
 
@@ -463,6 +491,34 @@ public class DirectoryInfoRESTImpl {
         CONSULTATIONS("consultations"){
             public String getSubType() { return "consultations";}
             public String getMnemonic() { return "CONS";}
+        },
+        LAB("lab"){
+            public String getSubType() { return "laboratory";}
+            public String getMnemonic() { return "LAB";}
+        },
+        DIAG("diag"){
+            public String getSubType() { return "instrumental";}
+            public String getMnemonic() { return "DIAG";}
+        },
+        CONS("cons"){
+            public String getSubType() { return "consultations";}
+            public String getMnemonic() { return "CONS";}
+        },
+        EXAM("exam"){
+            public String getSubType() { return "examinations";}
+            public String getMnemonic() { return "EXAM";}
+        },
+        JOUR("jour"){
+            public String getSubType() { return "journal";}
+            public String getMnemonic() { return "JOUR";}
+        },
+        ORD("ord"){
+            public String getSubType() { return "ordering";}
+            public String getMnemonic() { return "ORD";}
+        },
+        EPI("epi"){
+            public String getSubType() { return "epicrisis";}
+            public String getMnemonic() { return "EPI";}
         };
 
         public abstract String getSubType();

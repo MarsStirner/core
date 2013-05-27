@@ -10,12 +10,15 @@ import javax.persistence.{EntityManager, PersistenceContext}
 
 import scala.collection.JavaConversions._
 import ru.korus.tmis.core.data.{RlsDataListFilter, QueryDataStructure}
+import ru.korus.tmis.core.exception.CoreException
+import ru.korus.tmis.util.{I18nable, ConfigManager}
 
 @Interceptors(Array(classOf[LoggingInterceptor]))
 @Stateless
 class DbMkbBean
   extends DbMkbBeanLocal
-  with Logging {
+  with Logging
+  with I18nable {
 
   @PersistenceContext(unitName = "s11r64")
   var em: EntityManager = _
@@ -28,7 +31,7 @@ class DbMkbBean
 
     result.size match {
       case 0 => {
-        null
+        throw new CoreException(ConfigManager.ErrorCodes.JobNotFound, i18n("error.mkbWithIdNotFound").format(id))
       }
       case size => {
         result.foreach(em.detach(_))
@@ -44,7 +47,7 @@ class DbMkbBean
 
     result.size match {
       case 0 => {
-        null      //нужен ексепшен
+        throw new CoreException(ConfigManager.ErrorCodes.JobNotFound, i18n("error.mkbWithCodeNotFound").format(code))
       }
       case size => {
         result.foreach(em.detach(_))

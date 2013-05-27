@@ -33,7 +33,7 @@ class PatientsListData {
            roleId: Int,
            condInfo: java.util.LinkedHashMap[java.lang.Integer, java.util.LinkedHashMap[ActionProperty, java.util.List[APValue]]],
            mAdmissionDepartment: (Int) => OrgStructure,
-           mActionPropertiesWithValues: (Int, java.util.List[java.lang.Integer]) =>  java.util.Map[ActionProperty, java.util.List[APValue]],
+           mActionPropertiesWithValues: (Int, java.util.Set[String]) =>  java.util.Map[ActionProperty, java.util.List[APValue]],
            //mCorrList: (java.util.List[java.lang.Integer])=> java.util.List[RbCoreActionProperty],
            mDiagnostics: (Int) => java.util.List[Diagnostic]) = {
     this ()
@@ -46,6 +46,7 @@ class PatientsListData {
 
       var bed: OrgStructureHospitalBed = null
       var from : OrgStructure = null
+      var toDep : OrgStructure = null
 
       val value: Object = if (e._2!=null && e._2.size()>0) {
         val apvs = e._2.iterator.next()
@@ -56,14 +57,25 @@ class PatientsListData {
 
       if (value.isInstanceOf[OrgStructureHospitalBed]){
         bed = value.asInstanceOf[OrgStructureHospitalBed]
+        //куда переведен
+        if (mActionPropertiesWithValues!=null) {
+          val codes = Set[String](ConfigManager.Messages("db.apt.moving.codes.orgStructTransfer"))
+          val apValues = mActionPropertiesWithValues(action.getId.intValue(), asJavaSet(codes))
+          if (apValues!=null && apValues.size()>0){
+            val depart = apValues.iterator.next()
+            if (depart._2!=null && depart._2.size()>0){
+              toDep = depart._2.get(0).asInstanceOf[APValueOrgStructure].getValue
+            }
+          }
+        }
       } else if (value.isInstanceOf[OrgStructure]){
         if (action.getActionType.getId.compareTo(ConfigManager.Messages("db.actionType.hospitalization.primary").toInt :java.lang.Integer)==0){
           from = if (mAdmissionDepartment!=null ) mAdmissionDepartment(28) else null // Приемное отделение
           bed = null
         } else if (action.getActionType.getId.compareTo(ConfigManager.Messages("db.actionType.moving").toInt :java.lang.Integer)==0){
           if (mActionPropertiesWithValues!=null) {
-            val listMovAP = JavaConversions.asJavaList(List(ConfigManager.RbCAPIds("db.rbCAP.moving.id.bed").toInt :java.lang.Integer))
-            val apValues = mActionPropertiesWithValues(action.getId.intValue(), listMovAP)
+            val codes = Set[String](ConfigManager.Messages("db.apt.moving.codes.hospitalBed"))
+            val apValues = mActionPropertiesWithValues(action.getId.intValue(), asJavaSet(codes))
             if (apValues!=null && apValues.size()>0){
               val bedvs = apValues.iterator.next()
               if (bedvs._2!=null && bedvs._2.size()>0){
@@ -125,7 +137,7 @@ class PatientsListData {
           case condition => condInfo.get(event.getId)
         }
       } else null
-      this.data.add(new PatientsListEntry(event, bed, action.getBegDate/*begDate*/, condition, from, mDiagnostics))
+      this.data.add(new PatientsListEntry(event, bed, action.getBegDate/*begDate*/, condition, from, toDep, mDiagnostics))
     })
   }
 
@@ -253,7 +265,7 @@ class PatientsListRequestDataFilter {
       qs.add("departmentId", this.departmentId:java.lang.Integer)
     }
     if(this.doctorId>0 && roleId!=25){  //Для сестры отделения выводим всех пациентов
-      qs.query += ("AND e.executor.id = :doctorId\n")
+      qs.query += ("AND a.event.executor.id = :doctorId\n")
       qs.add("doctorId", this.doctorId:java.lang.Integer)
     }
     if(this.endDate!=null){
@@ -264,15 +276,15 @@ class PatientsListRequestDataFilter {
   @Override
   def toSortingString (sortingField: String, sortingMethod: String) = {
     var sorting = sortingField.toLowerCase match {
-      case "createDatetime"| "start" | "begDate" => {"a.begDate %s".format(sortingMethod)}
-      case "end" | "endDate" => {"e.execDate %s".format(sortingMethod)}
-      case "doctor" => {"e.executor.lastName %s, e.executor.firstName %s, e.executor.patrName %s".format(sortingMethod, sortingMethod, sortingMethod)}
-      case "department" => {"org.masterDepartment.name %s".format(sortingMethod)}
+      case "createDatetime"| "start" | "begDate" => {"ap.action.begDate %s".format(sortingMethod)}
+      case "end" | "endDate" => {"ap.action.event.execDate %s".format(sortingMethod)}
+      case "doctor" => {"ap.action.event.executor.lastName %s, ap.action.event.executor.firstName %s, ap.action.event.executor.patrName %s".format(sortingMethod, sortingMethod, sortingMethod)}
+      //case "department" => {"org.masterDepartment.name %s".format(sortingMethod)}
       //case "bed" => {"org.name %s".format(sortingMethod)}
       //case "number" => "CAST(SUBSTRING(e.externalId, 1, 4) AS UNSIGNED) %s, CAST(SUBSTRING(e.externalId, 6) AS UNSIGNED) %s".format(sortingMethod,sortingMethod)//{"e.externalId %s".format(sortingMethod)}
-      case "fullname" => {"e.patient.lastName %s, e.patient.firstName %s, e.patient.patrName %s".format(sortingMethod,sortingMethod,sortingMethod)}
-      case "birthdate" => {"e.patient.birthDate %s".format(sortingMethod)}
-      case _ => {"e.id %s".format(sortingMethod)}
+      case "fullname" => {"ap.action.event.patient.lastName %s, ap.action.event.patient.firstName %s, ap.action.event.patient.patrName %s".format(sortingMethod,sortingMethod,sortingMethod)}
+      case "birthdate" => {"ap.action.event.patient.birthDate %s".format(sortingMethod)}
+      case _ => {"ap.action.event.id %s".format(sortingMethod)}
     }
     //sortingFieldInternal
     sorting = "ORDER BY " + sorting.format(sortingMethod)
@@ -306,6 +318,9 @@ class PatientsListEntry {
   var movingFrom: IdNameContainer = _    //Переведен из (Заполняется когда пациент не лежит на койке (т.е находится в процессе движения))
 
   @BeanProperty
+  var movingTo: IdNameContainer = _    //Переведен в (Заполняется когда пациента перевели из текущего отделение в другое, но еще не положили там на койку (т.е находится в процессе движения))
+
+  @BeanProperty
   var doctor: DoctorSpecsContainer = _   //Врач + Специальность + Отделение
 
   @BeanProperty
@@ -334,7 +349,8 @@ class PatientsListEntry {
   def this(event: Event,
            bed: OrgStructureHospitalBed,
            condition: java.util.Map[ActionProperty, java.util.List[APValue]],
-           from: OrgStructure) {
+           from: OrgStructure,
+           toDep: OrgStructure) {
      this()
      val patient = event.getPatient
      this.id = event.getId.intValue()
@@ -345,19 +361,22 @@ class PatientsListEntry {
      this.createDateTime = event.getCreateDatetime
      this.checkOut = ""                               //TODO: "Выписка через" - расчетное поле, алгоритм не утвержден
      if(bed!=null)
-        this.hospitalBed = new HospitalBedContainer(bed)
+       this.hospitalBed = new HospitalBedContainer(bed)
      if(condition!=null)
-        this.condition = new PersonConditionContainer(condition)
+       this.condition = new PersonConditionContainer(condition)
      if(from!=null)
-        this.movingFrom = new IdNameContainer(from.getId.intValue(),from.getName)
+       this.movingFrom = new IdNameContainer(from.getId.intValue(),from.getName)
+     if(toDep!=null)
+       this.movingTo = new IdNameContainer(toDep.getId.intValue(),toDep.getName)
   }
 
   def this(event: Event,
            bed: OrgStructureHospitalBed,
            begDate: Date,
            condition: java.util.Map[ActionProperty, java.util.List[APValue]],
-           from: OrgStructure) {
-    this(event, bed, condition, from)
+           from: OrgStructure,
+           toDep: OrgStructure) {
+    this(event, bed, condition, from, toDep)
     val eType = event.getEventType
     if (eType.getFinance!=null)
       this.finance = new IdNameContainer(eType.getFinance.getId.intValue(), eType.getFinance.getName)
@@ -378,8 +397,9 @@ class PatientsListEntry {
            begDate: Date,
            condition: java.util.Map[ActionProperty, java.util.List[APValue]],
            from: OrgStructure,
+           toDep: OrgStructure,
            mDiagnostics: (Int)=> java.util.List[Diagnostic]) {
-    this(event, bed, begDate, condition, from)
+    this(event, bed, begDate, condition, from, toDep)
     if (mDiagnostics!=null){
        val diagnostics = mDiagnostics(event.getId.intValue())
        if (diagnostics!=null && diagnostics.size()>0) {

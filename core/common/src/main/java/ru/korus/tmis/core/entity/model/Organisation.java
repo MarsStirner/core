@@ -162,7 +162,21 @@ public class Organisation implements Serializable {
     @Column(name = "miacCode")
     private String miacCode;
 
+    @ManyToOne(cascade = CascadeType.ALL)
+    @JoinColumn(name = "uuid_id")
+//    @Transient
+    private UUID uuid;
+
+
     public Organisation() {
+    }
+
+    public UUID getUuid() {
+        return uuid;
+    }
+
+    public void setUuid(UUID uuid) {
+        this.uuid = uuid;
     }
 
     public Organisation(Integer id) {

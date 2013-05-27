@@ -7,6 +7,8 @@ import javax.xml.bind.DatatypeConverter
 import javax.xml.namespace.QName
 import reflect.Configuration
 import grizzled.slf4j.Logging
+import ru.korus.tmis.core.entity.model.Staff
+
 
 object ConfigManager extends Configuration {
 
@@ -104,6 +106,7 @@ object ConfigManager extends Configuration {
     var noRightForAction = 0x146
     var BloodTypeIsNull = 0x147
     var InvalidAuthData = 0x148
+    var MkbNotFound = 0x149
   }
 
   val Drugstore = new Configuration {
@@ -128,12 +131,49 @@ object ConfigManager extends Configuration {
     var GetDepList_SoapOperation = "GetDepartmentList"
     var GetDepList_RequestRootElement = "OrganizationRef"
 
-    var User = "admin"
-    var Password = "1234"
+    var User = ""
+    var Password = ""
 
     def HttpAuthToken = DatatypeConverter.printBase64Binary(
       (User + ":" + Password).getBytes)
   }
+
+  /**
+   * Параметры сервиса управления пользователями
+   */
+  class UsersMgrClass extends Configuration {
+    var CoreUserLogin: String = "core"
+    var KeepAliveDays = 1
+    var MaxConnections = 10000
+  }
+
+  var UsersMgr = new UsersMgrClass
+
+  /**
+   * Параметры модуля интегрции с подсистемой ТРФУ
+   */
+  class TrfuPropClass extends Configuration {
+    var ServiceUrl = ""
+  }
+
+  var TrfuProp = new TrfuPropClass
+
+
+  /**
+   * Метод хелпер, создан из-за невозможности вызвать класс-конфиг из джава кода
+   */
+  def getDrugUser: String = Drugstore.User
+
+  /**
+   * Метод хелпер, создан из-за невозможности вызвать класс-конфиг из джава кода
+   */
+  def getDrugPassword: String = Drugstore.Password
+
+  /**
+   * Метод хелпер, создан из-за невозможности вызвать класс-конфиг из джава кода
+   */
+  def getDrugUrl: URL = Drugstore.ServiceUrl
+
 
   val Laboratory = new Configuration {
     // LIS service URL
@@ -255,9 +295,9 @@ object ConfigManager extends Configuration {
 }
 
 trait I18nable {
-  val i18n = ConfigManager.Messages
-}
+   val i18n = ConfigManager.Messages
+ }
 
 trait CAPids {
-  val iCapIds = ConfigManager.RbCAPIds
-}
+   val iCapIds = ConfigManager.RbCAPIds
+ }

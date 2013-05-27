@@ -16,7 +16,7 @@ public class ReferenceTest {
     private static final Logger logger = LoggerFactory.getLogger(ReferenceTest.class);
 
     private ReferenceBook referenceBook;
-
+    /*
     @BeforeSuite
     void start() {
         referenceBook = new ReferenceBook();
@@ -139,5 +139,5 @@ public class ReferenceTest {
         rt.start();
         rt.loadV005();
     }
-
+    */
 }

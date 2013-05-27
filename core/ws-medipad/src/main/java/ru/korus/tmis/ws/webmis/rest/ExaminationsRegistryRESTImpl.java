@@ -9,6 +9,9 @@ import ru.korus.tmis.core.logging.slf4j.interceptor.ServicesLoggingInterceptor;
 import ru.korus.tmis.ws.impl.WebMisRESTImpl;
 import javax.interceptor.Interceptors;
 import javax.ws.rs.*;
+import javax.ws.rs.core.Context;
+import javax.ws.rs.core.UriInfo;
+import java.util.LinkedList;
 
 /**
  * Список REST-сервисов для работы с осмотрами
@@ -44,7 +47,7 @@ public class ExaminationsRegistryRESTImpl {
     @Consumes("application/json")
     @Produces("application/x-javascript")
     public  Object insertPrimaryMedExamForPatient(JSONCommonData data) {
-        return new JSONWithPadding(wsImpl.insertPrimaryMedExamForPatient(eventId, data, this.auth), this.callback);
+        return new JSONWithPadding(wsImpl.insertPrimaryMedExamForPatient(this.eventId, data, this.auth), this.callback);
     }
 
     /**
@@ -93,7 +96,8 @@ public class ExaminationsRegistryRESTImpl {
      */
     @GET
     @Produces("application/x-javascript")
-    public Object getListOfAssessmentsForPatientByEvent(@QueryParam("limit")int limit,
+    public Object getListOfAssessmentsForPatientByEvent(@Context UriInfo info,
+                                                        @QueryParam("limit")int limit,
                                                         @QueryParam("page")int  page,
                                                         @QueryParam("sortingField")String sortingField,    //сортировки вкл.
                                                         @QueryParam("sortingMethod")String sortingMethod,
@@ -103,14 +107,23 @@ public class ExaminationsRegistryRESTImpl {
                                                         @QueryParam("filter[speciality]") String speciality,
                                                         @QueryParam("filter[assessmentName]") String assessmentName,
                                                         @QueryParam("filter[departmentName]") String departmentName) {
-        AssessmentsListRequestDataFilter filter = new AssessmentsListRequestDataFilter(this.eventId, assessmentTypeCode, assessmentDate, doctorName, speciality, assessmentName, departmentName);
+
+        java.util.List<String> mnems = info.getQueryParameters().get("filter[mnem]");
+        java.util.List<String> mnemonics = new LinkedList<String>();
+        if(mnems!=null && mnems.size()>0) {
+            for(String mnem: mnems) {
+                DirectoryInfoRESTImpl.ActionTypesSubType atst = (mnem!=null && !mnem.isEmpty()) ? DirectoryInfoRESTImpl.ActionTypesSubType.getType(mnem.toLowerCase())
+                                                                                                : DirectoryInfoRESTImpl.ActionTypesSubType.getType("");
+                mnemonics.add(atst.getMnemonic());
+            }
+        }
+        AssessmentsListRequestDataFilter filter = new AssessmentsListRequestDataFilter(this.eventId, assessmentTypeCode, assessmentDate, doctorName, speciality, assessmentName, departmentName, mnemonics);
         AssessmentsListRequestData alrd= new AssessmentsListRequestData(sortingField, sortingMethod, limit, page, filter);
-        return new JSONWithPadding(wsImpl.getListOfAssessmentsForPatientByEvent(alrd, this.auth), this.callback);
+        return new JSONWithPadding(this.wsImpl.getListOfAssessmentsForPatientByEvent(alrd, this.auth), this.callback);
     }
 
     /**
-     * Запрос на получение данных о первичном осмотре
-     * &#15; Внимание! В логике сервиса параметр не используется.</pre>
+     * Запрос на получение данных об осмотре
      * @param actionId Идентификатор первичного осмотра.
      * @return com.sun.jersey.api.json.JSONWithPadding как Object
      * @throws ru.korus.tmis.core.exception.CoreException
@@ -124,28 +137,13 @@ public class ExaminationsRegistryRESTImpl {
     }
 
     /**
-     * Запрос на структуру json для первичного осмотра.
-     * &#15; Внимание! В логике сервиса параметр не используется.</pre>
-     * @param actionTypeId Идентификатор типа действия
-     * @return com.sun.jersey.api.json.JSONWithPadding как Object
-     * @throws ru.korus.tmis.core.exception.CoreException
-     * @see ru.korus.tmis.core.exception.CoreException
-     */
-    @GET
-    @Path("/struct/{actionTypeId}")
-    @Produces("application/x-javascript")
-    public Object getStructOfPrimaryMedExam(@PathParam("actionTypeId") int actionTypeId) {
-        return new JSONWithPadding(wsImpl.getStructOfPrimaryMedExam(actionTypeId, this.auth), this.callback);
-    }
-
-    /**
      * Запрос на структуру для первичного осмотра с копированием данных из предыдущего первичного осмотра
      * @return com.sun.jersey.api.json.JSONWithPadding как Object
      * @throws ru.korus.tmis.core.exception.CoreException
      * @see ru.korus.tmis.core.exception.CoreException
      */
     @GET
-    @Path("/structWithCopy/{actionTypeId}")
+    @Path("/lastByType/{actionTypeId}")
     @Produces("application/x-javascript")
     public Object getStructOfPrimaryMedExamWithCopy(@PathParam("actionTypeId") int actionTypeId) {
         return new JSONWithPadding(wsImpl.getStructOfPrimaryMedExamWithCopy(actionTypeId, this.auth, this.eventId), this.callback);

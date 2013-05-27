@@ -1,5 +1,6 @@
 package ru.korus.tmis.core.database;
 
+import ru.korus.tmis.core.entity.model.APValueTime;
 import ru.korus.tmis.core.entity.model.Action;
 import ru.korus.tmis.core.entity.model.Staff;
 import ru.korus.tmis.core.exception.CoreException;
@@ -41,7 +42,7 @@ public interface DbStaffBeanLocal {
                                        Function1<Long, Boolean> setRecCount)
             throws CoreException;
 
-    List<Staff> getEmptyPersonsByRequest(int limit, int page, String sorting, ListDataFilter filter)
+    java.util.HashMap<Staff, java.util.LinkedList<APValueTime>> getEmptyPersonsByRequest(int limit, int page, String sorting, ListDataFilter filter)
             throws CoreException;
 
     long getCountAllPersonsWithFilter(Object filter)

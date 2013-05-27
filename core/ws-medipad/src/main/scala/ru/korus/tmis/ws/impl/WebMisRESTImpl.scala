@@ -24,6 +24,7 @@ import ru.korus.tmis.core.thesaurus.ThesaurusBeanLocal
 import ru.korus.tmis.core.treatment.TreatmentBeanLocal
 import com.google.common.collect.Lists
 import javax.servlet.http.HttpServletRequest
+import ru.korus.tmis.core.entity.model.layout.LayoutAttribute
 
 /**
  * Created with IntelliJ IDEA.
@@ -167,6 +168,9 @@ class WebMisRESTImpl  extends WebMisREST
 
   @EJB
   var diagnosisBean: DiagnosisBeanLocal = _
+
+  @EJB
+  var dbLayoutAttributeBean: DbLayoutAttributeBeanLocal = _
 
   def getAllPatients(requestData: PatientRequestData, auth: AuthData): PatientData = {
     if (auth != null) {
@@ -417,12 +421,12 @@ class WebMisRESTImpl  extends WebMisREST
     //listForSummary.add(ActionWrapperInfo.toOrder)
 
     primaryAssessmentBean.getEmptyStructure(actionTypeId,
-      "PrimaryAssesment",
-      listForConverter,
-      listForSummary,
-      authData,
-      postProcessing _,
-      null)
+                                            "PrimaryAssesment",
+                                            listForConverter,
+                                            listForSummary,
+                                            authData,
+                                            postProcessing _,
+                                            null)
   }
 
   //запрос на структуру первичного мед. осмотра с копированием данных из предыдущего осмотра
@@ -478,37 +482,25 @@ class WebMisRESTImpl  extends WebMisREST
 
   //создание первичного мед. осмотра
   def insertPrimaryMedExamForPatient(eventId: Int, data: JSONCommonData, authData: AuthData)  = {
-    //создаем ответственного, если до этого был другой
-    /*val eventPerson = dbEventPerson.getLastEventPersonForEventId(eventId)
-    if (eventPerson == null || eventPerson.getPerson != authData.getUser) {
-      dbEventPerson.insertOrUpdateEventPerson(if (eventPerson != null) {eventPerson.getId.intValue()} else 0,
-        dbEventBean.getEventById(eventId),
-        authData.getUser,
-        false) //параметр для флаша
-    }*/
-    appealBean.setExecPersonForAppeal(eventId, 0, authData, ExecPersonSetType.EP_CREATE_PRIMARY)
+    if(data.getData.find(ce => ce.getTypeId().compareTo(i18n("db.actionType.primary").toInt)==0).getOrElse(null)!=null) //Врач прописывается только для первичного осмотра  (ид=139)
+      appealBean.setExecPersonForAppeal(eventId, 0, authData, ExecPersonSetType.EP_CREATE_PRIMARY)
+
     //создаем осмотр. ЕвентПерсон не флашится!!!
-    val returnValue = primaryAssessmentBean.createPrimaryAssessmentForEventId(eventId,
+    val returnValue = primaryAssessmentBean createPrimaryAssessmentForEventId(eventId,
       data,
       "Assessment",
       authData,
       preProcessing _,
       postProcessing _)
-    dbEventBean.setExecPersonForEventWithId(eventId, authData.getUser)
+    //dbEventBean.setExecPersonForEventWithId(eventId, authData.getUser)
     returnValue
   }
 
   //редактирование первичного мед. осмотра
   def modifyPrimaryMedExamForPatient(actionId: Int, data: JSONCommonData, authData: AuthData)  = {
     //создаем ответственного, если до этого был другой
-    /*val eventPerson = dbEventPerson.getLastEventPersonForEventId(actionBean.getActionById(actionId).getEvent.getId.intValue())
-    if (eventPerson.getPerson != authData.getUser) {
-      dbEventPerson.insertOrUpdateEventPerson(if (eventPerson != null) {eventPerson.getId.intValue()} else 0,
-        actionBean.getActionById(actionId).getEvent,
-        authData.getUser,
-        false)
-    }*/
-    appealBean.setExecPersonForAppeal(actionId, 0, authData, ExecPersonSetType.EP_MODIFY_PRIMARY)
+    if(data.getData.find(ce => ce.getTypeId().compareTo(i18n("db.actionType.primary").toInt)==0).getOrElse(null)!=null) //Врач прописывается только для первичного осмотра  (ид=139)
+      appealBean.setExecPersonForAppeal(actionId, 0, authData, ExecPersonSetType.EP_MODIFY_PRIMARY)
 
     //создаем осмотр. ЕвентПерсон не флашится!!!
     val returnValue = primaryAssessmentBean.modifyPrimaryAssessmentById(actionId,
@@ -721,9 +713,9 @@ class WebMisRESTImpl  extends WebMisREST
     var actions: java.util.List[Action] = null
     if(requestData.getRecordsCount()>0) {
       actions = dbCustomQueryBean.getAllDiagnosticsWithFilter(requestData.page-1,
-        requestData.limit,
-        requestData.sortingFieldInternal,
-        requestData.filter.unwrap())
+                                                              requestData.limit,
+                                                              requestData.sortingFieldInternal,
+                                                              requestData.filter.unwrap())
     }
     val list = new DiagnosticsListData(actions, requestData)
     list
@@ -738,7 +730,8 @@ class WebMisRESTImpl  extends WebMisREST
 
     //<= Изменить запрос (ждем отклик)
     //requestData.setRecordsCount(dbStaff.getCountAllPersonsWithFilter(requestData.filter))
-    val list = new AllPersonsListData(dbStaff.getEmptyPersonsByRequest( requestData.limit,
+    new FreePersonsListDataFilter()
+    val list = new FreePersonsListData(dbStaff.getEmptyPersonsByRequest( requestData.limit,
       requestData.page-1,
       requestData.sortingFieldInternal,
       requestData.filter.unwrap()),
@@ -818,9 +811,11 @@ class WebMisRESTImpl  extends WebMisREST
     primaryAssessmentBean.modifyAssessmentsForEventIdFromCommonData(eventId, data, "Diagnostic", null, auth,  postProcessingForDiagnosis _)// postProcessingForDiagnosis
   }
 
-  def insertConsultation(request: ConsultationRequestData) = {
-    val authData:AuthData = null
-    primaryAssessmentBean.insertAssessmentAsConsultation(request.eventId, request.actionTypeId, request.executorId, request.beginDate, request.endDate, request.urgent, request, authData)
+  def insertConsultation(request: ConsultationRequestData, authData: AuthData) = {
+    val actionId = directionBean.createConsultation(request, authData)
+    var json = directionBean.getDirectionById(actionId, "Consultation", null)
+    json.setRequestData(request) //по идее эта штука должна быть в конструкторе вызываемая в методе гет
+    json
   }
 
   def removeDirection(data: AssignmentsToRemoveDataList, directionType: String, auth: AuthData) = {
@@ -1105,9 +1100,9 @@ class WebMisRESTImpl  extends WebMisREST
       if (actions.size() > 0 || map.size == 0) map += (firstJobTicket -> actions)
     }
     new TakingOfBiomaterialData(map,
-      hospitalBedBean.getLastMovingActionForEventId _,
-      actionPropertyBean.getActionPropertiesByActionIdAndRbCoreActionPropertyIds _,
-      request)
+                                hospitalBedBean.getLastMovingActionForEventId _,
+                                actionPropertyBean.getActionPropertiesByActionIdAndRbCoreActionPropertyIds _,
+                                request)
   }
 
   def updateJobTicketsStatuses(data: JobTicketStatusDataList, authData: AuthData) = {
@@ -1140,6 +1135,10 @@ class WebMisRESTImpl  extends WebMisREST
   def setExecPersonForAppeal(eventId: Int, personId: Int, authData: AuthData) = {
     appealBean.setExecPersonForAppeal(eventId, personId, authData, ExecPersonSetType.EP_SET_IN_LPU)
   }
+
+  def getLayoutAttributes() = new LayoutAttributeListData(dbLayoutAttributeBean.getAllLayoutAttributes)
+
+
   //__________________________________________________________________________________________________
   //***************  AUTHDATA  *******************
   //__________________________________________________________________________________________________

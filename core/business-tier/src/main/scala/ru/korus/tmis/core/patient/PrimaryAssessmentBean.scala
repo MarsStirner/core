@@ -14,6 +14,7 @@ import ru.korus.tmis.core.database._
 import ru.korus.tmis.core.data._
 import collection.immutable.HashMap
 import ru.korus.tmis.util.{StringId, ConfigManager, ActionPropertyWrapperInfo, I18nable}
+import ru.korus.tmis.util.StringId
 
 @Interceptors(Array(classOf[LoggingInterceptor]))
 @Stateless
@@ -31,9 +32,6 @@ class PrimaryAssessmentBean
   private var actionPropertyBean: DbActionPropertyBeanLocal = _
 
   @EJB
-  private var actionPropertyTypeBean: DbActionPropertyTypeBeanLocal = _
-
-  @EJB
   private var actionTypeBean: DbActionTypeBeanLocal = _
 
   @EJB
@@ -44,6 +42,9 @@ class PrimaryAssessmentBean
 
   @EJB
   private var dbManager: DbManagerBeanLocal = _
+
+  @EJB
+  var dbLayoutAttributeValueBean: DbLayoutAttributeValueBeanLocal = _
 
   def summary(assessment: Action) = {
     val group = new CommonGroup(0, "Summary")
@@ -101,6 +102,33 @@ class PrimaryAssessmentBean
     group
   }
 
+  def detailsWithLayouts(assessment: Action) = {
+    val propertiesMap =
+      actionPropertyBean.getActionPropertiesByActionId(assessment.getId.intValue)
+
+    val group = new CommonGroup(1, "Details")
+
+    propertiesMap.foreach(
+      (p) => {
+        val (ap, apvs) = p
+        val apw = new ActionPropertyWrapper(ap)
+
+        apvs.size match {
+          case 0 => {
+            group add apw.get(null, List(APWI.Unit, APWI.Norm))
+          }
+          case _ => {
+            apvs.foreach((apv) => {
+              val ca = apw.get(apv, List(APWI.Value, APWI.ValueId, APWI.Unit, APWI.Norm))
+              group add new CommonAttributeWithLayout(ca, dbLayoutAttributeValueBean.getLayoutAttributeValuesByActionPropertyTypeId(ap.getType.getId.intValue()).toList)
+            })
+          }
+        }
+      })
+
+    group
+  }
+
   def detailsWithAge(assessment: Action) = {
     val propertiesMap = actionPropertyBean.getActionPropertiesByActionId(assessment.getId.intValue)
     val group = new CommonGroup(1, "Details")
@@ -134,7 +162,7 @@ class PrimaryAssessmentBean
 
   def converterFromList(list: java.util.List[String], apt: ActionPropertyType) = {
 
-    var map = list.foldLeft(Map.empty[String,String])(
+    val map = list.foldLeft(Map.empty[String,String])(
       (str_key, el) => {
         val key = el
         val value  =   if(key == APWI.Value.toString){apt.getDefaultValue}
@@ -147,12 +175,13 @@ class PrimaryAssessmentBean
         str_key + (key -> value)
       })
 
-    new CommonAttribute(apt.getId,
-      0,
-      apt.getName,
-      apt.getTypeName,
-      apt.getConstructorValueDomain,
-      map)
+    new CommonAttributeWithLayout(apt.getId,
+                                  0,
+                                  apt.getName,
+                                  apt.getTypeName,
+                                  apt.getConstructorValueDomain,
+                                  map,
+                                  dbLayoutAttributeValueBean.getLayoutAttributeValuesByActionPropertyTypeId(apt.getId.intValue()).toList)
   }
 
   def getEmptyStructure(atId: Int,
@@ -295,7 +324,7 @@ class PrimaryAssessmentBean
     val com_data = commonDataProcessor.fromActions(
       actions,
       title,
-      List(summary _, details _))
+      List(summary _, detailsWithLayouts _))
 
     var json_data = new JSONCommonData()
     json_data.data = com_data.entity
@@ -335,44 +364,5 @@ class PrimaryAssessmentBean
         })
       dbManager.mergeAll(apSet)
     }
-  }
-
-  //временно расположим тут
-  def insertAssessmentAsConsultation(eventId: Int,
-                                     actionTypeId: Int,
-                                     executorId: Int,
-                                     bDate: Date,
-                                     eDate:Date,
-                                     urgent:Boolean,
-                                     request: Object,
-                                     userData: AuthData) = {
-
-    //action
-    var action: Action = actionBean.createAction(eventId.intValue(),
-                                                 actionTypeId.intValue(),
-                                                 userData)
-    action.setIsUrgent(urgent)
-    action.setExecutor(dbStaff.getStaffById(executorId))
-    action.setBegDate(bDate)
-    action.setPlannedEndDate(eDate)
-    dbManager.persist(action)
-
-    //empty action property
-    val apSet = new HashSet[ActionProperty]
-
-    actionPropertyTypeBean.getActionPropertyTypesByActionTypeId(actionTypeId.intValue())
-      .toList
-      .foreach((apt) => {
-        val property = actionPropertyBean.createActionProperty(action,
-                                                               apt.getId.intValue(),
-                                                               userData)
-        apSet += property
-    })
-
-    dbManager.mergeAll(apSet)
-
-    var json = this.getPrimaryAssessmentById(action.getId.intValue(), "Consultation", userData, null, false)
-    json.setRequestData(request) //по идее эта штука должна быть в конструкторе вызываемая в методе гет
-    json
   }
 }

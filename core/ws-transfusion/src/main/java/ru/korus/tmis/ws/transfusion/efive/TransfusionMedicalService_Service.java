@@ -1,5 +1,7 @@
 package ru.korus.tmis.ws.transfusion.efive;
 
+import ru.korus.tmis.util.ConfigManager;
+
 import java.net.MalformedURLException;
 import java.net.URL;
 import javax.xml.namespace.QName;
@@ -29,7 +31,7 @@ public class TransfusionMedicalService_Service
         URL url = null;
         WebServiceException e = null;
         try {
-            url = new URL(System.getProperty("tmis.trfu.wsdl"));
+            url = new URL(ConfigManager.TrfuProp().ServiceUrl().trim());
         } catch (MalformedURLException ex) {
             e = new WebServiceException(ex);
         }

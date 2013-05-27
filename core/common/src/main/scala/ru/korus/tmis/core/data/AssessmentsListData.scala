@@ -90,6 +90,8 @@ class AssessmentsListRequestDataFilter extends AbstractListDataFilter{
   var departmentName: String = _
   @BeanProperty
   var eventId: Int = _
+  @BeanProperty
+  var mnemonics: java.util.List[String] = new java.util.LinkedList[String]
 
   def this(eventId: Int,
            code_x: String,
@@ -97,7 +99,8 @@ class AssessmentsListRequestDataFilter extends AbstractListDataFilter{
            doctorName: String,
            speciality: String,
            assessmentName: String,
-           departmentName: String) {
+           departmentName: String,
+           mnemonics: java.util.List[String]) {
     this()
     this.eventId = eventId
     this.code = if (code_x != null && code_x != "") {
@@ -114,6 +117,7 @@ class AssessmentsListRequestDataFilter extends AbstractListDataFilter{
     this.speciality = speciality
     this.assessmentName = assessmentName
     this.departmentName = departmentName
+    this.mnemonics = mnemonics.filter(p=>(p!=null && !p.isEmpty))
   }
 
   @Override
@@ -147,7 +151,10 @@ class AssessmentsListRequestDataFilter extends AbstractListDataFilter{
       qs.query += "AND upper(a.createPerson.orgStructure.name) LIKE upper(:departmentName)\n"
       qs.add("departmentName", "%" + this.departmentName + "%")
     }
-    qs.query += "AND a.actionType.mnemonic = 'EXAM'\n"
+    if (this.mnemonics!=null && this.mnemonics.size() > 0) {
+      qs.query += ("AND a.actionType.mnemonic IN  :mnemonic\n")
+      qs.add("mnemonic",asJavaCollection(this.mnemonics))
+    }
     qs
   }
 
