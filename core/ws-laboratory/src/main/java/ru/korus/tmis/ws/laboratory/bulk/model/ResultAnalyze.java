@@ -1,14 +1,17 @@
 package ru.korus.tmis.ws.laboratory.bulk.model;
 
-import javax.xml.bind.annotation.XmlElement;
-import javax.xml.bind.annotation.XmlEnum;
-import javax.xml.bind.annotation.XmlEnumValue;
-import javax.xml.bind.annotation.XmlRootElement;
+import javax.xml.bind.annotation.*;
 import javax.xml.datatype.XMLGregorianCalendar;
+
+import java.util.List;
 
 import static ru.korus.tmis.util.CompileTimeConfigManager.Laboratory.Namespace;
 
 /**
+ * Модель данных для результата анализов
+ * <p/>
+ * test @see ru.korus.tmis.ws.laboratory.bulk.model.ResultAnalyzeSpec
+ *
  * @author anosov@outlook.com
  *         date: 5/26/13
  */
@@ -16,21 +19,36 @@ import static ru.korus.tmis.util.CompileTimeConfigManager.Laboratory.Namespace;
 public class ResultAnalyze {
 
     /**
+     * список изображений (их может быть много)
+     */
+    protected List<ImageValue> imageValues;
+
+    /**
+     * набор значений
+     */
+    protected List<MicroValue> microValues;
+
+    /**
+     * набор значений
+     */
+    protected List<MicroSensitivity> microSensitivity;
+
+    /**
      * код методики/показателя/микроорганизма
      */
-    @XmlElement
+
     private String indicatorCode;
 
     /**
      * название методики/показателя/микроорганизма
      */
-    @XmlElement
+
     private String indicatorName;
 
     /**
      * название прибора
      */
-    @XmlElement
+
     private String deviceName;
 
     /**
@@ -41,99 +59,181 @@ public class ResultAnalyze {
      * 4 –чувствительность микроорг.)
      * РЕЗУЛЬТАТ МОЖЕТ ИМЕТЬ ЗНАЧЕНИЯ ТОЛЬКО ОДНОГО ТИПА, и обязательно должен присутствовать хотя бы один.
      */
-    @XmlElement
+
     private ValueType valueType;
 
     /**
      * значение (значение в виде строки или большого текста)
      */
-    @XmlElement
+
     private String resultValueText;
-
-//    /**
-//     * список изображений (их может быть много)
-//     */
-//    @XmlElement
-//    @XmlList
-//    private List<ImageValue> imageValues;
-
-//    /**
-//     * набор значений
-//     */
-//    @XmlElement
-//    private List<MicroValue> microValues;
-//
-//    /**
-//     * набор значений
-//     */
-//    @XmlElement
-//    private List<MicroSensitivity> microSensitivity;
 
     /**
      * норма, т.е. диапазон допустимых значений в строковом вид
      */
-    @XmlElement
+
     private String resultNormString;
 
     /**
      * значение результата относительно нормы (число в диапазоне -1 до +1)
      */
-    @XmlElement
+
     private Float resultNormalityIndex;
 
     /**
      * дата выполнения/утверждения результата
      */
-    @XmlElement
     private XMLGregorianCalendar resultSignDate;
 
     /**
      * единица измерения
      */
-    @XmlElement
     private String resultUnit;
 
     /**
      * если результата нет здесь указана причина
      */
-    @XmlElement
     private String resultStatus;
 
     /**
      * произвольный текстовый комментарий
      */
-    @XmlElement
     private String resultComment;
 
+    @XmlElements ({
+            @XmlElement (name = "imageValues", type = ImageValue.class)
+    })
+    @XmlElementWrapper
+    public List<ImageValue> getImageValues() {
+        return imageValues;
+    }
 
+    public void setImageValues(List<ImageValue> imageValues) {
+        this.imageValues = imageValues;
+    }
 
-//    public List<ImageValue> getImageValues() {
-//        return imageValues;
-//    }
-//
-//    public void setImageValues(List<ImageValue> imageValues) {
-//        this.imageValues = imageValues;
-//    }
-//
-//    public List<MicroValue> getMicroValues() {
-//        return microValues;
-//    }
-//
-//    public void setMicroValues(List<MicroValue> microValues) {
-//        this.microValues = microValues;
-//    }
-//
-//    public List<MicroSensitivity> getMicroSensitivity() {
-//        return microSensitivity;
-//    }
-//
-//    public void setMicroSensitivity(List<MicroSensitivity> microSensitivity) {
-//        this.microSensitivity = microSensitivity;
-//    }
-//
+    @XmlElements ({
+            @XmlElement (name = "microValues", type = MicroValue.class)
+    })
+    @XmlElementWrapper
+    public List<MicroValue> getMicroValues() {
+        return microValues;
+    }
 
+    public void setMicroValues(List<MicroValue> microValues) {
+        this.microValues = microValues;
+    }
 
+    @XmlElements ({
+            @XmlElement (name = "microSensitivity", type = MicroSensitivity.class)
+    })
+    @XmlElementWrapper
+    public List<MicroSensitivity> getMicroSensitivity() {
+        return microSensitivity;
+    }
 
+    public void setMicroSensitivity(List<MicroSensitivity> microSensitivity) {
+        this.microSensitivity = microSensitivity;
+    }
+
+    @XmlElement(name = "indicatorCode")
+    public String getIndicatorCode() {
+        return indicatorCode;
+    }
+
+    public void setIndicatorCode(String indicatorCode) {
+        this.indicatorCode = indicatorCode;
+    }
+
+    @XmlElement(name = "indicatorName")
+    public String getIndicatorName() {
+        return indicatorName;
+    }
+
+    public void setIndicatorName(String indicatorName) {
+        this.indicatorName = indicatorName;
+    }
+
+    @XmlElement(name = "deviceName")
+    public String getDeviceName() {
+        return deviceName;
+    }
+
+    public void setDeviceName(String deviceName) {
+        this.deviceName = deviceName;
+    }
+
+    @XmlElement(name = "valueType")
+    public ValueType getValueType() {
+        return valueType;
+    }
+
+    public void setValueType(ValueType valueType) {
+        this.valueType = valueType;
+    }
+
+    @XmlElement(name = "resultValueText")
+    public String getResultValueText() {
+        return resultValueText;
+    }
+
+    public void setResultValueText(String resultValueText) {
+        this.resultValueText = resultValueText;
+    }
+
+    @XmlElement(name = "resultNormString")
+    public String getResultNormString() {
+        return resultNormString;
+    }
+
+    public void setResultNormString(String resultNormString) {
+        this.resultNormString = resultNormString;
+    }
+
+    @XmlElement(name = "resultNormalityIndex")
+    public Float getResultNormalityIndex() {
+        return resultNormalityIndex;
+    }
+
+    public void setResultNormalityIndex(Float resultNormalityIndex) {
+        this.resultNormalityIndex = resultNormalityIndex;
+    }
+
+    @XmlElement(name = "resultSignDate")
+    public XMLGregorianCalendar getResultSignDate() {
+        return resultSignDate;
+    }
+
+    public void setResultSignDate(XMLGregorianCalendar resultSignDate) {
+        this.resultSignDate = resultSignDate;
+    }
+
+    @XmlElement(name = "resultUnit")
+    public String getResultUnit() {
+        return resultUnit;
+    }
+
+    public void setResultUnit(String resultUnit) {
+        this.resultUnit = resultUnit;
+    }
+
+    @XmlElement(name = "resultStatus")
+    public String getResultStatus() {
+        return resultStatus;
+    }
+
+    public void setResultStatus(String resultStatus) {
+        this.resultStatus = resultStatus;
+    }
+
+    @XmlElement(name = "resultComment")
+    public String getResultComment() {
+        return resultComment;
+    }
+
+    public void setResultComment(String resultComment) {
+        this.resultComment = resultComment;
+    }
 
     @Override
     public String toString() {
@@ -178,166 +278,4 @@ public class ResultAnalyze {
         @XmlEnumValue ("4")
         SENS_OF_MICROORG;
     }
-
-//    public class ImageValue {
-//
-//        /**
-//         * строка описания
-//         */
-//        @XmlElement
-//        private String imageString;
-//
-//        /**
-//         * картинка, закодированная в Base64
-//         */
-//        @XmlElement
-//        private String imageData;
-//
-//        String getImageString() {
-//            return imageString;
-//        }
-//
-//        void setImageString(String imageString) {
-//            this.imageString = imageString;
-//        }
-//
-//        String getImageData() {
-//            return imageData;
-//        }
-//
-//        void setImageData(String imageData) {
-//            this.imageData = imageData;
-//        }
-//
-//        @Override
-//        public String toString() {
-//            return "ImageValue{" +
-//                    "imageString='" + imageString + '\'' +
-//                    ", imageData='" + imageData + '\'' +
-//                    '}';
-//        }
-//    }
-
-//    public class MicroValue {
-//
-//        /**
-//         * идентификатор организма по БД ЛИС
-//         */
-//        @XmlElement
-//        private String organismLisId;
-//
-//        /**
-//         * название организма
-//         */
-//        @XmlElement
-//        private String organismName;
-//
-//        /**
-//         * описание концентрации в произвольном виде
-//         */
-//        @XmlElement
-//        private String organismConcetration;
-//
-//        String getOrganismLisId() {
-//            return organismLisId;
-//        }
-//
-//        void setOrganismLisId(String organismLisId) {
-//            this.organismLisId = organismLisId;
-//        }
-//
-//        String getOrganismName() {
-//            return organismName;
-//        }
-//
-//        void setOrganismName(String organismName) {
-//            this.organismName = organismName;
-//        }
-//
-//        String getOrganismConcetration() {
-//            return organismConcetration;
-//        }
-//
-//        void setOrganismConcetration(String organismConcetration) {
-//            this.organismConcetration = organismConcetration;
-//        }
-//
-//        @Override
-//        public String toString() {
-//            return "MicroValue{" +
-//                    "organismLisId='" + organismLisId + '\'' +
-//                    ", organismName='" + organismName + '\'' +
-//                    ", organismConcetration='" + organismConcetration + '\'' +
-//                    '}';
-//        }
-//    }
-//
-//    public class MicroSensitivity {
-//
-//        /**
-//         * идентификатор антибиотика БД
-//         */
-//        @XmlElement
-//        private String antibioticLisId;
-//
-//        /**
-//         * название антибиотика
-//         */
-//        @XmlElement
-//        private String antibioticName;
-//
-//        /**
-//         * величина концентрации
-//         */
-//        @XmlElement
-//        private String MIC;
-//
-//        /**
-//         * описание чувствительности в произвольном виде: R,S,I
-//         */
-//        @XmlElement
-//        private String antibioticActivityValue;
-//
-//        String getAntibioticLisId() {
-//            return antibioticLisId;
-//        }
-//
-//        void setAntibioticLisId(String antibioticLisId) {
-//            this.antibioticLisId = antibioticLisId;
-//        }
-//
-//        String getAntibioticName() {
-//            return antibioticName;
-//        }
-//
-//        void setAntibioticName(String antibioticName) {
-//            this.antibioticName = antibioticName;
-//        }
-//
-//        String getMIC() {
-//            return MIC;
-//        }
-//
-//        void setMIC(String MIC) {
-//            this.MIC = MIC;
-//        }
-//
-//        String getAntibioticActivityValue() {
-//            return antibioticActivityValue;
-//        }
-//
-//        void setAntibioticActivityValue(String antibioticActivityValue) {
-//            this.antibioticActivityValue = antibioticActivityValue;
-//        }
-//
-//        @Override
-//        public String toString() {
-//            return "MicroSensitivity{" +
-//                    "antibioticLisId='" + antibioticLisId + '\'' +
-//                    ", antibioticName='" + antibioticName + '\'' +
-//                    ", MIC='" + MIC + '\'' +
-//                    ", antibioticActivityValue='" + antibioticActivityValue + '\'' +
-//                    '}';
-//        }
-//    }
 }

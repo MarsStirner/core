@@ -68,7 +68,7 @@ public class BulkLaboratoryBeanImpl implements BulkLaboratoryBeanLocal {
     }};
 
     @Override
-    @Schedule(minute = "*/1", hour = "*")
+//    @Schedule(minute = "*/1", hour = "*")
     public void sendLisAnalysisRequest() {
         CGMService cgmService;
         try {
