@@ -93,6 +93,42 @@
         <logs.path>${com.sun.aas.instanceRoot}/logs/</logs.path>
         <!-- Формат записи в лог -->
         <log.format>%5p [%d][%thread][%logger{0}] %msg%n</log.format>
+
+        <!-- Название ресурса к которому подсоединяется ядро (жестко прописаны в коде, всегда должны быть такими) -->
+        <mysql.db.jndi.mis>s11r64</mysql.db.jndi.mis>
+        <mysql.db.jndi.rls>rls</mysql.db.jndi.rls>
+        <mysql.db.jndi.tmis_core>tmis_core</mysql.db.jndi.tmis_core>
+        <mysql.db.jndi.kladr>kladr</mysql.db.jndi.kladr>
+
+
+        <!-- Адрес базы данных -->
+        <mysql.db.host>127.0.0.1</mysql.db.host>
+        <!-- Порт подключения к базе данных -->
+        <mysql.db.port>3306</mysql.db.port>
+        <!-- Логин к базе данных -->
+        <mysql.login>root</mysql.login>
+        <!-- Пароль к базе данных -->
+        <mysql.password>root</mysql.password>
+        <!-- Название базы данных МИС -->
+        <mysql.db.mis>s11r64</mysql.db.mis>
+        <!-- Название пула для базы данных МИС -->
+        <mysql.db.mis.pool>s11r64-pool</mysql.db.mis.pool>
+        <!-- Название базы данных RLS -->
+        <mysql.db.rls>rls</mysql.db.rls>
+        <!-- Название пула для базы данных RLS -->
+        <mysql.db.rls.pool>rls-pool</mysql.db.rls.pool>
+        <!-- Название базы данных для конфигурации ядра  -->
+        <mysql.db.tmis_core>tmis_core</mysql.db.tmis_core>
+        <!-- Название пула для базы данных - конфигурации ядра -->
+        <mysql.db.tmis_core.pool>tmis_core-pool</mysql.db.tmis_core.pool>
+
+        <!-- Настройки persistence.xml по умолчанию -->
+        <eclipselink.logging.level>WARNING</eclipselink.logging.level>
+        <eclipselink.logging.sql.level>OFF</eclipselink.logging.sql.level>
+        <eclipselink.logging.parameters>false</eclipselink.logging.parameters>
+        <eclipselink.logging.showsql>false</eclipselink.logging.showsql>
+
+        <eclipselink.ddl.generated>create-table</eclipselink.ddl.generated>
     </properties>
 
     <profiles>
@@ -347,7 +383,7 @@
                 <!-- Пароль к базе данных -->
                 <mysql.password>root</mysql.password>
                 <!-- Название базы данных МИС -->
-                <mysql.db.mis>hospital</mysql.db.mis>
+                <mysql.db.mis>s11r64</mysql.db.mis>
                 <!-- Название пула для базы данных МИС -->
                 <mysql.db.mis.pool>s11r64-pool</mysql.db.mis.pool>
                 <!-- Название базы данных RLS -->
