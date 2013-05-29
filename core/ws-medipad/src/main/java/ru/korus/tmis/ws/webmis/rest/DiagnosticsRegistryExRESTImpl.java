@@ -293,7 +293,7 @@ public class DiagnosticsRegistryExRESTImpl {
      * @return com.sun.jersey.api.json.JSONWithPadding как Object
      * @throws ru.korus.tmis.core.exception.CoreException
      * @see ru.korus.tmis.core.exception.CoreException
-     */
+     */       /*
     @PUT
     @Path("/{var}/")
     @Consumes("application/json")
@@ -322,7 +322,7 @@ public class DiagnosticsRegistryExRESTImpl {
         }
     }
 
-
+              */
 
     /**
      * Редактирование направления на лабораторные исследование
@@ -389,28 +389,41 @@ public class DiagnosticsRegistryExRESTImpl {
      * @see ru.korus.tmis.core.exception.CoreException
      */
     @DELETE
-    @Path("/{var}/")
+    @Path("/laboratory")
     @Consumes("application/json")
     @Produces("application/x-javascript")
-    public Object removeLaboratoryStudies(AssignmentsToRemoveDataList data,
-                                          @PathParam("var") String var) {
+    public Object removeLaboratoryStudies(AssignmentsToRemoveDataList data) {
+        return new JSONWithPadding(wsImpl.removeDirection(data, "laboratory", this.auth), this.callback);
+    }
 
-        DirectoryInfoRESTImpl.ActionTypesSubType atst = DirectoryInfoRESTImpl.ActionTypesSubType.getType(var);
+    /**
+     * Удаление списка направлений на инструментальные исследования
+     * @param data Json с данными о лабораторном исследовании как CommonData
+     * @return com.sun.jersey.api.json.JSONWithPadding как Object
+     * @throws ru.korus.tmis.core.exception.CoreException
+     * @see ru.korus.tmis.core.exception.CoreException
+     */
+    @DELETE
+    @Path("/instrumental")
+    @Consumes("application/json")
+    @Produces("application/x-javascript")
+    public Object removeInstrumentalStudies(AssignmentsToRemoveDataList data) {
+        return new JSONWithPadding(wsImpl.removeDirection(data, "instrumental", this.auth), this.callback);
+    }
 
-        switch (atst){
-            case LABORATORY: {
-                return new JSONWithPadding(wsImpl.removeDirection(data, "laboratory", this.auth), this.callback);
-            }
-            case INSTRUMENTAL: {
-                return null;
-            }
-            case CONSULTATIONS: {
-                return null;
-            }
-            default: {
-                return null;
-            }
-        }
+    /**
+     * Удаление списка направлений на консультации
+     * @param data Json с данными о лабораторном исследовании как CommonData
+     * @return com.sun.jersey.api.json.JSONWithPadding как Object
+     * @throws ru.korus.tmis.core.exception.CoreException
+     * @see ru.korus.tmis.core.exception.CoreException
+     */
+    @DELETE
+    @Path("/consultations")
+    @Consumes("application/json")
+    @Produces("application/x-javascript")
+    public Object removeConsultationsStudies(AssignmentsToRemoveDataList data) {
+        return new JSONWithPadding(wsImpl.removeDirection(data, "consultations", this.auth), this.callback);
     }
 
     /**
