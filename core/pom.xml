@@ -996,29 +996,27 @@
                 <version>2.6</version>
                 <configuration>
                     <useFile>false</useFile>
-                    <includes>
-                        <include>**/*.java</include>
-                    </includes>
+                    <testNGArtifactName>org.testng:testng</testNGArtifactName>
+                    <junitArtifactName>none:none</junitArtifactName>
+                    <excludes>
+                        <exclude>**/*Spec.java</exclude>
+                    </excludes>
                 </configuration>
                 <executions>
-                    <execution>
-                        <phase>test</phase>
-                        <goals>
-                            <goal>test</goal>
-                        </goals>
-                        <configuration>
-                            <testNGArtifactName>none:none</testNGArtifactName>
-                        </configuration>
-                    </execution>
                     <!-- Добавлен отдельный execution для совместного использования junit и testng -->
                     <execution>
-                        <id>test-testng</id>
+                        <id>test-spockframework</id>
                         <phase>test</phase>
                         <goals>
                             <goal>test</goal>
                         </goals>
                         <configuration>
-                            <junitArtifactName>none:none</junitArtifactName>
+                            <useFile>false</useFile>
+                            <junitArtifactName>junit:junit</junitArtifactName>
+                            <testNGArtifactName>none:none</testNGArtifactName>
+                            <includes>
+                                <include>**/*Spec.groovy</include>
+                            </includes>
                         </configuration>
                     </execution>
                 </executions>
