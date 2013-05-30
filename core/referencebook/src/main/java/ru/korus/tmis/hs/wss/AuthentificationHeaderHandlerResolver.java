@@ -15,8 +15,8 @@ import java.util.List;
  */
 public class AuthentificationHeaderHandlerResolver implements HandlerResolver {
 
-    public List<Handler> getHandlerChain(PortInfo portInfo) {
-        List<Handler> handlerChain = new ArrayList<Handler>();
+    public List<Handler> getHandlerChain(final PortInfo portInfo) {
+        final List<Handler> handlerChain = new ArrayList<Handler>();
         handlerChain.add(new AuthentificationHeaderHandler());
         return handlerChain;
     }

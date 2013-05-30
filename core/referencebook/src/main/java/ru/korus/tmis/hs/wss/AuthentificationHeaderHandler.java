@@ -21,7 +21,7 @@ import java.util.Set;
 public class AuthentificationHeaderHandler implements SOAPHandler<SOAPMessageContext> {
 
     @Override
-    public boolean handleMessage(SOAPMessageContext smc) {
+    public boolean handleMessage(final SOAPMessageContext smc) {
 
         Boolean outboundProperty = (Boolean) smc.get(MessageContext.MESSAGE_OUTBOUND_PROPERTY);
         // LOGIN AND PASSWORD ADD TO HEADER
@@ -53,7 +53,7 @@ public class AuthentificationHeaderHandler implements SOAPHandler<SOAPMessageCon
         return outboundProperty;
     }
 
-    private void writeMessage(SOAPMessage message) {
+    private void writeMessage(final SOAPMessage message) {
         try {
             ByteArrayOutputStream requestStream = new ByteArrayOutputStream();
             message.writeTo(requestStream);
@@ -83,7 +83,7 @@ public class AuthentificationHeaderHandler implements SOAPHandler<SOAPMessageCon
      *                                        handler fault processing and dispatch the fault.
      */
     @Override
-    public boolean handleFault(SOAPMessageContext context) {
+    public boolean handleFault(final SOAPMessageContext context) {
         return true;
     }
 
@@ -96,7 +96,7 @@ public class AuthentificationHeaderHandler implements SOAPHandler<SOAPMessageCon
      * @param context the message context
      */
     @Override
-    public void close(MessageContext context) {
+    public void close(final MessageContext context) {
     }
 
     /**

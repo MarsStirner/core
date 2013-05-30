@@ -1088,7 +1088,12 @@
                         ru/korus/tmis/ws/webmis/rest/,
                         ru/korus/tmis/ws/medipad/,
                         ru/korus/tmis/ws/transfusion/efive/,
-                        ru/korus/tmis/communication/
+                        ru/korus/tmis/communication/,
+                        ru/korus/tmis/entity/,
+                        wsdl/,
+                        ru/korus/tmis/hs/
+                        ru/korus/tmis/dao/,
+                        nsi/
                     </excludes>
                 </configuration>
                 <executions>
