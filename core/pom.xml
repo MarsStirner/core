@@ -23,11 +23,12 @@
         <module>ws-finance</module>
         <module>ws-transfusion</module>
         <module>communication</module>
+        <module>ws-users-mgr</module>
     </modules>
 
     <properties>
         <!-- Версия ядра-->
-        <version.tmis.core>0.9.13-SNAPSHOT</version.tmis.core>
+        <version.tmis.core>0.9.14-SNAPSHOT</version.tmis.core>
 
 
         <version.joda.time>2.1</version.joda.time>
@@ -1088,7 +1089,12 @@
                         ru/korus/tmis/ws/webmis/rest/,
                         ru/korus/tmis/ws/medipad/,
                         ru/korus/tmis/ws/transfusion/efive/,
-                        ru/korus/tmis/communication/
+                        ru/korus/tmis/communication/,
+                        ru/korus/tmis/entity/,
+                        wsdl/,
+                        ru/korus/tmis/hs/
+                        ru/korus/tmis/dao/,
+                        nsi/
                     </excludes>
                 </configuration>
                 <executions>

@@ -98,6 +98,13 @@
         </dependency>
 
         <dependency>
+            <groupId>ru.korus.tmis.ws.usersmngr</groupId>
+            <artifactId>tmis-ws-users-mgr</artifactId>
+            <version>${version.tmis.core}</version>
+            <type>war</type>
+        </dependency>
+
+        <dependency>
             <groupId>ru.korus.tmis.communication</groupId>
             <artifactId>tmis-communication</artifactId>
             <version>${version.tmis.core}</version>

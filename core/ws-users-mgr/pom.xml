@@ -1,0 +1,64 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
+
+    <modelVersion>4.0.0</modelVersion>
+    <groupId>ru.korus.tmis.ws.usersmngr</groupId>
+    <artifactId>tmis-ws-users-mgr</artifactId>
+    <version>${version.tmis.core}</version>
+    <packaging>war</packaging>
+    <name>TMIS WS Users</name>
+
+    <parent>
+        <groupId>ru.korus.tmis</groupId>
+        <artifactId>tmis-nexus</artifactId>
+        <version>${version.tmis.core}</version>
+        <relativePath>../</relativePath>
+    </parent>
+
+    <properties>
+        <maven.test.skip>false</maven.test.skip>
+        <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+        <jaxws.plugin.version>2.1</jaxws.plugin.version>
+    </properties>
+
+    <build>
+        <!-- Set the name of the war, used as the context root when the app is
+            deployed -->
+        <!--<finalName>tmis-ws-users</finalName>-->
+
+        <plugins>
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-war-plugin</artifactId>
+                <version>2.1.1</version>
+                <configuration>
+                    <packagingExcludes>WEB-INF/lib/*.jar</packagingExcludes>
+                    <archive>
+                        <manifest>
+                            <addClasspath>true</addClasspath>
+                            <classpathPrefix>lib/</classpathPrefix>
+                        </manifest>
+                    </archive>
+                    <failOnMissingWebXml>false</failOnMissingWebXml>
+                </configuration>
+            </plugin>
+        </plugins>
+    </build>
+
+    <dependencies>
+        <dependency>
+            <groupId>ru.korus.tmis.core</groupId>
+            <artifactId>tmis-core-database</artifactId>
+            <version>${version.tmis.core}</version>
+            <type>jar</type>
+        </dependency>
+        <dependency>
+            <groupId>com.google.code.gson</groupId>
+            <artifactId>gson</artifactId>
+            <version>2.2.2</version>
+        </dependency>
+
+    </dependencies>
+
+</project>
