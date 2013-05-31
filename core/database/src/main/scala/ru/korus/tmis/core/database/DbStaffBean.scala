@@ -116,9 +116,10 @@ class DbStaffBean
     }
 
     val result = typed.getResultList
-    if (result == null || result.size() == 0) {
+    /*
+    if (result != null || result.size() != 0) {
       throw new CoreException(i18n("error.staffsNotFound"))
-    }
+    }                     */
 
     var retMap = new java.util.HashMap[Staff, java.util.LinkedList[APValueTime]]
     result.foreach(f => {

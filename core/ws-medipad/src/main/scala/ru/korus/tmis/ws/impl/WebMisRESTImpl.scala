@@ -8,8 +8,8 @@ import org.codehaus.jackson.map.ObjectMapper
 import ru.korus.tmis.core.exception.CoreException
 import java.util
 import ru.korus.tmis.util._
-import ru.korus.tmis.core.entity.model.{JobTicket, ActionTypeTissueType, Action}
-import collection.mutable
+import ru.korus.tmis.core.entity.model.{OrgStructureHospitalBed, JobTicket, ActionTypeTissueType, Action}
+import collection.{JavaConversions, mutable}
 import util.LinkedList
 import grizzled.slf4j.Logging
 import ru.korus.tmis.ws.webmis.rest.WebMisREST
@@ -45,7 +45,8 @@ import ru.korus.tmis.core.entity.model.layout.LayoutAttribute
 @HandlerChain(file = "tmis-ws-logging-handlers.xml") */
 class WebMisRESTImpl  extends WebMisREST
                       with Logging
-                      with I18nable {
+                      with I18nable
+                      with CAPids {
   @EJB
   private var authStorage: AuthStorageBeanLocal = _
 
@@ -265,6 +266,21 @@ class WebMisRESTImpl  extends WebMisREST
       val map = patientBean.getKLADRAddressMapForPatient(patient)
       val street = patientBean.getKLADRStreetForPatient(patient)
       //val appType = dbFDRecordBean.getIdValueFDRecordByEventTypeId(25, positionE._1.getEventType.getId.intValue())
+
+      // Текущее отделение пребывания пациента
+      val moving = hospitalBedBean.getLastMovingActionForEventId(ide)
+      var currentDepartment = dbOrgStructureBean.getOrgStructureById(28)//приемное отделение
+      //actionPropertyBean.getActionPropertiesByActionIdAndTypeId(moving.getId.intValue(), 1616)
+      if (moving != null) {
+        val listMovAP = JavaConversions.asJavaList(List(iCapIds("db.rbCAP.moving.id.bed").toInt: java.lang.Integer))
+        val bedValues = actionPropertyBean.getActionPropertiesByActionIdAndRbCoreActionPropertyIds(moving.getId.intValue(), listMovAP)
+        if (bedValues!=null && bedValues!=0 && bedValues.size()>0) {
+          if (bedValues.get(0) != null) {
+            currentDepartment = bedValues.get(0).get(0).getValue.asInstanceOf[OrgStructureHospitalBed].getMasterDepartment
+          }
+        }
+      }
+      //
       mapper.writeValueAsString(new AppealData( positionE._1,
         positionA._1,
         values,
@@ -280,6 +296,7 @@ class WebMisRESTImpl  extends WebMisREST
         if (positionA._1.getContractId != null) {
           dbContractBean.getContractById(positionA._1.getContractId.intValue())
         } else {null},
+        currentDepartment,
         dbDiagnosticBean.getDiagnosticsByEventIdAndTypes _
       ))
     } else {
@@ -299,6 +316,21 @@ class WebMisRESTImpl  extends WebMisREST
     mapper.getSerializationConfig().setSerializationView(classOf[Views.DynamicFieldsStandartForm]);
     //val map = patientBean.getKLADRAddressMapForPatient(result)
     //val appType = dbFDRecordBean.getIdValueFDRecordByEventTypeId(25, positionE._1.getEventType.getId.intValue())
+
+    // Текущее отделение пребывания пациента
+    val moving = hospitalBedBean.getLastMovingActionForEventId(id)
+    var currentDepartment = dbOrgStructureBean.getOrgStructureById(28)//приемное отделение
+    //actionPropertyBean.getActionPropertiesByActionIdAndTypeId(moving.getId.intValue(), 1616)
+    if (moving != null) {
+      val listMovAP = JavaConversions.asJavaList(List(iCapIds("db.rbCAP.moving.id.bed").toInt: java.lang.Integer))
+      val bedValues = actionPropertyBean.getActionPropertiesByActionIdAndRbCoreActionPropertyIds(moving.getId.intValue(), listMovAP)
+      if (bedValues!=null && bedValues!=0 && bedValues.size()>0) {
+        if (bedValues.get(0) != null) {
+          currentDepartment = bedValues.get(0).get(0).getValue.asInstanceOf[OrgStructureHospitalBed].getMasterDepartment
+        }
+      }
+    }
+
     mapper.writeValueAsString(new AppealData( positionE._1,
       positionA._1,
       values,
@@ -314,6 +346,7 @@ class WebMisRESTImpl  extends WebMisREST
       if (positionE._1.getContract != null) {
         dbContractBean.getContractById(positionE._1.getContract.getId.intValue())
       } else {null},
+      currentDepartment,
       dbDiagnosticBean.getDiagnosticsByEventIdAndTypes _
     ))
   }
@@ -330,6 +363,20 @@ class WebMisRESTImpl  extends WebMisREST
     val map = patientBean.getKLADRAddressMapForPatient(positionE._1.getPatient)
     val street = patientBean.getKLADRStreetForPatient(positionE._1.getPatient)
 
+    // Текущее отделение пребывания пациента
+    val moving = hospitalBedBean.getLastMovingActionForEventId(id)
+    var currentDepartment = dbOrgStructureBean.getOrgStructureById(28)//приемное отделение
+    //actionPropertyBean.getActionPropertiesByActionIdAndTypeId(moving.getId.intValue(), 1616)
+    if (moving != null) {
+      val listMovAP = JavaConversions.asJavaList(List(iCapIds("db.rbCAP.moving.id.bed").toInt: java.lang.Integer))
+      val bedValues = actionPropertyBean.getActionPropertiesByActionIdAndRbCoreActionPropertyIds(moving.getId.intValue(), listMovAP)
+      if (bedValues!=null && bedValues!=0 && bedValues.size()>0) {
+        if (bedValues.get(0) != null) {
+          currentDepartment = bedValues.get(0).get(0).getValue.asInstanceOf[OrgStructureHospitalBed].getMasterDepartment
+        }
+      }
+    }
+
     mapper.writeValueAsString(new AppealData( positionE._1,
       positionA._1,
       values,
@@ -345,6 +392,7 @@ class WebMisRESTImpl  extends WebMisREST
       if (positionA._1.getContractId != null) {
         dbContractBean.getContractById(positionA._1.getContractId.intValue())
       } else {null},
+      currentDepartment,
       dbDiagnosticBean.getDiagnosticsByEventIdAndTypes _
     ))
   }

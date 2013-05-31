@@ -379,9 +379,9 @@ class DirectionBean extends DirectionBeanLocal
         val ap = actionPropertyBean.createActionProperty(action,
           apt.getId.intValue(),
           userData)
-        if (ap.getType.getTypeName.compareTo("MKB") == 0) {
+        if (ap.getType.getTypeName.compareTo("MKB") == 0 && request.diagnosis != null && request.diagnosis.getCode != null) {
           //запишем диагноз, который пришел с клиента
-          val mkb = dbMkbBean.getMkbByCode(request.getDiagnosis.getCode)
+          val mkb = dbMkbBean.getMkbByCode(request.diagnosis.getCode)
           if (mkb != null) {
             em.merge(actionPropertyBean.setActionPropertyValue(ap, mkb.getId.intValue().toString, 0))
           } else {

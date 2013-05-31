@@ -519,6 +519,14 @@ public class DirectoryInfoRESTImpl {
         EPI("epi"){
             public String getSubType() { return "epicrisis";}
             public String getMnemonic() { return "EPI";}
+        },
+        OTH("oth"){
+            public String getSubType() { return "OTH";}   //хз че это
+            public String getMnemonic() { return "OTH";}
+        },
+        NOT("not"){
+            public String getSubType() { return "NOT";}
+            public String getMnemonic() { return "NOT";}
         };
 
         public abstract String getSubType();

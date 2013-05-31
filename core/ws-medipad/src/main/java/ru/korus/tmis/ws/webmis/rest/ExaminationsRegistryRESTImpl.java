@@ -85,7 +85,9 @@ public class ExaminationsRegistryRESTImpl {
      * &#15; "asc" - по возрастанию (значение по умолчанию);
      * &#15; "desc" - по убыванию;</pre>
      * @param assessmentTypeCode Фильтр значений по коду типа осмотра.
-     * @param assessmentDate Фильтр значений по дате осмотра.
+     * @param actionTypeId Фильтр значений по типу осмотра.
+     * @param begDate Фильтр значений по дате осмотра.
+     * @param endDate Фильтр значений по дате осмотра.
      * @param doctorName Фильтр значений по ФИО врача.
      * @param speciality Фильтр значений по специальности врача.
      * @param assessmentName Фильтр значений по наименованию осмотра.
@@ -101,8 +103,11 @@ public class ExaminationsRegistryRESTImpl {
                                                         @QueryParam("page")int  page,
                                                         @QueryParam("sortingField")String sortingField,    //сортировки вкл.
                                                         @QueryParam("sortingMethod")String sortingMethod,
-                                                        @QueryParam("filter[code]")String  assessmentTypeCode,
-                                                        @QueryParam("filter[assessmentDate]") long assessmentDate,
+                                                        @QueryParam("filter[actionTypeId]")int actionTypeId,
+                                                        @QueryParam("filter[begDate]")long begDate,
+                                                        @QueryParam("filter[endDate]")long endDate,
+                                                        @QueryParam("filter[actionTypeCode]")String  assessmentTypeCode,
+                                                        //@QueryParam("filter[assessmentDate]") long assessmentDate,
                                                         @QueryParam("filter[doctorName]") String doctorName,
                                                         @QueryParam("filter[speciality]") String speciality,
                                                         @QueryParam("filter[assessmentName]") String assessmentName,
@@ -117,7 +122,7 @@ public class ExaminationsRegistryRESTImpl {
                 mnemonics.add(atst.getMnemonic());
             }
         }
-        AssessmentsListRequestDataFilter filter = new AssessmentsListRequestDataFilter(this.eventId, assessmentTypeCode, assessmentDate, doctorName, speciality, assessmentName, departmentName, mnemonics);
+        AssessmentsListRequestDataFilter filter = new AssessmentsListRequestDataFilter(this.eventId, actionTypeId, assessmentTypeCode, begDate, endDate, doctorName, speciality, assessmentName, departmentName, mnemonics);
         AssessmentsListRequestData alrd= new AssessmentsListRequestData(sortingField, sortingMethod, limit, page, filter);
         return new JSONWithPadding(this.wsImpl.getListOfAssessmentsForPatientByEvent(alrd, this.auth), this.callback);
     }
