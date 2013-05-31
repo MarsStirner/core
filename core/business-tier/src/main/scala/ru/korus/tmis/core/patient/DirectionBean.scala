@@ -356,6 +356,10 @@ class DirectionBean extends DirectionBeanLocal
        */
     var action: Action = actionBean.createAction(request.eventId.intValue(), request.actionTypeId.intValue(), userData)
     action.setIsUrgent(request.urgent)
+    if (request.createPerson > 0 && dbStaffBean.getStaffById(request.createPerson) != null) {
+      action.setCreatePerson(dbStaffBean.getStaffById(request.createPerson))
+    }
+    if (request.createDateTime != null) action.setCreateDatetime(request.createDateTime)
     //action.setBegDate(bDate)
     action.setPlannedEndDate(new Date(request.plannedEndDate.getTime + request.plannedTime.getTime.getTime))
     if (request.getFinance.getId > 0) {

@@ -9,10 +9,12 @@ import java.util.Date;
  * Company:     Korus Consulting IT<br>
  * Description:  <br>
  */
-public class DateUtil {
+public final class DateUtil {
 
-    public static Date getDate(XMLGregorianCalendar gc) {
+    public static Date getDate(final XMLGregorianCalendar gc) {
         return gc != null ? gc.toGregorianCalendar().getTime() : null;
     }
 
+    private DateUtil() {
+    }
 }

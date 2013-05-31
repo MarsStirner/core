@@ -53,6 +53,10 @@ class ConsultationRequestData {
   @BeanProperty
   var patientId: Int = _
   @BeanProperty
+  var createPerson: Int = _
+  @BeanProperty
+  var createDateTime: Date = _
+  @BeanProperty
   var plannedEndDate: Date = _
   @BeanProperty
   var plannedTime: ScheduleContainer = _

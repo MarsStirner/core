@@ -1,0 +1,32 @@
+<definitions xmlns="http://schemas.xmlsoap.org/wsdl/" xmlns:soap="http://schemas.xmlsoap.org/wsdl/soap/" xmlns:tns="cgm.ru" xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:ns="cgm.ru" name="cgmsoap" targetNamespace="cgm.ru">
+	<message name="queryAnalysis">
+		<part name="hl7_qry" type="xsd:string"/>
+	</message>
+	<message name="queryAnalysisResponse">
+		<part name="returnValue" type="xsd:string"/>
+	</message>
+	<portType name="cgmsoap_PortType">
+		<operation name="queryAnalysis">
+			<input message="tns:queryAnalysis"/>
+			<output message="tns:queryAnalysisResponse"/>
+		</operation>
+	</portType>
+	<binding name="cgmsoap_Binding" type="tns:cgmsoap_PortType">
+		<soap:binding style="rpc" transport="http://schemas.xmlsoap.org/soap/http"/>
+		<operation name="queryAnalysis">
+			<soap:operation soapAction="qry_CGM"/>
+			<input>
+				<soap:body  encodingStyle="http://schemas.xmlsoap.org/soap/encoding/" namespace="urn:cgm.ru:cgmsoap"/>
+			</input>
+			<output>
+				<soap:body encodingStyle="http://schemas.xmlsoap.org/soap/encoding/" namespace="urn:cgm.ru:cgmsoap"/>
+			</output>
+		</operation>
+	</binding>
+	<service name="CGM_SOAP">
+		<documentation>WSDL File for cgmsoap</documentation>
+		<port name="cgmsoap_PortType" binding="tns:cgmsoap_Binding">
+			<soap:address location="http://10.128.131.114:8090/CGM_SOAP"/>
+		</port>
+	</service>
+</definitions>

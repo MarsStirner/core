@@ -35,6 +35,12 @@ class DiagnosticsListData {
           actions.foreach(action => this.data.asInstanceOf[LinkedList[InstrumentalDiagnosticsListEntry]].add(new InstrumentalDiagnosticsListEntry(action)))
         }
       }
+      case "consultations" => {
+        this.data = new LinkedList[InstrumentalDiagnosticsListEntry]
+        if (actions != null && actions.size > 0) {
+          actions.foreach(action => this.data.asInstanceOf[LinkedList[InstrumentalDiagnosticsListEntry]].add(new InstrumentalDiagnosticsListEntry(action)))
+        }
+      }
       case _ => {
         this.data = new LinkedList[DiagnosticsListEntry]
         if (actions != null && actions.size > 0) {

@@ -9,6 +9,9 @@ import ru.korus.tmis.core.logging.slf4j.interceptor.ServicesLoggingInterceptor;
 import ru.korus.tmis.ws.impl.WebMisRESTImpl;
 import javax.interceptor.Interceptors;
 import javax.ws.rs.*;
+import javax.ws.rs.core.Context;
+import javax.ws.rs.core.UriInfo;
+import java.util.LinkedList;
 
 /**
  * Список REST-сервисов для работы с осмотрами
@@ -93,7 +96,8 @@ public class ExaminationsRegistryRESTImpl {
      */
     @GET
     @Produces("application/x-javascript")
-    public Object getListOfAssessmentsForPatientByEvent(@QueryParam("limit")int limit,
+    public Object getListOfAssessmentsForPatientByEvent(@Context UriInfo info,
+                                                        @QueryParam("limit")int limit,
                                                         @QueryParam("page")int  page,
                                                         @QueryParam("sortingField")String sortingField,    //сортировки вкл.
                                                         @QueryParam("sortingMethod")String sortingMethod,
@@ -103,7 +107,17 @@ public class ExaminationsRegistryRESTImpl {
                                                         @QueryParam("filter[speciality]") String speciality,
                                                         @QueryParam("filter[assessmentName]") String assessmentName,
                                                         @QueryParam("filter[departmentName]") String departmentName) {
-        AssessmentsListRequestDataFilter filter = new AssessmentsListRequestDataFilter(this.eventId, assessmentTypeCode, assessmentDate, doctorName, speciality, assessmentName, departmentName);
+
+        java.util.List<String> mnems = info.getQueryParameters().get("filter[mnem]");
+        java.util.List<String> mnemonics = new LinkedList<String>();
+        if(mnems!=null && mnems.size()>0) {
+            for(String mnem: mnems) {
+                DirectoryInfoRESTImpl.ActionTypesSubType atst = (mnem!=null && !mnem.isEmpty()) ? DirectoryInfoRESTImpl.ActionTypesSubType.getType(mnem.toLowerCase())
+                                                                                                : DirectoryInfoRESTImpl.ActionTypesSubType.getType("");
+                mnemonics.add(atst.getMnemonic());
+            }
+        }
+        AssessmentsListRequestDataFilter filter = new AssessmentsListRequestDataFilter(this.eventId, assessmentTypeCode, assessmentDate, doctorName, speciality, assessmentName, departmentName, mnemonics);
         AssessmentsListRequestData alrd= new AssessmentsListRequestData(sortingField, sortingMethod, limit, page, filter);
         return new JSONWithPadding(this.wsImpl.getListOfAssessmentsForPatientByEvent(alrd, this.auth), this.callback);
     }
