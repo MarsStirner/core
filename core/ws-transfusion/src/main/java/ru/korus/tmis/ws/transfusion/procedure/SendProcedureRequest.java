@@ -37,7 +37,7 @@ import ru.korus.tmis.ws.transfusion.efive.PatientCredentials;
 import ru.korus.tmis.ws.transfusion.efive.ProcedureType;
 import ru.korus.tmis.ws.transfusion.efive.TransfusionMedicalService;
 import ru.korus.tmis.ws.transfusion.order.SendOrderBloodComponents;
-import ru.korus.tmis.ws.transfusion.order.TrfuActionProp;
+import ru.korus.tmis.ws.transfusion.TrfuActionProp;
 
 /**
  * Author:      Sergey A. Zagrebelny <br>

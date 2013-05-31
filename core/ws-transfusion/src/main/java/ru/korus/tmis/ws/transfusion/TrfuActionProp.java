@@ -1,4 +1,4 @@
-package ru.korus.tmis.ws.transfusion.order;
+package ru.korus.tmis.ws.transfusion;
 
 import java.util.HashMap;
 import java.util.List;
@@ -93,5 +93,10 @@ public class TrfuActionProp {
     public void orderResult2DB(final Action action, final Integer requestId) throws CoreException {
         setRequestState(action.getId(), "Получен идентификатор в системе ТРФУ: " + requestId);
         action.setStatus(Database.ACTION_STATE_WAIT);
+    }
+
+    public void setErrorState(final Action action, final String errMsg) throws CoreException {
+        setRequestState(action.getId(), errMsg);
+        throw new CoreException(errMsg);
     }
 }

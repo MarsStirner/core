@@ -24,6 +24,7 @@ import ru.korus.tmis.core.entity.model.Staff;
 import ru.korus.tmis.core.exception.CoreException;
 import ru.korus.tmis.util.EntityMgr;
 import ru.korus.tmis.ws.transfusion.PropType;
+import ru.korus.tmis.ws.transfusion.TrfuActionProp;
 import ru.korus.tmis.ws.transfusion.efive.ComponentType;
 import ru.korus.tmis.ws.transfusion.efive.OrderInformation;
 import ru.korus.tmis.ws.transfusion.efive.OrderResult;
