@@ -19,23 +19,37 @@ import java.sql.Statement;
 public class TestBase {
     private static final String HOST = "localhost";// "10.128.225.66"
     protected static final String JDBC_MYSQL_URL = "jdbc:mysql://" + HOST + "/s11r64";
-    protected final static Integer TRFU_ACTION_CREATED_PERSON_ID = 183; // TODO create tester person
+    protected final static Integer TRFU_ACTION_CREATED_PERSON_ID = 181; // TODO create tester person
 
     protected final static Integer ACTION_ID = 100000000;
 
     protected final static Integer ACTION_PORP_ID_BASE = 100000000;
 
-    static Connection conn = null;
+    static protected Connection conn = null;
 
     protected static void initTestCase(final Integer actionId, final PropType[] propConstants) {
         try {
-            final String userName = "root";
-            final String password = "root";
-            final String url = JDBC_MYSQL_URL;
-            Class.forName("com.mysql.jdbc.Driver").newInstance();
-            conn = DriverManager.getConnection(url, userName, password);
+            initConnection();
             initPropId(actionId, propConstants);
             System.out.println("Database connection established");
+        } catch (final Exception e) {
+            e.printStackTrace();
+        }
+    }
+
+    /**
+     * @throws InstantiationException
+     * @throws IllegalAccessException
+     * @throws ClassNotFoundException
+     * @throws SQLException
+     */
+    protected static void initConnection() {
+        final String userName = "root";
+        final String password = "root";
+        final String url = JDBC_MYSQL_URL;
+        try {
+            Class.forName("com.mysql.jdbc.Driver").newInstance();
+            conn = DriverManager.getConnection(url, userName, password);
         } catch (final Exception e) {
             e.printStackTrace();
         }
@@ -107,17 +121,15 @@ public class TestBase {
         // TODO create test Event
         final String sqlActionInsertTpl =
                 "INSERT INTO Action (`id`, `createDatetime`, `createPerson_id`, `modifyDatetime`, `modifyPerson_id`, `deleted`, `actionType_id`, `event_id`, `idx`, `directionDate`, `status`, `setPerson_id`, `isUrgent`, `begDate`, `plannedEndDate`, `endDate`, `note`, `person_id`, `office`, `amount`, `uet`, `expose`, `payStatus`, `account`, `finance_id`, `prescription_id`, `takenTissueJournal_id`, `contract_id`, `coordDate`, `coordAgent`, `coordInspector`, `coordText`, `hospitalUidFrom`, `pacientInQueueType`, `version`, `parentAction_id`, `uuid_id`) "
-                        + " VALUES (%d, CURRENT_TIMESTAMP, %d, CURRENT_TIMESTAMP, %d, 0, %d, 1, 0, CURRENT_TIMESTAMP, 0, %d, 0, CURRENT_TIMESTAMP, CURRENT_TIMESTAMP, NULL, '', %d, '', 0, 0, 1, 0, 0, NULL, NULL, NULL, NULL, NULL, '', '', '', '0', 0, 3, NULL, 284056);";
-        s.executeUpdate(String.format(sqlActionInsertTpl, ACTION_ID, TRFU_ACTION_CREATED_PERSON_ID, TRFU_ACTION_CREATED_PERSON_ID, actionTypeId,
-                TRFU_ACTION_CREATED_PERSON_ID,
+                        + " VALUES (%d, CURRENT_TIMESTAMP, 181, CURRENT_TIMESTAMP, %d, 0, %d, 69398, 0, CURRENT_TIMESTAMP, 0, %d, 0, CURRENT_TIMESTAMP, CURRENT_TIMESTAMP, NULL, '', %d, '', 0, 0, 1, 0, 0, NULL, NULL, NULL, NULL, NULL, '', '', '', '0', 0, 3, NULL, 284056);";
+        s.executeUpdate(String.format(sqlActionInsertTpl, ACTION_ID, TRFU_ACTION_CREATED_PERSON_ID, actionTypeId, TRFU_ACTION_CREATED_PERSON_ID,
                 TRFU_ACTION_CREATED_PERSON_ID));
         final String sqlActionPropInsertTpl =
                 "INSERT INTO ActionProperty "
                         + "(`id`, `createDatetime`, `createPerson_id`, `modifyDatetime`, `modifyPerson_id`, `deleted`, `action_id`, `type_id`, `unit_id`, `norm`, `isAssigned`, `evaluation`, `version`) "
-                        + "VALUES " + "(%d, CURRENT_TIMESTAMP, %d, CURRENT_TIMESTAMP, %d, 0, %d, %d, NULL, '', 0, NULL, 0);";
+                        + "VALUES " + "(%d, CURRENT_TIMESTAMP, 181, CURRENT_TIMESTAMP, %d, 0, %d, %d, NULL, '', 0, NULL, 0);";
         for (final PropType propType : propConstants) {
-            s.executeUpdate(String.format(sqlActionPropInsertTpl, getPropValueId(propType), TRFU_ACTION_CREATED_PERSON_ID, TRFU_ACTION_CREATED_PERSON_ID,
-                    ACTION_ID, propType.getId()));
+            s.executeUpdate(String.format(sqlActionPropInsertTpl, getPropValueId(propType), TRFU_ACTION_CREATED_PERSON_ID, ACTION_ID, propType.getId()));
         }
 
     }
