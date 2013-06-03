@@ -153,6 +153,10 @@ public class Action
     @Column(name = "hospitalUidFrom")
     private String hospitalUidFrom = "";
 
+    @Basic(optional = true)
+    @Column(name = "pacientInQueueType")
+    private Short pacientInQueueType = 0;
+
     @Version
     @Basic(optional = false)
     @Column(name = "version")
@@ -515,6 +519,14 @@ public class Action
 
     public void setHospitalUidFrom(String hospitalUidFrom) {
         this.hospitalUidFrom = hospitalUidFrom;
+    }
+
+    public Short getPacientInQueueType() {
+        return pacientInQueueType;
+    }
+
+    public void setPacientInQueueType(Short pacientInQueueType) {
+        this.pacientInQueueType = pacientInQueueType;
     }
 
     public UUID getUuid() {

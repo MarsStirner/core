@@ -25,13 +25,14 @@ import static org.testng.Assert.*;
  * User: eupatov
  * Date: 17.12.12 at 14:53
  */
+@Test(enabled = true, groups = {"communication"})
 public class CommunicationServiceTest {
     final static Logger logger = LoggerFactory.getLogger(CommunicationServiceTest.class);
 
     private Communications.Client client;
-    private String[] hosts = {"10.2.1.58", "localhost"};
+    private String[] hosts = {"10.2.1.58", "localhost", "192.168.1.100"};
     private static int port = 7911;
-    private static int timeout = 15000;
+    private static int timeout = 35000;
     private TTransport transport;
 
     @BeforeClass
@@ -498,7 +499,10 @@ public class CommunicationServiceTest {
                             }
                         }
                         //добавление записи вида {Id врача-> Список свободных талончиков}
-                        result.put(currentDoctor.getId(), freeTicketsTime);
+                        if (!freeTicketsTime.isEmpty()) {
+                            result.put(currentDoctor.getId(), freeTicketsTime);
+                        }
+
                     }
                 }
                 currentDay++;
