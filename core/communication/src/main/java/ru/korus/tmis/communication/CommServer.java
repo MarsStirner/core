@@ -354,8 +354,35 @@ public class CommServer implements Communications.Iface {
         final List<Ticket> tickets = new ArrayList<Ticket>();
         //fill Amb structure and lists
         final Amb result = getAmbulatoryProperties(action, times, queue);
+        //Подсчет количества записанных вне очереди и экстренно
+        /**
+         * количество записанных экстренно
+         */
+        int emergencyPatientCount = 0;
+        /**
+         * Количество записанных вне очереди
+         */
+        int outOfTurnCount = 0;
+        for (APValueAction checkAction : queue) {
+            if (checkAction != null) {
+                Action chechActionValue = checkAction.getValue();
+                if (chechActionValue != null) {
+                    Short pacientInQueueType = chechActionValue.getPacientInQueueType();
+                    if (pacientInQueueType != null) {
+                        if (pacientInQueueType == (short) 1) {
+                            emergencyPatientCount++;
+                        } else {
+                            if (pacientInQueueType == (short) 2) {
+                                outOfTurnCount++;
+                            }
+                        }
+                    }
+                }
+            }
+        }
+        logger.debug("Founded {} emergency and {} out of turn actions", emergencyPatientCount, outOfTurnCount);
         //COMPUTE TICKETS to list and evaluate externalCount
-        final short externalCount = computeTickets(action, times, queue, tickets);
+        final short externalCount = computeTickets(action, times, queue, tickets, emergencyPatientCount);
         // http://miswiki.ru/   Получение талончиков _getTickets()
         final int available = Math.max(0, (int) (quota * tickets.size() * 0.01) - externalCount);
         if (quota != -1 && available < 1) {
@@ -375,13 +402,14 @@ public class CommServer implements Communications.Iface {
      * @param tickets Список талончиков для заполнения
      * @return Количество внешних обращений (из других ЛПУ)
      */
-    private short computeTickets(final Action action, final List<APValueTime> times, final List<APValueAction> queue, final List<Ticket> tickets) {
+    private short computeTickets(final Action action, final List<APValueTime> times, final List<APValueAction> queue,
+                                 final List<Ticket> tickets, final int emergencyCount) {
         short externalCount = 0;
         for (int i = 0; i < times.size(); i++) {
             final APValueTime currentTime = times.get(i);
             int free;
             if (currentTime != null) {
-                if (queue.size() > i && queue.get(i).getValue() != null) {
+                if (queue.size() > emergencyCount + i && queue.get(emergencyCount + i).getValue() != null) {
                     free = 0;
                     if (action.getAssigner() != null) {
                         externalCount++;
@@ -395,13 +423,13 @@ public class CommServer implements Communications.Iface {
                 if (free == 0) {
                     //талончик занят, выясняем кем
                     if (logger.isDebugEnabled()) {
-                        logger.debug("CLIENT ACTION={}", queue.get(i).getValue());
-                        logger.debug("CLIENT ACTIONID={}", queue.get(i).getValue().getId());
-                        logger.debug("CLIENT ACTIONEVENT={}", queue.get(i).getValue().getEvent());
-                        logger.debug("CLIENT ACTIONEVENTPATIENT={}", queue.get(i).getValue().getEvent().getPatient());
+                        logger.debug("CLIENT ACTION={}", queue.get(emergencyCount + i).getValue());
+                        logger.debug("CLIENT ACTIONID={}", queue.get(emergencyCount + i).getValue().getId());
+                        logger.debug("CLIENT ACTIONEVENT={}", queue.get(emergencyCount + i).getValue().getEvent());
+                        logger.debug("CLIENT ACTIONEVENTPATIENT={}", queue.get(emergencyCount + i).getValue().getEvent().getPatient());
                     }
 
-                    final Patient queuePatient = queue.get(i).getValue().getEvent().getPatient();
+                    final Patient queuePatient = queue.get(emergencyCount + i).getValue().getEvent().getPatient();
                     if (queuePatient != null) {
                         newTicket.setPatientId(queuePatient.getId())
                                 .setPatientInfo(new StringBuilder(queuePatient.getLastName())
@@ -842,13 +870,40 @@ public class CommServer implements Communications.Iface {
                 doctorAction.getActionType().getId(), doctorAction.getActionType().getName(), doctorAction.getOffice());
         final List<APValueTime> timesAMB = new ArrayList<APValueTime>();
         final List<APValueAction> queueAMB = new ArrayList<APValueAction>();
-
         final Event queueEvent;
         final EventType queueEventType;
         Action queueAction = null;
         final ActionType queueActionType;
 
         ActionProperty queueAP = getAmbTimesAndQueues(doctorAction, timesAMB, queueAMB);
+
+        //Подсчет количества записанных вне очереди и экстренно
+        /**
+         * количество записанных экстренно
+         */
+        int emergencyPatientCount = 0;
+        /**
+         * Количество записанных вне очереди
+         */
+        int outOfTurnCount = 0;
+        for (APValueAction checkAction : queueAMB) {
+            if (checkAction != null) {
+                Action chechActionValue = checkAction.getValue();
+                if (chechActionValue != null) {
+                    Short pacientInQueueType = chechActionValue.getPacientInQueueType();
+                    if (pacientInQueueType != null) {
+                        if (pacientInQueueType == (short) 1) {
+                            emergencyPatientCount++;
+                        } else {
+                            if (pacientInQueueType == (short) 2) {
+                                outOfTurnCount++;
+                            }
+                        }
+                    }
+                }
+            }
+        }
+        logger.debug("Founded {} emergency and {} out of turn actions", emergencyPatientCount, outOfTurnCount);
         logger.debug("Action property: {}", queueAP);
         //счетчик индекса для queue & times
         int i = 0;
@@ -860,7 +915,7 @@ public class CommServer implements Communications.Iface {
                 timeHit = true;
                 logger.info("HIT!!!!");
                 //Проверка свободности найденной ячейки времени
-                if (queueAMB.size() > i && queueAMB.get(i).getValue() != null) {
+                if (queueAMB.size() > emergencyPatientCount + i && queueAMB.get(emergencyPatientCount + i).getValue() != null) {
                     logger.info("#{} Ticket is busy.", currentRequestNum);
                     return new EnqueuePatientStatus().setSuccess(false)
                             .setMessage(CommunicationErrors.msgTicketIsBusy.getMessage());
@@ -912,7 +967,7 @@ public class CommServer implements Communications.Iface {
                         // заполняем очередь(queue) null'ами если она не ссылается на другой Action,
                         // и добавлем наш запрос в эту очередь
                         // с нужным значением index, по которому будет происходить соответствие с ячейкой времени.
-                        addActionToQueuePropertyValue(doctorAction, timesAMB, queueAMB, queueAction, queueAP, i);
+                        addActionToQueuePropertyValue(doctorAction, timesAMB, queueAMB, queueAction, queueAP, emergencyPatientCount + i);
                     } catch (CoreException e) {
                         logger.error("CoreException while create new EVENT", e);
                         return new EnqueuePatientStatus().setSuccess(false)
@@ -1121,19 +1176,27 @@ public class CommServer implements Communications.Iface {
                 queueAP = actionPropertyBean.createActionProperty(doctorAction, 14, null);
             }
         }
+        logger.debug("Queue ActionProperty = {}", queueAP.getId());
         for (int j = queueAMB.size(); j < index; j++) {
             APValueAction newActionPropertyAction = new APValueAction(queueAP.getId(), j);
             newActionPropertyAction.setValue(null);
             managerBean.persist(newActionPropertyAction);
         }
+
         APValueAction newActionPropertyAction = new APValueAction(queueAP.getId(), index);
         newActionPropertyAction.setValue(queueAction);
+        logger.debug("NewActionProperty [{} {} {}]",
+                newActionPropertyAction.getId().getId(),
+                newActionPropertyAction.getId().getIndex(),
+                newActionPropertyAction.getValue().getId());
         if (queueAMB.size() < index) {
+            logger.debug("Persist!");
             managerBean.persist(newActionPropertyAction);
         } else {
+            logger.debug("Merge!");
             managerBean.merge(newActionPropertyAction);
         }
-        logger.debug("All ActionProperty_Action's set successfully");
+        logger.debug("All ActionProperty_Action's set successfully with index = {}", newActionPropertyAction.getId().getIndex());
     }
 
     /**
@@ -1589,7 +1652,8 @@ public class CommServer implements Communications.Iface {
             try {
                 logger.error("Wait for a second to Thread interrupt");
                 communicationListener.join(1000);
-            } catch (InterruptedException e) {}
+            } catch (InterruptedException e) {
+            }
             if (communicationListener.isAlive()) {
                 logger.error("ServerThread is STILL ALIVE?! Setting MinimalPriority to the Thread");
                 communicationListener.setPriority(Thread.MIN_PRIORITY);

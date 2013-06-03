@@ -448,7 +448,7 @@
             </properties>
         </profile>
 
-            <!-- Пользовательский профиль -->
+        <!-- Пользовательский профиль -->
         <profile>
             <id>nde-lin</id>
             <properties>
@@ -954,41 +954,41 @@
                 </dependencies>
             </plugin>
             <!--<plugin>-->
-                <!--<groupId>org.codehaus.gmaven</groupId>-->
-                <!--<artifactId>gmaven-plugin</artifactId>-->
-                <!--<version>${version.maven.gmaven.plugin}</version>-->
-                <!--<configuration>-->
-                    <!--<source>src / main / groovy</source>-->
-                    <!--<providerSelection>2.0</providerSelection>-->
-                <!--</configuration>-->
-                <!--<executions>-->
-                    <!--<execution>-->
-                        <!--<goals>-->
-                            <!--<goal>generateStubs</goal>-->
-                            <!--<goal>compile</goal>-->
-                            <!--<goal>generateTestStubs</goal>-->
-                            <!--<goal>testCompile</goal>-->
-                        <!--</goals>-->
-                    <!--</execution>-->
-                <!--</executions>-->
-                <!--<dependencies>-->
-                    <!--<dependency>-->
-                        <!--<groupId>org.codehaus.gmaven.runtime</groupId>-->
-                        <!--<artifactId>gmaven-runtime-2.0</artifactId>-->
-                        <!--<version>${version.gmaven.runtime}</version>-->
-                        <!--<exclusions>-->
-                            <!--<exclusion>-->
-                                <!--<groupId>org.codehaus.groovy</groupId>-->
-                                <!--<artifactId>groovy-all</artifactId>-->
-                            <!--</exclusion>-->
-                        <!--</exclusions>-->
-                    <!--</dependency>-->
-                    <!--<dependency>-->
-                        <!--<groupId>org.codehaus.groovy</groupId>-->
-                        <!--<artifactId>groovy-all</artifactId>-->
-                        <!--<version>${version.groovy}</version>-->
-                    <!--</dependency>-->
-                <!--</dependencies>-->
+            <!--<groupId>org.codehaus.gmaven</groupId>-->
+            <!--<artifactId>gmaven-plugin</artifactId>-->
+            <!--<version>${version.maven.gmaven.plugin}</version>-->
+            <!--<configuration>-->
+            <!--<source>src / main / groovy</source>-->
+            <!--<providerSelection>2.0</providerSelection>-->
+            <!--</configuration>-->
+            <!--<executions>-->
+            <!--<execution>-->
+            <!--<goals>-->
+            <!--<goal>generateStubs</goal>-->
+            <!--<goal>compile</goal>-->
+            <!--<goal>generateTestStubs</goal>-->
+            <!--<goal>testCompile</goal>-->
+            <!--</goals>-->
+            <!--</execution>-->
+            <!--</executions>-->
+            <!--<dependencies>-->
+            <!--<dependency>-->
+            <!--<groupId>org.codehaus.gmaven.runtime</groupId>-->
+            <!--<artifactId>gmaven-runtime-2.0</artifactId>-->
+            <!--<version>${version.gmaven.runtime}</version>-->
+            <!--<exclusions>-->
+            <!--<exclusion>-->
+            <!--<groupId>org.codehaus.groovy</groupId>-->
+            <!--<artifactId>groovy-all</artifactId>-->
+            <!--</exclusion>-->
+            <!--</exclusions>-->
+            <!--</dependency>-->
+            <!--<dependency>-->
+            <!--<groupId>org.codehaus.groovy</groupId>-->
+            <!--<artifactId>groovy-all</artifactId>-->
+            <!--<version>${version.groovy}</version>-->
+            <!--</dependency>-->
+            <!--</dependencies>-->
             <!--</plugin>-->
 
             <!-- Only required if default Surefire configuration is not satisfactory -->
@@ -1326,9 +1326,9 @@
         </repository>
 
         <!--<repository>-->
-            <!--<id>eclipselink</id>-->
-            <!--<name>EclipseLink Repo</name>-->
-            <!--<url>http://www.eclipse.org/downloads/download.php?r=1&amp;nf=1&amp;file=/rt/eclipselink/maven.repo</url>-->
+        <!--<id>eclipselink</id>-->
+        <!--<name>EclipseLink Repo</name>-->
+        <!--<url>http://www.eclipse.org/downloads/download.php?r=1&amp;nf=1&amp;file=/rt/eclipselink/maven.repo</url>-->
         <!--</repository>-->
 
         <repository>
