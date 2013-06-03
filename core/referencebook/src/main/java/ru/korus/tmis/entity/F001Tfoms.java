@@ -128,7 +128,10 @@ public class F001Tfoms implements Serializable {
     public F001Tfoms() {
     }
 
-    private F001Tfoms(String tfKod, String tfOkato, String tfOgrn, String nameTfp, String nameTfk, String idx, String address, String famDir, String imDir, String otDir, String phone, String fax, String email, long kfTf, String www, Date dEdit, Date dEnd) {
+    private F001Tfoms(final String tfKod, final String tfOkato, final String tfOgrn, final String nameTfp, final String nameTfk,
+                      final String idx, final String address, final String famDir, final String imDir, final String otDir,
+                      final String phone,
+                      final String fax, final String email, final long kfTf, final String www, final Date dEdit, final Date dEnd) {
         this.tfKod = tfKod;
         this.tfOkato = tfOkato;
         this.tfOgrn = tfOgrn;

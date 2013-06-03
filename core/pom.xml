@@ -818,6 +818,24 @@
             <version>${version.joda.time}</version>
         </dependency>
 
+        <dependency>
+            <groupId>org.apache.maven</groupId>
+            <artifactId>maven-project</artifactId>
+            <version>3.0-alpha-2</version>
+            <scope>provided</scope>
+        </dependency>
+        <dependency>
+            <groupId>org.apache.maven</groupId>
+            <artifactId>maven-plugin-api</artifactId>
+            <version>3.0.5</version>
+            <scope>provided</scope>
+        </dependency>
+        <dependency>
+            <groupId>org.apache.maven</groupId>
+            <artifactId>maven-artifact</artifactId>
+            <version>3.0.5</version>
+            <scope>provided</scope>
+        </dependency>
 
     </dependencies>
 
@@ -1092,7 +1110,7 @@
                         ru/korus/tmis/communication/,
                         ru/korus/tmis/entity/,
                         wsdl/,
-                        ru/korus/tmis/hs/
+                        ru/korus/tmis/hs/,
                         ru/korus/tmis/dao/,
                         nsi/
                     </excludes>
