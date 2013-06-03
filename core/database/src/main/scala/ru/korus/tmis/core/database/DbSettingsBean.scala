@@ -14,6 +14,7 @@ import collection.mutable.Buffer
 
 import java.util.{List => JList}
 import ru.korus.tmis.util.I18nable
+import java.util
 
 @Startup
 @Interceptors(Array(classOf[LoggingInterceptor]))
@@ -26,9 +27,6 @@ with I18nable {
   @PersistenceContext(unitName = "tmis_core")
   var tmis_core: EntityManager = _
 
-
-
-
   @PostConstruct
   @Schedule(second = "0", minute = "0", hour = "4")
   def init() = {
@@ -38,8 +36,6 @@ with I18nable {
   def load_settings = {
     import ru.korus.tmis.util.ConfigManager._
     import collection.JavaConversions._
-
-
     val settings: Buffer[Setting] = tmis_core.createNamedQuery[Setting]("Setting.findAll", classOf[Setting]).getResultList.toBuffer
 
     settings.foreach {
@@ -51,8 +47,9 @@ with I18nable {
           info("Successfully changed setting")
         }
     }
-
-
   }
 
+  def getSettingByPath(path: String): Setting = tmis_core.createQuery("SELECT s FROM Setting s WHERE s.path = :path", classOf[Setting]).setParameter("path", path).getSingleResult
+
+  def getAllSettings: util.List[Setting] = tmis_core.createNamedQuery("Setting.findAll", classOf[Setting]).getResultList
 }
