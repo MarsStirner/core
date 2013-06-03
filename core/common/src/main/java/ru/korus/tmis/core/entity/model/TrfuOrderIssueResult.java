@@ -17,7 +17,7 @@ import javax.persistence.Table;
  * 
  */
 @Entity
-@Table(name="TrfuOrderIssueResult")
+@Table(name="trfuOrderIssueResult")
 public class TrfuOrderIssueResult implements Serializable {
 	private static final long serialVersionUID = 1L;
 
