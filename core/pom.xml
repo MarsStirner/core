@@ -384,7 +384,7 @@
                 <!-- Пароль к базе данных -->
                 <mysql.password>root</mysql.password>
                 <!-- Название базы данных МИС -->
-                <mysql.db.mis>hospital</mysql.db.mis>
+                <mysql.db.mis>s11r64</mysql.db.mis>
                 <!-- Название пула для базы данных МИС -->
                 <mysql.db.mis.pool>s11r64-pool</mysql.db.mis.pool>
                 <!-- Название базы данных RLS -->
