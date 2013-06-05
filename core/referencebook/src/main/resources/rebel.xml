@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<application xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+             xmlns="http://www.zeroturnaround.com"
+             xsi:schemaLocation="http://www.zeroturnaround.com http://www.zeroturnaround.com/alderaan/rebel-2_0.xsd">
+	<classpath>
+        <dir name="/home/anosov/development/korus/tmis-core/core/business-tier/target/classes"/>
+        <dir name="/home/anosov/development/korus/tmis-core/core/laboratory-tier/target/classes"/>
+        <dir name="/home/anosov/development/korus/tmis-core/core/drugstore-tier/target/classes"/>
+        <dir name="/home/anosov/development/korus/tmis-core/core/database/target/classes"/>
+        <dir name="/home/anosov/development/korus/tmis-core/core/common/target/classes"/>
+        <dir name="/home/anosov/development/korus/tmis-core/core/communication/target/classes"/>
+        <dir name="/home/anosov/development/korus/tmis-core/core/ws-drugstore/target/classes"/>
+        <dir name="/home/anosov/development/korus/tmis-core/core/ws-finance/target/classes"/>
+        <dir name="/home/anosov/development/korus/tmis-core/core/ws-laboratory/target/classes"/>
+        <dir name="/home/anosov/development/korus/tmis-core/core/ws-medipad/target/classes"/>
+        <dir name="/home/anosov/development/korus/tmis-core/core/ws-transfusion/target/classes"/>
+    </classpath>
+</application>
