@@ -510,7 +510,7 @@ public class CommServer implements Communications.Iface {
      * Добавление указанного пациента
      *
      * @param params ФИО, Дата рождения, Пол
-     * @return Статус добавления пациента
+     * @return Статус попытки добавления пациента
      * @throws TException
      */
     @Override
