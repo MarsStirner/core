@@ -3,6 +3,7 @@ package ru.korus.tmis.core.entity.model;
 import javax.persistence.*;
 import javax.xml.bind.annotation.XmlRootElement;
 import javax.xml.bind.annotation.XmlType;
+import java.io.Serializable;
 
 /**
  * RbJobType Entity
@@ -18,7 +19,7 @@ import javax.xml.bind.annotation.XmlType;
         })
 @XmlType(name = "rbJobType")
 @XmlRootElement(name = "rbJobType")
-public class RbJobType {
+public class RbJobType implements Serializable {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)

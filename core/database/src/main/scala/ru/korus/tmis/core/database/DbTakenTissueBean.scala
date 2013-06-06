@@ -42,17 +42,18 @@ class DbTakenTissueBean extends DbTakenTissueBeanLocal
       tissue = new TakenTissue
       tissue.setPatient(action.getEvent.getPatient)
       tissue.setExternalId(action.getEvent.getExternalId)
-
+      /*
       val lastBarcode = getLastTakenTissueJournalBarCode
       if (lastBarcode > 0 && lastBarcode != 999999) {
         tissue.setBarcode(lastBarcode + 1)
       } else {
         tissue.setBarcode(100000)
       }
+      */
     }
     tissue.setNote("")
     tissue.setAmount(0)
-    tissue.setPeriod(0)
+    //tissue.setPeriod(0)
     tissue.setDatetimeTaken(action.getPlannedEndDate)
     tissue.setType(getActionTypeTissueTypeByMasterId(action.getActionType.getId.intValue()).getTissueType)
     tissue
