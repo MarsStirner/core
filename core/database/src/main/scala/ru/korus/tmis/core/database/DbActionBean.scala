@@ -129,7 +129,8 @@ class DbActionBean
       }
       else
         a.setAssigner(userData.user)
-      a.setExecutor(userData.user)
+      //a.setExecutor(userData.user)
+      a.setExecutor(a.getActionType.getDefaultExecutor)
     }
 
     a.setCreateDatetime(now)
@@ -157,8 +158,7 @@ class DbActionBean
         eventPerson = dbEventPerson.getLastEventPersonForEventId(a.getEvent.getId.intValue())
         if (eventPerson != null) a.setAssigner(eventPerson.getPerson) else a.setAssigner(userData.user)
       }
-
-      a.setExecutor(userData.user)
+      //a.setExecutor(userData.user)
     }
 
     a.setModifyDatetime(now)

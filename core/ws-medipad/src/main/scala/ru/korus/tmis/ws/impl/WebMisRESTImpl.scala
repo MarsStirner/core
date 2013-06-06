@@ -1,6 +1,6 @@
 package ru.korus.tmis.ws.impl
 
-import javax.inject.Named
+import javax.inject.{Inject, Named}
 import javax.jws.{HandlerChain, WebService}
 import ru.korus.tmis.core.data._
 import ru.korus.tmis.core.auth.{AuthToken, AuthStorageBeanLocal, AuthData}
@@ -24,6 +24,7 @@ import ru.korus.tmis.core.thesaurus.ThesaurusBeanLocal
 import ru.korus.tmis.core.treatment.TreatmentBeanLocal
 import com.google.common.collect.Lists
 import javax.servlet.http.HttpServletRequest
+import ru.korus.tmis.laboratory.business.LaboratoryBeanLocal
 
 /**
  * Created with IntelliJ IDEA.
@@ -167,6 +168,9 @@ class WebMisRESTImpl  extends WebMisREST
 
   @EJB
   var diagnosisBean: DiagnosisBeanLocal = _
+
+  @EJB
+  var lisBean: LaboratoryBeanLocal = _
 
   def getAllPatients(requestData: PatientRequestData, auth: AuthData): PatientData = {
     if (auth != null) {
@@ -802,7 +806,14 @@ class WebMisRESTImpl  extends WebMisREST
 
   //********* Диагнозтические исследования **********
   def insertLaboratoryStudies(eventId: Int, data: CommonData, auth: AuthData) = {
-    directionBean.createDirectionsForEventIdFromCommonData(eventId, data, "Diagnostic", null, auth,  postProcessingForDiagnosis _)
+    val json = directionBean.createDirectionsForEventIdFromCommonData(eventId, data, "Diagnostic", null, auth,  postProcessingForDiagnosis _)
+    json.getData().map(entity => entity.getId().intValue()).foreach(a_id => {
+      val action = actionBean.getActionById(a_id)
+      if (action.getStatus == 2 && !action.getIsUrgent) {
+        lisBean.sendLisAnalysisRequest(a_id)
+      }
+    })
+    json
     //primaryAssessmentBean.createAssessmentsForEventIdFromCommonData(eventId, data, "Diagnostic", null, auth,  postProcessingForDiagnosis _)// postProcessingForDiagnosis
   }
 
@@ -1115,6 +1126,9 @@ class WebMisRESTImpl  extends WebMisREST
     var isSuccess: Boolean = true
     data.getData.foreach(f=> {
       val res = dbJobTicketBean.modifyJobTicketStatus(f.getId, f.getStatus, authData)
+      if (f.getStatus == 2) {
+        dbJobTicketBean.getActionsForJobTicket(f.getId).foreach(a => {lisBean.sendLisAnalysisRequest(a.getId.intValue())})
+      }
       if(!res)
         isSuccess = res
     })

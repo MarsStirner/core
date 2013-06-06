@@ -10,6 +10,7 @@ import ru.korus.tmis.core.exception.CoreException;
 
 import javax.ejb.Local;
 import java.util.Date;
+import java.util.List;
 import java.util.Map;
 
 /**
@@ -46,5 +47,7 @@ public interface DbJobTicketBeanLocal {
      * @see Job
      * @see CoreException
      */
-    Object getJobTicketAndTakenTissueForAction(Action action) throws CoreException;
+    Object getJobTicketAndTakenTissueForAction(int eventId, int atId, Date date) throws CoreException;
+
+    List<Action> getActionsForJobTicket(int jobTicketId) throws CoreException;
 }

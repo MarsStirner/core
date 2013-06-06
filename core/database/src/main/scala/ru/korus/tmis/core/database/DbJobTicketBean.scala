@@ -140,15 +140,15 @@ class DbJobTicketBean extends DbJobTicketBeanLocal
     isComplete
   }
 
-  def getJobTicketAndTakenTissueForAction(action: Action) = {
+  def getJobTicketAndTakenTissueForAction(eventId: Int, atId: Int, datef: Date) = {
     val formatter = new SimpleDateFormat("yyyy-MM-dd")
-    val strDate = formatter.format(action.getPlannedEndDate)
+    val strDate = formatter.format(datef)
     val date = formatter.parse(strDate)
 
     val query = em.createQuery(JobTicketAndTakenTissueForActionQuery, classOf[Array[AnyRef]])
                   .setParameter("plannedEndDate", date)
-                  .setParameter("eventId", action.getEvent.getId.intValue())
-                  .setParameter("actionTypeId", action.getActionType.getId.intValue())
+                  .setParameter("eventId", eventId)
+                  .setParameter("actionTypeId", atId)
 
     val result = query.getResultList
 
@@ -160,7 +160,7 @@ class DbJobTicketBean extends DbJobTicketBeanLocal
           i18n("error.jobNotFound").format(id))          */
       }
       case size => {
-        val jobAndJobTicket = result.foldLeft(new java.util.LinkedList[(JobTicket, TakenTissue)])(
+        /*val jobAndJobTicket = result.foldLeft(new java.util.LinkedList[(JobTicket, TakenTissue)])(
           (list, aj) => {
             em.detach(aj(0))
             em.detach(aj(1))
@@ -168,8 +168,32 @@ class DbJobTicketBean extends DbJobTicketBeanLocal
             list
           }
         )
-        jobAndJobTicket.get(0)
+        jobAndJobTicket.get(0)*/
+        val jt = result.get(0)(0).asInstanceOf[JobTicket]
+        val tt = result.get(0)(1).asInstanceOf[TakenTissue]
+        em.detach(jt)
+        em.detach(tt)
+        (jt, tt)
       }
+    }
+  }
+
+  def getActionsForJobTicket(jobTicketId: Int) = {
+    val query = em.createQuery(ActionsForJobTicketQuery, classOf[Action])
+      .setParameter("jobTicketId", jobTicketId)
+
+    val result = query.getResultList
+
+    result.size match {
+      case 0 => {
+        throw new CoreException(
+          ConfigManager.ErrorCodes.JobNotFound,
+          i18n("error.ActionsForJobTicketNotFound").format(jobTicketId))
+      }
+      case size => {
+        result.foreach(a => {em.detach(a)})
+      }
+      result
     }
   }
 
@@ -289,6 +313,36 @@ class DbJobTicketBean extends DbJobTicketBeanLocal
       AND
         j.deleted = 0
     """
+
+  val ActionsForJobTicketQuery =
+    """
+      SELECT a
+      FROM
+        JobTicket jt
+          JOIN jt.job j,
+        APValueJobTicket apval,
+        ActionProperty ap
+          JOIN ap.action a
+      WHERE
+        jt.id = :jobTicketId
+      AND
+        a.actionType.mnemonic = 'LAB'
+      AND
+        a.isUrgent = 0
+      AND
+        apval.id.id = ap.id
+      AND
+        apval.value = jt.id
+      AND
+        ap.deleted = 0
+      AND
+        a.deleted = 0
+      AND
+        j.deleted = 0
+    """
+
+
+
 }
 
 
