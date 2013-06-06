@@ -4,7 +4,7 @@
 
     <modelVersion>4.0.0</modelVersion>
     <groupId>ru.korus.tmis</groupId>
-    <artifactId>tmis-nexus</artifactId>
+    <artifactId>tmis-core</artifactId>
     <packaging>pom</packaging>
     <version>${version.tmis.core}</version>
     <name>TMIS Root Project</name>
