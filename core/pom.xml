@@ -18,7 +18,7 @@
         <module>server</module>
         <module>ws-medipad</module>
         <module>ws-laboratory</module>
-        <module>ws-drugstore</module>
+        <!--<module>ws-drugstore</module>-->
         <module>referencebook</module>
         <module>ws-finance</module>
         <module>ws-transfusion</module>
@@ -63,6 +63,7 @@
         <version.maven.plugin.ejb>2.3</version.maven.plugin.ejb>
         <version.maven.gmaven.plugin>1.4</version.maven.gmaven.plugin>
 
+        <spring.version>3.2.0.RELEASE</spring.version>
 
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
         <project.build.jdk>1.6</project.build.jdk>
@@ -739,6 +740,15 @@
     </profiles>
 
     <dependencies>
+
+        <!-- Spring framework ${spring.version} -->
+        <dependency>
+            <groupId>org.springframework</groupId>
+            <artifactId>spring-context</artifactId>
+            <version>3.2.3.RELEASE</version>
+        </dependency>
+
+
         <!--
             Java EE
         -->
@@ -1423,6 +1433,11 @@
             <url>http://download.java.net/maven/glassfish</url>
         </repository>
 
+        <repository>
+            <id>springsource-repo</id>
+            <name>SpringSource Repository</name>
+            <url>http://repo.springsource.org/release</url>
+        </repository>
 
     </repositories>
 

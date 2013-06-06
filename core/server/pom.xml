@@ -69,12 +69,12 @@
             <type>ejb</type>
         </dependency>
 
-        <!-- <dependency>
-             <groupId>ru.korus.tmis.drugstore</groupId>
-             <artifactId>tmis-ws-drugstore</artifactId>
-             <version>${version.tmis.core}</version>
-             <type>war</type>
-         </dependency>     -->
+        <!--<dependency>-->
+            <!--<groupId>ru.korus.tmis.drugstore</groupId>-->
+            <!--<artifactId>tmis-ws-drugstore</artifactId>-->
+            <!--<version>${version.tmis.core}</version>-->
+            <!--<type>war</type>-->
+        <!--</dependency>-->
 
         <!--<dependency>-->
         <!--<groupId>ru.korus.tmis.hl7</groupId>-->
@@ -119,6 +119,13 @@
         <resources>
             <resource>
                 <directory>src/main/resources/</directory>
+                <filtering>true</filtering>
+                <includes>
+                    <include>META-INF/spring/*.xml</include>
+                </includes>
+            </resource>
+            <resource>
+                <directory>src/main/resources/</directory>
                 <targetPath>../</targetPath>
                 <filtering>true</filtering>
                 <includes>
@@ -144,7 +151,8 @@
                 <configuration>
                     <version>6</version>
                     <defaultLibBundleDir>lib</defaultLibBundleDir>
-                    <!--<earSourceDirectory>${basedir}/src/main/resources/</earSourceDirectory>-->
+                    <earSourceDirectory>${basedir}/src/main/resources/</earSourceDirectory>
+                    <earSourceDirectory>${basedir}/src/main/webapps/</earSourceDirectory>
                     <earSourceExcludes>logback.xml</earSourceExcludes>
                     <!--<earSourceIncludes>logback.xml</earSourceIncludes>-->
                 </configuration>
