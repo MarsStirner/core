@@ -5,7 +5,7 @@ import ru.korus.tmis.core.logging.LoggingInterceptor
 import javax.ejb.{TransactionAttributeType, TransactionAttribute, EJB, Stateless}
 import grizzled.slf4j.Logging
 import ru.korus.tmis.util.{ConfigManager, CAPids, I18nable}
-import javax.persistence.{EntityManager, PersistenceContext}
+import javax.persistence.{FlushModeType, EntityManager, PersistenceContext}
 import ru.korus.tmis.core.data.{AssignmentsToRemoveDataList, CommonGroup, JSONCommonData, CommonData}
 import ru.korus.tmis.core.auth.AuthData
 import ru.korus.tmis.core.entity.model._
@@ -151,7 +151,6 @@ class DirectionBean extends DirectionBeanLocal
   }
     */
   private def createJobTicketsForActions(actions: java.util.List[Action], eventId: Int) =  {
-
     val moving = hospitalBedBean.getLastMovingActionForEventId(eventId)
     var department = dbOrgStructure.getOrgStructureById(28)//приемное отделение
     //actionPropertyBean.getActionPropertiesByActionIdAndTypeId(moving.getId.intValue(), 1616)
@@ -187,7 +186,14 @@ class DirectionBean extends DirectionBeanLocal
             val j = dbJobBean.insertOrUpdateJob(0, a, department)
             val jt = dbJobTicketBean.insertOrUpdateJobTicket(0, a, j)
             val tt = dbTakenTissue.insertOrUpdateTakenTissue(0, a)
-            //if (list != null && list.size()>0) tt.setBarcode(list.getLast._3.getBarcode+1)
+            if (list != null && list.size()>0) {
+              if (list.getLast._3.getBarcode != 999999) {
+                tt.setBarcode(list.getLast._3.getBarcode+1)
+              } else {
+                tt.setBarcode(100000)
+                tt.setPeriod(list.getLast._3.getPeriod+1)
+              }
+            }
             if (tt != null) a.setTakenTissue(tt)
             list.add(j, jt, tt)
             jtForAp = jt
@@ -227,7 +233,14 @@ class DirectionBean extends DirectionBeanLocal
         val j = dbJobBean.insertOrUpdateJob(0, a, department)
         val jt = dbJobTicketBean.insertOrUpdateJobTicket(0, a, j)
         val tt = dbTakenTissue.insertOrUpdateTakenTissue(0, a)
-        //if (list != null && list.size()>0) tt.setBarcode(list.getLast._3.getBarcode+1)
+        if (list != null && list.size()>0) {
+          if (list.getLast._3.getBarcode != 999999) {
+            tt.setBarcode(list.getLast._3.getBarcode+1)
+          } else {
+            tt.setBarcode(100000)
+            tt.setPeriod(list.getLast._3.getPeriod+1)
+          }
+        }
         if (tt != null) a.setTakenTissue(tt)
         list.add(j, jt, tt)
         jtForAp = jt
@@ -302,7 +315,6 @@ class DirectionBean extends DirectionBeanLocal
                                                 request: Object,
                                                userData: AuthData,
                              postProcessingForDiagnosis: (JSONCommonData, java.lang.Boolean) => JSONCommonData) = {
-
     var actions: java.util.List[Action] = commonDataProcessor.createActionForEventFromCommonData(eventId, directions, userData)
     actions = createJobTicketsForActions(actions, eventId)
 

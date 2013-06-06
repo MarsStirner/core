@@ -6,7 +6,7 @@ import ru.korus.tmis.core.logging.LoggingInterceptor
 import javax.ejb.{EJB, Stateless}
 import grizzled.slf4j.Logging
 import ru.korus.tmis.util.{ConfigManager, CAPids, I18nable}
-import javax.persistence.{EntityManager, PersistenceContext}
+import javax.persistence.{FlushModeType, EntityManager, PersistenceContext}
 import ru.korus.tmis.core.exception.CoreException
 import ru.korus.tmis.core.entity.model.{ActionTypeTissueType, Action, Event, TakenTissue}
 import java.util.Date
@@ -42,18 +42,18 @@ class DbTakenTissueBean extends DbTakenTissueBeanLocal
       tissue = new TakenTissue
       tissue.setPatient(action.getEvent.getPatient)
       tissue.setExternalId(action.getEvent.getExternalId)
-      /*
+
       val lastBarcode = getLastTakenTissueJournalBarCode
       if (lastBarcode > 0 && lastBarcode != 999999) {
         tissue.setBarcode(lastBarcode + 1)
       } else {
         tissue.setBarcode(100000)
+        tissue.setPeriod(tissue.getPeriod+1)
       }
-      */
     }
     tissue.setNote("")
     tissue.setAmount(0)
-    //tissue.setPeriod(0)
+    tissue.setPeriod(0)
     tissue.setDatetimeTaken(action.getPlannedEndDate)
     tissue.setType(getActionTypeTissueTypeByMasterId(action.getActionType.getId.intValue()).getTissueType)
     tissue

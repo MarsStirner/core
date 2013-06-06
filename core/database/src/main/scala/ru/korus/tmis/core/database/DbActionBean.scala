@@ -130,7 +130,7 @@ class DbActionBean
       else
         a.setAssigner(userData.user)
       //a.setExecutor(userData.user)
-      a.setExecutor(a.getActionType.getDefaultExecutor)
+      a.setExecutor(at.getDefaultExecutor)
     }
 
     a.setCreateDatetime(now)
@@ -140,6 +140,7 @@ class DbActionBean
 
     a.setEvent(e)
     a.setActionType(at)
+    a.setExecutor(at.getDefaultExecutor)
 
     a.setStatus(ActionStatus.STARTED.getCode)
     a.setUuid(dbUUIDBeanLocal.createUUID())
