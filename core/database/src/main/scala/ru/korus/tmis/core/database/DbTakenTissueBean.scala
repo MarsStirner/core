@@ -43,17 +43,17 @@ class DbTakenTissueBean extends DbTakenTissueBeanLocal
       tissue.setPatient(action.getEvent.getPatient)
       tissue.setExternalId(action.getEvent.getExternalId)
 
-      val lastBarcode = getLastTakenTissueJournalBarCode
-      if (lastBarcode > 0 && lastBarcode != 999999) {
-        tissue.setBarcode(lastBarcode + 1)
+      val lastTissue = getLastTakenTissueJournalBarCode
+      if (lastTissue != null && lastTissue.getBarcode > 0 && lastTissue.getBarcode != 999999) {
+        tissue.setBarcode(lastTissue.getBarcode + 1)
       } else {
         tissue.setBarcode(100000)
-        tissue.setPeriod(tissue.getPeriod+1)
+        tissue.setPeriod(lastTissue.getPeriod+1)
       }
     }
     tissue.setNote("")
     tissue.setAmount(0)
-    tissue.setPeriod(0)
+    //tissue.setPeriod(0)
     tissue.setDatetimeTaken(action.getPlannedEndDate)
     tissue.setType(getActionTypeTissueTypeByMasterId(action.getActionType.getId.intValue()).getTissueType)
     tissue
@@ -83,9 +83,9 @@ class DbTakenTissueBean extends DbTakenTissueBeanLocal
 
     if (result != null) {
       em.detach(result)
-      result.getBarcode
+      result
     } else {
-      -1
+      null
     }
     /*
         throw new CoreException(
