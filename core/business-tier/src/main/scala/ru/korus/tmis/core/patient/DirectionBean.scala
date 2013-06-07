@@ -189,6 +189,7 @@ class DirectionBean extends DirectionBeanLocal
             if (list != null && list.size()>0) {
               if (list.getLast._3.getBarcode != 999999) {
                 tt.setBarcode(list.getLast._3.getBarcode+1)
+                tt.setPeriod(list.getLast._3.getPeriod)
               } else {
                 tt.setBarcode(100000)
                 tt.setPeriod(list.getLast._3.getPeriod+1)
@@ -236,6 +237,7 @@ class DirectionBean extends DirectionBeanLocal
         if (list != null && list.size()>0) {
           if (list.getLast._3.getBarcode != 999999) {
             tt.setBarcode(list.getLast._3.getBarcode+1)
+            tt.setPeriod(list.getLast._3.getPeriod)
           } else {
             tt.setBarcode(100000)
             tt.setPeriod(list.getLast._3.getPeriod+1)

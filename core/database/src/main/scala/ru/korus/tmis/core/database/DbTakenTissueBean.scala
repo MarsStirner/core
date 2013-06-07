@@ -46,6 +46,7 @@ class DbTakenTissueBean extends DbTakenTissueBeanLocal
       val lastTissue = getLastTakenTissueJournalBarCode
       if (lastTissue != null && lastTissue.getBarcode > 0 && lastTissue.getBarcode != 999999) {
         tissue.setBarcode(lastTissue.getBarcode + 1)
+        tissue.setPeriod(lastTissue.getPeriod)
       } else {
         tissue.setBarcode(100000)
         tissue.setPeriod(lastTissue.getPeriod+1)
