@@ -27,7 +27,7 @@
 
     <properties>
         <!-- Версия ядра-->
-        <version.tmis.core>0.9.13-RC7</version.tmis.core>
+        <version.tmis.core>0.9.13-RC8</version.tmis.core>
 
 
         <version.joda.time>2.1</version.joda.time>
