@@ -3,10 +3,7 @@ package ru.korus.tmis.laboratory.bak.utils;
 import org.apache.commons.lang.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import ru.korus.tmis.laboratory.bak.model.BiomaterialInfo;
-import ru.korus.tmis.laboratory.bak.model.DiagnosticRequestInfo;
-import ru.korus.tmis.laboratory.bak.model.OrderInfo;
-import ru.korus.tmis.laboratory.bak.model.PatientInfo;
+import ru.korus.tmis.laboratory.bak.model.*;
 
 import javax.xml.datatype.DatatypeConfigurationException;
 import javax.xml.datatype.DatatypeFactory;
@@ -24,6 +21,16 @@ import java.util.Map;
 public class QueryInitializer {
 
     private static final Logger log = LoggerFactory.getLogger(QueryInitializer.class);
+
+
+    public static QueryHL7 buildQueryHL7(Map<String, Object> params) {
+        final QueryHL7 query = new QueryHL7();
+        query.biomaterialInfo = initBiomaterialInfo(params);
+        query.patientInfo = initPatientInfo(params);
+        query.diagnosticRequestInfo = initDiagnosticRequestInfo(params);
+        query.orderInfo  = initOrderInfo(params);
+        return query;
+    }
 
     public static DiagnosticRequestInfo initDiagnosticRequestInfo(Map<String, Object> params) {
         DiagnosticRequestInfo diagnosticRequestInfo = new DiagnosticRequestInfo();

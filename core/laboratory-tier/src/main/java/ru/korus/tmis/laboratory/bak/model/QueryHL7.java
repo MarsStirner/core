@@ -1,7 +1,5 @@
 package ru.korus.tmis.laboratory.bak.model;
 
-import ru.korus.tmis.util.CompileTimeConfigManager;
-
 import javax.xml.bind.JAXBContext;
 import javax.xml.bind.JAXBException;
 import javax.xml.bind.Marshaller;
@@ -15,9 +13,7 @@ import java.io.StringWriter;
  * @author anosov@outlook.com
  *         date: 5/22/13
  */
-@XmlRootElement (
-        namespace = CompileTimeConfigManager.Laboratory.Namespace,
-        name = "queryAnalysis")
+@XmlRootElement
 public class QueryHL7 {
 
     @XmlElement

@@ -2,6 +2,7 @@ package ru.korus.tmis.laboratory.bak.bean;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import ru.korus.tmis.core.exception.CoreException;
 import ru.korus.tmis.core.logging.LoggingInterceptor;
 import ru.korus.tmis.laboratory.bak.model.PatientInfo;
 import ru.korus.tmis.laboratory.bak.model.QueryHL7;
@@ -17,6 +18,8 @@ import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
 
+import static ru.korus.tmis.laboratory.bak.utils.QueryInitializer.buildQueryHL7;
+
 
 /**
  * Сервис для отправки заявки на анализы к сервису CGM
@@ -30,8 +33,6 @@ import java.util.Map;
 public class BakLaboratoryBeanImpl implements BakLaboratoryBeanLocal {
 
     private static final Logger log = LoggerFactory.getLogger(BakLaboratoryBeanImpl.class);
-
-    CGMServiceImpl cgmService;
 
     private final Map<String, Object> mockParams = new HashMap<String, Object>(){{
         put(QueryInitializer.ParamName.CUSTODIAN.getName(), "mock");
@@ -71,32 +72,31 @@ public class BakLaboratoryBeanImpl implements BakLaboratoryBeanLocal {
         put(QueryInitializer.ParamName.UNIT_BIOMETRIAL_NAME.getName(), "mock");
     }};
 
+    CGMServiceImpl cgmService;
+
+    /**
+     * Метод для отсылки запроса на анализ в лабораторию
+     */
     @Override
     @Schedule(minute = "*/1", hour = "*")
-    public void sendLisAnalysisRequest() {
+    public void sendLisAnalysisRequest() throws CoreException {
+        log.info("Create cgmService..");
+        cgmService = new CGMServiceImpl();
+        cgmService.setHandlerResolver(new SOAPEnvelopeHandlerResolver());
         try {
-            log.info("Create cgmService..");
-            cgmService = new CGMServiceImpl();
-            cgmService.setHandlerResolver(new SOAPEnvelopeHandlerResolver());
             log.info("Sending query cgmService..");
             final ICGMService service = cgmService.getService();
             final QueryHL7 queryHL7 = buildQueryHL7(mockParams);
-            final String result = service.queryAnalysis("GLASSFISH");
+            final String xml = queryHL7.toXML();
+            final String result = service.queryAnalysis(xml);
             log.info("Result query cgmService result: " + result);
         } catch (Exception e) {
             log.info("Error in BakLaboratoryBeanImpl: " + e, e);
+            throw new CoreException(e.getMessage());
         } finally {
             log.info("Not result");
         }
     }
 
 
-    private QueryHL7 buildQueryHL7(Map<String, Object> params) {
-        QueryHL7 query = new QueryHL7();
-        query.biomaterialInfo = QueryInitializer.initBiomaterialInfo(params);
-        query.patientInfo = QueryInitializer.initPatientInfo(params);
-        query.diagnosticRequestInfo = QueryInitializer.initDiagnosticRequestInfo(params);
-        query.orderInfo  = QueryInitializer.initOrderInfo(params);
-        return query;
-    }
 }
