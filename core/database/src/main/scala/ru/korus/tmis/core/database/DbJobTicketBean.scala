@@ -116,26 +116,24 @@ class DbJobTicketBean extends DbJobTicketBeanLocal
 
   def modifyJobTicketStatus(id: Int, status: Int, auth: AuthData) = {
 
-    var lockId: Int = -1
-    var oldJobTicket : JobTicket = null
     var isComplete: Boolean = false
 
     if (id > 0) {
-      try {
-        val jobTicket = this.getJobTicketById(id)
-        oldJobTicket = JobTicket.clone(jobTicket)
-        lockId = appLock.acquireLock("Job_Ticket", oldJobTicket.getId.intValue(), oldJobTicket.getId.intValue(), auth)
+      val jobTicket = this.getJobTicketById(id)
+      val oldJobTicket = JobTicket.clone(jobTicket)
+      val lockId = appLock.acquireLock("Job_Ticket", id, oldJobTicket.getId.intValue(), auth)
 
+      try {
         jobTicket.setStatus(status)
         dbManager.merge(jobTicket)
         isComplete = true
       } finally {
-        if (lockId > 0) appLock.releaseLock(lockId)
+        appLock.releaseLock(lockId)
       }
     } else {
       LoggingManager.setLoggerType(LoggingManager.LoggingTypes.Debug)
       LoggingManager.warning("code " + ConfigManager.ErrorCodes.JobTicketNotFound +
-                             "Невозможно отредактировать: " + ConfigManager.Messages("error.jobTicketNotFound".format(id)))
+        "Невозможно отредактировать" + ConfigManager.Messages("error.jobTicketNotFound".format(id)))
     }
     isComplete
   }

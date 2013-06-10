@@ -79,10 +79,13 @@ class DbDiagnosticBean  extends DbDiagnosticBeanLocal
     var oldDiagnostic: Diagnostic = null
     var lockId: Int = 0
 
+    val event = dbEventBean.getEventById(eventId)
+    val diagnosisType = dbRbDiagnosisTypeBean.getRbDiagnosisTypeByFlatCode(diagnosisTypeFlatCode)
+
     if (id>0) {
       diagnostic = getDiagnosticById(id)
       oldDiagnostic = Diagnostic.clone(diagnostic)
-      lockId = appLock.acquireLock("Diagnostic", diagnostic.getId.intValue(), oldDiagnostic.getId.intValue(), userData)
+      lockId = appLock.acquireLock("Diagnostic", id, oldDiagnostic.getId.intValue(), userData)
     }
     else {
       diagnostic = new Diagnostic()
@@ -94,9 +97,6 @@ class DbDiagnosticBean  extends DbDiagnosticBeanLocal
     }
 
     try {
-      val event = dbEventBean.getEventById(eventId)
-      val diagnosisType = dbRbDiagnosisTypeBean.getRbDiagnosisTypeByFlatCode(diagnosisTypeFlatCode)
-
       diagnostic.setModifyDatetime(now)
       diagnostic.setModifyPerson(userData.getUser)
       diagnostic.setEvent(event)
