@@ -1,5 +1,8 @@
 package ru.korus.tmis.laboratory.bak.model;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 import javax.xml.bind.JAXBContext;
 import javax.xml.bind.JAXBException;
 import javax.xml.bind.Marshaller;
@@ -16,6 +19,8 @@ import java.io.StringWriter;
 @XmlRootElement
 public class QueryHL7 {
 
+    private static final Logger log = LoggerFactory.getLogger(QueryHL7.class);
+
     @XmlElement
     public
     PatientInfo patientInfo;
@@ -31,7 +36,6 @@ public class QueryHL7 {
     public
     OrderInfo orderInfo;
 
-
     public String toXML() {
         StringWriter writer = new StringWriter();
         try {
@@ -40,7 +44,7 @@ public class QueryHL7 {
 
             jaxbMarshaller.marshal(this, writer);
         } catch (JAXBException e) {
-            e.printStackTrace();
+            log.error("Error during marshalling QueryHL7 object to Xml. ", e);
         }
 
         return writer.toString();
