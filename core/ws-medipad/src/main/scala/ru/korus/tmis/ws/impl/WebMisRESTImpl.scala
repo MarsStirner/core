@@ -502,7 +502,7 @@ class WebMisRESTImpl  extends WebMisREST
 
   private def postProcessing (jData: JSONCommonData, reWriteId: java.lang.Boolean) = {
     //Постобработка (Сопоставление id APT c CoreAP в подветке details - id, typeId)
-    jData.data.get(0).group.get(1).attribute.foreach(ap => {
+    /*jData.data.get(0).group.get(1).attribute.foreach(ap => {
       var value = if(reWriteId.booleanValue)
         ap.id.intValue()
       else {
@@ -513,6 +513,15 @@ class WebMisRESTImpl  extends WebMisREST
       }
       ap.typeId = dbRbCoreActionPropertyBean.getRbCoreActionPropertiesByActionPropertyTypeId(value).getId.intValue()
       if(reWriteId.booleanValue) ap.id =ap.typeId
+    })*/
+    jData.data.get(0).group.get(1).attribute.foreach(ap => {
+      val value = if(ap.typeId!=null && ap.typeId.intValue()>0)
+        ap.typeId.intValue()
+      else
+        actionPropertyBean.getActionPropertyById(ap.id.intValue()).getType.getId.intValue()
+      ap.typeId = value
+      if(reWriteId.booleanValue)
+        ap.id =ap.typeId
     })
     jData
   }
