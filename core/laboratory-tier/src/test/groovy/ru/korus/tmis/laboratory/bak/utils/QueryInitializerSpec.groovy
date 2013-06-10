@@ -2,6 +2,7 @@ package ru.korus.tmis.laboratory.bak.utils
 
 import ru.korus.tmis.laboratory.bak.model.PatientInfo
 import ru.korus.tmis.laboratory.bak.model.QueryHL7
+import spock.lang.Ignore
 import spock.lang.Shared
 import spock.lang.Specification
 
@@ -56,6 +57,7 @@ class QueryInitializerSpec extends Specification {
 
     }
 
+    @Ignore
     def "тестировние построение запроса через QueryInitializer"() {
         given:
         QueryHL7 query = new QueryHL7();
