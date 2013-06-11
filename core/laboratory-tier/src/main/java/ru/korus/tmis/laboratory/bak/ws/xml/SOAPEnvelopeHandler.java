@@ -1,5 +1,8 @@
 package ru.korus.tmis.laboratory.bak.ws.xml;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 import javax.xml.namespace.QName;
 import javax.xml.soap.*;
 import javax.xml.ws.handler.MessageContext;
@@ -8,7 +11,6 @@ import javax.xml.ws.handler.soap.SOAPMessageContext;
 import java.io.ByteArrayOutputStream;
 import java.util.HashSet;
 import java.util.Set;
-import java.util.logging.Logger;
 
 /**
  * Жесточайший хак, для того чтобы согласовать
@@ -20,14 +22,14 @@ import java.util.logging.Logger;
  */
 public class SOAPEnvelopeHandler implements SOAPHandler<SOAPMessageContext> {
 
-    private static final Logger log = Logger.getLogger(SOAPEnvelopeHandler.class.getName());
+    private static final Logger log = LoggerFactory.getLogger(SOAPEnvelopeHandler.class);
 
     @Override
     public boolean handleMessage(final SOAPMessageContext context) {
         final Boolean isSoapRequest = (Boolean) context.get(MessageContext.MESSAGE_OUTBOUND_PROPERTY);
         if (isSoapRequest) {
             final SOAPMessage message = context.getMessage();
-            writeMessage(message);
+//            writeMessage(message);
             try {
                 final SOAPEnvelope envelope = message.getSOAPPart().getEnvelope();
                 envelope.addNamespaceDeclaration("soapenv", "http://schemas.xmlsoap.org/soap/envelope/");
@@ -35,12 +37,11 @@ public class SOAPEnvelopeHandler implements SOAPHandler<SOAPMessageContext> {
                 envelope.removeAttribute("xmlns:S");
                 envelope.setPrefix("soapenv");
                 message.getSOAPBody().setPrefix("soapenv");
-//                envelope.getHeader().detachNode();
                 message.saveChanges();
                 context.setMessage(message);
-                writeMessage(message);
+//                writeMessage(message);
             } catch (SOAPException e) {
-                e.printStackTrace();
+                log.error("Error during modify SOAP message [correcting namespace] ", e);
             }
         }
         return true;

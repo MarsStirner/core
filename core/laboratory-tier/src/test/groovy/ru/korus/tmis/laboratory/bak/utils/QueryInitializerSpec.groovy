@@ -57,14 +57,13 @@ class QueryInitializerSpec extends Specification {
 
     }
 
-    @Ignore
     def "тестировние построение запроса через QueryInitializer"() {
         given:
         QueryHL7 query = new QueryHL7();
-        query.setBiomaterialInfo(QueryInitializer.initBiomaterialInfo(mockParams));
-        query.setPatientInfo(QueryInitializer.initPatientInfo(mockParams));
-        query.setDiagnosticRequestInfo(QueryInitializer.initDiagnosticRequestInfo(mockParams));
-        query.setOrderInfo(QueryInitializer.initOrderInfo(mockParams));
+        query.biomaterialInfo  = QueryInitializer.initBiomaterialInfo(mockParams)
+        query.patientInfo = QueryInitializer.initPatientInfo(mockParams);
+        query.diagnosticRequestInfo = QueryInitializer.initDiagnosticRequestInfo(mockParams);
+        query.orderInfo = QueryInitializer.initOrderInfo(mockParams);
 
         expect:
         query != null

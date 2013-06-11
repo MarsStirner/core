@@ -165,7 +165,7 @@ public class QueryInitializer {
         try {
             value = DatatypeFactory.newInstance().newXMLGregorianCalendar(c);
         } catch (DatatypeConfigurationException e) {
-            throw new RuntimeException(e.getMessage());
+            throw new RuntimeException(e.getMessage(), e);
         }
         log.debug("Initialize query. Pass param [" + param + "] " + " by value [" + value + "]");
         return value;
