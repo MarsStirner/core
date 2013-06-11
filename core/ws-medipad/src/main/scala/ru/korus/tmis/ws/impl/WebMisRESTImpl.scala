@@ -469,7 +469,7 @@ class WebMisRESTImpl  extends WebMisREST
     //listForSummary.add(ActionWrapperInfo.toOrder)
 
     primaryAssessmentBean.getEmptyStructure(actionTypeId,
-                                            "PrimaryAssesment",
+                                            "Document",
                                             listForConverter,
                                             listForSummary,
                                             authData,
@@ -481,7 +481,7 @@ class WebMisRESTImpl  extends WebMisREST
   def getStructOfPrimaryMedExamWithCopy(actionTypeId: Int, authData: AuthData, eventId: Int) = {
     var lastActionId = actionBean.getActionIdWithCopyByEventId(eventId, actionTypeId)
     try {
-      primaryAssessmentBean.getPrimaryAssessmentById(lastActionId, "Assessment", authData, postProcessing _, false) //postProcessingWithCopy _, true)
+      primaryAssessmentBean.getPrimaryAssessmentById(lastActionId, "Document", authData, postProcessing _, false) //postProcessingWithCopy _, true)
     }
     catch {
       case e: Exception => {
@@ -491,14 +491,14 @@ class WebMisRESTImpl  extends WebMisREST
 
   }
 
-  private def preProcessing (jData: JSONCommonData, reWriteId: java.lang.Boolean) = {
+  /*private def preProcessing (jData: JSONCommonData, reWriteId: java.lang.Boolean) = {
     //Предбработка (Сопоставление CoreAP с id APT в подветке details - id, typeId)
     jData.data.get(0).group.get(1).attribute.foreach(core => {
       core.typeId = dbRbCoreActionPropertyBean.getRbCoreActionPropertiesById(core.typeId.intValue()).getActionPropertyType.getId
       if(reWriteId.booleanValue) core.id = core.typeId
     })
     jData
-  }
+  } */
 
   private def postProcessing (jData: JSONCommonData, reWriteId: java.lang.Boolean) = {
     //Постобработка (Сопоставление id APT c CoreAP в подветке details - id, typeId)
@@ -514,14 +514,14 @@ class WebMisRESTImpl  extends WebMisREST
       ap.typeId = dbRbCoreActionPropertyBean.getRbCoreActionPropertiesByActionPropertyTypeId(value).getId.intValue()
       if(reWriteId.booleanValue) ap.id =ap.typeId
     })*/
+    //Без привязки к CoreAP
     jData.data.get(0).group.get(1).attribute.foreach(ap => {
-      val value = if(ap.typeId!=null && ap.typeId.intValue()>0)
-        ap.typeId.intValue()
-      else
-        actionPropertyBean.getActionPropertyById(ap.id.intValue()).getType.getId.intValue()
-      ap.typeId = value
-      if(reWriteId.booleanValue)
-        ap.id =ap.typeId
+      if(ap.typeId==null || ap.typeId.intValue()<=0) {
+        if(reWriteId.booleanValue)  //в id -> apt.id
+          ap.typeId = ap.id
+        else
+          ap.typeId = actionPropertyBean.getActionPropertyById(ap.id.intValue()).getType.getId.intValue()
+      }
     })
     jData
   }
@@ -545,9 +545,9 @@ class WebMisRESTImpl  extends WebMisREST
     //создаем осмотр. ЕвентПерсон не флашится!!!
     val returnValue = primaryAssessmentBean createPrimaryAssessmentForEventId(eventId,
       data,
-      "Assessment",
+      "Document",
       authData,
-      preProcessing _,
+      /*preProcessing _*/null,
       postProcessing _)
     //dbEventBean.setExecPersonForEventWithId(eventId, authData.getUser)
     returnValue
@@ -562,9 +562,9 @@ class WebMisRESTImpl  extends WebMisREST
     //создаем осмотр. ЕвентПерсон не флашится!!!
     val returnValue = primaryAssessmentBean.modifyPrimaryAssessmentById(actionId,
       data,
-      "Assessment",
+      "Document",
       authData,
-      preProcessing _,
+      /*preProcessing _*/null,
       postProcessing _)
     returnValue
   }
