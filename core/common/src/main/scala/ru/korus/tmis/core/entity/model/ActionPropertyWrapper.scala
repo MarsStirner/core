@@ -72,7 +72,7 @@ class ActionPropertyWrapper(ap: ActionProperty)
       ap.getVersion.intValue,
       apt.getName,
       apt.getTypeName,
-      apt.getConstructorValueDomain,
+      apt.getValueDomain,//apt.getConstructorValueDomain,
       map)
   }
 

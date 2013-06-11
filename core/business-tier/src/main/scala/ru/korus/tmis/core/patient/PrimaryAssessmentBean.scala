@@ -179,7 +179,7 @@ class PrimaryAssessmentBean
                                   0,
                                   apt.getName,
                                   apt.getTypeName,
-                                  apt.getConstructorValueDomain,
+                                  apt.getValueDomain,//apt.getConstructorValueDomain,
                                   map,
                                   dbLayoutAttributeValueBean.getLayoutAttributeValuesByActionPropertyTypeId(apt.getId.intValue()).toList)
   }
