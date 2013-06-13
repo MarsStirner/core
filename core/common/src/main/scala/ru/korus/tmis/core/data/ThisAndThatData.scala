@@ -1265,8 +1265,9 @@ class DepartmentsDataFilter extends AbstractListDataFilter{
     var qs = new QueryDataStructure()
 
     if(hasBeds) {
-      qs.query += ("AND os.hasHospitalBeds = :hasBeds\n")
-      qs.add("hasBeds", this.hasBeds: java.lang.Boolean)
+      // qs.query += ("AND os.hasHospitalBeds = :hasBeds\n")   //Старый запрос (до баги WEBMIS-793)
+      //qs.add("hasBeds", this.hasBeds: java.lang.Boolean)
+      qs.query += ("AND exists (SELECT  oshb.masterDepartment.id FROM OrgStructureHospitalBed oshb WHERE oshb.masterDepartment.id = os.id)")  //WEBMIS-793
     }
     if(hasPatients) {
       val res = """ AND exists(
