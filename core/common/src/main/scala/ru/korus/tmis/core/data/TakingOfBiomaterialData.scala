@@ -231,15 +231,19 @@ class ActionInfoDataContainer {
 
   def this(action: Action, tissueType: ActionTypeTissueType) {
     this()
-    this.id = action.getId.intValue()
-    this.actionType = new IdNameContainer(action.getActionType.getId.intValue(),
-      action.getActionType.getName)
-    this.biomaterial = new TissueTypeContainer(tissueType)
-    this.urgent = action.getIsUrgent
-    this.tubeType = new TestTubeTypeInfoContainer(action.getActionType.getTestTubeType)
+    if (action!=null){
+      this.id = action.getId.intValue()
+      this.actionType = new IdNameContainer(action.getActionType.getId.intValue(), action.getActionType.getName)
+      this.urgent = action.getIsUrgent
+      this.tubeType = new TestTubeTypeInfoContainer(action.getActionType.getTestTubeType)
+      if (action.getEvent!=null && action.getEvent.getPatient!=null)
+        this.patient = new PatientInfoDataContainer(action.getEvent.getPatient)
+      if (action.getTakenTissue!=null)
+        this.takenTissueJournal = action.getTakenTissue.getBarcode
+    }
+    if(tissueType!=null)
+      this.biomaterial = new TissueTypeContainer(tissueType)
     //this.assigner = new DoctorContainer(action.getAssigner)
-    this.patient = new PatientInfoDataContainer(action.getEvent.getPatient)
-    this.takenTissueJournal = action.getTakenTissue.getBarcode
   }
 }
 
