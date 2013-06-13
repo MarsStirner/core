@@ -17,7 +17,7 @@
             <property name="eclipselink.query-results-cache" value="false"/>
             <property name="eclipselink.logging.logger" value="ru.korus.tmis.core.logging.slf4j.eclipselink.Logger"/>
             <!--<property name="eclipselink.logging.level" value="WARNING"/>-->
-            <property name="eclipselink.ddl-generation" value="create-tables"/>
+            <!--<property name="eclipselink.ddl-generation" value="create-tables"/>-->
 
             <!--<property name="eclipselink.logging.level.sql" value="FINE"/>-->
             <!--<property name="eclipselink.logging.parameters" value="true"/>-->
