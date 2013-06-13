@@ -14,6 +14,15 @@ object ConfigManager extends Configuration {
 
   var DateFormatter = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss")
 
+  /**
+   *   Общие параметры работы ядра
+   */
+  class CommonClass extends Configuration {
+    var OrgId = 3479 // индекс организации в табл Organization (по умолчанию id ФНКЦ для БД ФНКЦ)
+  }
+
+  var Common = new CommonClass
+
   val Filter = new Configuration {
     var isOn = false
   }

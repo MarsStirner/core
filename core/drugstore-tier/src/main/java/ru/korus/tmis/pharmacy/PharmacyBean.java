@@ -304,12 +304,12 @@ public class PharmacyBean implements PharmacyBeanLocal {
 
 
     private Organisation getCustodianOrgStructure(final Action action) throws NoSuchOrgStructureException {
-        try {
-            final Event event = action.getEvent();
-            return dbOrganizationBeanLocal.getOrganizationById(event.getOrgId());
-        } catch (CoreException e) {
-            throw new NoSuchOrgStructureException(e);
+        final Event event = action.getEvent();
+        Organisation res = event.getOrganisation();
+        if (res == null) {
+            throw new NoSuchOrgStructureException();
         }
+        return res;
     }
 
     /**
