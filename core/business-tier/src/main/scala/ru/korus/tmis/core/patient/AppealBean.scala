@@ -364,7 +364,12 @@ class AppealBean extends AppealBeanLocal
     Set("assignment", "aftereffect", "attendant").foreach(flatCode=>{
       val values = appealData.data.diagnoses.filter(p=>p.getDiagnosisKind.compareTo(flatCode)==0)
                                             .map(f=>{
-                                                      val mkb = dbMkbBean.getMkbByCode(f.getMkb.getCode)
+                                                      var mkb :Mkb = null
+                                                      try {
+                                                        mkb = dbMkbBean.getMkbByCode(f.getMkb.getCode)
+                                                      } catch {
+                                                        case e: Exception => mkb = null
+                                                      }
                                                       (Integer.valueOf(f.getDiagnosticId),
                                                       f.getDescription,
                                                       if(mkb!=null) Integer.valueOf(mkb.getId.intValue) else -1)
@@ -763,7 +768,12 @@ class AppealBean extends AppealBeanLocal
       } else {
         try {
           if (dc.mkb.getCode() != null) {
-            val mkb = dbMkbBean.getMkbByCode(dc.mkb.getCode().toString)
+            var mkb :Mkb = null
+            try {
+              mkb = dbMkbBean.getMkbByCode(dc.mkb.getCode().toString)
+            } catch {
+              case e: Exception => mkb = null
+            }
             if(mkb!=null && mkb.getId.intValue()>0)
               valueSet += mkb.getId.toString
           }
@@ -905,7 +915,12 @@ class AppealBean extends AppealBeanLocal
     }
     try {
       val patient = eventBean.getEventById(eventId).getPatient
-      val mkb = dbMkbBean.getMkbByCode(dataEntry.getMkb.getCode)
+      var mkb :Mkb = null
+      try {
+        mkb = dbMkbBean.getMkbByCode(dataEntry.getMkb.getCode)
+      } catch {
+        case e: Exception => mkb = null
+      }
       var isPersist = true
       if (dataEntry.getId > 0) {
         isPersist = false
