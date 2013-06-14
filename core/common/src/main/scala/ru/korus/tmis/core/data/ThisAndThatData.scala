@@ -195,9 +195,13 @@ class FreePersonsListDataFilter  extends AbstractListDataFilter {
   @Override
   def toSortingString (sortingField: String, sortingMethod: String) = {
     var sorting = sortingField match {
-      case _ => {"s.id %s"}
+      case "fio" | "fullname"=> {"s.lastName %s, s.firstName %s, s.patrName %s".format(sortingMethod,sortingMethod,sortingMethod)}
+      case "lastname" => {"s.lastName %s".format(sortingMethod)}
+      case "firstname" | "name" => {"s.firstName %s".format(sortingMethod)}
+      case "patrname" => {"s.patrName %s".format(sortingMethod)}
+      case _ => {"s.id %s".format(sortingMethod)}
     }
-    sorting = "ORDER BY " + sorting.format(sortingMethod)
+    sorting = "ORDER BY " + sorting
     sorting
   }
 }
@@ -226,9 +230,13 @@ class PersonsListDataFilter  extends AbstractListDataFilter {
   @Override
   def toSortingString (sortingField: String, sortingMethod: String) = {
     var sorting = sortingField match {
-      case _ => {"s.id %s"}
+      case "fio" | "fullname"=> {"s.lastName %s, s.firstName %s, s.patrName %s".format(sortingMethod,sortingMethod,sortingMethod)}
+      case "lastname" => {"s.lastName %s".format(sortingMethod)}
+      case "firstname" | "name" => {"s.firstName %s".format(sortingMethod)}
+      case "patrname" => {"s.patrName %s".format(sortingMethod)}
+      case _ => {"s.id %s".format(sortingMethod)}
     }
-    sorting = "ORDER BY " + sorting.format(sortingMethod)
+    sorting = "ORDER BY " + sorting
     sorting
   }
 }
