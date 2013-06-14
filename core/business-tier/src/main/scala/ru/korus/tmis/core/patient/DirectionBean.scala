@@ -151,19 +151,8 @@ class DirectionBean extends DirectionBeanLocal
   }
     */
   private def createJobTicketsForActions(actions: java.util.List[Action], eventId: Int) =  {
-    val moving = hospitalBedBean.getLastMovingActionForEventId(eventId)
-    var department = dbOrgStructure.getOrgStructureById(28)//приемное отделение
-    //actionPropertyBean.getActionPropertiesByActionIdAndTypeId(moving.getId.intValue(), 1616)
-    if (moving != null) {
-      val listMovAP = JavaConversions.asJavaList(List(iCapIds("db.rbCAP.moving.id.bed").toInt: java.lang.Integer))
-      val bedValues = actionPropertyBean.getActionPropertiesByActionIdAndRbCoreActionPropertyIds(moving.getId.intValue(), listMovAP)
-      if (bedValues!=null && bedValues!=0 && bedValues.size()>0) {
-        if (bedValues.get(0) != null) {
-          department = bedValues.get(0).get(0).getValue.asInstanceOf[OrgStructureHospitalBed].getMasterDepartment
-        }
-      }
-    }
 
+    val department = hospitalBedBean.getCurrentDepartmentForAppeal(eventId)
     var list = new java.util.LinkedList[(Job, JobTicket, TakenTissue)]
     var apvList = new java.util.LinkedList[(ActionProperty, JobTicket)]
     var apvMKBList = new java.util.LinkedList[(ActionProperty, Mkb)]
