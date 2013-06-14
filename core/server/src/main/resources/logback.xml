@@ -7,38 +7,38 @@
     <statusListener class="ch.qos.logback.core.status.OnConsoleStatusListener"/>
 
     <!-- Аппендер для отправки уведомлений об exceptions по e-mail -->
-    <appender name="EMAIL" class="ch.qos.logback.classic.net.SMTPAppender">
-        <cyclicBufferTracker class="ch.qos.logback.core.spi.CyclicBufferTrackerImpl">
-            <bufferSize>${alarm.count.message}</bufferSize>
-        </cyclicBufferTracker>
+    <!--<appender name="EMAIL" class="ch.qos.logback.classic.net.SMTPAppender">-->
+        <!--<cyclicBufferTracker class="ch.qos.logback.core.spi.CyclicBufferTrackerImpl">-->
+            <!--<bufferSize>${alarm.count.message}</bufferSize>-->
+        <!--</cyclicBufferTracker>-->
 
-        <evaluator class="ru.korus.tmis.util.logs.CounterBasedEvaluator">
-            <countMessage>${alarm.count.message}</countMessage>
-        </evaluator>
+        <!--<evaluator class="ru.korus.tmis.util.logs.CounterBasedEvaluator">-->
+            <!--<countMessage>${alarm.count.message}</countMessage>-->
+        <!--</evaluator>-->
 
-        <!-- For example you can configure that only error messages are mailed -->
-        <filter class="ch.qos.logback.classic.filter.LevelFilter">
-            <level>ERROR</level>
-            <onMatch>ACCEPT</onMatch>
-            <onMismatch>DENY</onMismatch>
-        </filter>
+        <!--&lt;!&ndash; For example you can configure that only error messages are mailed &ndash;&gt;-->
+        <!--<filter class="ch.qos.logback.classic.filter.LevelFilter">-->
+            <!--<level>ERROR</level>-->
+            <!--<onMatch>ACCEPT</onMatch>-->
+            <!--<onMismatch>DENY</onMismatch>-->
+        <!--</filter>-->
 
-        <layout class="ch.qos.logback.classic.html.HTMLLayout">
-            <pattern>%relative%thread%mdc%level%logger%msg</pattern>
-        </layout>
+        <!--<layout class="ch.qos.logback.classic.html.HTMLLayout">-->
+            <!--<pattern>%relative%thread%mdc%level%logger%msg</pattern>-->
+        <!--</layout>-->
 
-        <!-- For GMAIL -->
-        <smtpPort>587</smtpPort>
-        <STARTTLS>true</STARTTLS>
-        <username>******</username>
-        <password>*****</password>
-        <!-- - -->
+        <!--&lt;!&ndash; For GMAIL &ndash;&gt;-->
+        <!--<smtpPort>587</smtpPort>-->
+        <!--<STARTTLS>true</STARTTLS>-->
+        <!--<username>******</username>-->
+        <!--<password>*****</password>-->
+        <!--&lt;!&ndash; - &ndash;&gt;-->
 
-        <SmtpHost>${alarm.smtpHost}</SmtpHost>
-        <To>${alarm.to}</To>
-        <From>${alarm.from}</From>
-        <subject>TMIS CORE ALARM %logger{20} - %m</subject>
-    </appender>
+        <!--<SmtpHost>${alarm.smtpHost}</SmtpHost>-->
+        <!--<To>${alarm.to}</To>-->
+        <!--<From>${alarm.from}</From>-->
+        <!--<subject>TMIS CORE ALARM %logger{20} - %m</subject>-->
+    <!--</appender>-->
 
 
     <!-- Основные настройки для консоли, для эксепшен лога-->
@@ -100,7 +100,7 @@
         <appender-ref ref="STDOUT"/>
         <appender-ref ref="STDOUT_ERROR"/>
         <appender-ref ref="EXCEPTIONS"/>
-        <appender-ref ref="EMAIL"/>
+        <!--<appender-ref ref="EMAIL"/>-->
     </root>
 
     <!--Общий логгер для всего проекта-->
@@ -124,7 +124,7 @@
 
     <logger name="ru.korus.tmis" level="INFO" additivity="false">
         <appender-ref ref="TMIS"/>
-        <appender-ref ref="EMAIL"/>
+        <!--<appender-ref ref="EMAIL"/>-->
         <appender-ref ref="STDOUT_ERROR"/>
         <appender-ref ref="EXCEPTIONS"/>
     </logger>
