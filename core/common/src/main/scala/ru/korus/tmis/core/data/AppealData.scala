@@ -287,6 +287,8 @@ class AppealEntry {
   var nextHospDepartment: String = _
   @BeanProperty
   var nextHospFinanceType: String = _
+  @BeanProperty
+  var closed: Boolean = false       //Флаг закрыта ли госпитализация
 
   /**
    * Конструктор класса AppealEntry
@@ -327,6 +329,7 @@ class AppealEntry {
 
     //Обращение и Действие
     this.id = event.getId.intValue()
+    this.closed =  (event.getExecDate!=null)
     this.version = event.getVersion
     this.number = event.getExternalId
     this.setPerson = if (event.getAssigner != null) {new ComplexPersonContainer(event.getAssigner)} else {new ComplexPersonContainer}
