@@ -40,14 +40,19 @@ public class HsPixPullBean {
     @EJB
     DbSchemeKladrBeanLocal dbSchemeKladrBeanLocal;
 
-    @Schedule(hour = "*", minute = "*")
+    @Schedule(hour = "*", minute = "*", second = "30")
     void pullDb() {
         Integer maxId = db.getEntityMgr().createQuery("SELECT max(hsi.eventId) FROM HSIntegration hsi", Integer.class).getSingleResult();
         if (maxId == null) {
             maxId = 0;
         }
         List<Event> newEvents =
-                db.getEntityMgr().createQuery("SELECT e FROM Event e WHERE e.id > :max", Event.class).setParameter("max", maxId).getResultList();
+                db.getEntityMgr().createQuery("SELECT e FROM Event e WHERE e.id > :max AND (" +
+                        "e.eventType.requestType.code = 'clinic' OR " +
+                        "e.eventType.requestType.code = 'hospital' OR " +
+                        "e.eventType.requestType.code = 'stationary' OR " +
+                        "e.eventType.requestType.code = '4' OR " +
+                        "e.eventType.requestType.code = '6' )", Event.class).setParameter("max", maxId).getResultList();
 
         addNewEvent(newEvents);
         sendToHS();
@@ -78,12 +83,16 @@ public class HsPixPullBean {
         SDASoapServiceService service = new SDASoapServiceService();
         service.setHandlerResolver(new AuthentificationHeaderHandlerResolver());
         SDASoapServiceServiceSoap port = service.getSDASoapServiceServiceSoap();
+        final HSIntegration hsIntegration = em.find(HSIntegration.class, event.getId());
         try {
             port.sendSDA(PixInfo.toSda(new ClientInfo(event.getPatient(), dbSchemeKladrBeanLocal), new EventInfo(event)));
-            em.find(HSIntegration.class, event.getId()).setStatus(HSIntegration.Status.SENDED);
+            hsIntegration.setStatus(HSIntegration.Status.SENDED);
             em.flush();
         } catch (SOAPFaultException ex) {
+            hsIntegration.setStatus(HSIntegration.Status.ERROR);
+            hsIntegration.setInfo(ex.getMessage());
             ex.printStackTrace();
+            em.flush();
         }
     }
 
