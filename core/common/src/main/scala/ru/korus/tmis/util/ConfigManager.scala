@@ -137,6 +137,10 @@ object ConfigManager extends Configuration {
       (User + ":" + Password).getBytes)
   }
 
+  var Core = new Configuration {
+    var RequestLaboratoryUrl = "http://localhost:8080/tmis-ws-laboratory/tmis-client-laboratory"
+  }
+
   /**
    * Параметры сервиса управления пользователями
    */
