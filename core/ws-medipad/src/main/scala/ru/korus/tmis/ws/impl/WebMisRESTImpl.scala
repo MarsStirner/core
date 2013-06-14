@@ -810,7 +810,7 @@ class WebMisRESTImpl  extends WebMisREST
     json.getData().map(entity => entity.getId().intValue()).foreach(a_id => {
       val action = actionBean.getActionById(a_id)
       if (action.getStatus == 2 && !action.getIsUrgent) {
-        lisBean.sendLisAnalysisRequest(a_id)
+        lisBean.sendLis2AnalysisRequest(a_id)
       }
     })
     json
@@ -1127,7 +1127,7 @@ class WebMisRESTImpl  extends WebMisREST
     data.getData.foreach(f=> {
       val res = dbJobTicketBean.modifyJobTicketStatus(f.getId, f.getStatus, authData)
       if (f.getStatus == 2) {
-        dbJobTicketBean.getActionsForJobTicket(f.getId).foreach(a => {lisBean.sendLisAnalysisRequest(a.getId.intValue())})
+        dbJobTicketBean.getActionsForJobTicket(f.getId).foreach(a => {lisBean.sendLis2AnalysisRequest(a.getId.intValue())})
       }
       if(!res)
         isSuccess = res
