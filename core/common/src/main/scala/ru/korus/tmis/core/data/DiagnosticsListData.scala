@@ -298,6 +298,9 @@ class DiagnosticsListEntry {
   var diagnosticDate: Date = _ //Дата диагностики
 
   @BeanProperty
+  var plannedEndDate: Date = _ //Дата направления (Дата забора БМ)
+
+  @BeanProperty
   var diagnosticName: IdNameContainer = _ //Направление исследований
 
   @BeanProperty
@@ -305,6 +308,12 @@ class DiagnosticsListEntry {
 
   @BeanProperty
   var execPerson: DoctorContainer = new DoctorContainer() //Исполнивший Врач
+
+  @BeanProperty
+  var createPerson: DoctorContainer = new DoctorContainer() //Создавший направление Врач
+
+  @BeanProperty
+  var cito: Boolean = _ //Срочность исследования
 
   @BeanProperty
   var office: String = _ //Кабинет
@@ -321,6 +330,9 @@ class DiagnosticsListEntry {
     this.office = action.getOffice
     this.status = new IdNameContainer(action.getStatus, ActionStatus.fromShort(action.getStatus).getName)
     this.diagnosticName = new IdNameContainer(action.getActionType.getId.intValue(), action.getActionType.getName)
+    this.plannedEndDate = action.getPlannedEndDate
+    this.createPerson = new DoctorContainer(action.getCreatePerson)
+    this.cito = action.getIsUrgent
   }
 }
 
