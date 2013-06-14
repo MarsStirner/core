@@ -3,10 +3,7 @@ package ru.korus.tmis.core.patient;
 import ru.korus.tmis.core.auth.AuthData;
 import ru.korus.tmis.core.data.HospitalBedData;
 import ru.korus.tmis.core.data.HospitalBedDataListFilter;
-import ru.korus.tmis.core.entity.model.APValue;
-import ru.korus.tmis.core.entity.model.Action;
-import ru.korus.tmis.core.entity.model.ActionProperty;
-import ru.korus.tmis.core.entity.model.OrgStructureHospitalBed;
+import ru.korus.tmis.core.entity.model.*;
 import ru.korus.tmis.core.exception.CoreException;
 import ru.korus.tmis.core.filter.ListDataFilter;
 
@@ -122,4 +119,13 @@ public interface HospitalBedBeanLocal {
      * @throws CoreException
      */
     Action getLastCloseMovingActionForEventId(int eventId) throws CoreException;
+
+    /**
+     * Получить отделение нахождения пациента
+     * @param movingId Идентификатор движения
+     * @return
+     * @throws CoreException
+     */
+    OrgStructure getCurrentDepartmentForAppeal(int movingId)  throws CoreException;
+
 }

@@ -631,6 +631,23 @@ with TmisLogging{
      this.getLastActionByCondition(eventId, "ORDER BY a.createDatetime desc")
   }
 
+  def getCurrentDepartmentForAppeal(id: Int) = {
+    // Текущее отделение пребывания пациента
+    val moving = this.getLastMovingActionForEventId(id)
+    var department = dbOrgStructureBean.getOrgStructureById(i18n("db.dayHospital.id").toInt)//приемное отделение
+    if (moving != null) {
+      val bedValues = actionPropertyBean.getActionPropertiesByActionIdAndTypeCodes(moving.getId.intValue(),
+        JavaConversions.asJavaList(List(i18n("db.apt.moving.codes.hospOrgStruct"))))
+      if (bedValues!=null && bedValues.size()>0) {
+        val values = bedValues.iterator.next()._2
+        if (values!=null && values.size()>0){
+          department = values.get(0).getValue.asInstanceOf[OrgStructure]//.asInstanceOf[OrgStructureHospitalBed].getMasterDepartment
+        }
+      }
+    }
+    department
+  }
+
   private def getLastActionByCondition(eventId: Int, condition: String) = {
     val result = em.createQuery(LastMovingActionByEventIdQuery.format(i18n("db.action.movingFlatCode"), condition),
       classOf[Action])

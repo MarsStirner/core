@@ -266,20 +266,7 @@ class WebMisRESTImpl  extends WebMisREST
       val map = patientBean.getKLADRAddressMapForPatient(patient)
       val street = patientBean.getKLADRStreetForPatient(patient)
       //val appType = dbFDRecordBean.getIdValueFDRecordByEventTypeId(25, positionE._1.getEventType.getId.intValue())
-
-      // Текущее отделение пребывания пациента
-      val moving = hospitalBedBean.getLastMovingActionForEventId(ide)
-      var currentDepartment = dbOrgStructureBean.getOrgStructureById(28)//приемное отделение
-      //actionPropertyBean.getActionPropertiesByActionIdAndTypeId(moving.getId.intValue(), 1616)
-      if (moving != null) {
-        val listMovAP = JavaConversions.asJavaList(List(iCapIds("db.rbCAP.moving.id.bed").toInt: java.lang.Integer))
-        val bedValues = actionPropertyBean.getActionPropertiesByActionIdAndRbCoreActionPropertyIds(moving.getId.intValue(), listMovAP)
-        if (bedValues!=null && bedValues!=0 && bedValues.size()>0) {
-          if (bedValues.get(0) != null) {
-            currentDepartment = bedValues.get(0).get(0).getValue.asInstanceOf[OrgStructureHospitalBed].getMasterDepartment
-          }
-        }
-      }
+      val currentDepartment = hospitalBedBean.getCurrentDepartmentForAppeal(ide)
       //
       mapper.writeValueAsString(new AppealData( positionE._1,
         positionA._1,
@@ -316,20 +303,7 @@ class WebMisRESTImpl  extends WebMisREST
     mapper.getSerializationConfig().setSerializationView(classOf[Views.DynamicFieldsStandartForm]);
     //val map = patientBean.getKLADRAddressMapForPatient(result)
     //val appType = dbFDRecordBean.getIdValueFDRecordByEventTypeId(25, positionE._1.getEventType.getId.intValue())
-
-    // Текущее отделение пребывания пациента
-    val moving = hospitalBedBean.getLastMovingActionForEventId(id)
-    var currentDepartment = dbOrgStructureBean.getOrgStructureById(28)//приемное отделение
-    //actionPropertyBean.getActionPropertiesByActionIdAndTypeId(moving.getId.intValue(), 1616)
-    if (moving != null) {
-      val listMovAP = JavaConversions.asJavaList(List(iCapIds("db.rbCAP.moving.id.bed").toInt: java.lang.Integer))
-      val bedValues = actionPropertyBean.getActionPropertiesByActionIdAndRbCoreActionPropertyIds(moving.getId.intValue(), listMovAP)
-      if (bedValues!=null && bedValues!=0 && bedValues.size()>0) {
-        if (bedValues.get(0) != null) {
-          currentDepartment = bedValues.get(0).get(0).getValue.asInstanceOf[OrgStructureHospitalBed].getMasterDepartment
-        }
-      }
-    }
+    val currentDepartment = hospitalBedBean.getCurrentDepartmentForAppeal(id)
 
     mapper.writeValueAsString(new AppealData( positionE._1,
       positionA._1,
@@ -362,20 +336,7 @@ class WebMisRESTImpl  extends WebMisREST
 
     val map = patientBean.getKLADRAddressMapForPatient(positionE._1.getPatient)
     val street = patientBean.getKLADRStreetForPatient(positionE._1.getPatient)
-
-    // Текущее отделение пребывания пациента
-    val moving = hospitalBedBean.getLastMovingActionForEventId(id)
-    var currentDepartment = dbOrgStructureBean.getOrgStructureById(28)//приемное отделение
-    //actionPropertyBean.getActionPropertiesByActionIdAndTypeId(moving.getId.intValue(), 1616)
-    if (moving != null) {
-      val listMovAP = JavaConversions.asJavaList(List(iCapIds("db.rbCAP.moving.id.bed").toInt: java.lang.Integer))
-      val bedValues = actionPropertyBean.getActionPropertiesByActionIdAndRbCoreActionPropertyIds(moving.getId.intValue(), listMovAP)
-      if (bedValues!=null && bedValues!=0 && bedValues.size()>0) {
-        if (bedValues.get(0) != null) {
-          currentDepartment = bedValues.get(0).get(0).getValue.asInstanceOf[OrgStructureHospitalBed].getMasterDepartment
-        }
-      }
-    }
+    val currentDepartment = hospitalBedBean.getCurrentDepartmentForAppeal(id)
 
     mapper.writeValueAsString(new AppealData( positionE._1,
       positionA._1,
