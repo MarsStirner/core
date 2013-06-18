@@ -106,11 +106,11 @@
         <rollingPolicy class="ch.qos.logback.core.rolling.TimeBasedRollingPolicy">
             <!-- rollover daily -->
             <fileNamePattern>${logs.path}pharmacy/pharmacy.%d{yyyy-MM-dd}.log.gz</fileNamePattern>
-            <timeBasedFileNamingAndTriggeringPolicy
-                    class="ch.qos.logback.core.rolling.SizeAndTimeBasedFNATP">
+            <!--<timeBasedFileNamingAndTriggeringPolicy-->
+                    <!--class="ch.qos.logback.core.rolling.SizeAndTimeBasedFNATP">-->
                 <!-- or whenever the file size reaches 200MB -->
                 <!--<maxFileSize>200MB</maxFileSize>-->
-            </timeBasedFileNamingAndTriggeringPolicy>
+            <!--</timeBasedFileNamingAndTriggeringPolicy>-->
         </rollingPolicy>
     </appender>
 
@@ -132,11 +132,11 @@
         <rollingPolicy class="ch.qos.logback.core.rolling.TimeBasedRollingPolicy">
             <!-- rollover daily -->
             <fileNamePattern>${logs.path}tmis-core/core.%d{yyyy-MM-dd}.log.gz</fileNamePattern>
-            <timeBasedFileNamingAndTriggeringPolicy
-                    class="ch.qos.logback.core.rolling.SizeAndTimeBasedFNATP">
+            <!--<timeBasedFileNamingAndTriggeringPolicy-->
+                    <!--class="ch.qos.logback.core.rolling.SizeAndTimeBasedFNATP">-->
                 <!-- or whenever the file size reaches 200MB -->
                 <!--<maxFileSize>200MB</maxFileSize>-->
-            </timeBasedFileNamingAndTriggeringPolicy>
+            <!--</timeBasedFileNamingAndTriggeringPolicy>-->
         </rollingPolicy>
     </appender>
 
@@ -158,11 +158,11 @@
         <rollingPolicy class="ch.qos.logback.core.rolling.TimeBasedRollingPolicy">
             <!-- rollover daily -->
             <fileNamePattern>${logs.path}reference-book/rb.%d{yyyy-MM-dd}.log.gz</fileNamePattern>
-            <timeBasedFileNamingAndTriggeringPolicy
-                    class="ch.qos.logback.core.rolling.SizeAndTimeBasedFNATP">
+            <!--<timeBasedFileNamingAndTriggeringPolicy-->
+                    <!--class="ch.qos.logback.core.rolling.SizeAndTimeBasedFNATP">-->
                 <!-- or whenever the file size reaches 200MB -->
                 <!--<maxFileSize>200MB</maxFileSize>-->
-            </timeBasedFileNamingAndTriggeringPolicy>
+            <!--</timeBasedFileNamingAndTriggeringPolicy>-->
         </rollingPolicy>
     </appender>
 
@@ -184,11 +184,11 @@
         <rollingPolicy class="ch.qos.logback.core.rolling.TimeBasedRollingPolicy">
             <!-- rollover daily -->
             <fileNamePattern>${logs.path}ws-finance/finance.%d{yyyy-MM-dd}.log.gz</fileNamePattern>
-            <timeBasedFileNamingAndTriggeringPolicy
-                    class="ch.qos.logback.core.rolling.SizeAndTimeBasedFNATP">
+            <!--<timeBasedFileNamingAndTriggeringPolicy-->
+                    <!--class="ch.qos.logback.core.rolling.SizeAndTimeBasedFNATP">-->
                 <!-- or whenever the file size reaches 200MB -->
                 <!--<maxFileSize>200MB</maxFileSize>-->
-            </timeBasedFileNamingAndTriggeringPolicy>
+            <!--</timeBasedFileNamingAndTriggeringPolicy>-->
         </rollingPolicy>
     </appender>
 
@@ -209,11 +209,11 @@
         <rollingPolicy class="ch.qos.logback.core.rolling.TimeBasedRollingPolicy">
             <!-- rollover daily -->
             <fileNamePattern>${logs.path}ws-transfusion/transfusion.%d{yyyy-MM-dd}.log.gz</fileNamePattern>
-            <timeBasedFileNamingAndTriggeringPolicy
-                    class="ch.qos.logback.core.rolling.SizeAndTimeBasedFNATP">
+            <!--<timeBasedFileNamingAndTriggeringPolicy-->
+                    <!--class="ch.qos.logback.core.rolling.SizeAndTimeBasedFNATP">-->
                 <!-- or whenever the file size reaches 200MB -->
                 <!--<maxFileSize>200MB</maxFileSize>-->
-            </timeBasedFileNamingAndTriggeringPolicy>
+            <!--</timeBasedFileNamingAndTriggeringPolicy>-->
         </rollingPolicy>
     </appender>
 
@@ -235,11 +235,11 @@
         <rollingPolicy class="ch.qos.logback.core.rolling.TimeBasedRollingPolicy">
             <!-- rollover daily -->
             <fileNamePattern>${logs.path}communication/communication.%d{yyyy-MM-dd}.log.gz</fileNamePattern>
-            <timeBasedFileNamingAndTriggeringPolicy
-                    class="ch.qos.logback.core.rolling.SizeAndTimeBasedFNATP">
+            <!--<timeBasedFileNamingAndTriggeringPolicy-->
+                    <!--class="ch.qos.logback.core.rolling.SizeAndTimeBasedFNATP">-->
                 <!-- or whenever the file size reaches 200MB -->
                 <!--<maxFileSize>200MB</maxFileSize>-->
-            </timeBasedFileNamingAndTriggeringPolicy>
+            <!--</timeBasedFileNamingAndTriggeringPolicy>-->
         </rollingPolicy>
     </appender>
 
