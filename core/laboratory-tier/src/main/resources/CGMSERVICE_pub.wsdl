@@ -26,7 +26,7 @@
 	<service name="CGM_SOAP">
 		<documentation>WSDL File for cgmsoap</documentation>
 		<port name="cgmsoap_PortType" binding="tns:cgmsoap_Binding">
-			<soap:address location="http://192.168.1.10:8090"/>
+			<soap:address location="http://10.128.131.114:8090/"/>
 		</port>
 	</service>
 </definitions>
