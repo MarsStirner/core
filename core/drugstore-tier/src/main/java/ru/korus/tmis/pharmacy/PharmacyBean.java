@@ -18,6 +18,7 @@ import ru.korus.tmis.core.pharmacy.FlatCode;
 import ru.korus.tmis.pharmacy.exception.MessageProcessException;
 import ru.korus.tmis.pharmacy.exception.NoSuchOrgStructureException;
 import ru.korus.tmis.pharmacy.exception.SkipMessageProcessException;
+import ru.korus.tmis.util.ConfigManager;
 import ru.korus.tmis.util.logs.ToLog;
 
 import javax.ejb.EJB;
@@ -109,25 +110,27 @@ public class PharmacyBean implements PharmacyBeanLocal {
     @Override
     @Schedule(minute = "*/1", hour = "*")
     public void pooling() {
-        logger.info("pooling... last modify date {}", getLastDate());
-        try {
-            if (lastDateUpdate == null) {
-                lastDateUpdate = firstPolling();
-            }
+        if (ConfigManager.isActive()) {
+            logger.info("pooling... last modify date {}", getLastDate());
+            try {
+                if (lastDateUpdate == null) {
+                    lastDateUpdate = firstPolling();
+                }
 
-            final List<Action> actionAfterDate = dbPharmacy.getVirtualActionsAfterDate(lastDateUpdate);
-            if (!actionAfterDate.isEmpty()) {
-                logger.info("Found {} newest actions after date {}", actionAfterDate.size(), getLastDate());
-                for (Action action : actionAfterDate) {
-                    if (isMovingAction(action)) {
-                        send(action);
-                        lastDateUpdate = new DateTime(action.getModifyDatetime());
+                final List<Action> actionAfterDate = dbPharmacy.getVirtualActionsAfterDate(lastDateUpdate);
+                if (!actionAfterDate.isEmpty()) {
+                    logger.info("Found {} newest actions after date {}", actionAfterDate.size(), getLastDate());
+                    for (Action action : actionAfterDate) {
+                        if (isMovingAction(action)) {
+                            send(action);
+                            lastDateUpdate = new DateTime(action.getModifyDatetime());
+                        }
                     }
                 }
+                resendMessages();
+            } catch (Exception e) {
+                logger.error("Exception e: " + e, e);
             }
-            resendMessages();
-        } catch (Exception e) {
-            logger.error("Exception e: " + e, e);
         }
     }
 

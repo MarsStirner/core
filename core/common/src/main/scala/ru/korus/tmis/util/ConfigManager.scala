@@ -7,7 +7,6 @@ import javax.xml.bind.DatatypeConverter
 import javax.xml.namespace.QName
 import reflect.Configuration
 import grizzled.slf4j.Logging
-import ru.korus.tmis.core.entity.model.Staff
 
 
 object ConfigManager extends Configuration {
@@ -109,10 +108,20 @@ object ConfigManager extends Configuration {
     var MkbNotFound = 0x149
   }
 
+  /**
+   * Параметры для 1С Аптеки
+   */
   val Drugstore = new Configuration {
-    var OrgName = "ФНКЦ ДГОИ"
+    /** Включен ли сервис */
+    var Active = "off"
 
     var ServiceUrl = new URL("http://pharmacy3.fccho-moscow.ru/ws/MISExchange")
+    var User = ""
+    var Password = ""
+
+
+    var OrgName = "ФНКЦ ДГОИ"
+
     var XmlNamespace = "urn:hl7-org:v3"
     var DefaultXsiType = ""
 
@@ -130,9 +139,6 @@ object ConfigManager extends Configuration {
     var GetDepList_SoapAction = "urn:hl7-org:v3#MISExchange:GetDepartmentList"
     var GetDepList_SoapOperation = "GetDepartmentList"
     var GetDepList_RequestRootElement = "OrganizationRef"
-
-    var User = ""
-    var Password = ""
 
     def HttpAuthToken = DatatypeConverter.printBase64Binary(
       (User + ":" + Password).getBytes)
@@ -174,9 +180,14 @@ object ConfigManager extends Configuration {
    */
   def getDrugUrl: URL = Drugstore.ServiceUrl
 
+  /**
+   * Метод хелпер, создан из-за невозможности вызвать класс-конфиг из джава кода
+   */
+  def isActive: Boolean = Drugstore.Active.equals("on")
+
 
   val Laboratory = new Configuration {
-    // LIS service URL
+    // LIS service URL  Алтей
     // null means that URL should be acquired from the WSDL file
     var ServiceUrl: URL = null
     var User: String = null
@@ -209,10 +220,21 @@ object ConfigManager extends Configuration {
     var RuntimeWSDLUrl: URL = null
 
 
-    // NB: Altey's LIS does not conform to 'url' + '?wsdl' convention
+    // NB: Across's LIS does not conform to 'url' + '?wsdl' convention
     // WSDL url is a:
     // - RuntimeWSDLUrl if it's defined
     // - compile-time-defined (local WSDL from resources) otherwise
+    def WSDLUrl: URL = Option(RuntimeWSDLUrl).getOrElse(null)
+  }
+
+  /** Конфигурация для БАК лаборатории */
+  val LaboratoryBak = new Configuration {
+    var ServiceUrl: URL = null
+    var User: String = null
+    var Password: String = null
+
+    var RuntimeWSDLUrl: URL = null
+
     def WSDLUrl: URL = Option(RuntimeWSDLUrl).getOrElse(null)
   }
 
@@ -295,9 +317,9 @@ object ConfigManager extends Configuration {
 }
 
 trait I18nable {
-   val i18n = ConfigManager.Messages
- }
+  val i18n = ConfigManager.Messages
+}
 
 trait CAPids {
-   val iCapIds = ConfigManager.RbCAPIds
- }
+  val iCapIds = ConfigManager.RbCAPIds
+}
