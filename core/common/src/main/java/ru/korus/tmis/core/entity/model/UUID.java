@@ -1,6 +1,7 @@
 package ru.korus.tmis.core.entity.model;
 
 import javax.persistence.*;
+import java.io.Serializable;
 
 /**
  * Created with IntelliJ IDEA.
@@ -12,7 +13,7 @@ import javax.persistence.*;
 
 @Entity
 @Table(name = "UUID", catalog = "", schema = "")
-public class UUID {
+public class UUID implements Serializable {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
