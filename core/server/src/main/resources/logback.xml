@@ -7,38 +7,38 @@
     <statusListener class="ch.qos.logback.core.status.OnConsoleStatusListener"/>
 
     <!-- Аппендер для отправки уведомлений об exceptions по e-mail -->
-    <appender name="EMAIL" class="ch.qos.logback.classic.net.SMTPAppender">
-        <cyclicBufferTracker class="ch.qos.logback.core.spi.CyclicBufferTrackerImpl">
-            <bufferSize>${alarm.count.message}</bufferSize>
-        </cyclicBufferTracker>
+    <!--<appender name="EMAIL" class="ch.qos.logback.classic.net.SMTPAppender">-->
+        <!--<cyclicBufferTracker class="ch.qos.logback.core.spi.CyclicBufferTrackerImpl">-->
+            <!--<bufferSize>${alarm.count.message}</bufferSize>-->
+        <!--</cyclicBufferTracker>-->
 
-        <evaluator class="ru.korus.tmis.util.logs.CounterBasedEvaluator">
-            <countMessage>${alarm.count.message}</countMessage>
-        </evaluator>
+        <!--<evaluator class="ru.korus.tmis.util.logs.CounterBasedEvaluator">-->
+            <!--<countMessage>${alarm.count.message}</countMessage>-->
+        <!--</evaluator>-->
 
-        <!-- For example you can configure that only error messages are mailed -->
-        <filter class="ch.qos.logback.classic.filter.LevelFilter">
-            <level>ERROR</level>
-            <onMatch>ACCEPT</onMatch>
-            <onMismatch>DENY</onMismatch>
-        </filter>
+        <!--&lt;!&ndash; For example you can configure that only error messages are mailed &ndash;&gt;-->
+        <!--<filter class="ch.qos.logback.classic.filter.LevelFilter">-->
+            <!--<level>ERROR</level>-->
+            <!--<onMatch>ACCEPT</onMatch>-->
+            <!--<onMismatch>DENY</onMismatch>-->
+        <!--</filter>-->
 
-        <layout class="ch.qos.logback.classic.html.HTMLLayout">
-            <pattern>%relative%thread%mdc%level%logger%msg</pattern>
-        </layout>
+        <!--<layout class="ch.qos.logback.classic.html.HTMLLayout">-->
+            <!--<pattern>%relative%thread%mdc%level%logger%msg</pattern>-->
+        <!--</layout>-->
 
-        <!-- For GMAIL -->
-        <smtpPort>587</smtpPort>
-        <STARTTLS>true</STARTTLS>
-        <username>******</username>
-        <password>*****</password>
-        <!-- - -->
+        <!--&lt;!&ndash; For GMAIL &ndash;&gt;-->
+        <!--<smtpPort>587</smtpPort>-->
+        <!--<STARTTLS>true</STARTTLS>-->
+        <!--<username>******</username>-->
+        <!--<password>*****</password>-->
+        <!--&lt;!&ndash; - &ndash;&gt;-->
 
-        <SmtpHost>${alarm.smtpHost}</SmtpHost>
-        <To>${alarm.to}</To>
-        <From>${alarm.from}</From>
-        <subject>TMIS CORE ALARM %logger{20} - %m</subject>
-    </appender>
+        <!--<SmtpHost>${alarm.smtpHost}</SmtpHost>-->
+        <!--<To>${alarm.to}</To>-->
+        <!--<From>${alarm.from}</From>-->
+        <!--<subject>TMIS CORE ALARM %logger{20} - %m</subject>-->
+    <!--</appender>-->
 
 
     <!-- Основные настройки для консоли, для эксепшен лога-->
@@ -80,7 +80,7 @@
     </appender>
 
     <appender name="EXCEPTIONS" class="ch.qos.logback.core.rolling.RollingFileAppender">
-        <file>${logs.path}/exceptions/exceptions.log</file>
+        <!--<file>${logs.path}/exceptions/exceptions.log</file>-->
 
         <filter class="ru.korus.tmis.util.logs.filter.ExceptionFilter">
             <exceptionClassName>java.lang.Exception</exceptionClassName>
@@ -95,6 +95,24 @@
             <pattern>${log.format}</pattern>
         </encoder>
     </appender>
+    <!-- Аппендер для 1С Аптека -->
+    <appender name="PHARMACY" class="ch.qos.logback.core.rolling.RollingFileAppender">
+        <!--<file>${logs.path}pharmacy/pharmacy.log</file>-->
+        <encoder>
+            <pattern>${log.format}</pattern>
+            <charset>UTF-8</charset>
+        </encoder>
+
+        <rollingPolicy class="ch.qos.logback.core.rolling.TimeBasedRollingPolicy">
+            <!-- rollover daily -->
+            <fileNamePattern>${logs.path}pharmacy/pharmacy.%d{yyyy-MM-dd}.log.gz</fileNamePattern>
+            <timeBasedFileNamingAndTriggeringPolicy
+                    class="ch.qos.logback.core.rolling.SizeAndTimeBasedFNATP">
+                <!-- or whenever the file size reaches 200MB -->
+                <!--<maxFileSize>200MB</maxFileSize>-->
+            </timeBasedFileNamingAndTriggeringPolicy>
+        </rollingPolicy>
+    </appender>
 
     <logger name="ru.korus.tmis.pharmacy" level="INFO" additivity="false">
         <appender-ref ref="PHARMACY"/>
@@ -105,7 +123,7 @@
 
     <!--Общий логгер для всего проекта-->
     <appender name="TMIS" class="ch.qos.logback.core.rolling.RollingFileAppender">
-        <file>${logs.path}tmis-core/core.log</file>
+        <!--<file>${logs.path}tmis-core/core.log</file>-->
         <encoder>
             <pattern>${log.format}</pattern>
             <charset>UTF-8</charset>
@@ -113,11 +131,11 @@
 
         <rollingPolicy class="ch.qos.logback.core.rolling.TimeBasedRollingPolicy">
             <!-- rollover daily -->
-            <fileNamePattern>${logs.path}tmis-core/core.%d{yyyy-MM-dd}.%i.log.gz</fileNamePattern>
+            <fileNamePattern>${logs.path}tmis-core/core.%d{yyyy-MM-dd}.log.gz</fileNamePattern>
             <timeBasedFileNamingAndTriggeringPolicy
                     class="ch.qos.logback.core.rolling.SizeAndTimeBasedFNATP">
                 <!-- or whenever the file size reaches 200MB -->
-                <maxFileSize>200MB</maxFileSize>
+                <!--<maxFileSize>200MB</maxFileSize>-->
             </timeBasedFileNamingAndTriggeringPolicy>
         </rollingPolicy>
     </appender>
@@ -131,7 +149,7 @@
 
     <!--Справочники -->
     <appender name="REFERENCE_BOOK" class="ch.qos.logback.core.rolling.RollingFileAppender">
-        <file>${logs.path}reference-book/rb.log</file>
+        <!--<file>${logs.path}reference-book/rb.log</file>-->
         <encoder>
             <pattern>${log.format}</pattern>
             <charset>UTF-8</charset>
@@ -139,11 +157,11 @@
 
         <rollingPolicy class="ch.qos.logback.core.rolling.TimeBasedRollingPolicy">
             <!-- rollover daily -->
-            <fileNamePattern>${logs.path}reference-book/rb.%d{yyyy-MM-dd}.%i.log.gz</fileNamePattern>
+            <fileNamePattern>${logs.path}reference-book/rb.%d{yyyy-MM-dd}.log.gz</fileNamePattern>
             <timeBasedFileNamingAndTriggeringPolicy
                     class="ch.qos.logback.core.rolling.SizeAndTimeBasedFNATP">
                 <!-- or whenever the file size reaches 200MB -->
-                <maxFileSize>200MB</maxFileSize>
+                <!--<maxFileSize>200MB</maxFileSize>-->
             </timeBasedFileNamingAndTriggeringPolicy>
         </rollingPolicy>
     </appender>
@@ -155,30 +173,9 @@
         <appender-ref ref="EXCEPTIONS"/>
     </logger>
 
-    <!-- Аппендер для 1С Аптека -->
-    <appender name="PHARMACY" class="ch.qos.logback.core.rolling.RollingFileAppender">
-        <file>${logs.path}pharmacy/pharmacy.log</file>
-        <encoder>
-            <pattern>${log.format}</pattern>
-            <charset>UTF-8</charset>
-        </encoder>
-
-        <rollingPolicy class="ch.qos.logback.core.rolling.TimeBasedRollingPolicy">
-            <!-- rollover daily -->
-            <fileNamePattern>${logs.path}pharmacy/pharmacy.%d{yyyy-MM-dd}.%i.log.gz</fileNamePattern>
-            <timeBasedFileNamingAndTriggeringPolicy
-                    class="ch.qos.logback.core.rolling.SizeAndTimeBasedFNATP">
-                <!-- or whenever the file size reaches 200MB -->
-                <maxFileSize>200MB</maxFileSize>
-            </timeBasedFileNamingAndTriggeringPolicy>
-        </rollingPolicy>
-    </appender>
-
-
-
     <!--Логер для модуля WS-FINANCE-->
     <appender name="WS-FINANCE" class="ch.qos.logback.core.rolling.RollingFileAppender">
-        <file>${logs.path}ws-finance/finance.log</file>
+        <!--<file>${logs.path}ws-finance/finance.log</file>-->
         <encoder>
             <pattern>${log.format}</pattern>
             <charset>UTF-8</charset>
@@ -186,11 +183,11 @@
 
         <rollingPolicy class="ch.qos.logback.core.rolling.TimeBasedRollingPolicy">
             <!-- rollover daily -->
-            <fileNamePattern>${logs.path}ws-finance/finance.%d{yyyy-MM-dd}.%i.log.gz</fileNamePattern>
+            <fileNamePattern>${logs.path}ws-finance/finance.%d{yyyy-MM-dd}.log.gz</fileNamePattern>
             <timeBasedFileNamingAndTriggeringPolicy
                     class="ch.qos.logback.core.rolling.SizeAndTimeBasedFNATP">
                 <!-- or whenever the file size reaches 200MB -->
-                <maxFileSize>200MB</maxFileSize>
+                <!--<maxFileSize>200MB</maxFileSize>-->
             </timeBasedFileNamingAndTriggeringPolicy>
         </rollingPolicy>
     </appender>
@@ -203,7 +200,7 @@
 
     <!--Логер для модуля WS-TRANCFUSION-->
     <appender name="WS-TRANCFUSION" class="ch.qos.logback.core.rolling.RollingFileAppender">
-        <file>${logs.path}ws-transfusion/transfusion.log</file>
+        <!--<file>${logs.path}ws-transfusion/transfusion.log</file>-->
         <encoder>
             <pattern>${log.format}</pattern>
             <charset>UTF-8</charset>
@@ -211,11 +208,11 @@
 
         <rollingPolicy class="ch.qos.logback.core.rolling.TimeBasedRollingPolicy">
             <!-- rollover daily -->
-            <fileNamePattern>${logs.path}ws-transfusion/transfusion.%d{yyyy-MM-dd}.%i.log.gz</fileNamePattern>
+            <fileNamePattern>${logs.path}ws-transfusion/transfusion.%d{yyyy-MM-dd}.log.gz</fileNamePattern>
             <timeBasedFileNamingAndTriggeringPolicy
                     class="ch.qos.logback.core.rolling.SizeAndTimeBasedFNATP">
                 <!-- or whenever the file size reaches 200MB -->
-                <maxFileSize>200MB</maxFileSize>
+                <!--<maxFileSize>200MB</maxFileSize>-->
             </timeBasedFileNamingAndTriggeringPolicy>
         </rollingPolicy>
     </appender>
@@ -229,7 +226,7 @@
 
     <!--Логер для конмоненты связи-->
     <appender name="COMMUNICATION" class="ch.qos.logback.core.rolling.RollingFileAppender">
-        <file>${logs.path}communication/communication.log</file>
+        <!--<file>${logs.path}communication/communication.log</file>-->
         <encoder>
             <pattern>${log.format}</pattern>
             <charset>UTF-8</charset>
@@ -237,11 +234,11 @@
 
         <rollingPolicy class="ch.qos.logback.core.rolling.TimeBasedRollingPolicy">
             <!-- rollover daily -->
-            <fileNamePattern>${logs.path}communication/communication.%d{yyyy-MM-dd}.%i.log.gz</fileNamePattern>
+            <fileNamePattern>${logs.path}communication/communication.%d{yyyy-MM-dd}.log.gz</fileNamePattern>
             <timeBasedFileNamingAndTriggeringPolicy
                     class="ch.qos.logback.core.rolling.SizeAndTimeBasedFNATP">
                 <!-- or whenever the file size reaches 200MB -->
-                <maxFileSize>200MB</maxFileSize>
+                <!--<maxFileSize>200MB</maxFileSize>-->
             </timeBasedFileNamingAndTriggeringPolicy>
         </rollingPolicy>
     </appender>
@@ -253,7 +250,7 @@
     </logger>
 
     <appender name="AUTH" class="ch.qos.logback.core.FileAppender">
-        <file>${logs.path}auth/auth.log</file>
+        <!--<file>${logs.path}auth/auth.log</file>-->
         <encoder>
             <pattern>%d{HH:mm:ss.SSS} %-5level %msg%n</pattern>
             <charset>UTF8</charset>
@@ -265,7 +262,7 @@
     </logger>
 
     <appender name="SERVICES" class="ch.qos.logback.core.FileAppender">
-        <file>${logs.path}services/services.log</file>
+        <!--<file>${logs.path}services/services.log</file>-->
         <encoder>
             <pattern>%d{HH:mm:ss.SSS} %-5level %msg%n</pattern>
             <charset>UTF8</charset>
@@ -278,31 +275,21 @@
     </logger>
 
     <appender name="DEBUGLOG" class="ch.qos.logback.core.FileAppender">
-        <file>${logs.path}debug/debug.log</file>
+        <!--<file>${logs.path}debug/debug.log</file>-->
         <encoder>
             <pattern>%d{HH:mm:ss.SSS} [%thread] %-5level %msg%n</pattern>
             <charset>UTF8</charset>
         </encoder>
     </appender>
-    <!--
-    <logger name="ru.korus.tmis.core.logging.slf4j.interceptor.ServicesLoggingInterceptor" level="INFO" additivity="true">
-        <appender-ref ref="DEBUGLOG"/>
-    </logger>
-    -->
+
     <logger name="ru.korus.tmis.core.logging._LoggingInterceptor_Serializable" level="INFO" additivity="false">
         <appender-ref ref="DEBUGLOG"/>
     </logger>
-    <!--
-    <root level="INFO">
-        <appender-ref ref="DEBUGLOG" />
-    </root>
-    -->
 
     <root level="${logs.level}">
         <appender-ref ref="STDOUT"/>
         <appender-ref ref="STDOUT_ERROR"/>
         <appender-ref ref="EXCEPTIONS"/>
-        <appender-ref ref="EMAIL"/>
     </root>
 
 </configuration>

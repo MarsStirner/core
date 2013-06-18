@@ -4,6 +4,8 @@
 #
 
 GF_PASSWD_FILE=./password
+ASADMIN=${glassfish.home}/bin
+
 
 # Создание файла с паролями                                                                                                                                     
 echo "AS_ADMIN_PASSWORD="${glassfish.admin.password} > $GF_PASSWD_FILE
@@ -13,7 +15,7 @@ export PATH=${glassfish.home}/bin/:$PATH
 
 echo "Undeploy ${glassfish.application.name}"
 echo ""
-asadmin --host ${glassfish.host} \
+$ASADMIN/asadmin --host ${glassfish.host} \
         --port ${glassfish.port.admin} \
         --user ${glassfish.admin.login} \
         --passwordfile $GF_PASSWD_FILE \
@@ -21,8 +23,8 @@ asadmin --host ${glassfish.host} \
         undeploy \
         $1
 
-#asadmin stop-domain --domaindir ${glassfish.domain.dir} ${glassfish.domain}
-#asadmin start-domain --domaindir ${glassfish.domain.dir} ${glassfish.domain}
+#$ASADMIN/asadmin stop-domain --domaindir ${glassfish.domain.dir} ${glassfish.domain}
+#$ASADMIN/asadmin start-domain --domaindir ${glassfish.domain.dir} ${glassfish.domain}
 
 rm -f $GF_PASSWD_FILE
 
