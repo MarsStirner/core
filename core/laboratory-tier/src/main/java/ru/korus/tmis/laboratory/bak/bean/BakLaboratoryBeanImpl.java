@@ -11,6 +11,7 @@ import ru.korus.tmis.laboratory.bak.ws.CGMService;
 import ru.korus.tmis.laboratory.bak.ws.ICGMService;
 import ru.korus.tmis.laboratory.bak.ws.xml.SOAPEnvelopeHandlerResolver;
 import ru.korus.tmis.laboratory.business.LaboratoryBean;
+import ru.korus.tmis.laboratory.business.LaboratoryBeanLocal;
 import ru.korus.tmis.laboratory.data.request.BiomaterialInfo;
 import ru.korus.tmis.laboratory.data.request.DiagnosticRequestInfo;
 import ru.korus.tmis.laboratory.data.request.OrderInfo;
@@ -119,10 +120,10 @@ public class BakLaboratoryBeanImpl implements BakLaboratoryBeanLocal {
     }};
 
     @EJB
-    LaboratoryBean laboratoryBean;
+    private LaboratoryBeanLocal laboratoryBean;
 
     @EJB
-    DbActionBeanLocal dbActionBean;
+    private DbActionBeanLocal dbActionBean;
 
 
     CGMService cgmService;
@@ -169,11 +170,11 @@ public class BakLaboratoryBeanImpl implements BakLaboratoryBeanLocal {
         final Patient patient = event.getPatient();
         final PatientInfo patientInfo = getPatientInfo(patient);
         // Request section
-        final DiagnosticRequestInfo requestInfo = laboratoryBean.getDiagnosticRequestInfo(action);
+        final DiagnosticRequestInfo requestInfo = ((LaboratoryBean)laboratoryBean).getDiagnosticRequestInfo(action);
         // Biomaterial section
-        final BiomaterialInfo biomaterialInfo = laboratoryBean.getBiomaterialInfo(action, action.getTakenTissue());
+        final BiomaterialInfo biomaterialInfo = ((LaboratoryBean)laboratoryBean).getBiomaterialInfo(action, action.getTakenTissue());
         // Order section
-        final OrderInfo orderInfo = laboratoryBean.getOrderInfo(action, actionType);
+        final OrderInfo orderInfo = ((LaboratoryBean)laboratoryBean).getOrderInfo(action, actionType);
 
 
         return new HashMap<String, Object>() {{
