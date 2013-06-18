@@ -99,9 +99,10 @@ public class CGMService extends Service {
     public ICGMService getService() {
         final ICGMService service = super.getPort(new QName("cgm.ru", "cgmsoap_PortType"), ICGMService.class);
         final String serviceUrl = ConfigManager.getBakServiceUrl().toString();
-        Map<String, Object> requestContext = ((BindingProvider) service).getRequestContext();
-        requestContext.put(BindingProvider.ENDPOINT_ADDRESS_PROPERTY, serviceUrl);
-
+        if (serviceUrl != null) {
+            Map<String, Object> requestContext = ((BindingProvider) service).getRequestContext();
+            requestContext.put(BindingProvider.ENDPOINT_ADDRESS_PROPERTY, serviceUrl);
+        }
         return service;
     }
 
@@ -114,8 +115,10 @@ public class CGMService extends Service {
     public ICGMService getService(WebServiceFeature... features) {
         final ICGMService service = super.getPort(new QName("cgm.ru", "cgmsoap_PortType"), ICGMService.class, features);
         final String serviceUrl = ConfigManager.getBakServiceUrl().toString();
-        Map<String, Object> requestContext = ((BindingProvider) service).getRequestContext();
-        requestContext.put(BindingProvider.ENDPOINT_ADDRESS_PROPERTY, serviceUrl);
+        if (serviceUrl != null) {
+            Map<String, Object> requestContext = ((BindingProvider) service).getRequestContext();
+            requestContext.put(BindingProvider.ENDPOINT_ADDRESS_PROPERTY, serviceUrl);
+        }
         return service;
     }
 
