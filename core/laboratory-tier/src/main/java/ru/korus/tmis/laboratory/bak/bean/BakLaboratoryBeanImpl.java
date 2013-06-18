@@ -119,14 +119,15 @@ public class BakLaboratoryBeanImpl implements BakLaboratoryBeanLocal {
         put(QueryInitializer.ParamName.UNIT_BIOMETRIAL_NAME.getName(), MOCK);
     }};
 
-    @EJB
+    @EJB(beanName = "LaboratoryBean")
     private LaboratoryBeanLocal laboratoryBean;
+//    private LaboratoryBean laboratoryBean;
 
     @EJB
     private DbActionBeanLocal dbActionBean;
 
 
-    CGMService cgmService;
+    private CGMService cgmService;
 
     /**
      * Метод для отсылки запроса на анализ в лабораторию
@@ -170,11 +171,11 @@ public class BakLaboratoryBeanImpl implements BakLaboratoryBeanLocal {
         final Patient patient = event.getPatient();
         final PatientInfo patientInfo = getPatientInfo(patient);
         // Request section
-        final DiagnosticRequestInfo requestInfo = ((LaboratoryBean)laboratoryBean).getDiagnosticRequestInfo(action);
+        final DiagnosticRequestInfo requestInfo = laboratoryBean.getDiagnosticRequestInfo(action);
         // Biomaterial section
-        final BiomaterialInfo biomaterialInfo = ((LaboratoryBean)laboratoryBean).getBiomaterialInfo(action, action.getTakenTissue());
+        final BiomaterialInfo biomaterialInfo = laboratoryBean.getBiomaterialInfo(action, action.getTakenTissue());
         // Order section
-        final OrderInfo orderInfo = ((LaboratoryBean)laboratoryBean).getOrderInfo(action, actionType);
+        final OrderInfo orderInfo = laboratoryBean.getOrderInfo(action, actionType);
 
 
         return new HashMap<String, Object>() {{
