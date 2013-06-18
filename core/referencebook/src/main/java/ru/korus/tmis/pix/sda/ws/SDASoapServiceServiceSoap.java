@@ -15,7 +15,7 @@ import javax.xml.bind.annotation.XmlSeeAlso;
  * 
  */
 @WebService(name = "SDASoapServiceServiceSoap", targetNamespace = "urn:wsdl")
-@SOAPBinding(parameterStyle = SOAPBinding.ParameterStyle.BARE)
+@SOAPBinding(parameterStyle = SOAPBinding.ParameterStyle.WRAPPED)
 @XmlSeeAlso({
     ObjectFactory.class
 })

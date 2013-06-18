@@ -1,23 +1,21 @@
 package ru.korus.tmis.pix.sda;
 
-import java.util.List;
+import javax.xml.ws.WebServiceException;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import ru.korus.tmis.core.database.DbSchemeKladrBeanLocal;
+import ru.korus.tmis.core.entity.model.Event;
+import ru.korus.tmis.core.entity.model.HSIntegration;
+import ru.korus.tmis.pix.sda.ws.SDASoapServiceService;
+import ru.korus.tmis.pix.sda.ws.SDASoapServiceServiceSoap;
 
 import javax.ejb.EJB;
 import javax.ejb.Schedule;
 import javax.ejb.Stateless;
 import javax.persistence.EntityManager;
+import javax.persistence.PersistenceContext;
 import javax.xml.ws.soap.SOAPFaultException;
-
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-
-import ru.korus.tmis.core.database.DbSchemeKladrBeanLocal;
-import ru.korus.tmis.core.database.dbutil.Database;
-import ru.korus.tmis.core.entity.model.Event;
-import ru.korus.tmis.core.entity.model.HSIntegration;
-import ru.korus.tmis.hs.wss.AuthentificationHeaderHandlerResolver;
-import ru.korus.tmis.pix.sda.ws.SDASoapServiceService;
-import ru.korus.tmis.pix.sda.ws.SDASoapServiceServiceSoap;
+import java.util.List;
 
 /**
  * Author:      Sergey A. Zagrebelny <br>
@@ -34,20 +32,21 @@ public class HsPixPullBean {
 
     private static final Logger logger = LoggerFactory.getLogger(HsPixPullBean.class);
 
-    @EJB
-    Database db;
+    @PersistenceContext(unitName = "s11r64")
+    private EntityManager em = null;
+
 
     @EJB
     DbSchemeKladrBeanLocal dbSchemeKladrBeanLocal;
 
     @Schedule(hour = "*", minute = "*", second = "30")
     void pullDb() {
-        Integer maxId = db.getEntityMgr().createQuery("SELECT max(hsi.eventId) FROM HSIntegration hsi", Integer.class).getSingleResult();
+        Integer maxId = em.createQuery("SELECT max(hsi.eventId) FROM HSIntegration hsi", Integer.class).getSingleResult();
         if (maxId == null) {
             maxId = 0;
         }
         List<Event> newEvents =
-                db.getEntityMgr().createQuery("SELECT e FROM Event e WHERE e.id > :max AND (" +
+                em.createQuery("SELECT e FROM Event e WHERE e.id > :max AND (" +
                         "e.eventType.requestType.code = 'clinic' OR " +
                         "e.eventType.requestType.code = 'hospital' OR " +
                         "e.eventType.requestType.code = 'stationary' OR " +
@@ -62,7 +61,7 @@ public class HsPixPullBean {
      * 
      */
     private void sendToHS() {
-        List<Event> newEvents = db.getEntityMgr().
+        List<Event> newEvents = em.
                 createQuery("SELECT hsi.event FROM HSIntegration hsi WHERE hsi.status = :newEvent AND hsi.event.execDate IS NOT NULL AND (" +
                         "hsi.event.eventType.requestType.code = 'clinic' OR " +
                         "hsi.event.eventType.requestType.code = 'hospital' OR " +
@@ -71,7 +70,7 @@ public class HsPixPullBean {
                         "hsi.event.eventType.requestType.code = '6' )", Event.class).setParameter("newEvent", HSIntegration.Status.NEW).getResultList();
 
         for (Event event : newEvents) {
-            SendToHS(event, db.getEntityMgr(), dbSchemeKladrBeanLocal);
+            sendToHS(event,em, dbSchemeKladrBeanLocal);
         }
     }
 
@@ -79,17 +78,21 @@ public class HsPixPullBean {
      * @param event
      * @param entityManager
      */
-    static public void SendToHS(Event event, EntityManager em, DbSchemeKladrBeanLocal dbSchemeKladrBeanLocal) {
+     public void sendToHS(Event event, EntityManager em, DbSchemeKladrBeanLocal dbSchemeKladrBeanLocal) {
         SDASoapServiceService service = new SDASoapServiceService();
-        service.setHandlerResolver(new AuthentificationHeaderHandlerResolver());
+        service.setHandlerResolver(new SdaHandlerResolver());
         SDASoapServiceServiceSoap port = service.getSDASoapServiceServiceSoap();
         final HSIntegration hsIntegration = em.find(HSIntegration.class, event.getId());
         try {
             port.sendSDA(PixInfo.toSda(new ClientInfo(event.getPatient(), dbSchemeKladrBeanLocal), new EventInfo(event)));
             hsIntegration.setStatus(HSIntegration.Status.SENDED);
             em.flush();
-        } catch (SOAPFaultException ex) {
+        } catch (SOAPFaultException  ex) {
             hsIntegration.setStatus(HSIntegration.Status.ERROR);
+            hsIntegration.setInfo(ex.getMessage());
+            ex.printStackTrace();
+            em.flush();
+        } catch ( WebServiceException ex) {
             hsIntegration.setInfo(ex.getMessage());
             ex.printStackTrace();
             em.flush();
@@ -104,8 +107,8 @@ public class HsPixPullBean {
             HSIntegration hsi = new HSIntegration();
             hsi.setEvent(event);
             hsi.setStatus(HSIntegration.Status.NEW);
-            db.getEntityMgr().persist(hsi);
+            em.persist(hsi);
         }
-        db.getEntityMgr().flush();
+        em.flush();
     }
 }

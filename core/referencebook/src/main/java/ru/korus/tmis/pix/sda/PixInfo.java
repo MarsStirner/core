@@ -50,9 +50,9 @@ public class PixInfo {
         res.setPatient(patient);
         final Name name = new Name();
         // ФИО
-        name.setFamilyName(clientInfo.getFamilyName());
-        name.setGivenName(clientInfo.getGivenName());
-        name.setMiddleName(clientInfo.getMiddleName());
+        name.setFamilyName(emptyToNull(clientInfo.getFamilyName()));
+        name.setGivenName(emptyToNull(clientInfo.getGivenName()));
+        name.setMiddleName(emptyToNull(clientInfo.getMiddleName()));
         patient.setName(name);
         // Пол
         patient.setGender(new Gender());
@@ -135,6 +135,10 @@ public class PixInfo {
         return res;
     }
 
+    private static String emptyToNull(String in) {
+        return "".equals(in) ? null : in;
+    }
+
     /**
      * @param addr
      * @return
@@ -149,7 +153,7 @@ public class PixInfo {
      * @param patientNumbers
      */
     private static void addNumbre(NumberType type, String value, ArrayOfPatientNumberPatientNumber patientNumbers) {
-        if (value != null) {
+        if (value != null && !"".equals(value) ) {
             final PatientNumber patientNumberSnils = new PatientNumber();
             patientNumbers.getPatientNumber().add(patientNumberSnils);
             patientNumberSnils.setNumberType(type.name());
