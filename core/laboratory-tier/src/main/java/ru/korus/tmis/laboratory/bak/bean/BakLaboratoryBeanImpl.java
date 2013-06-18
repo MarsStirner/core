@@ -11,7 +11,6 @@ import ru.korus.tmis.laboratory.bak.ws.CGMServiceImpl;
 import ru.korus.tmis.laboratory.bak.ws.ICGMService;
 import ru.korus.tmis.laboratory.bak.ws.xml.SOAPEnvelopeHandlerResolver;
 
-import javax.ejb.Schedule;
 import javax.ejb.Stateless;
 import javax.interceptor.Interceptors;
 import java.util.Date;
@@ -79,7 +78,7 @@ public class BakLaboratoryBeanImpl implements BakLaboratoryBeanLocal {
      * Метод для отсылки запроса на анализ в лабораторию
      */
     @Override
-    @Schedule(minute = "*/1", hour = "*")
+//    @Schedule(minute = "*/1", hour = "*")
     public void sendLisAnalysisRequest() throws CoreException {
         log.info("Create cgmService..");
         cgmService = new CGMServiceImpl();
