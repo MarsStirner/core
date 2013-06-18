@@ -10,7 +10,6 @@ import ru.korus.tmis.laboratory.bak.utils.QueryInitializer;
 import ru.korus.tmis.laboratory.bak.ws.CGMService;
 import ru.korus.tmis.laboratory.bak.ws.ICGMService;
 import ru.korus.tmis.laboratory.bak.ws.xml.SOAPEnvelopeHandlerResolver;
-import ru.korus.tmis.laboratory.business.LaboratoryBean;
 import ru.korus.tmis.laboratory.business.LaboratoryBeanLocal;
 import ru.korus.tmis.laboratory.data.request.BiomaterialInfo;
 import ru.korus.tmis.laboratory.data.request.DiagnosticRequestInfo;
@@ -119,15 +118,14 @@ public class BakLaboratoryBeanImpl implements BakLaboratoryBeanLocal {
         put(QueryInitializer.ParamName.UNIT_BIOMETRIAL_NAME.getName(), MOCK);
     }};
 
-    @EJB(beanName = "LaboratoryBean")
+    @EJB
     private LaboratoryBeanLocal laboratoryBean;
-//    private LaboratoryBean laboratoryBean;
 
     @EJB
     private DbActionBeanLocal dbActionBean;
 
 
-    private CGMService cgmService;
+    CGMService cgmService;
 
     /**
      * Метод для отсылки запроса на анализ в лабораторию
@@ -214,7 +212,7 @@ public class BakLaboratoryBeanImpl implements BakLaboratoryBeanLocal {
             put(QueryInitializer.ParamName.PATIENT_NUMBER.getName(), MOCK);
             put(QueryInitializer.ParamName.PATIENT_PATRONUM.getName(), patientInfo.patientPatronum().get());
             put(QueryInitializer.ParamName.PATIENT_SEX.getName(), patientInfo.patientSex().toString());
-            put(QueryInitializer.ParamName.TYPE_FINANCE_CODE.getName(), MOCK);
+            put(QueryInitializer.ParamName.TYPE_FINANCE_CODE.getName(), "00a012234");
             put(QueryInitializer.ParamName.TYPE_FINANCE_NAME.getName(), MOCK);
             put(QueryInitializer.ParamName.UNIT_BIOMETRIAL_CODE.getName(), MOCK);
             put(QueryInitializer.ParamName.UNIT_BIOMETRIAL_NAME.getName(), MOCK);
