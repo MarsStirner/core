@@ -238,6 +238,27 @@ object ConfigManager extends Configuration {
     def WSDLUrl: URL = Option(RuntimeWSDLUrl).getOrElse(null)
   }
 
+  /**
+   * Метод хелпер, создан из-за невозможности вызвать класс-конфиг из джава кода
+   */
+  def getBakServiceUrl: URL = LaboratoryBak.ServiceUrl
+
+  /**
+   * Метод хелпер, создан из-за невозможности вызвать класс-конфиг из джава кода
+   */
+  def getBakUser: String = LaboratoryBak.User
+
+  /**
+   * Метод хелпер, создан из-за невозможности вызвать класс-конфиг из джава кода
+   */
+  def getBakPassword: String = LaboratoryBak.Password
+
+  /**
+   * Метод хелпер, создан из-за невозможности вызвать класс-конфиг из джава кода
+   */
+  def getBakRuntimeWsdl: URL = LaboratoryBak.RuntimeWSDLUrl
+
+
   val TmisAuth = new Configuration {
     var RealmName = "TMIS-Core-Server"
 
