@@ -7,7 +7,7 @@ import ru.korus.tmis.core.logging.LoggingInterceptor;
 import ru.korus.tmis.laboratory.bak.model.PatientInfo;
 import ru.korus.tmis.laboratory.bak.model.QueryHL7;
 import ru.korus.tmis.laboratory.bak.utils.QueryInitializer;
-import ru.korus.tmis.laboratory.bak.ws.CGMServiceImpl;
+import ru.korus.tmis.laboratory.bak.ws.CGMService;
 import ru.korus.tmis.laboratory.bak.ws.ICGMService;
 import ru.korus.tmis.laboratory.bak.ws.xml.SOAPEnvelopeHandlerResolver;
 
@@ -72,7 +72,7 @@ public class BakLaboratoryBeanImpl implements BakLaboratoryBeanLocal {
         put(QueryInitializer.ParamName.UNIT_BIOMETRIAL_NAME.getName(), MOCK);
     }};
 
-    CGMServiceImpl cgmService;
+    CGMService cgmService;
 
     /**
      * Метод для отсылки запроса на анализ в лабораторию
@@ -81,7 +81,7 @@ public class BakLaboratoryBeanImpl implements BakLaboratoryBeanLocal {
 //    @Schedule(minute = "*/1", hour = "*")
     public void sendLisAnalysisRequest() throws CoreException {
         log.info("Create cgmService..");
-        cgmService = new CGMServiceImpl();
+        cgmService = new CGMService();
         cgmService.setHandlerResolver(new SOAPEnvelopeHandlerResolver());
         try {
             log.info("Sending query cgmService..");

@@ -189,7 +189,7 @@ object ConfigManager extends Configuration {
   val Laboratory = new Configuration {
     // LIS service URL  Алтей
     // null means that URL should be acquired from the WSDL file
-    var ServiceUrl: URL = null
+    var ServiceUrl: URL = new URL("http://10.128.131.114:8090/CGM_SOAP")
     var User: String = null
     var Password: String = null
 
@@ -229,7 +229,7 @@ object ConfigManager extends Configuration {
 
   /** Конфигурация для БАК лаборатории */
   val LaboratoryBak = new Configuration {
-    var ServiceUrl: URL = null
+    var ServiceUrl: URL = "tmis-client-bak"
     var User: String = null
     var Password: String = null
 
