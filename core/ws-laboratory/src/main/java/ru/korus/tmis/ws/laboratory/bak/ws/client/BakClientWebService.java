@@ -24,6 +24,6 @@ public class BakClientWebService implements IBakClientWebService {
 
     @Override
     public void sendAnalysisRequest(int actionId) throws CoreException {
-        bakLaboratoryBeanLocal.sendLisAnalysisRequest();
+        bakLaboratoryBeanLocal.sendLisAnalysisRequest(actionId);
     }
 }

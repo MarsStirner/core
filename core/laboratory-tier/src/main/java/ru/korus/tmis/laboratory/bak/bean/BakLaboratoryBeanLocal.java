@@ -11,5 +11,5 @@ public interface BakLaboratoryBeanLocal {
     /**
      * Отправить в ЛИС запрос анализа
      */
-    void sendLisAnalysisRequest() throws CoreException;
+    void sendLisAnalysisRequest(int actionId) throws CoreException;
 }
