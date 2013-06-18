@@ -15,7 +15,15 @@ import java.util.regex.Pattern;
  * Author:      Dmitriy E. Nosov <br>
  * Date:        19.06.13, 0:31 <br>
  * Company:     Korus Consulting IT<br>
- * Description:  <br>
+ * Description: Форматер текста<br>
+ * Пример:     public static final TextFormat DEFAULT_FORMAT = new TextFormat("${title}, result: [${result}], trace: [${trace}] [${time} ms]");
+ * final Map<String, Object> ctx = getContext();
+ * ctx.put("title", title);
+ * ctx.put("result", result);
+ * ctx.put("trace", trace);
+ * ctx.put("time", System.currentTimeMillis() - startTime);
+ *
+ * String result = DEFAULT_FORMAT.format(ctx);
  */
 public class TextFormat {
     private static final Logger logger = LoggerFactory.getLogger(TextFormat.class);
