@@ -1,4 +1,4 @@
-package ru.korus.tmis.laboratory.bak.ws.client;
+package ru.korus.tmis.ws.laboratory.bak.ws.client;
 
 import ru.korus.tmis.core.exception.CoreException;
 
@@ -14,7 +14,7 @@ import javax.jws.WebService;
  *         Date: 18.06.13 18:10
  */
 @WebService(
-        targetNamespace = "http://korus.ru/tmis/client-laboratory",
+        targetNamespace = "http://korus.ru/tmis/client-bak",
         name = "client-bak"
 )
 public interface IBakClientWebService {

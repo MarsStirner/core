@@ -1,4 +1,4 @@
-package ru.korus.tmis.laboratory.bak.ws.client;
+package ru.korus.tmis.ws.laboratory.bak.ws.client;
 
 import ru.korus.tmis.core.exception.CoreException;
 import ru.korus.tmis.laboratory.bak.bean.BakLaboratoryBeanLocal;
@@ -12,12 +12,12 @@ import javax.jws.WebService;
  */
 
 @WebService(
-  endpointInterface = "ru.korus.tmis.laboratory.bak.ws.client.IBakClientWebService",
+  endpointInterface = "ru.korus.tmis.ws.laboratory.bak.ws.client.IBakClientWebService",
   targetNamespace = "http://korus.ru/tmis/client-bak",
   serviceName = "tmis-client-bak",
   portName = "client-bak",
   name = "client-bak")
-public class BakClientWebService implements IBakClientWebService{
+public class BakClientWebService implements IBakClientWebService {
 
     @EJB
     BakLaboratoryBeanLocal bakLaboratoryBeanLocal;
