@@ -176,47 +176,149 @@ public class BakLaboratoryBeanImpl implements BakLaboratoryBeanLocal {
         final OrderInfo orderInfo = laboratoryBean.getOrderInfo(action, actionType);
 
 
-        return new HashMap<String, Object>() {{
-            final String MOCK = "";
-            put(CUSTODIAN.getName(), MOCK);
-            put(DIAGNOSTIC_CODE.getName(), orderInfo.diagnosticCode());
-            put(DIAGNOSTIC_NAME.getName(), orderInfo.diagnosticName());
-            put(IS_URGENT.getName(), MOCK);
+        return new HashMap<String, Object>() {
+            {
+                final String MOCK = "";
+                put(CUSTODIAN.getName(), MOCK);
+                put(DIAGNOSTIC_CODE.getName(), orderInfo.diagnosticCode());
+                put(DIAGNOSTIC_NAME.getName(), orderInfo.diagnosticName());
+                put(IS_URGENT.getName(), MOCK);
 
-            put(QueryInitializer.ParamName.ORDER_BAR_CODE.getName(), biomaterialInfo.orderBarCode().get());
-            put(QueryInitializer.ParamName.ORDER_BIOMATERIAL_CODE.getName(), biomaterialInfo.orderBiomaterialCode().get());
-            put(QueryInitializer.ParamName.TAKEN_TISSUE_JOURNAL.getName(), biomaterialInfo.orderTakenTissueId().get());
-            put(QueryInitializer.ParamName.ORDER_BIOMATERIAL_COMMENT.getName(), biomaterialInfo.orderBiomaterialComment().get());
-            put(QueryInitializer.ParamName.ORDER_BIOMATERIAL_NAME.getName(), biomaterialInfo.orderBiomaterialname().get());
-            put(QueryInitializer.ParamName.ORDER_BIOMATERIAL_VOLUME.getName(), MOCK);
+                put(QueryInitializer.ParamName.ORDER_BAR_CODE.getName(), biomaterialInfo.orderBarCode().get());
+                put(QueryInitializer.ParamName.ORDER_BIOMATERIAL_CODE.getName(), biomaterialInfo.orderBiomaterialCode().get());
+                try {
+                    put(QueryInitializer.ParamName.TAKEN_TISSUE_JOURNAL.getName(), biomaterialInfo.orderTakenTissueId().get());
+                } catch (Exception e) {
+                    put(QueryInitializer.ParamName.TAKEN_TISSUE_JOURNAL.getName(), "");
+                }
+                try {
+                    put(QueryInitializer.ParamName.ORDER_BIOMATERIAL_COMMENT.getName(), biomaterialInfo.orderBiomaterialComment().get());
+                } catch (Exception e) {
+                    put(QueryInitializer.ParamName.ORDER_BIOMATERIAL_COMMENT.getName(), MOCK);
+                }
+                try {
+                    put(QueryInitializer.ParamName.ORDER_BIOMATERIAL_NAME.getName(), biomaterialInfo.orderBiomaterialname().get());
+                } catch (Exception e) {
+                    put(QueryInitializer.ParamName.ORDER_BIOMATERIAL_NAME.getName(), "");
+                }
+                put(QueryInitializer.ParamName.ORDER_BIOMATERIAL_VOLUME.getName(), MOCK);
+                try {
+                    put(QueryInitializer.ParamName.ORDER_COMMENT.getName(), requestInfo.orderComment().get());
+                } catch (Exception e) {
+                    put(QueryInitializer.ParamName.ORDER_COMMENT.getName(), "");
+                }
 
-            put(QueryInitializer.ParamName.ORDER_COMMENT.getName(), requestInfo.orderComment().get());
-            put(QueryInitializer.ParamName.ORDER_DEPARTMENT_MIS_ID.getName(), requestInfo.orderDepartmentMisCode().get());
-            put(QueryInitializer.ParamName.ORDER_DEPARTMENT_NAME.getName(), requestInfo.orderDepartmentName().get());
-            put(QueryInitializer.ParamName.ORDER_DIAG_CODE.getName(), requestInfo.orderDiagCode().get());
-            put(QueryInitializer.ParamName.ORDER_DIAG_TEXT.getName(), requestInfo.orderDiagText().get());
-            put(QueryInitializer.ParamName.ORDER_DOCTOR_FAMILY.getName(), requestInfo.orderDoctorFamily().get());
-            put(QueryInitializer.ParamName.ORDER_DOCTOR_MIS_ID.getName(), requestInfo.orderDoctorMisId().get());
-            put(QueryInitializer.ParamName.ORDER_DOCTOR_NAME.getName(), requestInfo.orderDoctorName().get());
-            put(QueryInitializer.ParamName.ORDER_DOCTOR_PATRONUM.getName(), requestInfo.orderDoctorPatronum().get());
-            put(QueryInitializer.ParamName.ORDER_MIS_DATE.getName(), requestInfo.orderMisDate().get());
-            put(QueryInitializer.ParamName.ORDER_MIS_ID.getName(), requestInfo.orderMisId());
-            put(QueryInitializer.ParamName.ORDER_PREGNAT.getName(), requestInfo.orderPregnatMin().get());
+                try {
+                    put(QueryInitializer.ParamName.ORDER_DEPARTMENT_MIS_ID.getName(), requestInfo.orderDepartmentMisCode().get());
+                } catch (Exception e) {
+                    put(QueryInitializer.ParamName.ORDER_DEPARTMENT_MIS_ID.getName(), "");
 
-            put(QueryInitializer.ParamName.ORDER_PROBE_DATE.getName(), biomaterialInfo.orderProbeDate().get());
-            put(QueryInitializer.ParamName.PATIENT_ADDRESS.getName(), "");
-            put(QueryInitializer.ParamName.PATIENT_BIRTH_DATE.getName(), patientInfo.patientBirthDate().get());
-            put(QueryInitializer.ParamName.PATIENT_FAMILY.getName(), patientInfo.patientFamily().get());
-            put(QueryInitializer.ParamName.PATIENT_MIS_ID.getName(), patientInfo.patientMisId());
-            put(QueryInitializer.ParamName.PATIENT_NAME.getName(), patientInfo.patientName().get());
-            put(QueryInitializer.ParamName.PATIENT_NUMBER.getName(), MOCK);
-            put(QueryInitializer.ParamName.PATIENT_PATRONUM.getName(), patientInfo.patientPatronum().get());
-            put(QueryInitializer.ParamName.PATIENT_SEX.getName(), patientInfo.patientSex().toString());
-            put(QueryInitializer.ParamName.TYPE_FINANCE_CODE.getName(), "00a012234");
-            put(QueryInitializer.ParamName.TYPE_FINANCE_NAME.getName(), MOCK);
-            put(QueryInitializer.ParamName.UNIT_BIOMETRIAL_CODE.getName(), MOCK);
-            put(QueryInitializer.ParamName.UNIT_BIOMETRIAL_NAME.getName(), MOCK);
-        }};
+                }
+                try {
+                    put(QueryInitializer.ParamName.ORDER_DEPARTMENT_NAME.getName(), requestInfo.orderDepartmentName().get());
+                } catch (Exception e) {
+                    put(QueryInitializer.ParamName.ORDER_DEPARTMENT_NAME.getName(), "");
+                }
+                try {
+                    put(QueryInitializer.ParamName.ORDER_DIAG_CODE.getName(), requestInfo.orderDiagCode().get());
+                } catch (Exception e) {
+                    put(QueryInitializer.ParamName.ORDER_DIAG_CODE.getName(), "");
+                }
+
+                try {
+                    put(QueryInitializer.ParamName.ORDER_DIAG_TEXT.getName(), requestInfo.orderDiagText().get());
+                } catch (Exception e) {
+                    put(QueryInitializer.ParamName.ORDER_DIAG_TEXT.getName(), "");
+                }
+
+                try {
+                    put(QueryInitializer.ParamName.ORDER_DOCTOR_FAMILY.getName(), requestInfo.orderDoctorFamily().get());
+                } catch (Exception e) {
+                    put(QueryInitializer.ParamName.ORDER_DOCTOR_FAMILY.getName(), "");
+                }
+
+                try {
+                    put(QueryInitializer.ParamName.ORDER_DOCTOR_MIS_ID.getName(), requestInfo.orderDoctorMisId().get());
+                } catch (Exception e) {
+                    put(QueryInitializer.ParamName.ORDER_DOCTOR_MIS_ID.getName(), "");
+                }
+
+                try {
+                    put(QueryInitializer.ParamName.ORDER_DOCTOR_NAME.getName(), requestInfo.orderDoctorName().get());
+                } catch (Exception e) {
+                    put(QueryInitializer.ParamName.ORDER_DOCTOR_NAME.getName(), "");
+                }
+
+                try {
+                    put(QueryInitializer.ParamName.ORDER_DOCTOR_PATRONUM.getName(), requestInfo.orderDoctorPatronum().get());
+                } catch (Exception e) {
+                    put(QueryInitializer.ParamName.ORDER_DOCTOR_PATRONUM.getName(), "");
+                }
+                try {
+                    put(QueryInitializer.ParamName.ORDER_MIS_DATE.getName(), requestInfo.orderMisDate().get());
+                } catch (Exception e) {
+                    put(QueryInitializer.ParamName.ORDER_MIS_DATE.getName(), "");
+                }
+                try {
+                    put(QueryInitializer.ParamName.ORDER_MIS_ID.getName(), requestInfo.orderMisId());
+                } catch (Exception e) {
+                    put(QueryInitializer.ParamName.ORDER_MIS_ID.getName(), "0");
+                }
+                try {
+                    put(QueryInitializer.ParamName.ORDER_PREGNAT.getName(), requestInfo.orderPregnatMin().get());
+                } catch (Exception e) {
+                    put(QueryInitializer.ParamName.ORDER_PREGNAT.getName(), "");
+                }
+                try {
+                    put(QueryInitializer.ParamName.ORDER_PROBE_DATE.getName(), biomaterialInfo.orderProbeDate().get());
+                } catch (Exception e) {
+                    put(QueryInitializer.ParamName.ORDER_PROBE_DATE.getName(), "");
+                }
+                try {
+                    put(QueryInitializer.ParamName.PATIENT_ADDRESS.getName(), "");
+                } catch (Exception e) {
+                    put(QueryInitializer.ParamName.PATIENT_ADDRESS.getName(), "");
+                }
+                try {
+                    put(QueryInitializer.ParamName.PATIENT_BIRTH_DATE.getName(), patientInfo.patientBirthDate().get());
+                } catch (Exception e) {
+                    put(QueryInitializer.ParamName.PATIENT_BIRTH_DATE.getName(), "");
+                }
+                try {
+                    put(QueryInitializer.ParamName.PATIENT_FAMILY.getName(), patientInfo.patientFamily().get());
+                } catch (Exception e) {
+                    put(QueryInitializer.ParamName.PATIENT_FAMILY.getName(), "");
+                }
+                try {
+                    put(QueryInitializer.ParamName.PATIENT_MIS_ID.getName(), patientInfo.patientMisId());
+                } catch (Exception e) {
+                    put(QueryInitializer.ParamName.PATIENT_MIS_ID.getName(), "");
+                }
+                try {
+                    put(QueryInitializer.ParamName.PATIENT_NAME.getName(), patientInfo.patientName().get());
+                } catch (Exception e) {
+                    put(QueryInitializer.ParamName.PATIENT_NAME.getName(), "");
+                }
+                try {
+                    put(QueryInitializer.ParamName.PATIENT_NUMBER.getName(), MOCK);
+                } catch (Exception e) {
+                }
+                try {
+                    put(QueryInitializer.ParamName.PATIENT_PATRONUM.getName(), patientInfo.patientPatronum().get());
+                } catch (Exception e) {
+                    put(QueryInitializer.ParamName.PATIENT_PATRONUM.getName(), "");
+                }
+                try {
+                    put(QueryInitializer.ParamName.PATIENT_PATRONUM.getName(), patientInfo.patientPatronum().get());
+                } catch (Exception e) {
+                    put(QueryInitializer.ParamName.PATIENT_SEX.getName(), "");
+                }
+                put(QueryInitializer.ParamName.TYPE_FINANCE_CODE.getName(), "00a012234");
+                put(QueryInitializer.ParamName.TYPE_FINANCE_NAME.getName(), MOCK);
+                put(QueryInitializer.ParamName.UNIT_BIOMETRIAL_CODE.getName(), MOCK);
+                put(QueryInitializer.ParamName.UNIT_BIOMETRIAL_NAME.getName(), MOCK);
+            }
+        };
     }
 
     private PatientInfo getPatientInfo(Patient patient) {
