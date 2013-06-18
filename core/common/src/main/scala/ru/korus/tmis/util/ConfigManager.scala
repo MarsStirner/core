@@ -233,7 +233,7 @@ object ConfigManager extends Configuration {
 
   /** Конфигурация для БАК лаборатории */
   val LaboratoryBak = new Configuration {
-    var ServiceUrl: URL = "tmis-client-bak"
+    var ServiceUrl: URL = new URL("http://10.128.131.114:8090/CGM_SOAP")
     var User: String = null
     var Password: String = null
 
