@@ -1,13 +1,10 @@
 
 package ru.korus.tmis.laboratory.bak.ws;
 
-import java.net.URL;
 import javax.xml.namespace.QName;
-import javax.xml.ws.Service;
-import javax.xml.ws.WebEndpoint;
-import javax.xml.ws.WebServiceClient;
-import javax.xml.ws.WebServiceException;
-import javax.xml.ws.WebServiceFeature;
+import javax.xml.ws.*;
+import java.net.MalformedURLException;
+import java.net.URL;
 
 
 /**
@@ -17,10 +14,10 @@ import javax.xml.ws.WebServiceFeature;
  * JAX-WS RI 2.2.4-b01
  * Generated source version: 2.2
  */
-@WebServiceClient (
+@WebServiceClient(
         name = "CGM_SOAP",
         targetNamespace = "cgm.ru",
-        wsdlLocation = "/CGMSERVICE_pub.wsdl")
+        wsdlLocation = "../../../../../../CGMSERVICE_pub.wsdl")
 public class CGMServiceImpl extends Service {
 
     private final static URL CGMSOAP_WSDL_LOCATION;
@@ -30,12 +27,17 @@ public class CGMServiceImpl extends Service {
     private final static QName CGMSOAP_QNAME = new QName("cgm.ru", "CGM_SOAP");
 
     static {
-        CGMSOAP_WSDL_LOCATION = CGMServiceImpl.class.getResource("/CGMSERVICE_pub.wsdl");
-        WebServiceException e = null;
-        if (CGMSOAP_WSDL_LOCATION == null) {
-            e = new WebServiceException("Cannot find '../../../../../../CGMSERVICE_pub.wsdl' wsdl. Place the resource correctly in the classpath.");
+        final URL baseUrl = CGMServiceImpl.class.getResource(".");
+        try {
+            CGMSOAP_WSDL_LOCATION = new URL(baseUrl, "../../../../../../CGMSERVICE_pub.wsdl");
+            WebServiceException e = null;
+            if (CGMSOAP_WSDL_LOCATION == null) {
+                e = new WebServiceException("Cannot find '/CGMSERVICE_pub.wsdl' wsdl. Place the resource correctly in the classpath.");
+            }
+            CGMSOAP_EXCEPTION = e;
+        } catch (MalformedURLException e) {
+            throw new RuntimeException(e);
         }
-        CGMSOAP_EXCEPTION = e;
     }
 
     public CGMServiceImpl() {
@@ -72,7 +74,7 @@ public class CGMServiceImpl extends Service {
     /**
      * @return returns ICGMService
      */
-    @WebEndpoint (name = "cgmsoap_PortType")
+    @WebEndpoint(name = "cgmsoap_PortType")
     public ICGMService getService() {
         return super.getPort(new QName("cgm.ru", "cgmsoap_PortType"), ICGMService.class);
     }
@@ -81,7 +83,7 @@ public class CGMServiceImpl extends Service {
      * @param features A list of {@link javax.xml.ws.WebServiceFeature} to configure on the proxy.  Supported features not in the <code>features</code> parameter will have their default values.
      * @return returns ICGMService
      */
-    @WebEndpoint (name = "cgmsoap_PortType")
+    @WebEndpoint(name = "cgmsoap_PortType")
     public ICGMService getService(WebServiceFeature... features) {
         return super.getPort(new QName("cgm.ru", "cgmsoap_PortType"), ICGMService.class, features);
     }
