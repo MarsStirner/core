@@ -1,18 +1,14 @@
 
 package misexchange;
 
-import ru.korus.tmis.core.database.DbSettingsBeanLocal;
 import ru.korus.tmis.util.ConfigManager;
-import ru.korus.tmis.util.reflect.Configuration;
 
-import javax.ejb.EJB;
 import javax.xml.namespace.QName;
 import javax.xml.ws.*;
 import java.net.Authenticator;
 import java.net.MalformedURLException;
 import java.net.PasswordAuthentication;
 import java.net.URL;
-import java.util.List;
 import java.util.Map;
 
 
@@ -85,10 +81,12 @@ public class MISExchange
         final MISExchangePortType port = super.getPort(new QName("MISExchange", "MISExchangeSoap"), MISExchangePortType.class);
 
         final String serviceUrl = ConfigManager.getDrugUrl().toString();
-        Map<String, Object> requestContext = ((BindingProvider) port).getRequestContext();
-        requestContext.put(BindingProvider.ENDPOINT_ADDRESS_PROPERTY, serviceUrl);
+        if (serviceUrl != null && !"".equals(serviceUrl)) {
+            Map<String, Object> requestContext = ((BindingProvider) port).getRequestContext();
+            requestContext.put(BindingProvider.ENDPOINT_ADDRESS_PROPERTY, serviceUrl);
 //        requestContext.put(BindingProvider.USERNAME_PROPERTY, login);
 //        requestContext.put(BindingProvider.PASSWORD_PROPERTY, password);
+        }
         return port;
     }
 

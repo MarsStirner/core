@@ -112,7 +112,11 @@ object ConfigManager extends Configuration {
    * Параметры для 1С Аптеки
    */
   val Drugstore = new Configuration {
-    /** Включен ли сервис */
+    /**
+     * Включен ли сервис
+     * on - включен
+     * off - выключен (по умолчанию)
+     */
     var Active = "off"
 
     var ServiceUrl = new URL("http://pharmacy3.fccho-moscow.ru/ws/MISExchange")
