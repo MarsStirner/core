@@ -42,7 +42,7 @@ public class BakLaboratoryBeanImpl implements BakLaboratoryBeanLocal {
     private static final Logger log = LoggerFactory.getLogger(BakLaboratoryBeanImpl.class);
     private static final String XML_TEMPLATE = "<ClinicalDocument xmlns='urn:hl7-org:v3' xmlns:xsi='http://www.w3.org/2001/XMLSchema-instance' xsi:schemaLocation='urn:hl7-org:v3 CDA.xsd'>" +
             "<typeId extension='POCD_HD000040' root='2.16.840.1.113883.1.3'/>" +
-            "<id root='GUID'/>" +
+            "<id root='${uuid}'/>" +
             "<setID root='id'/>" +
             "<versionNumber orderStatus='2'/>" +
             "<code>${diagnosticCode}, ${diagnosticName}</code>" +
@@ -55,7 +55,7 @@ public class BakLaboratoryBeanImpl implements BakLaboratoryBeanLocal {
             "<addr>${patientAddress}</addr>" +
             "<telecom nullFlavor='NI'/>" +
             "<patient>" +
-            "<id root='OID' extension='${patientNumber}' assigningAuthorityName='${custodian}' displayable='true'/>" +
+            "<id root='${uuid}' extension='${patientNumber}' assigningAuthorityName='${custodian}' displayable='true'/>" +
             "<name> ${patientFamily} ${patientName} ${patientPatronum}" +
             "<family>${patientFamily}</family>" +
             "<given>${patientName}</given>" +
@@ -87,14 +87,14 @@ public class BakLaboratoryBeanImpl implements BakLaboratoryBeanLocal {
             "<custodian>" +
             "<assignedCustodian>" +
             "<representedCustodianOrganization>" +
-            "<id root='GUID'/>" +
+            "<id root='${uuid}'/>" +
             "<name>${сustodian}</name>" +
             "</representedCustodianOrganization>" +
             "</assignedCustodian>" +
             "</custodian>" +
             "<componentOf>" +
             "<encompassingEncounter>" +
-            "<id root='GUID' extension='${patientNumber}'/>" +
+            "<id root='${uuid}' extension='${patientNumber}'/>" +
             "<effectiveTime nullFlavor='NI'/>" +
             "</encompassingEncounter>" +
             "</componentOf>" +
@@ -227,10 +227,10 @@ public class BakLaboratoryBeanImpl implements BakLaboratoryBeanLocal {
             log.info("Sending query cgmService..");
             final ICGMService service = cgmService.getService();
 //            final QueryHL7 queryHL7 = buildQueryHL7(mockParams);
-
 //            final String xml = queryHL7.toXML();
             TextFormat tf = new TextFormat(XML_TEMPLATE);
             final String xml = tf.format(getAnalysisRequest(actionId));
+
             log.info("Bak XML request: \n " + xml);
             final String result = service.queryAnalysis(xml);
             log.info("Result query cgmService result: " + result);
@@ -266,7 +266,7 @@ public class BakLaboratoryBeanImpl implements BakLaboratoryBeanLocal {
         return new HashMap<String, Object>() {
             {
                 final String MOCK = "";
-                put(CUSTODIAN.getName(), "ФМКЦ");
+                put(CUSTODIAN.getName(), "ФНКЦ");
                 put(DIAGNOSTIC_CODE.getName(), orderInfo.diagnosticCode());
                 put(DIAGNOSTIC_NAME.getName(), orderInfo.diagnosticName());
                 put(IS_URGENT.getName(), MOCK);
@@ -398,7 +398,7 @@ public class BakLaboratoryBeanImpl implements BakLaboratoryBeanLocal {
                 try {
                     put(QueryInitializer.ParamName.PATIENT_PATRONUM.getName(), patientInfo.patientPatronum().get());
                 } catch (Exception e) {
-                    put(QueryInitializer.ParamName.PATIENT_SEX.getName(), patient.getSex());
+                    put(QueryInitializer.ParamName.PATIENT_SEX.getName(), "");
                 }
                 put(QueryInitializer.ParamName.TYPE_FINANCE_CODE.getName(), "00a012234");
                 put(QueryInitializer.ParamName.TYPE_FINANCE_NAME.getName(), MOCK);
