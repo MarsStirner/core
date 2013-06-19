@@ -21,8 +21,9 @@ import scala.Option;
 import javax.ejb.EJB;
 import javax.ejb.Stateless;
 import javax.interceptor.Interceptors;
-import java.util.*;
-import java.util.UUID;
+import java.util.Date;
+import java.util.HashMap;
+import java.util.Map;
 
 import static ru.korus.tmis.laboratory.bak.utils.QueryInitializer.ParamName.*;
 
@@ -87,7 +88,7 @@ public class BakLaboratoryBeanImpl implements BakLaboratoryBeanLocal {
             "<assignedCustodian>" +
             "<representedCustodianOrganization>" +
             "<id root='GUID'/>" +
-            "<name>${orderCustodian}</name>" +
+            "<name>${сustodian}</name>" +
             "</representedCustodianOrganization>" +
             "</assignedCustodian>" +
             "</custodian>" +
@@ -265,7 +266,7 @@ public class BakLaboratoryBeanImpl implements BakLaboratoryBeanLocal {
         return new HashMap<String, Object>() {
             {
                 final String MOCK = "";
-                put(CUSTODIAN.getName(), MOCK);
+                put(CUSTODIAN.getName(), "ФМКЦ");
                 put(DIAGNOSTIC_CODE.getName(), orderInfo.diagnosticCode());
                 put(DIAGNOSTIC_NAME.getName(), orderInfo.diagnosticName());
                 put(IS_URGENT.getName(), MOCK);
@@ -397,12 +398,14 @@ public class BakLaboratoryBeanImpl implements BakLaboratoryBeanLocal {
                 try {
                     put(QueryInitializer.ParamName.PATIENT_PATRONUM.getName(), patientInfo.patientPatronum().get());
                 } catch (Exception e) {
-                    put(QueryInitializer.ParamName.PATIENT_SEX.getName(), "");
+                    put(QueryInitializer.ParamName.PATIENT_SEX.getName(), patient.getSex());
                 }
                 put(QueryInitializer.ParamName.TYPE_FINANCE_CODE.getName(), "00a012234");
                 put(QueryInitializer.ParamName.TYPE_FINANCE_NAME.getName(), MOCK);
                 put(QueryInitializer.ParamName.UNIT_BIOMETRIAL_CODE.getName(), MOCK);
                 put(QueryInitializer.ParamName.UNIT_BIOMETRIAL_NAME.getName(), MOCK);
+                put("GUID", "17891798");
+                put("custodian", "17891798");
             }
         };
     }
