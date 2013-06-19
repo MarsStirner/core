@@ -86,6 +86,7 @@ public class HsPixPullBean {
         try {
             port.sendSDA(PixInfo.toSda(new ClientInfo(event.getPatient(), dbSchemeKladrBeanLocal), new EventInfo(event)));
             hsIntegration.setStatus(HSIntegration.Status.SENDED);
+            hsIntegration.setInfo("");
             em.flush();
         } catch (SOAPFaultException  ex) {
             hsIntegration.setStatus(HSIntegration.Status.ERROR);
