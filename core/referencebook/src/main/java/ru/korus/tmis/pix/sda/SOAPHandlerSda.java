@@ -22,22 +22,32 @@ import java.util.Set;
  * Description:  <br>
  */
 public class SOAPHandlerSda implements SOAPHandler<SOAPMessageContext> {
+    /**
+     * Обработчик входных/выходных сообщений SOAP.
+     * Переоперделен с целью удаления пространства имен ns2:wsdl
+     * @see SOAPHandler#handleMessage(javax.xml.ws.handler.MessageContext)
+     */
     @Override
     public boolean handleMessage(final SOAPMessageContext smc) {
         Boolean outboundProperty = (Boolean) smc.get(MessageContext.MESSAGE_OUTBOUND_PROPERTY);
 
-        if (outboundProperty.booleanValue()) {
+        if (outboundProperty.booleanValue()) {  // если сообщение на отправку
             SOAPMessage message = smc.getMessage();
             try {
-                SOAPEnvelope envelope = message.getSOAPPart().getEnvelope();
-                SOAPBody body = envelope.getBody();
-                Element nodeWithNameSpace = (Element)body.getFirstChild();
-                NodeList nodeList = nodeWithNameSpace.getChildNodes();
 
+                SOAPEnvelope envelope = message.getSOAPPart().getEnvelope();
+                SOAPBody body = envelope.getBody(); //Теле сообщения
+
+                Element nodeWithNameSpace = (Element)body.getFirstChild(); // элемент в пространстве имен ns2:wsdl
+                NodeList nodeList = nodeWithNameSpace.getChildNodes();
+                //Создаем новый элемент с пустым пространством имен
                 Element cont =  body.getOwnerDocument().createElement(nodeWithNameSpace.getNodeName());
+                //копируем в новы элемент узлы из SOAP сообщения
                 for (int index = 0; index < nodeList.getLength(); ++index ) {
                     cont.appendChild(nodeList.item(index));
                 }
+
+                //Заменяем элемент из SOAP сообщения на элемент с пустым пространством имен
                 body.replaceChild(cont, nodeWithNameSpace);
 
                 message.saveChanges();
