@@ -21,9 +21,8 @@ import scala.Option;
 import javax.ejb.EJB;
 import javax.ejb.Stateless;
 import javax.interceptor.Interceptors;
-import java.util.Date;
-import java.util.HashMap;
-import java.util.Map;
+import java.util.*;
+import java.util.UUID;
 
 import static ru.korus.tmis.laboratory.bak.utils.QueryInitializer.ParamName.*;
 
@@ -171,6 +170,7 @@ public class BakLaboratoryBeanImpl implements BakLaboratoryBeanLocal {
         put(DIAGNOSTIC_CODE.getName(), MOCK);
         put(DIAGNOSTIC_NAME.getName(), MOCK);
         put(IS_URGENT.getName(), 1);
+        put("uuid", java.util.UUID.randomUUID().toString());
         put(QueryInitializer.ParamName.ORDER_BAR_CODE.getName(), MOCK);
         put(QueryInitializer.ParamName.ORDER_BIOMATERIAL_CODE.getName(), MOCK);
         put(QueryInitializer.ParamName.ORDER_BIOMATERIAL_COMMENT.getName(), MOCK);
