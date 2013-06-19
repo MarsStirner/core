@@ -40,44 +40,143 @@ import static ru.korus.tmis.laboratory.bak.utils.QueryInitializer.ParamName.*;
 public class BakLaboratoryBeanImpl implements BakLaboratoryBeanLocal {
 
     private static final Logger log = LoggerFactory.getLogger(BakLaboratoryBeanImpl.class);
-    private static final String XML_TEMPLATE = "<custodian>${custodian}</custodian>\n" +
-            "<patientMisId>${patientMisId}</patientMisId>\n" +
-            "<patientNumber>${patientNumber}</patientNumber>\n" +
-            "<patientFamily>${patientFamily}</patientFamily>\n" +
-            "<patientName>${patientName}</patientName>\n" +
-            "<patientPatronum>${patientPatronum}</patientPatronum>\n" +
-            "<patientBirthDate>${patientBirthDate}</patientBirthDate>\n" +
-            "<patientSex>${patientSex}</patientSex>\n" +
-            "<patientAddress>${patientAddress}</patientAddress>\n" +
+    private static final String XML_TEMPLATE = "<ClinicalDocument xmlns='urn:hl7-org:v3' xmlns:xsi='http://www.w3.org/2001/XMLSchema-instance' xsi:schemaLocation='urn:hl7-org:v3 CDA.xsd'>\n" +
+            "\t<typeId extension='POCD_HD000040' root='2.16.840.1.113883.1.3'/>\n" +
             "\n" +
-            "<orderMisId>${orderMisId}</orderMisId>\n" +
-            "<orderMisDate>${orderMisDate}</orderMisDate>\n" +
-            "<isUrgent>${isUrgent}</isUrgent>\n" +
-            "<orderPregnat>${orderPregnat}</orderPregnat>\n" +
-            "<orderDiagCode>${orderDiagCode}</orderDiagCode>\n" +
-            "<orderDiagText>${orderDiagText}</orderDiagText>\n" +
-            "<orderComment>${orderComment}</orderComment>\n" +
-            "<orderDepartmentName>${orderDepartmentName}</orderDepartmentName>\n" +
-            "<orderDepartmentMisId>${orderDepartmentMisId}</orderDepartmentMisId>\n" +
-            "<orderDoctorMisId>${orderDoctorMisId}</orderDoctorMisId>\n" +
-            "<orderDoctorFamily>${orderDoctorFamily}</orderDoctorFamily>\n" +
-            "<orderDoctorName>${orderDoctorName}</orderDoctorName>\n" +
-            "<orderDoctorPatronum>${orderDoctorPatronum}</orderDoctorPatronum>\n" +
+            "\t<id root='GUID'/>\n" +
+            "\t<setID root='id'/>\n" +
+            "\t<versionNumber orderStatus='2'/>\n" +
             "\n" +
-            "<diagnosticCode>${diagnosticCode}</diagnosticCode>\n" +
-            "<diagnosticName>${diagnosticName}</diagnosticName>\n" +
-            "<typeFinanceCode>${typeFinanceCode}</typeFinanceCode>\n" +
-            "<typeFinanceName>${typeFinanceName}</typeFinanceName>\n" +
+            "\t<code>${diagnosticCode}, ${diagnosticName}</code>\n" +
             "\n" +
-            "<orderBarCode>${orderBarCode}</orderBarCode>\n" +
-            "<orderBiomaterialCode>${orderBiomaterialCode}</orderBiomaterialCode>\n" +
-            "<TakenTissueJournal>${TakenTissueJournal}</TakenTissueJournal>\n" +
-            "<orderBiomaterialComment>${orderBiomaterialComment}</orderBiomaterialComment>\n" +
-            "<orderBiomaterialname>${orderBiomaterialname}</orderBiomaterialname>\n" +
-            "<orderProbeDate>${orderProbeDate}</orderProbeDate>\n" +
-            "<orderBiomaterialVolume>${orderBiomaterialVolume}</orderBiomaterialVolume>\n" +
-            "<UnitBiomaterialCode>${UnitBiomaterialCode}</UnitBiomaterialCode>\n" +
-            "<UnitBiomaterialName>${UnitBiomaterialName}</UnitBiomaterialName>";
+            "\t<title>${diagnosticName}</title>\n" +
+            "\t<effectiveTime value='${orderMisDate}'/>\n" +
+            "\t<confidentialityCode code='N' codeSystem='2.16.840.1.113883.5.25' displayName='Normal'/>\n" +
+            "\t<recordTarget>\n" +
+            "\t\t<patientRole>\n" +
+            "\t\t\t<id root='${patientMisId}'/>\n" +
+            "\t\t\t<addr>${patientAddress}</addr>\n" +
+            "\t\t\t<telecom nullFlavor='NI'/>\n" +
+            "\t\t\t<patient>\n" +
+            "\t\t\t\t<id root='OID' extension='${patientNumber}' assigningAuthorityName='${custodian}' displayable='true'/>\n" +
+            "\t\t\t\t<name> ${patientFamily} ${patientName} ${patientPatronum}\n" +
+            "\t\t\t\t\t<family>${patientFamily}</family>\n" +
+            "\t\t\t\t\t<given>${patientName}</given>\n" +
+            "\t\t\t\t\t<given>${patientPatronum}</given>\n" +
+            "\t\t\t\t</name>\n" +
+            "\t\t\t\t<birthTime value='${patientBirthDate}'/>\n" +
+            "\t\t\t\t<administrativeGenderCode code='${patientSex}'/>\n" +
+            "\t\t\t</patient>\n" +
+            "\t\t\t<providerOrganization>${custodian}</providerOrganization>\n" +
+            "\t\t</patientRole>\n" +
+            "\t</recordTarget>\n" +
+            "\n" +
+            "\t<author>\n" +
+            "\t\t<time value='${orderMisDate}'/>\n" +
+            "\t\t\t<assignedAuthor>\n" +
+            "\t\t\t\t<id root='${orderDoctorMisId}' extension='${orderDoctorMisId}'/>\n" +
+            "\t\t\t\t<assignedAuthor>\n" +
+            "\t\t\t\t\t<code code='DolgCode' displayName='DolgName'/>\n" +
+            "\t\t\t\t</assignedAuthor>\n" +
+            "\n" +
+            "\t\t\t\t<assignedPerson>\n" +
+            "\t\t\t\t\t<prefix>${orderDepartmentMisId}</prefix>\n" +
+            "\t\t\t\t\t<name>${orderDoctorFamily} ${orderDoctorName} ${orderDoctorPatronum}\n" +
+            "\t\t\t\t\t\t<family>${orderDoctorFamily}</family>\n" +
+            "\t\t\t\t\t\t<given>${orderDoctorName}</given>\n" +
+            "\t\t\t\t\t\t<given>${orderDoctorPatronum}</given>\n" +
+            "\t\t\t\t\t</name>\n" +
+            "\t\t\t\t</assignedPerson>\n" +
+            "\t\t\t</assignedAuthor>\n" +
+            "\t</author>\n" +
+            "\n" +
+            "\t<custodian>\n" +
+            "\t\t<assignedCustodian>\n" +
+            "\t\t\t<representedCustodianOrganization>\n" +
+            "\t\t\t\t<id root='GUID'/>\n" +
+            "\t\t\t\t<name>${orderCustodian}</name>\n" +
+            "\t\t\t</representedCustodianOrganization>\n" +
+            "\t\t</assignedCustodian>\n" +
+            "\t</custodian>\n" +
+            "\n" +
+            "\t<componentOf>\n" +
+            "\t\t<encompassingEncounter>\n" +
+            "\t\t\t<id root='GUID' extension='${patientNumber}'/>\n" +
+            "\t\t\t<effectiveTime nullFlavor='NI'/>\n" +
+            "\t\t</encompassingEncounter>\n" +
+            "\t</componentOf>\n" +
+            "\n" +
+            "\t<component>\n" +
+            "\t\t<structuredBody>\n" +
+            "\t\t\t<component>\n" +
+            "\t\t\t\t<section>${orderDiagText}\n" +
+            "\t\t\t\t\t<entry>\n" +
+            "\t\t\t\t\t\t${orderDiagCode}\n" +
+            "\t\t\t\t\t</entry>\n" +
+            "\t\t\t\t\t<component>\n" +
+            "\t\t\t\t\t\t<section>\n" +
+            "\t\t\t\t\t\t\t<title>срочность заказа</title>\n" +
+            "\t\t\t\t\t\t\t<text>${isUrgent}</text>\n" +
+            "\t\t\t\t\t\t</section>\n" +
+            "\t\t\t\t\t</component>\n" +
+            "\t\t\t\t\t<component>\n" +
+            "\t\t\t\t\t\t<section>\n" +
+            "\t\t\t\t\t\t\t<title>средний срок беременности, в неделях</title>\n" +
+            "\t\t\t\t\t\t\t<text>${orderPregnat}</text>\n" +
+            "\t\t\t\t\t\t</section>\n" +
+            "\t\t\t\t\t</component>\n" +
+            "\t\t\t\t\t<component>\n" +
+            "\t\t\t\t\t\t<section>\n" +
+            "\t\t\t\t\t\t\t<title>Комментарий к анализу</title>\n" +
+            "\t\t\t\t\t\t\t<text>${orderComment}</text>\n" +
+            "\t\t\t\t\t\t</section>\n" +
+            "\t\t\t\t\t</component>\n" +
+            "\t\t\t\t</section>\n" +
+            "\t\t\t</component>\n" +
+            "\n" +
+            "\t\t\t<component>\n" +
+            "\t\t\t\t<entry>\n" +
+            "\t\t\t\t\t<observation classCode='OBS' moodCode='ENT'/>\n" +
+            "\t\t\t\t\t<effectiveTime value='${orderProbeDate}'/>\n" +
+            "\t\t\t\t</entry>\n" +
+            "\t\t\t\t<specimen>\n" +
+            "\t\t\t\t\t<specimenRole>\n" +
+            "\t\t\t\t\t\t<id root='${orderBarCode}|${TakenTissueJournal}'/>\n" +
+            "\t\t\t\t\t\t\t<specimenPlayingEntity>\n" +
+            "\t\t\t\t\t\t\t\t<code code='${orderBiomaterialCode}'>\n" +
+            "\t\t\t\t\t\t\t\t\t<translation displayName='${orderBiomaterialName}'/>\n" +
+            "\t\t\t\t\t\t\t\t</code>\n" +
+            "\t\t\t\t\t\t\t\t<quantity value='${orderBiomaterialVolume}'/>\n" +
+            "\t\t\t\t\t\t\t\t<text value='${orderBiomaterialComment}'/>\n" +
+            "\t\t\t\t\t\t\t</specimenPlayingEntity>\n" +
+            "\t\t\t\t\t</specimenRole>\n" +
+            "\t\t\t\t</specimen>\n" +
+            "\t\t\t</component>\n" +
+            "\n" +
+            "\t\t\t<component>\n" +
+            "\t\t\t\t<entry>\n" +
+            "\t\t\t\t\t<observation classCode='OBS' moodCode='RQO' negationInd='false'/>\n" +
+            "\t\t\t\t\t<id root='GUID'/>\n" +
+            "\t\t\t\t\t<id type='${FinanceCode}' extension='${typeFinanceName}'/>\n" +
+            "\t\t\t\t\t<code code='${diagnosticCode}' displayName='${diagnosticName}'/>\n" +
+            "\t\t\t\t</entry>\n" +
+            "\t\t\t</component>\n" +
+            "\t\t\t\n" +
+            "\t\t\t<component>\n" +
+            "\t\t\t\t<section> indicators\n" +
+            "\t\t\t\t\t<entry>\n" +
+            "\t\t\t\t\t\t<code code='indicatorCode1' displayName='indicatorName1'/>\n" +
+            "\t\t\t\t\t</entry>\n" +
+            "\n" +
+            "\t\t\t\t\t<entry>\n" +
+            "\t\t\t\t\t\t<code code='indicatorCoden' displayName='indicatorNamen'/>\n" +
+            "\t\t\t\t\t</entry>\n" +
+            "\t\t\t\t</section>\n" +
+            "\t\t\t</component>\n" +
+            "\t\t</structuredBody>\n" +
+            "\t</component>\n" +
+            "\n" +
+            "</ClinicalDocument>\n";
 
     private final Map<String, Object> mockParams = new HashMap<String, Object>() {{
         final String MOCK = "mock";
