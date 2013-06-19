@@ -129,8 +129,6 @@ class DbActionBean
       }
       else
         a.setAssigner(userData.user)
-      //a.setExecutor(userData.user)
-      a.setExecutor(at.getDefaultExecutor)
     }
 
     a.setCreateDatetime(now)

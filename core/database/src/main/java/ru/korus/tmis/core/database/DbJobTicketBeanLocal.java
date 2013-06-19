@@ -39,15 +39,20 @@ public interface DbJobTicketBeanLocal {
     JobTicket insertOrUpdateJobTicket(int id, Action action, Job job) throws CoreException;
 
     /**
-     * Поиск работы для действия
-     * @param action Действие Action, для которого будет производиться поиск работы Job
+     * Поиск работы и биоматериала для действия
+     * @param eventId Госпитализация Event, для которого будет производиться поиск работы Job
+     * @param atId Тип действия ActionType, для которого будет производиться поиск работы Job
+     * @param date Дата, для которой будет производиться поиск работы Job
+     * @param departmentId Отделение OrgStructure, для которого будет производиться поиск работы Job
      * @return Работа как Job
      * @throws CoreException
      * @see Action
      * @see Job
      * @see CoreException
      */
-    Object getJobTicketAndTakenTissueForAction(int eventId, int atId, Date date) throws CoreException;
+    Object getJobTicketAndTakenTissueForAction(int eventId, int atId, Date date, int departmentId) throws CoreException;
 
     List<Action> getActionsForJobTicket(int jobTicketId) throws CoreException;
+
+    JobTicket getJobTicketForAction(int actionId) throws CoreException;
 }

@@ -4,6 +4,7 @@ import ru.korus.tmis.core.auth.AuthData;
 import ru.korus.tmis.core.data.AssignmentsToRemoveDataList;
 import ru.korus.tmis.core.data.CommonData;
 import ru.korus.tmis.core.data.JSONCommonData;
+import ru.korus.tmis.core.data.JobTicketStatusDataList;
 import ru.korus.tmis.core.exception.CoreException;
 import scala.Function2;
 
@@ -77,4 +78,15 @@ public interface DirectionBeanLocal {
      * @see CoreException
      */
     boolean removeDirections(AssignmentsToRemoveDataList directions, String directionType, AuthData userData) throws CoreException;
+
+    /**
+     * Сервис по обновлению статусов JobTicket
+     * @param data Список статусов JobTicket как JobTicketStatusDataList
+     * @param authData Авторизационные данные как AuthData
+     * @return true - редактирование прошло успешно или false - при редактировании возникли ошибки (см. лог)
+     * @throws CoreException
+     */
+    boolean updateJobTicketsStatuses(JobTicketStatusDataList data, AuthData authData) throws CoreException;
+
+    void sendActionToLis(int actionId) throws CoreException;
 }

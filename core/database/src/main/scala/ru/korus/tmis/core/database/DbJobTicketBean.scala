@@ -138,7 +138,7 @@ class DbJobTicketBean extends DbJobTicketBeanLocal
     isComplete
   }
 
-  def getJobTicketAndTakenTissueForAction(eventId: Int, atId: Int, datef: Date) = {
+  def getJobTicketAndTakenTissueForAction(eventId: Int, atId: Int, datef: Date, departmentId: Int) = {
     val formatter = new SimpleDateFormat("yyyy-MM-dd")
     val strDate = formatter.format(datef)
     val date = formatter.parse(strDate)
@@ -147,6 +147,7 @@ class DbJobTicketBean extends DbJobTicketBeanLocal
                   .setParameter("plannedEndDate", date)
                   .setParameter("eventId", eventId)
                   .setParameter("actionTypeId", atId)
+                  .setParameter("departmentId", departmentId)
 
     val result = query.getResultList
 
@@ -172,6 +173,26 @@ class DbJobTicketBean extends DbJobTicketBeanLocal
         em.detach(jt)
         em.detach(tt)
         (jt, tt)
+      }
+    }
+  }
+
+  def getJobTicketForAction(actionId: Int) = {
+    val query = em.createQuery(JobTicketForActionQuery, classOf[JobTicket])
+      .setParameter("actionId", actionId)
+
+    val result = query.getResultList
+
+    result.size match {
+      case 0 => {
+        null /*
+        throw new CoreException(
+          ConfigManager.ErrorCodes.JobNotFound,
+          i18n("error.jobNotFound").format(id))          */
+      }
+      case size => {
+        result.foreach(jt => em.detach(jt))
+        result.get(0)
       }
     }
   }
@@ -240,6 +261,8 @@ class DbJobTicketBean extends DbJobTicketBeanLocal
           AND
             at2.flatCode = '%s'
           AND
+            jt.job.orgStructure.id = bed.masterDepartment.id
+          AND
             apt2.id IN (
               SELECT cap.actionPropertyType.id
               FROM
@@ -250,7 +273,7 @@ class DbJobTicketBean extends DbJobTicketBeanLocal
           AND (
             a2.endDate IS NULL
             OR
-            jt.datetime BETWEEN a2.begDate AND a2.endDate
+            (jt.datetime BETWEEN a2.begDate AND a2.endDate AND a2.endDate BETWEEN :beginDate AND :endDate)
           )
           AND
             a2.deleted = 0
@@ -305,6 +328,31 @@ class DbJobTicketBean extends DbJobTicketBeanLocal
       AND
         j.date = :plannedEndDate
       AND
+        j.orgStructure.id = :departmentId
+      AND
+        ap.deleted = 0
+      AND
+        a.deleted = 0
+      AND
+        j.deleted = 0
+    """
+
+  val JobTicketForActionQuery =
+    """
+      SELECT DISTINCT jt
+      FROM
+        JobTicket jt
+          JOIN jt.job j,
+        APValueJobTicket apval,
+        ActionProperty ap
+          JOIN ap.action a
+      WHERE
+        a.id = :actionId
+      AND
+        apval.id.id = ap.id
+      AND
+        apval.value = jt.id
+      AND
         ap.deleted = 0
       AND
         a.deleted = 0
@@ -338,11 +386,4 @@ class DbJobTicketBean extends DbJobTicketBeanLocal
       AND
         j.deleted = 0
     """
-
-
-
 }
-
-
- //AND
-//a.actionType.isRequiredTissue = 1

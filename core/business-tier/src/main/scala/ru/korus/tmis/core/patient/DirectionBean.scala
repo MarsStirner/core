@@ -6,7 +6,7 @@ import javax.ejb.{TransactionAttributeType, TransactionAttribute, EJB, Stateless
 import grizzled.slf4j.Logging
 import ru.korus.tmis.util.{ConfigManager, CAPids, I18nable}
 import javax.persistence.{FlushModeType, EntityManager, PersistenceContext}
-import ru.korus.tmis.core.data.{AssignmentsToRemoveDataList, CommonGroup, JSONCommonData, CommonData}
+import ru.korus.tmis.core.data._
 import ru.korus.tmis.core.auth.AuthData
 import ru.korus.tmis.core.entity.model._
 import scala.collection.JavaConversions._
@@ -76,6 +76,10 @@ class DirectionBean extends DirectionBeanLocal
       AWI.doctorFirstName,
       AWI.doctorMiddleName,
       AWI.doctorSpecs,
+      AWI.assignerLastName,
+      AWI.assignerFirstName,
+      AWI.assignerMiddleName,
+      AWI.assignerSpecs,
       AWI.urgent,
       AWI.multiplicity,
       AWI.Status,
@@ -161,7 +165,8 @@ class DirectionBean extends DirectionBeanLocal
       if (!a.getIsUrgent) {
         val jobAndTicket = dbJobTicketBean.getJobTicketAndTakenTissueForAction( a.getEvent.getId.intValue(),
                                                                                 a.getActionType.getId.intValue(),
-                                                                                a.getPlannedEndDate)
+                                                                                a.getPlannedEndDate,
+                                                                                department.getId.intValue())
         if (jobAndTicket == null) {
           var fromList = list.find((p) => p._1.getId == null &&
             p._2.getDatetime == a.getPlannedEndDate &&
@@ -382,7 +387,8 @@ class DirectionBean extends DirectionBeanLocal
           case "laboratory" => {
             val res = dbJobTicketBean.getJobTicketAndTakenTissueForAction( a.getEvent.getId.intValue(),
                                                                            a.getActionType.getId.intValue(),
-                                                                           a.getPlannedEndDate)
+                                                                           a.getPlannedEndDate,
+                                                                           hospitalBedBean.getCurrentDepartmentForAppeal(a.getEvent.getId.intValue()).getId.intValue())
             if (res!=null &&
               res.isInstanceOf[(JobTicket, TakenTissue)] &&
               res.asInstanceOf[(JobTicket, TakenTissue)]._1 != null &&
@@ -408,5 +414,51 @@ class DirectionBean extends DirectionBeanLocal
     })
     em.flush()
     true
+  }
+
+  def updateJobTicketsStatuses(data: JobTicketStatusDataList, authData: AuthData) = {
+    var isSuccess: Boolean = true
+    data.getData.foreach(f=> {
+      var isAllActionSent: Boolean = true
+      if (f.getStatus == 2) {
+        dbJobTicketBean.getActionsForJobTicket(f.getId).foreach(a => {
+          try {
+            lisBean.sendLis2AnalysisRequest(a.getId.intValue())
+          }
+          catch {
+            case e: Exception => {
+              var jt = dbJobTicketBean.getJobTicketById(f.getId)
+              jt.setNote(jt.getNote + "Невозможно передать данные об исследовании '%s'. ".format(a.getId.toString))
+              isAllActionSent = false
+              em.merge(jt)
+            }
+          }
+        })
+      }
+      var res: Boolean = true
+      if (isAllActionSent) {
+        res = dbJobTicketBean.modifyJobTicketStatus(f.getId, f.getStatus, authData)
+      }
+      if(!res)
+        isSuccess = res
+    })
+    em.flush()
+    isSuccess
+  }
+
+  def sendActionToLis(actionId: Int) {
+    var jt = dbJobTicketBean.getJobTicketForAction(actionId)
+    if (jt != null) {
+      try {
+        lisBean.sendLis2AnalysisRequest(actionId)
+      }
+      catch {
+        case e: Exception => {
+          jt.setNote(jt.getNote + "Невозможно передать данные об исследовании '%s'. ".format(actionId.toString))
+          em.merge(jt)
+          em.flush()
+        }
+      }
+    }
   }
 }
