@@ -15,6 +15,7 @@ import ru.korus.tmis.laboratory.data.request.BiomaterialInfo;
 import ru.korus.tmis.laboratory.data.request.DiagnosticRequestInfo;
 import ru.korus.tmis.laboratory.data.request.OrderInfo;
 import ru.korus.tmis.laboratory.data.request.PatientInfo;
+import ru.korus.tmis.util.ConfigManager;
 import ru.korus.tmis.util.TextFormat;
 import scala.Option;
 
@@ -40,130 +41,6 @@ import static ru.korus.tmis.laboratory.bak.utils.QueryInitializer.ParamName.*;
 public class BakLaboratoryBeanImpl implements BakLaboratoryBeanLocal {
 
     private static final Logger log = LoggerFactory.getLogger(BakLaboratoryBeanImpl.class);
-    private static final String XML_TEMPLATE = "<ClinicalDocument xmlns='urn:hl7-org:v3' xmlns:xsi='http://www.w3.org/2001/XMLSchema-instance' xsi:schemaLocation='urn:hl7-org:v3 CDA.xsd'>" +
-            "<typeId extension='POCD_HD000040' root='2.16.840.1.113883.1.3'/>" +
-            "<id root='${uuid}'/>" +
-            "<setID root='id'/>" +
-            "<versionNumber orderStatus='2'/>" +
-            "<code>${diagnosticCode}, ${diagnosticName}</code>" +
-            "<title>${diagnosticName}</title>" +
-            "<effectiveTime value='${orderMisDate}'/>" +
-            "<confidentialityCode code='N' codeSystem='2.16.840.1.113883.5.25' displayName='Normal'/>" +
-            "<recordTarget>" +
-            "<patientRole>" +
-            "<id root='${patientMisId}'/>" +
-            "<addr>${patientAddress}</addr>" +
-            "<telecom nullFlavor='NI'/>" +
-            "<patient>" +
-            "<id root='${uuid}' extension='${patientNumber}' assigningAuthorityName='${custodian}' displayable='true'/>" +
-            "<name> ${patientFamily} ${patientName} ${patientPatronum}" +
-            "<family>${patientFamily}</family>" +
-            "<given>${patientName}</given>" +
-            "<given>${patientPatronum}</given>" +
-            "</name>" +
-            "<birthTime value='${patientBirthDate}'/>" +
-            "<administrativeGenderCode code='${patientSex}'/>" +
-            "</patient>" +
-            "<providerOrganization>${custodian}</providerOrganization>" +
-            "</patientRole>" +
-            "</recordTarget>" +
-            "<author>" +
-            "<time value='${orderMisDate}'/>" +
-            "<assignedAuthor>" +
-            "<id root='${orderDoctorMisId}' extension='${orderDoctorMisId}'/>" +
-            "<assignedAuthor>" +
-            "<code code='DolgCode' displayName='DolgName'/>" +
-            "</assignedAuthor>" +
-            "<assignedPerson>" +
-            "<prefix>${orderDepartmentMisId}</prefix>" +
-            "<name>${orderDoctorFamily} ${orderDoctorName} ${orderDoctorPatronum}" +
-            "<family>${orderDoctorFamily}</family>" +
-            "<given>${orderDoctorName}</given>" +
-            "<given>${orderDoctorPatronum}</given>" +
-            "</name>" +
-            "</assignedPerson>" +
-            "</assignedAuthor>" +
-            "</author>" +
-            "<custodian>" +
-            "<assignedCustodian>" +
-            "<representedCustodianOrganization>" +
-            "<id root='${uuid}'/>" +
-            "<name>${сustodian}</name>" +
-            "</representedCustodianOrganization>" +
-            "</assignedCustodian>" +
-            "</custodian>" +
-            "<componentOf>" +
-            "<encompassingEncounter>" +
-            "<id root='${uuid}' extension='${patientNumber}'/>" +
-            "<effectiveTime nullFlavor='NI'/>" +
-            "</encompassingEncounter>" +
-            "</componentOf>" +
-            "<component>" +
-            "<structuredBody>" +
-            "<component>" +
-            "<section>${orderDiagText}" +
-            "<entry>" +
-            "${orderDiagCode}" +
-            "</entry>" +
-            "<component>" +
-            "<section>" +
-            "<title>срочность заказа</title>" +
-            "<text>${isUrgent}</text>" +
-            "</section>" +
-            "</component>" +
-            "<component>" +
-            "<section>" +
-            "<title>средний срок беременности, в неделях</title>" +
-            "<text>${orderPregnat}</text>" +
-            "</section>" +
-            "</component>" +
-            "<component>" +
-            "<section>" +
-            "<title>Комментарий к анализу</title>" +
-            "<text>${orderComment}</text>" +
-            "</section>" +
-            "</component>" +
-            "</section>" +
-            "</component>" +
-            "<component>" +
-            "<entry>" +
-            "<observation classCode='OBS' moodCode='ENT'/>" +
-            "<effectiveTime value='${orderProbeDate}'/>" +
-            "</entry>" +
-            "<specimen>" +
-            "<specimenRole>" +
-            "<id root='${orderBarCode}|${TakenTissueJournal}'/>" +
-            "<specimenPlayingEntity>" +
-            "<code code='${orderBiomaterialCode}'>" +
-            "<translation displayName='${orderBiomaterialName}'/>" +
-            "</code>" +
-            "<quantity value='${orderBiomaterialVolume}'/>" +
-            "<text value='${orderBiomaterialComment}'/>" +
-            "</specimenPlayingEntity>" +
-            "</specimenRole>" +
-            "</specimen>" +
-            "</component>" +
-            "<component>" +
-            "<entry>" +
-            "<observation classCode='OBS' moodCode='RQO' negationInd='false'/>" +
-            "<id root='${uuid}'/>" +
-            "<id type='${FinanceCode}' extension='${typeFinanceName}'/>" +
-            "<code code='${diagnosticCode}' displayName='${diagnosticName}'/>" +
-            "</entry>" +
-            "</component>" +
-            "<component>" +
-            "<section> indicators" +
-            "<entry>" +
-            "<code code='indicatorCode1' displayName='indicatorName1'/>" +
-            "</entry>" +
-            "<entry>" +
-            "<code code='indicatorCoden' displayName='indicatorNamen'/>" +
-            "</entry>" +
-            "</section>" +
-            "</component>" +
-            "</structuredBody>" +
-            "</component>" +
-            "</ClinicalDocument>";
 
     private final Map<String, Object> mockParams = new HashMap<String, Object>() {{
         final String MOCK = "mock";
@@ -217,7 +94,11 @@ public class BakLaboratoryBeanImpl implements BakLaboratoryBeanLocal {
     /**
      * Отправляемое сообщение
      */
-    public static final TextFormat TEXT_FORMAT = new TextFormat(XML_TEMPLATE);
+    public TextFormat assignmentTemplate;
+
+    public BakLaboratoryBeanImpl() {
+        assignmentTemplate = new TextFormat(ConfigManager.getBakAssignmentTemplate());
+    }
 
     /**
      * Метод для отсылки запроса на анализ в лабораторию
