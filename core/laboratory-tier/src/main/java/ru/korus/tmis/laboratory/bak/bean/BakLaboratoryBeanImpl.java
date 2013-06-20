@@ -40,7 +40,7 @@ import static ru.korus.tmis.laboratory.bak.utils.QueryInitializer.ParamName.*;
 @Interceptors(LoggingInterceptor.class)
 public class BakLaboratoryBeanImpl implements BakLaboratoryBeanLocal {
 
-    private static final Logger log = LoggerFactory.getLogger(BakLaboratoryBeanImpl.class);
+    private static final Logger logger = LoggerFactory.getLogger(BakLaboratoryBeanImpl.class);
 
     private final Map<String, Object> mockParams = new HashMap<String, Object>() {{
         final String MOCK = "mock";
@@ -106,23 +106,23 @@ public class BakLaboratoryBeanImpl implements BakLaboratoryBeanLocal {
     @Override
 //    @Schedule(minute = "*/1", hour = "*")
     public void sendLisAnalysisRequest(int actionId) throws CoreException {
-        log.info("Create cgmService..");
+        logger.info("Create cgmService..");
         cgmService = new CGMService();
         cgmService.setHandlerResolver(new SOAPEnvelopeHandlerResolver());
         try {
-            log.info("Sending query cgmService..");
+            logger.info("Sending query cgmService..");
             final ICGMService service = cgmService.getService();
 //            final QueryHL7 queryHL7 = buildQueryHL7(mockParams);
 //            final String xml = queryHL7.toXML();
             final String xml = TEXT_FORMAT.format(getAnalysisRequest(actionId));
 
-            log.info("Bak XML request: \n " + xml);
+            logger.info("Bak XML request: \n " + xml);
             final String result = service.queryAnalysis(xml);
-            log.info("Result query cgmService result: " + result);
+            logger.info("Result query cgmService result: " + result);
         } catch (Exception e) {
-            log.error("Error in BakLaboratoryBeanImpl: " + e, e);
+            logger.error("Error in BakLaboratoryBeanImpl: " + e, e);
         } finally {
-            log.info("Not result");
+            logger.info("Not result");
         }
     }
 
@@ -134,7 +134,7 @@ public class BakLaboratoryBeanImpl implements BakLaboratoryBeanLocal {
             throw new CoreException("Error no Type For Action" + action.getId());
         }
 
-        log.info("sendLisAnalysisRequest actionId=" + actionId);
+        logger.info("sendLisAnalysisRequest actionId=" + actionId);
 
         // Patient section
         Event event = action.getEvent();
@@ -297,22 +297,22 @@ public class BakLaboratoryBeanImpl implements BakLaboratoryBeanLocal {
 
     private PatientInfo getPatientInfo(Patient patient) {
         Integer misId = patient.getId();
-        log.info("Patient:Code=" + patient.getId());
+        logger.info("Patient:Code=" + patient.getId());
         // LastName (string) -- фамилия
         String lastName = patient.getLastName();
-        log.info("Patient:Family=" + patient.getLastName());
+        logger.info("Patient:Family=" + patient.getLastName());
         // FirstName (string) -- имя
         String firstName = patient.getFirstName();
-        log.info("Patient:FirstName=" + patient.getFirstName());
+        logger.info("Patient:FirstName=" + patient.getFirstName());
         // MiddleName (string) -- отчество
         String patrName = patient.getPatrName();
-        log.info("Patient:MiddleName=" + patient.getPatrName());
+        logger.info("Patient:MiddleName=" + patient.getPatrName());
         // BirthDate (datetime) -- дата рождения
         Date birthDate = patient.getBirthDate();
-        log.info("Patient:BirthDate=" + patient.getBirthDate());
+        logger.info("Patient:BirthDate=" + patient.getBirthDate());
         // Sex (enum) -- пол (мужской/женский/не определен)
         Sex sex = Sex.valueOf(patient.getSex());
-        log.info("Patient:Sex=" + patient.getSex());
+        logger.info("Patient:Sex=" + patient.getSex());
 
 
         final PatientInfo patientInfo = new PatientInfo(
