@@ -101,7 +101,7 @@ public class BakLaboratoryBeanImpl implements BakLaboratoryBeanLocal {
     }
 
     /**
-     * Метод для отсылки запроса на анализ в лабораторию
+     * Метод для отсылки запроса на анализ в лабораторию                  §
      */
     @Override
 //    @Schedule(minute = "*/1", hour = "*")
@@ -114,7 +114,7 @@ public class BakLaboratoryBeanImpl implements BakLaboratoryBeanLocal {
             final ICGMService service = cgmService.getService();
 //            final QueryHL7 queryHL7 = buildQueryHL7(mockParams);
 //            final String xml = queryHL7.toXML();
-            final String xml = TEXT_FORMAT.format(getAnalysisRequest(actionId));
+            final String xml = assignmentTemplate.format(getAnalysisRequest(actionId));
 
             logger.info("Bak XML request: \n " + xml);
             final String result = service.queryAnalysis(xml);
