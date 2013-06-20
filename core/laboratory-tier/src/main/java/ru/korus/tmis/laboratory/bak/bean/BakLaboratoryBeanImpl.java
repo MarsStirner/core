@@ -94,7 +94,7 @@ public class BakLaboratoryBeanImpl implements BakLaboratoryBeanLocal {
     /**
      * Отправляемое сообщение
      */
-    public TextFormat assignmentTemplate;
+    private TextFormat assignmentTemplate;
 
     public BakLaboratoryBeanImpl() {
         assignmentTemplate = new TextFormat(ConfigManager.getBakAssignmentTemplate());
