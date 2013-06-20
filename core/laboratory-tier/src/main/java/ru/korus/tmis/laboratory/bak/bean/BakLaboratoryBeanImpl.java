@@ -212,7 +212,12 @@ public class BakLaboratoryBeanImpl implements BakLaboratoryBeanLocal {
     private DbActionBeanLocal dbActionBean;
 
 
-    CGMService cgmService;
+    private CGMService cgmService;
+
+    /**
+     * Отправляемое сообщение
+     */
+    public static final TextFormat TEXT_FORMAT = new TextFormat(XML_TEMPLATE);
 
     /**
      * Метод для отсылки запроса на анализ в лабораторию
@@ -228,8 +233,7 @@ public class BakLaboratoryBeanImpl implements BakLaboratoryBeanLocal {
             final ICGMService service = cgmService.getService();
 //            final QueryHL7 queryHL7 = buildQueryHL7(mockParams);
 //            final String xml = queryHL7.toXML();
-            TextFormat tf = new TextFormat(XML_TEMPLATE);
-            final String xml = tf.format(getAnalysisRequest(actionId));
+            final String xml = TEXT_FORMAT.format(getAnalysisRequest(actionId));
 
             log.info("Bak XML request: \n " + xml);
             final String result = service.queryAnalysis(xml);
