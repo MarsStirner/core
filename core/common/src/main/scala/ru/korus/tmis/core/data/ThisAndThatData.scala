@@ -381,6 +381,9 @@ class ActionTypesListEntry {
   var code: String = _
 
   @BeanProperty
+  var flatCode: String = _
+
+  @BeanProperty
   var name: String = _
 
   @JsonView(Array(classOf[ActionTypesListDataViews.DefaultView]))
@@ -395,6 +398,7 @@ class ActionTypesListEntry {
     this.id = actionType.getId.intValue()
     this.groupId = if(actionType.getGroupId!=null) {actionType.getGroupId.intValue()} else{0}
     this.code = actionType.getCode
+    this.flatCode = actionType.getFlatCode
     this.name = actionType.getName
     if (requestData.filter.asInstanceOf[ActionTypesListRequestDataFilter].view.compareTo("tree") == 0) {
       getAllActionTypeWithFilter(0,0,requestData.sortingFieldInternal,requestData.filter.unwrap()).foreach(f => {

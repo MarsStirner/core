@@ -193,7 +193,13 @@ class AssessmentsListEntry {
   var id: Int = _ //Action Id
 
   @BeanProperty
-  var assessmentDate: Date = _ //date of assessment
+  var typeId: Int = _ //Тип действия
+
+  @BeanProperty
+  var assessmentDate: Date = _ //дата создания
+
+  @BeanProperty
+  var closeDate: Date = _ //дата закрытия
 
   @BeanProperty
   var assessmentName: IdNameContainer = _ //Наименование
@@ -204,7 +210,9 @@ class AssessmentsListEntry {
   def this(action: Action) {
     this()
     this.id = action.getId.intValue()
+    this.typeId = action.getActionType.getId.intValue()
     this.assessmentDate = action.getCreateDatetime
+    this.closeDate = action.getEndDate
     this.assessmentName = new IdNameContainer(action.getActionType.getId.intValue(), action.getActionType.getName)
     this.doctor = new DoctorSpecsContainer(action.getCreatePerson)
   }

@@ -527,6 +527,10 @@ public class DirectoryInfoRESTImpl {
         NOT("not"){
             public String getSubType() { return "NOT";}
             public String getMnemonic() { return "NOT";}
+        },
+        THER("ther"){
+            public String getSubType() { return "THER";}
+            public String getMnemonic() { return "THER";}
         };
 
         public abstract String getSubType();

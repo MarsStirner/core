@@ -142,7 +142,7 @@ public class ExaminationsRegistryRESTImpl {
     }
 
     /**
-     * Запрос на структуру для первичного осмотра с копированием данных из предыдущего первичного осмотра
+     * Запрос на структуру для первичного осмотра с копированием данных из предыдущего первичного осмотра ПРЕДЫДУЩЕЙ госпитализации
      * @return com.sun.jersey.api.json.JSONWithPadding как Object
      * @throws ru.korus.tmis.core.exception.CoreException
      * @see ru.korus.tmis.core.exception.CoreException
