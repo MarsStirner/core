@@ -429,6 +429,7 @@ class DirectionBean extends DirectionBeanLocal
             case e: Exception => {
               var jt = dbJobTicketBean.getJobTicketById(f.getId)
               jt.setNote(jt.getNote + "Невозможно передать данные об исследовании '%s'. ".format(a.getId.toString))
+              jt.setLabel("##Ошибка отправки в ЛИС##")
               isAllActionSent = false
               em.merge(jt)
             }
@@ -455,6 +456,7 @@ class DirectionBean extends DirectionBeanLocal
       catch {
         case e: Exception => {
           jt.setNote(jt.getNote + "Невозможно передать данные об исследовании '%s'. ".format(actionId.toString))
+          jt.setLabel("##Ошибка отправки в ЛИС##")
           em.merge(jt)
           em.flush()
         }
