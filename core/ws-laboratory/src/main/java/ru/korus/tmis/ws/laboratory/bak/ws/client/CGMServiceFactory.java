@@ -1,5 +1,5 @@
 
-package ru.korus.tmis.laboratory.bak.ws;
+package ru.korus.tmis.ws.laboratory.bak.ws.client;
 
 import ru.korus.tmis.util.ConfigManager;
 
@@ -22,8 +22,8 @@ import java.util.Map;
 @WebServiceClient(
         name = "CGM_SOAP",
         targetNamespace = "cgm.ru",
-        wsdlLocation = "../../../../../../CGMSERVICE_pub.wsdl")
-public class CGMService extends Service {
+        wsdlLocation = "../../../../../../../../CGMSERVICE_pub.wsdl")
+public class CGMServiceFactory extends Service {
 
     private final static URL CGMSOAP_WSDL_LOCATION;
 
@@ -48,12 +48,12 @@ public class CGMService extends Service {
         }
 
 
-        final URL baseUrl = CGMService.class.getResource(".");
+        final URL baseUrl = CGMServiceFactory.class.getResource(".");
         try {
-            CGMSOAP_WSDL_LOCATION = new URL(baseUrl, "../../../../../../CGMSERVICE_pub.wsdl");
+            CGMSOAP_WSDL_LOCATION = new URL(baseUrl, "../../../../../../../../CGMSERVICE_pub.wsdl");
             WebServiceException e = null;
             if (CGMSOAP_WSDL_LOCATION == null) {
-                e = new WebServiceException("Cannot find '/CGMSERVICE_pub.wsdl' wsdl. Place the resource correctly in the classpath.");
+                e = new WebServiceException("Cannot find '../../../../../../../../CGMSERVICE_pub.wsdl' wsdl. Place the resource correctly in the classpath.");
             }
             CGMSOAP_EXCEPTION = e;
         } catch (MalformedURLException e) {
@@ -61,27 +61,27 @@ public class CGMService extends Service {
         }
     }
 
-    public CGMService() {
+    public CGMServiceFactory() {
         super(__getWsdlLocation(), CGMSOAP_QNAME);
     }
 
-    public CGMService(WebServiceFeature... features) {
+    public CGMServiceFactory(WebServiceFeature... features) {
         super(__getWsdlLocation(), CGMSOAP_QNAME, features);
     }
 
-    public CGMService(URL wsdlLocation) {
+    public CGMServiceFactory(URL wsdlLocation) {
         super(wsdlLocation, CGMSOAP_QNAME);
     }
 
-    public CGMService(URL wsdlLocation, WebServiceFeature... features) {
+    public CGMServiceFactory(URL wsdlLocation, WebServiceFeature... features) {
         super(wsdlLocation, CGMSOAP_QNAME, features);
     }
 
-    public CGMService(URL wsdlLocation, QName serviceName) {
+    public CGMServiceFactory(URL wsdlLocation, QName serviceName) {
         super(wsdlLocation, serviceName);
     }
 
-    public CGMService(URL wsdlLocation, QName serviceName, WebServiceFeature... features) {
+    public CGMServiceFactory(URL wsdlLocation, QName serviceName, WebServiceFeature... features) {
         super(wsdlLocation, serviceName, features);
     }
 

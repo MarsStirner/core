@@ -1,4 +1,4 @@
-package ru.korus.tmis.laboratory.bak.bean;
+package ru.korus.tmis.ws.laboratory.bak.ws.client.bean;
 
 
 import ru.korus.tmis.core.exception.CoreException;
@@ -6,7 +6,7 @@ import ru.korus.tmis.core.exception.CoreException;
 import javax.ejb.Local;
 
 @Local
-public interface BakLaboratoryBeanLocal {
+public interface IBakLaboratoryBean {
 
     /**
      * Отправить в ЛИС запрос анализа

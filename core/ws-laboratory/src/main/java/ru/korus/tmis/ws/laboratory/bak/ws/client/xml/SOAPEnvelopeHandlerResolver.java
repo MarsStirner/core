@@ -1,4 +1,4 @@
-package ru.korus.tmis.laboratory.bak.ws.xml;
+package ru.korus.tmis.ws.laboratory.bak.ws.client.xml;
 
 import javax.xml.ws.handler.Handler;
 import javax.xml.ws.handler.HandlerResolver;

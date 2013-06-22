@@ -1,5 +1,5 @@
 
-package ru.korus.tmis.laboratory.bak.ws;
+package ru.korus.tmis.ws.laboratory.bak.ws.client;
 
 import javax.jws.WebMethod;
 import javax.jws.WebParam;

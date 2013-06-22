@@ -1,7 +1,8 @@
-package ru.korus.tmis.ws.laboratory.bak;
+package ru.korus.tmis.ws.laboratory.bak.ws.server;
 
 import ru.korus.tmis.core.exception.CoreException;
 import ru.korus.tmis.ws.laboratory.bak.model.ResultAnalyze;
+import ru.korus.tmis.ws.laboratory.bak.ws.server.model.ResponseHL7;
 
 import javax.jws.WebMethod;
 import javax.jws.WebParam;
@@ -16,7 +17,7 @@ import static ru.korus.tmis.util.CompileTimeConfigManager.Laboratory.Namespace;
 @WebService(
         targetNamespace = Namespace,
         name = "bak-lis")
-public interface IBakLISWebService {
+public interface IBakMISWebService {
 
     /**
      * 
@@ -33,25 +34,9 @@ public interface IBakLISWebService {
      */
     @WebMethod
     int setAnalysisResults(
-            @WebParam (name = "orderMisId", targetNamespace = Namespace)
-            Integer orderMisId,
-            @WebParam (name = "orderBarCode", targetNamespace = Namespace)
-            String orderBarCode,
-            @WebParam (name = "takenTissueJournal", targetNamespace = Namespace)
-            String takenTissueJournal,
-            @WebParam (name = "referralIsFinished", targetNamespace = Namespace)
-            Boolean referralIsFinished,
-            @WebParam (name = "result", targetNamespace = Namespace)
-            ResultAnalyze result,
-            @WebParam (name = "biomaterialDefects", targetNamespace = Namespace)
-            String biomaterialDefects,
-            @WebParam (name = "ResultDoctorLisId", targetNamespace = Namespace)
-            Integer resultDoctorLisId,
-            @WebParam (name = "ResultDoctorLisName", targetNamespace = Namespace)
-            String resultDoctorLisName,
-            @WebParam (name = "CodeLIS", targetNamespace = Namespace)
-            String codeLIS
-            );
+            @WebParam(name = "PRPA_IN201302UV02", targetNamespace = "urn:hl7-org:v3", partName = "Body")
+            ResponseHL7 response
+    );
 
     /**
      * Запрос «Биоматериал доставлен»:

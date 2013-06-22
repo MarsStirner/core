@@ -1,9 +1,10 @@
-package ru.korus.tmis.laboratory.bak.utils;
+package ru.korus.tmis.ws.laboratory.bak.utils;
 
 import org.apache.commons.lang.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import ru.korus.tmis.laboratory.bak.model.*;
+import ru.korus.tmis.ws.laboratory.bak.model.QueryHL7;
 
 import javax.xml.datatype.DatatypeConfigurationException;
 import javax.xml.datatype.DatatypeFactory;

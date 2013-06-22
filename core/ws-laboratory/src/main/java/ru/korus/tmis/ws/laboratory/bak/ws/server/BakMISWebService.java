@@ -1,4 +1,4 @@
-package ru.korus.tmis.ws.laboratory.bak;
+package ru.korus.tmis.ws.laboratory.bak.ws.server;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -12,8 +12,6 @@ import javax.jws.WebService;
 import javax.xml.datatype.XMLGregorianCalendar;
 
 import static ru.korus.tmis.util.CompileTimeConfigManager.Laboratory.Namespace;
-import static ru.korus.tmis.ws.laboratory.bak.IBakLISWebService.PORT_NAME;
-import static ru.korus.tmis.ws.laboratory.bak.IBakLISWebService.SERVICE_NAME;
 import static ru.korus.tmis.ws.laboratory.bak.model.params.ParamSetResult.initInParams;
 
 /**
@@ -26,12 +24,12 @@ import static ru.korus.tmis.ws.laboratory.bak.model.params.ParamSetResult.initIn
  */
 @WebService(
         targetNamespace = CompileTimeConfigManager.Laboratory.Namespace,
-        serviceName = SERVICE_NAME,
-        portName = PORT_NAME,
-        name = PORT_NAME)
-public class BakLISWebServiceImpl implements IBakLISWebService {
+        serviceName = IBakMISWebService.SERVICE_NAME,
+        portName = IBakMISWebService.PORT_NAME,
+        name = IBakMISWebService.PORT_NAME)
+public class BakMISWebService implements IBakMISWebService {
 
-    private static final Logger log = LoggerFactory.getLogger(BakLISWebServiceImpl.class);
+    private static final Logger log = LoggerFactory.getLogger(BakMISWebService.class);
 
     @Override
     public int setAnalysisResults(
