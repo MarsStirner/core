@@ -47,8 +47,8 @@ public class PixInfo {
     static public Container toSda(ClientInfo clientInfo, EventInfo eventInfo) {
         final Container res = new Container();
         final Patient patient = new Patient();
-        final String orgName = eventInfo.getOrgName() == null || "".equals(eventInfo.getOrgName())  ? "Не задано" : eventInfo.getOrgName();
-        res.setSendingFacility(eventInfo.getOrgName());
+        final String orgName = eventInfo == null || eventInfo.getOrgName() == null || "".equals(eventInfo.getOrgName())  ? "Не задано" : eventInfo.getOrgName();
+        res.setSendingFacility(orgName);
         res.setPatient(patient);
         final Name name = new Name();
         // ФИО
@@ -72,7 +72,7 @@ public class PixInfo {
         patientNumberTmisId.setNumber("" + clientInfo.getTmisId());
         final Organization organization = new Organization();
         patientNumberTmisId.setOrganization(organization);
-        organization.setCode(eventInfo.getOrgName());
+        organization.setCode(orgName);
 
         // СНИЛС
         addNumbre(NumberType.SSN, clientInfo.getSnils(), patientNumbers);
