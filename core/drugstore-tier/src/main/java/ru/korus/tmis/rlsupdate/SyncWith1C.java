@@ -24,51 +24,51 @@ import ru.korus.tmis.core.entity.model.RlsInpName;
 import ru.korus.tmis.core.entity.model.RlsNomen;
 import ru.korus.tmis.core.entity.model.RlsPacking;
 import ru.korus.tmis.core.entity.model.RlsTradeName;
+import ru.korus.tmis.util.ConfigManager;
 
 /**
  * Author: Sergey A. Zagrebelny <br>
  * Date: 28.05.2013, 15:04:07 <br>
  * Company: Korus Consulting IT<br>
- * Description: <br>
+ * Description:Синхронизация БД лекарственных средств “РЛС” c информацией 1С
  */
-
 @Stateless
 public class SyncWith1C {
 
     /**
-     *
+     * Наименование системы кодирования лекарственных средств (1С)
      */
-    private static final String RLS = "RLS";
+    private static final String CODE_SYSTEM_RLS = "RLS";
     /**
-     * Тара
+     * Код описания тары в кодовой системе "RLS"
      */
     private static final String UPACK = "UPACK";
     /**
-     * 
+     * Наименование системы кодирования для описания форм выпуска лекарственных средств
      */
     private static final String RLS_CLSDRUGFORMS = "RLS_CLSDRUGFORMS";
     /**
-     * Упаковка
+     * Код описания упаковки в кодовой системе "RLS"
      */
     private static final String PPACK = "PPACK";
     /**
-     * 
+     * Наименование системы кодирования объемов лекарственных средств
      */
     private static final String RLS_CUBICUNITS = "RLS_CUBICUNITS";
     /**
-     * 
+     * Наименование системы кодирования массы лекарственных средств
      */
     private static final String RLS_MASSUNITS = "RLS_MASSUNITS";
     /**
-     * 
+     * Наименование системы кодирования упаковок лекарственных средств
      */
     private static final String RLS_DRUGPACK = "RLS_DRUGPACK";
     /**
-     * 
+     * Наименование системы кодирования действующих веществ лекарственных средств
      */
     private static final String RLS_TRADENAMES = "RLS_TRADENAMES";
     /**
-     *
+     * Наименование системы кодирования дейст лекарственных средст
      */
     private static final String RLS_ACTMATTERS = "RLS_ACTMATTERS";
 
@@ -78,25 +78,35 @@ public class SyncWith1C {
     @PersistenceContext(unitName = "s11r64")
     private EntityManager em = null;
 
+    /**
+     * Обновление БД - один раз в день в 0 часов 00 мин
+     */
     @Schedule(second = "0", minute = "0", hour = "0")
-    public void pullDB() {
-        update();
+    public void pull1С() {
+        if ( ConfigManager.Drugstore().isUpdateRLS()) {
+            update();
+        }
     }
 
     /**
+     * Обновление таблиц базы данных, описывающих реестр лекарственных средств
      * @return
      */
     public String update() {
         logger.info("update RLS...start");
+        if ( !ConfigManager.Drugstore().isUpdateRLS() ) {
+            logger.info("update RLS...stoped");
+            return "RLS update is disabled. For enable RLS update set Drugstore.UpdateRLS=true in  table 'Setting' (database 'tmis_core').";
+        }
         final MISExchange serv = new MISExchange();
         MISExchangePortType ws1C = serv.getMISExchangeSoap();
+        //Справочник лекарственных средсв из системы 1С
         DrugList drugList = ws1C.getDrugList();
         logger.info("update RLS...the list of drugs has been recived from 1C. list size: {}", drugList.getDrug().size());
         String res = "";
         for (POCDMT000040LabeledDrug drug : drugList.getDrug()) {
             final Integer drugRlsCode = getDrugRlsCode(drug);
-            if (drugRlsCode != null) {
-
+            if (drugRlsCode != null) { // если задан код лекарственного средства
                 final RlsDosage rlsDosage = new RlsDosage();
                 final RlsFilling rlsFilling = new RlsFilling();
                 final RlsForm rlsForm = new RlsForm();
@@ -113,7 +123,7 @@ public class SyncWith1C {
                 rlsInpName.setName(inpNames[0]);
                 rlsInpName.setLatName(inpNames[1]);
 
-                rlsPacking.setName(getBoxingName(drug));
+                rlsPacking.setName(getPackingName(drug));
                 rlsTradeName.setName(getTradeName(drug));
 
                 rlsNomen.setCode(drugRlsCode);
@@ -121,23 +131,27 @@ public class SyncWith1C {
                 List<RlsNomen> drugs =
                         em.createQuery("SELECT n FROM RlsNomen n WHERE n.code = :code", RlsNomen.class).setParameter("code", drugRlsCode).getResultList();
 
-                if (drugs.isEmpty()) {
+                if (drugs.isEmpty()) { // если лекарственного средства нет в БД, то добавляем его в БД
                     saveNewDrug(rlsDosage, rlsFilling, rlsForm, rlsInpName, rlsPacking, rlsTradeName, rlsNomen);
                     String info =  "New drug: #" + drugRlsCode + System.getProperty("line.separator");
                     logger.info(info);
                     res += info;
-                } else {
+                } else { // если лекарственное средство с кодом drugRlsCode есть, то сравниваем данные ТМИС и 1С
                     String info = verify(drugs.get(0), rlsDosage, rlsFilling, rlsForm, rlsInpName, rlsPacking, rlsTradeName);
                     logger.info(info);
                     res += info;
                 }
-
             }
         }
         logger.info("update RLS...completed");
         return res;
     }
 
+    /**
+     * Извлечение наименования активного вещества (name) и латинского наименования (lat_name) из полного имени фомата "name (lat_name)"
+     * @param inpName
+     * @return
+     */
     private String[] splitNames(String inpName) {
         String[] res = {inpName, ""};
         int index0 = inpName.indexOf('(');
@@ -150,18 +164,28 @@ public class SyncWith1C {
         return res;
     }
 
+    /**
+     * Получение полного наименования активного вещества лекарственного средства
+     * @param drug - описание ЛС
+     * @return - наименование активного вещества лекарственного средства
+     */
     private String getInpName(POCDMT000040LabeledDrug drug) {
             return getTranslationDisplayNameByName(drug, RLS_ACTMATTERS);
     }
 
-    /**
-     * @param rlsNomenDb
-     * @param rlsDosage
-     * @param rlsFilling
-     * @param rlsForm
-     * @param rlsInpName
-     * @param rlsPacking
-     * @param rlsTradeName
+    /*
+     * Сверка описание лекарственного средства в БД ТМИС и по данным 1С
+     *
+     * @param rlsNomenDb - описание лекарственного средства в БД ТМИС
+     * @param rlsDosage - дозировка по данным 1С
+     * @param rlsFilling - упаковка по данным 1С
+     * @param rlsForm - форма выпуска по данным 1С
+     * @param rlsInpName - активное вещество по данным 1С
+     * @param rlsPacking - тара по данным 1С
+     * @param rlsTradeName - торговое наименование по данным 1С
+     * @return -
+     *   пустастая строка, если описания в БД ТМИС и 1С совпвдют;
+     *   строка с описанием найденных различий, если описания в БД ТМИС и 1С отличаются
      */
     private String verify(RlsNomen rlsNomenDb,
             RlsDosage rlsDosage,
@@ -191,19 +215,12 @@ public class SyncWith1C {
             res += checkDiff(rlsTradeName.getName(), rlsNomenDb.getRlsTradeName().getName(), "TradeName", "Name");
         }
 
-        if (!res.equals("")) {
+        if (!res.equals("")) { //если найдено хоть одно различие
             res = "Warning. The description of drug #" + rlsNomenDb.getCode() + " was different from 1C information: " + res + System.getProperty("line.separator");
         }
         return res;
     }
 
-    /**
-     * @param name
-     * @param name2
-     * @param string
-     * @param string2
-     * @return
-     */
     private String checkDiff(String value1C, String valueDb, String table, String field) {
         if (!valueDb.equals(value1C)) {
             return "1C " + table + ": '" + value1C + "'; rls" + table + "." + field + ": '" + valueDb + "' ";
@@ -211,16 +228,8 @@ public class SyncWith1C {
         return "";
     }
 
-    /**
-     * @param rlsDosage
-     * @param rlsFilling
-     * @param rlsForm
-     * @param rlsInpName
-     * @param rlsPacking
-     * @param rlsTradeName
-     * @param rlsNomen
-     */
-    protected void saveNewDrug(final RlsDosage rlsDosage,
+
+    private void saveNewDrug(final RlsDosage rlsDosage,
             final RlsFilling rlsFilling,
             final RlsForm rlsForm,
             final RlsInpName rlsInpName,
@@ -243,11 +252,7 @@ public class SyncWith1C {
         em.persist(rlsNomen);
     }
 
-    /**
-     * @param drug
-     * @return
-     */
-    protected Integer getDrugRlsCode(POCDMT000040LabeledDrug drug) {
+    private Integer getDrugRlsCode(POCDMT000040LabeledDrug drug) {
         Integer res = null;
         try {
             res = Integer.parseInt(drug.getCode().getCode());
@@ -261,9 +266,9 @@ public class SyncWith1C {
      * @param drug
      * @return
      */
-    private String getBoxingName(POCDMT000040LabeledDrug drug) {
+    private String getPackingName(POCDMT000040LabeledDrug drug) {
         String res = "";
-        final CD translation = getTranslationByCodeSystemNameAndCode(drug.getCode().getTranslation(), RLS, UPACK);
+        final CD translation = getTranslationByCodeSystemNameAndCode(drug.getCode().getTranslation(), CODE_SYSTEM_RLS, UPACK);
         if (translation != null) {
             // Код тары
             final CD cdPack = getValueByCodeSystemName(translation.getQualifier(), RLS_DRUGPACK);
@@ -274,24 +279,7 @@ public class SyncWith1C {
         return res;
     }
 
-    /**
-     * @param drug
-     * @return
-     */
-    private String getLatName(POCDMT000040LabeledDrug drug) {
-        String res = "";
-        // форма выпуска
-        final CD translation = getTranslationByCodeSystemName(drug.getCode().getTranslation(), RLS_TRADENAMES);
-        if (translation != null) {
-            res = translation.getDisplayName();
-        }
-        return res;
-    }
 
-    /**
-     * @param drug
-     * @return
-     */
     private String getTradeName(POCDMT000040LabeledDrug drug) {
         return getTranslationCodeByName(drug, RLS_TRADENAMES);
     }
@@ -300,7 +288,7 @@ public class SyncWith1C {
      * Код формы выпуска лекарства
      * 
      * @param drug
-     *            - HL7 описание лекарства
+     *            - 1С описание лекарства
      * @return строку, содержащею код формы выпуска лекарства
      */
     private String getFormName(POCDMT000040LabeledDrug drug) {
@@ -316,11 +304,6 @@ public class SyncWith1C {
         return res;
     }
 
-    /**
-     * @param drug
-     * @param codeSystemName
-     * @return
-     */
     private String getTranslationCodeByName(final POCDMT000040LabeledDrug drug, final String codeSystemName) {
         String res = "";
         final CD translation = getTranslationByCodeSystemName(drug.getCode().getTranslation(), codeSystemName);
@@ -331,12 +314,14 @@ public class SyncWith1C {
     }
 
     /**
-     * @param drug
-     * @return
+     * Описание упаковки.
+     * Формируется как конкатация кода упаковки, массы, ед. измер. массы, объема, ед. измер. объема, количества таблеток в упаковке и код лекарственной формы
+     * @param drug - 1С описание лекарства
+     * @return - строку, содержащею описание упаковки
      */
     private String getFillingName(POCDMT000040LabeledDrug drug) {
         String res = "";
-        final CD translation = getTranslationByCodeSystemNameAndCode(drug.getCode().getTranslation(), RLS, PPACK);
+        final CD translation = getTranslationByCodeSystemNameAndCode(drug.getCode().getTranslation(), CODE_SYSTEM_RLS, PPACK);
         if (translation != null) {
             // Код упаковки
             final CD cdCode = getValueByCodeSystemName(translation.getQualifier(), RLS_DRUGPACK);
@@ -365,11 +350,7 @@ public class SyncWith1C {
         return res;
     }
 
-    /**
-     * @param qualifier
-     * @param string
-     * @return
-     */
+
     private CD getValueByCodeSystemName(List<CR> cont, String codeSystemName) {
         for (CR qualifier : cont) {
             if (qualifier.getValue().getCodeSystemName().equals(codeSystemName)) {
@@ -380,8 +361,9 @@ public class SyncWith1C {
     }
 
     /**
-     * @param drug
-     * @return
+     * Дозировка. Формируется как конкатация числового значение дозировки и наименования единиц измерения
+     * @param drug - 1С описание лекарства
+     * @return строку, содержащею описание дозировки
      */
     private String getDosageName(POCDMT000040LabeledDrug drug) {
         CD translation = getTranslationByCodeSystemName(drug.getCode().getTranslation(), RLS_CLSDRUGFORMS);
@@ -397,12 +379,7 @@ public class SyncWith1C {
         return "";
     }
 
-    /**
-     *
-     * @param cont
-     * @param codeSystemName
-     * @return
-     */
+
     private CD getTranslationByCodeSystemName(List<CD> cont, String codeSystemName) {
         for (CD translation : cont) {
             if (translation.getCodeSystemName().equals(codeSystemName)) {

@@ -30,8 +30,8 @@ public class MISExchange
     private final static QName MISEXCHANGE_QNAME = new QName("MISExchange", "MISExchange");
 
     static {
-        final String login = ConfigManager.getDrugUser();
-        final String password = ConfigManager.getDrugPassword();
+        final String login = ConfigManager.Drugstore().User();
+        final String password = ConfigManager.Drugstore().Password();
 
         Authenticator.setDefault(new Authenticator() {
             @Override
@@ -84,7 +84,7 @@ public class MISExchange
     public MISExchangePortType getMISExchangeSoap() {
         final MISExchangePortType port = super.getPort(new QName("MISExchange", "MISExchangeSoap"), MISExchangePortType.class);
 
-        final String serviceUrl = ConfigManager.getDrugUrl().toString();
+        final String serviceUrl = ConfigManager.Drugstore().ServiceUrl().toString();
         Map<String, Object> requestContext = ((BindingProvider) port).getRequestContext();
         requestContext.put(BindingProvider.ENDPOINT_ADDRESS_PROPERTY, serviceUrl);
 //        requestContext.put(BindingProvider.USERNAME_PROPERTY, login);

@@ -108,7 +108,7 @@ object ConfigManager extends Configuration {
     var InvalidAuthData = 0x148
   }
 
-  val Drugstore = new Configuration {
+  class DrugstoreClass extends Configuration {
     var OrgName = "ФНКЦ ДГОИ"
 
     var ServiceUrl = new URL("http://pharmacy3.fccho-moscow.ru/ws/MISExchange")
@@ -133,9 +133,15 @@ object ConfigManager extends Configuration {
     var User = ""
     var Password = ""
 
+    var UpdateRLS = "off"
+
+    def isUpdateRLS = "on".equals(UpdateRLS)
+
     def HttpAuthToken = DatatypeConverter.printBase64Binary(
       (User + ":" + Password).getBytes)
   }
+
+  var Drugstore = new DrugstoreClass
 
   var Core = new Configuration {
     var RequestLaboratoryUrl = "http://localhost:8080/tmis-ws-laboratory/tmis-client-laboratory"
@@ -160,23 +166,6 @@ object ConfigManager extends Configuration {
   }
 
   var TrfuProp = new TrfuPropClass
-
-
-  /**
-   * Метод хелпер, создан из-за невозможности вызвать класс-конфиг из джава кода
-   */
-  def getDrugUser: String = Drugstore.User
-
-  /**
-   * Метод хелпер, создан из-за невозможности вызвать класс-конфиг из джава кода
-   */
-  def getDrugPassword: String = Drugstore.Password
-
-  /**
-   * Метод хелпер, создан из-за невозможности вызвать класс-конфиг из джава кода
-   */
-  def getDrugUrl: URL = Drugstore.ServiceUrl
-
 
   val Laboratory = new Configuration {
     // LIS service URL
