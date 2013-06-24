@@ -54,6 +54,9 @@ public class BakLISWebServiceImpl implements IBakLISWebService {
             @WebParam(name = "CodeLIS", targetNamespace = Namespace)
             String codeLIS) {
 
+
+
+
         log.info("\n========QUERY setAnalysisResults============\n" +
                 "orderMisId          [" + orderMisId + "]\n" +
                 "orderBarCode        [" + orderBarCode + "]\n" +
