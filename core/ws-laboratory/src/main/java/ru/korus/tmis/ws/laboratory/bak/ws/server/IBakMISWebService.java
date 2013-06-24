@@ -1,15 +1,19 @@
 package ru.korus.tmis.ws.laboratory.bak.ws.server;
 
 import ru.korus.tmis.core.exception.CoreException;
-import ru.korus.tmis.ws.laboratory.bak.model.ResultAnalyze;
 import ru.korus.tmis.ws.laboratory.bak.ws.server.model.ResponseHL7;
+import ru.korus.tmis.ws.laboratory.bak.ws.server.model.hl7.HL7Specification;
+import ru.korus.tmis.ws.laboratory.bak.ws.server.model.hl7.complex.MCCIIN000002UV01;
 
 import javax.jws.WebMethod;
 import javax.jws.WebParam;
+import javax.jws.WebResult;
 import javax.jws.WebService;
 import javax.xml.datatype.XMLGregorianCalendar;
 
 import static ru.korus.tmis.util.CompileTimeConfigManager.Laboratory.Namespace;
+import static ru.korus.tmis.ws.laboratory.bak.ws.server.model.hl7.HL7Specification.NAMESPACE;
+import static ru.korus.tmis.ws.laboratory.bak.ws.server.model.hl7.HL7Specification.SUCCESS_ACCEPT_EVENT;
 
 /**
  * @author anosov@outlook.com
@@ -32,9 +36,10 @@ public interface IBakMISWebService {
      * @return
      * @throws CoreException
      */
-    @WebMethod
-    int setAnalysisResults(
-            @WebParam(name = "PRPA_IN201302UV02", targetNamespace = "urn:hl7-org:v3", partName = "Body")
+    @WebMethod(operationName = "LIS_SetAnalysisResults")
+    @WebResult(name = SUCCESS_ACCEPT_EVENT, targetNamespace = NAMESPACE, partName = "Body")
+    MCCIIN000002UV01 setAnalysisResults(
+            @WebParam(name = "ResponseHL7", targetNamespace = NAMESPACE, partName = "Body")
             ResponseHL7 response
     );
 
