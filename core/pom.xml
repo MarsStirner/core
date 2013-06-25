@@ -578,8 +578,8 @@
                 <configuration>
                     <sourceDir>src/main/scala</sourceDir>
                     <jvmArgs>
-                        <jvmArg>-Xms256m</jvmArg>
-                        <jvmArg>-Xmx768m</jvmArg>
+                        <jvmArg>-Xms512m</jvmArg>
+                        <jvmArg>-Xmx1024m</jvmArg>
                     </jvmArgs>
                     <scalaVersion>${version.scala}</scalaVersion>
                 </configuration>

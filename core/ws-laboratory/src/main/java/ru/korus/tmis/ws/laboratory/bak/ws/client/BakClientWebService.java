@@ -1,7 +1,7 @@
 package ru.korus.tmis.ws.laboratory.bak.ws.client;
 
 import ru.korus.tmis.core.exception.CoreException;
-import ru.korus.tmis.laboratory.bak.bean.BakLaboratoryBeanLocal;
+import ru.korus.tmis.ws.laboratory.bak.ws.client.bean.IBakLaboratoryBean;
 
 import javax.ejb.EJB;
 import javax.jws.WebService;
@@ -20,10 +20,10 @@ import javax.jws.WebService;
 public class BakClientWebService implements IBakClientWebService {
 
     @EJB
-    BakLaboratoryBeanLocal bakLaboratoryBeanLocal;
+    IBakLaboratoryBean bakLaboratoryBean;
 
     @Override
     public void sendAnalysisRequest(int actionId) throws CoreException {
-        bakLaboratoryBeanLocal.sendLisAnalysisRequest(actionId);
+        bakLaboratoryBean.sendLisAnalysisRequest(actionId);
     }
 }
