@@ -28,10 +28,11 @@ import static ru.korus.tmis.ws.laboratory.bak.ws.server.model.hl7.HL7Specificati
  *         date: 5/21/13
  */
 @WebService(
-        targetNamespace = CompileTimeConfigManager.Laboratory.Namespace,
-        serviceName = IBakMISWebService.SERVICE_NAME,
-        portName = IBakMISWebService.PORT_NAME,
-        name = IBakMISWebService.PORT_NAME)
+  endpointInterface = "ru.korus.tmis.ws.laboratory.bak.ws.server.IBakMISWebService",
+  targetNamespace = CompileTimeConfigManager.Laboratory.Namespace,
+  serviceName = IBakMISWebService.SERVICE_NAME,
+  portName = IBakMISWebService.PORT_NAME,
+  name = IBakMISWebService.PORT_NAME)
 public class BakMISWebService implements IBakMISWebService {
 
     private static final Logger log = LoggerFactory.getLogger(BakMISWebService.class);

@@ -2,13 +2,14 @@ package ru.korus.tmis.ws.laboratory.bak.ws.server;
 
 import ru.korus.tmis.core.exception.CoreException;
 import ru.korus.tmis.ws.laboratory.bak.ws.server.model.ResponseHL7;
-import ru.korus.tmis.ws.laboratory.bak.ws.server.model.hl7.HL7Specification;
 import ru.korus.tmis.ws.laboratory.bak.ws.server.model.hl7.complex.MCCIIN000002UV01;
+import ru.korus.tmis.ws.laboratory.bak.ws.server.model.hl7.complex.ObjectFactory;
 
 import javax.jws.WebMethod;
 import javax.jws.WebParam;
 import javax.jws.WebResult;
 import javax.jws.WebService;
+import javax.xml.bind.annotation.XmlSeeAlso;
 import javax.xml.datatype.XMLGregorianCalendar;
 
 import static ru.korus.tmis.util.CompileTimeConfigManager.Laboratory.Namespace;
@@ -20,7 +21,10 @@ import static ru.korus.tmis.ws.laboratory.bak.ws.server.model.hl7.HL7Specificati
  */
 @WebService(
         targetNamespace = Namespace,
-        name = "bak-lis")
+        name = IBakMISWebService.PORT_NAME)
+@XmlSeeAlso({
+    ObjectFactory.class
+})
 public interface IBakMISWebService {
 
     /**
@@ -70,6 +74,6 @@ public interface IBakMISWebService {
     );
 
 
-    static final String PORT_NAME = "IBAK_FNKC";
-    static final String SERVICE_NAME = "IBAK_FNKC";
+    static final String PORT_NAME = "IBAK_FNKC_PORT_NAME";
+    static final String SERVICE_NAME = "IBAK-FNKC";
 }

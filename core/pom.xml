@@ -297,8 +297,13 @@
         <profile>
             <id>anosov-win</id>
             <properties>
+                <!-- Путь к директории доменов -->
+                <glassfish.domain.dir>C:\glassfish3\glassfish\domains</glassfish.domain.dir>
                 <!-- Домашняя директория Glassfish -->
                 <glassfish.home>C:\glassfish3\</glassfish.home>
+
+                <glassfish.bin>C:\glassfish3\bin\</glassfish.bin>
+
                 <!-- Название базы данных МИС -->
                 <mysql.db.mis>hospital</mysql.db.mis>
             </properties>
