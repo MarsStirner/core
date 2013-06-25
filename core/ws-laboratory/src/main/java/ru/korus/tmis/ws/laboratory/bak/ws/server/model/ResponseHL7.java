@@ -24,6 +24,7 @@ import static ru.korus.tmis.ws.laboratory.bak.ws.server.model.hl7.HL7Specificati
         "recordTarget",
         "author",
         "custodian",
+        "componentOf"
 })
 public class ResponseHL7 {
 
