@@ -64,6 +64,11 @@ public class RlsNomen implements Serializable {
     @JoinColumn(name = "tradeName_id")
     private RlsTradeName rlsTradeName;
 
+    @Column(nullable=false)
+    @JoinColumn(name = "version")
+    private Integer version = 0;
+
+
     public RlsNomen() {
     }
 
@@ -195,6 +200,14 @@ public class RlsNomen implements Serializable {
 
     public void setRegDate(Date regDate) {
         this.regDate = regDate;
+    }
+
+    public Integer getVersion() {
+        return version;
+    }
+
+    public void setVersion(Integer version) {
+        this.version = version;
     }
 
 }

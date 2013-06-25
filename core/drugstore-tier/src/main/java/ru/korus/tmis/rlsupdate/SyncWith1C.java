@@ -103,7 +103,7 @@ public class SyncWith1C {
         //Справочник лекарственных средсв из системы 1С
         DrugList drugList = ws1C.getDrugList();
         logger.info("update RLS...the list of drugs has been recived from 1C. list size: {}", drugList.getDrug().size());
-        String res = "";
+        String res = "update RLS...start...1C drugs list size: " + drugList.getDrug().size() +  System.getProperty("line.separator");
         for (POCDMT000040LabeledDrug drug : drugList.getDrug()) {
             final Integer drugRlsCode = getDrugRlsCode(drug);
             if (drugRlsCode != null) { // если задан код лекарственного средства
@@ -115,16 +115,18 @@ public class SyncWith1C {
                 final RlsTradeName rlsTradeName = new RlsTradeName();
                 final RlsNomen rlsNomen = new RlsNomen();
 
-                rlsDosage.setName(getDosageName(drug));
+                rlsDosage.setName(getDosageName(drug).replace('_', ' '));
                 rlsFilling.setName(getFillingName(drug));
-                rlsForm.setName(getFormName(drug));
+                rlsForm.setName(formatForDb(getFormName(drug)));
 
                 final String inpNames[] = splitNames(getInpName(drug));
                 rlsInpName.setName(inpNames[0]);
                 rlsInpName.setLatName(inpNames[1]);
 
-                rlsPacking.setName(getPackingName(drug));
-                rlsTradeName.setName(getTradeName(drug));
+                rlsPacking.setName(formatForDb(getPackingName(drug)));
+
+                rlsTradeName.setName(getTradeName(drug).replace('_', ' '));
+                rlsTradeName.setLatName(getTradeNameLat(drug));
 
                 rlsNomen.setCode(drugRlsCode);
 
@@ -137,13 +139,32 @@ public class SyncWith1C {
                     logger.info(info);
                     res += info;
                 } else { // если лекарственное средство с кодом drugRlsCode есть, то сравниваем данные ТМИС и 1С
-                    String info = verify(drugs.get(0), rlsDosage, rlsFilling, rlsForm, rlsInpName, rlsPacking, rlsTradeName);
-                    logger.info(info);
-                    res += info;
+                    RlsNomen lastVer = getMaxVersion(drugs);
+                    String info = verify(lastVer, rlsDosage, rlsFilling, rlsForm, rlsInpName, rlsPacking, rlsTradeName);
+                    if(!info.isEmpty()) { //если описание лекарственного средства в БД ТМИС и по данным 1С не совпадают, то добавляем
+                        rlsNomen.setVersion(lastVer.getVersion() + 1);
+                        saveNewDrug(rlsDosage, rlsFilling, rlsForm, rlsInpName, rlsPacking, rlsTradeName, rlsNomen);
+                        logger.info(info);
+                        res += info;
+                    }
                 }
             }
         }
-        logger.info("update RLS...completed");
+        final String end = "update RLS...completed";
+        res += end;
+        logger.info(end);
+        return res;
+    }
+
+    private RlsNomen getMaxVersion(List<RlsNomen> drugs) {
+        RlsNomen res = drugs.get(0);
+        Integer max = res.getVersion();
+        for(RlsNomen drug : drugs) {
+           if (max < drug.getVersion()) {
+               max = drug.getVersion();
+               res = drug;
+           }
+        }
         return res;
     }
 
@@ -199,7 +220,11 @@ public class SyncWith1C {
             res += checkDiff(rlsDosage.getName(), rlsNomenDb.getRlsDosage().getName(), "Dosage", "Name");
         }
         if (rlsNomenDb.getRlsFilling() != null) {
-            res += checkDiff(rlsFilling.getName(), rlsNomenDb.getRlsFilling().getName(), "Filling", "Name");
+            final String diff = checkDiff(formatForDb(rlsFilling.getName()), formatForDb(rlsNomenDb.getRlsFilling().getName()), "Filling", "Name");
+            if(diff.isEmpty()) {
+                rlsFilling.setName(rlsNomenDb.getRlsFilling().getName());
+            }
+            res += diff;
         }
         if (rlsNomenDb.getRlsForm() != null) {
             res += checkDiff(rlsForm.getName(), rlsNomenDb.getRlsForm().getName(), "Form", "Name");
@@ -284,6 +309,17 @@ public class SyncWith1C {
         return getTranslationCodeByName(drug, RLS_TRADENAMES);
     }
 
+    private String getTradeNameLat(POCDMT000040LabeledDrug drug) {
+        return getTranslationDisplayNameByName(drug, RLS_TRADENAMES);
+    }
+
+    private String formatForDb(String str) {
+        if (str != null) {
+            return str.replace(" ","").replace('_', ' ');
+        }
+        return str;
+    }
+
     /**
      * Код формы выпуска лекарства
      * 
@@ -292,7 +328,7 @@ public class SyncWith1C {
      * @return строку, содержащею код формы выпуска лекарства
      */
     private String getFormName(POCDMT000040LabeledDrug drug) {
-        return getTranslationDisplayNameByName(drug, RLS_CLSDRUGFORMS);
+        return getTranslationCodeByName(drug, RLS_CLSDRUGFORMS);
     }
 
     private String getTranslationDisplayNameByName(final POCDMT000040LabeledDrug drug, final String codeSystemName) {
@@ -325,18 +361,20 @@ public class SyncWith1C {
         if (translation != null) {
             // Код упаковки
             final CD cdCode = getValueByCodeSystemName(translation.getQualifier(), RLS_DRUGPACK);
-            final String code = cdCode != null ? cdCode.getCode().trim() + " " : "";
+            final String code = cdCode != null ? formatForDb(cdCode.getCode().trim()): "";
             // Масса упаковки
             final CD cdMass = getValueByCodeSystemName(translation.getQualifier(), RLS_MASSUNITS);
-            final String mass = cdMass != null ? ((String) cdMass.getOriginalText().getContent().get(0)).trim() + " " : "";
+            final String mass = cdMass != null && !((String)cdMass.getOriginalText().getContent().get(0)).isEmpty() ?
+                    ((String)cdMass.getOriginalText().getContent().get(0)).trim() + " " : "";
             // Ед.изм. массы
-            final String massUnit = cdMass != null ?  (cdMass.getCode() + " ") : "";
+            final String massUnit = cdMass != null ? cdMass.getCode().trim() : "";
 
             final CD volume = getValueByCodeSystemName(translation.getQualifier(), RLS_CUBICUNITS);
             // Объем
-            final String volumeValue = volume != null ? ((String) volume.getOriginalText().getContent().get(0)).trim() + " " : "";
+            final String volumeValue = volume != null && !((String) volume.getOriginalText().getContent().get(0)).isEmpty() ?
+                    ((String) volume.getOriginalText().getContent().get(0)).trim() + " " : "";
             // Ед.изм. объема
-            final String volumeUnit = volume != null ? (String) volume.getCode().trim() + " " : "";
+            final String volumeUnit = volume != null ? formatForDb(volume.getCode().trim()) : "";
 
             final CD cdCount = getValueByCodeSystemName(translation.getQualifier(), RLS_DRUGPACK);
             // Кол-во в упаковке
