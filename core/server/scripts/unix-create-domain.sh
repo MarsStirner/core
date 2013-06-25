@@ -4,7 +4,7 @@
 #
 
 GF_PASSWD_FILE=./password
-ASADMIN=${glassfish.home}/bin
+ASADMIN=${glassfish.bin}
 
 # Создание файла с паролями                                                                                                                                     
 echo "AS_ADMIN_MASTERPASSWORD="${glassfish.master.password} > $GF_PASSWD_FILE

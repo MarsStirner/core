@@ -28,7 +28,7 @@
 
     <properties>
         <!-- Версия ядра-->
-        <version.tmis.core>0.9.14-BAK</version.tmis.core>
+        <version.tmis.core>1.1.0-SHAPSHOT</version.tmis.core>
 
 
         <version.joda.time>2.1</version.joda.time>
@@ -100,6 +100,8 @@
 
         <!-- Домашняя директория Glassfish -->
         <glassfish.home>/usr/local/glassfish3</glassfish.home>
+        <!-- Исполняемая директория Glassfish -->
+        <glassfish.bin>/usr/local/glassfish3/bin</glassfish.bin>
         <!-- Путь к директории доменов -->
         <glassfish.domain.dir>${glassfish.home}/glassfish/domains/</glassfish.domain.dir>
         <!-- Хост сервера Glassfish -->
@@ -264,6 +266,8 @@
                 <glassfish.domain.dir>C:\Winprog\glassfish3\glassfish\domains</glassfish.domain.dir>
                 <!-- Домашняя директория Glassfish -->
                 <glassfish.home>C:\Winprog\glassfish3\</glassfish.home>
+
+                <glassfish.bin>C:\Winprog\glassfish3\bin\</glassfish.bin>
                 <!-- Название домена -->
                 <glassfish.domain>fccho</glassfish.domain>
                 <!-- Путь к директории домена (нужен для того, чтобы валидировался pom.xml -->

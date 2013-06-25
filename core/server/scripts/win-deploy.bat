@@ -1,5 +1,5 @@
 @echo off
-SET PATH=${glassfish.home}\bin\;%PATH%
+SET PATH=${glassfish.bin};%PATH%
 
 SET GF_PASSWD_FILE=.\password
 echo AS_ADMIN_PASSWORD=${glassfish.admin.password}>%GF_PASSWD_FILE%
@@ -12,19 +12,19 @@ echo.
 echo --------------------------------------------------------------------
 echo List domains
 echo.
-call ${glassfish.home}\bin\asadmin list-domains
+call ${glassfish.bin}\asadmin list-domains
 echo.
 echo --------------------------------------------------------------------
 echo List applications
 echo.
-call ${glassfish.home}\bin\asadmin --user ${glassfish.admin.login} ^
+call ${glassfish.bin}\asadmin --user ${glassfish.admin.login} ^
              --passwordfile %GF_PASSWD_FILE% ^
             list-applications
 echo.
 echo --------------------------------------------------------------------
 echo Undeploy ${glassfish.application.name}
 echo.
-call ${glassfish.home}\bin\asadmin --host ${glassfish.host} ^
+call ${glassfish.bin}\asadmin --host ${glassfish.host} ^
         --port ${glassfish.port.admin} ^
         --user ${glassfish.admin.login} ^
         --passwordfile %GF_PASSWD_FILE% ^
@@ -34,8 +34,8 @@ call ${glassfish.home}\bin\asadmin --host ${glassfish.host} ^
 echo --------------------------------------------------------------------
 echo Stop-Start Glassfish
 echo.
-call ${glassfish.home}\bin\asadmin stop-domain --domaindir ${glassfish.domain.dir} ${glassfish.domain}
-call ${glassfish.home}\bin\asadmin start-domain --domaindir ${glassfish.domain.dir} ${glassfish.domain}
+call ${glassfish.bin}\asadmin stop-domain --domaindir ${glassfish.domain.dir} ${glassfish.domain}
+call ${glassfish.bin}\asadmin start-domain --domaindir ${glassfish.domain.dir} ${glassfish.domain}
 echo --------------------------------------------------------------------
 echo Copy config file to ${glassfish.domain.dir}\${glassfish.domain}\config\logback.xml
 echo.
@@ -43,7 +43,7 @@ copy /Y logback.xml ${glassfish.domain.dir}\${glassfish.domain}\config\
 echo --------------------------------------------------------------------
 echo Deploy ${glassfish.application.name}
 echo.
-call ${glassfish.home}\bin\asadmin --host ${glassfish.host} ^
+call ${glassfish.bin}\asadmin --host ${glassfish.host} ^
         --port ${glassfish.port.admin} ^
         --user ${glassfish.admin.login} ^
         --passwordfile %GF_PASSWD_FILE% ^
@@ -67,12 +67,5 @@ call ${glassfish.home}\bin\asadmin --host ${glassfish.host} ^
 echo --------------------------------------------------------------------
 echo.
 del -f %GF_PASSWD_FILE%
-
-echo tail -f -n 5000 ${com.sun.aas.instanceRoot}/logs/tmis-core/core.log
-echo tail -f -n 5000 ${com.sun.aas.instanceRoot}/logs/pharmacy/pharmacy.log
-echo tail -f -n 5000 ${com.sun.aas.instanceRoot}/logs/server.log
-echo.
-echo.
-rem tail -n 1000 ${com.sun.aas.instanceRoot}/logs/server.log | grep "${glassfish.application.name} was successfully deployed in
 echo.
 echo.

@@ -4,7 +4,7 @@ SET GF_PASSWD_FILE=.\password
 echo AS_ADMIN_PASSWORD=${glassfish.admin.password}>%GF_PASSWD_FILE%
 echo AS_ADMIN_MASTERPASSWORD=${glassfish.admin.password}>>%GF_PASSWD_FILE%
 
-SET PATH=${glassfish.home}\bin\;$PATH
+SET PATH=${glassfish.bin};$PATH
 echo.
 echo.
 echo.
