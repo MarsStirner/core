@@ -45,7 +45,7 @@ import java.util.List;
     "birthTime",
     "addr"
 })
-public class    COCTMT290000UV06ProviderPerson {
+public class COCTMT290000UV06ProviderPerson {
 
     protected List<CS> realmCode;
     protected II typeId;

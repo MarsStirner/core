@@ -3,8 +3,6 @@ package ru.korus.tmis.ws.laboratory.bak.utils;
 import org.apache.commons.lang.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import ru.korus.tmis.laboratory.bak.model.*;
-import ru.korus.tmis.ws.laboratory.bak.model.QueryHL7;
 
 import javax.xml.datatype.DatatypeConfigurationException;
 import javax.xml.datatype.DatatypeFactory;
@@ -24,71 +22,7 @@ public class QueryInitializer {
     private static final Logger log = LoggerFactory.getLogger(QueryInitializer.class);
 
 
-    public static QueryHL7 buildQueryHL7(Map<String, Object> params) {
-        final QueryHL7 query = new QueryHL7();
-        query.biomaterialInfo = initBiomaterialInfo(params);
-        query.patientInfo = initPatientInfo(params);
-        query.diagnosticRequestInfo = initDiagnosticRequestInfo(params);
-        query.orderInfo  = initOrderInfo(params);
-        return query;
-    }
-
-    public static DiagnosticRequestInfo initDiagnosticRequestInfo(Map<String, Object> params) {
-        DiagnosticRequestInfo diagnosticRequestInfo = new DiagnosticRequestInfo();
-        diagnosticRequestInfo.setOrderMisId(initValueInterger(params, ParamName.ORDER_MIS_ID.name, true));
-        diagnosticRequestInfo.setOrderMisDate(initValueXMLDate(params, ParamName.ORDER_MIS_DATE.name, true));
-        diagnosticRequestInfo.setUrgent(initValueInterger(params, ParamName.IS_URGENT.name, true));
-        diagnosticRequestInfo.setOrderPregnat(initValueInterger(params, ParamName.ORDER_PREGNAT.name, false));
-        diagnosticRequestInfo.setOrderDiagCode(initValueString(params, ParamName.ORDER_DIAG_CODE.name, false));
-        diagnosticRequestInfo.setOrderDiagText(initValueString(params, ParamName.ORDER_DIAG_TEXT.name, false));
-        diagnosticRequestInfo.setOrderComment(initValueString(params, ParamName.ORDER_COMMENT.name, false));
-        diagnosticRequestInfo.setOrderDepartmentName(initValueString(params, ParamName.ORDER_DEPARTMENT_NAME.name, false));
-        diagnosticRequestInfo.setOrderDepartmentMisId(initValueString(params, ParamName.ORDER_DEPARTMENT_MIS_ID.name, true));
-        diagnosticRequestInfo.setOrderDoctorMisId(initValueString(params, ParamName.ORDER_DOCTOR_MIS_ID.name, true));
-        diagnosticRequestInfo.setOrderDoctorFamily(initValueString(params, ParamName.ORDER_DOCTOR_FAMILY.name, false));
-        diagnosticRequestInfo.setOrderDoctorName(initValueString(params, ParamName.ORDER_DOCTOR_NAME.name, false));
-        diagnosticRequestInfo.setOrderDoctorPatronum(initValueString(params, ParamName.ORDER_DOCTOR_PATRONUM.name, false));
-        return diagnosticRequestInfo;
-    }
-
-    public static OrderInfo initOrderInfo(Map<String, Object> params) {
-        OrderInfo orderInfo = new OrderInfo();
-        orderInfo.setDiagnosticCode(initValueString(params, ParamName.DIAGNOSTIC_CODE.name, true));
-        orderInfo.setDiagnosticName(initValueString(params, ParamName.DIAGNOSTIC_NAME.name, false));
-        orderInfo.setTypeFinanceCode(initValueString(params, ParamName.TYPE_FINANCE_CODE.name, true));
-        orderInfo.setTypeFinanceName(initValueString(params, ParamName.TYPE_FINANCE_NAME.name, true));
-        return orderInfo;
-    }
-
-    public static PatientInfo initPatientInfo(Map<String, Object> params) {
-        PatientInfo patientInfo = new PatientInfo();
-        patientInfo.setCustodian(initValueString(params, ParamName.CUSTODIAN.name, true));
-        patientInfo.setPatientMisId(initValueInterger(params, ParamName.PATIENT_MIS_ID.name, true));
-        patientInfo.setPatientNumber(initValueString(params, ParamName.PATIENT_NUMBER.name, true));
-        patientInfo.setPatientFamily(initValueString(params, ParamName.PATIENT_FAMILY.name, false));
-        patientInfo.setPatientName(initValueString(params, ParamName.PATIENT_NAME.name, false));
-        patientInfo.setPatientPatronum(initValueString(params, ParamName.PATIENT_PATRONUM.name, false));
-        patientInfo.setPatientBirthDate(initValueDate(params, ParamName.PATIENT_BIRTH_DATE.name, true));
-        patientInfo.setPatientSex(QueryInitializer.<PatientInfo.Gender>initValueCustomType(params, ParamName.PATIENT_SEX.name, true));
-        patientInfo.setPatientAddress(initValueString(params, ParamName.PATIENT_ADDRESS.name, false));
-        return patientInfo;
-    }
-
-    public static BiomaterialInfo initBiomaterialInfo(Map<String, Object> params) {
-        BiomaterialInfo bio = new BiomaterialInfo();
-        bio.setOrderBarCode(initValueString(params, ParamName.ORDER_BAR_CODE.name, true));
-        bio.setTakenTissueJournal(initValueString(params, ParamName.TAKEN_TISSUE_JOURNAL.name, true));
-        bio.setOrderProbeDate(initValueXMLDate(params, ParamName.ORDER_PROBE_DATE.name, true));
-        bio.setOrderBiomaterialCode(initValueString(params, ParamName.ORDER_BIOMATERIAL_CODE.name, false));
-        bio.setOrderBiomaterialname(initValueString(params, ParamName.ORDER_BIOMATERIAL_NAME.name, false));
-        bio.setOrderBiomaterialVolume(initValueInterger(params, ParamName.ORDER_BIOMATERIAL_VOLUME.name, false));
-        bio.setUnitBiomaterialCode(initValueInterger(params, ParamName.UNIT_BIOMETRIAL_CODE.name, false));
-        bio.setUnitBiomaterialName(initValueString(params, ParamName.UNIT_BIOMETRIAL_NAME.name, false));
-        bio.setOrderBiomaterialComment(initValueString(params, ParamName.ORDER_BIOMATERIAL_COMMENT.name, false));
-        return bio;
-    }
-
-    // {{ Helper's methods
+      // {{ Helper's methods
     private static String initValueString(Map<String, Object> params, String param, boolean required) {
         String value = initValueString(params, param);
         if (required && StringUtils.isEmpty(value)) {

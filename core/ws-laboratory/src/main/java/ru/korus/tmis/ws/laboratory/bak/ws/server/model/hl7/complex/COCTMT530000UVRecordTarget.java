@@ -1,19 +1,16 @@
+
 package ru.korus.tmis.ws.laboratory.bak.ws.server.model.hl7.complex;
 
+import javax.xml.bind.annotation.*;
 import java.util.ArrayList;
 import java.util.List;
-import javax.xml.bind.annotation.XmlAccessType;
-import javax.xml.bind.annotation.XmlAccessorType;
-import javax.xml.bind.annotation.XmlAttribute;
-import javax.xml.bind.annotation.XmlElement;
-import javax.xml.bind.annotation.XmlType;
 
 
 /**
  * <p>Java class for COCT_MT530000UV.RecordTarget complex type.
- *
+ * 
  * <p>The following schema fragment specifies the expected content contained within this class.
- *
+ * 
  * <pre>
  * &lt;complexType name="COCT_MT530000UV.RecordTarget">
  *   &lt;complexContent>
@@ -30,8 +27,8 @@ import javax.xml.bind.annotation.XmlType;
  *   &lt;/complexContent>
  * &lt;/complexType>
  * </pre>
- *
- *
+ * 
+ * 
  */
 @XmlAccessorType(XmlAccessType.FIELD)
 @XmlType(name = "COCT_MT530000UV.RecordTarget", propOrder = {
@@ -56,25 +53,25 @@ public class COCTMT530000UVRecordTarget {
 
     /**
      * Gets the value of the realmCode property.
-     *
+     * 
      * <p>
      * This accessor method returns a reference to the live list,
      * not a snapshot. Therefore any modification you make to the
      * returned list will be present inside the JAXB object.
      * This is why there is not a <CODE>set</CODE> method for the realmCode property.
-     *
+     * 
      * <p>
      * For example, to add a new item, do as follows:
      * <pre>
      *    getRealmCode().add(newItem);
      * </pre>
-     *
-     *
+     * 
+     * 
      * <p>
      * Objects of the following type(s) are allowed in the list
      * {@link CS }
-     *
-     *
+     * 
+     * 
      */
     public List<CS> getRealmCode() {
         if (realmCode == null) {
@@ -85,11 +82,11 @@ public class COCTMT530000UVRecordTarget {
 
     /**
      * Gets the value of the typeId property.
-     *
+     * 
      * @return
      *     possible object is
      *     {@link II }
-     *
+     *     
      */
     public II getTypeId() {
         return typeId;
@@ -97,11 +94,11 @@ public class COCTMT530000UVRecordTarget {
 
     /**
      * Sets the value of the typeId property.
-     *
+     * 
      * @param value
      *     allowed object is
      *     {@link II }
-     *
+     *     
      */
     public void setTypeId(II value) {
         this.typeId = value;
@@ -109,25 +106,25 @@ public class COCTMT530000UVRecordTarget {
 
     /**
      * Gets the value of the templateId property.
-     *
+     * 
      * <p>
      * This accessor method returns a reference to the live list,
      * not a snapshot. Therefore any modification you make to the
      * returned list will be present inside the JAXB object.
      * This is why there is not a <CODE>set</CODE> method for the templateId property.
-     *
+     * 
      * <p>
      * For example, to add a new item, do as follows:
      * <pre>
      *    getTemplateId().add(newItem);
      * </pre>
-     *
-     *
+     * 
+     * 
      * <p>
      * Objects of the following type(s) are allowed in the list
      * {@link II }
-     *
-     *
+     * 
+     * 
      */
     public List<II> getTemplateId() {
         if (templateId == null) {
@@ -138,11 +135,11 @@ public class COCTMT530000UVRecordTarget {
 
     /**
      * Gets the value of the patient property.
-     *
+     * 
      * @return
      *     possible object is
      *     {@link COCTMT050000UV01Patient }
-     *
+     *     
      */
     public COCTMT050000UV01Patient getPatient() {
         return patient;
@@ -150,11 +147,11 @@ public class COCTMT530000UVRecordTarget {
 
     /**
      * Sets the value of the patient property.
-     *
+     * 
      * @param value
      *     allowed object is
      *     {@link COCTMT050000UV01Patient }
-     *
+     *     
      */
     public void setPatient(COCTMT050000UV01Patient value) {
         this.patient = value;
@@ -162,25 +159,25 @@ public class COCTMT530000UVRecordTarget {
 
     /**
      * Gets the value of the nullFlavor property.
-     *
+     * 
      * <p>
      * This accessor method returns a reference to the live list,
      * not a snapshot. Therefore any modification you make to the
      * returned list will be present inside the JAXB object.
      * This is why there is not a <CODE>set</CODE> method for the nullFlavor property.
-     *
+     * 
      * <p>
      * For example, to add a new item, do as follows:
      * <pre>
      *    getNullFlavor().add(newItem);
      * </pre>
-     *
-     *
+     * 
+     * 
      * <p>
      * Objects of the following type(s) are allowed in the list
      * {@link String }
-     *
-     *
+     * 
+     * 
      */
     public List<String> getNullFlavor() {
         if (nullFlavor == null) {
@@ -191,25 +188,25 @@ public class COCTMT530000UVRecordTarget {
 
     /**
      * Gets the value of the typeCode property.
-     *
+     * 
      * <p>
      * This accessor method returns a reference to the live list,
      * not a snapshot. Therefore any modification you make to the
      * returned list will be present inside the JAXB object.
      * This is why there is not a <CODE>set</CODE> method for the typeCode property.
-     *
+     * 
      * <p>
      * For example, to add a new item, do as follows:
      * <pre>
      *    getTypeCode().add(newItem);
      * </pre>
-     *
-     *
+     * 
+     * 
      * <p>
      * Objects of the following type(s) are allowed in the list
      * {@link String }
-     *
-     *
+     * 
+     * 
      */
     public List<String> getTypeCode() {
         if (typeCode == null) {
@@ -220,11 +217,11 @@ public class COCTMT530000UVRecordTarget {
 
     /**
      * Gets the value of the contextControlCode property.
-     *
+     * 
      * @return
      *     possible object is
      *     {@link String }
-     *
+     *     
      */
     public String getContextControlCode() {
         if (contextControlCode == null) {
@@ -236,11 +233,11 @@ public class COCTMT530000UVRecordTarget {
 
     /**
      * Sets the value of the contextControlCode property.
-     *
+     * 
      * @param value
      *     allowed object is
      *     {@link String }
-     *
+     *     
      */
     public void setContextControlCode(String value) {
         this.contextControlCode = value;
