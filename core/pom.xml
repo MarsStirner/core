@@ -101,7 +101,7 @@
         <!-- Домашняя директория Glassfish -->
         <glassfish.home>/usr/local/glassfish3</glassfish.home>
         <!-- Исполняемая директория Glassfish -->
-        <glassfish.bin>/usr/local/glassfish3/bin</glassfish.bin>
+        <glassfish.bin>${glassfish.home}/bin</glassfish.bin>
         <!-- Путь к директории доменов -->
         <glassfish.domain.dir>${glassfish.home}/glassfish/domains/</glassfish.domain.dir>
         <!-- Хост сервера Glassfish -->
