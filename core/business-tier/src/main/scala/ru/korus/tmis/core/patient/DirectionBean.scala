@@ -359,7 +359,10 @@ class DirectionBean extends DirectionBeanLocal
     if (request.createPerson > 0 && dbStaffBean.getStaffById(request.createPerson) != null) {
       action.setCreatePerson(dbStaffBean.getStaffById(request.createPerson))
     }
-    if (request.createDateTime != null) action.setCreateDatetime(request.createDateTime)
+    if (request.createDateTime != null) {
+      action.setCreateDatetime(request.createDateTime)
+      action.setBegDate(request.createDateTime)
+    }
     //action.setBegDate(bDate)
     action.setPlannedEndDate(new Date(request.plannedEndDate.getTime + request.plannedTime.getTime.getTime))
     if (request.getFinance.getId > 0) {

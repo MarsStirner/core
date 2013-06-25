@@ -4,7 +4,7 @@ import reflect.BeanProperty
 import javax.xml.bind.annotation.{XmlRootElement, XmlType}
 import scala.collection.JavaConversions._
 import ru.korus.tmis.util.ConfigManager
-import java.util.{Calendar, TimeZone, Date, ArrayList}
+import util._
 import java.text.{DateFormat, SimpleDateFormat}
 import scala.Predef._
 import ru.korus.tmis.core.entity.model._
@@ -17,6 +17,7 @@ import ru.korus.tmis.core.exception.CoreException
 import ru.korus.tmis.core.filter.{ListDataFilter, AbstractListDataFilter}
 import org.codehaus.jackson.map.ObjectMapper
 import java.io.IOException
+import util.{TimeZone, Calendar, ArrayList, Date}
 
 @XmlType(name = "listRequestData")
 @XmlRootElement(name = "listRequestData")
@@ -127,9 +128,12 @@ class ScheduleContainer {
   def this(time: APValueTime){
     this()
     if(time!=null)  {
+      val needTime = Calendar.getInstance()
+      needTime.setTime(time.getValue)
       this.id = time.getId.getId
       this.index = time.getId.getIndex
-      this.time = time.getValue
+      this.time = new Date(needTime.getTime.getTime + needTime.getTimeZone.getRawOffset) // new Date(time.getValue.getTime)
+
     }
   }
 }

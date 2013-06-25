@@ -129,6 +129,7 @@ class DbStaffBean
           if (f(1).isInstanceOf[APValueTime]) {
             val time = f(1).asInstanceOf[APValueTime]
             var timeList = new util.LinkedList[APValueTime]
+            em.detach(time)
             timeList.add(time)
             retMap.put(staff, timeList)
           }
@@ -136,12 +137,14 @@ class DbStaffBean
         else {
           if (f(1).isInstanceOf[APValueTime]) {
             val time = (f(1).asInstanceOf[APValueTime])
+            em.detach(time)
             //retMap.remove(staff)
             //retMap.put(staff, time)
             var curList = retMap.get(staff)
             curList.add(time)
           }
         }
+
         em.detach(staff)
         staff
       }

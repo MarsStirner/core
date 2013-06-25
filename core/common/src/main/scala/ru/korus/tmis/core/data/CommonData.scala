@@ -326,6 +326,28 @@ trait AbstractCommonAttribute {
     this.typeId = eTypeId
   }
 
+  var mandatory: String = _
+
+  @XmlAttribute(name = "mandatory")
+  def getMandatory() = {
+    mandatory
+  }
+
+  def setMandatory(mandatory: String) = {
+    this.mandatory = mandatory
+  }
+
+  var readOnly: String = _
+
+  @XmlAttribute(name = "readOnly")
+  def getReadOnly() = {
+    readOnly
+  }
+
+  def setReadOnly(readOnly: String) = {
+    this.readOnly = readOnly
+  }
+
   @XmlJavaTypeAdapter(value = classOf[PropertyMapAdapter])
   var properties: Map[String, String] = Map.empty[String, String]
 
@@ -427,6 +449,19 @@ class CommonAttribute  extends AbstractCommonAttribute{
            props: Map[String, String]) = {
     this(id, version, name, aType, scope)
     this.apply(props)
+  }
+
+  def this(id: Integer,
+           version: Integer,
+           name: String,
+           aType: String,
+           mandatory: String,
+           readOnly: String,
+           scope: String,
+           props: Map[String, String]) = {
+    this(id, version, name, aType, scope, props)
+    this.mandatory = mandatory
+    this.readOnly = readOnly
   }
 }
 
