@@ -73,7 +73,7 @@ public class BakMISWebService implements IBakMISWebService {
     @WebResult(name = SUCCESS_ACCEPT_EVENT, targetNamespace = NAMESPACE, partName = "Body")
     public MCCIIN000002UV01 setAnalysisResults(
             @WebParam(name = "RESPONSE", targetNamespace = NAMESPACE, partName = "Body")
-            ResponseHL7 request) {
+            final ResponseHL7 request) {
         return createResponse();
     }
 
@@ -98,7 +98,7 @@ public class BakMISWebService implements IBakMISWebService {
         processingModeCode.setCode("T");
 
         final CS acceptAskCode = new CS();
-        processingModeCode.setCode("AL");
+        acceptAskCode.setCode("AL");
 
         final MCCIMT000200UV01Sender sender = new MCCIMT000200UV01Sender();
         sender.setTypeCode(CommunicationFunctionType.SND);
