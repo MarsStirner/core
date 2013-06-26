@@ -216,7 +216,9 @@ public class SendProcedureRequest {
         final Event event = EntityMgr.getSafe(action.getEvent());
         res.setIbNumber(senderUtils.getIbNumbre(action, event, trfuActionProp));
         final Date plannedEndDate = senderUtils.getPlannedData(action, trfuActionProp);
-        res.setRegistrationDate(Database.toGregorianCalendar(plannedEndDate));
+        res.setPlanDate(Database.toGregorianCalendar(plannedEndDate));
+        final Date begDate = action.getBegDate();
+        res.setRegistrationDate(Database.toGregorianCalendar(begDate));
         res.setAttendingPhysicianId(createPerson.getId());
         res.setAttendingPhysicianFirstName(createPerson.getFirstName());
         res.setAttendingPhysicianLastName(createPerson.getLastName());
