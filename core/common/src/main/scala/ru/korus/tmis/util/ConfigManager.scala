@@ -118,8 +118,6 @@ object ConfigManager extends Configuration {
      * off - выключен (по умолчанию)
      */
     var Active = "off"
-  class DrugstoreClass extends Configuration {
-    var OrgName = "ФНКЦ ДГОИ"
 
     var ServiceUrl = new URL("http://pharmacy3.fccho-moscow.ru/ws/MISExchange")
     var User = ""
@@ -146,21 +144,8 @@ object ConfigManager extends Configuration {
     var GetDepList_SoapOperation = "GetDepartmentList"
     var GetDepList_RequestRootElement = "OrganizationRef"
 
-    var User = ""
-    var Password = ""
-
-    var UpdateRLS = "off"
-
-    def isUpdateRLS = "on".equals(UpdateRLS)
-
     def HttpAuthToken = DatatypeConverter.printBase64Binary(
       (User + ":" + Password).getBytes)
-  }
-
-  var Drugstore = new DrugstoreClass
-
-  var Core = new Configuration {
-    var RequestLaboratoryUrl = "http://localhost:8080/tmis-ws-laboratory/tmis-client-laboratory"
   }
 
   /**
@@ -278,11 +263,6 @@ object ConfigManager extends Configuration {
    * Метод хелпер, создан из-за невозможности вызвать класс-конфиг из джава кода
    */
   def getBakRuntimeWsdl: URL = LaboratoryBak.RuntimeWSDLUrl
-
-  /**
-   * Метод хелпер, создан из-за невозможности вызвать класс-конфиг из джава кода
-   */
-  def getBakAssignmentTemplate: String = LaboratoryBak.AssignmentTemplate
 
 
   val TmisAuth = new Configuration {
