@@ -9,6 +9,7 @@ import ru.korus.tmis.core.data.{QueryDataStructure, DictionaryListRequestDataFil
 import javax.persistence.{TypedQuery, PersistenceContext, EntityManager}
 import scala.collection.JavaConversions._
 import ru.korus.tmis.core.entity.model.kladr.{Street, Kladr}
+import ru.korus.tmis.core.filter.ListDataFilter
 
 
 @Interceptors(Array(classOf[LoggingInterceptor]))
@@ -104,29 +105,19 @@ class DbSchemeKladrBean
     typed.getSingleResult
   }
 
-  def getAllKladrRecordsWithFilter(page: Int, limit: Int, sortingField: String, sortingMethod: String, filter: Object): java.util.LinkedList[Object] = {
+  def getAllKladrRecordsWithFilter(page: Int, limit: Int, sorting: String, filter: ListDataFilter): java.util.LinkedList[Object] = {
 
-    var optional = false
-    var queryStr: QueryDataStructure = if (filter.isInstanceOf[DictionaryListRequestDataFilter]) {
-      if (filter.asInstanceOf[DictionaryListRequestDataFilter].level.compare("street") == 0) {
-        optional = true
+    val optional = if (filter.asInstanceOf[DictionaryListRequestDataFilter].level.compare("street") == 0) true else false
+    val queryStr = filter.toQueryStructure()
+
+    val query =
+      if (optional) {
+        StreetByFilterQuery.format("str.code, str.name, str.socr, str.index", "WHERE str.code LIKE '%%00'\n"+ queryStr.query, "ORDER BY str.name asc, str.socr asc, str.code asc")
+      } else {
+        KladrByFilterQuery.format("kl.code, kl.name, kl.socr, kl.index", queryStr.query, "ORDER BY kl.name asc, kl.socr asc, kl.code asc")
       }
-      filter.asInstanceOf[DictionaryListRequestDataFilter].toQueryStructure()
-    }
-    else {
-      new QueryDataStructure()
-    }
 
-    val sorting = "ORDER BY %s %s".format(sortingField, sortingMethod)
-
-    var query = ""
-    if (optional) {
-      query = StreetByFilterQuery.format("str.code, str.name, str.socr, str.index", "WHERE str.code LIKE '%%00'\n"+ queryStr.query, "ORDER BY str.name asc, str.socr asc, str.code asc")
-    } else {
-      query = KladrByFilterQuery.format("kl.code, kl.name, kl.socr, kl.index", queryStr.query, "ORDER BY kl.name asc, kl.socr asc, kl.code asc")
-    }
-
-    var typed = em.createQuery(query, classOf[Array[AnyRef]])
+    val typed = em.createQuery(query, classOf[Array[AnyRef]])
       .setMaxResults(limit)
       .setFirstResult(limit * page)
 

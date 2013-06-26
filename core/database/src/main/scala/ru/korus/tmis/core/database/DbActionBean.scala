@@ -12,9 +12,10 @@ import javax.ejb.{TransactionAttributeType, TransactionAttribute, EJB, Stateless
 import javax.interceptor.Interceptors
 import scala.collection.JavaConversions._
 import javax.persistence.{TypedQuery, PersistenceContext, EntityManager}
-import ru.korus.tmis.core.data.{AssessmentsListRequestDataFilter, AssessmentsListRequestData}
-import ru.korus.tmis.core.hl7db.DbUUIDBeanLocal
+import ru.korus.tmis.core.data.{QueryDataStructure, AssessmentsListRequestDataFilter, AssessmentsListRequestData}
+import ru.korus.tmis.core.pharmacy.DbUUIDBeanLocal
 import java.util
+import ru.korus.tmis.core.filter.ListDataFilter
 
 @Interceptors(Array(classOf[LoggingInterceptor]))
 @Stateless
@@ -117,22 +118,27 @@ class DbActionBean
       a.setModifyPerson(userData.user)
       a.setModifyDatetime(now)
 
-      val eventPerson = dbEventPerson.getLastEventPersonForEventId(eventId)
-      if (eventPerson != null) {
-        a.setAssigner(eventPerson.getPerson)
-      } else {
-        a.setAssigner(userData.user)
+      var eventPerson: EventPerson = null
+      if (userData.getUserRole.getCode.compareTo("admNurse") == 0 || userData.getUserRole.getCode.compareTo("strNurse") == 0) {
+        eventPerson = dbEventPerson.getLastEventPersonForEventId(eventId)
+        if (eventPerson != null) {
+          a.setAssigner(eventPerson.getPerson)
+        } else {
+          a.setAssigner(userData.user)
+        }
       }
-      a.setExecutor(userData.user)
+      else
+        a.setAssigner(userData.user)
     }
 
     a.setCreateDatetime(now)
     a.setModifyDatetime(now)
     a.setBegDate(now)
-    a.setEndDate(now)
+    //a.setEndDate(now)
 
     a.setEvent(e)
     a.setActionType(at)
+    a.setExecutor(at.getDefaultExecutor)
 
     a.setStatus(ActionStatus.STARTED.getCode)
     a.setUuid(dbUUIDBeanLocal.createUUID())
@@ -142,17 +148,22 @@ class DbActionBean
 
   def updateAction(id: Int, version: Int, userData: AuthData) = {
     val a = getActionById(id)
-
     val now = new Date
 
-    a.setModifyPerson(userData.user)
+    if (userData != null) {
+      a.setModifyPerson(userData.user)
+      var eventPerson: EventPerson = null
+      if (userData.getUserRole.getCode.compareTo("admNurse") == 0 || userData.getUserRole.getCode.compareTo("strNurse") == 0) {
+        eventPerson = dbEventPerson.getLastEventPersonForEventId(a.getEvent.getId.intValue())
+        if (eventPerson != null) a.setAssigner(eventPerson.getPerson) else a.setAssigner(userData.user)
+      }
+      //a.setExecutor(userData.user)
+    }
+
     a.setModifyDatetime(now)
     a.setVersion(version)
-
-    a.setAssigner(userData.user)
-    a.setExecutor(userData.user)
     a.setBegDate(now)
-    a.setEndDate(now)
+    //a.setEndDate(now)
 
     a
   }
@@ -210,27 +221,28 @@ class DbActionBean
     result.iterator().next()
   }
 
-  def getActionsByEventIdWithFilter(eventId: Int, userData: AuthData, requestData: AssessmentsListRequestData) = {
+  def getActionsWithFilter(limit: Int,
+                           page: Int,
+                           sorting: String,
+                           filter: ListDataFilter,
+                           records: (java.lang.Long) => java.lang.Boolean,
+                           userData: AuthData) = {
 
-    val queryStr = requestData.filter.asInstanceOf[AssessmentsListRequestDataFilter].toQueryStructure()
+    val queryStr: QueryDataStructure = filter.toQueryStructure()
 
-    var typed = getCountRecordsOrPagesQuery(ActionsForSwitchPatientByEventQuery, queryStr.query)
-      .setParameter("eventId", eventId)
+    if (records != null) {
+      val countTyped = em.createQuery(ActionsForSwitchPatientByEventQuery.format("count(a)", queryStr.query, ""), classOf[Long])
+      if (queryStr.data.size() > 0)
+        queryStr.data.foreach(qdp => countTyped.setParameter(qdp.name, qdp.value))
+      records(countTyped.getSingleResult)
+    }
 
-    val sorting = "ORDER BY %s %s".format(requestData.sortingFieldInternal, requestData.sortingMethod)
-    var typed2 = em.createQuery(ActionsForSwitchPatientByEventQuery.format("a", queryStr.query, sorting), classOf[Action])
-      .setMaxResults(requestData.limit)
-      .setFirstResult(requestData.limit * (requestData.page - 1))
-      .setParameter("eventId", eventId)
+    val typed = em.createQuery(ActionsForSwitchPatientByEventQuery.format("a", queryStr.query, sorting), classOf[Action])
+      .setMaxResults(limit)
+      .setFirstResult(limit * page)
+    queryStr.data.foreach(qdp => typed.setParameter(qdp.name, qdp.value))
 
-    queryStr.data.foreach(qdp => {
-      //проставляем динамическую фильтрацию
-      typed.setParameter(qdp.name, qdp.value)
-      typed2.setParameter(qdp.name, qdp.value)
-    })
-    requestData.setRecordsCount(typed.getSingleResult)
-    val result = typed2.getResultList
-
+    val result = typed.getResultList
     result.foreach(a => em.detach(a))
     result
   }
@@ -374,10 +386,8 @@ class DbActionBean
     FROM
       Action a
     WHERE
-      a.event.id = :eventId
-    AND
       a.event.deleted = 0
-      %s
+    %s
     AND
       a.deleted = 0
     %s
@@ -427,7 +437,7 @@ class DbActionBean
     et
   }
 
-  def createAction(actionType: ActionType, event: Event, person: Staff, date: Date, hospitalUidFrom: String): Action = {
+  def createAction(actionType: ActionType, event: Event, person: Staff, date: Date, hospitalUidFrom: String, note: String): Action = {
     val now = new Date
     var newAction = new Action()
     //Инициализируем структуру Event
@@ -438,14 +448,18 @@ class DbActionBean
       newAction.setActionType(actionType);
       newAction.setModifyDatetime(now);
       newAction.setEvent(event);
-      newAction.setNote("");
+      newAction.setNote(note);
       newAction.setBegDate(date);
-      newAction.setEndDate(date);
+      newAction.setEndDate(now);
+      newAction.setDirectionDate(date)
       newAction.setDeleted(false);
       newAction.setPayStatus(0);
       newAction.setExecutor(person)
       newAction.setAssigner(person)
       newAction.setUuid(dbUUIDBeanLocal.createUUID());
+      if (!hospitalUidFrom.isEmpty) {
+        newAction.setHospitalUidFrom(hospitalUidFrom);
+      }
       //1. Инсертим
       em.persist(newAction);
     }

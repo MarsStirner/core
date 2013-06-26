@@ -35,7 +35,7 @@ import org.slf4j.LoggerFactory;
 public class GetTimeWorkAndStatusParameters implements org.apache.thrift.TBase<GetTimeWorkAndStatusParameters, GetTimeWorkAndStatusParameters._Fields>, java.io.Serializable, Cloneable {
     private static final org.apache.thrift.protocol.TStruct STRUCT_DESC = new org.apache.thrift.protocol.TStruct("GetTimeWorkAndStatusParameters");
 
-    private static final org.apache.thrift.protocol.TField HOSPITAL_UID_FROM_FIELD_DESC = new org.apache.thrift.protocol.TField("hospitalUidFrom", org.apache.thrift.protocol.TType.I32, (short) 1);
+    private static final org.apache.thrift.protocol.TField HOSPITAL_UID_FROM_FIELD_DESC = new org.apache.thrift.protocol.TField("hospitalUidFrom", org.apache.thrift.protocol.TType.STRING, (short) 1);
     private static final org.apache.thrift.protocol.TField PERSON_ID_FIELD_DESC = new org.apache.thrift.protocol.TField("personId", org.apache.thrift.protocol.TType.I32, (short) 2);
     private static final org.apache.thrift.protocol.TField DATE_FIELD_DESC = new org.apache.thrift.protocol.TField("date", org.apache.thrift.protocol.TType.I64, (short) 3);
 
@@ -46,7 +46,7 @@ public class GetTimeWorkAndStatusParameters implements org.apache.thrift.TBase<G
         schemes.put(TupleScheme.class, new GetTimeWorkAndStatusParametersTupleSchemeFactory());
     }
 
-    public int hospitalUidFrom; // optional
+    public String hospitalUidFrom; // optional
     public int personId; // required
     public long date; // optional
 
@@ -117,9 +117,8 @@ public class GetTimeWorkAndStatusParameters implements org.apache.thrift.TBase<G
     }
 
     // isset id assignments
-    private static final int __HOSPITALUIDFROM_ISSET_ID = 0;
-    private static final int __PERSONID_ISSET_ID = 1;
-    private static final int __DATE_ISSET_ID = 2;
+    private static final int __PERSONID_ISSET_ID = 0;
+    private static final int __DATE_ISSET_ID = 1;
     private byte __isset_bitfield = 0;
     private _Fields optionals[] = {_Fields.HOSPITAL_UID_FROM, _Fields.DATE};
     public static final Map<_Fields, org.apache.thrift.meta_data.FieldMetaData> metaDataMap;
@@ -127,7 +126,7 @@ public class GetTimeWorkAndStatusParameters implements org.apache.thrift.TBase<G
     static {
         Map<_Fields, org.apache.thrift.meta_data.FieldMetaData> tmpMap = new EnumMap<_Fields, org.apache.thrift.meta_data.FieldMetaData>(_Fields.class);
         tmpMap.put(_Fields.HOSPITAL_UID_FROM, new org.apache.thrift.meta_data.FieldMetaData("hospitalUidFrom", org.apache.thrift.TFieldRequirementType.OPTIONAL,
-                new org.apache.thrift.meta_data.FieldValueMetaData(org.apache.thrift.protocol.TType.I32)));
+                new org.apache.thrift.meta_data.FieldValueMetaData(org.apache.thrift.protocol.TType.STRING)));
         tmpMap.put(_Fields.PERSON_ID, new org.apache.thrift.meta_data.FieldMetaData("personId", org.apache.thrift.TFieldRequirementType.REQUIRED,
                 new org.apache.thrift.meta_data.FieldValueMetaData(org.apache.thrift.protocol.TType.I32)));
         tmpMap.put(_Fields.DATE, new org.apache.thrift.meta_data.FieldMetaData("date", org.apache.thrift.TFieldRequirementType.OPTIONAL,
@@ -151,7 +150,9 @@ public class GetTimeWorkAndStatusParameters implements org.apache.thrift.TBase<G
      */
     public GetTimeWorkAndStatusParameters(GetTimeWorkAndStatusParameters other) {
         __isset_bitfield = other.__isset_bitfield;
-        this.hospitalUidFrom = other.hospitalUidFrom;
+        if (other.isSetHospitalUidFrom()) {
+            this.hospitalUidFrom = other.hospitalUidFrom;
+        }
         this.personId = other.personId;
         this.date = other.date;
     }
@@ -162,37 +163,37 @@ public class GetTimeWorkAndStatusParameters implements org.apache.thrift.TBase<G
 
     @Override
     public void clear() {
-        setHospitalUidFromIsSet(false);
-        this.hospitalUidFrom = 0;
+        this.hospitalUidFrom = null;
         setPersonIdIsSet(false);
         this.personId = 0;
         setDateIsSet(false);
         this.date = 0;
     }
 
-    public int getHospitalUidFrom() {
+    public String getHospitalUidFrom() {
         return this.hospitalUidFrom;
     }
 
-    public GetTimeWorkAndStatusParameters setHospitalUidFrom(int hospitalUidFrom) {
+    public GetTimeWorkAndStatusParameters setHospitalUidFrom(String hospitalUidFrom) {
         this.hospitalUidFrom = hospitalUidFrom;
-        setHospitalUidFromIsSet(true);
         return this;
     }
 
     public void unsetHospitalUidFrom() {
-        __isset_bitfield = EncodingUtils.clearBit(__isset_bitfield, __HOSPITALUIDFROM_ISSET_ID);
+        this.hospitalUidFrom = null;
     }
 
     /**
      * Returns true if field hospitalUidFrom is set (has been assigned a value) and false otherwise
      */
     public boolean isSetHospitalUidFrom() {
-        return EncodingUtils.testBit(__isset_bitfield, __HOSPITALUIDFROM_ISSET_ID);
+        return this.hospitalUidFrom != null;
     }
 
     public void setHospitalUidFromIsSet(boolean value) {
-        __isset_bitfield = EncodingUtils.setBit(__isset_bitfield, __HOSPITALUIDFROM_ISSET_ID, value);
+        if (!value) {
+            this.hospitalUidFrom = null;
+        }
     }
 
     public int getPersonId() {
@@ -251,7 +252,7 @@ public class GetTimeWorkAndStatusParameters implements org.apache.thrift.TBase<G
                 if (value == null) {
                     unsetHospitalUidFrom();
                 } else {
-                    setHospitalUidFrom((Integer) value);
+                    setHospitalUidFrom((String) value);
                 }
                 break;
 
@@ -277,7 +278,7 @@ public class GetTimeWorkAndStatusParameters implements org.apache.thrift.TBase<G
     public Object getFieldValue(_Fields field) {
         switch (field) {
             case HOSPITAL_UID_FROM:
-                return Integer.valueOf(getHospitalUidFrom());
+                return getHospitalUidFrom();
 
             case PERSON_ID:
                 return Integer.valueOf(getPersonId());
@@ -326,7 +327,7 @@ public class GetTimeWorkAndStatusParameters implements org.apache.thrift.TBase<G
         if (this_present_hospitalUidFrom || that_present_hospitalUidFrom) {
             if (!(this_present_hospitalUidFrom && that_present_hospitalUidFrom))
                 return false;
-            if (this.hospitalUidFrom != that.hospitalUidFrom)
+            if (!this.hospitalUidFrom.equals(that.hospitalUidFrom))
                 return false;
         }
 
@@ -416,7 +417,11 @@ public class GetTimeWorkAndStatusParameters implements org.apache.thrift.TBase<G
 
         if (isSetHospitalUidFrom()) {
             sb.append("hospitalUidFrom:");
-            sb.append(this.hospitalUidFrom);
+            if (this.hospitalUidFrom == null) {
+                sb.append("null");
+            } else {
+                sb.append(this.hospitalUidFrom);
+            }
             first = false;
         }
         if (!first) sb.append(", ");
@@ -475,8 +480,8 @@ public class GetTimeWorkAndStatusParameters implements org.apache.thrift.TBase<G
                 }
                 switch (schemeField.id) {
                     case 1: // HOSPITAL_UID_FROM
-                        if (schemeField.type == org.apache.thrift.protocol.TType.I32) {
-                            struct.hospitalUidFrom = iprot.readI32();
+                        if (schemeField.type == org.apache.thrift.protocol.TType.STRING) {
+                            struct.hospitalUidFrom = iprot.readString();
                             struct.setHospitalUidFromIsSet(true);
                         } else {
                             org.apache.thrift.protocol.TProtocolUtil.skip(iprot, schemeField.type);
@@ -516,10 +521,12 @@ public class GetTimeWorkAndStatusParameters implements org.apache.thrift.TBase<G
             struct.validate();
 
             oprot.writeStructBegin(STRUCT_DESC);
-            if (struct.isSetHospitalUidFrom()) {
-                oprot.writeFieldBegin(HOSPITAL_UID_FROM_FIELD_DESC);
-                oprot.writeI32(struct.hospitalUidFrom);
-                oprot.writeFieldEnd();
+            if (struct.hospitalUidFrom != null) {
+                if (struct.isSetHospitalUidFrom()) {
+                    oprot.writeFieldBegin(HOSPITAL_UID_FROM_FIELD_DESC);
+                    oprot.writeString(struct.hospitalUidFrom);
+                    oprot.writeFieldEnd();
+                }
             }
             oprot.writeFieldBegin(PERSON_ID_FIELD_DESC);
             oprot.writeI32(struct.personId);
@@ -556,7 +563,7 @@ public class GetTimeWorkAndStatusParameters implements org.apache.thrift.TBase<G
             }
             oprot.writeBitSet(optionals, 2);
             if (struct.isSetHospitalUidFrom()) {
-                oprot.writeI32(struct.hospitalUidFrom);
+                oprot.writeString(struct.hospitalUidFrom);
             }
             if (struct.isSetDate()) {
                 oprot.writeI64(struct.date);
@@ -570,7 +577,7 @@ public class GetTimeWorkAndStatusParameters implements org.apache.thrift.TBase<G
             struct.setPersonIdIsSet(true);
             BitSet incoming = iprot.readBitSet(2);
             if (incoming.get(0)) {
-                struct.hospitalUidFrom = iprot.readI32();
+                struct.hospitalUidFrom = iprot.readString();
                 struct.setHospitalUidFromIsSet(true);
             }
             if (incoming.get(1)) {

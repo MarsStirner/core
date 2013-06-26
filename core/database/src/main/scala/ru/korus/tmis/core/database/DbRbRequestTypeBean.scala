@@ -8,6 +8,7 @@ import grizzled.slf4j.Logging
 import javax.persistence.{EntityManager, PersistenceContext}
 import ru.korus.tmis.core.data.{DictionaryListRequestDataFilter, QueryDataStructure}
 import scala.collection.JavaConversions._
+import ru.korus.tmis.core.filter.ListDataFilter
 
 /**
  * Методы для работы с таблицей s11r64.rbFinance.
@@ -23,12 +24,9 @@ class DbRbRequestTypeBean extends DbRbRequestTypeBeanLocal
   @PersistenceContext(unitName = "s11r64")
   var em: EntityManager = _
 
-  def getAllRbRequestTypesWithFilter(page: Int, limit: Int, sortingField: String, sortingMethod: String, filter: Object, records: (java.lang.Long) => java.lang.Boolean) = {
-    val queryStr: QueryDataStructure = if (filter.isInstanceOf[DictionaryListRequestDataFilter])
-      filter.asInstanceOf[DictionaryListRequestDataFilter].toQueryStructure()
-    else new QueryDataStructure()
+  def getAllRbRequestTypesWithFilter(page: Int, limit: Int, sorting: String, filter: ListDataFilter, records: (java.lang.Long) => java.lang.Boolean) = {
 
-    val sorting = "ORDER BY %s %s".format(sortingField, sortingMethod)
+    val queryStr = filter.toQueryStructure()
     if (queryStr.data.size() > 0) {
       if (queryStr.query.indexOf("AND ") == 0) {
         queryStr.query = "WHERE " + queryStr.query.substring("AND ".length())
@@ -37,9 +35,9 @@ class DbRbRequestTypeBean extends DbRbRequestTypeBeanLocal
 
     if (records!=null) records(em.createQuery(AllRbRequestTypesWithFilterQuery.format("count(r)", queryStr.query, ""), classOf[Long]).getSingleResult)//Перепишем количество записей для структуры
 
-    var typed = em.createQuery(AllRbRequestTypesWithFilterQuery.format("r.id, r.name, r.code", queryStr.query, sorting), classOf[Array[AnyRef]])
-      .setMaxResults(limit)
-      .setFirstResult(limit * page)
+    val typed = em.createQuery(AllRbRequestTypesWithFilterQuery.format("r.id, r.name, r.code", queryStr.query, sorting), classOf[Array[AnyRef]])
+                  .setMaxResults(limit)
+                  .setFirstResult(limit * page)
     if (queryStr.data.size() > 0) queryStr.data.foreach(qdp => typed.setParameter(qdp.name, qdp.value))
 
     val result = typed.getResultList

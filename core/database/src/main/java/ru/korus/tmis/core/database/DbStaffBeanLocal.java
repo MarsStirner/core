@@ -3,6 +3,8 @@ package ru.korus.tmis.core.database;
 import ru.korus.tmis.core.entity.model.Action;
 import ru.korus.tmis.core.entity.model.Staff;
 import ru.korus.tmis.core.exception.CoreException;
+import ru.korus.tmis.core.filter.ListDataFilter;
+import scala.Function1;
 
 import javax.ejb.Local;
 import java.util.Date;
@@ -32,10 +34,14 @@ public interface DbStaffBeanLocal {
     List<Staff> getAllPersons()
             throws CoreException;
 
-    List<Staff> getAllPersonsByRequest(int limit, int page, String sortField, String sortMethod, Object filter)
+    List<Staff> getAllPersonsByRequest(int limit,
+                                       int page,
+                                       String sorting,
+                                       ListDataFilter filter,
+                                       Function1<Long, Boolean> setRecCount)
             throws CoreException;
 
-    List<Staff> getEmptyPersonsByRequest(int limit, int page, String sortField, String sortMethod, Object filter)
+    List<Staff> getEmptyPersonsByRequest(int limit, int page, String sorting, ListDataFilter filter)
             throws CoreException;
 
     long getCountAllPersonsWithFilter(Object filter)
@@ -53,4 +59,5 @@ public interface DbStaffBeanLocal {
     Action getPersonActionsByDateAndType(int personId, Date date, String actionType)
             throws CoreException;
 
+    Staff getDoctorByClientAmbulatoryAction(Action queueAction);
 }

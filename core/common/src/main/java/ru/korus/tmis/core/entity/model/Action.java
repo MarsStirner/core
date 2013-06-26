@@ -153,6 +153,10 @@ public class Action
     @Column(name = "hospitalUidFrom")
     private String hospitalUidFrom = "";
 
+    @Basic(optional = true)
+    @Column(name = "pacientInQueueType")
+    private Short pacientInQueueType = 0;
+
     @Version
     @Basic(optional = false)
     @Column(name = "version")
@@ -164,9 +168,9 @@ public class Action
             inverseJoinColumns = {@JoinColumn(name = "tissue_id")})
     private Set<Tissue> tissue = new LinkedHashSet<Tissue>();
 
-    @Basic(optional = false)
-    @Column(name = "toOrder")
-    private boolean toOrder = false;
+    //@Basic(optional = false)
+    //@Column(name = "toOrder")
+    //private boolean toOrder = false;
 
     @ManyToOne(cascade = CascadeType.ALL)
     @JoinColumn(name = "uuid_id")
@@ -349,13 +353,13 @@ public class Action
         this.isUrgent = isUrgent;
     }
 
-    public boolean getToOrder() {
+/*    public boolean getToOrder() {
         return toOrder;
     }
 
     public void setToOrder(boolean toOrder) {
         this.toOrder = toOrder;
-    }
+    }*/
 
     public Date getBegDate() {
         return begDate;
@@ -515,6 +519,14 @@ public class Action
 
     public void setHospitalUidFrom(String hospitalUidFrom) {
         this.hospitalUidFrom = hospitalUidFrom;
+    }
+
+    public Short getPacientInQueueType() {
+        return pacientInQueueType;
+    }
+
+    public void setPacientInQueueType(Short pacientInQueueType) {
+        this.pacientInQueueType = pacientInQueueType;
     }
 
     public UUID getUuid() {

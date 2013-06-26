@@ -1,4 +1,5 @@
 package ru.korus.tmis.ws.transfusion;
+
 /**
  * Author:      Sergey A. Zagrebelny <br>
  * Date:        30.01.2013, 13:32:25 <br>
@@ -7,15 +8,15 @@ package ru.korus.tmis.ws.transfusion;
  */
 
 /**
- * 
+ * Описание подразделений ЛПУ
  */
 public class DivisionInfo {
-    
+
     /**
-     * Идентификатор отделения в МИС 
+     * Идентификатор отделения в МИС
      */
     private Integer id;
-    
+
     /**
      * Наименование отделения
      */
@@ -29,9 +30,10 @@ public class DivisionInfo {
     }
 
     /**
-     * @param id the id to set
+     * @param id
+     *            the id to set
      */
-    public void setId(Integer id) {
+    public void setId(final Integer id) {
         this.id = id;
     }
 
@@ -42,21 +44,20 @@ public class DivisionInfo {
         return name;
     }
 
-
     /**
-     * @param name the name to set
+     * @param name
+     *            the name to set
      */
-    public void setName(String name) {
+    public void setName(final String name) {
         this.name = name;
     }
-
 
     /**
      * @see java.lang.Object#toString()
      */
     @Override
     public String toString() {
-        StringBuilder builder = new StringBuilder();
+        final StringBuilder builder = new StringBuilder();
         builder.append("DivisionsInfo [id=");
         builder.append(id);
         builder.append(", name=");

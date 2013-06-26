@@ -2,7 +2,6 @@ package ru.korus.tmis.core.entity.model;
 
 import java.io.Serializable;
 
-import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.JoinColumn;
 import javax.persistence.OneToOne;
@@ -18,7 +17,7 @@ public class APValueRbBloodComponentType extends AbstractAPValue implements Seri
 
     @OneToOne
     @JoinColumn(name = "value", insertable = false, updatable = false)
-    private RbBloodComponentType value;
+    private RbTrfuBloodComponentType value;
 
     public APValueRbBloodComponentType() {
     }
@@ -32,11 +31,11 @@ public class APValueRbBloodComponentType extends AbstractAPValue implements Seri
     }
 
     @Override
-    public RbBloodComponentType getValue() {
+    public RbTrfuBloodComponentType getValue() {
         return value;
     }
 
-    public void setValue(RbBloodComponentType value) {
+    public void setValue(RbTrfuBloodComponentType value) {
         this.value = value;
     }
 

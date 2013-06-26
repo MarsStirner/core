@@ -88,14 +88,17 @@ class PatientBean
   @EJB
   var dbStaff: DbStaffBeanLocal = _
 
-  @EJB
-  private var dbRbCoreActionPropertyBean: DbRbCoreActionPropertyBeanLocal = _
+  //@EJB
+  //private var dbRbCoreActionPropertyBean: DbRbCoreActionPropertyBeanLocal = _
 
   @EJB
   private var dbDiagnocticsBean: DbDiagnosticBeanLocal = _
 
   @EJB
   private var dbOrgStructureBean: DbOrgStructureBeanLocal = _
+
+  @EJB
+  var dbBloodHistoryBean: DbBloodHistoryBeanLocal= _
   //////////////////////////////////////////////////////////////////////////////
 
   def getCurrentPatientsForDoctor(userData: AuthData) = {
@@ -365,21 +368,15 @@ class PatientBean
 
     val eventsMap = customQuery.getActiveEventsForDepartmentAndDoctor(requestData.page-1,
                                                                       requestData.limit,
-                                                                      requestData.sortingFieldInternal,
+                                                                      requestData.sortingField,
                                                                       requestData.sortingMethod,
                                                                       requestData.filter,
                                                                       requestData.rewriteRecordsCount _)
 
-    var conditionsInfo = new java.util.HashMap[Event, java.util.Map[ActionProperty, java.util.List[APValue]]]
+    var conditionsInfo: java.util.LinkedHashMap[java.lang.Integer, java.util.LinkedHashMap[ActionProperty, java.util.List[APValue]]]
+      = new java.util.LinkedHashMap[java.lang.Integer, java.util.LinkedHashMap[ActionProperty, java.util.List[APValue]]]
     if(role == 25) {  //Для сестры отделения только
-      val conditions = customQuery.getLastAssessmentByEvents(eventsMap.keySet().toList)   //Последний экшн осмотра
-      conditions.foreach(
-        c => {
-          //val apList = dbActionProperty.getActionPropertiesByActionIdAndTypeNames(c._2.getId.intValue,List("Состояние", "ЧСС", "АД нижн.","АД верхн."))
-          val apList = dbActionProperty.getActionPropertiesByActionIdAndTypeCodes(c._2.getId.intValue,List("STATE", "PULS", "BPRAS","BPRAD"))
-          conditionsInfo.put(c._1, apList)
-        }
-      )
+      conditionsInfo = dbActionProperty.getActionPropertiesByEventIdsAndActionPropertyTypeCodes(eventsMap.map(p=> p._1.getEvent.getId).toList, asJavaSet(Set("STATE", "PULS", "BPRAS","BPRAD")),1)
       mapper.getSerializationConfig().setSerializationView(classOf[PatientsListDataViews.NurseView])
     }
     else mapper.getSerializationConfig().setSerializationView(classOf[PatientsListDataViews.AttendingDoctorView])
@@ -389,8 +386,7 @@ class PatientBean
                                                    role,
                                                    conditionsInfo,
                                                    dbOrgStructureBean.getOrgStructureById _,
-                                                   dbActionProperty.getActionPropertiesByActionIdAndRbCoreActionPropertyIds _,
-                                                   dbRbCoreActionPropertyBean.getRbCoreActionPropertiesByIds _,
+                                                   dbActionProperty.getActionPropertiesByActionIdAndActionPropertyTypeCodes _,
                                                    dbDiagnocticsBean.getDiagnosticsByEventId _))
   }
 
@@ -399,92 +395,21 @@ class PatientBean
   }
 
   def getAllPatients(requestData: PatientRequestData) = {
-    //
-    //  TODO: разобрать контейнер перед вызовом:
-    //
-    //  patientCode — Код пациента
-    //  document    — Фильтр по любому документу
-    //  fullName    — ФИО
-    //  birthDate   — Дата рождения (кстати, как передавать будем?)
-
-    // Если заполнен документ или код - ищем только по одному из них (по коду, думаю.
-    // то есть по всей видимости есть приоритеты:
-
-    val limit = requestData.limit match {
-      case null => {0}
-      case _ => {requestData.limit.toInt}
-    }
-
-    val page = requestData.page match {
-      case null => {0}
-      case _ => {requestData.page.toInt-1} //c клиента приходит номер страницы начиная с 1
-    }
-
-    val sortField = requestData.sortingField match {
-      case null => {"id"}
-      case "middleName" => {"patrName"}
-      case "patientCode"=> {"id"}         //TODO: в бд нет поля "код пациента"
-      case _ => {requestData.sortingField}
-    }
-
-    val sortMethod = requestData.sortingMethod match {
-      case null => {"asc"}
-      case _ => {requestData.sortingMethod}
-    }
-
-    if (requestData.filter.patientCode != null)
-    {
-      dbPatient.getPatientsWithCode(
-        limit, page, sortField, sortMethod,
-        requestData.filter.patientCode.toInt,
-        requestData)
-    }
-    else if (requestData.filter.document != null)
-    {
-      dbPatient.getPatientsWithDocumentPattern(
-        limit, page, sortField, sortMethod,
-        requestData.filter.document,
-        requestData)
-    }
-    else if (requestData.filter.fullName != null && requestData.filter.birthDate == null)
-    {
-      dbPatient.getPatientsWithFullNamePattern(
-        limit, page, sortField, sortMethod,
-        requestData.filter.fullName,
-        requestData)
-    }
-    else if (requestData.filter.fullName == null && requestData.filter.birthDate != null)
-    {
-      dbPatient.getPatientsWithBirthDate(
-        limit, page, sortField, sortMethod,
-        requestData.filter.birthDate,
-        requestData)
-    }
-    else if (requestData.filter.fullName != null && requestData.filter.birthDate != null)
-    {
-      dbPatient.getPatientsWithBirthDateAndFullNamePattern(
-        limit, page, sortField, sortMethod,
-        requestData.filter.birthDate,
-        requestData.filter.fullName,
-        requestData)
-    }
-    else
-    {
-      dbPatient.getAllPatients(
-        limit, page, sortField, sortMethod,
-        requestData
-      )
-    }
+      dbPatient.getAllPatients( requestData.page-1,
+                                requestData.limit,
+                                requestData.sortingFieldInternal,
+                                requestData.filter.unwrap(),
+                                requestData.rewriteRecordsCount _)
   }
 
-  def savePatient(patientEntry: PatientEntry, userData: AuthData) : PatientEntry = {
+  def savePatient(id: Int, patientEntry: PatientEntry, userData: AuthData) : PatientEntry = {
     val usver = dbStaff.getStaffById(userData.doctor.id)
     var lockId: Int = -1
     var oldPatient : Patient = null
     var patientVersion : Int = 0
-    if (patientEntry.getId() > 0) {
+    if (id > 0) {
       patientVersion = patientEntry.getVersion()
-      oldPatient = Patient.clone(dbPatient.getPatientById(patientEntry.getId()))
+      oldPatient = Patient.clone(dbPatient.getPatientById(id))
       lockId = appLock.acquireLock("Client", oldPatient.getId.intValue(), oldPatient.getId.intValue(), userData)//oldAction.getIdx
     }
     var patient : Patient = null
@@ -508,7 +433,7 @@ class PatientBean
       }
 
       patient = dbPatient.insertOrUpdatePatient(
-        patientEntry.getId(),
+        id,
         patientEntry.getName().getFirst(),
         patientEntry.getName().getMiddle(),
         patientEntry.getName().getLast(),
@@ -1130,5 +1055,51 @@ class PatientBean
 
   def checkPolicyNumber(number: String, serial: String, typeId: Int) = {
     dbClientPolicy.checkPolicyNumber(number: String, serial: String, typeId: Int)
+  }
+
+  def deletePatientInfo(id: Int) = dbPatient.deletePatient(id)
+
+  def getBloodHistory(id: Int) = new BloodHistoryListData(dbBloodHistoryBean.getBloodHistoryByPatient(id))
+
+  def insertBloodTypeForPatient(id: Int, data: BloodHistoryData, authData: AuthData) = {
+
+    var bloodTypeId:Int = -1
+    val now = new Date()
+    var bloodDate:Date = now
+    var lockId: Int = -1
+    var oldPatient : Patient = null
+    var version : Int = 0
+
+    if(data!=null && data.getData!=null) {
+      if(data.getData.getBloodType!=null)
+        bloodTypeId = data.getData.getBloodType.getId
+      if(data.getData.getBloodDate!=null)
+        bloodDate = data.getData.getBloodDate
+    }
+     //Создаем запись в BloodHistory
+    val bloodhistory = dbBloodHistoryBean.createBloodHistoryRecord(id, bloodTypeId, bloodDate, authData)
+    dbManager.persist(bloodhistory)
+
+    val patient = this.getPatientById(id)
+
+    version = patient.getVersion()
+    oldPatient = Patient.clone(patient)
+    lockId = appLock.acquireLock("Client", oldPatient.getId.intValue(), oldPatient.getId.intValue(), authData)
+    try {
+      patient.setVersion(version)
+      patient.setModifyPerson(authData.getUser)
+      patient.setModifyDatetime(now)
+      patient.setBloodDate(bloodDate)
+      patient.setBloodType(bloodhistory.getBloodType)
+
+      dbManager.merge(patient)
+
+      new BloodHistoryData(bloodhistory)
+    }
+    finally {
+      if (lockId > 0) {
+        appLock.releaseLock(lockId)
+      }
+    }
   }
 }

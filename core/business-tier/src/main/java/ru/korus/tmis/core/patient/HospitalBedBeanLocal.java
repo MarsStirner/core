@@ -2,11 +2,10 @@ package ru.korus.tmis.core.patient;
 
 import ru.korus.tmis.core.auth.AuthData;
 import ru.korus.tmis.core.data.HospitalBedData;
-import ru.korus.tmis.core.entity.model.APValue;
-import ru.korus.tmis.core.entity.model.Action;
-import ru.korus.tmis.core.entity.model.ActionProperty;
-import ru.korus.tmis.core.entity.model.OrgStructureHospitalBed;
+import ru.korus.tmis.core.data.HospitalBedDataListFilter;
+import ru.korus.tmis.core.entity.model.*;
 import ru.korus.tmis.core.exception.CoreException;
+import ru.korus.tmis.core.filter.ListDataFilter;
 
 import javax.ejb.Local;
 
@@ -91,7 +90,7 @@ public interface HospitalBedBeanLocal {
      * @see HospitalBedData
      * @see AuthData
      */
-    HospitalBedData getMovingListByEventIdAndFilter(Object filter, AuthData authData) throws CoreException;
+    HospitalBedData getMovingListByEventIdAndFilter(HospitalBedDataListFilter filter, AuthData authData) throws CoreException;
 
     /**
      * Отказ от регистрации на койке
@@ -102,4 +101,30 @@ public interface HospitalBedBeanLocal {
      * @throws CoreException
      */
     boolean callOffHospitalBedForPatient(int actionId, AuthData authData) throws CoreException;
+
+    /**
+     * Запрос на последнее по ивенту действие типа Движение
+     * @param eventId Идентификатор ивента.
+     * @see AuthData
+     * @return
+     * @throws CoreException
+     */
+    Action getLastMovingActionForEventId(int eventId) throws CoreException;
+
+    /**
+     * Запрос на последнее по ивенту действие типа Движение
+     * @param eventId Идентификатор ивента.
+     * @see AuthData
+     * @return
+     * @throws CoreException
+     */
+    Action getLastCloseMovingActionForEventId(int eventId) throws CoreException;
+
+    /**
+     * Получить отделение нахождения пациента
+     * @param movingId Идентификатор движения
+     * @return
+     * @throws CoreException
+     */
+    OrgStructure getCurrentDepartmentForAppeal(int movingId)  throws CoreException;
 }

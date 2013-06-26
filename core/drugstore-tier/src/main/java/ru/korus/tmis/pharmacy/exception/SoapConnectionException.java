@@ -1,11 +1,10 @@
 package ru.korus.tmis.pharmacy.exception;
 
 /**
- * Created with IntelliJ IDEA.
- * User: nde
- * Date: 12.12.12
- * Time: 9:01
- * To change this template use File | Settings | File Templates.
+ * Author:      Dmitriy E. Nosov <br>
+ * Date:        12.12.12, 9:01 <br>
+ * Company:     Korus Consulting IT<br>
+ * Description:  <br>
  */
 public class SoapConnectionException extends Exception {
 

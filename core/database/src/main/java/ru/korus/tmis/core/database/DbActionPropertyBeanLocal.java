@@ -5,6 +5,7 @@ import ru.korus.tmis.core.entity.model.*;
 import ru.korus.tmis.core.exception.CoreException;
 
 import javax.ejb.Local;
+import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
@@ -43,6 +44,10 @@ public interface DbActionPropertyBeanLocal {
     getActionPropertiesByActionIdAndRbCoreActionPropertyIds(int actionId, List<Integer> coreIds)
             throws CoreException;
 
+    Map<ActionProperty, List<APValue>>
+    getActionPropertiesByActionIdAndActionPropertyTypeCodes(int actionId, Set<String> codes)
+            throws CoreException;
+
     /**
      * Возвращает список свойств со значениями из последнего Action внутри выбранного Event по идентификаторам из таблицы rbCoreActionProperty
      *
@@ -58,6 +63,10 @@ public interface DbActionPropertyBeanLocal {
      */
     Map<ActionProperty, List<APValue>>
     getActionPropertiesForEventByActionTypes(int eventId, Set<Integer> atIds, Set<Integer> coreIds)
+            throws CoreException;
+
+    LinkedHashMap<Integer, LinkedHashMap<ActionProperty, List<APValue>>>
+    getActionPropertiesByEventIdsAndActionPropertyTypeCodes(java.util.List<Integer> eventId, java.util.Set<String> codes, int countInGroup)
             throws CoreException;
 
     List<APValue>

@@ -8,8 +8,8 @@ import ru.korus.tmis.core.entity.model._
 import ru.korus.tmis.util.ConfigManager
 import org.codehaus.jackson.map.annotate.JsonView
 import collection.JavaConversions
+import collection.immutable.ListMap
 import java.util
-import java.text.SimpleDateFormat
 
 object PatientsListDataViews {
   class AttendingDoctorView {}
@@ -28,46 +28,68 @@ class PatientsListData {
   @BeanProperty
   var data: LinkedList[PatientsListEntry] = new LinkedList[PatientsListEntry]
 
-  def this(events: java.util.Map[Event, Action],
-           bedInfo: java.util.Map[Event, OrgStructureHospitalBed],
-           condInfo: java.util.Map[Event, java.util.Map[ActionProperty, java.util.List[APValue]]],
-           requestData: PatientsListRequestData) = {
-    this ()
-
-    events.foreach(e => {
-
-      val bed = bedInfo.containsKey(e._1) match {
-        case false => null
-        case bed => bedInfo.get(e._1)
-      }
-
-      val condition = condInfo.containsKey(e._1) match {
-        case false => null
-        case condition => {
-          condInfo.get(e._1)
-        }
-      }
-      this.data.add(new PatientsListEntry(e._1, bed, condition, null))
-    })
-    this.requestData = requestData
-  }
-
-  def this(events: java.util.Map[Event, Action],
+  def this(actions: java.util.Map[Action, java.util.Map[ActionProperty, java.util.List[APValue]]],
            requestData: PatientsListRequestData,
            roleId: Int,
-           condInfo: java.util.Map[Event, java.util.Map[ActionProperty, java.util.List[APValue]]],
+           condInfo: java.util.LinkedHashMap[java.lang.Integer, java.util.LinkedHashMap[ActionProperty, java.util.List[APValue]]],
            mAdmissionDepartment: (Int) => OrgStructure,
-           mActionPropertiesWithValues: (Int, java.util.List[java.lang.Integer]) =>  java.util.Map[ActionProperty, java.util.List[APValue]],
-           mCorrList: (java.util.List[java.lang.Integer])=> java.util.List[RbCoreActionProperty],
+           mActionPropertiesWithValues: (Int, java.util.Set[String]) =>  java.util.Map[ActionProperty, java.util.List[APValue]],
+           //mCorrList: (java.util.List[java.lang.Integer])=> java.util.List[RbCoreActionProperty],
            mDiagnostics: (Int) => java.util.List[Diagnostic]) = {
     this ()
     this.requestData = requestData
 
-    events.foreach(e => {
+    actions.foreach(e => {
 
-      val event = e._1
-      val action = e._2
+      val action = e._1
+      val event = action.getEvent
+
       var bed: OrgStructureHospitalBed = null
+      var from : OrgStructure = null
+      var toDep : OrgStructure = null
+
+      val value: Object = if (e._2!=null && e._2.size()>0) {
+        val apvs = e._2.iterator.next()
+        if (apvs._2!=null && apvs._2.size()>0){
+          apvs._2.get(0).getValue
+        } else null
+      } else null
+
+      if (value.isInstanceOf[OrgStructureHospitalBed]){
+        bed = value.asInstanceOf[OrgStructureHospitalBed]
+        //куда переведен
+        if (mActionPropertiesWithValues!=null) {
+          val codes = Set[String](ConfigManager.Messages("db.apt.moving.codes.orgStructTransfer"))
+          val apValues = mActionPropertiesWithValues(action.getId.intValue(), asJavaSet(codes))
+          if (apValues!=null && apValues.size()>0){
+            val depart = apValues.iterator.next()
+            if (depart._2!=null && depart._2.size()>0){
+              toDep = depart._2.get(0).asInstanceOf[APValueOrgStructure].getValue
+            }
+          }
+        }
+      } else if (value.isInstanceOf[OrgStructure]){
+        if (action.getActionType.getId.compareTo(ConfigManager.Messages("db.actionType.hospitalization.primary").toInt :java.lang.Integer)==0){
+          from = if (mAdmissionDepartment!=null ) mAdmissionDepartment(28) else null // Приемное отделение
+          bed = null
+        } else if (action.getActionType.getId.compareTo(ConfigManager.Messages("db.actionType.moving").toInt :java.lang.Integer)==0){
+          if (mActionPropertiesWithValues!=null) {
+            val codes = Set[String](ConfigManager.Messages("db.apt.moving.codes.hospitalBed"))
+            val apValues = mActionPropertiesWithValues(action.getId.intValue(), asJavaSet(codes))
+            if (apValues!=null && apValues.size()>0){
+              val bedvs = apValues.iterator.next()
+              if (bedvs._2!=null && bedvs._2.size()>0){
+                val bedVal = bedvs._2.get(0).getValue
+                if (bedVal.isInstanceOf[OrgStructureHospitalBed]){
+                  from = bedVal.asInstanceOf[OrgStructureHospitalBed].getMasterDepartment
+                  bed = null
+                }
+              }
+            }
+          }
+        }
+      }
+      /*var bed: OrgStructureHospitalBed = null
       var begDate: Date = null
       var from : OrgStructure = null
 
@@ -107,15 +129,15 @@ class PatientsListData {
             }
           })
         }
-      }
+      } */
       val condition = if (roleId == 25) {
         //Состояние пациента (только для роли сестра отделения)
-        condInfo.containsKey(event) match {
+        condInfo.containsKey(event.getId) match {
           case false => null
-          case condition => condInfo.get(event)
+          case condition => condInfo.get(event.getId)
         }
       } else null
-      this.data.add(new PatientsListEntry(event, bed, begDate, condition, from, mDiagnostics))
+      this.data.add(new PatientsListEntry(event, bed, action.getBegDate/*begDate*/, condition, from, toDep, mDiagnostics))
     })
   }
 
@@ -193,7 +215,7 @@ class PatientsListRequestData {
     this()
     this.filter = new PatientsListRequestDataFilter(departmentId, doctorId, roleId, endDate)
     this.sortingField = sortingField match {
-      case null => {"id"}
+      case null => {"bed"}
       case _ => {sortingField}
     }
     this.sortingMethod = sortingMethod match {
@@ -204,7 +226,7 @@ class PatientsListRequestData {
     this.page = if(page>1){page} else{1}
     this.coreVersion = ConfigManager.Messages("misCore.assembly.version")
 
-    this.sortingFieldInternal = this.filter.toSortingString(this.sortingField)
+    this.sortingFieldInternal = this.filter.toSortingString(this.sortingField, this.sortingMethod)
   }
 
   def rewriteRecordsCount(recordsCount: java.lang.Long) = {
@@ -243,7 +265,7 @@ class PatientsListRequestDataFilter {
       qs.add("departmentId", this.departmentId:java.lang.Integer)
     }
     if(this.doctorId>0 && roleId!=25){  //Для сестры отделения выводим всех пациентов
-      qs.query += ("AND e.executor.id = :doctorId\n")
+      qs.query += ("AND a.event.executor.id = :doctorId\n")
       qs.add("doctorId", this.doctorId:java.lang.Integer)
     }
     if(this.endDate!=null){
@@ -251,19 +273,22 @@ class PatientsListRequestDataFilter {
     }
     qs
   }
-  def toSortingString (sortingField: String) = {
-    val sortingFieldInternal = sortingField match {
-      case "createDatetime"| "start" | "begDate" => {"a.begDate"}
-      case "end" | "endDate" => {"e.execDate"}
-      case "doctor" => {"e.executor.lastName, e.executor.firstName, e.executor.patrName"}
-      case "department" => {"org.masterDepartment.name"}
-      case "bed" => {"org.name"}
-      case "number" => {"e.externalId"}
-      case "fullName" => {"e.patient.lastName, e.patient.firstName, e.patient.patrName"}
-      case "birthDate" => {"e.patient.birthDate"}
-      case _ => {"e.id"}
+  @Override
+  def toSortingString (sortingField: String, sortingMethod: String) = {
+    var sorting = sortingField.toLowerCase match {
+      case "createDatetime"| "start" | "begDate" => {"ap.action.begDate %s".format(sortingMethod)}
+      case "end" | "endDate" => {"ap.action.event.execDate %s".format(sortingMethod)}
+      case "doctor" => {"ap.action.event.executor.lastName %s, ap.action.event.executor.firstName %s, ap.action.event.executor.patrName %s".format(sortingMethod, sortingMethod, sortingMethod)}
+      //case "department" => {"org.masterDepartment.name %s".format(sortingMethod)}
+      //case "bed" => {"org.name %s".format(sortingMethod)}
+      //case "number" => "CAST(SUBSTRING(e.externalId, 1, 4) AS UNSIGNED) %s, CAST(SUBSTRING(e.externalId, 6) AS UNSIGNED) %s".format(sortingMethod,sortingMethod)//{"e.externalId %s".format(sortingMethod)}
+      case "fullname" => {"ap.action.event.patient.lastName %s, ap.action.event.patient.firstName %s, ap.action.event.patient.patrName %s".format(sortingMethod,sortingMethod,sortingMethod)}
+      case "birthdate" => {"ap.action.event.patient.birthDate %s".format(sortingMethod)}
+      case _ => {"ap.action.event.id %s".format(sortingMethod)}
     }
-    sortingFieldInternal
+    //sortingFieldInternal
+    sorting = "ORDER BY " + sorting.format(sortingMethod)
+    sorting
   }
 }
 
@@ -291,6 +316,9 @@ class PatientsListEntry {
 
   @BeanProperty
   var movingFrom: IdNameContainer = _    //Переведен из (Заполняется когда пациент не лежит на койке (т.е находится в процессе движения))
+
+  @BeanProperty
+  var movingTo: IdNameContainer = _    //Переведен в (Заполняется когда пациента перевели из текущего отделение в другое, но еще не положили там на койку (т.е находится в процессе движения))
 
   @BeanProperty
   var doctor: DoctorSpecsContainer = _   //Врач + Специальность + Отделение
@@ -321,7 +349,8 @@ class PatientsListEntry {
   def this(event: Event,
            bed: OrgStructureHospitalBed,
            condition: java.util.Map[ActionProperty, java.util.List[APValue]],
-           from: OrgStructure) {
+           from: OrgStructure,
+           toDep: OrgStructure) {
      this()
      val patient = event.getPatient
      this.id = event.getId.intValue()
@@ -332,19 +361,22 @@ class PatientsListEntry {
      this.createDateTime = event.getCreateDatetime
      this.checkOut = ""                               //TODO: "Выписка через" - расчетное поле, алгоритм не утвержден
      if(bed!=null)
-        this.hospitalBed = new HospitalBedContainer(bed)
+       this.hospitalBed = new HospitalBedContainer(bed)
      if(condition!=null)
-        this.condition = new PersonConditionContainer(condition)
+       this.condition = new PersonConditionContainer(condition)
      if(from!=null)
-        this.movingFrom = new IdNameContainer(from.getId.intValue(),from.getName)
+       this.movingFrom = new IdNameContainer(from.getId.intValue(),from.getName)
+     if(toDep!=null)
+       this.movingTo = new IdNameContainer(toDep.getId.intValue(),toDep.getName)
   }
 
   def this(event: Event,
            bed: OrgStructureHospitalBed,
            begDate: Date,
            condition: java.util.Map[ActionProperty, java.util.List[APValue]],
-           from: OrgStructure) {
-    this(event, bed, condition, from)
+           from: OrgStructure,
+           toDep: OrgStructure) {
+    this(event, bed, condition, from, toDep)
     val eType = event.getEventType
     if (eType.getFinance!=null)
       this.finance = new IdNameContainer(eType.getFinance.getId.intValue(), eType.getFinance.getName)
@@ -365,8 +397,9 @@ class PatientsListEntry {
            begDate: Date,
            condition: java.util.Map[ActionProperty, java.util.List[APValue]],
            from: OrgStructure,
+           toDep: OrgStructure,
            mDiagnostics: (Int)=> java.util.List[Diagnostic]) {
-    this(event, bed, begDate, condition, from)
+    this(event, bed, begDate, condition, from, toDep)
     if (mDiagnostics!=null){
        val diagnostics = mDiagnostics(event.getId.intValue())
        if (diagnostics!=null && diagnostics.size()>0) {
@@ -439,17 +472,17 @@ class PersonConditionContainer {
          case 0 => ""
          case size => c._2.get(0).getValueAsString
        }
-       c._1.getType.getName match {
-         case "Состояние" =>  {
+       c._1.getType.getCode match {
+         case "STATE" =>  {    //"Состояние"
            this.state = value
          }
-         case "ЧСС" =>  {
+         case "PULS" =>  {         //"ЧСС"
            this.breathingRate = value
          }
-         case "АД нижн." =>  {
+         case "BPRAS" =>  {    //"АД нижн."
            this.arterialBloodPressure.low = value
          }
-         case "АД верхн." =>  {
+         case "BPRAD" =>  {   //"АД верхн."
            this.arterialBloodPressure.high = value
          }
          case _ => {}

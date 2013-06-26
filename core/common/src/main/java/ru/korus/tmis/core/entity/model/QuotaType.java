@@ -36,11 +36,11 @@ public class QuotaType implements Serializable {
     @Basic(optional = false)
     @Column(name = "name")
     private String name;
-
+    /*
     @ManyToOne
     @JoinColumn(name = "MKB", referencedColumnName = "DiagID")
     private Mkb mkb;
-
+    */
     @Basic(optional = false)
     @Column(name = "class")
     private boolean quotaClass;
@@ -98,7 +98,7 @@ public class QuotaType implements Serializable {
     public void setName(String name) {
         this.name = name;
     }
-
+        /*
     public Mkb getMkb() {
         return mkb;
     }
@@ -106,7 +106,7 @@ public class QuotaType implements Serializable {
     public void setMkb(Mkb mkb) {
         this.mkb = mkb;
     }
-
+            */
     public boolean isQuotaClass() {
         return quotaClass;
     }

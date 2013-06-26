@@ -35,9 +35,10 @@ import org.slf4j.LoggerFactory;
 public class Speciality implements org.apache.thrift.TBase<Speciality, Speciality._Fields>, java.io.Serializable, Cloneable {
     private static final org.apache.thrift.protocol.TStruct STRUCT_DESC = new org.apache.thrift.protocol.TStruct("Speciality");
 
-    private static final org.apache.thrift.protocol.TField TICKETS_PER_MONTHS_FIELD_DESC = new org.apache.thrift.protocol.TField("ticketsPerMonths", org.apache.thrift.protocol.TType.I32, (short) 1);
-    private static final org.apache.thrift.protocol.TField TICKETS_AVAILABLE_FIELD_DESC = new org.apache.thrift.protocol.TField("ticketsAvailable", org.apache.thrift.protocol.TType.I32, (short) 2);
-    private static final org.apache.thrift.protocol.TField SPECIALITY_FIELD_DESC = new org.apache.thrift.protocol.TField("speciality", org.apache.thrift.protocol.TType.STRING, (short) 3);
+    private static final org.apache.thrift.protocol.TField ID_FIELD_DESC = new org.apache.thrift.protocol.TField("id", org.apache.thrift.protocol.TType.I32, (short) 1);
+    private static final org.apache.thrift.protocol.TField TICKETS_PER_MONTHS_FIELD_DESC = new org.apache.thrift.protocol.TField("ticketsPerMonths", org.apache.thrift.protocol.TType.I32, (short) 2);
+    private static final org.apache.thrift.protocol.TField TICKETS_AVAILABLE_FIELD_DESC = new org.apache.thrift.protocol.TField("ticketsAvailable", org.apache.thrift.protocol.TType.I32, (short) 3);
+    private static final org.apache.thrift.protocol.TField SPECIALITY_FIELD_DESC = new org.apache.thrift.protocol.TField("speciality", org.apache.thrift.protocol.TType.STRING, (short) 4);
 
     private static final Map<Class<? extends IScheme>, SchemeFactory> schemes = new HashMap<Class<? extends IScheme>, SchemeFactory>();
 
@@ -46,6 +47,7 @@ public class Speciality implements org.apache.thrift.TBase<Speciality, Specialit
         schemes.put(TupleScheme.class, new SpecialityTupleSchemeFactory());
     }
 
+    public int id; // required
     public int ticketsPerMonths; // optional
     public int ticketsAvailable; // optional
     public String speciality; // optional
@@ -54,9 +56,10 @@ public class Speciality implements org.apache.thrift.TBase<Speciality, Specialit
      * The set of fields this struct contains, along with convenience methods for finding and manipulating them.
      */
     public enum _Fields implements org.apache.thrift.TFieldIdEnum {
-        TICKETS_PER_MONTHS((short) 1, "ticketsPerMonths"),
-        TICKETS_AVAILABLE((short) 2, "ticketsAvailable"),
-        SPECIALITY((short) 3, "speciality");
+        ID((short) 1, "id"),
+        TICKETS_PER_MONTHS((short) 2, "ticketsPerMonths"),
+        TICKETS_AVAILABLE((short) 3, "ticketsAvailable"),
+        SPECIALITY((short) 4, "speciality");
 
         private static final Map<String, _Fields> byName = new HashMap<String, _Fields>();
 
@@ -71,11 +74,13 @@ public class Speciality implements org.apache.thrift.TBase<Speciality, Specialit
          */
         public static _Fields findByThriftId(int fieldId) {
             switch (fieldId) {
-                case 1: // TICKETS_PER_MONTHS
+                case 1: // ID
+                    return ID;
+                case 2: // TICKETS_PER_MONTHS
                     return TICKETS_PER_MONTHS;
-                case 2: // TICKETS_AVAILABLE
+                case 3: // TICKETS_AVAILABLE
                     return TICKETS_AVAILABLE;
-                case 3: // SPECIALITY
+                case 4: // SPECIALITY
                     return SPECIALITY;
                 default:
                     return null;
@@ -117,14 +122,17 @@ public class Speciality implements org.apache.thrift.TBase<Speciality, Specialit
     }
 
     // isset id assignments
-    private static final int __TICKETSPERMONTHS_ISSET_ID = 0;
-    private static final int __TICKETSAVAILABLE_ISSET_ID = 1;
+    private static final int __ID_ISSET_ID = 0;
+    private static final int __TICKETSPERMONTHS_ISSET_ID = 1;
+    private static final int __TICKETSAVAILABLE_ISSET_ID = 2;
     private byte __isset_bitfield = 0;
     private _Fields optionals[] = {_Fields.TICKETS_PER_MONTHS, _Fields.TICKETS_AVAILABLE, _Fields.SPECIALITY};
     public static final Map<_Fields, org.apache.thrift.meta_data.FieldMetaData> metaDataMap;
 
     static {
         Map<_Fields, org.apache.thrift.meta_data.FieldMetaData> tmpMap = new EnumMap<_Fields, org.apache.thrift.meta_data.FieldMetaData>(_Fields.class);
+        tmpMap.put(_Fields.ID, new org.apache.thrift.meta_data.FieldMetaData("id", org.apache.thrift.TFieldRequirementType.REQUIRED,
+                new org.apache.thrift.meta_data.FieldValueMetaData(org.apache.thrift.protocol.TType.I32)));
         tmpMap.put(_Fields.TICKETS_PER_MONTHS, new org.apache.thrift.meta_data.FieldMetaData("ticketsPerMonths", org.apache.thrift.TFieldRequirementType.OPTIONAL,
                 new org.apache.thrift.meta_data.FieldValueMetaData(org.apache.thrift.protocol.TType.I32)));
         tmpMap.put(_Fields.TICKETS_AVAILABLE, new org.apache.thrift.meta_data.FieldMetaData("ticketsAvailable", org.apache.thrift.TFieldRequirementType.OPTIONAL,
@@ -138,11 +146,19 @@ public class Speciality implements org.apache.thrift.TBase<Speciality, Specialit
     public Speciality() {
     }
 
+    public Speciality(
+            int id) {
+        this();
+        this.id = id;
+        setIdIsSet(true);
+    }
+
     /**
      * Performs a deep copy on <i>other</i>.
      */
     public Speciality(Speciality other) {
         __isset_bitfield = other.__isset_bitfield;
+        this.id = other.id;
         this.ticketsPerMonths = other.ticketsPerMonths;
         this.ticketsAvailable = other.ticketsAvailable;
         if (other.isSetSpeciality()) {
@@ -156,11 +172,38 @@ public class Speciality implements org.apache.thrift.TBase<Speciality, Specialit
 
     @Override
     public void clear() {
+        setIdIsSet(false);
+        this.id = 0;
         setTicketsPerMonthsIsSet(false);
         this.ticketsPerMonths = 0;
         setTicketsAvailableIsSet(false);
         this.ticketsAvailable = 0;
         this.speciality = null;
+    }
+
+    public int getId() {
+        return this.id;
+    }
+
+    public Speciality setId(int id) {
+        this.id = id;
+        setIdIsSet(true);
+        return this;
+    }
+
+    public void unsetId() {
+        __isset_bitfield = EncodingUtils.clearBit(__isset_bitfield, __ID_ISSET_ID);
+    }
+
+    /**
+     * Returns true if field id is set (has been assigned a value) and false otherwise
+     */
+    public boolean isSetId() {
+        return EncodingUtils.testBit(__isset_bitfield, __ID_ISSET_ID);
+    }
+
+    public void setIdIsSet(boolean value) {
+        __isset_bitfield = EncodingUtils.setBit(__isset_bitfield, __ID_ISSET_ID, value);
     }
 
     public int getTicketsPerMonths() {
@@ -241,6 +284,14 @@ public class Speciality implements org.apache.thrift.TBase<Speciality, Specialit
 
     public void setFieldValue(_Fields field, Object value) {
         switch (field) {
+            case ID:
+                if (value == null) {
+                    unsetId();
+                } else {
+                    setId((Integer) value);
+                }
+                break;
+
             case TICKETS_PER_MONTHS:
                 if (value == null) {
                     unsetTicketsPerMonths();
@@ -270,6 +321,9 @@ public class Speciality implements org.apache.thrift.TBase<Speciality, Specialit
 
     public Object getFieldValue(_Fields field) {
         switch (field) {
+            case ID:
+                return Integer.valueOf(getId());
+
             case TICKETS_PER_MONTHS:
                 return Integer.valueOf(getTicketsPerMonths());
 
@@ -292,6 +346,8 @@ public class Speciality implements org.apache.thrift.TBase<Speciality, Specialit
         }
 
         switch (field) {
+            case ID:
+                return isSetId();
             case TICKETS_PER_MONTHS:
                 return isSetTicketsPerMonths();
             case TICKETS_AVAILABLE:
@@ -314,6 +370,15 @@ public class Speciality implements org.apache.thrift.TBase<Speciality, Specialit
     public boolean equals(Speciality that) {
         if (that == null)
             return false;
+
+        boolean this_present_id = true;
+        boolean that_present_id = true;
+        if (this_present_id || that_present_id) {
+            if (!(this_present_id && that_present_id))
+                return false;
+            if (this.id != that.id)
+                return false;
+        }
 
         boolean this_present_ticketsPerMonths = true && this.isSetTicketsPerMonths();
         boolean that_present_ticketsPerMonths = true && that.isSetTicketsPerMonths();
@@ -358,6 +423,16 @@ public class Speciality implements org.apache.thrift.TBase<Speciality, Specialit
         int lastComparison = 0;
         Speciality typedOther = (Speciality) other;
 
+        lastComparison = Boolean.valueOf(isSetId()).compareTo(typedOther.isSetId());
+        if (lastComparison != 0) {
+            return lastComparison;
+        }
+        if (isSetId()) {
+            lastComparison = org.apache.thrift.TBaseHelper.compareTo(this.id, typedOther.id);
+            if (lastComparison != 0) {
+                return lastComparison;
+            }
+        }
         lastComparison = Boolean.valueOf(isSetTicketsPerMonths()).compareTo(typedOther.isSetTicketsPerMonths());
         if (lastComparison != 0) {
             return lastComparison;
@@ -408,7 +483,11 @@ public class Speciality implements org.apache.thrift.TBase<Speciality, Specialit
         StringBuilder sb = new StringBuilder("Speciality(");
         boolean first = true;
 
+        sb.append("id:");
+        sb.append(this.id);
+        first = false;
         if (isSetTicketsPerMonths()) {
+            if (!first) sb.append(", ");
             sb.append("ticketsPerMonths:");
             sb.append(this.ticketsPerMonths);
             first = false;
@@ -435,6 +514,7 @@ public class Speciality implements org.apache.thrift.TBase<Speciality, Specialit
 
     public void validate() throws org.apache.thrift.TException {
         // check for required fields
+        // alas, we cannot check 'id' because it's a primitive and you chose the non-beans generator.
         // check for sub-struct validity
     }
 
@@ -473,7 +553,15 @@ public class Speciality implements org.apache.thrift.TBase<Speciality, Specialit
                     break;
                 }
                 switch (schemeField.id) {
-                    case 1: // TICKETS_PER_MONTHS
+                    case 1: // ID
+                        if (schemeField.type == org.apache.thrift.protocol.TType.I32) {
+                            struct.id = iprot.readI32();
+                            struct.setIdIsSet(true);
+                        } else {
+                            org.apache.thrift.protocol.TProtocolUtil.skip(iprot, schemeField.type);
+                        }
+                        break;
+                    case 2: // TICKETS_PER_MONTHS
                         if (schemeField.type == org.apache.thrift.protocol.TType.I32) {
                             struct.ticketsPerMonths = iprot.readI32();
                             struct.setTicketsPerMonthsIsSet(true);
@@ -481,7 +569,7 @@ public class Speciality implements org.apache.thrift.TBase<Speciality, Specialit
                             org.apache.thrift.protocol.TProtocolUtil.skip(iprot, schemeField.type);
                         }
                         break;
-                    case 2: // TICKETS_AVAILABLE
+                    case 3: // TICKETS_AVAILABLE
                         if (schemeField.type == org.apache.thrift.protocol.TType.I32) {
                             struct.ticketsAvailable = iprot.readI32();
                             struct.setTicketsAvailableIsSet(true);
@@ -489,7 +577,7 @@ public class Speciality implements org.apache.thrift.TBase<Speciality, Specialit
                             org.apache.thrift.protocol.TProtocolUtil.skip(iprot, schemeField.type);
                         }
                         break;
-                    case 3: // SPECIALITY
+                    case 4: // SPECIALITY
                         if (schemeField.type == org.apache.thrift.protocol.TType.STRING) {
                             struct.speciality = iprot.readString();
                             struct.setSpecialityIsSet(true);
@@ -505,6 +593,9 @@ public class Speciality implements org.apache.thrift.TBase<Speciality, Specialit
             iprot.readStructEnd();
 
             // check for required fields of primitive type, which can't be checked in the validate method
+            if (!struct.isSetId()) {
+                throw new org.apache.thrift.protocol.TProtocolException("Required field 'id' was not found in serialized data! Struct: " + toString());
+            }
             struct.validate();
         }
 
@@ -512,6 +603,9 @@ public class Speciality implements org.apache.thrift.TBase<Speciality, Specialit
             struct.validate();
 
             oprot.writeStructBegin(STRUCT_DESC);
+            oprot.writeFieldBegin(ID_FIELD_DESC);
+            oprot.writeI32(struct.id);
+            oprot.writeFieldEnd();
             if (struct.isSetTicketsPerMonths()) {
                 oprot.writeFieldBegin(TICKETS_PER_MONTHS_FIELD_DESC);
                 oprot.writeI32(struct.ticketsPerMonths);
@@ -546,6 +640,7 @@ public class Speciality implements org.apache.thrift.TBase<Speciality, Specialit
         @Override
         public void write(org.apache.thrift.protocol.TProtocol prot, Speciality struct) throws org.apache.thrift.TException {
             TTupleProtocol oprot = (TTupleProtocol) prot;
+            oprot.writeI32(struct.id);
             BitSet optionals = new BitSet();
             if (struct.isSetTicketsPerMonths()) {
                 optionals.set(0);
@@ -571,6 +666,8 @@ public class Speciality implements org.apache.thrift.TBase<Speciality, Specialit
         @Override
         public void read(org.apache.thrift.protocol.TProtocol prot, Speciality struct) throws org.apache.thrift.TException {
             TTupleProtocol iprot = (TTupleProtocol) prot;
+            struct.id = iprot.readI32();
+            struct.setIdIsSet(true);
             BitSet incoming = iprot.readBitSet(3);
             if (incoming.get(0)) {
                 struct.ticketsPerMonths = iprot.readI32();

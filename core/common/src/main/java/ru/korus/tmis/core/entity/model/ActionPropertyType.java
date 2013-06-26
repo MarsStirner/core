@@ -1,18 +1,31 @@
 package ru.korus.tmis.core.entity.model;
 
-import ru.korus.tmis.util.PublicClonable;
-
 import java.io.Serializable;
-import javax.persistence.*;
+
+import javax.persistence.Basic;
+import javax.persistence.Column;
+import javax.persistence.Entity;
+import javax.persistence.GeneratedValue;
+import javax.persistence.GenerationType;
+import javax.persistence.Id;
+import javax.persistence.JoinColumn;
+import javax.persistence.Lob;
+import javax.persistence.ManyToOne;
+import javax.persistence.NamedQueries;
+import javax.persistence.NamedQuery;
+import javax.persistence.Table;
+import javax.persistence.Transient;
 import javax.xml.bind.annotation.XmlRootElement;
 import javax.xml.bind.annotation.XmlType;
+
+import ru.korus.tmis.util.PublicClonable;
 
 @Entity
 @Table(name = "ActionPropertyType", catalog = "", schema = "")
 @NamedQueries(
-        {
-                @NamedQuery(name = "ActionPropertyType.findAll", query = "SELECT a FROM ActionPropertyType a")
-        })
+{
+        @NamedQuery(name = "ActionPropertyType.findAll", query = "SELECT a FROM ActionPropertyType a")
+})
 @XmlType(name = "actionPropertyType")
 @XmlRootElement(name = "actionPropertyType")
 public class ActionPropertyType implements Serializable, PublicClonable<ActionPropertyType> {
@@ -86,6 +99,22 @@ public class ActionPropertyType implements Serializable, PublicClonable<ActionPr
     private String age;
 
     @Basic(optional = false)
+    @Column(name = "age_bu")
+    private int age_bu;
+
+    @Basic(optional = false)
+    @Column(name = "age_bc")
+    private int age_bc;
+
+    @Basic(optional = false)
+    @Column(name = "age_eu")
+    private int age_eu;
+
+    @Basic(optional = false)
+    @Column(name = "age_ec")
+    private int age_ec;
+
+    @Basic(optional = false)
     @Column(name = "penalty")
     private int penalty;
 
@@ -105,9 +134,47 @@ public class ActionPropertyType implements Serializable, PublicClonable<ActionPr
     @Column(name = "defaultEvaluation")
     private boolean defaultEvaluation;
 
-    ////////////////////////////////////////////////////////////////////////////
+    @Basic(optional = false)
+    @Column(name = "mandatory")
+    private boolean mandatory;
+
+    @Basic(optional = false)
+    @Column(name = "readOnly")
+    private boolean readOnly;
+
+    // //////////////////////////////////////////////////////////////////////////
     // Custom stuff
-    ////////////////////////////////////////////////////////////////////////////
+    // //////////////////////////////////////////////////////////////////////////
+
+    /**
+     * @return the mandatory
+     */
+    public boolean isMandatory() {
+        return mandatory;
+    }
+
+    /**
+     * @param mandatory
+     *            the mandatory to set
+     */
+    public void setMandatory(boolean mandatory) {
+        this.mandatory = mandatory;
+    }
+
+    /**
+     * @return the readOnly
+     */
+    public boolean isReadOnly() {
+        return readOnly;
+    }
+
+    /**
+     * @param readOnly
+     *            the readOnly to set
+     */
+    public void setReadOnly(boolean readOnly) {
+        this.readOnly = readOnly;
+    }
 
     @Transient
     public boolean isConstructor() {
@@ -119,9 +186,9 @@ public class ActionPropertyType implements Serializable, PublicClonable<ActionPr
         return isConstructor() ? valueDomain : null;
     }
 
-    ////////////////////////////////////////////////////////////////////////////
+    // //////////////////////////////////////////////////////////////////////////
     // End of custom stuff
-    ////////////////////////////////////////////////////////////////////////////
+    // //////////////////////////////////////////////////////////////////////////
 
     public ActionPropertyType() {
     }
@@ -230,7 +297,6 @@ public class ActionPropertyType implements Serializable, PublicClonable<ActionPr
         this.code = code;
     }
 
-
     public boolean getIsVector() {
         return isVector;
     }
@@ -261,6 +327,38 @@ public class ActionPropertyType implements Serializable, PublicClonable<ActionPr
 
     public void setAge(String age) {
         this.age = age;
+    }
+
+    public int getAge_bu() {
+        return age_bu;
+    }
+
+    public void setAge_bu(int age_bu) {
+        this.age_bu = age_bu;
+    }
+
+    public int getAge_bc() {
+        return age_bc;
+    }
+
+    public void setAge_bc(int age_bc) {
+        this.age_bc = age_bc;
+    }
+
+    public int getAge_eu() {
+        return age_eu;
+    }
+
+    public void setAge_eu(int age_eu) {
+        this.age_eu = age_eu;
+    }
+
+    public int getAge_ec() {
+        return age_ec;
+    }
+
+    public void setAge_ec(int age_ec) {
+        this.age_ec = age_ec;
     }
 
     public int getPenalty() {
@@ -327,7 +425,6 @@ public class ActionPropertyType implements Serializable, PublicClonable<ActionPr
     public String toString() {
         return "ru.korus.tmis.core.entity.model.ActionPropertyType[id=" + id + "]";
     }
-
 
     public ActionPropertyType clone() {
         ActionPropertyType that = new ActionPropertyType(id);

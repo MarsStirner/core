@@ -67,7 +67,7 @@ public interface TransfusionMedicalService {
     /**
      * 
      * @return
-     *     returns java.util.List<ru.korus.tmis.ws.transfusion.efive.ProcedureType>
+     *     returns java.dbutil.List<ru.korus.tmis.ws.transfusion.efive.ProcedureType>
      */
     @WebMethod(action = "urn:getProcedureTypes")
     @WebResult(targetNamespace = "")
@@ -79,7 +79,7 @@ public interface TransfusionMedicalService {
     /**
      * 
      * @return
-     *     returns java.util.List<ru.korus.tmis.ws.transfusion.efive.LaboratoryMeasureType>
+     *     returns java.dbutil.List<ru.korus.tmis.ws.transfusion.efive.LaboratoryMeasureType>
      */
     @WebMethod(action = "urn:getLaboratoryMeasureTypes")
     @WebResult(targetNamespace = "")
@@ -91,7 +91,7 @@ public interface TransfusionMedicalService {
     /**
      * 
      * @return
-     *     returns java.util.List<ru.korus.tmis.ws.transfusion.efive.ComponentType>
+     *     returns java.dbutil.List<ru.korus.tmis.ws.transfusion.efive.ComponentType>
      */
     @WebMethod(action = "urn:getComponentTypes")
     @WebResult(targetNamespace = "")

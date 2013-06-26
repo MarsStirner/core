@@ -1,19 +1,17 @@
 package ru.korus.tmis.core.database
 
-import ru.korus.tmis.core.logging.LoggingInterceptor
 import javax.interceptor.Interceptors
 import ru.korus.tmis.core.logging.LoggingInterceptor
 import grizzled.slf4j.Logging
-import javax.persistence.PersistenceContext._
 import javax.persistence.{EntityManager, PersistenceContext}
 import javax.annotation.PostConstruct
 import javax.ejb.{Schedule, TransactionManagementType, TransactionManagement, Startup, Singleton}
-import javax.ejb.Schedule._
 import ru.korus.tmis.core.entity.model.Setting
 import collection.mutable.Buffer
 
 import java.util.{List => JList}
 import ru.korus.tmis.util.I18nable
+import java.util
 
 @Startup
 @Interceptors(Array(classOf[LoggingInterceptor]))
@@ -35,8 +33,6 @@ with I18nable {
   def load_settings = {
     import ru.korus.tmis.util.ConfigManager._
     import collection.JavaConversions._
-
-
     val settings: Buffer[Setting] = tmis_core.createNamedQuery[Setting]("Setting.findAll", classOf[Setting]).getResultList.toBuffer
 
     settings.foreach {
@@ -48,8 +44,21 @@ with I18nable {
           info("Successfully changed setting")
         }
     }
-
-
   }
 
+  def getSettingByPath(path: String): Setting = {
+    val result: Setting = tmis_core.createQuery("SELECT s FROM Setting s WHERE s.path = :path", classOf[Setting]).setParameter("path", path).getSingleResult
+    if (result == null) {
+      new Setting
+    }
+    result
+  }
+
+  def getAllSettings: util.List[Setting] = {
+    val resultList: util.List[Setting] = tmis_core.createNamedQuery("Setting.findAll", classOf[Setting]).getResultList
+    if (resultList == null) {
+      new util.ArrayList(0)
+    }
+    resultList
+  }
 }

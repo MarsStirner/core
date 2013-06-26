@@ -6,6 +6,7 @@ import java.util.{LinkedList, Date}
 import scala.collection.JavaConversions._
 import ru.korus.tmis.util.ConfigManager
 import ru.korus.tmis.core.entity.model.{ActionStatus, Staff, Action}
+import ru.korus.tmis.core.filter.AbstractListDataFilter
 
 //Контейнер для списка диагностик
 @XmlType(name = "diagnosticsListData")
@@ -28,6 +29,12 @@ class DiagnosticsListData {
           actions.foreach(action => this.data.asInstanceOf[LinkedList[LaboratoryDiagnosticsListEntry]].add(new LaboratoryDiagnosticsListEntry(action)))
         }
       }
+      case "instrumental" => {
+        this.data = new LinkedList[InstrumentalDiagnosticsListEntry]
+        if (actions != null && actions.size > 0) {
+          actions.foreach(action => this.data.asInstanceOf[LinkedList[InstrumentalDiagnosticsListEntry]].add(new InstrumentalDiagnosticsListEntry(action)))
+        }
+      }
       case _ => {
         this.data = new LinkedList[DiagnosticsListEntry]
         if (actions != null && actions.size > 0) {
@@ -43,7 +50,7 @@ class DiagnosticsListData {
 class DiagnosticsListRequestData {
 
   @BeanProperty
-  var filter: AnyRef = _
+  var filter: AbstractListDataFilter = new DiagnosticsListRequestDataFilter()
   @BeanProperty
   var sortingField: String = _
   @BeanProperty
@@ -63,7 +70,7 @@ class DiagnosticsListRequestData {
            sortingMethod: String,
            limit: Int,
            page: Int,
-           filter: AnyRef) = {
+           filter: AbstractListDataFilter) = {
     this()
 
     this.filter = if (filter != null) {
@@ -79,12 +86,6 @@ class DiagnosticsListRequestData {
         sortingField
       }
     }
-    this.sortingFieldInternal =
-      if (filter.isInstanceOf[DiagnosticsListRequestDataFilter])
-        this.filter.asInstanceOf[DiagnosticsListRequestDataFilter].toSortingString(this.sortingField)
-      else
-        this.sortingField
-
     this.sortingMethod = sortingMethod match {
       case null => {
         "asc"
@@ -93,6 +94,13 @@ class DiagnosticsListRequestData {
         sortingMethod
       }
     }
+
+    this.sortingFieldInternal =
+      if (filter.isInstanceOf[DiagnosticsListRequestDataFilter])
+        this.filter.asInstanceOf[DiagnosticsListRequestDataFilter].toSortingString(this.sortingField, this.sortingMethod)
+      else
+        this.sortingField
+
     this.limit = if (limit > 0) {
       limit
     } else {
@@ -109,7 +117,7 @@ class DiagnosticsListRequestData {
 
 @XmlType(name = "diagnosticsListRequestDataFilter")
 @XmlRootElement(name = "diagnosticsListRequestDataFilter")
-class DiagnosticsListRequestDataFilter {
+class DiagnosticsListRequestDataFilter extends AbstractListDataFilter {
 
   //   =>Фильтрация по коду типа действия<=
   @BeanProperty
@@ -118,11 +126,14 @@ class DiagnosticsListRequestDataFilter {
   @BeanProperty
   var eventId: Int = _
 
-  @BeanProperty
+ /* @BeanProperty
   var diagnosticDate: Date = _
 
   @BeanProperty
-  var directionDate: Date = _
+  var directionDate: Date = _ */
+
+  @BeanProperty
+  var plannedEndDate: Date = _
 
   @BeanProperty
   var diagnosticName: String = _
@@ -149,8 +160,9 @@ class DiagnosticsListRequestDataFilter {
 
   def this(code_x: String,
            eventId: Int,
-           diagnosticDate: Long,
-           directionDate: Long,
+           //diagnosticDate: Long,
+           //directionDate: Long,
+           plannedEndDate: Long,
            diagnosticName: String,
            assignPersonId: Int,
            execPersonId: Int,
@@ -166,7 +178,8 @@ class DiagnosticsListRequestDataFilter {
       code_x
     }
     else {
-      diaType_x match {
+      diaType_x match {  //больше не ищем по коду
+          /*
         case "laboratory" => {
           "2_"
         }
@@ -175,23 +188,16 @@ class DiagnosticsListRequestDataFilter {
         }
         case "consultations" => {
           "1_3_"
-        }
+        }         */
         case _ => {
           ""
         }
       }
     }
     this.eventId = eventId
-    this.diagnosticDate = if (diagnosticDate == 0) {
-      null
-    } else {
-      new Date(diagnosticDate)
-    }
-    this.directionDate = if (directionDate == 0) {
-      null
-    } else {
-      new Date(directionDate)
-    }
+    //this.diagnosticDate = if (diagnosticDate == 0) null else new Date(diagnosticDate)
+    //this.directionDate = if (directionDate == 0) null else new Date(directionDate)
+    this.plannedEndDate = if (plannedEndDate == 0) null else new Date(plannedEndDate)
     this.diagnosticName = diagnosticName
     this.assignPersonId = assignPersonId
     this.execPersonId = execPersonId
@@ -201,6 +207,7 @@ class DiagnosticsListRequestDataFilter {
     this.mnemonic = mnemonic
   }
 
+  @Override
   def toQueryStructure() = {
     var qs = new QueryDataStructure()
     if (this.code != null && !this.code.isEmpty) {
@@ -211,13 +218,18 @@ class DiagnosticsListRequestDataFilter {
       qs.query += ("AND a.event.id = :eventId\n")
       qs.add("eventId", this.eventId: java.lang.Integer)
     }
-    if (this.diagnosticDate != null) {
+    /*if (this.diagnosticDate != null) {
       qs.query += "AND a.createDatetime = :diagnosticDate\n"
       qs.add("diagnosticDate", this.diagnosticDate)
     }
     if (this.directionDate != null) {
       qs.query += "AND a.directionDate= :directionDate\n"
       qs.add("directionDate", this.directionDate)
+    } */
+
+    if (this.plannedEndDate != null) {
+      qs.query += "AND a.plannedEndDate= :plannedEndDate\n"
+      qs.add("plannedEndDate", this.plannedEndDate)
     }
     if (this.diagnosticName != null && !this.diagnosticName.isEmpty) {
       qs.query += "AND upper(a.actionType.name) LIKE upper(:diagnosticName)\n"
@@ -250,36 +262,22 @@ class DiagnosticsListRequestDataFilter {
     qs
   }
 
-  def toSortingString(sortingField: String) = {
-    sortingField match {
-      case "directionDate" => {
-        "a.directionDate"
-      }
-      case "diagnosticDate" => {
-        "a.endDate"
-      }
-      case "diagnosticName" => {
-        "a.actionType.name"
-      }
-      case "execPerson" => {
-        "a.executor.lastName, a.executor.firstName, a.executor.patrName"
-      }
-      case "assignPerson" => {
-        "a.assigner.lastName, a.assigner.firstName, a.assigner.patrName"
-      }
-      case "office" => {
-        "a.office"
-      }
-      case "status" => {
-        "a.status"
-      }
-      case "cito" => {
-        "a.isUrgent"
-      }
-      case _ => {
-        "a.id"
-      }
+  @Override
+  def toSortingString (sortingField: String, sortingMethod: String) = {
+    var sorting = sortingField match {
+      case "plannedEndDate" => {"a.plannedEndDate %s".format(sortingMethod)}
+      //case "directionDate" => {"a.directionDate %s".format(sortingMethod)}
+      //case "diagnosticDate" => {"a.endDate %s".format(sortingMethod)}
+      case "diagnosticName" => {"a.actionType.name %s".format(sortingMethod)}
+      case "execPerson" => {"a.executor.lastName %s, a.executor.firstName %s, a.executor.patrName %s".format(sortingMethod, sortingMethod, sortingMethod)}
+      case "assignPerson" => {"a.assigner.lastName %s, a.assigner.firstName %s, a.assigner.patrName %s".format(sortingMethod, sortingMethod, sortingMethod)}
+      case "office" => {"a.office %s".format(sortingMethod)}
+      case "status" => {"a.status %s".format(sortingMethod)}
+      case "cito" => {"a.isUrgent %s".format(sortingMethod)}
+      case _ => {"a.id %s".format(sortingMethod)}
     }
+    sorting = "ORDER BY " + sorting
+    sorting
   }
 }
 
@@ -327,11 +325,14 @@ class LaboratoryDiagnosticsListEntry {
   @BeanProperty
   var id: Int = _ //Ид действия
 
-  @BeanProperty
-  var directionDate: Date = _ //Дата направления
+  //@BeanProperty
+  //var directionDate: Date = _ //Дата направления
+
+  //@BeanProperty
+  //var diagnosticDate: Date = _ //Дата диагностики   (выполнения)
 
   @BeanProperty
-  var diagnosticDate: Date = _ //Дата диагностики   (выполнения)
+  var plannedEndDate: Date = _ //Дата направления (Дата забора БМ)
 
   @BeanProperty
   var diagnosticName: IdNameContainer = _ //Направление лабораторных исследований
@@ -343,24 +344,82 @@ class LaboratoryDiagnosticsListEntry {
   var execPerson: DoctorContainer = new DoctorContainer() //Исполнивший Врач
 
   @BeanProperty
+  var createPerson: DoctorContainer = new DoctorContainer() //Создавший направление Врач
+
+  @BeanProperty
   var cito: Boolean = _ //Срочность исследования
 
   @BeanProperty
   var status: IdNameContainer = _ //Статус
 
-  @BeanProperty
-  var toOrder: Boolean = _ //Дозаказ
+  //@BeanProperty
+  //var toOrder: Boolean = _ //Дозаказ  (не используется)
 
   def this(action: Action) {
     this()
     this.id = action.getId.intValue()
-    this.diagnosticDate = action.getEndDate
-    this.directionDate = action.getBegDate //getDirectionDate
+    //this.diagnosticDate = action.getEndDate
+    //this.directionDate = action.getBegDate //getDirectionDate
+    this.plannedEndDate = action.getPlannedEndDate
     this.diagnosticName = new IdNameContainer(action.getActionType.getId.intValue, action.getActionType.getName)
     this.assignPerson = new DoctorContainer(action.getAssigner)
+    this.createPerson = new DoctorContainer(action.getCreatePerson)
     this.execPerson = new DoctorContainer(action.getExecutor)
     this.cito = action.getIsUrgent
     this.status = new IdNameContainer(action.getStatus, ActionStatus.fromShort(action.getStatus).getName)
-    this.toOrder = action.getToOrder
+    //this.toOrder = action.getToOrder
+  }
+}
+
+@XmlType(name = "instrumentalDiagnosticsListEntry")
+@XmlRootElement(name = "instrumentalDiagnosticsListEntry")
+class InstrumentalDiagnosticsListEntry {
+
+  @BeanProperty
+  var id: Int = _ //Ид действия
+
+  //@BeanProperty
+  //var directionDate: Date = _ //Дата направления
+
+  //@BeanProperty
+  //var diagnosticDate: Date = _ //Дата диагностики   (выполнения)
+
+  @BeanProperty
+  var plannedEndDate: Date = _ //Дата направления (Дата забора БМ)
+
+  @BeanProperty
+  var diagnosticName: IdNameContainer = _ //Направление лабораторных исследований
+
+  @BeanProperty
+  var assignPerson: DoctorContainer = new DoctorContainer() //Направивший Врач
+
+  @BeanProperty
+  var execPerson: DoctorContainer = new DoctorContainer() //Исполнивший Врач
+
+  @BeanProperty
+  var createPerson: DoctorContainer = new DoctorContainer() //Создавший направление Врач
+
+  @BeanProperty
+  var cito: Boolean = _ //Срочность исследования
+
+  @BeanProperty
+  var status: IdNameContainer = _ //Статус
+
+  //@BeanProperty
+  //var toOrder: Boolean = _ //Дозаказ  (не используется)
+
+  def this(action: Action) {
+    this()
+    this.id = action.getId.intValue()
+    //this.diagnosticDate = action.getEndDate
+    //this.directionDate = action.getBegDate //getDirectionDate
+    this.plannedEndDate = action.getPlannedEndDate
+    this.diagnosticName = new IdNameContainer(action.getActionType.getId.intValue, action.getActionType.getName)
+    this.assignPerson = new DoctorContainer(action.getAssigner)
+    this.execPerson = new DoctorContainer(action.getExecutor)
+    this.createPerson = new DoctorContainer(action.getCreatePerson)
+    this.cito = action.getIsUrgent
+    this.status = new IdNameContainer(action.getStatus, ActionStatus.fromShort(action.getStatus).getName)
+    //this.toOrder = action.getToOrder
   }
 }

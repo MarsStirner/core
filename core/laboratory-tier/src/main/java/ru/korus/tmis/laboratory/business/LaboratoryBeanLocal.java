@@ -1,5 +1,6 @@
 package ru.korus.tmis.laboratory.business;
 
+import ru.korus.tmis.core.entity.model.Action;
 import ru.korus.tmis.core.exception.CoreException;
 import ru.korus.tmis.laboratory.data.lis.accept.AnalysisResult;
 

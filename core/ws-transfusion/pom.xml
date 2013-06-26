@@ -16,12 +16,8 @@
         <relativePath>../</relativePath>
     </parent>
 
-	<!--<properties> <tmis-core-version>0.9.11-SNAPSHOT</tmis-core-version> 
-		<maven.test.skip>false</maven.test.skip> <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding> 
-		<jaxws.plugin.version>2.1</jaxws.plugin.version> </properties> -->
-
-	<build>
-		<plugins>
+    <build>
+        <plugins>
 
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
@@ -36,33 +32,40 @@
                         </manifest>
                     </archive>
                     <failOnMissingWebXml>false</failOnMissingWebXml>
+                    <attachClasses>true</attachClasses>
                 </configuration>
             </plugin>
 
         </plugins>
-	</build>
+    </build>
 
 
+    <dependencies>
+        <dependency>
+            <groupId>mysql</groupId>
+            <artifactId>mysql-connector-java</artifactId>
+            <version>5.1.6</version>
+        </dependency>
+        <dependency>
+            <groupId>junit</groupId>
+            <artifactId>junit</artifactId>
+            <version>4.11</version>
+        </dependency>
 
-   <dependencies>
-       <dependency>
-           <groupId>junit</groupId>
-           <artifactId>junit</artifactId>
-           <version>4.11</version>
-       </dependency>
 
-       <dependency>
-           <groupId>ru.korus.tmis.core</groupId>
-           <artifactId>tmis-core-common</artifactId>
-           <version>${version.tmis.core}</version>
-           <type>jar</type>
-       </dependency>
-       <!--   <dependency>
-              <groupId>ru.korus.tmis.core</groupId>
-              <artifactId>tmis-core-common</artifactId>
-              <version>${tmis-core-version}</version>
-              <type>jar</type>
-          </dependency>-->
+        <dependency>
+            <groupId>ru.korus.tmis.core</groupId>
+            <artifactId>tmis-core-common</artifactId>
+            <version>${version.tmis.core}</version>
+            <type>jar</type>
+        </dependency>
+
+        <dependency>
+            <groupId>ru.korus.tmis.core</groupId>
+            <artifactId>tmis-core-database</artifactId>
+            <version>${version.tmis.core}</version>
+            <type>jar</type>
+        </dependency>
     </dependencies>
 
 </project>

@@ -43,13 +43,25 @@ public class Pharmacy implements Serializable {
     @Column(name = "result")
     private String result;
 
-//    @Basic(optional = false)
-//    @Column(name = "attempts")
-    @Transient
+    @Basic(optional = false)
+    @Column(name = "attempts")
+//    @Transient
     private int attempts = 0;
 
+    @Basic(optional = false)
+    @Column(name = "error_string")
+//    @Transient
+    private String errorString = "";
 
     public Pharmacy() {
+    }
+
+    public String getErrorString() {
+        return errorString;
+    }
+
+    public void setErrorString(String errorString) {
+        this.errorString = errorString;
     }
 
     public int getActionId() {
@@ -82,6 +94,9 @@ public class Pharmacy implements Serializable {
 
     public void setStatus(PharmacyStatus status) {
         this.status = status;
+        if (status.equals(PharmacyStatus.COMPLETE)) {
+            errorString = "";
+        }
     }
 
     public String getResult() {
@@ -109,6 +124,7 @@ public class Pharmacy implements Serializable {
                 ", documentUUID='" + documentUUID + '\'' +
                 ", result='" + result + '\'' +
                 ", attempts=" + attempts +
+                ", errorString='" + errorString + '\'' +
                 '}';
     }
 }

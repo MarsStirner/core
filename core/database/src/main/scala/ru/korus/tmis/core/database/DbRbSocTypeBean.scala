@@ -14,6 +14,7 @@ import ru.korus.tmis.core.exception.NoSuchEntityException
 import ru.korus.tmis.core.entity.model.RbSocStatusType
 import scala.collection.JavaConversions._
 import ru.korus.tmis.core.data.{DictionaryListRequestDataFilter, QueryDataStructure}
+import ru.korus.tmis.core.filter.ListDataFilter
 
 @Interceptors(Array(classOf[LoggingInterceptor]))
 @Stateless
@@ -66,18 +67,12 @@ with I18nable {
     typed.getSingleResult
   }
 
-  def getAllSocStatusTypesWithFilter(page: Int, limit: Int, sortingField: String, sortingMethod: String, filter: Object) = {
-    var queryStr: QueryDataStructure = if (filter.isInstanceOf[DictionaryListRequestDataFilter]) {
-      filter.asInstanceOf[DictionaryListRequestDataFilter].toQueryStructure()
-    } else {
-      new QueryDataStructure()
-    }
+  def getAllSocStatusTypesWithFilter(page: Int, limit: Int, sorting: String, filter: ListDataFilter) = {
 
-    val sorting = "ORDER BY %s %s".format(sortingField, sortingMethod)
-
-    var typed = em.createQuery(SocStatusTypeDictionaryFindQuery.format("sst.id, sst.name", queryStr.query, sorting), classOf[Array[AnyRef]])
-      .setMaxResults(limit)
-      .setFirstResult(limit * page)
+    val queryStr = filter.toQueryStructure()
+    val typed = em.createQuery(SocStatusTypeDictionaryFindQuery.format("sst.id, sst.name", queryStr.query, sorting), classOf[Array[AnyRef]])
+                  .setMaxResults(limit)
+                  .setFirstResult(limit * page)
     if (queryStr.data.size() > 0) {
       queryStr.data.foreach(qdp => typed.setParameter(qdp.name, qdp.value))
     }

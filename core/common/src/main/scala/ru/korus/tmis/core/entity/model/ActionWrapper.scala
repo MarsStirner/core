@@ -130,6 +130,62 @@ class ActionWrapper(a: Action)
         }
       }
 
+      case AWI.AssignerLastName => {
+        if (this.a.getAssigner != null) {
+          List(
+            Map(APWI.Value.toString -> this.a.getAssigner.getLastName)
+          )
+        } else {
+          List(
+            Map(APWI.Value.toString -> "")
+          )
+        }
+      }
+      case AWI.AssignerFirstName => {
+        if (this.a.getAssigner != null) {
+          List(
+            Map(APWI.Value.toString -> this.a.getAssigner.getFirstName)
+          )
+        } else {
+          List(
+            Map(APWI.Value.toString -> "")
+          )
+        }
+      }
+      case AWI.AssignerMiddleName => {
+        if (this.a.getAssigner != null) {
+          List(
+            Map(APWI.Value.toString -> this.a.getAssigner.getPatrName)
+          )
+        } else {
+          List(
+            Map(APWI.Value.toString -> "")
+          )
+        }
+      }
+      case AWI.AssignerSpecs => {
+        if (this.a.getAssigner != null && this.a.getAssigner.getSpeciality != null) {
+          List(
+            Map(APWI.Value.toString -> this.a.getAssigner.getSpeciality.getName)
+          )
+        } else {
+          List(
+            Map(APWI.Value.toString -> "")
+          )
+        }
+      }
+      case AWI.AssignerPost => {
+        if (this.a.getAssigner != null && this.a.getAssigner.getPost != null) {
+          List(
+            Map(APWI.Value.toString -> this.a.getAssigner.getPost.getName)
+          )
+        } else {
+          List(
+            Map(APWI.Value.toString -> "")
+          )
+        }
+      }
+
       case AWI.Status => {
         List(
           Map(APWI.Value.toString -> this.a.getStatus.toString)
@@ -172,11 +228,11 @@ class ActionWrapper(a: Action)
           }
         }
       }
-      case AWI.ToOrder => {
+      /*case AWI.ToOrder => {
         List(
           Map(APWI.Value.toString -> this.a.getToOrder.toString)
         )
-      }
+      } */
 
       case _ => {
         debug("Cannot get <" + name + ">")
