@@ -1,6 +1,6 @@
 package ru.korus.tmis.ws.impl
 
-import javax.inject.{Inject, Named}
+import javax.inject.Named
 import javax.jws.{HandlerChain, WebService}
 import ru.korus.tmis.core.data._
 import ru.korus.tmis.core.auth.{AuthToken, AuthStorageBeanLocal, AuthData}
@@ -8,8 +8,8 @@ import org.codehaus.jackson.map.ObjectMapper
 import ru.korus.tmis.core.exception.CoreException
 import java.util
 import ru.korus.tmis.util._
-import ru.korus.tmis.core.entity.model.{JobTicket, ActionTypeTissueType, Action}
-import collection.mutable
+import ru.korus.tmis.core.entity.model.{OrgStructureHospitalBed, JobTicket, ActionTypeTissueType, Action}
+import collection.{JavaConversions, mutable}
 import util.LinkedList
 import grizzled.slf4j.Logging
 import ru.korus.tmis.ws.webmis.rest.WebMisREST
@@ -25,6 +25,7 @@ import ru.korus.tmis.core.treatment.TreatmentBeanLocal
 import com.google.common.collect.Lists
 import javax.servlet.http.HttpServletRequest
 import ru.korus.tmis.laboratory.business.LaboratoryBeanLocal
+import ru.korus.tmis.core.entity.model.layout.LayoutAttribute
 
 /**
  * Created with IntelliJ IDEA.
@@ -45,7 +46,8 @@ import ru.korus.tmis.laboratory.business.LaboratoryBeanLocal
 @HandlerChain(file = "tmis-ws-logging-handlers.xml") */
 class WebMisRESTImpl  extends WebMisREST
                       with Logging
-                      with I18nable {
+                      with I18nable
+                      with CAPids {
   @EJB
   private var authStorage: AuthStorageBeanLocal = _
 
@@ -170,6 +172,9 @@ class WebMisRESTImpl  extends WebMisREST
   var diagnosisBean: DiagnosisBeanLocal = _
 
   @EJB
+  var dbLayoutAttributeBean: DbLayoutAttributeBeanLocal = _
+
+  @EJB
   var lisBean: LaboratoryBeanLocal = _
 
   def getAllPatients(requestData: PatientRequestData, auth: AuthData): PatientData = {
@@ -265,6 +270,8 @@ class WebMisRESTImpl  extends WebMisREST
       val map = patientBean.getKLADRAddressMapForPatient(patient)
       val street = patientBean.getKLADRStreetForPatient(patient)
       //val appType = dbFDRecordBean.getIdValueFDRecordByEventTypeId(25, positionE._1.getEventType.getId.intValue())
+      val currentDepartment = hospitalBedBean.getCurrentDepartmentForAppeal(ide)
+      //
       mapper.writeValueAsString(new AppealData( positionE._1,
         positionA._1,
         values,
@@ -280,6 +287,7 @@ class WebMisRESTImpl  extends WebMisREST
         if (positionA._1.getContractId != null) {
           dbContractBean.getContractById(positionA._1.getContractId.intValue())
         } else {null},
+        currentDepartment,
         dbDiagnosticBean.getDiagnosticsByEventIdAndTypes _
       ))
     } else {
@@ -299,6 +307,8 @@ class WebMisRESTImpl  extends WebMisREST
     mapper.getSerializationConfig().setSerializationView(classOf[Views.DynamicFieldsStandartForm]);
     //val map = patientBean.getKLADRAddressMapForPatient(result)
     //val appType = dbFDRecordBean.getIdValueFDRecordByEventTypeId(25, positionE._1.getEventType.getId.intValue())
+    val currentDepartment = hospitalBedBean.getCurrentDepartmentForAppeal(id)
+
     mapper.writeValueAsString(new AppealData( positionE._1,
       positionA._1,
       values,
@@ -314,6 +324,7 @@ class WebMisRESTImpl  extends WebMisREST
       if (positionE._1.getContract != null) {
         dbContractBean.getContractById(positionE._1.getContract.getId.intValue())
       } else {null},
+      currentDepartment,
       dbDiagnosticBean.getDiagnosticsByEventIdAndTypes _
     ))
   }
@@ -329,6 +340,7 @@ class WebMisRESTImpl  extends WebMisREST
 
     val map = patientBean.getKLADRAddressMapForPatient(positionE._1.getPatient)
     val street = patientBean.getKLADRStreetForPatient(positionE._1.getPatient)
+    val currentDepartment = hospitalBedBean.getCurrentDepartmentForAppeal(id)
 
     mapper.writeValueAsString(new AppealData( positionE._1,
       positionA._1,
@@ -345,6 +357,7 @@ class WebMisRESTImpl  extends WebMisREST
       if (positionA._1.getContractId != null) {
         dbContractBean.getContractById(positionA._1.getContractId.intValue())
       } else {null},
+      currentDepartment,
       dbDiagnosticBean.getDiagnosticsByEventIdAndTypes _
     ))
   }
@@ -421,19 +434,19 @@ class WebMisRESTImpl  extends WebMisREST
     //listForSummary.add(ActionWrapperInfo.toOrder)
 
     primaryAssessmentBean.getEmptyStructure(actionTypeId,
-      "PrimaryAssesment",
-      listForConverter,
-      listForSummary,
-      authData,
-      postProcessing _,
-      null)
+                                            "Document",
+                                            listForConverter,
+                                            listForSummary,
+                                            authData,
+                                            postProcessing _,
+                                            null)
   }
 
   //запрос на структуру первичного мед. осмотра с копированием данных из предыдущего осмотра
   def getStructOfPrimaryMedExamWithCopy(actionTypeId: Int, authData: AuthData, eventId: Int) = {
     var lastActionId = actionBean.getActionIdWithCopyByEventId(eventId, actionTypeId)
     try {
-      primaryAssessmentBean.getPrimaryAssessmentById(lastActionId, "Assessment", authData, postProcessing _, false) //postProcessingWithCopy _, true)
+      primaryAssessmentBean.getPrimaryAssessmentById(lastActionId, "Document", authData, postProcessing _, false) //postProcessingWithCopy _, true)
     }
     catch {
       case e: Exception => {
@@ -443,18 +456,18 @@ class WebMisRESTImpl  extends WebMisREST
 
   }
 
-  private def preProcessing (jData: JSONCommonData, reWriteId: java.lang.Boolean) = {
+  /*private def preProcessing (jData: JSONCommonData, reWriteId: java.lang.Boolean) = {
     //Предбработка (Сопоставление CoreAP с id APT в подветке details - id, typeId)
     jData.data.get(0).group.get(1).attribute.foreach(core => {
       core.typeId = dbRbCoreActionPropertyBean.getRbCoreActionPropertiesById(core.typeId.intValue()).getActionPropertyType.getId
       if(reWriteId.booleanValue) core.id = core.typeId
     })
     jData
-  }
+  } */
 
   private def postProcessing (jData: JSONCommonData, reWriteId: java.lang.Boolean) = {
     //Постобработка (Сопоставление id APT c CoreAP в подветке details - id, typeId)
-    jData.data.get(0).group.get(1).attribute.foreach(ap => {
+    /*jData.data.get(0).group.get(1).attribute.foreach(ap => {
       var value = if(reWriteId.booleanValue)
         ap.id.intValue()
       else {
@@ -465,6 +478,15 @@ class WebMisRESTImpl  extends WebMisREST
       }
       ap.typeId = dbRbCoreActionPropertyBean.getRbCoreActionPropertiesByActionPropertyTypeId(value).getId.intValue()
       if(reWriteId.booleanValue) ap.id =ap.typeId
+    })*/
+    //Без привязки к CoreAP
+    jData.data.get(0).group.get(1).attribute.foreach(ap => {
+      if(ap.typeId==null || ap.typeId.intValue()<=0) {
+        if(reWriteId.booleanValue)  //в id -> apt.id
+          ap.typeId = ap.id
+        else
+          ap.typeId = actionPropertyBean.getActionPropertyById(ap.id.intValue()).getType.getId.intValue()
+      }
     })
     jData
   }
@@ -482,44 +504,32 @@ class WebMisRESTImpl  extends WebMisREST
 
   //создание первичного мед. осмотра
   def insertPrimaryMedExamForPatient(eventId: Int, data: JSONCommonData, authData: AuthData)  = {
-    //создаем ответственного, если до этого был другой
-    /*val eventPerson = dbEventPerson.getLastEventPersonForEventId(eventId)
-    if (eventPerson == null || eventPerson.getPerson != authData.getUser) {
-      dbEventPerson.insertOrUpdateEventPerson(if (eventPerson != null) {eventPerson.getId.intValue()} else 0,
-        dbEventBean.getEventById(eventId),
-        authData.getUser,
-        false) //параметр для флаша
-    }*/
-    appealBean.setExecPersonForAppeal(eventId, 0, authData, ExecPersonSetType.EP_CREATE_PRIMARY)
+    if(data.getData.find(ce => ce.getTypeId().compareTo(i18n("db.actionType.primary").toInt)==0).getOrElse(null)!=null) //Врач прописывается только для первичного осмотра  (ид=139)
+      appealBean.setExecPersonForAppeal(eventId, 0, authData, ExecPersonSetType.EP_CREATE_PRIMARY)
+
     //создаем осмотр. ЕвентПерсон не флашится!!!
-    val returnValue = primaryAssessmentBean.createPrimaryAssessmentForEventId(eventId,
+    val returnValue = primaryAssessmentBean createPrimaryAssessmentForEventId(eventId,
       data,
-      "Assessment",
+      "Document",
       authData,
-      preProcessing _,
+      /*preProcessing _*/null,
       postProcessing _)
-    dbEventBean.setExecPersonForEventWithId(eventId, authData.getUser)
+    //dbEventBean.setExecPersonForEventWithId(eventId, authData.getUser)
     returnValue
   }
 
   //редактирование первичного мед. осмотра
   def modifyPrimaryMedExamForPatient(actionId: Int, data: JSONCommonData, authData: AuthData)  = {
     //создаем ответственного, если до этого был другой
-    /*val eventPerson = dbEventPerson.getLastEventPersonForEventId(actionBean.getActionById(actionId).getEvent.getId.intValue())
-    if (eventPerson.getPerson != authData.getUser) {
-      dbEventPerson.insertOrUpdateEventPerson(if (eventPerson != null) {eventPerson.getId.intValue()} else 0,
-        actionBean.getActionById(actionId).getEvent,
-        authData.getUser,
-        false)
-    }*/
-    appealBean.setExecPersonForAppeal(actionId, 0, authData, ExecPersonSetType.EP_MODIFY_PRIMARY)
+    if(data.getData.find(ce => ce.getTypeId().compareTo(i18n("db.actionType.primary").toInt)==0).getOrElse(null)!=null) //Врач прописывается только для первичного осмотра  (ид=139)
+      appealBean.setExecPersonForAppeal(actionId, 0, authData, ExecPersonSetType.EP_MODIFY_PRIMARY)
 
     //создаем осмотр. ЕвентПерсон не флашится!!!
     val returnValue = primaryAssessmentBean.modifyPrimaryAssessmentById(actionId,
       data,
-      "Assessment",
+      "Document",
       authData,
-      preProcessing _,
+      /*preProcessing _*/null,
       postProcessing _)
     returnValue
   }
@@ -742,7 +752,8 @@ class WebMisRESTImpl  extends WebMisREST
 
     //<= Изменить запрос (ждем отклик)
     //requestData.setRecordsCount(dbStaff.getCountAllPersonsWithFilter(requestData.filter))
-    val list = new AllPersonsListData(dbStaff.getEmptyPersonsByRequest( requestData.limit,
+    new FreePersonsListDataFilter()
+    val list = new FreePersonsListData(dbStaff.getEmptyPersonsByRequest( requestData.limit,
       requestData.page-1,
       requestData.sortingFieldInternal,
       requestData.filter.unwrap()),
@@ -829,9 +840,11 @@ class WebMisRESTImpl  extends WebMisREST
     primaryAssessmentBean.modifyAssessmentsForEventIdFromCommonData(eventId, data, "Diagnostic", null, auth,  postProcessingForDiagnosis _)// postProcessingForDiagnosis
   }
 
-  def insertConsultation(request: ConsultationRequestData) = {
-    val authData:AuthData = null
-    primaryAssessmentBean.insertAssessmentAsConsultation(request.eventId, request.actionTypeId, request.executorId, request.beginDate, request.endDate, request.urgent, request, authData)
+  def insertConsultation(request: ConsultationRequestData, authData: AuthData) = {
+    val actionId = directionBean.createConsultation(request, authData)
+    var json = directionBean.getDirectionById(actionId, "Consultation", null)
+    json.setRequestData(request) //по идее эта штука должна быть в конструкторе вызываемая в методе гет
+    json
   }
 
   def removeDirection(data: AssignmentsToRemoveDataList, directionType: String, auth: AuthData) = {
@@ -1144,6 +1157,10 @@ class WebMisRESTImpl  extends WebMisREST
   def setExecPersonForAppeal(eventId: Int, personId: Int, authData: AuthData) = {
     appealBean.setExecPersonForAppeal(eventId, personId, authData, ExecPersonSetType.EP_SET_IN_LPU)
   }
+
+  def getLayoutAttributes() = new LayoutAttributeListData(dbLayoutAttributeBean.getAllLayoutAttributes)
+
+
   //__________________________________________________________________________________________________
   //***************  AUTHDATA  *******************
   //__________________________________________________________________________________________________

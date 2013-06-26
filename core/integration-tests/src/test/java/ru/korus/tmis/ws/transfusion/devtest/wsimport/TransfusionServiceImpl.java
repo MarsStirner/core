@@ -26,7 +26,6 @@ public class TransfusionServiceImpl extends Service {
         URL url = null;
         WebServiceException e = null;
         try {
-            // url = new URL("http://ftmis-core2-node1.gfish.fccho-moscow.ru:8080/tmis-ws-transfusion/TransfusionServiceImpl?wsdl");
             url = new URL("http://szagrebelny-nb:8080/tmis-ws-transfusion/TransfusionServiceImpl?wsdl");
         } catch (final MalformedURLException ex) {
             e = new WebServiceException(ex);

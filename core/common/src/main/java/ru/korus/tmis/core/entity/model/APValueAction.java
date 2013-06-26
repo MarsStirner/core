@@ -1,12 +1,10 @@
 package ru.korus.tmis.core.entity.model;
 
+import ru.korus.tmis.core.exception.CoreException;
+import ru.korus.tmis.util.TextUtils;
+
 import java.io.Serializable;
-import javax.persistence.Entity;
-import javax.persistence.JoinColumn;
-import javax.persistence.ManyToOne;
-import javax.persistence.NamedQueries;
-import javax.persistence.NamedQuery;
-import javax.persistence.Table;
+import javax.persistence.*;
 import javax.xml.bind.annotation.XmlRootElement;
 import javax.xml.bind.annotation.XmlType;
 
@@ -51,8 +49,18 @@ public class APValueAction extends AbstractAPValue implements Serializable, APVa
     }
 
     @Override
-    public boolean setValueFromString(final String value) {
-        return false;
+    public boolean setValueFromString(final String value) throws CoreException {
+        try {
+            this.setValue(new Action(TextUtils.getRobustInt(value)));
+            return true;
+        } catch (NumberFormatException ex) {
+            throw new CoreException(
+                    0x0106, // TODO: Fix me!
+                    "Не могу установить " +
+                            this.getClass().getSimpleName() +
+                            " в значение <" + value + ">"
+            );
+        }
     }
 
     @Override

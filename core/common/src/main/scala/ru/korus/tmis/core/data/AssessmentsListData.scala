@@ -79,7 +79,11 @@ class AssessmentsListRequestDataFilter extends AbstractListDataFilter{
   @BeanProperty
   var code: String = _
   @BeanProperty
-  var assessmentDate: Date = _
+  var actionTypeId: Int = _
+  @BeanProperty
+  var begDate: Date = _
+  @BeanProperty
+  var endDate: Date = _
   @BeanProperty
   var doctorName: String = _
   @BeanProperty
@@ -90,30 +94,34 @@ class AssessmentsListRequestDataFilter extends AbstractListDataFilter{
   var departmentName: String = _
   @BeanProperty
   var eventId: Int = _
+  @BeanProperty
+  var mnemonics: java.util.List[String] = new java.util.LinkedList[String]
 
   def this(eventId: Int,
+           actionTypeId: Int,
            code_x: String,
-           assessmentDate: Long,
+           begDate: Long,
+           endDate: Long,
            doctorName: String,
            speciality: String,
            assessmentName: String,
-           departmentName: String) {
+           departmentName: String,
+           mnemonics: java.util.List[String]) {
     this()
     this.eventId = eventId
+    this.actionTypeId = actionTypeId
     this.code = if (code_x != null && code_x != "") {
       code_x
     } else {
       ""   //Изменили спеку, теперь ищем акшены по мнемонике, а не по коду. было "1_"
     }
-    this.assessmentDate = if (assessmentDate == 0) {
-      null
-    } else {
-      new Date(assessmentDate)
-    }
+    this.begDate = if (begDate == 0) null else new Date(begDate)
+    this.endDate = if (endDate == 0) null else new Date(endDate)
     this.doctorName = doctorName
     this.speciality = speciality
     this.assessmentName = assessmentName
     this.departmentName = departmentName
+    this.mnemonics = mnemonics.filter(p=>(p!=null && !p.isEmpty))
   }
 
   @Override
@@ -123,6 +131,10 @@ class AssessmentsListRequestDataFilter extends AbstractListDataFilter{
       qs.query += "AND a.event.id = :eventId\n"
       qs.add("eventId",this.eventId:java.lang.Integer)
     }
+    if (this.actionTypeId > 0) {
+      qs.query += "AND a.actionType.id = :actionTypeId\n"
+      qs.add("actionTypeId", this.actionTypeId:java.lang.Integer)
+    }
     if (this.code != null && !this.code.isEmpty) {
       qs.query += "AND a.actionType.code LIKE :code\n"
       qs.add("code", this.code + "%")
@@ -131,9 +143,13 @@ class AssessmentsListRequestDataFilter extends AbstractListDataFilter{
       qs.query += ("AND upper(a.createPerson.lastName) LIKE upper(:doctorName)\n")
       qs.add("doctorName", "%" + this.doctorName + "%")
     }
-    if (this.assessmentDate != null) {
-      qs.query += "AND a.createDatetime = :assessmentDate\n"
-      qs.add("assessmentDate", this.assessmentDate)
+    if (this.begDate != null) {
+      qs.query += "AND a.createDatetime >= :begDate\n"
+      qs.add("begDate", this.begDate)
+    }
+    if (this.endDate != null) {
+      qs.query += "AND a.createDatetime <= :endDate\n"
+      qs.add("endDate", this.endDate)
     }
     if (this.speciality != null && !this.speciality.isEmpty) {
       qs.query += "AND upper(a.createPerson.speciality.name) LIKE upper(:speciality)\n"
@@ -147,7 +163,10 @@ class AssessmentsListRequestDataFilter extends AbstractListDataFilter{
       qs.query += "AND upper(a.createPerson.orgStructure.name) LIKE upper(:departmentName)\n"
       qs.add("departmentName", "%" + this.departmentName + "%")
     }
-    qs.query += "AND a.actionType.mnemonic = 'EXAM'\n"
+    if (this.mnemonics!=null && this.mnemonics.size() > 0) {
+      qs.query += ("AND a.actionType.mnemonic IN  :mnemonic\n")
+      qs.add("mnemonic",asJavaCollection(this.mnemonics))
+    }
     qs
   }
 
@@ -174,7 +193,13 @@ class AssessmentsListEntry {
   var id: Int = _ //Action Id
 
   @BeanProperty
-  var assessmentDate: Date = _ //date of assessment
+  var typeId: Int = _ //Тип действия
+
+  @BeanProperty
+  var assessmentDate: Date = _ //дата создания
+
+  @BeanProperty
+  var closeDate: Date = _ //дата закрытия
 
   @BeanProperty
   var assessmentName: IdNameContainer = _ //Наименование
@@ -185,7 +210,9 @@ class AssessmentsListEntry {
   def this(action: Action) {
     this()
     this.id = action.getId.intValue()
+    this.typeId = action.getActionType.getId.intValue()
     this.assessmentDate = action.getCreateDatetime
+    this.closeDate = action.getEndDate
     this.assessmentName = new IdNameContainer(action.getActionType.getId.intValue(), action.getActionType.getName)
     this.doctor = new DoctorSpecsContainer(action.getCreatePerson)
   }

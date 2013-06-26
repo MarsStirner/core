@@ -7,7 +7,6 @@ import javax.xml.bind.DatatypeConverter
 import javax.xml.namespace.QName
 import reflect.Configuration
 import grizzled.slf4j.Logging
-import ru.korus.tmis.core.entity.model.Staff
 
 
 object ConfigManager extends Configuration {
@@ -106,12 +105,29 @@ object ConfigManager extends Configuration {
     var noRightForAction = 0x146
     var BloodTypeIsNull = 0x147
     var InvalidAuthData = 0x148
+    var MkbNotFound = 0x149
   }
 
+  /**
+   * Параметры для 1С Аптеки
+   */
+  val Drugstore = new Configuration {
+    /**
+     * Включен ли сервис
+     * on - включен
+     * off - выключен (по умолчанию)
+     */
+    var Active = "off"
   class DrugstoreClass extends Configuration {
     var OrgName = "ФНКЦ ДГОИ"
 
     var ServiceUrl = new URL("http://pharmacy3.fccho-moscow.ru/ws/MISExchange")
+    var User = ""
+    var Password = ""
+
+
+    var OrgName = "ФНКЦ ДГОИ"
+
     var XmlNamespace = "urn:hl7-org:v3"
     var DefaultXsiType = ""
 
@@ -167,10 +183,32 @@ object ConfigManager extends Configuration {
 
   var TrfuProp = new TrfuPropClass
 
+
+  /**
+   * Метод хелпер, создан из-за невозможности вызвать класс-конфиг из джава кода
+   */
+  def getDrugUser: String = Drugstore.User
+
+  /**
+   * Метод хелпер, создан из-за невозможности вызвать класс-конфиг из джава кода
+   */
+  def getDrugPassword: String = Drugstore.Password
+
+  /**
+   * Метод хелпер, создан из-за невозможности вызвать класс-конфиг из джава кода
+   */
+  def getDrugUrl: URL = Drugstore.ServiceUrl
+
+  /**
+   * Метод хелпер, создан из-за невозможности вызвать класс-конфиг из джава кода
+   */
+  def isActive: Boolean = Drugstore.Active.equals("on")
+
+
   val Laboratory = new Configuration {
-    // LIS service URL
+    // LIS service URL  Алтей
     // null means that URL should be acquired from the WSDL file
-    var ServiceUrl: URL = null
+    var ServiceUrl: URL = new URL("http://10.128.131.114:8090/CGM_SOAP")
     var User: String = null
     var Password: String = null
 
@@ -201,12 +239,51 @@ object ConfigManager extends Configuration {
     var RuntimeWSDLUrl: URL = null
 
 
-    // NB: Altey's LIS does not conform to 'url' + '?wsdl' convention
+    // NB: Across's LIS does not conform to 'url' + '?wsdl' convention
     // WSDL url is a:
     // - RuntimeWSDLUrl if it's defined
     // - compile-time-defined (local WSDL from resources) otherwise
     def WSDLUrl: URL = Option(RuntimeWSDLUrl).getOrElse(null)
   }
+
+  /** Конфигурация для БАК лаборатории */
+  val LaboratoryBak = new Configuration {
+    var ServiceUrl: URL = new URL("http://10.128.131.114:8090/CGM_SOAP")
+    var User: String = null
+    var Password: String = null
+
+    var RuntimeWSDLUrl: URL = null
+
+    def WSDLUrl: URL = Option(RuntimeWSDLUrl).getOrElse(null)
+
+    var AssignmentTemplate: String = "<ClinicalDocument xmlns='urn:hl7-org:v3' xmlns:xsi='http://www.w3.org/2001/XMLSchema-instance' xsi:schemaLocation='urn:hl7-org:v3 CDA.xsd'>" + "<typeId extension='POCD_HD000040' root='2.16.840.1.113883.1.3'/>" + "<id root='${uuid}'/>" + "<setID root='id'/>" + "<versionNumber orderStatus='2'/>" + "<code>${diagnosticCode}, ${diagnosticName}</code>" + "<title>${diagnosticName}</title>" + "<effectiveTime value='${orderMisDate}'/>" + "<confidentialityCode code='N' codeSystem='2.16.840.1.113883.5.25' displayName='Normal'/>" + "<recordTarget>" + "<patientRole>" + "<id root='${patientMisId}'/>" + "<addr>${patientAddress}</addr>" + "<telecom nullFlavor='NI'/>" + "<patient>" + "<id root='${uuid}' extension='${patientNumber}' assigningAuthorityName='${custodian}' displayable='true'/>" + "<name> ${patientFamily} ${patientName} ${patientPatronum}" + "<family>${patientFamily}</family>" + "<given>${patientName}</given>" + "<given>${patientPatronum}</given>" + "</name>" + "<birthTime value='${patientBirthDate}'/>" + "<administrativeGenderCode code='${patientSex}'/>" + "</patient>" + "<providerOrganization>${custodian}</providerOrganization>" + "</patientRole>" + "</recordTarget>" + "<author>" + "<time value='${orderMisDate}'/>" + "<assignedAuthor>" + "<id root='${orderDoctorMisId}' extension='${orderDoctorMisId}'/>" + "<assignedAuthor>" + "<code code='DolgCode' displayName='DolgName'/>" + "</assignedAuthor>" + "<assignedPerson>" + "<prefix>${orderDepartmentMisId}</prefix>" + "<name>${orderDoctorFamily} ${orderDoctorName} ${orderDoctorPatronum}" + "<family>${orderDoctorFamily}</family>" + "<given>${orderDoctorName}</given>" + "<given>${orderDoctorPatronum}</given>" + "</name>" + "</assignedPerson>" + "</assignedAuthor>" + "</author>" + "<custodian>" + "<assignedCustodian>" + "<representedCustodianOrganization>" + "<id root='${uuid}'/>" + "<name>${сustodian}</name>" + "</representedCustodianOrganization>" + "</assignedCustodian>" + "</custodian>" + "<componentOf>" + "<encompassingEncounter>" + "<id root='${uuid}' extension='${patientNumber}'/>" + "<effectiveTime nullFlavor='NI'/>" + "</encompassingEncounter>" + "</componentOf>" + "<component>" + "<structuredBody>" + "<component>" + "<section>${orderDiagText}" + "<entry>" + "${orderDiagCode}" + "</entry>" + "<component>" + "<section>" + "<title>срочность заказа</title>" + "<text>${isUrgent}</text>" + "</section>" + "</component>" + "<component>" + "<section>" + "<title>средний срок беременности, в неделях</title>" + "<text>${orderPregnat}</text>" + "</section>" + "</component>" + "<component>" + "<section>" + "<title>Комментарий к анализу</title>" + "<text>${orderComment}</text>" + "</section>" + "</component>" + "</section>" + "</component>" + "<component>" + "<entry>" + "<observation classCode='OBS' moodCode='ENT'/>" + "<effectiveTime value='${orderProbeDate}'/>" + "</entry>" + "<specimen>" + "<specimenRole>" + "<id root='${orderBarCode}|${TakenTissueJournal}'/>" + "<specimenPlayingEntity>" + "<code code='${orderBiomaterialCode}'>" + "<translation displayName='${orderBiomaterialName}'/>" + "</code>" + "<quantity value='${orderBiomaterialVolume}'/>" + "<text value='${orderBiomaterialComment}'/>" + "</specimenPlayingEntity>" + "</specimenRole>" + "</specimen>" + "</component>" + "<component>" + "<entry>" + "<observation classCode='OBS' moodCode='RQO' negationInd='false'/>" + "<id root='${uuid}'/>" + "<id type='${FinanceCode}' extension='${typeFinanceName}'/>" + "<code code='${diagnosticCode}' displayName='${diagnosticName}'/>" + "</entry>" + "</component>" + "<component>" + "<section> indicators" + "<entry>" + "<code code='indicatorCode1' displayName='indicatorName1'/>" + "</entry>" + "<entry>" + "<code code='indicatorCoden' displayName='indicatorNamen'/>" + "</entry>" + "</section>" + "</component>" + "</structuredBody>" + "</component>" + "</ClinicalDocument>"
+  }
+
+  /**
+   * Метод хелпер, создан из-за невозможности вызвать класс-конфиг из джава кода
+   */
+  def getBakServiceUrl: URL = LaboratoryBak.ServiceUrl
+
+  /**
+   * Метод хелпер, создан из-за невозможности вызвать класс-конфиг из джава кода
+   */
+  def getBakUser: String = LaboratoryBak.User
+
+  /**
+   * Метод хелпер, создан из-за невозможности вызвать класс-конфиг из джава кода
+   */
+  def getBakPassword: String = LaboratoryBak.Password
+
+  /**
+   * Метод хелпер, создан из-за невозможности вызвать класс-конфиг из джава кода
+   */
+  def getBakRuntimeWsdl: URL = LaboratoryBak.RuntimeWSDLUrl
+
+  /**
+   * Метод хелпер, создан из-за невозможности вызвать класс-конфиг из джава кода
+   */
+  def getBakAssignmentTemplate: String = LaboratoryBak.AssignmentTemplate
+
 
   val TmisAuth = new Configuration {
     var RealmName = "TMIS-Core-Server"
@@ -287,9 +364,9 @@ object ConfigManager extends Configuration {
 }
 
 trait I18nable {
-   val i18n = ConfigManager.Messages
- }
+  val i18n = ConfigManager.Messages
+}
 
 trait CAPids {
-   val iCapIds = ConfigManager.RbCAPIds
- }
+  val iCapIds = ConfigManager.RbCAPIds
+}

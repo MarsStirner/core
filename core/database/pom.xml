@@ -11,17 +11,17 @@
 
     <parent>
         <groupId>ru.korus.tmis</groupId>
-        <artifactId>tmis-nexus</artifactId>
+        <artifactId>tmis-core</artifactId>
         <version>${version.tmis.core}</version>
         <relativePath>../</relativePath>
     </parent>
 
     <dependencies>
-        <dependency>
-            <groupId>junit</groupId>
-            <artifactId>junit</artifactId>
-            <version>4.11</version>
-        </dependency>
+        <!--<dependency>-->
+            <!--<groupId>junit</groupId>-->
+            <!--<artifactId>junit</artifactId>-->
+            <!--<version>4.11</version>-->
+        <!--</dependency>-->
 
         <dependency>
             <groupId>ru.korus.tmis.core</groupId>
@@ -30,12 +30,7 @@
             <type>jar</type>
         </dependency>
 
-        <dependency>
-            <groupId>org.eclipse.persistence</groupId>
-            <artifactId>eclipselink</artifactId>
-            <version>2.2.0</version>
-            <scope>provided</scope>
-        </dependency>
+
     </dependencies>
 
     <build>

@@ -4,7 +4,7 @@ import reflect.BeanProperty
 import javax.xml.bind.annotation.{XmlRootElement, XmlType}
 import scala.collection.JavaConversions._
 import ru.korus.tmis.util.ConfigManager
-import java.util.{Calendar, TimeZone, Date, ArrayList}
+import util._
 import java.text.{DateFormat, SimpleDateFormat}
 import scala.Predef._
 import ru.korus.tmis.core.entity.model._
@@ -15,6 +15,9 @@ import ru.korus.tmis.auxiliary.AuxiliaryFunctions
 import java.util
 import ru.korus.tmis.core.exception.CoreException
 import ru.korus.tmis.core.filter.{ListDataFilter, AbstractListDataFilter}
+import org.codehaus.jackson.map.ObjectMapper
+import java.io.IOException
+import util.{TimeZone, Calendar, ArrayList, Date}
 
 @XmlType(name = "listRequestData")
 @XmlRootElement(name = "listRequestData")
@@ -77,7 +80,62 @@ class AllPersonsListData {
     this.requestData = requestData
     persons.foreach(p => this.data.add(new DoctorContainer(p)))
   }
+}
 
+@XmlType(name = "freePersonsListData")
+@XmlRootElement(name = "freePersonsListData")
+class FreePersonsListData {
+
+  @BeanProperty
+  var requestData: ListDataRequest = _
+  @BeanProperty
+  var data: ArrayList[DoctorWithScheduleContainer] = new ArrayList[DoctorWithScheduleContainer]
+
+  def this(personsWithSchedule: java.util.HashMap[Staff, java.util.LinkedList[APValueTime]], requestData: ListDataRequest) = {
+    this ()
+    this.requestData = requestData
+    personsWithSchedule.foreach(p => this.data.add(new DoctorWithScheduleContainer(p._1, p._2)))
+  }
+}
+
+@XmlType(name = "doctorWithScheduleContainer")
+@XmlRootElement(name = "doctorWithScheduleContainer")
+@JsonIgnoreProperties(ignoreUnknown = true)
+class DoctorWithScheduleContainer {
+  @BeanProperty
+  var doctor: DoctorContainer = _
+  @BeanProperty
+  var schedule: java.util.LinkedList[ScheduleContainer] = new java.util.LinkedList[ScheduleContainer]
+
+  def this(staff: Staff, times: java.util.LinkedList[APValueTime]) {                     //
+    this()
+    this.doctor = new DoctorContainer(staff)
+    times.foreach(t => this.schedule.add(new ScheduleContainer(t)))
+  }
+}
+
+@XmlType(name = "scheduleContainer")
+@XmlRootElement(name = "scheduleContainer")
+@JsonIgnoreProperties(ignoreUnknown = true)
+class ScheduleContainer {
+  @BeanProperty
+  var id: Int = _
+  @BeanProperty
+  var index: Int = _
+  @BeanProperty
+  var time: Date = _
+
+  def this(time: APValueTime){
+    this()
+    if(time!=null)  {
+      val needTime = Calendar.getInstance()
+      needTime.setTime(time.getValue)
+      this.id = time.getId.getId
+      this.index = time.getId.getIndex
+      this.time = new Date(needTime.getTime.getTime + needTime.getTimeZone.getRawOffset) // new Date(time.getValue.getTime)
+
+    }
+  }
 }
 
 @XmlType(name = "freePersonsListDataFilter")
@@ -88,6 +146,8 @@ class FreePersonsListDataFilter  extends AbstractListDataFilter {
   @BeanProperty
   var doctorId:  Int = _
   @BeanProperty
+  var actionType:  Int = _
+  @BeanProperty
   var beginDate: Date = _
   @BeanProperty
   var endDate: Date = _
@@ -96,10 +156,11 @@ class FreePersonsListDataFilter  extends AbstractListDataFilter {
   var beginOnlyTime: Date = _
   var endOnlyTime: Date = _
 
-  def this(speciality:  Int, doctorId:  Int, beginDate: Long, endDate: Long){
+  def this(speciality:  Int, doctorId:  Int, actionType: Int, beginDate: Long, endDate: Long){
     this()
     this.speciality = speciality
     this.doctorId = doctorId
+    this.actionType = actionType
     this.beginDate = if(beginDate==0) {null} else {new Date(beginDate)}
     this.endDate = if(endDate==0) {null} else {new Date(endDate)}
 
@@ -120,6 +181,9 @@ class FreePersonsListDataFilter  extends AbstractListDataFilter {
     if(this.speciality>0){
       qs.query += "AND s.speciality.id = :speciality\n"
       qs.add("speciality",this.speciality:java.lang.Integer)
+    } else if (this.actionType>0) {
+      qs.query += "AND at.id = :actionType\n AND sProfile.service.id = at.service.id\n AND sProfile.speciality.id = s.speciality.id\n"
+      qs.add("actionType",this.actionType:java.lang.Integer)
     }
     if(this.doctorId>0){
       qs.query += ("AND s.id = :doctorId\n")
@@ -135,9 +199,13 @@ class FreePersonsListDataFilter  extends AbstractListDataFilter {
   @Override
   def toSortingString (sortingField: String, sortingMethod: String) = {
     var sorting = sortingField match {
-      case _ => {"e.id %s"}
+      case "fio" | "fullname"=> {"s.lastName %s, s.firstName %s, s.patrName %s".format(sortingMethod,sortingMethod,sortingMethod)}
+      case "lastname" => {"s.lastName %s".format(sortingMethod)}
+      case "firstname" | "name" => {"s.firstName %s".format(sortingMethod)}
+      case "patrname" => {"s.patrName %s".format(sortingMethod)}
+      case _ => {"s.id %s".format(sortingMethod)}
     }
-    sorting = "ORDER BY " + sorting.format(sortingMethod)
+    sorting = "ORDER BY " + sorting
     sorting
   }
 }
@@ -166,16 +234,20 @@ class PersonsListDataFilter  extends AbstractListDataFilter {
   @Override
   def toSortingString (sortingField: String, sortingMethod: String) = {
     var sorting = sortingField match {
-      case _ => {"s.id %s"}
+      case "fio" | "fullname"=> {"s.lastName %s, s.firstName %s, s.patrName %s".format(sortingMethod,sortingMethod,sortingMethod)}
+      case "lastname" => {"s.lastName %s".format(sortingMethod)}
+      case "firstname" | "name" => {"s.firstName %s".format(sortingMethod)}
+      case "patrname" => {"s.patrName %s".format(sortingMethod)}
+      case _ => {"s.id %s".format(sortingMethod)}
     }
-    sorting = "ORDER BY " + sorting.format(sortingMethod)
+    sorting = "ORDER BY " + sorting
     sorting
   }
 }
 
 @XmlType(name = "allDepartmentsListData")
 @XmlRootElement(name = "allDepartmentsListData")
-class AllDepartmentsListData {
+class AllDepartmentsListData extends AbstractDefaultData{
 
   @BeanProperty
   var requestData: ListDataRequest = _
@@ -186,6 +258,15 @@ class AllDepartmentsListData {
     this ()
     this.requestData = requestData
     departments.foreach(org => this.data.add(new IdNameContainer(org.getId.intValue(), org.getName)))
+  }
+
+  override def dataToString = {
+    val mapper= new ObjectMapper()
+    try {
+      mapper.writeValueAsString(this)
+    } catch {
+      case e: IOException => {throw e}
+    }
   }
 }
 
@@ -205,8 +286,7 @@ class ActionTypesListData {
     getAllActionTypeWithFilter(0, 0, this.requestData.sortingFieldInternal, this.requestData.filter.unwrap()).foreach(at => {
       requestData.setFilter( new ActionTypesListRequestDataFilter( "",
                                                                   at.getId.intValue(),
-                                                                  "",
-                                                                  this.requestData.filter.asInstanceOf[ActionTypesListRequestDataFilter].mnemonic,
+                                                                  this.requestData.filter.asInstanceOf[ActionTypesListRequestDataFilter].mnemonics,
                                                                   this.requestData.filter.asInstanceOf[ActionTypesListRequestDataFilter].view))
       this.data.add(new ActionTypesListEntry(at, requestData, getAllActionTypeWithFilter))
     })
@@ -224,29 +304,29 @@ class ActionTypesListRequestDataFilter extends AbstractListDataFilter {
   var groupId: Int = _
 
   @BeanProperty
-  var mnemonic: String = _
+  var mnemonics: java.util.List[String] = new java.util.LinkedList[String]
 
   @BeanProperty
   var view: String = "all"
 
   def this(code_x: String,
            groupId: Int,
-           diaType_x: String,
-           mnemonic: String,
+           //diaType_xs: java.util.List[String],
+           mnemonics: java.util.List[String],
            view: String) {
     this()
-    this.code = if(code_x!=null && code_x!="") {
-                  code_x
-                }
-                else {
-                        diaType_x match {
+    if(code_x!=null && code_x!="")
+      this.code = code_x
+
+                /*else {
+                        this.code = diaType_x match {
                                             case "laboratory" => {"2"}
                                             case "instrumental" => {"3"}
                                             case _ => {""}
                                         }
-                }
+                }*/
     this.groupId = groupId
-    this.mnemonic = mnemonic
+    this.mnemonics = mnemonics.filter(p=>(p!=null && !p.isEmpty))
     if (view!=null && !view.isEmpty){
       this.view = view
     }
@@ -263,9 +343,9 @@ class ActionTypesListRequestDataFilter extends AbstractListDataFilter {
       qs.query += ("AND at.groupId IN (SELECT at2.id FROM ActionType at2 WHERE at2.code = :code)\n")
       qs.add("code",this.code)
     }
-    if (this.mnemonic!=null && !this.mnemonic.isEmpty && this.mnemonic.compareTo("") != 0) {
-      qs.query += ("AND at.mnemonic =  :mnemonic\n")
-      qs.add("mnemonic",this.mnemonic)
+    if (this.mnemonics!=null && this.mnemonics.size() > 0) {
+      qs.query += ("AND at.mnemonic IN  :mnemonic\n")
+      qs.add("mnemonic",asJavaCollection(this.mnemonics))
     }
     qs
   }
@@ -305,6 +385,9 @@ class ActionTypesListEntry {
   var code: String = _
 
   @BeanProperty
+  var flatCode: String = _
+
+  @BeanProperty
   var name: String = _
 
   @JsonView(Array(classOf[ActionTypesListDataViews.DefaultView]))
@@ -319,11 +402,13 @@ class ActionTypesListEntry {
     this.id = actionType.getId.intValue()
     this.groupId = if(actionType.getGroupId!=null) {actionType.getGroupId.intValue()} else{0}
     this.code = actionType.getCode
+    this.flatCode = actionType.getFlatCode
     this.name = actionType.getName
     if (requestData.filter.asInstanceOf[ActionTypesListRequestDataFilter].view.compareTo("tree") == 0) {
       getAllActionTypeWithFilter(0,0,requestData.sortingFieldInternal,requestData.filter.unwrap()).foreach(f => {
-        val filter = new ActionTypesListRequestDataFilter("", f.getId.intValue(), "",
-                                                          requestData.filter.asInstanceOf[ActionTypesListRequestDataFilter].mnemonic,
+        val filter = new ActionTypesListRequestDataFilter("",
+                                                          f.getId.intValue(),
+                                                          requestData.filter.asInstanceOf[ActionTypesListRequestDataFilter].mnemonics,
                                                           requestData.filter.asInstanceOf[ActionTypesListRequestDataFilter].view)
         val request = new ListDataRequest(requestData.sortingField, requestData.sortingMethod, requestData.limit, requestData.page, filter)
         this.groups.add(new ActionTypesListEntry(f, request, getAllActionTypeWithFilter))
@@ -1196,8 +1281,9 @@ class DepartmentsDataFilter extends AbstractListDataFilter{
     var qs = new QueryDataStructure()
 
     if(hasBeds) {
-      qs.query += ("AND os.hasHospitalBeds = :hasBeds\n")
-      qs.add("hasBeds", this.hasBeds: java.lang.Boolean)
+      // qs.query += ("AND os.hasHospitalBeds = :hasBeds\n")   //Старый запрос (до баги WEBMIS-793)
+      //qs.add("hasBeds", this.hasBeds: java.lang.Boolean)
+      qs.query += ("AND exists (SELECT  oshb.masterDepartment.id FROM OrgStructureHospitalBed oshb WHERE oshb.masterDepartment.id = os.id)")  //WEBMIS-793
     }
     if(hasPatients) {
       val res = """ AND exists(

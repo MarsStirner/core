@@ -31,7 +31,7 @@ public class DiagnosticsRegistryExRESTImpl {
     }
 
     /**
-     * Просмотр списка направлений на {var} исследования
+     * Просмотр списка направлений на лабораторные исследования
      * var = {laboratory, instrumental, consultations}
      * @param limit Максимальное количество выводимых элементов на странице.
      * @param page Номер выводимой страницы.
@@ -62,81 +62,212 @@ public class DiagnosticsRegistryExRESTImpl {
      * @see ru.korus.tmis.core.exception.CoreException
      */
     @GET
-    @Path("/{var}")
+    @Path("/laboratory")
     @Produces("application/x-javascript")
-    public Object getListOfLaboratoryDiagnosticsForPatientByEvent(  @PathParam("var") String var,
-                                                                    @QueryParam("limit")int limit,
-                                                                    @QueryParam("page")int  page,
-                                                                    @QueryParam("sortingField")String sortingField,           //сортировки вкл
-                                                                    @QueryParam("sortingMethod")String sortingMethod,
-                                                                    @QueryParam("filter[code]")String  diaTypeCode,
-                                                                    //@QueryParam("filter[diagnosticDate]")long  diagnosticDate,
-                                                                    //@QueryParam("filter[directionDate]")long  directionDate,
-                                                                    @QueryParam("filter[date]") long date,
-                                                                    @QueryParam("filter[diagnosticName]")String  diagnosticName,
-                                                                    @QueryParam("filter[assignPersonId]")int  assignPersonId,
-                                                                    @QueryParam("filter[execPersonId]")int  execPersonId,
-                                                                    @QueryParam("filter[statusId]")int  statusId,
-                                                                    @QueryParam("filter[office]")String  office,
-                                                                    @QueryParam("filter[urgent]")Boolean  urgent) {
+    public Object getListOfLaboratoryDiagnosticsForPatientByEvent(   @QueryParam("limit")int limit,
+                                                                     @QueryParam("page")int  page,
+                                                                     @QueryParam("sortingField")String sortingField,           //сортировки вкл
+                                                                     @QueryParam("sortingMethod")String sortingMethod,
+                                                                     @QueryParam("filter[code]")String  diaTypeCode,
+                                                                     //@QueryParam("filter[diagnosticDate]")long  diagnosticDate,
+                                                                     //@QueryParam("filter[directionDate]")long  directionDate,
+                                                                     @QueryParam("filter[date]") long date,
+                                                                     @QueryParam("filter[diagnosticName]")String  diagnosticName,
+                                                                     @QueryParam("filter[assignPersonId]")int  assignPersonId,
+                                                                     @QueryParam("filter[execPersonId]")int  execPersonId,
+                                                                     @QueryParam("filter[statusId]")int  statusId,
+                                                                     @QueryParam("filter[office]")String  office,
+                                                                     @QueryParam("filter[urgent]")Boolean  urgent) {
 
-        DirectoryInfoRESTImpl.ActionTypesSubType atst = DirectoryInfoRESTImpl.ActionTypesSubType.getType(var);
+        DirectoryInfoRESTImpl.ActionTypesSubType atst = DirectoryInfoRESTImpl.ActionTypesSubType.getType("laboratory");
         DiagnosticsListRequestDataFilter filter = new DiagnosticsListRequestDataFilter( diaTypeCode,
-                                                                                        this.eventId,
-                                                                                        //diagnosticDate,
-                                                                                        //directionDate,
-                                                                                        date,
-                                                                                        diagnosticName,
-                                                                                        assignPersonId,
-                                                                                        execPersonId,
-                                                                                        office,
-                                                                                        statusId,
-                                                                                        (urgent==null) ? -1 : (urgent) ? 1 : 0,
-                                                                                        atst.getSubType(),
-                                                                                        atst.getMnemonic());
+                this.eventId,
+                //diagnosticDate,
+                //directionDate,
+                date,
+                diagnosticName,
+                assignPersonId,
+                execPersonId,
+                office,
+                statusId,
+                (urgent==null) ? -1 : (urgent) ? 1 : 0,
+                atst.getSubType(),
+                atst.getMnemonic());
 
         DiagnosticsListRequestData requestData = new DiagnosticsListRequestData(sortingField, sortingMethod, limit, page, filter);
         return new JSONWithPadding(wsImpl.getListOfDiagnosticsForPatientByEvent(requestData),this.callback);
     }
 
-    //TODO: POST и PUT требуется привести к единому виду
+    /**
+     * Просмотр списка направлений на инструментальные исследования
+     * var = {laboratory, instrumental, consultations}
+     * @param limit Максимальное количество выводимых элементов на странице.
+     * @param page Номер выводимой страницы.
+     * @param sortingField Наименование поля для сортировки.<pre>
+     * &#15; Возможные значения:
+     * &#15; "id" - по идентификатору направления (значение по умолчанию);
+     * &#15; "directionDate" - по дате направления;
+     * &#15; "diagnosticName" - по наименованию типа направления;
+     * &#15; "execPerson" - по ФИО исполнителя;
+     * &#15; "assignPerson" - по ФИО специалиста, назначившего исследование;
+     * &#15; "office" - по идентификатору кабинета;
+     * &#15; "status" - по статусу;
+     * &#15; "cito" - по срочности;</pre>
+     * @param sortingMethod Метод сортировки.<pre>
+     * &#15; Возможные значения:
+     * &#15; "asc" - по возрастанию (значение по умолчанию);
+     * &#15; "desc" - по убыванию;</pre>
+     * @param diaTypeCode Фильтр по коду типа исследования.
+     * @param date Фильтр по дате исследования.
+     * @param diagnosticName Фильтр по наименованию исследования.
+     * @param assignPersonId Фильтр по направившему на исследование специалисту.
+     * @param execPersonId  Фильтр по проводившему исследование специалисту.
+     * @param statusId Фильтр по статусу исследования.
+     * @param urgent  Фильтр по срочности исследования.
+     * @param office  Фильтр по коду кабинета.
+     * @return com.sun.jersey.api.json.JSONWithPadding как Object
+     * @throws ru.korus.tmis.core.exception.CoreException
+     * @see ru.korus.tmis.core.exception.CoreException
+     */
+    @GET
+    @Path("/instrumental")
+    @Produces("application/x-javascript")
+    public Object getListOfInstrumentalDiagnosticsForPatientByEvent(@QueryParam("limit")int limit,
+                                                             @QueryParam("page")int  page,
+                                                             @QueryParam("sortingField")String sortingField,           //сортировки вкл
+                                                             @QueryParam("sortingMethod")String sortingMethod,
+                                                             @QueryParam("filter[code]")String  diaTypeCode,
+                                                             //@QueryParam("filter[diagnosticDate]")long  diagnosticDate,
+                                                             //@QueryParam("filter[directionDate]")long  directionDate,
+                                                             @QueryParam("filter[date]") long date,
+                                                             @QueryParam("filter[diagnosticName]")String  diagnosticName,
+                                                             @QueryParam("filter[assignPersonId]")int  assignPersonId,
+                                                             @QueryParam("filter[execPersonId]")int  execPersonId,
+                                                             @QueryParam("filter[statusId]")int  statusId,
+                                                             @QueryParam("filter[office]")String  office,
+                                                             @QueryParam("filter[urgent]")Boolean  urgent) {
+
+        DirectoryInfoRESTImpl.ActionTypesSubType atst = DirectoryInfoRESTImpl.ActionTypesSubType.getType("instrumental");
+        DiagnosticsListRequestDataFilter filter = new DiagnosticsListRequestDataFilter( diaTypeCode,
+                this.eventId,
+                //diagnosticDate,
+                //directionDate,
+                date,
+                diagnosticName,
+                assignPersonId,
+                execPersonId,
+                office,
+                statusId,
+                (urgent==null) ? -1 : (urgent) ? 1 : 0,
+                atst.getSubType(),
+                atst.getMnemonic());
+
+        DiagnosticsListRequestData requestData = new DiagnosticsListRequestData(sortingField, sortingMethod, limit, page, filter);
+        return new JSONWithPadding(wsImpl.getListOfDiagnosticsForPatientByEvent(requestData),this.callback);
+    }
 
     /**
-     * Создание направления на диагностику
+     * Просмотр списка направлений на консультации исследования
+     * var = {laboratory, instrumental, consultations}
+     * @param limit Максимальное количество выводимых элементов на странице.
+     * @param page Номер выводимой страницы.
+     * @param sortingField Наименование поля для сортировки.<pre>
+     * &#15; Возможные значения:
+     * &#15; "id" - по идентификатору направления (значение по умолчанию);
+     * &#15; "directionDate" - по дате направления;
+     * &#15; "diagnosticName" - по наименованию типа направления;
+     * &#15; "execPerson" - по ФИО исполнителя;
+     * &#15; "assignPerson" - по ФИО специалиста, назначившего исследование;
+     * &#15; "office" - по идентификатору кабинета;
+     * &#15; "status" - по статусу;
+     * &#15; "cito" - по срочности;</pre>
+     * @param sortingMethod Метод сортировки.<pre>
+     * &#15; Возможные значения:
+     * &#15; "asc" - по возрастанию (значение по умолчанию);
+     * &#15; "desc" - по убыванию;</pre>
+     * @param diaTypeCode Фильтр по коду типа исследования.
+     * @param date Фильтр по дате исследования.
+     * @param diagnosticName Фильтр по наименованию исследования.
+     * @param assignPersonId Фильтр по направившему на исследование специалисту.
+     * @param execPersonId  Фильтр по проводившему исследование специалисту.
+     * @param statusId Фильтр по статусу исследования.
+     * @param urgent  Фильтр по срочности исследования.
+     * @param office  Фильтр по коду кабинета.
+     * @return com.sun.jersey.api.json.JSONWithPadding как Object
+     * @throws ru.korus.tmis.core.exception.CoreException
+     * @see ru.korus.tmis.core.exception.CoreException
+     */
+    @GET
+    @Path("/consultations")
+    @Produces("application/x-javascript")
+    public Object getListOfConsultationDiagnosticsForPatientByEvent(  @QueryParam("limit")int limit,
+                                                               @QueryParam("page")int  page,
+                                                               @QueryParam("sortingField")String sortingField,           //сортировки вкл
+                                                               @QueryParam("sortingMethod")String sortingMethod,
+                                                               @QueryParam("filter[code]")String  diaTypeCode,
+                                                               //@QueryParam("filter[diagnosticDate]")long  diagnosticDate,
+                                                               //@QueryParam("filter[directionDate]")long  directionDate,
+                                                               @QueryParam("filter[date]") long date,
+                                                               @QueryParam("filter[diagnosticName]")String  diagnosticName,
+                                                               @QueryParam("filter[assignPersonId]")int  assignPersonId,
+                                                               @QueryParam("filter[execPersonId]")int  execPersonId,
+                                                               @QueryParam("filter[statusId]")int  statusId,
+                                                               @QueryParam("filter[office]")String  office,
+                                                               @QueryParam("filter[urgent]")Boolean  urgent) {
+
+        DirectoryInfoRESTImpl.ActionTypesSubType atst = DirectoryInfoRESTImpl.ActionTypesSubType.getType("consultations");
+        DiagnosticsListRequestDataFilter filter = new DiagnosticsListRequestDataFilter( diaTypeCode,
+                this.eventId,
+                //diagnosticDate,
+                //directionDate,
+                date,
+                diagnosticName,
+                assignPersonId,
+                execPersonId,
+                office,
+                statusId,
+                (urgent==null) ? -1 : (urgent) ? 1 : 0,
+                atst.getSubType(),
+                atst.getMnemonic());
+
+        DiagnosticsListRequestData requestData = new DiagnosticsListRequestData(sortingField, sortingMethod, limit, page, filter);
+        return new JSONWithPadding(wsImpl.getListOfDiagnosticsForPatientByEvent(requestData),this.callback);
+    }
+
+    /**
+     * Создание направления на лабораторное исследование
      * @param data Json с данными о лабораторном исследовании как CommonData
      * @return com.sun.jersey.api.json.JSONWithPadding как Object
      * @throws ru.korus.tmis.core.exception.CoreException
      * @see ru.korus.tmis.core.exception.CoreException
      */
     @POST
-    @Path("/{var}")
+    @Path("/laboratory")
     @Consumes("application/json")
     @Produces("application/x-javascript")
-    public Object insertLaboratoryStudies(JSONCommonData data,
-                                          @PathParam("var") String var) {
+    public Object insertLaboratoryStudies(JSONCommonData data) {
+        //DirectoryInfoRESTImpl.ActionTypesSubType atst = DirectoryInfoRESTImpl.ActionTypesSubType.getType(var);
+        CommonData com_data = new CommonData();
+        com_data.setEntity(data.getData());
+        return new JSONWithPadding(wsImpl.insertLaboratoryStudies(this.eventId, com_data, this.auth), this.callback);
+    }
 
-        DirectoryInfoRESTImpl.ActionTypesSubType atst = DirectoryInfoRESTImpl.ActionTypesSubType.getType(var);
+    /**
+     * Создание направления на инструментальное исследование
+     * @param data json данные о инструментальном исследовании как JSONCommonData.
+     * @return com.sun.jersey.api.json.JSONWithPadding как Object
+     * @throws ru.korus.tmis.core.exception.CoreException
+     * @see ru.korus.tmis.core.exception.CoreException
+     */
 
-        switch (atst){
-            case LABORATORY: {
-                CommonData com_data = new CommonData();
-                com_data.setEntity(data.getData());
-                return new JSONWithPadding(wsImpl.insertLaboratoryStudies(this.eventId, com_data, this.auth), this.callback);
-            }
-            case INSTRUMENTAL: {
-                CommonData com_data = new CommonData();
-                com_data.setEntity(data.getData());
-                return new JSONWithPadding(wsImpl.insertInstrumentalStudies(this.eventId, com_data, this.auth), this.callback);
-            }
-            case CONSULTATIONS: {
-                //ConsultationRequestData request = new ConsultationRequestData(eventId, actionTypeId, executorId, patientId, beginDate, endDate, urgent);
-                //JSONWithPadding returnValue = new JSONWithPadding(wsImpl.insertConsultation(data.rewriteDefault(data)), callback);
-                return null;
-            }
-            default: {
-                return null;
-            }
-        }
+    @POST
+    @Path("/instrumental")
+    @Consumes("application/json")
+    @Produces("application/x-javascript")
+    public Object insertInstrumental(JSONCommonData data) {
+        CommonData com_data = new CommonData();
+        com_data.setEntity(data.getData());
+        return new JSONWithPadding(wsImpl.insertInstrumentalStudies(this.eventId, com_data, this.auth), this.callback);
     }
 
     /**
@@ -146,26 +277,23 @@ public class DiagnosticsRegistryExRESTImpl {
      * @throws ru.korus.tmis.core.exception.CoreException
      * @see ru.korus.tmis.core.exception.CoreException
      */
-     /*
+
     @POST
     @Path("/consultations")
     @Consumes("application/json")
     @Produces("application/x-javascript")
     public Object insertConsultation(ConsultationRequestData data) {
-
-
         //ConsultationRequestData request = new ConsultationRequestData(eventId, actionTypeId, executorId, patientId, beginDate, endDate, urgent);
-        JSONWithPadding returnValue = new JSONWithPadding(wsImpl.insertConsultation(data.rewriteDefault(data)), callback);
-        return returnValue;
+        return new JSONWithPadding(wsImpl.insertConsultation(data.rewriteDefault(data), this.auth), callback);
     }
-       */
+
     /**
      * Редактирование списка направлений на лабораторные исследования
      * @param data Json с данными о лабораторном исследовании как CommonData
      * @return com.sun.jersey.api.json.JSONWithPadding как Object
      * @throws ru.korus.tmis.core.exception.CoreException
      * @see ru.korus.tmis.core.exception.CoreException
-     */
+     */       /*
     @PUT
     @Path("/{var}/")
     @Consumes("application/json")
@@ -194,7 +322,7 @@ public class DiagnosticsRegistryExRESTImpl {
         }
     }
 
-
+              */
 
     /**
      * Редактирование направления на лабораторные исследование
@@ -261,28 +389,41 @@ public class DiagnosticsRegistryExRESTImpl {
      * @see ru.korus.tmis.core.exception.CoreException
      */
     @DELETE
-    @Path("/{var}/")
+    @Path("/laboratory")
     @Consumes("application/json")
     @Produces("application/x-javascript")
-    public Object removeLaboratoryStudies(AssignmentsToRemoveDataList data,
-                                          @PathParam("var") String var) {
+    public Object removeLaboratoryStudies(AssignmentsToRemoveDataList data) {
+        return new JSONWithPadding(wsImpl.removeDirection(data, "laboratory", this.auth), this.callback);
+    }
 
-        DirectoryInfoRESTImpl.ActionTypesSubType atst = DirectoryInfoRESTImpl.ActionTypesSubType.getType(var);
+    /**
+     * Удаление списка направлений на инструментальные исследования
+     * @param data Json с данными о лабораторном исследовании как CommonData
+     * @return com.sun.jersey.api.json.JSONWithPadding как Object
+     * @throws ru.korus.tmis.core.exception.CoreException
+     * @see ru.korus.tmis.core.exception.CoreException
+     */
+    @DELETE
+    @Path("/instrumental")
+    @Consumes("application/json")
+    @Produces("application/x-javascript")
+    public Object removeInstrumentalStudies(AssignmentsToRemoveDataList data) {
+        return new JSONWithPadding(wsImpl.removeDirection(data, "instrumental", this.auth), this.callback);
+    }
 
-        switch (atst){
-            case LABORATORY: {
-                return new JSONWithPadding(wsImpl.removeDirection(data, "laboratory", this.auth), this.callback);
-            }
-            case INSTRUMENTAL: {
-                return null;
-            }
-            case CONSULTATIONS: {
-                return null;
-            }
-            default: {
-                return null;
-            }
-        }
+    /**
+     * Удаление списка направлений на консультации
+     * @param data Json с данными о лабораторном исследовании как CommonData
+     * @return com.sun.jersey.api.json.JSONWithPadding как Object
+     * @throws ru.korus.tmis.core.exception.CoreException
+     * @see ru.korus.tmis.core.exception.CoreException
+     */
+    @DELETE
+    @Path("/consultations")
+    @Consumes("application/json")
+    @Produces("application/x-javascript")
+    public Object removeConsultationsStudies(AssignmentsToRemoveDataList data) {
+        return new JSONWithPadding(wsImpl.removeDirection(data, "consultations", this.auth), this.callback);
     }
 
     /**

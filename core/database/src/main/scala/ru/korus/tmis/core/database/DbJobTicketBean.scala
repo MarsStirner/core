@@ -177,6 +177,35 @@ class DbJobTicketBean extends DbJobTicketBeanLocal
     }
   }
 
+  def getActionTypeTissueTypeForActionType(actionTypeId: Int) = {
+    val query = em.createQuery(ActionTypeTissueTypeByActionTypeIdQuery, classOf[ActionTypeTissueType])
+      .setParameter(":actionTypeId", actionTypeId)
+
+    val result = query.getResultList
+
+    result.size match {
+      case 0 => {
+        null /*
+        throw new CoreException(
+          ConfigManager.ErrorCodes.JobNotFound,
+          i18n("error.jobNotFound").format(id))          */
+      }
+      case size => {
+        result.foreach(em.detach(_))
+        result(0)
+      }
+    }
+  }
+
+  val ActionTypeTissueTypeByActionTypeIdQuery =
+    """
+      SELECT attp
+      FROM
+        ActionTypeTissueType attp
+      WHERE
+        attp.actionType.id = :actionTypeId
+    """
+
   def getJobTicketForAction(actionId: Int) = {
     val query = em.createQuery(JobTicketForActionQuery, classOf[JobTicket])
       .setParameter("actionId", actionId)

@@ -112,6 +112,7 @@ public interface DbActionPropertyBeanLocal {
 
     ActionProperty createActionProperty(Action doctorAction, ActionPropertyType queueAPType) throws CoreException;
 
+    APValueAction getActionPropertyValue_ActionByValue(Action action) throws CoreException;
     /**
      * Получение своства действия по значению действия  (ActionProperty_Action by ActionProperty_Action.value)
      *

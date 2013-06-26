@@ -167,6 +167,7 @@ public class CustomInfoRESTImpl {
      * &#15; "desc" - по убыванию;</pre>
      * @param endDate Фильтр значений по дате закрытия госпитализации.
      * @param departmentId Фильтр значений по отделению (по умолчанию берется из данных авторизации).
+     * @param doctorId Фильтр значений по врачу (по умолчанию берется из данных авторизации).
      * @return com.sun.jersey.api.json.JSONWithPadding как Object
      * @throws ru.korus.tmis.core.exception.CoreException
      * @see ru.korus.tmis.core.exception.CoreException
@@ -175,12 +176,13 @@ public class CustomInfoRESTImpl {
     @Path("/departments/patients")
     @Produces("application/x-javascript")
     public Object getAllPatientsForDepartmentOrUserByPeriod(@QueryParam("filter[date]")long endDate,
-                                                            @QueryParam("filter[departmentId]") int departmentId) {
+                                                            @QueryParam("filter[departmentId]") int departmentId,
+                                                            @QueryParam("filter[doctorId]") int doctorId) {
 
         int depId = (departmentId>0) ? departmentId : auth.getUser().getOrgStructure().getId().intValue();
         PatientsListRequestData requestData = new PatientsListRequestData ( depId,
-                                                                            auth.getUser().getId().intValue(),
-                                                                            auth.getUserRole().getId().intValue(),
+                                                                            doctorId,//auth.getUser().getId().intValue(),           //WEBMIS-809: Если параметр doctorId не указан, то ищем всех пациентов отделения.
+                                                                            doctorId>0 ? 0 : auth.getUserRole().getId().intValue(), //Если указан доктор, то ищем пациентов доктора.
                                                                             endDate,
                                                                             sortingField,
                                                                             sortingMethod,

@@ -274,10 +274,21 @@ class DbActionBean
   }
 
   def getActionIdWithCopyByEventId(eventId: Int, actionTypeId: Int) = {
-    val result = em.createQuery(ActionsIdFindQuery, classOf[Int])
-      .setParameter("id", eventId)
-      .setParameter("actionTypeId", actionTypeId)
-      .getResultList
+    /*
+     Для первичного осмотра ищется последний осмотр заданного типа во всех предыдущих обращениях
+     Для остальных осмотров ищется последний осмотр заданного типа в данном обращении
+     Выполнено согласно "ТРЕБОВАНИЯМ К РАБОТЕ С МЕДИЦИНСКИМИ ДОКУМЕНТАМИ"
+     */
+    val subQuery = if(actionTypeId == i18n("db.actionType.primary").toInt || actionTypeId == i18n("db.actionType.secondary").toInt)
+                      "e.patient.id IN (SELECT DISTINCT e2.patient.id FROM Event e2 WHERE e2.id = :id)"
+                   else //"e.id = :id"
+            "e.execDate IN (SELECT DISTINCT MAX(e2.execDate) FROM Event e2 WHERE e2.patient.id IN" +
+              "(SELECT DISTINCT e3.patient.id FROM Event e3 WHERE e3.id = :id))"
+
+    val result = em.createQuery(ActionsIdFindQuery.format(subQuery), classOf[Int])
+                   .setParameter("id", eventId)
+                   .setParameter("actionTypeId", actionTypeId)
+                   .getResultList
 
     result.size match {
       case 0 => 0
@@ -301,6 +312,40 @@ class DbActionBean
     }
   }
 
+  @TransactionAttribute(TransactionAttributeType.REQUIRES_NEW)
+  def getEvent29AndAction19ForAction(action: Action) = {
+    var typed = em.createQuery(GetEvent29AndAction19ForAction, classOf[Action])
+      .setParameter("externalId", action.getEvent.getExternalId)
+      .setParameter("directionDate", action.getPlannedEndDate)
+
+    val result = typed.getResultList
+    result.size match {
+      case 0 => null
+      case size => {
+        result.foreach(em.detach(_))
+        result(0)
+      }
+    }
+  }
+
+  val GetEvent29AndAction19ForAction = """
+  SELECT a
+  FROM
+    Action a
+  WHERE
+    a.event.externalId = :externalId
+  AND
+    a.event.eventType.id = '29'
+  AND
+    a.directionDate = :directionDate
+  AND
+    a.event.deleted = 0
+  AND
+    a.actionType.id = '19'
+  AND
+    a.deleted = '0'
+                                       """
+
   val ActionsByATypeIdAndEventId = """
     SELECT a.id
     FROM
@@ -316,7 +361,7 @@ class DbActionBean
     ORDER BY a.createDatetime DESC
                                    """
 
-  val ActionsIdFindQuery = """
+  /*val ActionsIdFindQuery = """
     SELECT a.id
     FROM
       Action a
@@ -328,6 +373,20 @@ class DbActionBean
       at.id = :actionTypeId
     AND
       e.patient.id IN (SELECT DISTINCT e2.patient.id FROM Event e2 WHERE e2.id = :id AND e2.deleted = 0)
+    ORDER BY a.createDatetime DESC
+                           """*/
+  val ActionsIdFindQuery = """
+    SELECT a.id
+    FROM
+      Action a
+      JOIN a.event e
+      JOIN a.actionType at
+    WHERE
+      a.deleted = 0
+    AND
+      at.id = :actionTypeId
+    AND
+      %s
     ORDER BY a.createDatetime DESC
                            """
 

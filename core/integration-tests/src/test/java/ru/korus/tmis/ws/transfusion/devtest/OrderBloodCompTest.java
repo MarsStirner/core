@@ -20,7 +20,6 @@ import ru.korus.tmis.ws.transfusion.devtest.wsimport.IssueResult;
 import ru.korus.tmis.ws.transfusion.devtest.wsimport.OrderIssueInfo;
 import ru.korus.tmis.ws.transfusion.devtest.wsimport.TransfusionService;
 import ru.korus.tmis.ws.transfusion.devtest.wsimport.TransfusionServiceImpl;
-import ru.korus.tmis.ws.transfusion.order.SendOrderBloodComponents;
 
 /**
  * Author:      Sergey A. Zagrebelny <br>
@@ -34,7 +33,7 @@ import ru.korus.tmis.ws.transfusion.order.SendOrderBloodComponents;
  */
 public class OrderBloodCompTest extends TestBase {
 
-    protected final static Integer TRFU_ACTION_TYPE_ID = 3580;// 3689; // TODO init by flatCode
+    protected final static Integer TRFU_ACTION_TYPE_ID = 3689;// 3689; // TODO init by flatCode
 
     private static final PropType[] propConstants = { PropType.DIAGNOSIS, // Основной клинический диагноз
             PropType.BLOOD_COMP_TYPE, // Требуемый компонент крови
@@ -57,7 +56,7 @@ public class OrderBloodCompTest extends TestBase {
         closeTestCase();
     }
 
-    @Test(groups = "createNewOrder")
+    @Test
     public void createNewOrder() {
         try {
             clearDB(propConstants);
@@ -69,7 +68,7 @@ public class OrderBloodCompTest extends TestBase {
             setValue(PropType.BLOOD_COMP_TYPE, 1);
             setValue(PropType.DOSE_COUNT, 0.1);
             setValue(PropType.ROOT_CAUSE, "tst root cause");
-            setValue(PropType.TYPE, "<>" + SendOrderBloodComponents.TRANSFUSION_TYPE_PLANED + "<>");
+            setValue(PropType.TYPE, "<>" + "Плановая" + "<>");
             setValue(PropType.ORDER_ISSUE_BLOOD_COMP_PASPORT, ACTION_ID);
             String res = waitOrderRequestId();
             AssertJUnit.assertTrue(res != null ? res.indexOf("Получен идентификатор в системе ТРФУ: ") == 0 : false);
@@ -82,7 +81,6 @@ public class OrderBloodCompTest extends TestBase {
         }
     }
 
-    @Test(groups = "setOrderRes", dependsOnGroups = "createNewOrder")
     public void setOrderRes() {
         final TransfusionServiceImpl serv = new TransfusionServiceImpl();
         final TransfusionService wsTrfu = serv.getPortTransfusion();

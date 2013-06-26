@@ -153,7 +153,7 @@ public interface DbActionBeanLocal {
             throws CoreException;
 
     /**
-     * Возвращает идентификатор последнего действия заданного типа из предыдущего обращения для пациента, для которого заведено текущее обращение.<br>
+     * Возвращает идентификатор последнего действия заданного типа из предыдущего обращения (если осмотр) или текущего обращения для пациента, для которого заведено текущее обращение.<br>
      * "Копирование"
      *
      * @param eventId      Идентификатор обращения.
@@ -176,4 +176,6 @@ public interface DbActionBeanLocal {
     ActionType getActionTypeByCode(String code) throws CoreException;
 
     Action createAction(ActionType actionType, Event event, Staff person, Date date, String hospitalUidFrom, String note);
+
+    Action getEvent29AndAction19ForAction (Action action) throws CoreException;
 }

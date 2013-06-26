@@ -74,6 +74,7 @@ class AppealData {
            mAdmissionDiagnosis: (Int, java.util.List[java.lang.Integer]) => java.util.Map[ActionProperty, java.util.List[APValue]],
            mCorrList: (java.util.List[java.lang.Integer])=> java.util.List[RbCoreActionProperty],
            contract: Contract,
+           currentDepartment: OrgStructure,
            mDiagnosticList: (Int, java.util.Set[String]) => java.util.List[Diagnostic]){
     this ()
     this.requestData = requestData
@@ -117,10 +118,10 @@ class AppealData {
       val extractId = postProcessing(event.getId.intValue(), setExtractATIds)
       val extractProperties = if (mAdmissionDiagnosis!=null && extractId>0) mAdmissionDiagnosis(extractId, setExtractIds) else null
 
-      new AppealEntry(event, appeal, values, mMovingProperties, typeOfResponse, map, street, (primaryId>0), mRelationByRelativeId, admissions, extractProperties, corrMap, contract, diagnostics)
+      new AppealEntry(event, appeal, values, mMovingProperties, typeOfResponse, map, street, (primaryId>0), mRelationByRelativeId, admissions, extractProperties, corrMap, contract, currentDepartment, diagnostics)
     } else {
       val corrMap = if(mCorrList!=null) mCorrList(setMovingIds) else null
-      new AppealEntry(event, appeal, values, mMovingProperties, typeOfResponse, map, street, false, mRelationByRelativeId, null, null, corrMap, contract, diagnostics)
+      new AppealEntry(event, appeal, values, mMovingProperties, typeOfResponse, map, street, false, mRelationByRelativeId, null, null, corrMap, contract, currentDepartment, diagnostics)
      }
   }
 }
@@ -276,7 +277,8 @@ class AppealEntry {
   @JsonView(Array(classOf[Views.DynamicFieldsPrintForm]))
   @BeanProperty
   var totalDays: String = _                                       //Проведено койко-дней
-
+  @BeanProperty
+  var currentDepartment: IdNameContainer = _
   //данные о последующей госпитализации (reeadonly)
   //согласно спецификации: https://docs.google.com/spreadsheet/ccc?key=0Au-ED6EnawLcdHo0Z3BiSkRJRVYtLUxhaG5uYkNWaGc#gid=5
   @BeanProperty
@@ -285,6 +287,10 @@ class AppealEntry {
   var nextHospDepartment: String = _
   @BeanProperty
   var nextHospFinanceType: String = _
+  @BeanProperty
+  var closed: Boolean = false       //Флаг закрыта ли госпитализация
+  @BeanProperty
+  var closeDateTime: Date = _       //Дата закрытия госпитализации госпитализация
 
   /**
    * Конструктор класса AppealEntry
@@ -318,12 +324,15 @@ class AppealEntry {
            extractProperties: java.util.Map[ActionProperty, java.util.List[APValue]],
            corrList: java.util.List[RbCoreActionProperty],
            contract: Contract,
+           currentDepartment: OrgStructure,
            diagnostics: java.util.List[Diagnostic]) {
     this()
     var exValue: java.util.List[Object] = null
 
     //Обращение и Действие
     this.id = event.getId.intValue()
+    this.closed =  (event.getExecDate!=null)
+    this.closeDateTime = event.getExecDate
     this.version = event.getVersion
     this.number = event.getExternalId
     this.setPerson = if (event.getAssigner != null) {new ComplexPersonContainer(event.getAssigner)} else {new ComplexPersonContainer}
@@ -559,6 +568,10 @@ class AppealEntry {
           }
         }
       }
+    }
+    // Текущее отделение пребывания пациента
+    if (currentDepartment != null) {
+      this.currentDepartment = new IdNameContainer(currentDepartment.getId.intValue(), currentDepartment.getName)
     }
     //Имеет первичный осмотр
     this.havePrimary = havePrimary

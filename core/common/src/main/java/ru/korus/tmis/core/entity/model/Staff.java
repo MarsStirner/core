@@ -1,23 +1,40 @@
 package ru.korus.tmis.core.entity.model;
 
-import javax.persistence.*;
-import javax.xml.bind.annotation.XmlElement;
-import javax.xml.bind.annotation.XmlRootElement;
-import javax.xml.bind.annotation.XmlTransient;
-import javax.xml.bind.annotation.XmlType;
 import java.io.Serializable;
 import java.util.Date;
 import java.util.LinkedHashSet;
 import java.util.Set;
 
+import javax.persistence.Basic;
+import javax.persistence.CascadeType;
+import javax.persistence.Column;
+import javax.persistence.Entity;
+import javax.persistence.GeneratedValue;
+import javax.persistence.GenerationType;
+import javax.persistence.Id;
+import javax.persistence.JoinColumn;
+import javax.persistence.JoinTable;
+import javax.persistence.ManyToMany;
+import javax.persistence.ManyToOne;
+import javax.persistence.NamedQueries;
+import javax.persistence.NamedQuery;
+import javax.persistence.Table;
+import javax.persistence.Temporal;
+import javax.persistence.TemporalType;
+import javax.persistence.Transient;
+import javax.xml.bind.annotation.XmlElement;
+import javax.xml.bind.annotation.XmlRootElement;
+import javax.xml.bind.annotation.XmlTransient;
+import javax.xml.bind.annotation.XmlType;
+
 @Entity
 @Table(name = "Person", catalog = "", schema = "")
 @NamedQueries(
-        {
-                @NamedQuery(name = "Staff.findAll", query = "SELECT s FROM Staff s"),
-                @NamedQuery(name = "Staff.findByLogin",
-                        query = "SELECT s FROM Staff s WHERE s.login = :login AND s.deleted = 0")
-        })
+{
+        @NamedQuery(name = "Staff.findAll", query = "SELECT s FROM Staff s"),
+        @NamedQuery(name = "Staff.findByLogin",
+                query = "SELECT s FROM Staff s WHERE s.login = :login AND s.deleted = 0")
+})
 @XmlType(name = "staff")
 @XmlRootElement(name = "staff")
 public class Staff implements Serializable {
@@ -137,6 +154,10 @@ public class Staff implements Serializable {
     @Column(name = "password")
     private String password;
 
+    @ManyToOne
+    @JoinColumn(name = "userProfile_id")
+    private Role userProfileId;
+
     @Basic(optional = false)
     @Column(name = "retired")
     private boolean retired;
@@ -200,11 +221,11 @@ public class Staff implements Serializable {
 
     @ManyToOne
     @JoinColumn(name = "uuid_id")
-//    @Transient
+    // @Transient
     private UUID uuid;
-    ////////////////////////////////////////////////////////////////////////////
+    // //////////////////////////////////////////////////////////////////////////
     // Custom mappings
-    ////////////////////////////////////////////////////////////////////////////
+    // //////////////////////////////////////////////////////////////////////////
 
     @ManyToOne
     @JoinColumn(name = "createPerson_id")
@@ -231,7 +252,7 @@ public class Staff implements Serializable {
         this.createPersonId = createPersonId;
     }
 
-    ////////////////////////////////////////////////////////////////////////////
+    // //////////////////////////////////////////////////////////////////////////
 
     @ManyToOne
     @JoinColumn(name = "modifyPerson_id")
@@ -258,12 +279,12 @@ public class Staff implements Serializable {
         this.modifyPersonId = modifyPersonId;
     }
 
-    ////////////////////////////////////////////////////////////////////////////
+    // //////////////////////////////////////////////////////////////////////////
 
     @ManyToMany(cascade = CascadeType.ALL)
     @JoinTable(name = "Person_Profiles",
-            joinColumns = {@JoinColumn(name = "person_id")},
-            inverseJoinColumns = {@JoinColumn(name = "userProfile_id")})
+            joinColumns = { @JoinColumn(name = "person_id") },
+            inverseJoinColumns = { @JoinColumn(name = "userProfile_id") })
     private Set<Role> roles = new LinkedHashSet<Role>();
 
     public Set<Role> getRoles() {
@@ -274,9 +295,9 @@ public class Staff implements Serializable {
         this.roles = roles;
     }
 
-    ////////////////////////////////////////////////////////////////////////////
+    // //////////////////////////////////////////////////////////////////////////
     // End of custom mappings
-    ////////////////////////////////////////////////////////////////////////////
+    // //////////////////////////////////////////////////////////////////////////
 
     public Staff() {
     }
@@ -508,6 +529,14 @@ public class Staff implements Serializable {
 
     public void setPassword(String password) {
         this.password = password;
+    }
+
+    public Role getUserProfileId() {
+        return userProfileId;
+    }
+
+    public void setUserProfileId(Role userProfileId) {
+        this.userProfileId = userProfileId;
     }
 
     public boolean getRetired() {

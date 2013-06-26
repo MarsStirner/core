@@ -41,7 +41,7 @@ public class AppealsInfoRESTImpl {
         return new AssignmentsRegistryRESTImpl(wsImpl, eventId, callback, this.auth) ;
     }
 
-    @Path("/{eventId}/examinations/")
+    @Path("/{eventId}/documents/")
     public ExaminationsRegistryRESTImpl getExaminationsRegistryRESTImpl(@PathParam("eventId") int eventId) {
         return new ExaminationsRegistryRESTImpl(wsImpl, eventId, callback, this.auth) ;
     }

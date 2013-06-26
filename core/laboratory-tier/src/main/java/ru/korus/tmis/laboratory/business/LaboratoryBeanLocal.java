@@ -1,8 +1,13 @@
 package ru.korus.tmis.laboratory.business;
 
 import ru.korus.tmis.core.entity.model.Action;
+import ru.korus.tmis.core.entity.model.ActionType;
+import ru.korus.tmis.core.entity.model.TakenTissue;
 import ru.korus.tmis.core.exception.CoreException;
 import ru.korus.tmis.laboratory.data.lis.accept.AnalysisResult;
+import ru.korus.tmis.laboratory.data.request.BiomaterialInfo;
+import ru.korus.tmis.laboratory.data.request.DiagnosticRequestInfo;
+import ru.korus.tmis.laboratory.data.request.OrderInfo;
 
 import javax.ejb.Local;
 import java.util.List;
@@ -40,4 +45,12 @@ public interface LaboratoryBeanLocal {
             boolean lastPiece,
             List<ru.korus.tmis.laboratory.data.lis2.accept.AnalysisResult> results,
             String biomaterialDefects) throws CoreException;
+
+
+    //    TEMP FIXME...
+    DiagnosticRequestInfo getDiagnosticRequestInfo(Action a);
+
+    BiomaterialInfo getBiomaterialInfo(Action action, TakenTissue takenTissue);
+
+    OrderInfo getOrderInfo(Action a, ActionType at);
 }

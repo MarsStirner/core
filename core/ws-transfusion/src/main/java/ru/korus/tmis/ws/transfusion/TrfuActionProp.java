@@ -9,6 +9,7 @@ import ru.korus.tmis.core.entity.model.Action;
 import ru.korus.tmis.core.entity.model.ActionPropertyType;
 import ru.korus.tmis.core.entity.model.ActionType;
 import ru.korus.tmis.core.exception.CoreException;
+import ru.korus.tmis.ws.transfusion.PropType;
 
 /**
  * Author: Sergey A. Zagrebelny <br>
@@ -17,39 +18,19 @@ import ru.korus.tmis.core.exception.CoreException;
  * Description: <br>
  */
 
-/**
- * Класс для работы со свойствами действия
- */
 public class TrfuActionProp {
 
     private final Database database;
 
-    /**
-     * Таблица свойств действия. Key - тип свойства действия, Value - ActionPropertyType.Id
-     */
     private final Map<PropType, Integer> propIds;
 
-    /**
-     * Создание класса для работы со свойствами действия
-     * 
-     * @param databaseBean
-     *            - доступ к БД
-     * @param actionTypeFlatCode
-     *            - код типа действия для
-     * @param propConstants
-     *            - список свойств дейсвия
-     * @throws CoreException
-     *             - при ошибке во время работы с БД
-     */
     public TrfuActionProp(final Database databaseBean, final String actionTypeFlatCode, final List<PropType> propConstants) throws CoreException {
         database = databaseBean;
         final List<ActionType> actionType =
                 database.getEntityMgr().createQuery("SELECT at FROM ActionType at WHERE at.flatCode = :flatCode AND at.deleted = 0", ActionType.class)
                         .setParameter("flatCode", actionTypeFlatCode).getResultList();
         if (actionType.size() != 1) {
-            throw new CoreException(String.format(
-                    "The Action 'Transfusion Therapy' has been not found or more that one has been found. flatCode '%s', count of action type: '%d'",
-                    actionTypeFlatCode, actionType.size()));
+            throw new CoreException(String.format("The Action 'Transfusion Therapy' has been not found. flatCode '%s'", actionTypeFlatCode));
         }
 
         final List<ActionPropertyType> actionPropTypes = database.getEntityMgr()
@@ -106,6 +87,7 @@ public class TrfuActionProp {
 
     public void setRequestState(final Integer actionId, final String state) throws CoreException {
         setProp(state, actionId, PropType.ORDER_REQUEST_ID, true);
+
     }
 
     public void orderResult2DB(final Action action, final Integer requestId) throws CoreException {

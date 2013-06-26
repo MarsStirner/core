@@ -3,12 +3,14 @@ package ru.korus.tmis.core.patient;
 import ru.korus.tmis.core.auth.AuthData;
 import ru.korus.tmis.core.data.AssignmentsToRemoveDataList;
 import ru.korus.tmis.core.data.CommonData;
+import ru.korus.tmis.core.data.ConsultationRequestData;
 import ru.korus.tmis.core.data.JSONCommonData;
 import ru.korus.tmis.core.data.JobTicketStatusDataList;
 import ru.korus.tmis.core.exception.CoreException;
 import scala.Function2;
 
 import javax.ejb.Local;
+import java.util.Date;
 
 /**
  * Методы для работы с Направлениями
@@ -67,6 +69,9 @@ public interface DirectionBeanLocal {
                                                              Object request,
                                                              AuthData userData,
                                                              Function2<JSONCommonData, java.lang.Boolean, JSONCommonData> postProcessingForDiagnosis)
+            throws CoreException;
+
+    int createConsultation(ConsultationRequestData request, AuthData userData)
             throws CoreException;
 
     /**

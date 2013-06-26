@@ -55,4 +55,14 @@ public interface DbJobTicketBeanLocal {
     List<Action> getActionsForJobTicket(int jobTicketId) throws CoreException;
 
     JobTicket getJobTicketForAction(int actionId) throws CoreException;
+    Object getJobTicketAndTakenTissueForAction(Action action) throws CoreException;
+
+    /**
+     * Поиск работы для действия
+     * @param actionTypeId Тип действие Action, для которого будет производиться поиск
+     * @return ActionTypeTissueType
+     * @throws CoreException
+     * @see CoreException
+     */
+    ActionTypeTissueType getActionTypeTissueTypeForActionType(int actionTypeId) throws CoreException;
 }

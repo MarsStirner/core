@@ -8,6 +8,8 @@ import java.util.{Date, LinkedList}
 import javax.xml.bind.annotation._
 import javax.xml.bind.annotation.adapters.{XmlJavaTypeAdapter, XmlAdapter}
 import org.codehaus.jackson.annotate.JsonIgnoreProperties
+import java.util
+import ru.korus.tmis.core.entity.model.layout.LayoutAttributeValue
 
 @XmlType(name = "entities")
 @XmlRootElement(name = "entities")
@@ -253,7 +255,7 @@ class CommonGroup {
 @XmlType(name = "attribute")
 @XmlRootElement(name = "attribute")
 @JsonIgnoreProperties(ignoreUnknown = true)
-class CommonAttribute() {
+trait AbstractCommonAttribute {
 
   @XmlTransient
   var dateFormatter = ConfigManager.DateFormatter
@@ -323,6 +325,48 @@ class CommonAttribute() {
   def setTypeId(eTypeId: Integer) = {
     this.typeId = eTypeId
   }
+
+  var mandatory: String = _
+
+  @XmlAttribute(name = "mandatory")
+  def getMandatory() = {
+    mandatory
+  }
+
+  def setMandatory(mandatory: String) = {
+    this.mandatory = mandatory
+  }
+
+  var readOnly: String = _
+
+  @XmlAttribute(name = "readOnly")
+  def getReadOnly() = {
+    readOnly
+  }
+
+  def setReadOnly(readOnly: String) = {
+    this.readOnly = readOnly
+  }
+
+  @XmlJavaTypeAdapter(value = classOf[PropertyMapAdapter])
+  var properties: Map[String, String] = Map.empty[String, String]
+
+  def addProperty(key: String, value: String) = {
+    value match {
+      case null => {}
+      case _ => properties += (key -> value)
+    }
+  }
+
+  def apply(map: Map[String, String]) = {
+    map.foreach((property) => {
+      addProperty(property._1, property._2)
+    })
+    this
+  }
+}
+
+class CommonAttribute  extends AbstractCommonAttribute{
 
   private def this(id: Integer,
                    name: String,
@@ -407,21 +451,45 @@ class CommonAttribute() {
     this.apply(props)
   }
 
-  @XmlJavaTypeAdapter(value = classOf[PropertyMapAdapter])
-  var properties: Map[String, String] = Map.empty[String, String]
+  def this(id: Integer,
+           version: Integer,
+           name: String,
+           aType: String,
+           mandatory: String,
+           readOnly: String,
+           scope: String,
+           props: Map[String, String]) = {
+    this(id, version, name, aType, scope, props)
+    this.mandatory = mandatory
+    this.readOnly = readOnly
+  }
+}
 
-  def addProperty(key: String, value: String) = {
-    value match {
-      case null => {}
-      case _ => properties += (key -> value)
-    }
+class CommonAttributeWithLayout(id: Integer,
+                                version: Integer,
+                                name: String,
+                                aType: String,
+                                scope: String,
+                                props: Map[String, String]) extends CommonAttribute (id, version, name, aType, scope, props){
+
+  @BeanProperty
+  var layoutAttributeValues = new LinkedList[LayoutAttributeSimplifyDataContainer]
+
+  def this(id: Integer,
+           version: Integer,
+           name: String,
+           aType: String,
+           scope: String,
+           props: Map[String, String],
+           layout: List[LayoutAttributeValue]) = {
+    this(id, version, name, aType, scope, props)
+    layout.foreach(f=> this.layoutAttributeValues.add(new LayoutAttributeSimplifyDataContainer(f)))
   }
 
-  def apply(map: Map[String, String]) = {
-    map.foreach((property) => {
-      addProperty(property._1, property._2)
-    })
-    this
+  def this (ca: CommonAttribute,
+            layout: List[LayoutAttributeValue] ) = {
+    this(ca.id, ca.version, ca.name, ca.aType, ca.scope, ca.properties)
+    layout.foreach(f=> this.layoutAttributeValues.add(new LayoutAttributeSimplifyDataContainer(f)))
   }
 }
 

@@ -11,7 +11,7 @@
 
     <parent>
         <groupId>ru.korus.tmis</groupId>
-        <artifactId>tmis-nexus</artifactId>
+        <artifactId>tmis-core</artifactId>
         <version>${version.tmis.core}</version>
         <relativePath>../</relativePath>
     </parent>
@@ -29,6 +29,13 @@
             <version>${version.tmis.core}</version>
             <type>jar</type>
         </dependency>
+
+        <dependency>
+            <groupId>com.sun.jersey</groupId>
+            <artifactId>jersey-servlet</artifactId>
+            <version>1.14</version>
+        </dependency>
+
         <dependency>
             <groupId>ru.korus.tmis.laboratory</groupId>
             <artifactId>tmis-laboratory-tier</artifactId>
