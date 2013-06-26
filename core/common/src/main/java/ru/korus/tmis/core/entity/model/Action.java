@@ -1,17 +1,10 @@
 package ru.korus.tmis.core.entity.model;
 
-import java.io.Serializable;
-import java.util.Date;
-import java.util.HashSet;
-import java.util.LinkedHashMap;
-import java.util.LinkedHashSet;
-import java.util.LinkedList;
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
 import javax.persistence.*;
 import javax.xml.bind.annotation.XmlRootElement;
 import javax.xml.bind.annotation.XmlType;
+import java.io.Serializable;
+import java.util.*;
 
 @Entity
 @Table(name = "Action", catalog = "", schema = "")
@@ -156,6 +149,14 @@ public class Action
     @Column(name = "coordText")
     private String coordText = "";
 
+    @Basic(optional = false)
+    @Column(name = "hospitalUidFrom")
+    private String hospitalUidFrom = "";
+
+    @Basic(optional = true)
+    @Column(name = "pacientInQueueType")
+    private Short pacientInQueueType = 0;
+
     @Version
     @Basic(optional = false)
     @Column(name = "version")
@@ -167,10 +168,18 @@ public class Action
             inverseJoinColumns = {@JoinColumn(name = "tissue_id")})
     private Set<Tissue> tissue = new LinkedHashSet<Tissue>();
 
-//    @ManyToOne
-//    @JoinColumn(name = "uuid_id")
-    @Transient
+    //@Basic(optional = false)
+    //@Column(name = "toOrder")
+    //private boolean toOrder = false;
+
+    @ManyToOne(cascade = CascadeType.ALL)
+    @JoinColumn(name = "uuid_id")
+//    @Transient
     private UUID uuid;
+
+    @Basic(optional = false)
+    @Column(name = "parentAction_id")
+    private int parentActionId = 0;
     ////////////////////////////////////////////////////////////////////////////
     // Custom mappings
     ////////////////////////////////////////////////////////////////////////////
@@ -344,6 +353,14 @@ public class Action
         this.isUrgent = isUrgent;
     }
 
+/*    public boolean getToOrder() {
+        return toOrder;
+    }
+
+    public void setToOrder(boolean toOrder) {
+        this.toOrder = toOrder;
+    }*/
+
     public Date getBegDate() {
         return begDate;
     }
@@ -496,6 +513,22 @@ public class Action
         this.coordText = coordText;
     }
 
+    public String getHospitalUidFrom() {
+        return hospitalUidFrom;
+    }
+
+    public void setHospitalUidFrom(String hospitalUidFrom) {
+        this.hospitalUidFrom = hospitalUidFrom;
+    }
+
+    public Short getPacientInQueueType() {
+        return pacientInQueueType;
+    }
+
+    public void setPacientInQueueType(Short pacientInQueueType) {
+        this.pacientInQueueType = pacientInQueueType;
+    }
+
     public UUID getUuid() {
         return uuid;
     }
@@ -526,6 +559,14 @@ public class Action
 
     public void setTissue(Set<Tissue> tissue) {
         this.tissue = tissue;
+    }
+
+    public int getParentActionId() {
+        return parentActionId;
+    }
+
+    public void setParentActionId(int parentActionId) {
+        this.parentActionId = parentActionId;
     }
 
     @Override

@@ -5,108 +5,143 @@
     <modelVersion>4.0.0</modelVersion>
     <groupId>ru.korus.tmis</groupId>
     <artifactId>tmis-server</artifactId>
-    <version>0.9.10-SNAPSHOT</version>
+    <version>${version.tmis.core}</version>
     <packaging>ear</packaging>
     <name>TMIS Server EAR</name>
 
     <parent>
         <groupId>ru.korus.tmis</groupId>
         <artifactId>tmis-nexus</artifactId>
-        <version>0.9.10-SNAPSHOT</version>
+        <version>${version.tmis.core}</version>
         <relativePath>../</relativePath>
     </parent>
 
+
     <dependencies>
+
+        <!-- Korus dependency -->
         <dependency>
             <groupId>ru.korus.tmis.core</groupId>
             <artifactId>tmis-core-business</artifactId>
-            <version>0.9.10-SNAPSHOT</version>
+            <version>${version.tmis.core}</version>
             <type>ejb</type>
         </dependency>
+
         <dependency>
             <groupId>ru.korus.tmis.core</groupId>
             <artifactId>tmis-core-common</artifactId>
-            <version>0.9.10-SNAPSHOT</version>
+            <version>${version.tmis.core}</version>
             <type>jar</type>
         </dependency>
+
         <dependency>
             <groupId>ru.korus.tmis.core</groupId>
             <artifactId>tmis-core-database</artifactId>
-            <version>0.9.10-SNAPSHOT</version>
+            <version>${version.tmis.core}</version>
             <type>ejb</type>
         </dependency>
+
         <dependency>
             <groupId>ru.korus.tmis</groupId>
             <artifactId>tmis-ws-medipad</artifactId>
-            <version>0.9.10-SNAPSHOT</version>
+            <version>${version.tmis.core}</version>
             <type>war</type>
         </dependency>
 
         <dependency>
             <groupId>ru.korus.tmis.laboratory</groupId>
             <artifactId>tmis-laboratory-tier</artifactId>
-            <version>0.9.10-SNAPSHOT</version>
+            <version>${version.tmis.core}</version>
             <type>ejb</type>
         </dependency>
+
         <dependency>
             <groupId>ru.korus.tmis.laboratory</groupId>
             <artifactId>tmis-ws-laboratory</artifactId>
-            <version>0.9.10-SNAPSHOT</version>
+            <version>${version.tmis.core}</version>
             <type>war</type>
         </dependency>
 
         <dependency>
             <groupId>ru.korus.tmis.drugstore</groupId>
             <artifactId>tmis-drugstore-tier</artifactId>
-            <version>0.9.10-SNAPSHOT</version>
+            <version>${version.tmis.core}</version>
             <type>ejb</type>
         </dependency>
+
         <dependency>
-            <groupId>ru.korus.tmis.drugstore</groupId>
-            <artifactId>tmis-ws-drugstore</artifactId>
-            <version>0.9.10-SNAPSHOT</version>
+             <groupId>ru.korus.tmis.drugstore</groupId>
+             <artifactId>tmis-ws-drugstore</artifactId>
+             <version>${version.tmis.core}</version>
+             <type>war</type>
+         </dependency>
+
+         <!--<dependency>-->
+        <!--<groupId>ru.korus.tmis.hl7</groupId>-->
+        <!--<artifactId>tmis-hl7</artifactId>-->
+        <!--<version>${version.tmis.core}</version>-->
+        <!--<type>war</type>-->
+        <!--</dependency>-->
+
+        <dependency>
+            <groupId>ru.korus.tmis.ws.finance</groupId>
+            <artifactId>tmis-ws-finance</artifactId>
+            <version>${version.tmis.core}</version>
             <type>war</type>
         </dependency>
+
+        <dependency>
+            <groupId>ru.korus.tmis.ws.transfusion</groupId>
+            <artifactId>tmis-ws-transfusion</artifactId>
+            <version>${version.tmis.core}</version>
+            <type>war</type>
+        </dependency>
+
+        <dependency>
+            <groupId>ru.korus.tmis.communication</groupId>
+            <artifactId>tmis-communication</artifactId>
+            <version>${version.tmis.core}</version>
+            <type>ejb</type>
+        </dependency>
+
     </dependencies>
 
     <build>
+
+        <!-- Ресурсы для рабочих исходников-->
+        <resources>
+            <resource>
+                <directory>src/main/resources/</directory>
+                <targetPath>../</targetPath>
+                <filtering>true</filtering>
+                <includes>
+                    <include>logback.xml</include>
+                </includes>
+            </resource>
+            <resource>
+                <directory>scripts/</directory>
+                <targetPath>../</targetPath>
+                <filtering>true</filtering>
+                <includes>
+                    <include>**/*.sh</include>
+                    <include>**/*.bat</include>
+                </includes>
+            </resource>
+        </resources>
+
         <plugins>
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-ear-plugin</artifactId>
-                <version>2.4.2</version>
+                <version>2.8</version>
                 <configuration>
                     <version>6</version>
                     <defaultLibBundleDir>lib</defaultLibBundleDir>
+                    <!--<earSourceDirectory>${basedir}/src/main/resources/</earSourceDirectory>-->
+                    <earSourceExcludes>logback.xml</earSourceExcludes>
+                    <!--<earSourceIncludes>logback.xml</earSourceIncludes>-->
                 </configuration>
             </plugin>
-            <!--
-                        <plugin>
-                            <groupId>org.glassfish.maven.plugin</groupId>
-                            <artifactId>maven-glassfish-plugin</artifactId>
-                            <executions>
-                                <execution>
-                                    <phase>install</phase>
-                                    <goals>
-                                        <goal>redeploy</goal>
-                                    </goals>
-                                </execution>
-                            </executions>
-                        </plugin>
-                        <plugin>
-                            <groupId>maven-python-mojos</groupId>
-                            <artifactId>maven-bdd-plugin</artifactId>
-                            <version>1.0.1</version>
-                            <executions>
-                                <execution>
-                                    <phase>install</phase>
-                                    <goals>
-                                        <goal>nose</goal>
-                                    </goals>
-                                </execution>
-                            </executions>
-                        </plugin>
-            -->
         </plugins>
     </build>
 

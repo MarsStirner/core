@@ -1,10 +1,7 @@
 package ru.korus.tmis.core.patient;
 
 import ru.korus.tmis.core.auth.AuthData;
-import ru.korus.tmis.core.data.CommonData;
-import ru.korus.tmis.core.data.PatientEntry;
-import ru.korus.tmis.core.data.PatientRequestData;
-import ru.korus.tmis.core.data.PatientsListRequestData;
+import ru.korus.tmis.core.data.*;
 import ru.korus.tmis.core.entity.model.Patient;
 import ru.korus.tmis.core.entity.model.kladr.Kladr;
 import ru.korus.tmis.core.entity.model.kladr.Street;
@@ -41,10 +38,10 @@ public interface PatientBeanLocal {
     Iterable<Patient> getAllPatients(PatientRequestData requestData)
             throws CoreException;
 
-    PatientEntry savePatient(PatientEntry patientEntry, AuthData userData)
+    PatientEntry savePatient(int id, PatientEntry patientEntry, AuthData userData)
             throws CoreException;
 
-    String getAllPatientsForDepartmentIdAndDoctorIdByPeriod(PatientsListRequestData requestData, int role, AuthData authData)
+    String getAllPatientsForDepartmentIdAndDoctorIdByPeriod(PatientsListRequestData requestData, AuthData authData)
             throws CoreException;
 
     LinkedHashMap<Integer, LinkedList<Kladr>> getKLADRAddressMapForPatient(Patient patient) throws CoreException;
@@ -54,4 +51,23 @@ public interface PatientBeanLocal {
     Boolean checkSNILSNumber(String number) throws CoreException;
 
     Boolean checkPolicyNumber(String number, String serial, int typeId) throws CoreException;
+
+    /**
+     * Удаление всей информации о пациенте
+     * @param id Идентификатор пациента
+     * @return true/false
+     * @throws CoreException
+     */
+    Boolean deletePatientInfo(int id) throws CoreException;
+
+    /**
+     * Получение истории измения групп крови у пациента
+     * @param id Идентификатор пациента
+     * @return BloodHistoryListData
+     * @throws CoreException
+     */
+    BloodHistoryListData getBloodHistory(int id) throws CoreException;
+
+    BloodHistoryData insertBloodTypeForPatient(int id, BloodHistoryData data, AuthData authData) throws CoreException;
+
 }

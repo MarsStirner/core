@@ -1,6 +1,7 @@
 package ru.korus.tmis.core.entity.model;
 
 import javax.persistence.*;
+import java.io.Serializable;
 
 /**
  * Created with IntelliJ IDEA.
@@ -12,7 +13,9 @@ import javax.persistence.*;
 
 @Entity
 @Table(name = "UUID", catalog = "", schema = "")
-public class UUID {
+public class UUID implements Serializable {
+
+    private static final long serialVersionUID = 1L;
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -41,7 +44,7 @@ public class UUID {
     }
 
     public String getUuid() {
-        return uuid;
+        return uuid != null ? uuid : "";
     }
 
     public void setUuid(String uuid) {

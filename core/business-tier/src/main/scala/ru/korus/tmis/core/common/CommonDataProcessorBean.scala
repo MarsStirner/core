@@ -18,7 +18,7 @@ import javax.inject.Inject
 import javax.interceptor.Interceptors
 
 import scala.collection.JavaConversions._
-import java.util.Date
+import java.util.{Calendar, Date}
 
 @Interceptors(Array(classOf[LoggingInterceptor]))
 @Stateless
@@ -80,6 +80,10 @@ class CommonDataProcessorBean
         var multiplicity: Int = 1
         var beginDate: Date = null
         var endDate: Date = null
+        var plannedEndDate: Date = null
+        var finance: Int = -1
+        var now = new Date()
+        //var toOrder: Boolean = false
 
         aps.foreach(attribute => {
           if (attribute.name == AWI.Multiplicity.toString) {
@@ -100,6 +104,24 @@ class CommonDataProcessorBean
               case Some(x) => ConfigManager.DateFormatter.parse(x)
             }
           }
+          else if (attribute.name == AWI.finance.toString) {
+            finance = attribute.properties.get(APWI.Value.toString) match {
+              case None | Some("") => 0
+              case Some(x) => x.toInt
+            }
+          }
+          else if (attribute.name == AWI.plannedEndDate.toString) {
+            plannedEndDate = attribute.properties.get(APWI.Value.toString) match {
+              case None | Some("") => null
+              case Some(x) => ConfigManager.DateFormatter.parse(x)
+            }
+          }
+          /*else if (attribute.name == AWI.toOrder.toString) {
+            toOrder = attribute.properties.get(APWI.Value.toString) match {
+              case None | Some("") => false
+              case Some(x) => x.toBoolean
+            }
+          }*/
         })
 
         var i = 0
@@ -108,12 +130,19 @@ class CommonDataProcessorBean
           val action = dbAction.createAction(eventId,
             entity.id.intValue,
             userData)
-          if (entity.id.intValue == 139 || entity.id.intValue == 112 || entity.id.intValue == 2456) {
+          val isPrimaryAction = (entity.id.intValue == 139 || entity.id.intValue == 112 || entity.id.intValue == 2456)
+          if (isPrimaryAction) {
             action.setStatus(ActionStatus.FINISHED.getCode)   //TODO: Материть Александра!
           }
+          //plannedEndDate
+          if (finance > 0) action.setFinanceId(finance)
+          //action.setToOrder(toOrder)
           //Если пришли значения Даты начала и дата конца, то перепишем дефолтные
-          if (beginDate != null) action.setBegDate(beginDate)
-          if (endDate != null) action.setEndDate(endDate)
+          //Для первичного осмотра в качестве дефолтных значений вставим текущее время
+          if (beginDate != null) action.setBegDate(beginDate) else if (isPrimaryAction) action.setBegDate(now)
+          if (endDate != null) action.setEndDate(endDate) else if (isPrimaryAction) action.setEndDate(now)
+          if (plannedEndDate != null) action.setPlannedEndDate(plannedEndDate)
+
 
           val actionType = dbActionType.getActionTypeById(entity.id.intValue)
           val aw = new ActionWrapper(action)
@@ -211,7 +240,7 @@ class CommonDataProcessorBean
 
           result = updatedAction :: result
 
-          i += 1
+          i = i+1
         }
 
       } catch {
@@ -223,10 +252,12 @@ class CommonDataProcessorBean
     })
 
     val r = dbManager.detachAll[Action](result).toList
+    /*
     r.foreach(a => {
       val values = dbActionProperty.getActionPropertiesByActionId(a.getId.intValue)
       actionEvent.fire(new CreateActionNotification(a, values))
     })
+    */
     return r
   }
 
@@ -265,6 +296,9 @@ class CommonDataProcessorBean
         //Если пришли значения Даты начала и дата конца, то перепишем дефолтные
         var beginDate: Date = null
         var endDate: Date = null
+        var plannedEndDate: Date = null
+        var finance: Int = -1
+        //var toOrder: Boolean = false
 
         var res = aps.find(p => p.name == AWI.assessmentBeginDate.toString).getOrElse(null)
         if (res != null) {
@@ -280,9 +314,33 @@ class CommonDataProcessorBean
             case Some(x) => ConfigManager.DateFormatter.parse(x)
           }
         }
+        res = aps.find(p => p.name == AWI.finance.toString).getOrElse(null)
+        if (res != null) {
+          finance = res.properties.get(APWI.Value.toString) match {
+            case None | Some("") => 0
+            case Some(x) => x.toInt
+          }
+        }
+        res = aps.find(p => p.name == AWI.plannedEndDate.toString).getOrElse(null)
+        if (res != null)  {
+          plannedEndDate = res.properties.get(APWI.Value.toString) match {
+            case None | Some("") => null
+            case Some(x) => ConfigManager.DateFormatter.parse(x)
+          }
+        }
+        /*res = aps.find(p => p.name == AWI.toOrder.toString).getOrElse(null)
+        if (res != null) {
+          toOrder = res.properties.get(APWI.Value.toString) match {
+            case None | Some("") => false
+            case Some(x) => x.toBoolean
+          }
+        }*/
 
         if (beginDate != null) a.setBegDate(beginDate)
         if (endDate != null) a.setEndDate(endDate)
+        if (finance > 0) a.setFinanceId(finance)
+        //a.setToOrder(toOrder)
+        if (plannedEndDate != null) a.setPlannedEndDate(plannedEndDate)
 
         result = a :: result
         entities = entities + a
@@ -344,6 +402,7 @@ class CommonDataProcessorBean
         .toList
 
       val r = dbManager.detachAll[Action](result).toList
+      /*
       r.foreach(newAction => {
         val newValues = dbActionProperty.getActionPropertiesByActionId(newAction.getId.intValue)
         actionEvent.fire(new ModifyActionNotification(oldAction,
@@ -351,6 +410,7 @@ class CommonDataProcessorBean
           newAction,
           newValues))
       })
+      */
       return r
 
     } finally {
@@ -368,10 +428,12 @@ class CommonDataProcessorBean
 
     status match {
       case ActionStatus.Canceled => {
+        /*
         r.foreach(a => {
           val values = dbActionProperty.getActionPropertiesByActionId(a.getId.intValue)
           actionEvent.fire(new CancelActionNotification(a, values))
         })
+        */
       }
       case _ => {
 
@@ -405,7 +467,9 @@ class CommonDataProcessorBean
                                   typeName: String,
                                   listForSummary: java.util.List[StringId],
                                   listForConverter: java.util.List[String],
-                                  converter: (java.util.List[String], ActionPropertyType) => CommonAttribute) = {
+                                  converter: (java.util.List[String], ActionPropertyType) => CommonAttribute,
+                                  patient: Patient) = {
+    val age = defineAgeOfPatient(patient)
     types.foldLeft(
       new CommonData(0, dbVersion.getGlobalVersion)
     )((data, at) => {
@@ -430,7 +494,11 @@ class CommonDataProcessorBean
       //***
       val group = new CommonGroup(1, "Details")
       dbActionType.getActionTypePropertiesById(at.getId.intValue).foreach(
-        (apt) => group add converter(listForConverter, apt)
+        (apt) => {
+          if (checkActionPropertyTypeForPatientAge(age, apt)) {
+            group add converter(listForConverter, apt)
+          }
+        }
       )
       data add (entity add group)
     })
@@ -461,4 +529,59 @@ class CommonDataProcessorBean
       (group, attributeName) => group add wrapper.get(attributeName)
     )
   }
+
+  def defineAgeOfPatient(patient: Patient): Calendar = {
+    if (patient != null) {
+      val now = Calendar.getInstance()
+      now.setTime(new Date())
+      val birth = Calendar.getInstance()
+      birth.setTime(if (patient != null) patient.getBirthDate else new Date())
+
+      val age = Calendar.getInstance()
+      age.set(now.get(Calendar.YEAR) - birth.get(Calendar.YEAR),
+        now.get(Calendar.MONTH) - birth.get(Calendar.MONTH),
+        now.get(Calendar.DATE) - birth.get(Calendar.DATE))
+
+      age
+    } else {
+      null
+    }
+  }
+
+  def checkActionPropertyTypeForPatientAge(age: Calendar, apt: ActionPropertyType): Boolean = {
+    var needProp: Boolean = false
+    if (age == null || age.get(Calendar.YEAR) == 0 || (apt.getAge_bc == 0 && apt.getAge_ec == 0 && apt.getAge_bu == 0 && apt.getAge_eu == 0)) {
+      apt.getAge_eu match {
+        case 1 => {   //дней
+          if ((age.get(Calendar.DAY_OF_YEAR) >= apt.getAge_bc || apt.getAge_bc == 0)  &&
+            (age.get(Calendar.DAY_OF_YEAR) < apt.getAge_ec || apt.getAge_ec == 0)) {
+            needProp = true
+          }
+        }
+        case 2 => {   //недель
+          if ((age.get(Calendar.WEEK_OF_YEAR) >= apt.getAge_bc || apt.getAge_bc == 0) &&
+            (age.get(Calendar.WEEK_OF_YEAR) < apt.getAge_ec || apt.getAge_ec == 0)) {
+            needProp = true
+          }
+        }
+        case 3 => {   //месяцев
+          if ((age.get(Calendar.MONTH) >= apt.getAge_bc || apt.getAge_bc == 0) &&
+            (age.get(Calendar.MONTH) < apt.getAge_ec || apt.getAge_ec == 0)) {
+            needProp = true
+          }
+        }
+        case _ => {
+          needProp = true
+        }
+      }
+    } else {             //лет
+      if ( apt.getAge_eu == 4 &&
+        (age.get(Calendar.YEAR) >= apt.getAge_bc || apt.getAge_bc == 0) &&
+        (age.get(Calendar.YEAR) < apt.getAge_ec || apt.getAge_ec == 0)) {
+        needProp = true
+      }
+    }
+    needProp
+  }
+
 }

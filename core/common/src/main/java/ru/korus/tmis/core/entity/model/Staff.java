@@ -1,14 +1,14 @@
 package ru.korus.tmis.core.entity.model;
 
-import java.io.Serializable;
-import java.util.Date;
-import java.util.LinkedHashSet;
-import java.util.Set;
 import javax.persistence.*;
 import javax.xml.bind.annotation.XmlElement;
 import javax.xml.bind.annotation.XmlRootElement;
 import javax.xml.bind.annotation.XmlTransient;
 import javax.xml.bind.annotation.XmlType;
+import java.io.Serializable;
+import java.util.Date;
+import java.util.LinkedHashSet;
+import java.util.Set;
 
 @Entity
 @Table(name = "Person", catalog = "", schema = "")
@@ -16,7 +16,7 @@ import javax.xml.bind.annotation.XmlType;
         {
                 @NamedQuery(name = "Staff.findAll", query = "SELECT s FROM Staff s"),
                 @NamedQuery(name = "Staff.findByLogin",
-                            query = "SELECT s FROM Staff s WHERE s.login = :login AND s.deleted = 0")
+                        query = "SELECT s FROM Staff s WHERE s.login = :login AND s.deleted = 0")
         })
 @XmlType(name = "staff")
 @XmlRootElement(name = "staff")
@@ -198,9 +198,9 @@ public class Staff implements Serializable {
     @JoinColumn(name = "speciality_id")
     private Speciality speciality;
 
-//    @ManyToOne
-//    @JoinColumn(name = "uuid_id")
-@Transient
+    @ManyToOne
+    @JoinColumn(name = "uuid_id")
+//    @Transient
     private UUID uuid;
     ////////////////////////////////////////////////////////////////////////////
     // Custom mappings
@@ -262,8 +262,8 @@ public class Staff implements Serializable {
 
     @ManyToMany(cascade = CascadeType.ALL)
     @JoinTable(name = "Person_Profiles",
-               joinColumns = {@JoinColumn(name = "person_id")},
-               inverseJoinColumns = {@JoinColumn(name = "userProfile_id")})
+            joinColumns = {@JoinColumn(name = "person_id")},
+            inverseJoinColumns = {@JoinColumn(name = "userProfile_id")})
     private Set<Role> roles = new LinkedHashSet<Role>();
 
     public Set<Role> getRoles() {

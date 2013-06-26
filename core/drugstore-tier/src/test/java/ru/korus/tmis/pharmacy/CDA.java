@@ -16,11 +16,11 @@ import java.util.Date;
 import java.util.UUID;
 
 /**
- * @Author:      Dmitriy E. Nosov <br>
- * @Date:        10.12.12, 17:42 <br>
- * @Company:     Korus Consulting IT<br>
+ * Author:      Dmitriy E. Nosov <br>
+ * Date:        10.12.12, 17:42 <br>
+ * Company:     Korus Consulting IT<br>
  * Revision:    \$Id$ <br>
- * @Description: <br>
+ * Description: <br>
  */
 public class CDA {
 
@@ -40,7 +40,7 @@ public class CDA {
         try {
             jaxbContext = JAXBContext.newInstance("org.hl7.v3");
         } catch (JAXBException e) {
-            e.printStackTrace();  //To change body of catch statement use File | Settings | File Templates.
+            e.printStackTrace();
         }
     }
 

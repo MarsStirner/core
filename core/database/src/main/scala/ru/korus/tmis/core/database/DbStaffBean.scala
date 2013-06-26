@@ -9,10 +9,11 @@ import javax.ejb.Stateless
 import javax.interceptor.Interceptors
 import scala.collection.JavaConversions._
 import java.util.Date
-import java.text.{DateFormat, SimpleDateFormat}
-import javax.persistence.{TypedQuery, EntityManager, PersistenceContext}
-import ru.korus.tmis.core.entity.model.Staff
+import javax.persistence.{TemporalType, EntityManager, PersistenceContext}
+import ru.korus.tmis.core.entity.model.{ActionProperty, Action, Staff}
 import ru.korus.tmis.core.data.{FreePersonsListDataFilter, QueryDataStructure}
+import ru.korus.tmis.core.filter.ListDataFilter
+import org.slf4j.{LoggerFactory, Logger}
 
 @Interceptors(Array(classOf[LoggingInterceptor]))
 @Stateless
@@ -23,6 +24,8 @@ class DbStaffBean
 
   @PersistenceContext(unitName = "s11r64")
   var em: EntityManager = _
+
+  private final val commlogger: Logger = LoggerFactory.getLogger("ru.korus.tmis.communication");
 
   def getStaffByLogin(login: String) = {
     val staffs = em.createNamedQuery("Staff.findByLogin", classOf[Staff])
@@ -79,40 +82,32 @@ class DbStaffBean
   }
 
 
-  def getAllPersonsByRequest(limit: Int, page: Int, sortField: String, sortMethod: String, filter: Object) = {
+  def getAllPersonsByRequest(limit: Int, page: Int, sorting: String, filter: ListDataFilter, records: (java.lang.Long) => java.lang.Boolean) = {
 
-    val sorting: String = "ORDER BY s.%s %s".format(sortField, sortMethod)
-
-    val queryStr: QueryDataStructure = if (filter.isInstanceOf[FreePersonsListDataFilter]) {
-      filter.asInstanceOf[FreePersonsListDataFilter].toQueryStructure()
+    val queryStr = filter.toQueryStructure()
+    if (records!=null){
+      val querytyped = em.createQuery(StaffsAndCountRecordsWithFilterQuery.format("count(s)", queryStr.query, ""), classOf[Long])
+      if (queryStr.data.size() > 0)
+        queryStr.data.foreach(qdp => querytyped.setParameter(qdp.name, qdp.value))
+      records(querytyped.getSingleResult)
     }
-    else {
-      new QueryDataStructure()
-    }
-
-    var typed = em.createQuery(StaffsAndCountRecordsWithFilterQuery.format("s", queryStr.query, sorting), classOf[Staff])
-    if (queryStr.data.size() > 0) {
+    val typed = em.createQuery(StaffsAndCountRecordsWithFilterQuery.format("s", queryStr.query, sorting), classOf[Staff])
+    if (queryStr.data.size() > 0)
       queryStr.data.foreach(qdp => typed.setParameter(qdp.name, qdp.value))
-    }
+
     val result = typed.setMaxResults(limit)
       .setFirstResult(limit * page)
       .getResultList
     result
   }
 
-  def getEmptyPersonsByRequest(limit: Int, page: Int, sortField: String, sortMethod: String, filter: Object) = {
+  def getEmptyPersonsByRequest(limit: Int, page: Int, sorting: String, filter: ListDataFilter) = {
 
     //TODO: как то надо подрубить пэйджинг, сортировки и общее кол-во
-    val queryStr: QueryDataStructure = if (filter.isInstanceOf[FreePersonsListDataFilter]) {
-      filter.asInstanceOf[FreePersonsListDataFilter].toQueryStructure()
-    }
-    else {
-      new QueryDataStructure()
-    }
+    val queryStr = filter.toQueryStructure()
 
-    //   val sorting = "ORDER BY at.%s %s".format(sortingField, sortingMethod)
     //Получение всех врачей по графику
-    val sqlRequest = AllEmptyStaffWithFilterQuery.format("s, apt.name, time.value", queryStr.query, /*sorting*/ "")
+    val sqlRequest = AllEmptyStaffWithFilterQuery.format("s, apt.name, time.value", queryStr.query, sorting)
     var typed = em.createQuery(sqlRequest, classOf[Array[AnyRef]])
 
     if (queryStr.data.size() > 0) {
@@ -187,6 +182,7 @@ class DbStaffBean
     })
     retList
   }
+
 
   val StaffByIdQuery = """
   SELECT s
@@ -279,4 +275,78 @@ class DbStaffBean
   AND
     s.consultancyQuota > 0
                                        """
+
+  /**
+   * Получение действия(Action) по заданному типу, времени и владельцу
+   * @param personId  Владелец действия
+   * @param date      Дата на момент которой ищется действие
+   * @param actionType    Тип искомого действия
+   * @return  Найденое действие
+   * @throws CoreException   Если действие не найдено
+   */
+  def getPersonActionsByDateAndType(personId: Int, date: Date, actionType: String): Action = {
+    // val resultList =
+    commlogger.debug("DATE is " + date);
+
+    val query = em.createQuery(getPersonActionsByDateAndTypeQuery, classOf[Action]).setParameter("ACTIONTYPECODE", actionType)
+      .setParameter("PERSONID", personId).setParameter("SETDATE", date, TemporalType.DATE);
+
+    commlogger.debug(query.getParameterValue("SETDATE").toString);
+
+    val resultList = query.getResultList
+    if (resultList.size() == 1) {
+      val timelineAccessibleDays = resultList.get(0).getEvent.getExecutor.getTimelineAccessibleDays;
+      val lastAccessibleDate = new java.util.GregorianCalendar();
+      lastAccessibleDate.add(java.util.Calendar.DATE, timelineAccessibleDays);
+      if (timelineAccessibleDays <= 0 || resultList.get(0).getEvent.getSetDate.before(lastAccessibleDate.getTime)) {
+        //AND (Person.timelineAccessibleDays IS NULL OR Person.timelineAccessibleDays <= 0 OR DATE(Event.setDate)<=ADDDATE(CURRENT_DATE(), Person.timelineAccessibleDays))
+        return resultList.get(0);
+      }
+    }
+    throw new CoreException("Not found any actual actions");
+  }
+
+
+  val getPersonActionsByDateAndTypeQuery = """
+    SELECT action
+    FROM Action action
+    LEFT JOIN action.actionType actiontype
+    LEFT JOIN action.event event
+    LEFT JOIN event.eventType eventtype
+    LEFT JOIN event.executor  pers
+    WHERE event.deleted=0
+    AND action.deleted=0
+    AND eventtype.code = '0'
+    AND actiontype.code= :ACTIONTYPECODE
+    AND pers.id = :PERSONID
+    AND ( pers.lastAccessibleTimelineDate IS NULL OR pers.lastAccessibleTimelineDate = '0000-00-00' OR event.setDate <= pers.lastAccessibleTimelineDate )
+    AND event.setDate = :SETDATE
+                                           """
+
+  val getDoctorByClientQueueActionQuery =
+    """
+     SELECT doctorEvent.executor
+     FROM ActionProperty doctorAP, Action queueAction, APValueAction ap_a
+     JOIN doctorAP.action doctorAction
+     JOIN doctorAction.event doctorEvent
+     WHERE doctorEvent.executor.deleted=0
+     AND queueAction = :QUEUEACTION
+     AND doctorEvent.deleted=0
+     AND doctorAction.deleted=0
+     AND doctorAP.deleted=0
+     AND doctorAction.actionType.code = 'amb'
+     AND doctorAP.actionPropertyType.name = 'queue'
+     AND queueAction = ap_a.value
+     AND ap_a.id.id = doctorAP.id
+    """
+
+  def getDoctorByClientAmbulatoryAction(queueAction: Action): Staff = {
+    em.createQuery(getDoctorByClientQueueActionQuery, classOf[Staff])
+      .setParameter("QUEUEACTION", queueAction)
+      .getSingleResult
+  }
+
+
 }
+
+

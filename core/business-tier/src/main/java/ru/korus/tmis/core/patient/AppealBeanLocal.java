@@ -30,6 +30,8 @@ public interface AppealBeanLocal {
      */
     int insertAppealForPatient(AppealData appealData, int patientId, AuthData authData) throws CoreException;
 
+    int updateAppeal(AppealData appealData, int eventId, AuthData authData) throws CoreException;
+
     /**
      * Получение данных об обращении на госпитализацию по идентификатору.
      * @param id Идентификатор обращения.
@@ -135,5 +137,9 @@ public interface AppealBeanLocal {
      * @throws CoreException
      * @since 1.0.0.48
      */
-    void insertOrUpdateClientQuoting(QuotaEntry dataEntry, int eventId, AuthData auth) throws CoreException;
+    ClientQuoting insertOrUpdateClientQuoting(QuotaEntry dataEntry, int eventId, AuthData auth) throws CoreException;
+
+    MonitoringInfoListData getMonitoringInfo(int eventId, int condition, AuthData authData) throws CoreException;
+
+    Boolean setExecPersonForAppeal(int id, int personId, AuthData authData, ExecPersonSetType epst) throws CoreException;
 }

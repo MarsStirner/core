@@ -19,9 +19,17 @@ object ActionWrapperInfo extends Configuration {
   var ExecutorMiddleName = StringId("actionExecutorMiddleName")
   var ExecutorSpecs = StringId("actionExecutorSpecs")
   var ExecutorPost = StringId("actionExecutorPost")
+  var AssignerLastName = StringId("actionAssignerLastName")
+  var AssignerFirstName = StringId("actionAssignerFirstName")
+  var AssignerMiddleName = StringId("actionAssignerMiddleName")
+  var AssignerSpecs = StringId("actionAssignerSpecs")
+  var AssignerPost = StringId("actionAssignerPost")
   var Status = StringId("actionStatus")
   var Urgent = StringId("urgent")
   var Multiplicity = StringId("multiplicity")
+  var Finance = StringId("finance")
+  var PlannedEndDate = StringId("plannedEndDate")
+  //var ToOrder = StringId("toOrder")
 
   // Typed internal Ids
   def TypedId = (Id, Types.Integer)
@@ -44,11 +52,27 @@ object ActionWrapperInfo extends Configuration {
 
   def TypedExecutorPost = (ExecutorPost, Types.String)
 
+  def TypedAssignerLastName = (AssignerLastName, Types.String)
+
+  def TypedAssignerFirstName = (AssignerFirstName, Types.String)
+
+  def TypedAssignerMiddleName = (AssignerMiddleName, Types.String)
+
+  def TypedAssignerSpecs = (AssignerSpecs, Types.String)
+
+  def TypedAssignerPost = (AssignerPost, Types.String)
+
   def TypedStatus = (Status, Types.Integer)
 
   def TypedUrgent = (Urgent, Types.Boolean)
 
   def TypedMultiplicity = (Multiplicity, Types.Integer)
+
+  def TypedFinance = (Finance, Types.String)
+
+  def TypedPlannedEndDate = (PlannedEndDate, Types.Datetime)
+
+  //def TypedToOrder = (ToOrder, Types.Boolean)
 
   // External Ids
   var assessmentId = StringId("assessmentId")
@@ -71,9 +95,17 @@ object ActionWrapperInfo extends Configuration {
   var executorMiddleName = StringId("executorMiddleName")
   var doctorSpecs = StringId("doctorSpecs")
   var executorPost = StringId("executorPost")
+  var assignerLastName = StringId("assignerLastName")
+  var assignerFirstName = StringId("assignerFirstName")
+  var assignerMiddleName = StringId("assignerMiddleName")
+  var assignerSpecs = StringId("assignerSpecs")
+  var assignerPost = StringId("assignerPost")
   var actionStatus = StringId("actionStatus")
   var urgent = StringId("urgent")
   var multiplicity = StringId("multiplicity")
+  var finance = StringId("finance")
+  var plannedEndDate = StringId("plannedEndDate")
+  //var toOrder = StringId("toOrder")
   //////////////////////////////////////////////////////////////////////////////
 
   def map = Map(
@@ -110,10 +142,19 @@ object ActionWrapperInfo extends Configuration {
 
     executorPost -> TypedExecutorPost,
 
+    assignerLastName -> TypedAssignerLastName,
+    assignerFirstName -> TypedAssignerFirstName,
+    assignerMiddleName -> TypedAssignerMiddleName,
+    assignerSpecs -> TypedAssignerSpecs,
+    assignerPost -> TypedAssignerPost,
+
     actionStatus -> TypedStatus,
 
     urgent -> TypedUrgent,
-    multiplicity -> TypedMultiplicity
+    multiplicity -> TypedMultiplicity,
+    finance -> TypedFinance,
+    plannedEndDate -> TypedPlannedEndDate
+    //toOrder -> TypedToOrder
   )
 
   def apply(key: StringId) = {
@@ -135,9 +176,17 @@ object ActionWrapperInfo extends Configuration {
     val ExecutorMiddleName = awi.ExecutorMiddleName
     val ExecutorSpecs = awi.ExecutorSpecs
     val ExecutorPost = awi.ExecutorPost
+    val AssignerLastName = awi.AssignerLastName
+    val AssignerFirstName = awi.AssignerFirstName
+    val AssignerMiddleName = awi.AssignerMiddleName
+    val AssignerSpecs = awi.AssignerSpecs
+    val AssignerPost = awi.AssignerPost
     val Status = awi.Status
     val Urgent = awi.Urgent
     val Multiplicity = awi.Multiplicity
+    val Finance = awi.Finance
+    val PlannedEndDate = awi.PlannedEndDate
+    //val ToOrder = awi.ToOrder
 
     def apply(key: StringId) = awi(key)
   }

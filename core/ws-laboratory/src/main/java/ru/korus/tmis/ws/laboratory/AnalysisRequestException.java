@@ -6,7 +6,7 @@ import javax.xml.ws.WebFault;
         faultBean = "ru.korus.tmis.ws.laboratory.FaultBean")
 public class AnalysisRequestException extends Exception {
 
-    final FaultBean faultBean;
+    private final FaultBean faultBean;
 
     public FaultBean getFaultInfo() {
         return faultBean;
@@ -16,17 +16,17 @@ public class AnalysisRequestException extends Exception {
         faultBean = new FaultBean(0, "");
     }
 
-    public AnalysisRequestException(String message) {
+    public AnalysisRequestException(final String message) {
         super(message);
         faultBean = new FaultBean(0, message);
     }
 
-    public AnalysisRequestException(String message, Throwable cause) {
+    public AnalysisRequestException(final String message, final Throwable cause) {
         super(message, cause);
         faultBean = new FaultBean(0, message);
     }
 
-    public AnalysisRequestException(Throwable cause) {
+    public AnalysisRequestException(final Throwable cause) {
         super(cause);
         faultBean = new FaultBean(0, "");
     }

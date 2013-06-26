@@ -2,6 +2,7 @@ package ru.korus.tmis.core.database;
 
 import ru.korus.tmis.core.entity.model.RbDocumentType;
 import ru.korus.tmis.core.exception.CoreException;
+import ru.korus.tmis.core.filter.ListDataFilter;
 
 import javax.ejb.Local;
 
@@ -20,6 +21,6 @@ public interface DbRbDocumentTypeBeanLocal {
     long getCountOfDocumentTypesWithFilter(Object filter)
             throws CoreException;
 
-    java.util.LinkedList<Object> getAllDocumentTypesWithFilter(int page, int limit, String sortingField, String sortingMethod, Object filter)
+    java.util.LinkedList<Object> getAllDocumentTypesWithFilter(int page, int limit, String sorting, ListDataFilter filter)
             throws CoreException;
 }

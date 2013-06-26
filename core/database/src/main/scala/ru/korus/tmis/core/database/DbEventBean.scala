@@ -20,6 +20,7 @@ import fd.FDRecord
 import ru.korus.tmis.core.data._
 import ru.korus.tmis.core.exception.CoreException
 import scala.Some
+import ru.korus.tmis.core.pharmacy.DbUUIDBeanLocal
 
 @Interceptors(Array(classOf[LoggingInterceptor]))
 @Stateless
@@ -40,6 +41,12 @@ class DbEventBean
   @EJB
   private var actionTypeBean: DbActionTypeBeanLocal = _
 
+  @EJB
+  private var contractBean: DbContractBeanLocal = _
+
+  @EJB
+  private var dbUUIDBeanLocal: DbUUIDBeanLocal = _
+
   def getCountRecordsOrPagesQuery(enterPosition: String): TypedQuery[Long] = {
 
     val cntMacroStr = "count(e)"
@@ -57,6 +64,13 @@ class DbEventBean
     em.createQuery(curentRequest.toString(), classOf[Long])
   }
 
+  def setExecPersonForEventWithId(eventId: Int, execPerson: Staff) {
+    val event = this.getEventById(eventId)
+    event.setExecutor(execPerson)
+    em.merge(event)
+    em.flush()
+  }
+
   @TransactionAttribute(TransactionAttributeType.REQUIRES_NEW)
   def getEventById(id: Int) = {
     val result = em.createQuery(EventByIdQuery,
@@ -66,7 +80,7 @@ class DbEventBean
 
     result.size() match {
       case 0 => {
-        null        //ексепшн нужен
+        null //ексепшн нужен
       }
       case size => {
         val e = result.get(0)
@@ -116,7 +130,6 @@ class DbEventBean
     val result = em.merge(rbCounterBean.setRbCounterValue(rbCounter, rbCounter.getValue.intValue() + 1))
 
     //берем коунтер и получаем НИБ
-    //val count =  rbCounterBean.getRbCounterById(eventType.getCounterId.intValue())
     val externalId = Calendar.getInstance()
       .get(Calendar.YEAR).toString
       .concat(rbCounter.getSeparator)
@@ -137,14 +150,59 @@ class DbEventBean
       newEvent.setAssigner(authData.user)
       newEvent.setNote(" ")
       newEvent.setSetDate(begDate)
+      //val contract = contractBean.getContractForEventType(eventType)
+      //if (contract != null) {
+        newEvent.setContract(contractBean.getContractForEventType(eventType))
+      //}
+      newEvent.setUuid(dbUUIDBeanLocal.createUUID())
       //newEvent.setExecDate(endDate)
     }
     catch {
       case ex: Exception => {
       }
-      em.refresh(newEvent)
+      //em.refresh(newEvent)
     }
     return newEvent
+  }
+
+  /**
+   * Создает и записывает в БД новый event с указанными значениями и   (CreatePerson & ModifyPerson = null )
+   * @param patient Пациент для которого создается Event
+   * @param eventType Тип события
+   * @param person Врач, которому назначено событие                  
+   * @param begDate Время начала события
+   * @param endDate Время окончания события
+   * @return Новый экземпляр события, сохраненный в БД и не открепленный (without  em.detach())
+   */
+  def createEvent(patient: Patient, eventType: EventType, person: Staff, begDate: Date, endDate: Date): Event = {
+    val now = new Date
+    var newEvent = new Event
+    //Инициализируем структуру Event
+    try {
+      newEvent.setIsPrimary(1);
+      newEvent.setCreateDatetime(now);
+      newEvent.setCreatePerson(null);
+      newEvent.setModifyPerson(null);
+      newEvent.setEventType(eventType);
+      newEvent.setOrgId(0);
+      newEvent.setPatient(patient);
+      newEvent.setSetDate(begDate);
+      newEvent.setExternalId("");
+      newEvent.setModifyDatetime(now);
+      newEvent.setNote("");
+      newEvent.setOrder(0);
+      newEvent.setDeleted(false);
+      newEvent.setPayStatus(0);
+      newEvent.setExecutor(person)
+      newEvent.setAssigner(person)
+      newEvent.setUuid(dbUUIDBeanLocal.createUUID());
+      //1. Инсертим
+      em.persist(newEvent);
+    }
+    catch {
+      case ex: Exception => throw new CoreException("error while creating event ");
+    }
+    newEvent
   }
 
   def getEventTypeById(eventTypeId: Int): EventType = {
@@ -418,6 +476,16 @@ class DbEventBean
     AND
       et.deleted = 0
                            """
+  val EventTypeByCodeQuery = """
+    SELECT et
+    FROM
+      EventType et
+    WHERE
+      et.code = :code
+    AND
+      et.deleted = 0
+                             """
+
   val RbCounterByEventTypeCntQuery = """
     SELECT
       rbc.id
@@ -478,4 +546,13 @@ class DbEventBean
       %s
       %s
     """
+
+  def getEventTypeByCode(code: String): EventType = {
+    val result = em.createQuery(EventTypeByCodeQuery, classOf[EventType])
+      .setParameter("code", code)
+      .getResultList
+    val et = result(0)
+    result.foreach(em.detach(_))
+    et
+  }
 }

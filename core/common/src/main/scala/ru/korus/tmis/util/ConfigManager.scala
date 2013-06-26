@@ -7,6 +7,8 @@ import javax.xml.bind.DatatypeConverter
 import javax.xml.namespace.QName
 import reflect.Configuration
 import grizzled.slf4j.Logging
+import ru.korus.tmis.core.entity.model.Staff
+
 
 object ConfigManager extends Configuration {
 
@@ -87,9 +89,26 @@ object ConfigManager extends Configuration {
     var ClientQuotingAllNotFound = 0x129
     var QuotaTypeNotFound = 0x130
     var OrgStructureNotFound = 0x131
+    var EventPersonNotFound = 0x132
+    var EventTypeNotFound = 0x133
+    var EventPersonForEventAndUserNotFound = 0x134
+    var ContractNotFound = 0x135
+    var PatientIsNull = 0x136
+    var RbTestTubeTypeIsNull = 0x137
+    var JobTicketIsNull = 0x138
+    var JobTicketNotFound = 0x139
+    var RbDiagnosisTypeNotFound = 0x140
+    var DiagnosisNotFound = 0x141
+    var DiagnosticNotFound = 0x142
+    var JobNotFound = 0x143
+    var TakenTissueNotFound = 0x144
+    var ActionTypeNotFound = 0x145
+    var noRightForAction = 0x146
+    var BloodTypeIsNull = 0x147
+    var InvalidAuthData = 0x148
   }
 
-  val Drugstore = new Configuration {
+  class DrugstoreClass extends Configuration {
     var OrgName = "ФНКЦ ДГОИ"
 
     var ServiceUrl = new URL("http://pharmacy3.fccho-moscow.ru/ws/MISExchange")
@@ -111,12 +130,42 @@ object ConfigManager extends Configuration {
     var GetDepList_SoapOperation = "GetDepartmentList"
     var GetDepList_RequestRootElement = "OrganizationRef"
 
-    var User = "admin"
-    var Password = "1234"
+    var User = ""
+    var Password = ""
+
+    var UpdateRLS = "off"
+
+    def isUpdateRLS = "on".equals(UpdateRLS)
 
     def HttpAuthToken = DatatypeConverter.printBase64Binary(
       (User + ":" + Password).getBytes)
   }
+
+  var Drugstore = new DrugstoreClass
+
+  var Core = new Configuration {
+    var RequestLaboratoryUrl = "http://localhost:8080/tmis-ws-laboratory/tmis-client-laboratory"
+  }
+
+  /**
+   * Параметры сервиса управления пользователями
+   */
+  class UsersMgrClass extends Configuration {
+    var CoreUserLogin: String = "core"
+    var KeepAliveDays = 1
+    var MaxConnections = 10000
+  }
+
+  var UsersMgr = new UsersMgrClass
+
+  /**
+   * Параметры модуля интегрции с подсистемой ТРФУ
+   */
+  class TrfuPropClass extends Configuration {
+    var ServiceUrl = ""
+  }
+
+  var TrfuProp = new TrfuPropClass
 
   val Laboratory = new Configuration {
     // LIS service URL
@@ -238,9 +287,9 @@ object ConfigManager extends Configuration {
 }
 
 trait I18nable {
-  val i18n = ConfigManager.Messages
-}
+   val i18n = ConfigManager.Messages
+ }
 
 trait CAPids {
-  val iCapIds = ConfigManager.RbCAPIds
-}
+   val iCapIds = ConfigManager.RbCAPIds
+ }

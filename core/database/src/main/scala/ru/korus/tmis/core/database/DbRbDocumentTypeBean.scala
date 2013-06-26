@@ -11,6 +11,7 @@ import ru.korus.tmis.core.exception.NoSuchRbDocumentTypeException
 import ru.korus.tmis.core.entity.model.{RbDocumentType}
 import scala.collection.JavaConversions._
 import ru.korus.tmis.core.data.{DictionaryListRequestDataFilter, QueryDataStructure}
+import ru.korus.tmis.core.filter.ListDataFilter
 
 @Interceptors(Array(classOf[LoggingInterceptor]))
 @Stateless
@@ -70,22 +71,17 @@ class DbRbDocumentTypeBean
     typed.getSingleResult
   }
 
-  def getAllDocumentTypesWithFilter(page: Int, limit: Int, sortingField: String, sortingMethod: String, filter: Object): java.util.LinkedList[Object] = {
-    var queryStr: QueryDataStructure = if (filter.isInstanceOf[DictionaryListRequestDataFilter]) {
-      filter.asInstanceOf[DictionaryListRequestDataFilter].toQueryStructure()
-    }
-    else {
-      new QueryDataStructure()
-    }
-    val sorting = "ORDER BY %s %s".format(sortingField, sortingMethod)
+  def getAllDocumentTypesWithFilter(page: Int, limit: Int, sorting: String, filter: ListDataFilter): java.util.LinkedList[Object] = {
+
+    val queryStr = filter.toQueryStructure()
     if (queryStr.data.size() > 0 || queryStr.query.size > 0) {
       if (queryStr.query.indexOf("AND ") == 0) {
         queryStr.query = "WHERE " + queryStr.query.substring("AND ".length())
       }
     }
-    var typed = em.createQuery(AllDocumentTypesWithFilterQuery.format("r.id, r.name", queryStr.query, sorting), classOf[Array[AnyRef]])
-      .setMaxResults(limit)
-      .setFirstResult(limit * page)
+    val typed = em.createQuery(AllDocumentTypesWithFilterQuery.format("r.id, r.name", queryStr.query, sorting), classOf[Array[AnyRef]])
+                  .setMaxResults(limit)
+                  .setFirstResult(limit * page)
     if (queryStr.data.size() > 0) {
       queryStr.data.foreach(qdp => typed.setParameter(qdp.name, qdp.value))
     }

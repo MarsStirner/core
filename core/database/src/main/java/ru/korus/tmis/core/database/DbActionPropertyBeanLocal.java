@@ -1,15 +1,14 @@
 package ru.korus.tmis.core.database;
 
 import ru.korus.tmis.core.auth.AuthData;
-import ru.korus.tmis.core.entity.model.APValue;
-import ru.korus.tmis.core.entity.model.Action;
-import ru.korus.tmis.core.entity.model.ActionProperty;
+import ru.korus.tmis.core.entity.model.*;
 import ru.korus.tmis.core.exception.CoreException;
 
+import javax.ejb.Local;
+import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
-import javax.ejb.Local;
 
 @Local
 public interface DbActionPropertyBeanLocal {
@@ -25,10 +24,15 @@ public interface DbActionPropertyBeanLocal {
     getActionPropertiesByActionIdAndTypeNames(int actionId, List<String> names)
             throws CoreException;
 
+    Map<ActionProperty, List<APValue>>
+    getActionPropertiesByActionIdAndTypeCodes(int actionId, List<String> codes)
+            throws CoreException;
+
     /**
      * Возвращает список свойств со значениями по идентификаторам из таблицы rbCoreActionProperty
+     *
      * @param actionId Идентификатор записи в таблице Action
-     * @param coreIds Список значений идентификаторов из таблицы rbCoreActionProperty
+     * @param coreIds  Список значений идентификаторов из таблицы rbCoreActionProperty
      * @return Список значений ActionProperty
      * @throws CoreException
      * @see ActionProperty
@@ -40,10 +44,15 @@ public interface DbActionPropertyBeanLocal {
     getActionPropertiesByActionIdAndRbCoreActionPropertyIds(int actionId, List<Integer> coreIds)
             throws CoreException;
 
+    Map<ActionProperty, List<APValue>>
+    getActionPropertiesByActionIdAndActionPropertyTypeCodes(int actionId, Set<String> codes)
+            throws CoreException;
+
     /**
      * Возвращает список свойств со значениями из последнего Action внутри выбранного Event по идентификаторам из таблицы rbCoreActionProperty
+     *
      * @param eventId Идентификатор обращения.
-     * @param atIds Список идентификаторов ActionType внутри данного обращения
+     * @param atIds   Список идентификаторов ActionType внутри данного обращения
      * @param coreIds Список значений идентификаторов из таблицы rbCoreActionProperty
      * @return
      * @throws CoreException
@@ -54,6 +63,10 @@ public interface DbActionPropertyBeanLocal {
      */
     Map<ActionProperty, List<APValue>>
     getActionPropertiesForEventByActionTypes(int eventId, Set<Integer> atIds, Set<Integer> coreIds)
+            throws CoreException;
+
+    LinkedHashMap<Integer, LinkedHashMap<ActionProperty, List<APValue>>>
+    getActionPropertiesByEventIdsAndActionPropertyTypeCodes(java.util.List<Integer> eventId, java.util.Set<String> codes, int countInGroup)
             throws CoreException;
 
     List<APValue>
@@ -96,4 +109,14 @@ public interface DbActionPropertyBeanLocal {
                                       String value,
                                       int index)
             throws CoreException;
+
+    ActionProperty createActionProperty(Action doctorAction, ActionPropertyType queueAPType) throws CoreException;
+
+    /**
+     * Получение своства действия по значению действия  (ActionProperty_Action by ActionProperty_Action.value)
+     *
+     * @param action действие,  которое указано как значение в ActionProperty_Action (VALUE)
+     * @return
+     */
+    APValueAction getActionProperty_ActionByValue(Action action) throws CoreException;
 }

@@ -2,6 +2,7 @@ package ru.korus.tmis.core.database;
 
 import ru.korus.tmis.core.entity.model.*;
 import ru.korus.tmis.core.exception.CoreException;
+import ru.korus.tmis.core.filter.ListDataFilter;
 import ru.korus.tmis.core.indicators.IndicatorValue;
 import scala.Function1;
 
@@ -22,10 +23,7 @@ public interface DbCustomQueryLocal {
     List<Event> getActiveEventsForDepartment(int id)
             throws CoreException;
 
-    List<Event> getActiveEventsForDepartmentAndDoctor(int page, int limit, String sortField, String sortMethod, Object filter)
-            throws CoreException;
-
-    long getCountActiveEventsForDepartmentAndDoctor(Object filter)
+    Map<Action, Map<ActionProperty, List<APValue>>> getActiveEventsForDepartmentAndDoctor(int page, int limit, String sortField, String sortMethod, Object filter, Function1<Long, Boolean> postProcessing)
             throws CoreException;
 
     Map<Event, Action> getAdmissionsByEvents(List<Event> events)
@@ -58,7 +56,7 @@ public interface DbCustomQueryLocal {
     long getCountDiagnosticsWithFilter(Object filter)
             throws CoreException;
 
-    List<Action> getAllDiagnosticsWithFilter(int page, int limit, String sortField, String sortMethod, Object filter)
+    List<Action> getAllDiagnosticsWithFilter(int page, int limit, String sorting, Object filter)
             throws CoreException;
 
     List<IndicatorValue<Double>>
@@ -99,10 +97,10 @@ public interface DbCustomQueryLocal {
     long getCountOfAppealsWithFilter(Object filter)
             throws CoreException;
 
-    List<Mkb> getAllMkbsWithFilter(int page, int limit, String sortingField, String sortingMethod, Object filter)
+    List<Mkb> getAllMkbsWithFilter(int page, int limit, String sorting, ListDataFilter filter)
             throws CoreException;
 
-    Map<String, Map<String, Mkb>> getDistinctMkbsWithFilter(String sortingField, String sortingMethod, Object filter)
+    Map<String, Map<String, Mkb>> getDistinctMkbsWithFilter(String sorting, ListDataFilter filter)
             throws CoreException;
 
     long getCountOfMkbsWithFilter(Object filter)
@@ -111,7 +109,7 @@ public interface DbCustomQueryLocal {
     long getCountOfThesaurusWithFilter(Object filter)
             throws CoreException;
 
-    List<Thesaurus> getAllThesaurusWithFilter(int page, int limit, String sortingField, String sortingMethod, Object filter)
+    List<Thesaurus> getAllThesaurusWithFilter(int page, int limit, String sorting, ListDataFilter filter)
             throws CoreException;
 
     Action getLastActionByTypeCodeAndAPTypeName(int eventId, String code, String aptName)
@@ -124,5 +122,7 @@ public interface DbCustomQueryLocal {
      * @return - код источника финансирования
      * @throws CoreException
      */
-    Integer getFinanceId(Event e) throws CoreException;
+    Integer getFinanceId(Event e);
+
+
 }

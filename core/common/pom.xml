@@ -5,30 +5,22 @@
     <modelVersion>4.0.0</modelVersion>
     <groupId>ru.korus.tmis.core</groupId>
     <artifactId>tmis-core-common</artifactId>
-    <version>0.9.10-SNAPSHOT</version>
+    <version>${version.tmis.core}</version>
     <packaging>jar</packaging>
     <name>TMIS Core Common API JAR</name>
 
     <parent>
         <groupId>ru.korus.tmis</groupId>
         <artifactId>tmis-nexus</artifactId>
-        <version>0.9.10-SNAPSHOT</version>
+        <version>${version.tmis.core}</version>
         <relativePath>../</relativePath>
     </parent>
-
-    <properties>
-        <mysql.login>root</mysql.login>
-        <mysql.password>root</mysql.password>
-    </properties>
 
     <build>
         <resources>
             <resource>
                 <directory>src/main/resources</directory>
                 <filtering>true</filtering>
-                <!--<excludes>-->
-                <!--<exclude>*.ttf</exclude>-->
-                <!--</excludes>-->
             </resource>
         </resources>
     </build>
@@ -46,13 +38,6 @@
             <artifactId>jackson-jaxrs</artifactId>
             <version>1.9.7</version>
         </dependency>
-
-        <!--<dependency>-->
-            <!--<groupId>com.sun.xml.bind</groupId>-->
-            <!--<artifactId>jaxb-impl</artifactId>-->
-            <!--<version>2.1.6</version>-->
-            <!--<scope>test</scope>-->
-        <!--</dependency>-->
 
         <dependency>
             <groupId>net.htmlparser.jericho</groupId>
@@ -75,7 +60,7 @@
         <dependency>
             <groupId>mysql</groupId>
             <artifactId>mysql-connector-java</artifactId>
-            <version>5.1.15</version>
+            <version>${version.mysql.connector}</version>
             <scope>provided</scope>
         </dependency>
 
@@ -92,15 +77,18 @@
             <version>3.5.6-Final</version>
         </dependency>
 
-        <!--<dependency>-->
-            <!--<groupId>org.slf4j</groupId>-->
-            <!--<artifactId>slf4j-api</artifactId>-->
-            <!--<version>1.7.2</version>-->
-        <!--</dependency>-->
-        <!--<dependency>-->
-            <!--<groupId>ch.qos.logback</groupId>-->
-            <!--<artifactId>logback-classic</artifactId>-->
-            <!--<version>1.0.7</version>-->
-        <!--</dependency>-->
+        <dependency>
+            <groupId>com.sun.jersey</groupId>
+            <artifactId>jersey-server</artifactId>
+            <version>1.16</version>
+            <scope>test</scope>
+        </dependency>
+
+        <dependency>
+            <groupId>com.google.code.gson</groupId>
+            <artifactId>gson</artifactId>
+            <version>2.2.2</version>
+        </dependency>
+
     </dependencies>
 </project>

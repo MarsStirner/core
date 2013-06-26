@@ -9,6 +9,36 @@ import reflect.BeanProperty
 import scala.collection.JavaConversions._
 import ru.korus.tmis.core.entity.model._
 import java.util.{Calendar, Date}
+import java.util
+import ru.korus.tmis.lis.data.PatientInfo
+
+/**
+ * Список возможных ключей для запросов формы 007
+ */
+class Form007QueryStatuses{}
+
+object Form007QueryStatuses extends Enumeration {
+
+  type Form007QueryStatuses = Value
+
+  val F007QS_PERMANENT_BEDS,                  //1.3  Количество развернутых коек
+  F007QS_ALL_PATIENTS_LOCATED_AT_BEGIN_DATE,  //1.5  Состояло на начало суток
+  F007QS_RECEIVED_ALL,                        //1.6  Поступило больных всего
+  F007QS_RECEIVED_DAY_HOSPITAL,               //1.7  В том числе из дневного стационара.
+  F007QS_RECEIVED_VILLAGERS,                  //1.8  Кол-во сельских жителей
+  F007QS_RECEIVED_CHILDREN,                   //1.9  Кол-во детей в возрасте от 0 до 17 лет
+  F007QS_RECEIVED_AFTER60,                    //1.10 Кол-во граждан, старше 60 лет
+  F007QS_MOVING_FROM,                         //1.11 Кол-во переводов из отделений
+  F007QS_MOVING_IN,                           //1.12 Кол-во переводов в отделения
+  F007QS_LEAVED_ALL,                          //1.13 Выписано всего
+  F007QS_LEAVED_ANOTHER_HOSPITAL,             //1.14 Переведено в другие стационары
+  F007QS_LEAVED_HOUR_HOSPITAL,                //1.15 Переведено в другие отделения
+  F007QS_LEAVED_DAY_HOSPITAL,                 //1.16 Переведено в дневной стационар
+  F007QS_LEAVED_DEAD,                         //1.17 Умерло
+  F007QS_ALL_PATIENTS_LOCATED_AT_END_DATE,    //1.18 Состоит на начало текущего дня
+  F007QS_PATRONAGE                            //1.19 Состоит матерей
+  = Value
+}
 
 @XmlType(name = "formOfAccountingMovementOfPatientsData")
 @XmlRootElement(name = "formOfAccountingMovementOfPatientsData")
@@ -19,11 +49,12 @@ class FormOfAccountingMovementOfPatientsData {
   @BeanProperty
   var data: FormOfAccountingMovementOfPatientsEntry = _
 
-  def this(that: SeventhFormLinearView,
+  def this(department: OrgStructure,
+           that: Map[Form007QueryStatuses.Form007QueryStatuses, (Long, List[Event])],
            request: SeventhFormRequestData) {
     this()
     this.requestData = request
-    this.data = new FormOfAccountingMovementOfPatientsEntry(that.getProfileMap(), that.getPatientMap())
+    this.data = new FormOfAccountingMovementOfPatientsEntry(request, department, that)
   }
 }
 
@@ -32,6 +63,23 @@ class FormOfAccountingMovementOfPatientsData {
 @JsonIgnoreProperties(ignoreUnknown = true)
 class SeventhFormRequestData {
 
+  @BeanProperty
+  var departmentId: Int = _                                                   //Отделение
+
+  @BeanProperty
+  var beginDate: Date = _                                                     //Дата начала
+
+  @BeanProperty
+  var endDate: Date = _                                                       //Дата окончания
+
+  def this(departmentId: Int,
+           beginDate: Date,
+           endDate: Date ){
+    this()
+    this.departmentId = departmentId
+    this.beginDate = beginDate
+    this.endDate = endDate
+  }
 }
 
 @XmlType(name = "formOfAccountingMovementOfPatientsEntry")
@@ -40,78 +88,67 @@ class SeventhFormRequestData {
 class FormOfAccountingMovementOfPatientsEntry {
 
   @BeanProperty
+  var rangeReportDateTime: DatePeriodContainer = _
+
+  @BeanProperty
+  var department: OrgStructureContainer = _
+
+  @BeanProperty
   var counts: java.util.LinkedList[SeventhFormFrontPage] = new java.util.LinkedList[SeventhFormFrontPage]
 
   @BeanProperty
   var patients: SeventhFormReversePage = new SeventhFormReversePage()
 
-  def this(counts: java.util.Map[RbHospitalBedProfile, SeventhFormLinearViewEntry],
-           patients: java.util.Map[Int, java.util.List[Patient]]) {
+  def this(request: SeventhFormRequestData,
+           department: OrgStructure,
+           that: Map[Form007QueryStatuses.Form007QueryStatuses, (Long, List[Event])]) {
     this()
-    var it = 0
-    counts.foreach(profile => {
-      it = it + 1
-      this.counts.add(new SeventhFormFrontPage(it, profile._1, profile._2))
+    this.rangeReportDateTime = new DatePeriodContainer(request.getBeginDate, request.getEndDate)
+    var cnt = Map.empty[Form007QueryStatuses.Form007QueryStatuses, Long]
+    var pat = Map.empty[Form007QueryStatuses.Form007QueryStatuses, List[Event]]
+    that.foreach(f=> {
+      if (f._2!=null){
+        cnt += f._1 -> f._2._1
+        if (f._2._2!=null && f._2._2.size>0) pat += f._1 -> f._2._2
+      }
     })
-    this.patients = new SeventhFormReversePage(patients)
+    this.counts.add(new SeventhFormFrontPage(0, null, cnt)) //Всего
+    this.patients = new SeventhFormReversePage(pat)
+    this.department = new OrgStructureContainer(department)
   }
 }
 
 @XmlType(name = "seventhFormFrontPage")
 @XmlRootElement(name = "seventhFormFrontPage")
 @JsonIgnoreProperties(ignoreUnknown = true)
-class SeventhFormFrontPage {
+class SeventhFormFrontPage {                                                    //Аверс формы 007
 
   @BeanProperty
-  var id: Int = -1
+  var pos: Int = -1                                                             //Номер строки формы
 
   @BeanProperty
-  var name: IdNameContainer = new IdNameContainer
+  var name: IdNameContainer = new IdNameContainer                               //Профиль койки
 
   @BeanProperty
-  var code: String = ""
+  var code: String = ""                                                         //Код
 
   @BeanProperty
-  var deployedBed: Int = 0
+  var deployedBed: Long = 0                                                     //Развернуто коек всего
 
   @BeanProperty
-  var closedBed: Int = 0
+  var closedBed: Long = 0                                                       //Свернуто на ремонт
 
   @BeanProperty
-  var movement: MovementDataContainer = new MovementDataContainer
+  var movement: MovementDataContainer = new MovementDataContainer               //Движение больных за истекшие сутки
 
   @BeanProperty
-  var atBeginingOfDay: AtBeginingOfDayContainer = _
-
-  def this(departmentId: Int,
-           id: Int,
-           name: RbHospitalBedProfile,
-           bed: java.util.Map[String, java.lang.Integer],
-           receive: java.util.Map[Patient, String],
-           transfer: java.util.Map[Patient, java.util.Map[String, OrgStructure]]
-            ) {
-    this()
-    this.id = id
-    if (name != null) {
-      this.name = new IdNameContainer(name.getId.intValue(), name.getName)
-      this.code = name.getCode
-    }
-    else {
-      this.name = new IdNameContainer(-1, "Всего")
-      this.code = ""
-    }
-    if (bed != null) {
-      this.deployedBed = bed.get("deployed").intValue()
-      this.closedBed = bed.get("involution").intValue()
-    }
-    this.movement.calculate(departmentId, receive, transfer) //считаем
-  }
+  var atBeginingOfDay: AtBeginingOfDayContainer = _                             //На начало текущего дня
 
   def this(id: Int,
            name: RbHospitalBedProfile,
-           counts: SeventhFormLinearViewEntry) {
+           that: Map[Form007QueryStatuses.Form007QueryStatuses, Long]) {
     this()
-    this.id = id
+    this.pos = id
     if (name != null) {
       this.name = new IdNameContainer(name.getId.intValue(), name.getName)
       this.code = name.getCode
@@ -120,10 +157,14 @@ class SeventhFormFrontPage {
       this.name = new IdNameContainer(-1, "Всего")
       this.code = ""
     }
-    this.deployedBed = counts.deployedBed
-    this.closedBed = counts.closedBed
-    this.movement = new MovementDataContainer(counts)
-    this.atBeginingOfDay = new AtBeginingOfDayContainer(counts.summary, counts.mothers, counts.male, counts.female)
+
+    import Form007QueryStatuses._
+
+    this.deployedBed = that.get(F007QS_PERMANENT_BEDS).getOrElse(0)
+    this.closedBed = 0 //Не используется в этой реализации
+    this.movement = new MovementDataContainer(that)
+    this.atBeginingOfDay = new AtBeginingOfDayContainer(that)
+
   }
 }
 
@@ -133,62 +174,42 @@ class SeventhFormFrontPage {
 class SeventhFormReversePage {
 
   @BeanProperty
-  var received: java.util.LinkedList[IdNameContainer] = new java.util.LinkedList[IdNameContainer]
+  var received: java.util.LinkedList[PatientInfoContainer] = new java.util.LinkedList[PatientInfoContainer]
 
   @BeanProperty
-  var receivedFromHourHospital: java.util.LinkedList[IdNameContainer] = new java.util.LinkedList[IdNameContainer]
+  var receivedFromHourHospital: java.util.LinkedList[PatientInfoContainer] = new java.util.LinkedList[PatientInfoContainer]
 
   @BeanProperty
-  var leaved: java.util.LinkedList[IdNameContainer] = new java.util.LinkedList[IdNameContainer]
+  var leaved: java.util.LinkedList[PatientInfoContainer] = new java.util.LinkedList[PatientInfoContainer]
 
   @BeanProperty
   var moving: IdNameTransferredPatientsContainer = new IdNameTransferredPatientsContainer
 
   @BeanProperty
-  var died: java.util.LinkedList[IdNameContainer] = new java.util.LinkedList[IdNameContainer]
+  var died: java.util.LinkedList[PatientInfoContainer] = new java.util.LinkedList[PatientInfoContainer]
 
   @BeanProperty
-  var toVacation: java.util.LinkedList[IdNameContainer] = new java.util.LinkedList[IdNameContainer]
+  var toVacation: java.util.LinkedList[PatientInfoContainer] = new java.util.LinkedList[PatientInfoContainer]
 
-  def this(patients: java.util.Map[Int, java.util.List[Patient]]) {
+  def this(that: Map[Form007QueryStatuses.Form007QueryStatuses, List[Event]]) {
     this()
-    var it: java.util.Iterator[Int] = patients.keySet().iterator()
-    while (it.hasNext()) {
-      val key = it.next();
-      patients.get(key).foreach(p => {
-        val value = new IdNameContainer(p.getId.intValue(),
-          "%s %s.%s.".format(p.getLastName,
-            p.getFirstName.substring(0, 1),
-            p.getPatrName.substring(0, 1)
-          )
-        )
-        key match {
-          case 0 => {
-            this.received.add(value)
-          }
-          case 1 => {
-            this.receivedFromHourHospital.add(value)
-          }
-          case 2 => {
-            this.leaved.add(value)
-          }
-          case 3 => {
-            this.moving.add(value, 0)
-          }
-          case 4 => {
-            this.moving.add(value, 1)
-          }
-          case 5 => {
-            this.died.add(value)
-          }
-          case 6 => {
-            this.toVacation.add(value)
-          }
-          case _ => {}
-        }
-      })
-    }
+
+    import Form007QueryStatuses._
+
+    that.foreach(f=>{
+      f._1 match {
+        case F007QS_RECEIVED_ALL => f._2.foreach(e => this.received.add(new PatientInfoContainer(e)))
+        case F007QS_MOVING_FROM => f._2.foreach(e => this.receivedFromHourHospital.add(new PatientInfoContainer(e)))
+        case F007QS_LEAVED_ALL => f._2.foreach(e => this.leaved.add(new PatientInfoContainer(e)))
+        case F007QS_MOVING_IN => f._2.foreach(e => this.moving.add(e, 0))
+        case F007QS_LEAVED_ANOTHER_HOSPITAL => f._2.foreach(e => this.moving.add(e, 1))
+        case F007QS_LEAVED_DEAD => f._2.foreach(e => this.died.add(new PatientInfoContainer(e)))
+        case _ => null
+      }
+
+    })
   }
+
 }
 
 @XmlType(name = "movementDataContainer")
@@ -197,38 +218,30 @@ class SeventhFormReversePage {
 class MovementDataContainer {
 
   @BeanProperty
-  var atBeginingLastDay: Int = 0
+  var atBeginingLastDay: Long = 0
 
   @BeanProperty
   var received: CountOfReceivedPatientsContainer = new CountOfReceivedPatientsContainer
 
   @BeanProperty
-  var moving: CountOfTransferredPatientsContainer = new CountOfTransferredPatientsContainer
+  var moving: CountOfTransferredPatientsContainer = _//new CountOfTransferredPatientsContainer
 
   @BeanProperty
   var leaved: CountOfDischargedPatientsContainer = new CountOfDischargedPatientsContainer
 
   @BeanProperty
-  var died: Int = 0
+  var died: Long = 0
 
-  def calculate(departmentId: Int,
-                receive: java.util.Map[Patient, String],
-                transfer: java.util.Map[Patient, java.util.Map[String, OrgStructure]]) {
-    if (receive != null) {
-      this.received = new CountOfReceivedPatientsContainer(receive)
-    }
-    if (transfer != null) {
-      this.moving = new CountOfTransferredPatientsContainer(departmentId, transfer)
-    }
-  }
-
-  def this(counts: SeventhFormLinearViewEntry) {
+  def this(that: Map[Form007QueryStatuses.Form007QueryStatuses, Long]) {
     this()
-    this.atBeginingLastDay = counts.atBeginingLastDay
-    this.received = new CountOfReceivedPatientsContainer(counts)
-    this.moving = new CountOfTransferredPatientsContainer(counts.from, counts.in)
-    this.leaved = new CountOfDischargedPatientsContainer(counts)
-    this.died = counts.died
+
+    import Form007QueryStatuses._
+    this.atBeginingLastDay = that.get(F007QS_ALL_PATIENTS_LOCATED_AT_BEGIN_DATE).getOrElse(0)
+    this.received = new CountOfReceivedPatientsContainer(that)
+    this.moving = new CountOfTransferredPatientsContainer(that.get(F007QS_MOVING_FROM).getOrElse(0),
+                                                          that.get(F007QS_MOVING_IN).getOrElse(0))
+    this.leaved = new CountOfDischargedPatientsContainer(that)
+    this.died = that.get(F007QS_LEAVED_DEAD).getOrElse(0)
   }
 }
 
@@ -238,22 +251,21 @@ class MovementDataContainer {
 class AtBeginingOfDayContainer {
 
   @BeanProperty
-  var summary: Int = _
+  var summary: Long = _
 
   @BeanProperty
-  var mothers: Int = _
+  var mothers: Long = _
 
   @BeanProperty
   var freePlaces: CountOfFreePlacesContainer = _
 
-  def this(summary: Int,
-           mothers: Int,
-           male: Int,
-           female: Int) {
+  def this(that: Map[Form007QueryStatuses.Form007QueryStatuses, Long]) {
     this()
-    this.summary = summary
-    this.mothers = mothers
-    this.freePlaces = new CountOfFreePlacesContainer(male, female)
+
+    import Form007QueryStatuses._
+    this.summary = that.get(F007QS_ALL_PATIENTS_LOCATED_AT_END_DATE).getOrElse(0)
+    this.mothers = that.get(F007QS_ALL_PATIENTS_LOCATED_AT_END_DATE).getOrElse(0)
+    this.freePlaces = new CountOfFreePlacesContainer(0, 0)  //Не используется в этой реализации
   }
 }
 
@@ -263,68 +275,23 @@ class AtBeginingOfDayContainer {
 class CountOfReceivedPatientsContainer {
 
   @BeanProperty
-  var summary: Int = _
+  var summary: Long = _
 
   @BeanProperty
-  var fromDayHospital: Int = _
+  var fromDayHospital: Long = _
 
   @BeanProperty
   var including: IncludingReceivedPatientsContainer = _
 
-  def this(counts: SeventhFormLinearViewEntry) = {
+  def this(that: Map[Form007QueryStatuses.Form007QueryStatuses, Long]) {
     this()
-    this.summary = counts.summaryReceived
-    this.fromDayHospital = counts.fromDayHospital
-    this.including = new IncludingReceivedPatientsContainer(counts.villagers, counts.before17age, counts.after60age)
-  }
 
-  def this(receive: java.util.Map[Patient, String]) = {
-    this()
-    var it = 0
-    var ageBefore17 = 0
-    var ageAfter60 = 0
-    var villager = 0
-
-    this.summary = receive.size
-    if (this.summary > 0) {
-      receive.foreach(r => {
-        if (this.getAgeByBirthDate(r._1.getBirthDate) < 17) {
-          ageBefore17 += 1
-        } else if (this.getAgeByBirthDate(r._1.getBirthDate) > 60) {
-          ageAfter60 += 1
-        }
-        if (r._2.compareTo("Дневной стационар") == 0) {
-          it += 1
-        }
-      })
-    }
-    this.fromDayHospital = it
-    this.including = new IncludingReceivedPatientsContainer(villager, ageBefore17, ageAfter60) //TODO: villager??? где в базе
-  }
-
-  private def getAgeByBirthDate(birthDate: Date) = {
-
-    val now = Calendar.getInstance()
-    val birth = Calendar.getInstance()
-    birth.setTime(birthDate)
-
-    if (birth.after(now)) {
-      error("Can't be born in the future")
-    }
-
-    var age = now.get(Calendar.YEAR) - birth.get(Calendar.YEAR)
-
-    val month1 = now.get(Calendar.MONTH)
-    val month2 = birth.get(Calendar.MONTH)
-    if (month2 > month1) {
-      age += -1
-    }
-    else if (month1 == month2) {
-      if (now.get(Calendar.DAY_OF_MONTH) > birth.get(Calendar.DAY_OF_MONTH)) {
-        age += -1
-      }
-    }
-    age
+    import Form007QueryStatuses._
+    this.summary = that.get(F007QS_RECEIVED_ALL).getOrElse(0)
+    this.fromDayHospital = that.get(F007QS_RECEIVED_DAY_HOSPITAL).getOrElse(0)
+    this.including = new IncludingReceivedPatientsContainer(that.get(F007QS_RECEIVED_VILLAGERS).getOrElse(0),
+                                                            that.get(F007QS_RECEIVED_CHILDREN).getOrElse(0),
+                                                            that.get(F007QS_RECEIVED_AFTER60).getOrElse(0))
   }
 }
 
@@ -335,37 +302,16 @@ class CountOfReceivedPatientsContainer {
 class CountOfTransferredPatientsContainer {
 
   @BeanProperty
-  var from: Int = 0
+  var from: Long = 0
 
   @BeanProperty
-  var in: Int = 0
+  var in: Long = 0
 
-  def this(from: Int,
-           in: Int) {
+  def this(from: Long,
+           in: Long) {
     this()
     this.from = from
     this.in = in
-  }
-
-  def this(departmentId: Int,
-           transfer: java.util.Map[Patient, java.util.Map[String, OrgStructure]]) {
-    this()
-    transfer.foreach(el => {
-      el._2.foreach(org => {
-
-        if (org._2.getId.intValue() == departmentId) {
-          org._1 match {
-            case "in" => {
-              this.in += 1
-            }
-            case "from" => {
-              this.from += 1
-            }
-            case _ => {}
-          }
-        }
-      })
-    })
   }
 }
 
@@ -375,15 +321,19 @@ class CountOfTransferredPatientsContainer {
 class CountOfDischargedPatientsContainer {
 
   @BeanProperty
-  var summary: Int = _
+  var summary: Long = _
 
   @BeanProperty
   var including: IncludingDischargedPatientsContainer = _
 
-  def this(counts: SeventhFormLinearViewEntry) {
+  def this(that: Map[Form007QueryStatuses.Form007QueryStatuses, Long]) {
     this()
-    this.summary = counts.summaryDisharged
-    this.including = new IncludingDischargedPatientsContainer(counts.toOtherHospital, counts.toHourHospital, counts.toDayHospital)
+
+    import Form007QueryStatuses._
+    this.summary = that.get(F007QS_LEAVED_ALL).getOrElse(0)
+    this.including = new IncludingDischargedPatientsContainer(that.get(F007QS_LEAVED_ANOTHER_HOSPITAL).getOrElse(0),
+                                                              that.get(F007QS_LEAVED_HOUR_HOSPITAL).getOrElse(0),
+                                                              that.get(F007QS_LEAVED_DAY_HOSPITAL).getOrElse(0))
   }
 }
 
@@ -393,17 +343,17 @@ class CountOfDischargedPatientsContainer {
 class IncludingReceivedPatientsContainer {
 
   @BeanProperty
-  var villagers: Int = _
+  var villagers: Long = _
 
   @BeanProperty
-  var before17age: Int = _
+  var before17age: Long = _
 
   @BeanProperty
-  var after60age: Int = _
+  var after60age: Long = _
 
-  def this(villagers: Int,
-           before17age: Int,
-           after60age: Int) {
+  def this(villagers: Long,
+           before17age: Long,
+           after60age: Long) {
     this()
     this.villagers = villagers
     this.before17age = before17age
@@ -417,17 +367,17 @@ class IncludingReceivedPatientsContainer {
 class IncludingDischargedPatientsContainer {
 
   @BeanProperty
-  var toOtherHospital: Int = _
+  var toOtherHospital: Long = _
 
   @BeanProperty
-  var toHourHospital: Int = _
+  var toHourHospital: Long = _
 
   @BeanProperty
-  var toDayHospital: Int = _
+  var toDayHospital: Long = _
 
-  def this(toOtherHospital: Int,
-           toHourHospital: Int,
-           toDayHospital: Int) {
+  def this(toOtherHospital: Long,
+           toHourHospital: Long,
+           toDayHospital: Long) {
     this()
     this.toOtherHospital = toOtherHospital
     this.toHourHospital = toHourHospital
@@ -460,260 +410,58 @@ class CountOfFreePlacesContainer {
 class IdNameTransferredPatientsContainer {
 
   @BeanProperty
-  var toDepartment: java.util.LinkedList[IdNameContainer] = new java.util.LinkedList[IdNameContainer]
+  var toDepartment: java.util.LinkedList[PatientInfoContainer] = new java.util.LinkedList[PatientInfoContainer]
 
   @BeanProperty
-  var toHospital: java.util.LinkedList[IdNameContainer] = new java.util.LinkedList[IdNameContainer]
+  var toHospital: java.util.LinkedList[PatientInfoContainer] = new java.util.LinkedList[PatientInfoContainer]
 
-  def add(value: IdNameContainer,
+  def add(value: Event,
           to: Int) {
     to match {
-      case 0 => {
-        this.toDepartment.add(value)
-      }
-      case 1 => {
-        this.toHospital.add(value)
-      }
+      case 0 => this.toDepartment.add(new PatientInfoContainer(value))
+      case 1 => this.toHospital.add(new PatientInfoContainer(value))
       case _ => {}
     }
   }
 }
 
-class SeventhFormLinearView {
+@XmlType(name = "patientInfoContainer")
+@XmlRootElement(name = "patientInfoContainer")
+@JsonIgnoreProperties(ignoreUnknown = true)
+class PatientInfoContainer {
 
-  private val profileMap = new java.util.HashMap[RbHospitalBedProfile, SeventhFormLinearViewEntry]()
+  @BeanProperty
+  var appealId: Int = _
 
-  private val patientMap = new java.util.HashMap[Int, java.util.List[Patient]]()
+  @BeanProperty
+  var externalId: String = _
 
-  def initProfileMapStructure(keys: java.util.Set[RbHospitalBedProfile]) {
-    if (profileMap.size() <= 0) {
-      var entry = new SeventhFormLinearViewEntry()
-      profileMap.put(null, entry)
-      keys.foreach(key => {
-        entry = new SeventhFormLinearViewEntry()
-        profileMap.put(key, entry)
-      })
-    }
-  }
+  @BeanProperty
+  var patient: PersonNameContainer = _
 
-  def add(values: java.util.Map[RbHospitalBedProfile, Object], pos: Int) {
-
-    var entry: SeventhFormLinearViewEntry = null
-    var summary = profileMap.get(null: RbHospitalBedProfile)
-
-    values.foreach(value => {
-      if (profileMap.containsKey(value._1)) {
-        entry = profileMap.get(value._1)
-
-        pos match {
-          case 0 => {
-            //deployedBed & closedBed
-            if (value._2.isInstanceOf[(java.lang.Long, java.lang.Long)]) {
-              val (first, second) = value._2.asInstanceOf[(java.lang.Long, java.lang.Long)]
-              entry.deployedBed = first.intValue()
-              entry.closedBed = second.intValue()
-              summary.deployedBed += first.intValue()
-              summary.closedBed += second.intValue()
-            }
-          }
-          case 1 => {
-            if (value._2.isInstanceOf[java.lang.Long]) {
-              val first = value._2.asInstanceOf[java.lang.Long]
-              entry.atBeginingLastDay = first.intValue()
-              summary.atBeginingLastDay += first.intValue()
-            }
-          }
-          case 2 => {
-            if (value._2.isInstanceOf[java.lang.Long]) {
-              val first = value._2.asInstanceOf[java.lang.Long]
-              entry.summary = first.intValue()
-              summary.summary += first.intValue()
-            }
-          }
-          case 3 => {
-            if (value._2.isInstanceOf[java.lang.Long]) {
-              val first = value._2.asInstanceOf[java.lang.Long]
-              entry.mothers = first.intValue()
-              summary.mothers += first.intValue()
-            }
-          }
-          case 4 => {
-            //переведен из отделения
-            if (value._2.isInstanceOf[(java.lang.Long, java.util.List[Patient])]) {
-              val (first, second) = value._2.asInstanceOf[(java.lang.Long, java.util.List[Patient])]
-              entry.from = first.intValue()
-              if (!this.patientMap.containsKey(3: Int)) {
-                this.patientMap.put(3: Int, second)
-              } else {
-                this.patientMap.get(3).addAll(second)
-              }
-              summary.from += first.intValue()
-            }
-          }
-          case 5 => {
-            //переведен в отделение
-            if (value._2.isInstanceOf[(java.lang.Long, java.util.List[Patient])]) {
-              val (first, second) = value._2.asInstanceOf[(java.lang.Long, java.util.List[Patient])]
-              entry.in = first.intValue()
-              if (!this.patientMap.containsKey(1: Int)) {
-                this.patientMap.put(1: Int, second)
-              } else {
-                this.patientMap.get(1).addAll(second)
-              }
-              summary.in += first.intValue()
-            }
-          }
-          case 6 => {
-            //Поступило всего
-            if (value._2.isInstanceOf[(java.lang.Long, java.util.List[Patient])]) {
-              val (first, second) = value._2.asInstanceOf[(java.lang.Long, java.util.List[Patient])]
-              entry.summaryReceived = first.intValue()
-              if (!this.patientMap.containsKey(0: Int)) {
-                this.patientMap.put(0: Int, second)
-              } else {
-                this.patientMap.get(0).addAll(second)
-              }
-              summary.summaryReceived += first.intValue()
-            }
-          }
-          case 7 => {
-            //выписано всего
-            if (value._2.isInstanceOf[(java.lang.Long, java.util.List[Patient])]) {
-              val (first, second) = value._2.asInstanceOf[(java.lang.Long, java.util.List[Patient])]
-              entry.summaryDisharged = first.intValue()
-              if (!this.patientMap.containsKey(2: Int)) {
-                this.patientMap.put(2: Int, second)
-              } else {
-                this.patientMap.get(2).addAll(second)
-              }
-              summary.summaryDisharged += first.intValue()
-            }
-          }
-          case 8 => {
-            //выписано в дневной стационар
-            if (value._2.isInstanceOf[(java.lang.Long, java.util.List[Patient])]) {
-              val (first, second) = value._2.asInstanceOf[(java.lang.Long, java.util.List[Patient])]
-              entry.toDayHospital = first.intValue()
-              summary.toDayHospital += first.intValue()
-            }
-          }
-          case 9 => {
-            //выписано в другой стационар
-            if (value._2.isInstanceOf[(java.lang.Long, java.util.List[Patient])]) {
-              val (first, second) = value._2.asInstanceOf[(java.lang.Long, java.util.List[Patient])]
-              entry.toOtherHospital = first.intValue()
-              if (!this.patientMap.containsKey(4: Int)) {
-                this.patientMap.put(4: Int, second)
-              } else {
-                this.patientMap.get(4).addAll(second)
-              }
-              summary.toOtherHospital += first.intValue()
-            }
-          }
-          case 10 => {
-            //умерло
-            if (value._2.isInstanceOf[(java.lang.Long, java.util.List[Patient])]) {
-              val (first, second) = value._2.asInstanceOf[(java.lang.Long, java.util.List[Patient])]
-              entry.died = first.intValue()
-              if (!this.patientMap.containsKey(5: Int)) {
-                this.patientMap.put(5: Int, second)
-              } else {
-                this.patientMap.get(5).addAll(second)
-              }
-              summary.died += first.intValue()
-            }
-          }
-          case 11 => {
-            //выписано в круглосуточный стационар
-            if (value._2.isInstanceOf[(java.lang.Long, java.util.List[Patient])]) {
-              val (first, second) = value._2.asInstanceOf[(java.lang.Long, java.util.List[Patient])]
-              entry.toHourHospital = first.intValue()
-              summary.toHourHospital += first.intValue()
-            }
-          }
-          case 12 => {
-            //свободно мужских коек
-            if (value._2.isInstanceOf[java.lang.Long]) {
-              val first = value._2.asInstanceOf[java.lang.Long]
-              entry.male = first.intValue()
-              summary.male += first.intValue()
-            }
-          }
-          case 13 => {
-            //свободно женских коек
-            if (value._2.isInstanceOf[java.lang.Long]) {
-              val first = value._2.asInstanceOf[java.lang.Long]
-              entry.female = first.intValue()
-              summary.female += first.intValue()
-            }
-          }
-          case 14 => {
-            //поступившие из дневного стационара
-            if (value._2.isInstanceOf[(java.lang.Long, java.util.List[Patient])]) {
-              val (first, second) = value._2.asInstanceOf[(java.lang.Long, java.util.List[Patient])]
-              entry.fromDayHospital = first.intValue()
-              summary.fromDayHospital += first.intValue()
-            }
-          }
-          case 15 => {
-            //поступившие до 17 лет
-            if (value._2.isInstanceOf[(java.lang.Long, java.util.List[Patient])]) {
-              val (first, second) = value._2.asInstanceOf[(java.lang.Long, java.util.List[Patient])]
-              entry.before17age = first.intValue()
-              summary.before17age += first.intValue()
-            }
-          }
-          case 16 => {
-            //поступившие после 60 лет
-            if (value._2.isInstanceOf[(java.lang.Long, java.util.List[Patient])]) {
-              val (first, second) = value._2.asInstanceOf[(java.lang.Long, java.util.List[Patient])]
-              entry.after60age = first.intValue()
-              summary.after60age += first.intValue()
-            }
-          }
-          case 17 => {
-            //поступившие сельские жители
-            if (value._2.isInstanceOf[(java.lang.Long, java.util.List[Patient])]) {
-              val (first, second) = value._2.asInstanceOf[(java.lang.Long, java.util.List[Patient])]
-              entry.villagers = first.intValue()
-              summary.villagers += first.intValue()
-            }
-          }
-          case _ => {}
-        }
-      }
-    })
-  }
-
-  def getProfileMap() = {
-    this.profileMap
-  }
-
-  def getPatientMap() = {
-    this.patientMap
+  def this(event: Event){
+    this()
+    this.appealId = event.getId.intValue()
+    this.externalId = event.getExternalId
+    this.patient = new PersonNameContainer(event.getPatient)
   }
 }
 
-class SeventhFormLinearViewEntry {
+class OrgStructureContainer {
+  @BeanProperty
+  var id : Int = _
+  @BeanProperty
+  var name : String = _
+  @BeanProperty
+  var address : String = _
 
-  var deployedBed: Int = 0
-  var closedBed: Int = 0
-  var atBeginingLastDay: Int = 0
-  var summaryReceived: Int = 0
-  var fromDayHospital: Int = 0
-  var villagers: Int = 0
-  var before17age: Int = 0
-  var after60age: Int = 0
-  var from: Int = 0
-  var in: Int = 0
-  var summaryDisharged: Int = 0
-  var toOtherHospital: Int = 0
-  var toHourHospital: Int = 0
-  var toDayHospital: Int = 0
-  var died: Int = 0
-  var summary: Int = 0
-  var mothers: Int = 0
-  var male: Int = 0
-  var female: Int = 0
+  def this(department: OrgStructure){
+    this()
+    if (department!=null){
+      this.id = department.getId.intValue()
+      this.name = department.getName
+      this.address = department.getAddress
+    }
+  }
 }
 

@@ -20,6 +20,9 @@ import ru.korus.tmis.core.entity.model.{Staff, Role}
 class RoleData {
 
   @BeanProperty
+  var version: String = _
+
+  @BeanProperty
   //var user: StaffEntity = _
   var doctor: DoctorSpecsContainer = _
 
@@ -33,6 +36,7 @@ class RoleData {
    */
   def this(staffEn: Staff, roles: Set[Role]) = {
     this()
+    this.version = ConfigManager.Messages("misCore.assembly.version")
     this.doctor = new DoctorSpecsContainer(staffEn)
     roles.foreach(r => this.roles.add(new RoleEntry(r)))
   }
@@ -55,6 +59,9 @@ class RoleEntry {
   var name: String = _
 
   @BeanProperty
+  var withDep: Int = _
+
+  @BeanProperty
   var right = new LinkedList[UserRightEntry]()
 
   /**
@@ -66,6 +73,7 @@ class RoleEntry {
     this.id = role.getId.intValue()
     this.code = role.getCode
     this.name = role.getName
+    this.withDep = role.getWithDep
 
     val rolePermissions = role.getRights.map(_.getCode)
     ConfigManager.TmisAuth.SupportedPermissions.foreach(

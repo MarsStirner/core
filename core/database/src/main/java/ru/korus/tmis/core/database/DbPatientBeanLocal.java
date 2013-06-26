@@ -1,42 +1,23 @@
 package ru.korus.tmis.core.database;
 
 import ru.korus.tmis.core.data.PatientRequestData;
-import ru.korus.tmis.core.data.PatientsListRequestData;
-import ru.korus.tmis.core.entity.model.Event;
 import ru.korus.tmis.core.entity.model.Patient;
 import ru.korus.tmis.core.entity.model.Staff;
 import ru.korus.tmis.core.exception.CoreException;
+import ru.korus.tmis.core.filter.ListDataFilter;
+import scala.Function1;
 
 import javax.ejb.Local;
-import javax.persistence.TypedQuery;
 import java.util.Date;
 import java.util.List;
+import java.util.Map;
 
 @Local
 public interface DbPatientBeanLocal {
 
-    Iterable<Patient> getAllPatients(int limit, int page, String sortField, String sortMethod,
-                                     PatientRequestData requestData)
-            throws CoreException;
+    Iterable<Patient> getAllPatients() throws CoreException;
 
-    Iterable<Patient> getPatientsWithCode(int limit, int page, String sortField, String sortMethod,
-                                          int patientCode, PatientRequestData requestData)
-            throws CoreException;
-
-    Iterable<Patient> getPatientsWithDocumentPattern(int limit, int page, String sortField, String sortMethod,
-                                                     String documentPattern, PatientRequestData requestData)
-            throws CoreException;
-
-    Iterable<Patient> getPatientsWithFullNamePattern(int limit, int page, String sortField, String sortMethod,
-                                                     String fullNamePattern, PatientRequestData requestData)
-            throws CoreException;
-
-    Iterable<Patient> getPatientsWithBirthDate(int limit, int page, String sortField, String sortMethod,
-                                               Date birthDate, PatientRequestData requestData)
-            throws CoreException;
-
-    Iterable<Patient> getPatientsWithBirthDateAndFullNamePattern(int limit, int page, String sortField, String sortMethod,
-                                                                 Date birthDate, String fullNamePattern, PatientRequestData requestData)
+    Iterable<Patient> getAllPatients(int page, int limit, String sorting, ListDataFilter filter, Function1<Long, Boolean> setRecCount)
             throws CoreException;
 
     Patient getPatientById(int id)
@@ -61,4 +42,30 @@ public interface DbPatientBeanLocal {
             throws CoreException;
 
     Boolean checkSNILSNumber(String number) throws CoreException;
+
+    List<Patient> findPatient(Map<String, String> params, int clientId) throws CoreException;
+
+    List<Patient> findPatientByPolicy
+            (Map<String, String> params, String policySerial, String policyNumber, int policyType)
+            throws CoreException;
+
+    List<Patient> findPatientByDocument
+            (Map<String, String> params, String documentSerial, String documentNumber, int documentCode)
+            throws CoreException;
+
+    List<Patient> findPatientsByParams(Map<String, String> params, Map<String, String> documents);
+
+    Integer savePatientToDataBase(Patient patient) throws CoreException;
+
+    /**
+     * Проверяет жив ли пациент
+     *
+     * @param patient Пациент, факт смерти которого проверяется
+     * @return false=мертв, true=жив
+     */
+    boolean isAlive(Patient patient);
+
+    boolean deletePatient(int id) throws CoreException;
+
+    List<Patient> findPatientWithoutDocuments(Map<String, String> parameters);
 }

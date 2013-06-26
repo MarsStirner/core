@@ -4,14 +4,14 @@
     <modelVersion>4.0.0</modelVersion>
     <groupId>ru.korus.tmis.core</groupId>
     <artifactId>tmis-core-business</artifactId>
-    <version>0.9.10-SNAPSHOT</version>
+    <version>${version.tmis.core}</version>
     <packaging>ejb</packaging>
     <name>TMIS Core Business Tier EJBs</name>
 
     <parent>
         <groupId>ru.korus.tmis</groupId>
         <artifactId>tmis-nexus</artifactId>
-        <version>0.9.10-SNAPSHOT</version>
+        <version>${version.tmis.core}</version>
         <relativePath>../</relativePath>
     </parent>
 
@@ -20,17 +20,22 @@
         <dependency>
             <groupId>ru.korus.tmis.core</groupId>
             <artifactId>tmis-core-common</artifactId>
-            <version>0.9.10-SNAPSHOT</version>
+            <version>${version.tmis.core}</version>
             <type>jar</type>
         </dependency>
 
         <dependency>
             <groupId>ru.korus.tmis.core</groupId>
             <artifactId>tmis-core-database</artifactId>
-            <version>0.9.10-SNAPSHOT</version>
+            <version>${version.tmis.core}</version>
             <type>ejb</type>
         </dependency>
-
+        <dependency>
+            <groupId>ru.korus.tmis.laboratory</groupId>
+            <artifactId>tmis-laboratory-tier</artifactId>
+            <version>${version.tmis.core}</version>
+            <type>ejb</type>
+        </dependency>
         <dependency>
             <groupId>net.sf.ehcache</groupId>
             <artifactId>ehcache-web</artifactId>
@@ -70,14 +75,14 @@
         <dependency>
             <groupId>mysql</groupId>
             <artifactId>mysql-connector-java</artifactId>
-            <version>5.1.15</version>
+            <version>${version.mysql.connector}</version>
             <scope>provided</scope>
         </dependency>
 
         <dependency>
             <groupId>org.glassfish.extras</groupId>
             <artifactId>glassfish-embedded-all</artifactId>
-            <version>3.1</version>
+            <version>${version.maven.plugin.embedded.glassfish}</version>
             <scope>test</scope>
         </dependency>
     </dependencies>
@@ -87,7 +92,7 @@
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-ejb-plugin</artifactId>
-                <version>2.3</version>
+                <version>${version.maven.plugin.ejb}</version>
                 <configuration>
                     <ejbVersion>3.1</ejbVersion>
                     <generateClient>true</generateClient>

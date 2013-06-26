@@ -1,0 +1,5 @@
+[database]
+host = mysql.host
+username = root
+password = rootpasswd
+dbname = rls

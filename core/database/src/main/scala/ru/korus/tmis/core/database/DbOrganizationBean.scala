@@ -1,6 +1,5 @@
 package ru.korus.tmis.core.database
 
-import ru.korus.tmis.core.entity.model.Organisation
 import ru.korus.tmis.core.logging.LoggingInterceptor
 
 import javax.ejb.Stateless
@@ -9,10 +8,10 @@ import javax.persistence.{EntityManager, PersistenceContext}
 
 import grizzled.slf4j.Logging
 import ru.korus.tmis.core.entity.model.Organisation
-import ru.korus.tmis.core.exception.NoSuchOrganisationException
-import ru.korus.tmis.util.{I18nable, ConfigManager}
 import scala.collection.JavaConversions._
 import ru.korus.tmis.core.data.{QueryDataStructure, DictionaryListRequestDataFilter}
+import ru.korus.tmis.core.exception.CoreException
+import ru.korus.tmis.core.filter.ListDataFilter
 
 @Interceptors(Array(classOf[LoggingInterceptor]))
 @Stateless
@@ -65,6 +64,11 @@ class DbOrganizationBean
   %s
                                         """
 
+  val OrganisationFindQueryByInfisCode = """
+  SELECT org
+  FROM Organisation org
+  WHERE org.infisCode =                 :INFISCODE
+                                         """
 
   def getCountOfOrganizationWithFilter(filter: Object) = {
     var queryStr: QueryDataStructure = if (filter.isInstanceOf[DictionaryListRequestDataFilter]) {
@@ -95,20 +99,15 @@ class DbOrganizationBean
     typed.getSingleResult
   }
 
-  def getAllOrganizationWithFilter(page: Int, limit: Int, sortingField: String, sortingMethod: String, filter: Object): java.util.LinkedList[Object] = {
-    var queryStr: QueryDataStructure = if (filter.isInstanceOf[DictionaryListRequestDataFilter]) {
-      filter.asInstanceOf[DictionaryListRequestDataFilter].toQueryStructure()
-    }
-    else {
-      new QueryDataStructure()
-    }
+  def getAllOrganizationWithFilter(page: Int, limit: Int, sorting: String, filter: ListDataFilter): java.util.LinkedList[Object] = {
+
+    val queryStr = filter.toQueryStructure()
     queryStr.query += (if (filter.asInstanceOf[DictionaryListRequestDataFilter].getDictName().compare("TFOMS") == 0) {
       "AND r.headId IS NULL AND r.isHospital = 0"
     }
     else {
       "AND r.isInsurer = 1"
     })
-    val sorting = "ORDER BY %s %s".format(sortingField, sortingMethod)
     if (queryStr.data.size() > 0 || queryStr.query.size > 0) {
       if (queryStr.query.indexOf("AND ") == 0) {
         queryStr.query = "WHERE " + queryStr.query.substring("AND ".length())
@@ -120,9 +119,9 @@ class DbOrganizationBean
     } else {
       "r.id, r.fullName"
     }
-    var typed = em.createQuery(AllOrganizationsWithFilterQuery.format(handle, queryStr.query, sorting), classOf[Array[AnyRef]])
-      .setMaxResults(limit)
-      .setFirstResult(limit * page)
+    val typed = em.createQuery(AllOrganizationsWithFilterQuery.format(handle, queryStr.query, sorting), classOf[Array[AnyRef]])
+                  .setMaxResults(limit)
+                  .setFirstResult(limit * page)
     if (queryStr.data.size() > 0) {
       queryStr.data.foreach(qdp => typed.setParameter(qdp.name, qdp.value))
     }
@@ -185,6 +184,22 @@ class DbOrganizationBean
         })
         result(0)
       }
+    }
+  }
+
+  /**
+   * Получение организации по ее инфис-коду, если не найдено вообще ни одной, то CoreException
+   * @param infisCode   инфис-код организации, для поиска
+   * @return  Организация
+   */
+  def getOrganizationByInfisCode(infisCode: String): Organisation = {
+    val resultList = em.createQuery(OrganisationFindQueryByInfisCode, classOf[Organisation])
+      .setParameter("INFISCODE", infisCode).setMaxResults(20).getResultList;
+    if (resultList.size() != 0) {
+      return resultList.get(0);
+    }
+    else {
+      throw new CoreException("No organisation found by \"".concat(infisCode).concat("\" infisCode."));
     }
   }
 }

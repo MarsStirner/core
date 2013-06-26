@@ -1,13 +1,12 @@
 package ru.korus.tmis.core.entity.model;
 
-import java.io.Serializable;
-import java.util.Date;
-import java.util.HashSet;
-import java.util.LinkedList;
-import java.util.List;
 import javax.persistence.*;
 import javax.xml.bind.annotation.XmlRootElement;
 import javax.xml.bind.annotation.XmlType;
+import java.io.Serializable;
+import java.util.Date;
+import java.util.LinkedList;
+import java.util.List;
 
 @Entity
 @Table(name = "Event", catalog = "", schema = "")
@@ -55,14 +54,14 @@ public class Event implements Serializable {
 
     @ManyToOne
     @JoinColumn(name = "eventType_id",
-                nullable = false)
+            nullable = false)
     private EventType eventType;
 
     @Column(name = "org_id")
     private Integer orgId;
 
-    @Column(name = "contract_id")
-    private Integer contractId;
+    @JoinColumn(name = "contract_id")
+    private Contract contract;
 
     @Column(name = "prevEventDate")
     @Temporal(TemporalType.TIMESTAMP)
@@ -139,9 +138,9 @@ public class Event implements Serializable {
     private int version;
 
 
-//    @ManyToOne
-//    @JoinColumn(name = "uuid_id")
-@Transient
+    @ManyToOne(cascade = CascadeType.ALL)
+    @JoinColumn(name = "uuid_id")
+//    @Transient
     private UUID uuid;
     ////////////////////////////////////////////////////////////////////////////
     // Custom mappings
@@ -259,12 +258,12 @@ public class Event implements Serializable {
         this.orgId = orgId;
     }
 
-    public Integer getContractId() {
-        return contractId;
+    public Contract getContract() {
+        return contract;
     }
 
-    public void setContractId(Integer contractId) {
-        this.contractId = contractId;
+    public void setContract(Contract contract) {
+        this.contract = contract;
     }
 
     public Date getPrevEventDate() {
