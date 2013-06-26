@@ -20,6 +20,7 @@ import ru.korus.tmis.ws.transfusion.IssueResult;
 import ru.korus.tmis.ws.transfusion.PropType;
 import ru.korus.tmis.ws.transfusion.TrfuActionProp;
 import ru.korus.tmis.ws.transfusion.efive.PatientCredentials;
+import ru.korus.tmis.ws.transfusion.order.RegOrderIssueResult;
 import ru.korus.tmis.ws.transfusion.order.SendOrderBloodComponents;
 
 /**
@@ -54,8 +55,17 @@ public class RegProcedureResult {
             return res;
         }
 
+        if (procedureInfo.getFactDate() == null ) {
+            res.setDescription("The procedure factDate is null");
+            res.setResult(false);
+            return res;
+        }
+
         try {
-            updateProp(action, procedureInfo, eritrocyteMass);
+            if ( !updateProp(action, procedureInfo, eritrocyteMass) ){
+                res.setDescription("The result has been already set");
+                return res;
+            }
             updateMeasures(action, measures);
             updateFinalValue(action, finalVolume);
         } catch (final CoreException ex) {
@@ -68,10 +78,6 @@ public class RegProcedureResult {
         return res;
     }
 
-    /**
-     * @param action
-     * @param finalVolume
-     */
     private void updateFinalValue(final Action action, final List<FinalVolume> finalVolumes) {
         for (final FinalVolume finalVolume : finalVolumes) {
             final TrfuFinalVolume trfuFinalValume = new TrfuFinalVolume();
@@ -117,23 +123,19 @@ public class RegProcedureResult {
         em.flush();
     }
 
-    /**
-     * @param action
-     * @param requestId
-     * @param procedureInfo
-     * @param eritrocyteMass
-     * @throws CoreException
-     */
-    private void updateProp(final Action action, final ProcedureInfo procedureInfo, final EritrocyteMass eritrocyteMass) throws CoreException {
+    private boolean updateProp(final Action action, final ProcedureInfo procedureInfo, final EritrocyteMass eritrocyteMass) throws CoreException {
         final TrfuActionProp trfuActionProp =
                 new TrfuActionProp(database, action.getActionType().getFlatCode(), Arrays.asList(SendProcedureRequest.propTypes));
         final Integer actionId = action.getId();
         final boolean update = true;
 
-        if (procedureInfo.getFactDate() != null) {
-            trfuActionProp.setProp(procedureInfo.getFactDate(), actionId, PropType.ORDER_ISSUE_RES_TIME, update);
-            trfuActionProp.setProp(procedureInfo.getFactDate(), actionId, PropType.ORDER_ISSUE_RES_DATE, update);
+        if (RegOrderIssueResult.alreadySet(actionId, trfuActionProp))  {
+            return false;
         }
+
+        trfuActionProp.setProp(procedureInfo.getFactDate(), actionId, PropType.ORDER_ISSUE_RES_TIME, update);
+
+        trfuActionProp.setProp(procedureInfo.getFactDate(), actionId, PropType.ORDER_ISSUE_RES_DATE, update);
 
         trfuActionProp.setProp(procedureInfo.getContraindication(), actionId, PropType.CONTRAINDICATION, update);
 
@@ -217,5 +219,6 @@ public class RegProcedureResult {
 
         trfuActionProp.setProp(actionId, actionId, PropType.FINAL_VOLUME, update);
 
+        return true;
     }
 }

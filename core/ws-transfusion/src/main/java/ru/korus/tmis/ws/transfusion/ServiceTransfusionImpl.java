@@ -60,7 +60,7 @@ public class ServiceTransfusionImpl implements ServiceTransfusion {
         final IssueResult res = new IssueResult();
         logger.info("Entered in transfusion service 'setOrderIssueResult' with parameters: requestId: {}, factDate: {}, listOrderIssueInfo.size: {}",
                 requestId, factDate, components == null ? null : components.size());
-        if (requestId == null || components == null || components.isEmpty()) {
+        if (requestId == null || components == null || components.isEmpty() || factDate == null ) {
             res.setDescription("Error: illegal arguments for setOrderIssueResult");
             res.setResult(false);
             return res;

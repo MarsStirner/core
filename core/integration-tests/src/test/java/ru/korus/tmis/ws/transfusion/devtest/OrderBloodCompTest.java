@@ -73,7 +73,6 @@ public class OrderBloodCompTest extends TestBase {
             setValue(PropType.ORDER_ISSUE_BLOOD_COMP_PASPORT, ACTION_ID);
             String res = waitOrderRequestId();
             AssertJUnit.assertTrue(res != null ? res.indexOf("Получен идентификатор в системе ТРФУ: ") == 0 : false);
-            setOrderRes();
         } catch (final InterruptedException ex) {
             ex.printStackTrace();
             Assert.fail(" Thread.sleep error");

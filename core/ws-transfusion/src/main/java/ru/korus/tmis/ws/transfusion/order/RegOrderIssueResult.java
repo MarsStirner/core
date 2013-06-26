@@ -41,9 +41,7 @@ public class RegOrderIssueResult {
 
     /**
      * Регистрация извещения о резульатах выполнения требования КК
-     * 
-     * @param orderIssue
-     *            - входные данные от подсистемы ТРФУ
+     *
      * @return результат регистрации
      */
     public IssueResult save(final Integer requestId, final Date factDate, final List<OrderIssueInfo> components, final String orderComment) {
@@ -61,11 +59,15 @@ public class RegOrderIssueResult {
         }
 
         try {
-            update(action, factDate, components, orderComment);
+            if (!update(action, factDate, components, orderComment)) {
+                res.setDescription("The result has been already set");
+                return res;
+            }
         } catch (final CoreException ex) {
             logger.error("Cannot update action {} property. Error description: '{}'", action.getId(), ex.getMessage());
             ex.printStackTrace();
             res.setDescription("MIS Internal error");
+
             return res;
         }
         action.setStatus(Database.ACTION_STATE_FINISHED);
@@ -84,20 +86,25 @@ public class RegOrderIssueResult {
      *            - паспортные данные выданного(-ых) компонентов крови
      * @param orderComment
      *            - комментарий
+     * @return true - если данные ранее не были установлены
+     *         false - если результат уже установлен
      * @throws CoreException
      *             - при кокой-либо ошибке во время работы с БД
      */
-    private void update(final Action action, final Date factDate, final List<OrderIssueInfo> components, final String orderComment)
+    private boolean update(final Action action, final Date factDate, final List<OrderIssueInfo> components, final String orderComment)
             throws CoreException {
         final TrfuActionProp trfuActionProp =
                 new TrfuActionProp(database, SendOrderBloodComponents.TRANSFUSION_ACTION_FLAT_CODE, Arrays.asList(SendOrderBloodComponents.propConstants));
         final Integer actionId = action.getId();
+        if (alreadySet(actionId, trfuActionProp)) {
+            return false;
+        }
         final boolean update = true;
         final EntityManager em = database.getEntityMgr();
-        if (factDate != null) {
-            trfuActionProp.setProp(factDate, actionId, PropType.ORDER_ISSUE_RES_TIME, update);
-            trfuActionProp.setProp(factDate, actionId, PropType.ORDER_ISSUE_RES_DATE, update);
-        }
+
+        trfuActionProp.setProp(factDate, actionId, PropType.ORDER_ISSUE_RES_TIME, update);
+        trfuActionProp.setProp(factDate, actionId, PropType.ORDER_ISSUE_RES_DATE, update);
+
         String errMsg = "";
         for (final OrderIssueInfo orderIssue : components) {
             final TrfuOrderIssueResult trfuOrderIssueResult = new TrfuOrderIssueResult();
@@ -124,6 +131,15 @@ public class RegOrderIssueResult {
         trfuActionProp.setProp(actionId, actionId, PropType.ORDER_ISSUE_BLOOD_COMP_PASPORT, true);
         trfuActionProp.setProp(res, actionId, PropType.ORDER_REQUEST_ID, true);
         em.flush();
+        return true;
+    }
+
+    public static boolean alreadySet(Integer actionId, TrfuActionProp trfuActionProp) {
+        try {
+            return  trfuActionProp.getProp(actionId,  PropType.ORDER_ISSUE_RES_DATE) != null;
+        } catch (CoreException e) {
+            return  false;
+        }
     }
 
     private RbBloodType toRbBloodType(final Integer bloodGroupId, final Integer rhesusFactorId) {
