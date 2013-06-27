@@ -109,9 +109,9 @@ object ConfigManager extends Configuration {
   }
 
   /**
-   * Параметры для 1С Аптеки
+   * Параметры для 1С Аптека
    */
-  val Drugstore = new Configuration {
+  class DrugstoreClass extends Configuration {
     /**
      * Включен ли сервис
      * on - включен
@@ -144,8 +144,18 @@ object ConfigManager extends Configuration {
     var GetDepList_SoapOperation = "GetDepartmentList"
     var GetDepList_RequestRootElement = "OrganizationRef"
 
+    var UpdateRLS = "off"
+
+    def isUpdateRLS = "on".equals(UpdateRLS)
+
     def HttpAuthToken = DatatypeConverter.printBase64Binary(
       (User + ":" + Password).getBytes)
+  }
+
+  var Drugstore = new DrugstoreClass
+
+  var Core = new Configuration {
+    var RequestLaboratoryUrl = "http://localhost:8080/tmis-ws-laboratory/tmis-client-laboratory"
   }
 
   /**
