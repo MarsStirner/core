@@ -31,6 +31,9 @@ import ru.korus.tmis.ws.transfusion.procedure.RegProcedureResult;
  * Description: <br>
  */
 
+/**
+ * Вебсервис МИС для подсистемы ТРФУ
+ */
 @WebService(endpointInterface = "ru.korus.tmis.ws.transfusion.ServiceTransfusion", targetNamespace = "http://korus.ru/tmis/ws/transfusion",
         serviceName = "TransfusionServiceImpl", portName = "portTransfusion", name = "nameTransfusion")
 public class ServiceTransfusionImpl implements ServiceTransfusion {
