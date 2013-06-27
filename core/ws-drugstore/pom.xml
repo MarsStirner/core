@@ -11,7 +11,7 @@
 
     <parent>
         <groupId>ru.korus.tmis</groupId>
-        <artifactId>tmis-nexus</artifactId>
+        <artifactId>tmis-core</artifactId>
         <version>${version.tmis.core}</version>
         <relativePath>../</relativePath>
     </parent>
