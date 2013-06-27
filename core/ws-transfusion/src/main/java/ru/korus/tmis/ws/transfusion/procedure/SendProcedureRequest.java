@@ -161,7 +161,7 @@ public class SendProcedureRequest {
                 }
                 OrderResult orderResult = new OrderResult();
                 actionProp.get(curFlatCode).setRequestState(action.getId(), "");
-                final PatientCredentials patientCredentials = SendOrderBloodComponents.getPatientCredentials(action, actionProp.get(curFlatCode));
+                final PatientCredentials patientCredentials = SendOrderBloodComponents.getPatientCredentials(action, actionProp.get(curFlatCode), database.getEntityMgr());
                 if (patientCredentials != null) {
                     final DonorInfo donorInfo = getDonorInfo(database.getEntityMgr(), action, actionProp.get(curFlatCode));
                     final ru.korus.tmis.ws.transfusion.efive.ProcedureInfo procedureInfo =

@@ -22,6 +22,8 @@ public class TestBase {
     protected final static Integer TRFU_ACTION_CREATED_PERSON_ID = 183; // TODO create tester person
 
     protected final static Integer ACTION_ID = 100000000;
+    protected final static Integer ACTION_MOVING_ID = 100000001;
+    protected final static Integer ACTION_MOVING_TYPE = 113;
 
     protected final static Integer ACTION_PORP_ID_BASE = 100000000;
 
@@ -86,6 +88,7 @@ public class TestBase {
             s.executeUpdate(sql);
         }
         s.executeUpdate("DELETE FROM Action WHERE id=" + ACTION_ID);
+        s.executeUpdate("DELETE FROM Action WHERE id=" + ACTION_MOVING_ID);
     }
 
     /**
@@ -109,6 +112,9 @@ public class TestBase {
                 "INSERT INTO Action (`id`, `createDatetime`, `createPerson_id`, `modifyDatetime`, `modifyPerson_id`, `deleted`, `actionType_id`, `event_id`, `idx`, `directionDate`, `status`, `setPerson_id`, `isUrgent`, `begDate`, `plannedEndDate`, `endDate`, `note`, `person_id`, `office`, `amount`, `uet`, `expose`, `payStatus`, `account`, `finance_id`, `prescription_id`, `takenTissueJournal_id`, `contract_id`, `coordDate`, `coordAgent`, `coordInspector`, `coordText`, `hospitalUidFrom`, `pacientInQueueType`, `version`, `parentAction_id`, `uuid_id`) "
                         + " VALUES (%d, CURRENT_TIMESTAMP, %d, CURRENT_TIMESTAMP, %d, 0, %d, 1, 0, CURRENT_TIMESTAMP, 0, %d, 0, CURRENT_TIMESTAMP, CURRENT_TIMESTAMP, NULL, '', %d, '', 0, 0, 1, 0, 0, NULL, NULL, NULL, NULL, NULL, '', '', '', '0', 0, 3, NULL, 284056);";
         s.executeUpdate(String.format(sqlActionInsertTpl, ACTION_ID, TRFU_ACTION_CREATED_PERSON_ID, TRFU_ACTION_CREATED_PERSON_ID, actionTypeId,
+                TRFU_ACTION_CREATED_PERSON_ID,
+                TRFU_ACTION_CREATED_PERSON_ID));
+        s.executeUpdate(String.format(sqlActionInsertTpl, ACTION_MOVING_ID, TRFU_ACTION_CREATED_PERSON_ID, TRFU_ACTION_CREATED_PERSON_ID, ACTION_MOVING_TYPE,
                 TRFU_ACTION_CREATED_PERSON_ID,
                 TRFU_ACTION_CREATED_PERSON_ID));
         final String sqlActionPropInsertTpl =
