@@ -140,8 +140,6 @@ class DbActionTypeBean
       ActionType at
     WHERE
       at.id = :id
-    AND
-      at.deleted = 0
                             """
 
   val ActionTypePropertiesByIdQuery = """

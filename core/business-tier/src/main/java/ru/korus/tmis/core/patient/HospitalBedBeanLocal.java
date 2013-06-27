@@ -128,13 +128,4 @@ public interface HospitalBedBeanLocal {
      * @throws CoreException
      */
     OrgStructure getCurrentDepartmentForAppeal(int movingId)  throws CoreException;
-
-
-    /**
-     * Получить отделение нахождения пациента
-     * @param movingId Идентификатор движения
-     * @return
-     * @throws CoreException
-     */
-    OrgStructure getCurrentDepartmentForAppeal(int movingId)  throws CoreException;
 }
