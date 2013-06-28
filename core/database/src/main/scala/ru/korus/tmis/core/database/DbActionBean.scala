@@ -279,11 +279,12 @@ class DbActionBean
      Для остальных осмотров ищется последний осмотр заданного типа в данном обращении
      Выполнено согласно "ТРЕБОВАНИЯМ К РАБОТЕ С МЕДИЦИНСКИМИ ДОКУМЕНТАМИ"
      */
-    val subQuery = if(actionTypeId == i18n("db.actionType.primary").toInt || actionTypeId == i18n("db.actionType.secondary").toInt)
-                      "e.patient.id IN (SELECT DISTINCT e2.patient.id FROM Event e2 WHERE e2.id = :id)"
-                   else //"e.id = :id"
-            "e.execDate IN (SELECT DISTINCT MAX(e2.execDate) FROM Event e2 WHERE e2.patient.id IN" +
-              "(SELECT DISTINCT e3.patient.id FROM Event e3 WHERE e3.id = :id))"
+    val subQuery = // if(actionTypeId == i18n("db.actionType.primary").toInt || actionTypeId == i18n("db.actionType.secondary").toInt)
+                   //   "e.patient.id IN (SELECT DISTINCT e2.patient.id FROM Event e2 WHERE e2.id = :id)"
+                   //else //"e.id = :id"
+            "e.createDatetime IN (SELECT DISTINCT MAX(e2.createDatetime) FROM Event e2 WHERE e2.patient.id IN" +
+              "(SELECT DISTINCT e3.patient.id FROM Event e3 WHERE e3.id = :id) AND e2.createDatetime < " +
+              "(SELECT DISTINCT e4.createDatetime FROM Event e4 WHERE e4.id = :id))"
 
     val result = em.createQuery(ActionsIdFindQuery.format(subQuery), classOf[Int])
                    .setParameter("id", eventId)
