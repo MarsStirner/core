@@ -51,7 +51,9 @@
         <version.gmaven.runtime>1.4</version.gmaven.runtime>
         <version.mysql.connector>5.1.25</version.mysql.connector>
         <version.eclipselink>2.5.0</version.eclipselink>
-
+        <version.eclipse.persistence.jpa>2.5.0-M5</version.eclipse.persistence.jpa>
+        <version.findbug.annotation>2.0.1</version.findbug.annotation>
+        <version.test.spock>0.7-groovy-2.0</version.test.spock>
 
         <version.maven.plugin.scala>2.15.2</version.maven.plugin.scala>
         <version.maven.plugin.compiler>2.3.2</version.maven.plugin.compiler>
@@ -152,6 +154,7 @@
         <!-- Название пула для базы данных - конфигурации ядра -->
         <mysql.db.tmis_core.pool>tmis_core-pool</mysql.db.tmis_core.pool>
 
+
         <!-- Настройки persistence.xml по умолчанию -->
         <eclipselink.logging.level>WARNING</eclipselink.logging.level>
         <eclipselink.logging.sql.level>OFF</eclipselink.logging.sql.level>
@@ -159,6 +162,7 @@
         <eclipselink.logging.showsql>false</eclipselink.logging.showsql>
         <!-- Схема работы при запуске приложения-->
         <eclipselink.ddl.generated>update-table</eclipselink.ddl.generated>
+
     </properties>
 
     <profiles>
@@ -396,7 +400,7 @@
         <dependency>
             <groupId>org.spockframework</groupId>
             <artifactId>spock-core</artifactId>
-            <version>0.7-groovy-2.0</version>
+            <version>${version.test.spock}</version>
             <scope>test</scope>
         </dependency>
 
@@ -490,7 +494,7 @@
         <dependency>
             <groupId>org.eclipse.persistence</groupId>
             <artifactId>org.eclipse.persistence.jpa</artifactId>
-            <version>2.5.0-M5</version>
+            <version>${version.eclipse.persistence.jpa}</version>
             <scope>provided</scope>
         </dependency>
 
@@ -498,7 +502,7 @@
         <dependency>
             <groupId>com.google.code.findbugs</groupId>
             <artifactId>annotations</artifactId>
-            <version>2.0.1</version>
+            <version>${version.findbug.annotation}</version>
         </dependency>
 
     </dependencies>
