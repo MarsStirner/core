@@ -469,8 +469,10 @@ class CommonAttributeWithLayout(id: Integer,
                                 version: Integer,
                                 name: String,
                                 aType: String,
+                                mandatory: String,
+                                readOnly: String,
                                 scope: String,
-                                props: Map[String, String]) extends CommonAttribute (id, version, name, aType, scope, props){
+                                props: Map[String, String]) extends CommonAttribute (id, version, name, aType, mandatory, readOnly, scope, props){
 
   @BeanProperty
   var layoutAttributeValues = new LinkedList[LayoutAttributeSimplifyDataContainer]
@@ -481,14 +483,16 @@ class CommonAttributeWithLayout(id: Integer,
            aType: String,
            scope: String,
            props: Map[String, String],
-           layout: List[LayoutAttributeValue]) = {
-    this(id, version, name, aType, scope, props)
+           layout: List[LayoutAttributeValue],
+           mandatory: String,
+           readOnly: String) = {
+    this(id, version, name, aType, mandatory, readOnly, scope, props)
     layout.foreach(f=> this.layoutAttributeValues.add(new LayoutAttributeSimplifyDataContainer(f)))
   }
 
   def this (ca: CommonAttribute,
             layout: List[LayoutAttributeValue] ) = {
-    this(ca.id, ca.version, ca.name, ca.aType, ca.scope, ca.properties)
+    this(ca.id, ca.version, ca.name, ca.aType, ca.mandatory, ca.readOnly, ca.scope, ca.properties)
     layout.foreach(f=> this.layoutAttributeValues.add(new LayoutAttributeSimplifyDataContainer(f)))
   }
 }

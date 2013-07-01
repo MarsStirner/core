@@ -181,7 +181,9 @@ class PrimaryAssessmentBean
                                   apt.getTypeName,
                                   apt.getValueDomain,//apt.getConstructorValueDomain,
                                   map,
-                                  dbLayoutAttributeValueBean.getLayoutAttributeValuesByActionPropertyTypeId(apt.getId.intValue()).toList)
+                                  dbLayoutAttributeValueBean.getLayoutAttributeValuesByActionPropertyTypeId(apt.getId.intValue()).toList,
+                                  apt.isMandatory.toString,
+                                  apt.isReadOnly.toString)
   }
 
   def getEmptyStructure(atId: Int,
