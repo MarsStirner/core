@@ -112,13 +112,17 @@ public class CustomInfoRESTImpl {
      * &#15; По умолчанию - начало текущих суток (Dd.Mm.Year 23:59).</pre>
      * @param status Фильтр по статусу забора (В url: filter[status]=...)<pre>
      * &#15; По умолчанию - 0.</pre>
-     * @param biomaterial  Фильтр по статусу забора (В url: filter[status]=...)
+     * @param biomaterial  Фильтр по типу биоматериала (В url: filter[biomaterial]=...)
+     * &#15; По умолчанию - 0.</pre>
+     * @param jobTicketId  Фильтр по id жобТикета (В url: filter[jobTicketId]=...)
+     * &#15; По умолчанию - 0.</pre>
      * @return
      */
     @GET
     @Path("/biomaterial/info")
     @Produces("application/x-javascript")
-    public Object getTakingOfBiomaterial(@QueryParam("filter[departmentId]")int departmentId,
+    public Object getTakingOfBiomaterial(@QueryParam("filter[jobTicketId]")int jobTicketId,
+                                         @QueryParam("filter[departmentId]")int departmentId,
                                          @QueryParam("filter[beginDate]")long beginDate,
                                          @QueryParam("filter[endDate]")long endDate,
                                          @QueryParam("filter[status]") String status,
@@ -128,7 +132,8 @@ public class CustomInfoRESTImpl {
         int depId = (departmentId>0) ? departmentId : this.auth.getUser().getOrgStructure().getId().intValue();
         short statusS = (status!=null && !status.isEmpty()) ? Short.parseShort(status): -1;
 
-        TakingOfBiomaterialRequesDataFilter filter = new TakingOfBiomaterialRequesDataFilter(depId,
+        TakingOfBiomaterialRequesDataFilter filter = new TakingOfBiomaterialRequesDataFilter(jobTicketId,
+                                                                                            depId,
                                                                                             beginDate,
                                                                                             endDate,
                                                                                             statusS,

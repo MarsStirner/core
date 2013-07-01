@@ -138,9 +138,9 @@ class CommonDataProcessorBean
           if (finance > 0) action.setFinanceId(finance)
           //action.setToOrder(toOrder)
           //Если пришли значения Даты начала и дата конца, то перепишем дефолтные
-          //Для первичного осмотра в качестве дефолтных значений вставим текущее время
+          //Для первичного осмотра в качестве дефолтных значений вставим текущее время(не понравилось - убираю (WEBMIS-837: Документ создается сразу же закрытым))
           if (beginDate != null) action.setBegDate(beginDate) else if (isPrimaryAction) action.setBegDate(now)
-          if (endDate != null) action.setEndDate(endDate) else if (isPrimaryAction) action.setEndDate(now)
+          if (endDate != null) action.setEndDate(endDate) //else if (isPrimaryAction) action.setEndDate(now)
           if (plannedEndDate != null) action.setPlannedEndDate(plannedEndDate)
 
 

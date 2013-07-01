@@ -88,6 +88,8 @@ class TakingOfBiomaterialRequesData {
 class TakingOfBiomaterialRequesDataFilter {
 
   @BeanProperty
+  var jobTicketId: Int = -1
+  @BeanProperty
   var departmentId: Int = _
   @BeanProperty
   var beginDate: Date = _
@@ -98,12 +100,14 @@ class TakingOfBiomaterialRequesDataFilter {
   @BeanProperty
   var biomaterial: Int = -1
 
-  def this( departmentId: Int,
+  def this( jobTicketId: Int,
+            departmentId: Int,
             beginDate: Long,
             endDate: Long,
             status: Short,
             biomaterial: Int) {
     this()
+    this.jobTicketId = jobTicketId
     this.departmentId = departmentId
     this.status = status
     this.biomaterial = biomaterial
@@ -197,13 +201,19 @@ class TakingOfBiomaterialRequesDataFilter {
 
   def toQueryStructure() = {
     val qs = new QueryDataStructure()
-    if(this.status>=0){
-      qs.query += "AND jt.status = :status\n"
-      qs.add("status",this.status:java.lang.Integer)
+    if (this.jobTicketId >= 0) {
+      qs.query += "AND jt.id = :jobTicketId\n"
+      qs.add("jobTicketId",this.jobTicketId:java.lang.Integer)
     }
-    if(this.biomaterial>0){
-      qs.query += ("AND attp.actionType.id = a.actionType.id AND attp.tissueType.id = :biomaterial")
-      qs.add("biomaterial",this.biomaterial:java.lang.Integer)
+    else {
+      if(this.status>=0){
+        qs.query += "AND jt.status = :status\n"
+        qs.add("status",this.status:java.lang.Integer)
+      }
+      if(this.biomaterial>0){
+        qs.query += ("AND attp.actionType.id = a.actionType.id AND attp.tissueType.id = :biomaterial")
+        qs.add("biomaterial",this.biomaterial:java.lang.Integer)
+      }
     }
     qs
   }
