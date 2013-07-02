@@ -29,6 +29,8 @@ object ActionWrapperInfo extends Configuration {
   var Multiplicity = StringId("multiplicity")
   var Finance = StringId("finance")
   var PlannedEndDate = StringId("plannedEndDate")
+  var AssignerId = StringId("assignerId")
+  var ExecutorId = StringId("assignerId")
   //var ToOrder = StringId("toOrder")
 
   // Typed internal Ids
@@ -73,6 +75,8 @@ object ActionWrapperInfo extends Configuration {
   def TypedPlannedEndDate = (PlannedEndDate, Types.Datetime)
 
   //def TypedToOrder = (ToOrder, Types.Boolean)
+  def TypedAssignerId = (AssignerId, Types.Integer)
+  def TypedExecutorId = (ExecutorId, Types.Integer)
 
   // External Ids
   var assessmentId = StringId("assessmentId")
@@ -105,6 +109,8 @@ object ActionWrapperInfo extends Configuration {
   var multiplicity = StringId("multiplicity")
   var finance = StringId("finance")
   var plannedEndDate = StringId("plannedEndDate")
+  var assignerId = StringId("assignerId")
+  var executorId = StringId("executorId")
   //var toOrder = StringId("toOrder")
   //////////////////////////////////////////////////////////////////////////////
 
@@ -153,7 +159,9 @@ object ActionWrapperInfo extends Configuration {
     urgent -> TypedUrgent,
     multiplicity -> TypedMultiplicity,
     finance -> TypedFinance,
-    plannedEndDate -> TypedPlannedEndDate
+    plannedEndDate -> TypedPlannedEndDate,
+    assignerId -> TypedAssignerId,
+    executorId -> TypedExecutorId
     //toOrder -> TypedToOrder
   )
 
@@ -186,6 +194,8 @@ object ActionWrapperInfo extends Configuration {
     val Multiplicity = awi.Multiplicity
     val Finance = awi.Finance
     val PlannedEndDate = awi.PlannedEndDate
+    val AssignerId = awi.AssignerId
+    val ExecutorId = awi.ExecutorId
     //val ToOrder = awi.ToOrder
 
     def apply(key: StringId) = awi(key)

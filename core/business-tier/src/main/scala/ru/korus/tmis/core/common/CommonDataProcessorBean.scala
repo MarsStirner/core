@@ -83,6 +83,8 @@ class CommonDataProcessorBean
         var plannedEndDate: Date = null
         var finance: Int = -1
         var now = new Date()
+        var assignerId: Int = -1
+        var executorId: Int = -1
         //var toOrder: Boolean = false
 
         aps.foreach(attribute => {
@@ -116,6 +118,18 @@ class CommonDataProcessorBean
               case Some(x) => ConfigManager.DateFormatter.parse(x)
             }
           }
+          else if (attribute.name == AWI.assignerId.toString) {  //ид. направившего врача
+            assignerId = attribute.properties.get(APWI.Value.toString) match {
+              case None | Some("") => 0
+              case Some(x) => x.toInt
+            }
+          }
+          else if (attribute.name == AWI.executorId.toString) {  //ид. исполнителя
+            executorId = attribute.properties.get(APWI.Value.toString) match {
+              case None | Some("") => 0
+              case Some(x) => x.toInt
+            }
+          }
           /*else if (attribute.name == AWI.toOrder.toString) {
             toOrder = attribute.properties.get(APWI.Value.toString) match {
               case None | Some("") => false
@@ -136,6 +150,9 @@ class CommonDataProcessorBean
           }
           //plannedEndDate
           if (finance > 0) action.setFinanceId(finance)
+          //выбран направивший врач вручную (https://docs.google.com/spreadsheet/ccc?key=0Au-ED6EnawLcdHo0Z3BiSkRJRVYtLUxhaG5uYkNWaGc#gid=6 (строка 57))
+          if (assignerId > 0) action.setAssigner(new Staff(assignerId))
+          if (executorId > 0) action.setExecutor(new Staff(executorId))
           //action.setToOrder(toOrder)
           //Если пришли значения Даты начала и дата конца, то перепишем дефолтные
           //Для первичного осмотра в качестве дефолтных значений вставим текущее время(не понравилось - убираю (WEBMIS-837: Документ создается сразу же закрытым))
@@ -298,6 +315,8 @@ class CommonDataProcessorBean
         var endDate: Date = null
         var plannedEndDate: Date = null
         var finance: Int = -1
+        var assignerId: Int = -1
+        var executorId: Int = -1
         //var toOrder: Boolean = false
 
         var res = aps.find(p => p.name == AWI.assessmentBeginDate.toString).getOrElse(null)
@@ -328,6 +347,20 @@ class CommonDataProcessorBean
             case Some(x) => ConfigManager.DateFormatter.parse(x)
           }
         }
+        res = aps.find(p => p.name == AWI.assignerId.toString).getOrElse(null)
+        if (res != null) {
+          assignerId = res.properties.get(APWI.Value.toString) match {
+            case None | Some("") => 0
+            case Some(x) => x.toInt
+          }
+        }
+        res = aps.find(p => p.name == AWI.executorId.toString).getOrElse(null)
+        if (res != null) {
+          executorId = res.properties.get(APWI.Value.toString) match {
+            case None | Some("") => 0
+            case Some(x) => x.toInt
+          }
+        }
         /*res = aps.find(p => p.name == AWI.toOrder.toString).getOrElse(null)
         if (res != null) {
           toOrder = res.properties.get(APWI.Value.toString) match {
@@ -341,6 +374,8 @@ class CommonDataProcessorBean
         if (finance > 0) a.setFinanceId(finance)
         //a.setToOrder(toOrder)
         if (plannedEndDate != null) a.setPlannedEndDate(plannedEndDate)
+        if (assignerId > 0) a.setAssigner(new Staff(assignerId))
+        if (executorId > 0) a.setExecutor(new Staff(executorId))
 
         result = a :: result
         entities = entities + a

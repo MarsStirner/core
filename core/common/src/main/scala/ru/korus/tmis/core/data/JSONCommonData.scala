@@ -51,6 +51,8 @@ class ConsultationRequestData {
   @BeanProperty
   var executorId: Int = _
   @BeanProperty
+  var assignerId: Int = _
+  @BeanProperty
   var patientId: Int = _
   @BeanProperty
   var createPerson: Int = _
@@ -72,6 +74,7 @@ class ConsultationRequestData {
   def this(eventId: Int,
            actionTypeId: Int,
            executorId: Int,
+           assignerId: Int,
            patientId: Int,
            plannedEndDate: Long,
            plannedTime: Long,
@@ -83,6 +86,7 @@ class ConsultationRequestData {
     this.eventId = eventId
     this.actionTypeId = actionTypeId
     this.executorId = executorId
+    this.assignerId = assignerId
     this.patientId = patientId
     this.plannedEndDate = if (plannedEndDate == 0) {
       null

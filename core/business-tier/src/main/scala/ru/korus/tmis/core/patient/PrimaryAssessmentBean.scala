@@ -129,37 +129,6 @@ class PrimaryAssessmentBean
     group
   }
 
-  def detailsWithAge(assessment: Action) = {
-    val propertiesMap = actionPropertyBean.getActionPropertiesByActionId(assessment.getId.intValue)
-    val group = new CommonGroup(1, "Details")
-
-    val age = commonDataProcessor.defineAgeOfPatient(assessment.getEvent.getPatient)
-
-    propertiesMap.foreach(
-      (p) => {
-        val (ap, apvs) = p
-        val apw = new ActionPropertyWrapper(ap)
-        if (commonDataProcessor.checkActionPropertyTypeForPatientAge(age, ap.getType)) {
-          apvs.size match {
-            case 0 => {
-              group add apw.get(null, List(APWI.Unit,
-                APWI.Norm))
-            }
-            case _ => {
-              apvs.foreach((apv) => {
-                group add apw.get(apv, List(APWI.Value,
-                  APWI.ValueId,
-                  APWI.Unit,
-                  APWI.Norm))
-              })
-            }
-          }
-        }
-      })
-
-    group
-  }
-
   def converterFromList(list: java.util.List[String], apt: ActionPropertyType) = {
 
     val map = list.foldLeft(Map.empty[String,String])(
@@ -204,45 +173,6 @@ class PrimaryAssessmentBean
     json_data.data = cd.entity
     if (postProcessing != null) {
       json_data =  postProcessing(json_data, true)
-    }
-    json_data
-  }
-
-  def  createAssessmentsForEventIdFromCommonData(eventId: Int,
-                                                 assessments: CommonData,
-                                                 title: String,
-                                                 request: Object,
-                                                 userData: AuthData,
-                                                 postProcessingForDiagnosis: (JSONCommonData, java.lang.Boolean) => JSONCommonData) = {
-
-     val actions: java.util.List[Action] = commonDataProcessor.createActionForEventFromCommonData(eventId, assessments, userData)
-     //создание жоб тикета
-     val com_data = commonDataProcessor.fromActions( actions, title, List(summary _, detailsWithAge _))
-
-     var json_data = new JSONCommonData(request, com_data)
-     if (postProcessingForDiagnosis != null) {
-       json_data =  postProcessingForDiagnosis(json_data, false)
-     }
-     json_data
-  }
-
-  def  modifyAssessmentsForEventIdFromCommonData(assessmentId: Int,
-                                                 assessments: CommonData,
-                                                 title: String,
-                                                 request: Object,
-                                                 userData: AuthData,
-                                                 postProcessingForDiagnosis: (JSONCommonData, java.lang.Boolean) => JSONCommonData) = {
-
-    //val actions: java.util.List[Action] = commonDataProcessor.createActionForEventFromCommonData(eventId, assessments, userData)
-    var actions: java.util.List[Action] = null// commonDataProcessor.modifyActionFromCommonData(assessmentId, assessments, userData)
-    assessments.getEntity.foreach((action) => {
-      actions = commonDataProcessor.modifyActionFromCommonData(action.getId().intValue(), assessments, userData)
-    })
-    val com_data = commonDataProcessor.fromActions( actions, title, List(summary _, detailsWithAge _))
-
-    var json_data = new JSONCommonData(request, com_data)
-    if (postProcessingForDiagnosis != null) {
-      json_data =  postProcessingForDiagnosis(json_data, false)
     }
     json_data
   }

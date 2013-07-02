@@ -228,11 +228,33 @@ class ActionWrapper(a: Action)
           }
         }
       }
+      case AWI.AssignerId => {
+        if (this.a.getAssigner != null) {
+          List(
+            Map(APWI.Value.toString -> this.a.getAssigner.getId.toString)
+          )
+        } else {
+          List(
+            Map(APWI.Value.toString -> "-1")
+          )
+        }
+      }
+      case AWI.ExecutorId => {
+        if (this.a.getAssigner != null) {
+          List(
+            Map(APWI.Value.toString -> this.a.getAssigner.getId.toString)
+          )
+        } else {
+          List(
+            Map(APWI.Value.toString -> "-1")
+          )
+        }
+      }
       /*case AWI.ToOrder => {
-        List(
-          Map(APWI.Value.toString -> this.a.getToOrder.toString)
-        )
-      } */
+       List(
+         Map(APWI.Value.toString -> this.a.getToOrder.toString)
+       )
+     } */
 
       case _ => {
         debug("Cannot get <" + name + ">")
