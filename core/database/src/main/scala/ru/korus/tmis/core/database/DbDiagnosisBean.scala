@@ -70,10 +70,6 @@ class DbDiagnosisBean  extends DbDiagnosisBeanLocal
     var oldDiagnosis: Diagnosis = null
     var lockId: Int = 0
 
-    val client = dbPatientBean.getPatientById(clientId)
-    val diagnosisType = dbRbDiagnosisTypeBean.getRbDiagnosisTypeByFlatCode(diagnosisTypeFlatCode)
-    val mkb = dbMKBBean.getMkbById(mkbId)
-
     if (id>0) {
       diagnosis = getDiagnosisById(id)
       oldDiagnosis = Diagnosis.clone(diagnosis)
