@@ -357,7 +357,9 @@ class PatientsListEntry {
      this.number = event.getExternalId
      this.name = new PersonNameContainer(patient)
      this.birthDate = patient.getBirthDate
-     this.doctor =  new DoctorSpecsContainer(event.getExecutor)
+     if (event.getExecutor != null) {
+       this.doctor =  new DoctorSpecsContainer(event.getExecutor)
+     }
      this.createDateTime = event.getCreateDatetime
      this.checkOut = ""                               //TODO: "Выписка через" - расчетное поле, алгоритм не утвержден
      if(bed!=null)

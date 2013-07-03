@@ -201,7 +201,7 @@ class TakingOfBiomaterialRequesDataFilter {
 
   def toQueryStructure() = {
     val qs = new QueryDataStructure()
-    if (this.jobTicketId >= 0) {
+    if (this.jobTicketId > 0) {
       qs.query += "AND jt.id = :jobTicketId\n"
       qs.add("jobTicketId",this.jobTicketId:java.lang.Integer)
     }
