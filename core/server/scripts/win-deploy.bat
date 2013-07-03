@@ -32,14 +32,17 @@ call ${glassfish.bin}\asadmin --host ${glassfish.host} ^
         undeploy ^
         ${glassfish.application.name}
 echo --------------------------------------------------------------------
-echo Stop-Start Glassfish
+echo Stop Glassfish
 echo.
 call ${glassfish.bin}\asadmin stop-domain --domaindir ${glassfish.domain.dir} ${glassfish.domain}
-call ${glassfish.bin}\asadmin start-domain --domaindir ${glassfish.domain.dir} ${glassfish.domain}
 echo --------------------------------------------------------------------
 echo Copy config file to ${glassfish.domain.dir}\${glassfish.domain}\config\logback.xml
 echo.
 copy /Y logback.xml ${glassfish.domain.dir}\${glassfish.domain}\config\
+echo --------------------------------------------------------------------
+echo Start Glassfish
+echo.
+call ${glassfish.bin}\asadmin start-domain --domaindir ${glassfish.domain.dir} ${glassfish.domain}
 echo --------------------------------------------------------------------
 echo Deploy ${glassfish.application.name}
 echo.

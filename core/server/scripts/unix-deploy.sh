@@ -39,14 +39,17 @@ $ASADMIN/asadmin --host ${glassfish.host} \
         undeploy \
         ${glassfish.application.name}
 echo "--------------------------------------------------------------------"
-echo "Stop&Start Glassfish"
+echo "Stop Glassfish"
 echo ""
 $ASADMIN/asadmin stop-domain --domaindir ${glassfish.domain.dir} ${glassfish.domain}
-$ASADMIN/asadmin start-domain --domaindir ${glassfish.domain.dir} ${glassfish.domain}
 echo "--------------------------------------------------------------------"
 echo "Copy config file to ${glassfish.domain.dir}/${glassfish.domain}/config/logback.xml"
 echo ""
 cp ./logback.xml ${glassfish.domain.dir}/${glassfish.domain}/config
+echo "--------------------------------------------------------------------"
+echo "Start Glassfish"
+echo ""
+$ASADMIN/asadmin start-domain --domaindir ${glassfish.domain.dir} ${glassfish.domain}
 echo "--------------------------------------------------------------------"
 echo "Deploy ${glassfish.application.name}"
 echo ""
