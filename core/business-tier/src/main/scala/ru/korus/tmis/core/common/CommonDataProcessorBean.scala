@@ -519,6 +519,7 @@ class CommonDataProcessorBean
       val group0 = new CommonGroup(0, "Summary")
       var a = new Action()
       a.setId(0)
+      a.setActionType(at)
 
       this.addAttributes(
         group0,

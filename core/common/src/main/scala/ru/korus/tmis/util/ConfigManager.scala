@@ -174,6 +174,9 @@ object ConfigManager extends Configuration {
    */
   class TrfuPropClass extends Configuration {
     var ServiceUrl = ""
+    var Enable = "off"
+
+    def isEnable = "on".equals(Enable)
   }
 
   var TrfuProp = new TrfuPropClass

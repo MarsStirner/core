@@ -79,6 +79,10 @@ class ActionWrapper(a: Action)
           List(
             Map(APWI.Value.toString -> this.a.getExecutor.getLastName)
           )
+        } else if (this.a.getActionType.getDefaultExecutor != null) {
+          List(
+            Map(APWI.Value.toString -> this.a.getActionType.getDefaultExecutor.getLastName)
+          )
         } else {
           List(
             Map(APWI.Value.toString -> "")
@@ -89,6 +93,10 @@ class ActionWrapper(a: Action)
         if (this.a.getExecutor != null) {
           List(
             Map(APWI.Value.toString -> this.a.getExecutor.getFirstName)
+          )
+        } else if (this.a.getActionType.getDefaultExecutor != null) {
+          List(
+            Map(APWI.Value.toString -> this.a.getActionType.getDefaultExecutor.getFirstName)
           )
         } else {
           List(
@@ -101,6 +109,10 @@ class ActionWrapper(a: Action)
           List(
             Map(APWI.Value.toString -> this.a.getExecutor.getPatrName)
           )
+        } else if (this.a.getActionType.getDefaultExecutor != null) {
+          List(
+            Map(APWI.Value.toString -> this.a.getActionType.getDefaultExecutor.getPatrName)
+          )
         } else {
           List(
             Map(APWI.Value.toString -> "")
@@ -112,6 +124,10 @@ class ActionWrapper(a: Action)
           List(
             Map(APWI.Value.toString -> this.a.getExecutor.getSpeciality.getName)
           )
+        } else if (this.a.getActionType.getDefaultExecutor != null && this.a.getActionType.getDefaultExecutor.getSpeciality != null) {
+          List(
+            Map(APWI.Value.toString -> this.a.getActionType.getDefaultExecutor.getSpeciality.getName)
+          )
         } else {
           List(
             Map(APWI.Value.toString -> "")
@@ -122,6 +138,10 @@ class ActionWrapper(a: Action)
         if (this.a.getExecutor != null && this.a.getExecutor.getPost != null) {
           List(
             Map(APWI.Value.toString -> this.a.getExecutor.getPost.getName)
+          )
+        } else if (this.a.getActionType.getDefaultExecutor != null && this.a.getActionType.getDefaultExecutor.getPost != null) {
+          List(
+            Map(APWI.Value.toString -> this.a.getActionType.getDefaultExecutor.getPost.getName)
           )
         } else {
           List(
