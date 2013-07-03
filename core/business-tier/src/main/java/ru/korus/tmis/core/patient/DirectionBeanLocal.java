@@ -39,6 +39,7 @@ public interface DirectionBeanLocal {
      * @param eventId Идентификатор обращения на госпитализацию, в рамках которой создается исследование.
      * @param title  вспомогательный параметр название действия (Диагнозтика).
      * @param request Параметры запроса с клиента.
+     * @param mnem Мнемоника исследования.
      * @param userData Данные пользователя
      * @return com.sun.jersey.api.json.JSONWithPadding как Object
      * @throws CoreException
@@ -48,6 +49,7 @@ public interface DirectionBeanLocal {
                                                              CommonData directions,
                                                              String title,
                                                              Object request,
+                                                             String mnem,
                                                              AuthData userData,
                                                              Function2<JSONCommonData, java.lang.Boolean, JSONCommonData> postProcessingForDiagnosis)
             throws CoreException;
@@ -58,6 +60,7 @@ public interface DirectionBeanLocal {
      * @param directionId Идентификатор Направления на исследование.
      * @param title  вспомогательный параметр название действия (Диагнозтика).
      * @param request Параметры запроса с клиента.
+     * @param mnem Мнемоника исследования.
      * @param userData Данные пользователя
      * @return com.sun.jersey.api.json.JSONWithPadding как Object
      * @throws CoreException
@@ -67,6 +70,7 @@ public interface DirectionBeanLocal {
                                                              CommonData directions,
                                                              String title,
                                                              Object request,
+                                                             String mnem,
                                                              AuthData userData,
                                                              Function2<JSONCommonData, java.lang.Boolean, JSONCommonData> postProcessingForDiagnosis)
             throws CoreException;

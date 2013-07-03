@@ -163,6 +163,9 @@ class WebMisRESTImpl  extends WebMisREST
   var dbRbTissueType: DbRbTissueTypeBeanLocal = _
 
   @EJB
+  var dbRbOperationType: DbRbOperationTypeBeanLocal = _
+
+  @EJB
   var directionBean: DirectionBeanLocal = _
 
   @EJB
@@ -427,10 +430,26 @@ class WebMisRESTImpl  extends WebMisREST
     listForSummary.add(ActionWrapperInfo.doctorFirstName)
     listForSummary.add(ActionWrapperInfo.doctorMiddleName)
     listForSummary.add(ActionWrapperInfo.doctorSpecs)
+    listForSummary.add(ActionWrapperInfo.assignerLastName)
+    listForSummary.add(ActionWrapperInfo.assignerFirstName)
+    listForSummary.add(ActionWrapperInfo.assignerMiddleName)
+    listForSummary.add(ActionWrapperInfo.assignerSpecs)
+    listForSummary.add(ActionWrapperInfo.assignerPost)
     listForSummary.add(ActionWrapperInfo.urgent)
     listForSummary.add(ActionWrapperInfo.multiplicity)
     listForSummary.add(ActionWrapperInfo.finance)
     listForSummary.add(ActionWrapperInfo.plannedEndDate)
+
+    //Для направлений на лабисследования, консультации и инструментальные иследования выводить поле "Направивший врач"
+    val at = actionTypeBean.getActionTypeById(actionTypeId)
+    val flgDiagnostics = (at!=null &&
+                          (at.getMnemonic.toUpperCase().compareTo("LAB")==0 ||
+                           at.getMnemonic.toUpperCase().compareTo("DIAG")==0 ||
+                           at.getMnemonic.toUpperCase().compareTo("CONS")==0))
+    if(flgDiagnostics){
+      listForSummary.add(ActionWrapperInfo.executorId)
+      listForSummary.add(ActionWrapperInfo.assignerId)
+    }
     //listForSummary.add(ActionWrapperInfo.toOrder)
 
     primaryAssessmentBean.getEmptyStructure(actionTypeId,
@@ -787,6 +806,11 @@ class WebMisRESTImpl  extends WebMisREST
         listForSummary.add(ActionWrapperInfo.doctorFirstName)
         listForSummary.add(ActionWrapperInfo.doctorMiddleName)
         listForSummary.add(ActionWrapperInfo.doctorSpecs)
+        listForSummary.add(ActionWrapperInfo.assignerLastName)
+        listForSummary.add(ActionWrapperInfo.assignerFirstName)
+        listForSummary.add(ActionWrapperInfo.assignerMiddleName)
+        listForSummary.add(ActionWrapperInfo.assignerSpecs)
+        listForSummary.add(ActionWrapperInfo.assignerPost)
         listForSummary.add(ActionWrapperInfo.urgent)
         listForSummary.add(ActionWrapperInfo.multiplicity)
         listForSummary.add(ActionWrapperInfo.finance)
@@ -817,7 +841,7 @@ class WebMisRESTImpl  extends WebMisREST
 
   //********* Диагнозтические исследования **********
   def insertLaboratoryStudies(eventId: Int, data: CommonData, auth: AuthData) = {
-    val json = directionBean.createDirectionsForEventIdFromCommonData(eventId, data, "Diagnostic", null, auth,  postProcessingForDiagnosis _)
+    val json = directionBean.createDirectionsForEventIdFromCommonData(eventId, data, "Diagnostic", null, "LAB", auth,  postProcessingForDiagnosis _)
     json.getData().map(entity => entity.getId().intValue()).foreach(a_id => {
       val action = actionBean.getActionById(a_id)
       if (action.getStatus == 2 && !action.getIsUrgent) {
@@ -829,15 +853,15 @@ class WebMisRESTImpl  extends WebMisREST
   }
 
   def modifyLaboratoryStudies(eventId: Int, data: CommonData, auth: AuthData) = {
-    directionBean.modifyDirectionsForEventIdFromCommonData(eventId, data, "Diagnostic", null, auth,  postProcessingForDiagnosis _)// postProcessingForDiagnosis
+    directionBean.modifyDirectionsForEventIdFromCommonData(eventId, data, "Diagnostic", null, "LAB", auth,  postProcessingForDiagnosis _)// postProcessingForDiagnosis
   }
 
   def insertInstrumentalStudies(eventId: Int, data: CommonData, auth: AuthData) = {
-    primaryAssessmentBean.createAssessmentsForEventIdFromCommonData(eventId, data, "Diagnostic", null, auth,  postProcessingForDiagnosis _)// postProcessingForDiagnosis
+    directionBean.createDirectionsForEventIdFromCommonData(eventId, data, "Diagnostic", null, "DIAG", auth,  postProcessingForDiagnosis _)// postProcessingForDiagnosis
   }
 
   def modifyInstrumentalStudies(eventId: Int, data: CommonData, auth: AuthData) = {
-    primaryAssessmentBean.modifyAssessmentsForEventIdFromCommonData(eventId, data, "Diagnostic", null, auth,  postProcessingForDiagnosis _)// postProcessingForDiagnosis
+    directionBean.modifyDirectionsForEventIdFromCommonData(eventId, data, "Diagnostic", null, "DIAG", auth,  postProcessingForDiagnosis _)// postProcessingForDiagnosis
   }
 
   def insertConsultation(request: ConsultationRequestData, authData: AuthData) = {
@@ -1051,6 +1075,14 @@ class WebMisRESTImpl  extends WebMisREST
           request.sortingFieldInternal,
           request.filter.unwrap(),
           request.rewriteRecordsCount _)
+      }
+      case "operationTypes" => {  //Типы операций
+        mapper.getSerializationConfig().setSerializationView(classOf[DictionaryDataViews.DefaultView])
+        dbRbOperationType.getAllRbOperationTypeWithFilter(request.page-1,
+                                                          request.limit,
+                                                          request.sortingFieldInternal,
+                                                          request.filter.unwrap(),
+                                                          request.rewriteRecordsCount _)
       }
     }
     mapper.writeValueAsString(new DictionaryListData(list, request))
