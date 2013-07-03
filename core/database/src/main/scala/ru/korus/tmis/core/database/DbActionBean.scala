@@ -138,7 +138,8 @@ class DbActionBean
 
     a.setEvent(e)
     a.setActionType(at)
-    a.setExecutor(at.getDefaultExecutor)
+    // Исправление дефолтного значения от 03.07.2013 по задаче WEBMIS-873
+    a.setExecutor(userData.user)//a.setExecutor(at.getDefaultExecutor)
 
     a.setStatus(ActionStatus.STARTED.getCode)
     a.setUuid(dbUUIDBeanLocal.createUUID())
