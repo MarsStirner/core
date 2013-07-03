@@ -163,6 +163,9 @@ class WebMisRESTImpl  extends WebMisREST
   var dbRbTissueType: DbRbTissueTypeBeanLocal = _
 
   @EJB
+  var dbRbOperationType: DbRbOperationTypeBeanLocal = _
+
+  @EJB
   var directionBean: DirectionBeanLocal = _
 
   @EJB
@@ -1072,6 +1075,14 @@ class WebMisRESTImpl  extends WebMisREST
           request.sortingFieldInternal,
           request.filter.unwrap(),
           request.rewriteRecordsCount _)
+      }
+      case "operationTypes" => {  //Типы операций
+        mapper.getSerializationConfig().setSerializationView(classOf[DictionaryDataViews.DefaultView])
+        dbRbOperationType.getAllRbOperationTypeWithFilter(request.page-1,
+                                                          request.limit,
+                                                          request.sortingFieldInternal,
+                                                          request.filter.unwrap(),
+                                                          request.rewriteRecordsCount _)
       }
     }
     mapper.writeValueAsString(new DictionaryListData(list, request))
