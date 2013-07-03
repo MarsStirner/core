@@ -1222,6 +1222,7 @@ AND
                         WHERE ap2.action.id = ap3.action.id
                         AND ap2.actionPropertyType.code = '%s'
                         AND val2.id.id = ap2.id
+                        AND val2.value IS NOT NULL
                     )
                 )
             )

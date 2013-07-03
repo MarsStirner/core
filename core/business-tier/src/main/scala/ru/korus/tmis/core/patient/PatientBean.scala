@@ -366,7 +366,7 @@ class PatientBean
     val role = requestData.filter.roleId
     val mapper: ObjectMapper = new ObjectMapper()
 
-    val eventsMap = customQuery.getActiveEventsForDepartmentAndDoctor(requestData.page-1,
+    val actionsMap = customQuery.getActiveEventsForDepartmentAndDoctor(requestData.page-1,
                                                                       requestData.limit,
                                                                       requestData.sortingField,
                                                                       requestData.sortingMethod,
@@ -376,12 +376,12 @@ class PatientBean
     var conditionsInfo: java.util.LinkedHashMap[java.lang.Integer, java.util.LinkedHashMap[ActionProperty, java.util.List[APValue]]]
       = new java.util.LinkedHashMap[java.lang.Integer, java.util.LinkedHashMap[ActionProperty, java.util.List[APValue]]]
     if(role == 25) {  //Для сестры отделения только
-      conditionsInfo = dbActionProperty.getActionPropertiesByEventIdsAndActionPropertyTypeCodes(eventsMap.map(p=> p._1.getEvent.getId).toList, asJavaSet(Set("STATE", "PULS", "BPRAS","BPRAD")),1)
+      conditionsInfo = dbActionProperty.getActionPropertiesByEventIdsAndActionPropertyTypeCodes(actionsMap.map(p=> p._1.getEvent.getId).toList, asJavaSet(Set("STATE", "PULS", "BPRAS","BPRAD")),1)
       mapper.getSerializationConfig().setSerializationView(classOf[PatientsListDataViews.NurseView])
     }
     else mapper.getSerializationConfig().setSerializationView(classOf[PatientsListDataViews.AttendingDoctorView])
 
-    mapper.writeValueAsString(new PatientsListData(eventsMap,
+    mapper.writeValueAsString(new PatientsListData(actionsMap,
                                                    requestData,
                                                    role,
                                                    conditionsInfo,
