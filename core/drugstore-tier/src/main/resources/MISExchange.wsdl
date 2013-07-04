@@ -27939,7 +27939,7 @@
 							minOccurs="0"
 							maxOccurs="unbounded"/>
 				</xs:sequence>
-				<xs:attribute name="ID"
+				<xs:attribute name="ID1"
 						type="xs:ID"/>
 				<xs:attribute name="nullFlavor"
 						type="tns:NullFlavor"/>
@@ -28834,7 +28834,7 @@
 							minOccurs="0"
 							maxOccurs="unbounded"/>
 				</xs:sequence>
-				<xs:attribute name="ID"
+				<xs:attribute name="ID1"
 						type="xs:ID"/>
 				<xs:attribute name="nullFlavor"
 						type="tns:NullFlavor"/>
@@ -29020,7 +29020,7 @@
 							minOccurs="0"
 							maxOccurs="unbounded"/>
 				</xs:sequence>
-				<xs:attribute name="ID"
+				<xs:attribute name="ID1"
 						type="xs:ID"/>
 				<xs:attribute name="nullFlavor"
 						type="tns:NullFlavor"/>
@@ -38882,7 +38882,7 @@
 							minOccurs="0"
 							maxOccurs="unbounded"/>
 				</xs:choice>
-				<xs:attribute name="ID"
+				<xs:attribute name="ID1"
 						type="xs:ID"/>
 				<xs:attribute name="language"
 						type="xs:NMTOKEN"/>
@@ -38890,7 +38890,7 @@
 						type="xs:NMTOKENS"/>
 			</xs:complexType>
 			<xs:complexType name="StrucDoc.Col">
-				<xs:attribute name="ID"
+				<xs:attribute name="ID1"
 						type="xs:ID"/>
 				<xs:attribute name="language"
 						type="xs:NMTOKEN"/>
@@ -38934,7 +38934,7 @@
 							minOccurs="0"
 							maxOccurs="unbounded"/>
 				</xs:choice>
-				<xs:attribute name="ID"
+				<xs:attribute name="ID1"
 						type="xs:ID"/>
 				<xs:attribute name="language"
 						type="xs:NMTOKEN"/>
@@ -39007,7 +39007,7 @@
 							minOccurs="0"
 							maxOccurs="unbounded"/>
 				</xs:choice>
-				<xs:attribute name="ID"
+				<xs:attribute name="ID1"
 						type="xs:ID"/>
 				<xs:attribute name="language"
 						type="xs:NMTOKEN"/>
@@ -39062,7 +39062,7 @@
 							minOccurs="0"
 							maxOccurs="unbounded"/>
 				</xs:choice>
-				<xs:attribute name="ID"
+				<xs:attribute name="ID1"
 						type="xs:ID"/>
 				<xs:attribute name="language"
 						type="xs:NMTOKEN"/>
@@ -39070,7 +39070,7 @@
 						type="xs:NMTOKENS"/>
 			</xs:complexType>
 			<xs:complexType name="StrucDoc.FootnoteRef">
-				<xs:attribute name="ID"
+				<xs:attribute name="ID1"
 						type="xs:ID"/>
 				<xs:attribute name="language"
 						type="xs:NMTOKEN"/>
@@ -39131,7 +39131,7 @@
 							minOccurs="0"
 							maxOccurs="unbounded"/>
 				</xs:choice>
-				<xs:attribute name="ID"
+				<xs:attribute name="ID1"
 						type="xs:ID"/>
 				<xs:attribute name="language"
 						type="xs:NMTOKEN"/>
@@ -39160,7 +39160,7 @@
 						type="xs:string"/>
 				<xs:attribute name="title"
 						type="xs:string"/>
-				<xs:attribute name="ID"
+				<xs:attribute name="ID1"
 						type="xs:ID"/>
 				<xs:attribute name="language"
 						type="xs:NMTOKEN"/>
@@ -39176,7 +39176,7 @@
 							type="tns:StrucDoc.Item"
 							maxOccurs="unbounded"/>
 				</xs:sequence>
-				<xs:attribute name="ID"
+				<xs:attribute name="ID1"
 						type="xs:ID"/>
 				<xs:attribute name="language"
 						type="xs:NMTOKEN"/>
@@ -39231,7 +39231,7 @@
 							minOccurs="0"
 							maxOccurs="unbounded"/>
 				</xs:choice>
-				<xs:attribute name="ID"
+				<xs:attribute name="ID1"
 						type="xs:ID"/>
 				<xs:attribute name="language"
 						type="xs:NMTOKEN"/>
@@ -39247,7 +39247,7 @@
 				<xs:attribute name="referencedObject"
 						type="xs:IDREFS"
 						use="required"/>
-				<xs:attribute name="ID"
+				<xs:attribute name="ID1"
 						type="xs:ID"/>
 				<xs:attribute name="language"
 						type="xs:NMTOKEN"/>
@@ -39281,7 +39281,7 @@
 							type="tns:StrucDoc.Tbody"
 							maxOccurs="unbounded"/>
 				</xs:choice>
-				<xs:attribute name="ID"
+				<xs:attribute name="ID1"
 						type="xs:ID"/>
 				<xs:attribute name="language"
 						type="xs:NMTOKEN"/>
@@ -39330,7 +39330,7 @@
 							type="tns:StrucDoc.Tr"
 							maxOccurs="unbounded"/>
 				</xs:choice>
-				<xs:attribute name="ID"
+				<xs:attribute name="ID1"
 						type="xs:ID"/>
 				<xs:attribute name="language"
 						type="xs:NMTOKEN"/>
@@ -39406,7 +39406,7 @@
 							minOccurs="0"
 							maxOccurs="unbounded"/>
 				</xs:choice>
-				<xs:attribute name="ID"
+				<xs:attribute name="ID1"
 						type="xs:ID"/>
 				<xs:attribute name="language"
 						type="xs:NMTOKEN"/>
@@ -39508,7 +39508,7 @@
 							minOccurs="0"
 							maxOccurs="unbounded"/>
 				</xs:choice>
-				<xs:attribute name="ID"
+				<xs:attribute name="ID1"
 						type="xs:ID"/>
 				<xs:attribute name="language"
 						type="xs:NMTOKEN"/>
@@ -39524,7 +39524,7 @@
 							type="tns:StrucDoc.Tr"
 							maxOccurs="unbounded"/>
 				</xs:choice>
-				<xs:attribute name="ID"
+				<xs:attribute name="ID1"
 						type="xs:ID"/>
 				<xs:attribute name="language"
 						type="xs:NMTOKEN"/>
@@ -39592,7 +39592,7 @@
 							minOccurs="0"
 							maxOccurs="unbounded"/>
 				</xs:choice>
-				<xs:attribute name="ID"
+				<xs:attribute name="ID1"
 						type="xs:ID"/>
 				<xs:attribute name="language"
 						type="xs:NMTOKEN"/>
@@ -39652,7 +39652,7 @@
 							type="tns:StrucDoc.Tr"
 							maxOccurs="unbounded"/>
 				</xs:choice>
-				<xs:attribute name="ID"
+				<xs:attribute name="ID1"
 						type="xs:ID"/>
 				<xs:attribute name="language"
 						type="xs:NMTOKEN"/>
@@ -39712,7 +39712,7 @@
 							minOccurs="0"
 							maxOccurs="unbounded"/>
 				</xs:choice>
-				<xs:attribute name="ID"
+				<xs:attribute name="ID1"
 						type="xs:ID"/>
 				<xs:attribute name="language"
 						type="xs:NMTOKEN"/>
@@ -39750,7 +39750,7 @@
 							minOccurs="0"
 							maxOccurs="unbounded"/>
 				</xs:choice>
-				<xs:attribute name="ID"
+				<xs:attribute name="ID1"
 						type="xs:ID"/>
 				<xs:attribute name="language"
 						type="xs:NMTOKEN"/>
@@ -39777,7 +39777,7 @@
 							minOccurs="0"
 							maxOccurs="unbounded"/>
 				</xs:choice>
-				<xs:attribute name="ID"
+				<xs:attribute name="ID1"
 						type="xs:ID"/>
 				<xs:attribute name="language"
 						type="xs:NMTOKEN"/>
@@ -39795,7 +39795,7 @@
 							minOccurs="0"
 							maxOccurs="unbounded"/>
 				</xs:choice>
-				<xs:attribute name="ID"
+				<xs:attribute name="ID1"
 						type="xs:ID"/>
 				<xs:attribute name="language"
 						type="xs:NMTOKEN"/>
