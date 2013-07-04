@@ -404,6 +404,10 @@ class DirectionBean extends DirectionBeanLocal
     } else {
       action.setFinanceId(dbEventBean.getEventById(request.getEventId).getEventType.getFinance.getId.intValue())
     }
+    if(request.executorId>0)
+      action.setExecutor(new Staff(request.executorId))
+    if(request.assignerId>0)
+      action.setAssigner(new Staff(request.assignerId))
 
     em.persist(action)
 
