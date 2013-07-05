@@ -262,7 +262,7 @@ class ActionWrapper(a: Action)
       case AWI.ExecutorId => {
         if (this.a.getAssigner != null) {
           List(
-            Map(APWI.Value.toString -> this.a.getAssigner.getId.toString)
+            Map(APWI.Value.toString -> this.a.getExecutor.getId.toString)
           )
         } else {
           List(
