@@ -412,33 +412,38 @@ class DirectionBean extends DirectionBeanLocal
     em.persist(action)
 
     //empty action property
-    val apSet = new HashSet[ActionProperty]
+    var apSet = Set.empty[AnyRef]
 
     actionPropertyTypeBean.getActionPropertyTypesByActionTypeId(request.actionTypeId.intValue())
       .toList
       .foreach((apt) => {
-        val ap = actionPropertyBean.createActionProperty(action,
-          apt.getId.intValue(),
-          userData)
+        val ap = actionPropertyBean.createActionProperty(action, apt.getId.intValue(), userData)
+        em.persist(ap)
+
         if (ap.getType.getTypeName.compareTo("MKB") == 0 && request.diagnosis != null && request.diagnosis.getCode != null) {
           //запишем диагноз, который пришел с клиента
           val mkb = dbMkbBean.getMkbByCode(request.diagnosis.getCode)
           if (mkb != null) {
-            em.merge(actionPropertyBean.setActionPropertyValue(ap, mkb.getId.intValue().toString, 0))
+            val apv = actionPropertyBean.setActionPropertyValue(ap, mkb.getId.intValue().toString, 0)
+            if (apv!=null)
+              apSet = apSet + apv.unwrap
           } else {
             //если диагноз не пришел, то запишем дефолтный
             var props = actionPropertyBean.getActionPropertyValue(ap)
             if (props.get(0).getValueAsString.compareTo("") == 0) {
               val diagnosis = dbCustomQueryBean.getDiagnosisForMainDiagInAppeal(action.getEvent.getId.intValue())
               if (diagnosis != null) {
-                em.merge(actionPropertyBean.setActionPropertyValue(ap, diagnosis.getId.intValue().toString, 0))
+                val apv = actionPropertyBean.setActionPropertyValue(ap, diagnosis.getId.intValue().toString, 0)
+                if (apv!=null)
+                  apSet = apSet + apv.unwrap
               }
             }
           }
         } //else if (ap.getType.getTypeName.compareTo("queue") == 0) {
-        em.merge(ap)
-        apSet += ap
     })
+    apSet.foreach(f => em.persist(f))
+    em.flush()
+
     // Создаем ивент 29 и акшен 19 (по спеке)
     var event29 = dbEventBean.createEvent(request.patientId, 29, new Date(request.plannedEndDate.getTime + request.plannedTime.getTime.getTime), null, userData)
     event29.setExecutor(new Staff(request.executorId))
@@ -462,7 +467,7 @@ class DirectionBean extends DirectionBeanLocal
       case 0 => {
         ap18 = actionPropertyBean.createActionProperty(a, 18, userData)
         em.persist(ap18)
-        em.flush()
+        //em.flush()
       }
       case _ => {
         ap18 = aps(0)
