@@ -1,16 +1,50 @@
 
 package wsdl;
 
-import nsi.*;
-
 import javax.jws.WebMethod;
 import javax.jws.WebParam;
 import javax.jws.WebService;
+import javax.jws.soap.SOAPBinding;
 import javax.xml.bind.annotation.XmlSeeAlso;
 import javax.xml.ws.Holder;
-import javax.xml.ws.RequestWrapper;
-import javax.xml.ws.ResponseWrapper;
-import java.util.List;
+import nsi.F001;
+import nsi.F002;
+import nsi.F003;
+import nsi.F005;
+import nsi.F006;
+import nsi.F007;
+import nsi.F008;
+import nsi.F009;
+import nsi.F010;
+import nsi.F011;
+import nsi.F012;
+import nsi.F013;
+import nsi.F014;
+import nsi.F015;
+import nsi.Kladr;
+import nsi.KladrStreet;
+import nsi.M001;
+import nsi.O001;
+import nsi.O002;
+import nsi.O003;
+import nsi.O004;
+import nsi.O005;
+import nsi.ObjectFactory;
+import nsi.R001;
+import nsi.R002;
+import nsi.R003;
+import nsi.R004;
+import nsi.V001;
+import nsi.V002;
+import nsi.V003;
+import nsi.V004;
+import nsi.V005;
+import nsi.V006;
+import nsi.V007;
+import nsi.V008;
+import nsi.V009;
+import nsi.V010;
+import nsi.V012;
 
 
 /**
@@ -20,6 +54,7 @@ import java.util.List;
  * 
  */
 @WebService(name = "NsiServiceSoap", targetNamespace = "urn:wsdl")
+@SOAPBinding(parameterStyle = SOAPBinding.ParameterStyle.BARE)
 @XmlSeeAlso({
     ObjectFactory.class
 })
@@ -28,387 +63,335 @@ public interface NsiServiceSoap {
 
     /**
      * 
-     * @param rec
+     * @param parameters
      */
     @WebMethod(operationName = "F001")
-    @RequestWrapper(localName = "F001", targetNamespace = "urn:nsi", className = "nsi.F001")
-    @ResponseWrapper(localName = "F001", targetNamespace = "urn:nsi", className = "nsi.F001")
     public void f001(
-            @WebParam(name = "rec", targetNamespace = "urn:nsi", mode = WebParam.Mode.INOUT)
-            Holder<List<F001Type>> rec);
+        @WebParam(name = "F001", targetNamespace = "urn:nsi", mode = WebParam.Mode.INOUT, partName = "parameters")
+        Holder<F001> parameters);
 
     /**
      * 
-     * @param rec
+     * @param parameters
      */
     @WebMethod(operationName = "F002")
-    @RequestWrapper(localName = "F002", targetNamespace = "urn:nsi", className = "nsi.F002")
-    @ResponseWrapper(localName = "F002", targetNamespace = "urn:nsi", className = "nsi.F002")
     public void f002(
-            @WebParam(name = "rec", targetNamespace = "urn:nsi", mode = WebParam.Mode.INOUT)
-            Holder<List<F002Type>> rec);
+        @WebParam(name = "F002", targetNamespace = "urn:nsi", mode = WebParam.Mode.INOUT, partName = "parameters")
+        Holder<F002> parameters);
 
     /**
      * 
-     * @param rec
+     * @param parameters
      */
     @WebMethod(operationName = "F003")
-    @RequestWrapper(localName = "F003", targetNamespace = "urn:nsi", className = "nsi.F003")
-    @ResponseWrapper(localName = "F003", targetNamespace = "urn:nsi", className = "nsi.F003")
     public void f003(
-            @WebParam(name = "rec", targetNamespace = "urn:nsi", mode = WebParam.Mode.INOUT)
-            Holder<List<F003Type>> rec);
+        @WebParam(name = "F003", targetNamespace = "urn:nsi", mode = WebParam.Mode.INOUT, partName = "parameters")
+        Holder<F003> parameters);
 
     /**
      * 
-     * @param rec
+     * @param parameters
      */
     @WebMethod(operationName = "F005")
-    @RequestWrapper(localName = "F005", targetNamespace = "urn:nsi", className = "nsi.F005")
-    @ResponseWrapper(localName = "F005", targetNamespace = "urn:nsi", className = "nsi.F005")
     public void f005(
-            @WebParam(name = "rec", targetNamespace = "urn:nsi", mode = WebParam.Mode.INOUT)
-            Holder<List<F005Type>> rec);
+        @WebParam(name = "F005", targetNamespace = "urn:nsi", mode = WebParam.Mode.INOUT, partName = "parameters")
+        Holder<F005> parameters);
 
     /**
      * 
-     * @param rec
+     * @param parameters
      */
     @WebMethod(operationName = "F006")
-    @RequestWrapper(localName = "F006", targetNamespace = "urn:nsi", className = "nsi.F006")
-    @ResponseWrapper(localName = "F006", targetNamespace = "urn:nsi", className = "nsi.F006")
     public void f006(
-            @WebParam(name = "rec", targetNamespace = "urn:nsi", mode = WebParam.Mode.INOUT)
-            Holder<List<F006Type>> rec);
+        @WebParam(name = "F006", targetNamespace = "urn:nsi", mode = WebParam.Mode.INOUT, partName = "parameters")
+        Holder<F006> parameters);
 
     /**
      * 
-     * @param rec
+     * @param parameters
      */
     @WebMethod(operationName = "F007")
-    @RequestWrapper(localName = "F007", targetNamespace = "urn:nsi", className = "nsi.F007")
-    @ResponseWrapper(localName = "F007", targetNamespace = "urn:nsi", className = "nsi.F007")
     public void f007(
-            @WebParam(name = "rec", targetNamespace = "urn:nsi", mode = WebParam.Mode.INOUT)
-            Holder<List<F007Type>> rec);
+        @WebParam(name = "F007", targetNamespace = "urn:nsi", mode = WebParam.Mode.INOUT, partName = "parameters")
+        Holder<F007> parameters);
 
     /**
      * 
-     * @param rec
+     * @param parameters
      */
     @WebMethod(operationName = "F008")
-    @RequestWrapper(localName = "F008", targetNamespace = "urn:nsi", className = "nsi.F008")
-    @ResponseWrapper(localName = "F008", targetNamespace = "urn:nsi", className = "nsi.F008")
     public void f008(
-            @WebParam(name = "rec", targetNamespace = "urn:nsi", mode = WebParam.Mode.INOUT)
-            Holder<List<F008Type>> rec);
+        @WebParam(name = "F008", targetNamespace = "urn:nsi", mode = WebParam.Mode.INOUT, partName = "parameters")
+        Holder<F008> parameters);
 
     /**
      * 
-     * @param rec
+     * @param parameters
      */
     @WebMethod(operationName = "F009")
-    @RequestWrapper(localName = "F009", targetNamespace = "urn:nsi", className = "nsi.F009")
-    @ResponseWrapper(localName = "F009", targetNamespace = "urn:nsi", className = "nsi.F009")
     public void f009(
-            @WebParam(name = "rec", targetNamespace = "urn:nsi", mode = WebParam.Mode.INOUT)
-            Holder<List<F009Type>> rec);
+        @WebParam(name = "F009", targetNamespace = "urn:nsi", mode = WebParam.Mode.INOUT, partName = "parameters")
+        Holder<F009> parameters);
 
     /**
      * 
-     * @param rec
+     * @param parameters
      */
     @WebMethod(operationName = "F010")
-    @RequestWrapper(localName = "F010", targetNamespace = "urn:nsi", className = "nsi.F010")
-    @ResponseWrapper(localName = "F010", targetNamespace = "urn:nsi", className = "nsi.F010")
     public void f010(
-            @WebParam(name = "rec", targetNamespace = "urn:nsi", mode = WebParam.Mode.INOUT)
-            Holder<List<F010Type>> rec);
+        @WebParam(name = "F010", targetNamespace = "urn:nsi", mode = WebParam.Mode.INOUT, partName = "parameters")
+        Holder<F010> parameters);
 
     /**
      * 
-     * @param rec
+     * @param parameters
      */
     @WebMethod(operationName = "F011")
-    @RequestWrapper(localName = "F011", targetNamespace = "urn:nsi", className = "nsi.F011")
-    @ResponseWrapper(localName = "F011", targetNamespace = "urn:nsi", className = "nsi.F011")
     public void f011(
-            @WebParam(name = "rec", targetNamespace = "urn:nsi", mode = WebParam.Mode.INOUT)
-            Holder<List<F011Type>> rec);
+        @WebParam(name = "F011", targetNamespace = "urn:nsi", mode = WebParam.Mode.INOUT, partName = "parameters")
+        Holder<F011> parameters);
 
     /**
      * 
-     * @param rec
+     * @param parameters
      */
     @WebMethod(operationName = "F012")
-    @RequestWrapper(localName = "F012", targetNamespace = "urn:nsi", className = "nsi.F012")
-    @ResponseWrapper(localName = "F012", targetNamespace = "urn:nsi", className = "nsi.F012")
     public void f012(
-            @WebParam(name = "rec", targetNamespace = "urn:nsi", mode = WebParam.Mode.INOUT)
-            Holder<List<F012Type>> rec);
+        @WebParam(name = "F012", targetNamespace = "urn:nsi", mode = WebParam.Mode.INOUT, partName = "parameters")
+        Holder<F012> parameters);
 
     /**
      * 
-     * @param rec
+     * @param parameters
      */
     @WebMethod(operationName = "F013")
-    @RequestWrapper(localName = "F013", targetNamespace = "urn:nsi", className = "nsi.F013")
-    @ResponseWrapper(localName = "F013", targetNamespace = "urn:nsi", className = "nsi.F013")
     public void f013(
-            @WebParam(name = "rec", targetNamespace = "urn:nsi", mode = WebParam.Mode.INOUT)
-            Holder<List<F013Type>> rec);
+        @WebParam(name = "F013", targetNamespace = "urn:nsi", mode = WebParam.Mode.INOUT, partName = "parameters")
+        Holder<F013> parameters);
 
     /**
      * 
-     * @param rec
+     * @param parameters
      */
     @WebMethod(operationName = "F014")
-    @RequestWrapper(localName = "F014", targetNamespace = "urn:nsi", className = "nsi.F014")
-    @ResponseWrapper(localName = "F014", targetNamespace = "urn:nsi", className = "nsi.F014")
     public void f014(
-            @WebParam(name = "rec", targetNamespace = "urn:nsi", mode = WebParam.Mode.INOUT)
-            Holder<List<F014Type>> rec);
+        @WebParam(name = "F014", targetNamespace = "urn:nsi", mode = WebParam.Mode.INOUT, partName = "parameters")
+        Holder<F014> parameters);
 
     /**
      * 
-     * @param rec
+     * @param parameters
      */
     @WebMethod(operationName = "F015")
-    @RequestWrapper(localName = "F015", targetNamespace = "urn:nsi", className = "nsi.F015")
-    @ResponseWrapper(localName = "F015", targetNamespace = "urn:nsi", className = "nsi.F015")
     public void f015(
-            @WebParam(name = "rec", targetNamespace = "urn:nsi", mode = WebParam.Mode.INOUT)
-            Holder<List<F015Type>> rec);
+        @WebParam(name = "F015", targetNamespace = "urn:nsi", mode = WebParam.Mode.INOUT, partName = "parameters")
+        Holder<F015> parameters);
 
     /**
      * 
-     * @param rec
+     * @param parameters
+     */
+    @WebMethod(operationName = "Kladr")
+    public void kladr(
+        @WebParam(name = "Kladr", targetNamespace = "urn:nsi", mode = WebParam.Mode.INOUT, partName = "parameters")
+        Holder<Kladr> parameters);
+
+    /**
+     * 
+     * @param parameters
+     */
+    @WebMethod(operationName = "KladrStreet")
+    public void kladrStreet(
+        @WebParam(name = "KladrStreet", targetNamespace = "urn:nsi", mode = WebParam.Mode.INOUT, partName = "parameters")
+        Holder<KladrStreet> parameters);
+
+    /**
+     * 
+     * @param parameters
      */
     @WebMethod(operationName = "M001")
-    @RequestWrapper(localName = "M001", targetNamespace = "urn:nsi", className = "nsi.M001")
-    @ResponseWrapper(localName = "M001", targetNamespace = "urn:nsi", className = "nsi.M001")
     public void m001(
-            @WebParam(name = "rec", targetNamespace = "urn:nsi", mode = WebParam.Mode.INOUT)
-            Holder<List<M001Type>> rec);
+        @WebParam(name = "M001", targetNamespace = "urn:nsi", mode = WebParam.Mode.INOUT, partName = "parameters")
+        Holder<M001> parameters);
 
     /**
      * 
-     * @param rec
+     * @param parameters
      */
     @WebMethod(operationName = "O001")
-    @RequestWrapper(localName = "O001", targetNamespace = "urn:nsi", className = "nsi.O001")
-    @ResponseWrapper(localName = "O001", targetNamespace = "urn:nsi", className = "nsi.O001")
     public void o001(
-            @WebParam(name = "rec", targetNamespace = "urn:nsi", mode = WebParam.Mode.INOUT)
-            Holder<List<O001Type>> rec);
+        @WebParam(name = "O001", targetNamespace = "urn:nsi", mode = WebParam.Mode.INOUT, partName = "parameters")
+        Holder<O001> parameters);
 
     /**
      * 
-     * @param rec
+     * @param parameters
      */
     @WebMethod(operationName = "O002")
-    @RequestWrapper(localName = "O002", targetNamespace = "urn:nsi", className = "nsi.O002")
-    @ResponseWrapper(localName = "O002", targetNamespace = "urn:nsi", className = "nsi.O002")
     public void o002(
-            @WebParam(name = "rec", targetNamespace = "urn:nsi", mode = WebParam.Mode.INOUT)
-            Holder<List<O002Type>> rec);
+        @WebParam(name = "O002", targetNamespace = "urn:nsi", mode = WebParam.Mode.INOUT, partName = "parameters")
+        Holder<O002> parameters);
 
     /**
      * 
-     * @param rec
+     * @param parameters
      */
     @WebMethod(operationName = "O003")
-    @RequestWrapper(localName = "O003", targetNamespace = "urn:nsi", className = "nsi.O003")
-    @ResponseWrapper(localName = "O003", targetNamespace = "urn:nsi", className = "nsi.O003")
     public void o003(
-            @WebParam(name = "rec", targetNamespace = "urn:nsi", mode = WebParam.Mode.INOUT)
-            Holder<List<O003Type>> rec);
+        @WebParam(name = "O003", targetNamespace = "urn:nsi", mode = WebParam.Mode.INOUT, partName = "parameters")
+        Holder<O003> parameters);
 
     /**
      * 
-     * @param rec
+     * @param parameters
      */
     @WebMethod(operationName = "O004")
-    @RequestWrapper(localName = "O004", targetNamespace = "urn:nsi", className = "nsi.O004")
-    @ResponseWrapper(localName = "O004", targetNamespace = "urn:nsi", className = "nsi.O004")
     public void o004(
-            @WebParam(name = "rec", targetNamespace = "urn:nsi", mode = WebParam.Mode.INOUT)
-            Holder<List<O004Type>> rec);
+        @WebParam(name = "O004", targetNamespace = "urn:nsi", mode = WebParam.Mode.INOUT, partName = "parameters")
+        Holder<O004> parameters);
 
     /**
      * 
-     * @param rec
+     * @param parameters
      */
     @WebMethod(operationName = "O005")
-    @RequestWrapper(localName = "O005", targetNamespace = "urn:nsi", className = "nsi.O005")
-    @ResponseWrapper(localName = "O005", targetNamespace = "urn:nsi", className = "nsi.O005")
     public void o005(
-            @WebParam(name = "rec", targetNamespace = "urn:nsi", mode = WebParam.Mode.INOUT)
-            Holder<List<O005Type>> rec);
+        @WebParam(name = "O005", targetNamespace = "urn:nsi", mode = WebParam.Mode.INOUT, partName = "parameters")
+        Holder<O005> parameters);
 
     /**
      * 
-     * @param rec
+     * @param parameters
      */
     @WebMethod(operationName = "R001")
-    @RequestWrapper(localName = "R001", targetNamespace = "urn:nsi", className = "nsi.R001")
-    @ResponseWrapper(localName = "R001", targetNamespace = "urn:nsi", className = "nsi.R001")
     public void r001(
-            @WebParam(name = "rec", targetNamespace = "urn:nsi", mode = WebParam.Mode.INOUT)
-            Holder<List<R001Type>> rec);
+        @WebParam(name = "R001", targetNamespace = "urn:nsi", mode = WebParam.Mode.INOUT, partName = "parameters")
+        Holder<R001> parameters);
 
     /**
      * 
-     * @param rec
+     * @param parameters
      */
     @WebMethod(operationName = "R002")
-    @RequestWrapper(localName = "R002", targetNamespace = "urn:nsi", className = "nsi.R002")
-    @ResponseWrapper(localName = "R002", targetNamespace = "urn:nsi", className = "nsi.R002")
     public void r002(
-            @WebParam(name = "rec", targetNamespace = "urn:nsi", mode = WebParam.Mode.INOUT)
-            Holder<List<R002Type>> rec);
+        @WebParam(name = "R002", targetNamespace = "urn:nsi", mode = WebParam.Mode.INOUT, partName = "parameters")
+        Holder<R002> parameters);
 
     /**
      * 
-     * @param rec
+     * @param parameters
      */
     @WebMethod(operationName = "R003")
-    @RequestWrapper(localName = "R003", targetNamespace = "urn:nsi", className = "nsi.R003")
-    @ResponseWrapper(localName = "R003", targetNamespace = "urn:nsi", className = "nsi.R003")
     public void r003(
-            @WebParam(name = "rec", targetNamespace = "urn:nsi", mode = WebParam.Mode.INOUT)
-            Holder<List<R003Type>> rec);
+        @WebParam(name = "R003", targetNamespace = "urn:nsi", mode = WebParam.Mode.INOUT, partName = "parameters")
+        Holder<R003> parameters);
 
     /**
      * 
-     * @param rec
+     * @param parameters
      */
     @WebMethod(operationName = "R004")
-    @RequestWrapper(localName = "R004", targetNamespace = "urn:nsi", className = "nsi.R004")
-    @ResponseWrapper(localName = "R004", targetNamespace = "urn:nsi", className = "nsi.R004")
     public void r004(
-            @WebParam(name = "rec", targetNamespace = "urn:nsi", mode = WebParam.Mode.INOUT)
-            Holder<List<R004Type>> rec);
+        @WebParam(name = "R004", targetNamespace = "urn:nsi", mode = WebParam.Mode.INOUT, partName = "parameters")
+        Holder<R004> parameters);
 
     /**
      * 
-     * @param rec
+     * @param parameters
      */
     @WebMethod(operationName = "V001")
-    @RequestWrapper(localName = "V001", targetNamespace = "urn:nsi", className = "nsi.V001")
-    @ResponseWrapper(localName = "V001", targetNamespace = "urn:nsi", className = "nsi.V001")
     public void v001(
-            @WebParam(name = "rec", targetNamespace = "urn:nsi", mode = WebParam.Mode.INOUT)
-            Holder<List<V001Type>> rec);
+        @WebParam(name = "V001", targetNamespace = "urn:nsi", mode = WebParam.Mode.INOUT, partName = "parameters")
+        Holder<V001> parameters);
 
     /**
      * 
-     * @param rec
+     * @param parameters
      */
     @WebMethod(operationName = "V002")
-    @RequestWrapper(localName = "V002", targetNamespace = "urn:nsi", className = "nsi.V002")
-    @ResponseWrapper(localName = "V002", targetNamespace = "urn:nsi", className = "nsi.V002")
     public void v002(
-            @WebParam(name = "rec", targetNamespace = "urn:nsi", mode = WebParam.Mode.INOUT)
-            Holder<List<V002Type>> rec);
+        @WebParam(name = "V002", targetNamespace = "urn:nsi", mode = WebParam.Mode.INOUT, partName = "parameters")
+        Holder<V002> parameters);
 
     /**
      * 
-     * @param rec
+     * @param parameters
      */
     @WebMethod(operationName = "V003")
-    @RequestWrapper(localName = "V003", targetNamespace = "urn:nsi", className = "nsi.V003")
-    @ResponseWrapper(localName = "V003", targetNamespace = "urn:nsi", className = "nsi.V003")
     public void v003(
-            @WebParam(name = "rec", targetNamespace = "urn:nsi", mode = WebParam.Mode.INOUT)
-            Holder<List<V003Type>> rec);
+        @WebParam(name = "V003", targetNamespace = "urn:nsi", mode = WebParam.Mode.INOUT, partName = "parameters")
+        Holder<V003> parameters);
 
     /**
      * 
-     * @param rec
+     * @param parameters
      */
     @WebMethod(operationName = "V004")
-    @RequestWrapper(localName = "V004", targetNamespace = "urn:nsi", className = "nsi.V004")
-    @ResponseWrapper(localName = "V004", targetNamespace = "urn:nsi", className = "nsi.V004")
     public void v004(
-            @WebParam(name = "rec", targetNamespace = "urn:nsi", mode = WebParam.Mode.INOUT)
-            Holder<List<V004Type>> rec);
+        @WebParam(name = "V004", targetNamespace = "urn:nsi", mode = WebParam.Mode.INOUT, partName = "parameters")
+        Holder<V004> parameters);
 
     /**
      * 
-     * @param rec
+     * @param parameters
      */
     @WebMethod(operationName = "V005")
-    @RequestWrapper(localName = "V005", targetNamespace = "urn:nsi", className = "nsi.V005")
-    @ResponseWrapper(localName = "V005", targetNamespace = "urn:nsi", className = "nsi.V005")
     public void v005(
-            @WebParam(name = "rec", targetNamespace = "urn:nsi", mode = WebParam.Mode.INOUT)
-            Holder<List<V005Type>> rec);
+        @WebParam(name = "V005", targetNamespace = "urn:nsi", mode = WebParam.Mode.INOUT, partName = "parameters")
+        Holder<V005> parameters);
 
     /**
      * 
-     * @param rec
+     * @param parameters
      */
     @WebMethod(operationName = "V006")
-    @RequestWrapper(localName = "V006", targetNamespace = "urn:nsi", className = "nsi.V006")
-    @ResponseWrapper(localName = "V006", targetNamespace = "urn:nsi", className = "nsi.V006")
     public void v006(
-            @WebParam(name = "rec", targetNamespace = "urn:nsi", mode = WebParam.Mode.INOUT)
-            Holder<List<V006Type>> rec);
+        @WebParam(name = "V006", targetNamespace = "urn:nsi", mode = WebParam.Mode.INOUT, partName = "parameters")
+        Holder<V006> parameters);
 
     /**
      * 
-     * @param rec
+     * @param parameters
      */
     @WebMethod(operationName = "V007")
-    @RequestWrapper(localName = "V007", targetNamespace = "urn:nsi", className = "nsi.V007")
-    @ResponseWrapper(localName = "V007", targetNamespace = "urn:nsi", className = "nsi.V007")
     public void v007(
-            @WebParam(name = "rec", targetNamespace = "urn:nsi", mode = WebParam.Mode.INOUT)
-            Holder<List<V007Type>> rec);
+        @WebParam(name = "V007", targetNamespace = "urn:nsi", mode = WebParam.Mode.INOUT, partName = "parameters")
+        Holder<V007> parameters);
 
     /**
      * 
-     * @param rec
+     * @param parameters
      */
     @WebMethod(operationName = "V008")
-    @RequestWrapper(localName = "V008", targetNamespace = "urn:nsi", className = "nsi.V008")
-    @ResponseWrapper(localName = "V008", targetNamespace = "urn:nsi", className = "nsi.V008")
     public void v008(
-            @WebParam(name = "rec", targetNamespace = "urn:nsi", mode = WebParam.Mode.INOUT)
-            Holder<List<V008Type>> rec);
+        @WebParam(name = "V008", targetNamespace = "urn:nsi", mode = WebParam.Mode.INOUT, partName = "parameters")
+        Holder<V008> parameters);
 
     /**
      * 
-     * @param rec
+     * @param parameters
      */
     @WebMethod(operationName = "V009")
-    @RequestWrapper(localName = "V009", targetNamespace = "urn:nsi", className = "nsi.V009")
-    @ResponseWrapper(localName = "V009", targetNamespace = "urn:nsi", className = "nsi.V009")
     public void v009(
-            @WebParam(name = "rec", targetNamespace = "urn:nsi", mode = WebParam.Mode.INOUT)
-            Holder<List<V009Type>> rec);
+        @WebParam(name = "V009", targetNamespace = "urn:nsi", mode = WebParam.Mode.INOUT, partName = "parameters")
+        Holder<V009> parameters);
 
     /**
      * 
-     * @param rec
+     * @param parameters
      */
     @WebMethod(operationName = "V010")
-    @RequestWrapper(localName = "V010", targetNamespace = "urn:nsi", className = "nsi.V010")
-    @ResponseWrapper(localName = "V010", targetNamespace = "urn:nsi", className = "nsi.V010")
     public void v010(
-            @WebParam(name = "rec", targetNamespace = "urn:nsi", mode = WebParam.Mode.INOUT)
-            Holder<List<V010Type>> rec);
+        @WebParam(name = "V010", targetNamespace = "urn:nsi", mode = WebParam.Mode.INOUT, partName = "parameters")
+        Holder<V010> parameters);
 
     /**
      * 
-     * @param rec
+     * @param parameters
      */
     @WebMethod(operationName = "V012")
-    @RequestWrapper(localName = "V012", targetNamespace = "urn:nsi", className = "nsi.V012")
-    @ResponseWrapper(localName = "V012", targetNamespace = "urn:nsi", className = "nsi.V012")
     public void v012(
-            @WebParam(name = "rec", targetNamespace = "urn:nsi", mode = WebParam.Mode.INOUT)
-            Holder<List<V012Type>> rec);
+        @WebParam(name = "V012", targetNamespace = "urn:nsi", mode = WebParam.Mode.INOUT, partName = "parameters")
+        Holder<V012> parameters);
 
 }

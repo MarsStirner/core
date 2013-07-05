@@ -382,6 +382,22 @@ public class ObjectFactory {
     }
 
     /**
+     * Create an instance of {@link KladrStreet }
+     * 
+     */
+    public KladrStreet createKladrStreet() {
+        return new KladrStreet();
+    }
+
+    /**
+     * Create an instance of {@link KladrStreetType }
+     * 
+     */
+    public KladrStreetType createKladrStreetType() {
+        return new KladrStreetType();
+    }
+
+    /**
      * Create an instance of {@link R004 }
      * 
      */
@@ -574,6 +590,22 @@ public class ObjectFactory {
     }
 
     /**
+     * Create an instance of {@link Kladr }
+     * 
+     */
+    public Kladr createKladr() {
+        return new Kladr();
+    }
+
+    /**
+     * Create an instance of {@link KladrType }
+     * 
+     */
+    public KladrType createKladrType() {
+        return new KladrType();
+    }
+
+    /**
      * Create an instance of {@link F014 }
      * 
      */
@@ -630,6 +662,14 @@ public class ObjectFactory {
     }
 
     /**
+     * Create an instance of {@link ArrayOfKladrTypeKladrType }
+     * 
+     */
+    public ArrayOfKladrTypeKladrType createArrayOfKladrTypeKladrType() {
+        return new ArrayOfKladrTypeKladrType();
+    }
+
+    /**
      * Create an instance of {@link ArrayOfV005TypeV005Type }
      * 
      */
@@ -683,6 +723,14 @@ public class ObjectFactory {
      */
     public ArrayOfF006TypeF006Type createArrayOfF006TypeF006Type() {
         return new ArrayOfF006TypeF006Type();
+    }
+
+    /**
+     * Create an instance of {@link ArrayOfKladrStreetTypeKladrStreetType }
+     * 
+     */
+    public ArrayOfKladrStreetTypeKladrStreetType createArrayOfKladrStreetTypeKladrStreetType() {
+        return new ArrayOfKladrStreetTypeKladrStreetType();
     }
 
     /**

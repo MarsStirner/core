@@ -116,35 +116,35 @@ public class ReferenceBook implements ReferenceBookLocal {
     public void loadReferenceBooks() {
         logger.info("Start loading reference book...");
         try {
-            loadV001();
-            loadV002();
-            loadV003();
-            loadV004();
-            loadV005();
-            loadV006();
-            loadV007();
-            loadV008();
-            loadV009();
-            loadV010();
-            loadV012();
+//            loadV001();
+//            loadV002();
+//            loadV003();
+//            loadV004();
+//            loadV005();
+//            loadV006();
+//            loadV007();
+//            loadV008();
+//            loadV009();
+//            loadV010();
+//            loadV012();
 
-            loadF001();
+//            loadF001();
             loadF002();
-            loadF003();
-            loadF007();
-            loadF008();
-            loadF009();
-            loadF010();
-            loadF011();
-            loadF015();
+//            loadF003();
+//            loadF007();
+//            loadF008();
+//            loadF009();
+//            loadF010();
+//            loadF011();
+//            loadF015();
 
-            loadM001();
+//            loadM001();
 
-            loadO001();
-            loadO002();
-            loadO003();
-            loadO004();
-            loadO005();
+//            loadO001();
+//            loadO002();
+//            loadO003();
+//            loadO004();
+//            loadO005();
             logger.info("Stop loading reference book...");
         } catch (Exception e) {
             logger.warn("Failed loading!!! e: " + e);
@@ -168,10 +168,10 @@ public class ReferenceBook implements ReferenceBookLocal {
     public void loadM001() {
         final StringBuilder sb = new StringBuilder("loadM001");
         int added = 0;
-        final Holder<List<M001Type>> list = new Holder<List<M001Type>>();
+        final Holder<M001> list = new Holder<M001>();
         service.getNsiServiceSoap().m001(list);
 
-        for (M001Type type : list.value) {
+        for (M001Type type : list.value.getRec()) {
             if (logger.isDebugEnabled()) {
                 sb.append(getAllFields(type)).append("\n");
             }
@@ -181,7 +181,7 @@ public class ReferenceBook implements ReferenceBookLocal {
             }
         }
         logger.debug(sb.toString());
-        logger.info("M001 loading {} item(s), {} added", list.value.size(), added);
+        logger.info("M001 loading {} item(s), {} added", list.value.getRec().size(), added);
     }
 
     /**
@@ -192,10 +192,12 @@ public class ReferenceBook implements ReferenceBookLocal {
     public void loadV001() {
         final StringBuilder sb = new StringBuilder("loadV001");
         int added = 0;
-        final Holder<List<V001Type>> list = new Holder<List<V001Type>>();
+        V001 v001 = new V001();
+        v001.setToRow(10L);
+        final Holder<V001> list = new Holder<V001>(v001);
         service.getNsiServiceSoap().v001(list);
 
-        for (V001Type type : list.value) {
+        for (V001Type type : list.value.getRec()) {
             if (logger.isDebugEnabled()) {
                 sb.append(getAllFields(type)).append("\n");
             }
@@ -205,7 +207,7 @@ public class ReferenceBook implements ReferenceBookLocal {
             }
         }
         logger.debug(sb.toString());
-        logger.info("V001 loading {} item(s), {} added", list.value.size(), added);
+        logger.info("V001 loading {} item(s), {} added", list.value.getRec().size(), added);
     }
 
 
@@ -217,10 +219,10 @@ public class ReferenceBook implements ReferenceBookLocal {
     public void loadV002() {
         final StringBuilder sb = new StringBuilder("loadV002");
         int added = 0;
-        final Holder<List<V002Type>> list = new Holder<List<V002Type>>();
+        final Holder<V002> list = new Holder<V002>();
         service.getNsiServiceSoap().v002(list);
 
-        for (V002Type type : list.value) {
+        for (V002Type type : list.value.getRec()) {
             if (logger.isDebugEnabled()) {
                 sb.append(getAllFields(type)).append("\n");
             }
@@ -230,7 +232,7 @@ public class ReferenceBook implements ReferenceBookLocal {
             }
         }
         logger.debug(sb.toString());
-        logger.info("V002 loading {} item(s), {} added", list.value.size(), added);
+        logger.info("V002 loading {} item(s), {} added", list.value.getRec().size(), added);
     }
 
     /**
@@ -241,10 +243,10 @@ public class ReferenceBook implements ReferenceBookLocal {
     public void loadV003() {
         final StringBuilder sb = new StringBuilder("loadV003");
         int added = 0;
-        final Holder<List<V003Type>> list = new Holder<List<V003Type>>();
+        final Holder<V003> list = new Holder<V003>();
         service.getNsiServiceSoap().v003(list);
 
-        for (V003Type type : list.value) {
+        for (V003Type type : list.value.getRec()) {
             if (logger.isDebugEnabled()) {
                 sb.append(getAllFields(type)).append("\n");
             }
@@ -254,7 +256,7 @@ public class ReferenceBook implements ReferenceBookLocal {
             }
         }
         logger.debug(sb.toString());
-        logger.info("V003 loading {} item(s), {} added", list.value.size(), added);
+        logger.info("V003 loading {} item(s), {} added", list.value.getRec().size(), added);
     }
 
     /**
@@ -265,10 +267,10 @@ public class ReferenceBook implements ReferenceBookLocal {
     public void loadV004() {
         final StringBuilder sb = new StringBuilder("loadV004");
         int added = 0;
-        final Holder<List<V004Type>> list = new Holder<List<V004Type>>();
+        final Holder<V004> list = new Holder<V004>();
         service.getNsiServiceSoap().v004(list);
 
-        for (V004Type type : list.value) {
+        for (V004Type type : list.value.getRec()) {
             if (logger.isDebugEnabled()) {
                 sb.append(getAllFields(type)).append("\n");
             }
@@ -279,7 +281,7 @@ public class ReferenceBook implements ReferenceBookLocal {
             }
         }
         logger.debug(sb.toString());
-        logger.info("V004 loading {} item(s), {} added", list.value.size(), added);
+        logger.info("V004 loading {} item(s), {} added", list.value.getRec().size(), added);
     }
 
 
@@ -291,10 +293,10 @@ public class ReferenceBook implements ReferenceBookLocal {
     public void loadV005() {
         final StringBuilder sb = new StringBuilder("loadV005");
         int added = 0;
-        final Holder<List<V005Type>> list = new Holder<List<V005Type>>();
+        final Holder<V005> list = new Holder<V005>();
         service.getNsiServiceSoap().v005(list);
 
-        for (V005Type type : list.value) {
+        for (V005Type type : list.value.getRec()) {
             if (logger.isDebugEnabled()) {
                 sb.append(getAllFields(type)).append("\n");
             }
@@ -304,7 +306,7 @@ public class ReferenceBook implements ReferenceBookLocal {
             }
         }
         logger.debug(sb.toString());
-        logger.info("V005 loading {} item(s), {} added", list.value.size(), added);
+        logger.info("V005 loading {} item(s), {} added", list.value.getRec().size(), added);
     }
 
     /**
@@ -315,10 +317,10 @@ public class ReferenceBook implements ReferenceBookLocal {
     public void loadV006() {
         final StringBuilder sb = new StringBuilder("loadV006");
         int added = 0;
-        final Holder<List<V006Type>> list = new Holder<List<V006Type>>();
+        final Holder<V006> list = new Holder<V006>();
         service.getNsiServiceSoap().v006(list);
 
-        for (V006Type type : list.value) {
+        for (V006Type type : list.value.getRec()) {
             if (logger.isDebugEnabled()) {
                 sb.append(getAllFields(type)).append("\n");
             }
@@ -328,7 +330,7 @@ public class ReferenceBook implements ReferenceBookLocal {
             }
         }
         logger.debug(sb.toString());
-        logger.info("V006 loading {} item(s), {} added", list.value.size(), added);
+        logger.info("V006 loading {} item(s), {} added", list.value.getRec().size(), added);
     }
 
     /**
@@ -339,10 +341,10 @@ public class ReferenceBook implements ReferenceBookLocal {
     public void loadV007() {
         final StringBuilder sb = new StringBuilder("loadV007");
         int added = 0;
-        final Holder<List<V007Type>> list = new Holder<List<V007Type>>();
+        final Holder<V007> list = new Holder<V007>();
         service.getNsiServiceSoap().v007(list);
 
-        for (V007Type type : list.value) {
+        for (V007Type type : list.value.getRec()) {
             if (logger.isDebugEnabled()) {
                 sb.append(getAllFields(type)).append("\n");
             }
@@ -352,7 +354,7 @@ public class ReferenceBook implements ReferenceBookLocal {
             }
         }
         logger.debug(sb.toString());
-        logger.info("V007 loading {} item(s), {} added", list.value.size(), added);
+        logger.info("V007 loading {} item(s), {} added", list.value.getRec().size(), added);
     }
 
     /**
@@ -363,10 +365,10 @@ public class ReferenceBook implements ReferenceBookLocal {
     public void loadV008() {
         final StringBuilder sb = new StringBuilder("loadV008");
         int added = 0;
-        final Holder<List<V008Type>> list = new Holder<List<V008Type>>();
+        final Holder<V008> list = new Holder<V008>();
         service.getNsiServiceSoap().v008(list);
 
-        for (V008Type type : list.value) {
+        for (V008Type type : list.value.getRec()) {
             if (logger.isDebugEnabled()) {
                 sb.append(getAllFields(type)).append("\n");
             }
@@ -376,7 +378,7 @@ public class ReferenceBook implements ReferenceBookLocal {
             }
         }
         logger.debug(sb.toString());
-        logger.info("V008 loading {} item(s), {} added", list.value.size(), added);
+        logger.info("V008 loading {} item(s), {} added", list.value.getRec().size(), added);
     }
 
     /**
@@ -387,10 +389,10 @@ public class ReferenceBook implements ReferenceBookLocal {
     public void loadV009() {
         final StringBuilder sb = new StringBuilder("loadV009");
         int added = 0;
-        final Holder<List<V009Type>> list = new Holder<List<V009Type>>();
+        final Holder<V009> list = new Holder<V009>();
         service.getNsiServiceSoap().v009(list);
 
-        for (V009Type type : list.value) {
+        for (V009Type type : list.value.getRec()) {
             if (logger.isDebugEnabled()) {
                 sb.append(getAllFields(type)).append("\n");
             }
@@ -400,7 +402,7 @@ public class ReferenceBook implements ReferenceBookLocal {
             }
         }
         logger.debug(sb.toString());
-        logger.info("V009 loading {} item(s), {} added", list.value.size(), added);
+        logger.info("V009 loading {} item(s), {} added", list.value.getRec().size(), added);
     }
 
     /**
@@ -411,10 +413,10 @@ public class ReferenceBook implements ReferenceBookLocal {
     public void loadV010() {
         final StringBuilder sb = new StringBuilder("loadV010");
         int added = 0;
-        final Holder<List<V010Type>> list = new Holder<List<V010Type>>();
+        final Holder<V010> list = new Holder<V010>();
         service.getNsiServiceSoap().v010(list);
 
-        for (V010Type type : list.value) {
+        for (V010Type type : list.value.getRec()) {
             if (logger.isDebugEnabled()) {
                 sb.append(getAllFields(type)).append("\n");
             }
@@ -424,7 +426,7 @@ public class ReferenceBook implements ReferenceBookLocal {
             }
         }
         logger.debug(sb.toString());
-        logger.info("V010 loading {} item(s), {} added", list.value.size(), added);
+        logger.info("V010 loading {} item(s), {} added", list.value.getRec().size(), added);
     }
 
     /**
@@ -435,10 +437,10 @@ public class ReferenceBook implements ReferenceBookLocal {
     public void loadV012() {
         final StringBuilder sb = new StringBuilder("loadV012");
         int added = 0;
-        final Holder<List<V012Type>> list = new Holder<List<V012Type>>();
+        final Holder<V012> list = new Holder<V012>();
         service.getNsiServiceSoap().v012(list);
 
-        for (V012Type type : list.value) {
+        for (V012Type type : list.value.getRec()) {
             if (logger.isDebugEnabled()) {
                 sb.append(getAllFields(type)).append("\n");
             }
@@ -448,7 +450,7 @@ public class ReferenceBook implements ReferenceBookLocal {
             }
         }
         logger.debug(sb.toString());
-        logger.info("V012 loading {} item(s), {} added", list.value.size(), added);
+        logger.info("V012 loading {} item(s), {} added", list.value.getRec().size(), added);
     }
 
     /**
@@ -459,10 +461,10 @@ public class ReferenceBook implements ReferenceBookLocal {
     public void loadF001() {
         final StringBuilder sb = new StringBuilder("loadF001");
         int added = 0;
-        final Holder<List<F001Type>> list = new Holder<List<F001Type>>();
+        final Holder<F001> list = new Holder<F001>();
         service.getNsiServiceSoap().f001(list);
 
-        for (F001Type type : list.value) {
+        for (F001Type type : list.value.getRec()) {
             if (logger.isDebugEnabled()) {
                 sb.append(getAllFields(type)).append("\n");
             }
@@ -472,7 +474,7 @@ public class ReferenceBook implements ReferenceBookLocal {
             }
         }
         logger.debug(sb.toString());
-        logger.info("F001 loading {} item(s), {} added", list.value.size(), added);
+        logger.info("F001 loading {} item(s), {} added", list.value.getRec().size(), added);
     }
 
     /**
@@ -484,20 +486,23 @@ public class ReferenceBook implements ReferenceBookLocal {
     public void loadF002() {
         final StringBuilder sb = new StringBuilder("loadF002");
         int added = 0;
-        final Holder<List<F002Type>> list = new Holder<List<F002Type>>();
-        service.getNsiServiceSoap().f002(list);
+        final F002 f002 = new F002();
+        f002.setFromRow(0L);
+        f002.setToRow(1000L);
+        final Holder<F002> holder = new Holder<F002>(f002);
+        service.getNsiServiceSoap().f002(holder);
 
-        for (F002Type type : list.value) {
+        for (F002Type type : holder.value.getRec()) {
             if (logger.isDebugEnabled()) {
                 sb.append(getAllFields(type)).append("\n");
             }
-            if (!f002dao.isExist(type.getInn())) {   //todo
+            if (!f002dao.isExist(type.getSmocod())) {   //todo
                 f002dao.insert(F002Smo.getInstance(type));
                 added++;
             }
         }
         logger.debug(sb.toString());
-        logger.info("F002 loading {} item(s), {} added", list.value.size(), added);
+        logger.info("F002 loading {} item(s), {} added", holder.value.getRec().size(), added);
     }
 
     /**
@@ -509,20 +514,20 @@ public class ReferenceBook implements ReferenceBookLocal {
     public void loadF003() {
         final StringBuilder sb = new StringBuilder("loadF003");
         int added = 0;
-        final Holder<List<F003Type>> list = new Holder<List<F003Type>>();
+        final Holder<F003> list = new Holder<F003>();
         service.getNsiServiceSoap().f003(list);
 
-        for (F003Type type : list.value) {
+        for (F003Type type : list.value.getRec()) {
             if (logger.isDebugEnabled()) {
                 sb.append(getAllFields(type)).append("\n");
             }
-            if (!f003dao.isExist(type.getTfOkato())) {   //todo
+            if (!f003dao.isExist(type.getMcod())) {   //todo
                 f003dao.insert(F003Mo.getInstance(type));
                 added++;
             }
         }
         logger.debug(sb.toString());
-        logger.info("F003 loading {} item(s), {} added", list.value.size(), added);
+        logger.info("F003 loading {} item(s), {} added", list.value.getRec().size(), added);
     }
 
     /**
@@ -533,10 +538,10 @@ public class ReferenceBook implements ReferenceBookLocal {
     public void loadF007() {
         final StringBuilder sb = new StringBuilder("loadF007");
         int added = 0;
-        final Holder<List<F007Type>> list = new Holder<List<F007Type>>();
+        final Holder<F007> list = new Holder<F007>();
         service.getNsiServiceSoap().f007(list);
 
-        for (F007Type type : list.value) {
+        for (F007Type type : list.value.getRec()) {
             if (logger.isDebugEnabled()) {
                 sb.append(getAllFields(type)).append("\n");
             }
@@ -546,7 +551,7 @@ public class ReferenceBook implements ReferenceBookLocal {
             }
         }
         logger.debug(sb.toString());
-        logger.info("F007 loading {} item(s), {} added", list.value.size(), added);
+        logger.info("F007 loading {} item(s), {} added", list.value.getRec().size(), added);
     }
 
     /**
@@ -557,10 +562,10 @@ public class ReferenceBook implements ReferenceBookLocal {
     public void loadF008() {
         final StringBuilder sb = new StringBuilder("loadF008");
         int added = 0;
-        final Holder<List<F008Type>> list = new Holder<List<F008Type>>();
+        final Holder<F008> list = new Holder<F008>();
         service.getNsiServiceSoap().f008(list);
 
-        for (F008Type type : list.value) {
+        for (F008Type type : list.value.getRec()) {
             if (logger.isDebugEnabled()) {
                 sb.append(getAllFields(type)).append("\n");
             }
@@ -570,7 +575,7 @@ public class ReferenceBook implements ReferenceBookLocal {
             }
         }
         logger.debug(sb.toString());
-        logger.info("F008 loading {} item(s), {} added", list.value.size(), added);
+        logger.info("F008 loading {} item(s), {} added", list.value.getRec().size(), added);
     }
 
     /**
@@ -581,10 +586,10 @@ public class ReferenceBook implements ReferenceBookLocal {
     public void loadF009() {
         final StringBuilder sb = new StringBuilder("loadF009");
         int added = 0;
-        final Holder<List<F009Type>> list = new Holder<List<F009Type>>();
+        final Holder<F009> list = new Holder<F009>();
         service.getNsiServiceSoap().f009(list);
 
-        for (F009Type type : list.value) {
+        for (F009Type type : list.value.getRec()) {
             if (logger.isDebugEnabled()) {
                 sb.append(getAllFields(type)).append("\n");
             }
@@ -594,7 +599,7 @@ public class ReferenceBook implements ReferenceBookLocal {
             }
         }
         logger.debug(sb.toString());
-        logger.info("F009 loading {} item(s), {} added", list.value.size(), added);
+        logger.info("F009 loading {} item(s), {} added", list.value.getRec().size(), added);
     }
 
     /**
@@ -605,10 +610,10 @@ public class ReferenceBook implements ReferenceBookLocal {
     public void loadF010() {
         final StringBuilder sb = new StringBuilder("loadF010");
         int added = 0;
-        final Holder<List<F010Type>> list = new Holder<List<F010Type>>();
+        final Holder<F010> list = new Holder<F010>();
         service.getNsiServiceSoap().f010(list);
 
-        for (F010Type type : list.value) {
+        for (F010Type type : list.value.getRec()) {
             if (logger.isDebugEnabled()) {
                 sb.append(getAllFields(type)).append("\n");
             }
@@ -618,7 +623,7 @@ public class ReferenceBook implements ReferenceBookLocal {
             }
         }
         logger.debug(sb.toString());
-        logger.info("F010 loading {} item(s), {} added", list.value.size(), added);
+        logger.info("F010 loading {} item(s), {} added", list.value.getRec().size(), added);
     }
 
     /**
@@ -629,10 +634,10 @@ public class ReferenceBook implements ReferenceBookLocal {
     public void loadF011() {
         final StringBuilder sb = new StringBuilder("loadF011");
         int added = 0;
-        final Holder<List<F011Type>> list = new Holder<List<F011Type>>();
+        final Holder<F011> list = new Holder<F011>();
         service.getNsiServiceSoap().f011(list);
 
-        for (F011Type type : list.value) {
+        for (F011Type type : list.value.getRec()) {
             if (logger.isDebugEnabled()) {
                 sb.append(getAllFields(type)).append("\n");
             }
@@ -642,7 +647,7 @@ public class ReferenceBook implements ReferenceBookLocal {
             }
         }
         logger.debug(sb.toString());
-        logger.info("F011 loading {} item(s), {} added", list.value.size(), added);
+        logger.info("F011 loading {} item(s), {} added", list.value.getRec().size(), added);
     }
 
     /**
@@ -653,10 +658,10 @@ public class ReferenceBook implements ReferenceBookLocal {
     public void loadF015() {
         final StringBuilder sb = new StringBuilder("loadF015");
         int added = 0;
-        final Holder<List<F015Type>> list = new Holder<List<F015Type>>();
+        final Holder<F015> list = new Holder<F015>();
         service.getNsiServiceSoap().f015(list);
 
-        for (F015Type type : list.value) {
+        for (F015Type type : list.value.getRec()) {
             if (logger.isDebugEnabled()) {
                 sb.append(getAllFields(type)).append("\n");
             }
@@ -666,7 +671,7 @@ public class ReferenceBook implements ReferenceBookLocal {
             }
         }
         logger.debug(sb.toString());
-        logger.info("F015 loading {} item(s), {} added", list.value.size(), added);
+        logger.info("F015 loading {} item(s), {} added", list.value.getRec().size(), added);
     }
 
     /**
@@ -677,10 +682,10 @@ public class ReferenceBook implements ReferenceBookLocal {
     public void loadO001() {
         final StringBuilder sb = new StringBuilder("loadO001");
         int added = 0;
-        final Holder<List<O001Type>> list = new Holder<List<O001Type>>();
+        final Holder<O001> list = new Holder<O001>();
         service.getNsiServiceSoap().o001(list);
 
-        for (O001Type type : list.value) {
+        for (O001Type type : list.value.getRec()) {
             if (logger.isDebugEnabled()) {
                 sb.append(getAllFields(type)).append("\n");
             }
@@ -690,7 +695,7 @@ public class ReferenceBook implements ReferenceBookLocal {
             }
         }
         logger.debug(sb.toString());
-        logger.info("O001 loading {} item(s), {} added", list.value.size(), added);
+        logger.info("O001 loading {} item(s), {} added", list.value.getRec().size(), added);
     }
 
     /**
@@ -701,10 +706,10 @@ public class ReferenceBook implements ReferenceBookLocal {
     public void loadO002() {
         final StringBuilder sb = new StringBuilder("loadO002");
         int added = 0;
-        final Holder<List<O002Type>> list = new Holder<List<O002Type>>();
+        final Holder<O002> list = new Holder<O002>();
         service.getNsiServiceSoap().o002(list);
 
-        for (O002Type type : list.value) {
+        for (O002Type type : list.value.getRec()) {
             if (logger.isDebugEnabled()) {
                 sb.append(getAllFields(type)).append("\n");
             }
@@ -714,7 +719,7 @@ public class ReferenceBook implements ReferenceBookLocal {
             }
         }
         logger.debug(sb.toString());
-        logger.info("O002 loading {} item(s), {} added", list.value.size(), added);
+        logger.info("O002 loading {} item(s), {} added", list.value.getRec().size(), added);
     }
 
     /**
@@ -725,10 +730,10 @@ public class ReferenceBook implements ReferenceBookLocal {
     public void loadO003() {
         final StringBuilder sb = new StringBuilder("loadO003");
         int added = 0;
-        final Holder<List<O003Type>> list = new Holder<List<O003Type>>();
+        final Holder<O003> list = new Holder<O003>();
         service.getNsiServiceSoap().o003(list);
 
-        for (O003Type type : list.value) {
+        for (O003Type type : list.value.getRec()) {
             if (logger.isDebugEnabled()) {
                 sb.append(getAllFields(type)).append("\n");
             }
@@ -738,7 +743,7 @@ public class ReferenceBook implements ReferenceBookLocal {
             }
         }
         logger.debug(sb.toString());
-        logger.info("O003 loading {} item(s), {} added", list.value.size(), added);
+        logger.info("O003 loading {} item(s), {} added", list.value.getRec().size(), added);
     }
 
     /**
@@ -749,10 +754,10 @@ public class ReferenceBook implements ReferenceBookLocal {
     public void loadO004() {
         final StringBuilder sb = new StringBuilder("loadO004");
         int added = 0;
-        final Holder<List<O004Type>> list = new Holder<List<O004Type>>();
+        final Holder<O004> list = new Holder<O004>();
         service.getNsiServiceSoap().o004(list);
 
-        for (O004Type type : list.value) {
+        for (O004Type type : list.value.getRec()) {
             if (logger.isDebugEnabled()) {
                 sb.append(getAllFields(type)).append("\n");
             }
@@ -762,7 +767,7 @@ public class ReferenceBook implements ReferenceBookLocal {
             }
         }
         logger.debug(sb.toString());
-        logger.info("O004 loading {} item(s), {} added", list.value.size(), added);
+        logger.info("O004 loading {} item(s), {} added", list.value.getRec().size(), added);
     }
 
     /**
@@ -773,10 +778,10 @@ public class ReferenceBook implements ReferenceBookLocal {
     public void loadO005() {
         final StringBuilder sb = new StringBuilder("loadO005");
         int added = 0;
-        final Holder<List<O005Type>> list = new Holder<List<O005Type>>();
+        final Holder<O005> list = new Holder<O005>();
         service.getNsiServiceSoap().o005(list);
 
-        for (O005Type type : list.value) {
+        for (O005Type type : list.value.getRec()) {
             if (logger.isDebugEnabled()) {
                 sb.append(getAllFields(type)).append("\n");
             }
@@ -786,7 +791,7 @@ public class ReferenceBook implements ReferenceBookLocal {
             }
         }
         logger.debug(sb.toString());
-        logger.info("O005 loading {} item(s), {} added", list.value.size(), added);
+        logger.info("O005 loading {} item(s), {} added", list.value.getRec().size(), added);
     }
 
 

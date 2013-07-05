@@ -1,7 +1,11 @@
 
 package nsi;
 
-import javax.xml.bind.annotation.*;
+import javax.xml.bind.annotation.XmlAccessType;
+import javax.xml.bind.annotation.XmlAccessorType;
+import javax.xml.bind.annotation.XmlAttribute;
+import javax.xml.bind.annotation.XmlSchemaType;
+import javax.xml.bind.annotation.XmlType;
 import javax.xml.datatype.XMLGregorianCalendar;
 
 
@@ -135,7 +139,7 @@ import javax.xml.datatype.XMLGregorianCalendar;
  *       &lt;attribute name="n_doc">
  *         &lt;simpleType>
  *           &lt;restriction base="{http://www.w3.org/2001/XMLSchema}string">
- *             &lt;maxLength value="30"/>
+ *             &lt;maxLength value="60"/>
  *           &lt;/restriction>
  *         &lt;/simpleType>
  *       &lt;/attribute>
@@ -685,8 +689,8 @@ public class F003Type {
      * 
      * @return
      *     possible object is
-     *     {@link javax.xml.datatype.XMLGregorianCalendar }
-     *
+     *     {@link XMLGregorianCalendar }
+     *     
      */
     public XMLGregorianCalendar getDStart() {
         return dStart;
@@ -694,11 +698,11 @@ public class F003Type {
 
     /**
      * Sets the value of the dStart property.
-     *
+     * 
      * @param value
      *     allowed object is
-     *     {@link javax.xml.datatype.XMLGregorianCalendar }
-     *
+     *     {@link XMLGregorianCalendar }
+     *     
      */
     public void setDStart(XMLGregorianCalendar value) {
         this.dStart = value;
@@ -706,11 +710,11 @@ public class F003Type {
 
     /**
      * Gets the value of the dataE property.
-     *
+     * 
      * @return
      *     possible object is
-     *     {@link javax.xml.datatype.XMLGregorianCalendar }
-     *
+     *     {@link XMLGregorianCalendar }
+     *     
      */
     public XMLGregorianCalendar getDataE() {
         return dataE;
@@ -718,11 +722,11 @@ public class F003Type {
 
     /**
      * Sets the value of the dataE property.
-     *
+     * 
      * @param value
      *     allowed object is
-     *     {@link javax.xml.datatype.XMLGregorianCalendar }
-     *
+     *     {@link XMLGregorianCalendar }
+     *     
      */
     public void setDataE(XMLGregorianCalendar value) {
         this.dataE = value;
@@ -730,11 +734,11 @@ public class F003Type {
 
     /**
      * Gets the value of the mp property.
-     *
+     * 
      * @return
      *     possible object is
      *     {@link String }
-     *
+     *     
      */
     public String getMp() {
         return mp;
@@ -742,11 +746,11 @@ public class F003Type {
 
     /**
      * Sets the value of the mp property.
-     *
+     * 
      * @param value
      *     allowed object is
      *     {@link String }
-     *
+     *     
      */
     public void setMp(String value) {
         this.mp = value;
@@ -754,11 +758,11 @@ public class F003Type {
 
     /**
      * Gets the value of the www property.
-     *
+     * 
      * @return
      *     possible object is
      *     {@link String }
-     *
+     *     
      */
     public String getWww() {
         return www;
@@ -766,11 +770,11 @@ public class F003Type {
 
     /**
      * Sets the value of the www property.
-     *
+     * 
      * @param value
      *     allowed object is
      *     {@link String }
-     *
+     *     
      */
     public void setWww(String value) {
         this.www = value;
@@ -778,11 +782,11 @@ public class F003Type {
 
     /**
      * Gets the value of the dBegin property.
-     *
+     * 
      * @return
      *     possible object is
-     *     {@link javax.xml.datatype.XMLGregorianCalendar }
-     *
+     *     {@link XMLGregorianCalendar }
+     *     
      */
     public XMLGregorianCalendar getDBegin() {
         return dBegin;
@@ -790,11 +794,11 @@ public class F003Type {
 
     /**
      * Sets the value of the dBegin property.
-     *
+     * 
      * @param value
      *     allowed object is
-     *     {@link javax.xml.datatype.XMLGregorianCalendar }
-     *
+     *     {@link XMLGregorianCalendar }
+     *     
      */
     public void setDBegin(XMLGregorianCalendar value) {
         this.dBegin = value;
@@ -802,11 +806,11 @@ public class F003Type {
 
     /**
      * Gets the value of the dEnd property.
-     *
+     * 
      * @return
      *     possible object is
-     *     {@link javax.xml.datatype.XMLGregorianCalendar }
-     *
+     *     {@link XMLGregorianCalendar }
+     *     
      */
     public XMLGregorianCalendar getDEnd() {
         return dEnd;
@@ -814,11 +818,11 @@ public class F003Type {
 
     /**
      * Sets the value of the dEnd property.
-     *
+     * 
      * @param value
      *     allowed object is
-     *     {@link javax.xml.datatype.XMLGregorianCalendar }
-     *
+     *     {@link XMLGregorianCalendar }
+     *     
      */
     public void setDEnd(XMLGregorianCalendar value) {
         this.dEnd = value;
@@ -826,11 +830,11 @@ public class F003Type {
 
     /**
      * Gets the value of the nameE property.
-     *
+     * 
      * @return
      *     possible object is
      *     {@link String }
-     *
+     *     
      */
     public String getNameE() {
         return nameE;
@@ -838,11 +842,11 @@ public class F003Type {
 
     /**
      * Sets the value of the nameE property.
-     *
+     * 
      * @param value
      *     allowed object is
      *     {@link String }
-     *
+     *     
      */
     public void setNameE(String value) {
         this.nameE = value;
@@ -850,11 +854,11 @@ public class F003Type {
 
     /**
      * Gets the value of the duved property.
-     *
+     * 
      * @return
      *     possible object is
-     *     {@link javax.xml.datatype.XMLGregorianCalendar }
-     *
+     *     {@link XMLGregorianCalendar }
+     *     
      */
     public XMLGregorianCalendar getDUVED() {
         return duved;
@@ -862,11 +866,11 @@ public class F003Type {
 
     /**
      * Sets the value of the duved property.
-     *
+     * 
      * @param value
      *     allowed object is
-     *     {@link javax.xml.datatype.XMLGregorianCalendar }
-     *
+     *     {@link XMLGregorianCalendar }
+     *     
      */
     public void setDUVED(XMLGregorianCalendar value) {
         this.duved = value;
@@ -874,11 +878,11 @@ public class F003Type {
 
     /**
      * Gets the value of the dEdit property.
-     *
+     * 
      * @return
      *     possible object is
-     *     {@link javax.xml.datatype.XMLGregorianCalendar }
-     *
+     *     {@link XMLGregorianCalendar }
+     *     
      */
     public XMLGregorianCalendar getDEdit() {
         return dEdit;
@@ -886,10 +890,10 @@ public class F003Type {
 
     /**
      * Sets the value of the dEdit property.
-     *
+     * 
      * @param value
      *     allowed object is
-     *     {@link javax.xml.datatype.XMLGregorianCalendar }
+     *     {@link XMLGregorianCalendar }
      *     
      */
     public void setDEdit(XMLGregorianCalendar value) {

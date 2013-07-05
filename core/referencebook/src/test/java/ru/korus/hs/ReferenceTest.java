@@ -1,10 +1,20 @@
 package ru.korus.hs;
 
+import nsi.O005;
+import nsi.O005Type;
+import nsi.V001;
+import nsi.V001Type;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.testng.annotations.BeforeSuite;
 import org.testng.annotations.Test;
+import ru.korus.tmis.entity.O005Okopf;
 import ru.korus.tmis.hs.ReferenceBook;
+import ru.korus.tmis.hs.wss.AuthentificationHeaderHandlerResolver;
+import wsdl.NsiService;
+
+import javax.xml.ws.Holder;
+import java.lang.reflect.Field;
 
 /**
  * Author:      Dmitriy E. Nosov <br>
@@ -16,7 +26,7 @@ public class ReferenceTest {
     private static final Logger logger = LoggerFactory.getLogger(ReferenceTest.class);
 
     private ReferenceBook referenceBook;
-    /*
+
     @BeforeSuite
     void start() {
         referenceBook = new ReferenceBook();
@@ -133,11 +143,58 @@ public class ReferenceTest {
 
     }
 
+    public void load() {
+        final StringBuilder sb = new StringBuilder("load");
+        int added = 0;
+
+        NsiService service = new NsiService();
+        service.setHandlerResolver(new AuthentificationHeaderHandlerResolver());
+
+        final Holder<V001> list = new Holder<V001>();
+        list.value = new V001();
+        list.value.setToRow(0L);
+        list.value.setToRow(10L);
+        service.getNsiServiceSoap().v001(list);
+        for (V001Type type : list.value.getRec()) {
+
+            sb.append(getAllFields(type)).append("\n");
+
+            added++;
+        }
+
+        logger.debug(sb.toString());
+        logger.info("O005 loading {} item(s), {} added", list.value.getRec().size(), added);
+    }
+
+    private String getAllFields(final Object obj) {
+        StringBuilder sb = new StringBuilder("[");
+        if (obj != null) {
+            Class<?> c = obj.getClass();
+            try {
+                Field[] chap = c.getDeclaredFields();
+                for (Field f : chap) {
+                    f.setAccessible(true);
+                    final Object o = f.get(obj);
+                    if (o != null) {
+                        sb.append(o.toString()).append(", ");
+                    } else {
+                        sb.append("null, ");
+                    }
+                }
+            } catch (Exception x) {
+                x.printStackTrace();
+            }
+        } else {
+            sb.append("null");
+        }
+        sb.append("]");
+        return sb.toString();
+    }
 
     public static void main(String[] args) {
         ReferenceTest rt = new ReferenceTest();
         rt.start();
-        rt.loadV005();
+        rt.load();
+        //    rt.loadV005();
     }
-    */
 }

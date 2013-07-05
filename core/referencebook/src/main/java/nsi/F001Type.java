@@ -1,7 +1,11 @@
 
 package nsi;
 
-import javax.xml.bind.annotation.*;
+import javax.xml.bind.annotation.XmlAccessType;
+import javax.xml.bind.annotation.XmlAccessorType;
+import javax.xml.bind.annotation.XmlAttribute;
+import javax.xml.bind.annotation.XmlSchemaType;
+import javax.xml.bind.annotation.XmlType;
 import javax.xml.datatype.XMLGregorianCalendar;
 
 
@@ -525,8 +529,8 @@ public class F001Type {
      * 
      * @return
      *     possible object is
-     *     {@link javax.xml.datatype.XMLGregorianCalendar }
-     *
+     *     {@link XMLGregorianCalendar }
+     *     
      */
     public XMLGregorianCalendar getDEdit() {
         return dEdit;
@@ -534,11 +538,11 @@ public class F001Type {
 
     /**
      * Sets the value of the dEdit property.
-     *
+     * 
      * @param value
      *     allowed object is
-     *     {@link javax.xml.datatype.XMLGregorianCalendar }
-     *
+     *     {@link XMLGregorianCalendar }
+     *     
      */
     public void setDEdit(XMLGregorianCalendar value) {
         this.dEdit = value;
@@ -546,11 +550,11 @@ public class F001Type {
 
     /**
      * Gets the value of the dEnd property.
-     *
+     * 
      * @return
      *     possible object is
-     *     {@link javax.xml.datatype.XMLGregorianCalendar }
-     *
+     *     {@link XMLGregorianCalendar }
+     *     
      */
     public XMLGregorianCalendar getDEnd() {
         return dEnd;
@@ -558,10 +562,10 @@ public class F001Type {
 
     /**
      * Sets the value of the dEnd property.
-     *
+     * 
      * @param value
      *     allowed object is
-     *     {@link javax.xml.datatype.XMLGregorianCalendar }
+     *     {@link XMLGregorianCalendar }
      *     
      */
     public void setDEnd(XMLGregorianCalendar value) {

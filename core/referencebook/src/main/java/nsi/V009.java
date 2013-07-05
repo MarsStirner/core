@@ -1,9 +1,14 @@
 
 package nsi;
 
-import javax.xml.bind.annotation.*;
 import java.util.ArrayList;
 import java.util.List;
+import javax.xml.bind.annotation.XmlAccessType;
+import javax.xml.bind.annotation.XmlAccessorType;
+import javax.xml.bind.annotation.XmlAttribute;
+import javax.xml.bind.annotation.XmlElement;
+import javax.xml.bind.annotation.XmlRootElement;
+import javax.xml.bind.annotation.XmlType;
 
 
 /**
@@ -18,6 +23,20 @@ import java.util.List;
  *       &lt;sequence>
  *         &lt;element name="rec" type="{urn:nsi}V009Type" maxOccurs="unbounded" minOccurs="0"/>
  *       &lt;/sequence>
+ *       &lt;attribute name="fromRow">
+ *         &lt;simpleType>
+ *           &lt;restriction base="{http://www.w3.org/2001/XMLSchema}long">
+ *             &lt;minInclusive value="1"/>
+ *           &lt;/restriction>
+ *         &lt;/simpleType>
+ *       &lt;/attribute>
+ *       &lt;attribute name="toRow">
+ *         &lt;simpleType>
+ *           &lt;restriction base="{http://www.w3.org/2001/XMLSchema}long">
+ *             &lt;minInclusive value="1"/>
+ *           &lt;/restriction>
+ *         &lt;/simpleType>
+ *       &lt;/attribute>
  *     &lt;/restriction>
  *   &lt;/complexContent>
  * &lt;/complexType>
@@ -34,6 +53,10 @@ public class V009 {
 
     @XmlElement(nillable = true)
     protected List<V009Type> rec;
+    @XmlAttribute(name = "fromRow")
+    protected Long fromRow;
+    @XmlAttribute(name = "toRow")
+    protected Long toRow;
 
     /**
      * Gets the value of the rec property.
@@ -62,6 +85,54 @@ public class V009 {
             rec = new ArrayList<V009Type>();
         }
         return this.rec;
+    }
+
+    /**
+     * Gets the value of the fromRow property.
+     * 
+     * @return
+     *     possible object is
+     *     {@link Long }
+     *     
+     */
+    public Long getFromRow() {
+        return fromRow;
+    }
+
+    /**
+     * Sets the value of the fromRow property.
+     * 
+     * @param value
+     *     allowed object is
+     *     {@link Long }
+     *     
+     */
+    public void setFromRow(Long value) {
+        this.fromRow = value;
+    }
+
+    /**
+     * Gets the value of the toRow property.
+     * 
+     * @return
+     *     possible object is
+     *     {@link Long }
+     *     
+     */
+    public Long getToRow() {
+        return toRow;
+    }
+
+    /**
+     * Sets the value of the toRow property.
+     * 
+     * @param value
+     *     allowed object is
+     *     {@link Long }
+     *     
+     */
+    public void setToRow(Long value) {
+        this.toRow = value;
     }
 
 }
