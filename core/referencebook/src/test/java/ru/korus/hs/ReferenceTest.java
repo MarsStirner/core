@@ -32,85 +32,85 @@ public class ReferenceTest {
         referenceBook = new ReferenceBook();
     }
 
-    @Test
-    public void loadM001MKB10() {
-        referenceBook.loadM001();
-    }
-
-    @Test
-    public void loadV001NomeclR() {
-        referenceBook.loadV001();
-    }
-
-    @Test
-    public void loadV002ProfOt() {
-        referenceBook.loadV002();
-    }
-
-    @Test
-    public void loadV003LicUsl() {
-        referenceBook.loadV003();
-    }
-
-    @Test
-    public void loadV004Medspec() {
-        referenceBook.loadV004();
-    }
-
-    @Test
-    public void loadV005Pol() {
-        referenceBook.loadV005();
-    }
-
-    @Test
-    public void loadV006UslMp() {
-        referenceBook.loadV006();
-    }
-
-    @Test
-    public void loadV007NomMO() {
-        referenceBook.loadV007();
-    }
-
-    @Test
-    public void loadV008VidMp() {
-        referenceBook.loadV008();
-    }
-
-    @Test
-    public void loadV009Rezult() {
-        referenceBook.loadV009();
-    }
-
-    @Test
-    public void loadF001Tfoms() {
-        referenceBook.loadF001();
-    }
-
-    @Test
-    public void loadF002Smo() {
-        referenceBook.loadF002();
-    }
-
-    @Test
-    public void loadF003Mo() {
-        referenceBook.loadF003();
-    }
-
-    @Test
-    public void loadF007Vedom() {
-        referenceBook.loadF007();
-    }
-
-    @Test
-    public void loadF008TipOMS() {
-        referenceBook.loadF008();
-    }
-
-    @Test
-    public void loadF009StatZL() {
-        referenceBook.loadF009();
-    }
+//    @Test
+//    public void loadM001MKB10() {
+//        referenceBook.loadM001();
+//    }
+//
+//    @Test
+//    public void loadV001NomeclR() {
+//        referenceBook.loadV001();
+//    }
+//
+//    @Test
+//    public void loadV002ProfOt() {
+//        referenceBook.loadV002();
+//    }
+//
+//    @Test
+//    public void loadV003LicUsl() {
+//        referenceBook.loadV003();
+//    }
+//
+//    @Test
+//    public void loadV004Medspec() {
+//        referenceBook.loadV004();
+//    }
+//
+//    @Test
+//    public void loadV005Pol() {
+//        referenceBook.loadV005();
+//    }
+//
+//    @Test
+//    public void loadV006UslMp() {
+//        referenceBook.loadV006();
+//    }
+//
+//    @Test
+//    public void loadV007NomMO() {
+//        referenceBook.loadV007();
+//    }
+//
+//    @Test
+//    public void loadV008VidMp() {
+//        referenceBook.loadV008();
+//    }
+//
+//    @Test
+//    public void loadV009Rezult() {
+//        referenceBook.loadV009();
+//    }
+//
+//    @Test
+//    public void loadF001Tfoms() {
+//        referenceBook.loadF001();
+//    }
+//
+//    @Test
+//    public void loadF002Smo() {
+//        referenceBook.loadF002();
+//    }
+//
+//    @Test
+//    public void loadF003Mo() {
+//        referenceBook.loadF003();
+//    }
+//
+//    @Test
+//    public void loadF007Vedom() {
+//        referenceBook.loadF007();
+//    }
+//
+//    @Test
+//    public void loadF008TipOMS() {
+//        referenceBook.loadF008();
+//    }
+//
+//    @Test
+//    public void loadF009StatZL() {
+//        referenceBook.loadF009();
+//    }
 
     @Test(enabled = false)
     public void loadV005() {
