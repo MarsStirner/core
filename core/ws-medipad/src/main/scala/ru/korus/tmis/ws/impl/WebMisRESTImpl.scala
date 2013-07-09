@@ -817,6 +817,22 @@ class WebMisRESTImpl  extends WebMisREST
         listForSummary.add(ActionWrapperInfo.plannedEndDate)
         //listForSummary.add(ActionWrapperInfo.toOrder)
 
+        //Для направлений на лабисследования, консультации и инструментальные иследования выводить поле "Направивший врач"
+        val mnemonics = request.filter.asInstanceOf[ActionTypesListRequestDataFilter].getMnemonics
+        val flgDiagnostics = (
+          mnemonics!=null &&
+          mnemonics.size()>0 &&
+          (mnemonics.filter(p=>(p.toUpperCase().compareTo("LAB")==0 ||
+                                p.toUpperCase().compareTo("DIAG")==0 ||
+                                p.toUpperCase().compareTo("CONS")==0))
+          ).size>0
+        )
+
+        if(flgDiagnostics){
+          listForSummary.add(ActionWrapperInfo.executorId)
+          listForSummary.add(ActionWrapperInfo.assignerId)
+        }
+
         val json = primaryAssessmentBean.getEmptyStructure(actionType.getId.intValue(), "Action", listForConverter, listForSummary,  null, null, patientBean.getPatientById(patientId))
         json
       }
