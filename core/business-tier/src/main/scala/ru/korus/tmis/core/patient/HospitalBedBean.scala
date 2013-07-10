@@ -180,8 +180,8 @@ with TmisLogging{
       var currentEventPerson = dbEventPerson.getLastEventPersonForEventId(eventId)
       if (currentEventPerson != null) {
         currentEventPerson.setEndDate(new Date)
+        em.merge(currentEventPerson)
       }
-      em.merge(currentEventPerson)
       em.merge(currentEvent)
       em.flush()
     }
