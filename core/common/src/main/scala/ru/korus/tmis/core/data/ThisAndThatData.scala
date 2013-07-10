@@ -301,7 +301,7 @@ class ActionTypesListRequestDataFilter extends AbstractListDataFilter {
   var code: String = _
 
   @BeanProperty
-  var groupId: Int = _
+  var groupId: Int = 0
 
   @BeanProperty
   var mnemonics: java.util.List[String] = new java.util.LinkedList[String]
@@ -342,6 +342,8 @@ class ActionTypesListRequestDataFilter extends AbstractListDataFilter {
     else if(this.code!=null && !this.code.isEmpty){
       qs.query += ("AND at.groupId IN (SELECT at2.id FROM ActionType at2 WHERE at2.code = :code)\n")
       qs.add("code",this.code)
+    } else if(this.view.compareTo("tree")==0){
+      qs.query += ("AND (at.groupId IS NULL OR at.groupId<=0)")
     }
     if (this.mnemonics!=null && this.mnemonics.size() > 0) {
       qs.query += ("AND at.mnemonic IN  :mnemonic\n")

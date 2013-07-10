@@ -848,11 +848,7 @@ class WebMisRESTImpl  extends WebMisREST
 
   def getListOfActionTypes(request: ListDataRequest) = {
     val mapper: ObjectMapper = new ObjectMapper()
-    if (request.filter.asInstanceOf[ActionTypesListRequestDataFilter].view.compareTo("tree") == 0) {
-      mapper.getSerializationConfig().setSerializationView(classOf[ActionTypesListDataViews.DefaultView]);   //дерево
-    } else {
-      mapper.getSerializationConfig().setSerializationView(classOf[ActionTypesListDataViews.OneLevelView]);  //плоская структурв
-    }
+    mapper.getSerializationConfig().setSerializationView(classOf[ActionTypesListDataViews.DefaultView]);   //дерево
     mapper.writeValueAsString(new ActionTypesListData(request, actionTypeBean.getAllActionTypeWithFilter _))
   }
 
