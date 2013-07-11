@@ -46,13 +46,13 @@ public class O002Okato implements Serializable {
     /**
      * Код раздела
      */
-    @Column(name = "RAZDEL")
+    @Column(name = "razdel")
     private String razdel;
 
     /**
      * Наименование
      */
-    @Column(name = "NAME1")
+    @Column(name = "name1")
     private String name1;
 
     /**
@@ -81,7 +81,7 @@ public class O002Okato implements Serializable {
      * 3 - включить;
      * 0 - начальная загрузка
      */
-    @Column(name = "STATUS")
+    @Column(name = "status")
     private Long status;
 
     /**

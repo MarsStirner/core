@@ -46,7 +46,7 @@ public class O001Oksm implements Serializable {
     /**
      * Буквенный код альфа-3
      */
-    @Column(name = "ALFA3")
+    @Column(name = "alfa3")
     private String alfa3;
 
     /**

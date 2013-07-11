@@ -43,7 +43,7 @@ CREATE TABLE IF NOT EXISTS `rb_F002_SMO` (
   `d_end` date DEFAULT NULL,
   `d_start` date DEFAULT NULL,
   `data_e` date DEFAULT NULL,
-  `DUVED` date DEFAULT NULL,
+  `duved` date DEFAULT NULL,
   `e_mail` varchar(255) DEFAULT NULL,
   `fam_ruk` varchar(255) DEFAULT NULL,
   `fax` varchar(255) DEFAULT NULL,
@@ -52,13 +52,13 @@ CREATE TABLE IF NOT EXISTS `rb_F002_SMO` (
   `index_j` varchar(255) DEFAULT NULL,
   `inn` varchar(255) DEFAULT NULL,
   `kol_zl` bigint(20) DEFAULT NULL,
-  `KPP` varchar(255) DEFAULT NULL,
+  `kpp` varchar(255) DEFAULT NULL,
   `n_doc` varchar(255) DEFAULT NULL,
-  `Nal_p` varchar(255) DEFAULT NULL,
+  `nal_p` varchar(255) DEFAULT NULL,
   `nam_smok` varchar(255) DEFAULT NULL,
   `nam_smop` varchar(255) DEFAULT NULL,
   `name_e` varchar(255) DEFAULT NULL,
-  `Ogrn` varchar(255) DEFAULT NULL,
+  `ogrn` varchar(255) DEFAULT NULL,
   `okopf` varchar(255) DEFAULT NULL,
   `org` bigint(20) DEFAULT NULL,
   `ot_ruk` varchar(255) DEFAULT NULL,
@@ -83,21 +83,21 @@ CREATE TABLE IF NOT EXISTS `rb_F003_MO` (
   `d_end` date DEFAULT NULL,
   `d_start` date DEFAULT NULL,
   `data_e` date DEFAULT NULL,
-  `DUVED` date DEFAULT NULL,
+  `duved` date DEFAULT NULL,
   `e_mail` varchar(255) DEFAULT NULL,
   `fam_ruk` varchar(255) DEFAULT NULL,
   `fax` varchar(255) DEFAULT NULL,
   `im_ruk` varchar(255) DEFAULT NULL,
   `index_j` varchar(255) DEFAULT NULL,
   `inn` varchar(255) DEFAULT NULL,
-  `KPP` varchar(255) DEFAULT NULL,
+  `kpp` varchar(255) DEFAULT NULL,
   `lpu` int(11) DEFAULT NULL,
   `mp` varchar(255) DEFAULT NULL,
   `n_doc` varchar(255) DEFAULT NULL,
   `nam_mok` varchar(255) DEFAULT NULL,
   `nam_mop` varchar(255) DEFAULT NULL,
   `name_e` varchar(255) DEFAULT NULL,
-  `Ogrn` varchar(255) DEFAULT NULL,
+  `ogrn` varchar(255) DEFAULT NULL,
   `okopf` varchar(255) DEFAULT NULL,
   `org` bigint(20) DEFAULT NULL,
   `ot_ruk` varchar(255) DEFAULT NULL,
@@ -146,11 +146,11 @@ CREATE TABLE IF NOT EXISTS `rb_F008_TipOMS` (
 -- Дамп структуры для таблица devel.rb_F009_StatZL
 DROP TABLE IF EXISTS `rb_F009_StatZL`;
 CREATE TABLE IF NOT EXISTS `rb_F009_StatZL` (
-  `IDStatus` varchar(255) NOT NULL,
+  `idstatus` varchar(255) NOT NULL,
   `datebeg` date DEFAULT NULL,
   `dateend` date DEFAULT NULL,
-  `StatusName` varchar(255) DEFAULT NULL,
-  PRIMARY KEY (`IDStatus`)
+  `statusname` varchar(255) DEFAULT NULL,
+  PRIMARY KEY (`idstatus`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
 -- Дамп данных таблицы devel.rb_F009_StatZL: ~0 rows (приблизительно)
@@ -161,13 +161,13 @@ CREATE TABLE IF NOT EXISTS `rb_F009_StatZL` (
 -- Дамп структуры для таблица devel.rb_F010_Subekti
 DROP TABLE IF EXISTS `rb_F010_Subekti`;
 CREATE TABLE IF NOT EXISTS `rb_F010_Subekti` (
-  `KOD_TF` varchar(255) NOT NULL,
-  `DATEBEG` date DEFAULT NULL,
-  `DATEEND` date DEFAULT NULL,
-  `KOD_OKATO` varchar(255) DEFAULT NULL,
-  `OKRUG` bigint(20) DEFAULT NULL,
-  `SUBNAME` varchar(255) DEFAULT NULL,
-  PRIMARY KEY (`KOD_TF`)
+  `kod_tf` varchar(255) NOT NULL,
+  `datebeg` date DEFAULT NULL,
+  `dateend` date DEFAULT NULL,
+  `kod_okato` varchar(255) DEFAULT NULL,
+  `okrug` bigint(20) DEFAULT NULL,
+  `subname` varchar(255) DEFAULT NULL,
+  PRIMARY KEY (`kod_tf`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
 -- Дамп данных таблицы devel.rb_F010_Subekti: ~0 rows (приблизительно)
@@ -178,13 +178,13 @@ CREATE TABLE IF NOT EXISTS `rb_F010_Subekti` (
 -- Дамп структуры для таблица devel.rb_F011_Tipdoc
 DROP TABLE IF EXISTS `rb_F011_Tipdoc`;
 CREATE TABLE IF NOT EXISTS `rb_F011_Tipdoc` (
-  `IDDoc` bigint(20) NOT NULL,
-  `DATEBEG` date DEFAULT NULL,
-  `DATEEND` date DEFAULT NULL,
-  `DocName` varchar(255) DEFAULT NULL,
-  `DocNum` varchar(255) DEFAULT NULL,
-  `DocSer` varchar(255) DEFAULT NULL,
-  PRIMARY KEY (`IDDoc`)
+  `iddoc` bigint(20) NOT NULL,
+  `datebeg` date DEFAULT NULL,
+  `dateend` date DEFAULT NULL,
+  `docname` varchar(255) DEFAULT NULL,
+  `docnum` varchar(255) DEFAULT NULL,
+  `docser` varchar(255) DEFAULT NULL,
+  PRIMARY KEY (`iddoc`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
 -- Дамп данных таблицы devel.rb_F011_Tipdoc: ~0 rows (приблизительно)
@@ -195,11 +195,11 @@ CREATE TABLE IF NOT EXISTS `rb_F011_Tipdoc` (
 -- Дамп структуры для таблица devel.rb_F015_FedOkr
 DROP TABLE IF EXISTS `rb_F015_FedOkr`;
 CREATE TABLE IF NOT EXISTS `rb_F015_FedOkr` (
-  `KOD_OK` bigint(20) NOT NULL,
-  `DATEBEG` date DEFAULT NULL,
-  `DATEEND` date DEFAULT NULL,
-  `OKRNAME` varchar(255) DEFAULT NULL,
-  PRIMARY KEY (`KOD_OK`)
+  `kod_ok` bigint(20) NOT NULL,
+  `datebeg` date DEFAULT NULL,
+  `dateend` date DEFAULT NULL,
+  `okrname` varchar(255) DEFAULT NULL,
+  PRIMARY KEY (`kod_ok`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
 -- Дамп данных таблицы devel.rb_F015_FedOkr: ~0 rows (приблизительно)
@@ -262,16 +262,16 @@ CREATE TABLE IF NOT EXISTS `rb_M001_MKB10` (
 -- Дамп структуры для таблица devel.rb_O001_Oksm
 DROP TABLE IF EXISTS `rb_O001_Oksm`;
 CREATE TABLE IF NOT EXISTS `rb_O001_Oksm` (
-  `KOD` varchar(255) NOT NULL,
-  `ALFA2` varchar(255) DEFAULT NULL,
-  `ALFA3` varchar(255) DEFAULT NULL,
-  `DATA_UPD` date DEFAULT NULL,
-  `NAME11` varchar(255) DEFAULT NULL,
-  `NAME12` varchar(255) DEFAULT NULL,
-  `NOMAKT` varchar(255) DEFAULT NULL,
-  `NOMDESCR` varchar(255) DEFAULT NULL,
-  `STATUS` bigint(20) DEFAULT NULL,
-  PRIMARY KEY (`KOD`)
+  `kod` varchar(255) NOT NULL,
+  `alfa2` varchar(255) DEFAULT NULL,
+  `alfa3` varchar(255) DEFAULT NULL,
+  `data_upd` date DEFAULT NULL,
+  `name11` varchar(255) DEFAULT NULL,
+  `name12` varchar(255) DEFAULT NULL,
+  `nomakt` varchar(255) DEFAULT NULL,
+  `nomdescr` varchar(255) DEFAULT NULL,
+  `status` bigint(20) DEFAULT NULL,
+  PRIMARY KEY (`kod`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
 -- Дамп данных таблицы devel.rb_O001_Oksm: ~0 rows (приблизительно)
@@ -282,18 +282,18 @@ CREATE TABLE IF NOT EXISTS `rb_O001_Oksm` (
 -- Дамп структуры для таблица devel.rb_O002_Okato
 DROP TABLE IF EXISTS `rb_O002_Okato`;
 CREATE TABLE IF NOT EXISTS `rb_O002_Okato` (
-  `TER` varchar(255) NOT NULL,
-  `CENTRUM` varchar(255) DEFAULT NULL,
-  `DATA_UPD` date DEFAULT NULL,
-  `KOD1` varchar(255) DEFAULT NULL,
-  `KOD2` varchar(255) DEFAULT NULL,
-  `KOD3` varchar(255) DEFAULT NULL,
-  `NAME1` varchar(255) DEFAULT NULL,
-  `NOMAKT` varchar(255) DEFAULT NULL,
-  `NOMDESCR` varchar(255) DEFAULT NULL,
-  `RAZDEL` varchar(255) DEFAULT NULL,
-  `STATUS` bigint(20) DEFAULT NULL,
-  PRIMARY KEY (`TER`)
+  `ter` varchar(255) NOT NULL,
+  `centrum` varchar(255) DEFAULT NULL,
+  `data_upd` date DEFAULT NULL,
+  `kod1` varchar(255) DEFAULT NULL,
+  `kod2` varchar(255) DEFAULT NULL,
+  `kod3` varchar(255) DEFAULT NULL,
+  `name1` varchar(255) DEFAULT NULL,
+  `nomakt` varchar(255) DEFAULT NULL,
+  `nomdescr` varchar(255) DEFAULT NULL,
+  `razdel` varchar(255) DEFAULT NULL,
+  `status` bigint(20) DEFAULT NULL,
+  PRIMARY KEY (`ter`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
 -- Дамп данных таблицы devel.rb_O002_Okato: ~0 rows (приблизительно)
@@ -304,16 +304,16 @@ CREATE TABLE IF NOT EXISTS `rb_O002_Okato` (
 -- Дамп структуры для таблица devel.rb_O003_Okved
 DROP TABLE IF EXISTS `rb_O003_Okved`;
 CREATE TABLE IF NOT EXISTS `rb_O003_Okved` (
-  `KOD` varchar(255) NOT NULL,
-  `DATA_UPD` date DEFAULT NULL,
-  `NAME11` varchar(255) DEFAULT NULL,
-  `NAME12` varchar(255) DEFAULT NULL,
-  `NOMAKT` varchar(255) DEFAULT NULL,
-  `NOMDESCR` varchar(255) DEFAULT NULL,
-  `PRAZDEL` varchar(255) DEFAULT NULL,
-  `RAZDEL` varchar(255) DEFAULT NULL,
-  `STATUS` bigint(20) DEFAULT NULL,
-  PRIMARY KEY (`KOD`)
+  `kod` varchar(255) NOT NULL,
+  `data_upd` date DEFAULT NULL,
+  `name11` varchar(255) DEFAULT NULL,
+  `name12` varchar(255) DEFAULT NULL,
+  `nomakt` varchar(255) DEFAULT NULL,
+  `nomdescr` varchar(255) DEFAULT NULL,
+  `prazdel` varchar(255) DEFAULT NULL,
+  `razdel` varchar(255) DEFAULT NULL,
+  `status` bigint(20) DEFAULT NULL,
+  PRIMARY KEY (`kod`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
 -- Дамп данных таблицы devel.rb_O003_Okved: ~0 rows (приблизительно)
@@ -324,13 +324,13 @@ CREATE TABLE IF NOT EXISTS `rb_O003_Okved` (
 -- Дамп структуры для таблица devel.rb_O004_Okfs
 DROP TABLE IF EXISTS `rb_O004_Okfs`;
 CREATE TABLE IF NOT EXISTS `rb_O004_Okfs` (
-  `KOD` varchar(255) NOT NULL,
-  `ALG` varchar(255) DEFAULT NULL,
-  `DATA_UPD` date DEFAULT NULL,
-  `NAME1` varchar(255) DEFAULT NULL,
-  `NOMAKT` varchar(255) DEFAULT NULL,
-  `STATUS` bigint(20) DEFAULT NULL,
-  PRIMARY KEY (`KOD`)
+  `kod` varchar(255) NOT NULL,
+  `alg` varchar(255) DEFAULT NULL,
+  `data_upd` date DEFAULT NULL,
+  `name1` varchar(255) DEFAULT NULL,
+  `nomakt` varchar(255) DEFAULT NULL,
+  `status` bigint(20) DEFAULT NULL,
+  PRIMARY KEY (`kod`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
 -- Дамп данных таблицы devel.rb_O004_Okfs: ~0 rows (приблизительно)
@@ -341,13 +341,13 @@ CREATE TABLE IF NOT EXISTS `rb_O004_Okfs` (
 -- Дамп структуры для таблица devel.rb_O005_Okopf
 DROP TABLE IF EXISTS `rb_O005_Okopf`;
 CREATE TABLE IF NOT EXISTS `rb_O005_Okopf` (
-  `KOD` varchar(255) NOT NULL,
-  `ALG` varchar(255) DEFAULT NULL,
-  `DATA_UPD` date DEFAULT NULL,
-  `NAME1` varchar(255) DEFAULT NULL,
-  `NOMAKT` varchar(255) DEFAULT NULL,
-  `STATUS` bigint(20) DEFAULT NULL,
-  PRIMARY KEY (`KOD`)
+  `kod` varchar(255) NOT NULL,
+  `alg` varchar(255) DEFAULT NULL,
+  `data_upd` date DEFAULT NULL,
+  `name1` varchar(255) DEFAULT NULL,
+  `nomakt` varchar(255) DEFAULT NULL,
+  `status` bigint(20) DEFAULT NULL,
+  PRIMARY KEY (`kod`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
 -- Дамп данных таблицы devel.rb_O005_Okopf: ~0 rows (приблизительно)
@@ -388,13 +388,13 @@ CREATE TABLE IF NOT EXISTS `rb_V002_ProfOt` (
 -- Дамп структуры для таблица devel.rb_V003_LicUsl
 DROP TABLE IF EXISTS `rb_V003_LicUsl`;
 CREATE TABLE IF NOT EXISTS `rb_V003_LicUsl` (
-  `IDRL` bigint(20) NOT NULL,
-  `DATEBEG` date DEFAULT NULL,
-  `DATEEND` date DEFAULT NULL,
-  `IERARH` bigint(20) DEFAULT NULL,
-  `LICNAME` varchar(255) DEFAULT NULL,
-  `PRIM` bigint(20) DEFAULT NULL,
-  PRIMARY KEY (`IDRL`)
+  `idrl` bigint(20) NOT NULL,
+  `datebeg` date DEFAULT NULL,
+  `dateend` date DEFAULT NULL,
+  `ierarh` bigint(20) DEFAULT NULL,
+  `licname` varchar(255) DEFAULT NULL,
+  `prim` bigint(20) DEFAULT NULL,
+  PRIMARY KEY (`idrl`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
 -- Дамп данных таблицы devel.rb_V003_LicUsl: ~0 rows (приблизительно)
