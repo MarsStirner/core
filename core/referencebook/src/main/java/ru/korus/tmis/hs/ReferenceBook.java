@@ -190,13 +190,15 @@ public class ReferenceBook implements ReferenceBookLocal {
         final StringBuilder sb = new StringBuilder("loadM001");
         logger.info("Load M001...");
         try {
-            int added = 0;
+
             long from = 0;
             long to = CHUNK_SIZE;
             long size = 0;
 
             final M001 m001 = new M001();
             do {
+                int added = 0;
+
                 m001.setFromRow(from);
                 m001.setToRow(to);
 
@@ -968,12 +970,13 @@ public class ReferenceBook implements ReferenceBookLocal {
         final StringBuilder sb = new StringBuilder("loadKladr");
         logger.info("Load Kladr...");
         try {
-            int added = 0;
             long from = 0;
             long to = CHUNK_SIZE;
             long size = 0;
             final Kladr kladr = new Kladr();
             do {
+                int added = 0;
+
                 kladr.setFromRow(from);
                 kladr.setToRow(to);
                 final Holder<Kladr> list = new Holder<Kladr>(kladr);
@@ -1010,12 +1013,13 @@ public class ReferenceBook implements ReferenceBookLocal {
         final StringBuilder sb = new StringBuilder("loadKladrStreet");
         logger.info("Load KladrStreet...");
         try {
-            int added = 0;
             long from = 0;
             long to = CHUNK_SIZE;
             long size = 0;
             final KladrStreet kladrStreet = new KladrStreet();
             do {
+                int added = 0;
+
                 kladrStreet.setFromRow(from);
                 kladrStreet.setToRow(to);
                 final Holder<KladrStreet> list = new Holder<KladrStreet>(kladrStreet);
