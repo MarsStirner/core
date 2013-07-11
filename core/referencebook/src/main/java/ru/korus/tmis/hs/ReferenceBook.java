@@ -191,20 +191,35 @@ public class ReferenceBook implements ReferenceBookLocal {
         logger.info("Load M001...");
         try {
             int added = 0;
-            final Holder<M001> list = new Holder<M001>();
-            service.getNsiServiceSoap().m001(list);
+            long from = 0;
+            long to = CHUNK_SIZE;
+            long size = 0;
 
-            for (M001Type type : list.value.getRec()) {
-                if (logger.isDebugEnabled()) {
-                    sb.append(getAllFields(type)).append("\n");
+            final M001 m001 = new M001();
+            do {
+                m001.setFromRow(from);
+                m001.setToRow(to);
+
+                final Holder<M001> list = new Holder<M001>(m001);
+                service.getNsiServiceSoap().m001(list);
+
+                size = list.value.getRec().size();
+                for (M001Type type : list.value.getRec()) {
+                    if (logger.isDebugEnabled()) {
+                        sb.append(getAllFields(type)).append("\n");
+                    }
+                    if (!m001dao.isExist(type.getIDDS())) {
+                        m001dao.insert(M001MKB10.getInstance(type));
+                        added++;
+                    }
                 }
-                if (!m001dao.isExist(type.getIDDS())) {
-                    m001dao.insert(M001MKB10.getInstance(type));
-                    added++;
-                }
-            }
-            logger.debug(sb.toString());
-            logger.info("M001 loading {} item(s), {} added", list.value.getRec().size(), added);
+                logger.debug(sb.toString());
+                logger.info("M001 loading from {} to {}, loaded {} item(s), {} added", from, to, size, added);
+
+                from = to + 1;
+                to = to + CHUNK_SIZE;
+
+            } while (size >= CHUNK_SIZE);
         } catch (Throwable t) {
             logger.error("Exception e: " + t, new Exception(t));
         }
