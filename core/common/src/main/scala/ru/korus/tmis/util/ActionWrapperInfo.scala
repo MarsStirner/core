@@ -30,7 +30,7 @@ object ActionWrapperInfo extends Configuration {
   var Finance = StringId("finance")
   var PlannedEndDate = StringId("plannedEndDate")
   var AssignerId = StringId("assignerId")
-  var ExecutorId = StringId("assignerId")
+  var ExecutorId = StringId("executorId")
   //var ToOrder = StringId("toOrder")
 
   // Typed internal Ids

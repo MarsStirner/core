@@ -108,7 +108,7 @@
         </rollingPolicy>
     </appender>
 
-    <logger name="ru.korus.tmis.hs" level="DEBUG" additivity="false">
+    <logger name="ru.korus.tmis.hs" level="INFO" additivity="false">
         <appender-ref ref="REFERENCE_BOOK"/>
         <appender-ref ref="STDOUT_ERROR"/>
         <appender-ref ref="EXCEPTIONS"/>

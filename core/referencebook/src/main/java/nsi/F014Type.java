@@ -1,7 +1,11 @@
 
 package nsi;
 
-import javax.xml.bind.annotation.*;
+import javax.xml.bind.annotation.XmlAccessType;
+import javax.xml.bind.annotation.XmlAccessorType;
+import javax.xml.bind.annotation.XmlAttribute;
+import javax.xml.bind.annotation.XmlSchemaType;
+import javax.xml.bind.annotation.XmlType;
 import javax.xml.datatype.XMLGregorianCalendar;
 
 
@@ -219,8 +223,8 @@ public class F014Type {
      * 
      * @return
      *     possible object is
-     *     {@link javax.xml.datatype.XMLGregorianCalendar }
-     *
+     *     {@link XMLGregorianCalendar }
+     *     
      */
     public XMLGregorianCalendar getDATEBEG() {
         return datebeg;
@@ -228,11 +232,11 @@ public class F014Type {
 
     /**
      * Sets the value of the datebeg property.
-     *
+     * 
      * @param value
      *     allowed object is
-     *     {@link javax.xml.datatype.XMLGregorianCalendar }
-     *
+     *     {@link XMLGregorianCalendar }
+     *     
      */
     public void setDATEBEG(XMLGregorianCalendar value) {
         this.datebeg = value;
@@ -240,11 +244,11 @@ public class F014Type {
 
     /**
      * Gets the value of the dateend property.
-     *
+     * 
      * @return
      *     possible object is
-     *     {@link javax.xml.datatype.XMLGregorianCalendar }
-     *
+     *     {@link XMLGregorianCalendar }
+     *     
      */
     public XMLGregorianCalendar getDATEEND() {
         return dateend;
@@ -252,10 +256,10 @@ public class F014Type {
 
     /**
      * Sets the value of the dateend property.
-     *
+     * 
      * @param value
      *     allowed object is
-     *     {@link javax.xml.datatype.XMLGregorianCalendar }
+     *     {@link XMLGregorianCalendar }
      *     
      */
     public void setDATEEND(XMLGregorianCalendar value) {

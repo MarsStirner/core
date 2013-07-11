@@ -22,25 +22,25 @@ public class O002Okato implements Serializable {
      * Код территории
      */
     @Id
-    @Column(name = "TER")
+    @Column(name = "ter")
     private String ter;
 
     /**
      * Код района/города
      */
-    @Column(name = "KOD1")
+    @Column(name = "kod1")
     private String kod1;
 
     /**
      * Код РП/сельсовета
      */
-    @Column(name = "KOD2")
+    @Column(name = "kod2")
     private String kod2;
 
     /**
      * Код сельского населенного пункта
      */
-    @Column(name = "KOD3")
+    @Column(name = "kod3")
     private String kod3;
 
     /**
@@ -58,19 +58,19 @@ public class O002Okato implements Serializable {
     /**
      * Дополнительные данные
      */
-    @Column(name = "CENTRUM")
+    @Column(name = "centrum")
     private String centrum;
 
     /**
      * Описание (пояснение) может содержать до 250 символов
      */
-    @Column(name = "NOMDESCR")
+    @Column(name = "nomdescr")
     private String nomdescr;
 
     /**
      * Номер последнего изменения
      */
-    @Column(name = "NOMAKT")
+    @Column(name = "nomakt")
     private String nomakt;
 
     /**
@@ -88,7 +88,7 @@ public class O002Okato implements Serializable {
      * Дата последнего изменения
      */
     @Temporal(TemporalType.DATE)
-    @Column(name = "DATA_UPD")
+    @Column(name = "data_upd")
     private Date dataupd;
 
     public O002Okato() {

@@ -8,7 +8,7 @@ import org.codehaus.jackson.map.ObjectMapper
 import ru.korus.tmis.core.exception.CoreException
 import java.util
 import ru.korus.tmis.util._
-import ru.korus.tmis.core.entity.model.{OrgStructureHospitalBed, JobTicket, ActionTypeTissueType, Action}
+import ru.korus.tmis.core.entity.model._
 import collection.{JavaConversions, mutable}
 import util.LinkedList
 import grizzled.slf4j.Logging
@@ -26,6 +26,7 @@ import com.google.common.collect.Lists
 import javax.servlet.http.HttpServletRequest
 import ru.korus.tmis.laboratory.business.LaboratoryBeanLocal
 import ru.korus.tmis.core.entity.model.layout.LayoutAttribute
+import ru.korus.tmis.util.StringId
 
 /**
  * Created with IntelliJ IDEA.
@@ -523,7 +524,8 @@ class WebMisRESTImpl  extends WebMisREST
 
   //создание первичного мед. осмотра
   def insertPrimaryMedExamForPatient(eventId: Int, data: JSONCommonData, authData: AuthData)  = {
-    if(data.getData.find(ce => ce.getTypeId().compareTo(i18n("db.actionType.primary").toInt)==0).getOrElse(null)!=null) //Врач прописывается только для первичного осмотра  (ид=139)
+    val isPrimary = (data.getData.find(ce => ce.getTypeId().compareTo(i18n("db.actionType.primary").toInt)==0).getOrElse(null)!=null) //Врач прописывается только для первичного осмотра  (ид=139)
+    if(isPrimary)
       appealBean.setExecPersonForAppeal(eventId, 0, authData, ExecPersonSetType.EP_CREATE_PRIMARY)
 
     //создаем осмотр. ЕвентПерсон не флашится!!!
@@ -533,7 +535,6 @@ class WebMisRESTImpl  extends WebMisREST
       authData,
       /*preProcessing _*/null,
       postProcessing _)
-    //dbEventBean.setExecPersonForEventWithId(eventId, authData.getUser)
     returnValue
   }
 
@@ -817,6 +818,22 @@ class WebMisRESTImpl  extends WebMisREST
         listForSummary.add(ActionWrapperInfo.plannedEndDate)
         //listForSummary.add(ActionWrapperInfo.toOrder)
 
+        //Для направлений на лабисследования, консультации и инструментальные иследования выводить поле "Направивший врач"
+        val mnemonics = request.filter.asInstanceOf[ActionTypesListRequestDataFilter].getMnemonics
+        val flgDiagnostics = (
+          mnemonics!=null &&
+          mnemonics.size()>0 &&
+          (mnemonics.filter(p=>(p.toUpperCase().compareTo("LAB")==0 ||
+                                p.toUpperCase().compareTo("DIAG")==0 ||
+                                p.toUpperCase().compareTo("CONS")==0))
+          ).size>0
+        )
+
+        if(flgDiagnostics){
+          listForSummary.add(ActionWrapperInfo.executorId)
+          listForSummary.add(ActionWrapperInfo.assignerId)
+        }
+
         val json = primaryAssessmentBean.getEmptyStructure(actionType.getId.intValue(), "Action", listForConverter, listForSummary,  null, null, patientBean.getPatientById(patientId))
         json
       }
@@ -831,11 +848,7 @@ class WebMisRESTImpl  extends WebMisREST
 
   def getListOfActionTypes(request: ListDataRequest) = {
     val mapper: ObjectMapper = new ObjectMapper()
-    if (request.filter.asInstanceOf[ActionTypesListRequestDataFilter].view.compareTo("tree") == 0) {
-      mapper.getSerializationConfig().setSerializationView(classOf[ActionTypesListDataViews.DefaultView]);   //дерево
-    } else {
-      mapper.getSerializationConfig().setSerializationView(classOf[ActionTypesListDataViews.OneLevelView]);  //плоская структурв
-    }
+    mapper.getSerializationConfig().setSerializationView(classOf[ActionTypesListDataViews.DefaultView]);   //дерево
     mapper.writeValueAsString(new ActionTypesListData(request, actionTypeBean.getAllActionTypeWithFilter _))
   }
 

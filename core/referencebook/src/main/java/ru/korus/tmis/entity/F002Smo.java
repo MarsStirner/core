@@ -28,6 +28,7 @@ public class F002Smo implements Serializable {
     /**
      * Код СМО в кодировке единого реестра СМО
      */
+    @Id
     @Column(name = "smocod")
     private String smocod;
 
@@ -46,7 +47,6 @@ public class F002Smo implements Serializable {
     /**
      * Идентификационный номер налогоплательщика
      */
-    @Id
     @Column(name = "inn")
     private String inn;
 

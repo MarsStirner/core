@@ -8,7 +8,7 @@ import javax.xml.bind.annotation.XmlType;
 
 
 /**
- * Классификатор пола застрахованного (V005Pol)
+ * Классификатор пола застрахованного (Pol)
  * 
  * <p>Java class for V005Type complex type.
  * 

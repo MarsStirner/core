@@ -1,10 +1,14 @@
 
 package wsdl;
 
-import javax.xml.namespace.QName;
-import javax.xml.ws.*;
 import java.net.MalformedURLException;
 import java.net.URL;
+import javax.xml.namespace.QName;
+import javax.xml.ws.Service;
+import javax.xml.ws.WebEndpoint;
+import javax.xml.ws.WebServiceClient;
+import javax.xml.ws.WebServiceException;
+import javax.xml.ws.WebServiceFeature;
 
 
 /**
@@ -13,7 +17,7 @@ import java.net.URL;
  * Generated source version: 2.2
  * 
  */
-@WebServiceClient(name = "NsiService", targetNamespace = "urn:wsdl", wsdlLocation = "../korus.NsiService.cls.xml")
+@WebServiceClient(name = "NsiService", targetNamespace = "urn:wsdl", wsdlLocation = "../korus.NsiService.cls.wsdl")
 public class NsiService
     extends Service
 {
@@ -27,7 +31,7 @@ public class NsiService
         WebServiceException e = null;
         try {
             final URL baseUrl = NsiService.class.getResource(".");
-            url = new URL(baseUrl, "../korus.NsiService.cls.xml");
+            url = new URL(baseUrl, "../korus.NsiService.cls.wsdl");
         } catch (MalformedURLException ex) {
             e = new WebServiceException(ex);
         }

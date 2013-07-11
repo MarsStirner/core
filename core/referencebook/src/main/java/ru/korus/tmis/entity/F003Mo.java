@@ -22,13 +22,13 @@ public class F003Mo implements Serializable {
     /**
      * Код субъекта РФ по ОКАТО, где расположена МО
      */
-    @Id
     @Column(name = "tf_okato")
     private String tfOkato;
 
     /**
      * Код МО в кодировке единого реестра МО
      */
+    @Id
     @Column(name = "mcod")
     private String mcod;
 
