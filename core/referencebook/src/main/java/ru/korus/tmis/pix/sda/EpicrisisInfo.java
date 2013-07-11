@@ -105,15 +105,17 @@ public class EpicrisisInfo {
         StringBuilder res = new StringBuilder();
         final SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd");
         res.append(orgName).append(' ')
-                .append("Дата и время: ").append(dateFormat.format(createDate)).append(' ')
+                .append("Дата и время: ").append(createDate != null ? dateFormat.format(createDate) : "???").append(' ')
                 .append("Амбулаторная карта №").append(action.getEvent().getExternalId()).append(' ')
                 .append("Ф.И.О. пациента: " + clientInfo.getFamilyName() + ' ' + clientInfo.getGivenName() + ' ' + clientInfo.getMiddleName())
-                .append("Возраст: " + getAge(createDate, clientInfo.getBirthDate()));
+                .append("Возраст: " + (createDate != null && clientInfo.getBirthDate() != null ? getAge(createDate, clientInfo.getBirthDate()) : "???"));
         Map<ActionProperty, List<APValue>> ap;
         try {
             ap = apBean.getActionPropertiesByActionId(action.getId());
             for (Map.Entry<ActionProperty, List<APValue>> prop : ap.entrySet()) {
-                res.append(prop.getKey().getType().getName() + ": " + prop.getValue().get(0).getValueAsString());
+                if (prop.getValue() != null && !prop.getValue().isEmpty()) {
+                    res.append(prop.getKey().getType().getName() + ": " + prop.getValue().get(0).getValueAsString());
+                }
             }
         } catch (CoreException e) {
             // TODO Auto-generated catch block

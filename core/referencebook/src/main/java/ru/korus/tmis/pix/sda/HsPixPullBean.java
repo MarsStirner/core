@@ -157,7 +157,7 @@ public class HsPixPullBean {
         List<Action> actions = em.createQuery("SELECT a FROM Action a WHERE a.event.id = :eventId AND a.deleted = 0", Action.class)
                 .setParameter("eventId", event.getId()).getResultList();
         for (Action a : actions) {
-            List<ActionType> actionTypes = em.createQuery("SELECT at FROM ActionType at WHERE at.id = :groupId AND a.deleted = 0", ActionType.class)
+            List<ActionType> actionTypes = em.createQuery("SELECT at FROM ActionType at WHERE at.id = :groupId AND at.deleted = 0", ActionType.class)
                     .setParameter("groupId", a.getActionType().getGroupId()).getResultList();
             if (!actionTypes.isEmpty()) {
                 if (actionTypes.get(0).getFlatCode().equals("epicrisis")) {
@@ -204,7 +204,7 @@ public class HsPixPullBean {
             hsi.setEvent(event);
             hsi.setStatus(HSIntegration.Status.NEW);
             em.persist(hsi);
+            em.flush();
         }
-        em.flush();
     }
 }
