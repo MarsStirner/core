@@ -22,39 +22,39 @@ public class V003LicUsl implements Serializable {
      * Код работ (услуг) при лицензировании медицинской помощи
      */
     @Id
-    @Column(name = "IDRL")
+    @Column(name = "idrl")
     private long idrl;
 
     /**
      * Наименование работ (услуг) при лицензировании медицинской помощи
      */
-    @Column(name = "LICNAME")
+    @Column(name = "licname")
     private String licname;
 
     /**
      * Код элемента верхнего уровня
      */
-    @Column(name = "IERARH")
+    @Column(name = "ierarh")
     private Long ierarh;
 
     /**
      * Признак допустимости использования
      */
-    @Column(name = "PRIM")
+    @Column(name = "prim")
     private Long prim;
 
     /**
      * Дата начала действия записи
      */
     @Temporal(TemporalType.DATE)
-    @Column(name = "DATEBEG")
+    @Column(name = "datebeg")
     private Date datebeg;
 
     /**
      * Дата окончания действия записи
      */
     @Temporal(TemporalType.DATE)
-    @Column(name = "DATEEND")
+    @Column(name = "dateend")
     private Date dateend;
 
     public V003LicUsl() {

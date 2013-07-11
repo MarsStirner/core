@@ -22,27 +22,27 @@ public class F015FedOkr implements Serializable {
      * Код округа
      */
     @Id
-    @Column(name = "KOD_OK")
+    @Column(name = "kod_ok")
     private long kodok;
 
     /**
      * Наименование округа РФ
      */
-    @Column(name = "OKRNAME")
+    @Column(name = "okrname")
     private String okrname;
 
     /**
      * Дата начала действия записи
      */
     @Temporal(TemporalType.DATE)
-    @Column(name = "DATEBEG")
+    @Column(name = "datebeg")
     private Date datebeg;
 
     /**
      * Дата окончания действия записи
      */
     @Temporal(TemporalType.DATE)
-    @Column(name = "DATEEND")
+    @Column(name = "dateend")
     private Date dateend;
 
     public F015FedOkr() {

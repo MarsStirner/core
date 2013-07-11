@@ -1,6 +1,8 @@
 package ru.korus.tmis.hs;
 
 import nsi.*;
+import nsi.Kladr;
+import nsi.KladrStreet;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import ru.korus.tmis.core.logging.LoggingInterceptor;
@@ -15,7 +17,6 @@ import javax.ejb.Stateless;
 import javax.interceptor.Interceptors;
 import javax.xml.ws.Holder;
 import java.lang.reflect.Field;
-import java.util.List;
 
 /**
  * Author:      Dmitriy E. Nosov <br>
@@ -27,6 +28,11 @@ import java.util.List;
 @Stateless
 public class ReferenceBook implements ReferenceBookLocal {
     private static final Logger logger = LoggerFactory.getLogger(ReferenceBook.class);
+
+    /**
+     * Кол-во сообщений, которые можно запросить у HS за один сеанс
+     */
+    public static final long CHUNK_SIZE = 9999;
 
     private NsiService service;
 
@@ -108,6 +114,12 @@ public class ReferenceBook implements ReferenceBookLocal {
     @EJB
     private O005DAOLocal o005dao;
 
+    @EJB
+    private KladrDAOLocal kladrdao;
+
+    @EJB
+    private KladrStreetDAOLocal kladrStreetdao;
+
     /**
      * Загрузка справочников по расписанию
      */
@@ -130,7 +142,7 @@ public class ReferenceBook implements ReferenceBookLocal {
 
 //            loadF001();
             loadF002();
-//            loadF003();
+            loadF003();
 //            loadF007();
 //            loadF008();
 //            loadF009();
@@ -145,6 +157,9 @@ public class ReferenceBook implements ReferenceBookLocal {
 //            loadO003();
 //            loadO004();
 //            loadO005();
+            loadKladr();
+            loadKladrStreet();
+
             logger.info("Stop loading reference book...");
         } catch (Exception e) {
             logger.warn("Failed loading!!! e: " + e);
@@ -485,24 +500,29 @@ public class ReferenceBook implements ReferenceBookLocal {
      */
     public void loadF002() {
         final StringBuilder sb = new StringBuilder("loadF002");
+        logger.info("Load F002...");
         int added = 0;
-        final F002 f002 = new F002();
-        f002.setFromRow(0L);
-        f002.setToRow(1000L);
-        final Holder<F002> holder = new Holder<F002>(f002);
-        service.getNsiServiceSoap().f002(holder);
+        try {
+            final F002 f002 = new F002();
+            f002.setFromRow(0L);
+            f002.setToRow(CHUNK_SIZE);
+            final Holder<F002> holder = new Holder<F002>(f002);
+            service.getNsiServiceSoap().f002(holder);
 
-        for (F002Type type : holder.value.getRec()) {
-            if (logger.isDebugEnabled()) {
-                sb.append(getAllFields(type)).append("\n");
+            for (F002Type type : holder.value.getRec()) {
+                if (logger.isDebugEnabled()) {
+                    sb.append(getAllFields(type)).append("\n");
+                }
+                if (!f002dao.isExist(type.getSmocod())) {   //todo
+                    f002dao.insert(F002Smo.getInstance(type));
+                    added++;
+                }
             }
-            if (!f002dao.isExist(type.getSmocod())) {   //todo
-                f002dao.insert(F002Smo.getInstance(type));
-                added++;
-            }
+            logger.debug(sb.toString());
+            logger.info("F002 loading {} item(s), {} added", holder.value.getRec().size(), added);
+        } catch (Throwable t) {
+            logger.error("Exception e: " + t, new Exception(t));
         }
-        logger.debug(sb.toString());
-        logger.info("F002 loading {} item(s), {} added", holder.value.getRec().size(), added);
     }
 
     /**
@@ -513,6 +533,7 @@ public class ReferenceBook implements ReferenceBookLocal {
      */
     public void loadF003() {
         final StringBuilder sb = new StringBuilder("loadF003");
+        logger.info("Load F003...");
         int added = 0;
         final Holder<F003> list = new Holder<F003>();
         service.getNsiServiceSoap().f003(list);
@@ -792,6 +813,88 @@ public class ReferenceBook implements ReferenceBookLocal {
         }
         logger.debug(sb.toString());
         logger.info("O005 loading {} item(s), {} added", list.value.getRec().size(), added);
+    }
+
+    /**
+     * Загрузка справочника Kladr -
+     *
+     * @return
+     */
+    public void loadKladr() {
+        final StringBuilder sb = new StringBuilder("loadKladr");
+        try {
+            int added = 0;
+            long from = 0;
+            long to = CHUNK_SIZE;
+            long size = 0;
+            final Kladr kladr = new Kladr();
+            do {
+                kladr.setFromRow(from);
+                kladr.setToRow(to);
+                final Holder<Kladr> list = new Holder<Kladr>(kladr);
+                service.getNsiServiceSoap().kladr(list);
+
+                size = list.value.getRec().size();
+                for (KladrType type : list.value.getRec()) {
+                    if (logger.isDebugEnabled()) {
+                        sb.append(getAllFields(type)).append("\n");
+                    }
+                    if (!kladrdao.isExist(type.getCode())) {
+                        kladrdao.insert(ru.korus.tmis.entity.Kladr.getInstance(type));
+                        added++;
+                    }
+                }
+                logger.debug(sb.toString());
+                logger.info("Kladr loading from {} to {}, loaded {} item(s), {} added", from, to, size, added);
+
+                from = from + size;
+                to = from + CHUNK_SIZE;
+
+            } while (size >= CHUNK_SIZE);
+        } catch (Throwable t) {
+            logger.error("Exception e: " + t, new Exception(t));
+        }
+    }
+
+    /**
+     * Загрузка справочника Kladr -
+     *
+     * @return
+     */
+    public void loadKladrStreet() {
+        final StringBuilder sb = new StringBuilder("loadKladrStreet");
+        try {
+            int added = 0;
+            long from = 0;
+            long to = CHUNK_SIZE;
+            long size = 0;
+            final KladrStreet kladrStreet = new KladrStreet();
+            do {
+                kladrStreet.setFromRow(from);
+                kladrStreet.setToRow(to);
+                final Holder<KladrStreet> list = new Holder<KladrStreet>(kladrStreet);
+                service.getNsiServiceSoap().kladrStreet(list);
+
+                size = list.value.getRec().size();
+                for (KladrStreetType type : list.value.getRec()) {
+                    if (logger.isDebugEnabled()) {
+                        sb.append(getAllFields(type)).append("\n");
+                    }
+                    if (!kladrStreetdao.isExist(type.getCode())) {
+                        kladrStreetdao.insert(ru.korus.tmis.entity.KladrStreet.getInstance(type));
+                        added++;
+                    }
+                }
+                logger.debug(sb.toString());
+                logger.info("KladrStreet loading from {} to {}, loaded {} item(s), {} added", from, to, size, added);
+
+                from = from + size;
+                to = from + CHUNK_SIZE;
+
+            } while (size >= CHUNK_SIZE);
+        } catch (Throwable t) {
+            logger.error("Exception e: " + t, new Exception(t));
+        }
     }
 
 
