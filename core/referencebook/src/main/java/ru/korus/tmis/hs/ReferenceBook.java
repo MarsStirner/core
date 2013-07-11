@@ -9,6 +9,7 @@ import ru.korus.tmis.core.logging.LoggingInterceptor;
 import ru.korus.tmis.dao.*;
 import ru.korus.tmis.entity.*;
 import ru.korus.tmis.hs.wss.AuthentificationHeaderHandlerResolver;
+import ru.korus.tmis.util.ConfigManager;
 import wsdl.NsiService;
 
 import javax.ejb.EJB;
@@ -32,7 +33,7 @@ public class ReferenceBook implements ReferenceBookLocal {
     /**
      * Кол-во сообщений, которые можно запросить у HS за один сеанс
      */
-    public static final long CHUNK_SIZE = 9999;
+    public static final long CHUNK_SIZE = 9000;
 
     private NsiService service;
 
@@ -126,43 +127,48 @@ public class ReferenceBook implements ReferenceBookLocal {
     @Override
     @Schedule(minute = "*/1", hour = "*")
     public void loadReferenceBooks() {
-        logger.info("Start loading reference book...");
-        try {
-//            loadV001();
-//            loadV002();
-//            loadV003();
-//            loadV004();
-//            loadV005();
-//            loadV006();
-//            loadV007();
-//            loadV008();
-//            loadV009();
-//            loadV010();
-//            loadV012();
+        if (ConfigManager.isHealthShareReferenceBook()) {
+            logger.info("Start loading reference book...");
+            try {
+                loadV001();
+                loadV002();
+                loadV003();
+                loadV004();
+                loadV005();
+                loadV006();
+                loadV007();
+                loadV008();
+                loadV009();
+                loadV010();
+                loadV012();
 
-//            loadF001();
-            loadF002();
-            loadF003();
-//            loadF007();
-//            loadF008();
-//            loadF009();
-//            loadF010();
-//            loadF011();
-//            loadF015();
+                loadF001();
+                loadF002();
+                loadF003();
+                loadF007();
+                loadF008();
+                loadF009();
+                loadF010();
+                loadF011();
+                loadF015();
 
-//            loadM001();
+                loadM001();
 
-//            loadO001();
-//            loadO002();
-//            loadO003();
-//            loadO004();
-//            loadO005();
-            loadKladr();
-            loadKladrStreet();
+                loadO001();
+                loadO002();
+                loadO003();
+                loadO004();
+                loadO005();
 
-            logger.info("Stop loading reference book...");
-        } catch (Exception e) {
-            logger.warn("Failed loading!!! e: " + e);
+                loadKladr();
+                loadKladrStreet();
+
+                logger.info("Complete loading reference book.");
+            } catch (Exception e) {
+                logger.warn("Failed loading!!! e: " + e);
+            } finally {
+                logger.info("Stop loading reference book...");
+            }
         }
     }
 
@@ -182,21 +188,26 @@ public class ReferenceBook implements ReferenceBookLocal {
      */
     public void loadM001() {
         final StringBuilder sb = new StringBuilder("loadM001");
-        int added = 0;
-        final Holder<M001> list = new Holder<M001>();
-        service.getNsiServiceSoap().m001(list);
+        logger.info("Load M001...");
+        try {
+            int added = 0;
+            final Holder<M001> list = new Holder<M001>();
+            service.getNsiServiceSoap().m001(list);
 
-        for (M001Type type : list.value.getRec()) {
-            if (logger.isDebugEnabled()) {
-                sb.append(getAllFields(type)).append("\n");
+            for (M001Type type : list.value.getRec()) {
+                if (logger.isDebugEnabled()) {
+                    sb.append(getAllFields(type)).append("\n");
+                }
+                if (!m001dao.isExist(type.getIDDS())) {
+                    m001dao.insert(M001MKB10.getInstance(type));
+                    added++;
+                }
             }
-            if (!m001dao.isExist(type.getIDDS())) {
-                m001dao.insert(M001MKB10.getInstance(type));
-                added++;
-            }
+            logger.debug(sb.toString());
+            logger.info("M001 loading {} item(s), {} added", list.value.getRec().size(), added);
+        } catch (Throwable t) {
+            logger.error("Exception e: " + t, new Exception(t));
         }
-        logger.debug(sb.toString());
-        logger.info("M001 loading {} item(s), {} added", list.value.getRec().size(), added);
     }
 
     /**
@@ -206,23 +217,28 @@ public class ReferenceBook implements ReferenceBookLocal {
      */
     public void loadV001() {
         final StringBuilder sb = new StringBuilder("loadV001");
-        int added = 0;
-        V001 v001 = new V001();
-        v001.setToRow(10L);
-        final Holder<V001> list = new Holder<V001>(v001);
-        service.getNsiServiceSoap().v001(list);
+        logger.info("Load V001...");
+        try {
+            int added = 0;
+            V001 v001 = new V001();
+            v001.setToRow(CHUNK_SIZE);
+            final Holder<V001> list = new Holder<V001>(v001);
+            service.getNsiServiceSoap().v001(list);
 
-        for (V001Type type : list.value.getRec()) {
-            if (logger.isDebugEnabled()) {
-                sb.append(getAllFields(type)).append("\n");
+            for (V001Type type : list.value.getRec()) {
+                if (logger.isDebugEnabled()) {
+                    sb.append(getAllFields(type)).append("\n");
+                }
+                if (!v001dao.isExist(type.getIDRB())) {
+                    v001dao.insert(V001Nomerclr.getInstance(type));
+                    added++;
+                }
             }
-            if (!v001dao.isExist(type.getIDRB())) {
-                v001dao.insert(V001Nomerclr.getInstance(type));
-                added++;
-            }
+            logger.debug(sb.toString());
+            logger.info("V001 loading {} item(s), {} added", list.value.getRec().size(), added);
+        } catch (Throwable t) {
+            logger.error("Exception e: " + t, new Exception(t));
         }
-        logger.debug(sb.toString());
-        logger.info("V001 loading {} item(s), {} added", list.value.getRec().size(), added);
     }
 
 
@@ -233,21 +249,26 @@ public class ReferenceBook implements ReferenceBookLocal {
      */
     public void loadV002() {
         final StringBuilder sb = new StringBuilder("loadV002");
-        int added = 0;
-        final Holder<V002> list = new Holder<V002>();
-        service.getNsiServiceSoap().v002(list);
+        logger.info("Load V002...");
+        try {
+            int added = 0;
+            final Holder<V002> list = new Holder<V002>();
+            service.getNsiServiceSoap().v002(list);
 
-        for (V002Type type : list.value.getRec()) {
-            if (logger.isDebugEnabled()) {
-                sb.append(getAllFields(type)).append("\n");
+            for (V002Type type : list.value.getRec()) {
+                if (logger.isDebugEnabled()) {
+                    sb.append(getAllFields(type)).append("\n");
+                }
+                if (!v002dao.isExist(type.getIDPR())) {
+                    v002dao.insert(V002ProfOt.getInstance(type));
+                    added++;
+                }
             }
-            if (!v002dao.isExist(type.getIDPR())) {
-                v002dao.insert(V002ProfOt.getInstance(type));
-                added++;
-            }
+            logger.debug(sb.toString());
+            logger.info("V002 loading {} item(s), {} added", list.value.getRec().size(), added);
+        } catch (Throwable t) {
+            logger.error("Exception e: " + t, new Exception(t));
         }
-        logger.debug(sb.toString());
-        logger.info("V002 loading {} item(s), {} added", list.value.getRec().size(), added);
     }
 
     /**
@@ -257,21 +278,26 @@ public class ReferenceBook implements ReferenceBookLocal {
      */
     public void loadV003() {
         final StringBuilder sb = new StringBuilder("loadV003");
-        int added = 0;
-        final Holder<V003> list = new Holder<V003>();
-        service.getNsiServiceSoap().v003(list);
+        logger.info("Load V003...");
+        try {
+            int added = 0;
+            final Holder<V003> list = new Holder<V003>();
+            service.getNsiServiceSoap().v003(list);
 
-        for (V003Type type : list.value.getRec()) {
-            if (logger.isDebugEnabled()) {
-                sb.append(getAllFields(type)).append("\n");
+            for (V003Type type : list.value.getRec()) {
+                if (logger.isDebugEnabled()) {
+                    sb.append(getAllFields(type)).append("\n");
+                }
+                if (!v003dao.isExist(type.getIDRL())) {
+                    v003dao.insert(V003LicUsl.getInstance(type));
+                    added++;
+                }
             }
-            if (!v003dao.isExist(type.getIDRL())) {
-                v003dao.insert(V003LicUsl.getInstance(type));
-                added++;
-            }
+            logger.debug(sb.toString());
+            logger.info("V003 loading {} item(s), {} added", list.value.getRec().size(), added);
+        } catch (Throwable t) {
+            logger.error("Exception e: " + t, new Exception(t));
         }
-        logger.debug(sb.toString());
-        logger.info("V003 loading {} item(s), {} added", list.value.getRec().size(), added);
     }
 
     /**
@@ -281,24 +307,28 @@ public class ReferenceBook implements ReferenceBookLocal {
      */
     public void loadV004() {
         final StringBuilder sb = new StringBuilder("loadV004");
-        int added = 0;
-        final Holder<V004> list = new Holder<V004>();
-        service.getNsiServiceSoap().v004(list);
+        logger.info("Load V004...");
+        try {
+            int added = 0;
+            final Holder<V004> list = new Holder<V004>();
+            service.getNsiServiceSoap().v004(list);
 
-        for (V004Type type : list.value.getRec()) {
-            if (logger.isDebugEnabled()) {
-                sb.append(getAllFields(type)).append("\n");
+            for (V004Type type : list.value.getRec()) {
+                if (logger.isDebugEnabled()) {
+                    sb.append(getAllFields(type)).append("\n");
+                }
+                if (!v004dao.isExist(type.getIDMSP())) {
+                    final V004Medspec item = V004Medspec.getInstance(type);
+                    v004dao.insert(item);
+                    added++;
+                }
             }
-            if (!v004dao.isExist(type.getIDMSP())) {
-                final V004Medspec item = V004Medspec.getInstance(type);
-                v004dao.insert(item);
-                added++;
-            }
+            logger.debug(sb.toString());
+            logger.info("V004 loading {} item(s), {} added", list.value.getRec().size(), added);
+        } catch (Throwable t) {
+            logger.error("Exception e: " + t, new Exception(t));
         }
-        logger.debug(sb.toString());
-        logger.info("V004 loading {} item(s), {} added", list.value.getRec().size(), added);
     }
-
 
     /**
      * Загрузка справочника V005 - классификатор пола застрахованного
@@ -307,21 +337,26 @@ public class ReferenceBook implements ReferenceBookLocal {
      */
     public void loadV005() {
         final StringBuilder sb = new StringBuilder("loadV005");
-        int added = 0;
-        final Holder<V005> list = new Holder<V005>();
-        service.getNsiServiceSoap().v005(list);
+        logger.info("Load V005...");
+        try {
+            int added = 0;
+            final Holder<V005> list = new Holder<V005>();
+            service.getNsiServiceSoap().v005(list);
 
-        for (V005Type type : list.value.getRec()) {
-            if (logger.isDebugEnabled()) {
-                sb.append(getAllFields(type)).append("\n");
+            for (V005Type type : list.value.getRec()) {
+                if (logger.isDebugEnabled()) {
+                    sb.append(getAllFields(type)).append("\n");
+                }
+                if (!v005dao.isExist(type.getIDPOL())) {
+                    v005dao.insert(V005Pol.getInstance(type));
+                    added++;
+                }
             }
-            if (!v005dao.isExist(type.getIDPOL())) {
-                v005dao.insert(V005Pol.getInstance(type));
-                added++;
-            }
+            logger.debug(sb.toString());
+            logger.info("V005 loading {} item(s), {} added", list.value.getRec().size(), added);
+        } catch (Throwable t) {
+            logger.error("Exception e: " + t, new Exception(t));
         }
-        logger.debug(sb.toString());
-        logger.info("V005 loading {} item(s), {} added", list.value.getRec().size(), added);
     }
 
     /**
@@ -331,21 +366,26 @@ public class ReferenceBook implements ReferenceBookLocal {
      */
     public void loadV006() {
         final StringBuilder sb = new StringBuilder("loadV006");
-        int added = 0;
-        final Holder<V006> list = new Holder<V006>();
-        service.getNsiServiceSoap().v006(list);
+        logger.info("Load V006...");
+        try {
+            int added = 0;
+            final Holder<V006> list = new Holder<V006>();
+            service.getNsiServiceSoap().v006(list);
 
-        for (V006Type type : list.value.getRec()) {
-            if (logger.isDebugEnabled()) {
-                sb.append(getAllFields(type)).append("\n");
+            for (V006Type type : list.value.getRec()) {
+                if (logger.isDebugEnabled()) {
+                    sb.append(getAllFields(type)).append("\n");
+                }
+                if (!v006dao.isExist(type.getIDUMP())) {
+                    v006dao.insert(V006UslMp.getInstance(type));
+                    added++;
+                }
             }
-            if (!v006dao.isExist(type.getIDUMP())) {
-                v006dao.insert(V006UslMp.getInstance(type));
-                added++;
-            }
+            logger.debug(sb.toString());
+            logger.info("V006 loading {} item(s), {} added", list.value.getRec().size(), added);
+        } catch (Throwable t) {
+            logger.error("Exception e: " + t, new Exception(t));
         }
-        logger.debug(sb.toString());
-        logger.info("V006 loading {} item(s), {} added", list.value.getRec().size(), added);
     }
 
     /**
@@ -355,21 +395,26 @@ public class ReferenceBook implements ReferenceBookLocal {
      */
     public void loadV007() {
         final StringBuilder sb = new StringBuilder("loadV007");
-        int added = 0;
-        final Holder<V007> list = new Holder<V007>();
-        service.getNsiServiceSoap().v007(list);
+        logger.info("Load V007...");
+        try {
+            int added = 0;
+            final Holder<V007> list = new Holder<V007>();
+            service.getNsiServiceSoap().v007(list);
 
-        for (V007Type type : list.value.getRec()) {
-            if (logger.isDebugEnabled()) {
-                sb.append(getAllFields(type)).append("\n");
+            for (V007Type type : list.value.getRec()) {
+                if (logger.isDebugEnabled()) {
+                    sb.append(getAllFields(type)).append("\n");
+                }
+                if (!v007dao.isExist(type.getIDNMO())) {
+                    v007dao.insert(V007NomMO.getInstance(type));
+                    added++;
+                }
             }
-            if (!v007dao.isExist(type.getIDNMO())) {
-                v007dao.insert(V007NomMO.getInstance(type));
-                added++;
-            }
+            logger.debug(sb.toString());
+            logger.info("V007 loading {} item(s), {} added", list.value.getRec().size(), added);
+        } catch (Throwable t) {
+            logger.error("Exception e: " + t, new Exception(t));
         }
-        logger.debug(sb.toString());
-        logger.info("V007 loading {} item(s), {} added", list.value.getRec().size(), added);
     }
 
     /**
@@ -379,21 +424,26 @@ public class ReferenceBook implements ReferenceBookLocal {
      */
     public void loadV008() {
         final StringBuilder sb = new StringBuilder("loadV008");
-        int added = 0;
-        final Holder<V008> list = new Holder<V008>();
-        service.getNsiServiceSoap().v008(list);
+        logger.info("Load V008...");
+        try {
+            int added = 0;
+            final Holder<V008> list = new Holder<V008>();
+            service.getNsiServiceSoap().v008(list);
 
-        for (V008Type type : list.value.getRec()) {
-            if (logger.isDebugEnabled()) {
-                sb.append(getAllFields(type)).append("\n");
+            for (V008Type type : list.value.getRec()) {
+                if (logger.isDebugEnabled()) {
+                    sb.append(getAllFields(type)).append("\n");
+                }
+                if (!v008dao.isExist(type.getIDVMP())) {
+                    v008dao.insert(V008VidMp.getInstance(type));
+                    added++;
+                }
             }
-            if (!v008dao.isExist(type.getIDVMP())) {
-                v008dao.insert(V008VidMp.getInstance(type));
-                added++;
-            }
+            logger.debug(sb.toString());
+            logger.info("V008 loading {} item(s), {} added", list.value.getRec().size(), added);
+        } catch (Throwable t) {
+            logger.error("Exception e: " + t, new Exception(t));
         }
-        logger.debug(sb.toString());
-        logger.info("V008 loading {} item(s), {} added", list.value.getRec().size(), added);
     }
 
     /**
@@ -403,21 +453,26 @@ public class ReferenceBook implements ReferenceBookLocal {
      */
     public void loadV009() {
         final StringBuilder sb = new StringBuilder("loadV009");
-        int added = 0;
-        final Holder<V009> list = new Holder<V009>();
-        service.getNsiServiceSoap().v009(list);
+        logger.info("Load V009...");
+        try {
+            int added = 0;
+            final Holder<V009> list = new Holder<V009>();
+            service.getNsiServiceSoap().v009(list);
 
-        for (V009Type type : list.value.getRec()) {
-            if (logger.isDebugEnabled()) {
-                sb.append(getAllFields(type)).append("\n");
+            for (V009Type type : list.value.getRec()) {
+                if (logger.isDebugEnabled()) {
+                    sb.append(getAllFields(type)).append("\n");
+                }
+                if (!v009dao.isExist(type.getIDRMP())) {
+                    v009dao.insert(V009Rezult.getInstance(type));
+                    added++;
+                }
             }
-            if (!v009dao.isExist(type.getIDRMP())) {
-                v009dao.insert(V009Rezult.getInstance(type));
-                added++;
-            }
+            logger.debug(sb.toString());
+            logger.info("V009 loading {} item(s), {} added", list.value.getRec().size(), added);
+        } catch (Throwable t) {
+            logger.error("Exception e: " + t, new Exception(t));
         }
-        logger.debug(sb.toString());
-        logger.info("V009 loading {} item(s), {} added", list.value.getRec().size(), added);
     }
 
     /**
@@ -427,21 +482,26 @@ public class ReferenceBook implements ReferenceBookLocal {
      */
     public void loadV010() {
         final StringBuilder sb = new StringBuilder("loadV010");
-        int added = 0;
-        final Holder<V010> list = new Holder<V010>();
-        service.getNsiServiceSoap().v010(list);
+        logger.info("Load V010...");
+        try {
+            int added = 0;
+            final Holder<V010> list = new Holder<V010>();
+            service.getNsiServiceSoap().v010(list);
 
-        for (V010Type type : list.value.getRec()) {
-            if (logger.isDebugEnabled()) {
-                sb.append(getAllFields(type)).append("\n");
+            for (V010Type type : list.value.getRec()) {
+                if (logger.isDebugEnabled()) {
+                    sb.append(getAllFields(type)).append("\n");
+                }
+                if (!v010dao.isExist(type.getIDSP())) {
+                    v010dao.insert(V010Sposob.getInstance(type));
+                    added++;
+                }
             }
-            if (!v010dao.isExist(type.getIDSP())) {
-                v010dao.insert(V010Sposob.getInstance(type));
-                added++;
-            }
+            logger.debug(sb.toString());
+            logger.info("V010 loading {} item(s), {} added", list.value.getRec().size(), added);
+        } catch (Throwable t) {
+            logger.error("Exception e: " + t, new Exception(t));
         }
-        logger.debug(sb.toString());
-        logger.info("V010 loading {} item(s), {} added", list.value.getRec().size(), added);
     }
 
     /**
@@ -451,21 +511,26 @@ public class ReferenceBook implements ReferenceBookLocal {
      */
     public void loadV012() {
         final StringBuilder sb = new StringBuilder("loadV012");
-        int added = 0;
-        final Holder<V012> list = new Holder<V012>();
-        service.getNsiServiceSoap().v012(list);
+        logger.info("Load V012...");
+        try {
+            int added = 0;
+            final Holder<V012> list = new Holder<V012>();
+            service.getNsiServiceSoap().v012(list);
 
-        for (V012Type type : list.value.getRec()) {
-            if (logger.isDebugEnabled()) {
-                sb.append(getAllFields(type)).append("\n");
+            for (V012Type type : list.value.getRec()) {
+                if (logger.isDebugEnabled()) {
+                    sb.append(getAllFields(type)).append("\n");
+                }
+                if (!v012dao.isExist(type.getIDIZ())) {
+                    v012dao.insert(V012Ishod.getInstance(type));
+                    added++;
+                }
             }
-            if (!v012dao.isExist(type.getIDIZ())) {
-                v012dao.insert(V012Ishod.getInstance(type));
-                added++;
-            }
+            logger.debug(sb.toString());
+            logger.info("V012 loading {} item(s), {} added", list.value.getRec().size(), added);
+        } catch (Throwable t) {
+            logger.error("Exception e: " + t, new Exception(t));
         }
-        logger.debug(sb.toString());
-        logger.info("V012 loading {} item(s), {} added", list.value.getRec().size(), added);
     }
 
     /**
@@ -475,21 +540,26 @@ public class ReferenceBook implements ReferenceBookLocal {
      */
     public void loadF001() {
         final StringBuilder sb = new StringBuilder("loadF001");
-        int added = 0;
-        final Holder<F001> list = new Holder<F001>();
-        service.getNsiServiceSoap().f001(list);
+        logger.info("Load F001...");
+        try {
+            int added = 0;
+            final Holder<F001> list = new Holder<F001>();
+            service.getNsiServiceSoap().f001(list);
 
-        for (F001Type type : list.value.getRec()) {
-            if (logger.isDebugEnabled()) {
-                sb.append(getAllFields(type)).append("\n");
+            for (F001Type type : list.value.getRec()) {
+                if (logger.isDebugEnabled()) {
+                    sb.append(getAllFields(type)).append("\n");
+                }
+                if (!f001dao.isExist(type.getTfKod())) {
+                    f001dao.insert(F001Tfoms.getInstance(type));
+                    added++;
+                }
             }
-            if (!f001dao.isExist(type.getTfKod())) {
-                f001dao.insert(F001Tfoms.getInstance(type));
-                added++;
-            }
+            logger.debug(sb.toString());
+            logger.info("F001 loading {} item(s), {} added", list.value.getRec().size(), added);
+        } catch (Throwable t) {
+            logger.error("Exception e: " + t, new Exception(t));
         }
-        logger.debug(sb.toString());
-        logger.info("F001 loading {} item(s), {} added", list.value.getRec().size(), added);
     }
 
     /**
@@ -534,21 +604,25 @@ public class ReferenceBook implements ReferenceBookLocal {
     public void loadF003() {
         final StringBuilder sb = new StringBuilder("loadF003");
         logger.info("Load F003...");
-        int added = 0;
-        final Holder<F003> list = new Holder<F003>();
-        service.getNsiServiceSoap().f003(list);
+        try {
+            int added = 0;
+            final Holder<F003> list = new Holder<F003>();
+            service.getNsiServiceSoap().f003(list);
 
-        for (F003Type type : list.value.getRec()) {
-            if (logger.isDebugEnabled()) {
-                sb.append(getAllFields(type)).append("\n");
+            for (F003Type type : list.value.getRec()) {
+                if (logger.isDebugEnabled()) {
+                    sb.append(getAllFields(type)).append("\n");
+                }
+                if (!f003dao.isExist(type.getMcod())) {   //todo
+                    f003dao.insert(F003Mo.getInstance(type));
+                    added++;
+                }
             }
-            if (!f003dao.isExist(type.getMcod())) {   //todo
-                f003dao.insert(F003Mo.getInstance(type));
-                added++;
-            }
+            logger.debug(sb.toString());
+            logger.info("F003 loading {} item(s), {} added", list.value.getRec().size(), added);
+        } catch (Throwable t) {
+            logger.error("Exception e: " + t, new Exception(t));
         }
-        logger.debug(sb.toString());
-        logger.info("F003 loading {} item(s), {} added", list.value.getRec().size(), added);
     }
 
     /**
@@ -558,21 +632,26 @@ public class ReferenceBook implements ReferenceBookLocal {
      */
     public void loadF007() {
         final StringBuilder sb = new StringBuilder("loadF007");
-        int added = 0;
-        final Holder<F007> list = new Holder<F007>();
-        service.getNsiServiceSoap().f007(list);
+        logger.info("Load F007...");
+        try {
+            int added = 0;
+            final Holder<F007> list = new Holder<F007>();
+            service.getNsiServiceSoap().f007(list);
 
-        for (F007Type type : list.value.getRec()) {
-            if (logger.isDebugEnabled()) {
-                sb.append(getAllFields(type)).append("\n");
+            for (F007Type type : list.value.getRec()) {
+                if (logger.isDebugEnabled()) {
+                    sb.append(getAllFields(type)).append("\n");
+                }
+                if (!f007dao.isExist(type.getIDVED())) {
+                    f007dao.insert(F007Vedom.getInstance(type));
+                    added++;
+                }
             }
-            if (!f007dao.isExist(type.getIDVED())) {
-                f007dao.insert(F007Vedom.getInstance(type));
-                added++;
-            }
+            logger.debug(sb.toString());
+            logger.info("F007 loading {} item(s), {} added", list.value.getRec().size(), added);
+        } catch (Throwable t) {
+            logger.error("Exception e: " + t, new Exception(t));
         }
-        logger.debug(sb.toString());
-        logger.info("F007 loading {} item(s), {} added", list.value.getRec().size(), added);
     }
 
     /**
@@ -582,21 +661,26 @@ public class ReferenceBook implements ReferenceBookLocal {
      */
     public void loadF008() {
         final StringBuilder sb = new StringBuilder("loadF008");
-        int added = 0;
-        final Holder<F008> list = new Holder<F008>();
-        service.getNsiServiceSoap().f008(list);
+        logger.info("Load F008...");
+        try {
+            int added = 0;
+            final Holder<F008> list = new Holder<F008>();
+            service.getNsiServiceSoap().f008(list);
 
-        for (F008Type type : list.value.getRec()) {
-            if (logger.isDebugEnabled()) {
-                sb.append(getAllFields(type)).append("\n");
+            for (F008Type type : list.value.getRec()) {
+                if (logger.isDebugEnabled()) {
+                    sb.append(getAllFields(type)).append("\n");
+                }
+                if (!f008dao.isExist(type.getIDDOC())) {
+                    f008dao.insert(F008TipOMS.getInstance(type));
+                    added++;
+                }
             }
-            if (!f008dao.isExist(type.getIDDOC())) {
-                f008dao.insert(F008TipOMS.getInstance(type));
-                added++;
-            }
+            logger.debug(sb.toString());
+            logger.info("F008 loading {} item(s), {} added", list.value.getRec().size(), added);
+        } catch (Throwable t) {
+            logger.error("Exception e: " + t, new Exception(t));
         }
-        logger.debug(sb.toString());
-        logger.info("F008 loading {} item(s), {} added", list.value.getRec().size(), added);
     }
 
     /**
@@ -606,21 +690,26 @@ public class ReferenceBook implements ReferenceBookLocal {
      */
     public void loadF009() {
         final StringBuilder sb = new StringBuilder("loadF009");
-        int added = 0;
-        final Holder<F009> list = new Holder<F009>();
-        service.getNsiServiceSoap().f009(list);
+        logger.info("Load F009...");
+        try {
+            int added = 0;
+            final Holder<F009> list = new Holder<F009>();
+            service.getNsiServiceSoap().f009(list);
 
-        for (F009Type type : list.value.getRec()) {
-            if (logger.isDebugEnabled()) {
-                sb.append(getAllFields(type)).append("\n");
+            for (F009Type type : list.value.getRec()) {
+                if (logger.isDebugEnabled()) {
+                    sb.append(getAllFields(type)).append("\n");
+                }
+                if (!f009dao.isExist(type.getIDStatus())) {
+                    f009dao.insert(F009StatZL.getInstance(type));
+                    added++;
+                }
             }
-            if (!f009dao.isExist(type.getIDStatus())) {
-                f009dao.insert(F009StatZL.getInstance(type));
-                added++;
-            }
+            logger.debug(sb.toString());
+            logger.info("F009 loading {} item(s), {} added", list.value.getRec().size(), added);
+        } catch (Throwable t) {
+            logger.error("Exception e: " + t, new Exception(t));
         }
-        logger.debug(sb.toString());
-        logger.info("F009 loading {} item(s), {} added", list.value.getRec().size(), added);
     }
 
     /**
@@ -630,21 +719,26 @@ public class ReferenceBook implements ReferenceBookLocal {
      */
     public void loadF010() {
         final StringBuilder sb = new StringBuilder("loadF010");
-        int added = 0;
-        final Holder<F010> list = new Holder<F010>();
-        service.getNsiServiceSoap().f010(list);
+        logger.info("Load F010...");
+        try {
+            int added = 0;
+            final Holder<F010> list = new Holder<F010>();
+            service.getNsiServiceSoap().f010(list);
 
-        for (F010Type type : list.value.getRec()) {
-            if (logger.isDebugEnabled()) {
-                sb.append(getAllFields(type)).append("\n");
+            for (F010Type type : list.value.getRec()) {
+                if (logger.isDebugEnabled()) {
+                    sb.append(getAllFields(type)).append("\n");
+                }
+                if (!f010dao.isExist(type.getKODTF())) {
+                    f010dao.insert(F010Subekti.getInstance(type));
+                    added++;
+                }
             }
-            if (!f010dao.isExist(type.getKODTF())) {
-                f010dao.insert(F010Subekti.getInstance(type));
-                added++;
-            }
+            logger.debug(sb.toString());
+            logger.info("F010 loading {} item(s), {} added", list.value.getRec().size(), added);
+        } catch (Throwable t) {
+            logger.error("Exception e: " + t, new Exception(t));
         }
-        logger.debug(sb.toString());
-        logger.info("F010 loading {} item(s), {} added", list.value.getRec().size(), added);
     }
 
     /**
@@ -654,21 +748,26 @@ public class ReferenceBook implements ReferenceBookLocal {
      */
     public void loadF011() {
         final StringBuilder sb = new StringBuilder("loadF011");
-        int added = 0;
-        final Holder<F011> list = new Holder<F011>();
-        service.getNsiServiceSoap().f011(list);
+        logger.info("Load F011...");
+        try {
+            int added = 0;
+            final Holder<F011> list = new Holder<F011>();
+            service.getNsiServiceSoap().f011(list);
 
-        for (F011Type type : list.value.getRec()) {
-            if (logger.isDebugEnabled()) {
-                sb.append(getAllFields(type)).append("\n");
+            for (F011Type type : list.value.getRec()) {
+                if (logger.isDebugEnabled()) {
+                    sb.append(getAllFields(type)).append("\n");
+                }
+                if (!f011dao.isExist(type.getIDDoc())) {
+                    f011dao.insert(F011Tipdoc.getInstance(type));
+                    added++;
+                }
             }
-            if (!f011dao.isExist(type.getIDDoc())) {
-                f011dao.insert(F011Tipdoc.getInstance(type));
-                added++;
-            }
+            logger.debug(sb.toString());
+            logger.info("F011 loading {} item(s), {} added", list.value.getRec().size(), added);
+        } catch (Throwable t) {
+            logger.error("Exception e: " + t, new Exception(t));
         }
-        logger.debug(sb.toString());
-        logger.info("F011 loading {} item(s), {} added", list.value.getRec().size(), added);
     }
 
     /**
@@ -678,21 +777,26 @@ public class ReferenceBook implements ReferenceBookLocal {
      */
     public void loadF015() {
         final StringBuilder sb = new StringBuilder("loadF015");
-        int added = 0;
-        final Holder<F015> list = new Holder<F015>();
-        service.getNsiServiceSoap().f015(list);
+        logger.info("Load F015...");
+        try {
+            int added = 0;
+            final Holder<F015> list = new Holder<F015>();
+            service.getNsiServiceSoap().f015(list);
 
-        for (F015Type type : list.value.getRec()) {
-            if (logger.isDebugEnabled()) {
-                sb.append(getAllFields(type)).append("\n");
+            for (F015Type type : list.value.getRec()) {
+                if (logger.isDebugEnabled()) {
+                    sb.append(getAllFields(type)).append("\n");
+                }
+                if (!f015dao.isExist(type.getKODOK())) {
+                    f015dao.insert(F015FedOkr.getInstance(type));
+                    added++;
+                }
             }
-            if (!f015dao.isExist(type.getKODOK())) {
-                f015dao.insert(F015FedOkr.getInstance(type));
-                added++;
-            }
+            logger.debug(sb.toString());
+            logger.info("F015 loading {} item(s), {} added", list.value.getRec().size(), added);
+        } catch (Throwable t) {
+            logger.error("Exception e: " + t, new Exception(t));
         }
-        logger.debug(sb.toString());
-        logger.info("F015 loading {} item(s), {} added", list.value.getRec().size(), added);
     }
 
     /**
@@ -702,21 +806,26 @@ public class ReferenceBook implements ReferenceBookLocal {
      */
     public void loadO001() {
         final StringBuilder sb = new StringBuilder("loadO001");
-        int added = 0;
-        final Holder<O001> list = new Holder<O001>();
-        service.getNsiServiceSoap().o001(list);
+        logger.info("Load O001...");
+        try {
+            int added = 0;
+            final Holder<O001> list = new Holder<O001>();
+            service.getNsiServiceSoap().o001(list);
 
-        for (O001Type type : list.value.getRec()) {
-            if (logger.isDebugEnabled()) {
-                sb.append(getAllFields(type)).append("\n");
+            for (O001Type type : list.value.getRec()) {
+                if (logger.isDebugEnabled()) {
+                    sb.append(getAllFields(type)).append("\n");
+                }
+                if (!o001dao.isExist(type.getKOD())) {
+                    o001dao.insert(O001Oksm.getInstance(type));
+                    added++;
+                }
             }
-            if (!o001dao.isExist(type.getKOD())) {
-                o001dao.insert(O001Oksm.getInstance(type));
-                added++;
-            }
+            logger.debug(sb.toString());
+            logger.info("O001 loading {} item(s), {} added", list.value.getRec().size(), added);
+        } catch (Throwable t) {
+            logger.error("Exception e: " + t, new Exception(t));
         }
-        logger.debug(sb.toString());
-        logger.info("O001 loading {} item(s), {} added", list.value.getRec().size(), added);
     }
 
     /**
@@ -726,21 +835,26 @@ public class ReferenceBook implements ReferenceBookLocal {
      */
     public void loadO002() {
         final StringBuilder sb = new StringBuilder("loadO002");
-        int added = 0;
-        final Holder<O002> list = new Holder<O002>();
-        service.getNsiServiceSoap().o002(list);
+        logger.info("Load O002...");
+        try {
+            int added = 0;
+            final Holder<O002> list = new Holder<O002>();
+            service.getNsiServiceSoap().o002(list);
 
-        for (O002Type type : list.value.getRec()) {
-            if (logger.isDebugEnabled()) {
-                sb.append(getAllFields(type)).append("\n");
+            for (O002Type type : list.value.getRec()) {
+                if (logger.isDebugEnabled()) {
+                    sb.append(getAllFields(type)).append("\n");
+                }
+                if (!o002dao.isExist(type.getTER())) {
+                    o002dao.insert(O002Okato.getInstance(type));
+                    added++;
+                }
             }
-            if (!o002dao.isExist(type.getTER())) {
-                o002dao.insert(O002Okato.getInstance(type));
-                added++;
-            }
+            logger.debug(sb.toString());
+            logger.info("O002 loading {} item(s), {} added", list.value.getRec().size(), added);
+        } catch (Throwable t) {
+            logger.error("Exception e: " + t, new Exception(t));
         }
-        logger.debug(sb.toString());
-        logger.info("O002 loading {} item(s), {} added", list.value.getRec().size(), added);
     }
 
     /**
@@ -750,21 +864,26 @@ public class ReferenceBook implements ReferenceBookLocal {
      */
     public void loadO003() {
         final StringBuilder sb = new StringBuilder("loadO003");
-        int added = 0;
-        final Holder<O003> list = new Holder<O003>();
-        service.getNsiServiceSoap().o003(list);
+        logger.info("Load O003...");
+        try {
+            int added = 0;
+            final Holder<O003> list = new Holder<O003>();
+            service.getNsiServiceSoap().o003(list);
 
-        for (O003Type type : list.value.getRec()) {
-            if (logger.isDebugEnabled()) {
-                sb.append(getAllFields(type)).append("\n");
+            for (O003Type type : list.value.getRec()) {
+                if (logger.isDebugEnabled()) {
+                    sb.append(getAllFields(type)).append("\n");
+                }
+                if (!o003dao.isExist(type.getKOD())) {
+                    o003dao.insert(O003Okved.getInstance(type));
+                    added++;
+                }
             }
-            if (!o003dao.isExist(type.getKOD())) {
-                o003dao.insert(O003Okved.getInstance(type));
-                added++;
-            }
+            logger.debug(sb.toString());
+            logger.info("O003 loading {} item(s), {} added", list.value.getRec().size(), added);
+        } catch (Throwable t) {
+            logger.error("Exception e: " + t, new Exception(t));
         }
-        logger.debug(sb.toString());
-        logger.info("O003 loading {} item(s), {} added", list.value.getRec().size(), added);
     }
 
     /**
@@ -774,21 +893,26 @@ public class ReferenceBook implements ReferenceBookLocal {
      */
     public void loadO004() {
         final StringBuilder sb = new StringBuilder("loadO004");
-        int added = 0;
-        final Holder<O004> list = new Holder<O004>();
-        service.getNsiServiceSoap().o004(list);
+        logger.info("Load O004...");
+        try {
+            int added = 0;
+            final Holder<O004> list = new Holder<O004>();
+            service.getNsiServiceSoap().o004(list);
 
-        for (O004Type type : list.value.getRec()) {
-            if (logger.isDebugEnabled()) {
-                sb.append(getAllFields(type)).append("\n");
+            for (O004Type type : list.value.getRec()) {
+                if (logger.isDebugEnabled()) {
+                    sb.append(getAllFields(type)).append("\n");
+                }
+                if (!o004dao.isExist(type.getKOD())) {
+                    o004dao.insert(O004Okfs.getInstance(type));
+                    added++;
+                }
             }
-            if (!o004dao.isExist(type.getKOD())) {
-                o004dao.insert(O004Okfs.getInstance(type));
-                added++;
-            }
+            logger.debug(sb.toString());
+            logger.info("O004 loading {} item(s), {} added", list.value.getRec().size(), added);
+        } catch (Throwable t) {
+            logger.error("Exception e: " + t, new Exception(t));
         }
-        logger.debug(sb.toString());
-        logger.info("O004 loading {} item(s), {} added", list.value.getRec().size(), added);
     }
 
     /**
@@ -798,21 +922,26 @@ public class ReferenceBook implements ReferenceBookLocal {
      */
     public void loadO005() {
         final StringBuilder sb = new StringBuilder("loadO005");
-        int added = 0;
-        final Holder<O005> list = new Holder<O005>();
-        service.getNsiServiceSoap().o005(list);
+        logger.info("Load O005...");
+        try {
+            int added = 0;
+            final Holder<O005> list = new Holder<O005>();
+            service.getNsiServiceSoap().o005(list);
 
-        for (O005Type type : list.value.getRec()) {
-            if (logger.isDebugEnabled()) {
-                sb.append(getAllFields(type)).append("\n");
+            for (O005Type type : list.value.getRec()) {
+                if (logger.isDebugEnabled()) {
+                    sb.append(getAllFields(type)).append("\n");
+                }
+                if (!o005dao.isExist(type.getKOD())) {
+                    o005dao.insert(O005Okopf.getInstance(type));
+                    added++;
+                }
             }
-            if (!o005dao.isExist(type.getKOD())) {
-                o005dao.insert(O005Okopf.getInstance(type));
-                added++;
-            }
+            logger.debug(sb.toString());
+            logger.info("O005 loading {} item(s), {} added", list.value.getRec().size(), added);
+        } catch (Throwable t) {
+            logger.error("Exception e: " + t, new Exception(t));
         }
-        logger.debug(sb.toString());
-        logger.info("O005 loading {} item(s), {} added", list.value.getRec().size(), added);
     }
 
     /**
@@ -822,6 +951,7 @@ public class ReferenceBook implements ReferenceBookLocal {
      */
     public void loadKladr() {
         final StringBuilder sb = new StringBuilder("loadKladr");
+        logger.info("Load Kladr...");
         try {
             int added = 0;
             long from = 0;
@@ -847,8 +977,8 @@ public class ReferenceBook implements ReferenceBookLocal {
                 logger.debug(sb.toString());
                 logger.info("Kladr loading from {} to {}, loaded {} item(s), {} added", from, to, size, added);
 
-                from = from + size;
-                to = from + CHUNK_SIZE;
+                from = to + 1;
+                to = to + CHUNK_SIZE;
 
             } while (size >= CHUNK_SIZE);
         } catch (Throwable t) {
@@ -857,12 +987,13 @@ public class ReferenceBook implements ReferenceBookLocal {
     }
 
     /**
-     * Загрузка справочника Kladr -
+     * Загрузка справочника KladrStreet -
      *
      * @return
      */
     public void loadKladrStreet() {
         final StringBuilder sb = new StringBuilder("loadKladrStreet");
+        logger.info("Load KladrStreet...");
         try {
             int added = 0;
             long from = 0;
@@ -888,8 +1019,8 @@ public class ReferenceBook implements ReferenceBookLocal {
                 logger.debug(sb.toString());
                 logger.info("KladrStreet loading from {} to {}, loaded {} item(s), {} added", from, to, size, added);
 
-                from = from + size;
-                to = from + CHUNK_SIZE;
+                from = to + 1;
+                to = to + CHUNK_SIZE;
 
             } while (size >= CHUNK_SIZE);
         } catch (Throwable t) {

@@ -163,6 +163,36 @@ object ConfigManager extends Configuration {
 
   var Drugstore = new DrugstoreClass
 
+
+
+  /**
+   * Параметры для HealthShare
+   */
+  class HealthShareClass extends Configuration {
+    /**
+     * Включен ли сервис
+     * on - включен
+     * off - выключен (по умолчанию)
+     */
+    var Active = "off"
+
+    /**
+     * Синхронизация справочников
+     * on - включен
+     * off - выключен (по умолчанию)
+     */
+    var ReferenceBookActive = "on"
+
+  }
+  var HealthShare = new HealthShareClass
+
+  def isHealthShareReferenceBook = "on".equals(HealthShare.ReferenceBookActive)
+
+
+    /**
+   *
+   */
+
   var Core = new Configuration {
     var RequestLaboratoryUrl = "http://localhost:8080/tmis-ws-laboratory/tmis-client-laboratory"
   }
