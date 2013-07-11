@@ -2,6 +2,7 @@ package ru.korus.tmis.pix.sda;
 
 import java.sql.Timestamp;
 import java.util.Date;
+import java.util.LinkedList;
 import java.util.List;
 
 import javax.ejb.EJB;
@@ -15,7 +16,12 @@ import javax.xml.ws.soap.SOAPFaultException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import ru.korus.tmis.core.database.DbActionPropertyBeanLocal;
 import ru.korus.tmis.core.database.DbSchemeKladrBeanLocal;
+import ru.korus.tmis.core.entity.model.Action;
+import ru.korus.tmis.core.entity.model.ActionType;
+import ru.korus.tmis.core.entity.model.ClientAllergy;
+import ru.korus.tmis.core.entity.model.Diagnostic;
 import ru.korus.tmis.core.entity.model.Event;
 import ru.korus.tmis.core.entity.model.HSIntegration;
 import ru.korus.tmis.core.entity.model.PatientsToHs;
@@ -39,6 +45,9 @@ public class HsPixPullBean {
 
     @PersistenceContext(unitName = "s11r64")
     private EntityManager em = null;
+
+    @EJB
+    DbActionPropertyBeanLocal dbActionPropertyBeanLocal;
 
     @EJB
     DbSchemeKladrBeanLocal dbSchemeKladrBeanLocal;
@@ -76,16 +85,19 @@ public class HsPixPullBean {
     private void sendPatientsInfo(SDASoapServiceServiceSoap port) {
         List<PatientsToHs> patientsToHs = em.
                 createQuery("SELECT pths FROM PatientsToHs pths WHERE pths.sendTime < :now", PatientsToHs.class)
-                   .setParameter("now", new Timestamp((new Date()).getTime())).getResultList();
+                .setParameter("now", new Timestamp((new Date()).getTime())).getResultList();
         for (PatientsToHs patientToHs : patientsToHs) {
             try {
                 int errCount = patientToHs.getErrCount();
-                long step = 89*1000; //время до слейдующей попытки передачи данных
+                long step = 89 * 1000; // время до слейдующей попытки передачи данных
                 patientToHs.setErrCount(errCount + 1);
-                patientToHs.setSendTime(new Timestamp(patientToHs.getSendTime().getTime() + (long)(errCount)*step));
-                port.sendSDA(PixInfo.toSda(new ClientInfo(patientToHs.getPatient(), dbSchemeKladrBeanLocal), null));
+                patientToHs.setSendTime(new Timestamp(patientToHs.getSendTime().getTime() + (long) (errCount) * step));
+                final LinkedList<AllergyInfo> emptyAllergy = new LinkedList<AllergyInfo>();
+                List<DiagnosisInfo> emptyDiag = new LinkedList<DiagnosisInfo>();
+                List<EpicrisisInfo> emptyEpi = new LinkedList<EpicrisisInfo>();
+                port.sendSDA(PixInfo.toSda(new ClientInfo(patientToHs.getPatient(), dbSchemeKladrBeanLocal), null, emptyAllergy, emptyDiag, emptyEpi));
                 em.remove(patientToHs);
-            } catch (SOAPFaultException  ex) {
+            } catch (SOAPFaultException ex) {
                 patientToHs.setInfo(ex.getMessage());
                 ex.printStackTrace();
                 em.flush();
@@ -115,11 +127,12 @@ public class HsPixPullBean {
         }
     }
 
-
     public void sendNewEventToHS(Event event, EntityManager em, DbSchemeKladrBeanLocal dbSchemeKladrBeanLocal, SDASoapServiceServiceSoap port) {
         final HSIntegration hsIntegration = em.find(HSIntegration.class, event.getId());
         try {
-            port.sendSDA(PixInfo.toSda(new ClientInfo(event.getPatient(), dbSchemeKladrBeanLocal), new EventInfo(event)));
+            final ClientInfo clientInfo = new ClientInfo(event.getPatient(), dbSchemeKladrBeanLocal);
+            final EventInfo eventInfo = new EventInfo(event);
+            port.sendSDA(PixInfo.toSda(clientInfo, eventInfo, getAllergies(event), getDiagnosis(event), getEpicrisis(event, clientInfo)));
             hsIntegration.setStatus(HSIntegration.Status.SENDED);
             hsIntegration.setInfo("");
             em.flush();
@@ -133,6 +146,53 @@ public class HsPixPullBean {
             ex.printStackTrace();
             em.flush();
         }
+    }
+
+    /**
+     * @param event
+     * @return
+     */
+    private List<EpicrisisInfo> getEpicrisis(Event event, ClientInfo clientInfo) {
+        List<EpicrisisInfo> res = new LinkedList<EpicrisisInfo>();
+        List<Action> actions = em.createQuery("SELECT a FROM Action a WHERE a.event.id = :eventId AND a.deleted = 0", Action.class)
+                .setParameter("eventId", event.getId()).getResultList();
+        for (Action a : actions) {
+            List<ActionType> actionTypes = em.createQuery("SELECT at FROM ActionType at WHERE at.id = :groupId AND a.deleted = 0", ActionType.class)
+                    .setParameter("groupId", a.getActionType().getGroupId()).getResultList();
+            if (!actionTypes.isEmpty()) {
+                if (actionTypes.get(0).getFlatCode().equals("epicrisis")) {
+                    res.add(new EpicrisisInfo(a, clientInfo, EventInfo.getOrgFullName(event), dbActionPropertyBeanLocal));
+                }
+            }
+        }
+        return res;
+    }
+
+    /**
+     * @param event
+     * @return
+     */
+    private List<DiagnosisInfo> getDiagnosis(Event event) {
+        List<DiagnosisInfo> res = new LinkedList<DiagnosisInfo>();
+        List<Diagnostic> diagnostics =
+                em.createQuery("SELECT d FROM Diagnostic d WHERE d.event.id = :eventId AND d.deleted = 0 AND d.diagnosis IS NOT NULL", Diagnostic.class)
+                        .setParameter("eventId", event.getId()).getResultList();
+        for (Diagnostic diagnostic : diagnostics) {
+            res.add(new DiagnosisInfo(event, diagnostic.getDiagnosis(), diagnostic.getDiagnosisType()));
+        }
+        return res;
+    }
+
+    /**
+     * @param event
+     * @return
+     */
+    private List<AllergyInfo> getAllergies(Event event) {
+        List<AllergyInfo> res = new LinkedList<AllergyInfo>();
+        for (ClientAllergy allergy : event.getPatient().getClientAllergies()) {
+            res.add(new AllergyInfo(allergy, EventInfo.getOrgFullName(event)));
+        }
+        return res;
     }
 
     /**

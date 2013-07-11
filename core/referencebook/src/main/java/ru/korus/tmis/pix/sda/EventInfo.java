@@ -61,8 +61,16 @@ public class EventInfo {
 
         this.begDate = begDate;
         this.endDate = endDate;
-        this.orgName = event.getOrganisation() == null ? null : event.getOrganisation().getFullName();
+        this.orgName = getOrgFullName(event);
         this.type = event.getEventType().getId();
+    }
+
+    /**
+     * @param event
+     * @return
+     */
+    public static String getOrgFullName(Event event) {
+        return event.getOrganisation() == null ? null : event.getOrganisation().getFullName();
     }
 
     /**
