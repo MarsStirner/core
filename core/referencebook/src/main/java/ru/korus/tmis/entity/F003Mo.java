@@ -59,13 +59,13 @@ public class F003Mo implements Serializable {
     /**
      * ОГРН МО
      */
-    @Column(name = "Ogrn")
+    @Column(name = "ogrn")
     private String ogrn;
 
     /**
      * Код причины постановки на учет налогоплательщика
      */
-    @Column(name = "KPP")
+    @Column(name = "kpp")
     private String kpp;
 
     /**
@@ -190,7 +190,7 @@ public class F003Mo implements Serializable {
      * Дата уведомления об осуществлении деятельности в сфере ОМС
      */
     @Temporal(TemporalType.DATE)
-    @Column(name = "DUVED")
+    @Column(name = "duved")
     private Date duved;
 
     /**

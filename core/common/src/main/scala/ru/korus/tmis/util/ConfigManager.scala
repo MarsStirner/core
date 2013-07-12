@@ -13,6 +13,15 @@ object ConfigManager extends Configuration {
 
   var DateFormatter = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss")
 
+  /**
+   *   Общие параметры работы ядра
+   */
+  class CommonClass extends Configuration {
+    var OrgId = 3479 // индекс организации в табл Organization (по умолчанию id ФНКЦ для БД ФНКЦ)
+  }
+
+  var Common = new CommonClass
+
   val Filter = new Configuration {
     var isOn = false
   }
@@ -153,6 +162,36 @@ object ConfigManager extends Configuration {
   }
 
   var Drugstore = new DrugstoreClass
+
+
+
+  /**
+   * Параметры для HealthShare
+   */
+  class HealthShareClass extends Configuration {
+    /**
+     * Включен ли сервис
+     * on - включен
+     * off - выключен (по умолчанию)
+     */
+    var Active = "off"
+
+    /**
+     * Синхронизация справочников
+     * on - включен
+     * off - выключен (по умолчанию)
+     */
+    var ReferenceBookActive = "on"
+
+  }
+  var HealthShare = new HealthShareClass
+
+  def isHealthShareReferenceBook = "on".equals(HealthShare.ReferenceBookActive)
+
+
+    /**
+   *
+   */
 
   var Core = new Configuration {
     var RequestLaboratoryUrl = "http://localhost:8080/tmis-ws-laboratory/tmis-client-laboratory"

@@ -22,43 +22,43 @@ public class O001Oksm implements Serializable {
      * Цифровой код
      */
     @Id
-    @Column(name = "KOD")
+    @Column(name = "kod")
     private String kod;
 
     /**
      * Наименование
      */
-    @Column(name = "NAME11")
+    @Column(name = "name11")
     private String name11;
 
     /**
      * продолжение наименования
      */
-    @Column(name = "NAME12")
+    @Column(name = "name12")
     private String name12;
 
     /**
      * Буквенный код альфа-2
      */
-    @Column(name = "ALFA2")
+    @Column(name = "alfa2")
     private String alfa2;
 
     /**
      * Буквенный код альфа-3
      */
-    @Column(name = "ALFA3")
+    @Column(name = "alfa3")
     private String alfa3;
 
     /**
      * Описание (пояснение) может содержать до 250 символов
      */
-    @Column(name = "NOMDESCR")
+    @Column(name = "nomdescr")
     private String nomdescr;
 
     /**
      * Номер последнего изменения
      */
-    @Column(name = "NOMAKT")
+    @Column(name = "nomakt")
     private String nomakt;
 
     /**
@@ -69,14 +69,14 @@ public class O001Oksm implements Serializable {
      * 3 - включить;
      * 0 - начальная загрузка
      */
-    @Column(name = "STATUS")
+    @Column(name = "status")
     private Long status;
 
     /**
      * Дата последнего изменения
      */
     @Temporal(TemporalType.DATE)
-    @Column(name = "DATA_UPD")
+    @Column(name = "data_upd")
     private Date dataupd;
 
     public O001Oksm() {

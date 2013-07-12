@@ -35,6 +35,9 @@ class AppealBean extends AppealBeanLocal
   var em: EntityManager = _
 
   @EJB
+  var organizationBeanLocal: DbOrganizationBeanLocal = _
+
+  @EJB
   var appLock: AppLockBeanLocal = _
 
   @EJB
@@ -652,7 +655,7 @@ class AppealBean extends AppealBeanLocal
       event.setIsPrimary(isPrim)
     } else event.setIsPrimary(0)
 
-    event.setOrgId(3479)  //TODO: ! Материть Сашу
+    event.setOrganisation(organizationBeanLocal.getOrganizationById(ConfigManager.Common.OrgId))
 
     return event
   }

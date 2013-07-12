@@ -22,25 +22,25 @@ public class O004Okfs implements Serializable {
      * Код позиции
      */
     @Id
-    @Column(name = "KOD")
+    @Column(name = "kod")
     private String kod;
 
     /**
      * Наименование
      */
-    @Column(name = "NAME1")
+    @Column(name = "name1")
     private String name1;
 
     /**
      * Алгоритм сбора
      */
-    @Column(name = "ALG")
+    @Column(name = "alg")
     private String alg;
 
     /**
      * Номер последнего изменения
      */
-    @Column(name = "NOMAKT")
+    @Column(name = "nomakt")
     private String nomakt;
 
     /**
@@ -51,14 +51,14 @@ public class O004Okfs implements Serializable {
      * 3 - включить;
      * 0 - начальная загрузка
      */
-    @Column(name = "STATUS")
+    @Column(name = "status")
     private Long status;
 
     /**
      * Дата последнего изменения
      */
     @Temporal(TemporalType.DATE)
-    @Column(name = "DATA_UPD")
+    @Column(name = "data_upd")
     private Date dataupd;
 
     public O004Okfs() {

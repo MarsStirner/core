@@ -1,5 +1,7 @@
 package ru.korus.tmis.entity;
 
+import nsi.KladrStreetType;
+
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.Id;
@@ -27,8 +29,8 @@ public class KladrStreet implements Serializable {
     @Column(name = "socr")
     private String socr;
 
-    @Column(name = "index")
-    private String index;
+    @Column(name = "idx")
+    private String idx;
 
     @Column(name = "gninmb")
     private String gninmb;
@@ -42,14 +44,26 @@ public class KladrStreet implements Serializable {
     public KladrStreet() {
     }
 
-    public KladrStreet(String code, String name, String socr, String index, String gninmb, String uno, String ocatd) {
+    private KladrStreet(String code, String name, String socr, String idx, String gninmb, String uno, String ocatd) {
         this.code = code;
         this.name = name;
         this.socr = socr;
-        this.index = index;
+        this.idx = idx;
         this.gninmb = gninmb;
         this.uno = uno;
         this.ocatd = ocatd;
+    }
+
+    public static KladrStreet getInstance(KladrStreetType type) {
+        return new KladrStreet(
+                type.getCode(),
+                type.getName(),
+                type.getSocr(),
+                type.getIndex(),
+                type.getGninmb(),
+                type.getUno(),
+                type.getOcatd()
+        );
     }
 
     public String getCode() {
@@ -64,8 +78,8 @@ public class KladrStreet implements Serializable {
         return socr;
     }
 
-    public String getIndex() {
-        return index;
+    public String getIdx() {
+        return idx;
     }
 
     public String getGninmb() {
@@ -86,7 +100,7 @@ public class KladrStreet implements Serializable {
                 "code='" + code + '\'' +
                 ", name='" + name + '\'' +
                 ", socr='" + socr + '\'' +
-                ", index='" + index + '\'' +
+                ", index='" + idx + '\'' +
                 ", gninmb='" + gninmb + '\'' +
                 ", uno='" + uno + '\'' +
                 ", ocatd='" + ocatd + '\'' +

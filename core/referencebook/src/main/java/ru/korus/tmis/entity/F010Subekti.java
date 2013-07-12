@@ -22,39 +22,39 @@ public class F010Subekti implements Serializable {
      * Код ТФОМС
      */
     @Id
-    @Column(name = "KOD_TF")
+    @Column(name = "kod_tf")
     private String kodtf;
 
     /**
      * Код по ОКАТО (Приложение А O003)
      */
-    @Column(name = "KOD_OKATO")
+    @Column(name = "kod_okato")
     private String kodokato;
 
     /**
      * Наименование субъекта РФ
      */
-    @Column(name = "SUBNAME")
+    @Column(name = "subname")
     private String subname;
 
     /**
      * Код федерального округа
      */
-    @Column(name = "OKRUG")
+    @Column(name = "okrug")
     private Long okrug;
 
     /**
      * Дата начала действия записи
      */
     @Temporal(TemporalType.DATE)
-    @Column(name = "DATEBEG")
+    @Column(name = "datebeg")
     private Date datebeg;
 
     /**
      * Дата окончания действия записи
      */
     @Temporal(TemporalType.DATE)
-    @Column(name = "DATEEND")
+    @Column(name = "dateend")
     private Date dateend;
 
     public F010Subekti() {

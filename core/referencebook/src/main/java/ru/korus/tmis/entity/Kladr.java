@@ -1,5 +1,7 @@
 package ru.korus.tmis.entity;
 
+import nsi.KladrType;
+
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.Id;
@@ -12,11 +14,12 @@ import java.io.Serializable;
  * Company:  Korus Consulting IT <br>
  * Revision: $Id$ <br>
  * Description: <br>
+ * <rec name="Адыгея" socr="Респ" code="0100000000000" index="385000" gninmb="0100" uno="" ocatd="79000000000" status="0"/>
  */
 @Entity
 @Table(name = "rb_Kladr", catalog = "", schema = "")
 public class Kladr implements Serializable {
-    //  <rec name="Адыгея" socr="Респ" code="0100000000000" index="385000" gninmb="0100" uno="" ocatd="79000000000" status="0"/>
+
     @Id
     @Column(name = "code")
     private String code;
@@ -27,8 +30,8 @@ public class Kladr implements Serializable {
     @Column(name = "socr")
     private String socr;
 
-    @Column(name = "index")
-    private String index;
+    @Column(name = "idx")
+    private String idx;
 
     @Column(name = "gninmb")
     private String gninmb;
@@ -45,15 +48,28 @@ public class Kladr implements Serializable {
     public Kladr() {
     }
 
-    public Kladr(String code, String name, String socr, String index, String gninmb, String uno, String ocatd, String status) {
+    private Kladr(String code, String name, String socr, String index, String gninmb, String uno, String ocatd, String status) {
         this.code = code;
         this.name = name;
         this.socr = socr;
-        this.index = index;
+        this.idx = index;
         this.gninmb = gninmb;
         this.uno = uno;
         this.ocatd = ocatd;
         this.status = status;
+    }
+
+    public static Kladr getInstance(KladrType type) {
+        return new Kladr(
+                type.getCode(),
+                type.getName(),
+                type.getSocr(),
+                type.getIndex(),
+                type.getGninmb(),
+                type.getUno(),
+                type.getOcatd(),
+                type.getStatus()
+        );
     }
 
     public String getCode() {
@@ -69,7 +85,7 @@ public class Kladr implements Serializable {
     }
 
     public String getIndex() {
-        return index;
+        return idx;
     }
 
     public String getGninmb() {
@@ -94,7 +110,7 @@ public class Kladr implements Serializable {
                 "code='" + code + '\'' +
                 ", name='" + name + '\'' +
                 ", socr='" + socr + '\'' +
-                ", index='" + index + '\'' +
+                ", index='" + idx + '\'' +
                 ", gninmb='" + gninmb + '\'' +
                 ", uno='" + uno + '\'' +
                 ", ocatd='" + ocatd + '\'' +

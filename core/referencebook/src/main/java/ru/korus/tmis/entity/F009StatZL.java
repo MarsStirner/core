@@ -22,13 +22,13 @@ public class F009StatZL implements Serializable {
      * Код статус застрахованного лица
      */
     @Id
-    @Column(name = "IDStatus")
+    @Column(name = "idstatus")
     private String id;
 
     /**
      * Наименование статуса застрахованного лица
      */
-    @Column(name = "StatusName")
+    @Column(name = "statusname")
     private String statusName;
 
     /**

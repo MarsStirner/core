@@ -152,7 +152,6 @@ class DbEventBean
       newEvent.setNote(" ")
       newEvent.setSetDate(begDate)
       newEvent.setIsPrimary(1)
-      newEvent.setOrgId(0)
       newEvent.setOrder(0)
       newEvent.setDeleted(false)
       newEvent.setPayStatus(0)
@@ -190,7 +189,6 @@ class DbEventBean
       newEvent.setCreatePerson(null);
       newEvent.setModifyPerson(null);
       newEvent.setEventType(eventType);
-      newEvent.setOrgId(0);
       newEvent.setPatient(patient);
       newEvent.setSetDate(begDate);
       newEvent.setExternalId("");

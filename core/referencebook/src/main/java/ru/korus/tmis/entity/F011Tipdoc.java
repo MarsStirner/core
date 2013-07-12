@@ -22,39 +22,39 @@ public class F011Tipdoc implements Serializable {
      * Код типа документа
      */
     @Id
-    @Column(name = "IDDoc")
+    @Column(name = "iddoc")
     private long idDoc;
 
     /**
      * Наименование типа документа
      */
-    @Column(name = "DocName")
+    @Column(name = "docname")
     private String docName;
 
     /**
      * Маска серии документа
      */
-    @Column(name = "DocSer")
+    @Column(name = "docser")
     private String docSer;
 
     /**
      * Маска номера документа
      */
-    @Column(name = "DocNum")
+    @Column(name = "docnum")
     private String docNum;
 
     /**
      * Дата начала действия записи
      */
     @Temporal(TemporalType.DATE)
-    @Column(name = "DATEBEG")
+    @Column(name = "datebeg")
     private Date datebeg;
 
     /**
      * Дата окончания действия записи
      */
     @Temporal(TemporalType.DATE)
-    @Column(name = "DATEEND")
+    @Column(name = "dateend")
     private Date dateend;
 
     public F011Tipdoc() {

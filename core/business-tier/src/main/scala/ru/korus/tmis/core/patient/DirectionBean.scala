@@ -467,7 +467,7 @@ class DirectionBean extends DirectionBeanLocal
       case 0 => {
         ap18 = actionPropertyBean.createActionProperty(a, 18, userData)
         em.persist(ap18)
-        //em.flush()
+        em.flush()
       }
       case _ => {
         ap18 = aps(0)

@@ -53,13 +53,13 @@ public class F002Smo implements Serializable {
     /**
      * ОГРН СМО
      */
-    @Column(name = "Ogrn")
+    @Column(name = "ogrn")
     private String ogrn;
 
     /**
      * Код причины постановки на учет налогоплательщика
      */
-    @Column(name = "KPP")
+    @Column(name = "kpp")
     private String kpp;
 
     /**
@@ -183,14 +183,14 @@ public class F002Smo implements Serializable {
     /**
      * Наличие действующих полисов СМО
      */
-    @Column(name = "Nal_p")
+    @Column(name = "nal_p")
     private String nalP;
 
     /**
      * Дата уведомления об осуществлении деятельности в сфере ОМС
      */
     @Temporal(TemporalType.DATE)
-    @Column(name = "DUVED")
+    @Column(name = "duved")
     private Date duved;
 
     /**
