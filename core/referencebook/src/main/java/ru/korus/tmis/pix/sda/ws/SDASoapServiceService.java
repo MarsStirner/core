@@ -1,14 +1,13 @@
 
 package ru.korus.tmis.pix.sda.ws;
 
+import ru.korus.tmis.util.ConfigManager;
+
 import java.net.MalformedURLException;
 import java.net.URL;
+import java.util.Map;
 import javax.xml.namespace.QName;
-import javax.xml.ws.Service;
-import javax.xml.ws.WebEndpoint;
-import javax.xml.ws.WebServiceClient;
-import javax.xml.ws.WebServiceException;
-import javax.xml.ws.WebServiceFeature;
+import javax.xml.ws.*;
 
 
 /**
@@ -70,7 +69,10 @@ public class SDASoapServiceService
      */
     @WebEndpoint(name = "SDASoapServiceServiceSoap")
     public SDASoapServiceServiceSoap getSDASoapServiceServiceSoap() {
-        return super.getPort(new QName("urn:wsdl", "SDASoapServiceServiceSoap"), SDASoapServiceServiceSoap.class);
+        SDASoapServiceServiceSoap port = super.getPort(new QName("urn:wsdl", "SDASoapServiceServiceSoap"), SDASoapServiceServiceSoap.class);
+        Map<String, Object> requestContext = ((BindingProvider) port).getRequestContext();
+        requestContext.put(BindingProvider.ENDPOINT_ADDRESS_PROPERTY, ConfigManager.HealthShare().ServiceUrlSda().toString());
+        return port;
     }
 
     /**
