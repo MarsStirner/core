@@ -108,6 +108,7 @@ public class ExaminationsRegistryRESTImpl {
                                                         @QueryParam("filter[endDate]")long endDate,
                                                         @QueryParam("filter[actionTypeCode]")String  assessmentTypeCode,
                                                         //@QueryParam("filter[assessmentDate]") long assessmentDate,
+                                                        @QueryParam("filter[doctorId]") int doctorId,
                                                         @QueryParam("filter[doctorName]") String doctorName,
                                                         @QueryParam("filter[speciality]") String speciality,
                                                         @QueryParam("filter[assessmentName]") String assessmentName,
@@ -122,7 +123,7 @@ public class ExaminationsRegistryRESTImpl {
                 mnemonics.add(atst.getMnemonic());
             }
         }
-        AssessmentsListRequestDataFilter filter = new AssessmentsListRequestDataFilter(this.eventId, actionTypeId, assessmentTypeCode, begDate, endDate, doctorName, speciality, assessmentName, departmentName, mnemonics);
+        AssessmentsListRequestDataFilter filter = new AssessmentsListRequestDataFilter(this.eventId, actionTypeId, assessmentTypeCode, begDate, endDate, doctorId, doctorName, speciality, assessmentName, departmentName, mnemonics);
         AssessmentsListRequestData alrd= new AssessmentsListRequestData(sortingField, sortingMethod, limit, page, filter);
         return new JSONWithPadding(this.wsImpl.getListOfAssessmentsForPatientByEvent(alrd, this.auth), this.callback);
     }
