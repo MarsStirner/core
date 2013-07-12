@@ -27,6 +27,7 @@ import ru.korus.tmis.core.entity.model.HSIntegration;
 import ru.korus.tmis.core.entity.model.PatientsToHs;
 import ru.korus.tmis.pix.sda.ws.SDASoapServiceService;
 import ru.korus.tmis.pix.sda.ws.SDASoapServiceServiceSoap;
+import ru.korus.tmis.util.ConfigManager;
 
 /**
  * Author:      Sergey A. Zagrebelny <br>
@@ -54,28 +55,30 @@ public class HsPixPullBean {
 
     @Schedule(hour = "*", minute = "*", second = "30")
     void pullDb() {
-        SDASoapServiceService service = new SDASoapServiceService();
-        service.setHandlerResolver(new SdaHandlerResolver());
-        SDASoapServiceServiceSoap port = service.getSDASoapServiceServiceSoap();
+        if (ConfigManager.HealthShare().isSdaActive()) {
+            SDASoapServiceService service = new SDASoapServiceService();
+            service.setHandlerResolver(new SdaHandlerResolver());
+            SDASoapServiceServiceSoap port = service.getSDASoapServiceServiceSoap();
 
-        Integer maxId = em.createQuery("SELECT max(hsi.eventId) FROM HSIntegration hsi", Integer.class).getSingleResult();
-        if (maxId == null) {
-            maxId = 0;
+            Integer maxId = em.createQuery("SELECT max(hsi.eventId) FROM HSIntegration hsi", Integer.class).getSingleResult();
+            if (maxId == null) {
+                maxId = 0;
+            }
+            List<Event> newEvents =
+                    em.createQuery("SELECT e FROM Event e WHERE e.id > :max AND (" +
+                            "e.eventType.requestType.code = 'clinic' OR " +
+                            "e.eventType.requestType.code = 'hospital' OR " +
+                            "e.eventType.requestType.code = 'stationary' OR " +
+                            "e.eventType.requestType.code = '4' OR " +
+                            "e.eventType.requestType.code = '6' )", Event.class).setParameter("max", maxId).getResultList();
+
+            addNewEvent(newEvents);
+
+            // Отправка завершенных обращений
+            sendNewEventToHS(port);
+            // Отправка карточек новых/обновленных пациентов
+            sendPatientsInfo(port);
         }
-        List<Event> newEvents =
-                em.createQuery("SELECT e FROM Event e WHERE e.id > :max AND (" +
-                        "e.eventType.requestType.code = 'clinic' OR " +
-                        "e.eventType.requestType.code = 'hospital' OR " +
-                        "e.eventType.requestType.code = 'stationary' OR " +
-                        "e.eventType.requestType.code = '4' OR " +
-                        "e.eventType.requestType.code = '6' )", Event.class).setParameter("max", maxId).getResultList();
-
-        addNewEvent(newEvents);
-
-        // Отправка завершенных обращений
-        sendNewEventToHS(port);
-        // Отправка карточек новых/обновленных пациентов
-        sendPatientsInfo(port);
     }
 
     /**
