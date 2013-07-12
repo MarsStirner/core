@@ -1,7 +1,4 @@
-package ru.korus.tmis.entity;
-
-import nsi.F007Type;
-import ru.korus.tmis.utils.DateUtil;
+package ru.korus.tmis.core.entity.model.referencebook;
 
 import javax.persistence.*;
 import java.io.Serializable;
@@ -11,25 +8,25 @@ import java.util.Date;
  * Author:      Dmitriy E. Nosov <br>
  * Date:        30.04.13, 14:47 <br>
  * Company:     Korus Consulting IT<br>
- * Description: Классификатор ведомственной принадлежности медицинской организации(Vedom)<br>
+ * Description: Классификатор типов документов, подтверждающих факт страхования по ОМС (TipOMS)<br>
  * The class implements a Serializable interface, and that
  * allows it to be passed by value through a remote interface.
  */
 @Entity
-@Table(name = "rb_F007_Vedom", catalog = "", schema = "")
-public class F007Vedom implements Serializable {
+@Table(name = "rb_F008_TipOMS", catalog = "", schema = "")
+public class F008TipOMS implements Serializable {
     /**
-     * Код типа ведомства
+     * Код типа документа, подтверждающего факт страхования по ОМС
      */
     @Id
-    @Column(name = "idved")
+    @Column(name = "iddoc")
     private long id;
 
     /**
-     * Наименование ведомства
+     * Наименование документа, подтверждающего факт страхования по ОМС
      */
-    @Column(name = "vedname")
-    private String vedName;
+    @Column(name = "docname")
+    private String docName;
 
     /**
      * Дата начала действия записи
@@ -45,31 +42,22 @@ public class F007Vedom implements Serializable {
     @Column(name = "dateend")
     private Date dateEnd;
 
-    public F007Vedom() {
+    public F008TipOMS() {
     }
 
-    private F007Vedom(long id, String vedName, Date dateBegin, Date dateEnd) {
+    public F008TipOMS(long id, String docName, Date dateBegin, Date dateEnd) {
         this.id = id;
-        this.vedName = vedName;
+        this.docName = docName;
         this.dateBegin = dateBegin;
         this.dateEnd = dateEnd;
-    }
-
-    public static F007Vedom getInstance(F007Type type) {
-        return new F007Vedom(
-                type.getIDVED(),
-                type.getVEDNAME(),
-                DateUtil.getDate(type.getDATEBEG()),
-                DateUtil.getDate(type.getDATEEND())
-        );
     }
 
     public long getId() {
         return id;
     }
 
-    public String getVedName() {
-        return vedName;
+    public String getDocName() {
+        return docName;
     }
 
     public Date getDateBegin() {
@@ -82,9 +70,9 @@ public class F007Vedom implements Serializable {
 
     @Override
     public String toString() {
-        return "F007Vedom{" +
+        return "F008TipOMS{" +
                 "id=" + id +
-                ", vedName='" + vedName + '\'' +
+                ", docName='" + docName + '\'' +
                 ", dateBegin=" + dateBegin +
                 ", dateEnd=" + dateEnd +
                 '}';

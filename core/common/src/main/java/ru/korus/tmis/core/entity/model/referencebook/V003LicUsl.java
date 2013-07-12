@@ -1,7 +1,4 @@
-package ru.korus.tmis.entity;
-
-import nsi.V003Type;
-import ru.korus.tmis.utils.DateUtil;
+package ru.korus.tmis.core.entity.model.referencebook;
 
 import javax.persistence.*;
 import java.io.Serializable;
@@ -60,24 +57,13 @@ public class V003LicUsl implements Serializable {
     public V003LicUsl() {
     }
 
-    private V003LicUsl(long idrl, String licname, Long ierarh, Long prim, Date datebeg, Date dateend) {
+    public V003LicUsl(long idrl, String licname, Long ierarh, Long prim, Date datebeg, Date dateend) {
         this.idrl = idrl;
         this.licname = licname;
         this.ierarh = ierarh;
         this.prim = prim;
         this.datebeg = datebeg;
         this.dateend = dateend;
-    }
-
-    public static V003LicUsl getInstance(V003Type type) {
-        return new V003LicUsl(
-                type.getIDRL(),
-                type.getLICNAME(),
-                type.getIERARH(),
-                type.getPRIM(),
-                DateUtil.getDate(type.getDATEBEG()),
-                DateUtil.getDate(type.getDATEEND())
-        );
     }
 
     public long getIdrl() {

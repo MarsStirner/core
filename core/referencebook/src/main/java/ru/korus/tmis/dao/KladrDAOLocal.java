@@ -1,7 +1,6 @@
 package ru.korus.tmis.dao;
 
-import ru.korus.tmis.entity.F001Tfoms;
-import ru.korus.tmis.entity.Kladr;
+import ru.korus.tmis.core.entity.model.referencebook.Kladr;
 
 import javax.ejb.Local;
 

@@ -1,7 +1,4 @@
-package ru.korus.tmis.entity;
-
-import nsi.M001Type;
-import ru.korus.tmis.utils.DateUtil;
+package ru.korus.tmis.core.entity.model.referencebook;
 
 import javax.persistence.*;
 import java.io.Serializable;
@@ -48,20 +45,11 @@ public class M001MKB10 implements Serializable {
     public M001MKB10() {
     }
 
-    private M001MKB10(String id, String dsName, Date dateBegin, Date dateEnd) {
+    public M001MKB10(String id, String dsName, Date dateBegin, Date dateEnd) {
         this.id = id;
         this.dsName = dsName;
         this.dateBegin = dateBegin;
         this.dateEnd = dateEnd;
-    }
-
-    public static M001MKB10 getInstance(M001Type type) {
-        return new M001MKB10(
-                type.getIDDS(),
-                type.getDSNAME(),
-                DateUtil.getDate(type.getDATEBEG()),
-                DateUtil.getDate(type.getDATEEND())
-        );
     }
 
     public String getId() {

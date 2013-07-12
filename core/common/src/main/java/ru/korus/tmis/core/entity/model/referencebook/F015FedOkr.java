@@ -1,7 +1,4 @@
-package ru.korus.tmis.entity;
-
-import nsi.F015Type;
-import ru.korus.tmis.utils.DateUtil;
+package ru.korus.tmis.core.entity.model.referencebook;
 
 import javax.persistence.*;
 import java.io.Serializable;
@@ -48,20 +45,11 @@ public class F015FedOkr implements Serializable {
     public F015FedOkr() {
     }
 
-    private F015FedOkr(long kodok, String okrname, Date datebeg, Date dateend) {
+    public F015FedOkr(long kodok, String okrname, Date datebeg, Date dateend) {
         this.kodok = kodok;
         this.okrname = okrname;
         this.datebeg = datebeg;
         this.dateend = dateend;
-    }
-
-    public static F015FedOkr getInstance(F015Type type) {
-        return new F015FedOkr(
-                type.getKODOK(),
-                type.getOKRNAME(),
-                DateUtil.getDate(type.getDATEBEG()),
-                DateUtil.getDate(type.getDATEEND())
-        );
     }
 
     public long getKodok() {

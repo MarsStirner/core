@@ -1,6 +1,4 @@
-package ru.korus.tmis.entity;
-
-import nsi.KladrType;
+package ru.korus.tmis.core.entity.model.referencebook;
 
 import javax.persistence.Column;
 import javax.persistence.Entity;
@@ -14,12 +12,11 @@ import java.io.Serializable;
  * Company:  Korus Consulting IT <br>
  * Revision: $Id$ <br>
  * Description: <br>
- * <rec name="Адыгея" socr="Респ" code="0100000000000" index="385000" gninmb="0100" uno="" ocatd="79000000000" status="0"/>
  */
 @Entity
-@Table(name = "rb_Kladr", catalog = "", schema = "")
-public class Kladr implements Serializable {
-
+@Table(name = "rb_KladrStreet", catalog = "", schema = "")
+public class KladrStreet implements Serializable {
+    //  <rec name="Абадзехская" socr="ул" code="01000001000000100" index="385000" gninmb="0105" uno="" ocatd="79401000000"/>
     @Id
     @Column(name = "code")
     private String code;
@@ -42,34 +39,17 @@ public class Kladr implements Serializable {
     @Column(name = "ocatd")
     private String ocatd;
 
-    @Column(name = "status")
-    private String status;
-
-    public Kladr() {
+    public KladrStreet() {
     }
 
-    private Kladr(String code, String name, String socr, String index, String gninmb, String uno, String ocatd, String status) {
+    public KladrStreet(String code, String name, String socr, String idx, String gninmb, String uno, String ocatd) {
         this.code = code;
         this.name = name;
         this.socr = socr;
-        this.idx = index;
+        this.idx = idx;
         this.gninmb = gninmb;
         this.uno = uno;
         this.ocatd = ocatd;
-        this.status = status;
-    }
-
-    public static Kladr getInstance(KladrType type) {
-        return new Kladr(
-                type.getCode(),
-                type.getName(),
-                type.getSocr(),
-                type.getIndex(),
-                type.getGninmb(),
-                type.getUno(),
-                type.getOcatd(),
-                type.getStatus()
-        );
     }
 
     public String getCode() {
@@ -84,7 +64,7 @@ public class Kladr implements Serializable {
         return socr;
     }
 
-    public String getIndex() {
+    public String getIdx() {
         return idx;
     }
 
@@ -100,13 +80,9 @@ public class Kladr implements Serializable {
         return ocatd;
     }
 
-    public String getStatus() {
-        return status;
-    }
-
     @Override
     public String toString() {
-        return "Kladr{" +
+        return "KladrStreet{" +
                 "code='" + code + '\'' +
                 ", name='" + name + '\'' +
                 ", socr='" + socr + '\'' +
@@ -114,7 +90,6 @@ public class Kladr implements Serializable {
                 ", gninmb='" + gninmb + '\'' +
                 ", uno='" + uno + '\'' +
                 ", ocatd='" + ocatd + '\'' +
-                ", status='" + status + '\'' +
                 '}';
     }
 }

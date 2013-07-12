@@ -1,7 +1,4 @@
-package ru.korus.tmis.entity;
-
-import nsi.F002Type;
-import ru.korus.tmis.utils.DateUtil;
+package ru.korus.tmis.core.entity.model.referencebook;
 
 import javax.persistence.*;
 import java.io.Serializable;
@@ -209,7 +206,7 @@ public class F002Smo implements Serializable {
     public F002Smo() {
     }
 
-    private F002Smo(String tfOkato, String smocod, String namSmop, String namSmok, String inn, String ogrn, String kpp, String indexJ, String addrJ, String indexF, String addrF, String okopf, String famRuk, String imRuk, String otRuk, String phone, String fax, String eMail, String www, String nDoc, Date dStart, Date dataE, long org, Date dBegin, Date dEnd, String nameE, String nalP, Date duved, long kolZl, Date dEdit) {
+    public F002Smo(String tfOkato, String smocod, String namSmop, String namSmok, String inn, String ogrn, String kpp, String indexJ, String addrJ, String indexF, String addrF, String okopf, String famRuk, String imRuk, String otRuk, String phone, String fax, String eMail, String www, String nDoc, Date dStart, Date dataE, long org, Date dBegin, Date dEnd, String nameE, String nalP, Date duved, long kolZl, Date dEdit) {
         this.tfOkato = tfOkato;
         this.smocod = smocod;
         this.namSmop = namSmop;
@@ -240,41 +237,6 @@ public class F002Smo implements Serializable {
         this.duved = duved;
         this.kolZl = kolZl;
         this.dEdit = dEdit;
-    }
-
-    public static F002Smo getInstance(F002Type type) {
-        return new F002Smo(
-                type.getTfOkato(),
-                type.getSmocod(),
-                type.getNamSmop(),
-                type.getNamSmok(),
-                type.getInn(),
-                type.getOgrn(),
-                type.getKPP(),
-                type.getIndexJ(),
-                type.getAddrJ(),
-                type.getIndexF(),
-                type.getAddrF(),
-                type.getOkopf(),
-                type.getFamRuk(),
-                type.getImRuk(),
-                type.getOtRuk(),
-                type.getPhone(),
-                type.getFax(),
-                type.getEMail(),
-                type.getWww(),
-                type.getNDoc(),
-                DateUtil.getDate(type.getDStart()),
-                DateUtil.getDate(type.getDataE()),
-                type.getOrg(),
-                DateUtil.getDate(type.getDBegin()),
-                DateUtil.getDate(type.getDEnd()),
-                type.getNameE(),
-                type.getNalP(),
-                DateUtil.getDate(type.getDUVED()),
-                type.getKolZl(),
-                DateUtil.getDate(type.getDEdit())
-        );
     }
 
     public String getTfOkato() {

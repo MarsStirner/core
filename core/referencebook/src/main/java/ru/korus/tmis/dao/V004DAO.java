@@ -2,7 +2,7 @@ package ru.korus.tmis.dao;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import ru.korus.tmis.entity.V004Medspec;
+import ru.korus.tmis.core.entity.model.referencebook.V004Medspec;
 
 import javax.ejb.Stateless;
 import javax.ejb.TransactionAttribute;

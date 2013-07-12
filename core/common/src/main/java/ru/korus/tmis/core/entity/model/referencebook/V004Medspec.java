@@ -1,7 +1,4 @@
-package ru.korus.tmis.entity;
-
-import nsi.V010Type;
-import ru.korus.tmis.utils.DateUtil;
+package ru.korus.tmis.core.entity.model.referencebook;
 
 import javax.persistence.*;
 import java.io.Serializable;
@@ -11,25 +8,25 @@ import java.util.Date;
  * Author:      Dmitriy E. Nosov <br>
  * Date:        30.04.13, 14:47 <br>
  * Company:     Korus Consulting IT<br>
- * Description: Классификатор способов оплаты медицинской помощи (Sposob)<br>
+ * Description: Классификатор медицинских специальностей (Medspeс)<br>
  * The class implements a Serializable interface, and that
  * allows it to be passed by value through a remote interface.
  */
 @Entity
-@Table(name = "rb_V010_Sposob", catalog = "", schema = "")
-public class V010Sposob implements Serializable {
+@Table(name = "rb_V004_Medspec", catalog = "", schema = "")
+public class V004Medspec implements Serializable {
     /**
-     * Код способа оплаты медицинской помощи
+     * Код медицинской специальности
      */
     @Id
-    @Column(name = "idsp")
+    @Column(name = "idmsp")
     private long id;
 
     /**
-     * Наименование способа оплаты медицинской помощи
+     * Наименование медицинской специальности
      */
-    @Column(name = "spname")
-    private String spnName;
+    @Column(name = "mspname")
+    private String mspName;
 
     /**
      * Дата начала действия записи
@@ -45,31 +42,22 @@ public class V010Sposob implements Serializable {
     @Column(name = "dateend")
     private Date dateEnd;
 
-    public V010Sposob() {
+    public V004Medspec() {
     }
 
-    private V010Sposob(long id, String spnName, Date dateBegin, Date dateEnd) {
+    public V004Medspec(long id, String mspName, Date dateBegin, Date dateEnd) {
         this.id = id;
-        this.spnName = spnName;
+        this.mspName = mspName;
         this.dateBegin = dateBegin;
         this.dateEnd = dateEnd;
-    }
-
-    public static V010Sposob getInstance(V010Type type) {
-        return new V010Sposob(
-                type.getIDSP(),
-                type.getSPNAME(),
-                DateUtil.getDate(type.getDATEBEG()),
-                DateUtil.getDate(type.getDATEEND())
-        );
     }
 
     public long getId() {
         return id;
     }
 
-    public String getSpnName() {
-        return spnName;
+    public String getMspName() {
+        return mspName;
     }
 
     public Date getDateBegin() {
@@ -82,9 +70,9 @@ public class V010Sposob implements Serializable {
 
     @Override
     public String toString() {
-        final StringBuilder sb = new StringBuilder("V010Sposob{");
-        sb.append("id=").append(id);
-        sb.append(", spnName='").append(spnName).append('\'');
+        final StringBuilder sb = new StringBuilder("V004Medspec{");
+        sb.append("id='").append(id).append('\'');
+        sb.append(", mspName='").append(mspName).append('\'');
         sb.append(", dateBegin=").append(dateBegin);
         sb.append(", dateEnd=").append(dateEnd);
         sb.append('}');

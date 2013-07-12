@@ -1,6 +1,4 @@
-package ru.korus.tmis.entity;
-
-import nsi.V005Type;
+package ru.korus.tmis.core.entity.model.referencebook;
 
 import javax.persistence.Column;
 import javax.persistence.Entity;
@@ -35,15 +33,9 @@ public class V005Pol implements Serializable {
     public V005Pol() {
     }
 
-    private V005Pol(long id, String polName) {
+    public V005Pol(long id, String polName) {
         this.id = id;
         this.polName = polName;
-    }
-
-    public static V005Pol getInstance(V005Type type) {
-        return new V005Pol(
-                type.getIDPOL(),
-                type.getPOLNAME());
     }
 
     public long getId() {

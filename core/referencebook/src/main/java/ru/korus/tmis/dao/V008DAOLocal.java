@@ -1,6 +1,6 @@
 package ru.korus.tmis.dao;
 
-import ru.korus.tmis.entity.V008VidMp;
+import ru.korus.tmis.core.entity.model.referencebook.V008VidMp;
 
 import javax.ejb.Local;
 

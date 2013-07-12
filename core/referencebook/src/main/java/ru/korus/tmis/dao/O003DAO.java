@@ -2,7 +2,7 @@ package ru.korus.tmis.dao;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import ru.korus.tmis.entity.O003Okved;
+import ru.korus.tmis.core.entity.model.referencebook.O003Okved;
 
 import javax.ejb.Stateless;
 import javax.ejb.TransactionAttribute;

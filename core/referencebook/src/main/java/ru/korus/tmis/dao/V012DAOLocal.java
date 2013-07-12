@@ -1,6 +1,6 @@
 package ru.korus.tmis.dao;
 
-import ru.korus.tmis.entity.V012Ishod;
+import ru.korus.tmis.core.entity.model.referencebook.V012Ishod;
 
 import javax.ejb.Local;
 

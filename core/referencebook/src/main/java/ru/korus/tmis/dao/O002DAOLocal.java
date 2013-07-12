@@ -1,6 +1,6 @@
 package ru.korus.tmis.dao;
 
-import ru.korus.tmis.entity.O002Okato;
+import ru.korus.tmis.core.entity.model.referencebook.O002Okato;
 
 import javax.ejb.Local;
 
