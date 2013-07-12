@@ -197,7 +197,7 @@ object ConfigManager extends Configuration {
      */
     var SdaActive = "off"
 
-    def isSdaActive = "on".equals(SdaActive);
+    def isSdaActive = "on".equals(SdaActive)
 
   }
 
