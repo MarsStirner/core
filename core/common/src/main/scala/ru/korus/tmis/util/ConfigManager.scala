@@ -188,6 +188,8 @@ object ConfigManager extends Configuration {
     var User = "demo"
     var Password = "demo"
 
+    var ServiceUrlSda = new URL("http://188.127.249.29:57772/csp/healthshare/hsedgesda/isc.SDASoapService.cls")
+
     /**
      * Передача карточки пациента по SDA
      * on - включен
