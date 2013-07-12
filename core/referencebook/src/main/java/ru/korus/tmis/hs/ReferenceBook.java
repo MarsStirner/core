@@ -1219,6 +1219,8 @@ public class ReferenceBook implements ReferenceBookLocal {
                                 type.getStatus()
                         ));
                         added++;
+                    } else {
+                        logger.info("!!!!!!! duplicate " + type.getCode());
                     }
                 }
                 logger.debug(sb.toString());
@@ -1270,6 +1272,8 @@ public class ReferenceBook implements ReferenceBookLocal {
                                 type.getOcatd()
                         ));
                         added++;
+                    } else {
+                        logger.info("!!!!!!! duplicate " + type.getCode());
                     }
                 }
                 logger.debug(sb.toString());
