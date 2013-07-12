@@ -140,7 +140,7 @@ public class PixInfo {
         // <Encounters> – блок данных по «эпизодам», т.е. по амбулаторным приемам и по законченным случаям лечения в стационаре.
         if (eventInfo != null) {
             Encounter encounter = new Encounter();
-            encounter.setEncounterNumber("" + eventInfo.getId());
+            encounter.setEncounterNumber("" + eventInfo.getUuid());
             if (eventInfo.getBegDate() != null) {
                 encounter.setFromTime(eventInfo.getBegDate());
             }
@@ -234,11 +234,6 @@ public class PixInfo {
         return res;
     }
 
-    /**
-     * @param res
-     * @param diagInfo
-     * @return
-     */
     private static Container addDiagnosis(Container res, List<DiagnosisInfo> diagisesInfo) {
         res.setDiagnoses(new ArrayOfDiagnosisDiagnosis());
         for (DiagnosisInfo diagInfo : diagisesInfo) {

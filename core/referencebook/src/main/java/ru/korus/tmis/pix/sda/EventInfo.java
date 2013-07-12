@@ -7,7 +7,7 @@ import javax.xml.datatype.XMLGregorianCalendar;
 
 import ru.korus.tmis.core.database.dbutil.Database;
 import ru.korus.tmis.core.entity.model.Event;
-import ru.korus.tmis.core.entity.model.RbRequestType;
+import ru.korus.tmis.core.entity.model.RbRequestType;import ru.korus.tmis.core.entity.model.UUID;
 
 /**
  * Author:      Sergey A. Zagrebelny <br>
@@ -21,9 +21,9 @@ import ru.korus.tmis.core.entity.model.RbRequestType;
  */
 public class EventInfo {
     /**
-     * Уникальный идентификатор в МИС
+     * UUID события
      */
-    final private Integer id;
+    private final String eventUuid;
     /**
      * Краткое наименование ЛПУ
      */
@@ -48,7 +48,8 @@ public class EventInfo {
     final private String[] inpatient = { "clinic", "hospital", "stationary" };
 
     public EventInfo(Event event) {
-        this.id = event.getId();
+        final ru.korus.tmis.core.entity.model.UUID uuid = event.getUuid();
+        this.eventUuid = uuid != null ? uuid.getUuid() : null;
         RbRequestType requestType = event.getEventType().getRequestType();
         this.requestType = requestType == null ? null : requestType.getCode();
         XMLGregorianCalendar begDate = null;
@@ -76,8 +77,8 @@ public class EventInfo {
     /**
      * @return the id
      */
-    public Integer getId() {
-        return id;
+    public String getUuid() {
+        return eventUuid;
     }
 
     /**
