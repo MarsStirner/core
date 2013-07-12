@@ -1,6 +1,6 @@
 package ru.korus.tmis.dao;
 
-import ru.korus.tmis.entity.F008TipOMS;
+import ru.korus.tmis.core.entity.model.referencebook.F008TipOMS;
 
 import javax.ejb.Local;
 

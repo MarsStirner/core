@@ -1,14 +1,13 @@
 
 package wsdl;
 
+import ru.korus.tmis.util.ConfigManager;
+
 import java.net.MalformedURLException;
 import java.net.URL;
+import java.util.Map;
 import javax.xml.namespace.QName;
-import javax.xml.ws.Service;
-import javax.xml.ws.WebEndpoint;
-import javax.xml.ws.WebServiceClient;
-import javax.xml.ws.WebServiceException;
-import javax.xml.ws.WebServiceFeature;
+import javax.xml.ws.*;
 
 
 /**
@@ -70,7 +69,12 @@ public class NsiService
      */
     @WebEndpoint(name = "NsiServiceSoap")
     public NsiServiceSoap getNsiServiceSoap() {
-        return super.getPort(new QName("urn:wsdl", "NsiServiceSoap"), NsiServiceSoap.class);
+        NsiServiceSoap port = super.getPort(new QName("urn:wsdl", "NsiServiceSoap"), NsiServiceSoap.class);
+
+        final String serviceUrl = ConfigManager.HealthShare().ServiceUrl().toString();
+        Map<String, Object> requestContext = ((BindingProvider) port).getRequestContext();
+        requestContext.put(BindingProvider.ENDPOINT_ADDRESS_PROPERTY, serviceUrl);
+        return port;
     }
 
     /**

@@ -1,7 +1,4 @@
-package ru.korus.tmis.entity;
-
-import nsi.F011Type;
-import ru.korus.tmis.utils.DateUtil;
+package ru.korus.tmis.core.entity.model.referencebook;
 
 import javax.persistence.*;
 import java.io.Serializable;
@@ -60,24 +57,13 @@ public class F011Tipdoc implements Serializable {
     public F011Tipdoc() {
     }
 
-    private F011Tipdoc(long idDoc, String docName, String docSer, String docNum, Date datebeg, Date dateend) {
+    public F011Tipdoc(long idDoc, String docName, String docSer, String docNum, Date datebeg, Date dateend) {
         this.idDoc = idDoc;
         this.docName = docName;
         this.docSer = docSer;
         this.docNum = docNum;
         this.datebeg = datebeg;
         this.dateend = dateend;
-    }
-
-    public static F011Tipdoc getInstance(F011Type type) {
-        return new F011Tipdoc(
-                type.getIDDoc(),
-                type.getDocName(),
-                type.getDocSer(),
-                type.getDocNum(),
-                DateUtil.getDate(type.getDATEBEG()),
-                DateUtil.getDate(type.getDATEEND())
-        );
     }
 
     public long getIdDoc() {

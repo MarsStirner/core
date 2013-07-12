@@ -1,14 +1,11 @@
 package ru.korus.hs;
 
-import nsi.O005;
-import nsi.O005Type;
 import nsi.V001;
 import nsi.V001Type;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.testng.annotations.BeforeSuite;
 import org.testng.annotations.Test;
-import ru.korus.tmis.entity.O005Okopf;
 import ru.korus.tmis.hs.ReferenceBook;
 import ru.korus.tmis.hs.wss.AuthentificationHeaderHandlerResolver;
 import wsdl.NsiService;

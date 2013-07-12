@@ -1,6 +1,6 @@
 package ru.korus.tmis.dao;
 
-import ru.korus.tmis.entity.V001Nomerclr;
+import ru.korus.tmis.core.entity.model.referencebook.V001Nomerclr;
 
 import javax.ejb.Local;
 

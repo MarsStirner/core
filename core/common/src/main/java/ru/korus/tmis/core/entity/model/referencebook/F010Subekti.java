@@ -1,7 +1,4 @@
-package ru.korus.tmis.entity;
-
-import nsi.F010Type;
-import ru.korus.tmis.utils.DateUtil;
+package ru.korus.tmis.core.entity.model.referencebook;
 
 import javax.persistence.*;
 import java.io.Serializable;
@@ -60,24 +57,13 @@ public class F010Subekti implements Serializable {
     public F010Subekti() {
     }
 
-    private F010Subekti(String kodtf, String kodokato, String subname, Long okrug, Date datebeg, Date dateend) {
+    public F010Subekti(String kodtf, String kodokato, String subname, Long okrug, Date datebeg, Date dateend) {
         this.kodtf = kodtf;
         this.kodokato = kodokato;
         this.subname = subname;
         this.okrug = okrug;
         this.datebeg = datebeg;
         this.dateend = dateend;
-    }
-
-    public static F010Subekti getInstance(F010Type type) {
-        return new F010Subekti(
-                type.getKODTF(),
-                type.getKODOKATO(),
-                type.getSUBNAME(),
-                type.getOKRUG(),
-                DateUtil.getDate(type.getDATEBEG()),
-                DateUtil.getDate(type.getDATEEND())
-        );
     }
 
     public String getKodtf() {

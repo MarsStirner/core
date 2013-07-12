@@ -1,7 +1,4 @@
-package ru.korus.tmis.entity;
-
-import nsi.O005Type;
-import ru.korus.tmis.utils.DateUtil;
+package ru.korus.tmis.core.entity.model.referencebook;
 
 import javax.persistence.*;
 import java.io.Serializable;
@@ -64,24 +61,13 @@ public class O005Okopf implements Serializable {
     public O005Okopf() {
     }
 
-    private O005Okopf(String kod, String name1, String alg, String nomakt, Long status, Date dataupd) {
+    public O005Okopf(String kod, String name1, String alg, String nomakt, Long status, Date dataupd) {
         this.kod = kod;
         this.name1 = name1;
         this.alg = alg;
         this.nomakt = nomakt;
         this.status = status;
         this.dataupd = dataupd;
-    }
-
-    public static O005Okopf getInstance(O005Type type) {
-        return new O005Okopf(
-                type.getKOD(),
-                type.getNAME1(),
-                type.getALG(),
-                type.getNOMAKT(),
-                type.getSTATUS(),
-                DateUtil.getDate(type.getDATAUPD())
-        );
     }
 
     public String getKod() {

@@ -2,7 +2,7 @@ package ru.korus.tmis.dao;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import ru.korus.tmis.entity.Kladr;
+import ru.korus.tmis.core.entity.model.referencebook.KladrRb;
 
 import javax.ejb.Stateless;
 import javax.ejb.TransactionAttribute;
@@ -25,12 +25,12 @@ public class KladrDAO implements KladrDAOLocal {
 
     @Override
     public boolean isExist(String id) {
-        return em.find(Kladr.class, id) != null;
+        return em.find(KladrRb.class, id) != null;
     }
 
     @Override
     @TransactionAttribute(value = TransactionAttributeType.REQUIRES_NEW)
-    public void insert(Kladr item) {
+    public void insert(KladrRb item) {
         em.persist(item);
     }
 }

@@ -1,7 +1,4 @@
-package ru.korus.tmis.entity;
-
-import nsi.O003Type;
-import ru.korus.tmis.utils.DateUtil;
+package ru.korus.tmis.core.entity.model.referencebook;
 
 import javax.persistence.*;
 import java.io.Serializable;
@@ -82,7 +79,7 @@ public class O003Okved implements Serializable {
     public O003Okved() {
     }
 
-    private O003Okved(String razdel, String prazdel, String kod, String name11, String name12, String nomdescr, String nomakt, Long status, Date dataupd) {
+    public O003Okved(String razdel, String prazdel, String kod, String name11, String name12, String nomdescr, String nomakt, Long status, Date dataupd) {
         this.razdel = razdel;
         this.prazdel = prazdel;
         this.kod = kod;
@@ -92,20 +89,6 @@ public class O003Okved implements Serializable {
         this.nomakt = nomakt;
         this.status = status;
         this.dataupd = dataupd;
-    }
-
-    public static O003Okved getInstance(O003Type type) {
-        return new O003Okved(
-                type.getRAZDEL(),
-                type.getPRAZDEL(),
-                type.getKOD(),
-                type.getNAME11(),
-                type.getNAME12(),
-                type.getNOMDESCR().length() > 255 ? type.getNOMDESCR().substring(0, 255) : type.getNOMDESCR(),
-                type.getNOMAKT(),
-                type.getSTATUS(),
-                DateUtil.getDate(type.getDATAUPD())
-        );
     }
 
     public String getRazdel() {

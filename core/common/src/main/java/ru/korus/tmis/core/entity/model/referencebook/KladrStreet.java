@@ -1,6 +1,4 @@
-package ru.korus.tmis.entity;
-
-import nsi.KladrStreetType;
+package ru.korus.tmis.core.entity.model.referencebook;
 
 import javax.persistence.Column;
 import javax.persistence.Entity;
@@ -44,7 +42,7 @@ public class KladrStreet implements Serializable {
     public KladrStreet() {
     }
 
-    private KladrStreet(String code, String name, String socr, String idx, String gninmb, String uno, String ocatd) {
+    public KladrStreet(String code, String name, String socr, String idx, String gninmb, String uno, String ocatd) {
         this.code = code;
         this.name = name;
         this.socr = socr;
@@ -52,18 +50,6 @@ public class KladrStreet implements Serializable {
         this.gninmb = gninmb;
         this.uno = uno;
         this.ocatd = ocatd;
-    }
-
-    public static KladrStreet getInstance(KladrStreetType type) {
-        return new KladrStreet(
-                type.getCode(),
-                type.getName(),
-                type.getSocr(),
-                type.getIndex(),
-                type.getGninmb(),
-                type.getUno(),
-                type.getOcatd()
-        );
     }
 
     public String getCode() {

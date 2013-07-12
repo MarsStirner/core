@@ -1,6 +1,6 @@
 package ru.korus.tmis.dao;
 
-import ru.korus.tmis.entity.F007Vedom;
+import ru.korus.tmis.core.entity.model.referencebook.F007Vedom;
 
 import javax.ejb.Local;
 

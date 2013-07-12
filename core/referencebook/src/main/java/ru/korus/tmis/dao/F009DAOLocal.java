@@ -1,6 +1,6 @@
 package ru.korus.tmis.dao;
 
-import ru.korus.tmis.entity.F009StatZL;
+import ru.korus.tmis.core.entity.model.referencebook.F009StatZL;
 
 import javax.ejb.Local;
 
