@@ -35,7 +35,6 @@
             <artifactId>jersey-servlet</artifactId>
             <version>1.14</version>
         </dependency>
-
         <dependency>
             <groupId>ru.korus.tmis.laboratory</groupId>
             <artifactId>tmis-laboratory-tier</artifactId>
@@ -56,6 +55,11 @@
             <groupId>org.json</groupId>
             <artifactId>json</artifactId>
             <version>20070829</version>
+        </dependency>
+        <dependency>
+            <groupId>org.mockito</groupId>
+            <artifactId>mockito-all</artifactId>
+            <version>1.8.5</version>
         </dependency>
     </dependencies>
 
