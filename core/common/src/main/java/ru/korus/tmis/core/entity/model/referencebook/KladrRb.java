@@ -16,7 +16,7 @@ import java.io.Serializable;
  */
 @Entity
 @Table(name = "rb_Kladr", catalog = "", schema = "")
-public class Kladr implements Serializable {
+public class KladrRb implements Serializable {
 
     @Id
     @Column(name = "code")
@@ -43,10 +43,10 @@ public class Kladr implements Serializable {
     @Column(name = "status")
     private String status;
 
-    public Kladr() {
+    public KladrRb() {
     }
 
-    public Kladr(String code, String name, String socr, String index, String gninmb, String uno, String ocatd, String status) {
+    public KladrRb(String code, String name, String socr, String index, String gninmb, String uno, String ocatd, String status) {
         this.code = code;
         this.name = name;
         this.socr = socr;
@@ -91,7 +91,7 @@ public class Kladr implements Serializable {
 
     @Override
     public String toString() {
-        return "Kladr{" +
+        return "KladrRb{" +
                 "code='" + code + '\'' +
                 ", name='" + name + '\'' +
                 ", socr='" + socr + '\'' +

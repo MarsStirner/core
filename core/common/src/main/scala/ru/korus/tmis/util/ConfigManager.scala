@@ -14,7 +14,7 @@ object ConfigManager extends Configuration {
   var DateFormatter = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss")
 
   /**
-   *   Общие параметры работы ядра
+   * Общие параметры работы ядра
    */
   class CommonClass extends Configuration {
     var OrgId = 3479 // индекс организации в табл Organization (по умолчанию id ФНКЦ для БД ФНКЦ)
@@ -164,7 +164,6 @@ object ConfigManager extends Configuration {
   var Drugstore = new DrugstoreClass
 
 
-
   /**
    * Параметры для HealthShare
    */
@@ -181,26 +180,31 @@ object ConfigManager extends Configuration {
      * on - включен
      * off - выключен
      */
-    var ReferenceBookActive = "on"
+    var ReferenceBookActive = "off"
+
+    def isHealthShareReferenceBook = "on".equals(HealthShare.ReferenceBookActive)
+
+    var ServiceUrl = new URL("http://188.127.249.29:57772/csp/healthshare/hsregistry/korus.NsiService.cls")
+    var User = "demo"
+    var Password = "demo"
 
     /**
      * Передача карточки пациента по SDA
-  \  * on - включен
+     * on - включен
      * off - выключен
      */
     var SdaActive = "off"
-    def isSdaActive =  "on".equals(SdaActive);
+
+    def isSdaActive = "on".equals(SdaActive);
 
   }
+
   var HealthShare = new HealthShareClass
 
-  def isHealthShareReferenceBook = "on".equals(HealthShare.ReferenceBookActive)
 
-
-    /**
+  /**
    *
    */
-
   var Core = new Configuration {
     var RequestLaboratoryUrl = "http://localhost:8080/tmis-ws-laboratory/tmis-client-laboratory"
   }

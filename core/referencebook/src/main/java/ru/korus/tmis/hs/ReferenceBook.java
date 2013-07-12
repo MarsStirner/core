@@ -1208,7 +1208,7 @@ public class ReferenceBook implements ReferenceBookLocal {
                         sb.append(getAllFields(type)).append("\n");
                     }
                     if (!kladrdao.isExist(type.getCode())) {
-                        kladrdao.insert(new ru.korus.tmis.core.entity.model.referencebook.Kladr(
+                        kladrdao.insert(new KladrRb(
                                 type.getCode(),
                                 type.getName(),
                                 type.getSocr(),
