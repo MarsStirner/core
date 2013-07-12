@@ -179,9 +179,17 @@ object ConfigManager extends Configuration {
     /**
      * Синхронизация справочников
      * on - включен
-     * off - выключен (по умолчанию)
+     * off - выключен
      */
     var ReferenceBookActive = "on"
+
+    /**
+     * Передача карточки пациента по SDA
+  \  * on - включен
+     * off - выключен
+     */
+    var SdaActive = "off"
+    def isSdaActive =  "on".equals(SdaActive);
 
   }
   var HealthShare = new HealthShareClass
