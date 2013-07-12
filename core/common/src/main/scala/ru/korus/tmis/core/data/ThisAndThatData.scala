@@ -257,7 +257,8 @@ class AllDepartmentsListData extends AbstractDefaultData{
   def this(departments: java.util.List[OrgStructure], requestData: ListDataRequest) = {
     this ()
     this.requestData = requestData
-    departments.foreach(org => this.data.add(new IdNameContainer(org.getId.intValue(), org.getName)))
+    if(departments!=null && !departments.isEmpty)
+      departments.foreach(org => this.data.add(new IdNameContainer(org.getId.intValue(), org.getName)))
   }
 
   override def dataToString = {

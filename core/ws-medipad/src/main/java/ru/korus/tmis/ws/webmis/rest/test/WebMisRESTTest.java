@@ -1,11 +1,14 @@
 package ru.korus.tmis.ws.webmis.rest.test;
 
+
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.*;
 import org.mockito.runners.MockitoJUnitRunner;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import ru.korus.tmis.core.data.*;
 import ru.korus.tmis.core.database.DbOrgStructureBeanLocal;
 import ru.korus.tmis.core.entity.model.OrgStructure;
@@ -17,11 +20,10 @@ import java.util.List;
 import static org.mockito.Mockito.*;
 
 /**
- * Created with IntelliJ IDEA.
- * User: idmitriev
- * Date: 7/11/13
- * Time: 9:52 AM
- * To change this template use File | Settings | File Templates.
+ * Author:      Ivan Dmitriev <br>
+ * Date:        11.07.13, 9:52 <br>
+ * Company:     Systema-Soft<br>
+ * Description: Тесты для REST-сервисов  <br>
  */
 @RunWith(MockitoJUnitRunner.class)
 public class WebMisRESTTest {
@@ -34,6 +36,32 @@ public class WebMisRESTTest {
 
     @Before
     public void init() {
+    }
+
+    @Test
+    public void testGetAllDepartmentsCaseNullResponse() throws CoreException {
+        final DepartmentsDataFilter filter = new DepartmentsDataFilter(false);
+        final ListDataRequest request = new ListDataRequest("id", "asc", 10, 1, filter);
+
+        when(dbOrgStructureBean.getCountAllOrgStructuresWithFilter(request.filter())).thenReturn(0L);
+        when(dbOrgStructureBean.getAllOrgStructuresByRequest(request.limit(),
+                                                             request.page()-1,
+                                                             request.sortingFieldInternal(),
+                                                             request.filter().unwrap())).thenReturn(null);
+
+        AllDepartmentsListData result = wsImpl.getAllDepartments(request);
+
+        verify(dbOrgStructureBean).getCountAllOrgStructuresWithFilter(request.filter());
+        verify(dbOrgStructureBean).getAllOrgStructuresByRequest(request.limit(),
+                                                                request.page()-1,
+                                                                request.sortingFieldInternal(),
+                                                                request.filter().unwrap());
+
+        Assert.assertNotNull(result);
+        //проверка, что в случае пустых данных, возвращается пустой список
+        Assert.assertNotNull(result.data());
+        Assert.assertEquals(0L, result.requestData().recordsCount());
+        Assert.assertEquals(0, result.data().size());
     }
 
     @Test
@@ -62,12 +90,12 @@ public class WebMisRESTTest {
 
         verify(dbOrgStructureBean).getCountAllOrgStructuresWithFilter(request.filter());
         verify(dbOrgStructureBean).getAllOrgStructuresByRequest(request.limit(),
-                request.page()-1,
-                request.sortingFieldInternal(),
-                request.filter().unwrap());
+                                                                request.page()-1,
+                                                                request.sortingFieldInternal(),
+                                                                request.filter().unwrap());
 
         Assert.assertNotNull(result);
-        //проверка количества
+        //проверка требуемого количества
         Assert.assertEquals(3L, result.requestData().recordsCount());
         Assert.assertEquals(3, result.data().size());
         //проверка сохранности сортировки
