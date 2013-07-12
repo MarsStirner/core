@@ -128,7 +128,7 @@ public class ReferenceBook implements ReferenceBookLocal {
     @Override
     @Schedule(minute = "*/1", hour = "*")
     public void loadReferenceBooks() {
-        if (ConfigManager.isHealthShareReferenceBook()) {
+        if (ConfigManager.HealthShare().isHealthShareReferenceBook()) {
             logger.info("Start loading reference book...");
             try {
                 loadV001();
