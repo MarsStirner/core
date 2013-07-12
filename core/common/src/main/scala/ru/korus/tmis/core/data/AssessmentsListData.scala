@@ -85,6 +85,8 @@ class AssessmentsListRequestDataFilter extends AbstractListDataFilter{
   @BeanProperty
   var endDate: Date = _
   @BeanProperty
+  var doctorId: Int = _
+  @BeanProperty
   var doctorName: String = _
   @BeanProperty
   var speciality: String = _
@@ -102,6 +104,7 @@ class AssessmentsListRequestDataFilter extends AbstractListDataFilter{
            code_x: String,
            begDate: Long,
            endDate: Long,
+           doctorId: Int,
            doctorName: String,
            speciality: String,
            assessmentName: String,
@@ -117,6 +120,7 @@ class AssessmentsListRequestDataFilter extends AbstractListDataFilter{
     }
     this.begDate = if (begDate == 0) null else new Date(begDate)
     this.endDate = if (endDate == 0) null else new Date(endDate)
+    this.doctorId= doctorId
     this.doctorName = doctorName
     this.speciality = speciality
     this.assessmentName = assessmentName
@@ -138,6 +142,10 @@ class AssessmentsListRequestDataFilter extends AbstractListDataFilter{
     if (this.code != null && !this.code.isEmpty) {
       qs.query += "AND a.actionType.code LIKE :code\n"
       qs.add("code", this.code + "%")
+    }
+    if (this.doctorId > 0) {
+      qs.query += "AND a.createPerson.id = :doctorId\n"
+      qs.add("doctorId", this.doctorId:java.lang.Integer)
     }
     if (this.doctorName != null && !this.doctorName.isEmpty) {
       qs.query += ("AND upper(a.createPerson.lastName) LIKE upper(:doctorName)\n")
