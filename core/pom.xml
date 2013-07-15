@@ -4,7 +4,7 @@
 
     <modelVersion>4.0.0</modelVersion>
     <groupId>ru.korus.tmis</groupId>
-    <artifactId>tmis-nexus</artifactId>
+    <artifactId>tmis-core</artifactId>
     <packaging>pom</packaging>
     <version>${version.tmis.core}</version>
     <name>TMIS Root Project</name>
@@ -27,7 +27,7 @@
 
     <properties>
         <!-- Версия ядра-->
-        <version.tmis.core>1.0.0</version.tmis.core>
+        <version.tmis.core>1.0.1</version.tmis.core>
 
 
         <version.joda.time>2.1</version.joda.time>
