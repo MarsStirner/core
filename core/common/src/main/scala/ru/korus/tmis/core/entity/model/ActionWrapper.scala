@@ -260,11 +260,16 @@ class ActionWrapper(a: Action)
         }
       }
       case AWI.ExecutorId => {
-        if (this.a.getAssigner != null) {
+        if (this.a.getExecutor != null) {
           List(
             Map(APWI.Value.toString -> this.a.getExecutor.getId.toString)
           )
-        } else {
+        } else if (this.a.getActionType.getDefaultExecutor != null) {
+          List(
+            Map(APWI.Value.toString -> this.a.getActionType.getDefaultExecutor.getId.toString)
+          )
+        }
+        else {
           List(
             Map(APWI.Value.toString -> "-1")
           )
