@@ -4,6 +4,7 @@ import java.util.Arrays;
 import java.util.Date;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.Vector;
 
 import javax.ejb.EJB;
 import javax.ejb.Stateless;
@@ -14,7 +15,13 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import ru.korus.tmis.core.database.dbutil.Database;
-import ru.korus.tmis.core.entity.model.*;
+import ru.korus.tmis.core.entity.model.Action;
+import ru.korus.tmis.core.entity.model.ActionType;
+import ru.korus.tmis.core.entity.model.Event;
+import ru.korus.tmis.core.entity.model.Patient;
+import ru.korus.tmis.core.entity.model.RbBloodType;
+import ru.korus.tmis.core.entity.model.RbTrfuBloodComponentType;
+import ru.korus.tmis.core.entity.model.Staff;
 import ru.korus.tmis.core.exception.CoreException;
 import ru.korus.tmis.util.EntityMgr;
 import ru.korus.tmis.ws.transfusion.PropType;
@@ -121,7 +128,7 @@ public class SendOrderBloodComponents {
     /**
      * Информация о пациенте для предачи требования КК в ТРФУ
      * 
-     *
+     * 
      * @param action
      *            - действие, соответсвующее новому требованию КК
      * @param trfuActionProp
@@ -134,7 +141,7 @@ public class SendOrderBloodComponents {
      */
     public static PatientCredentials getPatientCredentials(final Action action, final TrfuActionProp trfuActionProp, EntityManager em) throws CoreException,
             DatatypeConfigurationException {
-        if ( !checkMovingForPatient(action, em)) {
+        if (!checkMovingForPatient(action, em)) {
             trfuActionProp.setRequestState(action.getId(), "Ошибка: Пациента снят с койки");
             return null;
         }
@@ -158,16 +165,26 @@ public class SendOrderBloodComponents {
     }
 
     private static boolean checkMovingForPatient(Action action, EntityManager em) {
+        final List<Action> movings = getMovings(action, em);
+        return !movings.isEmpty();
+    }
+
+    /**
+     * @param action
+     * @param em
+     * @return
+     */
+    protected static List<Action> getMovings(Action action, EntityManager em) {
         final List<ActionType> typeMovings = em
                 .createQuery("SELECT at FROM ActionType at WHERE at.deleted = 0 AND at.flatCode = 'moving'", ActionType.class).getResultList();
         if (typeMovings.isEmpty()) {
-            return true;
+            return new Vector<Action>();
         }
         final List<Action> movings = em
                 .createQuery("SELECT a FROM Action a WHERE a.deleted = 0 AND a.actionType.deleted = 0 AND a.actionType.flatCode = 'moving'" +
                         " AND a.status != 2 AND a.event.patient.id = :patientId", Action.class)
                 .setParameter("patientId", action.getEvent().getPatient().getId()).getResultList();
-        return !movings.isEmpty();
+        return movings;
     }
 
     public void pullDB(final TransfusionMedicalService trfuService) {
