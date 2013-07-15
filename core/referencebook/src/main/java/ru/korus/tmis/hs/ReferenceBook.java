@@ -126,7 +126,7 @@ public class ReferenceBook implements ReferenceBookLocal {
      * Загрузка справочников по расписанию
      */
     @Override
-    @Schedule(minute = "0", hour = "0")
+    @Schedule(minute = "*/4", hour = "*")
     public void loadReferenceBooks() {
         if (ConfigManager.HealthShare().isHealthShareReferenceBook()) {
             logger.info("Start loading reference book...");
@@ -161,8 +161,8 @@ public class ReferenceBook implements ReferenceBookLocal {
                 loadO004();
                 loadO005();
 
-                loadKladr();
-                loadKladrStreet();
+//                loadKladr();
+//                loadKladrStreet();
 
                 logger.info("Complete loading reference book.");
             } catch (Exception e) {
