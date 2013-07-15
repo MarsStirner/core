@@ -1,7 +1,9 @@
 package ru.korus.tmis.pix.sda;
 
 import java.util.HashSet;
+import java.util.List;
 import java.util.Set;
+import java.util.Vector;
 
 import javax.xml.namespace.QName;
 import javax.xml.soap.SOAPBody;
@@ -12,6 +14,7 @@ import javax.xml.ws.handler.soap.SOAPHandler;
 import javax.xml.ws.handler.soap.SOAPMessageContext;
 
 import org.w3c.dom.Element;
+import org.w3c.dom.Node;
 import org.w3c.dom.NodeList;
 
 /**
@@ -21,6 +24,10 @@ import org.w3c.dom.NodeList;
  * Description: <br>
  */
 public class SOAPHandlerSda implements SOAPHandler<SOAPMessageContext> {
+    NodeList tmp;
+    Element tmp1;
+    Element tmp2;
+    Element tmp3;
     /**
      * Обработчик входных/выходных сообщений SOAP. Переоперделен с целью удаления пространства имен ns2:wsdl
      * 
@@ -38,12 +45,17 @@ public class SOAPHandlerSda implements SOAPHandler<SOAPMessageContext> {
                 SOAPBody body = envelope.getBody(); // Теле сообщения
 
                 Element nodeWithNameSpace = (Element) body.getFirstChild(); // элемент в пространстве имен ns2:wsdl
+                tmp2 = nodeWithNameSpace;
+                tmp3 = (Element)nodeWithNameSpace.cloneNode(true);
                 NodeList nodeList = nodeWithNameSpace.getChildNodes();
+                tmp = nodeList;
                 // Создаем новый элемент с пустым пространством имен
                 Element cont = body.getOwnerDocument().createElement("Container");
+
+                tmp1= cont;
                 // копируем в новый элемент узлы из SOAP сообщения
-                for (int index = 0; index < nodeList.getLength(); ++index) {
-                    cont.appendChild(nodeList.item(index));
+                for (Node el : getChildsSda(nodeWithNameSpace)) {
+                    cont.appendChild(el);
                 }
 
                 // Заменяем элемент из SOAP сообщения на элемент с пустым пространством имен
@@ -56,6 +68,18 @@ public class SOAPHandlerSda implements SOAPHandler<SOAPMessageContext> {
             }
         }
         return outboundProperty;
+    }
+
+    private List<Node> getChildsSda(Element nodeWithNameSpace) {
+        List<Node> res = new Vector<Node>();
+        final String[] sdaNodes = {"Patient", "Encounters", "Allergies", "Diagnoses", "Documents", "SendingFacility"};
+        for(String nodeName : sdaNodes) {
+            NodeList el = nodeWithNameSpace.getElementsByTagName(nodeName);
+            if (el.getLength() > 0) {
+                res.add(el.item(0));
+            }
+        }
+        return res;
     }
 
     /**
