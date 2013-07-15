@@ -790,9 +790,10 @@ class WebMisRESTImpl  extends WebMisREST
       case 0 => {
         val actionType = if(request.filter.asInstanceOf[ActionTypesListRequestDataFilter].getGroupId()> 0){
           actionTypeBean.getActionTypeById(request.filter.asInstanceOf[ActionTypesListRequestDataFilter].getGroupId())
-        } else {
+        } else if ( request.filter.asInstanceOf[ActionTypesListRequestDataFilter].getCode() != null  &&
+                    request.filter.asInstanceOf[ActionTypesListRequestDataFilter].getCode().compareTo("") != 0) {
           actionTypeBean.getActionTypeByCode(request.filter.asInstanceOf[ActionTypesListRequestDataFilter].getCode())
-        }
+        } else null
 
         //empty action property
         val listForConverter = new java.util.ArrayList[String]
@@ -833,8 +834,11 @@ class WebMisRESTImpl  extends WebMisREST
           listForSummary.add(ActionWrapperInfo.executorId)
           listForSummary.add(ActionWrapperInfo.assignerId)
         }
-
-        val json = primaryAssessmentBean.getEmptyStructure(actionType.getId.intValue(), "Action", listForConverter, listForSummary,  null, null, patientBean.getPatientById(patientId))
+        var json = new JSONCommonData()
+        json.setRequestData(request)
+        if (actionType != null) {
+          json = primaryAssessmentBean.getEmptyStructure(actionType.getId.intValue(), "Action", listForConverter, listForSummary,  null, null, patientBean.getPatientById(patientId))
+        }
         json
       }
       case _  => {
