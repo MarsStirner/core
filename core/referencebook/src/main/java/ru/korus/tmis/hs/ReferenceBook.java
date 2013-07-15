@@ -5,11 +5,12 @@ import nsi.Kladr;
 import nsi.KladrStreet;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import ru.korus.tmis.core.entity.model.referencebook.*;
 import ru.korus.tmis.core.logging.LoggingInterceptor;
 import ru.korus.tmis.dao.*;
-import ru.korus.tmis.entity.*;
 import ru.korus.tmis.hs.wss.AuthentificationHeaderHandlerResolver;
 import ru.korus.tmis.util.ConfigManager;
+import ru.korus.tmis.utils.DateUtil;
 import wsdl.NsiService;
 
 import javax.ejb.EJB;
@@ -125,9 +126,9 @@ public class ReferenceBook implements ReferenceBookLocal {
      * Загрузка справочников по расписанию
      */
     @Override
-    @Schedule(minute = "*/1", hour = "*")
+    @Schedule(minute = "0", hour = "0")
     public void loadReferenceBooks() {
-        if (ConfigManager.isHealthShareReferenceBook()) {
+        if (ConfigManager.HealthShare().isHealthShareReferenceBook()) {
             logger.info("Start loading reference book...");
             try {
                 loadV001();
@@ -211,7 +212,12 @@ public class ReferenceBook implements ReferenceBookLocal {
                         sb.append(getAllFields(type)).append("\n");
                     }
                     if (!m001dao.isExist(type.getIDDS())) {
-                        m001dao.insert(M001MKB10.getInstance(type));
+                        m001dao.insert(new M001MKB10(
+                                type.getIDDS(),
+                                type.getDSNAME(),
+                                DateUtil.getDate(type.getDATEBEG()),
+                                DateUtil.getDate(type.getDATEEND())
+                        ));
                         added++;
                     }
                 }
@@ -247,7 +253,11 @@ public class ReferenceBook implements ReferenceBookLocal {
                     sb.append(getAllFields(type)).append("\n");
                 }
                 if (!v001dao.isExist(type.getIDRB())) {
-                    v001dao.insert(V001Nomerclr.getInstance(type));
+                    v001dao.insert(new V001Nomerclr(
+                            type.getIDRB(),
+                            type.getRBNAME(),
+                            DateUtil.getDate(type.getDATEBEG()),
+                            DateUtil.getDate(type.getDATEEND())));
                     added++;
                 }
             }
@@ -277,7 +287,12 @@ public class ReferenceBook implements ReferenceBookLocal {
                     sb.append(getAllFields(type)).append("\n");
                 }
                 if (!v002dao.isExist(type.getIDPR())) {
-                    v002dao.insert(V002ProfOt.getInstance(type));
+                    v002dao.insert(new V002ProfOt(
+                            type.getIDPR(),
+                            type.getPRNAME(),
+                            DateUtil.getDate(type.getDATEBEG()),
+                            DateUtil.getDate(type.getDATEEND())
+                    ));
                     added++;
                 }
             }
@@ -306,7 +321,14 @@ public class ReferenceBook implements ReferenceBookLocal {
                     sb.append(getAllFields(type)).append("\n");
                 }
                 if (!v003dao.isExist(type.getIDRL())) {
-                    v003dao.insert(V003LicUsl.getInstance(type));
+                    v003dao.insert(new V003LicUsl(
+                            type.getIDRL(),
+                            type.getLICNAME(),
+                            type.getIERARH(),
+                            type.getPRIM(),
+                            DateUtil.getDate(type.getDATEBEG()),
+                            DateUtil.getDate(type.getDATEEND())
+                    ));
                     added++;
                 }
             }
@@ -335,8 +357,12 @@ public class ReferenceBook implements ReferenceBookLocal {
                     sb.append(getAllFields(type)).append("\n");
                 }
                 if (!v004dao.isExist(type.getIDMSP())) {
-                    final V004Medspec item = V004Medspec.getInstance(type);
-                    v004dao.insert(item);
+                    v004dao.insert(new V004Medspec(
+                            type.getIDMSP(),
+                            type.getMSPNAME(),
+                            DateUtil.getDate(type.getDATEBEG()),
+                            DateUtil.getDate(type.getDATEEND())
+                    ));
                     added++;
                 }
             }
@@ -365,7 +391,9 @@ public class ReferenceBook implements ReferenceBookLocal {
                     sb.append(getAllFields(type)).append("\n");
                 }
                 if (!v005dao.isExist(type.getIDPOL())) {
-                    v005dao.insert(V005Pol.getInstance(type));
+                    v005dao.insert(new V005Pol(
+                            type.getIDPOL(),
+                            type.getPOLNAME()));
                     added++;
                 }
             }
@@ -394,7 +422,12 @@ public class ReferenceBook implements ReferenceBookLocal {
                     sb.append(getAllFields(type)).append("\n");
                 }
                 if (!v006dao.isExist(type.getIDUMP())) {
-                    v006dao.insert(V006UslMp.getInstance(type));
+                    v006dao.insert(new V006UslMp(
+                            type.getIDUMP(),
+                            type.getUMPNAME(),
+                            DateUtil.getDate(type.getDATEBEG()),
+                            DateUtil.getDate(type.getDATEEND())
+                    ));
                     added++;
                 }
             }
@@ -423,7 +456,12 @@ public class ReferenceBook implements ReferenceBookLocal {
                     sb.append(getAllFields(type)).append("\n");
                 }
                 if (!v007dao.isExist(type.getIDNMO())) {
-                    v007dao.insert(V007NomMO.getInstance(type));
+                    v007dao.insert(new V007NomMO(
+                            type.getIDNMO(),
+                            type.getNMONAME(),
+                            DateUtil.getDate(type.getDATEBEG()),
+                            DateUtil.getDate(type.getDATEEND())
+                    ));
                     added++;
                 }
             }
@@ -452,7 +490,12 @@ public class ReferenceBook implements ReferenceBookLocal {
                     sb.append(getAllFields(type)).append("\n");
                 }
                 if (!v008dao.isExist(type.getIDVMP())) {
-                    v008dao.insert(V008VidMp.getInstance(type));
+                    v008dao.insert(new V008VidMp(
+                            type.getIDVMP(),
+                            type.getVMPNAME(),
+                            DateUtil.getDate(type.getDATEBEG()),
+                            DateUtil.getDate(type.getDATEEND())
+                    ));
                     added++;
                 }
             }
@@ -481,7 +524,13 @@ public class ReferenceBook implements ReferenceBookLocal {
                     sb.append(getAllFields(type)).append("\n");
                 }
                 if (!v009dao.isExist(type.getIDRMP())) {
-                    v009dao.insert(V009Rezult.getInstance(type));
+                    v009dao.insert(new V009Rezult(
+                            type.getIDRMP(),
+                            type.getRMPNAME(),
+                            type.getIDUSLOV(),
+                            DateUtil.getDate(type.getDATEBEG()),
+                            DateUtil.getDate(type.getDATEEND())
+                    ));
                     added++;
                 }
             }
@@ -510,7 +559,12 @@ public class ReferenceBook implements ReferenceBookLocal {
                     sb.append(getAllFields(type)).append("\n");
                 }
                 if (!v010dao.isExist(type.getIDSP())) {
-                    v010dao.insert(V010Sposob.getInstance(type));
+                    v010dao.insert(new V010Sposob(
+                            type.getIDSP(),
+                            type.getSPNAME(),
+                            DateUtil.getDate(type.getDATEBEG()),
+                            DateUtil.getDate(type.getDATEEND())
+                    ));
                     added++;
                 }
             }
@@ -539,7 +593,13 @@ public class ReferenceBook implements ReferenceBookLocal {
                     sb.append(getAllFields(type)).append("\n");
                 }
                 if (!v012dao.isExist(type.getIDIZ())) {
-                    v012dao.insert(V012Ishod.getInstance(type));
+                    v012dao.insert(new V012Ishod(
+                            type.getIDIZ(),
+                            type.getIZNAME(),
+                            type.getIDUSLOV(),
+                            DateUtil.getDate(type.getDATEBEG()),
+                            DateUtil.getDate(type.getDATEEND())
+                    ));
                     added++;
                 }
             }
@@ -568,7 +628,26 @@ public class ReferenceBook implements ReferenceBookLocal {
                     sb.append(getAllFields(type)).append("\n");
                 }
                 if (!f001dao.isExist(type.getTfKod())) {
-                    f001dao.insert(F001Tfoms.getInstance(type));
+                    f001dao.insert(
+                            new F001Tfoms(
+                                    type.getTfKod(),
+                                    type.getTfOkato(),
+                                    type.getTfOgrn(),
+                                    type.getNameTfp(),
+                                    type.getNameTfk(),
+                                    type.getIndex(),
+                                    type.getAddress(),
+                                    type.getFamDir(),
+                                    type.getImDir(),
+                                    type.getOtDir(),
+                                    type.getPhone(),
+                                    type.getFax(),
+                                    type.getEMail(),
+                                    type.getKfTf(),
+                                    type.getWww(),
+                                    DateUtil.getDate(type.getDEdit()),
+                                    DateUtil.getDate(type.getDEnd())
+                            ));
                     added++;
                 }
             }
@@ -578,6 +657,7 @@ public class ReferenceBook implements ReferenceBookLocal {
             logger.error("Exception e: " + t, new Exception(t));
         }
     }
+
 
     /**
      * Загрузка справочника F002 - единый реестр мед.организаций,
@@ -601,7 +681,38 @@ public class ReferenceBook implements ReferenceBookLocal {
                     sb.append(getAllFields(type)).append("\n");
                 }
                 if (!f002dao.isExist(type.getSmocod())) {   //todo
-                    f002dao.insert(F002Smo.getInstance(type));
+                    f002dao.insert(new F002Smo(
+                            type.getTfOkato(),
+                            type.getSmocod(),
+                            type.getNamSmop(),
+                            type.getNamSmok(),
+                            type.getInn(),
+                            type.getOgrn(),
+                            type.getKPP(),
+                            type.getIndexJ(),
+                            type.getAddrJ(),
+                            type.getIndexF(),
+                            type.getAddrF(),
+                            type.getOkopf(),
+                            type.getFamRuk(),
+                            type.getImRuk(),
+                            type.getOtRuk(),
+                            type.getPhone(),
+                            type.getFax(),
+                            type.getEMail(),
+                            type.getWww(),
+                            type.getNDoc(),
+                            DateUtil.getDate(type.getDStart()),
+                            DateUtil.getDate(type.getDataE()),
+                            type.getOrg(),
+                            DateUtil.getDate(type.getDBegin()),
+                            DateUtil.getDate(type.getDEnd()),
+                            type.getNameE(),
+                            type.getNalP(),
+                            DateUtil.getDate(type.getDUVED()),
+                            type.getKolZl(),
+                            DateUtil.getDate(type.getDEdit())
+                    ));
                     added++;
                 }
             }
@@ -631,7 +742,37 @@ public class ReferenceBook implements ReferenceBookLocal {
                     sb.append(getAllFields(type)).append("\n");
                 }
                 if (!f003dao.isExist(type.getMcod())) {   //todo
-                    f003dao.insert(F003Mo.getInstance(type));
+                    f003dao.insert(new F003Mo(
+                            type.getTfOkato(),
+                            type.getMcod(),
+                            0,  //todo
+                            type.getNamMop(),
+                            type.getNamMok(),
+                            type.getInn(),
+                            type.getOgrn(),
+                            type.getKPP(),
+                            type.getIndexJ(),
+                            type.getAddrJ(),
+                            type.getOkopf(),
+                            type.getVedpri(),
+                            type.getOrg(),
+                            type.getFamRuk(),
+                            type.getImRuk(),
+                            type.getOtRuk(),
+                            type.getPhone(),
+                            type.getFax(),
+                            type.getEMail(),
+                            type.getNDoc(),
+                            DateUtil.getDate(type.getDStart()),
+                            DateUtil.getDate(type.getDataE()),
+                            type.getMp(),
+                            type.getWww(),
+                            DateUtil.getDate(type.getDBegin()),
+                            DateUtil.getDate(type.getDEnd()),
+                            type.getNameE(),
+                            DateUtil.getDate(type.getDUVED()),
+                            DateUtil.getDate(type.getDEdit())
+                    ));
                     added++;
                 }
             }
@@ -660,7 +801,12 @@ public class ReferenceBook implements ReferenceBookLocal {
                     sb.append(getAllFields(type)).append("\n");
                 }
                 if (!f007dao.isExist(type.getIDVED())) {
-                    f007dao.insert(F007Vedom.getInstance(type));
+                    f007dao.insert(new F007Vedom(
+                            type.getIDVED(),
+                            type.getVEDNAME(),
+                            DateUtil.getDate(type.getDATEBEG()),
+                            DateUtil.getDate(type.getDATEEND())
+                    ));
                     added++;
                 }
             }
@@ -689,7 +835,11 @@ public class ReferenceBook implements ReferenceBookLocal {
                     sb.append(getAllFields(type)).append("\n");
                 }
                 if (!f008dao.isExist(type.getIDDOC())) {
-                    f008dao.insert(F008TipOMS.getInstance(type));
+                    f008dao.insert(new F008TipOMS(
+                            type.getIDDOC(),
+                            type.getDOCNAME(),
+                            DateUtil.getDate(type.getDATEBEG()),
+                            DateUtil.getDate(type.getDATEEND())));
                     added++;
                 }
             }
@@ -718,7 +868,12 @@ public class ReferenceBook implements ReferenceBookLocal {
                     sb.append(getAllFields(type)).append("\n");
                 }
                 if (!f009dao.isExist(type.getIDStatus())) {
-                    f009dao.insert(F009StatZL.getInstance(type));
+                    f009dao.insert(new F009StatZL(
+                            type.getIDStatus(),
+                            type.getStatusName(),
+                            DateUtil.getDate(type.getDATEBEG()),
+                            DateUtil.getDate(type.getDATEEND())
+                    ));
                     added++;
                 }
             }
@@ -747,7 +902,14 @@ public class ReferenceBook implements ReferenceBookLocal {
                     sb.append(getAllFields(type)).append("\n");
                 }
                 if (!f010dao.isExist(type.getKODTF())) {
-                    f010dao.insert(F010Subekti.getInstance(type));
+                    f010dao.insert(new F010Subekti(
+                            type.getKODTF(),
+                            type.getKODOKATO(),
+                            type.getSUBNAME(),
+                            type.getOKRUG(),
+                            DateUtil.getDate(type.getDATEBEG()),
+                            DateUtil.getDate(type.getDATEEND())
+                    ));
                     added++;
                 }
             }
@@ -776,7 +938,14 @@ public class ReferenceBook implements ReferenceBookLocal {
                     sb.append(getAllFields(type)).append("\n");
                 }
                 if (!f011dao.isExist(type.getIDDoc())) {
-                    f011dao.insert(F011Tipdoc.getInstance(type));
+                    f011dao.insert(new F011Tipdoc(
+                            type.getIDDoc(),
+                            type.getDocName(),
+                            type.getDocSer(),
+                            type.getDocNum(),
+                            DateUtil.getDate(type.getDATEBEG()),
+                            DateUtil.getDate(type.getDATEEND())
+                    ));
                     added++;
                 }
             }
@@ -805,7 +974,12 @@ public class ReferenceBook implements ReferenceBookLocal {
                     sb.append(getAllFields(type)).append("\n");
                 }
                 if (!f015dao.isExist(type.getKODOK())) {
-                    f015dao.insert(F015FedOkr.getInstance(type));
+                    f015dao.insert(new F015FedOkr(
+                            type.getKODOK(),
+                            type.getOKRNAME(),
+                            DateUtil.getDate(type.getDATEBEG()),
+                            DateUtil.getDate(type.getDATEEND())
+                    ));
                     added++;
                 }
             }
@@ -834,7 +1008,17 @@ public class ReferenceBook implements ReferenceBookLocal {
                     sb.append(getAllFields(type)).append("\n");
                 }
                 if (!o001dao.isExist(type.getKOD())) {
-                    o001dao.insert(O001Oksm.getInstance(type));
+                    o001dao.insert(new O001Oksm(
+                            type.getKOD(),
+                            type.getNAME11(),
+                            type.getNAME12(),
+                            type.getALFA2(),
+                            type.getALFA3(),
+                            type.getNOMDESCR().length() > 255 ? type.getNOMDESCR().substring(0, 255) : type.getNOMDESCR(),
+                            type.getNOMAKT(),
+                            type.getSTATUS(),
+                            DateUtil.getDate(type.getDATAUPD())
+                    ));
                     added++;
                 }
             }
@@ -863,7 +1047,19 @@ public class ReferenceBook implements ReferenceBookLocal {
                     sb.append(getAllFields(type)).append("\n");
                 }
                 if (!o002dao.isExist(type.getTER())) {
-                    o002dao.insert(O002Okato.getInstance(type));
+                    o002dao.insert(new O002Okato(
+                            type.getTER(),
+                            type.getKOD1(),
+                            type.getKOD2(),
+                            type.getKOD3(),
+                            type.getRAZDEL(),
+                            type.getNAME1(),
+                            type.getCENTRUM(),
+                            type.getNOMDESCR(),
+                            type.getNOMAKT(),
+                            type.getSTATUS(),
+                            DateUtil.getDate(type.getDATAUPD())
+                    ));
                     added++;
                 }
             }
@@ -892,7 +1088,17 @@ public class ReferenceBook implements ReferenceBookLocal {
                     sb.append(getAllFields(type)).append("\n");
                 }
                 if (!o003dao.isExist(type.getKOD())) {
-                    o003dao.insert(O003Okved.getInstance(type));
+                    o003dao.insert(new O003Okved(
+                            type.getRAZDEL(),
+                            type.getPRAZDEL(),
+                            type.getKOD(),
+                            type.getNAME11(),
+                            type.getNAME12(),
+                            type.getNOMDESCR().length() > 255 ? type.getNOMDESCR().substring(0, 255) : type.getNOMDESCR(),
+                            type.getNOMAKT(),
+                            type.getSTATUS(),
+                            DateUtil.getDate(type.getDATAUPD())
+                    ));
                     added++;
                 }
             }
@@ -921,7 +1127,14 @@ public class ReferenceBook implements ReferenceBookLocal {
                     sb.append(getAllFields(type)).append("\n");
                 }
                 if (!o004dao.isExist(type.getKOD())) {
-                    o004dao.insert(O004Okfs.getInstance(type));
+                    o004dao.insert(new O004Okfs(
+                            type.getKOD(),
+                            type.getNAME1(),
+                            type.getALG(),
+                            type.getNOMAKT(),
+                            type.getSTATUS(),
+                            DateUtil.getDate(type.getDATAUPD())
+                    ));
                     added++;
                 }
             }
@@ -950,7 +1163,14 @@ public class ReferenceBook implements ReferenceBookLocal {
                     sb.append(getAllFields(type)).append("\n");
                 }
                 if (!o005dao.isExist(type.getKOD())) {
-                    o005dao.insert(O005Okopf.getInstance(type));
+                    o005dao.insert(new O005Okopf(
+                            type.getKOD(),
+                            type.getNAME1(),
+                            type.getALG(),
+                            type.getNOMAKT(),
+                            type.getSTATUS(),
+                            DateUtil.getDate(type.getDATAUPD())
+                    ));
                     added++;
                 }
             }
@@ -988,8 +1208,19 @@ public class ReferenceBook implements ReferenceBookLocal {
                         sb.append(getAllFields(type)).append("\n");
                     }
                     if (!kladrdao.isExist(type.getCode())) {
-                        kladrdao.insert(ru.korus.tmis.entity.Kladr.getInstance(type));
+                        kladrdao.insert(new KladrRb(
+                                type.getCode(),
+                                type.getName(),
+                                type.getSocr(),
+                                type.getIndex(),
+                                type.getGninmb(),
+                                type.getUno(),
+                                type.getOcatd(),
+                                type.getStatus()
+                        ));
                         added++;
+                    } else {
+                        logger.info("!!!!!!! duplicate " + type.getCode());
                     }
                 }
                 logger.debug(sb.toString());
@@ -1031,8 +1262,18 @@ public class ReferenceBook implements ReferenceBookLocal {
                         sb.append(getAllFields(type)).append("\n");
                     }
                     if (!kladrStreetdao.isExist(type.getCode())) {
-                        kladrStreetdao.insert(ru.korus.tmis.entity.KladrStreet.getInstance(type));
+                        kladrStreetdao.insert(new ru.korus.tmis.core.entity.model.referencebook.KladrStreet(
+                                type.getCode(),
+                                type.getName(),
+                                type.getSocr(),
+                                type.getIndex(),
+                                type.getGninmb(),
+                                type.getUno(),
+                                type.getOcatd()
+                        ));
                         added++;
+                    } else {
+                        logger.info("!!!!!!! duplicate " + type.getCode());
                     }
                 }
                 logger.debug(sb.toString());

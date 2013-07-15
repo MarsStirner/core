@@ -1,6 +1,4 @@
-package ru.korus.tmis.entity;
-
-import nsi.KladrType;
+package ru.korus.tmis.core.entity.model.referencebook;
 
 import javax.persistence.Column;
 import javax.persistence.Entity;
@@ -18,7 +16,7 @@ import java.io.Serializable;
  */
 @Entity
 @Table(name = "rb_Kladr", catalog = "", schema = "")
-public class Kladr implements Serializable {
+public class KladrRb implements Serializable {
 
     @Id
     @Column(name = "code")
@@ -45,10 +43,10 @@ public class Kladr implements Serializable {
     @Column(name = "status")
     private String status;
 
-    public Kladr() {
+    public KladrRb() {
     }
 
-    private Kladr(String code, String name, String socr, String index, String gninmb, String uno, String ocatd, String status) {
+    public KladrRb(String code, String name, String socr, String index, String gninmb, String uno, String ocatd, String status) {
         this.code = code;
         this.name = name;
         this.socr = socr;
@@ -57,19 +55,6 @@ public class Kladr implements Serializable {
         this.uno = uno;
         this.ocatd = ocatd;
         this.status = status;
-    }
-
-    public static Kladr getInstance(KladrType type) {
-        return new Kladr(
-                type.getCode(),
-                type.getName(),
-                type.getSocr(),
-                type.getIndex(),
-                type.getGninmb(),
-                type.getUno(),
-                type.getOcatd(),
-                type.getStatus()
-        );
     }
 
     public String getCode() {
@@ -106,7 +91,7 @@ public class Kladr implements Serializable {
 
     @Override
     public String toString() {
-        return "Kladr{" +
+        return "KladrRb{" +
                 "code='" + code + '\'' +
                 ", name='" + name + '\'' +
                 ", socr='" + socr + '\'' +

@@ -1,6 +1,6 @@
 package ru.korus.tmis.dao;
 
-import ru.korus.tmis.entity.O003Okved;
+import ru.korus.tmis.core.entity.model.referencebook.O003Okved;
 
 import javax.ejb.Local;
 

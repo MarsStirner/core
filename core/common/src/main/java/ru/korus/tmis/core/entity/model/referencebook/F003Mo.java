@@ -1,7 +1,4 @@
-package ru.korus.tmis.entity;
-
-import nsi.F003Type;
-import ru.korus.tmis.utils.DateUtil;
+package ru.korus.tmis.core.entity.model.referencebook;
 
 import javax.persistence.*;
 import java.io.Serializable;
@@ -204,7 +201,7 @@ public class F003Mo implements Serializable {
     public F003Mo() {
     }
 
-    private F003Mo(String tfOkato, String mcod, int lpu, String namMop, String namMok, String inn, String ogrn, String kpp, String indexJ, String addrJ, String okopf, long vedpri, long org, String famRuk, String imRuk, String otRuk, String phone, String fax, String eMail, String nDoc, Date dStart, Date dataE, String mp, String www, Date dBegin, Date dEnd, String nameE, Date duved, Date dEdit) {
+    public F003Mo(String tfOkato, String mcod, int lpu, String namMop, String namMok, String inn, String ogrn, String kpp, String indexJ, String addrJ, String okopf, long vedpri, long org, String famRuk, String imRuk, String otRuk, String phone, String fax, String eMail, String nDoc, Date dStart, Date dataE, String mp, String www, Date dBegin, Date dEnd, String nameE, Date duved, Date dEdit) {
         this.tfOkato = tfOkato;
         this.mcod = mcod;
         this.lpu = lpu;
@@ -234,40 +231,6 @@ public class F003Mo implements Serializable {
         this.nameE = nameE;
         this.duved = duved;
         this.dEdit = dEdit;
-    }
-
-    public static F003Mo getInstance(F003Type type) {
-        return new F003Mo(
-                type.getTfOkato(),
-                type.getMcod(),
-                0,  //todo
-                type.getNamMop(),
-                type.getNamMok(),
-                type.getInn(),
-                type.getOgrn(),
-                type.getKPP(),
-                type.getIndexJ(),
-                type.getAddrJ(),
-                type.getOkopf(),
-                type.getVedpri(),
-                type.getOrg(),
-                type.getFamRuk(),
-                type.getImRuk(),
-                type.getOtRuk(),
-                type.getPhone(),
-                type.getFax(),
-                type.getEMail(),
-                type.getNDoc(),
-                DateUtil.getDate(type.getDStart()),
-                DateUtil.getDate(type.getDataE()),
-                type.getMp(),
-                type.getWww(),
-                DateUtil.getDate(type.getDBegin()),
-                DateUtil.getDate(type.getDEnd()),
-                type.getNameE(),
-                DateUtil.getDate(type.getDUVED()),
-                DateUtil.getDate(type.getDEdit())
-        );
     }
 
     public int getLpu() {

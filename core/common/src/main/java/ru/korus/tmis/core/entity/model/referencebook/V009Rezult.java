@@ -1,7 +1,4 @@
-package ru.korus.tmis.entity;
-
-import nsi.V009Type;
-import ru.korus.tmis.utils.DateUtil;
+package ru.korus.tmis.core.entity.model.referencebook;
 
 import javax.persistence.*;
 import java.io.Serializable;
@@ -54,22 +51,12 @@ public class V009Rezult implements Serializable {
     public V009Rezult() {
     }
 
-    private V009Rezult(long id, String rmpName, long iduslov, Date dateBegin, Date dateEnd) {
+    public V009Rezult(long id, String rmpName, long iduslov, Date dateBegin, Date dateEnd) {
         this.id = id;
         this.rmpName = rmpName;
         this.iduslov = iduslov;
         this.dateBegin = dateBegin;
         this.dateEnd = dateEnd;
-    }
-
-    public static V009Rezult getInstance(V009Type type) {
-        return new V009Rezult(
-                type.getIDRMP(),
-                type.getRMPNAME(),
-                type.getIDUSLOV(),
-                DateUtil.getDate(type.getDATEBEG()),
-                DateUtil.getDate(type.getDATEEND())
-        );
     }
 
     public long getId() {

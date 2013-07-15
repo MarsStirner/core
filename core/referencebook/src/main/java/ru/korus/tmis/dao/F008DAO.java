@@ -2,7 +2,7 @@ package ru.korus.tmis.dao;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import ru.korus.tmis.entity.F008TipOMS;
+import ru.korus.tmis.core.entity.model.referencebook.F008TipOMS;
 
 import javax.ejb.Stateless;
 import javax.ejb.TransactionAttribute;

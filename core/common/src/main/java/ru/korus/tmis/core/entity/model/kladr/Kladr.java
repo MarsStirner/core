@@ -191,6 +191,6 @@ public class Kladr
 
     @Override
     public String toString() {
-        return "ru.korus.tmis.core.database.model.Kladr[code=" + code + "]";
+        return "ru.korus.tmis.core.database.model.KladrRb[code=" + code + "]";
     }
 }

@@ -1,5 +1,7 @@
 package ru.korus.tmis.hs.wss;
 
+import ru.korus.tmis.util.ConfigManager;
+
 import javax.xml.namespace.QName;
 import javax.xml.soap.SOAPElement;
 import javax.xml.soap.SOAPEnvelope;
@@ -38,11 +40,11 @@ public class AuthentificationHeaderHandler implements SOAPHandler<SOAPMessageCon
                 usernameToken.addAttribute(new QName("xmlns:wsu"), "http://docs.oasis-open.org/wss/2004/01/oasis-200401-wss-wssecurity-utility-1.0.xsd");
                 SOAPElement username1 =
                         usernameToken.addChildElement("Username", "wsse");
-                username1.addTextNode("demo");
+                username1.addTextNode(ConfigManager.HealthShare().User());
                 SOAPElement password1 =
                         usernameToken.addChildElement("Password", "wsse");
                 password1.setAttribute("Type", "http://docs.oasis-open.org/wss/2004/01/oasis-200401-wss-username-token-profile-1.0#PasswordText");
-                password1.addTextNode("demo");
+                password1.addTextNode(ConfigManager.HealthShare().Password());
 
                 message.saveChanges();
                 // writeMessage(message);

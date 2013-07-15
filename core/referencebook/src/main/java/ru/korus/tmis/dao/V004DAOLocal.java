@@ -1,6 +1,6 @@
 package ru.korus.tmis.dao;
 
-import ru.korus.tmis.entity.V004Medspec;
+import ru.korus.tmis.core.entity.model.referencebook.V004Medspec;
 
 import javax.ejb.Local;
 

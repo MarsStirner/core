@@ -1,7 +1,4 @@
-package ru.korus.tmis.entity;
-
-import nsi.V001Type;
-import ru.korus.tmis.utils.DateUtil;
+package ru.korus.tmis.core.entity.model.referencebook;
 
 import javax.persistence.*;
 import java.io.Serializable;
@@ -11,25 +8,25 @@ import java.util.Date;
  * Author:      Dmitriy E. Nosov <br>
  * Date:        30.04.13, 14:47 <br>
  * Company:     Korus Consulting IT<br>
- * Description: Номенклатура работ и услуг в здравоохранении (NomeclR)<br>
+ * Description: Номенклатура МО (NomMO)<br>
  * The class implements a Serializable interface, and that
  * allows it to be passed by value through a remote interface.
  */
 @Entity
-@Table(name = "rb_V001_Nomerclr", catalog = "", schema = "")
-public class V001Nomerclr implements Serializable {
+@Table(name = "rb_V007_NomMO", catalog = "", schema = "")
+public class V007NomMO implements Serializable {
     /**
-     * Код работы (услуги)
+     * Код типа медицинской организации
      */
     @Id
-    @Column(name = "idrb")
+    @Column(name = "idnmo")
     private long id;
 
     /**
-     * Наименование работы (услуги)
+     * Наименование типа медицинской организации
      */
-    @Column(name = "rbname")
-    private String rbName;
+    @Column(name = "nmoname")
+    private String nmoName;
 
     /**
      * Дата начала действия записи
@@ -45,23 +42,14 @@ public class V001Nomerclr implements Serializable {
     @Column(name = "dateend")
     private Date dateEnd;
 
-
-    public V001Nomerclr() {
+    public V007NomMO() {
     }
 
-    private V001Nomerclr(long id, String rbName, Date dateBegin, Date dateEnd) {
+    public V007NomMO(long id, String nmoName, Date dateBegin, Date dateEnd) {
         this.id = id;
-        this.rbName = rbName;
+        this.nmoName = nmoName;
         this.dateBegin = dateBegin;
         this.dateEnd = dateEnd;
-    }
-
-    public static V001Nomerclr getInstance(V001Type type) {
-        return new V001Nomerclr(
-                type.getIDRB(),
-                type.getRBNAME(),
-                DateUtil.getDate(type.getDATEBEG()),
-                DateUtil.getDate(type.getDATEEND()));
     }
 
     public long getId() {
@@ -72,12 +60,12 @@ public class V001Nomerclr implements Serializable {
         this.id = id;
     }
 
-    public String getRbName() {
-        return rbName;
+    public String getNmoName() {
+        return nmoName;
     }
 
-    public void setRbName(String rbName) {
-        this.rbName = rbName;
+    public void setNmoName(String nmoName) {
+        this.nmoName = nmoName;
     }
 
     public Date getDateBegin() {
@@ -98,9 +86,9 @@ public class V001Nomerclr implements Serializable {
 
     @Override
     public String toString() {
-        final StringBuilder sb = new StringBuilder("V001Nomerclr{");
+        final StringBuilder sb = new StringBuilder("V007NomMO{");
         sb.append("id=").append(id);
-        sb.append(", rbName='").append(rbName).append('\'');
+        sb.append(", nmoName='").append(nmoName).append('\'');
         sb.append(", dateBegin=").append(dateBegin);
         sb.append(", dateEnd=").append(dateEnd);
         sb.append('}');

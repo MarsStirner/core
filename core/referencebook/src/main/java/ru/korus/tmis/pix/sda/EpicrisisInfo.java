@@ -105,7 +105,7 @@ public class EpicrisisInfo {
         StringBuilder res = new StringBuilder();
         final SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd");
         res.append(orgName).append(' ')
-                .append("Дата и время: ").append(createDate != null ? dateFormat.format(createDate) : "???").append(' ')
+                .append("Дата и время: ").append(createDate != null ? dateFormat.format(createDate.toGregorianCalendar().getTime()) : "???").append(' ')
                 .append("Амбулаторная карта №").append(action.getEvent().getExternalId()).append(' ')
                 .append("Ф.И.О. пациента: " + clientInfo.getFamilyName() + ' ' + clientInfo.getGivenName() + ' ' + clientInfo.getMiddleName())
                 .append("Возраст: " + (createDate != null && clientInfo.getBirthDate() != null ? getAge(createDate, clientInfo.getBirthDate()) : "???"));

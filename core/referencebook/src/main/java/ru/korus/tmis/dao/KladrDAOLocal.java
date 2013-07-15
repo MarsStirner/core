@@ -1,7 +1,6 @@
 package ru.korus.tmis.dao;
 
-import ru.korus.tmis.entity.F001Tfoms;
-import ru.korus.tmis.entity.Kladr;
+import ru.korus.tmis.core.entity.model.referencebook.KladrRb;
 
 import javax.ejb.Local;
 
@@ -16,5 +15,5 @@ public interface KladrDAOLocal {
 
     boolean isExist(String id);
 
-    void insert(final Kladr item);
+    void insert(final KladrRb item);
 }

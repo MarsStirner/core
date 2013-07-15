@@ -41,7 +41,7 @@ public class SOAPHandlerSda implements SOAPHandler<SOAPMessageContext> {
                 NodeList nodeList = nodeWithNameSpace.getChildNodes();
                 // Создаем новый элемент с пустым пространством имен
                 Element cont = body.getOwnerDocument().createElement("Container");
-                // копируем в новы элемент узлы из SOAP сообщения
+                // копируем в новый элемент узлы из SOAP сообщения
                 for (int index = 0; index < nodeList.getLength(); ++index) {
                     cont.appendChild(nodeList.item(index));
                 }
