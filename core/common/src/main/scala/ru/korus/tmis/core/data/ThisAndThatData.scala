@@ -284,12 +284,21 @@ class ActionTypesListData {
   def this(requestData: ListDataRequest, getAllActionTypeWithFilter: (Int, Int, String, ListDataFilter) => java.util.List[ActionType]) = {
     this ()
     this.requestData = requestData
-    getAllActionTypeWithFilter(0, 0, this.requestData.sortingFieldInternal, this.requestData.filter.unwrap()).foreach(at => {
+
+    var ats = getAllActionTypeWithFilter(0, 0, this.requestData.sortingFieldInternal, this.requestData.filter.unwrap())
+    ats.foreach(at => {
       requestData.setFilter( new ActionTypesListRequestDataFilter( "",
                                                                   at.getId.intValue(),
+                                                                  this.requestData.filter.asInstanceOf[ActionTypesListRequestDataFilter].flatCodes,
                                                                   this.requestData.filter.asInstanceOf[ActionTypesListRequestDataFilter].mnemonics,
                                                                   this.requestData.filter.asInstanceOf[ActionTypesListRequestDataFilter].view))
-      this.data.add(new ActionTypesListEntry(at, requestData, getAllActionTypeWithFilter))
+      var elem: ActionType = null
+      if (at.getGroupId != null && requestData.filter.asInstanceOf[ActionTypesListRequestDataFilter].view.compareTo("tree") == 0) {
+        elem = ats.find(at2 => at2.getId.intValue() == at.getGroupId.intValue()).getOrElse(null)
+      }
+      if (elem == null) {
+        this.data.add(new ActionTypesListEntry(at, requestData, getAllActionTypeWithFilter))
+      }
     })
   }
 }
@@ -302,6 +311,9 @@ class ActionTypesListRequestDataFilter extends AbstractListDataFilter {
   var code: String = _
 
   @BeanProperty
+  var flatCodes: java.util.List[String] = new java.util.LinkedList[String]
+
+  @BeanProperty
   var groupId: Int = 0
 
   @BeanProperty
@@ -312,6 +324,7 @@ class ActionTypesListRequestDataFilter extends AbstractListDataFilter {
 
   def this(code_x: String,
            groupId: Int,
+           flatCodes: java.util.List[String],
            //diaType_xs: java.util.List[String],
            mnemonics: java.util.List[String],
            view: String) {
@@ -327,6 +340,9 @@ class ActionTypesListRequestDataFilter extends AbstractListDataFilter {
                                         }
                 }*/
     this.groupId = groupId
+    if (flatCodes != null && flatCodes.size() > 0) {
+      this.flatCodes = flatCodes.filter(p=>(p!=null && !p.isEmpty))
+    }
     this.mnemonics = mnemonics.filter(p=>(p!=null && !p.isEmpty))
     if (view!=null && !view.isEmpty){
       this.view = view
@@ -337,17 +353,20 @@ class ActionTypesListRequestDataFilter extends AbstractListDataFilter {
   def toQueryStructure() = {
     var qs = new QueryDataStructure()
     if(this.groupId>0){
-      qs.query += ("AND at.groupId =  :groupId\n")
+      qs.query += ("AND at.groupId = :groupId\n")
       qs.add("groupId", this.groupId:java.lang.Integer)
     }
     else if(this.code!=null && !this.code.isEmpty){
       qs.query += ("AND at.groupId IN (SELECT at2.id FROM ActionType at2 WHERE at2.code = :code)\n")
       qs.add("code",this.code)
-    } else if(this.view.compareTo("tree")==0){
-      qs.query += ("AND (at.groupId IS NULL OR at.groupId<=0)")
-    }
+    } else if (this.flatCodes!=null && this.flatCodes.size() > 0) {
+      qs.query += ("AND at.flatCode IN :flatCodes\n")
+      qs.add("flatCodes", asJavaCollection(this.flatCodes))
+    }   //else if(this.view.compareTo("tree")==0){
+      //qs.query += ("AND (at.groupId IS NULL OR at.groupId<=0)")
+    //}
     if (this.mnemonics!=null && this.mnemonics.size() > 0) {
-      qs.query += ("AND at.mnemonic IN  :mnemonic\n")
+      qs.query += ("AND at.mnemonic IN :mnemonic\n")
       qs.add("mnemonic",asJavaCollection(this.mnemonics))
     }
     qs
@@ -359,6 +378,8 @@ class ActionTypesListRequestDataFilter extends AbstractListDataFilter {
       case "groupId" => {"at.groupId %s"}
       case "code" => {"at.code %s"}
       case "name" => {"at.name %s"}
+      case "flatCode" => {"at.flatCode %s"}
+      case "mnem" => {"at.mnemonic %s"}
       case _ => {"at.id %s"}
     }
     sorting = "ORDER BY " + sorting.format(sortingMethod)
@@ -411,6 +432,7 @@ class ActionTypesListEntry {
       getAllActionTypeWithFilter(0,0,requestData.sortingFieldInternal,requestData.filter.unwrap()).foreach(f => {
         val filter = new ActionTypesListRequestDataFilter("",
                                                           f.getId.intValue(),
+                                                          requestData.filter.asInstanceOf[ActionTypesListRequestDataFilter].flatCodes,
                                                           requestData.filter.asInstanceOf[ActionTypesListRequestDataFilter].mnemonics,
                                                           requestData.filter.asInstanceOf[ActionTypesListRequestDataFilter].view)
         val request = new ListDataRequest(requestData.sortingField, requestData.sortingMethod, requestData.limit, requestData.page, filter)

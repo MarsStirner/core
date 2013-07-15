@@ -407,6 +407,7 @@ public class DirectoryInfoRESTImpl {
      * &#15; "name" - по обозначению типа действия;</pre>
      * @param groupId Фильтр по идентификатору группы типа действия (s11r64.ActionType.group_id). (В url: filter[groupId]=...)
      * @param code  Фильтр по коду типа действия (s11r64.ActionType.code). (В url: filter[code]=...)
+     * @param flatCode Фильтр по флэтКоду. (В url: filter[flatCode]=...)
      * @param view  Фильтр по коду типа отображения информации. (В url: filter[view]=...)
      * &#15; Возможные значения:
      * &#15; "tree" - в виде дерева;
@@ -426,6 +427,7 @@ public class DirectoryInfoRESTImpl {
                                         @QueryParam("filter[mnem]")String mnem*/) {
 
         java.util.List<String> mnems = info.getQueryParameters().get("filter[mnem]");
+        java.util.List<String> flatCodes = info.getQueryParameters().get("filter[flatCode]");
 
         //java.util.List<String> subTypes = new LinkedList<String>();
         java.util.List<String> mnemonics = new LinkedList<String>();
@@ -439,7 +441,7 @@ public class DirectoryInfoRESTImpl {
             }
         }
 
-        ActionTypesListRequestDataFilter filter = new ActionTypesListRequestDataFilter(code, groupId, /*subTypes,*/ mnemonics, view);
+        ActionTypesListRequestDataFilter filter = new ActionTypesListRequestDataFilter(code, groupId, flatCodes, /*subTypes,*/ mnemonics, view);
         ListDataRequest request = new ListDataRequest(sortingField, sortingMethod, limit, page, filter);
         return new JSONWithPadding((view != null && view.compareTo("tree") == 0) ? wsImpl.getListOfActionTypes(request)
                                                                                  : wsImpl.getListOfActionTypeIdNames(request, patientId), this.callback);
