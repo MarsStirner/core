@@ -164,7 +164,7 @@ public class HsPixPullBean {
                     .setParameter("groupId", a.getActionType().getGroupId()).getResultList();
             if (!actionTypes.isEmpty()) {
                 if (actionTypes.get(0).getFlatCode().equals("epicrisis")) {
-                    res.add(new EpicrisisInfo(a, clientInfo, EventInfo.getOrgFullName(event), dbActionPropertyBeanLocal));
+                    res.add(new EpicrisisInfo(a, clientInfo, EventInfo.getOrgShortName(event), dbActionPropertyBeanLocal));
                 }
             }
         }
@@ -193,7 +193,7 @@ public class HsPixPullBean {
     private List<AllergyInfo> getAllergies(Event event) {
         List<AllergyInfo> res = new LinkedList<AllergyInfo>();
         for (ClientAllergy allergy : event.getPatient().getClientAllergies()) {
-            res.add(new AllergyInfo(allergy, EventInfo.getOrgFullName(event)));
+            res.add(new AllergyInfo(allergy, EventInfo.getOrgShortName(event)));
         }
         return res;
     }
