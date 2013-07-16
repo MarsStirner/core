@@ -3,6 +3,9 @@ package ru.korus.tmis.ws.transfusion;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Vector;
+
+import javax.persistence.EntityManager;
 
 import ru.korus.tmis.core.database.dbutil.Database;
 import ru.korus.tmis.core.entity.model.Action;
@@ -117,4 +120,18 @@ public class TrfuActionProp {
         setRequestState(action.getId(), errMsg);
         throw new CoreException(errMsg);
     }
+
+    public static List<Action> getMovings(Action action, EntityManager em) {
+        final List<ActionType> typeMovings = em
+                .createQuery("SELECT at FROM ActionType at WHERE at.deleted = 0 AND at.flatCode = 'moving'", ActionType.class).getResultList();
+        if (typeMovings.isEmpty()) {
+            return new Vector<Action>();
+        }
+        final List<Action> movings = em
+                .createQuery("SELECT a FROM Action a WHERE a.deleted = 0 AND a.actionType.deleted = 0 AND a.actionType.flatCode = 'moving'" +
+                        " AND a.status != 2 AND a.event.patient.id = :patientId", Action.class)
+                .setParameter("patientId", action.getEvent().getPatient().getId()).getResultList();
+        return movings;
+    }
+
 }

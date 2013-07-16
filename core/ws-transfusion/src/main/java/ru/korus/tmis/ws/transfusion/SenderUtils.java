@@ -4,7 +4,6 @@ import java.util.Date;
 
 import ru.korus.tmis.core.entity.model.Action;
 import ru.korus.tmis.core.entity.model.Event;
-import ru.korus.tmis.core.entity.model.OrgStructure;
 import ru.korus.tmis.core.entity.model.Staff;
 import ru.korus.tmis.core.exception.CoreException;
 
@@ -37,25 +36,6 @@ public class SenderUtils {
             trfuActionProp.setErrorState(action, "Ошибка: Не задан врач, назначивший трансфузию");
         }
         return assigner;
-    }
-
-    /**
-     * Отделение врача, назначившего трансфузию
-     * 
-     * @param action
-     *            - действие, передаваемое в подсистему ТРФУ
-     * @param createPerson
-     *            - врача, назначивший трансфузию
-     * @return - идентификатор отделения
-     * @throws CoreException
-     *             - если не установлено отделениt для врача, назначившего трансфузию
-     */
-    public Integer getOrgStructure(final Action action, final Staff createPerson, TrfuActionProp trfuActionProp) throws CoreException {
-        final OrgStructure orgStructure = createPerson.getOrgStructure();
-        if (orgStructure == null) {
-            trfuActionProp.setErrorState(action, "Ошибка: Не задано подразделение у врача, назначившего трансфузию");
-        }
-        return orgStructure.getId();
     }
 
     /**
