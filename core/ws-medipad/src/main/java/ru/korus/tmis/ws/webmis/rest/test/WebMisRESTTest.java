@@ -11,10 +11,12 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import ru.korus.tmis.core.data.*;
 import ru.korus.tmis.core.database.DbOrgStructureBeanLocal;
+import ru.korus.tmis.core.database.DbRbBloodTypeBeanLocal;
 import ru.korus.tmis.core.entity.model.OrgStructure;
 import ru.korus.tmis.core.exception.CoreException;
 import ru.korus.tmis.ws.impl.WebMisRESTImpl;
 import java.util.ArrayList;
+import java.util.LinkedList;
 import java.util.List;
 
 import static org.mockito.Mockito.*;
@@ -33,6 +35,9 @@ public class WebMisRESTTest {
 
     @Mock
     private DbOrgStructureBeanLocal dbOrgStructureBean;
+
+    @Mock
+    private DbRbBloodTypeBeanLocal dbBloodTypeBean;
 
     @Before
     public void init() {
@@ -82,9 +87,9 @@ public class WebMisRESTTest {
 
         when(dbOrgStructureBean.getCountAllOrgStructuresWithFilter(request.filter())).thenReturn(3L);
         when(dbOrgStructureBean.getAllOrgStructuresByRequest(request.limit(),
-                request.page()-1,
-                request.sortingFieldInternal(),
-                request.filter().unwrap())).thenReturn(list);
+                                                             request.page()-1,
+                                                             request.sortingFieldInternal(),
+                                                             request.filter().unwrap())).thenReturn(list);
 
         AllDepartmentsListData result = wsImpl.getAllDepartments(request);
 
@@ -104,6 +109,5 @@ public class WebMisRESTTest {
         Assert.assertEquals(list.get(2).getId().intValue(), result.data().get(2).id());
         validateMockitoUsage();
     }
-
 }
 

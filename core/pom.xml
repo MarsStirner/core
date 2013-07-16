@@ -165,7 +165,7 @@
     <profiles>
         <!-- Профиль для установки на стандартный Linux-сервер -->
         <profile>
-            <id>production-fnkc</id>
+            <id>production-standart</id>
             <properties>
                 <!-- Выключить дебаг -->
                 <project.build.debug>false</project.build.debug>
