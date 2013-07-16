@@ -7,7 +7,7 @@ import javax.xml.datatype.XMLGregorianCalendar;
 
 import ru.korus.tmis.core.database.dbutil.Database;
 import ru.korus.tmis.core.entity.model.Event;
-import ru.korus.tmis.core.entity.model.RbRequestType;import ru.korus.tmis.core.entity.model.UUID;
+import ru.korus.tmis.core.entity.model.RbRequestType;
 
 /**
  * Author:      Sergey A. Zagrebelny <br>
@@ -20,6 +20,7 @@ import ru.korus.tmis.core.entity.model.RbRequestType;import ru.korus.tmis.core.e
  * 
  */
 public class EventInfo {
+    private static final int MAX_ORG_NAME_LENGHT = 50;
     /**
      * UUID события
      */
@@ -62,7 +63,7 @@ public class EventInfo {
 
         this.begDate = begDate;
         this.endDate = endDate;
-        this.orgName = getOrgFullName(event);
+        this.orgName = getOrgShortName(event);
         this.type = event.getEventType().getId();
     }
 
@@ -70,8 +71,13 @@ public class EventInfo {
      * @param event
      * @return
      */
-    public static String getOrgFullName(Event event) {
-        return event.getOrganisation() == null ? null : event.getOrganisation().getFullName();
+    public static String getOrgShortName(Event event) {
+        if ( event.getOrganisation() == null || event.getOrganisation().getShortName() == null) {
+            return "unknown";
+        } else {
+            String res = event.getOrganisation().getShortName();
+            return res.substring(0, Math.min(MAX_ORG_NAME_LENGHT, res.length()));
+        }
     }
 
     /**
