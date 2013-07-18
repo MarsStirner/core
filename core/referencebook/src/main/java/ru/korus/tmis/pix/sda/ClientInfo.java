@@ -192,9 +192,9 @@ public class ClientInfo {
         this.middleName = client.getPatrName();
 
         if (client.getSex() == 1) {
-            this.gender = Gender.F;
-        } else if (client.getSex() == 2) {
             this.gender = Gender.M;
+        } else if (client.getSex() == 2) {
+            this.gender = Gender.F;
         } else {
             this.gender = null;
         }

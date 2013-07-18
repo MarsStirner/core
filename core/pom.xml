@@ -28,7 +28,7 @@
 
     <properties>
         <!-- Версия ядра-->
-        <version.tmis.core>2.0.2-SNAPSHOT</version.tmis.core>
+        <version.tmis.core>2.0.3-SNAPSHOT</version.tmis.core>
 
 
         <version.joda.time>2.1</version.joda.time>
@@ -165,7 +165,7 @@
     <profiles>
         <!-- Профиль для установки на стандартный Linux-сервер -->
         <profile>
-            <id>production-fnkc</id>
+            <id>production-standart</id>
             <properties>
                 <!-- Выключить дебаг -->
                 <project.build.debug>false</project.build.debug>
