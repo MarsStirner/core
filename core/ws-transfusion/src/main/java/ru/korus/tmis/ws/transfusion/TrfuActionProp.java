@@ -8,9 +8,7 @@ import java.util.Vector;
 import javax.persistence.EntityManager;
 
 import ru.korus.tmis.core.database.dbutil.Database;
-import ru.korus.tmis.core.entity.model.Action;
-import ru.korus.tmis.core.entity.model.ActionPropertyType;
-import ru.korus.tmis.core.entity.model.ActionType;
+import ru.korus.tmis.core.entity.model.*;
 import ru.korus.tmis.core.exception.CoreException;
 
 /**
@@ -132,6 +130,39 @@ public class TrfuActionProp {
                         " AND a.status != 2 AND a.event.patient.id = :patientId", Action.class)
                 .setParameter("patientId", action.getEvent().getPatient().getId()).getResultList();
         return movings;
+    }
+    public Integer getOrgStructure(Action action) {
+        List<Action> movings = getMovings(action, database.getEntityMgr());
+        for (Action moving : movings) {
+            Integer res = getOrgStructureForAction(moving);
+            if (res != null) {
+                return res;
+            }
+        }
+        return null;
+    }
+
+    private Integer getOrgStructureForAction(Action moving) {
+        final String propTypeCode  = "hospOrgStruct";
+        final EntityManager em = database.getEntityMgr();
+        final List<ActionPropertyType> actionPropTypes = em
+                .createQuery("SELECT atp FROM ActionPropertyType atp WHERE atp.actionType.id = :typeId AND atp.deleted = 0 AND atp.code = :propTypeCode", ActionPropertyType.class)
+                .setParameter("typeId", moving.getActionType().getId())
+                .setParameter("propTypeCode", propTypeCode).getResultList();
+        for(ActionPropertyType propType: actionPropTypes)  {
+            List<ActionProperty> actionProps = database.getActionProp(moving.getId(), propType.getId());
+            for(ActionProperty prop : actionProps) {
+                final List<APValueOrgStructure> propRes =
+                    em.createQuery("SELECT p FROM APValueOrgStructure p WHERE p.id = :id", APValueOrgStructure.class)
+                            .setParameter("id", new IndexedId(prop.getId(), 0)).getResultList();
+                if (!propRes.isEmpty()) {
+                    if (propRes.get(0).getValue() != null) {
+                        return propRes.get(0).getValue().getId();
+                    }
+                }
+            }
+        }
+        return  null;
     }
 
 }

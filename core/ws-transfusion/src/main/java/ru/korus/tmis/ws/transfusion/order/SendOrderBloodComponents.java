@@ -130,7 +130,6 @@ public class SendOrderBloodComponents {
      * @param action
      *            - действие, соответсвующее новому требованию КК
      * @param trfuActionProp
-     * @param entityMgr
      * @return - информацию о пациенте для передачи в ТРФУ
      * @throws CoreException
      *             - при ошибке во время работы с БД
@@ -163,7 +162,7 @@ public class SendOrderBloodComponents {
     }
 
     private static boolean checkMovingForPatient(Action action, EntityManager em) {
-        final List<Action> movings = SenderUtils.getMovings(action, em);
+        final List<Action> movings = TrfuActionProp.getMovings(action, em);
         return !movings.isEmpty();
     }
 
@@ -244,7 +243,7 @@ public class SendOrderBloodComponents {
 
         final Staff assigner = senderUtils.getAssigner(action, trfuActionProp);
         final Staff createPerson = EntityMgr.getSafe(assigner);
-        res.setDivisionId(senderUtils.getOrgStructure(action, createPerson, trfuActionProp));
+        res.setDivisionId(trfuActionProp.getOrgStructure(action));
         final Event event = EntityMgr.getSafe(action.getEvent());
         res.setIbNumber(senderUtils.getIbNumbre(action, event, trfuActionProp));
         res.setDiagnosis((String) trfuActionProp.getProp(action.getId(), PropType.DIAGNOSIS));

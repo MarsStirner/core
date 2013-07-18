@@ -212,7 +212,7 @@ public class SendProcedureRequest {
         res.setOperationType(getTrfuProcType(actionType.getFlatCode()));
         final Staff assigner = senderUtils.getAssigner(action, trfuActionProp);
         final Staff createPerson = EntityMgr.getSafe(assigner);
-        res.setDivisionId(senderUtils.getOrgStructure(action, createPerson, trfuActionProp));
+        res.setDivisionId(trfuActionProp.getOrgStructure(action));
         final Event event = EntityMgr.getSafe(action.getEvent());
         res.setIbNumber(senderUtils.getIbNumbre(action, event, trfuActionProp));
         final Date plannedEndDate = senderUtils.getPlannedData(action, trfuActionProp);

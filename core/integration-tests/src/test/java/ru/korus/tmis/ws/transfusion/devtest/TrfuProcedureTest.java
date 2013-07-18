@@ -100,6 +100,7 @@ public class TrfuProcedureTest extends TestBase {
         try {
             clearDB(propConstants);
             createActionWithProp(TRFU_PROCEDURE_ACTION_TYPE_ID, propConstants);
+            setValue(PropType.PATIENT_ORG_STRUCT, 1);
             String res = waitOrderRequestId();
             AssertJUnit.assertTrue(res != null ? res.indexOf("Получен идентификатор в системе ТРФУ: ") == 0 : false);
         } catch (final InterruptedException ex) {

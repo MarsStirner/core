@@ -23,21 +23,24 @@ public class TestBase {
 
     protected final static Integer ACTION_ID = 100000000;
     protected final static Integer ACTION_MOVING_ID = 100000001;
-    protected final static Integer ACTION_MOVING_TYPE = 113;
 
     protected final static Integer ACTION_PORP_ID_BASE = 100000000;
 
+    protected final static Integer ACTION_MOVING_TYPE = 113;
+    private static final PropType[] propMovingConstants = { PropType.PATIENT_ORG_STRUCT };
+
     static Connection conn = null;
 
-    protected static void initTestCase(final Integer actionId, final PropType[] propConstants) {
+    protected static void initTestCase(Integer actionTypeId, PropType[] propConstants) {
         try {
             final String userName = "root";
             final String password = "root";
             final String url = JDBC_MYSQL_URL;
             Class.forName("com.mysql.jdbc.Driver").newInstance();
             conn = DriverManager.getConnection(url, userName, password);
-            initPropId(actionId, propConstants);
             System.out.println("Database connection established");
+            initPropId(actionTypeId, propConstants);
+            initPropId(ACTION_MOVING_TYPE, propMovingConstants);
         } catch (final Exception e) {
             e.printStackTrace();
         }
@@ -53,23 +56,23 @@ public class TestBase {
         }
     }
 
-    /**
-     * @throws SQLException
-     * 
-     */
-    private static void initPropId(final Integer actionId, final PropType[] propConstants) throws SQLException {
-        final Statement s = conn.createStatement();
-        for (final PropType propType : propConstants) {
-            final String sqlActionPropTypeSelectTpl = "SELECT id FROM ActionPropertyType WHERE code = '%s' AND actionType_id = %d";
-            s.executeQuery(String.format(sqlActionPropTypeSelectTpl, propType.getCode(), actionId));
-            final ResultSet rs = s.getResultSet();
-            if (rs.next()) {
-                propType.setId(rs.getInt("id"));
-            } else {
-                throw new SQLException(String.format("The action property type for code %s has been not found", propType.getCode()));
+    public static void initPropId(final Integer actionTypeId, final PropType[] propConstants) {
+        try {
+            final Statement s = conn.createStatement();
+            for (final PropType propType : propConstants) {
+                final String sqlActionPropTypeSelectTpl = "SELECT id FROM ActionPropertyType WHERE code = '%s' AND actionType_id = %d";
+                s.executeQuery(String.format(sqlActionPropTypeSelectTpl, propType.getCode(), actionTypeId));
+                final ResultSet rs = s.getResultSet();
+                if (rs.next()) {
+                    propType.setId(rs.getInt("id"));
+                } else {
+                    throw new SQLException(String.format("The action property type for code %s has been not found", propType.getCode()));
+                }
             }
+            s.close();
+        } catch (final Exception e) {
+            e.printStackTrace();
         }
-        s.close();
     }
 
     /**
@@ -83,6 +86,11 @@ public class TestBase {
         s.executeUpdate("DELETE FROM trfuOrderIssueResult WHERE action_id=" + ACTION_ID);
         s.executeUpdate("DELETE FROM ActionProperty WHERE action_id=" + ACTION_ID);
         for (final PropType propType : propConstants) {
+            s.executeUpdate("DELETE FROM ActionProperty WHERE id=" + getPropValueId(propType));
+            final String sql = "DELETE FROM ActionProperty_" + propType.getType() + " WHERE id=" + getPropValueId(propType);
+            s.executeUpdate(sql);
+        }
+        for (final PropType propType : propMovingConstants) {
             s.executeUpdate("DELETE FROM ActionProperty WHERE id=" + getPropValueId(propType));
             final String sql = "DELETE FROM ActionProperty_" + propType.getType() + " WHERE id=" + getPropValueId(propType);
             s.executeUpdate(sql);
@@ -125,7 +133,10 @@ public class TestBase {
             s.executeUpdate(String.format(sqlActionPropInsertTpl, getPropValueId(propType), TRFU_ACTION_CREATED_PERSON_ID, TRFU_ACTION_CREATED_PERSON_ID,
                     ACTION_ID, propType.getId()));
         }
-
+        for (final PropType propType : propMovingConstants) {
+            s.executeUpdate(String.format(sqlActionPropInsertTpl, getPropValueId(propType), TRFU_ACTION_CREATED_PERSON_ID, TRFU_ACTION_CREATED_PERSON_ID,
+                    ACTION_MOVING_ID, propType.getId()));
+        }
     }
 
     /**
@@ -159,5 +170,17 @@ public class TestBase {
         } else {
             throw new SQLException(String.format("The action property type for code %s has been not found", propType.getCode()));
         }
+    }
+
+    /**
+     * @param diagnosis
+     * @param string
+     * @throws SQLException
+     */
+    public <T> void setValue(final PropType propType, final T value) throws SQLException {
+        final Statement s = conn.createStatement();
+        final Integer id = getPropValueId(propType);
+        final String sql = "INSERT INTO ActionProperty_" + propType.getType() + " (`id`, `index`, `value`) VALUES (" + id + ", 0, '" + value + "')";
+        s.executeUpdate(sql);
     }
 }
