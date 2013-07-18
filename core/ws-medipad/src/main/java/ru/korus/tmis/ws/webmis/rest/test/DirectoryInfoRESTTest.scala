@@ -5,12 +5,16 @@ import org.junit.Before
 import org.junit.Test
 import org.junit.runner.RunWith
 import org.mockito._
+import org.mockito.Matchers._
 import org.mockito.runners.MockitoJUnitRunner
 import ru.korus.tmis.ws.impl.WebMisRESTImpl
-import ru.korus.tmis.core.database.DbRbBloodTypeBeanLocal
+import ru.korus.tmis.core.database.{DbStaffBeanLocal, DbRbBloodTypeBeanLocal}
 import ru.korus.tmis.core.exception.CoreException
-import ru.korus.tmis.core.data.{AllDepartmentsListData, ListDataRequest, DictionaryListRequestDataFilter}
+import ru.korus.tmis.core.data.{PersonsListDataFilter, AllDepartmentsListData, ListDataRequest, DictionaryListRequestDataFilter}
 import org.mockito.Mockito._
+import ru.korus.tmis.core.entity.model.Staff
+import runtime.AbstractFunction1
+import java.util
 
 /**
  * Created with IntelliJ IDEA.
@@ -33,6 +37,9 @@ class DirectoryInfoRESTTest {
 
   @Mock
   var dbBloodTypeBean: DbRbBloodTypeBeanLocal = _
+
+  @Mock
+  var dbStaff: DbStaffBeanLocal = _
 
   @Before
   def init() {
@@ -71,6 +78,65 @@ class DirectoryInfoRESTTest {
     Assert.assertEquals(list.get(1).getId().intValue(), result.data().get(1).id());
     Assert.assertEquals(list.get(2).getId().intValue(), result.data().get(2).id());
     validateMockitoUsage();*/
+  }
+
+  @Test
+  def testGetAllPersons = {
+    //Справочник персонала
+    val filter = new PersonsListDataFilter(18);
+    val requestData = new ListDataRequest("id", "asc", 10, 1, filter);
+
+    val list = new java.util.LinkedList[Staff];
+    list.add(new Staff(204));
+    list.add(new Staff(205));
+
+    when(dbStaff.getAllPersonsByRequest(anyInt(),
+                                        anyInt(),
+                                        anyString(),
+                                        anyObject(),
+                                        anyObject())).thenReturn(list);
+
+    val result = wsImpl.getAllPersons(requestData);
+
+    verify(dbStaff).getAllPersonsByRequest( anyInt(),
+                                            anyInt(),
+                                            anyString(),
+                                            anyObject(),
+                                            anyObject());
+
+    Assert.assertNotNull(result)
+    Assert.assertEquals(2, result.data.size());
+    //проверка сохранности сортировки
+    Assert.assertEquals(list.get(0).getId().intValue(), result.data.get(0).getId);
+    Assert.assertEquals(list.get(1).getId().intValue(), result.data.get(1).getId);
+    validateMockitoUsage(); //Диагностика неисправности мокито
+  }
+
+  @Test
+  def testGetAllPersonsCaseNullResponse = {      //public void testGetAllDepartmentsCaseNullResponse() throws CoreException {
+    //Справочник персонала
+    val filter = new PersonsListDataFilter(18);
+    val requestData = new ListDataRequest("id", "asc", 10, 1, filter);
+    val list = new java.util.LinkedList[Staff]
+
+    when(dbStaff.getAllPersonsByRequest(anyInt(),
+      anyInt(),
+      anyString(),
+      anyObject(),
+      anyObject())).thenReturn(list);
+
+    var result = wsImpl.getAllPersons(requestData);
+
+    verify(dbStaff).getAllPersonsByRequest( anyInt(),
+      anyInt(),
+      anyString(),
+      anyObject(),
+      anyObject());
+
+    Assert.assertNotNull(result)
+    Assert.assertNotNull(result.data)
+    Assert.assertEquals(0, result.data.size());
+    validateMockitoUsage();
   }
 
 }

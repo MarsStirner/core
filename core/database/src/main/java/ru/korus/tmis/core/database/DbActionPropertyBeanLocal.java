@@ -5,10 +5,7 @@ import ru.korus.tmis.core.entity.model.*;
 import ru.korus.tmis.core.exception.CoreException;
 
 import javax.ejb.Local;
-import java.util.LinkedHashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
+import java.util.*;
 
 @Local
 public interface DbActionPropertyBeanLocal {
@@ -76,6 +73,12 @@ public interface DbActionPropertyBeanLocal {
     ActionProperty createActionProperty(Action action,
                                         int aptId,
                                         AuthData userData)
+            throws CoreException;
+
+    ActionProperty createActionPropertyWithDate(Action a,
+                                                int aptId,
+                                                AuthData userData,
+                                                Date now)
             throws CoreException;
 
     ActionProperty updateActionProperty(int id,

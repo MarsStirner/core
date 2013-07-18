@@ -127,6 +127,26 @@ class DbActionPropertyBean
     ap
   }
 
+  def createActionPropertyWithDate(a: Action, aptId: Int, userData: AuthData, now: Date) = {
+    val apt = dbActionPropertyType.getActionPropertyTypeById(aptId)
+    val ap = new ActionProperty
+
+    ap.setCreateDatetime(now)
+    ap.setModifyDatetime(now)
+    //TODO: временно подсовываю пустой Staff когда нет AuthData
+    if (userData != null) {
+      ap.setCreatePerson(userData.user)
+      ap.setCreateDatetime(now)
+      ap.setModifyPerson(userData.user)
+      ap.setModifyDatetime(now)
+    }
+
+    ap.setAction(a)
+    ap.setType(apt)
+
+    ap
+  }
+
   def updateActionProperty(id: Int, version: Int, userData: AuthData) = {
     val ap = getActionPropertyById(id)
 
