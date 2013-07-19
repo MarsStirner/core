@@ -12,6 +12,8 @@ import org.joda.time.Days;
 import org.joda.time.Months;
 import org.joda.time.Years;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import ru.korus.tmis.core.database.DbActionPropertyBeanLocal;
 import ru.korus.tmis.core.database.dbutil.Database;
 import ru.korus.tmis.core.entity.model.APValue;
@@ -33,6 +35,8 @@ import ru.korus.tmis.core.exception.CoreException;
  * 
  */
 public class EpicrisisInfo {
+
+    private static final Logger logger = LoggerFactory.getLogger(PixInfo.class);
 
     /**
      * UUID события
@@ -102,29 +106,31 @@ public class EpicrisisInfo {
     }
 
     private String genEpicrisisText(Action action, ClientInfo clientInfo, String orgName, DbActionPropertyBeanLocal apBean) {
+        final char XML_EOL = '\n';
         StringBuilder res = new StringBuilder();
         final SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd");
         res.append(orgName).append(' ')
                 .append("Дата и время: ").append(createDate != null ? dateFormat.format(createDate.toGregorianCalendar().getTime()) : "???").append(' ')
                 .append("Амбулаторная карта №").append(action.getEvent().getExternalId()).append(' ')
                 .append("Ф.И.О. пациента: " + clientInfo.getFamilyName() + ' ' + clientInfo.getGivenName() + ' ' + clientInfo.getMiddleName())
-                .append("Возраст: " + (createDate != null && clientInfo.getBirthDate() != null ? getAge(createDate, clientInfo.getBirthDate()) : "???"));
+                .append("Возраст: " + (createDate != null && clientInfo.getBirthDate() != null ? getAge(createDate, clientInfo.getBirthDate()) : "???"))
+                .append(XML_EOL);
         Map<ActionProperty, List<APValue>> ap;
         try {
             ap = apBean.getActionPropertiesByActionId(action.getId());
             for (Map.Entry<ActionProperty, List<APValue>> prop : ap.entrySet()) {
                 if (prop.getValue() != null && !prop.getValue().isEmpty()) {
-                    res.append(prop.getKey().getType().getName() + ": " + prop.getValue().get(0).getValueAsString());
+                    res.append(prop.getKey().getType().getName() + ": " + prop.getValue().get(0).getValueAsString()).append(XML_EOL);
                 }
             }
         } catch (CoreException e) {
-            // TODO Auto-generated catch block
             e.printStackTrace();
         }
         if (personCreatedId != null) {
-            res.append("идентификатор врача: " + personCreatedId);
+            res.append("идентификатор врача: " + personCreatedId).append(XML_EOL);
+
         }
-        res.append(" " + familyName + ' ' + givenName + ' ' + middleName);
+        res.append(" " + familyName + ' ' + givenName + ' ' + middleName).append(XML_EOL);
         return res.toString();
     }
 

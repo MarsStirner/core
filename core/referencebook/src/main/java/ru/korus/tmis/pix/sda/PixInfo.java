@@ -145,7 +145,7 @@ public class PixInfo {
                 encounter.setFromTime(eventInfo.getBegDate());
             }
             if (eventInfo.getEndDate() != null) {
-                encounter.setEndTime(eventInfo.getEndDate());
+                encounter.setToTime(eventInfo.getEndDate());
             }
             encounter.setEncounterType(eventInfo.isInpatient() ? "I" : "O");
             res.setEncounters(new ArrayOfEncounterEncounter());
