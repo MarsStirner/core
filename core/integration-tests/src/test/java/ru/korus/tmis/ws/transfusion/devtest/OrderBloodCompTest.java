@@ -1,7 +1,6 @@
 package ru.korus.tmis.ws.transfusion.devtest;
 
 import java.sql.SQLException;
-import java.sql.Statement;
 import java.util.GregorianCalendar;
 import java.util.List;
 import java.util.Vector;
@@ -20,6 +19,7 @@ import ru.korus.tmis.ws.transfusion.devtest.wsimport.IssueResult;
 import ru.korus.tmis.ws.transfusion.devtest.wsimport.OrderIssueInfo;
 import ru.korus.tmis.ws.transfusion.devtest.wsimport.TransfusionService;
 import ru.korus.tmis.ws.transfusion.devtest.wsimport.TransfusionServiceImpl;
+import ru.korus.tmis.ws.transfusion.order.SendOrderBloodComponents;
 
 /**
  * Author:      Sergey A. Zagrebelny <br>
@@ -33,7 +33,8 @@ import ru.korus.tmis.ws.transfusion.devtest.wsimport.TransfusionServiceImpl;
  */
 public class OrderBloodCompTest extends TestBase {
 
-    protected final static Integer TRFU_ACTION_TYPE_ID = 3689;// 3689; // TODO init by flatCode
+    protected final static Integer TRFU_ACTION_TYPE_ID = 3580;// 3689; // TODO init by flatCode
+    protected final static Integer ACTION_MOVING_TYPE_ID = 113; // TODO init by flatCode
 
     private static final PropType[] propConstants = { PropType.DIAGNOSIS, // Основной клинический диагноз
             PropType.BLOOD_COMP_TYPE, // Требуемый компонент крови
@@ -56,19 +57,19 @@ public class OrderBloodCompTest extends TestBase {
         closeTestCase();
     }
 
-    @Test
+    @Test(groups = "createNewOrder")
     public void createNewOrder() {
         try {
             clearDB(propConstants);
-            final Integer actionTypeId = TRFU_ACTION_TYPE_ID;
 
-            createActionWithProp(actionTypeId, propConstants);
+            createActionWithProp(TRFU_ACTION_TYPE_ID, propConstants);
 
+            setValue(PropType.PATIENT_ORG_STRUCT, 1);
             setValue(PropType.DIAGNOSIS, "tst DIAGNOSIS");
             setValue(PropType.BLOOD_COMP_TYPE, 1);
             setValue(PropType.DOSE_COUNT, 0.1);
             setValue(PropType.ROOT_CAUSE, "tst root cause");
-            setValue(PropType.TYPE, "<>" + "Плановая" + "<>");
+            setValue(PropType.TYPE, "<>" + SendOrderBloodComponents.TRANSFUSION_TYPE_PLANED + "<>");
             setValue(PropType.ORDER_ISSUE_BLOOD_COMP_PASPORT, ACTION_ID);
             String res = waitOrderRequestId();
             AssertJUnit.assertTrue(res != null ? res.indexOf("Получен идентификатор в системе ТРФУ: ") == 0 : false);
@@ -81,6 +82,7 @@ public class OrderBloodCompTest extends TestBase {
         }
     }
 
+    @Test(groups = "setOrderRes", dependsOnGroups = "createNewOrder")
     public void setOrderRes() {
         final TransfusionServiceImpl serv = new TransfusionServiceImpl();
         final TransfusionService wsTrfu = serv.getPortTransfusion();
@@ -107,18 +109,6 @@ public class OrderBloodCompTest extends TestBase {
         Assert.assertTrue(res.isResult());
         AssertJUnit.assertTrue(res.getDescription() == null);
         AssertJUnit.assertTrue(res.getRequestId().equals(ACTION_ID));
-    }
-
-    /**
-     * @param diagnosis
-     * @param string
-     * @throws SQLException
-     */
-    private <T> void setValue(final PropType propType, final T value) throws SQLException {
-        final Statement s = conn.createStatement();
-        final Integer id = getPropValueId(propType);
-        final String sql = "INSERT INTO ActionProperty_" + propType.getType() + " (`id`, `index`, `value`) VALUES (" + id + ", 0, '" + value + "')";
-        s.executeUpdate(sql);
     }
 
 }
