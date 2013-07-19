@@ -194,11 +194,13 @@ class CommonDataProcessorBean
 
           val emptyApList = emptyApts.map(
             apt => {
-              dbActionProperty.createActionPropertyWithDate(
-                action,
-                apt.getId.intValue,
-                userData,
-                now)
+              if (apt.getIsAssignable == false) {
+                dbActionProperty.createActionPropertyWithDate(
+                  action,
+                  apt.getId.intValue,
+                  userData,
+                  now)
+              }
             })
 
           entities = entities + action
@@ -241,9 +243,9 @@ class CommonDataProcessorBean
 
           // Save empty AP values (set to default values)
           //Для FlatDictionary (FlatDirectory) нету значения по умолчанию, внутри релэйшн по значению валуе, дефолт значение решил не писать
-          val emptyApvList = emptyApList.filter(p => (p.getType.getTypeName.compareTo("FlatDictionary") != 0 && p.getType.getTypeName.compareTo("FlatDirectory") != 0)).map(
+          val emptyApvList = emptyApList.filter(p => (p.asInstanceOf[ActionProperty].getType.getTypeName.compareTo("FlatDictionary") != 0 && p.asInstanceOf[ActionProperty].getType.getTypeName.compareTo("FlatDirectory") != 0)).map(
             ap => {
-              dbActionProperty.setActionPropertyValue(ap, ap.getType.getDefaultValue, 0)
+              dbActionProperty.setActionPropertyValue(ap.asInstanceOf[ActionProperty], ap.asInstanceOf[ActionProperty].getType.getDefaultValue, 0)
             })
 
           entities = (entities /: emptyApvList)(_ + _)

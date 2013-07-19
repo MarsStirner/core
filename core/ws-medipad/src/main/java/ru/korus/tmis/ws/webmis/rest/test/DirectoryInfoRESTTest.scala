@@ -10,11 +10,12 @@ import org.mockito.runners.MockitoJUnitRunner
 import ru.korus.tmis.ws.impl.WebMisRESTImpl
 import ru.korus.tmis.core.database.{DbStaffBeanLocal, DbRbBloodTypeBeanLocal}
 import ru.korus.tmis.core.exception.CoreException
-import ru.korus.tmis.core.data.{PersonsListDataFilter, AllDepartmentsListData, ListDataRequest, DictionaryListRequestDataFilter}
+import ru.korus.tmis.core.data._
 import org.mockito.Mockito._
-import ru.korus.tmis.core.entity.model.Staff
+import ru.korus.tmis.core.entity.model.{APValueTime, Staff}
 import runtime.AbstractFunction1
 import java.util
+import util.Date
 
 /**
  * Created with IntelliJ IDEA.
@@ -139,4 +140,66 @@ class DirectoryInfoRESTTest {
     validateMockitoUsage();
   }
 
+  @Test
+  def testGetFreePersons = {
+
+    //Справочник персонала
+    val filter = new FreePersonsListDataFilter(0, 0, 1465, 1371672000000L, 0);
+    val requestData = new ListDataRequest("id", "asc", 10, 1, filter);
+    val apvTimeList = new util.LinkedList[APValueTime]()
+    var apv1 = new APValueTime(904439, 0)
+    apv1.setValue(new Date(32400000))
+    var apv2 = new APValueTime(904439, 1)
+    apv2.setValue(new Date(36720000))
+    apvTimeList.add(apv1)
+    apvTimeList.add(apv2)
+    val map = new java.util.HashMap[Staff, java.util.LinkedList[APValueTime]];
+    map.put(new Staff(956), apvTimeList);
+
+    when(dbStaff.getEmptyPersonsByRequest(requestData.limit,
+                                          requestData.page-1,
+                                          requestData.sortingFieldInternal,
+                                          requestData.filter.unwrap())).thenReturn(map)
+
+    val result = wsImpl.getFreePersons(requestData)
+
+    verify(dbStaff).getEmptyPersonsByRequest( requestData.limit,
+                                              requestData.page-1,
+                                              requestData.sortingFieldInternal,
+                                              requestData.filter.unwrap())
+
+    Assert.assertNotNull(result)
+    Assert.assertEquals(1, result.data.size());
+    Assert.assertNotNull(result.data.get(0).doctor)
+    Assert.assertNotNull(map.get(new Staff(result.data.get(0).doctor.getId)));
+    Assert.assertEquals(map.get(new Staff(result.data.get(0).doctor.getId)).size(), result.data.get(0).schedule.size());
+    Assert.assertEquals(map.get(new Staff(result.data.get(0).doctor.getId)).get(0).getId.getId, result.data.get(0).schedule.get(0).getId());
+    Assert.assertEquals(map.get(new Staff(result.data.get(0).doctor.getId)).get(0).getId.getIndex, result.data.get(0).schedule.get(0).getIndex());
+    validateMockitoUsage(); //Диагностика неисправности мокито
+  }
+
+  @Test
+  def testGetFreePersonsCaseNullResponse = {
+    val filter = new FreePersonsListDataFilter(0, 0, 1465, 1371672000000L, 0);
+    val requestData = new ListDataRequest("id", "asc", 10, 1, filter);
+
+    val map = new java.util.HashMap[Staff, java.util.LinkedList[APValueTime]];
+
+    when(dbStaff.getEmptyPersonsByRequest(requestData.limit,
+      requestData.page-1,
+      requestData.sortingFieldInternal,
+      requestData.filter.unwrap())).thenReturn(map)
+
+    val result = wsImpl.getFreePersons(requestData)
+
+    verify(dbStaff).getEmptyPersonsByRequest( requestData.limit,
+      requestData.page-1,
+      requestData.sortingFieldInternal,
+      requestData.filter.unwrap())
+
+    Assert.assertNotNull(result)
+    Assert.assertNotNull(result.data)
+    Assert.assertEquals(0, result.data.size());
+    validateMockitoUsage();
+  }
 }
