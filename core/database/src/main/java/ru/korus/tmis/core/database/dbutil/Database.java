@@ -242,7 +242,7 @@ public class Database {
      *            - тип свойства действия {ActionPropertyType.Id}
      * @return список энтити {ActionProperty} соответвующий свойствам типа <code>propTypeId</code> для действия <code>actionId</code>
      */
-    private List<ActionProperty> getActionProp(final int actionId, final int propTypeId) {
+    public List<ActionProperty> getActionProp(final int actionId, final int propTypeId) {
         final List<ActionProperty> prop =
                 em.createQuery("SELECT p FROM ActionProperty p WHERE p.action.id = :curAction_id AND p.deleted = 0 AND p.actionPropertyType.id = :propTypeId",
                         ActionProperty.class).setParameter("curAction_id", actionId).setParameter("propTypeId", propTypeId).getResultList();

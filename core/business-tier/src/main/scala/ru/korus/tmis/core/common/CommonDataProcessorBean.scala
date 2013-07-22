@@ -178,10 +178,11 @@ class CommonDataProcessorBean
             if (AWI.isSupported(attribute.name)) {
               list
             } else {
-              val ap = dbActionProperty.createActionProperty(
+              val ap = dbActionProperty.createActionPropertyWithDate(
                 action,
                 attribute.id.intValue,
-                userData)
+                userData,
+                now)
               new ActionPropertyWrapper(ap).set(attribute)
               (ap, attribute) :: list
             }
@@ -193,10 +194,13 @@ class CommonDataProcessorBean
 
           val emptyApList = emptyApts.map(
             apt => {
-              dbActionProperty.createActionProperty(
-                action,
-                apt.getId.intValue,
-                userData)
+              if (apt.getIsAssignable == false) {
+                dbActionProperty.createActionPropertyWithDate(
+                  action,
+                  apt.getId.intValue,
+                  userData,
+                  now)
+              }
             })
 
           entities = entities + action
@@ -239,9 +243,9 @@ class CommonDataProcessorBean
 
           // Save empty AP values (set to default values)
           //Для FlatDictionary (FlatDirectory) нету значения по умолчанию, внутри релэйшн по значению валуе, дефолт значение решил не писать
-          val emptyApvList = emptyApList.filter(p => (p.getType.getTypeName.compareTo("FlatDictionary") != 0 && p.getType.getTypeName.compareTo("FlatDirectory") != 0)).map(
+          val emptyApvList = emptyApList.filter(p => (p.asInstanceOf[ActionProperty].getType.getTypeName.compareTo("FlatDictionary") != 0 && p.asInstanceOf[ActionProperty].getType.getTypeName.compareTo("FlatDirectory") != 0)).map(
             ap => {
-              dbActionProperty.setActionPropertyValue(ap, ap.getType.getDefaultValue, 0)
+              dbActionProperty.setActionPropertyValue(ap.asInstanceOf[ActionProperty], ap.asInstanceOf[ActionProperty].getType.getDefaultValue, 0)
             })
 
           entities = (entities /: emptyApvList)(_ + _)
@@ -373,7 +377,10 @@ class CommonDataProcessorBean
         }*/
 
         if (beginDate != null) a.setBegDate(beginDate)
-        if (endDate != null) a.setEndDate(endDate)
+        if (endDate != null) {
+          a.setEndDate(endDate)
+          a.setStatus(ActionStatus.FINISHED.getCode) //WEBMIS-880
+        }
         if (finance > 0) a.setFinanceId(finance)
         //a.setToOrder(toOrder)
         if (plannedEndDate != null) a.setPlannedEndDate(plannedEndDate)
@@ -511,11 +518,11 @@ class CommonDataProcessorBean
     types.foldLeft(
       new CommonData(0, dbVersion.getGlobalVersion)
     )((data, at) => {
-      val entity = new CommonEntity(at.getId,
+      val entity = new CommonEntity(at.getId.intValue(),
         0,
         at.getName,
         typeName,
-        at.getGroupId,
+        at.getId.intValue(),
         null,
         at.getCode)
       //***

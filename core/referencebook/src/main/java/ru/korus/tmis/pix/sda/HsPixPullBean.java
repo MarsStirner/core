@@ -55,15 +55,19 @@ public class HsPixPullBean {
 
     @Schedule(hour = "*", minute = "*", second = "30")
     void pullDb() {
+        logger.info("HS integration entry...");
         if (ConfigManager.HealthShare().isSdaActive()) {
+            logger.info("HS integration is active...");
             SDASoapServiceService service = new SDASoapServiceService();
             service.setHandlerResolver(new SdaHandlerResolver());
             SDASoapServiceServiceSoap port = service.getSDASoapServiceServiceSoap();
 
+            logger.info("HS integration ... SDASoapServiceServiceSoap is avalable");
             Integer maxId = em.createQuery("SELECT max(hsi.eventId) FROM HSIntegration hsi", Integer.class).getSingleResult();
             if (maxId == null) {
                 maxId = 0;
             }
+            logger.info("HS integration ... maxId = {}", maxId );
             List<Event> newEvents =
                     em.createQuery("SELECT e FROM Event e WHERE e.id > :max AND (" +
                             "e.eventType.requestType.code = 'clinic' OR " +
@@ -78,6 +82,9 @@ public class HsPixPullBean {
             sendNewEventToHS(port);
             // Отправка карточек новых/обновленных пациентов
             sendPatientsInfo(port);
+        }
+        else {
+            logger.info("HS integration is disabled...");
         }
     }
 

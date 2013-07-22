@@ -19,22 +19,23 @@ enum PropType {
     ROOT_CAUSE("trfuReqBloodCompRootCause", "String"), // Показания к проведению трансфузии
     ORDER_REQUEST_ID("trfuReqBloodCompResult", "String"), // Результат передачи требования в систему ТРФУ
     ORDER_ISSUE_RES_DATE("trfuReqBloodCompDate", "Date"), // Дата выдачи КК
-    ORDER_ISSUE_RES_TIME("trfuReqBloodCompTime", "Time"),// Время выдачи КК
-    ORDER_ISSUE_BLOOD_COMP_PASPORT("trfuReqBloodCompPasport", "Integer"), 
+    ORDER_ISSUE_RES_TIME("trfuReqBloodCompTime", "Time"), // Время выдачи КК
+    ORDER_ISSUE_BLOOD_COMP_PASPORT("trfuReqBloodCompPasport", "Integer"),
+    PATIENT_ORG_STRUCT("hospOrgStruct", "OrgStructure"),
 
-    DONOR_ID("trfuProcedureDonor","Integer"),
+    DONOR_ID("trfuProcedureDonor", "Integer"),
     CONTRAINDICATION("trfuProcedureContraindication", "String"),
     BEFORE_HEMODYNAMICS_PULSE("trfuProcedureBeforeHemodynamicsPulse", "String"),
     AFTER_HEMODYNAMICS_PULSE("trfuProcedureAfterHemodynamicsPulse", "String"),
     BEFORE_HEMODYNAMICS_ARTERIAL_PRESSURE("trfuProcedureBeforeHemodynamicsArterialPressure", "String"),
     AFTER_HEMODYNAMICS_ARTERIAL_PRESSURE("trfuProcedureAfterHemodynamicsArterialPressure", "String"),
-    BEFORE_HEMODYNAMICS_TEMPERATURE("trfuProcedureBeforeHemodynamicsTemperature", "String"), 
+    BEFORE_HEMODYNAMICS_TEMPERATURE("trfuProcedureBeforeHemodynamicsTemperature", "String"),
     AFTER_HEMODYNAMICS_TEMPERATURE("trfuProcedureAfterHemodynamicsTemperature", "String"),
     COMPLICATIONS("trfuProcedureComplications", "String"),
     INITIAL_VOLUME("trfuProcedureInitialVolume", "Double"),
     CHANGE_VOLUME("trfuProcedureChangeVolume", "Double"),
     INITIAL_TBV("trfuProcedureInitialTbv", "String"),
-    CHANGE_TBV("trfuProcedureChangeTbv",  "String"),
+    CHANGE_TBV("trfuProcedureChangeTbv", "String"),
     INITIAL_SPEED("trfuProcedureInitialSpeed", "String"),
     CHANGE_SPEED("trfuProcedureChangeSpeed", "String"),
     INITIAL_INLETACRATIO("trfuProcedureInitialInletAcRatio", "String"),
@@ -62,7 +63,7 @@ enum PropType {
     HT("trfuProcedureHt", "Double"),
     SALINE_VOLUME("trfuProcedureSalineVolume", "Double"),
     FINAL_HT("trfuProcedureFinalHt", "Double");
-    
+
     private Integer id;
     private final String code;
     private final String type;
@@ -80,7 +81,8 @@ enum PropType {
     }
 
     /**
-     * @param id the id to set
+     * @param id
+     *            the id to set
      */
     public void setId(Integer id) {
         this.id = id;
@@ -99,5 +101,5 @@ enum PropType {
     public String getType() {
         return type;
     }
-    
+
 }
