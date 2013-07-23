@@ -24,7 +24,7 @@ $ASADMIN/asadmin list-domains
 echo "--------------------------------------------------------------------"
 echo "Stop domains"
 echo ""
-$ASADMIN/asadmin stop-domain
+$ASADMIN/asadmin stop-domain ${glassfish.domain}"
 echo "--------------------------------------------------------------------"
 echo "Delete domain ${glassfish.domain}"
 echo ""
@@ -48,7 +48,7 @@ cp ../scripts/lib/* ${glassfish.domain.dir}/${glassfish.domain}/lib/ext/
 echo ""
 echo "--------------------------------------------------------------------"
 echo "Start domain ${glassfish.domain}"
-$ASADMIN/asadmin start-domain --domaindir ${glassfish.domain.dir} ${glassfish.domain}
+$ASADMIN/asadmin start-domain --passwordfile $GF_PASSWD_FILE --domaindir ${glassfish.domain.dir} ${glassfish.domain}
 echo "--------------------------------------------------------------------"
 echo "Enable secure admin"
 echo ""
