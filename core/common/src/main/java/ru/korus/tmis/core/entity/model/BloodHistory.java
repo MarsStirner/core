@@ -17,7 +17,7 @@ import java.util.Date;
 @NamedQueries(
         {
           @NamedQuery(name = "BloodHistory.findAll", query = "SELECT bh FROM BloodHistory bh"),
-          @NamedQuery(name = "BloodHistory.findByPatientId", query = "SELECT bh FROM BloodHistory bh WHERE bh.patient.id = :patientId ORDER BY bh.bloodDate desc")
+          @NamedQuery(name = "BloodHistory.findByPatientId", query = "SELECT bh FROM BloodHistory bh WHERE bh.patient.id = :patientId ORDER BY bh.bloodDate desc, bh.id desc")
         })
 @XmlType(name = "diagnostic")
 @XmlRootElement(name = "diagnostic")

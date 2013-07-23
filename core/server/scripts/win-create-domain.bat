@@ -16,7 +16,7 @@ call ${glassfish.home}\bin\asadmin list-domains
 echo --------------------------------------------------------------------
 echo Stop domains
 echo.
-call ${glassfish.home}\bin\asadmin stop-domain
+call ${glassfish.home}\bin\asadmin stop-domain ${glassfish.domain}
 echo --------------------------------------------------------------------
 echo Delete domain ${glassfish.domain}
 echo.
@@ -38,7 +38,7 @@ copy /y ..\scripts\lib\*.* ${glassfish.domain.dir}\${glassfish.domain}\lib\ext\
 echo.
 echo --------------------------------------------------------------------
 echo Start domain ${glassfish.domain}
-call ${glassfish.home}\bin\asadmin start-domain --domaindir ${glassfish.domain.dir} ${glassfish.domain}
+call ${glassfish.home}\bin\asadmin start-domain --passwordfile %GF_PASSWD_FILE% --domaindir ${glassfish.domain.dir} ${glassfish.domain}
 echo --------------------------------------------------------------------
 echo Enable secure admin
 echo.
@@ -156,8 +156,8 @@ del -f %GF_PASSWD_FILE%
 echo --------------------------------------------------------------------
 echo Stop-Start domain ${glassfish.domain}
 echo.
-call ${glassfish.home}\bin\asadmin stop-domain --domaindir ${glassfish.domain.dir} ${glassfish.domain}
-call ${glassfish.home}\bin\asadmin start-domain --domaindir ${glassfish.domain.dir} ${glassfish.domain}
+call ${glassfish.home}\bin\asadmin stop-domain --passwordfile %GF_PASSWD_FILE% --domaindir ${glassfish.domain.dir} ${glassfish.domain}
+call ${glassfish.home}\bin\asadmin start-domain --passwordfile %GF_PASSWD_FILE% --domaindir ${glassfish.domain.dir} ${glassfish.domain}
 echo --------------------------------------------------------------------
 
 
