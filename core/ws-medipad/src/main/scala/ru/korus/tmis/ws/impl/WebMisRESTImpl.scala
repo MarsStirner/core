@@ -211,6 +211,7 @@ class WebMisRESTImpl  extends WebMisREST
     if (inPatientEntry != null) {
       if (auth != null) {
         val outPatientEntry: PatientEntry = patientBean.savePatient(-1, inPatientEntry, auth)  //currentAuthData
+
         patientData.setData(outPatientEntry)
         return patientData
       }
