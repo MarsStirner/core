@@ -78,6 +78,16 @@ class DiagnosisBean  extends DiagnosisBeanLocal
 
     option match {
       case ID_CREATE => {
+        var lastDiag = dbDiagnosticBean.getLastDiagnosticByEventIdAndType(eventId, diaTypeFlatCode)
+        if (lastDiag != null) {
+          lastDiag.setDeleted(true)
+          val diagi = lastDiag.getDiagnosis
+          if (diagi != null) {
+            diagi.setDeleted(true)
+            em.merge(diagi)
+          }
+          em.merge(lastDiag)
+        }
         diagnosis = dbDiagnosisBean.insertOrUpdateDiagnosis(0,
                                                             patient.getId.intValue(),
                                                             diaTypeFlatCode,

@@ -125,6 +125,19 @@ class DbDiagnosticBean  extends DbDiagnosticBeanLocal
     result
   }
 
+  def getLastDiagnosticByEventIdAndType(eventId: Int, diagnosisTypeFlatCode: String) = {
+    val result =  em.createQuery(LastDiagnosticByEventIdAndTypesQuery, classOf[Diagnostic])
+      .setParameter("eventId", eventId)
+      .setParameter("flatCode", diagnosisTypeFlatCode)
+      .getResultList
+
+    result.foreach(em.detach(_))
+    if (result != null && result.size() > 0) {
+      result.get(0)
+    } else null
+
+  }
+
   val DiagnosticByIdQuery = """
     SELECT diac
     FROM Diagnostic diac
@@ -156,5 +169,20 @@ class DbDiagnosticBean  extends DbDiagnosticBeanLocal
       diac.diagnosisType.flatCode IN :flatCodes
     AND
       diac.deleted = '0'
+    """
+
+  val LastDiagnosticByEventIdAndTypesQuery =
+    """
+    SELECT diac
+    FROM
+      Diagnostic diac
+        JOIN diac.event e
+    WHERE
+      e.id = :eventId
+    AND
+      diac.diagnosisType.flatCode = :flatCode
+    AND
+      diac.deleted = '0'
+    ORDER BY diac.createDatetime DESC
     """
 }

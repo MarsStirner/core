@@ -43,8 +43,8 @@ class DbEventPersonBean
     ep.setPerson(sessionUser)
     if (event != null) {
       ep.setEvent(event)
-      ep.setBegDate(event.getCreateDatetime)
     }
+    ep.setBegDate(now)
     //ep.setDeleted(false)
     em.persist(ep)
     if (withFlash) {

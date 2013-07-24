@@ -61,4 +61,6 @@ public interface DbDiagnosticBeanLocal {
      */
     List<Diagnostic> getDiagnosticsByEventIdAndTypes(int eventId,
                                                      Set<String> diagnosisTypeFlatCodes) throws CoreException;
+
+    Diagnostic getLastDiagnosticByEventIdAndType(int eventId, String diagnosisTypeFlatCode) throws CoreException;
 }
