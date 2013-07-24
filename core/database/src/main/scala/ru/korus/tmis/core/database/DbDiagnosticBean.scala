@@ -132,7 +132,10 @@ class DbDiagnosticBean  extends DbDiagnosticBeanLocal
       .getResultList
 
     result.foreach(em.detach(_))
-    result.get(0)
+    if (result != null && result.size() > 0) {
+      result.get(0)
+    } else null
+
   }
 
   val DiagnosticByIdQuery = """

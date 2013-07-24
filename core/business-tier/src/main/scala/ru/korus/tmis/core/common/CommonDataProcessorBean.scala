@@ -19,6 +19,7 @@ import javax.interceptor.Interceptors
 
 import scala.collection.JavaConversions._
 import java.util.{Calendar, Date}
+import java.util
 
 @Interceptors(Array(classOf[LoggingInterceptor]))
 @Stateless
@@ -192,14 +193,14 @@ class CommonDataProcessorBean
           val emptyApts = actionType.getActionPropertyTypes
           emptyApts.removeAll(apList.map(_._1.getType))
 
-          val emptyApList = emptyApts.map(
+          var emptyApList = new java.util.LinkedList[ActionProperty]
+          emptyApts.foreach(
             apt => {
               if (apt.getIsAssignable == false) {
-                dbActionProperty.createActionPropertyWithDate(
-                  action,
-                  apt.getId.intValue,
-                  userData,
-                  now)
+                emptyApList.add(dbActionProperty.createActionPropertyWithDate(action,
+                                                                              apt.getId.intValue,
+                                                                              userData,
+                                                                              now))
               }
             })
 
@@ -377,10 +378,7 @@ class CommonDataProcessorBean
         }*/
 
         if (beginDate != null) a.setBegDate(beginDate)
-        if (endDate != null) {
-          a.setEndDate(endDate)
-          a.setStatus(ActionStatus.FINISHED.getCode) //WEBMIS-880
-        }
+
         if (finance > 0) a.setFinanceId(finance)
         //a.setToOrder(toOrder)
         if (plannedEndDate != null) a.setPlannedEndDate(plannedEndDate)
@@ -438,7 +436,12 @@ class CommonDataProcessorBean
             }
           }
         })
+        if (endDate != null) {
+          a.setEndDate(endDate)
+          a.setStatus(ActionStatus.FINISHED.getCode) //WEBMIS-880
+        }
       })
+
 
       result = dbManager
         .mergeAll(entities)
