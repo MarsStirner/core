@@ -1,0 +1,233 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<POLB_IN224100UV01
+        xmlns="urn:hl7-org:v3"
+        xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+        xsi:schemaLocation="urn:hl7-org:v3 file:/D:/distr/HL7/HL7_V3_NormativeEdition2012_2CDset/Edition2012_CD2/Edition2012/processable/multicacheschemas/POLB_IN224100UV01.xsd"
+        ITSVersion="XML_1.0">
+    <!-- UUID сообщения -->
+    <id root="XXXXXXXX-XXXX-XXXX-XXXX-XXXXXXXXXXXX"/>
+    <!-- время создания события. Значение value кодируется по шаблону: ггггммддччммсс -->
+    <creationTime value="20130303180027">
+    </creationTime>
+    <!-- Идентификатор типа сообщения. Значение @extension - тип сообщения.  -->
+    <interactionId extension="POLB_IN224100UV01"/>
+    <!-- Назначение сообщения относительно отправителя. Возможные значения — D (отладка, Debugging), P (промышленное функционирование, Production) or T (обучение, Training). -->
+    <processingCode code="P"/>
+    <!-- Режим обработки сообщения относительно отправителя. Возможные значения — A (архивирование, Archive), T (штатное функционирование, Current processing), I (инициализация, Initial load), R (восстановление, Restore). -->
+    <processingModeCode code="T"/>
+    <!-- Высылать ли подтверждающее сообщение. Значения - Always (AL), only on errors (ER), or never (NE) -->
+    <acceptAckCode code="ALL"/>
+    <!-- Раздел приемник - используется без изменений -->
+    <receiver typeCode="RCV">
+        <device classCode="DEV" determinerCode="INSTANCE">
+            <id>
+            </id>
+        </device>
+    </receiver>
+    <!-- Раздел отправитель - используется без изменений -->
+    <sender typeCode="RCV">
+        <device classCode="DEV" determinerCode="INSTANCE">
+            <id>
+            </id>
+        </device>
+    </sender>
+    <!-- информация о состоявшемся событии -->
+    <controlActProcess classCode="CACT" moodCode="APT">
+        <authorOrPerformer typeCode="PRF" contextControlCode="AN">
+            <noteText/>
+            <time/>
+            <modeCode/>
+            <signatureCode/>
+            <signatureText/>
+            <assignedPerson classCode="ASSIGNED">
+                <representedOrganization classCode="ORG" determinerCode="INSTANCE">
+                    <id/>
+                    <!-- Код лаборатории -->
+                    <code code="CodeLIS"/>
+                </representedOrganization>
+            </assignedPerson>
+        </authorOrPerformer>
+        <subject typeCode="SUBJ">
+            <observationReport classCode="GROUPER" moodCode="EVN">
+                <!-- идентификатор направления на анализы id=orderMisId   код исследования diagnosticCode-->
+                <code id="orderMisId" code="diagnosticCode">
+                    <!-- название исследования -->
+                    <displayName value="diagnosticName"></displayName>
+                </code>
+                <!-- отметка об окончании исследований по направлению (true-окончательный, заказ закрывается.False-Предварительный. Заказ открыт на изменение результата.) -->
+                <statusCode code="referrallsFinished"/>
+                <specimen typeCode="SPC" contextControlCode="OP">
+                    <specimen classCode="SPEC">
+                        <!-- штрих-код на контейнере c биоматериалом (десятичное представление считанного штрих-кода) -->
+                        <id identifierName="orderBarCode"/>
+                        <code/>
+                    </specimen>
+                </specimen>
+
+                <author typeCode="AUT">
+                    <time/>
+                    <assignedEntity classCode="ASSIGNED">
+                        <!-- уникальный идентификационный номер врача лаборатории подписавшего результаты исследования -->
+                        <code code="ResultDoctorLisId">
+                            <!-- ФИО врача лаборатории подписавшего результаты исследования -->
+                            <displayName value="ResultDoctorLisName"/>
+                        </code>
+                    </assignedEntity>
+                </author>
+            </observationReport>
+        </subject>
+        <subject typeCode="SUBJ" contextConductionInd="false">
+            <observationBattery classCode="BATTERY" moodCode="EVN">
+                <!-- название исследования -->
+                <code>
+                    <displayName value="diagnosticName"></displayName>
+                </code>
+                <statusCode/>
+                <inFulfillmentOf typeCode="FLFS" contextControlCode="ON" contextConductionInd="false">
+                    <fulfillerPromise classCode="OBS" moodCode="PRMS">
+                        <id/>
+                        <statusCode/>
+                        <inFulfillmentOf typeCode="FLFS">
+                            <placerOrder classCode="ACT" moodCode="RQO">
+                                <!-- идентификатор направления на анализы id=orderMisId  -->
+                                <id controlInformationExtension="orderMisId"/>
+                            </placerOrder>
+                        </inFulfillmentOf>
+                    </fulfillerPromise>
+                </inFulfillmentOf>
+                <component1 typeCode="COMP" contextControlCode="ON">
+                    <!-- состоявшееся событие по методике  -->
+                    <observationEvent classCode="OBS" moodCode="EVN">
+                        <!-- код методики/показателя/микроорганизма indicatorCode  -->
+                        <code code="indicatorCode1">
+                            <!-- название методики/показателя/микроорганизма indicatorName  -->
+                            <displayName value="indicatorName1"/>
+                        </code>
+
+                        <statusCode/>
+                        <!-- дата выполнения/утверждения результата  -->
+                        <effectiveTime value='resultSignDate'/>
+                        <confidentialityCode nullFlavor="UNK"/>
+
+                        <!-- обнаруженные микроорганизмы  -->
+                        <!-- микроорганизм 1  -->
+                        <component1 typeCode="COMP" contextControlCode="ON">
+                            <observationEvent classCode="OBS" moodCode="EVN">
+                                <!-- идентификатор организма по БД ЛИС 1 -->
+                                <code code="organismLisId1">
+                                    <!--название организма 1  -->
+                                    <displayName value="organismName1"/>
+                                </code>
+                                <statusCode/>
+                                <component1 typeCode="COMP" contextControlCode="ON">
+                                    <observationEvent classCode="OBS" moodCode="EVN">
+                                        <!-- описание концентрации в произвольном виде 1 -->
+                                        <code>
+                                            <originalText value="organismConcetration1"/>
+                                        </code>
+                                        <statusCode/>
+                                    </observationEvent>
+                                </component1>
+                            </observationEvent>
+                        </component1>
+                        <!-- микроорганизм 2  -->
+                        <component1 typeCode="COMP" contextControlCode="ON">
+                            <observationEvent classCode="OBS" moodCode="EVN">
+                                <!-- идентификатор организма по БД ЛИС 2 -->
+                                <code code="organismLisId2">
+                                    <!-- название организма 2  -->
+                                    <displayName value="organismName2"/>
+                                </code>
+                                <statusCode/>
+                                <component1 typeCode="COMP" contextControlCode="ON">
+                                    <observationEvent classCode="OBS" moodCode="EVN">
+                                        <!-- описание концентрации в произвольном виде 2 -->
+                                        <code>
+                                            <originalText value="organismConcetration2"/>
+                                        </code>
+                                        <statusCode/>
+                                    </observationEvent>
+                                </component1>
+                            </observationEvent>
+                        </component1>
+
+                    </observationEvent>
+
+                </component1>
+
+
+            </observationBattery>
+        </subject>
+        <!-- чувствительность к антибиотикам -->
+        <subject typeCode="SUBJ" contextConductionInd="false">
+            <!-- проверка чувствительности к антибиотикам микроорганизма 1-->
+            <specimenObservationCluster classCode="CLUSTER" moodCode="EVN">
+                <statusCode/>
+                <specimen typeCode="SPC" contextControlCode="ON">
+                    <specimen classCode="SPEC">
+                        <id/>
+                        <!-- идентификатор организма по БД ЛИС 1 -->
+                        <code code="organismLisId1">
+                            <!-- название организма 1  -->
+                            <displayName value="organismName1"/>
+                        </code>
+                    </specimen>
+                </specimen>
+                <!--  антибиотики -->
+                <component1 typeCode="COMP" contextControlCode="ON">
+                    <observationBattery classCode="BATTERY" moodCode="EVN">
+                        <code/>
+                        <statusCode/>
+                        <!--  антибиотик 1 -->
+                        <component1 typeCode="COMP" contextControlCode="ON">
+                            <observationEvent classCode="OBS" moodCode="EVN">
+                                <!--  антибиотик 1  идентификатор антибиотика БД antibioticLisId1-->
+                                <code code="antibioticLisId1">
+                                    <!--  антибиотик 1  название антибиотика  antibioticName1 -->
+                                    <displayName value="antibioticName1"/>
+                                    <!--  описание чувствительности в произвольном виде: R,S,I -->
+                                    <translation code="antibioticActivityValue1"/>
+                                </code>
+                                <!--  величина концентрации -->
+                                <text value="MIC1"/>
+                                <statusCode/>
+                            </observationEvent>
+                        </component1>
+                        <!--  антибиотик 2 -->
+                        <component1 typeCode="COMP" contextControlCode="ON">
+                            <observationEvent classCode="OBS" moodCode="EVN">
+                                <!--  антибиотик 2  идентификатор антибиотика БД antibioticLisId2-->
+                                <code code="antibioticLisId2">
+                                    <!--  антибиотик 2  название антибиотика  antibioticName2 -->
+                                    <displayName value="antibioticName2"/>
+                                    <!--  описание чувствительности в произвольном виде: R,S,I -->
+                                    <translation code="antibioticActivityValue2"/>
+                                </code>
+                                <!--  величина концентрации -->
+                                <text value="MIC2"/>
+                                <statusCode/>
+                            </observationEvent>
+                        </component1>
+                        <!--  антибиотик 3-->
+                        <component1 typeCode="COMP" contextControlCode="ON">
+                            <observationEvent classCode="OBS" moodCode="EVN">
+                                <!--  антибиотик 3  идентификатор антибиотика БД antibioticLisId3-->
+                                <code code="antibioticLisId3">
+                                    <!--  антибиотик 3  название антибиотика  antibioticName3 -->
+                                    <displayName value="oantibioticName3"/>
+                                    <!--  описание чувствительности в произвольном виде: R,S,I -->
+                                    <translation code="antibioticActivityValue3"/>
+                                </code>
+                                <!--  величина концентрации -->
+                                <text value="MIC3"/>
+                                <statusCode/>
+                            </observationEvent>
+                        </component1>
+
+                    </observationBattery>
+                </component1>
+            </specimenObservationCluster>
+        </subject>
+
+    </controlActProcess>
+</POLB_IN224100UV01>

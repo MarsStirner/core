@@ -151,8 +151,6 @@ call ${glassfish.home}\bin\asadmin --user ${glassfish.admin.login} ^
         create-jdbc-resource ^
         --connectionpoolid ${mysql.db.tmis_core.pool} ${mysql.db.jndi.tmis_core}
 
-del -f %GF_PASSWD_FILE%
-
 echo --------------------------------------------------------------------
 echo Stop-Start domain ${glassfish.domain}
 echo.
@@ -160,4 +158,4 @@ call ${glassfish.home}\bin\asadmin stop-domain --passwordfile %GF_PASSWD_FILE% -
 call ${glassfish.home}\bin\asadmin start-domain --passwordfile %GF_PASSWD_FILE% --domaindir ${glassfish.domain.dir} ${glassfish.domain}
 echo --------------------------------------------------------------------
 
-
+del -f %GF_PASSWD_FILE%
