@@ -34,7 +34,7 @@ call ${glassfish.bin}\asadmin --host ${glassfish.host} ^
 echo --------------------------------------------------------------------
 echo Stop Glassfish
 echo.
-call ${glassfish.bin}\asadmin stop-domain --domaindir ${glassfish.domain.dir} ${glassfish.domain}
+call ${glassfish.bin}\asadmin stop-domain --passwordfile %GF_PASSWD_FILE% --domaindir ${glassfish.domain.dir} ${glassfish.domain}
 echo --------------------------------------------------------------------
 echo Copy config file to ${glassfish.domain.dir}\${glassfish.domain}\config\logback.xml
 echo.
@@ -42,7 +42,7 @@ copy /Y logback.xml ${glassfish.domain.dir}\${glassfish.domain}\config\
 echo --------------------------------------------------------------------
 echo Start Glassfish
 echo.
-call ${glassfish.bin}\asadmin start-domain --domaindir ${glassfish.domain.dir} ${glassfish.domain}
+call ${glassfish.bin}\asadmin start-domain --passwordfile %GF_PASSWD_FILE% --domaindir ${glassfish.domain.dir} ${glassfish.domain}
 echo --------------------------------------------------------------------
 echo Deploy ${glassfish.application.name}
 echo.

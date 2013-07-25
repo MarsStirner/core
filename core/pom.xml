@@ -281,6 +281,24 @@
             </properties>
         </profile>
 
+        <profile>
+            <id>nde-win-glassfish4</id>
+            <properties>
+                <separate>\</separate>
+                <!-- Путь к директории доменов -->
+                <glassfish.domain.dir>C:\Winprog\glassfish4\glassfish\domains</glassfish.domain.dir>
+                <!-- Домашняя директория Glassfish -->
+                <glassfish.home>C:\Winprog\glassfish4\</glassfish.home>
+
+                <glassfish.bin>C:\Winprog\glassfish4\bin\</glassfish.bin>
+
+                <glassfish.master.password>changeit</glassfish.master.password>
+
+                <project.build.jdk>1.7</project.build.jdk>
+                <version.javaee.api>7.0</version.javaee.api>
+            </properties>
+        </profile>
+
         <!-- Пользовательский профиль -->
         <profile>
             <id>nde-lin</id>
