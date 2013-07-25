@@ -7,7 +7,6 @@ import org.junit.runner.RunWith
 import org.mockito._
 import org.mockito.Matchers._
 import org.mockito.runners.MockitoJUnitRunner
-import ru.korus.tmis.ws.impl.WebMisRESTImpl
 import ru.korus.tmis.core.data._
 import org.mockito.Mockito._
 import ru.korus.tmis.core.entity.model.{Mkb, APValueTime, Staff}
@@ -17,6 +16,7 @@ import org.codehaus.jackson.map.ObjectMapper
 import scala.collection.JavaConversions._
 import ru.korus.tmis.core.entity.model.fd.{FlatDirectory, FDRecord, FDFieldValue}
 import ru.korus.tmis.core.database.{DbStaffBeanLocal, DbFlatDirectoryBeanLocal, DbCustomQueryLocal, DbRbBloodTypeBeanLocal, DbRbRequestTypeBeanLocal}
+import ru.korus.tmis.ws.impl.WebMisRESTImpl
 
 /**
  * Created with IntelliJ IDEA.
@@ -45,7 +45,7 @@ class DirectoryInfoRESTTest {
 
   @Mock var dbStaff: DbStaffBeanLocal = _
 
-  @Mock private var flatDirectoryBean: DbFlatDirectoryBeanLocal = _
+  @Mock var flatDirectoryBean: DbFlatDirectoryBeanLocal = _
 
   @Before
   def init() {
@@ -421,10 +421,20 @@ class DirectoryInfoRESTTest {
                                                                   request.filter,
                                                                   request,
                                                                   null)
-
     Assert.assertNotNull(result)
+    //Проверка на количества
     Assert.assertEquals(result.data.size(), flatRecords.size())
-    Assert.assertEquals(result.requestData.recordsCount, fDRecords1.size() + fDRecords2.size())
+    Assert.assertEquals(result.data.get(0).getRecordList.size() + result.data.get(1).getRecordList.size(),
+                        fDRecords1.size() + fDRecords2.size())
+    var count = 0
+    fDRecords1.foreach(f => count += f._2.size())
+    fDRecords2.foreach(f => count += f._2.size())
+    Assert.assertEquals(result.data.get(0).getRecordList.get(0).getFieldValueList.size() +
+                        result.data.get(0).getRecordList.get(1).getFieldValueList.size() +
+                        result.data.get(1).getRecordList.get(0).getFieldValueList.size() +
+                        result.data.get(1).getRecordList.get(1).getFieldValueList.size(),
+                        count)
+    //Assert.assertEquals(result.requestData.recordsCount, fDRecords1.size() + fDRecords2.size())
     //TODO: <= проверка коректности записанных данных
     validateMockitoUsage()
   }
