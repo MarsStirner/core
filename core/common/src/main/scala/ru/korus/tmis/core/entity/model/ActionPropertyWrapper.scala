@@ -29,7 +29,13 @@ class ActionPropertyWrapper(ap: ActionProperty)
           case Value => {
             apv match {
               case null => map
-              case _ => map + (xmlName -> apv.getValueAsString)
+              case _ => {
+                if (this.apt.getTypeName.compareTo("Html")==0) {
+                  map + (xmlName -> apv.getValue.toString)
+                } else {
+                  map + (xmlName -> apv.getValueAsString)
+                }
+              }
             }
           }
           case ValueId => {

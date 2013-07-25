@@ -396,6 +396,8 @@ class DbActionPropertyBean
                               ActionProperty_Double ap_d
                           WHERE
                               ap_d.id = ap.id
+                          AND
+                              ap_d.value != '0.0'
                       )
                       OR
                       exists (
