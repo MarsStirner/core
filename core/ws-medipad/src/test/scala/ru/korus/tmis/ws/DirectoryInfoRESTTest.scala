@@ -19,6 +19,8 @@ import scala.collection.JavaConversions._
 import ru.korus.tmis.core.entity.model.fd.{FlatDirectory, FDRecord, FDFieldValue}
 import ru.korus.tmis.core.database.{DbStaffBeanLocal, DbFlatDirectoryBeanLocal, DbCustomQueryLocal, DbRbBloodTypeBeanLocal, DbRbRequestTypeBeanLocal}
 import ru.korus.tmis.ws.impl.WebMisRESTImpl
+import org.slf4j.{Logger, LoggerFactory}
+import ru.korus.tmis.core.exception.CoreException
 
 /**
  * Created with IntelliJ IDEA.
@@ -48,6 +50,8 @@ class DirectoryInfoRESTTest {
   @Mock var dbStaff: DbStaffBeanLocal = _
 
   @Mock var flatDirectoryBean: DbFlatDirectoryBeanLocal = _
+
+  final val logger: Logger = LoggerFactory.getLogger(classOf[DirectoryInfoRESTTest])
 
   @Before
   def init() {
@@ -369,6 +373,11 @@ class DirectoryInfoRESTTest {
 
   @Test
   def testGetFlatDirectories = {
+
+    logger.warn("Start of GetFlatDirectories test:")
+
+    val mapper: ObjectMapper = new ObjectMapper()
+
     //Тестовые параметры запроса
     //Выбрать справочники с id = {1, 2}
     val flatDictionaryIds = new util.LinkedList[Int]()
@@ -389,6 +398,8 @@ class DirectoryInfoRESTTest {
     val filter = new FlatDirectoryRequestDataListFilter(flatDictionaryIds, "yes", "yes", "yes", null, null, filterRecordIds)
     val request= new FlatDirectoryRequestData(sortingFieldIds, 10, 1, filter)
 
+    logger.info("Request data for method is: {}", mapper.writeValueAsString(request))
+
     val sorting =
       request.sortingFields.foldLeft(new java.util.LinkedHashMap[java.lang.Integer, java.lang.Integer])(
         (a, b) => { a.put(Integer.valueOf(b._1), Integer.valueOf(b._2))
@@ -408,36 +419,45 @@ class DirectoryInfoRESTTest {
     flatRecords.put(new FlatDirectory(1), fDRecords1)
     flatRecords.put(new FlatDirectory(2), fDRecords2)
 
-    when(flatDirectoryBean.getFlatDirectoriesWithFilterRecords(request.page,
-      request.limit,
-      sorting,
-      request.filter,
-      request,
-      null)).thenReturn(flatRecords)
+    try {
+      when(flatDirectoryBean.getFlatDirectoriesWithFilterRecords(request.page,
+                                                                request.limit,
+                                                                sorting,
+                                                                request.filter,
+                                                                request,
+                                                                null)).thenReturn(flatRecords)
+      val result = wsImpl.getFlatDirectories(request)
 
-    val result = wsImpl.getFlatDirectories(request)
+      verify(flatDirectoryBean).getFlatDirectoriesWithFilterRecords(request.page,
+                                                                    request.limit,
+                                                                    sorting,
+                                                                    request.filter,
+                                                                    request,
+                                                                    null)
+      Assert.assertNotNull(result)
+      //Проверка на количества
+      Assert.assertEquals(result.data.size(), flatRecords.size())
+      Assert.assertEquals(result.data.get(0).getRecordList.size() + result.data.get(1).getRecordList.size(),
+        fDRecords1.size() + fDRecords2.size())
+      var count = 0
+      fDRecords1.foreach(f => count += f._2.size())
+      fDRecords2.foreach(f => count += f._2.size())
+      Assert.assertEquals(result.data.get(0).getRecordList.get(0).getFieldValueList.size() +
+        result.data.get(0).getRecordList.get(1).getFieldValueList.size() +
+        result.data.get(1).getRecordList.get(0).getFieldValueList.size() +
+        result.data.get(1).getRecordList.get(1).getFieldValueList.size(),
+        count)
+      //Assert.assertEquals(result.requestData.recordsCount, fDRecords1.size() + fDRecords2.size())
+      //TODO: <= проверка коректности записанных данных
+      validateMockitoUsage()
+      logger.info("The method has been successfully completed. Result is: {}", mapper.writeValueAsString(result))
+      logger.warn("Successful end of GetFlatDirectories test")
+    } catch {
+      case ex: CoreException => {
+        logger.error("GetFlatDirectories test failed with error: {}", ex.getMessage + " " +ex.getStackTrace)
+      }
+    }
 
-    verify(flatDirectoryBean).getFlatDirectoriesWithFilterRecords(request.page,
-      request.limit,
-      sorting,
-      request.filter,
-      request,
-      null)
-    Assert.assertNotNull(result)
-    //Проверка на количества
-    Assert.assertEquals(result.data.size(), flatRecords.size())
-    Assert.assertEquals(result.data.get(0).getRecordList.size() + result.data.get(1).getRecordList.size(),
-      fDRecords1.size() + fDRecords2.size())
-    var count = 0
-    fDRecords1.foreach(f => count += f._2.size())
-    fDRecords2.foreach(f => count += f._2.size())
-    Assert.assertEquals(result.data.get(0).getRecordList.get(0).getFieldValueList.size() +
-      result.data.get(0).getRecordList.get(1).getFieldValueList.size() +
-      result.data.get(1).getRecordList.get(0).getFieldValueList.size() +
-      result.data.get(1).getRecordList.get(1).getFieldValueList.size(),
-      count)
-    //Assert.assertEquals(result.requestData.recordsCount, fDRecords1.size() + fDRecords2.size())
-    //TODO: <= проверка коректности записанных данных
-    validateMockitoUsage()
+
   }
 }
