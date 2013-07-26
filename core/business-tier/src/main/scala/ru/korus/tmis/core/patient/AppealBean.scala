@@ -949,9 +949,9 @@ class AppealBean extends AppealBeanLocal
 
   def getMonitoringInfo(eventId: Int, condition: Int, authData: AuthData)  = {
     val codes = asJavaSet(condition match {
-      case 0 => Set("TEMPERATURE", "BPRAS", "BPRAD", "PULS", "SP02", "RR", "STATE", "WB", "GROWTH", "WEIGHT")
+      case 0 => Set("TEMPERATURE", "BPRAS", "BPRAD", "PULS", "SPO2", "RR", "STATE", "WB", "GROWTH", "WEIGHT")
       case 1 => Set("K", "NA", "CA", "GLUCOSE", "TP", "UREA", "TB", "CB", "WBC", "GRAN", "NEUT", "HGB", "PLT")
-      case _ => Set("TEMPERATURE", "BPRAS","BPRAD", "PULS", "SP02", "RR", "STATE", "WB", "GROWTH", "WEIGHT")
+      case _ => Set("TEMPERATURE", "BPRAS","BPRAD", "PULS", "SPO2", "RR", "STATE", "WB", "GROWTH", "WEIGHT")
     })
     val map = actionPropertyBean.getActionPropertiesByEventIdsAndActionPropertyTypeCodes(List(Integer.valueOf(eventId)), codes, 5)
     if (map!=null && map.contains(Integer.valueOf(eventId)))

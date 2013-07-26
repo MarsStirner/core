@@ -1,4 +1,4 @@
-package ru.korus.tmis.ws.webmis.rest.test;
+package ru.korus.tmis.ws;//package ru.korus.tmis.ws.webmis.rest.test;
 
 
 import org.junit.Assert;

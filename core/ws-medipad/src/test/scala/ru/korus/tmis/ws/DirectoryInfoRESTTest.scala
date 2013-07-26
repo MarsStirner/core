@@ -1,4 +1,6 @@
-package ru.korus.tmis.ws.webmis.rest.test
+package ru.korus.tmis.ws
+
+//package ru.korus.tmis.ws.medipad
 
 import org.junit.Assert
 import org.junit.Before
@@ -69,9 +71,9 @@ class DirectoryInfoRESTTest {
     //mapper.getSerializationConfig().setSerializationView(classOf[DictionaryDataViews.DefaultView])
     when(dbBloodTypeBean.getCountOfBloodTypesWithFilter(request.filter)).thenReturn(4L)
     when(dbBloodTypeBean.getAllBloodTypesWithFilter(request.page - 1,
-                                                    request.limit,
-                                                    request.sortingFieldInternal,
-                                                    request.filter.unwrap)).thenReturn(list)
+      request.limit,
+      request.sortingFieldInternal,
+      request.filter.unwrap)).thenReturn(list)
 
     val result = wsImpl.getDictionary(request, "bloodTypes")
 
@@ -149,11 +151,11 @@ class DirectoryInfoRESTTest {
 
     when(dbCustomQueryBean.getCountOfMkbsWithFilter(request.filter)).thenReturn(mkbs.size())
     when(dbCustomQueryBean.getAllMkbsWithFilter(request.page,
-                                                request.limit,
-                                                request.sortingFieldInternal,
-                                                request.filter.unwrap)).thenReturn(mkbs)
+      request.limit,
+      request.sortingFieldInternal,
+      request.filter.unwrap)).thenReturn(mkbs)
     when(dbCustomQueryBean.getDistinctMkbsWithFilter(request.sortingFieldInternal,
-                                                     request.filter.unwrap)).thenReturn(null)
+      request.filter.unwrap)).thenReturn(null)
 
     val result = wsImpl.getAllMkbs(request, null)
 
@@ -195,9 +197,9 @@ class DirectoryInfoRESTTest {
 
     when(dbCustomQueryBean.getCountOfMkbsWithFilter(request.filter)).thenReturn(mkbs.size())
     when(dbCustomQueryBean.getAllMkbsWithFilter(request.page,
-                                                request.limit,
-                                                request.sortingFieldInternal,
-                                                request.filter.unwrap)).thenReturn(mkbs)
+      request.limit,
+      request.sortingFieldInternal,
+      request.filter.unwrap)).thenReturn(mkbs)
     when(dbCustomQueryBean.getDistinctMkbsWithFilter(request.sortingFieldInternal,
       request.filter.unwrap)).thenReturn(null)
 
@@ -246,18 +248,18 @@ class DirectoryInfoRESTTest {
     list.add(new Staff(205));
 
     when(dbStaff.getAllPersonsByRequest(anyInt(),
-                                        anyInt(),
-                                        anyString(),
-                                        anyObject(),
-                                        anyObject())).thenReturn(list);
+      anyInt(),
+      anyString(),
+      anyObject(),
+      anyObject())).thenReturn(list);
 
     val result = wsImpl.getAllPersons(requestData);
 
     verify(dbStaff).getAllPersonsByRequest( anyInt(),
-                                            anyInt(),
-                                            anyString(),
-                                            anyObject(),
-                                            anyObject());
+      anyInt(),
+      anyString(),
+      anyObject(),
+      anyObject());
 
     Assert.assertNotNull(result)
     Assert.assertEquals(2, result.data.size());
@@ -269,8 +271,8 @@ class DirectoryInfoRESTTest {
 
   @Test
   def testGetAllPersonsCaseNullResponse = {      //public void testGetAllDepartmentsCaseNullResponse() throws CoreException {
-    //Справочник персонала
-    val filter = new PersonsListDataFilter(18);
+  //Справочник персонала
+  val filter = new PersonsListDataFilter(18);
     val requestData = new ListDataRequest("id", "asc", 10, 1, filter);
     val list = new java.util.LinkedList[Staff]
 
@@ -315,16 +317,16 @@ class DirectoryInfoRESTTest {
     map.put(new Staff(956), apvTimeList);
 
     when(dbStaff.getEmptyPersonsByRequest(requestData.limit,
-                                          requestData.page-1,
-                                          requestData.sortingFieldInternal,
-                                          requestData.filter.unwrap())).thenReturn(map)
+      requestData.page-1,
+      requestData.sortingFieldInternal,
+      requestData.filter.unwrap())).thenReturn(map)
 
     val result = wsImpl.getFreePersons(requestData)
 
     verify(dbStaff).getEmptyPersonsByRequest( requestData.limit,
-                                              requestData.page-1,
-                                              requestData.sortingFieldInternal,
-                                              requestData.filter.unwrap())
+      requestData.page-1,
+      requestData.sortingFieldInternal,
+      requestData.filter.unwrap())
 
     Assert.assertNotNull(result)
     Assert.assertEquals(1, result.data.size());
@@ -407,33 +409,33 @@ class DirectoryInfoRESTTest {
     flatRecords.put(new FlatDirectory(2), fDRecords2)
 
     when(flatDirectoryBean.getFlatDirectoriesWithFilterRecords(request.page,
-                                                               request.limit,
-                                                               sorting,
-                                                               request.filter,
-                                                               request,
-                                                               null)).thenReturn(flatRecords)
+      request.limit,
+      sorting,
+      request.filter,
+      request,
+      null)).thenReturn(flatRecords)
 
     val result = wsImpl.getFlatDirectories(request)
 
     verify(flatDirectoryBean).getFlatDirectoriesWithFilterRecords(request.page,
-                                                                  request.limit,
-                                                                  sorting,
-                                                                  request.filter,
-                                                                  request,
-                                                                  null)
+      request.limit,
+      sorting,
+      request.filter,
+      request,
+      null)
     Assert.assertNotNull(result)
     //Проверка на количества
     Assert.assertEquals(result.data.size(), flatRecords.size())
     Assert.assertEquals(result.data.get(0).getRecordList.size() + result.data.get(1).getRecordList.size(),
-                        fDRecords1.size() + fDRecords2.size())
+      fDRecords1.size() + fDRecords2.size())
     var count = 0
     fDRecords1.foreach(f => count += f._2.size())
     fDRecords2.foreach(f => count += f._2.size())
     Assert.assertEquals(result.data.get(0).getRecordList.get(0).getFieldValueList.size() +
-                        result.data.get(0).getRecordList.get(1).getFieldValueList.size() +
-                        result.data.get(1).getRecordList.get(0).getFieldValueList.size() +
-                        result.data.get(1).getRecordList.get(1).getFieldValueList.size(),
-                        count)
+      result.data.get(0).getRecordList.get(1).getFieldValueList.size() +
+      result.data.get(1).getRecordList.get(0).getFieldValueList.size() +
+      result.data.get(1).getRecordList.get(1).getFieldValueList.size(),
+      count)
     //Assert.assertEquals(result.requestData.recordsCount, fDRecords1.size() + fDRecords2.size())
     //TODO: <= проверка коректности записанных данных
     validateMockitoUsage()
