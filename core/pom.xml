@@ -26,6 +26,7 @@
         <module>ws-users-mgr</module>
     </modules>
 
+
     <properties>
         <!-- Версия ядра-->
         <version.tmis.core>2.0.3-RC</version.tmis.core>
