@@ -602,7 +602,7 @@ public final class HL7PacketBuilder {
         section.setText(text);
 
         //----------------- Создаем несколько лек.средств в нашем случае будет только одно
-        section.getEntry().add(createEntry(drugCode, type));
+        section.getEntry().add(createEntry(event, drugCode, type));
 //        section.getEntry().add(createEntry(drug));
         //-----------------
         component3.setSection(section);
@@ -619,7 +619,7 @@ public final class HL7PacketBuilder {
      * @param drugCode идентификатор лек.средства
      * @return товарное наименование
      */
-    private static POCDMT000040Entry createEntry(final String drugCode, final AssignmentType type) {
+    private static POCDMT000040Entry createEntry(final Event event, final String drugCode, final AssignmentType type) {
         final POCDMT000040Entry entry = FACTORY_HL7.createPOCDMT000040Entry();
         //----------------
         final POCDMT000040SubstanceAdministration substanceAdministration = FACTORY_HL7.createPOCDMT000040SubstanceAdministration();
@@ -627,7 +627,9 @@ public final class HL7PacketBuilder {
         substanceAdministration.setMoodCode(getAssignmentType2(type));  // тип документа
 
         substanceAdministration.getId().add(createII(UUID.randomUUID().toString())); // UUID назначения
-        substanceAdministration.getId().add(createIIEx("ОМС"));
+
+        // источник финансирования
+        substanceAdministration.getId().add(createIIEx(String.valueOf(event.getEventType().getFinance().getId())));
         // период на который выполняется назначение
         substanceAdministration.getEffectiveTime().add(getIVLTSHiLo("20130314", "20130401"));
         // интервал, через который необходимо применять препарат (суточная доза)
