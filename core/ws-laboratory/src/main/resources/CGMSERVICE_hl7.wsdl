@@ -4,141 +4,63 @@
     <schema targetNamespace="http://cgm.ru"
             xmlns="http://www.w3.org/2001/XMLSchema"
             xmlns:wsdl="http://schemas.xmlsoap.org/wsdl/">
+      <complexType name="obsReferenceInfo">
+        <attribute name="value" type="xs:string"  use="optional"/>
+      </complexType>
+      <complexType name="obsTextInfo">
+        <sequence>
+          <element name="reference" type="tns:obsReferenceInfo"/>
+        </sequence>
+      </complexType>
+      <complexType name="obsCodeInfo">
+        <attribute name="code" type="xs:string"  use="optional"/>
+        <attribute name="displayName" type="xs:string"  use="optional"/>
+      </complexType>
+      <complexType name="obsIdInfo">
+        <attribute name="root" type="xs:string"  use="optional"/>
+        <attribute name="extension" type="xs:string"  use="optional"/>
+      </complexType>
+      <complexType name="observationInfo">
+        <sequence>
+          <element name="id" type="tns:obsIdInfo"/>
+          <element name="code" type="tns:obsCodeInfo"/>
+          <element name="text" type="tns:obsTextInfo"/>
+        </sequence>
+        <attribute name="classCode" type="xs:string"  use="optional"/>
+        <attribute name="moodCode" type="xs:string"  use="optional"/>
+        <attribute name="negationInd" type="xs:string"  use="optional"/>
+      </complexType>
       <complexType name="entryInfo">
         <sequence>
-          <element name="observation" type="xs:string"/>
-          <element name="effectiveTime" type="xs:dateTime"/>
-          <element name="id" type="xs:string"/>
-          <element name="code" type="xs:string"/>
-          <element name="displayName" type="xs:string"/>
+          <element name="observation" type="tns:observationInfo"/>
         </sequence>
       </complexType>
       <complexType name="sectionInfo">
         <sequence>
-          <element name="entry" type="tns:entryInfo" minOccurs="0" maxOccurs="unbounded"/>
+          <element name="code" type="xs:string" minOccurs="0"/>
+          <element name="title" type="xs:string" minOccurs="0"/>
+          <element name="text" type="xs:string" minOccurs="0"/>
+          <element name="entry" type="tns:entryInfo" minOccurs="0"/>
         </sequence>
       </complexType>
-      <complexType name="codeSpecimenInfo">
-        <sequence>
-          <element name="translation" type="xs:string"/>
-        </sequence>
-      </complexType>
-      <complexType name="specimenPlayingEntity">
-        <sequence>
-          <element name="code" type="tns:codeSpecimenInfo"/>
-          <element name="quantity" type="xs:string"/>
-          <element name="text" type="xs:string"/>
-        </sequence>
-      </complexType>
-      <complexType name="specimenRole">
-        <sequence>
-          <element name="id" type="xs:int"/>
-          <element name="section" type="tns:specimenPlayingEntity"/>
-        </sequence>
-      </complexType>
-      <complexType name="specimenInfo">
-        <sequence>
-          <element name="section" type="tns:specimenRole"/>
-        </sequence>
-      </complexType>
-      <complexType name="ComponentInfo">
+      <complexType name="subComponentInfo">
         <sequence>
           <element name="section" type="tns:sectionInfo"/>
-          <element name="entry" type="tns:entryInfo"/>
-          <element name="specimen" type="tns:specimenInfo"/>
+          <element name="entry" type="tns:entryInfo" minOccurs="0" maxOccurs="unbounded"/>
         </sequence>
       </complexType>
       <complexType name="structuredBodyInfo">
         <sequence>
-          <!--sectionOrderInfo -->
-          <element name="component" type="tns:ComponentInfo"/>
-          <!--specimenInfo -->
-          <element name="component" type="tns:ComponentInfo"/>
-          <!--observationInfo -->
-          <element name="component" type="tns:ComponentInfo"/>
-          <!--sectionIndicatorsInfo -->
-          <element name="component" type="tns:ComponentInfo"/>
-        </sequence>
-      </complexType>
-      <complexType name="patientInfo">
-        <sequence>
-          <element name="id" type="xs:string"/>
-          <element name="extension" type="xs:string"/>
-          <element name="name" type="xs:string"/>
-          <element name="family" type="xs:string"/>
-          <element name="given" type="xs:string"/>
-          <element name="given" type="xs:string"/>
-          <element name="birthTime" type="xs:dateTime"/>
-          <element name="administrativeGenderCode" type="xs:string"/>
-        </sequence>
-      </complexType>
-      <complexType name="patientRoleInfo">
-        <sequence>
-          <element name="id" type="xs:int"/>
-          <element name="addr" type="xs:string"/>
-          <element name="telecom" type="xs:string"/>
-          <element name="patient" type="tns:patientInfo"/>
-          <element name="providerOrganization" type="xs:string"/>
-        </sequence>
-      </complexType>
-      <complexType name="recordTargetInfo">
-        <sequence>
-          <element name="patientRole" type="tns:patientRoleInfo"/>
-        </sequence>
-      </complexType>
-      <complexType name="assignedPersonInfo">
-        <sequence>
-          <element name="prefix" type="xs:string"/>
-          <element name="name" type="xs:string"/>
-          <element name="family" type="xs:string"/>
-          <element name="given" type="xs:string"/>
-          <element name="given" type="xs:string"/>
-        </sequence>
-      </complexType>
-      <complexType name="assignedAuthorInfo2">
-        <sequence>
-          <element name="code" type="xs:string"/>
-          <element name="displayName" type="xs:string"/>
-        </sequence>
-      </complexType>
-      <complexType name="assignedAuthorInfo">
-        <sequence>
-          <element name="id" type="xs:int"/>
-          <element name="assignedAuthor" type="tns:assignedAuthorInfo2"/>
-          <element name="assignedPerson" type="tns:assignedPersonInfo"/>
-        </sequence>
-      </complexType>
-      <complexType name="authorInfo">
-        <sequence>
-          <element name="time" type="xs:dateTime"/>
-          <element name="assignedAuthor" type="tns:assignedAuthorInfo"/>
-        </sequence>
-      </complexType>
-      <complexType name="representedCustodianOrganizationInfo">
-        <sequence>
-          <element name="id" type="xs:int"/>
-          <element name="name" type="xs:string"/>
-        </sequence>
-      </complexType>
-      <complexType name="assignedCustodianInfo">
-        <sequence>
-          <element name="representedCustodianOrganization" type="tns:representedCustodianOrganizationInfo"/>
-        </sequence>
-      </complexType>
-      <complexType name="custodianInfo">
-        <sequence>
-          <element name="assignedCustodian" type="tns:assignedCustodianInfo"/>
-        </sequence>
-      </complexType>
-      <complexType name="encompassingEncounterInfo">
-        <sequence>
-          <element name="id" type="xs:string"/>
-          <element name="effectiveTime" type="xs:dateTime"/>
-        </sequence>
-      </complexType>
-      <complexType name="componentOfInfo">
-        <sequence>
-          <element name="encompassingEncounter" type="tns:encompassingEncounterInfo"/>
+          <!-- информация по биоматериалу -->
+          <element name="component" type="tns:subComponentInfo"/>
+          <!-- индикаторы -->
+          <element name="component" type="tns:subComponentInfo"/>
+          <!-- услуги -->
+          <element name="component" type="tns:subComponentInfo"/>
+          <!-- беременность -->
+          <element name="component" type="tns:subComponentInfo"/>
+          <!-- комментарий -->
+          <element name="component" type="tns:subComponentInfo"/>
         </sequence>
       </complexType>
       <complexType name="componentInfo">
@@ -146,19 +68,162 @@
           <element name="structuredBody" type="tns:structuredBodyInfo"/>
         </sequence>
       </complexType>
+      <complexType name ="effectiveTimeInfo">
+        <attribute name="nullFlavor" type="xs:string"  use="optional"/>
+      </complexType>
+      <complexType name ="eeCodeInfo">
+        <attribute name="codeSystem" type="xs:string"  use="optional"/>
+        <attribute name="codeSystemName" type="xs:string"  use="optional"/>
+        <attribute name="code" type="xs:string"  use="optional"/>
+        <attribute name="displayName" type="xs:string"  use="optional"/>
+      </complexType>
+      <complexType name ="eeIdInfo">
+        <attribute name="root" type="xs:string"  use="optional"/>
+        <attribute name="extension" type="xs:string"  use="optional"/>
+      </complexType>
+      <complexType name="encompassingEncounterInfo">
+        <sequence>
+          <element name="id" type="tns:eeIdInfo"/>
+          <element name="code" type="tns:eeCodeInfo"/>
+          <element name="effectiveTime" type="tns:effectiveTimeInfo"/>
+        </sequence>
+      </complexType>
+      <complexType name="componentOfInfo">
+        <sequence>
+          <element name="encompassingEncounter" type="tns:encompassingEncounterInfo"/>
+        </sequence>
+      </complexType>
+      <complexType name ="reporgIDInfo">
+        <attribute name="root" type="xs:string"  use="optional"/>
+      </complexType>
+      <complexType name="representedOrganizationInfo">
+        <sequence>
+          <element name="id" type="tns:reporgIDInfo"/>
+          <element name="name" type="xs:string"/>
+        </sequence>
+      </complexType>
+      <complexType name="assignedPersonInfo">
+        <sequence>
+          <element name="name" type="tns:nameInfo"/>
+        </sequence>
+        <attribute name="classCode" type="xs:string"  use="optional"/>
+        <attribute name="determinerCode" type="xs:string"  use="optional"/>
+      </complexType>
+      <complexType name ="doctorIdInfo">
+        <attribute name="extension" type="xs:string"  use="optional"/>
+        <attribute name="root" type="xs:string"  use="optional"/>
+      </complexType>
+      <complexType name="assignedAuthorInfo">
+        <sequence>
+          <element name="id" type="tns:doctorIdInfo"/>
+          <element name="assignedPerson" type="tns:assignedPersonInfo"/>
+          <element name="representedOrganization" type="tns:representedOrganizationInfo"/>
+        </sequence>
+        <attribute name="classCode" type="xs:string"  use="optional"/>
+      </complexType>
+      <complexType name ="dateTimeInfo">
+        <attribute name="value" type="xs:dateTime"  use="optional"/>
+      </complexType>
+      <complexType name="authorInfo">
+        <sequence>
+          <element name="time" type="tns:dateTimeInfo"/>
+          <element name="assignedAuthor" type="tns:assignedAuthorInfo"/>
+        </sequence>
+        <attribute name="typeCode" type="xs:string"  use="optional"/>
+      </complexType>
+      <complexType name ="lpuIDInfo">
+        <attribute name="root" type="xs:string"  use="optional"/>
+      </complexType>
+      <complexType name="providerOrganizationInfo">
+        <sequence>
+          <element name="id" type="tns:lpuIDInfo"/>
+          <element name="name" type="xs:string"/>
+        </sequence>
+        <attribute name="classCode" type="xs:string"  use="optional"/>
+        <attribute name="determinerCode" type="xs:string"  use="optional"/>
+      </complexType>
+      <complexType name ="birthTimeInfo">
+        <attribute name="value" type="xs:date"  use="optional"/>
+      </complexType>
+      <complexType name ="administrativeGenderCodeInfo">
+        <attribute name="code" type="xs:string"  use="optional"/>
+      </complexType>
+      <complexType name="nameInfo">
+        <sequence>
+          <element name="name" type="xs:string"/>
+          <element name="suffix" type="xs:string"/>
+          <element name="family" type="xs:string"/>
+        </sequence>
+      </complexType>
+      <complexType name="patientInfo">
+        <sequence>
+          <element name="name" type="tns:nameInfo"/>
+          <element name="administrativeGenderCode" type="tns:administrativeGenderCodeInfo"/>
+          <element name="birthTime" type="tns:birthTimeInfo"/>
+        </sequence>
+        <attribute name="classCode" type="xs:string"  use="optional"/>
+        <attribute name="determinerCode" type="xs:string"  use="optional"/>
+      </complexType>
+      <complexType name ="patientIDInfo">
+          <attribute name="extension" type="xs:string"  use="optional"/>
+          <attribute name="root" type="xs:string"  use="optional"/>
+      </complexType>
+      <complexType name="patientRoleInfo">
+        <sequence>
+          <element name="id" type="tns:patientIDInfo"/>
+          <element name="addr" type="xs:string"/>
+          <element name="patient" type="tns:patientInfo"/>
+          <element name="providerOrganization" type="tns:providerOrganizationInfo"/>
+        </sequence>
+        <attribute name="classCode" type="xs:string"  use="optional"/>
+      </complexType>
+      <complexType name="recordTargetInfo">
+        <sequence>
+          <element name="patientRole" type="tns:patientRoleInfo"/>
+        </sequence>
+        <attribute name="typeCode" type="xs:string"  use="optional"/>
+      </complexType>
+      <!-- document -->
       <complexType name="HL7_document">
         <sequence>
-          <element name="typeId" type="xs:string"/>
-          <element name="id" type="xs:string"/>
-          <element name="setID" type="xs:string"/>
-          <element name="versionNumber" type="xs:int"/>
-          <element name="code" type="xs:string"/>
+          <element name ="typeId">
+            <complexType>
+              <attribute name="extention" type="xs:string"  use="optional"/>
+              <attribute name="root" type="xs:string"  use="optional"/>
+            </complexType>
+          </element>
+          <element name ="id">
+            <complexType>
+              <attribute name="root" type="xs:string"  use="optional"/>
+              <attribute name="extention" type="xs:string"  use="optional"/>
+            </complexType>
+          </element>
+          <element name ="code">
+          </element>
           <element name="title" type="xs:string"/>
-          <element name="effectiveTime" type="xs:dateTime"/>
-          <element name="confidentialityCode" type="xs:string"/>
+          <element name ="effectiveTime">
+            <complexType>
+              <attribute name="value" type="xs:string"  use="required"/>
+            </complexType>
+          </element>
+          <element name ="confidentialityCode">
+            <complexType>
+              <attribute name="code" type="xs:string"  use="optional"/>
+              <attribute name="codeSystem" type="xs:string"  use="optional"/>
+            </complexType>
+          </element>
+          <element name ="languageCode">
+            <complexType>
+              <attribute name="code" type="xs:string"  use="optional"/>
+            </complexType>
+          </element>
+          <element name ="versionNumber">
+            <complexType>
+              <attribute name="value" type="xs:string"  use="optional"/>
+            </complexType>
+          </element>
           <element name="recordTarget" type="tns:recordTargetInfo"/>
           <element name="author" type="tns:authorInfo"/>
-          <element name="custodian" type="tns:custodianInfo"/>
           <element name="componentOf" type="tns:componentOfInfo"/>
           <element name="component" type="tns:componentInfo"/>
         </sequence>
@@ -171,7 +236,8 @@
   </message>
 
   <message name="queryAnalysisResponse">
-    <part name="return" type="xs:int"/>
+    <part name="id" type="xs:int"/>
+    <part name="GUID" type="xs:string"/>
 	</message>
 	<portType name="cgmsoap_PortType">
 		<operation name="queryAnalysis">

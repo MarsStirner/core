@@ -2,6 +2,7 @@ package ru.korus.tmis.ws.laboratory.bak.ws.client.bean;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import ru.cgm.service.*;
 import ru.korus.tmis.core.database.DbActionBeanLocal;
 import ru.korus.tmis.core.entity.model.*;
 import ru.korus.tmis.core.exception.CoreException;
@@ -13,15 +14,22 @@ import ru.korus.tmis.laboratory.data.request.OrderInfo;
 import ru.korus.tmis.laboratory.data.request.PatientInfo;
 import ru.korus.tmis.ws.laboratory.bak.model.QueryHL7;
 import ru.korus.tmis.ws.laboratory.bak.utils.QueryInitializer;
-import ru.korus.tmis.ws.laboratory.bak.ws.client.CGMServiceFactory;
-import ru.korus.tmis.ws.laboratory.bak.ws.client.ICGMService;
+import ru.korus.tmis.ws.laboratory.bak.ws.client.SendBakRequest;
+import ru.korus.tmis.ws.laboratory.bak.ws.client.SendBakRequestWS;
 import ru.korus.tmis.ws.laboratory.bak.ws.client.xml.SOAPEnvelopeHandlerResolver;
 import scala.Option;
 
 import javax.ejb.EJB;
 import javax.ejb.Stateless;
 import javax.interceptor.Interceptors;
+import javax.xml.bind.JAXBElement;
+import javax.xml.datatype.DatatypeConfigurationException;
+import javax.xml.datatype.DatatypeFactory;
+import javax.xml.datatype.XMLGregorianCalendar;
+import javax.xml.namespace.QName;
+import java.text.SimpleDateFormat;
 import java.util.Date;
+import java.util.GregorianCalendar;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -40,6 +48,11 @@ import static ru.korus.tmis.ws.laboratory.bak.utils.QueryInitializer.ParamName.*
 public class BakLaboratoryBean implements IBakLaboratoryBean {
 
     private static final Logger log = LoggerFactory.getLogger(BakLaboratoryBean.class);
+    public static final String ROOT = "2.16.840.1.113883.1.3";
+    private static final String GUID = String.valueOf(System.currentTimeMillis() / 1000);
+
+    private final ObjectFactory FACTORY_BAK = new ObjectFactory();
+
 
     @EJB
     private LaboratoryBeanLocal laboratoryBean;
@@ -57,11 +70,12 @@ public class BakLaboratoryBean implements IBakLaboratoryBean {
 //    @Schedule(minute = "*/1", hour = "*")
     public void sendLisAnalysisRequest(int actionId) throws CoreException {
         log.debug("BakLis: create service factory");
-        final ICGMService service = createCGMService();
+        final SendBakRequestWS service = createCGMService();
         final String queryHL7 = createRequestMessage(actionId);
+
         String result = "";
         try {
-            result = service.queryAnalysis(queryHL7);
+//            result = service.queryAnalysis(queryHL7);
         } catch (Exception e) {
             log.error("Error request to LIS Lab. Message:" + e.getMessage());
             log.info("====== queryHL7 request ======== \n" + queryHL7);
@@ -74,13 +88,14 @@ public class BakLaboratoryBean implements IBakLaboratoryBean {
 
     /**
      * Создание CGM-сервиса для запросов в ЛИС
-     * @see ICGMService
-     * @return ICGMService - сервис для выполнения запросов
+     *
+     * @return SendBakRequestWS - сервис для выполнения запросов
+     * @see SendBakRequestWS
      */
-    private ICGMService createCGMService() {
-        final CGMServiceFactory cgmServiceFactory = new CGMServiceFactory();
-        cgmServiceFactory.setHandlerResolver(new SOAPEnvelopeHandlerResolver());
-        return cgmServiceFactory.getService();
+    private SendBakRequestWS createCGMService() {
+        final SendBakRequest SendBakRequest = new SendBakRequest();
+        SendBakRequest.setHandlerResolver(new SOAPEnvelopeHandlerResolver());
+        return SendBakRequest.getService();
     }
 
     private String createRequestMessage(int actionId) throws CoreException {
@@ -88,8 +103,195 @@ public class BakLaboratoryBean implements IBakLaboratoryBean {
         return queryHL7.format();
     }
 
+    private HL7Document createDocument(int actionId) throws CoreException {
+        final HL7Document document = createAndInitializeDocument(actionId);
+        return document;
+    }
+
+    private HL7Document createAndInitializeDocument(final int actionId) throws CoreException {
+        final HL7Document document = new HL7Document();
+
+        final Action action = dbActionBean.getActionById(actionId);
+        final ActionType actionType = action.getActionType();
+
+        if (actionType.getId() == -1) {
+            throw new CoreException("Error no Type For Action" + action.getId());
+        }
+
+        log.info("sendBakAnalysisRequest actionId=" + actionId);
+
+        // Patient section
+        Event event = action.getEvent();
+        final Patient _patient = event.getPatient();
+        final PatientInfo patientInfo = getPatientInfo(_patient);
+        // Request section
+        final DiagnosticRequestInfo requestInfo = laboratoryBean.getDiagnosticRequestInfo(action);
+        // Biomaterial section
+        final BiomaterialInfo biomaterialInfo = laboratoryBean.getBiomaterialInfo(action, action.getTakenTissue());
+        // Order section
+        final OrderInfo orderInfo = laboratoryBean.getOrderInfo(action, actionType);
+
+        final HL7Document.TypeId typeId = new HL7Document.TypeId();
+        typeId.setExtention("POCD_HD000040");
+        typeId.setRoot(ROOT);
+        document.setTypeId(typeId);
+
+        final HL7Document.Id id = new HL7Document.Id();
+        id.setRoot(ROOT);
+        id.setExtention(String.valueOf(requestInfo.orderMisId()));
+        document.setId(id);
+
+        document.setCode(null);
+        document.setTitle("Заказ лабораторных исследований");
+
+        final HL7Document.EffectiveTime effectiveTime = new HL7Document.EffectiveTime();
+        final Date orderMisDate = requestInfo.orderMisDate().get();
+        final SimpleDateFormat sf = new SimpleDateFormat("dd/MMM/yyyy");
+        effectiveTime.setValue(sf.format(orderMisDate));
+        document.setEffectiveTime(effectiveTime);
+
+        final HL7Document.ConfidentialityCode confidentialityCode = new HL7Document.ConfidentialityCode();
+        confidentialityCode.setCode("N");
+        confidentialityCode.setCodeSystem("2.16.840.1.113883.5.25");
+        document.setConfidentialityCode(confidentialityCode);
+
+        final HL7Document.LanguageCode languageCode = new HL7Document.LanguageCode();
+        languageCode.setCode("ru-RU");
+        document.setLanguageCode(languageCode);
+
+        final HL7Document.VersionNumber versionNumber = new HL7Document.VersionNumber();
+        versionNumber.setValue("orderStatus");
+        document.setVersionNumber(versionNumber);
+
+        final RecordTargetInfo recordTarget = new RecordTargetInfo();
+        recordTarget.setTypeCode("RCT");
+
+        final PatientRoleInfo patientRole = new PatientRoleInfo();
+        patientRole.setClassCode("PAT");
+        patientRole.setAddr("patientAddress");
+
+        final PatientIDInfo patientId = new PatientIDInfo();
+        patientId.setExtension(String.valueOf(patientInfo.patientMisId()));
+        patientId.setRoot(GUID);
+        patientRole.setId(patientId);
+
+        final ru.cgm.service.PatientInfo patient = new ru.cgm.service.PatientInfo();
+        patient.setClassCode("PSN");
+        patient.setDeterminerCode("INSTANCE");
+
+        final NameInfo name = new NameInfo();
+        name.setName(patientInfo.patientName().get());
+        name.setSuffix(patientInfo.patientPatronum().get());
+        name.setFamily(patientInfo.patientFamily().get());
+        patient.setName(name);
+
+        final AdministrativeGenderCodeInfo administrativeGenderCode = new AdministrativeGenderCodeInfo();
+        administrativeGenderCode.setCode(patientInfo.patientSex().toString());
+        patient.setAdministrativeGenderCode(administrativeGenderCode);
+
+        final BirthTimeInfo birthTime = new BirthTimeInfo();
+        GregorianCalendar c = new GregorianCalendar();
+        c.setTime(patientInfo.patientBirthDate().get());
+        XMLGregorianCalendar xmlBirthTime = null;
+        try {
+            xmlBirthTime = DatatypeFactory.newInstance().newXMLGregorianCalendar(c);
+        } catch (DatatypeConfigurationException e) {
+            log.error(e.getMessage());
+        }
+        birthTime.setValue(xmlBirthTime);
+        patient.setBirthTime(birthTime);
+
+        patientRole.setPatient(patient);
+
+        final ProviderOrganizationInfo providerOrganization = new ProviderOrganizationInfo();
+        providerOrganization.setClassCode("ORG");
+        providerOrganization.setDeterminerCode("INSTANCE");
+        final LpuIDInfo orgId = new LpuIDInfo();
+        orgId.setRoot(GUID);
+        providerOrganization.setId(orgId);
+        providerOrganization.setName("orderCustodian");
+        patientRole.setProviderOrganization(providerOrganization);
+
+        recordTarget.setPatientRole(patientRole);
+
+        document.setRecordTarget(recordTarget);
+
+        final AuthorInfo author = new AuthorInfo();
+        author.setTypeCode("AUT");
+
+        final AssignedAuthorInfo assignedAuthor = new AssignedAuthorInfo();
+        assignedAuthor.setClassCode("ASSIGNED");
+
+        final DoctorIdInfo doctorId = new DoctorIdInfo();
+        doctorId.setExtension(String.valueOf(requestInfo.orderDoctorMisId().get()));
+        doctorId.setRoot(GUID);
+        assignedAuthor.setId(doctorId);
+
+        final AssignedPersonInfo assignedPerson = new AssignedPersonInfo();
+        assignedPerson.setClassCode("PSN");
+        assignedPerson.setDeterminerCode("INSTANCE");
+
+        final NameInfo assignedName = new NameInfo();
+        assignedName.setName(requestInfo.orderDoctorName().get());
+        assignedName.setFamily(requestInfo.orderDoctorFamily().get());
+        assignedName.setSuffix(requestInfo.orderDoctorPatronum().get());
+        assignedPerson.setName(assignedName);
+
+        assignedAuthor.setAssignedPerson(assignedPerson);
+
+        final RepresentedOrganizationInfo representedOrganization = new RepresentedOrganizationInfo();
+        final ReporgIDInfo reporgIDInfo = new ReporgIDInfo();
+        reporgIDInfo.setRoot(GUID);
+        representedOrganization.setId(reporgIDInfo);
+        representedOrganization.setName("orderCustodian");
+        assignedAuthor.setRepresentedOrganization(representedOrganization);
+
+        author.setAssignedAuthor(assignedAuthor);
+        document.setAuthor(author);
+
+
+        final ComponentOfInfo componentOf = new ComponentOfInfo();
+        final EncompassingEncounterInfo encompassingEncounter = new EncompassingEncounterInfo();
+        final EeIdInfo eeIdInfo = new EeIdInfo();
+        eeIdInfo.setRoot("orderCustodian");
+        eeIdInfo.setExtension("patientNumber");
+        encompassingEncounter.setId(eeIdInfo);
+
+        final EeCodeInfo code = new EeCodeInfo();
+        code.setCodeSystem("2.16.840.1.113883.5.4");
+        code.setCodeSystemName("actCode");
+        code.setCode("IMP");
+        code.setDisplayName("Inpatient encounter");
+        encompassingEncounter.setCode(code);
+        final EffectiveTimeInfo effectiveTime2 = new EffectiveTimeInfo();
+        effectiveTime2.setNullFlavor("NI");
+        encompassingEncounter.setEffectiveTime(effectiveTime2);
+        componentOf.setEncompassingEncounter(encompassingEncounter);
+        document.setComponentOf(componentOf);
+
+        final ComponentInfo component = new ComponentInfo();
+        final StructuredBodyInfo structuredBody = new StructuredBodyInfo();
+        final SubComponentInfo subComponentInfo = FACTORY_BAK.createSubComponentInfo();
+
+        final SectionInfo sectionInfo = new SectionInfo();
+        final EntryInfo entry = new EntryInfo();
+//        entry.setObservation(new );
+        //TODO...
+        sectionInfo.setEntry(entry);
+        subComponentInfo.setSection(sectionInfo);
+        final JAXBElement<SubComponentInfo> jaxbElement
+                = new JAXBElement<SubComponentInfo>(QName.valueOf("http://cgm.ru"), SubComponentInfo.class, subComponentInfo);
+        structuredBody.getContent().add(jaxbElement);
+
+        component.setStructuredBody(structuredBody);
+        document.setComponent(component);
+
+        return document;
+    }
+
     /**
      * FIXME необходимо переделать, нужно добавить валидацию полученных данных, остается неизменным пока не определен окончательно формат сервисов
+     *
      * @param actionId
      * @return
      * @throws CoreException
