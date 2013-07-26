@@ -583,7 +583,8 @@ class AppealEntry {
           if (result.getId.compareTo(ConfigManager.RbCAPIds("db.rbCAP.extract.id.nextHospDate").toInt :java.lang.Integer)==0){
             this.nextHospDate = prop._2.get(0).getValueAsString
           }
-          else if (result.getId.compareTo(ConfigManager.RbCAPIds("db.rbCAP.extract.id.nextHospDepartment").toInt :java.lang.Integer)==0){
+          else if (result.getId.compareTo(ConfigManager.RbCAPIds("db.rbCAP.extract.id.nextHospDepartment").toInt :java.lang.Integer)==0
+                   && prop._2.get(0).getValue != null && prop._2.get(0).getValue.asInstanceOf[OrgStructure].getName != null){
             this.nextHospDepartment = "%s(%s)".format(prop._2.get(0).getValue.asInstanceOf[OrgStructure].getName, prop._2.get(0).getValue.asInstanceOf[OrgStructure].getAddress)
           }
           else if (result.getId.compareTo(ConfigManager.RbCAPIds("db.rbCAP.extract.id.nextHospFinanceType").toInt :java.lang.Integer)==0){
