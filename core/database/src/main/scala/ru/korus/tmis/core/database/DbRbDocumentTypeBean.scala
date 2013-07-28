@@ -30,6 +30,15 @@ class DbRbDocumentTypeBean
     WHERE
       t.id = :id
                                 """
+  val RbDocumentTypeFindByNameQuery = """
+    SELECT t
+    FROM
+      RbDocumentType t
+    WHERE
+      t.name = :name
+    AND
+      t.documentTypeGroup.id = 1
+                                      """
 
   val RbDocumentTypeDictionaryFindQuery = """
     SELECT t.id, t.name
@@ -38,6 +47,14 @@ class DbRbDocumentTypeBean
     WHERE
       t.documentTypeGroup.id = 1
                                           """
+
+  val FindAllRbDocumentTypeDictionaryFindQuery = """
+    SELECT t
+    FROM
+      RbDocumentType t
+    WHERE
+      t.documentTypeGroup.id = 1
+                                                 """
 
   val AllDocumentTypesWithFilterQuery = """
   SELECT DISTINCT %s
@@ -80,8 +97,8 @@ class DbRbDocumentTypeBean
       }
     }
     val typed = em.createQuery(AllDocumentTypesWithFilterQuery.format("r.id, r.name", queryStr.query, sorting), classOf[Array[AnyRef]])
-                  .setMaxResults(limit)
-                  .setFirstResult(limit * page)
+      .setMaxResults(limit)
+      .setFirstResult(limit * page)
     if (queryStr.data.size() > 0) {
       queryStr.data.foreach(qdp => typed.setParameter(qdp.name, qdp.value))
     }
@@ -107,6 +124,10 @@ class DbRbDocumentTypeBean
     em.createNamedQuery("RbDocumentType.findAll", classOf[RbDocumentType]).getResultList
   }
 
+  def findAllRbDocumentTypes(): Iterable[RbDocumentType] = {
+    em.createQuery(FindAllRbDocumentTypeDictionaryFindQuery, classOf[RbDocumentType]).getResultList
+  }
+
   def getRbDocumentTypeById(id: Int): RbDocumentType = {
     val result = em.createQuery(RbDocumentTypeFindQuery,
       classOf[RbDocumentType])
@@ -127,5 +148,10 @@ class DbRbDocumentTypeBean
         result(0)
       }
     }
+  }
+
+  def findByName(name: String): RbDocumentType = {
+    em.createQuery(RbDocumentTypeFindByNameQuery, classOf[RbDocumentType])
+      .setParameter("name", name).getSingleResult
   }
 }
