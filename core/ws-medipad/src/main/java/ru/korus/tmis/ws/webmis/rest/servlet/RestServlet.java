@@ -15,7 +15,7 @@ import ru.korus.tmis.ws.webmis.rest.interceptors.ExceptionJSONMessage;
 
 import com.sun.jersey.json.impl.BaseJSONMarshaller;
 import com.sun.jersey.json.impl.writer.JsonEncoder;
-import com.sun.jersey.spi.container.servlet.ServletContainer;
+import org.glassfish.jersey.servlet.ServletContainer;
 
 public class RestServlet extends ServletContainer {
 
