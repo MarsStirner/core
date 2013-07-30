@@ -1,153 +1,228 @@
-<?xml version="1.0" encoding="UTF-8"?>
-<POLB_IN224100UV01
-        xmlns="urn:hl7-org:v3"
-        xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-        xsi:schemaLocation="urn:hl7-org:v3 ../processable/multicacheschemas/POLB_IN224100UV01.xsd"
-        ITSVersion="XML_1.0">
+<?xml version="1.0" encoding="windows-1251"?>
+<ClinicalDocument xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns="urn:hl7-org:v3"
+                  xsi:schemaLocation="urn:hl7-org:v3 CDA.xsd">
+    <typeId extension="POCD_HD000040" root="2.16.840.1.113883.1.3"/>
+    <!-- идентификатор мед документа -->
+    <id root="2.16.840.1.113883.1.3" extension="orderMisId"/>
+    <!-- код для документа type - пустой в нашем случае   -->
+    <code/>
+    <!-- Title для документа -->
+    <title>Заказ лабораторных исследований</title>
+    <!-- дата и время создания направления врачом -->
+    <effectiveTime value="orderMisDate"/>
+    <!-- уровень конфиденциальности документа : Normal -->
+    <confidentialityCode code="N" codeSystem="2.16.840.1.113883.5.25"/>
+    <!--язык для этого документа -->
+    <languageCode code="ru-RU"/>
+    <!--  -->
+    <versionNumber value="orderStatus"/>
+    <!-- Record target - демографические данные пациента -->
+    <recordTarget typeCode="RCT">
+        <patientRole classCode="PAT">
+            <!-- идентификатор пациента-->
+            <id extension="patientMisId" root="GUID"/>
+            <!-- адрес пациента-  если адреса нет <addr nullFlavor=“NI”/>-->
+            <addr>patientAddress</addr>
+            <patient classCode="PSN" determinerCode="INSTANCE">
+                <!-- фио пациента -->
+                <name>
+                    <given>patientName</given>
+                    <suffix>patientPatronum</suffix>
+                    <family>patientFamily</family>
+                </name>
+                <!-- пол пациента -->
+                <administrativeGenderCode code="patientSex" codeSystem=""
+                        />
+                <!-- дата рождения пациента -->
+                <birthTime value="patientBirthDate"/>
 
-    <!-- UUID СЃРѕРѕР±С‰РµРЅРёСЏ -->
-    <id root="XXXXXXXX-XXXX-XXXX-XXXX-XXXXXXXXXXXX"/>
-
-    <!-- РІСЂРµРјСЏ СЃРѕР·РґР°РЅРёСЏ СЃРѕР±С‹С‚РёСЏ. Р—РЅР°С‡РµРЅРёРµ value РєРѕРґРёСЂСѓРµС‚СЃСЏ РїРѕ С€Р°Р±Р»РѕРЅСѓ: РіРіРіРіРјРјРґРґС‡С‡РјРјСЃСЃ -->
-    <creationTime value="20050303180027"/>
-
-    <!-- РРґРµРЅС‚РёС„РёРєР°С‚РѕСЂ С‚РёРїР° СЃРѕРѕР±С‰РµРЅРёСЏ. Р—РЅР°С‡РµРЅРёРµ @extension - С‚РёРї СЃРѕРѕР±С‰РµРЅРёСЏ. @root РґРѕР»Р¶РµРЅ РёРјРµС‚СЊ Р·РЅР°С‡РµРЅРёРµ 2.16.840.1.113883.1.6 - HL7 Namespace for Interaction IDs -->
-    <interactionId extension='POLB_IN224100UV01' root='2.16.840.1.113883.1.6'/>
-
-    <!-- РќР°Р·РЅР°С‡РµРЅРёРµ СЃРѕРѕР±С‰РµРЅРёСЏ РѕС‚РЅРѕСЃРёС‚РµР»СЊРЅРѕ РѕС‚РїСЂР°РІРёС‚РµР»СЏ. Р’РѕР·РјРѕР¶РЅС‹Рµ Р·РЅР°С‡РµРЅРёСЏ вЂ” D (РѕС‚Р»Р°РґРєР°, Debugging), P (РїСЂРѕРјС‹С€Р»РµРЅРЅРѕРµ С„СѓРЅРєС†РёРѕРЅРёСЂРѕРІР°РЅРёРµ, Production) or T (РѕР±СѓС‡РµРЅРёРµ, Training). -->
-    <processingCode code='P'/>
-
-    <!-- Р РµР¶РёРј РѕР±СЂР°Р±РѕС‚РєРё СЃРѕРѕР±С‰РµРЅРёСЏ РѕС‚РЅРѕСЃРёС‚РµР»СЊРЅРѕ РѕС‚РїСЂР°РІРёС‚РµР»СЏ. Р’РѕР·РјРѕР¶РЅС‹Рµ Р·РЅР°С‡РµРЅРёСЏ вЂ” A (Р°СЂС…РёРІРёСЂРѕРІР°РЅРёРµ, Archive), T (С€С‚Р°С‚РЅРѕРµ С„СѓРЅРєС†РёРѕРЅРёСЂРѕРІР°РЅРёРµ, Current processing), I (РёРЅРёС†РёР°Р»РёР·Р°С†РёСЏ, Initial load), R (РІРѕСЃСЃС‚Р°РЅРѕРІР»РµРЅРёРµ, Restore). -->
-    <processingModeCode code="T"/>
-
-    <!-- Р’С‹СЃС‹Р»Р°С‚СЊ Р»Рё РїРѕРґС‚РІРµСЂР¶РґР°СЋС‰РµРµ СЃРѕРѕР±С‰РµРЅРёРµ. Р—РЅР°С‡РµРЅРёСЏ - Always (AL), only on errors (ER), or never (NE) -->
-    <acceptAckCode code="AL"/>
-
-    <!-- Р Р°Р·РґРµР» РїСЂРёРµРјРЅРёРє - РёСЃРїРѕР»СЊР·СѓРµС‚СЃСЏ Р±РµР· РёР·РјРµРЅРµРЅРёР№ -->
-    <receiver typeCode="RCV">
-        <device classCode="DEV" determinerCode="INSTANCE">
-            <id nullFlavor="NI"/>
-        </device>
-    </receiver>
-
-    <!-- Р Р°Р·РґРµР» РѕС‚РїСЂР°РІРёС‚РµР»СЊ - РёСЃРїРѕР»СЊР·СѓРµС‚СЃСЏ Р±РµР· РёР·РјРµРЅРµРЅРёР№ -->
-    <sender typeCode="SND">
-        <device classCode="DEV" determinerCode="INSTANCE">
-            <id nullFlavor="NI"/>
-        </device>
-    </sender>
-
-    <!-- РёРЅС„РѕСЂРјР°С†РёСЏ Рѕ СЃРѕСЃС‚РѕСЏРІС€РµРјСЃСЏ СЃРѕР±С‹С‚РёРё -->
-    <controlActProcess classCode="CACT" moodCode="APT">
-
-        <authorOrPerformer typeCode="PRF" contextControlCode="AN">
-            <noteText/>
-            <time/>
-            <modeCode/>
-            <signatureCode/>
-            <signatureText/>
-            <assignedPerson classCode="ASSIGNED">
-                <representedOrganization classCode="ORG" determinerCode="INSTANCE">
-                    <id/>
-                    <!-- РљРѕРґ Р»Р°Р±РѕСЂР°С‚РѕСЂРёРё -->
-                    <code code="CodeLIS"/>
-                </representedOrganization>
+            </patient>
+            <!-- Название ЛПУ, которое посылает в ЛИС направление -->
+            <providerOrganization classCode="ORG" determinerCode="INSTANCE">
+                <id root="GUID"/>
+                <name>orderCustodian</name>
+            </providerOrganization>
+        </patientRole>
+    </recordTarget>
+    <!-- создатель документа. Обязательный -->
+    <author typeCode="AUT">
+        <!-- дата и время создания направления врачом -->
+        <time value="orderMisDate"/>
+        <assignedAuthor classCode="ASSIGNED">
+            <!-- уникальный код назначившего врача -->
+            <id extension="orderDoctorMisId" root="GUID"/>
+            <!-- Направивиший врач -->
+            <assignedPerson classCode="PSN" determinerCode="INSTANCE">
+                <name>
+                    <family>orderDoctorFamily</family>
+                    <given>orderDoctorName</given>
+                    <suffix>orderDoctorPatronum</suffix>
+                </name>
             </assignedPerson>
-        </authorOrPerformer>
+            <!-- лпу в котором работает врач-->
+            <representedOrganization>
+                <id root="GUID"/>
+                <name>orderCustodian</name>
+            </representedOrganization>
+        </assignedAuthor>
+    </author>
+    <componentOf>
+        <encompassingEncounter>        <!-- Данные о случае госпитализации -->
+            <id root="orderCustodian" extension="patientNumber"/>
+            <!-- карта стационарного пациента, ее номер -->
+            <code codeSystem="2.16.840.1.113883.5.4"
+                  codeSystemName="actCode"
+                  code="IMP"
+                  displayName="Inpatient encounter"/>
+            <effectiveTime nullFlavor='NI'/>
+            <!-- Обязательный элемент. Дату госпитализации и выписки из стационара не пересылаем -->
+        </encompassingEncounter>
+    </componentOf>
 
-        <subject typeCode="SUBJ" contextConductionInd="false">
-            <observationReport classCode="GROUPER" moodCode="EVN">
-                <!-- РёРґРµРЅС‚РёС„РёРєР°С‚РѕСЂ РЅР°РїСЂР°РІР»РµРЅРёСЏ РЅР° Р°РЅР°Р»РёР·С‹ -->
-                <id controlInformationRoot="orderMisId"/>
-                <!-- РєРѕРґ РёСЃСЃР»РµРґРѕРІР°РЅРёСЏ -->
-                <code code="diagnosticCode">
-                    <!-- РЅР°Р·РІР°РЅРёРµ РёСЃСЃР»РµРґРѕРІР°РЅРёСЏ -->
-                    <displayName value="diagnosticName"/>
-                </code>
-                <title/>
-                <text/>
-                <!-- РѕС‚РјРµС‚РєР° РѕР± РѕРєРѕРЅС‡Р°РЅРёРё РёСЃСЃР»РµРґРѕРІР°РЅРёР№ РїРѕ РЅР°РїСЂР°РІР»РµРЅРёСЋ
-               (true-РѕРєРѕРЅС‡Р°С‚РµР»СЊРЅС‹Р№, Р·Р°РєР°Р· Р·Р°РєСЂС‹РІР°РµС‚СЃСЏ.False-РџСЂРµРґРІР°СЂРёС‚РµР»СЊРЅС‹Р№. Р—Р°РєР°Р· РѕС‚РєСЂС‹С‚ РЅР° РёР·РјРµРЅРµРЅРёРµ СЂРµР·СѓР»СЊС‚Р°С‚Р°.)  -->
-                <statusCode code="referralIsFinished"/>
-                <specimen typeCode="SPC" contextControlCode="OP">
-                    <specimen classCode="SPEC">
-                        <!-- С€С‚СЂРёС…-РєРѕРґ РЅР° РєРѕРЅС‚РµР№РЅРµСЂРµ c Р±РёРѕРјР°С‚РµСЂРёР°Р»РѕРј (РґРµСЃСЏС‚РёС‡РЅРѕРµ РїСЂРµРґСЃС‚Р°РІР»РµРЅРёРµ СЃС‡РёС‚Р°РЅРЅРѕРіРѕ С€С‚СЂРёС…-РєРѕРґР°) -->
-                        <id identifierName="orderBarCode"/>
-                        <code/>
-                    </specimen>
-                </specimen>
-                <author typeCode="AUT">
-                    <time/>
-                    <assignedEntity classCode="ASSIGNED">
-                        <!-- СѓРЅРёРєР°Р»СЊРЅС‹Р№ РёРґРµРЅС‚РёС„РёРєР°С†РёРѕРЅРЅС‹Р№ РЅРѕРјРµСЂ РІСЂР°С‡Р° Р»Р°Р±РѕСЂР°С‚РѕСЂРёРё РїРѕРґРїРёСЃР°РІС€РµРіРѕ СЂРµР·СѓР»СЊС‚Р°С‚С‹ РёСЃСЃР»РµРґРѕРІР°РЅРёСЏ -->
-                        <code code="ResultDoctorLisId">
-                            <!-- Р¤РРћ РІСЂР°С‡Р° Р»Р°Р±РѕСЂР°С‚РѕСЂРёРё РїРѕРґРїРёСЃР°РІС€РµРіРѕ СЂРµР·СѓР»СЊС‚Р°С‚С‹ РёСЃСЃР»РµРґРѕРІР°РЅРёСЏ -->
-                            <displayName value="ResultDoctorLisName"/>
-                        </code>
-                    </assignedEntity>
-                </author>
-            </observationReport>
-        </subject>
-        <subject typeCode="SUBJ" contextConductionInd="false">
-            <observationBattery classCode="BATTERY" moodCode="EVN">
-                <code>
-                    <!-- РЅР°Р·РІР°РЅРёРµ РёСЃСЃР»РµРґРѕРІР°РЅРёСЏ -->
-                    <displayName value="diagnosticName"/>
-                    <originalText/>
-                </code>
-                <text>
-                    <!-- РґРµС„РµРєС‚С‹ Р±РёРѕРјР°С‚РµСЂРёР°Р»Р° -->
-                    <description value="biomaterialDefects"/>
-                </text>
-                <!--  С‚РёРї Р·РЅР°С‡РµРЅРёСЏ (1 вЂ“ СЃС‚СЂРѕРєРѕРІРѕРµ Р·РЅР°С‡РµРЅРёРµ РёР»Рё Р±РѕР»СЊС€РѕР№ С‚РµРєСЃС‚, 2 вЂ“ РёР·РѕР±СЂР°Р¶РµРЅРёРµ, 3 вЂ“ РєРѕРЅС†РµРЅС‚СЂР°С†РёСЏ РјРёРєСЂРѕРѕСЂРі., 4 вЂ“С‡СѓРІСЃС‚РІРёС‚РµР»СЊРЅРѕСЃС‚СЊ РјРёРєСЂРѕРѕСЂРі.) 5 - С‚Р°Р±Р»РёС†Р° Р Р•Р—РЈР›Р¬РўРђРў РњРћР–Р•Рў РРњР•РўР¬ Р—РќРђР§Р•РќРРЇ РўРћР›Р¬РљРћ РћР”РќРћР“Рћ РўРРџРђ, Рё РѕР±СЏР·Р°С‚РµР»СЊРЅРѕ РґРѕР»Р¶РµРЅ РїСЂРёСЃСѓС‚СЃС‚РІРѕРІР°С‚СЊ С…РѕС‚СЏ Р±С‹ РѕРґРёРЅ.  -->
-                <statusCode code="valueType"/>
-            </observationBattery>
-        </subject>
-        <!-- РЅРёР¶РЅРёС… Р±Р»РѕРєРѕРІ Рј.Р±. РЅРµСЃРєРѕР»СЊРєРѕ - СЃРєРѕР»СЊРєРѕ РїРѕР»СѓС‡РёР»Рё indicatorCode -->
-        <subject typeCode="SUBJ" contextConductionInd="false">
-            <observationEvent classCode="OBS" moodCode="EVN">
-                <id/>
-                <!-- РєРѕРґ РјРµС‚РѕРґРёРєРё/РїРѕРєР°Р·Р°С‚РµР»СЏ/РјРёРєСЂРѕРѕСЂРіР°РЅРёР·РјР° 1-->
-                <code code="indicatorCode1">
-                    <!-- РЅР°Р·РІР°РЅРёРµ РјРµС‚РѕРґРёРєРё/РїРѕРєР°Р·Р°С‚РµР»СЏ/РјРёРєСЂРѕРѕСЂРіР°РЅРёР·РјР° 1-->
-                    <displayName value="indicatorName1"/>
-                </code>
-                <!-- resultComment-->
-                <text value="resultComment"/>
-                <!--  РµСЃР»Рё СЂРµР·СѓР»СЊС‚Р°С‚Р° РЅРµС‚ Р·РґРµСЃСЊ СѓРєР°Р·Р°РЅР° РїСЂРёС‡РёРЅР° -->
-                <statusCode code="resultStatus"/>
-                <!--  РґР°С‚Р° РІС‹РїРѕР»РЅРµРЅРёСЏ/СѓС‚РІРµСЂР¶РґРµРЅРёСЏ СЂРµР·СѓР»СЊС‚Р°С‚Р° resultSignDate -->
-                <effectiveTime value="orderProbeDate"/>
-                <!-- РµРґРёРЅРёС†Р° РёР·РјРµСЂРµРЅРёСЏ  unit=resultUnit  value= resultValueText-->
-                <value unit="mmol" value="8.0" xsi:type="PQ"/>
-                <device typeCode="DEV">
-                    <labTestKit classCode="MANU">
-                        <manufacturedTestKit classCode="DEV" determinerCode="INSTANCE">
-                            <!-- РЅР°Р·РІР°РЅРёРµ РїСЂРёР±РѕСЂР° -->
-                            <code code="deviceName"/>
-                        </manufacturedTestKit>
-                    </labTestKit>
-                </device>
-                <referenceRange typeCode="REFV" contextConductionInd="false" contextControlCode="ON">
-                    <interpretationRange classCode="OBS" moodCode="EVN.CRT">
-                        <interpretationCode>
-                            <!-- РЅРѕСЂРјР°, С‚.Рµ. РґРёР°РїР°Р·РѕРЅ РґРѕРїСѓСЃС‚РёРјС‹С… Р·РЅР°С‡РµРЅРёР№ РІ СЃС‚СЂРѕРєРѕРІРѕРј РІРёРґ -->
-                            <displayName value="resultNormString"/>
-                        </interpretationCode>
+    <component>
+        <structuredBody>
+            <!-- информация по биоматериалу -->
+            <component>
+                <entry>
+                    <observation classCode="OBS" moodCode="ENT" negationInd="false">
+                        <effectiveTime value="orderProbeDate"/>
+                        <specimen>
+                            <specimenRole>
+                                <id root="orderBarCode"/>
+                                <specimenPlayingEntity>
+                                    <code code="orderBiomaterialCode">
+                                        <translation displayName="orderBiomaterialName"/>
+                                    </code>
+                                    <quantity value="orderBiomaterialVolume"/>
+                                    <unit code="UnitBiomaterialCode" codename="UnitBiomaterialName"/>
+                                    <text value="orderBiomaterialComment"/>
+                                </specimenPlayingEntity>
+                            </specimenRole>
+                        </specimen>
+                    </observation>
+                </entry>
+            </component>
+            <component>
+                <section>
+                    <text>
+                        <table border="1">
+                            <thead>
+                                <tr>
+                                    <th>Код МКБ10</th>
+                                    <th>Название диагноза</th>
+                                    <th>Код отделения</th>
+                                    <th>Название отделения</th>
+                                    <th>Срочность</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr ID="tr-1">
+                                    <td>orderDiagCode</td>
+                                    <th>orderDiagText</th>
+                                    <td>orderDepartmentMisId</td>
+                                    <th>orderDepartmentName</th>
+                                    <th>isUrgent</th>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </text>
+                    <entry>
+                        <observation classCode="OBS" moodCode="RQO" negationInd="false">
+                            <!-- Название типа финансирования, код исследования, название исследования    -->
+                            <id root="GUID" extension="1"/>
+                            <id extension="typeFinanceName"/>
+                            <code code="diagnosticCode" displayName="diagnosticName"/>
+                            <text>
+                                <reference value="#tr-1"/>
+                            </text>
+                        </observation>
+                    </entry>
+                    <!--таблица индикаторов - может быть несколько строк   -->
+                    <entry>
+                        <observation classCode="OBS" moodCode="RQO" negationInd="false">
+                            <id root="GUID" extension="1"/>
+                            <code code="indicatorCode" displayName="indicatorName"/>
+                            <text>
+                                <reference value="#tr-2"/>
+                            </text>
+                        </observation>
+                    </entry>
+                </section>
+            </component>
 
-                        <precondition typeCode="PRCN" contextControlCode="ON" contextConductionInd="false">
-                            <criterion classCode="OBS" moodCode="EVN.CRT">
-                                <code>
-                                    <!-- Р·РЅР°С‡РµРЅРёРµ СЂРµР·СѓР»СЊС‚Р°С‚Р° РѕС‚РЅРѕСЃРёС‚РµР»СЊРЅРѕ РЅРѕСЂРјС‹ (С‡РёСЃР»Рѕ РІ РґРёР°РїР°Р·РѕРЅРµ -1 РґРѕ +1)  -->
-                                    <displayName value="resultNormalityIndex"/>
-                                </code>
-                                <value/>
-                            </criterion>
-                        </precondition>
-                    </interpretationRange>
-                </referenceRange>
-            </observationEvent>
-        </subject>
-    </controlActProcess>
-</POLB_IN224100UV01>
+            <component>
+                <section>
+                    <text>
+                        <table border="1">
+                            <thead>
+                                <tr>
+                                    <th>Код услуги</th>
+                                    <th>Название услуги</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr ID="tr-1">
+                                    <td>diagnosticCode</td>
+                                    <th>diagnosticName</th>
+                                </tr>
+                            </tbody>
+                        </table>
+                        <!--таблица индикаторов - может быть несколько строк   -->
+                        <table border="1">
+                            <thead>
+                                <tr>
+                                    <th>Код индикатора (теста)</th>
+                                    <th>Название индикатора</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr ID="tr-1">
+                                    <td>indicatorCode</td>
+                                    <th>indicatorName</th>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </text>
+                    <entry>
+                        <observation classCode="OBS" moodCode="RQO" negationInd="false">
+                            <id root="GUID" extension="1"/>
+                            <!--таблица индикаторов - может быть несколько строк   -->
+                            <id extension="typeFinanceName"/>
+                            <code code="diagnosticCode" displayName="diagnosticName"/>
+                            <text>
+                                <reference value="#tr-1"/>
+                            </text>
+                        </observation>
+                    </entry>
+                    <!--таблица индикаторов - может быть несколько строк   -->
+                    <entry>
+                        <observation classCode="OBS" moodCode="RQO" negationInd="false">
+                            <id root="GUID" extension="1"/>
+                            <code code="indicatorCode" displayName="indicatorName"/>
+                            <text>
+                                <reference value="#tr-2"/>
+                            </text>
+                        </observation>
+                    </entry>
+                </section>
+            </component>
+            <!--  появляется если пациент женщина и беременная  -->
+            <component>
+                <section>
+                    <code code=""/>
+                    <title>средний срок беременности, в неделях</title>
+                    <text>orderPregnat</text>
+                </section>
+            </component>
 
+            <component>
+                <section>
+                    <code code=""/>
+                    <title>комментарий к направлению</title>
+                    <text>orderComment</text>
+                </section>
+            </component>
+            <!-- закрытие  body и document -->
+        </structuredBody>
+    </component>
+</ClinicalDocument>
