@@ -1,8 +1,8 @@
-package ru.sda.bean;
+package ru.risar.bean;
 
 import ru.korus.tmis.core.exception.CoreException;
 import ru.korus.validation.Validator;
-import ru.sda.data.Patient;
+import ru.risar.data.Patient;
 
 import javax.ejb.Local;
 
@@ -13,7 +13,7 @@ import javax.ejb.Local;
  *         Date: 27.07.13 21:06
  */
 @Local
-public interface SavePatientInfo {
+public interface RegistrationPatient {
     /**
      * Метод сохраняет личные данные пациента в БД МИС
      *

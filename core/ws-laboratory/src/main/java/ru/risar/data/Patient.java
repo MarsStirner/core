@@ -1,9 +1,10 @@
-package ru.sda.data;
+package ru.risar.data;
 
-import javax.xml.bind.annotation.*;
-import java.util.ArrayList;
+import javax.xml.bind.annotation.XmlAccessType;
+import javax.xml.bind.annotation.XmlAccessorType;
+import javax.xml.bind.annotation.XmlElement;
+import javax.xml.bind.annotation.XmlType;
 import java.util.Date;
-import java.util.List;
 
 /**
  * @author anosov
@@ -33,25 +34,27 @@ public class Patient {
     protected PatientNumbers patientNumbers;
 
     @XmlElement(required = true)
-    protected List<Address> addresses;
+    protected Addresses addresses;
 
-    public PatientNumbers getPatientNumbers() {
+    @XmlElement(required = true)
+    protected ContactInfo contactInfo;
+
+
+    public Addresses getAddressesList() {
+        return addresses;
+    }
+
+    public void setAddresses(Addresses addresses) {
+        this.addresses = addresses;
+    }
+
+    public PatientNumbers getPatientNumberList() {
         return patientNumbers;
     }
 
     public void setPatientNumbers(PatientNumbers patientNumbers) {
         this.patientNumbers = patientNumbers;
     }
-
-    public List<Address> getAddresses() {
-        if (addresses == null) {
-            addresses = new ArrayList<Address>();
-        }
-        return this.addresses;
-    }
-
-    @XmlElement(required = true)
-    protected ContactInfo contactInfo;
 
     public Name getName() {
         return name;

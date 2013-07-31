@@ -1,7 +1,7 @@
-package ru.sda.server;
+package ru.risar.server;
 
 import ru.korus.tmis.core.exception.CoreException;
-import ru.sda.data.Patient;
+import ru.risar.data.Container;
 
 import javax.jws.WebMethod;
 import javax.jws.WebParam;
@@ -17,18 +17,18 @@ import static ru.korus.tmis.ws.laboratory.bak.ws.server.model.hl7.HL7Specificati
  */
 @WebService(
         targetNamespace = Namespace,
-        name = ISavePatientInfoWS.PORT_NAME)
-public interface ISavePatientInfoWS {
+        name = RegistartionPatientWS.SERVICE_NAME)
+public interface RegistartionPatientWS {
 
 
-    @WebMethod(operationName = "savePatientInfoToMIS")
+    @WebMethod(operationName = "registrationPatient")
     @WebResult(name = RESULT, targetNamespace = NAMESPACE, partName = "Body")
-    int savePatientInfo(
-            @WebParam(name = "Patient", targetNamespace = "http://korus.ru/tmis/ws/sda")
-            final Patient patient) throws CoreException;
+    int registrationPatient(
+            @WebParam(name = "container", targetNamespace = "http://korus.ru/tmis/ws/sda")
+            final Container container) throws CoreException;
 
 
     static final String RESULT = "result";
-    static final String SERVICE_NAME = "SAVE_PAT_MIS";
-    static final String PORT_NAME = "SAVE_PAT_MIS_PORT_NAME";
+    static final String SERVICE_NAME = "registartionPatient";
+    static final String PORT_NAME = "registartionPatientPortType";
 }

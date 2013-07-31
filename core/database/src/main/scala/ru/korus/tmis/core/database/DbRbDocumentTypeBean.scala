@@ -151,7 +151,24 @@ class DbRbDocumentTypeBean
   }
 
   def findByName(name: String): RbDocumentType = {
-    em.createQuery(RbDocumentTypeFindByNameQuery, classOf[RbDocumentType])
-      .setParameter("name", name).getSingleResult
+    val result = em.createQuery(RbDocumentTypeFindByNameQuery,
+      classOf[RbDocumentType])
+      .setParameter("name", name)
+      .getResultList
+
+    result.size match {
+          case 0 => {
+            throw new NoSuchRbDocumentTypeException(
+              ConfigManager.ErrorCodes.RbDocumentTypeNotFound,
+              1,
+              i18n("error.rbDocumentTypeNotFound"))
+          }
+          case size => {
+            result.foreach(rbType => {
+              em.detach(rbType)
+            })
+            result(0)
+          }
+        }
   }
 }

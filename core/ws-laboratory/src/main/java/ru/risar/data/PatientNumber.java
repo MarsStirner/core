@@ -1,4 +1,4 @@
-package ru.sda.data;
+package ru.risar.data;
 
 import javax.xml.bind.annotation.*;
 
@@ -11,7 +11,6 @@ import javax.xml.bind.annotation.*;
         "number",
         "numberType"
 })
-@XmlRootElement(name = "patientNumber")
 public class PatientNumber {
 
     @XmlElement(required = true)

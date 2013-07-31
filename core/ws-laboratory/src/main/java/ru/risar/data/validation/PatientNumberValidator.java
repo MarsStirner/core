@@ -1,8 +1,8 @@
-package ru.sda.data.validation;
+package ru.risar.data.validation;
 
 import ru.korus.tmis.core.entity.model.RbDocumentType;
 import ru.korus.validation.Validator;
-import ru.sda.data.PatientNumber;
+import ru.risar.data.PatientNumber;
 
 import java.util.List;
 import java.util.regex.Matcher;
@@ -45,9 +45,14 @@ public class PatientNumberValidator {
             if (numberType.equalsIgnoreCase("СНИЛС") || numberType.equalsIgnoreCase("ОМС")) {
                 isExist = true;
             }
+            if (isExist) {
+                break;
+            }
         }
         if (!isExist) {
-            final StringBuilder errorText = new StringBuilder("Неизвестный тип документа. Возможные варианты: \n ");
+            final StringBuilder errorText = new StringBuilder("Неизвестный тип документа [")
+                    .append(numberType)
+                    .append("]. Возможные варианты: \n ");
             for (RbDocumentType documentType : documentDictionary) {
                 errorText.append(" \t").append(documentType.getName()).append("\n");
             }

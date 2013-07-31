@@ -1,4 +1,4 @@
-package ru.sda.data;
+package ru.risar.data;
 
 import javax.xml.bind.annotation.XmlEnum;
 import javax.xml.bind.annotation.XmlEnumValue;

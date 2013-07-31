@@ -1,11 +1,11 @@
-package ru.sda.data.validation;
+package ru.risar.data.validation;
 
 import org.apache.commons.lang.StringUtils;
 import ru.korus.validation.Validator;
 import ru.korus.validation.rules.IRule;
-import ru.sda.data.Gender;
-import ru.sda.data.Name;
-import ru.sda.data.PatientNumber;
+import ru.risar.data.Gender;
+import ru.risar.data.Name;
+import ru.risar.data.PatientNumber;
 
 import java.util.Date;
 import java.util.List;

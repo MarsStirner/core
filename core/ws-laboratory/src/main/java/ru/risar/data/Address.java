@@ -1,4 +1,4 @@
-package ru.sda.data;
+package ru.risar.data;
 
 import javax.xml.bind.annotation.XmlAccessType;
 import javax.xml.bind.annotation.XmlAccessorType;
@@ -10,7 +10,7 @@ import javax.xml.bind.annotation.XmlType;
  *         Date: 28.07.13 0:50
  */
 @XmlAccessorType(XmlAccessType.FIELD)
-@XmlType(name = "address", propOrder = {
+@XmlType(name = "Address", propOrder = {
         "street",
         "city",
         "state",
