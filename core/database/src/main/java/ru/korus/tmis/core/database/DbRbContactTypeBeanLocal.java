@@ -19,4 +19,6 @@ public interface DbRbContactTypeBeanLocal {
 
     RbContactType getRbContactTypeById(int id)
             throws CoreException;
+
+    RbContactType findByName(String name) throws CoreException;
 }

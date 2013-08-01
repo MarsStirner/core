@@ -1,6 +1,6 @@
-package ru.korus.tmis.ws.laboratory.bak.validation;
+package ru.korus.validation;
 
-import ru.korus.tmis.ws.laboratory.bak.validation.rules.IRule;
+import ru.korus.validation.rules.IRule;
 
 import java.text.MessageFormat;
 import java.util.ArrayList;
@@ -20,23 +20,23 @@ public class Validator {
         this.errors = new ArrayList<String>();
     }
 
-    public static String getRequiredMessageError(Object... args) {
+    public static String getRequiredMessageError(final Object... args) {
         return Message.REQUIRED.getMessage(args);
     }
 
-    public static String getTopRangeMessageError(Object... args) {
+    public static String getTopRangeMessageError(final Object... args) {
         return Message.UNBOUND_TOP_RANGE.getMessage(args);
     }
 
-    public static String getBottomRangeMessageError(Object... args) {
+    public static String getBottomRangeMessageError(final Object... args) {
         return Message.UNBOUND_TOP_RANGE.getMessage(args);
     }
 
-    public <T> void validate(T field, IRule<T> rule) {
+    public <T> void validate(final T field, final IRule<T> rule) {
         rule.apply(field);
     }
 
-    public void addError(String errorText) {
+    public void addError(final String errorText) {
         errors.add(errorText);
     }
 
@@ -44,8 +44,20 @@ public class Validator {
         return !errors.isEmpty();
     }
 
+    public boolean isValid() {
+        return !hasErrors();
+    }
+
     public List<String> getErrors() {
         return errors;
+    }
+
+    public String getFullMessageError() {
+        final StringBuilder sb = new StringBuilder("Validation error. Please see details.\n Error validation list:\n");
+        for (String error : errors) {
+            sb.append(error).append("\n");
+        }
+        return sb.toString();
     }
 
     public enum Message {
@@ -54,11 +66,11 @@ public class Validator {
         REQUIRED("Поле {0} должно быть обязательно для заполнения");
         private String message;
 
-        Message(String message) {
+        Message(final String message) {
             this.message = message;
         }
 
-        public String getMessage(Object... args) {
+        public String getMessage(final Object... args) {
             return MessageFormat.format(this.message, args);
         }
     }

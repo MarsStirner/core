@@ -1,14 +1,14 @@
 package ru.korus.tmis.ws.laboratory.bak.model.params;
 
 import org.apache.commons.lang.StringUtils;
-import ru.korus.tmis.ws.laboratory.bak.validation.Validator;
-import ru.korus.tmis.ws.laboratory.bak.validation.rules.IRule;
+import ru.korus.validation.Validator;
+import ru.korus.validation.rules.IRule;
 
 import javax.xml.datatype.XMLGregorianCalendar;
 import java.util.List;
 
-import static ru.korus.tmis.ws.laboratory.bak.validation.Validator.getRequiredMessageError;
-import static ru.korus.tmis.ws.laboratory.bak.validation.Validator.getTopRangeMessageError;
+import static ru.korus.validation.Validator.getRequiredMessageError;
+import static ru.korus.validation.Validator.getTopRangeMessageError;
 
 /**
  * Модель данных для входных параметров запроса «Биоматериал доставлен»
