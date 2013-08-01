@@ -1,14 +1,13 @@
 package ru.korus.tmis.ws.laboratory.bak.model.params
 
-import ru.korus.tmis.ws.laboratory.bak.validation.Validator
 import spock.lang.Shared
 import spock.lang.Specification
 import spock.lang.Unroll
 
 import static ru.korus.tmis.ws.laboratory.bak.model.params.ParamBakDelivered.initInParams
 import static ru.korus.tmis.ws.laboratory.bak.utils.DateUtils.getXMLGregorianCalendarNow
-import static ru.korus.tmis.ws.laboratory.bak.validation.Validator.getRequiredMessageError
-import static ru.korus.tmis.ws.laboratory.bak.validation.Validator.getTopRangeMessageError
+import static ru.korus.validation.Validator.getRequiredMessageError
+import static ru.korus.validation.Validator.getTopRangeMessageError
 /**
  * Тест для модели данных входных параметров запроса «Биоматериал доставлен»
  *

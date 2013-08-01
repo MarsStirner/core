@@ -51,6 +51,14 @@ public class Thesaurus implements Serializable {
         this.id = id;
     }
 
+    public Thesaurus(Integer id, Integer groupId, String code, String name, String template) {
+        this.id = id;
+        this.groupId = groupId;
+        this.code = code;
+        this.name = name;
+        this.template = template;
+    }
+
     public Integer getId() {
         return id;
     }

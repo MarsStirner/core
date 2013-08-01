@@ -3,73 +3,73 @@
                   xsi:schemaLocation="urn:hl7-org:v3 CDA.xsd">
     <typeId extension="POCD_HD000040" root="2.16.840.1.113883.1.3"/>
     <!-- идентификатор мед документа -->
-    <id root="2.16.840.1.113883.1.3" extension="orderMisId"/>
+    <id root="2.16.840.1.113883.1.3" extension="558010"/>
     <!-- код для документа type - пустой в нашем случае   -->
     <code/>
     <!-- Title для документа -->
     <title>Заказ лабораторных исследований</title>
     <!-- дата и время создания направления врачом -->
-    <effectiveTime value="orderMisDate"/>
+    <effectiveTime value="2013-07-29T07:05:13.000Z"/>
     <!-- уровень конфиденциальности документа : Normal -->
     <confidentialityCode code="N" codeSystem="2.16.840.1.113883.5.25"/>
     <!--язык для этого документа -->
     <languageCode code="ru-RU"/>
     <!-- Статус заказа -->
-    <versionNumber value="orderStatus"/>
+    <versionNumber value="N"/>
     <!-- Record target - демографические данные пациента -->
     <recordTarget typeCode="RCT">
         <patientRole classCode="PAT">
             <!-- идентификатор пациента-->
-            <id extension="patientMisId" root="GUID"/>
+            <id extension="10177" root="GUID"/>
             <!-- адрес пациента-  если адреса нет <addr nullFlavor=“NI"/>-->
-            <addr>patientAddress</addr>
+            <addr>Брянск г, Ново-Советская ул, д.148, кв.1</addr>
             <patient classCode="PSN" determinerCode="INSTANCE">
                 <!-- фио пациента -->
                 <name>
-                    <given>patientName</given>
-                    <suffix>patientPatronum</suffix>
-                    <family>patientFamily</family>
+                    <given>Кирилл</given>
+                    <suffix>Евгеньевич</suffix>
+                    <family>Балябкин</family>
                 </name>
                 <!-- пол пациента -->
-                <administrativeGenderCode code="patientSex"/>
+                <administrativeGenderCode code="1"/>
                 <!-- дата рождения пациента -->
-                <birthTime value="YYYYMMDD"/>
+                <birthTime value="20121004"/>
             </patient>
             <providerOrganization classCode="ORG" determinerCode="INSTANCE">
                 <!-- UUID ЛПУ -->
                 <id root="XXXX-XXXX-XXXX-XXXX-XXXX"/>
                 <!-- Название ЛПУ, которое посылает в ЛИС направление -->
-                <name>orderCustodian</name>
+                <name>ФГБУ «ФНКЦ ДГОИ им. Дмитрия Рогачева» Минздрава России</name>
             </providerOrganization>
         </patientRole>
     </recordTarget>
     <!-- создатель документа. Обязательный -->
     <author typeCode="AUT">
         <!-- дата и время создания направления врачом -->
-        <time value="YYYYMMDDHHMM"/>
+        <time value="201307291321"/>
         <assignedAuthor classCode="ASSIGNED">
             <!-- уникальный код назначившего врача, UUID врача -->
-            <id extension="orderDoctorMisId" root="XXXX-XXXX-XXXX-XXXX-XXXX"/>
+            <id extension="438" root="XXXX-XXXX-XXXX-XXXX-XXXX"/>
             <assignedPerson classCode="PSN" determinerCode="INSTANCE">
                 <!-- ФИО направивишего врача -->
                 <name>
-                    <family>orderDoctorFamily</family>
-                    <given>orderDoctorName</given>
-                    <suffix>orderDoctorPatronum</suffix>
+                    <family>Иванашкин</family>
+                    <given>Алексей</given>
+                    <suffix>Юрьевич</suffix>
                 </name>
             </assignedPerson>
             <representedOrganization>
                 <!-- UUID лпу в котором работает врач-->
                 <id root="XXXX-XXXX-XXXX-XXXX-XXXX"/>
                 <!-- лпу в котором работает врач-->
-                <name>orderCustodian</name>
+                <name>ФГБУ «ФНКЦ ДГОИ им. Дмитрия Рогачева» Минздрава России</name>
             </representedOrganization>
         </assignedAuthor>
     </author>
     <componentOf>
         <encompassingEncounter>
             <!-- Данные о случае госпитализации -->
-            <id root="orderCustodian" extension="patientNumber"/>
+            <id root="ФГБУ «ФНКЦ ДГОИ им. Дмитрия Рогачева» Минздрава России" extension="2013/4208"/>
             <!-- Название ЛПУ, которое посылает в ЛИС направление, patientNumber - номер карты пациента -->
             <code codeSystem="2.16.840.1.113883.5.4"
                   codeSystemName="actCode"
@@ -86,22 +86,22 @@
         <component>
             <entry>
                 <observation classCode="OBS" moodCode="ENT" negationInd="false">
-                    <effectiveTime value="orderProbeDate"/>
+                    <effectiveTime value="2013-07-30T01:16:19.000Z"/>
                     <!-- дата и время забора биоматериала -->
                     <specimen>
                         <specimenRole>
-                            <id root="orderBarCode"/>
+                            <id root="443845"/>
                             <!-- штрих-код на контейнере c биоматериалом  -->
                             <specimenPlayingEntity>
-                                <code code="orderBiomaterialCode">  <!-- код  биоматериала  -->
-                                    <translation displayName="orderBiomaterialName"/>
+                                <code code="2">  <!-- код  биоматериала  -->
+                                    <translation displayName="Кровь венозная"/>
                                     <!-- название  биоматериала -->
                                 </code>
-                                <quantity value="orderBiomaterialVolume"/>
+                                <quantity value=""/>
                                 <!-- Количество/объем биоматериала -->
-                                <unit code="UnitBiomaterialCode" codename="UnitBiomaterialName"/>
+                                <unit code="2" codename="мл"/>
                                 <!-- UnitBiomaterialCode - Код единицы измерения биоматериала и UnitBiomaterialName - название биоматериала -->
-                                <text value="orderBiomaterialComment"/>
+                                <text value=""/>
                                 <!-- orderBiomaterialComment  -->
                             </specimenPlayingEntity>
                         </specimenRole>
@@ -115,7 +115,7 @@
                     <observation classCode="OBS" moodCode="RQO" negationInd="false">
                         <!-- Код отделения   Название отделения  -->
                         <id root="XXXX-XXXX-XXXX-XXXX-XXXX" extension="1"/>
-                        <code code="orderDepartmentMisId" displayName="orderDepartmentName"/>
+                        <code code="27" displayName="Отделение реанимации и интенсивной терапии"/>
                     </observation>
                 </entry>
                 <entry>
@@ -129,28 +129,30 @@
                     <observation classCode="OBS" moodCode="RQO" negationInd="false">
                         <!-- Код МКБ10 Название диагноза    -->
                         <id root="XXXX-XXXX-XXXX-XXXX-XXXX" extension="1"/>
-                        <code code="orderDiagCode" displayName="orderDiagText"/>
+                        <code code="" displayName=""/>
                     </observation>
                 </entry>
                 <entry>
                     <observation classCode="OBS" moodCode="RQO" negationInd="false">
                         <!-- Название типа финансирования, код исследования, название исследования    -->
                         <id root="XXXX-XXXX-XXXX-XXXX-XXXX" extension="1"/>
-                        <id extension="typeFinanceName"/>
-                        <code code="diagnosticCode" displayName="diagnosticName"/>
+                        <id extension="Бюджет"/>
+                        <code code="15.1"
+                              displayName="Определение HBsAg в сыворотке и плазме (тест-система Bio-RAD, США-Франция)"/>
                     </observation>
                 </entry>
                 <!--таблица индикаторов - может быть несколько строк   -->
                 <entry>
                     <observation classCode="OBS" moodCode="RQO" negationInd="false">
                         <id root="XXXX-XXXX-XXXX-XXXX-XXXX" extension="1"/>
-                        <code code="indicatorCode1" displayName="indicatorName1"/>
+                        <code code="15.2"
+                              displayName="Определение комплекса антиген/антитело к вирусу гепатита С (ВГС) (тест-система Bio-RAD, США-Франция)"/>
                     </observation>
                 </entry>
                 <entry>
                     <observation classCode="OBS" moodCode="RQO" negationInd="false">
                         <id root="XXXX-XXXX-XXXX-XXXX-XXXX" extension="1"/>
-                        <code code="indicatorCode2" displayName="indicatorName2"/>
+                        <code code="" displayName=""/>
                     </observation>
                 </entry>
             </section>
@@ -165,7 +167,7 @@
                         <translation displayName="средний срок беременности, в неделях"/>
                     </code>
                     <!-- срок беременности в неделях -->
-                    <value value="orderPregnat" unit="нед"/>
+                    <value value="" unit="нед"/>
                 </observation>
             </entry>
         </section>
@@ -178,7 +180,7 @@
                     <!-- комментарий к направлению  -->
                     <translation displayName="комментарий к направлению"/>
                 </code>
-                <value value="orderComment"/>
+                <value value=""/>
             </observation>
         </entry>
     </section>

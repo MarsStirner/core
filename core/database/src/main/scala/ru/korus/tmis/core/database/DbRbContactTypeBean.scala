@@ -7,7 +7,7 @@ import grizzled.slf4j.Logging
 import javax.persistence.{EntityManager, PersistenceContext}
 import ru.korus.tmis.util.{ConfigManager, I18nable}
 import ru.korus.tmis.core.exception.NoSuchRbContactTypeException
-import ru.korus.tmis.core.entity.model.{RbContactType}
+import ru.korus.tmis.core.entity.model.{ClientContact, RbContactType}
 import java.lang.Iterable
 import ru.korus.tmis.core.data.{DictionaryListRequestDataFilter, QueryDataStructure}
 import scala.collection.JavaConversions._
@@ -31,11 +31,25 @@ class DbRbContactTypeBean
       t.id = :id
                                """
 
+  val FindByNameQuery = """
+    SELECT d
+    FROM
+      RbContactType d
+    WHERE
+      d.name = :name
+                        """
+
+
+  def findByName(name: String): RbContactType = {
+    em.createQuery(FindByNameQuery,
+      classOf[RbContactType])
+      .setParameter("name", name)
+      .getSingleResult
+  }
 
   /*def getAllRbContactTypes(): Iterable[RbContactType] = {
     em.createNamedQuery("RbContactType.findAll", classOf[RbContactType]).getResultList
   }*/
-
 
 
   def getRbContactTypeById(id: Int): RbContactType = {
@@ -69,7 +83,7 @@ class DbRbContactTypeBean
         queryStr.query = "WHERE " + queryStr.query.substring("AND ".length())
       }
     }
-    var typed = em.createQuery(AllRbContactTypesWithFilterQuery.format("count(r)", queryStr.query,""), classOf[Long])
+    var typed = em.createQuery(AllRbContactTypesWithFilterQuery.format("count(r)", queryStr.query, ""), classOf[Long])
     if (queryStr.data.size() > 0) queryStr.data.foreach(qdp => typed.setParameter(qdp.name, qdp.value))
     typed.getSingleResult
   }
@@ -83,8 +97,8 @@ class DbRbContactTypeBean
       }
     }
     val typed = em.createQuery(AllRbContactTypesWithFilterQuery.format("r.id, r.name", queryStr.query, sorting), classOf[Array[AnyRef]])
-                  .setMaxResults(limit)
-                  .setFirstResult(limit * page)
+      .setMaxResults(limit)
+      .setFirstResult(limit * page)
     if (queryStr.data.size() > 0) queryStr.data.foreach(qdp => typed.setParameter(qdp.name, qdp.value))
 
     val result = typed.getResultList
@@ -101,5 +115,5 @@ class DbRbContactTypeBean
     RbContactType r
   %s
   %s
-                                     """
+                                         """
 }

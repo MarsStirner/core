@@ -23,4 +23,9 @@ public interface DbRbDocumentTypeBeanLocal {
 
     java.util.LinkedList<Object> getAllDocumentTypesWithFilter(int page, int limit, String sorting, ListDataFilter filter)
             throws CoreException;
+
+    Iterable<RbDocumentType> findAllRbDocumentTypes()
+            throws CoreException;
+
+    RbDocumentType findByName(String name) throws CoreException;
 }

@@ -843,10 +843,10 @@ class WebMisRESTImpl  extends WebMisREST
           listForSummary.add(ActionWrapperInfo.assignerId)
         }
         var json = new JSONCommonData()
-        json.setRequestData(request)
         if (actionType != null) {
           json = primaryAssessmentBean.getEmptyStructure(actionType.getId.intValue(), "Action", listForConverter, listForSummary,  null, null, patientBean.getPatientById(patientId))
         }
+        json.setRequestData(request)
         json
       }
       case _  => {

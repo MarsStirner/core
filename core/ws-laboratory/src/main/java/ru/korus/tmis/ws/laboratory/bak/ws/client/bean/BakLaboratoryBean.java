@@ -274,7 +274,14 @@ public class BakLaboratoryBean implements IBakLaboratoryBean {
         final SubComponentInfo subComponentInfo = FACTORY_BAK.createSubComponentInfo();
 
         final SectionInfo sectionInfo = new SectionInfo();
+
         final EntryInfo entry = new EntryInfo();
+        final ObservationInfo observation = new ObservationInfo();
+        observation.setClassCode("OBS");
+        observation.setMoodCode("ENT");
+        entry.setObservation(observation);
+        
+
 //        entry.setObservation(new );
         //TODO...
         sectionInfo.setEntry(entry);
