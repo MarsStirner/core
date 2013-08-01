@@ -3,21 +3,20 @@ package ru.cgm.service;
 
 import javax.xml.bind.annotation.XmlAccessType;
 import javax.xml.bind.annotation.XmlAccessorType;
+import javax.xml.bind.annotation.XmlAttribute;
 import javax.xml.bind.annotation.XmlType;
 
 
 /**
- * <p>Java class for entryInfo complex type.
+ * <p>Java class for spTextInfo complex type.
  * 
  * <p>The following schema fragment specifies the expected content contained within this class.
  * 
  * <pre>
- * &lt;complexType name="entryInfo">
+ * &lt;complexType name="spTextInfo">
  *   &lt;complexContent>
  *     &lt;restriction base="{http://www.w3.org/2001/XMLSchema}anyType">
- *       &lt;sequence>
- *         &lt;element name="observation" type="{http://cgm.ru}observationInfo" minOccurs="0"/>
- *       &lt;/sequence>
+ *       &lt;attribute name="value" type="{http://www.w3.org/2001/XMLSchema}string" />
  *     &lt;/restriction>
  *   &lt;/complexContent>
  * &lt;/complexType>
@@ -26,35 +25,34 @@ import javax.xml.bind.annotation.XmlType;
  * 
  */
 @XmlAccessorType(XmlAccessType.FIELD)
-@XmlType(name = "entryInfo", propOrder = {
-    "observation"
-})
-public class EntryInfo {
+@XmlType(name = "spTextInfo")
+public class SpTextInfo {
 
-    protected ObservationInfo observation;
+    @XmlAttribute(name = "value")
+    protected String value;
 
     /**
-     * Gets the value of the observation property.
+     * Gets the value of the value property.
      * 
      * @return
      *     possible object is
-     *     {@link ObservationInfo }
+     *     {@link String }
      *     
      */
-    public ObservationInfo getObservation() {
-        return observation;
+    public String getValue() {
+        return value;
     }
 
     /**
-     * Sets the value of the observation property.
+     * Sets the value of the value property.
      * 
      * @param value
      *     allowed object is
-     *     {@link ObservationInfo }
+     *     {@link String }
      *     
      */
-    public void setObservation(ObservationInfo value) {
-        this.observation = value;
+    public void setValue(String value) {
+        this.value = value;
     }
 
 }

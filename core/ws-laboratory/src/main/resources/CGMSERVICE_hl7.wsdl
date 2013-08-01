@@ -12,7 +12,13 @@
           <element name="reference" type="tns:obsReferenceInfo"/>
         </sequence>
       </complexType>
+      <complexType name="obsTranslationInfo">
+        <attribute name="displayName" type="xs:string"  use="optional"/>
+      </complexType>
       <complexType name="obsCodeInfo">
+        <sequence>
+          <element name="translation" type="tns:obsTranslationInfo"/>
+        </sequence>
         <attribute name="code" type="xs:string"  use="optional"/>
         <attribute name="displayName" type="xs:string"  use="optional"/>
       </complexType>
@@ -20,11 +26,64 @@
         <attribute name="root" type="xs:string"  use="optional"/>
         <attribute name="extension" type="xs:string"  use="optional"/>
       </complexType>
+      <complexType name="obsEffectiveTimeInfo">
+        <attribute name="value" type="xs:dateTime"  use="optional"/>
+      </complexType>
+      <complexType name="srIdInfo">
+        <attribute name="root" type="xs:string"  use="optional"/>
+      </complexType>
+      <complexType name="spTextInfo">
+        <attribute name="value" type="xs:string"  use="optional"/>
+      </complexType>
+      <complexType name="spTranslationInfo">
+        <attribute name="displayName" type="xs:string"  use="optional"/>
+      </complexType>
+      <complexType name="spCodeInfo">
+        <sequence>
+          <element name="translation" type="tns:spTranslationInfo"/>
+        </sequence>
+        <attribute name="code" type="xs:string"  use="optional"/>
+      </complexType>
+      <complexType name="spQuantityInfo">
+        <attribute name="value" type="xs:string"  use="optional"/>
+      </complexType>
+      <complexType name="spUnitInfo">
+        <attribute name="code" type="xs:string"  use="optional"/>
+        <attribute name="codename" type="xs:string"  use="optional"/>
+      </complexType>
+      <complexType name="specimenPlayingEntityInfo">
+        <sequence>
+          <element name="code" type="tns:spCodeInfo"/>
+          <element name="quantity" type="tns:spQuantityInfo"/>
+          <element name="unit" type="tns:spUnitInfo"/>
+          <element name="text" type="tns:spTextInfo"/>
+        </sequence>
+      </complexType>
+      <complexType name="specimenRoleInfo">
+        <sequence>
+          <element name="id" type="tns:srIdInfo"/>
+          <element name="specimenPlayingEntity" type="tns:specimenPlayingEntityInfo"/>
+        </sequence>
+        <attribute name="classCode" type="xs:string"  use="optional"/>
+        <attribute name="moodCode" type="xs:string"  use="optional"/>
+        <attribute name="negationInd" type="xs:string"  use="optional"/>
+      </complexType>
+      <complexType name="specimenInfo">
+        <sequence>
+          <element name="specimenRole" type="tns:specimenRoleInfo"/>
+        </sequence>
+      </complexType>
+      <complexType name="obsValueInfo">
+        <attribute name="value" type="xs:string"  use="optional"/>
+        <attribute name="unit" type="xs:string"  use="optional"/>
+      </complexType>
       <complexType name="observationInfo">
         <sequence>
-          <element name="id" type="tns:obsIdInfo"/>
-          <element name="code" type="tns:obsCodeInfo"/>
-          <element name="text" type="tns:obsTextInfo"/>
+          <element name="id" type="tns:obsIdInfo" minOccurs="0"/>
+          <element name="code" type="tns:obsCodeInfo" minOccurs="0"/>
+          <element name="value" type="tns:obsValueInfo" minOccurs="0"/>
+          <element name="effectiveTime" type="tns:obsEffectiveTimeInfo" minOccurs="0" />
+          <element name="specimen" type="tns:specimenInfo" minOccurs="0" />
         </sequence>
         <attribute name="classCode" type="xs:string"  use="optional"/>
         <attribute name="moodCode" type="xs:string"  use="optional"/>
@@ -32,15 +91,12 @@
       </complexType>
       <complexType name="entryInfo">
         <sequence>
-          <element name="observation" type="tns:observationInfo"/>
+          <element name="observation" type="tns:observationInfo" minOccurs="0"/>
         </sequence>
       </complexType>
       <complexType name="sectionInfo">
         <sequence>
-          <element name="code" type="xs:string" minOccurs="0"/>
-          <element name="title" type="xs:string" minOccurs="0"/>
-          <element name="text" type="xs:string" minOccurs="0"/>
-          <element name="entry" type="tns:entryInfo" minOccurs="0"/>
+          <element name="entry" type="tns:entryInfo" minOccurs="0" maxOccurs="unbounded"/>
         </sequence>
       </complexType>
       <complexType name="subComponentInfo">
@@ -230,11 +286,9 @@
       </complexType>
     </schema>
   </types>
-  
   <message name="queryAnalysisRequest">
     <part name="ClinicalDocument" type="tns:HL7_document"/>
   </message>
-
   <message name="queryAnalysisResponse">
     <part name="id" type="xs:int"/>
     <part name="GUID" type="xs:string"/>

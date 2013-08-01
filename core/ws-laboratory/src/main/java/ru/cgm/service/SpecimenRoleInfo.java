@@ -4,24 +4,22 @@ package ru.cgm.service;
 import javax.xml.bind.annotation.XmlAccessType;
 import javax.xml.bind.annotation.XmlAccessorType;
 import javax.xml.bind.annotation.XmlAttribute;
+import javax.xml.bind.annotation.XmlElement;
 import javax.xml.bind.annotation.XmlType;
 
 
 /**
- * <p>Java class for observationInfo complex type.
+ * <p>Java class for specimenRoleInfo complex type.
  * 
  * <p>The following schema fragment specifies the expected content contained within this class.
  * 
  * <pre>
- * &lt;complexType name="observationInfo">
+ * &lt;complexType name="specimenRoleInfo">
  *   &lt;complexContent>
  *     &lt;restriction base="{http://www.w3.org/2001/XMLSchema}anyType">
  *       &lt;sequence>
- *         &lt;element name="id" type="{http://cgm.ru}obsIdInfo" minOccurs="0"/>
- *         &lt;element name="code" type="{http://cgm.ru}obsCodeInfo" minOccurs="0"/>
- *         &lt;element name="value" type="{http://cgm.ru}obsValueInfo" minOccurs="0"/>
- *         &lt;element name="effectiveTime" type="{http://cgm.ru}obsEffectiveTimeInfo" minOccurs="0"/>
- *         &lt;element name="specimen" type="{http://cgm.ru}specimenInfo" minOccurs="0"/>
+ *         &lt;element name="id" type="{http://cgm.ru}srIdInfo"/>
+ *         &lt;element name="specimenPlayingEntity" type="{http://cgm.ru}specimenPlayingEntityInfo"/>
  *       &lt;/sequence>
  *       &lt;attribute name="classCode" type="{http://www.w3.org/2001/XMLSchema}string" />
  *       &lt;attribute name="moodCode" type="{http://www.w3.org/2001/XMLSchema}string" />
@@ -34,20 +32,16 @@ import javax.xml.bind.annotation.XmlType;
  * 
  */
 @XmlAccessorType(XmlAccessType.FIELD)
-@XmlType(name = "observationInfo", propOrder = {
+@XmlType(name = "specimenRoleInfo", propOrder = {
     "id",
-    "code",
-    "value",
-    "effectiveTime",
-    "specimen"
+    "specimenPlayingEntity"
 })
-public class ObservationInfo {
+public class SpecimenRoleInfo {
 
-    protected ObsIdInfo id;
-    protected ObsCodeInfo code;
-    protected ObsValueInfo value;
-    protected ObsEffectiveTimeInfo effectiveTime;
-    protected SpecimenInfo specimen;
+    @XmlElement(required = true)
+    protected SrIdInfo id;
+    @XmlElement(required = true)
+    protected SpecimenPlayingEntityInfo specimenPlayingEntity;
     @XmlAttribute(name = "classCode")
     protected String classCode;
     @XmlAttribute(name = "moodCode")
@@ -60,10 +54,10 @@ public class ObservationInfo {
      * 
      * @return
      *     possible object is
-     *     {@link ObsIdInfo }
+     *     {@link SrIdInfo }
      *     
      */
-    public ObsIdInfo getId() {
+    public SrIdInfo getId() {
         return id;
     }
 
@@ -72,107 +66,35 @@ public class ObservationInfo {
      * 
      * @param value
      *     allowed object is
-     *     {@link ObsIdInfo }
+     *     {@link SrIdInfo }
      *     
      */
-    public void setId(ObsIdInfo value) {
+    public void setId(SrIdInfo value) {
         this.id = value;
     }
 
     /**
-     * Gets the value of the code property.
+     * Gets the value of the specimenPlayingEntity property.
      * 
      * @return
      *     possible object is
-     *     {@link ObsCodeInfo }
+     *     {@link SpecimenPlayingEntityInfo }
      *     
      */
-    public ObsCodeInfo getCode() {
-        return code;
+    public SpecimenPlayingEntityInfo getSpecimenPlayingEntity() {
+        return specimenPlayingEntity;
     }
 
     /**
-     * Sets the value of the code property.
+     * Sets the value of the specimenPlayingEntity property.
      * 
      * @param value
      *     allowed object is
-     *     {@link ObsCodeInfo }
+     *     {@link SpecimenPlayingEntityInfo }
      *     
      */
-    public void setCode(ObsCodeInfo value) {
-        this.code = value;
-    }
-
-    /**
-     * Gets the value of the value property.
-     * 
-     * @return
-     *     possible object is
-     *     {@link ObsValueInfo }
-     *     
-     */
-    public ObsValueInfo getValue() {
-        return value;
-    }
-
-    /**
-     * Sets the value of the value property.
-     * 
-     * @param value
-     *     allowed object is
-     *     {@link ObsValueInfo }
-     *     
-     */
-    public void setValue(ObsValueInfo value) {
-        this.value = value;
-    }
-
-    /**
-     * Gets the value of the effectiveTime property.
-     * 
-     * @return
-     *     possible object is
-     *     {@link ObsEffectiveTimeInfo }
-     *     
-     */
-    public ObsEffectiveTimeInfo getEffectiveTime() {
-        return effectiveTime;
-    }
-
-    /**
-     * Sets the value of the effectiveTime property.
-     * 
-     * @param value
-     *     allowed object is
-     *     {@link ObsEffectiveTimeInfo }
-     *     
-     */
-    public void setEffectiveTime(ObsEffectiveTimeInfo value) {
-        this.effectiveTime = value;
-    }
-
-    /**
-     * Gets the value of the specimen property.
-     * 
-     * @return
-     *     possible object is
-     *     {@link SpecimenInfo }
-     *     
-     */
-    public SpecimenInfo getSpecimen() {
-        return specimen;
-    }
-
-    /**
-     * Sets the value of the specimen property.
-     * 
-     * @param value
-     *     allowed object is
-     *     {@link SpecimenInfo }
-     *     
-     */
-    public void setSpecimen(SpecimenInfo value) {
-        this.specimen = value;
+    public void setSpecimenPlayingEntity(SpecimenPlayingEntityInfo value) {
+        this.specimenPlayingEntity = value;
     }
 
     /**
