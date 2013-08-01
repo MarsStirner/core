@@ -2,10 +2,7 @@ package ru.korus.tmis.core.filter;
 
 import org.codehaus.jackson.annotate.JsonSubTypes;
 import org.codehaus.jackson.annotate.JsonTypeInfo;
-import ru.korus.tmis.core.data.DefaultListDataFilter;
-import ru.korus.tmis.core.data.DictionaryListRequestDataFilter;
-import ru.korus.tmis.core.data.MKBListRequestDataFilter;
-import ru.korus.tmis.core.data.QueryDataStructure;
+import ru.korus.tmis.core.data.*;
 
 /**
  * Абстрактный класс для фильтров
@@ -18,7 +15,11 @@ import ru.korus.tmis.core.data.QueryDataStructure;
 @JsonSubTypes({
         @JsonSubTypes.Type(value = DefaultListDataFilter.class, name = "DefaultListDataFilter"),
         @JsonSubTypes.Type(value = DictionaryListRequestDataFilter.class, name = "DictionaryListRequestDataFilter"),
-        @JsonSubTypes.Type(value = MKBListRequestDataFilter.class, name = "MKBListRequestDataFilter")
+        @JsonSubTypes.Type(value = MKBListRequestDataFilter.class, name = "MKBListRequestDataFilter"),
+        @JsonSubTypes.Type(value = ThesaurusListRequestDataFilter.class, name = "ThesaurusListRequestDataFilter"),
+        @JsonSubTypes.Type(value = QuotaTypesListRequestDataFilter.class, name = "QuotaTypesListRequestDataFilter"),
+        @JsonSubTypes.Type(value = EventTypesListRequestDataFilter.class, name = "EventTypesListRequestDataFilter"),
+        @JsonSubTypes.Type(value = ActionTypesListRequestDataFilter.class, name = "ActionTypesListRequestDataFilter")
 })
 public abstract class AbstractListDataFilter implements ListDataFilter {
 
