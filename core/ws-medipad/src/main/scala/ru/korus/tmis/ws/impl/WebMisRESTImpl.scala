@@ -181,6 +181,9 @@ class WebMisRESTImpl  extends WebMisREST
   @EJB
   var lisBean: LaboratoryBeanLocal = _
 
+  @EJB
+  var dbTempInvalidBean: DbTempInvalidBeanLocal = _
+
   def getAllPatients(requestData: PatientRequestData, auth: AuthData): PatientData = {
     if (auth != null) {
       val patients = patientBean.getAllPatients(requestData)
@@ -293,7 +296,8 @@ class WebMisRESTImpl  extends WebMisREST
           dbContractBean.getContractById(positionA._1.getContractId.intValue())
         } else {null},
         currentDepartment,
-        dbDiagnosticBean.getDiagnosticsByEventIdAndTypes _
+        dbDiagnosticBean.getDiagnosticsByEventIdAndTypes _,
+        dbTempInvalidBean.getTempInvalidByEventId(positionE._1.getId.intValue())
       ))
     } else {
       throw new CoreException("Неудачная попытка сохранения(изменения) обращения")
@@ -324,13 +328,14 @@ class WebMisRESTImpl  extends WebMisREST
       null,
       actionBean.getLastActionByActionTypeIdAndEventId _,  //havePrimary
       dbClientRelation.getClientRelationByRelativeId _,
-      actionPropertyBean.getActionPropertiesByActionIdAndRbCoreActionPropertyIds _,
+      actionPropertyBean.getActionPropertiesByActionIdAndActionPropertyTypeCodes _,
       dbRbCoreActionPropertyBean.getRbCoreActionPropertiesByIds _,                    //таблица соответствия
       if (positionE._1.getContract != null) {
         dbContractBean.getContractById(positionE._1.getContract.getId.intValue())
       } else {null},
       currentDepartment,
-      dbDiagnosticBean.getDiagnosticsByEventIdAndTypes _
+      dbDiagnosticBean.getDiagnosticsByEventIdAndTypes _,
+      dbTempInvalidBean.getTempInvalidByEventId(positionE._1.getId.intValue())
     ))
   }
 
@@ -350,21 +355,23 @@ class WebMisRESTImpl  extends WebMisREST
     mapper.writeValueAsString(new AppealData( positionE._1,
       positionA._1,
       values,
-      actionPropertyBean.getActionPropertiesForEventByActionTypes _,
+      actionPropertyBean.getActionPropertiesByEventIdsAndActionPropertyTypeCodes _,
       "print_form",
       map,
       street,
       null,
       actionBean.getLastActionByActionTypeIdAndEventId _, //havePrimary
       dbClientRelation.getClientRelationByRelativeId _,
-      actionPropertyBean.getActionPropertiesByActionIdAndRbCoreActionPropertyIds _,  //в тч Admission Diagnosis
+      actionPropertyBean.getActionPropertiesByActionIdAndActionPropertyTypeCodes _,  //в тч Admission Diagnosis
       dbRbCoreActionPropertyBean.getRbCoreActionPropertiesByIds _,          //таблица соответствия
       if (positionA._1.getContractId != null) {
         dbContractBean.getContractById(positionA._1.getContractId.intValue())
       } else {null},
       currentDepartment,
-      dbDiagnosticBean.getDiagnosticsByEventIdAndTypes _
+      dbDiagnosticBean.getDiagnosticsByEventIdAndTypes _,
+      dbTempInvalidBean.getTempInvalidByEventId(positionE._1.getId.intValue())
     ))
+
   }
 
   def getAllAppealsByPatient(requestData: AppealSimplifiedRequestData, auth: AuthData): AppealSimplifiedDataList = {

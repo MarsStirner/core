@@ -74,7 +74,7 @@ class TalonSPOEntry {
       this.typeOfPayment = new IdNameContainer(event.getEventType.getFinance.getId.intValue(), event.getEventType.getFinance.getName)
       this.appealMotive = new IdNameContainer()    //event.getEventType...????
       this.appealCase = new IdNameContainer()     //event.getIsPrimary<-boolean  ???
-      this.treatmentResult = new IdNameContainer(event.getResultId.intValue(), "")   //достать rbResult.name
+      this.treatmentResult = new IdNameContainer(event.getResult.getId.intValue(), "")   //достать rbResult.name
       //<=достаем диагнозы
     }
   }

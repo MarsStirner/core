@@ -115,6 +115,10 @@ object ConfigManager extends Configuration {
     var BloodTypeIsNull = 0x147
     var InvalidAuthData = 0x148
     var MkbNotFound = 0x149
+    var RbStatusNotFound = 0x150
+    var RbStatusForEventNotFound = 0x151
+    var RbTempInvalidForEventNotFound = 0x152
+    var RbResultNotFound = 0x153
   }
 
   /**

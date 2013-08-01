@@ -9,7 +9,7 @@ import ru.korus.tmis.core.logging.LoggingInterceptor
 import javax.persistence.PersistenceContext
 import javax.persistence.EntityManager
 import java.lang.Iterable
-import ru.korus.tmis.core.exception.NoSuchRbTempInvalidDocumentException
+import ru.korus.tmis.core.exception.{CoreException, NoSuchRbTempInvalidDocumentException}
 import java.util.Date
 import javax.ejb.EJB
 import ru.korus.tmis.core.entity.model.Staff
@@ -41,6 +41,14 @@ class DbTempInvalidBean
       t.id = :id
                       """
 
+  val FindByEventIdQuery = """
+    SELECT t
+    FROM
+      TempInvalid t
+    WHERE
+      t.eventId = :eventId
+                      """
+
   def getTempInvalidById(id: Int): TempInvalid = {
     val result = em.createQuery(FindByIdQuery,
       classOf[TempInvalid])
@@ -56,6 +64,28 @@ class DbTempInvalidBean
       }
       case size => {
         var ti = result.iterator.next()
+        ti
+      }
+    }
+  }
+
+  def getTempInvalidByEventId(eventId: Int): TempInvalid = {
+    val result = em.createQuery(FindByEventIdQuery,
+      classOf[TempInvalid])
+      .setParameter("eventId", eventId)
+      .getResultList
+
+    result.size match {
+      case 0 => {
+        null
+        /*
+        throw new CoreException(
+          ConfigManager.ErrorCodes.RbTempInvalidForEventNotFound,
+          i18n("error.rbTempInvalidForEventNotFound").format(eventId))       */
+      }
+      case size => {
+        var ti = result.iterator.next()
+        em.detach(ti)
         ti
       }
     }

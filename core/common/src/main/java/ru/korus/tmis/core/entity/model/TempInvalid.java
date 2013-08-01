@@ -60,6 +60,9 @@ public class TempInvalid implements Serializable {
     @Column(name = "diagnosis_id")
     private int diagnosisId;
 
+    @Column(name = "event_id")
+    private int eventId;
+
     //0-листок нетрудоспособности, 1-справка
     @Basic(optional = false)
     @Column(name = "docType")
@@ -206,6 +209,13 @@ public class TempInvalid implements Serializable {
         this.diagnosisId = diagnosisId;
     }
 
+    public int getEventId() {
+        return this.eventId;
+    }
+
+    public void setEventId(int eventId) {
+        this.eventId = eventId;
+    }
 
     public int getDuration() {
         return this.duration;

@@ -91,6 +91,9 @@ class AppealBean extends AppealBeanLocal
   @EJB
   private var dbStaff: DbStaffBeanLocal = _
 
+  @EJB
+  private var dbRbResultBean: DbRbResultBeanLocal = _
+
   @Inject
   @Any
   var actionEvent: javax.enterprise.event.Event[Notification] = _
@@ -522,7 +525,7 @@ class AppealBean extends AppealBeanLocal
       event.setModifyDatetime(now)
       event.setModifyPerson(authData.user)
       event.setExecDate(now)
-      event.setResultId(resultId) //какой-то айдишник =)
+      event.setResult(dbRbResultBean.getRbResultById(resultId)) //какой-то айдишник =)
     }
     catch {
       case e: Exception => {
