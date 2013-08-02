@@ -171,4 +171,14 @@ public class PatientRoleInfo {
         this.classCode = value;
     }
 
+    @Override
+    public String toString() {
+        return "PatientRoleInfo{" +
+                "id=" + id +
+                ", addr='" + addr + '\'' +
+                ", patient=" + patient +
+                ", providerOrganization=" + providerOrganization +
+                ", classCode='" + classCode + '\'' +
+                '}';
+    }
 }

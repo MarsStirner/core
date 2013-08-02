@@ -82,108 +82,108 @@
 
     <component>
         <structuredBody>
-        <!-- информация по биоматериалу -->
-        <component>
-            <entry>
-                <observation classCode="OBS" moodCode="ENT" negationInd="false">
-                    <effectiveTime value="orderProbeDate"/>
-                    <!-- дата и время забора биоматериала -->
-                    <specimen>
-                        <specimenRole>
-                            <id root="orderBarCode"/>
-                            <!-- штрих-код на контейнере c биоматериалом  -->
-                            <specimenPlayingEntity>
-                                <code code="orderBiomaterialCode">  <!-- код  биоматериала  -->
-                                    <translation displayName="orderBiomaterialName"/>
-                                    <!-- название  биоматериала -->
-                                </code>
-                                <quantity value="orderBiomaterialVolume"/>
-                                <!-- Количество/объем биоматериала -->
-                                <unit code="UnitBiomaterialCode" codename="UnitBiomaterialName"/>
-                                <!-- UnitBiomaterialCode - Код единицы измерения биоматериала и UnitBiomaterialName - название биоматериала -->
-                                <text value="orderBiomaterialComment"/>
-                                <!-- orderBiomaterialComment  -->
-                            </specimenPlayingEntity>
-                        </specimenRole>
-                    </specimen>
-                </observation>
-            </entry>
-        </component>
-        <component>
-            <section>
+            <!-- информация по биоматериалу -->
+            <component>
                 <entry>
-                    <observation classCode="OBS" moodCode="RQO" negationInd="false">
-                        <!-- Код отделения   Название отделения  -->
-                        <id root="XXXX-XXXX-XXXX-XXXX-XXXX" extension="1"/>
-                        <code code="orderDepartmentMisId" displayName="orderDepartmentName"/>
+                    <observation classCode="OBS" moodCode="ENT" negationInd="false">
+                        <effectiveTime value="orderProbeDate"/>
+                        <!-- дата и время забора биоматериала -->
+                        <specimen>
+                            <specimenRole>
+                                <id root="orderBarCode"/>
+                                <!-- штрих-код на контейнере c биоматериалом  -->
+                                <specimenPlayingEntity>
+                                    <code code="orderBiomaterialCode">  <!-- код  биоматериала  -->
+                                        <translation displayName="orderBiomaterialName"/>
+                                        <!-- название  биоматериала -->
+                                    </code>
+                                    <quantity value="orderBiomaterialVolume"/>
+                                    <!-- Количество/объем биоматериала -->
+                                    <unit code="UnitBiomaterialCode" codename="UnitBiomaterialName"/>
+                                    <!-- UnitBiomaterialCode - Код единицы измерения биоматериала и UnitBiomaterialName - название биоматериала -->
+                                    <text value="orderBiomaterialComment"/>
+                                    <!-- orderBiomaterialComment  -->
+                                </specimenPlayingEntity>
+                            </specimenRole>
+                        </specimen>
                     </observation>
                 </entry>
-                <entry>
-                    <observation classCode="OBS" moodCode="RQO" negationInd="false">
-                        <!-- Срочность  -->
-                        <id root="XXXX-XXXX-XXXX-XXXX-XXXX" extension="1"/>
-                        <code code="isUrgent" displayName=""/>
-                    </observation>
-                </entry>
-                <entry>
-                    <observation classCode="OBS" moodCode="RQO" negationInd="false">
-                        <!-- Код МКБ10 Название диагноза    -->
-                        <id root="XXXX-XXXX-XXXX-XXXX-XXXX" extension="1"/>
-                        <code code="orderDiagCode" displayName="orderDiagText"/>
-                    </observation>
-                </entry>
-                <entry>
-                    <observation classCode="OBS" moodCode="RQO" negationInd="false">
-                        <!-- Название типа финансирования, код исследования, название исследования    -->
-                        <id root="XXXX-XXXX-XXXX-XXXX-XXXX" extension="1"/>
-                        <id extension="typeFinanceName"/>
-                        <code code="diagnosticCode" displayName="diagnosticName"/>
-                    </observation>
-                </entry>
-                <!--таблица индикаторов - может быть несколько строк   -->
-                <entry>
-                    <observation classCode="OBS" moodCode="RQO" negationInd="false">
-                        <id root="XXXX-XXXX-XXXX-XXXX-XXXX" extension="1"/>
-                        <code code="indicatorCode1" displayName="indicatorName1"/>
-                    </observation>
-                </entry>
-                <entry>
-                    <observation classCode="OBS" moodCode="RQO" negationInd="false">
-                        <id root="XXXX-XXXX-XXXX-XXXX-XXXX" extension="1"/>
-                        <code code="indicatorCode2" displayName="indicatorName2"/>
-                    </observation>
-                </entry>
-            </section>
-        </component>
-        <!--  появляется если пациент женщина и беременная  -->
-        <component>
-            <section>
-                <entry>
-                    <observation classCode="OBS" moodCode="EVN">
-                    <code code="">
-                        <!-- Описание  -->
-                        <translation displayName="средний срок беременности, в неделях"/>
-                    </code>
-                    <!-- срок беременности в неделях -->
-                    <value value="orderPregnat" unit="нед"/>
-                </observation>
-            </entry>
-        </section>
-    </component>
-    <component>
-        <section>
-            <entry>
-                <observation classCode="OBS" moodCode="EVN">
-                <code code="">
-                    <!-- комментарий к направлению  -->
-                    <translation displayName="комментарий к направлению"/>
-                </code>
-                <value value="orderComment"/>
-            </observation>
-        </entry>
-    </section>
-</component>
-        <!-- закрытие  body и document -->
+            </component>
+            <component>
+                <section>
+                    <entry>
+                        <observation classCode="OBS" moodCode="RQO" negationInd="false">
+                            <!-- Код отделения   Название отделения  -->
+                            <id root="XXXX-XXXX-XXXX-XXXX-XXXX" extension="1"/>
+                            <code code="orderDepartmentMisId" displayName="orderDepartmentName"/>
+                        </observation>
+                    </entry>
+                    <entry>
+                        <observation classCode="OBS" moodCode="RQO" negationInd="false">
+                            <!-- Срочность  -->
+                            <id root="XXXX-XXXX-XXXX-XXXX-XXXX" extension="1"/>
+                            <code code="isUrgent" displayName=""/>
+                        </observation>
+                    </entry>
+                    <entry>
+                        <observation classCode="OBS" moodCode="RQO" negationInd="false">
+                            <!-- Код МКБ10 Название диагноза    -->
+                            <id root="XXXX-XXXX-XXXX-XXXX-XXXX" extension="1"/>
+                            <code code="orderDiagCode" displayName="orderDiagText"/>
+                        </observation>
+                    </entry>
+                    <entry>
+                        <observation classCode="OBS" moodCode="RQO" negationInd="false">
+                            <!-- Название типа финансирования, код исследования, название исследования    -->
+                            <id root="XXXX-XXXX-XXXX-XXXX-XXXX" extension="1"/>
+                            <id extension="typeFinanceName"/>
+                            <code code="diagnosticCode" displayName="diagnosticName"/>
+                        </observation>
+                    </entry>
+                    <!--таблица индикаторов - может быть несколько строк   -->
+                    <entry>
+                        <observation classCode="OBS" moodCode="RQO" negationInd="false">
+                            <id root="XXXX-XXXX-XXXX-XXXX-XXXX" extension="1"/>
+                            <code code="indicatorCode1" displayName="indicatorName1"/>
+                        </observation>
+                    </entry>
+                    <entry>
+                        <observation classCode="OBS" moodCode="RQO" negationInd="false">
+                            <id root="XXXX-XXXX-XXXX-XXXX-XXXX" extension="1"/>
+                            <code code="indicatorCode2" displayName="indicatorName2"/>
+                        </observation>
+                    </entry>
+                </section>
+            </component>
+            <!--  появляется если пациент женщина и беременная  -->
+            <component>
+                <section>
+                    <entry>
+                        <observation classCode="OBS" moodCode="EVN">
+                            <code code="">
+                                <!-- Описание  -->
+                                <translation displayName="средний срок беременности, в неделях"/>
+                            </code>
+                            <!-- срок беременности в неделях -->
+                            <value value="orderPregnat" unit="нед"/>
+                        </observation>
+                    </entry>
+                </section>
+            </component>
+            <component>
+                <section>
+                    <entry>
+                        <observation classCode="OBS" moodCode="EVN">
+                            <code code="">
+                                <!-- комментарий к направлению  -->
+                                <translation displayName="комментарий к направлению"/>
+                            </code>
+                            <value value="orderComment"/>
+                        </observation>
+                    </entry>
+                </section>
+            </component>
+            <!-- закрытие  body и document -->
         </structuredBody>
-        </component>
-        </ClinicalDocument>
+    </component>
+</ClinicalDocument>

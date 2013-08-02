@@ -19,8 +19,10 @@
                      <numberType>СНИЛС</numberType>
                   </patientNumber>
                   <patientNumber>
+                     <serial>1234</serial>
                      <number>1234567890111333</number>
                      <numberType>ОМС</numberType>
+                     <policyType>ДМС</policyType>
                   </patientNumber>
                   <patientNumber>
                      <number>4501 186888</number>

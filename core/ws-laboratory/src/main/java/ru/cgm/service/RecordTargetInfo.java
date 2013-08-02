@@ -87,4 +87,11 @@ public class RecordTargetInfo {
         this.typeCode = value;
     }
 
+    @Override
+    public String toString() {
+        return "RecordTargetInfo{" +
+                "patientRole=" + patientRole +
+                ", typeCode='" + typeCode + '\'' +
+                '}';
+    }
 }
