@@ -38,7 +38,7 @@ public interface AppealBeanLocal {
      * @return Данные об обращении на госпитализацию.
      * @throws CoreException
      */
-    java.util.HashMap<Event, java.util.Map<Action, java.util.Map<Integer,java.util.List<Object>>>> getAppealById(int id)
+    java.util.HashMap<Event, java.util.Map<Action, java.util.Map<Object ,java.util.List<Object>>>> getAppealById(int id)
         throws CoreException;
 
     /**

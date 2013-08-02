@@ -219,11 +219,13 @@ class CommonDataProcessorBean
             (attribute.properties.get("valueId"), attribute.properties.get("value")) match {
               case (None | Some(null) | Some(""), None | Some(null) | Some("")) => {
                 if (ap.getType.getTypeName.compareTo("FlatDirectory") != 0 && ap.getType.getTypeName.compareTo("FlatDictionary") != 0) {
-                  val apv = dbActionProperty.setActionPropertyValue(
-                    ap,
-                    ap.getType.getDefaultValue,
-                    0)
-                  apv :: list
+                  if (ap.getType.getDefaultValue.compareTo("нет") != 0) {     //костылик для мкб
+                    val apv = dbActionProperty.setActionPropertyValue(
+                      ap,
+                      ap.getType.getDefaultValue,
+                      0)
+                    apv :: list
+                  } else list
                 } else list
               }
               case (None | Some(null) | Some(""), Some(value)) => {
@@ -485,9 +487,13 @@ class CommonDataProcessorBean
       if (ap.getType.getTypeName.compareTo("MKB")==0) {
         val descriptionAP = apList.find(p => ap.getType.getCode != null && p.getType.getCode !=null && p.getType.getCode.compareTo(ap.getType.getCode.substring(0, ap.getType.getCode.size - 4))==0).getOrElse((null))
         if (ap.getType.getCode != null) {
-          map += (ap.getType.getCode -> Set[AnyRef]((-1,
-            if (descriptionAP!=null) dbActionProperty.getActionPropertyValue(descriptionAP).get(0).getValueAsString() else "",
-            Integer.valueOf(dbActionProperty.getActionPropertyValue(ap).get(0).getValueAsId))))
+          val mkbAPV = dbActionProperty.getActionPropertyValue(ap)
+          val descAPV = if (descriptionAP!=null) dbActionProperty.getActionPropertyValue(descriptionAP) else null
+          if (mkbAPV != null && mkbAPV.size() > 0 && mkbAPV.get(0).getValueAsId.compareTo("") != 0) {
+            map += (ap.getType.getCode -> Set[AnyRef]((-1,
+              if (descAPV != null) descAPV.get(0).getValueAsString() else "",
+              Integer.valueOf(mkbAPV.get(0).getValueAsId))))
+          }
         }
       }
     })

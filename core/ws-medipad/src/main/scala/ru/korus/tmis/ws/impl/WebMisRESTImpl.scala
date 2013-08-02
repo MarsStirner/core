@@ -270,7 +270,7 @@ class WebMisRESTImpl  extends WebMisREST
 
       val positionE = result.iterator.next()
       val positionA = positionE._2.iterator.next()
-      val values = positionA._2.asInstanceOf[java.util.Map[java.lang.Integer, java.util.List[Object]]]
+      val values = positionA._2.asInstanceOf[java.util.Map[(java.lang.Integer, ActionProperty), java.util.List[Object]]]
 
       val mapper: ObjectMapper = new ObjectMapper()
       mapper.getSerializationConfig().setSerializationView(classOf[Views.DynamicFieldsStandartForm]);
@@ -310,7 +310,7 @@ class WebMisRESTImpl  extends WebMisREST
 
     val positionE = result.iterator.next()
     val positionA = positionE._2.iterator.next()
-    val values = positionA._2.asInstanceOf[java.util.Map[java.lang.Integer, java.util.List[Object]]]
+    val values = positionA._2.asInstanceOf[java.util.Map[(java.lang.Integer, ActionProperty), java.util.List[Object]]]
 
     val mapper: ObjectMapper = new ObjectMapper()
     mapper.getSerializationConfig().setSerializationView(classOf[Views.DynamicFieldsStandartForm]);
@@ -343,7 +343,7 @@ class WebMisRESTImpl  extends WebMisREST
     val result = appealBean.getAppealById(id)
     val positionE = result.iterator.next()
     val positionA = positionE._2.iterator.next()
-    val values = positionA._2.asInstanceOf[java.util.Map[java.lang.Integer, java.util.List[Object]]]
+    val values = positionA._2.asInstanceOf[java.util.Map[(java.lang.Integer, ActionProperty), java.util.List[Object]]]
     val mapper: ObjectMapper = new ObjectMapper()
 
     mapper.getSerializationConfig().setSerializationView(classOf[Views.DynamicFieldsPrintForm])

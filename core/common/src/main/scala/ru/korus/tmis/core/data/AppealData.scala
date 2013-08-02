@@ -63,7 +63,7 @@ class AppealData extends I18nable {
 
   def this(event: Event,
            appeal: Action,
-           values: java.util.Map[java.lang.Integer, java.util.List[Object]],
+           values: java.util.Map[(java.lang.Integer, ActionProperty), java.util.List[Object]],
            mMovingProperties: (java.util.List[java.lang.Integer], java.util.Set[String], Int) => util.LinkedHashMap[java.lang.Integer, util.LinkedHashMap[ActionProperty, java.util.List[APValue]]],
            typeOfResponse: String,
            map: java.util.LinkedHashMap[java.lang.Integer, java.util.LinkedList[Kladr]],
@@ -83,7 +83,14 @@ class AppealData extends I18nable {
     val setMovingIds = JavaConversions.asJavaSet(Set(i18n("db.apt.received.codes.orgStructDirection"),
                                                      i18n("db.apt.moving.codes.orgStructTransfer")))
 
-    val diagnostics = if(mDiagnosticList!=null)mDiagnosticList(event.getId.intValue(), Set("assignment", "aftereffect", "attendant", "final", "admission")) else new java.util.ArrayList[Diagnostic]
+    val diagnostics = if(mDiagnosticList!=null)mDiagnosticList(event.getId.intValue(), Set(i18n("appeal.diagnosis.diagnosisKind.diagReceivedMkb"),
+                                                                                           i18n("appeal.diagnosis.diagnosisKind.admissionMkb"),
+                                                                                           i18n("appeal.diagnosis.diagnosisKind.finalMkb"),
+                                                                                           i18n("appeal.diagnosis.diagnosisKind.aftereffectMkb"),
+                                                                                           i18n("appeal.diagnosis.diagnosisKind.attendantMkb")))
+                      else new java.util.ArrayList[Diagnostic]
+
+      //Set("assignment", "aftereffect", "attendant", "final", "admission")) else new java.util.ArrayList[Diagnostic]
 
     this.data =
       if (postProcessing != null) {
@@ -340,7 +347,7 @@ class AppealEntry extends I18nable {
    */
   def this(event: Event,
            action: Action,
-           values: java.util.Map[java.lang.Integer, java.util.List[Object]],
+           values: java.util.Map[(java.lang.Integer, ActionProperty), java.util.List[Object]],
            mMovingProperties: (java.util.List[java.lang.Integer], java.util.Set[String], Int) => util.LinkedHashMap[java.lang.Integer, util.LinkedHashMap[ActionProperty, java.util.List[APValue]]],
            typeOfResponse: String,
            map: java.util.LinkedHashMap[java.lang.Integer, java.util.LinkedList[Kladr]],
@@ -489,15 +496,19 @@ class AppealEntry extends I18nable {
 
     //Диагнозы по новому
     if (diagnostics.size()>0){
-      Set("assignment", "aftereffect", "attendant", "final", "admission").foreach( diaType => {
+      Set(i18n("appeal.diagnosis.diagnosisKind.diagReceivedMkb"),
+          i18n("appeal.diagnosis.diagnosisKind.admissionMkb"),
+          i18n("appeal.diagnosis.diagnosisKind.finalMkb"),
+          i18n("appeal.diagnosis.diagnosisKind.aftereffectMkb"),
+          i18n("appeal.diagnosis.diagnosisKind.attendantMkb")).foreach( diaType => {
         val allByType = diagnostics.filter(p=>p.getDiagnosisType.getFlatCode.compareTo(diaType)==0)  //Все диагностики данного типа
         val diaByLastDate = allByType.find(p=> p.getCreateDatetime.getTime==allByType.map(_.getCreateDatetime.getTime).foldLeft(Long.MinValue)((i,m)=>m.max(i))).getOrElse(null) //Диагностика последняя по дате создания
         if (diaByLastDate!=null){
           this.diagnoses += new DiagnosisContainer(diaByLastDate)
-        }
+        }   /*
         else { //Достаем из ActionProperty осмотра  (Для старых госпитализации (когда не прописывалась история диагнозов Diagnostic + Diagnosis))
           diaType match {
-            case "assignment" | "aftereffect" | "attendant" => {  //Старая часть кода по диагнозам из экшн пропертей
+            case i18n("appeal.diagnosis.diagnosisKind.diagReceivedMkb") | i18n("appeal.diagnosis.diagnosisKind.aftereffectMkb") | i18n("appeal.diagnosis.diagnosisKind.attendantMkb") => {  //Старая часть кода по диагнозам из экшн пропертей
               val exDiagnosis = this.extractValuesInNumberedMap(LinkedHashSet(
                 ConfigManager.RbCAPIds("db.rbCAP.hosp.primary.id.diagnosis.assigment.code").toInt :java.lang.Integer,
                 ConfigManager.RbCAPIds("db.rbCAP.hosp.primary.id.diagnosis.aftereffect.code").toInt :java.lang.Integer,
@@ -528,7 +539,7 @@ class AppealEntry extends I18nable {
                 this.diagnoses += container
               }
             }
-            case "admission" => { //Старая часть кода по диагнозу при поступлении из экшн пропертей
+            case i18n("appeal.diagnosis.diagnosisKind.admissionMkb") => { //Старая часть кода по диагнозу при поступлении из экшн пропертей
               if (admissions!=null) {
                 var description: String = ""
                 var diagnosis: Mkb = null
@@ -545,7 +556,7 @@ class AppealEntry extends I18nable {
                   }
                 })
                 val container = new DiagnosisContainer()
-                container.setDiagnosisKind("admission")
+                container.setDiagnosisKind(i18n("appeal.diagnosis.diagnosisKind.admissionMkb"))
                 container.setDescription(description)
                 container.setMkb(new MKBContainer(diagnosis))
                 this.diagnoses += container
@@ -553,7 +564,7 @@ class AppealEntry extends I18nable {
             }
             case _ => {}
           }
-        }
+        }   */
       })
     }
     //*******************Доп сведения***************
@@ -640,12 +651,23 @@ class AppealEntry extends I18nable {
    * @param values Все значения свойств действия
    * @return Список значений для свойств действия из искомого списка
    */
-  private def extractValuesInNumberedMap(set: java.util.Set[java.lang.Integer], values: java.util.Map[java.lang.Integer, java.util.List[Object]]) = {
+  private def extractValuesInNumberedMap(set: java.util.Set[java.lang.Integer], values: java.util.Map[(java.lang.Integer, ActionProperty), java.util.List[Object]]) = {
 
     var map: java.util.Map[String, java.util.List[Object]] = new HashMap[String, java.util.List[Object]]
 
     var counter: Int = 0
     set.foreach(e => {
+      values.foreach(f => {
+        var dStr: String = null
+        if (f._1._1.intValue() == e.intValue()) {
+          dStr = counter.toString
+          map.put(dStr, values.get(e, f._1._2))
+        } else {
+          map.put(counter.toString, List(""))
+        }
+      })
+      counter = counter + 1
+      /*
       if(values.containsKey(e)){
         var dStr: String = null
         if(e.compareTo(ConfigManager.RbCAPIds("db.rbCAP.hosp.primary.id.diagnosis.assigment.code").toInt :java.lang.Integer)==0){
@@ -672,7 +694,7 @@ class AppealEntry extends I18nable {
       else {
         map.put(counter.toString, List(""))
       }
-      counter = counter + 1
+      counter = counter + 1  */
     })
     map
   }
@@ -1197,7 +1219,7 @@ class LeavedInfoContainer extends I18nable {
   @BeanProperty
   var nextHospDate: String = _
   @BeanProperty
-  var nextHospDepartment: String = _
+  var nextHospDepartment: IdNameContainer = _
   @BeanProperty
   var nextHospFinanceType: String = _
   @BeanProperty
@@ -1222,7 +1244,8 @@ class LeavedInfoContainer extends I18nable {
             this.nextHospDate = prop._2.get(0).getValueAsString
           } else if (prop._1.getType.getCode.compareTo(i18n("db.apt.moving.codes.hospOrgStruct"))==0
             && prop._2.get(0).getValue != null && prop._2.get(0).getValue.asInstanceOf[OrgStructure].getName != null){
-            this.nextHospDepartment = "%s(%s)".format(prop._2.get(0).getValue.asInstanceOf[OrgStructure].getName, prop._2.get(0).getValue.asInstanceOf[OrgStructure].getAddress)
+            this.nextHospDepartment = new IdNameContainer(prop._2.get(0).getValue.asInstanceOf[OrgStructure].getId.intValue() ,
+                                                          "%s(%s)".format(prop._2.get(0).getValue.asInstanceOf[OrgStructure].getName, prop._2.get(0).getValue.asInstanceOf[OrgStructure].getAddress))
           } else if (prop._1.getType.getCode.compareTo(i18n("db.apt.leaved.codes.nextHospFinance"))==0){
             this.nextHospFinanceType = prop._2.get(0).getValueAsString
           } else if (prop._1.getType.getCode.compareTo(i18n("db.apt.leaved.codes.hospOutcome"))==0){
