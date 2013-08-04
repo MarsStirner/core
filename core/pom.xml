@@ -335,6 +335,16 @@
         </profile>
 
         <profile>
+            <id>anosov-unix-risar</id>
+            <properties>
+                <glassfish.home>/opt/glassfish3/</glassfish.home>
+                <!-- Название базы данных МИС -->
+                <mysql.db.mis>hospital</mysql.db.mis>
+            </properties>
+        </profile>
+
+
+        <profile>
             <id>anosov-fnkc66</id>
             <properties>
                 <glassfish.home>/opt/glassfish3/</glassfish.home>
