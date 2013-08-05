@@ -165,11 +165,13 @@ public class RegistrationPatientBean implements RegistrationPatient {
             if (policy == null) {
                 clientPolicyDb = getClientPolicy(dbClientPolicyBean, patientDb, patientNumber, typeOMS, -1);
                 insert(clientPolicyDb);
+                patientDb.addClientPolicies(clientPolicyDb);
+                update(clientPolicyDb);
             } else {
                 clientPolicyDb = getClientPolicy(dbClientPolicyBean, patientDb, patientNumber, typeOMS, policy.getId());
-                clientPolicyDb = update(clientPolicyDb);
+                update(clientPolicyDb);
             }
-            patientDb.addClientPolicies(clientPolicyDb);
+            em.flush();
         } else {
             final RbDocumentType type = dbDocumentTypeBean.findByName(patientNumber.getNumberType());
             if (type != null) {

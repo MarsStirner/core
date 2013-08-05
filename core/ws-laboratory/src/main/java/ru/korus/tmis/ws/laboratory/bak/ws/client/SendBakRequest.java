@@ -21,7 +21,7 @@ import java.util.Map;
  */
 @WebServiceClient(name = "CGM_SOAP",
         targetNamespace = "http://cgm.ru",
-        wsdlLocation = "../../../../../../../../CGMSERVICE_pub.wsdl")
+        wsdlLocation = "/CGMSERVICE_hl7.wsdl")
 public class SendBakRequest extends Service {
 
     private final static URL CGMSOAP_WSDL_LOCATION;
@@ -47,8 +47,8 @@ public class SendBakRequest extends Service {
         WebServiceException e = null;
 
         try {
-            final URL baseUrl = SendBakRequest.class.getResource(".");
-            url = new URL(baseUrl, "../../../../../../../../CGMSERVICE_pub.wsdl");
+            final URL baseUrl = ru.korus.tmis.ws.laboratory.bak.ws.client.SendBakRequest.class.getResource("");
+            url = new URL(baseUrl, "../../../../../../../../CGMSERVICE_hl7.wsdl");
         } catch (MalformedURLException ex) {
             e = new WebServiceException(ex);
         }
