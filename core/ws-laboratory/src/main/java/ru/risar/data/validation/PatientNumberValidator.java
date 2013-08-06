@@ -1,6 +1,7 @@
 package ru.risar.data.validation;
 
 import ru.korus.tmis.core.entity.model.RbDocumentType;
+import ru.korus.tmis.core.entity.model.RbPolicyType;
 import ru.korus.validation.Validator;
 import ru.risar.data.PatientNumber;
 
@@ -16,6 +17,7 @@ public class PatientNumberValidator {
 
     Validator validator;
     List<RbDocumentType> documentDictionary;
+    List<RbPolicyType> policyTypeDictionary;
 
     public PatientNumberValidator(Validator validator) {
         this.validator = validator;
@@ -23,6 +25,10 @@ public class PatientNumberValidator {
 
     public void initializeDocumentDictionary(final List<RbDocumentType> documentDictionary) {
         this.documentDictionary = documentDictionary;
+    }
+
+    public void initializePolicyTypeDictionary(final List<RbPolicyType> policyTypeDictionary) {
+        this.policyTypeDictionary = policyTypeDictionary;
     }
 
     public void validateNumbers(final List<PatientNumber> patientNumbers) {
@@ -65,21 +71,50 @@ public class PatientNumberValidator {
         final String number = patientNumber.getNumber();
 
         if (numberType.equalsIgnoreCase("СНИЛС")) {
-            final String pattern = "^\\d+[-]\\d+[-]\\d+[ ]\\d\\d$";
-            final Matcher matcher = Pattern.compile(pattern).matcher(number);
-            if (!matcher.find()) {
-                validator.addError("Значение документа СНИЛС не соответсвует стандарту (" + number + ")");
-            }
+            validateSNILS(number);
         } else if (numberType.equalsIgnoreCase("ОМС")) {
-            if (number.length() != 16) {
-                validator.addError("Значение документа ОМС не соответсвует стандарту (" + number + ")");
-            }
+            validateOMS(patientNumber, number);
         } else if (numberType.equalsIgnoreCase("ПАСПОРТ РФ")) {
-            final String pattern = "^\\d\\d\\d\\d[ ]\\d+$";
-            final Matcher matcher = Pattern.compile(pattern).matcher(number);
-            if (!matcher.find()) {
-                validator.addError("Значение документа ПАСПОРТ РФ не соответсвует стандарту (" + number + ")");
+            validatePass(number);
+        }
+    }
+
+    private void validatePass(String number) {
+        final String pattern = "^\\d\\d\\d\\d[ ]\\d+$";
+        final Matcher matcher = Pattern.compile(pattern).matcher(number);
+        if (!matcher.find()) {
+            validator.addError("Значение документа ПАСПОРТ РФ не соответсвует стандарту (" + number + ")");
+        }
+    }
+
+    private void validateSNILS(String number) {
+        final String pattern = "^\\d+[-]\\d+[-]\\d+[ ]\\d\\d$";
+        final Matcher matcher = Pattern.compile(pattern).matcher(number);
+        if (!matcher.find()) {
+            validator.addError("Значение документа СНИЛС не соответсвует стандарту (" + number + ")");
+        }
+    }
+
+    private void validateOMS(PatientNumber patientNumber, String number) {
+        if (number.length() != 16) {
+            validator.addError("Значение документа ОМС не соответсвует стандарту (" + number + ")");
+        }
+        final String policyType = patientNumber.getPolicyType();
+        boolean isExist = false;
+        for (RbPolicyType poliRbDocumentType : policyTypeDictionary) {
+            if (policyType.equalsIgnoreCase(poliRbDocumentType.getName())) {
+                isExist = true;
+                break;
             }
+        }
+        if (!isExist) {
+            final StringBuilder errorText = new StringBuilder("Неизвестный тип полиса ОМС [")
+                    .append(policyType)
+                    .append("]. Возможные варианты: \n ");
+            for (RbPolicyType poliRbDocumentType : policyTypeDictionary) {
+                errorText.append(" \t").append(poliRbDocumentType.getName()).append("\n");
+            }
+            validator.addError(errorText.toString());
         }
     }
 }

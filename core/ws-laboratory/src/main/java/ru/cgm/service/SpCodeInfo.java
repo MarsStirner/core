@@ -9,19 +9,18 @@ import javax.xml.bind.annotation.XmlType;
 
 
 /**
- * <p>Java class for obsCodeInfo complex type.
+ * <p>Java class for spCodeInfo complex type.
  * 
  * <p>The following schema fragment specifies the expected content contained within this class.
  * 
  * <pre>
- * &lt;complexType name="obsCodeInfo">
+ * &lt;complexType name="spCodeInfo">
  *   &lt;complexContent>
  *     &lt;restriction base="{http://www.w3.org/2001/XMLSchema}anyType">
  *       &lt;sequence>
- *         &lt;element name="translation" type="{http://cgm.ru}obsTranslationInfo"/>
+ *         &lt;element name="translation" type="{http://cgm.ru}spTranslationInfo"/>
  *       &lt;/sequence>
  *       &lt;attribute name="code" type="{http://www.w3.org/2001/XMLSchema}string" />
- *       &lt;attribute name="displayName" type="{http://www.w3.org/2001/XMLSchema}string" />
  *     &lt;/restriction>
  *   &lt;/complexContent>
  * &lt;/complexType>
@@ -30,27 +29,25 @@ import javax.xml.bind.annotation.XmlType;
  * 
  */
 @XmlAccessorType(XmlAccessType.FIELD)
-@XmlType(name = "obsCodeInfo", propOrder = {
+@XmlType(name = "spCodeInfo", propOrder = {
     "translation"
 })
-public class ObsCodeInfo {
+public class SpCodeInfo {
 
     @XmlElement(required = true)
-    protected ObsTranslationInfo translation;
+    protected SpTranslationInfo translation;
     @XmlAttribute(name = "code")
     protected String code;
-    @XmlAttribute(name = "displayName")
-    protected String displayName;
 
     /**
      * Gets the value of the translation property.
      * 
      * @return
      *     possible object is
-     *     {@link ObsTranslationInfo }
+     *     {@link SpTranslationInfo }
      *     
      */
-    public ObsTranslationInfo getTranslation() {
+    public SpTranslationInfo getTranslation() {
         return translation;
     }
 
@@ -59,10 +56,10 @@ public class ObsCodeInfo {
      * 
      * @param value
      *     allowed object is
-     *     {@link ObsTranslationInfo }
+     *     {@link SpTranslationInfo }
      *     
      */
-    public void setTranslation(ObsTranslationInfo value) {
+    public void setTranslation(SpTranslationInfo value) {
         this.translation = value;
     }
 
@@ -88,30 +85,6 @@ public class ObsCodeInfo {
      */
     public void setCode(String value) {
         this.code = value;
-    }
-
-    /**
-     * Gets the value of the displayName property.
-     * 
-     * @return
-     *     possible object is
-     *     {@link String }
-     *     
-     */
-    public String getDisplayName() {
-        return displayName;
-    }
-
-    /**
-     * Sets the value of the displayName property.
-     * 
-     * @param value
-     *     allowed object is
-     *     {@link String }
-     *     
-     */
-    public void setDisplayName(String value) {
-        this.displayName = value;
     }
 
 }

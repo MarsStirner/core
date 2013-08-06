@@ -11,6 +11,7 @@ import ru.korus.tmis.core.entity.model.TempInvalid;
 @Local
 public interface DbTempInvalidBeanLocal {
 
+    TempInvalid getTempInvalidByEventId(int eventId);
 
     TempInvalid getTempInvalidById(int id);
 

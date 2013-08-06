@@ -91,6 +91,9 @@ class AppealBean extends AppealBeanLocal
   @EJB
   private var dbStaff: DbStaffBeanLocal = _
 
+  @EJB
+  private var dbRbResultBean: DbRbResultBeanLocal = _
+
   @Inject
   @Any
   var actionEvent: javax.enterprise.event.Event[Notification] = _
@@ -364,7 +367,9 @@ class AppealBean extends AppealBeanLocal
 
     //Создание/редактирование диагнозов (отд. записи)
     var map = Map.empty[String, java.util.Set[AnyRef]]
-    Set("assignment", "aftereffect", "attendant").foreach(flatCode=>{
+    Set(i18n("appeal.diagnosis.diagnosisKind.diagReceivedMkb"),
+        i18n("appeal.diagnosis.diagnosisKind.aftereffectMkb"),
+        i18n("appeal.diagnosis.diagnosisKind.attendantMkb")).foreach(flatCode=>{
       val values = appealData.data.diagnoses.filter(p=>p.getDiagnosisKind.compareTo(flatCode)==0)
                                             .map(f=>{
                                                       var mkb :Mkb = null
@@ -415,16 +420,16 @@ class AppealBean extends AppealBeanLocal
     //Запрос данных из ActionProperty
     val findMapActionProperty = actionPropertyBean.getActionPropertiesByActionId(action.getId.intValue())
 
-    val values: java.util.Map[java.lang.Integer, java.util.List[Object]] = findMapActionProperty.foldLeft(new java.util.HashMap[java.lang.Integer, java.util.List[Object]])(
+    val values: java.util.Map[(java.lang.Integer, ActionProperty), java.util.List[Object]] = findMapActionProperty.foldLeft(new java.util.HashMap[(java.lang.Integer, ActionProperty), java.util.List[Object]])(
       (str_key, el) => {
         val (ap,  apvs) = el
         val aptId = ap.getType.getId.intValue()
         val rbCap = dbRbCoreActionPropertyBean.getRbCoreActionPropertiesByActionPropertyTypeId(aptId)
         if (rbCap!=null) {
-          val key = rbCap.getId
+          val key = (rbCap.getId, ap)
           val list: java.util.List[Object] = new ArrayList[Object]
           if(apvs!=null && apvs.size>0) {
-            apvs.foreach(apv=>list += apv.getValue)
+            apvs.foreach(apv=>list += (apv.getValue))
           }
           else
             list += null
@@ -440,10 +445,10 @@ class AppealBean extends AppealBeanLocal
         str_key
       })
 
-    val eventsMap = new java.util.HashMap[Event, java.util.Map[Action, java.util.Map[java.lang.Integer,java.util.List[Object]]]]
-    val actionsMap = new java.util.HashMap[Action, java.util.Map[java.lang.Integer,java.util.List[Object]]]
+    val eventsMap = new java.util.HashMap[Event, java.util.Map[Action, java.util.Map[Object, java.util.List[Object]]]]
+    val actionsMap = new java.util.HashMap[Action, java.util.Map[Object, java.util.List[Object]]]
 
-    actionsMap.put(action, values)
+    actionsMap.put(action, values.asInstanceOf[java.util.Map[Object, java.util.List[Object]]])
     eventsMap.put(event, actionsMap)
 
     eventsMap
@@ -522,7 +527,7 @@ class AppealBean extends AppealBeanLocal
       event.setModifyDatetime(now)
       event.setModifyPerson(authData.user)
       event.setExecDate(now)
-      event.setResultId(resultId) //какой-то айдишник =)
+      event.setResult(dbRbResultBean.getRbResultById(resultId)) //какой-то айдишник =)
     }
     catch {
       case e: Exception => {

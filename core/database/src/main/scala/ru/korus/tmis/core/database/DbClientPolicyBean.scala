@@ -36,6 +36,16 @@ class DbClientPolicyBean
       p.id = :id
                               """
 
+  val findBySerialAndNumberQuery = """
+    SELECT p
+    FROM
+      ClientPolicy p
+    WHERE
+      p.serial = :serial AND
+      p.number = :number AND
+      p.policyType.id = :typeId
+                                   """
+
 
   def getAllPolicies(patientId: Int): Iterable[ClientPolicy] = {
     em.createNamedQuery("ClientPolicy.findAll", classOf[ClientPolicy]).getResultList
@@ -140,6 +150,25 @@ class DbClientPolicyBean
       isNumberFree = true
     }
     isNumberFree
+  }
+
+
+  def findBySerialAndNumberAndType(serial: String, number: String, typeId: Int): ClientPolicy = {
+    val result = em.createQuery(findBySerialAndNumberQuery, classOf[ClientPolicy])
+      .setParameter("number", number)
+      .setParameter("serial", serial)
+      .setParameter("typeId", typeId)
+      .getResultList
+
+    result.size match {
+      case 0 => {
+        null
+      }
+      case size => {
+        result.foreach(em.detach(_))
+        result(0)
+      }
+    }
   }
 
   val ClientPolicyByNumberSerialAndTypeIdQuery = """

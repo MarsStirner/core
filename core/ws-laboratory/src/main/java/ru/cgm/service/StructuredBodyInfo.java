@@ -48,8 +48,8 @@ public class StructuredBodyInfo {
      * <p>
      * You are getting this "catch-all" property because of the following reason: 
      * The field name "Component" is used by two different parts of a schema. See: 
-     * line 57 of file:/C:/development/github-work/tmis-core/core/ws-laboratory/src/main/resources/CGMSERVICE_hl7.wsdl
-     * line 55 of file:/C:/development/github-work/tmis-core/core/ws-laboratory/src/main/resources/CGMSERVICE_hl7.wsdl
+     * line 113 of file:/C:/development/github-work/tmis-core/core/ws-laboratory/src/main/resources/CGMSERVICE_hl7.wsdl
+     * line 111 of file:/C:/development/github-work/tmis-core/core/ws-laboratory/src/main/resources/CGMSERVICE_hl7.wsdl
      * <p>
      * To get rid of this property, apply a property customization to one 
      * of both of the following declarations to change their names: 

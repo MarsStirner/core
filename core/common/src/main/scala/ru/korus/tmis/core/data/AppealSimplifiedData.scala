@@ -213,12 +213,12 @@ class AppealSimplifiedData {
           if(d._1.isInstanceOf[Diagnostic]) {
             this.diagnoses += new DiagnosisContainer(d._1.asInstanceOf[Diagnostic])
           } else if(d._1.isInstanceOf[ActionProperty]) {
-            val diagnosisKind = d._1.asInstanceOf[ActionProperty].getAction.getActionType.getCode match {
+            val diagnosisKind = d._1.asInstanceOf[ActionProperty].getType.getCode /*getAction.getActionType.getCode match {
               case "4501" => "clinical"
               case "1_1_01" => "admission"
               case "4201" => "assignment"
               case _ => ""
-            }
+            }                       */
             val mkbContainer =
               if(d._2!=null) {
                 if(d._2.isInstanceOf[Mkb]) {

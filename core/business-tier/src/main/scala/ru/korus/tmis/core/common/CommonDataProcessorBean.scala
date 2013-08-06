@@ -20,6 +20,7 @@ import javax.interceptor.Interceptors
 import scala.collection.JavaConversions._
 import java.util.{Calendar, Date}
 import java.util
+import ru.korus.tmis.core.patient.DiagnosisBeanLocal
 
 @Interceptors(Array(classOf[LoggingInterceptor]))
 @Stateless
@@ -50,6 +51,9 @@ class CommonDataProcessorBean
 
   @EJB
   var dbVersion: DbVersionBeanLocal = _
+
+  @EJB
+  var diagnosisBean: DiagnosisBeanLocal = _
 
   //////////////////////////////////////////////////////////////////////////////
 
@@ -215,11 +219,13 @@ class CommonDataProcessorBean
             (attribute.properties.get("valueId"), attribute.properties.get("value")) match {
               case (None | Some(null) | Some(""), None | Some(null) | Some("")) => {
                 if (ap.getType.getTypeName.compareTo("FlatDirectory") != 0 && ap.getType.getTypeName.compareTo("FlatDictionary") != 0) {
-                  val apv = dbActionProperty.setActionPropertyValue(
-                    ap,
-                    ap.getType.getDefaultValue,
-                    0)
-                  apv :: list
+                  if (ap.getType.getDefaultValue.compareTo("нет") != 0) {     //костылик для мкб
+                    val apv = dbActionProperty.setActionPropertyValue(
+                      ap,
+                      ap.getType.getDefaultValue,
+                      0)
+                    apv :: list
+                  } else list
                 } else list
               }
               case (None | Some(null) | Some(""), Some(value)) => {
@@ -239,8 +245,13 @@ class CommonDataProcessorBean
             }
           })
 
+          //
           entities = (entities /: apvList)(_ + _)
           dbManager.persistAll(apvList)
+          //Сохранение диагнозов в таблицу Диагностик
+          var apsForDiag = new util.LinkedList[ActionProperty]()
+          apList.foreach(f => apsForDiag.add(f._1))
+          dbManager.persistAll(this.saveDiagnoses(eventId ,apsForDiag, userData))
 
           // Save empty AP values (set to default values)
           //Для FlatDictionary (FlatDirectory) нету значения по умолчанию, внутри релэйшн по значению валуе, дефолт значение решил не писать
@@ -304,7 +315,7 @@ class CommonDataProcessorBean
       actionId,
       oldAction.getIdx,
       userData)
-
+    var eventId = 0
     try {
       data.entity.filter(_.id == actionId).foreach(entity => {
         var a = dbAction.updateAction(entity.id.intValue,
@@ -440,8 +451,12 @@ class CommonDataProcessorBean
           a.setEndDate(endDate)
           a.setStatus(ActionStatus.FINISHED.getCode) //WEBMIS-880
         }
+        eventId = a.getEvent.getId.intValue()
       })
-
+      //Сохранение диагнозов в таблицу Диагностик
+      var apsForDiag = new util.LinkedList[ActionProperty]()
+      entities.foreach(f => if (f.isInstanceOf[ActionProperty]) apsForDiag.add(f.asInstanceOf[ActionProperty]))
+      dbManager.persistAll(this.saveDiagnoses(eventId ,apsForDiag, userData))
 
       result = dbManager
         .mergeAll(entities)
@@ -464,6 +479,26 @@ class CommonDataProcessorBean
     } finally {
       appLock.releaseLock(lockId)
     }
+  }
+
+  private def saveDiagnoses(eventId: Int, apList: java.util.List[ActionProperty], userData: AuthData): java.util.List[AnyRef] = {
+    var map = Map.empty[String, java.util.Set[AnyRef]]
+    apList.foreach(ap => {
+      if (ap.getType.getTypeName.compareTo("MKB")==0) {
+        val descriptionAP = apList.find(p => ap.getType.getCode != null && p.getType.getCode !=null && p.getType.getCode.compareTo(ap.getType.getCode.substring(0, ap.getType.getCode.size - 4))==0).getOrElse((null))
+        if (ap.getType.getCode != null) {
+          val mkbAPV = dbActionProperty.getActionPropertyValue(ap)
+          val descAPV = if (descriptionAP!=null) dbActionProperty.getActionPropertyValue(descriptionAP) else null
+          if (mkbAPV != null && mkbAPV.size() > 0 && mkbAPV.get(0).getValueAsId.compareTo("") != 0) {
+            map += (ap.getType.getCode -> Set[AnyRef]((-1,
+              if (descAPV != null) descAPV.get(0).getValueAsString() else "",
+              Integer.valueOf(mkbAPV.get(0).getValueAsId))))
+          }
+        }
+      }
+    })
+    val diag = diagnosisBean.insertDiagnoses(eventId, asJavaMap(map), userData)
+    diag
   }
 
   def changeActionStatus(eventId: Int,

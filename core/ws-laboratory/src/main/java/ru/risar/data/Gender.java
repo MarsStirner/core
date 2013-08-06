@@ -35,11 +35,19 @@ public enum Gender {
         throw new IllegalArgumentException(v);
     }
 
-    public short codeShort() {
+    public Short codeShort() {
         if (this == Gender.MALE) {
             return 1;
         } else {
             return 2;
+        }
+    }
+
+    public String codeName() {
+        if (this == Gender.MALE) {
+            return "male";
+        } else {
+            return "female";
         }
     }
 

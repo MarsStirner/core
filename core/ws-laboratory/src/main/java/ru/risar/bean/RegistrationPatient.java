@@ -21,7 +21,7 @@ public interface RegistrationPatient {
      * @return true - если "удача", false - ошибка сохранения
      * @throws CoreException
      */
-    boolean save(final Patient patient) throws CoreException;
+    boolean register(final Patient patient) throws CoreException;
 
     /**
      * Валидация входных данных

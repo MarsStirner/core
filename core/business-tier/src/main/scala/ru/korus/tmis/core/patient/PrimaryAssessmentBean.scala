@@ -213,7 +213,7 @@ class PrimaryAssessmentBean
     if (postProcessing != null) {
       json_data =  postProcessing(json_data, false)
     }
-
+    /*
     //Если первичный осмотр, то записать диагноз при поступлении
     val primaries = json_data.data.filter(ce => ce.getTypeId().compareTo(i18n("db.actionType.primary").toInt)==0)
     primaries.foreach(ce => {
@@ -228,7 +228,7 @@ class PrimaryAssessmentBean
         }
       }
     })
-
+    */
     json_data
   }
 

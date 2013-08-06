@@ -9,33 +9,7 @@ package ru.korus.tmis.pix.sda;
 
 import java.util.List;
 
-import ru.korus.tmis.pix.sda.ws.Address;
-import ru.korus.tmis.pix.sda.ws.Allergy;
-import ru.korus.tmis.pix.sda.ws.AllergyCode;
-import ru.korus.tmis.pix.sda.ws.ArrayOfAddressAddress;
-import ru.korus.tmis.pix.sda.ws.ArrayOfAllergyAllergy;
-import ru.korus.tmis.pix.sda.ws.ArrayOfDiagnosisDiagnosis;
-import ru.korus.tmis.pix.sda.ws.ArrayOfDocumentDocument;
-import ru.korus.tmis.pix.sda.ws.ArrayOfEncounterEncounter;
-import ru.korus.tmis.pix.sda.ws.ArrayOfPatientNumberPatientNumber;
-import ru.korus.tmis.pix.sda.ws.CareProvider;
-import ru.korus.tmis.pix.sda.ws.City;
-import ru.korus.tmis.pix.sda.ws.ContactInfo;
-import ru.korus.tmis.pix.sda.ws.Container;
-import ru.korus.tmis.pix.sda.ws.Diagnosis;
-import ru.korus.tmis.pix.sda.ws.DiagnosisCode;
-import ru.korus.tmis.pix.sda.ws.Document;
-import ru.korus.tmis.pix.sda.ws.DocumentType;
-import ru.korus.tmis.pix.sda.ws.Encounter;
-import ru.korus.tmis.pix.sda.ws.Gender;
-import ru.korus.tmis.pix.sda.ws.Name;
-import ru.korus.tmis.pix.sda.ws.Organization;
-import ru.korus.tmis.pix.sda.ws.Patient;
-import ru.korus.tmis.pix.sda.ws.PatientNumber;
-import ru.korus.tmis.pix.sda.ws.Severity;
-import ru.korus.tmis.pix.sda.ws.State;
-import ru.korus.tmis.pix.sda.ws.User;
-import ru.korus.tmis.pix.sda.ws.Zip;
+import ru.korus.tmis.pix.sda.ws.*;
 
 /**
  * 
@@ -269,6 +243,18 @@ public class PixInfo {
                 diagnosis.setDiagnosis(diagCode);
                 addNew = true;
             }
+            if (diagInfo.getDiagTypeCode() != null || diagInfo.getDiagTypeName() != null) {
+                DiagnosisType diagType = new DiagnosisType();
+                if (diagInfo.getDiagTypeCode() != null) {
+                    diagType.setCode(diagInfo.getDiagTypeCode());
+                }
+                if (diagInfo.getDiagTypeName() != null) {
+                    diagType.setDescription(diagInfo.getDiagTypeName());
+                }
+                diagnosis.setDiagnosisType(diagType);
+                addNew = true;
+            }
+
             if (addNew) {
                 res.getDiagnoses().getDiagnosis().add(diagnosis);
             }

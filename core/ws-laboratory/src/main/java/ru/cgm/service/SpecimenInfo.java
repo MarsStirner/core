@@ -3,20 +3,21 @@ package ru.cgm.service;
 
 import javax.xml.bind.annotation.XmlAccessType;
 import javax.xml.bind.annotation.XmlAccessorType;
+import javax.xml.bind.annotation.XmlElement;
 import javax.xml.bind.annotation.XmlType;
 
 
 /**
- * <p>Java class for entryInfo complex type.
+ * <p>Java class for specimenInfo complex type.
  * 
  * <p>The following schema fragment specifies the expected content contained within this class.
  * 
  * <pre>
- * &lt;complexType name="entryInfo">
+ * &lt;complexType name="specimenInfo">
  *   &lt;complexContent>
  *     &lt;restriction base="{http://www.w3.org/2001/XMLSchema}anyType">
  *       &lt;sequence>
- *         &lt;element name="observation" type="{http://cgm.ru}observationInfo" minOccurs="0"/>
+ *         &lt;element name="specimenRole" type="{http://cgm.ru}specimenRoleInfo"/>
  *       &lt;/sequence>
  *     &lt;/restriction>
  *   &lt;/complexContent>
@@ -26,35 +27,36 @@ import javax.xml.bind.annotation.XmlType;
  * 
  */
 @XmlAccessorType(XmlAccessType.FIELD)
-@XmlType(name = "entryInfo", propOrder = {
-    "observation"
+@XmlType(name = "specimenInfo", propOrder = {
+    "specimenRole"
 })
-public class EntryInfo {
+public class SpecimenInfo {
 
-    protected ObservationInfo observation;
+    @XmlElement(required = true)
+    protected SpecimenRoleInfo specimenRole;
 
     /**
-     * Gets the value of the observation property.
+     * Gets the value of the specimenRole property.
      * 
      * @return
      *     possible object is
-     *     {@link ObservationInfo }
+     *     {@link SpecimenRoleInfo }
      *     
      */
-    public ObservationInfo getObservation() {
-        return observation;
+    public SpecimenRoleInfo getSpecimenRole() {
+        return specimenRole;
     }
 
     /**
-     * Sets the value of the observation property.
+     * Sets the value of the specimenRole property.
      * 
      * @param value
      *     allowed object is
-     *     {@link ObservationInfo }
+     *     {@link SpecimenRoleInfo }
      *     
      */
-    public void setObservation(ObservationInfo value) {
-        this.observation = value;
+    public void setSpecimenRole(SpecimenRoleInfo value) {
+        this.specimenRole = value;
     }
 
 }
