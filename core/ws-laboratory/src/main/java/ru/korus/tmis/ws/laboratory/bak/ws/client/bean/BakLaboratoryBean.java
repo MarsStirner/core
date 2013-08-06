@@ -1,13 +1,10 @@
 package ru.korus.tmis.ws.laboratory.bak.ws.client.bean;
 
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import ru.cgm.service.*;
 import ru.korus.tmis.core.database.DbActionBeanLocal;
 import ru.korus.tmis.core.database.DbStaffBeanLocal;
 import ru.korus.tmis.core.entity.model.*;
 import ru.korus.tmis.core.exception.CoreException;
-import ru.korus.tmis.core.logging.LoggingInterceptor;
 import ru.korus.tmis.laboratory.business.LaboratoryBeanLocal;
 import ru.korus.tmis.laboratory.data.request.BiomaterialInfo;
 import ru.korus.tmis.laboratory.data.request.DiagnosticRequestInfo;
@@ -19,7 +16,6 @@ import ru.korus.tmis.ws.laboratory.bak.ws.client.xml.SOAPEnvelopeHandlerResolver
 
 import javax.ejb.EJB;
 import javax.ejb.Stateless;
-import javax.interceptor.Interceptors;
 import javax.xml.bind.JAXBElement;
 import javax.xml.datatype.DatatypeConfigurationException;
 import javax.xml.datatype.DatatypeFactory;
@@ -39,11 +35,11 @@ import static ru.korus.tmis.ws.laboratory.bak.ws.client.bean.BakLaboratoryBean.E
  *
  * @author anosov@outlook.com
  */
+//@Interceptors(LoggingInterceptor.class)
 @Stateless
-@Interceptors(LoggingInterceptor.class)
 public class BakLaboratoryBean implements IBakLaboratoryBean {
 
-    private static final Logger log = LoggerFactory.getLogger(BakLaboratoryBean.class);
+//    private static final Logger log = LoggerFactory.getLogger(BakLaboratoryBean.class);
     public static final String ROOT = "2.16.840.1.113883.1.3";
     private static final String GUID = String.valueOf(System.currentTimeMillis() / 1000);
 
@@ -69,15 +65,15 @@ public class BakLaboratoryBean implements IBakLaboratoryBean {
     @Override
     public void sendLisAnalysisRequest(int actionId) throws CoreException {
         final SendBakRequestWS service = createCGMService();
-        log.info("Создаем запрос на анализ по actionId = "+ actionId);
+//        log.info("Создаем запрос на анализ по actionId = "+ actionId);
         final HL7Document hl7Document = createDocument(actionId);
-        log.info("Запрос на анализ создан"+ hl7Document.toString());
+//        log.info("Запрос на анализ создан"+ hl7Document.toString());
         try {
-            log.info("Посылается запрос на анализ");
+//            log.info("Посылается запрос на анализ");
             service.queryAnalysis(hl7Document, new Holder<Integer>(1), new Holder<String>(GUID));
-            log.info("Запрос выполнился успешно");
+//            log.info("Запрос выполнился успешно");
         } catch (Exception e) {
-            log.error("Ошибка при отправке запроса:" + e.getMessage());
+//            log.error("Ошибка при отправке запроса:" + e.getMessage());
             throw new CoreException(e.getMessage());
         }
     }
@@ -193,7 +189,7 @@ public class BakLaboratoryBean implements IBakLaboratoryBean {
         try {
             xmlTime = DatatypeFactory.newInstance().newXMLGregorianCalendar(c1);
         } catch (DatatypeConfigurationException e) {
-            log.error(e.getMessage());
+//            log.error(e.getMessage());
         }
         time.setValue(xmlTime);
         author.setTime(time);
@@ -265,7 +261,7 @@ public class BakLaboratoryBean implements IBakLaboratoryBean {
         try {
             xmlBirthTime = DatatypeFactory.newInstance().newXMLGregorianCalendar(c);
         } catch (DatatypeConfigurationException e) {
-            log.error(e.getMessage());
+//            log.error(e.getMessage());
         }
         birthTime.setValue(xmlBirthTime);
         patient.setBirthTime(birthTime);
@@ -386,7 +382,7 @@ public class BakLaboratoryBean implements IBakLaboratoryBean {
             try {
                 xmlTime2 = DatatypeFactory.newInstance().newXMLGregorianCalendar(c2);
             } catch (DatatypeConfigurationException e) {
-                log.error(e.getMessage());
+//                log.error(e.getMessage());
             }
             effectiveTime.setValue(xmlTime2);
             observation.setEffectiveTime(effectiveTime);

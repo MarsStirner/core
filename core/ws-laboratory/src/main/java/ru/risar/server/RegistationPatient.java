@@ -38,7 +38,7 @@ public class RegistationPatient implements RegistartionPatientWS {
 
         final Patient patient = container.getPatient();
         if (patient != null) {
-            final boolean isSaved = registrationPatientBean.save(patient);
+            final boolean isSaved = registrationPatientBean.register(patient);
             if (isSaved) {
                 return 1;
             }

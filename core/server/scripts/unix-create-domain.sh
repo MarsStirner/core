@@ -24,7 +24,7 @@ $ASADMIN/asadmin list-domains
 echo "--------------------------------------------------------------------"
 echo "Stop domains"
 echo ""
-$ASADMIN/asadmin stop-domain ${glassfish.domain}"
+$ASADMIN/asadmin stop-domain ${glassfish.domain}
 echo "--------------------------------------------------------------------"
 echo "Delete domain ${glassfish.domain}"
 echo ""
