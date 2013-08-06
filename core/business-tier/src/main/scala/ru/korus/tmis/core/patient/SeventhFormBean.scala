@@ -731,7 +731,7 @@ with CAPids {
       Event e3,
       RbResult res
       WHERE
-        res.id = e3.resultId
+        res.id = e3.result.id
   """
   val leavedFromDeadAdditionalSubquery = """
       AND
