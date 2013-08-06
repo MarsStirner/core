@@ -483,16 +483,45 @@ class CommonDataProcessorBean
 
   private def saveDiagnoses(eventId: Int, apList: java.util.List[ActionProperty], userData: AuthData): java.util.List[AnyRef] = {
     var map = Map.empty[String, java.util.Set[AnyRef]]
+    val characterAP = apList.find(p => p.getType.getCode != null && p.getType.getCode !=null && p.getType.getCode.compareTo(i18n("db.apt.documents.codes.diseaseCharacter"))==0).getOrElse((null))
+    val stageAP = apList.find(p => p.getType.getCode != null && p.getType.getCode !=null && p.getType.getCode.compareTo(i18n("db.apt.documents.codes.diseaseStage"))==0).getOrElse((null))
+    var isStageSaved = false
+    var preCharacterId = 0
+    var preStageId = 0
+
+    val characterAPV = if (characterAP!=null) dbActionProperty.getActionPropertyValue(characterAP) else null
+    if (characterAPV != null && characterAPV.size() > 0 && characterAPV.get(0).getValueAsId.compareTo("") != 0) {
+      preCharacterId = Integer.valueOf(characterAPV.get(0).getValueAsId).intValue()
+    }
+    val stageAPV = if (stageAP!=null) dbActionProperty.getActionPropertyValue(stageAP) else null
+    if (stageAPV != null && stageAPV.size() > 0 && stageAPV.get(0).getValueAsId.compareTo("") != 0) {
+      preStageId = Integer.valueOf(stageAPV.get(0).getValueAsId).intValue()
+    }
+
     apList.foreach(ap => {
+      var characterId = 0
+      var stageId = 0
       if (ap.getType.getTypeName.compareTo("MKB")==0) {
         val descriptionAP = apList.find(p => ap.getType.getCode != null && p.getType.getCode !=null && p.getType.getCode.compareTo(ap.getType.getCode.substring(0, ap.getType.getCode.size - 4))==0).getOrElse((null))
         if (ap.getType.getCode != null) {
+          if (ap.getType.getCode.compareTo(i18n("appeal.diagnosis.diagnosisKind.finalMkb"))==0) {
+            characterId = preCharacterId
+            stageId = preStageId
+            isStageSaved = true
+          } else if (ap.getType.getCode.compareTo(i18n("appeal.diagnosis.diagnosisKind.mainDiagMkb"))==0 && !isStageSaved) {
+            if (apList.find(p => ap.getType.getCode != null && p.getType.getCode !=null && p.getType.getCode.compareTo(i18n("appeal.diagnosis.diagnosisKind.finalMkb"))==0).getOrElse((null)) == null) {
+              characterId = preCharacterId
+              stageId = preStageId
+            }
+          }
           val mkbAPV = dbActionProperty.getActionPropertyValue(ap)
           val descAPV = if (descriptionAP!=null) dbActionProperty.getActionPropertyValue(descriptionAP) else null
           if (mkbAPV != null && mkbAPV.size() > 0 && mkbAPV.get(0).getValueAsId.compareTo("") != 0) {
-            map += (ap.getType.getCode -> Set[AnyRef]((-1,
-              if (descAPV != null) descAPV.get(0).getValueAsString() else "",
-              Integer.valueOf(mkbAPV.get(0).getValueAsId))))
+            map += (ap.getType.getCode -> Set[AnyRef](( -1,
+                                                        if (descAPV != null) descAPV.get(0).getValueAsString() else "",
+                                                        Integer.valueOf(mkbAPV.get(0).getValueAsId),
+                                                        characterId,
+                                                        stageId)))
           }
         }
       }
