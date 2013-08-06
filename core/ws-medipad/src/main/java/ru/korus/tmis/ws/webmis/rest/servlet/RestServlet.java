@@ -28,16 +28,6 @@ public class RestServlet extends ServletContainer {
         // TODO Auto-generated constructor stub
     }
 
-    public RestServlet(Class<? extends Application> appClass) {
-        super(appClass);
-        // TODO Auto-generated constructor stub
-    }
-
-    public RestServlet(Application app) {
-        super(app);
-        // TODO Auto-generated constructor stub
-    }
-
     @Override
     public int service(URI baseUri, URI requestUri, HttpServletRequest request,
                        HttpServletResponse response) throws ServletException, IOException {

@@ -16,7 +16,7 @@
         <module>drugstore-tier</module>
         <module>laboratory-tier</module>
         <module>server</module>
-        <!--<module>ws-medipad</module>-->
+        <module>ws-medipad</module>
         <module>ws-laboratory</module>
         <!--<module>ws-drugstore</module>-->
         <module>referencebook</module>
