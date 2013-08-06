@@ -220,9 +220,11 @@ public class BakLaboratoryBean implements IBakLaboratoryBean {
         assignedAuthor.setAssignedPerson(assignedPerson);
 
         final RepresentedOrganizationInfo representedOrganization = new RepresentedOrganizationInfo();
-        final ReporgIDInfo reporgIDInfo = new ReporgIDInfo();
-        reporgIDInfo.setRoot(doctor.getOrgStructure().getUuid().getUuid());
-        representedOrganization.setId(reporgIDInfo);
+        if (doctor.getOrgStructure() != null && doctor.getOrgStructure().getUuid() != null) {
+            final ReporgIDInfo reporgIDInfo = new ReporgIDInfo();
+            reporgIDInfo.setRoot(doctor.getOrgStructure().getUuid().getUuid());
+            representedOrganization.setId(reporgIDInfo);
+        }
         representedOrganization.setName(ORDER_CUSTODIAN);
         assignedAuthor.setRepresentedOrganization(representedOrganization);
 
