@@ -39,7 +39,7 @@ import static ru.korus.tmis.ws.laboratory.bak.ws.client.bean.BakLaboratoryBean.E
 @Stateless
 public class BakLaboratoryBean implements IBakLaboratoryBean {
 
-//    private static final Logger log = LoggerFactory.getLogger(BakLaboratoryBean.class);
+    //    private static final Logger log = LoggerFactory.getLogger(BakLaboratoryBean.class);
     public static final String ROOT = "2.16.840.1.113883.1.3";
     private static final String GUID = String.valueOf(System.currentTimeMillis() / 1000);
 
@@ -182,17 +182,20 @@ public class BakLaboratoryBean implements IBakLaboratoryBean {
     private static void createDocAuthor(HL7Document document, Event eventInfo, DiagnosticRequestInfo requestInfo, DbStaffBeanLocal dbStaffBean) throws CoreException {
         final AuthorInfo author = new AuthorInfo();
         author.setTypeCode("AUT");
-        final DateTimeInfo time = new DateTimeInfo();
-        XMLGregorianCalendar xmlTime = null;
-        GregorianCalendar c1 = new GregorianCalendar();
-        c1.setTime(eventInfo.getExecDate());
-        try {
-            xmlTime = DatatypeFactory.newInstance().newXMLGregorianCalendar(c1);
-        } catch (DatatypeConfigurationException e) {
+        final Date execDate = eventInfo.getExecDate();
+        if (execDate != null) {
+            final DateTimeInfo time = new DateTimeInfo();
+            XMLGregorianCalendar xmlTime = null;
+            GregorianCalendar c1 = new GregorianCalendar();
+            c1.setTime(execDate);
+            try {
+                xmlTime = DatatypeFactory.newInstance().newXMLGregorianCalendar(c1);
+            } catch (DatatypeConfigurationException e) {
 //            log.error(e.getMessage());
+            }
+            time.setValue(xmlTime);
+            author.setTime(time);
         }
-        time.setValue(xmlTime);
-        author.setTime(time);
 
         final AssignedAuthorInfo assignedAuthor = new AssignedAuthorInfo();
         assignedAuthor.setClassCode("ASSIGNED");
