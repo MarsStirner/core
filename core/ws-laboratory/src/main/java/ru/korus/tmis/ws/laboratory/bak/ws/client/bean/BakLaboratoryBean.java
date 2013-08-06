@@ -131,7 +131,7 @@ public class BakLaboratoryBean implements IBakLaboratoryBean {
         subComponentInfo.getEntry().add(createEntryBiomaterial(biomaterialInfo));
 
         final JAXBElement<SubComponentInfo> jaxbElement
-                = new JAXBElement<SubComponentInfo>(QName.valueOf("http://cgm.ru"), SubComponentInfo.class, subComponentInfo);
+                = new JAXBElement<SubComponentInfo>(QName.valueOf("component"), SubComponentInfo.class, subComponentInfo);
         structuredBody.getContent().add(jaxbElement);
 
         final SubComponentInfo subComponentInfo2 = FACTORY_BAK.createSubComponentInfo();
@@ -152,6 +152,9 @@ public class BakLaboratoryBean implements IBakLaboratoryBean {
         }
 
         subComponentInfo2.setSection(section);
+        final JAXBElement<SubComponentInfo> jaxbElement2
+                = new JAXBElement<SubComponentInfo>(QName.valueOf("component"), SubComponentInfo.class, subComponentInfo2);
+        structuredBody.getContent().add(jaxbElement);
 
         component.setStructuredBody(structuredBody);
         document.setComponent(component);
@@ -220,9 +223,11 @@ public class BakLaboratoryBean implements IBakLaboratoryBean {
         assignedAuthor.setAssignedPerson(assignedPerson);
 
         final RepresentedOrganizationInfo representedOrganization = new RepresentedOrganizationInfo();
-        final ReporgIDInfo reporgIDInfo = new ReporgIDInfo();
-        reporgIDInfo.setRoot(doctor.getOrgStructure().getUuid().getUuid());
-        representedOrganization.setId(reporgIDInfo);
+        if (doctor.getOrgStructure() != null && doctor.getOrgStructure().getUuid() != null) {
+            final ReporgIDInfo reporgIDInfo = new ReporgIDInfo();
+            reporgIDInfo.setRoot(doctor.getOrgStructure().getUuid().getUuid());
+            representedOrganization.setId(reporgIDInfo);
+        }
         representedOrganization.setName(ORDER_CUSTODIAN);
         assignedAuthor.setRepresentedOrganization(representedOrganization);
 

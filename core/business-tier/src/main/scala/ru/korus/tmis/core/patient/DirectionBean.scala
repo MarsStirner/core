@@ -349,7 +349,8 @@ class DirectionBean extends DirectionBeanLocal
       }
 
       if((a.getCreatePerson!=null && a.getCreatePerson.getId.compareTo(userId)==0) ||
-         (a.getAssigner!=null && a.getAssigner.getId.compareTo(userId)==0) ||
+         /*(a.getAssigner!=null && a.getAssigner.getId.compareTo(userId)==0) || */
+         (a.getExecutor!=null && a.getExecutor.getId.compareTo(userId)==0) ||
          userRole.compareTo("strHead")==0) {
         actions = commonDataProcessor.modifyActionFromCommonData(action.getId().intValue(), directions, userData)
         if(flgLab) {
@@ -490,7 +491,7 @@ class DirectionBean extends DirectionBeanLocal
 
       if ((a.getCreatePerson!=null && a.getCreatePerson.getId.compareTo(userId)==0) ||
           /*(a.getAssigner!=null &&a.getAssigner.getId.compareTo(userId)==0) || */
-          (a.getExecutor!=null &&a.getExecutor.getId.compareTo(userId)==0) ||
+          (a.getExecutor!=null && a.getExecutor.getId.compareTo(userId)==0) ||
           userRole.compareTo("strHead")==0) {
         directionType match {
           case "laboratory" => {
