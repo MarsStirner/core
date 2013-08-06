@@ -131,7 +131,7 @@ public class BakLaboratoryBean implements IBakLaboratoryBean {
         subComponentInfo.getEntry().add(createEntryBiomaterial(biomaterialInfo));
 
         final JAXBElement<SubComponentInfo> jaxbElement
-                = new JAXBElement<SubComponentInfo>(QName.valueOf("http://cgm.ru"), SubComponentInfo.class, subComponentInfo);
+                = new JAXBElement<SubComponentInfo>(QName.valueOf("component"), SubComponentInfo.class, subComponentInfo);
         structuredBody.getContent().add(jaxbElement);
 
         final SubComponentInfo subComponentInfo2 = FACTORY_BAK.createSubComponentInfo();
