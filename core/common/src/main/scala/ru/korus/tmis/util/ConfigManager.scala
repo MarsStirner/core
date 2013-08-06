@@ -119,6 +119,8 @@ object ConfigManager extends Configuration {
     var RbStatusForEventNotFound = 0x151
     var RbTempInvalidForEventNotFound = 0x152
     var RbResultNotFound = 0x153
+    var RbDiseaseStageNotFound = 0x154
+    var RbDiseaseCharacterNotFound = 0x155
   }
 
   /**

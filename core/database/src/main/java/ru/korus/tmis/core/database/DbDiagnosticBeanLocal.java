@@ -40,6 +40,7 @@ public interface DbDiagnosticBeanLocal {
      * @param diagnosis Диагноза (Diagnosis).
      * @param diagnosisTypeFlatCode Код-идентификатор типа диагноза (rbDiagnosisType.flatCode).
      * @param diseaseCharacterId  Идентификатор характера заболевания (rbDiseaseCharacter.id)
+     * @param diseaseStageId Идентификатор стадии заболевания (rbDiseaseStage.id)
      * @param userData Авторизационные данные
      * @return Новая запись в таблице Diagnostic
      * @throws CoreException
@@ -49,6 +50,7 @@ public interface DbDiagnosticBeanLocal {
                                 Diagnosis diagnosis,
                                 String diagnosisTypeFlatCode,
                                 int diseaseCharacterId,
+                                int diseaseStageId,
                                 String note,
                                 AuthData userData) throws CoreException;
 

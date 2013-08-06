@@ -73,13 +73,13 @@ public class Diagnostic implements Serializable {
     @JoinColumn(name = "diagnosisType_id")
     private RbDiagnosisType diagnosisType;
 
-    @Basic(optional = false)
-    @Column(name = "character_id")
-    private Integer characterId;                //TODO: Новая Энтити
+    @ManyToOne
+    @JoinColumn(name = "character_id")
+    private RbDiseaseCharacter character;
 
-    @Basic(optional = false)
-    @Column(name = "stage_id")
-    private Integer stageId;                    //TODO: Новая Энтити
+    @ManyToOne
+    @JoinColumn(name = "stage_id")
+    private RbDiseaseStage stage;
 
     @Basic(optional = false)
     @Column(name = "phase_id")
@@ -210,20 +210,20 @@ public class Diagnostic implements Serializable {
         this.diagnosisType = diagnosisType;
     }
 
-    public Integer getCharacterId() {
-        return characterId;
+    public RbDiseaseCharacter getCharacter() {
+        return character;
     }
 
-    public void setCharacterId(Integer characterId) {
-        this.characterId = characterId;
+    public void setCharacter(RbDiseaseCharacter character) {
+        this.character = character;
     }
 
-    public Integer getStageId() {
-        return stageId;
+    public RbDiseaseStage getStage() {
+        return stage;
     }
 
-    public void setStageId(Integer stageId) {
-        this.stageId = stageId;
+    public void setStage(RbDiseaseStage stage) {
+        this.stage = stage;
     }
 
     public Integer getPhaseId() {

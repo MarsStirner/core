@@ -320,7 +320,7 @@ class AppealEntry extends I18nable {
   @BeanProperty
   var laboratory: LaboratoryPropertiesContainer = _  //
   @BeanProperty
-  var preHospitalDefects: LinkedList[String] = new LinkedList[String]  //
+  var preHospitalDefects: String = _  //
   @BeanProperty
   var closed: Boolean = false       //Флаг закрыта ли госпитализация
   @BeanProperty
@@ -581,7 +581,7 @@ class AppealEntry extends I18nable {
       if (moveProps!=null && moveProps.size>0) {
         var res = moveProps.get(event.getId.intValue()).find(f => {f._1.getType.getCode.compareTo(i18n("db.apt.moving.codes.orgStructTransfer"))==0}).getOrElse(null)
         if (res==null) {
-          res = moveProps.get(event.getId.intValue()).find(f => {f._1.getType.getCode.compareTo(i18n("db.apt.moving.codes.orgStructDirection"))==0}).getOrElse(null)
+          res = moveProps.get(event.getId.intValue()).find(f => {f._1.getType.getCode.compareTo(i18n("db.apt.received.codes.orgStructDirection"))==0}).getOrElse(null)
         }
         var labProp = moveProps.get(event.getId.intValue()).find(f => {f._1.getType.getCode.compareTo(i18n("db.apt.documents.codes.RW"))==0}).getOrElse(null)
         if (labProp != null) {
@@ -589,9 +589,7 @@ class AppealEntry extends I18nable {
         }
         var preHospitalDefects = moveProps.get(event.getId.intValue()).find(f => {f._1.getType.getCode.compareTo(i18n("db.apt.documents.codes.preHospitalDefects"))==0}).getOrElse(null)
         if (labProp != null) {
-          preHospitalDefects._2.foreach(apv => {
-            this.preHospitalDefects += apv.getValueAsString
-          })
+          this.preHospitalDefects = preHospitalDefects._2.get(0).asInstanceOf[String]
         }
         if (res!=null) {   //Запись
           this.ward = new OrgStructureContainer(res._2.get(0).getValue.asInstanceOf[OrgStructure])
@@ -662,10 +660,9 @@ class AppealEntry extends I18nable {
         if (f._1._1.intValue() == e.intValue()) {
           dStr = counter.toString
           map.put(dStr, values.get(e, f._1._2))
-        } else {
-          map.put(counter.toString, List(""))
-        }
+        } //else {map.put(counter.toString, List(""))}
       })
+      if (map.size()==counter) map.put(counter.toString, List(""))  //если не нашлась пропертя, то для рбкори запишем пустое значение
       counter = counter + 1
       /*
       if(values.containsKey(e)){

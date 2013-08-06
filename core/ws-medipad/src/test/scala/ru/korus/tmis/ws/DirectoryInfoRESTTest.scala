@@ -26,13 +26,6 @@ import ru.korus.tmis.util.StringId
 import ru.korus.tmis.core.filter.AbstractListDataFilter
 
 /**
- * Created with IntelliJ IDEA.
- * User: idmitriev
- * Date: 7/16/13
- * Time: 2:42 PM
- * To change this template use File | Settings | File Templates.
- */
-/**
  * Author:      Ivan Dmitriev <br>
  * Date:        16.07.13, 2:42  <br>
  * Company:     Systema-Soft<br>
