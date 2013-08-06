@@ -320,7 +320,7 @@ class AppealBean extends AppealBeanLocal
         val admissionMkb = dbCustomQueryBean.getDiagnosisForMainDiagInAppeal(appealData.data.id)
         if (admissionMkb != null) {
           var map = Map.empty[String, java.util.Set[AnyRef]]
-          map += ("final" -> Set[AnyRef]((-1, "", Integer.valueOf(admissionMkb.getId.intValue))))
+          map += ("final" -> Set[AnyRef]((-1, "", Integer.valueOf(admissionMkb.getId.intValue), 0, 0)))
           val diag = diagnosisBean.insertDiagnoses(appealData.data.id, asJavaMap(map), authData)
           diag.filter(p=>p.isInstanceOf[Diagnostic]).toList.foreach(f=>f.asInstanceOf[Diagnostic].setResult(this.getRbResultById(15)))
           dbManager.persistAll(diag)
@@ -380,7 +380,9 @@ class AppealBean extends AppealBeanLocal
                                                       }
                                                       (Integer.valueOf(f.getDiagnosticId),
                                                       f.getDescription,
-                                                      if(mkb!=null) Integer.valueOf(mkb.getId.intValue) else -1)
+                                                      if(mkb!=null) Integer.valueOf(mkb.getId.intValue) else -1,
+                                                      0, // characterId
+                                                      0) // stageId
                                                     })
                                             .toSet[AnyRef]
       map += (flatCode -> values)

@@ -67,9 +67,12 @@ class DbTakenTissueBean extends DbTakenTissueBeanLocal
 
     result.size match {
       case 0 => {
+        null
+        /*
         throw new CoreException(
           ConfigManager.ErrorCodes.ActionTypeNotFound,
           i18n("error.tissueForActionNotFound").format(actionTypeId))
+          */
       }
       case size => {
         result.foreach(em.detach(_))
