@@ -489,7 +489,8 @@ class DirectionBean extends DirectionBeanLocal
       var a = actionBean.getActionById(f.getId)
 
       if ((a.getCreatePerson!=null && a.getCreatePerson.getId.compareTo(userId)==0) ||
-          (a.getAssigner!=null &&a.getAssigner.getId.compareTo(userId)==0) ||
+          /*(a.getAssigner!=null &&a.getAssigner.getId.compareTo(userId)==0) || */
+          (a.getExecutor!=null &&a.getExecutor.getId.compareTo(userId)==0) ||
           userRole.compareTo("strHead")==0) {
         directionType match {
           case "laboratory" => {
