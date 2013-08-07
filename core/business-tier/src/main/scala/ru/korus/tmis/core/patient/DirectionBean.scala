@@ -172,7 +172,7 @@ class DirectionBean extends DirectionBeanLocal
             j.setQuantity(j.getQuantity+1)
             if (tt != null) a.setTakenTissue(tt)
             jtForAp = jt
-          } else {
+          } else if (dbTakenTissue.getActionTypeTissueTypeByMasterId(a.getActionType.getId.intValue()) != null) {
             val j = dbJobBean.insertOrUpdateJob(0, a, department)
             val jt = dbJobTicketBean.insertOrUpdateJobTicket(0, a, j)
             val tt = dbTakenTissue.insertOrUpdateTakenTissue(0, a)
@@ -220,7 +220,7 @@ class DirectionBean extends DirectionBeanLocal
             a.setStatus(2)
           }
         }
-      } else {
+      } else if (dbTakenTissue.getActionTypeTissueTypeByMasterId(a.getActionType.getId.intValue()) != null) {
         val j = dbJobBean.insertOrUpdateJob(0, a, department)
         val jt = dbJobTicketBean.insertOrUpdateJobTicket(0, a, j)
         val tt = dbTakenTissue.insertOrUpdateTakenTissue(0, a)
