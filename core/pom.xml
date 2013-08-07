@@ -249,6 +249,16 @@
                 <glassfish.home>/usr/local/opt/glassfish/libexec</glassfish.home>
             </properties>
         </profile>
+
+        <!-- Пользовательский профиль nde-macmini -->
+        <profile>
+            <id>nde-macmini</id>
+            <properties>
+                <!-- Домашняя директория Glassfish: /Users/nde/Unixprog/glassfish3/ -->
+                <glassfish.home>/Users/nde/Unixprog/glassfish3/</glassfish.home>
+            </properties>
+        </profile>
+
         <!-- Пользовательский профиль nde-mac -->
         <profile>
             <id>nde-mac-glassfish4</id>
