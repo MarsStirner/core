@@ -117,7 +117,7 @@ public class BakLaboratoryBean implements IBakLaboratoryBean {
         createOrderStatus(document, orderInfo); // cтатус заказа [orderStatus]
         createRecordTarget(document, patientInfo); // демографические данные пациента
         createDocAuthor(document, eventInfo, requestInfo, staffBean); // создатель документа. Обязательный
-        createComponentOf(document, patientInfo);
+        createComponentOf(document);
         createBody(document, biomaterialInfo, orderInfo, patientInfo, requestInfo, action);
 
         return document;
@@ -147,21 +147,29 @@ public class BakLaboratoryBean implements IBakLaboratoryBean {
             section.getEntry().add(createEntry("OBS", "RQO", indicatorMetodic.indicatorCode().get(), indicatorMetodic.indicatorName().get()));
         }
 
-        if (patient.getSex() == 2) { // появляется если пациент женщина и беременная
-            section.getEntry().add(createEntryPregnat("", requestInfo));
-        }
 
         subComponentInfo2.setSection(section);
         final JAXBElement<SubComponentInfo> jaxbElement2
                 = new JAXBElement<SubComponentInfo>(QName.valueOf("component"), SubComponentInfo.class, subComponentInfo2);
         structuredBody.getContent().add(jaxbElement2);
 
+        final SubComponentInfo subComponentInfo3 = FACTORY_BAK.createSubComponentInfo();
+        final SectionInfo section3 = new SectionInfo();
+
+        if (patient.getSex() == 2) { // появляется если пациент женщина и беременная
+            section3.getEntry().add(createEntryPregnat("", requestInfo));
+        }
+        subComponentInfo3.setSection(section3);
+        final JAXBElement<SubComponentInfo> jaxbElement3
+                = new JAXBElement<SubComponentInfo>(QName.valueOf("component"), SubComponentInfo.class, subComponentInfo3);
+        structuredBody.getContent().add(jaxbElement3);
+
         component.setStructuredBody(structuredBody);
         document.setComponent(component);
     }
 
 
-    private static void createComponentOf(HL7Document document, Patient patient) {
+    private static void createComponentOf(HL7Document document) {
         final ComponentOfInfo componentOf = new ComponentOfInfo();
         final EncompassingEncounterInfo encompassingEncounter = new EncompassingEncounterInfo();
         final EeIdInfo eeIdInfo = new EeIdInfo();
