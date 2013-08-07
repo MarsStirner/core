@@ -45,6 +45,7 @@ class DiagnosisBean  extends DiagnosisBeanLocal
                       diseaseCharacterId: Int,
                       description: String,
                       mkbId: Int,
+                      diseaseStageId: Int,
                       userData: AuthData) = {
 
     val event = dbEventBean.getEventById(eventId)
@@ -99,6 +100,7 @@ class DiagnosisBean  extends DiagnosisBeanLocal
                                                                 diagnosis,
                                                                 diaTypeFlatCode,
                                                                 diseaseCharacterId,
+                                                                diseaseStageId,
                                                                 description,
                                                                 userData)
       }
@@ -108,6 +110,7 @@ class DiagnosisBean  extends DiagnosisBeanLocal
                                                                 oldDiagnostic.getDiagnosis,
                                                                 diaTypeFlatCode,
                                                                 diseaseCharacterId,
+                                                                diseaseStageId,
                                                                 description,
                                                                 userData)
       }
@@ -123,6 +126,7 @@ class DiagnosisBean  extends DiagnosisBeanLocal
                                                                 diagnosis,
                                                                 diaTypeFlatCode,
                                                                 diseaseCharacterId,
+                                                                diseaseStageId,
                                                                 description,
                                                                 userData)
       }
@@ -134,9 +138,16 @@ class DiagnosisBean  extends DiagnosisBeanLocal
   def insertDiagnoses(eventId: Int, mkbs: java.util.Map[String, java.util.Set[AnyRef]], userData: AuthData) = {
 
     var entities = List.empty[AnyRef]
-    mkbs.foreach(f=>f._2.asInstanceOf[java.util.Set[(java.lang.Integer, String, java.lang.Integer)]]
+    mkbs.foreach(f=>f._2.asInstanceOf[java.util.Set[(java.lang.Integer, String, java.lang.Integer, java.lang.Integer, java.lang.Integer)]]
           .foreach(mkb=>{
-            val value = insertDiagnosis(mkb._1.intValue(), eventId, f._1, 3, mkb._2, mkb._3.intValue(), userData)
+            val value = insertDiagnosis(mkb._1.intValue(),                                    //diagnosticId
+                                        eventId,
+                                        f._1,
+                                        if (mkb._4.intValue() > 0) mkb._4.intValue() else 3,  // characterId     //3,
+                                        mkb._2,                                               // description
+                                        mkb._3.intValue(),                                    // mkbId
+                                        mkb._5.intValue(),                                    // stageId
+                                        userData)
             if(value._1!= null)
               entities = value._1 :: entities
             if(value._2!= null)

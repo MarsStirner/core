@@ -1,4 +1,4 @@
-package ru.korus.tmis.ws.laboratory.bak.validation.rules;
+package ru.korus.validation.rules;
 
 /**
  * Интерфейс для правила валидрования
@@ -8,5 +8,5 @@ package ru.korus.tmis.ws.laboratory.bak.validation.rules;
  */
 public interface IRule<T> {
 
-    void apply(T o);
+    void apply(final T value);
 }

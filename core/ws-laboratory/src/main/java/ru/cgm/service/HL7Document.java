@@ -495,6 +495,13 @@ public class HL7Document {
             this.codeSystem = value;
         }
 
+        @Override
+        public String toString() {
+            return "ConfidentialityCode{" +
+                    "code='" + code + '\'' +
+                    ", codeSystem='" + codeSystem + '\'' +
+                    '}';
+        }
     }
 
 
@@ -546,6 +553,12 @@ public class HL7Document {
             this.value = value;
         }
 
+        @Override
+        public String toString() {
+            return "EffectiveTime{" +
+                    "value='" + value + '\'' +
+                    '}';
+        }
     }
 
 
@@ -624,6 +637,13 @@ public class HL7Document {
             this.extention = value;
         }
 
+        @Override
+        public String toString() {
+            return "Id{" +
+                    "root='" + root + '\'' +
+                    ", extention='" + extention + '\'' +
+                    '}';
+        }
     }
 
 
@@ -675,6 +695,12 @@ public class HL7Document {
             this.code = value;
         }
 
+        @Override
+        public String toString() {
+            return "LanguageCode{" +
+                    "code='" + code + '\'' +
+                    '}';
+        }
     }
 
 
@@ -753,6 +779,13 @@ public class HL7Document {
             this.root = value;
         }
 
+        @Override
+        public String toString() {
+            return "TypeId{" +
+                    "extention='" + extention + '\'' +
+                    ", root='" + root + '\'' +
+                    '}';
+        }
     }
 
 
@@ -804,6 +837,30 @@ public class HL7Document {
             this.value = value;
         }
 
+        @Override
+        public String toString() {
+            return "VersionNumber{" +
+                    "value='" + value + '\'' +
+                    '}';
+        }
     }
 
+
+    @Override
+    public String toString() {
+        return "HL7Document{" +
+                "typeId=" + typeId +
+                ", id=" + id +
+                ", code=" + code +
+                ", title='" + title + '\'' +
+                ", effectiveTime=" + effectiveTime +
+                ", confidentialityCode=" + confidentialityCode +
+                ", languageCode=" + languageCode +
+                ", versionNumber=" + versionNumber +
+                ", recordTarget=" + recordTarget +
+                ", author=" + author +
+                ", componentOf=" + componentOf +
+                ", component=" + component +
+                '}';
+    }
 }

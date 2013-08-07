@@ -172,7 +172,7 @@ class DirectionBean extends DirectionBeanLocal
             j.setQuantity(j.getQuantity+1)
             if (tt != null) a.setTakenTissue(tt)
             jtForAp = jt
-          } else {
+          } else if (dbTakenTissue.getActionTypeTissueTypeByMasterId(a.getActionType.getId.intValue()) != null) {
             val j = dbJobBean.insertOrUpdateJob(0, a, department)
             val jt = dbJobTicketBean.insertOrUpdateJobTicket(0, a, j)
             val tt = dbTakenTissue.insertOrUpdateTakenTissue(0, a)
@@ -220,7 +220,7 @@ class DirectionBean extends DirectionBeanLocal
             a.setStatus(2)
           }
         }
-      } else {
+      } else if (dbTakenTissue.getActionTypeTissueTypeByMasterId(a.getActionType.getId.intValue()) != null) {
         val j = dbJobBean.insertOrUpdateJob(0, a, department)
         val jt = dbJobTicketBean.insertOrUpdateJobTicket(0, a, j)
         val tt = dbTakenTissue.insertOrUpdateTakenTissue(0, a)
@@ -349,7 +349,8 @@ class DirectionBean extends DirectionBeanLocal
       }
 
       if((a.getCreatePerson!=null && a.getCreatePerson.getId.compareTo(userId)==0) ||
-         (a.getAssigner!=null && a.getAssigner.getId.compareTo(userId)==0) ||
+         /*(a.getAssigner!=null && a.getAssigner.getId.compareTo(userId)==0) || */
+         (a.getExecutor!=null && a.getExecutor.getId.compareTo(userId)==0) ||
          userRole.compareTo("strHead")==0) {
         actions = commonDataProcessor.modifyActionFromCommonData(action.getId().intValue(), directions, userData)
         if(flgLab) {
@@ -489,7 +490,8 @@ class DirectionBean extends DirectionBeanLocal
       var a = actionBean.getActionById(f.getId)
 
       if ((a.getCreatePerson!=null && a.getCreatePerson.getId.compareTo(userId)==0) ||
-          (a.getAssigner!=null &&a.getAssigner.getId.compareTo(userId)==0) ||
+          /*(a.getAssigner!=null &&a.getAssigner.getId.compareTo(userId)==0) || */
+          (a.getExecutor!=null && a.getExecutor.getId.compareTo(userId)==0) ||
           userRole.compareTo("strHead")==0) {
         directionType match {
           case "laboratory" => {

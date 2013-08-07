@@ -7,7 +7,7 @@ import ru.korus.tmis.core.entity.model._
 import fd.FDRecord
 import kladr.{Street, Kladr}
 import collection.JavaConversions._
-import ru.korus.tmis.util.ConfigManager
+import ru.korus.tmis.util.{I18nable, ConfigManager}
 
 import java.util.{Date, HashMap, LinkedList}
 import javax.xml.bind.annotation.XmlRootElement._
@@ -35,7 +35,7 @@ class Views {}
 @XmlType(name = "appealData")
 @XmlRootElement(name = "appealData")
 @JsonIgnoreProperties(ignoreUnknown = true)
-class AppealData {
+class AppealData extends I18nable {
   @BeanProperty
   var requestData: AppealRequestData = _
   @BeanProperty
@@ -63,26 +63,34 @@ class AppealData {
 
   def this(event: Event,
            appeal: Action,
-           values: java.util.Map[java.lang.Integer, java.util.List[Object]],
-           mMovingProperties: (Int, java.util.Set[java.lang.Integer], java.util.Set[java.lang.Integer]) => java.util.Map[ActionProperty, java.util.List[APValue]],
+           values: java.util.Map[(java.lang.Integer, ActionProperty), java.util.List[Object]],
+           mMovingProperties: (java.util.List[java.lang.Integer], java.util.Set[String], Int) => util.LinkedHashMap[java.lang.Integer, util.LinkedHashMap[ActionProperty, java.util.List[APValue]]],
            typeOfResponse: String,
            map: java.util.LinkedHashMap[java.lang.Integer, java.util.LinkedList[Kladr]],
            street: java.util.LinkedHashMap[java.lang.Integer, Street],
            requestData: AppealRequestData,
            postProcessing: (Int, java.util.Set[java.lang.Integer]) => Int,
            mRelationByRelativeId: (Int)=> ClientRelation,
-           mAdmissionDiagnosis: (Int, java.util.List[java.lang.Integer]) => java.util.Map[ActionProperty, java.util.List[APValue]],
+           mAdmissionDiagnosis: (Int , java.util.Set[String]) => java.util.Map[ActionProperty, java.util.List[APValue]],
            mCorrList: (java.util.List[java.lang.Integer])=> java.util.List[RbCoreActionProperty],
            contract: Contract,
            currentDepartment: OrgStructure,
-           mDiagnosticList: (Int, java.util.Set[String]) => java.util.List[Diagnostic]){
+           mDiagnosticList: (Int, java.util.Set[String]) => java.util.List[Diagnostic],
+           tempInvalid: TempInvalid){
     this ()
     this.requestData = requestData
 
-    val setMovingIds = JavaConversions.asJavaList(List(ConfigManager.RbCAPIds("db.rbCAP.hosp.primary.id.sentTo").toInt :java.lang.Integer,
-                                                          ConfigManager.RbCAPIds("db.rbCAP.moving.id.movedIn").toInt :java.lang.Integer))
+    val setMovingIds = JavaConversions.asJavaSet(Set(i18n("db.apt.received.codes.orgStructDirection"),
+                                                     i18n("db.apt.moving.codes.orgStructTransfer")))
 
-    val diagnostics = if(mDiagnosticList!=null)mDiagnosticList(event.getId.intValue(), Set("assignment", "aftereffect", "attendant", "final", "admission")) else new java.util.ArrayList[Diagnostic]
+    val diagnostics = if(mDiagnosticList!=null)mDiagnosticList(event.getId.intValue(), Set(i18n("appeal.diagnosis.diagnosisKind.diagReceivedMkb"),
+                                                                                           i18n("appeal.diagnosis.diagnosisKind.admissionMkb"),
+                                                                                           i18n("appeal.diagnosis.diagnosisKind.finalMkb"),
+                                                                                           i18n("appeal.diagnosis.diagnosisKind.aftereffectMkb"),
+                                                                                           i18n("appeal.diagnosis.diagnosisKind.attendantMkb")))
+                      else new java.util.ArrayList[Diagnostic]
+
+      //Set("assignment", "aftereffect", "attendant", "final", "admission")) else new java.util.ArrayList[Diagnostic]
 
     this.data =
       if (postProcessing != null) {
@@ -91,26 +99,32 @@ class AppealData {
       val setATIds = JavaConversions.asJavaSet(Set(ConfigManager.Messages("db.actionType.primary").toInt :java.lang.Integer,
                                                    ConfigManager.Messages("db.actionType.secondary").toInt :java.lang.Integer))
       // (список рассматриваемых свойств действия)
-      val setAdmissionIds = JavaConversions.asJavaList(List(ConfigManager.Messages("db.rbCAP.primary.admission").toInt :java.lang.Integer,
-                                                            ConfigManager.Messages("db.rbCAP.primary.description").toInt :java.lang.Integer,
-                                                            ConfigManager.Messages("db.rbCAP.secondary.admission").toInt :java.lang.Integer,
-                                                            ConfigManager.Messages("db.rbCAP.secondary.description").toInt :java.lang.Integer,
-                                                            ConfigManager.RbCAPIds("db.rbCAP.hosp.primary.id.sentTo").toInt :java.lang.Integer,
-                                                            ConfigManager.RbCAPIds("db.rbCAP.moving.id.movedIn").toInt :java.lang.Integer))
+      val setAdmissionIds = JavaConversions.asJavaSet(Set(i18n("appeal.diagnosis.diagnosisKind.assignment"),
+                                                          i18n("appeal.diagnosis.diagnosisKind.mainDiag"),
+                                                          i18n("db.apt.received.codes.orgStructDirection"),
+                                                          i18n("db.apt.moving.codes.orgStructTransfer")
+      ))
 
       //Выписка
       // (список идентификаторов типов действий)
       val setExtractATIds = JavaConversions.asJavaSet(Set(ConfigManager.Messages("db.actionType.extract").toInt :java.lang.Integer))
       // (список рассматриваемых свойств действия)
-      val setExtractIds = JavaConversions.asJavaList(List(ConfigManager.RbCAPIds("db.rbCAP.extract.id.nextHospDate").toInt :java.lang.Integer,
-                                                          ConfigManager.RbCAPIds("db.rbCAP.extract.id.nextHospDepartment").toInt :java.lang.Integer,
-                                                          ConfigManager.RbCAPIds("db.rbCAP.extract.id.nextHospFinanceType").toInt :java.lang.Integer))
+      val setExtractIds = JavaConversions.asJavaSet(Set(i18n("db.apt.moving.codes.hospOrgStruct"),
+                                                        i18n("db.apt.leaved.codes.hospOutcome"),
+                                                        i18n("db.apt.leaved.codes.nextHospDate"),
+                                                        i18n("db.apt.leaved.codes.nextHospFinance"),
+                                                        i18n("db.apt.leaved.codes.hospLength")
+      ))
 
-      val lstAllIds = new java.util.ArrayList[java.lang.Integer](setAdmissionIds)
+       // val oldLastValues = actionPropertyBean.getActionPropertiesByActionIdAndActionPropertyTypeCodes(oldLastAction.getId.intValue,
+      //   listMovAP)
+
+
+      val lstAllIds = new java.util.ArrayList[java.lang.String](setAdmissionIds)
       lstAllIds.addAll(setExtractIds)
       lstAllIds.addAll(setMovingIds)
 
-      val corrMap = if(mCorrList!=null) mCorrList(lstAllIds) else null
+      //val corrMap = if(mCorrList!=null) mCorrList(lstAllIds) else null
 
       val primaryId = postProcessing(event.getId.intValue(), setATIds)
       val admissions = if (mAdmissionDiagnosis!=null && primaryId>0) mAdmissionDiagnosis(primaryId, setAdmissionIds) else null
@@ -118,10 +132,10 @@ class AppealData {
       val extractId = postProcessing(event.getId.intValue(), setExtractATIds)
       val extractProperties = if (mAdmissionDiagnosis!=null && extractId>0) mAdmissionDiagnosis(extractId, setExtractIds) else null
 
-      new AppealEntry(event, appeal, values, mMovingProperties, typeOfResponse, map, street, (primaryId>0), mRelationByRelativeId, admissions, extractProperties, corrMap, contract, currentDepartment, diagnostics)
+      new AppealEntry(event, appeal, values, mMovingProperties, typeOfResponse, map, street, (primaryId>0), mRelationByRelativeId, admissions, extractProperties, null, contract, currentDepartment, diagnostics, tempInvalid)
     } else {
-      val corrMap = if(mCorrList!=null) mCorrList(setMovingIds) else null
-      new AppealEntry(event, appeal, values, mMovingProperties, typeOfResponse, map, street, false, mRelationByRelativeId, null, null, corrMap, contract, currentDepartment, diagnostics)
+      //val corrMap = if(mCorrList!=null) mCorrList(setMovingIds) else null
+      new AppealEntry(event, appeal, values, mMovingProperties, typeOfResponse, map, street, false, mRelationByRelativeId, null, null, null, contract, currentDepartment, diagnostics, tempInvalid)
      }
   }
 }
@@ -212,7 +226,7 @@ class AppealRequestDataFilter {
 @XmlType(name = "appealEntry")
 @XmlRootElement(name = "appealEntry")
 @JsonIgnoreProperties(ignoreUnknown = true)
-class AppealEntry {
+class AppealEntry extends I18nable {
   @BeanProperty
   var id: Int = _
   @BeanProperty
@@ -282,11 +296,31 @@ class AppealEntry {
   //данные о последующей госпитализации (reeadonly)
   //согласно спецификации: https://docs.google.com/spreadsheet/ccc?key=0Au-ED6EnawLcdHo0Z3BiSkRJRVYtLUxhaG5uYkNWaGc#gid=5
   @BeanProperty
+  var leaved: LeavedInfoContainer = _
+  /*
+  @BeanProperty
   var nextHospDate: String = _
   @BeanProperty
   var nextHospDepartment: String = _
   @BeanProperty
   var nextHospFinanceType: String = _
+  @BeanProperty
+  var hospOutcome: String = _
+  @BeanProperty
+  var hospLength: String = _
+  @BeanProperty
+  var outcomeDate: Date = _
+  @BeanProperty
+  var leavedDoctor: DoctorContainer = _
+  */
+  @BeanProperty
+  var result: IdNameContainer = _
+  @BeanProperty
+  var tempInvalid: TempInvalidAppealContainer = _  //
+  @BeanProperty
+  var laboratory: LaboratoryPropertiesContainer = _  //
+  @BeanProperty
+  var preHospitalDefects: String = _  //
   @BeanProperty
   var closed: Boolean = false       //Флаг закрыта ли госпитализация
   @BeanProperty
@@ -313,8 +347,8 @@ class AppealEntry {
    */
   def this(event: Event,
            action: Action,
-           values: java.util.Map[java.lang.Integer, java.util.List[Object]],
-           mMovingProperties: (Int, java.util.Set[java.lang.Integer], java.util.Set[java.lang.Integer]) => java.util.Map[ActionProperty, java.util.List[APValue]],
+           values: java.util.Map[(java.lang.Integer, ActionProperty), java.util.List[Object]],
+           mMovingProperties: (java.util.List[java.lang.Integer], java.util.Set[String], Int) => util.LinkedHashMap[java.lang.Integer, util.LinkedHashMap[ActionProperty, java.util.List[APValue]]],
            typeOfResponse: String,
            map: java.util.LinkedHashMap[java.lang.Integer, java.util.LinkedList[Kladr]],
            street: java.util.LinkedHashMap[java.lang.Integer, Street],
@@ -325,7 +359,8 @@ class AppealEntry {
            corrList: java.util.List[RbCoreActionProperty],
            contract: Contract,
            currentDepartment: OrgStructure,
-           diagnostics: java.util.List[Diagnostic]) {
+           diagnostics: java.util.List[Diagnostic],
+           tempInvalid: TempInvalid) {
     this()
     var exValue: java.util.List[Object] = null
 
@@ -461,15 +496,19 @@ class AppealEntry {
 
     //Диагнозы по новому
     if (diagnostics.size()>0){
-      Set("assignment", "aftereffect", "attendant", "final", "admission").foreach( diaType => {
+      Set(i18n("appeal.diagnosis.diagnosisKind.diagReceivedMkb"),
+          i18n("appeal.diagnosis.diagnosisKind.admissionMkb"),
+          i18n("appeal.diagnosis.diagnosisKind.finalMkb"),
+          i18n("appeal.diagnosis.diagnosisKind.aftereffectMkb"),
+          i18n("appeal.diagnosis.diagnosisKind.attendantMkb")).foreach( diaType => {
         val allByType = diagnostics.filter(p=>p.getDiagnosisType.getFlatCode.compareTo(diaType)==0)  //Все диагностики данного типа
         val diaByLastDate = allByType.find(p=> p.getCreateDatetime.getTime==allByType.map(_.getCreateDatetime.getTime).foldLeft(Long.MinValue)((i,m)=>m.max(i))).getOrElse(null) //Диагностика последняя по дате создания
         if (diaByLastDate!=null){
           this.diagnoses += new DiagnosisContainer(diaByLastDate)
-        }
+        }   /*
         else { //Достаем из ActionProperty осмотра  (Для старых госпитализации (когда не прописывалась история диагнозов Diagnostic + Diagnosis))
           diaType match {
-            case "assignment" | "aftereffect" | "attendant" => {  //Старая часть кода по диагнозам из экшн пропертей
+            case i18n("appeal.diagnosis.diagnosisKind.diagReceivedMkb") | i18n("appeal.diagnosis.diagnosisKind.aftereffectMkb") | i18n("appeal.diagnosis.diagnosisKind.attendantMkb") => {  //Старая часть кода по диагнозам из экшн пропертей
               val exDiagnosis = this.extractValuesInNumberedMap(LinkedHashSet(
                 ConfigManager.RbCAPIds("db.rbCAP.hosp.primary.id.diagnosis.assigment.code").toInt :java.lang.Integer,
                 ConfigManager.RbCAPIds("db.rbCAP.hosp.primary.id.diagnosis.aftereffect.code").toInt :java.lang.Integer,
@@ -500,29 +539,24 @@ class AppealEntry {
                 this.diagnoses += container
               }
             }
-            case "admission" => { //Старая часть кода по диагнозу при поступлении из экшн пропертей
-              if (admissions!=null && corrList!=null) {
+            case i18n("appeal.diagnosis.diagnosisKind.admissionMkb") => { //Старая часть кода по диагнозу при поступлении из экшн пропертей
+              if (admissions!=null) {
                 var description: String = ""
                 var diagnosis: Mkb = null
 
                 admissions.foreach(prop => {
-                  val result = corrList.find(p=> p.getActionPropertyType.getId.intValue()==prop._1.getType.getId.intValue()).getOrElse(null)
-                  if (result!=null) {
-                    if (result.getId.compareTo(ConfigManager.Messages("db.rbCAP.primary.admission").toInt :java.lang.Integer)==0 ||
-                      result.getId.compareTo(ConfigManager.Messages("db.rbCAP.secondary.admission").toInt :java.lang.Integer)==0) {
-                      if (prop._2 != null && prop._2.size() > 0) {
-                        diagnosis = prop._2.get(0).getValue.asInstanceOf[Mkb]
-                      }
-                    } else if (result.getId.compareTo(ConfigManager.Messages("db.rbCAP.primary.description").toInt :java.lang.Integer)==0 ||
-                      result.getId.compareTo(ConfigManager.Messages("db.rbCAP.secondary.description").toInt :java.lang.Integer)==0) {
-                      if (prop._2 != null && prop._2.size() > 0) {
-                        description = prop._2.get(0).getValueAsString
-                      }
+                  if (prop._1.getType.getCode.compareTo(i18n("appeal.diagnosis.diagnosisKind.admission"))==0) {
+                    if (prop._2 != null && prop._2.size() > 0) {
+                      diagnosis = prop._2.get(0).getValue.asInstanceOf[Mkb]
+                    }
+                  } else if (prop._1.getType.getCode.compareTo(i18n("appeal.diagnosis.diagnosisKind.description"))==0) {
+                    if (prop._2 != null && prop._2.size() > 0) {
+                      description = prop._2.get(0).getValueAsString
                     }
                   }
                 })
                 val container = new DiagnosisContainer()
-                container.setDiagnosisKind("admission")
+                container.setDiagnosisKind(i18n("appeal.diagnosis.diagnosisKind.admissionMkb"))
                 container.setDescription(description)
                 container.setMkb(new MKBContainer(diagnosis))
                 this.diagnoses += container
@@ -530,42 +564,37 @@ class AppealEntry {
             }
             case _ => {}
           }
-        }
+        }   */
       })
     }
     //*******************Доп сведения***************
     //Движения
-    val setATIds = JavaConversions.asJavaSet(Set(ConfigManager.Messages("db.actionType.hospitalization.primary").toInt :java.lang.Integer,
-      ConfigManager.Messages("db.actionType.moving").toInt :java.lang.Integer))
-    val setCoreIds = JavaConversions.asJavaSet(Set(ConfigManager.RbCAPIds("db.rbCAP.hosp.primary.id.sentTo").toInt :java.lang.Integer,
-      ConfigManager.RbCAPIds("db.rbCAP.moving.id.movedIn").toInt :java.lang.Integer))
-
+    val setATCodes = JavaConversions.asJavaSet(Set(i18n("db.apt.received.codes.orgStructDirection"),
+                                                   i18n("db.apt.moving.codes.orgStructTransfer"),
+                                                   i18n("db.apt.documents.codes.RW"),
+                                                   i18n("db.apt.documents.codes.preHospitalDefects")
+        ))
     if (mMovingProperties!=null){
-      val move = mMovingProperties(event.getId.intValue(), setATIds, setCoreIds)
-      if (move!=null && move.size>0) {
-        val filtred = move.filter(element=>element._2.size>0)
-        if (filtred.size>0){
-          var res = filtred.find(element => {
-            val result = corrList.find(p=> p.getId.compareTo(ConfigManager.RbCAPIds("db.rbCAP.moving.id.movedIn").toInt)==0).getOrElse(null)
-            if (result!=null) {
-              element._1.getType.getId.compareTo(result.getActionPropertyType.getId)==0
-            } else false
-          }).getOrElse(null)
-
-          if (res==null) {
-            res = filtred.find(element => {
-              val result = corrList.find(p=> p.getId.compareTo(ConfigManager.RbCAPIds("db.rbCAP.hosp.primary.id.sentTo").toInt)==0).getOrElse(null)
-              if (result!=null) {
-                element._1.getType.getId.compareTo(result.getActionPropertyType.getId)==0
-              } else false
-            }).getOrElse(null)
-          }
-
-          if (res!=null) {   //Запись
-            this.ward = new OrgStructureContainer(res._2.get(0).getValue.asInstanceOf[OrgStructure])
-            val diffOfDays = ((new Date()).getTime - res._1.getAction.getBegDate.getTime)/(1000 * 60 * 60 * 24) + 1
-            this.totalDays = "Проведено %d койко-дней".format(diffOfDays)
-          }
+      val eventIds: java.util.List[java.lang.Integer] = new util.LinkedList[java.lang.Integer]();
+      eventIds.add(event.getId.intValue())
+      val moveProps = mMovingProperties(eventIds, setATCodes, 1)
+      if (moveProps!=null && moveProps.size>0) {
+        var res = moveProps.get(event.getId.intValue()).find(f => {f._1.getType.getCode.compareTo(i18n("db.apt.moving.codes.orgStructTransfer"))==0}).getOrElse(null)
+        if (res==null) {
+          res = moveProps.get(event.getId.intValue()).find(f => {f._1.getType.getCode.compareTo(i18n("db.apt.received.codes.orgStructDirection"))==0}).getOrElse(null)
+        }
+        var labProp = moveProps.get(event.getId.intValue()).find(f => {f._1.getType.getCode.compareTo(i18n("db.apt.documents.codes.RW"))==0}).getOrElse(null)
+        if (labProp != null) {
+          this.laboratory = new LaboratoryPropertiesContainer(labProp._2.get(0).getValueAsString)
+        }
+        var preHospitalDefects = moveProps.get(event.getId.intValue()).find(f => {f._1.getType.getCode.compareTo(i18n("db.apt.documents.codes.preHospitalDefects"))==0}).getOrElse(null)
+        if (labProp != null) {
+          this.preHospitalDefects = preHospitalDefects._2.get(0).asInstanceOf[String]
+        }
+        if (res!=null) {   //Запись
+          this.ward = new OrgStructureContainer(res._2.get(0).getValue.asInstanceOf[OrgStructure])
+          val diffOfDays = ((new Date()).getTime - res._1.getAction.getBegDate.getTime)/(1000 * 60 * 60 * 24) + 1
+          this.totalDays = "Проведено %d койко-дней".format(diffOfDays)
         }
       }
     }
@@ -576,26 +605,42 @@ class AppealEntry {
     //Имеет первичный осмотр
     this.havePrimary = havePrimary
     //Данные о последующей госпитализации
-    if (extractProperties!=null && corrList!=null) {
+    this.leaved = new LeavedInfoContainer(extractProperties)
+    /*
+    if (extractProperties!=null) {
       extractProperties.foreach(prop => {
-        val result = corrList.find(p=> p.getActionPropertyType.getId.intValue()==prop._1.getType.getId.intValue()).getOrElse(null)
-        if (result!=null && prop._2 != null && prop._2.size() > 0) {
-          if (result.getId.compareTo(ConfigManager.RbCAPIds("db.rbCAP.extract.id.nextHospDate").toInt :java.lang.Integer)==0){
+        if (prop != null && prop._1 != null && prop._2 != null && prop._2.size() > 0) {
+          if (this.outcomeDate == null && this.leavedDoctor == null) {
+            this.outcomeDate = prop._1.getAction.getEndDate
+            this.leavedDoctor = new DoctorContainer(prop._1.getAction.getExecutor)
+          }
+          if (prop._1.getType.getCode.compareTo(i18n("db.apt.leaved.codes.nextHospDate"))==0){
             this.nextHospDate = prop._2.get(0).getValueAsString
-          }
-          else if (result.getId.compareTo(ConfigManager.RbCAPIds("db.rbCAP.extract.id.nextHospDepartment").toInt :java.lang.Integer)==0
-                   && prop._2.get(0).getValue != null && prop._2.get(0).getValue.asInstanceOf[OrgStructure].getName != null){
+          } else if (prop._1.getType.getCode.compareTo(i18n("db.apt.moving.codes.hospOrgStruct"))==0
+                     && prop._2.get(0).getValue != null && prop._2.get(0).getValue.asInstanceOf[OrgStructure].getName != null){
             this.nextHospDepartment = "%s(%s)".format(prop._2.get(0).getValue.asInstanceOf[OrgStructure].getName, prop._2.get(0).getValue.asInstanceOf[OrgStructure].getAddress)
-          }
-          else if (result.getId.compareTo(ConfigManager.RbCAPIds("db.rbCAP.extract.id.nextHospFinanceType").toInt :java.lang.Integer)==0){
-            this.nextHospFinanceType= prop._2.get(0).getValueAsString
+          } else if (prop._1.getType.getCode.compareTo(i18n("db.apt.leaved.codes.nextHospFinance"))==0){
+            this.nextHospFinanceType = prop._2.get(0).getValueAsString
+          } else if (prop._1.getType.getCode.compareTo(i18n("db.apt.leaved.codes.hospOutcome"))==0){
+            this.hospOutcome = prop._2.get(0).getValueAsString
+          } else if (prop._1.getType.getCode.compareTo(i18n("db.apt.leaved.codes.hospLength"))==0){
+            this.hospLength = prop._2.get(0).getValueAsString
           }
         }
       })
     }
+    */
     //Контракт
     if (contract != null)
       this.contract = new ContractContainer(contract)
+    //Результат какой-то
+    if (event.getResult != null) {
+      this.result = new IdNameContainer(event.getResult.getId.intValue(), event.getResult.getName)
+    }
+    //Временная нетрудоспособность
+    if (tempInvalid != null) {
+      this.tempInvalid = new TempInvalidAppealContainer(tempInvalid)
+    }
 }
 
   /**
@@ -604,12 +649,22 @@ class AppealEntry {
    * @param values Все значения свойств действия
    * @return Список значений для свойств действия из искомого списка
    */
-  private def extractValuesInNumberedMap(set: java.util.Set[java.lang.Integer], values: java.util.Map[java.lang.Integer, java.util.List[Object]]) = {
+  private def extractValuesInNumberedMap(set: java.util.Set[java.lang.Integer], values: java.util.Map[(java.lang.Integer, ActionProperty), java.util.List[Object]]) = {
 
     var map: java.util.Map[String, java.util.List[Object]] = new HashMap[String, java.util.List[Object]]
 
     var counter: Int = 0
     set.foreach(e => {
+      values.foreach(f => {
+        var dStr: String = null
+        if (f._1._1.intValue() == e.intValue()) {
+          dStr = counter.toString
+          map.put(dStr, values.get(e, f._1._2))
+        } //else {map.put(counter.toString, List(""))}
+      })
+      if (map.size()==counter) map.put(counter.toString, List(""))  //если не нашлась пропертя, то для рбкори запишем пустое значение
+      counter = counter + 1
+      /*
       if(values.containsKey(e)){
         var dStr: String = null
         if(e.compareTo(ConfigManager.RbCAPIds("db.rbCAP.hosp.primary.id.diagnosis.assigment.code").toInt :java.lang.Integer)==0){
@@ -636,7 +691,7 @@ class AppealEntry {
       else {
         map.put(counter.toString, List(""))
       }
-      counter = counter + 1
+      counter = counter + 1  */
     })
     map
   }
@@ -1104,5 +1159,99 @@ class ContractContainer {
     this.number = contract.getNumber
     this.begDate = contract.getBegDate
     this.finance = new IdNameContainer(contract.getFinance.getId.intValue(), contract.getFinance.getName)
+  }
+}
+
+/**
+ * Контейнер для представления информации о временной нетрудоспособности
+ */
+@XmlType(name = "tempInvalidAppealContainer")
+@XmlRootElement(name = "tempInvalidAppealContainer")
+@JsonIgnoreProperties(ignoreUnknown = true)
+class TempInvalidAppealContainer {
+
+  @BeanProperty
+  var begDate : Date = _    //
+  @BeanProperty
+  var endDate: Date = _      //
+  @BeanProperty
+  var age : Int = _      //
+  @BeanProperty
+  var sex : Int = _      //
+
+  def this(tempInvalid: TempInvalid) = {
+    this()
+    this.begDate = tempInvalid.getBegDate
+    this.endDate = tempInvalid.getEndDate
+    this.age = tempInvalid.getAge
+    this.sex = tempInvalid.getSex
+  }
+}
+
+/**
+ * Контейнер для представления информации о лабораторных исследованиях
+ */
+@XmlType(name = "laboratoryPropertiesContainer")
+@XmlRootElement(name = "laboratoryPropertiesContainer")
+@JsonIgnoreProperties(ignoreUnknown = true)
+class LaboratoryPropertiesContainer {
+
+  @BeanProperty
+  var rw : String = _
+
+  def this(rw: String) = {
+    this()
+    this.rw = rw
+  }
+}
+
+/**
+ * Контейнер для представления информации о лабораторных исследованиях
+ */
+@XmlType(name = "leavedInfoContainer")
+@XmlRootElement(name = "leavedInfoContainer")
+@JsonIgnoreProperties(ignoreUnknown = true)
+class LeavedInfoContainer extends I18nable {
+
+  @BeanProperty
+  var nextHospDate: String = _
+  @BeanProperty
+  var nextHospDepartment: IdNameContainer = _
+  @BeanProperty
+  var nextHospFinanceType: String = _
+  @BeanProperty
+  var hospOutcome: String = _
+  @BeanProperty
+  var hospLength: String = _
+  @BeanProperty
+  var outcomeDate: Date = _
+  @BeanProperty
+  var leavedDoctor: DoctorContainer = _
+
+  def this(extractProperties: java.util.Map[ActionProperty, java.util.List[APValue]]) = {
+    this()
+    if (extractProperties!=null) {
+      extractProperties.foreach(prop => {
+        if (prop != null && prop._1 != null && prop._2 != null && prop._2.size() > 0) {
+          if (this.outcomeDate == null && this.leavedDoctor == null) {
+            this.outcomeDate = prop._1.getAction.getEndDate
+            this.leavedDoctor = new DoctorContainer(prop._1.getAction.getExecutor)
+          }
+          if (prop._1.getType.getCode.compareTo(i18n("db.apt.leaved.codes.nextHospDate"))==0){
+            this.nextHospDate = prop._2.get(0).getValueAsString
+          } else if (prop._1.getType.getCode.compareTo(i18n("db.apt.moving.codes.hospOrgStruct"))==0
+            && prop._2.get(0).getValue != null && prop._2.get(0).getValue.asInstanceOf[OrgStructure].getName != null){
+            this.nextHospDepartment = new IdNameContainer(prop._2.get(0).getValue.asInstanceOf[OrgStructure].getId.intValue() ,
+                                                          "%s(%s)".format(prop._2.get(0).getValue.asInstanceOf[OrgStructure].getName, prop._2.get(0).getValue.asInstanceOf[OrgStructure].getAddress))
+          } else if (prop._1.getType.getCode.compareTo(i18n("db.apt.leaved.codes.nextHospFinance"))==0){
+            this.nextHospFinanceType = prop._2.get(0).getValueAsString
+          } else if (prop._1.getType.getCode.compareTo(i18n("db.apt.leaved.codes.hospOutcome"))==0){
+            this.hospOutcome = prop._2.get(0).getValueAsString
+          } else if (prop._1.getType.getCode.compareTo(i18n("db.apt.leaved.codes.hospLength"))==0){
+            this.hospLength = prop._2.get(0).getValueAsString
+          }
+        }
+      })
+    }
   }
 }

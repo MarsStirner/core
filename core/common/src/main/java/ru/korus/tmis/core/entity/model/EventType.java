@@ -217,6 +217,11 @@ public class EventType implements Serializable {
         this.id = id;
     }
 
+    public EventType(Integer id, String name) {
+        this.id = id;
+        this.name = name;
+    }
+
     public Integer getId() {
         return id;
     }

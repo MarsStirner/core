@@ -248,6 +248,14 @@ public class ActionType implements Serializable {
         this.id = id;
     }
 
+    public ActionType(Integer id, Integer groupId, String code, String flatCode, String name) {
+        this.id = id;
+        this.groupId = groupId;
+        this.code = code;
+        this.flatCode = flatCode;
+        this.name = name;
+    }
+
     public Integer getId() {
         return id;
     }

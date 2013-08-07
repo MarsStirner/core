@@ -110,8 +110,8 @@ public class Event implements Serializable {
     @Column(name = "order")
     private Integer order;
 
-    @Column(name = "result_id")
-    private Integer resultId;
+    @JoinColumn(name = "result_id")
+    private RbResult result;
 
     @Column(name = "nextEventDate")
     @Temporal(TemporalType.TIMESTAMP)
@@ -340,12 +340,12 @@ public class Event implements Serializable {
         this.order = order;
     }
 
-    public Integer getResultId() {
-        return resultId;
+    public RbResult getResult() {
+        return result;
     }
 
-    public void setResultId(Integer resultId) {
-        this.resultId = resultId;
+    public void setResult(RbResult result) {
+        this.result = result;
     }
 
     public Date getNextEventDate() {

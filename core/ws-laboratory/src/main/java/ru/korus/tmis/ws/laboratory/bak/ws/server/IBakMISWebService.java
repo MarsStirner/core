@@ -1,6 +1,5 @@
 package ru.korus.tmis.ws.laboratory.bak.ws.server;
 
-import ru.korus.tmis.core.exception.CoreException;
 import ru.korus.tmis.ws.laboratory.bak.ws.server.model.ResponseHL7;
 import ru.korus.tmis.ws.laboratory.bak.ws.server.model.hl7.complex.MCCIIN000002UV01;
 import ru.korus.tmis.ws.laboratory.bak.ws.server.model.hl7.complex.ObjectFactory;
@@ -27,19 +26,6 @@ import static ru.korus.tmis.ws.laboratory.bak.ws.server.model.hl7.HL7Specificati
 })
 public interface IBakMISWebService {
 
-    /**
-     * 
-     * @param orderMisId идентификатор направления на анализы
-     * @param orderBarCode штрих-код на контейнере c биоматериалом (десятичное представление считанного штрих-кода)
-     * @param takenTissueJournal номер заказа TakenTissueJournal.id
-     * @param referralIsFinished отметка об окончании исследований по направлению (признак последнего сообщения с результатами для данного направления)
-     * @param biomaterialDefects дефекты биоматериала
-     * @param resultDoctorLisId уникальный идентификационный номер врача лаборатории подписавшего результаты исследования
-     * @param resultDoctorLisName ФИО врача лаборатории подписавшего результаты исследования
-     * @param codeLIS Код лаборатории
-     * @return
-     * @throws CoreException
-     */
     @WebMethod(operationName = "LIS_SetAnalysisResults")
     @WebResult(name = SUCCESS_ACCEPT_EVENT, targetNamespace = NAMESPACE, partName = "Body")
     MCCIIN000002UV01 setAnalysisResults(

@@ -58,19 +58,19 @@ public class ObjectFactory {
     }
 
     /**
-     * Create an instance of {@link SectionInfo }
-     * 
-     */
-    public SectionInfo createSectionInfo() {
-        return new SectionInfo();
-    }
-
-    /**
      * Create an instance of {@link EeIdInfo }
      * 
      */
     public EeIdInfo createEeIdInfo() {
         return new EeIdInfo();
+    }
+
+    /**
+     * Create an instance of {@link SectionInfo }
+     * 
+     */
+    public SectionInfo createSectionInfo() {
+        return new SectionInfo();
     }
 
     /**
@@ -106,11 +106,51 @@ public class ObjectFactory {
     }
 
     /**
+     * Create an instance of {@link SpTextInfo }
+     * 
+     */
+    public SpTextInfo createSpTextInfo() {
+        return new SpTextInfo();
+    }
+
+    /**
+     * Create an instance of {@link SpecimenInfo }
+     * 
+     */
+    public SpecimenInfo createSpecimenInfo() {
+        return new SpecimenInfo();
+    }
+
+    /**
+     * Create an instance of {@link ObsValueInfo }
+     * 
+     */
+    public ObsValueInfo createObsValueInfo() {
+        return new ObsValueInfo();
+    }
+
+    /**
+     * Create an instance of {@link SpecimenRoleInfo }
+     * 
+     */
+    public SpecimenRoleInfo createSpecimenRoleInfo() {
+        return new SpecimenRoleInfo();
+    }
+
+    /**
      * Create an instance of {@link EffectiveTimeInfo }
      * 
      */
     public EffectiveTimeInfo createEffectiveTimeInfo() {
         return new EffectiveTimeInfo();
+    }
+
+    /**
+     * Create an instance of {@link ObsTranslationInfo }
+     * 
+     */
+    public ObsTranslationInfo createObsTranslationInfo() {
+        return new ObsTranslationInfo();
     }
 
     /**
@@ -178,19 +218,19 @@ public class ObjectFactory {
     }
 
     /**
-     * Create an instance of {@link EeCodeInfo }
-     * 
-     */
-    public EeCodeInfo createEeCodeInfo() {
-        return new EeCodeInfo();
-    }
-
-    /**
      * Create an instance of {@link ProviderOrganizationInfo }
      * 
      */
     public ProviderOrganizationInfo createProviderOrganizationInfo() {
         return new ProviderOrganizationInfo();
+    }
+
+    /**
+     * Create an instance of {@link EeCodeInfo }
+     * 
+     */
+    public EeCodeInfo createEeCodeInfo() {
+        return new EeCodeInfo();
     }
 
     /**
@@ -218,6 +258,22 @@ public class ObjectFactory {
     }
 
     /**
+     * Create an instance of {@link SpQuantityInfo }
+     * 
+     */
+    public SpQuantityInfo createSpQuantityInfo() {
+        return new SpQuantityInfo();
+    }
+
+    /**
+     * Create an instance of {@link SpUnitInfo }
+     * 
+     */
+    public SpUnitInfo createSpUnitInfo() {
+        return new SpUnitInfo();
+    }
+
+    /**
      * Create an instance of {@link ObsIdInfo }
      * 
      */
@@ -234,11 +290,27 @@ public class ObjectFactory {
     }
 
     /**
+     * Create an instance of {@link ObsEffectiveTimeInfo }
+     * 
+     */
+    public ObsEffectiveTimeInfo createObsEffectiveTimeInfo() {
+        return new ObsEffectiveTimeInfo();
+    }
+
+    /**
      * Create an instance of {@link PatientIDInfo }
      * 
      */
     public PatientIDInfo createPatientIDInfo() {
         return new PatientIDInfo();
+    }
+
+    /**
+     * Create an instance of {@link SpTranslationInfo }
+     * 
+     */
+    public SpTranslationInfo createSpTranslationInfo() {
+        return new SpTranslationInfo();
     }
 
     /**
@@ -258,11 +330,27 @@ public class ObjectFactory {
     }
 
     /**
+     * Create an instance of {@link SpCodeInfo }
+     * 
+     */
+    public SpCodeInfo createSpCodeInfo() {
+        return new SpCodeInfo();
+    }
+
+    /**
      * Create an instance of {@link SubComponentInfo }
      * 
      */
     public SubComponentInfo createSubComponentInfo() {
         return new SubComponentInfo();
+    }
+
+    /**
+     * Create an instance of {@link SrIdInfo }
+     * 
+     */
+    public SrIdInfo createSrIdInfo() {
+        return new SrIdInfo();
     }
 
     /**
@@ -287,6 +375,14 @@ public class ObjectFactory {
      */
     public EntryInfo createEntryInfo() {
         return new EntryInfo();
+    }
+
+    /**
+     * Create an instance of {@link SpecimenPlayingEntityInfo }
+     * 
+     */
+    public SpecimenPlayingEntityInfo createSpecimenPlayingEntityInfo() {
+        return new SpecimenPlayingEntityInfo();
     }
 
     /**

@@ -33,4 +33,6 @@ public interface DbClientPolicyBeanLocal {
     void deleteClientPolicy(int id, Staff sessionUser) throws CoreException;
 
     Boolean checkPolicyNumber(String number, String serial, int typeId) throws CoreException;
+
+    ClientPolicy findBySerialAndNumberAndType(String serial, String number, int typeId);
 }

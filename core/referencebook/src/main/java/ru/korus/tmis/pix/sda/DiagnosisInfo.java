@@ -52,6 +52,16 @@ public class DiagnosisInfo {
      */
     private final String diagName;
 
+    /**
+     * Код типа диагноза
+     */
+    private final String diagTypeCode;
+
+    /**
+     * Наименование типа диагноза
+     */
+    private final String diagTypeName;
+
     public DiagnosisInfo(Event event, Diagnosis diagnosis, RbDiagnosisType diagnosisType) {
         final UUID uuid = event.getUuid();
         this.eventUuid = uuid != null ? uuid.getUuid() : null;
@@ -67,6 +77,15 @@ public class DiagnosisInfo {
         final Mkb mkb = diagnosis.getMkb();
         this.mkb = mkb != null ? mkb.getDiagID() : null;
         this.diagName = (mkb != null ? mkb.getDiagName() : "").trim() + "(" + (diagnosisType != null ? diagnosisType.getName() : "") + ")";
+        RbDiagnosisType dt = diagnosis.getDiagnosisType();
+        String diagTypeName = null;
+        String diagTypeCode = null;
+        if (dt != null) {
+            diagTypeCode = "".equals(dt.getCode())? null : dt.getCode();
+            diagTypeName = "".equals(dt.getName())? null : dt.getName();
+        }
+        this.diagTypeName = diagTypeName;
+        this.diagTypeCode = diagTypeCode;
     }
 
     /**
@@ -111,4 +130,11 @@ public class DiagnosisInfo {
         return diagName;
     }
 
+    public String getDiagTypeCode() {
+        return diagTypeCode;
+    }
+
+    public String getDiagTypeName() {
+        return diagTypeName;
+    }
 }

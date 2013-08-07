@@ -4,6 +4,7 @@ package ru.cgm.service;
 import javax.xml.bind.annotation.XmlAccessType;
 import javax.xml.bind.annotation.XmlAccessorType;
 import javax.xml.bind.annotation.XmlAttribute;
+import javax.xml.bind.annotation.XmlElement;
 import javax.xml.bind.annotation.XmlType;
 
 
@@ -16,6 +17,9 @@ import javax.xml.bind.annotation.XmlType;
  * &lt;complexType name="obsCodeInfo">
  *   &lt;complexContent>
  *     &lt;restriction base="{http://www.w3.org/2001/XMLSchema}anyType">
+ *       &lt;sequence>
+ *         &lt;element name="translation" type="{http://cgm.ru}obsTranslationInfo"/>
+ *       &lt;/sequence>
  *       &lt;attribute name="code" type="{http://www.w3.org/2001/XMLSchema}string" />
  *       &lt;attribute name="displayName" type="{http://www.w3.org/2001/XMLSchema}string" />
  *     &lt;/restriction>
@@ -26,13 +30,41 @@ import javax.xml.bind.annotation.XmlType;
  * 
  */
 @XmlAccessorType(XmlAccessType.FIELD)
-@XmlType(name = "obsCodeInfo")
+@XmlType(name = "obsCodeInfo", propOrder = {
+    "translation"
+})
 public class ObsCodeInfo {
 
+    @XmlElement(required = true)
+    protected ObsTranslationInfo translation;
     @XmlAttribute(name = "code")
     protected String code;
     @XmlAttribute(name = "displayName")
     protected String displayName;
+
+    /**
+     * Gets the value of the translation property.
+     * 
+     * @return
+     *     possible object is
+     *     {@link ObsTranslationInfo }
+     *     
+     */
+    public ObsTranslationInfo getTranslation() {
+        return translation;
+    }
+
+    /**
+     * Sets the value of the translation property.
+     * 
+     * @param value
+     *     allowed object is
+     *     {@link ObsTranslationInfo }
+     *     
+     */
+    public void setTranslation(ObsTranslationInfo value) {
+        this.translation = value;
+    }
 
     /**
      * Gets the value of the code property.

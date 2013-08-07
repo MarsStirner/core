@@ -533,6 +533,10 @@ public class DirectoryInfoRESTImpl {
         THER("ther"){
             public String getSubType() { return "THER";}
             public String getMnemonic() { return "THER";}
+        },
+        ANEST("anest"){
+            public String getSubType() { return "ANEST";}
+            public String getMnemonic() { return "ANEST";}
         };
 
         public abstract String getSubType();

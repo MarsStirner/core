@@ -1,153 +1,189 @@
-<?xml version="1.0" encoding="UTF-8"?>
-<POLB_IN224100UV01
-        xmlns="urn:hl7-org:v3"
-        xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-        xsi:schemaLocation="urn:hl7-org:v3 ../processable/multicacheschemas/POLB_IN224100UV01.xsd"
-        ITSVersion="XML_1.0">
-
-    <!-- UUID —Å–æ–æ–±—â–µ–Ω–∏—è -->
-    <id root="XXXXXXXX-XXXX-XXXX-XXXX-XXXXXXXXXXXX"/>
-
-    <!-- –≤—Ä–µ–º—è —Å–æ–∑–¥–∞–Ω–∏—è —Å–æ–±—ã—Ç–∏—è. –ó–Ω–∞—á–µ–Ω–∏–µ value –∫–æ–¥–∏—Ä—É–µ—Ç—Å—è –ø–æ —à–∞–±–ª–æ–Ω—É: –≥–≥–≥–≥–º–º–¥–¥—á—á–º–º—Å—Å -->
-    <creationTime value="20050303180027"/>
-
-    <!-- –ò–¥–µ–Ω—Ç–∏—Ñ–∏–∫–∞—Ç–æ—Ä —Ç–∏–ø–∞ —Å–æ–æ–±—â–µ–Ω–∏—è. –ó–Ω–∞—á–µ–Ω–∏–µ @extension - —Ç–∏–ø —Å–æ–æ–±—â–µ–Ω–∏—è. @root –¥–æ–ª–∂–µ–Ω –∏–º–µ—Ç—å –∑–Ω–∞—á–µ–Ω–∏–µ 2.16.840.1.113883.1.6 - HL7 Namespace for Interaction IDs -->
-    <interactionId extension='POLB_IN224100UV01' root='2.16.840.1.113883.1.6'/>
-
-    <!-- –ù–∞–∑–Ω–∞—á–µ–Ω–∏–µ —Å–æ–æ–±—â–µ–Ω–∏—è –æ—Ç–Ω–æ—Å–∏—Ç–µ–ª—å–Ω–æ –æ—Ç–ø—Ä–∞–≤–∏—Ç–µ–ª—è. –í–æ–∑–º–æ–∂–Ω—ã–µ –∑–Ω–∞—á–µ–Ω–∏—è ‚Äî D (–æ—Ç–ª–∞–¥–∫–∞, Debugging), P (–ø—Ä–æ–º—ã—à–ª–µ–Ω–Ω–æ–µ —Ñ—É–Ω–∫—Ü–∏–æ–Ω–∏—Ä–æ–≤–∞–Ω–∏–µ, Production) or T (–æ–±—É—á–µ–Ω–∏–µ, Training). -->
-    <processingCode code='P'/>
-
-    <!-- –†–µ–∂–∏–º –æ–±—Ä–∞–±–æ—Ç–∫–∏ —Å–æ–æ–±—â–µ–Ω–∏—è –æ—Ç–Ω–æ—Å–∏—Ç–µ–ª—å–Ω–æ –æ—Ç–ø—Ä–∞–≤–∏—Ç–µ–ª—è. –í–æ–∑–º–æ–∂–Ω—ã–µ –∑–Ω–∞—á–µ–Ω–∏—è ‚Äî A (–∞—Ä—Ö–∏–≤–∏—Ä–æ–≤–∞–Ω–∏–µ, Archive), T (—à—Ç–∞—Ç–Ω–æ–µ —Ñ—É–Ω–∫—Ü–∏–æ–Ω–∏—Ä–æ–≤–∞–Ω–∏–µ, Current processing), I (–∏–Ω–∏—Ü–∏–∞–ª–∏–∑–∞—Ü–∏—è, Initial load), R (–≤–æ—Å—Å—Ç–∞–Ω–æ–≤–ª–µ–Ω–∏–µ, Restore). -->
-    <processingModeCode code="T"/>
-
-    <!-- –í—ã—Å—ã–ª–∞—Ç—å –ª–∏ –ø–æ–¥—Ç–≤–µ—Ä–∂–¥–∞—é—â–µ–µ —Å–æ–æ–±—â–µ–Ω–∏–µ. –ó–Ω–∞—á–µ–Ω–∏—è - Always (AL), only on errors (ER), or never (NE) -->
-    <acceptAckCode code="AL"/>
-
-    <!-- –†–∞–∑–¥–µ–ª –ø—Ä–∏–µ–º–Ω–∏–∫ - –∏—Å–ø–æ–ª—å–∑—É–µ—Ç—Å—è –±–µ–∑ –∏–∑–º–µ–Ω–µ–Ω–∏–π -->
-    <receiver typeCode="RCV">
-        <device classCode="DEV" determinerCode="INSTANCE">
-            <id nullFlavor="NI"/>
-        </device>
-    </receiver>
-
-    <!-- –†–∞–∑–¥–µ–ª –æ—Ç–ø—Ä–∞–≤–∏—Ç–µ–ª—å - –∏—Å–ø–æ–ª—å–∑—É–µ—Ç—Å—è –±–µ–∑ –∏–∑–º–µ–Ω–µ–Ω–∏–π -->
-    <sender typeCode="SND">
-        <device classCode="DEV" determinerCode="INSTANCE">
-            <id nullFlavor="NI"/>
-        </device>
-    </sender>
-
-    <!-- –∏–Ω—Ñ–æ—Ä–º–∞—Ü–∏—è –æ —Å–æ—Å—Ç–æ—è–≤—à–µ–º—Å—è —Å–æ–±—ã—Ç–∏–∏ -->
-    <controlActProcess classCode="CACT" moodCode="APT">
-
-        <authorOrPerformer typeCode="PRF" contextControlCode="AN">
-            <noteText/>
-            <time/>
-            <modeCode/>
-            <signatureCode/>
-            <signatureText/>
-            <assignedPerson classCode="ASSIGNED">
-                <representedOrganization classCode="ORG" determinerCode="INSTANCE">
-                    <id/>
-                    <!-- –ö–æ–¥ –ª–∞–±–æ—Ä–∞—Ç–æ—Ä–∏–∏ -->
-                    <code code="CodeLIS"/>
-                </representedOrganization>
+<?xml version="1.0" encoding="windows-1251"?>
+<ClinicalDocument xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns="urn:hl7-org:v3"
+                  xsi:schemaLocation="urn:hl7-org:v3 CDA.xsd">
+    <typeId extension="POCD_HD000040" root="2.16.840.1.113883.1.3"/>
+    <!-- Ë‰ÂÌÚËÙËÍ‡ÚÓ ÏÂ‰ ‰ÓÍÛÏÂÌÚ‡ -->
+    <id root="2.16.840.1.113883.1.3" extension="orderMisId"/>
+    <!-- ÍÓ‰ ‰Îˇ ‰ÓÍÛÏÂÌÚ‡ type - ÔÛÒÚÓÈ ‚ Ì‡¯ÂÏ ÒÎÛ˜‡Â   -->
+    <code/>
+    <!-- Title ‰Îˇ ‰ÓÍÛÏÂÌÚ‡ -->
+    <title>«‡Í‡Á Î‡·Ó‡ÚÓÌ˚ı ËÒÒÎÂ‰Ó‚‡ÌËÈ</title>
+    <!-- ‰‡Ú‡ Ë ‚ÂÏˇ ÒÓÁ‰‡ÌËˇ Ì‡Ô‡‚ÎÂÌËˇ ‚‡˜ÓÏ -->
+    <effectiveTime value="orderMisDate"/>
+    <!-- ÛÓ‚ÂÌ¸ ÍÓÌÙË‰ÂÌˆË‡Î¸ÌÓÒÚË ‰ÓÍÛÏÂÌÚ‡ : Normal -->
+    <confidentialityCode code="N" codeSystem="2.16.840.1.113883.5.25"/>
+    <!--ˇÁ˚Í ‰Îˇ ˝ÚÓ„Ó ‰ÓÍÛÏÂÌÚ‡ -->
+    <languageCode code="ru-RU"/>
+    <!-- —Ú‡ÚÛÒ Á‡Í‡Á‡ -->
+    <versionNumber value="orderStatus"/>
+    <!-- Record target - ‰ÂÏÓ„‡ÙË˜ÂÒÍËÂ ‰‡ÌÌ˚Â Ô‡ˆËÂÌÚ‡ -->
+    <recordTarget typeCode="RCT">
+        <patientRole classCode="PAT">
+            <!-- Ë‰ÂÌÚËÙËÍ‡ÚÓ Ô‡ˆËÂÌÚ‡-->
+            <id extension="patientMisId" root="GUID"/>
+            <!-- ‡‰ÂÒ Ô‡ˆËÂÌÚ‡-  ÂÒÎË ‡‰ÂÒ‡ ÌÂÚ <addr nullFlavor=ìNI"/>-->
+            <addr>patientAddress</addr>
+            <patient classCode="PSN" determinerCode="INSTANCE">
+                <!-- ÙËÓ Ô‡ˆËÂÌÚ‡ -->
+                <name>
+                    <given>patientName</given>
+                    <suffix>patientPatronum</suffix>
+                    <family>patientFamily</family>
+                </name>
+                <!-- ÔÓÎ Ô‡ˆËÂÌÚ‡ -->
+                <administrativeGenderCode code="patientSex"/>
+                <!-- ‰‡Ú‡ ÓÊ‰ÂÌËˇ Ô‡ˆËÂÌÚ‡ -->
+                <birthTime value="YYYYMMDD"/>
+            </patient>
+            <providerOrganization classCode="ORG" determinerCode="INSTANCE">
+                <!-- UUID Àœ” -->
+                <id root="XXXX-XXXX-XXXX-XXXX-XXXX"/>
+                <!-- Õ‡Á‚‡ÌËÂ Àœ”, ÍÓÚÓÓÂ ÔÓÒ˚Î‡ÂÚ ‚ À»— Ì‡Ô‡‚ÎÂÌËÂ -->
+                <name>orderCustodian</name>
+            </providerOrganization>
+        </patientRole>
+    </recordTarget>
+    <!-- ÒÓÁ‰‡ÚÂÎ¸ ‰ÓÍÛÏÂÌÚ‡. Œ·ˇÁ‡ÚÂÎ¸Ì˚È -->
+    <author typeCode="AUT">
+        <!-- ‰‡Ú‡ Ë ‚ÂÏˇ ÒÓÁ‰‡ÌËˇ Ì‡Ô‡‚ÎÂÌËˇ ‚‡˜ÓÏ -->
+        <time value="YYYYMMDDHHMM"/>
+        <assignedAuthor classCode="ASSIGNED">
+            <!-- ÛÌËÍ‡Î¸Ì˚È ÍÓ‰ Ì‡ÁÌ‡˜Ë‚¯Â„Ó ‚‡˜‡, UUID ‚‡˜‡ -->
+            <id extension="orderDoctorMisId" root="XXXX-XXXX-XXXX-XXXX-XXXX"/>
+            <assignedPerson classCode="PSN" determinerCode="INSTANCE">
+                <!-- ‘»Œ Ì‡Ô‡‚Ë‚Ë¯Â„Ó ‚‡˜‡ -->
+                <name>
+                    <family>orderDoctorFamily</family>
+                    <given>orderDoctorName</given>
+                    <suffix>orderDoctorPatronum</suffix>
+                </name>
             </assignedPerson>
-        </authorOrPerformer>
+            <representedOrganization>
+                <!-- UUID ÎÔÛ ‚ ÍÓÚÓÓÏ ‡·ÓÚ‡ÂÚ ‚‡˜-->
+                <id root="XXXX-XXXX-XXXX-XXXX-XXXX"/>
+                <!-- ÎÔÛ ‚ ÍÓÚÓÓÏ ‡·ÓÚ‡ÂÚ ‚‡˜-->
+                <name>orderCustodian</name>
+            </representedOrganization>
+        </assignedAuthor>
+    </author>
+    <componentOf>
+        <encompassingEncounter>
+            <!-- ƒ‡ÌÌ˚Â Ó ÒÎÛ˜‡Â „ÓÒÔËÚ‡ÎËÁ‡ˆËË -->
+            <id root="orderCustodian" extension="patientNumber"/>
+            <!-- Õ‡Á‚‡ÌËÂ Àœ”, ÍÓÚÓÓÂ ÔÓÒ˚Î‡ÂÚ ‚ À»— Ì‡Ô‡‚ÎÂÌËÂ, patientNumber - ÌÓÏÂ Í‡Ú˚ Ô‡ˆËÂÌÚ‡ -->
+            <code codeSystem="2.16.840.1.113883.5.4"
+                  codeSystemName="actCode"
+                  code="IMP"
+                  displayName="Inpatient encounter"/>
+            <effectiveTime nullFlavor='NI'/>
+            <!-- Œ·ˇÁ‡ÚÂÎ¸Ì˚È ˝ÎÂÏÂÌÚ. ƒ‡ÚÛ „ÓÒÔËÚ‡ÎËÁ‡ˆËË Ë ‚˚ÔËÒÍË ËÁ ÒÚ‡ˆËÓÌ‡‡ ÌÂ ÔÂÂÒ˚Î‡ÂÏ -->
+        </encompassingEncounter>
+    </componentOf>
 
-        <subject typeCode="SUBJ" contextConductionInd="false">
-            <observationReport classCode="GROUPER" moodCode="EVN">
-                <!-- –∏–¥–µ–Ω—Ç–∏—Ñ–∏–∫–∞—Ç–æ—Ä –Ω–∞–ø—Ä–∞–≤–ª–µ–Ω–∏—è –Ω–∞ –∞–Ω–∞–ª–∏–∑—ã -->
-                <id controlInformationRoot="orderMisId"/>
-                <!-- –∫–æ–¥ –∏—Å—Å–ª–µ–¥–æ–≤–∞–Ω–∏—è -->
-                <code code="diagnosticCode">
-                    <!-- –Ω–∞–∑–≤–∞–Ω–∏–µ –∏—Å—Å–ª–µ–¥–æ–≤–∞–Ω–∏—è -->
-                    <displayName value="diagnosticName"/>
-                </code>
-                <title/>
-                <text/>
-                <!-- –æ—Ç–º–µ—Ç–∫–∞ –æ–± –æ–∫–æ–Ω—á–∞–Ω–∏–∏ –∏—Å—Å–ª–µ–¥–æ–≤–∞–Ω–∏–π –ø–æ –Ω–∞–ø—Ä–∞–≤–ª–µ–Ω–∏—é
-               (true-–æ–∫–æ–Ω—á–∞—Ç–µ–ª—å–Ω—ã–π, –∑–∞–∫–∞–∑ –∑–∞–∫—Ä—ã–≤–∞–µ—Ç—Å—è.False-–ü—Ä–µ–¥–≤–∞—Ä–∏—Ç–µ–ª—å–Ω—ã–π. –ó–∞–∫–∞–∑ –æ—Ç–∫—Ä—ã—Ç –Ω–∞ –∏–∑–º–µ–Ω–µ–Ω–∏–µ —Ä–µ–∑—É–ª—å—Ç–∞—Ç–∞.)  -->
-                <statusCode code="referralIsFinished"/>
-                <specimen typeCode="SPC" contextControlCode="OP">
-                    <specimen classCode="SPEC">
-                        <!-- —à—Ç—Ä–∏—Ö-–∫–æ–¥ –Ω–∞ –∫–æ–Ω—Ç–µ–π–Ω–µ—Ä–µ c –±–∏–æ–º–∞—Ç–µ—Ä–∏–∞–ª–æ–º (–¥–µ—Å—è—Ç–∏—á–Ω–æ–µ –ø—Ä–µ–¥—Å—Ç–∞–≤–ª–µ–Ω–∏–µ —Å—á–∏—Ç–∞–Ω–Ω–æ–≥–æ —à—Ç—Ä–∏—Ö-–∫–æ–¥–∞) -->
-                        <id identifierName="orderBarCode"/>
-                        <code/>
-                    </specimen>
-                </specimen>
-                <author typeCode="AUT">
-                    <time/>
-                    <assignedEntity classCode="ASSIGNED">
-                        <!-- —É–Ω–∏–∫–∞–ª—å–Ω—ã–π –∏–¥–µ–Ω—Ç–∏—Ñ–∏–∫–∞—Ü–∏–æ–Ω–Ω—ã–π –Ω–æ–º–µ—Ä –≤—Ä–∞—á–∞ –ª–∞–±–æ—Ä–∞—Ç–æ—Ä–∏–∏ –ø–æ–¥–ø–∏—Å–∞–≤—à–µ–≥–æ —Ä–µ–∑—É–ª—å—Ç–∞—Ç—ã –∏—Å—Å–ª–µ–¥–æ–≤–∞–Ω–∏—è -->
-                        <code code="ResultDoctorLisId">
-                            <!-- –§–ò–û –≤—Ä–∞—á–∞ –ª–∞–±–æ—Ä–∞—Ç–æ—Ä–∏–∏ –ø–æ–¥–ø–∏—Å–∞–≤—à–µ–≥–æ —Ä–µ–∑—É–ª—å—Ç–∞—Ç—ã –∏—Å—Å–ª–µ–¥–æ–≤–∞–Ω–∏—è -->
-                            <displayName value="ResultDoctorLisName"/>
-                        </code>
-                    </assignedEntity>
-                </author>
-            </observationReport>
-        </subject>
-        <subject typeCode="SUBJ" contextConductionInd="false">
-            <observationBattery classCode="BATTERY" moodCode="EVN">
-                <code>
-                    <!-- –Ω–∞–∑–≤–∞–Ω–∏–µ –∏—Å—Å–ª–µ–¥–æ–≤–∞–Ω–∏—è -->
-                    <displayName value="diagnosticName"/>
-                    <originalText/>
-                </code>
-                <text>
-                    <!-- –¥–µ—Ñ–µ–∫—Ç—ã –±–∏–æ–º–∞—Ç–µ—Ä–∏–∞–ª–∞ -->
-                    <description value="biomaterialDefects"/>
-                </text>
-                <!--  —Ç–∏–ø –∑–Ω–∞—á–µ–Ω–∏—è (1 ‚Äì —Å—Ç—Ä–æ–∫–æ–≤–æ–µ –∑–Ω–∞—á–µ–Ω–∏–µ –∏–ª–∏ –±–æ–ª—å—à–æ–π —Ç–µ–∫—Å—Ç, 2 ‚Äì –∏–∑–æ–±—Ä–∞–∂–µ–Ω–∏–µ, 3 ‚Äì –∫–æ–Ω—Ü–µ–Ω—Ç—Ä–∞—Ü–∏—è –º–∏–∫—Ä–æ–æ—Ä–≥., 4 ‚Äì—á—É–≤—Å—Ç–≤–∏—Ç–µ–ª—å–Ω–æ—Å—Ç—å –º–∏–∫—Ä–æ–æ—Ä–≥.) 5 - —Ç–∞–±–ª–∏—Ü–∞ –†–ï–ó–£–õ–¨–¢–ê–¢ –ú–û–ñ–ï–¢ –ò–ú–ï–¢–¨ –ó–ù–ê–ß–ï–ù–ò–Ø –¢–û–õ–¨–ö–û –û–î–ù–û–ì–û –¢–ò–ü–ê, –∏ –æ–±—è–∑–∞—Ç–µ–ª—å–Ω–æ –¥–æ–ª–∂–µ–Ω –ø—Ä–∏—Å—É—Ç—Å—Ç–≤–æ–≤–∞—Ç—å —Ö–æ—Ç—è –±—ã –æ–¥–∏–Ω.  -->
-                <statusCode code="valueType"/>
-            </observationBattery>
-        </subject>
-        <!-- –Ω–∏–∂–Ω–∏—Ö –±–ª–æ–∫–æ–≤ –º.–±. –Ω–µ—Å–∫–æ–ª—å–∫–æ - —Å–∫–æ–ª—å–∫–æ –ø–æ–ª—É—á–∏–ª–∏ indicatorCode -->
-        <subject typeCode="SUBJ" contextConductionInd="false">
-            <observationEvent classCode="OBS" moodCode="EVN">
-                <id/>
-                <!-- –∫–æ–¥ –º–µ—Ç–æ–¥–∏–∫–∏/–ø–æ–∫–∞–∑–∞—Ç–µ–ª—è/–º–∏–∫—Ä–æ–æ—Ä–≥–∞–Ω–∏–∑–º–∞ 1-->
-                <code code="indicatorCode1">
-                    <!-- –Ω–∞–∑–≤–∞–Ω–∏–µ –º–µ—Ç–æ–¥–∏–∫–∏/–ø–æ–∫–∞–∑–∞—Ç–µ–ª—è/–º–∏–∫—Ä–æ–æ—Ä–≥–∞–Ω–∏–∑–º–∞ 1-->
-                    <displayName value="indicatorName1"/>
-                </code>
-                <!-- resultComment-->
-                <text value="resultComment"/>
-                <!--  –µ—Å–ª–∏ —Ä–µ–∑—É–ª—å—Ç–∞—Ç–∞ –Ω–µ—Ç –∑–¥–µ—Å—å —É–∫–∞–∑–∞–Ω–∞ –ø—Ä–∏—á–∏–Ω–∞ -->
-                <statusCode code="resultStatus"/>
-                <!--  –¥–∞—Ç–∞ –≤—ã–ø–æ–ª–Ω–µ–Ω–∏—è/—É—Ç–≤–µ—Ä–∂–¥–µ–Ω–∏—è —Ä–µ–∑—É–ª—å—Ç–∞—Ç–∞ resultSignDate -->
-                <effectiveTime value="orderProbeDate"/>
-                <!-- –µ–¥–∏–Ω–∏—Ü–∞ –∏–∑–º–µ—Ä–µ–Ω–∏—è  unit=resultUnit  value= resultValueText-->
-                <value unit="mmol" value="8.0" xsi:type="PQ"/>
-                <device typeCode="DEV">
-                    <labTestKit classCode="MANU">
-                        <manufacturedTestKit classCode="DEV" determinerCode="INSTANCE">
-                            <!-- –Ω–∞–∑–≤–∞–Ω–∏–µ –ø—Ä–∏–±–æ—Ä–∞ -->
-                            <code code="deviceName"/>
-                        </manufacturedTestKit>
-                    </labTestKit>
-                </device>
-                <referenceRange typeCode="REFV" contextConductionInd="false" contextControlCode="ON">
-                    <interpretationRange classCode="OBS" moodCode="EVN.CRT">
-                        <interpretationCode>
-                            <!-- –Ω–æ—Ä–º–∞, —Ç.–µ. –¥–∏–∞–ø–∞–∑–æ–Ω –¥–æ–ø—É—Å—Ç–∏–º—ã—Ö –∑–Ω–∞—á–µ–Ω–∏–π –≤ —Å—Ç—Ä–æ–∫–æ–≤–æ–º –≤–∏–¥ -->
-                            <displayName value="resultNormString"/>
-                        </interpretationCode>
-
-                        <precondition typeCode="PRCN" contextControlCode="ON" contextConductionInd="false">
-                            <criterion classCode="OBS" moodCode="EVN.CRT">
-                                <code>
-                                    <!-- –∑–Ω–∞—á–µ–Ω–∏–µ —Ä–µ–∑—É–ª—å—Ç–∞—Ç–∞ –æ—Ç–Ω–æ—Å–∏—Ç–µ–ª—å–Ω–æ –Ω–æ—Ä–º—ã (—á–∏—Å–ª–æ –≤ –¥–∏–∞–ø–∞–∑–æ–Ω–µ -1 –¥–æ +1)  -->
-                                    <displayName value="resultNormalityIndex"/>
-                                </code>
-                                <value/>
-                            </criterion>
-                        </precondition>
-                    </interpretationRange>
-                </referenceRange>
-            </observationEvent>
-        </subject>
-    </controlActProcess>
-</POLB_IN224100UV01>
-
+    <component>
+        <structuredBody>
+            <!-- ËÌÙÓÏ‡ˆËˇ ÔÓ ·ËÓÏ‡ÚÂË‡ÎÛ -->
+            <component>
+                <entry>
+                    <observation classCode="OBS" moodCode="ENT" negationInd="false">
+                        <effectiveTime value="orderProbeDate"/>
+                        <!-- ‰‡Ú‡ Ë ‚ÂÏˇ Á‡·Ó‡ ·ËÓÏ‡ÚÂË‡Î‡ -->
+                        <specimen>
+                            <specimenRole>
+                                <id root="orderBarCode"/>
+                                <!-- ¯ÚËı-ÍÓ‰ Ì‡ ÍÓÌÚÂÈÌÂÂ c ·ËÓÏ‡ÚÂË‡ÎÓÏ  -->
+                                <specimenPlayingEntity>
+                                    <code code="orderBiomaterialCode">  <!-- ÍÓ‰  ·ËÓÏ‡ÚÂË‡Î‡  -->
+                                        <translation displayName="orderBiomaterialName"/>
+                                        <!-- Ì‡Á‚‡ÌËÂ  ·ËÓÏ‡ÚÂË‡Î‡ -->
+                                    </code>
+                                    <quantity value="orderBiomaterialVolume"/>
+                                    <!--  ÓÎË˜ÂÒÚ‚Ó/Ó·˙ÂÏ ·ËÓÏ‡ÚÂË‡Î‡ -->
+                                    <unit code="UnitBiomaterialCode" codename="UnitBiomaterialName"/>
+                                    <!-- UnitBiomaterialCode -  Ó‰ Â‰ËÌËˆ˚ ËÁÏÂÂÌËˇ ·ËÓÏ‡ÚÂË‡Î‡ Ë UnitBiomaterialName - Ì‡Á‚‡ÌËÂ ·ËÓÏ‡ÚÂË‡Î‡ -->
+                                    <text value="orderBiomaterialComment"/>
+                                    <!-- orderBiomaterialComment  -->
+                                </specimenPlayingEntity>
+                            </specimenRole>
+                        </specimen>
+                    </observation>
+                </entry>
+            </component>
+            <component>
+                <section>
+                    <entry>
+                        <observation classCode="OBS" moodCode="RQO" negationInd="false">
+                            <!--  Ó‰ ÓÚ‰ÂÎÂÌËˇ   Õ‡Á‚‡ÌËÂ ÓÚ‰ÂÎÂÌËˇ  -->
+                            <id root="XXXX-XXXX-XXXX-XXXX-XXXX" extension="1"/>
+                            <code code="orderDepartmentMisId" displayName="orderDepartmentName"/>
+                        </observation>
+                    </entry>
+                    <entry>
+                        <observation classCode="OBS" moodCode="RQO" negationInd="false">
+                            <!-- —Ó˜ÌÓÒÚ¸  -->
+                            <id root="XXXX-XXXX-XXXX-XXXX-XXXX" extension="1"/>
+                            <code code="isUrgent" displayName=""/>
+                        </observation>
+                    </entry>
+                    <entry>
+                        <observation classCode="OBS" moodCode="RQO" negationInd="false">
+                            <!--  Ó‰ Ã ¡10 Õ‡Á‚‡ÌËÂ ‰Ë‡„ÌÓÁ‡    -->
+                            <id root="XXXX-XXXX-XXXX-XXXX-XXXX" extension="1"/>
+                            <code code="orderDiagCode" displayName="orderDiagText"/>
+                        </observation>
+                    </entry>
+                    <entry>
+                        <observation classCode="OBS" moodCode="RQO" negationInd="false">
+                            <!-- Õ‡Á‚‡ÌËÂ ÚËÔ‡ ÙËÌ‡ÌÒËÓ‚‡ÌËˇ, ÍÓ‰ ËÒÒÎÂ‰Ó‚‡ÌËˇ, Ì‡Á‚‡ÌËÂ ËÒÒÎÂ‰Ó‚‡ÌËˇ    -->
+                            <id root="XXXX-XXXX-XXXX-XXXX-XXXX" extension="1"/>
+                            <id extension="typeFinanceName"/>
+                            <code code="diagnosticCode" displayName="diagnosticName"/>
+                        </observation>
+                    </entry>
+                    <!--Ú‡·ÎËˆ‡ ËÌ‰ËÍ‡ÚÓÓ‚ - ÏÓÊÂÚ ·˚Ú¸ ÌÂÒÍÓÎ¸ÍÓ ÒÚÓÍ   -->
+                    <entry>
+                        <observation classCode="OBS" moodCode="RQO" negationInd="false">
+                            <id root="XXXX-XXXX-XXXX-XXXX-XXXX" extension="1"/>
+                            <code code="indicatorCode1" displayName="indicatorName1"/>
+                        </observation>
+                    </entry>
+                    <entry>
+                        <observation classCode="OBS" moodCode="RQO" negationInd="false">
+                            <id root="XXXX-XXXX-XXXX-XXXX-XXXX" extension="1"/>
+                            <code code="indicatorCode2" displayName="indicatorName2"/>
+                        </observation>
+                    </entry>
+                </section>
+            </component>
+            <!--  ÔÓˇ‚ÎˇÂÚÒˇ ÂÒÎË Ô‡ˆËÂÌÚ ÊÂÌ˘ËÌ‡ Ë ·ÂÂÏÂÌÌ‡ˇ  -->
+            <component>
+                <section>
+                    <entry>
+                        <observation classCode="OBS" moodCode="EVN">
+                            <code code="">
+                                <!-- ŒÔËÒ‡ÌËÂ  -->
+                                <translation displayName="ÒÂ‰ÌËÈ ÒÓÍ ·ÂÂÏÂÌÌÓÒÚË, ‚ ÌÂ‰ÂÎˇı"/>
+                            </code>
+                            <!-- ÒÓÍ ·ÂÂÏÂÌÌÓÒÚË ‚ ÌÂ‰ÂÎˇı -->
+                            <value value="orderPregnat" unit="ÌÂ‰"/>
+                        </observation>
+                    </entry>
+                </section>
+            </component>
+            <component>
+                <section>
+                    <entry>
+                        <observation classCode="OBS" moodCode="EVN">
+                            <code code="">
+                                <!-- ÍÓÏÏÂÌÚ‡ËÈ Í Ì‡Ô‡‚ÎÂÌË˛  -->
+                                <translation displayName="ÍÓÏÏÂÌÚ‡ËÈ Í Ì‡Ô‡‚ÎÂÌË˛"/>
+                            </code>
+                            <value value="orderComment"/>
+                        </observation>
+                    </entry>
+                </section>
+            </component>
+            <!-- Á‡Í˚ÚËÂ  body Ë document -->
+        </structuredBody>
+    </component>
+</ClinicalDocument>
