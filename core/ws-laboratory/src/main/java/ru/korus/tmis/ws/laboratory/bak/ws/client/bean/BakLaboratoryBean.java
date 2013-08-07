@@ -154,7 +154,7 @@ public class BakLaboratoryBean implements IBakLaboratoryBean {
         subComponentInfo2.setSection(section);
         final JAXBElement<SubComponentInfo> jaxbElement2
                 = new JAXBElement<SubComponentInfo>(QName.valueOf("component"), SubComponentInfo.class, subComponentInfo2);
-        structuredBody.getContent().add(jaxbElement);
+        structuredBody.getContent().add(jaxbElement2);
 
         component.setStructuredBody(structuredBody);
         document.setComponent(component);

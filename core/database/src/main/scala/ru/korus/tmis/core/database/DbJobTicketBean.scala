@@ -403,8 +403,6 @@ class DbJobTicketBean extends DbJobTicketBeanLocal
       AND
         a.actionType.mnemonic = 'LAB'
       AND
-        a.isUrgent = 0
-      AND
         apval.id.id = ap.id
       AND
         apval.value = jt.id
@@ -414,5 +412,6 @@ class DbJobTicketBean extends DbJobTicketBeanLocal
         a.deleted = 0
       AND
         j.deleted = 0
-    """
+    """/*      AND
+        a.isUrgent = 0*/
 }
