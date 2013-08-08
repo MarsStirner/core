@@ -162,6 +162,9 @@ class DiagnosticsListRequestDataFilter extends AbstractListDataFilter {
   @BeanProperty
   var mnemonic: String = _
 
+  @BeanProperty
+  var clazz: Short = -1
+
   var diagnosticType: String = _
 
   def this(code_x: String,
@@ -176,7 +179,8 @@ class DiagnosticsListRequestDataFilter extends AbstractListDataFilter {
            statusId: Int,
            urgent: Int,
            diaType_x: String,
-           mnemonic: String) {
+           mnemonic: String,
+           clazz: Short) {
 
     this()
     this.diagnosticType = diaType_x
@@ -211,6 +215,7 @@ class DiagnosticsListRequestDataFilter extends AbstractListDataFilter {
     this.statusId = statusId
     this.urgent = urgent
     this.mnemonic = mnemonic
+    this.clazz = clazz
   }
 
   @Override
@@ -264,6 +269,10 @@ class DiagnosticsListRequestDataFilter extends AbstractListDataFilter {
     if (this.mnemonic != null && !this.mnemonic.isEmpty) {
       qs.query += "AND a.actionType.mnemonic = :mnemonic\n"
       qs.add("mnemonic", this.mnemonic)
+    }
+    if (this.clazz >= 0) {
+      qs.query += "AND a.actionType.clazz = :clazz\n"
+      qs.add("clazz", this.clazz: java.lang.Integer)
     }
     qs
   }
