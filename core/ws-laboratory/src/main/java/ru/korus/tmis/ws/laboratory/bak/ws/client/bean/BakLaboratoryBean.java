@@ -37,7 +37,7 @@ import static ru.korus.tmis.ws.laboratory.bak.ws.client.bean.BakLaboratoryBean.E
  */
 //@Interceptors(LoggingInterceptor.class)
 @Stateless
-public class BakLaboratoryBean implements IBakLaboratoryBean {
+public class BakLaboratoryBean implements BakLaboratoryService {
 
     //    private static final Logger log = LoggerFactory.getLogger(BakLaboratoryBean.class);
     public static final String ROOT = "2.16.840.1.113883.1.3";
@@ -114,9 +114,9 @@ public class BakLaboratoryBean implements IBakLaboratoryBean {
         createEffectiveTimeRequest(document, requestInfo); // дата и время создания направления врачом [orderMisDate]
         createConfLevel(document, "N"); // уровень конфиденциальности документа : Normal
         createLanguageDoc(document, "ru-RU"); // язык для этого документа
-        createOrderStatus(document, orderInfo); // cтатус заказа [orderStatus]
+        createOrderStatus(document); // cтатус заказа [orderStatus]
         createRecordTarget(document, patientInfo); // демографические данные пациента
-        createDocAuthor(document, eventInfo, requestInfo, staffBean); // создатель документа. Обязательный
+        createDocAuthor(document, eventInfo, requestInfo); // создатель документа. Обязательный
         createComponentOf(document);
         createBody(document, biomaterialInfo, orderInfo, patientInfo, requestInfo, action);
 
@@ -190,7 +190,7 @@ public class BakLaboratoryBean implements IBakLaboratoryBean {
         document.setComponentOf(componentOf);
     }
 
-    private static void createDocAuthor(HL7Document document, Event eventInfo, DiagnosticRequestInfo requestInfo, DbStaffBeanLocal dbStaffBean) throws CoreException {
+    private void createDocAuthor(HL7Document document, Event eventInfo, DiagnosticRequestInfo requestInfo) throws CoreException {
         final AuthorInfo author = new AuthorInfo();
         author.setTypeCode("AUT");
         final Date execDate = eventInfo.getExecDate();
@@ -213,7 +213,7 @@ public class BakLaboratoryBean implements IBakLaboratoryBean {
 
         final DoctorIdInfo doctorId = new DoctorIdInfo();
         final Integer docId = (Integer) requestInfo.orderDoctorMisId().get();
-        final Staff doctor = dbStaffBean.getStaffById(docId);
+        final Staff doctor = staffBean.getStaffById(docId);
         doctorId.setExtension(doctor.getId().toString());
         doctorId.setRoot(doctor.getUuid().getUuid());
         assignedAuthor.setId(doctorId);
@@ -298,7 +298,7 @@ public class BakLaboratoryBean implements IBakLaboratoryBean {
         document.setRecordTarget(recordTarget);
     }
 
-    private static void createOrderStatus(HL7Document document, OrderInfo orderInfo) {
+    private static void createOrderStatus(HL7Document document) {
         final HL7Document.VersionNumber versionNumber = new HL7Document.VersionNumber();
         versionNumber.setValue("N");
         document.setVersionNumber(versionNumber);
