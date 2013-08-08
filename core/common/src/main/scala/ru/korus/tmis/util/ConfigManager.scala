@@ -216,7 +216,13 @@ object ConfigManager extends Configuration {
    */
   class UsersMgrClass extends Configuration {
     var CoreUserLogin: String = "core"
+    /**
+     * Время жизни ключа в днях
+     */
     var KeepAliveDays = 1
+    /**
+     * Максимальное количество одновременно выданных ключей
+     */
     var MaxConnections = 10000
   }
 
