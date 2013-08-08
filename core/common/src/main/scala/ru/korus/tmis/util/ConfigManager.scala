@@ -109,7 +109,7 @@ object ConfigManager extends Configuration {
     var User = "demo"
     var Password = "demo"
 
-    var ServiceUrlSda = new URL("http://37.139.9.166:57772/csp/healthshare/hsedgesda/isc.SDASoapService.cls")
+    var ServiceUrlSda = new URL("http://188.127.249.29:57772/csp/healthshare/hsedgesda/isc.SDASoapService.cls")
 
     /**
      * Передача карточки пациента по SDA
@@ -186,7 +186,7 @@ object ConfigManager extends Configuration {
   val Laboratory = new Configuration {
     // LIS service URL  Алтей
     // null means that URL should be acquired from the WSDL file
-    var ServiceUrl: URL = new URL("")
+    var ServiceUrl: URL = null
     var User: String = null
     var Password: String = null
 
