@@ -44,8 +44,17 @@ object ConfigManager extends Configuration {
 
     def isActive = "on".equals(Active)
 
+    /**
+     * URL сервиса 1C
+     */
     var ServiceUrl = new URL("http://pharmacy3.fccho-moscow.ru/ws/MISExchange")
+    /**
+     * Login basic http auth
+     */
     var User = "admin"
+    /**
+     * Password basic http auth
+     */
     var Password = "1234"
 
     /**
@@ -105,8 +114,17 @@ object ConfigManager extends Configuration {
 
     def isHealthShareReferenceBook = "on".equals(HealthShare.ReferenceBookActive)
 
+    /**
+     * URL сервиса со справочниками HS
+     */
     var ServiceUrl = new URL("http://37.139.9.166:57772/csp/healthshare/hsregistry/korus.NsiService.cls")
+    /**
+     * Login WSS auth header
+     */
     var User = "demo"
+    /**
+     * Password WSS auth header
+     */
     var Password = "demo"
 
     var ServiceUrlSda = new URL("http://188.127.249.29:57772/csp/healthshare/hsedgesda/isc.SDASoapService.cls")
@@ -119,7 +137,6 @@ object ConfigManager extends Configuration {
     var SdaActive = "off"
 
     def isSdaActive = "on".equals(SdaActive)
-
   }
 
   /**
@@ -130,9 +147,11 @@ object ConfigManager extends Configuration {
    *
    */
   var Core = new Configuration {
+    /**
+     * URL сервиса, который по action_id производит отправку в ЛИС
+     */
     var RequestLaboratoryUrl = "http://localhost:8080/tmis-ws-laboratory/tmis-client-laboratory"
   }
-
 
   /**
    *
@@ -184,14 +203,22 @@ object ConfigManager extends Configuration {
    */
 
   val Laboratory = new Configuration {
-    // LIS service URL  Алтей
-    // null means that URL should be acquired from the WSDL file
+    /**
+     * URL сервиса Алтей
+     */
     var ServiceUrl: URL = null
+    /**
+     * Login basic http auth
+     */
     var User: String = null
+    /**
+     * Password basic http auth
+     */
     var Password: String = null
-
+    /**
+     * URL к WSDL, когда система не может выдавать URL через http get c параметром ?wsdl
+     */
     var RuntimeWSDLUrl: URL = null
-
 
     // WSDL url is a:
     // - RuntimeWSDLUrl if it's defined
@@ -215,14 +242,22 @@ object ConfigManager extends Configuration {
    *
    */
   val Laboratory2 = new Configuration {
-    // LIS service URL
-    // null means that URL should be acquired from the WSDL file
+    /**
+     * URL сервиса Акрос
+     */
     var ServiceUrl: URL = null
+    /**
+     * Login basic http auth
+     */
     var User: String = null
+    /**
+     * Password basic http auth
+     */
     var Password: String = null
-
+    /**
+     * URL к WSDL, когда система не может выдавать URL через http get c параметром ?wsdl
+     */
     var RuntimeWSDLUrl: URL = null
-
 
     // NB: Across's LIS does not conform to 'url' + '?wsdl' convention
     // WSDL url is a:
@@ -241,10 +276,21 @@ object ConfigManager extends Configuration {
   var LaboratoryBak = new LaboratoryBakClass
 
   class LaboratoryBakClass extends Configuration {
+    /**
+     * URL сервиса CGM
+     */
     var ServiceUrl: URL = new URL("http://10.128.131.114:8090/CGM_SOAP")
+    /**
+     * Login basic http auth
+     */
     var User: String = null
+    /**
+     * Password basic http auth
+     */
     var Password: String = null
-
+    /**
+     * URL к WSDL, когда система не может выдавать URL через http get c параметром ?wsdl
+     */
     var RuntimeWSDLUrl: URL = null
 
     def WSDLUrl: URL = Option(RuntimeWSDLUrl).getOrElse(null)
