@@ -113,7 +113,6 @@ object ConfigManager extends Configuration {
     var ReferenceBookActive = "off"
 
     def isHealthShareReferenceBook = "on".equals(HealthShare.ReferenceBookActive)
-
     /**
      * URL сервиса со справочниками HS
      */
@@ -126,9 +125,10 @@ object ConfigManager extends Configuration {
      * Password WSS auth header
      */
     var Password = "demo"
-
-    var ServiceUrlSda = new URL("http://188.127.249.29:57772/csp/healthshare/hsedgesda/isc.SDASoapService.cls")
-
+    /**
+     * URL сервиса по обмену информацией об пациентах
+     */
+    var ServiceUrlSda = new URL("http://37.139.9.166:57772/csp/healthshare/hsedgesda/isc.SDASoapService.cls")
     /**
      * Передача карточки пациента по SDA
      * on - включен
