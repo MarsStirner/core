@@ -41,7 +41,7 @@ public class TransfusionBean {
     @Schedule(hour = "*", minute = "*")
     public void pullDB() {
         try {
-            if (ConfigManager.TrfuProp().isEnable() &&
+            if (ConfigManager.TrfuProp().isActive() &&
                 ConfigManager.TrfuProp().ServiceUrl() != null && !"".equals(ConfigManager.TrfuProp().ServiceUrl().trim())) {
 
                 final TransfusionMedicalService_Service service = new TransfusionMedicalService_Service();

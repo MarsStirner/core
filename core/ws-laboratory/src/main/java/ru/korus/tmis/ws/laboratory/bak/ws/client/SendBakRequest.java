@@ -29,8 +29,8 @@ public class SendBakRequest extends Service {
     private final static QName CGMSOAP_QNAME = new QName("http://cgm.ru", "CGM_SOAP");
 
     static {
-        final String login = ConfigManager.getBakUser();
-        final String password = ConfigManager.getBakPassword();
+        final String login = ConfigManager.LaboratoryBak().User();
+        final String password = ConfigManager.LaboratoryBak().Password();
 
         if (login != null && password != null) {
             Authenticator.setDefault(new Authenticator() {
@@ -109,7 +109,7 @@ public class SendBakRequest extends Service {
      * @param service - объект сервиса, в который установим URL
      */
     private static void configureServiceURL(BindingProvider service) {
-        final String serviceUrl = ConfigManager.getBakServiceUrl().toString();
+        final String serviceUrl = ConfigManager.LaboratoryBak().ServiceUrl().toString();
         if (serviceUrl != null) {
             Map<String, Object> requestContext = service.getRequestContext();
             requestContext.put(BindingProvider.ENDPOINT_ADDRESS_PROPERTY, serviceUrl);

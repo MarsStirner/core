@@ -84,7 +84,7 @@ public class MISExchange
     public MISExchangePortType getMISExchangeSoap() {
         final MISExchangePortType port = super.getPort(new QName("MISExchange", "MISExchangeSoap"), MISExchangePortType.class);
 
-        final String serviceUrl = ConfigManager.getDrugUrl().toString();
+        final String serviceUrl = ConfigManager.Drugstore().ServiceUrl().toString();
         Map<String, Object> requestContext = ((BindingProvider) port).getRequestContext();
         requestContext.put(BindingProvider.ENDPOINT_ADDRESS_PROPERTY, serviceUrl);
 //        requestContext.put(BindingProvider.USERNAME_PROPERTY, login);

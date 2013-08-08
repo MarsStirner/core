@@ -11,17 +11,328 @@ import grizzled.slf4j.Logging
 
 object ConfigManager extends Configuration {
 
+  /**
+   * Формат даты по умолчанию
+   */
   var DateFormatter = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss")
 
   /**
    * Общие параметры работы ядра
    */
+  var Common = new CommonClass
+
   class CommonClass extends Configuration {
     var OrgId = 3479 // индекс организации в табл Organization (по умолчанию id ФНКЦ для БД ФНКЦ)
   }
 
-  var Common = new CommonClass
+  /**
+   *
+   *
+   * Параметры для 1С Аптека
+   *
+   *
+   */
+  var Drugstore = new DrugstoreClass
 
+  class DrugstoreClass extends Configuration {
+    /**
+     * Включен ли сервис 1C Аптека (Движение пациентов, Назначения)
+     * on - включен
+     * off - выключен (по умолчанию)
+     */
+    var Active = "off"
+
+    def isActive = "on".equals(Active)
+
+    var ServiceUrl = new URL("http://pharmacy3.fccho-moscow.ru/ws/MISExchange")
+    var User = "admin"
+    var Password = "1234"
+
+    /**
+     * Включен ли сервис Обновление данных о лекарственных средствах
+     * on - включен
+     * off - выключен (по умолчанию)
+     */
+    var UpdateRLS = "off"
+
+    def isUpdateRLS = "on".equals(UpdateRLS)
+
+
+    // Legacy area
+
+    var OrgName = "ФНКЦ ДГОИ"
+    var XmlNamespace = "urn:hl7-org:v3"
+    var DefaultXsiType = ""
+    val XsiNamespace = "http://www.w3.org/2001/XMLSchema-instance"
+    var Hl7_SoapAction = "urn:hl7-org:v3#MISExchange:ProcessHL7v3Message"
+    var Hl7_SoapOperation = "ProcessHL7v3Message"
+    var Hl7_RequestRootElement = "Message"
+    var Hl7_XsiType = "RCMR_IN000002UV02"
+    var GetOrgList_SoapAction = "urn:hl7-org:v3#MISExchange:GetOrganizationList"
+    var GetOrgList_SoapOperation = "GetOrganizationList"
+    var GetOrgList_RequestRootElement = "None"
+    var GetDepList_SoapAction = "urn:hl7-org:v3#MISExchange:GetDepartmentList"
+    var GetDepList_SoapOperation = "GetDepartmentList"
+    var GetDepList_RequestRootElement = "OrganizationRef"
+
+    def HttpAuthToken = DatatypeConverter.printBase64Binary(
+      (User + ":" + Password).getBytes)
+  }
+
+  /**
+   *
+   *
+   * Параметры для интеграции с подсистемой HealthShare
+   *
+   *
+   */
+  var HealthShare = new HealthShareClass
+
+  class HealthShareClass extends Configuration {
+    /**
+     * Включен ли сервис
+     * on - включен
+     * off - выключен (по умолчанию)
+     */
+    var Active = "off"
+
+    /**
+     * Синхронизация справочников HS
+     * on - включен
+     * off - выключен (по умолчанию)
+     */
+    var ReferenceBookActive = "off"
+
+    def isHealthShareReferenceBook = "on".equals(HealthShare.ReferenceBookActive)
+
+    var ServiceUrl = new URL("http://37.139.9.166:57772/csp/healthshare/hsregistry/korus.NsiService.cls")
+    var User = "demo"
+    var Password = "demo"
+
+    var ServiceUrlSda = new URL("http://37.139.9.166:57772/csp/healthshare/hsedgesda/isc.SDASoapService.cls")
+
+    /**
+     * Передача карточки пациента по SDA
+     * on - включен
+     * off - выключен
+     */
+    var SdaActive = "off"
+
+    def isSdaActive = "on".equals(SdaActive)
+
+  }
+
+  /**
+   *
+   *
+   * Настройки для Система-Софт (вызов отправки назначения на анализ в ЛИС)
+   *
+   *
+   */
+  var Core = new Configuration {
+    var RequestLaboratoryUrl = "http://localhost:8080/tmis-ws-laboratory/tmis-client-laboratory"
+  }
+
+
+  /**
+   *
+   *
+   * Параметры сервиса управления пользователями
+   *
+   *
+   */
+  var UsersMgr = new UsersMgrClass
+
+  class UsersMgrClass extends Configuration {
+    var CoreUserLogin: String = "core"
+    var KeepAliveDays = 1
+    var MaxConnections = 10000
+  }
+
+
+  /**
+   *
+   *
+   * Параметры модуля интегрции с подсистемой ТРФУ
+   *
+   *
+   */
+  var TrfuProp = new TrfuPropClass
+
+  class TrfuPropClass extends Configuration {
+    /**
+     * Включен ли сервис
+     * on - включен
+     * off - выключен (по умолчанию)
+     */
+    var Active = "off"
+
+    def isActive = "on".equals(Active)
+
+    /**
+     * URL сервиса
+     */
+    var ServiceUrl = ""
+  }
+
+  /**
+   *
+   *
+   * Интеграция с ЛИС Алтей
+   *
+   *
+   */
+
+  val Laboratory = new Configuration {
+    // LIS service URL  Алтей
+    // null means that URL should be acquired from the WSDL file
+    var ServiceUrl: URL = new URL("")
+    var User: String = null
+    var Password: String = null
+
+    var RuntimeWSDLUrl: URL = null
+
+
+    // WSDL url is a:
+    // - RuntimeWSDLUrl if it's defined
+    // - ServiceUrl + "?wsdl" if RuntimeWSDLUrl is not defined and ServiceUrl is defined
+    // - compile-time-defined otherwise
+    def WSDLUrl: URL = Option(RuntimeWSDLUrl).getOrElse {
+      Option(ServiceUrl).map {
+        it => new URL(it.toString + "?wsdl")
+      }.orNull
+    }
+
+    object CompileTime extends CompileTimeConfigManager.Laboratory
+
+  }
+
+  /**
+   *
+   *
+   * Интеграция с ЛИС Акрос
+   *
+   *
+   */
+  val Laboratory2 = new Configuration {
+    // LIS service URL
+    // null means that URL should be acquired from the WSDL file
+    var ServiceUrl: URL = null
+    var User: String = null
+    var Password: String = null
+
+    var RuntimeWSDLUrl: URL = null
+
+
+    // NB: Across's LIS does not conform to 'url' + '?wsdl' convention
+    // WSDL url is a:
+    // - RuntimeWSDLUrl if it's defined
+    // - compile-time-defined (local WSDL from resources) otherwise
+    def WSDLUrl: URL = Option(RuntimeWSDLUrl).getOrElse(null)
+  }
+
+  /**
+   *
+   *
+   * Интеграция с ЛИС CGM - БАК лаборатория
+   *
+   *
+   **/
+  var LaboratoryBak = new LaboratoryBakClass
+
+  class LaboratoryBakClass extends Configuration {
+    var ServiceUrl: URL = new URL("http://10.128.131.114:8090/CGM_SOAP")
+    var User: String = null
+    var Password: String = null
+
+    var RuntimeWSDLUrl: URL = null
+
+    def WSDLUrl: URL = Option(RuntimeWSDLUrl).getOrElse(null)
+  }
+
+
+  /**
+   * todo
+   */
+  val TmisAuth = new Configuration {
+    var RealmName = "TMIS-Core-Server"
+
+    var Namespace = "http://korus.ru/tmis/auth"
+    var NamespacePrefix = "ta"
+    var Token = "tmisAuthToken"
+
+    def QName = new QName(Namespace,
+      Token,
+      NamespacePrefix)
+
+    val ErrorCodes = new {
+      var LoginIncorrect = 0x01
+      var RoleNotAllowed = 0x02
+      var InvalidToken = 0x03
+      var PermissionNotAllowed = 0x04
+    }
+
+    // Время действия токена в мс
+    var AuthTokenPeriod = 60 * 60 * 1000 // 30 * 60 * 1000 = 30 мин
+
+    var AuthDataPropertyName = "ru.korus.tmis.authData"
+
+    // Sets not supported yet
+    val SupportedPermissions = Set(
+      "clientAssessmentCreate",
+      "clientAssessmentRead",
+      "clientAssessmentUpdate",
+      "clientAssessmentDelete",
+
+      "clientDiagnosticCreate",
+      "clientDiagnosticRead",
+      "clientDiagnosticUpdate",
+      "clientDiagnosticDelete",
+
+      "clientTreatmentCreate",
+      "clientTreatmentRead",
+      "clientTreatmentUpdate",
+      "clientTreatmentDelete"
+    )
+  }
+
+  val Messages = new Logging {
+    val bundle = ResourceBundle.getBundle("messages",
+      Utf8ResourceBundleControl.Singleton)
+
+    def apply(msg: String, params: Any*) = {
+      bundle.getString(msg) match {
+        case null => "<EMPTY>"
+        case result => if (params.isEmpty) result
+        else try {
+          result.format(params: _*)
+        } catch {
+          case e: Throwable => error("Could not format pattern " + msg + ". Using it as-is."); msg
+        }
+      }
+    }
+  }
+
+  val RbCAPIds = new Logging {
+    val bundle = ResourceBundle.getBundle("rbcap",
+      Utf8ResourceBundleControl.Singleton)
+
+    def apply(msg: String, params: Any*) = {
+      bundle.getString(msg) match {
+        case null => "<EMPTY>"
+        case result => if (params.isEmpty) result
+        else try {
+          result.format(params: _*)
+        } catch {
+          case e: Throwable => error("Could not format pattern " + msg + ". Using it as-is."); msg
+        }
+      }
+    }
+  }
+
+  /**
+   * todo
+   */
   val Filter = new Configuration {
     var isOn = false
   }
@@ -123,300 +434,6 @@ object ConfigManager extends Configuration {
     var RbDiseaseCharacterNotFound = 0x155
   }
 
-  /**
-   * Параметры для 1С Аптека
-   */
-  class DrugstoreClass extends Configuration {
-    /**
-     * Включен ли сервис
-     * on - включен
-     * off - выключен (по умолчанию)
-     */
-    var Active = "off"
-
-    var ServiceUrl = new URL("http://pharmacy3.fccho-moscow.ru/ws/MISExchange")
-    var User = ""
-    var Password = ""
-
-
-    var OrgName = "ФНКЦ ДГОИ"
-
-    var XmlNamespace = "urn:hl7-org:v3"
-    var DefaultXsiType = ""
-
-    val XsiNamespace = "http://www.w3.org/2001/XMLSchema-instance"
-
-    var Hl7_SoapAction = "urn:hl7-org:v3#MISExchange:ProcessHL7v3Message"
-    var Hl7_SoapOperation = "ProcessHL7v3Message"
-    var Hl7_RequestRootElement = "Message"
-    var Hl7_XsiType = "RCMR_IN000002UV02"
-
-    var GetOrgList_SoapAction = "urn:hl7-org:v3#MISExchange:GetOrganizationList"
-    var GetOrgList_SoapOperation = "GetOrganizationList"
-    var GetOrgList_RequestRootElement = "None"
-
-    var GetDepList_SoapAction = "urn:hl7-org:v3#MISExchange:GetDepartmentList"
-    var GetDepList_SoapOperation = "GetDepartmentList"
-    var GetDepList_RequestRootElement = "OrganizationRef"
-
-    var UpdateRLS = "off"
-
-    def isUpdateRLS = "on".equals(UpdateRLS)
-
-    def HttpAuthToken = DatatypeConverter.printBase64Binary(
-      (User + ":" + Password).getBytes)
-  }
-
-  var Drugstore = new DrugstoreClass
-
-
-  /**
-   * Параметры для HealthShare
-   */
-  class HealthShareClass extends Configuration {
-    /**
-     * Включен ли сервис
-     * on - включен
-     * off - выключен (по умолчанию)
-     */
-    var Active = "off"
-
-    /**
-     * Синхронизация справочников
-     * on - включен
-     * off - выключен
-     */
-    var ReferenceBookActive = "off"
-
-    def isHealthShareReferenceBook = "on".equals(HealthShare.ReferenceBookActive)
-
-    var ServiceUrl = new URL("http://188.127.249.29:57772/csp/healthshare/hsregistry/korus.NsiService.cls")
-    var User = "demo"
-    var Password = "demo"
-
-    var ServiceUrlSda = new URL("http://188.127.249.29:57772/csp/healthshare/hsedgesda/isc.SDASoapService.cls")
-
-    /**
-     * Передача карточки пациента по SDA
-     * on - включен
-     * off - выключен
-     */
-    var SdaActive = "off"
-
-    def isSdaActive = "on".equals(SdaActive)
-
-  }
-
-  var HealthShare = new HealthShareClass
-
-
-  /**
-   *
-   */
-  var Core = new Configuration {
-    var RequestLaboratoryUrl = "http://localhost:8080/tmis-ws-laboratory/tmis-client-laboratory"
-  }
-
-  /**
-   * Параметры сервиса управления пользователями
-   */
-  class UsersMgrClass extends Configuration {
-    var CoreUserLogin: String = "core"
-    var KeepAliveDays = 1
-    var MaxConnections = 10000
-  }
-
-  var UsersMgr = new UsersMgrClass
-
-  /**
-   * Параметры модуля интегрции с подсистемой ТРФУ
-   */
-  class TrfuPropClass extends Configuration {
-    var ServiceUrl = ""
-    var Enable = "off"
-
-    def isEnable = "on".equals(Enable)
-  }
-
-  var TrfuProp = new TrfuPropClass
-
-
-  /**
-   * Метод хелпер, создан из-за невозможности вызвать класс-конфиг из джава кода
-   */
-  def getDrugUser: String = Drugstore.User
-
-  /**
-   * Метод хелпер, создан из-за невозможности вызвать класс-конфиг из джава кода
-   */
-  def getDrugPassword: String = Drugstore.Password
-
-  /**
-   * Метод хелпер, создан из-за невозможности вызвать класс-конфиг из джава кода
-   */
-  def getDrugUrl: URL = Drugstore.ServiceUrl
-
-  /**
-   * Метод хелпер, создан из-за невозможности вызвать класс-конфиг из джава кода
-   */
-  def isActive: Boolean = Drugstore.Active.equals("on")
-
-
-  val Laboratory = new Configuration {
-    // LIS service URL  Алтей
-    // null means that URL should be acquired from the WSDL file
-    var ServiceUrl: URL = new URL("http://10.128.131.114:8090/CGM_SOAP")
-    var User: String = null
-    var Password: String = null
-
-    var RuntimeWSDLUrl: URL = null
-
-
-    // WSDL url is a:
-    // - RuntimeWSDLUrl if it's defined
-    // - ServiceUrl + "?wsdl" if RuntimeWSDLUrl is not defined and ServiceUrl is defined
-    // - compile-time-defined otherwise
-    def WSDLUrl: URL = Option(RuntimeWSDLUrl).getOrElse {
-      Option(ServiceUrl).map {
-        it => new URL(it.toString + "?wsdl")
-      }.orNull
-    }
-
-    object CompileTime extends CompileTimeConfigManager.Laboratory
-
-  }
-
-  val Laboratory2 = new Configuration {
-    // LIS service URL
-    // null means that URL should be acquired from the WSDL file
-    var ServiceUrl: URL = null
-    var User: String = null
-    var Password: String = null
-
-    var RuntimeWSDLUrl: URL = null
-
-
-    // NB: Across's LIS does not conform to 'url' + '?wsdl' convention
-    // WSDL url is a:
-    // - RuntimeWSDLUrl if it's defined
-    // - compile-time-defined (local WSDL from resources) otherwise
-    def WSDLUrl: URL = Option(RuntimeWSDLUrl).getOrElse(null)
-  }
-
-  /** Конфигурация для БАК лаборатории */
-  val LaboratoryBak = new Configuration {
-    var ServiceUrl: URL = new URL("http://10.128.131.114:8090/CGM_SOAP")
-    var User: String = null
-    var Password: String = null
-
-    var RuntimeWSDLUrl: URL = null
-
-    def WSDLUrl: URL = Option(RuntimeWSDLUrl).getOrElse(null)
-
-    var AssignmentTemplate: String = "<ClinicalDocument xmlns='urn:hl7-org:v3' xmlns:xsi='http://www.w3.org/2001/XMLSchema-instance' xsi:schemaLocation='urn:hl7-org:v3 CDA.xsd'>" + "<typeId extension='POCD_HD000040' root='2.16.840.1.113883.1.3'/>" + "<id root='${uuid}'/>" + "<setID root='id'/>" + "<versionNumber orderStatus='2'/>" + "<code>${diagnosticCode}, ${diagnosticName}</code>" + "<title>${diagnosticName}</title>" + "<effectiveTime value='${orderMisDate}'/>" + "<confidentialityCode code='N' codeSystem='2.16.840.1.113883.5.25' displayName='Normal'/>" + "<recordTarget>" + "<patientRole>" + "<id root='${patientMisId}'/>" + "<addr>${patientAddress}</addr>" + "<telecom nullFlavor='NI'/>" + "<patient>" + "<id root='${uuid}' extension='${patientNumber}' assigningAuthorityName='${custodian}' displayable='true'/>" + "<name> ${patientFamily} ${patientName} ${patientPatronum}" + "<family>${patientFamily}</family>" + "<given>${patientName}</given>" + "<given>${patientPatronum}</given>" + "</name>" + "<birthTime value='${patientBirthDate}'/>" + "<administrativeGenderCode code='${patientSex}'/>" + "</patient>" + "<providerOrganization>${custodian}</providerOrganization>" + "</patientRole>" + "</recordTarget>" + "<author>" + "<time value='${orderMisDate}'/>" + "<assignedAuthor>" + "<id root='${orderDoctorMisId}' extension='${orderDoctorMisId}'/>" + "<assignedAuthor>" + "<code code='DolgCode' displayName='DolgName'/>" + "</assignedAuthor>" + "<assignedPerson>" + "<prefix>${orderDepartmentMisId}</prefix>" + "<name>${orderDoctorFamily} ${orderDoctorName} ${orderDoctorPatronum}" + "<family>${orderDoctorFamily}</family>" + "<given>${orderDoctorName}</given>" + "<given>${orderDoctorPatronum}</given>" + "</name>" + "</assignedPerson>" + "</assignedAuthor>" + "</author>" + "<custodian>" + "<assignedCustodian>" + "<representedCustodianOrganization>" + "<id root='${uuid}'/>" + "<name>${сustodian}</name>" + "</representedCustodianOrganization>" + "</assignedCustodian>" + "</custodian>" + "<componentOf>" + "<encompassingEncounter>" + "<id root='${uuid}' extension='${patientNumber}'/>" + "<effectiveTime nullFlavor='NI'/>" + "</encompassingEncounter>" + "</componentOf>" + "<component>" + "<structuredBody>" + "<component>" + "<section>${orderDiagText}" + "<entry>" + "${orderDiagCode}" + "</entry>" + "<component>" + "<section>" + "<title>срочность заказа</title>" + "<text>${isUrgent}</text>" + "</section>" + "</component>" + "<component>" + "<section>" + "<title>средний срок беременности, в неделях</title>" + "<text>${orderPregnat}</text>" + "</section>" + "</component>" + "<component>" + "<section>" + "<title>Комментарий к анализу</title>" + "<text>${orderComment}</text>" + "</section>" + "</component>" + "</section>" + "</component>" + "<component>" + "<entry>" + "<observation classCode='OBS' moodCode='ENT'/>" + "<effectiveTime value='${orderProbeDate}'/>" + "</entry>" + "<specimen>" + "<specimenRole>" + "<id root='${orderBarCode}|${TakenTissueJournal}'/>" + "<specimenPlayingEntity>" + "<code code='${orderBiomaterialCode}'>" + "<translation displayName='${orderBiomaterialName}'/>" + "</code>" + "<quantity value='${orderBiomaterialVolume}'/>" + "<text value='${orderBiomaterialComment}'/>" + "</specimenPlayingEntity>" + "</specimenRole>" + "</specimen>" + "</component>" + "<component>" + "<entry>" + "<observation classCode='OBS' moodCode='RQO' negationInd='false'/>" + "<id root='${uuid}'/>" + "<id type='${FinanceCode}' extension='${typeFinanceName}'/>" + "<code code='${diagnosticCode}' displayName='${diagnosticName}'/>" + "</entry>" + "</component>" + "<component>" + "<section> indicators" + "<entry>" + "<code code='indicatorCode1' displayName='indicatorName1'/>" + "</entry>" + "<entry>" + "<code code='indicatorCoden' displayName='indicatorNamen'/>" + "</entry>" + "</section>" + "</component>" + "</structuredBody>" + "</component>" + "</ClinicalDocument>"
-  }
-
-  /**
-   * Метод хелпер, создан из-за невозможности вызвать класс-конфиг из джава кода
-   */
-  def getBakServiceUrl: URL = LaboratoryBak.ServiceUrl
-
-  /**
-   * Метод хелпер, создан из-за невозможности вызвать класс-конфиг из джава кода
-   */
-  def getBakUser: String = LaboratoryBak.User
-
-  /**
-   * Метод хелпер, создан из-за невозможности вызвать класс-конфиг из джава кода
-   */
-  def getBakPassword: String = LaboratoryBak.Password
-
-  /**
-   * Метод хелпер, создан из-за невозможности вызвать класс-конфиг из джава кода
-   */
-  def getBakRuntimeWsdl: URL = LaboratoryBak.RuntimeWSDLUrl
-
-  /**
-   * Метод хелпер, создан из-за невозможности вызвать класс-конфиг из джава кода
-   */
-  def getBakAssignmentTemplate: String = LaboratoryBak.AssignmentTemplate
-
-
-  val TmisAuth = new Configuration {
-    var RealmName = "TMIS-Core-Server"
-
-    var Namespace = "http://korus.ru/tmis/auth"
-    var NamespacePrefix = "ta"
-    var Token = "tmisAuthToken"
-
-    def QName = new QName(Namespace,
-      Token,
-      NamespacePrefix)
-
-    val ErrorCodes = new {
-      var LoginIncorrect = 0x01
-      var RoleNotAllowed = 0x02
-      var InvalidToken = 0x03
-      var PermissionNotAllowed = 0x04
-    }
-
-    // Время действия токена в мс
-    var AuthTokenPeriod = 60 * 60 * 1000 // 30 * 60 * 1000 = 30 мин
-
-    var AuthDataPropertyName = "ru.korus.tmis.authData"
-
-    // Sets not supported yet
-    val SupportedPermissions = Set(
-      "clientAssessmentCreate",
-      "clientAssessmentRead",
-      "clientAssessmentUpdate",
-      "clientAssessmentDelete",
-
-      "clientDiagnosticCreate",
-      "clientDiagnosticRead",
-      "clientDiagnosticUpdate",
-      "clientDiagnosticDelete",
-
-      "clientTreatmentCreate",
-      "clientTreatmentRead",
-      "clientTreatmentUpdate",
-      "clientTreatmentDelete"
-    )
-  }
-
-  val Messages = new Logging {
-    val bundle = ResourceBundle.getBundle("messages",
-      Utf8ResourceBundleControl.Singleton)
-
-    def apply(msg: String, params: Any*) = {
-      bundle.getString(msg) match {
-        case null => "<EMPTY>"
-        case result => if (params.isEmpty) result
-        else try {
-          result.format(params: _*)
-        } catch {
-          case e: Throwable => error("Could not format pattern " + msg + ". Using it as-is."); msg
-        }
-      }
-    }
-  }
-
-  val RbCAPIds = new Logging {
-    val bundle = ResourceBundle.getBundle("rbcap",
-      Utf8ResourceBundleControl.Singleton)
-
-    def apply(msg: String, params: Any*) = {
-      bundle.getString(msg) match {
-        case null => "<EMPTY>"
-        case result => if (params.isEmpty) result
-        else try {
-          result.format(params: _*)
-        } catch {
-          case e: Throwable => error("Could not format pattern " + msg + ". Using it as-is."); msg
-        }
-      }
-    }
-  }
 
 }
 
