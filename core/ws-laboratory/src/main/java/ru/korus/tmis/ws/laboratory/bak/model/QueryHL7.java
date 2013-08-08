@@ -25,7 +25,8 @@ public class QueryHL7 {
 
     public QueryHL7(Map<String, Object> _data) {
         this.data = _data;
-        assignmentTemplate = new TextFormat(ConfigManager.getBakAssignmentTemplate());
+        //todo из конфига убран шаблон
+//        assignmentTemplate = new TextFormat(ConfigManager.getBakAssignmentTemplate());
     }
 
     /**
