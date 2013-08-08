@@ -41,8 +41,9 @@ public class TransfusionBean {
     @Schedule(hour = "*", minute = "*")
     public void pullDB() {
         try {
+            logger.info("Pooling db...Trfu integration is {}", ConfigManager.TrfuProp().isActive());
             if (ConfigManager.TrfuProp().isActive() &&
-                ConfigManager.TrfuProp().ServiceUrl() != null && !"".equals(ConfigManager.TrfuProp().ServiceUrl().trim())) {
+                    ConfigManager.TrfuProp().ServiceUrl() != null && !"".equals(ConfigManager.TrfuProp().ServiceUrl().trim())) {
 
                 final TransfusionMedicalService_Service service = new TransfusionMedicalService_Service();
                 SecurityManager sm = System.getSecurityManager();
