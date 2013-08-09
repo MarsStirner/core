@@ -1,10 +1,15 @@
 
 package ru.korus.tmis.ws.laboratory.bak.ws.server.model.hl7.complex;
 
-import javax.xml.bind.JAXBElement;
-import javax.xml.bind.annotation.*;
 import java.util.ArrayList;
 import java.util.List;
+import javax.xml.bind.JAXBElement;
+import javax.xml.bind.annotation.XmlAccessType;
+import javax.xml.bind.annotation.XmlAccessorType;
+import javax.xml.bind.annotation.XmlAttribute;
+import javax.xml.bind.annotation.XmlElement;
+import javax.xml.bind.annotation.XmlElementRef;
+import javax.xml.bind.annotation.XmlType;
 
 
 /**
@@ -266,8 +271,8 @@ public class COCTMT040203UV01NotificationParty {
      * 
      * @return
      *     possible object is
-     *     {@link javax.xml.bind.JAXBElement }{@code <}{@link COCTMT150003UV03Organization }{@code >}
-     *
+     *     {@link JAXBElement }{@code <}{@link COCTMT150003UV03Organization }{@code >}
+     *     
      */
     public JAXBElement<COCTMT150003UV03Organization> getContactOrganization() {
         return contactOrganization;
@@ -275,11 +280,11 @@ public class COCTMT040203UV01NotificationParty {
 
     /**
      * Sets the value of the contactOrganization property.
-     *
+     * 
      * @param value
      *     allowed object is
-     *     {@link javax.xml.bind.JAXBElement }{@code <}{@link COCTMT150003UV03Organization }{@code >}
-     *
+     *     {@link JAXBElement }{@code <}{@link COCTMT150003UV03Organization }{@code >}
+     *     
      */
     public void setContactOrganization(JAXBElement<COCTMT150003UV03Organization> value) {
         this.contactOrganization = value;
@@ -287,11 +292,11 @@ public class COCTMT040203UV01NotificationParty {
 
     /**
      * Gets the value of the contactPerson property.
-     *
+     * 
      * @return
      *     possible object is
-     *     {@link javax.xml.bind.JAXBElement }{@code <}{@link COCTMT030203UV02Person }{@code >}
-     *
+     *     {@link JAXBElement }{@code <}{@link COCTMT030203UV02Person }{@code >}
+     *     
      */
     public JAXBElement<COCTMT030203UV02Person> getContactPerson() {
         return contactPerson;
@@ -299,10 +304,10 @@ public class COCTMT040203UV01NotificationParty {
 
     /**
      * Sets the value of the contactPerson property.
-     *
+     * 
      * @param value
      *     allowed object is
-     *     {@link javax.xml.bind.JAXBElement }{@code <}{@link COCTMT030203UV02Person }{@code >}
+     *     {@link JAXBElement }{@code <}{@link COCTMT030203UV02Person }{@code >}
      *     
      */
     public void setContactPerson(JAXBElement<COCTMT030203UV02Person> value) {

@@ -1,8 +1,12 @@
 
 package ru.korus.tmis.ws.laboratory.bak.ws.server.model.hl7.complex;
 
-import javax.xml.bind.annotation.*;
 import java.math.BigInteger;
+import javax.xml.bind.annotation.XmlAccessType;
+import javax.xml.bind.annotation.XmlAccessorType;
+import javax.xml.bind.annotation.XmlAttribute;
+import javax.xml.bind.annotation.XmlSeeAlso;
+import javax.xml.bind.annotation.XmlType;
 
 
 /**
@@ -49,8 +53,8 @@ public class INT
      * 
      * @return
      *     possible object is
-     *     {@link java.math.BigInteger }
-     *
+     *     {@link BigInteger }
+     *     
      */
     public BigInteger getValue() {
         return value;
@@ -58,10 +62,10 @@ public class INT
 
     /**
      * Sets the value of the value property.
-     *
+     * 
      * @param value
      *     allowed object is
-     *     {@link java.math.BigInteger }
+     *     {@link BigInteger }
      *     
      */
     public void setValue(BigInteger value) {

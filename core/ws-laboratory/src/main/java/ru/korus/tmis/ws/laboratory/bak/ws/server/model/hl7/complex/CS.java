@@ -3,7 +3,6 @@ package ru.korus.tmis.ws.laboratory.bak.ws.server.model.hl7.complex;
 
 import javax.xml.bind.annotation.XmlAccessType;
 import javax.xml.bind.annotation.XmlAccessorType;
-import javax.xml.bind.annotation.XmlSeeAlso;
 import javax.xml.bind.annotation.XmlType;
 
 
@@ -31,9 +30,6 @@ import javax.xml.bind.annotation.XmlType;
  */
 @XmlAccessorType(XmlAccessType.FIELD)
 @XmlType(name = "CS")
-@XmlSeeAlso({
-    PRPAMT201302UV02PatientStatusCode.class
-})
 public class CS
     extends CV
 {

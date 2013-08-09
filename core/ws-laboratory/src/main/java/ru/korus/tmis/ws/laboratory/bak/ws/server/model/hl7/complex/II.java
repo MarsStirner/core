@@ -1,7 +1,10 @@
 
 package ru.korus.tmis.ws.laboratory.bak.ws.server.model.hl7.complex;
 
-import javax.xml.bind.annotation.*;
+import javax.xml.bind.annotation.XmlAccessType;
+import javax.xml.bind.annotation.XmlAccessorType;
+import javax.xml.bind.annotation.XmlAttribute;
+import javax.xml.bind.annotation.XmlType;
 
 
 /**
@@ -34,21 +37,6 @@ import javax.xml.bind.annotation.*;
  */
 @XmlAccessorType(XmlAccessType.FIELD)
 @XmlType(name = "II")
-@XmlSeeAlso({
-    PRPAMT201302UV02StudentId.class,
-    PRPAMT201302UV02MemberId.class,
-    PRPAMT201302UV02AdministrativeObservationId.class,
-    PRPAMT201302UV02NonPersonLivingSubjectId.class,
-    PRPAMT201302UV02PatientId.class,
-    PRPAMT201302UV02CareGiverId.class,
-    PRPAMT201302UV02OtherIDsId.class,
-    PRPAMT201302UV02ContactPartyId.class,
-    PRPAMT201302UV02PersonId.class,
-    PRPAMT201302UV02EmployeeId.class,
-    PRPAMT201302UV02GuardianId.class,
-    PRPAMT201302UV02CitizenId.class,
-    PRPAMT201302UV02PersonalRelationshipId.class
-})
 public class II
     extends ANY
 {

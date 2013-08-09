@@ -90,6 +90,20 @@
             <!--<artifactId>glassfish-embedded-all</artifactId>-->
             <!--<version>4.0-b72</version>-->
         <!--</dependency>-->
+
+
+        <dependency>
+            <groupId>org.apache.derby</groupId>
+            <artifactId>derby</artifactId>
+            <version>10.8.2.2</version>
+            <scope>test</scope>
+        </dependency>
+        <dependency>
+            <groupId>org.apache.derby</groupId>
+            <artifactId>derbyclient</artifactId>
+            <version>10.8.2.2</version>
+            <scope>test</scope>
+        </dependency>
     </dependencies>
 
     <build>
