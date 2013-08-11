@@ -86,23 +86,23 @@
             <component>
                 <entry>
                     <observation classCode="OBS" moodCode="ENT" negationInd="false">
-                        <effectiveTime value="orderProbeDate"/>
                         <!-- дата и врем€ забора биоматериала -->
+                        <effectiveTime value="orderProbeDate"/>
                         <specimen>
                             <specimenRole>
-                                <id root="orderBarCode"/>
                                 <!-- штрих-код на контейнере c биоматериалом  -->
+                                <id root="orderBarCode"/>
                                 <specimenPlayingEntity>
                                     <code code="orderBiomaterialCode">  <!-- код  биоматериала  -->
                                         <translation displayName="orderBiomaterialName"/>
                                         <!-- название  биоматериала -->
                                     </code>
-                                    <quantity value="orderBiomaterialVolume"/>
                                     <!--  оличество/объем биоматериала -->
-                                    <unit code="UnitBiomaterialCode" codename="UnitBiomaterialName"/>
+                                    <quantity value="orderBiomaterialVolume"/>
                                     <!-- UnitBiomaterialCode -  од единицы измерени€ биоматериала и UnitBiomaterialName - название биоматериала -->
-                                    <text value="orderBiomaterialComment"/>
+                                    <unit code="UnitBiomaterialCode" codename="UnitBiomaterialName"/>
                                     <!-- orderBiomaterialComment  -->
+                                    <text value="orderBiomaterialComment"/>
                                 </specimenPlayingEntity>
                             </specimenRole>
                         </specimen>

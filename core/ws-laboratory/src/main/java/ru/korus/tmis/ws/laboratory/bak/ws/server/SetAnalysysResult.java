@@ -4,7 +4,6 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import ru.korus.tmis.core.exception.CoreException;
 import ru.korus.tmis.util.CompileTimeConfigManager;
-import ru.korus.tmis.ws.laboratory.bak.ws.server.model.ResponseHL7;
 import ru.korus.tmis.ws.laboratory.bak.ws.server.model.hl7.complex.*;
 
 import javax.jws.WebMethod;
@@ -41,13 +40,13 @@ public class SetAnalysysResult implements SetAnalysysResultWS {
     @WebMethod(operationName = "setAnalysisResults")
     @WebResult(name = SUCCESS_ACCEPT_EVENT, targetNamespace = NAMESPACE, partName = "Body")
     public MCCIIN000002UV01 setAnalysisResults(
-            @WebParam(name = "RESPONSE", targetNamespace = NAMESPACE, partName = "Body")
-            final ResponseHL7 request) throws CoreException {
+            @WebParam(name = "POLB_IN224100UV01", targetNamespace = NAMESPACE, partName = "Body")
+            final POLBIN224100UV01  request) throws CoreException {
         return createResponse();
     }
 
     private MCCIIN000002UV01 createResponse() {
-        final ru.korus.tmis.ws.laboratory.bak.ws.server.model.hl7.complex.MCCIIN000002UV01 response = new ru.korus.tmis.ws.laboratory.bak.ws.server.model.hl7.complex.MCCIIN000002UV01();
+        final MCCIIN000002UV01 response = new MCCIIN000002UV01();
 
         final II id2 = new II();
         id2.setRoot("XXXXXXXX-XXXX-XXXX-XXXX-XXXXXXXXXXXX");
