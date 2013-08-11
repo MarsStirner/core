@@ -177,6 +177,8 @@ public class BakLaboratoryBean implements BakLaboratoryService {
         eeIdInfo.setExtension("patientNumber");
         encompassingEncounter.setId(eeIdInfo);
 
+        //todo...
+
         final EeCodeInfo code = new EeCodeInfo();
         code.setCodeSystem("2.16.840.1.113883.5.4");
         code.setCodeSystemName("actCode");
