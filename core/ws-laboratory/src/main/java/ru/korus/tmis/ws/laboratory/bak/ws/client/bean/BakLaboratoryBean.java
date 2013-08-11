@@ -114,21 +114,21 @@ public class BakLaboratoryBean implements BakLaboratoryService {
         createEffectiveTimeRequest(document, requestInfo); // дата и время создания направления врачом [orderMisDate]
         createConfLevel(document, "N"); // уровень конфиденциальности документа : Normal
         createLanguageDoc(document, "ru-RU"); // язык для этого документа
-        createOrderStatus(document); // cтатус заказа [orderStatus]
+        createOrderStatus(document, action); // cтатус заказа [orderStatus]
         createRecordTarget(document, patientInfo); // демографические данные пациента
-        createDocAuthor(document, eventInfo, requestInfo); // создатель документа. Обязательный
-        createComponentOf(document);
-        createBody(document, biomaterialInfo, orderInfo, patientInfo, requestInfo, action);
+        createDocAuthor(document, action, requestInfo); // создатель документа. Обязательный
+        createComponentOf(document, patientInfo);
+        createBody(document, biomaterialInfo, orderInfo, patientInfo, requestInfo, action, eventInfo);
 
         return document;
     }
 
 
-    private static void createBody(HL7Document document, BiomaterialInfo biomaterialInfo, OrderInfo orderInfo, Patient patient, DiagnosticRequestInfo requestInfo, Action action) {
+    private static void createBody(HL7Document document, BiomaterialInfo biomaterialInfo, OrderInfo orderInfo, Patient patient, DiagnosticRequestInfo requestInfo, Action action, Event eventInfo) {
         final ComponentInfo component = new ComponentInfo();
         final StructuredBodyInfo structuredBody = new StructuredBodyInfo();
         final SubComponentInfo subComponentInfo = FACTORY_BAK.createSubComponentInfo();
-        subComponentInfo.getEntry().add(createEntryBiomaterial(biomaterialInfo));
+        subComponentInfo.getEntry().add(createEntryBiomaterial(biomaterialInfo, action));
 
         final JAXBElement<SubComponentInfo> jaxbElement
                 = new JAXBElement<SubComponentInfo>(QName.valueOf("component"), SubComponentInfo.class, subComponentInfo);
@@ -138,13 +138,13 @@ public class BakLaboratoryBean implements BakLaboratoryService {
         final SectionInfo section = new SectionInfo();
 //        section.setText("");
 
-        section.getEntry().add(createEntry("OBS", "RQO", requestInfo.orderDepartmentMisCode().get(), requestInfo.orderDepartmentName().get()));
-        section.getEntry().add(createEntry("OBS", "RQO", action.getIsUrgent() + "", ""));
-        section.getEntry().add(createEntry("OBS", "RQO", requestInfo.orderDiagCode().get(), requestInfo.orderDiagText().get()));
-        section.getEntry().add(createEntry("OBS", "RQO", orderInfo.diagnosticCode().get(), orderInfo.diagnosticName().get()));
+        section.getEntry().add(createEntry(eventInfo.getOrganisation().getUuid().getUuid(), "OBS", "RQO", requestInfo.orderDepartmentMisCode().get(), requestInfo.orderDepartmentName().get()));
+        section.getEntry().add(createEntry(action.getUuid().getUuid(), "OBS", "RQO", action.getIsUrgent() + "", ""));
+        section.getEntry().add(createEntry("XXX-XXX-XXX-XXX", "OBS", "RQO", requestInfo.orderDiagCode().get(), requestInfo.orderDiagText().get()));
+        section.getEntry().add(createEntry(eventInfo.getEventType().getFinance().getName(), "OBS", "RQO", orderInfo.diagnosticCode().get(), orderInfo.diagnosticName().get()));
 
         for (IndicatorMetodic indicatorMetodic : orderInfo.indicators()) {
-            section.getEntry().add(createEntry("OBS", "RQO", indicatorMetodic.indicatorCode().get(), indicatorMetodic.indicatorName().get()));
+            section.getEntry().add(createEntry("xxx-xxx-xxx-xxx", "OBS", "RQO", indicatorMetodic.indicatorCode().get(), indicatorMetodic.indicatorName().get()));
         }
 
 
@@ -164,17 +164,29 @@ public class BakLaboratoryBean implements BakLaboratoryService {
                 = new JAXBElement<SubComponentInfo>(QName.valueOf("component"), SubComponentInfo.class, subComponentInfo3);
         structuredBody.getContent().add(jaxbElement3);
 
+
+        final SubComponentInfo subComponentInfo4 = FACTORY_BAK.createSubComponentInfo();
+        final SectionInfo section4 = new SectionInfo();
+
+        if (patient.getSex() == 2) { // появляется если пациент женщина и беременная
+            section4.getEntry().add(createEntryComment("", action.getTakenTissue().getNote()));
+        }
+        subComponentInfo4.setSection(section4);
+        final JAXBElement<SubComponentInfo> jaxbElement4
+                = new JAXBElement<SubComponentInfo>(QName.valueOf("component"), SubComponentInfo.class, subComponentInfo4);
+        structuredBody.getContent().add(jaxbElement4);
+
         component.setStructuredBody(structuredBody);
         document.setComponent(component);
     }
 
 
-    private static void createComponentOf(HL7Document document) {
+    private static void createComponentOf(HL7Document document, Patient patientInfo) {
         final ComponentOfInfo componentOf = new ComponentOfInfo();
         final EncompassingEncounterInfo encompassingEncounter = new EncompassingEncounterInfo();
         final EeIdInfo eeIdInfo = new EeIdInfo();
         eeIdInfo.setRoot(ORDER_CUSTODIAN);
-        eeIdInfo.setExtension("patientNumber");
+        eeIdInfo.setExtension(patientInfo.getId().toString());
         encompassingEncounter.setId(eeIdInfo);
 
         //todo...
@@ -192,10 +204,10 @@ public class BakLaboratoryBean implements BakLaboratoryService {
         document.setComponentOf(componentOf);
     }
 
-    private void createDocAuthor(HL7Document document, Event eventInfo, DiagnosticRequestInfo requestInfo) throws CoreException {
+    private void createDocAuthor(HL7Document document, Action action, DiagnosticRequestInfo requestInfo) throws CoreException {
         final AuthorInfo author = new AuthorInfo();
         author.setTypeCode("AUT");
-        final Date execDate = eventInfo.getExecDate();
+        final Date execDate = action.getCreateDatetime();
         if (execDate != null) {
             final DateTimeInfo time = new DateTimeInfo();
             XMLGregorianCalendar xmlTime = null;
@@ -300,9 +312,9 @@ public class BakLaboratoryBean implements BakLaboratoryService {
         document.setRecordTarget(recordTarget);
     }
 
-    private static void createOrderStatus(HL7Document document) {
+    private static void createOrderStatus(HL7Document document, Action action) {
         final HL7Document.VersionNumber versionNumber = new HL7Document.VersionNumber();
-        versionNumber.setValue("N");
+        versionNumber.setValue(String.valueOf(action.getStatus()));
         document.setVersionNumber(versionNumber);
     }
 
@@ -351,14 +363,14 @@ public class BakLaboratoryBean implements BakLaboratoryService {
 
 
     static class EntryFactory {
-        static EntryInfo createEntry(String classCode, String moodCode, String code, String displayName) {
+        static EntryInfo createEntry(String root, String classCode, String moodCode, String code, String displayName) {
             final EntryInfo entry = new EntryInfo();
             final ObservationInfo observation = new ObservationInfo();
             observation.setClassCode(classCode);
             observation.setMoodCode(moodCode);
             observation.setNegationInd("false");
             final ObsIdInfo id = new ObsIdInfo();
-            id.setRoot(GUID);
+            id.setRoot(root);
             id.setExtension("1");
             observation.setId(id);
             final ObsCodeInfo codeInfo = new ObsCodeInfo();
@@ -388,7 +400,25 @@ public class BakLaboratoryBean implements BakLaboratoryService {
             return entry;
         }
 
-        static EntryInfo createEntryBiomaterial(BiomaterialInfo biomaterialInfo) {
+        static EntryInfo createEntryComment(String code, String comment) {
+            final EntryInfo entry = new EntryInfo();
+            final ObservationInfo observation = new ObservationInfo();
+            observation.setClassCode("OBS");
+            observation.setMoodCode("EVN");
+            final ObsCodeInfo codeInfo = new ObsCodeInfo();
+            codeInfo.setCode(code);
+            final ObsTranslationInfo translation = new ObsTranslationInfo();
+            translation.setDisplayName("комментарий к направлению");
+            codeInfo.setTranslation(translation);
+            observation.setCode(codeInfo);
+            final ObsValueInfo value = new ObsValueInfo();
+            value.setValue(comment);
+            observation.setValue(value);
+            entry.setObservation(observation);
+            return entry;
+        }
+
+        static EntryInfo createEntryBiomaterial(BiomaterialInfo biomaterialInfo, Action action) {
             final EntryInfo entry = new EntryInfo();
             final ObservationInfo observation = new ObservationInfo();
             observation.setClassCode("OBS");
@@ -421,15 +451,15 @@ public class BakLaboratoryBean implements BakLaboratoryService {
             specimenPlayingEntity.setCode(spCodeInfo);
 
             final SpQuantityInfo quantityInfo = new SpQuantityInfo();
-            quantityInfo.setValue("orderBiomaterialVolume");
+            quantityInfo.setValue(String.valueOf(action.getTakenTissue().getAmount()));
             specimenPlayingEntity.setQuantity(quantityInfo);
 
             final SpTextInfo text = new SpTextInfo();
-            text.setValue(biomaterialInfo.orderBiomaterialComment().get());
+            text.setValue(action.getTakenTissue().getUnit().getId().toString());
             specimenPlayingEntity.setText(text);
 
             final SpUnitInfo spUnitInfo = new SpUnitInfo();
-            spCodeInfo.setCode(biomaterialInfo.orderBiomaterialCode().get());
+            spCodeInfo.setCode(action.getTakenTissue().getType().getName());
             specimenPlayingEntity.setUnit(spUnitInfo);
 
             specimenRole.setSpecimenPlayingEntity(specimenPlayingEntity);

@@ -136,7 +136,7 @@
                         <observation classCode="OBS" moodCode="RQO" negationInd="false">
                             <!-- Название типа финансирования, код исследования, название исследования    -->
                             <id root="XXXX-XXXX-XXXX-XXXX-XXXX" extension="1"/>
-                            <id extension="typeFinanceName"/>
+                            <id extension="tyepeFinanceName"/>
                             <code code="diagnosticCode" displayName="diagnosticName"/>
                         </observation>
                     </entry>
