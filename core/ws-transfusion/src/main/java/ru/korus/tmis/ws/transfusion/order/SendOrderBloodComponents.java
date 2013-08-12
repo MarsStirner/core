@@ -8,12 +8,12 @@ import java.util.List;
 import javax.ejb.EJB;
 import javax.ejb.Stateless;
 import javax.persistence.EntityManager;
+import javax.persistence.PersistenceContext;
 import javax.xml.datatype.DatatypeConfigurationException;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import ru.korus.tmis.core.database.dbutil.Database;
 import ru.korus.tmis.core.entity.model.Action;
 import ru.korus.tmis.core.entity.model.Event;
 import ru.korus.tmis.core.entity.model.Patient;
@@ -21,6 +21,7 @@ import ru.korus.tmis.core.entity.model.RbBloodType;
 import ru.korus.tmis.core.entity.model.RbTrfuBloodComponentType;
 import ru.korus.tmis.core.entity.model.Staff;
 import ru.korus.tmis.core.exception.CoreException;
+import ru.korus.tmis.util.DatabaseService;
 import ru.korus.tmis.util.EntityMgr;
 import ru.korus.tmis.ws.transfusion.PropType;
 import ru.korus.tmis.ws.transfusion.SenderUtils;
@@ -87,7 +88,10 @@ public class SendOrderBloodComponents {
     public static final String UNIT_MILILITER = "мл";
 
     @EJB
-    private Database database;
+    private DatabaseService database;
+
+    @PersistenceContext(unitName = "s11r64")
+    private EntityManager em = null;
 
     private SenderUtils senderUtils = new SenderUtils();
 
@@ -149,7 +153,7 @@ public class SendOrderBloodComponents {
         res.setLastName(client.getLastName());
         res.setFirstName(client.getFirstName());
         res.setMiddleName(client.getPatrName());
-        res.setBirth(Database.toGregorianCalendar(EntityMgr.getSafe(client.getBirthDate())));
+        res.setBirth(EntityMgr.toGregorianCalendar(EntityMgr.getSafe(client.getBirthDate())));
         final RbBloodType clientBloodType = client.getBloodType();
         if (clientBloodType == null || clientBloodType == RbBloodType.getEmptyBloodType()) {
             trfuActionProp.setRequestState(action.getId(), "Ошибка: Не установлена группа крови пациента");
@@ -168,7 +172,7 @@ public class SendOrderBloodComponents {
 
     public void pullDB(final TransfusionMedicalService trfuService) {
         try {
-            trfuActionProp = new TrfuActionProp(database, ACTION_TYPE_TRANSFUSION_ORDER, Arrays.asList(propConstants));
+            trfuActionProp = new TrfuActionProp(em, database, ACTION_TYPE_TRANSFUSION_ORDER, Arrays.asList(propConstants));
         } catch (final CoreException ex) {
             logger.error("Cannot create entety manager. Error description: '{}'", ex.getMessage());
             return;
@@ -183,7 +187,7 @@ public class SendOrderBloodComponents {
             try {
                 OrderResult orderResult = new OrderResult();
                 trfuActionProp.setRequestState(action.getId(), "");
-                final PatientCredentials patientCredentials = getPatientCredentials(action, trfuActionProp, database.getEntityMgr());
+                final PatientCredentials patientCredentials = getPatientCredentials(action, trfuActionProp, em);
                 if (patientCredentials != null) {
                     final OrderInformation orderInfo = getOrderInformation(action);
                     logger.info("Processing transfusion action {}... Order Information: {}", action.getId(), orderInfo);
@@ -236,7 +240,6 @@ public class SendOrderBloodComponents {
      */
     private OrderInformation getOrderInformation(final Action action) throws CoreException,
             DatatypeConfigurationException {
-        final EntityManager em = database.getEntityMgr();
         final OrderInformation res = new OrderInformation();
         res.setNumber("");
         res.setId(action.getId());
@@ -255,8 +258,8 @@ public class SendOrderBloodComponents {
         res.setIndication(convertFromXml((String) trfuActionProp.getProp(action.getId(), PropType.ROOT_CAUSE)));
         res.setTransfusionType(convertTrfuType((String) trfuActionProp.getProp(action.getId(), PropType.TYPE)));
         final Date plannedEndDate = senderUtils.getPlannedData(action, trfuActionProp);
-        res.setPlanDate(Database.toGregorianCalendar(plannedEndDate));
-        res.setRegistrationDate(Database.toGregorianCalendar(new Date()));
+        res.setPlanDate(EntityMgr.toGregorianCalendar(plannedEndDate));
+        res.setRegistrationDate(EntityMgr.toGregorianCalendar(new Date()));
         res.setAttendingPhysicianId(createPerson.getId());
         res.setAttendingPhysicianFirstName(createPerson.getFirstName());
         res.setAttendingPhysicianLastName(createPerson.getLastName());
@@ -278,7 +281,7 @@ public class SendOrderBloodComponents {
     private void updateBloodCompTable(final TransfusionMedicalService trfuService) {
         final List<ComponentType> compTypesTrfu = trfuService.getComponentTypes();
         final List<RbTrfuBloodComponentType> compBloodTypesDb =
-                database.getEntityMgr().createQuery("SELECT c FROM RbTrfuBloodComponentType c", RbTrfuBloodComponentType.class).getResultList();
+                em.createQuery("SELECT c FROM RbTrfuBloodComponentType c", RbTrfuBloodComponentType.class).getResultList();
         logger.info("The Reference book for blood components has been received from TRFU. The count of blood component: {}", compTypesTrfu.size());
         final List<RbTrfuBloodComponentType> compBloodTypesTrfu = convertToDb(compTypesTrfu);
         for (final RbTrfuBloodComponentType compDb : compBloodTypesDb) {
@@ -290,9 +293,9 @@ public class SendOrderBloodComponents {
             }
         }
         for (final RbTrfuBloodComponentType compTrfu : compBloodTypesTrfu) {
-            database.getEntityMgr().persist(compTrfu);
+            em.persist(compTrfu);
         }
-        database.getEntityMgr().flush();
+        em.flush();
     }
 
     private List<RbTrfuBloodComponentType> convertToDb(final List<ComponentType> compBloodTypesTrfu) {

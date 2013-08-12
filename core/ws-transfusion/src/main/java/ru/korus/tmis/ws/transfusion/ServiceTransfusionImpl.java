@@ -9,12 +9,13 @@ import javax.jws.WebMethod;
 import javax.jws.WebParam;
 import javax.jws.WebService;
 import javax.persistence.EntityManager;
+import javax.persistence.PersistenceContext;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import ru.korus.tmis.core.database.dbutil.Database;
 import ru.korus.tmis.core.entity.model.OrgStructure;
+import ru.korus.tmis.util.DatabaseService;
 import ru.korus.tmis.ws.transfusion.efive.PatientCredentials;
 import ru.korus.tmis.ws.transfusion.order.OrderIssueInfo;
 import ru.korus.tmis.ws.transfusion.order.RegOrderIssueResult;
@@ -39,7 +40,10 @@ import ru.korus.tmis.ws.transfusion.procedure.RegProcedureResult;
 public class ServiceTransfusionImpl implements ServiceTransfusion {
 
     @EJB
-    private Database database;
+    private DatabaseService database;
+
+    @PersistenceContext(unitName = "s11r64")
+    private EntityManager em = null;
 
     private static final Logger logger = LoggerFactory.getLogger(ServiceTransfusionImpl.class);
 
@@ -104,7 +108,6 @@ public class ServiceTransfusionImpl implements ServiceTransfusion {
      */
     public List<DivisionInfo> getDivisionsFromDB() {
         final List<DivisionInfo> res = new LinkedList<DivisionInfo>();
-        EntityManager em = database.getEntityMgr();
         final List<OrgStructure> structs = em.createQuery("SELECT s FROM OrgStructure s WHERE s.deleted = 0", OrgStructure.class).getResultList();
         for (final OrgStructure struct : structs) {
             final DivisionInfo info = new DivisionInfo();

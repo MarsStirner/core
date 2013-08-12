@@ -1,0 +1,128 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
+
+    <modelVersion>4.0.0</modelVersion>
+    <groupId>ru.korus.tmis</groupId>
+    <artifactId>tmis-ear-transfusion</artifactId>
+    <version>${version.tmis.core}</version>
+    <packaging>ear</packaging>
+    <name>TMIS TRFU integration EAR</name>
+
+    <parent>
+        <groupId>ru.korus.tmis</groupId>
+        <artifactId>tmis-core</artifactId>
+        <version>${version.tmis.core}</version>
+        <relativePath>../</relativePath>
+    </parent>
+
+
+    <dependencies>
+
+        <dependency>
+            <groupId>ru.korus.tmis.ws.transfusion</groupId>
+            <artifactId>tmis-ws-transfusion</artifactId>
+            <version>${version.tmis.core}</version>
+            <type>war</type>
+        </dependency>
+
+        <dependency>
+            <groupId>javax.xml.bind</groupId>
+            <artifactId>jaxb-api</artifactId>
+            <version>2.2.7</version>
+            <scope>test</scope>
+        </dependency>
+
+        <dependency>
+            <groupId>org.codehaus.jackson</groupId>
+            <artifactId>jackson-jaxrs</artifactId>
+            <version>1.9.7</version>
+        </dependency>
+
+        <dependency>
+            <groupId>net.htmlparser.jericho</groupId>
+            <artifactId>jericho-html</artifactId>
+            <version>2.5</version>
+        </dependency>
+
+        <dependency>
+            <groupId>com.google.guava</groupId>
+            <artifactId>guava</artifactId>
+            <version>14.0.1</version>
+        </dependency>
+
+        <dependency>
+            <groupId>uk.com.robust-it</groupId>
+            <artifactId>cloning</artifactId>
+            <version>1.8.2</version>
+        </dependency>
+
+        <dependency>
+            <groupId>mysql</groupId>
+            <artifactId>mysql-connector-java</artifactId>
+            <version>${version.mysql.connector}</version>
+            <scope>provided</scope>
+        </dependency>
+
+        <dependency>
+            <groupId>org.hibernate</groupId>
+            <artifactId>hibernate-annotations</artifactId>
+            <version>3.5.6-Final</version>
+        </dependency>
+
+        <dependency>
+            <groupId>com.google.code.gson</groupId>
+            <artifactId>gson</artifactId>
+            <version>2.2.2</version>
+        </dependency>
+
+        <dependency>
+            <groupId>ru.korus.tmis.core</groupId>
+            <artifactId>tmis-core-common</artifactId>
+            <version>${version.tmis.core}</version>
+            <type>jar</type>
+        </dependency>
+
+    </dependencies>
+
+    <build>
+
+        <!-- Ресурсы для рабочих исходников-->
+        <resources>
+            <resource>
+                <directory>src/main/resources/</directory>
+                <targetPath>../</targetPath>
+                <filtering>true</filtering>
+                <includes>
+                    <include>logback.xml</include>
+                </includes>
+            </resource>
+            <resource>
+                <directory>scripts/</directory>
+                <targetPath>../</targetPath>
+                <filtering>true</filtering>
+                <includes>
+                    <include>**/*.sh</include>
+                    <include>**/*.bat</include>
+                </includes>
+            </resource>
+        </resources>
+
+        <plugins>
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-ear-plugin</artifactId>
+                <version>2.8</version>
+                <configuration>
+                    <!--<version>7</version>-->
+                    <defaultLibBundleDir>lib</defaultLibBundleDir>
+                    <!--<earSourceDirectory>${basedir}/src/main/resources/</earSourceDirectory>-->
+                    <!--<earSourceDirectory>${basedir}/src/main/webapps/</earSourceDirectory>-->
+                    <earSourceExcludes>logback.xml</earSourceExcludes>
+                    <!--<earSourceIncludes>logback.xml</earSourceIncludes>-->
+                </configuration>
+            </plugin>
+        </plugins>
+    </build>
+
+</project>

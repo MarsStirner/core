@@ -8,6 +8,7 @@ import javax.xml.datatype.XMLGregorianCalendar;
 import ru.korus.tmis.core.database.dbutil.Database;
 import ru.korus.tmis.core.entity.model.Event;
 import ru.korus.tmis.core.entity.model.RbRequestType;
+import ru.korus.tmis.util.EntityMgr;
 
 /**
  * Author:      Sergey A. Zagrebelny <br>
@@ -56,8 +57,8 @@ public class EventInfo {
         XMLGregorianCalendar begDate = null;
         XMLGregorianCalendar endDate = null;
         try {
-            begDate = Database.toGregorianCalendar(event.getSetDate());
-            endDate = Database.toGregorianCalendar(event.getExecDate());
+            begDate = EntityMgr.toGregorianCalendar(event.getSetDate());
+            endDate = EntityMgr.toGregorianCalendar(event.getExecDate());
         } catch (DatatypeConfigurationException e) {
         }
 

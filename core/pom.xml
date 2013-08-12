@@ -22,6 +22,7 @@
         <module>referencebook</module>
         <module>ws-finance</module>
         <module>ws-transfusion</module>
+        <module>ear-transfusion</module>
         <module>communication</module>
         <module>ws-users-mgr</module>
     </modules>

@@ -8,6 +8,7 @@ import javax.xml.datatype.XMLGregorianCalendar;
 
 import ru.korus.tmis.core.database.dbutil.Database;
 import ru.korus.tmis.core.entity.model.ClientAllergy;
+import ru.korus.tmis.util.EntityMgr;
 
 /**
  * Author: Sergey A. Zagrebelny <br>
@@ -82,7 +83,7 @@ public class AllergyInfo {
         this.orgName = orgName;
         XMLGregorianCalendar createDate = null;
         try {
-            createDate = Database.toGregorianCalendar(clientAllergy.getCreateDate());
+            createDate = EntityMgr.toGregorianCalendar(clientAllergy.getCreateDate());
         } catch (DatatypeConfigurationException e) {
         }
         this.createDate = createDate;

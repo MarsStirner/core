@@ -1,15 +1,11 @@
 package ru.korus.tmis.core.database.dbutil;
 
 import java.util.Date;
-import java.util.GregorianCalendar;
 import java.util.List;
 
 import javax.ejb.Stateless;
 import javax.persistence.EntityManager;
 import javax.persistence.PersistenceContext;
-import javax.xml.datatype.DatatypeConfigurationException;
-import javax.xml.datatype.DatatypeFactory;
-import javax.xml.datatype.XMLGregorianCalendar;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -24,6 +20,7 @@ import ru.korus.tmis.core.entity.model.RbUnit;
 import ru.korus.tmis.core.entity.model.Staff;
 import ru.korus.tmis.core.exception.CoreException;
 import ru.korus.tmis.util.ConfigManager;
+import ru.korus.tmis.util.DatabaseService;
 import ru.korus.tmis.util.EntityMgr;
 
 /**
@@ -34,25 +31,10 @@ import ru.korus.tmis.util.EntityMgr;
  */
 
 @Stateless
-public class Database {
+public class Database implements DatabaseService {
 
     @PersistenceContext(unitName = "s11r64")
     private EntityManager em = null;
-
-    /**
-     * Статус действия: Начато {Action.status}
-     */
-    public static final short ACTION_STATE_STARTED = 0;
-
-    /**
-     * Статус действия: Ожидание {Action.status}
-     */
-    public static final short ACTION_STATE_WAIT = 1;
-
-    /**
-     * Статус действия: Закончено {Action.status}
-     */
-    public static final short ACTION_STATE_FINISHED = 2;
 
     private static final Logger logger = LoggerFactory.getLogger(Database.class);
 
@@ -69,9 +51,10 @@ public class Database {
      * @throws CoreException
      *             - если свойсво не найдено или найдено более чем одно значение
      */
+    @Override
     @SuppressWarnings("unchecked")
     public <T> T getSingleProp(@SuppressWarnings("rawtypes") final Class classType,
-            final int actionId, final int propTypeId) throws CoreException {
+                               final int actionId, final int propTypeId) throws CoreException {
 
         final List<ActionProperty> prop = getActionProp(actionId, propTypeId);
 
@@ -92,9 +75,6 @@ public class Database {
         super();
     }
 
-    public EntityManager getEntityMgr() {
-        return em;
-    }
 
     /**
      * Получить из БД значение свойства действия {ActionProperty_<Type>.value} или значение по умолчанию
@@ -110,10 +90,11 @@ public class Database {
      * @return - значение свойства дейсвия типа <code>propTypeId</code> для действия <code>actionId</code>, <br>
      *         - либо значение по умолчанию <code>defaultVal</code>, если свойсво не найдено или найдено более чем одно значение
      */
+    @Override
     public <T> T getSingleProp(@SuppressWarnings("rawtypes") final Class classType,
-            final int actionId,
-            final int propTypeId,
-            final T defaultVal) {
+                               final int actionId,
+                               final int propTypeId,
+                               final T defaultVal) {
         try {
             return getSingleProp(classType, actionId, propTypeId);
         } catch (final CoreException e) {
@@ -156,11 +137,12 @@ public class Database {
      * @throws Error
      *             если невозможно создать экземпляр класса энтити таблицы classType (@see Class#newInstance())
      */
+    @Override
     public <T> int addSinglePropBasic(final T value,
-            @SuppressWarnings("rawtypes") final Class classType,
-            final int actionId,
-            final int propTypeId,
-            final boolean isUpdate) throws CoreException {
+                                      @SuppressWarnings("rawtypes") final Class classType,
+                                      final int actionId,
+                                      final int propTypeId,
+                                      final boolean isUpdate) throws CoreException {
         if (value == null) {
             throw new IllegalArgumentException("The param 'final T value' is null");
         }
@@ -209,28 +191,12 @@ public class Database {
      * @flatCode - код типа действия
      * @return - список действий с типом, соответсвующим flatCode и статусом 0 - Начато
      */
+    @Override
     public List<Action> getNewActionByFlatCode(final String flatCode) {
         final List<Action> actions =
                 em.createQuery("SELECT a FROM Action a WHERE a.status = 0 AND a.actionType.flatCode = :flatCode AND a.deleted = 0 ", Action.class)
                         .setParameter("flatCode", flatCode).getResultList();
         return actions;
-    }
-
-    /**
-     * Преобразовать Date в XMLGregorianCalendar
-     * 
-     * @param date
-     * @return XMLGregorianCalendar соответсвующий <code>date</code>
-     * @throws DatatypeConfigurationException
-     *             если не возможно создать экземпляр XMLGregorianCalendar (@see {@link DatatypeFactory#newInstance()})
-     */
-    public static XMLGregorianCalendar toGregorianCalendar(final Date date) throws DatatypeConfigurationException {
-        if (date == null) {
-            throw new DatatypeConfigurationException();
-        }
-        final GregorianCalendar planedDateCalendar = new GregorianCalendar();
-        planedDateCalendar.setTime(date);
-        return DatatypeFactory.newInstance().newXMLGregorianCalendar(planedDateCalendar);
     }
 
     /**
@@ -242,6 +208,7 @@ public class Database {
      *            - тип свойства действия {ActionPropertyType.Id}
      * @return список энтити {ActionProperty} соответвующий свойствам типа <code>propTypeId</code> для действия <code>actionId</code>
      */
+    @Override
     public List<ActionProperty> getActionProp(final int actionId, final int propTypeId) {
         final List<ActionProperty> prop =
                 em.createQuery("SELECT p FROM ActionProperty p WHERE p.action.id = :curAction_id AND p.deleted = 0 AND p.actionPropertyType.id = :propTypeId",
@@ -291,6 +258,7 @@ public class Database {
         return actionProp.getId();
     }
 
+    @Override
     public Staff getCoreUser() {
         final String coreLogin = ConfigManager.UsersMgr().CoreUserLogin();
         // System.getProperty("tmis.core.user");

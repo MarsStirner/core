@@ -17,6 +17,7 @@ import ru.korus.tmis.core.entity.model.Patient;
 import ru.korus.tmis.core.entity.model.kladr.Kladr;
 import ru.korus.tmis.core.entity.model.kladr.Street;
 import ru.korus.tmis.core.exception.CoreException;
+import ru.korus.tmis.util.EntityMgr;
 
 /**
  * Author:      Sergey A. Zagrebelny <br>
@@ -203,7 +204,7 @@ public class ClientInfo {
         Date birthDate = client.getBirthDate();
         if (birthDate != null) {
             try {
-                birth = Database.toGregorianCalendar(birthDate);
+                birth = EntityMgr.toGregorianCalendar(birthDate);
             } catch (DatatypeConfigurationException e) {
             }
         }

@@ -7,16 +7,18 @@ import java.util.List;
 import javax.ejb.EJB;
 import javax.ejb.Stateless;
 import javax.persistence.EntityManager;
+import javax.persistence.PersistenceContext;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import ru.korus.tmis.core.database.dbutil.Database;
 import ru.korus.tmis.core.entity.model.Action;
 import ru.korus.tmis.core.entity.model.RbBloodType;
 import ru.korus.tmis.core.entity.model.RbTrfuBloodComponentType;
 import ru.korus.tmis.core.entity.model.TrfuOrderIssueResult;
 import ru.korus.tmis.core.exception.CoreException;
+import ru.korus.tmis.util.DatabaseService;
+import ru.korus.tmis.util.EntityMgr;
 import ru.korus.tmis.ws.transfusion.IssueResult;
 import ru.korus.tmis.ws.transfusion.PropType;
 import ru.korus.tmis.ws.transfusion.TrfuActionProp;
@@ -35,7 +37,10 @@ import ru.korus.tmis.ws.transfusion.TrfuActionProp;
 public class RegOrderIssueResult {
 
     @EJB
-    private Database database;
+    private DatabaseService database;
+
+    @PersistenceContext(unitName = "s11r64")
+    private EntityManager em = null;
 
     private static final Logger logger = LoggerFactory.getLogger(SendOrderBloodComponents.class);
 
@@ -50,7 +55,7 @@ public class RegOrderIssueResult {
         res.setResult(false);
 
         res.setRequestId(requestId);
-        final Action action = database.getEntityMgr().find(Action.class, requestId);
+        final Action action = em.find(Action.class, requestId);
 
         if (action == null) { // требование КК не найдено в базе данных
             res.setDescription(String.format("The issue for requestId '%s' has been not found in MIS", "" + requestId));
@@ -70,7 +75,7 @@ public class RegOrderIssueResult {
 
             return res;
         }
-        action.setStatus(Database.ACTION_STATE_FINISHED);
+        action.setStatus(EntityMgr.ACTION_STATE_FINISHED);
         res.setResult(true);
         return res;
     }
@@ -94,13 +99,12 @@ public class RegOrderIssueResult {
     private boolean update(final Action action, final Date factDate, final List<OrderIssueInfo> components, final String orderComment)
             throws CoreException {
         final TrfuActionProp trfuActionProp =
-                new TrfuActionProp(database, SendOrderBloodComponents.TRANSFUSION_ACTION_FLAT_CODE, Arrays.asList(SendOrderBloodComponents.propConstants));
+                new TrfuActionProp(em, database, SendOrderBloodComponents.TRANSFUSION_ACTION_FLAT_CODE, Arrays.asList(SendOrderBloodComponents.propConstants));
         final Integer actionId = action.getId();
         if (alreadySet(actionId, trfuActionProp)) {
             return false;
         }
         final boolean update = true;
-        final EntityManager em = database.getEntityMgr();
 
         trfuActionProp.setProp(factDate, actionId, PropType.ORDER_ISSUE_RES_TIME, update);
         trfuActionProp.setProp(factDate, actionId, PropType.ORDER_ISSUE_RES_DATE, update);
@@ -143,7 +147,6 @@ public class RegOrderIssueResult {
     }
 
     private RbBloodType toRbBloodType(final Integer bloodGroupId, final Integer rhesusFactorId) {
-        final EntityManager em = database.getEntityMgr();
         final String[] bloodGroups = {
                 "0(I)Rh", "A(II)Rh", "B(III)Rh", "AB(IV)Rh" };
         final String[] rhesusFoctors = {
@@ -161,7 +164,6 @@ public class RegOrderIssueResult {
     }
 
     private RbTrfuBloodComponentType toRbBloodComponentType(final Integer componentId) {
-        final EntityManager em = database.getEntityMgr();
         final List<RbTrfuBloodComponentType> rbBloodComponentTypes =
                 em
                         .createQuery("SELECT c FROM RbTrfuBloodComponentType c WHERE c.trfuId = :trfuId", RbTrfuBloodComponentType.class)

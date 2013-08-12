@@ -23,6 +23,7 @@ import ru.korus.tmis.core.entity.model.Event;
 import ru.korus.tmis.core.entity.model.Staff;
 import ru.korus.tmis.core.entity.model.UUID;
 import ru.korus.tmis.core.exception.CoreException;
+import ru.korus.tmis.util.EntityMgr;
 
 /**
  * Author:      Sergey A. Zagrebelny <br>
@@ -92,7 +93,7 @@ public class EpicrisisInfo {
 
         XMLGregorianCalendar createDate = null;
         try {
-            createDate = Database.toGregorianCalendar(action.getEndDate());
+            createDate = EntityMgr.toGregorianCalendar(action.getEndDate());
         } catch (DatatypeConfigurationException e) {
         }
         this.createDate = createDate;

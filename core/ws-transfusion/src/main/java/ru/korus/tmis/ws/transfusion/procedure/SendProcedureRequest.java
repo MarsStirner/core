@@ -10,12 +10,12 @@ import java.util.Map;
 import javax.ejb.EJB;
 import javax.ejb.Stateless;
 import javax.persistence.EntityManager;
+import javax.persistence.PersistenceContext;
 import javax.xml.datatype.DatatypeConfigurationException;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import ru.korus.tmis.core.database.dbutil.Database;
 import ru.korus.tmis.core.entity.model.Action;
 import ru.korus.tmis.core.entity.model.ActionPropertyType;
 import ru.korus.tmis.core.entity.model.ActionType;
@@ -26,6 +26,7 @@ import ru.korus.tmis.core.entity.model.RbTrfuProcedureTypes;
 import ru.korus.tmis.core.entity.model.RbUnit;
 import ru.korus.tmis.core.entity.model.Staff;
 import ru.korus.tmis.core.exception.CoreException;
+import ru.korus.tmis.util.DatabaseService;
 import ru.korus.tmis.util.EntityMgr;
 import ru.korus.tmis.ws.transfusion.PropType;
 import ru.korus.tmis.ws.transfusion.SenderUtils;
@@ -57,7 +58,11 @@ public class SendProcedureRequest {
     private static final String AP_VALUE = "APValue";
 
     @EJB
-    private Database database;
+    private DatabaseService database;
+
+    @PersistenceContext(unitName = "s11r64")
+    private EntityManager em = null;
+
 
     private Staff coreUser;
 
@@ -151,21 +156,21 @@ public class SendProcedureRequest {
      * @throws DatatypeConfigurationException
      */
     private void sendNewProcedure(final TransfusionMedicalService trfuService) throws CoreException {
-        final List<Action> actions = getNewActions(database.getEntityMgr());
+        final List<Action> actions = getNewActions(em);
         final Map<String, TrfuActionProp> actionProp = new HashMap<String, TrfuActionProp>();
         for (final Action action : actions) {
             try {
                 final String curFlatCode = action.getActionType().getFlatCode();
                 if (actionProp.get(action.getActionType().getId()) == null) {
-                    actionProp.put(curFlatCode, new TrfuActionProp(database, curFlatCode, Arrays.asList(propTypes)));
+                    actionProp.put(curFlatCode, new TrfuActionProp(em, database, curFlatCode, Arrays.asList(propTypes)));
                 }
                 OrderResult orderResult = new OrderResult();
                 actionProp.get(curFlatCode).setRequestState(action.getId(), "");
-                final PatientCredentials patientCredentials = SendOrderBloodComponents.getPatientCredentials(action, actionProp.get(curFlatCode), database.getEntityMgr());
+                final PatientCredentials patientCredentials = SendOrderBloodComponents.getPatientCredentials(action, actionProp.get(curFlatCode), em);
                 if (patientCredentials != null) {
-                    final DonorInfo donorInfo = getDonorInfo(database.getEntityMgr(), action, actionProp.get(curFlatCode));
+                    final DonorInfo donorInfo = getDonorInfo(em, action, actionProp.get(curFlatCode));
                     final ru.korus.tmis.ws.transfusion.efive.ProcedureInfo procedureInfo =
-                            getProcedureInfo(database.getEntityMgr(), action, actionProp.get(curFlatCode));
+                            getProcedureInfo(em, action, actionProp.get(curFlatCode));
                     try {
                         orderResult = trfuService.orderMedicalProcedure(donorInfo, patientCredentials, procedureInfo);
                     } catch (final Exception ex) {
@@ -216,9 +221,9 @@ public class SendProcedureRequest {
         final Event event = EntityMgr.getSafe(action.getEvent());
         res.setIbNumber(senderUtils.getIbNumbre(action, event, trfuActionProp));
         final Date plannedEndDate = senderUtils.getPlannedData(action, trfuActionProp);
-        res.setPlanDate(Database.toGregorianCalendar(plannedEndDate));
+        res.setPlanDate(EntityMgr.toGregorianCalendar(plannedEndDate));
         final Date begDate = action.getBegDate();
-        res.setRegistrationDate(Database.toGregorianCalendar(begDate));
+        res.setRegistrationDate(EntityMgr.toGregorianCalendar(begDate));
         res.setAttendingPhysicianId(createPerson.getId());
         res.setAttendingPhysicianFirstName(createPerson.getFirstName());
         res.setAttendingPhysicianLastName(createPerson.getLastName());
@@ -271,7 +276,6 @@ public class SendProcedureRequest {
      */
     private void updateProcedureType(final TransfusionMedicalService trfuService) {
         final List<ProcedureType> procedureTypes = trfuService.getProcedureTypes();
-        final EntityManager em = database.getEntityMgr();
         logger.info("The Reference book for TRFU procedure types has been received from TRFU. The count of procedure: {}", procedureTypes.size());
         final List<RbTrfuProcedureTypes> procedureTypesDb = em.createQuery("SELECT p FROM RbTrfuProcedureTypes p", RbTrfuProcedureTypes.class).getResultList();
         final List<RbTrfuProcedureTypes> procedureTypesTrfu = convertToDb(procedureTypes);
@@ -296,7 +300,6 @@ public class SendProcedureRequest {
      * @param trfuService
      */
     private void updateLaboratoryMeasure(final TransfusionMedicalService trfuService) {
-        final EntityManager em = database.getEntityMgr();
         final List<LaboratoryMeasureType> measureTypes = trfuService.getLaboratoryMeasureTypes();
         logger.info("The Reference book for TRFU laboratory measure has been received from TRFU. The count of procedure: {}", measureTypes.size());
         final List<RbTrfuLaboratoryMeasureTypes> measureTypesDb =
@@ -331,7 +334,6 @@ public class SendProcedureRequest {
      * @param procedure
      */
     private void createActionType(final RbTrfuProcedureTypes procedure) {
-        final EntityManager em = database.getEntityMgr();
         final String flatCode = getFlatCode(procedure);
         final ActionType actionType = getActionTypeByFlatCode(em, flatCode);
         if (actionType == null) {
@@ -407,7 +409,7 @@ public class SendProcedureRequest {
             apt.setCode(curProp.getCode());
             apt.setName(curProp.getName());
             apt.setDescr(curProp.getName());
-            apt.setUnit(getRbUnit(database.getEntityMgr(), curProp.getUnitCode()));
+            apt.setUnit(getRbUnit(em, curProp.getUnitCode()));
             final String canonicalName = curProp.getValueClass().getCanonicalName();
             final String typeName =
                     curProp.getTypeName() == null ? canonicalName.substring(canonicalName.indexOf(AP_VALUE) + AP_VALUE.length()) : curProp.getTypeName();
@@ -420,7 +422,7 @@ public class SendProcedureRequest {
             apt.setDefaultValue("");
             apt.setReadOnly(curProp.isReadOnly());
             apt.setMandatory(curProp.isMandatory());
-            database.getEntityMgr().persist(apt);
+            em.persist(apt);
         }
     }
 

@@ -7,9 +7,10 @@ import java.util.Vector;
 
 import javax.persistence.EntityManager;
 
-import ru.korus.tmis.core.database.dbutil.Database;
 import ru.korus.tmis.core.entity.model.*;
 import ru.korus.tmis.core.exception.CoreException;
+import ru.korus.tmis.util.DatabaseService;
+import ru.korus.tmis.util.EntityMgr;
 
 /**
  * Author: Sergey A. Zagrebelny <br>
@@ -23,7 +24,8 @@ import ru.korus.tmis.core.exception.CoreException;
  */
 public class TrfuActionProp {
 
-    private final Database database;
+    private final DatabaseService database;
+    private final EntityManager em;
 
     /**
      * Таблица свойств действия. Key - тип свойства действия, Value - ActionPropertyType.Id
@@ -42,10 +44,11 @@ public class TrfuActionProp {
      * @throws CoreException
      *             - при ошибке во время работы с БД
      */
-    public TrfuActionProp(final Database databaseBean, final String actionTypeFlatCode, final List<PropType> propConstants) throws CoreException {
+    public TrfuActionProp(final EntityManager em,  final DatabaseService databaseBean, final String actionTypeFlatCode, final List<PropType> propConstants) throws CoreException {
         database = databaseBean;
+        this.em = em;
         final List<ActionType> actionType =
-                database.getEntityMgr().createQuery("SELECT at FROM ActionType at WHERE at.flatCode = :flatCode AND at.deleted = 0", ActionType.class)
+                em.createQuery("SELECT at FROM ActionType at WHERE at.flatCode = :flatCode AND at.deleted = 0", ActionType.class)
                         .setParameter("flatCode", actionTypeFlatCode).getResultList();
         if (actionType.size() != 1) {
             throw new CoreException(String.format(
@@ -53,8 +56,7 @@ public class TrfuActionProp {
                     actionTypeFlatCode, actionType.size()));
         }
 
-        final List<ActionPropertyType> actionPropTypes = database.getEntityMgr()
-                .createQuery("SELECT atp FROM ActionPropertyType atp WHERE atp.actionType.id = :typeId AND atp.deleted = 0", ActionPropertyType.class)
+        final List<ActionPropertyType> actionPropTypes = em.createQuery("SELECT atp FROM ActionPropertyType atp WHERE atp.actionType.id = :typeId AND atp.deleted = 0", ActionPropertyType.class)
                 .setParameter("typeId", actionType.get(0).getId()).getResultList();
 
         final StringBuffer msgError = new StringBuffer();
@@ -111,7 +113,7 @@ public class TrfuActionProp {
 
     public void orderResult2DB(final Action action, final Integer requestId) throws CoreException {
         setRequestState(action.getId(), "Получен идентификатор в системе ТРФУ: " + requestId);
-        action.setStatus(Database.ACTION_STATE_WAIT);
+        action.setStatus(EntityMgr.ACTION_STATE_WAIT);
     }
 
     public void setErrorState(final Action action, final String errMsg) throws CoreException {
@@ -132,7 +134,7 @@ public class TrfuActionProp {
         return movings;
     }
     public Integer getOrgStructure(Action action) {
-        List<Action> movings = getMovings(action, database.getEntityMgr());
+        List<Action> movings = getMovings(action, em);
         for (Action moving : movings) {
             Integer res = getOrgStructureForAction(moving);
             if (res != null) {
@@ -144,7 +146,7 @@ public class TrfuActionProp {
 
     private Integer getOrgStructureForAction(Action moving) {
         final String propTypeCode  = "hospOrgStruct";
-        final EntityManager em = database.getEntityMgr();
+
         final List<ActionPropertyType> actionPropTypes = em
                 .createQuery("SELECT atp FROM ActionPropertyType atp WHERE atp.actionType.id = :typeId AND atp.deleted = 0 AND atp.code = :propTypeCode", ActionPropertyType.class)
                 .setParameter("typeId", moving.getActionType().getId())

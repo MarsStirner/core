@@ -6,6 +6,8 @@ import java.util.NoSuchElementException;
 
 import javax.ejb.EJB;
 import javax.ejb.Stateless;
+import javax.persistence.EntityManager;
+import javax.persistence.PersistenceContext;
 
 import ru.korus.tmis.core.database.dbutil.Database;
 import ru.korus.tmis.core.entity.model.PersonProfile;
@@ -34,6 +36,10 @@ public class RolesMgr {
     @EJB
     private Database database = null;
 
+    @PersistenceContext(unitName = "s11r64")
+    private EntityManager em = null;
+
+
     static private class Roles {
         private List<JsonRole> roles;
     }
@@ -59,8 +65,8 @@ public class RolesMgr {
         Role role = new Role();
         role.setCode(jsonRole.getCode());
         role.setName(jsonRole.getTitle());
-        database.getEntityMgr().persist(role);
-        database.getEntityMgr().flush();
+        em.persist(role);
+        em.flush();
         return UsersMgr.ok();
     }
 
@@ -69,7 +75,7 @@ public class RolesMgr {
      * @return
      */
     private List<Role> getRoleByName(final String name) {
-        return database.getEntityMgr().createQuery("SELECT r FROM Role r WHERE r.name = :name", Role.class).
+        return em.createQuery("SELECT r FROM Role r WHERE r.name = :name", Role.class).
                 setParameter("name", name).getResultList();
     }
 
@@ -77,7 +83,7 @@ public class RolesMgr {
      * @return
      */
     public String getAll() {
-        List<Role> roles = database.getEntityMgr().createQuery("SELECT r FROM Role r", Role.class).getResultList();
+        List<Role> roles = em.createQuery("SELECT r FROM Role r", Role.class).getResultList();
         return new Gson().toJson(getRolesInfo(roles));
     }
 
@@ -102,7 +108,7 @@ public class RolesMgr {
      * @return
      */
     private List<Role> getRoleByCode(final String code) {
-        return database.getEntityMgr().createQuery("SELECT r FROM Role r WHERE r.code = :code", Role.class).
+        return em.createQuery("SELECT r FROM Role r WHERE r.code = :code", Role.class).
                 setParameter("code", code).getResultList();
     }
 
@@ -156,7 +162,7 @@ public class RolesMgr {
         if (jsonRole.getTitle() != null) {
             role.setName(jsonRole.getTitle());
         }
-        database.getEntityMgr().flush();
+        em.flush();
         return UsersMgr.ok();
     }
 
@@ -183,24 +189,24 @@ public class RolesMgr {
         }
 
         final List<PersonProfile> personProfiles =
-                database.getEntityMgr().createQuery("SELECT pp FROM PersonProfile pp WHERE pp.role.code = :code", PersonProfile.class).
+                em.createQuery("SELECT pp FROM PersonProfile pp WHERE pp.role.code = :code", PersonProfile.class).
                         setParameter("code", code).getResultList();
 
         removeProfiles(guest, personProfiles);
 
-        database.getEntityMgr().flush();
+        em.flush();
 
-        final List<Staff> staffs = database.getEntityMgr().createQuery("SELECT s FROM Staff s WHERE s.userProfileId.code = :code", Staff.class).
+        final List<Staff> staffs = em.createQuery("SELECT s FROM Staff s WHERE s.userProfileId.code = :code", Staff.class).
                 setParameter("code", code).getResultList();
 
         for (Staff staff : staffs) {
-            staff.setUserProfileId(database.getEntityMgr().createQuery("SELECT pp FROM PersonProfile pp WHERE pp.staff.id = :personId", PersonProfile.class)
+            staff.setUserProfileId(em.createQuery("SELECT pp FROM PersonProfile pp WHERE pp.staff.id = :personId", PersonProfile.class)
                     .setParameter("personId", staff.getId())
                     .getResultList().iterator().next().getRole());
         }
 
-        database.getEntityMgr().remove(role);
-        database.getEntityMgr().flush();
+        em.remove(role);
+        em.flush();
         return UsersMgr.ok();
     }
 
@@ -211,11 +217,11 @@ public class RolesMgr {
     protected void removeProfiles(final Role guest, final List<PersonProfile> personProfiles) {
         for (PersonProfile personProfile : personProfiles) {
             final Staff staff1 = personProfile.getStaff();
-            if (database.getEntityMgr().createQuery("SELECT pp FROM PersonProfile pp WHERE pp.staff.id = :personId", PersonProfile.class).
+            if (em.createQuery("SELECT pp FROM PersonProfile pp WHERE pp.staff.id = :personId", PersonProfile.class).
                     setParameter("personId", staff1.getId()).getResultList().size() <= 1) {
                 addPersonProfile(guest, staff1);
             }
-            database.getEntityMgr().remove(personProfile);
+            em.remove(personProfile);
         }
     }
 
@@ -225,7 +231,7 @@ public class RolesMgr {
      */
     protected void addGuest(final Role guest, PersonProfile personProfile) {
         final Staff staff = personProfile.getStaff();
-        if (database.getEntityMgr().createQuery("SELECT pp FROM PersonProfile pp WHERE pp.staff.id = :personId", PersonProfile.class).
+        if (em.createQuery("SELECT pp FROM PersonProfile pp WHERE pp.staff.id = :personId", PersonProfile.class).
                 setParameter("personId", staff.getId()).getResultList().size() <= 1) {
             addPersonProfile(guest, staff);
         }
@@ -239,7 +245,7 @@ public class RolesMgr {
         PersonProfile guestForPerson = new PersonProfile();
         guestForPerson.setStaff(staff);
         guestForPerson.setRole(role);
-        database.getEntityMgr().persist(guestForPerson);
+        em.persist(guestForPerson);
     }
 
     /**
@@ -252,7 +258,7 @@ public class RolesMgr {
             return errorRoleNotFound(code);
         }
         final List<PersonProfile> personProfiles =
-                database.getEntityMgr().createQuery("SELECT pp FROM PersonProfile pp WHERE pp.role.code = :code", PersonProfile.class).
+                em.createQuery("SELECT pp FROM PersonProfile pp WHERE pp.role.code = :code", PersonProfile.class).
                         setParameter("code", code).getResultList();
         UsersByRole res = new UsersByRole();
         res.users = new LinkedList<JsonPerson>();
@@ -277,7 +283,7 @@ public class RolesMgr {
         final Role role = roles.iterator().next();
 
         final String personUuid = jsonRoleMgr.getPersonUuid();
-        final List<Staff> staffs = database.getEntityMgr().createQuery("SELECT s FROM Staff s WHERE s.uuid.uuid = :uuid AND s.deleted = 0", Staff.class).
+        final List<Staff> staffs = em.createQuery("SELECT s FROM Staff s WHERE s.uuid.uuid = :uuid AND s.deleted = 0", Staff.class).
                 setParameter("uuid", personUuid).getResultList();
         if (staffs.isEmpty()) {
             return UsersMgr.errorUserNotFound();
@@ -296,7 +302,7 @@ public class RolesMgr {
     public String getRolesByUser(String token) {
 
         final List<PersonProfile> personProfiles =
-                database.getEntityMgr()
+                em
                         .createQuery("SELECT pp FROM PersonProfile pp WHERE pp.staff.uuid.uuid = :uuid AND pp.staff.deleted = 0", PersonProfile.class).
                         setParameter("uuid", token).getResultList();
         if (personProfiles.isEmpty()) {
@@ -324,7 +330,7 @@ public class RolesMgr {
             return UsersMgr.error("The role 'guest' is not set");
         }
         final List<PersonProfile> personProfiles =
-                database.getEntityMgr()
+                em
                         .createQuery("SELECT pp FROM PersonProfile pp WHERE pp.staff.uuid.uuid = :uuid AND pp.staff.deleted = 0 AND pp.role.code = :code",
                                 PersonProfile.class).
                         setParameter("uuid", token).setParameter("code", code).getResultList();

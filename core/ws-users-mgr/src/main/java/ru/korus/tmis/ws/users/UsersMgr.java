@@ -12,6 +12,8 @@ import java.util.Set;
 
 import javax.ejb.EJB;
 import javax.ejb.Stateless;
+import javax.persistence.EntityManager;
+import javax.persistence.PersistenceContext;
 import javax.xml.bind.annotation.adapters.HexBinaryAdapter;
 
 import org.joda.time.DateTime;
@@ -49,6 +51,10 @@ public class UsersMgr {
     @EJB
     private Database database = null;
 
+    @PersistenceContext(unitName = "s11r64")
+    private EntityManager em = null;
+
+
     private static Map<String, Integer> connections = new HashMap<String, Integer>();
     private static LinkedList<Pair> connectionsTime = new LinkedList<Pair>();
 
@@ -66,14 +72,14 @@ public class UsersMgr {
         String res = null;
 
         List<Staff> users =
-                database.getEntityMgr().createQuery("SELECT s FROM Staff s WHERE s.login  = :login", Staff.class).setParameter("login", login).getResultList();
+                em.createQuery("SELECT s FROM Staff s WHERE s.login  = :login", Staff.class).setParameter("login", login).getResultList();
 
         if (users == null || users.isEmpty()) {
             return errorUserNotFound();
         }
 
         users =
-                database.getEntityMgr()
+                em
                         .createQuery("SELECT s FROM Staff s WHERE s.login  = :login AND s.password = :password AND s.deleted = 0", Staff.class)
                         .setParameter("login", login).setParameter("password", getMD5(password))
                         .getResultList();
@@ -97,7 +103,7 @@ public class UsersMgr {
     }
 
     public List<JsonPerson> getAll() {
-        List<Staff> users = database.getEntityMgr().createQuery("SELECT s FROM Staff s WHERE s.deleted = 0", Staff.class)
+        List<Staff> users = em.createQuery("SELECT s FROM Staff s WHERE s.deleted = 0", Staff.class)
                 .getResultList();
         List<JsonPerson> res = new LinkedList<JsonPerson>();
         for (Staff staff : users) {
@@ -118,7 +124,7 @@ public class UsersMgr {
     public Staff getStaffByUUID(String token) {
         Integer id = connections.get(token);
         if (id != null) {
-            return database.getEntityMgr().find(Staff.class, id);
+            return em.find(Staff.class, id);
         }
         return null;
     }
@@ -157,7 +163,7 @@ public class UsersMgr {
         newStaff.setCode("code");
         newStaff.setFederalCode("");
         newStaff.setRegionalCode("");
-        newStaff.setSpeciality(database.getEntityMgr().find(Speciality.class, 1));
+        newStaff.setSpeciality(em.find(Speciality.class, 1));
         newStaff.setOffice("");
         newStaff.setOffice2("");
         newStaff.setAmbPlan((short) 0);
@@ -183,8 +189,8 @@ public class UsersMgr {
         newStaff.setTimelineAccessibleDays(0);
         newStaff.setTypeTimeLinePerson(0);
         newStaff.setUuid(createNewUUID());
-        database.getEntityMgr().persist(newStaff);
-        database.getEntityMgr().flush();
+        em.persist(newStaff);
+        em.flush();
         res = String.format("{\"OK\": \"True\", \"uuid\": \"%s\"}", newStaff.getUuid().getUuid());
         return res;
     }
@@ -198,7 +204,7 @@ public class UsersMgr {
         post = new RbPost();
         post.setName(jsonNewPerson.getPosition());
         post.setCode(jsonNewPerson.getCode());
-        database.getEntityMgr().persist(post);
+        em.persist(post);
         return post;
     }
 
@@ -207,7 +213,7 @@ public class UsersMgr {
      * @return
      */
     public boolean isLoginUsed(final String login) {
-        final List<Staff> users = database.getEntityMgr().createQuery("SELECT s FROM Staff s WHERE s.login = :login", Staff.class)
+        final List<Staff> users = em.createQuery("SELECT s FROM Staff s WHERE s.login = :login", Staff.class)
                 .setParameter("login", login).getResultList();
         return users != null && !users.isEmpty();
     }
@@ -264,28 +270,28 @@ public class UsersMgr {
         if (jsonNewPerson.getLogin() != null && !isLoginUsed(jsonNewPerson.getLogin())) {
             newStaff.setLogin(jsonNewPerson.getLogin());
         }
-        database.getEntityMgr().flush();
+        em.flush();
 
         return UsersMgr.ok();
     }
 
     public void deleteStaff(Staff staff, String token) {
         staff.setDeleted(true);
-        database.getEntityMgr().flush();
+        em.flush();
         connections.remove(token);
     }
 
     private UUID createNewUUID() {
         UUID res = new UUID();
         res.setUuid(java.util.UUID.randomUUID().toString());
-        database.getEntityMgr().persist(res);
+        em.persist(res);
         return res;
     }
 
     private Set<Role> getRoles(List<String> roleCodes) {
         Set<Role> res = new HashSet<Role>();
         for (String code : roleCodes) {
-            final List<Role> roles = database.getEntityMgr().createQuery("SELECT r FROM Role r WHERE r.code = :code", Role.class)
+            final List<Role> roles = em.createQuery("SELECT r FROM Role r WHERE r.code = :code", Role.class)
                     .setParameter("code", code).getResultList();
             if (roles != null && !roles.isEmpty()) {
                 res.add(roles.get(0));
@@ -306,7 +312,7 @@ public class UsersMgr {
 
     private OrgStructure getOrgStrucureByUUID(String subdivisionUUID) {
         final List<OrgStructure> orgStructures =
-                database.getEntityMgr().createQuery("SELECT s FROM OrgStructure s WHERE s.uuid.uuid = :sUUID", OrgStructure.class)
+                em.createQuery("SELECT s FROM OrgStructure s WHERE s.uuid.uuid = :sUUID", OrgStructure.class)
                         .setParameter("sUUID", subdivisionUUID).getResultList();
         if (orgStructures != null && !orgStructures.isEmpty()) {
             return orgStructures.get(0);
@@ -315,7 +321,7 @@ public class UsersMgr {
     }
 
     private RbPost getPost(final String postName) {
-        final List<RbPost> posts = database.getEntityMgr().createQuery("SELECT p FROM RbPost p WHERE p.name = :postName", RbPost.class)
+        final List<RbPost> posts = em.createQuery("SELECT p FROM RbPost p WHERE p.name = :postName", RbPost.class)
                 .setParameter("postName", postName).getResultList();
         if (posts != null && !posts.isEmpty()) {
             return posts.get(0);

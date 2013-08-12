@@ -6,16 +6,17 @@ import java.util.List;
 import javax.ejb.EJB;
 import javax.ejb.Stateless;
 import javax.persistence.EntityManager;
+import javax.persistence.PersistenceContext;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import ru.korus.tmis.core.database.dbutil.Database;
 import ru.korus.tmis.core.entity.model.Action;
 import ru.korus.tmis.core.entity.model.RbTrfuLaboratoryMeasureTypes;
 import ru.korus.tmis.core.entity.model.TrfuFinalVolume;
 import ru.korus.tmis.core.entity.model.TrfuLaboratoryMeasure;
 import ru.korus.tmis.core.exception.CoreException;
+import ru.korus.tmis.util.DatabaseService;
 import ru.korus.tmis.ws.transfusion.IssueResult;
 import ru.korus.tmis.ws.transfusion.PropType;
 import ru.korus.tmis.ws.transfusion.TrfuActionProp;
@@ -37,7 +38,10 @@ import ru.korus.tmis.ws.transfusion.order.SendOrderBloodComponents;
 public class RegProcedureResult {
 
     @EJB
-    private Database database;
+    private DatabaseService database;
+
+    @PersistenceContext(unitName = "s11r64")
+    private EntityManager em = null;
 
     private static final Logger logger = LoggerFactory.getLogger(SendOrderBloodComponents.class);
 
@@ -47,7 +51,7 @@ public class RegProcedureResult {
         res.setResult(false);
         final Integer requestId = procedureInfo.getId();
         res.setRequestId(requestId);
-        final Action action = database.getEntityMgr().find(Action.class, requestId);
+        final Action action = em.find(Action.class, requestId);
 
         if (action == null) { // требование КК не найдено в базе данных
             res.setDescription(String.format("The TRFU procedure for ID '%s' has been not found in MIS", "" + requestId));
@@ -89,9 +93,9 @@ public class RegProcedureResult {
             trfuFinalValume.setCollectVolume(finalVolume.getCollectVolume());
             trfuFinalValume.setAnticoagulantInCollect(finalVolume.getAnticoagulantInCollect());
             trfuFinalValume.setAnticoagulantInPlasma(finalVolume.getAnticoagulantInPlasma());
-            database.getEntityMgr().persist(trfuFinalValume);
+            em.persist(trfuFinalValume);
         }
-        database.getEntityMgr().flush();
+        em.flush();
     }
 
     /**
@@ -99,7 +103,7 @@ public class RegProcedureResult {
      * @param measures
      */
     private void updateMeasures(final Action action, final List<LaboratoryMeasure> measures) {
-        EntityManager em = database.getEntityMgr();
+
         for (final LaboratoryMeasure curMeasure : measures) {
             final TrfuLaboratoryMeasure trfuLaboratoryMeasure = new TrfuLaboratoryMeasure();
             trfuLaboratoryMeasure.setAction(action);
@@ -125,7 +129,7 @@ public class RegProcedureResult {
 
     private boolean updateProp(final Action action, final ProcedureInfo procedureInfo, final EritrocyteMass eritrocyteMass) throws CoreException {
         final TrfuActionProp trfuActionProp =
-                new TrfuActionProp(database, action.getActionType().getFlatCode(), Arrays.asList(SendProcedureRequest.propTypes));
+                new TrfuActionProp(em, database, action.getActionType().getFlatCode(), Arrays.asList(SendProcedureRequest.propTypes));
         final Integer actionId = action.getId();
         final boolean update = true;
 

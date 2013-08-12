@@ -10,6 +10,7 @@ import ru.korus.tmis.core.entity.model.Mkb;
 import ru.korus.tmis.core.entity.model.RbDiagnosisType;
 import ru.korus.tmis.core.entity.model.Staff;
 import ru.korus.tmis.core.entity.model.UUID;
+import ru.korus.tmis.util.EntityMgr;
 
 /**
  * Author:      Sergey A. Zagrebelny <br>
@@ -60,7 +61,7 @@ public class DiagnosisInfo {
         this.personCreatedName = person != null ? person.getFullName() : null;
         XMLGregorianCalendar createDate = null;
         try {
-            createDate = Database.toGregorianCalendar(diagnosis.getCreateDatetime());
+            createDate = EntityMgr.toGregorianCalendar(diagnosis.getCreateDatetime());
         } catch (DatatypeConfigurationException e) {
         }
         this.createDate = createDate;
