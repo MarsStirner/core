@@ -161,7 +161,7 @@ public class PharmacyBean implements PharmacyBeanLocal {
             final Request request = createRequest(action);
 
             logger.info("prepare message... \n\n {}", HL7PacketBuilder.marshallMessage(request, "misexchange"));
-            final MCCIIN000002UV01 result = new MISExchange().getMISExchangeSoap().processHL7V3Message(request);
+            final MCCIIN000002UV012 result = new MISExchange().getMISExchangeSoap().processHL7V3Message(request);
             if (result != null) {
                 logger.info("Connection successful. Result: {} \n\n {}",
                         result, HL7PacketBuilder.marshallMessage(result, "org.hl7.v3"));
