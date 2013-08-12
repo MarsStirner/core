@@ -357,7 +357,9 @@ class PatientsListEntry {
      this.number = event.getExternalId
      this.name = new PersonNameContainer(patient)
      this.birthDate = patient.getBirthDate
-     this.doctor =  new DoctorSpecsContainer(event.getExecutor)
+     if (event.getExecutor != null) {
+       this.doctor =  new DoctorSpecsContainer(event.getExecutor)
+     }
      this.createDateTime = event.getCreateDatetime
      this.checkOut = ""                               //TODO: "Выписка через" - расчетное поле, алгоритм не утвержден
      if(bed!=null)
@@ -378,17 +380,19 @@ class PatientsListEntry {
            toDep: OrgStructure) {
     this(event, bed, condition, from, toDep)
     val eType = event.getEventType
-    if (eType.getFinance!=null)
-      this.finance = new IdNameContainer(eType.getFinance.getId.intValue(), eType.getFinance.getName)
-    if (eType.getRequestType!=null){
-      val msecInDay = 1000 * 60 * 60 * 24
-      val nowDate = (new Date()).getTime
-      val diffOfDays = if(begDate!=null)(nowDate - begDate.getTime)/msecInDay else 0
+    if(eType!=null) {
+      if (eType.getFinance!=null)
+        this.finance = new IdNameContainer(eType.getFinance.getId.intValue(), eType.getFinance.getName)
+      if (eType.getRequestType!=null){
+        val msecInDay = 1000 * 60 * 60 * 24
+        val nowDate = (new Date()).getTime
+        val diffOfDays = if(begDate!=null)(nowDate - begDate.getTime)/msecInDay else 0
 
-      this.totalDays = eType.getRequestType.getId.intValue() match {
-        case 1 => "Проведено %d койко-дней".format(diffOfDays+1)
-        case 2 => "Проведено %d койко-дней".format(diffOfDays)
-        case _ => ""
+        this.totalDays = eType.getRequestType.getId.intValue() match {
+          case 1 => "Проведено %d койко-дней".format(diffOfDays+1)
+          case 2 => "Проведено %d койко-дней".format(diffOfDays)
+          case _ => ""
+        }
       }
     }
   }

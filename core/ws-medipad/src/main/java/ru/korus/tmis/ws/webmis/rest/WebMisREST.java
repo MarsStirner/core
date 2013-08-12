@@ -98,7 +98,7 @@ public interface WebMisREST extends Serializable {
 
     JSONCommonData getInfoAboutDiagnosticsForPatientByEvent(int actionId) throws CoreException;
 
-    AllPersonsListData getFreePersons(ListDataRequest requestData) throws CoreException;
+    FreePersonsListData getFreePersons(ListDataRequest requestData) throws CoreException;
 
     /**
      * Получение справочника типов действий плоской структурой либо структуры CommonData для нужного ActionType
@@ -117,7 +117,7 @@ public interface WebMisREST extends Serializable {
      */
     String getListOfActionTypes(ListDataRequest request) throws CoreException;
 
-    JSONCommonData insertConsultation(ConsultationRequestData request) throws CoreException;
+    JSONCommonData insertConsultation(ConsultationRequestData request, AuthData auth) throws CoreException;
 
     JSONCommonData insertLaboratoryStudies(int eventId, CommonData data, AuthData auth) throws CoreException;
 
@@ -333,4 +333,6 @@ public interface WebMisREST extends Serializable {
      * @throws CoreException
      */
     Boolean setExecPersonForAppeal(int eventId, int personId, AuthData authData) throws CoreException;
+
+    LayoutAttributeListData getLayoutAttributes() throws CoreException;
 }

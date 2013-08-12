@@ -79,10 +79,29 @@
             <scope>provided</scope>
         </dependency>
 
+        <!--<dependency>-->
+            <!--<groupId>javax.enterprise.concurrent</groupId>-->
+            <!--<artifactId>javax.enterprise.concurrent-api</artifactId>-->
+            <!--<version>1.0-SNAPSHOT</version>-->
+        <!--</dependency>-->
+
+        <!--<dependency>-->
+            <!--<groupId>org.glassfish.main.extras</groupId>-->
+            <!--<artifactId>glassfish-embedded-all</artifactId>-->
+            <!--<version>4.0-b72</version>-->
+        <!--</dependency>-->
+
+
         <dependency>
-            <groupId>org.glassfish.extras</groupId>
-            <artifactId>glassfish-embedded-all</artifactId>
-            <version>${version.maven.plugin.embedded.glassfish}</version>
+            <groupId>org.apache.derby</groupId>
+            <artifactId>derby</artifactId>
+            <version>10.8.2.2</version>
+            <scope>test</scope>
+        </dependency>
+        <dependency>
+            <groupId>org.apache.derby</groupId>
+            <artifactId>derbyclient</artifactId>
+            <version>10.8.2.2</version>
             <scope>test</scope>
         </dependency>
     </dependencies>

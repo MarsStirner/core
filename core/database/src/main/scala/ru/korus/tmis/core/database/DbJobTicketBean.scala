@@ -139,12 +139,12 @@ class DbJobTicketBean extends DbJobTicketBeanLocal
   }
 
   def getJobTicketAndTakenTissueForAction(eventId: Int, atId: Int, datef: Date, departmentId: Int) = {
-    val formatter = new SimpleDateFormat("yyyy-MM-dd")
+    val formatter = new SimpleDateFormat("yyyy-MM-dd HH:mm")
     val strDate = formatter.format(datef)
     val date = formatter.parse(strDate)
 
     val query = em.createQuery(JobTicketAndTakenTissueForActionQuery, classOf[Array[AnyRef]])
-                  .setParameter("plannedEndDate", date)
+                  .setParameter("plannedEndDate", strDate)
                   .setParameter("eventId", eventId)
                   .setParameter("actionTypeId", atId)
                   .setParameter("departmentId", departmentId)
@@ -176,6 +176,35 @@ class DbJobTicketBean extends DbJobTicketBeanLocal
       }
     }
   }
+
+  def getActionTypeTissueTypeForActionType(actionTypeId: Int) = {
+    val query = em.createQuery(ActionTypeTissueTypeByActionTypeIdQuery, classOf[ActionTypeTissueType])
+      .setParameter(":actionTypeId", actionTypeId)
+
+    val result = query.getResultList
+
+    result.size match {
+      case 0 => {
+        null /*
+        throw new CoreException(
+          ConfigManager.ErrorCodes.JobNotFound,
+          i18n("error.jobNotFound").format(id))          */
+      }
+      case size => {
+        result.foreach(em.detach(_))
+        result(0)
+      }
+    }
+  }
+
+  val ActionTypeTissueTypeByActionTypeIdQuery =
+    """
+      SELECT attp
+      FROM
+        ActionTypeTissueType attp
+      WHERE
+        attp.actionType.id = :actionTypeId
+    """
 
   def getJobTicketForAction(actionId: Int) = {
     val query = em.createQuery(JobTicketForActionQuery, classOf[JobTicket])
@@ -326,7 +355,7 @@ class DbJobTicketBean extends DbJobTicketBeanLocal
       AND
         tt.type.id = attt.tissueType.id
       AND
-        j.date = :plannedEndDate
+        substring(jt.datetime, 1, 16) = :plannedEndDate
       AND
         j.orgStructure.id = :departmentId
       AND
@@ -374,8 +403,6 @@ class DbJobTicketBean extends DbJobTicketBeanLocal
       AND
         a.actionType.mnemonic = 'LAB'
       AND
-        a.isUrgent = 0
-      AND
         apval.id.id = ap.id
       AND
         apval.value = jt.id
@@ -385,5 +412,6 @@ class DbJobTicketBean extends DbJobTicketBeanLocal
         a.deleted = 0
       AND
         j.deleted = 0
-    """
+    """/*      AND
+        a.isUrgent = 0*/
 }

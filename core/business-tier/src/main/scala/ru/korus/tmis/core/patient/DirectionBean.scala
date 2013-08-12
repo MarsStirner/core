@@ -4,8 +4,10 @@ import javax.interceptor.Interceptors
 import ru.korus.tmis.core.logging.LoggingInterceptor
 import javax.ejb.{TransactionAttributeType, TransactionAttribute, EJB, Stateless}
 import grizzled.slf4j.Logging
-import ru.korus.tmis.util.{ConfigManager, CAPids, I18nable}
+import ru.korus.tmis.util.{StringId, ConfigManager, CAPids, I18nable}
 import javax.persistence.{FlushModeType, EntityManager, PersistenceContext}
+import ru.korus.tmis.core.data._
+import javax.persistence.{EntityManager, PersistenceContext}
 import ru.korus.tmis.core.data._
 import ru.korus.tmis.core.auth.AuthData
 import ru.korus.tmis.core.entity.model._
@@ -18,6 +20,7 @@ import java.util
 import ru.korus.tmis.core.filter.ActionsListDataFilter
 import ru.korus.tmis.core.exception.CoreException
 import ru.korus.tmis.laboratory.business.LaboratoryBeanLocal
+import util.{HashSet, Date}
 
 /**
  * Методы для работы с Направлениями
@@ -33,33 +36,32 @@ class DirectionBean extends DirectionBeanLocal
 
   @PersistenceContext(unitName = "s11r64")
   var em: EntityManager = _
-
   @EJB
   private var commonDataProcessor: CommonDataProcessorBeanLocal = _
-
   @EJB
   private var actionPropertyBean: DbActionPropertyBeanLocal = _
-
+  @EJB
+  private var actionPropertyTypeBean: DbActionPropertyTypeBeanLocal = _
   @EJB
   private var dbJobBean: DbJobBeanLocal = _
-
   @EJB
   private var dbJobTicketBean: DbJobTicketBeanLocal = _
-
   @EJB
   private var dbTakenTissue: DbTakenTissueBeanLocal = _
-
   @EJB
   private var hospitalBedBean: HospitalBedBeanLocal = _
-
   @EJB
   private var dbCustomQueryBean: DbCustomQueryLocal = _
-
   @EJB
   private var dbOrgStructure: DbOrgStructureBeanLocal = _
-
   @EJB
   private var actionBean: DbActionBeanLocal = _
+  @EJB
+  private var dbMkbBean: DbMkbBeanLocal = _
+  @EJB
+  private var dbEventBean: DbEventBeanLocal = _
+  @EJB
+  private var dbStaffBean: DbStaffBeanLocal = _
 
   @EJB
   var lisBean: LaboratoryBeanLocal = _
@@ -84,13 +86,22 @@ class DirectionBean extends DirectionBeanLocal
       AWI.multiplicity,
       AWI.Status,
       AWI.Finance,
-      AWI.PlannedEndDate
+      AWI.PlannedEndDate,
+      AWI.ExecutorId,
+      AWI.AssignerId
       //AWI.ToOrder
     )
     commonDataProcessor.addAttributes(group, new ActionWrapper(direction), attributes)
   }
 
   def detailsWithAge(direction: Action) = {
+    var attributes = List(APWI.Value,
+                          APWI.ValueId,
+                          APWI.Unit,
+                          APWI.Norm)
+    if (direction.getActionType.getMnemonic.toUpperCase.compareTo("LAB")==0)
+      attributes = attributes ::: List(APWI.IsAssignable,APWI.IsAssigned)
+
     val propertiesMap = actionPropertyBean.getActionPropertiesByActionId(direction.getId.intValue)
     val group = new CommonGroup(1, "Details")
 
@@ -108,12 +119,7 @@ class DirectionBean extends DirectionBeanLocal
             }
             case _ => {
               apvs.foreach((apv) => {
-                group add apw.get(apv, List(APWI.Value,
-                  APWI.ValueId,
-                  APWI.IsAssignable,
-                  APWI.IsAssigned,
-                  APWI.Unit,
-                  APWI.Norm))
+                group add apw.get(apv, attributes)
               })
             }
           }
@@ -143,17 +149,7 @@ class DirectionBean extends DirectionBeanLocal
     }
     json_data
   }
-  /*
-  def  createInstrumentalDirectionsForEventIdFromCommonData(eventId: Int,
-                                                directions: CommonData,
-                                                title: String,
-                                                request: Object,
-                                                userData: AuthData,
-                                                postProcessingForDiagnosis: (JSONCommonData, java.lang.Boolean) => JSONCommonData) = {
-    val actions: java.util.List[Action] = commonDataProcessor.createActionForEventFromCommonData(eventId, directions, userData)
 
-  }
-    */
   private def createJobTicketsForActions(actions: java.util.List[Action], eventId: Int) =  {
 
     val department = hospitalBedBean.getCurrentDepartmentForAppeal(eventId)
@@ -176,7 +172,7 @@ class DirectionBean extends DirectionBeanLocal
             j.setQuantity(j.getQuantity+1)
             if (tt != null) a.setTakenTissue(tt)
             jtForAp = jt
-          } else {
+          } else if (dbTakenTissue.getActionTypeTissueTypeByMasterId(a.getActionType.getId.intValue()) != null) {
             val j = dbJobBean.insertOrUpdateJob(0, a, department)
             val jt = dbJobTicketBean.insertOrUpdateJobTicket(0, a, j)
             val tt = dbTakenTissue.insertOrUpdateTakenTissue(0, a)
@@ -224,7 +220,7 @@ class DirectionBean extends DirectionBeanLocal
             a.setStatus(2)
           }
         }
-      } else {
+      } else if (dbTakenTissue.getActionTypeTissueTypeByMasterId(a.getActionType.getId.intValue()) != null) {
         val j = dbJobBean.insertOrUpdateJob(0, a, department)
         val jt = dbJobTicketBean.insertOrUpdateJobTicket(0, a, j)
         val tt = dbTakenTissue.insertOrUpdateTakenTissue(0, a)
@@ -309,10 +305,15 @@ class DirectionBean extends DirectionBeanLocal
                                              directions: CommonData,
                                                   title: String,
                                                 request: Object,
+                                                mnem: String,
                                                userData: AuthData,
                              postProcessingForDiagnosis: (JSONCommonData, java.lang.Boolean) => JSONCommonData) = {
     var actions: java.util.List[Action] = commonDataProcessor.createActionForEventFromCommonData(eventId, directions, userData)
-    actions = createJobTicketsForActions(actions, eventId)
+
+    //Для лабораторных исследований отработаем с JobTicket
+    if (mnem.toUpperCase.compareTo("LAB")==0) {
+      actions = createJobTicketsForActions(actions, eventId)
+    }
 
     val com_data = commonDataProcessor.fromActions(actions, title, List(summary _, detailsWithAge _))
     var json_data = new JSONCommonData(request, com_data)
@@ -327,43 +328,53 @@ class DirectionBean extends DirectionBeanLocal
                                                 directions: CommonData,
                                                      title: String,
                                                    request: Object,
+                                                      mnem: String,
                                                   userData: AuthData,
                                 postProcessingForDiagnosis: (JSONCommonData, java.lang.Boolean) => JSONCommonData) = {
     var actions: java.util.List[Action] = null
     val userId = userData.getUser.getId
     val userRole = userData.getUserRole.getCode
+    val flgLab = (mnem.toUpperCase.compareTo("LAB")==0)
 
     directions.getEntity.foreach((action) => {
       //Проверка прав у пользователя на редактирование направления
-      val a = actionBean.getActionById(action.getId.intValue())
       var oldjt = 0
-      a.getActionProperties.foreach((ap) => {
-        if (ap.getType.getTypeName.compareTo("JobTicket") == 0) {
-          oldjt = actionPropertyBean.getActionPropertyValue(ap).get(0).asInstanceOf[APValueJobTicket].getValue .intValue()
-        }
-      })
-      if ((a.getCreatePerson!=null && a.getCreatePerson.getId.compareTo(userId)==0) ||
-          (a.getAssigner!=null &&a.getAssigner.getId.compareTo(userId)==0) ||
-          userRole.compareTo("strHead")==0) {
+      val a = actionBean.getActionById(action.getId.intValue())
+      if(flgLab) {
+        a.getActionProperties.foreach((ap) => {
+          if (ap.getType.getTypeName.compareTo("JobTicket") == 0) {
+            oldjt = actionPropertyBean.getActionPropertyValue(ap).get(0).asInstanceOf[APValueJobTicket].getValue .intValue()
+          }
+        })
+      }
+
+      if((a.getCreatePerson!=null && a.getCreatePerson.getId.compareTo(userId)==0) ||
+         /*(a.getAssigner!=null && a.getAssigner.getId.compareTo(userId)==0) || */
+         (a.getExecutor!=null && a.getExecutor.getId.compareTo(userId)==0) ||
+         userRole.compareTo("strHead")==0) {
         actions = commonDataProcessor.modifyActionFromCommonData(action.getId().intValue(), directions, userData)
-        actions = createJobTicketsForActions(actions, a.getEvent.getId.intValue())
-        //редактирование или удаление старого жобТикета
-        val jobTicket = if (oldjt > 0) dbJobTicketBean.getJobTicketById(oldjt) else null
-        if (jobTicket != null) {
-          if (jobTicket != null && jobTicket.getJob!=null) {
-            val job = jobTicket.getJob
-            if (job.getQuantity == 1) {
-              job.setDeleted(true)
+        if(flgLab) {
+          actions = createJobTicketsForActions(actions, a.getEvent.getId.intValue())
+          //редактирование или удаление старого жобТикета
+          val jobTicket = if (oldjt > 0) dbJobTicketBean.getJobTicketById(oldjt) else null
+          if (jobTicket != null) {
+            if (jobTicket != null && jobTicket.getJob!=null) {
+              val job = jobTicket.getJob
+              if (job.getQuantity == 1) {
+                job.setDeleted(true)
+              }
+              job.setQuantity(job.getQuantity - 1)
+              em.merge(job)
             }
-            job.setQuantity(job.getQuantity - 1)
-            em.merge(job)
           }
         }
       } else {
         throw new CoreException(ConfigManager.ErrorCodes.noRightForAction, i18n("Редактировать диагностику может только врач, создавший направление, или лечащий врач, или заведующий отделением"))
       }
     })
-    em.flush()
+    if(flgLab)
+      em.flush()
+
     val com_data = commonDataProcessor.fromActions( actions, title, List(summary _, detailsWithAge _))
 
     var json_data = new JSONCommonData(request, com_data)
@@ -371,6 +382,104 @@ class DirectionBean extends DirectionBeanLocal
       json_data =  postProcessingForDiagnosis(json_data, false)
     }
     json_data
+  }
+
+  def createConsultation(request: ConsultationRequestData, userData: AuthData) = {
+/*
+    request.finance.getId,
+    request.diagnosis.getCode,
+       */
+    var action: Action = actionBean.createAction(request.eventId.intValue(), request.actionTypeId.intValue(), userData)
+    action.setIsUrgent(request.urgent)
+    if (request.createPerson > 0 && dbStaffBean.getStaffById(request.createPerson) != null) {
+      action.setCreatePerson(dbStaffBean.getStaffById(request.createPerson))
+    }
+    if (request.createDateTime != null) {
+      action.setCreateDatetime(request.createDateTime)
+      action.setBegDate(request.createDateTime)
+    }
+    //action.setBegDate(bDate)
+    action.setPlannedEndDate(new Date(request.plannedEndDate.getTime + request.plannedTime.getTime.getTime))
+    if (request.getFinance.getId > 0) {
+      action.setFinanceId(request.getFinance.getId)
+    } else {
+      action.setFinanceId(dbEventBean.getEventById(request.getEventId).getEventType.getFinance.getId.intValue())
+    }
+    if(request.executorId>0)
+      action.setExecutor(new Staff(request.executorId))
+    if(request.assignerId>0)
+      action.setAssigner(new Staff(request.assignerId))
+
+    em.persist(action)
+
+    //empty action property
+    var apSet = Set.empty[AnyRef]
+
+    actionPropertyTypeBean.getActionPropertyTypesByActionTypeId(request.actionTypeId.intValue())
+      .toList
+      .foreach((apt) => {
+        val ap = actionPropertyBean.createActionProperty(action, apt.getId.intValue(), userData)
+        em.persist(ap)
+
+        if (ap.getType.getTypeName.compareTo("MKB") == 0 && request.diagnosis != null && request.diagnosis.getCode != null) {
+          //запишем диагноз, который пришел с клиента
+          val mkb = dbMkbBean.getMkbByCode(request.diagnosis.getCode)
+          if (mkb != null) {
+            val apv = actionPropertyBean.setActionPropertyValue(ap, mkb.getId.intValue().toString, 0)
+            if (apv!=null)
+              apSet = apSet + apv.unwrap
+          } else {
+            //если диагноз не пришел, то запишем дефолтный
+            var props = actionPropertyBean.getActionPropertyValue(ap)
+            if (props.get(0).getValueAsString.compareTo("") == 0) {
+              val diagnosis = dbCustomQueryBean.getDiagnosisForMainDiagInAppeal(action.getEvent.getId.intValue())
+              if (diagnosis != null) {
+                val apv = actionPropertyBean.setActionPropertyValue(ap, diagnosis.getId.intValue().toString, 0)
+                if (apv!=null)
+                  apSet = apSet + apv.unwrap
+              }
+            }
+          }
+        } //else if (ap.getType.getTypeName.compareTo("queue") == 0) {
+    })
+    apSet.foreach(f => em.persist(f))
+    em.flush()
+
+    // Создаем ивент 29 и акшен 19 (по спеке)
+    var event29 = dbEventBean.createEvent(request.patientId, 29, new Date(request.plannedEndDate.getTime + request.plannedTime.getTime.getTime), null, userData)
+    event29.setExecutor(new Staff(request.executorId))
+    event29.setExternalId(dbEventBean.getEventById(request.getEventId).getExternalId)
+    em.persist(event29)
+    em.flush()
+    var action19 = actionBean.createAction(event29.getId.intValue(), 19, userData)
+    if(request.executorId>0)
+      action19.setExecutor(new Staff(request.executorId))
+    if(request.assignerId>0)
+      action19.setAssigner(new Staff(request.assignerId))
+    action19.setDirectionDate(new Date(request.plannedEndDate.getTime + request.plannedTime.getTime.getTime))
+    action19.setEvent(event29)
+    em.persist(action19)
+    em.flush()
+    // создаем и/или заполняем значение проперти 18
+    val a = actionPropertyBean.getActionPropertyById(request.plannedTime.getId).getAction
+    var aps = actionPropertyBean.getActionPropertiesByActionIdAndTypeId(a.getId.intValue(), 18) // 18 = queue
+    var ap18: ActionProperty = null
+    aps.size() match {
+      case 0 => {
+        ap18 = actionPropertyBean.createActionProperty(a, 18, userData)
+        em.persist(ap18)
+        em.flush()
+      }
+      case _ => {
+        ap18 = aps(0)
+      }
+    }
+    if (ap18 != null) {
+      em.merge(actionPropertyBean.setActionPropertyValue(ap18, action19.getId.toString, request.plannedTime.getIndex))
+    }
+    // ****
+    em.flush()
+    action.getId.intValue()
   }
 
   def removeDirections(directions: AssignmentsToRemoveDataList, directionType: String, userData: AuthData) = {
@@ -381,7 +490,8 @@ class DirectionBean extends DirectionBeanLocal
       var a = actionBean.getActionById(f.getId)
 
       if ((a.getCreatePerson!=null && a.getCreatePerson.getId.compareTo(userId)==0) ||
-          (a.getAssigner!=null &&a.getAssigner.getId.compareTo(userId)==0) ||
+          /*(a.getAssigner!=null &&a.getAssigner.getId.compareTo(userId)==0) || */
+          (a.getExecutor!=null && a.getExecutor.getId.compareTo(userId)==0) ||
           userRole.compareTo("strHead")==0) {
         directionType match {
           case "laboratory" => {
@@ -399,6 +509,24 @@ class DirectionBean extends DirectionBeanLocal
               }
               job.setQuantity(job.getQuantity - 1)
               em.merge(job)
+            }
+          }
+          case "consultations" => {
+            var action19 = actionBean.getEvent29AndAction19ForAction(a)
+            if (action19 != null) {
+              val actionId = action19.getId.intValue()
+              var apv = actionPropertyBean.getActionPropertyValue_ActionByValue(action19)
+              if (apv != null) {
+                apv = em.merge(apv)
+                em.remove(apv)
+              }
+              //em.flush()
+              action19 = actionBean.getActionById(actionId)
+              val event29 = action19.getEvent
+              action19.setDeleted(true)
+              event29.setDeleted(true)
+              em.merge(event29)
+              //em.merge(action19)
             }
           }
           case _ => {

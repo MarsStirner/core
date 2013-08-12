@@ -6,7 +6,7 @@ import javax.ejb.{EJB, TransactionAttributeType, TransactionAttribute, Stateless
 import grizzled.slf4j.Logging
 import ru.korus.tmis.util.{ConfigManager, I18nable}
 import javax.persistence.{EntityManager, PersistenceContext}
-import ru.korus.tmis.core.entity.model.{Action, Diagnostic, Diagnosis}
+import ru.korus.tmis.core.entity.model.{Mkb, Action, Diagnostic, Diagnosis}
 import ru.korus.tmis.core.exception.CoreException
 import ru.korus.tmis.core.auth.AuthData
 import java.util.Date
@@ -70,10 +70,6 @@ class DbDiagnosisBean  extends DbDiagnosisBeanLocal
     var oldDiagnosis: Diagnosis = null
     var lockId: Int = 0
 
-    val client = dbPatientBean.getPatientById(clientId)
-    val diagnosisType = dbRbDiagnosisTypeBean.getRbDiagnosisTypeByFlatCode(diagnosisTypeFlatCode)
-    val mkb = dbMKBBean.getMkbById(mkbId)
-
     if (id>0) {
       diagnosis = getDiagnosisById(id)
       oldDiagnosis = Diagnosis.clone(diagnosis)
@@ -88,6 +84,17 @@ class DbDiagnosisBean  extends DbDiagnosisBeanLocal
     }
 
     try {
+
+
+      val client = dbPatientBean.getPatientById(clientId)
+      val diagnosisType = dbRbDiagnosisTypeBean.getRbDiagnosisTypeByFlatCode(diagnosisTypeFlatCode)
+      var mkb :Mkb = null
+      try {
+        mkb = dbMKBBean.getMkbById(mkbId)
+      } catch {
+        case e: Exception => mkb = null
+      }
+
       if (client==null || diagnosisType==null || mkb==null){
         diagnosis = null
       }

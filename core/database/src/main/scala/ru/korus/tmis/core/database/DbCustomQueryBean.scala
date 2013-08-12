@@ -1209,22 +1209,22 @@ AND
               AND valB.id.id = ap3.id
               AND valB.value.id = :departmentId
             )
-            AND
-            (
-                (ap.action.endDate IS NULL OR  ap.action.endDate > :endDate)
-                OR
-                (
-                    ap.action.endDate < :endDate
-                    AND exists (
-                        SELECT ap2.id
-                        FROM ActionProperty ap2,
-                             APValueOrgStructure val2
-                        WHERE ap2.action.id = ap3.action.id
-                        AND ap2.actionPropertyType.code = '%s'
-                        AND val2.id.id = ap2.id
-                    )
-                )
+        AND
+        (
+          (ap.action.endDate IS NULL OR  ap.action.endDate > :endDate)
+          OR
+          (
+            exists (
+               SELECT ap2.id
+               FROM ActionProperty ap2,
+                    APValueOrgStructure val2
+               WHERE ap2.action.id = ap.action.id
+               AND ap2.actionPropertyType.code = '%s'
+               AND ap2.id = val2.id.id
             )
+            AND ap.action.endDate <= :endDate
+          )
+        )
     )
 )
 AND ap.deleted = 0

@@ -108,9 +108,27 @@ class DbActionPropertyBean
 
   def createActionProperty(a: Action, aptId: Int, userData: AuthData) = {
     val apt = dbActionPropertyType.getActionPropertyTypeById(aptId)
-
     val now = new Date()
+    val ap = new ActionProperty
 
+    ap.setCreateDatetime(now)
+    ap.setModifyDatetime(now)
+    //TODO: временно подсовываю пустой Staff когда нет AuthData
+    if (userData != null) {
+      ap.setCreatePerson(userData.user)
+      ap.setCreateDatetime(now)
+      ap.setModifyPerson(userData.user)
+      ap.setModifyDatetime(now)
+    }
+
+    ap.setAction(a)
+    ap.setType(apt)
+
+    ap
+  }
+
+  def createActionPropertyWithDate(a: Action, aptId: Int, userData: AuthData, now: Date) = {
+    val apt = dbActionPropertyType.getActionPropertyTypeById(aptId)
     val ap = new ActionProperty
 
     ap.setCreateDatetime(now)
@@ -334,6 +352,13 @@ class DbActionPropertyBean
     )
   }
 
+  @TransactionAttribute(TransactionAttributeType.REQUIRES_NEW)
+  def getActionPropertyValue_ActionByValue(action: Action): APValueAction = {
+    val apv = em.createQuery(ActionProperty_ActionByValue, classOf[APValueAction]).setParameter("VALUE", action).getSingleResult
+    em.detach(apv)
+    apv
+  }
+
   val ActionPropertiesByEventIdAndActionPropertyTypeCodesQueryEx =
     """
       SELECT counted.idd2, counted.apidd2
@@ -371,6 +396,8 @@ class DbActionPropertyBean
                               ActionProperty_Double ap_d
                           WHERE
                               ap_d.id = ap.id
+                          AND
+                              ap_d.value != '0.0'
                       )
                       OR
                       exists (

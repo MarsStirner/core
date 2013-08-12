@@ -35,6 +35,12 @@ class DiagnosticsListData {
           actions.foreach(action => this.data.asInstanceOf[LinkedList[InstrumentalDiagnosticsListEntry]].add(new InstrumentalDiagnosticsListEntry(action)))
         }
       }
+      case "consultations" => {
+        this.data = new LinkedList[InstrumentalDiagnosticsListEntry]
+        if (actions != null && actions.size > 0) {
+          actions.foreach(action => this.data.asInstanceOf[LinkedList[InstrumentalDiagnosticsListEntry]].add(new InstrumentalDiagnosticsListEntry(action)))
+        }
+      }
       case _ => {
         this.data = new LinkedList[DiagnosticsListEntry]
         if (actions != null && actions.size > 0) {
@@ -156,6 +162,9 @@ class DiagnosticsListRequestDataFilter extends AbstractListDataFilter {
   @BeanProperty
   var mnemonic: String = _
 
+  @BeanProperty
+  var clazz: Short = -1
+
   var diagnosticType: String = _
 
   def this(code_x: String,
@@ -170,7 +179,8 @@ class DiagnosticsListRequestDataFilter extends AbstractListDataFilter {
            statusId: Int,
            urgent: Int,
            diaType_x: String,
-           mnemonic: String) {
+           mnemonic: String,
+           clazz: Short) {
 
     this()
     this.diagnosticType = diaType_x
@@ -205,6 +215,7 @@ class DiagnosticsListRequestDataFilter extends AbstractListDataFilter {
     this.statusId = statusId
     this.urgent = urgent
     this.mnemonic = mnemonic
+    this.clazz = clazz
   }
 
   @Override
@@ -259,6 +270,10 @@ class DiagnosticsListRequestDataFilter extends AbstractListDataFilter {
       qs.query += "AND a.actionType.mnemonic = :mnemonic\n"
       qs.add("mnemonic", this.mnemonic)
     }
+    if (this.clazz >= 0) {
+      qs.query += "AND a.actionType.clazz = :clazz\n"
+      qs.add("clazz", this.clazz: java.lang.Integer)
+    }
     qs
   }
 
@@ -292,6 +307,9 @@ class DiagnosticsListEntry {
   var diagnosticDate: Date = _ //Дата диагностики
 
   @BeanProperty
+  var plannedEndDate: Date = _ //Дата направления (Дата забора БМ)
+
+  @BeanProperty
   var diagnosticName: IdNameContainer = _ //Направление исследований
 
   @BeanProperty
@@ -299,6 +317,12 @@ class DiagnosticsListEntry {
 
   @BeanProperty
   var execPerson: DoctorContainer = new DoctorContainer() //Исполнивший Врач
+
+  @BeanProperty
+  var createPerson: DoctorContainer = new DoctorContainer() //Создавший направление Врач
+
+  @BeanProperty
+  var cito: Boolean = _ //Срочность исследования
 
   @BeanProperty
   var office: String = _ //Кабинет
@@ -315,6 +339,9 @@ class DiagnosticsListEntry {
     this.office = action.getOffice
     this.status = new IdNameContainer(action.getStatus, ActionStatus.fromShort(action.getStatus).getName)
     this.diagnosticName = new IdNameContainer(action.getActionType.getId.intValue(), action.getActionType.getName)
+    this.plannedEndDate = action.getPlannedEndDate
+    this.createPerson = new DoctorContainer(action.getCreatePerson)
+    this.cito = action.getIsUrgent
   }
 }
 

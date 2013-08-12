@@ -40,6 +40,12 @@ class DbDiagnosticBean  extends DbDiagnosticBeanLocal
   @EJB
   var dbDiagnosisBean: DbDiagnosisBeanLocal = _
 
+  @EJB
+  var dbRbDiseaseCharacterBean: DbRbDiseaseCharacterBeanLocal = _
+
+  @EJB
+  var dbRbDiseaseStageBean: DbRbDiseaseStageBeanLocal = _
+
   def getDiagnosticById (id: Int) = {
     val result =  em.createQuery(DiagnosticByIdQuery, classOf[Diagnostic])
                     .setParameter("id", id)
@@ -72,6 +78,7 @@ class DbDiagnosticBean  extends DbDiagnosticBeanLocal
                                diagnosis: Diagnosis,
                                diagnosisTypeFlatCode: String,
                                diseaseCharacterId: Int,
+                               diseaseStageId: Int,
                                note: String,
                                userData: AuthData) = {
     val now = new Date()
@@ -101,7 +108,12 @@ class DbDiagnosticBean  extends DbDiagnosticBeanLocal
       diagnostic.setModifyPerson(userData.getUser)
       diagnostic.setEvent(event)
       diagnostic.setDiagnosisType(diagnosisType)
-      diagnostic.setCharacterId(diseaseCharacterId)
+      if (diseaseCharacterId > 0) {
+        diagnostic.setCharacter(dbRbDiseaseCharacterBean.getDiseaseCharacterById(diseaseCharacterId))
+      }
+      if (diseaseStageId > 0) {
+        diagnostic.setStage(dbRbDiseaseStageBean.getDiseaseStageById(diseaseStageId))
+      }
       diagnostic.setSpeciality(userData.getUser.getSpeciality)
       diagnostic.setPerson(userData.getUser)
       diagnostic.setSetDate(now)
@@ -123,6 +135,19 @@ class DbDiagnosticBean  extends DbDiagnosticBeanLocal
 
     result.foreach(em.detach(_))
     result
+  }
+
+  def getLastDiagnosticByEventIdAndType(eventId: Int, diagnosisTypeFlatCode: String) = {
+    val result =  em.createQuery(LastDiagnosticByEventIdAndTypesQuery, classOf[Diagnostic])
+      .setParameter("eventId", eventId)
+      .setParameter("flatCode", diagnosisTypeFlatCode)
+      .getResultList
+
+    result.foreach(em.detach(_))
+    if (result != null && result.size() > 0) {
+      result.get(0)
+    } else null
+
   }
 
   val DiagnosticByIdQuery = """
@@ -156,5 +181,20 @@ class DbDiagnosticBean  extends DbDiagnosticBeanLocal
       diac.diagnosisType.flatCode IN :flatCodes
     AND
       diac.deleted = '0'
+    """
+
+  val LastDiagnosticByEventIdAndTypesQuery =
+    """
+    SELECT diac
+    FROM
+      Diagnostic diac
+        JOIN diac.event e
+    WHERE
+      e.id = :eventId
+    AND
+      diac.diagnosisType.flatCode = :flatCode
+    AND
+      diac.deleted = '0'
+    ORDER BY diac.createDatetime DESC
     """
 }

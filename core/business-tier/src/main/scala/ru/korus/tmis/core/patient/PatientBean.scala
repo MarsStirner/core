@@ -12,7 +12,7 @@ import javax.interceptor.Interceptors
 
 import kladr.{Street, Kladr}
 import scala.collection.JavaConversions._
-import java.util.{LinkedList, Date}
+import java.util.{Calendar, LinkedList, Date}
 import ru.korus.tmis.core.entity.model._
 import ru.korus.tmis.util.{ConfigManager, I18nable}
 import ru.korus.tmis.core.exception.CoreException
@@ -21,6 +21,7 @@ import javax.ejb._
 import scala.util.control.Breaks._
 import ru.korus.tmis.core.logging.LoggingInterceptor
 import java.util
+import util.Calendar
 
 @Interceptors(Array(classOf[LoggingInterceptor]))
 @Stateless
@@ -366,7 +367,7 @@ class PatientBean
     val role = requestData.filter.roleId
     val mapper: ObjectMapper = new ObjectMapper()
 
-    val eventsMap = customQuery.getActiveEventsForDepartmentAndDoctor(requestData.page-1,
+    val actionsMap = customQuery.getActiveEventsForDepartmentAndDoctor(requestData.page-1,
                                                                       requestData.limit,
                                                                       requestData.sortingField,
                                                                       requestData.sortingMethod,
@@ -376,12 +377,14 @@ class PatientBean
     var conditionsInfo: java.util.LinkedHashMap[java.lang.Integer, java.util.LinkedHashMap[ActionProperty, java.util.List[APValue]]]
       = new java.util.LinkedHashMap[java.lang.Integer, java.util.LinkedHashMap[ActionProperty, java.util.List[APValue]]]
     if(role == 25) {  //Для сестры отделения только
-      conditionsInfo = dbActionProperty.getActionPropertiesByEventIdsAndActionPropertyTypeCodes(eventsMap.map(p=> p._1.getEvent.getId).toList, asJavaSet(Set("STATE", "PULS", "BPRAS","BPRAD")),1)
+      if (actionsMap.size() > 0) {
+        conditionsInfo = dbActionProperty.getActionPropertiesByEventIdsAndActionPropertyTypeCodes(actionsMap.map(p=> p._1.getEvent.getId).toList, asJavaSet(Set("STATE", "PULS", "BPRAS","BPRAD")),1)
+      }
       mapper.getSerializationConfig().setSerializationView(classOf[PatientsListDataViews.NurseView])
     }
     else mapper.getSerializationConfig().setSerializationView(classOf[PatientsListDataViews.AttendingDoctorView])
 
-    mapper.writeValueAsString(new PatientsListData(eventsMap,
+    mapper.writeValueAsString(new PatientsListData(actionsMap,
                                                    requestData,
                                                    role,
                                                    conditionsInfo,
@@ -980,16 +983,31 @@ class PatientBean
       } else {
         dbManager.persist(patient)
       }
-      new PatientEntry(patient, this.getKLADRAddressMapForPatient(patient), this.getKLADRStreetForPatient(patient));
-    }/* catch {
-      case e: CoreException => {
-        //dbManager.rollbackTransaction()
-        throw new CoreException(
-          i18n("error.cantSavePatient").format()
-        )
-        null
+      //Пропишем историю групп крови
+      val bh = dbBloodHistoryBean.getBloodHistoryByPatient(patient.getId.intValue())
+      if (bloodType>0 && (
+            bh==null ||
+            bh.size()<=0 ||
+            bh!=null && bh.size()>0 && bh.get(0).getBloodType.getId.intValue()!=bloodType)){ //Создаем запись в BloodHistory
+        val bloodhistory = dbBloodHistoryBean.createBloodHistoryRecord(patient.getId.intValue(), bloodType, bloodDate, userData)
+        dbManager.persist(bloodhistory)
+      } else {        //Проверка дат (форматы хранения разные :()
+        if (bh!=null && bh.size()>0){
+          val oldBloodDate = bh.get(0).getBloodDate
+          val oldCalendar = Calendar.getInstance()
+          val curCalendar = Calendar.getInstance()
+          oldCalendar.setTime(oldBloodDate)
+          curCalendar.setTime(bloodDate)
+          if (oldCalendar.get(Calendar.YEAR)!=curCalendar.get(Calendar.YEAR) ||
+            oldCalendar.get(Calendar.MONTH)!=curCalendar.get(Calendar.MONTH) ||
+            oldCalendar.get(Calendar.DAY_OF_MONTH)!=curCalendar.get(Calendar.DAY_OF_MONTH)){
+              val bloodhistory = dbBloodHistoryBean.createBloodHistoryRecord(patient.getId.intValue(), bloodType, bloodDate, userData)
+              dbManager.persist(bloodhistory)
+          }
+        }
       }
-    }    */
+      new PatientEntry(patient, this.getKLADRAddressMapForPatient(patient), this.getKLADRStreetForPatient(patient));
+    }
     finally {
       if (lockId > 0) {
         appLock.releaseLock(lockId)

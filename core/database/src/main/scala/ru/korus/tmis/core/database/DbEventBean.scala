@@ -125,35 +125,40 @@ class DbEventBean
     val patient = patientBean.getPatientById(patientId)
     val eventType = this.getEventTypeById(appealTypeId)
 
-    //Анализ и инкремент счетчика
-    val rbCounter = rbCounterBean.getRbCounterById(eventType.getCounterId.intValue())
-    val result = em.merge(rbCounterBean.setRbCounterValue(rbCounter, rbCounter.getValue.intValue() + 1))
-
-    //берем коунтер и получаем НИБ
-    val externalId = Calendar.getInstance()
-      .get(Calendar.YEAR).toString
-      .concat(rbCounter.getSeparator)
-      .concat(rbCounter.getValue.toString)
-
     val now = new Date
     var newEvent = new Event
     //1. Инсертим /Инициализируем структуру Event по пациенту
     try {
+      //Анализ и инкремент счетчика
+      if (eventType.getCounterId != null) {
+        val rbCounter = rbCounterBean.getRbCounterById(eventType.getCounterId.intValue())
+        val result = em.merge(rbCounterBean.setRbCounterValue(rbCounter, rbCounter.getValue.intValue() + 1))
+        //берем коунтер и получаем НИБ
+        val externalId = Calendar.getInstance()
+          .get(Calendar.YEAR).toString
+          .concat(rbCounter.getSeparator)
+          .concat(rbCounter.getValue.toString)
+        newEvent.setExternalId(externalId) //НИБ
+      }
+
       newEvent.setPatient(patient)
       newEvent.setEventType(eventType)
       newEvent.setCreateDatetime(now)
       newEvent.setModifyDatetime(now)
-      newEvent.setExternalId(externalId) //НИБ
       newEvent.setCreatePerson(authData.user)
       newEvent.setModifyPerson(authData.user)
       newEvent.setExecutor(authData.user)
       newEvent.setAssigner(authData.user)
       newEvent.setNote(" ")
       newEvent.setSetDate(begDate)
+      newEvent.setIsPrimary(1)
+      newEvent.setOrder(0)
+      newEvent.setDeleted(false)
+      newEvent.setPayStatus(0)
       //val contract = contractBean.getContractForEventType(eventType)
-      //if (contract != null) {
+      if (eventType.getFinance != null) {
         newEvent.setContract(contractBean.getContractForEventType(eventType))
-      //}
+      }
       newEvent.setUuid(dbUUIDBeanLocal.createUUID())
       //newEvent.setExecDate(endDate)
     }
@@ -184,7 +189,6 @@ class DbEventBean
       newEvent.setCreatePerson(null);
       newEvent.setModifyPerson(null);
       newEvent.setEventType(eventType);
-      newEvent.setOrgId(0);
       newEvent.setPatient(patient);
       newEvent.setSetDate(begDate);
       newEvent.setExternalId("");

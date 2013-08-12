@@ -39,7 +39,7 @@ import org.apache.axis.client.{Stub => AxisStub}
 import scala.collection.mutable
 
 @Interceptors(Array(classOf[LoggingInterceptor]))
-@Remote(Array(classOf[LaboratoryBeanLocal]))
+//@Remote(Array(classOf[LaboratoryBeanLocal]))
 @Stateless
 class LaboratoryBean
   extends LaboratoryBeanLocal

@@ -19,6 +19,8 @@ import javax.interceptor.Interceptors
 
 import scala.collection.JavaConversions._
 import java.util.{Calendar, Date}
+import java.util
+import ru.korus.tmis.core.patient.DiagnosisBeanLocal
 
 @Interceptors(Array(classOf[LoggingInterceptor]))
 @Stateless
@@ -49,6 +51,9 @@ class CommonDataProcessorBean
 
   @EJB
   var dbVersion: DbVersionBeanLocal = _
+
+  @EJB
+  var diagnosisBean: DiagnosisBeanLocal = _
 
   //////////////////////////////////////////////////////////////////////////////
 
@@ -83,6 +88,8 @@ class CommonDataProcessorBean
         var plannedEndDate: Date = null
         var finance: Int = -1
         var now = new Date()
+        var assignerId: Int = -1
+        var executorId: Int = -1
         //var toOrder: Boolean = false
 
         aps.foreach(attribute => {
@@ -116,6 +123,18 @@ class CommonDataProcessorBean
               case Some(x) => ConfigManager.DateFormatter.parse(x)
             }
           }
+          else if (attribute.name == AWI.assignerId.toString) {  //ид. направившего врача
+            assignerId = attribute.properties.get(APWI.Value.toString) match {
+              case None | Some("") => 0
+              case Some(x) => x.toInt
+            }
+          }
+          else if (attribute.name == AWI.executorId.toString) {  //ид. исполнителя
+            executorId = attribute.properties.get(APWI.Value.toString) match {
+              case None | Some("") => 0
+              case Some(x) => x.toInt
+            }
+          }
           /*else if (attribute.name == AWI.toOrder.toString) {
             toOrder = attribute.properties.get(APWI.Value.toString) match {
               case None | Some("") => false
@@ -136,11 +155,17 @@ class CommonDataProcessorBean
           }
           //plannedEndDate
           if (finance > 0) action.setFinanceId(finance)
+          //выбран направивший врач вручную (https://docs.google.com/spreadsheet/ccc?key=0Au-ED6EnawLcdHo0Z3BiSkRJRVYtLUxhaG5uYkNWaGc#gid=6 (строка 57))
+          if (assignerId > 0) action.setAssigner(new Staff(assignerId))
+          if (executorId > 0) action.setExecutor(new Staff(executorId))
           //action.setToOrder(toOrder)
           //Если пришли значения Даты начала и дата конца, то перепишем дефолтные
-          //Для первичного осмотра в качестве дефолтных значений вставим текущее время
+          //Для первичного осмотра в качестве дефолтных значений вставим текущее время(не понравилось - убираю (WEBMIS-837: Документ создается сразу же закрытым))
           if (beginDate != null) action.setBegDate(beginDate) else if (isPrimaryAction) action.setBegDate(now)
-          if (endDate != null) action.setEndDate(endDate) else if (isPrimaryAction) action.setEndDate(now)
+          if (endDate != null) {
+            action.setEndDate(endDate)
+            action.setStatus(ActionStatus.FINISHED.getCode) //WEBMIS-880
+          } //else if (isPrimaryAction) action.setEndDate(now)
           if (plannedEndDate != null) action.setPlannedEndDate(plannedEndDate)
 
 
@@ -158,10 +183,11 @@ class CommonDataProcessorBean
             if (AWI.isSupported(attribute.name)) {
               list
             } else {
-              val ap = dbActionProperty.createActionProperty(
+              val ap = dbActionProperty.createActionPropertyWithDate(
                 action,
                 attribute.id.intValue,
-                userData)
+                userData,
+                now)
               new ActionPropertyWrapper(ap).set(attribute)
               (ap, attribute) :: list
             }
@@ -171,12 +197,15 @@ class CommonDataProcessorBean
           val emptyApts = actionType.getActionPropertyTypes
           emptyApts.removeAll(apList.map(_._1.getType))
 
-          val emptyApList = emptyApts.map(
+          var emptyApList = new java.util.LinkedList[ActionProperty]
+          emptyApts.foreach(
             apt => {
-              dbActionProperty.createActionProperty(
-                action,
-                apt.getId.intValue,
-                userData)
+              if (apt.getIsAssignable == false) {
+                emptyApList.add(dbActionProperty.createActionPropertyWithDate(action,
+                                                                              apt.getId.intValue,
+                                                                              userData,
+                                                                              now))
+              }
             })
 
           entities = entities + action
@@ -190,11 +219,13 @@ class CommonDataProcessorBean
             (attribute.properties.get("valueId"), attribute.properties.get("value")) match {
               case (None | Some(null) | Some(""), None | Some(null) | Some("")) => {
                 if (ap.getType.getTypeName.compareTo("FlatDirectory") != 0 && ap.getType.getTypeName.compareTo("FlatDictionary") != 0) {
-                  val apv = dbActionProperty.setActionPropertyValue(
-                    ap,
-                    ap.getType.getDefaultValue,
-                    0)
-                  apv :: list
+                  if (ap.getType.getDefaultValue.compareTo("нет") != 0) {     //костылик для мкб
+                    val apv = dbActionProperty.setActionPropertyValue(
+                      ap,
+                      ap.getType.getDefaultValue,
+                      0)
+                    apv :: list
+                  } else list
                 } else list
               }
               case (None | Some(null) | Some(""), Some(value)) => {
@@ -214,14 +245,19 @@ class CommonDataProcessorBean
             }
           })
 
+          //
           entities = (entities /: apvList)(_ + _)
           dbManager.persistAll(apvList)
+          //Сохранение диагнозов в таблицу Диагностик
+          var apsForDiag = new util.LinkedList[ActionProperty]()
+          apList.foreach(f => apsForDiag.add(f._1))
+          dbManager.persistAll(this.saveDiagnoses(eventId ,apsForDiag, userData))
 
           // Save empty AP values (set to default values)
           //Для FlatDictionary (FlatDirectory) нету значения по умолчанию, внутри релэйшн по значению валуе, дефолт значение решил не писать
-          val emptyApvList = emptyApList.filter(p => (p.getType.getTypeName.compareTo("FlatDictionary") != 0 && p.getType.getTypeName.compareTo("FlatDirectory") != 0)).map(
+          val emptyApvList = emptyApList.filter(p => (p.asInstanceOf[ActionProperty].getType.getTypeName.compareTo("FlatDictionary") != 0 && p.asInstanceOf[ActionProperty].getType.getTypeName.compareTo("FlatDirectory") != 0)).map(
             ap => {
-              dbActionProperty.setActionPropertyValue(ap, ap.getType.getDefaultValue, 0)
+              dbActionProperty.setActionPropertyValue(ap.asInstanceOf[ActionProperty], ap.asInstanceOf[ActionProperty].getType.getDefaultValue, 0)
             })
 
           entities = (entities /: emptyApvList)(_ + _)
@@ -279,7 +315,7 @@ class CommonDataProcessorBean
       actionId,
       oldAction.getIdx,
       userData)
-
+    var eventId = 0
     try {
       data.entity.filter(_.id == actionId).foreach(entity => {
         var a = dbAction.updateAction(entity.id.intValue,
@@ -298,6 +334,8 @@ class CommonDataProcessorBean
         var endDate: Date = null
         var plannedEndDate: Date = null
         var finance: Int = -1
+        var assignerId: Int = -1
+        var executorId: Int = -1
         //var toOrder: Boolean = false
 
         var res = aps.find(p => p.name == AWI.assessmentBeginDate.toString).getOrElse(null)
@@ -328,6 +366,20 @@ class CommonDataProcessorBean
             case Some(x) => ConfigManager.DateFormatter.parse(x)
           }
         }
+        res = aps.find(p => p.name == AWI.assignerId.toString).getOrElse(null)
+        if (res != null) {
+          assignerId = res.properties.get(APWI.Value.toString) match {
+            case None | Some("") => 0
+            case Some(x) => x.toInt
+          }
+        }
+        res = aps.find(p => p.name == AWI.executorId.toString).getOrElse(null)
+        if (res != null) {
+          executorId = res.properties.get(APWI.Value.toString) match {
+            case None | Some("") => 0
+            case Some(x) => x.toInt
+          }
+        }
         /*res = aps.find(p => p.name == AWI.toOrder.toString).getOrElse(null)
         if (res != null) {
           toOrder = res.properties.get(APWI.Value.toString) match {
@@ -337,10 +389,12 @@ class CommonDataProcessorBean
         }*/
 
         if (beginDate != null) a.setBegDate(beginDate)
-        if (endDate != null) a.setEndDate(endDate)
+
         if (finance > 0) a.setFinanceId(finance)
         //a.setToOrder(toOrder)
         if (plannedEndDate != null) a.setPlannedEndDate(plannedEndDate)
+        if (assignerId > 0) a.setAssigner(new Staff(assignerId))
+        if (executorId > 0) a.setExecutor(new Staff(executorId))
 
         result = a :: result
         entities = entities + a
@@ -393,7 +447,16 @@ class CommonDataProcessorBean
             }
           }
         })
+        if (endDate != null) {
+          a.setEndDate(endDate)
+          a.setStatus(ActionStatus.FINISHED.getCode) //WEBMIS-880
+        }
+        eventId = a.getEvent.getId.intValue()
       })
+      //Сохранение диагнозов в таблицу Диагностик
+      var apsForDiag = new util.LinkedList[ActionProperty]()
+      entities.foreach(f => if (f.isInstanceOf[ActionProperty]) apsForDiag.add(f.asInstanceOf[ActionProperty]))
+      dbManager.persistAll(this.saveDiagnoses(eventId ,apsForDiag, userData))
 
       result = dbManager
         .mergeAll(entities)
@@ -416,6 +479,55 @@ class CommonDataProcessorBean
     } finally {
       appLock.releaseLock(lockId)
     }
+  }
+
+  private def saveDiagnoses(eventId: Int, apList: java.util.List[ActionProperty], userData: AuthData): java.util.List[AnyRef] = {
+    var map = Map.empty[String, java.util.Set[AnyRef]]
+    val characterAP = apList.find(p => p.getType.getCode != null && p.getType.getCode !=null && p.getType.getCode.compareTo(i18n("db.apt.documents.codes.diseaseCharacter"))==0).getOrElse((null))
+    val stageAP = apList.find(p => p.getType.getCode != null && p.getType.getCode !=null && p.getType.getCode.compareTo(i18n("db.apt.documents.codes.diseaseStage"))==0).getOrElse((null))
+    var isStageSaved = false
+    var preCharacterId = 0
+    var preStageId = 0
+
+    val characterAPV = if (characterAP!=null) dbActionProperty.getActionPropertyValue(characterAP) else null
+    if (characterAPV != null && characterAPV.size() > 0 && characterAPV.get(0).getValueAsId.compareTo("") != 0) {
+      preCharacterId = Integer.valueOf(characterAPV.get(0).getValueAsId).intValue()
+    }
+    val stageAPV = if (stageAP!=null) dbActionProperty.getActionPropertyValue(stageAP) else null
+    if (stageAPV != null && stageAPV.size() > 0 && stageAPV.get(0).getValueAsId.compareTo("") != 0) {
+      preStageId = Integer.valueOf(stageAPV.get(0).getValueAsId).intValue()
+    }
+
+    apList.foreach(ap => {
+      var characterId = 0
+      var stageId = 0
+      if (ap.getType.getTypeName.compareTo("MKB")==0) {
+        val descriptionAP = apList.find(p => ap.getType.getCode != null && p.getType.getCode !=null && p.getType.getCode.compareTo(ap.getType.getCode.substring(0, ap.getType.getCode.size - 4))==0).getOrElse((null))
+        if (ap.getType.getCode != null) {
+          if (ap.getType.getCode.compareTo(i18n("appeal.diagnosis.diagnosisKind.finalMkb"))==0) {
+            characterId = preCharacterId
+            stageId = preStageId
+            isStageSaved = true
+          } else if (ap.getType.getCode.compareTo(i18n("appeal.diagnosis.diagnosisKind.mainDiagMkb"))==0 && !isStageSaved) {
+            if (apList.find(p => ap.getType.getCode != null && p.getType.getCode !=null && p.getType.getCode.compareTo(i18n("appeal.diagnosis.diagnosisKind.finalMkb"))==0).getOrElse((null)) == null) {
+              characterId = preCharacterId
+              stageId = preStageId
+            }
+          }
+          val mkbAPV = dbActionProperty.getActionPropertyValue(ap)
+          val descAPV = if (descriptionAP!=null) dbActionProperty.getActionPropertyValue(descriptionAP) else null
+          if (mkbAPV != null && mkbAPV.size() > 0 && mkbAPV.get(0).getValueAsId.compareTo("") != 0) {
+            map += (ap.getType.getCode -> Set[AnyRef](( -1,
+                                                        if (descAPV != null) descAPV.get(0).getValueAsString() else "",
+                                                        Integer.valueOf(mkbAPV.get(0).getValueAsId),
+                                                        characterId,
+                                                        stageId)))
+          }
+        }
+      }
+    })
+    val diag = diagnosisBean.insertDiagnoses(eventId, asJavaMap(map), userData)
+    diag
   }
 
   def changeActionStatus(eventId: Int,
@@ -473,17 +585,18 @@ class CommonDataProcessorBean
     types.foldLeft(
       new CommonData(0, dbVersion.getGlobalVersion)
     )((data, at) => {
-      val entity = new CommonEntity(at.getId,
+      val entity = new CommonEntity(at.getId.intValue(),
         0,
         at.getName,
         typeName,
-        at.getGroupId,
+        at.getId.intValue(),
         null,
         at.getCode)
       //***
       val group0 = new CommonGroup(0, "Summary")
       var a = new Action()
       a.setId(0)
+      a.setActionType(at)
 
       this.addAttributes(
         group0,

@@ -35,6 +35,9 @@ class AppealBean extends AppealBeanLocal
   var em: EntityManager = _
 
   @EJB
+  var organizationBeanLocal: DbOrganizationBeanLocal = _
+
+  @EJB
   var appLock: AppLockBeanLocal = _
 
   @EJB
@@ -87,6 +90,9 @@ class AppealBean extends AppealBeanLocal
 
   @EJB
   private var dbStaff: DbStaffBeanLocal = _
+
+  @EJB
+  private var dbRbResultBean: DbRbResultBeanLocal = _
 
   @Inject
   @Any
@@ -314,7 +320,7 @@ class AppealBean extends AppealBeanLocal
         val admissionMkb = dbCustomQueryBean.getDiagnosisForMainDiagInAppeal(appealData.data.id)
         if (admissionMkb != null) {
           var map = Map.empty[String, java.util.Set[AnyRef]]
-          map += ("final" -> Set[AnyRef]((-1, "", Integer.valueOf(admissionMkb.getId.intValue))))
+          map += ("final" -> Set[AnyRef]((-1, "", Integer.valueOf(admissionMkb.getId.intValue), 0, 0)))
           val diag = diagnosisBean.insertDiagnoses(appealData.data.id, asJavaMap(map), authData)
           diag.filter(p=>p.isInstanceOf[Diagnostic]).toList.foreach(f=>f.asInstanceOf[Diagnostic].setResult(this.getRbResultById(15)))
           dbManager.persistAll(diag)
@@ -361,13 +367,22 @@ class AppealBean extends AppealBeanLocal
 
     //Создание/редактирование диагнозов (отд. записи)
     var map = Map.empty[String, java.util.Set[AnyRef]]
-    Set("assignment", "aftereffect", "attendant").foreach(flatCode=>{
+    Set(i18n("appeal.diagnosis.diagnosisKind.diagReceivedMkb"),
+        i18n("appeal.diagnosis.diagnosisKind.aftereffectMkb"),
+        i18n("appeal.diagnosis.diagnosisKind.attendantMkb")).foreach(flatCode=>{
       val values = appealData.data.diagnoses.filter(p=>p.getDiagnosisKind.compareTo(flatCode)==0)
                                             .map(f=>{
-                                                      val mkb = dbMkbBean.getMkbByCode(f.getMkb.getCode)
+                                                      var mkb :Mkb = null
+                                                      try {
+                                                        mkb = dbMkbBean.getMkbByCode(f.getMkb.getCode)
+                                                      } catch {
+                                                        case e: Exception => mkb = null
+                                                      }
                                                       (Integer.valueOf(f.getDiagnosticId),
                                                       f.getDescription,
-                                                      if(mkb!=null) Integer.valueOf(mkb.getId.intValue) else -1)
+                                                      if(mkb!=null) Integer.valueOf(mkb.getId.intValue) else -1,
+                                                      0, // characterId
+                                                      0) // stageId
                                                     })
                                             .toSet[AnyRef]
       map += (flatCode -> values)
@@ -407,16 +422,16 @@ class AppealBean extends AppealBeanLocal
     //Запрос данных из ActionProperty
     val findMapActionProperty = actionPropertyBean.getActionPropertiesByActionId(action.getId.intValue())
 
-    val values: java.util.Map[java.lang.Integer, java.util.List[Object]] = findMapActionProperty.foldLeft(new java.util.HashMap[java.lang.Integer, java.util.List[Object]])(
+    val values: java.util.Map[(java.lang.Integer, ActionProperty), java.util.List[Object]] = findMapActionProperty.foldLeft(new java.util.HashMap[(java.lang.Integer, ActionProperty), java.util.List[Object]])(
       (str_key, el) => {
         val (ap,  apvs) = el
         val aptId = ap.getType.getId.intValue()
         val rbCap = dbRbCoreActionPropertyBean.getRbCoreActionPropertiesByActionPropertyTypeId(aptId)
         if (rbCap!=null) {
-          val key = rbCap.getId
+          val key = (rbCap.getId, ap)
           val list: java.util.List[Object] = new ArrayList[Object]
           if(apvs!=null && apvs.size>0) {
-            apvs.foreach(apv=>list += apv.getValue)
+            apvs.foreach(apv=>list += (apv.getValue))
           }
           else
             list += null
@@ -432,10 +447,10 @@ class AppealBean extends AppealBeanLocal
         str_key
       })
 
-    val eventsMap = new java.util.HashMap[Event, java.util.Map[Action, java.util.Map[java.lang.Integer,java.util.List[Object]]]]
-    val actionsMap = new java.util.HashMap[Action, java.util.Map[java.lang.Integer,java.util.List[Object]]]
+    val eventsMap = new java.util.HashMap[Event, java.util.Map[Action, java.util.Map[Object, java.util.List[Object]]]]
+    val actionsMap = new java.util.HashMap[Action, java.util.Map[Object, java.util.List[Object]]]
 
-    actionsMap.put(action, values)
+    actionsMap.put(action, values.asInstanceOf[java.util.Map[Object, java.util.List[Object]]])
     eventsMap.put(event, actionsMap)
 
     eventsMap
@@ -514,7 +529,7 @@ class AppealBean extends AppealBeanLocal
       event.setModifyDatetime(now)
       event.setModifyPerson(authData.user)
       event.setExecDate(now)
-      event.setResultId(resultId) //какой-то айдишник =)
+      event.setResult(dbRbResultBean.getRbResultById(resultId)) //какой-то айдишник =)
     }
     catch {
       case e: Exception => {
@@ -647,7 +662,7 @@ class AppealBean extends AppealBeanLocal
       event.setIsPrimary(isPrim)
     } else event.setIsPrimary(0)
 
-    event.setOrgId(3479)  //TODO: ! Материть Сашу
+    event.setOrganisation(organizationBeanLocal.getOrganizationById(ConfigManager.Common.OrgId))
 
     return event
   }
@@ -763,7 +778,12 @@ class AppealBean extends AppealBeanLocal
       } else {
         try {
           if (dc.mkb.getCode() != null) {
-            val mkb = dbMkbBean.getMkbByCode(dc.mkb.getCode().toString)
+            var mkb :Mkb = null
+            try {
+              mkb = dbMkbBean.getMkbByCode(dc.mkb.getCode().toString)
+            } catch {
+              case e: Exception => mkb = null
+            }
             if(mkb!=null && mkb.getId.intValue()>0)
               valueSet += mkb.getId.toString
           }
@@ -905,7 +925,12 @@ class AppealBean extends AppealBeanLocal
     }
     try {
       val patient = eventBean.getEventById(eventId).getPatient
-      val mkb = dbMkbBean.getMkbByCode(dataEntry.getMkb.getCode)
+      var mkb :Mkb = null
+      try {
+        mkb = dbMkbBean.getMkbByCode(dataEntry.getMkb.getCode)
+      } catch {
+        case e: Exception => mkb = null
+      }
       var isPersist = true
       if (dataEntry.getId > 0) {
         isPersist = false
@@ -931,9 +956,9 @@ class AppealBean extends AppealBeanLocal
 
   def getMonitoringInfo(eventId: Int, condition: Int, authData: AuthData)  = {
     val codes = asJavaSet(condition match {
-      case 0 => Set("TEMPERATURE", "BPRAS", "BPRAD", "PULS", "SP02", "RR", "STATE", "WB")
-      case 1 => Set("K", "NA", "CA", "GLUCOSE", "TP", "UREA", "TB", "CB")
-      case _ => Set("TEMPERATURE", "BPRAS","BPRAD", "PULS", "SP02", "RR", "STATE", "WB")
+      case 0 => Set("TEMPERATURE", "BPRAS", "BPRAD", "PULS", "SPO2", "RR", "STATE", "WB", "GROWTH", "WEIGHT")
+      case 1 => Set("K", "NA", "CA", "GLUCOSE", "TP", "UREA", "TB", "CB", "WBC", "GRAN", "NEUT", "HGB", "PLT")
+      case _ => Set("TEMPERATURE", "BPRAS","BPRAD", "PULS", "SPO2", "RR", "STATE", "WB", "GROWTH", "WEIGHT")
     })
     val map = actionPropertyBean.getActionPropertiesByEventIdsAndActionPropertyTypeCodes(List(Integer.valueOf(eventId)), codes, 5)
     if (map!=null && map.contains(Integer.valueOf(eventId)))

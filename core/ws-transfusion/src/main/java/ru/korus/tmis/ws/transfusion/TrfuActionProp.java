@@ -32,7 +32,7 @@ public class TrfuActionProp {
 
     /**
      * Создание класса для работы со свойствами действия
-     * 
+     *
      * @param databaseBean
      *            - доступ к БД
      * @param actionTypeFlatCode

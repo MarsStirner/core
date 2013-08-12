@@ -216,7 +216,7 @@ class FlatDirectoryEntry {
     this.description = directory.getDescription
     if (request.filter.isInstanceOf[FlatDirectoryRequestDataListFilter] &&
       request.filter.asInstanceOf[FlatDirectoryRequestDataListFilter].includeMeta) {
-      directory.getFdFields.foreach(fdField => this.fieldDescriptionList += new FieldDescriptionData(fdField))
+      directory.getFdFields.foreach(fdField => if(fdField!=null) this.fieldDescriptionList += new FieldDescriptionData(fdField))
     }
     if (request.filter.isInstanceOf[FlatDirectoryRequestDataListFilter] &&
       request.filter.asInstanceOf[FlatDirectoryRequestDataListFilter].includeRecordList) {
@@ -232,7 +232,7 @@ class FlatDirectoryEntry {
     this.description = directory._1.getDescription
     if (request.filter.isInstanceOf[FlatDirectoryRequestDataListFilter] &&
       request.filter.asInstanceOf[FlatDirectoryRequestDataListFilter].includeMeta) {
-      directory._1.getFdFields.foreach(fdField => this.fieldDescriptionList += new FieldDescriptionData(fdField))
+      directory._1.getFdFields.foreach(fdField => if(fdField!=null) this.fieldDescriptionList += new FieldDescriptionData(fdField))
     }
     if (request.filter.isInstanceOf[FlatDirectoryRequestDataListFilter] &&
       request.filter.asInstanceOf[FlatDirectoryRequestDataListFilter].includeRecordList) {
@@ -341,7 +341,11 @@ class FieldValueData {
   def this(value: FDFieldValue, flagFDRecord: Boolean) {
     this()
     if (flagFDRecord) {
-      this.fieldDescription = new FieldDescriptionData(value.getPk.getFDField)
+      this.fieldDescription =
+        if(value!=null && value.getPk!=null && value.getPk.getFDField!=null)
+          new FieldDescriptionData(value.getPk.getFDField)
+        else
+          new FieldDescriptionData()
     } else {
       this.fieldDescription = new IdOrderFieldDescriptionData(value.getPk.getFDField)
     }

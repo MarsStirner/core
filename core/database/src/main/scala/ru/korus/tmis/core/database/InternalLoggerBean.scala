@@ -40,12 +40,12 @@ class InternalLoggerBean
                     className: String,
                     methodName: String) = {
     try {
-      em.persist(new ProfileEvent(sessionId,
-        nestedLevel,
-        number,
-        time,
-        className,
-        methodName))
+      /*em.persist(new ProfileEvent(sessionId,
+                                  nestedLevel,
+                                  number,
+                                  time,
+                                  className,
+                                  methodName)) */
     }
     catch {
       case ex: Exception => {

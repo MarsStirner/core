@@ -30,7 +30,7 @@ public interface DiagnosisBeanLocal {
      * @return Диагноз как (Diagnostic, Diagnosis)
      * @throws CoreException
      */
-    Object insertDiagnosis(int id, int eventId, String diaTypeFlatCode, int diseaseCharacterId, String description, int mkb, AuthData userData) throws CoreException;
+    Object insertDiagnosis(int id, int eventId, String diaTypeFlatCode, int diseaseCharacterId, String description, int mkb, int diseaseStageId, AuthData userData) throws CoreException;
 
     /**
      * Запись или редактирование списка диагнозов.

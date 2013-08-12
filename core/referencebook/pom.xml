@@ -4,7 +4,7 @@
 
     <modelVersion>4.0.0</modelVersion>
     <groupId>ru.korus.tmis.referencebook</groupId>
-    <artifactId>reference-book</artifactId>
+    <artifactId>referencebook</artifactId>
     <version>${version.tmis.core}</version>
     <packaging>ejb</packaging>
     <name>TMIS Reference Book</name>

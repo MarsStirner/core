@@ -75,6 +75,19 @@ public class QuotaType implements Serializable {
     @Column(name = "teenOlder")
     private boolean teenOlder;
 
+    public QuotaType() {
+    }
+
+    public QuotaType(Integer id) {
+        this.id = id;
+    }
+
+    public QuotaType(Integer id, String code, String name) {
+        this.id = id;
+        this.code = code;
+        this.name = name;
+    }
+
     public Integer getId() {
         return id;
     }

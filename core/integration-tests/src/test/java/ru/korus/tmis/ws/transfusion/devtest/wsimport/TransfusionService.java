@@ -22,7 +22,7 @@ public interface TransfusionService {
 
     /**
      * 
-     * @return returns java.dbutil.List<ru.korus.tmis.ws.transfusion.devtest.wsimport.DivisionInfo>
+     * @return returns java.util.List<ru.korus.tmis.ws.transfusion.devtest.wsimport.DivisionInfo>
      */
     @WebMethod
     @WebResult(targetNamespace = "")

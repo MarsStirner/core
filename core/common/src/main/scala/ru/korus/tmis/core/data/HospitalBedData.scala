@@ -211,7 +211,7 @@ class HospitalBedEntry {
     if(received!=null && received.size>0) {
       val action = received.get(0)
       //Первая запись всегда "Приемное отделение"
-      this.moves.add(new MovesListHospitalBedContainer(action.getId.intValue(),
+      this.moves.add(new MovesListHospitalBedContainer(action,
                                                        28,
                                                        "Приемное отделение",
                                                        action.getBegDate,
@@ -269,7 +269,7 @@ class HospitalBedEntry {
           }
 
           //Запись движения
-          this.moves.add(new MovesListHospitalBedContainer(action.getId.intValue(),
+          this.moves.add(new MovesListHospitalBedContainer(action,
                                                            bed,
                                                            getFormattedDate(action.getBegDate, timeArrival),
                                                            getFormattedDate(action.getEndDate, timeLeaved)))
@@ -391,6 +391,11 @@ class MovesListHospitalBedContainer {
   var chamber: String = _  //TODO: Не используется в текущей реализации БД
   @BeanProperty
   var bed: String = _
+  //https://docs.google.com/document/d/1wuIO-4QNwq3nD7NEUAFIxDIIOmYFp35pYb3evZ7imcM/edit#heading=h.78wgoy5wysa5
+  @BeanProperty
+  var profileBeds: String = _
+  @BeanProperty
+  var doctorCode: String = _
 
   /**
    * Конструктор MovesListHospitalBedContainer.
@@ -414,25 +419,31 @@ class MovesListHospitalBedContainer {
    * @param leave Дата выбытия.
    * @since 1.0.0.45
    */
-  def this(id: Int, unitId: Int, unit: String, admission: Date, leave: Date){
+  def this(action: Action, unitId: Int, unit: String, admission: Date, leave: Date){
     this()
-    this.id = id
+    this.id = action.getId.intValue()
+    if(action.getAssigner!=null)
+      this.doctorCode = action.getAssigner.getId.toString
     this.unitId = unitId
     this.unit = unit
     this.admission = admission
     this.leave = leave
   }
 
-  def this(id: Int, bed: OrgStructureHospitalBed, admission: Date, leave: Date){
+  def this(action: Action, bed: OrgStructureHospitalBed, admission: Date, leave: Date){
     this()
-    this.id = id
+    this.id = action.getId.intValue()
     if (bed!=null){
       this.unitId = bed.getMasterDepartment.getId.intValue()
       this.unit = bed.getMasterDepartment.getCode
       this.bed = bed.getCode
+      if (bed.getProfileId!=null)
+        this.profileBeds = bed.getProfileId.getName
     }
     this.admission = admission
     this.leave = leave
+    if(action.getAssigner!=null)
+      this.doctorCode = action.getAssigner.getId.toString
     this.calculate()
   }
 

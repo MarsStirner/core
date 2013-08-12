@@ -14,7 +14,14 @@ import javax.xml.datatype.XMLGregorianCalendar;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import ru.korus.tmis.core.entity.model.*;
+import ru.korus.tmis.core.entity.model.APValue;
+import ru.korus.tmis.core.entity.model.AbstractAPValue;
+import ru.korus.tmis.core.entity.model.Action;
+import ru.korus.tmis.core.entity.model.ActionProperty;
+import ru.korus.tmis.core.entity.model.ActionPropertyType;
+import ru.korus.tmis.core.entity.model.IndexedId;
+import ru.korus.tmis.core.entity.model.RbUnit;
+import ru.korus.tmis.core.entity.model.Staff;
 import ru.korus.tmis.core.exception.CoreException;
 import ru.korus.tmis.util.ConfigManager;
 import ru.korus.tmis.util.EntityMgr;
@@ -73,11 +80,11 @@ public class Database {
         final String className = classType.getName();
         final List<Object> propRes =
                 em.createQuery("SELECT p FROM " + className.substring(className.lastIndexOf('.') + 1) + " p WHERE p.id = :id", classType)
-                        .setParameter("id", new IndexedId(prop.get(0).getId(), 0)).getResultList();
+                        .setParameter("id", new IndexedId(prop.iterator().next().getId(), 0)).getResultList();
 
         checkCountProp(actionId, propTypeId, propRes.size());
 
-        return (T) ((APValue) propRes.get(0)).getValue();
+        return (T) ((APValue) propRes.iterator().next()).getValue();
     }
 
     public Database()
@@ -157,13 +164,13 @@ public class Database {
         if (value == null) {
             throw new IllegalArgumentException("The param 'final T value' is null");
         }
-        Integer newPropId = null;
+        Integer newPropId;
         final List<ActionProperty> prop = getActionProp(actionId, propTypeId);
         if (prop.size() > 0) {
             if (isUpdate) {
-                newPropId = prop.get(0).getId();
+                newPropId = prop.iterator().next().getId();
             } else {
-                new CoreException(String.format("The property %i for action %i has been alredy set", propTypeId, actionId)); // свойство уже установленно
+                throw new CoreException(String.format("The property %i for action %i has been alredy set", propTypeId, actionId)); // свойство уже установленно
             }
         } else {
             newPropId = addActionProp(actionId, propTypeId);
@@ -218,6 +225,9 @@ public class Database {
      *             если не возможно создать экземпляр XMLGregorianCalendar (@see {@link DatatypeFactory#newInstance()})
      */
     public static XMLGregorianCalendar toGregorianCalendar(final Date date) throws DatatypeConfigurationException {
+        if (date == null) {
+            throw new DatatypeConfigurationException();
+        }
         final GregorianCalendar planedDateCalendar = new GregorianCalendar();
         planedDateCalendar.setTime(date);
         return DatatypeFactory.newInstance().newXMLGregorianCalendar(planedDateCalendar);
@@ -253,7 +263,7 @@ public class Database {
         final List<T> curProp =
                 (List<T>) em.createQuery(String.format(template, className.substring(className.lastIndexOf('.') + 1)), defaultValue.getClass())
                         .setParameter("curProp_id", newPropId).getResultList();
-        return curProp.size() > 0 ? curProp.get(0) : defaultValue;
+        return curProp.size() > 0 ? curProp.iterator().next() : defaultValue;
     }
 
     /**
@@ -283,14 +293,13 @@ public class Database {
 
     public Staff getCoreUser() {
         final String coreLogin = ConfigManager.UsersMgr().CoreUserLogin();
-        //System.getProperty("tmis.core.user");
+        // System.getProperty("tmis.core.user");
         if (coreLogin != null) {
             final List<Staff> coreUsers = em.createQuery("SELECT u FROM Staff u WHERE u.login = :login", Staff.class)
-                            .setParameter("login", coreLogin)
-                            .getResultList();
+                    .setParameter("login", coreLogin)
+                    .getResultList();
             return coreUsers.isEmpty() ? null : coreUsers.get(0);
         }
         return null;
     }
 }
-

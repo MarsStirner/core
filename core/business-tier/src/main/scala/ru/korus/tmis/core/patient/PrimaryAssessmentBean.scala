@@ -14,6 +14,7 @@ import ru.korus.tmis.core.database._
 import ru.korus.tmis.core.data._
 import collection.immutable.HashMap
 import ru.korus.tmis.util.{StringId, ConfigManager, ActionPropertyWrapperInfo, I18nable}
+import ru.korus.tmis.util.StringId
 
 @Interceptors(Array(classOf[LoggingInterceptor]))
 @Stateless
@@ -31,9 +32,6 @@ class PrimaryAssessmentBean
   private var actionPropertyBean: DbActionPropertyBeanLocal = _
 
   @EJB
-  private var actionPropertyTypeBean: DbActionPropertyTypeBeanLocal = _
-
-  @EJB
   private var actionTypeBean: DbActionTypeBeanLocal = _
 
   @EJB
@@ -44,6 +42,12 @@ class PrimaryAssessmentBean
 
   @EJB
   private var dbManager: DbManagerBeanLocal = _
+
+  @EJB
+  var dbLayoutAttributeValueBean: DbLayoutAttributeValueBeanLocal = _
+
+  @EJB
+  var diagnosisBean: DiagnosisBeanLocal = _
 
   def summary(assessment: Action) = {
     val group = new CommonGroup(0, "Summary")
@@ -101,30 +105,26 @@ class PrimaryAssessmentBean
     group
   }
 
-  def detailsWithAge(assessment: Action) = {
-    val propertiesMap = actionPropertyBean.getActionPropertiesByActionId(assessment.getId.intValue)
-    val group = new CommonGroup(1, "Details")
+  def detailsWithLayouts(assessment: Action) = {
+    val propertiesMap =
+      actionPropertyBean.getActionPropertiesByActionId(assessment.getId.intValue)
 
-    val age = commonDataProcessor.defineAgeOfPatient(assessment.getEvent.getPatient)
+    val group = new CommonGroup(1, "Details")
 
     propertiesMap.foreach(
       (p) => {
         val (ap, apvs) = p
         val apw = new ActionPropertyWrapper(ap)
-        if (commonDataProcessor.checkActionPropertyTypeForPatientAge(age, ap.getType)) {
-          apvs.size match {
-            case 0 => {
-              group add apw.get(null, List(APWI.Unit,
-                APWI.Norm))
-            }
-            case _ => {
-              apvs.foreach((apv) => {
-                group add apw.get(apv, List(APWI.Value,
-                  APWI.ValueId,
-                  APWI.Unit,
-                  APWI.Norm))
-              })
-            }
+
+        apvs.size match {
+          case 0 => {
+            group add apw.get(null, List(APWI.Unit, APWI.Norm))
+          }
+          case _ => {
+            apvs.foreach((apv) => {
+              val ca = apw.get(apv, List(APWI.Value, APWI.ValueId, APWI.Unit, APWI.Norm))
+              group add new CommonAttributeWithLayout(ca, dbLayoutAttributeValueBean.getLayoutAttributeValuesByActionPropertyTypeId(ap.getType.getId.intValue()).toList)
+            })
           }
         }
       })
@@ -134,7 +134,7 @@ class PrimaryAssessmentBean
 
   def converterFromList(list: java.util.List[String], apt: ActionPropertyType) = {
 
-    var map = list.foldLeft(Map.empty[String,String])(
+    val map = list.foldLeft(Map.empty[String,String])(
       (str_key, el) => {
         val key = el
         val value  =   if(key == APWI.Value.toString){apt.getDefaultValue}
@@ -147,12 +147,15 @@ class PrimaryAssessmentBean
         str_key + (key -> value)
       })
 
-    new CommonAttribute(apt.getId,
-      0,
-      apt.getName,
-      apt.getTypeName,
-      apt.getConstructorValueDomain,
-      map)
+    new CommonAttributeWithLayout(apt.getId,
+                                  0,
+                                  apt.getName,
+                                  apt.getTypeName,
+                                  apt.getValueDomain,//apt.getConstructorValueDomain,
+                                  map,
+                                  dbLayoutAttributeValueBean.getLayoutAttributeValuesByActionPropertyTypeId(apt.getId.intValue()).toList,
+                                  apt.isMandatory.toString,
+                                  apt.isReadOnly.toString)
   }
 
   def getEmptyStructure(atId: Int,
@@ -173,45 +176,6 @@ class PrimaryAssessmentBean
     json_data.data = cd.entity
     if (postProcessing != null) {
       json_data =  postProcessing(json_data, true)
-    }
-    json_data
-  }
-
-  def  createAssessmentsForEventIdFromCommonData(eventId: Int,
-                                                 assessments: CommonData,
-                                                 title: String,
-                                                 request: Object,
-                                                 userData: AuthData,
-                                                 postProcessingForDiagnosis: (JSONCommonData, java.lang.Boolean) => JSONCommonData) = {
-
-     val actions: java.util.List[Action] = commonDataProcessor.createActionForEventFromCommonData(eventId, assessments, userData)
-     //создание жоб тикета
-     val com_data = commonDataProcessor.fromActions( actions, title, List(summary _, detailsWithAge _))
-
-     var json_data = new JSONCommonData(request, com_data)
-     if (postProcessingForDiagnosis != null) {
-       json_data =  postProcessingForDiagnosis(json_data, false)
-     }
-     json_data
-  }
-
-  def  modifyAssessmentsForEventIdFromCommonData(assessmentId: Int,
-                                                 assessments: CommonData,
-                                                 title: String,
-                                                 request: Object,
-                                                 userData: AuthData,
-                                                 postProcessingForDiagnosis: (JSONCommonData, java.lang.Boolean) => JSONCommonData) = {
-
-    //val actions: java.util.List[Action] = commonDataProcessor.createActionForEventFromCommonData(eventId, assessments, userData)
-    var actions: java.util.List[Action] = null// commonDataProcessor.modifyActionFromCommonData(assessmentId, assessments, userData)
-    assessments.getEntity.foreach((action) => {
-      actions = commonDataProcessor.modifyActionFromCommonData(action.getId().intValue(), assessments, userData)
-    })
-    val com_data = commonDataProcessor.fromActions( actions, title, List(summary _, detailsWithAge _))
-
-    var json_data = new JSONCommonData(request, com_data)
-    if (postProcessingForDiagnosis != null) {
-      json_data =  postProcessingForDiagnosis(json_data, false)
     }
     json_data
   }
@@ -249,6 +213,22 @@ class PrimaryAssessmentBean
     if (postProcessing != null) {
       json_data =  postProcessing(json_data, false)
     }
+    /*
+    //Если первичный осмотр, то записать диагноз при поступлении
+    val primaries = json_data.data.filter(ce => ce.getTypeId().compareTo(i18n("db.actionType.primary").toInt)==0)
+    primaries.foreach(ce => {
+      val attr = ce.group.get(1).attribute.find(p=>p.getType().compareTo("MKB")==0).getOrElse(null)
+      if (attr!=null) {
+        val mkbId = attr.properties.get("valueId").getOrElse(null)
+        if(mkbId!=null && (!mkbId.isEmpty)){
+          var map = Map.empty[String, java.util.Set[AnyRef]]
+          map += ("admission" -> Set[AnyRef]((-1, "", Integer.valueOf(mkbId.toString))))
+          val diag = diagnosisBean.insertDiagnoses(eventId, asJavaMap(map), userData)
+          dbManager.persistAll(diag)
+        }
+      }
+    })
+    */
     json_data
   }
 
@@ -295,7 +275,7 @@ class PrimaryAssessmentBean
     val com_data = commonDataProcessor.fromActions(
       actions,
       title,
-      List(summary _, details _))
+      List(summary _, detailsWithLayouts _))
 
     var json_data = new JSONCommonData()
     json_data.data = com_data.entity
@@ -335,44 +315,5 @@ class PrimaryAssessmentBean
         })
       dbManager.mergeAll(apSet)
     }
-  }
-
-  //временно расположим тут
-  def insertAssessmentAsConsultation(eventId: Int,
-                                     actionTypeId: Int,
-                                     executorId: Int,
-                                     bDate: Date,
-                                     eDate:Date,
-                                     urgent:Boolean,
-                                     request: Object,
-                                     userData: AuthData) = {
-
-    //action
-    var action: Action = actionBean.createAction(eventId.intValue(),
-                                                 actionTypeId.intValue(),
-                                                 userData)
-    action.setIsUrgent(urgent)
-    action.setExecutor(dbStaff.getStaffById(executorId))
-    action.setBegDate(bDate)
-    action.setPlannedEndDate(eDate)
-    dbManager.persist(action)
-
-    //empty action property
-    val apSet = new HashSet[ActionProperty]
-
-    actionPropertyTypeBean.getActionPropertyTypesByActionTypeId(actionTypeId.intValue())
-      .toList
-      .foreach((apt) => {
-        val property = actionPropertyBean.createActionProperty(action,
-                                                               apt.getId.intValue(),
-                                                               userData)
-        apSet += property
-    })
-
-    dbManager.mergeAll(apSet)
-
-    var json = this.getPrimaryAssessmentById(action.getId.intValue(), "Consultation", userData, null, false)
-    json.setRequestData(request) //по идее эта штука должна быть в конструкторе вызываемая в методе гет
-    json
   }
 }

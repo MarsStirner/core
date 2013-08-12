@@ -32,29 +32,37 @@ public class BaseRegistryRESTImpl implements Serializable {
 
     private static final boolean TEST_MODE = true;
 
+    private boolean testConstruct = false;
+
     @Inject
     WebMisRESTImpl wsImpl;
 
     @Context
     HttpServletRequest servRequest;
+
     @Path("/")
     public CustomInfoRESTImpl getCustomInfoRESTImpl(@QueryParam("token") String token,
                                                     @QueryParam("callback") String callback,
-                                                          @QueryParam("limit") int limit,
-                                                          @QueryParam("page") int  page,
-                                                          @QueryParam("sortingField") String sortingField,
-                                                          @QueryParam("sortingMethod") String sortingMethod) {
+                                                    @QueryParam("limit") int limit,
+                                                    @QueryParam("page") int  page,
+                                                    @QueryParam("sortingField") String sortingField,
+                                                    @QueryParam("sortingMethod") String sortingMethod) {
         return new CustomInfoRESTImpl(wsImpl, callback, limit, page, sortingField, sortingMethod, makeAuth(token));
     }
 
     @Path("/dir/")
     public DirectoryInfoRESTImpl getDirectoryInfoRESTImpl(@QueryParam("token") String token,
+                                                          @QueryParam("test") String test,
                                                           @QueryParam("callback") String callback,
                                                           @QueryParam("limit") int limit,
                                                           @QueryParam("page") int  page,
                                                           @QueryParam("sortingField") String sortingField,
                                                           @QueryParam("sortingMethod") String sortingMethod) {
-        return new DirectoryInfoRESTImpl(wsImpl, callback, limit, page, sortingField, sortingMethod, makeAuth(token));
+        //TODO: Вставлен кэйс для тестов (нужно ли?)
+        this.testConstruct = (test!=null &&
+                              !test.isEmpty() &&
+                              (test.toLowerCase().compareTo("yes")==0 || test.toLowerCase().compareTo("true")==0)) ? true : false;
+        return new DirectoryInfoRESTImpl(wsImpl, servRequest, callback, limit, page, sortingField, sortingMethod, makeAuth(token), testConstruct);
     }
 
     @Path("/patients/")

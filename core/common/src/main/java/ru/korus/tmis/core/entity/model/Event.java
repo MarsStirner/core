@@ -1,19 +1,36 @@
 package ru.korus.tmis.core.entity.model;
 
-import javax.persistence.*;
-import javax.xml.bind.annotation.XmlRootElement;
-import javax.xml.bind.annotation.XmlType;
 import java.io.Serializable;
 import java.util.Date;
 import java.util.LinkedList;
 import java.util.List;
 
+import javax.persistence.Basic;
+import javax.persistence.CascadeType;
+import javax.persistence.Column;
+import javax.persistence.Entity;
+import javax.persistence.GeneratedValue;
+import javax.persistence.GenerationType;
+import javax.persistence.Id;
+import javax.persistence.JoinColumn;
+import javax.persistence.Lob;
+import javax.persistence.ManyToOne;
+import javax.persistence.NamedQueries;
+import javax.persistence.NamedQuery;
+import javax.persistence.OneToMany;
+import javax.persistence.Table;
+import javax.persistence.Temporal;
+import javax.persistence.TemporalType;
+import javax.persistence.Version;
+import javax.xml.bind.annotation.XmlRootElement;
+import javax.xml.bind.annotation.XmlType;
+
 @Entity
 @Table(name = "Event", catalog = "", schema = "")
 @NamedQueries(
-        {
-                @NamedQuery(name = "Event.findAll", query = "SELECT e FROM Event e")
-        })
+{
+        @NamedQuery(name = "Event.findAll", query = "SELECT e FROM Event e")
+})
 @XmlType(name = "event")
 @XmlRootElement(name = "event")
 public class Event implements Serializable {
@@ -57,8 +74,9 @@ public class Event implements Serializable {
             nullable = false)
     private EventType eventType;
 
-    @Column(name = "org_id")
-    private Integer orgId;
+    @ManyToOne
+    @JoinColumn(name = "org_id", nullable = true)
+    private Organisation organisation;
 
     @JoinColumn(name = "contract_id")
     private Contract contract;
@@ -92,8 +110,8 @@ public class Event implements Serializable {
     @Column(name = "order")
     private Integer order;
 
-    @Column(name = "result_id")
-    private Integer resultId;
+    @JoinColumn(name = "result_id")
+    private RbResult result;
 
     @Column(name = "nextEventDate")
     @Temporal(TemporalType.TIMESTAMP)
@@ -129,22 +147,21 @@ public class Event implements Serializable {
     @Column(name = "mesSpecification_id")
     private Integer mesSpecificationId;
 
-    //@Column(name = "refusal")
-    //private Integer refusal;
+    // @Column(name = "refusal")
+    // private Integer refusal;
 
     @Version
     @Basic(optional = false)
     @Column(name = "version")
     private int version;
 
-
     @ManyToOne(cascade = CascadeType.ALL)
     @JoinColumn(name = "uuid_id")
-//    @Transient
+    // @Transient
     private UUID uuid;
-    ////////////////////////////////////////////////////////////////////////////
+    // //////////////////////////////////////////////////////////////////////////
     // Custom mappings
-    ////////////////////////////////////////////////////////////////////////////
+    // //////////////////////////////////////////////////////////////////////////
 
     @ManyToOne
     @JoinColumn(name = "client_id")
@@ -175,9 +192,10 @@ public class Event implements Serializable {
             diagnostic.setEvent(this);
         }
     }
-    ////////////////////////////////////////////////////////////////////////////
+
+    // //////////////////////////////////////////////////////////////////////////
     // End of custom mappings
-    ////////////////////////////////////////////////////////////////////////////
+    // //////////////////////////////////////////////////////////////////////////
 
     public Event() {
     }
@@ -250,12 +268,12 @@ public class Event implements Serializable {
         this.eventType = eventType;
     }
 
-    public Integer getOrgId() {
-        return orgId;
+    public Organisation getOrganisation() {
+        return organisation;
     }
 
-    public void setOrgId(Integer orgId) {
-        this.orgId = orgId;
+    public void setOrganisation(Organisation organisation) {
+        this.organisation = organisation;
     }
 
     public Contract getContract() {
@@ -322,12 +340,12 @@ public class Event implements Serializable {
         this.order = order;
     }
 
-    public Integer getResultId() {
-        return resultId;
+    public RbResult getResult() {
+        return result;
     }
 
-    public void setResultId(Integer resultId) {
-        this.resultId = resultId;
+    public void setResult(RbResult result) {
+        this.result = result;
     }
 
     public Date getNextEventDate() {

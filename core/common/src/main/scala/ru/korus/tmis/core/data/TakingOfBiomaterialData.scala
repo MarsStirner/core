@@ -88,6 +88,8 @@ class TakingOfBiomaterialRequesData {
 class TakingOfBiomaterialRequesDataFilter {
 
   @BeanProperty
+  var jobTicketId: Int = -1
+  @BeanProperty
   var departmentId: Int = _
   @BeanProperty
   var beginDate: Date = _
@@ -98,12 +100,14 @@ class TakingOfBiomaterialRequesDataFilter {
   @BeanProperty
   var biomaterial: Int = -1
 
-  def this( departmentId: Int,
+  def this( jobTicketId: Int,
+            departmentId: Int,
             beginDate: Long,
             endDate: Long,
             status: Short,
             biomaterial: Int) {
     this()
+    this.jobTicketId = jobTicketId
     this.departmentId = departmentId
     this.status = status
     this.biomaterial = biomaterial
@@ -197,13 +201,19 @@ class TakingOfBiomaterialRequesDataFilter {
 
   def toQueryStructure() = {
     val qs = new QueryDataStructure()
-    if(this.status>=0){
-      qs.query += "AND jt.status = :status\n"
-      qs.add("status",this.status:java.lang.Integer)
+    if (this.jobTicketId > 0) {
+      qs.query += "AND jt.id = :jobTicketId\n"
+      qs.add("jobTicketId",this.jobTicketId:java.lang.Integer)
     }
-    if(this.biomaterial>0){
-      qs.query += ("AND attp.actionType.id = a.actionType.id AND attp.tissueType.id = :biomaterial")
-      qs.add("biomaterial",this.biomaterial:java.lang.Integer)
+    else {
+      if(this.status>=0){
+        qs.query += "AND jt.status = :status\n"
+        qs.add("status",this.status:java.lang.Integer)
+      }
+      if(this.biomaterial>0){
+        qs.query += ("AND attp.actionType.id = a.actionType.id AND attp.tissueType.id = :biomaterial")
+        qs.add("biomaterial",this.biomaterial:java.lang.Integer)
+      }
     }
     qs
   }
@@ -231,15 +241,19 @@ class ActionInfoDataContainer {
 
   def this(action: Action, tissueType: ActionTypeTissueType) {
     this()
-    this.id = action.getId.intValue()
-    this.actionType = new IdNameContainer(action.getActionType.getId.intValue(),
-      action.getActionType.getName)
-    this.biomaterial = new TissueTypeContainer(tissueType)
-    this.urgent = action.getIsUrgent
-    this.tubeType = new TestTubeTypeInfoContainer(action.getActionType.getTestTubeType)
+    if (action!=null){
+      this.id = action.getId.intValue()
+      this.actionType = new IdNameContainer(action.getActionType.getId.intValue(), action.getActionType.getName)
+      this.urgent = action.getIsUrgent
+      this.tubeType = new TestTubeTypeInfoContainer(action.getActionType.getTestTubeType)
+      if (action.getEvent!=null && action.getEvent.getPatient!=null)
+        this.patient = new PatientInfoDataContainer(action.getEvent.getPatient)
+      if (action.getTakenTissue!=null)
+        this.takenTissueJournal = action.getTakenTissue.getBarcode
+    }
+    if(tissueType!=null)
+      this.biomaterial = new TissueTypeContainer(tissueType)
     //this.assigner = new DoctorContainer(action.getAssigner)
-    this.patient = new PatientInfoDataContainer(action.getEvent.getPatient)
-    this.takenTissueJournal = action.getTakenTissue.getBarcode
   }
 }
 

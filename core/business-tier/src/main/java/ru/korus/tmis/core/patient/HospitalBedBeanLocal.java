@@ -4,6 +4,7 @@ import ru.korus.tmis.core.auth.AuthData;
 import ru.korus.tmis.core.data.HospitalBedData;
 import ru.korus.tmis.core.data.HospitalBedDataListFilter;
 import ru.korus.tmis.core.entity.model.*;
+import ru.korus.tmis.core.entity.model.*;
 import ru.korus.tmis.core.exception.CoreException;
 import ru.korus.tmis.core.filter.ListDataFilter;
 

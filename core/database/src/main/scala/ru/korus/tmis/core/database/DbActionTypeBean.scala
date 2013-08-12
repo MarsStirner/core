@@ -84,9 +84,13 @@ class DbActionTypeBean
       .setParameter("code", code)
       .getResultList
 
-    val at = result(0)
-    em.detach(at)
-    at
+    if (result != null && result.size() > 0) {
+      val at = result(0)
+      em.detach(at)
+      at
+    } else {
+      null
+    }
   }
 
   def getActionTypesByCode(code: String) = {
@@ -140,8 +144,6 @@ class DbActionTypeBean
       ActionType at
     WHERE
       at.id = :id
-    AND
-      at.deleted = 0
                             """
 
   val ActionTypePropertiesByIdQuery = """

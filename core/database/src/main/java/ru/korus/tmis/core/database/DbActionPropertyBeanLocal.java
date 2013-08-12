@@ -5,10 +5,7 @@ import ru.korus.tmis.core.entity.model.*;
 import ru.korus.tmis.core.exception.CoreException;
 
 import javax.ejb.Local;
-import java.util.LinkedHashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
+import java.util.*;
 
 @Local
 public interface DbActionPropertyBeanLocal {
@@ -78,6 +75,12 @@ public interface DbActionPropertyBeanLocal {
                                         AuthData userData)
             throws CoreException;
 
+    ActionProperty createActionPropertyWithDate(Action a,
+                                                int aptId,
+                                                AuthData userData,
+                                                Date now)
+            throws CoreException;
+
     ActionProperty updateActionProperty(int id,
                                         int version,
                                         AuthData userData)
@@ -112,6 +115,7 @@ public interface DbActionPropertyBeanLocal {
 
     ActionProperty createActionProperty(Action doctorAction, ActionPropertyType queueAPType) throws CoreException;
 
+    APValueAction getActionPropertyValue_ActionByValue(Action action) throws CoreException;
     /**
      * Получение своства действия по значению действия  (ActionProperty_Action by ActionProperty_Action.value)
      *

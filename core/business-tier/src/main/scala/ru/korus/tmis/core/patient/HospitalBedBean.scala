@@ -63,6 +63,9 @@ with TmisLogging{
   @EJB
   private var commonDataProcessor: CommonDataProcessorBeanLocal = _
 
+  @EJB
+  var dbEventPerson: DbEventPersonBeanLocal = _
+
   @Inject
   @Any
   var actionEvent: Event[Notification] = _
@@ -164,12 +167,41 @@ with TmisLogging{
             Integer.valueOf(hbData.data.bedRegistration.bedId)
           else null
         }
+        else if(code.compareTo(ConfigManager.Messages("db.apt.moving.codes.orgStructReceived"))==0){
+          if(hbData.data.bedRegistration.movedFromUnitId>0)
+            value = Integer.valueOf(hbData.data.bedRegistration.movedFromUnitId)
+          else { //берем значение по умолчанию из предыдущего действия
+            if (lastAction.getActionType.getFlatCode.compareTo(ConfigManager.Messages("db.action.admissionFlatCode"))==0) {
+              value = Integer.valueOf(ConfigManager.Messages("db.dayHospital.id").toInt) //Если есть только поступление, то запишем дневной стационар
+            }
+            else if(lastAction.getActionType.getFlatCode.compareTo(ConfigManager.Messages("db.action.movingFlatCode"))==0){
+              val codes = Set[String](ConfigManager.Messages("db.apt.moving.codes.hospOrgStruct"))
+              val lastProperties = actionPropertyBean.getActionPropertiesByActionIdAndActionPropertyTypeCodes(lastAction.getId.intValue, codes)
+              if(lastProperties!=null && lastProperties.size()>0){
+                val apv = lastProperties.iterator.next()._2
+                if(apv!=null && apv.size()>0)
+                  value = apv.get(0).asInstanceOf[APValueOrgStructure].getValue.getId
+              }
+            }
+          }
+        }
 
         val apv = this.createActionPropertyWithValue(action, apt.getId.intValue(), value, authData)
         if(apv!=null) entities += apv
       })
-
       dbManager.persistAll(entities)
+      /** ** По доработанной спеке https://docs.google.com/document/d/1wkIKuMt3UQ5PMHVlsE2NVweE-n1zkfKyBQbTrjYwuRo/edit#
+        * Пункт 3.3
+        */
+      var currentEvent = eventBean.getEventById(eventId)
+      currentEvent.setExecutor(null)
+      var currentEventPerson = dbEventPerson.getLastEventPersonForEventId(eventId)
+      if (currentEventPerson != null) {
+        currentEventPerson.setEndDate(new Date)
+        em.merge(currentEventPerson)
+      }
+      em.merge(currentEvent)
+      em.flush()
     }
     action
   }
@@ -445,6 +477,23 @@ with TmisLogging{
                         action,
                         newValues))
       */
+
+      /** ** По доработанной спеке https://docs.google.com/document/d/1wkIKuMt3UQ5PMHVlsE2NVweE-n1zkfKyBQbTrjYwuRo/edit#
+        * Пункт 3.3
+        */
+      var currentEvent = eventBean.getEventById(action.getEvent.getId.intValue())
+      dbEventPerson.insertOrUpdateEventPerson(0,     //id предыдущего евентПерсона. Здесь 0, потому что предыдущий ивентаПеросн всегда закрыт
+                                              currentEvent,
+                                              authData.getUser,
+                                              false)
+
+      //Изменим запись о назначевшем враче в ивенте
+      currentEvent.setExecutor(authData.getUser)
+      currentEvent.setModifyDatetime(new Date())
+      currentEvent.setModifyPerson(authData.getUser)
+      currentEvent.setVersion(currentEvent.getVersion)
+      dbManager.merge(currentEvent)
+
     }
     finally {
       appLock.releaseLock(lockId)

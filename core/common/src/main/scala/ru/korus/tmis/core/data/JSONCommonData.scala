@@ -7,6 +7,7 @@ import java.lang.Integer
 import java.util.{Date, LinkedList}
 import javax.xml.bind.annotation._
 import javax.xml.bind.annotation.adapters.{XmlJavaTypeAdapter, XmlAdapter}
+import ru.korus.tmis.core.entity.model.Mkb
 
 @XmlType(name = "jsonCommonData")
 @XmlRootElement(name = "jsonCommonData")
@@ -50,39 +51,53 @@ class ConsultationRequestData {
   @BeanProperty
   var executorId: Int = _
   @BeanProperty
+  var assignerId: Int = _
+  @BeanProperty
   var patientId: Int = _
   @BeanProperty
-  var beginDate: Date = _
+  var createPerson: Int = _
   @BeanProperty
-  var endDate: Date = _
+  var createDateTime: Date = _
+  @BeanProperty
+  var plannedEndDate: Date = _
+  @BeanProperty
+  var plannedTime: ScheduleContainer = _
   @BeanProperty
   var urgent: Boolean = _
+  @BeanProperty
+  var finance: IdNameContainer = _
+  @BeanProperty
+  var diagnosis: MKBContainer = _
   @BeanProperty
   var coreVersion: String = _
 
   def this(eventId: Int,
            actionTypeId: Int,
            executorId: Int,
+           assignerId: Int,
            patientId: Int,
-           beginDate: Long,
-           endDate: Long,
-           urgent: Boolean) = {
+           plannedEndDate: Long,
+           plannedTime: Long,
+           mkb: Mkb,
+           urgent: Boolean,
+           financeId: Int,
+           financeName: String) = {
     this()
     this.eventId = eventId
     this.actionTypeId = actionTypeId
     this.executorId = executorId
+    this.assignerId = assignerId
     this.patientId = patientId
-    this.beginDate = if (beginDate == 0) {
+    this.plannedEndDate = if (plannedEndDate == 0) {
       null
     } else {
-      new Date(beginDate)
+      new Date(plannedEndDate)
     }
-    this.endDate = if (endDate == 0) {
-      null
-    } else {
-      new Date(endDate)
-    }
+    //this.plannedTime = new ScheduleContainer(0, 0, Date(plannedTime))
     this.urgent = urgent
+    //this.finance = new IdNameContainer(event.getEventType.getFinance.getId.intValue(), event.getEventType.getFinance.getName)
+    this.finance = new IdNameContainer(financeId, financeName)
+    this.diagnosis = new MKBContainer(mkb)
     this.coreVersion = ConfigManager.Messages("misCore.assembly.version")
   }
 

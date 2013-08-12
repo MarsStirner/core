@@ -1,0 +1,153 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<POLB_IN224100UV01
+        xmlns="urn:hl7-org:v3"
+        xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+        xsi:schemaLocation="urn:hl7-org:v3 ../processable/multicacheschemas/POLB_IN224100UV01.xsd"
+        ITSVersion="XML_1.0">
+
+    <!-- UUID сообщения -->
+    <id root="XXXXXXXX-XXXX-XXXX-XXXX-XXXXXXXXXXXX"/>
+
+    <!-- время создания события. Значение value кодируется по шаблону: ггггммддччммсс -->
+    <creationTime value="20050303180027"/>
+
+    <!-- Идентификатор типа сообщения. Значение @extension - тип сообщения. @root должен иметь значение 2.16.840.1.113883.1.6 - HL7 Namespace for Interaction IDs -->
+    <interactionId extension='POLB_IN224100UV01' root='2.16.840.1.113883.1.6'/>
+
+    <!-- Назначение сообщения относительно отправителя. Возможные значения — D (отладка, Debugging), P (промышленное функционирование, Production) or T (обучение, Training). -->
+    <processingCode code='P'/>
+
+    <!-- Режим обработки сообщения относительно отправителя. Возможные значения — A (архивирование, Archive), T (штатное функционирование, Current processing), I (инициализация, Initial load), R (восстановление, Restore). -->
+    <processingModeCode code="T"/>
+
+    <!-- Высылать ли подтверждающее сообщение. Значения - Always (AL), only on errors (ER), or never (NE) -->
+    <acceptAckCode code="AL"/>
+
+    <!-- Раздел приемник - используется без изменений -->
+    <receiver typeCode="RCV">
+        <device classCode="DEV" determinerCode="INSTANCE">
+            <id nullFlavor="NI"/>
+        </device>
+    </receiver>
+
+    <!-- Раздел отправитель - используется без изменений -->
+    <sender typeCode="SND">
+        <device classCode="DEV" determinerCode="INSTANCE">
+            <id nullFlavor="NI"/>
+        </device>
+    </sender>
+
+    <!-- информация о состоявшемся событии -->
+    <controlActProcess classCode="CACT" moodCode="APT">
+
+        <authorOrPerformer typeCode="PRF" contextControlCode="AN">
+            <noteText/>
+            <time/>
+            <modeCode/>
+            <signatureCode/>
+            <signatureText/>
+            <assignedPerson classCode="ASSIGNED">
+                <representedOrganization classCode="ORG" determinerCode="INSTANCE">
+                    <id/>
+                    <!-- Код лаборатории -->
+                    <code code="CodeLIS"/>
+                </representedOrganization>
+            </assignedPerson>
+        </authorOrPerformer>
+
+        <subject typeCode="SUBJ" contextConductionInd="false">
+            <observationReport classCode="GROUPER" moodCode="EVN">
+                <!-- идентификатор направления на анализы -->
+                <id controlInformationRoot="orderMisId"/>
+                <!-- код исследования -->
+                <code code="diagnosticCode">
+                    <!-- название исследования -->
+                    <displayName value="diagnosticName"/>
+                </code>
+                <title/>
+                <text/>
+                <!-- отметка об окончании исследований по направлению
+               (true-окончательный, заказ закрывается.False-Предварительный. Заказ открыт на изменение результата.)  -->
+                <statusCode code="referralIsFinished"/>
+                <specimen typeCode="SPC" contextControlCode="OP">
+                    <specimen classCode="SPEC">
+                        <!-- штрих-код на контейнере c биоматериалом (десятичное представление считанного штрих-кода) -->
+                        <id identifierName="orderBarCode"/>
+                        <code/>
+                    </specimen>
+                </specimen>
+                <author typeCode="AUT">
+                    <time/>
+                    <assignedEntity classCode="ASSIGNED">
+                        <!-- уникальный идентификационный номер врача лаборатории подписавшего результаты исследования -->
+                        <code code="ResultDoctorLisId">
+                            <!-- ФИО врача лаборатории подписавшего результаты исследования -->
+                            <displayName value="ResultDoctorLisName"/>
+                        </code>
+                    </assignedEntity>
+                </author>
+            </observationReport>
+        </subject>
+        <subject typeCode="SUBJ" contextConductionInd="false">
+            <observationBattery classCode="BATTERY" moodCode="EVN">
+                <code>
+                    <!-- название исследования -->
+                    <displayName value="diagnosticName"/>
+                    <originalText/>
+                </code>
+                <text>
+                    <!-- дефекты биоматериала -->
+                    <description value="biomaterialDefects"/>
+                </text>
+                <!--  тип значения (1 – строковое значение или большой текст, 2 – изображение, 3 – концентрация микроорг., 4 –чувствительность микроорг.) 5 - таблица РЕЗУЛЬТАТ МОЖЕТ ИМЕТЬ ЗНАЧЕНИЯ ТОЛЬКО ОДНОГО ТИПА, и обязательно должен присутствовать хотя бы один.  -->
+                <statusCode code="valueType"/>
+            </observationBattery>
+        </subject>
+        <!-- нижних блоков м.б. несколько - сколько получили indicatorCode -->
+        <subject typeCode="SUBJ" contextConductionInd="false">
+            <observationEvent classCode="OBS" moodCode="EVN">
+                <id/>
+                <!-- код методики/показателя/микроорганизма 1-->
+                <code code="indicatorCode1">
+                    <!-- название методики/показателя/микроорганизма 1-->
+                    <displayName value="indicatorName1"/>
+                </code>
+                <!-- resultComment-->
+                <text value="resultComment"/>
+                <!--  если результата нет здесь указана причина -->
+                <statusCode code="resultStatus"/>
+                <!--  дата выполнения/утверждения результата resultSignDate -->
+                <effectiveTime value="orderProbeDate"/>
+                <!-- единица измерения  unit=resultUnit  value= resultValueText-->
+                <value unit="mmol" value="8.0" xsi:type="PQ"/>
+                <device typeCode="DEV">
+                    <labTestKit classCode="MANU">
+                        <manufacturedTestKit classCode="DEV" determinerCode="INSTANCE">
+                            <!-- название прибора -->
+                            <code code="deviceName"/>
+                        </manufacturedTestKit>
+                    </labTestKit>
+                </device>
+                <referenceRange typeCode="REFV" contextConductionInd="false" contextControlCode="ON">
+                    <interpretationRange classCode="OBS" moodCode="EVN.CRT">
+                        <interpretationCode>
+                            <!-- норма, т.е. диапазон допустимых значений в строковом вид -->
+                            <displayName value="resultNormString"/>
+                        </interpretationCode>
+
+                        <precondition typeCode="PRCN" contextControlCode="ON" contextConductionInd="false">
+                            <criterion classCode="OBS" moodCode="EVN.CRT">
+                                <code>
+                                    <!-- значение результата относительно нормы (число в диапазоне -1 до +1)  -->
+                                    <displayName value="resultNormalityIndex"/>
+                                </code>
+                                <value/>
+                            </criterion>
+                        </precondition>
+                    </interpretationRange>
+                </referenceRange>
+            </observationEvent>
+        </subject>
+    </controlActProcess>
+</POLB_IN224100UV01>
+

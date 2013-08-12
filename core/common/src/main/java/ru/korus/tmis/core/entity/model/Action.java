@@ -10,12 +10,13 @@ import java.util.*;
 @Table(name = "Action", catalog = "", schema = "")
 @NamedQueries(
         {
-                @NamedQuery(name = "Action.findAll", query = "SELECT a FROM Action a")
+                @NamedQuery(name = "Action.findAll", query = "SELECT a FROM Action a"),
+                @NamedQuery(name = "Action.findById", query = "SELECT a FROM Action a WHERE a.id = :id")
         })
 @XmlType(name = "action")
 @XmlRootElement(name = "action")
 public class Action
-        implements Serializable, Cloneable {
+        implements Serializable, Cloneable, DbEnumerable {
 
     private static final long serialVersionUID = 1L;
 
@@ -613,5 +614,27 @@ public class Action
         }
 
         return newAction;
+    }
+
+    private static Map<Integer, Action> dbEnumsById =
+            new HashMap<Integer, Action>();
+
+    public static Action getById(final Integer id) {
+        return dbEnumsById.get(id);
+    }
+
+    @Override
+    public void loadEnums(final Collection<Object> enums) {
+        Map<Integer, Action> newDbEnumsById =
+                new HashMap<Integer, Action>();
+        Map<String, Action> newDbEnumsByName =
+                new HashMap<String, Action>();
+        for (Object e : enums) {
+            if (e instanceof Action) {
+                Action ras = (Action) e;
+                newDbEnumsById.put(ras.id, ras);
+            }
+        }
+        dbEnumsById = newDbEnumsById;
     }
 }

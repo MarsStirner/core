@@ -4,10 +4,12 @@
 #
 
 GF_PASSWD_FILE=./password
+ASADMIN=${glassfish.bin}
+
 
 # Создание файла с паролями
 echo "AS_ADMIN_PASSWORD="${glassfish.admin.password} > $GF_PASSWD_FILE
-echo "AS_ADMIN_MASTERPASSWORD="${glassfish.admin.password} >> $GF_PASSWD_FILE
+echo "AS_ADMIN_MASTERPASSWORD="${glassfish.master.password} >> $GF_PASSWD_FILE
 
 export PATH=${glassfish.home}/bin/:$PATH
 echo ""
@@ -17,19 +19,19 @@ echo ""
 echo "--------------------------------------------------------------------"
 echo "List domains"
 echo ""
-asadmin list-domains
+$ASADMIN/asadmin list-domains
 echo ""
 echo "--------------------------------------------------------------------"
 echo "List applications"
 echo ""
-asadmin --user ${glassfish.admin.login} \
+$ASADMIN/asadmin --user ${glassfish.admin.login} \
         --passwordfile $GF_PASSWD_FILE \
        list-applications
 echo ""
 echo "--------------------------------------------------------------------"
 echo "Undeploy ${glassfish.application.name}"
 echo ""
-asadmin --host ${glassfish.host} \
+$ASADMIN/asadmin --host ${glassfish.host} \
         --port ${glassfish.port.admin} \
         --user ${glassfish.admin.login} \
         --passwordfile $GF_PASSWD_FILE \
@@ -37,18 +39,21 @@ asadmin --host ${glassfish.host} \
         undeploy \
         ${glassfish.application.name}
 echo "--------------------------------------------------------------------"
-echo "Stop&Start Glassfish"
+echo "Stop Glassfish"
 echo ""
-asadmin stop-domain --domaindir ${glassfish.domain.dir} ${glassfish.domain}
-asadmin start-domain --domaindir ${glassfish.domain.dir} ${glassfish.domain}
+$ASADMIN/asadmin stop-domain --domaindir ${glassfish.domain.dir} ${glassfish.domain}
 echo "--------------------------------------------------------------------"
 echo "Copy config file to ${glassfish.domain.dir}/${glassfish.domain}/config/logback.xml"
 echo ""
 cp ./logback.xml ${glassfish.domain.dir}/${glassfish.domain}/config
 echo "--------------------------------------------------------------------"
+echo "Start Glassfish"
+echo ""
+$ASADMIN/asadmin start-domain --domaindir ${glassfish.domain.dir} ${glassfish.domain}
+echo "--------------------------------------------------------------------"
 echo "Deploy ${glassfish.application.name}"
 echo ""
-asadmin --host ${glassfish.host} \
+$ASADMIN/asadmin --host ${glassfish.host} \
         --port ${glassfish.port.admin} \
         --user ${glassfish.admin.login} \
         --passwordfile $GF_PASSWD_FILE \
@@ -79,6 +84,6 @@ echo "tail -f -n 5000 ${com.sun.aas.instanceRoot}/logs/pharmacy/pharmacy.log"
 echo "tail -f -n 5000 ${com.sun.aas.instanceRoot}/logs/server.log"
 echo ""
 echo ""
-tail -n 5000 ${com.sun.aas.instanceRoot}/logs/server.log | grep "${glassfish.application.name} was successfully deployed in"
+tail -n 1000 ${com.sun.aas.instanceRoot}/logs/server.log | grep "${glassfish.application.name} was successfully deployed in"
 echo ""
 echo ""

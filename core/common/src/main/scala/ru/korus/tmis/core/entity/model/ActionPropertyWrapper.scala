@@ -29,7 +29,13 @@ class ActionPropertyWrapper(ap: ActionProperty)
           case Value => {
             apv match {
               case null => map
-              case _ => map + (xmlName -> apv.getValueAsString)
+              case _ => {
+                if (this.apt.getTypeName.compareTo("Html")==0 || this.apt.getTypeName.compareTo("Text")==0 || this.apt.getTypeName.compareTo("Constructor")==0) {
+                  map + (xmlName -> apv.getValue.toString)
+                } else {
+                  map + (xmlName -> apv.getValueAsString)
+                }
+              }
             }
           }
           case ValueId => {
@@ -72,7 +78,9 @@ class ActionPropertyWrapper(ap: ActionProperty)
       ap.getVersion.intValue,
       apt.getName,
       apt.getTypeName,
-      apt.getConstructorValueDomain,
+      apt.isMandatory.toString,
+      apt.isReadOnly.toString,
+      apt.getValueDomain,//apt.getConstructorValueDomain,
       map)
   }
 

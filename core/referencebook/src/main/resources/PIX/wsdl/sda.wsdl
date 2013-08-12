@@ -1,0 +1,2059 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<wsdl:definitions xmlns:wsdl="http://schemas.xmlsoap.org/wsdl/" xmlns:s="http://www.w3.org/2001/XMLSchema" xmlns:soap="http://schemas.xmlsoap.org/wsdl/soap/" xmlns:tns="urn:wsdl" targetNamespace="urn:wsdl">
+<wsdl:types>
+<s:schema>
+<s:element name="Container" type="Container"/>
+<s:complexType name="Container">
+    <s:sequence>
+        <s:element minOccurs="0" name="Patient" type="Patient"/>
+        <s:element minOccurs="0" name="Encounters" type="ArrayOfEncounterEncounter"/>
+        <s:element minOccurs="0" name="Alerts" type="ArrayOfAlertAlert"/>
+        <s:element minOccurs="0" name="AdvanceDirectives" type="ArrayOfAdvanceDirectiveAdvanceDirective"/>
+        <s:element minOccurs="0" name="Allergies" type="ArrayOfAllergyAllergy"/>
+        <s:element minOccurs="0" name="IllnessHistories" type="ArrayOfIllnessHistoryIllnessHistory"/>
+        <s:element minOccurs="0" name="SocialHistories" type="ArrayOfSocialHistorySocialHistory"/>
+        <s:element minOccurs="0" name="FamilyHistories" type="ArrayOfFamilyHistoryFamilyHistory"/>
+        <s:element minOccurs="0" name="Guarantors" type="ArrayOfGuarantorGuarantor"/>
+        <s:element minOccurs="0" name="Diagnoses" type="ArrayOfDiagnosisDiagnosis"/>
+        <s:element minOccurs="0" name="Observations" type="ArrayOfObservationObservation"/>
+        <s:element minOccurs="0" name="Problems" type="ArrayOfProblemProblem"/>
+        <s:element minOccurs="0" name="PhysicalExams" type="ArrayOfPhysicalExamPhysicalExam"/>
+        <s:element minOccurs="0" name="Procedures" type="ArrayOfProcedureProcedure"/>
+        <s:element minOccurs="0" name="Documents" type="ArrayOfDocumentDocument"/>
+        <s:element minOccurs="0" name="LabOrders" type="ArrayOfLabOrderLabOrder"/>
+        <s:element minOccurs="0" name="RadOrders" type="ArrayOfRadOrderRadOrder"/>
+        <s:element minOccurs="0" name="OtherOrders" type="ArrayOfOtherOrderOtherOrder"/>
+        <s:element minOccurs="0" name="Medications" type="ArrayOfMedicationMedication"/>
+        <s:element minOccurs="0" name="Vaccinations" type="ArrayOfVaccinationVaccination"/>
+        <s:element minOccurs="0" name="Appointments" type="ArrayOfAppointmentAppointment"/>
+        <s:element minOccurs="0" name="Referrals" type="ArrayOfReferralReferral"/>
+        <s:element minOccurs="0" name="SessionId">
+            <s:simpleType>
+                <s:restriction base="s:string">
+                    <s:maxLength value="32000"/>
+                </s:restriction>
+            </s:simpleType>
+        </s:element>
+        <s:element minOccurs="0" name="ControlId">
+            <s:simpleType>
+                <s:restriction base="s:string">
+                    <s:maxLength value="32000"/>
+                </s:restriction>
+            </s:simpleType>
+        </s:element>
+        <s:element minOccurs="0" name="Action">
+            <s:simpleType>
+                <s:restriction base="s:string">
+                    <s:enumeration value="AddOrUpdate"/>
+                    <s:enumeration value="Merge"/>
+                    <s:enumeration value="Move"/>
+                    <s:enumeration value="DeletePatient"/>
+                    <s:enumeration value="DeleteEncounter"/>
+                    <s:enumeration value="CancelAdmit"/>
+                    <s:enumeration value="CancelDischarge"/>
+                    <s:enumeration value="QueryResponse"/>
+                </s:restriction>
+            </s:simpleType>
+        </s:element>
+        <s:element minOccurs="0" name="EventDescription">
+            <s:simpleType>
+                <s:restriction base="s:string">
+                    <s:maxLength value="220"/>
+                </s:restriction>
+            </s:simpleType>
+        </s:element>
+        <s:element minOccurs="0" name="UpdateECRDemographics" type="s:boolean"/>
+        <s:element minOccurs="0" name="SendingFacility">
+            <s:simpleType>
+                <s:restriction base="s:string">
+                    <s:maxLength value="220"/>
+                </s:restriction>
+            </s:simpleType>
+        </s:element>
+        <s:element minOccurs="0" name="ClinicalRelationships" type="ArrayOfClinicalRelationshipClinicalRelationship"/>
+        <s:element minOccurs="0" name="ProgramMemberships" type="ArrayOfProgramMembershipProgramMembership"/>
+        <s:element minOccurs="0" name="AdditionalInfo" type="ArrayOfAdditionalInfoItemPairOfAdditionalInfoKeyAdditionalInfoItem"/>
+        <s:element minOccurs="0" name="CustomObjects" type="ArrayOfCustomObjectCustomObject"/>
+    </s:sequence>
+</s:complexType>
+<s:complexType name="Patient">
+    <s:complexContent>
+        <s:extension base="SuperClass">
+            <s:sequence>
+                <s:element minOccurs="0" name="MPIID">
+                    <s:simpleType>
+                        <s:restriction base="s:string">
+                            <s:maxLength value="220"/>
+                        </s:restriction>
+                    </s:simpleType>
+                </s:element>
+                <s:element minOccurs="0" name="Name" type="Name"/>
+                <s:element minOccurs="0" name="MothersMaidenName" type="s:string"/>
+                <s:element minOccurs="0" name="Aliases" type="ArrayOfNameName"/>
+                <s:element minOccurs="0" name="PrimaryLanguage" type="Language"/>
+                <s:element minOccurs="0" name="OtherLanguages" type="ArrayOfPatientLanguagePatientLanguage"/>
+                <s:element minOccurs="0" name="Religion" type="Religion"/>
+                <s:element minOccurs="0" name="MaritalStatus" type="MaritalStatus"/>
+                <s:element minOccurs="0" name="Gender" type="Gender"/>
+                <s:element minOccurs="0" name="Race" type="Race"/>
+                <s:element minOccurs="0" name="EthnicGroup" type="EthnicGroup"/>
+                <s:element minOccurs="0" name="SupportContacts" type="ArrayOfSupportContactSupportContact"/>
+                <s:element minOccurs="0" name="BirthTime" type="TimeStamp"/>
+                <s:element minOccurs="0" name="BirthPlace" type="Address"/>
+                <s:element minOccurs="0" name="DeathTime" type="TimeStamp"/>
+                <s:element minOccurs="0" name="IsDead" type="s:boolean"/>
+                <s:element minOccurs="0" name="DeathLocation">
+                    <s:simpleType>
+                        <s:restriction base="s:string">
+                            <s:maxLength value="255"/>
+                        </s:restriction>
+                    </s:simpleType>
+                </s:element>
+                <s:element minOccurs="0" name="DeathDeclaredBy" type="CareProvider"/>
+                <s:element minOccurs="0" name="Citizenship" type="Citizenship"/>
+                <s:element minOccurs="0" name="PatientNumbers" type="ArrayOfPatientNumberPatientNumber"/>
+                <s:element minOccurs="0" name="PriorPatientNumbers" type="ArrayOfPatientNumberPatientNumber"/>
+                <s:element minOccurs="0" name="Addresses" type="ArrayOfAddressAddress"/>
+                <s:element minOccurs="0" name="ContactInfo" type="ContactInfo"/>
+                <s:element minOccurs="0" name="FamilyDoctor" type="FamilyDoctor"/>
+                <s:element minOccurs="0" name="InactiveMRNs" type="s:string"/>
+                <s:element minOccurs="0" name="Occupation" type="Occupation"/>
+            </s:sequence>
+        </s:extension>
+    </s:complexContent>
+</s:complexType>
+<s:complexType name="SuperClass">
+    <s:complexContent>
+        <s:extension base="DataType">
+            <s:sequence>
+                <s:element minOccurs="0" name="ActionCode" type="s:string"/>
+                <s:element minOccurs="0" name="ActionScope" type="s:string"/>
+                <s:element minOccurs="0" name="EnteredBy" type="User"/>
+                <s:element minOccurs="0" name="EnteredAt" type="Organization"/>
+                <s:element minOccurs="0" name="EnteredOn" type="TimeStamp"/>
+                <s:element minOccurs="0" name="UpdatedOn" type="TimeStamp"/>
+                <s:element minOccurs="0" name="FromTime" type="TimeStamp"/>
+                <s:element minOccurs="0" name="ToTime" type="TimeStamp"/>
+                <s:element minOccurs="0" name="ExternalId">
+                    <s:simpleType>
+                        <s:restriction base="s:string">
+                            <s:maxLength value="220"/>
+                        </s:restriction>
+                    </s:simpleType>
+                </s:element>
+                <s:element minOccurs="0" name="EncounterNumber">
+                    <s:simpleType>
+                        <s:restriction base="s:string">
+                            <s:maxLength value="220"/>
+                        </s:restriction>
+                    </s:simpleType>
+                </s:element>
+                <s:element minOccurs="0" name="CustomPairs" type="ArrayOfNVPairNVPair"/>
+            </s:sequence>
+        </s:extension>
+    </s:complexContent>
+</s:complexType>
+<s:complexType name="DataType"/>
+<s:complexType name="User">
+    <s:complexContent>
+        <s:extension base="CodeTableDetail"/>
+    </s:complexContent>
+</s:complexType>
+<s:complexType name="CodeTableDetail">
+    <s:sequence>
+        <s:element minOccurs="0" name="SDACodingStandard">
+            <s:simpleType>
+                <s:restriction base="s:string">
+                    <s:maxLength value="32000"/>
+                </s:restriction>
+            </s:simpleType>
+        </s:element>
+        <s:element minOccurs="0" name="Code">
+            <s:simpleType>
+                <s:restriction base="StrippedString">
+                    <s:maxLength value="32000"/>
+                </s:restriction>
+            </s:simpleType>
+        </s:element>
+        <s:element minOccurs="0" name="Description">
+            <s:simpleType>
+                <s:restriction base="StrippedString">
+                    <s:maxLength value="32000"/>
+                </s:restriction>
+            </s:simpleType>
+        </s:element>
+    </s:sequence>
+</s:complexType>
+<s:simpleType name="StrippedString">
+    <s:restriction base="s:string">
+        <s:maxLength value="50"/>
+    </s:restriction>
+</s:simpleType>
+<s:complexType name="Organization">
+    <s:complexContent>
+        <s:extension base="CodeTableDetail">
+            <s:sequence>
+                <s:element minOccurs="0" name="Address" type="Address"/>
+                <s:element minOccurs="0" name="ContactInfo" type="ContactInfo"/>
+                <s:element minOccurs="0" name="Trusts" type="ArrayOfTrustTrust"/>
+            </s:sequence>
+        </s:extension>
+    </s:complexContent>
+</s:complexType>
+<s:complexType name="Address">
+    <s:complexContent>
+        <s:extension base="DataType">
+            <s:sequence>
+                <s:element minOccurs="0" name="FromTime" type="TimeStamp"/>
+                <s:element minOccurs="0" name="ToTime" type="TimeStamp"/>
+                <s:element minOccurs="0" name="Street">
+                    <s:simpleType>
+                        <s:restriction base="s:string">
+                            <s:maxLength value="220"/>
+                        </s:restriction>
+                    </s:simpleType>
+                </s:element>
+                <s:element minOccurs="0" name="City" type="City"/>
+                <s:element minOccurs="0" name="State" type="State"/>
+                <s:element minOccurs="0" name="Zip" type="Zip"/>
+                <s:element minOccurs="0" name="Country" type="Country"/>
+            </s:sequence>
+        </s:extension>
+    </s:complexContent>
+</s:complexType>
+<s:simpleType name="TimeStamp">
+    <s:restriction base="s:dateTime"/>
+</s:simpleType>
+<s:complexType name="City">
+    <s:complexContent>
+        <s:extension base="CodeTableDetail"/>
+    </s:complexContent>
+</s:complexType>
+<s:complexType name="State">
+    <s:complexContent>
+        <s:extension base="CodeTableDetail"/>
+    </s:complexContent>
+</s:complexType>
+<s:complexType name="Zip">
+    <s:complexContent>
+        <s:extension base="CodeTableDetail"/>
+    </s:complexContent>
+</s:complexType>
+<s:complexType name="Country">
+    <s:complexContent>
+        <s:extension base="CodeTableDetail"/>
+    </s:complexContent>
+</s:complexType>
+<s:complexType name="ContactInfo">
+    <s:complexContent>
+        <s:extension base="DataType">
+            <s:sequence>
+                <s:element minOccurs="0" name="HomePhoneNumber">
+                    <s:simpleType>
+                        <s:restriction base="s:string">
+                            <s:maxLength value="80"/>
+                        </s:restriction>
+                    </s:simpleType>
+                </s:element>
+                <s:element minOccurs="0" name="WorkPhoneNumber">
+                    <s:simpleType>
+                        <s:restriction base="s:string">
+                            <s:maxLength value="80"/>
+                        </s:restriction>
+                    </s:simpleType>
+                </s:element>
+                <s:element minOccurs="0" name="MobilePhoneNumber">
+                    <s:simpleType>
+                        <s:restriction base="s:string">
+                            <s:maxLength value="80"/>
+                        </s:restriction>
+                    </s:simpleType>
+                </s:element>
+                <s:element minOccurs="0" name="EmailAddress">
+                    <s:simpleType>
+                        <s:restriction base="s:string">
+                            <s:maxLength value="70"/>
+                        </s:restriction>
+                    </s:simpleType>
+                </s:element>
+            </s:sequence>
+        </s:extension>
+    </s:complexContent>
+</s:complexType>
+<s:complexType name="ArrayOfTrustTrust">
+    <s:sequence>
+        <s:element maxOccurs="unbounded" minOccurs="0" name="Trust" nillable="true" type="Trust"/>
+    </s:sequence>
+</s:complexType>
+<s:complexType name="Trust">
+    <s:complexContent>
+        <s:extension base="CodeTableDetail"/>
+    </s:complexContent>
+</s:complexType>
+<s:complexType name="ArrayOfNVPairNVPair">
+    <s:sequence>
+        <s:element maxOccurs="unbounded" minOccurs="0" name="NVPair" nillable="true" type="NVPair"/>
+    </s:sequence>
+</s:complexType>
+<s:complexType name="NVPair">
+    <s:complexContent>
+        <s:extension base="DataType">
+            <s:sequence>
+                <s:element minOccurs="0" name="Name" type="s:string"/>
+                <s:element minOccurs="0" name="Value" type="s:string"/>
+            </s:sequence>
+        </s:extension>
+    </s:complexContent>
+</s:complexType>
+<s:complexType name="Name">
+    <s:complexContent>
+        <s:extension base="DataType">
+            <s:sequence>
+                <s:element minOccurs="0" name="FamilyName">
+                    <s:simpleType>
+                        <s:restriction base="s:string">
+                            <s:maxLength value="80"/>
+                        </s:restriction>
+                    </s:simpleType>
+                </s:element>
+                <s:element minOccurs="0" name="FamilyNamePrefix">
+                    <s:simpleType>
+                        <s:restriction base="s:string">
+                            <s:maxLength value="220"/>
+                        </s:restriction>
+                    </s:simpleType>
+                </s:element>
+                <s:element minOccurs="0" name="NamePrefix">
+                    <s:simpleType>
+                        <s:restriction base="s:string">
+                            <s:maxLength value="220"/>
+                        </s:restriction>
+                    </s:simpleType>
+                </s:element>
+                <s:element minOccurs="0" name="NameSuffix">
+                    <s:simpleType>
+                        <s:restriction base="s:string">
+                            <s:maxLength value="220"/>
+                        </s:restriction>
+                    </s:simpleType>
+                </s:element>
+                <s:element minOccurs="0" name="GivenName">
+                    <s:simpleType>
+                        <s:restriction base="s:string">
+                            <s:maxLength value="60"/>
+                        </s:restriction>
+                    </s:simpleType>
+                </s:element>
+                <s:element minOccurs="0" name="MiddleName">
+                    <s:simpleType>
+                        <s:restriction base="s:string">
+                            <s:maxLength value="220"/>
+                        </s:restriction>
+                    </s:simpleType>
+                </s:element>
+                <s:element minOccurs="0" name="ProfessionalSuffix">
+                    <s:simpleType>
+                        <s:restriction base="s:string">
+                            <s:maxLength value="220"/>
+                        </s:restriction>
+                    </s:simpleType>
+                </s:element>
+                <s:element minOccurs="0" name="PreferredName">
+                    <s:simpleType>
+                        <s:restriction base="s:string">
+                            <s:maxLength value="220"/>
+                        </s:restriction>
+                    </s:simpleType>
+                </s:element>
+                <s:element minOccurs="0" name="DOB" type="TimeStamp"/>
+                <s:element minOccurs="0" name="MRN" type="s:string"/>
+            </s:sequence>
+        </s:extension>
+    </s:complexContent>
+</s:complexType>
+<s:complexType name="ArrayOfNameName">
+    <s:sequence>
+        <s:element maxOccurs="unbounded" minOccurs="0" name="Name" nillable="true" type="Name"/>
+    </s:sequence>
+</s:complexType>
+<s:complexType name="Language">
+    <s:complexContent>
+        <s:extension base="CodeTableDetail"/>
+    </s:complexContent>
+</s:complexType>
+<s:complexType name="ArrayOfPatientLanguagePatientLanguage">
+    <s:sequence>
+        <s:element maxOccurs="unbounded" minOccurs="0" name="PatientLanguage" nillable="true" type="PatientLanguage"/>
+    </s:sequence>
+</s:complexType>
+<s:complexType name="PatientLanguage">
+    <s:sequence>
+        <s:element minOccurs="0" name="ActionScope" type="s:string"/>
+        <s:element minOccurs="0" name="EnteredBy" type="User"/>
+        <s:element minOccurs="0" name="EnteredAt" type="Organization"/>
+        <s:element minOccurs="0" name="EnteredOn" type="TimeStamp"/>
+        <s:element minOccurs="0" name="UpdatedOn" type="TimeStamp"/>
+        <s:element minOccurs="0" name="FromTime" type="TimeStamp"/>
+        <s:element minOccurs="0" name="ToTime" type="TimeStamp"/>
+        <s:element minOccurs="0" name="ExternalId" type="s:string"/>
+        <s:element minOccurs="0" name="EncounterNumber" type="s:string"/>
+        <s:element minOccurs="0" name="CustomPairs" type="ArrayOfNVPairNVPair"/>
+        <s:element minOccurs="0" name="PreferredLanguage" type="Language"/>
+        <s:element minOccurs="0" name="Use">
+            <s:simpleType>
+                <s:restriction base="s:string">
+                    <s:maxLength value="220"/>
+                </s:restriction>
+            </s:simpleType>
+        </s:element>
+        <s:element minOccurs="0" name="ActionCode" type="s:string"/>
+    </s:sequence>
+</s:complexType>
+<s:complexType name="Religion">
+    <s:complexContent>
+        <s:extension base="CodeTableDetail"/>
+    </s:complexContent>
+</s:complexType>
+<s:complexType name="MaritalStatus">
+    <s:complexContent>
+        <s:extension base="CodeTableDetail"/>
+    </s:complexContent>
+</s:complexType>
+<s:complexType name="Gender">
+    <s:complexContent>
+        <s:extension base="CodeTableDetail"/>
+    </s:complexContent>
+</s:complexType>
+<s:complexType name="Race">
+    <s:complexContent>
+        <s:extension base="CodeTableDetail"/>
+    </s:complexContent>
+</s:complexType>
+<s:complexType name="EthnicGroup">
+    <s:complexContent>
+        <s:extension base="CodeTableDetail"/>
+    </s:complexContent>
+</s:complexType>
+<s:complexType name="ArrayOfSupportContactSupportContact">
+    <s:sequence>
+        <s:element maxOccurs="unbounded" minOccurs="0" name="SupportContact" nillable="true" type="SupportContact"/>
+    </s:sequence>
+</s:complexType>
+<s:complexType name="SupportContact">
+    <s:sequence>
+        <s:element minOccurs="0" name="ActionScope" type="s:string"/>
+        <s:element minOccurs="0" name="EnteredBy" type="User"/>
+        <s:element minOccurs="0" name="EnteredAt" type="Organization"/>
+        <s:element minOccurs="0" name="EnteredOn" type="TimeStamp"/>
+        <s:element minOccurs="0" name="UpdatedOn" type="TimeStamp"/>
+        <s:element minOccurs="0" name="FromTime" type="TimeStamp"/>
+        <s:element minOccurs="0" name="ToTime" type="TimeStamp"/>
+        <s:element minOccurs="0" name="ExternalId" type="s:string"/>
+        <s:element minOccurs="0" name="EncounterNumber" type="s:string"/>
+        <s:element minOccurs="0" name="CustomPairs" type="ArrayOfNVPairNVPair"/>
+        <s:element minOccurs="0" name="Name" type="Name"/>
+        <s:element minOccurs="0" name="Gender" type="Gender"/>
+        <s:element minOccurs="0" name="BirthTime" type="TimeStamp"/>
+        <s:element minOccurs="0" name="PrimaryLanguage" type="Language"/>
+        <s:element minOccurs="0" name="Address" type="Address"/>
+        <s:element minOccurs="0" name="ContactInfo" type="ContactInfo"/>
+        <s:element minOccurs="0" name="Relationship" type="Relationship"/>
+        <s:element minOccurs="0" name="ContactType" type="ContactType"/>
+        <s:element minOccurs="0" name="PrimaryContact" type="s:boolean"/>
+        <s:element minOccurs="0" name="Identifiers" type="ArrayOfPatientNumberPatientNumber"/>
+        <s:element minOccurs="0" name="ActionCode" type="s:string"/>
+    </s:sequence>
+</s:complexType>
+<s:complexType name="Relationship">
+    <s:complexContent>
+        <s:extension base="CodeTableDetail"/>
+    </s:complexContent>
+</s:complexType>
+<s:complexType name="ContactType">
+    <s:complexContent>
+        <s:extension base="CodeTableDetail"/>
+    </s:complexContent>
+</s:complexType>
+<s:complexType name="ArrayOfPatientNumberPatientNumber">
+    <s:sequence>
+        <s:element maxOccurs="unbounded" minOccurs="0" name="PatientNumber" nillable="true" type="PatientNumber"/>
+    </s:sequence>
+</s:complexType>
+<s:complexType name="PatientNumber">
+    <s:complexContent>
+        <s:extension base="SuperClass">
+            <s:sequence>
+                <s:element minOccurs="0" name="Number">
+                    <s:simpleType>
+                        <s:restriction base="s:string">
+                            <s:maxLength value="220"/>
+                        </s:restriction>
+                    </s:simpleType>
+                </s:element>
+                <s:element minOccurs="0" name="Organization" type="Organization"/>
+                <s:element minOccurs="0" name="NumberType">
+                    <s:simpleType>
+                        <s:restriction base="s:string">
+                            <s:enumeration value="MRN"/>
+                            <s:enumeration value="SSN"/>
+                            <s:enumeration value="DL"/>
+                            <s:enumeration value="SNC"/>
+                            <s:enumeration value="NI"/>
+                            <s:enumeration value="XX"/>
+                            <s:enumeration value="PPN"/>
+                            <s:enumeration value="OTH"/>
+                            <s:enumeration value="BCT"/>
+                        </s:restriction>
+                    </s:simpleType>
+                </s:element>
+            </s:sequence>
+        </s:extension>
+    </s:complexContent>
+</s:complexType>
+<s:complexType name="CareProvider">
+    <s:complexContent>
+        <s:extension base="CodeTableDetail">
+            <s:sequence>
+                <s:element minOccurs="0" name="Name" type="Name"/>
+                <s:element minOccurs="0" name="Address" type="Address"/>
+                <s:element minOccurs="0" name="ContactInfo" type="ContactInfo"/>
+                <s:element minOccurs="0" name="CareProviderType" type="CareProviderType"/>
+            </s:sequence>
+        </s:extension>
+    </s:complexContent>
+</s:complexType>
+<s:complexType name="CareProviderType">
+    <s:complexContent>
+        <s:extension base="CodeTableDetail"/>
+    </s:complexContent>
+</s:complexType>
+<s:complexType name="Citizenship">
+    <s:complexContent>
+        <s:extension base="CodeTableDetail"/>
+    </s:complexContent>
+</s:complexType>
+<s:complexType name="ArrayOfAddressAddress">
+    <s:sequence>
+        <s:element maxOccurs="unbounded" minOccurs="0" name="Address" nillable="true" type="Address"/>
+    </s:sequence>
+</s:complexType>
+<s:complexType name="FamilyDoctor">
+    <s:complexContent>
+        <s:extension base="CodeTableDetail">
+            <s:sequence>
+                <s:element minOccurs="0" name="Name" type="Name"/>
+                <s:element minOccurs="0" name="Address" type="Address"/>
+                <s:element minOccurs="0" name="ContactInfo" type="ContactInfo"/>
+            </s:sequence>
+        </s:extension>
+    </s:complexContent>
+</s:complexType>
+<s:complexType name="Occupation">
+    <s:complexContent>
+        <s:extension base="CodeTableDetail"/>
+    </s:complexContent>
+</s:complexType>
+<s:complexType name="ArrayOfEncounterEncounter">
+    <s:sequence>
+        <s:element maxOccurs="unbounded" minOccurs="0" name="Encounter" nillable="true" type="Encounter"/>
+    </s:sequence>
+</s:complexType>
+<s:complexType name="Encounter">
+    <s:complexContent>
+        <s:extension base="SuperClass">
+            <s:sequence>
+                <s:element minOccurs="0" name="AdmissionType" type="AdmissionType"/>
+                <s:element minOccurs="0" name="EncounterType">
+                    <s:simpleType>
+                        <s:restriction base="s:string">
+                            <s:enumeration value="E"/>
+                            <s:enumeration value="I"/>
+                            <s:enumeration value="O"/>
+                            <s:enumeration value="N"/>
+                            <s:enumeration value="G"/>
+                            <s:enumeration value="P"/>
+                            <s:enumeration value="S"/>
+                        </s:restriction>
+                    </s:simpleType>
+                </s:element>
+                <s:element minOccurs="0" name="AdmittingClinician" type="CareProvider"/>
+                <s:element minOccurs="0" name="AttendingClinicians" type="ArrayOfCareProviderCareProvider"/>
+                <s:element minOccurs="0" name="ConsultingClinicians" type="ArrayOfCareProviderCareProvider"/>
+                <s:element minOccurs="0" name="ReferringClinician" type="ReferralDoctor"/>
+                <s:element minOccurs="0" name="AccountNumber">
+                    <s:simpleType>
+                        <s:restriction base="s:string">
+                            <s:maxLength value="220"/>
+                        </s:restriction>
+                    </s:simpleType>
+                </s:element>
+                <s:element minOccurs="0" name="PriorVisitNumber">
+                    <s:simpleType>
+                        <s:restriction base="s:string">
+                            <s:maxLength value="220"/>
+                        </s:restriction>
+                    </s:simpleType>
+                </s:element>
+                <s:element minOccurs="0" name="PreAdmissionNumber">
+                    <s:simpleType>
+                        <s:restriction base="s:string">
+                            <s:maxLength value="220"/>
+                        </s:restriction>
+                    </s:simpleType>
+                </s:element>
+                <s:element minOccurs="0" name="AdmissionSource" type="AdmissionSource"/>
+                <s:element minOccurs="0" name="AssignedWard" type="s:string"/>
+                <s:element minOccurs="0" name="AssignedRoom" type="s:string"/>
+                <s:element minOccurs="0" name="AssignedBed" type="s:string"/>
+                <s:element minOccurs="0" name="PriorWard" type="s:string"/>
+                <s:element minOccurs="0" name="PriorRoom" type="s:string"/>
+                <s:element minOccurs="0" name="PriorBed" type="s:string"/>
+                <s:element minOccurs="0" name="AdmitReason" type="AdmitReason"/>
+                <s:element minOccurs="0" name="HealthCareFacility" type="HealthCareFacility"/>
+                <s:element minOccurs="0" name="DischargeLocation" type="DischargeLocation"/>
+                <s:element minOccurs="0" name="VisitDescription" type="s:string"/>
+                <s:element minOccurs="0" name="EncounterMRN" type="s:string"/>
+                <s:element minOccurs="0" name="HealthFunds" type="ArrayOfHealthFundHealthFund"/>
+                <s:element minOccurs="0" name="EndTime" type="TimeStamp"/>
+                <s:element minOccurs="0" name="SeparationMode" type="SeparationMode"/>
+                <s:element minOccurs="0" name="Specialties" type="ArrayOfCareProviderTypeCareProviderType"/>
+                <s:element minOccurs="0" name="RecommendationsProvided" type="ArrayOfRecommendationRecommendation"/>
+                <s:element minOccurs="0" name="ExpectedAdmitTime" type="TimeStamp"/>
+                <s:element minOccurs="0" name="ExpectedDischargeTime" type="TimeStamp"/>
+                <s:element minOccurs="0" name="PublicityCode" type="PublicityCode"/>
+                <s:element minOccurs="0" name="Priority" type="EncounterPriority"/>
+                <s:element minOccurs="0" name="ExpectedLOAReturnTime" type="TimeStamp"/>
+                <s:element minOccurs="0" name="DiagnosisRelatedGroup" type="DiagnosisRelatedGroup"/>
+            </s:sequence>
+        </s:extension>
+    </s:complexContent>
+</s:complexType>
+<s:complexType name="AdmissionType">
+    <s:complexContent>
+        <s:extension base="CodeTableDetail"/>
+    </s:complexContent>
+</s:complexType>
+<s:complexType name="ArrayOfCareProviderCareProvider">
+    <s:sequence>
+        <s:element maxOccurs="unbounded" minOccurs="0" name="CareProvider" nillable="true" type="CareProvider"/>
+    </s:sequence>
+</s:complexType>
+<s:complexType name="ReferralDoctor">
+    <s:complexContent>
+        <s:extension base="CodeTableDetail">
+            <s:sequence>
+                <s:element minOccurs="0" name="Name" type="Name"/>
+                <s:element minOccurs="0" name="Address" type="Address"/>
+                <s:element minOccurs="0" name="ContactInfo" type="ContactInfo"/>
+            </s:sequence>
+        </s:extension>
+    </s:complexContent>
+</s:complexType>
+<s:complexType name="AdmissionSource">
+    <s:complexContent>
+        <s:extension base="CodeTableDetail"/>
+    </s:complexContent>
+</s:complexType>
+<s:complexType name="AdmitReason">
+    <s:complexContent>
+        <s:extension base="CodeTableDetail"/>
+    </s:complexContent>
+</s:complexType>
+<s:complexType name="HealthCareFacility">
+    <s:complexContent>
+        <s:extension base="CodeTableDetail">
+            <s:sequence>
+                <s:element minOccurs="0" name="Organization" type="Organization"/>
+                <s:element minOccurs="0" name="LocationType">
+                    <s:simpleType>
+                        <s:restriction base="s:string">
+                            <s:enumeration value="CLINIC"/>
+                            <s:enumeration value="ER"/>
+                            <s:enumeration value="DEPARTMENT"/>
+                            <s:enumeration value="WARD"/>
+                            <s:enumeration value="OTHER"/>
+                        </s:restriction>
+                    </s:simpleType>
+                </s:element>
+            </s:sequence>
+        </s:extension>
+    </s:complexContent>
+</s:complexType>
+<s:complexType name="DischargeLocation">
+    <s:complexContent>
+        <s:extension base="CodeTableDetail"/>
+    </s:complexContent>
+</s:complexType>
+<s:complexType name="ArrayOfHealthFundHealthFund">
+    <s:sequence>
+        <s:element maxOccurs="unbounded" minOccurs="0" name="HealthFund" nillable="true" type="HealthFund"/>
+    </s:sequence>
+</s:complexType>
+<s:complexType name="HealthFund">
+    <s:sequence>
+        <s:element minOccurs="0" name="ActionScope" type="s:string"/>
+        <s:element minOccurs="0" name="EnteredBy" type="User"/>
+        <s:element minOccurs="0" name="EnteredAt" type="Organization"/>
+        <s:element minOccurs="0" name="EnteredOn" type="TimeStamp"/>
+        <s:element minOccurs="0" name="UpdatedOn" type="TimeStamp"/>
+        <s:element minOccurs="0" name="FromTime" type="TimeStamp"/>
+        <s:element minOccurs="0" name="ToTime" type="TimeStamp"/>
+        <s:element minOccurs="0" name="ExternalId" type="s:string"/>
+        <s:element minOccurs="0" name="EncounterNumber" type="s:string"/>
+        <s:element minOccurs="0" name="CustomPairs" type="ArrayOfNVPairNVPair"/>
+        <s:element minOccurs="0" name="HealthFund" type="HealthFundCode"/>
+        <s:element minOccurs="0" name="HealthFundPlan" type="HealthFundPlan"/>
+        <s:element minOccurs="0" name="GroupName">
+            <s:simpleType>
+                <s:restriction base="s:string">
+                    <s:maxLength value="32000"/>
+                </s:restriction>
+            </s:simpleType>
+        </s:element>
+        <s:element minOccurs="0" name="GroupNumber">
+            <s:simpleType>
+                <s:restriction base="s:string">
+                    <s:maxLength value="32000"/>
+                </s:restriction>
+            </s:simpleType>
+        </s:element>
+        <s:element minOccurs="0" name="MembershipNumber">
+            <s:simpleType>
+                <s:restriction base="s:string">
+                    <s:maxLength value="220"/>
+                </s:restriction>
+            </s:simpleType>
+        </s:element>
+        <s:element minOccurs="0" name="PlanType">
+            <s:simpleType>
+                <s:restriction base="s:string">
+                    <s:maxLength value="32000"/>
+                </s:restriction>
+            </s:simpleType>
+        </s:element>
+        <s:element minOccurs="0" name="InsuredName" type="Name"/>
+        <s:element minOccurs="0" name="InsuredAddress" type="Address"/>
+        <s:element minOccurs="0" name="InsuredContact" type="ContactInfo"/>
+        <s:element minOccurs="0" name="InsuredRelationship" type="Relationship"/>
+        <s:element minOccurs="0" name="ActionCode" type="s:string"/>
+    </s:sequence>
+</s:complexType>
+<s:complexType name="HealthFundCode">
+    <s:complexContent>
+        <s:extension base="CodeTableDetail">
+            <s:sequence>
+                <s:element minOccurs="0" name="Address" type="Address"/>
+                <s:element minOccurs="0" name="ContactPerson" type="Name"/>
+                <s:element minOccurs="0" name="ContactInfo" type="ContactInfo"/>
+            </s:sequence>
+        </s:extension>
+    </s:complexContent>
+</s:complexType>
+<s:complexType name="HealthFundPlan">
+    <s:complexContent>
+        <s:extension base="CodeTableDetail"/>
+    </s:complexContent>
+</s:complexType>
+<s:complexType name="SeparationMode">
+    <s:complexContent>
+        <s:extension base="CodeTableDetail"/>
+    </s:complexContent>
+</s:complexType>
+<s:complexType name="ArrayOfCareProviderTypeCareProviderType">
+    <s:sequence>
+        <s:element maxOccurs="unbounded" minOccurs="0" name="CareProviderType" nillable="true" type="CareProviderType"/>
+    </s:sequence>
+</s:complexType>
+<s:complexType name="ArrayOfRecommendationRecommendation">
+    <s:sequence>
+        <s:element maxOccurs="unbounded" minOccurs="0" name="Recommendation" nillable="true" type="Recommendation"/>
+    </s:sequence>
+</s:complexType>
+<s:complexType name="Recommendation">
+    <s:complexContent>
+        <s:extension base="DataType">
+            <s:sequence>
+                <s:element minOccurs="0" name="NoteText" type="s:string"/>
+                <s:element minOccurs="0" name="RecipientPersons" type="ArrayOfCareProviderCareProvider"/>
+                <s:element minOccurs="0" name="RecipientOrganizations" type="ArrayOfHealthCareFacilityHealthCareFacility"/>
+            </s:sequence>
+        </s:extension>
+    </s:complexContent>
+</s:complexType>
+<s:complexType name="ArrayOfHealthCareFacilityHealthCareFacility">
+    <s:sequence>
+        <s:element maxOccurs="unbounded" minOccurs="0" name="HealthCareFacility" nillable="true" type="HealthCareFacility"/>
+    </s:sequence>
+</s:complexType>
+<s:complexType name="PublicityCode">
+    <s:complexContent>
+        <s:extension base="CodeTableDetail"/>
+    </s:complexContent>
+</s:complexType>
+<s:complexType name="EncounterPriority">
+    <s:complexContent>
+        <s:extension base="CodeTableDetail"/>
+    </s:complexContent>
+</s:complexType>
+<s:complexType name="DiagnosisRelatedGroup">
+    <s:complexContent>
+        <s:extension base="CodeTableDetail"/>
+    </s:complexContent>
+</s:complexType>
+<s:complexType name="ArrayOfAlertAlert">
+    <s:sequence>
+        <s:element maxOccurs="unbounded" minOccurs="0" name="Alert" nillable="true" type="Alert"/>
+    </s:sequence>
+</s:complexType>
+<s:complexType name="Alert">
+    <s:complexContent>
+        <s:extension base="SuperClass">
+            <s:sequence>
+                <s:element minOccurs="0" name="AlertType" type="AlertType"/>
+                <s:element minOccurs="0" name="Alert" type="AlertCode"/>
+                <s:element minOccurs="0" name="Comments" type="s:string"/>
+                <s:element minOccurs="0" name="Status" type="s:string"/>
+            </s:sequence>
+        </s:extension>
+    </s:complexContent>
+</s:complexType>
+<s:complexType name="AlertType">
+    <s:complexContent>
+        <s:extension base="CodeTableDetail"/>
+    </s:complexContent>
+</s:complexType>
+<s:complexType name="AlertCode">
+    <s:complexContent>
+        <s:extension base="CodeTableDetail"/>
+    </s:complexContent>
+</s:complexType>
+<s:complexType name="ArrayOfAdvanceDirectiveAdvanceDirective">
+    <s:sequence>
+        <s:element maxOccurs="unbounded" minOccurs="0" name="AdvanceDirective" nillable="true" type="AdvanceDirective"/>
+    </s:sequence>
+</s:complexType>
+<s:complexType name="AdvanceDirective">
+    <s:complexContent>
+        <s:extension base="SuperClass">
+            <s:sequence>
+                <s:element minOccurs="0" name="AlertType" type="AlertType"/>
+                <s:element minOccurs="0" name="Alert" type="AlertCode"/>
+                <s:element minOccurs="0" name="Comments" type="s:string"/>
+                <s:element minOccurs="0" name="Status" type="s:string"/>
+            </s:sequence>
+        </s:extension>
+    </s:complexContent>
+</s:complexType>
+<s:complexType name="ArrayOfAllergyAllergy">
+    <s:sequence>
+        <s:element maxOccurs="unbounded" minOccurs="0" name="Allergy" nillable="true" type="Allergy"/>
+    </s:sequence>
+</s:complexType>
+<s:complexType name="Allergy">
+    <s:complexContent>
+        <s:extension base="SuperClass">
+            <s:sequence>
+                <s:element minOccurs="0" name="Allergy" type="AllergyCode"/>
+                <s:element minOccurs="0" name="AllergyCategory" type="AllergyCategory"/>
+                <s:element minOccurs="0" name="Clinician" type="CareProvider"/>
+                <s:element minOccurs="0" name="Reaction" type="Reaction"/>
+                <s:element minOccurs="0" name="Severity" type="Severity"/>
+                <s:element minOccurs="0" name="Certainty" type="Certainty"/>
+                <s:element minOccurs="0" name="DiscoveryTime" type="TimeStamp"/>
+                <s:element minOccurs="0" name="ConfirmedTime" type="TimeStamp"/>
+                <s:element minOccurs="0" name="Comments" type="s:string"/>
+                <s:element minOccurs="0" name="InactiveTime" type="TimeStamp"/>
+                <s:element minOccurs="0" name="InactiveComments" type="s:string"/>
+                <s:element minOccurs="0" name="VerifiedTime" type="TimeStamp"/>
+                <s:element minOccurs="0" name="ATCCode" type="ATCCode"/>
+                <s:element minOccurs="0" name="ReasonNotCoded" type="s:string"/>
+                <s:element minOccurs="0" name="FreeTextAllergy">
+                    <s:simpleType>
+                        <s:restriction base="s:string">
+                            <s:maxLength value="5000"/>
+                        </s:restriction>
+                    </s:simpleType>
+                </s:element>
+                <s:element minOccurs="0" name="QualifyingDetails">
+                    <s:simpleType>
+                        <s:restriction base="s:string">
+                            <s:maxLength value="32000"/>
+                        </s:restriction>
+                    </s:simpleType>
+                </s:element>
+                <s:element minOccurs="0" name="Status" type="s:string"/>
+            </s:sequence>
+        </s:extension>
+    </s:complexContent>
+</s:complexType>
+<s:complexType name="AllergyCode">
+    <s:complexContent>
+        <s:extension base="CodeTableTranslated"/>
+    </s:complexContent>
+</s:complexType>
+<s:complexType name="CodeTableTranslated">
+    <s:complexContent>
+        <s:extension base="CodeTableDetail">
+            <s:sequence>
+                <s:element minOccurs="0" name="OriginalText">
+                    <s:simpleType>
+                        <s:restriction base="s:string">
+                            <s:maxLength value="32000"/>
+                        </s:restriction>
+                    </s:simpleType>
+                </s:element>
+                <s:element minOccurs="0" name="PriorCodes" type="ArrayOfPriorCodePriorCode"/>
+            </s:sequence>
+        </s:extension>
+    </s:complexContent>
+</s:complexType>
+<s:complexType name="ArrayOfPriorCodePriorCode">
+    <s:sequence>
+        <s:element maxOccurs="unbounded" minOccurs="0" name="PriorCode" nillable="true" type="PriorCode"/>
+    </s:sequence>
+</s:complexType>
+<s:complexType name="PriorCode">
+    <s:complexContent>
+        <s:extension base="DataType">
+            <s:sequence>
+                <s:element minOccurs="0" name="Code">
+                    <s:simpleType>
+                        <s:restriction base="s:string">
+                            <s:maxLength value="32000"/>
+                        </s:restriction>
+                    </s:simpleType>
+                </s:element>
+                <s:element minOccurs="0" name="Description">
+                    <s:simpleType>
+                        <s:restriction base="s:string">
+                            <s:maxLength value="32000"/>
+                        </s:restriction>
+                    </s:simpleType>
+                </s:element>
+                <s:element minOccurs="0" name="CodeSystem">
+                    <s:simpleType>
+                        <s:restriction base="s:string">
+                            <s:maxLength value="32000"/>
+                        </s:restriction>
+                    </s:simpleType>
+                </s:element>
+                <s:element minOccurs="0" name="Type">
+                    <s:simpleType>
+                        <s:restriction base="s:string">
+                            <s:enumeration value="A"/>
+                            <s:enumeration value="O"/>
+                            <s:enumeration value="N"/>
+                        </s:restriction>
+                    </s:simpleType>
+                </s:element>
+            </s:sequence>
+        </s:extension>
+    </s:complexContent>
+</s:complexType>
+<s:complexType name="AllergyCategory">
+    <s:complexContent>
+        <s:extension base="CodeTableTranslated"/>
+    </s:complexContent>
+</s:complexType>
+<s:complexType name="Reaction">
+    <s:complexContent>
+        <s:extension base="CodeTableDetail"/>
+    </s:complexContent>
+</s:complexType>
+<s:complexType name="Severity">
+    <s:complexContent>
+        <s:extension base="CodeTableTranslated"/>
+    </s:complexContent>
+</s:complexType>
+<s:complexType name="Certainty">
+    <s:complexContent>
+        <s:extension base="CodeTableDetail"/>
+    </s:complexContent>
+</s:complexType>
+<s:complexType name="ATCCode">
+    <s:complexContent>
+        <s:extension base="CodeTableDetail"/>
+    </s:complexContent>
+</s:complexType>
+<s:complexType name="ArrayOfIllnessHistoryIllnessHistory">
+    <s:sequence>
+        <s:element maxOccurs="unbounded" minOccurs="0" name="IllnessHistory" nillable="true" type="IllnessHistory"/>
+    </s:sequence>
+</s:complexType>
+<s:complexType name="IllnessHistory">
+    <s:complexContent>
+        <s:extension base="SuperClass">
+            <s:sequence>
+                <s:element minOccurs="0" name="NoteText" type="s:string"/>
+                <s:element minOccurs="0" name="Condition" type="PastHistoryCondition"/>
+                <s:element minOccurs="0" name="Clinician" type="CareProvider"/>
+                <s:element minOccurs="0" name="VerifiedTime" type="TimeStamp"/>
+            </s:sequence>
+        </s:extension>
+    </s:complexContent>
+</s:complexType>
+<s:complexType name="PastHistoryCondition">
+    <s:complexContent>
+        <s:extension base="CodeTableDetail"/>
+    </s:complexContent>
+</s:complexType>
+<s:complexType name="ArrayOfSocialHistorySocialHistory">
+    <s:sequence>
+        <s:element maxOccurs="unbounded" minOccurs="0" name="SocialHistory" nillable="true" type="SocialHistory"/>
+    </s:sequence>
+</s:complexType>
+<s:complexType name="SocialHistory">
+    <s:complexContent>
+        <s:extension base="SuperClass">
+            <s:sequence>
+                <s:element minOccurs="0" name="SocialHabit" type="SocialHabit"/>
+                <s:element minOccurs="0" name="SocialHabitQty" type="SocialHabitQty"/>
+                <s:element minOccurs="0" name="SocialHabitComments" type="s:string"/>
+                <s:element minOccurs="0" name="Status" type="s:string"/>
+            </s:sequence>
+        </s:extension>
+    </s:complexContent>
+</s:complexType>
+<s:complexType name="SocialHabit">
+    <s:complexContent>
+        <s:extension base="CodeTableDetail"/>
+    </s:complexContent>
+</s:complexType>
+<s:complexType name="SocialHabitQty">
+    <s:complexContent>
+        <s:extension base="CodeTableDetail"/>
+    </s:complexContent>
+</s:complexType>
+<s:complexType name="ArrayOfFamilyHistoryFamilyHistory">
+    <s:sequence>
+        <s:element maxOccurs="unbounded" minOccurs="0" name="FamilyHistory" nillable="true" type="FamilyHistory"/>
+    </s:sequence>
+</s:complexType>
+<s:complexType name="FamilyHistory">
+    <s:complexContent>
+        <s:extension base="SuperClass">
+            <s:sequence>
+                <s:element minOccurs="0" name="FamilyMember" type="FamilyMember"/>
+                <s:element minOccurs="0" name="Diagnosis" type="DiagnosisCode"/>
+                <s:element minOccurs="0" name="NoteText" type="s:string"/>
+                <s:element minOccurs="0" name="Status" type="s:string"/>
+            </s:sequence>
+        </s:extension>
+    </s:complexContent>
+</s:complexType>
+<s:complexType name="FamilyMember">
+    <s:complexContent>
+        <s:extension base="CodeTableDetail"/>
+    </s:complexContent>
+</s:complexType>
+<s:complexType name="DiagnosisCode">
+    <s:complexContent>
+        <s:extension base="CodeTableTranslated"/>
+    </s:complexContent>
+</s:complexType>
+<s:complexType name="ArrayOfGuarantorGuarantor">
+    <s:sequence>
+        <s:element maxOccurs="unbounded" minOccurs="0" name="Guarantor" nillable="true" type="Guarantor"/>
+    </s:sequence>
+</s:complexType>
+<s:complexType name="Guarantor">
+    <s:complexContent>
+        <s:extension base="SuperClass">
+            <s:sequence>
+                <s:element minOccurs="0" name="Name" type="Name"/>
+                <s:element minOccurs="0" name="Address" type="Address"/>
+                <s:element minOccurs="0" name="ContactInfo" type="ContactInfo"/>
+                <s:element minOccurs="0" name="Relationship" type="Relationship"/>
+                <s:element minOccurs="0" name="GuarantorType">
+                    <s:simpleType>
+                        <s:restriction base="s:string">
+                            <s:maxLength value="32000"/>
+                        </s:restriction>
+                    </s:simpleType>
+                </s:element>
+                <s:element minOccurs="0" name="GuarantorNumber" type="PatientNumber"/>
+            </s:sequence>
+        </s:extension>
+    </s:complexContent>
+</s:complexType>
+<s:complexType name="ArrayOfDiagnosisDiagnosis">
+    <s:sequence>
+        <s:element maxOccurs="unbounded" minOccurs="0" name="Diagnosis" nillable="true" type="Diagnosis"/>
+    </s:sequence>
+</s:complexType>
+<s:complexType name="Diagnosis">
+    <s:complexContent>
+        <s:extension base="SuperClass">
+            <s:sequence>
+                <s:element minOccurs="0" name="DiagnosingClinician" type="CareProvider"/>
+                <s:element minOccurs="0" name="Diagnosis" type="DiagnosisCode"/>
+                <s:element minOccurs="0" name="DiagnosisType" type="DiagnosisType"/>
+                <s:element minOccurs="0" name="LinkedDiagnosisCode" type="s:string"/>
+                <s:element minOccurs="0" name="LinkedExternalId">
+                    <s:simpleType>
+                        <s:restriction base="s:string">
+                            <s:maxLength value="220"/>
+                        </s:restriction>
+                    </s:simpleType>
+                </s:element>
+                <s:element minOccurs="0" name="IdentificationTime" type="TimeStamp"/>
+                <s:element minOccurs="0" name="Status" type="DiagnosisStatus"/>
+                <s:element minOccurs="0" name="OnsetTime" type="TimeStamp"/>
+            </s:sequence>
+        </s:extension>
+    </s:complexContent>
+</s:complexType>
+<s:complexType name="DiagnosisType">
+    <s:complexContent>
+        <s:extension base="CodeTableTranslated"/>
+    </s:complexContent>
+</s:complexType>
+<s:complexType name="DiagnosisStatus">
+    <s:complexContent>
+        <s:extension base="CodeTableDetail"/>
+    </s:complexContent>
+</s:complexType>
+<s:complexType name="ArrayOfObservationObservation">
+    <s:sequence>
+        <s:element maxOccurs="unbounded" minOccurs="0" name="Observation" nillable="true" type="Observation"/>
+    </s:sequence>
+</s:complexType>
+<s:complexType name="Observation">
+    <s:complexContent>
+        <s:extension base="SuperClass">
+            <s:sequence>
+                <s:element minOccurs="0" name="ObservationTime" type="TimeStamp"/>
+                <s:element minOccurs="0" name="ObservationCode" type="ObservationCode"/>
+                <s:element minOccurs="0" name="ObservationValue">
+                    <s:simpleType>
+                        <s:restriction base="s:string">
+                            <s:maxLength value="999"/>
+                        </s:restriction>
+                    </s:simpleType>
+                </s:element>
+                <s:element minOccurs="0" name="Comments">
+                    <s:simpleType>
+                        <s:restriction base="s:string">
+                            <s:maxLength value="999"/>
+                        </s:restriction>
+                    </s:simpleType>
+                </s:element>
+                <s:element minOccurs="0" name="Clinician" type="CareProvider"/>
+                <s:element minOccurs="0" name="GroupId" type="s:string"/>
+            </s:sequence>
+        </s:extension>
+    </s:complexContent>
+</s:complexType>
+<s:complexType name="ObservationCode">
+    <s:complexContent>
+        <s:extension base="CodeTableTranslated">
+            <s:sequence>
+                <s:element minOccurs="0" name="ObservationValueUnits" type="UoM"/>
+            </s:sequence>
+        </s:extension>
+    </s:complexContent>
+</s:complexType>
+<s:complexType name="UoM">
+    <s:complexContent>
+        <s:extension base="CodeTableDetail"/>
+    </s:complexContent>
+</s:complexType>
+<s:complexType name="ArrayOfProblemProblem">
+    <s:sequence>
+        <s:element maxOccurs="unbounded" minOccurs="0" name="Problem" nillable="true" type="Problem"/>
+    </s:sequence>
+</s:complexType>
+<s:complexType name="Problem">
+    <s:complexContent>
+        <s:extension base="SuperClass">
+            <s:sequence>
+                <s:element minOccurs="0" name="ProblemDetails" type="s:string"/>
+                <s:element minOccurs="0" name="Problem" type="BodyPart"/>
+                <s:element minOccurs="0" name="Clinician" type="CareProvider"/>
+                <s:element minOccurs="0" name="CauseofDeath">
+                    <s:simpleType>
+                        <s:restriction base="s:string">
+                            <s:maxLength value="220"/>
+                            <s:enumeration value="Y"/>
+                            <s:enumeration value="N"/>
+                        </s:restriction>
+                    </s:simpleType>
+                </s:element>
+                <s:element minOccurs="0" name="Status" type="DiagnosisStatus"/>
+                <s:element minOccurs="0" name="Category" type="ProblemCategory"/>
+                <s:element minOccurs="0" name="Comments" type="s:string"/>
+            </s:sequence>
+        </s:extension>
+    </s:complexContent>
+</s:complexType>
+<s:complexType name="BodyPart">
+    <s:complexContent>
+        <s:extension base="CodeTableDetail"/>
+    </s:complexContent>
+</s:complexType>
+<s:complexType name="ProblemCategory">
+    <s:complexContent>
+        <s:extension base="CodeTableDetail"/>
+    </s:complexContent>
+</s:complexType>
+<s:complexType name="ArrayOfPhysicalExamPhysicalExam">
+    <s:sequence>
+        <s:element maxOccurs="unbounded" minOccurs="0" name="PhysicalExam" nillable="true" type="PhysicalExam"/>
+    </s:sequence>
+</s:complexType>
+<s:complexType name="PhysicalExam">
+    <s:complexContent>
+        <s:extension base="SuperClass">
+            <s:sequence>
+                <s:element minOccurs="0" name="PhysExamTime" type="TimeStamp"/>
+                <s:element minOccurs="0" name="PhysExamCode" type="PhysExam"/>
+                <s:element minOccurs="0" name="PhysExamObs" type="PhysExamObs"/>
+                <s:element minOccurs="0" name="PhysExamObsQualifier" type="PhysExamObsQualifier"/>
+                <s:element minOccurs="0" name="PhysExamObsValue" type="PhysExamObsValue"/>
+                <s:element minOccurs="0" name="NoteText" type="s:string"/>
+            </s:sequence>
+        </s:extension>
+    </s:complexContent>
+</s:complexType>
+<s:complexType name="PhysExam">
+    <s:complexContent>
+        <s:extension base="CodeTableDetail"/>
+    </s:complexContent>
+</s:complexType>
+<s:complexType name="PhysExamObs">
+    <s:complexContent>
+        <s:extension base="CodeTableDetail"/>
+    </s:complexContent>
+</s:complexType>
+<s:complexType name="PhysExamObsQualifier">
+    <s:complexContent>
+        <s:extension base="CodeTableDetail"/>
+    </s:complexContent>
+</s:complexType>
+<s:complexType name="PhysExamObsValue">
+    <s:complexContent>
+        <s:extension base="CodeTableDetail"/>
+    </s:complexContent>
+</s:complexType>
+<s:complexType name="ArrayOfProcedureProcedure">
+    <s:sequence>
+        <s:element maxOccurs="unbounded" minOccurs="0" name="Procedure" nillable="true" type="Procedure"/>
+    </s:sequence>
+</s:complexType>
+<s:complexType name="Procedure">
+    <s:complexContent>
+        <s:extension base="SuperClass">
+            <s:sequence>
+                <s:element minOccurs="0" name="Procedure" type="ProcedureCode"/>
+                <s:element minOccurs="0" name="Clinician" type="CareProvider"/>
+                <s:element minOccurs="0" name="ProcedureTime" type="TimeStamp"/>
+            </s:sequence>
+        </s:extension>
+    </s:complexContent>
+</s:complexType>
+<s:complexType name="ProcedureCode">
+    <s:complexContent>
+        <s:extension base="CodeTableTranslated"/>
+    </s:complexContent>
+</s:complexType>
+<s:complexType name="ArrayOfDocumentDocument">
+    <s:sequence>
+        <s:element maxOccurs="unbounded" minOccurs="0" name="Document" nillable="true" type="Document"/>
+    </s:sequence>
+</s:complexType>
+<s:complexType name="Document">
+    <s:complexContent>
+        <s:extension base="SuperClass">
+            <s:sequence>
+                <s:element minOccurs="0" name="DocumentTime" type="TimeStamp"/>
+                <s:element minOccurs="0" name="NoteText" type="s:string"/>
+                <s:element minOccurs="0" name="DocumentType" type="DocumentType"/>
+                <s:element minOccurs="0" name="Clinician" type="CareProvider"/>
+                <s:element minOccurs="0" name="TranscriptionTime" type="TimeStamp"/>
+                <s:element minOccurs="0" name="AuthorizationTime" type="TimeStamp"/>
+                <s:element minOccurs="0" name="DocumentName">
+                    <s:simpleType>
+                        <s:restriction base="s:string">
+                            <s:maxLength value="220"/>
+                        </s:restriction>
+                    </s:simpleType>
+                </s:element>
+                <s:element minOccurs="0" name="FileType" type="s:string"/>
+                <s:element minOccurs="0" name="Stream" type="s:base64Binary"/>
+                <s:element minOccurs="0" name="DocumentURL">
+                    <s:simpleType>
+                        <s:restriction base="s:string">
+                            <s:maxLength value="220"/>
+                        </s:restriction>
+                    </s:simpleType>
+                </s:element>
+                <s:element minOccurs="0" name="DocumentNumber">
+                    <s:simpleType>
+                        <s:restriction base="s:string">
+                            <s:maxLength value="220"/>
+                        </s:restriction>
+                    </s:simpleType>
+                </s:element>
+                <s:element minOccurs="0" name="Facilities" type="ArrayOfOrganizationOrganization"/>
+                <s:element minOccurs="0" name="Status" type="DocumentStatus"/>
+                <s:element minOccurs="0" name="ActionTime" type="TimeStamp"/>
+            </s:sequence>
+        </s:extension>
+    </s:complexContent>
+</s:complexType>
+<s:complexType name="DocumentType">
+    <s:complexContent>
+        <s:extension base="CodeTableTranslated"/>
+    </s:complexContent>
+</s:complexType>
+<s:complexType name="ArrayOfOrganizationOrganization">
+    <s:sequence>
+        <s:element maxOccurs="unbounded" minOccurs="0" name="Organization" nillable="true" type="Organization"/>
+    </s:sequence>
+</s:complexType>
+<s:complexType name="DocumentStatus">
+    <s:complexContent>
+        <s:extension base="CodeTableDetail"/>
+    </s:complexContent>
+</s:complexType>
+<s:complexType name="ArrayOfLabOrderLabOrder">
+    <s:sequence>
+        <s:element maxOccurs="unbounded" minOccurs="0" name="LabOrder" nillable="true" type="LabOrder"/>
+    </s:sequence>
+</s:complexType>
+<s:complexType name="LabOrder">
+    <s:complexContent>
+        <s:extension base="SuperClass">
+            <s:sequence>
+                <s:element minOccurs="0" name="PlacerId" type="s:string"/>
+                <s:element minOccurs="0" name="FillerId" type="s:string"/>
+                <s:element minOccurs="0" name="OrderItem" type="Order"/>
+                <s:element minOccurs="0" name="OrderCategory" type="OrderCategory"/>
+                <s:element minOccurs="0" name="OrderQuantity" type="s:string"/>
+                <s:element minOccurs="0" name="OrderedBy" type="CareProvider"/>
+                <s:element minOccurs="0" name="EnteringOrganization" type="HealthCareFacility"/>
+                <s:element minOccurs="0" name="VerifiedBy" type="CareProvider"/>
+                <s:element minOccurs="0" name="CallbackNumber" type="s:string"/>
+                <s:element minOccurs="0" name="Specimen" type="s:string"/>
+                <s:element minOccurs="0" name="SpecimenCollectedTime" type="TimeStamp"/>
+                <s:element minOccurs="0" name="SpecimenReceivedTime" type="TimeStamp"/>
+                <s:element minOccurs="0" name="ReassessmentTime" type="TimeStamp"/>
+                <s:element minOccurs="0" name="Frequency" type="Frequency"/>
+                <s:element minOccurs="0" name="Duration" type="Duration"/>
+                <s:element minOccurs="0" name="Status" type="s:string"/>
+                <s:element minOccurs="0" name="Priority" type="Priority"/>
+                <s:element minOccurs="0" name="ConfidentialityCode" type="Confidentiality"/>
+                <s:element minOccurs="0" name="Condition" type="s:string"/>
+                <s:element minOccurs="0" name="TextInstruction" type="s:string"/>
+                <s:element minOccurs="0" name="OrderGroup" type="s:string"/>
+                <s:element minOccurs="0" name="Comments" type="s:string"/>
+                <s:element minOccurs="0" name="ConsultationDepartment" type="HealthCareFacility"/>
+                <s:element minOccurs="0" name="AuthorizationTime" type="TimeStamp"/>
+                <s:element minOccurs="0" name="ReceivingLocation" type="HealthCareFacility"/>
+                <s:element minOccurs="0" name="VerifiedComments" type="s:string"/>
+                <s:element minOccurs="0" name="ResultCopiesTo" type="ArrayOfCareProviderCareProvider"/>
+                <s:element minOccurs="0" name="GroupId" type="s:string"/>
+                <s:element minOccurs="0" name="Result" type="Result"/>
+            </s:sequence>
+        </s:extension>
+    </s:complexContent>
+</s:complexType>
+<s:complexType name="Order">
+    <s:complexContent>
+        <s:extension base="CodeTableTranslated"/>
+    </s:complexContent>
+</s:complexType>
+<s:complexType name="OrderCategory">
+    <s:complexContent>
+        <s:extension base="CodeTableDetail"/>
+    </s:complexContent>
+</s:complexType>
+<s:complexType name="Frequency">
+    <s:complexContent>
+        <s:extension base="CodeTableDetail">
+            <s:sequence>
+                <s:element minOccurs="0" name="Factor">
+                    <s:simpleType>
+                        <s:restriction base="s:string">
+                            <s:maxLength value="32000"/>
+                        </s:restriction>
+                    </s:simpleType>
+                </s:element>
+            </s:sequence>
+        </s:extension>
+    </s:complexContent>
+</s:complexType>
+<s:complexType name="Duration">
+    <s:complexContent>
+        <s:extension base="CodeTableDetail">
+            <s:sequence>
+                <s:element minOccurs="0" name="Factor">
+                    <s:simpleType>
+                        <s:restriction base="s:string">
+                            <s:maxLength value="32000"/>
+                        </s:restriction>
+                    </s:simpleType>
+                </s:element>
+            </s:sequence>
+        </s:extension>
+    </s:complexContent>
+</s:complexType>
+<s:complexType name="Priority">
+    <s:complexContent>
+        <s:extension base="CodeTableDetail"/>
+    </s:complexContent>
+</s:complexType>
+<s:complexType name="Confidentiality">
+    <s:complexContent>
+        <s:extension base="CodeTableDetail"/>
+    </s:complexContent>
+</s:complexType>
+<s:complexType name="Result">
+    <s:complexContent>
+        <s:extension base="SuperClass">
+            <s:sequence>
+                <s:element minOccurs="0" name="ResultType" type="s:string"/>
+                <s:element minOccurs="0" name="ResultItems" type="ArrayOfLabResultItemLabResultItem"/>
+                <s:element minOccurs="0" name="VerifiedBy" type="CareProvider"/>
+                <s:element minOccurs="0" name="ResultTime" type="TimeStamp"/>
+                <s:element minOccurs="0" name="ResultStatus" type="s:string"/>
+                <s:element minOccurs="0" name="ResultText" type="s:string"/>
+                <s:element minOccurs="0" name="FileType" type="s:string"/>
+                <s:element minOccurs="0" name="DocumentName">
+                    <s:simpleType>
+                        <s:restriction base="s:string">
+                            <s:maxLength value="220"/>
+                        </s:restriction>
+                    </s:simpleType>
+                </s:element>
+                <s:element minOccurs="0" name="Stream" type="s:base64Binary"/>
+                <s:element minOccurs="0" name="DocumentURL">
+                    <s:simpleType>
+                        <s:restriction base="s:string">
+                            <s:maxLength value="32000"/>
+                        </s:restriction>
+                    </s:simpleType>
+                </s:element>
+                <s:element minOccurs="0" name="DocumentNumber">
+                    <s:simpleType>
+                        <s:restriction base="s:string">
+                            <s:maxLength value="220"/>
+                        </s:restriction>
+                    </s:simpleType>
+                </s:element>
+                <s:element minOccurs="0" name="Comments" type="s:string"/>
+                <s:element minOccurs="0" name="AuthorizationTime" type="TimeStamp"/>
+                <s:element minOccurs="0" name="PerformedAt" type="Organization"/>
+                <s:element minOccurs="0" name="ResultInterpretation" type="s:string"/>
+                <s:element minOccurs="0" name="GUID" type="s:string"/>
+                <s:element minOccurs="0" name="GUIDExpDate" type="TimeStamp"/>
+            </s:sequence>
+        </s:extension>
+    </s:complexContent>
+</s:complexType>
+<s:complexType name="ArrayOfLabResultItemLabResultItem">
+    <s:sequence>
+        <s:element maxOccurs="unbounded" minOccurs="0" name="LabResultItem" nillable="true" type="LabResultItem"/>
+    </s:sequence>
+</s:complexType>
+<s:complexType name="LabResultItem">
+    <s:complexContent>
+        <s:extension base="SuperClass">
+            <s:sequence>
+                <s:element minOccurs="0" name="TestItemCode" type="LabTestItem"/>
+                <s:element minOccurs="0" name="ResultValue" type="s:string"/>
+                <s:element minOccurs="0" name="SubId">
+                    <s:simpleType>
+                        <s:restriction base="s:string">
+                            <s:maxLength value="30"/>
+                        </s:restriction>
+                    </s:simpleType>
+                </s:element>
+                <s:element minOccurs="0" name="ResultValueUnits">
+                    <s:simpleType>
+                        <s:restriction base="s:string">
+                            <s:maxLength value="30"/>
+                        </s:restriction>
+                    </s:simpleType>
+                </s:element>
+                <s:element minOccurs="0" name="ResultNormalRange">
+                    <s:simpleType>
+                        <s:restriction base="s:string">
+                            <s:maxLength value="220"/>
+                        </s:restriction>
+                    </s:simpleType>
+                </s:element>
+                <s:element minOccurs="0" name="ResultInterpretation">
+                    <s:simpleType>
+                        <s:restriction base="s:string">
+                            <s:maxLength value="100"/>
+                        </s:restriction>
+                    </s:simpleType>
+                </s:element>
+                <s:element minOccurs="0" name="TestItemStatus">
+                    <s:simpleType>
+                        <s:restriction base="s:string">
+                            <s:maxLength value="100"/>
+                        </s:restriction>
+                    </s:simpleType>
+                </s:element>
+                <s:element minOccurs="0" name="Comments" type="s:string"/>
+                <s:element minOccurs="0" name="ReferenceComment">
+                    <s:simpleType>
+                        <s:restriction base="s:string">
+                            <s:maxLength value="1000"/>
+                        </s:restriction>
+                    </s:simpleType>
+                </s:element>
+                <s:element minOccurs="0" name="PerformedAt" type="Organization"/>
+            </s:sequence>
+        </s:extension>
+    </s:complexContent>
+</s:complexType>
+<s:complexType name="LabTestItem">
+    <s:complexContent>
+        <s:extension base="CodeTableTranslated">
+            <s:sequence>
+                <s:element minOccurs="0" name="IsNumeric" type="s:boolean"/>
+            </s:sequence>
+        </s:extension>
+    </s:complexContent>
+</s:complexType>
+<s:complexType name="ArrayOfRadOrderRadOrder">
+    <s:sequence>
+        <s:element maxOccurs="unbounded" minOccurs="0" name="RadOrder" nillable="true" type="RadOrder"/>
+    </s:sequence>
+</s:complexType>
+<s:complexType name="RadOrder">
+    <s:complexContent>
+        <s:extension base="SuperClass">
+            <s:sequence>
+                <s:element minOccurs="0" name="PlacerId" type="s:string"/>
+                <s:element minOccurs="0" name="FillerId" type="s:string"/>
+                <s:element minOccurs="0" name="OrderItem" type="Order"/>
+                <s:element minOccurs="0" name="OrderCategory" type="OrderCategory"/>
+                <s:element minOccurs="0" name="OrderQuantity" type="s:string"/>
+                <s:element minOccurs="0" name="OrderedBy" type="CareProvider"/>
+                <s:element minOccurs="0" name="EnteringOrganization" type="HealthCareFacility"/>
+                <s:element minOccurs="0" name="VerifiedBy" type="CareProvider"/>
+                <s:element minOccurs="0" name="CallbackNumber" type="s:string"/>
+                <s:element minOccurs="0" name="Specimen" type="s:string"/>
+                <s:element minOccurs="0" name="SpecimenCollectedTime" type="TimeStamp"/>
+                <s:element minOccurs="0" name="SpecimenReceivedTime" type="TimeStamp"/>
+                <s:element minOccurs="0" name="ReassessmentTime" type="TimeStamp"/>
+                <s:element minOccurs="0" name="Frequency" type="Frequency"/>
+                <s:element minOccurs="0" name="Duration" type="Duration"/>
+                <s:element minOccurs="0" name="Status" type="s:string"/>
+                <s:element minOccurs="0" name="Priority" type="Priority"/>
+                <s:element minOccurs="0" name="ConfidentialityCode" type="Confidentiality"/>
+                <s:element minOccurs="0" name="Condition" type="s:string"/>
+                <s:element minOccurs="0" name="TextInstruction" type="s:string"/>
+                <s:element minOccurs="0" name="OrderGroup" type="s:string"/>
+                <s:element minOccurs="0" name="Comments" type="s:string"/>
+                <s:element minOccurs="0" name="ConsultationDepartment" type="HealthCareFacility"/>
+                <s:element minOccurs="0" name="AuthorizationTime" type="TimeStamp"/>
+                <s:element minOccurs="0" name="ReceivingLocation" type="HealthCareFacility"/>
+                <s:element minOccurs="0" name="VerifiedComments" type="s:string"/>
+                <s:element minOccurs="0" name="ResultCopiesTo" type="ArrayOfCareProviderCareProvider"/>
+                <s:element minOccurs="0" name="GroupId" type="s:string"/>
+                <s:element minOccurs="0" name="Result" type="Result"/>
+            </s:sequence>
+        </s:extension>
+    </s:complexContent>
+</s:complexType>
+<s:complexType name="ArrayOfOtherOrderOtherOrder">
+    <s:sequence>
+        <s:element maxOccurs="unbounded" minOccurs="0" name="OtherOrder" nillable="true" type="OtherOrder"/>
+    </s:sequence>
+</s:complexType>
+<s:complexType name="OtherOrder">
+    <s:complexContent>
+        <s:extension base="SuperClass">
+            <s:sequence>
+                <s:element minOccurs="0" name="PlacerId" type="s:string"/>
+                <s:element minOccurs="0" name="FillerId" type="s:string"/>
+                <s:element minOccurs="0" name="OrderItem" type="Order"/>
+                <s:element minOccurs="0" name="OrderCategory" type="OrderCategory"/>
+                <s:element minOccurs="0" name="OrderQuantity" type="s:string"/>
+                <s:element minOccurs="0" name="OrderedBy" type="CareProvider"/>
+                <s:element minOccurs="0" name="EnteringOrganization" type="HealthCareFacility"/>
+                <s:element minOccurs="0" name="VerifiedBy" type="CareProvider"/>
+                <s:element minOccurs="0" name="CallbackNumber" type="s:string"/>
+                <s:element minOccurs="0" name="Specimen" type="s:string"/>
+                <s:element minOccurs="0" name="SpecimenCollectedTime" type="TimeStamp"/>
+                <s:element minOccurs="0" name="SpecimenReceivedTime" type="TimeStamp"/>
+                <s:element minOccurs="0" name="ReassessmentTime" type="TimeStamp"/>
+                <s:element minOccurs="0" name="Frequency" type="Frequency"/>
+                <s:element minOccurs="0" name="Duration" type="Duration"/>
+                <s:element minOccurs="0" name="Status" type="s:string"/>
+                <s:element minOccurs="0" name="Priority" type="Priority"/>
+                <s:element minOccurs="0" name="ConfidentialityCode" type="Confidentiality"/>
+                <s:element minOccurs="0" name="Condition" type="s:string"/>
+                <s:element minOccurs="0" name="TextInstruction" type="s:string"/>
+                <s:element minOccurs="0" name="OrderGroup" type="s:string"/>
+                <s:element minOccurs="0" name="Comments" type="s:string"/>
+                <s:element minOccurs="0" name="ConsultationDepartment" type="HealthCareFacility"/>
+                <s:element minOccurs="0" name="AuthorizationTime" type="TimeStamp"/>
+                <s:element minOccurs="0" name="ReceivingLocation" type="HealthCareFacility"/>
+                <s:element minOccurs="0" name="VerifiedComments" type="s:string"/>
+                <s:element minOccurs="0" name="ResultCopiesTo" type="ArrayOfCareProviderCareProvider"/>
+                <s:element minOccurs="0" name="GroupId" type="s:string"/>
+                <s:element minOccurs="0" name="Result" type="Result"/>
+            </s:sequence>
+        </s:extension>
+    </s:complexContent>
+</s:complexType>
+<s:complexType name="ArrayOfMedicationMedication">
+    <s:sequence>
+        <s:element maxOccurs="unbounded" minOccurs="0" name="Medication" nillable="true" type="Medication"/>
+    </s:sequence>
+</s:complexType>
+<s:complexType name="Medication">
+    <s:complexContent>
+        <s:extension base="SuperClass">
+            <s:sequence>
+                <s:element minOccurs="0" name="PlacerId" type="s:string"/>
+                <s:element minOccurs="0" name="FillerId" type="s:string"/>
+                <s:element minOccurs="0" name="OrderItem" type="Order"/>
+                <s:element minOccurs="0" name="OrderCategory" type="OrderCategory"/>
+                <s:element minOccurs="0" name="OrderQuantity" type="s:string"/>
+                <s:element minOccurs="0" name="OrderedBy" type="CareProvider"/>
+                <s:element minOccurs="0" name="EnteringOrganization" type="HealthCareFacility"/>
+                <s:element minOccurs="0" name="VerifiedBy" type="CareProvider"/>
+                <s:element minOccurs="0" name="CallbackNumber" type="s:string"/>
+                <s:element minOccurs="0" name="Specimen" type="s:string"/>
+                <s:element minOccurs="0" name="SpecimenCollectedTime" type="TimeStamp"/>
+                <s:element minOccurs="0" name="SpecimenReceivedTime" type="TimeStamp"/>
+                <s:element minOccurs="0" name="ReassessmentTime" type="TimeStamp"/>
+                <s:element minOccurs="0" name="Frequency" type="Frequency"/>
+                <s:element minOccurs="0" name="Duration" type="Duration"/>
+                <s:element minOccurs="0" name="Status" type="s:string"/>
+                <s:element minOccurs="0" name="Priority" type="Priority"/>
+                <s:element minOccurs="0" name="ConfidentialityCode" type="Confidentiality"/>
+                <s:element minOccurs="0" name="Condition" type="s:string"/>
+                <s:element minOccurs="0" name="TextInstruction" type="s:string"/>
+                <s:element minOccurs="0" name="OrderGroup" type="s:string"/>
+                <s:element minOccurs="0" name="Comments" type="s:string"/>
+                <s:element minOccurs="0" name="ConsultationDepartment" type="HealthCareFacility"/>
+                <s:element minOccurs="0" name="AuthorizationTime" type="TimeStamp"/>
+                <s:element minOccurs="0" name="ReceivingLocation" type="HealthCareFacility"/>
+                <s:element minOccurs="0" name="VerifiedComments" type="s:string"/>
+                <s:element minOccurs="0" name="ResultCopiesTo" type="ArrayOfCareProviderCareProvider"/>
+                <s:element minOccurs="0" name="GroupId" type="s:string"/>
+                <s:element minOccurs="0" name="DrugProduct" type="DrugProduct"/>
+                <s:element minOccurs="0" name="StrengthVolume" type="Numeric"/>
+                <s:element minOccurs="0" name="StrengthVolumeUnits" type="s:string"/>
+                <s:element minOccurs="0" name="RateAmount" type="Numeric"/>
+                <s:element minOccurs="0" name="RateUnits" type="RateUnits"/>
+                <s:element minOccurs="0" name="RateTimeUnit" type="s:string"/>
+                <s:element minOccurs="0" name="DoseQuantity" type="Numeric"/>
+                <s:element minOccurs="0" name="MaxDoseQuantity" type="Numeric"/>
+                <s:element minOccurs="0" name="NumberOfRefills" type="s:string"/>
+                <s:element minOccurs="0" name="DoseUoM" type="UoM"/>
+                <s:element minOccurs="0" name="DosageForm" type="DosageForm"/>
+                <s:element minOccurs="0" name="Route" type="Route"/>
+                <s:element minOccurs="0" name="Indication" type="s:string"/>
+                <s:element minOccurs="0" name="PharmacyStatus" type="s:string"/>
+                <s:element minOccurs="0" name="PrescriptionNumber" type="s:string"/>
+                <s:element minOccurs="0" name="RefillNumber" type="Numeric"/>
+                <s:element minOccurs="0" name="RefillDescription" type="s:string"/>
+                <s:element minOccurs="0" name="DosageSteps" type="ArrayOfDosageStepDosageStep"/>
+                <s:element minOccurs="0" name="Administrations" type="ArrayOfAdministrationAdministration"/>
+                <s:element minOccurs="0" name="ComponentMeds" type="ArrayOfDrugProductDrugProduct"/>
+            </s:sequence>
+        </s:extension>
+    </s:complexContent>
+</s:complexType>
+<s:complexType name="DrugProduct">
+    <s:complexContent>
+        <s:extension base="CodeTableTranslated">
+            <s:sequence>
+                <s:element minOccurs="0" name="BaseQty" type="Numeric"/>
+                <s:element minOccurs="0" name="BaseUnits" type="UoM"/>
+                <s:element minOccurs="0" name="ProductName">
+                    <s:simpleType>
+                        <s:restriction base="s:string">
+                            <s:maxLength value="220"/>
+                        </s:restriction>
+                    </s:simpleType>
+                </s:element>
+                <s:element minOccurs="0" name="OfficialCode">
+                    <s:simpleType>
+                        <s:restriction base="s:string">
+                            <s:maxLength value="220"/>
+                        </s:restriction>
+                    </s:simpleType>
+                </s:element>
+                <s:element minOccurs="0" name="PackageSize" type="Numeric"/>
+                <s:element minOccurs="0" name="PackageSizeUnits" type="PackageSizeUoM"/>
+                <s:element minOccurs="0" name="Type" type="DrugProductType"/>
+                <s:element minOccurs="0" name="Form" type="DrugProductForm"/>
+                <s:element minOccurs="0" name="Identifier1">
+                    <s:simpleType>
+                        <s:restriction base="s:string">
+                            <s:maxLength value="220"/>
+                        </s:restriction>
+                    </s:simpleType>
+                </s:element>
+                <s:element minOccurs="0" name="Identifier2">
+                    <s:simpleType>
+                        <s:restriction base="s:string">
+                            <s:maxLength value="220"/>
+                        </s:restriction>
+                    </s:simpleType>
+                </s:element>
+                <s:element minOccurs="0" name="ATCCode" type="ATCCode"/>
+                <s:element minOccurs="0" name="StrengthQty" type="Numeric"/>
+                <s:element minOccurs="0" name="StrengthUnits" type="UoM"/>
+                <s:element minOccurs="0" name="Strength" type="Strength"/>
+                <s:element minOccurs="0" name="Generic" type="Generic"/>
+                <s:element minOccurs="0" name="LabelName">
+                    <s:simpleType>
+                        <s:restriction base="s:string">
+                            <s:maxLength value="220"/>
+                        </s:restriction>
+                    </s:simpleType>
+                </s:element>
+            </s:sequence>
+        </s:extension>
+    </s:complexContent>
+</s:complexType>
+<s:simpleType name="Numeric">
+    <s:restriction base="s:decimal"/>
+</s:simpleType>
+<s:complexType name="PackageSizeUoM">
+    <s:complexContent>
+        <s:extension base="CodeTableDetail"/>
+    </s:complexContent>
+</s:complexType>
+<s:complexType name="DrugProductType">
+    <s:complexContent>
+        <s:extension base="CodeTableDetail"/>
+    </s:complexContent>
+</s:complexType>
+<s:complexType name="DrugProductForm">
+    <s:complexContent>
+        <s:extension base="CodeTableDetail"/>
+    </s:complexContent>
+</s:complexType>
+<s:complexType name="Strength">
+    <s:complexContent>
+        <s:extension base="CodeTableDetail"/>
+    </s:complexContent>
+</s:complexType>
+<s:complexType name="Generic">
+    <s:complexContent>
+        <s:extension base="CodeTableDetail"/>
+    </s:complexContent>
+</s:complexType>
+<s:complexType name="RateUnits">
+    <s:complexContent>
+        <s:extension base="CodeTableDetail"/>
+    </s:complexContent>
+</s:complexType>
+<s:complexType name="DosageForm">
+    <s:complexContent>
+        <s:extension base="CodeTableDetail"/>
+    </s:complexContent>
+</s:complexType>
+<s:complexType name="Route">
+    <s:complexContent>
+        <s:extension base="CodeTableDetail"/>
+    </s:complexContent>
+</s:complexType>
+<s:complexType name="ArrayOfDosageStepDosageStep">
+    <s:sequence>
+        <s:element maxOccurs="unbounded" minOccurs="0" name="DosageStep" nillable="true" type="DosageStep"/>
+    </s:sequence>
+</s:complexType>
+<s:complexType name="DosageStep">
+    <s:sequence>
+        <s:element minOccurs="0" name="ActionScope" type="s:string"/>
+        <s:element minOccurs="0" name="EnteredBy" type="User"/>
+        <s:element minOccurs="0" name="EnteredAt" type="Organization"/>
+        <s:element minOccurs="0" name="EnteredOn" type="TimeStamp"/>
+        <s:element minOccurs="0" name="UpdatedOn" type="TimeStamp"/>
+        <s:element minOccurs="0" name="FromTime" type="TimeStamp"/>
+        <s:element minOccurs="0" name="ToTime" type="TimeStamp"/>
+        <s:element minOccurs="0" name="ExternalId" type="s:string"/>
+        <s:element minOccurs="0" name="EncounterNumber" type="s:string"/>
+        <s:element minOccurs="0" name="CustomPairs" type="ArrayOfNVPairNVPair"/>
+        <s:element minOccurs="0" name="TextInstruction" type="s:string"/>
+        <s:element minOccurs="0" name="Frequency" type="Frequency"/>
+        <s:element minOccurs="0" name="DoseQuantity" type="Numeric"/>
+        <s:element minOccurs="0" name="DoseUoM" type="UoM"/>
+        <s:element minOccurs="0" name="Duration" type="Duration"/>
+        <s:element minOccurs="0" name="ActionCode" type="s:string"/>
+    </s:sequence>
+</s:complexType>
+<s:complexType name="ArrayOfAdministrationAdministration">
+    <s:sequence>
+        <s:element maxOccurs="unbounded" minOccurs="0" name="Administration" nillable="true" type="Administration"/>
+    </s:sequence>
+</s:complexType>
+<s:complexType name="Administration">
+    <s:complexContent>
+        <s:extension base="SuperClass">
+            <s:sequence>
+                <s:element minOccurs="0" name="AdministrationNotes" type="s:string"/>
+                <s:element minOccurs="0" name="AdministeringProvider" type="CareProvider"/>
+                <s:element minOccurs="0" name="AdministeredAtLocation" type="HealthCareFacility"/>
+                <s:element minOccurs="0" name="AdministrationStatus" type="CodeTableDetail"/>
+                <s:element minOccurs="0" name="AdministeredAmount" type="s:string"/>
+                <s:element minOccurs="0" name="AdministeredUnits" type="s:string"/>
+                <s:element minOccurs="0" name="LotNumber" type="s:string"/>
+                <s:element minOccurs="0" name="ExpiryDate" type="TimeStamp"/>
+                <s:element minOccurs="0" name="ManufacturerName">
+                    <s:simpleType>
+                        <s:restriction base="s:string">
+                            <s:maxLength value="32000"/>
+                        </s:restriction>
+                    </s:simpleType>
+                </s:element>
+            </s:sequence>
+        </s:extension>
+    </s:complexContent>
+</s:complexType>
+<s:complexType name="AppointmentType">
+    <s:complexContent>
+        <s:extension base="CodeTableDetail"/>
+    </s:complexContent>
+</s:complexType>
+<s:complexType name="DoseUoM">
+    <s:complexContent>
+        <s:extension base="CodeTableDetail"/>
+    </s:complexContent>
+</s:complexType>
+<s:complexType name="ArrayOfDrugProductDrugProduct">
+    <s:sequence>
+        <s:element maxOccurs="unbounded" minOccurs="0" name="DrugProduct" nillable="true" type="DrugProduct"/>
+    </s:sequence>
+</s:complexType>
+<s:complexType name="ArrayOfVaccinationVaccination">
+    <s:sequence>
+        <s:element maxOccurs="unbounded" minOccurs="0" name="Vaccination" nillable="true" type="Vaccination"/>
+    </s:sequence>
+</s:complexType>
+<s:complexType name="Vaccination">
+    <s:complexContent>
+        <s:extension base="SuperClass">
+            <s:sequence>
+                <s:element minOccurs="0" name="PlacerId" type="s:string"/>
+                <s:element minOccurs="0" name="FillerId" type="s:string"/>
+                <s:element minOccurs="0" name="OrderItem" type="Order"/>
+                <s:element minOccurs="0" name="OrderCategory" type="OrderCategory"/>
+                <s:element minOccurs="0" name="OrderQuantity" type="s:string"/>
+                <s:element minOccurs="0" name="OrderedBy" type="CareProvider"/>
+                <s:element minOccurs="0" name="EnteringOrganization" type="HealthCareFacility"/>
+                <s:element minOccurs="0" name="VerifiedBy" type="CareProvider"/>
+                <s:element minOccurs="0" name="CallbackNumber" type="s:string"/>
+                <s:element minOccurs="0" name="Specimen" type="s:string"/>
+                <s:element minOccurs="0" name="SpecimenCollectedTime" type="TimeStamp"/>
+                <s:element minOccurs="0" name="SpecimenReceivedTime" type="TimeStamp"/>
+                <s:element minOccurs="0" name="ReassessmentTime" type="TimeStamp"/>
+                <s:element minOccurs="0" name="Frequency" type="Frequency"/>
+                <s:element minOccurs="0" name="Duration" type="Duration"/>
+                <s:element minOccurs="0" name="Status" type="s:string"/>
+                <s:element minOccurs="0" name="Priority" type="Priority"/>
+                <s:element minOccurs="0" name="ConfidentialityCode" type="Confidentiality"/>
+                <s:element minOccurs="0" name="Condition" type="s:string"/>
+                <s:element minOccurs="0" name="TextInstruction" type="s:string"/>
+                <s:element minOccurs="0" name="OrderGroup" type="s:string"/>
+                <s:element minOccurs="0" name="Comments" type="s:string"/>
+                <s:element minOccurs="0" name="ConsultationDepartment" type="HealthCareFacility"/>
+                <s:element minOccurs="0" name="AuthorizationTime" type="TimeStamp"/>
+                <s:element minOccurs="0" name="ReceivingLocation" type="HealthCareFacility"/>
+                <s:element minOccurs="0" name="VerifiedComments" type="s:string"/>
+                <s:element minOccurs="0" name="ResultCopiesTo" type="ArrayOfCareProviderCareProvider"/>
+                <s:element minOccurs="0" name="GroupId" type="s:string"/>
+                <s:element minOccurs="0" name="DrugProduct" type="DrugProduct"/>
+                <s:element minOccurs="0" name="StrengthVolume" type="Numeric"/>
+                <s:element minOccurs="0" name="StrengthVolumeUnits" type="s:string"/>
+                <s:element minOccurs="0" name="RateAmount" type="Numeric"/>
+                <s:element minOccurs="0" name="RateUnits" type="RateUnits"/>
+                <s:element minOccurs="0" name="RateTimeUnit" type="s:string"/>
+                <s:element minOccurs="0" name="DoseQuantity" type="Numeric"/>
+                <s:element minOccurs="0" name="MaxDoseQuantity" type="Numeric"/>
+                <s:element minOccurs="0" name="NumberOfRefills" type="s:string"/>
+                <s:element minOccurs="0" name="DoseUoM" type="UoM"/>
+                <s:element minOccurs="0" name="DosageForm" type="DosageForm"/>
+                <s:element minOccurs="0" name="Route" type="Route"/>
+                <s:element minOccurs="0" name="Indication" type="s:string"/>
+                <s:element minOccurs="0" name="PharmacyStatus" type="s:string"/>
+                <s:element minOccurs="0" name="PrescriptionNumber" type="s:string"/>
+                <s:element minOccurs="0" name="RefillNumber" type="Numeric"/>
+                <s:element minOccurs="0" name="RefillDescription" type="s:string"/>
+                <s:element minOccurs="0" name="DosageSteps" type="ArrayOfDosageStepDosageStep"/>
+                <s:element minOccurs="0" name="Administrations" type="ArrayOfAdministrationAdministration"/>
+                <s:element minOccurs="0" name="ComponentMeds" type="ArrayOfDrugProductDrugProduct"/>
+            </s:sequence>
+        </s:extension>
+    </s:complexContent>
+</s:complexType>
+<s:complexType name="ArrayOfAppointmentAppointment">
+    <s:sequence>
+        <s:element maxOccurs="unbounded" minOccurs="0" name="Appointment" nillable="true" type="Appointment"/>
+    </s:sequence>
+</s:complexType>
+<s:complexType name="Appointment">
+    <s:complexContent>
+        <s:extension base="SuperClass">
+            <s:sequence>
+                <s:element minOccurs="0" name="Status" type="s:string"/>
+                <s:element minOccurs="0" name="NoShow" type="s:boolean"/>
+                <s:element minOccurs="0" name="Type" type="AppointmentType"/>
+                <s:element minOccurs="0" name="PlacerApptId" type="s:string"/>
+                <s:element minOccurs="0" name="FillerApptId" type="s:string"/>
+                <s:element minOccurs="0" name="PlacerOrderId" type="s:string"/>
+                <s:element minOccurs="0" name="FillerOrderId" type="s:string"/>
+                <s:element minOccurs="0" name="OrderItem" type="Order"/>
+                <s:element minOccurs="0" name="CareProvider" type="CareProvider"/>
+                <s:element minOccurs="0" name="Location" type="HealthCareFacility"/>
+                <s:element minOccurs="0" name="Notes" type="s:string"/>
+            </s:sequence>
+        </s:extension>
+    </s:complexContent>
+</s:complexType>
+<s:complexType name="ArrayOfReferralReferral">
+    <s:sequence>
+        <s:element maxOccurs="unbounded" minOccurs="0" name="Referral" nillable="true" type="Referral"/>
+    </s:sequence>
+</s:complexType>
+<s:complexType name="Referral">
+    <s:complexContent>
+        <s:extension base="SuperClass">
+            <s:sequence>
+                <s:element minOccurs="0" name="PlacerId">
+                    <s:simpleType>
+                        <s:restriction base="s:string">
+                            <s:maxLength value="220"/>
+                        </s:restriction>
+                    </s:simpleType>
+                </s:element>
+                <s:element minOccurs="0" name="FillerId">
+                    <s:simpleType>
+                        <s:restriction base="s:string">
+                            <s:maxLength value="220"/>
+                        </s:restriction>
+                    </s:simpleType>
+                </s:element>
+                <s:element minOccurs="0" name="ReferralReason">
+                    <s:simpleType>
+                        <s:restriction base="s:string">
+                            <s:maxLength value="32767"/>
+                        </s:restriction>
+                    </s:simpleType>
+                </s:element>
+                <s:element minOccurs="0" name="ReferringProvider" type="CareProvider"/>
+                <s:element minOccurs="0" name="ReferringOrganization" type="HealthCareFacility"/>
+                <s:element minOccurs="0" name="ReferredToProvider" type="CareProvider"/>
+                <s:element minOccurs="0" name="ReferredToOrganization" type="HealthCareFacility"/>
+                <s:element minOccurs="0" name="ValidityDuration" type="Duration"/>
+            </s:sequence>
+        </s:extension>
+    </s:complexContent>
+</s:complexType>
+<s:complexType name="ArrayOfClinicalRelationshipClinicalRelationship">
+    <s:sequence>
+        <s:element maxOccurs="unbounded" minOccurs="0" name="ClinicalRelationship" nillable="true" type="ClinicalRelationship"/>
+    </s:sequence>
+</s:complexType>
+<s:complexType name="ClinicalRelationship">
+    <s:complexContent>
+        <s:extension base="SuperClass">
+            <s:sequence>
+                <s:element minOccurs="0" name="Clinician" type="CareProvider"/>
+                <s:element minOccurs="0" name="FacilityCode" type="s:string"/>
+                <s:element minOccurs="0" name="ClinicianGroup" type="CareProvider"/>
+                <s:element minOccurs="0" name="ExpirationDate" type="TimeStamp"/>
+            </s:sequence>
+        </s:extension>
+    </s:complexContent>
+</s:complexType>
+<s:complexType name="ArrayOfProgramMembershipProgramMembership">
+    <s:sequence>
+        <s:element maxOccurs="unbounded" minOccurs="0" name="ProgramMembership" nillable="true" type="ProgramMembership"/>
+    </s:sequence>
+</s:complexType>
+<s:complexType name="ProgramMembership">
+    <s:complexContent>
+        <s:extension base="SuperClass">
+            <s:sequence>
+                <s:element minOccurs="0" name="ProgramName" type="s:string"/>
+                <s:element minOccurs="0" name="ProgramDescription">
+                    <s:simpleType>
+                        <s:restriction base="s:string">
+                            <s:maxLength value="220"/>
+                        </s:restriction>
+                    </s:simpleType>
+                </s:element>
+            </s:sequence>
+        </s:extension>
+    </s:complexContent>
+</s:complexType>
+<s:complexType name="ArrayOfAdditionalInfoItemPairOfAdditionalInfoKeyAdditionalInfoItem">
+    <s:sequence>
+        <s:element maxOccurs="unbounded" minOccurs="0" name="AdditionalInfoItem" nillable="true" type="PairOfAdditionalInfoKeyAdditionalInfoItem"/>
+    </s:sequence>
+</s:complexType>
+<s:complexType name="PairOfAdditionalInfoKeyAdditionalInfoItem">
+    <s:simpleContent>
+        <s:extension base="AdditionalInfoItem">
+            <s:attribute name="AdditionalInfoKey" type="s:string" use="required"/>
+        </s:extension>
+    </s:simpleContent>
+</s:complexType>
+<s:simpleType name="AdditionalInfoItem">
+    <s:restriction base="s:string"/>
+</s:simpleType>
+<s:complexType name="ArrayOfCustomObjectCustomObject">
+    <s:sequence>
+        <s:element maxOccurs="unbounded" minOccurs="0" name="CustomObject" nillable="true" type="CustomObject"/>
+    </s:sequence>
+</s:complexType>
+<s:complexType name="CustomObject">
+    <s:complexContent>
+        <s:extension base="SuperClass">
+            <s:sequence>
+                <s:element minOccurs="0" name="CustomType" type="s:string"/>
+                <s:element minOccurs="0" name="CustomMatchKey">
+                    <s:simpleType>
+                        <s:restriction base="s:string">
+                            <s:maxLength value="220"/>
+                        </s:restriction>
+                    </s:simpleType>
+                </s:element>
+            </s:sequence>
+        </s:extension>
+    </s:complexContent>
+</s:complexType>
+</s:schema>
+</wsdl:types>
+<wsdl:message name="SoapIn">
+<wsdl:part name="parameters" element="Container"/>
+</wsdl:message>
+<wsdl:message name="SoapOut"/>
+<wsdl:portType name="SDASoapServiceServiceSoap">
+<wsdl:operation name="sendSDA">
+<wsdl:input message="tns:SoapIn"/>
+<wsdl:output message="tns:SoapOut"/>
+</wsdl:operation>
+</wsdl:portType>
+<wsdl:binding name="SDASoapServiceServiceSoap" type="tns:SDASoapServiceServiceSoap">
+<soap:binding style="document" transport="http://schemas.xmlsoap.org/soap/http"/>
+<wsdl:operation name="sendSDA">
+<soap:operation soapAction="" style="document"/>
+<wsdl:input>
+<soap:body use="literal"/>
+</wsdl:input>
+<wsdl:output>
+<soap:body use="literal"/>
+</wsdl:output>
+</wsdl:operation>
+</wsdl:binding>
+<wsdl:service name="SDASoapServiceService">
+<wsdl:port name="SDASoapServiceServiceSoap" binding="tns:SDASoapServiceServiceSoap">
+<soap:address location="http://188.127.249.29:57772/csp/healthshare/hsedgesda/isc.SDASoapService.cls"/>
+</wsdl:port>
+</wsdl:service>
+</wsdl:definitions>

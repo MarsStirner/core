@@ -99,7 +99,7 @@ public class ServiceTransfusionImpl implements ServiceTransfusion {
 
     /**
      * Получит список подразделений {OrgStructure}
-     * 
+     *
      * @return список подразделений
      */
     public List<DivisionInfo> getDivisionsFromDB() {

@@ -84,6 +84,19 @@ public class Nomenclature
     public Nomenclature() {
     }
 
+    public Nomenclature(int id) {
+        this.id = id;
+    }
+
+    public Nomenclature(int id, int code, String tradeName, String tradeNameLat, String dosage, String form) {
+        this.id = id;
+        this.code = code;
+        this.tradeName = tradeName;
+        this.tradeNameLat = tradeNameLat;
+        this.dosage = dosage;
+        this.form = form;
+    }
+
     public int getId() {
         return id;
     }

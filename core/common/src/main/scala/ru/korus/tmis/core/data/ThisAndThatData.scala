@@ -4,17 +4,20 @@ import reflect.BeanProperty
 import javax.xml.bind.annotation.{XmlRootElement, XmlType}
 import scala.collection.JavaConversions._
 import ru.korus.tmis.util.ConfigManager
-import java.util.{Calendar, TimeZone, Date, ArrayList}
+import util._
 import java.text.{DateFormat, SimpleDateFormat}
 import scala.Predef._
 import ru.korus.tmis.core.entity.model._
-import org.codehaus.jackson.annotate.JsonIgnoreProperties
+import org.codehaus.jackson.annotate.{JsonTypeInfo, JsonSubTypes, JsonIgnoreProperties}
 import org.codehaus.jackson.annotate.JsonIgnoreProperties._
 import org.codehaus.jackson.map.annotate.JsonView
 import ru.korus.tmis.auxiliary.AuxiliaryFunctions
 import java.util
 import ru.korus.tmis.core.exception.CoreException
 import ru.korus.tmis.core.filter.{ListDataFilter, AbstractListDataFilter}
+import org.codehaus.jackson.map.ObjectMapper
+import java.io.IOException
+import util.{TimeZone, Calendar, ArrayList, Date}
 
 @XmlType(name = "listRequestData")
 @XmlRootElement(name = "listRequestData")
@@ -77,7 +80,62 @@ class AllPersonsListData {
     this.requestData = requestData
     persons.foreach(p => this.data.add(new DoctorContainer(p)))
   }
+}
 
+@XmlType(name = "freePersonsListData")
+@XmlRootElement(name = "freePersonsListData")
+class FreePersonsListData {
+
+  @BeanProperty
+  var requestData: ListDataRequest = _
+  @BeanProperty
+  var data: ArrayList[DoctorWithScheduleContainer] = new ArrayList[DoctorWithScheduleContainer]
+
+  def this(personsWithSchedule: java.util.HashMap[Staff, java.util.LinkedList[APValueTime]], requestData: ListDataRequest) = {
+    this ()
+    this.requestData = requestData
+    personsWithSchedule.foreach(p => this.data.add(new DoctorWithScheduleContainer(p._1, p._2)))
+  }
+}
+
+@XmlType(name = "doctorWithScheduleContainer")
+@XmlRootElement(name = "doctorWithScheduleContainer")
+@JsonIgnoreProperties(ignoreUnknown = true)
+class DoctorWithScheduleContainer {
+  @BeanProperty
+  var doctor: DoctorContainer = _
+  @BeanProperty
+  var schedule: java.util.LinkedList[ScheduleContainer] = new java.util.LinkedList[ScheduleContainer]
+
+  def this(staff: Staff, times: java.util.LinkedList[APValueTime]) {                     //
+    this()
+    this.doctor = new DoctorContainer(staff)
+    times.foreach(t => this.schedule.add(new ScheduleContainer(t)))
+  }
+}
+
+@XmlType(name = "scheduleContainer")
+@XmlRootElement(name = "scheduleContainer")
+@JsonIgnoreProperties(ignoreUnknown = true)
+class ScheduleContainer {
+  @BeanProperty
+  var id: Int = _
+  @BeanProperty
+  var index: Int = _
+  @BeanProperty
+  var time: Date = _
+
+  def this(time: APValueTime){
+    this()
+    if(time!=null)  {
+      val needTime = Calendar.getInstance()
+      needTime.setTime(time.getValue)
+      this.id = time.getId.getId
+      this.index = time.getId.getIndex
+      this.time = new Date(needTime.getTime.getTime + needTime.getTimeZone.getRawOffset) // new Date(time.getValue.getTime)
+
+    }
+  }
 }
 
 @XmlType(name = "freePersonsListDataFilter")
@@ -88,6 +146,8 @@ class FreePersonsListDataFilter  extends AbstractListDataFilter {
   @BeanProperty
   var doctorId:  Int = _
   @BeanProperty
+  var actionType:  Int = _
+  @BeanProperty
   var beginDate: Date = _
   @BeanProperty
   var endDate: Date = _
@@ -96,10 +156,11 @@ class FreePersonsListDataFilter  extends AbstractListDataFilter {
   var beginOnlyTime: Date = _
   var endOnlyTime: Date = _
 
-  def this(speciality:  Int, doctorId:  Int, beginDate: Long, endDate: Long){
+  def this(speciality:  Int, doctorId:  Int, actionType: Int, beginDate: Long, endDate: Long){
     this()
     this.speciality = speciality
     this.doctorId = doctorId
+    this.actionType = actionType
     this.beginDate = if(beginDate==0) {null} else {new Date(beginDate)}
     this.endDate = if(endDate==0) {null} else {new Date(endDate)}
 
@@ -120,6 +181,9 @@ class FreePersonsListDataFilter  extends AbstractListDataFilter {
     if(this.speciality>0){
       qs.query += "AND s.speciality.id = :speciality\n"
       qs.add("speciality",this.speciality:java.lang.Integer)
+    } else if (this.actionType>0) {
+      qs.query += "AND at.id = :actionType\n AND sProfile.service.id = at.service.id\n AND sProfile.speciality.id = s.speciality.id\n"
+      qs.add("actionType",this.actionType:java.lang.Integer)
     }
     if(this.doctorId>0){
       qs.query += ("AND s.id = :doctorId\n")
@@ -135,9 +199,13 @@ class FreePersonsListDataFilter  extends AbstractListDataFilter {
   @Override
   def toSortingString (sortingField: String, sortingMethod: String) = {
     var sorting = sortingField match {
-      case _ => {"e.id %s"}
+      case "fio" | "fullname"=> {"s.lastName %s, s.firstName %s, s.patrName %s".format(sortingMethod,sortingMethod,sortingMethod)}
+      case "lastname" => {"s.lastName %s".format(sortingMethod)}
+      case "firstname" | "name" => {"s.firstName %s".format(sortingMethod)}
+      case "patrname" => {"s.patrName %s".format(sortingMethod)}
+      case _ => {"s.id %s".format(sortingMethod)}
     }
-    sorting = "ORDER BY " + sorting.format(sortingMethod)
+    sorting = "ORDER BY " + sorting
     sorting
   }
 }
@@ -166,16 +234,20 @@ class PersonsListDataFilter  extends AbstractListDataFilter {
   @Override
   def toSortingString (sortingField: String, sortingMethod: String) = {
     var sorting = sortingField match {
-      case _ => {"s.id %s"}
+      case "fio" | "fullname"=> {"s.lastName %s, s.firstName %s, s.patrName %s".format(sortingMethod,sortingMethod,sortingMethod)}
+      case "lastname" => {"s.lastName %s".format(sortingMethod)}
+      case "firstname" | "name" => {"s.firstName %s".format(sortingMethod)}
+      case "patrname" => {"s.patrName %s".format(sortingMethod)}
+      case _ => {"s.id %s".format(sortingMethod)}
     }
-    sorting = "ORDER BY " + sorting.format(sortingMethod)
+    sorting = "ORDER BY " + sorting
     sorting
   }
 }
 
 @XmlType(name = "allDepartmentsListData")
 @XmlRootElement(name = "allDepartmentsListData")
-class AllDepartmentsListData {
+class AllDepartmentsListData extends AbstractDefaultData{
 
   @BeanProperty
   var requestData: ListDataRequest = _
@@ -185,7 +257,17 @@ class AllDepartmentsListData {
   def this(departments: java.util.List[OrgStructure], requestData: ListDataRequest) = {
     this ()
     this.requestData = requestData
-    departments.foreach(org => this.data.add(new IdNameContainer(org.getId.intValue(), org.getName)))
+    if(departments!=null && !departments.isEmpty)
+      departments.foreach(org => this.data.add(new IdNameContainer(org.getId.intValue(), org.getName)))
+  }
+
+  override def dataToString = {
+    val mapper= new ObjectMapper()
+    try {
+      mapper.writeValueAsString(this)
+    } catch {
+      case e: IOException => {throw e}
+    }
   }
 }
 
@@ -202,13 +284,21 @@ class ActionTypesListData {
   def this(requestData: ListDataRequest, getAllActionTypeWithFilter: (Int, Int, String, ListDataFilter) => java.util.List[ActionType]) = {
     this ()
     this.requestData = requestData
-    getAllActionTypeWithFilter(0, 0, this.requestData.sortingFieldInternal, this.requestData.filter.unwrap()).foreach(at => {
+
+    var ats = getAllActionTypeWithFilter(0, 0, this.requestData.sortingFieldInternal, this.requestData.filter.unwrap())
+    ats.foreach(at => {
       requestData.setFilter( new ActionTypesListRequestDataFilter( "",
                                                                   at.getId.intValue(),
-                                                                  "",
-                                                                  this.requestData.filter.asInstanceOf[ActionTypesListRequestDataFilter].mnemonic,
+                                                                  this.requestData.filter.asInstanceOf[ActionTypesListRequestDataFilter].flatCodes,
+                                                                  this.requestData.filter.asInstanceOf[ActionTypesListRequestDataFilter].mnemonics,
                                                                   this.requestData.filter.asInstanceOf[ActionTypesListRequestDataFilter].view))
-      this.data.add(new ActionTypesListEntry(at, requestData, getAllActionTypeWithFilter))
+      var elem: ActionType = null
+      if (at.getGroupId != null && requestData.filter.asInstanceOf[ActionTypesListRequestDataFilter].view.compareTo("tree") == 0) {
+        elem = ats.find(at2 => at2.getId.intValue() == at.getGroupId.intValue()).getOrElse(null)
+      }
+      if (elem == null) {
+        this.data.add(new ActionTypesListEntry(at, requestData, getAllActionTypeWithFilter))
+      }
     })
   }
 }
@@ -221,32 +311,39 @@ class ActionTypesListRequestDataFilter extends AbstractListDataFilter {
   var code: String = _
 
   @BeanProperty
-  var groupId: Int = _
+  var flatCodes: java.util.List[String] = new java.util.LinkedList[String]
 
   @BeanProperty
-  var mnemonic: String = _
+  var groupId: Int = 0
+
+  @BeanProperty
+  var mnemonics: java.util.List[String] = new java.util.LinkedList[String]
 
   @BeanProperty
   var view: String = "all"
 
   def this(code_x: String,
            groupId: Int,
-           diaType_x: String,
-           mnemonic: String,
+           flatCodes: java.util.List[String],
+           //diaType_xs: java.util.List[String],
+           mnemonics: java.util.List[String],
            view: String) {
     this()
-    this.code = if(code_x!=null && code_x!="") {
-                  code_x
-                }
-                else {
-                        diaType_x match {
+    if(code_x!=null && code_x!="")
+      this.code = code_x
+
+                /*else {
+                        this.code = diaType_x match {
                                             case "laboratory" => {"2"}
                                             case "instrumental" => {"3"}
                                             case _ => {""}
                                         }
-                }
+                }*/
     this.groupId = groupId
-    this.mnemonic = mnemonic
+    if (flatCodes != null && flatCodes.size() > 0) {
+      this.flatCodes = flatCodes.filter(p=>(p!=null && !p.isEmpty))
+    }
+    this.mnemonics = mnemonics.filter(p=>(p!=null && !p.isEmpty))
     if (view!=null && !view.isEmpty){
       this.view = view
     }
@@ -256,16 +353,21 @@ class ActionTypesListRequestDataFilter extends AbstractListDataFilter {
   def toQueryStructure() = {
     var qs = new QueryDataStructure()
     if(this.groupId>0){
-      qs.query += ("AND at.groupId =  :groupId\n")
+      qs.query += ("AND at.groupId = :groupId\n")
       qs.add("groupId", this.groupId:java.lang.Integer)
     }
     else if(this.code!=null && !this.code.isEmpty){
       qs.query += ("AND at.groupId IN (SELECT at2.id FROM ActionType at2 WHERE at2.code = :code)\n")
       qs.add("code",this.code)
-    }
-    if (this.mnemonic!=null && !this.mnemonic.isEmpty && this.mnemonic.compareTo("") != 0) {
-      qs.query += ("AND at.mnemonic =  :mnemonic\n")
-      qs.add("mnemonic",this.mnemonic)
+    } else if (this.flatCodes!=null && this.flatCodes.size() > 0) {
+      qs.query += ("AND at.flatCode IN :flatCodes\n")
+      qs.add("flatCodes", asJavaCollection(this.flatCodes))
+    }   //else if(this.view.compareTo("tree")==0){
+      //qs.query += ("AND (at.groupId IS NULL OR at.groupId<=0)")
+    //}
+    if (this.mnemonics!=null && this.mnemonics.size() > 0) {
+      qs.query += ("AND at.mnemonic IN :mnemonic\n")
+      qs.add("mnemonic",asJavaCollection(this.mnemonics))
     }
     qs
   }
@@ -276,6 +378,8 @@ class ActionTypesListRequestDataFilter extends AbstractListDataFilter {
       case "groupId" => {"at.groupId %s"}
       case "code" => {"at.code %s"}
       case "name" => {"at.name %s"}
+      case "flatCode" => {"at.flatCode %s"}
+      case "mnem" => {"at.mnemonic %s"}
       case _ => {"at.id %s"}
     }
     sorting = "ORDER BY " + sorting.format(sortingMethod)
@@ -305,6 +409,9 @@ class ActionTypesListEntry {
   var code: String = _
 
   @BeanProperty
+  var flatCode: String = _
+
+  @BeanProperty
   var name: String = _
 
   @JsonView(Array(classOf[ActionTypesListDataViews.DefaultView]))
@@ -319,11 +426,14 @@ class ActionTypesListEntry {
     this.id = actionType.getId.intValue()
     this.groupId = if(actionType.getGroupId!=null) {actionType.getGroupId.intValue()} else{0}
     this.code = actionType.getCode
+    this.flatCode = actionType.getFlatCode
     this.name = actionType.getName
     if (requestData.filter.asInstanceOf[ActionTypesListRequestDataFilter].view.compareTo("tree") == 0) {
       getAllActionTypeWithFilter(0,0,requestData.sortingFieldInternal,requestData.filter.unwrap()).foreach(f => {
-        val filter = new ActionTypesListRequestDataFilter("", f.getId.intValue(), "",
-                                                          requestData.filter.asInstanceOf[ActionTypesListRequestDataFilter].mnemonic,
+        val filter = new ActionTypesListRequestDataFilter("",
+                                                          f.getId.intValue(),
+                                                          requestData.filter.asInstanceOf[ActionTypesListRequestDataFilter].flatCodes,
+                                                          requestData.filter.asInstanceOf[ActionTypesListRequestDataFilter].mnemonics,
                                                           requestData.filter.asInstanceOf[ActionTypesListRequestDataFilter].view)
         val request = new ListDataRequest(requestData.sortingField, requestData.sortingMethod, requestData.limit, requestData.page, filter)
         this.groups.add(new ActionTypesListEntry(f, request, getAllActionTypeWithFilter))
@@ -349,7 +459,7 @@ class AllMKBListData {
   var requestData: ListDataRequest = _
 
   @BeanProperty
-  var data: AnyRef = _//java.util.LinkedList[ClassMKBContainer] = new java.util.LinkedList[ClassMKBContainer]
+  var data: java.util.LinkedList[AbstractMKBContainer] = new java.util.LinkedList[AbstractMKBContainer]//AnyRef = _//java.util.LinkedList[ClassMKBContainer] = new java.util.LinkedList[ClassMKBContainer]
 
 
   def this(mkbs: java.util.List[Mkb],
@@ -363,36 +473,27 @@ class AllMKBListData {
      case "class" => {
        val classMap = getGroupedValuesByLevel(mkbs, CLASS_LEVEL)
        this.requestData.setRecordsCount(classMap.size)
-       this.data = new java.util.LinkedList[ClassMKBContainer]
        classMap.foreach(f => {
-
          val (minDiagId, maxDiagId) = this.getMinAndMaxDiagId(f._2.getClassName, mkbs)
-         this.data.asInstanceOf[java.util.LinkedList[ClassMKBContainer]].add(new ClassMKBContainer(f._1,
-                                                                                                   f._2.getClassName,
-                                                                                                   minDiagId,
-                                                                                                   maxDiagId))
+         this.data.add(new ClassMKBContainer(f._1, f._2.getClassName, minDiagId, maxDiagId))
        })
      }
      case "group" => {
        val groupMap = getGroupedValuesByLevel(mkbs, GROUP_LEVEL)
        this.requestData.setRecordsCount(groupMap.size)
-       this.data = new java.util.LinkedList[GroupMKBContainer]
-       groupMap.foreach(f => this.data.asInstanceOf[java.util.LinkedList[GroupMKBContainer]].add(new GroupMKBContainer(f._1, f._2.getBlockName)))
+       groupMap.foreach(f => this.data.add(new GroupMKBContainer(f._1, f._2.getBlockName)))
      }
      case "subgroup" => {
        val subgroupMap = getGroupedValuesByLevel(mkbs, SUBGROUP_LEVEL)
        this.requestData.setRecordsCount(subgroupMap.size)
-       this.data = new java.util.LinkedList[SubGroupMKBContainer]
-       subgroupMap.foreach(f => this.data.asInstanceOf[java.util.LinkedList[SubGroupMKBContainer]].add(new SubGroupMKBContainer(f._1, f._2.getDiagName)))
+       subgroupMap.foreach(f => this.data.add(new SubGroupMKBContainer(f._1, f._2.getDiagName)))
      }
      case "mkb" => {
        val mkbMap = getGroupedValuesByLevel(mkbs, MKB_LEVEL)
        this.requestData.setRecordsCount(mkbMap.size)
-       this.data = new java.util.LinkedList[MKBContainer]
-       mkbMap.foreach(f => this.data.asInstanceOf[java.util.LinkedList[MKBContainer]].add(new MKBContainer(f._2)))
+       mkbMap.foreach(f => this.data.asInstanceOf[java.util.LinkedList[MKBContainerEx]].add(new MKBContainerEx(f._2)))
      }
      case _ => {  //дерево тогда анализируем дисплей
-       this.data = new java.util.LinkedList[ClassMKBContainer]
        val classMap = getGroupedValuesByLevel(mkbs, CLASS_LEVEL)
 
        if (requestData.filter.asInstanceOf[MKBListRequestDataFilter].display) {
@@ -612,16 +713,68 @@ class MKBListRequestDataFilter extends AbstractListDataFilter {
   }
 }
 
-@XmlType(name = "classMkbContainer")
-@XmlRootElement(name = "classMkbContainer")
-@JsonIgnoreProperties(ignoreUnknown = true)
-class ClassMKBContainer {
+/*@JsonTypeInfo(
+use = JsonTypeInfo.Id.NAME,
+include = JsonTypeInfo.As.PROPERTY,
+property = "type")
+@JsonSubTypes({
+@JsonSubTypes.Type(value = DefaultListDataFilter.class, name = "DefaultListDataFilter"),
+@JsonSubTypes.Type(value = DictionaryListRequestDataFilter.class, name = "DictionaryListRequestDataFilter"),
+@JsonSubTypes.Type(value = MKBListRequestDataFilter.class, name = "MKBListRequestDataFilter")
+})
+public abstract class AbstractMKBContainer implements MKBContainerEx {
+
+@Override
+public abstract String toSortingString (String sortingField, String sortingMethod);
+
+@Override
+public abstract QueryDataStructure toQueryStructure();
+
+@Override
+public ListDataFilter unwrap() {
+return this;
+}
+}  */
+
+trait IMKBContainer {
 
   @BeanProperty
   var id: String = _
 
   @BeanProperty
   var code: String = _
+
+  def getLEVEL: Int
+
+  def unwrap: IMKBContainer
+}
+
+@JsonTypeInfo(
+  use = JsonTypeInfo.Id.NAME,
+  include = JsonTypeInfo.As.PROPERTY,
+  property = "type")
+@JsonSubTypes(
+  Array(
+    new JsonSubTypes.Type(value = classOf[ClassMKBContainer], name = "ClassMKBContainer"),
+    new JsonSubTypes.Type(value = classOf[GroupMKBContainer], name = "GroupMKBContainer"),
+    new JsonSubTypes.Type(value = classOf[SubGroupMKBContainer], name = "SubGroupMKBContainer"),
+    new JsonSubTypes.Type(value = classOf[MKBContainerEx], name = "MKBContainerEx")
+  )
+)
+abstract class AbstractMKBContainer extends IMKBContainer {
+
+  @Override
+  def getLEVEL = 0
+
+  @Override
+  def unwrap = this
+}
+
+
+@XmlType(name = "classMkbContainer")
+@XmlRootElement(name = "classMkbContainer")
+@JsonIgnoreProperties(ignoreUnknown = true)
+class ClassMKBContainer extends AbstractMKBContainer {
 
   @BeanProperty
   var diagIdMin: String = _
@@ -633,7 +786,7 @@ class ClassMKBContainer {
   @BeanProperty
   var groups: java.util.LinkedList[GroupMKBContainer] = new java.util.LinkedList[GroupMKBContainer]
 
-  def this (id: String, code: String){
+  def this (id: String, code: String) {
     this()
     this.id = id
     this.code = code
@@ -657,16 +810,16 @@ class ClassMKBContainer {
     this(id, code, diagIdMin, diagIdMax)
 
     if (mkbs!=null && mGroupedValuesByLevel!=null && mFilteredValuesByLevel!= null) {
-      val groupMap = mGroupedValuesByLevel(mkbs, LEVEL)
+      val groupMap = mGroupedValuesByLevel(mkbs, getLEVEL)
       if (mkbs_display!=null && mRolledBrunch!=null) {
-        val rolled = mRolledBrunch(mkbs_display, LEVEL)
+        val rolled = mRolledBrunch(mkbs_display, getLEVEL)
         if (rolled!=null){
           rolled.foreach(f => {
             if (!groupMap.containsKey(f._1)){
               this.groups.add(new GroupMKBContainer(f._1, f._2.getBlockName))
             }
             else {
-              val filtredMkbs = mFilteredValuesByLevel(mkbs, groupMap.get(f._1), LEVEL)
+              val filtredMkbs = mFilteredValuesByLevel(mkbs, groupMap.get(f._1), getLEVEL)
               this.groups.add(new GroupMKBContainer( f._1,
                                               f._2.getBlockName,
                                               filtredMkbs,
@@ -679,33 +832,27 @@ class ClassMKBContainer {
         }
         else {
           groupMap.foreach(f => {
-            val filtredMkbs = mFilteredValuesByLevel(mkbs, f._2, LEVEL)
+            val filtredMkbs = mFilteredValuesByLevel(mkbs, f._2, getLEVEL)
             this.groups.add(new GroupMKBContainer(f._1, f._2.getBlockName, filtredMkbs, null, mGroupedValuesByLevel, mFilteredValuesByLevel, null))
           })
         }
       }
       else {
         groupMap.foreach(f => {
-          val filtredMkbs = mFilteredValuesByLevel(mkbs, f._2, LEVEL)
+          val filtredMkbs = mFilteredValuesByLevel(mkbs, f._2, getLEVEL)
           this.groups.add(new GroupMKBContainer(f._1, f._2.getBlockName, filtredMkbs, null, mGroupedValuesByLevel, mFilteredValuesByLevel, null))
         })
       }
     }
   }
 
-  private val LEVEL = 1
+  override def getLEVEL = 1
 }
 
 @XmlType(name = "groupMkbContainer")
 @XmlRootElement(name = "groupMkbContainer")
 @JsonIgnoreProperties(ignoreUnknown = true)
-class GroupMKBContainer {
-
-  @BeanProperty
-  var id: String = _
-
-  @BeanProperty
-  var code: String = _
+class GroupMKBContainer extends AbstractMKBContainer {
 
   @JsonView(Array(classOf[AllMKBListDataViews.DefaultView]))
   @BeanProperty
@@ -727,16 +874,16 @@ class GroupMKBContainer {
     this(id, code)
 
     if (mkbs!=null && mGroupedValuesByLevel!=null && mFilteredValuesByLevel!= null) {
-      val subgroupMap = mGroupedValuesByLevel(mkbs, LEVEL)
+      val subgroupMap = mGroupedValuesByLevel(mkbs, getLEVEL)
       if (mkbs_display!=null && mRolledBrunch!=null) {
-        val rolled = mRolledBrunch(mkbs_display, LEVEL)
+        val rolled = mRolledBrunch(mkbs_display, getLEVEL)
         if (rolled!=null){
           rolled.foreach(f => {
             if (!subgroupMap.containsKey(f._1)){
               this.subGroups.add(new SubGroupMKBContainer(f._1, f._2.getDiagName))
             }
             else {
-              val filtredMkbs = mFilteredValuesByLevel(mkbs, subgroupMap.get(f._1), LEVEL)
+              val filtredMkbs = mFilteredValuesByLevel(mkbs, subgroupMap.get(f._1), getLEVEL)
               this.subGroups.add(new SubGroupMKBContainer( f._1,
                                                  f._2.getDiagName,
                                                  filtredMkbs,
@@ -747,37 +894,31 @@ class GroupMKBContainer {
         }
         else {
           subgroupMap.foreach(f => {
-            val filtredMkbs = mFilteredValuesByLevel(mkbs, f._2, LEVEL)
+            val filtredMkbs = mFilteredValuesByLevel(mkbs, f._2, getLEVEL)
             this.subGroups.add(new SubGroupMKBContainer(f._1, f._2.getDiagName, filtredMkbs, mGroupedValuesByLevel))
           })
         }
       }
       else {
         subgroupMap.foreach(f => {
-          val filtredMkbs = mFilteredValuesByLevel(mkbs, f._2, LEVEL)
+          val filtredMkbs = mFilteredValuesByLevel(mkbs, f._2, getLEVEL)
           this.subGroups.add(new SubGroupMKBContainer(f._1, f._2.getDiagName, filtredMkbs, mGroupedValuesByLevel))
         })
       }
     }
   }
 
-  private val LEVEL = 2
+  override def getLEVEL = 2
 }
 
 @XmlType(name = "subGroupMkbContainer")
 @XmlRootElement(name = "subGroupMkbContainer")
 @JsonIgnoreProperties(ignoreUnknown = true)
-class SubGroupMKBContainer {
-
-  @BeanProperty
-  var id: String = _
-
-  @BeanProperty
-  var code: String = _
+class SubGroupMKBContainer extends AbstractMKBContainer {
 
   @JsonView(Array(classOf[AllMKBListDataViews.DefaultView]))
   @BeanProperty
-  var mkbs: java.util.LinkedList[MKBContainer] = new java.util.LinkedList[MKBContainer]
+  var mkbs: java.util.LinkedList[MKBContainerEx] = new java.util.LinkedList[MKBContainerEx]
 
   def this(mkbSubGroup: (String, java.util.List[Mkb]),
            mkbs_display: Object,
@@ -786,7 +927,7 @@ class SubGroupMKBContainer {
     this.id = mkbSubGroup._1
     this.code = subGroupTitleValue.get(mkbSubGroup._1)
     if (mkbSubGroup._2!=null && mkbSubGroup._2.size()>0) {
-      mkbSubGroup._2.foreach(mkb =>this.mkbs.add(new MKBContainer(mkb)))
+      mkbSubGroup._2.foreach(mkb =>this.mkbs.add(new MKBContainerEx(mkb)))
     }
   }
 
@@ -802,11 +943,31 @@ class SubGroupMKBContainer {
             mGroupedValuesByLevel: (java.util.List[Mkb], Int) => java.util.LinkedHashMap[String, Mkb]) {
     this(id, code)
 
-    val mkbMap = mGroupedValuesByLevel(mkbs, LEVEL)
-    mkbMap.foreach(f => this.mkbs.add(new MKBContainer(f._2)))
+    val mkbMap = mGroupedValuesByLevel(mkbs, getLEVEL)
+    mkbMap.foreach(f => this.mkbs.add(new MKBContainerEx(f._2)))
   }
 
-  private val LEVEL = 3
+  override def getLEVEL = 3
+}
+
+@XmlType(name = "mKBContainerEx")
+@XmlRootElement(name = "mKBContainerEx")
+@JsonIgnoreProperties(ignoreUnknown = true)
+class MKBContainerEx  extends AbstractMKBContainer{
+
+  @BeanProperty
+  var diagnosis: String = _
+
+  def this(mkb: Mkb){
+    this()
+    if (mkb!=null){
+      this.id = mkb.getId.toString
+      this.code = mkb.getDiagID
+      this.diagnosis = mkb.getDiagName
+    }
+  }
+
+  override def getLEVEL = 4
 }
 
 @XmlType(name = "thesaurusListData")
@@ -1196,8 +1357,9 @@ class DepartmentsDataFilter extends AbstractListDataFilter{
     var qs = new QueryDataStructure()
 
     if(hasBeds) {
-      qs.query += ("AND os.hasHospitalBeds = :hasBeds\n")
-      qs.add("hasBeds", this.hasBeds: java.lang.Boolean)
+      // qs.query += ("AND os.hasHospitalBeds = :hasBeds\n")   //Старый запрос (до баги WEBMIS-793)
+      //qs.add("hasBeds", this.hasBeds: java.lang.Boolean)
+      qs.query += ("AND exists (SELECT  oshb.masterDepartment.id FROM OrgStructureHospitalBed oshb WHERE oshb.masterDepartment.id = os.id)")  //WEBMIS-793
     }
     if(hasPatients) {
       val res = """ AND exists(

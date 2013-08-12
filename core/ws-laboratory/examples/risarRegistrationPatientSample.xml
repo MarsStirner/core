@@ -1,0 +1,63 @@
+<soapenv:Envelope xmlns:kor="http://www.korusconsulting.ru" xmlns:sda="http://korus.ru/tmis/ws/sda" xmlns:soapenv="http://schemas.xmlsoap.org/soap/envelope/">
+   <soapenv:Header/>
+   <soapenv:Body>
+      <kor:registrationPatient>
+         <!--Optional:-->
+         <sda:container>
+            <patient>
+               <name>
+                  <familyName>Петрова</familyName>
+                  <givenName>Любовь</givenName>
+                  <middleName>Ивановна</middleName>
+               </name>
+               <gender>F</gender>
+               <birthTime>1989-11-15T00:00:00Z</birthTime>
+               <patientNumbers>
+                  <!--Zero or more repetitions:-->
+                  <patientNumber>
+                     <number>112-277-324 35</number>
+                     <numberType>СНИЛС</numberType>
+                  </patientNumber>
+                  <patientNumber>
+                     <serial>1234</serial>
+                     <number>1234567890111333</number>
+                     <numberType>ОМС</numberType>
+                     <policyType>ДМС</policyType>
+                  </patientNumber>
+                  <patientNumber>
+                     <number>4501 186888</number>
+                     <numberType>ПАСПОРТ РФ</numberType>
+                  </patientNumber>
+                  <patientNumber>
+                     <number>IV-32 886888</number>
+                     <numberType>СВИД О РОЖД</numberType>
+                  </patientNumber>
+               </patientNumbers>
+               <addresses>
+                  <!--Zero or more repetitions:-->
+                  <address>
+                     <!--Optional:-->
+                     <street>ул. Ленина, д.1</street>
+                     <!--Optional:-->
+                     <city>с. Бессоновка</city>
+                     <!--Optional:-->
+                     <state>Пензенская область, Бессоновский район</state>
+                     <!--Optional:-->
+                     <zip>442780</zip>
+                  </address>
+               </addresses>
+               <contactInfo>
+                  <!--Optional:-->
+                  <homePhoneNumber>8 812 976 4572</homePhoneNumber>
+                  <!--Optional:-->
+                  <workPhoneNumber>8 916 976 4573</workPhoneNumber>
+                  <!--Optional:-->
+                  <mobilePhoneNumber>8 915 488 4900</mobilePhoneNumber>
+                  <!--Optional:-->
+                  <emailAddress>dimkat@gmail.com</emailAddress>
+               </contactInfo>
+            </patient>
+         </sda:container>
+      </kor:registrationPatient>
+   </soapenv:Body>
+</soapenv:Envelope>
