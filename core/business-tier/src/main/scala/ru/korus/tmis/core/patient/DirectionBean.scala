@@ -349,9 +349,10 @@ class DirectionBean extends DirectionBeanLocal
       }
 
       if((a.getCreatePerson!=null && a.getCreatePerson.getId.compareTo(userId)==0) ||
-         /*(a.getAssigner!=null && a.getAssigner.getId.compareTo(userId)==0) || */
+         (a.getModifyPerson!=null && a.getModifyPerson.getId.compareTo(userId)==0) ||
+         (a.getAssigner!=null && a.getAssigner.getId.compareTo(userId)==0) /*||
          (a.getExecutor!=null && a.getExecutor.getId.compareTo(userId)==0) ||
-         userRole.compareTo("strHead")==0) {
+         userRole.compareTo("strHead")==0*/) {
         actions = commonDataProcessor.modifyActionFromCommonData(action.getId().intValue(), directions, userData)
         if(flgLab) {
           actions = createJobTicketsForActions(actions, a.getEvent.getId.intValue())
@@ -490,9 +491,10 @@ class DirectionBean extends DirectionBeanLocal
       var a = actionBean.getActionById(f.getId)
 
       if ((a.getCreatePerson!=null && a.getCreatePerson.getId.compareTo(userId)==0) ||
-          /*(a.getAssigner!=null &&a.getAssigner.getId.compareTo(userId)==0) || */
+          (a.getModifyPerson!=null && a.getModifyPerson.getId.compareTo(userId)==0) ||
+          (a.getAssigner!=null &&a.getAssigner.getId.compareTo(userId)==0) /*||
           (a.getExecutor!=null && a.getExecutor.getId.compareTo(userId)==0) ||
-          userRole.compareTo("strHead")==0) {
+          userRole.compareTo("strHead")==0*/) {
         directionType match {
           case "laboratory" => {
             val res = dbJobTicketBean.getJobTicketAndTakenTissueForAction( a.getEvent.getId.intValue(),
@@ -537,7 +539,7 @@ class DirectionBean extends DirectionBeanLocal
         em.merge(a)
       }
       else {
-        throw new CoreException(ConfigManager.ErrorCodes.noRightForAction, i18n("Удалять диагностику может только врач, создавший направление, или лечащий врач, или заведующий отделением"));
+        throw new CoreException(ConfigManager.ErrorCodes.noRightForAction, "Удалять диагностику может только врач, создавший направление, или лечащий врач, или заведующий отделением");
       }
     })
     em.flush()

@@ -21,6 +21,8 @@ import scala.collection.JavaConversions._
 import java.util.{Calendar, Date}
 import java.util
 import ru.korus.tmis.core.patient.DiagnosisBeanLocal
+import ru.korus.tmis.util.StringId
+import scala.Some
 
 @Interceptors(Array(classOf[LoggingInterceptor]))
 @Stateless
@@ -54,6 +56,9 @@ class CommonDataProcessorBean
 
   @EJB
   var diagnosisBean: DiagnosisBeanLocal = _
+
+  @EJB
+  var dbCalendarExceptionsBean: DbCalendarExceptionsBeanLocal = _
 
   //////////////////////////////////////////////////////////////////////////////
 
@@ -597,7 +602,56 @@ class CommonDataProcessorBean
       var a = new Action()
       a.setId(0)
       a.setActionType(at)
+      //Запишем планируемую дату в акшен по логике https://korusconsulting.atlassian.net/browse/WEBMIS-1013
+      val date = Calendar.getInstance()
+      date.setTime(new Date())
 
+      at.getDefaultPlannedEndDate match {
+        case 0 => {
+          //a.setPlannedEndDate(null)
+        }
+        case 1 => {
+          date.add(Calendar.DAY_OF_YEAR, 1)
+          date.set(Calendar.HOUR_OF_DAY, 7);
+          date.set(Calendar.MINUTE, 0);
+          date.set(Calendar.SECOND, 0);
+          date.set(Calendar.MILLISECOND, 0);
+          a.setPlannedEndDate(date.getTime)
+        }
+        case 2 => {
+          date.set(Calendar.HOUR_OF_DAY, 7);
+          date.set(Calendar.MINUTE, 0);
+          date.set(Calendar.SECOND, 0);
+          date.set(Calendar.MILLISECOND, 0);
+          var isOver = false
+          while (!isOver) {
+            date.add(Calendar.DAY_OF_YEAR, 1)
+            val isWeekDay = date.get(Calendar.DAY_OF_WEEK) != Calendar.SATURDAY && date.get(Calendar.DAY_OF_WEEK) != Calendar.SUNDAY;
+            val isHoliday = (dbCalendarExceptionsBean.getHolideyByDate(date.getTime) != null)
+            val isPerenos = (dbCalendarExceptionsBean.getPerenosByDate(date.getTime) != null)
+            if ((isWeekDay && ((isHoliday && isPerenos) || !isHoliday)) || (!isWeekDay && !isHoliday && isPerenos)) {
+              isOver = true
+            }
+          }
+          a.setPlannedEndDate(date.getTime)
+        }
+        case 3 => {
+          if (date.get(Calendar.HOUR) != 23) {
+            //if (date.get(Calendar.MINUTE) != 0) {
+              date.add(Calendar.HOUR_OF_DAY, 1)
+            //}
+            date.set(Calendar.MINUTE, 0);
+            date.set(Calendar.SECOND, 0);
+            date.set(Calendar.MILLISECOND, 0);
+          } else {
+            date.set(Calendar.MINUTE, 59);
+            date.set(Calendar.SECOND, 0);
+            date.set(Calendar.MILLISECOND, 0);
+          }
+          a.setPlannedEndDate(date.getTime)
+        }
+      }
+      //
       this.addAttributes(
         group0,
         new ActionWrapper(a),

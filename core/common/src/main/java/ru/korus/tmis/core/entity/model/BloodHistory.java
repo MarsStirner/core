@@ -19,8 +19,8 @@ import java.util.Date;
           @NamedQuery(name = "BloodHistory.findAll", query = "SELECT bh FROM BloodHistory bh"),
           @NamedQuery(name = "BloodHistory.findByPatientId", query = "SELECT bh FROM BloodHistory bh WHERE bh.patient.id = :patientId ORDER BY bh.bloodDate desc, bh.id desc")
         })
-@XmlType(name = "diagnostic")
-@XmlRootElement(name = "diagnostic")
+@XmlType(name = "bloodHistory")
+@XmlRootElement(name = "bloodHistory")
 public class BloodHistory implements Serializable {
 
         private static final long serialVersionUID = 1L;

@@ -356,7 +356,7 @@ public class SendProcedureRequest {
             at.setContext("");
             at.setAmount(0);
             at.setDefaultDirectionDate((short) 2);
-            at.setDefaultPlannedEndDate(false);
+            at.setDefaultPlannedEndDate((short) 0);
             at.setDefaultEndDate((short) 0);
             at.setDefaultPersonInEvent((short) 4);
             at.setDefaultPersonInEditor((short) 4);
