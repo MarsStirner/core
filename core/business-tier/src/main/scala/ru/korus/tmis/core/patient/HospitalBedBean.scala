@@ -172,7 +172,9 @@ with TmisLogging{
             value = Integer.valueOf(hbData.data.bedRegistration.movedFromUnitId)
           else { //берем значение по умолчанию из предыдущего действия
             if (lastAction.getActionType.getFlatCode.compareTo(ConfigManager.Messages("db.action.admissionFlatCode"))==0) {
-              value = Integer.valueOf(ConfigManager.Messages("db.dayHospital.id").toInt) //Если есть только поступление, то запишем дневной стационар
+              //Закоментировано по таске [WEBMIS-1012] Сохранение пустого отделения в первом движении
+              //value = Integer.valueOf(ConfigManager.Messages("db.dayHospital.id").toInt) //Если есть только поступление, то запишем дневной стационар
+              value = null
             }
             else if(lastAction.getActionType.getFlatCode.compareTo(ConfigManager.Messages("db.action.movingFlatCode"))==0){
               val codes = Set[String](ConfigManager.Messages("db.apt.moving.codes.hospOrgStruct"))

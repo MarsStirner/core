@@ -720,6 +720,29 @@ class PersonNameContainer {
   }
 }
 
+@XmlType(name = "personNameContainer")
+@XmlRootElement(name = "personNameContainer")
+@JsonIgnoreProperties(ignoreUnknown = true)
+class ExtendedPersonNameContainer extends PersonNameContainer {
+  @BeanProperty
+  var code: String = _
+
+  @BeanProperty
+  var department: OrgStructureContainer = _
+
+  def this(person: Staff) = {
+    this ()
+    if (person!=null) {
+      this.code = person.getCode
+      this.department = new OrgStructureContainer(person.getOrgStructure)
+      this.first = person.getFirstName()
+      this.last = person.getLastName()
+      this.middle = person.getPatrName()
+      this.raw = this.last + " " + this.first + " " + this.middle
+    }
+  }
+}
+
 @XmlType(name = "tempInvalidContainer") //disability
 @XmlRootElement(name = "tempInvalidContainer")
 @JsonIgnoreProperties(ignoreUnknown = true)

@@ -324,6 +324,8 @@ public interface WebMisREST extends Serializable {
      */
     MonitoringInfoListData getMonitoringInfoByAppeal(int eventId, int condition, AuthData authData) throws CoreException;
 
+    SurgicalOperationsListData getSurgicalOperationsByAppeal(int eventId, AuthData authData) throws CoreException;
+
     /**
      * Назначение ответственного врача
      * @param eventId Идентификатор обращения
