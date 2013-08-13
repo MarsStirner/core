@@ -142,7 +142,7 @@ public class ActionType implements Serializable {
 
     @Basic(optional = false)
     @Column(name = "defaultPlannedEndDate")
-    private boolean defaultPlannedEndDate;
+    private short defaultPlannedEndDate;
 
     @Basic(optional = false)
     @Column(name = "defaultEndDate")
@@ -448,11 +448,11 @@ public class ActionType implements Serializable {
         this.defaultDirectionDate = defaultDirectionDate;
     }
 
-    public boolean getDefaultPlannedEndDate() {
+    public short getDefaultPlannedEndDate() {
         return defaultPlannedEndDate;
     }
 
-    public void setDefaultPlannedEndDate(boolean defaultPlannedEndDate) {
+    public void setDefaultPlannedEndDate(short defaultPlannedEndDate) {
         this.defaultPlannedEndDate = defaultPlannedEndDate;
     }
 

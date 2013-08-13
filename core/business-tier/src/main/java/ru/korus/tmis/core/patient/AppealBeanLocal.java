@@ -141,5 +141,7 @@ public interface AppealBeanLocal {
 
     MonitoringInfoListData getMonitoringInfo(int eventId, int condition, AuthData authData) throws CoreException;
 
+    SurgicalOperationsListData getSurgicalOperations(int eventId, AuthData authData) throws CoreException;
+
     Boolean setExecPersonForAppeal(int id, int personId, AuthData authData, ExecPersonSetType epst) throws CoreException;
 }

@@ -7,6 +7,7 @@ import java.util.Date
 import ru.korus.tmis.util.ConfigManager
 import org.codehaus.jackson.annotate.JsonIgnoreProperties
 import org.codehaus.jackson.annotate.JsonIgnoreProperties._
+import ru.korus.tmis.core.entity.model.OrgStructure
 
 @XmlType(name = "idNameContainer")
 @XmlRootElement(name = "idNameContainer")
@@ -141,5 +142,29 @@ class HandPreassureContainer {
     this()
     this.diast = diast
     this.syst = syst
+  }
+}
+
+@XmlType(name = "orgStructureContainer")
+@XmlRootElement(name = "orgStructureContainer")
+@JsonIgnoreProperties(ignoreUnknown = true)
+class OrgStructureContainer {
+  @BeanProperty
+  var id : Int = _
+  @BeanProperty
+  var name : String = _
+  @BeanProperty
+  var code : String = _
+  @BeanProperty
+  var address : String = _
+
+  def this(department: OrgStructure){
+    this()
+    if (department!=null){
+      this.id = department.getId.intValue()
+      this.name = department.getName
+      this.code = department.getCode
+      this.address = department.getAddress
+    }
   }
 }

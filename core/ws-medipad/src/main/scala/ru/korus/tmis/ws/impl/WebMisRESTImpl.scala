@@ -1223,6 +1223,10 @@ class WebMisRESTImpl  extends WebMisREST
     appealBean.getMonitoringInfo(eventId, condition, authData)
   }
 
+  def getSurgicalOperationsByAppeal(eventId: Int, authData: AuthData) = {
+    appealBean.getSurgicalOperations(eventId, authData)
+  }
+
   def setExecPersonForAppeal(eventId: Int, personId: Int, authData: AuthData) = {
     appealBean.setExecPersonForAppeal(eventId, personId, authData, ExecPersonSetType.EP_SET_IN_LPU)
   }

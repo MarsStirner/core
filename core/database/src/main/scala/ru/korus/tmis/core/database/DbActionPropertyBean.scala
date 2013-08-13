@@ -38,6 +38,7 @@ class DbActionPropertyBean
   private val FILTER_ID = 0
   private val FILTER_NAME = 1
   private val FILTER_CODE = 2
+  private val FILTER_TYPENAME = 3
 
   @TransactionAttribute(TransactionAttributeType.REQUIRES_NEW)
   def getActionPropertyById(id: Int) = {
@@ -235,6 +236,11 @@ class DbActionPropertyBean
   }
 
   @TransactionAttribute(TransactionAttributeType.REQUIRES_NEW)
+  def getActionPropertiesByActionIdAndTypeTypeNames(actionId: Int, codes: java.util.List[String]) = {
+    this.getActionPropertiesByActionIdAndCustomParameters(actionId, codes, FILTER_TYPENAME)
+  }
+
+  @TransactionAttribute(TransactionAttributeType.REQUIRES_NEW)
   def getActionPropertiesByActionIdAndTypeId(actionId: Int, typeId: Int) = {
     val result = em.createQuery(ActionPropertiesByActionIdAndTypeIdQuery,
       classOf[ActionProperty])
@@ -336,6 +342,7 @@ class DbActionPropertyBean
         case FILTER_ID => "id"
         case FILTER_NAME =>  "name"
         case FILTER_CODE =>  "code"
+        case FILTER_TYPENAME => "typeName"
         case _ => "id"
       }
     ), classOf[ActionProperty])

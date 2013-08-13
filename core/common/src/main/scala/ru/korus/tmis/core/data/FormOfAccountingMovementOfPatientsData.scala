@@ -447,21 +447,3 @@ class PatientInfoContainer {
   }
 }
 
-class OrgStructureContainer {
-  @BeanProperty
-  var id : Int = _
-  @BeanProperty
-  var name : String = _
-  @BeanProperty
-  var address : String = _
-
-  def this(department: OrgStructure){
-    this()
-    if (department!=null){
-      this.id = department.getId.intValue()
-      this.name = department.getName
-      this.address = department.getAddress
-    }
-  }
-}
-

@@ -166,6 +166,13 @@ public class AppealsInfoRESTImpl {
     }
 
     @GET
+    @Path("{eventId}/surgical")
+    @Produces("application/x-javascript")
+    public Object getSurgicalOperationsByAppeal(@PathParam("eventId")int eventId) {
+        return new JSONWithPadding(wsImpl.getSurgicalOperationsByAppeal(eventId, this.auth), this.callback);
+    }
+
+    @GET
     @Path("{eventId}/analyzes")
     @Produces("application/x-javascript")
     public Object getExpressAnalyzesInfoByAppeal(@PathParam("eventId")int eventId) {
