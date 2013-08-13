@@ -106,7 +106,11 @@ class SurgicalOperationInfoContainer {
         if(complication!=null)
           this.complicationName = complication.getValueAsString
         if(anesthesia!=null)
-          this.methodAnesthesia = anesthesia.getValueAsString
+          this.methodAnesthesia = anesthesia.getValueAsString match {
+            case "АМН" => "1"
+            case "ЭТН" => "2"
+            case value: String => value
+          }
         this.operationCode = code
       }
     }
