@@ -1,10 +1,14 @@
 
 package ru.korus.tmis.ws.laboratory.bak.ws.server.model.hl7.complex;
 
-import javax.xml.bind.JAXBElement;
-import javax.xml.bind.annotation.*;
 import java.util.ArrayList;
 import java.util.List;
+import javax.xml.bind.JAXBElement;
+import javax.xml.bind.annotation.XmlAccessType;
+import javax.xml.bind.annotation.XmlAccessorType;
+import javax.xml.bind.annotation.XmlAttribute;
+import javax.xml.bind.annotation.XmlElementRef;
+import javax.xml.bind.annotation.XmlType;
 
 
 /**
@@ -163,8 +167,8 @@ public class COCTMT230100UVSubContent {
      * 
      * @return
      *     possible object is
-     *     {@link javax.xml.bind.JAXBElement }{@code <}{@link COCTMT230100UVPackagedMedicine }{@code >}
-     *
+     *     {@link JAXBElement }{@code <}{@link COCTMT230100UVPackagedMedicine }{@code >}
+     *     
      */
     public JAXBElement<COCTMT230100UVPackagedMedicine> getContainedPackagedMedicine() {
         return containedPackagedMedicine;
@@ -172,10 +176,10 @@ public class COCTMT230100UVSubContent {
 
     /**
      * Sets the value of the containedPackagedMedicine property.
-     *
+     * 
      * @param value
      *     allowed object is
-     *     {@link javax.xml.bind.JAXBElement }{@code <}{@link COCTMT230100UVPackagedMedicine }{@code >}
+     *     {@link JAXBElement }{@code <}{@link COCTMT230100UVPackagedMedicine }{@code >}
      *     
      */
     public void setContainedPackagedMedicine(JAXBElement<COCTMT230100UVPackagedMedicine> value) {

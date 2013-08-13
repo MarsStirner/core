@@ -1,10 +1,14 @@
 
 package ru.korus.tmis.ws.laboratory.bak.ws.server.model.hl7.complex;
 
-import javax.xml.bind.JAXBElement;
-import javax.xml.bind.annotation.*;
 import java.util.ArrayList;
 import java.util.List;
+import javax.xml.bind.JAXBElement;
+import javax.xml.bind.annotation.XmlAccessType;
+import javax.xml.bind.annotation.XmlAccessorType;
+import javax.xml.bind.annotation.XmlAttribute;
+import javax.xml.bind.annotation.XmlElementRef;
+import javax.xml.bind.annotation.XmlType;
 
 
 /**
@@ -287,8 +291,8 @@ public class COCTMT530000UVRelatedEntity {
      * 
      * @return
      *     possible object is
-     *     {@link javax.xml.bind.JAXBElement }{@code <}{@link COCTMT530000UVPerson }{@code >}
-     *
+     *     {@link JAXBElement }{@code <}{@link COCTMT530000UVPerson }{@code >}
+     *     
      */
     public JAXBElement<COCTMT530000UVPerson> getRelatedPerson() {
         return relatedPerson;
@@ -296,11 +300,11 @@ public class COCTMT530000UVRelatedEntity {
 
     /**
      * Sets the value of the relatedPerson property.
-     *
+     * 
      * @param value
      *     allowed object is
-     *     {@link javax.xml.bind.JAXBElement }{@code <}{@link COCTMT530000UVPerson }{@code >}
-     *
+     *     {@link JAXBElement }{@code <}{@link COCTMT530000UVPerson }{@code >}
+     *     
      */
     public void setRelatedPerson(JAXBElement<COCTMT530000UVPerson> value) {
         this.relatedPerson = value;
@@ -308,11 +312,11 @@ public class COCTMT530000UVRelatedEntity {
 
     /**
      * Gets the value of the relatedAnimal property.
-     *
+     * 
      * @return
      *     possible object is
-     *     {@link javax.xml.bind.JAXBElement }{@code <}{@link COCTMT530000UVAnimal }{@code >}
-     *
+     *     {@link JAXBElement }{@code <}{@link COCTMT530000UVAnimal }{@code >}
+     *     
      */
     public JAXBElement<COCTMT530000UVAnimal> getRelatedAnimal() {
         return relatedAnimal;
@@ -320,11 +324,11 @@ public class COCTMT530000UVRelatedEntity {
 
     /**
      * Sets the value of the relatedAnimal property.
-     *
+     * 
      * @param value
      *     allowed object is
-     *     {@link javax.xml.bind.JAXBElement }{@code <}{@link COCTMT530000UVAnimal }{@code >}
-     *
+     *     {@link JAXBElement }{@code <}{@link COCTMT530000UVAnimal }{@code >}
+     *     
      */
     public void setRelatedAnimal(JAXBElement<COCTMT530000UVAnimal> value) {
         this.relatedAnimal = value;
@@ -332,11 +336,11 @@ public class COCTMT530000UVRelatedEntity {
 
     /**
      * Gets the value of the relatedEntity property.
-     *
+     * 
      * @return
      *     possible object is
-     *     {@link javax.xml.bind.JAXBElement }{@code <}{@link COCTMT530000UVEntity }{@code >}
-     *
+     *     {@link JAXBElement }{@code <}{@link COCTMT530000UVEntity }{@code >}
+     *     
      */
     public JAXBElement<COCTMT530000UVEntity> getRelatedEntity() {
         return relatedEntity;
@@ -344,11 +348,11 @@ public class COCTMT530000UVRelatedEntity {
 
     /**
      * Sets the value of the relatedEntity property.
-     *
+     * 
      * @param value
      *     allowed object is
-     *     {@link javax.xml.bind.JAXBElement }{@code <}{@link COCTMT530000UVEntity }{@code >}
-     *
+     *     {@link JAXBElement }{@code <}{@link COCTMT530000UVEntity }{@code >}
+     *     
      */
     public void setRelatedEntity(JAXBElement<COCTMT530000UVEntity> value) {
         this.relatedEntity = value;
@@ -356,11 +360,11 @@ public class COCTMT530000UVRelatedEntity {
 
     /**
      * Gets the value of the scopingPerson property.
-     *
+     * 
      * @return
      *     possible object is
-     *     {@link javax.xml.bind.JAXBElement }{@code <}{@link COCTMT530000UVPerson }{@code >}
-     *
+     *     {@link JAXBElement }{@code <}{@link COCTMT530000UVPerson }{@code >}
+     *     
      */
     public JAXBElement<COCTMT530000UVPerson> getScopingPerson() {
         return scopingPerson;
@@ -368,11 +372,11 @@ public class COCTMT530000UVRelatedEntity {
 
     /**
      * Sets the value of the scopingPerson property.
-     *
+     * 
      * @param value
      *     allowed object is
-     *     {@link javax.xml.bind.JAXBElement }{@code <}{@link COCTMT530000UVPerson }{@code >}
-     *
+     *     {@link JAXBElement }{@code <}{@link COCTMT530000UVPerson }{@code >}
+     *     
      */
     public void setScopingPerson(JAXBElement<COCTMT530000UVPerson> value) {
         this.scopingPerson = value;
@@ -380,11 +384,11 @@ public class COCTMT530000UVRelatedEntity {
 
     /**
      * Gets the value of the scopingAnimal property.
-     *
+     * 
      * @return
      *     possible object is
-     *     {@link javax.xml.bind.JAXBElement }{@code <}{@link COCTMT530000UVAnimal }{@code >}
-     *
+     *     {@link JAXBElement }{@code <}{@link COCTMT530000UVAnimal }{@code >}
+     *     
      */
     public JAXBElement<COCTMT530000UVAnimal> getScopingAnimal() {
         return scopingAnimal;
@@ -392,11 +396,11 @@ public class COCTMT530000UVRelatedEntity {
 
     /**
      * Sets the value of the scopingAnimal property.
-     *
+     * 
      * @param value
      *     allowed object is
-     *     {@link javax.xml.bind.JAXBElement }{@code <}{@link COCTMT530000UVAnimal }{@code >}
-     *
+     *     {@link JAXBElement }{@code <}{@link COCTMT530000UVAnimal }{@code >}
+     *     
      */
     public void setScopingAnimal(JAXBElement<COCTMT530000UVAnimal> value) {
         this.scopingAnimal = value;
@@ -404,11 +408,11 @@ public class COCTMT530000UVRelatedEntity {
 
     /**
      * Gets the value of the scopingEntity property.
-     *
+     * 
      * @return
      *     possible object is
-     *     {@link javax.xml.bind.JAXBElement }{@code <}{@link COCTMT530000UVEntity }{@code >}
-     *
+     *     {@link JAXBElement }{@code <}{@link COCTMT530000UVEntity }{@code >}
+     *     
      */
     public JAXBElement<COCTMT530000UVEntity> getScopingEntity() {
         return scopingEntity;
@@ -416,10 +420,10 @@ public class COCTMT530000UVRelatedEntity {
 
     /**
      * Sets the value of the scopingEntity property.
-     *
+     * 
      * @param value
      *     allowed object is
-     *     {@link javax.xml.bind.JAXBElement }{@code <}{@link COCTMT530000UVEntity }{@code >}
+     *     {@link JAXBElement }{@code <}{@link COCTMT530000UVEntity }{@code >}
      *     
      */
     public void setScopingEntity(JAXBElement<COCTMT530000UVEntity> value) {

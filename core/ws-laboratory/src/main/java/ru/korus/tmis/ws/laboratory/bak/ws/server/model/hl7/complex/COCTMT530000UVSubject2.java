@@ -1,10 +1,14 @@
 
 package ru.korus.tmis.ws.laboratory.bak.ws.server.model.hl7.complex;
 
-import javax.xml.bind.JAXBElement;
-import javax.xml.bind.annotation.*;
 import java.util.ArrayList;
 import java.util.List;
+import javax.xml.bind.JAXBElement;
+import javax.xml.bind.annotation.XmlAccessType;
+import javax.xml.bind.annotation.XmlAccessorType;
+import javax.xml.bind.annotation.XmlAttribute;
+import javax.xml.bind.annotation.XmlElementRef;
+import javax.xml.bind.annotation.XmlType;
 
 
 /**
@@ -203,8 +207,8 @@ public class COCTMT530000UVSubject2 {
      * 
      * @return
      *     possible object is
-     *     {@link javax.xml.bind.JAXBElement }{@code <}{@link COCTMT050000UV01Patient }{@code >}
-     *
+     *     {@link JAXBElement }{@code <}{@link COCTMT050000UV01Patient }{@code >}
+     *     
      */
     public JAXBElement<COCTMT050000UV01Patient> getPatient() {
         return patient;
@@ -212,11 +216,11 @@ public class COCTMT530000UVSubject2 {
 
     /**
      * Sets the value of the patient property.
-     *
+     * 
      * @param value
      *     allowed object is
-     *     {@link javax.xml.bind.JAXBElement }{@code <}{@link COCTMT050000UV01Patient }{@code >}
-     *
+     *     {@link JAXBElement }{@code <}{@link COCTMT050000UV01Patient }{@code >}
+     *     
      */
     public void setPatient(JAXBElement<COCTMT050000UV01Patient> value) {
         this.patient = value;
@@ -224,11 +228,11 @@ public class COCTMT530000UVSubject2 {
 
     /**
      * Gets the value of the relatedEntity property.
-     *
+     * 
      * @return
      *     possible object is
-     *     {@link javax.xml.bind.JAXBElement }{@code <}{@link COCTMT530000UVRelatedEntity }{@code >}
-     *
+     *     {@link JAXBElement }{@code <}{@link COCTMT530000UVRelatedEntity }{@code >}
+     *     
      */
     public JAXBElement<COCTMT530000UVRelatedEntity> getRelatedEntity() {
         return relatedEntity;
@@ -236,11 +240,11 @@ public class COCTMT530000UVSubject2 {
 
     /**
      * Sets the value of the relatedEntity property.
-     *
+     * 
      * @param value
      *     allowed object is
-     *     {@link javax.xml.bind.JAXBElement }{@code <}{@link COCTMT530000UVRelatedEntity }{@code >}
-     *
+     *     {@link JAXBElement }{@code <}{@link COCTMT530000UVRelatedEntity }{@code >}
+     *     
      */
     public void setRelatedEntity(JAXBElement<COCTMT530000UVRelatedEntity> value) {
         this.relatedEntity = value;
@@ -248,11 +252,11 @@ public class COCTMT530000UVSubject2 {
 
     /**
      * Gets the value of the specimen property.
-     *
+     * 
      * @return
      *     possible object is
-     *     {@link javax.xml.bind.JAXBElement }{@code <}{@link COCTMT080000UVSpecimen }{@code >}
-     *
+     *     {@link JAXBElement }{@code <}{@link COCTMT080000UVSpecimen }{@code >}
+     *     
      */
     public JAXBElement<COCTMT080000UVSpecimen> getSpecimen() {
         return specimen;
@@ -260,10 +264,10 @@ public class COCTMT530000UVSubject2 {
 
     /**
      * Sets the value of the specimen property.
-     *
+     * 
      * @param value
      *     allowed object is
-     *     {@link javax.xml.bind.JAXBElement }{@code <}{@link COCTMT080000UVSpecimen }{@code >}
+     *     {@link JAXBElement }{@code <}{@link COCTMT080000UVSpecimen }{@code >}
      *     
      */
     public void setSpecimen(JAXBElement<COCTMT080000UVSpecimen> value) {

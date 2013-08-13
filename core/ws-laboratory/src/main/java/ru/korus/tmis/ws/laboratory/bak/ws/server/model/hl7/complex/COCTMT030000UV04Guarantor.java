@@ -1,10 +1,14 @@
 
 package ru.korus.tmis.ws.laboratory.bak.ws.server.model.hl7.complex;
 
-import javax.xml.bind.JAXBElement;
-import javax.xml.bind.annotation.*;
 import java.util.ArrayList;
 import java.util.List;
+import javax.xml.bind.JAXBElement;
+import javax.xml.bind.annotation.XmlAccessType;
+import javax.xml.bind.annotation.XmlAccessorType;
+import javax.xml.bind.annotation.XmlAttribute;
+import javax.xml.bind.annotation.XmlElementRef;
+import javax.xml.bind.annotation.XmlType;
 
 
 /**
@@ -292,8 +296,8 @@ public class COCTMT030000UV04Guarantor {
      * 
      * @return
      *     possible object is
-     *     {@link javax.xml.bind.JAXBElement }{@code <}{@link COCTMT030202UV01Person }{@code >}
-     *
+     *     {@link JAXBElement }{@code <}{@link COCTMT030202UV01Person }{@code >}
+     *     
      */
     public JAXBElement<COCTMT030202UV01Person> getGuarantorPerson() {
         return guarantorPerson;
@@ -301,11 +305,11 @@ public class COCTMT030000UV04Guarantor {
 
     /**
      * Sets the value of the guarantorPerson property.
-     *
+     * 
      * @param value
      *     allowed object is
-     *     {@link javax.xml.bind.JAXBElement }{@code <}{@link COCTMT030202UV01Person }{@code >}
-     *
+     *     {@link JAXBElement }{@code <}{@link COCTMT030202UV01Person }{@code >}
+     *     
      */
     public void setGuarantorPerson(JAXBElement<COCTMT030202UV01Person> value) {
         this.guarantorPerson = value;
@@ -313,11 +317,11 @@ public class COCTMT030000UV04Guarantor {
 
     /**
      * Gets the value of the guarantorOrganization property.
-     *
+     * 
      * @return
      *     possible object is
-     *     {@link javax.xml.bind.JAXBElement }{@code <}{@link COCTMT150002UV01Organization }{@code >}
-     *
+     *     {@link JAXBElement }{@code <}{@link COCTMT150002UV01Organization }{@code >}
+     *     
      */
     public JAXBElement<COCTMT150002UV01Organization> getGuarantorOrganization() {
         return guarantorOrganization;
@@ -325,10 +329,10 @@ public class COCTMT030000UV04Guarantor {
 
     /**
      * Sets the value of the guarantorOrganization property.
-     *
+     * 
      * @param value
      *     allowed object is
-     *     {@link javax.xml.bind.JAXBElement }{@code <}{@link COCTMT150002UV01Organization }{@code >}
+     *     {@link JAXBElement }{@code <}{@link COCTMT150002UV01Organization }{@code >}
      *     
      */
     public void setGuarantorOrganization(JAXBElement<COCTMT150002UV01Organization> value) {

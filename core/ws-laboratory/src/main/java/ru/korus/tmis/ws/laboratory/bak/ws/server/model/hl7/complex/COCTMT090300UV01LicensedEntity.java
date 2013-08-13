@@ -1,10 +1,14 @@
 
 package ru.korus.tmis.ws.laboratory.bak.ws.server.model.hl7.complex;
 
-import javax.xml.bind.JAXBElement;
-import javax.xml.bind.annotation.*;
 import java.util.ArrayList;
 import java.util.List;
+import javax.xml.bind.JAXBElement;
+import javax.xml.bind.annotation.XmlAccessType;
+import javax.xml.bind.annotation.XmlAccessorType;
+import javax.xml.bind.annotation.XmlAttribute;
+import javax.xml.bind.annotation.XmlElementRef;
+import javax.xml.bind.annotation.XmlType;
 
 
 /**
@@ -222,8 +226,8 @@ public class COCTMT090300UV01LicensedEntity {
      * 
      * @return
      *     possible object is
-     *     {@link javax.xml.bind.JAXBElement }{@code <}{@link COCTMT150003UV03Organization }{@code >}
-     *
+     *     {@link JAXBElement }{@code <}{@link COCTMT150003UV03Organization }{@code >}
+     *     
      */
     public JAXBElement<COCTMT150003UV03Organization> getIssuingOrganization() {
         return issuingOrganization;
@@ -231,10 +235,10 @@ public class COCTMT090300UV01LicensedEntity {
 
     /**
      * Sets the value of the issuingOrganization property.
-     *
+     * 
      * @param value
      *     allowed object is
-     *     {@link javax.xml.bind.JAXBElement }{@code <}{@link COCTMT150003UV03Organization }{@code >}
+     *     {@link JAXBElement }{@code <}{@link COCTMT150003UV03Organization }{@code >}
      *     
      */
     public void setIssuingOrganization(JAXBElement<COCTMT150003UV03Organization> value) {

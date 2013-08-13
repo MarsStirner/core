@@ -1,10 +1,15 @@
 
 package ru.korus.tmis.ws.laboratory.bak.ws.server.model.hl7.complex;
 
-import javax.xml.bind.JAXBElement;
-import javax.xml.bind.annotation.*;
 import java.util.ArrayList;
 import java.util.List;
+import javax.xml.bind.JAXBElement;
+import javax.xml.bind.annotation.XmlAccessType;
+import javax.xml.bind.annotation.XmlAccessorType;
+import javax.xml.bind.annotation.XmlAttribute;
+import javax.xml.bind.annotation.XmlElement;
+import javax.xml.bind.annotation.XmlElementRef;
+import javax.xml.bind.annotation.XmlType;
 
 
 /**
@@ -320,8 +325,8 @@ public class COCTMT030000UV04ContactParty {
      * 
      * @return
      *     possible object is
-     *     {@link javax.xml.bind.JAXBElement }{@code <}{@link COCTMT030202UV01Person }{@code >}
-     *
+     *     {@link JAXBElement }{@code <}{@link COCTMT030202UV01Person }{@code >}
+     *     
      */
     public JAXBElement<COCTMT030202UV01Person> getContactPerson() {
         return contactPerson;
@@ -329,11 +334,11 @@ public class COCTMT030000UV04ContactParty {
 
     /**
      * Sets the value of the contactPerson property.
-     *
+     * 
      * @param value
      *     allowed object is
-     *     {@link javax.xml.bind.JAXBElement }{@code <}{@link COCTMT030202UV01Person }{@code >}
-     *
+     *     {@link JAXBElement }{@code <}{@link COCTMT030202UV01Person }{@code >}
+     *     
      */
     public void setContactPerson(JAXBElement<COCTMT030202UV01Person> value) {
         this.contactPerson = value;
@@ -341,11 +346,11 @@ public class COCTMT030000UV04ContactParty {
 
     /**
      * Gets the value of the contactOrganization property.
-     *
+     * 
      * @return
      *     possible object is
-     *     {@link javax.xml.bind.JAXBElement }{@code <}{@link COCTMT150002UV01Organization }{@code >}
-     *
+     *     {@link JAXBElement }{@code <}{@link COCTMT150002UV01Organization }{@code >}
+     *     
      */
     public JAXBElement<COCTMT150002UV01Organization> getContactOrganization() {
         return contactOrganization;
@@ -353,10 +358,10 @@ public class COCTMT030000UV04ContactParty {
 
     /**
      * Sets the value of the contactOrganization property.
-     *
+     * 
      * @param value
      *     allowed object is
-     *     {@link javax.xml.bind.JAXBElement }{@code <}{@link COCTMT150002UV01Organization }{@code >}
+     *     {@link JAXBElement }{@code <}{@link COCTMT150002UV01Organization }{@code >}
      *     
      */
     public void setContactOrganization(JAXBElement<COCTMT150002UV01Organization> value) {

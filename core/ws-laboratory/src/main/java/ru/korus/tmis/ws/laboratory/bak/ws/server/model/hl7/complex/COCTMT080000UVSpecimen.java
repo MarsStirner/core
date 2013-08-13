@@ -1,10 +1,15 @@
 
 package ru.korus.tmis.ws.laboratory.bak.ws.server.model.hl7.complex;
 
-import javax.xml.bind.JAXBElement;
-import javax.xml.bind.annotation.*;
 import java.util.ArrayList;
 import java.util.List;
+import javax.xml.bind.JAXBElement;
+import javax.xml.bind.annotation.XmlAccessType;
+import javax.xml.bind.annotation.XmlAccessorType;
+import javax.xml.bind.annotation.XmlAttribute;
+import javax.xml.bind.annotation.XmlElement;
+import javax.xml.bind.annotation.XmlElementRef;
+import javax.xml.bind.annotation.XmlType;
 
 
 /**
@@ -328,8 +333,8 @@ public class COCTMT080000UVSpecimen {
      * 
      * @return
      *     possible object is
-     *     {@link javax.xml.bind.JAXBElement }{@code <}{@link COCTMT080000UVNatural }{@code >}
-     *
+     *     {@link JAXBElement }{@code <}{@link COCTMT080000UVNatural }{@code >}
+     *     
      */
     public JAXBElement<COCTMT080000UVNatural> getSourceNatural() {
         return sourceNatural;
@@ -337,11 +342,11 @@ public class COCTMT080000UVSpecimen {
 
     /**
      * Sets the value of the sourceNatural property.
-     *
+     * 
      * @param value
      *     allowed object is
-     *     {@link javax.xml.bind.JAXBElement }{@code <}{@link COCTMT080000UVNatural }{@code >}
-     *
+     *     {@link JAXBElement }{@code <}{@link COCTMT080000UVNatural }{@code >}
+     *     
      */
     public void setSourceNatural(JAXBElement<COCTMT080000UVNatural> value) {
         this.sourceNatural = value;
@@ -349,11 +354,11 @@ public class COCTMT080000UVSpecimen {
 
     /**
      * Gets the value of the sourceManufactured property.
-     *
+     * 
      * @return
      *     possible object is
-     *     {@link javax.xml.bind.JAXBElement }{@code <}{@link COCTMT080000UVManufactured }{@code >}
-     *
+     *     {@link JAXBElement }{@code <}{@link COCTMT080000UVManufactured }{@code >}
+     *     
      */
     public JAXBElement<COCTMT080000UVManufactured> getSourceManufactured() {
         return sourceManufactured;
@@ -361,11 +366,11 @@ public class COCTMT080000UVSpecimen {
 
     /**
      * Sets the value of the sourceManufactured property.
-     *
+     * 
      * @param value
      *     allowed object is
-     *     {@link javax.xml.bind.JAXBElement }{@code <}{@link COCTMT080000UVManufactured }{@code >}
-     *
+     *     {@link JAXBElement }{@code <}{@link COCTMT080000UVManufactured }{@code >}
+     *     
      */
     public void setSourceManufactured(JAXBElement<COCTMT080000UVManufactured> value) {
         this.sourceManufactured = value;
@@ -373,11 +378,11 @@ public class COCTMT080000UVSpecimen {
 
     /**
      * Gets the value of the sourceNonPersonLivingSubject property.
-     *
+     * 
      * @return
      *     possible object is
-     *     {@link javax.xml.bind.JAXBElement }{@code <}{@link COCTMT080000UVNonPersonLivingSubject }{@code >}
-     *
+     *     {@link JAXBElement }{@code <}{@link COCTMT080000UVNonPersonLivingSubject }{@code >}
+     *     
      */
     public JAXBElement<COCTMT080000UVNonPersonLivingSubject> getSourceNonPersonLivingSubject() {
         return sourceNonPersonLivingSubject;
@@ -385,11 +390,11 @@ public class COCTMT080000UVSpecimen {
 
     /**
      * Sets the value of the sourceNonPersonLivingSubject property.
-     *
+     * 
      * @param value
      *     allowed object is
-     *     {@link javax.xml.bind.JAXBElement }{@code <}{@link COCTMT080000UVNonPersonLivingSubject }{@code >}
-     *
+     *     {@link JAXBElement }{@code <}{@link COCTMT080000UVNonPersonLivingSubject }{@code >}
+     *     
      */
     public void setSourceNonPersonLivingSubject(JAXBElement<COCTMT080000UVNonPersonLivingSubject> value) {
         this.sourceNonPersonLivingSubject = value;
@@ -397,11 +402,11 @@ public class COCTMT080000UVSpecimen {
 
     /**
      * Gets the value of the sourcePerson property.
-     *
+     * 
      * @return
      *     possible object is
-     *     {@link javax.xml.bind.JAXBElement }{@code <}{@link COCTMT080000UVPerson }{@code >}
-     *
+     *     {@link JAXBElement }{@code <}{@link COCTMT080000UVPerson }{@code >}
+     *     
      */
     public JAXBElement<COCTMT080000UVPerson> getSourcePerson() {
         return sourcePerson;
@@ -409,11 +414,11 @@ public class COCTMT080000UVSpecimen {
 
     /**
      * Sets the value of the sourcePerson property.
-     *
+     * 
      * @param value
      *     allowed object is
-     *     {@link javax.xml.bind.JAXBElement }{@code <}{@link COCTMT080000UVPerson }{@code >}
-     *
+     *     {@link JAXBElement }{@code <}{@link COCTMT080000UVPerson }{@code >}
+     *     
      */
     public void setSourcePerson(JAXBElement<COCTMT080000UVPerson> value) {
         this.sourcePerson = value;
@@ -421,25 +426,25 @@ public class COCTMT080000UVSpecimen {
 
     /**
      * Gets the value of the subjectOf1 property.
-     *
+     * 
      * <p>
      * This accessor method returns a reference to the live list,
      * not a snapshot. Therefore any modification you make to the
      * returned list will be present inside the JAXB object.
      * This is why there is not a <CODE>set</CODE> method for the subjectOf1 property.
-     *
+     * 
      * <p>
      * For example, to add a new item, do as follows:
      * <pre>
      *    getSubjectOf1().add(newItem);
      * </pre>
-     *
-     *
+     * 
+     * 
      * <p>
      * Objects of the following type(s) are allowed in the list
      * {@link COCTMT080000UVSubject4 }
-     *
-     *
+     * 
+     * 
      */
     public List<COCTMT080000UVSubject4> getSubjectOf1() {
         if (subjectOf1 == null) {
@@ -450,25 +455,25 @@ public class COCTMT080000UVSpecimen {
 
     /**
      * Gets the value of the subjectOf2 property.
-     *
+     * 
      * <p>
      * This accessor method returns a reference to the live list,
      * not a snapshot. Therefore any modification you make to the
      * returned list will be present inside the JAXB object.
      * This is why there is not a <CODE>set</CODE> method for the subjectOf2 property.
-     *
+     * 
      * <p>
      * For example, to add a new item, do as follows:
      * <pre>
      *    getSubjectOf2().add(newItem);
      * </pre>
-     *
-     *
+     * 
+     * 
      * <p>
      * Objects of the following type(s) are allowed in the list
      * {@link COCTMT080000UVSubject3 }
-     *
-     *
+     * 
+     * 
      */
     public List<COCTMT080000UVSubject3> getSubjectOf2() {
         if (subjectOf2 == null) {
@@ -479,11 +484,11 @@ public class COCTMT080000UVSpecimen {
 
     /**
      * Gets the value of the productOf property.
-     *
+     * 
      * @return
      *     possible object is
-     *     {@link javax.xml.bind.JAXBElement }{@code <}{@link COCTMT080000UVProduct }{@code >}
-     *
+     *     {@link JAXBElement }{@code <}{@link COCTMT080000UVProduct }{@code >}
+     *     
      */
     public JAXBElement<COCTMT080000UVProduct> getProductOf() {
         return productOf;
@@ -491,10 +496,10 @@ public class COCTMT080000UVSpecimen {
 
     /**
      * Sets the value of the productOf property.
-     *
+     * 
      * @param value
      *     allowed object is
-     *     {@link javax.xml.bind.JAXBElement }{@code <}{@link COCTMT080000UVProduct }{@code >}
+     *     {@link JAXBElement }{@code <}{@link COCTMT080000UVProduct }{@code >}
      *     
      */
     public void setProductOf(JAXBElement<COCTMT080000UVProduct> value) {

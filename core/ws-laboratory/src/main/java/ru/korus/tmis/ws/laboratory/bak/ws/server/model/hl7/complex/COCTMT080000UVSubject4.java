@@ -1,10 +1,14 @@
 
 package ru.korus.tmis.ws.laboratory.bak.ws.server.model.hl7.complex;
 
-import javax.xml.bind.JAXBElement;
-import javax.xml.bind.annotation.*;
 import java.util.ArrayList;
 import java.util.List;
+import javax.xml.bind.JAXBElement;
+import javax.xml.bind.annotation.XmlAccessType;
+import javax.xml.bind.annotation.XmlAccessorType;
+import javax.xml.bind.annotation.XmlAttribute;
+import javax.xml.bind.annotation.XmlElementRef;
+import javax.xml.bind.annotation.XmlType;
 
 
 /**
@@ -199,8 +203,8 @@ public class COCTMT080000UVSubject4 {
      * 
      * @return
      *     possible object is
-     *     {@link javax.xml.bind.JAXBElement }{@code <}{@link COCTMT080000UVSpecimenObservationEvent }{@code >}
-     *
+     *     {@link JAXBElement }{@code <}{@link COCTMT080000UVSpecimenObservationEvent }{@code >}
+     *     
      */
     public JAXBElement<COCTMT080000UVSpecimenObservationEvent> getSpecimenObservationEvent() {
         return specimenObservationEvent;
@@ -208,11 +212,11 @@ public class COCTMT080000UVSubject4 {
 
     /**
      * Sets the value of the specimenObservationEvent property.
-     *
+     * 
      * @param value
      *     allowed object is
-     *     {@link javax.xml.bind.JAXBElement }{@code <}{@link COCTMT080000UVSpecimenObservationEvent }{@code >}
-     *
+     *     {@link JAXBElement }{@code <}{@link COCTMT080000UVSpecimenObservationEvent }{@code >}
+     *     
      */
     public void setSpecimenObservationEvent(JAXBElement<COCTMT080000UVSpecimenObservationEvent> value) {
         this.specimenObservationEvent = value;
@@ -220,11 +224,11 @@ public class COCTMT080000UVSubject4 {
 
     /**
      * Gets the value of the automationSpecimenObservationEvent property.
-     *
+     * 
      * @return
      *     possible object is
-     *     {@link javax.xml.bind.JAXBElement }{@code <}{@link COCTMT080000UVAutomationSpecimenObservationEvent }{@code >}
-     *
+     *     {@link JAXBElement }{@code <}{@link COCTMT080000UVAutomationSpecimenObservationEvent }{@code >}
+     *     
      */
     public JAXBElement<COCTMT080000UVAutomationSpecimenObservationEvent> getAutomationSpecimenObservationEvent() {
         return automationSpecimenObservationEvent;
@@ -232,10 +236,10 @@ public class COCTMT080000UVSubject4 {
 
     /**
      * Sets the value of the automationSpecimenObservationEvent property.
-     *
+     * 
      * @param value
      *     allowed object is
-     *     {@link javax.xml.bind.JAXBElement }{@code <}{@link COCTMT080000UVAutomationSpecimenObservationEvent }{@code >}
+     *     {@link JAXBElement }{@code <}{@link COCTMT080000UVAutomationSpecimenObservationEvent }{@code >}
      *     
      */
     public void setAutomationSpecimenObservationEvent(JAXBElement<COCTMT080000UVAutomationSpecimenObservationEvent> value) {

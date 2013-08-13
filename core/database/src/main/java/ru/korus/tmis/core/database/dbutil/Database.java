@@ -164,13 +164,13 @@ public class Database {
         if (value == null) {
             throw new IllegalArgumentException("The param 'final T value' is null");
         }
-        Integer newPropId = null;
+        Integer newPropId;
         final List<ActionProperty> prop = getActionProp(actionId, propTypeId);
         if (prop.size() > 0) {
             if (isUpdate) {
                 newPropId = prop.iterator().next().getId();
             } else {
-                new CoreException(String.format("The property %i for action %i has been alredy set", propTypeId, actionId)); // свойство уже установленно
+                throw new CoreException(String.format("The property %i for action %i has been alredy set", propTypeId, actionId)); // свойство уже установленно
             }
         } else {
             newPropId = addActionProp(actionId, propTypeId);

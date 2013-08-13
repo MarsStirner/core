@@ -1,10 +1,14 @@
 
 package ru.korus.tmis.ws.laboratory.bak.ws.server.model.hl7.complex;
 
-import javax.xml.bind.JAXBElement;
-import javax.xml.bind.annotation.*;
 import java.util.ArrayList;
 import java.util.List;
+import javax.xml.bind.JAXBElement;
+import javax.xml.bind.annotation.XmlAccessType;
+import javax.xml.bind.annotation.XmlAccessorType;
+import javax.xml.bind.annotation.XmlAttribute;
+import javax.xml.bind.annotation.XmlElementRef;
+import javax.xml.bind.annotation.XmlType;
 
 
 /**
@@ -140,8 +144,8 @@ public class COCTMT230100UVTerritorialAuthority {
      * 
      * @return
      *     possible object is
-     *     {@link javax.xml.bind.JAXBElement }{@code <}{@link COCTMT230100UVAgency }{@code >}
-     *
+     *     {@link JAXBElement }{@code <}{@link COCTMT230100UVAgency }{@code >}
+     *     
      */
     public JAXBElement<COCTMT230100UVAgency> getTerritory() {
         return territory;
@@ -149,11 +153,11 @@ public class COCTMT230100UVTerritorialAuthority {
 
     /**
      * Sets the value of the territory property.
-     *
+     * 
      * @param value
      *     allowed object is
-     *     {@link javax.xml.bind.JAXBElement }{@code <}{@link COCTMT230100UVAgency }{@code >}
-     *
+     *     {@link JAXBElement }{@code <}{@link COCTMT230100UVAgency }{@code >}
+     *     
      */
     public void setTerritory(JAXBElement<COCTMT230100UVAgency> value) {
         this.territory = value;
@@ -161,11 +165,11 @@ public class COCTMT230100UVTerritorialAuthority {
 
     /**
      * Gets the value of the governingCountry property.
-     *
+     * 
      * @return
      *     possible object is
-     *     {@link javax.xml.bind.JAXBElement }{@code <}{@link COCTMT230100UVCountry }{@code >}
-     *
+     *     {@link JAXBElement }{@code <}{@link COCTMT230100UVCountry }{@code >}
+     *     
      */
     public JAXBElement<COCTMT230100UVCountry> getGoverningCountry() {
         return governingCountry;
@@ -173,10 +177,10 @@ public class COCTMT230100UVTerritorialAuthority {
 
     /**
      * Sets the value of the governingCountry property.
-     *
+     * 
      * @param value
      *     allowed object is
-     *     {@link javax.xml.bind.JAXBElement }{@code <}{@link COCTMT230100UVCountry }{@code >}
+     *     {@link JAXBElement }{@code <}{@link COCTMT230100UVCountry }{@code >}
      *     
      */
     public void setGoverningCountry(JAXBElement<COCTMT230100UVCountry> value) {

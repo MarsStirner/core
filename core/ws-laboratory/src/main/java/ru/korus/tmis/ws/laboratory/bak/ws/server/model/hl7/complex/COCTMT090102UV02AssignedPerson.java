@@ -1,10 +1,15 @@
 
 package ru.korus.tmis.ws.laboratory.bak.ws.server.model.hl7.complex;
 
-import javax.xml.bind.JAXBElement;
-import javax.xml.bind.annotation.*;
 import java.util.ArrayList;
 import java.util.List;
+import javax.xml.bind.JAXBElement;
+import javax.xml.bind.annotation.XmlAccessType;
+import javax.xml.bind.annotation.XmlAccessorType;
+import javax.xml.bind.annotation.XmlAttribute;
+import javax.xml.bind.annotation.XmlElement;
+import javax.xml.bind.annotation.XmlElementRef;
+import javax.xml.bind.annotation.XmlType;
 
 
 /**
@@ -234,8 +239,8 @@ public class COCTMT090102UV02AssignedPerson {
      * 
      * @return
      *     possible object is
-     *     {@link javax.xml.bind.JAXBElement }{@code <}{@link COCTMT090102UV02Person }{@code >}
-     *
+     *     {@link JAXBElement }{@code <}{@link COCTMT090102UV02Person }{@code >}
+     *     
      */
     public JAXBElement<COCTMT090102UV02Person> getAssignedPerson() {
         return assignedPerson;
@@ -243,11 +248,11 @@ public class COCTMT090102UV02AssignedPerson {
 
     /**
      * Sets the value of the assignedPerson property.
-     *
+     * 
      * @param value
      *     allowed object is
-     *     {@link javax.xml.bind.JAXBElement }{@code <}{@link COCTMT090102UV02Person }{@code >}
-     *
+     *     {@link JAXBElement }{@code <}{@link COCTMT090102UV02Person }{@code >}
+     *     
      */
     public void setAssignedPerson(JAXBElement<COCTMT090102UV02Person> value) {
         this.assignedPerson = value;
@@ -255,11 +260,11 @@ public class COCTMT090102UV02AssignedPerson {
 
     /**
      * Gets the value of the representedOrganization property.
-     *
+     * 
      * @return
      *     possible object is
-     *     {@link javax.xml.bind.JAXBElement }{@code <}{@link COCTMT150002UV01Organization }{@code >}
-     *
+     *     {@link JAXBElement }{@code <}{@link COCTMT150002UV01Organization }{@code >}
+     *     
      */
     public JAXBElement<COCTMT150002UV01Organization> getRepresentedOrganization() {
         return representedOrganization;
@@ -267,10 +272,10 @@ public class COCTMT090102UV02AssignedPerson {
 
     /**
      * Sets the value of the representedOrganization property.
-     *
+     * 
      * @param value
      *     allowed object is
-     *     {@link javax.xml.bind.JAXBElement }{@code <}{@link COCTMT150002UV01Organization }{@code >}
+     *     {@link JAXBElement }{@code <}{@link COCTMT150002UV01Organization }{@code >}
      *     
      */
     public void setRepresentedOrganization(JAXBElement<COCTMT150002UV01Organization> value) {

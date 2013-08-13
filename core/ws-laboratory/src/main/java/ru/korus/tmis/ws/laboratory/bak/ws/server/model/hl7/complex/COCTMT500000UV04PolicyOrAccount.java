@@ -1,10 +1,15 @@
 
 package ru.korus.tmis.ws.laboratory.bak.ws.server.model.hl7.complex;
 
-import javax.xml.bind.JAXBElement;
-import javax.xml.bind.annotation.*;
 import java.util.ArrayList;
 import java.util.List;
+import javax.xml.bind.JAXBElement;
+import javax.xml.bind.annotation.XmlAccessType;
+import javax.xml.bind.annotation.XmlAccessorType;
+import javax.xml.bind.annotation.XmlAttribute;
+import javax.xml.bind.annotation.XmlElement;
+import javax.xml.bind.annotation.XmlElementRef;
+import javax.xml.bind.annotation.XmlType;
 
 
 /**
@@ -261,8 +266,8 @@ public class COCTMT500000UV04PolicyOrAccount {
      * 
      * @return
      *     possible object is
-     *     {@link javax.xml.bind.JAXBElement }{@code <}{@link COCTMT500000UV04Holder }{@code >}
-     *
+     *     {@link JAXBElement }{@code <}{@link COCTMT500000UV04Holder }{@code >}
+     *     
      */
     public JAXBElement<COCTMT500000UV04Holder> getHolder() {
         return holder;
@@ -270,11 +275,11 @@ public class COCTMT500000UV04PolicyOrAccount {
 
     /**
      * Sets the value of the holder property.
-     *
+     * 
      * @param value
      *     allowed object is
-     *     {@link javax.xml.bind.JAXBElement }{@code <}{@link COCTMT500000UV04Holder }{@code >}
-     *
+     *     {@link JAXBElement }{@code <}{@link COCTMT500000UV04Holder }{@code >}
+     *     
      */
     public void setHolder(JAXBElement<COCTMT500000UV04Holder> value) {
         this.holder = value;
@@ -282,11 +287,11 @@ public class COCTMT500000UV04PolicyOrAccount {
 
     /**
      * Gets the value of the author property.
-     *
+     * 
      * @return
      *     possible object is
      *     {@link COCTMT500000UV04Author }
-     *
+     *     
      */
     public COCTMT500000UV04Author getAuthor() {
         return author;
@@ -294,11 +299,11 @@ public class COCTMT500000UV04PolicyOrAccount {
 
     /**
      * Sets the value of the author property.
-     *
+     * 
      * @param value
      *     allowed object is
      *     {@link COCTMT500000UV04Author }
-     *
+     *     
      */
     public void setAuthor(COCTMT500000UV04Author value) {
         this.author = value;
@@ -306,11 +311,11 @@ public class COCTMT500000UV04PolicyOrAccount {
 
     /**
      * Gets the value of the limitation property.
-     *
+     * 
      * @return
      *     possible object is
-     *     {@link javax.xml.bind.JAXBElement }{@code <}{@link COCTMT500000UV04Limitation }{@code >}
-     *
+     *     {@link JAXBElement }{@code <}{@link COCTMT500000UV04Limitation }{@code >}
+     *     
      */
     public JAXBElement<COCTMT500000UV04Limitation> getLimitation() {
         return limitation;
@@ -318,10 +323,10 @@ public class COCTMT500000UV04PolicyOrAccount {
 
     /**
      * Sets the value of the limitation property.
-     *
+     * 
      * @param value
      *     allowed object is
-     *     {@link javax.xml.bind.JAXBElement }{@code <}{@link COCTMT500000UV04Limitation }{@code >}
+     *     {@link JAXBElement }{@code <}{@link COCTMT500000UV04Limitation }{@code >}
      *     
      */
     public void setLimitation(JAXBElement<COCTMT500000UV04Limitation> value) {

@@ -1,10 +1,14 @@
 
 package ru.korus.tmis.ws.laboratory.bak.ws.server.model.hl7.complex;
 
-import javax.xml.bind.JAXBElement;
-import javax.xml.bind.annotation.*;
 import java.util.ArrayList;
 import java.util.List;
+import javax.xml.bind.JAXBElement;
+import javax.xml.bind.annotation.XmlAccessType;
+import javax.xml.bind.annotation.XmlAccessorType;
+import javax.xml.bind.annotation.XmlAttribute;
+import javax.xml.bind.annotation.XmlElementRef;
+import javax.xml.bind.annotation.XmlType;
 
 
 /**
@@ -319,8 +323,8 @@ public class COCTMT030000UV04Guardian {
      * 
      * @return
      *     possible object is
-     *     {@link javax.xml.bind.JAXBElement }{@code <}{@link COCTMT030202UV01Person }{@code >}
-     *
+     *     {@link JAXBElement }{@code <}{@link COCTMT030202UV01Person }{@code >}
+     *     
      */
     public JAXBElement<COCTMT030202UV01Person> getGuardianPerson() {
         return guardianPerson;
@@ -328,11 +332,11 @@ public class COCTMT030000UV04Guardian {
 
     /**
      * Sets the value of the guardianPerson property.
-     *
+     * 
      * @param value
      *     allowed object is
-     *     {@link javax.xml.bind.JAXBElement }{@code <}{@link COCTMT030202UV01Person }{@code >}
-     *
+     *     {@link JAXBElement }{@code <}{@link COCTMT030202UV01Person }{@code >}
+     *     
      */
     public void setGuardianPerson(JAXBElement<COCTMT030202UV01Person> value) {
         this.guardianPerson = value;
@@ -340,11 +344,11 @@ public class COCTMT030000UV04Guardian {
 
     /**
      * Gets the value of the guardianOrganization property.
-     *
+     * 
      * @return
      *     possible object is
-     *     {@link javax.xml.bind.JAXBElement }{@code <}{@link COCTMT150002UV01Organization }{@code >}
-     *
+     *     {@link JAXBElement }{@code <}{@link COCTMT150002UV01Organization }{@code >}
+     *     
      */
     public JAXBElement<COCTMT150002UV01Organization> getGuardianOrganization() {
         return guardianOrganization;
@@ -352,10 +356,10 @@ public class COCTMT030000UV04Guardian {
 
     /**
      * Sets the value of the guardianOrganization property.
-     *
+     * 
      * @param value
      *     allowed object is
-     *     {@link javax.xml.bind.JAXBElement }{@code <}{@link COCTMT150002UV01Organization }{@code >}
+     *     {@link JAXBElement }{@code <}{@link COCTMT150002UV01Organization }{@code >}
      *     
      */
     public void setGuardianOrganization(JAXBElement<COCTMT150002UV01Organization> value) {

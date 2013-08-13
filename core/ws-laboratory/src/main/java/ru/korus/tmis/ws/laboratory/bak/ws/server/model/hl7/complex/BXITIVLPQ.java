@@ -1,11 +1,11 @@
 
 package ru.korus.tmis.ws.laboratory.bak.ws.server.model.hl7.complex;
 
+import java.math.BigInteger;
 import javax.xml.bind.annotation.XmlAccessType;
 import javax.xml.bind.annotation.XmlAccessorType;
 import javax.xml.bind.annotation.XmlAttribute;
 import javax.xml.bind.annotation.XmlType;
-import java.math.BigInteger;
 
 
 /**
@@ -39,8 +39,8 @@ public class BXITIVLPQ
      * 
      * @return
      *     possible object is
-     *     {@link java.math.BigInteger }
-     *
+     *     {@link BigInteger }
+     *     
      */
     public BigInteger getQty() {
         if (qty == null) {
@@ -52,10 +52,10 @@ public class BXITIVLPQ
 
     /**
      * Sets the value of the qty property.
-     *
+     * 
      * @param value
      *     allowed object is
-     *     {@link java.math.BigInteger }
+     *     {@link BigInteger }
      *     
      */
     public void setQty(BigInteger value) {

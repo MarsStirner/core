@@ -1,10 +1,15 @@
 
 package ru.korus.tmis.ws.laboratory.bak.ws.server.model.hl7.complex;
 
-import javax.xml.bind.JAXBElement;
-import javax.xml.bind.annotation.*;
 import java.util.ArrayList;
 import java.util.List;
+import javax.xml.bind.JAXBElement;
+import javax.xml.bind.annotation.XmlAccessType;
+import javax.xml.bind.annotation.XmlAccessorType;
+import javax.xml.bind.annotation.XmlAttribute;
+import javax.xml.bind.annotation.XmlElement;
+import javax.xml.bind.annotation.XmlElementRef;
+import javax.xml.bind.annotation.XmlType;
 
 
 /**
@@ -663,8 +668,8 @@ public class COCTMT030000UV04NonPersonLivingSubject {
      * 
      * @return
      *     possible object is
-     *     {@link javax.xml.bind.JAXBElement }{@code <}{@link COCTMT500000UV04CoveredParty }{@code >}
-     *
+     *     {@link JAXBElement }{@code <}{@link COCTMT500000UV04CoveredParty }{@code >}
+     *     
      */
     public JAXBElement<COCTMT500000UV04CoveredParty> getAsCoveredParty() {
         return asCoveredParty;
@@ -672,11 +677,11 @@ public class COCTMT030000UV04NonPersonLivingSubject {
 
     /**
      * Sets the value of the asCoveredParty property.
-     *
+     * 
      * @param value
      *     allowed object is
-     *     {@link javax.xml.bind.JAXBElement }{@code <}{@link COCTMT500000UV04CoveredParty }{@code >}
-     *
+     *     {@link JAXBElement }{@code <}{@link COCTMT500000UV04CoveredParty }{@code >}
+     *     
      */
     public void setAsCoveredParty(JAXBElement<COCTMT500000UV04CoveredParty> value) {
         this.asCoveredParty = value;
@@ -684,25 +689,25 @@ public class COCTMT030000UV04NonPersonLivingSubject {
 
     /**
      * Gets the value of the contactParty property.
-     *
+     * 
      * <p>
      * This accessor method returns a reference to the live list,
      * not a snapshot. Therefore any modification you make to the
      * returned list will be present inside the JAXB object.
      * This is why there is not a <CODE>set</CODE> method for the contactParty property.
-     *
+     * 
      * <p>
      * For example, to add a new item, do as follows:
      * <pre>
      *    getContactParty().add(newItem);
      * </pre>
-     *
-     *
+     * 
+     * 
      * <p>
      * Objects of the following type(s) are allowed in the list
      * {@link COCTMT030000UV04ContactParty }
-     *
-     *
+     * 
+     * 
      */
     public List<COCTMT030000UV04ContactParty> getContactParty() {
         if (contactParty == null) {
@@ -713,25 +718,25 @@ public class COCTMT030000UV04NonPersonLivingSubject {
 
     /**
      * Gets the value of the guardian property.
-     *
+     * 
      * <p>
      * This accessor method returns a reference to the live list,
      * not a snapshot. Therefore any modification you make to the
      * returned list will be present inside the JAXB object.
      * This is why there is not a <CODE>set</CODE> method for the guardian property.
-     *
+     * 
      * <p>
      * For example, to add a new item, do as follows:
      * <pre>
      *    getGuardian().add(newItem);
      * </pre>
-     *
-     *
+     * 
+     * 
      * <p>
      * Objects of the following type(s) are allowed in the list
      * {@link COCTMT030000UV04Guardian }
-     *
-     *
+     * 
+     * 
      */
     public List<COCTMT030000UV04Guardian> getGuardian() {
         if (guardian == null) {
@@ -742,25 +747,25 @@ public class COCTMT030000UV04NonPersonLivingSubject {
 
     /**
      * Gets the value of the guarantor property.
-     *
+     * 
      * <p>
      * This accessor method returns a reference to the live list,
      * not a snapshot. Therefore any modification you make to the
      * returned list will be present inside the JAXB object.
      * This is why there is not a <CODE>set</CODE> method for the guarantor property.
-     *
+     * 
      * <p>
      * For example, to add a new item, do as follows:
      * <pre>
      *    getGuarantor().add(newItem);
      * </pre>
-     *
-     *
+     * 
+     * 
      * <p>
      * Objects of the following type(s) are allowed in the list
      * {@link COCTMT030000UV04Guarantor }
-     *
-     *
+     * 
+     * 
      */
     public List<COCTMT030000UV04Guarantor> getGuarantor() {
         if (guarantor == null) {
@@ -771,11 +776,11 @@ public class COCTMT030000UV04NonPersonLivingSubject {
 
     /**
      * Gets the value of the birthPlace property.
-     *
+     * 
      * @return
      *     possible object is
-     *     {@link javax.xml.bind.JAXBElement }{@code <}{@link COCTMT030000UV04BirthPlace }{@code >}
-     *
+     *     {@link JAXBElement }{@code <}{@link COCTMT030000UV04BirthPlace }{@code >}
+     *     
      */
     public JAXBElement<COCTMT030000UV04BirthPlace> getBirthPlace() {
         return birthPlace;
@@ -783,10 +788,10 @@ public class COCTMT030000UV04NonPersonLivingSubject {
 
     /**
      * Sets the value of the birthPlace property.
-     *
+     * 
      * @param value
      *     allowed object is
-     *     {@link javax.xml.bind.JAXBElement }{@code <}{@link COCTMT030000UV04BirthPlace }{@code >}
+     *     {@link JAXBElement }{@code <}{@link COCTMT030000UV04BirthPlace }{@code >}
      *     
      */
     public void setBirthPlace(JAXBElement<COCTMT030000UV04BirthPlace> value) {
