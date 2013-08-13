@@ -1,10 +1,14 @@
 
 package ru.korus.tmis.ws.laboratory.bak.ws.server.model.hl7.complex;
 
-import javax.xml.bind.JAXBElement;
-import javax.xml.bind.annotation.*;
 import java.util.ArrayList;
 import java.util.List;
+import javax.xml.bind.JAXBElement;
+import javax.xml.bind.annotation.XmlAccessType;
+import javax.xml.bind.annotation.XmlAccessorType;
+import javax.xml.bind.annotation.XmlAttribute;
+import javax.xml.bind.annotation.XmlElementRef;
+import javax.xml.bind.annotation.XmlType;
 
 
 /**
@@ -145,8 +149,8 @@ public class COCTMT530000UVConsumable {
      * 
      * @return
      *     possible object is
-     *     {@link javax.xml.bind.JAXBElement }{@code <}{@link COCTMT530000UVAdministerableMaterial }{@code >}
-     *
+     *     {@link JAXBElement }{@code <}{@link COCTMT530000UVAdministerableMaterial }{@code >}
+     *     
      */
     public JAXBElement<COCTMT530000UVAdministerableMaterial> getAdministerableMaterial() {
         return administerableMaterial;
@@ -154,11 +158,11 @@ public class COCTMT530000UVConsumable {
 
     /**
      * Sets the value of the administerableMaterial property.
-     *
+     * 
      * @param value
      *     allowed object is
-     *     {@link javax.xml.bind.JAXBElement }{@code <}{@link COCTMT530000UVAdministerableMaterial }{@code >}
-     *
+     *     {@link JAXBElement }{@code <}{@link COCTMT530000UVAdministerableMaterial }{@code >}
+     *     
      */
     public void setAdministerableMaterial(JAXBElement<COCTMT530000UVAdministerableMaterial> value) {
         this.administerableMaterial = value;
@@ -166,11 +170,11 @@ public class COCTMT530000UVConsumable {
 
     /**
      * Gets the value of the medication property.
-     *
+     * 
      * @return
      *     possible object is
-     *     {@link javax.xml.bind.JAXBElement }{@code <}{@link COCTMT230100UVMedication }{@code >}
-     *
+     *     {@link JAXBElement }{@code <}{@link COCTMT230100UVMedication }{@code >}
+     *     
      */
     public JAXBElement<COCTMT230100UVMedication> getMedication() {
         return medication;
@@ -178,10 +182,10 @@ public class COCTMT530000UVConsumable {
 
     /**
      * Sets the value of the medication property.
-     *
+     * 
      * @param value
      *     allowed object is
-     *     {@link javax.xml.bind.JAXBElement }{@code <}{@link COCTMT230100UVMedication }{@code >}
+     *     {@link JAXBElement }{@code <}{@link COCTMT230100UVMedication }{@code >}
      *     
      */
     public void setMedication(JAXBElement<COCTMT230100UVMedication> value) {

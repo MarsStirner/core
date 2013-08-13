@@ -1,10 +1,14 @@
 
 package ru.korus.tmis.ws.laboratory.bak.ws.server.model.hl7.complex;
 
-import javax.xml.bind.JAXBElement;
-import javax.xml.bind.annotation.*;
 import java.util.ArrayList;
 import java.util.List;
+import javax.xml.bind.JAXBElement;
+import javax.xml.bind.annotation.XmlAccessType;
+import javax.xml.bind.annotation.XmlAccessorType;
+import javax.xml.bind.annotation.XmlAttribute;
+import javax.xml.bind.annotation.XmlElementRef;
+import javax.xml.bind.annotation.XmlType;
 
 
 /**
@@ -172,8 +176,8 @@ public class COCTMT080000UVProduct {
      * 
      * @return
      *     possible object is
-     *     {@link javax.xml.bind.JAXBElement }{@code <}{@link COCTMT080000UVProcess }{@code >}
-     *
+     *     {@link JAXBElement }{@code <}{@link COCTMT080000UVProcess }{@code >}
+     *     
      */
     public JAXBElement<COCTMT080000UVProcess> getProcess() {
         return process;
@@ -181,11 +185,11 @@ public class COCTMT080000UVProduct {
 
     /**
      * Sets the value of the process property.
-     *
+     * 
      * @param value
      *     allowed object is
-     *     {@link javax.xml.bind.JAXBElement }{@code <}{@link COCTMT080000UVProcess }{@code >}
-     *
+     *     {@link JAXBElement }{@code <}{@link COCTMT080000UVProcess }{@code >}
+     *     
      */
     public void setProcess(JAXBElement<COCTMT080000UVProcess> value) {
         this.process = value;
@@ -193,11 +197,11 @@ public class COCTMT080000UVProduct {
 
     /**
      * Gets the value of the actRef property.
-     *
+     * 
      * @return
      *     possible object is
-     *     {@link javax.xml.bind.JAXBElement }{@code <}{@link COCTMT080000UVActRef }{@code >}
-     *
+     *     {@link JAXBElement }{@code <}{@link COCTMT080000UVActRef }{@code >}
+     *     
      */
     public JAXBElement<COCTMT080000UVActRef> getActRef() {
         return actRef;
@@ -205,10 +209,10 @@ public class COCTMT080000UVProduct {
 
     /**
      * Sets the value of the actRef property.
-     *
+     * 
      * @param value
      *     allowed object is
-     *     {@link javax.xml.bind.JAXBElement }{@code <}{@link COCTMT080000UVActRef }{@code >}
+     *     {@link JAXBElement }{@code <}{@link COCTMT080000UVActRef }{@code >}
      *     
      */
     public void setActRef(JAXBElement<COCTMT080000UVActRef> value) {

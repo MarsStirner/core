@@ -1,16 +1,22 @@
+
 package ru.korus.tmis.ws.laboratory.bak.ws.server.model.hl7.complex;
 
-import javax.xml.bind.JAXBElement;
-import javax.xml.bind.annotation.*;
 import java.util.ArrayList;
 import java.util.List;
+import javax.xml.bind.JAXBElement;
+import javax.xml.bind.annotation.XmlAccessType;
+import javax.xml.bind.annotation.XmlAccessorType;
+import javax.xml.bind.annotation.XmlAttribute;
+import javax.xml.bind.annotation.XmlElement;
+import javax.xml.bind.annotation.XmlElementRef;
+import javax.xml.bind.annotation.XmlType;
 
 
 /**
  * <p>Java class for MCCI_MT000200UV01.Device complex type.
- *
+ * 
  * <p>The following schema fragment specifies the expected content contained within this class.
- *
+ * 
  * <pre>
  * &lt;complexType name="MCCI_MT000200UV01.Device">
  *   &lt;complexContent>
@@ -35,8 +41,8 @@ import java.util.List;
  *   &lt;/complexContent>
  * &lt;/complexType>
  * </pre>
- *
- *
+ * 
+ * 
  */
 @XmlAccessorType(XmlAccessType.FIELD)
 @XmlType(name = "MCCI_MT000200UV01.Device", propOrder = {
@@ -79,25 +85,25 @@ public class MCCIMT000200UV01Device {
 
     /**
      * Gets the value of the realmCode property.
-     *
+     * 
      * <p>
      * This accessor method returns a reference to the live list,
      * not a snapshot. Therefore any modification you make to the
      * returned list will be present inside the JAXB object.
      * This is why there is not a <CODE>set</CODE> method for the realmCode property.
-     *
+     * 
      * <p>
      * For example, to add a new item, do as follows:
      * <pre>
      *    getRealmCode().add(newItem);
      * </pre>
-     *
-     *
+     * 
+     * 
      * <p>
      * Objects of the following type(s) are allowed in the list
      * {@link CS }
-     *
-     *
+     * 
+     * 
      */
     public List<CS> getRealmCode() {
         if (realmCode == null) {
@@ -108,11 +114,11 @@ public class MCCIMT000200UV01Device {
 
     /**
      * Gets the value of the typeId property.
-     *
+     * 
      * @return
      *     possible object is
      *     {@link II }
-     *
+     *     
      */
     public II getTypeId() {
         return typeId;
@@ -120,11 +126,11 @@ public class MCCIMT000200UV01Device {
 
     /**
      * Sets the value of the typeId property.
-     *
+     * 
      * @param value
      *     allowed object is
      *     {@link II }
-     *
+     *     
      */
     public void setTypeId(II value) {
         this.typeId = value;
@@ -132,25 +138,25 @@ public class MCCIMT000200UV01Device {
 
     /**
      * Gets the value of the templateId property.
-     *
+     * 
      * <p>
      * This accessor method returns a reference to the live list,
      * not a snapshot. Therefore any modification you make to the
      * returned list will be present inside the JAXB object.
      * This is why there is not a <CODE>set</CODE> method for the templateId property.
-     *
+     * 
      * <p>
      * For example, to add a new item, do as follows:
      * <pre>
      *    getTemplateId().add(newItem);
      * </pre>
-     *
-     *
+     * 
+     * 
      * <p>
      * Objects of the following type(s) are allowed in the list
      * {@link II }
-     *
-     *
+     * 
+     * 
      */
     public List<II> getTemplateId() {
         if (templateId == null) {
@@ -161,25 +167,25 @@ public class MCCIMT000200UV01Device {
 
     /**
      * Gets the value of the id property.
-     *
+     * 
      * <p>
      * This accessor method returns a reference to the live list,
      * not a snapshot. Therefore any modification you make to the
      * returned list will be present inside the JAXB object.
      * This is why there is not a <CODE>set</CODE> method for the id property.
-     *
+     * 
      * <p>
      * For example, to add a new item, do as follows:
      * <pre>
      *    getId().add(newItem);
      * </pre>
-     *
-     *
+     * 
+     * 
      * <p>
      * Objects of the following type(s) are allowed in the list
      * {@link II }
-     *
-     *
+     * 
+     * 
      */
     public List<II> getId() {
         if (id == null) {
@@ -190,25 +196,25 @@ public class MCCIMT000200UV01Device {
 
     /**
      * Gets the value of the name property.
-     *
+     * 
      * <p>
      * This accessor method returns a reference to the live list,
      * not a snapshot. Therefore any modification you make to the
      * returned list will be present inside the JAXB object.
      * This is why there is not a <CODE>set</CODE> method for the name property.
-     *
+     * 
      * <p>
      * For example, to add a new item, do as follows:
      * <pre>
      *    getName().add(newItem);
      * </pre>
-     *
-     *
+     * 
+     * 
      * <p>
      * Objects of the following type(s) are allowed in the list
      * {@link EN }
-     *
-     *
+     * 
+     * 
      */
     public List<EN> getName() {
         if (name == null) {
@@ -219,11 +225,11 @@ public class MCCIMT000200UV01Device {
 
     /**
      * Gets the value of the desc property.
-     *
+     * 
      * @return
      *     possible object is
      *     {@link ED }
-     *
+     *     
      */
     public ED getDesc() {
         return desc;
@@ -231,11 +237,11 @@ public class MCCIMT000200UV01Device {
 
     /**
      * Sets the value of the desc property.
-     *
+     * 
      * @param value
      *     allowed object is
      *     {@link ED }
-     *
+     *     
      */
     public void setDesc(ED value) {
         this.desc = value;
@@ -243,11 +249,11 @@ public class MCCIMT000200UV01Device {
 
     /**
      * Gets the value of the existenceTime property.
-     *
+     * 
      * @return
      *     possible object is
      *     {@link IVLTS }
-     *
+     *     
      */
     public IVLTS getExistenceTime() {
         return existenceTime;
@@ -255,11 +261,11 @@ public class MCCIMT000200UV01Device {
 
     /**
      * Sets the value of the existenceTime property.
-     *
+     * 
      * @param value
      *     allowed object is
      *     {@link IVLTS }
-     *
+     *     
      */
     public void setExistenceTime(IVLTS value) {
         this.existenceTime = value;
@@ -267,25 +273,25 @@ public class MCCIMT000200UV01Device {
 
     /**
      * Gets the value of the telecom property.
-     *
+     * 
      * <p>
      * This accessor method returns a reference to the live list,
      * not a snapshot. Therefore any modification you make to the
      * returned list will be present inside the JAXB object.
      * This is why there is not a <CODE>set</CODE> method for the telecom property.
-     *
+     * 
      * <p>
      * For example, to add a new item, do as follows:
      * <pre>
      *    getTelecom().add(newItem);
      * </pre>
-     *
-     *
+     * 
+     * 
      * <p>
      * Objects of the following type(s) are allowed in the list
      * {@link TEL }
-     *
-     *
+     * 
+     * 
      */
     public List<TEL> getTelecom() {
         if (telecom == null) {
@@ -296,11 +302,11 @@ public class MCCIMT000200UV01Device {
 
     /**
      * Gets the value of the manufacturerModelName property.
-     *
+     * 
      * @return
      *     possible object is
      *     {@link SC }
-     *
+     *     
      */
     public SC getManufacturerModelName() {
         return manufacturerModelName;
@@ -308,11 +314,11 @@ public class MCCIMT000200UV01Device {
 
     /**
      * Sets the value of the manufacturerModelName property.
-     *
+     * 
      * @param value
      *     allowed object is
      *     {@link SC }
-     *
+     *     
      */
     public void setManufacturerModelName(SC value) {
         this.manufacturerModelName = value;
@@ -320,11 +326,11 @@ public class MCCIMT000200UV01Device {
 
     /**
      * Gets the value of the softwareName property.
-     *
+     * 
      * @return
      *     possible object is
      *     {@link SC }
-     *
+     *     
      */
     public SC getSoftwareName() {
         return softwareName;
@@ -332,11 +338,11 @@ public class MCCIMT000200UV01Device {
 
     /**
      * Sets the value of the softwareName property.
-     *
+     * 
      * @param value
      *     allowed object is
      *     {@link SC }
-     *
+     *     
      */
     public void setSoftwareName(SC value) {
         this.softwareName = value;
@@ -344,11 +350,11 @@ public class MCCIMT000200UV01Device {
 
     /**
      * Gets the value of the asAgent property.
-     *
+     * 
      * @return
      *     possible object is
      *     {@link JAXBElement }{@code <}{@link MCCIMT000200UV01Agent }{@code >}
-     *
+     *     
      */
     public JAXBElement<MCCIMT000200UV01Agent> getAsAgent() {
         return asAgent;
@@ -356,11 +362,11 @@ public class MCCIMT000200UV01Device {
 
     /**
      * Sets the value of the asAgent property.
-     *
+     * 
      * @param value
      *     allowed object is
      *     {@link JAXBElement }{@code <}{@link MCCIMT000200UV01Agent }{@code >}
-     *
+     *     
      */
     public void setAsAgent(JAXBElement<MCCIMT000200UV01Agent> value) {
         this.asAgent = value;
@@ -368,25 +374,25 @@ public class MCCIMT000200UV01Device {
 
     /**
      * Gets the value of the asLocatedEntity property.
-     *
+     * 
      * <p>
      * This accessor method returns a reference to the live list,
      * not a snapshot. Therefore any modification you make to the
      * returned list will be present inside the JAXB object.
      * This is why there is not a <CODE>set</CODE> method for the asLocatedEntity property.
-     *
+     * 
      * <p>
      * For example, to add a new item, do as follows:
      * <pre>
      *    getAsLocatedEntity().add(newItem);
      * </pre>
-     *
-     *
+     * 
+     * 
      * <p>
      * Objects of the following type(s) are allowed in the list
      * {@link MCCIMT000200UV01LocatedEntity }
-     *
-     *
+     * 
+     * 
      */
     public List<MCCIMT000200UV01LocatedEntity> getAsLocatedEntity() {
         if (asLocatedEntity == null) {
@@ -397,25 +403,25 @@ public class MCCIMT000200UV01Device {
 
     /**
      * Gets the value of the nullFlavor property.
-     *
+     * 
      * <p>
      * This accessor method returns a reference to the live list,
      * not a snapshot. Therefore any modification you make to the
      * returned list will be present inside the JAXB object.
      * This is why there is not a <CODE>set</CODE> method for the nullFlavor property.
-     *
+     * 
      * <p>
      * For example, to add a new item, do as follows:
      * <pre>
      *    getNullFlavor().add(newItem);
      * </pre>
-     *
-     *
+     * 
+     * 
      * <p>
      * Objects of the following type(s) are allowed in the list
      * {@link String }
-     *
-     *
+     * 
+     * 
      */
     public List<String> getNullFlavor() {
         if (nullFlavor == null) {
@@ -426,11 +432,11 @@ public class MCCIMT000200UV01Device {
 
     /**
      * Gets the value of the classCode property.
-     *
+     * 
      * @return
      *     possible object is
      *     {@link EntityClassDevice }
-     *
+     *     
      */
     public EntityClassDevice getClassCode() {
         return classCode;
@@ -438,11 +444,11 @@ public class MCCIMT000200UV01Device {
 
     /**
      * Sets the value of the classCode property.
-     *
+     * 
      * @param value
      *     allowed object is
      *     {@link EntityClassDevice }
-     *
+     *     
      */
     public void setClassCode(EntityClassDevice value) {
         this.classCode = value;
@@ -450,11 +456,11 @@ public class MCCIMT000200UV01Device {
 
     /**
      * Gets the value of the determinerCode property.
-     *
+     * 
      * @return
      *     possible object is
      *     {@link String }
-     *
+     *     
      */
     public String getDeterminerCode() {
         if (determinerCode == null) {
@@ -466,11 +472,11 @@ public class MCCIMT000200UV01Device {
 
     /**
      * Sets the value of the determinerCode property.
-     *
+     * 
      * @param value
      *     allowed object is
      *     {@link String }
-     *
+     *     
      */
     public void setDeterminerCode(String value) {
         this.determinerCode = value;

@@ -1,10 +1,14 @@
 
 package ru.korus.tmis.ws.laboratory.bak.ws.server.model.hl7.complex;
 
-import javax.xml.bind.JAXBElement;
-import javax.xml.bind.annotation.*;
 import java.util.ArrayList;
 import java.util.List;
+import javax.xml.bind.JAXBElement;
+import javax.xml.bind.annotation.XmlAccessType;
+import javax.xml.bind.annotation.XmlAccessorType;
+import javax.xml.bind.annotation.XmlAttribute;
+import javax.xml.bind.annotation.XmlElementRef;
+import javax.xml.bind.annotation.XmlType;
 
 
 /**
@@ -228,8 +232,8 @@ public class COCTMT530000UVComponent {
      * 
      * @return
      *     possible object is
-     *     {@link javax.xml.bind.JAXBElement }{@code <}{@link COCTMT530000UVObservation }{@code >}
-     *
+     *     {@link JAXBElement }{@code <}{@link COCTMT530000UVObservation }{@code >}
+     *     
      */
     public JAXBElement<COCTMT530000UVObservation> getObservation() {
         return observation;
@@ -237,11 +241,11 @@ public class COCTMT530000UVComponent {
 
     /**
      * Sets the value of the observation property.
-     *
+     * 
      * @param value
      *     allowed object is
-     *     {@link javax.xml.bind.JAXBElement }{@code <}{@link COCTMT530000UVObservation }{@code >}
-     *
+     *     {@link JAXBElement }{@code <}{@link COCTMT530000UVObservation }{@code >}
+     *     
      */
     public void setObservation(JAXBElement<COCTMT530000UVObservation> value) {
         this.observation = value;
@@ -249,11 +253,11 @@ public class COCTMT530000UVComponent {
 
     /**
      * Gets the value of the substanceAdministration property.
-     *
+     * 
      * @return
      *     possible object is
-     *     {@link javax.xml.bind.JAXBElement }{@code <}{@link COCTMT530000UVSubstanceAdministration }{@code >}
-     *
+     *     {@link JAXBElement }{@code <}{@link COCTMT530000UVSubstanceAdministration }{@code >}
+     *     
      */
     public JAXBElement<COCTMT530000UVSubstanceAdministration> getSubstanceAdministration() {
         return substanceAdministration;
@@ -261,11 +265,11 @@ public class COCTMT530000UVComponent {
 
     /**
      * Sets the value of the substanceAdministration property.
-     *
+     * 
      * @param value
      *     allowed object is
-     *     {@link javax.xml.bind.JAXBElement }{@code <}{@link COCTMT530000UVSubstanceAdministration }{@code >}
-     *
+     *     {@link JAXBElement }{@code <}{@link COCTMT530000UVSubstanceAdministration }{@code >}
+     *     
      */
     public void setSubstanceAdministration(JAXBElement<COCTMT530000UVSubstanceAdministration> value) {
         this.substanceAdministration = value;
@@ -273,11 +277,11 @@ public class COCTMT530000UVComponent {
 
     /**
      * Gets the value of the supply property.
-     *
+     * 
      * @return
      *     possible object is
-     *     {@link javax.xml.bind.JAXBElement }{@code <}{@link COCTMT530000UVSupply }{@code >}
-     *
+     *     {@link JAXBElement }{@code <}{@link COCTMT530000UVSupply }{@code >}
+     *     
      */
     public JAXBElement<COCTMT530000UVSupply> getSupply() {
         return supply;
@@ -285,11 +289,11 @@ public class COCTMT530000UVComponent {
 
     /**
      * Sets the value of the supply property.
-     *
+     * 
      * @param value
      *     allowed object is
-     *     {@link javax.xml.bind.JAXBElement }{@code <}{@link COCTMT530000UVSupply }{@code >}
-     *
+     *     {@link JAXBElement }{@code <}{@link COCTMT530000UVSupply }{@code >}
+     *     
      */
     public void setSupply(JAXBElement<COCTMT530000UVSupply> value) {
         this.supply = value;
@@ -297,11 +301,11 @@ public class COCTMT530000UVComponent {
 
     /**
      * Gets the value of the procedure property.
-     *
+     * 
      * @return
      *     possible object is
-     *     {@link javax.xml.bind.JAXBElement }{@code <}{@link COCTMT530000UVProcedure }{@code >}
-     *
+     *     {@link JAXBElement }{@code <}{@link COCTMT530000UVProcedure }{@code >}
+     *     
      */
     public JAXBElement<COCTMT530000UVProcedure> getProcedure() {
         return procedure;
@@ -309,11 +313,11 @@ public class COCTMT530000UVComponent {
 
     /**
      * Sets the value of the procedure property.
-     *
+     * 
      * @param value
      *     allowed object is
-     *     {@link javax.xml.bind.JAXBElement }{@code <}{@link COCTMT530000UVProcedure }{@code >}
-     *
+     *     {@link JAXBElement }{@code <}{@link COCTMT530000UVProcedure }{@code >}
+     *     
      */
     public void setProcedure(JAXBElement<COCTMT530000UVProcedure> value) {
         this.procedure = value;
@@ -321,11 +325,11 @@ public class COCTMT530000UVComponent {
 
     /**
      * Gets the value of the encounter property.
-     *
+     * 
      * @return
      *     possible object is
-     *     {@link javax.xml.bind.JAXBElement }{@code <}{@link COCTMT530000UVEncounter }{@code >}
-     *
+     *     {@link JAXBElement }{@code <}{@link COCTMT530000UVEncounter }{@code >}
+     *     
      */
     public JAXBElement<COCTMT530000UVEncounter> getEncounter() {
         return encounter;
@@ -333,11 +337,11 @@ public class COCTMT530000UVComponent {
 
     /**
      * Sets the value of the encounter property.
-     *
+     * 
      * @param value
      *     allowed object is
-     *     {@link javax.xml.bind.JAXBElement }{@code <}{@link COCTMT530000UVEncounter }{@code >}
-     *
+     *     {@link JAXBElement }{@code <}{@link COCTMT530000UVEncounter }{@code >}
+     *     
      */
     public void setEncounter(JAXBElement<COCTMT530000UVEncounter> value) {
         this.encounter = value;
@@ -345,11 +349,11 @@ public class COCTMT530000UVComponent {
 
     /**
      * Gets the value of the act property.
-     *
+     * 
      * @return
      *     possible object is
-     *     {@link javax.xml.bind.JAXBElement }{@code <}{@link COCTMT530000UVAct }{@code >}
-     *
+     *     {@link JAXBElement }{@code <}{@link COCTMT530000UVAct }{@code >}
+     *     
      */
     public JAXBElement<COCTMT530000UVAct> getAct() {
         return act;
@@ -357,11 +361,11 @@ public class COCTMT530000UVComponent {
 
     /**
      * Sets the value of the act property.
-     *
+     * 
      * @param value
      *     allowed object is
-     *     {@link javax.xml.bind.JAXBElement }{@code <}{@link COCTMT530000UVAct }{@code >}
-     *
+     *     {@link JAXBElement }{@code <}{@link COCTMT530000UVAct }{@code >}
+     *     
      */
     public void setAct(JAXBElement<COCTMT530000UVAct> value) {
         this.act = value;
@@ -369,11 +373,11 @@ public class COCTMT530000UVComponent {
 
     /**
      * Gets the value of the organizer property.
-     *
+     * 
      * @return
      *     possible object is
-     *     {@link javax.xml.bind.JAXBElement }{@code <}{@link COCTMT530000UVOrganizer }{@code >}
-     *
+     *     {@link JAXBElement }{@code <}{@link COCTMT530000UVOrganizer }{@code >}
+     *     
      */
     public JAXBElement<COCTMT530000UVOrganizer> getOrganizer() {
         return organizer;
@@ -381,11 +385,11 @@ public class COCTMT530000UVComponent {
 
     /**
      * Sets the value of the organizer property.
-     *
+     * 
      * @param value
      *     allowed object is
-     *     {@link javax.xml.bind.JAXBElement }{@code <}{@link COCTMT530000UVOrganizer }{@code >}
-     *
+     *     {@link JAXBElement }{@code <}{@link COCTMT530000UVOrganizer }{@code >}
+     *     
      */
     public void setOrganizer(JAXBElement<COCTMT530000UVOrganizer> value) {
         this.organizer = value;
@@ -393,11 +397,11 @@ public class COCTMT530000UVComponent {
 
     /**
      * Gets the value of the actReference property.
-     *
+     * 
      * @return
      *     possible object is
-     *     {@link javax.xml.bind.JAXBElement }{@code <}{@link COCTMT530000UVActReference }{@code >}
-     *
+     *     {@link JAXBElement }{@code <}{@link COCTMT530000UVActReference }{@code >}
+     *     
      */
     public JAXBElement<COCTMT530000UVActReference> getActReference() {
         return actReference;
@@ -405,10 +409,10 @@ public class COCTMT530000UVComponent {
 
     /**
      * Sets the value of the actReference property.
-     *
+     * 
      * @param value
      *     allowed object is
-     *     {@link javax.xml.bind.JAXBElement }{@code <}{@link COCTMT530000UVActReference }{@code >}
+     *     {@link JAXBElement }{@code <}{@link COCTMT530000UVActReference }{@code >}
      *     
      */
     public void setActReference(JAXBElement<COCTMT530000UVActReference> value) {

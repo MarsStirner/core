@@ -1,10 +1,14 @@
 
 package ru.korus.tmis.ws.laboratory.bak.ws.server.model.hl7.complex;
 
-import javax.xml.bind.annotation.*;
 import java.math.BigInteger;
 import java.util.ArrayList;
 import java.util.List;
+import javax.xml.bind.annotation.XmlAccessType;
+import javax.xml.bind.annotation.XmlAccessorType;
+import javax.xml.bind.annotation.XmlElement;
+import javax.xml.bind.annotation.XmlList;
+import javax.xml.bind.annotation.XmlType;
 
 
 /**
@@ -112,7 +116,7 @@ public class SLISTPQ
      * 
      * <p>
      * Objects of the following type(s) are allowed in the list
-     * {@link java.math.BigInteger }
+     * {@link BigInteger }
      * 
      * 
      */

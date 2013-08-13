@@ -1,10 +1,14 @@
 
 package ru.korus.tmis.ws.laboratory.bak.ws.server.model.hl7.complex;
 
-import javax.xml.bind.JAXBElement;
-import javax.xml.bind.annotation.*;
 import java.util.ArrayList;
 import java.util.List;
+import javax.xml.bind.JAXBElement;
+import javax.xml.bind.annotation.XmlAccessType;
+import javax.xml.bind.annotation.XmlAccessorType;
+import javax.xml.bind.annotation.XmlAttribute;
+import javax.xml.bind.annotation.XmlElementRef;
+import javax.xml.bind.annotation.XmlType;
 
 
 /**
@@ -178,8 +182,8 @@ public class COCTMT530000UVManufacturedProduct {
      * 
      * @return
      *     possible object is
-     *     {@link javax.xml.bind.JAXBElement }{@code <}{@link COCTMT530000UVLabeledDrug }{@code >}
-     *
+     *     {@link JAXBElement }{@code <}{@link COCTMT530000UVLabeledDrug }{@code >}
+     *     
      */
     public JAXBElement<COCTMT530000UVLabeledDrug> getManufacturedLabeledDrug() {
         return manufacturedLabeledDrug;
@@ -187,11 +191,11 @@ public class COCTMT530000UVManufacturedProduct {
 
     /**
      * Sets the value of the manufacturedLabeledDrug property.
-     *
+     * 
      * @param value
      *     allowed object is
-     *     {@link javax.xml.bind.JAXBElement }{@code <}{@link COCTMT530000UVLabeledDrug }{@code >}
-     *
+     *     {@link JAXBElement }{@code <}{@link COCTMT530000UVLabeledDrug }{@code >}
+     *     
      */
     public void setManufacturedLabeledDrug(JAXBElement<COCTMT530000UVLabeledDrug> value) {
         this.manufacturedLabeledDrug = value;
@@ -199,11 +203,11 @@ public class COCTMT530000UVManufacturedProduct {
 
     /**
      * Gets the value of the manufacturedMaterial property.
-     *
+     * 
      * @return
      *     possible object is
-     *     {@link javax.xml.bind.JAXBElement }{@code <}{@link COCTMT530000UVMaterial }{@code >}
-     *
+     *     {@link JAXBElement }{@code <}{@link COCTMT530000UVMaterial }{@code >}
+     *     
      */
     public JAXBElement<COCTMT530000UVMaterial> getManufacturedMaterial() {
         return manufacturedMaterial;
@@ -211,11 +215,11 @@ public class COCTMT530000UVManufacturedProduct {
 
     /**
      * Sets the value of the manufacturedMaterial property.
-     *
+     * 
      * @param value
      *     allowed object is
-     *     {@link javax.xml.bind.JAXBElement }{@code <}{@link COCTMT530000UVMaterial }{@code >}
-     *
+     *     {@link JAXBElement }{@code <}{@link COCTMT530000UVMaterial }{@code >}
+     *     
      */
     public void setManufacturedMaterial(JAXBElement<COCTMT530000UVMaterial> value) {
         this.manufacturedMaterial = value;
@@ -223,11 +227,11 @@ public class COCTMT530000UVManufacturedProduct {
 
     /**
      * Gets the value of the manufacturerOrganization property.
-     *
+     * 
      * @return
      *     possible object is
-     *     {@link javax.xml.bind.JAXBElement }{@code <}{@link COCTMT530000UVOrganization }{@code >}
-     *
+     *     {@link JAXBElement }{@code <}{@link COCTMT530000UVOrganization }{@code >}
+     *     
      */
     public JAXBElement<COCTMT530000UVOrganization> getManufacturerOrganization() {
         return manufacturerOrganization;
@@ -235,10 +239,10 @@ public class COCTMT530000UVManufacturedProduct {
 
     /**
      * Sets the value of the manufacturerOrganization property.
-     *
+     * 
      * @param value
      *     allowed object is
-     *     {@link javax.xml.bind.JAXBElement }{@code <}{@link COCTMT530000UVOrganization }{@code >}
+     *     {@link JAXBElement }{@code <}{@link COCTMT530000UVOrganization }{@code >}
      *     
      */
     public void setManufacturerOrganization(JAXBElement<COCTMT530000UVOrganization> value) {

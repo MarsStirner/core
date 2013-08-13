@@ -1,12 +1,14 @@
 package ru.korus.tmis.ws.laboratory.bak.ws.server.model;
 
-import ru.korus.tmis.ws.laboratory.bak.ws.server.model.hl7.complex.*;
+import ru.korus.tmis.ws.laboratory.bak.ws.server.model.hl7.complex.CE;
+import ru.korus.tmis.ws.laboratory.bak.ws.server.model.hl7.complex.II;
+import ru.korus.tmis.ws.laboratory.bak.ws.server.model.hl7.complex.ST;
+import ru.korus.tmis.ws.laboratory.bak.ws.server.model.hl7.complex.SXCMTS;
 
-import javax.xml.bind.JAXBElement;
-import javax.xml.bind.annotation.*;
-import java.util.List;
+import javax.xml.bind.annotation.XmlAccessType;
+import javax.xml.bind.annotation.XmlAccessorType;
+import javax.xml.bind.annotation.XmlType;
 
-import static ru.korus.tmis.ws.laboratory.bak.ws.server.model.hl7.HL7Specification.NAMESPACE;
 import static ru.korus.tmis.ws.laboratory.bak.ws.server.model.hl7.HL7Specification.ROOT_TAG;
 
 /**
@@ -20,11 +22,7 @@ import static ru.korus.tmis.ws.laboratory.bak.ws.server.model.hl7.HL7Specificati
         "code",
         "title",
         "effectiveTime",
-        "confidentialityCode",
-        "recordTarget",
-        "author",
-        "custodian",
-        "componentOf"
+        "confidentialityCode"
 })
 public class ResponseHL7 {
 
@@ -34,20 +32,5 @@ public class ResponseHL7 {
     protected ST title;
     protected SXCMTS effectiveTime;
     protected CE confidentialityCode;
-
-    @XmlElementRef(name = "recordTarget", namespace = NAMESPACE, type = JAXBElement.class, required = false)
-    protected JAXBElement<COCTMT530000UVRecordTarget> recordTarget;
-
-    @XmlElement
-    protected COCTMT290000UV06Author1 author;
-
-    @XmlElement(required = true, nillable = true)
-    protected MFMIMT700701UV01Custodian custodian;
-
-    @XmlElement(nillable = true)
-    protected List<COCTMT290000UV06Component1> componentOf;
-
-//    @XmlElementRef(name = "component", namespace = "urn:hl7-org:v3", type = JAXBElement.class, required = false)
-//    protected JAXBElement<COCTMT290000UV06Component2> component;
 
 }

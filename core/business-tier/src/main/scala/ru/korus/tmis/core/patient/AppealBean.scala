@@ -967,6 +967,16 @@ class AppealBean extends AppealBeanLocal
       new MonitoringInfoListData()
   }
 
+  def getSurgicalOperations(eventId: Int, authData: AuthData)  = {
+    val codes = asJavaSet(Set("operationName", "complicationName", "methodAnesthesia"))
+    val map = actionPropertyBean.getActionPropertiesByEventIdsAndActionPropertyTypeCodes(List(Integer.valueOf(eventId)), codes, Int.MaxValue)
+    if (map!=null && map.contains(Integer.valueOf(eventId)))
+      new SurgicalOperationsListData(map.get(Integer.valueOf(eventId)),
+                                     actionPropertyBean.getActionPropertiesByActionIdAndTypeTypeNames _)
+    else
+      new SurgicalOperationsListData()
+  }
+
   def setExecPersonForAppeal(id: Int, personId: Int, authData: AuthData, epst: ExecPersonSetType) = {
 
     var eventPerson : EventPerson = null

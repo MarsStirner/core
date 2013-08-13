@@ -1,10 +1,14 @@
 
 package ru.korus.tmis.ws.laboratory.bak.ws.server.model.hl7.complex;
 
-import javax.xml.bind.JAXBElement;
-import javax.xml.bind.annotation.*;
 import java.util.ArrayList;
 import java.util.List;
+import javax.xml.bind.JAXBElement;
+import javax.xml.bind.annotation.XmlAccessType;
+import javax.xml.bind.annotation.XmlAccessorType;
+import javax.xml.bind.annotation.XmlAttribute;
+import javax.xml.bind.annotation.XmlElementRef;
+import javax.xml.bind.annotation.XmlType;
 
 
 /**
@@ -163,8 +167,8 @@ public class COCTMT230100UVSpecializedKind {
      * 
      * @return
      *     possible object is
-     *     {@link javax.xml.bind.JAXBElement }{@code <}{@link COCTMT230100UVMedicineClass }{@code >}
-     *
+     *     {@link JAXBElement }{@code <}{@link COCTMT230100UVMedicineClass }{@code >}
+     *     
      */
     public JAXBElement<COCTMT230100UVMedicineClass> getGeneralizedMedicineClass() {
         return generalizedMedicineClass;
@@ -172,10 +176,10 @@ public class COCTMT230100UVSpecializedKind {
 
     /**
      * Sets the value of the generalizedMedicineClass property.
-     *
+     * 
      * @param value
      *     allowed object is
-     *     {@link javax.xml.bind.JAXBElement }{@code <}{@link COCTMT230100UVMedicineClass }{@code >}
+     *     {@link JAXBElement }{@code <}{@link COCTMT230100UVMedicineClass }{@code >}
      *     
      */
     public void setGeneralizedMedicineClass(JAXBElement<COCTMT230100UVMedicineClass> value) {

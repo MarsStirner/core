@@ -1,10 +1,14 @@
 
 package ru.korus.tmis.ws.laboratory.bak.ws.server.model.hl7.complex;
 
-import javax.xml.bind.JAXBElement;
-import javax.xml.bind.annotation.*;
 import java.util.ArrayList;
 import java.util.List;
+import javax.xml.bind.JAXBElement;
+import javax.xml.bind.annotation.XmlAccessType;
+import javax.xml.bind.annotation.XmlAccessorType;
+import javax.xml.bind.annotation.XmlAttribute;
+import javax.xml.bind.annotation.XmlElementRef;
+import javax.xml.bind.annotation.XmlType;
 
 
 /**
@@ -194,8 +198,8 @@ public class COCTMT530000UVHealthCareFacility {
      * 
      * @return
      *     possible object is
-     *     {@link javax.xml.bind.JAXBElement }{@code <}{@link COCTMT530000UVPlace }{@code >}
-     *
+     *     {@link JAXBElement }{@code <}{@link COCTMT530000UVPlace }{@code >}
+     *     
      */
     public JAXBElement<COCTMT530000UVPlace> getLocation() {
         return location;
@@ -203,11 +207,11 @@ public class COCTMT530000UVHealthCareFacility {
 
     /**
      * Sets the value of the location property.
-     *
+     * 
      * @param value
      *     allowed object is
-     *     {@link javax.xml.bind.JAXBElement }{@code <}{@link COCTMT530000UVPlace }{@code >}
-     *
+     *     {@link JAXBElement }{@code <}{@link COCTMT530000UVPlace }{@code >}
+     *     
      */
     public void setLocation(JAXBElement<COCTMT530000UVPlace> value) {
         this.location = value;
@@ -215,11 +219,11 @@ public class COCTMT530000UVHealthCareFacility {
 
     /**
      * Gets the value of the serviceProviderOrganization property.
-     *
+     * 
      * @return
      *     possible object is
-     *     {@link javax.xml.bind.JAXBElement }{@code <}{@link COCTMT530000UVOrganization }{@code >}
-     *
+     *     {@link JAXBElement }{@code <}{@link COCTMT530000UVOrganization }{@code >}
+     *     
      */
     public JAXBElement<COCTMT530000UVOrganization> getServiceProviderOrganization() {
         return serviceProviderOrganization;
@@ -227,10 +231,10 @@ public class COCTMT530000UVHealthCareFacility {
 
     /**
      * Sets the value of the serviceProviderOrganization property.
-     *
+     * 
      * @param value
      *     allowed object is
-     *     {@link javax.xml.bind.JAXBElement }{@code <}{@link COCTMT530000UVOrganization }{@code >}
+     *     {@link JAXBElement }{@code <}{@link COCTMT530000UVOrganization }{@code >}
      *     
      */
     public void setServiceProviderOrganization(JAXBElement<COCTMT530000UVOrganization> value) {

@@ -1,5 +1,5 @@
-package ru.korus.tmis.ws.laboratory.bak.ws.server.model.hl7.complex;
 
+package ru.korus.tmis.ws.laboratory.bak.ws.server.model.hl7.complex;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -12,9 +12,9 @@ import javax.xml.bind.annotation.XmlType;
 
 /**
  * <p>Java class for MCCI_MT000200UV01.TargetMessage complex type.
- *
+ * 
  * <p>The following schema fragment specifies the expected content contained within this class.
- *
+ * 
  * <pre>
  * &lt;complexType name="MCCI_MT000200UV01.TargetMessage">
  *   &lt;complexContent>
@@ -29,8 +29,8 @@ import javax.xml.bind.annotation.XmlType;
  *   &lt;/complexContent>
  * &lt;/complexType>
  * </pre>
- *
- *
+ * 
+ * 
  */
 @XmlAccessorType(XmlAccessType.FIELD)
 @XmlType(name = "MCCI_MT000200UV01.TargetMessage", propOrder = {
@@ -51,25 +51,25 @@ public class MCCIMT000200UV01TargetMessage {
 
     /**
      * Gets the value of the realmCode property.
-     *
+     * 
      * <p>
      * This accessor method returns a reference to the live list,
      * not a snapshot. Therefore any modification you make to the
      * returned list will be present inside the JAXB object.
      * This is why there is not a <CODE>set</CODE> method for the realmCode property.
-     *
+     * 
      * <p>
      * For example, to add a new item, do as follows:
      * <pre>
      *    getRealmCode().add(newItem);
      * </pre>
-     *
-     *
+     * 
+     * 
      * <p>
      * Objects of the following type(s) are allowed in the list
      * {@link CS }
-     *
-     *
+     * 
+     * 
      */
     public List<CS> getRealmCode() {
         if (realmCode == null) {
@@ -80,11 +80,11 @@ public class MCCIMT000200UV01TargetMessage {
 
     /**
      * Gets the value of the typeId property.
-     *
+     * 
      * @return
      *     possible object is
      *     {@link II }
-     *
+     *     
      */
     public II getTypeId() {
         return typeId;
@@ -92,11 +92,11 @@ public class MCCIMT000200UV01TargetMessage {
 
     /**
      * Sets the value of the typeId property.
-     *
+     * 
      * @param value
      *     allowed object is
      *     {@link II }
-     *
+     *     
      */
     public void setTypeId(II value) {
         this.typeId = value;
@@ -104,25 +104,25 @@ public class MCCIMT000200UV01TargetMessage {
 
     /**
      * Gets the value of the templateId property.
-     *
+     * 
      * <p>
      * This accessor method returns a reference to the live list,
      * not a snapshot. Therefore any modification you make to the
      * returned list will be present inside the JAXB object.
      * This is why there is not a <CODE>set</CODE> method for the templateId property.
-     *
+     * 
      * <p>
      * For example, to add a new item, do as follows:
      * <pre>
      *    getTemplateId().add(newItem);
      * </pre>
-     *
-     *
+     * 
+     * 
      * <p>
      * Objects of the following type(s) are allowed in the list
      * {@link II }
-     *
-     *
+     * 
+     * 
      */
     public List<II> getTemplateId() {
         if (templateId == null) {
@@ -133,11 +133,11 @@ public class MCCIMT000200UV01TargetMessage {
 
     /**
      * Gets the value of the id property.
-     *
+     * 
      * @return
      *     possible object is
      *     {@link II }
-     *
+     *     
      */
     public II getId() {
         return id;
@@ -145,11 +145,11 @@ public class MCCIMT000200UV01TargetMessage {
 
     /**
      * Sets the value of the id property.
-     *
+     * 
      * @param value
      *     allowed object is
      *     {@link II }
-     *
+     *     
      */
     public void setId(II value) {
         this.id = value;
@@ -157,25 +157,25 @@ public class MCCIMT000200UV01TargetMessage {
 
     /**
      * Gets the value of the nullFlavor property.
-     *
+     * 
      * <p>
      * This accessor method returns a reference to the live list,
      * not a snapshot. Therefore any modification you make to the
      * returned list will be present inside the JAXB object.
      * This is why there is not a <CODE>set</CODE> method for the nullFlavor property.
-     *
+     * 
      * <p>
      * For example, to add a new item, do as follows:
      * <pre>
      *    getNullFlavor().add(newItem);
      * </pre>
-     *
-     *
+     * 
+     * 
      * <p>
      * Objects of the following type(s) are allowed in the list
      * {@link String }
-     *
-     *
+     * 
+     * 
      */
     public List<String> getNullFlavor() {
         if (nullFlavor == null) {

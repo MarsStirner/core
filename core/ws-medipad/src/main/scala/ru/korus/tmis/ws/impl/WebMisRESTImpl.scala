@@ -800,7 +800,19 @@ class WebMisRESTImpl  extends WebMisREST
           actionTypeBean.getActionTypeById(request.filter.asInstanceOf[ActionTypesListRequestDataFilter].getGroupId())
         } else if ( request.filter.asInstanceOf[ActionTypesListRequestDataFilter].getCode() != null  &&
                     request.filter.asInstanceOf[ActionTypesListRequestDataFilter].getCode().compareTo("") != 0) {
-          actionTypeBean.getActionTypeByCode(request.filter.asInstanceOf[ActionTypesListRequestDataFilter].getCode())
+          val types = actionTypeBean.getActionTypesByCode(request.filter.asInstanceOf[ActionTypesListRequestDataFilter].getCode())
+          if (types!=null && types.size()>0){
+            val mnems = request.filter.asInstanceOf[ActionTypesListRequestDataFilter].getMnemonics
+            types.find(p => {
+               if(mnems!=null && mnems.size()>0){
+                 val ress = mnems.find(mnem => mnem.compareTo(p.getMnemonic)==0).getOrElse(null)
+                 if (ress!=null)true else false
+               }
+               else {
+                 p.getMnemonic.compareTo("")==0
+               }
+            }).getOrElse(null)
+          }  else null
         } else null
 
         //empty action property
@@ -1209,6 +1221,10 @@ class WebMisRESTImpl  extends WebMisREST
 
   def getMonitoringInfoByAppeal(eventId: Int, condition: Int, authData: AuthData) = {
     appealBean.getMonitoringInfo(eventId, condition, authData)
+  }
+
+  def getSurgicalOperationsByAppeal(eventId: Int, authData: AuthData) = {
+    appealBean.getSurgicalOperations(eventId, authData)
   }
 
   def setExecPersonForAppeal(eventId: Int, personId: Int, authData: AuthData) = {

@@ -40,8 +40,8 @@ import javax.xml.bind.annotation.XmlType;
 @XmlAccessorType(XmlAccessType.FIELD)
 @XmlType(name = "CV")
 @XmlSeeAlso({
-    PQR.class,
     CS.class,
+    PQR.class,
     CO.class
 })
 public class CV

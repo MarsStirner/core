@@ -1,10 +1,15 @@
 
 package ru.korus.tmis.ws.laboratory.bak.ws.server.model.hl7.complex;
 
-import javax.xml.bind.JAXBElement;
-import javax.xml.bind.annotation.*;
 import java.util.ArrayList;
 import java.util.List;
+import javax.xml.bind.JAXBElement;
+import javax.xml.bind.annotation.XmlAccessType;
+import javax.xml.bind.annotation.XmlAccessorType;
+import javax.xml.bind.annotation.XmlAttribute;
+import javax.xml.bind.annotation.XmlElement;
+import javax.xml.bind.annotation.XmlElementRef;
+import javax.xml.bind.annotation.XmlType;
 
 
 /**
@@ -230,8 +235,8 @@ public class COCTMT080000UVHolder {
      * 
      * @return
      *     possible object is
-     *     {@link javax.xml.bind.JAXBElement }{@code <}{@link COCTMT080000UVContent4 }{@code >}
-     *
+     *     {@link JAXBElement }{@code <}{@link COCTMT080000UVContent4 }{@code >}
+     *     
      */
     public JAXBElement<COCTMT080000UVContent4> getAsContent() {
         return asContent;
@@ -239,11 +244,11 @@ public class COCTMT080000UVHolder {
 
     /**
      * Sets the value of the asContent property.
-     *
+     * 
      * @param value
      *     allowed object is
-     *     {@link javax.xml.bind.JAXBElement }{@code <}{@link COCTMT080000UVContent4 }{@code >}
-     *
+     *     {@link JAXBElement }{@code <}{@link COCTMT080000UVContent4 }{@code >}
+     *     
      */
     public void setAsContent(JAXBElement<COCTMT080000UVContent4> value) {
         this.asContent = value;
@@ -251,11 +256,11 @@ public class COCTMT080000UVHolder {
 
     /**
      * Gets the value of the asLocatedEntity property.
-     *
+     * 
      * @return
      *     possible object is
-     *     {@link javax.xml.bind.JAXBElement }{@code <}{@link COCTMT070000UV01LocatedEntity }{@code >}
-     *
+     *     {@link JAXBElement }{@code <}{@link COCTMT070000UV01LocatedEntity }{@code >}
+     *     
      */
     public JAXBElement<COCTMT070000UV01LocatedEntity> getAsLocatedEntity() {
         return asLocatedEntity;
@@ -263,10 +268,10 @@ public class COCTMT080000UVHolder {
 
     /**
      * Sets the value of the asLocatedEntity property.
-     *
+     * 
      * @param value
      *     allowed object is
-     *     {@link javax.xml.bind.JAXBElement }{@code <}{@link COCTMT070000UV01LocatedEntity }{@code >}
+     *     {@link JAXBElement }{@code <}{@link COCTMT070000UV01LocatedEntity }{@code >}
      *     
      */
     public void setAsLocatedEntity(JAXBElement<COCTMT070000UV01LocatedEntity> value) {

@@ -1,10 +1,14 @@
 
 package ru.korus.tmis.ws.laboratory.bak.ws.server.model.hl7.complex;
 
-import javax.xml.bind.JAXBElement;
-import javax.xml.bind.annotation.*;
 import java.util.ArrayList;
 import java.util.List;
+import javax.xml.bind.JAXBElement;
+import javax.xml.bind.annotation.XmlAccessType;
+import javax.xml.bind.annotation.XmlAccessorType;
+import javax.xml.bind.annotation.XmlAttribute;
+import javax.xml.bind.annotation.XmlElementRef;
+import javax.xml.bind.annotation.XmlType;
 
 
 /**
@@ -327,8 +331,8 @@ public class COCTMT090000UV01AssignedEntity {
      * 
      * @return
      *     possible object is
-     *     {@link javax.xml.bind.JAXBElement }{@code <}{@link COCTMT090000UV01Person }{@code >}
-     *
+     *     {@link JAXBElement }{@code <}{@link COCTMT090000UV01Person }{@code >}
+     *     
      */
     public JAXBElement<COCTMT090000UV01Person> getAssignedPerson() {
         return assignedPerson;
@@ -336,11 +340,11 @@ public class COCTMT090000UV01AssignedEntity {
 
     /**
      * Sets the value of the assignedPerson property.
-     *
+     * 
      * @param value
      *     allowed object is
-     *     {@link javax.xml.bind.JAXBElement }{@code <}{@link COCTMT090000UV01Person }{@code >}
-     *
+     *     {@link JAXBElement }{@code <}{@link COCTMT090000UV01Person }{@code >}
+     *     
      */
     public void setAssignedPerson(JAXBElement<COCTMT090000UV01Person> value) {
         this.assignedPerson = value;
@@ -348,11 +352,11 @@ public class COCTMT090000UV01AssignedEntity {
 
     /**
      * Gets the value of the assignedDevice property.
-     *
+     * 
      * @return
      *     possible object is
-     *     {@link javax.xml.bind.JAXBElement }{@code <}{@link COCTMT090000UV01Device }{@code >}
-     *
+     *     {@link JAXBElement }{@code <}{@link COCTMT090000UV01Device }{@code >}
+     *     
      */
     public JAXBElement<COCTMT090000UV01Device> getAssignedDevice() {
         return assignedDevice;
@@ -360,11 +364,11 @@ public class COCTMT090000UV01AssignedEntity {
 
     /**
      * Sets the value of the assignedDevice property.
-     *
+     * 
      * @param value
      *     allowed object is
-     *     {@link javax.xml.bind.JAXBElement }{@code <}{@link COCTMT090000UV01Device }{@code >}
-     *
+     *     {@link JAXBElement }{@code <}{@link COCTMT090000UV01Device }{@code >}
+     *     
      */
     public void setAssignedDevice(JAXBElement<COCTMT090000UV01Device> value) {
         this.assignedDevice = value;
@@ -372,11 +376,11 @@ public class COCTMT090000UV01AssignedEntity {
 
     /**
      * Gets the value of the assignedOrganization property.
-     *
+     * 
      * @return
      *     possible object is
-     *     {@link javax.xml.bind.JAXBElement }{@code <}{@link COCTMT090000UV01Organization }{@code >}
-     *
+     *     {@link JAXBElement }{@code <}{@link COCTMT090000UV01Organization }{@code >}
+     *     
      */
     public JAXBElement<COCTMT090000UV01Organization> getAssignedOrganization() {
         return assignedOrganization;
@@ -384,11 +388,11 @@ public class COCTMT090000UV01AssignedEntity {
 
     /**
      * Sets the value of the assignedOrganization property.
-     *
+     * 
      * @param value
      *     allowed object is
-     *     {@link javax.xml.bind.JAXBElement }{@code <}{@link COCTMT090000UV01Organization }{@code >}
-     *
+     *     {@link JAXBElement }{@code <}{@link COCTMT090000UV01Organization }{@code >}
+     *     
      */
     public void setAssignedOrganization(JAXBElement<COCTMT090000UV01Organization> value) {
         this.assignedOrganization = value;
@@ -396,11 +400,11 @@ public class COCTMT090000UV01AssignedEntity {
 
     /**
      * Gets the value of the representedOrganization property.
-     *
+     * 
      * @return
      *     possible object is
-     *     {@link javax.xml.bind.JAXBElement }{@code <}{@link COCTMT150000UV02Organization }{@code >}
-     *
+     *     {@link JAXBElement }{@code <}{@link COCTMT150000UV02Organization }{@code >}
+     *     
      */
     public JAXBElement<COCTMT150000UV02Organization> getRepresentedOrganization() {
         return representedOrganization;
@@ -408,10 +412,10 @@ public class COCTMT090000UV01AssignedEntity {
 
     /**
      * Sets the value of the representedOrganization property.
-     *
+     * 
      * @param value
      *     allowed object is
-     *     {@link javax.xml.bind.JAXBElement }{@code <}{@link COCTMT150000UV02Organization }{@code >}
+     *     {@link JAXBElement }{@code <}{@link COCTMT150000UV02Organization }{@code >}
      *     
      */
     public void setRepresentedOrganization(JAXBElement<COCTMT150000UV02Organization> value) {

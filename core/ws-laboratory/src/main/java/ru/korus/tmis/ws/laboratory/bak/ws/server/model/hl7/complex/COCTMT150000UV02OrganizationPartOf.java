@@ -1,10 +1,14 @@
 
 package ru.korus.tmis.ws.laboratory.bak.ws.server.model.hl7.complex;
 
-import javax.xml.bind.JAXBElement;
-import javax.xml.bind.annotation.*;
 import java.util.ArrayList;
 import java.util.List;
+import javax.xml.bind.JAXBElement;
+import javax.xml.bind.annotation.XmlAccessType;
+import javax.xml.bind.annotation.XmlAccessorType;
+import javax.xml.bind.annotation.XmlAttribute;
+import javax.xml.bind.annotation.XmlElementRef;
+import javax.xml.bind.annotation.XmlType;
 
 
 /**
@@ -249,8 +253,8 @@ public class COCTMT150000UV02OrganizationPartOf {
      * 
      * @return
      *     possible object is
-     *     {@link javax.xml.bind.JAXBElement }{@code <}{@link COCTMT150000UV02Organization }{@code >}
-     *
+     *     {@link JAXBElement }{@code <}{@link COCTMT150000UV02Organization }{@code >}
+     *     
      */
     public JAXBElement<COCTMT150000UV02Organization> getWholeOrganization() {
         return wholeOrganization;
@@ -258,10 +262,10 @@ public class COCTMT150000UV02OrganizationPartOf {
 
     /**
      * Sets the value of the wholeOrganization property.
-     *
+     * 
      * @param value
      *     allowed object is
-     *     {@link javax.xml.bind.JAXBElement }{@code <}{@link COCTMT150000UV02Organization }{@code >}
+     *     {@link JAXBElement }{@code <}{@link COCTMT150000UV02Organization }{@code >}
      *     
      */
     public void setWholeOrganization(JAXBElement<COCTMT150000UV02Organization> value) {

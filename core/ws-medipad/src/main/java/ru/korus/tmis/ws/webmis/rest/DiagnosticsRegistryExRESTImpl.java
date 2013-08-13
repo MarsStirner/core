@@ -77,7 +77,8 @@ public class DiagnosticsRegistryExRESTImpl {
                                                                      @QueryParam("filter[execPersonId]")int  execPersonId,
                                                                      @QueryParam("filter[statusId]")int  statusId,
                                                                      @QueryParam("filter[office]")String  office,
-                                                                     @QueryParam("filter[urgent]")Boolean  urgent) {
+                                                                     @QueryParam("filter[urgent]")Boolean  urgent,
+                                                                     @QueryParam("filter[class]")Short  clazz) {
 
         DirectoryInfoRESTImpl.ActionTypesSubType atst = DirectoryInfoRESTImpl.ActionTypesSubType.getType("laboratory");
         DiagnosticsListRequestDataFilter filter = new DiagnosticsListRequestDataFilter( diaTypeCode,
@@ -92,7 +93,8 @@ public class DiagnosticsRegistryExRESTImpl {
                 statusId,
                 (urgent==null) ? -1 : (urgent) ? 1 : 0,
                 atst.getSubType(),
-                atst.getMnemonic());
+                atst.getMnemonic(),
+                (clazz==null) ? -1 : clazz);
 
         DiagnosticsListRequestData requestData = new DiagnosticsListRequestData(sortingField, sortingMethod, limit, page, filter);
         return new JSONWithPadding(wsImpl.getListOfDiagnosticsForPatientByEvent(requestData),this.callback);
@@ -145,7 +147,8 @@ public class DiagnosticsRegistryExRESTImpl {
                                                              @QueryParam("filter[execPersonId]")int  execPersonId,
                                                              @QueryParam("filter[statusId]")int  statusId,
                                                              @QueryParam("filter[office]")String  office,
-                                                             @QueryParam("filter[urgent]")Boolean  urgent) {
+                                                             @QueryParam("filter[urgent]")Boolean  urgent,
+                                                             @QueryParam("filter[class]")Short  clazz) {
 
         DirectoryInfoRESTImpl.ActionTypesSubType atst = DirectoryInfoRESTImpl.ActionTypesSubType.getType("instrumental");
         DiagnosticsListRequestDataFilter filter = new DiagnosticsListRequestDataFilter( diaTypeCode,
@@ -160,7 +163,8 @@ public class DiagnosticsRegistryExRESTImpl {
                 statusId,
                 (urgent==null) ? -1 : (urgent) ? 1 : 0,
                 atst.getSubType(),
-                atst.getMnemonic());
+                atst.getMnemonic(),
+                (clazz==null) ? -1 : clazz);
 
         DiagnosticsListRequestData requestData = new DiagnosticsListRequestData(sortingField, sortingMethod, limit, page, filter);
         return new JSONWithPadding(wsImpl.getListOfDiagnosticsForPatientByEvent(requestData),this.callback);
@@ -213,7 +217,8 @@ public class DiagnosticsRegistryExRESTImpl {
                                                                @QueryParam("filter[execPersonId]")int  execPersonId,
                                                                @QueryParam("filter[statusId]")int  statusId,
                                                                @QueryParam("filter[office]")String  office,
-                                                               @QueryParam("filter[urgent]")Boolean  urgent) {
+                                                               @QueryParam("filter[urgent]")Boolean  urgent,
+                                                               @QueryParam("filter[class]")Short  clazz) {
 
         DirectoryInfoRESTImpl.ActionTypesSubType atst = DirectoryInfoRESTImpl.ActionTypesSubType.getType("consultations");
         DiagnosticsListRequestDataFilter filter = new DiagnosticsListRequestDataFilter( diaTypeCode,
@@ -228,7 +233,8 @@ public class DiagnosticsRegistryExRESTImpl {
                 statusId,
                 (urgent==null) ? -1 : (urgent) ? 1 : 0,
                 atst.getSubType(),
-                atst.getMnemonic());
+                atst.getMnemonic(),
+                (clazz==null) ? -1 : clazz);
 
         DiagnosticsListRequestData requestData = new DiagnosticsListRequestData(sortingField, sortingMethod, limit, page, filter);
         return new JSONWithPadding(wsImpl.getListOfDiagnosticsForPatientByEvent(requestData),this.callback);

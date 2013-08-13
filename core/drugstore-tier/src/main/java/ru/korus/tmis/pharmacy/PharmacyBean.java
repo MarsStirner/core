@@ -110,7 +110,7 @@ public class PharmacyBean implements PharmacyBeanLocal {
     @Override
     @Schedule(minute = "*/1", hour = "*")
     public void pooling() {
-        if (ConfigManager.isActive()) {
+        if (ConfigManager.Drugstore().isActive()) {
             logger.info("pooling... last modify date {}", getLastDate());
             try {
                 if (lastDateUpdate == null) {

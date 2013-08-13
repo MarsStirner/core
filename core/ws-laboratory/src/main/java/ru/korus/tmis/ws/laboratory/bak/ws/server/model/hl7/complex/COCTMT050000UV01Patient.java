@@ -1,10 +1,15 @@
 
 package ru.korus.tmis.ws.laboratory.bak.ws.server.model.hl7.complex;
 
-import javax.xml.bind.JAXBElement;
-import javax.xml.bind.annotation.*;
 import java.util.ArrayList;
 import java.util.List;
+import javax.xml.bind.JAXBElement;
+import javax.xml.bind.annotation.XmlAccessType;
+import javax.xml.bind.annotation.XmlAccessorType;
+import javax.xml.bind.annotation.XmlAttribute;
+import javax.xml.bind.annotation.XmlElement;
+import javax.xml.bind.annotation.XmlElementRef;
+import javax.xml.bind.annotation.XmlType;
 
 
 /**
@@ -352,8 +357,8 @@ public class COCTMT050000UV01Patient {
      * 
      * @return
      *     possible object is
-     *     {@link javax.xml.bind.JAXBElement }{@code <}{@link COCTMT030000UV04Person }{@code >}
-     *
+     *     {@link JAXBElement }{@code <}{@link COCTMT030000UV04Person }{@code >}
+     *     
      */
     public JAXBElement<COCTMT030000UV04Person> getPatientPerson() {
         return patientPerson;
@@ -361,11 +366,11 @@ public class COCTMT050000UV01Patient {
 
     /**
      * Sets the value of the patientPerson property.
-     *
+     * 
      * @param value
      *     allowed object is
-     *     {@link javax.xml.bind.JAXBElement }{@code <}{@link COCTMT030000UV04Person }{@code >}
-     *
+     *     {@link JAXBElement }{@code <}{@link COCTMT030000UV04Person }{@code >}
+     *     
      */
     public void setPatientPerson(JAXBElement<COCTMT030000UV04Person> value) {
         this.patientPerson = value;
@@ -373,11 +378,11 @@ public class COCTMT050000UV01Patient {
 
     /**
      * Gets the value of the patientNonPersonLivingSubject property.
-     *
+     * 
      * @return
      *     possible object is
-     *     {@link javax.xml.bind.JAXBElement }{@code <}{@link COCTMT030000UV04NonPersonLivingSubject }{@code >}
-     *
+     *     {@link JAXBElement }{@code <}{@link COCTMT030000UV04NonPersonLivingSubject }{@code >}
+     *     
      */
     public JAXBElement<COCTMT030000UV04NonPersonLivingSubject> getPatientNonPersonLivingSubject() {
         return patientNonPersonLivingSubject;
@@ -385,11 +390,11 @@ public class COCTMT050000UV01Patient {
 
     /**
      * Sets the value of the patientNonPersonLivingSubject property.
-     *
+     * 
      * @param value
      *     allowed object is
-     *     {@link javax.xml.bind.JAXBElement }{@code <}{@link COCTMT030000UV04NonPersonLivingSubject }{@code >}
-     *
+     *     {@link JAXBElement }{@code <}{@link COCTMT030000UV04NonPersonLivingSubject }{@code >}
+     *     
      */
     public void setPatientNonPersonLivingSubject(JAXBElement<COCTMT030000UV04NonPersonLivingSubject> value) {
         this.patientNonPersonLivingSubject = value;
@@ -397,11 +402,11 @@ public class COCTMT050000UV01Patient {
 
     /**
      * Gets the value of the providerOrganization property.
-     *
+     * 
      * @return
      *     possible object is
-     *     {@link javax.xml.bind.JAXBElement }{@code <}{@link COCTMT150000UV02Organization }{@code >}
-     *
+     *     {@link JAXBElement }{@code <}{@link COCTMT150000UV02Organization }{@code >}
+     *     
      */
     public JAXBElement<COCTMT150000UV02Organization> getProviderOrganization() {
         return providerOrganization;
@@ -409,10 +414,10 @@ public class COCTMT050000UV01Patient {
 
     /**
      * Sets the value of the providerOrganization property.
-     *
+     * 
      * @param value
      *     allowed object is
-     *     {@link javax.xml.bind.JAXBElement }{@code <}{@link COCTMT150000UV02Organization }{@code >}
+     *     {@link JAXBElement }{@code <}{@link COCTMT150000UV02Organization }{@code >}
      *     
      */
     public void setProviderOrganization(JAXBElement<COCTMT150000UV02Organization> value) {

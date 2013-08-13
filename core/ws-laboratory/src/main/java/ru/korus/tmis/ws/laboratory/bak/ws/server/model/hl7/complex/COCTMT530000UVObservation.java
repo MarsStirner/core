@@ -1,10 +1,15 @@
 
 package ru.korus.tmis.ws.laboratory.bak.ws.server.model.hl7.complex;
 
-import javax.xml.bind.JAXBElement;
-import javax.xml.bind.annotation.*;
 import java.util.ArrayList;
 import java.util.List;
+import javax.xml.bind.JAXBElement;
+import javax.xml.bind.annotation.XmlAccessType;
+import javax.xml.bind.annotation.XmlAccessorType;
+import javax.xml.bind.annotation.XmlAttribute;
+import javax.xml.bind.annotation.XmlElement;
+import javax.xml.bind.annotation.XmlElementRef;
+import javax.xml.bind.annotation.XmlType;
 
 
 /**
@@ -694,8 +699,8 @@ public class COCTMT530000UVObservation {
      * 
      * @return
      *     possible object is
-     *     {@link javax.xml.bind.JAXBElement }{@code <}{@link COCTMT530000UVRecordTarget }{@code >}
-     *
+     *     {@link JAXBElement }{@code <}{@link COCTMT530000UVRecordTarget }{@code >}
+     *     
      */
     public JAXBElement<COCTMT530000UVRecordTarget> getRecordTarget() {
         return recordTarget;
@@ -703,11 +708,11 @@ public class COCTMT530000UVObservation {
 
     /**
      * Sets the value of the recordTarget property.
-     *
+     * 
      * @param value
      *     allowed object is
-     *     {@link javax.xml.bind.JAXBElement }{@code <}{@link COCTMT530000UVRecordTarget }{@code >}
-     *
+     *     {@link JAXBElement }{@code <}{@link COCTMT530000UVRecordTarget }{@code >}
+     *     
      */
     public void setRecordTarget(JAXBElement<COCTMT530000UVRecordTarget> value) {
         this.recordTarget = value;
@@ -715,25 +720,25 @@ public class COCTMT530000UVObservation {
 
     /**
      * Gets the value of the responsibleParty property.
-     *
+     * 
      * <p>
      * This accessor method returns a reference to the live list,
      * not a snapshot. Therefore any modification you make to the
      * returned list will be present inside the JAXB object.
      * This is why there is not a <CODE>set</CODE> method for the responsibleParty property.
-     *
+     * 
      * <p>
      * For example, to add a new item, do as follows:
      * <pre>
      *    getResponsibleParty().add(newItem);
      * </pre>
-     *
-     *
+     * 
+     * 
      * <p>
      * Objects of the following type(s) are allowed in the list
      * {@link COCTMT530000UVResponsibleParty2 }
-     *
-     *
+     * 
+     * 
      */
     public List<COCTMT530000UVResponsibleParty2> getResponsibleParty() {
         if (responsibleParty == null) {
@@ -744,25 +749,25 @@ public class COCTMT530000UVObservation {
 
     /**
      * Gets the value of the performer property.
-     *
+     * 
      * <p>
      * This accessor method returns a reference to the live list,
      * not a snapshot. Therefore any modification you make to the
      * returned list will be present inside the JAXB object.
      * This is why there is not a <CODE>set</CODE> method for the performer property.
-     *
+     * 
      * <p>
      * For example, to add a new item, do as follows:
      * <pre>
      *    getPerformer().add(newItem);
      * </pre>
-     *
-     *
+     * 
+     * 
      * <p>
      * Objects of the following type(s) are allowed in the list
      * {@link COCTMT530000UVPerformer }
-     *
-     *
+     * 
+     * 
      */
     public List<COCTMT530000UVPerformer> getPerformer() {
         if (performer == null) {
@@ -773,25 +778,25 @@ public class COCTMT530000UVObservation {
 
     /**
      * Gets the value of the author property.
-     *
+     * 
      * <p>
      * This accessor method returns a reference to the live list,
      * not a snapshot. Therefore any modification you make to the
      * returned list will be present inside the JAXB object.
      * This is why there is not a <CODE>set</CODE> method for the author property.
-     *
+     * 
      * <p>
      * For example, to add a new item, do as follows:
      * <pre>
      *    getAuthor().add(newItem);
      * </pre>
-     *
-     *
+     * 
+     * 
      * <p>
      * Objects of the following type(s) are allowed in the list
      * {@link COCTMT530000UVAuthor }
-     *
-     *
+     * 
+     * 
      */
     public List<COCTMT530000UVAuthor> getAuthor() {
         if (author == null) {
@@ -802,11 +807,11 @@ public class COCTMT530000UVObservation {
 
     /**
      * Gets the value of the dataEnterer property.
-     *
+     * 
      * @return
      *     possible object is
-     *     {@link javax.xml.bind.JAXBElement }{@code <}{@link COCTMT530000UVDataEnterer }{@code >}
-     *
+     *     {@link JAXBElement }{@code <}{@link COCTMT530000UVDataEnterer }{@code >}
+     *     
      */
     public JAXBElement<COCTMT530000UVDataEnterer> getDataEnterer() {
         return dataEnterer;
@@ -814,11 +819,11 @@ public class COCTMT530000UVObservation {
 
     /**
      * Sets the value of the dataEnterer property.
-     *
+     * 
      * @param value
      *     allowed object is
-     *     {@link javax.xml.bind.JAXBElement }{@code <}{@link COCTMT530000UVDataEnterer }{@code >}
-     *
+     *     {@link JAXBElement }{@code <}{@link COCTMT530000UVDataEnterer }{@code >}
+     *     
      */
     public void setDataEnterer(JAXBElement<COCTMT530000UVDataEnterer> value) {
         this.dataEnterer = value;
@@ -826,25 +831,25 @@ public class COCTMT530000UVObservation {
 
     /**
      * Gets the value of the informant property.
-     *
+     * 
      * <p>
      * This accessor method returns a reference to the live list,
      * not a snapshot. Therefore any modification you make to the
      * returned list will be present inside the JAXB object.
      * This is why there is not a <CODE>set</CODE> method for the informant property.
-     *
+     * 
      * <p>
      * For example, to add a new item, do as follows:
      * <pre>
      *    getInformant().add(newItem);
      * </pre>
-     *
-     *
+     * 
+     * 
      * <p>
      * Objects of the following type(s) are allowed in the list
      * {@link COCTMT530000UVInformant }
-     *
-     *
+     * 
+     * 
      */
     public List<COCTMT530000UVInformant> getInformant() {
         if (informant == null) {
@@ -855,25 +860,25 @@ public class COCTMT530000UVObservation {
 
     /**
      * Gets the value of the verifier property.
-     *
+     * 
      * <p>
      * This accessor method returns a reference to the live list,
      * not a snapshot. Therefore any modification you make to the
      * returned list will be present inside the JAXB object.
      * This is why there is not a <CODE>set</CODE> method for the verifier property.
-     *
+     * 
      * <p>
      * For example, to add a new item, do as follows:
      * <pre>
      *    getVerifier().add(newItem);
      * </pre>
-     *
-     *
+     * 
+     * 
      * <p>
      * Objects of the following type(s) are allowed in the list
      * {@link COCTMT530000UVVerifier }
-     *
-     *
+     * 
+     * 
      */
     public List<COCTMT530000UVVerifier> getVerifier() {
         if (verifier == null) {
@@ -884,25 +889,25 @@ public class COCTMT530000UVObservation {
 
     /**
      * Gets the value of the location property.
-     *
+     * 
      * <p>
      * This accessor method returns a reference to the live list,
      * not a snapshot. Therefore any modification you make to the
      * returned list will be present inside the JAXB object.
      * This is why there is not a <CODE>set</CODE> method for the location property.
-     *
+     * 
      * <p>
      * For example, to add a new item, do as follows:
      * <pre>
      *    getLocation().add(newItem);
      * </pre>
-     *
-     *
+     * 
+     * 
      * <p>
      * Objects of the following type(s) are allowed in the list
      * {@link COCTMT530000UVLocation }
-     *
-     *
+     * 
+     * 
      */
     public List<COCTMT530000UVLocation> getLocation() {
         if (location == null) {
@@ -913,11 +918,11 @@ public class COCTMT530000UVObservation {
 
     /**
      * Gets the value of the definition property.
-     *
+     * 
      * @return
      *     possible object is
-     *     {@link javax.xml.bind.JAXBElement }{@code <}{@link COCTMT530000UVDefinition }{@code >}
-     *
+     *     {@link JAXBElement }{@code <}{@link COCTMT530000UVDefinition }{@code >}
+     *     
      */
     public JAXBElement<COCTMT530000UVDefinition> getDefinition() {
         return definition;
@@ -925,11 +930,11 @@ public class COCTMT530000UVObservation {
 
     /**
      * Sets the value of the definition property.
-     *
+     * 
      * @param value
      *     allowed object is
-     *     {@link javax.xml.bind.JAXBElement }{@code <}{@link COCTMT530000UVDefinition }{@code >}
-     *
+     *     {@link JAXBElement }{@code <}{@link COCTMT530000UVDefinition }{@code >}
+     *     
      */
     public void setDefinition(JAXBElement<COCTMT530000UVDefinition> value) {
         this.definition = value;
@@ -937,25 +942,25 @@ public class COCTMT530000UVObservation {
 
     /**
      * Gets the value of the conditions property.
-     *
+     * 
      * <p>
      * This accessor method returns a reference to the live list,
      * not a snapshot. Therefore any modification you make to the
      * returned list will be present inside the JAXB object.
      * This is why there is not a <CODE>set</CODE> method for the conditions property.
-     *
+     * 
      * <p>
      * For example, to add a new item, do as follows:
      * <pre>
      *    getConditions().add(newItem);
      * </pre>
-     *
-     *
+     * 
+     * 
      * <p>
      * Objects of the following type(s) are allowed in the list
      * {@link COCTMT530000UVConditions }
-     *
-     *
+     * 
+     * 
      */
     public List<COCTMT530000UVConditions> getConditions() {
         if (conditions == null) {
@@ -966,25 +971,25 @@ public class COCTMT530000UVObservation {
 
     /**
      * Gets the value of the referenceRange property.
-     *
+     * 
      * <p>
      * This accessor method returns a reference to the live list,
      * not a snapshot. Therefore any modification you make to the
      * returned list will be present inside the JAXB object.
      * This is why there is not a <CODE>set</CODE> method for the referenceRange property.
-     *
+     * 
      * <p>
      * For example, to add a new item, do as follows:
      * <pre>
      *    getReferenceRange().add(newItem);
      * </pre>
-     *
-     *
+     * 
+     * 
      * <p>
      * Objects of the following type(s) are allowed in the list
      * {@link COCTMT530000UVReferenceRange }
-     *
-     *
+     * 
+     * 
      */
     public List<COCTMT530000UVReferenceRange> getReferenceRange() {
         if (referenceRange == null) {
@@ -995,25 +1000,25 @@ public class COCTMT530000UVObservation {
 
     /**
      * Gets the value of the sourceOf1 property.
-     *
+     * 
      * <p>
      * This accessor method returns a reference to the live list,
      * not a snapshot. Therefore any modification you make to the
      * returned list will be present inside the JAXB object.
      * This is why there is not a <CODE>set</CODE> method for the sourceOf1 property.
-     *
+     * 
      * <p>
      * For example, to add a new item, do as follows:
      * <pre>
      *    getSourceOf1().add(newItem);
      * </pre>
-     *
-     *
+     * 
+     * 
      * <p>
      * Objects of the following type(s) are allowed in the list
      * {@link COCTMT530000UVSourceOf1 }
-     *
-     *
+     * 
+     * 
      */
     public List<COCTMT530000UVSourceOf1> getSourceOf1() {
         if (sourceOf1 == null) {
@@ -1024,25 +1029,25 @@ public class COCTMT530000UVObservation {
 
     /**
      * Gets the value of the sourceOf2 property.
-     *
+     * 
      * <p>
      * This accessor method returns a reference to the live list,
      * not a snapshot. Therefore any modification you make to the
      * returned list will be present inside the JAXB object.
      * This is why there is not a <CODE>set</CODE> method for the sourceOf2 property.
-     *
+     * 
      * <p>
      * For example, to add a new item, do as follows:
      * <pre>
      *    getSourceOf2().add(newItem);
      * </pre>
-     *
-     *
+     * 
+     * 
      * <p>
      * Objects of the following type(s) are allowed in the list
      * {@link COCTMT530000UVSourceOf3 }
-     *
-     *
+     * 
+     * 
      */
     public List<COCTMT530000UVSourceOf3> getSourceOf2() {
         if (sourceOf2 == null) {
@@ -1053,11 +1058,11 @@ public class COCTMT530000UVObservation {
 
     /**
      * Gets the value of the subjectOf property.
-     *
+     * 
      * @return
      *     possible object is
-     *     {@link javax.xml.bind.JAXBElement }{@code <}{@link COCTMT530000UVSubject1 }{@code >}
-     *
+     *     {@link JAXBElement }{@code <}{@link COCTMT530000UVSubject1 }{@code >}
+     *     
      */
     public JAXBElement<COCTMT530000UVSubject1> getSubjectOf() {
         return subjectOf;
@@ -1065,10 +1070,10 @@ public class COCTMT530000UVObservation {
 
     /**
      * Sets the value of the subjectOf property.
-     *
+     * 
      * @param value
      *     allowed object is
-     *     {@link javax.xml.bind.JAXBElement }{@code <}{@link COCTMT530000UVSubject1 }{@code >}
+     *     {@link JAXBElement }{@code <}{@link COCTMT530000UVSubject1 }{@code >}
      *     
      */
     public void setSubjectOf(JAXBElement<COCTMT530000UVSubject1> value) {

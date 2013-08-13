@@ -1,10 +1,15 @@
 
 package ru.korus.tmis.ws.laboratory.bak.ws.server.model.hl7.complex;
 
-import javax.xml.bind.JAXBElement;
-import javax.xml.bind.annotation.*;
 import java.util.ArrayList;
 import java.util.List;
+import javax.xml.bind.JAXBElement;
+import javax.xml.bind.annotation.XmlAccessType;
+import javax.xml.bind.annotation.XmlAccessorType;
+import javax.xml.bind.annotation.XmlAttribute;
+import javax.xml.bind.annotation.XmlElement;
+import javax.xml.bind.annotation.XmlElementRef;
+import javax.xml.bind.annotation.XmlType;
 
 
 /**
@@ -394,8 +399,8 @@ public class COCTMT530000UVAnimal {
      * 
      * @return
      *     possible object is
-     *     {@link javax.xml.bind.JAXBElement }{@code <}{@link COCTMT530000UVBirthplace }{@code >}
-     *
+     *     {@link JAXBElement }{@code <}{@link COCTMT530000UVBirthplace }{@code >}
+     *     
      */
     public JAXBElement<COCTMT530000UVBirthplace> getBirthplace() {
         return birthplace;
@@ -403,10 +408,10 @@ public class COCTMT530000UVAnimal {
 
     /**
      * Sets the value of the birthplace property.
-     *
+     * 
      * @param value
      *     allowed object is
-     *     {@link javax.xml.bind.JAXBElement }{@code <}{@link COCTMT530000UVBirthplace }{@code >}
+     *     {@link JAXBElement }{@code <}{@link COCTMT530000UVBirthplace }{@code >}
      *     
      */
     public void setBirthplace(JAXBElement<COCTMT530000UVBirthplace> value) {

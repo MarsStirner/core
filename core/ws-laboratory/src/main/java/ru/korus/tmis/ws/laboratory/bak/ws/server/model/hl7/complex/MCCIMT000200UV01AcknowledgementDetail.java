@@ -1,19 +1,19 @@
+
 package ru.korus.tmis.ws.laboratory.bak.ws.server.model.hl7.complex;
 
-
+import java.util.ArrayList;
+import java.util.List;
 import javax.xml.bind.annotation.XmlAccessType;
 import javax.xml.bind.annotation.XmlAccessorType;
 import javax.xml.bind.annotation.XmlAttribute;
 import javax.xml.bind.annotation.XmlType;
-import java.util.ArrayList;
-import java.util.List;
 
 
 /**
  * <p>Java class for MCCI_MT000200UV01.AcknowledgementDetail complex type.
- *
+ * 
  * <p>The following schema fragment specifies the expected content contained within this class.
- *
+ * 
  * <pre>
  * &lt;complexType name="MCCI_MT000200UV01.AcknowledgementDetail">
  *   &lt;complexContent>
@@ -31,8 +31,8 @@ import java.util.List;
  *   &lt;/complexContent>
  * &lt;/complexType>
  * </pre>
- *
- *
+ * 
+ * 
  */
 @XmlAccessorType(XmlAccessType.FIELD)
 @XmlType(name = "MCCI_MT000200UV01.AcknowledgementDetail", propOrder = {
@@ -58,25 +58,25 @@ public class MCCIMT000200UV01AcknowledgementDetail {
 
     /**
      * Gets the value of the realmCode property.
-     *
+     * 
      * <p>
      * This accessor method returns a reference to the live list,
      * not a snapshot. Therefore any modification you make to the
      * returned list will be present inside the JAXB object.
      * This is why there is not a <CODE>set</CODE> method for the realmCode property.
-     *
+     * 
      * <p>
      * For example, to add a new item, do as follows:
      * <pre>
      *    getRealmCode().add(newItem);
      * </pre>
-     *
-     *
+     * 
+     * 
      * <p>
      * Objects of the following type(s) are allowed in the list
      * {@link CS }
-     *
-     *
+     * 
+     * 
      */
     public List<CS> getRealmCode() {
         if (realmCode == null) {
@@ -87,11 +87,11 @@ public class MCCIMT000200UV01AcknowledgementDetail {
 
     /**
      * Gets the value of the typeId property.
-     *
+     * 
      * @return
      *     possible object is
      *     {@link II }
-     *
+     *     
      */
     public II getTypeId() {
         return typeId;
@@ -99,11 +99,11 @@ public class MCCIMT000200UV01AcknowledgementDetail {
 
     /**
      * Sets the value of the typeId property.
-     *
+     * 
      * @param value
      *     allowed object is
      *     {@link II }
-     *
+     *     
      */
     public void setTypeId(II value) {
         this.typeId = value;
@@ -111,25 +111,25 @@ public class MCCIMT000200UV01AcknowledgementDetail {
 
     /**
      * Gets the value of the templateId property.
-     *
+     * 
      * <p>
      * This accessor method returns a reference to the live list,
      * not a snapshot. Therefore any modification you make to the
      * returned list will be present inside the JAXB object.
      * This is why there is not a <CODE>set</CODE> method for the templateId property.
-     *
+     * 
      * <p>
      * For example, to add a new item, do as follows:
      * <pre>
      *    getTemplateId().add(newItem);
      * </pre>
-     *
-     *
+     * 
+     * 
      * <p>
      * Objects of the following type(s) are allowed in the list
      * {@link II }
-     *
-     *
+     * 
+     * 
      */
     public List<II> getTemplateId() {
         if (templateId == null) {
@@ -140,11 +140,11 @@ public class MCCIMT000200UV01AcknowledgementDetail {
 
     /**
      * Gets the value of the code property.
-     *
+     * 
      * @return
      *     possible object is
      *     {@link CE }
-     *
+     *     
      */
     public CE getCode() {
         return code;
@@ -152,11 +152,11 @@ public class MCCIMT000200UV01AcknowledgementDetail {
 
     /**
      * Sets the value of the code property.
-     *
+     * 
      * @param value
      *     allowed object is
      *     {@link CE }
-     *
+     *     
      */
     public void setCode(CE value) {
         this.code = value;
@@ -164,11 +164,11 @@ public class MCCIMT000200UV01AcknowledgementDetail {
 
     /**
      * Gets the value of the text property.
-     *
+     * 
      * @return
      *     possible object is
      *     {@link ED }
-     *
+     *     
      */
     public ED getText() {
         return text;
@@ -176,11 +176,11 @@ public class MCCIMT000200UV01AcknowledgementDetail {
 
     /**
      * Sets the value of the text property.
-     *
+     * 
      * @param value
      *     allowed object is
      *     {@link ED }
-     *
+     *     
      */
     public void setText(ED value) {
         this.text = value;
@@ -188,25 +188,25 @@ public class MCCIMT000200UV01AcknowledgementDetail {
 
     /**
      * Gets the value of the location property.
-     *
+     * 
      * <p>
      * This accessor method returns a reference to the live list,
      * not a snapshot. Therefore any modification you make to the
      * returned list will be present inside the JAXB object.
      * This is why there is not a <CODE>set</CODE> method for the location property.
-     *
+     * 
      * <p>
      * For example, to add a new item, do as follows:
      * <pre>
      *    getLocation().add(newItem);
      * </pre>
-     *
-     *
+     * 
+     * 
      * <p>
      * Objects of the following type(s) are allowed in the list
      * {@link ST }
-     *
-     *
+     * 
+     * 
      */
     public List<ST> getLocation() {
         if (location == null) {
@@ -217,25 +217,25 @@ public class MCCIMT000200UV01AcknowledgementDetail {
 
     /**
      * Gets the value of the nullFlavor property.
-     *
+     * 
      * <p>
      * This accessor method returns a reference to the live list,
      * not a snapshot. Therefore any modification you make to the
      * returned list will be present inside the JAXB object.
      * This is why there is not a <CODE>set</CODE> method for the nullFlavor property.
-     *
+     * 
      * <p>
      * For example, to add a new item, do as follows:
      * <pre>
      *    getNullFlavor().add(newItem);
      * </pre>
-     *
-     *
+     * 
+     * 
      * <p>
      * Objects of the following type(s) are allowed in the list
      * {@link String }
-     *
-     *
+     * 
+     * 
      */
     public List<String> getNullFlavor() {
         if (nullFlavor == null) {
@@ -246,11 +246,11 @@ public class MCCIMT000200UV01AcknowledgementDetail {
 
     /**
      * Gets the value of the typeCode property.
-     *
+     * 
      * @return
      *     possible object is
      *     {@link AcknowledgementDetailType }
-     *
+     *     
      */
     public AcknowledgementDetailType getTypeCode() {
         return typeCode;
@@ -258,11 +258,11 @@ public class MCCIMT000200UV01AcknowledgementDetail {
 
     /**
      * Sets the value of the typeCode property.
-     *
+     * 
      * @param value
      *     allowed object is
      *     {@link AcknowledgementDetailType }
-     *
+     *     
      */
     public void setTypeCode(AcknowledgementDetailType value) {
         this.typeCode = value;

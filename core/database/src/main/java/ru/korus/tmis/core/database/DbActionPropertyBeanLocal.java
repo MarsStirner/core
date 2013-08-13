@@ -22,6 +22,10 @@ public interface DbActionPropertyBeanLocal {
             throws CoreException;
 
     Map<ActionProperty, List<APValue>>
+    getActionPropertiesByActionIdAndTypeTypeNames(int actionId, List<String> names)
+            throws CoreException;
+
+    Map<ActionProperty, List<APValue>>
     getActionPropertiesByActionIdAndTypeCodes(int actionId, List<String> codes)
             throws CoreException;
 

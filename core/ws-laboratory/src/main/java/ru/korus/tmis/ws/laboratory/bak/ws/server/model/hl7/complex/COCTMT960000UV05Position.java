@@ -1,10 +1,15 @@
 
 package ru.korus.tmis.ws.laboratory.bak.ws.server.model.hl7.complex;
 
-import javax.xml.bind.JAXBElement;
-import javax.xml.bind.annotation.*;
 import java.util.ArrayList;
 import java.util.List;
+import javax.xml.bind.JAXBElement;
+import javax.xml.bind.annotation.XmlAccessType;
+import javax.xml.bind.annotation.XmlAccessorType;
+import javax.xml.bind.annotation.XmlAttribute;
+import javax.xml.bind.annotation.XmlElement;
+import javax.xml.bind.annotation.XmlElementRef;
+import javax.xml.bind.annotation.XmlType;
 
 
 /**
@@ -348,8 +353,8 @@ public class COCTMT960000UV05Position {
      * 
      * @return
      *     possible object is
-     *     {@link javax.xml.bind.JAXBElement }{@code <}{@link COCTMT960000UV05Author }{@code >}
-     *
+     *     {@link JAXBElement }{@code <}{@link COCTMT960000UV05Author }{@code >}
+     *     
      */
     public JAXBElement<COCTMT960000UV05Author> getAuthor() {
         return author;
@@ -357,11 +362,11 @@ public class COCTMT960000UV05Position {
 
     /**
      * Sets the value of the author property.
-     *
+     * 
      * @param value
      *     allowed object is
-     *     {@link javax.xml.bind.JAXBElement }{@code <}{@link COCTMT960000UV05Author }{@code >}
-     *
+     *     {@link JAXBElement }{@code <}{@link COCTMT960000UV05Author }{@code >}
+     *     
      */
     public void setAuthor(JAXBElement<COCTMT960000UV05Author> value) {
         this.author = value;
@@ -369,25 +374,25 @@ public class COCTMT960000UV05Position {
 
     /**
      * Gets the value of the component1 property.
-     *
+     * 
      * <p>
      * This accessor method returns a reference to the live list,
      * not a snapshot. Therefore any modification you make to the
      * returned list will be present inside the JAXB object.
      * This is why there is not a <CODE>set</CODE> method for the component1 property.
-     *
+     * 
      * <p>
      * For example, to add a new item, do as follows:
      * <pre>
      *    getComponent1().add(newItem);
      * </pre>
-     *
-     *
+     * 
+     * 
      * <p>
      * Objects of the following type(s) are allowed in the list
      * {@link COCTMT960000UV05Component1 }
-     *
-     *
+     * 
+     * 
      */
     public List<COCTMT960000UV05Component1> getComponent1() {
         if (component1 == null) {
@@ -398,11 +403,11 @@ public class COCTMT960000UV05Position {
 
     /**
      * Gets the value of the component2 property.
-     *
+     * 
      * @return
      *     possible object is
-     *     {@link javax.xml.bind.JAXBElement }{@code <}{@link COCTMT960000UV05Component2 }{@code >}
-     *
+     *     {@link JAXBElement }{@code <}{@link COCTMT960000UV05Component2 }{@code >}
+     *     
      */
     public JAXBElement<COCTMT960000UV05Component2> getComponent2() {
         return component2;
@@ -410,10 +415,10 @@ public class COCTMT960000UV05Position {
 
     /**
      * Sets the value of the component2 property.
-     *
+     * 
      * @param value
      *     allowed object is
-     *     {@link javax.xml.bind.JAXBElement }{@code <}{@link COCTMT960000UV05Component2 }{@code >}
+     *     {@link JAXBElement }{@code <}{@link COCTMT960000UV05Component2 }{@code >}
      *     
      */
     public void setComponent2(JAXBElement<COCTMT960000UV05Component2> value) {
