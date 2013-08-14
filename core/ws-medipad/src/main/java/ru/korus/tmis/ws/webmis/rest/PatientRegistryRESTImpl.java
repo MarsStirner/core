@@ -85,7 +85,7 @@ public class PatientRegistryRESTImpl {
                                   @QueryParam("filter[birthDate]")Long birthDate,
                                   @QueryParam("filter[document]")String document,
                                   @QueryParam("filter[withRelations]")String withRelations) {
-        Date bDate = birthDate == null ? null : new Date(birthDate);
+        Date bDate = (birthDate == null) ? null : new Date(birthDate);
         PatientRequestData requestData = new PatientRequestData(patientCode, fullName, bDate, document, withRelations, sortingField, sortingMethod, limit, page);
         return new JSONWithPadding(wsImpl.getAllPatients(requestData, this.auth), this.callback);
     }
