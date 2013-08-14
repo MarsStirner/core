@@ -1177,7 +1177,9 @@ class QuotaEntry  {
       this.department = new IdNameContainer(clientQuoting.getOrgStructure.getId.intValue(), clientQuoting.getOrgStructure.getName)
     }
       //this.department = new IdNameContainer(clientQuoting.getOrgStructure.getId.intValue(), clientQuoting.getOrgStructure.getName)
+    if (clientQuoting.getStatus != null) {
       this.status = new IdNameContainer(clientQuoting.getStatus.getId.intValue(), clientQuoting.getStatus.getName)
+    }
     //}
     //else if (classic == classOf[QuotaViews.DynamicFieldsQuotaHistory]) {
       this.stageSum = clientQuoting.getAmount + 1

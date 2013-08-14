@@ -608,7 +608,7 @@ class CommonDataProcessorBean
 
       at.getDefaultPlannedEndDate match {
         case 0 => {
-          //a.setPlannedEndDate(null)
+          a.setPlannedEndDate(null)
         }
         case 1 => {
           date.add(Calendar.DAY_OF_YEAR, 1)
