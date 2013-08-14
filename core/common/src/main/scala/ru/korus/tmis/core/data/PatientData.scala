@@ -198,7 +198,9 @@ class RequestDataFilter extends AbstractListDataFilter {
       case "fio" | "fullname"=> {"p.lastName %s, p.firstName %s, p.patrName %s".format(sortingMethod,sortingMethod,sortingMethod)}
       case "lastname" => {"p.lastName %s".format(sortingMethod)}
       case "firstname" | "name" => {"p.firstName %s".format(sortingMethod)}
-      case "patrname" => {"p.patrName %s".format(sortingMethod)}
+      case "patrname" | "middlename" => {"p.patrName %s".format(sortingMethod)}
+      case "sex" => {"p.sex %s".format(sortingMethod)}
+      case "birthdate" => {"p.birthDate %s".format(sortingMethod)}
       case _ => {"p.id %s".format(sortingMethod)}
     }
     sorting = "ORDER BY " + sorting.format(sortingMethod)

@@ -2,5 +2,5 @@
 *.hg
 *.hgignore
 *.iml
-/.idea
+.idea
 target

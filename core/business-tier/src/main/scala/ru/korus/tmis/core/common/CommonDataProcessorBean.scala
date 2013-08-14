@@ -507,7 +507,7 @@ class CommonDataProcessorBean
       var characterId = 0
       var stageId = 0
       if (ap.getType.getTypeName.compareTo("MKB")==0) {
-        val descriptionAP = apList.find(p => ap.getType.getCode != null && p.getType.getCode !=null && p.getType.getCode.compareTo(ap.getType.getCode.substring(0, ap.getType.getCode.size - 4))==0).getOrElse((null))
+        val descriptionAP = apList.find(p => ap.getType.getCode != null && p.getType.getCode !=null && !ap.equals(p) && ap.getType.getCode.contains(p.getType.getCode)/*p.getType.getCode.compareTo(ap.getType.getCode.substring(0, ap.getType.getCode.size - 3))==0*/).getOrElse((null))
         if (ap.getType.getCode != null) {
           if (ap.getType.getCode.compareTo(i18n("appeal.diagnosis.diagnosisKind.finalMkb"))==0) {
             characterId = preCharacterId
