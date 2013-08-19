@@ -1,8 +1,6 @@
-package ru.korus.tmis.ws;
+package ru.korus.tmis.test.data;
 
 import ru.korus.tmis.core.entity.model.*;
-import ru.korus.tmis.ws.webmis.rest.HospitalBedRegistryRESTImpl;
-
 import java.io.Serializable;
 import java.util.Date;
 import java.util.List;
@@ -65,9 +63,20 @@ public interface TestDataEntity extends Serializable {
     OrgStructureHospitalBed getTestDefaultOrgStructureHospitalBed(int id);
 
     ActionProperty getTestDefaultActionProperty();
+    ActionProperty getTestDefaultActionProperty(int id);
     Object getTestDefaultActionPropertyWithValues();
     Object getTestDefaultActionPropertyWithValues(int id, List<APValue> values);
 
     APValueHospitalBed getTestDefaultAPValueHospitalBed();
     APValueHospitalBed getTestDefaultAPValueHospitalBed(int id);
+
+    APValueOrgStructure getTestDefaultAPValueOrgStructure();
+    APValueOrgStructure getTestDefaultAPValueOrgStructure(int id);
+
+    APValueTime getTestDefaultAPValueTime();
+    APValueTime getTestDefaultAPValueTime(Date time);
+
+    ActionPropertyType getTestDefaultActionPropertyType(int id, String code);
+
+    EventPerson getTestDefaultEventPerson(int id, Event event, Staff person);
 }

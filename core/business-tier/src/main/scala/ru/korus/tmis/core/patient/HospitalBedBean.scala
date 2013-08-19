@@ -66,6 +66,9 @@ with TmisLogging{
   @EJB
   var dbEventPerson: DbEventPersonBeanLocal = _
 
+  @EJB
+  var dbOrgStructureHospitalBed: DbOrgStructureHospitalBedBeanLocal = _
+
   @Inject
   @Any
   var actionEvent: Event[Notification] = _
@@ -398,19 +401,13 @@ with TmisLogging{
   //Запрос на занятые койки в отделении
   def getCaseHospitalBedsByDepartmentId(departmentId: Int) = {
 
-    val allBeds = em.createQuery(AllHospitalBedsByDepartmentIdQuery, classOf[OrgStructureHospitalBed])
-                .setParameter("departmentId", departmentId)
-                .getResultList
+    val allBeds = dbOrgStructureHospitalBed.getHospitalBedByDepartmentId(departmentId)
 
-    val ids = CollectionUtils.collect(allBeds, new Transformer() {
+    /*val ids = CollectionUtils.collect(allBeds, new Transformer() {
        def transform(orgBed: Object) = orgBed.asInstanceOf[OrgStructureHospitalBed].getId
-    })
-
-    val result = em.createQuery(BusyHospitalBedsByDepartmentIdQuery.format(i18n("db.action.movingFlatCode"),
-                                                                           i18n("db.apt.moving.codes.hospitalBed")),
-                                classOf[OrgStructureHospitalBed])
-      .setParameter("ids", asJavaCollection(ids))
-      .getResultList
+    }) */
+    val ids = allBeds.map(f=>f.getId)
+    val result =  dbOrgStructureHospitalBed.getBusyHospitalBedByIds(asJavaCollection(ids))
 
     val map = new java.util.LinkedHashMap[OrgStructureHospitalBed, java.lang.Boolean]()
     allBeds.foreach(allBed => {
@@ -418,7 +415,6 @@ with TmisLogging{
       if(res==None) map.put(allBed, false)
       else map.put(allBed, true)
     })
-    result.foreach(em.detach(_))
     map
   }
 
@@ -535,12 +531,7 @@ with TmisLogging{
           val result = oldLastValues.find(p=> p._1.getType.getCode.compareTo(i18n("db.apt.moving.codes.hospitalBed"))==0).getOrElse(null)
           if (result!=null && result._2!=0 && result._2.size()>0) {
             bed = result._2.get(0).getValue.asInstanceOf[OrgStructureHospitalBed]
-            val result2 = em.createQuery(BusyHospitalBedsByDepartmentIdQuery.format(i18n("db.action.movingFlatCode"),
-                                                                                    i18n("db.apt.moving.codes.hospitalBed")),
-                                                                                    classOf[OrgStructureHospitalBed])
-                                                                                    .setParameter("ids", asJavaCollection(Set(bed.getId.intValue())))
-                                                                                    .getResultList
-            result2.foreach(em.detach(_))
+            val result2 = dbOrgStructureHospitalBed.getBusyHospitalBedByIds(asJavaCollection(asJavaCollection(Set(bed.getId))))
             if(result2!=null && result2.size()>0) { //Койка уже занята, инициируем перевод в это же отделение (Редактируем значения Переведен в и Время выбытия)
               flgEdit = 1
             }
@@ -617,7 +608,7 @@ with TmisLogging{
   /////////Внутренние методы/////////
 
   @throws(classOf[CoreException])
-  private def verificationData(eventId: Int, actionId: Int, hbData: HospitalBedData, flgParent:Int): Boolean = {
+  def verificationData(eventId: Int, actionId: Int, hbData: HospitalBedData, flgParent:Int): Boolean = {
 
     if (hbData==null){
       throw new CoreException("Некорректные данные в HospitalBedData")
@@ -713,47 +704,6 @@ with TmisLogging{
       }
     }
   }
-
-  val AllHospitalBedsByDepartmentIdQuery =
-    """
-    SELECT DISTINCT bed
-    FROM
-      OrgStructureHospitalBed bed
-      WHERE
-        bed.masterDepartment.id = :departmentId
-    ORDER BY bed.id
-    """
-
-
-  val BusyHospitalBedsByDepartmentIdQuery =
-    """
-    SELECT DISTINCT bed
-    FROM
-      APValueHospitalBed apval
-        JOIN apval.value bed,
-      ActionProperty ap
-        JOIN ap.actionPropertyType apt
-        JOIN ap.action a
-        JOIN a.actionType at
-      WHERE
-        apval.id.id = ap.id
-      AND
-        bed.id IN :ids
-      AND
-        at.flatCode = '%s'
-      AND
-        apt.code = '%s'
-      AND
-        a.endDate IS NULL
-      AND
-        a.deleted = 0
-      AND
-        ap.deleted = 0
-      AND
-        at.deleted = 0
-      AND
-        apt.deleted = 0
-    """
 
   val LastMovingActionByEventIdQuery =
     """

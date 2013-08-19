@@ -14,6 +14,7 @@ import org.mockito.Mockito._
 import ru.korus.tmis.core.exception.CoreException
 import ru.korus.tmis.core.patient.HospitalBedBeanLocal
 import scala.collection.JavaConversions._
+import ru.korus.tmis.test.data.{TestDataEntity, TestDataEntityImpl}
 
 /**
  * Author:      Ivan Dmitriev <br>
