@@ -10,7 +10,7 @@ import javax.persistence.*;
  */
 @Entity
 @Table(name="rlsFilling")
-public class RlsFilling implements Serializable {
+public class RlsFilling implements Serializable, UniqueName {
 	private static final long serialVersionUID = 1L;
 
 	@Id
@@ -18,10 +18,7 @@ public class RlsFilling implements Serializable {
 	@Column(unique=true, nullable=false)
 	private int id;
 
-	@Column(nullable=false)
-	private boolean disabledForPrescription;
-
-	@Column(length=128)
+	@Column(length=128, unique=true)
 	private String name;
 
 	public RlsFilling() {
@@ -35,20 +32,11 @@ public class RlsFilling implements Serializable {
 		this.id = id;
 	}
 
-	public boolean getDisabledForPrescription() {
-		return this.disabledForPrescription;
-	}
-
-	public void setDisabledForPrescription(boolean disabledForPrescription) {
-		this.disabledForPrescription = disabledForPrescription;
-	}
-
 	public String getName() {
 		return this.name;
 	}
-
+    @Override
 	public void setName(String name) {
 		this.name = name;
 	}
-
 }

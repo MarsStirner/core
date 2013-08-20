@@ -70,10 +70,10 @@ import org.hl7.v3.PQ;
 @XmlType(name = "BalanceOfGoods", propOrder = {
     "storage"
 })
-public class BalanceOfGoods2 {
+public class BalanceOfGoods2{
 
     @XmlElement(name = "Storage")
-    protected List<BalanceOfGoods2 .Storage> storage;
+    protected List<BalanceOfGoods2.Storage> storage;
 
     /**
      * Gets the value of the storage property.
@@ -93,13 +93,13 @@ public class BalanceOfGoods2 {
      * 
      * <p>
      * Objects of the following type(s) are allowed in the list
-     * {@link BalanceOfGoods2 .Storage }
+     * {@link BalanceOfGoods2.Storage }
      * 
      * 
      */
-    public List<BalanceOfGoods2 .Storage> getStorage() {
+    public List<BalanceOfGoods2.Storage> getStorage() {
         if (storage == null) {
-            storage = new ArrayList<BalanceOfGoods2 .Storage>();
+            storage = new ArrayList<BalanceOfGoods2.Storage>();
         }
         return this.storage;
     }
@@ -156,7 +156,7 @@ public class BalanceOfGoods2 {
     public static class Storage {
 
         @XmlElement(name = "Balance")
-        protected List<BalanceOfGoods2 .Storage.Balance> balance;
+        protected List<BalanceOfGoods2.Storage.Balance> balance;
         @XmlAttribute(name = "Ref", required = true)
         protected String ref;
         @XmlAttribute(name = "Description", required = true)
@@ -180,13 +180,13 @@ public class BalanceOfGoods2 {
          * 
          * <p>
          * Objects of the following type(s) are allowed in the list
-         * {@link BalanceOfGoods2 .Storage.Balance }
+         * {@link BalanceOfGoods2.torage.Balance }
          * 
          * 
          */
-        public List<BalanceOfGoods2 .Storage.Balance> getBalance() {
+        public List<BalanceOfGoods2.Storage.Balance> getBalance() {
             if (balance == null) {
-                balance = new ArrayList<BalanceOfGoods2 .Storage.Balance>();
+                balance = new ArrayList<BalanceOfGoods2.Storage.Balance>();
             }
             return this.balance;
         }
@@ -282,7 +282,7 @@ public class BalanceOfGoods2 {
             @XmlElement(name = "Drug")
             protected POCDMT000040LabeledDrug drug;
             @XmlElement(name = "Goods")
-            protected List<BalanceOfGoods2 .Storage.Balance.Goods> goods;
+            protected List<BalanceOfGoods2.Storage.Balance.Goods> goods;
 
             /**
              * Gets the value of the drug property.
@@ -326,13 +326,13 @@ public class BalanceOfGoods2 {
              * 
              * <p>
              * Objects of the following type(s) are allowed in the list
-             * {@link BalanceOfGoods2 .Storage.Balance.Goods }
+             * {@link BalanceOfGoods2.Storage.Balance.Goods }
              * 
              * 
              */
-            public List<BalanceOfGoods2 .Storage.Balance.Goods> getGoods() {
+            public List<BalanceOfGoods2.Storage.Balance.Goods> getGoods() {
                 if (goods == null) {
-                    goods = new ArrayList<BalanceOfGoods2 .Storage.Balance.Goods>();
+                    goods = new ArrayList<BalanceOfGoods2.Storage.Balance.Goods>();
                 }
                 return this.goods;
             }
