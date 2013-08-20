@@ -33,10 +33,10 @@ public class Patient {
     @XmlElement(required = true)
     protected PatientNumbers patientNumbers;
 
-    @XmlElement(required = true)
+    @XmlElement(required = false)
     protected Addresses addresses;
 
-    @XmlElement(required = true)
+    @XmlElement(required = false)
     protected ContactInfo contactInfo;
 
 

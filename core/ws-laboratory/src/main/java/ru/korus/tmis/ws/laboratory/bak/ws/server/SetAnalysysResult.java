@@ -13,6 +13,7 @@ import javax.jws.WebService;
 import javax.xml.datatype.XMLGregorianCalendar;
 import java.text.SimpleDateFormat;
 import java.util.Date;
+import java.util.UUID;
 
 import static ru.korus.tmis.util.CompileTimeConfigManager.Laboratory.Namespace;
 import static ru.korus.tmis.ws.laboratory.bak.ws.server.model.hl7.HL7Specification.NAMESPACE;
@@ -33,9 +34,8 @@ import static ru.korus.tmis.ws.laboratory.bak.ws.server.model.hl7.HL7Specificati
         portName = SetAnalysysResultWS.PORT_NAME,
         name = SetAnalysysResultWS.PORT_NAME)
 public class SetAnalysysResult implements SetAnalysysResultWS {
-
+    private static final UUID uuid = UUID.randomUUID();
     private static final Logger log = LoggerFactory.getLogger(SetAnalysysResult.class);
-    java.util.UUID uuid = new java.util.UUID(this.hashCode(), System.currentTimeMillis());
 
     @Override
     @WebMethod(operationName = "setAnalysisResults")
