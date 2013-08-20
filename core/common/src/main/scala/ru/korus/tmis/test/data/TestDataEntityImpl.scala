@@ -1,8 +1,7 @@
-package ru.korus.tmis.ws
+package ru.korus.tmis.test.data
 
 import ru.korus.tmis.core.entity.model._
 import java.util.Date
-import java.util
 
 /**
  * Created with IntelliJ IDEA.
@@ -17,12 +16,16 @@ class TestDataEntityImpl extends TestDataEntity {
 
   def  getTestDefaultAction(actionId: Int) =  {
     val action = new Action(actionId)
-
+    val date = new Date()
     action.setEvent(getTestDefaultEvent())
     action.setAssigner(getTestDefaultStaff())
     action.setIsUrgent(false)
     action.setActionType(getTestDefaultActionType)
     action.setTakenTissue(getTestDefaultTakenTissue)
+    action.setCreateDatetime(date)
+    action.setBegDate(date)
+    action.setPlannedEndDate(date)
+    action.setEndDate(date)
 
     action
   }
@@ -54,6 +57,7 @@ class TestDataEntityImpl extends TestDataEntity {
   def getTestDefaultActionType() = {
     val at = new ActionType(testId)
     at.setTestTubeType(getTestDefaultTestTubeType)
+    at.setCode("")
     at
   }
 
@@ -246,13 +250,19 @@ class TestDataEntityImpl extends TestDataEntity {
     ap
   }
 
+  def getTestDefaultActionProperty(id: Int) = {
+    val ap = getTestDefaultActionProperty
+    ap.setId(id)
+    ap
+  }
+
   def getTestDefaultActionPropertyWithValues() = {
     val ap = new ActionProperty(testId)
-    val values = new util.LinkedList[APValue]()
+    val values = new java.util.LinkedList[APValue]()
     (ap, values)
   }
 
-  def getTestDefaultActionPropertyWithValues(id: Int, values: util.List[APValue]) = {
+  def getTestDefaultActionPropertyWithValues(id: Int, values: java.util.List[APValue]) = {
     val apWithValues =  getTestDefaultActionPropertyWithValues
     apWithValues._1.setId(id)
     apWithValues._2.addAll(values)
@@ -269,6 +279,46 @@ class TestDataEntityImpl extends TestDataEntity {
     val apBed = new APValueHospitalBed()
     apBed.setValue(getTestDefaultOrgStructureHospitalBed(id))
     apBed
+  }
+
+  def getTestDefaultAPValueOrgStructure = {
+    val apBed = new APValueOrgStructure()
+    apBed.setValue(getTestDefaultOrgStructure)
+    apBed
+  }
+
+  def getTestDefaultAPValueOrgStructure(id: Int) = {
+    val apBed = new APValueOrgStructure()
+    apBed.setValue(getTestDefaultOrgStructure(id))
+    apBed
+  }
+
+  def getTestDefaultAPValueTime = {
+    val apBed = new APValueTime()
+    apBed.setValue(new Date())
+    apBed
+  }
+
+  def getTestDefaultAPValueTime (time: Date) = {
+    val apBed = new APValueTime ()
+    apBed.setValue(time)
+    apBed
+  }
+
+  def getTestDefaultActionPropertyType(id: Int, code: String) = {
+    val apt = new ActionPropertyType(id)
+    apt.setCode(code)
+    apt
+  }
+
+  def getTestDefaultEventPerson(id: Int, event: Event, person: Staff) = {
+    val ep = new EventPerson()
+    ep.setId(id)
+    ep.setEvent(event)
+    ep.setPerson(person)
+    ep.setBegDate(new Date())
+    ep.setEndDate(new Date())
+    ep
   }
 
 }

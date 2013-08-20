@@ -18,6 +18,7 @@ import ru.korus.tmis.core.database.{DbActionPropertyBeanLocal, DbJobTicketBeanLo
 import ru.korus.tmis.core.entity.model._
 import java.util
 import java.util.Date
+import ru.korus.tmis.test.data.{TestDataEntity, TestDataEntityImpl}
 
 /**
  * Author:      Ivan Dmitriev <br>
