@@ -35,13 +35,14 @@ import static ru.korus.tmis.ws.laboratory.bak.ws.server.model.hl7.HL7Specificati
 public class SetAnalysysResult implements SetAnalysysResultWS {
 
     private static final Logger log = LoggerFactory.getLogger(SetAnalysysResult.class);
+    java.util.UUID uuid = new java.util.UUID(this.hashCode(), System.currentTimeMillis());
 
     @Override
     @WebMethod(operationName = "setAnalysisResults")
     @WebResult(name = SUCCESS_ACCEPT_EVENT, targetNamespace = NAMESPACE, partName = "Body")
     public MCCIIN000002UV01 setAnalysisResults(
             @WebParam(name = "POLB_IN224100UV01", targetNamespace = NAMESPACE, partName = "Body")
-            final POLBIN224100UV01  request) throws CoreException {
+            final POLBIN224100UV01 request) throws CoreException {
         return createResponse();
     }
 
@@ -49,7 +50,7 @@ public class SetAnalysysResult implements SetAnalysysResultWS {
         final MCCIIN000002UV01 response = new MCCIIN000002UV01();
 
         final II id2 = new II();
-        id2.setRoot("XXXXXXXX-XXXX-XXXX-XXXX-XXXXXXXXXXXX");
+        id2.setRoot(uuid.toString());
         response.setId(id2);
 
         final TS creationTime = new TS();
@@ -97,7 +98,7 @@ public class SetAnalysysResult implements SetAnalysysResultWS {
         acknowledgement.setTypeCode(typeCode);
         final MCCIMT000200UV01TargetMessage targetMessage = new MCCIMT000200UV01TargetMessage();
         final II id1 = new II();
-        id1.setRoot("XXXXXXXX-XXXX-XXXX-XXXX-XXXXXXXXXXXX");
+        id1.setRoot(uuid.toString());
         targetMessage.setId(id1);
         acknowledgement.setTargetMessage(targetMessage);
 
