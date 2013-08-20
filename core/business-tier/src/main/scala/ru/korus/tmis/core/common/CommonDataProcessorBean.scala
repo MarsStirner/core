@@ -225,10 +225,9 @@ class CommonDataProcessorBean
               case (None | Some(null) | Some(""), None | Some(null) | Some("")) => {
                 if (ap.getType.getTypeName.compareTo("FlatDirectory") != 0 && ap.getType.getTypeName.compareTo("FlatDictionary") != 0) {
                   if (ap.getType.getDefaultValue.compareTo("нет") != 0) {     //костылик для мкб
-                    val apv = dbActionProperty.setActionPropertyValue(
-                      ap,
-                      ap.getType.getDefaultValue,
-                      0)
+                    val apv = dbActionProperty.setActionPropertyValue(ap,
+                                                                      ap.getType.getDefaultValue,
+                                                                      0)
                     apv :: list
                   } else list
                 } else list
@@ -428,6 +427,13 @@ class CommonDataProcessorBean
                   ap,
                   value,
                   0)
+
+                val apvs = dbActionProperty.getActionPropertyValue(ap)
+                if (ap.getType.getTypeName.compareTo("MKB")==0 && apvs != null && apvs.size()>0) {
+                  //apvs = apvs.foreach(apvv => {
+                  dbManager.removeAll(apvs)
+                  //})
+                }
                 new ActionPropertyWrapper(ap).set(attribute)
                 if (apv != null) {
                   entities = entities + ap + apv.unwrap

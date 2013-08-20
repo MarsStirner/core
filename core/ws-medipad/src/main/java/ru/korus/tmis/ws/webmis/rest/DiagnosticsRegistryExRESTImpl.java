@@ -97,7 +97,7 @@ public class DiagnosticsRegistryExRESTImpl {
                 (clazz==null) ? -1 : clazz);
 
         DiagnosticsListRequestData requestData = new DiagnosticsListRequestData(sortingField, sortingMethod, limit, page, filter);
-        return new JSONWithPadding(wsImpl.getListOfDiagnosticsForPatientByEvent(requestData),this.callback);
+        return new JSONWithPadding(wsImpl.getListOfDiagnosticsForPatientByEvent(requestData, this.auth),this.callback);
     }
 
     /**
@@ -167,7 +167,7 @@ public class DiagnosticsRegistryExRESTImpl {
                 (clazz==null) ? -1 : clazz);
 
         DiagnosticsListRequestData requestData = new DiagnosticsListRequestData(sortingField, sortingMethod, limit, page, filter);
-        return new JSONWithPadding(wsImpl.getListOfDiagnosticsForPatientByEvent(requestData),this.callback);
+        return new JSONWithPadding(wsImpl.getListOfDiagnosticsForPatientByEvent(requestData, this.auth),this.callback);
     }
 
     /**
@@ -237,7 +237,7 @@ public class DiagnosticsRegistryExRESTImpl {
                 (clazz==null) ? -1 : clazz);
 
         DiagnosticsListRequestData requestData = new DiagnosticsListRequestData(sortingField, sortingMethod, limit, page, filter);
-        return new JSONWithPadding(wsImpl.getListOfDiagnosticsForPatientByEvent(requestData),this.callback);
+        return new JSONWithPadding(wsImpl.getListOfDiagnosticsForPatientByEvent(requestData, this.auth),this.callback);
     }
 
     /**
@@ -488,7 +488,7 @@ public class DiagnosticsRegistryExRESTImpl {
     @Path("/laboratory/{actionId}")
     @Produces("application/x-javascript")
     public Object getInfoAboutDiagnosticsForPatientByEvent(@PathParam("actionId")int actionId) {
-        return new JSONWithPadding(wsImpl.getInfoAboutDiagnosticsForPatientByEvent(actionId), this.callback);
+        return new JSONWithPadding(wsImpl.getInfoAboutDiagnosticsForPatientByEvent(actionId, this.auth), this.callback);
     }
 
     /**
@@ -502,7 +502,7 @@ public class DiagnosticsRegistryExRESTImpl {
     @Path("/instrumental/{actionId}")
     @Produces("application/x-javascript")
     public Object getInfoAboutInstrumentalDiagnosticsForPatientByEvent(@PathParam("actionId")int actionId) {
-        return new JSONWithPadding(wsImpl.getInfoAboutDiagnosticsForPatientByEvent(actionId), this.callback);
+        return new JSONWithPadding(wsImpl.getInfoAboutDiagnosticsForPatientByEvent(actionId, this.auth), this.callback);
     }
 
     /**
@@ -516,6 +516,6 @@ public class DiagnosticsRegistryExRESTImpl {
     @Path("/consultations/{actionId}")
     @Produces("application/x-javascript")
     public Object getInfoAboutConsultationDiagnosticsForPatientByEvent(@PathParam("actionId")int actionId) {
-        return new JSONWithPadding(wsImpl.getInfoAboutDiagnosticsForPatientByEvent(actionId), this.callback);
+        return new JSONWithPadding(wsImpl.getInfoAboutDiagnosticsForPatientByEvent(actionId, this.auth), this.callback);
     }
 }

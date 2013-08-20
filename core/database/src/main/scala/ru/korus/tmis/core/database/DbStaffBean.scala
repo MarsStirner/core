@@ -214,7 +214,7 @@ class DbStaffBean
   AND
     apt.name = 'times'
   AND
-    NOT exists (
+    (NOT exists (
       SELECT ap2
       FROM
         ActionProperty ap2,
@@ -227,6 +227,24 @@ class DbStaffBean
         apvAction.id.id = ap2.id
       AND
         apvAction.id.index = time.id.index
+      )
+    OR
+      NOT exists (
+        SELECT ap2
+        FROM
+          ActionProperty ap2,
+          APValueAction apvAction
+        WHERE
+          ap2.action.id = a.id
+        AND
+          ap2.actionPropertyType.name = 'queue'
+        AND
+          apvAction.id.id = ap2.id
+        AND
+          apvAction.id.index = time.id.index
+        AND
+          apvAction.value is not null
+        )
       )
 
   GROUP BY s.id, ap.id, time.value

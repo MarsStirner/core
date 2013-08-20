@@ -30,7 +30,8 @@ public interface DirectionBeanLocal {
      */
     JSONCommonData getDirectionById(int directionId,
                                     String title,
-                                    Function2<JSONCommonData, java.lang.Boolean, JSONCommonData> postProcessingForDiagnosis)
+                                    Function2<JSONCommonData, java.lang.Boolean, JSONCommonData> postProcessingForDiagnosis,
+                                    AuthData authData)
            throws CoreException;
 
     /**

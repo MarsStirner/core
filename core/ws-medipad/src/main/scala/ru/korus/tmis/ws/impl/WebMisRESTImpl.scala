@@ -756,7 +756,7 @@ class WebMisRESTImpl  extends WebMisREST
   }
 
 
-  def getListOfDiagnosticsForPatientByEvent(requestData: DiagnosticsListRequestData) = {
+  def getListOfDiagnosticsForPatientByEvent(requestData: DiagnosticsListRequestData, authData: AuthData) = {
 
     //TODO: подключить анализ авторизационных данных и доступных ролей
     requestData.setRecordsCount(dbCustomQueryBean.getCountDiagnosticsWithFilter(requestData.filter))
@@ -767,12 +767,16 @@ class WebMisRESTImpl  extends WebMisREST
                                                               requestData.sortingFieldInternal,
                                                               requestData.filter.unwrap())
     }
-    val list = new DiagnosticsListData(actions, requestData)
+    var ajtList = new util.LinkedList[(Action, JobTicket)]()
+    actions.foreach(a => {
+      ajtList.add((a, dbJobTicketBean.getJobTicketForAction(a.getId.intValue())))
+    })
+    val list = new DiagnosticsListData(ajtList, requestData, authData)
     list
   }
 
-  def getInfoAboutDiagnosticsForPatientByEvent(actionId: Int) = {
-    val json_data = directionBean.getDirectionById(actionId, "Diagnostic", null)
+  def getInfoAboutDiagnosticsForPatientByEvent(actionId: Int, authData: AuthData) = {
+    val json_data = directionBean.getDirectionById(actionId, "Diagnostic", null, authData)
     json_data
   }
 
@@ -903,7 +907,7 @@ class WebMisRESTImpl  extends WebMisREST
 
   def insertConsultation(request: ConsultationRequestData, authData: AuthData) = {
     val actionId = directionBean.createConsultation(request, authData)
-    var json = directionBean.getDirectionById(actionId, "Consultation", null)
+    var json = directionBean.getDirectionById(actionId, "Consultation", null, authData)
     json.setRequestData(request) //по идее эта штука должна быть в конструкторе вызываемая в методе гет
     json
   }

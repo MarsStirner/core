@@ -131,7 +131,8 @@ class DirectionBean extends DirectionBeanLocal
 
   def getDirectionById(directionId: Int,
                              title: String,
-        postProcessingForDiagnosis: (JSONCommonData, java.lang.Boolean) => JSONCommonData) = {
+        postProcessingForDiagnosis: (JSONCommonData, java.lang.Boolean) => JSONCommonData,
+                          authData: AuthData) = {
 
     val action = actionBean.getActionById(directionId)
     var actions: java.util.List[Action] = new util.LinkedList[Action]
@@ -141,6 +142,11 @@ class DirectionBean extends DirectionBeanLocal
       actions,
       title,
       List(summary _, detailsWithAge _))
+
+    val isTrueDoctor = (authData.getUser.getId.intValue() == action.getCreatePerson.getId.intValue() ||
+                        authData.getUser.getId.intValue() == action.getAssigner.getId.intValue() )
+    val jt = dbJobTicketBean.getJobTicketForAction(action.getId.intValue())
+    com_data.getEntity().get(0).setIsEditable(action.getStatus == 0 && action.getEvent.getExecDate == null && isTrueDoctor && (jt == null || (jt != null && jt.getStatus == 0)))
 
     var json_data = new JSONCommonData()
     json_data.data = com_data.entity

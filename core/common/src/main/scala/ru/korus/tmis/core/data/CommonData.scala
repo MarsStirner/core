@@ -137,6 +137,17 @@ class CommonEntity {
     this.code = code
   }
 
+  var isEditable: Boolean = true
+
+  @XmlAttribute(name = "isEditable")
+  def getIsEditable() = {
+    isEditable
+  }
+
+  def setIsEditable(isEditable: Boolean) = {
+    this.isEditable = isEditable
+  }
+
   private def this(id: Integer,
                    name: String,
                    eType: String,
