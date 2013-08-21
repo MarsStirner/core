@@ -94,9 +94,23 @@ public interface WebMisREST extends Serializable {
      */
     AllDepartmentsListDataMP getAllDepartmentsByHasBeds(String hasBeds, String hasPatients) throws CoreException;
 
-    DiagnosticsListData getListOfDiagnosticsForPatientByEvent(DiagnosticsListRequestData requestData) throws CoreException;
+    /**
+     * Сервис получения списка направлений на исследования
+     * @param requestData Данные из запроса
+     * @param authData Данные о пользователе
+     * @return Список направлений как DiagnosticsListData
+     * @throws CoreException
+     */
+    DiagnosticsListData getListOfDiagnosticsForPatientByEvent(DiagnosticsListRequestData requestData, AuthData authData) throws CoreException;
 
-    JSONCommonData getInfoAboutDiagnosticsForPatientByEvent(int actionId) throws CoreException;
+    /**
+     * Получение информации по направлению.
+     * @param actionId Идентификатор направления (Action)
+     * @param authData Данные о пользователе
+     * @return Направление как JSONCommonData
+     * @throws CoreException
+     */
+    JSONCommonData getInfoAboutDiagnosticsForPatientByEvent(int actionId, AuthData authData) throws CoreException;
 
     FreePersonsListData getFreePersons(ListDataRequest requestData) throws CoreException;
 

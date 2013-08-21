@@ -1172,6 +1172,7 @@ WHERE ap.action.id IN (
         WHERE leaved.actionType.flatCode = '%s'
         AND leaved.event.id = a.event.id
         AND leaved.createDatetime < :endDate
+        AND leaved.deleted = 0
     )
     AND a.begDate <= :endDate
     AND a.actionType.flatCode IN :flatCodes

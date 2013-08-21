@@ -5,8 +5,9 @@ import reflect.BeanProperty
 import java.util.{LinkedList, Date}
 import scala.collection.JavaConversions._
 import ru.korus.tmis.util.ConfigManager
-import ru.korus.tmis.core.entity.model.{ActionStatus, Staff, Action}
+import ru.korus.tmis.core.entity.model.{JobTicket, ActionStatus, Staff, Action}
 import ru.korus.tmis.core.filter.AbstractListDataFilter
+import ru.korus.tmis.core.auth.AuthData
 
 //Контейнер для списка диагностик
 @XmlType(name = "diagnosticsListData")
@@ -18,33 +19,33 @@ class DiagnosticsListData {
   @BeanProperty
   var data: AnyRef = _ //new LinkedList[DiagnosticsListEntry]
 
-  def this(actions: java.util.List[Action], requestData: DiagnosticsListRequestData) {
+  def this(list: java.util.List[(Action, JobTicket)], requestData: DiagnosticsListRequestData, authData: AuthData) {
     this()
     this.requestData = requestData
 
     this.requestData.filter.asInstanceOf[DiagnosticsListRequestDataFilter].diagnosticType match {
       case "laboratory" => {
         this.data = new LinkedList[LaboratoryDiagnosticsListEntry]
-        if (actions != null && actions.size > 0) {
-          actions.foreach(action => this.data.asInstanceOf[LinkedList[LaboratoryDiagnosticsListEntry]].add(new LaboratoryDiagnosticsListEntry(action)))
+        if (list != null && list.size > 0) {
+          list.foreach(ajt => this.data.asInstanceOf[LinkedList[LaboratoryDiagnosticsListEntry]].add(new LaboratoryDiagnosticsListEntry(ajt._1, ajt._2, authData)))
         }
       }
       case "instrumental" => {
         this.data = new LinkedList[InstrumentalDiagnosticsListEntry]
-        if (actions != null && actions.size > 0) {
-          actions.foreach(action => this.data.asInstanceOf[LinkedList[InstrumentalDiagnosticsListEntry]].add(new InstrumentalDiagnosticsListEntry(action)))
+        if (list != null && list.size > 0) {
+          list.foreach(ajt => this.data.asInstanceOf[LinkedList[InstrumentalDiagnosticsListEntry]].add(new InstrumentalDiagnosticsListEntry(ajt._1, ajt._2, authData)))
         }
       }
       case "consultations" => {
         this.data = new LinkedList[InstrumentalDiagnosticsListEntry]
-        if (actions != null && actions.size > 0) {
-          actions.foreach(action => this.data.asInstanceOf[LinkedList[InstrumentalDiagnosticsListEntry]].add(new InstrumentalDiagnosticsListEntry(action)))
+        if (list != null && list.size > 0) {
+          list.foreach(ajt => this.data.asInstanceOf[LinkedList[InstrumentalDiagnosticsListEntry]].add(new InstrumentalDiagnosticsListEntry(ajt._1, ajt._2, authData)))
         }
       }
       case _ => {
         this.data = new LinkedList[DiagnosticsListEntry]
-        if (actions != null && actions.size > 0) {
-          actions.foreach(action => this.data.asInstanceOf[LinkedList[DiagnosticsListEntry]].add(new DiagnosticsListEntry(action)))
+        if (list != null && list.size > 0) {
+          list.foreach(ajt => this.data.asInstanceOf[LinkedList[DiagnosticsListEntry]].add(new DiagnosticsListEntry(ajt._1)))
         }
       }
     }
@@ -379,10 +380,13 @@ class LaboratoryDiagnosticsListEntry {
   @BeanProperty
   var status: IdNameContainer = _ //Статус
 
+  @BeanProperty
+  var isEditable: Boolean = _ //Признак возможности редактирования
+
   //@BeanProperty
   //var toOrder: Boolean = _ //Дозаказ  (не используется)
 
-  def this(action: Action) {
+  def this(action: Action, jt: JobTicket, authData: AuthData) {
     this()
     this.id = action.getId.intValue()
     //this.diagnosticDate = action.getEndDate
@@ -394,6 +398,9 @@ class LaboratoryDiagnosticsListEntry {
     this.execPerson = new DoctorContainer(action.getExecutor)
     this.cito = action.getIsUrgent
     this.status = new IdNameContainer(action.getStatus, ActionStatus.fromShort(action.getStatus).getName)
+    val isTrueDoctor = (authData.getUser.getId.intValue() == action.getCreatePerson.getId.intValue() ||
+                        authData.getUser.getId.intValue() == action.getAssigner.getId.intValue() )
+    this.isEditable = (action.getStatus == 0 && action.getEvent.getExecDate == null && isTrueDoctor && (jt == null || (jt != null && jt.getStatus == 0)))
     //this.toOrder = action.getToOrder
   }
 }
@@ -432,10 +439,13 @@ class InstrumentalDiagnosticsListEntry {
   @BeanProperty
   var status: IdNameContainer = _ //Статус
 
+  @BeanProperty
+  var isEditable: Boolean = _ //Признак возможности редактирования
+
   //@BeanProperty
   //var toOrder: Boolean = _ //Дозаказ  (не используется)
 
-  def this(action: Action) {
+  def this(action: Action, jt: JobTicket, authData: AuthData) {
     this()
     this.id = action.getId.intValue()
     //this.diagnosticDate = action.getEndDate
@@ -447,6 +457,9 @@ class InstrumentalDiagnosticsListEntry {
     this.createPerson = new DoctorContainer(action.getCreatePerson)
     this.cito = action.getIsUrgent
     this.status = new IdNameContainer(action.getStatus, ActionStatus.fromShort(action.getStatus).getName)
+    val isTrueDoctor = (authData.getUser.getId.intValue() == action.getCreatePerson.getId.intValue() ||
+                        authData.getUser.getId.intValue() == action.getAssigner.getId.intValue() )
+    this.isEditable = (action.getStatus == 0 && action.getEvent.getExecDate == null && isTrueDoctor && (jt == null || (jt != null && jt.getStatus == 0)))
     //this.toOrder = action.getToOrder
   }
 }
