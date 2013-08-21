@@ -8,7 +8,7 @@ package ru.korus.tmis.core
  * To change this template use File | Settings | File Templates.
  */
 
-import entity.model.{APValue, ActionProperty, ActionPropertyType, Action}
+import entity.model._
 import exception.CoreException
 import org.junit.runner.RunWith
 import org.mockito._
@@ -51,6 +51,7 @@ class HospitalBedBeanTest {
   @Mock var dbRbCoreActionPropertyBean: DbRbCoreActionPropertyBeanLocal = _
   @Mock var commonDataProcessor: CommonDataProcessorBeanLocal = _
   @Mock var dbEventPerson: DbEventPersonBeanLocal = _
+  @Mock var dbOrgStructureHospitalBed: DbOrgStructureHospitalBedBeanLocal = _
 
   final val logger: Logger = LoggerFactory.getLogger(classOf[HospitalBedBeanTest])
 
@@ -80,6 +81,29 @@ class HospitalBedBeanTest {
   final val TInvalid_action_id = 2
   final val TFlg_Create = 0
   final val TFlg_Modify = 1
+
+  final val TorgStructDirection = 1
+  final val TorgStructTransfer = 2
+  final val TtimeArrival = new Date()
+  final val Tpatronage = "да"
+  final val ThospitalBed = 5
+  final val TorgStructReceived = 3
+  final val ThospOrgStruct = 4
+
+  final val codes_all = asJavaSet(Set[String](ConfigManager.Messages("db.apt.received.codes.orgStructDirection").toString,
+                                              ConfigManager.Messages("db.apt.moving.codes.orgStructTransfer").toString,
+                                              ConfigManager.Messages("db.apt.moving.codes.timeArrival").toString,
+                                              ConfigManager.Messages("db.apt.moving.codes.patronage").toString,
+                                              ConfigManager.Messages("db.apt.moving.codes.hospitalBed").toString,
+                                              ConfigManager.Messages("db.apt.moving.codes.orgStructReceived").toString,
+                                              ConfigManager.Messages("db.apt.moving.codes.hospOrgStruct").toString))
+
+  val codes_move = asJavaSet(Set[String]( ConfigManager.Messages("db.apt.moving.codes.hospitalBed"),
+                                          ConfigManager.Messages("db.apt.moving.codes.orgStructTransfer"),
+                                          ConfigManager.Messages("db.apt.moving.codes.timeArrival"),
+                                          ConfigManager.Messages("db.apt.moving.codes.timeLeaved")))
+
+  val codes_receive = asJavaSet(Set(ConfigManager.Messages("db.apt.received.codes.orgStructDirection")))
 
   @Before
   def init() {
@@ -253,34 +277,264 @@ class HospitalBedBeanTest {
   def testGetCaseHospitalBedsByDepartmentIdSuccessfully = {
 
     logger.warn("Start of getCaseHospitalBedsByDepartmentId test:")
+    //Все койки отделения
+    val list_all = new java.util.LinkedList[OrgStructureHospitalBed]()
+    list_all.add(testData.getTestDefaultOrgStructureHospitalBed(1))
+    list_all.add(testData.getTestDefaultOrgStructureHospitalBed(2))
+    list_all.add(testData.getTestDefaultOrgStructureHospitalBed(3))
+    list_all.add(testData.getTestDefaultOrgStructureHospitalBed(4))
+    list_all.add(testData.getTestDefaultOrgStructureHospitalBed(5))
+    //Занятые койки отделения
+    val list_busy = new java.util.LinkedList[OrgStructureHospitalBed]()
+    list_busy.add(testData.getTestDefaultOrgStructureHospitalBed(1))
+    list_busy.add(testData.getTestDefaultOrgStructureHospitalBed(4))
+    list_busy.add(testData.getTestDefaultOrgStructureHospitalBed(5))
+
+    try
+    {
+      logger.info("Request data for method is: {}", "departmentId=%d".format(1))
+
+      when(dbOrgStructureHospitalBed.getHospitalBedByDepartmentId(anyInt())).thenReturn(list_all)
+      when(dbOrgStructureHospitalBed.getBusyHospitalBedByIds(anyObject())).thenReturn(list_busy)
+
+      val result = hospitalBedBean.getCaseHospitalBedsByDepartmentId(1)
+
+      verify(dbOrgStructureHospitalBed).getHospitalBedByDepartmentId(anyInt())
+      verify(dbOrgStructureHospitalBed).getBusyHospitalBedByIds(anyObject())
+
+      Assert.assertNotNull(result)
+      Assert.assertEquals(result.size(), list_all.size())
+
+      for(i <- 0 until list_all.size()){
+        if (i==0||i==3||i==4)
+          Assert.assertEquals(result.get(list_all.get(i)), true)
+        else
+          Assert.assertEquals(result.get(list_all.get(i)), false)
+      }
+      logger.info("The method has been successfully completed. Result is: {}", result.toString)
+      logger.warn("Successful end of getCaseHospitalBedsByDepartmentId test")
+    }
+    catch {
+      case ex: CoreException => {
+        logger.error("getCaseHospitalBedsByDepartmentId test failed with error: {}", ex.getMessage + " " + ex.getStackTrace)
+        Assert.fail()
+      }
+    }
   }
-  /*
-   //Запрос на занятые койки в отделении
- def getCaseHospitalBedsByDepartmentId(departmentId: Int) = {
 
-   val allBeds = em.createQuery(AllHospitalBedsByDepartmentIdQuery, classOf[OrgStructureHospitalBed])
-               .setParameter("departmentId", departmentId)
-               .getResultList
+  @Test
+  def testGetRegistryOriginalFormSuccessfully = {
 
-   val ids = CollectionUtils.collect(allBeds, new Transformer() {
-      def transform(orgBed: Object) = orgBed.asInstanceOf[OrgStructureHospitalBed].getId
-   })
+    logger.warn("Start of getRegistryOriginalForm test:")
 
-   val result = em.createQuery(BusyHospitalBedsByDepartmentIdQuery.format(i18n("db.action.movingFlatCode"),
-                                                                          i18n("db.apt.moving.codes.hospitalBed")),
-                               classOf[OrgStructureHospitalBed])
-     .setParameter("ids", asJavaCollection(ids))
-     .getResultList
+    val testAction = testData.getTestDefaultAction(TAction_id)
+    val auth = null
 
-   val map = new java.util.LinkedHashMap[OrgStructureHospitalBed, java.lang.Boolean]()
-   allBeds.foreach(allBed => {
-     val res = result.find(bed => allBed.getId.intValue()==bed.getId.intValue())
-     if(res==None) map.put(allBed, false)
-     else map.put(allBed, true)
-   })
-   result.foreach(em.detach(_))
-   map
- }
-  */
+    try
+    {
+      logger.info("Request data for method is: {}", "action=%s, auth=%s".format(testAction.toString, auth))
 
+      when(actionPropertyBean.getActionPropertiesByActionIdAndActionPropertyTypeCodes(anyInt(), anyObject())).thenReturn(this.getDefaultHospitalBedsValues(codes_all))
+      val result = hospitalBedBean.getRegistryOriginalForm(testAction, auth)
+      verify(actionPropertyBean).getActionPropertiesByActionIdAndActionPropertyTypeCodes(anyInt(), anyObject())
+
+      Assert.assertNotNull(result)
+      Assert.assertNotNull(result.data)
+      Assert.assertNotNull(result.data.bedRegistration)
+      val testing = result.data.bedRegistration
+      Assert.assertEquals(testing.getClientId, testAction.getEvent.getPatient.getId.intValue())
+      Assert.assertEquals(testing.getBedId, ThospitalBed)
+      Assert.assertEquals(testing.getMovedFromUnitId, TorgStructReceived)
+      Assert.assertEquals(testing.getPatronage, Tpatronage)
+
+      logger.info("The method has been successfully completed. Result is: {}", result.toString)
+      logger.warn("Successful end of getRegistryOriginalForm test")
+    }
+    catch {
+      case ex: CoreException => {
+        logger.error("getRegistryOriginalForm test failed with error: {}", ex.getMessage + " " + ex.getStackTrace)
+        Assert.fail()
+      }
+    }
+  }
+
+  @Test
+  def testGetRegistryFormWithChamberListSuccessfully = {
+
+    logger.warn("Start of getRegistryFormWithChamberList test:")
+
+    val testAction = testData.getTestDefaultAction(TAction_id)
+    val auth = null
+
+    //Все койки отделения
+    val list_all = new java.util.LinkedList[OrgStructureHospitalBed]()
+    list_all.add(testData.getTestDefaultOrgStructureHospitalBed(1))
+    list_all.add(testData.getTestDefaultOrgStructureHospitalBed(2))
+    list_all.add(testData.getTestDefaultOrgStructureHospitalBed(3))
+    list_all.add(testData.getTestDefaultOrgStructureHospitalBed(4))
+    list_all.add(testData.getTestDefaultOrgStructureHospitalBed(5))
+    //Занятые койки отделения
+    val list_busy = new java.util.LinkedList[OrgStructureHospitalBed]()
+    list_busy.add(testData.getTestDefaultOrgStructureHospitalBed(1))
+    list_busy.add(testData.getTestDefaultOrgStructureHospitalBed(4))
+    list_busy.add(testData.getTestDefaultOrgStructureHospitalBed(5))
+
+    try
+    {
+      logger.info("Request data for method is: {}", "action=%s, auth=%s".format(testAction.toString, auth))
+
+      when(dbOrgStructureHospitalBed.getHospitalBedByDepartmentId(anyInt())).thenReturn(list_all)
+      when(dbOrgStructureHospitalBed.getBusyHospitalBedByIds(anyObject())).thenReturn(list_busy)
+      when(actionPropertyBean.getActionPropertiesByActionIdAndActionPropertyTypeCodes(anyInt(), anyObject())).thenReturn(this.getDefaultHospitalBedsValues(codes_all))
+      val result = hospitalBedBean.getRegistryFormWithChamberList(testAction, auth)
+      verify(actionPropertyBean).getActionPropertiesByActionIdAndActionPropertyTypeCodes(anyInt(), anyObject())
+
+      Assert.assertNotNull(result)
+      Assert.assertNotNull(result.data)
+      Assert.assertNotNull(result.data.registrationForm)
+      val testing = result.data.registrationForm
+      Assert.assertEquals(testing.getClientId, testAction.getEvent.getPatient.getId.intValue())
+      Assert.assertEquals(testing.getBedId, ThospitalBed)
+      Assert.assertEquals(testing.getMovedFromUnitId, TorgStructReceived)
+      Assert.assertEquals(testing.getPatronage, Tpatronage)
+      Assert.assertEquals(testing.getChamberList.size(), 1)
+      Assert.assertEquals(testing.getChamberList.get(0).getBedList.size(), list_all.size())
+      for(i <- 0 until testing.getChamberList.get(0).getBedList.size()){
+        val bed0 = testing.getChamberList.get(0).getBedList.get(i)
+        Assert.assertEquals(bed0.getBedId, list_all.get(i).getId.intValue())
+        Assert.assertEquals(bed0.getCode, list_all.get(i).getCode)
+        Assert.assertEquals(bed0.getName, list_all.get(i).getName)
+        if (i==0||i==3||i==4)
+          Assert.assertEquals(bed0.getBusy, "yes")
+        else
+          Assert.assertEquals(bed0.getBusy, "no")
+      }
+
+      logger.info("The method has been successfully completed. Result is: {}", result.toString)
+      logger.warn("Successful end of getRegistryFormWithChamberList test")
+    }
+    catch {
+      case ex: CoreException => {
+        logger.error("getRegistryFormWithChamberList test failed with error: {}", ex.getMessage + " " + ex.getStackTrace)
+        Assert.fail()
+      }
+    }
+  }
+
+  @Test
+  def testGetMovingListByEventIdAndFilterSuccessfully = {
+
+    logger.warn("Start of getMovingListByEventIdAndFilter test:")
+
+    val filter = new HospitalBedDataListFilter(TEvent_id)
+    val auth = null
+
+    val actions = new java.util.LinkedList[Action]()
+    actions.add(testData.getTestDefaultAction(1, testData.getTestDefaultActionType(1, ConfigManager.Messages("db.action.admissionFlatCode"))))
+    actions.add(testData.getTestDefaultAction(2, testData.getTestDefaultActionType(2, ConfigManager.Messages("db.action.movingFlatCode"))))
+    actions.add(testData.getTestDefaultAction(3, testData.getTestDefaultActionType(3, ConfigManager.Messages("db.action.movingFlatCode"))))
+
+    val data_receive = this.getDefaultHospitalBedsValues(codes_receive)
+    val data_move = this.getDefaultHospitalBedsValues(codes_move)
+
+    try
+    {
+      logger.info("Request data for method is: {}", "filter=%s, auth=%s".format(mapper.writeValueAsString(filter), mapper.writeValueAsString(auth)))
+
+      when(actionBean.getActionsWithFilter(0, 0, filter.toSortingString("createDatetime", "asc"), filter.unwrap, null, auth)).thenReturn(actions)
+      when(actionPropertyBean.getActionPropertiesByActionIdAndActionPropertyTypeCodes(1, codes_receive)).thenReturn(data_receive)
+      when(actionPropertyBean.getActionPropertiesByActionIdAndActionPropertyTypeCodes(1, codes_move)).thenReturn(data_move)
+      when(actionPropertyBean.getActionPropertiesByActionIdAndActionPropertyTypeCodes(2, codes_receive)).thenReturn(data_receive)
+      when(actionPropertyBean.getActionPropertiesByActionIdAndActionPropertyTypeCodes(2, codes_move)).thenReturn(data_move)
+      when(actionPropertyBean.getActionPropertiesByActionIdAndActionPropertyTypeCodes(3, codes_receive)).thenReturn(data_receive)
+      when(actionPropertyBean.getActionPropertiesByActionIdAndActionPropertyTypeCodes(3, codes_move)).thenReturn(data_move)
+      val result = hospitalBedBean.getMovingListByEventIdAndFilter(filter, auth)
+      verify(actionBean).getActionsWithFilter(0, 0, filter.toSortingString("createDatetime", "asc"), filter.unwrap, null, auth)
+      //verify(actionPropertyBean).getActionPropertiesByActionIdAndActionPropertyTypeCodes(anyInt(), anyObject())
+
+      Assert.assertNotNull(result)
+      Assert.assertNotNull(result.data)
+      Assert.assertNotNull(result.data.moves)
+      Assert.assertEquals(result.data.moves.size(), actions.size()+1)
+      val testing =
+      for(i <- 0 until result.data.moves.size()){
+        val move0 = result.data.moves.get(i)
+
+        if (i==result.data.moves.size()-1) {  //Последний
+          Assert.assertEquals(move0.getUnitId, TorgStructTransfer)
+          Assert.assertEquals(move0.getUnit.contains("Направлен в "), true)
+          Assert.assertEquals(move0.getBed, "Положить на койку")
+        }
+        else {
+          if (i==0) {                             //Первый
+            Assert.assertEquals(move0.getUnitId, 28)
+            Assert.assertEquals(move0.getUnit, "Приемное отделение")
+          }
+          else {
+            Assert.assertEquals(move0.getUnitId, TorgStructDirection)
+            Assert.assertEquals(move0.getBed.isEmpty, false)
+          }
+          Assert.assertEquals(move0.getId, actions.get(i).getId.intValue())
+          Assert.assertEquals(move0.getDoctorCode, actions.get(i).getAssigner.getId.toString)
+          Assert.assertEquals(move0.getAdmission, actions.get(i).getBegDate)
+        }
+
+      }
+
+      logger.info("The method has been successfully completed. Result is: {}", result.toString)
+      logger.warn("Successful end of getMovingListByEventIdAndFilter test")
+    }
+    catch {
+      case ex: CoreException => {
+        logger.error("getMovingListByEventIdAndFilter test failed with error: {}", ex.getMessage + " " + ex.getStackTrace)
+        Assert.fail()
+      }
+    }
+  }
+
+  private def getDefaultHospitalBedsValues(codes: java.util.Set[String]) =  {
+
+    val now = new Date()
+    val map = new java.util.HashMap[ActionProperty, java.util.List[APValue]]()
+
+    codes.foreach(code => {
+      if(code.compareTo(ConfigManager.Messages("db.apt.received.codes.orgStructDirection").toString)==0){
+        map.put(testData.getTestDefaultActionProperty(1,
+          testData.getTestDefaultActionPropertyType(1, ConfigManager.Messages("db.apt.received.codes.orgStructDirection"))),
+          asJavaList(List[APValue](testData.getTestDefaultAPValueOrgStructure(TorgStructDirection))))
+      }
+      else if(code.compareTo(ConfigManager.Messages("db.apt.moving.codes.orgStructTransfer").toString)==0){
+        map.put(testData.getTestDefaultActionProperty(2,
+          testData.getTestDefaultActionPropertyType(2, ConfigManager.Messages("db.apt.moving.codes.orgStructTransfer"))),
+          asJavaList(List[APValue](testData.getTestDefaultAPValueOrgStructure(TorgStructTransfer))))
+      }
+      else if(code.compareTo(ConfigManager.Messages("db.apt.moving.codes.timeArrival").toString)==0){
+        map.put(testData.getTestDefaultActionProperty(3,
+          testData.getTestDefaultActionPropertyType(3, ConfigManager.Messages("db.apt.moving.codes.timeArrival"))),
+          asJavaList(List[APValue](testData.getTestDefaultAPValueTime(TtimeArrival))))
+      }
+      else if(code.compareTo(ConfigManager.Messages("db.apt.moving.codes.patronage").toString)==0){
+        map.put(testData.getTestDefaultActionProperty(4,
+          testData.getTestDefaultActionPropertyType(4, ConfigManager.Messages("db.apt.moving.codes.patronage"))),
+          asJavaList(List[APValue](testData.getTestDefaultAPValueString(Tpatronage))))
+      }
+      else if(code.compareTo(ConfigManager.Messages("db.apt.moving.codes.hospitalBed").toString)==0){
+        map.put(testData.getTestDefaultActionProperty(5,
+          testData.getTestDefaultActionPropertyType(5, ConfigManager.Messages("db.apt.moving.codes.hospitalBed"))),
+          asJavaList(List[APValue](testData.getTestDefaultAPValueHospitalBed(ThospitalBed))))
+      }
+      else if(code.compareTo(ConfigManager.Messages("db.apt.moving.codes.orgStructReceived").toString)==0){
+        map.put(testData.getTestDefaultActionProperty(6,
+          testData.getTestDefaultActionPropertyType(6, ConfigManager.Messages("db.apt.moving.codes.orgStructReceived"))),
+          asJavaList(List[APValue](testData.getTestDefaultAPValueOrgStructure(TorgStructReceived))))
+      }
+      else if(code.compareTo(ConfigManager.Messages("db.apt.moving.codes.hospOrgStruct").toString)==0){
+        map.put(testData.getTestDefaultActionProperty(7,
+          testData.getTestDefaultActionPropertyType(7, ConfigManager.Messages("db.apt.moving.codes.hospOrgStruct"))),
+          asJavaList(List[APValue](testData.getTestDefaultAPValueOrgStructure(ThospOrgStruct))))
+      }
+    })
+
+    map
+  }
 }
