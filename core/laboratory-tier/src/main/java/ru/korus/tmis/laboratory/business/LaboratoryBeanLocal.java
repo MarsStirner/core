@@ -2,6 +2,7 @@ package ru.korus.tmis.laboratory.business;
 
 import ru.korus.tmis.core.entity.model.Action;
 import ru.korus.tmis.core.entity.model.ActionType;
+import ru.korus.tmis.core.entity.model.Event;
 import ru.korus.tmis.core.entity.model.TakenTissue;
 import ru.korus.tmis.core.exception.CoreException;
 import ru.korus.tmis.laboratory.data.lis.accept.AnalysisResult;
@@ -53,4 +54,6 @@ public interface LaboratoryBeanLocal {
     BiomaterialInfo getBiomaterialInfo(Action action, TakenTissue takenTissue);
 
     OrderInfo getOrderInfo(Action a, ActionType at);
+
+    scala.Tuple2<String, String> getDiagnosis(Event e);
 }

@@ -2,6 +2,7 @@ package ru.korus.tmis.ws.laboratory.bak.ws.client.bean;
 
 import ru.cgm.service.*;
 import ru.korus.tmis.core.database.DbActionBeanLocal;
+import ru.korus.tmis.core.database.DbMkbBeanLocal;
 import ru.korus.tmis.core.database.DbStaffBeanLocal;
 import ru.korus.tmis.core.entity.model.*;
 import ru.korus.tmis.core.exception.CoreException;
@@ -13,6 +14,7 @@ import ru.korus.tmis.laboratory.data.request.OrderInfo;
 import ru.korus.tmis.ws.laboratory.bak.ws.client.SendBakRequest;
 import ru.korus.tmis.ws.laboratory.bak.ws.client.SendBakRequestWS;
 import ru.korus.tmis.ws.laboratory.bak.ws.client.xml.SOAPEnvelopeHandlerResolver;
+import scala.Tuple2;
 
 import javax.ejb.EJB;
 import javax.ejb.Stateless;
@@ -55,6 +57,9 @@ public class BakLaboratoryBean implements BakLaboratoryService {
 
     @EJB
     private DbActionBeanLocal dbActionBean;
+
+    @EJB
+    private DbMkbBeanLocal dbMKBBean;
 
     /**
      * Метод для отсылки запроса на анализ в лабораторию
@@ -124,7 +129,7 @@ public class BakLaboratoryBean implements BakLaboratoryService {
     }
 
 
-    private static void createBody(HL7Document document, BiomaterialInfo biomaterialInfo, OrderInfo orderInfo, Patient patient, DiagnosticRequestInfo requestInfo, Action action, Event eventInfo) {
+    private void createBody(HL7Document document, BiomaterialInfo biomaterialInfo, OrderInfo orderInfo, Patient patient, DiagnosticRequestInfo requestInfo, Action action, Event eventInfo) throws CoreException {
         final ComponentInfo component = new ComponentInfo();
         final StructuredBodyInfo structuredBody = new StructuredBodyInfo();
         final SubComponentInfo subComponentInfo = FACTORY_BAK.createSubComponentInfo();
@@ -140,11 +145,16 @@ public class BakLaboratoryBean implements BakLaboratoryService {
 
         section.getEntry().add(createEntry(eventInfo.getOrganisation().getUuid().getUuid(), "OBS", "RQO", requestInfo.orderDepartmentMisCode().get(), requestInfo.orderDepartmentName().get()));
         section.getEntry().add(createEntry(action.getUuid().getUuid(), "OBS", "RQO", action.getIsUrgent() + "", ""));
-        section.getEntry().add(createEntry("XXX-XXX-XXX-XXX", "OBS", "RQO", requestInfo.orderDiagCode().get(), requestInfo.orderDiagText().get()));
+        final Tuple2<String, String> diagnosis = laboratoryBean.getDiagnosis(eventInfo);
+        final String mkbCode = diagnosis._1();
+        final Mkb mkb = dbMKBBean.getMkbByCode(mkbCode);
+        final String diagName = mkb.getDiagName();
+        section.getEntry().add(createEntry(diagName, "OBS", "RQO", requestInfo.orderDiagCode().get(), requestInfo.orderDiagText().get()));
         section.getEntry().add(createEntry(eventInfo.getEventType().getFinance().getName(), "OBS", "RQO", orderInfo.diagnosticCode().get(), orderInfo.diagnosticName().get()));
 
         for (IndicatorMetodic indicatorMetodic : orderInfo.indicators()) {
-            section.getEntry().add(createEntry("xxx-xxx-xxx-xxx", "OBS", "RQO", indicatorMetodic.indicatorCode().get(), indicatorMetodic.indicatorName().get()));
+            // TODO задать вопрос что за root здесь
+            section.getEntry().add(createEntry(java.util.UUID.randomUUID().toString(), "OBS", "RQO", indicatorMetodic.indicatorCode().get(), indicatorMetodic.indicatorName().get()));
         }
 
 
@@ -245,9 +255,11 @@ public class BakLaboratoryBean implements BakLaboratoryService {
         assignedAuthor.setAssignedPerson(assignedPerson);
 
         final RepresentedOrganizationInfo representedOrganization = new RepresentedOrganizationInfo();
-        if (doctor.getOrgStructure() != null && doctor.getOrgStructure().getUuid() != null) {
+        final OrgStructure doctorOrgStructure = doctor.getOrgStructure();
+        final UUID doctorOrgStructureUuid = doctorOrgStructure.getUuid();
+        if (doctorOrgStructure != null && doctorOrgStructureUuid != null) {
             final ReporgIDInfo reporgIDInfo = new ReporgIDInfo();
-            reporgIDInfo.setRoot(doctor.getOrgStructure().getUuid().getUuid());
+            reporgIDInfo.setRoot(doctorOrgStructureUuid.getUuid());
             representedOrganization.setId(reporgIDInfo);
         }
         representedOrganization.setName(ORDER_CUSTODIAN);
@@ -449,17 +461,21 @@ public class BakLaboratoryBean implements BakLaboratoryService {
             spTranslationInfo.setDisplayName(biomaterialInfo.orderBiomaterialname().get());
             spCodeInfo.setTranslation(spTranslationInfo);
             specimenPlayingEntity.setCode(spCodeInfo);
+            final TakenTissue takenTissue = action.getTakenTissue();
 
             final SpQuantityInfo quantityInfo = new SpQuantityInfo();
-            quantityInfo.setValue(String.valueOf(action.getTakenTissue().getAmount()));
+            quantityInfo.setValue(String.valueOf(takenTissue.getAmount()));
             specimenPlayingEntity.setQuantity(quantityInfo);
 
             final SpTextInfo text = new SpTextInfo();
-            text.setValue(action.getTakenTissue().getUnit().getId().toString());
+            final RbUnit unit = takenTissue.getUnit();
+            final Integer unitId = unit.getId();
+            text.setValue(unitId.toString());
             specimenPlayingEntity.setText(text);
 
             final SpUnitInfo spUnitInfo = new SpUnitInfo();
-            spCodeInfo.setCode(action.getTakenTissue().getType().getName());
+            final RbTissueType takenTissueType = takenTissue.getType();
+            spCodeInfo.setCode(takenTissueType.getName());
             specimenPlayingEntity.setUnit(spUnitInfo);
 
             specimenRole.setSpecimenPlayingEntity(specimenPlayingEntity);
