@@ -15,6 +15,7 @@ import java.util.List;
 public interface TestDataEntity extends Serializable {
 
     Action getTestDefaultAction(int actionId);
+    Action getTestDefaultAction(int actionId, ActionType at);
     Action getTestAction(int actionId, Event event, Staff assigner, ActionType atype, TakenTissue ttissue, boolean urgent);
 
     Event getTestDefaultEvent();
@@ -25,7 +26,7 @@ public interface TestDataEntity extends Serializable {
     Staff getTestDefaultStaff(int personId);
 
     ActionType getTestDefaultActionType();
-    //ActionType getTestDefaultActionType(int id);
+    ActionType getTestDefaultActionType(int id, String flatCode);
 
     RbTestTubeType getTestDefaultTestTubeType();
 
@@ -64,6 +65,7 @@ public interface TestDataEntity extends Serializable {
 
     ActionProperty getTestDefaultActionProperty();
     ActionProperty getTestDefaultActionProperty(int id);
+    ActionProperty getTestDefaultActionProperty(int id, ActionPropertyType apt);
     Object getTestDefaultActionPropertyWithValues();
     Object getTestDefaultActionPropertyWithValues(int id, List<APValue> values);
 
@@ -75,6 +77,9 @@ public interface TestDataEntity extends Serializable {
 
     APValueTime getTestDefaultAPValueTime();
     APValueTime getTestDefaultAPValueTime(Date time);
+
+    APValueString getTestDefaultAPValueString();
+    APValueString getTestDefaultAPValueString(String str);
 
     ActionPropertyType getTestDefaultActionPropertyType(int id, String code);
 

@@ -30,6 +30,12 @@ class TestDataEntityImpl extends TestDataEntity {
     action
   }
 
+  def  getTestDefaultAction(actionId: Int, at: ActionType) =  {
+    val action = getTestDefaultAction(actionId)
+    action.setActionType(at)
+    action
+  }
+
   def  getTestAction(actionId: Int, event: Event, assigner: Staff, atype: ActionType, ttissue: TakenTissue, urgent: Boolean) =  {
     val action = getTestDefaultAction(actionId)
 
@@ -58,6 +64,14 @@ class TestDataEntityImpl extends TestDataEntity {
     val at = new ActionType(testId)
     at.setTestTubeType(getTestDefaultTestTubeType)
     at.setCode("")
+    at.setFlatCode("test_flatCode")
+    at
+  }
+
+  def getTestDefaultActionType(id: Int, flatCode: String) = {
+    val at = getTestDefaultActionType
+    at.setId(id)
+    at.setFlatCode(flatCode)
     at
   }
 
@@ -256,6 +270,12 @@ class TestDataEntityImpl extends TestDataEntity {
     ap
   }
 
+  def getTestDefaultActionProperty(id: Int, apt: ActionPropertyType) = {
+    val ap = getTestDefaultActionProperty(id)
+    ap.setType(apt)
+    ap
+  }
+
   def getTestDefaultActionPropertyWithValues() = {
     val ap = new ActionProperty(testId)
     val values = new java.util.LinkedList[APValue]()
@@ -303,6 +323,18 @@ class TestDataEntityImpl extends TestDataEntity {
     val apBed = new APValueTime ()
     apBed.setValue(time)
     apBed
+  }
+
+  def getTestDefaultAPValueString = {
+    val apStr = new APValueString()
+    apStr.setValue("test_string")
+    apStr
+  }
+
+  def getTestDefaultAPValueString (str: String) = {
+    val apStr = new APValueString()
+    apStr.setValue(str)
+    apStr
   }
 
   def getTestDefaultActionPropertyType(id: Int, code: String) = {
