@@ -146,9 +146,12 @@ public class BakLaboratoryBean implements BakLaboratoryService {
         section.getEntry().add(createEntry(eventInfo.getOrganisation().getUuid().getUuid(), "OBS", "RQO", requestInfo.orderDepartmentMisCode().get(), requestInfo.orderDepartmentName().get()));
         section.getEntry().add(createEntry(action.getUuid().getUuid(), "OBS", "RQO", action.getIsUrgent() + "", ""));
         final Tuple2<String, String> diagnosis = laboratoryBean.getDiagnosis(eventInfo);
-        final String mkbCode = diagnosis._1();
-        final Mkb mkb = dbMKBBean.getMkbByCode(mkbCode);
-        final String diagName = mkb.getDiagName();
+        String diagName = "";
+        if (diagnosis != null) {
+            final String mkbCode = diagnosis._1();
+            final Mkb mkb = dbMKBBean.getMkbByCode(mkbCode);
+            diagName = mkb.getDiagName();
+        }
         section.getEntry().add(createEntry(diagName, "OBS", "RQO", requestInfo.orderDiagCode().get(), requestInfo.orderDiagText().get()));
         section.getEntry().add(createEntry(eventInfo.getEventType().getFinance().getName(), "OBS", "RQO", orderInfo.diagnosticCode().get(), orderInfo.diagnosticName().get()));
 
@@ -256,11 +259,13 @@ public class BakLaboratoryBean implements BakLaboratoryService {
 
         final RepresentedOrganizationInfo representedOrganization = new RepresentedOrganizationInfo();
         final OrgStructure doctorOrgStructure = doctor.getOrgStructure();
-        final UUID doctorOrgStructureUuid = doctorOrgStructure.getUuid();
-        if (doctorOrgStructure != null && doctorOrgStructureUuid != null) {
-            final ReporgIDInfo reporgIDInfo = new ReporgIDInfo();
-            reporgIDInfo.setRoot(doctorOrgStructureUuid.getUuid());
-            representedOrganization.setId(reporgIDInfo);
+        if (doctorOrgStructure != null) {
+            final UUID doctorOrgStructureUuid = doctorOrgStructure.getUuid();
+            if (doctorOrgStructure != null && doctorOrgStructureUuid != null) {
+                final ReporgIDInfo reporgIDInfo = new ReporgIDInfo();
+                reporgIDInfo.setRoot(doctorOrgStructureUuid.getUuid());
+                representedOrganization.setId(reporgIDInfo);
+            }
         }
         representedOrganization.setName(ORDER_CUSTODIAN);
         assignedAuthor.setRepresentedOrganization(representedOrganization);
