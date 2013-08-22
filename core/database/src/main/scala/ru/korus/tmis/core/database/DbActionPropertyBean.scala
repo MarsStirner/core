@@ -423,7 +423,7 @@ class DbActionPropertyBean
                               ap_s.id = ap.id
                       )
                     )
-                    GROUP BY idd, apt.code, ap.createDatetime DESC
+                    GROUP BY idd, apt.code, ap.id, ap.createDatetime DESC
         ) grouped
       ) counted
       WHERE rown <= ?3
