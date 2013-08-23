@@ -768,9 +768,11 @@ class WebMisRESTImpl  extends WebMisREST
                                                               requestData.filter.unwrap())
     }
     var ajtList = new util.LinkedList[(Action, JobTicket)]()
-    actions.foreach(a => {
-      ajtList.add((a, dbJobTicketBean.getJobTicketForAction(a.getId.intValue())))
-    })
+    if (actions != null && actions.size() > 0) {
+      actions.foreach(a => {
+        ajtList.add((a, dbJobTicketBean.getJobTicketForAction(a.getId.intValue())))
+      })
+    }
     val list = new DiagnosticsListData(ajtList, requestData, authData)
     list
   }
