@@ -64,7 +64,7 @@ class AppealData extends I18nable {
   def this(event: Event,
            appeal: Action,
            values: java.util.Map[(java.lang.Integer, ActionProperty), java.util.List[Object]],
-           mMovingProperties: (java.util.List[java.lang.Integer], java.util.Set[String], Int) => util.LinkedHashMap[java.lang.Integer, util.LinkedHashMap[ActionProperty, java.util.List[APValue]]],
+           mMovingProperties: (java.util.List[java.lang.Integer], java.util.Set[String], Int, Boolean) => util.LinkedHashMap[java.lang.Integer, util.LinkedHashMap[ActionProperty, java.util.List[APValue]]],
            typeOfResponse: String,
            map: java.util.LinkedHashMap[java.lang.Integer, java.util.LinkedList[Kladr]],
            street: java.util.LinkedHashMap[java.lang.Integer, Street],
@@ -348,7 +348,7 @@ class AppealEntry extends I18nable {
   def this(event: Event,
            action: Action,
            values: java.util.Map[(java.lang.Integer, ActionProperty), java.util.List[Object]],
-           mMovingProperties: (java.util.List[java.lang.Integer], java.util.Set[String], Int) => util.LinkedHashMap[java.lang.Integer, util.LinkedHashMap[ActionProperty, java.util.List[APValue]]],
+           mMovingProperties: (java.util.List[java.lang.Integer], java.util.Set[String], Int, Boolean) => util.LinkedHashMap[java.lang.Integer, util.LinkedHashMap[ActionProperty, java.util.List[APValue]]],
            typeOfResponse: String,
            map: java.util.LinkedHashMap[java.lang.Integer, java.util.LinkedList[Kladr]],
            street: java.util.LinkedHashMap[java.lang.Integer, Street],
@@ -577,7 +577,7 @@ class AppealEntry extends I18nable {
     if (mMovingProperties!=null){
       val eventIds: java.util.List[java.lang.Integer] = new util.LinkedList[java.lang.Integer]();
       eventIds.add(event.getId.intValue())
-      val moveProps = mMovingProperties(eventIds, setATCodes, 1)
+      val moveProps = mMovingProperties(eventIds, setATCodes, 1, true)
       if (moveProps!=null && moveProps.size>0) {
         var res = moveProps.get(event.getId.intValue()).find(f => {f._1.getType.getCode.compareTo(i18n("db.apt.moving.codes.orgStructTransfer"))==0}).getOrElse(null)
         if (res==null) {
