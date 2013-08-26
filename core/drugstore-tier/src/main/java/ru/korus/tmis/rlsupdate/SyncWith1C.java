@@ -118,7 +118,7 @@ public class SyncWith1C {
         //Справочник лекарственных средсв из системы 1С
         final DrugList drugListRes = ws1C.getDrugList();
         logger.info("update RLS...the list of drugs has been recived from 1C. list size: {}", drugListRes.getDrug().size());
-        String res = "update RLS...start...1C drugs list size: " + drugListRes.getDrug().size() + EOL;
+        String res = htmlNewLine("update RLS...start...1C drugs list size: " + drugListRes.getDrug().size() + EOL);
         drugList = new DrugList();
         drugsInDb = new HashMap<Integer, RlsNomen>();
         for (POCDMT000040LabeledDrug drug : drugListRes.getDrug()) {
@@ -136,7 +136,7 @@ public class SyncWith1C {
                     }
                 } catch (NumberFormatException ex) {
                     logger.info("Wrong dosage format for drug # {}: {}",drugRlsCode, ex );
-                    res += "Wrong dosage format for drug #" + drugRlsCode + ": " + dosageValue + EOL;
+                    res += htmlNewLine("Wrong dosage format for drug #" + drugRlsCode + ": " + dosageValue + EOL);
                 }
                 rlsNomen.setDosageUnit(getRbUnit(getDosageUnit(drug)));
                 rlsNomen.setUnit(getRbUnit(getFillingUnit(drug)));
@@ -174,10 +174,15 @@ public class SyncWith1C {
                 drugList.getDrug().add(drug);
             }
         }
-        final String end = "update RLS...completed";
+        final String end = htmlNewLine("update RLS...completed");
         res += end;
         logger.info(end);
         return res;
+    }
+
+    private String htmlNewLine(String s) {
+        return "<p>" + s + " </p>";
+
     }
 
     private MISExchangePortType getMisExchangePortType() {
@@ -550,7 +555,7 @@ public class SyncWith1C {
             logger.info("update RLS balance...stoped");
             return RLS_UPDATE_IS_DISABLED;
         }
-        String res =  "<p> update RLS balance...start </p>" + EOL;
+        String res =  htmlNewLine("update RLS balance...start" + EOL);
         OrgStructure mainOrganization =  em.find(OrgStructure.class, 1);
         if(mainOrganization != null && mainOrganization.getUuid() != null) {
             List<OrgStructure> orgStructures = dbOrgStructureBean.getAllOrgStructures();
@@ -567,7 +572,7 @@ public class SyncWith1C {
         logger.info("update RLS balance for store {}", orgStructure.getName());
         final SimpleDateFormat dateFormat = new SimpleDateFormat("yyyyMMdd");
         Integer updateCount = 0;
-        String res = "<p>update RLS balance for store '" + orgStructure.getName() + "'</p>";
+        String res = htmlNewLine("update RLS balance for store '" + orgStructure.getName() + "'");
         MISExchangePortType servicePort = getMisExchangePortType();
         if(!drugList.getDrug().isEmpty()) {
             BalanceOfGoods2 balanceOfGoods2 = servicePort.balanceOfGoods(drugList, organizationRef, orgStructure.getUuid().getUuid());
