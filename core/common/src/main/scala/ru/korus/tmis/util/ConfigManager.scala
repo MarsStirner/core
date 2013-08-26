@@ -113,6 +113,7 @@ object ConfigManager extends Configuration {
     var ReferenceBookActive = "off"
 
     def isHealthShareReferenceBook = "on".equals(HealthShare.ReferenceBookActive)
+
     /**
      * URL сервиса со справочниками HS
      */
@@ -294,6 +295,27 @@ object ConfigManager extends Configuration {
     var RuntimeWSDLUrl: URL = null
 
     def WSDLUrl: URL = Option(RuntimeWSDLUrl).getOrElse(null)
+  }
+
+
+  /**
+   *
+   * Настройки thrift сервиса для обмена информацией с frontend системами: НТК, WebMIS
+   *
+   */
+  var Prescription = new PrescriptionClass
+
+  class PrescriptionClass extends Configuration {
+    /**
+     * Порт сервиса, к которому будут подключаться системы
+     */
+    var Port = 8383
+
+    /**
+     * Максимальное кол-во потоков, участвующее в работе
+     */
+    var MaxThreads = 5
+
   }
 
 
