@@ -39,7 +39,7 @@ class AppealData extends I18nable {
   @BeanProperty
   var requestData: AppealRequestData = _
   @BeanProperty
-  var data: AppealEntry = _
+  var data: AppealEntry = new AppealEntry()
 
   /**
    * Конструктор класса AppealData
@@ -56,7 +56,6 @@ class AppealData extends I18nable {
    * @param requestData Данные из запроса с клиента как AppealRequestData
    * @param postProcessing Делегируемый метод по поиску идентификатора первичного осмотра по идентификатору обращения.
    * @param mRelationByRelativeId Делегируемый метод по поиску связи пациента и представителя по идентификатору представителя.
-   * @param mCorrList Делегируемый метод, предоставляющий список соответствий идентификаторов ActionPropertyType и rbCoreActionProperty
    * @param contract Контракт
    * @param mDiagnosticList Делегируемый метод по получению диагностик госпитализации
    */
@@ -72,7 +71,6 @@ class AppealData extends I18nable {
            postProcessing: (Int, java.util.Set[java.lang.Integer]) => Int,
            mRelationByRelativeId: (Int)=> ClientRelation,
            mAdmissionDiagnosis: (Int , java.util.Set[String]) => java.util.Map[ActionProperty, java.util.List[APValue]],
-           mCorrList: (java.util.List[java.lang.Integer])=> java.util.List[RbCoreActionProperty],
            contract: Contract,
            currentDepartment: OrgStructure,
            mDiagnosticList: (Int, java.util.Set[String]) => java.util.List[Diagnostic],
@@ -124,8 +122,6 @@ class AppealData extends I18nable {
       lstAllIds.addAll(setExtractIds)
       lstAllIds.addAll(setMovingIds)
 
-      //val corrMap = if(mCorrList!=null) mCorrList(lstAllIds) else null
-
       val primaryId = postProcessing(event.getId.intValue(), setATIds)
       val admissions = if (mAdmissionDiagnosis!=null && primaryId>0) mAdmissionDiagnosis(primaryId, setAdmissionIds) else null
 
@@ -134,7 +130,6 @@ class AppealData extends I18nable {
 
       new AppealEntry(event, appeal, values, mMovingProperties, typeOfResponse, map, street, (primaryId>0), mRelationByRelativeId, admissions, extractProperties, null, contract, currentDepartment, diagnostics, tempInvalid)
     } else {
-      //val corrMap = if(mCorrList!=null) mCorrList(setMovingIds) else null
       new AppealEntry(event, appeal, values, mMovingProperties, typeOfResponse, map, street, false, mRelationByRelativeId, null, null, null, contract, currentDepartment, diagnostics, tempInvalid)
      }
   }
@@ -297,22 +292,6 @@ class AppealEntry extends I18nable {
   //согласно спецификации: https://docs.google.com/spreadsheet/ccc?key=0Au-ED6EnawLcdHo0Z3BiSkRJRVYtLUxhaG5uYkNWaGc#gid=5
   @BeanProperty
   var leaved: LeavedInfoContainer = _
-  /*
-  @BeanProperty
-  var nextHospDate: String = _
-  @BeanProperty
-  var nextHospDepartment: String = _
-  @BeanProperty
-  var nextHospFinanceType: String = _
-  @BeanProperty
-  var hospOutcome: String = _
-  @BeanProperty
-  var hospLength: String = _
-  @BeanProperty
-  var outcomeDate: Date = _
-  @BeanProperty
-  var leavedDoctor: DoctorContainer = _
-  */
   @BeanProperty
   var result: IdNameContainer = _
   @BeanProperty
@@ -606,30 +585,7 @@ class AppealEntry extends I18nable {
     this.havePrimary = havePrimary
     //Данные о последующей госпитализации
     this.leaved = new LeavedInfoContainer(extractProperties)
-    /*
-    if (extractProperties!=null) {
-      extractProperties.foreach(prop => {
-        if (prop != null && prop._1 != null && prop._2 != null && prop._2.size() > 0) {
-          if (this.outcomeDate == null && this.leavedDoctor == null) {
-            this.outcomeDate = prop._1.getAction.getEndDate
-            this.leavedDoctor = new DoctorContainer(prop._1.getAction.getExecutor)
-          }
-          if (prop._1.getType.getCode.compareTo(i18n("db.apt.leaved.codes.nextHospDate"))==0){
-            this.nextHospDate = prop._2.get(0).getValueAsString
-          } else if (prop._1.getType.getCode.compareTo(i18n("db.apt.moving.codes.hospOrgStruct"))==0
-                     && prop._2.get(0).getValue != null && prop._2.get(0).getValue.asInstanceOf[OrgStructure].getName != null){
-            this.nextHospDepartment = "%s(%s)".format(prop._2.get(0).getValue.asInstanceOf[OrgStructure].getName, prop._2.get(0).getValue.asInstanceOf[OrgStructure].getAddress)
-          } else if (prop._1.getType.getCode.compareTo(i18n("db.apt.leaved.codes.nextHospFinance"))==0){
-            this.nextHospFinanceType = prop._2.get(0).getValueAsString
-          } else if (prop._1.getType.getCode.compareTo(i18n("db.apt.leaved.codes.hospOutcome"))==0){
-            this.hospOutcome = prop._2.get(0).getValueAsString
-          } else if (prop._1.getType.getCode.compareTo(i18n("db.apt.leaved.codes.hospLength"))==0){
-            this.hospLength = prop._2.get(0).getValueAsString
-          }
-        }
-      })
-    }
-    */
+
     //Контракт
     if (contract != null)
       this.contract = new ContractContainer(contract)

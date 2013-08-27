@@ -153,7 +153,7 @@ class AppealBean extends AppealBeanLocal
     insertOrModifyAppeal(appealData, newEvent, false, authData)
   }
 
-  private def insertOrModifyAppeal(appealData : AppealData, event: Event, flgCreate: Boolean, authData: AuthData) = {
+  def insertOrModifyAppeal(appealData : AppealData, event: Event, flgCreate: Boolean, authData: AuthData) = {
 
     var entities = Set.empty[AnyRef]
     val now = new Date()
@@ -209,9 +209,11 @@ class AppealBean extends AppealBeanLocal
       }
 
       action.setIsUrgent(appealData.data.getUrgent)
-      if(appealData.data.rangeAppealDateTime.getStart!=null)
-        action.setBegDate(appealData.data.rangeAppealDateTime.getStart)
-      action.setEndDate(appealData.data.rangeAppealDateTime.getEnd)
+      if(appealData.data.rangeAppealDateTime!=null) {
+        if(appealData.data.rangeAppealDateTime.getStart!=null)
+          action.setBegDate(appealData.data.rangeAppealDateTime.getStart)
+        action.setEndDate(appealData.data.rangeAppealDateTime.getEnd)
+      }
 
       if (!flgCreate)
         entities = entities + action
@@ -592,7 +594,7 @@ class AppealBean extends AppealBeanLocal
   //Внутренние методы
 
   @throws(classOf[CoreException])
-  private def verificationData(id: Int, authData: AuthData, appealData: AppealData, flgCreate: Boolean): Event = {   //для создания ид пациента, для редактирование ид обращения
+  def verificationData(id: Int, authData: AuthData, appealData: AppealData, flgCreate: Boolean): Event = {   //для создания ид пациента, для редактирование ид обращения
 
     if (authData==null){
       throw new CoreException("Mетод для изменения обращения по госпитализации не доступен для неавторизованного пользователя.")

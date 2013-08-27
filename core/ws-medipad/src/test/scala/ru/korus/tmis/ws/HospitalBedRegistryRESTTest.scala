@@ -41,6 +41,8 @@ class HospitalBedRegistryRESTTest {
   def init() {
   }
 
+  //!!!!! Тесты в HospitalBedBeanTest (Сервис ретранслирует выполнение в HospitalBedBean)
+
   /*
   @Test
   def testGetMovingListForEvent = {

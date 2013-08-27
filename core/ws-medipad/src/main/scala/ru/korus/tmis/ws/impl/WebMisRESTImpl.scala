@@ -122,9 +122,6 @@ class WebMisRESTImpl  extends WebMisREST
   private var dbSpeciality: DbRbSpecialityBeanLocal = _
 
   @EJB
-  private var dbRbCoreActionPropertyBean: DbRbCoreActionPropertyBeanLocal = _
-
-  @EJB
   private var dbRbContactType: DbRbContactTypeBeanLocal = _
 
   @EJB
@@ -291,7 +288,6 @@ class WebMisRESTImpl  extends WebMisREST
         actionBean.getLastActionByActionTypeIdAndEventId _,  //havePrimary
         dbClientRelation.getClientRelationByRelativeId _,
         null,
-        null,
         if (positionA._1.getContractId != null) {
           dbContractBean.getContractById(positionA._1.getContractId.intValue())
         } else {null},
@@ -329,7 +325,6 @@ class WebMisRESTImpl  extends WebMisREST
       actionBean.getLastActionByActionTypeIdAndEventId _,  //havePrimary
       dbClientRelation.getClientRelationByRelativeId _,
       actionPropertyBean.getActionPropertiesByActionIdAndActionPropertyTypeCodes _,
-      dbRbCoreActionPropertyBean.getRbCoreActionPropertiesByIds _,                    //таблица соответствия
       if (positionE._1.getContract != null) {
         dbContractBean.getContractById(positionE._1.getContract.getId.intValue())
       } else {null},
@@ -363,7 +358,6 @@ class WebMisRESTImpl  extends WebMisREST
       actionBean.getLastActionByActionTypeIdAndEventId _, //havePrimary
       dbClientRelation.getClientRelationByRelativeId _,
       actionPropertyBean.getActionPropertiesByActionIdAndActionPropertyTypeCodes _,  //в тч Admission Diagnosis
-      dbRbCoreActionPropertyBean.getRbCoreActionPropertiesByIds _,          //таблица соответствия
       if (positionA._1.getContractId != null) {
         dbContractBean.getContractById(positionA._1.getContractId.intValue())
       } else {null},
@@ -484,30 +478,7 @@ class WebMisRESTImpl  extends WebMisREST
 
   }
 
-  /*private def preProcessing (jData: JSONCommonData, reWriteId: java.lang.Boolean) = {
-    //Предбработка (Сопоставление CoreAP с id APT в подветке details - id, typeId)
-    jData.data.get(0).group.get(1).attribute.foreach(core => {
-      core.typeId = dbRbCoreActionPropertyBean.getRbCoreActionPropertiesById(core.typeId.intValue()).getActionPropertyType.getId
-      if(reWriteId.booleanValue) core.id = core.typeId
-    })
-    jData
-  } */
-
   private def postProcessing (jData: JSONCommonData, reWriteId: java.lang.Boolean) = {
-    //Постобработка (Сопоставление id APT c CoreAP в подветке details - id, typeId)
-    /*jData.data.get(0).group.get(1).attribute.foreach(ap => {
-      var value = if(reWriteId.booleanValue)
-        ap.id.intValue()
-      else {
-        if(ap.typeId!=null && ap.typeId.intValue()>0)
-          ap.typeId.intValue()
-        else
-          actionPropertyBean.getActionPropertyById(ap.id.intValue()).getType.getId.intValue()
-      }
-      ap.typeId = dbRbCoreActionPropertyBean.getRbCoreActionPropertiesByActionPropertyTypeId(value).getId.intValue()
-      if(reWriteId.booleanValue) ap.id =ap.typeId
-    })*/
-    //Без привязки к CoreAP
     jData.data.get(0).group.get(1).attribute.foreach(ap => {
       if(ap.typeId==null || ap.typeId.intValue()<=0) {
         if(reWriteId.booleanValue)  //в id -> apt.id
