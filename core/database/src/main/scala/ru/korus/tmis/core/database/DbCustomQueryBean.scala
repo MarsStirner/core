@@ -99,7 +99,7 @@ class DbCustomQueryBean
 
     val typed = em.createQuery(ActiveEventsByDepartmentIdAndDoctorIdBetweenDatesQueryEx
                                .format(queryStr.query,
-                                       i18n("db.action.leavingFlatCode"),
+                                       //i18n("db.action.leavingFlatCode"), в спеке нет проверки на выписку https://docs.google.com/spreadsheet/ccc?key=0AgE0ILPv06JcdEE0ajBZdmk1a29ncjlteUp3VUI2MEE#gid=0
                                        i18n("db.apt.moving.codes.hospitalBed"),
                                        i18n("db.apt.moving.codes.hospOrgStruct"),
                                        i18n("db.apt.moving.codes.orgStructTransfer"),
@@ -1157,6 +1157,16 @@ AND
 %s
 %s
                                                              """
+  /*      в спеке нет проверки на выписку https://docs.google.com/spreadsheet/ccc?key=0AgE0ILPv06JcdEE0ajBZdmk1a29ncjlteUp3VUI2MEE#gid=0
+  AND a.event.id NOT IN (
+        SELECT leaved.event.id
+        FROM Action leaved
+        WHERE leaved.actionType.flatCode = '%s'
+        AND leaved.event.id = a.event.id
+        AND leaved.createDatetime < :endDate
+        AND leaved.deleted = 0
+    )
+   */
 val ActiveEventsByDepartmentIdAndDoctorIdBetweenDatesQueryEx = """
 SELECT ap
 FROM ActionProperty ap
@@ -1166,14 +1176,7 @@ WHERE ap.action.id IN (
     WHERE (a.event.execDate IS NULL OR a.event.execDate > :endDate )
     %s
     AND a.event.deleted = '0'
-    AND a.event.id NOT IN (
-        SELECT leaved.event.id
-        FROM Action leaved
-        WHERE leaved.actionType.flatCode = '%s'
-        AND leaved.event.id = a.event.id
-        AND leaved.createDatetime < :endDate
-        AND leaved.deleted = 0
-    )
+
     AND a.begDate <= :endDate
     AND a.actionType.flatCode IN :flatCodes
     AND a.deleted = '0'

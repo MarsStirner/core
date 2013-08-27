@@ -250,7 +250,8 @@ class DirectionBean extends DirectionBeanLocal
           apvList.add((ap, jtForAp))
         }
       })
-
+      /*  убрано https://korusconsulting.atlassian.net/browse/WEBMIS-1019
+      изменена спека https://docs.google.com/spreadsheet/ccc?key=0Au-ED6EnawLcdHo0Z3BiSkRJRVYtLUxhaG5uYkNWaGc#gid=6
       //пропишем диагноз в пропертю, если не пришел с клиента
       a.getActionProperties.foreach((ap) => {
         if (ap.getType.getTypeName.compareTo("MKB") == 0) {
@@ -262,7 +263,7 @@ class DirectionBean extends DirectionBeanLocal
             }
           }
         }
-      })
+      }) */
     })
     if (list != null && list.size() > 0) {
       list.foreach((f) => {

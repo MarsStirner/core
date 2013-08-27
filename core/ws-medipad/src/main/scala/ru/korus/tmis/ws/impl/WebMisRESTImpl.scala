@@ -405,7 +405,8 @@ class WebMisRESTImpl  extends WebMisREST
       new ReceivedPatientsData( received,
         requestData,
         appealBean.getDiagnosisListByAppealId _,
-        actionPropertyBean.getActionPropertiesForEventByActionTypes _,
+        actionPropertyBean.getActionPropertiesByEventIdsAndActionPropertyTypeCodes _,
+        //actionPropertyBean.getActionPropertiesForEventByActionTypes _,
         actionBean.getLastActionByActionTypeIdAndEventId _,
         appealBean.getPatientsHospitalizedStatus _,
         actionBean.getAppealActionByEventId _)
@@ -739,9 +740,11 @@ class WebMisRESTImpl  extends WebMisREST
                                                               requestData.filter.unwrap())
     }
     var ajtList = new util.LinkedList[(Action, JobTicket)]()
-    actions.foreach(a => {
-      ajtList.add((a, dbJobTicketBean.getJobTicketForAction(a.getId.intValue())))
-    })
+    if (actions != null && actions.size() > 0) {
+      actions.foreach(a => {
+        ajtList.add((a, dbJobTicketBean.getJobTicketForAction(a.getId.intValue())))
+      })
+    }
     val list = new DiagnosticsListData(ajtList, requestData, authData)
     list
   }

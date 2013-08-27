@@ -302,11 +302,15 @@ class DbActionPropertyBean
   }
 
   @TransactionAttribute(TransactionAttributeType.REQUIRES_NEW)
-  def getActionPropertiesByEventIdsAndActionPropertyTypeCodes(eventIds: java.util.List[java.lang.Integer], codes: java.util.Set[String], cntRead: Int) = {
+  def getActionPropertiesByEventIdsAndActionPropertyTypeCodes(eventIds: java.util.List[java.lang.Integer], codes: java.util.Set[String], cntRead: Int, needStatus: Boolean) = {
 
     val sqlCodes = convertCollectionToSqlString(asJavaCollection(codes))
     val sqlEventIds = convertCollectionToSqlString(asJavaCollection(eventIds))
-    val result = em.createNativeQuery(ActionPropertiesByEventIdAndActionPropertyTypeCodesQueryEx.format(sqlEventIds, sqlCodes))
+    var status = ""
+    if (needStatus) {
+      status = "AND a.status = 2"
+    }
+    val result = em.createNativeQuery(ActionPropertiesByEventIdAndActionPropertyTypeCodesQueryEx.format(sqlEventIds, sqlCodes, status))
                    //.setParameter(1, new java.util.LinkedList(eventIds map(f => f.toString)))
                    //.setParameter(2, sqlCodes)
                    .setParameter(3, cntRead)
@@ -391,9 +395,8 @@ class DbActionPropertyBean
                     AND
                       a.deleted = 0
                     AND
-                      a.status = 2
-                    AND
                       apt.code IN (%s)
+                    %s
                     AND
                       apt.deleted = 0
                     AND (
@@ -422,8 +425,24 @@ class DbActionPropertyBean
                           WHERE
                               ap_s.id = ap.id
                       )
+                      OR
+                      exists (
+                          SELECT ap_b.id
+                          FROM
+                              ActionProperty_HospitalBed ap_b
+                          WHERE
+                              ap_b.id = ap.id
+                      )
+                      OR
+                      exists (
+                          SELECT ap_os.id
+                          FROM
+                              ActionProperty_OrgStructure ap_os
+                          WHERE
+                              ap_os.id = ap.id
+                      )
                     )
-                    GROUP BY idd, apt.code, ap.createDatetime DESC
+                    GROUP BY idd, apt.code, ap.id, ap.createDatetime DESC
         ) grouped
       ) counted
       WHERE rown <= ?3

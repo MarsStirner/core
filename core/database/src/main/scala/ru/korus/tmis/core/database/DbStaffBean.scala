@@ -230,20 +230,20 @@ class DbStaffBean
       )
     OR
       NOT exists (
-        SELECT ap2
+        SELECT ap3
         FROM
-          ActionProperty ap2,
-          APValueAction apvAction
+          ActionProperty ap3,
+          APValueAction apvAction2
         WHERE
-          ap2.action.id = a.id
+          ap3.action.id = a.id
         AND
-          ap2.actionPropertyType.name = 'queue'
+          ap3.actionPropertyType.name = 'queue'
         AND
-          apvAction.id.id = ap2.id
+          apvAction2.id.id = ap3.id
         AND
-          apvAction.id.index = time.id.index
+          apvAction2.id.index = time.id.index
         AND
-          apvAction.value is not null
+          apvAction2.value is not null
         )
       )
 
