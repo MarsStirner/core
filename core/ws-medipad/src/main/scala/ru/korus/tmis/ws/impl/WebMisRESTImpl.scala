@@ -395,9 +395,9 @@ class WebMisRESTImpl  extends WebMisREST
       case _ =>  mapper.getSerializationConfig().setSerializationView(classOf[ReceivedPatientsDataViews.AdmissionDepartmentsDoctorView]) //Доктор
     }
 
-    requestData.setRecordsCount(appealBean.getCountOfAppealsForReceivedPatientByPeriod(requestData.filter))
+    requestData.setRecordsCount(dbEventBean.getCountOfAppealsForReceivedPatientByPeriod(requestData.filter))
     val data = if(requestData.recordsCount!=0){
-      var received = appealBean.getAllAppealsForReceivedPatientByPeriod(requestData.page-1,
+      var received = dbEventBean.getAllAppealsForReceivedPatientByPeriod(requestData.page-1,
         requestData.limit,
         requestData.sortingFieldInternal,
         requestData.sortingMethod,

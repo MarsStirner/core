@@ -41,7 +41,7 @@ class AppealBean extends AppealBeanLocal
   var appLock: AppLockBeanLocal = _
 
   @EJB
-  private var eventBean: DbEventBeanLocal = _
+  private var dbEventBean: DbEventBeanLocal = _
 
   @EJB
   private var actionBean: DbActionBeanLocal = _
@@ -412,7 +412,7 @@ class AppealBean extends AppealBeanLocal
 
   def getAppealById(id: Int) = {
     //запрос  данных из Эвента
-    val event = eventBean.getEventById(id)
+    val event = dbEventBean.getEventById(id)
     if(event==null){
       throw new CoreException("Обращение с id=%d не найдено в БД".format(id))
     }
@@ -467,54 +467,9 @@ class AppealBean extends AppealBeanLocal
     new AppealSimplifiedDataList(map, requestData)
   }
 
-  def getCountOfAppealsForReceivedPatientByPeriod(filter: Object) = {
-
-    var queryStr: QueryDataStructure = if(filter.isInstanceOf[ReceivedRequestDataFilter]) {
-      filter.asInstanceOf[ReceivedRequestDataFilter].toQueryStructure()
-    }
-    else {new QueryDataStructure()}
-
-    var typed= em.createQuery(AllAppealsWithFilterQuery.format("count(e)", i18n("db.flatDirectory.eventType.hospitalization"), queryStr.query, ""), classOf[Long])
-
-    if(queryStr.data.size()>0) {
-      queryStr.data.foreach(qdp=>typed.setParameter(qdp.name, qdp.value))
-    }
-
-    typed.getSingleResult
-  }
-
-  def getAllAppealsForReceivedPatientByPeriod (page: Int, limit: Int, sortingField: String, sortingMethod: String, filter: Object) = {
-
-    var queryStr: QueryDataStructure = if(filter.isInstanceOf[ReceivedRequestDataFilter]) {
-      filter.asInstanceOf[ReceivedRequestDataFilter].toQueryStructure()
-    }
-    else {new QueryDataStructure()}
-
-    val sorting = "ORDER BY %s %s".format(sortingField, sortingMethod)
-
-    val q = AllAppealsWithFilterQuery.format("e", i18n("db.flatDirectory.eventType.hospitalization") ,queryStr.query, sorting)
-    var typed = em.createQuery(q, classOf[Event])
-      .setMaxResults(limit)
-      .setFirstResult(limit*page)
-
-    if(queryStr.data.size()>0) {
-      queryStr.data.foreach(qdp=>typed.setParameter(qdp.name, qdp.value))
-    }
-
-    val result = typed.getResultList
-    result.foreach(e=>em.detach(e))
-    result
-  }
-
   def checkAppealNumber(number : String) = {
-    var isNumberFree = false
-    val result = em.createQuery(AppealByExternalIdQuery, classOf[Event])
-      .setParameter("externalId", number)
-      .getResultList
-
-    if (result == null || result.length < 1) {
-      isNumberFree = true
-    }
+    val result = dbEventBean.getAllAppealsForReceivedPatientByPeriod(0,1,"id","desc", new ReceivedRequestDataFilter(number))
+    val isNumberFree = (result == null || result.length < 1)
     isNumberFree
   }
 
@@ -545,7 +500,7 @@ class AppealBean extends AppealBeanLocal
 
   def getPatientsHospitalizedStatus(eventId: Int) = {
     var status: String = ""
-    val event = eventBean.getEventById(eventId)
+    val event = dbEventBean.getEventById(eventId)
     val execDate = event.getExecDate
 
     var setATIds = JavaConversions.asJavaSet(Set(i18n("db.actionType.hospitalization.primary").toInt :java.lang.Integer))
@@ -613,16 +568,16 @@ class AppealBean extends AppealBeanLocal
         throw new CoreException("Невозможно создать госпитализацию. Не задан тип обращения.")
         return null
       }
-      event = eventBean.createEvent(id,
-                                    //eventBean.getEventTypeIdByFDRecordId(appealData.data.appealType.getId()),
+      event = dbEventBean.createEvent(id,
+                                    //dbEventBean.getEventTypeIdByFDRecordId(appealData.data.appealType.getId()),
                                     appealData.data.appealType.eventType.getId,
-                                    //eventBean.getEventTypeIdByRequestTypeIdAndFinanceId(appealData.data.appealType.requestType.getId(), appealData.data.appealType.finance.getId()),
+                                    //dbEventBean.getEventTypeIdByRequestTypeIdAndFinanceId(appealData.data.appealType.requestType.getId(), appealData.data.appealType.finance.getId()),
                                     appealData.data.rangeAppealDateTime.getStart(),
                                     /*appealData.data.rangeAppealDateTime.getEnd()*/null,
                                     authData)
     }
     else {                      //Редактирование
-      event = eventBean.getEventById(id)
+      event = dbEventBean.getEventById(id)
       if (event==null) {
         throw new CoreException("Обращение с id = %s не найдено в БД".format(appealData.data.id.toString))
         return null
@@ -630,7 +585,7 @@ class AppealBean extends AppealBeanLocal
 
  //   Закомментировано согласно пожеланиям Александра
  //   Мотивация - хотят редактировать эвент тайп и финанс айди! (как бы потом не было бо-бо от этого)
- //     val eventTypeId = appealData.data.appealType.eventType.getId//eventBean.getEventTypeIdByRequestTypeIdAndFinanceId(appealData.data.appealType.requestType.getId(), appealData.data.appealType.finance.getId())
+ //     val eventTypeId = appealData.data.appealType.eventType.getId//dbEventBean.getEventTypeIdByRequestTypeIdAndFinanceId(appealData.data.appealType.requestType.getId(), appealData.data.appealType.finance.getId())
  //     if(event.getEventType.getId.intValue()!=eventTypeId) {
  //       throw new CoreException("Тип найденного обращения не соответствует типу в полученному в запросе (requestType = %s, finance = %s)".format(appealData.data.appealType.requestType.getId().toString, appealData.data.appealType.finance.getId().toString))
  //       return null
@@ -835,7 +790,7 @@ class AppealBean extends AppealBeanLocal
 
     val diag = dbCustomQueryBean.getDiagnosisForMainDiagInAppeal(eventId)
     if (diag != null) {
-      val event = eventBean.getEventById(eventId)
+      val event = dbEventBean.getEventById(eventId)
       val diagnosis = new Diagnosis()
       diagnosis.setCreateDatetime(now)
       diagnosis.setModifyDatetime(now)
@@ -926,7 +881,7 @@ class AppealBean extends AppealBeanLocal
       lockId = appLock.acquireLock("Client_Quoting", oldQuota.getId.intValue(), oldQuota.getId.intValue(), auth)
     }
     try {
-      val patient = eventBean.getEventById(eventId).getPatient
+      val patient = dbEventBean.getEventById(eventId).getPatient
       var mkb :Mkb = null
       try {
         mkb = dbMkbBean.getMkbByCode(dataEntry.getMkb.getCode)
@@ -987,7 +942,7 @@ class AppealBean extends AppealBeanLocal
 
     val event = epst.getVarId match {
       case 1 => actionBean.getActionById(id).getEvent
-      case _ => eventBean.getEventById(id)
+      case _ => dbEventBean.getEventById(id)
     }
 
     if (epst.isFindLast) {
@@ -1120,61 +1075,4 @@ class AppealBean extends AppealBeanLocal
     WHERE
       r.id = :id
   """
-
-  val AllAppealsWithFilterQuery = """
-    SELECT %s
-    FROM
-      Event e
-    WHERE
-      e.deleted = 0
-    AND
-      e.eventType.code IN (
-        SELECT fdfv.value
-        FROM
-          FDFieldValue fdfv
-        WHERE
-          fdfv.pk.fdRecord.flatDirectory.id = '%s'
-      )
-    %s
-    %s
-                                  """
-  /*
-      SELECT Max(et.id)
-  FROM
-    EventType et,
-    FDFieldValue fdfv
-  WHERE
-    fdfv.pk.fdRecord.id = '%s'
-  AND
-    et.code = fdfv.value
-   */
-  val AppealByExternalIdQuery = """
-  SELECT e
-  FROM
-    Event e
-  WHERE
-    e.externalId = :externalId
-  AND
-    e.deleted = 0
-   AND
-    e.eventType.id = '53'
-
-  """
 }
-/*
-    AND
-      exists(
-        SELECT ap3
-        FROM ActionProperty ap3
-                JOIN ap3.actionPropertyType apt3,
-             APValueString apstr
-        WHERE
-          ap3.action = a2
-        AND
-          apt3.name = 'Патронаж'
-        AND
-          ap3.id = apstr.id.id
-        AND
-          apstr.value = 'Да'
-      )
-*/

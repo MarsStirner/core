@@ -84,4 +84,12 @@ public interface TestDataEntity extends Serializable {
     ActionPropertyType getTestDefaultActionPropertyType(int id, String code);
 
     EventPerson getTestDefaultEventPerson(int id, Event event, Staff person);
+
+    Diagnostic getTestDefaultDiagnostic();
+    Diagnostic getTestDefaultDiagnostic(int id);
+    RbDiagnosisType getTestDefaultDiagnosisType();
+    RbTraumaType getTestDefaultRbTraumaType();
+    Diagnosis getTestDefaultDiagnosis();
+    Mkb getTestDefaultMkb();
+    Mkb getTestDefaultMkb(int id);
 }

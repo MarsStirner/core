@@ -37,7 +37,7 @@ class AppealBeanTest {
   @Mock var em: EntityManager = _
   @Mock var organizationBeanLocal: DbOrganizationBeanLocal = _
   @Mock var appLock: AppLockBeanLocal = _
-  @Mock var eventBean: DbEventBeanLocal = _
+  @Mock var dbEventBean: DbEventBeanLocal = _
   @Mock var actionBean: DbActionBeanLocal = _
   @Mock var actionTypeBean: DbActionTypeBeanLocal = _
   @Mock var actionPropertyBean: DbActionPropertyBeanLocal = _
@@ -176,7 +176,7 @@ class AppealBeanTest {
       //appealData : AppealData, event: Event, flgCreate: Boolean, authData: AuthData
       logger.info("Request data for method is: {}", "event_id=%d".format(TEvent_id))
 
-      when(eventBean.getEventById(testEventId)).thenReturn(testEvent)
+      when(dbEventBean.getEventById(testEventId)).thenReturn(testEvent)
       when(actionBean.getAppealActionByEventId(testEvent.getId.intValue(),
         ConfigManager.Messages("db.actionType.hospitalization.primary").toInt)).thenReturn(testAction)
       when(actionPropertyBean.getActionPropertiesByActionId(testAction.getId.intValue)).thenReturn(apvalues)
@@ -213,7 +213,7 @@ class AppealBeanTest {
   @Test
   def testGetAppealByIdBadEventException = {
     logger.warn("Start of getAppealById test with bad event's data:")
-    when(eventBean.getEventById(TEvent_id)).thenReturn(null)
+    when(dbEventBean.getEventById(TEvent_id)).thenReturn(null)
     this.testGetAppealByIdFail(TEvent_id, new CoreException("Обращение с id=%d не найдено в БД".format(TEvent_id)))
     logger.warn("Successful end of getAppealById test with bad events's data")
   }
@@ -223,7 +223,7 @@ class AppealBeanTest {
     logger.warn("Start of getAppealById test without primary assesments data:")
 
     val testEvent = testData.getTestDefaultEvent(TEvent_id)
-    when(eventBean.getEventById(TEvent_id)).thenReturn(testEvent)
+    when(dbEventBean.getEventById(TEvent_id)).thenReturn(testEvent)
     when(actionBean.getAppealActionByEventId(testEvent.getId.intValue(),
       ConfigManager.Messages("db.actionType.hospitalization.primary").toInt)).thenReturn(null)
     this.testGetAppealByIdFail(TEvent_id, new CoreException("Первичный осмотр для обращения с id=%d не найден в БД".format(TEvent_id)))
@@ -252,7 +252,7 @@ class AppealBeanTest {
   //****************************************   getAllAppealsByPatient Tests   ********************************
   //______________________________________________________________________________________________________
 
-  /*@Test
+  @Test
   def testGetAllAppealsByPatientSuccess = {
 
     logger.warn("Start of getAllAppealsByPatient test:")
@@ -261,11 +261,23 @@ class AppealBeanTest {
     val request = new AppealSimplifiedRequestData("id", "asc", 10, 1, filter)
     val authData: AuthData = null
 
-    val diagnoses = new java.util.HashMap[Diagnostic, Mkb]()
+    val diagnoses = new java.util.HashMap[Object, Object]()
     val map = new java.util.HashMap[Event, Object]()
 
+    val event = List(testData.getTestDefaultEvent(1), testData.getTestDefaultEvent(2))
+    val dep1 = testData.getTestDefaultOrgStructure(1)
+    val dep2 = testData.getTestDefaultOrgStructure(2)
+    val dia1 = testData.getTestDefaultDiagnostic(1)
+    val dia2 = testData.getTestDefaultActionProperty(1, testData.getTestDefaultActionPropertyType(1, "testCode_%d".format(1)))
+    val mkb1 = null
+    val mkb2 = testData.getTestDefaultMkb(2)
+    diagnoses.put(dia1, mkb1)
+    diagnoses.put(dia2, mkb2)
+
+    map.put(event.get(0), (diagnoses, dep1))
+    map.put(event.get(1), (diagnoses, dep2))
+
     try{
-      //appealData : AppealData, event: Event, flgCreate: Boolean, authData: AuthData
       logger.info("Request data for method is: {}", "request=%s, auth=%s".format(mapper.writeValueAsString(request), mapper.writeValueAsString(authData)))
 
       when(dbCustomQueryBean.getAllAppealsWithFilter(anyInt(), anyInt(), anyString(), anyString(), anyObject(), anyObject())).thenReturn(map)
@@ -273,7 +285,41 @@ class AppealBeanTest {
       val result = appealBean.getAllAppealsByPatient(request, authData)
 
       Assert.assertNotNull(result)
+      Assert.assertNotNull(result.data)
+      Assert.assertEquals(result.data.size(), map.size())
+      for(i <- 0 until result.data.size()) {
+        val pos = result.data.get(i)
+        Assert.assertEquals(pos.getId, event.get(i).getId.intValue())
+        Assert.assertEquals(pos.getNumber, event.get(i).getExternalId)
+        Assert.assertEquals(pos.getRangeAppealDateTime.getStart, event.get(i).getSetDate)
+        Assert.assertEquals(pos.getRangeAppealDateTime.getEnd, event.get(i).getExecDate)
+        val value0 = map.get(event.get(i))
+        Assert.assertTrue(value0.isInstanceOf[(java.util.Map[Object,  Object],OrgStructure)])
+        val value = value0.asInstanceOf[(java.util.Map[Object,  Object],OrgStructure)]
+        Assert.assertEquals(pos.getDepartment.getId, value._2.getId.intValue())
+        Assert.assertEquals(pos.getDepartment.getName, value._2.getName)
+        Assert.assertEquals(pos.getDiagnoses.size(), value._1.size())
 
+        val it = value._1.iterator
+        for(j <- 0 until pos.getDiagnoses.size()) {
+          val diag = it.next()
+          if(diag._1.isInstanceOf[Diagnostic]){
+            Assert.assertEquals(pos.getDiagnoses.get(j).getDiagnosticId, diag._1.asInstanceOf[Diagnostic].getId.intValue())
+            Assert.assertEquals(pos.getDiagnoses.get(j).getDiagnosisKind, diag._1.asInstanceOf[Diagnostic].getDiagnosisType.getFlatCode)
+            Assert.assertEquals(pos.getDiagnoses.get(j).getDescription, diag._1.asInstanceOf[Diagnostic].getNotes)
+            Assert.assertEquals(pos.getDiagnoses.get(j).getInjury, diag._1.asInstanceOf[Diagnostic].getTraumaType.getName)
+            Assert.assertEquals(pos.getDiagnoses.get(j).getMkb.getId, diag._1.asInstanceOf[Diagnostic].getDiagnosis.getMkb.getId.intValue())
+            Assert.assertEquals(pos.getDiagnoses.get(j).getMkb.getCode, diag._1.asInstanceOf[Diagnostic].getDiagnosis.getMkb.getDiagID)
+            Assert.assertEquals(pos.getDiagnoses.get(j).getMkb.getDiagnosis, diag._1.asInstanceOf[Diagnostic].getDiagnosis.getMkb.getDiagName)
+          }
+          else if(diag._1.isInstanceOf[ActionProperty]) {
+            Assert.assertEquals(pos.getDiagnoses.get(j).getDiagnosisKind, diag._1.asInstanceOf[ActionProperty].getType.getCode)
+            Assert.assertEquals(pos.getDiagnoses.get(j).getMkb.getId, diag._2.asInstanceOf[Mkb].getId.intValue())
+            Assert.assertEquals(pos.getDiagnoses.get(j).getMkb.getCode, diag._2.asInstanceOf[Mkb].getDiagID)
+            Assert.assertEquals(pos.getDiagnoses.get(j).getMkb.getDiagnosis, diag._2.asInstanceOf[Mkb].getDiagName)
+          }
+        }
+      }
       logger.info("The method has been successfully completed. Result is: {}", mapper.writeValueAsString(result))
       logger.warn("Successful end of getAllAppealsByPatient test")
     }
@@ -283,5 +329,77 @@ class AppealBeanTest {
         Assert.fail()
       }
     }
-  } */
+  }
+
+  //______________________________________________________________________________________________________
+  //****************************************   checkAppealNumber Tests   ********************************
+  //______________________________________________________________________________________________________
+
+  @Test
+  def testCheckAppealNumberTrue = {
+    val number = "testNumber_new"
+    logger.warn("Start of checkAppealNumber test:")
+    when(dbEventBean.getAllAppealsForReceivedPatientByPeriod(anyInt(), anyInt(), anyString(), anyString(), anyObject())).thenReturn(null)
+    try{
+      logger.info("Request data for method is: {}", "number=%s".format(number))
+      val result = appealBean.checkAppealNumber(number)
+      Assert.assertTrue(result.booleanValue())
+      logger.info("The method has been successfully completed. Result is: {}", mapper.writeValueAsString(result))
+      logger.warn("Successful end of checkAppealNumber test")
+    }
+    catch {
+      case ex: CoreException => {
+        logger.error("checkAppealNumber test failed with error: {}", ex.getMessage + " " + ex.getStackTrace)
+        Assert.fail()
+      }
+    }
+  }
+
+  @Test
+  def testCheckAppealNumberFalse = {
+    val number = "testNumber_existed"
+    val list = asJavaList(List(testData.getTestDefaultEvent))
+    logger.warn("Start of checkAppealNumber test:")
+    when(dbEventBean.getAllAppealsForReceivedPatientByPeriod(anyInt(), anyInt(), anyString(), anyString(), anyObject())).thenReturn(list)
+    try{
+      logger.info("Request data for method is: {}", "number=%s".format(number))
+      val result = appealBean.checkAppealNumber(number)
+      Assert.assertFalse(result.booleanValue())
+      validateMockitoUsage()
+      logger.info("The method has been successfully completed. Result is: {}", mapper.writeValueAsString(result))
+      logger.warn("Successful end of checkAppealNumber test")
+    }
+    catch {
+      case ex: CoreException => {
+        logger.error("checkAppealNumber test failed with error: {}", ex.getMessage + " " + ex.getStackTrace)
+        Assert.fail()
+      }
+    }
+  }
+
+  /*
+    def revokeAppealById(event : Event, resultId: Int, authData: AuthData) = {
+
+    //Закрываем госпитализацию с причиной отказа
+    val now = new Date()
+    if(event == null){
+      throw new CoreException("Не указано редактируемое обращение")
+    }
+    //TODO: Возможно надо прикрутить блокировку
+    try {
+      event.setModifyDatetime(now)
+      event.setModifyPerson(authData.user)
+      event.setExecDate(now)
+      event.setResult(dbRbResultBean.getRbResultById(resultId)) //какой-то айдишник =)
+    }
+    catch {
+      case e: Exception => {
+        error("revokeAppealById >> Ошибка при закрытии госпитализации: %s".format(e.getMessage))
+        throw new CoreException("Ошибка при закрытии госпитализации (id = %s)".format(event.getId.toString))
+      }
+    }
+    finally {}
+    event
+  }
+   */
 }
