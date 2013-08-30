@@ -29,18 +29,31 @@ public class TestBase {
     protected final static Integer ACTION_MOVING_TYPE = 113;
     private static final PropType[] propMovingConstants = { PropType.PATIENT_ORG_STRUCT };
 
-    static Connection conn = null;
+    protected static Connection conn = null;
 
-    protected static void initTestCase(Integer actionTypeId, PropType[] propConstants) {
+    protected static void initTestCase(final Integer actionId, final PropType[] propConstants) {
         try {
-            final String userName = "root";
-            final String password = "root";
-            final String url = JDBC_MYSQL_URL;
+            initConnection();
+            initPropId(actionId, propConstants);
+            System.out.println("Database connection established");
+        } catch (final Exception e) {
+            e.printStackTrace();
+        }
+    }
+
+    /**
+     * @throws InstantiationException
+     * @throws IllegalAccessException
+     * @throws ClassNotFoundException
+     * @throws SQLException
+     */
+    protected static void initConnection() {
+        final String userName = "root";
+        final String password = "root";
+        final String url = JDBC_MYSQL_URL;
+        try {
             Class.forName("com.mysql.jdbc.Driver").newInstance();
             conn = DriverManager.getConnection(url, userName, password);
-            System.out.println("Database connection established");
-            initPropId(actionTypeId, propConstants);
-            initPropId(ACTION_MOVING_TYPE, propMovingConstants);
         } catch (final Exception e) {
             e.printStackTrace();
         }
