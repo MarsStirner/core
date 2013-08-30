@@ -2,6 +2,7 @@ package ru.korus.tmis.test.data
 
 import ru.korus.tmis.core.entity.model._
 import java.util.Date
+import ru.korus.tmis.core.auth.AuthData
 
 /**
  * Created with IntelliJ IDEA.
@@ -351,6 +352,27 @@ class TestDataEntityImpl extends TestDataEntity {
     ep.setBegDate(new Date())
     ep.setEndDate(new Date())
     ep
+  }
+
+  def getTestDefaultBloodHistory(id: Int, bloodType: RbBloodType, person: Staff) = {
+    val bh = new BloodHistory()
+    bh.setId(id)
+    bh.setBloodType(bloodType)
+    bh.setPerson(person)
+    bh.setBloodDate(new Date(0))
+    bh
+  }
+
+  def getTestDefaultRbBloodType(id: Int) = {
+    val bt = new RbBloodType()
+    bt.setId(id)
+    bt
+  }
+
+  def getTestDefaultAuthData(user: Staff) = {
+    val authData = new AuthData()
+    authData.setUser(user)
+    authData
   }
 
 }

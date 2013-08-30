@@ -1,5 +1,6 @@
 package ru.korus.tmis.test.data;
 
+import ru.korus.tmis.core.auth.AuthData;
 import ru.korus.tmis.core.entity.model.*;
 import java.io.Serializable;
 import java.util.Date;
@@ -84,4 +85,8 @@ public interface TestDataEntity extends Serializable {
     ActionPropertyType getTestDefaultActionPropertyType(int id, String code);
 
     EventPerson getTestDefaultEventPerson(int id, Event event, Staff person);
+
+    BloodHistory getTestDefaultBloodHistory(int id, RbBloodType bloodType, Staff person);
+    RbBloodType getTestDefaultRbBloodType(int id);
+    AuthData getTestDefaultAuthData(Staff user);
 }
