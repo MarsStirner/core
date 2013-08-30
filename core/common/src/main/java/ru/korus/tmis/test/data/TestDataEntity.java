@@ -86,6 +86,14 @@ public interface TestDataEntity extends Serializable {
 
     EventPerson getTestDefaultEventPerson(int id, Event event, Staff person);
 
+    Diagnostic getTestDefaultDiagnostic();
+    Diagnostic getTestDefaultDiagnostic(int id);
+    RbDiagnosisType getTestDefaultDiagnosisType();
+    RbTraumaType getTestDefaultRbTraumaType();
+    Diagnosis getTestDefaultDiagnosis();
+    Mkb getTestDefaultMkb();
+    Mkb getTestDefaultMkb(int id);
+
     BloodHistory getTestDefaultBloodHistory(int id, RbBloodType bloodType, Staff person);
     RbBloodType getTestDefaultRbBloodType(int id);
     AuthData getTestDefaultAuthData(Staff user);

@@ -374,5 +374,50 @@ class TestDataEntityImpl extends TestDataEntity {
     authData.setUser(user)
     authData
   }
+  def  getTestDefaultDiagnostic() = {
+    val dia = new Diagnostic(testId)
+    dia.setDiagnosisType(getTestDefaultDiagnosisType)
+    dia.setTraumaType(getTestDefaultRbTraumaType)
+    dia.setNotes("test_notes")
+    dia.setDiagnosis(getTestDefaultDiagnosis)
+    dia
+  }
 
+  def  getTestDefaultDiagnostic(id: Int) = {
+    val dia = getTestDefaultDiagnostic
+    dia.setId(id)
+    dia
+  }
+
+  def getTestDefaultDiagnosisType = {
+    val dt = new RbDiagnosisType(testId)
+    dt.setName("test_name")
+    dt.setFlatCode("test_flatcode")
+    dt
+  }
+
+  def getTestDefaultRbTraumaType = {
+    val tt = new RbTraumaType(testId)
+    tt.setName("test_name")
+    tt
+  }
+
+  def getTestDefaultDiagnosis = {
+    val ds = new Diagnosis(testId)
+    ds.setMkb(getTestDefaultMkb)
+    ds
+  }
+
+  def getTestDefaultMkb = {
+    val mkb = new Mkb(testId)
+    mkb.setDiagID("test_diagId")
+    mkb.setDiagName("test_diagName")
+    mkb
+  }
+
+  def getTestDefaultMkb(id: Int) = {
+    val mkb = getTestDefaultMkb
+    mkb.setId(id)
+    mkb
+  }
 }

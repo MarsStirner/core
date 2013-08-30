@@ -423,11 +423,7 @@ class DbCustomQueryBean
     }
 
     //Получаем список всех обращений (без диагнозов) (сортированный)
-    val query = AllAppealsWithFilterExQuery.format("e", queryStr.query, "", sorting)
-    var typed = em.createQuery(query, classOf[Event])
-    //     .setMaxResults(limit)
-    //     .setFirstResult(limit * page)
-
+    var typed = em.createQuery(AllAppealsWithFilterExQuery.format("e", queryStr.query, "", sorting), classOf[Event])
     if (queryStr.data.size() > 0) {
       queryStr.data.foreach(qdp => typed.setParameter(qdp.name, qdp.value))
     }
@@ -441,14 +437,13 @@ class DbCustomQueryBean
     if (res.size() > 0) {
       res.foreach(e => ids.add(e.getId))
 
-      //Получение отделения из последнего из последнего экшена движения
+      //Получение отделения из последнего экшена движения
       val depArrayTyped = em.createQuery(OrgStructureSubQuery.format(department_filter), classOf[ActionProperty])
                             .setParameter("ids", asJavaCollection(ids))
                             .setParameter("flatCode", i18n("db.action.movingFlatCode"))
                             .setParameter("code", i18n("db.apt.moving.codes.hospOrgStruct"))
       if (flgDepartmentSwitched)
         depArrayTyped.setParameter("departmentId", filter.asInstanceOf[AppealSimplifiedRequestDataFilter].departmentId)
-
       val depArray = depArrayTyped.getResultList
 
 

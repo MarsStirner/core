@@ -82,6 +82,8 @@ public class PharmacyBean implements PharmacyBeanLocal {
     public void flushAssignment() {
         logger.info("");
         logger.info("Begin flush assignment for today...");
+
+        //todo здесь обрабатываются назначения
         for (Action action : dbPharmacy.getAssignmentForToday(DateTime.now())) {
             try {
                 final ActionType actionType = action.getActionType();
@@ -97,7 +99,7 @@ public class PharmacyBean implements PharmacyBeanLocal {
         // просмотреть назначения на сегодня и отправить исполненное
         logger.info("Begin flush release assignment for today...");
         for (Action action : dbPharmacy.getAssignmentForToday(DateTime.now())) {
-
+            //todo здесь обработать исполнения
         }
         logger.info("End flush release assignment for today...");
 
@@ -157,12 +159,16 @@ public class PharmacyBean implements PharmacyBeanLocal {
     private void send(final Action action) {
         Pharmacy pharmacy = null;
         try {
+            // сохранение данных об отправке
             pharmacy = dbPharmacy.getOrCreate(action);
+            // формирование сообщения для отправки
             final Request request = createRequest(action);
 
             logger.info("prepare message... \n\n {}", HL7PacketBuilder.marshallMessage(request, "misexchange"));
+            // отправка сообщения в 1С
             final MCCIIN000002UV01 result = new MISExchange().getMISExchangeSoap().processHL7V3Message(request);
             if (result != null) {
+                // обработка результата
                 logger.info("Connection successful. Result: {} \n\n {}",
                         result, HL7PacketBuilder.marshallMessage(result, "org.hl7.v3"));
 
@@ -227,7 +233,7 @@ public class PharmacyBean implements PharmacyBeanLocal {
     }
 
     /**
-     * Создание объектной модели сообщения для 1С Аптеки
+     * Создание объектной модели сообщения для 1С Аптеки в соответсвии с типом сообщения
      *
      * @param action событие на основе которого отправляется сообщение в 1С Аптеку
      * @return возвращает класс готовый к отправке в 1С Аптеку
@@ -241,22 +247,29 @@ public class PharmacyBean implements PharmacyBeanLocal {
         if (FlatCode.RECEIVED.getCode().equalsIgnoreCase(actionType.getFlatCode())) {
             // поступление в стационар
             return HL7PacketBuilder.processReceived(action, getOrgStructure(action));
-        } else if (FlatCode.DEL_RECEIVED.getCode().equalsIgnoreCase(actionType.getFlatCode())) {
-            return HL7PacketBuilder.processDelReceived(action);
-        } else if (FlatCode.MOVING.getCode().equalsIgnoreCase(actionType.getFlatCode())) {
 
+        } else if (FlatCode.DEL_RECEIVED.getCode().equalsIgnoreCase(actionType.getFlatCode())) {
+            // отмена поступления
+            return HL7PacketBuilder.processDelReceived(action);
+
+        } else if (FlatCode.MOVING.getCode().equalsIgnoreCase(actionType.getFlatCode())) {
+            // движение пациента между отделениями
             final OrgStructure orgStructureOut = getOrgStructureOut(action);
             final OrgStructure orgStructureIn = getOrgStructureIn(action);
 
             return HL7PacketBuilder.processMoving(action, orgStructureOut, orgStructureIn);
-        } else if (FlatCode.DEL_MOVING.getCode().equalsIgnoreCase(actionType.getFlatCode())) {
 
+        } else if (FlatCode.DEL_MOVING.getCode().equalsIgnoreCase(actionType.getFlatCode())) {
+            // отмена движения
             final OrgStructure orgStructureOut = getOrgStructureOut(action);
             final OrgStructure orgStructureIn = getOrgStructureIn(action);
 
             return HL7PacketBuilder.processDelMoving(action, orgStructureOut, orgStructureIn);
+
         } else if (FlatCode.LEAVED.getCode().equalsIgnoreCase(actionType.getFlatCode())) {
+            // выписка из стационара
             return HL7PacketBuilder.processLeaved(action);
+
         } else if (FlatCode.PRESCRIPTION.getCode().equalsIgnoreCase(actionType.getFlatCode())) {
             // Пациент
             final Patient client = action.getEvent().getPatient();
@@ -269,6 +282,21 @@ public class PharmacyBean implements PharmacyBeanLocal {
 
             return HL7PacketBuilder.processPrescription(
                     action, client, executorStaff, organisation, drugCode, AssignmentType.ASSIGNMENT);
+
+        } else if (FlatCode.RELEASE_PRESCRIPTION.getCode().equalsIgnoreCase(actionType.getFlatCode())) {    // искусственно введеный тип, либо к нему привязаться или реализовать по-другому
+
+            // Пациент
+            final Patient client = action.getEvent().getPatient();
+            // Врач, сделавший обращение
+            final Staff executorStaff = action.getExecutor();
+            // Организация, которой принадлежит документ
+            final Organisation organisation = getCustodianOrgStructure(action);
+            // Определяем код назначенного препарата
+            final String drugCode = dbPharmacy.getDrugCode(action);
+
+            return HL7PacketBuilder.processPrescription(
+                    action, client, executorStaff, organisation, drugCode, AssignmentType.EXECUTION);
+
         }
 
         throw new MessageProcessException();

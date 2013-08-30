@@ -1,13 +1,5 @@
 package ru.korus.tmis.core
 
-/**
- * Created with IntelliJ IDEA.
- * User: idmitriev
- * Date: 8/15/13
- * Time: 11:15 AM
- * To change this template use File | Settings | File Templates.
- */
-
 import entity.model._
 import exception.CoreException
 import org.junit.runner.RunWith

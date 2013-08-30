@@ -218,6 +218,11 @@ class ReceivedRequestDataFilter {
     this.role = role
   }
 
+  def this(externalId: String) = {
+    this()
+    this.externalId = externalId
+  }
+
   /**
    * Метод на формирование структуры поисковых запросов, с использование набора фильтров ReceivedRequestDataFilter
    * @return Структурированный поисковый запрос в виде QueryDataStructure
