@@ -253,9 +253,12 @@ class CommonDataProcessorBean
           entities = (entities /: apvList)(_ + _)
           dbManager.persistAll(apvList)
           //Сохранение диагнозов в таблицу Диагностик
-          var apsForDiag = new util.LinkedList[ActionProperty]()
-          apList.foreach(f => apsForDiag.add(f._1))
-          dbManager.persistAll(this.saveDiagnoses(eventId ,apsForDiag, userData))
+          //var apsForDiag = new util.LinkedList[ActionProperty]()
+          //apList.foreach(f => apsForDiag.add(f._1))
+          dbManager.persistAll(this.saveDiagnoses(eventId ,
+                              apList.map(_._1).toList,
+                              apvList,
+                              userData))
 
           // Save empty AP values (set to default values)
           //Для FlatDictionary (FlatDirectory) нету значения по умолчанию, внутри релэйшн по значению валуе, дефолт значение решил не писать
@@ -423,17 +426,17 @@ class CommonDataProcessorBean
                   id.intValue,
                   attribute.version.intValue,
                   userData)
-                val apv = dbActionProperty.setActionPropertyValue(
-                  ap,
-                  value,
-                  0)
+                var apv: APValue = null
 
-                val apvs = dbActionProperty.getActionPropertyValue(ap)
-                if (ap.getType.getTypeName.compareTo("MKB")==0 && apvs != null && apvs.size()>0) {
-                  //apvs = apvs.foreach(apvv => {
-                  dbManager.removeAll(apvs)
-                  //})
+                if (ap.getType.getTypeName.compareTo("MKB")==0 && (value==null || value.isEmpty)) {
+                  val apvs = dbActionProperty.getActionPropertyValue(ap)
+                  if(apvs != null && apvs.size()>0) {
+                    dbManager.removeAll(apvs.map(_.unwrap()))
+                  }
+                } else {
+                  apv = dbActionProperty.setActionPropertyValue(ap, value, 0)
                 }
+
                 new ActionPropertyWrapper(ap).set(attribute)
                 if (apv != null) {
                   entities = entities + ap + apv.unwrap
@@ -464,10 +467,6 @@ class CommonDataProcessorBean
         }
         eventId = a.getEvent.getId.intValue()
       })
-      //Сохранение диагнозов в таблицу Диагностик
-      var apsForDiag = new util.LinkedList[ActionProperty]()
-      entities.foreach(f => if (f.isInstanceOf[ActionProperty]) apsForDiag.add(f.asInstanceOf[ActionProperty]))
-      dbManager.persistAll(this.saveDiagnoses(eventId ,apsForDiag, userData))
 
       result = dbManager
         .mergeAll(entities)
@@ -476,6 +475,15 @@ class CommonDataProcessorBean
         .toList
 
       val r = dbManager.detachAll[Action](result).toList
+
+      //Сохранение диагнозов в таблицу Диагностик
+      //var apsForDiag = new util.LinkedList[ActionProperty]()
+      //entities.foreach(f => if (f.isInstanceOf[ActionProperty]) apsForDiag.add(f.asInstanceOf[ActionProperty]))
+      dbManager.persistAll(this.saveDiagnoses(eventId ,
+                              entities.filter(_.isInstanceOf[ActionProperty]).map(_.asInstanceOf[ActionProperty]).toList,
+                              entities.filter(_.isInstanceOf[APValue]).map(_.asInstanceOf[APValue]).toList,
+                              userData))
+
       /*
       r.foreach(newAction => {
         val newValues = dbActionProperty.getActionPropertiesByActionId(newAction.getId.intValue)
@@ -492,7 +500,8 @@ class CommonDataProcessorBean
     }
   }
 
-  private def saveDiagnoses(eventId: Int, apList: java.util.List[ActionProperty], userData: AuthData): java.util.List[AnyRef] = {
+  private def saveDiagnoses(eventId: Int, apList: java.util.List[ActionProperty], apValue: java.util.List[APValue], userData: AuthData): java.util.List[AnyRef] = {
+
     var map = Map.empty[String, java.util.Set[AnyRef]]
     val characterAP = apList.find(p => p.getType.getCode != null && p.getType.getCode !=null && p.getType.getCode.compareTo(i18n("db.apt.documents.codes.diseaseCharacter"))==0).getOrElse((null))
     val stageAP = apList.find(p => p.getType.getCode != null && p.getType.getCode !=null && p.getType.getCode.compareTo(i18n("db.apt.documents.codes.diseaseStage"))==0).getOrElse((null))
@@ -500,12 +509,25 @@ class CommonDataProcessorBean
     var preCharacterId = 0
     var preStageId = 0
 
-    val characterAPV = if (characterAP!=null) dbActionProperty.getActionPropertyValue(characterAP) else null
-    if (characterAPV != null && characterAPV.size() > 0 && characterAPV.get(0).getValueAsId.compareTo("") != 0) {
+    //val characterAPV =  if (characterAP!=null) dbActionProperty.getActionPropertyValue(characterAP) else null
+    val characterAPV = if (characterAP!=null) {
+      apValue.filter(apv => ((apv.unwrap().isInstanceOf[APValueString]) &&
+                             (apv.unwrap().asInstanceOf[APValueString].getId.getId == characterAP.getId)
+                            )
+                    ).toList
+    } else null
+    if (characterAPV != null && characterAPV.size > 0 && characterAPV.get(0).getValueAsId.compareTo("") != 0) {
       preCharacterId = Integer.valueOf(characterAPV.get(0).getValueAsId).intValue()
     }
-    val stageAPV = if (stageAP!=null) dbActionProperty.getActionPropertyValue(stageAP) else null
-    if (stageAPV != null && stageAPV.size() > 0 && stageAPV.get(0).getValueAsId.compareTo("") != 0) {
+
+    //val stageAPV = if (stageAP!=null) dbActionProperty.getActionPropertyValue(stageAP) else null
+    val stageAPV = if (stageAP!=null) {
+      apValue.filter(apv => ((apv.unwrap().isInstanceOf[APValueString]) &&
+        (apv.unwrap().asInstanceOf[APValueString].getId.getId == stageAP.getId)
+        )
+      ).toList
+    } else null
+    if (stageAPV != null && stageAPV.size > 0 && stageAPV.get(0).getValueAsId.compareTo("") != 0) {
       preStageId = Integer.valueOf(stageAPV.get(0).getValueAsId).intValue()
     }
 
@@ -525,14 +547,25 @@ class CommonDataProcessorBean
               stageId = preStageId
             }
           }
-          val mkbAPV = dbActionProperty.getActionPropertyValue(ap)
-          val descAPV = if (descriptionAP!=null) dbActionProperty.getActionPropertyValue(descriptionAP) else null
-          if (mkbAPV != null && mkbAPV.size() > 0 && mkbAPV.get(0).getValueAsId.compareTo("") != 0) {
-            map += (ap.getType.getCode -> Set[AnyRef](( -1,
-                                                        if (descAPV != null) descAPV.get(0).getValueAsString() else "",
+
+          //val mkbAPV = dbActionProperty.getActionPropertyValue(ap)
+          //val descAPV = if (descriptionAP!=null) dbActionProperty.getActionPropertyValue(descriptionAP) else null
+          val mkbAPV = apValue.filter(apv => ((apv.unwrap().isInstanceOf[APValueMKB]) &&
+                                              (apv.unwrap().asInstanceOf[APValueMKB].getId.getId == ap.getId)
+                                             )
+                                     ).toList
+          val descAPV = apValue.filter(apv => ((apv.unwrap().isInstanceOf[APValueString]) &&
+                                               (apv.unwrap().asInstanceOf[APValueString].getId.getId == descriptionAP.getId)
+                                              )
+                                      ).toList
+          if (mkbAPV != null && mkbAPV.size > 0 && mkbAPV.get(0).getValueAsId.compareTo("") != 0) {
+            map += (ap.getType.getCode -> Set[AnyRef](( -1,  //TODO: ???Всегда создавать новые записи в истории в т.ч. и при редактировании
+                                                        if (descAPV != null && descAPV.size > 0) descAPV.get(0).getValueAsString() else "",
                                                         Integer.valueOf(mkbAPV.get(0).getValueAsId),
                                                         characterId,
                                                         stageId)))
+          } else {
+            map += (ap.getType.getCode -> null)
           }
         }
       }

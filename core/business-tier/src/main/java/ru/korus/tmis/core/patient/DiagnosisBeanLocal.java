@@ -44,4 +44,6 @@ public interface DiagnosisBeanLocal {
 
 
     DiagnosesListData getDiagnosesByAppeal (int eventId) throws CoreException;
+
+    Boolean deleteDiagnosis(int eventId, String diaTypeFlatCode) throws CoreException;
 }
