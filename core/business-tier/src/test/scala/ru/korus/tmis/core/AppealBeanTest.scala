@@ -21,6 +21,7 @@ import scala.collection.JavaConversions._
 import java.util.Date
 import javax.persistence.EntityManager
 import java.util
+import collection.JavaConversions
 
 /**
  * Author:      Ivan Dmitriev <br>
@@ -377,29 +378,133 @@ class AppealBeanTest {
     }
   }
 
-  /*
-    def revokeAppealById(event : Event, resultId: Int, authData: AuthData) = {
+  //______________________________________________________________________________________________________
+  //****************************************   revokeAppealById Tests   ********************************
+  //______________________________________________________________________________________________________
 
-    //Закрываем госпитализацию с причиной отказа
-    val now = new Date()
-    if(event == null){
-      throw new CoreException("Не указано редактируемое обращение")
-    }
-    //TODO: Возможно надо прикрутить блокировку
-    try {
-      event.setModifyDatetime(now)
-      event.setModifyPerson(authData.user)
-      event.setExecDate(now)
-      event.setResult(dbRbResultBean.getRbResultById(resultId)) //какой-то айдишник =)
+  @Test
+  def testRevokeAppealByIdSuccess = {
+
+    val event =  testData.getTestDefaultEvent(TEvent_id)
+    val resultId = 1
+    val authData = testData.getTestDefaultAuthData(testData.getTestDefaultStaff)
+
+    logger.warn("Start of revokeAppealById test:")
+    when(dbRbResultBean.getRbResultById(resultId)).thenReturn(new RbResult(resultId))
+
+    try{
+      logger.info("Request data for method is: {}", "event_id=%d, result_id=%d, auth=%s".format(TEvent_id, resultId, mapper.writeValueAsString(authData)))
+      val result = appealBean.revokeAppealById(event, resultId, authData)
+      Assert.assertNotNull(result)
+      Assert.assertEquals(result.getModifyPerson, authData.user)
+      Assert.assertEquals(result.getResult.getId.intValue(), resultId)
+      validateMockitoUsage()
+      logger.info("The method has been successfully completed. Result is: {}", result.toString)
+      logger.warn("Successful end of revokeAppealById test")
     }
     catch {
-      case e: Exception => {
-        error("revokeAppealById >> Ошибка при закрытии госпитализации: %s".format(e.getMessage))
-        throw new CoreException("Ошибка при закрытии госпитализации (id = %s)".format(event.getId.toString))
+      case ex: CoreException => {
+        logger.error("revokeAppealById test failed with error: {}", ex.getMessage + " " + ex.getStackTrace)
+        Assert.fail()
       }
     }
-    finally {}
-    event
   }
-   */
+
+  //______________________________________________________________________________________________________
+  //****************************************   getPatientsHospitalizedStatus Tests   ********************************
+  //______________________________________________________________________________________________________
+
+  @Test
+  def testGetPatientsHospitalizedStatusSuccess = {
+
+    val event =  testData.getTestDefaultEvent(TEvent_id)
+    val setATIdsPrimary = JavaConversions.asJavaSet(Set(ConfigManager.Messages("db.actionType.hospitalization.primary").toInt :java.lang.Integer))
+    val setATIdsMoving = JavaConversions.asJavaSet(Set(ConfigManager.Messages("db.actionType.moving").toInt :java.lang.Integer))
+    val setATIdsPrimarySecondary =JavaConversions.asJavaSet(Set(ConfigManager.Messages("db.actionType.primary").toInt :java.lang.Integer, ConfigManager.Messages("db.actionType.secondary").toInt :java.lang.Integer))
+    val lstSentToIds = JavaConversions.asJavaList(List(ConfigManager.Messages("db.rbCAP.hosp.primary.id.sentTo").toInt :java.lang.Integer))
+    val lstCancelIds = JavaConversions.asJavaList(List(ConfigManager.Messages("db.rbCAP.hosp.primary.id.cancel").toInt :java.lang.Integer))
+
+    var apt = List.empty[ActionPropertyType]
+    var ap = List.empty[ActionProperty]
+    val apvalues = new java.util.HashMap[ActionProperty, java.util.List[APValue]]()
+    val apv = List[APValue](testData.getTestDefaultAPValueOrgStructure(1),
+      testData.getTestDefaultAPValueTime(new Date()),
+      testData.getTestDefaultAPValueString("test"))
+
+    for(i <- 0 until 3) {
+      apt :+= testData.getTestDefaultActionPropertyType(i+1, "testCode_%d".format(i+1))
+      ap :+= testData.getTestDefaultActionProperty(i+1, apt.get(i))
+      apvalues.put(ap.get(i), asJavaList(List[APValue](apv.get(i))))
+    }
+
+    logger.warn("Start of getPatientsHospitalizedStatus test:")
+    when(dbEventBean.getEventById(TEvent_id)).thenReturn(event)
+    when(actionBean.getLastActionByActionTypeIdAndEventId (TEvent_id, setATIdsPrimary)).thenReturn(TAction_id)
+    when(actionPropertyBean.getActionPropertiesByActionIdAndRbCoreActionPropertyIds(TAction_id, lstSentToIds)).thenReturn(apvalues)
+    when(actionPropertyBean.getActionPropertiesByActionIdAndRbCoreActionPropertyIds(TAction_id, lstCancelIds)).thenReturn(apvalues)
+    when(actionBean.getLastActionByActionTypeIdAndEventId(TEvent_id, setATIdsMoving)).thenReturn(TAction_id+1)
+    when(actionBean.getLastActionByActionTypeIdAndEventId(TEvent_id, setATIdsPrimarySecondary)).thenReturn(TAction_id)
+
+    try{
+      logger.info("Request data for method is: {}", "event_id=%d".format(TEvent_id))
+      val result = appealBean.getPatientsHospitalizedStatus(TEvent_id)
+      Assert.assertNotNull(result)
+      Assert.assertEquals(ConfigManager.Messages("patient.status.regToBed").toString, result)
+      validateMockitoUsage()
+      logger.info("The method has been successfully completed. Result is: {}", result.toString)
+      logger.warn("Successful end of getPatientsHospitalizedStatus test")
+    }
+    catch {
+      case ex: CoreException => {
+        logger.error("getPatientsHospitalizedStatus test failed with error: {}", ex.getMessage + " " + ex.getStackTrace)
+        Assert.fail()
+      }
+    }
+  }
+
+  //______________________________________________________________________________________________________
+  //****************************************   getDiagnosisListByAppealId Tests   ********************************
+  //______________________________________________________________________________________________________
+
+  @Test
+  def testGetDiagnosisListByAppealIdSuccess = {
+
+    logger.warn("Start of getDiagnosisListByAppealId test:")
+    val filter = new ReceivedRequestDataFilter(TEvent_id, "", 0, "", 0, (new Date()).getTime, "", 1)
+
+    val map = new java.util.HashMap[ActionProperty, java.util.List[APValue]]()
+    val apt1 = testData.getTestDefaultActionPropertyType(1, "testCode_1")
+    apt1.setName("Диагноз направившего учреждения")
+    val apt2 = testData.getTestDefaultActionPropertyType(2, "testCode_2")
+    apt2.setName("Test property")
+    val ap1 = testData.getTestDefaultActionProperty(1, apt1)
+    val ap2 = testData.getTestDefaultActionProperty(2, apt2)
+    val apv1 = List[APValue](testData.getTestDefaultAPValueMkb(1))
+    val apv2 = List[APValue](testData.getTestDefaultAPValueString("test"))
+    map.put(ap1, apv1)
+    map.put(ap2, apv2)
+
+    when(actionBean.getLastActionByActionTypeIdAndEventId (anyInt(), anyObject())).thenReturn(TAction_id)
+    when(actionPropertyBean.getActionPropertiesByActionId(TAction_id)).thenReturn(map)
+
+    try{
+      logger.info("Request data for method is: {}", "event_id=%d, filter=%s".format(TEvent_id, mapper.writeValueAsString(filter)))
+      val result = appealBean.getDiagnosisListByAppealId(TEvent_id, filter.diagnosis)
+      Assert.assertNotNull(result)
+      Assert.assertEquals(result.size(), 3)
+      Assert.assertEquals(result.get("assignment").size(), 1)
+      Assert.assertEquals(result.get("attendant").size(), 0)
+      Assert.assertEquals(result.get("aftereffect").size(), 0)
+
+      validateMockitoUsage()
+      logger.info("The method has been successfully completed. Result is: {}", result.toString)
+      logger.warn("Successful end of getDiagnosisListByAppealId test")
+    }
+    catch {
+      case ex: CoreException => {
+        logger.error("getDiagnosisListByAppealId test failed with error: {}", ex.getMessage + " " + ex.getStackTrace)
+        Assert.fail()
+      }
+    }
+  }
 }
