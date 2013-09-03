@@ -37,6 +37,7 @@ public class PrescriptionList implements org.apache.thrift.TBase<PrescriptionLis
   private static final org.apache.thrift.protocol.TStruct STRUCT_DESC = new org.apache.thrift.protocol.TStruct("PrescriptionList");
 
   private static final org.apache.thrift.protocol.TField PRESCRIPTION_LIST_FIELD_DESC = new org.apache.thrift.protocol.TField("prescriptionList", org.apache.thrift.protocol.TType.LIST, (short)1);
+  private static final org.apache.thrift.protocol.TField EVENT_ID_FIELD_DESC = new org.apache.thrift.protocol.TField("eventId", org.apache.thrift.protocol.TType.I32, (short)2);
 
   private static final Map<Class<? extends IScheme>, SchemeFactory> schemes = new HashMap<Class<? extends IScheme>, SchemeFactory>();
   static {
@@ -45,10 +46,12 @@ public class PrescriptionList implements org.apache.thrift.TBase<PrescriptionLis
   }
 
   public List<Prescription> prescriptionList; // required
+  public int eventId; // optional
 
   /** The set of fields this struct contains, along with convenience methods for finding and manipulating them. */
   public enum _Fields implements org.apache.thrift.TFieldIdEnum {
-    PRESCRIPTION_LIST((short)1, "prescriptionList");
+    PRESCRIPTION_LIST((short)1, "prescriptionList"),
+    EVENT_ID((short)2, "eventId");
 
     private static final Map<String, _Fields> byName = new HashMap<String, _Fields>();
 
@@ -65,6 +68,8 @@ public class PrescriptionList implements org.apache.thrift.TBase<PrescriptionLis
       switch(fieldId) {
         case 1: // PRESCRIPTION_LIST
           return PRESCRIPTION_LIST;
+        case 2: // EVENT_ID
+          return EVENT_ID;
         default:
           return null;
       }
@@ -105,12 +110,17 @@ public class PrescriptionList implements org.apache.thrift.TBase<PrescriptionLis
   }
 
   // isset id assignments
+  private static final int __EVENTID_ISSET_ID = 0;
+  private byte __isset_bitfield = 0;
+  private _Fields optionals[] = {_Fields.EVENT_ID};
   public static final Map<_Fields, org.apache.thrift.meta_data.FieldMetaData> metaDataMap;
   static {
     Map<_Fields, org.apache.thrift.meta_data.FieldMetaData> tmpMap = new EnumMap<_Fields, org.apache.thrift.meta_data.FieldMetaData>(_Fields.class);
     tmpMap.put(_Fields.PRESCRIPTION_LIST, new org.apache.thrift.meta_data.FieldMetaData("prescriptionList", org.apache.thrift.TFieldRequirementType.REQUIRED, 
         new org.apache.thrift.meta_data.ListMetaData(org.apache.thrift.protocol.TType.LIST, 
             new org.apache.thrift.meta_data.StructMetaData(org.apache.thrift.protocol.TType.STRUCT, Prescription.class))));
+    tmpMap.put(_Fields.EVENT_ID, new org.apache.thrift.meta_data.FieldMetaData("eventId", org.apache.thrift.TFieldRequirementType.OPTIONAL, 
+        new org.apache.thrift.meta_data.FieldValueMetaData(org.apache.thrift.protocol.TType.I32)));
     metaDataMap = Collections.unmodifiableMap(tmpMap);
     org.apache.thrift.meta_data.FieldMetaData.addStructMetaDataMap(PrescriptionList.class, metaDataMap);
   }
@@ -129,6 +139,7 @@ public class PrescriptionList implements org.apache.thrift.TBase<PrescriptionLis
    * Performs a deep copy on <i>other</i>.
    */
   public PrescriptionList(PrescriptionList other) {
+    __isset_bitfield = other.__isset_bitfield;
     if (other.isSetPrescriptionList()) {
       List<Prescription> __this__prescriptionList = new ArrayList<Prescription>();
       for (Prescription other_element : other.prescriptionList) {
@@ -136,6 +147,7 @@ public class PrescriptionList implements org.apache.thrift.TBase<PrescriptionLis
       }
       this.prescriptionList = __this__prescriptionList;
     }
+    this.eventId = other.eventId;
   }
 
   public PrescriptionList deepCopy() {
@@ -145,6 +157,8 @@ public class PrescriptionList implements org.apache.thrift.TBase<PrescriptionLis
   @Override
   public void clear() {
     this.prescriptionList = null;
+    setEventIdIsSet(false);
+    this.eventId = 0;
   }
 
   public int getPrescriptionListSize() {
@@ -186,6 +200,29 @@ public class PrescriptionList implements org.apache.thrift.TBase<PrescriptionLis
     }
   }
 
+  public int getEventId() {
+    return this.eventId;
+  }
+
+  public PrescriptionList setEventId(int eventId) {
+    this.eventId = eventId;
+    setEventIdIsSet(true);
+    return this;
+  }
+
+  public void unsetEventId() {
+    __isset_bitfield = EncodingUtils.clearBit(__isset_bitfield, __EVENTID_ISSET_ID);
+  }
+
+  /** Returns true if field eventId is set (has been assigned a value) and false otherwise */
+  public boolean isSetEventId() {
+    return EncodingUtils.testBit(__isset_bitfield, __EVENTID_ISSET_ID);
+  }
+
+  public void setEventIdIsSet(boolean value) {
+    __isset_bitfield = EncodingUtils.setBit(__isset_bitfield, __EVENTID_ISSET_ID, value);
+  }
+
   public void setFieldValue(_Fields field, Object value) {
     switch (field) {
     case PRESCRIPTION_LIST:
@@ -196,6 +233,14 @@ public class PrescriptionList implements org.apache.thrift.TBase<PrescriptionLis
       }
       break;
 
+    case EVENT_ID:
+      if (value == null) {
+        unsetEventId();
+      } else {
+        setEventId((Integer)value);
+      }
+      break;
+
     }
   }
 
@@ -203,6 +248,9 @@ public class PrescriptionList implements org.apache.thrift.TBase<PrescriptionLis
     switch (field) {
     case PRESCRIPTION_LIST:
       return getPrescriptionList();
+
+    case EVENT_ID:
+      return Integer.valueOf(getEventId());
 
     }
     throw new IllegalStateException();
@@ -217,6 +265,8 @@ public class PrescriptionList implements org.apache.thrift.TBase<PrescriptionLis
     switch (field) {
     case PRESCRIPTION_LIST:
       return isSetPrescriptionList();
+    case EVENT_ID:
+      return isSetEventId();
     }
     throw new IllegalStateException();
   }
@@ -243,6 +293,15 @@ public class PrescriptionList implements org.apache.thrift.TBase<PrescriptionLis
         return false;
     }
 
+    boolean this_present_eventId = true && this.isSetEventId();
+    boolean that_present_eventId = true && that.isSetEventId();
+    if (this_present_eventId || that_present_eventId) {
+      if (!(this_present_eventId && that_present_eventId))
+        return false;
+      if (this.eventId != that.eventId)
+        return false;
+    }
+
     return true;
   }
 
@@ -265,6 +324,16 @@ public class PrescriptionList implements org.apache.thrift.TBase<PrescriptionLis
     }
     if (isSetPrescriptionList()) {
       lastComparison = org.apache.thrift.TBaseHelper.compareTo(this.prescriptionList, typedOther.prescriptionList);
+      if (lastComparison != 0) {
+        return lastComparison;
+      }
+    }
+    lastComparison = Boolean.valueOf(isSetEventId()).compareTo(typedOther.isSetEventId());
+    if (lastComparison != 0) {
+      return lastComparison;
+    }
+    if (isSetEventId()) {
+      lastComparison = org.apache.thrift.TBaseHelper.compareTo(this.eventId, typedOther.eventId);
       if (lastComparison != 0) {
         return lastComparison;
       }
@@ -296,6 +365,12 @@ public class PrescriptionList implements org.apache.thrift.TBase<PrescriptionLis
       sb.append(this.prescriptionList);
     }
     first = false;
+    if (isSetEventId()) {
+      if (!first) sb.append(", ");
+      sb.append("eventId:");
+      sb.append(this.eventId);
+      first = false;
+    }
     sb.append(")");
     return sb.toString();
   }
@@ -318,6 +393,8 @@ public class PrescriptionList implements org.apache.thrift.TBase<PrescriptionLis
 
   private void readObject(java.io.ObjectInputStream in) throws java.io.IOException, ClassNotFoundException {
     try {
+      // it doesn't seem like you should have to do this, but java serialization is wacky, and doesn't call the default constructor.
+      __isset_bitfield = 0;
       read(new org.apache.thrift.protocol.TCompactProtocol(new org.apache.thrift.transport.TIOStreamTransport(in)));
     } catch (org.apache.thrift.TException te) {
       throw new java.io.IOException(te);
@@ -361,6 +438,14 @@ public class PrescriptionList implements org.apache.thrift.TBase<PrescriptionLis
               org.apache.thrift.protocol.TProtocolUtil.skip(iprot, schemeField.type);
             }
             break;
+          case 2: // EVENT_ID
+            if (schemeField.type == org.apache.thrift.protocol.TType.I32) {
+              struct.eventId = iprot.readI32();
+              struct.setEventIdIsSet(true);
+            } else { 
+              org.apache.thrift.protocol.TProtocolUtil.skip(iprot, schemeField.type);
+            }
+            break;
           default:
             org.apache.thrift.protocol.TProtocolUtil.skip(iprot, schemeField.type);
         }
@@ -388,6 +473,11 @@ public class PrescriptionList implements org.apache.thrift.TBase<PrescriptionLis
         }
         oprot.writeFieldEnd();
       }
+      if (struct.isSetEventId()) {
+        oprot.writeFieldBegin(EVENT_ID_FIELD_DESC);
+        oprot.writeI32(struct.eventId);
+        oprot.writeFieldEnd();
+      }
       oprot.writeFieldStop();
       oprot.writeStructEnd();
     }
@@ -412,6 +502,14 @@ public class PrescriptionList implements org.apache.thrift.TBase<PrescriptionLis
           _iter28.write(oprot);
         }
       }
+      BitSet optionals = new BitSet();
+      if (struct.isSetEventId()) {
+        optionals.set(0);
+      }
+      oprot.writeBitSet(optionals, 1);
+      if (struct.isSetEventId()) {
+        oprot.writeI32(struct.eventId);
+      }
     }
 
     @Override
@@ -429,6 +527,11 @@ public class PrescriptionList implements org.apache.thrift.TBase<PrescriptionLis
         }
       }
       struct.setPrescriptionListIsSet(true);
+      BitSet incoming = iprot.readBitSet(1);
+      if (incoming.get(0)) {
+        struct.eventId = iprot.readI32();
+        struct.setEventIdIsSet(true);
+      }
     }
   }
 

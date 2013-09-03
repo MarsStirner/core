@@ -1,4 +1,5 @@
 namespace java ru.korus.tmis.prescription.thservice
+namespace py prescr
 
 typedef i64 timestamp
 
@@ -8,11 +9,12 @@ typedef i64 timestamp
  * Данные экшена назначения и значения его свойств
  */
 struct ActionData {
-	1:optional i32 action_id, // Action.id
-	2:optional string note, // Action.note
-	3:required i32 setPerson_id, // Назначивший Action.setPerson_id
-	4:optional string moa, // способ ввода препарата AP_S.value для APT с кодом moa
-	5:optional string voa // скорость ввода препарата AP_S.value для APT с кодом voa
+	1:optional i32 id, // Action.id
+	2:optional i32 actionType_id,
+	3:optional string note, // Action.note
+	4:optional i32 setPerson_id, // Назначивший Action.setPerson_id
+	5:optional string moa, // способ ввода препарата AP_S.value для APT с кодом moa
+	6:optional string voa // скорость ввода препарата AP_S.value для APT с кодом voa
 }
 
 /**
@@ -23,9 +25,9 @@ struct DrugComponent {
 	2:optional i32 action_id,
 	3:optional i32 nomen, // код РЛС препарата
 	4:optional string name, // наименование препарата; используется там, где нет РЛС
-	5:required double dose, // доза препарата в единицах измерения препарата
-	6:required i32 unit, // идентификатор ед.изм. препарата {rbUnit.id}
-	7:required timestamp createDateTime, // датавремя назначения препарата
+	5:optional double dose, // доза препарата в единицах измерения препарата
+	6:optional i32 unit, // идентификатор ед.изм. препарата {rbUnit.id}
+	7:optional timestamp createDateTime, // датавремя назначения препарата
 	8:optional timestamp cancelDateTime // датавремя отменя препарата
 
 }
@@ -36,14 +38,14 @@ struct DrugComponent {
  * Для этих записей установлено поле master_id, ссылающееся на запись
  * назначенного интервала
  */
-struct DrugIntervalInner {
+struct DrugIntervalExec {
 	1:optional i32 id,
 	2:optional i32 action_id,
 	3:optional i32 master_id, // назначенный интервал
-	4:required timestamp begDateTime, // начало
+	4:optional timestamp begDateTime, // начало
 	5:optional timestamp endDateTime, // окончание
-	6:required i32 status, // статус исполнения (назначено, отменено, исполнено)
-	7:optional timestamp statusDatetime, // время изменения статуса с "назначено" на иной
+	6:optional i32 status, // статус исполнения (назначено, отменено, исполнено)
+	7:optional timestamp statusDateTime, // время изменения статуса с "назначено" на иной
 	8:optional string note // заметка для интервала назначения или исполнения
 }
 
@@ -55,12 +57,12 @@ struct DrugIntervalInner {
 struct DrugInterval {
 	1:optional i32 id,
 	2:optional i32 action_id,
-	3:required timestamp begDateTime, // начало
+	3:optional timestamp begDateTime, // начало
 	4:optional timestamp endDateTime, // окончание
-	5:required i32 status, // статус исполнения (назначено, отменено, исполнено)
+	5:optional i32 status, // статус исполнения (назначено, отменено, исполнено)
 	6:optional timestamp statusDateTime, // время изменения статуса с "назначено" на иной
 	7:optional string note, // заметка для интервала назначения или исполнения
-	8:required list<DrugIntervalInner> execIntervals // интервалы исполнения
+	8:optional list<DrugIntervalExec> execIntervals // интервалы исполнения
 }
 
 /**
@@ -68,8 +70,8 @@ struct DrugInterval {
  * список компонентов, список интервалов времен назначений
  */
 struct Prescription {
-	1:required ActionData actInfo,
-	2:required list<DrugComponent> drugComponents,
+	1:optional ActionData actInfo,
+	2:optional list<DrugComponent> drugComponents,
 	3:optional list<DrugInterval> drugIntervals
 }
 
@@ -77,14 +79,11 @@ struct Prescription {
  * Базовая структура листа назначений, включает в себя список отдельных назначений
  */
 struct PrescriptionList {
-	1:required list<Prescription> prescriptionList
+	1:required list<Prescription> prescriptionList,
+        2:optional i32 eventId
+
 }
 
-
-exception EmptyPrescrListException {
-	1: string message,
-	2: i32 error_code
-}
 
 exception SavePrescrListException {
 	1: string message,
@@ -98,6 +97,6 @@ exception SavePrescrListException {
  */
 service PrescriptionExchange {
 
-	PrescriptionList getPrescriptionList(1:i32 eventId) throws (1: EmptyPrescrListException e),
+	PrescriptionList getPrescriptionList(1:i32 eventId),
 	void save(1:PrescriptionList prescrList) throws (1: SavePrescrListException e)
 }

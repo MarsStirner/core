@@ -19,12 +19,11 @@ public class PrescriptionThriftTest {
     class Servak implements PrescriptionExchange.Iface {
 
         @Override
-        public PrescriptionList getPrescriptionList(int eventId) throws EmptyPrescrListException, TException {
+        public PrescriptionList getPrescriptionList(int eventId) throws  TException {
             System.out.println("eventId = " + eventId);
             PrescriptionList prescriptionList = new PrescriptionList();
             Prescription elem = new Prescription();
-            elem.setActInfo(new ActionData(1));
-            elem.addToDrugComponents(new DrugComponent(1.0, 1, System.currentTimeMillis()));
+            elem.setActInfo(new ActionData());
             prescriptionList.addToPrescriptionList(elem);
             return prescriptionList;
         }

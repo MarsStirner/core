@@ -47,8 +47,8 @@ public class Prescription implements org.apache.thrift.TBase<Prescription, Presc
     schemes.put(TupleScheme.class, new PrescriptionTupleSchemeFactory());
   }
 
-  public ActionData actInfo; // required
-  public List<DrugComponent> drugComponents; // required
+  public ActionData actInfo; // optional
+  public List<DrugComponent> drugComponents; // optional
   public List<DrugInterval> drugIntervals; // optional
 
   /** The set of fields this struct contains, along with convenience methods for finding and manipulating them. */
@@ -116,13 +116,13 @@ public class Prescription implements org.apache.thrift.TBase<Prescription, Presc
   }
 
   // isset id assignments
-  private _Fields optionals[] = {_Fields.DRUG_INTERVALS};
+  private _Fields optionals[] = {_Fields.ACT_INFO,_Fields.DRUG_COMPONENTS,_Fields.DRUG_INTERVALS};
   public static final Map<_Fields, org.apache.thrift.meta_data.FieldMetaData> metaDataMap;
   static {
     Map<_Fields, org.apache.thrift.meta_data.FieldMetaData> tmpMap = new EnumMap<_Fields, org.apache.thrift.meta_data.FieldMetaData>(_Fields.class);
-    tmpMap.put(_Fields.ACT_INFO, new org.apache.thrift.meta_data.FieldMetaData("actInfo", org.apache.thrift.TFieldRequirementType.REQUIRED, 
+    tmpMap.put(_Fields.ACT_INFO, new org.apache.thrift.meta_data.FieldMetaData("actInfo", org.apache.thrift.TFieldRequirementType.OPTIONAL, 
         new org.apache.thrift.meta_data.StructMetaData(org.apache.thrift.protocol.TType.STRUCT, ActionData.class)));
-    tmpMap.put(_Fields.DRUG_COMPONENTS, new org.apache.thrift.meta_data.FieldMetaData("drugComponents", org.apache.thrift.TFieldRequirementType.REQUIRED, 
+    tmpMap.put(_Fields.DRUG_COMPONENTS, new org.apache.thrift.meta_data.FieldMetaData("drugComponents", org.apache.thrift.TFieldRequirementType.OPTIONAL, 
         new org.apache.thrift.meta_data.ListMetaData(org.apache.thrift.protocol.TType.LIST, 
             new org.apache.thrift.meta_data.StructMetaData(org.apache.thrift.protocol.TType.STRUCT, DrugComponent.class))));
     tmpMap.put(_Fields.DRUG_INTERVALS, new org.apache.thrift.meta_data.FieldMetaData("drugIntervals", org.apache.thrift.TFieldRequirementType.OPTIONAL, 
@@ -133,15 +133,6 @@ public class Prescription implements org.apache.thrift.TBase<Prescription, Presc
   }
 
   public Prescription() {
-  }
-
-  public Prescription(
-    ActionData actInfo,
-    List<DrugComponent> drugComponents)
-  {
-    this();
-    this.actInfo = actInfo;
-    this.drugComponents = drugComponents;
   }
 
   /**
@@ -447,21 +438,25 @@ public class Prescription implements org.apache.thrift.TBase<Prescription, Presc
     StringBuilder sb = new StringBuilder("Prescription(");
     boolean first = true;
 
-    sb.append("actInfo:");
-    if (this.actInfo == null) {
-      sb.append("null");
-    } else {
-      sb.append(this.actInfo);
+    if (isSetActInfo()) {
+      sb.append("actInfo:");
+      if (this.actInfo == null) {
+        sb.append("null");
+      } else {
+        sb.append(this.actInfo);
+      }
+      first = false;
     }
-    first = false;
-    if (!first) sb.append(", ");
-    sb.append("drugComponents:");
-    if (this.drugComponents == null) {
-      sb.append("null");
-    } else {
-      sb.append(this.drugComponents);
+    if (isSetDrugComponents()) {
+      if (!first) sb.append(", ");
+      sb.append("drugComponents:");
+      if (this.drugComponents == null) {
+        sb.append("null");
+      } else {
+        sb.append(this.drugComponents);
+      }
+      first = false;
     }
-    first = false;
     if (isSetDrugIntervals()) {
       if (!first) sb.append(", ");
       sb.append("drugIntervals:");
@@ -478,12 +473,6 @@ public class Prescription implements org.apache.thrift.TBase<Prescription, Presc
 
   public void validate() throws org.apache.thrift.TException {
     // check for required fields
-    if (actInfo == null) {
-      throw new org.apache.thrift.protocol.TProtocolException("Required field 'actInfo' was not present! Struct: " + toString());
-    }
-    if (drugComponents == null) {
-      throw new org.apache.thrift.protocol.TProtocolException("Required field 'drugComponents' was not present! Struct: " + toString());
-    }
     // check for sub-struct validity
     if (actInfo != null) {
       actInfo.validate();
@@ -587,21 +576,25 @@ public class Prescription implements org.apache.thrift.TBase<Prescription, Presc
 
       oprot.writeStructBegin(STRUCT_DESC);
       if (struct.actInfo != null) {
-        oprot.writeFieldBegin(ACT_INFO_FIELD_DESC);
-        struct.actInfo.write(oprot);
-        oprot.writeFieldEnd();
+        if (struct.isSetActInfo()) {
+          oprot.writeFieldBegin(ACT_INFO_FIELD_DESC);
+          struct.actInfo.write(oprot);
+          oprot.writeFieldEnd();
+        }
       }
       if (struct.drugComponents != null) {
-        oprot.writeFieldBegin(DRUG_COMPONENTS_FIELD_DESC);
-        {
-          oprot.writeListBegin(new org.apache.thrift.protocol.TList(org.apache.thrift.protocol.TType.STRUCT, struct.drugComponents.size()));
-          for (DrugComponent _iter14 : struct.drugComponents)
+        if (struct.isSetDrugComponents()) {
+          oprot.writeFieldBegin(DRUG_COMPONENTS_FIELD_DESC);
           {
-            _iter14.write(oprot);
+            oprot.writeListBegin(new org.apache.thrift.protocol.TList(org.apache.thrift.protocol.TType.STRUCT, struct.drugComponents.size()));
+            for (DrugComponent _iter14 : struct.drugComponents)
+            {
+              _iter14.write(oprot);
+            }
+            oprot.writeListEnd();
           }
-          oprot.writeListEnd();
+          oprot.writeFieldEnd();
         }
-        oprot.writeFieldEnd();
       }
       if (struct.drugIntervals != null) {
         if (struct.isSetDrugIntervals()) {
@@ -634,19 +627,29 @@ public class Prescription implements org.apache.thrift.TBase<Prescription, Presc
     @Override
     public void write(org.apache.thrift.protocol.TProtocol prot, Prescription struct) throws org.apache.thrift.TException {
       TTupleProtocol oprot = (TTupleProtocol) prot;
-      struct.actInfo.write(oprot);
-      {
-        oprot.writeI32(struct.drugComponents.size());
-        for (DrugComponent _iter16 : struct.drugComponents)
-        {
-          _iter16.write(oprot);
-        }
-      }
       BitSet optionals = new BitSet();
-      if (struct.isSetDrugIntervals()) {
+      if (struct.isSetActInfo()) {
         optionals.set(0);
       }
-      oprot.writeBitSet(optionals, 1);
+      if (struct.isSetDrugComponents()) {
+        optionals.set(1);
+      }
+      if (struct.isSetDrugIntervals()) {
+        optionals.set(2);
+      }
+      oprot.writeBitSet(optionals, 3);
+      if (struct.isSetActInfo()) {
+        struct.actInfo.write(oprot);
+      }
+      if (struct.isSetDrugComponents()) {
+        {
+          oprot.writeI32(struct.drugComponents.size());
+          for (DrugComponent _iter16 : struct.drugComponents)
+          {
+            _iter16.write(oprot);
+          }
+        }
+      }
       if (struct.isSetDrugIntervals()) {
         {
           oprot.writeI32(struct.drugIntervals.size());
@@ -661,23 +664,27 @@ public class Prescription implements org.apache.thrift.TBase<Prescription, Presc
     @Override
     public void read(org.apache.thrift.protocol.TProtocol prot, Prescription struct) throws org.apache.thrift.TException {
       TTupleProtocol iprot = (TTupleProtocol) prot;
-      struct.actInfo = new ActionData();
-      struct.actInfo.read(iprot);
-      struct.setActInfoIsSet(true);
-      {
-        org.apache.thrift.protocol.TList _list18 = new org.apache.thrift.protocol.TList(org.apache.thrift.protocol.TType.STRUCT, iprot.readI32());
-        struct.drugComponents = new ArrayList<DrugComponent>(_list18.size);
-        for (int _i19 = 0; _i19 < _list18.size; ++_i19)
-        {
-          DrugComponent _elem20; // required
-          _elem20 = new DrugComponent();
-          _elem20.read(iprot);
-          struct.drugComponents.add(_elem20);
-        }
-      }
-      struct.setDrugComponentsIsSet(true);
-      BitSet incoming = iprot.readBitSet(1);
+      BitSet incoming = iprot.readBitSet(3);
       if (incoming.get(0)) {
+        struct.actInfo = new ActionData();
+        struct.actInfo.read(iprot);
+        struct.setActInfoIsSet(true);
+      }
+      if (incoming.get(1)) {
+        {
+          org.apache.thrift.protocol.TList _list18 = new org.apache.thrift.protocol.TList(org.apache.thrift.protocol.TType.STRUCT, iprot.readI32());
+          struct.drugComponents = new ArrayList<DrugComponent>(_list18.size);
+          for (int _i19 = 0; _i19 < _list18.size; ++_i19)
+          {
+            DrugComponent _elem20; // required
+            _elem20 = new DrugComponent();
+            _elem20.read(iprot);
+            struct.drugComponents.add(_elem20);
+          }
+        }
+        struct.setDrugComponentsIsSet(true);
+      }
+      if (incoming.get(2)) {
         {
           org.apache.thrift.protocol.TList _list21 = new org.apache.thrift.protocol.TList(org.apache.thrift.protocol.TType.STRUCT, iprot.readI32());
           struct.drugIntervals = new ArrayList<DrugInterval>(_list21.size);

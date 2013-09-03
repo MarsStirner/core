@@ -55,9 +55,9 @@ public class DrugComponent implements org.apache.thrift.TBase<DrugComponent, Dru
   public int action_id; // optional
   public int nomen; // optional
   public String name; // optional
-  public double dose; // required
-  public int unit; // required
-  public long createDateTime; // required
+  public double dose; // optional
+  public int unit; // optional
+  public long createDateTime; // optional
   public long cancelDateTime; // optional
 
   /** The set of fields this struct contains, along with convenience methods for finding and manipulating them. */
@@ -148,7 +148,7 @@ public class DrugComponent implements org.apache.thrift.TBase<DrugComponent, Dru
   private static final int __CREATEDATETIME_ISSET_ID = 5;
   private static final int __CANCELDATETIME_ISSET_ID = 6;
   private byte __isset_bitfield = 0;
-  private _Fields optionals[] = {_Fields.ID,_Fields.ACTION_ID,_Fields.NOMEN,_Fields.NAME,_Fields.CANCEL_DATE_TIME};
+  private _Fields optionals[] = {_Fields.ID,_Fields.ACTION_ID,_Fields.NOMEN,_Fields.NAME,_Fields.DOSE,_Fields.UNIT,_Fields.CREATE_DATE_TIME,_Fields.CANCEL_DATE_TIME};
   public static final Map<_Fields, org.apache.thrift.meta_data.FieldMetaData> metaDataMap;
   static {
     Map<_Fields, org.apache.thrift.meta_data.FieldMetaData> tmpMap = new EnumMap<_Fields, org.apache.thrift.meta_data.FieldMetaData>(_Fields.class);
@@ -160,11 +160,11 @@ public class DrugComponent implements org.apache.thrift.TBase<DrugComponent, Dru
         new org.apache.thrift.meta_data.FieldValueMetaData(org.apache.thrift.protocol.TType.I32)));
     tmpMap.put(_Fields.NAME, new org.apache.thrift.meta_data.FieldMetaData("name", org.apache.thrift.TFieldRequirementType.OPTIONAL, 
         new org.apache.thrift.meta_data.FieldValueMetaData(org.apache.thrift.protocol.TType.STRING)));
-    tmpMap.put(_Fields.DOSE, new org.apache.thrift.meta_data.FieldMetaData("dose", org.apache.thrift.TFieldRequirementType.REQUIRED, 
+    tmpMap.put(_Fields.DOSE, new org.apache.thrift.meta_data.FieldMetaData("dose", org.apache.thrift.TFieldRequirementType.OPTIONAL, 
         new org.apache.thrift.meta_data.FieldValueMetaData(org.apache.thrift.protocol.TType.DOUBLE)));
-    tmpMap.put(_Fields.UNIT, new org.apache.thrift.meta_data.FieldMetaData("unit", org.apache.thrift.TFieldRequirementType.REQUIRED, 
+    tmpMap.put(_Fields.UNIT, new org.apache.thrift.meta_data.FieldMetaData("unit", org.apache.thrift.TFieldRequirementType.OPTIONAL, 
         new org.apache.thrift.meta_data.FieldValueMetaData(org.apache.thrift.protocol.TType.I32)));
-    tmpMap.put(_Fields.CREATE_DATE_TIME, new org.apache.thrift.meta_data.FieldMetaData("createDateTime", org.apache.thrift.TFieldRequirementType.REQUIRED, 
+    tmpMap.put(_Fields.CREATE_DATE_TIME, new org.apache.thrift.meta_data.FieldMetaData("createDateTime", org.apache.thrift.TFieldRequirementType.OPTIONAL, 
         new org.apache.thrift.meta_data.FieldValueMetaData(org.apache.thrift.protocol.TType.I64        , "timestamp")));
     tmpMap.put(_Fields.CANCEL_DATE_TIME, new org.apache.thrift.meta_data.FieldMetaData("cancelDateTime", org.apache.thrift.TFieldRequirementType.OPTIONAL, 
         new org.apache.thrift.meta_data.FieldValueMetaData(org.apache.thrift.protocol.TType.I64        , "timestamp")));
@@ -173,20 +173,6 @@ public class DrugComponent implements org.apache.thrift.TBase<DrugComponent, Dru
   }
 
   public DrugComponent() {
-  }
-
-  public DrugComponent(
-    double dose,
-    int unit,
-    long createDateTime)
-  {
-    this();
-    this.dose = dose;
-    setDoseIsSet(true);
-    this.unit = unit;
-    setUnitIsSet(true);
-    this.createDateTime = createDateTime;
-    setCreateDateTimeIsSet(true);
   }
 
   /**
@@ -589,8 +575,8 @@ public class DrugComponent implements org.apache.thrift.TBase<DrugComponent, Dru
         return false;
     }
 
-    boolean this_present_dose = true;
-    boolean that_present_dose = true;
+    boolean this_present_dose = true && this.isSetDose();
+    boolean that_present_dose = true && that.isSetDose();
     if (this_present_dose || that_present_dose) {
       if (!(this_present_dose && that_present_dose))
         return false;
@@ -598,8 +584,8 @@ public class DrugComponent implements org.apache.thrift.TBase<DrugComponent, Dru
         return false;
     }
 
-    boolean this_present_unit = true;
-    boolean that_present_unit = true;
+    boolean this_present_unit = true && this.isSetUnit();
+    boolean that_present_unit = true && that.isSetUnit();
     if (this_present_unit || that_present_unit) {
       if (!(this_present_unit && that_present_unit))
         return false;
@@ -607,8 +593,8 @@ public class DrugComponent implements org.apache.thrift.TBase<DrugComponent, Dru
         return false;
     }
 
-    boolean this_present_createDateTime = true;
-    boolean that_present_createDateTime = true;
+    boolean this_present_createDateTime = true && this.isSetCreateDateTime();
+    boolean that_present_createDateTime = true && that.isSetCreateDateTime();
     if (this_present_createDateTime || that_present_createDateTime) {
       if (!(this_present_createDateTime && that_present_createDateTime))
         return false;
@@ -768,18 +754,24 @@ public class DrugComponent implements org.apache.thrift.TBase<DrugComponent, Dru
       }
       first = false;
     }
-    if (!first) sb.append(", ");
-    sb.append("dose:");
-    sb.append(this.dose);
-    first = false;
-    if (!first) sb.append(", ");
-    sb.append("unit:");
-    sb.append(this.unit);
-    first = false;
-    if (!first) sb.append(", ");
-    sb.append("createDateTime:");
-    sb.append(this.createDateTime);
-    first = false;
+    if (isSetDose()) {
+      if (!first) sb.append(", ");
+      sb.append("dose:");
+      sb.append(this.dose);
+      first = false;
+    }
+    if (isSetUnit()) {
+      if (!first) sb.append(", ");
+      sb.append("unit:");
+      sb.append(this.unit);
+      first = false;
+    }
+    if (isSetCreateDateTime()) {
+      if (!first) sb.append(", ");
+      sb.append("createDateTime:");
+      sb.append(this.createDateTime);
+      first = false;
+    }
     if (isSetCancelDateTime()) {
       if (!first) sb.append(", ");
       sb.append("cancelDateTime:");
@@ -792,9 +784,6 @@ public class DrugComponent implements org.apache.thrift.TBase<DrugComponent, Dru
 
   public void validate() throws org.apache.thrift.TException {
     // check for required fields
-    // alas, we cannot check 'dose' because it's a primitive and you chose the non-beans generator.
-    // alas, we cannot check 'unit' because it's a primitive and you chose the non-beans generator.
-    // alas, we cannot check 'createDateTime' because it's a primitive and you chose the non-beans generator.
     // check for sub-struct validity
   }
 
@@ -906,15 +895,6 @@ public class DrugComponent implements org.apache.thrift.TBase<DrugComponent, Dru
       iprot.readStructEnd();
 
       // check for required fields of primitive type, which can't be checked in the validate method
-      if (!struct.isSetDose()) {
-        throw new org.apache.thrift.protocol.TProtocolException("Required field 'dose' was not found in serialized data! Struct: " + toString());
-      }
-      if (!struct.isSetUnit()) {
-        throw new org.apache.thrift.protocol.TProtocolException("Required field 'unit' was not found in serialized data! Struct: " + toString());
-      }
-      if (!struct.isSetCreateDateTime()) {
-        throw new org.apache.thrift.protocol.TProtocolException("Required field 'createDateTime' was not found in serialized data! Struct: " + toString());
-      }
       struct.validate();
     }
 
@@ -944,15 +924,21 @@ public class DrugComponent implements org.apache.thrift.TBase<DrugComponent, Dru
           oprot.writeFieldEnd();
         }
       }
-      oprot.writeFieldBegin(DOSE_FIELD_DESC);
-      oprot.writeDouble(struct.dose);
-      oprot.writeFieldEnd();
-      oprot.writeFieldBegin(UNIT_FIELD_DESC);
-      oprot.writeI32(struct.unit);
-      oprot.writeFieldEnd();
-      oprot.writeFieldBegin(CREATE_DATE_TIME_FIELD_DESC);
-      oprot.writeI64(struct.createDateTime);
-      oprot.writeFieldEnd();
+      if (struct.isSetDose()) {
+        oprot.writeFieldBegin(DOSE_FIELD_DESC);
+        oprot.writeDouble(struct.dose);
+        oprot.writeFieldEnd();
+      }
+      if (struct.isSetUnit()) {
+        oprot.writeFieldBegin(UNIT_FIELD_DESC);
+        oprot.writeI32(struct.unit);
+        oprot.writeFieldEnd();
+      }
+      if (struct.isSetCreateDateTime()) {
+        oprot.writeFieldBegin(CREATE_DATE_TIME_FIELD_DESC);
+        oprot.writeI64(struct.createDateTime);
+        oprot.writeFieldEnd();
+      }
       if (struct.isSetCancelDateTime()) {
         oprot.writeFieldBegin(CANCEL_DATE_TIME_FIELD_DESC);
         oprot.writeI64(struct.cancelDateTime);
@@ -975,9 +961,6 @@ public class DrugComponent implements org.apache.thrift.TBase<DrugComponent, Dru
     @Override
     public void write(org.apache.thrift.protocol.TProtocol prot, DrugComponent struct) throws org.apache.thrift.TException {
       TTupleProtocol oprot = (TTupleProtocol) prot;
-      oprot.writeDouble(struct.dose);
-      oprot.writeI32(struct.unit);
-      oprot.writeI64(struct.createDateTime);
       BitSet optionals = new BitSet();
       if (struct.isSetId()) {
         optionals.set(0);
@@ -991,10 +974,19 @@ public class DrugComponent implements org.apache.thrift.TBase<DrugComponent, Dru
       if (struct.isSetName()) {
         optionals.set(3);
       }
-      if (struct.isSetCancelDateTime()) {
+      if (struct.isSetDose()) {
         optionals.set(4);
       }
-      oprot.writeBitSet(optionals, 5);
+      if (struct.isSetUnit()) {
+        optionals.set(5);
+      }
+      if (struct.isSetCreateDateTime()) {
+        optionals.set(6);
+      }
+      if (struct.isSetCancelDateTime()) {
+        optionals.set(7);
+      }
+      oprot.writeBitSet(optionals, 8);
       if (struct.isSetId()) {
         oprot.writeI32(struct.id);
       }
@@ -1007,6 +999,15 @@ public class DrugComponent implements org.apache.thrift.TBase<DrugComponent, Dru
       if (struct.isSetName()) {
         oprot.writeString(struct.name);
       }
+      if (struct.isSetDose()) {
+        oprot.writeDouble(struct.dose);
+      }
+      if (struct.isSetUnit()) {
+        oprot.writeI32(struct.unit);
+      }
+      if (struct.isSetCreateDateTime()) {
+        oprot.writeI64(struct.createDateTime);
+      }
       if (struct.isSetCancelDateTime()) {
         oprot.writeI64(struct.cancelDateTime);
       }
@@ -1015,13 +1016,7 @@ public class DrugComponent implements org.apache.thrift.TBase<DrugComponent, Dru
     @Override
     public void read(org.apache.thrift.protocol.TProtocol prot, DrugComponent struct) throws org.apache.thrift.TException {
       TTupleProtocol iprot = (TTupleProtocol) prot;
-      struct.dose = iprot.readDouble();
-      struct.setDoseIsSet(true);
-      struct.unit = iprot.readI32();
-      struct.setUnitIsSet(true);
-      struct.createDateTime = iprot.readI64();
-      struct.setCreateDateTimeIsSet(true);
-      BitSet incoming = iprot.readBitSet(5);
+      BitSet incoming = iprot.readBitSet(8);
       if (incoming.get(0)) {
         struct.id = iprot.readI32();
         struct.setIdIsSet(true);
@@ -1039,6 +1034,18 @@ public class DrugComponent implements org.apache.thrift.TBase<DrugComponent, Dru
         struct.setNameIsSet(true);
       }
       if (incoming.get(4)) {
+        struct.dose = iprot.readDouble();
+        struct.setDoseIsSet(true);
+      }
+      if (incoming.get(5)) {
+        struct.unit = iprot.readI32();
+        struct.setUnitIsSet(true);
+      }
+      if (incoming.get(6)) {
+        struct.createDateTime = iprot.readI64();
+        struct.setCreateDateTimeIsSet(true);
+      }
+      if (incoming.get(7)) {
         struct.cancelDateTime = iprot.readI64();
         struct.setCancelDateTimeIsSet(true);
       }

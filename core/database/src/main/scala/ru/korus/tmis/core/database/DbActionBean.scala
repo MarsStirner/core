@@ -544,4 +544,19 @@ class DbActionBean
     result.foreach(a => em.detach(a))
     result
   }
+
+  val ActionsByTypeFlatCodeAndEventQuery: String =
+    """
+     SELECT act
+     FROM Action act
+     WHERE act.event.id = :EVENTID
+     AND act.actionType.flatCode = :FLATCODE
+    """
+
+  def getActionsByTypeFlatCodeAndEventId(eventId: Int, actionTypeFlatCode: String): util.List[Action] = {
+    em.createQuery(ActionsByTypeFlatCodeAndEventQuery, classOf[Action])
+    .setParameter("EVENTID", eventId)
+    .setParameter("FLATCODE", actionTypeFlatCode)
+    .getResultList
+  }
 }

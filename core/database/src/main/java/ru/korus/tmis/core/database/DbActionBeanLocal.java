@@ -1,5 +1,6 @@
 package ru.korus.tmis.core.database;
 
+import com.google.common.collect.ImmutableSet;
 import ru.korus.tmis.core.auth.AuthData;
 import ru.korus.tmis.core.data.AssessmentsListRequestData;
 import ru.korus.tmis.core.entity.model.Action;
@@ -11,9 +12,7 @@ import ru.korus.tmis.core.filter.ListDataFilter;
 import scala.Function1;
 
 import javax.ejb.Local;
-import java.util.Date;
-import java.util.List;
-import java.util.Set;
+import java.util.*;
 
 /**
  * Методы для работы с данными таблицы БД s11r64.Action
@@ -178,4 +177,12 @@ public interface DbActionBeanLocal {
     Action createAction(ActionType actionType, Event event, Staff person, Date date, String hospitalUidFrom, String note);
 
     Action getEvent29AndAction19ForAction (Action action) throws CoreException;
+
+    /**
+     * Возвращает список действий относящихся к заданному обращению и типу действия(по flatCode)
+     * @param eventId идентификатор обращения
+     * @param actionTypeFlatCode значение flatCode типа действия
+     * @return Список действий
+     */
+    List<Action> getActionsByTypeFlatCodeAndEventId(int eventId, String actionTypeFlatCode);
 }
