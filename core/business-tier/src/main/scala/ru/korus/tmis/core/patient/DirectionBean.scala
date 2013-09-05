@@ -469,12 +469,18 @@ class DirectionBean extends DirectionBeanLocal
     em.persist(action19)
     em.flush()
     // создаем и/или заполняем значение проперти 18
-    val a = actionPropertyBean.getActionPropertyById(request.plannedTime.getId).getAction
+    val apSchedule = actionPropertyBean.getActionPropertyById(request.plannedTime.getId)
+    val a = apSchedule.getAction
     var aps = actionPropertyBean.getActionPropertiesByActionIdAndTypeId(a.getId.intValue(), 18) // 18 = queue
     var ap18: ActionProperty = null
     aps.size() match {
       case 0 => {
         ap18 = actionPropertyBean.createActionProperty(a, 18, userData)
+        /*
+        actionPropertyBean.getActionPropertyValue(apSchedule).foreach(f => {
+          if (f.asInstanceOf[APValueDate].getId.getIndex != request.plannedTime.getIndex())
+            em.merge(actionPropertyBean.setActionPropertyValue(ap18, null, f.asInstanceOf[APValueAction].getId.getIndex))
+        })   */
         em.persist(ap18)
         em.flush()
       }
@@ -483,7 +489,14 @@ class DirectionBean extends DirectionBeanLocal
       }
     }
     if (ap18 != null) {
+      val ap18values = actionPropertyBean.getActionPropertyValue(ap18)
+      actionPropertyBean.getActionPropertyValue(apSchedule).foreach(f => {
+        if (f.asInstanceOf[APValueTime].getId.getIndex != request.plannedTime.getIndex() &&
+            ap18values.find(p => p.asInstanceOf[APValueAction].getId.getIndex == f.asInstanceOf[APValueTime].getId.getIndex).getOrElse(null) == null)
+          em.merge(actionPropertyBean.setActionPropertyValue(ap18, null, f.asInstanceOf[APValueTime].getId.getIndex))
+      })
       em.merge(actionPropertyBean.setActionPropertyValue(ap18, action19.getId.toString, request.plannedTime.getIndex))
+
     }
     // ****
     em.flush()
