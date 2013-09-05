@@ -451,15 +451,23 @@ public class BakLaboratoryBean implements BakLaboratoryService {
             specimenPlayingEntity.setCode(spCodeInfo);
 
             final SpQuantityInfo quantityInfo = new SpQuantityInfo();
-            quantityInfo.setValue(String.valueOf(action.getTakenTissue().getAmount()));
+            final TakenTissue takenTissue = action.getTakenTissue();
+            quantityInfo.setValue(String.valueOf(takenTissue.getAmount()));
             specimenPlayingEntity.setQuantity(quantityInfo);
 
             final SpTextInfo text = new SpTextInfo();
-            text.setValue(action.getTakenTissue().getUnit().getId().toString());
-            specimenPlayingEntity.setText(text);
+            final RbUnit unit = takenTissue.getUnit();
+            if (unit != null) {
+                text.setValue(unit.getId().toString());
+                specimenPlayingEntity.setText(text);
+
+            }
 
             final SpUnitInfo spUnitInfo = new SpUnitInfo();
-            spCodeInfo.setCode(action.getTakenTissue().getType().getName());
+            final RbTissueType tissueType = takenTissue.getType();
+            if (tissueType != null) {
+                spCodeInfo.setCode(tissueType.getName());
+            }
             specimenPlayingEntity.setUnit(spUnitInfo);
 
             specimenRole.setSpecimenPlayingEntity(specimenPlayingEntity);

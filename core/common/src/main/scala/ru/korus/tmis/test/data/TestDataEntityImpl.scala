@@ -303,6 +303,18 @@ class TestDataEntityImpl extends TestDataEntity {
     apBed
   }
 
+  def getTestDefaultAPValueMkb = {
+    val mkb = new APValueMKB()
+    mkb.setValue(1.toString)
+    mkb
+  }
+
+  def getTestDefaultAPValueMkb(id: Int) = {
+    val mkb = new APValueMKB()
+    mkb.setValue(id.toString)
+    mkb
+  }
+
   def getTestDefaultAPValueOrgStructure = {
     val apBed = new APValueOrgStructure()
     apBed.setValue(getTestDefaultOrgStructure)

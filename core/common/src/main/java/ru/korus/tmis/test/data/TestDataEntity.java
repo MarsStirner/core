@@ -76,6 +76,9 @@ public interface TestDataEntity extends Serializable {
     APValueHospitalBed getTestDefaultAPValueHospitalBed();
     APValueHospitalBed getTestDefaultAPValueHospitalBed(int id);
 
+    APValueMKB getTestDefaultAPValueMkb();
+    APValueMKB getTestDefaultAPValueMkb(int id);
+
     APValueOrgStructure getTestDefaultAPValueOrgStructure();
     APValueOrgStructure getTestDefaultAPValueOrgStructure(int id);
 
