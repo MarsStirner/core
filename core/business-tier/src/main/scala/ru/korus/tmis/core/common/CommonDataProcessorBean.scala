@@ -555,6 +555,7 @@ class CommonDataProcessorBean
                                              )
                                      ).toList
           val descAPV = apValue.filter(apv => ((apv.unwrap().isInstanceOf[APValueString]) &&
+                                               descriptionAP != null &&
                                                (apv.unwrap().asInstanceOf[APValueString].getId.getId == descriptionAP.getId)
                                               )
                                       ).toList

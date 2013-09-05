@@ -2,6 +2,7 @@ package ru.korus.tmis.test.data
 
 import ru.korus.tmis.core.entity.model._
 import java.util.Date
+import kladr.{Kladr, Street}
 import ru.korus.tmis.core.auth.AuthData
 
 /**
@@ -420,4 +421,19 @@ class TestDataEntityImpl extends TestDataEntity {
     mkb.setId(id)
     mkb
   }
+
+  def getTestDefaultKladr() = {
+    val kladr = new Kladr()
+    kladr.setCode("testCode")
+    kladr.setName("test_streetName")
+    kladr
+  }
+
+  def getTestDefaultStreet() = {
+    val street = new Street()
+    street.setCode("testCode")
+    street.setName("test_streetName")
+    street
+  }
+
 }

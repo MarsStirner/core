@@ -2,6 +2,9 @@ package ru.korus.tmis.test.data;
 
 import ru.korus.tmis.core.auth.AuthData;
 import ru.korus.tmis.core.entity.model.*;
+import ru.korus.tmis.core.entity.model.kladr.Kladr;
+import ru.korus.tmis.core.entity.model.kladr.Street;
+
 import java.io.Serializable;
 import java.util.Date;
 import java.util.List;
@@ -97,4 +100,8 @@ public interface TestDataEntity extends Serializable {
     BloodHistory getTestDefaultBloodHistory(int id, RbBloodType bloodType, Staff person);
     RbBloodType getTestDefaultRbBloodType(int id);
     AuthData getTestDefaultAuthData(Staff user);
+
+    Kladr getTestDefaultKladr();
+    Street getTestDefaultStreet();
 }
+
