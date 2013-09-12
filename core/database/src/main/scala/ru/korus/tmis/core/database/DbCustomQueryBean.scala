@@ -464,9 +464,9 @@ class DbCustomQueryBean
       val map = new java.util.LinkedHashMap[java.lang.Integer, Object]()
       map.put(0, (MainDiagnosisQuery, i18n("db.diagnostics.diagnosisType.id.clinical"), ""))
       map.put(1, (MainDiagnosisQuery, i18n("db.diagnostics.diagnosisType.id.main"), ""))
-      map.put(2, (ClinicalDiagnosisQuery, "4501", "Основной клинический диагноз"))
-      map.put(3, (AttendantDiagnosisQuery, "1_1_01", "Основной клинический диагноз"))
-      map.put(4, (AttendantDiagnosisQuery, "4201", "Диагноз направившего учреждения"))
+      map.put(2, (ClinicalDiagnosisQuery, "4501", i18n("appeal.diagnosis.diagnosisKind.mainDiagMkb")))
+      map.put(3, (AttendantDiagnosisQuery, "1_1_01", i18n("appeal.diagnosis.diagnosisKind.mainDiagMkb")))
+      map.put(4, (AttendantDiagnosisQuery, "4201", i18n("appeal.diagnosis.diagnosisKind.diagReceivedMkb")))
 
       var i = 0
       while (ids.size() > 0 && i <= 4) {
@@ -561,9 +561,9 @@ class DbCustomQueryBean
     //map.put(0, (MainDiagnosisQuery,"",""))
     map.put(0, (MainDiagnosisQuery, i18n("db.diagnostics.diagnosisType.id.clinical"), ""))   //этих двух диагнозов тут не было
     map.put(1, (MainDiagnosisQuery, i18n("db.diagnostics.diagnosisType.id.main"), ""))       //
-    map.put(2, (ClinicalDiagnosisQuery, "4501", "Основной клинический диагноз"))
-    map.put(3, (AttendantDiagnosisQuery, "1_1_01", "Основной клинический диагноз"))
-    map.put(4, (AttendantDiagnosisQuery, "4201", "Диагноз направившего учреждения"))
+    map.put(2, (ClinicalDiagnosisQuery, "4501", i18n("appeal.diagnosis.diagnosisKind.mainDiagMkb"))) //"Основной клинический диагноз"))
+    map.put(3, (AttendantDiagnosisQuery, "1_1_01", i18n("appeal.diagnosis.diagnosisKind.mainDiagMkb")))
+    map.put(4, (AttendantDiagnosisQuery, "4201", i18n("appeal.diagnosis.diagnosisKind.diagReceivedMkb")))
 
     var i = 0
     while (ids.size() > 0 && i <= 4) {
@@ -1605,7 +1605,7 @@ AND ap.deleted = 0
       e.id IN :ids
     AND ap.id = apv.id.id
     AND at.code = '%s'
-    AND apt.name = '%s'
+    AND apt.code = '%s'
     AND apv.value IS NOT NULL
     %s
     GROUP BY e
@@ -1623,7 +1623,7 @@ AND ap.deleted = 0
       e.id IN :ids
     AND ap.id = apv.id.id
     AND at.code = '%s'
-    AND apt.name = '%s'
+    AND apt.code = '%s'
     AND apv.mkb IS NOT NULL
     %s
     GROUP BY e

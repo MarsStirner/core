@@ -172,7 +172,9 @@ class DirectionBean extends DirectionBeanLocal
         if (jobAndTicket == null) {
           var fromList = list.find((p) => p._1.getId == null &&
             p._2.getDatetime == a.getPlannedEndDate &&
-            p._3.getType.getId == dbTakenTissue.getActionTypeTissueTypeByMasterId(a.getActionType.getId.intValue()).getTissueType.getId).getOrElse(null)
+            p._3.getType.getId == dbTakenTissue.getActionTypeTissueTypeByMasterId(a.getActionType.getId.intValue()).getTissueType.getId &&
+            apvList.find(apjt => apjt._2.equals(p._2)).getOrElse(null) != null &&     //для отфильтровки жобТикетов со срочными акшенами
+            apvList.find(apjt => apjt._2.equals(p._2)).getOrElse(null)._1.getAction.getIsUrgent == false).getOrElse(null)
           if (fromList != null) {
             var (j, jt, tt) = fromList.asInstanceOf[(Job, JobTicket, TakenTissue)]
             j.setQuantity(j.getQuantity+1)
