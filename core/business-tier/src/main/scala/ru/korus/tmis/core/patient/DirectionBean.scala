@@ -159,7 +159,7 @@ class DirectionBean extends DirectionBeanLocal
   private def createJobTicketsForActions(actions: java.util.List[Action], eventId: Int) =  {
 
     val department = hospitalBedBean.getCurrentDepartmentForAppeal(eventId)
-    var list = new java.util.LinkedList[(Job, JobTicket, TakenTissue)]
+    var list = new java.util.LinkedList[(Job, JobTicket, TakenTissue, Action)]
     var apvList = new java.util.LinkedList[(ActionProperty, JobTicket)]
     var apvMKBList = new java.util.LinkedList[(ActionProperty, Mkb)]
     var jtForAp: JobTicket = null
@@ -173,10 +173,9 @@ class DirectionBean extends DirectionBeanLocal
           var fromList = list.find((p) => p._1.getId == null &&
             p._2.getDatetime == a.getPlannedEndDate &&
             p._3.getType.getId == dbTakenTissue.getActionTypeTissueTypeByMasterId(a.getActionType.getId.intValue()).getTissueType.getId &&
-            apvList.find(apjt => apjt._2.equals(p._2)).getOrElse(null) != null &&     //для отфильтровки жобТикетов со срочными акшенами
-            apvList.find(apjt => apjt._2.equals(p._2)).getOrElse(null)._1.getAction.getIsUrgent == false).getOrElse(null)
+            p._4.getIsUrgent == false).getOrElse(null)     //для отфильтровки жобТикетов со срочными акшенами
           if (fromList != null) {
-            var (j, jt, tt) = fromList.asInstanceOf[(Job, JobTicket, TakenTissue)]
+            var (j, jt, tt, a) = fromList.asInstanceOf[(Job, JobTicket, TakenTissue, Action)]
             j.setQuantity(j.getQuantity+1)
             if (tt != null) a.setTakenTissue(tt)
             jtForAp = jt
@@ -194,7 +193,7 @@ class DirectionBean extends DirectionBeanLocal
               }
             }
             if (tt != null) a.setTakenTissue(tt)
-            list.add(j, jt, tt)
+            list.add(j, jt, tt, a)
             jtForAp = jt
           }
         } else {
@@ -205,10 +204,10 @@ class DirectionBean extends DirectionBeanLocal
               val j = dbJobBean.insertOrUpdateJob(jobTicket.getJob.getId.intValue(), a, department)
               val jt = dbJobTicketBean.insertOrUpdateJobTicket(jobTicket.getId.intValue(), a, j)
               if (takenTissue != null) a.setTakenTissue(takenTissue)
-              list.add(j, jt, takenTissue)
+              list.add(j, jt, takenTissue, a)
               jtForAp = jt
             } else {
-              var (j, jt, tt) = fromList.asInstanceOf[(Job, JobTicket, TakenTissue)]
+              var (j, jt, tt, a) = fromList.asInstanceOf[(Job, JobTicket, TakenTissue, Action)]
               j.setQuantity(j.getQuantity+1)
               if (tt != null) a.setTakenTissue(tt)
               jtForAp = jt
@@ -242,7 +241,7 @@ class DirectionBean extends DirectionBeanLocal
           }
         }
         if (tt != null) a.setTakenTissue(tt)
-        list.add(j, jt, tt)
+        list.add(j, jt, tt, a)
         jtForAp = jt
       }
 
@@ -269,7 +268,7 @@ class DirectionBean extends DirectionBeanLocal
     })
     if (list != null && list.size() > 0) {
       list.foreach((f) => {
-        var (j, jt, tt) = f
+        var (j, jt, tt, a) = f
         if (j != null) {
           if (j.getId != null && j.getId.intValue() > 0) {
             j = em.merge(j)
