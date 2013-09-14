@@ -35,7 +35,7 @@ class MonitoringInfoListData {
               val values  = new java.util.LinkedList[(Date, APValue)]
               map.put(code,(name, values))
             }
-            map.get(code)._2.add((record._1.getCreateDatetime, record._2.get(0)))
+            map.get(code)._2.add((record._1.getAction.getEndDate, record._2.get(0)))
           }
         })
 
