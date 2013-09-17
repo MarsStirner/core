@@ -1,9 +1,18 @@
 package ru.korus.tmis.ws.laboratory.bak.ws.client.bean;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import ru.cgm.service.*;
 import ru.korus.tmis.core.database.DbActionBeanLocal;
 import ru.korus.tmis.core.database.DbStaffBeanLocal;
-import ru.korus.tmis.core.entity.model.*;
+import ru.korus.tmis.core.entity.model.Action;
+import ru.korus.tmis.core.entity.model.ActionType;
+import ru.korus.tmis.core.entity.model.Event;
+import ru.korus.tmis.core.entity.model.Patient;
+import ru.korus.tmis.core.entity.model.RbTissueType;
+import ru.korus.tmis.core.entity.model.RbUnit;
+import ru.korus.tmis.core.entity.model.Staff;
+import ru.korus.tmis.core.entity.model.TakenTissue;
 import ru.korus.tmis.core.exception.CoreException;
 import ru.korus.tmis.laboratory.business.LaboratoryBeanLocal;
 import ru.korus.tmis.laboratory.data.request.BiomaterialInfo;
@@ -25,7 +34,10 @@ import javax.xml.ws.Holder;
 import java.util.Date;
 import java.util.GregorianCalendar;
 
-import static ru.korus.tmis.ws.laboratory.bak.ws.client.bean.BakLaboratoryBean.EntryFactory.*;
+import static ru.korus.tmis.ws.laboratory.bak.ws.client.bean.BakLaboratoryBean.EntryFactory.createEntry;
+import static ru.korus.tmis.ws.laboratory.bak.ws.client.bean.BakLaboratoryBean.EntryFactory.createEntryBiomaterial;
+import static ru.korus.tmis.ws.laboratory.bak.ws.client.bean.BakLaboratoryBean.EntryFactory.createEntryComment;
+import static ru.korus.tmis.ws.laboratory.bak.ws.client.bean.BakLaboratoryBean.EntryFactory.createEntryPregnat;
 
 
 /**
@@ -39,7 +51,7 @@ import static ru.korus.tmis.ws.laboratory.bak.ws.client.bean.BakLaboratoryBean.E
 @Stateless
 public class BakLaboratoryBean implements BakLaboratoryService {
 
-    //    private static final Logger log = LoggerFactory.getLogger(BakLaboratoryBean.class);
+    private static final Logger log = LoggerFactory.getLogger(BakLaboratoryBean.class);
     public static final String ROOT = "2.16.840.1.113883.1.3";
     private static final String GUID = String.valueOf(System.currentTimeMillis() / 1000);
 
@@ -65,15 +77,15 @@ public class BakLaboratoryBean implements BakLaboratoryService {
     @Override
     public void sendLisAnalysisRequest(int actionId) throws CoreException {
         final SendBakRequestWS service = createCGMService();
-//        log.info("Создаем запрос на анализ по actionId = "+ actionId);
+        log.info("Создаем запрос на анализ по actionId = "+ actionId);
         final HL7Document hl7Document = createDocument(actionId);
-//        log.info("Запрос на анализ создан"+ hl7Document.toString());
+        log.info("Запрос на анализ создан"+ hl7Document.toString());
         try {
-//            log.info("Посылается запрос на анализ");
+            log.info("Посылается запрос на анализ");
             service.queryAnalysis(hl7Document, new Holder<Integer>(1), new Holder<String>(GUID));
-//            log.info("Запрос выполнился успешно");
+            log.info("Запрос выполнился успешно");
         } catch (Exception e) {
-//            log.error("Ошибка при отправке запроса:" + e.getMessage());
+            log.error("Ошибка при отправке запроса:" + e.getMessage());
             throw new CoreException(e.getMessage());
         }
     }
@@ -140,11 +152,12 @@ public class BakLaboratoryBean implements BakLaboratoryService {
 
         section.getEntry().add(createEntry(eventInfo.getOrganisation().getUuid().getUuid(), "OBS", "RQO", requestInfo.orderDepartmentMisCode().get(), requestInfo.orderDepartmentName().get()));
         section.getEntry().add(createEntry(action.getUuid().getUuid(), "OBS", "RQO", action.getIsUrgent() + "", ""));
-        section.getEntry().add(createEntry("XXX-XXX-XXX-XXX", "OBS", "RQO", requestInfo.orderDiagCode().get(), requestInfo.orderDiagText().get()));
+        // MKB.DiagName
+        section.getEntry().add(createEntry("", "OBS", "RQO", requestInfo.orderDiagCode().get(), requestInfo.orderDiagText().get()));
         section.getEntry().add(createEntry(eventInfo.getEventType().getFinance().getName(), "OBS", "RQO", orderInfo.diagnosticCode().get(), orderInfo.diagnosticName().get()));
 
         for (IndicatorMetodic indicatorMetodic : orderInfo.indicators()) {
-            section.getEntry().add(createEntry("xxx-xxx-xxx-xxx", "OBS", "RQO", indicatorMetodic.indicatorCode().get(), indicatorMetodic.indicatorName().get()));
+            section.getEntry().add(createEntry("", "OBS", "RQO", indicatorMetodic.indicatorCode().get(), indicatorMetodic.indicatorName().get()));
         }
 
 
@@ -291,7 +304,7 @@ public class BakLaboratoryBean implements BakLaboratoryService {
         try {
             xmlBirthTime = DatatypeFactory.newInstance().newXMLGregorianCalendar(c);
         } catch (DatatypeConfigurationException e) {
-//            log.error(e.getMessage());
+            log.error(e.getMessage());
         }
         birthTime.setValue(xmlBirthTime);
         patient.setBirthTime(birthTime);
