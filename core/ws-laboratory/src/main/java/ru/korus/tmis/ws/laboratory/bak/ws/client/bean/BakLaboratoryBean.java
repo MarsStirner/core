@@ -51,7 +51,8 @@ import static ru.korus.tmis.ws.laboratory.bak.ws.client.bean.BakLaboratoryBean.E
 @Stateless
 public class BakLaboratoryBean implements BakLaboratoryService {
 
-    private static final Logger log = LoggerFactory.getLogger(BakLaboratoryBean.class);
+    private static final Logger logger = LoggerFactory.getLogger(BakLaboratoryBean.class);
+
     public static final String ROOT = "2.16.840.1.113883.1.3";
     private static final String GUID = String.valueOf(System.currentTimeMillis() / 1000);
 
@@ -77,15 +78,15 @@ public class BakLaboratoryBean implements BakLaboratoryService {
     @Override
     public void sendLisAnalysisRequest(int actionId) throws CoreException {
         final SendBakRequestWS service = createCGMService();
-        log.info("Создаем запрос на анализ по actionId = "+ actionId);
+        logger.info("Создаем запрос на анализ по actionId = " + actionId);
         final HL7Document hl7Document = createDocument(actionId);
-        log.info("Запрос на анализ создан"+ hl7Document.toString());
+        logger.info("Запрос на анализ создан" + hl7Document.toString());
         try {
-            log.info("Посылается запрос на анализ");
+            logger.info("Посылается запрос на анализ");
             service.queryAnalysis(hl7Document, new Holder<Integer>(1), new Holder<String>(GUID));
-            log.info("Запрос выполнился успешно");
+            logger.info("Запрос выполнился успешно");
         } catch (Exception e) {
-            log.error("Ошибка при отправке запроса:" + e.getMessage());
+            logger.error("Ошибка при отправке запроса:" + e.getMessage());
             throw new CoreException(e.getMessage());
         }
     }
@@ -229,7 +230,7 @@ public class BakLaboratoryBean implements BakLaboratoryService {
             try {
                 xmlTime = DatatypeFactory.newInstance().newXMLGregorianCalendar(c1);
             } catch (DatatypeConfigurationException e) {
-//            log.error(e.getMessage());
+//            logger.error(e.getMessage());
             }
             time.setValue(xmlTime);
             author.setTime(time);
@@ -304,7 +305,7 @@ public class BakLaboratoryBean implements BakLaboratoryService {
         try {
             xmlBirthTime = DatatypeFactory.newInstance().newXMLGregorianCalendar(c);
         } catch (DatatypeConfigurationException e) {
-            log.error(e.getMessage());
+            logger.error(e.getMessage());
         }
         birthTime.setValue(xmlBirthTime);
         patient.setBirthTime(birthTime);
@@ -443,7 +444,7 @@ public class BakLaboratoryBean implements BakLaboratoryService {
             try {
                 xmlTime2 = DatatypeFactory.newInstance().newXMLGregorianCalendar(c2);
             } catch (DatatypeConfigurationException e) {
-//                log.error(e.getMessage());
+//                logger.error(e.getMessage());
             }
             effectiveTime.setValue(xmlTime2);
             observation.setEffectiveTime(effectiveTime);
