@@ -53,12 +53,13 @@ public class BakLaboratoryBean implements BakLaboratoryService {
 
     private static final Logger logger = LoggerFactory.getLogger(BakLaboratoryBean.class);
 
-    public static final String ROOT = "2.16.840.1.113883.1.3";
+    private static final String ROOT = "2.16.840.1.113883.1.3";
+
     private static final String GUID = String.valueOf(System.currentTimeMillis() / 1000);
 
     private final static ObjectFactory FACTORY_BAK = new ObjectFactory();
-    static final String ORDER_CUSTODIAN = "ФГБУ &quot;ФНКЦ ДГОИ им. Дмитрия Рогачева&quot; Минздрава России";
 
+    private static final String CUSTODIAN_NAME = "ФГБУ &quot;ФНКЦ ДГОИ им. Дмитрия Рогачева&quot; Минздрава России";
 
     @EJB
     private DbStaffBeanLocal staffBean;
@@ -199,7 +200,7 @@ public class BakLaboratoryBean implements BakLaboratoryService {
         final ComponentOfInfo componentOf = new ComponentOfInfo();
         final EncompassingEncounterInfo encompassingEncounter = new EncompassingEncounterInfo();
         final EeIdInfo eeIdInfo = new EeIdInfo();
-        eeIdInfo.setRoot(ORDER_CUSTODIAN);
+        eeIdInfo.setRoot(CUSTODIAN_NAME);
         eeIdInfo.setExtension(patientInfo.getId().toString());
         encompassingEncounter.setId(eeIdInfo);
 
@@ -264,7 +265,7 @@ public class BakLaboratoryBean implements BakLaboratoryService {
             reporgIDInfo.setRoot(doctor.getOrgStructure().getUuid().getUuid());
             representedOrganization.setId(reporgIDInfo);
         }
-        representedOrganization.setName(ORDER_CUSTODIAN);
+        representedOrganization.setName(CUSTODIAN_NAME);
         assignedAuthor.setRepresentedOrganization(representedOrganization);
 
         author.setAssignedAuthor(assignedAuthor);
@@ -318,7 +319,7 @@ public class BakLaboratoryBean implements BakLaboratoryService {
         final LpuIDInfo orgId = new LpuIDInfo();
         orgId.setRoot(patientInfo.getUuid().getUuid()); // todo провериь толи значение я сейчас беру!
         providerOrganization.setId(orgId);
-        providerOrganization.setName(ORDER_CUSTODIAN);
+        providerOrganization.setName(CUSTODIAN_NAME);
         patientRole.setProviderOrganization(providerOrganization);
 
         recordTarget.setPatientRole(patientRole);
