@@ -244,10 +244,15 @@
 
         <!-- Пользовательский профиль nde-mac -->
         <profile>
-            <id>nde-mac</id>
+            <id>nde-mac-glassfish4</id>
             <properties>
                 <!-- Домашняя директория Glassfish -->
                 <glassfish.home>/usr/local/opt/glassfish/libexec</glassfish.home>
+
+                <glassfish.master.password>changeit</glassfish.master.password>
+
+                <project.build.jdk>1.7</project.build.jdk>
+                <version.javaee.api>7.0</version.javaee.api>
             </properties>
         </profile>
 
@@ -262,15 +267,12 @@
 
         <!-- Пользовательский профиль nde-mac -->
         <profile>
-            <id>nde-mac-glassfish4</id>
+            <id>nde-mac-glassfish3</id>
             <properties>
                 <!-- Домашняя директория Glassfish -->
-                <glassfish.home>/Users/nde/Unixprog/glassfish4/</glassfish.home>
+                <glassfish.home>/Users/nde/Unixprog/glassfish3/</glassfish.home>
 
-                <glassfish.master.password>changeit</glassfish.master.password>
 
-                <project.build.jdk>1.7</project.build.jdk>
-                <version.javaee.api>7.0</version.javaee.api>
             </properties>
         </profile>
 
