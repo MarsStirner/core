@@ -39,16 +39,43 @@
 					type="tns:PRPA_IN402007UV02"/>
 			<xs:complexType name="BalanceOfGoods">
 				<xs:sequence>
-					<xs:element name="BalanceOfGood"
+					<xs:element name="Storage"
 							minOccurs="0"
 							maxOccurs="unbounded">
 						<xs:complexType>
 							<xs:sequence>
-								<xs:element name="Drug"
-										type="xs2:POCD_MT000040.LabeledDrug"/>
-								<xs:element name="Qty"
-										type="xs2:PQ"/>
+								<xs:element name="Balance"
+										minOccurs="0"
+										maxOccurs="unbounded">
+									<xs:complexType>
+										<xs:sequence>
+											<xs:element name="Drug"
+													type="xs2:POCD_MT000040.LabeledDrug"
+													minOccurs="0"/>
+											<xs:element name="Goods"
+													minOccurs="0"
+													maxOccurs="unbounded">
+												<xs:complexType>
+													<xs:sequence>
+														<xs:element name="Drug"
+																type="xs2:POCD_MT000040.LabeledDrug"/>
+														<xs:element name="Qty"
+																type="xs2:PQ"/>
+														<xs:element name="BestBefore"
+																type="xs2:ts"/>
+													</xs:sequence>
+												</xs:complexType>
+											</xs:element>
+										</xs:sequence>
+									</xs:complexType>
+								</xs:element>
 							</xs:sequence>
+							<xs:attribute name="Ref"
+									type="tns:uuid"
+									use="required"/>
+							<xs:attribute name="Description"
+									type="xs:string"
+									use="required"/>
 						</xs:complexType>
 					</xs:element>
 				</xs:sequence>
@@ -252,30 +279,11 @@
 					<xs:pattern value="[0-9a-zA-Z]{8}-[0-9a-zA-Z]{4}-[0-9a-zA-Z]{4}-[0-9a-zA-Z]{4}-[0-9a-zA-Z]{12}"/>
 				</xs:restriction>
 			</xs:simpleType>
-			<xs:element name="BalanceOfGoodsInOrganization">
+			<xs:element name="BalanceOfGoods">
 				<xs:complexType>
 					<xs:sequence>
-						<xs:element name="Drug"
-								type="xs2:POCD_MT000040.LabeledDrug"/>
-						<xs:element name="OrganizationRef"
-								type="tns:uuid"
-								nillable="true"/>
-					</xs:sequence>
-				</xs:complexType>
-			</xs:element>
-			<xs:element name="BalanceOfGoodsInOrganizationResponse">
-				<xs:complexType>
-					<xs:sequence>
-						<xs:element name="return"
-								type="tns:BalanceOfGoods"/>
-					</xs:sequence>
-				</xs:complexType>
-			</xs:element>
-			<xs:element name="BalanceOfGoodsInStorage">
-				<xs:complexType>
-					<xs:sequence>
-						<xs:element name="Drug"
-								type="xs2:POCD_MT000040.LabeledDrug"/>
+						<xs:element name="DrugList"
+								type="tns:DrugList"/>
 						<xs:element name="OrganizationRef"
 								type="tns:uuid"
 								nillable="true"/>
@@ -285,7 +293,7 @@
 					</xs:sequence>
 				</xs:complexType>
 			</xs:element>
-			<xs:element name="BalanceOfGoodsInStorageResponse">
+			<xs:element name="BalanceOfGoodsResponse">
 				<xs:complexType>
 					<xs:sequence>
 						<xs:element name="return"
@@ -361,7 +369,8 @@
 				<xs:complexType>
 					<xs:sequence>
 						<xs:element name="return"
-								type="xs2:MCCI_IN000002UV01"/>
+								type="xs2:MCCI_IN000002UV01"
+								nillable="true"/>
 					</xs:sequence>
 				</xs:complexType>
 			</xs:element>
@@ -40966,21 +40975,13 @@
 			</xs:simpleType>
 		</xs:schema>
 	</types>
-	<message name="BalanceOfGoodsInOrganizationRequestMessage">
+	<message name="BalanceOfGoodsRequestMessage">
 		<part name="parameters"
-				element="tns:BalanceOfGoodsInOrganization"/>
+				element="tns:BalanceOfGoods"/>
 	</message>
-	<message name="BalanceOfGoodsInOrganizationResponseMessage">
+	<message name="BalanceOfGoodsResponseMessage">
 		<part name="parameters"
-				element="tns:BalanceOfGoodsInOrganizationResponse"/>
-	</message>
-	<message name="BalanceOfGoodsInStorageRequestMessage">
-		<part name="parameters"
-				element="tns:BalanceOfGoodsInStorage"/>
-	</message>
-	<message name="BalanceOfGoodsInStorageResponseMessage">
-		<part name="parameters"
-				element="tns:BalanceOfGoodsInStorageResponse"/>
+				element="tns:BalanceOfGoodsResponse"/>
 	</message>
 	<message name="GetDepartmentListRequestMessage">
 		<part name="parameters"
@@ -41023,13 +41024,9 @@
 				element="tns:ProcessHL7v3MessageResponse"/>
 	</message>
 	<portType name="MISExchangePortType">
-		<operation name="BalanceOfGoodsInOrganization">
-			<input message="tns:BalanceOfGoodsInOrganizationRequestMessage"/>
-			<output message="tns:BalanceOfGoodsInOrganizationResponseMessage"/>
-		</operation>
-		<operation name="BalanceOfGoodsInStorage">
-			<input message="tns:BalanceOfGoodsInStorageRequestMessage"/>
-			<output message="tns:BalanceOfGoodsInStorageResponseMessage"/>
+		<operation name="BalanceOfGoods">
+			<input message="tns:BalanceOfGoodsRequestMessage"/>
+			<output message="tns:BalanceOfGoodsResponseMessage"/>
 		</operation>
 		<operation name="GetDepartmentList">
 			<input message="tns:GetDepartmentListRequestMessage"/>
@@ -41056,19 +41053,9 @@
 			type="tns:MISExchangePortType">
 		<soapbind:binding style="document"
 				transport="http://schemas.xmlsoap.org/soap/http"/>
-		<operation name="BalanceOfGoodsInOrganization">
+		<operation name="BalanceOfGoods">
 			<soapbind:operation style="document"
-					soapAction="MISExchange#MISExchange:BalanceOfGoodsInOrganization"/>
-			<input>
-				<soapbind:body use="literal"/>
-			</input>
-			<output>
-				<soapbind:body use="literal"/>
-			</output>
-		</operation>
-		<operation name="BalanceOfGoodsInStorage">
-			<soapbind:operation style="document"
-					soapAction="MISExchange#MISExchange:BalanceOfGoodsInStorage"/>
+					soapAction="MISExchange#MISExchange:BalanceOfGoods"/>
 			<input>
 				<soapbind:body use="literal"/>
 			</input>
@@ -41131,19 +41118,9 @@
 			type="tns:MISExchangePortType">
 		<soap12bind:binding style="document"
 				transport="http://schemas.xmlsoap.org/soap/http"/>
-		<operation name="BalanceOfGoodsInOrganization">
+		<operation name="BalanceOfGoods">
 			<soap12bind:operation style="document"
-					soapAction="MISExchange#MISExchange:BalanceOfGoodsInOrganization"/>
-			<input>
-				<soap12bind:body use="literal"/>
-			</input>
-			<output>
-				<soap12bind:body use="literal"/>
-			</output>
-		</operation>
-		<operation name="BalanceOfGoodsInStorage">
-			<soap12bind:operation style="document"
-					soapAction="MISExchange#MISExchange:BalanceOfGoodsInStorage"/>
+					soapAction="MISExchange#MISExchange:BalanceOfGoods"/>
 			<input>
 				<soap12bind:body use="literal"/>
 			</input>

@@ -16,7 +16,7 @@ import javax.xml.ws.*;
  * Generated source version: 2.2
  * 
  */
-@WebServiceClient(name = "SDASoapServiceService", targetNamespace = "urn:wsdl", wsdlLocation = "file:/C:/Project/tmis-core/core/referencebook/src/main/resources/PIX/wsdl/bak.wsdl")
+@WebServiceClient(name = "SDASoapServiceService", targetNamespace = "urn:wsdl", wsdlLocation = "../../../../../../PIX/wsdl/sda.wsdl")
 public class SDASoapServiceService
     extends Service
 {

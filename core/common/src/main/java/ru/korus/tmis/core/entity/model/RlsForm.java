@@ -2,6 +2,7 @@ package ru.korus.tmis.core.entity.model;
 
 import java.io.Serializable;
 import javax.persistence.*;
+import java.util.List;
 
 
 /**
@@ -10,7 +11,7 @@ import javax.persistence.*;
  */
 @Entity
 @Table(name="rlsForm")
-public class RlsForm implements Serializable {
+public class RlsForm implements Serializable, UniqueName {
 	private static final long serialVersionUID = 1L;
 
 	@Id
@@ -18,8 +19,12 @@ public class RlsForm implements Serializable {
 	@Column(unique=true, nullable=false)
 	private int id;
 
-	@Column(length=128)
+	@Column(length=128, unique=true)
 	private String name;
+
+	//bi-directional many-to-one association to RlsNomen
+	@OneToMany(mappedBy="rlsForm")
+	private List<RlsNomen> rlsNomens;
 
 	public RlsForm() {
 	}
@@ -36,8 +41,17 @@ public class RlsForm implements Serializable {
 		return this.name;
 	}
 
+    @Override
 	public void setName(String name) {
 		this.name = name;
+	}
+
+	public List<RlsNomen> getRlsNomens() {
+		return this.rlsNomens;
+	}
+
+	public void setRlsNomens(List<RlsNomen> rlsNomens) {
+		this.rlsNomens = rlsNomens;
 	}
 
 }
