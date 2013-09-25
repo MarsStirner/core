@@ -43,6 +43,8 @@ public class PrescriptionExchange {
 
     public void save(PrescriptionList prescrList) throws SavePrescrListException, org.apache.thrift.TException;
 
+    public boolean updateBalanceOfGoods(List<Integer> drugIds) throws org.apache.thrift.TException;
+
   }
 
   public interface AsyncIface {
@@ -50,6 +52,8 @@ public class PrescriptionExchange {
     public void getPrescriptionList(int eventId, org.apache.thrift.async.AsyncMethodCallback<AsyncClient.getPrescriptionList_call> resultHandler) throws org.apache.thrift.TException;
 
     public void save(PrescriptionList prescrList, org.apache.thrift.async.AsyncMethodCallback<AsyncClient.save_call> resultHandler) throws org.apache.thrift.TException;
+
+    public void updateBalanceOfGoods(List<Integer> drugIds, org.apache.thrift.async.AsyncMethodCallback<AsyncClient.updateBalanceOfGoods_call> resultHandler) throws org.apache.thrift.TException;
 
   }
 
@@ -117,6 +121,29 @@ public class PrescriptionExchange {
         throw result.e;
       }
       return;
+    }
+
+    public boolean updateBalanceOfGoods(List<Integer> drugIds) throws org.apache.thrift.TException
+    {
+      send_updateBalanceOfGoods(drugIds);
+      return recv_updateBalanceOfGoods();
+    }
+
+    public void send_updateBalanceOfGoods(List<Integer> drugIds) throws org.apache.thrift.TException
+    {
+      updateBalanceOfGoods_args args = new updateBalanceOfGoods_args();
+      args.setDrugIds(drugIds);
+      sendBase("updateBalanceOfGoods", args);
+    }
+
+    public boolean recv_updateBalanceOfGoods() throws org.apache.thrift.TException
+    {
+      updateBalanceOfGoods_result result = new updateBalanceOfGoods_result();
+      receiveBase(result, "updateBalanceOfGoods");
+      if (result.isSetSuccess()) {
+        return result.success;
+      }
+      throw new org.apache.thrift.TApplicationException(org.apache.thrift.TApplicationException.MISSING_RESULT, "updateBalanceOfGoods failed: unknown result");
     }
 
   }
@@ -201,6 +228,38 @@ public class PrescriptionExchange {
       }
     }
 
+    public void updateBalanceOfGoods(List<Integer> drugIds, org.apache.thrift.async.AsyncMethodCallback<updateBalanceOfGoods_call> resultHandler) throws org.apache.thrift.TException {
+      checkReady();
+      updateBalanceOfGoods_call method_call = new updateBalanceOfGoods_call(drugIds, resultHandler, this, ___protocolFactory, ___transport);
+      this.___currentMethod = method_call;
+      ___manager.call(method_call);
+    }
+
+    public static class updateBalanceOfGoods_call extends org.apache.thrift.async.TAsyncMethodCall {
+      private List<Integer> drugIds;
+      public updateBalanceOfGoods_call(List<Integer> drugIds, org.apache.thrift.async.AsyncMethodCallback<updateBalanceOfGoods_call> resultHandler, org.apache.thrift.async.TAsyncClient client, org.apache.thrift.protocol.TProtocolFactory protocolFactory, org.apache.thrift.transport.TNonblockingTransport transport) throws org.apache.thrift.TException {
+        super(client, protocolFactory, transport, resultHandler, false);
+        this.drugIds = drugIds;
+      }
+
+      public void write_args(org.apache.thrift.protocol.TProtocol prot) throws org.apache.thrift.TException {
+        prot.writeMessageBegin(new org.apache.thrift.protocol.TMessage("updateBalanceOfGoods", org.apache.thrift.protocol.TMessageType.CALL, 0));
+        updateBalanceOfGoods_args args = new updateBalanceOfGoods_args();
+        args.setDrugIds(drugIds);
+        args.write(prot);
+        prot.writeMessageEnd();
+      }
+
+      public boolean getResult() throws org.apache.thrift.TException {
+        if (getState() != org.apache.thrift.async.TAsyncMethodCall.State.RESPONSE_READ) {
+          throw new IllegalStateException("Method call not finished!");
+        }
+        org.apache.thrift.transport.TMemoryInputTransport memoryTransport = new org.apache.thrift.transport.TMemoryInputTransport(getFrameBuffer().array());
+        org.apache.thrift.protocol.TProtocol prot = client.getProtocolFactory().getProtocol(memoryTransport);
+        return (new Client(prot)).recv_updateBalanceOfGoods();
+      }
+    }
+
   }
 
   public static class Processor<I extends Iface> extends org.apache.thrift.TBaseProcessor<I> implements org.apache.thrift.TProcessor {
@@ -216,6 +275,7 @@ public class PrescriptionExchange {
     private static <I extends Iface> Map<String,  org.apache.thrift.ProcessFunction<I, ? extends  org.apache.thrift.TBase>> getProcessMap(Map<String,  org.apache.thrift.ProcessFunction<I, ? extends  org.apache.thrift.TBase>> processMap) {
       processMap.put("getPrescriptionList", new getPrescriptionList());
       processMap.put("save", new save());
+      processMap.put("updateBalanceOfGoods", new updateBalanceOfGoods());
       return processMap;
     }
 
@@ -259,6 +319,27 @@ public class PrescriptionExchange {
         } catch (SavePrescrListException e) {
           result.e = e;
         }
+        return result;
+      }
+    }
+
+    public static class updateBalanceOfGoods<I extends Iface> extends org.apache.thrift.ProcessFunction<I, updateBalanceOfGoods_args> {
+      public updateBalanceOfGoods() {
+        super("updateBalanceOfGoods");
+      }
+
+      public updateBalanceOfGoods_args getEmptyArgsInstance() {
+        return new updateBalanceOfGoods_args();
+      }
+
+      protected boolean isOneway() {
+        return false;
+      }
+
+      public updateBalanceOfGoods_result getResult(I iface, updateBalanceOfGoods_args args) throws org.apache.thrift.TException {
+        updateBalanceOfGoods_result result = new updateBalanceOfGoods_result();
+        result.success = iface.updateBalanceOfGoods(args.drugIds);
+        result.setSuccessIsSet(true);
         return result;
       }
     }
@@ -1685,6 +1766,766 @@ public class PrescriptionExchange {
           struct.e = new SavePrescrListException();
           struct.e.read(iprot);
           struct.setEIsSet(true);
+        }
+      }
+    }
+
+  }
+
+  public static class updateBalanceOfGoods_args implements org.apache.thrift.TBase<updateBalanceOfGoods_args, updateBalanceOfGoods_args._Fields>, java.io.Serializable, Cloneable   {
+    private static final org.apache.thrift.protocol.TStruct STRUCT_DESC = new org.apache.thrift.protocol.TStruct("updateBalanceOfGoods_args");
+
+    private static final org.apache.thrift.protocol.TField DRUG_IDS_FIELD_DESC = new org.apache.thrift.protocol.TField("drugIds", org.apache.thrift.protocol.TType.LIST, (short)1);
+
+    private static final Map<Class<? extends IScheme>, SchemeFactory> schemes = new HashMap<Class<? extends IScheme>, SchemeFactory>();
+    static {
+      schemes.put(StandardScheme.class, new updateBalanceOfGoods_argsStandardSchemeFactory());
+      schemes.put(TupleScheme.class, new updateBalanceOfGoods_argsTupleSchemeFactory());
+    }
+
+    public List<Integer> drugIds; // required
+
+    /** The set of fields this struct contains, along with convenience methods for finding and manipulating them. */
+    public enum _Fields implements org.apache.thrift.TFieldIdEnum {
+      DRUG_IDS((short)1, "drugIds");
+
+      private static final Map<String, _Fields> byName = new HashMap<String, _Fields>();
+
+      static {
+        for (_Fields field : EnumSet.allOf(_Fields.class)) {
+          byName.put(field.getFieldName(), field);
+        }
+      }
+
+      /**
+       * Find the _Fields constant that matches fieldId, or null if its not found.
+       */
+      public static _Fields findByThriftId(int fieldId) {
+        switch(fieldId) {
+          case 1: // DRUG_IDS
+            return DRUG_IDS;
+          default:
+            return null;
+        }
+      }
+
+      /**
+       * Find the _Fields constant that matches fieldId, throwing an exception
+       * if it is not found.
+       */
+      public static _Fields findByThriftIdOrThrow(int fieldId) {
+        _Fields fields = findByThriftId(fieldId);
+        if (fields == null) throw new IllegalArgumentException("Field " + fieldId + " doesn't exist!");
+        return fields;
+      }
+
+      /**
+       * Find the _Fields constant that matches name, or null if its not found.
+       */
+      public static _Fields findByName(String name) {
+        return byName.get(name);
+      }
+
+      private final short _thriftId;
+      private final String _fieldName;
+
+      _Fields(short thriftId, String fieldName) {
+        _thriftId = thriftId;
+        _fieldName = fieldName;
+      }
+
+      public short getThriftFieldId() {
+        return _thriftId;
+      }
+
+      public String getFieldName() {
+        return _fieldName;
+      }
+    }
+
+    // isset id assignments
+    public static final Map<_Fields, org.apache.thrift.meta_data.FieldMetaData> metaDataMap;
+    static {
+      Map<_Fields, org.apache.thrift.meta_data.FieldMetaData> tmpMap = new EnumMap<_Fields, org.apache.thrift.meta_data.FieldMetaData>(_Fields.class);
+      tmpMap.put(_Fields.DRUG_IDS, new org.apache.thrift.meta_data.FieldMetaData("drugIds", org.apache.thrift.TFieldRequirementType.DEFAULT, 
+          new org.apache.thrift.meta_data.ListMetaData(org.apache.thrift.protocol.TType.LIST, 
+              new org.apache.thrift.meta_data.FieldValueMetaData(org.apache.thrift.protocol.TType.I32))));
+      metaDataMap = Collections.unmodifiableMap(tmpMap);
+      org.apache.thrift.meta_data.FieldMetaData.addStructMetaDataMap(updateBalanceOfGoods_args.class, metaDataMap);
+    }
+
+    public updateBalanceOfGoods_args() {
+    }
+
+    public updateBalanceOfGoods_args(
+      List<Integer> drugIds)
+    {
+      this();
+      this.drugIds = drugIds;
+    }
+
+    /**
+     * Performs a deep copy on <i>other</i>.
+     */
+    public updateBalanceOfGoods_args(updateBalanceOfGoods_args other) {
+      if (other.isSetDrugIds()) {
+        List<Integer> __this__drugIds = new ArrayList<Integer>();
+        for (Integer other_element : other.drugIds) {
+          __this__drugIds.add(other_element);
+        }
+        this.drugIds = __this__drugIds;
+      }
+    }
+
+    public updateBalanceOfGoods_args deepCopy() {
+      return new updateBalanceOfGoods_args(this);
+    }
+
+    @Override
+    public void clear() {
+      this.drugIds = null;
+    }
+
+    public int getDrugIdsSize() {
+      return (this.drugIds == null) ? 0 : this.drugIds.size();
+    }
+
+    public java.util.Iterator<Integer> getDrugIdsIterator() {
+      return (this.drugIds == null) ? null : this.drugIds.iterator();
+    }
+
+    public void addToDrugIds(int elem) {
+      if (this.drugIds == null) {
+        this.drugIds = new ArrayList<Integer>();
+      }
+      this.drugIds.add(elem);
+    }
+
+    public List<Integer> getDrugIds() {
+      return this.drugIds;
+    }
+
+    public updateBalanceOfGoods_args setDrugIds(List<Integer> drugIds) {
+      this.drugIds = drugIds;
+      return this;
+    }
+
+    public void unsetDrugIds() {
+      this.drugIds = null;
+    }
+
+    /** Returns true if field drugIds is set (has been assigned a value) and false otherwise */
+    public boolean isSetDrugIds() {
+      return this.drugIds != null;
+    }
+
+    public void setDrugIdsIsSet(boolean value) {
+      if (!value) {
+        this.drugIds = null;
+      }
+    }
+
+    public void setFieldValue(_Fields field, Object value) {
+      switch (field) {
+      case DRUG_IDS:
+        if (value == null) {
+          unsetDrugIds();
+        } else {
+          setDrugIds((List<Integer>)value);
+        }
+        break;
+
+      }
+    }
+
+    public Object getFieldValue(_Fields field) {
+      switch (field) {
+      case DRUG_IDS:
+        return getDrugIds();
+
+      }
+      throw new IllegalStateException();
+    }
+
+    /** Returns true if field corresponding to fieldID is set (has been assigned a value) and false otherwise */
+    public boolean isSet(_Fields field) {
+      if (field == null) {
+        throw new IllegalArgumentException();
+      }
+
+      switch (field) {
+      case DRUG_IDS:
+        return isSetDrugIds();
+      }
+      throw new IllegalStateException();
+    }
+
+    @Override
+    public boolean equals(Object that) {
+      if (that == null)
+        return false;
+      if (that instanceof updateBalanceOfGoods_args)
+        return this.equals((updateBalanceOfGoods_args)that);
+      return false;
+    }
+
+    public boolean equals(updateBalanceOfGoods_args that) {
+      if (that == null)
+        return false;
+
+      boolean this_present_drugIds = true && this.isSetDrugIds();
+      boolean that_present_drugIds = true && that.isSetDrugIds();
+      if (this_present_drugIds || that_present_drugIds) {
+        if (!(this_present_drugIds && that_present_drugIds))
+          return false;
+        if (!this.drugIds.equals(that.drugIds))
+          return false;
+      }
+
+      return true;
+    }
+
+    @Override
+    public int hashCode() {
+      return 0;
+    }
+
+    public int compareTo(updateBalanceOfGoods_args other) {
+      if (!getClass().equals(other.getClass())) {
+        return getClass().getName().compareTo(other.getClass().getName());
+      }
+
+      int lastComparison = 0;
+      updateBalanceOfGoods_args typedOther = (updateBalanceOfGoods_args)other;
+
+      lastComparison = Boolean.valueOf(isSetDrugIds()).compareTo(typedOther.isSetDrugIds());
+      if (lastComparison != 0) {
+        return lastComparison;
+      }
+      if (isSetDrugIds()) {
+        lastComparison = org.apache.thrift.TBaseHelper.compareTo(this.drugIds, typedOther.drugIds);
+        if (lastComparison != 0) {
+          return lastComparison;
+        }
+      }
+      return 0;
+    }
+
+    public _Fields fieldForId(int fieldId) {
+      return _Fields.findByThriftId(fieldId);
+    }
+
+    public void read(org.apache.thrift.protocol.TProtocol iprot) throws org.apache.thrift.TException {
+      schemes.get(iprot.getScheme()).getScheme().read(iprot, this);
+    }
+
+    public void write(org.apache.thrift.protocol.TProtocol oprot) throws org.apache.thrift.TException {
+      schemes.get(oprot.getScheme()).getScheme().write(oprot, this);
+    }
+
+    @Override
+    public String toString() {
+      StringBuilder sb = new StringBuilder("updateBalanceOfGoods_args(");
+      boolean first = true;
+
+      sb.append("drugIds:");
+      if (this.drugIds == null) {
+        sb.append("null");
+      } else {
+        sb.append(this.drugIds);
+      }
+      first = false;
+      sb.append(")");
+      return sb.toString();
+    }
+
+    public void validate() throws org.apache.thrift.TException {
+      // check for required fields
+      // check for sub-struct validity
+    }
+
+    private void writeObject(java.io.ObjectOutputStream out) throws java.io.IOException {
+      try {
+        write(new org.apache.thrift.protocol.TCompactProtocol(new org.apache.thrift.transport.TIOStreamTransport(out)));
+      } catch (org.apache.thrift.TException te) {
+        throw new java.io.IOException(te);
+      }
+    }
+
+    private void readObject(java.io.ObjectInputStream in) throws java.io.IOException, ClassNotFoundException {
+      try {
+        read(new org.apache.thrift.protocol.TCompactProtocol(new org.apache.thrift.transport.TIOStreamTransport(in)));
+      } catch (org.apache.thrift.TException te) {
+        throw new java.io.IOException(te);
+      }
+    }
+
+    private static class updateBalanceOfGoods_argsStandardSchemeFactory implements SchemeFactory {
+      public updateBalanceOfGoods_argsStandardScheme getScheme() {
+        return new updateBalanceOfGoods_argsStandardScheme();
+      }
+    }
+
+    private static class updateBalanceOfGoods_argsStandardScheme extends StandardScheme<updateBalanceOfGoods_args> {
+
+      public void read(org.apache.thrift.protocol.TProtocol iprot, updateBalanceOfGoods_args struct) throws org.apache.thrift.TException {
+        org.apache.thrift.protocol.TField schemeField;
+        iprot.readStructBegin();
+        while (true)
+        {
+          schemeField = iprot.readFieldBegin();
+          if (schemeField.type == org.apache.thrift.protocol.TType.STOP) { 
+            break;
+          }
+          switch (schemeField.id) {
+            case 1: // DRUG_IDS
+              if (schemeField.type == org.apache.thrift.protocol.TType.LIST) {
+                {
+                  org.apache.thrift.protocol.TList _list32 = iprot.readListBegin();
+                  struct.drugIds = new ArrayList<Integer>(_list32.size);
+                  for (int _i33 = 0; _i33 < _list32.size; ++_i33)
+                  {
+                    int _elem34; // required
+                    _elem34 = iprot.readI32();
+                    struct.drugIds.add(_elem34);
+                  }
+                  iprot.readListEnd();
+                }
+                struct.setDrugIdsIsSet(true);
+              } else { 
+                org.apache.thrift.protocol.TProtocolUtil.skip(iprot, schemeField.type);
+              }
+              break;
+            default:
+              org.apache.thrift.protocol.TProtocolUtil.skip(iprot, schemeField.type);
+          }
+          iprot.readFieldEnd();
+        }
+        iprot.readStructEnd();
+
+        // check for required fields of primitive type, which can't be checked in the validate method
+        struct.validate();
+      }
+
+      public void write(org.apache.thrift.protocol.TProtocol oprot, updateBalanceOfGoods_args struct) throws org.apache.thrift.TException {
+        struct.validate();
+
+        oprot.writeStructBegin(STRUCT_DESC);
+        if (struct.drugIds != null) {
+          oprot.writeFieldBegin(DRUG_IDS_FIELD_DESC);
+          {
+            oprot.writeListBegin(new org.apache.thrift.protocol.TList(org.apache.thrift.protocol.TType.I32, struct.drugIds.size()));
+            for (int _iter35 : struct.drugIds)
+            {
+              oprot.writeI32(_iter35);
+            }
+            oprot.writeListEnd();
+          }
+          oprot.writeFieldEnd();
+        }
+        oprot.writeFieldStop();
+        oprot.writeStructEnd();
+      }
+
+    }
+
+    private static class updateBalanceOfGoods_argsTupleSchemeFactory implements SchemeFactory {
+      public updateBalanceOfGoods_argsTupleScheme getScheme() {
+        return new updateBalanceOfGoods_argsTupleScheme();
+      }
+    }
+
+    private static class updateBalanceOfGoods_argsTupleScheme extends TupleScheme<updateBalanceOfGoods_args> {
+
+      @Override
+      public void write(org.apache.thrift.protocol.TProtocol prot, updateBalanceOfGoods_args struct) throws org.apache.thrift.TException {
+        TTupleProtocol oprot = (TTupleProtocol) prot;
+        BitSet optionals = new BitSet();
+        if (struct.isSetDrugIds()) {
+          optionals.set(0);
+        }
+        oprot.writeBitSet(optionals, 1);
+        if (struct.isSetDrugIds()) {
+          {
+            oprot.writeI32(struct.drugIds.size());
+            for (int _iter36 : struct.drugIds)
+            {
+              oprot.writeI32(_iter36);
+            }
+          }
+        }
+      }
+
+      @Override
+      public void read(org.apache.thrift.protocol.TProtocol prot, updateBalanceOfGoods_args struct) throws org.apache.thrift.TException {
+        TTupleProtocol iprot = (TTupleProtocol) prot;
+        BitSet incoming = iprot.readBitSet(1);
+        if (incoming.get(0)) {
+          {
+            org.apache.thrift.protocol.TList _list37 = new org.apache.thrift.protocol.TList(org.apache.thrift.protocol.TType.I32, iprot.readI32());
+            struct.drugIds = new ArrayList<Integer>(_list37.size);
+            for (int _i38 = 0; _i38 < _list37.size; ++_i38)
+            {
+              int _elem39; // required
+              _elem39 = iprot.readI32();
+              struct.drugIds.add(_elem39);
+            }
+          }
+          struct.setDrugIdsIsSet(true);
+        }
+      }
+    }
+
+  }
+
+  public static class updateBalanceOfGoods_result implements org.apache.thrift.TBase<updateBalanceOfGoods_result, updateBalanceOfGoods_result._Fields>, java.io.Serializable, Cloneable   {
+    private static final org.apache.thrift.protocol.TStruct STRUCT_DESC = new org.apache.thrift.protocol.TStruct("updateBalanceOfGoods_result");
+
+    private static final org.apache.thrift.protocol.TField SUCCESS_FIELD_DESC = new org.apache.thrift.protocol.TField("success", org.apache.thrift.protocol.TType.BOOL, (short)0);
+
+    private static final Map<Class<? extends IScheme>, SchemeFactory> schemes = new HashMap<Class<? extends IScheme>, SchemeFactory>();
+    static {
+      schemes.put(StandardScheme.class, new updateBalanceOfGoods_resultStandardSchemeFactory());
+      schemes.put(TupleScheme.class, new updateBalanceOfGoods_resultTupleSchemeFactory());
+    }
+
+    public boolean success; // required
+
+    /** The set of fields this struct contains, along with convenience methods for finding and manipulating them. */
+    public enum _Fields implements org.apache.thrift.TFieldIdEnum {
+      SUCCESS((short)0, "success");
+
+      private static final Map<String, _Fields> byName = new HashMap<String, _Fields>();
+
+      static {
+        for (_Fields field : EnumSet.allOf(_Fields.class)) {
+          byName.put(field.getFieldName(), field);
+        }
+      }
+
+      /**
+       * Find the _Fields constant that matches fieldId, or null if its not found.
+       */
+      public static _Fields findByThriftId(int fieldId) {
+        switch(fieldId) {
+          case 0: // SUCCESS
+            return SUCCESS;
+          default:
+            return null;
+        }
+      }
+
+      /**
+       * Find the _Fields constant that matches fieldId, throwing an exception
+       * if it is not found.
+       */
+      public static _Fields findByThriftIdOrThrow(int fieldId) {
+        _Fields fields = findByThriftId(fieldId);
+        if (fields == null) throw new IllegalArgumentException("Field " + fieldId + " doesn't exist!");
+        return fields;
+      }
+
+      /**
+       * Find the _Fields constant that matches name, or null if its not found.
+       */
+      public static _Fields findByName(String name) {
+        return byName.get(name);
+      }
+
+      private final short _thriftId;
+      private final String _fieldName;
+
+      _Fields(short thriftId, String fieldName) {
+        _thriftId = thriftId;
+        _fieldName = fieldName;
+      }
+
+      public short getThriftFieldId() {
+        return _thriftId;
+      }
+
+      public String getFieldName() {
+        return _fieldName;
+      }
+    }
+
+    // isset id assignments
+    private static final int __SUCCESS_ISSET_ID = 0;
+    private byte __isset_bitfield = 0;
+    public static final Map<_Fields, org.apache.thrift.meta_data.FieldMetaData> metaDataMap;
+    static {
+      Map<_Fields, org.apache.thrift.meta_data.FieldMetaData> tmpMap = new EnumMap<_Fields, org.apache.thrift.meta_data.FieldMetaData>(_Fields.class);
+      tmpMap.put(_Fields.SUCCESS, new org.apache.thrift.meta_data.FieldMetaData("success", org.apache.thrift.TFieldRequirementType.DEFAULT, 
+          new org.apache.thrift.meta_data.FieldValueMetaData(org.apache.thrift.protocol.TType.BOOL)));
+      metaDataMap = Collections.unmodifiableMap(tmpMap);
+      org.apache.thrift.meta_data.FieldMetaData.addStructMetaDataMap(updateBalanceOfGoods_result.class, metaDataMap);
+    }
+
+    public updateBalanceOfGoods_result() {
+    }
+
+    public updateBalanceOfGoods_result(
+      boolean success)
+    {
+      this();
+      this.success = success;
+      setSuccessIsSet(true);
+    }
+
+    /**
+     * Performs a deep copy on <i>other</i>.
+     */
+    public updateBalanceOfGoods_result(updateBalanceOfGoods_result other) {
+      __isset_bitfield = other.__isset_bitfield;
+      this.success = other.success;
+    }
+
+    public updateBalanceOfGoods_result deepCopy() {
+      return new updateBalanceOfGoods_result(this);
+    }
+
+    @Override
+    public void clear() {
+      setSuccessIsSet(false);
+      this.success = false;
+    }
+
+    public boolean isSuccess() {
+      return this.success;
+    }
+
+    public updateBalanceOfGoods_result setSuccess(boolean success) {
+      this.success = success;
+      setSuccessIsSet(true);
+      return this;
+    }
+
+    public void unsetSuccess() {
+      __isset_bitfield = EncodingUtils.clearBit(__isset_bitfield, __SUCCESS_ISSET_ID);
+    }
+
+    /** Returns true if field success is set (has been assigned a value) and false otherwise */
+    public boolean isSetSuccess() {
+      return EncodingUtils.testBit(__isset_bitfield, __SUCCESS_ISSET_ID);
+    }
+
+    public void setSuccessIsSet(boolean value) {
+      __isset_bitfield = EncodingUtils.setBit(__isset_bitfield, __SUCCESS_ISSET_ID, value);
+    }
+
+    public void setFieldValue(_Fields field, Object value) {
+      switch (field) {
+      case SUCCESS:
+        if (value == null) {
+          unsetSuccess();
+        } else {
+          setSuccess((Boolean)value);
+        }
+        break;
+
+      }
+    }
+
+    public Object getFieldValue(_Fields field) {
+      switch (field) {
+      case SUCCESS:
+        return Boolean.valueOf(isSuccess());
+
+      }
+      throw new IllegalStateException();
+    }
+
+    /** Returns true if field corresponding to fieldID is set (has been assigned a value) and false otherwise */
+    public boolean isSet(_Fields field) {
+      if (field == null) {
+        throw new IllegalArgumentException();
+      }
+
+      switch (field) {
+      case SUCCESS:
+        return isSetSuccess();
+      }
+      throw new IllegalStateException();
+    }
+
+    @Override
+    public boolean equals(Object that) {
+      if (that == null)
+        return false;
+      if (that instanceof updateBalanceOfGoods_result)
+        return this.equals((updateBalanceOfGoods_result)that);
+      return false;
+    }
+
+    public boolean equals(updateBalanceOfGoods_result that) {
+      if (that == null)
+        return false;
+
+      boolean this_present_success = true;
+      boolean that_present_success = true;
+      if (this_present_success || that_present_success) {
+        if (!(this_present_success && that_present_success))
+          return false;
+        if (this.success != that.success)
+          return false;
+      }
+
+      return true;
+    }
+
+    @Override
+    public int hashCode() {
+      return 0;
+    }
+
+    public int compareTo(updateBalanceOfGoods_result other) {
+      if (!getClass().equals(other.getClass())) {
+        return getClass().getName().compareTo(other.getClass().getName());
+      }
+
+      int lastComparison = 0;
+      updateBalanceOfGoods_result typedOther = (updateBalanceOfGoods_result)other;
+
+      lastComparison = Boolean.valueOf(isSetSuccess()).compareTo(typedOther.isSetSuccess());
+      if (lastComparison != 0) {
+        return lastComparison;
+      }
+      if (isSetSuccess()) {
+        lastComparison = org.apache.thrift.TBaseHelper.compareTo(this.success, typedOther.success);
+        if (lastComparison != 0) {
+          return lastComparison;
+        }
+      }
+      return 0;
+    }
+
+    public _Fields fieldForId(int fieldId) {
+      return _Fields.findByThriftId(fieldId);
+    }
+
+    public void read(org.apache.thrift.protocol.TProtocol iprot) throws org.apache.thrift.TException {
+      schemes.get(iprot.getScheme()).getScheme().read(iprot, this);
+    }
+
+    public void write(org.apache.thrift.protocol.TProtocol oprot) throws org.apache.thrift.TException {
+      schemes.get(oprot.getScheme()).getScheme().write(oprot, this);
+      }
+
+    @Override
+    public String toString() {
+      StringBuilder sb = new StringBuilder("updateBalanceOfGoods_result(");
+      boolean first = true;
+
+      sb.append("success:");
+      sb.append(this.success);
+      first = false;
+      sb.append(")");
+      return sb.toString();
+    }
+
+    public void validate() throws org.apache.thrift.TException {
+      // check for required fields
+      // check for sub-struct validity
+    }
+
+    private void writeObject(java.io.ObjectOutputStream out) throws java.io.IOException {
+      try {
+        write(new org.apache.thrift.protocol.TCompactProtocol(new org.apache.thrift.transport.TIOStreamTransport(out)));
+      } catch (org.apache.thrift.TException te) {
+        throw new java.io.IOException(te);
+      }
+    }
+
+    private void readObject(java.io.ObjectInputStream in) throws java.io.IOException, ClassNotFoundException {
+      try {
+        // it doesn't seem like you should have to do this, but java serialization is wacky, and doesn't call the default constructor.
+        __isset_bitfield = 0;
+        read(new org.apache.thrift.protocol.TCompactProtocol(new org.apache.thrift.transport.TIOStreamTransport(in)));
+      } catch (org.apache.thrift.TException te) {
+        throw new java.io.IOException(te);
+      }
+    }
+
+    private static class updateBalanceOfGoods_resultStandardSchemeFactory implements SchemeFactory {
+      public updateBalanceOfGoods_resultStandardScheme getScheme() {
+        return new updateBalanceOfGoods_resultStandardScheme();
+      }
+    }
+
+    private static class updateBalanceOfGoods_resultStandardScheme extends StandardScheme<updateBalanceOfGoods_result> {
+
+      public void read(org.apache.thrift.protocol.TProtocol iprot, updateBalanceOfGoods_result struct) throws org.apache.thrift.TException {
+        org.apache.thrift.protocol.TField schemeField;
+        iprot.readStructBegin();
+        while (true)
+        {
+          schemeField = iprot.readFieldBegin();
+          if (schemeField.type == org.apache.thrift.protocol.TType.STOP) { 
+            break;
+          }
+          switch (schemeField.id) {
+            case 0: // SUCCESS
+              if (schemeField.type == org.apache.thrift.protocol.TType.BOOL) {
+                struct.success = iprot.readBool();
+                struct.setSuccessIsSet(true);
+              } else { 
+                org.apache.thrift.protocol.TProtocolUtil.skip(iprot, schemeField.type);
+              }
+              break;
+            default:
+              org.apache.thrift.protocol.TProtocolUtil.skip(iprot, schemeField.type);
+          }
+          iprot.readFieldEnd();
+        }
+        iprot.readStructEnd();
+
+        // check for required fields of primitive type, which can't be checked in the validate method
+        struct.validate();
+      }
+
+      public void write(org.apache.thrift.protocol.TProtocol oprot, updateBalanceOfGoods_result struct) throws org.apache.thrift.TException {
+        struct.validate();
+
+        oprot.writeStructBegin(STRUCT_DESC);
+        if (struct.isSetSuccess()) {
+          oprot.writeFieldBegin(SUCCESS_FIELD_DESC);
+          oprot.writeBool(struct.success);
+          oprot.writeFieldEnd();
+        }
+        oprot.writeFieldStop();
+        oprot.writeStructEnd();
+      }
+
+    }
+
+    private static class updateBalanceOfGoods_resultTupleSchemeFactory implements SchemeFactory {
+      public updateBalanceOfGoods_resultTupleScheme getScheme() {
+        return new updateBalanceOfGoods_resultTupleScheme();
+      }
+    }
+
+    private static class updateBalanceOfGoods_resultTupleScheme extends TupleScheme<updateBalanceOfGoods_result> {
+
+      @Override
+      public void write(org.apache.thrift.protocol.TProtocol prot, updateBalanceOfGoods_result struct) throws org.apache.thrift.TException {
+        TTupleProtocol oprot = (TTupleProtocol) prot;
+        BitSet optionals = new BitSet();
+        if (struct.isSetSuccess()) {
+          optionals.set(0);
+        }
+        oprot.writeBitSet(optionals, 1);
+        if (struct.isSetSuccess()) {
+          oprot.writeBool(struct.success);
+        }
+      }
+
+      @Override
+      public void read(org.apache.thrift.protocol.TProtocol prot, updateBalanceOfGoods_result struct) throws org.apache.thrift.TException {
+        TTupleProtocol iprot = (TTupleProtocol) prot;
+        BitSet incoming = iprot.readBitSet(1);
+        if (incoming.get(0)) {
+          struct.success = iprot.readBool();
+          struct.setSuccessIsSet(true);
         }
       }
     }

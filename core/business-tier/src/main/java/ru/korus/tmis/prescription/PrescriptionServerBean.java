@@ -44,6 +44,9 @@ public class PrescriptionServerBean {
     DbStaffBeanLocal staffBean = null;
     @EJB
     DbActionPropertyTypeBeanLocal actionPropertyTypeBean = null;
+    @EJB
+    BalanceOfGoodsInfo balanceOfGoodsInfo;
+
 
     public PrescriptionServerBean() {
         logger.info("PrescriptionServerBean simple constructor called.");
@@ -65,6 +68,7 @@ public class PrescriptionServerBean {
             PrescriptionServer.setActionTypeBean(actionTypeBean);
             PrescriptionServer.setStaffBean(staffBean);
             PrescriptionServer.setActionPropertyTypeBean(actionPropertyTypeBean);
+            PrescriptionServer.setBalanceOfGoodsInfo(balanceOfGoodsInfo);
             server.startServer();
         } catch (Exception exception) {
             logger.error("Exception while initialize PrescriptionServerBean", exception);

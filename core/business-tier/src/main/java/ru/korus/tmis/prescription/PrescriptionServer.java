@@ -60,7 +60,8 @@ public class PrescriptionServer implements PrescriptionExchange.Iface {
     //Number of request
     private static int requestNum = 0;
 
-
+    //Обновления остатков
+    private static BalanceOfGoodsInfo balanceOfGoodsInfo = null;
 
 
     @Override
@@ -207,6 +208,12 @@ public class PrescriptionServer implements PrescriptionExchange.Iface {
         logger.info("End of #{} save. Save is successfully", currentRequestNum);
     }
 
+    @Override
+    public boolean updateBalanceOfGoods(List<Integer> drugIds) throws TException {
+        logger.info("Call method -> updateBalanceOfGoods; drugIds.size(): {}", drugIds.size());
+        return balanceOfGoodsInfo.update(drugIds);
+    }
+
     public static PrescriptionServer getInstance(int port, int maxThreadCount) {
         if (instance == null) {
             instance = new PrescriptionServer(port, maxThreadCount);
@@ -345,6 +352,7 @@ public class PrescriptionServer implements PrescriptionExchange.Iface {
         return actionPropertyTypeBean;
     }
 
-
-
+    public static void setBalanceOfGoodsInfo(BalanceOfGoodsInfo balanceOfGoodsInfo) {
+        PrescriptionServer.balanceOfGoodsInfo = balanceOfGoodsInfo;
+    }
 }

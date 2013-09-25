@@ -13,10 +13,7 @@ import javax.ejb.Stateless;
 import javax.persistence.EntityManager;
 import javax.persistence.PersistenceContext;
 
-import misexchange.BalanceOfGoods2;
-import misexchange.DrugList;
-import misexchange.MISExchange;
-import misexchange.MISExchangePortType;
+import misexchange.*;
 
 import org.hl7.v3.CD;
 import org.hl7.v3.CR;
@@ -119,7 +116,8 @@ public class SyncWith1C {
         final DrugList drugListRes = ws1C.getDrugList();
         logger.info("update RLS...the list of drugs has been recived from 1C. list size: {}", drugListRes.getDrug().size());
         String res = htmlNewLine("update RLS...start...1C drugs list size: " + drugListRes.getDrug().size() + EOL);
-        drugList = new DrugList();
+        ObjectFactory factory = new ObjectFactory();
+        drugList = factory.createDrugList();
         drugsInDb = new HashMap<Integer, RlsNomen>();
         for (POCDMT000040LabeledDrug drug : drugListRes.getDrug()) {
             final Integer drugRlsCode = getDrugRlsCode(drug);
@@ -550,6 +548,10 @@ public class SyncWith1C {
     }
 
     public String updateBalance() {
+        return updateBalance(drugList);
+    }
+
+    public String updateBalance(DrugList drugList ) {
         logger.info("update RLS balance...start");
         if ( !ConfigManager.Drugstore().isUpdateRLS() ) {
             logger.info("update RLS balance...stoped");
@@ -561,14 +563,14 @@ public class SyncWith1C {
             List<OrgStructure> orgStructures = dbOrgStructureBean.getAllOrgStructures();
             for(OrgStructure orgStructure : orgStructures) {
                 if( !orgStructure.getDeleted() && orgStructure.getUuid() != null ) {
-                    res += updateBalance( mainOrganization.getUuid().getUuid(), orgStructure);
+                    res += updateBalance(drugList, mainOrganization.getUuid().getUuid(), orgStructure);
                 }
             }
         }
         return res;
     }
 
-    private String updateBalance(String organizationRef, OrgStructure orgStructure) {
+    public String updateBalance(DrugList drugList, String organizationRef, OrgStructure orgStructure) {
         logger.info("update RLS balance for store {}", orgStructure.getName());
         final SimpleDateFormat dateFormat = new SimpleDateFormat("yyyyMMdd");
         Integer updateCount = 0;

@@ -8,6 +8,8 @@ import org.apache.thrift.transport.TSocket;
 import org.apache.thrift.transport.TTransportException;
 import ru.korus.tmis.prescription.thservice.*;
 
+import java.util.List;
+
 /**
  * Author:      Dmitriy E. Nosov <br>
  * Date:        20.08.13, 17:50 <br>
@@ -31,6 +33,11 @@ public class PrescriptionThriftTest {
         @Override
         public void save(PrescriptionList prescrList) throws SavePrescrListException, TException {
 
+        }
+
+        @Override
+        public boolean updateBalanceOfGoods(List<Integer> drugIds) throws TException {
+            return false;  //To change body of implemented methods use File | Settings | File Templates.
         }
     }
 
