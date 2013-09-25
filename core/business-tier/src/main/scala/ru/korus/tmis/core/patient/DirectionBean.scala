@@ -106,12 +106,13 @@ class DirectionBean extends DirectionBeanLocal
     val group = new CommonGroup(1, "Details")
 
     val age = commonDataProcessor.defineAgeOfPatient(direction.getEvent.getPatient)
+    val (year, month, week, date) = age.asInstanceOf[(Int, Int, Int, Int)]
 
     propertiesMap.foreach(
       (p) => {
         val (ap, apvs) = p
         val apw = new ActionPropertyWrapper(ap)
-        if (commonDataProcessor.checkActionPropertyTypeForPatientAge(age, ap.getType)) {
+        if (commonDataProcessor.checkActionPropertyTypeForPatientAge(year, month, week, date, ap.getType)) {
           apvs.size match {
             case 0 => {
               group add apw.get(null, List(APWI.Unit,
@@ -124,8 +125,8 @@ class DirectionBean extends DirectionBeanLocal
             }
           }
         }
-      })
-
+      }
+    )
     group
   }
 

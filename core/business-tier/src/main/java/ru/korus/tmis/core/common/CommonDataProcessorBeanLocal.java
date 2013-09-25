@@ -56,7 +56,7 @@ public interface CommonDataProcessorBeanLocal {
                               List<StringId> attributeNames)
             throws CoreException;
 
-    Calendar defineAgeOfPatient(Patient patient) throws CoreException;
+    Object defineAgeOfPatient(Patient patient) throws CoreException;
 
-    boolean checkActionPropertyTypeForPatientAge(Calendar age, ActionPropertyType apt) throws CoreException;
+    boolean checkActionPropertyTypeForPatientAge(int year, int month, int week, int date, ActionPropertyType apt) throws CoreException;
 }

@@ -627,6 +627,8 @@ class CommonDataProcessorBean
                                   converter: (java.util.List[String], ActionPropertyType) => CommonAttribute,
                                   patient: Patient) = {
     val age = defineAgeOfPatient(patient)
+    val (year, month, week, date2) = age.asInstanceOf[(Int, Int, Int, Int)]
+
     types.foldLeft(
       new CommonData(0, dbVersion.getGlobalVersion)
     )((data, at) => {
@@ -702,7 +704,7 @@ class CommonDataProcessorBean
       val group = new CommonGroup(1, "Details")
       dbActionType.getActionTypePropertiesById(at.getId.intValue).foreach(
         (apt) => {
-          if (checkActionPropertyTypeForPatientAge(age, apt)) {
+          if (checkActionPropertyTypeForPatientAge(year, month, week, date2, apt)) {
             group add converter(listForConverter, apt)
           }
         }
@@ -737,43 +739,45 @@ class CommonDataProcessorBean
     )
   }
 
-  def defineAgeOfPatient(patient: Patient): Calendar = {
+  def defineAgeOfPatient(patient: Patient) = {
     if (patient != null) {
       val now = Calendar.getInstance()
       now.setTime(new Date())
       val birth = Calendar.getInstance()
       birth.setTime(if (patient != null) patient.getBirthDate else new Date())
 
-      val age = Calendar.getInstance()
-      age.set(now.get(Calendar.YEAR) - birth.get(Calendar.YEAR),
-        now.get(Calendar.MONTH) - birth.get(Calendar.MONTH),
-        now.get(Calendar.DATE) - birth.get(Calendar.DATE))
+      var age = Calendar.getInstance()
+      val year = now.get(Calendar.YEAR) - birth.get(Calendar.YEAR)
+      val month = now.get(Calendar.MONTH) - birth.get(Calendar.MONTH)
+      val week = now.get(Calendar.WEEK_OF_YEAR) - birth.get(Calendar.WEEK_OF_YEAR)
+      val date = now.get(Calendar.DATE) - birth.get(Calendar.DATE)
+      age.set(year, month, date, 0, 0)
 
-      age
+      (year, month, week, date)
     } else {
       null
     }
   }
 
-  def checkActionPropertyTypeForPatientAge(age: Calendar, apt: ActionPropertyType): Boolean = {
+  def checkActionPropertyTypeForPatientAge(year: Int, month: Int, week: Int, date: Int, apt: ActionPropertyType): Boolean = {
     var needProp: Boolean = false
-    if (age == null || age.get(Calendar.YEAR) == 0 || (apt.getAge_bc == 0 && apt.getAge_ec == 0 && apt.getAge_bu == 0 && apt.getAge_eu == 0)) {
+    if (year.intValue() == 0 || (apt.getAge_bc == 0 && apt.getAge_ec == 0 && apt.getAge_bu == 0 && apt.getAge_eu == 0)) {
       apt.getAge_eu match {
         case 1 => {   //дней
-          if ((age.get(Calendar.DAY_OF_YEAR) >= apt.getAge_bc || apt.getAge_bc == 0)  &&
-            (age.get(Calendar.DAY_OF_YEAR) < apt.getAge_ec || apt.getAge_ec == 0)) {
+          if ((date >= apt.getAge_bc || apt.getAge_bc == 0)  &&
+              (date < apt.getAge_ec || apt.getAge_ec == 0)) {
             needProp = true
           }
         }
         case 2 => {   //недель
-          if ((age.get(Calendar.WEEK_OF_YEAR) >= apt.getAge_bc || apt.getAge_bc == 0) &&
-            (age.get(Calendar.WEEK_OF_YEAR) < apt.getAge_ec || apt.getAge_ec == 0)) {
+          if ((week >= apt.getAge_bc || apt.getAge_bc == 0) &&
+              (week < apt.getAge_ec || apt.getAge_ec == 0)) {
             needProp = true
           }
         }
         case 3 => {   //месяцев
-          if ((age.get(Calendar.MONTH) >= apt.getAge_bc || apt.getAge_bc == 0) &&
-            (age.get(Calendar.MONTH) < apt.getAge_ec || apt.getAge_ec == 0)) {
+          if ((month >= apt.getAge_bc || apt.getAge_bc == 0) &&
+              (month < apt.getAge_ec || apt.getAge_ec == 0)) {
             needProp = true
           }
         }
@@ -783,8 +787,8 @@ class CommonDataProcessorBean
       }
     } else {             //лет
       if ( apt.getAge_eu == 4 &&
-        (age.get(Calendar.YEAR) >= apt.getAge_bc || apt.getAge_bc == 0) &&
-        (age.get(Calendar.YEAR) < apt.getAge_ec || apt.getAge_ec == 0)) {
+        (year >= apt.getAge_bc || apt.getAge_bc == 0) &&
+        (year < apt.getAge_ec || apt.getAge_ec == 0)) {
         needProp = true
       }
     }
