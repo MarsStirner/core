@@ -16,8 +16,5 @@ public interface PharmacyBeanLocal {
      */
     void pooling();
 
-    /**
-     * Выгрузка данных по назначениям за текущие сутки
-     */
-    void flushAssignment();
+
 }

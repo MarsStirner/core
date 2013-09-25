@@ -49,7 +49,11 @@ class PatientsListData {
       var toDep : OrgStructure = null
 
       val value: Object = if (e._2!=null && e._2.size()>0) {
-        val apvs = e._2.iterator.next()
+        val apvs = if (e._2.size() > 1) {
+          e._2.find(f => f._1.getType.getCode.compareTo(ConfigManager.Messages("db.apt.moving.codes.orgStructTransfer")) == 0).getOrElse(null)
+        } else {
+          e._2.iterator.next()
+        }
         if (apvs._2!=null && apvs._2.size()>0){
           apvs._2.get(0).getValue
         } else null

@@ -15,6 +15,7 @@ import ru.korus.tmis.core.exception.CoreException
 import ru.korus.tmis.util.reflect.LoggingManager
 import java.util.Date
 import java.text.SimpleDateFormat
+import java.util
 
 /**
  * Методы для работы с JobTicket
@@ -234,9 +235,12 @@ class DbJobTicketBean extends DbJobTicketBeanLocal
 
     result.size match {
       case 0 => {
+        new util.LinkedList[Action]
+        /*
         throw new CoreException(
           ConfigManager.ErrorCodes.JobNotFound,
           i18n("error.ActionsForJobTicketNotFound").format(jobTicketId))
+          */
       }
       case size => {
         result.foreach(a => {em.detach(a)})

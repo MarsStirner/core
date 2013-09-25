@@ -31,21 +31,21 @@ import javax.xml.bind.annotation.XmlType;
 @XmlType(name = "", propOrder = {
     "_return"
 })
-@XmlRootElement(name = "BalanceOfGoodsInOrganizationResponse")
-public class BalanceOfGoodsInOrganizationResponse {
+@XmlRootElement(name = "BalanceOfGoodsResponse")
+public class BalanceOfGoodsResponse {
 
     @XmlElement(name = "return", required = true)
-    protected BalanceOfGoods _return;
+    protected BalanceOfGoods2 _return;
 
     /**
      * Gets the value of the return property.
      * 
      * @return
      *     possible object is
-     *     {@link BalanceOfGoods }
+     *     {@link BalanceOfGoods2 }
      *     
      */
-    public BalanceOfGoods getReturn() {
+    public BalanceOfGoods2 getReturn() {
         return _return;
     }
 
@@ -54,10 +54,10 @@ public class BalanceOfGoodsInOrganizationResponse {
      * 
      * @param value
      *     allowed object is
-     *     {@link BalanceOfGoods }
+     *     {@link BalanceOfGoods2 }
      *     
      */
-    public void setReturn(BalanceOfGoods value) {
+    public void setReturn(BalanceOfGoods2 value) {
         this._return = value;
     }
 

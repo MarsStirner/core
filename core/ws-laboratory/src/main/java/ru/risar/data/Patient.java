@@ -12,6 +12,7 @@ import java.util.Date;
  */
 @XmlAccessorType(XmlAccessType.FIELD)
 @XmlType(name = "Patient", propOrder = {
+        "identifier",
         "name",
         "gender",
         "birthTime",
@@ -20,6 +21,9 @@ import java.util.Date;
         "contactInfo"
 })
 public class Patient {
+
+    @XmlElement(required = true)
+    protected String identifier;
 
     @XmlElement(required = true)
     protected Name name;
@@ -39,6 +43,13 @@ public class Patient {
     @XmlElement(required = true)
     protected ContactInfo contactInfo;
 
+    public String getIdentifier() {
+        return identifier;
+    }
+
+    public void setIdentifier(String identifier) {
+        this.identifier = identifier;
+    }
 
     public Addresses getAddressesList() {
         return addresses;

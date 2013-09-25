@@ -159,7 +159,7 @@ class DirectionBean extends DirectionBeanLocal
   private def createJobTicketsForActions(actions: java.util.List[Action], eventId: Int) =  {
 
     val department = hospitalBedBean.getCurrentDepartmentForAppeal(eventId)
-    var list = new java.util.LinkedList[(Job, JobTicket, TakenTissue)]
+    var list = new java.util.LinkedList[(Job, JobTicket, TakenTissue, Action)]
     var apvList = new java.util.LinkedList[(ActionProperty, JobTicket)]
     var apvMKBList = new java.util.LinkedList[(ActionProperty, Mkb)]
     var jtForAp: JobTicket = null
@@ -172,9 +172,10 @@ class DirectionBean extends DirectionBeanLocal
         if (jobAndTicket == null) {
           var fromList = list.find((p) => p._1.getId == null &&
             p._2.getDatetime == a.getPlannedEndDate &&
-            p._3.getType.getId == dbTakenTissue.getActionTypeTissueTypeByMasterId(a.getActionType.getId.intValue()).getTissueType.getId).getOrElse(null)
+            p._3.getType.getId == dbTakenTissue.getActionTypeTissueTypeByMasterId(a.getActionType.getId.intValue()).getTissueType.getId &&
+            p._4.getIsUrgent == false).getOrElse(null)     //для отфильтровки жобТикетов со срочными акшенами
           if (fromList != null) {
-            var (j, jt, tt) = fromList.asInstanceOf[(Job, JobTicket, TakenTissue)]
+            var (j, jt, tt, a) = fromList.asInstanceOf[(Job, JobTicket, TakenTissue, Action)]
             j.setQuantity(j.getQuantity+1)
             if (tt != null) a.setTakenTissue(tt)
             jtForAp = jt
@@ -192,7 +193,7 @@ class DirectionBean extends DirectionBeanLocal
               }
             }
             if (tt != null) a.setTakenTissue(tt)
-            list.add(j, jt, tt)
+            list.add(j, jt, tt, a)
             jtForAp = jt
           }
         } else {
@@ -203,10 +204,10 @@ class DirectionBean extends DirectionBeanLocal
               val j = dbJobBean.insertOrUpdateJob(jobTicket.getJob.getId.intValue(), a, department)
               val jt = dbJobTicketBean.insertOrUpdateJobTicket(jobTicket.getId.intValue(), a, j)
               if (takenTissue != null) a.setTakenTissue(takenTissue)
-              list.add(j, jt, takenTissue)
+              list.add(j, jt, takenTissue, a)
               jtForAp = jt
             } else {
-              var (j, jt, tt) = fromList.asInstanceOf[(Job, JobTicket, TakenTissue)]
+              var (j, jt, tt, a) = fromList.asInstanceOf[(Job, JobTicket, TakenTissue, Action)]
               j.setQuantity(j.getQuantity+1)
               if (tt != null) a.setTakenTissue(tt)
               jtForAp = jt
@@ -240,7 +241,7 @@ class DirectionBean extends DirectionBeanLocal
           }
         }
         if (tt != null) a.setTakenTissue(tt)
-        list.add(j, jt, tt)
+        list.add(j, jt, tt, a)
         jtForAp = jt
       }
 
@@ -267,7 +268,7 @@ class DirectionBean extends DirectionBeanLocal
     })
     if (list != null && list.size() > 0) {
       list.foreach((f) => {
-        var (j, jt, tt) = f
+        var (j, jt, tt, a) = f
         if (j != null) {
           if (j.getId != null && j.getId.intValue() > 0) {
             j = em.merge(j)
@@ -469,12 +470,18 @@ class DirectionBean extends DirectionBeanLocal
     em.persist(action19)
     em.flush()
     // создаем и/или заполняем значение проперти 18
-    val a = actionPropertyBean.getActionPropertyById(request.plannedTime.getId).getAction
+    val apSchedule = actionPropertyBean.getActionPropertyById(request.plannedTime.getId)
+    val a = apSchedule.getAction
     var aps = actionPropertyBean.getActionPropertiesByActionIdAndTypeId(a.getId.intValue(), 18) // 18 = queue
     var ap18: ActionProperty = null
     aps.size() match {
       case 0 => {
         ap18 = actionPropertyBean.createActionProperty(a, 18, userData)
+        /*
+        actionPropertyBean.getActionPropertyValue(apSchedule).foreach(f => {
+          if (f.asInstanceOf[APValueDate].getId.getIndex != request.plannedTime.getIndex())
+            em.merge(actionPropertyBean.setActionPropertyValue(ap18, null, f.asInstanceOf[APValueAction].getId.getIndex))
+        })   */
         em.persist(ap18)
         em.flush()
       }
@@ -483,7 +490,14 @@ class DirectionBean extends DirectionBeanLocal
       }
     }
     if (ap18 != null) {
+      val ap18values = actionPropertyBean.getActionPropertyValue(ap18)
+      actionPropertyBean.getActionPropertyValue(apSchedule).foreach(f => {
+        if (f.asInstanceOf[APValueTime].getId.getIndex != request.plannedTime.getIndex() &&
+            ap18values.find(p => p.asInstanceOf[APValueAction].getId.getIndex == f.asInstanceOf[APValueTime].getId.getIndex).getOrElse(null) == null)
+          em.merge(actionPropertyBean.setActionPropertyValue(ap18, null, f.asInstanceOf[APValueTime].getId.getIndex))
+      })
       em.merge(actionPropertyBean.setActionPropertyValue(ap18, action19.getId.toString, request.plannedTime.getIndex))
+
     }
     // ****
     em.flush()

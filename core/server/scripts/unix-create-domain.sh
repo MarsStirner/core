@@ -48,12 +48,14 @@ cp ../scripts/lib/* ${glassfish.domain.dir}/${glassfish.domain}/lib/ext/
 echo ""
 echo "--------------------------------------------------------------------"
 echo "Start domain ${glassfish.domain}"
-$ASADMIN/asadmin start-domain --passwordfile $GF_PASSWD_FILE --domaindir ${glassfish.domain.dir} ${glassfish.domain}
+$ASADMIN/asadmin start-domain
+        --passwordfile $GF_PASSWD_FILE --domaindir ${glassfish.domain.dir} ${glassfish.domain}
 echo "--------------------------------------------------------------------"
 echo "Enable secure admin"
 echo ""
 $ASADMIN/asadmin --user ${glassfish.admin.login} \
         --passwordfile $GF_PASSWD_FILE \
+        --port ${glassfish.port.admin} \
         enable-secure-admin
 echo "--------------------------------------------------------------------"
 echo "Add JVM options"
@@ -63,9 +65,11 @@ echo ""
 # Создаем настройку для logbak.xml
 $ASADMIN/asadmin --user ${glassfish.admin.login} \
         --passwordfile $GF_PASSWD_FILE \
+        --port ${glassfish.port.admin} \
         create-jvm-options --target server-config '-Dlogback.configurationFile=${com.sun.aas.instanceRoot}/config/logback.xml'
 $ASADMIN/asadmin --user ${glassfish.admin.login} \
         --passwordfile $GF_PASSWD_FILE \
+        --port ${glassfish.port.admin} \
         create-jvm-options --target default-config '-Dlogback.configurationFile=${com.sun.aas.instanceRoot}/config/logback.xml'
 echo ""
 echo "for encoding UTF-8"
@@ -73,9 +77,11 @@ echo ""
 # Настройка для кодировки по умолчанию UTF-8
 $ASADMIN/asadmin --user ${glassfish.admin.login} \
         --passwordfile $GF_PASSWD_FILE \
+        --port ${glassfish.port.admin} \
         create-jvm-options --target server-config '-Dfile.encoding=UTF8'
 $ASADMIN/asadmin --user ${glassfish.admin.login} \
         --passwordfile $GF_PASSWD_FILE \
+        --port ${glassfish.port.admin} \
         create-jvm-options --target default-config '-Dfile.encoding=UTF8'
 echo ""
 echo "for remote debug on 5005 port"
@@ -83,9 +89,11 @@ echo ""
 # Создаем ключи для дебага
 $ASADMIN/asadmin --user ${glassfish.admin.login} \
         --passwordfile $GF_PASSWD_FILE \
+        --port ${glassfish.port.admin} \
         create-jvm-options --target server-config "-agentlib\:jdwp=transport=dt_socket,server=y,suspend=n,address=5005"
 $ASADMIN/asadmin --user ${glassfish.admin.login} \
         --passwordfile $GF_PASSWD_FILE \
+        --port ${glassfish.port.admin} \
         create-jvm-options --target default-config "-agentlib\:jdwp=transport=dt_socket,server=y,suspend=n,address=5005"
 echo ""
 echo "for JVM"
@@ -93,35 +101,45 @@ echo ""
 # Выставляем переменные по памяти для JVM
 $ASADMIN/asadmin --user ${glassfish.admin.login} \
         --passwordfile $GF_PASSWD_FILE \
+        --port ${glassfish.port.admin} \
         create-jvm-options --target server-config '-XX\:+UnlockExperimentalVMOptions'
 $ASADMIN/asadmin --user ${glassfish.admin.login} \
         --passwordfile $GF_PASSWD_FILE \
+        --port ${glassfish.port.admin} \
         delete-jvm-options --target server-config '-Xmx512m'
 $ASADMIN/asadmin --user ${glassfish.admin.login} \
         --passwordfile $GF_PASSWD_FILE \
+        --port ${glassfish.port.admin} \
         create-jvm-options --target server-config '-Xmx1024m'
 $ASADMIN/asadmin --user ${glassfish.admin.login} \
         --passwordfile $GF_PASSWD_FILE \
+        --port ${glassfish.port.admin} \
         delete-jvm-options --target server-config '-XX\:MaxPermSize=192m'
 $ASADMIN/asadmin --user ${glassfish.admin.login} \
         --passwordfile $GF_PASSWD_FILE \
+        --port ${glassfish.port.admin} \
         create-jvm-options --target server-config '-XX\:MaxPermSize=256m'
 
 
 $ASADMIN/asadmin --user ${glassfish.admin.login} \
         --passwordfile $GF_PASSWD_FILE \
+        --port ${glassfish.port.admin} \
         create-jvm-options --target default-config '-XX\:+UnlockExperimentalVMOptions'
 $ASADMIN/asadmin --user ${glassfish.admin.login} \
         --passwordfile $GF_PASSWD_FILE \
+        --port ${glassfish.port.admin} \
         delete-jvm-options --target default-config '-Xmx512m'
 $ASADMIN/asadmin --user ${glassfish.admin.login} \
         --passwordfile $GF_PASSWD_FILE \
+        --port ${glassfish.port.admin} \
         create-jvm-options --target default-config '-Xmx1024m'
 $ASADMIN/asadmin --user ${glassfish.admin.login} \
         --passwordfile $GF_PASSWD_FILE \
+        --port ${glassfish.port.admin} \
         delete-jvm-options --target default-config '-XX\:MaxPermSize=192m'
 $ASADMIN/asadmin --user ${glassfish.admin.login} \
         --passwordfile $GF_PASSWD_FILE \
+        --port ${glassfish.port.admin} \
         create-jvm-options --target default-config '-XX\:MaxPermSize=256m'
 
 echo "--------------------------------------------------------------------"
@@ -129,6 +147,7 @@ echo "Create DB pools"
 echo ""
 $ASADMIN/asadmin --user ${glassfish.admin.login} \
         --passwordfile $GF_PASSWD_FILE \
+        --port ${glassfish.port.admin} \
         create-jdbc-connection-pool \
         --datasourceclassname com.mysql.jdbc.jdbc2.optional.MysqlDataSource \
         --property user=${mysql.login}:password=${mysql.password}:DatabaseName=${mysql.db.mis}:ServerName=${mysql.db.host}:port=${mysql.db.port}:useUnicode=true:characterEncoding=UTF-8:characterSetResults=UTF-8:datasourceName=${mysql.db.mis}:zeroDateTimeBehavior=convertToNull \
@@ -136,12 +155,14 @@ $ASADMIN/asadmin --user ${glassfish.admin.login} \
         ${mysql.db.mis.pool}
 $ASADMIN/asadmin --user ${glassfish.admin.login} \
         --passwordfile $GF_PASSWD_FILE \
+        --port ${glassfish.port.admin} \
         create-jdbc-resource \
         --connectionpoolid ${mysql.db.mis.pool} ${mysql.db.jndi.mis}
 
 
 $ASADMIN/asadmin --user ${glassfish.admin.login} \
         --passwordfile $GF_PASSWD_FILE \
+        --port ${glassfish.port.admin} \
         create-jdbc-connection-pool \
         --datasourceclassname com.mysql.jdbc.jdbc2.optional.MysqlDataSource \
         --property user=${mysql.login}:password=${mysql.password}:DatabaseName=${mysql.db.rls}:ServerName=${mysql.db.host}:port=${mysql.db.port}:useUnicode=true:characterEncoding=UTF-8:characterSetResults=UTF-8:datasourceName=${mysql.db.rls}:zeroDateTimeBehavior=convertToNull \
@@ -149,12 +170,14 @@ $ASADMIN/asadmin --user ${glassfish.admin.login} \
         ${mysql.db.rls.pool}
 $ASADMIN/asadmin --user ${glassfish.admin.login} \
         --passwordfile $GF_PASSWD_FILE \
+        --port ${glassfish.port.admin} \
         create-jdbc-resource \
         --connectionpoolid ${mysql.db.rls.pool} ${mysql.db.jndi.rls}
 
 
 $ASADMIN/asadmin --user ${glassfish.admin.login} \
         --passwordfile $GF_PASSWD_FILE \
+        --port ${glassfish.port.admin} \
         create-jdbc-connection-pool \
         --datasourceclassname com.mysql.jdbc.jdbc2.optional.MysqlDataSource \
         --property user=${mysql.login}:password=${mysql.password}:DatabaseName=${mysql.db.tmis_core}:ServerName=${mysql.db.host}:port=${mysql.db.port}:useUnicode=true:characterEncoding=UTF-8:characterSetResults=UTF-8:datasourceName=${mysql.db.tmis_core}:zeroDateTimeBehavior=convertToNull \
@@ -162,6 +185,7 @@ $ASADMIN/asadmin --user ${glassfish.admin.login} \
         ${mysql.db.tmis_core.pool}
 $ASADMIN/asadmin --user ${glassfish.admin.login} \
         --passwordfile $GF_PASSWD_FILE \
+        --port ${glassfish.port.admin} \
         create-jdbc-resource \
         --connectionpoolid ${mysql.db.tmis_core.pool} ${mysql.db.jndi.tmis_core}
 

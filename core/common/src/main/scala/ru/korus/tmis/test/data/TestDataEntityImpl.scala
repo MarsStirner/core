@@ -2,6 +2,8 @@ package ru.korus.tmis.test.data
 
 import ru.korus.tmis.core.entity.model._
 import java.util.Date
+import kladr.{Kladr, Street}
+import ru.korus.tmis.core.auth.AuthData
 
 /**
  * Created with IntelliJ IDEA.
@@ -301,6 +303,18 @@ class TestDataEntityImpl extends TestDataEntity {
     apBed
   }
 
+  def getTestDefaultAPValueMkb = {
+    val mkb = new APValueMKB()
+    mkb.setValue(1.toString)
+    mkb
+  }
+
+  def getTestDefaultAPValueMkb(id: Int) = {
+    val mkb = new APValueMKB()
+    mkb.setValue(id.toString)
+    mkb
+  }
+
   def getTestDefaultAPValueOrgStructure = {
     val apBed = new APValueOrgStructure()
     apBed.setValue(getTestDefaultOrgStructure)
@@ -352,6 +366,27 @@ class TestDataEntityImpl extends TestDataEntity {
     ep.setEndDate(new Date())
     ep
   }
+
+  def getTestDefaultBloodHistory(id: Int, bloodType: RbBloodType, person: Staff) = {
+    val bh = new BloodHistory()
+    bh.setId(id)
+    bh.setBloodType(bloodType)
+    bh.setPerson(person)
+    bh.setBloodDate(new Date(0))
+    bh
+  }
+
+  def getTestDefaultRbBloodType(id: Int) = {
+    val bt = new RbBloodType()
+    bt.setId(id)
+    bt
+  }
+
+  def getTestDefaultAuthData(user: Staff) = {
+    val authData = new AuthData()
+    authData.setUser(user)
+    authData
+  }
   def  getTestDefaultDiagnostic() = {
     val dia = new Diagnostic(testId)
     dia.setDiagnosisType(getTestDefaultDiagnosisType)
@@ -398,4 +433,19 @@ class TestDataEntityImpl extends TestDataEntity {
     mkb.setId(id)
     mkb
   }
+
+  def getTestDefaultKladr() = {
+    val kladr = new Kladr()
+    kladr.setCode("testCode")
+    kladr.setName("test_streetName")
+    kladr
+  }
+
+  def getTestDefaultStreet() = {
+    val street = new Street()
+    street.setCode("testCode")
+    street.setName("test_streetName")
+    street
+  }
+
 }

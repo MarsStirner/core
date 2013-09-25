@@ -35,7 +35,7 @@ import java.util.Map;
  * Company:     Korus Consulting IT<br>
  * Description: Работа по отправке сообщений в сторону 1С Аптеки<br>
  */
-@Interceptors(LoggingInterceptor.class)
+//@Interceptors(LoggingInterceptor.class)
 @Stateless
 public class PharmacyBean implements PharmacyBeanLocal {
 
@@ -74,37 +74,6 @@ public class PharmacyBean implements PharmacyBeanLocal {
 
     private DateTime lastDateUpdate = null;
 
-    /**
-     * Выгрузка данных по назначениям за текущие сутки
-     */
-    @Override
-    @Schedule(second = "59", minute = "59", hour = "23")
-    public void flushAssignment() {
-        logger.info("");
-        logger.info("Begin flush assignment for today...");
-
-        //todo здесь обрабатываются назначения
-        for (Action action : dbPharmacy.getAssignmentForToday(DateTime.now())) {
-            try {
-                final ActionType actionType = action.getActionType();
-                if (FlatCode.PRESCRIPTION.getCode().equalsIgnoreCase(actionType.getFlatCode())) {
-                    send(action);
-                }
-            } catch (Exception e) {
-                logger.error("Error");
-            }
-        }
-        logger.info("End flush assignment for today...");
-
-        // просмотреть назначения на сегодня и отправить исполненное
-        logger.info("Begin flush release assignment for today...");
-        for (Action action : dbPharmacy.getAssignmentForToday(DateTime.now())) {
-            //todo здесь обработать исполнения
-        }
-        logger.info("End flush release assignment for today...");
-
-
-    }
 
     /**
      * Полинг базы данных для поиска событий по движениям пациентов
@@ -114,42 +83,48 @@ public class PharmacyBean implements PharmacyBeanLocal {
     public void pooling() {
         if (ConfigManager.Drugstore().isActive()) {
             logger.info("pooling... last modify date {}", getLastDate());
+            if (lastDateUpdate == null) {
+                lastDateUpdate = firstPolling();
+            }
             try {
-                if (lastDateUpdate == null) {
-                    lastDateUpdate = firstPolling();
-                }
-
                 final List<Action> actionAfterDate = dbPharmacy.getVirtualActionsAfterDate(lastDateUpdate);
                 if (!actionAfterDate.isEmpty()) {
                     logger.info("Found {} newest actions after date {}", actionAfterDate.size(), getLastDate());
                     for (Action action : actionAfterDate) {
-                        if (isMovingAction(action)) {
+                        if (isActionForSend(action)) {
                             send(action);
                             lastDateUpdate = new DateTime(action.getModifyDatetime());
                         }
                     }
                 }
-                resendMessages();
             } catch (Exception e) {
                 logger.error("Exception e: " + e, e);
             }
+            // повторная отправка неотправленных сообщений
+            resendMessages();
+        } else {
+            logger.info("pooling... {}", ConfigManager.Drugstore().Active());
         }
     }
 
     /**
-     * Повторная отправка сообщений, которые имеют статус отличный от COMPETE
+     * Повторная отправка сообщений, которые имеют статус отличный от COMPLETE
      *
      * @throws CoreException
      */
-    private void resendMessages() throws CoreException {
-        // resend old messages
-        final List<Pharmacy> nonCompletedItems = dbPharmacy.getNonCompletedItems();
-        if (!nonCompletedItems.isEmpty()) {
-            logger.info("Resend old message....");
-            for (Pharmacy pharmacy : nonCompletedItems) {
-                final Action action = dbAction.getActionById(pharmacy.getActionId());
-                send(action);
+    private void resendMessages() {
+        try {
+            // resend old messages
+            final List<Pharmacy> nonCompletedItems = dbPharmacy.getNonCompletedItems();
+            if (!nonCompletedItems.isEmpty()) {
+                logger.info("Resend old message....");
+                for (Pharmacy pharmacy : nonCompletedItems) {
+                    final Action action = dbAction.getActionById(pharmacy.getActionId());
+                    send(action);
+                }
             }
+        } catch (Exception e) {
+            logger.error("Exception e: " + e, e);
         }
     }
 
@@ -166,7 +141,8 @@ public class PharmacyBean implements PharmacyBeanLocal {
 
             logger.info("prepare message... \n\n {}", HL7PacketBuilder.marshallMessage(request, "misexchange"));
             // отправка сообщения в 1С
-            final MCCIIN000002UV01 result = new MISExchange().getMISExchangeSoap().processHL7V3Message(request);
+           // final MCCIIN000002UV01 result = new MISExchange().getMISExchangeSoap().processHL7V3Message(request);
+            final MCCIIN000002UV012 result = new MISExchange().getMISExchangeSoap().processHL7V3Message(request);
             if (result != null) {
                 // обработка результата
                 logger.info("Connection successful. Result: {} \n\n {}",
@@ -196,16 +172,19 @@ public class PharmacyBean implements PharmacyBeanLocal {
             }
         } catch (NoSuchOrgStructureException e) {
             if (pharmacy != null) {
+                pharmacy.setErrorString("NoSuchOrgStructureException " + e);
                 pharmacy.setStatus(PharmacyStatus.ERROR);
             }
             logger.info("OrgStructure not found. Skip message: " + e);
         } catch (SkipMessageProcessException e) {
             if (pharmacy != null) {
+                pharmacy.setErrorString("SkipMessageProcessException " + e);
                 pharmacy.setStatus(PharmacyStatus.ERROR);
             }
             logger.info("Skip message: " + e);
         } catch (Exception e) {
             if (pharmacy != null) {
+                pharmacy.setErrorString("Exception " + e);
                 pharmacy.setStatus(PharmacyStatus.ERROR);
             }
             logger.error("Exception: " + e, e);
@@ -223,13 +202,14 @@ public class PharmacyBean implements PharmacyBeanLocal {
     /**
      * Проверка на код по движению пациентов
      */
-    private boolean isMovingAction(final Action action) {
+    private boolean isActionForSend(final Action action) {
         final ActionType actionType = action.getActionType();
         return FlatCode.RECEIVED.getCode().equalsIgnoreCase(actionType.getFlatCode())
                 || FlatCode.DEL_RECEIVED.getCode().equalsIgnoreCase(actionType.getFlatCode())
                 || FlatCode.MOVING.getCode().equalsIgnoreCase(actionType.getFlatCode())
                 || FlatCode.DEL_MOVING.getCode().equalsIgnoreCase(actionType.getFlatCode())
-                || FlatCode.LEAVED.getCode().equalsIgnoreCase(actionType.getFlatCode());
+                || FlatCode.LEAVED.getCode().equalsIgnoreCase(actionType.getFlatCode())
+                || FlatCode.PRESCRIPTION.getCode().equalsIgnoreCase(actionType.getFlatCode());
     }
 
     /**
@@ -284,7 +264,7 @@ public class PharmacyBean implements PharmacyBeanLocal {
                     action, client, executorStaff, organisation, drugCode, AssignmentType.ASSIGNMENT);
 
         } else if (FlatCode.RELEASE_PRESCRIPTION.getCode().equalsIgnoreCase(actionType.getFlatCode())) {    // искусственно введеный тип, либо к нему привязаться или реализовать по-другому
-
+            // todo!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
             // Пациент
             final Patient client = action.getEvent().getPatient();
             // Врач, сделавший обращение

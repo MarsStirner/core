@@ -1,16 +1,20 @@
 
 package org.hl7.v3;
 
-import javax.xml.bind.annotation.*;
+import javax.xml.bind.annotation.XmlAccessType;
+import javax.xml.bind.annotation.XmlAccessorType;
+import javax.xml.bind.annotation.XmlAttribute;
+import javax.xml.bind.annotation.XmlRootElement;
+import javax.xml.bind.annotation.XmlType;
 
 
 /**
- * <p>Java class for MCCI_IN000002UV01 complex type.
+ * <p>Java class for anonymous complex type.
  * 
  * <p>The following schema fragment specifies the expected content contained within this class.
  * 
  * <pre>
- * &lt;complexType name="MCCI_IN000002UV01">
+ * &lt;complexType>
  *   &lt;complexContent>
  *     &lt;extension base="{urn:hl7-org:v3}MCCI_MT000200UV01.Message">
  *       &lt;attribute name="ITSVersion" type="{http://www.w3.org/2001/XMLSchema}string" fixed="XML_1.0" />
@@ -22,8 +26,8 @@ import javax.xml.bind.annotation.*;
  * 
  */
 @XmlAccessorType(XmlAccessType.FIELD)
-@XmlType(name = "MCCI_IN000002UV01")
-@XmlRootElement
+@XmlType(name = "")
+@XmlRootElement(name = "MCCI_IN000002UV01")
 public class MCCIIN000002UV01
     extends MCCIMT000200UV01Message
 {

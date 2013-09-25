@@ -1,6 +1,10 @@
 package ru.korus.tmis.test.data;
 
+import ru.korus.tmis.core.auth.AuthData;
 import ru.korus.tmis.core.entity.model.*;
+import ru.korus.tmis.core.entity.model.kladr.Kladr;
+import ru.korus.tmis.core.entity.model.kladr.Street;
+
 import java.io.Serializable;
 import java.util.Date;
 import java.util.List;
@@ -72,6 +76,9 @@ public interface TestDataEntity extends Serializable {
     APValueHospitalBed getTestDefaultAPValueHospitalBed();
     APValueHospitalBed getTestDefaultAPValueHospitalBed(int id);
 
+    APValueMKB getTestDefaultAPValueMkb();
+    APValueMKB getTestDefaultAPValueMkb(int id);
+
     APValueOrgStructure getTestDefaultAPValueOrgStructure();
     APValueOrgStructure getTestDefaultAPValueOrgStructure(int id);
 
@@ -92,4 +99,12 @@ public interface TestDataEntity extends Serializable {
     Diagnosis getTestDefaultDiagnosis();
     Mkb getTestDefaultMkb();
     Mkb getTestDefaultMkb(int id);
+
+    BloodHistory getTestDefaultBloodHistory(int id, RbBloodType bloodType, Staff person);
+    RbBloodType getTestDefaultRbBloodType(int id);
+    AuthData getTestDefaultAuthData(Staff user);
+
+    Kladr getTestDefaultKladr();
+    Street getTestDefaultStreet();
 }
+
