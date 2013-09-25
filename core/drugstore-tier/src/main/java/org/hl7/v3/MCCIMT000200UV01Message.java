@@ -68,8 +68,8 @@ import javax.xml.bind.annotation.XmlType;
     "acknowledgement"
 })
 @XmlSeeAlso({
-    MCCIIN000002UV01 .class,
-    MCCIIN000002UV012 .class
+    MCCIIN000002UV012 .class,
+    MCCIIN000002UV01 .class
 })
 public class MCCIMT000200UV01Message {
 

@@ -128,9 +128,9 @@ class DbActionPropertyTypeBean
   }
 
   def getActionPropertyTypesByFlatCodes(codes: java.util.Set[String]) = {
-    val result = em.createQuery(ActionPropertyTypesByFlatCodesQuery,classOf[ActionPropertyType])
-                   .setParameter("codes", asJavaCollection(codes))
-                   .getResultList
+    val result = em.createQuery(ActionPropertyTypesByFlatCodesQuery, classOf[ActionPropertyType])
+      .setParameter("codes", asJavaCollection(codes))
+      .getResultList
     result.foreach((apt) => em.detach((apt)))
     result
   }
@@ -145,8 +145,8 @@ class DbActionPropertyTypeBean
     }
 
     val typed = em.createQuery(valueDomainQuery.format(queryStr.query), classOf[String])
-                  .setMaxResults(limit)
-                  .setFirstResult(limit * page)
+      .setMaxResults(limit)
+      .setFirstResult(limit * page)
     if (queryStr.data.size() > 0) {
       queryStr.data.foreach(qdp => typed.setParameter(qdp.name, qdp.value))
     }
@@ -240,7 +240,7 @@ class DbActionPropertyTypeBean
     apt.flatCodes IN :codes
   AND
     apt.deleted = 0
-  """
+                                            """
 
   val ActionTypeByCode = """
    SELECT at
@@ -257,5 +257,34 @@ class DbActionPropertyTypeBean
       JOIN at.actionPropertyTypes apt
      %s
                          """
+
+  val getActionPropertyTypeByActionTypeIdAndTypeCodeQuery: String =
+    """
+      |SELECT apt
+      |FROM ActionPropertyType apt
+      |WHERE apt.actionType.id = :ACTIONTYPEID
+      |AND apt.code = :CODE
+      |AND apt.deleted = :DELETED
+    """.stripMargin
+
+  def getActionPropertyTypeByActionTypeIdAndTypeCode(
+                                                      actionTypeId: Int,
+                                                      code: String,
+                                                      deleted: Boolean): ActionPropertyType = {
+    val resultList = em.createQuery(getActionPropertyTypeByActionTypeIdAndTypeCodeQuery, classOf[ActionPropertyType])
+      .setParameter("ACTIONTYPEID", actionTypeId)
+      .setParameter("CODE", code)
+      .setParameter("DELETED", deleted)
+      .setMaxResults(1)
+      .getResultList
+    resultList.size match {
+      case 0 => {
+        null
+      }
+      case size => {
+        resultList.get(0)
+      }
+    }
+  }
 }
 

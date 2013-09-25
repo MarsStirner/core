@@ -73,7 +73,7 @@ public class CommunicationServiceTest {
             logger.error("None of organisation found by this infisCode =" + infisCodeParam, e);
         } catch (TException e) {
             logger.error("Get organisationInfo test failed");
-            assertTrue(false);
+            fail();
         }
     }
 
@@ -94,7 +94,7 @@ public class CommunicationServiceTest {
             logger.error("No one speciality found or LPU is incorrect.", e);
         } catch (TException e) {
             logger.error("Exception on server side", e);
-            assertTrue(false);
+            fail();
         }
     }
 
@@ -112,10 +112,10 @@ public class CommunicationServiceTest {
             logger.error("Something not found", e);
         } catch (SQLException e) {
             logger.error("SQLEXCEPTION server side error", e);
-            assertTrue(false);
+            fail();
         } catch (TException e) {
             logger.error("dequeuePatient test failed", e);
-            assertTrue(false);
+            fail();
         }
     }
 
@@ -190,7 +190,7 @@ public class CommunicationServiceTest {
             logger.warn("Successful end of findPatientS test.");
         } catch (TException e) {
             logger.error("findPatientS test FAILED", e);
-            assertTrue(false);
+            fail();
         }
     }
 
@@ -218,7 +218,7 @@ public class CommunicationServiceTest {
             logger.error("OrgStructure not found", e);
         } catch (TException e) {
             logger.error("Fail findOrgStructureByAddress test. Exception stacktrace:", e);
-            assertTrue(false);
+            fail();
         }
     }
 

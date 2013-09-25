@@ -1,29 +1,33 @@
 package ru.korus.tmis.rlsupdate;
 
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
+import java.util.Date;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
+import javax.ejb.EJB;
 import javax.ejb.Schedule;
 import javax.ejb.Stateless;
 import javax.persistence.EntityManager;
 import javax.persistence.PersistenceContext;
 
+import misexchange.BalanceOfGoods2;
 import misexchange.DrugList;
 import misexchange.MISExchange;
 import misexchange.MISExchangePortType;
 
 import org.hl7.v3.CD;
 import org.hl7.v3.CR;
+import org.hl7.v3.CV;
 import org.hl7.v3.POCDMT000040LabeledDrug;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import ru.korus.tmis.core.entity.model.RlsDosage;
-import ru.korus.tmis.core.entity.model.RlsFilling;
-import ru.korus.tmis.core.entity.model.RlsForm;
-import ru.korus.tmis.core.entity.model.RlsInpName;
-import ru.korus.tmis.core.entity.model.RlsNomen;
-import ru.korus.tmis.core.entity.model.RlsPacking;
-import ru.korus.tmis.core.entity.model.RlsTradeName;
+import ru.korus.tmis.core.database.DbOrgStructureBean;
+import ru.korus.tmis.core.database.DbOrgStructureBeanLocal;
+import ru.korus.tmis.core.entity.model.*;
 import ru.korus.tmis.util.ConfigManager;
 
 /**
@@ -73,10 +77,22 @@ public class SyncWith1C {
     private static final String RLS_ACTMATTERS = "RLS_ACTMATTERS";
 
     private static final Logger logger = LoggerFactory.getLogger(SyncWith1C.class);
-
+    private static final String RLS_UPDATE_IS_DISABLED = "RLS update is disabled. For enable RLS update set Drugstore.UpdateRLS=true in  table 'Setting' (database 'tmis_core').";
+    private static final String EOL = System.getProperty("line.separator");
 
     @PersistenceContext(unitName = "s11r64")
     private EntityManager em = null;
+
+    @EJB
+    private DbOrgStructureBeanLocal dbOrgStructureBean;
+
+    private DrugList drugList;
+
+    private Map<Integer, RlsNomen> drugsInDb;
+
+    private MISExchange serv = null;
+
+    private MISExchangePortType servPort = null;
 
     /**
      * Обновление БД - один раз в день в 0 часов 00 мин
@@ -96,76 +112,139 @@ public class SyncWith1C {
         logger.info("update RLS...start");
         if ( !ConfigManager.Drugstore().isUpdateRLS() ) {
             logger.info("update RLS...stoped");
-            return "RLS update is disabled. For enable RLS update set Drugstore.UpdateRLS=true in  table 'Setting' (database 'tmis_core').";
+            return RLS_UPDATE_IS_DISABLED;
         }
-        final MISExchange serv = new MISExchange();
-        MISExchangePortType ws1C = serv.getMISExchangeSoap();
+        MISExchangePortType ws1C = getMisExchangePortType();
         //Справочник лекарственных средсв из системы 1С
-        DrugList drugList = ws1C.getDrugList();
-        logger.info("update RLS...the list of drugs has been recived from 1C. list size: {}", drugList.getDrug().size());
-        String res = "update RLS...start...1C drugs list size: " + drugList.getDrug().size() +  System.getProperty("line.separator");
-        for (POCDMT000040LabeledDrug drug : drugList.getDrug()) {
+        final DrugList drugListRes = ws1C.getDrugList();
+        logger.info("update RLS...the list of drugs has been recived from 1C. list size: {}", drugListRes.getDrug().size());
+        String res = htmlNewLine("update RLS...start...1C drugs list size: " + drugListRes.getDrug().size() + EOL);
+        drugList = new DrugList();
+        drugsInDb = new HashMap<Integer, RlsNomen>();
+        for (POCDMT000040LabeledDrug drug : drugListRes.getDrug()) {
             final Integer drugRlsCode = getDrugRlsCode(drug);
             if (drugRlsCode != null) { // если задан код лекарственного средства
-                final RlsDosage rlsDosage = new RlsDosage();
-                final RlsFilling rlsFilling = new RlsFilling();
-                final RlsForm rlsForm = new RlsForm();
-                final RlsInpName rlsInpName = new RlsInpName();
-                final RlsPacking rlsPacking = new RlsPacking();
-                final RlsTradeName rlsTradeName = new RlsTradeName();
-                final RlsNomen rlsNomen = new RlsNomen();
+                final RlsNomenPK rlsCode = new RlsNomenPK(drugRlsCode);
 
-                rlsDosage.setName(getDosageName(drug).replace('_', ' '));
-                rlsFilling.setName(getFillingName(drug));
-                rlsForm.setName(formatForDb(getFormName(drug)));
+                RlsNomen rlsNomen = new RlsNomen();
+                rlsNomen.setId(rlsCode);
+
+                final String dosageValue = getDosageValue(drug);
+                try {
+                    if (dosageValue != null && !"".equals(dosageValue)) {
+                        rlsNomen.setDosageValue(Double.parseDouble(dosageValue));
+                    }
+                } catch (NumberFormatException ex) {
+                    logger.info("Wrong dosage format for drug # {}: {}",drugRlsCode, ex );
+                    res += htmlNewLine("Wrong dosage format for drug #" + drugRlsCode + ": " + dosageValue + EOL);
+                }
+                rlsNomen.setDosageUnit(getRbUnit(getDosageUnit(drug)));
+                rlsNomen.setUnit(getRbUnit(getFillingUnit(drug)));
+
+                rlsNomen.setRlsFilling(initByName(new  RlsFilling(),getFillingName(drug)));
+                rlsNomen.setRlsForm(initByName(new RlsForm(), formatForDb(getFormName(drug))));
 
                 final String inpNames[] = splitNames(getInpName(drug));
-                rlsInpName.setName(inpNames[0]);
-                rlsInpName.setLatName(inpNames[1]);
+                final RlsActMatter rlsActMatter = initByLocalName(initByName(new RlsActMatter(), inpNames[1]), inpNames[0]);
 
-                rlsPacking.setName(formatForDb(getPackingName(drug)));
-
-                rlsTradeName.setName(getTradeName(drug).replace('_', ' '));
-                rlsTradeName.setLatName(getTradeNameLat(drug));
-
-                rlsNomen.setCode(drugRlsCode);
+                rlsNomen.setRlsPacking(initByName(new RlsPacking(), formatForDb(getPackingName(drug))));
+                rlsNomen.setRlsTradeName(initByLocalName(initByName(new RlsTradeName(), getTradeNameLat(drug)), getTradeName(drug)));
 
                 List<RlsNomen> drugs =
-                        em.createQuery("SELECT n FROM RlsNomen n WHERE n.code = :code", RlsNomen.class).setParameter("code", drugRlsCode).getResultList();
+                        em.createNamedQuery("RlsNomen.findByCode", RlsNomen.class).setParameter("code", drugRlsCode).getResultList();
 
                 if (drugs.isEmpty()) { // если лекарственного средства нет в БД, то добавляем его в БД
-                    saveNewDrug(rlsDosage, rlsFilling, rlsForm, rlsInpName, rlsPacking, rlsTradeName, rlsNomen);
-                    String info =  "New drug: #" + drugRlsCode + System.getProperty("line.separator");
+                    saveNewDrug(rlsActMatter, rlsNomen);
+                    String info =  "New drug: #" + drugRlsCode + EOL;
                     logger.info(info);
                     res += info;
                 } else { // если лекарственное средство с кодом drugRlsCode есть, то сравниваем данные ТМИС и 1С
-                    RlsNomen lastVer = getMaxVersion(drugs);
-                    String info = verify(lastVer, rlsDosage, rlsFilling, rlsForm, rlsInpName, rlsPacking, rlsTradeName);
-                    if(!info.isEmpty()) { //если описание лекарственного средства в БД ТМИС и по данным 1С не совпадают, то добавляем
-                        rlsNomen.setVersion(lastVer.getVersion() + 1);
-                        saveNewDrug(rlsDosage, rlsFilling, rlsForm, rlsInpName, rlsPacking, rlsTradeName, rlsNomen);
+                    RlsNomen lastVer = drugs.get(0);
+                    String info = verify(lastVer, rlsNomen);
+                    if(info.isEmpty()) {
+                        rlsNomen = lastVer;
+                    } else { //если описание лекарственного средства в БД ТМИС и по данным 1С не совпадают, то добавляем
+                        rlsNomen.setId(new RlsNomenPK(lastVer.getId()));
+                        saveNewDrug(rlsActMatter, rlsNomen);
                         logger.info(info);
                         res += info;
                     }
                 }
+                drugsInDb.put(drugRlsCode, rlsNomen);
+                drugList.getDrug().add(drug);
             }
         }
-        final String end = "update RLS...completed";
+        final String end = htmlNewLine("update RLS...completed");
         res += end;
         logger.info(end);
         return res;
     }
 
-    private RlsNomen getMaxVersion(List<RlsNomen> drugs) {
-        RlsNomen res = drugs.get(0);
-        Integer max = res.getVersion();
-        for(RlsNomen drug : drugs) {
-           if (max < drug.getVersion()) {
-               max = drug.getVersion();
-               res = drug;
-           }
+    private String htmlNewLine(String s) {
+        return "<p>" + s + " </p>";
+
+    }
+
+    private MISExchangePortType getMisExchangePortType() {
+        if (serv == null || servPort == null) {
+            serv = new MISExchange();
+            servPort = serv.getMISExchangeSoap();
         }
+        return servPort;
+    }
+
+    private void saveNewDrug(RlsActMatter rlsActMatter, RlsNomen rlsNomen) {
+        em.persist(rlsNomen);
+        em.persist(rlsActMatter);
+        List<RlsActMatters_Nomen> actMattersNomens =
+                em.createNamedQuery("RlsActMatters_Nomen.findNomenByCode", RlsActMatters_Nomen.class).
+                        setParameter("code", rlsNomen.getId().getId()).getResultList();
+        if(actMattersNomens.isEmpty()) {
+            RlsActMatters_Nomen newActMattersNomen = new RlsActMatters_Nomen();
+            newActMattersNomen.setId(new RlsActMatters_NomenPK());
+            newActMattersNomen.getId().setNomenId(rlsNomen.getId().getId());
+            newActMattersNomen.getId().setActMatter_id(rlsActMatter.getId());
+            em.persist(newActMattersNomen);
+        }
+    }
+
+
+    private RbUnit getRbUnit(final String code) {
+        if(code == null) {
+            return null;
+        }
+        List<RbUnit> drugs =
+                em.createNamedQuery("RbUnit.findByCode", RbUnit.class).setParameter("code", code).getResultList();
+
+        if(drugs.isEmpty()) {
+            RbUnit res = new RbUnit();
+            res.setCode(code);
+            res.setName(code);
+            return res;
+        }
+        return drugs.get(0);
+    }
+
+    private <T> T initByName(T t, String name) {
+        String columnName = "name";
+        T res = getByColumnValue(t, name, columnName);
+        ((UniqueName)res).setName(name);
         return res;
+    }
+
+    private <T> T initByLocalName(T t, String name) {
+        String columnName = "localName";
+        T res = getByColumnValue(t, name, columnName);
+        ((UniqueLocalName)res).setLocalName(name);
+        return res;
+    }
+
+    private <T> T getByColumnValue(T t, String name, String columnName) {
+        final String fullClassName = t.getClass().getName();
+        final String className = fullClassName.substring(fullClassName.lastIndexOf('.') + 1);
+        List<Object> rlsFillings =
+                (List<Object>) em.createQuery("SELECT f FROM " + className + " f WHERE f." + columnName + " = :name",  t.getClass()).setParameter("name", name).getResultList();
+        return rlsFillings.isEmpty() ?  t : (T)rlsFillings.get(0);
     }
 
     /**
@@ -198,83 +277,46 @@ public class SyncWith1C {
      * Сверка описание лекарственного средства в БД ТМИС и по данным 1С
      *
      * @param rlsNomenDb - описание лекарственного средства в БД ТМИС
-     * @param rlsDosage - дозировка по данным 1С
-     * @param rlsFilling - упаковка по данным 1С
-     * @param rlsForm - форма выпуска по данным 1С
-     * @param rlsInpName - активное вещество по данным 1С
-     * @param rlsPacking - тара по данным 1С
-     * @param rlsTradeName - торговое наименование по данным 1С
+     * @param rlsNomenNew - описание лекарственного средства по данным сервиса 1С
+     * @param rlsActName - наименование активного вещества по данным сервиса 1С
      * @return -
      *   пустастая строка, если описания в БД ТМИС и 1С совпвдют;
      *   строка с описанием найденных различий, если описания в БД ТМИС и 1С отличаются
      */
     private String verify(RlsNomen rlsNomenDb,
-            RlsDosage rlsDosage,
-            RlsFilling rlsFilling,
-            RlsForm rlsForm,
-            RlsInpName rlsInpName,
-            RlsPacking rlsPacking,
-            RlsTradeName rlsTradeName) {
+                          RlsNomen rlsNomenNew) {
         String res = "";
-        if (rlsNomenDb.getRlsDosage() != null) {
-            res += checkDiff(rlsDosage.getName(), rlsNomenDb.getRlsDosage().getName(), "Dosage", "Name");
+        if (rlsNomenDb.getDosageValue() != null) {
+            res += checkDiff(rlsNomenNew.getDosageValue(), rlsNomenDb.getDosageValue(), "Dosage", "Name");
         }
         if (rlsNomenDb.getRlsFilling() != null) {
-            final String diff = checkDiff(formatForDb(rlsFilling.getName()), formatForDb(rlsNomenDb.getRlsFilling().getName()), "Filling", "Name");
+            final String diff = checkDiff(formatForDb(rlsNomenNew.getRlsFilling().getName()), formatForDb(rlsNomenDb.getRlsFilling().getName()), "Filling", "Name");
             if(diff.isEmpty()) {
-                rlsFilling.setName(rlsNomenDb.getRlsFilling().getName());
+                rlsNomenNew.setRlsFilling(rlsNomenDb.getRlsFilling());
             }
             res += diff;
         }
         if (rlsNomenDb.getRlsForm() != null) {
-            res += checkDiff(rlsForm.getName(), rlsNomenDb.getRlsForm().getName(), "Form", "Name");
-        }
-        if (rlsNomenDb.getRlsInpName() != null) {
-            res += checkDiff(rlsInpName.getName(), rlsNomenDb.getRlsInpName().getName(), "InpName", "Name");
-            res += checkDiff(rlsInpName.getLatName(), rlsNomenDb.getRlsInpName().getLatName(), "InpLatName", "LatName");
+            res += checkDiff(rlsNomenNew.getRlsForm().getName(), rlsNomenDb.getRlsForm().getName(), "Form", "Name");
         }
         if (rlsNomenDb.getRlsPacking() != null) {
-            res += checkDiff(rlsPacking.getName(), rlsNomenDb.getRlsPacking().getName(), "Packing", "Name");
+            res += checkDiff(rlsNomenNew.getRlsPacking().getName(), rlsNomenDb.getRlsPacking().getName(), "Packing", "Name");
         }
         if (rlsNomenDb.getRlsTradeName() != null) {
-            res += checkDiff(rlsTradeName.getName(), rlsNomenDb.getRlsTradeName().getName(), "TradeName", "Name");
+            res += checkDiff(rlsNomenDb.getRlsTradeName().getName(), rlsNomenDb.getRlsTradeName().getName(), "TradeName", "Name");
         }
 
         if (!res.equals("")) { //если найдено хоть одно различие
-            res = "Warning. The description of drug #" + rlsNomenDb.getCode() + " was different from 1C information: " + res + System.getProperty("line.separator");
+            res = "Warning. The description of drug #" + rlsNomenDb.getId().getId() + " was different from 1C information: " + res + EOL;
         }
         return res;
     }
 
-    private String checkDiff(String value1C, String valueDb, String table, String field) {
+    private String checkDiff(Object value1C, Object valueDb, String table, String field) {
         if (!valueDb.equals(value1C)) {
             return "1C " + table + ": '" + value1C + "'; rls" + table + "." + field + ": '" + valueDb + "' ";
         }
         return "";
-    }
-
-
-    private void saveNewDrug(final RlsDosage rlsDosage,
-            final RlsFilling rlsFilling,
-            final RlsForm rlsForm,
-            final RlsInpName rlsInpName,
-            final RlsPacking rlsPacking,
-            final RlsTradeName rlsTradeName,
-            final RlsNomen rlsNomen) {
-        rlsNomen.setRlsTradeName(rlsTradeName);
-        rlsNomen.setRlsInpName(rlsInpName);
-        rlsNomen.setRlsForm(rlsForm);
-        rlsNomen.setRlsDosage(rlsDosage);
-        rlsNomen.setRlsFilling(rlsFilling);
-        rlsNomen.setRlsPacking(rlsPacking);
-
-        em.persist(rlsDosage);
-        em.persist(rlsFilling);
-        em.persist(rlsForm);
-        em.persist(rlsInpName);
-        em.persist(rlsPacking);
-        em.persist(rlsTradeName);
-        em.persist(rlsNomen);
     }
 
     private Integer getDrugRlsCode(POCDMT000040LabeledDrug drug) {
@@ -306,7 +348,7 @@ public class SyncWith1C {
 
 
     private String getTradeName(POCDMT000040LabeledDrug drug) {
-        return getTranslationCodeByName(drug, RLS_TRADENAMES);
+        return getTranslationCodeByName(drug, RLS_TRADENAMES).replace('_', ' ');
     }
 
     private String getTradeNameLat(POCDMT000040LabeledDrug drug) {
@@ -362,6 +404,11 @@ public class SyncWith1C {
             // Код упаковки
             final CD cdCode = getValueByCodeSystemName(translation.getQualifier(), RLS_DRUGPACK);
             final String code = cdCode != null ? formatForDb(cdCode.getCode().trim()): "";
+            // Кол-во в упаковке
+            String count = cdCode != null ? ((String) cdCode.getOriginalText().getContent().get(0)).trim() : "";
+            if ( "0".equals(count)) {
+                count = "";
+            }
             // Масса упаковки
             final CD cdMass = getValueByCodeSystemName(translation.getQualifier(), RLS_MASSUNITS);
             final String mass = cdMass != null && !((String)cdMass.getOriginalText().getContent().get(0)).isEmpty() ?
@@ -376,17 +423,46 @@ public class SyncWith1C {
             // Ед.изм. объема
             final String volumeUnit = volume != null ? formatForDb(volume.getCode().trim()) : "";
 
-            final CD cdCount = getValueByCodeSystemName(translation.getQualifier(), RLS_DRUGPACK);
-            // Кол-во в упаковке
-            String count = cdCount != null ? ((String) cdCount.getOriginalText().getContent().get(0)).trim() : "";
-            if ( "0".equals(count)) {
-                count = "";
-            }
 
             res = (code + mass + massUnit + volumeValue + volumeUnit + count).trim();
         }
         return res;
     }
+
+    /**
+     * Ед.Изм. препарата упаковки.
+     * Формируется как конкатация кода упаковки, массы, ед. измер. массы, объема, ед. измер. объема, количества таблеток в упаковке и код лекарственной формы
+     * @param drug - 1С описание лекарства
+     * @return - строку, содержащею описание упаковки
+     */
+    private String getFillingUnit(POCDMT000040LabeledDrug drug) {
+        final CD translation = getTranslationByCodeSystemNameAndCode(drug.getCode().getTranslation(), CODE_SYSTEM_RLS, PPACK);
+        if (translation != null) {
+            // Код упаковки
+            final CD cdCode = getValueByCodeSystemName(translation.getQualifier(), RLS_DRUGPACK);
+            final String code = cdCode != null ? formatForDb(cdCode.getCode().trim()): "";
+            // Кол-во в упаковке
+            String count = cdCode != null ? ((String) cdCode.getOriginalText().getContent().get(0)).trim() : "";
+            if ( "0".equals(count)) {
+                // Ед.изм. массы
+                final CD cdMass = getValueByCodeSystemName(translation.getQualifier(), RLS_MASSUNITS);
+                final String massUnit = cdMass != null ? cdMass.getCode().trim() : "";
+                if("".equals(massUnit)) {
+                    final CD volume = getValueByCodeSystemName(translation.getQualifier(), RLS_CUBICUNITS);
+                    // Ед.изм. объема
+                    return volume != null ? formatForDb(volume.getCode().trim()) : null;
+
+                }  else { // масса
+                    return massUnit;
+                }
+
+            } else { //измеряется м штуках
+                return code;
+            }
+        }
+        return null;
+    }
+
 
 
     private CD getValueByCodeSystemName(List<CR> cont, String codeSystemName) {
@@ -399,22 +475,58 @@ public class SyncWith1C {
     }
 
     /**
-     * Дозировка. Формируется как конкатация числового значение дозировки и наименования единиц измерения
+     * Доза в единице лекарственной формы
+     *
      * @param drug - 1С описание лекарства
      * @return строку, содержащею описание дозировки
      */
-    private String getDosageName(POCDMT000040LabeledDrug drug) {
-        CD translation = getTranslationByCodeSystemName(drug.getCode().getTranslation(), RLS_CLSDRUGFORMS);
-        if (translation != null && !translation.getQualifier().isEmpty()) {
-            CD value = translation.getQualifier().get(0).getValue();
+    private String getDosageValue(POCDMT000040LabeledDrug drug) {
+        CD value = getDrugFormCdValue(drug);
+        if(value != null) {
             String val = null;
             if (value.getOriginalText() != null && !value.getOriginalText().getContent().isEmpty()) {
                 val = (String) value.getOriginalText().getContent().get(0);
             }
-            String unit = value.getCode();
-            return (val != null ? (val + " " ) : "") + (unit != null ? unit : "");
+            return (val != null ? (val.replace(",", ".") + " " ) : "");
         }
         return "";
+    }
+
+    /**
+     * Единицы измерения дозы
+     *
+     * @param drug - 1С описание лекарства
+     * @return строку, содержащею описание дозировки
+     */
+    private String getDosageUnit(POCDMT000040LabeledDrug drug) {
+        CD value = getDrugFormCdValue(drug);
+        return value != null ? value.getCode() : null;
+    }
+
+
+    private CD getDrugFormCdValue(POCDMT000040LabeledDrug drug) {
+        CD translation = getTranslationByCodeSystemName(drug.getCode().getTranslation(), RLS_CLSDRUGFORMS);
+        CD value = null;
+        if (translation != null) {
+            for (CR qualifier : translation.getQualifier()) {
+                final CV name = qualifier.getName();
+                if (name != null && name.getCode().startsWith("DF")) { // поиск одного из кодов: "DFACT", "DFCONC", "DFMASS", "DFSIZE"
+                    value = qualifier.getValue();
+                    break;
+                }
+            }
+        }
+        return value;
+    }
+
+    private CR getQualifierByCode(List<CR> qualifiers, String code) {
+        for (CR qualifier : qualifiers) {
+            final CV name = qualifier.getName();
+            if (name != null && code.startsWith(name.getCode())) {
+                return qualifier;
+            }
+        }
+        return null;
     }
 
 
@@ -435,5 +547,76 @@ public class SyncWith1C {
             }
         }
         return null;
+    }
+
+    public String updateBalance() {
+        logger.info("update RLS balance...start");
+        if ( !ConfigManager.Drugstore().isUpdateRLS() ) {
+            logger.info("update RLS balance...stoped");
+            return RLS_UPDATE_IS_DISABLED;
+        }
+        String res =  htmlNewLine("update RLS balance...start" + EOL);
+        OrgStructure mainOrganization =  em.find(OrgStructure.class, 1);
+        if(mainOrganization != null && mainOrganization.getUuid() != null) {
+            List<OrgStructure> orgStructures = dbOrgStructureBean.getAllOrgStructures();
+            for(OrgStructure orgStructure : orgStructures) {
+                if( !orgStructure.getDeleted() && orgStructure.getUuid() != null ) {
+                    res += updateBalance( mainOrganization.getUuid().getUuid(), orgStructure);
+                }
+            }
+        }
+        return res;
+    }
+
+    private String updateBalance(String organizationRef, OrgStructure orgStructure) {
+        logger.info("update RLS balance for store {}", orgStructure.getName());
+        final SimpleDateFormat dateFormat = new SimpleDateFormat("yyyyMMdd");
+        Integer updateCount = 0;
+        String res = htmlNewLine("update RLS balance for store '" + orgStructure.getName() + "'");
+        MISExchangePortType servicePort = getMisExchangePortType();
+        if(!drugList.getDrug().isEmpty()) {
+            BalanceOfGoods2 balanceOfGoods2 = servicePort.balanceOfGoods(drugList, organizationRef, orgStructure.getUuid().getUuid());
+            if (balanceOfGoods2 != null) {
+                for( BalanceOfGoods2.Storage storages : balanceOfGoods2.getStorage()) {
+                    for(BalanceOfGoods2.Storage.Balance balance: storages.getBalance()) {
+                        final Integer drugRlsCode = getDrugRlsCode(balance.getDrug());
+                        final RlsNomen rlsNomen = drugsInDb.get(drugRlsCode);
+                        for(BalanceOfGoods2.Storage.Balance.Goods goods : balance.getGoods()) {
+                            try {
+                                Date bestBefore = dateFormat.parse(goods.getBestBefore());
+                                RlsBalanceOfGood rlsBalanceOfGood = getRlsBalanceOfGood(drugRlsCode, orgStructure.getId(), bestBefore);
+                                rlsBalanceOfGood.setRlsNomen(rlsNomen);
+                                rlsBalanceOfGood.setOrgStructure(orgStructure);
+                                rlsBalanceOfGood.setValue(Double.parseDouble(goods.getQty().getValue()));
+                                rlsBalanceOfGood.setBestBefore(bestBefore);
+                                em.persist(rlsBalanceOfGood);
+                                ++updateCount;
+                            } catch (ParseException ex) {
+                                logger.info("Wrong date format '{}', drug code: '{}', storage: '{}'", goods.getBestBefore(), drugRlsCode, orgStructure.getName());
+                            } catch (NumberFormatException ex) {
+                                logger.info("Wrong dosage format for drug # {}: {}",drugRlsCode, ex );
+                                res += "Wrong storage value format for drug #" + drugRlsCode + ": " + goods.getQty().getValue() + EOL;
+                            }
+
+                        }
+                    }
+                }
+            }
+        }
+        res += "<p>balance update count: " +  updateCount +  "</p>" + EOL;
+        return res;
+    }
+
+    private RlsBalanceOfGood getRlsBalanceOfGood(Integer drugRlsCode, Integer orgStructureId,  Date bestBefore) {
+        List<RlsBalanceOfGood> rlsBalanceOfGoods =
+                em.createNamedQuery( "RlsBalanceOfGood.findByCodeAndStore", RlsBalanceOfGood.class).
+                        setParameter("code", drugRlsCode).
+                        setParameter("orgStructureId", orgStructureId).
+                        setParameter("date", bestBefore).getResultList();
+        if (rlsBalanceOfGoods.isEmpty()) {
+            return new RlsBalanceOfGood();
+        } else {
+            return rlsBalanceOfGoods.get(0);
+        }
     }
 }

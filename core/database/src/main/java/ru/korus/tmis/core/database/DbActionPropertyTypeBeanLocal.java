@@ -49,4 +49,13 @@ public interface DbActionPropertyTypeBeanLocal {
                                                                    String sorting,
                                                                    ListDataFilter filter)
             throws CoreException;
+
+    /**
+     * Получение ActionPropertyType по идентификатору типа действия(ActionType.id) и коду с учетом флажка deleted
+     * @param actionTypeId    идентификатор типа действия
+     * @param code   код типа свойства действия
+     * @param deleted  флажок удаления (проверяется на равенство)
+     * @return    ActionPropertyType
+     */
+    ActionPropertyType getActionPropertyTypeByActionTypeIdAndTypeCode(int actionTypeId, String code, boolean deleted);
 }

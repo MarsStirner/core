@@ -25,6 +25,8 @@ public class RestSyncWith1C {
     @GET
     @Path("/update")
     public Response updateDragList() {
-        return Response.status(Response.Status.OK).entity(sync.update()).build();
+        String res = sync.update();
+        res += sync.updateBalance();
+        return Response.status(Response.Status.OK).entity(res).build();
     }
 }

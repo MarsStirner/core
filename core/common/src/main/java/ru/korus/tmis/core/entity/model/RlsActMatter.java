@@ -5,12 +5,12 @@ import javax.persistence.*;
 
 
 /**
- * The persistent class for the rlsInpName database table.
+ * The persistent class for the rlsActMatters database table.
  * 
  */
 @Entity
-@Table(name="rlsInpName")
-public class RlsInpName implements Serializable {
+@Table(name="rlsActMatters")
+public class RlsActMatter implements Serializable, UniqueName, UniqueLocalName {
 	private static final long serialVersionUID = 1L;
 
 	@Id
@@ -18,16 +18,13 @@ public class RlsInpName implements Serializable {
 	@Column(unique=true, nullable=false)
 	private int id;
 
-	@Column(length=255)
-	private String latName;
+	@Column(nullable=false, length=255)
+	private String localName;
 
-	@Column(length=255)
+	@Column(nullable=false, length=255)
 	private String name;
 
-	@Column(length=255)
-	private String rawName;
-
-	public RlsInpName() {
+	public RlsActMatter() {
 	}
 
 	public int getId() {
@@ -38,12 +35,12 @@ public class RlsInpName implements Serializable {
 		this.id = id;
 	}
 
-	public String getLatName() {
-		return this.latName;
+	public String getLocalName() {
+		return this.localName;
 	}
 
-	public void setLatName(String latName) {
-		this.latName = latName;
+	public void setLocalName(String localName) {
+		this.localName = localName;
 	}
 
 	public String getName() {
@@ -52,14 +49,6 @@ public class RlsInpName implements Serializable {
 
 	public void setName(String name) {
 		this.name = name;
-	}
-
-	public String getRawName() {
-		return this.rawName;
-	}
-
-	public void setRawName(String rawName) {
-		this.rawName = rawName;
 	}
 
 }

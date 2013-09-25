@@ -55,12 +55,12 @@ public class DrugInterval implements org.apache.thrift.TBase<DrugInterval, DrugI
 
   public int id; // optional
   public int action_id; // optional
-  public long begDateTime; // required
+  public long begDateTime; // optional
   public long endDateTime; // optional
-  public int status; // required
+  public int status; // optional
   public long statusDateTime; // optional
   public String note; // optional
-  public List<DrugIntervalInner> execIntervals; // required
+  public List<DrugIntervalExec> execIntervals; // optional
 
   /** The set of fields this struct contains, along with convenience methods for finding and manipulating them. */
   public enum _Fields implements org.apache.thrift.TFieldIdEnum {
@@ -149,7 +149,7 @@ public class DrugInterval implements org.apache.thrift.TBase<DrugInterval, DrugI
   private static final int __STATUS_ISSET_ID = 4;
   private static final int __STATUSDATETIME_ISSET_ID = 5;
   private byte __isset_bitfield = 0;
-  private _Fields optionals[] = {_Fields.ID,_Fields.ACTION_ID,_Fields.END_DATE_TIME,_Fields.STATUS_DATE_TIME,_Fields.NOTE};
+  private _Fields optionals[] = {_Fields.ID,_Fields.ACTION_ID,_Fields.BEG_DATE_TIME,_Fields.END_DATE_TIME,_Fields.STATUS,_Fields.STATUS_DATE_TIME,_Fields.NOTE,_Fields.EXEC_INTERVALS};
   public static final Map<_Fields, org.apache.thrift.meta_data.FieldMetaData> metaDataMap;
   static {
     Map<_Fields, org.apache.thrift.meta_data.FieldMetaData> tmpMap = new EnumMap<_Fields, org.apache.thrift.meta_data.FieldMetaData>(_Fields.class);
@@ -157,37 +157,24 @@ public class DrugInterval implements org.apache.thrift.TBase<DrugInterval, DrugI
         new org.apache.thrift.meta_data.FieldValueMetaData(org.apache.thrift.protocol.TType.I32)));
     tmpMap.put(_Fields.ACTION_ID, new org.apache.thrift.meta_data.FieldMetaData("action_id", org.apache.thrift.TFieldRequirementType.OPTIONAL, 
         new org.apache.thrift.meta_data.FieldValueMetaData(org.apache.thrift.protocol.TType.I32)));
-    tmpMap.put(_Fields.BEG_DATE_TIME, new org.apache.thrift.meta_data.FieldMetaData("begDateTime", org.apache.thrift.TFieldRequirementType.REQUIRED, 
+    tmpMap.put(_Fields.BEG_DATE_TIME, new org.apache.thrift.meta_data.FieldMetaData("begDateTime", org.apache.thrift.TFieldRequirementType.OPTIONAL, 
         new org.apache.thrift.meta_data.FieldValueMetaData(org.apache.thrift.protocol.TType.I64        , "timestamp")));
     tmpMap.put(_Fields.END_DATE_TIME, new org.apache.thrift.meta_data.FieldMetaData("endDateTime", org.apache.thrift.TFieldRequirementType.OPTIONAL, 
         new org.apache.thrift.meta_data.FieldValueMetaData(org.apache.thrift.protocol.TType.I64        , "timestamp")));
-    tmpMap.put(_Fields.STATUS, new org.apache.thrift.meta_data.FieldMetaData("status", org.apache.thrift.TFieldRequirementType.REQUIRED, 
+    tmpMap.put(_Fields.STATUS, new org.apache.thrift.meta_data.FieldMetaData("status", org.apache.thrift.TFieldRequirementType.OPTIONAL, 
         new org.apache.thrift.meta_data.FieldValueMetaData(org.apache.thrift.protocol.TType.I32)));
     tmpMap.put(_Fields.STATUS_DATE_TIME, new org.apache.thrift.meta_data.FieldMetaData("statusDateTime", org.apache.thrift.TFieldRequirementType.OPTIONAL, 
         new org.apache.thrift.meta_data.FieldValueMetaData(org.apache.thrift.protocol.TType.I64        , "timestamp")));
     tmpMap.put(_Fields.NOTE, new org.apache.thrift.meta_data.FieldMetaData("note", org.apache.thrift.TFieldRequirementType.OPTIONAL, 
         new org.apache.thrift.meta_data.FieldValueMetaData(org.apache.thrift.protocol.TType.STRING)));
-    tmpMap.put(_Fields.EXEC_INTERVALS, new org.apache.thrift.meta_data.FieldMetaData("execIntervals", org.apache.thrift.TFieldRequirementType.REQUIRED, 
+    tmpMap.put(_Fields.EXEC_INTERVALS, new org.apache.thrift.meta_data.FieldMetaData("execIntervals", org.apache.thrift.TFieldRequirementType.OPTIONAL, 
         new org.apache.thrift.meta_data.ListMetaData(org.apache.thrift.protocol.TType.LIST, 
-            new org.apache.thrift.meta_data.StructMetaData(org.apache.thrift.protocol.TType.STRUCT, DrugIntervalInner.class))));
+            new org.apache.thrift.meta_data.StructMetaData(org.apache.thrift.protocol.TType.STRUCT, DrugIntervalExec.class))));
     metaDataMap = Collections.unmodifiableMap(tmpMap);
     org.apache.thrift.meta_data.FieldMetaData.addStructMetaDataMap(DrugInterval.class, metaDataMap);
   }
 
   public DrugInterval() {
-  }
-
-  public DrugInterval(
-    long begDateTime,
-    int status,
-    List<DrugIntervalInner> execIntervals)
-  {
-    this();
-    this.begDateTime = begDateTime;
-    setBegDateTimeIsSet(true);
-    this.status = status;
-    setStatusIsSet(true);
-    this.execIntervals = execIntervals;
   }
 
   /**
@@ -205,9 +192,9 @@ public class DrugInterval implements org.apache.thrift.TBase<DrugInterval, DrugI
       this.note = other.note;
     }
     if (other.isSetExecIntervals()) {
-      List<DrugIntervalInner> __this__execIntervals = new ArrayList<DrugIntervalInner>();
-      for (DrugIntervalInner other_element : other.execIntervals) {
-        __this__execIntervals.add(new DrugIntervalInner(other_element));
+      List<DrugIntervalExec> __this__execIntervals = new ArrayList<DrugIntervalExec>();
+      for (DrugIntervalExec other_element : other.execIntervals) {
+        __this__execIntervals.add(new DrugIntervalExec(other_element));
       }
       this.execIntervals = __this__execIntervals;
     }
@@ -401,22 +388,22 @@ public class DrugInterval implements org.apache.thrift.TBase<DrugInterval, DrugI
     return (this.execIntervals == null) ? 0 : this.execIntervals.size();
   }
 
-  public java.util.Iterator<DrugIntervalInner> getExecIntervalsIterator() {
+  public java.util.Iterator<DrugIntervalExec> getExecIntervalsIterator() {
     return (this.execIntervals == null) ? null : this.execIntervals.iterator();
   }
 
-  public void addToExecIntervals(DrugIntervalInner elem) {
+  public void addToExecIntervals(DrugIntervalExec elem) {
     if (this.execIntervals == null) {
-      this.execIntervals = new ArrayList<DrugIntervalInner>();
+      this.execIntervals = new ArrayList<DrugIntervalExec>();
     }
     this.execIntervals.add(elem);
   }
 
-  public List<DrugIntervalInner> getExecIntervals() {
+  public List<DrugIntervalExec> getExecIntervals() {
     return this.execIntervals;
   }
 
-  public DrugInterval setExecIntervals(List<DrugIntervalInner> execIntervals) {
+  public DrugInterval setExecIntervals(List<DrugIntervalExec> execIntervals) {
     this.execIntervals = execIntervals;
     return this;
   }
@@ -498,7 +485,7 @@ public class DrugInterval implements org.apache.thrift.TBase<DrugInterval, DrugI
       if (value == null) {
         unsetExecIntervals();
       } else {
-        setExecIntervals((List<DrugIntervalInner>)value);
+        setExecIntervals((List<DrugIntervalExec>)value);
       }
       break;
 
@@ -593,8 +580,8 @@ public class DrugInterval implements org.apache.thrift.TBase<DrugInterval, DrugI
         return false;
     }
 
-    boolean this_present_begDateTime = true;
-    boolean that_present_begDateTime = true;
+    boolean this_present_begDateTime = true && this.isSetBegDateTime();
+    boolean that_present_begDateTime = true && that.isSetBegDateTime();
     if (this_present_begDateTime || that_present_begDateTime) {
       if (!(this_present_begDateTime && that_present_begDateTime))
         return false;
@@ -611,8 +598,8 @@ public class DrugInterval implements org.apache.thrift.TBase<DrugInterval, DrugI
         return false;
     }
 
-    boolean this_present_status = true;
-    boolean that_present_status = true;
+    boolean this_present_status = true && this.isSetStatus();
+    boolean that_present_status = true && that.isSetStatus();
     if (this_present_status || that_present_status) {
       if (!(this_present_status && that_present_status))
         return false;
@@ -774,20 +761,24 @@ public class DrugInterval implements org.apache.thrift.TBase<DrugInterval, DrugI
       sb.append(this.action_id);
       first = false;
     }
-    if (!first) sb.append(", ");
-    sb.append("begDateTime:");
-    sb.append(this.begDateTime);
-    first = false;
+    if (isSetBegDateTime()) {
+      if (!first) sb.append(", ");
+      sb.append("begDateTime:");
+      sb.append(this.begDateTime);
+      first = false;
+    }
     if (isSetEndDateTime()) {
       if (!first) sb.append(", ");
       sb.append("endDateTime:");
       sb.append(this.endDateTime);
       first = false;
     }
-    if (!first) sb.append(", ");
-    sb.append("status:");
-    sb.append(this.status);
-    first = false;
+    if (isSetStatus()) {
+      if (!first) sb.append(", ");
+      sb.append("status:");
+      sb.append(this.status);
+      first = false;
+    }
     if (isSetStatusDateTime()) {
       if (!first) sb.append(", ");
       sb.append("statusDateTime:");
@@ -804,25 +795,22 @@ public class DrugInterval implements org.apache.thrift.TBase<DrugInterval, DrugI
       }
       first = false;
     }
-    if (!first) sb.append(", ");
-    sb.append("execIntervals:");
-    if (this.execIntervals == null) {
-      sb.append("null");
-    } else {
-      sb.append(this.execIntervals);
+    if (isSetExecIntervals()) {
+      if (!first) sb.append(", ");
+      sb.append("execIntervals:");
+      if (this.execIntervals == null) {
+        sb.append("null");
+      } else {
+        sb.append(this.execIntervals);
+      }
+      first = false;
     }
-    first = false;
     sb.append(")");
     return sb.toString();
   }
 
   public void validate() throws org.apache.thrift.TException {
     // check for required fields
-    // alas, we cannot check 'begDateTime' because it's a primitive and you chose the non-beans generator.
-    // alas, we cannot check 'status' because it's a primitive and you chose the non-beans generator.
-    if (execIntervals == null) {
-      throw new org.apache.thrift.protocol.TProtocolException("Required field 'execIntervals' was not present! Struct: " + toString());
-    }
     // check for sub-struct validity
   }
 
@@ -922,11 +910,11 @@ public class DrugInterval implements org.apache.thrift.TBase<DrugInterval, DrugI
             if (schemeField.type == org.apache.thrift.protocol.TType.LIST) {
               {
                 org.apache.thrift.protocol.TList _list0 = iprot.readListBegin();
-                struct.execIntervals = new ArrayList<DrugIntervalInner>(_list0.size);
+                struct.execIntervals = new ArrayList<DrugIntervalExec>(_list0.size);
                 for (int _i1 = 0; _i1 < _list0.size; ++_i1)
                 {
-                  DrugIntervalInner _elem2; // required
-                  _elem2 = new DrugIntervalInner();
+                  DrugIntervalExec _elem2; // required
+                  _elem2 = new DrugIntervalExec();
                   _elem2.read(iprot);
                   struct.execIntervals.add(_elem2);
                 }
@@ -945,12 +933,6 @@ public class DrugInterval implements org.apache.thrift.TBase<DrugInterval, DrugI
       iprot.readStructEnd();
 
       // check for required fields of primitive type, which can't be checked in the validate method
-      if (!struct.isSetBegDateTime()) {
-        throw new org.apache.thrift.protocol.TProtocolException("Required field 'begDateTime' was not found in serialized data! Struct: " + toString());
-      }
-      if (!struct.isSetStatus()) {
-        throw new org.apache.thrift.protocol.TProtocolException("Required field 'status' was not found in serialized data! Struct: " + toString());
-      }
       struct.validate();
     }
 
@@ -968,17 +950,21 @@ public class DrugInterval implements org.apache.thrift.TBase<DrugInterval, DrugI
         oprot.writeI32(struct.action_id);
         oprot.writeFieldEnd();
       }
-      oprot.writeFieldBegin(BEG_DATE_TIME_FIELD_DESC);
-      oprot.writeI64(struct.begDateTime);
-      oprot.writeFieldEnd();
+      if (struct.isSetBegDateTime()) {
+        oprot.writeFieldBegin(BEG_DATE_TIME_FIELD_DESC);
+        oprot.writeI64(struct.begDateTime);
+        oprot.writeFieldEnd();
+      }
       if (struct.isSetEndDateTime()) {
         oprot.writeFieldBegin(END_DATE_TIME_FIELD_DESC);
         oprot.writeI64(struct.endDateTime);
         oprot.writeFieldEnd();
       }
-      oprot.writeFieldBegin(STATUS_FIELD_DESC);
-      oprot.writeI32(struct.status);
-      oprot.writeFieldEnd();
+      if (struct.isSetStatus()) {
+        oprot.writeFieldBegin(STATUS_FIELD_DESC);
+        oprot.writeI32(struct.status);
+        oprot.writeFieldEnd();
+      }
       if (struct.isSetStatusDateTime()) {
         oprot.writeFieldBegin(STATUS_DATE_TIME_FIELD_DESC);
         oprot.writeI64(struct.statusDateTime);
@@ -992,16 +978,18 @@ public class DrugInterval implements org.apache.thrift.TBase<DrugInterval, DrugI
         }
       }
       if (struct.execIntervals != null) {
-        oprot.writeFieldBegin(EXEC_INTERVALS_FIELD_DESC);
-        {
-          oprot.writeListBegin(new org.apache.thrift.protocol.TList(org.apache.thrift.protocol.TType.STRUCT, struct.execIntervals.size()));
-          for (DrugIntervalInner _iter3 : struct.execIntervals)
+        if (struct.isSetExecIntervals()) {
+          oprot.writeFieldBegin(EXEC_INTERVALS_FIELD_DESC);
           {
-            _iter3.write(oprot);
+            oprot.writeListBegin(new org.apache.thrift.protocol.TList(org.apache.thrift.protocol.TType.STRUCT, struct.execIntervals.size()));
+            for (DrugIntervalExec _iter3 : struct.execIntervals)
+            {
+              _iter3.write(oprot);
+            }
+            oprot.writeListEnd();
           }
-          oprot.writeListEnd();
+          oprot.writeFieldEnd();
         }
-        oprot.writeFieldEnd();
       }
       oprot.writeFieldStop();
       oprot.writeStructEnd();
@@ -1020,15 +1008,6 @@ public class DrugInterval implements org.apache.thrift.TBase<DrugInterval, DrugI
     @Override
     public void write(org.apache.thrift.protocol.TProtocol prot, DrugInterval struct) throws org.apache.thrift.TException {
       TTupleProtocol oprot = (TTupleProtocol) prot;
-      oprot.writeI64(struct.begDateTime);
-      oprot.writeI32(struct.status);
-      {
-        oprot.writeI32(struct.execIntervals.size());
-        for (DrugIntervalInner _iter4 : struct.execIntervals)
-        {
-          _iter4.write(oprot);
-        }
-      }
       BitSet optionals = new BitSet();
       if (struct.isSetId()) {
         optionals.set(0);
@@ -1036,24 +1015,39 @@ public class DrugInterval implements org.apache.thrift.TBase<DrugInterval, DrugI
       if (struct.isSetAction_id()) {
         optionals.set(1);
       }
-      if (struct.isSetEndDateTime()) {
+      if (struct.isSetBegDateTime()) {
         optionals.set(2);
       }
-      if (struct.isSetStatusDateTime()) {
+      if (struct.isSetEndDateTime()) {
         optionals.set(3);
       }
-      if (struct.isSetNote()) {
+      if (struct.isSetStatus()) {
         optionals.set(4);
       }
-      oprot.writeBitSet(optionals, 5);
+      if (struct.isSetStatusDateTime()) {
+        optionals.set(5);
+      }
+      if (struct.isSetNote()) {
+        optionals.set(6);
+      }
+      if (struct.isSetExecIntervals()) {
+        optionals.set(7);
+      }
+      oprot.writeBitSet(optionals, 8);
       if (struct.isSetId()) {
         oprot.writeI32(struct.id);
       }
       if (struct.isSetAction_id()) {
         oprot.writeI32(struct.action_id);
       }
+      if (struct.isSetBegDateTime()) {
+        oprot.writeI64(struct.begDateTime);
+      }
       if (struct.isSetEndDateTime()) {
         oprot.writeI64(struct.endDateTime);
+      }
+      if (struct.isSetStatus()) {
+        oprot.writeI32(struct.status);
       }
       if (struct.isSetStatusDateTime()) {
         oprot.writeI64(struct.statusDateTime);
@@ -1061,28 +1055,21 @@ public class DrugInterval implements org.apache.thrift.TBase<DrugInterval, DrugI
       if (struct.isSetNote()) {
         oprot.writeString(struct.note);
       }
+      if (struct.isSetExecIntervals()) {
+        {
+          oprot.writeI32(struct.execIntervals.size());
+          for (DrugIntervalExec _iter4 : struct.execIntervals)
+          {
+            _iter4.write(oprot);
+          }
+        }
+      }
     }
 
     @Override
     public void read(org.apache.thrift.protocol.TProtocol prot, DrugInterval struct) throws org.apache.thrift.TException {
       TTupleProtocol iprot = (TTupleProtocol) prot;
-      struct.begDateTime = iprot.readI64();
-      struct.setBegDateTimeIsSet(true);
-      struct.status = iprot.readI32();
-      struct.setStatusIsSet(true);
-      {
-        org.apache.thrift.protocol.TList _list5 = new org.apache.thrift.protocol.TList(org.apache.thrift.protocol.TType.STRUCT, iprot.readI32());
-        struct.execIntervals = new ArrayList<DrugIntervalInner>(_list5.size);
-        for (int _i6 = 0; _i6 < _list5.size; ++_i6)
-        {
-          DrugIntervalInner _elem7; // required
-          _elem7 = new DrugIntervalInner();
-          _elem7.read(iprot);
-          struct.execIntervals.add(_elem7);
-        }
-      }
-      struct.setExecIntervalsIsSet(true);
-      BitSet incoming = iprot.readBitSet(5);
+      BitSet incoming = iprot.readBitSet(8);
       if (incoming.get(0)) {
         struct.id = iprot.readI32();
         struct.setIdIsSet(true);
@@ -1092,16 +1079,38 @@ public class DrugInterval implements org.apache.thrift.TBase<DrugInterval, DrugI
         struct.setAction_idIsSet(true);
       }
       if (incoming.get(2)) {
+        struct.begDateTime = iprot.readI64();
+        struct.setBegDateTimeIsSet(true);
+      }
+      if (incoming.get(3)) {
         struct.endDateTime = iprot.readI64();
         struct.setEndDateTimeIsSet(true);
       }
-      if (incoming.get(3)) {
+      if (incoming.get(4)) {
+        struct.status = iprot.readI32();
+        struct.setStatusIsSet(true);
+      }
+      if (incoming.get(5)) {
         struct.statusDateTime = iprot.readI64();
         struct.setStatusDateTimeIsSet(true);
       }
-      if (incoming.get(4)) {
+      if (incoming.get(6)) {
         struct.note = iprot.readString();
         struct.setNoteIsSet(true);
+      }
+      if (incoming.get(7)) {
+        {
+          org.apache.thrift.protocol.TList _list5 = new org.apache.thrift.protocol.TList(org.apache.thrift.protocol.TType.STRUCT, iprot.readI32());
+          struct.execIntervals = new ArrayList<DrugIntervalExec>(_list5.size);
+          for (int _i6 = 0; _i6 < _list5.size; ++_i6)
+          {
+            DrugIntervalExec _elem7; // required
+            _elem7 = new DrugIntervalExec();
+            _elem7.read(iprot);
+            struct.execIntervals.add(_elem7);
+          }
+        }
+        struct.setExecIntervalsIsSet(true);
       }
     }
   }

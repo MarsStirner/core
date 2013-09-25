@@ -36,11 +36,12 @@ import org.slf4j.LoggerFactory;
 public class ActionData implements org.apache.thrift.TBase<ActionData, ActionData._Fields>, java.io.Serializable, Cloneable {
   private static final org.apache.thrift.protocol.TStruct STRUCT_DESC = new org.apache.thrift.protocol.TStruct("ActionData");
 
-  private static final org.apache.thrift.protocol.TField ACTION_ID_FIELD_DESC = new org.apache.thrift.protocol.TField("action_id", org.apache.thrift.protocol.TType.I32, (short)1);
-  private static final org.apache.thrift.protocol.TField NOTE_FIELD_DESC = new org.apache.thrift.protocol.TField("note", org.apache.thrift.protocol.TType.STRING, (short)2);
-  private static final org.apache.thrift.protocol.TField SET_PERSON_ID_FIELD_DESC = new org.apache.thrift.protocol.TField("setPerson_id", org.apache.thrift.protocol.TType.I32, (short)3);
-  private static final org.apache.thrift.protocol.TField MOA_FIELD_DESC = new org.apache.thrift.protocol.TField("moa", org.apache.thrift.protocol.TType.STRING, (short)4);
-  private static final org.apache.thrift.protocol.TField VOA_FIELD_DESC = new org.apache.thrift.protocol.TField("voa", org.apache.thrift.protocol.TType.STRING, (short)5);
+  private static final org.apache.thrift.protocol.TField ID_FIELD_DESC = new org.apache.thrift.protocol.TField("id", org.apache.thrift.protocol.TType.I32, (short)1);
+  private static final org.apache.thrift.protocol.TField ACTION_TYPE_ID_FIELD_DESC = new org.apache.thrift.protocol.TField("actionType_id", org.apache.thrift.protocol.TType.I32, (short)2);
+  private static final org.apache.thrift.protocol.TField NOTE_FIELD_DESC = new org.apache.thrift.protocol.TField("note", org.apache.thrift.protocol.TType.STRING, (short)3);
+  private static final org.apache.thrift.protocol.TField SET_PERSON_ID_FIELD_DESC = new org.apache.thrift.protocol.TField("setPerson_id", org.apache.thrift.protocol.TType.I32, (short)4);
+  private static final org.apache.thrift.protocol.TField MOA_FIELD_DESC = new org.apache.thrift.protocol.TField("moa", org.apache.thrift.protocol.TType.STRING, (short)5);
+  private static final org.apache.thrift.protocol.TField VOA_FIELD_DESC = new org.apache.thrift.protocol.TField("voa", org.apache.thrift.protocol.TType.STRING, (short)6);
 
   private static final Map<Class<? extends IScheme>, SchemeFactory> schemes = new HashMap<Class<? extends IScheme>, SchemeFactory>();
   static {
@@ -48,19 +49,21 @@ public class ActionData implements org.apache.thrift.TBase<ActionData, ActionDat
     schemes.put(TupleScheme.class, new ActionDataTupleSchemeFactory());
   }
 
-  public int action_id; // optional
+  public int id; // optional
+  public int actionType_id; // optional
   public String note; // optional
-  public int setPerson_id; // required
+  public int setPerson_id; // optional
   public String moa; // optional
   public String voa; // optional
 
   /** The set of fields this struct contains, along with convenience methods for finding and manipulating them. */
   public enum _Fields implements org.apache.thrift.TFieldIdEnum {
-    ACTION_ID((short)1, "action_id"),
-    NOTE((short)2, "note"),
-    SET_PERSON_ID((short)3, "setPerson_id"),
-    MOA((short)4, "moa"),
-    VOA((short)5, "voa");
+    ID((short)1, "id"),
+    ACTION_TYPE_ID((short)2, "actionType_id"),
+    NOTE((short)3, "note"),
+    SET_PERSON_ID((short)4, "setPerson_id"),
+    MOA((short)5, "moa"),
+    VOA((short)6, "voa");
 
     private static final Map<String, _Fields> byName = new HashMap<String, _Fields>();
 
@@ -75,15 +78,17 @@ public class ActionData implements org.apache.thrift.TBase<ActionData, ActionDat
      */
     public static _Fields findByThriftId(int fieldId) {
       switch(fieldId) {
-        case 1: // ACTION_ID
-          return ACTION_ID;
-        case 2: // NOTE
+        case 1: // ID
+          return ID;
+        case 2: // ACTION_TYPE_ID
+          return ACTION_TYPE_ID;
+        case 3: // NOTE
           return NOTE;
-        case 3: // SET_PERSON_ID
+        case 4: // SET_PERSON_ID
           return SET_PERSON_ID;
-        case 4: // MOA
+        case 5: // MOA
           return MOA;
-        case 5: // VOA
+        case 6: // VOA
           return VOA;
         default:
           return null;
@@ -125,18 +130,21 @@ public class ActionData implements org.apache.thrift.TBase<ActionData, ActionDat
   }
 
   // isset id assignments
-  private static final int __ACTION_ID_ISSET_ID = 0;
-  private static final int __SETPERSON_ID_ISSET_ID = 1;
+  private static final int __ID_ISSET_ID = 0;
+  private static final int __ACTIONTYPE_ID_ISSET_ID = 1;
+  private static final int __SETPERSON_ID_ISSET_ID = 2;
   private byte __isset_bitfield = 0;
-  private _Fields optionals[] = {_Fields.ACTION_ID,_Fields.NOTE,_Fields.MOA,_Fields.VOA};
+  private _Fields optionals[] = {_Fields.ID,_Fields.ACTION_TYPE_ID,_Fields.NOTE,_Fields.SET_PERSON_ID,_Fields.MOA,_Fields.VOA};
   public static final Map<_Fields, org.apache.thrift.meta_data.FieldMetaData> metaDataMap;
   static {
     Map<_Fields, org.apache.thrift.meta_data.FieldMetaData> tmpMap = new EnumMap<_Fields, org.apache.thrift.meta_data.FieldMetaData>(_Fields.class);
-    tmpMap.put(_Fields.ACTION_ID, new org.apache.thrift.meta_data.FieldMetaData("action_id", org.apache.thrift.TFieldRequirementType.OPTIONAL, 
+    tmpMap.put(_Fields.ID, new org.apache.thrift.meta_data.FieldMetaData("id", org.apache.thrift.TFieldRequirementType.OPTIONAL, 
+        new org.apache.thrift.meta_data.FieldValueMetaData(org.apache.thrift.protocol.TType.I32)));
+    tmpMap.put(_Fields.ACTION_TYPE_ID, new org.apache.thrift.meta_data.FieldMetaData("actionType_id", org.apache.thrift.TFieldRequirementType.OPTIONAL, 
         new org.apache.thrift.meta_data.FieldValueMetaData(org.apache.thrift.protocol.TType.I32)));
     tmpMap.put(_Fields.NOTE, new org.apache.thrift.meta_data.FieldMetaData("note", org.apache.thrift.TFieldRequirementType.OPTIONAL, 
         new org.apache.thrift.meta_data.FieldValueMetaData(org.apache.thrift.protocol.TType.STRING)));
-    tmpMap.put(_Fields.SET_PERSON_ID, new org.apache.thrift.meta_data.FieldMetaData("setPerson_id", org.apache.thrift.TFieldRequirementType.REQUIRED, 
+    tmpMap.put(_Fields.SET_PERSON_ID, new org.apache.thrift.meta_data.FieldMetaData("setPerson_id", org.apache.thrift.TFieldRequirementType.OPTIONAL, 
         new org.apache.thrift.meta_data.FieldValueMetaData(org.apache.thrift.protocol.TType.I32)));
     tmpMap.put(_Fields.MOA, new org.apache.thrift.meta_data.FieldMetaData("moa", org.apache.thrift.TFieldRequirementType.OPTIONAL, 
         new org.apache.thrift.meta_data.FieldValueMetaData(org.apache.thrift.protocol.TType.STRING)));
@@ -149,20 +157,13 @@ public class ActionData implements org.apache.thrift.TBase<ActionData, ActionDat
   public ActionData() {
   }
 
-  public ActionData(
-    int setPerson_id)
-  {
-    this();
-    this.setPerson_id = setPerson_id;
-    setSetPerson_idIsSet(true);
-  }
-
   /**
    * Performs a deep copy on <i>other</i>.
    */
   public ActionData(ActionData other) {
     __isset_bitfield = other.__isset_bitfield;
-    this.action_id = other.action_id;
+    this.id = other.id;
+    this.actionType_id = other.actionType_id;
     if (other.isSetNote()) {
       this.note = other.note;
     }
@@ -181,8 +182,10 @@ public class ActionData implements org.apache.thrift.TBase<ActionData, ActionDat
 
   @Override
   public void clear() {
-    setAction_idIsSet(false);
-    this.action_id = 0;
+    setIdIsSet(false);
+    this.id = 0;
+    setActionType_idIsSet(false);
+    this.actionType_id = 0;
     this.note = null;
     setSetPerson_idIsSet(false);
     this.setPerson_id = 0;
@@ -190,27 +193,50 @@ public class ActionData implements org.apache.thrift.TBase<ActionData, ActionDat
     this.voa = null;
   }
 
-  public int getAction_id() {
-    return this.action_id;
+  public int getId() {
+    return this.id;
   }
 
-  public ActionData setAction_id(int action_id) {
-    this.action_id = action_id;
-    setAction_idIsSet(true);
+  public ActionData setId(int id) {
+    this.id = id;
+    setIdIsSet(true);
     return this;
   }
 
-  public void unsetAction_id() {
-    __isset_bitfield = EncodingUtils.clearBit(__isset_bitfield, __ACTION_ID_ISSET_ID);
+  public void unsetId() {
+    __isset_bitfield = EncodingUtils.clearBit(__isset_bitfield, __ID_ISSET_ID);
   }
 
-  /** Returns true if field action_id is set (has been assigned a value) and false otherwise */
-  public boolean isSetAction_id() {
-    return EncodingUtils.testBit(__isset_bitfield, __ACTION_ID_ISSET_ID);
+  /** Returns true if field id is set (has been assigned a value) and false otherwise */
+  public boolean isSetId() {
+    return EncodingUtils.testBit(__isset_bitfield, __ID_ISSET_ID);
   }
 
-  public void setAction_idIsSet(boolean value) {
-    __isset_bitfield = EncodingUtils.setBit(__isset_bitfield, __ACTION_ID_ISSET_ID, value);
+  public void setIdIsSet(boolean value) {
+    __isset_bitfield = EncodingUtils.setBit(__isset_bitfield, __ID_ISSET_ID, value);
+  }
+
+  public int getActionType_id() {
+    return this.actionType_id;
+  }
+
+  public ActionData setActionType_id(int actionType_id) {
+    this.actionType_id = actionType_id;
+    setActionType_idIsSet(true);
+    return this;
+  }
+
+  public void unsetActionType_id() {
+    __isset_bitfield = EncodingUtils.clearBit(__isset_bitfield, __ACTIONTYPE_ID_ISSET_ID);
+  }
+
+  /** Returns true if field actionType_id is set (has been assigned a value) and false otherwise */
+  public boolean isSetActionType_id() {
+    return EncodingUtils.testBit(__isset_bitfield, __ACTIONTYPE_ID_ISSET_ID);
+  }
+
+  public void setActionType_idIsSet(boolean value) {
+    __isset_bitfield = EncodingUtils.setBit(__isset_bitfield, __ACTIONTYPE_ID_ISSET_ID, value);
   }
 
   public String getNote() {
@@ -310,11 +336,19 @@ public class ActionData implements org.apache.thrift.TBase<ActionData, ActionDat
 
   public void setFieldValue(_Fields field, Object value) {
     switch (field) {
-    case ACTION_ID:
+    case ID:
       if (value == null) {
-        unsetAction_id();
+        unsetId();
       } else {
-        setAction_id((Integer)value);
+        setId((Integer)value);
+      }
+      break;
+
+    case ACTION_TYPE_ID:
+      if (value == null) {
+        unsetActionType_id();
+      } else {
+        setActionType_id((Integer)value);
       }
       break;
 
@@ -355,8 +389,11 @@ public class ActionData implements org.apache.thrift.TBase<ActionData, ActionDat
 
   public Object getFieldValue(_Fields field) {
     switch (field) {
-    case ACTION_ID:
-      return Integer.valueOf(getAction_id());
+    case ID:
+      return Integer.valueOf(getId());
+
+    case ACTION_TYPE_ID:
+      return Integer.valueOf(getActionType_id());
 
     case NOTE:
       return getNote();
@@ -381,8 +418,10 @@ public class ActionData implements org.apache.thrift.TBase<ActionData, ActionDat
     }
 
     switch (field) {
-    case ACTION_ID:
-      return isSetAction_id();
+    case ID:
+      return isSetId();
+    case ACTION_TYPE_ID:
+      return isSetActionType_id();
     case NOTE:
       return isSetNote();
     case SET_PERSON_ID:
@@ -408,12 +447,21 @@ public class ActionData implements org.apache.thrift.TBase<ActionData, ActionDat
     if (that == null)
       return false;
 
-    boolean this_present_action_id = true && this.isSetAction_id();
-    boolean that_present_action_id = true && that.isSetAction_id();
-    if (this_present_action_id || that_present_action_id) {
-      if (!(this_present_action_id && that_present_action_id))
+    boolean this_present_id = true && this.isSetId();
+    boolean that_present_id = true && that.isSetId();
+    if (this_present_id || that_present_id) {
+      if (!(this_present_id && that_present_id))
         return false;
-      if (this.action_id != that.action_id)
+      if (this.id != that.id)
+        return false;
+    }
+
+    boolean this_present_actionType_id = true && this.isSetActionType_id();
+    boolean that_present_actionType_id = true && that.isSetActionType_id();
+    if (this_present_actionType_id || that_present_actionType_id) {
+      if (!(this_present_actionType_id && that_present_actionType_id))
+        return false;
+      if (this.actionType_id != that.actionType_id)
         return false;
     }
 
@@ -426,8 +474,8 @@ public class ActionData implements org.apache.thrift.TBase<ActionData, ActionDat
         return false;
     }
 
-    boolean this_present_setPerson_id = true;
-    boolean that_present_setPerson_id = true;
+    boolean this_present_setPerson_id = true && this.isSetSetPerson_id();
+    boolean that_present_setPerson_id = true && that.isSetSetPerson_id();
     if (this_present_setPerson_id || that_present_setPerson_id) {
       if (!(this_present_setPerson_id && that_present_setPerson_id))
         return false;
@@ -469,12 +517,22 @@ public class ActionData implements org.apache.thrift.TBase<ActionData, ActionDat
     int lastComparison = 0;
     ActionData typedOther = (ActionData)other;
 
-    lastComparison = Boolean.valueOf(isSetAction_id()).compareTo(typedOther.isSetAction_id());
+    lastComparison = Boolean.valueOf(isSetId()).compareTo(typedOther.isSetId());
     if (lastComparison != 0) {
       return lastComparison;
     }
-    if (isSetAction_id()) {
-      lastComparison = org.apache.thrift.TBaseHelper.compareTo(this.action_id, typedOther.action_id);
+    if (isSetId()) {
+      lastComparison = org.apache.thrift.TBaseHelper.compareTo(this.id, typedOther.id);
+      if (lastComparison != 0) {
+        return lastComparison;
+      }
+    }
+    lastComparison = Boolean.valueOf(isSetActionType_id()).compareTo(typedOther.isSetActionType_id());
+    if (lastComparison != 0) {
+      return lastComparison;
+    }
+    if (isSetActionType_id()) {
+      lastComparison = org.apache.thrift.TBaseHelper.compareTo(this.actionType_id, typedOther.actionType_id);
       if (lastComparison != 0) {
         return lastComparison;
       }
@@ -539,9 +597,15 @@ public class ActionData implements org.apache.thrift.TBase<ActionData, ActionDat
     StringBuilder sb = new StringBuilder("ActionData(");
     boolean first = true;
 
-    if (isSetAction_id()) {
-      sb.append("action_id:");
-      sb.append(this.action_id);
+    if (isSetId()) {
+      sb.append("id:");
+      sb.append(this.id);
+      first = false;
+    }
+    if (isSetActionType_id()) {
+      if (!first) sb.append(", ");
+      sb.append("actionType_id:");
+      sb.append(this.actionType_id);
       first = false;
     }
     if (isSetNote()) {
@@ -554,10 +618,12 @@ public class ActionData implements org.apache.thrift.TBase<ActionData, ActionDat
       }
       first = false;
     }
-    if (!first) sb.append(", ");
-    sb.append("setPerson_id:");
-    sb.append(this.setPerson_id);
-    first = false;
+    if (isSetSetPerson_id()) {
+      if (!first) sb.append(", ");
+      sb.append("setPerson_id:");
+      sb.append(this.setPerson_id);
+      first = false;
+    }
     if (isSetMoa()) {
       if (!first) sb.append(", ");
       sb.append("moa:");
@@ -584,7 +650,6 @@ public class ActionData implements org.apache.thrift.TBase<ActionData, ActionDat
 
   public void validate() throws org.apache.thrift.TException {
     // check for required fields
-    // alas, we cannot check 'setPerson_id' because it's a primitive and you chose the non-beans generator.
     // check for sub-struct validity
   }
 
@@ -624,15 +689,23 @@ public class ActionData implements org.apache.thrift.TBase<ActionData, ActionDat
           break;
         }
         switch (schemeField.id) {
-          case 1: // ACTION_ID
+          case 1: // ID
             if (schemeField.type == org.apache.thrift.protocol.TType.I32) {
-              struct.action_id = iprot.readI32();
-              struct.setAction_idIsSet(true);
+              struct.id = iprot.readI32();
+              struct.setIdIsSet(true);
             } else { 
               org.apache.thrift.protocol.TProtocolUtil.skip(iprot, schemeField.type);
             }
             break;
-          case 2: // NOTE
+          case 2: // ACTION_TYPE_ID
+            if (schemeField.type == org.apache.thrift.protocol.TType.I32) {
+              struct.actionType_id = iprot.readI32();
+              struct.setActionType_idIsSet(true);
+            } else { 
+              org.apache.thrift.protocol.TProtocolUtil.skip(iprot, schemeField.type);
+            }
+            break;
+          case 3: // NOTE
             if (schemeField.type == org.apache.thrift.protocol.TType.STRING) {
               struct.note = iprot.readString();
               struct.setNoteIsSet(true);
@@ -640,7 +713,7 @@ public class ActionData implements org.apache.thrift.TBase<ActionData, ActionDat
               org.apache.thrift.protocol.TProtocolUtil.skip(iprot, schemeField.type);
             }
             break;
-          case 3: // SET_PERSON_ID
+          case 4: // SET_PERSON_ID
             if (schemeField.type == org.apache.thrift.protocol.TType.I32) {
               struct.setPerson_id = iprot.readI32();
               struct.setSetPerson_idIsSet(true);
@@ -648,7 +721,7 @@ public class ActionData implements org.apache.thrift.TBase<ActionData, ActionDat
               org.apache.thrift.protocol.TProtocolUtil.skip(iprot, schemeField.type);
             }
             break;
-          case 4: // MOA
+          case 5: // MOA
             if (schemeField.type == org.apache.thrift.protocol.TType.STRING) {
               struct.moa = iprot.readString();
               struct.setMoaIsSet(true);
@@ -656,7 +729,7 @@ public class ActionData implements org.apache.thrift.TBase<ActionData, ActionDat
               org.apache.thrift.protocol.TProtocolUtil.skip(iprot, schemeField.type);
             }
             break;
-          case 5: // VOA
+          case 6: // VOA
             if (schemeField.type == org.apache.thrift.protocol.TType.STRING) {
               struct.voa = iprot.readString();
               struct.setVoaIsSet(true);
@@ -672,9 +745,6 @@ public class ActionData implements org.apache.thrift.TBase<ActionData, ActionDat
       iprot.readStructEnd();
 
       // check for required fields of primitive type, which can't be checked in the validate method
-      if (!struct.isSetSetPerson_id()) {
-        throw new org.apache.thrift.protocol.TProtocolException("Required field 'setPerson_id' was not found in serialized data! Struct: " + toString());
-      }
       struct.validate();
     }
 
@@ -682,9 +752,14 @@ public class ActionData implements org.apache.thrift.TBase<ActionData, ActionDat
       struct.validate();
 
       oprot.writeStructBegin(STRUCT_DESC);
-      if (struct.isSetAction_id()) {
-        oprot.writeFieldBegin(ACTION_ID_FIELD_DESC);
-        oprot.writeI32(struct.action_id);
+      if (struct.isSetId()) {
+        oprot.writeFieldBegin(ID_FIELD_DESC);
+        oprot.writeI32(struct.id);
+        oprot.writeFieldEnd();
+      }
+      if (struct.isSetActionType_id()) {
+        oprot.writeFieldBegin(ACTION_TYPE_ID_FIELD_DESC);
+        oprot.writeI32(struct.actionType_id);
         oprot.writeFieldEnd();
       }
       if (struct.note != null) {
@@ -694,9 +769,11 @@ public class ActionData implements org.apache.thrift.TBase<ActionData, ActionDat
           oprot.writeFieldEnd();
         }
       }
-      oprot.writeFieldBegin(SET_PERSON_ID_FIELD_DESC);
-      oprot.writeI32(struct.setPerson_id);
-      oprot.writeFieldEnd();
+      if (struct.isSetSetPerson_id()) {
+        oprot.writeFieldBegin(SET_PERSON_ID_FIELD_DESC);
+        oprot.writeI32(struct.setPerson_id);
+        oprot.writeFieldEnd();
+      }
       if (struct.moa != null) {
         if (struct.isSetMoa()) {
           oprot.writeFieldBegin(MOA_FIELD_DESC);
@@ -728,26 +805,37 @@ public class ActionData implements org.apache.thrift.TBase<ActionData, ActionDat
     @Override
     public void write(org.apache.thrift.protocol.TProtocol prot, ActionData struct) throws org.apache.thrift.TException {
       TTupleProtocol oprot = (TTupleProtocol) prot;
-      oprot.writeI32(struct.setPerson_id);
       BitSet optionals = new BitSet();
-      if (struct.isSetAction_id()) {
+      if (struct.isSetId()) {
         optionals.set(0);
       }
-      if (struct.isSetNote()) {
+      if (struct.isSetActionType_id()) {
         optionals.set(1);
       }
-      if (struct.isSetMoa()) {
+      if (struct.isSetNote()) {
         optionals.set(2);
       }
-      if (struct.isSetVoa()) {
+      if (struct.isSetSetPerson_id()) {
         optionals.set(3);
       }
-      oprot.writeBitSet(optionals, 4);
-      if (struct.isSetAction_id()) {
-        oprot.writeI32(struct.action_id);
+      if (struct.isSetMoa()) {
+        optionals.set(4);
+      }
+      if (struct.isSetVoa()) {
+        optionals.set(5);
+      }
+      oprot.writeBitSet(optionals, 6);
+      if (struct.isSetId()) {
+        oprot.writeI32(struct.id);
+      }
+      if (struct.isSetActionType_id()) {
+        oprot.writeI32(struct.actionType_id);
       }
       if (struct.isSetNote()) {
         oprot.writeString(struct.note);
+      }
+      if (struct.isSetSetPerson_id()) {
+        oprot.writeI32(struct.setPerson_id);
       }
       if (struct.isSetMoa()) {
         oprot.writeString(struct.moa);
@@ -760,22 +848,28 @@ public class ActionData implements org.apache.thrift.TBase<ActionData, ActionDat
     @Override
     public void read(org.apache.thrift.protocol.TProtocol prot, ActionData struct) throws org.apache.thrift.TException {
       TTupleProtocol iprot = (TTupleProtocol) prot;
-      struct.setPerson_id = iprot.readI32();
-      struct.setSetPerson_idIsSet(true);
-      BitSet incoming = iprot.readBitSet(4);
+      BitSet incoming = iprot.readBitSet(6);
       if (incoming.get(0)) {
-        struct.action_id = iprot.readI32();
-        struct.setAction_idIsSet(true);
+        struct.id = iprot.readI32();
+        struct.setIdIsSet(true);
       }
       if (incoming.get(1)) {
+        struct.actionType_id = iprot.readI32();
+        struct.setActionType_idIsSet(true);
+      }
+      if (incoming.get(2)) {
         struct.note = iprot.readString();
         struct.setNoteIsSet(true);
       }
-      if (incoming.get(2)) {
+      if (incoming.get(3)) {
+        struct.setPerson_id = iprot.readI32();
+        struct.setSetPerson_idIsSet(true);
+      }
+      if (incoming.get(4)) {
         struct.moa = iprot.readString();
         struct.setMoaIsSet(true);
       }
-      if (incoming.get(3)) {
+      if (incoming.get(5)) {
         struct.voa = iprot.readString();
         struct.setVoaIsSet(true);
       }

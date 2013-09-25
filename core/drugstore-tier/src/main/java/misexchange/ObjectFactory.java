@@ -43,11 +43,43 @@ public class ObjectFactory {
     }
 
     /**
+     * Create an instance of {@link BalanceOfGoods2 }
+     * 
+     */
+    public BalanceOfGoods2 createBalanceOfGoods2() {
+        return new BalanceOfGoods2();
+    }
+
+    /**
+     * Create an instance of {@link BalanceOfGoods2 .Storage }
+     * 
+     */
+    public BalanceOfGoods2 .Storage createBalanceOfGoods2Storage() {
+        return new BalanceOfGoods2 .Storage();
+    }
+
+    /**
+     * Create an instance of {@link BalanceOfGoods2 .Storage.Balance }
+     * 
+     */
+    public BalanceOfGoods2 .Storage.Balance createBalanceOfGoods2StorageBalance() {
+        return new BalanceOfGoods2 .Storage.Balance();
+    }
+
+    /**
      * Create an instance of {@link BalanceOfGoods }
      * 
      */
     public BalanceOfGoods createBalanceOfGoods() {
         return new BalanceOfGoods();
+    }
+
+    /**
+     * Create an instance of {@link DrugList }
+     * 
+     */
+    public DrugList createDrugList() {
+        return new DrugList();
     }
 
     /**
@@ -104,14 +136,6 @@ public class ObjectFactory {
      */
     public DepartmentList createDepartmentList() {
         return new DepartmentList();
-    }
-
-    /**
-     * Create an instance of {@link BalanceOfGoodsInOrganizationResponse }
-     * 
-     */
-    public BalanceOfGoodsInOrganizationResponse createBalanceOfGoodsInOrganizationResponse() {
-        return new BalanceOfGoodsInOrganizationResponse();
     }
 
     /**
@@ -195,14 +219,6 @@ public class ObjectFactory {
     }
 
     /**
-     * Create an instance of {@link DrugList }
-     * 
-     */
-    public DrugList createDrugList() {
-        return new DrugList();
-    }
-
-    /**
      * Create an instance of {@link GetStorageListResponse }
      * 
      */
@@ -216,14 +232,6 @@ public class ObjectFactory {
      */
     public StorageList createStorageList() {
         return new StorageList();
-    }
-
-    /**
-     * Create an instance of {@link BalanceOfGoodsInStorageResponse }
-     * 
-     */
-    public BalanceOfGoodsInStorageResponse createBalanceOfGoodsInStorageResponse() {
-        return new BalanceOfGoodsInStorageResponse();
     }
 
     /**
@@ -243,22 +251,6 @@ public class ObjectFactory {
     }
 
     /**
-     * Create an instance of {@link BalanceOfGoodsInStorage }
-     * 
-     */
-    public BalanceOfGoodsInStorage createBalanceOfGoodsInStorage() {
-        return new BalanceOfGoodsInStorage();
-    }
-
-    /**
-     * Create an instance of {@link BalanceOfGoodsInOrganization }
-     * 
-     */
-    public BalanceOfGoodsInOrganization createBalanceOfGoodsInOrganization() {
-        return new BalanceOfGoodsInOrganization();
-    }
-
-    /**
      * Create an instance of {@link GetStorageList }
      * 
      */
@@ -275,6 +267,14 @@ public class ObjectFactory {
     }
 
     /**
+     * Create an instance of {@link BalanceOfGoodsResponse }
+     * 
+     */
+    public BalanceOfGoodsResponse createBalanceOfGoodsResponse() {
+        return new BalanceOfGoodsResponse();
+    }
+
+    /**
      * Create an instance of {@link Organization }
      * 
      */
@@ -283,11 +283,11 @@ public class ObjectFactory {
     }
 
     /**
-     * Create an instance of {@link Storage }
+     * Create an instance of {@link misexchange.Storage }
      * 
      */
-    public Storage createStorage() {
-        return new Storage();
+    public misexchange.Storage createStorage() {
+        return new misexchange.Storage();
     }
 
     /**
@@ -299,11 +299,11 @@ public class ObjectFactory {
     }
 
     /**
-     * Create an instance of {@link BalanceOfGoods.BalanceOfGood }
+     * Create an instance of {@link BalanceOfGoods2 .Storage.Balance.Goods }
      * 
      */
-    public BalanceOfGoods.BalanceOfGood createBalanceOfGoodsBalanceOfGood() {
-        return new BalanceOfGoods.BalanceOfGood();
+    public BalanceOfGoods2 .Storage.Balance.Goods createBalanceOfGoods2StorageBalanceGoods() {
+        return new BalanceOfGoods2 .Storage.Balance.Goods();
     }
 
     /**

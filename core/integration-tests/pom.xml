@@ -83,6 +83,14 @@
         </dependency>
         <!--For transfusion testing-->
 
+        <!--For prescriptionList testing -->
+        <dependency>
+            <groupId>ru.korus.tmis.core</groupId>
+            <artifactId>tmis-core-business</artifactId>
+            <version>${version.tmis.core}</version>
+            <scope>test</scope>
+        </dependency>
+
 
         <dependency>
             <groupId>mysql</groupId>
@@ -102,6 +110,7 @@
                 <version>2.6</version>
                 <configuration>
                     <skip>true</skip>
+                    <argLine>-Dfile.encoding=UTF-8</argLine>
                 </configuration>
                 <executions>
                     <execution>
@@ -122,8 +131,20 @@
                             <goal>test</goal>
                         </goals>
                         <configuration>
-                            <skip>false</skip>
+                            <skip>true</skip>
                             <groups>communication</groups>
+                        </configuration>
+                    </execution>
+                    <!-- PrescriptionList testing-->
+                    <execution>
+                        <id>surefire-it-prescription</id>
+                        <phase>integration-test</phase>
+                        <goals>
+                            <goal>test</goal>
+                        </goals>
+                        <configuration>
+                            <skip>false</skip>
+                            <groups>prescription</groups>
                         </configuration>
                     </execution>
                 </executions>

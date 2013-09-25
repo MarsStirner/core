@@ -2,7 +2,6 @@
 package misexchange;
 
 import javax.xml.bind.annotation.*;
-
 import org.hl7.v3.PRPAIN201304UV022;
 
 

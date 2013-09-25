@@ -39,7 +39,7 @@ public class PrescriptionExchange {
    */
   public interface Iface {
 
-    public PrescriptionList getPrescriptionList(int eventId) throws EmptyPrescrListException, org.apache.thrift.TException;
+    public PrescriptionList getPrescriptionList(int eventId) throws org.apache.thrift.TException;
 
     public void save(PrescriptionList prescrList) throws SavePrescrListException, org.apache.thrift.TException;
 
@@ -73,7 +73,7 @@ public class PrescriptionExchange {
       super(iprot, oprot);
     }
 
-    public PrescriptionList getPrescriptionList(int eventId) throws EmptyPrescrListException, org.apache.thrift.TException
+    public PrescriptionList getPrescriptionList(int eventId) throws org.apache.thrift.TException
     {
       send_getPrescriptionList(eventId);
       return recv_getPrescriptionList();
@@ -86,15 +86,12 @@ public class PrescriptionExchange {
       sendBase("getPrescriptionList", args);
     }
 
-    public PrescriptionList recv_getPrescriptionList() throws EmptyPrescrListException, org.apache.thrift.TException
+    public PrescriptionList recv_getPrescriptionList() throws org.apache.thrift.TException
     {
       getPrescriptionList_result result = new getPrescriptionList_result();
       receiveBase(result, "getPrescriptionList");
       if (result.isSetSuccess()) {
         return result.success;
-      }
-      if (result.e != null) {
-        throw result.e;
       }
       throw new org.apache.thrift.TApplicationException(org.apache.thrift.TApplicationException.MISSING_RESULT, "getPrescriptionList failed: unknown result");
     }
@@ -162,7 +159,7 @@ public class PrescriptionExchange {
         prot.writeMessageEnd();
       }
 
-      public PrescriptionList getResult() throws EmptyPrescrListException, org.apache.thrift.TException {
+      public PrescriptionList getResult() throws org.apache.thrift.TException {
         if (getState() != org.apache.thrift.async.TAsyncMethodCall.State.RESPONSE_READ) {
           throw new IllegalStateException("Method call not finished!");
         }
@@ -237,11 +234,7 @@ public class PrescriptionExchange {
 
       public getPrescriptionList_result getResult(I iface, getPrescriptionList_args args) throws org.apache.thrift.TException {
         getPrescriptionList_result result = new getPrescriptionList_result();
-        try {
-          result.success = iface.getPrescriptionList(args.eventId);
-        } catch (EmptyPrescrListException e) {
-          result.e = e;
-        }
+        result.success = iface.getPrescriptionList(args.eventId);
         return result;
       }
     }
@@ -628,7 +621,6 @@ public class PrescriptionExchange {
     private static final org.apache.thrift.protocol.TStruct STRUCT_DESC = new org.apache.thrift.protocol.TStruct("getPrescriptionList_result");
 
     private static final org.apache.thrift.protocol.TField SUCCESS_FIELD_DESC = new org.apache.thrift.protocol.TField("success", org.apache.thrift.protocol.TType.STRUCT, (short)0);
-    private static final org.apache.thrift.protocol.TField E_FIELD_DESC = new org.apache.thrift.protocol.TField("e", org.apache.thrift.protocol.TType.STRUCT, (short)1);
 
     private static final Map<Class<? extends IScheme>, SchemeFactory> schemes = new HashMap<Class<? extends IScheme>, SchemeFactory>();
     static {
@@ -637,12 +629,10 @@ public class PrescriptionExchange {
     }
 
     public PrescriptionList success; // required
-    public EmptyPrescrListException e; // required
 
     /** The set of fields this struct contains, along with convenience methods for finding and manipulating them. */
     public enum _Fields implements org.apache.thrift.TFieldIdEnum {
-      SUCCESS((short)0, "success"),
-      E((short)1, "e");
+      SUCCESS((short)0, "success");
 
       private static final Map<String, _Fields> byName = new HashMap<String, _Fields>();
 
@@ -659,8 +649,6 @@ public class PrescriptionExchange {
         switch(fieldId) {
           case 0: // SUCCESS
             return SUCCESS;
-          case 1: // E
-            return E;
           default:
             return null;
         }
@@ -706,8 +694,6 @@ public class PrescriptionExchange {
       Map<_Fields, org.apache.thrift.meta_data.FieldMetaData> tmpMap = new EnumMap<_Fields, org.apache.thrift.meta_data.FieldMetaData>(_Fields.class);
       tmpMap.put(_Fields.SUCCESS, new org.apache.thrift.meta_data.FieldMetaData("success", org.apache.thrift.TFieldRequirementType.DEFAULT, 
           new org.apache.thrift.meta_data.StructMetaData(org.apache.thrift.protocol.TType.STRUCT, PrescriptionList.class)));
-      tmpMap.put(_Fields.E, new org.apache.thrift.meta_data.FieldMetaData("e", org.apache.thrift.TFieldRequirementType.DEFAULT, 
-          new org.apache.thrift.meta_data.FieldValueMetaData(org.apache.thrift.protocol.TType.STRUCT)));
       metaDataMap = Collections.unmodifiableMap(tmpMap);
       org.apache.thrift.meta_data.FieldMetaData.addStructMetaDataMap(getPrescriptionList_result.class, metaDataMap);
     }
@@ -716,12 +702,10 @@ public class PrescriptionExchange {
     }
 
     public getPrescriptionList_result(
-      PrescriptionList success,
-      EmptyPrescrListException e)
+      PrescriptionList success)
     {
       this();
       this.success = success;
-      this.e = e;
     }
 
     /**
@@ -730,9 +714,6 @@ public class PrescriptionExchange {
     public getPrescriptionList_result(getPrescriptionList_result other) {
       if (other.isSetSuccess()) {
         this.success = new PrescriptionList(other.success);
-      }
-      if (other.isSetE()) {
-        this.e = new EmptyPrescrListException(other.e);
       }
     }
 
@@ -743,7 +724,6 @@ public class PrescriptionExchange {
     @Override
     public void clear() {
       this.success = null;
-      this.e = null;
     }
 
     public PrescriptionList getSuccess() {
@@ -770,30 +750,6 @@ public class PrescriptionExchange {
       }
     }
 
-    public EmptyPrescrListException getE() {
-      return this.e;
-    }
-
-    public getPrescriptionList_result setE(EmptyPrescrListException e) {
-      this.e = e;
-      return this;
-    }
-
-    public void unsetE() {
-      this.e = null;
-    }
-
-    /** Returns true if field e is set (has been assigned a value) and false otherwise */
-    public boolean isSetE() {
-      return this.e != null;
-    }
-
-    public void setEIsSet(boolean value) {
-      if (!value) {
-        this.e = null;
-      }
-    }
-
     public void setFieldValue(_Fields field, Object value) {
       switch (field) {
       case SUCCESS:
@@ -804,14 +760,6 @@ public class PrescriptionExchange {
         }
         break;
 
-      case E:
-        if (value == null) {
-          unsetE();
-        } else {
-          setE((EmptyPrescrListException)value);
-        }
-        break;
-
       }
     }
 
@@ -819,9 +767,6 @@ public class PrescriptionExchange {
       switch (field) {
       case SUCCESS:
         return getSuccess();
-
-      case E:
-        return getE();
 
       }
       throw new IllegalStateException();
@@ -836,8 +781,6 @@ public class PrescriptionExchange {
       switch (field) {
       case SUCCESS:
         return isSetSuccess();
-      case E:
-        return isSetE();
       }
       throw new IllegalStateException();
     }
@@ -861,15 +804,6 @@ public class PrescriptionExchange {
         if (!(this_present_success && that_present_success))
           return false;
         if (!this.success.equals(that.success))
-          return false;
-      }
-
-      boolean this_present_e = true && this.isSetE();
-      boolean that_present_e = true && that.isSetE();
-      if (this_present_e || that_present_e) {
-        if (!(this_present_e && that_present_e))
-          return false;
-        if (!this.e.equals(that.e))
           return false;
       }
 
@@ -899,16 +833,6 @@ public class PrescriptionExchange {
           return lastComparison;
         }
       }
-      lastComparison = Boolean.valueOf(isSetE()).compareTo(typedOther.isSetE());
-      if (lastComparison != 0) {
-        return lastComparison;
-      }
-      if (isSetE()) {
-        lastComparison = org.apache.thrift.TBaseHelper.compareTo(this.e, typedOther.e);
-        if (lastComparison != 0) {
-          return lastComparison;
-        }
-      }
       return 0;
     }
 
@@ -934,14 +858,6 @@ public class PrescriptionExchange {
         sb.append("null");
       } else {
         sb.append(this.success);
-      }
-      first = false;
-      if (!first) sb.append(", ");
-      sb.append("e:");
-      if (this.e == null) {
-        sb.append("null");
-      } else {
-        sb.append(this.e);
       }
       first = false;
       sb.append(")");
@@ -999,15 +915,6 @@ public class PrescriptionExchange {
                 org.apache.thrift.protocol.TProtocolUtil.skip(iprot, schemeField.type);
               }
               break;
-            case 1: // E
-              if (schemeField.type == org.apache.thrift.protocol.TType.STRUCT) {
-                struct.e = new EmptyPrescrListException();
-                struct.e.read(iprot);
-                struct.setEIsSet(true);
-              } else { 
-                org.apache.thrift.protocol.TProtocolUtil.skip(iprot, schemeField.type);
-              }
-              break;
             default:
               org.apache.thrift.protocol.TProtocolUtil.skip(iprot, schemeField.type);
           }
@@ -1026,11 +933,6 @@ public class PrescriptionExchange {
         if (struct.success != null) {
           oprot.writeFieldBegin(SUCCESS_FIELD_DESC);
           struct.success.write(oprot);
-          oprot.writeFieldEnd();
-        }
-        if (struct.e != null) {
-          oprot.writeFieldBegin(E_FIELD_DESC);
-          struct.e.write(oprot);
           oprot.writeFieldEnd();
         }
         oprot.writeFieldStop();
@@ -1054,31 +956,20 @@ public class PrescriptionExchange {
         if (struct.isSetSuccess()) {
           optionals.set(0);
         }
-        if (struct.isSetE()) {
-          optionals.set(1);
-        }
-        oprot.writeBitSet(optionals, 2);
+        oprot.writeBitSet(optionals, 1);
         if (struct.isSetSuccess()) {
           struct.success.write(oprot);
-        }
-        if (struct.isSetE()) {
-          struct.e.write(oprot);
         }
       }
 
       @Override
       public void read(org.apache.thrift.protocol.TProtocol prot, getPrescriptionList_result struct) throws org.apache.thrift.TException {
         TTupleProtocol iprot = (TTupleProtocol) prot;
-        BitSet incoming = iprot.readBitSet(2);
+        BitSet incoming = iprot.readBitSet(1);
         if (incoming.get(0)) {
           struct.success = new PrescriptionList();
           struct.success.read(iprot);
           struct.setSuccessIsSet(true);
-        }
-        if (incoming.get(1)) {
-          struct.e = new EmptyPrescrListException();
-          struct.e.read(iprot);
-          struct.setEIsSet(true);
         }
       }
     }

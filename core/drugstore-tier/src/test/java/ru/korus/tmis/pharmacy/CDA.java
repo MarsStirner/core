@@ -152,7 +152,7 @@ public class CDA {
         System.out.println("----------send---------------");
 
         try {
-            final MCCIIN000002UV01 mcciin000002UV01 = new MISExchange().getMISExchangeSoap().processHL7V3Message(request);
+            final MCCIIN000002UV012 mcciin000002UV01 = new MISExchange().getMISExchangeSoap().processHL7V3Message(request);
             System.out.println("mcciin000002UV01 = " + mcciin000002UV01);
 
             try {
