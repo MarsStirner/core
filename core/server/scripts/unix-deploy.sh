@@ -26,6 +26,7 @@ echo "List applications"
 echo ""
 $ASADMIN/asadmin --user ${glassfish.admin.login} \
         --passwordfile $GF_PASSWD_FILE \
+        --port ${glassfish.port.admin} \
        list-applications
 echo ""
 echo "--------------------------------------------------------------------"

@@ -261,8 +261,9 @@
             <id>nde-mac-glassfish3</id>
             <properties>
                 <!-- Домашняя директория Glassfish -->
-                <glassfish.home>/Users/nde/Unixprog/glassfish3/</glassfish.home>
-
+                <glassfish.home>/Users/nde/Unixprog/glassfish3</glassfish.home>
+                <!-- Порт админского Web IF -->
+                <glassfish.port.admin>4849</glassfish.port.admin>
 
             </properties>
         </profile>
@@ -272,7 +273,7 @@
             <id>nde-macmini</id>
             <properties>
                 <!-- Домашняя директория Glassfish: /Users/nde/Unixprog/glassfish3/ -->
-                <glassfish.home>/Users/nde/Unixprog/glassfish3/</glassfish.home>
+                <glassfish.home>/Users/nde/Unixprog/glassfish3</glassfish.home>
             </properties>
         </profile>
 

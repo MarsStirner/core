@@ -1,10 +1,7 @@
 
 package org.hl7.v3;
 
-import javax.xml.bind.annotation.XmlAccessType;
-import javax.xml.bind.annotation.XmlAccessorType;
-import javax.xml.bind.annotation.XmlAttribute;
-import javax.xml.bind.annotation.XmlType;
+import javax.xml.bind.annotation.*;
 
 
 /**
@@ -26,6 +23,7 @@ import javax.xml.bind.annotation.XmlType;
  */
 @XmlAccessorType(XmlAccessType.FIELD)
 @XmlType(name = "MCCI_IN000002UV01")
+@XmlRootElement
 public class MCCIIN000002UV012
     extends MCCIMT000200UV01Message
 {

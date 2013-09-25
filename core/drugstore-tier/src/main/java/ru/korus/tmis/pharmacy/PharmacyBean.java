@@ -35,7 +35,7 @@ import java.util.Map;
  * Company:     Korus Consulting IT<br>
  * Description: Работа по отправке сообщений в сторону 1С Аптеки<br>
  */
-@Interceptors(LoggingInterceptor.class)
+//@Interceptors(LoggingInterceptor.class)
 @Stateless
 public class PharmacyBean implements PharmacyBeanLocal {
 
@@ -108,7 +108,7 @@ public class PharmacyBean implements PharmacyBeanLocal {
     }
 
     /**
-     * Повторная отправка сообщений, которые имеют статус отличный от COMPETE
+     * Повторная отправка сообщений, которые имеют статус отличный от COMPLETE
      *
      * @throws CoreException
      */
