@@ -138,8 +138,8 @@ class ActionWrapper(a: Action)
         if (this.a.getExecutor != null && this.a.getExecutor.getPost != null) {
           List(
             Map(APWI.Value.toString -> this.a.getExecutor.getPost.getName,
-                APWI.ValueId.toString -> this.a.getExecutor.getId.toString,
-                APWI.Code.toString -> this.a.getExecutor.getCode)
+                APWI.ValueId.toString -> this.a.getExecutor.getPost.getId.toString,
+                APWI.Code.toString -> this.a.getExecutor.getPost.getCode)
           )
         } else if (this.a.getActionType.getDefaultExecutor != null && this.a.getActionType.getDefaultExecutor.getPost != null) {
           List(
