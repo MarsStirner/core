@@ -19,7 +19,7 @@ public class RlsForm implements Serializable, UniqueName {
 	@Column(unique=true, nullable=false)
 	private int id;
 
-	@Column(length=128, unique=true)
+	@Column(length=128)
 	private String name;
 
 	//bi-directional many-to-one association to RlsNomen
@@ -41,7 +41,6 @@ public class RlsForm implements Serializable, UniqueName {
 		return this.name;
 	}
 
-    @Override
 	public void setName(String name) {
 		this.name = name;
 	}

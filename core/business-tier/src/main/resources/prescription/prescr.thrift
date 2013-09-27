@@ -99,4 +99,5 @@ service PrescriptionExchange {
 
 	PrescriptionList getPrescriptionList(1:i32 eventId),
 	void save(1:PrescriptionList prescrList) throws (1: SavePrescrListException e)
+	bool updateBalanceOfGoods(1:list<i32> drugIds)
 }

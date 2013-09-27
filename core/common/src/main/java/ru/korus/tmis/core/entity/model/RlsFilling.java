@@ -18,7 +18,7 @@ public class RlsFilling implements Serializable, UniqueName {
 	@Column(unique=true, nullable=false)
 	private int id;
 
-	@Column(length=128, unique=true)
+	@Column(length=128)
 	private String name;
 
 	public RlsFilling() {
@@ -35,8 +35,9 @@ public class RlsFilling implements Serializable, UniqueName {
 	public String getName() {
 		return this.name;
 	}
-    @Override
+
 	public void setName(String name) {
 		this.name = name;
 	}
+
 }

@@ -10,7 +10,7 @@ import javax.xml.bind.annotation.XmlType;
 @NamedQueries(
         {
                 @NamedQuery(name = "RbUnit.findAll", query = "SELECT r FROM RbUnit r"),
-                @NamedQuery(name = "RbUnit.findByCode", query = "  SELECT u FROM RbUnit u WHERE u.code = :code")
+                @NamedQuery(name = "RbUnit.findByCode", query = "SELECT u FROM RbUnit u WHERE u.code = :code")
         })
 @XmlType(name = "rbUnit")
 @XmlRootElement(name = "rbUnit")
