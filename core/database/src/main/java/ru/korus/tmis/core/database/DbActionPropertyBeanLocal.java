@@ -49,6 +49,10 @@ public interface DbActionPropertyBeanLocal {
     getActionPropertiesByActionIdAndActionPropertyTypeCodes(int actionId, Set<String> codes)
             throws CoreException;
 
+    Map<ActionProperty, List<APValue>>
+    getActionPropertiesByActionIdAndActionPropertyTypeCodesWithoutDel(int actionId, Set<String> codes)
+            throws CoreException;
+
     /**
      * Возвращает список свойств со значениями из последнего Action внутри выбранного Event по идентификаторам из таблицы rbCoreActionProperty
      *

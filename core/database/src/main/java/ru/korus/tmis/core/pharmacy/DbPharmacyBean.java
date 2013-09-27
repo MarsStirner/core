@@ -172,7 +172,7 @@ public class DbPharmacyBean implements DbPharmacyBeanLocal {
     @Override
     public List<Action> getVirtualActionsAfterDate(final DateTime after) {
         return em.createQuery(
-                "SELECT a FROM Action a WHERE a.actionType.flatCode IN :flatCode AND a.modifyDatetime > :modifyDatetime", Action.class)
+                "SELECT a FROM Action a WHERE a.actionType.flatCode IN :flatCode AND a.createDatetime > :modifyDatetime ORDER BY a.createDatetime ASC", Action.class)
                 .setParameter("flatCode", getFlatCodeStrings())
                 .setParameter("modifyDatetime", after.toDate())
                 .getResultList();

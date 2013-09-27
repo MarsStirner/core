@@ -86,6 +86,7 @@ public class PharmacyBean implements PharmacyBeanLocal {
                 final List<Action> actionAfterDate = dbPharmacy.getVirtualActionsAfterDate(lastDateUpdate);
                 if (!actionAfterDate.isEmpty()) {
                     logger.info("Found {} newest actions after date {}", actionAfterDate.size(), getLastDate());
+                    logger.info("List {}", actionAfterDate);
                     for (Action action : actionAfterDate) {
                         if (isActionForSend(action)) {
                             send(action);
@@ -328,7 +329,7 @@ public class PharmacyBean implements PharmacyBeanLocal {
             codes.add("orgStructReceived");
 
             final Map<ActionProperty, List<APValue>> names =
-                    dbActionPropertyBeanLocal.getActionPropertiesByActionIdAndActionPropertyTypeCodes(action.getId(), codes);
+                    dbActionPropertyBeanLocal.getActionPropertiesByActionIdAndActionPropertyTypeCodesWithoutDel(action.getId(), codes);
 
             logger.info("getOrgStructureOut Action properties and type {}", names);
             for (ActionProperty property : names.keySet()) {
@@ -355,7 +356,7 @@ public class PharmacyBean implements PharmacyBeanLocal {
             codes.add("orgStructStay");
 
             final Map<ActionProperty, List<APValue>> names
-                    = dbActionPropertyBeanLocal.getActionPropertiesByActionIdAndActionPropertyTypeCodes(action.getId(), codes);
+                    = dbActionPropertyBeanLocal.getActionPropertiesByActionIdAndActionPropertyTypeCodesWithoutDel(action.getId(), codes);
             logger.info("getOrgStructureIn Action properties and type {}", names);
 
             for (ActionProperty property : names.keySet()) {
@@ -382,7 +383,7 @@ public class PharmacyBean implements PharmacyBeanLocal {
             codesSet.add("orgStructStay");
 
             final Map<ActionProperty, List<APValue>> names
-                    = dbActionPropertyBeanLocal.getActionPropertiesByActionIdAndActionPropertyTypeCodes(action.getId(), codesSet);
+                    = dbActionPropertyBeanLocal.getActionPropertiesByActionIdAndActionPropertyTypeCodesWithoutDel(action.getId(), codesSet);
             logger.info("Action properties and type {}", names);
 
        //     final Map<ActionProperty, List<APValue>> actionPropertiesMap = dbActionPropertyBeanLocal.getActionPropertiesByActionId(action.getId());
@@ -402,42 +403,6 @@ public class PharmacyBean implements PharmacyBeanLocal {
     }
 
 
-    /**
-     * Поиск OrgStructure для конкретного Action
-     */
-    private OrgStructure getOrgStructure(final Action action) throws SkipMessageProcessException {
-        try {
-            final Map<ActionProperty, List<APValue>> names
-                    = dbActionPropertyBeanLocal.getActionPropertiesByActionIdAndTypeNames(
-                    action.getId(), Arrays.asList("Переведен в отделение", "Отделение пребывания"));
-            logger.info("Action properties and type {}", names);
-
-
-            final Map<ActionProperty, List<APValue>> actionPropertiesMap = dbActionPropertyBeanLocal.getActionPropertiesByActionId(action.getId());
-            for (ActionProperty property : actionPropertiesMap.keySet()) {
-                final List<APValue> apValues = actionPropertiesMap.get(property);
-                for (APValue apValue : apValues) {
-                    if (apValue instanceof APValueOrgStructure) {
-                        logger.info("Found OrgStructure property: {}, apvalue: {}, value: {}", property, apValue, apValue.getValue());
-                        return (OrgStructure) apValue.getValue();
-                    }
-                }
-            }
-            if (action.getParentActionId() != 0) {
-                logger.info("try recursive call {} by actionParentId [{}]", action, action.getParentActionId());
-                final Action parentAction = dbAction.getActionByIdWithIgnoreDeleted(action.getParentActionId());
-                if (parentAction != null) {
-                    return getOrgStructure(parentAction);
-                }
-            } else {
-                logger.info("OrgStructure is not found {} by actionParentId [{}]", action, action.getParentActionId());
-            }
-//            throw new NoSuchOrgStructureException("OrgStructure for " + action + " is not found");
-        } catch (CoreException e) {
-            // skip
-        }
-        throw new SkipMessageProcessException("OrgStructure for " + action + " is not found");
-    }
 
 
 }
