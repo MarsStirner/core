@@ -39,7 +39,7 @@ public class PharmacyBean implements PharmacyBeanLocal {
 
     private static final int LAST_ACTIONS = 10;
 
-    private static final String DATE_TIME_FORMAT = "yyyy-MM-dd hh:mm:ss";
+    private static final String DATE_TIME_FORMAT = "yyyy-MM-dd HH:mm:ss";
 
     @EJB(beanName = "DbActionBean")
     private DbActionBeanLocal dbAction = null;
@@ -89,7 +89,7 @@ public class PharmacyBean implements PharmacyBeanLocal {
                     for (Action action : actionAfterDate) {
                         if (isActionForSend(action)) {
                             send(action);
-                            lastDateUpdate = new DateTime(action.getModifyDatetime());
+                            lastDateUpdate = new DateTime(action.getCreateDatetime());
                         }
                     }
                 }

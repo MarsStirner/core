@@ -263,7 +263,7 @@
                 <!-- Домашняя директория Glassfish -->
                 <glassfish.home>/Users/nde/Unixprog/glassfish3</glassfish.home>
                 <!-- Порт админского Web IF -->
-                <glassfish.port.admin>4849</glassfish.port.admin>
+                <!--<glassfish.port.admin>4849</glassfish.port.admin>-->
 
             </properties>
         </profile>
