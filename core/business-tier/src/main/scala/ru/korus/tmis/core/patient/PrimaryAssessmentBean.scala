@@ -61,6 +61,7 @@ class PrimaryAssessmentBean
       AWI.doctorFirstName,
       AWI.doctorMiddleName,
       AWI.doctorSpecs,
+      AWI.executorPost,
       AWI.urgent,
       AWI.multiplicity,
       AWI.Status,

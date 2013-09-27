@@ -671,7 +671,7 @@ class AppealBean extends AppealBeanLocal
       case listNdx(0) => this.AnyToSetOfString(appealData.data.assignment.directed, "")                                                 //Кем направлен
       case listNdx(1) => this.AnyToSetOfString(appealData.data.assignment.number, "")                                                   //Номер направления
       case listNdx(2) => this.AnyToSetOfString(appealData.data.deliveredType, "")                                                       //Кем доставлен
-      case listNdx(3) => this.writeMKBDiagnosesFromAppealData(appealData.data.diagnoses, "assignment", false)                       //Диагноз направившего учреждения
+      case listNdx(3) => this.writeMKBDiagnosesFromAppealData(appealData.data.diagnoses, "diagReceivedMkb", false)                       //Диагноз направившего учреждения
       case listNdx(4) => this.AnyToSetOfString(appealData.data.deliveredAfterType, "")                                                  //Доставлен в стационар от начала заболевания
       case listNdx(5) => this.AnyToSetOfString(null, "")                                                                                //Направлен в отделение
       case listNdx(6) => this.AnyToSetOfString(appealData.data.refuseAppealReason, "")                                                  //Причина отказа в госпитализации
@@ -683,9 +683,9 @@ class AppealBean extends AppealBeanLocal
       case listNdx(12) => this.AnyToSetOfString(appealData.data.assignment.assignmentDate, "")                                          //Дата направления
       case listNdx(13) => this.AnyToSetOfString(appealData.data.hospitalizationChannelType, "")      //Канал госпитализации
       case listNdx(14) => this.AnyToSetOfString(appealData.data.assignment.doctor, "")                                                  //Направивший врач
-      case listNdx(15) => this.writeMKBDiagnosesFromAppealData(appealData.data.diagnoses, "assignment", true)                       //Клиническое описание
-      case listNdx(16) => this.writeMKBDiagnosesFromAppealData(appealData.data.diagnoses, "aftereffect", false)                     //Диагноз направившего учреждения (осложнения)
-      case listNdx(17) => this.writeMKBDiagnosesFromAppealData(appealData.data.diagnoses, "aftereffect", true)                      //Клиническое описание (осложнения)
+      case listNdx(15) => this.writeMKBDiagnosesFromAppealData(appealData.data.diagnoses, "diagReceivedMkb", true)                       //Клиническое описание
+      case listNdx(16) => this.writeMKBDiagnosesFromAppealData(appealData.data.diagnoses, "aftereffectMkb", false)                     //Диагноз направившего учреждения (осложнения)
+      case listNdx(17) => this.writeMKBDiagnosesFromAppealData(appealData.data.diagnoses, "aftereffectMkb", true)                      //Клиническое описание (осложнения)
       case listNdx(18) => this.AnyToSetOfString(appealData.data.ambulanceNumber, "")                                                    //Номер наряда СП
       case listNdx(19) => this.AnyToSetOfString(java.lang.Double.valueOf(appealData.data.physicalParameters.bloodPressure.left.diast), "")                              //Артериальное давление (левая рука Диаст)
       case listNdx(20) => this.AnyToSetOfString(java.lang.Double.valueOf(appealData.data.physicalParameters.bloodPressure.left.syst), "")                             //Артериальное давление (левая рука Сист)
@@ -697,8 +697,8 @@ class AppealBean extends AppealBeanLocal
       case listNdx(26) => this.AnyToSetOfString(appealData.data.hospitalizationWith, "relative")                                                //Законный представитель
       case listNdx(27) => this.AnyToSetOfString(appealData.data.hospitalizationType, "")             //Тип госпитализации
       case listNdx(28) => this.AnyToSetOfString(appealData.data.hospitalizationPointType, "")        //Цель госпитализации
-      case listNdx(29) => this.writeMKBDiagnosesFromAppealData(appealData.data.diagnoses, "attendant", false)                       //Диагноз направившего учреждения (сопутствующий)
-      case listNdx(30) => this.writeMKBDiagnosesFromAppealData(appealData.data.diagnoses, "attendant", true)                        //Клиническое описание (сопутствующий)
+      case listNdx(29) => this.writeMKBDiagnosesFromAppealData(appealData.data.diagnoses, "attendantMkb", false)                       //Диагноз направившего учреждения (сопутствующий)
+      case listNdx(30) => this.writeMKBDiagnosesFromAppealData(appealData.data.diagnoses, "attendantMkb", true)                        //Клиническое описание (сопутствующий)
       case listNdx(31) => this.AnyToSetOfString(java.lang.Double.valueOf(appealData.data.physicalParameters.bloodPressure.right.diast), "")                              //Артериальное давление (правая рука)
       case listNdx(32) => this.AnyToSetOfString(java.lang.Double.valueOf(appealData.data.physicalParameters.bloodPressure.right.syst), "")
       case listNdx(33) => this.AnyToSetOfString(appealData.data.hospitalizationWith, "note") //Примечание

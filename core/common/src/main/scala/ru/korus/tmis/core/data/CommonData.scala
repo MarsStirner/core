@@ -10,6 +10,7 @@ import javax.xml.bind.annotation.adapters.{XmlJavaTypeAdapter, XmlAdapter}
 import org.codehaus.jackson.annotate.JsonIgnoreProperties
 import java.util
 import ru.korus.tmis.core.entity.model.layout.LayoutAttributeValue
+import javax.management.remote.rmi._RMIConnectionImpl_Tie
 
 @XmlType(name = "entities")
 @XmlRootElement(name = "entities")
@@ -148,6 +149,17 @@ class CommonEntity {
     this.isEditable = isEditable
   }
 
+  var flatCode: String = _
+
+  @XmlAttribute(name = "flatCode")
+  def getFlatCode() = {
+    flatCode
+  }
+
+  def setFlatCode(flatCode: String) = {
+    this.flatCode = flatCode
+  }
+
   private def this(id: Integer,
                    name: String,
                    eType: String,
@@ -187,6 +199,18 @@ class CommonEntity {
            code: String) = {
     this(id, version, name, eType, eTypeId, status)
     this.code = code
+  }
+
+  def this(id: Integer,
+           version: Integer,
+           name: String,
+           eType: String,
+           eTypeId: Integer,
+           status: Integer,
+           code: String,
+           flatCode: String) = {
+    this(id, version, name, eType, eTypeId, status, code)
+    this.flatCode = flatCode
   }
 
   @BeanProperty

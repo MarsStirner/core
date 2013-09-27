@@ -11,6 +11,7 @@ object ActionPropertyWrapperInfo extends Configuration {
   var ValueId = StringId("valueId")
   var Norm = StringId("norm")
   var Unit = StringId("unit")
+  var Code = StringId("code")
   var IsAssignable = StringId("isAssignable")
   var IsAssigned = StringId("isAssigned")
 
@@ -21,6 +22,7 @@ object ActionPropertyWrapperInfo extends Configuration {
     ValueId -> ValueId,
     Norm -> Norm,
     Unit -> Unit,
+    Code -> Code,
     IsAssignable -> IsAssignable,
     IsAssigned -> IsAssigned
   )
@@ -38,6 +40,7 @@ object ActionPropertyWrapperInfo extends Configuration {
     val ValueId = apwi.ValueId
     val Norm = apwi.Norm
     val Unit = apwi.Unit
+    val Code = apwi.Code
     val IsAssignable = apwi.IsAssignable
     val IsAssigned = apwi.IsAssigned
     val Completed = apwi.Completed

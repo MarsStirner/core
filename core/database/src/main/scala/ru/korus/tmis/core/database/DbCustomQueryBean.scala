@@ -115,8 +115,6 @@ class DbCustomQueryBean
                                                         i18n("db.apt.moving.codes.orgStructTransfer"))))
 
     var result = typed.getResultList
-    //Перепишем общее количество записей для запроса
-    if (records!=null) records(result.size)
 
     var actions = result.foldLeft(LinkedHashMap.empty[Action, java.util.Map[ActionProperty, List[APValue]]])(
       (map, e) => {
@@ -126,6 +124,8 @@ class DbCustomQueryBean
         em.detach(e)
         map
       })
+    //Перепишем общее количество записей для запроса
+    if (actions!=null) records(actions.size)
 
     if (sortingField.compareTo("bed") == 0) {
       //предобработка

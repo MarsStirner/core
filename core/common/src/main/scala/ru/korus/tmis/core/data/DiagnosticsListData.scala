@@ -457,8 +457,10 @@ class InstrumentalDiagnosticsListEntry {
     this.createPerson = new DoctorContainer(action.getCreatePerson)
     this.cito = action.getIsUrgent
     this.status = new IdNameContainer(action.getStatus, ActionStatus.fromShort(action.getStatus).getName)
-    val isTrueDoctor = (authData.getUser.getId.intValue() == action.getCreatePerson.getId.intValue() ||
-                        authData.getUser.getId.intValue() == action.getAssigner.getId.intValue() )
+    val isTrueDoctor = ((action.getCreatePerson != null &&
+                         authData.getUser.getId.intValue() == action.getCreatePerson.getId.intValue()) ||
+                        (action.getAssigner != null &&
+                         authData.getUser.getId.intValue() == action.getAssigner.getId.intValue()))
     this.isEditable = (action.getStatus == 0 && action.getEvent.getExecDate == null && isTrueDoctor && (jt == null || (jt != null && jt.getStatus == 0)))
     //this.toOrder = action.getToOrder
   }

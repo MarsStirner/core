@@ -106,6 +106,7 @@ class DirectionBean extends DirectionBeanLocal
     val group = new CommonGroup(1, "Details")
 
     val age = commonDataProcessor.defineAgeOfPatient(direction.getEvent.getPatient)
+    //val (year, month, week, date) = age.asInstanceOf[(Int, Int, Int, Int)]
 
     propertiesMap.foreach(
       (p) => {
@@ -124,8 +125,8 @@ class DirectionBean extends DirectionBeanLocal
             }
           }
         }
-      })
-
+      }
+    )
     group
   }
 

@@ -11,7 +11,6 @@ import ru.korus.tmis.core.entity.model.*;
 import ru.korus.tmis.core.entity.model.pharmacy.Pharmacy;
 import ru.korus.tmis.core.entity.model.pharmacy.PharmacyStatus;
 import ru.korus.tmis.core.exception.CoreException;
-import ru.korus.tmis.core.logging.LoggingInterceptor;
 import ru.korus.tmis.core.pharmacy.DbPharmacyBeanLocal;
 import ru.korus.tmis.core.pharmacy.DbUUIDBeanLocal;
 import ru.korus.tmis.core.pharmacy.FlatCode;
@@ -24,10 +23,7 @@ import ru.korus.tmis.util.logs.ToLog;
 import javax.ejb.EJB;
 import javax.ejb.Schedule;
 import javax.ejb.Stateless;
-import javax.interceptor.Interceptors;
-import java.util.Arrays;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 /**
  * Author:      Dmitriy E. Nosov <br>
@@ -43,7 +39,7 @@ public class PharmacyBean implements PharmacyBeanLocal {
 
     private static final int LAST_ACTIONS = 10;
 
-    private static final String DATE_TIME_FORMAT = "yyyy-MM-dd hh:mm:ss";
+    private static final String DATE_TIME_FORMAT = "yyyy-MM-dd HH:mm:ss";
 
     @EJB(beanName = "DbActionBean")
     private DbActionBeanLocal dbAction = null;
@@ -93,7 +89,7 @@ public class PharmacyBean implements PharmacyBeanLocal {
                     for (Action action : actionAfterDate) {
                         if (isActionForSend(action)) {
                             send(action);
-                            lastDateUpdate = new DateTime(action.getModifyDatetime());
+                            lastDateUpdate = new DateTime(action.getCreateDatetime());
                         }
                     }
                 }
@@ -225,8 +221,9 @@ public class PharmacyBean implements PharmacyBeanLocal {
         final ActionType actionType = action.getActionType();
 
         if (FlatCode.RECEIVED.getCode().equalsIgnoreCase(actionType.getFlatCode())) {
+            final OrgStructure structure = getReceivedOrgStructure(action);
             // поступление в стационар
-            return HL7PacketBuilder.processReceived(action, getOrgStructure(action));
+            return HL7PacketBuilder.processReceived(action, structure);
 
         } else if (FlatCode.DEL_RECEIVED.getCode().equalsIgnoreCase(actionType.getFlatCode())) {
             // отмена поступления
@@ -250,7 +247,7 @@ public class PharmacyBean implements PharmacyBeanLocal {
             // выписка из стационара
             return HL7PacketBuilder.processLeaved(action);
 
-        } else if (FlatCode.PRESCRIPTION.getCode().equalsIgnoreCase(actionType.getFlatCode())) {
+        /*} else if (FlatCode.PRESCRIPTION.getCode().equalsIgnoreCase(actionType.getFlatCode())) {
             // Пациент
             final Patient client = action.getEvent().getPatient();
             // Врач, сделавший обращение
@@ -276,7 +273,7 @@ public class PharmacyBean implements PharmacyBeanLocal {
 
             return HL7PacketBuilder.processPrescription(
                     action, client, executorStaff, organisation, drugCode, AssignmentType.EXECUTION);
-
+                   */
         }
 
         throw new MessageProcessException();
@@ -313,7 +310,6 @@ public class PharmacyBean implements PharmacyBeanLocal {
         return lastDateUpdate != null ? lastDateUpdate.toString(DATE_TIME_FORMAT) : "none";
     }
 
-
     private Organisation getCustodianOrgStructure(final Action action) throws NoSuchOrgStructureException {
         final Event event = action.getEvent();
         Organisation res = event.getOrganisation();
@@ -328,9 +324,12 @@ public class PharmacyBean implements PharmacyBeanLocal {
      */
     private OrgStructure getOrgStructureOut(final Action action) throws SkipMessageProcessException {
         try {
-            final Map<ActionProperty, List<APValue>> names
-                    = dbActionPropertyBeanLocal.getActionPropertiesByActionIdAndTypeNames(
-                    action.getId(), Arrays.asList("Отделение пребывания"));
+            final Set<String> codes = new HashSet<String>();
+            codes.add("orgStructReceived");
+
+            final Map<ActionProperty, List<APValue>> names =
+                    dbActionPropertyBeanLocal.getActionPropertiesByActionIdAndActionPropertyTypeCodes(action.getId(), codes);
+
             logger.info("getOrgStructureOut Action properties and type {}", names);
             for (ActionProperty property : names.keySet()) {
                 final List<APValue> apValues = names.get(property);
@@ -352,10 +351,13 @@ public class PharmacyBean implements PharmacyBeanLocal {
      */
     private OrgStructure getOrgStructureIn(final Action action) throws SkipMessageProcessException {
         try {
+            final Set<String> codes = new HashSet<String>();
+            codes.add("orgStructStay");
+
             final Map<ActionProperty, List<APValue>> names
-                    = dbActionPropertyBeanLocal.getActionPropertiesByActionIdAndTypeNames(
-                    action.getId(), Arrays.asList("Переведен в отделение"));
+                    = dbActionPropertyBeanLocal.getActionPropertiesByActionIdAndActionPropertyTypeCodes(action.getId(), codes);
             logger.info("getOrgStructureIn Action properties and type {}", names);
+
             for (ActionProperty property : names.keySet()) {
                 final List<APValue> apValues = names.get(property);
                 for (APValue apValue : apValues) {
@@ -374,11 +376,40 @@ public class PharmacyBean implements PharmacyBeanLocal {
     /**
      * Поиск OrgStructure для конкретного Action
      */
+    private OrgStructure getReceivedOrgStructure(final Action action) throws SkipMessageProcessException {
+        try {
+            final Set<String> codesSet = new HashSet<String>();
+            codesSet.add("orgStructStay");
+
+            final Map<ActionProperty, List<APValue>> names
+                    = dbActionPropertyBeanLocal.getActionPropertiesByActionIdAndActionPropertyTypeCodes(action.getId(), codesSet);
+            logger.info("Action properties and type {}", names);
+
+       //     final Map<ActionProperty, List<APValue>> actionPropertiesMap = dbActionPropertyBeanLocal.getActionPropertiesByActionId(action.getId());
+            for (ActionProperty property : names.keySet()) {
+                final List<APValue> apValues = names.get(property);
+                for (APValue apValue : apValues) {
+                    if (apValue instanceof APValueOrgStructure) {
+                        logger.info("Found OrgStructure property: {}, apvalue: {}, value: {}", property, apValue, apValue.getValue());
+                        return (OrgStructure) apValue.getValue();
+                    }
+                }
+            }
+        } catch (CoreException e) {
+            // skip
+        }
+        throw new SkipMessageProcessException("OrgStructure for " + action + " is not found");
+    }
+
+
+    /**
+     * Поиск OrgStructure для конкретного Action
+     */
     private OrgStructure getOrgStructure(final Action action) throws SkipMessageProcessException {
         try {
             final Map<ActionProperty, List<APValue>> names
                     = dbActionPropertyBeanLocal.getActionPropertiesByActionIdAndTypeNames(
-                    action.getId(), Arrays.asList("Переведен в отделение", "Переведен из отделения", "Отделение пребывания"));
+                    action.getId(), Arrays.asList("Переведен в отделение", "Отделение пребывания"));
             logger.info("Action properties and type {}", names);
 
 
