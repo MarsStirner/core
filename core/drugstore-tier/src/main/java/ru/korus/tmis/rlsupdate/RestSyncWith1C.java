@@ -33,12 +33,20 @@ public class RestSyncWith1C {
     @Path("/update")
     public Response updateDragList() {
         String res = sync.update();
-        res += sync.updateBalance();
         return Response.status(Response.Status.OK).entity(res).build();
     }
 
+    @GET
+    @Path("/update-balance")
+    public Response updateBalance() {
+        String res = sync.updateBalance();
+        return Response.status(Response.Status.OK).entity(res).build();
+    }
+
+
     @Schedule(hour = "1", minute = "33")
     public void updateDragListSchedule() {
+        sync.update();
         sync.updateBalance();
     }
 
@@ -47,7 +55,7 @@ public class RestSyncWith1C {
     @Path("/update-tst")
     public Response updateDragListTst() {
         String res = "";
-        final Integer drugs[] = { 28, 29};
+        final Integer drugs[] = { 162019 };
         res += balanceOfGoodsInfoBean.update(Arrays.asList(drugs)) ? "OK" : "ERROR";
         return Response.status(Response.Status.OK).entity(res).build();
     }

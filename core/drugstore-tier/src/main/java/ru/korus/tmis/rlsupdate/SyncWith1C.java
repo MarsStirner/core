@@ -7,9 +7,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import javax.ejb.EJB;
-import javax.ejb.Schedule;
-import javax.ejb.Stateless;
+import javax.ejb.*;
 import javax.persistence.EntityManager;
 import javax.persistence.PersistenceContext;
 import javax.persistence.TypedQuery;
@@ -297,7 +295,7 @@ public class SyncWith1C {
     }
 
     private String checkDiff(Object value1C, Object valueDb, String table, String field) {
-        if (!valueDb.equals(value1C)) {
+        if (valueDb != null && !valueDb.equals(value1C)) {
             return "1C " + table + ": '" + value1C + "'; rls" + table + "." + field + ": '" + valueDb + "' ";
         }
         return "";
@@ -556,38 +554,43 @@ public class SyncWith1C {
         return res;
     }
 
+    @TransactionAttribute(value = TransactionAttributeType.REQUIRES_NEW)
     public String updateBalance(DrugList drugList, String organizationRef, OrgStructure orgStructure) {
         logger.info("update RLS balance for store {}", orgStructure.getName());
         final SimpleDateFormat dateFormat = new SimpleDateFormat("yyyyMMdd");
         Integer updateCount = 0;
         String res = htmlNewLine("update RLS balance for store '" + orgStructure.getName() + "'");
         MISExchangePortType servicePort = getMisExchangePortType();
-        final UUID uuid = orgStructure.getUuid();
+        final UUID uuid =orgStructure.getUuid();
         if(!drugList.getDrug().isEmpty() && uuid != null) {
-            BalanceOfGoods2 balanceOfGoods2 = servicePort.balanceOfGoods(drugList, organizationRef, uuid.getUuid());
+            BalanceOfGoods2 balanceOfGoods2 = servicePort.balanceOfGoods(drugList, organizationRef,  uuid.getUuid());
             if (balanceOfGoods2 != null) {
                 for( BalanceOfGoods2.Storage storages : balanceOfGoods2.getStorage()) {
                     for(BalanceOfGoods2.Storage.Balance balance: storages.getBalance()) {
                         final Integer drugRlsCode = getDrugRlsCode(balance.getDrug());
-                        final RlsNomen rlsNomen = drugsInDb.get(drugRlsCode);
-                        for(BalanceOfGoods2.Storage.Balance.Goods goods : balance.getGoods()) {
-                            try {
-                                Date bestBefore = dateFormat.parse(goods.getBestBefore());
-                                RlsBalanceOfGood rlsBalanceOfGood = getRlsBalanceOfGood(drugRlsCode, orgStructure.getId(), bestBefore);
-                                rlsBalanceOfGood.setRlsNomen(rlsNomen);
-                                rlsBalanceOfGood.setOrgStructure(orgStructure);
-                                rlsBalanceOfGood.setValue(Double.parseDouble(goods.getQty().getValue()));
-                                rlsBalanceOfGood.setBestBefore(bestBefore);
-                                rlsBalanceOfGood.setUpdateDateTime(new Date());
-                                em.persist(rlsBalanceOfGood);
-                                ++updateCount;
-                            } catch (ParseException ex) {
-                                logger.info("Wrong date format '{}', drug code: '{}', storage: '{}'", goods.getBestBefore(), drugRlsCode, orgStructure.getName());
-                            } catch (NumberFormatException ex) {
-                                logger.info("Wrong dosage format for drug # {}: {}",drugRlsCode, ex );
-                                res += "Wrong storage value format for drug #" + drugRlsCode + ": " + goods.getQty().getValue() + EOL;
-                            }
+                        final RlsNomen rlsNomen = drugsInDb == null ? em.find(RlsNomen.class, drugRlsCode) : drugsInDb.get(drugRlsCode);
+                        if(rlsNomen != null) {
+                            final List<BalanceOfGoods2.Storage.Balance.Goods> goodsList = balance.getGoods();
+                            for(BalanceOfGoods2.Storage.Balance.Goods goods : goodsList) {
+                                try {
+                                    Date bestBefore = dateFormat.parse(goods.getBestBefore());
+                                    RlsBalanceOfGood rlsBalanceOfGood = getRlsBalanceOfGood(drugRlsCode, orgStructure.getId(), bestBefore);
+                                    rlsBalanceOfGood.setRlsNomen(rlsNomen);
+                                    rlsBalanceOfGood.setOrgStructure(orgStructure);
+                                    rlsBalanceOfGood.setValue(Double.parseDouble(goods.getQty().getValue()));
+                                    rlsBalanceOfGood.setBestBefore(bestBefore);
+                                    rlsBalanceOfGood.setUpdateDateTime(new Date());
+                                    em.persist(rlsBalanceOfGood);
+                                    em.flush();
+                                    ++updateCount;
+                                } catch (ParseException ex) {
+                                    logger.info("Wrong date format '{}', drug code: '{}', storage: '{}'", goods.getBestBefore(), drugRlsCode, orgStructure.getName());
+                                } catch (NumberFormatException ex) {
+                                    logger.info("Wrong dosage format for drug # {}: {}",drugRlsCode, ex );
+                                    res += "Wrong storage value format for drug #" + drugRlsCode + ": " + goods.getQty().getValue() + EOL;
+                                }
 
+                            }
                         }
                     }
                 }
