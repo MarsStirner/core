@@ -1,5 +1,6 @@
 package ru.korus.tmis.rlsupdate;
 
+import ru.korus.tmis.prescription.BalanceOfGoodsInfo;
 import ru.korus.tmis.rlsupdate.SyncWith1C;
 
 import javax.ejb.EJB;
@@ -22,26 +23,31 @@ import java.util.Arrays;
 public class RestSyncWith1C {
 
     @EJB
-    SyncWith1C sync = null;
+    SyncWith1C sync;
 
     @EJB
-    BalanceOfGoodsInfoBean balanceOfGoodsInfoBean = null;
+    BalanceOfGoodsInfo balanceOfGoodsInfoBean;
 
 
     @GET
     @Path("/update")
-    @Schedule(hour = "1", minute = "33")
     public Response updateDragList() {
         String res = sync.update();
         res += sync.updateBalance();
         return Response.status(Response.Status.OK).entity(res).build();
     }
 
+    @Schedule(hour = "1", minute = "33")
+    public void updateDragListSchedule() {
+        sync.updateBalance();
+    }
+
+
     @GET
     @Path("/update-tst")
     public Response updateDragListTst() {
-        String res = sync.update();
-        final Integer drugs[] = { 1, 2};
+        String res = "";
+        final Integer drugs[] = { 28, 29};
         res += balanceOfGoodsInfoBean.update(Arrays.asList(drugs)) ? "OK" : "ERROR";
         return Response.status(Response.Status.OK).entity(res).build();
     }

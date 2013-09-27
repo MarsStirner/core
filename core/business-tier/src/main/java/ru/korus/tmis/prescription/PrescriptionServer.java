@@ -1,7 +1,5 @@
 package ru.korus.tmis.prescription;
 
-import ch.epfl.lamp.compiler.msil.util.Table;
-import com.google.common.collect.ImmutableSet;
 import org.apache.thrift.TException;
 import org.apache.thrift.protocol.TBinaryProtocol;
 import org.apache.thrift.server.TServer;
@@ -13,13 +11,10 @@ import org.slf4j.LoggerFactory;
 import ru.korus.tmis.core.database.*;
 import ru.korus.tmis.core.entity.model.*;
 import ru.korus.tmis.core.exception.CoreException;
-import ru.korus.tmis.core.pharmacy.DbUUIDBean;
 import ru.korus.tmis.prescription.thservice.*;
 import ru.korus.tmis.prescription.thservice.DrugComponent;
 
 import java.util.ArrayList;
-import java.util.Date;
-import java.util.HashMap;
 import java.util.List;
 
 /**

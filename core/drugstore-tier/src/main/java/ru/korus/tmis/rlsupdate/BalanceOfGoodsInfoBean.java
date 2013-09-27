@@ -19,12 +19,12 @@ import java.util.List;
 public class BalanceOfGoodsInfoBean implements BalanceOfGoodsInfo {
 
     @EJB
-    SyncWith1C sync = null;
+    SyncWith1C sync;
 
     private final misexchange.ObjectFactory factory = new misexchange.ObjectFactory();
     private final org.hl7.v3.ObjectFactory factoryHL7 = new org.hl7.v3.ObjectFactory();
 
-    @Override
+   // @Override
     public boolean update(List<Integer> drugIds) {
 
         DrugList drugList = factory.createDrugList();
@@ -40,6 +40,7 @@ public class BalanceOfGoodsInfoBean implements BalanceOfGoodsInfo {
         drugList.getDrug().add(labeledDrug);
         final CE ce = factoryHL7.createCE();
         labeledDrug.setCode(ce);
+        ce.setCodeSystemName("RLS_NOMEN");
         ce.setCode(drugCode);
     }
 

@@ -1,8 +1,10 @@
-package ru.korus.tmis.prescription;
+package ru.korus.tmis.rlsupdate;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import ru.korus.tmis.core.database.*;
+import ru.korus.tmis.prescription.BalanceOfGoodsInfo;
+import ru.korus.tmis.prescription.PrescriptionServer;
 import ru.korus.tmis.util.ConfigManager;
 
 import javax.annotation.PostConstruct;

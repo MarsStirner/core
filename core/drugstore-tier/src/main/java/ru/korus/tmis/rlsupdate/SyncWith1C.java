@@ -12,6 +12,7 @@ import javax.ejb.Schedule;
 import javax.ejb.Stateless;
 import javax.persistence.EntityManager;
 import javax.persistence.PersistenceContext;
+import javax.persistence.TypedQuery;
 
 import misexchange.*;
 
@@ -122,20 +123,14 @@ public class SyncWith1C {
         for (POCDMT000040LabeledDrug drug : drugListRes.getDrug()) {
             final Integer drugRlsCode = getDrugRlsCode(drug);
             if (drugRlsCode != null) { // если задан код лекарственного средства
-                final RlsNomenPK rlsCode = new RlsNomenPK(drugRlsCode);
 
                 RlsNomen rlsNomen = new RlsNomen();
-                rlsNomen.setId(rlsCode);
+                rlsNomen.setId(drugRlsCode);
 
                 final String dosageValue = getDosageValue(drug);
-                try {
                     if (dosageValue != null && !"".equals(dosageValue)) {
-                        rlsNomen.setDosageValue(Double.parseDouble(dosageValue));
+                        rlsNomen.setDosageValue(dosageValue);
                     }
-                } catch (NumberFormatException ex) {
-                    logger.info("Wrong dosage format for drug # {}: {}",drugRlsCode, ex );
-                    res += htmlNewLine("Wrong dosage format for drug #" + drugRlsCode + ": " + dosageValue + EOL);
-                }
                 rlsNomen.setDosageUnit(getRbUnit(getDosageUnit(drug)));
                 rlsNomen.setUnit(getRbUnit(getFillingUnit(drug)));
 
@@ -148,26 +143,22 @@ public class SyncWith1C {
                 rlsNomen.setRlsPacking(initByName(new RlsPacking(), formatForDb(getPackingName(drug))));
                 rlsNomen.setRlsTradeName(initByLocalName(initByName(new RlsTradeName(), getTradeNameLat(drug)), getTradeName(drug)));
 
-                List<RlsNomen> drugs =
-                        em.createNamedQuery("RlsNomen.findByCode", RlsNomen.class).setParameter("code", drugRlsCode).getResultList();
+                RlsNomen drugDb = em.find(RlsNomen.class, drugRlsCode);
 
-                if (drugs.isEmpty()) { // если лекарственного средства нет в БД, то добавляем его в БД
+                if (drugDb == null) { // если лекарственного средства нет в БД, то добавляем его в БД
                     saveNewDrug(rlsActMatter, rlsNomen);
                     String info =  "New drug: #" + drugRlsCode + EOL;
                     logger.info(info);
                     res += info;
-                } else { // если лекарственное средство с кодом drugRlsCode есть, то сравниваем данные ТМИС и 1С
-                    RlsNomen lastVer = drugs.get(0);
-                    String info = verify(lastVer, rlsNomen);
-                    if(info.isEmpty()) {
-                        rlsNomen = lastVer;
-                    } else { //если описание лекарственного средства в БД ТМИС и по данным 1С не совпадают, то добавляем
-                        rlsNomen.setId(new RlsNomenPK(lastVer.getId()));
-                        saveNewDrug(rlsActMatter, rlsNomen);
+                }
+                else { // если лекарственное средство с кодом drugRlsCode есть, то сравниваем данные ТМИС и 1С
+                    String info = verify(drugDb, rlsNomen);
+                    if( !info.isEmpty()) {  //если описание лекарственного средства в БД ТМИС и по данным 1С не совпадают
                         logger.info(info);
                         res += info;
                     }
                 }
+
                 drugsInDb.put(drugRlsCode, rlsNomen);
                 drugList.getDrug().add(drug);
             }
@@ -192,18 +183,10 @@ public class SyncWith1C {
     }
 
     private void saveNewDrug(RlsActMatter rlsActMatter, RlsNomen rlsNomen) {
-        em.persist(rlsNomen);
         em.persist(rlsActMatter);
-        List<RlsActMatters_Nomen> actMattersNomens =
-                em.createNamedQuery("RlsActMatters_Nomen.findNomenByCode", RlsActMatters_Nomen.class).
-                        setParameter("code", rlsNomen.getId().getId()).getResultList();
-        if(actMattersNomens.isEmpty()) {
-            RlsActMatters_Nomen newActMattersNomen = new RlsActMatters_Nomen();
-            newActMattersNomen.setId(new RlsActMatters_NomenPK());
-            newActMattersNomen.getId().setNomenId(rlsNomen.getId().getId());
-            newActMattersNomen.getId().setActMatter_id(rlsActMatter.getId());
-            em.persist(newActMattersNomen);
-        }
+        rlsNomen.setRlsActMatter(rlsActMatter);
+        em.persist(rlsNomen);
+        em.flush();
     }
 
 
@@ -211,16 +194,19 @@ public class SyncWith1C {
         if(code == null) {
             return null;
         }
-        List<RbUnit> drugs =
-                em.createNamedQuery("RbUnit.findByCode", RbUnit.class).setParameter("code", code).getResultList();
+        //final TypedQuery<RbUnit> code1 = em.createNamedQuery("RbUnit.findByCode", RbUnit.class).setParameter("code", code);
+        final TypedQuery<RbUnit> code1 = em.createQuery("SELECT u FROM RbUnit u WHERE u.code = :code", RbUnit.class).setParameter("code", code);
+        List<RbUnit> units =
+                code1.getResultList();
 
-        if(drugs.isEmpty()) {
+        if(units.isEmpty()) {
             RbUnit res = new RbUnit();
             res.setCode(code);
             res.setName(code);
+            em.persist(res);
             return res;
         }
-        return drugs.get(0);
+        return units.get(0);
     }
 
     private <T> T initByName(T t, String name) {
@@ -305,7 +291,7 @@ public class SyncWith1C {
         }
 
         if (!res.equals("")) { //если найдено хоть одно различие
-            res = "Warning. The description of drug #" + rlsNomenDb.getId().getId() + " was different from 1C information: " + res + EOL;
+            res = "Warning. The description of drug #" + rlsNomenDb.getId() + " was different from 1C information: " + res + EOL;
         }
         return res;
     }
@@ -576,8 +562,9 @@ public class SyncWith1C {
         Integer updateCount = 0;
         String res = htmlNewLine("update RLS balance for store '" + orgStructure.getName() + "'");
         MISExchangePortType servicePort = getMisExchangePortType();
-        if(!drugList.getDrug().isEmpty()) {
-            BalanceOfGoods2 balanceOfGoods2 = servicePort.balanceOfGoods(drugList, organizationRef, orgStructure.getUuid().getUuid());
+        final UUID uuid = orgStructure.getUuid();
+        if(!drugList.getDrug().isEmpty() && uuid != null) {
+            BalanceOfGoods2 balanceOfGoods2 = servicePort.balanceOfGoods(drugList, organizationRef, uuid.getUuid());
             if (balanceOfGoods2 != null) {
                 for( BalanceOfGoods2.Storage storages : balanceOfGoods2.getStorage()) {
                     for(BalanceOfGoods2.Storage.Balance balance: storages.getBalance()) {
@@ -591,6 +578,7 @@ public class SyncWith1C {
                                 rlsBalanceOfGood.setOrgStructure(orgStructure);
                                 rlsBalanceOfGood.setValue(Double.parseDouble(goods.getQty().getValue()));
                                 rlsBalanceOfGood.setBestBefore(bestBefore);
+                                rlsBalanceOfGood.setUpdateDateTime(new Date());
                                 em.persist(rlsBalanceOfGood);
                                 ++updateCount;
                             } catch (ParseException ex) {

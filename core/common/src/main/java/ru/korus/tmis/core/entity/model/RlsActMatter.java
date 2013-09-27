@@ -2,6 +2,7 @@ package ru.korus.tmis.core.entity.model;
 
 import java.io.Serializable;
 import javax.persistence.*;
+import java.util.List;
 
 
 /**
@@ -18,11 +19,15 @@ public class RlsActMatter implements Serializable, UniqueName, UniqueLocalName {
 	@Column(unique=true, nullable=false)
 	private int id;
 
-	@Column(nullable=false, length=255)
+	@Column(length=255)
 	private String localName;
 
-	@Column(nullable=false, length=255)
+	@Column(length=255)
 	private String name;
+
+	//bi-directional many-to-one association to RlsNomen
+	@OneToMany(mappedBy="rlsActMatter")
+	private List<RlsNomen> rlsNomens;
 
 	public RlsActMatter() {
 	}
@@ -49,6 +54,14 @@ public class RlsActMatter implements Serializable, UniqueName, UniqueLocalName {
 
 	public void setName(String name) {
 		this.name = name;
+	}
+
+	public List<RlsNomen> getRlsNomens() {
+		return this.rlsNomens;
+	}
+
+	public void setRlsNomens(List<RlsNomen> rlsNomens) {
+		this.rlsNomens = rlsNomens;
 	}
 
 }

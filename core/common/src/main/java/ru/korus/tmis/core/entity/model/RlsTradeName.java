@@ -19,10 +19,10 @@ public class RlsTradeName implements Serializable, UniqueName, UniqueLocalName {
 	@Column(unique=true, nullable=false)
 	private int id;
 
-	@Column(nullable=false, length=255, unique=true)
+	@Column(length=255)
 	private String localName;
 
-	@Column(nullable=false, length=255, unique=true)
+	@Column(length=255)
 	private String name;
 
 	//bi-directional many-to-one association to RlsNomen
@@ -52,7 +52,6 @@ public class RlsTradeName implements Serializable, UniqueName, UniqueLocalName {
 		return this.name;
 	}
 
-    @Override
 	public void setName(String name) {
 		this.name = name;
 	}
