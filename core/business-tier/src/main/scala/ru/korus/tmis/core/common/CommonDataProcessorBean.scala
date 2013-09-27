@@ -611,7 +611,8 @@ class CommonDataProcessorBean
         typeName,
         at.getGroupId,
         null,
-        at.getCode)
+        at.getCode,
+        at.getFlatCode)
       val group = new CommonGroup
       dbActionType.getActionTypePropertiesById(at.getId.intValue).foreach(
         (apt) => group add converter(apt)
@@ -627,7 +628,7 @@ class CommonDataProcessorBean
                                   converter: (java.util.List[String], ActionPropertyType) => CommonAttribute,
                                   patient: Patient) = {
     val age = defineAgeOfPatient(patient)
-    val (year, month, week, date2) = age.asInstanceOf[(Int, Int, Int, Int)]
+    //val (year, month, week, date2) = age.asInstanceOf[(Int, Int, Int, Int)]
 
     types.foldLeft(
       new CommonData(0, dbVersion.getGlobalVersion)
@@ -638,7 +639,8 @@ class CommonDataProcessorBean
         typeName,
         at.getId.intValue(),
         null,
-        at.getCode)
+        at.getCode,
+        at.getFlatCode)
       //***
       val group0 = new CommonGroup(0, "Summary")
       var a = new Action()
@@ -704,7 +706,7 @@ class CommonDataProcessorBean
       val group = new CommonGroup(1, "Details")
       dbActionType.getActionTypePropertiesById(at.getId.intValue).foreach(
         (apt) => {
-          if (checkActionPropertyTypeForPatientAge(year, month, week, date2, apt)) {
+          if (checkActionPropertyTypeForPatientAge(age, apt)) {
             group add converter(listForConverter, apt)
           }
         }
@@ -726,7 +728,8 @@ class CommonDataProcessorBean
           actionName,
           action.getActionType.getId,
           action.getStatus,
-          action.getActionType.getCode)
+          action.getActionType.getCode,
+          action.getActionType.getFlatCode)
       )((entity, converter) => entity add converter(action))
     })
   }
@@ -739,7 +742,7 @@ class CommonDataProcessorBean
     )
   }
 
-  def defineAgeOfPatient(patient: Patient) = {
+  def defineAgeOfPatient(patient: Patient): CustomCalendar = {
     if (patient != null) {
       val now = Calendar.getInstance()
       now.setTime(new Date())
@@ -753,31 +756,32 @@ class CommonDataProcessorBean
       val date = now.get(Calendar.DATE) - birth.get(Calendar.DATE)
       age.set(year, month, date, 0, 0)
 
-      (year, month, week, date)
+      new CustomCalendar(year, month, week, date)
+      //(year, month, week, date)
     } else {
       null
     }
   }
 
-  def checkActionPropertyTypeForPatientAge(year: Int, month: Int, week: Int, date: Int, apt: ActionPropertyType): Boolean = {
+  def checkActionPropertyTypeForPatientAge(age: CustomCalendar, apt: ActionPropertyType): Boolean = {
     var needProp: Boolean = false
-    if (year.intValue() == 0 || (apt.getAge_bc == 0 && apt.getAge_ec == 0 && apt.getAge_bu == 0 && apt.getAge_eu == 0)) {
+    if (age == null || age.getYear.intValue() == 0 || (apt.getAge_bc == 0 && apt.getAge_ec == 0 && apt.getAge_bu == 0 && apt.getAge_eu == 0)) {
       apt.getAge_eu match {
         case 1 => {   //дней
-          if ((date >= apt.getAge_bc || apt.getAge_bc == 0)  &&
-              (date < apt.getAge_ec || apt.getAge_ec == 0)) {
+          if ((age.getDay.intValue() >= apt.getAge_bc || apt.getAge_bc == 0)  &&
+              (age.getDay.intValue() < apt.getAge_ec || apt.getAge_ec == 0)) {
             needProp = true
           }
         }
         case 2 => {   //недель
-          if ((week >= apt.getAge_bc || apt.getAge_bc == 0) &&
-              (week < apt.getAge_ec || apt.getAge_ec == 0)) {
+          if ((age.getWeek.intValue() >= apt.getAge_bc || apt.getAge_bc == 0) &&
+              (age.getWeek.intValue() < apt.getAge_ec || apt.getAge_ec == 0)) {
             needProp = true
           }
         }
         case 3 => {   //месяцев
-          if ((month >= apt.getAge_bc || apt.getAge_bc == 0) &&
-              (month < apt.getAge_ec || apt.getAge_ec == 0)) {
+          if ((age.getMonth.intValue() >= apt.getAge_bc || apt.getAge_bc == 0) &&
+              (age.getMonth.intValue() < apt.getAge_ec || apt.getAge_ec == 0)) {
             needProp = true
           }
         }
@@ -787,8 +791,8 @@ class CommonDataProcessorBean
       }
     } else {             //лет
       if ( apt.getAge_eu == 4 &&
-        (year >= apt.getAge_bc || apt.getAge_bc == 0) &&
-        (year < apt.getAge_ec || apt.getAge_ec == 0)) {
+        (age.getYear.intValue() >= apt.getAge_bc || apt.getAge_bc == 0) &&
+        (age.getYear.intValue() < apt.getAge_ec || apt.getAge_ec == 0)) {
         needProp = true
       }
     }
