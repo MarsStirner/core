@@ -138,7 +138,7 @@ public class PharmacyBean implements PharmacyBeanLocal {
 
             logger.info("prepare message... \n\n {}", HL7PacketBuilder.marshallMessage(request, "misexchange"));
             // отправка сообщения в 1С
-           // final MCCIIN000002UV01 result = new MISExchange().getMISExchangeSoap().processHL7V3Message(request);
+            // final MCCIIN000002UV01 result = new MISExchange().getMISExchangeSoap().processHL7V3Message(request);
             final MCCIIN000002UV012 result = new MISExchange().getMISExchangeSoap().processHL7V3Message(request);
             if (result != null) {
                 // обработка результата
@@ -239,8 +239,8 @@ public class PharmacyBean implements PharmacyBeanLocal {
 
         } else if (FlatCode.DEL_MOVING.getCode().equalsIgnoreCase(actionType.getFlatCode())) {
             // отмена движения
-            final OrgStructure orgStructureOut = getOrgStructureOut(action);
-            final OrgStructure orgStructureIn = getOrgStructureIn(action);
+            final OrgStructure orgStructureOut = getOrgStructureOutWithDel(action);
+            final OrgStructure orgStructureIn = getOrgStructureInWithDel(action);
 
             return HL7PacketBuilder.processDelMoving(action, orgStructureOut, orgStructureIn);
 
@@ -350,6 +350,41 @@ public class PharmacyBean implements PharmacyBeanLocal {
     /**
      * Поиск OrgStructure для конкретного Action
      */
+    private OrgStructure getOrgStructureOutWithDel(final Action action) throws SkipMessageProcessException {
+        try {
+            if (action.getParentActionId() != 0) {
+                logger.info("try recursive call {} by actionParentId [{}]", action, action.getParentActionId());
+                final Action parentAction = dbAction.getActionByIdWithIgnoreDeleted(action.getParentActionId());
+                if (parentAction != null) {
+                    final Set<String> codes = new HashSet<String>();
+                    codes.add("orgStructReceived");
+
+                    final Map<ActionProperty, List<APValue>> names =
+                            dbActionPropertyBeanLocal.getActionPropertiesByActionIdAndActionPropertyTypeCodesWithoutDel(parentAction.getId(), codes);
+
+                    logger.info("getOrgStructureOut Action properties and type {}", names);
+                    for (ActionProperty property : names.keySet()) {
+                        final List<APValue> apValues = names.get(property);
+                        for (APValue apValue : apValues) {
+                            if (apValue instanceof APValueOrgStructure) {
+                                final OrgStructure orgStructure = (OrgStructure) apValue.getValue();
+                                logger.info("Found OrgStructureOut: {}, {}", orgStructure, orgStructure.getName());
+                                return orgStructure;
+                            }
+                        }
+                    }
+                }
+            } else {
+                logger.info("OrgStructure is not found {} by actionParentId [{}]", action, action.getParentActionId());
+            }
+        } catch (CoreException e) {
+        }
+        throw new SkipMessageProcessException();
+    }
+
+    /**
+     * Поиск OrgStructure для конкретного Action
+     */
     private OrgStructure getOrgStructureIn(final Action action) throws SkipMessageProcessException {
         try {
             final Set<String> codes = new HashSet<String>();
@@ -377,6 +412,43 @@ public class PharmacyBean implements PharmacyBeanLocal {
     /**
      * Поиск OrgStructure для конкретного Action
      */
+    private OrgStructure getOrgStructureInWithDel(final Action action) throws SkipMessageProcessException {
+        try {
+            if (action.getParentActionId() != 0) {
+                logger.info("try recursive call {} by actionParentId [{}]", action, action.getParentActionId());
+                final Action parentAction = dbAction.getActionByIdWithIgnoreDeleted(action.getParentActionId());
+                if (parentAction != null) {
+                    final Set<String> codes = new HashSet<String>();
+                    codes.add("orgStructStay");
+
+                    final Map<ActionProperty, List<APValue>> names
+                            = dbActionPropertyBeanLocal.getActionPropertiesByActionIdAndActionPropertyTypeCodesWithoutDel(parentAction.getId(), codes);
+                    logger.info("getOrgStructureIn Action properties and type {}", names);
+
+                    for (ActionProperty property : names.keySet()) {
+                        final List<APValue> apValues = names.get(property);
+                        for (APValue apValue : apValues) {
+                            if (apValue instanceof APValueOrgStructure) {
+                                final OrgStructure orgStructure = (OrgStructure) apValue.getValue();
+                                logger.info("Found OrgStructureIn: {}, {}", orgStructure, orgStructure.getName());
+                                return orgStructure;
+                            }
+                        }
+                    }
+                } else {
+                    logger.info("OrgStructure is not found {} by actionParentId [{}]", action, action.getParentActionId());
+                }
+            }
+
+
+        } catch (CoreException e) {
+        }
+        throw new SkipMessageProcessException();
+    }
+
+    /**
+     * Поиск OrgStructure для конкретного Action
+     */
     private OrgStructure getReceivedOrgStructure(final Action action) throws SkipMessageProcessException {
         try {
             final Set<String> codesSet = new HashSet<String>();
@@ -386,7 +458,7 @@ public class PharmacyBean implements PharmacyBeanLocal {
                     = dbActionPropertyBeanLocal.getActionPropertiesByActionIdAndActionPropertyTypeCodesWithoutDel(action.getId(), codesSet);
             logger.info("Action properties and type {}", names);
 
-       //     final Map<ActionProperty, List<APValue>> actionPropertiesMap = dbActionPropertyBeanLocal.getActionPropertiesByActionId(action.getId());
+            //     final Map<ActionProperty, List<APValue>> actionPropertiesMap = dbActionPropertyBeanLocal.getActionPropertiesByActionId(action.getId());
             for (ActionProperty property : names.keySet()) {
                 final List<APValue> apValues = names.get(property);
                 for (APValue apValue : apValues) {
@@ -401,8 +473,6 @@ public class PharmacyBean implements PharmacyBeanLocal {
         }
         throw new SkipMessageProcessException("OrgStructure for " + action + " is not found");
     }
-
-
 
 
 }
