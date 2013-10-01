@@ -158,6 +158,10 @@ public class Action
     @Column(name = "pacientInQueueType")
     private Short pacientInQueueType = 0;
 
+    @Basic(optional = true)
+    @Column(name = "appointmentType")
+    private String appointmentType = "0";
+
     @Version
     @Basic(optional = false)
     @Column(name = "version")
@@ -528,6 +532,14 @@ public class Action
 
     public void setPacientInQueueType(Short pacientInQueueType) {
         this.pacientInQueueType = pacientInQueueType;
+    }
+
+    public String getAppointmentType() {
+        return appointmentType;
+    }
+
+    public void setAppointmentType(String appointmentType) {
+        this.appointmentType = appointmentType;
     }
 
     public UUID getUuid() {

@@ -65,6 +65,8 @@ class ConsultationRequestData {
   @BeanProperty
   var urgent: Boolean = _
   @BeanProperty
+  var overQueue: Boolean = _
+  @BeanProperty
   var finance: IdNameContainer = _
   @BeanProperty
   var diagnosis: MKBContainer = _
@@ -80,6 +82,7 @@ class ConsultationRequestData {
            plannedTime: Long,
            mkb: Mkb,
            urgent: Boolean,
+           overQueue: Boolean,
            financeId: Int,
            financeName: String) = {
     this()
@@ -95,6 +98,7 @@ class ConsultationRequestData {
     }
     //this.plannedTime = new ScheduleContainer(0, 0, Date(plannedTime))
     this.urgent = urgent
+    this.overQueue = overQueue
     //this.finance = new IdNameContainer(event.getEventType.getFinance.getId.intValue(), event.getEventType.getFinance.getName)
     this.finance = new IdNameContainer(financeId, financeName)
     this.diagnosis = new MKBContainer(mkb)

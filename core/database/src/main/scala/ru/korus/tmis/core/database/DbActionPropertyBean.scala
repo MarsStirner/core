@@ -363,12 +363,30 @@ class DbActionPropertyBean
     )
   }
 
+  def getCountOfActionsWithAppointmentType(appointmentType: Int) {
+    val result = em.createQuery(ActionsWithAppointmentTypeQuery,
+      classOf[Action])
+      .setParameter("appointmentType", appointmentType)
+      .getSingleResult
+  }
+
   @TransactionAttribute(TransactionAttributeType.REQUIRES_NEW)
   def getActionPropertyValue_ActionByValue(action: Action): APValueAction = {
     val apv = em.createQuery(ActionProperty_ActionByValue, classOf[APValueAction]).setParameter("VALUE", action).getSingleResult
     em.detach(apv)
     apv
   }
+
+  val ActionsWithAppointmentTypeQuery = """
+    SELECT COUNT(a)
+    FROM
+      ActionProperty ap
+        JOIN ap.action a
+    WHERE
+      a.appointmentType = :appointmentType
+    ORDER BY
+      v.id.index ASC
+                     """
 
   val ActionPropertiesByEventIdAndActionPropertyTypeCodesQueryEx =
     """

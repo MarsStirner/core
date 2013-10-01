@@ -219,6 +219,14 @@ public class Staff implements Serializable {
     @JoinColumn(name = "speciality_id")
     private Speciality speciality;
 
+    @Basic(optional = false)
+    @Column(name = "maxCito")
+    private int maxCito;
+
+    @Basic(optional = false)
+    @Column(name = "maxOverQueue")
+    private int maxOverQueue;
+
     @ManyToOne
     @JoinColumn(name = "uuid_id")
     // @Transient
@@ -658,6 +666,23 @@ public class Staff implements Serializable {
     public void setSpeciality(Speciality speciality) {
         this.speciality = speciality;
     }
+
+    public int getMaxCito() {
+        return maxCito;
+    }
+
+    public void setMaxCito(int maxCito) {
+        this.maxCito = maxCito;
+    }
+
+    public int getMaxOverQueue() {
+        return maxOverQueue;
+    }
+
+    public void setMaxOverQueue(int maxOverQueue) {
+        this.maxOverQueue = maxOverQueue;
+    }
+
 
     public UUID getUuid() {
         return uuid;
