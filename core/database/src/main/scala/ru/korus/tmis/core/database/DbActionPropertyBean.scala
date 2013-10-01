@@ -285,6 +285,22 @@ class DbActionPropertyBean
   }
 
   @TransactionAttribute(TransactionAttributeType.REQUIRES_NEW)
+  def getActionPropertiesByActionIdAndActionPropertyTypeCodesWithoutDel(actionId: Int, codes: java.util.Set[String]) = {
+    val result = em.createQuery(ActionPropertiesByActionIdAndTypeCodesQuery2, classOf[ActionProperty])
+      .setParameter("actionId", actionId)
+      .setParameter("codes", asJavaCollection(codes))
+      .getResultList
+
+    result.foldLeft(LinkedHashMap.empty[ActionProperty, java.util.List[APValue]])(
+      (map, ap) => {
+        em.detach(ap)
+        map.put(ap, getActionPropertyValue(ap))
+        map
+      }
+    )
+  }
+
+  @TransactionAttribute(TransactionAttributeType.REQUIRES_NEW)
   def getActionPropertiesForEventByActionTypes(eventId: Int, atIds: java.util.Set[java.lang.Integer], coreIds: java.util.Set[java.lang.Integer]) = {
     val result = em.createQuery(ActionPropertiesForEventByActionTypesQuery, classOf[Array[AnyRef]])
       .setParameter("eventId", eventId)
@@ -534,6 +550,16 @@ class DbActionPropertyBean
       ap.actionPropertyType.code IN :codes
     AND
       ap.deleted = 0
+                                                 """
+
+  val ActionPropertiesByActionIdAndTypeCodesQuery2 = """
+    SELECT ap
+    FROM
+      ActionProperty ap
+    WHERE
+      ap.action.id = :actionId
+    AND
+      ap.actionPropertyType.code IN :codes
                                                  """
 
   val ActionPropertiesByActionIdAndRbCoreActionPropertyIds =

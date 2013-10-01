@@ -1,8 +1,10 @@
-package ru.korus.tmis.prescription;
+package ru.korus.tmis.rlsupdate;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import ru.korus.tmis.core.database.*;
+import ru.korus.tmis.prescription.BalanceOfGoodsInfo;
+import ru.korus.tmis.prescription.PrescriptionServer;
 import ru.korus.tmis.util.ConfigManager;
 
 import javax.annotation.PostConstruct;
@@ -44,6 +46,9 @@ public class PrescriptionServerBean {
     DbStaffBeanLocal staffBean = null;
     @EJB
     DbActionPropertyTypeBeanLocal actionPropertyTypeBean = null;
+    @EJB
+    BalanceOfGoodsInfo balanceOfGoodsInfo;
+
 
     public PrescriptionServerBean() {
         logger.info("PrescriptionServerBean simple constructor called.");
@@ -65,6 +70,7 @@ public class PrescriptionServerBean {
             PrescriptionServer.setActionTypeBean(actionTypeBean);
             PrescriptionServer.setStaffBean(staffBean);
             PrescriptionServer.setActionPropertyTypeBean(actionPropertyTypeBean);
+            PrescriptionServer.setBalanceOfGoodsInfo(balanceOfGoodsInfo);
             server.startServer();
         } catch (Exception exception) {
             logger.error("Exception while initialize PrescriptionServerBean", exception);

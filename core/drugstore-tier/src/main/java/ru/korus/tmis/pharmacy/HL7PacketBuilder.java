@@ -272,8 +272,10 @@ public final class HL7PacketBuilder {
         final String externalId = event.getExternalId();
         final String uuidExternal = event.getUuid().getUuid();
         final String uuidClient = client.getUuid().getUuid();
-        final String uuidLocationOut = orgStructureOut.getUuid().getUuid();
-        final String uuidLocationIn = orgStructureIn.getUuid().getUuid();
+        // Если OrgStructure не содержит UUID, то генерируем случайный
+        final String uuidLocationOut = orgStructureOut.getUuid() != null ? orgStructureOut.getUuid().getUuid() : String.valueOf(UUID.randomUUID());
+        // Если OrgStructure не содержит UUID, то генерируем случайный
+        final String uuidLocationIn = orgStructureIn.getUuid() != null ? orgStructureIn.getUuid().getUuid() : String.valueOf(UUID.randomUUID());
 
         final String uuidDocument = UUID.randomUUID().toString();
         logger.info("process MOVING document {}, action {}", uuidDocument, action);
@@ -349,8 +351,11 @@ public final class HL7PacketBuilder {
         final String externalId = event.getExternalId();
         final String uuidExternal = event.getUuid().getUuid();
         final String uuidClient = client.getUuid().getUuid();
-        final String uuidLocationOut = orgStructureOut.getUuid().getUuid();
-        final String uuidLocationIn = orgStructureIn.getUuid().getUuid();
+        // Если OrgStructure не содержит UUID, то генерируем случайный
+        final String uuidLocationOut = orgStructureOut.getUuid() != null ? orgStructureOut.getUuid().getUuid() : String.valueOf(UUID.randomUUID());
+        // Если OrgStructure не содержит UUID, то генерируем случайный
+        final String uuidLocationIn = orgStructureIn.getUuid() != null ? orgStructureIn.getUuid().getUuid() : String.valueOf(UUID.randomUUID());
+
 
         final String uuidDocument = UUID.randomUUID().toString();
         logger.info("process DEL_MOVING document {}, action {}", uuidDocument, action);

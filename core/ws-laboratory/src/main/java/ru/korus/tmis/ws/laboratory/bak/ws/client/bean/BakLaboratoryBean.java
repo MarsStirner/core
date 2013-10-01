@@ -79,15 +79,15 @@ public class BakLaboratoryBean implements BakLaboratoryService {
     @Override
     public void sendLisAnalysisRequest(int actionId) throws CoreException {
         final SendBakRequestWS service = createCGMService();
-        logger.info("Создаем запрос на анализ по actionId = " + actionId);
+        logger.info("Создаем запрос на анализ по actionId = {}", actionId);
         final HL7Document hl7Document = createDocument(actionId);
-        logger.info("Запрос на анализ создан" + hl7Document.toString());
+        logger.info("Запрос на анализ создан {}", hl7Document.toString());
         try {
             logger.info("Посылается запрос на анализ");
             service.queryAnalysis(hl7Document, new Holder<Integer>(1), new Holder<String>(GUID));
             logger.info("Запрос выполнился успешно");
         } catch (Exception e) {
-            logger.error("Ошибка при отправке запроса:" + e.getMessage());
+            logger.error("Ошибка при отправке запроса:" + e.getMessage(), e);
             throw new CoreException(e.getMessage());
         }
     }
