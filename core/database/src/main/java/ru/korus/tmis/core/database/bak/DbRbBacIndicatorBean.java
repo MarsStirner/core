@@ -26,10 +26,10 @@ public class DbRbBacIndicatorBean implements DbRbBacIndicatorBeanLocal {
     public void add(RbBacIndicator rbBacIndicator) {
         final RbBacIndicator response = em.find(RbBacIndicator.class, rbBacIndicator.getId());
         if (response == null) {
-            em.persist(response);
-            logger.info("create BbtOrganismSensValues {}", response);
+            em.persist(rbBacIndicator);
+            logger.info("create rbBacIndicator {}", rbBacIndicator);
         } else {
-            logger.info("find BbtOrganismSensValues {}", response);
+            logger.info("find rbBacIndicator {}", response);
         }
     }
 

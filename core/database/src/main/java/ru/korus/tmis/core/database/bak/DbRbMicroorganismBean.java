@@ -15,8 +15,8 @@ import javax.persistence.PersistenceContext;
  * Description:  <br>
  */
 @Stateless
-public class DbRbMicroorganismBeanLocalImpl implements DbRbMicroorganismBeanLocal {
-    private static final Logger logger = LoggerFactory.getLogger(DbRbMicroorganismBeanLocalImpl.class);
+public class DbRbMicroorganismBean implements DbRbMicroorganismBeanLocal {
+    private static final Logger logger = LoggerFactory.getLogger(DbRbMicroorganismBean.class);
 
     @PersistenceContext(unitName = "s11r64")
     private EntityManager em = null;
@@ -25,8 +25,8 @@ public class DbRbMicroorganismBeanLocalImpl implements DbRbMicroorganismBeanLoca
     public void add(RbMicroorganism rbMicroorganism) {
         final RbMicroorganism response = em.find(RbMicroorganism.class, rbMicroorganism.getId());
         if (response == null) {
-            em.persist(response);
-            logger.info("create RbMicroorganism {}", response);
+            em.persist(rbMicroorganism);
+            logger.info("create RbMicroorganism {}", rbMicroorganism);
         } else {
             logger.info("find RbMicroorganism {}", response);
         }
