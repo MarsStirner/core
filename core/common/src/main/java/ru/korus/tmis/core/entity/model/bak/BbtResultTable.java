@@ -45,6 +45,7 @@ public class BbtResultTable implements Serializable {
 
     @Basic(optional = false)
     @Column(name = "signDateTime")
+    @Temporal(TemporalType.DATE)
     private Date signDateTime;
 
     @Basic(optional = false)

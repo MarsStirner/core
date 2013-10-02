@@ -3,6 +3,7 @@ package ru.korus.tmis.core.database.bak;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import ru.korus.tmis.core.entity.model.bak.BbtResponse;
+import ru.korus.tmis.core.entity.model.bak.BbtResultTable;
 
 import javax.ejb.Stateless;
 import javax.persistence.EntityManager;
@@ -15,16 +16,16 @@ import javax.persistence.PersistenceContext;
  * Description:  <br>
  */
 @Stateless
-public class DbBbtResponseBean implements DbBbtResponseBeanLocal {
+public class DbBbtResultTableBean implements DbBbtResultTableBeanLocal {
 
-    private static final Logger logger = LoggerFactory.getLogger(DbBbtResponseBean.class);
+    private static final Logger logger = LoggerFactory.getLogger(DbBbtResultTableBean.class);
 
     @PersistenceContext(unitName = "s11r64")
     private EntityManager em = null;
 
     @Override
-    public void add(final BbtResponse bbtResponse) {
-        final BbtResponse response = em.find(BbtResponse.class, bbtResponse.getId());
+    public void add(final BbtResultTable bbtResponse) {
+        final BbtResultTable response = em.find(BbtResultTable.class, bbtResponse.getId());
         if (response == null) {
             em.persist(response);
             logger.info("create BbtResponse {}", response);
@@ -34,7 +35,7 @@ public class DbBbtResponseBean implements DbBbtResponseBeanLocal {
     }
 
     @Override
-    public BbtResponse get(final Integer id) {
-        return em.find(BbtResponse.class, id);
+    public BbtResultTable get(final Integer id) {
+        return em.find(BbtResultTable.class, id);
     }
 }
