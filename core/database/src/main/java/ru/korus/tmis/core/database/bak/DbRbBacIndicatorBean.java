@@ -4,6 +4,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import ru.korus.tmis.core.entity.model.bak.RbBacIndicator;
 
+import javax.ejb.Stateless;
 import javax.persistence.EntityManager;
 import javax.persistence.PersistenceContext;
 
@@ -13,6 +14,7 @@ import javax.persistence.PersistenceContext;
  * Company:     Korus Consulting IT<br>
  * Description:  <br>
  */
+@Stateless
 public class DbRbBacIndicatorBean implements DbRbBacIndicatorBeanLocal {
     private static final Logger logger = LoggerFactory.getLogger(DbRbBacIndicatorBean.class);
 
