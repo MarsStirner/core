@@ -2,7 +2,6 @@ package ru.korus.tmis.ws.laboratory.bak.ws.server;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import ru.korus.tmis.core.database.bak.DbBbtResponseBean;
 import ru.korus.tmis.core.database.bak.DbBbtResponseBeanLocal;
 import ru.korus.tmis.core.entity.model.bak.BbtResponse;
 import ru.korus.tmis.core.exception.CoreException;
@@ -47,10 +46,13 @@ public class SetAnalysysResult implements SetAnalysysResultWS {
     private DbBbtResponseBeanLocal dbBbtResponseBean;
 
 
-
-
-
-
+    /**
+     * Получение результатов исследования
+     *
+     * @param request
+     * @return
+     * @throws CoreException
+     */
     @Override
     @WebMethod(operationName = "setAnalysisResults")
     @WebResult(name = SUCCESS_ACCEPT_EVENT, targetNamespace = NAMESPACE, partName = "Body")
@@ -84,9 +86,9 @@ public class SetAnalysysResult implements SetAnalysysResultWS {
     private void flushToDB(POLBIN224100UV01 request) {
 
         final BbtResponse bbtResponse = new BbtResponse();
-    //    bbtResponse.setId(request.);
+        //    bbtResponse.setId(request.);
 
-    //    request.getControlActProcess().getSubject().get(0).getObservationReport().getValue().getId()
+        //    request.getControlActProcess().getSubject().get(0).getObservationReport().getValue().getId()
 
         dbBbtResponseBean.add(bbtResponse);
     }
@@ -218,7 +220,7 @@ public class SetAnalysysResult implements SetAnalysysResultWS {
 
         final MCCIMT000200UV01Acknowledgement acknowledgement = new MCCIMT000200UV01Acknowledgement();
         final CS typeCode = new CS();
-        typeCode.setCode("AA");
+        typeCode.setCode("AE");
         acknowledgement.setTypeCode(typeCode);
         final MCCIMT000200UV01TargetMessage targetMessage = new MCCIMT000200UV01TargetMessage();
         final II id1 = new II();
@@ -243,6 +245,17 @@ public class SetAnalysysResult implements SetAnalysysResultWS {
         return response;
     }
 
+    /**
+     * Сообщение от ЛИС о доставке материала. Факт завершения забора биоматериала.
+     *
+     * @param orderMisId           - штрих-код на контейнере c биоматериалом (десятичное представление считанного штрих-кода)
+     * @param takenTissueJournal   - TakenTissueJournal.id – номер заказа
+     * @param getTissueTime        - Дата и время регистрации биоматериала в лаборатории
+     * @param orderBiomaterialName - название  биоматериала из справочника биоматериалов
+     * @param orderLIS             - Номер заказа в ЛИС
+     * @return
+     * @throws CoreException
+     */
     @Override
     public int bakDelivered(@WebParam(name = "orderBarCode", targetNamespace = Namespace)
                             Integer orderMisId,
