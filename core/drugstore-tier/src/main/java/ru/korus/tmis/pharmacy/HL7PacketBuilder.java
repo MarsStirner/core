@@ -582,13 +582,13 @@ public final class HL7PacketBuilder {
         final POCDMT000040Component3 component3 = FACTORY_HL7.createPOCDMT000040Component3();
         final POCDMT000040Section section = FACTORY_HL7.createPOCDMT000040Section();
         final StrucDocText text = FACTORY_HL7.createStrucDocText();
-        text.getContent().add("Take captopril 25mg PO every 12 hours, starting on Jan 01, 2002, ending on Feb 01, 2002");
+        text.getContent().add("Дополнительные рекомендации");
 
         JAXBElement<StrucDocList> docItemList = FACTORY_HL7.createStrucDocItemList(FACTORY_HL7.createStrucDocList());
         final StrucDocList docList = FACTORY_HL7.createStrucDocList();
 
         final StrucDocItem item = FACTORY_HL7.createStrucDocItem();
-        item.getContent().add("Анальгин");
+        item.getContent().add("Описание препарата");
         docList.getItem().add(item);
 
         final StrucDocItem item2 = FACTORY_HL7.createStrucDocItem();
