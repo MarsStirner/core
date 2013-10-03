@@ -13,9 +13,9 @@ import javax.xml.bind.annotation.XmlType;
  * <pre>
  * &lt;simpleType name="x_RoleClassCoverage">
  *   &lt;restriction base="{urn:hl7-org:v3}cs">
- *     &lt;enumeration value="SPNSR"/>
  *     &lt;enumeration value="COVPTY"/>
  *     &lt;enumeration value="POLHOLD"/>
+ *     &lt;enumeration value="SPNSR"/>
  *     &lt;enumeration value="UNDWRT"/>
  *   &lt;/restriction>
  * &lt;/simpleType>
@@ -26,9 +26,9 @@ import javax.xml.bind.annotation.XmlType;
 @XmlEnum
 public enum XRoleClassCoverage {
 
-    SPNSR,
     COVPTY,
     POLHOLD,
+    SPNSR,
     UNDWRT;
 
     public String value() {

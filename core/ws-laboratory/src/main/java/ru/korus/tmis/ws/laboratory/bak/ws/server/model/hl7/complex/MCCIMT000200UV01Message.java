@@ -5,7 +5,6 @@ import java.util.ArrayList;
 import java.util.List;
 import javax.xml.bind.annotation.XmlAccessType;
 import javax.xml.bind.annotation.XmlAccessorType;
-import javax.xml.bind.annotation.XmlAttribute;
 import javax.xml.bind.annotation.XmlElement;
 import javax.xml.bind.annotation.XmlSeeAlso;
 import javax.xml.bind.annotation.XmlType;
@@ -27,11 +26,11 @@ import javax.xml.bind.annotation.XmlType;
  *         &lt;element name="securityText" type="{urn:hl7-org:v3}ST" minOccurs="0"/>
  *         &lt;element name="versionCode" type="{urn:hl7-org:v3}CS" minOccurs="0"/>
  *         &lt;element name="interactionId" type="{urn:hl7-org:v3}II"/>
- *         &lt;element name="profileId" type="{urn:hl7-org:v3}II" maxOccurs="unbounded" minOccurs="0"/>
+ *         &lt;element name="profileId" type="{urn:hl7-org:v3}DSET_II" minOccurs="0"/>
  *         &lt;element name="processingCode" type="{urn:hl7-org:v3}CS"/>
  *         &lt;element name="processingModeCode" type="{urn:hl7-org:v3}CS"/>
  *         &lt;element name="acceptAckCode" type="{urn:hl7-org:v3}CS"/>
- *         &lt;element name="attachmentText" type="{urn:hl7-org:v3}ED" maxOccurs="unbounded" minOccurs="0"/>
+ *         &lt;element name="attachmentText" type="{urn:hl7-org:v3}DSET_ED" minOccurs="0"/>
  *         &lt;element name="receiver" type="{urn:hl7-org:v3}MCCI_MT000200UV01.Receiver" maxOccurs="unbounded"/>
  *         &lt;element name="respondTo" type="{urn:hl7-org:v3}MCCI_MT000200UV01.RespondTo" maxOccurs="unbounded" minOccurs="0"/>
  *         &lt;element name="sender" type="{urn:hl7-org:v3}MCCI_MT000200UV01.Sender"/>
@@ -39,7 +38,6 @@ import javax.xml.bind.annotation.XmlType;
  *         &lt;element name="acknowledgement" type="{urn:hl7-org:v3}MCCI_MT000200UV01.Acknowledgement" maxOccurs="unbounded" minOccurs="0"/>
  *       &lt;/sequence>
  *       &lt;attGroup ref="{urn:hl7-org:v3}InfrastructureRootAttributes"/>
- *       &lt;attribute name="nullFlavor" type="{urn:hl7-org:v3}NullFlavor" />
  *     &lt;/restriction>
  *   &lt;/complexContent>
  * &lt;/complexType>
@@ -73,9 +71,9 @@ import javax.xml.bind.annotation.XmlType;
 })
 public class MCCIMT000200UV01Message {
 
-    protected List<CS> realmCode;
+    protected DSETCS realmCode;
     protected II typeId;
-    protected List<II> templateId;
+    protected LISTII templateId;
     @XmlElement(required = true)
     protected II id;
     @XmlElement(required = true)
@@ -84,14 +82,14 @@ public class MCCIMT000200UV01Message {
     protected CS versionCode;
     @XmlElement(required = true)
     protected II interactionId;
-    protected List<II> profileId;
+    protected DSETII profileId;
     @XmlElement(required = true)
     protected CS processingCode;
     @XmlElement(required = true)
     protected CS processingModeCode;
     @XmlElement(required = true)
     protected CS acceptAckCode;
-    protected List<ED> attachmentText;
+    protected DSETED attachmentText;
     @XmlElement(required = true)
     protected List<MCCIMT000200UV01Receiver> receiver;
     @XmlElement(nillable = true)
@@ -102,36 +100,29 @@ public class MCCIMT000200UV01Message {
     protected List<MCCIMT000200UV01AttentionLine> attentionLine;
     @XmlElement(nillable = true)
     protected List<MCCIMT000200UV01Acknowledgement> acknowledgement;
-    @XmlAttribute(name = "nullFlavor")
-    protected List<String> nullFlavor;
 
     /**
      * Gets the value of the realmCode property.
      * 
-     * <p>
-     * This accessor method returns a reference to the live list,
-     * not a snapshot. Therefore any modification you make to the
-     * returned list will be present inside the JAXB object.
-     * This is why there is not a <CODE>set</CODE> method for the realmCode property.
-     * 
-     * <p>
-     * For example, to add a new item, do as follows:
-     * <pre>
-     *    getRealmCode().add(newItem);
-     * </pre>
-     * 
-     * 
-     * <p>
-     * Objects of the following type(s) are allowed in the list
-     * {@link CS }
-     * 
-     * 
+     * @return
+     *     possible object is
+     *     {@link DSETCS }
+     *     
      */
-    public List<CS> getRealmCode() {
-        if (realmCode == null) {
-            realmCode = new ArrayList<CS>();
-        }
-        return this.realmCode;
+    public DSETCS getRealmCode() {
+        return realmCode;
+    }
+
+    /**
+     * Sets the value of the realmCode property.
+     * 
+     * @param value
+     *     allowed object is
+     *     {@link DSETCS }
+     *     
+     */
+    public void setRealmCode(DSETCS value) {
+        this.realmCode = value;
     }
 
     /**
@@ -161,30 +152,25 @@ public class MCCIMT000200UV01Message {
     /**
      * Gets the value of the templateId property.
      * 
-     * <p>
-     * This accessor method returns a reference to the live list,
-     * not a snapshot. Therefore any modification you make to the
-     * returned list will be present inside the JAXB object.
-     * This is why there is not a <CODE>set</CODE> method for the templateId property.
-     * 
-     * <p>
-     * For example, to add a new item, do as follows:
-     * <pre>
-     *    getTemplateId().add(newItem);
-     * </pre>
-     * 
-     * 
-     * <p>
-     * Objects of the following type(s) are allowed in the list
-     * {@link II }
-     * 
-     * 
+     * @return
+     *     possible object is
+     *     {@link LISTII }
+     *     
      */
-    public List<II> getTemplateId() {
-        if (templateId == null) {
-            templateId = new ArrayList<II>();
-        }
-        return this.templateId;
+    public LISTII getTemplateId() {
+        return templateId;
+    }
+
+    /**
+     * Sets the value of the templateId property.
+     * 
+     * @param value
+     *     allowed object is
+     *     {@link LISTII }
+     *     
+     */
+    public void setTemplateId(LISTII value) {
+        this.templateId = value;
     }
 
     /**
@@ -310,30 +296,25 @@ public class MCCIMT000200UV01Message {
     /**
      * Gets the value of the profileId property.
      * 
-     * <p>
-     * This accessor method returns a reference to the live list,
-     * not a snapshot. Therefore any modification you make to the
-     * returned list will be present inside the JAXB object.
-     * This is why there is not a <CODE>set</CODE> method for the profileId property.
-     * 
-     * <p>
-     * For example, to add a new item, do as follows:
-     * <pre>
-     *    getProfileId().add(newItem);
-     * </pre>
-     * 
-     * 
-     * <p>
-     * Objects of the following type(s) are allowed in the list
-     * {@link II }
-     * 
-     * 
+     * @return
+     *     possible object is
+     *     {@link DSETII }
+     *     
      */
-    public List<II> getProfileId() {
-        if (profileId == null) {
-            profileId = new ArrayList<II>();
-        }
-        return this.profileId;
+    public DSETII getProfileId() {
+        return profileId;
+    }
+
+    /**
+     * Sets the value of the profileId property.
+     * 
+     * @param value
+     *     allowed object is
+     *     {@link DSETII }
+     *     
+     */
+    public void setProfileId(DSETII value) {
+        this.profileId = value;
     }
 
     /**
@@ -411,30 +392,25 @@ public class MCCIMT000200UV01Message {
     /**
      * Gets the value of the attachmentText property.
      * 
-     * <p>
-     * This accessor method returns a reference to the live list,
-     * not a snapshot. Therefore any modification you make to the
-     * returned list will be present inside the JAXB object.
-     * This is why there is not a <CODE>set</CODE> method for the attachmentText property.
-     * 
-     * <p>
-     * For example, to add a new item, do as follows:
-     * <pre>
-     *    getAttachmentText().add(newItem);
-     * </pre>
-     * 
-     * 
-     * <p>
-     * Objects of the following type(s) are allowed in the list
-     * {@link ED }
-     * 
-     * 
+     * @return
+     *     possible object is
+     *     {@link DSETED }
+     *     
      */
-    public List<ED> getAttachmentText() {
-        if (attachmentText == null) {
-            attachmentText = new ArrayList<ED>();
-        }
-        return this.attachmentText;
+    public DSETED getAttachmentText() {
+        return attachmentText;
+    }
+
+    /**
+     * Sets the value of the attachmentText property.
+     * 
+     * @param value
+     *     allowed object is
+     *     {@link DSETED }
+     *     
+     */
+    public void setAttachmentText(DSETED value) {
+        this.attachmentText = value;
     }
 
     /**
@@ -575,35 +551,6 @@ public class MCCIMT000200UV01Message {
             acknowledgement = new ArrayList<MCCIMT000200UV01Acknowledgement>();
         }
         return this.acknowledgement;
-    }
-
-    /**
-     * Gets the value of the nullFlavor property.
-     * 
-     * <p>
-     * This accessor method returns a reference to the live list,
-     * not a snapshot. Therefore any modification you make to the
-     * returned list will be present inside the JAXB object.
-     * This is why there is not a <CODE>set</CODE> method for the nullFlavor property.
-     * 
-     * <p>
-     * For example, to add a new item, do as follows:
-     * <pre>
-     *    getNullFlavor().add(newItem);
-     * </pre>
-     * 
-     * 
-     * <p>
-     * Objects of the following type(s) are allowed in the list
-     * {@link String }
-     * 
-     * 
-     */
-    public List<String> getNullFlavor() {
-        if (nullFlavor == null) {
-            nullFlavor = new ArrayList<String>();
-        }
-        return this.nullFlavor;
     }
 
 }

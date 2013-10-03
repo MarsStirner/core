@@ -15,8 +15,11 @@ import javax.xml.bind.annotation.XmlType;
  * <pre>
  * &lt;complexType name="UVP_TS">
  *   &lt;complexContent>
- *     &lt;extension base="{urn:hl7-org:v3}TS">
- *       &lt;attribute name="probability" type="{urn:hl7-org:v3}probability" />
+ *     &lt;extension base="{urn:hl7-org:v3}ANY">
+ *       &lt;sequence>
+ *         &lt;element name="value" type="{urn:hl7-org:v3}TS" minOccurs="0"/>
+ *       &lt;/sequence>
+ *       &lt;attribute name="probability" type="{urn:hl7-org:v3}Decimal" />
  *     &lt;/extension>
  *   &lt;/complexContent>
  * &lt;/complexType>
@@ -25,13 +28,40 @@ import javax.xml.bind.annotation.XmlType;
  * 
  */
 @XmlAccessorType(XmlAccessType.FIELD)
-@XmlType(name = "UVP_TS")
+@XmlType(name = "UVP_TS", propOrder = {
+    "value"
+})
 public class UVPTS
-    extends TS
+    extends ANY
 {
 
+    protected TS value;
     @XmlAttribute(name = "probability")
     protected Double probability;
+
+    /**
+     * Gets the value of the value property.
+     * 
+     * @return
+     *     possible object is
+     *     {@link TS }
+     *     
+     */
+    public TS getValue() {
+        return value;
+    }
+
+    /**
+     * Sets the value of the value property.
+     * 
+     * @param value
+     *     allowed object is
+     *     {@link TS }
+     *     
+     */
+    public void setValue(TS value) {
+        this.value = value;
+    }
 
     /**
      * Gets the value of the probability property.

@@ -13,7 +13,15 @@ import javax.xml.bind.annotation.XmlType;
  * <pre>
  * &lt;simpleType name="x_ActMoodIntentEvent">
  *   &lt;restriction base="{urn:hl7-org:v3}cs">
+ *     &lt;enumeration value="APT"/>
+ *     &lt;enumeration value="ARQ"/>
  *     &lt;enumeration value="EVN"/>
+ *     &lt;enumeration value="INT"/>
+ *     &lt;enumeration value="PERMRQ"/>
+ *     &lt;enumeration value="PRMS"/>
+ *     &lt;enumeration value="PRP"/>
+ *     &lt;enumeration value="RMD"/>
+ *     &lt;enumeration value="RQO"/>
  *   &lt;/restriction>
  * &lt;/simpleType>
  * </pre>
@@ -23,7 +31,15 @@ import javax.xml.bind.annotation.XmlType;
 @XmlEnum
 public enum XActMoodIntentEvent {
 
-    EVN;
+    APT,
+    ARQ,
+    EVN,
+    INT,
+    PERMRQ,
+    PRMS,
+    PRP,
+    RMD,
+    RQO;
 
     public String value() {
         return name();

@@ -14,9 +14,9 @@ import javax.xml.bind.annotation.XmlType;
  * &lt;simpleType name="ResponseLevel">
  *   &lt;restriction base="{urn:hl7-org:v3}cs">
  *     &lt;enumeration value="C"/>
- *     &lt;enumeration value="F"/>
  *     &lt;enumeration value="D"/>
  *     &lt;enumeration value="E"/>
+ *     &lt;enumeration value="F"/>
  *     &lt;enumeration value="N"/>
  *     &lt;enumeration value="R"/>
  *     &lt;enumeration value="X"/>
@@ -30,9 +30,9 @@ import javax.xml.bind.annotation.XmlType;
 public enum ResponseLevel {
 
     C,
-    F,
     D,
     E,
+    F,
     N,
     R,
     X;

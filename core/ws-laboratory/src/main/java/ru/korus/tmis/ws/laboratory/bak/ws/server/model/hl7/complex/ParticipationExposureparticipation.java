@@ -14,8 +14,8 @@ import javax.xml.bind.annotation.XmlType;
  * &lt;simpleType name="ParticipationExposureparticipation">
  *   &lt;restriction base="{urn:hl7-org:v3}cs">
  *     &lt;enumeration value="EXPART"/>
- *     &lt;enumeration value="EXSRC"/>
  *     &lt;enumeration value="EXPTRGT"/>
+ *     &lt;enumeration value="EXSRC"/>
  *   &lt;/restriction>
  * &lt;/simpleType>
  * </pre>
@@ -26,8 +26,8 @@ import javax.xml.bind.annotation.XmlType;
 public enum ParticipationExposureparticipation {
 
     EXPART,
-    EXSRC,
-    EXPTRGT;
+    EXPTRGT,
+    EXSRC;
 
     public String value() {
         return name();

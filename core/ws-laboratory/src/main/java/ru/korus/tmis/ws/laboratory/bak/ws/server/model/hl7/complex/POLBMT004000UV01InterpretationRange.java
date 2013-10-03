@@ -8,8 +8,6 @@ import javax.xml.bind.annotation.XmlAccessorType;
 import javax.xml.bind.annotation.XmlAttribute;
 import javax.xml.bind.annotation.XmlElement;
 import javax.xml.bind.annotation.XmlType;
-import javax.xml.bind.annotation.adapters.CollapsedStringAdapter;
-import javax.xml.bind.annotation.adapters.XmlJavaTypeAdapter;
 
 
 /**
@@ -24,7 +22,7 @@ import javax.xml.bind.annotation.adapters.XmlJavaTypeAdapter;
  *       &lt;sequence>
  *         &lt;group ref="{urn:hl7-org:v3}InfrastructureRootElements"/>
  *         &lt;element name="value" type="{urn:hl7-org:v3}ANY" minOccurs="0"/>
- *         &lt;element name="interpretationCode" type="{urn:hl7-org:v3}CE"/>
+ *         &lt;element name="interpretationCode" type="{urn:hl7-org:v3}CD"/>
  *         &lt;element name="precondition" type="{urn:hl7-org:v3}POLB_MT004000UV01.Precondition" maxOccurs="unbounded" minOccurs="0"/>
  *       &lt;/sequence>
  *       &lt;attGroup ref="{urn:hl7-org:v3}InfrastructureRootAttributes"/>
@@ -49,49 +47,43 @@ import javax.xml.bind.annotation.adapters.XmlJavaTypeAdapter;
 })
 public class POLBMT004000UV01InterpretationRange {
 
-    protected List<CS> realmCode;
+    protected DSETCS realmCode;
     protected II typeId;
-    protected List<II> templateId;
+    protected LISTII templateId;
     protected ANY value;
     @XmlElement(required = true)
-    protected CE interpretationCode;
+    protected CD interpretationCode;
     @XmlElement(nillable = true)
     protected List<POLBMT004000UV01Precondition> precondition;
     @XmlAttribute(name = "nullFlavor")
-    protected List<String> nullFlavor;
+    protected NullFlavor nullFlavor;
     @XmlAttribute(name = "classCode", required = true)
-    protected List<String> classCode;
+    protected ActClassObservation classCode;
     @XmlAttribute(name = "moodCode", required = true)
-    @XmlJavaTypeAdapter(CollapsedStringAdapter.class)
-    protected String moodCode;
+    protected ActMoodEventCriterion moodCode;
 
     /**
      * Gets the value of the realmCode property.
      * 
-     * <p>
-     * This accessor method returns a reference to the live list,
-     * not a snapshot. Therefore any modification you make to the
-     * returned list will be present inside the JAXB object.
-     * This is why there is not a <CODE>set</CODE> method for the realmCode property.
-     * 
-     * <p>
-     * For example, to add a new item, do as follows:
-     * <pre>
-     *    getRealmCode().add(newItem);
-     * </pre>
-     * 
-     * 
-     * <p>
-     * Objects of the following type(s) are allowed in the list
-     * {@link CS }
-     * 
-     * 
+     * @return
+     *     possible object is
+     *     {@link DSETCS }
+     *     
      */
-    public List<CS> getRealmCode() {
-        if (realmCode == null) {
-            realmCode = new ArrayList<CS>();
-        }
-        return this.realmCode;
+    public DSETCS getRealmCode() {
+        return realmCode;
+    }
+
+    /**
+     * Sets the value of the realmCode property.
+     * 
+     * @param value
+     *     allowed object is
+     *     {@link DSETCS }
+     *     
+     */
+    public void setRealmCode(DSETCS value) {
+        this.realmCode = value;
     }
 
     /**
@@ -121,30 +113,25 @@ public class POLBMT004000UV01InterpretationRange {
     /**
      * Gets the value of the templateId property.
      * 
-     * <p>
-     * This accessor method returns a reference to the live list,
-     * not a snapshot. Therefore any modification you make to the
-     * returned list will be present inside the JAXB object.
-     * This is why there is not a <CODE>set</CODE> method for the templateId property.
-     * 
-     * <p>
-     * For example, to add a new item, do as follows:
-     * <pre>
-     *    getTemplateId().add(newItem);
-     * </pre>
-     * 
-     * 
-     * <p>
-     * Objects of the following type(s) are allowed in the list
-     * {@link II }
-     * 
-     * 
+     * @return
+     *     possible object is
+     *     {@link LISTII }
+     *     
      */
-    public List<II> getTemplateId() {
-        if (templateId == null) {
-            templateId = new ArrayList<II>();
-        }
-        return this.templateId;
+    public LISTII getTemplateId() {
+        return templateId;
+    }
+
+    /**
+     * Sets the value of the templateId property.
+     * 
+     * @param value
+     *     allowed object is
+     *     {@link LISTII }
+     *     
+     */
+    public void setTemplateId(LISTII value) {
+        this.templateId = value;
     }
 
     /**
@@ -176,10 +163,10 @@ public class POLBMT004000UV01InterpretationRange {
      * 
      * @return
      *     possible object is
-     *     {@link CE }
+     *     {@link CD }
      *     
      */
-    public CE getInterpretationCode() {
+    public CD getInterpretationCode() {
         return interpretationCode;
     }
 
@@ -188,10 +175,10 @@ public class POLBMT004000UV01InterpretationRange {
      * 
      * @param value
      *     allowed object is
-     *     {@link CE }
+     *     {@link CD }
      *     
      */
-    public void setInterpretationCode(CE value) {
+    public void setInterpretationCode(CD value) {
         this.interpretationCode = value;
     }
 
@@ -227,59 +214,49 @@ public class POLBMT004000UV01InterpretationRange {
     /**
      * Gets the value of the nullFlavor property.
      * 
-     * <p>
-     * This accessor method returns a reference to the live list,
-     * not a snapshot. Therefore any modification you make to the
-     * returned list will be present inside the JAXB object.
-     * This is why there is not a <CODE>set</CODE> method for the nullFlavor property.
-     * 
-     * <p>
-     * For example, to add a new item, do as follows:
-     * <pre>
-     *    getNullFlavor().add(newItem);
-     * </pre>
-     * 
-     * 
-     * <p>
-     * Objects of the following type(s) are allowed in the list
-     * {@link String }
-     * 
-     * 
+     * @return
+     *     possible object is
+     *     {@link NullFlavor }
+     *     
      */
-    public List<String> getNullFlavor() {
-        if (nullFlavor == null) {
-            nullFlavor = new ArrayList<String>();
-        }
-        return this.nullFlavor;
+    public NullFlavor getNullFlavor() {
+        return nullFlavor;
+    }
+
+    /**
+     * Sets the value of the nullFlavor property.
+     * 
+     * @param value
+     *     allowed object is
+     *     {@link NullFlavor }
+     *     
+     */
+    public void setNullFlavor(NullFlavor value) {
+        this.nullFlavor = value;
     }
 
     /**
      * Gets the value of the classCode property.
      * 
-     * <p>
-     * This accessor method returns a reference to the live list,
-     * not a snapshot. Therefore any modification you make to the
-     * returned list will be present inside the JAXB object.
-     * This is why there is not a <CODE>set</CODE> method for the classCode property.
-     * 
-     * <p>
-     * For example, to add a new item, do as follows:
-     * <pre>
-     *    getClassCode().add(newItem);
-     * </pre>
-     * 
-     * 
-     * <p>
-     * Objects of the following type(s) are allowed in the list
-     * {@link String }
-     * 
-     * 
+     * @return
+     *     possible object is
+     *     {@link ActClassObservation }
+     *     
      */
-    public List<String> getClassCode() {
-        if (classCode == null) {
-            classCode = new ArrayList<String>();
-        }
-        return this.classCode;
+    public ActClassObservation getClassCode() {
+        return classCode;
+    }
+
+    /**
+     * Sets the value of the classCode property.
+     * 
+     * @param value
+     *     allowed object is
+     *     {@link ActClassObservation }
+     *     
+     */
+    public void setClassCode(ActClassObservation value) {
+        this.classCode = value;
     }
 
     /**
@@ -287,10 +264,10 @@ public class POLBMT004000UV01InterpretationRange {
      * 
      * @return
      *     possible object is
-     *     {@link String }
+     *     {@link ActMoodEventCriterion }
      *     
      */
-    public String getMoodCode() {
+    public ActMoodEventCriterion getMoodCode() {
         return moodCode;
     }
 
@@ -299,10 +276,10 @@ public class POLBMT004000UV01InterpretationRange {
      * 
      * @param value
      *     allowed object is
-     *     {@link String }
+     *     {@link ActMoodEventCriterion }
      *     
      */
-    public void setMoodCode(String value) {
+    public void setMoodCode(ActMoodEventCriterion value) {
         this.moodCode = value;
     }
 

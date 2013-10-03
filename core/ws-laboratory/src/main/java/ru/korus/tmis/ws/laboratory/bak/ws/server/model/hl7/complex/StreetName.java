@@ -14,8 +14,6 @@ import javax.xml.bind.annotation.XmlType;
  * &lt;simpleType name="StreetName">
  *   &lt;restriction base="{urn:hl7-org:v3}cs">
  *     &lt;enumeration value="STR"/>
- *     &lt;enumeration value="STB"/>
- *     &lt;enumeration value="STTYP"/>
  *   &lt;/restriction>
  * &lt;/simpleType>
  * </pre>
@@ -25,9 +23,7 @@ import javax.xml.bind.annotation.XmlType;
 @XmlEnum
 public enum StreetName {
 
-    STR,
-    STB,
-    STTYP;
+    STR;
 
     public String value() {
         return name();

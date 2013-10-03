@@ -16,11 +16,15 @@ import ru.korus.tmis.core.common.CommonDataProcessorBeanLocal
 import ru.korus.tmis.util.ConfigManager._
 import ru.korus.tmis.core.database._
 import collection.JavaConversions
-import java.util
+import java.{lang, util}
 import ru.korus.tmis.core.filter.ActionsListDataFilter
 import ru.korus.tmis.core.exception.CoreException
 import ru.korus.tmis.laboratory.business.LaboratoryBeanLocal
 import util.{HashSet, Date}
+
+import java.lang.reflect.Method;
+import java.lang.reflect.Type;
+import scala.collection.immutable.StringOps;
 
 /**
  * Методы для работы с Направлениями
@@ -395,10 +399,7 @@ class DirectionBean extends DirectionBeanLocal
   }
 
   def createConsultation(request: ConsultationRequestData, userData: AuthData) = {
-/*
-    request.finance.getId,
-    request.diagnosis.getCode,
-       */
+
     var action: Action = actionBean.createAction(request.eventId.intValue(), request.actionTypeId.intValue(), userData)
     action.setIsUrgent(request.urgent)
     if (request.createPerson > 0 && dbStaffBean.getStaffById(request.createPerson) != null) {
@@ -408,7 +409,6 @@ class DirectionBean extends DirectionBeanLocal
       action.setCreateDatetime(request.createDateTime)
       action.setBegDate(request.createDateTime)
     }
-    //action.setBegDate(bDate)
     action.setPlannedEndDate(new Date(request.plannedEndDate.getTime + request.plannedTime.getTime.getTime))
     if (request.getFinance.getId > 0) {
       action.setFinanceId(request.getFinance.getId)
@@ -416,9 +416,9 @@ class DirectionBean extends DirectionBeanLocal
       action.setFinanceId(dbEventBean.getEventById(request.getEventId).getEventType.getFinance.getId.intValue())
     }
     if(request.executorId>0)
-      action.setExecutor(new Staff(request.executorId))
+      action.setExecutor(dbStaffBean.getStaffById(request.executorId))
     if(request.assignerId>0)
-      action.setAssigner(new Staff(request.assignerId))
+      action.setAssigner(dbStaffBean.getStaffById(request.assignerId))
 
     em.persist(action)
 
@@ -457,15 +457,15 @@ class DirectionBean extends DirectionBeanLocal
 
     // Создаем ивент 29 и акшен 19 (по спеке)
     var event29 = dbEventBean.createEvent(request.patientId, 29, new Date(request.plannedEndDate.getTime + request.plannedTime.getTime.getTime), null, userData)
-    event29.setExecutor(new Staff(request.executorId))
+    event29.setExecutor(dbStaffBean.getStaffById(request.executorId))
     event29.setExternalId(dbEventBean.getEventById(request.getEventId).getExternalId)
     em.persist(event29)
     em.flush()
     var action19 = actionBean.createAction(event29.getId.intValue(), 19, userData)
     if(request.executorId>0)
-      action19.setExecutor(new Staff(request.executorId))
+      action19.setExecutor(dbStaffBean.getStaffById(request.executorId))
     if(request.assignerId>0)
-      action19.setAssigner(new Staff(request.assignerId))
+      action19.setAssigner(dbStaffBean.getStaffById(request.assignerId))
     action19.setDirectionDate(new Date(request.plannedEndDate.getTime + request.plannedTime.getTime.getTime))
     action19.setEvent(event29)
     em.persist(action19)
@@ -497,8 +497,60 @@ class DirectionBean extends DirectionBeanLocal
             ap18values.find(p => p.asInstanceOf[APValueAction].getId.getIndex == f.asInstanceOf[APValueTime].getId.getIndex).getOrElse(null) == null)
           em.merge(actionPropertyBean.setActionPropertyValue(ap18, null, f.asInstanceOf[APValueTime].getId.getIndex))
       })
-      em.merge(actionPropertyBean.setActionPropertyValue(ap18, action19.getId.toString, request.plannedTime.getIndex))
+      //*** Обработка срочности и сверх приема по новой спеке
+      action.setAppointmentType("hospital")
+      if (action.getIsUrgent) {
+        var citoActionsCount = actionBean.getActionForEventAndPacientInQueueType(action.getEvent.getId.intValue(), 1) //срочные акшены
+        /*
+        ap18values.foreach(p => {
+          if (p.asInstanceOf[APValueAction].getValue != null && p.asInstanceOf[APValueAction].getValue.getPacientInQueueType.intValue() == 1) {
+            citoActionsCount = citoActionsCount + 1}
+        })  */
+        if (action.getExecutor != null && action.getExecutor.getMaxCito > 0 && action.getExecutor.getMaxCito > citoActionsCount) {
+          //сдвинуть все индексы
+          //action.setAppointmentType(1)
+          val odin : lang.Integer = 1
+          action.setPacientInQueueType(odin.shortValue())
+          //em.merge(action)
+          ap18values.sortWith(_.asInstanceOf[APValueAction].getId.getIndex > _.asInstanceOf[APValueAction].getId.getIndex)
+          ap18values.foreach(apvv => {
+            val valueToSave =  if (apvv.getValueAsString.compareTo("<EMPTY>") != 0) {
+              apvv.asInstanceOf[APValueAction].getValue.getId.toString
+            } else {
+              null
+            }
+            em.merge(actionPropertyBean.setActionPropertyValue(ap18, valueToSave, apvv.asInstanceOf[APValueAction].getId.getIndex+1))
 
+          })
+          em.merge(actionPropertyBean.setActionPropertyValue(ap18, action19.getId.toString, 0))
+        } else {
+          action.setDeleted(true)
+          em.flush()
+          throw new CoreException(ConfigManager.Messages("error.citoLimit"))
+        }
+      } else if (request.overQueue) {
+        var overQueueActionsCount = actionBean.getActionForEventAndPacientInQueueType(action.getEvent.getId.intValue(), 2) //акшены сверх сетки приема
+        /*
+        ap18values.foreach(p => {
+          if (p.asInstanceOf[APValueAction].getValue != null && p.asInstanceOf[APValueAction].getValue.getPacientInQueueType.intValue() == 1) {overQueueActionsCount = overQueueActionsCount + 1}
+        }) */
+        if (action.getExecutor != null && action.getExecutor.getMaxOverQueue > 0 && action.getExecutor.getMaxOverQueue > overQueueActionsCount) {
+          //записать в конец
+          //action.setAppointmentType(2)
+          val odin : lang.Integer = 2
+          action.setPacientInQueueType(odin.shortValue())
+          //em.merge(action)
+          val maxIndex = ap18values.sortBy(_.asInstanceOf[APValueAction].getId.getIndex).last.asInstanceOf[APValueAction].getId.getIndex
+          em.merge(actionPropertyBean.setActionPropertyValue(ap18, action19.getId.toString, maxIndex+1))
+        } else {
+          action.setDeleted(true)
+          em.flush()
+          throw new CoreException(ConfigManager.Messages("error.overQueueLimit"))
+        }
+      } else {
+        em.merge(actionPropertyBean.setActionPropertyValue(ap18, action19.getId.toString, request.plannedTime.getIndex))
+      }
+      em.merge(action)
     }
     // ****
     em.flush()

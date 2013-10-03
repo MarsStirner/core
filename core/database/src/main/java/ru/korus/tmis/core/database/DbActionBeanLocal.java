@@ -179,6 +179,14 @@ public interface DbActionBeanLocal {
     Action getEvent29AndAction19ForAction (Action action) throws CoreException;
 
     /**
+     * Возвращает количество записей для указанного евента и типа PacientInQueueType (срочно и сверх сетки приема)
+     * @param eventId идентификатор обращения
+     * @param pacientInQueueType какой-то типа акшена (срочно и сверх сетки приема)
+     * @return количество записей как int
+     */
+    long getActionForEventAndPacientInQueueType(int eventId, int pacientInQueueType) throws CoreException;
+
+    /**
      * Возвращает список действий относящихся к заданному обращению и типу действия(по flatCode)
      * @param eventId идентификатор обращения
      * @param actionTypeFlatCode значение flatCode типа действия

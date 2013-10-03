@@ -8,12 +8,6 @@ import javax.xml.bind.annotation.XmlType;
 
 
 /**
- * 
- *             The Boolean type stands for the values of two-valued logic.
- *             A Boolean value can be either true or
- *             false, or, as any other value may be NULL.
- *          
- * 
  * <p>Java class for BL complex type.
  * 
  * <p>The following schema fragment specifies the expected content contained within this class.
@@ -22,7 +16,7 @@ import javax.xml.bind.annotation.XmlType;
  * &lt;complexType name="BL">
  *   &lt;complexContent>
  *     &lt;extension base="{urn:hl7-org:v3}ANY">
- *       &lt;attribute name="value" type="{urn:hl7-org:v3}bl" />
+ *       &lt;attribute name="value" type="{http://www.w3.org/2001/XMLSchema}boolean" />
  *     &lt;/extension>
  *   &lt;/complexContent>
  * &lt;/complexType>

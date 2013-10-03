@@ -2,6 +2,7 @@
 package ru.korus.tmis.ws.laboratory.bak.ws.server.model.hl7.complex;
 
 import javax.xml.bind.annotation.XmlEnum;
+import javax.xml.bind.annotation.XmlEnumValue;
 import javax.xml.bind.annotation.XmlType;
 
 
@@ -13,7 +14,10 @@ import javax.xml.bind.annotation.XmlType;
  * <pre>
  * &lt;simpleType name="x_ClinicalStatementSubstanceMood">
  *   &lt;restriction base="{urn:hl7-org:v3}cs">
+ *     &lt;enumeration value="CRT"/>
+ *     &lt;enumeration value="DEF"/>
  *     &lt;enumeration value="EVN"/>
+ *     &lt;enumeration value="EVN.CRT"/>
  *     &lt;enumeration value="INT"/>
  *     &lt;enumeration value="PRMS"/>
  *     &lt;enumeration value="PRP"/>
@@ -27,18 +31,32 @@ import javax.xml.bind.annotation.XmlType;
 @XmlEnum
 public enum XClinicalStatementSubstanceMood {
 
-    EVN,
-    INT,
-    PRMS,
-    PRP,
-    RQO;
+    CRT("CRT"),
+    DEF("DEF"),
+    EVN("EVN"),
+    @XmlEnumValue("EVN.CRT")
+    EVN_CRT("EVN.CRT"),
+    INT("INT"),
+    PRMS("PRMS"),
+    PRP("PRP"),
+    RQO("RQO");
+    private final String value;
+
+    XClinicalStatementSubstanceMood(String v) {
+        value = v;
+    }
 
     public String value() {
-        return name();
+        return value;
     }
 
     public static XClinicalStatementSubstanceMood fromValue(String v) {
-        return valueOf(v);
+        for (XClinicalStatementSubstanceMood c: XClinicalStatementSubstanceMood.values()) {
+            if (c.value.equals(v)) {
+                return c;
+            }
+        }
+        throw new IllegalArgumentException(v);
     }
 
 }

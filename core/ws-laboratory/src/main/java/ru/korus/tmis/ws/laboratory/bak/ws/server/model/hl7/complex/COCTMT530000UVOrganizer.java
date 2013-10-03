@@ -23,14 +23,14 @@ import javax.xml.bind.annotation.XmlType;
  *     &lt;restriction base="{http://www.w3.org/2001/XMLSchema}anyType">
  *       &lt;sequence>
  *         &lt;group ref="{urn:hl7-org:v3}InfrastructureRootElements"/>
- *         &lt;element name="id" type="{urn:hl7-org:v3}II" maxOccurs="unbounded" minOccurs="0"/>
+ *         &lt;element name="id" type="{urn:hl7-org:v3}DSET_II" minOccurs="0"/>
  *         &lt;element name="code" type="{urn:hl7-org:v3}CD" minOccurs="0"/>
  *         &lt;element name="text" type="{urn:hl7-org:v3}ED" minOccurs="0"/>
  *         &lt;element name="statusCode" type="{urn:hl7-org:v3}CS" minOccurs="0"/>
  *         &lt;element name="effectiveTime" type="{urn:hl7-org:v3}IVL_TS" minOccurs="0"/>
  *         &lt;element name="availabilityTime" type="{urn:hl7-org:v3}TS" minOccurs="0"/>
- *         &lt;element name="priorityCode" type="{urn:hl7-org:v3}CE" maxOccurs="unbounded" minOccurs="0"/>
- *         &lt;element name="confidentialityCode" type="{urn:hl7-org:v3}CE" maxOccurs="unbounded" minOccurs="0"/>
+ *         &lt;element name="priorityCode" type="{urn:hl7-org:v3}DSET_CD" minOccurs="0"/>
+ *         &lt;element name="confidentialityCode" type="{urn:hl7-org:v3}DSET_CD" minOccurs="0"/>
  *         &lt;element name="subject" type="{urn:hl7-org:v3}COCT_MT530000UV.Subject2" maxOccurs="unbounded" minOccurs="0"/>
  *         &lt;element name="recordTarget" type="{urn:hl7-org:v3}COCT_MT530000UV.RecordTarget" minOccurs="0"/>
  *         &lt;element name="responsibleParty" type="{urn:hl7-org:v3}COCT_MT530000UV.ResponsibleParty2" maxOccurs="unbounded" minOccurs="0"/>
@@ -43,15 +43,14 @@ import javax.xml.bind.annotation.XmlType;
  *         &lt;element name="definition" type="{urn:hl7-org:v3}COCT_MT530000UV.Definition" minOccurs="0"/>
  *         &lt;element name="conditions" type="{urn:hl7-org:v3}COCT_MT530000UV.Conditions" maxOccurs="unbounded" minOccurs="0"/>
  *         &lt;element name="component" type="{urn:hl7-org:v3}COCT_MT530000UV.Component" maxOccurs="unbounded" minOccurs="0"/>
- *         &lt;element name="sourceOf1" type="{urn:hl7-org:v3}COCT_MT530000UV.SourceOf1" maxOccurs="unbounded" minOccurs="0"/>
- *         &lt;element name="sourceOf2" type="{urn:hl7-org:v3}COCT_MT530000UV.SourceOf3" maxOccurs="unbounded" minOccurs="0"/>
+ *         &lt;element name="outboundRelationship1" type="{urn:hl7-org:v3}COCT_MT530000UV.SourceOf1" maxOccurs="unbounded" minOccurs="0"/>
+ *         &lt;element name="outboundRelationship2" type="{urn:hl7-org:v3}COCT_MT530000UV.SourceOf3" maxOccurs="unbounded" minOccurs="0"/>
  *         &lt;element name="subjectOf" type="{urn:hl7-org:v3}COCT_MT530000UV.Subject1" minOccurs="0"/>
- *         &lt;element name="targetOf" type="{urn:hl7-org:v3}COCT_MT530000UV.SourceOf2" maxOccurs="unbounded" minOccurs="0"/>
+ *         &lt;element name="inboundRelationship" type="{urn:hl7-org:v3}COCT_MT530000UV.SourceOf2" maxOccurs="unbounded" minOccurs="0"/>
  *       &lt;/sequence>
  *       &lt;attGroup ref="{urn:hl7-org:v3}InfrastructureRootAttributes"/>
- *       &lt;attribute name="nullFlavor" type="{urn:hl7-org:v3}NullFlavor" />
  *       &lt;attribute name="classCode" use="required" type="{urn:hl7-org:v3}ActClassContainer" />
- *       &lt;attribute name="moodCode" use="required" type="{urn:hl7-org:v3}ActMood" fixed="EVN" />
+ *       &lt;attribute name="moodCode" use="required" type="{urn:hl7-org:v3}ActMoodEventOccurrence" />
  *     &lt;/restriction>
  *   &lt;/complexContent>
  * &lt;/complexType>
@@ -84,24 +83,24 @@ import javax.xml.bind.annotation.XmlType;
     "definition",
     "conditions",
     "component",
-    "sourceOf1",
-    "sourceOf2",
+    "outboundRelationship1",
+    "outboundRelationship2",
     "subjectOf",
-    "targetOf"
+    "inboundRelationship"
 })
 public class COCTMT530000UVOrganizer {
 
-    protected List<CS> realmCode;
+    protected DSETCS realmCode;
     protected II typeId;
-    protected List<II> templateId;
-    protected List<II> id;
+    protected LISTII templateId;
+    protected DSETII id;
     protected CD code;
     protected ED text;
     protected CS statusCode;
     protected IVLTS effectiveTime;
     protected TS availabilityTime;
-    protected List<CE> priorityCode;
-    protected List<CE> confidentialityCode;
+    protected DSETCD priorityCode;
+    protected DSETCD confidentialityCode;
     @XmlElement(nillable = true)
     protected List<COCTMT530000UVSubject2> subject;
     @XmlElementRef(name = "recordTarget", namespace = "urn:hl7-org:v3", type = JAXBElement.class, required = false)
@@ -127,47 +126,40 @@ public class COCTMT530000UVOrganizer {
     @XmlElement(nillable = true)
     protected List<COCTMT530000UVComponent> component;
     @XmlElement(nillable = true)
-    protected List<COCTMT530000UVSourceOf1> sourceOf1;
+    protected List<COCTMT530000UVSourceOf1> outboundRelationship1;
     @XmlElement(nillable = true)
-    protected List<COCTMT530000UVSourceOf3> sourceOf2;
+    protected List<COCTMT530000UVSourceOf3> outboundRelationship2;
     @XmlElementRef(name = "subjectOf", namespace = "urn:hl7-org:v3", type = JAXBElement.class, required = false)
     protected JAXBElement<COCTMT530000UVSubject1> subjectOf;
     @XmlElement(nillable = true)
-    protected List<COCTMT530000UVSourceOf2> targetOf;
-    @XmlAttribute(name = "nullFlavor")
-    protected List<String> nullFlavor;
+    protected List<COCTMT530000UVSourceOf2> inboundRelationship;
     @XmlAttribute(name = "classCode", required = true)
-    protected List<String> classCode;
+    protected ActClassContainer classCode;
     @XmlAttribute(name = "moodCode", required = true)
-    protected List<String> moodCode;
+    protected ActMoodEventOccurrence moodCode;
 
     /**
      * Gets the value of the realmCode property.
      * 
-     * <p>
-     * This accessor method returns a reference to the live list,
-     * not a snapshot. Therefore any modification you make to the
-     * returned list will be present inside the JAXB object.
-     * This is why there is not a <CODE>set</CODE> method for the realmCode property.
-     * 
-     * <p>
-     * For example, to add a new item, do as follows:
-     * <pre>
-     *    getRealmCode().add(newItem);
-     * </pre>
-     * 
-     * 
-     * <p>
-     * Objects of the following type(s) are allowed in the list
-     * {@link CS }
-     * 
-     * 
+     * @return
+     *     possible object is
+     *     {@link DSETCS }
+     *     
      */
-    public List<CS> getRealmCode() {
-        if (realmCode == null) {
-            realmCode = new ArrayList<CS>();
-        }
-        return this.realmCode;
+    public DSETCS getRealmCode() {
+        return realmCode;
+    }
+
+    /**
+     * Sets the value of the realmCode property.
+     * 
+     * @param value
+     *     allowed object is
+     *     {@link DSETCS }
+     *     
+     */
+    public void setRealmCode(DSETCS value) {
+        this.realmCode = value;
     }
 
     /**
@@ -197,59 +189,49 @@ public class COCTMT530000UVOrganizer {
     /**
      * Gets the value of the templateId property.
      * 
-     * <p>
-     * This accessor method returns a reference to the live list,
-     * not a snapshot. Therefore any modification you make to the
-     * returned list will be present inside the JAXB object.
-     * This is why there is not a <CODE>set</CODE> method for the templateId property.
-     * 
-     * <p>
-     * For example, to add a new item, do as follows:
-     * <pre>
-     *    getTemplateId().add(newItem);
-     * </pre>
-     * 
-     * 
-     * <p>
-     * Objects of the following type(s) are allowed in the list
-     * {@link II }
-     * 
-     * 
+     * @return
+     *     possible object is
+     *     {@link LISTII }
+     *     
      */
-    public List<II> getTemplateId() {
-        if (templateId == null) {
-            templateId = new ArrayList<II>();
-        }
-        return this.templateId;
+    public LISTII getTemplateId() {
+        return templateId;
+    }
+
+    /**
+     * Sets the value of the templateId property.
+     * 
+     * @param value
+     *     allowed object is
+     *     {@link LISTII }
+     *     
+     */
+    public void setTemplateId(LISTII value) {
+        this.templateId = value;
     }
 
     /**
      * Gets the value of the id property.
      * 
-     * <p>
-     * This accessor method returns a reference to the live list,
-     * not a snapshot. Therefore any modification you make to the
-     * returned list will be present inside the JAXB object.
-     * This is why there is not a <CODE>set</CODE> method for the id property.
-     * 
-     * <p>
-     * For example, to add a new item, do as follows:
-     * <pre>
-     *    getId().add(newItem);
-     * </pre>
-     * 
-     * 
-     * <p>
-     * Objects of the following type(s) are allowed in the list
-     * {@link II }
-     * 
-     * 
+     * @return
+     *     possible object is
+     *     {@link DSETII }
+     *     
      */
-    public List<II> getId() {
-        if (id == null) {
-            id = new ArrayList<II>();
-        }
-        return this.id;
+    public DSETII getId() {
+        return id;
+    }
+
+    /**
+     * Sets the value of the id property.
+     * 
+     * @param value
+     *     allowed object is
+     *     {@link DSETII }
+     *     
+     */
+    public void setId(DSETII value) {
+        this.id = value;
     }
 
     /**
@@ -375,59 +357,49 @@ public class COCTMT530000UVOrganizer {
     /**
      * Gets the value of the priorityCode property.
      * 
-     * <p>
-     * This accessor method returns a reference to the live list,
-     * not a snapshot. Therefore any modification you make to the
-     * returned list will be present inside the JAXB object.
-     * This is why there is not a <CODE>set</CODE> method for the priorityCode property.
-     * 
-     * <p>
-     * For example, to add a new item, do as follows:
-     * <pre>
-     *    getPriorityCode().add(newItem);
-     * </pre>
-     * 
-     * 
-     * <p>
-     * Objects of the following type(s) are allowed in the list
-     * {@link CE }
-     * 
-     * 
+     * @return
+     *     possible object is
+     *     {@link DSETCD }
+     *     
      */
-    public List<CE> getPriorityCode() {
-        if (priorityCode == null) {
-            priorityCode = new ArrayList<CE>();
-        }
-        return this.priorityCode;
+    public DSETCD getPriorityCode() {
+        return priorityCode;
+    }
+
+    /**
+     * Sets the value of the priorityCode property.
+     * 
+     * @param value
+     *     allowed object is
+     *     {@link DSETCD }
+     *     
+     */
+    public void setPriorityCode(DSETCD value) {
+        this.priorityCode = value;
     }
 
     /**
      * Gets the value of the confidentialityCode property.
      * 
-     * <p>
-     * This accessor method returns a reference to the live list,
-     * not a snapshot. Therefore any modification you make to the
-     * returned list will be present inside the JAXB object.
-     * This is why there is not a <CODE>set</CODE> method for the confidentialityCode property.
-     * 
-     * <p>
-     * For example, to add a new item, do as follows:
-     * <pre>
-     *    getConfidentialityCode().add(newItem);
-     * </pre>
-     * 
-     * 
-     * <p>
-     * Objects of the following type(s) are allowed in the list
-     * {@link CE }
-     * 
-     * 
+     * @return
+     *     possible object is
+     *     {@link DSETCD }
+     *     
      */
-    public List<CE> getConfidentialityCode() {
-        if (confidentialityCode == null) {
-            confidentialityCode = new ArrayList<CE>();
-        }
-        return this.confidentialityCode;
+    public DSETCD getConfidentialityCode() {
+        return confidentialityCode;
+    }
+
+    /**
+     * Sets the value of the confidentialityCode property.
+     * 
+     * @param value
+     *     allowed object is
+     *     {@link DSETCD }
+     *     
+     */
+    public void setConfidentialityCode(DSETCD value) {
+        this.confidentialityCode = value;
     }
 
     /**
@@ -764,18 +736,18 @@ public class COCTMT530000UVOrganizer {
     }
 
     /**
-     * Gets the value of the sourceOf1 property.
+     * Gets the value of the outboundRelationship1 property.
      * 
      * <p>
      * This accessor method returns a reference to the live list,
      * not a snapshot. Therefore any modification you make to the
      * returned list will be present inside the JAXB object.
-     * This is why there is not a <CODE>set</CODE> method for the sourceOf1 property.
+     * This is why there is not a <CODE>set</CODE> method for the outboundRelationship1 property.
      * 
      * <p>
      * For example, to add a new item, do as follows:
      * <pre>
-     *    getSourceOf1().add(newItem);
+     *    getOutboundRelationship1().add(newItem);
      * </pre>
      * 
      * 
@@ -785,26 +757,26 @@ public class COCTMT530000UVOrganizer {
      * 
      * 
      */
-    public List<COCTMT530000UVSourceOf1> getSourceOf1() {
-        if (sourceOf1 == null) {
-            sourceOf1 = new ArrayList<COCTMT530000UVSourceOf1>();
+    public List<COCTMT530000UVSourceOf1> getOutboundRelationship1() {
+        if (outboundRelationship1 == null) {
+            outboundRelationship1 = new ArrayList<COCTMT530000UVSourceOf1>();
         }
-        return this.sourceOf1;
+        return this.outboundRelationship1;
     }
 
     /**
-     * Gets the value of the sourceOf2 property.
+     * Gets the value of the outboundRelationship2 property.
      * 
      * <p>
      * This accessor method returns a reference to the live list,
      * not a snapshot. Therefore any modification you make to the
      * returned list will be present inside the JAXB object.
-     * This is why there is not a <CODE>set</CODE> method for the sourceOf2 property.
+     * This is why there is not a <CODE>set</CODE> method for the outboundRelationship2 property.
      * 
      * <p>
      * For example, to add a new item, do as follows:
      * <pre>
-     *    getSourceOf2().add(newItem);
+     *    getOutboundRelationship2().add(newItem);
      * </pre>
      * 
      * 
@@ -814,11 +786,11 @@ public class COCTMT530000UVOrganizer {
      * 
      * 
      */
-    public List<COCTMT530000UVSourceOf3> getSourceOf2() {
-        if (sourceOf2 == null) {
-            sourceOf2 = new ArrayList<COCTMT530000UVSourceOf3>();
+    public List<COCTMT530000UVSourceOf3> getOutboundRelationship2() {
+        if (outboundRelationship2 == null) {
+            outboundRelationship2 = new ArrayList<COCTMT530000UVSourceOf3>();
         }
-        return this.sourceOf2;
+        return this.outboundRelationship2;
     }
 
     /**
@@ -846,18 +818,18 @@ public class COCTMT530000UVOrganizer {
     }
 
     /**
-     * Gets the value of the targetOf property.
+     * Gets the value of the inboundRelationship property.
      * 
      * <p>
      * This accessor method returns a reference to the live list,
      * not a snapshot. Therefore any modification you make to the
      * returned list will be present inside the JAXB object.
-     * This is why there is not a <CODE>set</CODE> method for the targetOf property.
+     * This is why there is not a <CODE>set</CODE> method for the inboundRelationship property.
      * 
      * <p>
      * For example, to add a new item, do as follows:
      * <pre>
-     *    getTargetOf().add(newItem);
+     *    getInboundRelationship().add(newItem);
      * </pre>
      * 
      * 
@@ -867,98 +839,59 @@ public class COCTMT530000UVOrganizer {
      * 
      * 
      */
-    public List<COCTMT530000UVSourceOf2> getTargetOf() {
-        if (targetOf == null) {
-            targetOf = new ArrayList<COCTMT530000UVSourceOf2>();
+    public List<COCTMT530000UVSourceOf2> getInboundRelationship() {
+        if (inboundRelationship == null) {
+            inboundRelationship = new ArrayList<COCTMT530000UVSourceOf2>();
         }
-        return this.targetOf;
-    }
-
-    /**
-     * Gets the value of the nullFlavor property.
-     * 
-     * <p>
-     * This accessor method returns a reference to the live list,
-     * not a snapshot. Therefore any modification you make to the
-     * returned list will be present inside the JAXB object.
-     * This is why there is not a <CODE>set</CODE> method for the nullFlavor property.
-     * 
-     * <p>
-     * For example, to add a new item, do as follows:
-     * <pre>
-     *    getNullFlavor().add(newItem);
-     * </pre>
-     * 
-     * 
-     * <p>
-     * Objects of the following type(s) are allowed in the list
-     * {@link String }
-     * 
-     * 
-     */
-    public List<String> getNullFlavor() {
-        if (nullFlavor == null) {
-            nullFlavor = new ArrayList<String>();
-        }
-        return this.nullFlavor;
+        return this.inboundRelationship;
     }
 
     /**
      * Gets the value of the classCode property.
      * 
-     * <p>
-     * This accessor method returns a reference to the live list,
-     * not a snapshot. Therefore any modification you make to the
-     * returned list will be present inside the JAXB object.
-     * This is why there is not a <CODE>set</CODE> method for the classCode property.
-     * 
-     * <p>
-     * For example, to add a new item, do as follows:
-     * <pre>
-     *    getClassCode().add(newItem);
-     * </pre>
-     * 
-     * 
-     * <p>
-     * Objects of the following type(s) are allowed in the list
-     * {@link String }
-     * 
-     * 
+     * @return
+     *     possible object is
+     *     {@link ActClassContainer }
+     *     
      */
-    public List<String> getClassCode() {
-        if (classCode == null) {
-            classCode = new ArrayList<String>();
-        }
-        return this.classCode;
+    public ActClassContainer getClassCode() {
+        return classCode;
+    }
+
+    /**
+     * Sets the value of the classCode property.
+     * 
+     * @param value
+     *     allowed object is
+     *     {@link ActClassContainer }
+     *     
+     */
+    public void setClassCode(ActClassContainer value) {
+        this.classCode = value;
     }
 
     /**
      * Gets the value of the moodCode property.
      * 
-     * <p>
-     * This accessor method returns a reference to the live list,
-     * not a snapshot. Therefore any modification you make to the
-     * returned list will be present inside the JAXB object.
-     * This is why there is not a <CODE>set</CODE> method for the moodCode property.
-     * 
-     * <p>
-     * For example, to add a new item, do as follows:
-     * <pre>
-     *    getMoodCode().add(newItem);
-     * </pre>
-     * 
-     * 
-     * <p>
-     * Objects of the following type(s) are allowed in the list
-     * {@link String }
-     * 
-     * 
+     * @return
+     *     possible object is
+     *     {@link ActMoodEventOccurrence }
+     *     
      */
-    public List<String> getMoodCode() {
-        if (moodCode == null) {
-            moodCode = new ArrayList<String>();
-        }
-        return this.moodCode;
+    public ActMoodEventOccurrence getMoodCode() {
+        return moodCode;
+    }
+
+    /**
+     * Sets the value of the moodCode property.
+     * 
+     * @param value
+     *     allowed object is
+     *     {@link ActMoodEventOccurrence }
+     *     
+     */
+    public void setMoodCode(ActMoodEventOccurrence value) {
+        this.moodCode = value;
     }
 
 }

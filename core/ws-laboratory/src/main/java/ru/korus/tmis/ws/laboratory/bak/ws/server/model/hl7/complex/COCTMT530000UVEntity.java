@@ -21,20 +21,20 @@ import javax.xml.bind.annotation.XmlType;
  *     &lt;restriction base="{http://www.w3.org/2001/XMLSchema}anyType">
  *       &lt;sequence>
  *         &lt;group ref="{urn:hl7-org:v3}InfrastructureRootElements"/>
- *         &lt;element name="id" type="{urn:hl7-org:v3}II" maxOccurs="unbounded" minOccurs="0"/>
- *         &lt;element name="code" type="{urn:hl7-org:v3}CE" minOccurs="0"/>
- *         &lt;element name="quantity" type="{urn:hl7-org:v3}PQ" maxOccurs="unbounded" minOccurs="0"/>
- *         &lt;element name="name" type="{urn:hl7-org:v3}EN" maxOccurs="unbounded" minOccurs="0"/>
+ *         &lt;element name="id" type="{urn:hl7-org:v3}DSET_II" minOccurs="0"/>
+ *         &lt;element name="code" type="{urn:hl7-org:v3}CD" minOccurs="0"/>
+ *         &lt;element name="quantity" type="{urn:hl7-org:v3}DSET_PQ" minOccurs="0"/>
+ *         &lt;element name="name" type="{urn:hl7-org:v3}DSET_EN" minOccurs="0"/>
  *         &lt;element name="desc" type="{urn:hl7-org:v3}ED" minOccurs="0"/>
  *         &lt;element name="statusCode" type="{urn:hl7-org:v3}CS" minOccurs="0"/>
- *         &lt;element name="riskCode" type="{urn:hl7-org:v3}CE" minOccurs="0"/>
- *         &lt;element name="handlingCode" type="{urn:hl7-org:v3}CE" minOccurs="0"/>
+ *         &lt;element name="riskCode" type="{urn:hl7-org:v3}CD" minOccurs="0"/>
+ *         &lt;element name="handlingCode" type="{urn:hl7-org:v3}CD" minOccurs="0"/>
  *         &lt;element name="asRole" type="{urn:hl7-org:v3}COCT_MT530000UV.Role" maxOccurs="unbounded" minOccurs="0"/>
  *       &lt;/sequence>
  *       &lt;attGroup ref="{urn:hl7-org:v3}InfrastructureRootAttributes"/>
  *       &lt;attribute name="nullFlavor" type="{urn:hl7-org:v3}NullFlavor" />
  *       &lt;attribute name="classCode" use="required" type="{urn:hl7-org:v3}EntityClassRoot" />
- *       &lt;attribute name="determinerCode" use="required" type="{urn:hl7-org:v3}EntityDeterminer" fixed="INSTANCE" />
+ *       &lt;attribute name="determinerCode" use="required" type="{urn:hl7-org:v3}EntityDeterminerSpecific" />
  *     &lt;/restriction>
  *   &lt;/complexContent>
  * &lt;/complexType>
@@ -59,53 +59,48 @@ import javax.xml.bind.annotation.XmlType;
 })
 public class COCTMT530000UVEntity {
 
-    protected List<CS> realmCode;
+    protected DSETCS realmCode;
     protected II typeId;
-    protected List<II> templateId;
-    protected List<II> id;
-    protected CE code;
-    protected List<PQ> quantity;
-    protected List<EN> name;
+    protected LISTII templateId;
+    protected DSETII id;
+    protected CD code;
+    protected DSETPQ quantity;
+    protected DSETEN name;
     protected ED desc;
     protected CS statusCode;
-    protected CE riskCode;
-    protected CE handlingCode;
+    protected CD riskCode;
+    protected CD handlingCode;
     @XmlElement(nillable = true)
     protected List<COCTMT530000UVRole> asRole;
     @XmlAttribute(name = "nullFlavor")
-    protected List<String> nullFlavor;
+    protected NullFlavor nullFlavor;
     @XmlAttribute(name = "classCode", required = true)
-    protected List<String> classCode;
+    protected EntityClassRoot classCode;
     @XmlAttribute(name = "determinerCode", required = true)
-    protected String determinerCode;
+    protected EntityDeterminerSpecific determinerCode;
 
     /**
      * Gets the value of the realmCode property.
      * 
-     * <p>
-     * This accessor method returns a reference to the live list,
-     * not a snapshot. Therefore any modification you make to the
-     * returned list will be present inside the JAXB object.
-     * This is why there is not a <CODE>set</CODE> method for the realmCode property.
-     * 
-     * <p>
-     * For example, to add a new item, do as follows:
-     * <pre>
-     *    getRealmCode().add(newItem);
-     * </pre>
-     * 
-     * 
-     * <p>
-     * Objects of the following type(s) are allowed in the list
-     * {@link CS }
-     * 
-     * 
+     * @return
+     *     possible object is
+     *     {@link DSETCS }
+     *     
      */
-    public List<CS> getRealmCode() {
-        if (realmCode == null) {
-            realmCode = new ArrayList<CS>();
-        }
-        return this.realmCode;
+    public DSETCS getRealmCode() {
+        return realmCode;
+    }
+
+    /**
+     * Sets the value of the realmCode property.
+     * 
+     * @param value
+     *     allowed object is
+     *     {@link DSETCS }
+     *     
+     */
+    public void setRealmCode(DSETCS value) {
+        this.realmCode = value;
     }
 
     /**
@@ -135,59 +130,49 @@ public class COCTMT530000UVEntity {
     /**
      * Gets the value of the templateId property.
      * 
-     * <p>
-     * This accessor method returns a reference to the live list,
-     * not a snapshot. Therefore any modification you make to the
-     * returned list will be present inside the JAXB object.
-     * This is why there is not a <CODE>set</CODE> method for the templateId property.
-     * 
-     * <p>
-     * For example, to add a new item, do as follows:
-     * <pre>
-     *    getTemplateId().add(newItem);
-     * </pre>
-     * 
-     * 
-     * <p>
-     * Objects of the following type(s) are allowed in the list
-     * {@link II }
-     * 
-     * 
+     * @return
+     *     possible object is
+     *     {@link LISTII }
+     *     
      */
-    public List<II> getTemplateId() {
-        if (templateId == null) {
-            templateId = new ArrayList<II>();
-        }
-        return this.templateId;
+    public LISTII getTemplateId() {
+        return templateId;
+    }
+
+    /**
+     * Sets the value of the templateId property.
+     * 
+     * @param value
+     *     allowed object is
+     *     {@link LISTII }
+     *     
+     */
+    public void setTemplateId(LISTII value) {
+        this.templateId = value;
     }
 
     /**
      * Gets the value of the id property.
      * 
-     * <p>
-     * This accessor method returns a reference to the live list,
-     * not a snapshot. Therefore any modification you make to the
-     * returned list will be present inside the JAXB object.
-     * This is why there is not a <CODE>set</CODE> method for the id property.
-     * 
-     * <p>
-     * For example, to add a new item, do as follows:
-     * <pre>
-     *    getId().add(newItem);
-     * </pre>
-     * 
-     * 
-     * <p>
-     * Objects of the following type(s) are allowed in the list
-     * {@link II }
-     * 
-     * 
+     * @return
+     *     possible object is
+     *     {@link DSETII }
+     *     
      */
-    public List<II> getId() {
-        if (id == null) {
-            id = new ArrayList<II>();
-        }
-        return this.id;
+    public DSETII getId() {
+        return id;
+    }
+
+    /**
+     * Sets the value of the id property.
+     * 
+     * @param value
+     *     allowed object is
+     *     {@link DSETII }
+     *     
+     */
+    public void setId(DSETII value) {
+        this.id = value;
     }
 
     /**
@@ -195,10 +180,10 @@ public class COCTMT530000UVEntity {
      * 
      * @return
      *     possible object is
-     *     {@link CE }
+     *     {@link CD }
      *     
      */
-    public CE getCode() {
+    public CD getCode() {
         return code;
     }
 
@@ -207,69 +192,59 @@ public class COCTMT530000UVEntity {
      * 
      * @param value
      *     allowed object is
-     *     {@link CE }
+     *     {@link CD }
      *     
      */
-    public void setCode(CE value) {
+    public void setCode(CD value) {
         this.code = value;
     }
 
     /**
      * Gets the value of the quantity property.
      * 
-     * <p>
-     * This accessor method returns a reference to the live list,
-     * not a snapshot. Therefore any modification you make to the
-     * returned list will be present inside the JAXB object.
-     * This is why there is not a <CODE>set</CODE> method for the quantity property.
-     * 
-     * <p>
-     * For example, to add a new item, do as follows:
-     * <pre>
-     *    getQuantity().add(newItem);
-     * </pre>
-     * 
-     * 
-     * <p>
-     * Objects of the following type(s) are allowed in the list
-     * {@link PQ }
-     * 
-     * 
+     * @return
+     *     possible object is
+     *     {@link DSETPQ }
+     *     
      */
-    public List<PQ> getQuantity() {
-        if (quantity == null) {
-            quantity = new ArrayList<PQ>();
-        }
-        return this.quantity;
+    public DSETPQ getQuantity() {
+        return quantity;
+    }
+
+    /**
+     * Sets the value of the quantity property.
+     * 
+     * @param value
+     *     allowed object is
+     *     {@link DSETPQ }
+     *     
+     */
+    public void setQuantity(DSETPQ value) {
+        this.quantity = value;
     }
 
     /**
      * Gets the value of the name property.
      * 
-     * <p>
-     * This accessor method returns a reference to the live list,
-     * not a snapshot. Therefore any modification you make to the
-     * returned list will be present inside the JAXB object.
-     * This is why there is not a <CODE>set</CODE> method for the name property.
-     * 
-     * <p>
-     * For example, to add a new item, do as follows:
-     * <pre>
-     *    getName().add(newItem);
-     * </pre>
-     * 
-     * 
-     * <p>
-     * Objects of the following type(s) are allowed in the list
-     * {@link EN }
-     * 
-     * 
+     * @return
+     *     possible object is
+     *     {@link DSETEN }
+     *     
      */
-    public List<EN> getName() {
-        if (name == null) {
-            name = new ArrayList<EN>();
-        }
-        return this.name;
+    public DSETEN getName() {
+        return name;
+    }
+
+    /**
+     * Sets the value of the name property.
+     * 
+     * @param value
+     *     allowed object is
+     *     {@link DSETEN }
+     *     
+     */
+    public void setName(DSETEN value) {
+        this.name = value;
     }
 
     /**
@@ -325,10 +300,10 @@ public class COCTMT530000UVEntity {
      * 
      * @return
      *     possible object is
-     *     {@link CE }
+     *     {@link CD }
      *     
      */
-    public CE getRiskCode() {
+    public CD getRiskCode() {
         return riskCode;
     }
 
@@ -337,10 +312,10 @@ public class COCTMT530000UVEntity {
      * 
      * @param value
      *     allowed object is
-     *     {@link CE }
+     *     {@link CD }
      *     
      */
-    public void setRiskCode(CE value) {
+    public void setRiskCode(CD value) {
         this.riskCode = value;
     }
 
@@ -349,10 +324,10 @@ public class COCTMT530000UVEntity {
      * 
      * @return
      *     possible object is
-     *     {@link CE }
+     *     {@link CD }
      *     
      */
-    public CE getHandlingCode() {
+    public CD getHandlingCode() {
         return handlingCode;
     }
 
@@ -361,10 +336,10 @@ public class COCTMT530000UVEntity {
      * 
      * @param value
      *     allowed object is
-     *     {@link CE }
+     *     {@link CD }
      *     
      */
-    public void setHandlingCode(CE value) {
+    public void setHandlingCode(CD value) {
         this.handlingCode = value;
     }
 
@@ -400,59 +375,49 @@ public class COCTMT530000UVEntity {
     /**
      * Gets the value of the nullFlavor property.
      * 
-     * <p>
-     * This accessor method returns a reference to the live list,
-     * not a snapshot. Therefore any modification you make to the
-     * returned list will be present inside the JAXB object.
-     * This is why there is not a <CODE>set</CODE> method for the nullFlavor property.
-     * 
-     * <p>
-     * For example, to add a new item, do as follows:
-     * <pre>
-     *    getNullFlavor().add(newItem);
-     * </pre>
-     * 
-     * 
-     * <p>
-     * Objects of the following type(s) are allowed in the list
-     * {@link String }
-     * 
-     * 
+     * @return
+     *     possible object is
+     *     {@link NullFlavor }
+     *     
      */
-    public List<String> getNullFlavor() {
-        if (nullFlavor == null) {
-            nullFlavor = new ArrayList<String>();
-        }
-        return this.nullFlavor;
+    public NullFlavor getNullFlavor() {
+        return nullFlavor;
+    }
+
+    /**
+     * Sets the value of the nullFlavor property.
+     * 
+     * @param value
+     *     allowed object is
+     *     {@link NullFlavor }
+     *     
+     */
+    public void setNullFlavor(NullFlavor value) {
+        this.nullFlavor = value;
     }
 
     /**
      * Gets the value of the classCode property.
      * 
-     * <p>
-     * This accessor method returns a reference to the live list,
-     * not a snapshot. Therefore any modification you make to the
-     * returned list will be present inside the JAXB object.
-     * This is why there is not a <CODE>set</CODE> method for the classCode property.
-     * 
-     * <p>
-     * For example, to add a new item, do as follows:
-     * <pre>
-     *    getClassCode().add(newItem);
-     * </pre>
-     * 
-     * 
-     * <p>
-     * Objects of the following type(s) are allowed in the list
-     * {@link String }
-     * 
-     * 
+     * @return
+     *     possible object is
+     *     {@link EntityClassRoot }
+     *     
      */
-    public List<String> getClassCode() {
-        if (classCode == null) {
-            classCode = new ArrayList<String>();
-        }
-        return this.classCode;
+    public EntityClassRoot getClassCode() {
+        return classCode;
+    }
+
+    /**
+     * Sets the value of the classCode property.
+     * 
+     * @param value
+     *     allowed object is
+     *     {@link EntityClassRoot }
+     *     
+     */
+    public void setClassCode(EntityClassRoot value) {
+        this.classCode = value;
     }
 
     /**
@@ -460,15 +425,11 @@ public class COCTMT530000UVEntity {
      * 
      * @return
      *     possible object is
-     *     {@link String }
+     *     {@link EntityDeterminerSpecific }
      *     
      */
-    public String getDeterminerCode() {
-        if (determinerCode == null) {
-            return "INSTANCE";
-        } else {
-            return determinerCode;
-        }
+    public EntityDeterminerSpecific getDeterminerCode() {
+        return determinerCode;
     }
 
     /**
@@ -476,10 +437,10 @@ public class COCTMT530000UVEntity {
      * 
      * @param value
      *     allowed object is
-     *     {@link String }
+     *     {@link EntityDeterminerSpecific }
      *     
      */
-    public void setDeterminerCode(String value) {
+    public void setDeterminerCode(EntityDeterminerSpecific value) {
         this.determinerCode = value;
     }
 

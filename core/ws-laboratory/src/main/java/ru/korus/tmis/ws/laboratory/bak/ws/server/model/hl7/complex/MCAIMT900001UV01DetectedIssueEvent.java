@@ -21,7 +21,7 @@ import javax.xml.bind.annotation.XmlType;
  *     &lt;restriction base="{http://www.w3.org/2001/XMLSchema}anyType">
  *       &lt;sequence>
  *         &lt;group ref="{urn:hl7-org:v3}InfrastructureRootElements"/>
- *         &lt;element name="id" type="{urn:hl7-org:v3}II" maxOccurs="unbounded" minOccurs="0"/>
+ *         &lt;element name="id" type="{urn:hl7-org:v3}DSET_II" minOccurs="0"/>
  *         &lt;element name="code" type="{urn:hl7-org:v3}CD"/>
  *         &lt;element name="text" type="{urn:hl7-org:v3}ED" minOccurs="0"/>
  *         &lt;element name="value" type="{urn:hl7-org:v3}ANY" minOccurs="0"/>
@@ -29,9 +29,8 @@ import javax.xml.bind.annotation.XmlType;
  *         &lt;element name="triggerFor" type="{urn:hl7-org:v3}MCAI_MT900001UV01.Requires" maxOccurs="unbounded" minOccurs="0"/>
  *       &lt;/sequence>
  *       &lt;attGroup ref="{urn:hl7-org:v3}InfrastructureRootAttributes"/>
- *       &lt;attribute name="nullFlavor" type="{urn:hl7-org:v3}NullFlavor" />
- *       &lt;attribute name="classCode" use="required" type="{urn:hl7-org:v3}ActClass" fixed="ALRT" />
- *       &lt;attribute name="moodCode" use="required" type="{urn:hl7-org:v3}ActMood" fixed="EVN" />
+ *       &lt;attribute name="classCode" use="required" type="{urn:hl7-org:v3}ActClassDetectedIssue" />
+ *       &lt;attribute name="moodCode" use="required" type="{urn:hl7-org:v3}ActMoodEventOccurrence" />
  *     &lt;/restriction>
  *   &lt;/complexContent>
  * &lt;/complexType>
@@ -53,10 +52,10 @@ import javax.xml.bind.annotation.XmlType;
 })
 public class MCAIMT900001UV01DetectedIssueEvent {
 
-    protected List<CS> realmCode;
+    protected DSETCS realmCode;
     protected II typeId;
-    protected List<II> templateId;
-    protected List<II> id;
+    protected LISTII templateId;
+    protected DSETII id;
     @XmlElement(required = true)
     protected CD code;
     protected ED text;
@@ -65,40 +64,33 @@ public class MCAIMT900001UV01DetectedIssueEvent {
     protected List<MCAIMT900001UV01SourceOf> mitigatedBy;
     @XmlElement(nillable = true)
     protected List<MCAIMT900001UV01Requires> triggerFor;
-    @XmlAttribute(name = "nullFlavor")
-    protected List<String> nullFlavor;
     @XmlAttribute(name = "classCode", required = true)
-    protected List<String> classCode;
+    protected ActClassDetectedIssue classCode;
     @XmlAttribute(name = "moodCode", required = true)
-    protected List<String> moodCode;
+    protected ActMoodEventOccurrence moodCode;
 
     /**
      * Gets the value of the realmCode property.
      * 
-     * <p>
-     * This accessor method returns a reference to the live list,
-     * not a snapshot. Therefore any modification you make to the
-     * returned list will be present inside the JAXB object.
-     * This is why there is not a <CODE>set</CODE> method for the realmCode property.
-     * 
-     * <p>
-     * For example, to add a new item, do as follows:
-     * <pre>
-     *    getRealmCode().add(newItem);
-     * </pre>
-     * 
-     * 
-     * <p>
-     * Objects of the following type(s) are allowed in the list
-     * {@link CS }
-     * 
-     * 
+     * @return
+     *     possible object is
+     *     {@link DSETCS }
+     *     
      */
-    public List<CS> getRealmCode() {
-        if (realmCode == null) {
-            realmCode = new ArrayList<CS>();
-        }
-        return this.realmCode;
+    public DSETCS getRealmCode() {
+        return realmCode;
+    }
+
+    /**
+     * Sets the value of the realmCode property.
+     * 
+     * @param value
+     *     allowed object is
+     *     {@link DSETCS }
+     *     
+     */
+    public void setRealmCode(DSETCS value) {
+        this.realmCode = value;
     }
 
     /**
@@ -128,59 +120,49 @@ public class MCAIMT900001UV01DetectedIssueEvent {
     /**
      * Gets the value of the templateId property.
      * 
-     * <p>
-     * This accessor method returns a reference to the live list,
-     * not a snapshot. Therefore any modification you make to the
-     * returned list will be present inside the JAXB object.
-     * This is why there is not a <CODE>set</CODE> method for the templateId property.
-     * 
-     * <p>
-     * For example, to add a new item, do as follows:
-     * <pre>
-     *    getTemplateId().add(newItem);
-     * </pre>
-     * 
-     * 
-     * <p>
-     * Objects of the following type(s) are allowed in the list
-     * {@link II }
-     * 
-     * 
+     * @return
+     *     possible object is
+     *     {@link LISTII }
+     *     
      */
-    public List<II> getTemplateId() {
-        if (templateId == null) {
-            templateId = new ArrayList<II>();
-        }
-        return this.templateId;
+    public LISTII getTemplateId() {
+        return templateId;
+    }
+
+    /**
+     * Sets the value of the templateId property.
+     * 
+     * @param value
+     *     allowed object is
+     *     {@link LISTII }
+     *     
+     */
+    public void setTemplateId(LISTII value) {
+        this.templateId = value;
     }
 
     /**
      * Gets the value of the id property.
      * 
-     * <p>
-     * This accessor method returns a reference to the live list,
-     * not a snapshot. Therefore any modification you make to the
-     * returned list will be present inside the JAXB object.
-     * This is why there is not a <CODE>set</CODE> method for the id property.
-     * 
-     * <p>
-     * For example, to add a new item, do as follows:
-     * <pre>
-     *    getId().add(newItem);
-     * </pre>
-     * 
-     * 
-     * <p>
-     * Objects of the following type(s) are allowed in the list
-     * {@link II }
-     * 
-     * 
+     * @return
+     *     possible object is
+     *     {@link DSETII }
+     *     
      */
-    public List<II> getId() {
-        if (id == null) {
-            id = new ArrayList<II>();
-        }
-        return this.id;
+    public DSETII getId() {
+        return id;
+    }
+
+    /**
+     * Sets the value of the id property.
+     * 
+     * @param value
+     *     allowed object is
+     *     {@link DSETII }
+     *     
+     */
+    public void setId(DSETII value) {
+        this.id = value;
     }
 
     /**
@@ -314,90 +296,51 @@ public class MCAIMT900001UV01DetectedIssueEvent {
     }
 
     /**
-     * Gets the value of the nullFlavor property.
+     * Gets the value of the classCode property.
      * 
-     * <p>
-     * This accessor method returns a reference to the live list,
-     * not a snapshot. Therefore any modification you make to the
-     * returned list will be present inside the JAXB object.
-     * This is why there is not a <CODE>set</CODE> method for the nullFlavor property.
-     * 
-     * <p>
-     * For example, to add a new item, do as follows:
-     * <pre>
-     *    getNullFlavor().add(newItem);
-     * </pre>
-     * 
-     * 
-     * <p>
-     * Objects of the following type(s) are allowed in the list
-     * {@link String }
-     * 
-     * 
+     * @return
+     *     possible object is
+     *     {@link ActClassDetectedIssue }
+     *     
      */
-    public List<String> getNullFlavor() {
-        if (nullFlavor == null) {
-            nullFlavor = new ArrayList<String>();
-        }
-        return this.nullFlavor;
+    public ActClassDetectedIssue getClassCode() {
+        return classCode;
     }
 
     /**
-     * Gets the value of the classCode property.
+     * Sets the value of the classCode property.
      * 
-     * <p>
-     * This accessor method returns a reference to the live list,
-     * not a snapshot. Therefore any modification you make to the
-     * returned list will be present inside the JAXB object.
-     * This is why there is not a <CODE>set</CODE> method for the classCode property.
-     * 
-     * <p>
-     * For example, to add a new item, do as follows:
-     * <pre>
-     *    getClassCode().add(newItem);
-     * </pre>
-     * 
-     * 
-     * <p>
-     * Objects of the following type(s) are allowed in the list
-     * {@link String }
-     * 
-     * 
+     * @param value
+     *     allowed object is
+     *     {@link ActClassDetectedIssue }
+     *     
      */
-    public List<String> getClassCode() {
-        if (classCode == null) {
-            classCode = new ArrayList<String>();
-        }
-        return this.classCode;
+    public void setClassCode(ActClassDetectedIssue value) {
+        this.classCode = value;
     }
 
     /**
      * Gets the value of the moodCode property.
      * 
-     * <p>
-     * This accessor method returns a reference to the live list,
-     * not a snapshot. Therefore any modification you make to the
-     * returned list will be present inside the JAXB object.
-     * This is why there is not a <CODE>set</CODE> method for the moodCode property.
-     * 
-     * <p>
-     * For example, to add a new item, do as follows:
-     * <pre>
-     *    getMoodCode().add(newItem);
-     * </pre>
-     * 
-     * 
-     * <p>
-     * Objects of the following type(s) are allowed in the list
-     * {@link String }
-     * 
-     * 
+     * @return
+     *     possible object is
+     *     {@link ActMoodEventOccurrence }
+     *     
      */
-    public List<String> getMoodCode() {
-        if (moodCode == null) {
-            moodCode = new ArrayList<String>();
-        }
-        return this.moodCode;
+    public ActMoodEventOccurrence getMoodCode() {
+        return moodCode;
+    }
+
+    /**
+     * Sets the value of the moodCode property.
+     * 
+     * @param value
+     *     allowed object is
+     *     {@link ActMoodEventOccurrence }
+     *     
+     */
+    public void setMoodCode(ActMoodEventOccurrence value) {
+        this.moodCode = value;
     }
 
 }

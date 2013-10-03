@@ -1,8 +1,6 @@
 
 package ru.korus.tmis.ws.laboratory.bak.ws.server.model.hl7.complex;
 
-import java.util.ArrayList;
-import java.util.List;
 import javax.xml.bind.annotation.XmlAccessType;
 import javax.xml.bind.annotation.XmlAccessorType;
 import javax.xml.bind.annotation.XmlAttribute;
@@ -10,17 +8,6 @@ import javax.xml.bind.annotation.XmlType;
 
 
 /**
- * 
- *             Note: because this type is defined as an extension of SXCM_T,
- *             all of the attributes and elements accepted for T are also
- *             accepted by this definition.  However, they are NOT allowed
- *             by the normative description of this type.  Unfortunately,
- *             we cannot write a general purpose schematron contraints to
- *             provide that extra validation, thus applications must be
- *             aware that instance (fragments) that pass validation with
- *             this might might still not be legal.
- *          
- * 
  * <p>Java class for PIVL_TS complex type.
  * 
  * <p>The following schema fragment specifies the expected content contained within this class.
@@ -28,13 +15,15 @@ import javax.xml.bind.annotation.XmlType;
  * <pre>
  * &lt;complexType name="PIVL_TS">
  *   &lt;complexContent>
- *     &lt;extension base="{urn:hl7-org:v3}SXCM_TS">
+ *     &lt;extension base="{urn:hl7-org:v3}QSET_TS">
  *       &lt;sequence>
  *         &lt;element name="phase" type="{urn:hl7-org:v3}IVL_TS" minOccurs="0"/>
  *         &lt;element name="period" type="{urn:hl7-org:v3}PQ" minOccurs="0"/>
+ *         &lt;element name="frequency" type="{urn:hl7-org:v3}RTO" minOccurs="0"/>
+ *         &lt;element name="count" type="{urn:hl7-org:v3}INT" minOccurs="0"/>
  *       &lt;/sequence>
  *       &lt;attribute name="alignment" type="{urn:hl7-org:v3}CalendarCycle" />
- *       &lt;attribute name="institutionSpecified" type="{urn:hl7-org:v3}bl" default="false" />
+ *       &lt;attribute name="isFlexible" type="{http://www.w3.org/2001/XMLSchema}boolean" />
  *     &lt;/extension>
  *   &lt;/complexContent>
  * &lt;/complexType>
@@ -45,18 +34,22 @@ import javax.xml.bind.annotation.XmlType;
 @XmlAccessorType(XmlAccessType.FIELD)
 @XmlType(name = "PIVL_TS", propOrder = {
     "phase",
-    "period"
+    "period",
+    "frequency",
+    "count"
 })
 public class PIVLTS
-    extends SXCMTS
+    extends QSETTS
 {
 
     protected IVLTS phase;
     protected PQ period;
+    protected RTO frequency;
+    protected INT count;
     @XmlAttribute(name = "alignment")
-    protected List<String> alignment;
-    @XmlAttribute(name = "institutionSpecified")
-    protected Boolean institutionSpecified;
+    protected CalendarCycle alignment;
+    @XmlAttribute(name = "isFlexible")
+    protected Boolean isFlexible;
 
     /**
      * Gets the value of the phase property.
@@ -107,60 +100,99 @@ public class PIVLTS
     }
 
     /**
-     * Gets the value of the alignment property.
+     * Gets the value of the frequency property.
      * 
-     * <p>
-     * This accessor method returns a reference to the live list,
-     * not a snapshot. Therefore any modification you make to the
-     * returned list will be present inside the JAXB object.
-     * This is why there is not a <CODE>set</CODE> method for the alignment property.
-     * 
-     * <p>
-     * For example, to add a new item, do as follows:
-     * <pre>
-     *    getAlignment().add(newItem);
-     * </pre>
-     * 
-     * 
-     * <p>
-     * Objects of the following type(s) are allowed in the list
-     * {@link String }
-     * 
-     * 
+     * @return
+     *     possible object is
+     *     {@link RTO }
+     *     
      */
-    public List<String> getAlignment() {
-        if (alignment == null) {
-            alignment = new ArrayList<String>();
-        }
-        return this.alignment;
+    public RTO getFrequency() {
+        return frequency;
     }
 
     /**
-     * Gets the value of the institutionSpecified property.
+     * Sets the value of the frequency property.
+     * 
+     * @param value
+     *     allowed object is
+     *     {@link RTO }
+     *     
+     */
+    public void setFrequency(RTO value) {
+        this.frequency = value;
+    }
+
+    /**
+     * Gets the value of the count property.
+     * 
+     * @return
+     *     possible object is
+     *     {@link INT }
+     *     
+     */
+    public INT getCount() {
+        return count;
+    }
+
+    /**
+     * Sets the value of the count property.
+     * 
+     * @param value
+     *     allowed object is
+     *     {@link INT }
+     *     
+     */
+    public void setCount(INT value) {
+        this.count = value;
+    }
+
+    /**
+     * Gets the value of the alignment property.
+     * 
+     * @return
+     *     possible object is
+     *     {@link CalendarCycle }
+     *     
+     */
+    public CalendarCycle getAlignment() {
+        return alignment;
+    }
+
+    /**
+     * Sets the value of the alignment property.
+     * 
+     * @param value
+     *     allowed object is
+     *     {@link CalendarCycle }
+     *     
+     */
+    public void setAlignment(CalendarCycle value) {
+        this.alignment = value;
+    }
+
+    /**
+     * Gets the value of the isFlexible property.
      * 
      * @return
      *     possible object is
      *     {@link Boolean }
      *     
      */
-    public boolean isInstitutionSpecified() {
-        if (institutionSpecified == null) {
-            return false;
-        } else {
-            return institutionSpecified;
-        }
+    public Boolean isIsFlexible() {
+        return isFlexible;
     }
 
     /**
-     * Sets the value of the institutionSpecified property.
+     * Sets the value of the isFlexible property.
      * 
      * @param value
      *     allowed object is
      *     {@link Boolean }
      *     
      */
-    public void setInstitutionSpecified(Boolean value) {
-        this.institutionSpecified = value;
+    public void setIsFlexible(Boolean value) {
+        this.isFlexible = value;
     }
 
 }

@@ -1,8 +1,6 @@
 
 package ru.korus.tmis.ws.laboratory.bak.ws.server.model.hl7.complex;
 
-import java.util.ArrayList;
-import java.util.List;
 import javax.xml.bind.annotation.XmlAccessType;
 import javax.xml.bind.annotation.XmlAccessorType;
 import javax.xml.bind.annotation.XmlAttribute;
@@ -21,8 +19,8 @@ import javax.xml.bind.annotation.XmlType;
  *     &lt;restriction base="{http://www.w3.org/2001/XMLSchema}anyType">
  *       &lt;sequence>
  *         &lt;group ref="{urn:hl7-org:v3}InfrastructureRootElements"/>
- *         &lt;element name="id" type="{urn:hl7-org:v3}II" maxOccurs="unbounded"/>
- *         &lt;element name="code" type="{urn:hl7-org:v3}CE" minOccurs="0"/>
+ *         &lt;element name="id" type="{urn:hl7-org:v3}DSET_II"/>
+ *         &lt;element name="code" type="{urn:hl7-org:v3}CD" minOccurs="0"/>
  *       &lt;/sequence>
  *       &lt;attGroup ref="{urn:hl7-org:v3}InfrastructureRootAttributes"/>
  *       &lt;attribute name="classCode" use="required" type="{urn:hl7-org:v3}RoleClassAssignedEntity" />
@@ -43,42 +41,37 @@ import javax.xml.bind.annotation.XmlType;
 })
 public class COCTMT090001UV01AssignedEntity {
 
-    protected List<CS> realmCode;
+    protected DSETCS realmCode;
     protected II typeId;
-    protected List<II> templateId;
+    protected LISTII templateId;
     @XmlElement(required = true)
-    protected List<II> id;
-    protected CE code;
+    protected DSETII id;
+    protected CD code;
     @XmlAttribute(name = "classCode", required = true)
-    protected String classCode;
+    protected RoleClassAssignedEntity classCode;
 
     /**
      * Gets the value of the realmCode property.
      * 
-     * <p>
-     * This accessor method returns a reference to the live list,
-     * not a snapshot. Therefore any modification you make to the
-     * returned list will be present inside the JAXB object.
-     * This is why there is not a <CODE>set</CODE> method for the realmCode property.
-     * 
-     * <p>
-     * For example, to add a new item, do as follows:
-     * <pre>
-     *    getRealmCode().add(newItem);
-     * </pre>
-     * 
-     * 
-     * <p>
-     * Objects of the following type(s) are allowed in the list
-     * {@link CS }
-     * 
-     * 
+     * @return
+     *     possible object is
+     *     {@link DSETCS }
+     *     
      */
-    public List<CS> getRealmCode() {
-        if (realmCode == null) {
-            realmCode = new ArrayList<CS>();
-        }
-        return this.realmCode;
+    public DSETCS getRealmCode() {
+        return realmCode;
+    }
+
+    /**
+     * Sets the value of the realmCode property.
+     * 
+     * @param value
+     *     allowed object is
+     *     {@link DSETCS }
+     *     
+     */
+    public void setRealmCode(DSETCS value) {
+        this.realmCode = value;
     }
 
     /**
@@ -108,59 +101,49 @@ public class COCTMT090001UV01AssignedEntity {
     /**
      * Gets the value of the templateId property.
      * 
-     * <p>
-     * This accessor method returns a reference to the live list,
-     * not a snapshot. Therefore any modification you make to the
-     * returned list will be present inside the JAXB object.
-     * This is why there is not a <CODE>set</CODE> method for the templateId property.
-     * 
-     * <p>
-     * For example, to add a new item, do as follows:
-     * <pre>
-     *    getTemplateId().add(newItem);
-     * </pre>
-     * 
-     * 
-     * <p>
-     * Objects of the following type(s) are allowed in the list
-     * {@link II }
-     * 
-     * 
+     * @return
+     *     possible object is
+     *     {@link LISTII }
+     *     
      */
-    public List<II> getTemplateId() {
-        if (templateId == null) {
-            templateId = new ArrayList<II>();
-        }
-        return this.templateId;
+    public LISTII getTemplateId() {
+        return templateId;
+    }
+
+    /**
+     * Sets the value of the templateId property.
+     * 
+     * @param value
+     *     allowed object is
+     *     {@link LISTII }
+     *     
+     */
+    public void setTemplateId(LISTII value) {
+        this.templateId = value;
     }
 
     /**
      * Gets the value of the id property.
      * 
-     * <p>
-     * This accessor method returns a reference to the live list,
-     * not a snapshot. Therefore any modification you make to the
-     * returned list will be present inside the JAXB object.
-     * This is why there is not a <CODE>set</CODE> method for the id property.
-     * 
-     * <p>
-     * For example, to add a new item, do as follows:
-     * <pre>
-     *    getId().add(newItem);
-     * </pre>
-     * 
-     * 
-     * <p>
-     * Objects of the following type(s) are allowed in the list
-     * {@link II }
-     * 
-     * 
+     * @return
+     *     possible object is
+     *     {@link DSETII }
+     *     
      */
-    public List<II> getId() {
-        if (id == null) {
-            id = new ArrayList<II>();
-        }
-        return this.id;
+    public DSETII getId() {
+        return id;
+    }
+
+    /**
+     * Sets the value of the id property.
+     * 
+     * @param value
+     *     allowed object is
+     *     {@link DSETII }
+     *     
+     */
+    public void setId(DSETII value) {
+        this.id = value;
     }
 
     /**
@@ -168,10 +151,10 @@ public class COCTMT090001UV01AssignedEntity {
      * 
      * @return
      *     possible object is
-     *     {@link CE }
+     *     {@link CD }
      *     
      */
-    public CE getCode() {
+    public CD getCode() {
         return code;
     }
 
@@ -180,10 +163,10 @@ public class COCTMT090001UV01AssignedEntity {
      * 
      * @param value
      *     allowed object is
-     *     {@link CE }
+     *     {@link CD }
      *     
      */
-    public void setCode(CE value) {
+    public void setCode(CD value) {
         this.code = value;
     }
 
@@ -192,10 +175,10 @@ public class COCTMT090001UV01AssignedEntity {
      * 
      * @return
      *     possible object is
-     *     {@link String }
+     *     {@link RoleClassAssignedEntity }
      *     
      */
-    public String getClassCode() {
+    public RoleClassAssignedEntity getClassCode() {
         return classCode;
     }
 
@@ -204,10 +187,10 @@ public class COCTMT090001UV01AssignedEntity {
      * 
      * @param value
      *     allowed object is
-     *     {@link String }
+     *     {@link RoleClassAssignedEntity }
      *     
      */
-    public void setClassCode(String value) {
+    public void setClassCode(RoleClassAssignedEntity value) {
         this.classCode = value;
     }
 

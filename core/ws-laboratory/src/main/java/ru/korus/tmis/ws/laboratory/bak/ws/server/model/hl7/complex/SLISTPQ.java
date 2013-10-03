@@ -1,13 +1,10 @@
 
 package ru.korus.tmis.ws.laboratory.bak.ws.server.model.hl7.complex;
 
-import java.math.BigInteger;
 import java.util.ArrayList;
 import java.util.List;
 import javax.xml.bind.annotation.XmlAccessType;
 import javax.xml.bind.annotation.XmlAccessorType;
-import javax.xml.bind.annotation.XmlElement;
-import javax.xml.bind.annotation.XmlList;
 import javax.xml.bind.annotation.XmlType;
 
 
@@ -21,9 +18,9 @@ import javax.xml.bind.annotation.XmlType;
  *   &lt;complexContent>
  *     &lt;extension base="{urn:hl7-org:v3}ANY">
  *       &lt;sequence>
- *         &lt;element name="origin" type="{urn:hl7-org:v3}PQ"/>
- *         &lt;element name="scale" type="{urn:hl7-org:v3}PQ"/>
- *         &lt;element name="digits" type="{urn:hl7-org:v3}list_int"/>
+ *         &lt;element name="origin" type="{urn:hl7-org:v3}PQ" minOccurs="0"/>
+ *         &lt;element name="scale" type="{urn:hl7-org:v3}QTY" minOccurs="0"/>
+ *         &lt;element name="digit" type="{urn:hl7-org:v3}INT" maxOccurs="unbounded" minOccurs="0"/>
  *       &lt;/sequence>
  *     &lt;/extension>
  *   &lt;/complexContent>
@@ -36,19 +33,15 @@ import javax.xml.bind.annotation.XmlType;
 @XmlType(name = "SLIST_PQ", propOrder = {
     "origin",
     "scale",
-    "digits"
+    "digit"
 })
 public class SLISTPQ
     extends ANY
 {
 
-    @XmlElement(required = true)
     protected PQ origin;
-    @XmlElement(required = true)
-    protected PQ scale;
-    @XmlList
-    @XmlElement(required = true)
-    protected List<BigInteger> digits;
+    protected QTY scale;
+    protected List<INT> digit;
 
     /**
      * Gets the value of the origin property.
@@ -79,10 +72,10 @@ public class SLISTPQ
      * 
      * @return
      *     possible object is
-     *     {@link PQ }
+     *     {@link QTY }
      *     
      */
-    public PQ getScale() {
+    public QTY getScale() {
         return scale;
     }
 
@@ -91,40 +84,40 @@ public class SLISTPQ
      * 
      * @param value
      *     allowed object is
-     *     {@link PQ }
+     *     {@link QTY }
      *     
      */
-    public void setScale(PQ value) {
+    public void setScale(QTY value) {
         this.scale = value;
     }
 
     /**
-     * Gets the value of the digits property.
+     * Gets the value of the digit property.
      * 
      * <p>
      * This accessor method returns a reference to the live list,
      * not a snapshot. Therefore any modification you make to the
      * returned list will be present inside the JAXB object.
-     * This is why there is not a <CODE>set</CODE> method for the digits property.
+     * This is why there is not a <CODE>set</CODE> method for the digit property.
      * 
      * <p>
      * For example, to add a new item, do as follows:
      * <pre>
-     *    getDigits().add(newItem);
+     *    getDigit().add(newItem);
      * </pre>
      * 
      * 
      * <p>
      * Objects of the following type(s) are allowed in the list
-     * {@link BigInteger }
+     * {@link INT }
      * 
      * 
      */
-    public List<BigInteger> getDigits() {
-        if (digits == null) {
-            digits = new ArrayList<BigInteger>();
+    public List<INT> getDigit() {
+        if (digit == null) {
+            digit = new ArrayList<INT>();
         }
-        return this.digits;
+        return this.digit;
     }
 
 }

@@ -13,9 +13,9 @@ import javax.xml.bind.annotation.XmlType;
  * <pre>
  * &lt;simpleType name="x_ActMoodDocumentObservation">
  *   &lt;restriction base="{urn:hl7-org:v3}cs">
- *     &lt;enumeration value="GOL"/>
  *     &lt;enumeration value="DEF"/>
  *     &lt;enumeration value="EVN"/>
+ *     &lt;enumeration value="GOL"/>
  *     &lt;enumeration value="INT"/>
  *     &lt;enumeration value="PRMS"/>
  *     &lt;enumeration value="PRP"/>
@@ -29,9 +29,9 @@ import javax.xml.bind.annotation.XmlType;
 @XmlEnum
 public enum XActMoodDocumentObservation {
 
-    GOL,
     DEF,
     EVN,
+    GOL,
     INT,
     PRMS,
     PRP,

@@ -13,8 +13,8 @@ import javax.xml.bind.annotation.XmlType;
  * <pre>
  * &lt;simpleType name="x_ActClassCareProvisionObservation">
  *   &lt;restriction base="{urn:hl7-org:v3}cs">
- *     &lt;enumeration value="PCPR"/>
  *     &lt;enumeration value="OBS"/>
+ *     &lt;enumeration value="PCPR"/>
  *   &lt;/restriction>
  * &lt;/simpleType>
  * </pre>
@@ -24,8 +24,8 @@ import javax.xml.bind.annotation.XmlType;
 @XmlEnum
 public enum XActClassCareProvisionObservation {
 
-    PCPR,
-    OBS;
+    OBS,
+    PCPR;
 
     public String value() {
         return name();

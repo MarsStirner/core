@@ -14,8 +14,8 @@ import javax.xml.bind.annotation.XmlType;
  * &lt;simpleType name="QueryResponse">
  *   &lt;restriction base="{urn:hl7-org:v3}cs">
  *     &lt;enumeration value="AE"/>
- *     &lt;enumeration value="OK"/>
  *     &lt;enumeration value="NF"/>
+ *     &lt;enumeration value="OK"/>
  *     &lt;enumeration value="QE"/>
  *   &lt;/restriction>
  * &lt;/simpleType>
@@ -27,8 +27,8 @@ import javax.xml.bind.annotation.XmlType;
 public enum QueryResponse {
 
     AE,
-    OK,
     NF,
+    OK,
     QE;
 
     public String value() {

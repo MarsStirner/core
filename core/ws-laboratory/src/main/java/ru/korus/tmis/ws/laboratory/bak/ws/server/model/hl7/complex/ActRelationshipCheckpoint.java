@@ -16,8 +16,8 @@ import javax.xml.bind.annotation.XmlType;
  *     &lt;enumeration value="B"/>
  *     &lt;enumeration value="E"/>
  *     &lt;enumeration value="S"/>
- *     &lt;enumeration value="X"/>
  *     &lt;enumeration value="T"/>
+ *     &lt;enumeration value="X"/>
  *   &lt;/restriction>
  * &lt;/simpleType>
  * </pre>
@@ -30,8 +30,8 @@ public enum ActRelationshipCheckpoint {
     B,
     E,
     S,
-    X,
-    T;
+    T,
+    X;
 
     public String value() {
         return name();

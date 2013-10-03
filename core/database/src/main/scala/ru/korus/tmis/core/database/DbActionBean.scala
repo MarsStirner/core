@@ -330,6 +330,29 @@ class DbActionBean
     }
   }
 
+  @TransactionAttribute(TransactionAttributeType.REQUIRES_NEW)
+  def getActionForEventAndPacientInQueueType(eventId: Int, pacientInQueueType: Int) = {
+    var typed = em.createQuery(GetActionForEventAndPacientInQueueType, classOf[Long])
+      .setParameter("eventId", eventId)
+      .setParameter("pacientInQueueType", pacientInQueueType)
+
+    typed.getSingleResult
+  }
+
+  val GetActionForEventAndPacientInQueueType = """
+  SELECT COUNT(a)
+  FROM
+    Action a
+  WHERE
+    a.event.id = :eventId
+  AND
+    a.pacientInQueueType = :pacientInQueueType
+  AND
+    a.event.deleted = 0
+  AND
+    a.deleted = '0'
+                                       """
+
   val GetEvent29AndAction19ForAction = """
   SELECT a
   FROM

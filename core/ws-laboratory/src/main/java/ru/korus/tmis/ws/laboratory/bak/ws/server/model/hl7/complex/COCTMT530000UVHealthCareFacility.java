@@ -1,8 +1,6 @@
 
 package ru.korus.tmis.ws.laboratory.bak.ws.server.model.hl7.complex;
 
-import java.util.ArrayList;
-import java.util.List;
 import javax.xml.bind.JAXBElement;
 import javax.xml.bind.annotation.XmlAccessType;
 import javax.xml.bind.annotation.XmlAccessorType;
@@ -23,7 +21,7 @@ import javax.xml.bind.annotation.XmlType;
  *       &lt;sequence>
  *         &lt;group ref="{urn:hl7-org:v3}InfrastructureRootElements"/>
  *         &lt;element name="id" type="{urn:hl7-org:v3}II" minOccurs="0"/>
- *         &lt;element name="code" type="{urn:hl7-org:v3}CE" minOccurs="0"/>
+ *         &lt;element name="code" type="{urn:hl7-org:v3}CD" minOccurs="0"/>
  *         &lt;element name="location" type="{urn:hl7-org:v3}COCT_MT530000UV.Place" minOccurs="0"/>
  *         &lt;element name="serviceProviderOrganization" type="{urn:hl7-org:v3}COCT_MT530000UV.Organization" minOccurs="0"/>
  *       &lt;/sequence>
@@ -49,47 +47,42 @@ import javax.xml.bind.annotation.XmlType;
 })
 public class COCTMT530000UVHealthCareFacility {
 
-    protected List<CS> realmCode;
+    protected DSETCS realmCode;
     protected II typeId;
-    protected List<II> templateId;
+    protected LISTII templateId;
     protected II id;
-    protected CE code;
+    protected CD code;
     @XmlElementRef(name = "location", namespace = "urn:hl7-org:v3", type = JAXBElement.class, required = false)
     protected JAXBElement<COCTMT530000UVPlace> location;
     @XmlElementRef(name = "serviceProviderOrganization", namespace = "urn:hl7-org:v3", type = JAXBElement.class, required = false)
     protected JAXBElement<COCTMT530000UVOrganization> serviceProviderOrganization;
     @XmlAttribute(name = "nullFlavor")
-    protected List<String> nullFlavor;
+    protected NullFlavor nullFlavor;
     @XmlAttribute(name = "classCode", required = true)
     protected RoleClassServiceDeliveryLocation classCode;
 
     /**
      * Gets the value of the realmCode property.
      * 
-     * <p>
-     * This accessor method returns a reference to the live list,
-     * not a snapshot. Therefore any modification you make to the
-     * returned list will be present inside the JAXB object.
-     * This is why there is not a <CODE>set</CODE> method for the realmCode property.
-     * 
-     * <p>
-     * For example, to add a new item, do as follows:
-     * <pre>
-     *    getRealmCode().add(newItem);
-     * </pre>
-     * 
-     * 
-     * <p>
-     * Objects of the following type(s) are allowed in the list
-     * {@link CS }
-     * 
-     * 
+     * @return
+     *     possible object is
+     *     {@link DSETCS }
+     *     
      */
-    public List<CS> getRealmCode() {
-        if (realmCode == null) {
-            realmCode = new ArrayList<CS>();
-        }
-        return this.realmCode;
+    public DSETCS getRealmCode() {
+        return realmCode;
+    }
+
+    /**
+     * Sets the value of the realmCode property.
+     * 
+     * @param value
+     *     allowed object is
+     *     {@link DSETCS }
+     *     
+     */
+    public void setRealmCode(DSETCS value) {
+        this.realmCode = value;
     }
 
     /**
@@ -119,30 +112,25 @@ public class COCTMT530000UVHealthCareFacility {
     /**
      * Gets the value of the templateId property.
      * 
-     * <p>
-     * This accessor method returns a reference to the live list,
-     * not a snapshot. Therefore any modification you make to the
-     * returned list will be present inside the JAXB object.
-     * This is why there is not a <CODE>set</CODE> method for the templateId property.
-     * 
-     * <p>
-     * For example, to add a new item, do as follows:
-     * <pre>
-     *    getTemplateId().add(newItem);
-     * </pre>
-     * 
-     * 
-     * <p>
-     * Objects of the following type(s) are allowed in the list
-     * {@link II }
-     * 
-     * 
+     * @return
+     *     possible object is
+     *     {@link LISTII }
+     *     
      */
-    public List<II> getTemplateId() {
-        if (templateId == null) {
-            templateId = new ArrayList<II>();
-        }
-        return this.templateId;
+    public LISTII getTemplateId() {
+        return templateId;
+    }
+
+    /**
+     * Sets the value of the templateId property.
+     * 
+     * @param value
+     *     allowed object is
+     *     {@link LISTII }
+     *     
+     */
+    public void setTemplateId(LISTII value) {
+        this.templateId = value;
     }
 
     /**
@@ -174,10 +162,10 @@ public class COCTMT530000UVHealthCareFacility {
      * 
      * @return
      *     possible object is
-     *     {@link CE }
+     *     {@link CD }
      *     
      */
-    public CE getCode() {
+    public CD getCode() {
         return code;
     }
 
@@ -186,10 +174,10 @@ public class COCTMT530000UVHealthCareFacility {
      * 
      * @param value
      *     allowed object is
-     *     {@link CE }
+     *     {@link CD }
      *     
      */
-    public void setCode(CE value) {
+    public void setCode(CD value) {
         this.code = value;
     }
 
@@ -244,30 +232,25 @@ public class COCTMT530000UVHealthCareFacility {
     /**
      * Gets the value of the nullFlavor property.
      * 
-     * <p>
-     * This accessor method returns a reference to the live list,
-     * not a snapshot. Therefore any modification you make to the
-     * returned list will be present inside the JAXB object.
-     * This is why there is not a <CODE>set</CODE> method for the nullFlavor property.
-     * 
-     * <p>
-     * For example, to add a new item, do as follows:
-     * <pre>
-     *    getNullFlavor().add(newItem);
-     * </pre>
-     * 
-     * 
-     * <p>
-     * Objects of the following type(s) are allowed in the list
-     * {@link String }
-     * 
-     * 
+     * @return
+     *     possible object is
+     *     {@link NullFlavor }
+     *     
      */
-    public List<String> getNullFlavor() {
-        if (nullFlavor == null) {
-            nullFlavor = new ArrayList<String>();
-        }
-        return this.nullFlavor;
+    public NullFlavor getNullFlavor() {
+        return nullFlavor;
+    }
+
+    /**
+     * Sets the value of the nullFlavor property.
+     * 
+     * @param value
+     *     allowed object is
+     *     {@link NullFlavor }
+     *     
+     */
+    public void setNullFlavor(NullFlavor value) {
+        this.nullFlavor = value;
     }
 
     /**

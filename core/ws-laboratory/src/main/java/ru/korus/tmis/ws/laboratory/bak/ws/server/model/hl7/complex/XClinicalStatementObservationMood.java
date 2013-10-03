@@ -2,6 +2,7 @@
 package ru.korus.tmis.ws.laboratory.bak.ws.server.model.hl7.complex;
 
 import javax.xml.bind.annotation.XmlEnum;
+import javax.xml.bind.annotation.XmlEnumValue;
 import javax.xml.bind.annotation.XmlType;
 
 
@@ -13,15 +14,18 @@ import javax.xml.bind.annotation.XmlType;
  * <pre>
  * &lt;simpleType name="x_ClinicalStatementObservationMood">
  *   &lt;restriction base="{urn:hl7-org:v3}cs">
- *     &lt;enumeration value="GOL"/>
  *     &lt;enumeration value="APT"/>
  *     &lt;enumeration value="ARQ"/>
+ *     &lt;enumeration value="CRT"/>
  *     &lt;enumeration value="DEF"/>
  *     &lt;enumeration value="EVN"/>
+ *     &lt;enumeration value="EVN.CRT"/>
+ *     &lt;enumeration value="GOL"/>
  *     &lt;enumeration value="INT"/>
  *     &lt;enumeration value="PRMS"/>
  *     &lt;enumeration value="PRP"/>
  *     &lt;enumeration value="RQO"/>
+ *     &lt;enumeration value="RSK"/>
  *   &lt;/restriction>
  * &lt;/simpleType>
  * </pre>
@@ -31,22 +35,36 @@ import javax.xml.bind.annotation.XmlType;
 @XmlEnum
 public enum XClinicalStatementObservationMood {
 
-    GOL,
-    APT,
-    ARQ,
-    DEF,
-    EVN,
-    INT,
-    PRMS,
-    PRP,
-    RQO;
+    APT("APT"),
+    ARQ("ARQ"),
+    CRT("CRT"),
+    DEF("DEF"),
+    EVN("EVN"),
+    @XmlEnumValue("EVN.CRT")
+    EVN_CRT("EVN.CRT"),
+    GOL("GOL"),
+    INT("INT"),
+    PRMS("PRMS"),
+    PRP("PRP"),
+    RQO("RQO"),
+    RSK("RSK");
+    private final String value;
+
+    XClinicalStatementObservationMood(String v) {
+        value = v;
+    }
 
     public String value() {
-        return name();
+        return value;
     }
 
     public static XClinicalStatementObservationMood fromValue(String v) {
-        return valueOf(v);
+        for (XClinicalStatementObservationMood c: XClinicalStatementObservationMood.values()) {
+            if (c.value.equals(v)) {
+                return c;
+            }
+        }
+        throw new IllegalArgumentException(v);
     }
 
 }

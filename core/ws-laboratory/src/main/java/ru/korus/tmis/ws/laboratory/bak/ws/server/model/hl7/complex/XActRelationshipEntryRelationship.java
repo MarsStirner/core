@@ -13,16 +13,16 @@ import javax.xml.bind.annotation.XmlType;
  * <pre>
  * &lt;simpleType name="x_ActRelationshipEntryRelationship">
  *   &lt;restriction base="{urn:hl7-org:v3}cs">
- *     &lt;enumeration value="XCRPT"/>
- *     &lt;enumeration value="GEVL"/>
- *     &lt;enumeration value="COMP"/>
- *     &lt;enumeration value="RSON"/>
- *     &lt;enumeration value="SUBJ"/>
- *     &lt;enumeration value="SPRT"/>
  *     &lt;enumeration value="CAUS"/>
+ *     &lt;enumeration value="COMP"/>
+ *     &lt;enumeration value="GEVL"/>
  *     &lt;enumeration value="MFST"/>
  *     &lt;enumeration value="REFR"/>
+ *     &lt;enumeration value="RSON"/>
  *     &lt;enumeration value="SAS"/>
+ *     &lt;enumeration value="SPRT"/>
+ *     &lt;enumeration value="SUBJ"/>
+ *     &lt;enumeration value="XCRPT"/>
  *   &lt;/restriction>
  * &lt;/simpleType>
  * </pre>
@@ -32,16 +32,16 @@ import javax.xml.bind.annotation.XmlType;
 @XmlEnum
 public enum XActRelationshipEntryRelationship {
 
-    XCRPT,
-    GEVL,
-    COMP,
-    RSON,
-    SUBJ,
-    SPRT,
     CAUS,
+    COMP,
+    GEVL,
     MFST,
     REFR,
-    SAS;
+    RSON,
+    SAS,
+    SPRT,
+    SUBJ,
+    XCRPT;
 
     public String value() {
         return name();

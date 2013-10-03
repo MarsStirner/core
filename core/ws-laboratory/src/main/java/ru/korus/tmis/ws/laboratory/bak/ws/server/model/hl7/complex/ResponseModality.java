@@ -14,8 +14,8 @@ import javax.xml.bind.annotation.XmlType;
  * &lt;simpleType name="ResponseModality">
  *   &lt;restriction base="{urn:hl7-org:v3}cs">
  *     &lt;enumeration value="B"/>
- *     &lt;enumeration value="T"/>
  *     &lt;enumeration value="R"/>
+ *     &lt;enumeration value="T"/>
  *   &lt;/restriction>
  * &lt;/simpleType>
  * </pre>
@@ -26,8 +26,8 @@ import javax.xml.bind.annotation.XmlType;
 public enum ResponseModality {
 
     B,
-    T,
-    R;
+    R,
+    T;
 
     public String value() {
         return name();

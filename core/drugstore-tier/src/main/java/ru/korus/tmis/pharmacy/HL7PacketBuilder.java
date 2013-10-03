@@ -272,8 +272,10 @@ public final class HL7PacketBuilder {
         final String externalId = event.getExternalId();
         final String uuidExternal = event.getUuid().getUuid();
         final String uuidClient = client.getUuid().getUuid();
-        final String uuidLocationOut = orgStructureOut.getUuid().getUuid();
-        final String uuidLocationIn = orgStructureIn.getUuid().getUuid();
+        // Если OrgStructure не содержит UUID, то генерируем случайный
+        final String uuidLocationOut = orgStructureOut.getUuid() != null ? orgStructureOut.getUuid().getUuid() : String.valueOf(UUID.randomUUID());
+        // Если OrgStructure не содержит UUID, то генерируем случайный
+        final String uuidLocationIn = orgStructureIn.getUuid() != null ? orgStructureIn.getUuid().getUuid() : String.valueOf(UUID.randomUUID());
 
         final String uuidDocument = UUID.randomUUID().toString();
         logger.info("process MOVING document {}, action {}", uuidDocument, action);
@@ -349,8 +351,11 @@ public final class HL7PacketBuilder {
         final String externalId = event.getExternalId();
         final String uuidExternal = event.getUuid().getUuid();
         final String uuidClient = client.getUuid().getUuid();
-        final String uuidLocationOut = orgStructureOut.getUuid().getUuid();
-        final String uuidLocationIn = orgStructureIn.getUuid().getUuid();
+        // Если OrgStructure не содержит UUID, то генерируем случайный
+        final String uuidLocationOut = orgStructureOut.getUuid() != null ? orgStructureOut.getUuid().getUuid() : String.valueOf(UUID.randomUUID());
+        // Если OrgStructure не содержит UUID, то генерируем случайный
+        final String uuidLocationIn = orgStructureIn.getUuid() != null ? orgStructureIn.getUuid().getUuid() : String.valueOf(UUID.randomUUID());
+
 
         final String uuidDocument = UUID.randomUUID().toString();
         logger.info("process DEL_MOVING document {}, action {}", uuidDocument, action);
@@ -583,13 +588,13 @@ public final class HL7PacketBuilder {
         final POCDMT000040Component3 component3 = FACTORY_HL7.createPOCDMT000040Component3();
         final POCDMT000040Section section = FACTORY_HL7.createPOCDMT000040Section();
         final StrucDocText text = FACTORY_HL7.createStrucDocText();
-        text.getContent().add("Take captopril 25mg PO every 12 hours, starting on Jan 01, 2002, ending on Feb 01, 2002");
+        text.getContent().add("Дополнительные рекомендации");
 
         JAXBElement<StrucDocList> docItemList = FACTORY_HL7.createStrucDocItemList(FACTORY_HL7.createStrucDocList());
         final StrucDocList docList = FACTORY_HL7.createStrucDocList();
 
         final StrucDocItem item = FACTORY_HL7.createStrucDocItem();
-        item.getContent().add("Анальгин");
+        item.getContent().add("Описание препарата");
         docList.getItem().add(item);
 
         final StrucDocItem item2 = FACTORY_HL7.createStrucDocItem();

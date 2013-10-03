@@ -13,11 +13,11 @@ import javax.xml.bind.annotation.XmlType;
  * <pre>
  * &lt;simpleType name="x_ActRelationshipPertinentInfo">
  *   &lt;restriction base="{urn:hl7-org:v3}cs">
- *     &lt;enumeration value="SUBJ"/>
- *     &lt;enumeration value="SPRT"/>
  *     &lt;enumeration value="CAUS"/>
  *     &lt;enumeration value="MFST"/>
  *     &lt;enumeration value="REFR"/>
+ *     &lt;enumeration value="SPRT"/>
+ *     &lt;enumeration value="SUBJ"/>
  *   &lt;/restriction>
  * &lt;/simpleType>
  * </pre>
@@ -27,11 +27,11 @@ import javax.xml.bind.annotation.XmlType;
 @XmlEnum
 public enum XActRelationshipPertinentInfo {
 
-    SUBJ,
-    SPRT,
     CAUS,
     MFST,
-    REFR;
+    REFR,
+    SPRT,
+    SUBJ;
 
     public String value() {
         return name();
