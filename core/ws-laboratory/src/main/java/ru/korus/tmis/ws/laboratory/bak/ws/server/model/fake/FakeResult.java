@@ -22,28 +22,28 @@ import javax.xml.bind.annotation.XmlType;
 })
 public class FakeResult {
     @XmlElement(required = true)
-    protected String orderMISId;
+    public String orderMISId;
 
     @XmlElement(required = true)
-    protected String codeIsl;
+    public String codeIsl;
 
     @XmlElement(required = true)
-    protected String nameIsl;
+    public String nameIsl;
 
     @XmlElement(required = true)
-    protected String barCode;
+    public String barCode;
 
     @XmlElement(required = true)
-    protected String doctorId;
+    public String doctorId;
 
     @XmlElement(required = true)
-    protected String doctorName;
+    public String doctorName;
 
     @XmlElement(required = true)
-    protected MicroOrgs microOrgs;
+    public MicroOrgs microOrgs;
 
     @XmlElement(required = true)
-    protected Results results;
+    public Results results;
 
 
     public String getOrderMISId() {

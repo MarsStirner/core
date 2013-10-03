@@ -12,6 +12,7 @@ import java.util.List;
  */
 @XmlAccessorType(XmlAccessType.FIELD)
 public class Results {
+
     @XmlElement(name = "results")
     private List<Result> results = new ArrayList<Result>();
 

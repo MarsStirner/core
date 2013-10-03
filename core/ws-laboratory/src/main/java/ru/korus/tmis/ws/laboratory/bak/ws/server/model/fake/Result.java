@@ -10,7 +10,7 @@ import javax.xml.bind.annotation.XmlType;
  *         Date: 04.10.13 1:11
  */
 @XmlAccessorType(XmlAccessType.FIELD)
-@XmlType(name = "Antibiotic", propOrder = {
+@XmlType(name = "Result", propOrder = {
         "idMicroOrg",
         "code",
         "concentation"
