@@ -472,13 +472,12 @@ public class SetAnalysysResult implements SetAnalysysResultWS {
         bbtResponse.setId(Integer.parseInt(request.getOrderMISId()));
         bbtResponse.setDoctorId(Integer.parseInt(request.getDoctorId()));
         bbtResponse.setFinalFlag(1);
+        bbtResponse.setCodeLIS(Integer.parseInt(request.getOrderMISId()));
+        bbtResponse.setDefects("----");
 
         dbBbtResponseBean.add(bbtResponse);
-
 //        final BbtOrganismSensValues bbtOrganismSensValues = new BbtOrganismSensValues();
-
 //        dbBbtOrganismSensValuesBean.add(bbtOrganismSensValues);
-
 
         return createSuccessResponse();
     }
