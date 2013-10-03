@@ -111,7 +111,7 @@ public class SetAnalysysResult implements SetAnalysysResultWS {
                 final JAXBElement<POLBMT004000UV01ObservationBattery> battery = subj.getObservationBattery();
                 final POLBMT004000UV01ObservationBattery value = battery.getValue();
 
-                final String displayName = value.getCode().getDisplayName();
+                final String displayName = value.getCode().getCode();
 
 
             } else if (subj.getObservationEvent() != null) {
@@ -135,7 +135,7 @@ public class SetAnalysysResult implements SetAnalysysResultWS {
 
                 final List<POLBMT004000UV01Specimen> specimenList = value.getSpecimen();
                 for (POLBMT004000UV01Specimen specimen : specimenList) {
-                    final String code = specimen.getSpecimen().getCode().getCode();
+//                    final String code = specimen.getSpecimen().getCode().getCode();
 
 
                 }
@@ -208,10 +208,10 @@ public class SetAnalysysResult implements SetAnalysysResultWS {
         sender.setTypeCode(CommunicationFunctionType.SND);
         final MCCIMT000200UV01Device device = new MCCIMT000200UV01Device();
         device.setClassCode(EntityClassDevice.DEV);
-        device.setDeterminerCode("INSTANCE");
+//        device.setDeterminerCode("INSTANCE");
         final II id = new II();
-        id.getNullFlavor().add("NULL");
-        device.getId().add(id);
+//        id.getNullFlavor().add("NULL");
+//        device.getId().add(id);
         sender.setDevice(device);
 
 
@@ -230,7 +230,7 @@ public class SetAnalysysResult implements SetAnalysysResultWS {
         final MCCIMT000200UV01Acknowledgement acknowledgement = new MCCIMT000200UV01Acknowledgement();
         final CS typeCode = new CS();
         typeCode.setCode("AA");
-        acknowledgement.setTypeCode(typeCode);
+//        acknowledgement.setTypeCode(typeCode);
         final MCCIMT000200UV01TargetMessage targetMessage = new MCCIMT000200UV01TargetMessage();
         final II id1 = new II();
         id1.setRoot(UUID.randomUUID().toString());
@@ -284,10 +284,10 @@ public class SetAnalysysResult implements SetAnalysysResultWS {
         sender.setTypeCode(CommunicationFunctionType.SND);
         final MCCIMT000200UV01Device device = new MCCIMT000200UV01Device();
         device.setClassCode(EntityClassDevice.DEV);
-        device.setDeterminerCode("INSTANCE");
+//        device.setDeterminerCode("INSTANCE");
         final II id = new II();
-        id.getNullFlavor().add("NULL");
-        device.getId().add(id);
+//        id.getNullFlavor().add("NULL");
+//        device.getId().add(id);
         sender.setDevice(device);
 
 
@@ -306,7 +306,7 @@ public class SetAnalysysResult implements SetAnalysysResultWS {
         final MCCIMT000200UV01Acknowledgement acknowledgement = new MCCIMT000200UV01Acknowledgement();
         final CS typeCode = new CS();
         typeCode.setCode("AE");
-        acknowledgement.setTypeCode(typeCode);
+//        acknowledgement.setTypeCode(typeCode);
         final MCCIMT000200UV01TargetMessage targetMessage = new MCCIMT000200UV01TargetMessage();
         final II id1 = new II();
         id1.setRoot(UUID.randomUUID().toString());
