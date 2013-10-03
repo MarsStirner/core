@@ -13,17 +13,17 @@ import java.util.List;
 @XmlAccessorType(XmlAccessType.FIELD)
 public class MicroOrgs {
     @XmlElement(name = "microOrgs")
-    private List<Antibiotic> microOrgs = new ArrayList<Antibiotic>();
+    private List<MicroOrg> microOrgs = new ArrayList<MicroOrg>();
 
-    public MicroOrgs(List<Antibiotic> microOrgs) {
+    public MicroOrgs(List<MicroOrg> microOrgs) {
         this.microOrgs = microOrgs;
     }
 
-    public List<Antibiotic> getMicroOrgs() {
+    public List<MicroOrg> getMicroOrgs() {
         return microOrgs;
     }
 
-    public void setMicroOrgs(List<Antibiotic> microOrgs) {
+    public void setMicroOrgs(List<MicroOrg> microOrgs) {
         this.microOrgs = microOrgs;
     }
 }

@@ -66,6 +66,7 @@ public interface SetAnalysysResultWS {
     @WebResult(name = SUCCESS_ACCEPT_EVENT, targetNamespace = NAMESPACE, partName = "Body")
     MCCIIN000002UV01 setAnalysisResults2(
             @WebParam(name = "FakeResult", targetNamespace = NAMESPACE, partName = "Body")
+            final
             FakeResult response
     )  throws CoreException;
 }
