@@ -13,7 +13,7 @@ import java.util.Date;
 @Table(name="rlsBalanceOfGoods")
 @NamedQueries(
         { @NamedQuery(name = "RlsBalanceOfGood.findByCodeAndStore",
-            query = "SELECT b FROM RlsBalanceOfGood b WHERE b.rlsNomen.id = :code AND b.storage_uuid = :uuid AND b.bestBefore = :date")
+            query = "SELECT b FROM RlsBalanceOfGood b WHERE b.rlsNomen.id = :code AND b.storageUuid = :uuid AND b.bestBefore = :date")
         })
 public class RlsBalanceOfGood implements Serializable {
 	private static final long serialVersionUID = 1L;
