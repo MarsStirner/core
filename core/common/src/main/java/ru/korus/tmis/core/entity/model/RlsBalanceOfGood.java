@@ -13,7 +13,7 @@ import java.util.Date;
 @Table(name="rlsBalanceOfGoods")
 @NamedQueries(
         { @NamedQuery(name = "RlsBalanceOfGood.findByCodeAndStore",
-            query = "SELECT b FROM RlsBalanceOfGood b WHERE b.rlsNomen.id = :code AND b.orgStructure.id = :orgStructureId AND b.bestBefore = :date")
+            query = "SELECT b FROM RlsBalanceOfGood b WHERE b.rlsNomen.id = :code AND b.storage_uuid = :uuid AND b.bestBefore = :date")
         })
 public class RlsBalanceOfGood implements Serializable {
 	private static final long serialVersionUID = 1L;
@@ -36,10 +36,8 @@ public class RlsBalanceOfGood implements Serializable {
 	@Column(nullable=false)
 	private double value;
 
-	//bi-directional many-to-one association to OrgStructure
-	@ManyToOne
-	@JoinColumn(name="orgStructure_id")
-	private OrgStructure orgStructure;
+    @Column(name = "storage_uuid", nullable=false)
+	private String  storageUuid;
 
 	//bi-directional many-to-one association to RlsNomen
 	@ManyToOne
@@ -89,14 +87,6 @@ public class RlsBalanceOfGood implements Serializable {
 		this.value = value;
 	}
 
-	public OrgStructure getOrgStructure() {
-		return this.orgStructure;
-	}
-
-	public void setOrgStructure(OrgStructure orgStructure) {
-		this.orgStructure = orgStructure;
-	}
-
 	public RlsNomen getRlsNomen() {
 		return this.rlsNomen;
 	}
@@ -105,4 +95,11 @@ public class RlsBalanceOfGood implements Serializable {
 		this.rlsNomen = rlsNomen;
 	}
 
+    public String getStorageUuid() {
+        return storageUuid;
+    }
+
+    public void setStorageUuid(String storageUuid) {
+        this.storageUuid = storageUuid;
+    }
 }

@@ -425,14 +425,17 @@ public final class HL7PacketBuilder {
             final Staff executorStaff,
             final Organisation organisation,
             final String drugCode,
-            final AssignmentType type) {
+            final AssignmentType type,
+            final Boolean negationInd,
+            final String uuid,
+            final Integer version) {
 
-        final String uuidDocument = UUID.randomUUID().toString();
+        final String uuidDocument = uuid == null ? UUID.randomUUID().toString() : uuid;
         logger.info("process RCMRIN000002UV02 document {}, action {}, patient {}, organisation {}, executor staff {}",
                 uuidDocument, action, client, organisation, executorStaff);
 
         final POCDMT000040ClinicalDocument clinicalDocument =
-                getClinicalDocument(action, client, organisation, executorStaff, drugCode, type);
+                getClinicalDocument(action, client, organisation, executorStaff, drugCode, type, negationInd, uuid, version);
         final String innerDocument = marshallMessage(clinicalDocument, "org.hl7.v3");
         logger.info("prepare inner document... \n\n{}", innerDocument);
 
@@ -440,7 +443,8 @@ public final class HL7PacketBuilder {
         final RCMRIN000002UV022 message = FACTORY_HL7.createRCMRIN000002UV022();
 
         message.setITSVersion("XML_1.0");
-        message.setId(createII(uuidDocument));
+        message.setId(createII(UUID.randomUUID().toString()));
+
         message.setCreationTime(createTS(action.getCreateDatetime(), "yyyyMMddHHmmss"));
         message.setInteractionId(createII("2.16.840.1.113883.1.18", "RCMR_IN000002UV02"));
         message.setProcessingCode(createCS("P"));
@@ -453,6 +457,7 @@ public final class HL7PacketBuilder {
                 controlActProcess = FACTORY_HL7.createRCMRIN000002UV02MCAIMT700201UV01ControlActProcess();
         controlActProcess.setClassCode(ActClassControlAct.CACT);
         controlActProcess.setMoodCode(getAssignmentType(type));
+
 
         final ED text = FACTORY_HL7.createED();
         text.setMediaType("multipart/related");
@@ -500,7 +505,8 @@ public final class HL7PacketBuilder {
             final Organisation organisation,
             final Staff executorStaff,
             final String drugCode,
-            final AssignmentType type) {
+            final AssignmentType type,
+            final Boolean negationInd, String uuid, Integer version) {
 
         final String uuidDocument = UUID.randomUUID().toString();
         final Event event = action.getEvent();
@@ -607,7 +613,7 @@ public final class HL7PacketBuilder {
         section.setText(text);
 
         //----------------- Создаем несколько лек.средств в нашем случае будет только одно
-        section.getEntry().add(createEntry(event, drugCode, type));
+        section.getEntry().add(createEntry(event, drugCode, type, negationInd));
 //        section.getEntry().add(createEntry(drug));
         //-----------------
         component3.setSection(section);
@@ -615,6 +621,12 @@ public final class HL7PacketBuilder {
         structuredBody.getComponent().add(component3);
         component.setStructuredBody(structuredBody);
         clinicalDocument.setComponent(component);
+
+        final POCDMT000040RegionOfInterestValue intValue = FACTORY_HL7.createPOCDMT000040RegionOfInterestValue();
+        intValue.setValue(BigInteger.valueOf(version));
+        clinicalDocument.setVersionNumber(intValue);
+        clinicalDocument.setId(createII(uuid));
+
         return clinicalDocument;
     }
 
@@ -624,12 +636,13 @@ public final class HL7PacketBuilder {
      * @param drugCode идентификатор лек.средства
      * @return товарное наименование
      */
-    private static POCDMT000040Entry createEntry(final Event event, final String drugCode, final AssignmentType type) {
+    private static POCDMT000040Entry createEntry(final Event event, final String drugCode, final AssignmentType type, final Boolean negationInd) {
         final POCDMT000040Entry entry = FACTORY_HL7.createPOCDMT000040Entry();
         //----------------
         final POCDMT000040SubstanceAdministration substanceAdministration = FACTORY_HL7.createPOCDMT000040SubstanceAdministration();
         substanceAdministration.setClassCode(ActClass.SBADM);
         substanceAdministration.setMoodCode(getAssignmentType2(type));  // тип документа
+        substanceAdministration.setNegationInd(negationInd);
 
         substanceAdministration.getId().add(createII(UUID.randomUUID().toString())); // UUID назначения
 
