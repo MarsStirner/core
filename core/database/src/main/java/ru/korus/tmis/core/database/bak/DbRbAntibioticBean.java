@@ -23,13 +23,13 @@ public class DbRbAntibioticBean implements DbRbAntibioticBeanLocal {
 
     @Override
     public void add(RbAntibiotic rbAntibiotic) {
-        final RbAntibiotic response = em.find(RbAntibiotic.class, rbAntibiotic.getId());
-        if (response == null) {
+      //  final RbAntibiotic response = em.find(RbAntibiotic.class, rbAntibiotic.getId());
+        //if (response == null) {
             em.persist(rbAntibiotic);
             logger.info("create RbAntibiotic {}", rbAntibiotic);
-        } else {
-            logger.info("find RbAntibiotic {}", response);
-        }
+       // } else {
+         //   logger.info("find RbAntibiotic {}", response);
+       // }
     }
 
     @Override

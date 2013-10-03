@@ -30,6 +30,10 @@ public class Antibiotic {
     @XmlElement(required = true)
     protected String concentation;
 
+
+    public Antibiotic() {
+    }
+
     public String getIdAntibiotic() {
         return idAntibiotic;
     }

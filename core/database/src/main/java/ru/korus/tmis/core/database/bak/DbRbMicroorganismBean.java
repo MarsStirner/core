@@ -23,13 +23,13 @@ public class DbRbMicroorganismBean implements DbRbMicroorganismBeanLocal {
 
     @Override
     public void add(RbMicroorganism rbMicroorganism) {
-        final RbMicroorganism response = em.find(RbMicroorganism.class, rbMicroorganism.getId());
-        if (response == null) {
+       // final RbMicroorganism response = em.find(RbMicroorganism.class, rbMicroorganism.getId());
+      //  if (response == null) {
             em.persist(rbMicroorganism);
             logger.info("create RbMicroorganism {}", rbMicroorganism);
-        } else {
-            logger.info("find RbMicroorganism {}", response);
-        }
+        //} else {
+          //  logger.info("find RbMicroorganism {}", response);
+       // }
     }
 
     @Override

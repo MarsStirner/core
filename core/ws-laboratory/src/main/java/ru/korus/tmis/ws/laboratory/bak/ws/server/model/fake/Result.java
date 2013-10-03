@@ -12,6 +12,7 @@ import javax.xml.bind.annotation.XmlType;
 @XmlAccessorType(XmlAccessType.FIELD)
 @XmlType(name = "Result", propOrder = {
         "idMicroOrg",
+        "resultText",
         "antibiotics"
 })
 public class Result {
@@ -20,7 +21,18 @@ public class Result {
     protected String idMicroOrg;
 
     @XmlElement(required = true)
+    protected String resultText;
+
+    @XmlElement(required = true)
     public Antibiotics antibiotics;
+
+    public String getResultText() {
+        return resultText;
+    }
+
+    public void setResultText(String resultText) {
+        this.resultText = resultText;
+    }
 
     public String getIdMicroOrg() {
         return idMicroOrg;
@@ -36,5 +48,15 @@ public class Result {
 
     public void setAntibiotics(Antibiotics antibiotics) {
         this.antibiotics = antibiotics;
+    }
+
+    @Override
+    public String toString() {
+        final StringBuilder sb = new StringBuilder("Result{");
+        sb.append("idMicroOrg='").append(idMicroOrg).append('\'');
+        sb.append(", resultText='").append(resultText).append('\'');
+        sb.append(", antibiotics=").append(antibiotics);
+        sb.append('}');
+        return sb.toString();
     }
 }

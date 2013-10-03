@@ -12,8 +12,11 @@ import java.util.List;
  */
 @XmlAccessorType(XmlAccessType.FIELD)
 public class MicroOrgs {
-    @XmlElement(name = "microOrgs")
+    @XmlElement(name = "microOrg")
     private List<MicroOrg> microOrgs = new ArrayList<MicroOrg>();
+
+    public MicroOrgs() {
+    }
 
     public MicroOrgs(List<MicroOrg> microOrgs) {
         this.microOrgs = microOrgs;

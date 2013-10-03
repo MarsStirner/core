@@ -17,6 +17,9 @@ import javax.xml.bind.annotation.XmlType;
         "barCode",
         "doctorId",
         "doctorName",
+        "date",
+        "status",
+        "comment",
         "microOrgs",
         "results"
 })
@@ -40,12 +43,44 @@ public class FakeResult {
     public String doctorName;
 
     @XmlElement(required = true)
+    public String date;
+
+    @XmlElement(required = true)
+    public String status;
+
+    @XmlElement(required = true)
+    public String comment;
+
+    @XmlElement(required = true)
     public MicroOrgs microOrgs;
 
     @XmlElement(required = true)
     public Results results;
 
 
+    public String getDate() {
+        return date;
+    }
+
+    public void setDate(String date) {
+        this.date = date;
+    }
+
+    public String getStatus() {
+        return status;
+    }
+
+    public void setStatus(String status) {
+        this.status = status;
+    }
+
+    public String getComment() {
+        return comment;
+    }
+
+    public void setComment(String comment) {
+        this.comment = comment;
+    }
 
     public String getOrderMISId() {
         return orderMISId;
@@ -110,4 +145,23 @@ public class FakeResult {
     public void setResults(Results results) {
         this.results = results;
     }
+
+    @Override
+    public String toString() {
+        final StringBuilder sb = new StringBuilder("FakeResult{");
+        sb.append("orderMISId='").append(orderMISId).append('\'');
+        sb.append(", codeIsl='").append(codeIsl).append('\'');
+        sb.append(", nameIsl='").append(nameIsl).append('\'');
+        sb.append(", barCode='").append(barCode).append('\'');
+        sb.append(", doctorId='").append(doctorId).append('\'');
+        sb.append(", doctorName='").append(doctorName).append('\'');
+        sb.append(", date='").append(date).append('\'');
+        sb.append(", status='").append(status).append('\'');
+        sb.append(", comment='").append(comment).append('\'');
+        sb.append(", microOrgs=").append(microOrgs);
+        sb.append(", results=").append(results);
+        sb.append('}');
+        return sb.toString();
+    }
 }
+

@@ -12,8 +12,11 @@ import java.util.List;
  */
 @XmlAccessorType(XmlAccessType.FIELD)
 public class Antibiotics {
-    @XmlElement(name = "antibiotics")
+    @XmlElement(name = "antibiotic")
     private List<Antibiotic> antibiotics = new ArrayList<Antibiotic>();
+
+    public Antibiotics() {
+    }
 
     public Antibiotics(List<Antibiotic> antibiotics) {
         this.antibiotics = antibiotics;

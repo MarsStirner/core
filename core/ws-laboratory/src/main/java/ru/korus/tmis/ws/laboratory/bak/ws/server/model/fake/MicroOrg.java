@@ -26,6 +26,15 @@ public class MicroOrg {
     @XmlElement(required = true)
     protected String concentration;
 
+    public MicroOrg() {
+    }
+
+    public MicroOrg(String name, String code, String concentration) {
+        this.name = name;
+        this.code = code;
+        this.concentration = concentration;
+    }
+
     public String getName() {
         return name;
     }

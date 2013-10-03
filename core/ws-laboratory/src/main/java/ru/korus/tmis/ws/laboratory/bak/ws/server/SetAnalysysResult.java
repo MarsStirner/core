@@ -10,7 +10,10 @@ import ru.korus.tmis.core.entity.model.bak.*;
 import ru.korus.tmis.core.exception.CoreException;
 import ru.korus.tmis.util.CompileTimeConfigManager;
 import ru.korus.tmis.util.logs.ToLog;
+import ru.korus.tmis.ws.laboratory.bak.ws.server.model.fake.Antibiotic;
 import ru.korus.tmis.ws.laboratory.bak.ws.server.model.fake.FakeResult;
+import ru.korus.tmis.ws.laboratory.bak.ws.server.model.fake.MicroOrg;
+import ru.korus.tmis.ws.laboratory.bak.ws.server.model.fake.Result;
 import ru.korus.tmis.ws.laboratory.bak.ws.server.model.hl7.complex.*;
 
 import javax.ejb.EJB;
@@ -433,6 +436,49 @@ public class SetAnalysysResult implements SetAnalysysResultWS {
     public MCCIIN000002UV01 setAnalysisResults2(
             @WebParam(name = "FakeResult", targetNamespace = NAMESPACE, partName = "Body")
             final FakeResult request) throws CoreException {
+
+        for (Result result : request.getResults().getResults()) {
+
+            for (Antibiotic a : result.getAntibiotics().getAntibiotics()) {
+                final RbAntibiotic rbAntibiotic = new RbAntibiotic();
+                rbAntibiotic.setCode(a.getIdAntibiotic());
+                rbAntibiotic.setName(a.getNameAntibiotic());
+                dbRbAntibioticBean.add(rbAntibiotic);
+            }
+        }
+
+
+        final RbBacIndicator rbBacIndicator = new RbBacIndicator();
+        rbBacIndicator.setCode("2");
+        rbBacIndicator.setId(2);
+        rbBacIndicator.setName("cde");
+        dbRbBacIndicatorBean.add(rbBacIndicator);
+
+        for (MicroOrg microOrg : request.getMicroOrgs().getMicroOrgs()) {
+//            if (dbRbMicroorganismBean.get(microOrg.getCode()) == null) {
+            final RbMicroorganism rbMicroorganism = new RbMicroorganism();
+            rbMicroorganism.setCode(microOrg.getCode());
+            rbMicroorganism.setName(microOrg.getName());
+            dbRbMicroorganismBean.add(rbMicroorganism);
+//            }
+        }
+
+        final BbtResultTable bbtResultTable = new BbtResultTable();
+
+        dbBbtResultTableBean.add(bbtResultTable);
+
+        final BbtResponse bbtResponse = new BbtResponse();
+        bbtResponse.setId(Integer.parseInt(request.getOrderMISId()));
+        bbtResponse.setDoctorId(Integer.parseInt(request.getDoctorId()));
+        bbtResponse.setFinalFlag(1);
+
+        dbBbtResponseBean.add(bbtResponse);
+
+        final BbtOrganismSensValues bbtOrganismSensValues = new BbtOrganismSensValues();
+
+        dbBbtOrganismSensValuesBean.add(bbtOrganismSensValues);
+
+
         return createSuccessResponse();
     }
 }

@@ -24,13 +24,13 @@ public class DbRbBacIndicatorBean implements DbRbBacIndicatorBeanLocal {
 
     @Override
     public void add(RbBacIndicator rbBacIndicator) {
-        final RbBacIndicator response = em.find(RbBacIndicator.class, rbBacIndicator.getId());
-        if (response == null) {
+     //   final RbBacIndicator response = em.find(RbBacIndicator.class, rbBacIndicator.getId());
+       // if (response == null) {
             em.persist(rbBacIndicator);
             logger.info("create rbBacIndicator {}", rbBacIndicator);
-        } else {
-            logger.info("find rbBacIndicator {}", response);
-        }
+      //  } else {
+        //    logger.info("find rbBacIndicator {}", response);
+       // }
     }
 
     @Override
