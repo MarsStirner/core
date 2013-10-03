@@ -13,7 +13,7 @@ import javax.xml.bind.annotation.XmlType;
 @XmlType(name = "MicroOrg", propOrder = {
         "name",
         "code",
-        "concentation"
+        "concentration"
 })
 public class MicroOrg {
 
@@ -24,7 +24,7 @@ public class MicroOrg {
     protected String code;
 
     @XmlElement(required = true)
-    protected String concentation;
+    protected String concentration;
 
     public String getName() {
         return name;
@@ -42,11 +42,11 @@ public class MicroOrg {
         this.code = code;
     }
 
-    public String getConcentation() {
-        return concentation;
+    public String getConcentration() {
+        return concentration;
     }
 
-    public void setConcentation(String concentation) {
-        this.concentation = concentation;
+    public void setConcentration(String concentration) {
+        this.concentration = concentration;
     }
 }
