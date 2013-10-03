@@ -22,12 +22,12 @@ import javax.xml.bind.annotation.XmlType;
  *       &lt;sequence>
  *         &lt;group ref="{urn:hl7-org:v3}InfrastructureRootElements"/>
  *         &lt;element name="id" type="{urn:hl7-org:v3}II" minOccurs="0"/>
- *         &lt;element name="code" type="{urn:hl7-org:v3}CD"/>
+ *         &lt;element name="code" type="{urn:hl7-org:v3}CV"/>
  *         &lt;element name="text" type="{urn:hl7-org:v3}ED" minOccurs="0"/>
  *         &lt;element name="effectiveTime" type="{urn:hl7-org:v3}TS"/>
- *         &lt;element name="priorityCode" type="{urn:hl7-org:v3}DSET_CD" minOccurs="0"/>
- *         &lt;element name="reasonCode" type="{urn:hl7-org:v3}CD" minOccurs="0"/>
- *         &lt;element name="languageCode" type="{urn:hl7-org:v3}CD" minOccurs="0"/>
+ *         &lt;element name="priorityCode" type="{urn:hl7-org:v3}CE" maxOccurs="unbounded" minOccurs="0"/>
+ *         &lt;element name="reasonCode" type="{urn:hl7-org:v3}CV" minOccurs="0"/>
+ *         &lt;element name="languageCode" type="{urn:hl7-org:v3}CE" minOccurs="0"/>
  *         &lt;element name="overseer" type="{urn:hl7-org:v3}COCT_MT080000UV09.Overseer" maxOccurs="unbounded" minOccurs="0"/>
  *         &lt;element name="authorOrPerformer" type="{urn:hl7-org:v3}COCT_MT080000UV09.AuthorOrPerformer" maxOccurs="unbounded" minOccurs="0"/>
  *         &lt;element name="dataEnterer" type="{urn:hl7-org:v3}COCT_MT080000UV09.DataEnterer" maxOccurs="unbounded" minOccurs="0"/>
@@ -63,18 +63,18 @@ import javax.xml.bind.annotation.XmlType;
 })
 public class COCTMT080000UV09ControlActEvent {
 
-    protected DSETCS realmCode;
+    protected List<CS> realmCode;
     protected II typeId;
-    protected LISTII templateId;
+    protected List<II> templateId;
     protected II id;
     @XmlElement(required = true)
-    protected CD code;
+    protected CV code;
     protected ED text;
     @XmlElement(required = true)
     protected TS effectiveTime;
-    protected DSETCD priorityCode;
-    protected CD reasonCode;
-    protected CD languageCode;
+    protected List<CE> priorityCode;
+    protected CV reasonCode;
+    protected CE languageCode;
     @XmlElement(nillable = true)
     protected List<COCTMT080000UV09Overseer> overseer;
     @XmlElement(nillable = true)
@@ -93,25 +93,30 @@ public class COCTMT080000UV09ControlActEvent {
     /**
      * Gets the value of the realmCode property.
      * 
-     * @return
-     *     possible object is
-     *     {@link DSETCS }
-     *     
-     */
-    public DSETCS getRealmCode() {
-        return realmCode;
-    }
-
-    /**
-     * Sets the value of the realmCode property.
+     * <p>
+     * This accessor method returns a reference to the live list,
+     * not a snapshot. Therefore any modification you make to the
+     * returned list will be present inside the JAXB object.
+     * This is why there is not a <CODE>set</CODE> method for the realmCode property.
      * 
-     * @param value
-     *     allowed object is
-     *     {@link DSETCS }
-     *     
+     * <p>
+     * For example, to add a new item, do as follows:
+     * <pre>
+     *    getRealmCode().add(newItem);
+     * </pre>
+     * 
+     * 
+     * <p>
+     * Objects of the following type(s) are allowed in the list
+     * {@link CS }
+     * 
+     * 
      */
-    public void setRealmCode(DSETCS value) {
-        this.realmCode = value;
+    public List<CS> getRealmCode() {
+        if (realmCode == null) {
+            realmCode = new ArrayList<CS>();
+        }
+        return this.realmCode;
     }
 
     /**
@@ -141,25 +146,30 @@ public class COCTMT080000UV09ControlActEvent {
     /**
      * Gets the value of the templateId property.
      * 
-     * @return
-     *     possible object is
-     *     {@link LISTII }
-     *     
-     */
-    public LISTII getTemplateId() {
-        return templateId;
-    }
-
-    /**
-     * Sets the value of the templateId property.
+     * <p>
+     * This accessor method returns a reference to the live list,
+     * not a snapshot. Therefore any modification you make to the
+     * returned list will be present inside the JAXB object.
+     * This is why there is not a <CODE>set</CODE> method for the templateId property.
      * 
-     * @param value
-     *     allowed object is
-     *     {@link LISTII }
-     *     
+     * <p>
+     * For example, to add a new item, do as follows:
+     * <pre>
+     *    getTemplateId().add(newItem);
+     * </pre>
+     * 
+     * 
+     * <p>
+     * Objects of the following type(s) are allowed in the list
+     * {@link II }
+     * 
+     * 
      */
-    public void setTemplateId(LISTII value) {
-        this.templateId = value;
+    public List<II> getTemplateId() {
+        if (templateId == null) {
+            templateId = new ArrayList<II>();
+        }
+        return this.templateId;
     }
 
     /**
@@ -191,10 +201,10 @@ public class COCTMT080000UV09ControlActEvent {
      * 
      * @return
      *     possible object is
-     *     {@link CD }
+     *     {@link CV }
      *     
      */
-    public CD getCode() {
+    public CV getCode() {
         return code;
     }
 
@@ -203,10 +213,10 @@ public class COCTMT080000UV09ControlActEvent {
      * 
      * @param value
      *     allowed object is
-     *     {@link CD }
+     *     {@link CV }
      *     
      */
-    public void setCode(CD value) {
+    public void setCode(CV value) {
         this.code = value;
     }
 
@@ -261,25 +271,30 @@ public class COCTMT080000UV09ControlActEvent {
     /**
      * Gets the value of the priorityCode property.
      * 
-     * @return
-     *     possible object is
-     *     {@link DSETCD }
-     *     
-     */
-    public DSETCD getPriorityCode() {
-        return priorityCode;
-    }
-
-    /**
-     * Sets the value of the priorityCode property.
+     * <p>
+     * This accessor method returns a reference to the live list,
+     * not a snapshot. Therefore any modification you make to the
+     * returned list will be present inside the JAXB object.
+     * This is why there is not a <CODE>set</CODE> method for the priorityCode property.
      * 
-     * @param value
-     *     allowed object is
-     *     {@link DSETCD }
-     *     
+     * <p>
+     * For example, to add a new item, do as follows:
+     * <pre>
+     *    getPriorityCode().add(newItem);
+     * </pre>
+     * 
+     * 
+     * <p>
+     * Objects of the following type(s) are allowed in the list
+     * {@link CE }
+     * 
+     * 
      */
-    public void setPriorityCode(DSETCD value) {
-        this.priorityCode = value;
+    public List<CE> getPriorityCode() {
+        if (priorityCode == null) {
+            priorityCode = new ArrayList<CE>();
+        }
+        return this.priorityCode;
     }
 
     /**
@@ -287,10 +302,10 @@ public class COCTMT080000UV09ControlActEvent {
      * 
      * @return
      *     possible object is
-     *     {@link CD }
+     *     {@link CV }
      *     
      */
-    public CD getReasonCode() {
+    public CV getReasonCode() {
         return reasonCode;
     }
 
@@ -299,10 +314,10 @@ public class COCTMT080000UV09ControlActEvent {
      * 
      * @param value
      *     allowed object is
-     *     {@link CD }
+     *     {@link CV }
      *     
      */
-    public void setReasonCode(CD value) {
+    public void setReasonCode(CV value) {
         this.reasonCode = value;
     }
 
@@ -311,10 +326,10 @@ public class COCTMT080000UV09ControlActEvent {
      * 
      * @return
      *     possible object is
-     *     {@link CD }
+     *     {@link CE }
      *     
      */
-    public CD getLanguageCode() {
+    public CE getLanguageCode() {
         return languageCode;
     }
 
@@ -323,10 +338,10 @@ public class COCTMT080000UV09ControlActEvent {
      * 
      * @param value
      *     allowed object is
-     *     {@link CD }
+     *     {@link CE }
      *     
      */
-    public void setLanguageCode(CD value) {
+    public void setLanguageCode(CE value) {
         this.languageCode = value;
     }
 

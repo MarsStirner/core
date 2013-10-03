@@ -6,10 +6,19 @@ import java.util.List;
 import javax.xml.bind.annotation.XmlAccessType;
 import javax.xml.bind.annotation.XmlAccessorType;
 import javax.xml.bind.annotation.XmlAttribute;
+import javax.xml.bind.annotation.XmlSeeAlso;
 import javax.xml.bind.annotation.XmlType;
 
 
 /**
+ * 
+ *             A character string token representing a part of a name.
+ *             May have a type code signifying the role of the part in
+ *             the whole entity name, and a qualifier code for more detail
+ *             about the name part type. Typical name parts for person
+ *             names are given names, and family names, titles, etc.
+ *          
+ * 
  * <p>Java class for ENXP complex type.
  * 
  * <p>The following schema fragment specifies the expected content contained within this class.
@@ -17,8 +26,8 @@ import javax.xml.bind.annotation.XmlType;
  * <pre>
  * &lt;complexType name="ENXP">
  *   &lt;complexContent>
- *     &lt;extension base="{urn:hl7-org:v3}XP">
- *       &lt;attribute name="type" type="{urn:hl7-org:v3}EntityNamePartType" />
+ *     &lt;extension base="{urn:hl7-org:v3}ST">
+ *       &lt;attribute name="partType" type="{urn:hl7-org:v3}EntityNamePartType" />
  *       &lt;attribute name="qualifier" type="{urn:hl7-org:v3}set_EntityNamePartQualifier" />
  *     &lt;/extension>
  *   &lt;/complexContent>
@@ -29,37 +38,44 @@ import javax.xml.bind.annotation.XmlType;
  */
 @XmlAccessorType(XmlAccessType.FIELD)
 @XmlType(name = "ENXP")
+@XmlSeeAlso({
+    EnDelimiter.class,
+    EnGiven.class,
+    EnFamily.class,
+    EnSuffix.class,
+    EnPrefix.class
+})
 public class ENXP
-    extends XP
+    extends ST
 {
 
-    @XmlAttribute(name = "type")
-    protected EntityNamePartType type;
+    @XmlAttribute(name = "partType")
+    protected EntityNamePartType partType;
     @XmlAttribute(name = "qualifier")
     protected List<EntityNamePartQualifier> qualifier;
 
     /**
-     * Gets the value of the type property.
+     * Gets the value of the partType property.
      * 
      * @return
      *     possible object is
      *     {@link EntityNamePartType }
      *     
      */
-    public EntityNamePartType getType() {
-        return type;
+    public EntityNamePartType getPartType() {
+        return partType;
     }
 
     /**
-     * Sets the value of the type property.
+     * Sets the value of the partType property.
      * 
      * @param value
      *     allowed object is
      *     {@link EntityNamePartType }
      *     
      */
-    public void setType(EntityNamePartType value) {
-        this.type = value;
+    public void setPartType(EntityNamePartType value) {
+        this.partType = value;
     }
 
     /**

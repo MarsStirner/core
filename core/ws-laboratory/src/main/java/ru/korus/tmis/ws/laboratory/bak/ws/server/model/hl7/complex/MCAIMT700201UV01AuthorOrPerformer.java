@@ -1,6 +1,8 @@
 
 package ru.korus.tmis.ws.laboratory.bak.ws.server.model.hl7.complex;
 
+import java.util.ArrayList;
+import java.util.List;
 import javax.xml.bind.JAXBElement;
 import javax.xml.bind.annotation.XmlAccessType;
 import javax.xml.bind.annotation.XmlAccessorType;
@@ -22,8 +24,8 @@ import javax.xml.bind.annotation.XmlType;
  *         &lt;group ref="{urn:hl7-org:v3}InfrastructureRootElements"/>
  *         &lt;element name="noteText" type="{urn:hl7-org:v3}ED" minOccurs="0"/>
  *         &lt;element name="time" type="{urn:hl7-org:v3}IVL_TS" minOccurs="0"/>
- *         &lt;element name="modeCode" type="{urn:hl7-org:v3}CD" minOccurs="0"/>
- *         &lt;element name="signatureCode" type="{urn:hl7-org:v3}CD" minOccurs="0"/>
+ *         &lt;element name="modeCode" type="{urn:hl7-org:v3}CE" minOccurs="0"/>
+ *         &lt;element name="signatureCode" type="{urn:hl7-org:v3}CE" minOccurs="0"/>
  *         &lt;element name="signatureText" type="{urn:hl7-org:v3}ED" minOccurs="0"/>
  *         &lt;choice>
  *           &lt;element name="assignedDevice" type="{urn:hl7-org:v3}COCT_MT090300UV01.AssignedDevice"/>
@@ -56,13 +58,13 @@ import javax.xml.bind.annotation.XmlType;
 })
 public class MCAIMT700201UV01AuthorOrPerformer {
 
-    protected DSETCS realmCode;
+    protected List<CS> realmCode;
     protected II typeId;
-    protected LISTII templateId;
+    protected List<II> templateId;
     protected ED noteText;
     protected IVLTS time;
-    protected CD modeCode;
-    protected CD signatureCode;
+    protected CE modeCode;
+    protected CE signatureCode;
     protected ED signatureText;
     @XmlElementRef(name = "assignedDevice", namespace = "urn:hl7-org:v3", type = JAXBElement.class, required = false)
     protected JAXBElement<COCTMT090300UV01AssignedDevice> assignedDevice;
@@ -78,25 +80,30 @@ public class MCAIMT700201UV01AuthorOrPerformer {
     /**
      * Gets the value of the realmCode property.
      * 
-     * @return
-     *     possible object is
-     *     {@link DSETCS }
-     *     
-     */
-    public DSETCS getRealmCode() {
-        return realmCode;
-    }
-
-    /**
-     * Sets the value of the realmCode property.
+     * <p>
+     * This accessor method returns a reference to the live list,
+     * not a snapshot. Therefore any modification you make to the
+     * returned list will be present inside the JAXB object.
+     * This is why there is not a <CODE>set</CODE> method for the realmCode property.
      * 
-     * @param value
-     *     allowed object is
-     *     {@link DSETCS }
-     *     
+     * <p>
+     * For example, to add a new item, do as follows:
+     * <pre>
+     *    getRealmCode().add(newItem);
+     * </pre>
+     * 
+     * 
+     * <p>
+     * Objects of the following type(s) are allowed in the list
+     * {@link CS }
+     * 
+     * 
      */
-    public void setRealmCode(DSETCS value) {
-        this.realmCode = value;
+    public List<CS> getRealmCode() {
+        if (realmCode == null) {
+            realmCode = new ArrayList<CS>();
+        }
+        return this.realmCode;
     }
 
     /**
@@ -126,25 +133,30 @@ public class MCAIMT700201UV01AuthorOrPerformer {
     /**
      * Gets the value of the templateId property.
      * 
-     * @return
-     *     possible object is
-     *     {@link LISTII }
-     *     
-     */
-    public LISTII getTemplateId() {
-        return templateId;
-    }
-
-    /**
-     * Sets the value of the templateId property.
+     * <p>
+     * This accessor method returns a reference to the live list,
+     * not a snapshot. Therefore any modification you make to the
+     * returned list will be present inside the JAXB object.
+     * This is why there is not a <CODE>set</CODE> method for the templateId property.
      * 
-     * @param value
-     *     allowed object is
-     *     {@link LISTII }
-     *     
+     * <p>
+     * For example, to add a new item, do as follows:
+     * <pre>
+     *    getTemplateId().add(newItem);
+     * </pre>
+     * 
+     * 
+     * <p>
+     * Objects of the following type(s) are allowed in the list
+     * {@link II }
+     * 
+     * 
      */
-    public void setTemplateId(LISTII value) {
-        this.templateId = value;
+    public List<II> getTemplateId() {
+        if (templateId == null) {
+            templateId = new ArrayList<II>();
+        }
+        return this.templateId;
     }
 
     /**
@@ -200,10 +212,10 @@ public class MCAIMT700201UV01AuthorOrPerformer {
      * 
      * @return
      *     possible object is
-     *     {@link CD }
+     *     {@link CE }
      *     
      */
-    public CD getModeCode() {
+    public CE getModeCode() {
         return modeCode;
     }
 
@@ -212,10 +224,10 @@ public class MCAIMT700201UV01AuthorOrPerformer {
      * 
      * @param value
      *     allowed object is
-     *     {@link CD }
+     *     {@link CE }
      *     
      */
-    public void setModeCode(CD value) {
+    public void setModeCode(CE value) {
         this.modeCode = value;
     }
 
@@ -224,10 +236,10 @@ public class MCAIMT700201UV01AuthorOrPerformer {
      * 
      * @return
      *     possible object is
-     *     {@link CD }
+     *     {@link CE }
      *     
      */
-    public CD getSignatureCode() {
+    public CE getSignatureCode() {
         return signatureCode;
     }
 
@@ -236,10 +248,10 @@ public class MCAIMT700201UV01AuthorOrPerformer {
      * 
      * @param value
      *     allowed object is
-     *     {@link CD }
+     *     {@link CE }
      *     
      */
-    public void setSignatureCode(CD value) {
+    public void setSignatureCode(CE value) {
         this.signatureCode = value;
     }
 

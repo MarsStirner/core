@@ -8,6 +8,8 @@ import javax.xml.bind.annotation.XmlAccessorType;
 import javax.xml.bind.annotation.XmlAttribute;
 import javax.xml.bind.annotation.XmlElement;
 import javax.xml.bind.annotation.XmlType;
+import javax.xml.bind.annotation.adapters.CollapsedStringAdapter;
+import javax.xml.bind.annotation.adapters.XmlJavaTypeAdapter;
 
 
 /**
@@ -24,8 +26,8 @@ import javax.xml.bind.annotation.XmlType;
  *         &lt;element name="code" type="{urn:hl7-org:v3}CD"/>
  *         &lt;element name="quantity" type="{urn:hl7-org:v3}PQ" minOccurs="0"/>
  *         &lt;element name="desc" type="{urn:hl7-org:v3}ED" minOccurs="0"/>
- *         &lt;element name="riskCode" type="{urn:hl7-org:v3}CD" minOccurs="0"/>
- *         &lt;element name="handlingCode" type="{urn:hl7-org:v3}CD" minOccurs="0"/>
+ *         &lt;element name="riskCode" type="{urn:hl7-org:v3}CE" minOccurs="0"/>
+ *         &lt;element name="handlingCode" type="{urn:hl7-org:v3}CE" minOccurs="0"/>
  *         &lt;element name="asSpecimenStub" type="{urn:hl7-org:v3}COCT_MT080000UV09.SpecimenStub" maxOccurs="unbounded" minOccurs="0"/>
  *         &lt;element name="asSpecimenInContainer" type="{urn:hl7-org:v3}COCT_MT080000UV09.SpecimenInContainer" maxOccurs="unbounded" minOccurs="0"/>
  *         &lt;element name="asOtherIDs" type="{urn:hl7-org:v3}COCT_MT080000UV09.OtherIDs" maxOccurs="unbounded" minOccurs="0"/>
@@ -34,7 +36,7 @@ import javax.xml.bind.annotation.XmlType;
  *       &lt;/sequence>
  *       &lt;attGroup ref="{urn:hl7-org:v3}InfrastructureRootAttributes"/>
  *       &lt;attribute name="nullFlavor" type="{urn:hl7-org:v3}NullFlavor" />
- *       &lt;attribute name="classCode" use="required" type="{urn:hl7-org:v3}EntityClassRoot" />
+ *       &lt;attribute name="classCode" use="required" type="{urn:hl7-org:v3}cs" />
  *       &lt;attribute name="determinerCode" use="required" type="{urn:hl7-org:v3}EntityDeterminer" />
  *     &lt;/restriction>
  *   &lt;/complexContent>
@@ -61,15 +63,15 @@ import javax.xml.bind.annotation.XmlType;
 })
 public class COCTMT080000UV09Natural {
 
-    protected DSETCS realmCode;
+    protected List<CS> realmCode;
     protected II typeId;
-    protected LISTII templateId;
+    protected List<II> templateId;
     @XmlElement(required = true)
     protected CD code;
     protected PQ quantity;
     protected ED desc;
-    protected CD riskCode;
-    protected CD handlingCode;
+    protected CE riskCode;
+    protected CE handlingCode;
     @XmlElement(nillable = true)
     protected List<COCTMT080000UV09SpecimenStub> asSpecimenStub;
     @XmlElement(nillable = true)
@@ -83,32 +85,38 @@ public class COCTMT080000UV09Natural {
     @XmlAttribute(name = "nullFlavor")
     protected NullFlavor nullFlavor;
     @XmlAttribute(name = "classCode", required = true)
-    protected EntityClassRoot classCode;
+    @XmlJavaTypeAdapter(CollapsedStringAdapter.class)
+    protected String classCode;
     @XmlAttribute(name = "determinerCode", required = true)
     protected EntityDeterminer determinerCode;
 
     /**
      * Gets the value of the realmCode property.
      * 
-     * @return
-     *     possible object is
-     *     {@link DSETCS }
-     *     
-     */
-    public DSETCS getRealmCode() {
-        return realmCode;
-    }
-
-    /**
-     * Sets the value of the realmCode property.
+     * <p>
+     * This accessor method returns a reference to the live list,
+     * not a snapshot. Therefore any modification you make to the
+     * returned list will be present inside the JAXB object.
+     * This is why there is not a <CODE>set</CODE> method for the realmCode property.
      * 
-     * @param value
-     *     allowed object is
-     *     {@link DSETCS }
-     *     
+     * <p>
+     * For example, to add a new item, do as follows:
+     * <pre>
+     *    getRealmCode().add(newItem);
+     * </pre>
+     * 
+     * 
+     * <p>
+     * Objects of the following type(s) are allowed in the list
+     * {@link CS }
+     * 
+     * 
      */
-    public void setRealmCode(DSETCS value) {
-        this.realmCode = value;
+    public List<CS> getRealmCode() {
+        if (realmCode == null) {
+            realmCode = new ArrayList<CS>();
+        }
+        return this.realmCode;
     }
 
     /**
@@ -138,25 +146,30 @@ public class COCTMT080000UV09Natural {
     /**
      * Gets the value of the templateId property.
      * 
-     * @return
-     *     possible object is
-     *     {@link LISTII }
-     *     
-     */
-    public LISTII getTemplateId() {
-        return templateId;
-    }
-
-    /**
-     * Sets the value of the templateId property.
+     * <p>
+     * This accessor method returns a reference to the live list,
+     * not a snapshot. Therefore any modification you make to the
+     * returned list will be present inside the JAXB object.
+     * This is why there is not a <CODE>set</CODE> method for the templateId property.
      * 
-     * @param value
-     *     allowed object is
-     *     {@link LISTII }
-     *     
+     * <p>
+     * For example, to add a new item, do as follows:
+     * <pre>
+     *    getTemplateId().add(newItem);
+     * </pre>
+     * 
+     * 
+     * <p>
+     * Objects of the following type(s) are allowed in the list
+     * {@link II }
+     * 
+     * 
      */
-    public void setTemplateId(LISTII value) {
-        this.templateId = value;
+    public List<II> getTemplateId() {
+        if (templateId == null) {
+            templateId = new ArrayList<II>();
+        }
+        return this.templateId;
     }
 
     /**
@@ -236,10 +249,10 @@ public class COCTMT080000UV09Natural {
      * 
      * @return
      *     possible object is
-     *     {@link CD }
+     *     {@link CE }
      *     
      */
-    public CD getRiskCode() {
+    public CE getRiskCode() {
         return riskCode;
     }
 
@@ -248,10 +261,10 @@ public class COCTMT080000UV09Natural {
      * 
      * @param value
      *     allowed object is
-     *     {@link CD }
+     *     {@link CE }
      *     
      */
-    public void setRiskCode(CD value) {
+    public void setRiskCode(CE value) {
         this.riskCode = value;
     }
 
@@ -260,10 +273,10 @@ public class COCTMT080000UV09Natural {
      * 
      * @return
      *     possible object is
-     *     {@link CD }
+     *     {@link CE }
      *     
      */
-    public CD getHandlingCode() {
+    public CE getHandlingCode() {
         return handlingCode;
     }
 
@@ -272,10 +285,10 @@ public class COCTMT080000UV09Natural {
      * 
      * @param value
      *     allowed object is
-     *     {@link CD }
+     *     {@link CE }
      *     
      */
-    public void setHandlingCode(CD value) {
+    public void setHandlingCode(CE value) {
         this.handlingCode = value;
     }
 
@@ -453,10 +466,10 @@ public class COCTMT080000UV09Natural {
      * 
      * @return
      *     possible object is
-     *     {@link EntityClassRoot }
+     *     {@link String }
      *     
      */
-    public EntityClassRoot getClassCode() {
+    public String getClassCode() {
         return classCode;
     }
 
@@ -465,10 +478,10 @@ public class COCTMT080000UV09Natural {
      * 
      * @param value
      *     allowed object is
-     *     {@link EntityClassRoot }
+     *     {@link String }
      *     
      */
-    public void setClassCode(EntityClassRoot value) {
+    public void setClassCode(String value) {
         this.classCode = value;
     }
 

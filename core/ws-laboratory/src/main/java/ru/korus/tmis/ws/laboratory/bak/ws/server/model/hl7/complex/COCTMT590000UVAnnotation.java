@@ -1,6 +1,8 @@
 
 package ru.korus.tmis.ws.laboratory.bak.ws.server.model.hl7.complex;
 
+import java.util.ArrayList;
+import java.util.List;
 import javax.xml.bind.JAXBElement;
 import javax.xml.bind.annotation.XmlAccessType;
 import javax.xml.bind.annotation.XmlAccessorType;
@@ -21,10 +23,10 @@ import javax.xml.bind.annotation.XmlType;
  *     &lt;restriction base="{http://www.w3.org/2001/XMLSchema}anyType">
  *       &lt;sequence>
  *         &lt;group ref="{urn:hl7-org:v3}InfrastructureRootElements"/>
- *         &lt;element name="code" type="{urn:hl7-org:v3}CD" minOccurs="0"/>
+ *         &lt;element name="code" type="{urn:hl7-org:v3}CE" minOccurs="0"/>
  *         &lt;element name="text" type="{urn:hl7-org:v3}ST"/>
  *         &lt;element name="statusCode" type="{urn:hl7-org:v3}CS"/>
- *         &lt;element name="reasonCode" type="{urn:hl7-org:v3}CD" minOccurs="0"/>
+ *         &lt;element name="reasonCode" type="{urn:hl7-org:v3}CE" minOccurs="0"/>
  *         &lt;element name="author" type="{urn:hl7-org:v3}COCT_MT590000UV.Author"/>
  *         &lt;element name="dataEnterer" type="{urn:hl7-org:v3}COCT_MT590000UV.DataEnterer" minOccurs="0"/>
  *       &lt;/sequence>
@@ -52,15 +54,15 @@ import javax.xml.bind.annotation.XmlType;
 })
 public class COCTMT590000UVAnnotation {
 
-    protected DSETCS realmCode;
+    protected List<CS> realmCode;
     protected II typeId;
-    protected LISTII templateId;
-    protected CD code;
+    protected List<II> templateId;
+    protected CE code;
     @XmlElement(required = true)
     protected ST text;
     @XmlElement(required = true)
     protected CS statusCode;
-    protected CD reasonCode;
+    protected CE reasonCode;
     @XmlElement(required = true)
     protected COCTMT590000UVAuthor author;
     @XmlElementRef(name = "dataEnterer", namespace = "urn:hl7-org:v3", type = JAXBElement.class, required = false)
@@ -73,25 +75,30 @@ public class COCTMT590000UVAnnotation {
     /**
      * Gets the value of the realmCode property.
      * 
-     * @return
-     *     possible object is
-     *     {@link DSETCS }
-     *     
-     */
-    public DSETCS getRealmCode() {
-        return realmCode;
-    }
-
-    /**
-     * Sets the value of the realmCode property.
+     * <p>
+     * This accessor method returns a reference to the live list,
+     * not a snapshot. Therefore any modification you make to the
+     * returned list will be present inside the JAXB object.
+     * This is why there is not a <CODE>set</CODE> method for the realmCode property.
      * 
-     * @param value
-     *     allowed object is
-     *     {@link DSETCS }
-     *     
+     * <p>
+     * For example, to add a new item, do as follows:
+     * <pre>
+     *    getRealmCode().add(newItem);
+     * </pre>
+     * 
+     * 
+     * <p>
+     * Objects of the following type(s) are allowed in the list
+     * {@link CS }
+     * 
+     * 
      */
-    public void setRealmCode(DSETCS value) {
-        this.realmCode = value;
+    public List<CS> getRealmCode() {
+        if (realmCode == null) {
+            realmCode = new ArrayList<CS>();
+        }
+        return this.realmCode;
     }
 
     /**
@@ -121,25 +128,30 @@ public class COCTMT590000UVAnnotation {
     /**
      * Gets the value of the templateId property.
      * 
-     * @return
-     *     possible object is
-     *     {@link LISTII }
-     *     
-     */
-    public LISTII getTemplateId() {
-        return templateId;
-    }
-
-    /**
-     * Sets the value of the templateId property.
+     * <p>
+     * This accessor method returns a reference to the live list,
+     * not a snapshot. Therefore any modification you make to the
+     * returned list will be present inside the JAXB object.
+     * This is why there is not a <CODE>set</CODE> method for the templateId property.
      * 
-     * @param value
-     *     allowed object is
-     *     {@link LISTII }
-     *     
+     * <p>
+     * For example, to add a new item, do as follows:
+     * <pre>
+     *    getTemplateId().add(newItem);
+     * </pre>
+     * 
+     * 
+     * <p>
+     * Objects of the following type(s) are allowed in the list
+     * {@link II }
+     * 
+     * 
      */
-    public void setTemplateId(LISTII value) {
-        this.templateId = value;
+    public List<II> getTemplateId() {
+        if (templateId == null) {
+            templateId = new ArrayList<II>();
+        }
+        return this.templateId;
     }
 
     /**
@@ -147,10 +159,10 @@ public class COCTMT590000UVAnnotation {
      * 
      * @return
      *     possible object is
-     *     {@link CD }
+     *     {@link CE }
      *     
      */
-    public CD getCode() {
+    public CE getCode() {
         return code;
     }
 
@@ -159,10 +171,10 @@ public class COCTMT590000UVAnnotation {
      * 
      * @param value
      *     allowed object is
-     *     {@link CD }
+     *     {@link CE }
      *     
      */
-    public void setCode(CD value) {
+    public void setCode(CE value) {
         this.code = value;
     }
 
@@ -219,10 +231,10 @@ public class COCTMT590000UVAnnotation {
      * 
      * @return
      *     possible object is
-     *     {@link CD }
+     *     {@link CE }
      *     
      */
-    public CD getReasonCode() {
+    public CE getReasonCode() {
         return reasonCode;
     }
 
@@ -231,10 +243,10 @@ public class COCTMT590000UVAnnotation {
      * 
      * @param value
      *     allowed object is
-     *     {@link CD }
+     *     {@link CE }
      *     
      */
-    public void setReasonCode(CD value) {
+    public void setReasonCode(CE value) {
         this.reasonCode = value;
     }
 

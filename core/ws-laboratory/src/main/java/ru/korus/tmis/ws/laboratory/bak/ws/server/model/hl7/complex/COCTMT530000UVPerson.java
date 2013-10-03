@@ -23,16 +23,16 @@ import javax.xml.bind.annotation.XmlType;
  *     &lt;restriction base="{http://www.w3.org/2001/XMLSchema}anyType">
  *       &lt;sequence>
  *         &lt;group ref="{urn:hl7-org:v3}InfrastructureRootElements"/>
- *         &lt;element name="name" type="{urn:hl7-org:v3}DSET_EN" minOccurs="0"/>
- *         &lt;element name="telecom" type="{urn:hl7-org:v3}DSET_TEL" minOccurs="0"/>
- *         &lt;element name="administrativeGenderCode" type="{urn:hl7-org:v3}CD" minOccurs="0"/>
+ *         &lt;element name="name" type="{urn:hl7-org:v3}PN" maxOccurs="unbounded" minOccurs="0"/>
+ *         &lt;element name="telecom" type="{urn:hl7-org:v3}TEL" maxOccurs="unbounded" minOccurs="0"/>
+ *         &lt;element name="administrativeGenderCode" type="{urn:hl7-org:v3}CE" minOccurs="0"/>
  *         &lt;element name="birthTime" type="{urn:hl7-org:v3}TS" minOccurs="0"/>
  *         &lt;element name="multipleBirthInd" type="{urn:hl7-org:v3}BL" minOccurs="0"/>
  *         &lt;element name="multipleBirthOrderNumber" type="{urn:hl7-org:v3}INT" minOccurs="0"/>
- *         &lt;element name="maritalStatusCode" type="{urn:hl7-org:v3}CD" minOccurs="0"/>
- *         &lt;element name="religiousAffiliationCode" type="{urn:hl7-org:v3}CD" minOccurs="0"/>
- *         &lt;element name="raceCode" type="{urn:hl7-org:v3}CD" minOccurs="0"/>
- *         &lt;element name="ethnicGroupCode" type="{urn:hl7-org:v3}CD" minOccurs="0"/>
+ *         &lt;element name="maritalStatusCode" type="{urn:hl7-org:v3}CE" minOccurs="0"/>
+ *         &lt;element name="religiousAffiliationCode" type="{urn:hl7-org:v3}CE" minOccurs="0"/>
+ *         &lt;element name="raceCode" type="{urn:hl7-org:v3}CE" minOccurs="0"/>
+ *         &lt;element name="ethnicGroupCode" type="{urn:hl7-org:v3}CE" minOccurs="0"/>
  *         &lt;element name="asRole" type="{urn:hl7-org:v3}COCT_MT530000UV.Role" maxOccurs="unbounded" minOccurs="0"/>
  *         &lt;element name="birthplace" type="{urn:hl7-org:v3}COCT_MT530000UV.Birthplace" minOccurs="0"/>
  *       &lt;/sequence>
@@ -67,19 +67,19 @@ import javax.xml.bind.annotation.XmlType;
 })
 public class COCTMT530000UVPerson {
 
-    protected DSETCS realmCode;
+    protected List<CS> realmCode;
     protected II typeId;
-    protected LISTII templateId;
-    protected DSETEN name;
-    protected DSETTEL telecom;
-    protected CD administrativeGenderCode;
+    protected List<II> templateId;
+    protected List<PN> name;
+    protected List<TEL> telecom;
+    protected CE administrativeGenderCode;
     protected TS birthTime;
     protected BL multipleBirthInd;
     protected INT multipleBirthOrderNumber;
-    protected CD maritalStatusCode;
-    protected CD religiousAffiliationCode;
-    protected CD raceCode;
-    protected CD ethnicGroupCode;
+    protected CE maritalStatusCode;
+    protected CE religiousAffiliationCode;
+    protected CE raceCode;
+    protected CE ethnicGroupCode;
     @XmlElement(nillable = true)
     protected List<COCTMT530000UVRole> asRole;
     @XmlElementRef(name = "birthplace", namespace = "urn:hl7-org:v3", type = JAXBElement.class, required = false)
@@ -94,25 +94,30 @@ public class COCTMT530000UVPerson {
     /**
      * Gets the value of the realmCode property.
      * 
-     * @return
-     *     possible object is
-     *     {@link DSETCS }
-     *     
-     */
-    public DSETCS getRealmCode() {
-        return realmCode;
-    }
-
-    /**
-     * Sets the value of the realmCode property.
+     * <p>
+     * This accessor method returns a reference to the live list,
+     * not a snapshot. Therefore any modification you make to the
+     * returned list will be present inside the JAXB object.
+     * This is why there is not a <CODE>set</CODE> method for the realmCode property.
      * 
-     * @param value
-     *     allowed object is
-     *     {@link DSETCS }
-     *     
+     * <p>
+     * For example, to add a new item, do as follows:
+     * <pre>
+     *    getRealmCode().add(newItem);
+     * </pre>
+     * 
+     * 
+     * <p>
+     * Objects of the following type(s) are allowed in the list
+     * {@link CS }
+     * 
+     * 
      */
-    public void setRealmCode(DSETCS value) {
-        this.realmCode = value;
+    public List<CS> getRealmCode() {
+        if (realmCode == null) {
+            realmCode = new ArrayList<CS>();
+        }
+        return this.realmCode;
     }
 
     /**
@@ -142,73 +147,88 @@ public class COCTMT530000UVPerson {
     /**
      * Gets the value of the templateId property.
      * 
-     * @return
-     *     possible object is
-     *     {@link LISTII }
-     *     
-     */
-    public LISTII getTemplateId() {
-        return templateId;
-    }
-
-    /**
-     * Sets the value of the templateId property.
+     * <p>
+     * This accessor method returns a reference to the live list,
+     * not a snapshot. Therefore any modification you make to the
+     * returned list will be present inside the JAXB object.
+     * This is why there is not a <CODE>set</CODE> method for the templateId property.
      * 
-     * @param value
-     *     allowed object is
-     *     {@link LISTII }
-     *     
+     * <p>
+     * For example, to add a new item, do as follows:
+     * <pre>
+     *    getTemplateId().add(newItem);
+     * </pre>
+     * 
+     * 
+     * <p>
+     * Objects of the following type(s) are allowed in the list
+     * {@link II }
+     * 
+     * 
      */
-    public void setTemplateId(LISTII value) {
-        this.templateId = value;
+    public List<II> getTemplateId() {
+        if (templateId == null) {
+            templateId = new ArrayList<II>();
+        }
+        return this.templateId;
     }
 
     /**
      * Gets the value of the name property.
      * 
-     * @return
-     *     possible object is
-     *     {@link DSETEN }
-     *     
-     */
-    public DSETEN getName() {
-        return name;
-    }
-
-    /**
-     * Sets the value of the name property.
+     * <p>
+     * This accessor method returns a reference to the live list,
+     * not a snapshot. Therefore any modification you make to the
+     * returned list will be present inside the JAXB object.
+     * This is why there is not a <CODE>set</CODE> method for the name property.
      * 
-     * @param value
-     *     allowed object is
-     *     {@link DSETEN }
-     *     
+     * <p>
+     * For example, to add a new item, do as follows:
+     * <pre>
+     *    getName().add(newItem);
+     * </pre>
+     * 
+     * 
+     * <p>
+     * Objects of the following type(s) are allowed in the list
+     * {@link PN }
+     * 
+     * 
      */
-    public void setName(DSETEN value) {
-        this.name = value;
+    public List<PN> getName() {
+        if (name == null) {
+            name = new ArrayList<PN>();
+        }
+        return this.name;
     }
 
     /**
      * Gets the value of the telecom property.
      * 
-     * @return
-     *     possible object is
-     *     {@link DSETTEL }
-     *     
-     */
-    public DSETTEL getTelecom() {
-        return telecom;
-    }
-
-    /**
-     * Sets the value of the telecom property.
+     * <p>
+     * This accessor method returns a reference to the live list,
+     * not a snapshot. Therefore any modification you make to the
+     * returned list will be present inside the JAXB object.
+     * This is why there is not a <CODE>set</CODE> method for the telecom property.
      * 
-     * @param value
-     *     allowed object is
-     *     {@link DSETTEL }
-     *     
+     * <p>
+     * For example, to add a new item, do as follows:
+     * <pre>
+     *    getTelecom().add(newItem);
+     * </pre>
+     * 
+     * 
+     * <p>
+     * Objects of the following type(s) are allowed in the list
+     * {@link TEL }
+     * 
+     * 
      */
-    public void setTelecom(DSETTEL value) {
-        this.telecom = value;
+    public List<TEL> getTelecom() {
+        if (telecom == null) {
+            telecom = new ArrayList<TEL>();
+        }
+        return this.telecom;
     }
 
     /**
@@ -216,10 +236,10 @@ public class COCTMT530000UVPerson {
      * 
      * @return
      *     possible object is
-     *     {@link CD }
+     *     {@link CE }
      *     
      */
-    public CD getAdministrativeGenderCode() {
+    public CE getAdministrativeGenderCode() {
         return administrativeGenderCode;
     }
 
@@ -228,10 +248,10 @@ public class COCTMT530000UVPerson {
      * 
      * @param value
      *     allowed object is
-     *     {@link CD }
+     *     {@link CE }
      *     
      */
-    public void setAdministrativeGenderCode(CD value) {
+    public void setAdministrativeGenderCode(CE value) {
         this.administrativeGenderCode = value;
     }
 
@@ -312,10 +332,10 @@ public class COCTMT530000UVPerson {
      * 
      * @return
      *     possible object is
-     *     {@link CD }
+     *     {@link CE }
      *     
      */
-    public CD getMaritalStatusCode() {
+    public CE getMaritalStatusCode() {
         return maritalStatusCode;
     }
 
@@ -324,10 +344,10 @@ public class COCTMT530000UVPerson {
      * 
      * @param value
      *     allowed object is
-     *     {@link CD }
+     *     {@link CE }
      *     
      */
-    public void setMaritalStatusCode(CD value) {
+    public void setMaritalStatusCode(CE value) {
         this.maritalStatusCode = value;
     }
 
@@ -336,10 +356,10 @@ public class COCTMT530000UVPerson {
      * 
      * @return
      *     possible object is
-     *     {@link CD }
+     *     {@link CE }
      *     
      */
-    public CD getReligiousAffiliationCode() {
+    public CE getReligiousAffiliationCode() {
         return religiousAffiliationCode;
     }
 
@@ -348,10 +368,10 @@ public class COCTMT530000UVPerson {
      * 
      * @param value
      *     allowed object is
-     *     {@link CD }
+     *     {@link CE }
      *     
      */
-    public void setReligiousAffiliationCode(CD value) {
+    public void setReligiousAffiliationCode(CE value) {
         this.religiousAffiliationCode = value;
     }
 
@@ -360,10 +380,10 @@ public class COCTMT530000UVPerson {
      * 
      * @return
      *     possible object is
-     *     {@link CD }
+     *     {@link CE }
      *     
      */
-    public CD getRaceCode() {
+    public CE getRaceCode() {
         return raceCode;
     }
 
@@ -372,10 +392,10 @@ public class COCTMT530000UVPerson {
      * 
      * @param value
      *     allowed object is
-     *     {@link CD }
+     *     {@link CE }
      *     
      */
-    public void setRaceCode(CD value) {
+    public void setRaceCode(CE value) {
         this.raceCode = value;
     }
 
@@ -384,10 +404,10 @@ public class COCTMT530000UVPerson {
      * 
      * @return
      *     possible object is
-     *     {@link CD }
+     *     {@link CE }
      *     
      */
-    public CD getEthnicGroupCode() {
+    public CE getEthnicGroupCode() {
         return ethnicGroupCode;
     }
 
@@ -396,10 +416,10 @@ public class COCTMT530000UVPerson {
      * 
      * @param value
      *     allowed object is
-     *     {@link CD }
+     *     {@link CE }
      *     
      */
-    public void setEthnicGroupCode(CD value) {
+    public void setEthnicGroupCode(CE value) {
         this.ethnicGroupCode = value;
     }
 

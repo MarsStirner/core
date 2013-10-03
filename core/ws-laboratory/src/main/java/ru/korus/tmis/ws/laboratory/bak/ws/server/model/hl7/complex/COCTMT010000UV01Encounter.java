@@ -23,20 +23,20 @@ import javax.xml.bind.annotation.XmlType;
  *     &lt;restriction base="{http://www.w3.org/2001/XMLSchema}anyType">
  *       &lt;sequence>
  *         &lt;group ref="{urn:hl7-org:v3}InfrastructureRootElements"/>
- *         &lt;element name="id" type="{urn:hl7-org:v3}DSET_II"/>
+ *         &lt;element name="id" type="{urn:hl7-org:v3}II" maxOccurs="unbounded"/>
  *         &lt;element name="code" type="{urn:hl7-org:v3}CD" minOccurs="0"/>
  *         &lt;element name="statusCode" type="{urn:hl7-org:v3}CS"/>
  *         &lt;element name="effectiveTime" type="{urn:hl7-org:v3}IVL_TS" minOccurs="0"/>
  *         &lt;element name="activityTime" type="{urn:hl7-org:v3}IVL_TS" minOccurs="0"/>
- *         &lt;element name="priorityCode" type="{urn:hl7-org:v3}DSET_CD" minOccurs="0"/>
- *         &lt;element name="confidentialityCode" type="{urn:hl7-org:v3}DSET_CD" minOccurs="0"/>
- *         &lt;element name="reasonCode" type="{urn:hl7-org:v3}DSET_CD" minOccurs="0"/>
- *         &lt;element name="admissionReferralSourceCode" type="{urn:hl7-org:v3}CD" minOccurs="0"/>
+ *         &lt;element name="priorityCode" type="{urn:hl7-org:v3}CE" maxOccurs="unbounded" minOccurs="0"/>
+ *         &lt;element name="confidentialityCode" type="{urn:hl7-org:v3}CE" maxOccurs="unbounded" minOccurs="0"/>
+ *         &lt;element name="reasonCode" type="{urn:hl7-org:v3}CE" maxOccurs="unbounded" minOccurs="0"/>
+ *         &lt;element name="admissionReferralSourceCode" type="{urn:hl7-org:v3}CE" minOccurs="0"/>
  *         &lt;element name="lengthOfStayQuantity" type="{urn:hl7-org:v3}PQ" minOccurs="0"/>
- *         &lt;element name="dischargeDispositionCode" type="{urn:hl7-org:v3}CD" minOccurs="0"/>
+ *         &lt;element name="dischargeDispositionCode" type="{urn:hl7-org:v3}CE" minOccurs="0"/>
  *         &lt;element name="preAdmitTestInd" type="{urn:hl7-org:v3}BL" minOccurs="0"/>
- *         &lt;element name="specialCourtesiesCode" type="{urn:hl7-org:v3}DSET_CD" minOccurs="0"/>
- *         &lt;element name="specialArrangementCode" type="{urn:hl7-org:v3}DSET_CD" minOccurs="0"/>
+ *         &lt;element name="specialCourtesiesCode" type="{urn:hl7-org:v3}CE" maxOccurs="unbounded" minOccurs="0"/>
+ *         &lt;element name="specialArrangementCode" type="{urn:hl7-org:v3}CE" maxOccurs="unbounded" minOccurs="0"/>
  *         &lt;element name="subject" type="{urn:hl7-org:v3}COCT_MT010000UV01.Subject1"/>
  *         &lt;element name="responsibleParty" type="{urn:hl7-org:v3}COCT_MT010000UV01.ResponsibleParty1" maxOccurs="unbounded" minOccurs="0"/>
  *         &lt;element name="admitter" type="{urn:hl7-org:v3}COCT_MT010000UV01.Admitter" minOccurs="0"/>
@@ -107,25 +107,25 @@ import javax.xml.bind.annotation.XmlType;
 })
 public class COCTMT010000UV01Encounter {
 
-    protected DSETCS realmCode;
+    protected List<CS> realmCode;
     protected II typeId;
-    protected LISTII templateId;
+    protected List<II> templateId;
     @XmlElement(required = true)
-    protected DSETII id;
+    protected List<II> id;
     protected CD code;
     @XmlElement(required = true)
     protected CS statusCode;
     protected IVLTS effectiveTime;
     protected IVLTS activityTime;
-    protected DSETCD priorityCode;
-    protected DSETCD confidentialityCode;
-    protected DSETCD reasonCode;
-    protected CD admissionReferralSourceCode;
+    protected List<CE> priorityCode;
+    protected List<CE> confidentialityCode;
+    protected List<CE> reasonCode;
+    protected CE admissionReferralSourceCode;
     protected PQ lengthOfStayQuantity;
-    protected CD dischargeDispositionCode;
+    protected CE dischargeDispositionCode;
     protected BL preAdmitTestInd;
-    protected DSETCD specialCourtesiesCode;
-    protected DSETCD specialArrangementCode;
+    protected List<CE> specialCourtesiesCode;
+    protected List<CE> specialArrangementCode;
     @XmlElement(required = true)
     protected COCTMT010000UV01Subject1 subject;
     @XmlElement(nillable = true)
@@ -172,25 +172,30 @@ public class COCTMT010000UV01Encounter {
     /**
      * Gets the value of the realmCode property.
      * 
-     * @return
-     *     possible object is
-     *     {@link DSETCS }
-     *     
-     */
-    public DSETCS getRealmCode() {
-        return realmCode;
-    }
-
-    /**
-     * Sets the value of the realmCode property.
+     * <p>
+     * This accessor method returns a reference to the live list,
+     * not a snapshot. Therefore any modification you make to the
+     * returned list will be present inside the JAXB object.
+     * This is why there is not a <CODE>set</CODE> method for the realmCode property.
      * 
-     * @param value
-     *     allowed object is
-     *     {@link DSETCS }
-     *     
+     * <p>
+     * For example, to add a new item, do as follows:
+     * <pre>
+     *    getRealmCode().add(newItem);
+     * </pre>
+     * 
+     * 
+     * <p>
+     * Objects of the following type(s) are allowed in the list
+     * {@link CS }
+     * 
+     * 
      */
-    public void setRealmCode(DSETCS value) {
-        this.realmCode = value;
+    public List<CS> getRealmCode() {
+        if (realmCode == null) {
+            realmCode = new ArrayList<CS>();
+        }
+        return this.realmCode;
     }
 
     /**
@@ -220,49 +225,59 @@ public class COCTMT010000UV01Encounter {
     /**
      * Gets the value of the templateId property.
      * 
-     * @return
-     *     possible object is
-     *     {@link LISTII }
-     *     
-     */
-    public LISTII getTemplateId() {
-        return templateId;
-    }
-
-    /**
-     * Sets the value of the templateId property.
+     * <p>
+     * This accessor method returns a reference to the live list,
+     * not a snapshot. Therefore any modification you make to the
+     * returned list will be present inside the JAXB object.
+     * This is why there is not a <CODE>set</CODE> method for the templateId property.
      * 
-     * @param value
-     *     allowed object is
-     *     {@link LISTII }
-     *     
+     * <p>
+     * For example, to add a new item, do as follows:
+     * <pre>
+     *    getTemplateId().add(newItem);
+     * </pre>
+     * 
+     * 
+     * <p>
+     * Objects of the following type(s) are allowed in the list
+     * {@link II }
+     * 
+     * 
      */
-    public void setTemplateId(LISTII value) {
-        this.templateId = value;
+    public List<II> getTemplateId() {
+        if (templateId == null) {
+            templateId = new ArrayList<II>();
+        }
+        return this.templateId;
     }
 
     /**
      * Gets the value of the id property.
      * 
-     * @return
-     *     possible object is
-     *     {@link DSETII }
-     *     
-     */
-    public DSETII getId() {
-        return id;
-    }
-
-    /**
-     * Sets the value of the id property.
+     * <p>
+     * This accessor method returns a reference to the live list,
+     * not a snapshot. Therefore any modification you make to the
+     * returned list will be present inside the JAXB object.
+     * This is why there is not a <CODE>set</CODE> method for the id property.
      * 
-     * @param value
-     *     allowed object is
-     *     {@link DSETII }
-     *     
+     * <p>
+     * For example, to add a new item, do as follows:
+     * <pre>
+     *    getId().add(newItem);
+     * </pre>
+     * 
+     * 
+     * <p>
+     * Objects of the following type(s) are allowed in the list
+     * {@link II }
+     * 
+     * 
      */
-    public void setId(DSETII value) {
-        this.id = value;
+    public List<II> getId() {
+        if (id == null) {
+            id = new ArrayList<II>();
+        }
+        return this.id;
     }
 
     /**
@@ -364,73 +379,88 @@ public class COCTMT010000UV01Encounter {
     /**
      * Gets the value of the priorityCode property.
      * 
-     * @return
-     *     possible object is
-     *     {@link DSETCD }
-     *     
-     */
-    public DSETCD getPriorityCode() {
-        return priorityCode;
-    }
-
-    /**
-     * Sets the value of the priorityCode property.
+     * <p>
+     * This accessor method returns a reference to the live list,
+     * not a snapshot. Therefore any modification you make to the
+     * returned list will be present inside the JAXB object.
+     * This is why there is not a <CODE>set</CODE> method for the priorityCode property.
      * 
-     * @param value
-     *     allowed object is
-     *     {@link DSETCD }
-     *     
+     * <p>
+     * For example, to add a new item, do as follows:
+     * <pre>
+     *    getPriorityCode().add(newItem);
+     * </pre>
+     * 
+     * 
+     * <p>
+     * Objects of the following type(s) are allowed in the list
+     * {@link CE }
+     * 
+     * 
      */
-    public void setPriorityCode(DSETCD value) {
-        this.priorityCode = value;
+    public List<CE> getPriorityCode() {
+        if (priorityCode == null) {
+            priorityCode = new ArrayList<CE>();
+        }
+        return this.priorityCode;
     }
 
     /**
      * Gets the value of the confidentialityCode property.
      * 
-     * @return
-     *     possible object is
-     *     {@link DSETCD }
-     *     
-     */
-    public DSETCD getConfidentialityCode() {
-        return confidentialityCode;
-    }
-
-    /**
-     * Sets the value of the confidentialityCode property.
+     * <p>
+     * This accessor method returns a reference to the live list,
+     * not a snapshot. Therefore any modification you make to the
+     * returned list will be present inside the JAXB object.
+     * This is why there is not a <CODE>set</CODE> method for the confidentialityCode property.
      * 
-     * @param value
-     *     allowed object is
-     *     {@link DSETCD }
-     *     
+     * <p>
+     * For example, to add a new item, do as follows:
+     * <pre>
+     *    getConfidentialityCode().add(newItem);
+     * </pre>
+     * 
+     * 
+     * <p>
+     * Objects of the following type(s) are allowed in the list
+     * {@link CE }
+     * 
+     * 
      */
-    public void setConfidentialityCode(DSETCD value) {
-        this.confidentialityCode = value;
+    public List<CE> getConfidentialityCode() {
+        if (confidentialityCode == null) {
+            confidentialityCode = new ArrayList<CE>();
+        }
+        return this.confidentialityCode;
     }
 
     /**
      * Gets the value of the reasonCode property.
      * 
-     * @return
-     *     possible object is
-     *     {@link DSETCD }
-     *     
-     */
-    public DSETCD getReasonCode() {
-        return reasonCode;
-    }
-
-    /**
-     * Sets the value of the reasonCode property.
+     * <p>
+     * This accessor method returns a reference to the live list,
+     * not a snapshot. Therefore any modification you make to the
+     * returned list will be present inside the JAXB object.
+     * This is why there is not a <CODE>set</CODE> method for the reasonCode property.
      * 
-     * @param value
-     *     allowed object is
-     *     {@link DSETCD }
-     *     
+     * <p>
+     * For example, to add a new item, do as follows:
+     * <pre>
+     *    getReasonCode().add(newItem);
+     * </pre>
+     * 
+     * 
+     * <p>
+     * Objects of the following type(s) are allowed in the list
+     * {@link CE }
+     * 
+     * 
      */
-    public void setReasonCode(DSETCD value) {
-        this.reasonCode = value;
+    public List<CE> getReasonCode() {
+        if (reasonCode == null) {
+            reasonCode = new ArrayList<CE>();
+        }
+        return this.reasonCode;
     }
 
     /**
@@ -438,10 +468,10 @@ public class COCTMT010000UV01Encounter {
      * 
      * @return
      *     possible object is
-     *     {@link CD }
+     *     {@link CE }
      *     
      */
-    public CD getAdmissionReferralSourceCode() {
+    public CE getAdmissionReferralSourceCode() {
         return admissionReferralSourceCode;
     }
 
@@ -450,10 +480,10 @@ public class COCTMT010000UV01Encounter {
      * 
      * @param value
      *     allowed object is
-     *     {@link CD }
+     *     {@link CE }
      *     
      */
-    public void setAdmissionReferralSourceCode(CD value) {
+    public void setAdmissionReferralSourceCode(CE value) {
         this.admissionReferralSourceCode = value;
     }
 
@@ -486,10 +516,10 @@ public class COCTMT010000UV01Encounter {
      * 
      * @return
      *     possible object is
-     *     {@link CD }
+     *     {@link CE }
      *     
      */
-    public CD getDischargeDispositionCode() {
+    public CE getDischargeDispositionCode() {
         return dischargeDispositionCode;
     }
 
@@ -498,10 +528,10 @@ public class COCTMT010000UV01Encounter {
      * 
      * @param value
      *     allowed object is
-     *     {@link CD }
+     *     {@link CE }
      *     
      */
-    public void setDischargeDispositionCode(CD value) {
+    public void setDischargeDispositionCode(CE value) {
         this.dischargeDispositionCode = value;
     }
 
@@ -532,49 +562,59 @@ public class COCTMT010000UV01Encounter {
     /**
      * Gets the value of the specialCourtesiesCode property.
      * 
-     * @return
-     *     possible object is
-     *     {@link DSETCD }
-     *     
-     */
-    public DSETCD getSpecialCourtesiesCode() {
-        return specialCourtesiesCode;
-    }
-
-    /**
-     * Sets the value of the specialCourtesiesCode property.
+     * <p>
+     * This accessor method returns a reference to the live list,
+     * not a snapshot. Therefore any modification you make to the
+     * returned list will be present inside the JAXB object.
+     * This is why there is not a <CODE>set</CODE> method for the specialCourtesiesCode property.
      * 
-     * @param value
-     *     allowed object is
-     *     {@link DSETCD }
-     *     
+     * <p>
+     * For example, to add a new item, do as follows:
+     * <pre>
+     *    getSpecialCourtesiesCode().add(newItem);
+     * </pre>
+     * 
+     * 
+     * <p>
+     * Objects of the following type(s) are allowed in the list
+     * {@link CE }
+     * 
+     * 
      */
-    public void setSpecialCourtesiesCode(DSETCD value) {
-        this.specialCourtesiesCode = value;
+    public List<CE> getSpecialCourtesiesCode() {
+        if (specialCourtesiesCode == null) {
+            specialCourtesiesCode = new ArrayList<CE>();
+        }
+        return this.specialCourtesiesCode;
     }
 
     /**
      * Gets the value of the specialArrangementCode property.
      * 
-     * @return
-     *     possible object is
-     *     {@link DSETCD }
-     *     
-     */
-    public DSETCD getSpecialArrangementCode() {
-        return specialArrangementCode;
-    }
-
-    /**
-     * Sets the value of the specialArrangementCode property.
+     * <p>
+     * This accessor method returns a reference to the live list,
+     * not a snapshot. Therefore any modification you make to the
+     * returned list will be present inside the JAXB object.
+     * This is why there is not a <CODE>set</CODE> method for the specialArrangementCode property.
      * 
-     * @param value
-     *     allowed object is
-     *     {@link DSETCD }
-     *     
+     * <p>
+     * For example, to add a new item, do as follows:
+     * <pre>
+     *    getSpecialArrangementCode().add(newItem);
+     * </pre>
+     * 
+     * 
+     * <p>
+     * Objects of the following type(s) are allowed in the list
+     * {@link CE }
+     * 
+     * 
      */
-    public void setSpecialArrangementCode(DSETCD value) {
-        this.specialArrangementCode = value;
+    public List<CE> getSpecialArrangementCode() {
+        if (specialArrangementCode == null) {
+            specialArrangementCode = new ArrayList<CE>();
+        }
+        return this.specialArrangementCode;
     }
 
     /**

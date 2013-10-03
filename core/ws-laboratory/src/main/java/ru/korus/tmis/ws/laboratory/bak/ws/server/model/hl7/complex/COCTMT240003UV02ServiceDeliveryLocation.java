@@ -1,6 +1,8 @@
 
 package ru.korus.tmis.ws.laboratory.bak.ws.server.model.hl7.complex;
 
+import java.util.ArrayList;
+import java.util.List;
 import javax.xml.bind.JAXBElement;
 import javax.xml.bind.annotation.XmlAccessType;
 import javax.xml.bind.annotation.XmlAccessorType;
@@ -21,10 +23,10 @@ import javax.xml.bind.annotation.XmlType;
  *     &lt;restriction base="{http://www.w3.org/2001/XMLSchema}anyType">
  *       &lt;sequence>
  *         &lt;group ref="{urn:hl7-org:v3}InfrastructureRootElements"/>
- *         &lt;element name="id" type="{urn:hl7-org:v3}DSET_II"/>
- *         &lt;element name="code" type="{urn:hl7-org:v3}CD" minOccurs="0"/>
- *         &lt;element name="addr" type="{urn:hl7-org:v3}COLL_AD" minOccurs="0"/>
- *         &lt;element name="telecom" type="{urn:hl7-org:v3}COLL_TEL" minOccurs="0"/>
+ *         &lt;element name="id" type="{urn:hl7-org:v3}II" maxOccurs="unbounded"/>
+ *         &lt;element name="code" type="{urn:hl7-org:v3}CE" minOccurs="0"/>
+ *         &lt;element name="addr" type="{urn:hl7-org:v3}AD" maxOccurs="unbounded" minOccurs="0"/>
+ *         &lt;element name="telecom" type="{urn:hl7-org:v3}TEL" maxOccurs="unbounded" minOccurs="0"/>
  *         &lt;element name="location" type="{urn:hl7-org:v3}COCT_MT710000UV07.Place" minOccurs="0"/>
  *         &lt;element name="serviceProviderOrganization" type="{urn:hl7-org:v3}COCT_MT150003UV03.Organization" minOccurs="0"/>
  *       &lt;/sequence>
@@ -51,14 +53,14 @@ import javax.xml.bind.annotation.XmlType;
 })
 public class COCTMT240003UV02ServiceDeliveryLocation {
 
-    protected DSETCS realmCode;
+    protected List<CS> realmCode;
     protected II typeId;
-    protected LISTII templateId;
+    protected List<II> templateId;
     @XmlElement(required = true)
-    protected DSETII id;
-    protected CD code;
-    protected COLLAD addr;
-    protected COLLTEL telecom;
+    protected List<II> id;
+    protected CE code;
+    protected List<AD> addr;
+    protected List<TEL> telecom;
     @XmlElementRef(name = "location", namespace = "urn:hl7-org:v3", type = JAXBElement.class, required = false)
     protected JAXBElement<COCTMT710000UV07Place> location;
     @XmlElementRef(name = "serviceProviderOrganization", namespace = "urn:hl7-org:v3", type = JAXBElement.class, required = false)
@@ -69,25 +71,30 @@ public class COCTMT240003UV02ServiceDeliveryLocation {
     /**
      * Gets the value of the realmCode property.
      * 
-     * @return
-     *     possible object is
-     *     {@link DSETCS }
-     *     
-     */
-    public DSETCS getRealmCode() {
-        return realmCode;
-    }
-
-    /**
-     * Sets the value of the realmCode property.
+     * <p>
+     * This accessor method returns a reference to the live list,
+     * not a snapshot. Therefore any modification you make to the
+     * returned list will be present inside the JAXB object.
+     * This is why there is not a <CODE>set</CODE> method for the realmCode property.
      * 
-     * @param value
-     *     allowed object is
-     *     {@link DSETCS }
-     *     
+     * <p>
+     * For example, to add a new item, do as follows:
+     * <pre>
+     *    getRealmCode().add(newItem);
+     * </pre>
+     * 
+     * 
+     * <p>
+     * Objects of the following type(s) are allowed in the list
+     * {@link CS }
+     * 
+     * 
      */
-    public void setRealmCode(DSETCS value) {
-        this.realmCode = value;
+    public List<CS> getRealmCode() {
+        if (realmCode == null) {
+            realmCode = new ArrayList<CS>();
+        }
+        return this.realmCode;
     }
 
     /**
@@ -117,49 +124,59 @@ public class COCTMT240003UV02ServiceDeliveryLocation {
     /**
      * Gets the value of the templateId property.
      * 
-     * @return
-     *     possible object is
-     *     {@link LISTII }
-     *     
-     */
-    public LISTII getTemplateId() {
-        return templateId;
-    }
-
-    /**
-     * Sets the value of the templateId property.
+     * <p>
+     * This accessor method returns a reference to the live list,
+     * not a snapshot. Therefore any modification you make to the
+     * returned list will be present inside the JAXB object.
+     * This is why there is not a <CODE>set</CODE> method for the templateId property.
      * 
-     * @param value
-     *     allowed object is
-     *     {@link LISTII }
-     *     
+     * <p>
+     * For example, to add a new item, do as follows:
+     * <pre>
+     *    getTemplateId().add(newItem);
+     * </pre>
+     * 
+     * 
+     * <p>
+     * Objects of the following type(s) are allowed in the list
+     * {@link II }
+     * 
+     * 
      */
-    public void setTemplateId(LISTII value) {
-        this.templateId = value;
+    public List<II> getTemplateId() {
+        if (templateId == null) {
+            templateId = new ArrayList<II>();
+        }
+        return this.templateId;
     }
 
     /**
      * Gets the value of the id property.
      * 
-     * @return
-     *     possible object is
-     *     {@link DSETII }
-     *     
-     */
-    public DSETII getId() {
-        return id;
-    }
-
-    /**
-     * Sets the value of the id property.
+     * <p>
+     * This accessor method returns a reference to the live list,
+     * not a snapshot. Therefore any modification you make to the
+     * returned list will be present inside the JAXB object.
+     * This is why there is not a <CODE>set</CODE> method for the id property.
      * 
-     * @param value
-     *     allowed object is
-     *     {@link DSETII }
-     *     
+     * <p>
+     * For example, to add a new item, do as follows:
+     * <pre>
+     *    getId().add(newItem);
+     * </pre>
+     * 
+     * 
+     * <p>
+     * Objects of the following type(s) are allowed in the list
+     * {@link II }
+     * 
+     * 
      */
-    public void setId(DSETII value) {
-        this.id = value;
+    public List<II> getId() {
+        if (id == null) {
+            id = new ArrayList<II>();
+        }
+        return this.id;
     }
 
     /**
@@ -167,10 +184,10 @@ public class COCTMT240003UV02ServiceDeliveryLocation {
      * 
      * @return
      *     possible object is
-     *     {@link CD }
+     *     {@link CE }
      *     
      */
-    public CD getCode() {
+    public CE getCode() {
         return code;
     }
 
@@ -179,59 +196,69 @@ public class COCTMT240003UV02ServiceDeliveryLocation {
      * 
      * @param value
      *     allowed object is
-     *     {@link CD }
+     *     {@link CE }
      *     
      */
-    public void setCode(CD value) {
+    public void setCode(CE value) {
         this.code = value;
     }
 
     /**
      * Gets the value of the addr property.
      * 
-     * @return
-     *     possible object is
-     *     {@link COLLAD }
-     *     
-     */
-    public COLLAD getAddr() {
-        return addr;
-    }
-
-    /**
-     * Sets the value of the addr property.
+     * <p>
+     * This accessor method returns a reference to the live list,
+     * not a snapshot. Therefore any modification you make to the
+     * returned list will be present inside the JAXB object.
+     * This is why there is not a <CODE>set</CODE> method for the addr property.
      * 
-     * @param value
-     *     allowed object is
-     *     {@link COLLAD }
-     *     
+     * <p>
+     * For example, to add a new item, do as follows:
+     * <pre>
+     *    getAddr().add(newItem);
+     * </pre>
+     * 
+     * 
+     * <p>
+     * Objects of the following type(s) are allowed in the list
+     * {@link AD }
+     * 
+     * 
      */
-    public void setAddr(COLLAD value) {
-        this.addr = value;
+    public List<AD> getAddr() {
+        if (addr == null) {
+            addr = new ArrayList<AD>();
+        }
+        return this.addr;
     }
 
     /**
      * Gets the value of the telecom property.
      * 
-     * @return
-     *     possible object is
-     *     {@link COLLTEL }
-     *     
-     */
-    public COLLTEL getTelecom() {
-        return telecom;
-    }
-
-    /**
-     * Sets the value of the telecom property.
+     * <p>
+     * This accessor method returns a reference to the live list,
+     * not a snapshot. Therefore any modification you make to the
+     * returned list will be present inside the JAXB object.
+     * This is why there is not a <CODE>set</CODE> method for the telecom property.
      * 
-     * @param value
-     *     allowed object is
-     *     {@link COLLTEL }
-     *     
+     * <p>
+     * For example, to add a new item, do as follows:
+     * <pre>
+     *    getTelecom().add(newItem);
+     * </pre>
+     * 
+     * 
+     * <p>
+     * Objects of the following type(s) are allowed in the list
+     * {@link TEL }
+     * 
+     * 
      */
-    public void setTelecom(COLLTEL value) {
-        this.telecom = value;
+    public List<TEL> getTelecom() {
+        if (telecom == null) {
+            telecom = new ArrayList<TEL>();
+        }
+        return this.telecom;
     }
 
     /**

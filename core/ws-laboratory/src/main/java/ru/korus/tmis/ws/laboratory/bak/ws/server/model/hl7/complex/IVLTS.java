@@ -1,9 +1,13 @@
 
 package ru.korus.tmis.ws.laboratory.bak.ws.server.model.hl7.complex;
 
+import java.util.ArrayList;
+import java.util.List;
+import javax.xml.bind.JAXBElement;
 import javax.xml.bind.annotation.XmlAccessType;
 import javax.xml.bind.annotation.XmlAccessorType;
-import javax.xml.bind.annotation.XmlAttribute;
+import javax.xml.bind.annotation.XmlElementRef;
+import javax.xml.bind.annotation.XmlElementRefs;
 import javax.xml.bind.annotation.XmlType;
 
 
@@ -15,15 +19,25 @@ import javax.xml.bind.annotation.XmlType;
  * <pre>
  * &lt;complexType name="IVL_TS">
  *   &lt;complexContent>
- *     &lt;extension base="{urn:hl7-org:v3}QSET_TS">
- *       &lt;sequence>
- *         &lt;element name="low" type="{urn:hl7-org:v3}TS" minOccurs="0"/>
- *         &lt;element name="high" type="{urn:hl7-org:v3}TS" minOccurs="0"/>
- *         &lt;element name="width" type="{urn:hl7-org:v3}QTY" minOccurs="0"/>
- *         &lt;element name="any" type="{urn:hl7-org:v3}TS" minOccurs="0"/>
- *       &lt;/sequence>
- *       &lt;attribute name="lowClosed" type="{http://www.w3.org/2001/XMLSchema}boolean" />
- *       &lt;attribute name="highClosed" type="{http://www.w3.org/2001/XMLSchema}boolean" />
+ *     &lt;extension base="{urn:hl7-org:v3}SXCM_TS">
+ *       &lt;choice minOccurs="0">
+ *         &lt;sequence>
+ *           &lt;element name="low" type="{urn:hl7-org:v3}IVXB_TS"/>
+ *           &lt;choice minOccurs="0">
+ *             &lt;element name="width" type="{urn:hl7-org:v3}PQ" minOccurs="0"/>
+ *             &lt;element name="high" type="{urn:hl7-org:v3}IVXB_TS" minOccurs="0"/>
+ *           &lt;/choice>
+ *         &lt;/sequence>
+ *         &lt;element name="high" type="{urn:hl7-org:v3}IVXB_TS"/>
+ *         &lt;sequence>
+ *           &lt;element name="width" type="{urn:hl7-org:v3}PQ"/>
+ *           &lt;element name="high" type="{urn:hl7-org:v3}IVXB_TS" minOccurs="0"/>
+ *         &lt;/sequence>
+ *         &lt;sequence>
+ *           &lt;element name="center" type="{urn:hl7-org:v3}TS"/>
+ *           &lt;element name="width" type="{urn:hl7-org:v3}PQ" minOccurs="0"/>
+ *         &lt;/sequence>
+ *       &lt;/choice>
  *     &lt;/extension>
  *   &lt;/complexContent>
  * &lt;/complexType>
@@ -33,166 +47,60 @@ import javax.xml.bind.annotation.XmlType;
  */
 @XmlAccessorType(XmlAccessType.FIELD)
 @XmlType(name = "IVL_TS", propOrder = {
-    "low",
-    "high",
-    "width",
-    "any"
+    "rest"
 })
 public class IVLTS
-    extends QSETTS
+    extends SXCMTS
 {
 
-    protected TS low;
-    protected TS high;
-    protected QTY width;
-    protected TS any;
-    @XmlAttribute(name = "lowClosed")
-    protected Boolean lowClosed;
-    @XmlAttribute(name = "highClosed")
-    protected Boolean highClosed;
+    @XmlElementRefs({
+        @XmlElementRef(name = "low", namespace = "urn:hl7-org:v3", type = JAXBElement.class, required = false),
+        @XmlElementRef(name = "center", namespace = "urn:hl7-org:v3", type = JAXBElement.class, required = false),
+        @XmlElementRef(name = "width", namespace = "urn:hl7-org:v3", type = JAXBElement.class, required = false),
+        @XmlElementRef(name = "high", namespace = "urn:hl7-org:v3", type = JAXBElement.class, required = false)
+    })
+    protected List<JAXBElement<? extends QTY>> rest;
 
     /**
-     * Gets the value of the low property.
+     * Gets the rest of the content model. 
      * 
-     * @return
-     *     possible object is
-     *     {@link TS }
-     *     
-     */
-    public TS getLow() {
-        return low;
-    }
-
-    /**
-     * Sets the value of the low property.
+     * <p>
+     * You are getting this "catch-all" property because of the following reason: 
+     * The field name "High" is used by two different parts of a schema. See: 
+     * line 1758 of file:/C:/Users/anosov/Downloads/processable2011/processable/coreschemas/datatypes-base.xsd
+     * line 1749 of file:/C:/Users/anosov/Downloads/processable2011/processable/coreschemas/datatypes-base.xsd
+     * <p>
+     * To get rid of this property, apply a property customization to one 
+     * of both of the following declarations to change their names: 
+     * Gets the value of the rest property.
      * 
-     * @param value
-     *     allowed object is
-     *     {@link TS }
-     *     
-     */
-    public void setLow(TS value) {
-        this.low = value;
-    }
-
-    /**
-     * Gets the value of the high property.
+     * <p>
+     * This accessor method returns a reference to the live list,
+     * not a snapshot. Therefore any modification you make to the
+     * returned list will be present inside the JAXB object.
+     * This is why there is not a <CODE>set</CODE> method for the rest property.
      * 
-     * @return
-     *     possible object is
-     *     {@link TS }
-     *     
-     */
-    public TS getHigh() {
-        return high;
-    }
-
-    /**
-     * Sets the value of the high property.
+     * <p>
+     * For example, to add a new item, do as follows:
+     * <pre>
+     *    getRest().add(newItem);
+     * </pre>
      * 
-     * @param value
-     *     allowed object is
-     *     {@link TS }
-     *     
-     */
-    public void setHigh(TS value) {
-        this.high = value;
-    }
-
-    /**
-     * Gets the value of the width property.
      * 
-     * @return
-     *     possible object is
-     *     {@link QTY }
-     *     
-     */
-    public QTY getWidth() {
-        return width;
-    }
-
-    /**
-     * Sets the value of the width property.
+     * <p>
+     * Objects of the following type(s) are allowed in the list
+     * {@link JAXBElement }{@code <}{@link IVXBTS }{@code >}
+     * {@link JAXBElement }{@code <}{@link TS }{@code >}
+     * {@link JAXBElement }{@code <}{@link PQ }{@code >}
+     * {@link JAXBElement }{@code <}{@link IVXBTS }{@code >}
      * 
-     * @param value
-     *     allowed object is
-     *     {@link QTY }
-     *     
-     */
-    public void setWidth(QTY value) {
-        this.width = value;
-    }
-
-    /**
-     * Gets the value of the any property.
      * 
-     * @return
-     *     possible object is
-     *     {@link TS }
-     *     
      */
-    public TS getAny() {
-        return any;
-    }
-
-    /**
-     * Sets the value of the any property.
-     * 
-     * @param value
-     *     allowed object is
-     *     {@link TS }
-     *     
-     */
-    public void setAny(TS value) {
-        this.any = value;
-    }
-
-    /**
-     * Gets the value of the lowClosed property.
-     * 
-     * @return
-     *     possible object is
-     *     {@link Boolean }
-     *     
-     */
-    public Boolean isLowClosed() {
-        return lowClosed;
-    }
-
-    /**
-     * Sets the value of the lowClosed property.
-     * 
-     * @param value
-     *     allowed object is
-     *     {@link Boolean }
-     *     
-     */
-    public void setLowClosed(Boolean value) {
-        this.lowClosed = value;
-    }
-
-    /**
-     * Gets the value of the highClosed property.
-     * 
-     * @return
-     *     possible object is
-     *     {@link Boolean }
-     *     
-     */
-    public Boolean isHighClosed() {
-        return highClosed;
-    }
-
-    /**
-     * Sets the value of the highClosed property.
-     * 
-     * @param value
-     *     allowed object is
-     *     {@link Boolean }
-     *     
-     */
-    public void setHighClosed(Boolean value) {
-        this.highClosed = value;
+    public List<JAXBElement<? extends QTY>> getRest() {
+        if (rest == null) {
+            rest = new ArrayList<JAXBElement<? extends QTY>>();
+        }
+        return this.rest;
     }
 
 }

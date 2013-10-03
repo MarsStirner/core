@@ -7,6 +7,19 @@ import javax.xml.bind.annotation.XmlType;
 
 
 /**
+ * 
+ *             A quantity constructed as the quotient of a numerator
+ *             quantity divided by a denominator quantity. Common
+ *             factors in the numerator and denominator are not
+ *             automatically cancelled out.   supports titers
+ *             (e.g., "1:128") and other quantities produced by
+ *             laboratories that truly represent ratios. Ratios are
+ *             not simply "structured numerics", particularly blood
+ *             pressure measurements (e.g. "120/60") are not ratios.
+ *             In many cases REAL should be used instead
+ *             of .
+ *          
+ * 
  * <p>Java class for RTO complex type.
  * 
  * <p>The following schema fragment specifies the expected content contained within this class.
@@ -14,11 +27,7 @@ import javax.xml.bind.annotation.XmlType;
  * <pre>
  * &lt;complexType name="RTO">
  *   &lt;complexContent>
- *     &lt;extension base="{urn:hl7-org:v3}QTY">
- *       &lt;sequence>
- *         &lt;element name="numerator" type="{urn:hl7-org:v3}QTY" minOccurs="0"/>
- *         &lt;element name="denominator" type="{urn:hl7-org:v3}QTY" minOccurs="0"/>
- *       &lt;/sequence>
+ *     &lt;extension base="{urn:hl7-org:v3}RTO_QTY_QTY">
  *     &lt;/extension>
  *   &lt;/complexContent>
  * &lt;/complexType>
@@ -27,63 +36,10 @@ import javax.xml.bind.annotation.XmlType;
  * 
  */
 @XmlAccessorType(XmlAccessType.FIELD)
-@XmlType(name = "RTO", propOrder = {
-    "numerator",
-    "denominator"
-})
+@XmlType(name = "RTO")
 public class RTO
-    extends QTY
+    extends RTOQTYQTY
 {
 
-    protected QTY numerator;
-    protected QTY denominator;
-
-    /**
-     * Gets the value of the numerator property.
-     * 
-     * @return
-     *     possible object is
-     *     {@link QTY }
-     *     
-     */
-    public QTY getNumerator() {
-        return numerator;
-    }
-
-    /**
-     * Sets the value of the numerator property.
-     * 
-     * @param value
-     *     allowed object is
-     *     {@link QTY }
-     *     
-     */
-    public void setNumerator(QTY value) {
-        this.numerator = value;
-    }
-
-    /**
-     * Gets the value of the denominator property.
-     * 
-     * @return
-     *     possible object is
-     *     {@link QTY }
-     *     
-     */
-    public QTY getDenominator() {
-        return denominator;
-    }
-
-    /**
-     * Sets the value of the denominator property.
-     * 
-     * @param value
-     *     allowed object is
-     *     {@link QTY }
-     *     
-     */
-    public void setDenominator(QTY value) {
-        this.denominator = value;
-    }
 
 }

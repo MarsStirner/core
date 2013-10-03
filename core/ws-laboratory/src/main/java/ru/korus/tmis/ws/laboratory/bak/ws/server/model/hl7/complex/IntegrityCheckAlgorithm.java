@@ -13,9 +13,9 @@ import javax.xml.bind.annotation.XmlType;
  * <p>
  * <pre>
  * &lt;simpleType name="IntegrityCheckAlgorithm">
- *   &lt;restriction base="{http://www.w3.org/2001/XMLSchema}string">
- *     &lt;enumeration value="SHA1"/>
- *     &lt;enumeration value="SHA256"/>
+ *   &lt;restriction base="{urn:hl7-org:v3}cs">
+ *     &lt;enumeration value="SHA-1"/>
+ *     &lt;enumeration value="SHA-256"/>
  *   &lt;/restriction>
  * &lt;/simpleType>
  * </pre>
@@ -25,10 +25,10 @@ import javax.xml.bind.annotation.XmlType;
 @XmlEnum
 public enum IntegrityCheckAlgorithm {
 
-    @XmlEnumValue("SHA1")
-    SHA_1("SHA1"),
-    @XmlEnumValue("SHA256")
-    SHA_256("SHA256");
+    @XmlEnumValue("SHA-1")
+    SHA_1("SHA-1"),
+    @XmlEnumValue("SHA-256")
+    SHA_256("SHA-256");
     private final String value;
 
     IntegrityCheckAlgorithm(String v) {

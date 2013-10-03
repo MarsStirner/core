@@ -23,7 +23,7 @@ import javax.xml.bind.annotation.XmlType;
  *         &lt;group ref="{urn:hl7-org:v3}InfrastructureRootElements"/>
  *         &lt;element name="expectedSequenceNumber" type="{urn:hl7-org:v3}INT" minOccurs="0"/>
  *         &lt;element name="messageWaitingNumber" type="{urn:hl7-org:v3}INT" minOccurs="0"/>
- *         &lt;element name="messageWaitingPriorityCode" type="{urn:hl7-org:v3}CD" minOccurs="0"/>
+ *         &lt;element name="messageWaitingPriorityCode" type="{urn:hl7-org:v3}CE" minOccurs="0"/>
  *         &lt;element name="targetMessage" type="{urn:hl7-org:v3}MCCI_MT000200UV01.TargetMessage"/>
  *         &lt;element name="acknowledgementDetail" type="{urn:hl7-org:v3}MCCI_MT000200UV01.AcknowledgementDetail" maxOccurs="unbounded" minOccurs="0"/>
  *       &lt;/sequence>
@@ -50,12 +50,12 @@ import javax.xml.bind.annotation.XmlType;
 })
 public class MCCIMT000200UV01Acknowledgement {
 
-    protected DSETCS realmCode;
+    protected List<CS> realmCode;
     protected II typeId;
-    protected LISTII templateId;
+    protected List<II> templateId;
     protected INT expectedSequenceNumber;
     protected INT messageWaitingNumber;
-    protected CD messageWaitingPriorityCode;
+    protected CE messageWaitingPriorityCode;
     @XmlElement(required = true, nillable = true)
     protected MCCIMT000200UV01TargetMessage targetMessage;
     @XmlElement(nillable = true)
@@ -68,25 +68,30 @@ public class MCCIMT000200UV01Acknowledgement {
     /**
      * Gets the value of the realmCode property.
      * 
-     * @return
-     *     possible object is
-     *     {@link DSETCS }
-     *     
-     */
-    public DSETCS getRealmCode() {
-        return realmCode;
-    }
-
-    /**
-     * Sets the value of the realmCode property.
+     * <p>
+     * This accessor method returns a reference to the live list,
+     * not a snapshot. Therefore any modification you make to the
+     * returned list will be present inside the JAXB object.
+     * This is why there is not a <CODE>set</CODE> method for the realmCode property.
      * 
-     * @param value
-     *     allowed object is
-     *     {@link DSETCS }
-     *     
+     * <p>
+     * For example, to add a new item, do as follows:
+     * <pre>
+     *    getRealmCode().add(newItem);
+     * </pre>
+     * 
+     * 
+     * <p>
+     * Objects of the following type(s) are allowed in the list
+     * {@link CS }
+     * 
+     * 
      */
-    public void setRealmCode(DSETCS value) {
-        this.realmCode = value;
+    public List<CS> getRealmCode() {
+        if (realmCode == null) {
+            realmCode = new ArrayList<CS>();
+        }
+        return this.realmCode;
     }
 
     /**
@@ -116,25 +121,30 @@ public class MCCIMT000200UV01Acknowledgement {
     /**
      * Gets the value of the templateId property.
      * 
-     * @return
-     *     possible object is
-     *     {@link LISTII }
-     *     
-     */
-    public LISTII getTemplateId() {
-        return templateId;
-    }
-
-    /**
-     * Sets the value of the templateId property.
+     * <p>
+     * This accessor method returns a reference to the live list,
+     * not a snapshot. Therefore any modification you make to the
+     * returned list will be present inside the JAXB object.
+     * This is why there is not a <CODE>set</CODE> method for the templateId property.
      * 
-     * @param value
-     *     allowed object is
-     *     {@link LISTII }
-     *     
+     * <p>
+     * For example, to add a new item, do as follows:
+     * <pre>
+     *    getTemplateId().add(newItem);
+     * </pre>
+     * 
+     * 
+     * <p>
+     * Objects of the following type(s) are allowed in the list
+     * {@link II }
+     * 
+     * 
      */
-    public void setTemplateId(LISTII value) {
-        this.templateId = value;
+    public List<II> getTemplateId() {
+        if (templateId == null) {
+            templateId = new ArrayList<II>();
+        }
+        return this.templateId;
     }
 
     /**
@@ -190,10 +200,10 @@ public class MCCIMT000200UV01Acknowledgement {
      * 
      * @return
      *     possible object is
-     *     {@link CD }
+     *     {@link CE }
      *     
      */
-    public CD getMessageWaitingPriorityCode() {
+    public CE getMessageWaitingPriorityCode() {
         return messageWaitingPriorityCode;
     }
 
@@ -202,10 +212,10 @@ public class MCCIMT000200UV01Acknowledgement {
      * 
      * @param value
      *     allowed object is
-     *     {@link CD }
+     *     {@link CE }
      *     
      */
-    public void setMessageWaitingPriorityCode(CD value) {
+    public void setMessageWaitingPriorityCode(CE value) {
         this.messageWaitingPriorityCode = value;
     }
 

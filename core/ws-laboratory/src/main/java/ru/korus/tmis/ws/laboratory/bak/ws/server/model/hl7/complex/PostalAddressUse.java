@@ -12,23 +12,18 @@ import javax.xml.bind.annotation.XmlType;
  * <p>
  * <pre>
  * &lt;simpleType name="PostalAddressUse">
- *   &lt;restriction base="{http://www.w3.org/2001/XMLSchema}string">
+ *   &lt;restriction base="{urn:hl7-org:v3}cs">
+ *     &lt;enumeration value="BAD"/>
+ *     &lt;enumeration value="CONF"/>
+ *     &lt;enumeration value="DIR"/>
  *     &lt;enumeration value="H"/>
  *     &lt;enumeration value="HP"/>
  *     &lt;enumeration value="HV"/>
- *     &lt;enumeration value="WP"/>
- *     &lt;enumeration value="DIR"/>
- *     &lt;enumeration value="PUB"/>
- *     &lt;enumeration value="BAD"/>
  *     &lt;enumeration value="PHYS"/>
  *     &lt;enumeration value="PST"/>
+ *     &lt;enumeration value="PUB"/>
  *     &lt;enumeration value="TMP"/>
- *     &lt;enumeration value="ABC"/>
- *     &lt;enumeration value="IDE"/>
- *     &lt;enumeration value="SYL"/>
- *     &lt;enumeration value="SRCH"/>
- *     &lt;enumeration value="SNDX"/>
- *     &lt;enumeration value="PHON"/>
+ *     &lt;enumeration value="WP"/>
  *   &lt;/restriction>
  * &lt;/simpleType>
  * </pre>
@@ -38,22 +33,17 @@ import javax.xml.bind.annotation.XmlType;
 @XmlEnum
 public enum PostalAddressUse {
 
+    BAD,
+    CONF,
+    DIR,
     H,
     HP,
     HV,
-    WP,
-    DIR,
-    PUB,
-    BAD,
     PHYS,
     PST,
+    PUB,
     TMP,
-    ABC,
-    IDE,
-    SYL,
-    SRCH,
-    SNDX,
-    PHON;
+    WP;
 
     public String value() {
         return name();

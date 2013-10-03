@@ -1,6 +1,8 @@
 
 package ru.korus.tmis.ws.laboratory.bak.ws.server.model.hl7.complex;
 
+import java.util.ArrayList;
+import java.util.List;
 import javax.xml.bind.annotation.XmlAccessType;
 import javax.xml.bind.annotation.XmlAccessorType;
 import javax.xml.bind.annotation.XmlAttribute;
@@ -23,20 +25,20 @@ import javax.xml.bind.annotation.XmlType;
  *         &lt;element name="code" type="{urn:hl7-org:v3}CD"/>
  *         &lt;element name="text" type="{urn:hl7-org:v3}ED" minOccurs="0"/>
  *         &lt;element name="statusCode" type="{urn:hl7-org:v3}CS" minOccurs="0"/>
- *         &lt;element name="effectiveTime" type="{urn:hl7-org:v3}QSET_TS" minOccurs="0"/>
+ *         &lt;element name="effectiveTime" type="{urn:hl7-org:v3}SXCM_TS" maxOccurs="unbounded" minOccurs="0"/>
  *         &lt;element name="repeatNumber" type="{urn:hl7-org:v3}IVL_INT"/>
- *         &lt;element name="uncertaintyCode" type="{urn:hl7-org:v3}CD" minOccurs="0"/>
- *         &lt;element name="approachSiteCode" type="{urn:hl7-org:v3}DSET_CD" minOccurs="0"/>
- *         &lt;element name="routeCode" type="{urn:hl7-org:v3}CD" minOccurs="0"/>
- *         &lt;element name="doseQuantity" type="{urn:hl7-org:v3}PQ" minOccurs="0"/>
- *         &lt;element name="rateQuantity" type="{urn:hl7-org:v3}PQ" minOccurs="0"/>
- *         &lt;element name="doseCheckQuantity" type="{urn:hl7-org:v3}DSET_RTO" minOccurs="0"/>
- *         &lt;element name="maxDoseQuantity" type="{urn:hl7-org:v3}DSET_RTO" minOccurs="0"/>
+ *         &lt;element name="uncertaintyCode" type="{urn:hl7-org:v3}CE" minOccurs="0"/>
+ *         &lt;element name="routeCode" type="{urn:hl7-org:v3}CE" minOccurs="0"/>
+ *         &lt;element name="approachSiteCode" type="{urn:hl7-org:v3}CD" maxOccurs="unbounded" minOccurs="0"/>
+ *         &lt;element name="doseQuantity" type="{urn:hl7-org:v3}IVL_PQ" minOccurs="0"/>
+ *         &lt;element name="rateQuantity" type="{urn:hl7-org:v3}IVL_PQ" minOccurs="0"/>
+ *         &lt;element name="doseCheckQuantity" type="{urn:hl7-org:v3}RTO_QTY_QTY" maxOccurs="unbounded" minOccurs="0"/>
+ *         &lt;element name="maxDoseQuantity" type="{urn:hl7-org:v3}RTO_QTY_QTY" maxOccurs="unbounded" minOccurs="0"/>
  *       &lt;/sequence>
  *       &lt;attGroup ref="{urn:hl7-org:v3}InfrastructureRootAttributes"/>
  *       &lt;attribute name="classCode" use="required" type="{urn:hl7-org:v3}ActClassSubstanceAdministration" />
  *       &lt;attribute name="moodCode" use="required" type="{urn:hl7-org:v3}x_ActMoodOrdPrmsEvn" />
- *       &lt;attribute name="negationInd" type="{http://www.w3.org/2001/XMLSchema}boolean" default="false" />
+ *       &lt;attribute name="negationInd" type="{urn:hl7-org:v3}bl" default="false" />
  *     &lt;/restriction>
  *   &lt;/complexContent>
  * &lt;/complexType>
@@ -56,8 +58,8 @@ import javax.xml.bind.annotation.XmlType;
     "effectiveTime",
     "repeatNumber",
     "uncertaintyCode",
-    "approachSiteCode",
     "routeCode",
+    "approachSiteCode",
     "doseQuantity",
     "rateQuantity",
     "doseCheckQuantity",
@@ -65,25 +67,25 @@ import javax.xml.bind.annotation.XmlType;
 })
 public class COCTMT200000UV01SubstanceAdministration {
 
-    protected DSETCS realmCode;
+    protected List<CS> realmCode;
     protected II typeId;
-    protected LISTII templateId;
+    protected List<II> templateId;
     @XmlElement(required = true)
     protected II id;
     @XmlElement(required = true)
     protected CD code;
     protected ED text;
     protected CS statusCode;
-    protected QSETTS effectiveTime;
+    protected List<SXCMTS> effectiveTime;
     @XmlElement(required = true)
     protected IVLINT repeatNumber;
-    protected CD uncertaintyCode;
-    protected DSETCD approachSiteCode;
-    protected CD routeCode;
-    protected PQ doseQuantity;
-    protected PQ rateQuantity;
-    protected DSETRTO doseCheckQuantity;
-    protected DSETRTO maxDoseQuantity;
+    protected CE uncertaintyCode;
+    protected CE routeCode;
+    protected List<CD> approachSiteCode;
+    protected IVLPQ doseQuantity;
+    protected IVLPQ rateQuantity;
+    protected List<RTOQTYQTY> doseCheckQuantity;
+    protected List<RTOQTYQTY> maxDoseQuantity;
     @XmlAttribute(name = "classCode", required = true)
     protected ActClassSubstanceAdministration classCode;
     @XmlAttribute(name = "moodCode", required = true)
@@ -94,25 +96,30 @@ public class COCTMT200000UV01SubstanceAdministration {
     /**
      * Gets the value of the realmCode property.
      * 
-     * @return
-     *     possible object is
-     *     {@link DSETCS }
-     *     
-     */
-    public DSETCS getRealmCode() {
-        return realmCode;
-    }
-
-    /**
-     * Sets the value of the realmCode property.
+     * <p>
+     * This accessor method returns a reference to the live list,
+     * not a snapshot. Therefore any modification you make to the
+     * returned list will be present inside the JAXB object.
+     * This is why there is not a <CODE>set</CODE> method for the realmCode property.
      * 
-     * @param value
-     *     allowed object is
-     *     {@link DSETCS }
-     *     
+     * <p>
+     * For example, to add a new item, do as follows:
+     * <pre>
+     *    getRealmCode().add(newItem);
+     * </pre>
+     * 
+     * 
+     * <p>
+     * Objects of the following type(s) are allowed in the list
+     * {@link CS }
+     * 
+     * 
      */
-    public void setRealmCode(DSETCS value) {
-        this.realmCode = value;
+    public List<CS> getRealmCode() {
+        if (realmCode == null) {
+            realmCode = new ArrayList<CS>();
+        }
+        return this.realmCode;
     }
 
     /**
@@ -142,25 +149,30 @@ public class COCTMT200000UV01SubstanceAdministration {
     /**
      * Gets the value of the templateId property.
      * 
-     * @return
-     *     possible object is
-     *     {@link LISTII }
-     *     
-     */
-    public LISTII getTemplateId() {
-        return templateId;
-    }
-
-    /**
-     * Sets the value of the templateId property.
+     * <p>
+     * This accessor method returns a reference to the live list,
+     * not a snapshot. Therefore any modification you make to the
+     * returned list will be present inside the JAXB object.
+     * This is why there is not a <CODE>set</CODE> method for the templateId property.
      * 
-     * @param value
-     *     allowed object is
-     *     {@link LISTII }
-     *     
+     * <p>
+     * For example, to add a new item, do as follows:
+     * <pre>
+     *    getTemplateId().add(newItem);
+     * </pre>
+     * 
+     * 
+     * <p>
+     * Objects of the following type(s) are allowed in the list
+     * {@link II }
+     * 
+     * 
      */
-    public void setTemplateId(LISTII value) {
-        this.templateId = value;
+    public List<II> getTemplateId() {
+        if (templateId == null) {
+            templateId = new ArrayList<II>();
+        }
+        return this.templateId;
     }
 
     /**
@@ -262,25 +274,30 @@ public class COCTMT200000UV01SubstanceAdministration {
     /**
      * Gets the value of the effectiveTime property.
      * 
-     * @return
-     *     possible object is
-     *     {@link QSETTS }
-     *     
-     */
-    public QSETTS getEffectiveTime() {
-        return effectiveTime;
-    }
-
-    /**
-     * Sets the value of the effectiveTime property.
+     * <p>
+     * This accessor method returns a reference to the live list,
+     * not a snapshot. Therefore any modification you make to the
+     * returned list will be present inside the JAXB object.
+     * This is why there is not a <CODE>set</CODE> method for the effectiveTime property.
      * 
-     * @param value
-     *     allowed object is
-     *     {@link QSETTS }
-     *     
+     * <p>
+     * For example, to add a new item, do as follows:
+     * <pre>
+     *    getEffectiveTime().add(newItem);
+     * </pre>
+     * 
+     * 
+     * <p>
+     * Objects of the following type(s) are allowed in the list
+     * {@link SXCMTS }
+     * 
+     * 
      */
-    public void setEffectiveTime(QSETTS value) {
-        this.effectiveTime = value;
+    public List<SXCMTS> getEffectiveTime() {
+        if (effectiveTime == null) {
+            effectiveTime = new ArrayList<SXCMTS>();
+        }
+        return this.effectiveTime;
     }
 
     /**
@@ -312,10 +329,10 @@ public class COCTMT200000UV01SubstanceAdministration {
      * 
      * @return
      *     possible object is
-     *     {@link CD }
+     *     {@link CE }
      *     
      */
-    public CD getUncertaintyCode() {
+    public CE getUncertaintyCode() {
         return uncertaintyCode;
     }
 
@@ -324,35 +341,11 @@ public class COCTMT200000UV01SubstanceAdministration {
      * 
      * @param value
      *     allowed object is
-     *     {@link CD }
+     *     {@link CE }
      *     
      */
-    public void setUncertaintyCode(CD value) {
+    public void setUncertaintyCode(CE value) {
         this.uncertaintyCode = value;
-    }
-
-    /**
-     * Gets the value of the approachSiteCode property.
-     * 
-     * @return
-     *     possible object is
-     *     {@link DSETCD }
-     *     
-     */
-    public DSETCD getApproachSiteCode() {
-        return approachSiteCode;
-    }
-
-    /**
-     * Sets the value of the approachSiteCode property.
-     * 
-     * @param value
-     *     allowed object is
-     *     {@link DSETCD }
-     *     
-     */
-    public void setApproachSiteCode(DSETCD value) {
-        this.approachSiteCode = value;
     }
 
     /**
@@ -360,10 +353,10 @@ public class COCTMT200000UV01SubstanceAdministration {
      * 
      * @return
      *     possible object is
-     *     {@link CD }
+     *     {@link CE }
      *     
      */
-    public CD getRouteCode() {
+    public CE getRouteCode() {
         return routeCode;
     }
 
@@ -372,11 +365,40 @@ public class COCTMT200000UV01SubstanceAdministration {
      * 
      * @param value
      *     allowed object is
-     *     {@link CD }
+     *     {@link CE }
      *     
      */
-    public void setRouteCode(CD value) {
+    public void setRouteCode(CE value) {
         this.routeCode = value;
+    }
+
+    /**
+     * Gets the value of the approachSiteCode property.
+     * 
+     * <p>
+     * This accessor method returns a reference to the live list,
+     * not a snapshot. Therefore any modification you make to the
+     * returned list will be present inside the JAXB object.
+     * This is why there is not a <CODE>set</CODE> method for the approachSiteCode property.
+     * 
+     * <p>
+     * For example, to add a new item, do as follows:
+     * <pre>
+     *    getApproachSiteCode().add(newItem);
+     * </pre>
+     * 
+     * 
+     * <p>
+     * Objects of the following type(s) are allowed in the list
+     * {@link CD }
+     * 
+     * 
+     */
+    public List<CD> getApproachSiteCode() {
+        if (approachSiteCode == null) {
+            approachSiteCode = new ArrayList<CD>();
+        }
+        return this.approachSiteCode;
     }
 
     /**
@@ -384,10 +406,10 @@ public class COCTMT200000UV01SubstanceAdministration {
      * 
      * @return
      *     possible object is
-     *     {@link PQ }
+     *     {@link IVLPQ }
      *     
      */
-    public PQ getDoseQuantity() {
+    public IVLPQ getDoseQuantity() {
         return doseQuantity;
     }
 
@@ -396,10 +418,10 @@ public class COCTMT200000UV01SubstanceAdministration {
      * 
      * @param value
      *     allowed object is
-     *     {@link PQ }
+     *     {@link IVLPQ }
      *     
      */
-    public void setDoseQuantity(PQ value) {
+    public void setDoseQuantity(IVLPQ value) {
         this.doseQuantity = value;
     }
 
@@ -408,10 +430,10 @@ public class COCTMT200000UV01SubstanceAdministration {
      * 
      * @return
      *     possible object is
-     *     {@link PQ }
+     *     {@link IVLPQ }
      *     
      */
-    public PQ getRateQuantity() {
+    public IVLPQ getRateQuantity() {
         return rateQuantity;
     }
 
@@ -420,59 +442,69 @@ public class COCTMT200000UV01SubstanceAdministration {
      * 
      * @param value
      *     allowed object is
-     *     {@link PQ }
+     *     {@link IVLPQ }
      *     
      */
-    public void setRateQuantity(PQ value) {
+    public void setRateQuantity(IVLPQ value) {
         this.rateQuantity = value;
     }
 
     /**
      * Gets the value of the doseCheckQuantity property.
      * 
-     * @return
-     *     possible object is
-     *     {@link DSETRTO }
-     *     
-     */
-    public DSETRTO getDoseCheckQuantity() {
-        return doseCheckQuantity;
-    }
-
-    /**
-     * Sets the value of the doseCheckQuantity property.
+     * <p>
+     * This accessor method returns a reference to the live list,
+     * not a snapshot. Therefore any modification you make to the
+     * returned list will be present inside the JAXB object.
+     * This is why there is not a <CODE>set</CODE> method for the doseCheckQuantity property.
      * 
-     * @param value
-     *     allowed object is
-     *     {@link DSETRTO }
-     *     
+     * <p>
+     * For example, to add a new item, do as follows:
+     * <pre>
+     *    getDoseCheckQuantity().add(newItem);
+     * </pre>
+     * 
+     * 
+     * <p>
+     * Objects of the following type(s) are allowed in the list
+     * {@link RTOQTYQTY }
+     * 
+     * 
      */
-    public void setDoseCheckQuantity(DSETRTO value) {
-        this.doseCheckQuantity = value;
+    public List<RTOQTYQTY> getDoseCheckQuantity() {
+        if (doseCheckQuantity == null) {
+            doseCheckQuantity = new ArrayList<RTOQTYQTY>();
+        }
+        return this.doseCheckQuantity;
     }
 
     /**
      * Gets the value of the maxDoseQuantity property.
      * 
-     * @return
-     *     possible object is
-     *     {@link DSETRTO }
-     *     
-     */
-    public DSETRTO getMaxDoseQuantity() {
-        return maxDoseQuantity;
-    }
-
-    /**
-     * Sets the value of the maxDoseQuantity property.
+     * <p>
+     * This accessor method returns a reference to the live list,
+     * not a snapshot. Therefore any modification you make to the
+     * returned list will be present inside the JAXB object.
+     * This is why there is not a <CODE>set</CODE> method for the maxDoseQuantity property.
      * 
-     * @param value
-     *     allowed object is
-     *     {@link DSETRTO }
-     *     
+     * <p>
+     * For example, to add a new item, do as follows:
+     * <pre>
+     *    getMaxDoseQuantity().add(newItem);
+     * </pre>
+     * 
+     * 
+     * <p>
+     * Objects of the following type(s) are allowed in the list
+     * {@link RTOQTYQTY }
+     * 
+     * 
      */
-    public void setMaxDoseQuantity(DSETRTO value) {
-        this.maxDoseQuantity = value;
+    public List<RTOQTYQTY> getMaxDoseQuantity() {
+        if (maxDoseQuantity == null) {
+            maxDoseQuantity = new ArrayList<RTOQTYQTY>();
+        }
+        return this.maxDoseQuantity;
     }
 
     /**

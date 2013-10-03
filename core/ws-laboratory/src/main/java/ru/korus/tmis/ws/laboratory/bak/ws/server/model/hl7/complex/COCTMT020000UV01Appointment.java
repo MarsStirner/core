@@ -8,6 +8,8 @@ import javax.xml.bind.annotation.XmlAccessorType;
 import javax.xml.bind.annotation.XmlAttribute;
 import javax.xml.bind.annotation.XmlElement;
 import javax.xml.bind.annotation.XmlType;
+import javax.xml.bind.annotation.adapters.CollapsedStringAdapter;
+import javax.xml.bind.annotation.adapters.XmlJavaTypeAdapter;
 
 
 /**
@@ -23,12 +25,12 @@ import javax.xml.bind.annotation.XmlType;
  *         &lt;group ref="{urn:hl7-org:v3}InfrastructureRootElements"/>
  *         &lt;element name="id" type="{urn:hl7-org:v3}II"/>
  *         &lt;element name="code" type="{urn:hl7-org:v3}CD" minOccurs="0"/>
- *         &lt;element name="effectiveTime" type="{urn:hl7-org:v3}QSET_TS" minOccurs="0"/>
+ *         &lt;element name="effectiveTime" type="{urn:hl7-org:v3}SXCM_TS" maxOccurs="unbounded" minOccurs="0"/>
  *         &lt;element name="referencedOrder" type="{urn:hl7-org:v3}COCT_MT020000UV01.ReferencedOrder" maxOccurs="unbounded" minOccurs="0"/>
  *         &lt;element name="scheduleRequest" type="{urn:hl7-org:v3}COCT_MT020000UV01.ScheduleRequest" maxOccurs="unbounded" minOccurs="0"/>
  *       &lt;/sequence>
  *       &lt;attGroup ref="{urn:hl7-org:v3}InfrastructureRootAttributes"/>
- *       &lt;attribute name="classCode" use="required" type="{urn:hl7-org:v3}ActClassRoot" />
+ *       &lt;attribute name="classCode" use="required" type="{urn:hl7-org:v3}cs" />
  *       &lt;attribute name="moodCode" use="required" type="{urn:hl7-org:v3}ActMoodAppointment" />
  *     &lt;/restriction>
  *   &lt;/complexContent>
@@ -50,44 +52,50 @@ import javax.xml.bind.annotation.XmlType;
 })
 public class COCTMT020000UV01Appointment {
 
-    protected DSETCS realmCode;
+    protected List<CS> realmCode;
     protected II typeId;
-    protected LISTII templateId;
+    protected List<II> templateId;
     @XmlElement(required = true)
     protected II id;
     protected CD code;
-    protected QSETTS effectiveTime;
+    protected List<SXCMTS> effectiveTime;
     @XmlElement(nillable = true)
     protected List<COCTMT020000UV01ReferencedOrder> referencedOrder;
     @XmlElement(nillable = true)
     protected List<COCTMT020000UV01ScheduleRequest> scheduleRequest;
     @XmlAttribute(name = "classCode", required = true)
-    protected ActClassRoot classCode;
+    @XmlJavaTypeAdapter(CollapsedStringAdapter.class)
+    protected String classCode;
     @XmlAttribute(name = "moodCode", required = true)
     protected ActMoodAppointment moodCode;
 
     /**
      * Gets the value of the realmCode property.
      * 
-     * @return
-     *     possible object is
-     *     {@link DSETCS }
-     *     
-     */
-    public DSETCS getRealmCode() {
-        return realmCode;
-    }
-
-    /**
-     * Sets the value of the realmCode property.
+     * <p>
+     * This accessor method returns a reference to the live list,
+     * not a snapshot. Therefore any modification you make to the
+     * returned list will be present inside the JAXB object.
+     * This is why there is not a <CODE>set</CODE> method for the realmCode property.
      * 
-     * @param value
-     *     allowed object is
-     *     {@link DSETCS }
-     *     
+     * <p>
+     * For example, to add a new item, do as follows:
+     * <pre>
+     *    getRealmCode().add(newItem);
+     * </pre>
+     * 
+     * 
+     * <p>
+     * Objects of the following type(s) are allowed in the list
+     * {@link CS }
+     * 
+     * 
      */
-    public void setRealmCode(DSETCS value) {
-        this.realmCode = value;
+    public List<CS> getRealmCode() {
+        if (realmCode == null) {
+            realmCode = new ArrayList<CS>();
+        }
+        return this.realmCode;
     }
 
     /**
@@ -117,25 +125,30 @@ public class COCTMT020000UV01Appointment {
     /**
      * Gets the value of the templateId property.
      * 
-     * @return
-     *     possible object is
-     *     {@link LISTII }
-     *     
-     */
-    public LISTII getTemplateId() {
-        return templateId;
-    }
-
-    /**
-     * Sets the value of the templateId property.
+     * <p>
+     * This accessor method returns a reference to the live list,
+     * not a snapshot. Therefore any modification you make to the
+     * returned list will be present inside the JAXB object.
+     * This is why there is not a <CODE>set</CODE> method for the templateId property.
      * 
-     * @param value
-     *     allowed object is
-     *     {@link LISTII }
-     *     
+     * <p>
+     * For example, to add a new item, do as follows:
+     * <pre>
+     *    getTemplateId().add(newItem);
+     * </pre>
+     * 
+     * 
+     * <p>
+     * Objects of the following type(s) are allowed in the list
+     * {@link II }
+     * 
+     * 
      */
-    public void setTemplateId(LISTII value) {
-        this.templateId = value;
+    public List<II> getTemplateId() {
+        if (templateId == null) {
+            templateId = new ArrayList<II>();
+        }
+        return this.templateId;
     }
 
     /**
@@ -189,25 +202,30 @@ public class COCTMT020000UV01Appointment {
     /**
      * Gets the value of the effectiveTime property.
      * 
-     * @return
-     *     possible object is
-     *     {@link QSETTS }
-     *     
-     */
-    public QSETTS getEffectiveTime() {
-        return effectiveTime;
-    }
-
-    /**
-     * Sets the value of the effectiveTime property.
+     * <p>
+     * This accessor method returns a reference to the live list,
+     * not a snapshot. Therefore any modification you make to the
+     * returned list will be present inside the JAXB object.
+     * This is why there is not a <CODE>set</CODE> method for the effectiveTime property.
      * 
-     * @param value
-     *     allowed object is
-     *     {@link QSETTS }
-     *     
+     * <p>
+     * For example, to add a new item, do as follows:
+     * <pre>
+     *    getEffectiveTime().add(newItem);
+     * </pre>
+     * 
+     * 
+     * <p>
+     * Objects of the following type(s) are allowed in the list
+     * {@link SXCMTS }
+     * 
+     * 
      */
-    public void setEffectiveTime(QSETTS value) {
-        this.effectiveTime = value;
+    public List<SXCMTS> getEffectiveTime() {
+        if (effectiveTime == null) {
+            effectiveTime = new ArrayList<SXCMTS>();
+        }
+        return this.effectiveTime;
     }
 
     /**
@@ -273,10 +291,10 @@ public class COCTMT020000UV01Appointment {
      * 
      * @return
      *     possible object is
-     *     {@link ActClassRoot }
+     *     {@link String }
      *     
      */
-    public ActClassRoot getClassCode() {
+    public String getClassCode() {
         return classCode;
     }
 
@@ -285,10 +303,10 @@ public class COCTMT020000UV01Appointment {
      * 
      * @param value
      *     allowed object is
-     *     {@link ActClassRoot }
+     *     {@link String }
      *     
      */
-    public void setClassCode(ActClassRoot value) {
+    public void setClassCode(String value) {
         this.classCode = value;
     }
 

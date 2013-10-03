@@ -23,11 +23,11 @@ import javax.xml.bind.annotation.XmlType;
  *     &lt;restriction base="{http://www.w3.org/2001/XMLSchema}anyType">
  *       &lt;sequence>
  *         &lt;group ref="{urn:hl7-org:v3}InfrastructureRootElements"/>
- *         &lt;element name="id" type="{urn:hl7-org:v3}DSET_II"/>
- *         &lt;element name="name" type="{urn:hl7-org:v3}COLL_EN" minOccurs="0"/>
+ *         &lt;element name="id" type="{urn:hl7-org:v3}II" maxOccurs="unbounded"/>
+ *         &lt;element name="name" type="{urn:hl7-org:v3}EN" maxOccurs="unbounded" minOccurs="0"/>
  *         &lt;element name="desc" type="{urn:hl7-org:v3}ED" minOccurs="0"/>
  *         &lt;element name="existenceTime" type="{urn:hl7-org:v3}IVL_TS" minOccurs="0"/>
- *         &lt;element name="telecom" type="{urn:hl7-org:v3}COLL_TEL" minOccurs="0"/>
+ *         &lt;element name="telecom" type="{urn:hl7-org:v3}TEL" maxOccurs="unbounded" minOccurs="0"/>
  *         &lt;element name="manufacturerModelName" type="{urn:hl7-org:v3}SC" minOccurs="0"/>
  *         &lt;element name="softwareName" type="{urn:hl7-org:v3}SC" minOccurs="0"/>
  *         &lt;element name="asAgent" type="{urn:hl7-org:v3}MCCI_MT000200UV01.Agent" minOccurs="0"/>
@@ -60,15 +60,15 @@ import javax.xml.bind.annotation.XmlType;
 })
 public class MCCIMT000200UV01Device {
 
-    protected DSETCS realmCode;
+    protected List<CS> realmCode;
     protected II typeId;
-    protected LISTII templateId;
+    protected List<II> templateId;
     @XmlElement(required = true)
-    protected DSETII id;
-    protected COLLEN name;
+    protected List<II> id;
+    protected List<EN> name;
     protected ED desc;
     protected IVLTS existenceTime;
-    protected COLLTEL telecom;
+    protected List<TEL> telecom;
     protected SC manufacturerModelName;
     protected SC softwareName;
     @XmlElementRef(name = "asAgent", namespace = "urn:hl7-org:v3", type = JAXBElement.class, required = false)
@@ -83,25 +83,30 @@ public class MCCIMT000200UV01Device {
     /**
      * Gets the value of the realmCode property.
      * 
-     * @return
-     *     possible object is
-     *     {@link DSETCS }
-     *     
-     */
-    public DSETCS getRealmCode() {
-        return realmCode;
-    }
-
-    /**
-     * Sets the value of the realmCode property.
+     * <p>
+     * This accessor method returns a reference to the live list,
+     * not a snapshot. Therefore any modification you make to the
+     * returned list will be present inside the JAXB object.
+     * This is why there is not a <CODE>set</CODE> method for the realmCode property.
      * 
-     * @param value
-     *     allowed object is
-     *     {@link DSETCS }
-     *     
+     * <p>
+     * For example, to add a new item, do as follows:
+     * <pre>
+     *    getRealmCode().add(newItem);
+     * </pre>
+     * 
+     * 
+     * <p>
+     * Objects of the following type(s) are allowed in the list
+     * {@link CS }
+     * 
+     * 
      */
-    public void setRealmCode(DSETCS value) {
-        this.realmCode = value;
+    public List<CS> getRealmCode() {
+        if (realmCode == null) {
+            realmCode = new ArrayList<CS>();
+        }
+        return this.realmCode;
     }
 
     /**
@@ -131,73 +136,88 @@ public class MCCIMT000200UV01Device {
     /**
      * Gets the value of the templateId property.
      * 
-     * @return
-     *     possible object is
-     *     {@link LISTII }
-     *     
-     */
-    public LISTII getTemplateId() {
-        return templateId;
-    }
-
-    /**
-     * Sets the value of the templateId property.
+     * <p>
+     * This accessor method returns a reference to the live list,
+     * not a snapshot. Therefore any modification you make to the
+     * returned list will be present inside the JAXB object.
+     * This is why there is not a <CODE>set</CODE> method for the templateId property.
      * 
-     * @param value
-     *     allowed object is
-     *     {@link LISTII }
-     *     
+     * <p>
+     * For example, to add a new item, do as follows:
+     * <pre>
+     *    getTemplateId().add(newItem);
+     * </pre>
+     * 
+     * 
+     * <p>
+     * Objects of the following type(s) are allowed in the list
+     * {@link II }
+     * 
+     * 
      */
-    public void setTemplateId(LISTII value) {
-        this.templateId = value;
+    public List<II> getTemplateId() {
+        if (templateId == null) {
+            templateId = new ArrayList<II>();
+        }
+        return this.templateId;
     }
 
     /**
      * Gets the value of the id property.
      * 
-     * @return
-     *     possible object is
-     *     {@link DSETII }
-     *     
-     */
-    public DSETII getId() {
-        return id;
-    }
-
-    /**
-     * Sets the value of the id property.
+     * <p>
+     * This accessor method returns a reference to the live list,
+     * not a snapshot. Therefore any modification you make to the
+     * returned list will be present inside the JAXB object.
+     * This is why there is not a <CODE>set</CODE> method for the id property.
      * 
-     * @param value
-     *     allowed object is
-     *     {@link DSETII }
-     *     
+     * <p>
+     * For example, to add a new item, do as follows:
+     * <pre>
+     *    getId().add(newItem);
+     * </pre>
+     * 
+     * 
+     * <p>
+     * Objects of the following type(s) are allowed in the list
+     * {@link II }
+     * 
+     * 
      */
-    public void setId(DSETII value) {
-        this.id = value;
+    public List<II> getId() {
+        if (id == null) {
+            id = new ArrayList<II>();
+        }
+        return this.id;
     }
 
     /**
      * Gets the value of the name property.
      * 
-     * @return
-     *     possible object is
-     *     {@link COLLEN }
-     *     
-     */
-    public COLLEN getName() {
-        return name;
-    }
-
-    /**
-     * Sets the value of the name property.
+     * <p>
+     * This accessor method returns a reference to the live list,
+     * not a snapshot. Therefore any modification you make to the
+     * returned list will be present inside the JAXB object.
+     * This is why there is not a <CODE>set</CODE> method for the name property.
      * 
-     * @param value
-     *     allowed object is
-     *     {@link COLLEN }
-     *     
+     * <p>
+     * For example, to add a new item, do as follows:
+     * <pre>
+     *    getName().add(newItem);
+     * </pre>
+     * 
+     * 
+     * <p>
+     * Objects of the following type(s) are allowed in the list
+     * {@link EN }
+     * 
+     * 
      */
-    public void setName(COLLEN value) {
-        this.name = value;
+    public List<EN> getName() {
+        if (name == null) {
+            name = new ArrayList<EN>();
+        }
+        return this.name;
     }
 
     /**
@@ -251,25 +271,30 @@ public class MCCIMT000200UV01Device {
     /**
      * Gets the value of the telecom property.
      * 
-     * @return
-     *     possible object is
-     *     {@link COLLTEL }
-     *     
-     */
-    public COLLTEL getTelecom() {
-        return telecom;
-    }
-
-    /**
-     * Sets the value of the telecom property.
+     * <p>
+     * This accessor method returns a reference to the live list,
+     * not a snapshot. Therefore any modification you make to the
+     * returned list will be present inside the JAXB object.
+     * This is why there is not a <CODE>set</CODE> method for the telecom property.
      * 
-     * @param value
-     *     allowed object is
-     *     {@link COLLTEL }
-     *     
+     * <p>
+     * For example, to add a new item, do as follows:
+     * <pre>
+     *    getTelecom().add(newItem);
+     * </pre>
+     * 
+     * 
+     * <p>
+     * Objects of the following type(s) are allowed in the list
+     * {@link TEL }
+     * 
+     * 
      */
-    public void setTelecom(COLLTEL value) {
-        this.telecom = value;
+    public List<TEL> getTelecom() {
+        if (telecom == null) {
+            telecom = new ArrayList<TEL>();
+        }
+        return this.telecom;
     }
 
     /**

@@ -12,25 +12,25 @@ import javax.xml.bind.annotation.XmlType;
  * <p>
  * <pre>
  * &lt;simpleType name="TimingEvent">
- *   &lt;restriction base="{http://www.w3.org/2001/XMLSchema}string">
- *     &lt;enumeration value="HS"/>
- *     &lt;enumeration value="WAKE"/>
+ *   &lt;restriction base="{urn:hl7-org:v3}cs">
  *     &lt;enumeration value="AC"/>
- *     &lt;enumeration value="ACM"/>
  *     &lt;enumeration value="ACD"/>
+ *     &lt;enumeration value="ACM"/>
  *     &lt;enumeration value="ACV"/>
+ *     &lt;enumeration value="C"/>
+ *     &lt;enumeration value="CD"/>
+ *     &lt;enumeration value="CM"/>
+ *     &lt;enumeration value="CV"/>
+ *     &lt;enumeration value="HS"/>
  *     &lt;enumeration value="IC"/>
- *     &lt;enumeration value="ICM"/>
  *     &lt;enumeration value="ICD"/>
+ *     &lt;enumeration value="ICM"/>
  *     &lt;enumeration value="ICV"/>
  *     &lt;enumeration value="PC"/>
- *     &lt;enumeration value="PCM"/>
  *     &lt;enumeration value="PCD"/>
+ *     &lt;enumeration value="PCM"/>
  *     &lt;enumeration value="PCV"/>
- *     &lt;enumeration value="C"/>
- *     &lt;enumeration value="CM"/>
- *     &lt;enumeration value="CD"/>
- *     &lt;enumeration value="CV"/>
+ *     &lt;enumeration value="WAKE"/>
  *   &lt;/restriction>
  * &lt;/simpleType>
  * </pre>
@@ -40,24 +40,24 @@ import javax.xml.bind.annotation.XmlType;
 @XmlEnum
 public enum TimingEvent {
 
-    HS,
-    WAKE,
     AC,
-    ACM,
     ACD,
+    ACM,
     ACV,
+    C,
+    CD,
+    CM,
+    CV,
+    HS,
     IC,
-    ICM,
     ICD,
+    ICM,
     ICV,
     PC,
-    PCM,
     PCD,
+    PCM,
     PCV,
-    C,
-    CM,
-    CD,
-    CV;
+    WAKE;
 
     public String value() {
         return name();

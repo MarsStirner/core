@@ -16,7 +16,6 @@ import javax.xml.bind.annotation.XmlType;
  *   &lt;restriction base="{urn:hl7-org:v3}cs">
  *     &lt;enumeration value="APND"/>
  *     &lt;enumeration value="ARR"/>
- *     &lt;enumeration value="ART"/>
  *     &lt;enumeration value="AUTH"/>
  *     &lt;enumeration value="BLOCK"/>
  *     &lt;enumeration value="BSLN"/>
@@ -110,7 +109,6 @@ public enum ActRelationshipType {
 
     APND("APND"),
     ARR("ARR"),
-    ART("ART"),
     AUTH("AUTH"),
     BLOCK("BLOCK"),
     BSLN("BSLN"),

@@ -11,13 +11,13 @@
                     xmlns:hl7="urn:hl7-org:v3">
             <!-- Include the message schema -->
             <xsd:include
-                    schemaLocation="../MCCI_IN000002UV01.xsd"/>
+                    schemaLocation="./MCCI_IN000002UV01.xsd"/>
         </xsd:schema>
         <xsd:schema elementFormDefault="qualified" targetNamespace="urn:hl7-org:v3"
                     xmlns:hl7="urn:hl7-org:v3">
             <!-- Include the message schema -->
             <xsd:include
-                    schemaLocation="../POLB_IN224100UV01.xsd"/>
+                    schemaLocation="./POLB_IN224100UV01.xsd"/>
         </xsd:schema>
     </types>
     <message name="MCCI_IN000002UV01_Message">

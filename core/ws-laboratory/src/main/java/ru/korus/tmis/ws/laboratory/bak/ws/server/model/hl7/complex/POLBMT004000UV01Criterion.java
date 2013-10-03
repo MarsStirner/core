@@ -21,9 +21,9 @@ import javax.xml.bind.annotation.XmlType;
  *     &lt;restriction base="{http://www.w3.org/2001/XMLSchema}anyType">
  *       &lt;sequence>
  *         &lt;group ref="{urn:hl7-org:v3}InfrastructureRootElements"/>
- *         &lt;element name="code" type="{urn:hl7-org:v3}CD"/>
+ *         &lt;element name="code" type="{urn:hl7-org:v3}CE"/>
  *         &lt;element name="value" type="{urn:hl7-org:v3}ANY"/>
- *         &lt;element name="interpretationCode" type="{urn:hl7-org:v3}DSET_CD" minOccurs="0"/>
+ *         &lt;element name="interpretationCode" type="{urn:hl7-org:v3}CE" maxOccurs="unbounded" minOccurs="0"/>
  *         &lt;element name="device" type="{urn:hl7-org:v3}POLB_MT004000UV01.Device" maxOccurs="unbounded" minOccurs="0"/>
  *         &lt;element name="consumable1" type="{urn:hl7-org:v3}POLB_MT004000UV01.Consumable2" maxOccurs="unbounded" minOccurs="0"/>
  *         &lt;element name="consumable2" type="{urn:hl7-org:v3}POLB_MT004000UV01.Consumable" maxOccurs="unbounded" minOccurs="0"/>
@@ -53,14 +53,14 @@ import javax.xml.bind.annotation.XmlType;
 })
 public class POLBMT004000UV01Criterion {
 
-    protected DSETCS realmCode;
+    protected List<CS> realmCode;
     protected II typeId;
-    protected LISTII templateId;
+    protected List<II> templateId;
     @XmlElement(required = true)
-    protected CD code;
+    protected CE code;
     @XmlElement(required = true)
     protected ANY value;
-    protected DSETCD interpretationCode;
+    protected List<CE> interpretationCode;
     @XmlElement(nillable = true)
     protected List<POLBMT004000UV01Device> device;
     @XmlElement(nillable = true)
@@ -77,25 +77,30 @@ public class POLBMT004000UV01Criterion {
     /**
      * Gets the value of the realmCode property.
      * 
-     * @return
-     *     possible object is
-     *     {@link DSETCS }
-     *     
-     */
-    public DSETCS getRealmCode() {
-        return realmCode;
-    }
-
-    /**
-     * Sets the value of the realmCode property.
+     * <p>
+     * This accessor method returns a reference to the live list,
+     * not a snapshot. Therefore any modification you make to the
+     * returned list will be present inside the JAXB object.
+     * This is why there is not a <CODE>set</CODE> method for the realmCode property.
      * 
-     * @param value
-     *     allowed object is
-     *     {@link DSETCS }
-     *     
+     * <p>
+     * For example, to add a new item, do as follows:
+     * <pre>
+     *    getRealmCode().add(newItem);
+     * </pre>
+     * 
+     * 
+     * <p>
+     * Objects of the following type(s) are allowed in the list
+     * {@link CS }
+     * 
+     * 
      */
-    public void setRealmCode(DSETCS value) {
-        this.realmCode = value;
+    public List<CS> getRealmCode() {
+        if (realmCode == null) {
+            realmCode = new ArrayList<CS>();
+        }
+        return this.realmCode;
     }
 
     /**
@@ -125,25 +130,30 @@ public class POLBMT004000UV01Criterion {
     /**
      * Gets the value of the templateId property.
      * 
-     * @return
-     *     possible object is
-     *     {@link LISTII }
-     *     
-     */
-    public LISTII getTemplateId() {
-        return templateId;
-    }
-
-    /**
-     * Sets the value of the templateId property.
+     * <p>
+     * This accessor method returns a reference to the live list,
+     * not a snapshot. Therefore any modification you make to the
+     * returned list will be present inside the JAXB object.
+     * This is why there is not a <CODE>set</CODE> method for the templateId property.
      * 
-     * @param value
-     *     allowed object is
-     *     {@link LISTII }
-     *     
+     * <p>
+     * For example, to add a new item, do as follows:
+     * <pre>
+     *    getTemplateId().add(newItem);
+     * </pre>
+     * 
+     * 
+     * <p>
+     * Objects of the following type(s) are allowed in the list
+     * {@link II }
+     * 
+     * 
      */
-    public void setTemplateId(LISTII value) {
-        this.templateId = value;
+    public List<II> getTemplateId() {
+        if (templateId == null) {
+            templateId = new ArrayList<II>();
+        }
+        return this.templateId;
     }
 
     /**
@@ -151,10 +161,10 @@ public class POLBMT004000UV01Criterion {
      * 
      * @return
      *     possible object is
-     *     {@link CD }
+     *     {@link CE }
      *     
      */
-    public CD getCode() {
+    public CE getCode() {
         return code;
     }
 
@@ -163,10 +173,10 @@ public class POLBMT004000UV01Criterion {
      * 
      * @param value
      *     allowed object is
-     *     {@link CD }
+     *     {@link CE }
      *     
      */
-    public void setCode(CD value) {
+    public void setCode(CE value) {
         this.code = value;
     }
 
@@ -197,25 +207,30 @@ public class POLBMT004000UV01Criterion {
     /**
      * Gets the value of the interpretationCode property.
      * 
-     * @return
-     *     possible object is
-     *     {@link DSETCD }
-     *     
-     */
-    public DSETCD getInterpretationCode() {
-        return interpretationCode;
-    }
-
-    /**
-     * Sets the value of the interpretationCode property.
+     * <p>
+     * This accessor method returns a reference to the live list,
+     * not a snapshot. Therefore any modification you make to the
+     * returned list will be present inside the JAXB object.
+     * This is why there is not a <CODE>set</CODE> method for the interpretationCode property.
      * 
-     * @param value
-     *     allowed object is
-     *     {@link DSETCD }
-     *     
+     * <p>
+     * For example, to add a new item, do as follows:
+     * <pre>
+     *    getInterpretationCode().add(newItem);
+     * </pre>
+     * 
+     * 
+     * <p>
+     * Objects of the following type(s) are allowed in the list
+     * {@link CE }
+     * 
+     * 
      */
-    public void setInterpretationCode(DSETCD value) {
-        this.interpretationCode = value;
+    public List<CE> getInterpretationCode() {
+        if (interpretationCode == null) {
+            interpretationCode = new ArrayList<CE>();
+        }
+        return this.interpretationCode;
     }
 
     /**

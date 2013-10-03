@@ -12,11 +12,12 @@ import javax.xml.bind.annotation.XmlType;
  * <p>
  * <pre>
  * &lt;simpleType name="EntityNamePartType">
- *   &lt;restriction base="{http://www.w3.org/2001/XMLSchema}string">
+ *   &lt;restriction base="{urn:hl7-org:v3}cs">
+ *     &lt;enumeration value="DEL"/>
  *     &lt;enumeration value="FAM"/>
  *     &lt;enumeration value="GIV"/>
- *     &lt;enumeration value="TITLE"/>
- *     &lt;enumeration value="DEL"/>
+ *     &lt;enumeration value="PFX"/>
+ *     &lt;enumeration value="SFX"/>
  *   &lt;/restriction>
  * &lt;/simpleType>
  * </pre>
@@ -26,10 +27,11 @@ import javax.xml.bind.annotation.XmlType;
 @XmlEnum
 public enum EntityNamePartType {
 
+    DEL,
     FAM,
     GIV,
-    TITLE,
-    DEL;
+    PFX,
+    SFX;
 
     public String value() {
         return name();

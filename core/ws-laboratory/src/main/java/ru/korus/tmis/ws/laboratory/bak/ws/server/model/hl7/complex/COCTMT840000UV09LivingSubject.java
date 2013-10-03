@@ -24,12 +24,12 @@ import javax.xml.bind.annotation.XmlType;
  *       &lt;sequence>
  *         &lt;group ref="{urn:hl7-org:v3}InfrastructureRootElements"/>
  *         &lt;element name="quantity" type="{urn:hl7-org:v3}PQ" minOccurs="0"/>
- *         &lt;element name="name" type="{urn:hl7-org:v3}COLL_EN" minOccurs="0"/>
+ *         &lt;element name="name" type="{urn:hl7-org:v3}EN" maxOccurs="unbounded" minOccurs="0"/>
  *         &lt;element name="desc" type="{urn:hl7-org:v3}ED" minOccurs="0"/>
  *         &lt;element name="existenceTime" type="{urn:hl7-org:v3}IVL_TS" minOccurs="0"/>
- *         &lt;element name="riskCode" type="{urn:hl7-org:v3}DSET_CD" minOccurs="0"/>
- *         &lt;element name="handlingCode" type="{urn:hl7-org:v3}DSET_CD" minOccurs="0"/>
- *         &lt;element name="administrativeGenderCode" type="{urn:hl7-org:v3}CD" minOccurs="0"/>
+ *         &lt;element name="riskCode" type="{urn:hl7-org:v3}CE" maxOccurs="unbounded" minOccurs="0"/>
+ *         &lt;element name="handlingCode" type="{urn:hl7-org:v3}CE" maxOccurs="unbounded" minOccurs="0"/>
+ *         &lt;element name="administrativeGenderCode" type="{urn:hl7-org:v3}CE" minOccurs="0"/>
  *         &lt;element name="birthTime" type="{urn:hl7-org:v3}TS" minOccurs="0"/>
  *         &lt;element name="deceasedInd" type="{urn:hl7-org:v3}BL" minOccurs="0"/>
  *         &lt;element name="deceasedTime" type="{urn:hl7-org:v3}TS" minOccurs="0"/>
@@ -98,16 +98,16 @@ import javax.xml.bind.annotation.XmlType;
 })
 public class COCTMT840000UV09LivingSubject {
 
-    protected DSETCS realmCode;
+    protected List<CS> realmCode;
     protected II typeId;
-    protected LISTII templateId;
+    protected List<II> templateId;
     protected PQ quantity;
-    protected COLLEN name;
+    protected List<EN> name;
     protected ED desc;
     protected IVLTS existenceTime;
-    protected DSETCD riskCode;
-    protected DSETCD handlingCode;
-    protected CD administrativeGenderCode;
+    protected List<CE> riskCode;
+    protected List<CE> handlingCode;
+    protected CE administrativeGenderCode;
     protected TS birthTime;
     protected BL deceasedInd;
     protected TS deceasedTime;
@@ -152,25 +152,30 @@ public class COCTMT840000UV09LivingSubject {
     /**
      * Gets the value of the realmCode property.
      * 
-     * @return
-     *     possible object is
-     *     {@link DSETCS }
-     *     
-     */
-    public DSETCS getRealmCode() {
-        return realmCode;
-    }
-
-    /**
-     * Sets the value of the realmCode property.
+     * <p>
+     * This accessor method returns a reference to the live list,
+     * not a snapshot. Therefore any modification you make to the
+     * returned list will be present inside the JAXB object.
+     * This is why there is not a <CODE>set</CODE> method for the realmCode property.
      * 
-     * @param value
-     *     allowed object is
-     *     {@link DSETCS }
-     *     
+     * <p>
+     * For example, to add a new item, do as follows:
+     * <pre>
+     *    getRealmCode().add(newItem);
+     * </pre>
+     * 
+     * 
+     * <p>
+     * Objects of the following type(s) are allowed in the list
+     * {@link CS }
+     * 
+     * 
      */
-    public void setRealmCode(DSETCS value) {
-        this.realmCode = value;
+    public List<CS> getRealmCode() {
+        if (realmCode == null) {
+            realmCode = new ArrayList<CS>();
+        }
+        return this.realmCode;
     }
 
     /**
@@ -200,25 +205,30 @@ public class COCTMT840000UV09LivingSubject {
     /**
      * Gets the value of the templateId property.
      * 
-     * @return
-     *     possible object is
-     *     {@link LISTII }
-     *     
-     */
-    public LISTII getTemplateId() {
-        return templateId;
-    }
-
-    /**
-     * Sets the value of the templateId property.
+     * <p>
+     * This accessor method returns a reference to the live list,
+     * not a snapshot. Therefore any modification you make to the
+     * returned list will be present inside the JAXB object.
+     * This is why there is not a <CODE>set</CODE> method for the templateId property.
      * 
-     * @param value
-     *     allowed object is
-     *     {@link LISTII }
-     *     
+     * <p>
+     * For example, to add a new item, do as follows:
+     * <pre>
+     *    getTemplateId().add(newItem);
+     * </pre>
+     * 
+     * 
+     * <p>
+     * Objects of the following type(s) are allowed in the list
+     * {@link II }
+     * 
+     * 
      */
-    public void setTemplateId(LISTII value) {
-        this.templateId = value;
+    public List<II> getTemplateId() {
+        if (templateId == null) {
+            templateId = new ArrayList<II>();
+        }
+        return this.templateId;
     }
 
     /**
@@ -248,25 +258,30 @@ public class COCTMT840000UV09LivingSubject {
     /**
      * Gets the value of the name property.
      * 
-     * @return
-     *     possible object is
-     *     {@link COLLEN }
-     *     
-     */
-    public COLLEN getName() {
-        return name;
-    }
-
-    /**
-     * Sets the value of the name property.
+     * <p>
+     * This accessor method returns a reference to the live list,
+     * not a snapshot. Therefore any modification you make to the
+     * returned list will be present inside the JAXB object.
+     * This is why there is not a <CODE>set</CODE> method for the name property.
      * 
-     * @param value
-     *     allowed object is
-     *     {@link COLLEN }
-     *     
+     * <p>
+     * For example, to add a new item, do as follows:
+     * <pre>
+     *    getName().add(newItem);
+     * </pre>
+     * 
+     * 
+     * <p>
+     * Objects of the following type(s) are allowed in the list
+     * {@link EN }
+     * 
+     * 
      */
-    public void setName(COLLEN value) {
-        this.name = value;
+    public List<EN> getName() {
+        if (name == null) {
+            name = new ArrayList<EN>();
+        }
+        return this.name;
     }
 
     /**
@@ -320,49 +335,59 @@ public class COCTMT840000UV09LivingSubject {
     /**
      * Gets the value of the riskCode property.
      * 
-     * @return
-     *     possible object is
-     *     {@link DSETCD }
-     *     
-     */
-    public DSETCD getRiskCode() {
-        return riskCode;
-    }
-
-    /**
-     * Sets the value of the riskCode property.
+     * <p>
+     * This accessor method returns a reference to the live list,
+     * not a snapshot. Therefore any modification you make to the
+     * returned list will be present inside the JAXB object.
+     * This is why there is not a <CODE>set</CODE> method for the riskCode property.
      * 
-     * @param value
-     *     allowed object is
-     *     {@link DSETCD }
-     *     
+     * <p>
+     * For example, to add a new item, do as follows:
+     * <pre>
+     *    getRiskCode().add(newItem);
+     * </pre>
+     * 
+     * 
+     * <p>
+     * Objects of the following type(s) are allowed in the list
+     * {@link CE }
+     * 
+     * 
      */
-    public void setRiskCode(DSETCD value) {
-        this.riskCode = value;
+    public List<CE> getRiskCode() {
+        if (riskCode == null) {
+            riskCode = new ArrayList<CE>();
+        }
+        return this.riskCode;
     }
 
     /**
      * Gets the value of the handlingCode property.
      * 
-     * @return
-     *     possible object is
-     *     {@link DSETCD }
-     *     
-     */
-    public DSETCD getHandlingCode() {
-        return handlingCode;
-    }
-
-    /**
-     * Sets the value of the handlingCode property.
+     * <p>
+     * This accessor method returns a reference to the live list,
+     * not a snapshot. Therefore any modification you make to the
+     * returned list will be present inside the JAXB object.
+     * This is why there is not a <CODE>set</CODE> method for the handlingCode property.
      * 
-     * @param value
-     *     allowed object is
-     *     {@link DSETCD }
-     *     
+     * <p>
+     * For example, to add a new item, do as follows:
+     * <pre>
+     *    getHandlingCode().add(newItem);
+     * </pre>
+     * 
+     * 
+     * <p>
+     * Objects of the following type(s) are allowed in the list
+     * {@link CE }
+     * 
+     * 
      */
-    public void setHandlingCode(DSETCD value) {
-        this.handlingCode = value;
+    public List<CE> getHandlingCode() {
+        if (handlingCode == null) {
+            handlingCode = new ArrayList<CE>();
+        }
+        return this.handlingCode;
     }
 
     /**
@@ -370,10 +395,10 @@ public class COCTMT840000UV09LivingSubject {
      * 
      * @return
      *     possible object is
-     *     {@link CD }
+     *     {@link CE }
      *     
      */
-    public CD getAdministrativeGenderCode() {
+    public CE getAdministrativeGenderCode() {
         return administrativeGenderCode;
     }
 
@@ -382,10 +407,10 @@ public class COCTMT840000UV09LivingSubject {
      * 
      * @param value
      *     allowed object is
-     *     {@link CD }
+     *     {@link CE }
      *     
      */
-    public void setAdministrativeGenderCode(CD value) {
+    public void setAdministrativeGenderCode(CE value) {
         this.administrativeGenderCode = value;
     }
 

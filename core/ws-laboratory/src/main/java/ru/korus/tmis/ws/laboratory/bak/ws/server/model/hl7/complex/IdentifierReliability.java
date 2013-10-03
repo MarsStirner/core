@@ -12,10 +12,10 @@ import javax.xml.bind.annotation.XmlType;
  * <p>
  * <pre>
  * &lt;simpleType name="IdentifierReliability">
- *   &lt;restriction base="{http://www.w3.org/2001/XMLSchema}string">
+ *   &lt;restriction base="{urn:hl7-org:v3}cs">
  *     &lt;enumeration value="ISS"/>
- *     &lt;enumeration value="VRF"/>
  *     &lt;enumeration value="UNV"/>
+ *     &lt;enumeration value="VER"/>
  *   &lt;/restriction>
  * &lt;/simpleType>
  * </pre>
@@ -26,8 +26,8 @@ import javax.xml.bind.annotation.XmlType;
 public enum IdentifierReliability {
 
     ISS,
-    VRF,
-    UNV;
+    UNV,
+    VER;
 
     public String value() {
         return name();

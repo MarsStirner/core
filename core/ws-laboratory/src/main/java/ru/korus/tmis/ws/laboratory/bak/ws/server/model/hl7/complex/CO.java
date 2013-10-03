@@ -3,11 +3,18 @@ package ru.korus.tmis.ws.laboratory.bak.ws.server.model.hl7.complex;
 
 import javax.xml.bind.annotation.XmlAccessType;
 import javax.xml.bind.annotation.XmlAccessorType;
-import javax.xml.bind.annotation.XmlAttribute;
 import javax.xml.bind.annotation.XmlType;
 
 
 /**
+ * 
+ *             Coded data, where the domain from which the codeset comes
+ *             is ordered. The Coded Ordinal data type adds semantics
+ *             related to ordering so that models that make use of such
+ *             domains may introduce model elements that involve statements
+ *             about the order of the terms in a domain. 
+ *          
+ * 
  * <p>Java class for CO complex type.
  * 
  * <p>The following schema fragment specifies the expected content contained within this class.
@@ -15,11 +22,7 @@ import javax.xml.bind.annotation.XmlType;
  * <pre>
  * &lt;complexType name="CO">
  *   &lt;complexContent>
- *     &lt;extension base="{urn:hl7-org:v3}QTY">
- *       &lt;sequence>
- *         &lt;element name="code" type="{urn:hl7-org:v3}CD" minOccurs="0"/>
- *       &lt;/sequence>
- *       &lt;attribute name="value" type="{urn:hl7-org:v3}Decimal" />
+ *     &lt;extension base="{urn:hl7-org:v3}CV">
  *     &lt;/extension>
  *   &lt;/complexContent>
  * &lt;/complexType>
@@ -28,63 +31,10 @@ import javax.xml.bind.annotation.XmlType;
  * 
  */
 @XmlAccessorType(XmlAccessType.FIELD)
-@XmlType(name = "CO", propOrder = {
-    "code"
-})
+@XmlType(name = "CO")
 public class CO
-    extends QTY
+    extends CV
 {
 
-    protected CD code;
-    @XmlAttribute(name = "value")
-    protected Double value;
-
-    /**
-     * Gets the value of the code property.
-     * 
-     * @return
-     *     possible object is
-     *     {@link CD }
-     *     
-     */
-    public CD getCode() {
-        return code;
-    }
-
-    /**
-     * Sets the value of the code property.
-     * 
-     * @param value
-     *     allowed object is
-     *     {@link CD }
-     *     
-     */
-    public void setCode(CD value) {
-        this.code = value;
-    }
-
-    /**
-     * Gets the value of the value property.
-     * 
-     * @return
-     *     possible object is
-     *     {@link Double }
-     *     
-     */
-    public Double getValue() {
-        return value;
-    }
-
-    /**
-     * Sets the value of the value property.
-     * 
-     * @param value
-     *     allowed object is
-     *     {@link Double }
-     *     
-     */
-    public void setValue(Double value) {
-        this.value = value;
-    }
 
 }

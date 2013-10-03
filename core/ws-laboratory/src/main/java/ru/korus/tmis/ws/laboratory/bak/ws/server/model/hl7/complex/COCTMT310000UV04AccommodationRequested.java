@@ -1,11 +1,15 @@
 
 package ru.korus.tmis.ws.laboratory.bak.ws.server.model.hl7.complex;
 
+import java.util.ArrayList;
+import java.util.List;
 import javax.xml.bind.annotation.XmlAccessType;
 import javax.xml.bind.annotation.XmlAccessorType;
 import javax.xml.bind.annotation.XmlAttribute;
 import javax.xml.bind.annotation.XmlElement;
 import javax.xml.bind.annotation.XmlType;
+import javax.xml.bind.annotation.adapters.CollapsedStringAdapter;
+import javax.xml.bind.annotation.adapters.XmlJavaTypeAdapter;
 
 
 /**
@@ -24,7 +28,7 @@ import javax.xml.bind.annotation.XmlType;
  *         &lt;element name="author" type="{urn:hl7-org:v3}COCT_MT310000UV04.Author"/>
  *       &lt;/sequence>
  *       &lt;attGroup ref="{urn:hl7-org:v3}InfrastructureRootAttributes"/>
- *       &lt;attribute name="classCode" use="required" type="{urn:hl7-org:v3}ActClassRoot" />
+ *       &lt;attribute name="classCode" use="required" type="{urn:hl7-org:v3}cs" />
  *       &lt;attribute name="moodCode" use="required" type="{urn:hl7-org:v3}ActMoodRequest" />
  *     &lt;/restriction>
  *   &lt;/complexContent>
@@ -44,41 +48,47 @@ import javax.xml.bind.annotation.XmlType;
 })
 public class COCTMT310000UV04AccommodationRequested {
 
-    protected DSETCS realmCode;
+    protected List<CS> realmCode;
     protected II typeId;
-    protected LISTII templateId;
+    protected List<II> templateId;
     @XmlElement(required = true)
     protected CS code;
     protected TS effectiveTime;
     @XmlElement(required = true)
     protected COCTMT310000UV04Author author;
     @XmlAttribute(name = "classCode", required = true)
-    protected ActClassRoot classCode;
+    @XmlJavaTypeAdapter(CollapsedStringAdapter.class)
+    protected String classCode;
     @XmlAttribute(name = "moodCode", required = true)
     protected ActMoodRequest moodCode;
 
     /**
      * Gets the value of the realmCode property.
      * 
-     * @return
-     *     possible object is
-     *     {@link DSETCS }
-     *     
-     */
-    public DSETCS getRealmCode() {
-        return realmCode;
-    }
-
-    /**
-     * Sets the value of the realmCode property.
+     * <p>
+     * This accessor method returns a reference to the live list,
+     * not a snapshot. Therefore any modification you make to the
+     * returned list will be present inside the JAXB object.
+     * This is why there is not a <CODE>set</CODE> method for the realmCode property.
      * 
-     * @param value
-     *     allowed object is
-     *     {@link DSETCS }
-     *     
+     * <p>
+     * For example, to add a new item, do as follows:
+     * <pre>
+     *    getRealmCode().add(newItem);
+     * </pre>
+     * 
+     * 
+     * <p>
+     * Objects of the following type(s) are allowed in the list
+     * {@link CS }
+     * 
+     * 
      */
-    public void setRealmCode(DSETCS value) {
-        this.realmCode = value;
+    public List<CS> getRealmCode() {
+        if (realmCode == null) {
+            realmCode = new ArrayList<CS>();
+        }
+        return this.realmCode;
     }
 
     /**
@@ -108,25 +118,30 @@ public class COCTMT310000UV04AccommodationRequested {
     /**
      * Gets the value of the templateId property.
      * 
-     * @return
-     *     possible object is
-     *     {@link LISTII }
-     *     
-     */
-    public LISTII getTemplateId() {
-        return templateId;
-    }
-
-    /**
-     * Sets the value of the templateId property.
+     * <p>
+     * This accessor method returns a reference to the live list,
+     * not a snapshot. Therefore any modification you make to the
+     * returned list will be present inside the JAXB object.
+     * This is why there is not a <CODE>set</CODE> method for the templateId property.
      * 
-     * @param value
-     *     allowed object is
-     *     {@link LISTII }
-     *     
+     * <p>
+     * For example, to add a new item, do as follows:
+     * <pre>
+     *    getTemplateId().add(newItem);
+     * </pre>
+     * 
+     * 
+     * <p>
+     * Objects of the following type(s) are allowed in the list
+     * {@link II }
+     * 
+     * 
      */
-    public void setTemplateId(LISTII value) {
-        this.templateId = value;
+    public List<II> getTemplateId() {
+        if (templateId == null) {
+            templateId = new ArrayList<II>();
+        }
+        return this.templateId;
     }
 
     /**
@@ -206,10 +221,10 @@ public class COCTMT310000UV04AccommodationRequested {
      * 
      * @return
      *     possible object is
-     *     {@link ActClassRoot }
+     *     {@link String }
      *     
      */
-    public ActClassRoot getClassCode() {
+    public String getClassCode() {
         return classCode;
     }
 
@@ -218,10 +233,10 @@ public class COCTMT310000UV04AccommodationRequested {
      * 
      * @param value
      *     allowed object is
-     *     {@link ActClassRoot }
+     *     {@link String }
      *     
      */
-    public void setClassCode(ActClassRoot value) {
+    public void setClassCode(String value) {
         this.classCode = value;
     }
 

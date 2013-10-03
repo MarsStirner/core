@@ -12,7 +12,7 @@ import javax.xml.bind.annotation.XmlType;
  * <p>
  * <pre>
  * &lt;simpleType name="IdentifierScope">
- *   &lt;restriction base="{http://www.w3.org/2001/XMLSchema}string">
+ *   &lt;restriction base="{urn:hl7-org:v3}cs">
  *     &lt;enumeration value="BUSN"/>
  *     &lt;enumeration value="OBJ"/>
  *     &lt;enumeration value="VER"/>

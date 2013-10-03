@@ -6,8 +6,6 @@ import java.util.List;
 import javax.xml.bind.annotation.XmlAccessType;
 import javax.xml.bind.annotation.XmlAccessorType;
 import javax.xml.bind.annotation.XmlAttribute;
-import javax.xml.bind.annotation.XmlID;
-import javax.xml.bind.annotation.XmlSchemaType;
 import javax.xml.bind.annotation.XmlSeeAlso;
 import javax.xml.bind.annotation.XmlType;
 import javax.xml.bind.annotation.adapters.CollapsedStringAdapter;
@@ -15,6 +13,20 @@ import javax.xml.bind.annotation.adapters.XmlJavaTypeAdapter;
 
 
 /**
+ * 
+ *             A concept descriptor represents any kind of concept usually
+ *             by giving a code defined in a code system.  A concept
+ *             descriptor can contain the original text or phrase that
+ *             served as the basis of the coding and one or more
+ *             translations into different coding systems. A concept
+ *             descriptor can also contain qualifiers to describe, e.g.,
+ *             the concept of a "left foot" as a postcoordinated term built
+ *             from the primary code "FOOT" and the qualifier "LEFT".
+ *             In exceptional cases, the concept descriptor need not
+ *             contain a code but only the original text describing
+ *             that concept.
+ *          
+ * 
  * <p>Java class for CD complex type.
  * 
  * <p>The following schema fragment specifies the expected content contained within this class.
@@ -24,19 +36,15 @@ import javax.xml.bind.annotation.adapters.XmlJavaTypeAdapter;
  *   &lt;complexContent>
  *     &lt;extension base="{urn:hl7-org:v3}ANY">
  *       &lt;sequence>
- *         &lt;element name="displayName" type="{urn:hl7-org:v3}ST" minOccurs="0"/>
  *         &lt;element name="originalText" type="{urn:hl7-org:v3}ED" minOccurs="0"/>
+ *         &lt;element name="qualifier" type="{urn:hl7-org:v3}CR" maxOccurs="unbounded" minOccurs="0"/>
  *         &lt;element name="translation" type="{urn:hl7-org:v3}CD" maxOccurs="unbounded" minOccurs="0"/>
- *         &lt;element name="source" type="{urn:hl7-org:v3}XReference" minOccurs="0"/>
  *       &lt;/sequence>
- *       &lt;attribute name="code" type="{http://www.w3.org/2001/XMLSchema}string" />
- *       &lt;attribute name="codeSystem" type="{urn:hl7-org:v3}Uid" />
- *       &lt;attribute name="codeSystemName" type="{http://www.w3.org/2001/XMLSchema}string" />
- *       &lt;attribute name="codeSystemVersion" type="{http://www.w3.org/2001/XMLSchema}string" />
- *       &lt;attribute name="valueSet" type="{urn:hl7-org:v3}Uid" />
- *       &lt;attribute name="valueSetVersion" type="{http://www.w3.org/2001/XMLSchema}string" />
- *       &lt;attribute name="codingRationale" type="{urn:hl7-org:v3}CodingRationale" />
- *       &lt;attribute name="id" type="{http://www.w3.org/2001/XMLSchema}ID" />
+ *       &lt;attribute name="code" type="{urn:hl7-org:v3}cs" />
+ *       &lt;attribute name="codeSystem" type="{urn:hl7-org:v3}uid" />
+ *       &lt;attribute name="codeSystemName" type="{urn:hl7-org:v3}st" />
+ *       &lt;attribute name="codeSystemVersion" type="{urn:hl7-org:v3}st" />
+ *       &lt;attribute name="displayName" type="{urn:hl7-org:v3}st" />
  *     &lt;/extension>
  *   &lt;/complexContent>
  * &lt;/complexType>
@@ -46,23 +54,24 @@ import javax.xml.bind.annotation.adapters.XmlJavaTypeAdapter;
  */
 @XmlAccessorType(XmlAccessType.FIELD)
 @XmlType(name = "CD", propOrder = {
-    "displayName",
     "originalText",
-    "translation",
-    "source"
+    "qualifier",
+    "translation"
 })
 @XmlSeeAlso({
-    PQR.class
+    SXCMCD.class,
+    BXITCD.class,
+    CE.class
 })
 public class CD
     extends ANY
 {
 
-    protected ST displayName;
     protected ED originalText;
+    protected List<CR> qualifier;
     protected List<CD> translation;
-    protected XReference source;
     @XmlAttribute(name = "code")
+    @XmlJavaTypeAdapter(CollapsedStringAdapter.class)
     protected String code;
     @XmlAttribute(name = "codeSystem")
     protected String codeSystem;
@@ -70,41 +79,8 @@ public class CD
     protected String codeSystemName;
     @XmlAttribute(name = "codeSystemVersion")
     protected String codeSystemVersion;
-    @XmlAttribute(name = "valueSet")
-    protected String valueSet;
-    @XmlAttribute(name = "valueSetVersion")
-    protected String valueSetVersion;
-    @XmlAttribute(name = "codingRationale")
-    protected CodingRationale codingRationale;
-    @XmlAttribute(name = "id")
-    @XmlJavaTypeAdapter(CollapsedStringAdapter.class)
-    @XmlID
-    @XmlSchemaType(name = "ID")
-    protected String id;
-
-    /**
-     * Gets the value of the displayName property.
-     * 
-     * @return
-     *     possible object is
-     *     {@link ST }
-     *     
-     */
-    public ST getDisplayName() {
-        return displayName;
-    }
-
-    /**
-     * Sets the value of the displayName property.
-     * 
-     * @param value
-     *     allowed object is
-     *     {@link ST }
-     *     
-     */
-    public void setDisplayName(ST value) {
-        this.displayName = value;
-    }
+    @XmlAttribute(name = "displayName")
+    protected String displayName;
 
     /**
      * Gets the value of the originalText property.
@@ -128,6 +104,35 @@ public class CD
      */
     public void setOriginalText(ED value) {
         this.originalText = value;
+    }
+
+    /**
+     * Gets the value of the qualifier property.
+     * 
+     * <p>
+     * This accessor method returns a reference to the live list,
+     * not a snapshot. Therefore any modification you make to the
+     * returned list will be present inside the JAXB object.
+     * This is why there is not a <CODE>set</CODE> method for the qualifier property.
+     * 
+     * <p>
+     * For example, to add a new item, do as follows:
+     * <pre>
+     *    getQualifier().add(newItem);
+     * </pre>
+     * 
+     * 
+     * <p>
+     * Objects of the following type(s) are allowed in the list
+     * {@link CR }
+     * 
+     * 
+     */
+    public List<CR> getQualifier() {
+        if (qualifier == null) {
+            qualifier = new ArrayList<CR>();
+        }
+        return this.qualifier;
     }
 
     /**
@@ -157,30 +162,6 @@ public class CD
             translation = new ArrayList<CD>();
         }
         return this.translation;
-    }
-
-    /**
-     * Gets the value of the source property.
-     * 
-     * @return
-     *     possible object is
-     *     {@link XReference }
-     *     
-     */
-    public XReference getSource() {
-        return source;
-    }
-
-    /**
-     * Sets the value of the source property.
-     * 
-     * @param value
-     *     allowed object is
-     *     {@link XReference }
-     *     
-     */
-    public void setSource(XReference value) {
-        this.source = value;
     }
 
     /**
@@ -280,99 +261,27 @@ public class CD
     }
 
     /**
-     * Gets the value of the valueSet property.
+     * Gets the value of the displayName property.
      * 
      * @return
      *     possible object is
      *     {@link String }
      *     
      */
-    public String getValueSet() {
-        return valueSet;
+    public String getDisplayName() {
+        return displayName;
     }
 
     /**
-     * Sets the value of the valueSet property.
+     * Sets the value of the displayName property.
      * 
      * @param value
      *     allowed object is
      *     {@link String }
      *     
      */
-    public void setValueSet(String value) {
-        this.valueSet = value;
-    }
-
-    /**
-     * Gets the value of the valueSetVersion property.
-     * 
-     * @return
-     *     possible object is
-     *     {@link String }
-     *     
-     */
-    public String getValueSetVersion() {
-        return valueSetVersion;
-    }
-
-    /**
-     * Sets the value of the valueSetVersion property.
-     * 
-     * @param value
-     *     allowed object is
-     *     {@link String }
-     *     
-     */
-    public void setValueSetVersion(String value) {
-        this.valueSetVersion = value;
-    }
-
-    /**
-     * Gets the value of the codingRationale property.
-     * 
-     * @return
-     *     possible object is
-     *     {@link CodingRationale }
-     *     
-     */
-    public CodingRationale getCodingRationale() {
-        return codingRationale;
-    }
-
-    /**
-     * Sets the value of the codingRationale property.
-     * 
-     * @param value
-     *     allowed object is
-     *     {@link CodingRationale }
-     *     
-     */
-    public void setCodingRationale(CodingRationale value) {
-        this.codingRationale = value;
-    }
-
-    /**
-     * Gets the value of the id property.
-     * 
-     * @return
-     *     possible object is
-     *     {@link String }
-     *     
-     */
-    public String getId() {
-        return id;
-    }
-
-    /**
-     * Sets the value of the id property.
-     * 
-     * @param value
-     *     allowed object is
-     *     {@link String }
-     *     
-     */
-    public void setId(String value) {
-        this.id = value;
+    public void setDisplayName(String value) {
+        this.displayName = value;
     }
 
 }

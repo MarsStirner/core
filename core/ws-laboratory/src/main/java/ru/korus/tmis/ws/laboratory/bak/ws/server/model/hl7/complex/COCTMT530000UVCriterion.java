@@ -24,14 +24,14 @@ import javax.xml.bind.annotation.XmlType;
  *         &lt;element name="code" type="{urn:hl7-org:v3}CD" minOccurs="0"/>
  *         &lt;element name="text" type="{urn:hl7-org:v3}ED" minOccurs="0"/>
  *         &lt;element name="value" type="{urn:hl7-org:v3}ANY"/>
- *         &lt;element name="interpretationCode" type="{urn:hl7-org:v3}CD"/>
+ *         &lt;element name="interpretationCode" type="{urn:hl7-org:v3}CE"/>
  *         &lt;element name="precondition" type="{urn:hl7-org:v3}COCT_MT530000UV.Precondition2" maxOccurs="unbounded" minOccurs="0"/>
  *       &lt;/sequence>
  *       &lt;attGroup ref="{urn:hl7-org:v3}InfrastructureRootAttributes"/>
  *       &lt;attribute name="nullFlavor" type="{urn:hl7-org:v3}NullFlavor" />
  *       &lt;attribute name="classCode" use="required" type="{urn:hl7-org:v3}ActClassObservation" />
  *       &lt;attribute name="moodCode" use="required" type="{urn:hl7-org:v3}ActMoodEventCriterion" />
- *       &lt;attribute name="negationInd" type="{http://www.w3.org/2001/XMLSchema}boolean" default="false" />
+ *       &lt;attribute name="negationInd" type="{urn:hl7-org:v3}bl" default="false" />
  *     &lt;/restriction>
  *   &lt;/complexContent>
  * &lt;/complexType>
@@ -52,15 +52,15 @@ import javax.xml.bind.annotation.XmlType;
 })
 public class COCTMT530000UVCriterion {
 
-    protected DSETCS realmCode;
+    protected List<CS> realmCode;
     protected II typeId;
-    protected LISTII templateId;
+    protected List<II> templateId;
     protected CD code;
     protected ED text;
     @XmlElement(required = true)
     protected ANY value;
     @XmlElement(required = true)
-    protected CD interpretationCode;
+    protected CE interpretationCode;
     @XmlElement(nillable = true)
     protected List<COCTMT530000UVPrecondition2> precondition;
     @XmlAttribute(name = "nullFlavor")
@@ -75,25 +75,30 @@ public class COCTMT530000UVCriterion {
     /**
      * Gets the value of the realmCode property.
      * 
-     * @return
-     *     possible object is
-     *     {@link DSETCS }
-     *     
-     */
-    public DSETCS getRealmCode() {
-        return realmCode;
-    }
-
-    /**
-     * Sets the value of the realmCode property.
+     * <p>
+     * This accessor method returns a reference to the live list,
+     * not a snapshot. Therefore any modification you make to the
+     * returned list will be present inside the JAXB object.
+     * This is why there is not a <CODE>set</CODE> method for the realmCode property.
      * 
-     * @param value
-     *     allowed object is
-     *     {@link DSETCS }
-     *     
+     * <p>
+     * For example, to add a new item, do as follows:
+     * <pre>
+     *    getRealmCode().add(newItem);
+     * </pre>
+     * 
+     * 
+     * <p>
+     * Objects of the following type(s) are allowed in the list
+     * {@link CS }
+     * 
+     * 
      */
-    public void setRealmCode(DSETCS value) {
-        this.realmCode = value;
+    public List<CS> getRealmCode() {
+        if (realmCode == null) {
+            realmCode = new ArrayList<CS>();
+        }
+        return this.realmCode;
     }
 
     /**
@@ -123,25 +128,30 @@ public class COCTMT530000UVCriterion {
     /**
      * Gets the value of the templateId property.
      * 
-     * @return
-     *     possible object is
-     *     {@link LISTII }
-     *     
-     */
-    public LISTII getTemplateId() {
-        return templateId;
-    }
-
-    /**
-     * Sets the value of the templateId property.
+     * <p>
+     * This accessor method returns a reference to the live list,
+     * not a snapshot. Therefore any modification you make to the
+     * returned list will be present inside the JAXB object.
+     * This is why there is not a <CODE>set</CODE> method for the templateId property.
      * 
-     * @param value
-     *     allowed object is
-     *     {@link LISTII }
-     *     
+     * <p>
+     * For example, to add a new item, do as follows:
+     * <pre>
+     *    getTemplateId().add(newItem);
+     * </pre>
+     * 
+     * 
+     * <p>
+     * Objects of the following type(s) are allowed in the list
+     * {@link II }
+     * 
+     * 
      */
-    public void setTemplateId(LISTII value) {
-        this.templateId = value;
+    public List<II> getTemplateId() {
+        if (templateId == null) {
+            templateId = new ArrayList<II>();
+        }
+        return this.templateId;
     }
 
     /**
@@ -221,10 +231,10 @@ public class COCTMT530000UVCriterion {
      * 
      * @return
      *     possible object is
-     *     {@link CD }
+     *     {@link CE }
      *     
      */
-    public CD getInterpretationCode() {
+    public CE getInterpretationCode() {
         return interpretationCode;
     }
 
@@ -233,10 +243,10 @@ public class COCTMT530000UVCriterion {
      * 
      * @param value
      *     allowed object is
-     *     {@link CD }
+     *     {@link CE }
      *     
      */
-    public void setInterpretationCode(CD value) {
+    public void setInterpretationCode(CE value) {
         this.interpretationCode = value;
     }
 

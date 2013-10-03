@@ -10,6 +10,8 @@ import javax.xml.bind.annotation.XmlAttribute;
 import javax.xml.bind.annotation.XmlElement;
 import javax.xml.bind.annotation.XmlElementRef;
 import javax.xml.bind.annotation.XmlType;
+import javax.xml.bind.annotation.adapters.CollapsedStringAdapter;
+import javax.xml.bind.annotation.adapters.XmlJavaTypeAdapter;
 
 
 /**
@@ -23,16 +25,16 @@ import javax.xml.bind.annotation.XmlType;
  *     &lt;restriction base="{http://www.w3.org/2001/XMLSchema}anyType">
  *       &lt;sequence>
  *         &lt;group ref="{urn:hl7-org:v3}InfrastructureRootElements"/>
- *         &lt;element name="id" type="{urn:hl7-org:v3}DSET_II" minOccurs="0"/>
+ *         &lt;element name="id" type="{urn:hl7-org:v3}II" maxOccurs="unbounded" minOccurs="0"/>
  *         &lt;element name="code" type="{urn:hl7-org:v3}CD"/>
  *         &lt;element name="text" type="{urn:hl7-org:v3}ED" minOccurs="0"/>
  *         &lt;element name="statusCode" type="{urn:hl7-org:v3}CS" minOccurs="0"/>
  *         &lt;element name="effectiveTime" type="{urn:hl7-org:v3}IVL_TS" minOccurs="0"/>
  *         &lt;element name="availabilityTime" type="{urn:hl7-org:v3}TS" minOccurs="0"/>
- *         &lt;element name="priorityCode" type="{urn:hl7-org:v3}CD" minOccurs="0"/>
- *         &lt;element name="confidentialityCode" type="{urn:hl7-org:v3}DSET_CD" minOccurs="0"/>
- *         &lt;element name="uncertaintyCode" type="{urn:hl7-org:v3}CD" minOccurs="0"/>
- *         &lt;element name="languageCode" type="{urn:hl7-org:v3}CD" minOccurs="0"/>
+ *         &lt;element name="priorityCode" type="{urn:hl7-org:v3}CE" minOccurs="0"/>
+ *         &lt;element name="confidentialityCode" type="{urn:hl7-org:v3}CE" maxOccurs="unbounded" minOccurs="0"/>
+ *         &lt;element name="uncertaintyCode" type="{urn:hl7-org:v3}CE" minOccurs="0"/>
+ *         &lt;element name="languageCode" type="{urn:hl7-org:v3}CE" minOccurs="0"/>
  *         &lt;element name="subject" type="{urn:hl7-org:v3}COCT_MT530000UV.Subject2" maxOccurs="unbounded" minOccurs="0"/>
  *         &lt;element name="recordTarget" type="{urn:hl7-org:v3}COCT_MT530000UV.RecordTarget" minOccurs="0"/>
  *         &lt;element name="responsibleParty" type="{urn:hl7-org:v3}COCT_MT530000UV.ResponsibleParty2" maxOccurs="unbounded" minOccurs="0"/>
@@ -50,9 +52,9 @@ import javax.xml.bind.annotation.XmlType;
  *         &lt;element name="inboundRelationship" type="{urn:hl7-org:v3}COCT_MT530000UV.SourceOf2" maxOccurs="unbounded" minOccurs="0"/>
  *       &lt;/sequence>
  *       &lt;attGroup ref="{urn:hl7-org:v3}InfrastructureRootAttributes"/>
- *       &lt;attribute name="classCode" use="required" type="{urn:hl7-org:v3}ActClassRoot" />
+ *       &lt;attribute name="classCode" use="required" type="{urn:hl7-org:v3}cs" />
  *       &lt;attribute name="moodCode" use="required" type="{urn:hl7-org:v3}x_ClinicalStatementActMood" />
- *       &lt;attribute name="negationInd" type="{http://www.w3.org/2001/XMLSchema}boolean" />
+ *       &lt;attribute name="negationInd" type="{urn:hl7-org:v3}bl" />
  *     &lt;/restriction>
  *   &lt;/complexContent>
  * &lt;/complexType>
@@ -93,20 +95,20 @@ import javax.xml.bind.annotation.XmlType;
 })
 public class COCTMT530000UVAct {
 
-    protected DSETCS realmCode;
+    protected List<CS> realmCode;
     protected II typeId;
-    protected LISTII templateId;
-    protected DSETII id;
+    protected List<II> templateId;
+    protected List<II> id;
     @XmlElement(required = true)
     protected CD code;
     protected ED text;
     protected CS statusCode;
     protected IVLTS effectiveTime;
     protected TS availabilityTime;
-    protected CD priorityCode;
-    protected DSETCD confidentialityCode;
-    protected CD uncertaintyCode;
-    protected CD languageCode;
+    protected CE priorityCode;
+    protected List<CE> confidentialityCode;
+    protected CE uncertaintyCode;
+    protected CE languageCode;
     @XmlElement(nillable = true)
     protected List<COCTMT530000UVSubject2> subject;
     @XmlElementRef(name = "recordTarget", namespace = "urn:hl7-org:v3", type = JAXBElement.class, required = false)
@@ -138,7 +140,8 @@ public class COCTMT530000UVAct {
     @XmlElement(nillable = true)
     protected List<COCTMT530000UVSourceOf2> inboundRelationship;
     @XmlAttribute(name = "classCode", required = true)
-    protected ActClassRoot classCode;
+    @XmlJavaTypeAdapter(CollapsedStringAdapter.class)
+    protected String classCode;
     @XmlAttribute(name = "moodCode", required = true)
     protected XClinicalStatementActMood moodCode;
     @XmlAttribute(name = "negationInd")
@@ -147,25 +150,30 @@ public class COCTMT530000UVAct {
     /**
      * Gets the value of the realmCode property.
      * 
-     * @return
-     *     possible object is
-     *     {@link DSETCS }
-     *     
-     */
-    public DSETCS getRealmCode() {
-        return realmCode;
-    }
-
-    /**
-     * Sets the value of the realmCode property.
+     * <p>
+     * This accessor method returns a reference to the live list,
+     * not a snapshot. Therefore any modification you make to the
+     * returned list will be present inside the JAXB object.
+     * This is why there is not a <CODE>set</CODE> method for the realmCode property.
      * 
-     * @param value
-     *     allowed object is
-     *     {@link DSETCS }
-     *     
+     * <p>
+     * For example, to add a new item, do as follows:
+     * <pre>
+     *    getRealmCode().add(newItem);
+     * </pre>
+     * 
+     * 
+     * <p>
+     * Objects of the following type(s) are allowed in the list
+     * {@link CS }
+     * 
+     * 
      */
-    public void setRealmCode(DSETCS value) {
-        this.realmCode = value;
+    public List<CS> getRealmCode() {
+        if (realmCode == null) {
+            realmCode = new ArrayList<CS>();
+        }
+        return this.realmCode;
     }
 
     /**
@@ -195,49 +203,59 @@ public class COCTMT530000UVAct {
     /**
      * Gets the value of the templateId property.
      * 
-     * @return
-     *     possible object is
-     *     {@link LISTII }
-     *     
-     */
-    public LISTII getTemplateId() {
-        return templateId;
-    }
-
-    /**
-     * Sets the value of the templateId property.
+     * <p>
+     * This accessor method returns a reference to the live list,
+     * not a snapshot. Therefore any modification you make to the
+     * returned list will be present inside the JAXB object.
+     * This is why there is not a <CODE>set</CODE> method for the templateId property.
      * 
-     * @param value
-     *     allowed object is
-     *     {@link LISTII }
-     *     
+     * <p>
+     * For example, to add a new item, do as follows:
+     * <pre>
+     *    getTemplateId().add(newItem);
+     * </pre>
+     * 
+     * 
+     * <p>
+     * Objects of the following type(s) are allowed in the list
+     * {@link II }
+     * 
+     * 
      */
-    public void setTemplateId(LISTII value) {
-        this.templateId = value;
+    public List<II> getTemplateId() {
+        if (templateId == null) {
+            templateId = new ArrayList<II>();
+        }
+        return this.templateId;
     }
 
     /**
      * Gets the value of the id property.
      * 
-     * @return
-     *     possible object is
-     *     {@link DSETII }
-     *     
-     */
-    public DSETII getId() {
-        return id;
-    }
-
-    /**
-     * Sets the value of the id property.
+     * <p>
+     * This accessor method returns a reference to the live list,
+     * not a snapshot. Therefore any modification you make to the
+     * returned list will be present inside the JAXB object.
+     * This is why there is not a <CODE>set</CODE> method for the id property.
      * 
-     * @param value
-     *     allowed object is
-     *     {@link DSETII }
-     *     
+     * <p>
+     * For example, to add a new item, do as follows:
+     * <pre>
+     *    getId().add(newItem);
+     * </pre>
+     * 
+     * 
+     * <p>
+     * Objects of the following type(s) are allowed in the list
+     * {@link II }
+     * 
+     * 
      */
-    public void setId(DSETII value) {
-        this.id = value;
+    public List<II> getId() {
+        if (id == null) {
+            id = new ArrayList<II>();
+        }
+        return this.id;
     }
 
     /**
@@ -365,10 +383,10 @@ public class COCTMT530000UVAct {
      * 
      * @return
      *     possible object is
-     *     {@link CD }
+     *     {@link CE }
      *     
      */
-    public CD getPriorityCode() {
+    public CE getPriorityCode() {
         return priorityCode;
     }
 
@@ -377,35 +395,40 @@ public class COCTMT530000UVAct {
      * 
      * @param value
      *     allowed object is
-     *     {@link CD }
+     *     {@link CE }
      *     
      */
-    public void setPriorityCode(CD value) {
+    public void setPriorityCode(CE value) {
         this.priorityCode = value;
     }
 
     /**
      * Gets the value of the confidentialityCode property.
      * 
-     * @return
-     *     possible object is
-     *     {@link DSETCD }
-     *     
-     */
-    public DSETCD getConfidentialityCode() {
-        return confidentialityCode;
-    }
-
-    /**
-     * Sets the value of the confidentialityCode property.
+     * <p>
+     * This accessor method returns a reference to the live list,
+     * not a snapshot. Therefore any modification you make to the
+     * returned list will be present inside the JAXB object.
+     * This is why there is not a <CODE>set</CODE> method for the confidentialityCode property.
      * 
-     * @param value
-     *     allowed object is
-     *     {@link DSETCD }
-     *     
+     * <p>
+     * For example, to add a new item, do as follows:
+     * <pre>
+     *    getConfidentialityCode().add(newItem);
+     * </pre>
+     * 
+     * 
+     * <p>
+     * Objects of the following type(s) are allowed in the list
+     * {@link CE }
+     * 
+     * 
      */
-    public void setConfidentialityCode(DSETCD value) {
-        this.confidentialityCode = value;
+    public List<CE> getConfidentialityCode() {
+        if (confidentialityCode == null) {
+            confidentialityCode = new ArrayList<CE>();
+        }
+        return this.confidentialityCode;
     }
 
     /**
@@ -413,10 +436,10 @@ public class COCTMT530000UVAct {
      * 
      * @return
      *     possible object is
-     *     {@link CD }
+     *     {@link CE }
      *     
      */
-    public CD getUncertaintyCode() {
+    public CE getUncertaintyCode() {
         return uncertaintyCode;
     }
 
@@ -425,10 +448,10 @@ public class COCTMT530000UVAct {
      * 
      * @param value
      *     allowed object is
-     *     {@link CD }
+     *     {@link CE }
      *     
      */
-    public void setUncertaintyCode(CD value) {
+    public void setUncertaintyCode(CE value) {
         this.uncertaintyCode = value;
     }
 
@@ -437,10 +460,10 @@ public class COCTMT530000UVAct {
      * 
      * @return
      *     possible object is
-     *     {@link CD }
+     *     {@link CE }
      *     
      */
-    public CD getLanguageCode() {
+    public CE getLanguageCode() {
         return languageCode;
     }
 
@@ -449,10 +472,10 @@ public class COCTMT530000UVAct {
      * 
      * @param value
      *     allowed object is
-     *     {@link CD }
+     *     {@link CE }
      *     
      */
-    public void setLanguageCode(CD value) {
+    public void setLanguageCode(CE value) {
         this.languageCode = value;
     }
 
@@ -876,10 +899,10 @@ public class COCTMT530000UVAct {
      * 
      * @return
      *     possible object is
-     *     {@link ActClassRoot }
+     *     {@link String }
      *     
      */
-    public ActClassRoot getClassCode() {
+    public String getClassCode() {
         return classCode;
     }
 
@@ -888,10 +911,10 @@ public class COCTMT530000UVAct {
      * 
      * @param value
      *     allowed object is
-     *     {@link ActClassRoot }
+     *     {@link String }
      *     
      */
-    public void setClassCode(ActClassRoot value) {
+    public void setClassCode(String value) {
         this.classCode = value;
     }
 

@@ -1,6 +1,8 @@
 
 package ru.korus.tmis.ws.laboratory.bak.ws.server.model.hl7.complex;
 
+import java.util.ArrayList;
+import java.util.List;
 import javax.xml.bind.annotation.XmlAccessType;
 import javax.xml.bind.annotation.XmlAccessorType;
 import javax.xml.bind.annotation.XmlAttribute;
@@ -19,7 +21,7 @@ import javax.xml.bind.annotation.XmlType;
  *     &lt;restriction base="{http://www.w3.org/2001/XMLSchema}anyType">
  *       &lt;sequence>
  *         &lt;group ref="{urn:hl7-org:v3}InfrastructureRootElements"/>
- *         &lt;element name="quantity" type="{urn:hl7-org:v3}RTO" minOccurs="0"/>
+ *         &lt;element name="quantity" type="{urn:hl7-org:v3}RTO_PQ_PQ" minOccurs="0"/>
  *         &lt;element name="manufacturedMaterialKind" type="{urn:hl7-org:v3}COCT_MT300000UV04.ManufacturedMaterialKind"/>
  *       &lt;/sequence>
  *       &lt;attGroup ref="{urn:hl7-org:v3}InfrastructureRootAttributes"/>
@@ -42,10 +44,10 @@ import javax.xml.bind.annotation.XmlType;
 })
 public class COCTMT300000UV04ManufacturedProduct {
 
-    protected DSETCS realmCode;
+    protected List<CS> realmCode;
     protected II typeId;
-    protected LISTII templateId;
-    protected RTO quantity;
+    protected List<II> templateId;
+    protected RTOPQPQ quantity;
     @XmlElement(required = true, nillable = true)
     protected COCTMT300000UV04ManufacturedMaterialKind manufacturedMaterialKind;
     @XmlAttribute(name = "nullFlavor")
@@ -56,25 +58,30 @@ public class COCTMT300000UV04ManufacturedProduct {
     /**
      * Gets the value of the realmCode property.
      * 
-     * @return
-     *     possible object is
-     *     {@link DSETCS }
-     *     
-     */
-    public DSETCS getRealmCode() {
-        return realmCode;
-    }
-
-    /**
-     * Sets the value of the realmCode property.
+     * <p>
+     * This accessor method returns a reference to the live list,
+     * not a snapshot. Therefore any modification you make to the
+     * returned list will be present inside the JAXB object.
+     * This is why there is not a <CODE>set</CODE> method for the realmCode property.
      * 
-     * @param value
-     *     allowed object is
-     *     {@link DSETCS }
-     *     
+     * <p>
+     * For example, to add a new item, do as follows:
+     * <pre>
+     *    getRealmCode().add(newItem);
+     * </pre>
+     * 
+     * 
+     * <p>
+     * Objects of the following type(s) are allowed in the list
+     * {@link CS }
+     * 
+     * 
      */
-    public void setRealmCode(DSETCS value) {
-        this.realmCode = value;
+    public List<CS> getRealmCode() {
+        if (realmCode == null) {
+            realmCode = new ArrayList<CS>();
+        }
+        return this.realmCode;
     }
 
     /**
@@ -104,25 +111,30 @@ public class COCTMT300000UV04ManufacturedProduct {
     /**
      * Gets the value of the templateId property.
      * 
-     * @return
-     *     possible object is
-     *     {@link LISTII }
-     *     
-     */
-    public LISTII getTemplateId() {
-        return templateId;
-    }
-
-    /**
-     * Sets the value of the templateId property.
+     * <p>
+     * This accessor method returns a reference to the live list,
+     * not a snapshot. Therefore any modification you make to the
+     * returned list will be present inside the JAXB object.
+     * This is why there is not a <CODE>set</CODE> method for the templateId property.
      * 
-     * @param value
-     *     allowed object is
-     *     {@link LISTII }
-     *     
+     * <p>
+     * For example, to add a new item, do as follows:
+     * <pre>
+     *    getTemplateId().add(newItem);
+     * </pre>
+     * 
+     * 
+     * <p>
+     * Objects of the following type(s) are allowed in the list
+     * {@link II }
+     * 
+     * 
      */
-    public void setTemplateId(LISTII value) {
-        this.templateId = value;
+    public List<II> getTemplateId() {
+        if (templateId == null) {
+            templateId = new ArrayList<II>();
+        }
+        return this.templateId;
     }
 
     /**
@@ -130,10 +142,10 @@ public class COCTMT300000UV04ManufacturedProduct {
      * 
      * @return
      *     possible object is
-     *     {@link RTO }
+     *     {@link RTOPQPQ }
      *     
      */
-    public RTO getQuantity() {
+    public RTOPQPQ getQuantity() {
         return quantity;
     }
 
@@ -142,10 +154,10 @@ public class COCTMT300000UV04ManufacturedProduct {
      * 
      * @param value
      *     allowed object is
-     *     {@link RTO }
+     *     {@link RTOPQPQ }
      *     
      */
-    public void setQuantity(RTO value) {
+    public void setQuantity(RTOPQPQ value) {
         this.quantity = value;
     }
 

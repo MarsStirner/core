@@ -12,20 +12,26 @@ import javax.xml.bind.annotation.XmlType;
  * <p>
  * <pre>
  * &lt;simpleType name="EntityNamePartQualifier">
- *   &lt;restriction base="{http://www.w3.org/2001/XMLSchema}string">
- *     &lt;enumeration value="LS"/>
+ *   &lt;restriction base="{urn:hl7-org:v3}cs">
  *     &lt;enumeration value="AC"/>
+ *     &lt;enumeration value="AD"/>
+ *     &lt;enumeration value="BR"/>
+ *     &lt;enumeration value="CL"/>
+ *     &lt;enumeration value="CON"/>
+ *     &lt;enumeration value="DEV"/>
+ *     &lt;enumeration value="FRM"/>
+ *     &lt;enumeration value="IN"/>
+ *     &lt;enumeration value="INV"/>
+ *     &lt;enumeration value="LS"/>
  *     &lt;enumeration value="NB"/>
  *     &lt;enumeration value="PR"/>
- *     &lt;enumeration value="HON"/>
- *     &lt;enumeration value="BR"/>
- *     &lt;enumeration value="AD"/>
+ *     &lt;enumeration value="SCI"/>
  *     &lt;enumeration value="SP"/>
- *     &lt;enumeration value="MID"/>
- *     &lt;enumeration value="CL"/>
- *     &lt;enumeration value="IN"/>
- *     &lt;enumeration value="PFX"/>
- *     &lt;enumeration value="SFX"/>
+ *     &lt;enumeration value="STR"/>
+ *     &lt;enumeration value="TITLE"/>
+ *     &lt;enumeration value="TMK"/>
+ *     &lt;enumeration value="USE"/>
+ *     &lt;enumeration value="VV"/>
  *   &lt;/restriction>
  * &lt;/simpleType>
  * </pre>
@@ -35,19 +41,25 @@ import javax.xml.bind.annotation.XmlType;
 @XmlEnum
 public enum EntityNamePartQualifier {
 
-    LS,
     AC,
+    AD,
+    BR,
+    CL,
+    CON,
+    DEV,
+    FRM,
+    IN,
+    INV,
+    LS,
     NB,
     PR,
-    HON,
-    BR,
-    AD,
+    SCI,
     SP,
-    MID,
-    CL,
-    IN,
-    PFX,
-    SFX;
+    STR,
+    TITLE,
+    TMK,
+    USE,
+    VV;
 
     public String value() {
         return name();

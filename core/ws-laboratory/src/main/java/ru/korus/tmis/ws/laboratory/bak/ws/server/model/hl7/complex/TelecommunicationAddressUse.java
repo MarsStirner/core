@@ -12,19 +12,20 @@ import javax.xml.bind.annotation.XmlType;
  * <p>
  * <pre>
  * &lt;simpleType name="TelecommunicationAddressUse">
- *   &lt;restriction base="{http://www.w3.org/2001/XMLSchema}string">
+ *   &lt;restriction base="{urn:hl7-org:v3}cs">
+ *     &lt;enumeration value="AS"/>
+ *     &lt;enumeration value="BAD"/>
+ *     &lt;enumeration value="CONF"/>
+ *     &lt;enumeration value="DIR"/>
+ *     &lt;enumeration value="EC"/>
  *     &lt;enumeration value="H"/>
  *     &lt;enumeration value="HP"/>
  *     &lt;enumeration value="HV"/>
- *     &lt;enumeration value="WP"/>
- *     &lt;enumeration value="DIR"/>
- *     &lt;enumeration value="PUB"/>
- *     &lt;enumeration value="BAD"/>
- *     &lt;enumeration value="TMP"/>
- *     &lt;enumeration value="AS"/>
- *     &lt;enumeration value="EC"/>
  *     &lt;enumeration value="MC"/>
  *     &lt;enumeration value="PG"/>
+ *     &lt;enumeration value="PUB"/>
+ *     &lt;enumeration value="TMP"/>
+ *     &lt;enumeration value="WP"/>
  *   &lt;/restriction>
  * &lt;/simpleType>
  * </pre>
@@ -34,18 +35,19 @@ import javax.xml.bind.annotation.XmlType;
 @XmlEnum
 public enum TelecommunicationAddressUse {
 
+    AS,
+    BAD,
+    CONF,
+    DIR,
+    EC,
     H,
     HP,
     HV,
-    WP,
-    DIR,
-    PUB,
-    BAD,
-    TMP,
-    AS,
-    EC,
     MC,
-    PG;
+    PG,
+    PUB,
+    TMP,
+    WP;
 
     public String value() {
         return name();

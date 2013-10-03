@@ -12,12 +12,10 @@ import javax.xml.bind.annotation.XmlType;
  * <p>
  * <pre>
  * &lt;simpleType name="CodingRationale">
- *   &lt;restriction base="{http://www.w3.org/2001/XMLSchema}string">
+ *   &lt;restriction base="{urn:hl7-org:v3}cs">
  *     &lt;enumeration value="O"/>
  *     &lt;enumeration value="P"/>
  *     &lt;enumeration value="R"/>
- *     &lt;enumeration value="OR"/>
- *     &lt;enumeration value="PR"/>
  *   &lt;/restriction>
  * &lt;/simpleType>
  * </pre>
@@ -29,9 +27,7 @@ public enum CodingRationale {
 
     O,
     P,
-    R,
-    OR,
-    PR;
+    R;
 
     public String value() {
         return name();

@@ -12,37 +12,36 @@ import javax.xml.bind.annotation.XmlType;
  * <p>
  * <pre>
  * &lt;simpleType name="AddressPartType">
- *   &lt;restriction base="{http://www.w3.org/2001/XMLSchema}string">
- *     &lt;enumeration value="AL"/>
+ *   &lt;restriction base="{urn:hl7-org:v3}cs">
  *     &lt;enumeration value="ADL"/>
- *     &lt;enumeration value="UNID"/>
- *     &lt;enumeration value="UNIT"/>
- *     &lt;enumeration value="DAL"/>
- *     &lt;enumeration value="DINST"/>
- *     &lt;enumeration value="DINSTA"/>
- *     &lt;enumeration value="DINSTQ"/>
- *     &lt;enumeration value="DMOD"/>
- *     &lt;enumeration value="DMODID"/>
- *     &lt;enumeration value="SAL"/>
- *     &lt;enumeration value="BNR"/>
+ *     &lt;enumeration value="AL"/>
  *     &lt;enumeration value="BNN"/>
+ *     &lt;enumeration value="BNR"/>
  *     &lt;enumeration value="BNS"/>
- *     &lt;enumeration value="STR"/>
- *     &lt;enumeration value="STB"/>
- *     &lt;enumeration value="STTYP"/>
- *     &lt;enumeration value="DIR"/>
- *     &lt;enumeration value="INT"/>
  *     &lt;enumeration value="CAR"/>
  *     &lt;enumeration value="CEN"/>
  *     &lt;enumeration value="CNT"/>
  *     &lt;enumeration value="CPA"/>
  *     &lt;enumeration value="CTY"/>
+ *     &lt;enumeration value="DAL"/>
  *     &lt;enumeration value="DEL"/>
+ *     &lt;enumeration value="DINST"/>
+ *     &lt;enumeration value="DINSTA"/>
+ *     &lt;enumeration value="DINSTQ"/>
+ *     &lt;enumeration value="DIR"/>
+ *     &lt;enumeration value="DMOD"/>
+ *     &lt;enumeration value="DMODID"/>
+ *     &lt;enumeration value="INT"/>
  *     &lt;enumeration value="POB"/>
  *     &lt;enumeration value="PRE"/>
+ *     &lt;enumeration value="SAL"/>
  *     &lt;enumeration value="STA"/>
+ *     &lt;enumeration value="STB"/>
+ *     &lt;enumeration value="STR"/>
+ *     &lt;enumeration value="STTYP"/>
+ *     &lt;enumeration value="UNID"/>
+ *     &lt;enumeration value="UNIT"/>
  *     &lt;enumeration value="ZIP"/>
- *     &lt;enumeration value="DPID"/>
  *   &lt;/restriction>
  * &lt;/simpleType>
  * </pre>
@@ -52,36 +51,35 @@ import javax.xml.bind.annotation.XmlType;
 @XmlEnum
 public enum AddressPartType {
 
-    AL,
     ADL,
-    UNID,
-    UNIT,
-    DAL,
-    DINST,
-    DINSTA,
-    DINSTQ,
-    DMOD,
-    DMODID,
-    SAL,
-    BNR,
+    AL,
     BNN,
+    BNR,
     BNS,
-    STR,
-    STB,
-    STTYP,
-    DIR,
-    INT,
     CAR,
     CEN,
     CNT,
     CPA,
     CTY,
+    DAL,
     DEL,
+    DINST,
+    DINSTA,
+    DINSTQ,
+    DIR,
+    DMOD,
+    DMODID,
+    INT,
     POB,
     PRE,
+    SAL,
     STA,
-    ZIP,
-    DPID;
+    STB,
+    STR,
+    STTYP,
+    UNID,
+    UNIT,
+    ZIP;
 
     public String value() {
         return name();
