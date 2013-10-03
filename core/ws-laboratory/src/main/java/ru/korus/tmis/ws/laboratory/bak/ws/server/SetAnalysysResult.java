@@ -2,6 +2,10 @@ package ru.korus.tmis.ws.laboratory.bak.ws.server;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.w3c.dom.Document;
+import org.w3c.dom.Node;
+import org.w3c.dom.NodeList;
+import org.xml.sax.SAXException;
 import ru.korus.tmis.core.database.bak.*;
 import ru.korus.tmis.core.entity.model.bak.*;
 import ru.korus.tmis.core.exception.CoreException;
@@ -14,11 +18,19 @@ import javax.jws.WebMethod;
 import javax.jws.WebParam;
 import javax.jws.WebResult;
 import javax.jws.WebService;
-import javax.xml.bind.JAXBElement;
 import javax.xml.datatype.XMLGregorianCalendar;
+import javax.xml.parsers.DocumentBuilder;
+import javax.xml.parsers.DocumentBuilderFactory;
+import javax.xml.parsers.ParserConfigurationException;
+import javax.xml.xpath.XPath;
+import javax.xml.xpath.XPathConstants;
+import javax.xml.xpath.XPathExpressionException;
+import javax.xml.xpath.XPathFactory;
+import java.io.ByteArrayInputStream;
+import java.io.IOException;
+import java.io.UnsupportedEncodingException;
 import java.text.SimpleDateFormat;
 import java.util.Date;
-import java.util.List;
 import java.util.UUID;
 
 import static ru.korus.tmis.util.CompileTimeConfigManager.Laboratory.Namespace;
@@ -95,6 +107,7 @@ public class SetAnalysysResult implements SetAnalysysResultWS {
         return response;
     }
 
+
     /**
      * Запись данных результата в БД
      *
@@ -104,6 +117,61 @@ public class SetAnalysysResult implements SetAnalysysResultWS {
         // заполняем справочники
         final String results = Utils.marshallMessage(request, "ru.korus.tmis.ws.laboratory.bak.ws.server.model.hl7.complex");
 
+
+        final DocumentBuilderFactory builderFactory = DocumentBuilderFactory.newInstance();
+        DocumentBuilder builder = null;
+        try {
+            builder = builderFactory.newDocumentBuilder();
+
+
+            Document xmlDocument = builder.parse(new ByteArrayInputStream(results.getBytes("UTF-8")));
+
+            XPath xPath = XPathFactory.newInstance().newXPath();
+
+            //root документа
+            String root = xPath.compile("/POLB_IN224100UV01/id/@root").evaluate(xmlDocument);
+
+
+//            String orderMisId = xPath.compile("/POLB_IN224100UV01/id/@root").evaluate(xmlDocument);
+
+            String orderMisId = (String) xPath.compile("/*[name()='POLB_IN224100UV01']/*[name()='controlActProcess']/*[name()='subject'][1]/*[name()='observationReport']/*[name()='id']/@controlInformationRoot").evaluate(xmlDocument, XPathConstants.STRING);
+
+
+            String nameAnaliz = (String) xPath.compile("/*[name()='POLB_IN224100UV01']/*[name()='controlActProcess']/*[name()='subject'][1]/*[name()='observationReport']/*[name()='code']/*[name()='displayName']/@value").evaluate(xmlDocument, XPathConstants.STRING);
+            String codeAnaliz = xPath.compile("/*[name()='POLB_IN224100UV01']/*[name()='controlActProcess']/*[name()='subject'][1]/*[name()='observationReport']/*[name()='code']/@code").evaluate(xmlDocument);
+
+
+            String identifierName = xPath.compile("/*[name()='POLB_IN224100UV01']/*[name()='controlActProcess']/*[name()='subject'][1]/*[name()='observationReport']/*[name()='specimen']/*[name()='specimen']/*[name()='id']/@identifierName").evaluate(xmlDocument);
+
+            String authorCode = xPath.compile("/*[name()='POLB_IN224100UV01']/*[name()='controlActProcess']/*[name()='subject'][1]/*[name()='observationReport']/*[name()='author']/*[name()='assignedEntity']/*[name()='code']/@code").evaluate(xmlDocument);
+            String authorName = xPath.compile("/*[name()='POLB_IN224100UV01']/*[name()='controlActProcess']/*[name()='subject'][1]/*[name()='observationReport']/*[name()='author']/*[name()='assignedEntity']/*[name()='code']/*[name()='displayName']/@value").evaluate(xmlDocument);
+
+
+            NodeList nodeList = (NodeList) xPath.compile("/*[name()='POLB_IN224100UV01']/*[name()='controlActProcess']/*[name()='subject']").evaluate(xmlDocument, XPathConstants.NODESET);
+            for(int i = 0; i < nodeList.getLength(); i++) {
+                System.out.println(nodeList.item(i).getFirstChild().getNodeValue());
+            }
+
+//            String identifierName = xPath.compile("").evaluate(xmlDocument);
+//            String identifierName = xPath.compile("").evaluate(xmlDocument);
+//            String identifierName = xPath.compile("").evaluate(xmlDocument);
+//            String identifierName = xPath.compile("").evaluate(xmlDocument);
+//            String identifierName = xPath.compile("").evaluate(xmlDocument);
+
+
+            logger.info("parse {}", root);
+
+        } catch (ParserConfigurationException e) {
+            e.printStackTrace();
+        } catch (SAXException e) {
+            e.printStackTrace();
+        } catch (UnsupportedEncodingException e) {
+            e.printStackTrace();
+        } catch (IOException e) {
+            e.printStackTrace();
+        } catch (XPathExpressionException e) {
+            e.printStackTrace();
+        }
 
 //        final List<POLBIN224100UV01MCAIMT700201UV01Subject2> subjectList = request.getControlActProcess().getSubject();
 //        for (POLBIN224100UV01MCAIMT700201UV01Subject2 subj : subjectList) {
