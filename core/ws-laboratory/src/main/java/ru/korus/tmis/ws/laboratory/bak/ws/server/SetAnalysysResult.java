@@ -102,48 +102,50 @@ public class SetAnalysysResult implements SetAnalysysResultWS {
      */
     private void flushToDB(POLBIN224100UV01 request) {
         // заполняем справочники
-
-        final List<POLBIN224100UV01MCAIMT700201UV01Subject2> subjectList = request.getControlActProcess().getSubject();
-        for (POLBIN224100UV01MCAIMT700201UV01Subject2 subj : subjectList) {
-
-            if (subj.getObservationBattery() != null) {
-
-                final JAXBElement<POLBMT004000UV01ObservationBattery> battery = subj.getObservationBattery();
-                final POLBMT004000UV01ObservationBattery value = battery.getValue();
-
-                final String displayName = value.getCode().getCode();
+        final String results = Utils.marshallMessage(request, "ru.korus.tmis.ws.laboratory.bak.ws.server.model.hl7.complex");
 
 
-            } else if (subj.getObservationEvent() != null) {
-
-                final JAXBElement<POLBMT004000UV01ObservationEvent> event = subj.getObservationEvent();
-                final POLBMT004000UV01ObservationEvent value = event.getValue();
-                final String code = value.getCode().getCode();
-
-
-            } else if (subj.getObservationReport() != null) {
-
-                final JAXBElement<POLBMT004000UV01ObservationReport> report = subj.getObservationReport();
-                final POLBMT004000UV01ObservationReport value = report.getValue();
-                final String code = value.getCode().getCode();
-
-
-            } else if (subj.getSpecimenObservationCluster() != null) {
-
-                final JAXBElement<POLBMT004000UV01SpecimenObservationCluster> cluster = subj.getSpecimenObservationCluster();
-                final POLBMT004000UV01SpecimenObservationCluster value = cluster.getValue();
-
-                final List<POLBMT004000UV01Specimen> specimenList = value.getSpecimen();
-                for (POLBMT004000UV01Specimen specimen : specimenList) {
-//                    final String code = specimen.getSpecimen().getCode().getCode();
-
-
-                }
-
-            }
-
-
-        }
+//        final List<POLBIN224100UV01MCAIMT700201UV01Subject2> subjectList = request.getControlActProcess().getSubject();
+//        for (POLBIN224100UV01MCAIMT700201UV01Subject2 subj : subjectList) {
+//
+//            if (subj.getObservationBattery() != null) {
+//
+//                final JAXBElement<POLBMT004000UV01ObservationBattery> battery = subj.getObservationBattery();
+//                final POLBMT004000UV01ObservationBattery value = battery.getValue();
+//
+//                final String displayName = value.getCode().getCode();
+//
+//
+//            } else if (subj.getObservationEvent() != null) {
+//
+//                final JAXBElement<POLBMT004000UV01ObservationEvent> event = subj.getObservationEvent();
+//                final POLBMT004000UV01ObservationEvent value = event.getValue();
+//                final String code = value.getCode().getCode();
+//
+//
+//            } else if (subj.getObservationReport() != null) {
+//
+//                final JAXBElement<POLBMT004000UV01ObservationReport> report = subj.getObservationReport();
+//                final POLBMT004000UV01ObservationReport value = report.getValue();
+//                final String code = value.getCode().getCode();
+//
+//
+//            } else if (subj.getSpecimenObservationCluster() != null) {
+//
+//                final JAXBElement<POLBMT004000UV01SpecimenObservationCluster> cluster = subj.getSpecimenObservationCluster();
+//                final POLBMT004000UV01SpecimenObservationCluster value = cluster.getValue();
+//
+//                final List<POLBMT004000UV01Specimen> specimenList = value.getSpecimen();
+//                for (POLBMT004000UV01Specimen specimen : specimenList) {
+////                    final String code = specimen.getSpecimen().getCode().getCode();
+//
+//
+//                }
+//
+//            }
+//
+//
+//        }
 
         final RbAntibiotic rbAntibiotic = new RbAntibiotic();
         rbAntibiotic.setCode("1");
