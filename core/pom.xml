@@ -262,7 +262,7 @@
             <properties>
                 <!-- Домашняя директория Glassfish -->
                 <glassfish.home>/Users/nde/Unixprog/glassfish3</glassfish.home>
-                <eclipselink.ddl.generated>update-tables</eclipselink.ddl.generated>
+                <!--<eclipselink.ddl.generated>update-tables</eclipselink.ddl.generated>-->
 
             </properties>
         </profile>
