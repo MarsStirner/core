@@ -1,6 +1,6 @@
 package ru.korus.tmis.core.database.bak;
 
-import ru.korus.tmis.core.entity.model.bak.BbtResponse;
+import ru.korus.tmis.core.entity.model.bak.RbMicroorganism;
 
 import javax.ejb.Local;
 
@@ -11,9 +11,9 @@ import javax.ejb.Local;
  * Description:  <br>
  */
 @Local
-public interface DbBbtResponseBeanLocal {
+public interface DbRbMicroorganismBeanLocal {
 
-    void add(BbtResponse bbtResponse);
+    void add(RbMicroorganism rbMicroorganism);
 
-    BbtResponse get(final Integer id);
+    RbMicroorganism get(final Integer id);
 }

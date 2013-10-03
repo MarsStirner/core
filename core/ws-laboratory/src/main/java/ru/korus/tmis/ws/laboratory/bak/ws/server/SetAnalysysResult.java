@@ -2,9 +2,8 @@ package ru.korus.tmis.ws.laboratory.bak.ws.server;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import ru.korus.tmis.core.database.bak.DbBbtResponseBean;
-import ru.korus.tmis.core.database.bak.DbBbtResponseBeanLocal;
-import ru.korus.tmis.core.entity.model.bak.BbtResponse;
+import ru.korus.tmis.core.database.bak.*;
+import ru.korus.tmis.core.entity.model.bak.*;
 import ru.korus.tmis.core.exception.CoreException;
 import ru.korus.tmis.util.CompileTimeConfigManager;
 import ru.korus.tmis.util.logs.ToLog;
@@ -15,9 +14,11 @@ import javax.jws.WebMethod;
 import javax.jws.WebParam;
 import javax.jws.WebResult;
 import javax.jws.WebService;
+import javax.xml.bind.JAXBElement;
 import javax.xml.datatype.XMLGregorianCalendar;
 import java.text.SimpleDateFormat;
 import java.util.Date;
+import java.util.List;
 import java.util.UUID;
 
 import static ru.korus.tmis.util.CompileTimeConfigManager.Laboratory.Namespace;
@@ -46,11 +47,29 @@ public class SetAnalysysResult implements SetAnalysysResultWS {
     @EJB
     private DbBbtResponseBeanLocal dbBbtResponseBean;
 
+    @EJB
+    private DbBbtResultTableBeanLocal dbBbtResultTableBean;
+
+    @EJB
+    private DbBbtOrganismSensValuesBeanLocal dbBbtOrganismSensValuesBean;
+
+    @EJB
+    private DbRbAntibioticBeanLocal dbRbAntibioticBean;
+
+    @EJB
+    private DbRbBacIndicatorBeanLocal dbRbBacIndicatorBean;
+
+    @EJB
+    private DbRbMicroorganismBeanLocal dbRbMicroorganismBean;
 
 
-
-
-
+    /**
+     * Получение результатов исследования
+     *
+     * @param request
+     * @return
+     * @throws CoreException
+     */
     @Override
     @WebMethod(operationName = "setAnalysisResults")
     @WebResult(name = SUCCESS_ACCEPT_EVENT, targetNamespace = NAMESPACE, partName = "Body")
@@ -82,13 +101,81 @@ public class SetAnalysysResult implements SetAnalysysResultWS {
      * @param request
      */
     private void flushToDB(POLBIN224100UV01 request) {
+        // заполняем справочники
+
+        final List<POLBIN224100UV01MCAIMT700201UV01Subject2> subjectList = request.getControlActProcess().getSubject();
+        for (POLBIN224100UV01MCAIMT700201UV01Subject2 subj : subjectList) {
+
+            if (subj.getObservationBattery() != null) {
+
+                final JAXBElement<POLBMT004000UV01ObservationBattery> battery = subj.getObservationBattery();
+                final POLBMT004000UV01ObservationBattery value = battery.getValue();
+
+                final String displayName = value.getCode().getDisplayName();
+
+
+            } else if (subj.getObservationEvent() != null) {
+
+                final JAXBElement<POLBMT004000UV01ObservationEvent> event = subj.getObservationEvent();
+                final POLBMT004000UV01ObservationEvent value = event.getValue();
+                final String code = value.getCode().getCode();
+
+
+            } else if (subj.getObservationReport() != null) {
+
+                final JAXBElement<POLBMT004000UV01ObservationReport> report = subj.getObservationReport();
+                final POLBMT004000UV01ObservationReport value = report.getValue();
+                final String code = value.getCode().getCode();
+
+
+            } else if (subj.getSpecimenObservationCluster() != null) {
+
+                final JAXBElement<POLBMT004000UV01SpecimenObservationCluster> cluster = subj.getSpecimenObservationCluster();
+                final POLBMT004000UV01SpecimenObservationCluster value = cluster.getValue();
+
+                final List<POLBMT004000UV01Specimen> specimenList = value.getSpecimen();
+                for (POLBMT004000UV01Specimen specimen : specimenList) {
+                    final String code = specimen.getSpecimen().getCode().getCode();
+
+
+                }
+
+            }
+
+
+        }
+
+        final RbAntibiotic rbAntibiotic = new RbAntibiotic();
+        rbAntibiotic.setCode("1");
+        rbAntibiotic.setId(1);
+        rbAntibiotic.setName("abc");
+        dbRbAntibioticBean.add(rbAntibiotic);
+
+        final RbBacIndicator rbBacIndicator = new RbBacIndicator();
+        rbBacIndicator.setCode("2");
+        rbBacIndicator.setId(2);
+        rbBacIndicator.setName("cde");
+        dbRbBacIndicatorBean.add(rbBacIndicator);
+
+        final RbMicroorganism rbMicroorganism = new RbMicroorganism();
+        rbMicroorganism.setCode("3");
+        rbMicroorganism.setId(3);
+        rbMicroorganism.setName("efg");
+        dbRbMicroorganismBean.add(rbMicroorganism);
+
+
+        final BbtResultTable bbtResultTable = new BbtResultTable();
+
+        dbBbtResultTableBean.add(bbtResultTable);
 
         final BbtResponse bbtResponse = new BbtResponse();
-    //    bbtResponse.setId(request.);
-
-    //    request.getControlActProcess().getSubject().get(0).getObservationReport().getValue().getId()
+        //    bbtResponse.setId(request.);
 
         dbBbtResponseBean.add(bbtResponse);
+
+        final BbtOrganismSensValues bbtOrganismSensValues = new BbtOrganismSensValues();
+
+        dbBbtOrganismSensValuesBean.add(bbtOrganismSensValues);
     }
 
     /**
@@ -218,7 +305,7 @@ public class SetAnalysysResult implements SetAnalysysResultWS {
 
         final MCCIMT000200UV01Acknowledgement acknowledgement = new MCCIMT000200UV01Acknowledgement();
         final CS typeCode = new CS();
-        typeCode.setCode("AA");
+        typeCode.setCode("AE");
         acknowledgement.setTypeCode(typeCode);
         final MCCIMT000200UV01TargetMessage targetMessage = new MCCIMT000200UV01TargetMessage();
         final II id1 = new II();
@@ -243,6 +330,17 @@ public class SetAnalysysResult implements SetAnalysysResultWS {
         return response;
     }
 
+    /**
+     * Сообщение от ЛИС о доставке материала. Факт завершения забора биоматериала.
+     *
+     * @param orderMisId           - штрих-код на контейнере c биоматериалом (десятичное представление считанного штрих-кода)
+     * @param takenTissueJournal   - TakenTissueJournal.id – номер заказа
+     * @param getTissueTime        - Дата и время регистрации биоматериала в лаборатории
+     * @param orderBiomaterialName - название  биоматериала из справочника биоматериалов
+     * @param orderLIS             - Номер заказа в ЛИС
+     * @return
+     * @throws CoreException
+     */
     @Override
     public int bakDelivered(@WebParam(name = "orderBarCode", targetNamespace = Namespace)
                             Integer orderMisId,

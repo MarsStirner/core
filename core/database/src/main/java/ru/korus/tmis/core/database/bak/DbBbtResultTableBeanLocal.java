@@ -1,6 +1,7 @@
 package ru.korus.tmis.core.database.bak;
 
 import ru.korus.tmis.core.entity.model.bak.BbtResponse;
+import ru.korus.tmis.core.entity.model.bak.BbtResultTable;
 
 import javax.ejb.Local;
 
@@ -11,9 +12,9 @@ import javax.ejb.Local;
  * Description:  <br>
  */
 @Local
-public interface DbBbtResponseBeanLocal {
+public interface DbBbtResultTableBeanLocal {
 
-    void add(BbtResponse bbtResponse);
+    void add(BbtResultTable bbtResultTable);
 
-    BbtResponse get(final Integer id);
+    BbtResultTable get(final Integer id);
 }
