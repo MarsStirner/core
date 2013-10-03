@@ -13,8 +13,8 @@ import javax.xml.bind.annotation.XmlType;
  * <pre>
  * &lt;simpleType name="x_ActClassDocumentEntryOrganizer">
  *   &lt;restriction base="{urn:hl7-org:v3}cs">
- *     &lt;enumeration value="CLUSTER"/>
  *     &lt;enumeration value="BATTERY"/>
+ *     &lt;enumeration value="CLUSTER"/>
  *   &lt;/restriction>
  * &lt;/simpleType>
  * </pre>
@@ -24,8 +24,8 @@ import javax.xml.bind.annotation.XmlType;
 @XmlEnum
 public enum XActClassDocumentEntryOrganizer {
 
-    CLUSTER,
-    BATTERY;
+    BATTERY,
+    CLUSTER;
 
     public String value() {
         return name();

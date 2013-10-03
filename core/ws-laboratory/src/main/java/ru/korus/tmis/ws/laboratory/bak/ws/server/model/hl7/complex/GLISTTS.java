@@ -1,11 +1,9 @@
 
 package ru.korus.tmis.ws.laboratory.bak.ws.server.model.hl7.complex;
 
-import java.math.BigInteger;
 import javax.xml.bind.annotation.XmlAccessType;
 import javax.xml.bind.annotation.XmlAccessorType;
 import javax.xml.bind.annotation.XmlAttribute;
-import javax.xml.bind.annotation.XmlElement;
 import javax.xml.bind.annotation.XmlType;
 
 
@@ -19,11 +17,11 @@ import javax.xml.bind.annotation.XmlType;
  *   &lt;complexContent>
  *     &lt;extension base="{urn:hl7-org:v3}ANY">
  *       &lt;sequence>
- *         &lt;element name="head" type="{urn:hl7-org:v3}TS"/>
- *         &lt;element name="increment" type="{urn:hl7-org:v3}PQ"/>
+ *         &lt;element name="head" type="{urn:hl7-org:v3}TS" minOccurs="0"/>
+ *         &lt;element name="increment" type="{urn:hl7-org:v3}QTY" minOccurs="0"/>
  *       &lt;/sequence>
- *       &lt;attribute name="period" type="{urn:hl7-org:v3}int" />
- *       &lt;attribute name="denominator" type="{urn:hl7-org:v3}int" />
+ *       &lt;attribute name="denominator" type="{http://www.w3.org/2001/XMLSchema}int" />
+ *       &lt;attribute name="period" type="{http://www.w3.org/2001/XMLSchema}int" />
  *     &lt;/extension>
  *   &lt;/complexContent>
  * &lt;/complexType>
@@ -40,14 +38,12 @@ public class GLISTTS
     extends ANY
 {
 
-    @XmlElement(required = true)
     protected TS head;
-    @XmlElement(required = true)
-    protected PQ increment;
-    @XmlAttribute(name = "period")
-    protected BigInteger period;
+    protected QTY increment;
     @XmlAttribute(name = "denominator")
-    protected BigInteger denominator;
+    protected Integer denominator;
+    @XmlAttribute(name = "period")
+    protected Integer period;
 
     /**
      * Gets the value of the head property.
@@ -78,10 +74,10 @@ public class GLISTTS
      * 
      * @return
      *     possible object is
-     *     {@link PQ }
+     *     {@link QTY }
      *     
      */
-    public PQ getIncrement() {
+    public QTY getIncrement() {
         return increment;
     }
 
@@ -90,35 +86,11 @@ public class GLISTTS
      * 
      * @param value
      *     allowed object is
-     *     {@link PQ }
+     *     {@link QTY }
      *     
      */
-    public void setIncrement(PQ value) {
+    public void setIncrement(QTY value) {
         this.increment = value;
-    }
-
-    /**
-     * Gets the value of the period property.
-     * 
-     * @return
-     *     possible object is
-     *     {@link BigInteger }
-     *     
-     */
-    public BigInteger getPeriod() {
-        return period;
-    }
-
-    /**
-     * Sets the value of the period property.
-     * 
-     * @param value
-     *     allowed object is
-     *     {@link BigInteger }
-     *     
-     */
-    public void setPeriod(BigInteger value) {
-        this.period = value;
     }
 
     /**
@@ -126,10 +98,10 @@ public class GLISTTS
      * 
      * @return
      *     possible object is
-     *     {@link BigInteger }
+     *     {@link Integer }
      *     
      */
-    public BigInteger getDenominator() {
+    public Integer getDenominator() {
         return denominator;
     }
 
@@ -138,11 +110,35 @@ public class GLISTTS
      * 
      * @param value
      *     allowed object is
-     *     {@link BigInteger }
+     *     {@link Integer }
      *     
      */
-    public void setDenominator(BigInteger value) {
+    public void setDenominator(Integer value) {
         this.denominator = value;
+    }
+
+    /**
+     * Gets the value of the period property.
+     * 
+     * @return
+     *     possible object is
+     *     {@link Integer }
+     *     
+     */
+    public Integer getPeriod() {
+        return period;
+    }
+
+    /**
+     * Sets the value of the period property.
+     * 
+     * @param value
+     *     allowed object is
+     *     {@link Integer }
+     *     
+     */
+    public void setPeriod(Integer value) {
+        this.period = value;
     }
 
 }

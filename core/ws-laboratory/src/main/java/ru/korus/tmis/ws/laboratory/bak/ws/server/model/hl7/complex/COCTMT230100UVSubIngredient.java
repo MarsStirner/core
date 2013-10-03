@@ -1,8 +1,6 @@
 
 package ru.korus.tmis.ws.laboratory.bak.ws.server.model.hl7.complex;
 
-import java.util.ArrayList;
-import java.util.List;
 import javax.xml.bind.JAXBElement;
 import javax.xml.bind.annotation.XmlAccessType;
 import javax.xml.bind.annotation.XmlAccessorType;
@@ -22,13 +20,13 @@ import javax.xml.bind.annotation.XmlType;
  *     &lt;restriction base="{http://www.w3.org/2001/XMLSchema}anyType">
  *       &lt;sequence>
  *         &lt;group ref="{urn:hl7-org:v3}InfrastructureRootElements"/>
- *         &lt;element name="quantity" type="{urn:hl7-org:v3}RTO_QTY_QTY" minOccurs="0"/>
- *         &lt;element name="ingredient" type="{urn:hl7-org:v3}COCT_MT230100UV.Substance" minOccurs="0"/>
+ *         &lt;element name="quantity" type="{urn:hl7-org:v3}RTO" minOccurs="0"/>
+ *         &lt;element name="ingredientSubstance" type="{urn:hl7-org:v3}COCT_MT230100UV.Substance" minOccurs="0"/>
  *       &lt;/sequence>
  *       &lt;attGroup ref="{urn:hl7-org:v3}InfrastructureRootAttributes"/>
  *       &lt;attribute name="nullFlavor" type="{urn:hl7-org:v3}NullFlavor" />
  *       &lt;attribute name="classCode" use="required" type="{urn:hl7-org:v3}RoleClassIngredientEntity" />
- *       &lt;attribute name="negationInd" type="{urn:hl7-org:v3}bl" default="false" />
+ *       &lt;attribute name="negationInd" type="{http://www.w3.org/2001/XMLSchema}boolean" default="false" />
  *     &lt;/restriction>
  *   &lt;/complexContent>
  * &lt;/complexType>
@@ -42,50 +40,45 @@ import javax.xml.bind.annotation.XmlType;
     "typeId",
     "templateId",
     "quantity",
-    "ingredient"
+    "ingredientSubstance"
 })
 public class COCTMT230100UVSubIngredient {
 
-    protected List<CS> realmCode;
+    protected DSETCS realmCode;
     protected II typeId;
-    protected List<II> templateId;
-    protected RTOQTYQTY quantity;
-    @XmlElementRef(name = "ingredient", namespace = "urn:hl7-org:v3", type = JAXBElement.class, required = false)
-    protected JAXBElement<COCTMT230100UVSubstance> ingredient;
+    protected LISTII templateId;
+    protected RTO quantity;
+    @XmlElementRef(name = "ingredientSubstance", namespace = "urn:hl7-org:v3", type = JAXBElement.class, required = false)
+    protected JAXBElement<COCTMT230100UVSubstance> ingredientSubstance;
     @XmlAttribute(name = "nullFlavor")
-    protected List<String> nullFlavor;
+    protected NullFlavor nullFlavor;
     @XmlAttribute(name = "classCode", required = true)
-    protected String classCode;
+    protected RoleClassIngredientEntity classCode;
     @XmlAttribute(name = "negationInd")
     protected Boolean negationInd;
 
     /**
      * Gets the value of the realmCode property.
      * 
-     * <p>
-     * This accessor method returns a reference to the live list,
-     * not a snapshot. Therefore any modification you make to the
-     * returned list will be present inside the JAXB object.
-     * This is why there is not a <CODE>set</CODE> method for the realmCode property.
-     * 
-     * <p>
-     * For example, to add a new item, do as follows:
-     * <pre>
-     *    getRealmCode().add(newItem);
-     * </pre>
-     * 
-     * 
-     * <p>
-     * Objects of the following type(s) are allowed in the list
-     * {@link CS }
-     * 
-     * 
+     * @return
+     *     possible object is
+     *     {@link DSETCS }
+     *     
      */
-    public List<CS> getRealmCode() {
-        if (realmCode == null) {
-            realmCode = new ArrayList<CS>();
-        }
-        return this.realmCode;
+    public DSETCS getRealmCode() {
+        return realmCode;
+    }
+
+    /**
+     * Sets the value of the realmCode property.
+     * 
+     * @param value
+     *     allowed object is
+     *     {@link DSETCS }
+     *     
+     */
+    public void setRealmCode(DSETCS value) {
+        this.realmCode = value;
     }
 
     /**
@@ -115,30 +108,25 @@ public class COCTMT230100UVSubIngredient {
     /**
      * Gets the value of the templateId property.
      * 
-     * <p>
-     * This accessor method returns a reference to the live list,
-     * not a snapshot. Therefore any modification you make to the
-     * returned list will be present inside the JAXB object.
-     * This is why there is not a <CODE>set</CODE> method for the templateId property.
-     * 
-     * <p>
-     * For example, to add a new item, do as follows:
-     * <pre>
-     *    getTemplateId().add(newItem);
-     * </pre>
-     * 
-     * 
-     * <p>
-     * Objects of the following type(s) are allowed in the list
-     * {@link II }
-     * 
-     * 
+     * @return
+     *     possible object is
+     *     {@link LISTII }
+     *     
      */
-    public List<II> getTemplateId() {
-        if (templateId == null) {
-            templateId = new ArrayList<II>();
-        }
-        return this.templateId;
+    public LISTII getTemplateId() {
+        return templateId;
+    }
+
+    /**
+     * Sets the value of the templateId property.
+     * 
+     * @param value
+     *     allowed object is
+     *     {@link LISTII }
+     *     
+     */
+    public void setTemplateId(LISTII value) {
+        this.templateId = value;
     }
 
     /**
@@ -146,10 +134,10 @@ public class COCTMT230100UVSubIngredient {
      * 
      * @return
      *     possible object is
-     *     {@link RTOQTYQTY }
+     *     {@link RTO }
      *     
      */
-    public RTOQTYQTY getQuantity() {
+    public RTO getQuantity() {
         return quantity;
     }
 
@@ -158,64 +146,59 @@ public class COCTMT230100UVSubIngredient {
      * 
      * @param value
      *     allowed object is
-     *     {@link RTOQTYQTY }
+     *     {@link RTO }
      *     
      */
-    public void setQuantity(RTOQTYQTY value) {
+    public void setQuantity(RTO value) {
         this.quantity = value;
     }
 
     /**
-     * Gets the value of the ingredient property.
+     * Gets the value of the ingredientSubstance property.
      * 
      * @return
      *     possible object is
      *     {@link JAXBElement }{@code <}{@link COCTMT230100UVSubstance }{@code >}
      *     
      */
-    public JAXBElement<COCTMT230100UVSubstance> getIngredient() {
-        return ingredient;
+    public JAXBElement<COCTMT230100UVSubstance> getIngredientSubstance() {
+        return ingredientSubstance;
     }
 
     /**
-     * Sets the value of the ingredient property.
+     * Sets the value of the ingredientSubstance property.
      * 
      * @param value
      *     allowed object is
      *     {@link JAXBElement }{@code <}{@link COCTMT230100UVSubstance }{@code >}
      *     
      */
-    public void setIngredient(JAXBElement<COCTMT230100UVSubstance> value) {
-        this.ingredient = value;
+    public void setIngredientSubstance(JAXBElement<COCTMT230100UVSubstance> value) {
+        this.ingredientSubstance = value;
     }
 
     /**
      * Gets the value of the nullFlavor property.
      * 
-     * <p>
-     * This accessor method returns a reference to the live list,
-     * not a snapshot. Therefore any modification you make to the
-     * returned list will be present inside the JAXB object.
-     * This is why there is not a <CODE>set</CODE> method for the nullFlavor property.
-     * 
-     * <p>
-     * For example, to add a new item, do as follows:
-     * <pre>
-     *    getNullFlavor().add(newItem);
-     * </pre>
-     * 
-     * 
-     * <p>
-     * Objects of the following type(s) are allowed in the list
-     * {@link String }
-     * 
-     * 
+     * @return
+     *     possible object is
+     *     {@link NullFlavor }
+     *     
      */
-    public List<String> getNullFlavor() {
-        if (nullFlavor == null) {
-            nullFlavor = new ArrayList<String>();
-        }
-        return this.nullFlavor;
+    public NullFlavor getNullFlavor() {
+        return nullFlavor;
+    }
+
+    /**
+     * Sets the value of the nullFlavor property.
+     * 
+     * @param value
+     *     allowed object is
+     *     {@link NullFlavor }
+     *     
+     */
+    public void setNullFlavor(NullFlavor value) {
+        this.nullFlavor = value;
     }
 
     /**
@@ -223,10 +206,10 @@ public class COCTMT230100UVSubIngredient {
      * 
      * @return
      *     possible object is
-     *     {@link String }
+     *     {@link RoleClassIngredientEntity }
      *     
      */
-    public String getClassCode() {
+    public RoleClassIngredientEntity getClassCode() {
         return classCode;
     }
 
@@ -235,10 +218,10 @@ public class COCTMT230100UVSubIngredient {
      * 
      * @param value
      *     allowed object is
-     *     {@link String }
+     *     {@link RoleClassIngredientEntity }
      *     
      */
-    public void setClassCode(String value) {
+    public void setClassCode(RoleClassIngredientEntity value) {
         this.classCode = value;
     }
 

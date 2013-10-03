@@ -13,6 +13,7 @@ import javax.xml.bind.annotation.XmlType;
  * <pre>
  * &lt;simpleType name="RoleClassEquivalentEntity">
  *   &lt;restriction base="{urn:hl7-org:v3}cs">
+ *     &lt;enumeration value="EQUIV"/>
  *     &lt;enumeration value="SAME"/>
  *     &lt;enumeration value="SUBY"/>
  *   &lt;/restriction>
@@ -24,6 +25,7 @@ import javax.xml.bind.annotation.XmlType;
 @XmlEnum
 public enum RoleClassEquivalentEntity {
 
+    EQUIV,
     SAME,
     SUBY;
 

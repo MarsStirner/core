@@ -14,11 +14,6 @@ import javax.xml.bind.annotation.XmlType;
  * &lt;simpleType name="DeliveryAddressLine">
  *   &lt;restriction base="{urn:hl7-org:v3}cs">
  *     &lt;enumeration value="DAL"/>
- *     &lt;enumeration value="DINSTA"/>
- *     &lt;enumeration value="DINSTQ"/>
- *     &lt;enumeration value="DINST"/>
- *     &lt;enumeration value="DMOD"/>
- *     &lt;enumeration value="DMODID"/>
  *   &lt;/restriction>
  * &lt;/simpleType>
  * </pre>
@@ -28,12 +23,7 @@ import javax.xml.bind.annotation.XmlType;
 @XmlEnum
 public enum DeliveryAddressLine {
 
-    DAL,
-    DINSTA,
-    DINSTQ,
-    DINST,
-    DMOD,
-    DMODID;
+    DAL;
 
     public String value() {
         return name();

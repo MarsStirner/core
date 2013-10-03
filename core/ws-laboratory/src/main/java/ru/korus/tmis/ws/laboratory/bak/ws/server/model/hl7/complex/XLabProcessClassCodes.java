@@ -15,8 +15,11 @@ import javax.xml.bind.annotation.XmlType;
  *   &lt;restriction base="{urn:hl7-org:v3}cs">
  *     &lt;enumeration value="ACSN"/>
  *     &lt;enumeration value="CONTREG"/>
+ *     &lt;enumeration value="OBS"/>
  *     &lt;enumeration value="PROC"/>
  *     &lt;enumeration value="SPCTRT"/>
+ *     &lt;enumeration value="SPECCOLLECT"/>
+ *     &lt;enumeration value="STORE"/>
  *     &lt;enumeration value="TRNS"/>
  *   &lt;/restriction>
  * &lt;/simpleType>
@@ -29,8 +32,11 @@ public enum XLabProcessClassCodes {
 
     ACSN,
     CONTREG,
+    OBS,
     PROC,
     SPCTRT,
+    SPECCOLLECT,
+    STORE,
     TRNS;
 
     public String value() {

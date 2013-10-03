@@ -14,6 +14,8 @@ import javax.xml.bind.annotation.XmlType;
  * &lt;simpleType name="ActClassProcedure">
  *   &lt;restriction base="{urn:hl7-org:v3}cs">
  *     &lt;enumeration value="PROC"/>
+ *     &lt;enumeration value="SBADM"/>
+ *     &lt;enumeration value="SBEXT"/>
  *     &lt;enumeration value="SPECCOLLECT"/>
  *   &lt;/restriction>
  * &lt;/simpleType>
@@ -25,6 +27,8 @@ import javax.xml.bind.annotation.XmlType;
 public enum ActClassProcedure {
 
     PROC,
+    SBADM,
+    SBEXT,
     SPECCOLLECT;
 
     public String value() {

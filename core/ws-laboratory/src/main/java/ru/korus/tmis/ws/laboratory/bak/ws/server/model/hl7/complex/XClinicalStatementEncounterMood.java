@@ -15,6 +15,7 @@ import javax.xml.bind.annotation.XmlType;
  *   &lt;restriction base="{urn:hl7-org:v3}cs">
  *     &lt;enumeration value="APT"/>
  *     &lt;enumeration value="ARQ"/>
+ *     &lt;enumeration value="DEF"/>
  *     &lt;enumeration value="EVN"/>
  *     &lt;enumeration value="INT"/>
  *     &lt;enumeration value="PRMS"/>
@@ -31,6 +32,7 @@ public enum XClinicalStatementEncounterMood {
 
     APT,
     ARQ,
+    DEF,
     EVN,
     INT,
     PRMS,

@@ -14,7 +14,11 @@ import javax.xml.bind.annotation.XmlType;
  * &lt;simpleType name="x_EntityClassDocumentReceiving">
  *   &lt;restriction base="{urn:hl7-org:v3}cs">
  *     &lt;enumeration value="HCE"/>
+ *     &lt;enumeration value="NAT"/>
+ *     &lt;enumeration value="ORG"/>
  *     &lt;enumeration value="PSN"/>
+ *     &lt;enumeration value="PUB"/>
+ *     &lt;enumeration value="STATE"/>
  *   &lt;/restriction>
  * &lt;/simpleType>
  * </pre>
@@ -25,7 +29,11 @@ import javax.xml.bind.annotation.XmlType;
 public enum XEntityClassDocumentReceiving {
 
     HCE,
-    PSN;
+    NAT,
+    ORG,
+    PSN,
+    PUB,
+    STATE;
 
     public String value() {
         return name();

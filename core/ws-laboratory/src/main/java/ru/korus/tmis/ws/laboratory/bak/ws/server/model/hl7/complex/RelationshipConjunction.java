@@ -14,8 +14,8 @@ import javax.xml.bind.annotation.XmlType;
  * &lt;simpleType name="RelationshipConjunction">
  *   &lt;restriction base="{urn:hl7-org:v3}cs">
  *     &lt;enumeration value="AND"/>
- *     &lt;enumeration value="XOR"/>
  *     &lt;enumeration value="OR"/>
+ *     &lt;enumeration value="XOR"/>
  *   &lt;/restriction>
  * &lt;/simpleType>
  * </pre>
@@ -26,8 +26,8 @@ import javax.xml.bind.annotation.XmlType;
 public enum RelationshipConjunction {
 
     AND,
-    XOR,
-    OR;
+    OR,
+    XOR;
 
     public String value() {
         return name();

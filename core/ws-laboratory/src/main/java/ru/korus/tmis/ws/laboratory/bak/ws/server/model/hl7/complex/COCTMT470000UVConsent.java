@@ -8,8 +8,6 @@ import javax.xml.bind.annotation.XmlAccessorType;
 import javax.xml.bind.annotation.XmlAttribute;
 import javax.xml.bind.annotation.XmlElement;
 import javax.xml.bind.annotation.XmlType;
-import javax.xml.bind.annotation.adapters.CollapsedStringAdapter;
-import javax.xml.bind.annotation.adapters.XmlJavaTypeAdapter;
 
 
 /**
@@ -34,7 +32,7 @@ import javax.xml.bind.annotation.adapters.XmlJavaTypeAdapter;
  *       &lt;attGroup ref="{urn:hl7-org:v3}InfrastructureRootAttributes"/>
  *       &lt;attribute name="classCode" use="required" type="{urn:hl7-org:v3}ActClassConsent" />
  *       &lt;attribute name="moodCode" use="required" type="{urn:hl7-org:v3}ActMoodEventOccurrence" />
- *       &lt;attribute name="negationInd" type="{urn:hl7-org:v3}bl" />
+ *       &lt;attribute name="negationInd" type="{http://www.w3.org/2001/XMLSchema}boolean" />
  *     &lt;/restriction>
  *   &lt;/complexContent>
  * &lt;/complexType>
@@ -57,9 +55,9 @@ import javax.xml.bind.annotation.adapters.XmlJavaTypeAdapter;
 })
 public class COCTMT470000UVConsent {
 
-    protected List<CS> realmCode;
+    protected DSETCS realmCode;
     protected II typeId;
-    protected List<II> templateId;
+    protected LISTII templateId;
     protected II id;
     protected CD code;
     @XmlElement(required = true)
@@ -71,41 +69,34 @@ public class COCTMT470000UVConsent {
     @XmlElement(required = true, nillable = true)
     protected List<COCTMT470000UVPerformer> performer;
     @XmlAttribute(name = "classCode", required = true)
-    @XmlJavaTypeAdapter(CollapsedStringAdapter.class)
-    protected String classCode;
+    protected ActClassConsent classCode;
     @XmlAttribute(name = "moodCode", required = true)
-    @XmlJavaTypeAdapter(CollapsedStringAdapter.class)
-    protected String moodCode;
+    protected ActMoodEventOccurrence moodCode;
     @XmlAttribute(name = "negationInd")
     protected Boolean negationInd;
 
     /**
      * Gets the value of the realmCode property.
      * 
-     * <p>
-     * This accessor method returns a reference to the live list,
-     * not a snapshot. Therefore any modification you make to the
-     * returned list will be present inside the JAXB object.
-     * This is why there is not a <CODE>set</CODE> method for the realmCode property.
-     * 
-     * <p>
-     * For example, to add a new item, do as follows:
-     * <pre>
-     *    getRealmCode().add(newItem);
-     * </pre>
-     * 
-     * 
-     * <p>
-     * Objects of the following type(s) are allowed in the list
-     * {@link CS }
-     * 
-     * 
+     * @return
+     *     possible object is
+     *     {@link DSETCS }
+     *     
      */
-    public List<CS> getRealmCode() {
-        if (realmCode == null) {
-            realmCode = new ArrayList<CS>();
-        }
-        return this.realmCode;
+    public DSETCS getRealmCode() {
+        return realmCode;
+    }
+
+    /**
+     * Sets the value of the realmCode property.
+     * 
+     * @param value
+     *     allowed object is
+     *     {@link DSETCS }
+     *     
+     */
+    public void setRealmCode(DSETCS value) {
+        this.realmCode = value;
     }
 
     /**
@@ -135,30 +126,25 @@ public class COCTMT470000UVConsent {
     /**
      * Gets the value of the templateId property.
      * 
-     * <p>
-     * This accessor method returns a reference to the live list,
-     * not a snapshot. Therefore any modification you make to the
-     * returned list will be present inside the JAXB object.
-     * This is why there is not a <CODE>set</CODE> method for the templateId property.
-     * 
-     * <p>
-     * For example, to add a new item, do as follows:
-     * <pre>
-     *    getTemplateId().add(newItem);
-     * </pre>
-     * 
-     * 
-     * <p>
-     * Objects of the following type(s) are allowed in the list
-     * {@link II }
-     * 
-     * 
+     * @return
+     *     possible object is
+     *     {@link LISTII }
+     *     
      */
-    public List<II> getTemplateId() {
-        if (templateId == null) {
-            templateId = new ArrayList<II>();
-        }
-        return this.templateId;
+    public LISTII getTemplateId() {
+        return templateId;
+    }
+
+    /**
+     * Sets the value of the templateId property.
+     * 
+     * @param value
+     *     allowed object is
+     *     {@link LISTII }
+     *     
+     */
+    public void setTemplateId(LISTII value) {
+        this.templateId = value;
     }
 
     /**
@@ -344,10 +330,10 @@ public class COCTMT470000UVConsent {
      * 
      * @return
      *     possible object is
-     *     {@link String }
+     *     {@link ActClassConsent }
      *     
      */
-    public String getClassCode() {
+    public ActClassConsent getClassCode() {
         return classCode;
     }
 
@@ -356,10 +342,10 @@ public class COCTMT470000UVConsent {
      * 
      * @param value
      *     allowed object is
-     *     {@link String }
+     *     {@link ActClassConsent }
      *     
      */
-    public void setClassCode(String value) {
+    public void setClassCode(ActClassConsent value) {
         this.classCode = value;
     }
 
@@ -368,10 +354,10 @@ public class COCTMT470000UVConsent {
      * 
      * @return
      *     possible object is
-     *     {@link String }
+     *     {@link ActMoodEventOccurrence }
      *     
      */
-    public String getMoodCode() {
+    public ActMoodEventOccurrence getMoodCode() {
         return moodCode;
     }
 
@@ -380,10 +366,10 @@ public class COCTMT470000UVConsent {
      * 
      * @param value
      *     allowed object is
-     *     {@link String }
+     *     {@link ActMoodEventOccurrence }
      *     
      */
-    public void setMoodCode(String value) {
+    public void setMoodCode(ActMoodEventOccurrence value) {
         this.moodCode = value;
     }
 

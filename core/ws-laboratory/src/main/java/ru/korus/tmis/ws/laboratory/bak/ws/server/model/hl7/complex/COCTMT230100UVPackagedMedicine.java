@@ -24,12 +24,12 @@ import javax.xml.bind.annotation.XmlType;
  *       &lt;sequence>
  *         &lt;group ref="{urn:hl7-org:v3}InfrastructureRootElements"/>
  *         &lt;element name="id" type="{urn:hl7-org:v3}II" minOccurs="0"/>
- *         &lt;element name="code" type="{urn:hl7-org:v3}CE" minOccurs="0"/>
- *         &lt;element name="name" type="{urn:hl7-org:v3}TN" maxOccurs="unbounded" minOccurs="0"/>
- *         &lt;element name="formCode" type="{urn:hl7-org:v3}CE" minOccurs="0"/>
+ *         &lt;element name="code" type="{urn:hl7-org:v3}CD" minOccurs="0"/>
+ *         &lt;element name="name" type="{urn:hl7-org:v3}DSET_EN" minOccurs="0"/>
+ *         &lt;element name="formCode" type="{urn:hl7-org:v3}CD" minOccurs="0"/>
  *         &lt;element name="lotNumberText" type="{urn:hl7-org:v3}ST" minOccurs="0"/>
  *         &lt;element name="capacityQuantity" type="{urn:hl7-org:v3}PQ" minOccurs="0"/>
- *         &lt;element name="capTypeCode" type="{urn:hl7-org:v3}CE" minOccurs="0"/>
+ *         &lt;element name="capTypeCode" type="{urn:hl7-org:v3}CD" minOccurs="0"/>
  *         &lt;element name="asManufacturedProduct" type="{urn:hl7-org:v3}COCT_MT230100UV.ManufacturedProduct" maxOccurs="unbounded" minOccurs="0"/>
  *         &lt;element name="asSuperContent" type="{urn:hl7-org:v3}COCT_MT230100UV.SuperContent" minOccurs="0"/>
  *         &lt;element name="subContent" type="{urn:hl7-org:v3}COCT_MT230100UV.SubContent" minOccurs="0"/>
@@ -63,16 +63,16 @@ import javax.xml.bind.annotation.XmlType;
 })
 public class COCTMT230100UVPackagedMedicine {
 
-    protected List<CS> realmCode;
+    protected DSETCS realmCode;
     protected II typeId;
-    protected List<II> templateId;
+    protected LISTII templateId;
     protected II id;
-    protected CE code;
-    protected List<TN> name;
-    protected CE formCode;
+    protected CD code;
+    protected DSETEN name;
+    protected CD formCode;
     protected ST lotNumberText;
     protected PQ capacityQuantity;
-    protected CE capTypeCode;
+    protected CD capTypeCode;
     @XmlElement(nillable = true)
     protected List<COCTMT230100UVManufacturedProduct> asManufacturedProduct;
     @XmlElementRef(name = "asSuperContent", namespace = "urn:hl7-org:v3", type = JAXBElement.class, required = false)
@@ -80,39 +80,34 @@ public class COCTMT230100UVPackagedMedicine {
     @XmlElementRef(name = "subContent", namespace = "urn:hl7-org:v3", type = JAXBElement.class, required = false)
     protected JAXBElement<COCTMT230100UVSubContent> subContent;
     @XmlAttribute(name = "nullFlavor")
-    protected List<String> nullFlavor;
+    protected NullFlavor nullFlavor;
     @XmlAttribute(name = "classCode", required = true)
     protected EntityClassContainer classCode;
     @XmlAttribute(name = "determinerCode", required = true)
-    protected String determinerCode;
+    protected EntityDeterminer determinerCode;
 
     /**
      * Gets the value of the realmCode property.
      * 
-     * <p>
-     * This accessor method returns a reference to the live list,
-     * not a snapshot. Therefore any modification you make to the
-     * returned list will be present inside the JAXB object.
-     * This is why there is not a <CODE>set</CODE> method for the realmCode property.
-     * 
-     * <p>
-     * For example, to add a new item, do as follows:
-     * <pre>
-     *    getRealmCode().add(newItem);
-     * </pre>
-     * 
-     * 
-     * <p>
-     * Objects of the following type(s) are allowed in the list
-     * {@link CS }
-     * 
-     * 
+     * @return
+     *     possible object is
+     *     {@link DSETCS }
+     *     
      */
-    public List<CS> getRealmCode() {
-        if (realmCode == null) {
-            realmCode = new ArrayList<CS>();
-        }
-        return this.realmCode;
+    public DSETCS getRealmCode() {
+        return realmCode;
+    }
+
+    /**
+     * Sets the value of the realmCode property.
+     * 
+     * @param value
+     *     allowed object is
+     *     {@link DSETCS }
+     *     
+     */
+    public void setRealmCode(DSETCS value) {
+        this.realmCode = value;
     }
 
     /**
@@ -142,30 +137,25 @@ public class COCTMT230100UVPackagedMedicine {
     /**
      * Gets the value of the templateId property.
      * 
-     * <p>
-     * This accessor method returns a reference to the live list,
-     * not a snapshot. Therefore any modification you make to the
-     * returned list will be present inside the JAXB object.
-     * This is why there is not a <CODE>set</CODE> method for the templateId property.
-     * 
-     * <p>
-     * For example, to add a new item, do as follows:
-     * <pre>
-     *    getTemplateId().add(newItem);
-     * </pre>
-     * 
-     * 
-     * <p>
-     * Objects of the following type(s) are allowed in the list
-     * {@link II }
-     * 
-     * 
+     * @return
+     *     possible object is
+     *     {@link LISTII }
+     *     
      */
-    public List<II> getTemplateId() {
-        if (templateId == null) {
-            templateId = new ArrayList<II>();
-        }
-        return this.templateId;
+    public LISTII getTemplateId() {
+        return templateId;
+    }
+
+    /**
+     * Sets the value of the templateId property.
+     * 
+     * @param value
+     *     allowed object is
+     *     {@link LISTII }
+     *     
+     */
+    public void setTemplateId(LISTII value) {
+        this.templateId = value;
     }
 
     /**
@@ -197,10 +187,10 @@ public class COCTMT230100UVPackagedMedicine {
      * 
      * @return
      *     possible object is
-     *     {@link CE }
+     *     {@link CD }
      *     
      */
-    public CE getCode() {
+    public CD getCode() {
         return code;
     }
 
@@ -209,40 +199,35 @@ public class COCTMT230100UVPackagedMedicine {
      * 
      * @param value
      *     allowed object is
-     *     {@link CE }
+     *     {@link CD }
      *     
      */
-    public void setCode(CE value) {
+    public void setCode(CD value) {
         this.code = value;
     }
 
     /**
      * Gets the value of the name property.
      * 
-     * <p>
-     * This accessor method returns a reference to the live list,
-     * not a snapshot. Therefore any modification you make to the
-     * returned list will be present inside the JAXB object.
-     * This is why there is not a <CODE>set</CODE> method for the name property.
-     * 
-     * <p>
-     * For example, to add a new item, do as follows:
-     * <pre>
-     *    getName().add(newItem);
-     * </pre>
-     * 
-     * 
-     * <p>
-     * Objects of the following type(s) are allowed in the list
-     * {@link TN }
-     * 
-     * 
+     * @return
+     *     possible object is
+     *     {@link DSETEN }
+     *     
      */
-    public List<TN> getName() {
-        if (name == null) {
-            name = new ArrayList<TN>();
-        }
-        return this.name;
+    public DSETEN getName() {
+        return name;
+    }
+
+    /**
+     * Sets the value of the name property.
+     * 
+     * @param value
+     *     allowed object is
+     *     {@link DSETEN }
+     *     
+     */
+    public void setName(DSETEN value) {
+        this.name = value;
     }
 
     /**
@@ -250,10 +235,10 @@ public class COCTMT230100UVPackagedMedicine {
      * 
      * @return
      *     possible object is
-     *     {@link CE }
+     *     {@link CD }
      *     
      */
-    public CE getFormCode() {
+    public CD getFormCode() {
         return formCode;
     }
 
@@ -262,10 +247,10 @@ public class COCTMT230100UVPackagedMedicine {
      * 
      * @param value
      *     allowed object is
-     *     {@link CE }
+     *     {@link CD }
      *     
      */
-    public void setFormCode(CE value) {
+    public void setFormCode(CD value) {
         this.formCode = value;
     }
 
@@ -322,10 +307,10 @@ public class COCTMT230100UVPackagedMedicine {
      * 
      * @return
      *     possible object is
-     *     {@link CE }
+     *     {@link CD }
      *     
      */
-    public CE getCapTypeCode() {
+    public CD getCapTypeCode() {
         return capTypeCode;
     }
 
@@ -334,10 +319,10 @@ public class COCTMT230100UVPackagedMedicine {
      * 
      * @param value
      *     allowed object is
-     *     {@link CE }
+     *     {@link CD }
      *     
      */
-    public void setCapTypeCode(CE value) {
+    public void setCapTypeCode(CD value) {
         this.capTypeCode = value;
     }
 
@@ -421,30 +406,25 @@ public class COCTMT230100UVPackagedMedicine {
     /**
      * Gets the value of the nullFlavor property.
      * 
-     * <p>
-     * This accessor method returns a reference to the live list,
-     * not a snapshot. Therefore any modification you make to the
-     * returned list will be present inside the JAXB object.
-     * This is why there is not a <CODE>set</CODE> method for the nullFlavor property.
-     * 
-     * <p>
-     * For example, to add a new item, do as follows:
-     * <pre>
-     *    getNullFlavor().add(newItem);
-     * </pre>
-     * 
-     * 
-     * <p>
-     * Objects of the following type(s) are allowed in the list
-     * {@link String }
-     * 
-     * 
+     * @return
+     *     possible object is
+     *     {@link NullFlavor }
+     *     
      */
-    public List<String> getNullFlavor() {
-        if (nullFlavor == null) {
-            nullFlavor = new ArrayList<String>();
-        }
-        return this.nullFlavor;
+    public NullFlavor getNullFlavor() {
+        return nullFlavor;
+    }
+
+    /**
+     * Sets the value of the nullFlavor property.
+     * 
+     * @param value
+     *     allowed object is
+     *     {@link NullFlavor }
+     *     
+     */
+    public void setNullFlavor(NullFlavor value) {
+        this.nullFlavor = value;
     }
 
     /**
@@ -476,10 +456,10 @@ public class COCTMT230100UVPackagedMedicine {
      * 
      * @return
      *     possible object is
-     *     {@link String }
+     *     {@link EntityDeterminer }
      *     
      */
-    public String getDeterminerCode() {
+    public EntityDeterminer getDeterminerCode() {
         return determinerCode;
     }
 
@@ -488,10 +468,10 @@ public class COCTMT230100UVPackagedMedicine {
      * 
      * @param value
      *     allowed object is
-     *     {@link String }
+     *     {@link EntityDeterminer }
      *     
      */
-    public void setDeterminerCode(String value) {
+    public void setDeterminerCode(EntityDeterminer value) {
         this.determinerCode = value;
     }
 

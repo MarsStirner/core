@@ -4,24 +4,10 @@ package ru.korus.tmis.ws.laboratory.bak.ws.server.model.hl7.complex;
 import javax.xml.bind.annotation.XmlAccessType;
 import javax.xml.bind.annotation.XmlAccessorType;
 import javax.xml.bind.annotation.XmlAttribute;
-import javax.xml.bind.annotation.XmlSeeAlso;
 import javax.xml.bind.annotation.XmlType;
-import javax.xml.bind.annotation.adapters.CollapsedStringAdapter;
-import javax.xml.bind.annotation.adapters.XmlJavaTypeAdapter;
 
 
 /**
- * 
- *             A monetary amount is a quantity expressing the amount of
- *             money in some currency. Currencies are the units in which
- *             monetary amounts are denominated in different economic
- *             regions. While the monetary amount is a single kind of
- *             quantity (money) the exchange rates between the different
- *             units are variable.  This is the principle difference
- *             between physical quantity and monetary amounts, and the
- *             reason why currency units are not physical units.
- *          
- * 
  * <p>Java class for MO complex type.
  * 
  * <p>The following schema fragment specifies the expected content contained within this class.
@@ -30,8 +16,8 @@ import javax.xml.bind.annotation.adapters.XmlJavaTypeAdapter;
  * &lt;complexType name="MO">
  *   &lt;complexContent>
  *     &lt;extension base="{urn:hl7-org:v3}QTY">
- *       &lt;attribute name="value" type="{urn:hl7-org:v3}real" />
- *       &lt;attribute name="currency" type="{urn:hl7-org:v3}cs" />
+ *       &lt;attribute name="value" type="{urn:hl7-org:v3}Decimal" />
+ *       &lt;attribute name="currency" type="{urn:hl7-org:v3}Code" />
  *     &lt;/extension>
  *   &lt;/complexContent>
  * &lt;/complexType>
@@ -41,18 +27,13 @@ import javax.xml.bind.annotation.adapters.XmlJavaTypeAdapter;
  */
 @XmlAccessorType(XmlAccessType.FIELD)
 @XmlType(name = "MO")
-@XmlSeeAlso({
-    SXCMMO.class,
-    IVXBMO.class
-})
 public class MO
     extends QTY
 {
 
     @XmlAttribute(name = "value")
-    protected String value;
+    protected Double value;
     @XmlAttribute(name = "currency")
-    @XmlJavaTypeAdapter(CollapsedStringAdapter.class)
     protected String currency;
 
     /**
@@ -60,10 +41,10 @@ public class MO
      * 
      * @return
      *     possible object is
-     *     {@link String }
+     *     {@link Double }
      *     
      */
-    public String getValue() {
+    public Double getValue() {
         return value;
     }
 
@@ -72,10 +53,10 @@ public class MO
      * 
      * @param value
      *     allowed object is
-     *     {@link String }
+     *     {@link Double }
      *     
      */
-    public void setValue(String value) {
+    public void setValue(Double value) {
         this.value = value;
     }
 

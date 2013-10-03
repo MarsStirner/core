@@ -2,6 +2,7 @@
 package ru.korus.tmis.ws.laboratory.bak.ws.server.model.hl7.complex;
 
 import javax.xml.bind.annotation.XmlEnum;
+import javax.xml.bind.annotation.XmlEnumValue;
 import javax.xml.bind.annotation.XmlType;
 
 
@@ -15,8 +16,10 @@ import javax.xml.bind.annotation.XmlType;
  *   &lt;restriction base="{urn:hl7-org:v3}cs">
  *     &lt;enumeration value="APT"/>
  *     &lt;enumeration value="ARQ"/>
+ *     &lt;enumeration value="CRT"/>
  *     &lt;enumeration value="DEF"/>
  *     &lt;enumeration value="EVN"/>
+ *     &lt;enumeration value="EVN.CRT"/>
  *     &lt;enumeration value="INT"/>
  *     &lt;enumeration value="PRMS"/>
  *     &lt;enumeration value="PRP"/>
@@ -30,21 +33,34 @@ import javax.xml.bind.annotation.XmlType;
 @XmlEnum
 public enum XClinicalStatementProcedureMood {
 
-    APT,
-    ARQ,
-    DEF,
-    EVN,
-    INT,
-    PRMS,
-    PRP,
-    RQO;
+    APT("APT"),
+    ARQ("ARQ"),
+    CRT("CRT"),
+    DEF("DEF"),
+    EVN("EVN"),
+    @XmlEnumValue("EVN.CRT")
+    EVN_CRT("EVN.CRT"),
+    INT("INT"),
+    PRMS("PRMS"),
+    PRP("PRP"),
+    RQO("RQO");
+    private final String value;
+
+    XClinicalStatementProcedureMood(String v) {
+        value = v;
+    }
 
     public String value() {
-        return name();
+        return value;
     }
 
     public static XClinicalStatementProcedureMood fromValue(String v) {
-        return valueOf(v);
+        for (XClinicalStatementProcedureMood c: XClinicalStatementProcedureMood.values()) {
+            if (c.value.equals(v)) {
+                return c;
+            }
+        }
+        throw new IllegalArgumentException(v);
     }
 
 }

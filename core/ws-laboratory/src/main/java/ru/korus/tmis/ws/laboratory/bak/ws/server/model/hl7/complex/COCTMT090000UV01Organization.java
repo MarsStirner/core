@@ -23,7 +23,7 @@ import javax.xml.bind.annotation.XmlType;
  *     &lt;restriction base="{http://www.w3.org/2001/XMLSchema}anyType">
  *       &lt;sequence>
  *         &lt;group ref="{urn:hl7-org:v3}InfrastructureRootElements"/>
- *         &lt;element name="name" type="{urn:hl7-org:v3}EN" maxOccurs="unbounded" minOccurs="0"/>
+ *         &lt;element name="name" type="{urn:hl7-org:v3}COLL_EN" minOccurs="0"/>
  *         &lt;element name="asLicensedEntity" type="{urn:hl7-org:v3}COCT_MT090000UV01.LicensedEntity" maxOccurs="unbounded" minOccurs="0"/>
  *         &lt;element name="asMember" type="{urn:hl7-org:v3}COCT_MT090000UV01.Member" maxOccurs="unbounded" minOccurs="0"/>
  *         &lt;element name="asRoleOther" type="{urn:hl7-org:v3}COCT_MT090000UV01.RoleOther" maxOccurs="unbounded" minOccurs="0"/>
@@ -33,7 +33,7 @@ import javax.xml.bind.annotation.XmlType;
  *       &lt;attGroup ref="{urn:hl7-org:v3}InfrastructureRootAttributes"/>
  *       &lt;attribute name="nullFlavor" type="{urn:hl7-org:v3}NullFlavor" />
  *       &lt;attribute name="classCode" use="required" type="{urn:hl7-org:v3}EntityClassOrganization" />
- *       &lt;attribute name="determinerCode" use="required" type="{urn:hl7-org:v3}EntityDeterminer" fixed="INSTANCE" />
+ *       &lt;attribute name="determinerCode" use="required" type="{urn:hl7-org:v3}EntityDeterminerSpecific" />
  *     &lt;/restriction>
  *   &lt;/complexContent>
  * &lt;/complexType>
@@ -55,10 +55,10 @@ import javax.xml.bind.annotation.XmlType;
 })
 public class COCTMT090000UV01Organization {
 
-    protected List<CS> realmCode;
+    protected DSETCS realmCode;
     protected II typeId;
-    protected List<II> templateId;
-    protected List<EN> name;
+    protected LISTII templateId;
+    protected COLLEN name;
     @XmlElement(nillable = true)
     protected List<COCTMT090000UV01LicensedEntity> asLicensedEntity;
     @XmlElement(nillable = true)
@@ -70,39 +70,34 @@ public class COCTMT090000UV01Organization {
     @XmlElement(nillable = true)
     protected List<COCTMT090000UV01LanguageCommunication> languageCommunication;
     @XmlAttribute(name = "nullFlavor")
-    protected List<String> nullFlavor;
+    protected NullFlavor nullFlavor;
     @XmlAttribute(name = "classCode", required = true)
-    protected String classCode;
+    protected EntityClassOrganization classCode;
     @XmlAttribute(name = "determinerCode", required = true)
-    protected String determinerCode;
+    protected EntityDeterminerSpecific determinerCode;
 
     /**
      * Gets the value of the realmCode property.
      * 
-     * <p>
-     * This accessor method returns a reference to the live list,
-     * not a snapshot. Therefore any modification you make to the
-     * returned list will be present inside the JAXB object.
-     * This is why there is not a <CODE>set</CODE> method for the realmCode property.
-     * 
-     * <p>
-     * For example, to add a new item, do as follows:
-     * <pre>
-     *    getRealmCode().add(newItem);
-     * </pre>
-     * 
-     * 
-     * <p>
-     * Objects of the following type(s) are allowed in the list
-     * {@link CS }
-     * 
-     * 
+     * @return
+     *     possible object is
+     *     {@link DSETCS }
+     *     
      */
-    public List<CS> getRealmCode() {
-        if (realmCode == null) {
-            realmCode = new ArrayList<CS>();
-        }
-        return this.realmCode;
+    public DSETCS getRealmCode() {
+        return realmCode;
+    }
+
+    /**
+     * Sets the value of the realmCode property.
+     * 
+     * @param value
+     *     allowed object is
+     *     {@link DSETCS }
+     *     
+     */
+    public void setRealmCode(DSETCS value) {
+        this.realmCode = value;
     }
 
     /**
@@ -132,59 +127,49 @@ public class COCTMT090000UV01Organization {
     /**
      * Gets the value of the templateId property.
      * 
-     * <p>
-     * This accessor method returns a reference to the live list,
-     * not a snapshot. Therefore any modification you make to the
-     * returned list will be present inside the JAXB object.
-     * This is why there is not a <CODE>set</CODE> method for the templateId property.
-     * 
-     * <p>
-     * For example, to add a new item, do as follows:
-     * <pre>
-     *    getTemplateId().add(newItem);
-     * </pre>
-     * 
-     * 
-     * <p>
-     * Objects of the following type(s) are allowed in the list
-     * {@link II }
-     * 
-     * 
+     * @return
+     *     possible object is
+     *     {@link LISTII }
+     *     
      */
-    public List<II> getTemplateId() {
-        if (templateId == null) {
-            templateId = new ArrayList<II>();
-        }
-        return this.templateId;
+    public LISTII getTemplateId() {
+        return templateId;
+    }
+
+    /**
+     * Sets the value of the templateId property.
+     * 
+     * @param value
+     *     allowed object is
+     *     {@link LISTII }
+     *     
+     */
+    public void setTemplateId(LISTII value) {
+        this.templateId = value;
     }
 
     /**
      * Gets the value of the name property.
      * 
-     * <p>
-     * This accessor method returns a reference to the live list,
-     * not a snapshot. Therefore any modification you make to the
-     * returned list will be present inside the JAXB object.
-     * This is why there is not a <CODE>set</CODE> method for the name property.
-     * 
-     * <p>
-     * For example, to add a new item, do as follows:
-     * <pre>
-     *    getName().add(newItem);
-     * </pre>
-     * 
-     * 
-     * <p>
-     * Objects of the following type(s) are allowed in the list
-     * {@link EN }
-     * 
-     * 
+     * @return
+     *     possible object is
+     *     {@link COLLEN }
+     *     
      */
-    public List<EN> getName() {
-        if (name == null) {
-            name = new ArrayList<EN>();
-        }
-        return this.name;
+    public COLLEN getName() {
+        return name;
+    }
+
+    /**
+     * Sets the value of the name property.
+     * 
+     * @param value
+     *     allowed object is
+     *     {@link COLLEN }
+     *     
+     */
+    public void setName(COLLEN value) {
+        this.name = value;
     }
 
     /**
@@ -330,30 +315,25 @@ public class COCTMT090000UV01Organization {
     /**
      * Gets the value of the nullFlavor property.
      * 
-     * <p>
-     * This accessor method returns a reference to the live list,
-     * not a snapshot. Therefore any modification you make to the
-     * returned list will be present inside the JAXB object.
-     * This is why there is not a <CODE>set</CODE> method for the nullFlavor property.
-     * 
-     * <p>
-     * For example, to add a new item, do as follows:
-     * <pre>
-     *    getNullFlavor().add(newItem);
-     * </pre>
-     * 
-     * 
-     * <p>
-     * Objects of the following type(s) are allowed in the list
-     * {@link String }
-     * 
-     * 
+     * @return
+     *     possible object is
+     *     {@link NullFlavor }
+     *     
      */
-    public List<String> getNullFlavor() {
-        if (nullFlavor == null) {
-            nullFlavor = new ArrayList<String>();
-        }
-        return this.nullFlavor;
+    public NullFlavor getNullFlavor() {
+        return nullFlavor;
+    }
+
+    /**
+     * Sets the value of the nullFlavor property.
+     * 
+     * @param value
+     *     allowed object is
+     *     {@link NullFlavor }
+     *     
+     */
+    public void setNullFlavor(NullFlavor value) {
+        this.nullFlavor = value;
     }
 
     /**
@@ -361,10 +341,10 @@ public class COCTMT090000UV01Organization {
      * 
      * @return
      *     possible object is
-     *     {@link String }
+     *     {@link EntityClassOrganization }
      *     
      */
-    public String getClassCode() {
+    public EntityClassOrganization getClassCode() {
         return classCode;
     }
 
@@ -373,10 +353,10 @@ public class COCTMT090000UV01Organization {
      * 
      * @param value
      *     allowed object is
-     *     {@link String }
+     *     {@link EntityClassOrganization }
      *     
      */
-    public void setClassCode(String value) {
+    public void setClassCode(EntityClassOrganization value) {
         this.classCode = value;
     }
 
@@ -385,15 +365,11 @@ public class COCTMT090000UV01Organization {
      * 
      * @return
      *     possible object is
-     *     {@link String }
+     *     {@link EntityDeterminerSpecific }
      *     
      */
-    public String getDeterminerCode() {
-        if (determinerCode == null) {
-            return "INSTANCE";
-        } else {
-            return determinerCode;
-        }
+    public EntityDeterminerSpecific getDeterminerCode() {
+        return determinerCode;
     }
 
     /**
@@ -401,10 +377,10 @@ public class COCTMT090000UV01Organization {
      * 
      * @param value
      *     allowed object is
-     *     {@link String }
+     *     {@link EntityDeterminerSpecific }
      *     
      */
-    public void setDeterminerCode(String value) {
+    public void setDeterminerCode(EntityDeterminerSpecific value) {
         this.determinerCode = value;
     }
 

@@ -14,9 +14,9 @@ import javax.xml.bind.annotation.XmlType;
  * &lt;simpleType name="ProcessingMode">
  *   &lt;restriction base="{urn:hl7-org:v3}cs">
  *     &lt;enumeration value="A"/>
- *     &lt;enumeration value="T"/>
  *     &lt;enumeration value="I"/>
  *     &lt;enumeration value="R"/>
+ *     &lt;enumeration value="T"/>
  *   &lt;/restriction>
  * &lt;/simpleType>
  * </pre>
@@ -27,9 +27,9 @@ import javax.xml.bind.annotation.XmlType;
 public enum ProcessingMode {
 
     A,
-    T,
     I,
-    R;
+    R,
+    T;
 
     public String value() {
         return name();

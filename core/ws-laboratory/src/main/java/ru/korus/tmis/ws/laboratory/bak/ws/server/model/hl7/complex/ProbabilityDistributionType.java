@@ -14,15 +14,15 @@ import javax.xml.bind.annotation.XmlType;
  * <pre>
  * &lt;simpleType name="ProbabilityDistributionType">
  *   &lt;restriction base="{urn:hl7-org:v3}cs">
- *     &lt;enumeration value="G"/>
- *     &lt;enumeration value="F"/>
- *     &lt;enumeration value="T"/>
  *     &lt;enumeration value="B"/>
- *     &lt;enumeration value="X2"/>
  *     &lt;enumeration value="E"/>
+ *     &lt;enumeration value="F"/>
+ *     &lt;enumeration value="G"/>
  *     &lt;enumeration value="LN"/>
  *     &lt;enumeration value="N"/>
+ *     &lt;enumeration value="T"/>
  *     &lt;enumeration value="U"/>
+ *     &lt;enumeration value="X2"/>
  *   &lt;/restriction>
  * &lt;/simpleType>
  * </pre>
@@ -32,16 +32,16 @@ import javax.xml.bind.annotation.XmlType;
 @XmlEnum
 public enum ProbabilityDistributionType {
 
-    G("G"),
-    F("F"),
-    T("T"),
     B("B"),
-    @XmlEnumValue("X2")
-    X_2("X2"),
     E("E"),
+    F("F"),
+    G("G"),
     LN("LN"),
     N("N"),
-    U("U");
+    T("T"),
+    U("U"),
+    @XmlEnumValue("X2")
+    X_2("X2");
     private final String value;
 
     ProbabilityDistributionType(String v) {

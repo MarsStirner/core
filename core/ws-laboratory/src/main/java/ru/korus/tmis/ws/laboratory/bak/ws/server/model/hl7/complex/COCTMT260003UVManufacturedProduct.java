@@ -1,0 +1,171 @@
+
+package ru.korus.tmis.ws.laboratory.bak.ws.server.model.hl7.complex;
+
+import javax.xml.bind.JAXBElement;
+import javax.xml.bind.annotation.XmlAccessType;
+import javax.xml.bind.annotation.XmlAccessorType;
+import javax.xml.bind.annotation.XmlAttribute;
+import javax.xml.bind.annotation.XmlElementRef;
+import javax.xml.bind.annotation.XmlType;
+
+
+/**
+ * <p>Java class for COCT_MT260003UV.ManufacturedProduct complex type.
+ * 
+ * <p>The following schema fragment specifies the expected content contained within this class.
+ * 
+ * <pre>
+ * &lt;complexType name="COCT_MT260003UV.ManufacturedProduct">
+ *   &lt;complexContent>
+ *     &lt;restriction base="{http://www.w3.org/2001/XMLSchema}anyType">
+ *       &lt;sequence>
+ *         &lt;group ref="{urn:hl7-org:v3}InfrastructureRootElements"/>
+ *         &lt;element name="manufacturedMaterialKind" type="{urn:hl7-org:v3}COCT_MT260003UV.ManufacturedMaterialKind" minOccurs="0"/>
+ *       &lt;/sequence>
+ *       &lt;attGroup ref="{urn:hl7-org:v3}InfrastructureRootAttributes"/>
+ *       &lt;attribute name="classCode" use="required" type="{urn:hl7-org:v3}RoleClassManufacturedProduct" />
+ *     &lt;/restriction>
+ *   &lt;/complexContent>
+ * &lt;/complexType>
+ * </pre>
+ * 
+ * 
+ */
+@XmlAccessorType(XmlAccessType.FIELD)
+@XmlType(name = "COCT_MT260003UV.ManufacturedProduct", propOrder = {
+    "realmCode",
+    "typeId",
+    "templateId",
+    "manufacturedMaterialKind"
+})
+public class COCTMT260003UVManufacturedProduct {
+
+    protected DSETCS realmCode;
+    protected II typeId;
+    protected LISTII templateId;
+    @XmlElementRef(name = "manufacturedMaterialKind", namespace = "urn:hl7-org:v3", type = JAXBElement.class, required = false)
+    protected JAXBElement<COCTMT260003UVManufacturedMaterialKind> manufacturedMaterialKind;
+    @XmlAttribute(name = "classCode", required = true)
+    protected RoleClassManufacturedProduct classCode;
+
+    /**
+     * Gets the value of the realmCode property.
+     * 
+     * @return
+     *     possible object is
+     *     {@link DSETCS }
+     *     
+     */
+    public DSETCS getRealmCode() {
+        return realmCode;
+    }
+
+    /**
+     * Sets the value of the realmCode property.
+     * 
+     * @param value
+     *     allowed object is
+     *     {@link DSETCS }
+     *     
+     */
+    public void setRealmCode(DSETCS value) {
+        this.realmCode = value;
+    }
+
+    /**
+     * Gets the value of the typeId property.
+     * 
+     * @return
+     *     possible object is
+     *     {@link II }
+     *     
+     */
+    public II getTypeId() {
+        return typeId;
+    }
+
+    /**
+     * Sets the value of the typeId property.
+     * 
+     * @param value
+     *     allowed object is
+     *     {@link II }
+     *     
+     */
+    public void setTypeId(II value) {
+        this.typeId = value;
+    }
+
+    /**
+     * Gets the value of the templateId property.
+     * 
+     * @return
+     *     possible object is
+     *     {@link LISTII }
+     *     
+     */
+    public LISTII getTemplateId() {
+        return templateId;
+    }
+
+    /**
+     * Sets the value of the templateId property.
+     * 
+     * @param value
+     *     allowed object is
+     *     {@link LISTII }
+     *     
+     */
+    public void setTemplateId(LISTII value) {
+        this.templateId = value;
+    }
+
+    /**
+     * Gets the value of the manufacturedMaterialKind property.
+     * 
+     * @return
+     *     possible object is
+     *     {@link JAXBElement }{@code <}{@link COCTMT260003UVManufacturedMaterialKind }{@code >}
+     *     
+     */
+    public JAXBElement<COCTMT260003UVManufacturedMaterialKind> getManufacturedMaterialKind() {
+        return manufacturedMaterialKind;
+    }
+
+    /**
+     * Sets the value of the manufacturedMaterialKind property.
+     * 
+     * @param value
+     *     allowed object is
+     *     {@link JAXBElement }{@code <}{@link COCTMT260003UVManufacturedMaterialKind }{@code >}
+     *     
+     */
+    public void setManufacturedMaterialKind(JAXBElement<COCTMT260003UVManufacturedMaterialKind> value) {
+        this.manufacturedMaterialKind = value;
+    }
+
+    /**
+     * Gets the value of the classCode property.
+     * 
+     * @return
+     *     possible object is
+     *     {@link RoleClassManufacturedProduct }
+     *     
+     */
+    public RoleClassManufacturedProduct getClassCode() {
+        return classCode;
+    }
+
+    /**
+     * Sets the value of the classCode property.
+     * 
+     * @param value
+     *     allowed object is
+     *     {@link RoleClassManufacturedProduct }
+     *     
+     */
+    public void setClassCode(RoleClassManufacturedProduct value) {
+        this.classCode = value;
+    }
+
+}

@@ -1,8 +1,6 @@
 
 package ru.korus.tmis.ws.laboratory.bak.ws.server.model.hl7.complex;
 
-import java.util.ArrayList;
-import java.util.List;
 import javax.xml.bind.annotation.XmlAccessType;
 import javax.xml.bind.annotation.XmlAccessorType;
 import javax.xml.bind.annotation.XmlAttribute;
@@ -11,14 +9,6 @@ import javax.xml.bind.annotation.XmlType;
 
 
 /**
- * 
- *             Defines the basic properties of every data value. This
- *             is an abstract type, meaning that no value can be just
- *             a data value without belonging to any concrete type.
- *             Every concrete type is a specialization of this
- *             general abstract DataValue type.
- *          
- * 
  * <p>Java class for ANY complex type.
  * 
  * <p>The following schema fragment specifies the expected content contained within this class.
@@ -26,9 +16,11 @@ import javax.xml.bind.annotation.XmlType;
  * <pre>
  * &lt;complexType name="ANY">
  *   &lt;complexContent>
- *     &lt;restriction base="{http://www.w3.org/2001/XMLSchema}anyType">
+ *     &lt;extension base="{urn:hl7-org:v3}HXIT">
  *       &lt;attribute name="nullFlavor" type="{urn:hl7-org:v3}NullFlavor" />
- *     &lt;/restriction>
+ *       &lt;attribute name="flavorId" type="{http://www.w3.org/2001/XMLSchema}string" />
+ *       &lt;attribute name="updateMode" type="{urn:hl7-org:v3}UpdateMode" />
+ *     &lt;/extension>
  *   &lt;/complexContent>
  * &lt;/complexType>
  * </pre>
@@ -39,50 +31,162 @@ import javax.xml.bind.annotation.XmlType;
 @XmlType(name = "ANY")
 @XmlSeeAlso({
     II.class,
+    CS.class,
     SLISTPQ.class,
+    QSETREAL.class,
+    NPPDTS.class,
+    SLISTINT.class,
+    NPPDST.class,
     SLISTTS.class,
+    NPPDREAL.class,
+    UVPINT.class,
+    UVPREAL.class,
+    TEL.class,
+    NPPDRTO.class,
+    UVPRTO.class,
+    COLLINT.class,
+    ED.class,
+    EN.class,
+    SLISTREAL.class,
+    QSETMO.class,
+    AD.class,
     BL.class,
-    CR.class,
-    ANYNonNull.class,
-    GLISTTS.class,
-    URL.class,
     CD.class,
-    BIN.class,
+    QSETQTY.class,
+    NPPDTEL.class,
+    ST.class,
+    QSETCO.class,
+    NPPDMO.class,
+    UVPSC.class,
+    NPPDINT.class,
+    UVPST.class,
+    QSETINT.class,
+    UVPTS.class,
+    NPPDSC.class,
+    UVPMO.class,
+    NPPDPQ.class,
+    UVPPQ.class,
+    NPPDEN.class,
+    COLLTEL.class,
+    NPPDED.class,
+    QSETPQ.class,
+    NPPDCO.class,
+    NPPDCS.class,
+    NPPDCD.class,
+    NPPDII.class,
+    COLLST.class,
+    COLLSC.class,
+    COLLTS.class,
+    UVPBL.class,
+    QSETTS.class,
+    UVPAD.class,
+    UVPCS.class,
+    COLLPQ.class,
+    UVPCD.class,
+    COLLRTO.class,
+    UVPCO.class,
+    NPPDAD.class,
+    NPPDBL.class,
+    COLLMO.class,
+    GLISTREAL.class,
+    UVPII.class,
+    UVPTEL.class,
+    COLLII.class,
+    COLLAD.class,
+    GLISTTS.class,
+    UVPEN.class,
+    COLLED.class,
+    COLLEN.class,
+    UVPED.class,
+    COLLREAL.class,
     QTY.class,
-    GLISTPQ.class
+    GLISTPQ.class,
+    COLLCO.class,
+    COLLCD.class,
+    COLLCS.class,
+    COLLBL.class
 })
-public abstract class ANY {
+public class ANY
+    extends HXIT
+{
 
     @XmlAttribute(name = "nullFlavor")
-    protected List<String> nullFlavor;
+    protected NullFlavor nullFlavor;
+    @XmlAttribute(name = "flavorId")
+    protected String flavorId;
+    @XmlAttribute(name = "updateMode")
+    protected UpdateMode updateMode;
 
     /**
      * Gets the value of the nullFlavor property.
      * 
-     * <p>
-     * This accessor method returns a reference to the live list,
-     * not a snapshot. Therefore any modification you make to the
-     * returned list will be present inside the JAXB object.
-     * This is why there is not a <CODE>set</CODE> method for the nullFlavor property.
-     * 
-     * <p>
-     * For example, to add a new item, do as follows:
-     * <pre>
-     *    getNullFlavor().add(newItem);
-     * </pre>
-     * 
-     * 
-     * <p>
-     * Objects of the following type(s) are allowed in the list
-     * {@link String }
-     * 
-     * 
+     * @return
+     *     possible object is
+     *     {@link NullFlavor }
+     *     
      */
-    public List<String> getNullFlavor() {
-        if (nullFlavor == null) {
-            nullFlavor = new ArrayList<String>();
-        }
-        return this.nullFlavor;
+    public NullFlavor getNullFlavor() {
+        return nullFlavor;
+    }
+
+    /**
+     * Sets the value of the nullFlavor property.
+     * 
+     * @param value
+     *     allowed object is
+     *     {@link NullFlavor }
+     *     
+     */
+    public void setNullFlavor(NullFlavor value) {
+        this.nullFlavor = value;
+    }
+
+    /**
+     * Gets the value of the flavorId property.
+     * 
+     * @return
+     *     possible object is
+     *     {@link String }
+     *     
+     */
+    public String getFlavorId() {
+        return flavorId;
+    }
+
+    /**
+     * Sets the value of the flavorId property.
+     * 
+     * @param value
+     *     allowed object is
+     *     {@link String }
+     *     
+     */
+    public void setFlavorId(String value) {
+        this.flavorId = value;
+    }
+
+    /**
+     * Gets the value of the updateMode property.
+     * 
+     * @return
+     *     possible object is
+     *     {@link UpdateMode }
+     *     
+     */
+    public UpdateMode getUpdateMode() {
+        return updateMode;
+    }
+
+    /**
+     * Sets the value of the updateMode property.
+     * 
+     * @param value
+     *     allowed object is
+     *     {@link UpdateMode }
+     *     
+     */
+    public void setUpdateMode(UpdateMode value) {
+        this.updateMode = value;
     }
 
 }

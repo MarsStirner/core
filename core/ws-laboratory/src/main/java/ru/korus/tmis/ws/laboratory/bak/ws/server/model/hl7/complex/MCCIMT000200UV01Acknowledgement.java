@@ -21,15 +21,15 @@ import javax.xml.bind.annotation.XmlType;
  *     &lt;restriction base="{http://www.w3.org/2001/XMLSchema}anyType">
  *       &lt;sequence>
  *         &lt;group ref="{urn:hl7-org:v3}InfrastructureRootElements"/>
- *         &lt;element name="typeCode" type="{urn:hl7-org:v3}CS"/>
  *         &lt;element name="expectedSequenceNumber" type="{urn:hl7-org:v3}INT" minOccurs="0"/>
  *         &lt;element name="messageWaitingNumber" type="{urn:hl7-org:v3}INT" minOccurs="0"/>
- *         &lt;element name="messageWaitingPriorityCode" type="{urn:hl7-org:v3}CE" minOccurs="0"/>
+ *         &lt;element name="messageWaitingPriorityCode" type="{urn:hl7-org:v3}CD" minOccurs="0"/>
  *         &lt;element name="targetMessage" type="{urn:hl7-org:v3}MCCI_MT000200UV01.TargetMessage"/>
  *         &lt;element name="acknowledgementDetail" type="{urn:hl7-org:v3}MCCI_MT000200UV01.AcknowledgementDetail" maxOccurs="unbounded" minOccurs="0"/>
  *       &lt;/sequence>
  *       &lt;attGroup ref="{urn:hl7-org:v3}InfrastructureRootAttributes"/>
  *       &lt;attribute name="nullFlavor" type="{urn:hl7-org:v3}NullFlavor" />
+ *       &lt;attribute name="typeCode" use="required" type="{urn:hl7-org:v3}AcknowledgementType" />
  *     &lt;/restriction>
  *   &lt;/complexContent>
  * &lt;/complexType>
@@ -42,7 +42,6 @@ import javax.xml.bind.annotation.XmlType;
     "realmCode",
     "typeId",
     "templateId",
-    "typeCode",
     "expectedSequenceNumber",
     "messageWaitingNumber",
     "messageWaitingPriorityCode",
@@ -51,48 +50,43 @@ import javax.xml.bind.annotation.XmlType;
 })
 public class MCCIMT000200UV01Acknowledgement {
 
-    protected List<CS> realmCode;
+    protected DSETCS realmCode;
     protected II typeId;
-    protected List<II> templateId;
-    @XmlElement(required = true)
-    protected CS typeCode;
+    protected LISTII templateId;
     protected INT expectedSequenceNumber;
     protected INT messageWaitingNumber;
-    protected CE messageWaitingPriorityCode;
+    protected CD messageWaitingPriorityCode;
     @XmlElement(required = true, nillable = true)
     protected MCCIMT000200UV01TargetMessage targetMessage;
     @XmlElement(nillable = true)
     protected List<MCCIMT000200UV01AcknowledgementDetail> acknowledgementDetail;
     @XmlAttribute(name = "nullFlavor")
-    protected List<String> nullFlavor;
+    protected NullFlavor nullFlavor;
+    @XmlAttribute(name = "typeCode", required = true)
+    protected AcknowledgementType typeCode;
 
     /**
      * Gets the value of the realmCode property.
      * 
-     * <p>
-     * This accessor method returns a reference to the live list,
-     * not a snapshot. Therefore any modification you make to the
-     * returned list will be present inside the JAXB object.
-     * This is why there is not a <CODE>set</CODE> method for the realmCode property.
-     * 
-     * <p>
-     * For example, to add a new item, do as follows:
-     * <pre>
-     *    getRealmCode().add(newItem);
-     * </pre>
-     * 
-     * 
-     * <p>
-     * Objects of the following type(s) are allowed in the list
-     * {@link CS }
-     * 
-     * 
+     * @return
+     *     possible object is
+     *     {@link DSETCS }
+     *     
      */
-    public List<CS> getRealmCode() {
-        if (realmCode == null) {
-            realmCode = new ArrayList<CS>();
-        }
-        return this.realmCode;
+    public DSETCS getRealmCode() {
+        return realmCode;
+    }
+
+    /**
+     * Sets the value of the realmCode property.
+     * 
+     * @param value
+     *     allowed object is
+     *     {@link DSETCS }
+     *     
+     */
+    public void setRealmCode(DSETCS value) {
+        this.realmCode = value;
     }
 
     /**
@@ -122,54 +116,25 @@ public class MCCIMT000200UV01Acknowledgement {
     /**
      * Gets the value of the templateId property.
      * 
-     * <p>
-     * This accessor method returns a reference to the live list,
-     * not a snapshot. Therefore any modification you make to the
-     * returned list will be present inside the JAXB object.
-     * This is why there is not a <CODE>set</CODE> method for the templateId property.
-     * 
-     * <p>
-     * For example, to add a new item, do as follows:
-     * <pre>
-     *    getTemplateId().add(newItem);
-     * </pre>
-     * 
-     * 
-     * <p>
-     * Objects of the following type(s) are allowed in the list
-     * {@link II }
-     * 
-     * 
-     */
-    public List<II> getTemplateId() {
-        if (templateId == null) {
-            templateId = new ArrayList<II>();
-        }
-        return this.templateId;
-    }
-
-    /**
-     * Gets the value of the typeCode property.
-     * 
      * @return
      *     possible object is
-     *     {@link CS }
+     *     {@link LISTII }
      *     
      */
-    public CS getTypeCode() {
-        return typeCode;
+    public LISTII getTemplateId() {
+        return templateId;
     }
 
     /**
-     * Sets the value of the typeCode property.
+     * Sets the value of the templateId property.
      * 
      * @param value
      *     allowed object is
-     *     {@link CS }
+     *     {@link LISTII }
      *     
      */
-    public void setTypeCode(CS value) {
-        this.typeCode = value;
+    public void setTemplateId(LISTII value) {
+        this.templateId = value;
     }
 
     /**
@@ -225,10 +190,10 @@ public class MCCIMT000200UV01Acknowledgement {
      * 
      * @return
      *     possible object is
-     *     {@link CE }
+     *     {@link CD }
      *     
      */
-    public CE getMessageWaitingPriorityCode() {
+    public CD getMessageWaitingPriorityCode() {
         return messageWaitingPriorityCode;
     }
 
@@ -237,10 +202,10 @@ public class MCCIMT000200UV01Acknowledgement {
      * 
      * @param value
      *     allowed object is
-     *     {@link CE }
+     *     {@link CD }
      *     
      */
-    public void setMessageWaitingPriorityCode(CE value) {
+    public void setMessageWaitingPriorityCode(CD value) {
         this.messageWaitingPriorityCode = value;
     }
 
@@ -300,30 +265,49 @@ public class MCCIMT000200UV01Acknowledgement {
     /**
      * Gets the value of the nullFlavor property.
      * 
-     * <p>
-     * This accessor method returns a reference to the live list,
-     * not a snapshot. Therefore any modification you make to the
-     * returned list will be present inside the JAXB object.
-     * This is why there is not a <CODE>set</CODE> method for the nullFlavor property.
-     * 
-     * <p>
-     * For example, to add a new item, do as follows:
-     * <pre>
-     *    getNullFlavor().add(newItem);
-     * </pre>
-     * 
-     * 
-     * <p>
-     * Objects of the following type(s) are allowed in the list
-     * {@link String }
-     * 
-     * 
+     * @return
+     *     possible object is
+     *     {@link NullFlavor }
+     *     
      */
-    public List<String> getNullFlavor() {
-        if (nullFlavor == null) {
-            nullFlavor = new ArrayList<String>();
-        }
-        return this.nullFlavor;
+    public NullFlavor getNullFlavor() {
+        return nullFlavor;
+    }
+
+    /**
+     * Sets the value of the nullFlavor property.
+     * 
+     * @param value
+     *     allowed object is
+     *     {@link NullFlavor }
+     *     
+     */
+    public void setNullFlavor(NullFlavor value) {
+        this.nullFlavor = value;
+    }
+
+    /**
+     * Gets the value of the typeCode property.
+     * 
+     * @return
+     *     possible object is
+     *     {@link AcknowledgementType }
+     *     
+     */
+    public AcknowledgementType getTypeCode() {
+        return typeCode;
+    }
+
+    /**
+     * Sets the value of the typeCode property.
+     * 
+     * @param value
+     *     allowed object is
+     *     {@link AcknowledgementType }
+     *     
+     */
+    public void setTypeCode(AcknowledgementType value) {
+        this.typeCode = value;
     }
 
 }

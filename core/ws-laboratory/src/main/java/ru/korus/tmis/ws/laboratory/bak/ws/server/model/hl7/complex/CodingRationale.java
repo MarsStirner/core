@@ -2,7 +2,6 @@
 package ru.korus.tmis.ws.laboratory.bak.ws.server.model.hl7.complex;
 
 import javax.xml.bind.annotation.XmlEnum;
-import javax.xml.bind.annotation.XmlEnumValue;
 import javax.xml.bind.annotation.XmlType;
 
 
@@ -13,10 +12,12 @@ import javax.xml.bind.annotation.XmlType;
  * <p>
  * <pre>
  * &lt;simpleType name="CodingRationale">
- *   &lt;restriction base="{urn:hl7-org:v3}cs">
- *     &lt;enumeration value="SH"/>
- *     &lt;enumeration value="HL7"/>
- *     &lt;enumeration value="SRC"/>
+ *   &lt;restriction base="{http://www.w3.org/2001/XMLSchema}string">
+ *     &lt;enumeration value="O"/>
+ *     &lt;enumeration value="P"/>
+ *     &lt;enumeration value="R"/>
+ *     &lt;enumeration value="OR"/>
+ *     &lt;enumeration value="PR"/>
  *   &lt;/restriction>
  * &lt;/simpleType>
  * </pre>
@@ -26,27 +27,18 @@ import javax.xml.bind.annotation.XmlType;
 @XmlEnum
 public enum CodingRationale {
 
-    SH("SH"),
-    @XmlEnumValue("HL7")
-    HL_7("HL7"),
-    SRC("SRC");
-    private final String value;
-
-    CodingRationale(String v) {
-        value = v;
-    }
+    O,
+    P,
+    R,
+    OR,
+    PR;
 
     public String value() {
-        return value;
+        return name();
     }
 
     public static CodingRationale fromValue(String v) {
-        for (CodingRationale c: CodingRationale.values()) {
-            if (c.value.equals(v)) {
-                return c;
-            }
-        }
-        throw new IllegalArgumentException(v);
+        return valueOf(v);
     }
 
 }

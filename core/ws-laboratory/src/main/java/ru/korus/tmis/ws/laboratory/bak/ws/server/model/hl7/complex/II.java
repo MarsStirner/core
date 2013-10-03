@@ -8,14 +8,6 @@ import javax.xml.bind.annotation.XmlType;
 
 
 /**
- * 
- *             An identifier that uniquely identifies a thing or object.
- *             Examples are object identifier for HL7 RIM objects,
- *             medical record number, order id, service catalog item id,
- *             Vehicle Identification Number (VIN), etc. Instance
- *             identifiers are defined based on ISO object identifiers.
- *          
- * 
  * <p>Java class for II complex type.
  * 
  * <p>The following schema fragment specifies the expected content contained within this class.
@@ -24,10 +16,12 @@ import javax.xml.bind.annotation.XmlType;
  * &lt;complexType name="II">
  *   &lt;complexContent>
  *     &lt;extension base="{urn:hl7-org:v3}ANY">
- *       &lt;attribute name="root" type="{urn:hl7-org:v3}uid" />
- *       &lt;attribute name="extension" type="{urn:hl7-org:v3}st" />
- *       &lt;attribute name="assigningAuthorityName" type="{urn:hl7-org:v3}st" />
- *       &lt;attribute name="displayable" type="{urn:hl7-org:v3}bl" />
+ *       &lt;attribute name="root" type="{urn:hl7-org:v3}Uid" />
+ *       &lt;attribute name="extension" type="{http://www.w3.org/2001/XMLSchema}string" />
+ *       &lt;attribute name="identifierName" type="{http://www.w3.org/2001/XMLSchema}string" />
+ *       &lt;attribute name="displayable" type="{http://www.w3.org/2001/XMLSchema}boolean" />
+ *       &lt;attribute name="scope" type="{urn:hl7-org:v3}IdentifierScope" />
+ *       &lt;attribute name="reliability" type="{urn:hl7-org:v3}IdentifierReliability" />
  *     &lt;/extension>
  *   &lt;/complexContent>
  * &lt;/complexType>
@@ -45,10 +39,14 @@ public class II
     protected String root;
     @XmlAttribute(name = "extension")
     protected String extension;
-    @XmlAttribute(name = "assigningAuthorityName")
-    protected String assigningAuthorityName;
+    @XmlAttribute(name = "identifierName")
+    protected String identifierName;
     @XmlAttribute(name = "displayable")
     protected Boolean displayable;
+    @XmlAttribute(name = "scope")
+    protected IdentifierScope scope;
+    @XmlAttribute(name = "reliability")
+    protected IdentifierReliability reliability;
 
     /**
      * Gets the value of the root property.
@@ -99,27 +97,27 @@ public class II
     }
 
     /**
-     * Gets the value of the assigningAuthorityName property.
+     * Gets the value of the identifierName property.
      * 
      * @return
      *     possible object is
      *     {@link String }
      *     
      */
-    public String getAssigningAuthorityName() {
-        return assigningAuthorityName;
+    public String getIdentifierName() {
+        return identifierName;
     }
 
     /**
-     * Sets the value of the assigningAuthorityName property.
+     * Sets the value of the identifierName property.
      * 
      * @param value
      *     allowed object is
      *     {@link String }
      *     
      */
-    public void setAssigningAuthorityName(String value) {
-        this.assigningAuthorityName = value;
+    public void setIdentifierName(String value) {
+        this.identifierName = value;
     }
 
     /**
@@ -144,6 +142,54 @@ public class II
      */
     public void setDisplayable(Boolean value) {
         this.displayable = value;
+    }
+
+    /**
+     * Gets the value of the scope property.
+     * 
+     * @return
+     *     possible object is
+     *     {@link IdentifierScope }
+     *     
+     */
+    public IdentifierScope getScope() {
+        return scope;
+    }
+
+    /**
+     * Sets the value of the scope property.
+     * 
+     * @param value
+     *     allowed object is
+     *     {@link IdentifierScope }
+     *     
+     */
+    public void setScope(IdentifierScope value) {
+        this.scope = value;
+    }
+
+    /**
+     * Gets the value of the reliability property.
+     * 
+     * @return
+     *     possible object is
+     *     {@link IdentifierReliability }
+     *     
+     */
+    public IdentifierReliability getReliability() {
+        return reliability;
+    }
+
+    /**
+     * Sets the value of the reliability property.
+     * 
+     * @param value
+     *     allowed object is
+     *     {@link IdentifierReliability }
+     *     
+     */
+    public void setReliability(IdentifierReliability value) {
+        this.reliability = value;
     }
 
 }

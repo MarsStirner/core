@@ -6,18 +6,10 @@ import java.util.List;
 import javax.xml.bind.annotation.XmlAccessType;
 import javax.xml.bind.annotation.XmlAccessorType;
 import javax.xml.bind.annotation.XmlAttribute;
-import javax.xml.bind.annotation.XmlSeeAlso;
 import javax.xml.bind.annotation.XmlType;
-import javax.xml.bind.annotation.adapters.CollapsedStringAdapter;
-import javax.xml.bind.annotation.adapters.XmlJavaTypeAdapter;
 
 
 /**
- * 
- *             A dimensioned quantity expressing the result of a
- *             measurement act.
- *         
- * 
  * <p>Java class for PQ complex type.
  * 
  * <p>The following schema fragment specifies the expected content contained within this class.
@@ -29,8 +21,9 @@ import javax.xml.bind.annotation.adapters.XmlJavaTypeAdapter;
  *       &lt;sequence>
  *         &lt;element name="translation" type="{urn:hl7-org:v3}PQR" maxOccurs="unbounded" minOccurs="0"/>
  *       &lt;/sequence>
- *       &lt;attribute name="value" type="{urn:hl7-org:v3}real" />
- *       &lt;attribute name="unit" type="{urn:hl7-org:v3}cs" default="1" />
+ *       &lt;attribute name="value" type="{urn:hl7-org:v3}Decimal" />
+ *       &lt;attribute name="unit" type="{urn:hl7-org:v3}Code" />
+ *       &lt;attribute name="codingRationale" type="{urn:hl7-org:v3}CodingRationale" />
  *     &lt;/extension>
  *   &lt;/complexContent>
  * &lt;/complexType>
@@ -42,22 +35,17 @@ import javax.xml.bind.annotation.adapters.XmlJavaTypeAdapter;
 @XmlType(name = "PQ", propOrder = {
     "translation"
 })
-@XmlSeeAlso({
-    SXCMPQ.class,
-    IVXBPQ.class,
-    PPDPQ.class,
-    HXITPQ.class
-})
 public class PQ
     extends QTY
 {
 
     protected List<PQR> translation;
     @XmlAttribute(name = "value")
-    protected String value;
+    protected Double value;
     @XmlAttribute(name = "unit")
-    @XmlJavaTypeAdapter(CollapsedStringAdapter.class)
     protected String unit;
+    @XmlAttribute(name = "codingRationale")
+    protected CodingRationale codingRationale;
 
     /**
      * Gets the value of the translation property.
@@ -93,10 +81,10 @@ public class PQ
      * 
      * @return
      *     possible object is
-     *     {@link String }
+     *     {@link Double }
      *     
      */
-    public String getValue() {
+    public Double getValue() {
         return value;
     }
 
@@ -105,10 +93,10 @@ public class PQ
      * 
      * @param value
      *     allowed object is
-     *     {@link String }
+     *     {@link Double }
      *     
      */
-    public void setValue(String value) {
+    public void setValue(Double value) {
         this.value = value;
     }
 
@@ -121,11 +109,7 @@ public class PQ
      *     
      */
     public String getUnit() {
-        if (unit == null) {
-            return "1";
-        } else {
-            return unit;
-        }
+        return unit;
     }
 
     /**
@@ -138,6 +122,30 @@ public class PQ
      */
     public void setUnit(String value) {
         this.unit = value;
+    }
+
+    /**
+     * Gets the value of the codingRationale property.
+     * 
+     * @return
+     *     possible object is
+     *     {@link CodingRationale }
+     *     
+     */
+    public CodingRationale getCodingRationale() {
+        return codingRationale;
+    }
+
+    /**
+     * Sets the value of the codingRationale property.
+     * 
+     * @param value
+     *     allowed object is
+     *     {@link CodingRationale }
+     *     
+     */
+    public void setCodingRationale(CodingRationale value) {
+        this.codingRationale = value;
     }
 
 }

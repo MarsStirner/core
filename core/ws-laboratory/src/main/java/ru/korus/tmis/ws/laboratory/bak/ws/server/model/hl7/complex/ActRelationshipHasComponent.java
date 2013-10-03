@@ -15,8 +15,8 @@ import javax.xml.bind.annotation.XmlType;
  *   &lt;restriction base="{urn:hl7-org:v3}cs">
  *     &lt;enumeration value="COMP"/>
  *     &lt;enumeration value="ARR"/>
- *     &lt;enumeration value="DEP"/>
  *     &lt;enumeration value="CTRLV"/>
+ *     &lt;enumeration value="DEP"/>
  *   &lt;/restriction>
  * &lt;/simpleType>
  * </pre>
@@ -28,8 +28,8 @@ public enum ActRelationshipHasComponent {
 
     COMP,
     ARR,
-    DEP,
-    CTRLV;
+    CTRLV,
+    DEP;
 
     public String value() {
         return name();

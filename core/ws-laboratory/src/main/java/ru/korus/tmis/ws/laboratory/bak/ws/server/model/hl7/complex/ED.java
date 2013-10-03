@@ -1,29 +1,15 @@
 
 package ru.korus.tmis.ws.laboratory.bak.ws.server.model.hl7.complex;
 
+import java.util.ArrayList;
+import java.util.List;
 import javax.xml.bind.annotation.XmlAccessType;
 import javax.xml.bind.annotation.XmlAccessorType;
 import javax.xml.bind.annotation.XmlAttribute;
-import javax.xml.bind.annotation.XmlSeeAlso;
 import javax.xml.bind.annotation.XmlType;
-import javax.xml.bind.annotation.adapters.CollapsedStringAdapter;
-import javax.xml.bind.annotation.adapters.XmlJavaTypeAdapter;
 
 
 /**
- * 
- *             Data that is primarily intended for human interpretation
- *             or for further machine processing is outside the scope of
- *             HL7. This includes unformatted or formatted written language,
- *             multimedia data, or structured information as defined by a
- *             different standard (e.g., XML-signatures.)  Instead of the
- *             data itself, an ED may contain 
- *             only a reference (see TEL.) Note
- *             that the ST data type is a
- *             specialization of 
- *             when the  is text/plain.
- *          
- * 
  * <p>Java class for ED complex type.
  * 
  * <p>The following schema fragment specifies the expected content contained within this class.
@@ -31,16 +17,22 @@ import javax.xml.bind.annotation.adapters.XmlJavaTypeAdapter;
  * <pre>
  * &lt;complexType name="ED">
  *   &lt;complexContent>
- *     &lt;extension base="{urn:hl7-org:v3}BIN">
+ *     &lt;extension base="{urn:hl7-org:v3}ANY">
  *       &lt;sequence>
+ *         &lt;element name="data" type="{http://www.w3.org/2001/XMLSchema}base64Binary" minOccurs="0"/>
+ *         &lt;element name="xml" type="{http://www.w3.org/2001/XMLSchema}anyType" minOccurs="0"/>
  *         &lt;element name="reference" type="{urn:hl7-org:v3}TEL" minOccurs="0"/>
- *         &lt;element name="thumbnail" type="{urn:hl7-org:v3}thumbnail" minOccurs="0"/>
+ *         &lt;element name="integrityCheck" type="{http://www.w3.org/2001/XMLSchema}base64Binary" minOccurs="0"/>
+ *         &lt;element name="thumbnail" type="{urn:hl7-org:v3}ED" minOccurs="0"/>
+ *         &lt;element name="description" type="{urn:hl7-org:v3}ST" minOccurs="0"/>
+ *         &lt;element name="translation" type="{urn:hl7-org:v3}ED" maxOccurs="unbounded" minOccurs="0"/>
  *       &lt;/sequence>
- *       &lt;attribute name="mediaType" type="{urn:hl7-org:v3}cs" default="text/plain" />
- *       &lt;attribute name="language" type="{urn:hl7-org:v3}cs" />
- *       &lt;attribute name="compression" type="{urn:hl7-org:v3}CompressionAlgorithm" />
- *       &lt;attribute name="integrityCheck" type="{urn:hl7-org:v3}bin" />
- *       &lt;attribute name="integrityCheckAlgorithm" type="{urn:hl7-org:v3}IntegrityCheckAlgorithm" default="SHA-1" />
+ *       &lt;attribute name="value" type="{http://www.w3.org/2001/XMLSchema}string" />
+ *       &lt;attribute name="mediaType" type="{http://www.w3.org/2001/XMLSchema}string" default="text/plain" />
+ *       &lt;attribute name="charset" type="{urn:hl7-org:v3}Code" />
+ *       &lt;attribute name="language" type="{urn:hl7-org:v3}Code" />
+ *       &lt;attribute name="compression" type="{urn:hl7-org:v3}Compression" />
+ *       &lt;attribute name="integrityCheckAlgorithm" type="{urn:hl7-org:v3}IntegrityCheckAlgorithm" />
  *     &lt;/extension>
  *   &lt;/complexContent>
  * &lt;/complexType>
@@ -50,31 +42,83 @@ import javax.xml.bind.annotation.adapters.XmlJavaTypeAdapter;
  */
 @XmlAccessorType(XmlAccessType.FIELD)
 @XmlType(name = "ED", propOrder = {
+    "data",
+    "xml",
     "reference",
-    "thumbnail"
-})
-@XmlSeeAlso({
-    Thumbnail.class,
-    ST.class
+    "integrityCheck",
+    "thumbnail",
+    "description",
+    "translation"
 })
 public class ED
-    extends BIN
+    extends ANY
 {
 
+    protected byte[] data;
+    protected Object xml;
     protected TEL reference;
-    protected Thumbnail thumbnail;
+    protected byte[] integrityCheck;
+    protected ED thumbnail;
+    protected ST description;
+    protected List<ED> translation;
+    @XmlAttribute(name = "value")
+    protected String value;
     @XmlAttribute(name = "mediaType")
-    @XmlJavaTypeAdapter(CollapsedStringAdapter.class)
     protected String mediaType;
+    @XmlAttribute(name = "charset")
+    protected String charset;
     @XmlAttribute(name = "language")
-    @XmlJavaTypeAdapter(CollapsedStringAdapter.class)
     protected String language;
     @XmlAttribute(name = "compression")
-    protected CompressionAlgorithm compression;
-    @XmlAttribute(name = "integrityCheck")
-    protected byte[] integrityCheck;
+    protected Compression compression;
     @XmlAttribute(name = "integrityCheckAlgorithm")
     protected IntegrityCheckAlgorithm integrityCheckAlgorithm;
+
+    /**
+     * Gets the value of the data property.
+     * 
+     * @return
+     *     possible object is
+     *     byte[]
+     */
+    public byte[] getData() {
+        return data;
+    }
+
+    /**
+     * Sets the value of the data property.
+     * 
+     * @param value
+     *     allowed object is
+     *     byte[]
+     */
+    public void setData(byte[] value) {
+        this.data = value;
+    }
+
+    /**
+     * Gets the value of the xml property.
+     * 
+     * @return
+     *     possible object is
+     *     {@link Object }
+     *     
+     */
+    public Object getXml() {
+        return xml;
+    }
+
+    /**
+     * Sets the value of the xml property.
+     * 
+     * @param value
+     *     allowed object is
+     *     {@link Object }
+     *     
+     */
+    public void setXml(Object value) {
+        this.xml = value;
+    }
 
     /**
      * Gets the value of the reference property.
@@ -101,14 +145,36 @@ public class ED
     }
 
     /**
+     * Gets the value of the integrityCheck property.
+     * 
+     * @return
+     *     possible object is
+     *     byte[]
+     */
+    public byte[] getIntegrityCheck() {
+        return integrityCheck;
+    }
+
+    /**
+     * Sets the value of the integrityCheck property.
+     * 
+     * @param value
+     *     allowed object is
+     *     byte[]
+     */
+    public void setIntegrityCheck(byte[] value) {
+        this.integrityCheck = value;
+    }
+
+    /**
      * Gets the value of the thumbnail property.
      * 
      * @return
      *     possible object is
-     *     {@link Thumbnail }
+     *     {@link ED }
      *     
      */
-    public Thumbnail getThumbnail() {
+    public ED getThumbnail() {
         return thumbnail;
     }
 
@@ -117,11 +183,88 @@ public class ED
      * 
      * @param value
      *     allowed object is
-     *     {@link Thumbnail }
+     *     {@link ED }
      *     
      */
-    public void setThumbnail(Thumbnail value) {
+    public void setThumbnail(ED value) {
         this.thumbnail = value;
+    }
+
+    /**
+     * Gets the value of the description property.
+     * 
+     * @return
+     *     possible object is
+     *     {@link ST }
+     *     
+     */
+    public ST getDescription() {
+        return description;
+    }
+
+    /**
+     * Sets the value of the description property.
+     * 
+     * @param value
+     *     allowed object is
+     *     {@link ST }
+     *     
+     */
+    public void setDescription(ST value) {
+        this.description = value;
+    }
+
+    /**
+     * Gets the value of the translation property.
+     * 
+     * <p>
+     * This accessor method returns a reference to the live list,
+     * not a snapshot. Therefore any modification you make to the
+     * returned list will be present inside the JAXB object.
+     * This is why there is not a <CODE>set</CODE> method for the translation property.
+     * 
+     * <p>
+     * For example, to add a new item, do as follows:
+     * <pre>
+     *    getTranslation().add(newItem);
+     * </pre>
+     * 
+     * 
+     * <p>
+     * Objects of the following type(s) are allowed in the list
+     * {@link ED }
+     * 
+     * 
+     */
+    public List<ED> getTranslation() {
+        if (translation == null) {
+            translation = new ArrayList<ED>();
+        }
+        return this.translation;
+    }
+
+    /**
+     * Gets the value of the value property.
+     * 
+     * @return
+     *     possible object is
+     *     {@link String }
+     *     
+     */
+    public String getValue() {
+        return value;
+    }
+
+    /**
+     * Sets the value of the value property.
+     * 
+     * @param value
+     *     allowed object is
+     *     {@link String }
+     *     
+     */
+    public void setValue(String value) {
+        this.value = value;
     }
 
     /**
@@ -153,6 +296,30 @@ public class ED
     }
 
     /**
+     * Gets the value of the charset property.
+     * 
+     * @return
+     *     possible object is
+     *     {@link String }
+     *     
+     */
+    public String getCharset() {
+        return charset;
+    }
+
+    /**
+     * Sets the value of the charset property.
+     * 
+     * @param value
+     *     allowed object is
+     *     {@link String }
+     *     
+     */
+    public void setCharset(String value) {
+        this.charset = value;
+    }
+
+    /**
      * Gets the value of the language property.
      * 
      * @return
@@ -181,10 +348,10 @@ public class ED
      * 
      * @return
      *     possible object is
-     *     {@link CompressionAlgorithm }
+     *     {@link Compression }
      *     
      */
-    public CompressionAlgorithm getCompression() {
+    public Compression getCompression() {
         return compression;
     }
 
@@ -193,33 +360,11 @@ public class ED
      * 
      * @param value
      *     allowed object is
-     *     {@link CompressionAlgorithm }
+     *     {@link Compression }
      *     
      */
-    public void setCompression(CompressionAlgorithm value) {
+    public void setCompression(Compression value) {
         this.compression = value;
-    }
-
-    /**
-     * Gets the value of the integrityCheck property.
-     * 
-     * @return
-     *     possible object is
-     *     byte[]
-     */
-    public byte[] getIntegrityCheck() {
-        return integrityCheck;
-    }
-
-    /**
-     * Sets the value of the integrityCheck property.
-     * 
-     * @param value
-     *     allowed object is
-     *     byte[]
-     */
-    public void setIntegrityCheck(byte[] value) {
-        this.integrityCheck = value;
     }
 
     /**
@@ -231,11 +376,7 @@ public class ED
      *     
      */
     public IntegrityCheckAlgorithm getIntegrityCheckAlgorithm() {
-        if (integrityCheckAlgorithm == null) {
-            return IntegrityCheckAlgorithm.SHA_1;
-        } else {
-            return integrityCheckAlgorithm;
-        }
+        return integrityCheckAlgorithm;
     }
 
     /**

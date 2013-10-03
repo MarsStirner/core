@@ -14,13 +14,13 @@ import javax.xml.bind.annotation.XmlType;
  * &lt;simpleType name="ActClassGenomicObservation">
  *   &lt;restriction base="{urn:hl7-org:v3}cs">
  *     &lt;enumeration value="GEN"/>
- *     &lt;enumeration value="SEQ"/>
- *     &lt;enumeration value="SEQVAR"/>
  *     &lt;enumeration value="DETPOL"/>
  *     &lt;enumeration value="EXP"/>
  *     &lt;enumeration value="LOC"/>
  *     &lt;enumeration value="PHN"/>
  *     &lt;enumeration value="POL"/>
+ *     &lt;enumeration value="SEQ"/>
+ *     &lt;enumeration value="SEQVAR"/>
  *   &lt;/restriction>
  * &lt;/simpleType>
  * </pre>
@@ -31,13 +31,13 @@ import javax.xml.bind.annotation.XmlType;
 public enum ActClassGenomicObservation {
 
     GEN,
-    SEQ,
-    SEQVAR,
     DETPOL,
     EXP,
     LOC,
     PHN,
-    POL;
+    POL,
+    SEQ,
+    SEQVAR;
 
     public String value() {
         return name();
