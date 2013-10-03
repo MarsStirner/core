@@ -57,6 +57,7 @@ public class BbtResultTable implements Serializable {
     private String comment;
 
     public BbtResultTable() {
+
     }
 
     public Integer getId() {

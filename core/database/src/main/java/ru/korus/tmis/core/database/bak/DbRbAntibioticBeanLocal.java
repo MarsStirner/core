@@ -14,7 +14,7 @@ import javax.ejb.Local;
 @Local
 public interface DbRbAntibioticBeanLocal {
 
-    void add(RbAntibiotic rbAntibiotic);
+    void add(final RbAntibiotic rbAntibiotic);
 
-    RbAntibiotic get(final Integer id);
+    RbAntibiotic get(final String code);
 }

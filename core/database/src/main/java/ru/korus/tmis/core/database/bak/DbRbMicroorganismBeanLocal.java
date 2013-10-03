@@ -15,5 +15,5 @@ public interface DbRbMicroorganismBeanLocal {
 
     void add(RbMicroorganism rbMicroorganism);
 
-    RbMicroorganism get(final Integer id);
+    RbMicroorganism get(String code);
 }

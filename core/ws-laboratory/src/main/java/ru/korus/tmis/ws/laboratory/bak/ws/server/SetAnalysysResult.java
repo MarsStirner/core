@@ -218,7 +218,7 @@ public class SetAnalysysResult implements SetAnalysysResultWS {
 //
 //        }
 
-        final RbAntibiotic rbAntibiotic = new RbAntibiotic();
+      /*  final RbAntibiotic rbAntibiotic = new RbAntibiotic();
         rbAntibiotic.setCode("1");
         rbAntibiotic.setId(1);
         rbAntibiotic.setName("abc");
@@ -249,6 +249,7 @@ public class SetAnalysysResult implements SetAnalysysResultWS {
         final BbtOrganismSensValues bbtOrganismSensValues = new BbtOrganismSensValues();
 
         dbBbtOrganismSensValuesBean.add(bbtOrganismSensValues);
+        */
     }
 
     /**
@@ -448,11 +449,11 @@ public class SetAnalysysResult implements SetAnalysysResultWS {
         }
 
 
-        final RbBacIndicator rbBacIndicator = new RbBacIndicator();
-        rbBacIndicator.setCode("2");
-        rbBacIndicator.setId(2);
-        rbBacIndicator.setName("cde");
-        dbRbBacIndicatorBean.add(rbBacIndicator);
+//        final RbBacIndicator rbBacIndicator = new RbBacIndicator();
+//        rbBacIndicator.setCode("2");
+//        rbBacIndicator.setId(2);
+//        rbBacIndicator.setName("cde");
+//        dbRbBacIndicatorBean.add(rbBacIndicator);
 
         for (MicroOrg microOrg : request.getMicroOrgs().getMicroOrgs()) {
 //            if (dbRbMicroorganismBean.get(microOrg.getCode()) == null) {
@@ -463,9 +464,9 @@ public class SetAnalysysResult implements SetAnalysysResultWS {
 //            }
         }
 
-        final BbtResultTable bbtResultTable = new BbtResultTable();
+//        final BbtResultTable bbtResultTable = new BbtResultTable();
 
-        dbBbtResultTableBean.add(bbtResultTable);
+//        dbBbtResultTableBean.add(bbtResultTable);
 
         final BbtResponse bbtResponse = new BbtResponse();
         bbtResponse.setId(Integer.parseInt(request.getOrderMISId()));
@@ -474,9 +475,9 @@ public class SetAnalysysResult implements SetAnalysysResultWS {
 
         dbBbtResponseBean.add(bbtResponse);
 
-        final BbtOrganismSensValues bbtOrganismSensValues = new BbtOrganismSensValues();
+//        final BbtOrganismSensValues bbtOrganismSensValues = new BbtOrganismSensValues();
 
-        dbBbtOrganismSensValuesBean.add(bbtOrganismSensValues);
+//        dbBbtOrganismSensValuesBean.add(bbtOrganismSensValues);
 
 
         return createSuccessResponse();
