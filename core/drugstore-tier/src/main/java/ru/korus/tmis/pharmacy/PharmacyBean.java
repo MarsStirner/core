@@ -12,6 +12,7 @@ import ru.korus.tmis.core.entity.model.pharmacy.Pharmacy;
 import ru.korus.tmis.core.entity.model.pharmacy.PharmacyStatus;
 import ru.korus.tmis.core.exception.CoreException;
 import ru.korus.tmis.core.pharmacy.DbPharmacyBeanLocal;
+import ru.korus.tmis.core.pharmacy.DbPrescriptionsTo1CBeanLocal;
 import ru.korus.tmis.core.pharmacy.DbUUIDBeanLocal;
 import ru.korus.tmis.core.pharmacy.FlatCode;
 import ru.korus.tmis.pharmacy.exception.MessageProcessException;
@@ -23,6 +24,7 @@ import ru.korus.tmis.util.logs.ToLog;
 import javax.ejb.EJB;
 import javax.ejb.Schedule;
 import javax.ejb.Stateless;
+import java.sql.Timestamp;
 import java.util.*;
 
 /**
@@ -68,11 +70,33 @@ public class PharmacyBean implements PharmacyBeanLocal {
     @EJB(beanName = "DbOrganizationBean")
     private DbOrganizationBeanLocal dbOrganizationBeanLocal = null;
 
+    @EJB
+    private DbPrescriptionsTo1CBeanLocal dbPrescriptionsTo1CBeanLocal = null;
+
     private DateTime lastDateUpdate = null;
 
+    /**
+     * Назначен/Не исполнен (ещё или уже)
+     */
+    private static final int PS_NEW = 0;
 
     /**
-     * Полинг базы данных для поиска событий по движениям пациентов
+     *  исполнен
+     */
+    private static final int PS_FINISHED = 1;
+
+    /**
+     *  Отменён
+     */
+    private static final int PS_CANCELED = 2;
+
+    /**
+     * Пауза
+     */
+    private static final int PS_PAUSE = 3;
+
+    /**
+     * Полинг базы данных для поиска событий по движениям пациентов и назначениям ЛС
      */
     @Override
     @Schedule(minute = "*/1", hour = "*")
@@ -99,6 +123,9 @@ public class PharmacyBean implements PharmacyBeanLocal {
             }
             // повторная отправка неотправленных сообщений
             resendMessages();
+            //Отправка назначений ЛС
+            sendPrescriptionTo1C();
+
         } else {
             logger.info("pooling... {}", ConfigManager.Drugstore().Active());
         }
@@ -169,7 +196,7 @@ public class PharmacyBean implements PharmacyBeanLocal {
             }
         } catch (NoSuchOrgStructureException e) {
             if (pharmacy != null) {
-                pharmacy.setErrorString("NoSuchOrgStructureException " + e);
+                pharmacy.setErrorString(getErrorString(e));
                 pharmacy.setStatus(PharmacyStatus.ERROR);
             }
             logger.info("OrgStructure not found. Skip message: " + e);
@@ -194,6 +221,10 @@ public class PharmacyBean implements PharmacyBeanLocal {
                 }
             }
         }
+    }
+
+    private String getErrorString(NoSuchOrgStructureException e) {
+        return "NoSuchOrgStructureException " + e;
     }
 
     /**
@@ -248,7 +279,7 @@ public class PharmacyBean implements PharmacyBeanLocal {
             // выписка из стационара
             return HL7PacketBuilder.processLeaved(action);
 
-        /*} else if (FlatCode.PRESCRIPTION.getCode().equalsIgnoreCase(actionType.getFlatCode())) {
+        }  /*else if (FlatCode.PRESCRIPTION.getCode().equalsIgnoreCase(actionType.getFlatCode())) {
             // Пациент
             final Patient client = action.getEvent().getPatient();
             // Врач, сделавший обращение
@@ -261,7 +292,8 @@ public class PharmacyBean implements PharmacyBeanLocal {
             return HL7PacketBuilder.processPrescription(
                     action, client, executorStaff, organisation, drugCode, AssignmentType.ASSIGNMENT);
 
-        } else if (FlatCode.RELEASE_PRESCRIPTION.getCode().equalsIgnoreCase(actionType.getFlatCode())) {    // искусственно введеный тип, либо к нему привязаться или реализовать по-другому
+        }
+        else if (FlatCode.RELEASE_PRESCRIPTION.getCode().equalsIgnoreCase(actionType.getFlatCode())) {    // искусственно введеный тип, либо к нему привязаться или реализовать по-другому
             // todo!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
             // Пациент
             final Patient client = action.getEvent().getPatient();
@@ -274,8 +306,8 @@ public class PharmacyBean implements PharmacyBeanLocal {
 
             return HL7PacketBuilder.processPrescription(
                     action, client, executorStaff, organisation, drugCode, AssignmentType.EXECUTION);
-                   */
-        }
+
+        }          */
 
         throw new MessageProcessException();
     }
@@ -402,7 +434,57 @@ public class PharmacyBean implements PharmacyBeanLocal {
         throw new SkipMessageProcessException("OrgStructure for " + action + " is not found");
     }
 
+    private void sendPrescriptionTo1C() {
+        Iterable<PrescriptionsTo1C> prescriptions = dbPrescriptionsTo1CBeanLocal.getPrescriptions();
+        for (PrescriptionsTo1C prescription : prescriptions) {
+            int errCount = prescription.getErrCount();
+            long step = 89 * 1000; // время до слейдующей попытки передачи данных
+            prescription.setErrCount(errCount + 1);
+            prescription.setSendTime(new Timestamp(prescription.getSendTime().getTime() + (long) (errCount) * step));
+            if (sendPrescription(prescription) ) {
+                dbPrescriptionsTo1CBeanLocal.remove(prescription);
+            }
+        }
+    }
 
-
+    private boolean sendPrescription(PrescriptionsTo1C prescription) {
+        boolean res = false;
+        try {
+            final Action action =  prescription.getDrugChart().getAction();
+            // Пациент
+            final Patient client = action.getEvent().getPatient();
+            // Врач, сделавший обращение
+            final Staff executorStaff = action.getExecutor();
+            // Организация, которой принадлежит документ
+            final Organisation organisation;
+            organisation = getCustodianOrgStructure(action);
+            // Определяем код назначенного препарата
+            final String drugCode = dbPharmacy.getDrugCode(action);
+            Request request = null;
+            if(prescription.isPrescription()) { // передача нового / отмена назначения
+                request = HL7PacketBuilder.processPrescription(
+                        action, client, executorStaff, organisation, drugCode, AssignmentType.ASSIGNMENT, prescription.getNewStatus() == PS_CANCELED,
+                        prescription.getDrugChart().getUuid(), prescription.getDrugChart().getVersion());
+            } else if (prescription.getOldStatus() == PS_NEW && prescription.getNewStatus() == PS_FINISHED) {
+                request = HL7PacketBuilder.processPrescription(
+                        action, client, executorStaff, organisation, drugCode, AssignmentType.EXECUTION, false, prescription.getDrugChart().getUuid(),
+                        prescription.getDrugChart().getVersion());
+            } else if (prescription.getOldStatus() == PS_FINISHED && prescription.getNewStatus() == PS_NEW) {
+                request = HL7PacketBuilder.processPrescription(
+                        action, client, executorStaff, organisation, drugCode, AssignmentType.EXECUTION, true, prescription.getDrugChart().getUuid(),
+                        prescription.getDrugChart().getVersion());
+            }
+            final MCCIIN000002UV012 result = new MISExchange().getMISExchangeSoap().processHL7V3Message(request);
+            prescription.getDrugChart().setUuid(result.getAcknowledgement().iterator().next().getTargetMessage().getId().getRoot());
+            Integer version = prescription.getDrugChart().getVersion() == null ? 1 : (prescription.getDrugChart().getVersion() + 1);
+            prescription.getDrugChart().setVersion(version);
+            res = true;
+        } catch (NoSuchOrgStructureException e) {
+            final String errorString = getErrorString(e);
+            prescription.setInfo(errorString);
+            logger.error(errorString);
+        }
+        return res;
+    }
 
 }

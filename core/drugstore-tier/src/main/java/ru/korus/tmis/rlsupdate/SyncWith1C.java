@@ -2,10 +2,7 @@ package ru.korus.tmis.rlsupdate;
 
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
-import java.util.Date;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 import javax.ejb.*;
 import javax.persistence.EntityManager;
@@ -79,8 +76,7 @@ public class SyncWith1C {
     @PersistenceContext(unitName = "s11r64")
     private EntityManager em = null;
 
-    @EJB
-    private DbOrgStructureBeanLocal dbOrgStructureBean;
+    private List<String> storageUuids = null;
 
     private DrugList drugList;
 
@@ -544,26 +540,35 @@ public class SyncWith1C {
         String res =  htmlNewLine("update RLS balance...start" + EOL);
         OrgStructure mainOrganization =  em.find(OrgStructure.class, 1);
         if(mainOrganization != null && mainOrganization.getUuid() != null) {
-            List<OrgStructure> orgStructures = dbOrgStructureBean.getAllOrgStructures();
-            for(OrgStructure orgStructure : orgStructures) {
-                if( !orgStructure.getDeleted() && orgStructure.getUuid() != null ) {
-                    res += updateBalance(drugList, mainOrganization.getUuid().getUuid(), orgStructure);
-                }
+            List<String> uuids = getStorageUuid();
+            for(String orgStructure : uuids) {
+                res += updateBalance(drugList, mainOrganization.getUuid().getUuid(), orgStructure);
             }
         }
         return res;
     }
 
+    private List<String> getStorageUuid() {
+        if(storageUuids == null || storageUuids.isEmpty()) {
+            storageUuids = new LinkedList<String>();
+            MISExchangePortType servicePort = getMisExchangePortType();
+            StorageList storageFrom1C = servicePort.getStorageList();
+            for( Storage storage : storageFrom1C.getStorage() ) {
+                storageUuids.add(storage.getRef());
+            }
+        }
+        return storageUuids;
+    }
+
     @TransactionAttribute(value = TransactionAttributeType.REQUIRES_NEW)
-    public String updateBalance(DrugList drugList, String organizationRef, OrgStructure orgStructure) {
-        logger.info("update RLS balance for store {}", orgStructure.getName());
+    public String updateBalance(DrugList drugList, String organizationRef, String uuid) {
+        logger.info("update RLS balance for UUID {}", uuid);
         final SimpleDateFormat dateFormat = new SimpleDateFormat("yyyyMMdd");
         Integer updateCount = 0;
-        String res = htmlNewLine("update RLS balance for store '" + orgStructure.getName() + "'");
+        String res = htmlNewLine("update RLS balance for UUID '" + uuid + "'");
         MISExchangePortType servicePort = getMisExchangePortType();
-        final UUID uuid =orgStructure.getUuid();
         if(!drugList.getDrug().isEmpty() && uuid != null) {
-            BalanceOfGoods2 balanceOfGoods2 = servicePort.balanceOfGoods(drugList, organizationRef,  uuid.getUuid());
+            BalanceOfGoods2 balanceOfGoods2 = servicePort.balanceOfGoods(drugList, organizationRef,  uuid);
             if (balanceOfGoods2 != null) {
                 for( BalanceOfGoods2.Storage storages : balanceOfGoods2.getStorage()) {
                     for(BalanceOfGoods2.Storage.Balance balance: storages.getBalance()) {
@@ -574,9 +579,9 @@ public class SyncWith1C {
                             for(BalanceOfGoods2.Storage.Balance.Goods goods : goodsList) {
                                 try {
                                     Date bestBefore = dateFormat.parse(goods.getBestBefore());
-                                    RlsBalanceOfGood rlsBalanceOfGood = getRlsBalanceOfGood(drugRlsCode, orgStructure.getId(), bestBefore);
+                                    RlsBalanceOfGood rlsBalanceOfGood = getRlsBalanceOfGood(drugRlsCode, uuid, bestBefore);
                                     rlsBalanceOfGood.setRlsNomen(rlsNomen);
-                                    rlsBalanceOfGood.setOrgStructure(orgStructure);
+                                    rlsBalanceOfGood.setStorageUuid(uuid);
                                     rlsBalanceOfGood.setValue(Double.parseDouble(goods.getQty().getValue()));
                                     rlsBalanceOfGood.setBestBefore(bestBefore);
                                     rlsBalanceOfGood.setUpdateDateTime(new Date());
@@ -584,7 +589,7 @@ public class SyncWith1C {
                                     em.flush();
                                     ++updateCount;
                                 } catch (ParseException ex) {
-                                    logger.info("Wrong date format '{}', drug code: '{}', storage: '{}'", goods.getBestBefore(), drugRlsCode, orgStructure.getName());
+                                    logger.info("Wrong date format '{}', drug code: '{}', storage: '{}'", goods.getBestBefore(), drugRlsCode, uuid);
                                 } catch (NumberFormatException ex) {
                                     logger.info("Wrong dosage format for drug # {}: {}",drugRlsCode, ex );
                                     res += "Wrong storage value format for drug #" + drugRlsCode + ": " + goods.getQty().getValue() + EOL;
@@ -600,11 +605,11 @@ public class SyncWith1C {
         return res;
     }
 
-    private RlsBalanceOfGood getRlsBalanceOfGood(Integer drugRlsCode, Integer orgStructureId,  Date bestBefore) {
+    private RlsBalanceOfGood getRlsBalanceOfGood(Integer drugRlsCode, String uuid,  Date bestBefore) {
         List<RlsBalanceOfGood> rlsBalanceOfGoods =
                 em.createNamedQuery( "RlsBalanceOfGood.findByCodeAndStore", RlsBalanceOfGood.class).
                         setParameter("code", drugRlsCode).
-                        setParameter("orgStructureId", orgStructureId).
+                        setParameter("uuid", uuid).
                         setParameter("date", bestBefore).getResultList();
         if (rlsBalanceOfGoods.isEmpty()) {
             return new RlsBalanceOfGood();

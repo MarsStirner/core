@@ -14,13 +14,13 @@
             <property name="eclipselink.logging.level.sql" value="${eclipselink.logging.sql.level}"/>
             <property name="eclipselink.logging.parameters" value="${eclipselink.logging.parameters}"/>
             <property name="javax.persistence.jdbc.show_sql" value="${eclipselink.logging.showsql}"/>
-            <!--<property name="eclipselink.ddl-generation" value="${eclipselink.ddl.generated}"/>-->
-
+            <property name="eclipselink.ddl-generation" value="create-tables"/>
             <property name="eclipselink.cache.shared.default" value="false"/>
             <property name="eclipselink.cache.size.default" value="0"/>
             <property name="eclipselink.cache.type.default" value="none"/>
             <property name="eclipselink.query-results-cache" value="false"/>
             <property name="eclipselink.logging.logger" value="ru.korus.tmis.core.logging.slf4j.eclipselink.Logger"/>
+
         </properties>
     </persistence-unit>
 

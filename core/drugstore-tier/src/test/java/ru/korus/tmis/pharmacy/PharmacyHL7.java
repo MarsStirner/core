@@ -133,7 +133,7 @@ public class PharmacyHL7 {
                 doctor,
                 organisation,
                 "20044",
-                AssignmentType.ASSIGNMENT));
+                AssignmentType.ASSIGNMENT, false, null, null));
     }
 
     private void send(Request request) {
