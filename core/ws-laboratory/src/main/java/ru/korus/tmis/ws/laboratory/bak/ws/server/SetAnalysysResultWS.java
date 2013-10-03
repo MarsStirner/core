@@ -1,6 +1,7 @@
 package ru.korus.tmis.ws.laboratory.bak.ws.server;
 
 import ru.korus.tmis.core.exception.CoreException;
+import ru.korus.tmis.ws.laboratory.bak.ws.server.model.fake.FakeResult;
 import ru.korus.tmis.ws.laboratory.bak.ws.server.model.hl7.complex.MCCIIN000002UV01;
 import ru.korus.tmis.ws.laboratory.bak.ws.server.model.hl7.complex.POLBIN224100UV01;
 
@@ -58,4 +59,13 @@ public interface SetAnalysysResultWS {
 
     static final String SERVICE_NAME = "setAnalysisResultService";
     static final String PORT_NAME = "setAnalysisResultPortType";
+
+
+
+    @WebMethod(operationName = "setAnalysisResults2")
+    @WebResult(name = SUCCESS_ACCEPT_EVENT, targetNamespace = NAMESPACE, partName = "Body")
+    MCCIIN000002UV01 setAnalysisResults2(
+            @WebParam(name = "POLB_IN224100UV01", targetNamespace = NAMESPACE, partName = "Body")
+            FakeResult response
+    )  throws CoreException;
 }

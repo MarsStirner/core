@@ -11,6 +11,7 @@ import ru.korus.tmis.core.entity.model.bak.*;
 import ru.korus.tmis.core.exception.CoreException;
 import ru.korus.tmis.util.CompileTimeConfigManager;
 import ru.korus.tmis.util.logs.ToLog;
+import ru.korus.tmis.ws.laboratory.bak.ws.server.model.fake.FakeResult;
 import ru.korus.tmis.ws.laboratory.bak.ws.server.model.hl7.complex.*;
 
 import javax.ejb.EJB;
@@ -148,7 +149,7 @@ public class SetAnalysysResult implements SetAnalysysResultWS {
 
 
             NodeList nodeList = (NodeList) xPath.compile("/*[name()='POLB_IN224100UV01']/*[name()='controlActProcess']/*[name()='subject']").evaluate(xmlDocument, XPathConstants.NODESET);
-            for(int i = 0; i < nodeList.getLength(); i++) {
+            for (int i = 0; i < nodeList.getLength(); i++) {
                 System.out.println(nodeList.item(i).getFirstChild().getNodeValue());
             }
 
@@ -427,4 +428,12 @@ public class SetAnalysysResult implements SetAnalysysResultWS {
     }
 
 
+    @Override
+    @WebMethod(operationName = "setAnalysisResults2")
+    @WebResult(name = SUCCESS_ACCEPT_EVENT, targetNamespace = NAMESPACE, partName = "Body")
+    public MCCIIN000002UV01 setAnalysisResults2(
+            @WebParam(name = "POLB_IN224100UV01", targetNamespace = NAMESPACE, partName = "Body")
+            final FakeResult request) throws CoreException {
+        return createSuccessResponse();
+    }
 }
