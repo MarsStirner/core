@@ -18,8 +18,7 @@ import javax.xml.bind.annotation.XmlType;
         "doctorId",
         "doctorName",
         "microOrgs",
-        "results",
-        "antibiotics"
+        "results"
 })
 public class FakeResult {
     @XmlElement(required = true)
@@ -46,8 +45,6 @@ public class FakeResult {
     @XmlElement(required = true)
     public Results results;
 
-    @XmlElement(required = true)
-    public Antibiotics antibiotics;
 
 
     public String getOrderMISId() {
@@ -112,13 +109,5 @@ public class FakeResult {
 
     public void setResults(Results results) {
         this.results = results;
-    }
-
-    public Antibiotics getAntibiotics() {
-        return antibiotics;
-    }
-
-    public void setAntibiotics(Antibiotics antibiotics) {
-        this.antibiotics = antibiotics;
     }
 }

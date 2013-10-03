@@ -13,7 +13,8 @@ import javax.xml.bind.annotation.XmlType;
 @XmlType(name = "Result", propOrder = {
         "idMicroOrg",
         "code",
-        "concentration"
+        "concentration",
+        "antibiotics"
 })
 public class Result {
 
@@ -26,6 +27,8 @@ public class Result {
     @XmlElement(required = true)
     protected String concentration;
 
+    @XmlElement(required = true)
+    public Antibiotics antibiotics;
 
     public String getIdMicroOrg() {
         return idMicroOrg;
@@ -49,5 +52,13 @@ public class Result {
 
     public void setConcentration(String concentration) {
         this.concentration = concentration;
+    }
+
+    public Antibiotics getAntibiotics() {
+        return antibiotics;
+    }
+
+    public void setAntibiotics(Antibiotics antibiotics) {
+        this.antibiotics = antibiotics;
     }
 }
