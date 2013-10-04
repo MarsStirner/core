@@ -417,7 +417,18 @@ public final class HL7PacketBuilder {
     }
 
     /**
-     * Назначения врача
+     * Формирования сообщения об интервалах назначения и исполнения ЛС
+     *
+     * @param action - Действие, соответствующее отправляемому интервалу
+     * @param client - Пациента
+     * @param executorStaff - Врач, назначивший ЛС
+     * @param organisation -  ЛПУ
+     * @param drugCode - код ЛС
+     * @param type - тип интервала. ASSIGNMENT - назначение; EXECUTION - исполнение
+     * @param negationInd - true - отменить/удалить интервал; false - создать/обновить
+     * @param uuid - uuid в 1С. Если новый интервал то должен быть равен null
+     * @param version -  номер версии
+     * @return
      */
     public static Request processPrescription(
             final Action action,
