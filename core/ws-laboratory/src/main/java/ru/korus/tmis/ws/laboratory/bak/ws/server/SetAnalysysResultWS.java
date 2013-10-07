@@ -1,6 +1,7 @@
 package ru.korus.tmis.ws.laboratory.bak.ws.server;
 
 import ru.korus.tmis.core.exception.CoreException;
+import ru.korus.tmis.ws.laboratory.bak.ws.server.model.exception.BakIntegrationException;
 import ru.korus.tmis.ws.laboratory.bak.ws.server.model.fake.FakeResult;
 import ru.korus.tmis.ws.laboratory.bak.ws.server.model.hl7.complex.MCCIIN000002UV01;
 import ru.korus.tmis.ws.laboratory.bak.ws.server.model.hl7.complex.POLBIN224100UV01;
@@ -66,7 +67,5 @@ public interface SetAnalysysResultWS {
     @WebResult(name = SUCCESS_ACCEPT_EVENT, targetNamespace = NAMESPACE, partName = "Body")
     MCCIIN000002UV01 setAnalysisResults2(
             @WebParam(name = "FakeResult", targetNamespace = NAMESPACE, partName = "Body")
-            final
-            FakeResult response
-    )  throws CoreException;
+            final FakeResult response) throws CoreException;
 }

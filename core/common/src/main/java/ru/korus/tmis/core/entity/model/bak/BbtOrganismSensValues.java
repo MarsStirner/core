@@ -41,6 +41,30 @@ public class BbtOrganismSensValues implements Serializable {
     public BbtOrganismSensValues() {
     }
 
+    public void setId(Integer id) {
+        this.id = id;
+    }
+
+    public void setBbtResultOrganismId(Integer bbtResultOrganismId) {
+        this.bbtResultOrganismId = bbtResultOrganismId;
+    }
+
+    public void setIdx(Integer idx) {
+        this.idx = idx;
+    }
+
+    public void setAntibioticId(Integer antibioticId) {
+        this.antibioticId = antibioticId;
+    }
+
+    public void setMic(String mic) {
+        this.mic = mic;
+    }
+
+    public void setActivity(String activity) {
+        this.activity = activity;
+    }
+
     public Integer getId() {
         return id;
     }

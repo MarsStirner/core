@@ -2,11 +2,10 @@ package ru.korus.tmis.core.exception;
 
 import javax.xml.ws.WebFault;
 
-@WebFault(name = "ExceptionFault",
-        faultBean = "ru.korus.tmis.core.exception.FaultBean")
+@WebFault(name = "ExceptionFault", faultBean = "ru.korus.tmis.core.exception.FaultBean")
 public class CoreException extends Exception {
 
-    final FaultBean faultBean;
+    private final FaultBean faultBean;
 
     public FaultBean getFaultInfo() {
         return faultBean;
@@ -25,8 +24,7 @@ public class CoreException extends Exception {
         faultBean = new FaultBean(0, message);
     }
 
-    public CoreException(final int id,
-                         final String message) {
+    public CoreException(final int id, final String message) {
         super(message);
         faultBean = new FaultBean(id, message);
     }
