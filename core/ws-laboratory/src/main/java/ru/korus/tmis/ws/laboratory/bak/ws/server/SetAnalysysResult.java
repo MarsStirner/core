@@ -5,15 +5,18 @@ import org.slf4j.LoggerFactory;
 import org.w3c.dom.Document;
 import org.w3c.dom.NodeList;
 import org.xml.sax.SAXException;
-import ru.korus.tmis.core.database.bak.*;
+import ru.korus.tmis.core.database.bak.DbBbtOrganismSensValuesBeanLocal;
+import ru.korus.tmis.core.database.bak.DbBbtResponseBeanLocal;
+import ru.korus.tmis.core.database.bak.DbBbtResultTableBeanLocal;
+import ru.korus.tmis.core.database.bak.DbRbAntibioticBeanLocal;
+import ru.korus.tmis.core.database.bak.DbRbBacIndicatorBeanLocal;
+import ru.korus.tmis.core.database.bak.DbRbMicroorganismBeanLocal;
 import ru.korus.tmis.core.entity.model.bak.BbtResponse;
 import ru.korus.tmis.core.entity.model.bak.RbAntibiotic;
 import ru.korus.tmis.core.entity.model.bak.RbMicroorganism;
 import ru.korus.tmis.core.exception.CoreException;
-import ru.korus.tmis.core.exception.SOAPFaultInfo;
 import ru.korus.tmis.util.CompileTimeConfigManager;
 import ru.korus.tmis.util.logs.ToLog;
-import ru.korus.tmis.ws.laboratory.bak.ws.server.model.exception.BakIntegrationException;
 import ru.korus.tmis.ws.laboratory.bak.ws.server.model.fake.Antibiotic;
 import ru.korus.tmis.ws.laboratory.bak.ws.server.model.fake.FakeResult;
 import ru.korus.tmis.ws.laboratory.bak.ws.server.model.fake.MicroOrg;
@@ -26,8 +29,6 @@ import javax.jws.WebParam;
 import javax.jws.WebResult;
 import javax.jws.WebService;
 import javax.xml.bind.JAXBElement;
-import javax.xml.bind.annotation.XmlSeeAlso;
-import javax.xml.datatype.XMLGregorianCalendar;
 import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
 import javax.xml.parsers.ParserConfigurationException;
@@ -413,30 +414,17 @@ public class SetAnalysysResult implements SetAnalysysResultWS {
     }
 
     /**
-     * Сообщение от ЛИС о доставке материала. Факт завершения забора биоматериала.
-     *
-     * @param orderMisId           - штрих-код на контейнере c биоматериалом (десятичное представление считанного штрих-кода)
-     * @param takenTissueJournal   - TakenTissueJournal.id – номер заказа
-     * @param getTissueTime        - Дата и время регистрации биоматериала в лаборатории
-     * @param orderBiomaterialName - название  биоматериала из справочника биоматериалов
-     * @param orderLIS             - Номер заказа в ЛИС
-     * @return
-     * @throws CoreException
+     * {@inheritDoc}
      */
     @Override
-    public int bakDelivered(@WebParam(name = "orderBarCode", targetNamespace = Namespace)
+    public int bakDelivered(@WebParam(name = "GUID ", targetNamespace = Namespace)
+                            String GUID,
+                            @WebParam(name = "DtTime", targetNamespace = Namespace)
+                            String DtTime,
+                            @WebParam(name = "orderMisId", targetNamespace = Namespace)
                             Integer orderMisId,
-                            @WebParam(name = "TakenTissueJournal", targetNamespace = Namespace)
-                            String takenTissueJournal,
-                            @WebParam(name = "getTissueTime", targetNamespace = Namespace)
-                            XMLGregorianCalendar getTissueTime,
                             @WebParam(name = "orderBiomaterialName", targetNamespace = Namespace)
-                            String orderBiomaterialName,
-                            @WebParam(name = "orderLIS", targetNamespace = Namespace)
-                            String orderLIS) throws CoreException {
-
-        logger.info("Bak delivery: orderMisId [{}], takenTissueJournal [{}], getTissueTime [{}], orderBiomaterialName [{}], orderLIS [{}]",
-                orderMisId, takenTissueJournal, getTissueTime, orderBiomaterialName, orderLIS);
+                            Integer orderBarCode) throws CoreException {
 
         return 0;
     }
