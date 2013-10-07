@@ -161,7 +161,9 @@ public class DbPharmacyBean implements DbPharmacyBeanLocal {
     private List<String> getFlatCodeStrings() {
         final List<String> flatCodeList = new ArrayList<String>(10);
         for (FlatCode fc : FlatCode.values()) {
-            flatCodeList.add(fc.getCode());
+            if( !FlatCode.PRESCRIPTION.equals(fc)) {
+                flatCodeList.add(fc.getCode());
+            }
         }
         return flatCodeList;
     }

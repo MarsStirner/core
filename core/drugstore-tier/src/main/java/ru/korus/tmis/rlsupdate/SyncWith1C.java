@@ -76,7 +76,7 @@ public class SyncWith1C {
     @PersistenceContext(unitName = "s11r64")
     private EntityManager em = null;
 
-    private static List<RbStorage> storageUuids = null;
+    private static List<Integer> storageUuids = null;
 
     private static DrugList drugList;
 
@@ -540,17 +540,17 @@ public class SyncWith1C {
         String res =  htmlNewLine("update RLS balance...start" + EOL);
         OrgStructure mainOrganization =  em.find(OrgStructure.class, 1);
         if(mainOrganization != null && mainOrganization.getUuid() != null) {
-            List<RbStorage> rbStoragesList = getStorageUuid();
-            for(RbStorage rbStorages : rbStoragesList) {
-                res += updateBalance(drugList, mainOrganization.getUuid().getUuid(), rbStorages);
+            List<Integer> rbStoragesList = getStorageUuid();
+            for(Integer rbStorageId : rbStoragesList) {
+                res += updateBalance(drugList, mainOrganization.getUuid().getUuid(), em.find(RbStorage.class, rbStorageId));
             }
         }
         return res;
     }
 
-    private List<RbStorage> getStorageUuid() {
+    private List<Integer> getStorageUuid() {
         if(storageUuids == null || storageUuids.isEmpty()) {
-            storageUuids = new LinkedList<RbStorage>();
+            storageUuids = new LinkedList<Integer>();
             MISExchangePortType servicePort = getMisExchangePortType();
             StorageList storageFrom1C = servicePort.getStorageList();
             for( Storage storage : storageFrom1C.getStorage() ) {
@@ -562,7 +562,8 @@ public class SyncWith1C {
                     em.persist(storageDb);
                     uuids.add(storageDb);
                 }
-                storageUuids.add(uuids.iterator().next());
+                em.flush();
+                storageUuids.add(uuids.iterator().next().getId());
             }
         }
         return storageUuids;

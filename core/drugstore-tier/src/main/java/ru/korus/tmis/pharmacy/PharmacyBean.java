@@ -124,7 +124,9 @@ public class PharmacyBean implements PharmacyBeanLocal {
             // повторная отправка неотправленных сообщений
             resendMessages();
             //Отправка назначений ЛС
+            logger.info("sending prescription start...");
             sendPrescriptionTo1C();
+            logger.info("sending prescription stop");
 
         } else {
             logger.info("pooling... {}", ConfigManager.Drugstore().Active());
