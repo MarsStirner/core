@@ -1,6 +1,7 @@
 
 package ru.korus.tmis.ws.laboratory.bak.ws.server.model.hl7.complex;
 
+import javax.xml.bind.JAXBElement;
 import javax.xml.bind.annotation.*;
 import javax.xml.bind.annotation.adapters.CollapsedStringAdapter;
 import javax.xml.bind.annotation.adapters.XmlJavaTypeAdapter;
@@ -45,11 +46,11 @@ import java.util.List;
  * </pre>
  */
 @XmlAccessorType(XmlAccessType.FIELD)
-//@XmlRootElement
+@XmlRootElement
 @XmlType(name = "ED", propOrder = {
+        "content",
         "reference",
-        "thumbnail",
-        "content"
+        "thumbnail"
 })
 @XmlSeeAlso({
         Thumbnail.class,
@@ -58,8 +59,6 @@ import java.util.List;
 public class ED
         extends BIN {
 
-    @XmlMixed
-    protected List<Serializable> content;
 
     protected TEL reference;
     protected Thumbnail thumbnail;
@@ -76,6 +75,10 @@ public class ED
     @XmlAttribute(name = "integrityCheckAlgorithm")
     protected IntegrityCheckAlgorithm integrityCheckAlgorithm;
 
+
+//    @XmlMixed
+//    @XmlAnyElement
+    protected List<Serializable> content;
 
 
     public List<Serializable> getContent() {
