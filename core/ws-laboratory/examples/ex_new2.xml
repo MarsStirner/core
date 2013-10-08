@@ -1,0 +1,110 @@
+<SOAP-ENV:Envelope
+        xmlns:SOAP-ENV="http://schemas.xmlsoap.org/soap/envelope/"
+        xmlns:urn="http://www.korusconsulting.ru"
+        xmlns:xsd="http://www.w3.org/1999/XMLSchema"
+        xmlns:xsi="http://www.w3.org/1999/XMLSchema-instance"
+        SOAP-ENV:encodingStyle="http://schemas.xmlsoap.org/soap/encoding/">
+    <SOAP-ENV:Body>
+        <urn:setAnalysisResults>
+            <POLB_IN224100UV01 xmlns="urn:hl7-org:v3" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="urn:hl7-org:v3 ./processable/multicacheschemas/POLB_IN224100UV01.xsd" ITSVersion="XML_1.0">
+                <id root="{UUID сообщения}"/>
+                <creationTime value="{Время создания события. Значение value кодируется по шаблону: ггггммддччммсс}"/>
+                <!-- Идентификатор типа сообщения. -->
+                <interactionId extension="POLB_IN224100UV01" root="2.16.840.1.113883.1.6"/>
+                <!-- Назначение сообщения относительно отправителя. Возможные значения — D (отладка, Debugging), P (промышленное функционирование, Production) or T (обучение, Training). -->
+                <processingCode code="P"/>
+                <!-- Режим обработки сообщения относительно отправителя. Возможные значения — A (архивирование, Archive), T (штатное функционирование, Current processing), I (инициализация, Initial load), R (восстановление, Restore). -->
+                <processingModeCode code="T"/>
+                <!-- Высылать ли подтверждающее сообщение. Значения - Always (AL), only on errors (ER), or never (NE) -->
+                <acceptAckCode code="AL"/>
+                <!-- Раздел приемник - используется без изменений -->
+                <receiver typeCode="RCV">
+                    <device classCode="DEV" determinerCode="INSTANCE">
+                        <id nullFlavor="NI"/>
+                    </device>
+                </receiver>
+                <!-- Раздел отправитель - используется без изменений -->
+                <sender typeCode="SND">
+                    <device classCode="DEV" determinerCode="INSTANCE">
+                        <id nullFlavor="NI"/>
+                    </device>
+                </sender>
+                <!-- информация о состоявшемся событии -->
+                <controlActProcess classCode="CACT" moodCode="APT">
+
+                    <authorOrPerformer typeCode="PRF" contextControlCode="AN">
+                        <assignedPerson classCode="ASSIGNED">
+                            <representedOrganization classCode="ORG" determinerCode="INSTANCE">
+                                <code code="{Код лаборатории}"/>
+                            </representedOrganization>
+                        </assignedPerson>
+                    </authorOrPerformer>
+
+                    <subject typeCode="SUBJ">
+                        <!-- раздел результата, для идентификации заказу/исследованию -->
+                        <observationReport classCode="GROUPER" moodCode="EVN">
+                            <id root="{идентификатор направления на анализы}"/>
+                            <code code="{код исследования}" displayName="{название исследования}"/>
+                            <statusCode code="{отметка об окончании исследований по направлению, true-окончательный, заказ закрывается, false - предварительный}"/>
+
+                            <specimen typeCode="SPC" contextControlCode="OP">
+                                <specimen classCode="SPEC">
+                                    <id root="{штрих-код на контейнере c биоматериалом}"/>
+                                </specimen>
+                            </specimen>
+                            <author typeCode="AUT">
+                                <assignedEntity classCode="ASSIGNED">
+                                    <code code="{уникальный идентификационный номер врача лаборатории подписавшего результаты исследования }"
+                                          displayName="{ФИО врача лаборатории подписавшего результаты исследования}"/>
+                                </assignedEntity>
+                            </author>
+                        </observationReport>
+                    </subject>
+
+                    <subject typeCode="SUBJ">
+                        <observationBattery classCode="BATTERY" moodCode="EVN">
+                            <code displayName="{название исследования}"/>
+                            <text>{дефекты биоматериала}</text>
+                        </observationBattery>
+                    </subject>
+
+                    <subject typeCode="SUBJ" contextConductionInd="false">
+                        <observationEvent classCode="OBS" moodCode="EVN">
+                            <code code="{код методики/показателя/микроорганизма}" displayName value="{название методики/показателя/микроорганизма}"/>
+
+                            <text>{произвольный текстовый комментарий}</text>
+
+                            <statusCode displayName="{если результата нет, здесь указана причина}"/>
+
+                            <effectiveTime value="{дата выполнения/утверждения результата}"/>
+
+                            <value unit="{единица измерения}" value="{значение}" xsi:type="PQ"/>
+                            <device typeCode="DEV">
+                                <labTestKit classCode="MANU">
+                                    <manufacturedTestKit classCode="DEV" determinerCode="INSTANCE">
+
+                                        <code displayName="{название прибора}"/>
+                                    </manufacturedTestKit>
+                                </labTestKit>
+                            </device>
+                            <referenceRange typeCode="REFV" contextConductionInd="false" contextControlCode="ON">
+                                <interpretationRange classCode="OBS" moodCode="EVN.CRT">
+                                    <interpretationCode displayName="{норма, т.е. диапазон допустимых значений в строковом вид}"/>
+
+                                    <precondition typeCode="PRCN" contextControlCode="ON" contextConductionInd="false">
+                                        <criterion classCode="OBS" moodCode="EVN.CRT">
+                                            <code displayName="{значение результата относительно нормы}"/>
+                                        </criterion>
+                                    </precondition>
+                                </interpretationRange>
+                            </referenceRange>
+                        </observationEvent>
+                    </subject>
+
+
+                </controlActProcess>
+            </POLB_IN224100UV01>
+        </urn:setAnalysisResults>
+
+    </SOAP-ENV:Body>
+</SOAP-ENV:Envelope>
