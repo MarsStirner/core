@@ -3,10 +3,12 @@ package ru.korus.tmis.core.database.bak;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import ru.korus.tmis.core.entity.model.bak.BbtResponse;
+import ru.korus.tmis.core.entity.model.bak.RbMicroorganism;
 
 import javax.ejb.Stateless;
 import javax.persistence.EntityManager;
 import javax.persistence.PersistenceContext;
+import java.util.List;
 
 /**
  * Author:      Dmitriy E. Nosov <br>
@@ -24,10 +26,10 @@ public class DbBbtResponseBean implements DbBbtResponseBeanLocal {
 
     @Override
     public void add(final BbtResponse bbtResponse) {
-        final BbtResponse response = em.find(BbtResponse.class, bbtResponse.getId());
+        final BbtResponse response = get(bbtResponse.getId());
         if (response == null) {
-            em.persist(response);
-            logger.info("create BbtResponse {}", response);
+            em.persist(bbtResponse);
+            logger.info("create BbtResponse {}", bbtResponse);
         } else {
             logger.info("find BbtResponse {}", response);
         }
@@ -35,6 +37,9 @@ public class DbBbtResponseBean implements DbBbtResponseBeanLocal {
 
     @Override
     public BbtResponse get(final Integer id) {
-        return em.find(BbtResponse.class, id);
+        List<BbtResponse> responseList =
+                em.createQuery("SELECT a FROM BbtResponse a WHERE a.id = :id", BbtResponse.class)
+                        .setParameter("id", id).getResultList();
+        return !responseList.isEmpty() ? responseList.get(0) : null;
     }
 }

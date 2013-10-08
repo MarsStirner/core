@@ -1,0 +1,304 @@
+<POLB_IN224100UV01 xmlns="urn:hl7-org:v3" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="urn:hl7-org:v3 ../processable/multicacheschemas/POLB_IN224100UV01.xsd" ITSVersion="XML_1.0">
+    <id root="3f14ec3f-2382-4673-9498-d1bf3b4f9e36"/>
+    <creationTime value="20131003000102"/>
+    <interactionId extension="POLB_IN224100UV01" root="2.16.840.1.113883.1.6"/>
+    <processingCode code="P"/>
+    <processingModeCode code="T"/>
+    <acceptAckCode code="AL"/>
+    <receiver typeCode="RCV">
+        <device classCode="DEV" determinerCode="INSTANCE">
+            <id nullFlavor="NI"/>
+        </device>
+    </receiver>
+    <sender typeCode="SND">
+        <device classCode="DEV" determinerCode="INSTANCE">
+            <id nullFlavor="NI"/>
+        </device>
+    </sender>
+    <controlActProcess classCode="CACT" moodCode="APT">
+        <authorOrPerformer typeCode="PRF" contextControlCode="AN">
+            <noteText/>
+            <time/>
+            <modeCode/>
+            <signatureCode/>
+            <signatureText/>
+            <assignedPerson classCode="ASSIGNED">
+                <representedOrganization classCode="ORG" determinerCode="INSTANCE">
+                    <id/>
+                    <code code="42"/>
+                </representedOrganization>
+            </assignedPerson>
+        </authorOrPerformer>
+        <subject typeCode="SUBJ" contextConductionInd="false">
+            <observationReport classCode="GROUPER" moodCode="EVN">
+                <id controlInformationRoot="0000460902"/>
+                <code code="P_CVK">
+                    <displayName value="Катетер/ отделяемое ЦВК-(БАКПОСЕВ)"/>
+                </code>
+                <title/>
+                <text/>
+                <statusCode code="referralIsFinished"/>
+                <specimen typeCode="SPC" contextControlCode="OP">
+                    <specimen classCode="SPEC">
+                        <id identifierName="0000460902KL"/>
+                        <code/>
+                    </specimen>
+                </specimen>
+                <author typeCode="AUT">
+                    <time/>
+                    <assignedEntity classCode="ASSIGNED">
+                        <code code="SNN">
+                            <displayName value="Цvrigt Смирнова Н Н"/>
+                        </code>
+                    </assignedEntity>
+                </author>
+            </observationReport>
+        </subject>
+        <subject typeCode="SUBJ" contextConductionInd="false">
+            <observationBattery classCode="BATTERY" moodCode="EVN">
+                <code>
+                    <displayName value="Катетер/ отделяемое ЦВК-(БАКПОСЕВ)"/>
+                    <originalText/>
+                </code>
+                <text>
+                    <description value=""/>
+                </text>
+                <statusCode/>
+                <inFulfillmentOf typeCode="FLFS">
+                    <placerOrder classCode="ACT" moodCode="RQO">
+                        <id controlInformationExtension="0000460902"/>
+                    </placerOrder>
+                </inFulfillmentOf>
+                <component1 typeCode="COMP" contextControlCode="ON">
+                    <observationEvent classCode="OBS" moodCode="EVN">
+                        <code code="P_CVK">
+                            <displayName value="Катетер/ отделяемое ЦВК-(БАКПОСЕВ)"/>
+                        </code>
+                        <statusCode/>
+                        <effectiveTime value="201310021640"/>
+                        <confidentialityCode nullFlavor="UNK"/>
+                        <component1 typeCode="COMP" contextControlCode="ON">
+                            <observationEvent classCode="OBS" moodCode="EVN">
+                                <code code="CALB">
+                                    <displayName value="Candida albicans"/>
+                                </code>
+                                <statusCode/>
+                                <component1 typeCode="COMP" contextControlCode="ON">
+                                    <observationEvent classCode="OBS" moodCode="EVN">
+                                        <code>
+                                            <originalText value="КОМЕНТАРИЙ К МИКРООРГАНИЗМУ"/>
+                                        </code>
+                                        <statusCode/>
+                                    </observationEvent>
+                                </component1>
+                            </observationEvent>
+                        </component1>
+                        <component1 typeCode="COMP" contextControlCode="ON">
+                            <observationEvent classCode="OBS" moodCode="EVN">
+                                <code code="KLEPNEU">
+                                    <displayName value="Klebsiella pneumoniae"/>
+                                </code>
+                                <statusCode/>
+                                <component1 typeCode="COMP" contextControlCode="ON">
+                                    <observationEvent classCode="OBS" moodCode="EVN">
+                                        <statusCode/>
+                                    </observationEvent>
+                                </component1>
+                            </observationEvent>
+                        </component1>
+                        <component1 typeCode="COMP" contextControlCode="ON">
+                            <observationEvent classCode="OBS" moodCode="EVN">
+                                <code code="MRSA_CK">
+                                    <displayName value="MRSA"/>
+                                </code>
+                                <statusCode/>
+                                <component1 typeCode="COMP" contextControlCode="ON">
+                                    <observationEvent classCode="OBS" moodCode="EVN">
+                                        <statusCode/>
+                                    </observationEvent>
+                                </component1>
+                            </observationEvent>
+                        </component1>
+                    </observationEvent>
+                </component1>
+            </observationBattery>
+        </subject>
+        <subject typeCode="SUBJ" contextConductionInd="false">
+            <specimenObservationCluster classCode="CLUSTER" moodCode="EVN">
+                <statusCode/>
+                <specimen typeCode="SPC" contextControlCode="ON">
+                    <specimen classCode="SPEC">
+                        <id/>
+                        <code code="CALB">
+                            <displayName value="Candida albicans"/>
+                        </code>
+                    </specimen>
+                </specimen>
+                <component1 typeCode="COMP" contextControlCode="ON">
+                    <observationBattery classCode="BATTERY" moodCode="EVN">
+                        <code/>
+                        <statusCode/>
+                    </observationBattery>
+                </component1>
+            </specimenObservationCluster>
+        </subject>
+        <subject typeCode="SUBJ" contextConductionInd="false">
+            <specimenObservationCluster classCode="CLUSTER" moodCode="EVN">
+                <statusCode/>
+                <specimen typeCode="SPC" contextControlCode="ON">
+                    <specimen classCode="SPEC">
+                        <id/>
+                        <code code="KLEPNEU">
+                            <displayName value="Klebsiella pneumoniae"/>
+                        </code>
+                    </specimen>
+                </specimen>
+                <component1 typeCode="COMP" contextControlCode="ON">
+                    <observationBattery classCode="BATTERY" moodCode="EVN">
+                        <code/>
+                        <statusCode/>
+                        <component1 typeCode="COMP" contextControlCode="ON">
+                            <observationEvent classCode="OBS" moodCode="EVN">
+                                <code code="AK">
+                                    <displayName value="АМИКАЦИН"/>
+                                    <translation code="R"/>
+                                </code>
+                                <text value="Z"/>
+                                <statusCode/>
+                            </observationEvent>
+                        </component1>
+                        <component1 typeCode="COMP" contextControlCode="ON">
+                            <observationEvent classCode="OBS" moodCode="EVN">
+                                <code code="CAZ">
+                                    <displayName value="ЦЕФТАЗИДИМ"/>
+                                    <translation code="S"/>
+                                </code>
+                                <text value="Z"/>
+                                <statusCode/>
+                            </observationEvent>
+                        </component1>
+                        <component1 typeCode="COMP" contextControlCode="ON">
+                            <observationEvent classCode="OBS" moodCode="EVN">
+                                <code code="CEP">
+                                    <displayName value="ЦЕФПОДОКСИМ/КЛАВУЛОНАТ"/>
+                                    <translation code="S"/>
+                                </code>
+                                <text value="Z"/>
+                                <statusCode/>
+                            </observationEvent>
+                        </component1>
+                        <component1 typeCode="COMP" contextControlCode="ON">
+                            <observationEvent classCode="OBS" moodCode="EVN">
+                                <code code="CN">
+                                    <displayName value="ГЕНТАМИЦИН 10"/>
+                                    <translation code="I"/>
+                                </code>
+                                <text value="Z"/>
+                                <statusCode/>
+                            </observationEvent>
+                        </component1>
+                        <component1 typeCode="COMP" contextControlCode="ON">
+                            <observationEvent classCode="OBS" moodCode="EVN">
+                                <code code="CPD">
+                                    <displayName value="ЦЕФПОДОКСИМ"/>
+                                    <translation code="R"/>
+                                </code>
+                                <text value="Z"/>
+                                <statusCode/>
+                            </observationEvent>
+                        </component1>
+                        <component1 typeCode="COMP" contextControlCode="ON">
+                            <observationEvent classCode="OBS" moodCode="EVN">
+                                <code code="CRO">
+                                    <displayName value="ЦЕФТРИАКСОН"/>
+                                    <translation code="R"/>
+                                </code>
+                                <text value="Z"/>
+                                <statusCode/>
+                            </observationEvent>
+                        </component1>
+                        <component1 typeCode="COMP" contextControlCode="ON">
+                            <observationEvent classCode="OBS" moodCode="EVN">
+                                <code code="CT">
+                                    <displayName value="КОЛИСТИН"/>
+                                    <translation code="R"/>
+                                </code>
+                                <text value="Z"/>
+                                <statusCode/>
+                            </observationEvent>
+                        </component1>
+                        <component1 typeCode="COMP" contextControlCode="ON">
+                            <observationEvent classCode="OBS" moodCode="EVN">
+                                <code code="ETP">
+                                    <displayName value="ЭРТАПЕНЕМ"/>
+                                    <translation code="R"/>
+                                </code>
+                                <text value="Z"/>
+                                <statusCode/>
+                            </observationEvent>
+                        </component1>
+                        <component1 typeCode="COMP" contextControlCode="ON">
+                            <observationEvent classCode="OBS" moodCode="EVN">
+                                <code code="FEP">
+                                    <displayName value="ЦЕФЕПИМ"/>
+                                    <translation code="R"/>
+                                </code>
+                                <text value="Z"/>
+                                <statusCode/>
+                            </observationEvent>
+                        </component1>
+                        <component1 typeCode="COMP" contextControlCode="ON">
+                            <observationEvent classCode="OBS" moodCode="EVN">
+                                <code code="MEM">
+                                    <displayName value="МЕРОПЕНЕМ"/>
+                                    <translation code="R"/>
+                                </code>
+                                <text value="Z"/>
+                                <statusCode/>
+                            </observationEvent>
+                        </component1>
+                        <component1 typeCode="COMP" contextControlCode="ON">
+                            <observationEvent classCode="OBS" moodCode="EVN">
+                                <code code="NA">
+                                    <displayName value="НАЛИДИКСОВАЯ КИСЛОТА"/>
+                                    <translation code="S"/>
+                                </code>
+                                <text value="Z"/>
+                                <statusCode/>
+                            </observationEvent>
+                        </component1>
+                        <component1 typeCode="COMP" contextControlCode="ON">
+                            <observationEvent classCode="OBS" moodCode="EVN">
+                                <code code="TZP">
+                                    <displayName value="ПИПЕРАЦЕЛЛИН/ТАЗОБАКТАМ"/>
+                                    <translation code="R"/>
+                                </code>
+                                <text value="Z"/>
+                                <statusCode/>
+                            </observationEvent>
+                        </component1>
+                    </observationBattery>
+                </component1>
+            </specimenObservationCluster>
+        </subject>
+        <subject typeCode="SUBJ" contextConductionInd="false">
+            <specimenObservationCluster classCode="CLUSTER" moodCode="EVN">
+                <statusCode/>
+                <specimen typeCode="SPC" contextControlCode="ON">
+                    <specimen classCode="SPEC">
+                        <id/>
+                        <code code="MRSA_CK">
+                            <displayName value="MRSA"/>
+                        </code>
+                    </specimen>
+                </specimen>
+                <component1 typeCode="COMP" contextControlCode="ON">
+                    <observationBattery classCode="BATTERY" moodCode="EVN">
+                        <code/>
+                        <statusCode/>
+                    </observationBattery>
+                </component1>
+            </specimenObservationCluster>
+        </subject>
+    </controlActProcess>
+</POLB_IN224100UV01>

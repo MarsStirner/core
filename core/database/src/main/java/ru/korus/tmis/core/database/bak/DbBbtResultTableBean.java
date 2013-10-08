@@ -25,13 +25,13 @@ public class DbBbtResultTableBean implements DbBbtResultTableBeanLocal {
 
     @Override
     public void add(final BbtResultTable bbtResponse) {
-        final BbtResultTable response = em.find(BbtResultTable.class, bbtResponse.getId());
-        if (response == null) {
-            em.persist(response);
-            logger.info("create BbtResponse {}", response);
-        } else {
-            logger.info("find BbtResponse {}", response);
-        }
+     //   final BbtResultTable response = em.find(BbtResultTable.class, bbtResponse.getId());
+       // if (response == null) {
+            em.persist(bbtResponse);
+            logger.info("create BbtResponse {}", bbtResponse);
+      //  } else {
+        //    logger.info("find BbtResponse {}", response);
+       // }
     }
 
     @Override

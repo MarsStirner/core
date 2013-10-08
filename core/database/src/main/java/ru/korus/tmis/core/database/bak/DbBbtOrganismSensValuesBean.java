@@ -7,6 +7,7 @@ import ru.korus.tmis.core.entity.model.bak.BbtOrganismSensValues;
 import javax.ejb.Stateless;
 import javax.persistence.EntityManager;
 import javax.persistence.PersistenceContext;
+import java.util.List;
 
 /**
  * Author:      Dmitriy E. Nosov <br>
@@ -24,10 +25,10 @@ public class DbBbtOrganismSensValuesBean implements DbBbtOrganismSensValuesBeanL
 
     @Override
     public void add(BbtOrganismSensValues bbtOrganismSensValues) {
-        final BbtOrganismSensValues response = em.find(BbtOrganismSensValues.class, bbtOrganismSensValues.getId());
+        final BbtOrganismSensValues response = get(bbtOrganismSensValues.getId());
         if (response == null) {
-            em.persist(response);
-            logger.info("create BbtOrganismSensValues {}", response);
+            em.persist(bbtOrganismSensValues);
+            logger.info("create BbtOrganismSensValues {}", bbtOrganismSensValues);
         } else {
             logger.info("find BbtOrganismSensValues {}", response);
         }
@@ -35,6 +36,9 @@ public class DbBbtOrganismSensValuesBean implements DbBbtOrganismSensValuesBeanL
 
     @Override
     public BbtOrganismSensValues get(Integer id) {
-        return em.find(BbtOrganismSensValues.class, id);
+        List<BbtOrganismSensValues> responseList =
+                em.createQuery("SELECT a FROM BbtOrganismSensValues a WHERE a.id = :id", BbtOrganismSensValues.class)
+                        .setParameter("id", id).getResultList();
+        return !responseList.isEmpty() ? responseList.get(0) : null;
     }
 }

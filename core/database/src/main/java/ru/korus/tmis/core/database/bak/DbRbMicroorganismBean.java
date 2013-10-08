@@ -7,6 +7,7 @@ import ru.korus.tmis.core.entity.model.bak.RbMicroorganism;
 import javax.ejb.Stateless;
 import javax.persistence.EntityManager;
 import javax.persistence.PersistenceContext;
+import java.util.List;
 
 /**
  * Author:      Dmitriy E. Nosov <br>
@@ -23,17 +24,21 @@ public class DbRbMicroorganismBean implements DbRbMicroorganismBeanLocal {
 
     @Override
     public void add(RbMicroorganism rbMicroorganism) {
-        final RbMicroorganism response = em.find(RbMicroorganism.class, rbMicroorganism.getId());
+       final RbMicroorganism response = get(rbMicroorganism.getCode());
         if (response == null) {
             em.persist(rbMicroorganism);
             logger.info("create RbMicroorganism {}", rbMicroorganism);
         } else {
             logger.info("find RbMicroorganism {}", response);
-        }
+       }
     }
 
     @Override
-    public RbMicroorganism get(Integer id) {
-        return em.find(RbMicroorganism.class, id);
+    public RbMicroorganism get(String code) {
+        List<RbMicroorganism> microList =
+                em.createQuery("SELECT a FROM RbMicroorganism a WHERE a.code = :code", RbMicroorganism.class)
+                        .setParameter("code", code).getResultList();
+        return !microList.isEmpty() ? microList.get(0) : null;
+
     }
 }

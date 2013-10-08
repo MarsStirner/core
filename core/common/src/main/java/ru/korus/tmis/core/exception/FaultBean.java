@@ -1,8 +1,11 @@
 package ru.korus.tmis.core.exception;
 
-public class FaultBean {
+import javax.xml.bind.annotation.XmlElement;
 
+public class FaultBean {
+//    @XmlElement(name = "faultcode")
     private int id;
+//    @XmlElement(name = "faultstring")
     private String message;
 
     public FaultBean() {

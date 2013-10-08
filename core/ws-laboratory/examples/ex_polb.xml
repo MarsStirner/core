@@ -1,0 +1,62 @@
+<?xml version="1.0" encoding="windiws-1251"?>
+<!-- 
+Процесс выполнения лабораторного исследования начался. Сообщение используется как 
+оповещение о факте регистрации биоматериала в лабораторной информационной системе-->
+<POLB_IN224100UV01
+        ITSVersion="XML_1.0"
+        xsi:schemaLocation="urn:hl7-org:v3 ../multicacheschemas/POLB_IN224100UV01.xsd"
+        xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+        xmlns="urn:hl7-org:v3">
+    <id root="XXXXXXXX-XXXX-XXXX-XXXX-XXXXXXXXXXXX"/>
+    <!-- UUID сообщения -->
+    <creationTime value="20050303180027"/>
+    <!-- Время создания события. Значение value кодируется по шаблону: ггггммддччммсс.  -->
+    <interactionId extension='PRPA_IN201304UV02' root='2.16.840.1.113883.1.18'/>
+    <!-- Идентификатор типа сообщения. Значение @extension - значение HL7 Interaction identifier. @root должен иметь значение 2.16.840.1.113883.1.18 - HL7 TriggerEventID -->
+    <processingCode code='P'/>
+    <!-- Назначение сообщения относительно отправителя. Возможные значения — D (отладка, Debugging), P (промышленное функционирование, Production) or T (обучение, Training). -->
+    <processingModeCode code="T"/>
+    <!-- Режим обработки сообщения относительно отправителя. Возможные значения — A (архивирование, Archive), T (штатное функционирование, Current processing), I (инициализация, Initial load), R (восстановление, Restore). -->
+    <acceptAckCode code="AL"/>
+    <!-- Высылать ли подтверждающее сообщение. Значения - Always (AL), only on errors (ER), or never (NE) -->
+    <receiver typeCode="RCV">
+        <device classCode="DEV" determinerCode="INSTANCE">
+            <id nullFlavor="NI"/>
+        </device>
+    </receiver>
+    <sender typeCode="SND">
+        <device classCode="DEV" determinerCode="INSTANCE">
+            <id nullFlavor="NI"/>
+        </device>
+    </sender>
+    <controlActProcess classCode="CACT" moodCode="EVN">
+        <subject typeCode="SUBJ">
+            <observationEvent classCode="OBS" moodCode="EVN">
+                <code code="1201" displayName="Глюкоза 1 (на тощак)"/>
+                <!-- услуга, для которой зарегистрирован биоматериал -->
+                <statusCode code="active"/>
+                <!-- "active" - биоматериал зарегистрирован, "aborted" - отмена регистрации биоматериала -->
+                <inFulfillmentOf typeCode="FLFS">
+                    <placerOrder classCode="ACT" moodCode="RQO">
+                        <id root="XXXXXXXX-XXXX-XXXX-XXXX-XXXXXXXXXXXX" extension="номер заказа"/>
+                        <!-- номер заказа -->
+                    </placerOrder>
+                </inFulfillmentOf>
+            </observationEvent>
+        </subject>
+        <subject typeCode="SUBJ">
+            <observationEvent classCode="OBS" moodCode="EVN">
+                <code code="1405" displayName="Полный гематологический анализ"/>
+                <!-- услуга, для которой зарегистрирован биоматериал -->
+                <statusCode code="active"/>
+                <!-- "active" - биоматериал зарегистрирован, "aborted" - отмена регистрации биоматериала  -->
+                <inFulfillmentOf typeCode="FLFS">
+                    <placerOrder classCode="ACT" moodCode="RQO">
+                        <id root="XXXXXXXX-XXXX-XXXX-XXXX-XXXXXXXXXXXX" extension="номер заказа"/>
+                        <!-- номер заказа -->
+                    </placerOrder>
+                </inFulfillmentOf>
+            </observationEvent>
+        </subject>
+    </controlActProcess>
+</POLB_IN224100UV01>

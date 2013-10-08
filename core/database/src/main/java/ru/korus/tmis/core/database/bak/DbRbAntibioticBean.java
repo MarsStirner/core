@@ -7,6 +7,7 @@ import ru.korus.tmis.core.entity.model.bak.RbAntibiotic;
 import javax.ejb.Stateless;
 import javax.persistence.EntityManager;
 import javax.persistence.PersistenceContext;
+import java.util.List;
 
 /**
  * Author:      Dmitriy E. Nosov <br>
@@ -23,7 +24,7 @@ public class DbRbAntibioticBean implements DbRbAntibioticBeanLocal {
 
     @Override
     public void add(RbAntibiotic rbAntibiotic) {
-        final RbAntibiotic response = em.find(RbAntibiotic.class, rbAntibiotic.getId());
+        final RbAntibiotic response = get(rbAntibiotic.getCode());
         if (response == null) {
             em.persist(rbAntibiotic);
             logger.info("create RbAntibiotic {}", rbAntibiotic);
@@ -33,7 +34,9 @@ public class DbRbAntibioticBean implements DbRbAntibioticBeanLocal {
     }
 
     @Override
-    public RbAntibiotic get(Integer id) {
-        return em.find(RbAntibiotic.class, id);
+    public RbAntibiotic get(String code) {
+        List<RbAntibiotic> antibioticList =
+                em.createQuery("SELECT a FROM RbAntibiotic a WHERE a.code = :code", RbAntibiotic.class).setParameter("code", code).getResultList();
+        return !antibioticList.isEmpty() ? antibioticList.get(0) : null;
     }
 }

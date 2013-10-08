@@ -2,11 +2,25 @@ package ru.korus.tmis.ws.laboratory.bak.ws.server;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import ru.korus.tmis.core.database.bak.*;
-import ru.korus.tmis.core.entity.model.bak.*;
+import org.w3c.dom.Document;
+import org.w3c.dom.NodeList;
+import org.xml.sax.SAXException;
+import ru.korus.tmis.core.database.bak.DbBbtOrganismSensValuesBeanLocal;
+import ru.korus.tmis.core.database.bak.DbBbtResponseBeanLocal;
+import ru.korus.tmis.core.database.bak.DbBbtResultTableBeanLocal;
+import ru.korus.tmis.core.database.bak.DbRbAntibioticBeanLocal;
+import ru.korus.tmis.core.database.bak.DbRbBacIndicatorBeanLocal;
+import ru.korus.tmis.core.database.bak.DbRbMicroorganismBeanLocal;
+import ru.korus.tmis.core.entity.model.bak.BbtResponse;
+import ru.korus.tmis.core.entity.model.bak.RbAntibiotic;
+import ru.korus.tmis.core.entity.model.bak.RbMicroorganism;
 import ru.korus.tmis.core.exception.CoreException;
 import ru.korus.tmis.util.CompileTimeConfigManager;
 import ru.korus.tmis.util.logs.ToLog;
+import ru.korus.tmis.ws.laboratory.bak.ws.server.model.fake.Antibiotic;
+import ru.korus.tmis.ws.laboratory.bak.ws.server.model.fake.FakeResult;
+import ru.korus.tmis.ws.laboratory.bak.ws.server.model.fake.MicroOrg;
+import ru.korus.tmis.ws.laboratory.bak.ws.server.model.fake.Result;
 import ru.korus.tmis.ws.laboratory.bak.ws.server.model.hl7.complex.*;
 
 import javax.ejb.EJB;
@@ -15,7 +29,16 @@ import javax.jws.WebParam;
 import javax.jws.WebResult;
 import javax.jws.WebService;
 import javax.xml.bind.JAXBElement;
-import javax.xml.datatype.XMLGregorianCalendar;
+import javax.xml.parsers.DocumentBuilder;
+import javax.xml.parsers.DocumentBuilderFactory;
+import javax.xml.parsers.ParserConfigurationException;
+import javax.xml.xpath.XPath;
+import javax.xml.xpath.XPathConstants;
+import javax.xml.xpath.XPathExpressionException;
+import javax.xml.xpath.XPathFactory;
+import java.io.ByteArrayInputStream;
+import java.io.IOException;
+import java.io.UnsupportedEncodingException;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.List;
@@ -39,6 +62,7 @@ import static ru.korus.tmis.ws.laboratory.bak.ws.server.model.hl7.HL7Specificati
         serviceName = SetAnalysysResultWS.SERVICE_NAME,
         portName = SetAnalysysResultWS.PORT_NAME,
         name = SetAnalysysResultWS.PORT_NAME)
+//@XmlSeeAlso({ObjectFactory.class})
 public class SetAnalysysResult implements SetAnalysysResultWS {
 
     private static final Logger logger = LoggerFactory.getLogger(SetAnalysysResult.class);
@@ -95,6 +119,7 @@ public class SetAnalysysResult implements SetAnalysysResultWS {
         return response;
     }
 
+
     /**
      * Запись данных результата в БД
      *
@@ -102,6 +127,63 @@ public class SetAnalysysResult implements SetAnalysysResultWS {
      */
     private void flushToDB(POLBIN224100UV01 request) {
         // заполняем справочники
+        final String results = Utils.marshallMessage(request, "ru.korus.tmis.ws.laboratory.bak.ws.server.model.hl7.complex");
+
+
+        final DocumentBuilderFactory builderFactory = DocumentBuilderFactory.newInstance();
+        DocumentBuilder builder = null;
+        try {
+            builder = builderFactory.newDocumentBuilder();
+
+
+            Document xmlDocument = builder.parse(new ByteArrayInputStream(results.getBytes("UTF-8")));
+
+            XPath xPath = XPathFactory.newInstance().newXPath();
+
+            //root документа
+            String root = xPath.compile("/POLB_IN224100UV01/id/@root").evaluate(xmlDocument);
+
+
+//            String orderMisId = xPath.compile("/POLB_IN224100UV01/id/@root").evaluate(xmlDocument);
+
+            String orderMisId = (String) xPath.compile("/*[name()='POLB_IN224100UV01']/*[name()='controlActProcess']/*[name()='subject'][1]/*[name()='observationReport']/*[name()='id']/@controlInformationRoot").evaluate(xmlDocument, XPathConstants.STRING);
+
+
+            String nameAnaliz = (String) xPath.compile("/*[name()='POLB_IN224100UV01']/*[name()='controlActProcess']/*[name()='subject'][1]/*[name()='observationReport']/*[name()='code']/*[name()='displayName']/@value").evaluate(xmlDocument, XPathConstants.STRING);
+            String codeAnaliz = xPath.compile("/*[name()='POLB_IN224100UV01']/*[name()='controlActProcess']/*[name()='subject'][1]/*[name()='observationReport']/*[name()='code']/@code").evaluate(xmlDocument);
+
+
+            String identifierName = xPath.compile("/*[name()='POLB_IN224100UV01']/*[name()='controlActProcess']/*[name()='subject'][1]/*[name()='observationReport']/*[name()='specimen']/*[name()='specimen']/*[name()='id']/@identifierName").evaluate(xmlDocument);
+
+            String authorCode = xPath.compile("/*[name()='POLB_IN224100UV01']/*[name()='controlActProcess']/*[name()='subject'][1]/*[name()='observationReport']/*[name()='author']/*[name()='assignedEntity']/*[name()='code']/@code").evaluate(xmlDocument);
+            String authorName = xPath.compile("/*[name()='POLB_IN224100UV01']/*[name()='controlActProcess']/*[name()='subject'][1]/*[name()='observationReport']/*[name()='author']/*[name()='assignedEntity']/*[name()='code']/*[name()='displayName']/@value").evaluate(xmlDocument);
+
+
+            NodeList nodeList = (NodeList) xPath.compile("/*[name()='POLB_IN224100UV01']/*[name()='controlActProcess']/*[name()='subject']").evaluate(xmlDocument, XPathConstants.NODESET);
+            for (int i = 0; i < nodeList.getLength(); i++) {
+                System.out.println(nodeList.item(i).getFirstChild().getNodeValue());
+            }
+
+//            String identifierName = xPath.compile("").evaluate(xmlDocument);
+//            String identifierName = xPath.compile("").evaluate(xmlDocument);
+//            String identifierName = xPath.compile("").evaluate(xmlDocument);
+//            String identifierName = xPath.compile("").evaluate(xmlDocument);
+//            String identifierName = xPath.compile("").evaluate(xmlDocument);
+
+
+            logger.info("parse {}", root);
+
+        } catch (ParserConfigurationException e) {
+            e.printStackTrace();
+        } catch (SAXException e) {
+            e.printStackTrace();
+        } catch (UnsupportedEncodingException e) {
+            e.printStackTrace();
+        } catch (IOException e) {
+            e.printStackTrace();
+        } catch (XPathExpressionException e) {
+            e.printStackTrace();
+        }
 
         final List<POLBIN224100UV01MCAIMT700201UV01Subject2> subjectList = request.getControlActProcess().getSubject();
         for (POLBIN224100UV01MCAIMT700201UV01Subject2 subj : subjectList) {
@@ -145,7 +227,7 @@ public class SetAnalysysResult implements SetAnalysysResultWS {
 
         }
 
-        final RbAntibiotic rbAntibiotic = new RbAntibiotic();
+      /*  final RbAntibiotic rbAntibiotic = new RbAntibiotic();
         rbAntibiotic.setCode("1");
         rbAntibiotic.setId(1);
         rbAntibiotic.setName("abc");
@@ -176,6 +258,7 @@ public class SetAnalysysResult implements SetAnalysysResultWS {
         final BbtOrganismSensValues bbtOrganismSensValues = new BbtOrganismSensValues();
 
         dbBbtOrganismSensValuesBean.add(bbtOrganismSensValues);
+        */
     }
 
     /**
@@ -331,30 +414,111 @@ public class SetAnalysysResult implements SetAnalysysResultWS {
     }
 
     /**
-     * Сообщение от ЛИС о доставке материала. Факт завершения забора биоматериала.
-     *
-     * @param orderMisId           - штрих-код на контейнере c биоматериалом (десятичное представление считанного штрих-кода)
-     * @param takenTissueJournal   - TakenTissueJournal.id – номер заказа
-     * @param getTissueTime        - Дата и время регистрации биоматериала в лаборатории
-     * @param orderBiomaterialName - название  биоматериала из справочника биоматериалов
-     * @param orderLIS             - Номер заказа в ЛИС
-     * @return
-     * @throws CoreException
+     * {@inheritDoc}
      */
     @Override
-    public int bakDelivered(@WebParam(name = "orderBarCode", targetNamespace = Namespace)
+    public int bakDelivered(@WebParam(name = "GUID ", targetNamespace = Namespace)
+                            String GUID,
+                            @WebParam(name = "DtTime", targetNamespace = Namespace)
+                            String DtTime,
+                            @WebParam(name = "orderMisId", targetNamespace = Namespace)
                             Integer orderMisId,
-                            @WebParam(name = "TakenTissueJournal", targetNamespace = Namespace)
-                            String takenTissueJournal,
-                            @WebParam(name = "getTissueTime", targetNamespace = Namespace)
-                            XMLGregorianCalendar getTissueTime,
                             @WebParam(name = "orderBiomaterialName", targetNamespace = Namespace)
-                            String orderBiomaterialName,
-                            @WebParam(name = "orderLIS", targetNamespace = Namespace)
-                            String orderLIS) throws CoreException {
+                            Integer orderBarCode) throws CoreException {
 
         return 0;
     }
 
 
+    @Override
+    @WebMethod(operationName = "setAnalysisResults2")
+    @WebResult(name = SUCCESS_ACCEPT_EVENT, targetNamespace = NAMESPACE, partName = "Body")
+    public MCCIIN000002UV01 setAnalysisResults2(
+            @WebParam(name = "FakeResult", targetNamespace = NAMESPACE, partName = "Body")
+            final FakeResult request) throws CoreException {
+
+        validateRequest(request);
+
+        try {
+            for (Result result : request.getResults().getResults()) {
+                for (Antibiotic a : result.getAntibiotics().getAntibiotics()) {
+                    final RbAntibiotic rbAntibiotic = new RbAntibiotic();
+                    rbAntibiotic.setCode(a.getIdAntibiotic());
+                    rbAntibiotic.setName(a.getNameAntibiotic());
+                    dbRbAntibioticBean.add(rbAntibiotic);
+                }
+            }
+
+//        final RbBacIndicator rbBacIndicator = new RbBacIndicator();
+//        rbBacIndicator.setCode("2");
+//        rbBacIndicator.setName("cde");
+//        dbRbBacIndicatorBean.add(rbBacIndicator);
+
+            for (MicroOrg microOrg : request.getMicroOrgs().getMicroOrgs()) {
+                final RbMicroorganism rbMicroorganism = new RbMicroorganism();
+                rbMicroorganism.setCode(microOrg.getCode());
+                rbMicroorganism.setName(microOrg.getName());
+                dbRbMicroorganismBean.add(rbMicroorganism);
+            }
+
+//        final BbtResultTable bbtResultTable = new BbtResultTable();
+
+//        dbBbtResultTableBean.add(bbtResultTable);
+
+            final BbtResponse bbtResponse = new BbtResponse();
+            bbtResponse.setId(Integer.parseInt(request.getOrderMISId()));
+            bbtResponse.setDoctorId(Integer.parseInt(request.getDoctorId()));
+            bbtResponse.setFinalFlag(1);
+            bbtResponse.setCodeLIS(Integer.parseInt(request.getOrderMISId()));
+            bbtResponse.setDefects("----");
+
+            dbBbtResponseBean.add(bbtResponse);
+
+//            for (request.getResults().getResults()) {
+//                final BbtOrganismSensValues sens = new BbtOrganismSensValues();
+//                sens.setBbtResultOrganismId();
+//                dbBbtOrganismSensValuesBean.add(sens);
+//            }
+
+        } catch (Exception e) {
+            throw new CoreException(400, "Ошибка обработки запроса");
+        }
+        return createSuccessResponse();
+    }
+
+
+    /**
+     * Проверка входных данных
+     *
+     * @param request
+     * @throws CoreException
+     */
+    private void validateRequest(FakeResult request) throws CoreException {
+        try {
+            if (request.getBarCode() == null) {
+//                throw new CoreException(new SOAPFaultInfo("400", "Отсутствует штрих-код"));
+            }
+            if (request.getCodeIsl() == null) {
+//                throw new BakIntegrationException(400, "Отсутствует код исследования");
+            }
+            if (request.getDate() == null) {
+//                throw new BakIntegrationException(400, "Отсутствует дата исследования");
+            }
+            if (request.getDoctorId() == null) {
+//                throw new BakIntegrationException(400, "Отсутствует идентификатор врача");
+            }
+            if (request.getNameIsl() == null) {
+//                throw new BakIntegrationException(400, "Отсутствует название исследования");
+            }
+            if (request.getMicroOrgs().getMicroOrgs().isEmpty()) {
+//                throw new BakIntegrationException(400, "Отсутствует список микроорганизмов");
+            }
+            if (request.getResults().getResults().isEmpty()) {
+//                throw new BakIntegrationException(400, "Отсутствует список результатов и антибиотиков");
+            }
+        } catch (Exception e) {
+            throw new CoreException(400, "Ошибка в формате результатов анализов");
+        }
+
+    }
 }
