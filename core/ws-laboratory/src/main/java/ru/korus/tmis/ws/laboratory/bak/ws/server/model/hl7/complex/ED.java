@@ -4,6 +4,7 @@ package ru.korus.tmis.ws.laboratory.bak.ws.server.model.hl7.complex;
 import javax.xml.bind.annotation.*;
 import javax.xml.bind.annotation.adapters.CollapsedStringAdapter;
 import javax.xml.bind.annotation.adapters.XmlJavaTypeAdapter;
+import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -44,10 +45,11 @@ import java.util.List;
  * </pre>
  */
 @XmlAccessorType(XmlAccessType.FIELD)
+//@XmlRootElement
 @XmlType(name = "ED", propOrder = {
         "reference",
-        "thumbnail"//,
-      // "content"
+        "thumbnail",
+        "content"
 })
 @XmlSeeAlso({
         Thumbnail.class,
@@ -55,6 +57,9 @@ import java.util.List;
 })
 public class ED
         extends BIN {
+
+    @XmlMixed
+    protected List<Serializable> content;
 
     protected TEL reference;
     protected Thumbnail thumbnail;
@@ -71,18 +76,13 @@ public class ED
     @XmlAttribute(name = "integrityCheckAlgorithm")
     protected IntegrityCheckAlgorithm integrityCheckAlgorithm;
 
-    @XmlMixed
-   private List<Object> content;
 
-//    public void setContent(List<Object> content) {
-//        this.content = content;
-//    }
 
-    public List<Object> getContent() {
+    public List<Serializable> getContent() {
         if (content == null)
-            content = new ArrayList<Object>();
+            content = new ArrayList<Serializable>();
         return content;
-   }
+    }
 
     /**
      * Gets the value of the reference property.

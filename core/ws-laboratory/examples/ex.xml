@@ -29,14 +29,8 @@
                 <controlActProcess classCode="CACT" moodCode="APT">
 
                     <authorOrPerformer typeCode="PRF" contextControlCode="AN">
-                        <noteText/>
-                        <time/>
-                        <modeCode/>
-                        <signatureCode/>
-                        <signatureText/>
                         <assignedPerson classCode="ASSIGNED">
                             <representedOrganization classCode="ORG" determinerCode="INSTANCE">
-                                <id/>
                                 <code code="42"/>
                             </representedOrganization>
                         </assignedPerson>
