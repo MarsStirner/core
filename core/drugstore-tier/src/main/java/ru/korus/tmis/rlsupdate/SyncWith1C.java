@@ -76,8 +76,6 @@ public class SyncWith1C {
     @PersistenceContext(unitName = "s11r64")
     private EntityManager em = null;
 
-    private static List<Integer> storageUuids = null;
-
     private static DrugList drugList;
 
     private Map<Integer, RlsNomen> drugsInDb;
@@ -528,6 +526,7 @@ public class SyncWith1C {
     }
 
     public String updateBalance() {
+        UpdateStorageUuid();
         return updateBalance(drugList);
     }
 
@@ -540,33 +539,27 @@ public class SyncWith1C {
         String res =  htmlNewLine("update RLS balance...start" + EOL);
         OrgStructure mainOrganization =  em.find(OrgStructure.class, 1);
         if(mainOrganization != null && mainOrganization.getUuid() != null) {
-            List<Integer> rbStoragesList = getStorageUuid();
-            for(Integer rbStorageId : rbStoragesList) {
-                res += updateBalance(drugList, mainOrganization.getUuid().getUuid(), em.find(RbStorage.class, rbStorageId));
+            List<RbStorage> rbStoragesList = em.createNamedQuery("rbStorage.findAll", RbStorage.class).getResultList();
+            for(RbStorage rbStorage : rbStoragesList) {
+                res += updateBalance(drugList, mainOrganization.getUuid().getUuid(), rbStorage);
             }
         }
         return res;
     }
 
-    private List<Integer> getStorageUuid() {
-        if(storageUuids == null || storageUuids.isEmpty()) {
-            storageUuids = new LinkedList<Integer>();
-            MISExchangePortType servicePort = getMisExchangePortType();
-            StorageList storageFrom1C = servicePort.getStorageList();
-            for( Storage storage : storageFrom1C.getStorage() ) {
-                List<RbStorage> uuids = em.createNamedQuery("rbStorage.findByUUID", RbStorage.class).setParameter("uuid", storage.getRef()).getResultList();
-                if(uuids.isEmpty()) {
-                    RbStorage storageDb = new RbStorage();
-                    storageDb.setName(storage.getDescription());
-                    storageDb.setUuid(storage.getRef());
-                    em.persist(storageDb);
-                    uuids.add(storageDb);
-                }
-                em.flush();
-                storageUuids.add(uuids.iterator().next().getId());
+    public void UpdateStorageUuid() {
+        MISExchangePortType servicePort = getMisExchangePortType();
+        StorageList storageFrom1C = servicePort.getStorageList();
+        for( Storage storage : storageFrom1C.getStorage() ) {
+            List<RbStorage> uuids = em.createNamedQuery("rbStorage.findByUUID", RbStorage.class).setParameter("uuid", storage.getRef()).getResultList();
+            if(uuids.isEmpty()) {
+                RbStorage storageDb = new RbStorage();
+                storageDb.setName(storage.getDescription());
+                storageDb.setUuid(storage.getRef());
+                em.persist(storageDb);
+                uuids.add(storageDb);
             }
         }
-        return storageUuids;
     }
 
     @TransactionAttribute(value = TransactionAttributeType.REQUIRES_NEW)

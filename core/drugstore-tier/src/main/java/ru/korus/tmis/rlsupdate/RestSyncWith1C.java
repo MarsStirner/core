@@ -55,6 +55,7 @@ public class RestSyncWith1C {
     @Path("/update-tst")
     public Response updateDragListTst() {
         String res = "";
+        sync.UpdateStorageUuid();
         final Integer drugs[] = { 162019 };
         res += balanceOfGoodsInfoBean.update(Arrays.asList(drugs)) ? "OK" : "ERROR";
         return Response.status(Response.Status.OK).entity(res).build();

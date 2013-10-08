@@ -13,7 +13,9 @@ import java.util.List;
 @Table(name="rbStorage")
 @NamedQueries(
         { @NamedQuery(name = "rbStorage.findByUUID",
-                query = "SELECT s FROM RbStorage s WHERE s.uuid = :uuid")
+                query = "SELECT s FROM RbStorage s WHERE s.uuid = :uuid"),
+          @NamedQuery(name = "rbStorage.findAll",
+                query = "SELECT s FROM RbStorage s")
         })
 public class RbStorage implements Serializable {
 	private static final long serialVersionUID = 1L;
