@@ -10,8 +10,6 @@ import org.joda.time.DateTime;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import ru.korus.tmis.core.entity.model.*;
-import ru.korus.tmis.core.pharmacy.FlatCode;
-import ru.korus.tmis.pharmacy.exception.SoapConnectionException;
 
 import javax.xml.bind.JAXBContext;
 import javax.xml.bind.JAXBElement;
@@ -419,15 +417,15 @@ public final class HL7PacketBuilder {
     /**
      * Формирования сообщения об интервалах назначения и исполнения ЛС
      *
-     * @param action - Действие, соответствующее отправляемому интервалу
-     * @param client - Пациента
+     * @param action        - Действие, соответствующее отправляемому интервалу
+     * @param client        - Пациента
      * @param executorStaff - Врач, назначивший ЛС
-     * @param organisation -  ЛПУ
-     * @param drugCode - код ЛС
-     * @param type - тип интервала. ASSIGNMENT - назначение; EXECUTION - исполнение
-     * @param negationInd - true - отменить/удалить интервал; false - создать/обновить
-     * @param uuid - uuid в 1С. Если новый интервал то должен быть равен null
-     * @param version -  номер версии
+     * @param organisation  -  ЛПУ
+     * @param drugCode      - код ЛС
+     * @param type          - тип интервала. ASSIGNMENT - назначение; EXECUTION - исполнение
+     * @param negationInd   - true - отменить/удалить интервал; false - создать/обновить
+     * @param uuid          - uuid в 1С. Если новый интервал то должен быть равен null
+     * @param version       -  номер версии
      * @return
      */
     public static Request processPrescription(
@@ -534,7 +532,8 @@ public final class HL7PacketBuilder {
         root.setExtension("POCD_HD000040");
         root.setRoot("2.16.840.1.113883.1.3");
         clinicalDocument.setTypeId(root);
-        clinicalDocument.setId(createII(uuidDocument));
+        clinicalDocument.setId(createII(uuid == null ? uuidDocument : uuid));
+
         clinicalDocument.setCode(createCE("18610-6", "2.16.840.1.113883.6.1", "LOINC", "MEDICATION ADMINISTERED"));
         clinicalDocument.setEffectiveTime(createTS(action.getCreateDatetime(), "yyyyMMddHHmmss"));
         clinicalDocument.setConfidentialityCode(createCE("N", "2.16.840.1.113883.5.25"));
@@ -609,7 +608,6 @@ public final class HL7PacketBuilder {
         docList.getItem().add(item);
 
         final StrucDocItem item2 = FACTORY_HL7.createStrucDocItem();
-        item2.getContent().add("Esidrix");
         docList.getItem().add(item2);
         docItemList.setValue(docList);
         text.getContent().add(docItemList);
@@ -636,7 +634,6 @@ public final class HL7PacketBuilder {
         final POCDMT000040RegionOfInterestValue intValue = FACTORY_HL7.createPOCDMT000040RegionOfInterestValue();
         intValue.setValue(BigInteger.valueOf(version));
         clinicalDocument.setVersionNumber(intValue);
-        clinicalDocument.setId(createII(uuid));
 
         return clinicalDocument;
     }

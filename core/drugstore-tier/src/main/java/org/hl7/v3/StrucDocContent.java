@@ -73,7 +73,7 @@ public class StrucDocContent {
     })
     @XmlMixed
     protected List<Serializable> content;
-    @XmlAttribute(name = "ID1")
+    @XmlAttribute(name = "ID")
     @XmlJavaTypeAdapter(CollapsedStringAdapter.class)
     @XmlID
     @XmlSchemaType(name = "ID")

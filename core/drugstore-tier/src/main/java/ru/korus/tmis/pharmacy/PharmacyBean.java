@@ -508,7 +508,7 @@ public class PharmacyBean implements PharmacyBeanLocal {
         throw new SkipMessageProcessException("OrgStructure for " + action + " is not found");
     }
 
-    private void sendPrescriptionTo1C() {
+    public void sendPrescriptionTo1C() {
         Iterable<PrescriptionsTo1C> prescriptions = dbPrescriptionsTo1CBeanLocal.getPrescriptions();
         for (PrescriptionsTo1C prescription : prescriptions) {
             int errCount = prescription.getErrCount();
@@ -535,22 +535,20 @@ public class PharmacyBean implements PharmacyBeanLocal {
             // Определяем код назначенного препарата
             final String drugCode = dbPharmacy.getDrugCode(action);
             Request request = null;
+            Integer version = prescription.getDrugChart().getVersion() == null ? 1 : (prescription.getDrugChart().getVersion() + 1);
             if(prescription.isPrescription()) { // передача нового / отмена назначения
                 request = HL7PacketBuilder.processPrescription(
                         action, client, executorStaff, organisation, drugCode, AssignmentType.ASSIGNMENT, prescription.getNewStatus() == PS_CANCELED,
-                        prescription.getDrugChart().getUuid(), prescription.getDrugChart().getVersion());
+                        prescription.getDrugChart().getUuid(), version);
             } else if (prescription.getOldStatus() == PS_NEW && prescription.getNewStatus() == PS_FINISHED) {
                 request = HL7PacketBuilder.processPrescription(
-                        action, client, executorStaff, organisation, drugCode, AssignmentType.EXECUTION, false, prescription.getDrugChart().getUuid(),
-                        prescription.getDrugChart().getVersion());
+                        action, client, executorStaff, organisation, drugCode, AssignmentType.EXECUTION, false, prescription.getDrugChart().getUuid(), version);
             } else if (prescription.getOldStatus() == PS_FINISHED && prescription.getNewStatus() == PS_NEW) {
                 request = HL7PacketBuilder.processPrescription(
-                        action, client, executorStaff, organisation, drugCode, AssignmentType.EXECUTION, true, prescription.getDrugChart().getUuid(),
-                        prescription.getDrugChart().getVersion());
+                        action, client, executorStaff, organisation, drugCode, AssignmentType.EXECUTION, true, prescription.getDrugChart().getUuid(), version);
             }
             final MCCIIN000002UV012 result = new MISExchange().getMISExchangeSoap().processHL7V3Message(request);
             prescription.getDrugChart().setUuid(result.getAcknowledgement().iterator().next().getTargetMessage().getId().getRoot());
-            Integer version = prescription.getDrugChart().getVersion() == null ? 1 : (prescription.getDrugChart().getVersion() + 1);
             prescription.getDrugChart().setVersion(version);
             res = true;
         } catch (NoSuchOrgStructureException e) {

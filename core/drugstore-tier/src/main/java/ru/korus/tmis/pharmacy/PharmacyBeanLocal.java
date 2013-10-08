@@ -16,5 +16,9 @@ public interface PharmacyBeanLocal {
      */
     void pooling();
 
+    /**
+     * Отправка интервалов назначений.исполнений в 1С
+     */
+    void  sendPrescriptionTo1C();
 
 }

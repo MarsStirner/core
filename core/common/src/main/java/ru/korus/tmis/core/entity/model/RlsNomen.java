@@ -23,8 +23,6 @@ public class RlsNomen implements Serializable {
     @Column(length = 128)
     private String dosageValue;
 
-    private Integer drugLifetime;
-
     @Temporal(TemporalType.DATE)
     private Date regDate;
 
@@ -66,6 +64,9 @@ public class RlsNomen implements Serializable {
 	@ManyToOne(cascade=CascadeType.PERSIST)
     @JoinColumn(name = "tradeName_id", nullable = false)
     private RlsTradeName rlsTradeName;
+
+    @Column(nullable = true)
+    private Integer drugLifetime;
 
     public RlsNomen() {
     }
