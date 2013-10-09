@@ -48,9 +48,9 @@ import java.util.List;
 @XmlAccessorType(XmlAccessType.FIELD)
 @XmlRootElement
 @XmlType(name = "ED", propOrder = {
-        "content",
         "reference",
-        "thumbnail"
+        "thumbnail",
+        "content"
 })
 @XmlSeeAlso({
         Thumbnail.class,
@@ -78,12 +78,12 @@ public class ED
 
 //    @XmlMixed
 //    @XmlAnyElement
-    protected List<Serializable> content;
+    protected List<Object> content;
 
 
-    public List<Serializable> getContent() {
+    public List<Object> getContent() {
         if (content == null)
-            content = new ArrayList<Serializable>();
+            content = new ArrayList<Object>();
         return content;
     }
 
