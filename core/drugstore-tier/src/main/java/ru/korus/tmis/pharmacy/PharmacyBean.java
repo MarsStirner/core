@@ -510,8 +510,8 @@ public class PharmacyBean implements PharmacyBeanLocal {
             final String code[] = {"moa"};
             String routeOfAdministration = null;
             Map<ActionProperty, List<APValue>> actionProp = dbActionProperty.getActionPropertiesByActionIdAndTypeCodes(action.getId(), Arrays.asList(code));
-            if (!actionProp.isEmpty()) {
-                Object codeId = (Integer) (actionProp.entrySet().iterator().next().getValue().iterator().next().getValue());
+            if (!actionProp.isEmpty() && !actionProp.entrySet().iterator().next().getValue().isEmpty() ) {
+                Object codeId = actionProp.entrySet().iterator().next().getValue().iterator().next().getValue();
                 if (codeId instanceof Integer) {
                     routeOfAdministration = dbRbMethodOfAdministrationLocal.getById((Integer) codeId).getCode();
                 }
