@@ -81,12 +81,12 @@ public class PharmacyBean implements PharmacyBeanLocal {
     private static final int PS_NEW = 0;
 
     /**
-     *  исполнен
+     * исполнен
      */
     private static final int PS_FINISHED = 1;
 
     /**
-     *  Отменён
+     * Отменён
      */
     private static final int PS_CANCELED = 2;
 
@@ -118,15 +118,15 @@ public class PharmacyBean implements PharmacyBeanLocal {
                         }
                     }
                 }
+                // повторная отправка неотправленных сообщений
+                resendMessages();
+                //Отправка назначений ЛС
+                logger.info("sending prescription start...");
+                sendPrescriptionTo1C();
+                logger.info("sending prescription stop");
             } catch (Exception e) {
                 logger.error("Exception e: " + e, e);
             }
-            // повторная отправка неотправленных сообщений
-            resendMessages();
-            //Отправка назначений ЛС
-            logger.info("sending prescription start...");
-            sendPrescriptionTo1C();
-            logger.info("sending prescription stop");
 
         } else {
             logger.info("pooling... {}", ConfigManager.Drugstore().Active());
@@ -239,7 +239,7 @@ public class PharmacyBean implements PharmacyBeanLocal {
                 || FlatCode.MOVING.getCode().equalsIgnoreCase(actionType.getFlatCode())
                 || FlatCode.DEL_MOVING.getCode().equalsIgnoreCase(actionType.getFlatCode())
                 || FlatCode.LEAVED.getCode().equalsIgnoreCase(actionType.getFlatCode());
-               // || FlatCode.PRESCRIPTION.getCode().equalsIgnoreCase(actionType.getFlatCode());
+        // || FlatCode.PRESCRIPTION.getCode().equalsIgnoreCase(actionType.getFlatCode());
     }
 
     /**
@@ -515,7 +515,7 @@ public class PharmacyBean implements PharmacyBeanLocal {
             long step = 89 * 1000; // время до слейдующей попытки передачи данных
             prescription.setErrCount(errCount + 1);
             prescription.setSendTime(new Timestamp(prescription.getSendTime().getTime() + (long) (errCount) * step));
-            if (sendPrescription(prescription) ) {
+            if (sendPrescription(prescription)) {
                 dbPrescriptionsTo1CBeanLocal.remove(prescription);
             }
         }
@@ -524,7 +524,7 @@ public class PharmacyBean implements PharmacyBeanLocal {
     private boolean sendPrescription(PrescriptionsTo1C prescription) {
         boolean res = false;
         try {
-            final Action action =  prescription.getDrugChart().getAction();
+            final Action action = prescription.getDrugChart().getAction();
             // Пациент
             final Patient client = action.getEvent().getPatient();
             // Врач, сделавший обращение
@@ -536,7 +536,7 @@ public class PharmacyBean implements PharmacyBeanLocal {
             final String drugCode = dbPharmacy.getDrugCode(action);
             Request request = null;
             Integer version = prescription.getDrugChart().getVersion() == null ? 1 : (prescription.getDrugChart().getVersion() + 1);
-            if(prescription.isPrescription()) { // передача нового / отмена назначения
+            if (prescription.isPrescription()) { // передача нового / отмена назначения
                 request = HL7PacketBuilder.processPrescription(
                         action, client, executorStaff, organisation, drugCode, AssignmentType.ASSIGNMENT, prescription.getNewStatus() == PS_CANCELED,
                         prescription.getDrugChart().getUuid(), version);
