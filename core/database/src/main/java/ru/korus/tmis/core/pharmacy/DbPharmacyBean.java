@@ -6,10 +6,7 @@ import org.slf4j.LoggerFactory;
 import ru.korus.tmis.core.database.DbActionPropertyBeanLocal;
 import ru.korus.tmis.core.database.DbActionPropertyTypeBeanLocal;
 import ru.korus.tmis.core.database.DbManagerBeanLocal;
-import ru.korus.tmis.core.entity.model.APValue;
-import ru.korus.tmis.core.entity.model.Action;
-import ru.korus.tmis.core.entity.model.ActionProperty;
-import ru.korus.tmis.core.entity.model.ActionType;
+import ru.korus.tmis.core.entity.model.*;
 import ru.korus.tmis.core.entity.model.pharmacy.Pharmacy;
 import ru.korus.tmis.core.entity.model.pharmacy.PharmacyStatus;
 import ru.korus.tmis.core.exception.CoreException;
@@ -70,16 +67,12 @@ public class DbPharmacyBean implements DbPharmacyBeanLocal {
      * @param action связанное действие
      * @return код (code) в формате ФОЛС из RLS
      */
-    public String getDrugCode(final Action action) {
-        List result = em.createNativeQuery(
-                "SELECT api.value FROM ActionProperty ap "
-                        + "JOIN ActionProperty_Integer api  ON ap.id = api.id "
-                        + "JOIN ActionPropertyType apt ON ap.type_id = apt.id "
-                        + "WHERE ap.action_id = ? AND apt.typeName = ?")
-                .setParameter(1, action.getId())
-                .setParameter(2, "RLS")
-                .getResultList();
-        return String.valueOf(getResult(result));
+    public RlsNomen getDrugCode(final Action action) {
+        List<DrugComponent> comps = em.createNamedQuery("DrugComponent.getByActionId", DrugComponent.class).setParameter("actionId", action.getId()).getResultList();
+        if(comps.isEmpty()) {
+            return null;
+        }
+        return em.find(RlsNomen.class, comps.iterator().next().getNomen());
     }
 
     private Integer getResult(final List input) {

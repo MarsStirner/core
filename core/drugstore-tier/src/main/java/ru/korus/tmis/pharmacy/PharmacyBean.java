@@ -11,10 +11,7 @@ import ru.korus.tmis.core.entity.model.*;
 import ru.korus.tmis.core.entity.model.pharmacy.Pharmacy;
 import ru.korus.tmis.core.entity.model.pharmacy.PharmacyStatus;
 import ru.korus.tmis.core.exception.CoreException;
-import ru.korus.tmis.core.pharmacy.DbPharmacyBeanLocal;
-import ru.korus.tmis.core.pharmacy.DbPrescriptionsTo1CBeanLocal;
-import ru.korus.tmis.core.pharmacy.DbUUIDBeanLocal;
-import ru.korus.tmis.core.pharmacy.FlatCode;
+import ru.korus.tmis.core.pharmacy.*;
 import ru.korus.tmis.pharmacy.exception.MessageProcessException;
 import ru.korus.tmis.pharmacy.exception.NoSuchOrgStructureException;
 import ru.korus.tmis.pharmacy.exception.SkipMessageProcessException;
@@ -73,6 +70,9 @@ public class PharmacyBean implements PharmacyBeanLocal {
     @EJB
     private DbPrescriptionsTo1CBeanLocal dbPrescriptionsTo1CBeanLocal = null;
 
+    @EJB
+    private DbRbMethodOfAdministrationLocal dbRbMethodOfAdministrationLocal = null;
+
     private DateTime lastDateUpdate = null;
 
     /**
@@ -81,12 +81,12 @@ public class PharmacyBean implements PharmacyBeanLocal {
     private static final int PS_NEW = 0;
 
     /**
-     *  исполнен
+     * исполнен
      */
     private static final int PS_FINISHED = 1;
 
     /**
-     *  Отменён
+     * Отменён
      */
     private static final int PS_CANCELED = 2;
 
@@ -102,11 +102,11 @@ public class PharmacyBean implements PharmacyBeanLocal {
     @Schedule(minute = "*/1", hour = "*")
     public void pooling() {
         if (ConfigManager.Drugstore().isActive()) {
-            logger.info("pooling... last modify date {}", getLastDate());
-            if (lastDateUpdate == null) {
-                lastDateUpdate = firstPolling();
-            }
             try {
+                logger.info("pooling... last modify date {}", getLastDate());
+                if (lastDateUpdate == null) {
+                    lastDateUpdate = firstPolling();
+                }
                 final List<Action> actionAfterDate = dbPharmacy.getVirtualActionsAfterDate(lastDateUpdate);
                 if (!actionAfterDate.isEmpty()) {
                     logger.info("Found {} newest actions after date {}", actionAfterDate.size(), getLastDate());
@@ -118,15 +118,15 @@ public class PharmacyBean implements PharmacyBeanLocal {
                         }
                     }
                 }
+                // повторная отправка неотправленных сообщений
+                resendMessages();
+                //Отправка назначений ЛС
+                logger.info("sending prescription start...");
+                sendPrescriptionTo1C();
+                logger.info("sending prescription stop");
             } catch (Exception e) {
                 logger.error("Exception e: " + e, e);
             }
-            // повторная отправка неотправленных сообщений
-            resendMessages();
-            //Отправка назначений ЛС
-            logger.info("sending prescription start...");
-            sendPrescriptionTo1C();
-            logger.info("sending prescription stop");
 
         } else {
             logger.info("pooling... {}", ConfigManager.Drugstore().Active());
@@ -281,35 +281,7 @@ public class PharmacyBean implements PharmacyBeanLocal {
             // выписка из стационара
             return HL7PacketBuilder.processLeaved(action);
 
-        }  /*else if (FlatCode.PRESCRIPTION.getCode().equalsIgnoreCase(actionType.getFlatCode())) {
-            // Пациент
-            final Patient client = action.getEvent().getPatient();
-            // Врач, сделавший обращение
-            final Staff executorStaff = action.getExecutor();
-            // Организация, которой принадлежит документ
-            final Organisation organisation = getCustodianOrgStructure(action);
-            // Определяем код назначенного препарата
-            final String drugCode = dbPharmacy.getDrugCode(action);
-
-            return HL7PacketBuilder.processPrescription(
-                    action, client, executorStaff, organisation, drugCode, AssignmentType.ASSIGNMENT);
-
         }
-        else if (FlatCode.RELEASE_PRESCRIPTION.getCode().equalsIgnoreCase(actionType.getFlatCode())) {    // искусственно введеный тип, либо к нему привязаться или реализовать по-другому
-            // todo!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
-            // Пациент
-            final Patient client = action.getEvent().getPatient();
-            // Врач, сделавший обращение
-            final Staff executorStaff = action.getExecutor();
-            // Организация, которой принадлежит документ
-            final Organisation organisation = getCustodianOrgStructure(action);
-            // Определяем код назначенного препарата
-            final String drugCode = dbPharmacy.getDrugCode(action);
-
-            return HL7PacketBuilder.processPrescription(
-                    action, client, executorStaff, organisation, drugCode, AssignmentType.EXECUTION);
-
-        }          */
 
         throw new MessageProcessException();
     }
@@ -508,23 +480,23 @@ public class PharmacyBean implements PharmacyBeanLocal {
         throw new SkipMessageProcessException("OrgStructure for " + action + " is not found");
     }
 
-    public void sendPrescriptionTo1C() {
+    public void sendPrescriptionTo1C() throws CoreException {
         Iterable<PrescriptionsTo1C> prescriptions = dbPrescriptionsTo1CBeanLocal.getPrescriptions();
         for (PrescriptionsTo1C prescription : prescriptions) {
             int errCount = prescription.getErrCount();
             long step = 89 * 1000; // время до слейдующей попытки передачи данных
             prescription.setErrCount(errCount + 1);
             prescription.setSendTime(new Timestamp(prescription.getSendTime().getTime() + (long) (errCount) * step));
-            if (sendPrescription(prescription) ) {
+            if (sendPrescription(prescription)) {
                 dbPrescriptionsTo1CBeanLocal.remove(prescription);
             }
         }
     }
 
-    private boolean sendPrescription(PrescriptionsTo1C prescription) {
+    private boolean sendPrescription(PrescriptionsTo1C prescription) throws CoreException {
         boolean res = false;
         try {
-            final Action action =  prescription.getDrugChart().getAction();
+            final Action action = prescription.getDrugChart().getAction();
             // Пациент
             final Patient client = action.getEvent().getPatient();
             // Врач, сделавший обращение
@@ -533,19 +505,29 @@ public class PharmacyBean implements PharmacyBeanLocal {
             final Organisation organisation;
             organisation = getCustodianOrgStructure(action);
             // Определяем код назначенного препарата
-            final String drugCode = dbPharmacy.getDrugCode(action);
+            final RlsNomen rlsNomen = dbPharmacy.getDrugCode(action);
+            // Способ применения
+            final String code[] = {"moa"};
+            String routeOfAdministration = null;
+            Map<ActionProperty, List<APValue>> actionProp = dbActionProperty.getActionPropertiesByActionIdAndTypeCodes(action.getId(), Arrays.asList(code));
+            if (!actionProp.isEmpty()) {
+                Object codeId = (Integer) (actionProp.entrySet().iterator().next().getValue().iterator().next().getValue());
+                if (codeId instanceof Integer) {
+                    routeOfAdministration = dbRbMethodOfAdministrationLocal.getById((Integer) codeId).getCode();
+                }
+            }
             Request request = null;
             Integer version = prescription.getDrugChart().getVersion() == null ? 1 : (prescription.getDrugChart().getVersion() + 1);
-            if(prescription.isPrescription()) { // передача нового / отмена назначения
+            if (prescription.isPrescription()) { // передача нового / отмена назначения
                 request = HL7PacketBuilder.processPrescription(
-                        action, client, executorStaff, organisation, drugCode, AssignmentType.ASSIGNMENT, prescription.getNewStatus() == PS_CANCELED,
+                        prescription.getDrugChart(), client, rlsNomen, routeOfAdministration, executorStaff, organisation, AssignmentType.ASSIGNMENT, prescription.getNewStatus() == PS_CANCELED,
                         prescription.getDrugChart().getUuid(), version);
             } else if (prescription.getOldStatus() == PS_NEW && prescription.getNewStatus() == PS_FINISHED) {
                 request = HL7PacketBuilder.processPrescription(
-                        action, client, executorStaff, organisation, drugCode, AssignmentType.EXECUTION, false, prescription.getDrugChart().getUuid(), version);
+                        prescription.getDrugChart(), client, rlsNomen, routeOfAdministration, executorStaff, organisation, AssignmentType.EXECUTION, false, prescription.getDrugChart().getUuid(), version);
             } else if (prescription.getOldStatus() == PS_FINISHED && prescription.getNewStatus() == PS_NEW) {
                 request = HL7PacketBuilder.processPrescription(
-                        action, client, executorStaff, organisation, drugCode, AssignmentType.EXECUTION, true, prescription.getDrugChart().getUuid(), version);
+                        prescription.getDrugChart(), client, rlsNomen, routeOfAdministration, executorStaff, organisation, AssignmentType.EXECUTION, true, prescription.getDrugChart().getUuid(), version);
             }
             final MCCIIN000002UV012 result = new MISExchange().getMISExchangeSoap().processHL7V3Message(request);
             prescription.getDrugChart().setUuid(result.getAcknowledgement().iterator().next().getTargetMessage().getId().getRoot());
