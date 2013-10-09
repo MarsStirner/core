@@ -63,26 +63,19 @@
 
                     <subject typeCode="SUBJ">
                         <observationBattery classCode="BATTERY" moodCode="EVN">
-                            <code displayName="{название исследования}"/>
-                            <text>{дефекты биоматериала}</text>
+                            <code displayName="{название исследования}" code="{дефекты биоматериала}"/>
                         </observationBattery>
                     </subject>
 
                     <subject typeCode="SUBJ" contextConductionInd="false">
                         <observationEvent classCode="OBS" moodCode="EVN">
-                            <code code="{код методики/показателя/микроорганизма}" displayName value="{название методики/показателя/микроорганизма}"/>
-
-                            <text>{произвольный текстовый комментарий}</text>
-
+                            <code code="{код методики/показателя/микроорганизма}" displayName="{название методики/показателя/микроорганизма}" codeSystem="{произвольный текстовый комментарий}"/>
                             <statusCode displayName="{если результата нет, здесь указана причина}"/>
-
                             <effectiveTime value="{дата выполнения/утверждения результата}"/>
-
                             <value unit="{единица измерения}" value="{значение}" xsi:type="PQ"/>
                             <device typeCode="DEV">
                                 <labTestKit classCode="MANU">
                                     <manufacturedTestKit classCode="DEV" determinerCode="INSTANCE">
-
                                         <code displayName="{название прибора}"/>
                                     </manufacturedTestKit>
                                 </labTestKit>

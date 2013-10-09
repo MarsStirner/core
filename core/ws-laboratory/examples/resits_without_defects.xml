@@ -9,10 +9,8 @@
             <POLB_IN224100UV01 xmlns="urn:hl7-org:v3" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
                                xsi:schemaLocation="urn:hl7-org:v3 ./processable/multicacheschemas/POLB_IN224100UV01.xsd"
                                ITSVersion="XML_1.0">
-                <!-- UUID сообщения -->
-                <id root="3f14ec3f-2382-4673-9498-d1bf3b4f9e36"/>
-                <!-- Время создания события. Значение value кодируется по шаблону: ггггммддччммсс.  -->
-                <creationTime value="20131003000102"/>
+                <id root="{UUID сообщения}"/>
+                <creationTime value="{Время создания события. Значение value кодируется по шаблону: ггггммддччммсс}"/>
                 <!-- Идентификатор типа сообщения. -->
                 <interactionId extension="POLB_IN224100UV01" root="2.16.840.1.113883.1.6"/>
                 <!-- Назначение сообщения относительно отправителя. Возможные значения — D (отладка, Debugging), P (промышленное функционирование, Production) or T (обучение, Training). -->
@@ -85,19 +83,10 @@
                                     <effectiveTime value="{дата исследования}"/>
                                     <confidentialityCode nullFlavor="UNK"/>
 
-                                    <!-- 1 или несколько-->
+                                    <!-- 0 или несколько-->
                                     <component1 typeCode="COMP" contextControlCode="ON">
                                         <observationEvent classCode="OBS" moodCode="EVN">
-                                            <code code="{код микроорганизма}" displayName="{название микроорганизма}"/>
-
-                                            <component1 typeCode="COMP" contextControlCode="ON">
-                                                <observationEvent classCode="OBS" moodCode="EVN">
-                                                    <code>
-                                                        <originalText>{чувствительность}</originalText>
-                                                    </code>
-                                                    <statusCode/>
-                                                </observationEvent>
-                                            </component1>
+                                            <code code="{код микроорганизма}" displayName="{название микроорганизма}" codeSystem="{чувствительность}"/>
                                         </observationEvent>
                                     </component1>
 
@@ -109,7 +98,6 @@
                     <subject typeCode="SUBJ">
                         <!-- результаты, проведенные конкретно для обнаруженного микроорганизма, проверка на чувствительность к антибиотикам, антибиотиков может быть несколько -->
                         <specimenObservationCluster classCode="CLUSTER" moodCode="EVN">
-                            <statusCode/>
                             <specimen typeCode="SPC" contextControlCode="ON">
                                 <specimen classCode="SPEC">
                                     <code code="{код микроорганизма}" displayName="{название микрооранизма}"/>
@@ -117,13 +105,13 @@
                             </specimen>
                             <component1 typeCode="COMP" contextControlCode="ON">
                                 <observationBattery classCode="BATTERY" moodCode="EVN">
+
                                     <!-- 1 или более-->
                                     <component1 typeCode="COMP" contextControlCode="ON">
                                         <observationEvent classCode="OBS" moodCode="EVN">
-                                            <code code="{код антибиотика}" displayName="{название антибиотика}">
+                                            <code code="{код антибиотика}" displayName="{название антибиотика}" codeSystem="{величина концентрации}">
                                                 <translation code="{чувствительность}"/>
                                             </code>
-                                            <text>{величина концентрации}</text>
                                         </observationEvent>
                                     </component1>
 

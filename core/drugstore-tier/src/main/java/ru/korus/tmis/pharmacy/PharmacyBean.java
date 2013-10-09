@@ -238,8 +238,8 @@ public class PharmacyBean implements PharmacyBeanLocal {
                 || FlatCode.DEL_RECEIVED.getCode().equalsIgnoreCase(actionType.getFlatCode())
                 || FlatCode.MOVING.getCode().equalsIgnoreCase(actionType.getFlatCode())
                 || FlatCode.DEL_MOVING.getCode().equalsIgnoreCase(actionType.getFlatCode())
-                || FlatCode.LEAVED.getCode().equalsIgnoreCase(actionType.getFlatCode())
-                || FlatCode.PRESCRIPTION.getCode().equalsIgnoreCase(actionType.getFlatCode());
+                || FlatCode.LEAVED.getCode().equalsIgnoreCase(actionType.getFlatCode());
+               // || FlatCode.PRESCRIPTION.getCode().equalsIgnoreCase(actionType.getFlatCode());
     }
 
     /**
