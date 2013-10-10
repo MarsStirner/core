@@ -700,7 +700,7 @@ public final class HL7PacketBuilder {
 
         final IVLPQ doseQuantity = FACTORY_HL7.createIVLPQ();
         final PQ center = FACTORY_HL7.createPQ();
-        center.setValue(rlsNomen.getDosageValue());
+        center.setValue(rlsNomen.getDosageValue().trim());
         final PQR pqr = FACTORY_HL7.createPQR();
         pqr.setCodeSystemName("RLS");
         final ED originalText = FACTORY_HL7.createED();
