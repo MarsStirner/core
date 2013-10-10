@@ -180,14 +180,7 @@ public class PharmacyBean implements PharmacyBeanLocal {
                     if (AcknowledgementType.AA.equals(ack.getTypeCode())) {
                         pharmacy.setStatus(PharmacyStatus.COMPLETE);
                     } else {
-                        final StringBuilder sb = new StringBuilder();
-                        final List<MCCIMT000200UV01AcknowledgementDetail> detailList = ack.getAcknowledgementDetail();
-                        for (MCCIMT000200UV01AcknowledgementDetail detail : detailList) {
-                            final ED text = detail.getText();
-                            for (Object o : text.getContent()) {
-                                sb.append(o);
-                            }
-                        }
+                        final StringBuilder sb = getAckString(ack);
                         pharmacy.setErrorString(sb.toString());
                         pharmacy.setStatus(PharmacyStatus.ERROR);
                     }
@@ -198,7 +191,7 @@ public class PharmacyBean implements PharmacyBeanLocal {
             }
         } catch (NoSuchOrgStructureException e) {
             if (pharmacy != null) {
-                pharmacy.setErrorString(getErrorString(e));
+                pharmacy.setErrorString("NoSuchOrgStructureException " + e);
                 pharmacy.setStatus(PharmacyStatus.ERROR);
             }
             logger.info("OrgStructure not found. Skip message: " + e);
@@ -225,8 +218,16 @@ public class PharmacyBean implements PharmacyBeanLocal {
         }
     }
 
-    private String getErrorString(NoSuchOrgStructureException e) {
-        return "NoSuchOrgStructureException " + e;
+    private StringBuilder getAckString(MCCIMT000200UV01Acknowledgement ack) {
+        final StringBuilder sb = new StringBuilder();
+        final List<MCCIMT000200UV01AcknowledgementDetail> detailList = ack.getAcknowledgementDetail();
+        for (MCCIMT000200UV01AcknowledgementDetail detail : detailList) {
+            final ED text = detail.getText();
+            for (Object o : text.getContent()) {
+                sb.append(o);
+            }
+        }
+        return sb;
     }
 
     /**
@@ -486,7 +487,7 @@ public class PharmacyBean implements PharmacyBeanLocal {
             int errCount = prescription.getErrCount();
             long step = 89 * 1000; // время до слейдующей попытки передачи данных
             prescription.setErrCount(errCount + 1);
-            prescription.setSendTime(new Timestamp(prescription.getSendTime().getTime() + (long) (errCount) * step));
+            prescription.setSendTime(new Timestamp((new java.util.Date()).getTime() + (long) (errCount) * step));
             if (sendPrescription(prescription)) {
                 dbPrescriptionsTo1CBeanLocal.remove(prescription);
             }
@@ -530,13 +531,28 @@ public class PharmacyBean implements PharmacyBeanLocal {
                         prescription.getDrugChart(), client, rlsNomen, routeOfAdministration, executorStaff, organisation, AssignmentType.EXECUTION, true, prescription.getDrugChart().getUuid(), version);
             }
             final MCCIIN000002UV012 result = new MISExchange().getMISExchangeSoap().processHL7V3Message(request);
-            prescription.getDrugChart().setUuid(result.getAcknowledgement().iterator().next().getTargetMessage().getId().getRoot());
-            prescription.getDrugChart().setVersion(version);
-            res = true;
-        } catch (NoSuchOrgStructureException e) {
-            final String errorString = getErrorString(e);
+            if(isOk(result)) {
+                prescription.getDrugChart().setUuid(result.getAcknowledgement().iterator().next().getTargetMessage().getId().getRoot());
+                prescription.getDrugChart().setVersion(version);
+                res = true;
+            }
+        } catch (Exception e) {
+            final String errorString = e.toString();
             prescription.setInfo(errorString);
             logger.error(errorString);
+        }
+        return res;
+    }
+
+    private boolean isOk(MCCIIN000002UV012 result) throws CoreException {
+        boolean res = false;
+        for (MCCIMT000200UV01Acknowledgement ack : result.getAcknowledgement()) {
+            if (AcknowledgementType.AA.equals(ack.getTypeCode())) {
+                res = true;
+            } else {
+                final StringBuilder sb = getAckString(ack);
+                throw new CoreException(sb.toString());
+            }
         }
         return res;
     }

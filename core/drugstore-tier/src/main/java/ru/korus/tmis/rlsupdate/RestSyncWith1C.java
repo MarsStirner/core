@@ -1,5 +1,6 @@
 package ru.korus.tmis.rlsupdate;
 
+import ru.korus.tmis.core.exception.CoreException;
 import ru.korus.tmis.pharmacy.PharmacyBean;
 import ru.korus.tmis.prescription.BalanceOfGoodsInfo;
 import ru.korus.tmis.rlsupdate.SyncWith1C;
@@ -69,8 +70,13 @@ public class RestSyncWith1C {
     @GET
     @Path("/send-pre")
     public Response sendPrescription() {
-        pharmacyBean.sendPrescriptionTo1C();
-        return Response.status(Response.Status.OK).entity("OK").build();
+        String res = "OK";
+        try {
+            pharmacyBean.sendPrescriptionTo1C();
+        } catch (CoreException e) {
+            res = e.getMessage();
+        }
+        return Response.status(Response.Status.OK).entity(res).build();
     }
 
 }

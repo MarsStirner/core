@@ -33,7 +33,7 @@ public final class HL7PacketBuilder {
     static final Logger logger = LoggerFactory.getLogger(HL7PacketBuilder.class);
     private static final ObjectFactory FACTORY_MIS = new ObjectFactory();
     private static final org.hl7.v3.ObjectFactory FACTORY_HL7 = new org.hl7.v3.ObjectFactory();
-    private static final String DATE_FORMAT = "yyyyMMddHHmmss";
+    private static final String DATE_FORMAT = "yyyyMMdd";
 
     private HL7PacketBuilder() {
     }
@@ -497,16 +497,16 @@ public final class HL7PacketBuilder {
      */
     private static XActMoodIntentEvent getAssignmentType(final AssignmentType type) {
         if (AssignmentType.ASSIGNMENT.equals(type)) {
-            return XActMoodIntentEvent.EVN;
+            return XActMoodIntentEvent.RQO;
         }
-        return XActMoodIntentEvent.RQO;
+        return XActMoodIntentEvent.EVN;
     }
 
     private static XDocumentSubstanceMood getAssignmentType2(final AssignmentType type) {
         if (AssignmentType.ASSIGNMENT.equals(type)) {
-            return XDocumentSubstanceMood.EVN;
+            return XDocumentSubstanceMood.RQO;
         }
-        return XDocumentSubstanceMood.RQO;
+        return XDocumentSubstanceMood.EVN;
     }
 
     /**
@@ -715,7 +715,8 @@ public final class HL7PacketBuilder {
         final POCDMT000040ManufacturedProduct manufacturedProduct = FACTORY_HL7.createPOCDMT000040ManufacturedProduct();
 
         // Получение товарной единицы лекарственного средства
-        final POCDMT000040LabeledDrug drug = BalanceOfGoodsInfoBean.getLabeledDrug(FACTORY_HL7, String.valueOf(rlsNomen.getId()));
+        //final POCDMT000040LabeledDrug drug = BalanceOfGoodsInfoBean.getLabeledDrug(FACTORY_HL7, String.valueOf(rlsNomen.getId()));
+        final POCDMT000040LabeledDrug drug = getFomsDrug("33814");
 
         manufacturedProduct.setManufacturedLabeledDrug(/*manufacturedLabeledDrug*/drug);
         consumable.setManufacturedProduct(manufacturedProduct);
@@ -1131,6 +1132,21 @@ public final class HL7PacketBuilder {
         patientPerson.setValue(person);
         return patientPerson;
 
+    }
+
+    public static POCDMT000040LabeledDrug getFomsDrug(final String code) {
+
+        final DrugList drugList1 = new MISExchange().getMISExchangeSoap().getDrugList();
+        List<POCDMT000040LabeledDrug> drugList = drugList1.getDrug();
+        logger.info("Loading successful...{} drug(s)", drugList.size());
+
+        for (POCDMT000040LabeledDrug d : drugList) {
+            if (d.getCode().getCode().equals(code/*"20044"*/)) {
+                logger.info("Fetch drug from cache {}", marshallMessage(d, "org.hl7.v3"));
+                return d;
+            }
+        }
+        return drugList.get(2); //todo для теста возвращаем любой drug
     }
 
 
