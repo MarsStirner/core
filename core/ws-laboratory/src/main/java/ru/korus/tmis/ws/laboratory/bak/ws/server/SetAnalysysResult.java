@@ -1,5 +1,8 @@
 package ru.korus.tmis.ws.laboratory.bak.ws.server;
 
+import org.joda.time.DateTime;
+import org.joda.time.format.DateTimeFormat;
+import org.joda.time.format.DateTimeFormatter;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.w3c.dom.Document;
@@ -127,68 +130,104 @@ public class SetAnalysysResult implements SetAnalysysResultWS {
      */
     private void flushToDB(POLBIN224100UV01 request) {
         // заполняем справочники
-        final String results = Utils.marshallMessage(request, "ru.korus.tmis.ws.laboratory.bak.ws.server.model.hl7.complex");
+//        final String results = Utils.marshallMessage(request, "ru.korus.tmis.ws.laboratory.bak.ws.server.model.hl7.complex");
+//
+//
+//        final DocumentBuilderFactory builderFactory = DocumentBuilderFactory.newInstance();
+//        DocumentBuilder builder = null;
+//        try {
+//            builder = builderFactory.newDocumentBuilder();
+//
+//
+//            Document xmlDocument = builder.parse(new ByteArrayInputStream(results.getBytes("UTF-8")));
+//
+//            XPath xPath = XPathFactory.newInstance().newXPath();
+//
+//            //root документа
+//            String root = xPath.compile("/POLB_IN224100UV01/id/@root").evaluate(xmlDocument);
+//
+//
+////            String orderMisId = xPath.compile("/POLB_IN224100UV01/id/@root").evaluate(xmlDocument);
+//
+//            String orderMisId = (String) xPath.compile("/*[name()='POLB_IN224100UV01']/*[name()='controlActProcess']/*[name()='subject'][1]/*[name()='observationReport']/*[name()='id']/@controlInformationRoot").evaluate(xmlDocument, XPathConstants.STRING);
+//
+//
+//            String nameAnaliz = (String) xPath.compile("/*[name()='POLB_IN224100UV01']/*[name()='controlActProcess']/*[name()='subject'][1]/*[name()='observationReport']/*[name()='code']/*[name()='displayName']/@value").evaluate(xmlDocument, XPathConstants.STRING);
+//            String codeAnaliz = xPath.compile("/*[name()='POLB_IN224100UV01']/*[name()='controlActProcess']/*[name()='subject'][1]/*[name()='observationReport']/*[name()='code']/@code").evaluate(xmlDocument);
+//
+//
+//            String identifierName = xPath.compile("/*[name()='POLB_IN224100UV01']/*[name()='controlActProcess']/*[name()='subject'][1]/*[name()='observationReport']/*[name()='specimen']/*[name()='specimen']/*[name()='id']/@identifierName").evaluate(xmlDocument);
+//
+//            String authorCode = xPath.compile("/*[name()='POLB_IN224100UV01']/*[name()='controlActProcess']/*[name()='subject'][1]/*[name()='observationReport']/*[name()='author']/*[name()='assignedEntity']/*[name()='code']/@code").evaluate(xmlDocument);
+//            String authorName = xPath.compile("/*[name()='POLB_IN224100UV01']/*[name()='controlActProcess']/*[name()='subject'][1]/*[name()='observationReport']/*[name()='author']/*[name()='assignedEntity']/*[name()='code']/*[name()='displayName']/@value").evaluate(xmlDocument);
+//
+//
+//            NodeList nodeList = (NodeList) xPath.compile("/*[name()='POLB_IN224100UV01']/*[name()='controlActProcess']/*[name()='subject']").evaluate(xmlDocument, XPathConstants.NODESET);
+//            for (int i = 0; i < nodeList.getLength(); i++) {
+//                System.out.println(nodeList.item(i).getFirstChild().getNodeValue());
+//            }
+//
+////            String identifierName = xPath.compile("").evaluate(xmlDocument);
+////            String identifierName = xPath.compile("").evaluate(xmlDocument);
+////            String identifierName = xPath.compile("").evaluate(xmlDocument);
+////            String identifierName = xPath.compile("").evaluate(xmlDocument);
+////            String identifierName = xPath.compile("").evaluate(xmlDocument);
+//
+//
+//            logger.info("parse {}", root);
+//
+//        } catch (ParserConfigurationException e) {
+//            e.printStackTrace();
+//        } catch (SAXException e) {
+//            e.printStackTrace();
+//        } catch (UnsupportedEncodingException e) {
+//            e.printStackTrace();
+//        } catch (IOException e) {
+//            e.printStackTrace();
+//        } catch (XPathExpressionException e) {
+//            e.printStackTrace();
+//        }
 
+        final String uuidDocument = request.getId().getRoot();
+        final DateTimeFormatter formatter = DateTimeFormat.forPattern("yyyyMMddHHmmss");
+        final DateTime createTime = formatter.parseDateTime(request.getCreationTime().getValue());
 
-        final DocumentBuilderFactory builderFactory = DocumentBuilderFactory.newInstance();
-        DocumentBuilder builder = null;
-        try {
-            builder = builderFactory.newDocumentBuilder();
-
-
-            Document xmlDocument = builder.parse(new ByteArrayInputStream(results.getBytes("UTF-8")));
-
-            XPath xPath = XPathFactory.newInstance().newXPath();
-
-            //root документа
-            String root = xPath.compile("/POLB_IN224100UV01/id/@root").evaluate(xmlDocument);
-
-
-//            String orderMisId = xPath.compile("/POLB_IN224100UV01/id/@root").evaluate(xmlDocument);
-
-            String orderMisId = (String) xPath.compile("/*[name()='POLB_IN224100UV01']/*[name()='controlActProcess']/*[name()='subject'][1]/*[name()='observationReport']/*[name()='id']/@controlInformationRoot").evaluate(xmlDocument, XPathConstants.STRING);
-
-
-            String nameAnaliz = (String) xPath.compile("/*[name()='POLB_IN224100UV01']/*[name()='controlActProcess']/*[name()='subject'][1]/*[name()='observationReport']/*[name()='code']/*[name()='displayName']/@value").evaluate(xmlDocument, XPathConstants.STRING);
-            String codeAnaliz = xPath.compile("/*[name()='POLB_IN224100UV01']/*[name()='controlActProcess']/*[name()='subject'][1]/*[name()='observationReport']/*[name()='code']/@code").evaluate(xmlDocument);
-
-
-            String identifierName = xPath.compile("/*[name()='POLB_IN224100UV01']/*[name()='controlActProcess']/*[name()='subject'][1]/*[name()='observationReport']/*[name()='specimen']/*[name()='specimen']/*[name()='id']/@identifierName").evaluate(xmlDocument);
-
-            String authorCode = xPath.compile("/*[name()='POLB_IN224100UV01']/*[name()='controlActProcess']/*[name()='subject'][1]/*[name()='observationReport']/*[name()='author']/*[name()='assignedEntity']/*[name()='code']/@code").evaluate(xmlDocument);
-            String authorName = xPath.compile("/*[name()='POLB_IN224100UV01']/*[name()='controlActProcess']/*[name()='subject'][1]/*[name()='observationReport']/*[name()='author']/*[name()='assignedEntity']/*[name()='code']/*[name()='displayName']/@value").evaluate(xmlDocument);
-
-
-            NodeList nodeList = (NodeList) xPath.compile("/*[name()='POLB_IN224100UV01']/*[name()='controlActProcess']/*[name()='subject']").evaluate(xmlDocument, XPathConstants.NODESET);
-            for (int i = 0; i < nodeList.getLength(); i++) {
-                System.out.println(nodeList.item(i).getFirstChild().getNodeValue());
-            }
-
-//            String identifierName = xPath.compile("").evaluate(xmlDocument);
-//            String identifierName = xPath.compile("").evaluate(xmlDocument);
-//            String identifierName = xPath.compile("").evaluate(xmlDocument);
-//            String identifierName = xPath.compile("").evaluate(xmlDocument);
-//            String identifierName = xPath.compile("").evaluate(xmlDocument);
-
-
-            logger.info("parse {}", root);
-
-        } catch (ParserConfigurationException e) {
-            e.printStackTrace();
-        } catch (SAXException e) {
-            e.printStackTrace();
-        } catch (UnsupportedEncodingException e) {
-            e.printStackTrace();
-        } catch (IOException e) {
-            e.printStackTrace();
-        } catch (XPathExpressionException e) {
-            e.printStackTrace();
-        }
 
         final List<POLBIN224100UV01MCAIMT700201UV01Subject2> subjectList = request.getControlActProcess().getSubject();
         for (POLBIN224100UV01MCAIMT700201UV01Subject2 subj : subjectList) {
 
-            if (subj.getObservationBattery() != null) {
+            if (subj.getObservationReport() != null) {
+
+                final JAXBElement<POLBMT004000UV01ObservationReport> report = subj.getObservationReport();
+                final POLBMT004000UV01ObservationReport value = report.getValue();
+
+                final II ii = !value.getId().isEmpty() ? value.getId().get(0) : new II();
+                // идентификатор направления на анализы
+                final String id = ii.getRoot();
+                // код исследования
+                final String codeIsled = value.getCode().getCode();
+                // название исследования
+                final String nameIsled = value.getCode().getDisplayName();
+                // отметка об окончании исследований по направлению, true-окончательный, заказ закрывается, false - предварительный
+                final boolean isComplete = value.getStatusCode().getCode().equals("true");
+
+                // штрих-код на контейнере c биоматериалом
+                String barCode;
+                for (POLBMT004000UV01Specimen s : value.getSpecimen()) {
+                    barCode = s.getSpecimen().getValue().getId().getRoot();
+                }
+
+                final List<POLBMT004000UV01Author1> author1List = value.getAuthor();
+                for (POLBMT004000UV01Author1 a : author1List) {
+                    final COCTMT090000UV01AssignedEntity assignedEntity = a.getAssignedEntity();
+                    // уникальный идентификационный номер врача лаборатории подписавшего результаты исследования
+                    final String doctorId = assignedEntity.getCode().getCode();
+                    // ФИО врача лаборатории подписавшего результаты исследования
+                    final String doctorName = assignedEntity.getCode().getDisplayName();
+                }
+
+
+            } else if (subj.getObservationBattery() != null) {
 
                 final JAXBElement<POLBMT004000UV01ObservationBattery> battery = subj.getObservationBattery();
                 final POLBMT004000UV01ObservationBattery value = battery.getValue();
@@ -200,13 +239,6 @@ public class SetAnalysysResult implements SetAnalysysResultWS {
 
                 final JAXBElement<POLBMT004000UV01ObservationEvent> event = subj.getObservationEvent();
                 final POLBMT004000UV01ObservationEvent value = event.getValue();
-                final String code = value.getCode().getCode();
-
-
-            } else if (subj.getObservationReport() != null) {
-
-                final JAXBElement<POLBMT004000UV01ObservationReport> report = subj.getObservationReport();
-                final POLBMT004000UV01ObservationReport value = report.getValue();
                 final String code = value.getCode().getCode();
 
 
