@@ -278,6 +278,22 @@ public class SetAnalysysResult implements SetAnalysysResultWS {
                 // единица измерения
                 final String valueUnit = "";//value.((PQ)(value.getValue().getNullFlavor())).value();
 
+                for (POLBMT004000UV01Device dd : value.getDevice()) {
+                    // название прибора
+                    final String pribor = dd.getLabTestKit().getManufacturedTestKit().getValue().getCode().getDisplayName();
+
+
+                }
+
+                for (POLBMT004000UV01ReferenceRange range : value.getReferenceRange()) {
+                    // норма, т.е. диапазон допустимых значений в строковом вид
+                    final String interCode = range.getInterpretationRange().getInterpretationCode().getDisplayName();
+                    for (POLBMT004000UV01Precondition precondition1 : range.getInterpretationRange().getPrecondition()) {
+                        // значение результата относительно нормы
+                        final String norma = precondition1.getCriterion().getCode().getDisplayName();
+                    }
+                }
+
 
             } else if (subj.getSpecimenObservationCluster() != null) {
 
