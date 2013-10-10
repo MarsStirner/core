@@ -26,6 +26,10 @@ public class RbMicroorganism implements Serializable {
     @Column(name = "name")
     private String name;
 
+    public RbMicroorganism(String code, String name) {
+        this.code = code;
+        this.name = name;
+    }
 
     public RbMicroorganism() {
     }
