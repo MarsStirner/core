@@ -58,7 +58,7 @@
                     <subject typeCode="SUBJ">
                         <observationBattery classCode="BATTERY" moodCode="EVN">
                             <code displayName="Катетер/ отделяемое ЦВК-(БАКПОСЕВ)">
-                                <originalText>org text</originalText>
+                                <originalText><content>org text</content>org text</originalText>
                             </code>
                             <inFulfillmentOf typeCode="FLFS">
                                 <placerOrder classCode="ACT" moodCode="RQO">

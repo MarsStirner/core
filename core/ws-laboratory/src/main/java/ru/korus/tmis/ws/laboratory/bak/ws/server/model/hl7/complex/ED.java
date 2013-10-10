@@ -46,7 +46,7 @@ import java.util.List;
  * </pre>
  */
 @XmlAccessorType(XmlAccessType.FIELD)
-@XmlRootElement
+//@XmlRootElement
 @XmlType(name = "ED", propOrder = {
         "reference",
         "thumbnail",
@@ -62,6 +62,10 @@ public class ED
 
     protected TEL reference;
     protected Thumbnail thumbnail;
+//    @XmlAnyElement
+    @XmlElement(nillable = true)
+    protected List<Object> content;
+
     @XmlAttribute(name = "mediaType")
     @XmlJavaTypeAdapter(CollapsedStringAdapter.class)
     protected String mediaType;
@@ -75,18 +79,34 @@ public class ED
     @XmlAttribute(name = "integrityCheckAlgorithm")
     protected IntegrityCheckAlgorithm integrityCheckAlgorithm;
 
-
-//    @XmlMixed
-//    @XmlAnyElement
-    protected List<Object> content;
-
-
+    /**
+     * Gets the value of the content property.
+     *
+     * <p>
+     * This accessor method returns a reference to the live list,
+     * not a snapshot. Therefore any modification you make to the
+     * returned list will be present inside the JAXB object.
+     * This is why there is not a <CODE>set</CODE> method for the content property.
+     *
+     * <p>
+     * For example, to add a new item, do as follows:
+     * <pre>
+     *    getContent().add(newItem);
+     * </pre>
+     *
+     *
+     * <p>
+     * Objects of the following type(s) are allowed in the list
+     * {@link Object }
+     *
+     *
+     */
     public List<Object> getContent() {
-        if (content == null)
+        if (content == null) {
             content = new ArrayList<Object>();
-        return content;
+        }
+        return this.content;
     }
-
     /**
      * Gets the value of the reference property.
      *
