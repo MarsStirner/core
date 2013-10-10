@@ -7,17 +7,11 @@
     <SOAP-ENV:Body>
         <urn:setAnalysisResults>
             <POLB_IN224100UV01 xmlns="urn:hl7-org:v3" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="urn:hl7-org:v3 ./processable/multicacheschemas/POLB_IN224100UV01.xsd" ITSVersion="XML_1.0">
-                <!-- UUID сообщения -->
                 <id root="3f14ec3f-2382-4673-9498-d1bf3b4f9e36"/>
-                <!-- Время создания события. Значение value кодируется по шаблону: ггггммддччммсс.  -->
                 <creationTime value="20131003000102"/>
-                <!-- Идентификатор типа сообщения. -->
                 <interactionId extension="POLB_IN224100UV01" root="2.16.840.1.113883.1.6"/>
-                <!-- Назначение сообщения относительно отправителя. Возможные значения — D (отладка, Debugging), P (промышленное функционирование, Production) or T (обучение, Training). -->
                 <processingCode code="P"/>
-                <!-- Режим обработки сообщения относительно отправителя. Возможные значения — A (архивирование, Archive), T (штатное функционирование, Current processing), I (инициализация, Initial load), R (восстановление, Restore). -->
                 <processingModeCode code="T"/>
-                <!-- Высылать ли подтверждающее сообщение. Значения - Always (AL), only on errors (ER), or never (NE) -->
                 <acceptAckCode code="AL"/>
 
                 <receiver typeCode="RCV">
@@ -35,14 +29,8 @@
                 <controlActProcess classCode="CACT" moodCode="APT">
 
                     <authorOrPerformer typeCode="PRF" contextControlCode="AN">
-                        <noteText/>
-                        <time/>
-                        <modeCode/>
-                        <signatureCode/>
-                        <signatureText/>
                         <assignedPerson classCode="ASSIGNED">
                             <representedOrganization classCode="ORG" determinerCode="INSTANCE">
-                                <id/>
                                 <code code="42"/>
                             </representedOrganization>
                         </assignedPerson>
@@ -70,7 +58,7 @@
                     <subject typeCode="SUBJ">
                         <observationBattery classCode="BATTERY" moodCode="EVN">
                             <code displayName="Катетер/ отделяемое ЦВК-(БАКПОСЕВ)">
-                                <originalText>org text</originalText>
+                                <originalText><content>org text</content>org text</originalText>
                             </code>
                             <inFulfillmentOf typeCode="FLFS">
                                 <placerOrder classCode="ACT" moodCode="RQO">

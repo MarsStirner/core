@@ -139,18 +139,18 @@ public class PharmacyBean implements PharmacyBeanLocal {
      * @throws CoreException
      */
     private void resendMessages() {
-        try {
-            // resend old messages
-            final List<Pharmacy> nonCompletedItems = dbPharmacy.getNonCompletedItems();
-            if (!nonCompletedItems.isEmpty()) {
-                logger.info("Resend old message....");
-                for (Pharmacy pharmacy : nonCompletedItems) {
+        // resend old messages
+        final List<Pharmacy> nonCompletedItems = dbPharmacy.getNonCompletedItems();
+        if (!nonCompletedItems.isEmpty()) {
+            logger.info("Resend old message....");
+            for (Pharmacy pharmacy : nonCompletedItems) {
+                try {
                     final Action action = dbAction.getActionById(pharmacy.getActionId());
                     send(action);
+                } catch (Exception e) {
+                    logger.error("Resend old Exception e: " + e, e);
                 }
             }
-        } catch (Exception e) {
-            logger.error("Exception e: " + e, e);
         }
     }
 
@@ -238,8 +238,8 @@ public class PharmacyBean implements PharmacyBeanLocal {
                 || FlatCode.DEL_RECEIVED.getCode().equalsIgnoreCase(actionType.getFlatCode())
                 || FlatCode.MOVING.getCode().equalsIgnoreCase(actionType.getFlatCode())
                 || FlatCode.DEL_MOVING.getCode().equalsIgnoreCase(actionType.getFlatCode())
-                || FlatCode.LEAVED.getCode().equalsIgnoreCase(actionType.getFlatCode())
-                || FlatCode.PRESCRIPTION.getCode().equalsIgnoreCase(actionType.getFlatCode());
+                || FlatCode.LEAVED.getCode().equalsIgnoreCase(actionType.getFlatCode());
+        // || FlatCode.PRESCRIPTION.getCode().equalsIgnoreCase(actionType.getFlatCode());
     }
 
     /**

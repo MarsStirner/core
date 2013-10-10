@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <configuration scan="true" scanPeriod="30 seconds" debug="true">
-    <!--<jmxConfigurator/>-->
+    <jmxConfigurator/>
     <contextName>tmis-core</contextName>
 
     <!-- dump status message on the console as they arrive -->
@@ -50,8 +50,7 @@
         </filter>
 
         <rollingPolicy class="ch.qos.logback.core.rolling.TimeBasedRollingPolicy">
-            <FileNamePattern>${com.sun.aas.instanceRoot}/logs/exceptions/exceptions.%d{yyyy-MM-dd}.log.gz
-            </FileNamePattern>
+            <FileNamePattern>${com.sun.aas.instanceRoot}/logs/exceptions/exceptions.%d{yyyy-MM-dd}.log.gz</FileNamePattern>
             <MaxHistory>365</MaxHistory>
         </rollingPolicy>
 
@@ -141,8 +140,7 @@
         </encoder>
 
         <rollingPolicy class="ch.qos.logback.core.rolling.TimeBasedRollingPolicy">
-            <fileNamePattern>${com.sun.aas.instanceRoot}/logs/ws-transfusion/transfusion.%d{yyyy-MM-dd}.log.gz
-            </fileNamePattern>
+            <fileNamePattern>${com.sun.aas.instanceRoot}/logs/ws-transfusion/transfusion.%d{yyyy-MM-dd}.log.gz</fileNamePattern>
         </rollingPolicy>
     </appender>
 
@@ -161,8 +159,7 @@
         </encoder>
 
         <rollingPolicy class="ch.qos.logback.core.rolling.TimeBasedRollingPolicy">
-            <fileNamePattern>${com.sun.aas.instanceRoot}/logs/communication/communication.%d{yyyy-MM-dd}.log.gz
-            </fileNamePattern>
+            <fileNamePattern>${com.sun.aas.instanceRoot}/logs/communication/communication.%d{yyyy-MM-dd}.log.gz</fileNamePattern>
         </rollingPolicy>
     </appender>
 
