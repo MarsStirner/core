@@ -19,8 +19,8 @@ import javax.persistence.EntityManager;
 import javax.persistence.PersistenceContext;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.LinkedList;
 import java.util.List;
-import java.util.Map;
 
 /**
  * Author   Dmitriy E. Nosov <br>
@@ -64,15 +64,17 @@ public class DbPharmacyBean implements DbPharmacyBeanLocal {
     /**
      * Получение лекарственного средства назначенного пациенту. Метод требует переработки в дальнейшем.
      *
+     *
      * @param action связанное действие
      * @return код (code) в формате ФОЛС из RLS
      */
-    public RlsNomen getDrugCode(final Action action) {
+    public List<RlsNomen> getDrugCode(final Action action) {
         List<DrugComponent> comps = em.createNamedQuery("DrugComponent.getByActionId", DrugComponent.class).setParameter("actionId", action.getId()).getResultList();
-        if(comps.isEmpty()) {
-            return null;
+        List<RlsNomen> res = new LinkedList<RlsNomen>();
+        for (DrugComponent comp : comps) {
+            res.add(em.find(RlsNomen.class, comp.getNomen()));
         }
-        return em.find(RlsNomen.class, comps.iterator().next().getNomen());
+        return res;
     }
 
     private Integer getResult(final List input) {

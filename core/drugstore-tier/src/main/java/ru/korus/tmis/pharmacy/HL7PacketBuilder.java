@@ -10,6 +10,7 @@ import org.joda.time.DateTime;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import ru.korus.tmis.core.entity.model.*;
+import ru.korus.tmis.core.entity.model.pharmacy.PrescriptionSendingRes;
 import ru.korus.tmis.rlsupdate.BalanceOfGoodsInfoBean;
 
 import javax.xml.bind.JAXBContext;
@@ -418,31 +419,30 @@ public final class HL7PacketBuilder {
 
     /**
      * Формирования сообщения об интервалах назначения и исполнения ЛС
-     *
      * @param interval      - Интервал
-     * @param client        - Пациента
-     * @param executorStaff - Врач, назначивший ЛС
      * @param organisation  -  ЛПУ
-     * @param drugCode      - код ЛС
      * @param type          - тип интервала. ASSIGNMENT - назначение; EXECUTION - исполнение
      * @param negationInd   - true - отменить/удалить интервал; false - создать/обновить
-     * @param uuid          - uuid в 1С. Если новый интервал то должен быть равен null
-     * @param version       -  номер версии
      * @return
      */
     public static Request processPrescription(
             final DrugChart interval,
-            final Patient client,
             final RlsNomen rlsNomen,
             final String routeOfAdministration,
-            final Staff executorStaff,
             final Organisation organisation,
             final AssignmentType type,
             final Boolean negationInd,
-            final String uuid,
-            final Integer version) {
-
+            final PrescriptionSendingRes prescriptionSendingRes) {
         final Action action = interval.getAction();
+        //Пациент
+        final Patient client = action.getEvent().getPatient();
+        //номер версии
+        final Integer version = prescriptionSendingRes.getVersion() == null ? 1 : (prescriptionSendingRes.getVersion() + 1);
+        //uuid в 1С. Если новый интервал то должен быть равен null
+        final String uuid = prescriptionSendingRes.getUuid();
+        //Врач, назначивший ЛС
+        final Staff executorStaff = action.getExecutor();
+
         final String uuidDocument = uuid == null ? UUID.randomUUID().toString() : uuid;
         logger.info("process RCMRIN000002UV02 document {}, action {}, patient {}, organisation {}, executor staff {}",
                 uuidDocument, action, client, organisation, executorStaff);

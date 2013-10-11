@@ -1,7 +1,6 @@
 package ru.korus.tmis.core.pharmacy;
 
-import ru.korus.tmis.core.entity.model.PrescriptionsTo1C;
-import ru.korus.tmis.core.exception.CoreException;
+import ru.korus.tmis.core.entity.model.pharmacy.PrescriptionsTo1C;
 
 import javax.ejb.Stateless;
 import javax.persistence.EntityManager;

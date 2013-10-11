@@ -51,13 +51,6 @@ public class DrugChart {
     @Column(name = "note")
     private String note;
 
-    @Column(name = "uuid", nullable = true)
-    private String uuid;
-
-    @Column(name = "version", nullable = true)
-    private Integer version;
-
-
     public DrugChart() {
     }
 
@@ -147,19 +140,4 @@ public class DrugChart {
         return id != null ? id.hashCode() : 0;
     }
 
-    public String getUuid() {
-        return uuid;
-    }
-
-    public void setUuid(String uuid) {
-        this.uuid = uuid;
-    }
-
-    public Integer getVersion() {
-        return version;
-    }
-
-    public void setVersion(Integer version) {
-        this.version = version;
-    }
 }

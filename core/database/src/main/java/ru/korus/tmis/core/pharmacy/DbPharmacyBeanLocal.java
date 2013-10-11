@@ -28,10 +28,11 @@ public interface DbPharmacyBeanLocal {
     /**
      * Получение кода назначенного препарата
      *
+     *
      * @param action
      * @return
      */
-    RlsNomen getDrugCode(Action action);
+    List<RlsNomen> getDrugCode(Action action);
 
     /**
      * Поиск или создание записи об обращении в таблице Pharmacy
