@@ -70,7 +70,7 @@
                     <subject typeCode="SUBJ" contextConductionInd="false">
                         <observationEvent classCode="OBS" moodCode="EVN">
                             <code code="{код методики/показателя/микроорганизма}" displayName="{название методики/показателя/микроорганизма}" codeSystem="{произвольный текстовый комментарий}"/>
-                            <statusCode displayName="{если результата нет, здесь указана причина}"/>
+                            <statusCode code="{если результата нет, здесь указана причина}"/>
                             <effectiveTime value="{дата выполнения/утверждения результата}"/>
                             <value unit="{единица измерения}" value="{значение}" xsi:type="PQ"/>
                             <device typeCode="DEV">
