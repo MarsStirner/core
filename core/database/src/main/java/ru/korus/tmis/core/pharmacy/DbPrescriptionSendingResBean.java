@@ -4,6 +4,7 @@ import ru.korus.tmis.core.entity.model.DrugChart;
 import ru.korus.tmis.core.entity.model.RlsNomen;
 import ru.korus.tmis.core.entity.model.pharmacy.PrescriptionSendingRes;
 
+import javax.ejb.Stateless;
 import javax.persistence.EntityManager;
 import javax.persistence.PersistenceContext;
 import java.util.List;
@@ -14,6 +15,7 @@ import java.util.List;
  * Company:     Korus Consulting IT<br>
  * Description:  <br>
  */
+@Stateless
 public class DbPrescriptionSendingResBean implements DbPrescriptionSendingResBeanLocal {
 
     @PersistenceContext(unitName = "s11r64")

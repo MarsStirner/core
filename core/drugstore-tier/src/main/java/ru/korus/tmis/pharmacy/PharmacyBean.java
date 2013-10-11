@@ -77,7 +77,7 @@ public class PharmacyBean implements PharmacyBeanLocal {
     private DbRbMethodOfAdministrationLocal dbRbMethodOfAdministrationLocal = null;
 
     @EJB
-    private DbPrescriptionSendingResBean dbPrescriptionSendingResBean = null;
+    private DbPrescriptionSendingResBeanLocal dbPrescriptionSendingResBean = null;
 
     private DateTime lastDateUpdate = null;
 

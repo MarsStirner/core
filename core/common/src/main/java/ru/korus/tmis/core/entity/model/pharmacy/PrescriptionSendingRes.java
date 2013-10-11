@@ -15,7 +15,8 @@ import javax.persistence.*;
 /**
  * Результат передачи интервалов назначений и исполнений в 1С
  */
-@Table
+@Entity
+@Table(name = "PrescriptionSendingRes")
 @NamedQueries(
         {
                 @NamedQuery(name = "PrescriptionSendingRes.findByIntervalAndNomen", query =
@@ -24,7 +25,9 @@ import javax.persistence.*;
 public class PrescriptionSendingRes {
 
     @Id
-    @Column(name = "id", columnDefinition = "COMMENT 'Идентификатор события {Event.event_id}'")
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @Basic(optional = false)
+    @Column(name = "id")
     private int id;
 
     @ManyToOne
