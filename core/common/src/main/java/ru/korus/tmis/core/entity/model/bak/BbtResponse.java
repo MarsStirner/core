@@ -14,6 +14,7 @@ import java.io.Serializable;
 public class BbtResponse implements Serializable {
 
     @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Basic(optional = false)
     @Column(name = "id")
     private Integer id;

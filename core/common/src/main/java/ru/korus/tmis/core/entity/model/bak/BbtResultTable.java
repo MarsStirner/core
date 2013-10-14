@@ -15,6 +15,7 @@ import java.util.Date;
 public class BbtResultTable implements Serializable {
 
     @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Basic(optional = false)
     @Column(name = "id")
     private Integer id;

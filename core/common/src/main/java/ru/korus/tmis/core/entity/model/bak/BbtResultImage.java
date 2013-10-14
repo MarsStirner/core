@@ -14,6 +14,7 @@ import java.sql.Blob;
 @Table(name = "bbtResult_Image", catalog = "", schema = "")
 public class BbtResultImage implements Serializable {
     @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Basic(optional = false)
     @Column(name = "id")
     private Integer id;
