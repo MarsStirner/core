@@ -159,7 +159,7 @@
         <eclipselink.logging.parameters>false</eclipselink.logging.parameters>
         <eclipselink.logging.showsql>false</eclipselink.logging.showsql>
         <!-- Схема работы при запуске приложения-->
-        <eclipselink.ddl.generated>create-tables</eclipselink.ddl.generated>
+        <eclipselink.ddl.generated>update-tables</eclipselink.ddl.generated>
 
     </properties>
 
