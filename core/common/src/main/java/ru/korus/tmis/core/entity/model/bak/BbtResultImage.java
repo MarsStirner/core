@@ -11,7 +11,7 @@ import java.sql.Blob;
  * Description:  <br>
  */
 @Entity
-@Table(name = "bbtResultImage", catalog = "", schema = "")
+@Table(name = "bbtResult_Image", catalog = "", schema = "")
 public class BbtResultImage implements Serializable {
     @Id
     @Basic(optional = false)
