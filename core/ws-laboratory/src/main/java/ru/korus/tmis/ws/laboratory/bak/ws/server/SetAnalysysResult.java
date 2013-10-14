@@ -59,6 +59,9 @@ public class SetAnalysysResult implements SetAnalysysResultWS {
     private DbBbtResultTableBeanLocal dbBbtResultTableBean;
 
     @EJB
+    private DbBbtResultOrganismBeanLocal dbBbtResultOrganismBean;
+
+    @EJB
     private DbBbtOrganismSensValuesBeanLocal dbBbtOrganismSensValuesBean;
 
     @EJB
@@ -110,156 +113,174 @@ public class SetAnalysysResult implements SetAnalysysResultWS {
      * @param request
      */
     private void flushToDB(POLBIN224100UV01 request) throws CoreException {
+        try {
+            final String uuidDocument = request.getId().getRoot();
+            final DateTime createTime = createDate(request.getCreationTime().getValue());
 
-        final String uuidDocument = request.getId().getRoot();
-        final DateTime createTime = createDate(request.getCreationTime().getValue());
+            // true - табличное представление, false - с микроорганизмами
+            boolean isTable = detectTableForm(request);
 
-        boolean isTable = detectTableForm(request);
-
-        // идентификатор направления на анализы
-        String id = "";
-        // штрих-код на контейнере c биоматериалом
-        String barCode;
-        // уникальный идентификационный номер врача лаборатории подписавшего результаты исследования
-        String doctorId = "0";
-        // ФИО врача лаборатории подписавшего результаты исследования
-        String doctorName;
-        // отметка об окончании исследований по направлению, true-окончательный, заказ закрывается, false - предварительный
-        boolean isComplete = false;
-
-
-        String defects = getDefects(request);
+            // идентификатор направления на анализы
+            String id = "";
+            // штрих-код на контейнере c биоматериалом
+            String barCode;
+            // уникальный идентификационный номер врача лаборатории подписавшего результаты исследования
+            String doctorId = "0";
+            // ФИО врача лаборатории подписавшего результаты исследования
+            String doctorName;
+            // отметка об окончании исследований по направлению, true-окончательный, заказ закрывается, false - предварительный
+            boolean isComplete = false;
 
 
-        for (POLBIN224100UV01MCAIMT700201UV01Subject2 subj : request.getControlActProcess().getSubject()) {
+            String defects = getDefects(request);
 
-            if (subj.getObservationReport() != null) {
-                try {
-                    final JAXBElement<POLBMT004000UV01ObservationReport> report = subj.getObservationReport();
-                    final POLBMT004000UV01ObservationReport value = report.getValue();
 
-                    final II ii = !value.getId().isEmpty() ? value.getId().get(0) : new II();
-                    id = ii.getRoot();
-                    // код исследования
-                    final String codeIsled = value.getCode().getCode();
-                    // название исследования
-                    final String nameIsled = value.getCode().getDisplayName();
-                    isComplete = value.getStatusCode().getCode().equals("true");
+            for (POLBIN224100UV01MCAIMT700201UV01Subject2 subj : request.getControlActProcess().getSubject()) {
 
-                    barCode = value.getSpecimen().get(0).getSpecimen().getValue().getId().getRoot();
+                if (subj.getObservationReport() != null) {
+                    try {
+                        final JAXBElement<POLBMT004000UV01ObservationReport> report = subj.getObservationReport();
+                        final POLBMT004000UV01ObservationReport value = report.getValue();
 
-                    final COCTMT090000UV01AssignedEntity assignedEntity = value.getAuthor().get(0).getAssignedEntity();
-                    doctorId = assignedEntity.getCode().getCode();
-                    doctorName = assignedEntity.getCode().getDisplayName();
-
-                } catch (Exception e) {
-                    logger.error("Exception: " + e, e);
-                    throw new CoreException("Ошибка в формате тега observationReport");
-                }
-
-            } else if (subj.getObservationBattery() != null) {
-                try {
-                    final JAXBElement<POLBMT004000UV01ObservationBattery> battery = subj.getObservationBattery();
-                    final POLBMT004000UV01ObservationBattery value = battery.getValue();
-
-                    // название исследования
-                    final String nameIsled = value.getCode().getDisplayName();
-
-                    // идентификатор направления на анализы id=orderMisId
-                    String orderMisId;
-                    for (POLBMT004000UV01InFulfillmentOf2 i : value.getInFulfillmentOf()) {
-                        for (II ii : i.getPlacerOrder().getValue().getId()) {
-                            orderMisId = ii.getExtension();
-                        }
-                    }
-
-                    final List<POLBMT004000UV01Component2> component1 = value.getComponent1();
-                    for (POLBMT004000UV01Component2 p : component1) {
-
-                        final JAXBElement<POLBMT004000UV01ObservationEvent> observationEvent = p.getObservationEvent();
+                        final II ii = !value.getId().isEmpty() ? value.getId().get(0) : new II();
+                        id = ii.getRoot();
                         // код исследования
-                        final String codeIsled = observationEvent.getValue().getCode().getCode();
+                        final String codeIsled = value.getCode().getCode();
                         // название исследования
-                        final String nameIsledd = observationEvent.getValue().getCode().getDisplayName();
+                        final String nameIsled = value.getCode().getDisplayName();
+                        isComplete = value.getStatusCode().getCode().equals("true");
+
+                        barCode = value.getSpecimen().get(0).getSpecimen().getValue().getId().getRoot();
+
+                        final COCTMT090000UV01AssignedEntity assignedEntity = value.getAuthor().get(0).getAssignedEntity();
+                        doctorId = assignedEntity.getCode().getCode();
+                        doctorName = assignedEntity.getCode().getDisplayName();
+
+                    } catch (Exception e) {
+                        logger.error("Exception: " + e, e);
+                        throw new CoreException("Ошибка в формате тега observationReport");
+                    }
+
+                } else if (subj.getObservationBattery() != null) {
+                    try {
+                        final JAXBElement<POLBMT004000UV01ObservationBattery> battery = subj.getObservationBattery();
+                        final POLBMT004000UV01ObservationBattery value = battery.getValue();
+
+                        // название исследования
+                        final String nameIsled = value.getCode().getDisplayName();
+
+                        // идентификатор направления на анализы id=orderMisId
+                        String orderMisId;
+                        for (POLBMT004000UV01InFulfillmentOf2 i : value.getInFulfillmentOf()) {
+                            for (II ii : i.getPlacerOrder().getValue().getId()) {
+                                orderMisId = ii.getExtension();
+                            }
+                        }
+
+                        final List<POLBMT004000UV01Component2> component1 = value.getComponent1();
+                        for (POLBMT004000UV01Component2 p : component1) {
+
+                            final JAXBElement<POLBMT004000UV01ObservationEvent> observationEvent = p.getObservationEvent();
+                            // код исследования
+                            final String codeIsled = observationEvent.getValue().getCode().getCode();
+                            // название исследования
+                            final String nameIsledd = observationEvent.getValue().getCode().getDisplayName();
+                            // дата исследования
+                            final DateTime effectiveTime = createDate(observationEvent.getValue().getEffectiveTime().get(0).getValue());
+
+                            List<MicroOrg> microOrgs = new ArrayList<MicroOrg>();
+
+                            int idx = 1;
+                            for (POLBMT004000UV01Component2 comp : observationEvent.getValue().getComponent1()) {
+                                // код микроорганизма
+                                final String codeMicroOrg = comp.getObservationEvent().getValue().getCode().getCode();
+                                // название микроорганизма
+                                final String nameMicroOrg = comp.getObservationEvent().getValue().getCode().getDisplayName();
+                                // чувствительность
+                                final String sensMicroOrg = comp.getObservationEvent().getValue().getCode().getCodeSystem();
+
+                                RbMicroorganism org = new RbMicroorganism(codeMicroOrg, nameMicroOrg);
+                                dbRbMicroorganismBean.add(org);
+
+                                final RbMicroorganism mic = dbRbMicroorganismBean.get(codeMicroOrg);
+
+                                final BbtResultOrganism resultOrganism = new BbtResultOrganism();
+                                resultOrganism.setActionId(Integer.parseInt(id));
+                                resultOrganism.setConcentration(sensMicroOrg);
+                                resultOrganism.setIdx(idx++);
+                                resultOrganism.setOrganismId(mic.getId());
+                                dbBbtResultOrganismBean.add(resultOrganism);
+
+                            }
+                        }
+
+                        // запись в бд
+
+
+                    } catch (Exception e) {
+                        logger.error("Exception: " + e, e);
+                        throw new CoreException("Ошибка в формате тега observationBattery");
+                    }
+
+                } else if (subj.getObservationEvent() != null) {
+                    try {
+                        final JAXBElement<POLBMT004000UV01ObservationEvent> event = subj.getObservationEvent();
+                        final POLBMT004000UV01ObservationEvent value = event.getValue();
+
+                        // код методики/показателя/микроорганизма
+                        final String codeMethod = value.getCode().getCode();
+
+                        // название методики/показателя/микроорганизма
+                        final String nameMethod = value.getCode().getDisplayName();
+
+                        // произвольный текстовый комментарий
+                        final String commentMethod = value.getCode().getCodeSystem();
+
+                        // если результата нет, здесь указана причина
+                        final String statusCode = value.getStatusCode().getCode();
+
                         // дата исследования
-                        final DateTime effectiveTime = createDate(observationEvent.getValue().getEffectiveTime().get(0).getValue());
+                        final DateTime effectiveTime = createDate(value.getEffectiveTime().get(0).getValue());
 
-                        List<MicroOrg> microOrgs = new ArrayList<MicroOrg>();
+                        // единица измерения
+                        final PQ pq = (PQ) value.getValue();
+                        final String unUnit = pq.getUnit();
+                        final String valueUnit = pq.getValue();
 
-                        for (POLBMT004000UV01Component2 comp : observationEvent.getValue().getComponent1()) {
-                            // код микроорганизма
-                            final String codeMicroOrg = comp.getObservationEvent().getValue().getCode().getCode();
-                            // название микроорганизма
-                            final String nameMicroOrg = comp.getObservationEvent().getValue().getCode().getDisplayName();
-                            // чувствительность
-                            final String sensMicroOrg = comp.getObservationEvent().getValue().getCode().getCodeSystem();
+                        for (POLBMT004000UV01Device dd : value.getDevice()) {
+                            // название прибора
+                            final String pribor = dd.getLabTestKit().getManufacturedTestKit().getValue().getCode().getDisplayName();
 
-                            RbMicroorganism org = new RbMicroorganism(codeMicroOrg, nameMicroOrg);
-                            dbRbMicroorganismBean.add(org);
+
                         }
-                    }
 
-                    // запись в бд
-
-
-                } catch (Exception e) {
-                    logger.error("Exception: " + e, e);
-                    throw new CoreException("Ошибка в формате тега observationBattery");
-                }
-
-            } else if (subj.getObservationEvent() != null) {
-                try {
-                    final JAXBElement<POLBMT004000UV01ObservationEvent> event = subj.getObservationEvent();
-                    final POLBMT004000UV01ObservationEvent value = event.getValue();
-
-                    // код методики/показателя/микроорганизма
-                    final String codeMethod = value.getCode().getCode();
-
-                    // название методики/показателя/микроорганизма
-                    final String nameMethod = value.getCode().getDisplayName();
-
-                    // произвольный текстовый комментарий
-                    final String commentMethod = value.getCode().getCodeSystem();
-
-                    // если результата нет, здесь указана причина
-                    final String statusCode = value.getStatusCode().getCode();
-
-                    // дата исследования
-                    final DateTime effectiveTime = createDate(value.getEffectiveTime().get(0).getValue());
-
-                    // единица измерения
-                    final PQ pq = (PQ) value.getValue();
-                    final String unUnit = pq.getUnit();
-                    final String valueUnit = pq.getValue();
-
-                    for (POLBMT004000UV01Device dd : value.getDevice()) {
-                        // название прибора
-                        final String pribor = dd.getLabTestKit().getManufacturedTestKit().getValue().getCode().getDisplayName();
-
-
-                    }
-
-                    for (POLBMT004000UV01ReferenceRange range : value.getReferenceRange()) {
-                        // норма, т.е. диапазон допустимых значений в строковом вид
-                        final String interCode = range.getInterpretationRange().getInterpretationCode().getDisplayName();
-                        for (POLBMT004000UV01Precondition precondition1 : range.getInterpretationRange().getPrecondition()) {
-                            // значение результата относительно нормы
-                            final String norma = precondition1.getCriterion().getCode().getDisplayName();
+                        for (POLBMT004000UV01ReferenceRange range : value.getReferenceRange()) {
+                            // норма, т.е. диапазон допустимых значений в строковом вид
+                            final String interCode = range.getInterpretationRange().getInterpretationCode().getDisplayName();
+                            for (POLBMT004000UV01Precondition precondition1 : range.getInterpretationRange().getPrecondition()) {
+                                // значение результата относительно нормы
+                                final String norma = precondition1.getCriterion().getCode().getDisplayName();
+                            }
                         }
+                    } catch (Exception e) {
+                        logger.error("Exception: " + e, e);
+                        throw new CoreException("Ошибка в формате тега observationEvent");
                     }
-                } catch (Exception e) {
-                    logger.error("Exception: " + e, e);
-                    throw new CoreException("Ошибка в формате тега observationEvent");
-                }
 
-            } else if (subj.getSpecimenObservationCluster() != null) {
-                try {
-                    final JAXBElement<POLBMT004000UV01SpecimenObservationCluster> cluster = subj.getSpecimenObservationCluster();
-                    final POLBMT004000UV01SpecimenObservationCluster value = cluster.getValue();
+                } else if (subj.getSpecimenObservationCluster() != null) {
+                    try {
+                        final JAXBElement<POLBMT004000UV01SpecimenObservationCluster> cluster = subj.getSpecimenObservationCluster();
+                        final POLBMT004000UV01SpecimenObservationCluster value = cluster.getValue();
 
-                    for (POLBMT004000UV01Specimen s : value.getSpecimen()) {
+                        String codeMicroOrg = "";
+
+                        if (value.getSpecimen().isEmpty()) {
+                            throw new CoreException("В формате тега specimenObservationCluster указано более 1 микроогранизма");
+                        }
+
+                        POLBMT004000UV01Specimen s = value.getSpecimen().get(0);
                         // код микроорганизма
-                        final String codeMicroOrg = s.getSpecimen().getValue().getCode().getCode();
+                        codeMicroOrg = s.getSpecimen().getValue().getCode().getCode();
                         // название микрооранизма
                         final String nameMicroOrg = s.getSpecimen().getValue().getCode().getDisplayName();
 
@@ -267,96 +288,98 @@ public class SetAnalysysResult implements SetAnalysysResultWS {
                         microorganism.setCode(codeMicroOrg);
                         microorganism.setName(nameMicroOrg);
                         dbRbMicroorganismBean.add(microorganism);
-                    }
+
+                        int idx = 1;
+                        for (POLBMT004000UV01Component2 component2 : value.getComponent1()) {
+                            final JAXBElement<POLBMT004000UV01ObservationBattery> ob = component2.getObservationBattery();
+
+                            for (POLBMT004000UV01Component2 pp : ob.getValue().getComponent1()) {
+
+                                // код антибиотика
+                                final String codeAntib = pp.getObservationEvent().getValue().getCode().getCode();
+
+                                // название антибиотика
+                                final String nameAntib = pp.getObservationEvent().getValue().getCode().getDisplayName();
+
+                                // величина концентрации
+                                final String concAntib = pp.getObservationEvent().getValue().getCode().getCodeSystem();
+
+                                // чувствительность
+                                final String sensAntib = pp.getObservationEvent().getValue().getCode().getTranslation().get(0).getCode();
 
 
-                    for (POLBMT004000UV01Component2 component2 : value.getComponent1()) {
-                        final JAXBElement<POLBMT004000UV01ObservationBattery> ob = component2.getObservationBattery();
+                                final RbAntibiotic antibiotic = new RbAntibiotic();
+                                antibiotic.setCode(codeAntib);
+                                antibiotic.setName(nameAntib);
+                                dbRbAntibioticBean.add(antibiotic);
 
-                        for (POLBMT004000UV01Component2 pp : ob.getValue().getComponent1()) {
+                                final RbAntibiotic a = dbRbAntibioticBean.get(codeAntib);
+                                final RbMicroorganism m = dbRbMicroorganismBean.get(codeMicroOrg);
 
-                            // код антибиотика
-                            final String codeAntib = pp.getObservationEvent().getValue().getCode().getCode();
+                                final BbtOrganismSensValues sensAntib1 = new BbtOrganismSensValues();
 
-                            // название антибиотика
-                            final String nameAntib = pp.getObservationEvent().getValue().getCode().getDisplayName();
+                                sensAntib1.setActivity(sensAntib);
+                                sensAntib1.setAntibioticId(a.getId());
+                                sensAntib1.setBbtResultOrganismId(m.getId());
+                                sensAntib1.setIdx(idx++);
+                                sensAntib1.setMic(concAntib);
 
-                            // величина концентрации
-                            final String concAntib = pp.getObservationEvent().getValue().getCode().getCodeSystem();
-
-                            // чувствительность
-                            final String sensAntib = pp.getObservationEvent().getValue().getCode().getTranslation().get(0).getCode();
-
-
-                            final RbAntibiotic antibiotic = new RbAntibiotic();
-                            antibiotic.setCode(codeAntib);
-                            antibiotic.setName(nameAntib);
-                            dbRbAntibioticBean.add(antibiotic);
+                                dbBbtOrganismSensValuesBean.add(sensAntib1);
 
 
-                            final BbtOrganismSensValues bbtOrganismSensValues = new BbtOrganismSensValues();
-
-//                            dbRbMicroorganismBean.get()
-
-//                            bbtOrganismSensValues.setBbtResultOrganismId();
-//                            dbBbtOrganismSensValuesBean.add(bbtOrganismSensValues);
-
+                            }
                         }
-
+                    } catch (Exception e) {
+                        logger.error("Exception: " + e, e);
+                        throw new CoreException("Ошибка в формате тега specimenObservationCluster");
                     }
-                } catch (Exception e) {
-                    logger.error("Exception: " + e, e);
-                    throw new CoreException("Ошибка в формате тега specimenObservationCluster");
                 }
             }
+
+            // записываем данные в БД
+            final BbtResponse response = new BbtResponse();
+            response.setId(Integer.parseInt(id));
+            response.setDoctorId(Integer.parseInt(doctorId));
+            response.setFinalFlag(isComplete ? 1 : 0);
+            response.setDefects(getDefects(request));
+            response.setCodeLIS(Integer.parseInt(getLisCode(request)));
+            dbBbtResponseBean.add(response);
+
+
+        } catch (Exception e) {
+            logger.error("Exception: " + e, e);
+            throw new CoreException("Ошибка формата результата");
         }
-
-        // записываем данные в БД
-        final BbtResponse response = new BbtResponse();
-        response.setId(Integer.parseInt(id));
-        response.setDoctorId(Integer.parseInt(doctorId));
-        response.setFinalFlag(isComplete ? 1 : 0);
-//                    response.setCodeLIS(Integer.parseInt(id));
-        dbBbtResponseBean.add(response);
-
-
-
-      /*  final RbAntibiotic rbAntibiotic = new RbAntibiotic();
-        rbAntibiotic.setCode("1");
-        rbAntibiotic.setId(1);
-        rbAntibiotic.setName("abc");
-        dbRbAntibioticBean.add(rbAntibiotic);
-
-        final RbBacIndicator rbBacIndicator = new RbBacIndicator();
-        rbBacIndicator.setCode("2");
-        rbBacIndicator.setId(2);
-        rbBacIndicator.setName("cde");
-        dbRbBacIndicatorBean.add(rbBacIndicator);
-
-        final RbMicroorganism rbMicroorganism = new RbMicroorganism();
-        rbMicroorganism.setCode("3");
-        rbMicroorganism.setId(3);
-        rbMicroorganism.setName("efg");
-        dbRbMicroorganismBean.add(rbMicroorganism);
-
-
-        final BbtResultTable bbtResultTable = new BbtResultTable();
-
-        dbBbtResultTableBean.add(bbtResultTable);
-
-        final BbtResponse bbtResponse = new BbtResponse();
-        //    bbtResponse.setId(request.);
-
-        dbBbtResponseBean.add(bbtResponse);
-
-        final BbtOrganismSensValues bbtOrganismSensValues = new BbtOrganismSensValues();
-
-        dbBbtOrganismSensValuesBean.add(bbtOrganismSensValues);
-        */
     }
 
+    /**
+     * Описание дефектов биоматериала
+     *
+     * @param request
+     * @return
+     */
     private String getDefects(POLBIN224100UV01 request) {
-        return null;
+        for (POLBIN224100UV01MCAIMT700201UV01Subject2 subj : request.getControlActProcess().getSubject()) {
+            if (subj.getObservationBattery() != null) {
+                return subj.getObservationBattery().getValue().getCode().getCode();
+            }
+        }
+        return "";
+    }
+
+    /**
+     * Получить код лаборатории
+     *
+     * @param request
+     * @return
+     */
+    private String getLisCode(POLBIN224100UV01 request) {
+        // Код лаборатории
+        return request.getControlActProcess().getAuthorOrPerformer()
+                .get(0)
+                .getAssignedPerson().getValue()
+                .getRepresentedOrganization()
+                .getValue().getCode().getCode();
     }
 
     /**

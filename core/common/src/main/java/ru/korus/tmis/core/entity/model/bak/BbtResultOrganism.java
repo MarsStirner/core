@@ -37,6 +37,26 @@ public class BbtResultOrganism implements Serializable {
     public BbtResultOrganism() {
     }
 
+    public void setId(Integer id) {
+        this.id = id;
+    }
+
+    public void setActionId(Integer actionId) {
+        this.actionId = actionId;
+    }
+
+    public void setIdx(Integer idx) {
+        this.idx = idx;
+    }
+
+    public void setOrganismId(Integer organismId) {
+        this.organismId = organismId;
+    }
+
+    public void setConcentration(String concentration) {
+        this.concentration = concentration;
+    }
+
     public Integer getId() {
         return id;
     }
