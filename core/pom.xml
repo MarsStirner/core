@@ -230,6 +230,8 @@
             <properties>
                 <!-- Имя ear, которое будет после package -->
                 <ear.name>tmis-server-${version.tmis.core}</ear.name>
+                <!-- Опиция для автосоздания таблиц/ключей на основе содержимого JPA-сущностей -->
+                <eclipselink.ddl.generated>NONE</eclipselink.ddl.generated>
             </properties>
         </profile>
 
@@ -390,6 +392,8 @@
                 <glassfish.admin.login>admin1234</glassfish.admin.login>
                 <!-- Пароль администратора-->
                 <glassfish.admin.password>admin1234</glassfish.admin.password>
+                <!-- Опиция для автосоздания таблиц/ключей на основе содержимого JPA-сущностей -->
+                <eclipselink.ddl.generated>NONE</eclipselink.ddl.generated>
             </properties>
         </profile>
     </profiles>
