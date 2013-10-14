@@ -6,9 +6,7 @@ import org.joda.time.format.DateTimeFormatter;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import ru.korus.tmis.core.database.bak.*;
-import ru.korus.tmis.core.entity.model.bak.BbtResponse;
-import ru.korus.tmis.core.entity.model.bak.RbAntibiotic;
-import ru.korus.tmis.core.entity.model.bak.RbMicroorganism;
+import ru.korus.tmis.core.entity.model.bak.*;
 import ru.korus.tmis.core.exception.CoreException;
 import ru.korus.tmis.util.CompileTimeConfigManager;
 import ru.korus.tmis.util.logs.ToLog;
@@ -112,71 +110,28 @@ public class SetAnalysysResult implements SetAnalysysResultWS {
      * @param request
      */
     private void flushToDB(POLBIN224100UV01 request) throws CoreException {
-        // заполняем справочники
-//        final String results = Utils.marshallMessage(request, "ru.korus.tmis.ws.laboratory.bak.ws.server.model.hl7.complex");
-//
-//
-//        final DocumentBuilderFactory builderFactory = DocumentBuilderFactory.newInstance();
-//        DocumentBuilder builder = null;
-//        try {
-//            builder = builderFactory.newDocumentBuilder();
-//
-//
-//            Document xmlDocument = builder.parse(new ByteArrayInputStream(results.getBytes("UTF-8")));
-//
-//            XPath xPath = XPathFactory.newInstance().newXPath();
-//
-//            //root документа
-//            String root = xPath.compile("/POLB_IN224100UV01/id/@root").evaluate(xmlDocument);
-//
-//
-////            String orderMisId = xPath.compile("/POLB_IN224100UV01/id/@root").evaluate(xmlDocument);
-//
-//            String orderMisId = (String) xPath.compile("/*[name()='POLB_IN224100UV01']/*[name()='controlActProcess']/*[name()='subject'][1]/*[name()='observationReport']/*[name()='id']/@controlInformationRoot").evaluate(xmlDocument, XPathConstants.STRING);
-//
-//
-//            String nameAnaliz = (String) xPath.compile("/*[name()='POLB_IN224100UV01']/*[name()='controlActProcess']/*[name()='subject'][1]/*[name()='observationReport']/*[name()='code']/*[name()='displayName']/@value").evaluate(xmlDocument, XPathConstants.STRING);
-//            String codeAnaliz = xPath.compile("/*[name()='POLB_IN224100UV01']/*[name()='controlActProcess']/*[name()='subject'][1]/*[name()='observationReport']/*[name()='code']/@code").evaluate(xmlDocument);
-//
-//
-//            String identifierName = xPath.compile("/*[name()='POLB_IN224100UV01']/*[name()='controlActProcess']/*[name()='subject'][1]/*[name()='observationReport']/*[name()='specimen']/*[name()='specimen']/*[name()='id']/@identifierName").evaluate(xmlDocument);
-//
-//            String authorCode = xPath.compile("/*[name()='POLB_IN224100UV01']/*[name()='controlActProcess']/*[name()='subject'][1]/*[name()='observationReport']/*[name()='author']/*[name()='assignedEntity']/*[name()='code']/@code").evaluate(xmlDocument);
-//            String authorName = xPath.compile("/*[name()='POLB_IN224100UV01']/*[name()='controlActProcess']/*[name()='subject'][1]/*[name()='observationReport']/*[name()='author']/*[name()='assignedEntity']/*[name()='code']/*[name()='displayName']/@value").evaluate(xmlDocument);
-//
-//
-//            NodeList nodeList = (NodeList) xPath.compile("/*[name()='POLB_IN224100UV01']/*[name()='controlActProcess']/*[name()='subject']").evaluate(xmlDocument, XPathConstants.NODESET);
-//            for (int i = 0; i < nodeList.getLength(); i++) {
-//                System.out.println(nodeList.item(i).getFirstChild().getNodeValue());
-//            }
-//
-////            String identifierName = xPath.compile("").evaluate(xmlDocument);
-////            String identifierName = xPath.compile("").evaluate(xmlDocument);
-////            String identifierName = xPath.compile("").evaluate(xmlDocument);
-////            String identifierName = xPath.compile("").evaluate(xmlDocument);
-////            String identifierName = xPath.compile("").evaluate(xmlDocument);
-//
-//
-//            logger.info("parse {}", root);
-//
-//        } catch (ParserConfigurationException e) {
-//            e.printStackTrace();
-//        } catch (SAXException e) {
-//            e.printStackTrace();
-//        } catch (UnsupportedEncodingException e) {
-//            e.printStackTrace();
-//        } catch (IOException e) {
-//            e.printStackTrace();
-//        } catch (XPathExpressionException e) {
-//            e.printStackTrace();
-//        }
 
         final String uuidDocument = request.getId().getRoot();
         final DateTime createTime = createDate(request.getCreationTime().getValue());
 
+        boolean isTable = detectTableForm(request);
 
-        final List<POLBIN224100UV01MCAIMT700201UV01Subject2> subjectList = request.getControlActProcess().getSubject();
-        for (POLBIN224100UV01MCAIMT700201UV01Subject2 subj : subjectList) {
+        // идентификатор направления на анализы
+        String id = "";
+        // штрих-код на контейнере c биоматериалом
+        String barCode;
+        // уникальный идентификационный номер врача лаборатории подписавшего результаты исследования
+        String doctorId = "0";
+        // ФИО врача лаборатории подписавшего результаты исследования
+        String doctorName;
+        // отметка об окончании исследований по направлению, true-окончательный, заказ закрывается, false - предварительный
+        boolean isComplete = false;
+
+
+        String defects = getDefects(request);
+
+
+        for (POLBIN224100UV01MCAIMT700201UV01Subject2 subj : request.getControlActProcess().getSubject()) {
 
             if (subj.getObservationReport() != null) {
                 try {
@@ -184,35 +139,21 @@ public class SetAnalysysResult implements SetAnalysysResultWS {
                     final POLBMT004000UV01ObservationReport value = report.getValue();
 
                     final II ii = !value.getId().isEmpty() ? value.getId().get(0) : new II();
-                    // идентификатор направления на анализы
-                    final String id = ii.getRoot();
+                    id = ii.getRoot();
                     // код исследования
                     final String codeIsled = value.getCode().getCode();
                     // название исследования
                     final String nameIsled = value.getCode().getDisplayName();
-                    // отметка об окончании исследований по направлению, true-окончательный, заказ закрывается, false - предварительный
-                    final boolean isComplete = value.getStatusCode().getCode().equals("true");
+                    isComplete = value.getStatusCode().getCode().equals("true");
 
-                    // штрих-код на контейнере c биоматериалом
-                    String barCode;
-                    for (POLBMT004000UV01Specimen s : value.getSpecimen()) {
-                        barCode = s.getSpecimen().getValue().getId().getRoot();
-                    }
+                    barCode = value.getSpecimen().get(0).getSpecimen().getValue().getId().getRoot();
 
-                    String doctorId;
-                    String doctorName;
-
-                    for (POLBMT004000UV01Author1 a : value.getAuthor()) {
-                        final COCTMT090000UV01AssignedEntity assignedEntity = a.getAssignedEntity();
-                        // уникальный идентификационный номер врача лаборатории подписавшего результаты исследования
-                        doctorId = assignedEntity.getCode().getCode();
-                        // ФИО врача лаборатории подписавшего результаты исследования
-                        doctorName = assignedEntity.getCode().getDisplayName();
-                    }
-
-                    // записываем все в БД
+                    final COCTMT090000UV01AssignedEntity assignedEntity = value.getAuthor().get(0).getAssignedEntity();
+                    doctorId = assignedEntity.getCode().getCode();
+                    doctorName = assignedEntity.getCode().getDisplayName();
 
                 } catch (Exception e) {
+                    logger.error("Exception: " + e, e);
                     throw new CoreException("Ошибка в формате тега observationReport");
                 }
 
@@ -256,9 +197,13 @@ public class SetAnalysysResult implements SetAnalysysResultWS {
                             RbMicroorganism org = new RbMicroorganism(codeMicroOrg, nameMicroOrg);
                             dbRbMicroorganismBean.add(org);
                         }
-
                     }
+
+                    // запись в бд
+
+
                 } catch (Exception e) {
+                    logger.error("Exception: " + e, e);
                     throw new CoreException("Ошибка в формате тега observationBattery");
                 }
 
@@ -303,6 +248,7 @@ public class SetAnalysysResult implements SetAnalysysResultWS {
                         }
                     }
                 } catch (Exception e) {
+                    logger.error("Exception: " + e, e);
                     throw new CoreException("Ошибка в формате тега observationEvent");
                 }
 
@@ -312,10 +258,8 @@ public class SetAnalysysResult implements SetAnalysysResultWS {
                     final POLBMT004000UV01SpecimenObservationCluster value = cluster.getValue();
 
                     for (POLBMT004000UV01Specimen s : value.getSpecimen()) {
-
                         // код микроорганизма
                         final String codeMicroOrg = s.getSpecimen().getValue().getCode().getCode();
-
                         // название микрооранизма
                         final String nameMicroOrg = s.getSpecimen().getValue().getCode().getDisplayName();
 
@@ -348,14 +292,34 @@ public class SetAnalysysResult implements SetAnalysysResultWS {
                             antibiotic.setCode(codeAntib);
                             antibiotic.setName(nameAntib);
                             dbRbAntibioticBean.add(antibiotic);
+
+
+                            final BbtOrganismSensValues bbtOrganismSensValues = new BbtOrganismSensValues();
+
+//                            dbRbMicroorganismBean.get()
+
+//                            bbtOrganismSensValues.setBbtResultOrganismId();
+//                            dbBbtOrganismSensValuesBean.add(bbtOrganismSensValues);
+
                         }
 
                     }
                 } catch (Exception e) {
+                    logger.error("Exception: " + e, e);
                     throw new CoreException("Ошибка в формате тега specimenObservationCluster");
                 }
             }
         }
+
+        // записываем данные в БД
+        final BbtResponse response = new BbtResponse();
+        response.setId(Integer.parseInt(id));
+        response.setDoctorId(Integer.parseInt(doctorId));
+        response.setFinalFlag(isComplete ? 1 : 0);
+//                    response.setCodeLIS(Integer.parseInt(id));
+        dbBbtResponseBean.add(response);
+
+
 
       /*  final RbAntibiotic rbAntibiotic = new RbAntibiotic();
         rbAntibiotic.setCode("1");
@@ -391,8 +355,27 @@ public class SetAnalysysResult implements SetAnalysysResultWS {
         */
     }
 
+    private String getDefects(POLBIN224100UV01 request) {
+        return null;
+    }
+
+    /**
+     * Метод определения табличная форма или нет
+     *
+     * @param request
+     * @return true - табличная форма представления (есть табличка с дефектами и прибор), false - микроорганизмы
+     */
+    private boolean detectTableForm(POLBIN224100UV01 request) {
+        for (POLBIN224100UV01MCAIMT700201UV01Subject2 subj : request.getControlActProcess().getSubject()) {
+            if (subj.getObservationEvent() != null) {
+                return true;
+            }
+        }
+        return false;
+    }
+
     private DateTime createDate(String date) {
-        final DateTimeFormatter formatter = DateTimeFormat.forPattern("yyyyMMddHHmmss");
+        final DateTimeFormatter formatter = DateTimeFormat.forPattern("yyyyMMddHHmm");
         return formatter.parseDateTime(date);
     }
 
