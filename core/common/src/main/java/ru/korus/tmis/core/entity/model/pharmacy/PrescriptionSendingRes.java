@@ -31,11 +31,11 @@ public class PrescriptionSendingRes {
     private int id;
 
     @ManyToOne
-    @JoinColumn(name = "nomen_id", nullable = false, insertable = false, updatable = false)
+    @JoinColumn(name = "nomen_id", nullable = true)
     private RlsNomen rlsNomen;
 
     @ManyToOne
-    @JoinColumn(name = "interval_id", nullable = false, insertable = false, updatable = false)
+    @JoinColumn(name = "interval_id", nullable = true)
     private DrugChart drugChart;
 
     @Column(name = "uuid", columnDefinition = "VARCHAR(100) NULL DEFAULT NULL COMMENT 'идентификатор интервала 1С'")

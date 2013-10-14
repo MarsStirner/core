@@ -31,6 +31,7 @@ public class DbPrescriptionSendingResBean implements DbPrescriptionSendingResBea
             prescriptionSendingRes.setRlsNomen(rlsNomen);
             prescriptionSendingRes.setDrugChart(drugChart);
             em.persist(prescriptionSendingRes);
+            em.flush();
             return prescriptionSendingRes;
         }
         return resList.iterator().next();
