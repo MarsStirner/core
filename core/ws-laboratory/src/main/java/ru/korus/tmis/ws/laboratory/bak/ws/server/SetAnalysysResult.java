@@ -205,7 +205,7 @@ public class SetAnalysysResult implements SetAnalysysResultWS {
                                 final RbMicroorganism mic = dbRbMicroorganismBean.get(codeMicroOrg);
 
                                 final BbtResultOrganism resultOrganism = new BbtResultOrganism();
-                                resultOrganism.setActionId(Integer.parseInt(id));
+                                resultOrganism.setActionId(Integer.parseInt(id) - 100000000);
                                 resultOrganism.setConcentration(sensMicroOrg);
                                 resultOrganism.setIdx(idx++);
                                 resultOrganism.setOrganismId(mic.getId());
@@ -338,7 +338,7 @@ public class SetAnalysysResult implements SetAnalysysResultWS {
 
             // записываем данные в БД
             final BbtResponse response = new BbtResponse();
-            response.setId(Integer.parseInt(id));
+            response.setId(Integer.parseInt(id) - 100000000);
             response.setDoctorId(Integer.parseInt(doctorId));
             response.setFinalFlag(isComplete ? 1 : 0);
             response.setDefects(getDefects(request));

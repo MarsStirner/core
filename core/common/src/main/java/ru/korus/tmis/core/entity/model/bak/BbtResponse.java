@@ -81,12 +81,13 @@ public class BbtResponse implements Serializable {
 
     @Override
     public String toString() {
-        return "BbtResponse{" +
-                "actionId=" + id +
-                ", finalFlag=" + finalFlag +
-                ", defects='" + defects + '\'' +
-                ", doctorId=" + doctorId +
-                ", codeLIS=" + codeLIS +
-                '}';
+        final StringBuilder sb = new StringBuilder("BbtResponse{");
+        sb.append("id=").append(id);
+        sb.append(", finalFlag=").append(finalFlag);
+        sb.append(", defects='").append(defects).append('\'');
+        sb.append(", doctorId=").append(doctorId);
+        sb.append(", codeLIS=").append(codeLIS);
+        sb.append('}');
+        return sb.toString();
     }
 }
