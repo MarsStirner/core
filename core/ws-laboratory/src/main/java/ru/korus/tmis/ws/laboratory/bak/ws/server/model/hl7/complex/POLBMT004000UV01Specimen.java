@@ -3,13 +3,12 @@ package ru.korus.tmis.ws.laboratory.bak.ws.server.model.hl7.complex;
 
 import java.util.ArrayList;
 import java.util.List;
+import javax.xml.bind.JAXBElement;
 import javax.xml.bind.annotation.XmlAccessType;
 import javax.xml.bind.annotation.XmlAccessorType;
 import javax.xml.bind.annotation.XmlAttribute;
-import javax.xml.bind.annotation.XmlElement;
+import javax.xml.bind.annotation.XmlElementRef;
 import javax.xml.bind.annotation.XmlType;
-import javax.xml.bind.annotation.adapters.CollapsedStringAdapter;
-import javax.xml.bind.annotation.adapters.XmlJavaTypeAdapter;
 
 
 /**
@@ -24,7 +23,10 @@ import javax.xml.bind.annotation.adapters.XmlJavaTypeAdapter;
  *       &lt;sequence>
  *         &lt;group ref="{urn:hl7-org:v3}InfrastructureRootElements"/>
  *         &lt;element name="sequenceNumber" type="{urn:hl7-org:v3}INT" minOccurs="0"/>
- *         &lt;element name="specimen" type="{urn:hl7-org:v3}COCT_MT080000UV.Specimen"/>
+ *         &lt;choice>
+ *           &lt;element name="specimen" type="{urn:hl7-org:v3}COCT_MT080000UV09.Specimen"/>
+ *           &lt;element name="derivedSpecimen" type="{urn:hl7-org:v3}COCT_MT080000UV09.DerivedSpecimen"/>
+ *         &lt;/choice>
  *       &lt;/sequence>
  *       &lt;attGroup ref="{urn:hl7-org:v3}InfrastructureRootAttributes"/>
  *       &lt;attribute name="nullFlavor" type="{urn:hl7-org:v3}NullFlavor" />
@@ -43,7 +45,8 @@ import javax.xml.bind.annotation.adapters.XmlJavaTypeAdapter;
     "typeId",
     "templateId",
     "sequenceNumber",
-    "specimen"
+    "specimen",
+    "derivedSpecimen"
 })
 public class POLBMT004000UV01Specimen {
 
@@ -51,15 +54,16 @@ public class POLBMT004000UV01Specimen {
     protected II typeId;
     protected List<II> templateId;
     protected INT sequenceNumber;
-    @XmlElement(required = true, nillable = true)
-    protected COCTMT080000UVSpecimen specimen;
+    @XmlElementRef(name = "specimen", namespace = "urn:hl7-org:v3", type = JAXBElement.class, required = false)
+    protected JAXBElement<COCTMT080000UV09Specimen> specimen;
+    @XmlElementRef(name = "derivedSpecimen", namespace = "urn:hl7-org:v3", type = JAXBElement.class, required = false)
+    protected JAXBElement<COCTMT080000UV09DerivedSpecimen> derivedSpecimen;
     @XmlAttribute(name = "nullFlavor")
-    protected List<String> nullFlavor;
+    protected NullFlavor nullFlavor;
     @XmlAttribute(name = "typeCode", required = true)
-    @XmlJavaTypeAdapter(CollapsedStringAdapter.class)
-    protected String typeCode;
+    protected ParticipationSpecimen typeCode;
     @XmlAttribute(name = "contextControlCode")
-    protected String contextControlCode;
+    protected ContextControl contextControlCode;
 
     /**
      * Gets the value of the realmCode property.
@@ -172,10 +176,10 @@ public class POLBMT004000UV01Specimen {
      * 
      * @return
      *     possible object is
-     *     {@link COCTMT080000UVSpecimen }
+     *     {@link JAXBElement }{@code <}{@link COCTMT080000UV09Specimen }{@code >}
      *     
      */
-    public COCTMT080000UVSpecimen getSpecimen() {
+    public JAXBElement<COCTMT080000UV09Specimen> getSpecimen() {
         return specimen;
     }
 
@@ -184,40 +188,59 @@ public class POLBMT004000UV01Specimen {
      * 
      * @param value
      *     allowed object is
-     *     {@link COCTMT080000UVSpecimen }
+     *     {@link JAXBElement }{@code <}{@link COCTMT080000UV09Specimen }{@code >}
      *     
      */
-    public void setSpecimen(COCTMT080000UVSpecimen value) {
+    public void setSpecimen(JAXBElement<COCTMT080000UV09Specimen> value) {
         this.specimen = value;
+    }
+
+    /**
+     * Gets the value of the derivedSpecimen property.
+     * 
+     * @return
+     *     possible object is
+     *     {@link JAXBElement }{@code <}{@link COCTMT080000UV09DerivedSpecimen }{@code >}
+     *     
+     */
+    public JAXBElement<COCTMT080000UV09DerivedSpecimen> getDerivedSpecimen() {
+        return derivedSpecimen;
+    }
+
+    /**
+     * Sets the value of the derivedSpecimen property.
+     * 
+     * @param value
+     *     allowed object is
+     *     {@link JAXBElement }{@code <}{@link COCTMT080000UV09DerivedSpecimen }{@code >}
+     *     
+     */
+    public void setDerivedSpecimen(JAXBElement<COCTMT080000UV09DerivedSpecimen> value) {
+        this.derivedSpecimen = value;
     }
 
     /**
      * Gets the value of the nullFlavor property.
      * 
-     * <p>
-     * This accessor method returns a reference to the live list,
-     * not a snapshot. Therefore any modification you make to the
-     * returned list will be present inside the JAXB object.
-     * This is why there is not a <CODE>set</CODE> method for the nullFlavor property.
-     * 
-     * <p>
-     * For example, to add a new item, do as follows:
-     * <pre>
-     *    getNullFlavor().add(newItem);
-     * </pre>
-     * 
-     * 
-     * <p>
-     * Objects of the following type(s) are allowed in the list
-     * {@link String }
-     * 
-     * 
+     * @return
+     *     possible object is
+     *     {@link NullFlavor }
+     *     
      */
-    public List<String> getNullFlavor() {
-        if (nullFlavor == null) {
-            nullFlavor = new ArrayList<String>();
-        }
-        return this.nullFlavor;
+    public NullFlavor getNullFlavor() {
+        return nullFlavor;
+    }
+
+    /**
+     * Sets the value of the nullFlavor property.
+     * 
+     * @param value
+     *     allowed object is
+     *     {@link NullFlavor }
+     *     
+     */
+    public void setNullFlavor(NullFlavor value) {
+        this.nullFlavor = value;
     }
 
     /**
@@ -225,10 +248,10 @@ public class POLBMT004000UV01Specimen {
      * 
      * @return
      *     possible object is
-     *     {@link String }
+     *     {@link ParticipationSpecimen }
      *     
      */
-    public String getTypeCode() {
+    public ParticipationSpecimen getTypeCode() {
         return typeCode;
     }
 
@@ -237,10 +260,10 @@ public class POLBMT004000UV01Specimen {
      * 
      * @param value
      *     allowed object is
-     *     {@link String }
+     *     {@link ParticipationSpecimen }
      *     
      */
-    public void setTypeCode(String value) {
+    public void setTypeCode(ParticipationSpecimen value) {
         this.typeCode = value;
     }
 
@@ -249,12 +272,12 @@ public class POLBMT004000UV01Specimen {
      * 
      * @return
      *     possible object is
-     *     {@link String }
+     *     {@link ContextControl }
      *     
      */
-    public String getContextControlCode() {
+    public ContextControl getContextControlCode() {
         if (contextControlCode == null) {
-            return "OP";
+            return ContextControl.OP;
         } else {
             return contextControlCode;
         }
@@ -265,10 +288,10 @@ public class POLBMT004000UV01Specimen {
      * 
      * @param value
      *     allowed object is
-     *     {@link String }
+     *     {@link ContextControl }
      *     
      */
-    public void setContextControlCode(String value) {
+    public void setContextControlCode(ContextControl value) {
         this.contextControlCode = value;
     }
 

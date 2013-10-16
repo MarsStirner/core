@@ -26,7 +26,6 @@ import javax.xml.bind.annotation.XmlType;
  *         &lt;element name="materialPart" type="{urn:hl7-org:v3}COCT_MT530000UV.MaterialPart" maxOccurs="unbounded" minOccurs="0"/>
  *       &lt;/sequence>
  *       &lt;attGroup ref="{urn:hl7-org:v3}InfrastructureRootAttributes"/>
- *       &lt;attribute name="nullFlavor" type="{urn:hl7-org:v3}NullFlavor" />
  *       &lt;attribute name="classCode" use="required" type="{urn:hl7-org:v3}EntityClassMaterial" />
  *       &lt;attribute name="determinerCode" use="required" type="{urn:hl7-org:v3}EntityDeterminerDetermined" />
  *     &lt;/restriction>
@@ -54,10 +53,8 @@ public class COCTMT530000UVMaterialKind {
     protected ST desc;
     @XmlElement(nillable = true)
     protected List<COCTMT530000UVMaterialPart> materialPart;
-    @XmlAttribute(name = "nullFlavor")
-    protected List<String> nullFlavor;
     @XmlAttribute(name = "classCode", required = true)
-    protected List<String> classCode;
+    protected EntityClassMaterial classCode;
     @XmlAttribute(name = "determinerCode", required = true)
     protected EntityDeterminerDetermined determinerCode;
 
@@ -221,61 +218,27 @@ public class COCTMT530000UVMaterialKind {
     }
 
     /**
-     * Gets the value of the nullFlavor property.
+     * Gets the value of the classCode property.
      * 
-     * <p>
-     * This accessor method returns a reference to the live list,
-     * not a snapshot. Therefore any modification you make to the
-     * returned list will be present inside the JAXB object.
-     * This is why there is not a <CODE>set</CODE> method for the nullFlavor property.
-     * 
-     * <p>
-     * For example, to add a new item, do as follows:
-     * <pre>
-     *    getNullFlavor().add(newItem);
-     * </pre>
-     * 
-     * 
-     * <p>
-     * Objects of the following type(s) are allowed in the list
-     * {@link String }
-     * 
-     * 
+     * @return
+     *     possible object is
+     *     {@link EntityClassMaterial }
+     *     
      */
-    public List<String> getNullFlavor() {
-        if (nullFlavor == null) {
-            nullFlavor = new ArrayList<String>();
-        }
-        return this.nullFlavor;
+    public EntityClassMaterial getClassCode() {
+        return classCode;
     }
 
     /**
-     * Gets the value of the classCode property.
+     * Sets the value of the classCode property.
      * 
-     * <p>
-     * This accessor method returns a reference to the live list,
-     * not a snapshot. Therefore any modification you make to the
-     * returned list will be present inside the JAXB object.
-     * This is why there is not a <CODE>set</CODE> method for the classCode property.
-     * 
-     * <p>
-     * For example, to add a new item, do as follows:
-     * <pre>
-     *    getClassCode().add(newItem);
-     * </pre>
-     * 
-     * 
-     * <p>
-     * Objects of the following type(s) are allowed in the list
-     * {@link String }
-     * 
-     * 
+     * @param value
+     *     allowed object is
+     *     {@link EntityClassMaterial }
+     *     
      */
-    public List<String> getClassCode() {
-        if (classCode == null) {
-            classCode = new ArrayList<String>();
-        }
-        return this.classCode;
+    public void setClassCode(EntityClassMaterial value) {
+        this.classCode = value;
     }
 
     /**

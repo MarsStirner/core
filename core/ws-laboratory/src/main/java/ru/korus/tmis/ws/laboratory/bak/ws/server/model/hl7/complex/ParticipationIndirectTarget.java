@@ -19,8 +19,8 @@ import javax.xml.bind.annotation.XmlType;
  *     &lt;enumeration value="COV"/>
  *     &lt;enumeration value="GUAR"/>
  *     &lt;enumeration value="HLD"/>
- *     &lt;enumeration value="RCV"/>
  *     &lt;enumeration value="RCT"/>
+ *     &lt;enumeration value="RCV"/>
  *   &lt;/restriction>
  * &lt;/simpleType>
  * </pre>
@@ -36,8 +36,8 @@ public enum ParticipationIndirectTarget {
     COV,
     GUAR,
     HLD,
-    RCV,
-    RCT;
+    RCT,
+    RCV;
 
     public String value() {
         return name();

@@ -67,8 +67,8 @@ public class IVLTS
      * <p>
      * You are getting this "catch-all" property because of the following reason: 
      * The field name "High" is used by two different parts of a schema. See: 
-     * line 1757 of file:/C:/development/code/wsdl-queryhl7-example/ITI/schema/HL7V3/NE2008/coreschemas/datatypes-base.xsd
-     * line 1748 of file:/C:/development/code/wsdl-queryhl7-example/ITI/schema/HL7V3/NE2008/coreschemas/datatypes-base.xsd
+     * line 1758 of file:/C:/Users/anosov/Downloads/processable2011/processable/coreschemas/datatypes-base.xsd
+     * line 1749 of file:/C:/Users/anosov/Downloads/processable2011/processable/coreschemas/datatypes-base.xsd
      * <p>
      * To get rid of this property, apply a property customization to one 
      * of both of the following declarations to change their names: 
@@ -89,9 +89,9 @@ public class IVLTS
      * 
      * <p>
      * Objects of the following type(s) are allowed in the list
+     * {@link JAXBElement }{@code <}{@link IVXBTS }{@code >}
      * {@link JAXBElement }{@code <}{@link TS }{@code >}
      * {@link JAXBElement }{@code <}{@link PQ }{@code >}
-     * {@link JAXBElement }{@code <}{@link IVXBTS }{@code >}
      * {@link JAXBElement }{@code <}{@link IVXBTS }{@code >}
      * 
      * 

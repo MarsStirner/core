@@ -64,9 +64,9 @@ public class COCTMT030202UV07Person {
     @XmlElementRef(name = "birthPlace", namespace = "urn:hl7-org:v3", type = JAXBElement.class, required = false)
     protected JAXBElement<COCTMT030202UV07BirthPlace> birthPlace;
     @XmlAttribute(name = "classCode")
-    protected List<String> classCode;
+    protected EntityClass classCode;
     @XmlAttribute(name = "determinerCode")
-    protected String determinerCode;
+    protected EntityDeterminer determinerCode;
 
     /**
      * Gets the value of the realmCode property.
@@ -283,30 +283,29 @@ public class COCTMT030202UV07Person {
     /**
      * Gets the value of the classCode property.
      * 
-     * <p>
-     * This accessor method returns a reference to the live list,
-     * not a snapshot. Therefore any modification you make to the
-     * returned list will be present inside the JAXB object.
-     * This is why there is not a <CODE>set</CODE> method for the classCode property.
-     * 
-     * <p>
-     * For example, to add a new item, do as follows:
-     * <pre>
-     *    getClassCode().add(newItem);
-     * </pre>
-     * 
-     * 
-     * <p>
-     * Objects of the following type(s) are allowed in the list
-     * {@link String }
-     * 
-     * 
+     * @return
+     *     possible object is
+     *     {@link EntityClass }
+     *     
      */
-    public List<String> getClassCode() {
+    public EntityClass getClassCode() {
         if (classCode == null) {
-            classCode = new ArrayList<String>();
+            return EntityClass.PSN;
+        } else {
+            return classCode;
         }
-        return this.classCode;
+    }
+
+    /**
+     * Sets the value of the classCode property.
+     * 
+     * @param value
+     *     allowed object is
+     *     {@link EntityClass }
+     *     
+     */
+    public void setClassCode(EntityClass value) {
+        this.classCode = value;
     }
 
     /**
@@ -314,12 +313,12 @@ public class COCTMT030202UV07Person {
      * 
      * @return
      *     possible object is
-     *     {@link String }
+     *     {@link EntityDeterminer }
      *     
      */
-    public String getDeterminerCode() {
+    public EntityDeterminer getDeterminerCode() {
         if (determinerCode == null) {
-            return "INSTANCE";
+            return EntityDeterminer.INSTANCE;
         } else {
             return determinerCode;
         }
@@ -330,10 +329,10 @@ public class COCTMT030202UV07Person {
      * 
      * @param value
      *     allowed object is
-     *     {@link String }
+     *     {@link EntityDeterminer }
      *     
      */
-    public void setDeterminerCode(String value) {
+    public void setDeterminerCode(EntityDeterminer value) {
         this.determinerCode = value;
     }
 

@@ -13,12 +13,12 @@ import javax.xml.bind.annotation.XmlType;
  * <pre>
  * &lt;simpleType name="AcknowledgementType">
  *   &lt;restriction base="{urn:hl7-org:v3}cs">
- *     &lt;enumeration value="CA"/>
- *     &lt;enumeration value="CE"/>
- *     &lt;enumeration value="CR"/>
  *     &lt;enumeration value="AA"/>
  *     &lt;enumeration value="AE"/>
  *     &lt;enumeration value="AR"/>
+ *     &lt;enumeration value="CA"/>
+ *     &lt;enumeration value="CE"/>
+ *     &lt;enumeration value="CR"/>
  *   &lt;/restriction>
  * &lt;/simpleType>
  * </pre>
@@ -28,12 +28,12 @@ import javax.xml.bind.annotation.XmlType;
 @XmlEnum
 public enum AcknowledgementType {
 
-    CA,
-    CE,
-    CR,
     AA,
     AE,
-    AR;
+    AR,
+    CA,
+    CE,
+    CR;
 
     public String value() {
         return name();

@@ -14,8 +14,6 @@ import javax.xml.bind.annotation.XmlType;
  * &lt;simpleType name="AdditionalLocator">
  *   &lt;restriction base="{urn:hl7-org:v3}cs">
  *     &lt;enumeration value="ADL"/>
- *     &lt;enumeration value="UNIT"/>
- *     &lt;enumeration value="UNID"/>
  *   &lt;/restriction>
  * &lt;/simpleType>
  * </pre>
@@ -25,9 +23,7 @@ import javax.xml.bind.annotation.XmlType;
 @XmlEnum
 public enum AdditionalLocator {
 
-    ADL,
-    UNIT,
-    UNID;
+    ADL;
 
     public String value() {
         return name();

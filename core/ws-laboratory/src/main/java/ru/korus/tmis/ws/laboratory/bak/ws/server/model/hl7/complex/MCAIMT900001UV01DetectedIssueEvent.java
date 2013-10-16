@@ -29,9 +29,8 @@ import javax.xml.bind.annotation.XmlType;
  *         &lt;element name="triggerFor" type="{urn:hl7-org:v3}MCAI_MT900001UV01.Requires" maxOccurs="unbounded" minOccurs="0"/>
  *       &lt;/sequence>
  *       &lt;attGroup ref="{urn:hl7-org:v3}InfrastructureRootAttributes"/>
- *       &lt;attribute name="nullFlavor" type="{urn:hl7-org:v3}NullFlavor" />
- *       &lt;attribute name="classCode" use="required" type="{urn:hl7-org:v3}ActClass" fixed="ALRT" />
- *       &lt;attribute name="moodCode" use="required" type="{urn:hl7-org:v3}ActMood" fixed="EVN" />
+ *       &lt;attribute name="classCode" use="required" type="{urn:hl7-org:v3}ActClassDetectedIssue" />
+ *       &lt;attribute name="moodCode" use="required" type="{urn:hl7-org:v3}ActMoodEventOccurrence" />
  *     &lt;/restriction>
  *   &lt;/complexContent>
  * &lt;/complexType>
@@ -65,12 +64,10 @@ public class MCAIMT900001UV01DetectedIssueEvent {
     protected List<MCAIMT900001UV01SourceOf> mitigatedBy;
     @XmlElement(nillable = true)
     protected List<MCAIMT900001UV01Requires> triggerFor;
-    @XmlAttribute(name = "nullFlavor")
-    protected List<String> nullFlavor;
     @XmlAttribute(name = "classCode", required = true)
-    protected List<String> classCode;
+    protected ActClassDetectedIssue classCode;
     @XmlAttribute(name = "moodCode", required = true)
-    protected List<String> moodCode;
+    protected ActMoodEventOccurrence moodCode;
 
     /**
      * Gets the value of the realmCode property.
@@ -314,90 +311,51 @@ public class MCAIMT900001UV01DetectedIssueEvent {
     }
 
     /**
-     * Gets the value of the nullFlavor property.
+     * Gets the value of the classCode property.
      * 
-     * <p>
-     * This accessor method returns a reference to the live list,
-     * not a snapshot. Therefore any modification you make to the
-     * returned list will be present inside the JAXB object.
-     * This is why there is not a <CODE>set</CODE> method for the nullFlavor property.
-     * 
-     * <p>
-     * For example, to add a new item, do as follows:
-     * <pre>
-     *    getNullFlavor().add(newItem);
-     * </pre>
-     * 
-     * 
-     * <p>
-     * Objects of the following type(s) are allowed in the list
-     * {@link String }
-     * 
-     * 
+     * @return
+     *     possible object is
+     *     {@link ActClassDetectedIssue }
+     *     
      */
-    public List<String> getNullFlavor() {
-        if (nullFlavor == null) {
-            nullFlavor = new ArrayList<String>();
-        }
-        return this.nullFlavor;
+    public ActClassDetectedIssue getClassCode() {
+        return classCode;
     }
 
     /**
-     * Gets the value of the classCode property.
+     * Sets the value of the classCode property.
      * 
-     * <p>
-     * This accessor method returns a reference to the live list,
-     * not a snapshot. Therefore any modification you make to the
-     * returned list will be present inside the JAXB object.
-     * This is why there is not a <CODE>set</CODE> method for the classCode property.
-     * 
-     * <p>
-     * For example, to add a new item, do as follows:
-     * <pre>
-     *    getClassCode().add(newItem);
-     * </pre>
-     * 
-     * 
-     * <p>
-     * Objects of the following type(s) are allowed in the list
-     * {@link String }
-     * 
-     * 
+     * @param value
+     *     allowed object is
+     *     {@link ActClassDetectedIssue }
+     *     
      */
-    public List<String> getClassCode() {
-        if (classCode == null) {
-            classCode = new ArrayList<String>();
-        }
-        return this.classCode;
+    public void setClassCode(ActClassDetectedIssue value) {
+        this.classCode = value;
     }
 
     /**
      * Gets the value of the moodCode property.
      * 
-     * <p>
-     * This accessor method returns a reference to the live list,
-     * not a snapshot. Therefore any modification you make to the
-     * returned list will be present inside the JAXB object.
-     * This is why there is not a <CODE>set</CODE> method for the moodCode property.
-     * 
-     * <p>
-     * For example, to add a new item, do as follows:
-     * <pre>
-     *    getMoodCode().add(newItem);
-     * </pre>
-     * 
-     * 
-     * <p>
-     * Objects of the following type(s) are allowed in the list
-     * {@link String }
-     * 
-     * 
+     * @return
+     *     possible object is
+     *     {@link ActMoodEventOccurrence }
+     *     
      */
-    public List<String> getMoodCode() {
-        if (moodCode == null) {
-            moodCode = new ArrayList<String>();
-        }
-        return this.moodCode;
+    public ActMoodEventOccurrence getMoodCode() {
+        return moodCode;
+    }
+
+    /**
+     * Sets the value of the moodCode property.
+     * 
+     * @param value
+     *     allowed object is
+     *     {@link ActMoodEventOccurrence }
+     *     
+     */
+    public void setMoodCode(ActMoodEventOccurrence value) {
+        this.moodCode = value;
     }
 
 }

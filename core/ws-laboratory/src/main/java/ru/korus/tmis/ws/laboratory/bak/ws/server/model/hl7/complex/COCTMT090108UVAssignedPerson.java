@@ -33,8 +33,7 @@ import javax.xml.bind.annotation.XmlType;
  *         &lt;element name="representedOrganization" type="{urn:hl7-org:v3}COCT_MT150007UV.Organization" minOccurs="0"/>
  *       &lt;/sequence>
  *       &lt;attGroup ref="{urn:hl7-org:v3}InfrastructureRootAttributes"/>
- *       &lt;attribute name="nullFlavor" type="{urn:hl7-org:v3}NullFlavor" />
- *       &lt;attribute name="classCode" type="{urn:hl7-org:v3}RoleClassAssignedEntity" default="ASSIGNED" />
+ *       &lt;attribute name="classCode" use="required" type="{urn:hl7-org:v3}RoleClassAssignedEntity" />
  *     &lt;/restriction>
  *   &lt;/complexContent>
  * &lt;/complexType>
@@ -68,10 +67,8 @@ public class COCTMT090108UVAssignedPerson {
     protected JAXBElement<COCTMT090108UVPerson> assignedPerson;
     @XmlElementRef(name = "representedOrganization", namespace = "urn:hl7-org:v3", type = JAXBElement.class, required = false)
     protected JAXBElement<COCTMT150007UVOrganization> representedOrganization;
-    @XmlAttribute(name = "nullFlavor")
-    protected List<String> nullFlavor;
-    @XmlAttribute(name = "classCode")
-    protected String classCode;
+    @XmlAttribute(name = "classCode", required = true)
+    protected RoleClassAssignedEntity classCode;
 
     /**
      * Gets the value of the realmCode property.
@@ -315,48 +312,15 @@ public class COCTMT090108UVAssignedPerson {
     }
 
     /**
-     * Gets the value of the nullFlavor property.
-     * 
-     * <p>
-     * This accessor method returns a reference to the live list,
-     * not a snapshot. Therefore any modification you make to the
-     * returned list will be present inside the JAXB object.
-     * This is why there is not a <CODE>set</CODE> method for the nullFlavor property.
-     * 
-     * <p>
-     * For example, to add a new item, do as follows:
-     * <pre>
-     *    getNullFlavor().add(newItem);
-     * </pre>
-     * 
-     * 
-     * <p>
-     * Objects of the following type(s) are allowed in the list
-     * {@link String }
-     * 
-     * 
-     */
-    public List<String> getNullFlavor() {
-        if (nullFlavor == null) {
-            nullFlavor = new ArrayList<String>();
-        }
-        return this.nullFlavor;
-    }
-
-    /**
      * Gets the value of the classCode property.
      * 
      * @return
      *     possible object is
-     *     {@link String }
+     *     {@link RoleClassAssignedEntity }
      *     
      */
-    public String getClassCode() {
-        if (classCode == null) {
-            return "ASSIGNED";
-        } else {
-            return classCode;
-        }
+    public RoleClassAssignedEntity getClassCode() {
+        return classCode;
     }
 
     /**
@@ -364,10 +328,10 @@ public class COCTMT090108UVAssignedPerson {
      * 
      * @param value
      *     allowed object is
-     *     {@link String }
+     *     {@link RoleClassAssignedEntity }
      *     
      */
-    public void setClassCode(String value) {
+    public void setClassCode(RoleClassAssignedEntity value) {
         this.classCode = value;
     }
 

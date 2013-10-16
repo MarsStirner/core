@@ -23,22 +23,23 @@ import javax.xml.bind.annotation.XmlType;
  *     &lt;restriction base="{http://www.w3.org/2001/XMLSchema}anyType">
  *       &lt;sequence>
  *         &lt;group ref="{urn:hl7-org:v3}InfrastructureRootElements"/>
- *         &lt;element name="id" type="{urn:hl7-org:v3}II" maxOccurs="unbounded"/>
+ *         &lt;element name="id" type="{urn:hl7-org:v3}II" maxOccurs="unbounded" minOccurs="0"/>
  *         &lt;element name="addr" type="{urn:hl7-org:v3}AD" maxOccurs="unbounded" minOccurs="0"/>
  *         &lt;element name="telecom" type="{urn:hl7-org:v3}TEL" maxOccurs="unbounded" minOccurs="0"/>
- *         &lt;element name="statusCode" type="{urn:hl7-org:v3}CS"/>
+ *         &lt;element name="statusCode" type="{urn:hl7-org:v3}CS" minOccurs="0"/>
  *         &lt;element name="effectiveTime" type="{urn:hl7-org:v3}IVL_TS" minOccurs="0"/>
- *         &lt;element name="confidentialityCode" type="{urn:hl7-org:v3}CE" minOccurs="0"/>
+ *         &lt;element name="confidentialityCode" type="{urn:hl7-org:v3}CE" maxOccurs="unbounded" minOccurs="0"/>
  *         &lt;element name="veryImportantPersonCode" type="{urn:hl7-org:v3}CE" minOccurs="0"/>
  *         &lt;choice>
- *           &lt;element name="patientPerson" type="{urn:hl7-org:v3}COCT_MT030000UV04.Person"/>
- *           &lt;element name="patientNonPersonLivingSubject" type="{urn:hl7-org:v3}COCT_MT030000UV04.NonPersonLivingSubject"/>
+ *           &lt;element name="patientPerson" type="{urn:hl7-org:v3}COCT_MT050000UV01.Person" minOccurs="0"/>
+ *           &lt;element name="patientNonPersonLivingSubject" type="{urn:hl7-org:v3}COCT_MT050000UV01.NonPersonLivingSubject" minOccurs="0"/>
  *         &lt;/choice>
  *         &lt;element name="providerOrganization" type="{urn:hl7-org:v3}COCT_MT150000UV02.Organization" minOccurs="0"/>
+ *         &lt;element name="subjectOf" type="{urn:hl7-org:v3}COCT_MT050000UV01.Subject4" maxOccurs="unbounded" minOccurs="0"/>
+ *         &lt;element name="coveredPartyOf" type="{urn:hl7-org:v3}COCT_MT050000UV01.CoveredParty" maxOccurs="unbounded" minOccurs="0"/>
  *       &lt;/sequence>
  *       &lt;attGroup ref="{urn:hl7-org:v3}InfrastructureRootAttributes"/>
- *       &lt;attribute name="nullFlavor" type="{urn:hl7-org:v3}NullFlavor" />
- *       &lt;attribute name="classCode" use="required" type="{urn:hl7-org:v3}RoleClass" fixed="PAT" />
+ *       &lt;attribute name="classCode" use="required" type="{urn:hl7-org:v3}RoleClassPatient" />
  *     &lt;/restriction>
  *   &lt;/complexContent>
  * &lt;/complexType>
@@ -60,32 +61,34 @@ import javax.xml.bind.annotation.XmlType;
     "veryImportantPersonCode",
     "patientPerson",
     "patientNonPersonLivingSubject",
-    "providerOrganization"
+    "providerOrganization",
+    "subjectOf",
+    "coveredPartyOf"
 })
 public class COCTMT050000UV01Patient {
 
     protected List<CS> realmCode;
     protected II typeId;
     protected List<II> templateId;
-    @XmlElement(required = true)
     protected List<II> id;
     protected List<AD> addr;
     protected List<TEL> telecom;
-    @XmlElement(required = true)
     protected CS statusCode;
     protected IVLTS effectiveTime;
-    protected CE confidentialityCode;
+    protected List<CE> confidentialityCode;
     protected CE veryImportantPersonCode;
     @XmlElementRef(name = "patientPerson", namespace = "urn:hl7-org:v3", type = JAXBElement.class, required = false)
-    protected JAXBElement<COCTMT030000UV04Person> patientPerson;
+    protected JAXBElement<COCTMT050000UV01Person> patientPerson;
     @XmlElementRef(name = "patientNonPersonLivingSubject", namespace = "urn:hl7-org:v3", type = JAXBElement.class, required = false)
-    protected JAXBElement<COCTMT030000UV04NonPersonLivingSubject> patientNonPersonLivingSubject;
+    protected JAXBElement<COCTMT050000UV01NonPersonLivingSubject> patientNonPersonLivingSubject;
     @XmlElementRef(name = "providerOrganization", namespace = "urn:hl7-org:v3", type = JAXBElement.class, required = false)
     protected JAXBElement<COCTMT150000UV02Organization> providerOrganization;
-    @XmlAttribute(name = "nullFlavor")
-    protected List<String> nullFlavor;
+    @XmlElement(nillable = true)
+    protected List<COCTMT050000UV01Subject4> subjectOf;
+    @XmlElement(nillable = true)
+    protected List<COCTMT050000UV01CoveredParty> coveredPartyOf;
     @XmlAttribute(name = "classCode", required = true)
-    protected List<String> classCode;
+    protected RoleClassPatient classCode;
 
     /**
      * Gets the value of the realmCode property.
@@ -307,25 +310,30 @@ public class COCTMT050000UV01Patient {
     /**
      * Gets the value of the confidentialityCode property.
      * 
-     * @return
-     *     possible object is
-     *     {@link CE }
-     *     
-     */
-    public CE getConfidentialityCode() {
-        return confidentialityCode;
-    }
-
-    /**
-     * Sets the value of the confidentialityCode property.
+     * <p>
+     * This accessor method returns a reference to the live list,
+     * not a snapshot. Therefore any modification you make to the
+     * returned list will be present inside the JAXB object.
+     * This is why there is not a <CODE>set</CODE> method for the confidentialityCode property.
      * 
-     * @param value
-     *     allowed object is
-     *     {@link CE }
-     *     
+     * <p>
+     * For example, to add a new item, do as follows:
+     * <pre>
+     *    getConfidentialityCode().add(newItem);
+     * </pre>
+     * 
+     * 
+     * <p>
+     * Objects of the following type(s) are allowed in the list
+     * {@link CE }
+     * 
+     * 
      */
-    public void setConfidentialityCode(CE value) {
-        this.confidentialityCode = value;
+    public List<CE> getConfidentialityCode() {
+        if (confidentialityCode == null) {
+            confidentialityCode = new ArrayList<CE>();
+        }
+        return this.confidentialityCode;
     }
 
     /**
@@ -357,10 +365,10 @@ public class COCTMT050000UV01Patient {
      * 
      * @return
      *     possible object is
-     *     {@link JAXBElement }{@code <}{@link COCTMT030000UV04Person }{@code >}
+     *     {@link JAXBElement }{@code <}{@link COCTMT050000UV01Person }{@code >}
      *     
      */
-    public JAXBElement<COCTMT030000UV04Person> getPatientPerson() {
+    public JAXBElement<COCTMT050000UV01Person> getPatientPerson() {
         return patientPerson;
     }
 
@@ -369,10 +377,10 @@ public class COCTMT050000UV01Patient {
      * 
      * @param value
      *     allowed object is
-     *     {@link JAXBElement }{@code <}{@link COCTMT030000UV04Person }{@code >}
+     *     {@link JAXBElement }{@code <}{@link COCTMT050000UV01Person }{@code >}
      *     
      */
-    public void setPatientPerson(JAXBElement<COCTMT030000UV04Person> value) {
+    public void setPatientPerson(JAXBElement<COCTMT050000UV01Person> value) {
         this.patientPerson = value;
     }
 
@@ -381,10 +389,10 @@ public class COCTMT050000UV01Patient {
      * 
      * @return
      *     possible object is
-     *     {@link JAXBElement }{@code <}{@link COCTMT030000UV04NonPersonLivingSubject }{@code >}
+     *     {@link JAXBElement }{@code <}{@link COCTMT050000UV01NonPersonLivingSubject }{@code >}
      *     
      */
-    public JAXBElement<COCTMT030000UV04NonPersonLivingSubject> getPatientNonPersonLivingSubject() {
+    public JAXBElement<COCTMT050000UV01NonPersonLivingSubject> getPatientNonPersonLivingSubject() {
         return patientNonPersonLivingSubject;
     }
 
@@ -393,10 +401,10 @@ public class COCTMT050000UV01Patient {
      * 
      * @param value
      *     allowed object is
-     *     {@link JAXBElement }{@code <}{@link COCTMT030000UV04NonPersonLivingSubject }{@code >}
+     *     {@link JAXBElement }{@code <}{@link COCTMT050000UV01NonPersonLivingSubject }{@code >}
      *     
      */
-    public void setPatientNonPersonLivingSubject(JAXBElement<COCTMT030000UV04NonPersonLivingSubject> value) {
+    public void setPatientNonPersonLivingSubject(JAXBElement<COCTMT050000UV01NonPersonLivingSubject> value) {
         this.patientNonPersonLivingSubject = value;
     }
 
@@ -425,61 +433,85 @@ public class COCTMT050000UV01Patient {
     }
 
     /**
-     * Gets the value of the nullFlavor property.
+     * Gets the value of the subjectOf property.
      * 
      * <p>
      * This accessor method returns a reference to the live list,
      * not a snapshot. Therefore any modification you make to the
      * returned list will be present inside the JAXB object.
-     * This is why there is not a <CODE>set</CODE> method for the nullFlavor property.
+     * This is why there is not a <CODE>set</CODE> method for the subjectOf property.
      * 
      * <p>
      * For example, to add a new item, do as follows:
      * <pre>
-     *    getNullFlavor().add(newItem);
+     *    getSubjectOf().add(newItem);
      * </pre>
      * 
      * 
      * <p>
      * Objects of the following type(s) are allowed in the list
-     * {@link String }
+     * {@link COCTMT050000UV01Subject4 }
      * 
      * 
      */
-    public List<String> getNullFlavor() {
-        if (nullFlavor == null) {
-            nullFlavor = new ArrayList<String>();
+    public List<COCTMT050000UV01Subject4> getSubjectOf() {
+        if (subjectOf == null) {
+            subjectOf = new ArrayList<COCTMT050000UV01Subject4>();
         }
-        return this.nullFlavor;
+        return this.subjectOf;
+    }
+
+    /**
+     * Gets the value of the coveredPartyOf property.
+     * 
+     * <p>
+     * This accessor method returns a reference to the live list,
+     * not a snapshot. Therefore any modification you make to the
+     * returned list will be present inside the JAXB object.
+     * This is why there is not a <CODE>set</CODE> method for the coveredPartyOf property.
+     * 
+     * <p>
+     * For example, to add a new item, do as follows:
+     * <pre>
+     *    getCoveredPartyOf().add(newItem);
+     * </pre>
+     * 
+     * 
+     * <p>
+     * Objects of the following type(s) are allowed in the list
+     * {@link COCTMT050000UV01CoveredParty }
+     * 
+     * 
+     */
+    public List<COCTMT050000UV01CoveredParty> getCoveredPartyOf() {
+        if (coveredPartyOf == null) {
+            coveredPartyOf = new ArrayList<COCTMT050000UV01CoveredParty>();
+        }
+        return this.coveredPartyOf;
     }
 
     /**
      * Gets the value of the classCode property.
      * 
-     * <p>
-     * This accessor method returns a reference to the live list,
-     * not a snapshot. Therefore any modification you make to the
-     * returned list will be present inside the JAXB object.
-     * This is why there is not a <CODE>set</CODE> method for the classCode property.
-     * 
-     * <p>
-     * For example, to add a new item, do as follows:
-     * <pre>
-     *    getClassCode().add(newItem);
-     * </pre>
-     * 
-     * 
-     * <p>
-     * Objects of the following type(s) are allowed in the list
-     * {@link String }
-     * 
-     * 
+     * @return
+     *     possible object is
+     *     {@link RoleClassPatient }
+     *     
      */
-    public List<String> getClassCode() {
-        if (classCode == null) {
-            classCode = new ArrayList<String>();
-        }
-        return this.classCode;
+    public RoleClassPatient getClassCode() {
+        return classCode;
+    }
+
+    /**
+     * Sets the value of the classCode property.
+     * 
+     * @param value
+     *     allowed object is
+     *     {@link RoleClassPatient }
+     *     
+     */
+    public void setClassCode(RoleClassPatient value) {
+        this.classCode = value;
     }
 
 }

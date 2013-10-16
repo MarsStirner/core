@@ -10,8 +10,6 @@ import javax.xml.bind.annotation.XmlAttribute;
 import javax.xml.bind.annotation.XmlElement;
 import javax.xml.bind.annotation.XmlElementRef;
 import javax.xml.bind.annotation.XmlType;
-import javax.xml.bind.annotation.adapters.CollapsedStringAdapter;
-import javax.xml.bind.annotation.adapters.XmlJavaTypeAdapter;
 
 
 /**
@@ -33,8 +31,8 @@ import javax.xml.bind.annotation.adapters.XmlJavaTypeAdapter;
  *         &lt;element name="confidentialityCode" type="{urn:hl7-org:v3}CE" minOccurs="0"/>
  *         &lt;element name="veryImportantPersonCode" type="{urn:hl7-org:v3}CE" minOccurs="0"/>
  *         &lt;choice>
- *           &lt;element name="patientPerson" type="{urn:hl7-org:v3}COCT_MT030000UV04.Person"/>
- *           &lt;element name="patientNonPersonLivingSubject" type="{urn:hl7-org:v3}COCT_MT030000UV04.NonPersonLivingSubject"/>
+ *           &lt;element name="patientPerson" type="{urn:hl7-org:v3}COCT_MT030000UV09.Person"/>
+ *           &lt;element name="patientNonPersonLivingSubject" type="{urn:hl7-org:v3}COCT_MT030000UV09.NonPersonLivingSubject"/>
  *         &lt;/choice>
  *         &lt;element name="providerOrganization" type="{urn:hl7-org:v3}COCT_MT150000UV02.Organization" minOccurs="0"/>
  *         &lt;element name="subjectOf" type="{urn:hl7-org:v3}COCT_MT050004UV01.Subject" maxOccurs="unbounded" minOccurs="0"/>
@@ -80,16 +78,15 @@ public class COCTMT050004UV01PatientClinical {
     protected CE confidentialityCode;
     protected CE veryImportantPersonCode;
     @XmlElementRef(name = "patientPerson", namespace = "urn:hl7-org:v3", type = JAXBElement.class, required = false)
-    protected JAXBElement<COCTMT030000UV04Person> patientPerson;
+    protected JAXBElement<COCTMT030000UV09Person> patientPerson;
     @XmlElementRef(name = "patientNonPersonLivingSubject", namespace = "urn:hl7-org:v3", type = JAXBElement.class, required = false)
-    protected JAXBElement<COCTMT030000UV04NonPersonLivingSubject> patientNonPersonLivingSubject;
+    protected JAXBElement<COCTMT030000UV09NonPersonLivingSubject> patientNonPersonLivingSubject;
     @XmlElementRef(name = "providerOrganization", namespace = "urn:hl7-org:v3", type = JAXBElement.class, required = false)
     protected JAXBElement<COCTMT150000UV02Organization> providerOrganization;
     @XmlElement(nillable = true)
     protected List<COCTMT050004UV01Subject> subjectOf;
     @XmlAttribute(name = "classCode", required = true)
-    @XmlJavaTypeAdapter(CollapsedStringAdapter.class)
-    protected String classCode;
+    protected RoleClassPatient classCode;
 
     /**
      * Gets the value of the realmCode property.
@@ -361,10 +358,10 @@ public class COCTMT050004UV01PatientClinical {
      * 
      * @return
      *     possible object is
-     *     {@link JAXBElement }{@code <}{@link COCTMT030000UV04Person }{@code >}
+     *     {@link JAXBElement }{@code <}{@link COCTMT030000UV09Person }{@code >}
      *     
      */
-    public JAXBElement<COCTMT030000UV04Person> getPatientPerson() {
+    public JAXBElement<COCTMT030000UV09Person> getPatientPerson() {
         return patientPerson;
     }
 
@@ -373,10 +370,10 @@ public class COCTMT050004UV01PatientClinical {
      * 
      * @param value
      *     allowed object is
-     *     {@link JAXBElement }{@code <}{@link COCTMT030000UV04Person }{@code >}
+     *     {@link JAXBElement }{@code <}{@link COCTMT030000UV09Person }{@code >}
      *     
      */
-    public void setPatientPerson(JAXBElement<COCTMT030000UV04Person> value) {
+    public void setPatientPerson(JAXBElement<COCTMT030000UV09Person> value) {
         this.patientPerson = value;
     }
 
@@ -385,10 +382,10 @@ public class COCTMT050004UV01PatientClinical {
      * 
      * @return
      *     possible object is
-     *     {@link JAXBElement }{@code <}{@link COCTMT030000UV04NonPersonLivingSubject }{@code >}
+     *     {@link JAXBElement }{@code <}{@link COCTMT030000UV09NonPersonLivingSubject }{@code >}
      *     
      */
-    public JAXBElement<COCTMT030000UV04NonPersonLivingSubject> getPatientNonPersonLivingSubject() {
+    public JAXBElement<COCTMT030000UV09NonPersonLivingSubject> getPatientNonPersonLivingSubject() {
         return patientNonPersonLivingSubject;
     }
 
@@ -397,10 +394,10 @@ public class COCTMT050004UV01PatientClinical {
      * 
      * @param value
      *     allowed object is
-     *     {@link JAXBElement }{@code <}{@link COCTMT030000UV04NonPersonLivingSubject }{@code >}
+     *     {@link JAXBElement }{@code <}{@link COCTMT030000UV09NonPersonLivingSubject }{@code >}
      *     
      */
-    public void setPatientNonPersonLivingSubject(JAXBElement<COCTMT030000UV04NonPersonLivingSubject> value) {
+    public void setPatientNonPersonLivingSubject(JAXBElement<COCTMT030000UV09NonPersonLivingSubject> value) {
         this.patientNonPersonLivingSubject = value;
     }
 
@@ -462,10 +459,10 @@ public class COCTMT050004UV01PatientClinical {
      * 
      * @return
      *     possible object is
-     *     {@link String }
+     *     {@link RoleClassPatient }
      *     
      */
-    public String getClassCode() {
+    public RoleClassPatient getClassCode() {
         return classCode;
     }
 
@@ -474,10 +471,10 @@ public class COCTMT050004UV01PatientClinical {
      * 
      * @param value
      *     allowed object is
-     *     {@link String }
+     *     {@link RoleClassPatient }
      *     
      */
-    public void setClassCode(String value) {
+    public void setClassCode(RoleClassPatient value) {
         this.classCode = value;
     }
 

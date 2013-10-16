@@ -8,8 +8,6 @@ import javax.xml.bind.annotation.XmlAccessorType;
 import javax.xml.bind.annotation.XmlAttribute;
 import javax.xml.bind.annotation.XmlElement;
 import javax.xml.bind.annotation.XmlType;
-import javax.xml.bind.annotation.adapters.CollapsedStringAdapter;
-import javax.xml.bind.annotation.adapters.XmlJavaTypeAdapter;
 
 
 /**
@@ -50,10 +48,9 @@ public class COCTMT020000UV01ScheduleRequest {
     @XmlElement(required = true, nillable = true)
     protected COCTMT020000UV01ActAppointmentRequest actAppointmentRequest;
     @XmlAttribute(name = "nullFlavor")
-    protected List<String> nullFlavor;
+    protected NullFlavor nullFlavor;
     @XmlAttribute(name = "typeCode", required = true)
-    @XmlJavaTypeAdapter(CollapsedStringAdapter.class)
-    protected String typeCode;
+    protected ActRelationshipSchedulesRequest typeCode;
 
     /**
      * Gets the value of the realmCode property.
@@ -164,30 +161,25 @@ public class COCTMT020000UV01ScheduleRequest {
     /**
      * Gets the value of the nullFlavor property.
      * 
-     * <p>
-     * This accessor method returns a reference to the live list,
-     * not a snapshot. Therefore any modification you make to the
-     * returned list will be present inside the JAXB object.
-     * This is why there is not a <CODE>set</CODE> method for the nullFlavor property.
-     * 
-     * <p>
-     * For example, to add a new item, do as follows:
-     * <pre>
-     *    getNullFlavor().add(newItem);
-     * </pre>
-     * 
-     * 
-     * <p>
-     * Objects of the following type(s) are allowed in the list
-     * {@link String }
-     * 
-     * 
+     * @return
+     *     possible object is
+     *     {@link NullFlavor }
+     *     
      */
-    public List<String> getNullFlavor() {
-        if (nullFlavor == null) {
-            nullFlavor = new ArrayList<String>();
-        }
-        return this.nullFlavor;
+    public NullFlavor getNullFlavor() {
+        return nullFlavor;
+    }
+
+    /**
+     * Sets the value of the nullFlavor property.
+     * 
+     * @param value
+     *     allowed object is
+     *     {@link NullFlavor }
+     *     
+     */
+    public void setNullFlavor(NullFlavor value) {
+        this.nullFlavor = value;
     }
 
     /**
@@ -195,10 +187,10 @@ public class COCTMT020000UV01ScheduleRequest {
      * 
      * @return
      *     possible object is
-     *     {@link String }
+     *     {@link ActRelationshipSchedulesRequest }
      *     
      */
-    public String getTypeCode() {
+    public ActRelationshipSchedulesRequest getTypeCode() {
         return typeCode;
     }
 
@@ -207,10 +199,10 @@ public class COCTMT020000UV01ScheduleRequest {
      * 
      * @param value
      *     allowed object is
-     *     {@link String }
+     *     {@link ActRelationshipSchedulesRequest }
      *     
      */
-    public void setTypeCode(String value) {
+    public void setTypeCode(ActRelationshipSchedulesRequest value) {
         this.typeCode = value;
     }
 

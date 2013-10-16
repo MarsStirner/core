@@ -14,9 +14,9 @@ import javax.xml.bind.annotation.XmlType;
  * &lt;simpleType name="ActRelationshipJoin">
  *   &lt;restriction base="{urn:hl7-org:v3}cs">
  *     &lt;enumeration value="D"/>
- *     &lt;enumeration value="X"/>
  *     &lt;enumeration value="K"/>
  *     &lt;enumeration value="W"/>
+ *     &lt;enumeration value="X"/>
  *   &lt;/restriction>
  * &lt;/simpleType>
  * </pre>
@@ -27,9 +27,9 @@ import javax.xml.bind.annotation.XmlType;
 public enum ActRelationshipJoin {
 
     D,
-    X,
     K,
-    W;
+    W,
+    X;
 
     public String value() {
         return name();

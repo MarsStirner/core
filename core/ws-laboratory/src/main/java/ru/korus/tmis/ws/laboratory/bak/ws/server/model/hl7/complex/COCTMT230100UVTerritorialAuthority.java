@@ -26,8 +26,7 @@ import javax.xml.bind.annotation.XmlType;
  *         &lt;element name="governingCountry" type="{urn:hl7-org:v3}COCT_MT230100UV.Country" minOccurs="0"/>
  *       &lt;/sequence>
  *       &lt;attGroup ref="{urn:hl7-org:v3}InfrastructureRootAttributes"/>
- *       &lt;attribute name="nullFlavor" type="{urn:hl7-org:v3}NullFlavor" />
- *       &lt;attribute name="classCode" use="required" type="{urn:hl7-org:v3}RoleClass" fixed="TERR" />
+ *       &lt;attribute name="classCode" use="required" type="{urn:hl7-org:v3}RoleClassTerritoryOfAuthority" />
  *     &lt;/restriction>
  *   &lt;/complexContent>
  * &lt;/complexType>
@@ -52,10 +51,8 @@ public class COCTMT230100UVTerritorialAuthority {
     protected JAXBElement<COCTMT230100UVAgency> territory;
     @XmlElementRef(name = "governingCountry", namespace = "urn:hl7-org:v3", type = JAXBElement.class, required = false)
     protected JAXBElement<COCTMT230100UVCountry> governingCountry;
-    @XmlAttribute(name = "nullFlavor")
-    protected List<String> nullFlavor;
     @XmlAttribute(name = "classCode", required = true)
-    protected List<String> classCode;
+    protected RoleClassTerritoryOfAuthority classCode;
 
     /**
      * Gets the value of the realmCode property.
@@ -188,61 +185,27 @@ public class COCTMT230100UVTerritorialAuthority {
     }
 
     /**
-     * Gets the value of the nullFlavor property.
+     * Gets the value of the classCode property.
      * 
-     * <p>
-     * This accessor method returns a reference to the live list,
-     * not a snapshot. Therefore any modification you make to the
-     * returned list will be present inside the JAXB object.
-     * This is why there is not a <CODE>set</CODE> method for the nullFlavor property.
-     * 
-     * <p>
-     * For example, to add a new item, do as follows:
-     * <pre>
-     *    getNullFlavor().add(newItem);
-     * </pre>
-     * 
-     * 
-     * <p>
-     * Objects of the following type(s) are allowed in the list
-     * {@link String }
-     * 
-     * 
+     * @return
+     *     possible object is
+     *     {@link RoleClassTerritoryOfAuthority }
+     *     
      */
-    public List<String> getNullFlavor() {
-        if (nullFlavor == null) {
-            nullFlavor = new ArrayList<String>();
-        }
-        return this.nullFlavor;
+    public RoleClassTerritoryOfAuthority getClassCode() {
+        return classCode;
     }
 
     /**
-     * Gets the value of the classCode property.
+     * Sets the value of the classCode property.
      * 
-     * <p>
-     * This accessor method returns a reference to the live list,
-     * not a snapshot. Therefore any modification you make to the
-     * returned list will be present inside the JAXB object.
-     * This is why there is not a <CODE>set</CODE> method for the classCode property.
-     * 
-     * <p>
-     * For example, to add a new item, do as follows:
-     * <pre>
-     *    getClassCode().add(newItem);
-     * </pre>
-     * 
-     * 
-     * <p>
-     * Objects of the following type(s) are allowed in the list
-     * {@link String }
-     * 
-     * 
+     * @param value
+     *     allowed object is
+     *     {@link RoleClassTerritoryOfAuthority }
+     *     
      */
-    public List<String> getClassCode() {
-        if (classCode == null) {
-            classCode = new ArrayList<String>();
-        }
-        return this.classCode;
+    public void setClassCode(RoleClassTerritoryOfAuthority value) {
+        this.classCode = value;
     }
 
 }

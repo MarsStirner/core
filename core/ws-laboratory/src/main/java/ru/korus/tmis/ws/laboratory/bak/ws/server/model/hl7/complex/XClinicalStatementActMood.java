@@ -21,6 +21,7 @@ import javax.xml.bind.annotation.XmlType;
  *     &lt;enumeration value="PRMS"/>
  *     &lt;enumeration value="PRP"/>
  *     &lt;enumeration value="RQO"/>
+ *     &lt;enumeration value="RSK"/>
  *   &lt;/restriction>
  * &lt;/simpleType>
  * </pre>
@@ -37,7 +38,8 @@ public enum XClinicalStatementActMood {
     INT,
     PRMS,
     PRP,
-    RQO;
+    RQO,
+    RSK;
 
     public String value() {
         return name();

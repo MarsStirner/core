@@ -9,8 +9,6 @@ import javax.xml.bind.annotation.XmlAccessorType;
 import javax.xml.bind.annotation.XmlAttribute;
 import javax.xml.bind.annotation.XmlElementRef;
 import javax.xml.bind.annotation.XmlType;
-import javax.xml.bind.annotation.adapters.CollapsedStringAdapter;
-import javax.xml.bind.annotation.adapters.XmlJavaTypeAdapter;
 
 
 /**
@@ -66,10 +64,9 @@ public class POLBIN224100UV01MCAIMT700201UV01Subject2 {
     @XmlElementRef(name = "observationEvent", namespace = "urn:hl7-org:v3", type = JAXBElement.class, required = false)
     protected JAXBElement<POLBMT004000UV01ObservationEvent> observationEvent;
     @XmlAttribute(name = "nullFlavor")
-    protected List<String> nullFlavor;
+    protected NullFlavor nullFlavor;
     @XmlAttribute(name = "typeCode", required = true)
-    @XmlJavaTypeAdapter(CollapsedStringAdapter.class)
-    protected String typeCode;
+    protected ActRelationshipHasSubject typeCode;
     @XmlAttribute(name = "contextConductionInd")
     protected Boolean contextConductionInd;
 
@@ -254,30 +251,25 @@ public class POLBIN224100UV01MCAIMT700201UV01Subject2 {
     /**
      * Gets the value of the nullFlavor property.
      * 
-     * <p>
-     * This accessor method returns a reference to the live list,
-     * not a snapshot. Therefore any modification you make to the
-     * returned list will be present inside the JAXB object.
-     * This is why there is not a <CODE>set</CODE> method for the nullFlavor property.
-     * 
-     * <p>
-     * For example, to add a new item, do as follows:
-     * <pre>
-     *    getNullFlavor().add(newItem);
-     * </pre>
-     * 
-     * 
-     * <p>
-     * Objects of the following type(s) are allowed in the list
-     * {@link String }
-     * 
-     * 
+     * @return
+     *     possible object is
+     *     {@link NullFlavor }
+     *     
      */
-    public List<String> getNullFlavor() {
-        if (nullFlavor == null) {
-            nullFlavor = new ArrayList<String>();
-        }
-        return this.nullFlavor;
+    public NullFlavor getNullFlavor() {
+        return nullFlavor;
+    }
+
+    /**
+     * Sets the value of the nullFlavor property.
+     * 
+     * @param value
+     *     allowed object is
+     *     {@link NullFlavor }
+     *     
+     */
+    public void setNullFlavor(NullFlavor value) {
+        this.nullFlavor = value;
     }
 
     /**
@@ -285,10 +277,10 @@ public class POLBIN224100UV01MCAIMT700201UV01Subject2 {
      * 
      * @return
      *     possible object is
-     *     {@link String }
+     *     {@link ActRelationshipHasSubject }
      *     
      */
-    public String getTypeCode() {
+    public ActRelationshipHasSubject getTypeCode() {
         return typeCode;
     }
 
@@ -297,10 +289,10 @@ public class POLBIN224100UV01MCAIMT700201UV01Subject2 {
      * 
      * @param value
      *     allowed object is
-     *     {@link String }
+     *     {@link ActRelationshipHasSubject }
      *     
      */
-    public void setTypeCode(String value) {
+    public void setTypeCode(ActRelationshipHasSubject value) {
         this.typeCode = value;
     }
 

@@ -50,7 +50,7 @@ public class COCTMT590000UVAuthor {
     @XmlElement(required = true)
     protected COCTMT090000UV01AssignedEntity assignedEntity;
     @XmlAttribute(name = "typeCode")
-    protected List<String> typeCode;
+    protected ParticipationType typeCode;
 
     /**
      * Gets the value of the realmCode property.
@@ -185,30 +185,29 @@ public class COCTMT590000UVAuthor {
     /**
      * Gets the value of the typeCode property.
      * 
-     * <p>
-     * This accessor method returns a reference to the live list,
-     * not a snapshot. Therefore any modification you make to the
-     * returned list will be present inside the JAXB object.
-     * This is why there is not a <CODE>set</CODE> method for the typeCode property.
-     * 
-     * <p>
-     * For example, to add a new item, do as follows:
-     * <pre>
-     *    getTypeCode().add(newItem);
-     * </pre>
-     * 
-     * 
-     * <p>
-     * Objects of the following type(s) are allowed in the list
-     * {@link String }
-     * 
-     * 
+     * @return
+     *     possible object is
+     *     {@link ParticipationType }
+     *     
      */
-    public List<String> getTypeCode() {
+    public ParticipationType getTypeCode() {
         if (typeCode == null) {
-            typeCode = new ArrayList<String>();
+            return ParticipationType.AUT;
+        } else {
+            return typeCode;
         }
-        return this.typeCode;
+    }
+
+    /**
+     * Sets the value of the typeCode property.
+     * 
+     * @param value
+     *     allowed object is
+     *     {@link ParticipationType }
+     *     
+     */
+    public void setTypeCode(ParticipationType value) {
+        this.typeCode = value;
     }
 
 }

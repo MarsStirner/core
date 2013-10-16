@@ -10,8 +10,6 @@ import javax.xml.bind.annotation.XmlAttribute;
 import javax.xml.bind.annotation.XmlElement;
 import javax.xml.bind.annotation.XmlElementRef;
 import javax.xml.bind.annotation.XmlType;
-import javax.xml.bind.annotation.adapters.CollapsedStringAdapter;
-import javax.xml.bind.annotation.adapters.XmlJavaTypeAdapter;
 
 
 /**
@@ -95,10 +93,9 @@ public class COCTMT120100UVObservationDx {
     @XmlElementRef(name = "definition", namespace = "urn:hl7-org:v3", type = JAXBElement.class, required = false)
     protected JAXBElement<COCTMT120100UVDefinition> definition;
     @XmlAttribute(name = "classCode", required = true)
-    protected List<String> classCode;
+    protected ActClassObservation classCode;
     @XmlAttribute(name = "moodCode", required = true)
-    @XmlJavaTypeAdapter(CollapsedStringAdapter.class)
-    protected String moodCode;
+    protected ActMoodEventOccurrence moodCode;
     @XmlAttribute(name = "negationInd")
     protected Boolean negationInd;
 
@@ -519,30 +516,25 @@ public class COCTMT120100UVObservationDx {
     /**
      * Gets the value of the classCode property.
      * 
-     * <p>
-     * This accessor method returns a reference to the live list,
-     * not a snapshot. Therefore any modification you make to the
-     * returned list will be present inside the JAXB object.
-     * This is why there is not a <CODE>set</CODE> method for the classCode property.
-     * 
-     * <p>
-     * For example, to add a new item, do as follows:
-     * <pre>
-     *    getClassCode().add(newItem);
-     * </pre>
-     * 
-     * 
-     * <p>
-     * Objects of the following type(s) are allowed in the list
-     * {@link String }
-     * 
-     * 
+     * @return
+     *     possible object is
+     *     {@link ActClassObservation }
+     *     
      */
-    public List<String> getClassCode() {
-        if (classCode == null) {
-            classCode = new ArrayList<String>();
-        }
-        return this.classCode;
+    public ActClassObservation getClassCode() {
+        return classCode;
+    }
+
+    /**
+     * Sets the value of the classCode property.
+     * 
+     * @param value
+     *     allowed object is
+     *     {@link ActClassObservation }
+     *     
+     */
+    public void setClassCode(ActClassObservation value) {
+        this.classCode = value;
     }
 
     /**
@@ -550,10 +542,10 @@ public class COCTMT120100UVObservationDx {
      * 
      * @return
      *     possible object is
-     *     {@link String }
+     *     {@link ActMoodEventOccurrence }
      *     
      */
-    public String getMoodCode() {
+    public ActMoodEventOccurrence getMoodCode() {
         return moodCode;
     }
 
@@ -562,10 +554,10 @@ public class COCTMT120100UVObservationDx {
      * 
      * @param value
      *     allowed object is
-     *     {@link String }
+     *     {@link ActMoodEventOccurrence }
      *     
      */
-    public void setMoodCode(String value) {
+    public void setMoodCode(ActMoodEventOccurrence value) {
         this.moodCode = value;
     }
 

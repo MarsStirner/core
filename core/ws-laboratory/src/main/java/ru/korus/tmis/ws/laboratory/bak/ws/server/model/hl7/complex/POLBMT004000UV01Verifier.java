@@ -68,11 +68,11 @@ public class POLBMT004000UV01Verifier {
     @XmlElement(required = true, nillable = true)
     protected COCTMT090000UV01AssignedEntity assignedEntity;
     @XmlAttribute(name = "nullFlavor")
-    protected List<String> nullFlavor;
+    protected NullFlavor nullFlavor;
     @XmlAttribute(name = "typeCode", required = true)
     protected ParticipationVerifier typeCode;
     @XmlAttribute(name = "contextControlCode")
-    protected String contextControlCode;
+    protected ContextControl contextControlCode;
 
     /**
      * Gets the value of the realmCode property.
@@ -327,30 +327,25 @@ public class POLBMT004000UV01Verifier {
     /**
      * Gets the value of the nullFlavor property.
      * 
-     * <p>
-     * This accessor method returns a reference to the live list,
-     * not a snapshot. Therefore any modification you make to the
-     * returned list will be present inside the JAXB object.
-     * This is why there is not a <CODE>set</CODE> method for the nullFlavor property.
-     * 
-     * <p>
-     * For example, to add a new item, do as follows:
-     * <pre>
-     *    getNullFlavor().add(newItem);
-     * </pre>
-     * 
-     * 
-     * <p>
-     * Objects of the following type(s) are allowed in the list
-     * {@link String }
-     * 
-     * 
+     * @return
+     *     possible object is
+     *     {@link NullFlavor }
+     *     
      */
-    public List<String> getNullFlavor() {
-        if (nullFlavor == null) {
-            nullFlavor = new ArrayList<String>();
-        }
-        return this.nullFlavor;
+    public NullFlavor getNullFlavor() {
+        return nullFlavor;
+    }
+
+    /**
+     * Sets the value of the nullFlavor property.
+     * 
+     * @param value
+     *     allowed object is
+     *     {@link NullFlavor }
+     *     
+     */
+    public void setNullFlavor(NullFlavor value) {
+        this.nullFlavor = value;
     }
 
     /**
@@ -382,12 +377,12 @@ public class POLBMT004000UV01Verifier {
      * 
      * @return
      *     possible object is
-     *     {@link String }
+     *     {@link ContextControl }
      *     
      */
-    public String getContextControlCode() {
+    public ContextControl getContextControlCode() {
         if (contextControlCode == null) {
-            return "OP";
+            return ContextControl.OP;
         } else {
             return contextControlCode;
         }
@@ -398,10 +393,10 @@ public class POLBMT004000UV01Verifier {
      * 
      * @param value
      *     allowed object is
-     *     {@link String }
+     *     {@link ContextControl }
      *     
      */
-    public void setContextControlCode(String value) {
+    public void setContextControlCode(ContextControl value) {
         this.contextControlCode = value;
     }
 

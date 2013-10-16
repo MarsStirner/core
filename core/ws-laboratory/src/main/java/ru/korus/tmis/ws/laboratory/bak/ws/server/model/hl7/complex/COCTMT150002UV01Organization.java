@@ -27,9 +27,8 @@ import javax.xml.bind.annotation.XmlType;
  *         &lt;element name="addr" type="{urn:hl7-org:v3}AD" maxOccurs="unbounded" minOccurs="0"/>
  *       &lt;/sequence>
  *       &lt;attGroup ref="{urn:hl7-org:v3}InfrastructureRootAttributes"/>
- *       &lt;attribute name="nullFlavor" type="{urn:hl7-org:v3}NullFlavor" />
  *       &lt;attribute name="classCode" use="required" type="{urn:hl7-org:v3}EntityClassOrganization" />
- *       &lt;attribute name="determinerCode" use="required" type="{urn:hl7-org:v3}EntityDeterminer" fixed="INSTANCE" />
+ *       &lt;attribute name="determinerCode" use="required" type="{urn:hl7-org:v3}EntityDeterminerSpecific" />
  *     &lt;/restriction>
  *   &lt;/complexContent>
  * &lt;/complexType>
@@ -57,12 +56,10 @@ public class COCTMT150002UV01Organization {
     protected CE code;
     protected List<ON> name;
     protected List<AD> addr;
-    @XmlAttribute(name = "nullFlavor")
-    protected List<String> nullFlavor;
     @XmlAttribute(name = "classCode", required = true)
-    protected String classCode;
+    protected EntityClassOrganization classCode;
     @XmlAttribute(name = "determinerCode", required = true)
-    protected String determinerCode;
+    protected EntityDeterminerSpecific determinerCode;
 
     /**
      * Gets the value of the realmCode property.
@@ -258,43 +255,14 @@ public class COCTMT150002UV01Organization {
     }
 
     /**
-     * Gets the value of the nullFlavor property.
-     * 
-     * <p>
-     * This accessor method returns a reference to the live list,
-     * not a snapshot. Therefore any modification you make to the
-     * returned list will be present inside the JAXB object.
-     * This is why there is not a <CODE>set</CODE> method for the nullFlavor property.
-     * 
-     * <p>
-     * For example, to add a new item, do as follows:
-     * <pre>
-     *    getNullFlavor().add(newItem);
-     * </pre>
-     * 
-     * 
-     * <p>
-     * Objects of the following type(s) are allowed in the list
-     * {@link String }
-     * 
-     * 
-     */
-    public List<String> getNullFlavor() {
-        if (nullFlavor == null) {
-            nullFlavor = new ArrayList<String>();
-        }
-        return this.nullFlavor;
-    }
-
-    /**
      * Gets the value of the classCode property.
      * 
      * @return
      *     possible object is
-     *     {@link String }
+     *     {@link EntityClassOrganization }
      *     
      */
-    public String getClassCode() {
+    public EntityClassOrganization getClassCode() {
         return classCode;
     }
 
@@ -303,10 +271,10 @@ public class COCTMT150002UV01Organization {
      * 
      * @param value
      *     allowed object is
-     *     {@link String }
+     *     {@link EntityClassOrganization }
      *     
      */
-    public void setClassCode(String value) {
+    public void setClassCode(EntityClassOrganization value) {
         this.classCode = value;
     }
 
@@ -315,15 +283,11 @@ public class COCTMT150002UV01Organization {
      * 
      * @return
      *     possible object is
-     *     {@link String }
+     *     {@link EntityDeterminerSpecific }
      *     
      */
-    public String getDeterminerCode() {
-        if (determinerCode == null) {
-            return "INSTANCE";
-        } else {
-            return determinerCode;
-        }
+    public EntityDeterminerSpecific getDeterminerCode() {
+        return determinerCode;
     }
 
     /**
@@ -331,10 +295,10 @@ public class COCTMT150002UV01Organization {
      * 
      * @param value
      *     allowed object is
-     *     {@link String }
+     *     {@link EntityDeterminerSpecific }
      *     
      */
-    public void setDeterminerCode(String value) {
+    public void setDeterminerCode(EntityDeterminerSpecific value) {
         this.determinerCode = value;
     }
 

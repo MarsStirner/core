@@ -8,8 +8,6 @@ import javax.xml.bind.annotation.XmlAccessorType;
 import javax.xml.bind.annotation.XmlAttribute;
 import javax.xml.bind.annotation.XmlElement;
 import javax.xml.bind.annotation.XmlType;
-import javax.xml.bind.annotation.adapters.CollapsedStringAdapter;
-import javax.xml.bind.annotation.adapters.XmlJavaTypeAdapter;
 
 
 /**
@@ -56,10 +54,9 @@ public class COCTMT250000UV03TestReagent {
     protected ST lotNumberText;
     protected IVLTS expirationTime;
     @XmlAttribute(name = "classCode", required = true)
-    protected String classCode;
+    protected EntityClassManufacturedMaterial classCode;
     @XmlAttribute(name = "determinerCode", required = true)
-    @XmlJavaTypeAdapter(CollapsedStringAdapter.class)
-    protected String determinerCode;
+    protected EntityDeterminerSpecific determinerCode;
 
     /**
      * Gets the value of the realmCode property.
@@ -220,10 +217,10 @@ public class COCTMT250000UV03TestReagent {
      * 
      * @return
      *     possible object is
-     *     {@link String }
+     *     {@link EntityClassManufacturedMaterial }
      *     
      */
-    public String getClassCode() {
+    public EntityClassManufacturedMaterial getClassCode() {
         return classCode;
     }
 
@@ -232,10 +229,10 @@ public class COCTMT250000UV03TestReagent {
      * 
      * @param value
      *     allowed object is
-     *     {@link String }
+     *     {@link EntityClassManufacturedMaterial }
      *     
      */
-    public void setClassCode(String value) {
+    public void setClassCode(EntityClassManufacturedMaterial value) {
         this.classCode = value;
     }
 
@@ -244,10 +241,10 @@ public class COCTMT250000UV03TestReagent {
      * 
      * @return
      *     possible object is
-     *     {@link String }
+     *     {@link EntityDeterminerSpecific }
      *     
      */
-    public String getDeterminerCode() {
+    public EntityDeterminerSpecific getDeterminerCode() {
         return determinerCode;
     }
 
@@ -256,10 +253,10 @@ public class COCTMT250000UV03TestReagent {
      * 
      * @param value
      *     allowed object is
-     *     {@link String }
+     *     {@link EntityDeterminerSpecific }
      *     
      */
-    public void setDeterminerCode(String value) {
+    public void setDeterminerCode(EntityDeterminerSpecific value) {
         this.determinerCode = value;
     }
 

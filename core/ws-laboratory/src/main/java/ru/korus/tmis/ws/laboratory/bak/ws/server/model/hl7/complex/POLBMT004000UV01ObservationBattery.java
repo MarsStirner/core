@@ -10,8 +10,6 @@ import javax.xml.bind.annotation.XmlAttribute;
 import javax.xml.bind.annotation.XmlElement;
 import javax.xml.bind.annotation.XmlElementRef;
 import javax.xml.bind.annotation.XmlType;
-import javax.xml.bind.annotation.adapters.CollapsedStringAdapter;
-import javax.xml.bind.annotation.adapters.XmlJavaTypeAdapter;
 
 
 /**
@@ -147,11 +145,9 @@ public class POLBMT004000UV01ObservationBattery {
     @XmlElementRef(name = "componentOf", namespace = "urn:hl7-org:v3", type = JAXBElement.class, required = false)
     protected JAXBElement<POLBMT004000UV01Component1> componentOf;
     @XmlAttribute(name = "classCode", required = true)
-    @XmlJavaTypeAdapter(CollapsedStringAdapter.class)
-    protected String classCode;
+    protected ActClassBattery classCode;
     @XmlAttribute(name = "moodCode", required = true)
-    @XmlJavaTypeAdapter(CollapsedStringAdapter.class)
-    protected String moodCode;
+    protected ActMoodEventOccurrence moodCode;
 
     /**
      * Gets the value of the realmCode property.
@@ -964,10 +960,10 @@ public class POLBMT004000UV01ObservationBattery {
      * 
      * @return
      *     possible object is
-     *     {@link String }
+     *     {@link ActClassBattery }
      *     
      */
-    public String getClassCode() {
+    public ActClassBattery getClassCode() {
         return classCode;
     }
 
@@ -976,10 +972,10 @@ public class POLBMT004000UV01ObservationBattery {
      * 
      * @param value
      *     allowed object is
-     *     {@link String }
+     *     {@link ActClassBattery }
      *     
      */
-    public void setClassCode(String value) {
+    public void setClassCode(ActClassBattery value) {
         this.classCode = value;
     }
 
@@ -988,10 +984,10 @@ public class POLBMT004000UV01ObservationBattery {
      * 
      * @return
      *     possible object is
-     *     {@link String }
+     *     {@link ActMoodEventOccurrence }
      *     
      */
-    public String getMoodCode() {
+    public ActMoodEventOccurrence getMoodCode() {
         return moodCode;
     }
 
@@ -1000,10 +996,10 @@ public class POLBMT004000UV01ObservationBattery {
      * 
      * @param value
      *     allowed object is
-     *     {@link String }
+     *     {@link ActMoodEventOccurrence }
      *     
      */
-    public void setMoodCode(String value) {
+    public void setMoodCode(ActMoodEventOccurrence value) {
         this.moodCode = value;
     }
 

@@ -54,10 +54,10 @@ public class IVLMO
 {
 
     @XmlElementRefs({
-        @XmlElementRef(name = "low", namespace = "urn:hl7-org:v3", type = JAXBElement.class, required = false),
-        @XmlElementRef(name = "center", namespace = "urn:hl7-org:v3", type = JAXBElement.class, required = false),
+        @XmlElementRef(name = "high", namespace = "urn:hl7-org:v3", type = JAXBElement.class, required = false),
         @XmlElementRef(name = "width", namespace = "urn:hl7-org:v3", type = JAXBElement.class, required = false),
-        @XmlElementRef(name = "high", namespace = "urn:hl7-org:v3", type = JAXBElement.class, required = false)
+        @XmlElementRef(name = "center", namespace = "urn:hl7-org:v3", type = JAXBElement.class, required = false),
+        @XmlElementRef(name = "low", namespace = "urn:hl7-org:v3", type = JAXBElement.class, required = false)
     })
     protected List<JAXBElement<? extends MO>> rest;
 
@@ -67,8 +67,8 @@ public class IVLMO
      * <p>
      * You are getting this "catch-all" property because of the following reason: 
      * The field name "High" is used by two different parts of a schema. See: 
-     * line 1003 of file:/C:/development/code/wsdl-queryhl7-example/ITI/schema/HL7V3/NE2008/coreschemas/datatypes.xsd
-     * line 994 of file:/C:/development/code/wsdl-queryhl7-example/ITI/schema/HL7V3/NE2008/coreschemas/datatypes.xsd
+     * line 1003 of file:/C:/Users/anosov/Downloads/processable2011/processable/coreschemas/datatypes.xsd
+     * line 994 of file:/C:/Users/anosov/Downloads/processable2011/processable/coreschemas/datatypes.xsd
      * <p>
      * To get rid of this property, apply a property customization to one 
      * of both of the following declarations to change their names: 
@@ -89,8 +89,8 @@ public class IVLMO
      * 
      * <p>
      * Objects of the following type(s) are allowed in the list
-     * {@link JAXBElement }{@code <}{@link IVXBMO }{@code >}
      * {@link JAXBElement }{@code <}{@link MO }{@code >}
+     * {@link JAXBElement }{@code <}{@link IVXBMO }{@code >}
      * {@link JAXBElement }{@code <}{@link MO }{@code >}
      * {@link JAXBElement }{@code <}{@link IVXBMO }{@code >}
      * 

@@ -50,7 +50,7 @@ public class COCTMT090001UV01AssignedEntity {
     protected List<II> id;
     protected CE code;
     @XmlAttribute(name = "classCode", required = true)
-    protected String classCode;
+    protected RoleClassAssignedEntity classCode;
 
     /**
      * Gets the value of the realmCode property.
@@ -192,10 +192,10 @@ public class COCTMT090001UV01AssignedEntity {
      * 
      * @return
      *     possible object is
-     *     {@link String }
+     *     {@link RoleClassAssignedEntity }
      *     
      */
-    public String getClassCode() {
+    public RoleClassAssignedEntity getClassCode() {
         return classCode;
     }
 
@@ -204,10 +204,10 @@ public class COCTMT090001UV01AssignedEntity {
      * 
      * @param value
      *     allowed object is
-     *     {@link String }
+     *     {@link RoleClassAssignedEntity }
      *     
      */
-    public void setClassCode(String value) {
+    public void setClassCode(RoleClassAssignedEntity value) {
         this.classCode = value;
     }
 

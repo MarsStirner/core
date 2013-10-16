@@ -14,11 +14,11 @@ import javax.xml.bind.annotation.XmlType;
  * &lt;simpleType name="ParticipationInformationRecipient">
  *   &lt;restriction base="{urn:hl7-org:v3}cs">
  *     &lt;enumeration value="IRCP"/>
+ *     &lt;enumeration value="NOT"/>
+ *     &lt;enumeration value="PRCP"/>
  *     &lt;enumeration value="REFB"/>
  *     &lt;enumeration value="REFT"/>
- *     &lt;enumeration value="PRCP"/>
  *     &lt;enumeration value="TRC"/>
- *     &lt;enumeration value="NOT"/>
  *   &lt;/restriction>
  * &lt;/simpleType>
  * </pre>
@@ -29,11 +29,11 @@ import javax.xml.bind.annotation.XmlType;
 public enum ParticipationInformationRecipient {
 
     IRCP,
+    NOT,
+    PRCP,
     REFB,
     REFT,
-    PRCP,
-    TRC,
-    NOT;
+    TRC;
 
     public String value() {
         return name();

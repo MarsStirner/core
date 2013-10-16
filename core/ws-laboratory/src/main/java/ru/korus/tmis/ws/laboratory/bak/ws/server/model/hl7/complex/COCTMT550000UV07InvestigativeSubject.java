@@ -27,20 +27,20 @@ import javax.xml.bind.annotation.XmlType;
  *         &lt;element name="effectiveTime" type="{urn:hl7-org:v3}IVL_TS" minOccurs="0"/>
  *         &lt;choice>
  *           &lt;choice>
- *             &lt;element name="subjectPerson1" type="{urn:hl7-org:v3}COCT_MT840000UV.Person" minOccurs="0"/>
- *             &lt;element name="subjectLivingSubject1" type="{urn:hl7-org:v3}COCT_MT840000UV.LivingSubject" minOccurs="0"/>
- *             &lt;element name="subjectNonPersonLivingSubject1" type="{urn:hl7-org:v3}COCT_MT840000UV.NonPersonLivingSubject" minOccurs="0"/>
+ *             &lt;element name="subjectPerson1" type="{urn:hl7-org:v3}COCT_MT840000UV09.Person" minOccurs="0"/>
+ *             &lt;element name="subjectLivingSubject1" type="{urn:hl7-org:v3}COCT_MT840000UV09.LivingSubject" minOccurs="0"/>
+ *             &lt;element name="subjectNonPersonLivingSubject1" type="{urn:hl7-org:v3}COCT_MT840000UV09.NonPersonLivingSubject" minOccurs="0"/>
  *           &lt;/choice>
  *           &lt;choice>
- *             &lt;element name="subjectPlace1" type="{urn:hl7-org:v3}COCT_MT840000UV.Place" minOccurs="0"/>
+ *             &lt;element name="subjectPlace1" type="{urn:hl7-org:v3}COCT_MT840000UV09.Place" minOccurs="0"/>
  *             &lt;choice>
- *               &lt;element name="subjectMaterial" type="{urn:hl7-org:v3}COCT_MT840000UV.Material" minOccurs="0"/>
- *               &lt;element name="subjectManufacturedMaterial" type="{urn:hl7-org:v3}COCT_MT840000UV.ManufacturedMaterial" minOccurs="0"/>
+ *               &lt;element name="subjectMaterial" type="{urn:hl7-org:v3}COCT_MT840000UV09.Material" minOccurs="0"/>
+ *               &lt;element name="subjectManufacturedMaterial" type="{urn:hl7-org:v3}COCT_MT840000UV09.ManufacturedMaterial" minOccurs="0"/>
  *             &lt;/choice>
  *           &lt;/choice>
- *           &lt;element name="subjectOrganization" type="{urn:hl7-org:v3}COCT_MT840000UV.Organization" minOccurs="0"/>
- *           &lt;element name="subjectEntityGroup" type="{urn:hl7-org:v3}COCT_MT840000UV.EntityGroup" minOccurs="0"/>
- *           &lt;element name="subjectEntity" type="{urn:hl7-org:v3}COCT_MT840000UV.Entity" minOccurs="0"/>
+ *           &lt;element name="subjectOrganization" type="{urn:hl7-org:v3}COCT_MT840000UV09.Organization" minOccurs="0"/>
+ *           &lt;element name="subjectEntityGroup" type="{urn:hl7-org:v3}COCT_MT840000UV09.EntityGroup" minOccurs="0"/>
+ *           &lt;element name="subjectEntity" type="{urn:hl7-org:v3}COCT_MT840000UV09.Entity" minOccurs="0"/>
  *         &lt;/choice>
  *         &lt;element name="investigationSponsor" type="{urn:hl7-org:v3}COCT_MT150000UV02.Organization" minOccurs="0"/>
  *       &lt;/sequence>
@@ -81,23 +81,23 @@ public class COCTMT550000UV07InvestigativeSubject {
     protected CE code;
     protected IVLTS effectiveTime;
     @XmlElementRef(name = "subjectPerson1", namespace = "urn:hl7-org:v3", type = JAXBElement.class, required = false)
-    protected JAXBElement<COCTMT840000UVPerson> subjectPerson1;
+    protected JAXBElement<COCTMT840000UV09Person> subjectPerson1;
     @XmlElementRef(name = "subjectLivingSubject1", namespace = "urn:hl7-org:v3", type = JAXBElement.class, required = false)
-    protected JAXBElement<COCTMT840000UVLivingSubject> subjectLivingSubject1;
+    protected JAXBElement<COCTMT840000UV09LivingSubject> subjectLivingSubject1;
     @XmlElementRef(name = "subjectNonPersonLivingSubject1", namespace = "urn:hl7-org:v3", type = JAXBElement.class, required = false)
-    protected JAXBElement<COCTMT840000UVNonPersonLivingSubject> subjectNonPersonLivingSubject1;
+    protected JAXBElement<COCTMT840000UV09NonPersonLivingSubject> subjectNonPersonLivingSubject1;
     @XmlElementRef(name = "subjectPlace1", namespace = "urn:hl7-org:v3", type = JAXBElement.class, required = false)
-    protected JAXBElement<COCTMT840000UVPlace> subjectPlace1;
+    protected JAXBElement<COCTMT840000UV09Place> subjectPlace1;
     @XmlElementRef(name = "subjectMaterial", namespace = "urn:hl7-org:v3", type = JAXBElement.class, required = false)
-    protected JAXBElement<COCTMT840000UVMaterial> subjectMaterial;
+    protected JAXBElement<COCTMT840000UV09Material> subjectMaterial;
     @XmlElementRef(name = "subjectManufacturedMaterial", namespace = "urn:hl7-org:v3", type = JAXBElement.class, required = false)
-    protected JAXBElement<COCTMT840000UVManufacturedMaterial> subjectManufacturedMaterial;
+    protected JAXBElement<COCTMT840000UV09ManufacturedMaterial> subjectManufacturedMaterial;
     @XmlElementRef(name = "subjectOrganization", namespace = "urn:hl7-org:v3", type = JAXBElement.class, required = false)
-    protected JAXBElement<COCTMT840000UVOrganization> subjectOrganization;
+    protected JAXBElement<COCTMT840000UV09Organization> subjectOrganization;
     @XmlElementRef(name = "subjectEntityGroup", namespace = "urn:hl7-org:v3", type = JAXBElement.class, required = false)
-    protected JAXBElement<COCTMT840000UVEntityGroup> subjectEntityGroup;
+    protected JAXBElement<COCTMT840000UV09EntityGroup> subjectEntityGroup;
     @XmlElementRef(name = "subjectEntity", namespace = "urn:hl7-org:v3", type = JAXBElement.class, required = false)
-    protected JAXBElement<COCTMT840000UVEntity> subjectEntity;
+    protected JAXBElement<COCTMT840000UV09Entity> subjectEntity;
     @XmlElementRef(name = "investigationSponsor", namespace = "urn:hl7-org:v3", type = JAXBElement.class, required = false)
     protected JAXBElement<COCTMT150000UV02Organization> investigationSponsor;
     @XmlAttribute(name = "classCode", required = true)
@@ -262,10 +262,10 @@ public class COCTMT550000UV07InvestigativeSubject {
      * 
      * @return
      *     possible object is
-     *     {@link JAXBElement }{@code <}{@link COCTMT840000UVPerson }{@code >}
+     *     {@link JAXBElement }{@code <}{@link COCTMT840000UV09Person }{@code >}
      *     
      */
-    public JAXBElement<COCTMT840000UVPerson> getSubjectPerson1() {
+    public JAXBElement<COCTMT840000UV09Person> getSubjectPerson1() {
         return subjectPerson1;
     }
 
@@ -274,10 +274,10 @@ public class COCTMT550000UV07InvestigativeSubject {
      * 
      * @param value
      *     allowed object is
-     *     {@link JAXBElement }{@code <}{@link COCTMT840000UVPerson }{@code >}
+     *     {@link JAXBElement }{@code <}{@link COCTMT840000UV09Person }{@code >}
      *     
      */
-    public void setSubjectPerson1(JAXBElement<COCTMT840000UVPerson> value) {
+    public void setSubjectPerson1(JAXBElement<COCTMT840000UV09Person> value) {
         this.subjectPerson1 = value;
     }
 
@@ -286,10 +286,10 @@ public class COCTMT550000UV07InvestigativeSubject {
      * 
      * @return
      *     possible object is
-     *     {@link JAXBElement }{@code <}{@link COCTMT840000UVLivingSubject }{@code >}
+     *     {@link JAXBElement }{@code <}{@link COCTMT840000UV09LivingSubject }{@code >}
      *     
      */
-    public JAXBElement<COCTMT840000UVLivingSubject> getSubjectLivingSubject1() {
+    public JAXBElement<COCTMT840000UV09LivingSubject> getSubjectLivingSubject1() {
         return subjectLivingSubject1;
     }
 
@@ -298,10 +298,10 @@ public class COCTMT550000UV07InvestigativeSubject {
      * 
      * @param value
      *     allowed object is
-     *     {@link JAXBElement }{@code <}{@link COCTMT840000UVLivingSubject }{@code >}
+     *     {@link JAXBElement }{@code <}{@link COCTMT840000UV09LivingSubject }{@code >}
      *     
      */
-    public void setSubjectLivingSubject1(JAXBElement<COCTMT840000UVLivingSubject> value) {
+    public void setSubjectLivingSubject1(JAXBElement<COCTMT840000UV09LivingSubject> value) {
         this.subjectLivingSubject1 = value;
     }
 
@@ -310,10 +310,10 @@ public class COCTMT550000UV07InvestigativeSubject {
      * 
      * @return
      *     possible object is
-     *     {@link JAXBElement }{@code <}{@link COCTMT840000UVNonPersonLivingSubject }{@code >}
+     *     {@link JAXBElement }{@code <}{@link COCTMT840000UV09NonPersonLivingSubject }{@code >}
      *     
      */
-    public JAXBElement<COCTMT840000UVNonPersonLivingSubject> getSubjectNonPersonLivingSubject1() {
+    public JAXBElement<COCTMT840000UV09NonPersonLivingSubject> getSubjectNonPersonLivingSubject1() {
         return subjectNonPersonLivingSubject1;
     }
 
@@ -322,10 +322,10 @@ public class COCTMT550000UV07InvestigativeSubject {
      * 
      * @param value
      *     allowed object is
-     *     {@link JAXBElement }{@code <}{@link COCTMT840000UVNonPersonLivingSubject }{@code >}
+     *     {@link JAXBElement }{@code <}{@link COCTMT840000UV09NonPersonLivingSubject }{@code >}
      *     
      */
-    public void setSubjectNonPersonLivingSubject1(JAXBElement<COCTMT840000UVNonPersonLivingSubject> value) {
+    public void setSubjectNonPersonLivingSubject1(JAXBElement<COCTMT840000UV09NonPersonLivingSubject> value) {
         this.subjectNonPersonLivingSubject1 = value;
     }
 
@@ -334,10 +334,10 @@ public class COCTMT550000UV07InvestigativeSubject {
      * 
      * @return
      *     possible object is
-     *     {@link JAXBElement }{@code <}{@link COCTMT840000UVPlace }{@code >}
+     *     {@link JAXBElement }{@code <}{@link COCTMT840000UV09Place }{@code >}
      *     
      */
-    public JAXBElement<COCTMT840000UVPlace> getSubjectPlace1() {
+    public JAXBElement<COCTMT840000UV09Place> getSubjectPlace1() {
         return subjectPlace1;
     }
 
@@ -346,10 +346,10 @@ public class COCTMT550000UV07InvestigativeSubject {
      * 
      * @param value
      *     allowed object is
-     *     {@link JAXBElement }{@code <}{@link COCTMT840000UVPlace }{@code >}
+     *     {@link JAXBElement }{@code <}{@link COCTMT840000UV09Place }{@code >}
      *     
      */
-    public void setSubjectPlace1(JAXBElement<COCTMT840000UVPlace> value) {
+    public void setSubjectPlace1(JAXBElement<COCTMT840000UV09Place> value) {
         this.subjectPlace1 = value;
     }
 
@@ -358,10 +358,10 @@ public class COCTMT550000UV07InvestigativeSubject {
      * 
      * @return
      *     possible object is
-     *     {@link JAXBElement }{@code <}{@link COCTMT840000UVMaterial }{@code >}
+     *     {@link JAXBElement }{@code <}{@link COCTMT840000UV09Material }{@code >}
      *     
      */
-    public JAXBElement<COCTMT840000UVMaterial> getSubjectMaterial() {
+    public JAXBElement<COCTMT840000UV09Material> getSubjectMaterial() {
         return subjectMaterial;
     }
 
@@ -370,10 +370,10 @@ public class COCTMT550000UV07InvestigativeSubject {
      * 
      * @param value
      *     allowed object is
-     *     {@link JAXBElement }{@code <}{@link COCTMT840000UVMaterial }{@code >}
+     *     {@link JAXBElement }{@code <}{@link COCTMT840000UV09Material }{@code >}
      *     
      */
-    public void setSubjectMaterial(JAXBElement<COCTMT840000UVMaterial> value) {
+    public void setSubjectMaterial(JAXBElement<COCTMT840000UV09Material> value) {
         this.subjectMaterial = value;
     }
 
@@ -382,10 +382,10 @@ public class COCTMT550000UV07InvestigativeSubject {
      * 
      * @return
      *     possible object is
-     *     {@link JAXBElement }{@code <}{@link COCTMT840000UVManufacturedMaterial }{@code >}
+     *     {@link JAXBElement }{@code <}{@link COCTMT840000UV09ManufacturedMaterial }{@code >}
      *     
      */
-    public JAXBElement<COCTMT840000UVManufacturedMaterial> getSubjectManufacturedMaterial() {
+    public JAXBElement<COCTMT840000UV09ManufacturedMaterial> getSubjectManufacturedMaterial() {
         return subjectManufacturedMaterial;
     }
 
@@ -394,10 +394,10 @@ public class COCTMT550000UV07InvestigativeSubject {
      * 
      * @param value
      *     allowed object is
-     *     {@link JAXBElement }{@code <}{@link COCTMT840000UVManufacturedMaterial }{@code >}
+     *     {@link JAXBElement }{@code <}{@link COCTMT840000UV09ManufacturedMaterial }{@code >}
      *     
      */
-    public void setSubjectManufacturedMaterial(JAXBElement<COCTMT840000UVManufacturedMaterial> value) {
+    public void setSubjectManufacturedMaterial(JAXBElement<COCTMT840000UV09ManufacturedMaterial> value) {
         this.subjectManufacturedMaterial = value;
     }
 
@@ -406,10 +406,10 @@ public class COCTMT550000UV07InvestigativeSubject {
      * 
      * @return
      *     possible object is
-     *     {@link JAXBElement }{@code <}{@link COCTMT840000UVOrganization }{@code >}
+     *     {@link JAXBElement }{@code <}{@link COCTMT840000UV09Organization }{@code >}
      *     
      */
-    public JAXBElement<COCTMT840000UVOrganization> getSubjectOrganization() {
+    public JAXBElement<COCTMT840000UV09Organization> getSubjectOrganization() {
         return subjectOrganization;
     }
 
@@ -418,10 +418,10 @@ public class COCTMT550000UV07InvestigativeSubject {
      * 
      * @param value
      *     allowed object is
-     *     {@link JAXBElement }{@code <}{@link COCTMT840000UVOrganization }{@code >}
+     *     {@link JAXBElement }{@code <}{@link COCTMT840000UV09Organization }{@code >}
      *     
      */
-    public void setSubjectOrganization(JAXBElement<COCTMT840000UVOrganization> value) {
+    public void setSubjectOrganization(JAXBElement<COCTMT840000UV09Organization> value) {
         this.subjectOrganization = value;
     }
 
@@ -430,10 +430,10 @@ public class COCTMT550000UV07InvestigativeSubject {
      * 
      * @return
      *     possible object is
-     *     {@link JAXBElement }{@code <}{@link COCTMT840000UVEntityGroup }{@code >}
+     *     {@link JAXBElement }{@code <}{@link COCTMT840000UV09EntityGroup }{@code >}
      *     
      */
-    public JAXBElement<COCTMT840000UVEntityGroup> getSubjectEntityGroup() {
+    public JAXBElement<COCTMT840000UV09EntityGroup> getSubjectEntityGroup() {
         return subjectEntityGroup;
     }
 
@@ -442,10 +442,10 @@ public class COCTMT550000UV07InvestigativeSubject {
      * 
      * @param value
      *     allowed object is
-     *     {@link JAXBElement }{@code <}{@link COCTMT840000UVEntityGroup }{@code >}
+     *     {@link JAXBElement }{@code <}{@link COCTMT840000UV09EntityGroup }{@code >}
      *     
      */
-    public void setSubjectEntityGroup(JAXBElement<COCTMT840000UVEntityGroup> value) {
+    public void setSubjectEntityGroup(JAXBElement<COCTMT840000UV09EntityGroup> value) {
         this.subjectEntityGroup = value;
     }
 
@@ -454,10 +454,10 @@ public class COCTMT550000UV07InvestigativeSubject {
      * 
      * @return
      *     possible object is
-     *     {@link JAXBElement }{@code <}{@link COCTMT840000UVEntity }{@code >}
+     *     {@link JAXBElement }{@code <}{@link COCTMT840000UV09Entity }{@code >}
      *     
      */
-    public JAXBElement<COCTMT840000UVEntity> getSubjectEntity() {
+    public JAXBElement<COCTMT840000UV09Entity> getSubjectEntity() {
         return subjectEntity;
     }
 
@@ -466,10 +466,10 @@ public class COCTMT550000UV07InvestigativeSubject {
      * 
      * @param value
      *     allowed object is
-     *     {@link JAXBElement }{@code <}{@link COCTMT840000UVEntity }{@code >}
+     *     {@link JAXBElement }{@code <}{@link COCTMT840000UV09Entity }{@code >}
      *     
      */
-    public void setSubjectEntity(JAXBElement<COCTMT840000UVEntity> value) {
+    public void setSubjectEntity(JAXBElement<COCTMT840000UV09Entity> value) {
         this.subjectEntity = value;
     }
 

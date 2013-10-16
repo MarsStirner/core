@@ -50,19 +50,19 @@ public class ENXP
 {
 
     @XmlAttribute(name = "partType")
-    protected String partType;
+    protected EntityNamePartType partType;
     @XmlAttribute(name = "qualifier")
-    protected List<String> qualifier;
+    protected List<EntityNamePartQualifier> qualifier;
 
     /**
      * Gets the value of the partType property.
      * 
      * @return
      *     possible object is
-     *     {@link String }
+     *     {@link EntityNamePartType }
      *     
      */
-    public String getPartType() {
+    public EntityNamePartType getPartType() {
         return partType;
     }
 
@@ -71,10 +71,10 @@ public class ENXP
      * 
      * @param value
      *     allowed object is
-     *     {@link String }
+     *     {@link EntityNamePartType }
      *     
      */
-    public void setPartType(String value) {
+    public void setPartType(EntityNamePartType value) {
         this.partType = value;
     }
 
@@ -96,13 +96,13 @@ public class ENXP
      * 
      * <p>
      * Objects of the following type(s) are allowed in the list
-     * {@link String }
+     * {@link EntityNamePartQualifier }
      * 
      * 
      */
-    public List<String> getQualifier() {
+    public List<EntityNamePartQualifier> getQualifier() {
         if (qualifier == null) {
-            qualifier = new ArrayList<String>();
+            qualifier = new ArrayList<EntityNamePartQualifier>();
         }
         return this.qualifier;
     }

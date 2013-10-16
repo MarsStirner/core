@@ -23,7 +23,7 @@ import javax.xml.bind.annotation.XmlType;
  *     &lt;restriction base="{http://www.w3.org/2001/XMLSchema}anyType">
  *       &lt;sequence>
  *         &lt;group ref="{urn:hl7-org:v3}InfrastructureRootElements"/>
- *         &lt;element name="administerableMedicine" type="{urn:hl7-org:v3}COCT_MT230100UV.Medicine"/>
+ *         &lt;element name="administrableMedicine" type="{urn:hl7-org:v3}COCT_MT230100UV.Medicine"/>
  *         &lt;element name="subjectOf1" type="{urn:hl7-org:v3}COCT_MT230100UV.Subject2" maxOccurs="unbounded" minOccurs="0"/>
  *         &lt;element name="subjectOf2" type="{urn:hl7-org:v3}COCT_MT230100UV.Subject1" maxOccurs="unbounded" minOccurs="0"/>
  *         &lt;element name="subjectOf3" type="{urn:hl7-org:v3}COCT_MT230100UV.Subject22" maxOccurs="unbounded" minOccurs="0"/>
@@ -31,8 +31,7 @@ import javax.xml.bind.annotation.XmlType;
  *         &lt;element name="subjectOf5" type="{urn:hl7-org:v3}COCT_MT230100UV.Subject7" minOccurs="0"/>
  *       &lt;/sequence>
  *       &lt;attGroup ref="{urn:hl7-org:v3}InfrastructureRootAttributes"/>
- *       &lt;attribute name="nullFlavor" type="{urn:hl7-org:v3}NullFlavor" />
- *       &lt;attribute name="classCode" use="required" type="{urn:hl7-org:v3}RoleClass" fixed="ADMM" />
+ *       &lt;attribute name="classCode" use="required" type="{urn:hl7-org:v3}RoleClassAdministerableMaterial" />
  *     &lt;/restriction>
  *   &lt;/complexContent>
  * &lt;/complexType>
@@ -45,7 +44,7 @@ import javax.xml.bind.annotation.XmlType;
     "realmCode",
     "typeId",
     "templateId",
-    "administerableMedicine",
+    "administrableMedicine",
     "subjectOf1",
     "subjectOf2",
     "subjectOf3",
@@ -58,7 +57,7 @@ public class COCTMT230100UVMedication {
     protected II typeId;
     protected List<II> templateId;
     @XmlElement(required = true)
-    protected COCTMT230100UVMedicine administerableMedicine;
+    protected COCTMT230100UVMedicine administrableMedicine;
     @XmlElement(nillable = true)
     protected List<COCTMT230100UVSubject2> subjectOf1;
     @XmlElement(nillable = true)
@@ -69,10 +68,8 @@ public class COCTMT230100UVMedication {
     protected List<COCTMT230100UVSubject3> subjectOf4;
     @XmlElementRef(name = "subjectOf5", namespace = "urn:hl7-org:v3", type = JAXBElement.class, required = false)
     protected JAXBElement<COCTMT230100UVSubject7> subjectOf5;
-    @XmlAttribute(name = "nullFlavor")
-    protected List<String> nullFlavor;
     @XmlAttribute(name = "classCode", required = true)
-    protected List<String> classCode;
+    protected RoleClassAdministerableMaterial classCode;
 
     /**
      * Gets the value of the realmCode property.
@@ -157,27 +154,27 @@ public class COCTMT230100UVMedication {
     }
 
     /**
-     * Gets the value of the administerableMedicine property.
+     * Gets the value of the administrableMedicine property.
      * 
      * @return
      *     possible object is
      *     {@link COCTMT230100UVMedicine }
      *     
      */
-    public COCTMT230100UVMedicine getAdministerableMedicine() {
-        return administerableMedicine;
+    public COCTMT230100UVMedicine getAdministrableMedicine() {
+        return administrableMedicine;
     }
 
     /**
-     * Sets the value of the administerableMedicine property.
+     * Sets the value of the administrableMedicine property.
      * 
      * @param value
      *     allowed object is
      *     {@link COCTMT230100UVMedicine }
      *     
      */
-    public void setAdministerableMedicine(COCTMT230100UVMedicine value) {
-        this.administerableMedicine = value;
+    public void setAdministrableMedicine(COCTMT230100UVMedicine value) {
+        this.administrableMedicine = value;
     }
 
     /**
@@ -321,61 +318,27 @@ public class COCTMT230100UVMedication {
     }
 
     /**
-     * Gets the value of the nullFlavor property.
+     * Gets the value of the classCode property.
      * 
-     * <p>
-     * This accessor method returns a reference to the live list,
-     * not a snapshot. Therefore any modification you make to the
-     * returned list will be present inside the JAXB object.
-     * This is why there is not a <CODE>set</CODE> method for the nullFlavor property.
-     * 
-     * <p>
-     * For example, to add a new item, do as follows:
-     * <pre>
-     *    getNullFlavor().add(newItem);
-     * </pre>
-     * 
-     * 
-     * <p>
-     * Objects of the following type(s) are allowed in the list
-     * {@link String }
-     * 
-     * 
+     * @return
+     *     possible object is
+     *     {@link RoleClassAdministerableMaterial }
+     *     
      */
-    public List<String> getNullFlavor() {
-        if (nullFlavor == null) {
-            nullFlavor = new ArrayList<String>();
-        }
-        return this.nullFlavor;
+    public RoleClassAdministerableMaterial getClassCode() {
+        return classCode;
     }
 
     /**
-     * Gets the value of the classCode property.
+     * Sets the value of the classCode property.
      * 
-     * <p>
-     * This accessor method returns a reference to the live list,
-     * not a snapshot. Therefore any modification you make to the
-     * returned list will be present inside the JAXB object.
-     * This is why there is not a <CODE>set</CODE> method for the classCode property.
-     * 
-     * <p>
-     * For example, to add a new item, do as follows:
-     * <pre>
-     *    getClassCode().add(newItem);
-     * </pre>
-     * 
-     * 
-     * <p>
-     * Objects of the following type(s) are allowed in the list
-     * {@link String }
-     * 
-     * 
+     * @param value
+     *     allowed object is
+     *     {@link RoleClassAdministerableMaterial }
+     *     
      */
-    public List<String> getClassCode() {
-        if (classCode == null) {
-            classCode = new ArrayList<String>();
-        }
-        return this.classCode;
+    public void setClassCode(RoleClassAdministerableMaterial value) {
+        this.classCode = value;
     }
 
 }

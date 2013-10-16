@@ -7,8 +7,6 @@ import javax.xml.bind.annotation.XmlAccessType;
 import javax.xml.bind.annotation.XmlAccessorType;
 import javax.xml.bind.annotation.XmlAttribute;
 import javax.xml.bind.annotation.XmlType;
-import javax.xml.bind.annotation.adapters.CollapsedStringAdapter;
-import javax.xml.bind.annotation.adapters.XmlJavaTypeAdapter;
 
 
 /**
@@ -55,12 +53,11 @@ public class COCTMT110000UV04AccountHolderOrganization {
     protected CE code;
     protected ON name;
     @XmlAttribute(name = "nullFlavor")
-    protected List<String> nullFlavor;
+    protected NullFlavor nullFlavor;
     @XmlAttribute(name = "classCode", required = true)
-    protected String classCode;
+    protected EntityClassOrganization classCode;
     @XmlAttribute(name = "determinerCode", required = true)
-    @XmlJavaTypeAdapter(CollapsedStringAdapter.class)
-    protected String determinerCode;
+    protected EntityDeterminerSpecific determinerCode;
 
     /**
      * Gets the value of the realmCode property.
@@ -224,30 +221,25 @@ public class COCTMT110000UV04AccountHolderOrganization {
     /**
      * Gets the value of the nullFlavor property.
      * 
-     * <p>
-     * This accessor method returns a reference to the live list,
-     * not a snapshot. Therefore any modification you make to the
-     * returned list will be present inside the JAXB object.
-     * This is why there is not a <CODE>set</CODE> method for the nullFlavor property.
-     * 
-     * <p>
-     * For example, to add a new item, do as follows:
-     * <pre>
-     *    getNullFlavor().add(newItem);
-     * </pre>
-     * 
-     * 
-     * <p>
-     * Objects of the following type(s) are allowed in the list
-     * {@link String }
-     * 
-     * 
+     * @return
+     *     possible object is
+     *     {@link NullFlavor }
+     *     
      */
-    public List<String> getNullFlavor() {
-        if (nullFlavor == null) {
-            nullFlavor = new ArrayList<String>();
-        }
-        return this.nullFlavor;
+    public NullFlavor getNullFlavor() {
+        return nullFlavor;
+    }
+
+    /**
+     * Sets the value of the nullFlavor property.
+     * 
+     * @param value
+     *     allowed object is
+     *     {@link NullFlavor }
+     *     
+     */
+    public void setNullFlavor(NullFlavor value) {
+        this.nullFlavor = value;
     }
 
     /**
@@ -255,10 +247,10 @@ public class COCTMT110000UV04AccountHolderOrganization {
      * 
      * @return
      *     possible object is
-     *     {@link String }
+     *     {@link EntityClassOrganization }
      *     
      */
-    public String getClassCode() {
+    public EntityClassOrganization getClassCode() {
         return classCode;
     }
 
@@ -267,10 +259,10 @@ public class COCTMT110000UV04AccountHolderOrganization {
      * 
      * @param value
      *     allowed object is
-     *     {@link String }
+     *     {@link EntityClassOrganization }
      *     
      */
-    public void setClassCode(String value) {
+    public void setClassCode(EntityClassOrganization value) {
         this.classCode = value;
     }
 
@@ -279,10 +271,10 @@ public class COCTMT110000UV04AccountHolderOrganization {
      * 
      * @return
      *     possible object is
-     *     {@link String }
+     *     {@link EntityDeterminerSpecific }
      *     
      */
-    public String getDeterminerCode() {
+    public EntityDeterminerSpecific getDeterminerCode() {
         return determinerCode;
     }
 
@@ -291,10 +283,10 @@ public class COCTMT110000UV04AccountHolderOrganization {
      * 
      * @param value
      *     allowed object is
-     *     {@link String }
+     *     {@link EntityDeterminerSpecific }
      *     
      */
-    public void setDeterminerCode(String value) {
+    public void setDeterminerCode(EntityDeterminerSpecific value) {
         this.determinerCode = value;
     }
 

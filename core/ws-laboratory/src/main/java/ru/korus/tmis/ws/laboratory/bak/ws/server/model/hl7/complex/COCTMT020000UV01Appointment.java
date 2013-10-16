@@ -30,7 +30,7 @@ import javax.xml.bind.annotation.adapters.XmlJavaTypeAdapter;
  *         &lt;element name="scheduleRequest" type="{urn:hl7-org:v3}COCT_MT020000UV01.ScheduleRequest" maxOccurs="unbounded" minOccurs="0"/>
  *       &lt;/sequence>
  *       &lt;attGroup ref="{urn:hl7-org:v3}InfrastructureRootAttributes"/>
- *       &lt;attribute name="classCode" use="required" type="{urn:hl7-org:v3}ActClassRoot" />
+ *       &lt;attribute name="classCode" use="required" type="{urn:hl7-org:v3}cs" />
  *       &lt;attribute name="moodCode" use="required" type="{urn:hl7-org:v3}ActMoodAppointment" />
  *     &lt;/restriction>
  *   &lt;/complexContent>
@@ -64,10 +64,10 @@ public class COCTMT020000UV01Appointment {
     @XmlElement(nillable = true)
     protected List<COCTMT020000UV01ScheduleRequest> scheduleRequest;
     @XmlAttribute(name = "classCode", required = true)
-    protected List<String> classCode;
-    @XmlAttribute(name = "moodCode", required = true)
     @XmlJavaTypeAdapter(CollapsedStringAdapter.class)
-    protected String moodCode;
+    protected String classCode;
+    @XmlAttribute(name = "moodCode", required = true)
+    protected ActMoodAppointment moodCode;
 
     /**
      * Gets the value of the realmCode property.
@@ -289,30 +289,25 @@ public class COCTMT020000UV01Appointment {
     /**
      * Gets the value of the classCode property.
      * 
-     * <p>
-     * This accessor method returns a reference to the live list,
-     * not a snapshot. Therefore any modification you make to the
-     * returned list will be present inside the JAXB object.
-     * This is why there is not a <CODE>set</CODE> method for the classCode property.
-     * 
-     * <p>
-     * For example, to add a new item, do as follows:
-     * <pre>
-     *    getClassCode().add(newItem);
-     * </pre>
-     * 
-     * 
-     * <p>
-     * Objects of the following type(s) are allowed in the list
-     * {@link String }
-     * 
-     * 
+     * @return
+     *     possible object is
+     *     {@link String }
+     *     
      */
-    public List<String> getClassCode() {
-        if (classCode == null) {
-            classCode = new ArrayList<String>();
-        }
-        return this.classCode;
+    public String getClassCode() {
+        return classCode;
+    }
+
+    /**
+     * Sets the value of the classCode property.
+     * 
+     * @param value
+     *     allowed object is
+     *     {@link String }
+     *     
+     */
+    public void setClassCode(String value) {
+        this.classCode = value;
     }
 
     /**
@@ -320,10 +315,10 @@ public class COCTMT020000UV01Appointment {
      * 
      * @return
      *     possible object is
-     *     {@link String }
+     *     {@link ActMoodAppointment }
      *     
      */
-    public String getMoodCode() {
+    public ActMoodAppointment getMoodCode() {
         return moodCode;
     }
 
@@ -332,10 +327,10 @@ public class COCTMT020000UV01Appointment {
      * 
      * @param value
      *     allowed object is
-     *     {@link String }
+     *     {@link ActMoodAppointment }
      *     
      */
-    public void setMoodCode(String value) {
+    public void setMoodCode(ActMoodAppointment value) {
         this.moodCode = value;
     }
 

@@ -36,12 +36,17 @@ public class BalanceOfGoodsInfoBean implements BalanceOfGoodsInfo {
     }
 
     private void addDrug(DrugList drugList, String drugCode) {
-        final POCDMT000040LabeledDrug labeledDrug = factoryHL7.createPOCDMT000040LabeledDrug();
+        final POCDMT000040LabeledDrug labeledDrug = getLabeledDrug(factoryHL7, drugCode);
         drugList.getDrug().add(labeledDrug);
+    }
+
+    public static POCDMT000040LabeledDrug getLabeledDrug(final org.hl7.v3.ObjectFactory factoryHL7, final String drugCode) {
+        final POCDMT000040LabeledDrug labeledDrug = factoryHL7.createPOCDMT000040LabeledDrug();
         final CE ce = factoryHL7.createCE();
         labeledDrug.setCode(ce);
         ce.setCodeSystemName("RLS_NOMEN");
         ce.setCode(drugCode);
+        return labeledDrug;
     }
 
 }

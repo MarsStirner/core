@@ -11,6 +11,11 @@ import java.util.Date;
  */
 @Entity
 @Table(name = "DrugComponent", schema = "", catalog = "")
+@NamedQueries(
+        {
+                @NamedQuery(name = "DrugComponent.getByActionId", query = "SELECT dc FROM DrugComponent dc WHERE dc.action.id = :actionId"),
+        }
+)
 public class DrugComponent {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)

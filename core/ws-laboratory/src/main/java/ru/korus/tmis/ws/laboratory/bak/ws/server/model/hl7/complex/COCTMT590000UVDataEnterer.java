@@ -48,9 +48,9 @@ public class COCTMT590000UVDataEnterer {
     @XmlElement(required = true, nillable = true)
     protected COCTMT090000UV01AssignedEntity assignedEntity;
     @XmlAttribute(name = "nullFlavor")
-    protected List<String> nullFlavor;
+    protected NullFlavor nullFlavor;
     @XmlAttribute(name = "typeCode")
-    protected List<String> typeCode;
+    protected ParticipationType typeCode;
 
     /**
      * Gets the value of the realmCode property.
@@ -161,59 +161,53 @@ public class COCTMT590000UVDataEnterer {
     /**
      * Gets the value of the nullFlavor property.
      * 
-     * <p>
-     * This accessor method returns a reference to the live list,
-     * not a snapshot. Therefore any modification you make to the
-     * returned list will be present inside the JAXB object.
-     * This is why there is not a <CODE>set</CODE> method for the nullFlavor property.
-     * 
-     * <p>
-     * For example, to add a new item, do as follows:
-     * <pre>
-     *    getNullFlavor().add(newItem);
-     * </pre>
-     * 
-     * 
-     * <p>
-     * Objects of the following type(s) are allowed in the list
-     * {@link String }
-     * 
-     * 
+     * @return
+     *     possible object is
+     *     {@link NullFlavor }
+     *     
      */
-    public List<String> getNullFlavor() {
-        if (nullFlavor == null) {
-            nullFlavor = new ArrayList<String>();
-        }
-        return this.nullFlavor;
+    public NullFlavor getNullFlavor() {
+        return nullFlavor;
+    }
+
+    /**
+     * Sets the value of the nullFlavor property.
+     * 
+     * @param value
+     *     allowed object is
+     *     {@link NullFlavor }
+     *     
+     */
+    public void setNullFlavor(NullFlavor value) {
+        this.nullFlavor = value;
     }
 
     /**
      * Gets the value of the typeCode property.
      * 
-     * <p>
-     * This accessor method returns a reference to the live list,
-     * not a snapshot. Therefore any modification you make to the
-     * returned list will be present inside the JAXB object.
-     * This is why there is not a <CODE>set</CODE> method for the typeCode property.
-     * 
-     * <p>
-     * For example, to add a new item, do as follows:
-     * <pre>
-     *    getTypeCode().add(newItem);
-     * </pre>
-     * 
-     * 
-     * <p>
-     * Objects of the following type(s) are allowed in the list
-     * {@link String }
-     * 
-     * 
+     * @return
+     *     possible object is
+     *     {@link ParticipationType }
+     *     
      */
-    public List<String> getTypeCode() {
+    public ParticipationType getTypeCode() {
         if (typeCode == null) {
-            typeCode = new ArrayList<String>();
+            return ParticipationType.ENT;
+        } else {
+            return typeCode;
         }
-        return this.typeCode;
+    }
+
+    /**
+     * Sets the value of the typeCode property.
+     * 
+     * @param value
+     *     allowed object is
+     *     {@link ParticipationType }
+     *     
+     */
+    public void setTypeCode(ParticipationType value) {
+        this.typeCode = value;
     }
 
 }

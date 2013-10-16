@@ -13,6 +13,7 @@ import javax.xml.bind.annotation.XmlType;
  * <pre>
  * &lt;simpleType name="x_ClinicalStatementSupplyMood">
  *   &lt;restriction base="{urn:hl7-org:v3}cs">
+ *     &lt;enumeration value="DEF"/>
  *     &lt;enumeration value="EVN"/>
  *     &lt;enumeration value="INT"/>
  *   &lt;/restriction>
@@ -24,6 +25,7 @@ import javax.xml.bind.annotation.XmlType;
 @XmlEnum
 public enum XClinicalStatementSupplyMood {
 
+    DEF,
     EVN,
     INT;
 

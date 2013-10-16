@@ -14,7 +14,6 @@ import javax.xml.bind.annotation.XmlType;
  * <pre>
  * &lt;simpleType name="x_PhoneOrEmailURLScheme">
  *   &lt;restriction base="{urn:hl7-org:v3}cs">
- *     &lt;enumeration value="fax"/>
  *     &lt;enumeration value="mailto"/>
  *     &lt;enumeration value="tel"/>
  *   &lt;/restriction>
@@ -26,8 +25,6 @@ import javax.xml.bind.annotation.XmlType;
 @XmlEnum
 public enum XPhoneOrEmailURLScheme {
 
-    @XmlEnumValue("fax")
-    FAX("fax"),
     @XmlEnumValue("mailto")
     MAILTO("mailto"),
     @XmlEnumValue("tel")

@@ -14,6 +14,9 @@ import javax.xml.bind.annotation.XmlType;
  * &lt;simpleType name="x_RoleClassCredentialedEntity">
  *   &lt;restriction base="{urn:hl7-org:v3}cs">
  *     &lt;enumeration value="ASSIGNED"/>
+ *     &lt;enumeration value="LIC"/>
+ *     &lt;enumeration value="NOT"/>
+ *     &lt;enumeration value="PROV"/>
  *     &lt;enumeration value="QUAL"/>
  *   &lt;/restriction>
  * &lt;/simpleType>
@@ -25,6 +28,9 @@ import javax.xml.bind.annotation.XmlType;
 public enum XRoleClassCredentialedEntity {
 
     ASSIGNED,
+    LIC,
+    NOT,
+    PROV,
     QUAL;
 
     public String value() {

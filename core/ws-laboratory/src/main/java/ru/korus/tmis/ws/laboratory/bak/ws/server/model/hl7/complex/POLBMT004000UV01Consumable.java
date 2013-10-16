@@ -8,8 +8,6 @@ import javax.xml.bind.annotation.XmlAccessorType;
 import javax.xml.bind.annotation.XmlAttribute;
 import javax.xml.bind.annotation.XmlElement;
 import javax.xml.bind.annotation.XmlType;
-import javax.xml.bind.annotation.adapters.CollapsedStringAdapter;
-import javax.xml.bind.annotation.adapters.XmlJavaTypeAdapter;
 
 
 /**
@@ -24,7 +22,7 @@ import javax.xml.bind.annotation.adapters.XmlJavaTypeAdapter;
  *       &lt;sequence>
  *         &lt;group ref="{urn:hl7-org:v3}InfrastructureRootElements"/>
  *         &lt;element name="sequenceNumber" type="{urn:hl7-org:v3}INT" minOccurs="0"/>
- *         &lt;element name="labTestKit" type="{urn:hl7-org:v3}COCT_MT430000UV.LabTestKit"/>
+ *         &lt;element name="labTestKit" type="{urn:hl7-org:v3}COCT_MT430000UV09.LabTestKit"/>
  *       &lt;/sequence>
  *       &lt;attGroup ref="{urn:hl7-org:v3}InfrastructureRootAttributes"/>
  *       &lt;attribute name="nullFlavor" type="{urn:hl7-org:v3}NullFlavor" />
@@ -52,14 +50,13 @@ public class POLBMT004000UV01Consumable {
     protected List<II> templateId;
     protected INT sequenceNumber;
     @XmlElement(required = true, nillable = true)
-    protected COCTMT430000UVLabTestKit labTestKit;
+    protected COCTMT430000UV09LabTestKit labTestKit;
     @XmlAttribute(name = "nullFlavor")
-    protected List<String> nullFlavor;
+    protected NullFlavor nullFlavor;
     @XmlAttribute(name = "typeCode", required = true)
-    @XmlJavaTypeAdapter(CollapsedStringAdapter.class)
-    protected String typeCode;
+    protected ParticipationConsumable typeCode;
     @XmlAttribute(name = "contextControlCode")
-    protected String contextControlCode;
+    protected ContextControl contextControlCode;
 
     /**
      * Gets the value of the realmCode property.
@@ -172,10 +169,10 @@ public class POLBMT004000UV01Consumable {
      * 
      * @return
      *     possible object is
-     *     {@link COCTMT430000UVLabTestKit }
+     *     {@link COCTMT430000UV09LabTestKit }
      *     
      */
-    public COCTMT430000UVLabTestKit getLabTestKit() {
+    public COCTMT430000UV09LabTestKit getLabTestKit() {
         return labTestKit;
     }
 
@@ -184,40 +181,35 @@ public class POLBMT004000UV01Consumable {
      * 
      * @param value
      *     allowed object is
-     *     {@link COCTMT430000UVLabTestKit }
+     *     {@link COCTMT430000UV09LabTestKit }
      *     
      */
-    public void setLabTestKit(COCTMT430000UVLabTestKit value) {
+    public void setLabTestKit(COCTMT430000UV09LabTestKit value) {
         this.labTestKit = value;
     }
 
     /**
      * Gets the value of the nullFlavor property.
      * 
-     * <p>
-     * This accessor method returns a reference to the live list,
-     * not a snapshot. Therefore any modification you make to the
-     * returned list will be present inside the JAXB object.
-     * This is why there is not a <CODE>set</CODE> method for the nullFlavor property.
-     * 
-     * <p>
-     * For example, to add a new item, do as follows:
-     * <pre>
-     *    getNullFlavor().add(newItem);
-     * </pre>
-     * 
-     * 
-     * <p>
-     * Objects of the following type(s) are allowed in the list
-     * {@link String }
-     * 
-     * 
+     * @return
+     *     possible object is
+     *     {@link NullFlavor }
+     *     
      */
-    public List<String> getNullFlavor() {
-        if (nullFlavor == null) {
-            nullFlavor = new ArrayList<String>();
-        }
-        return this.nullFlavor;
+    public NullFlavor getNullFlavor() {
+        return nullFlavor;
+    }
+
+    /**
+     * Sets the value of the nullFlavor property.
+     * 
+     * @param value
+     *     allowed object is
+     *     {@link NullFlavor }
+     *     
+     */
+    public void setNullFlavor(NullFlavor value) {
+        this.nullFlavor = value;
     }
 
     /**
@@ -225,10 +217,10 @@ public class POLBMT004000UV01Consumable {
      * 
      * @return
      *     possible object is
-     *     {@link String }
+     *     {@link ParticipationConsumable }
      *     
      */
-    public String getTypeCode() {
+    public ParticipationConsumable getTypeCode() {
         return typeCode;
     }
 
@@ -237,10 +229,10 @@ public class POLBMT004000UV01Consumable {
      * 
      * @param value
      *     allowed object is
-     *     {@link String }
+     *     {@link ParticipationConsumable }
      *     
      */
-    public void setTypeCode(String value) {
+    public void setTypeCode(ParticipationConsumable value) {
         this.typeCode = value;
     }
 
@@ -249,12 +241,12 @@ public class POLBMT004000UV01Consumable {
      * 
      * @return
      *     possible object is
-     *     {@link String }
+     *     {@link ContextControl }
      *     
      */
-    public String getContextControlCode() {
+    public ContextControl getContextControlCode() {
         if (contextControlCode == null) {
-            return "ON";
+            return ContextControl.ON;
         } else {
             return contextControlCode;
         }
@@ -265,10 +257,10 @@ public class POLBMT004000UV01Consumable {
      * 
      * @param value
      *     allowed object is
-     *     {@link String }
+     *     {@link ContextControl }
      *     
      */
-    public void setContextControlCode(String value) {
+    public void setContextControlCode(ContextControl value) {
         this.contextControlCode = value;
     }
 

@@ -25,9 +25,12 @@ import javax.xml.bind.annotation.XmlType;
  *         &lt;element name="sequenceNumber" type="{urn:hl7-org:v3}INT" minOccurs="0"/>
  *         &lt;element name="awarenessCode" type="{urn:hl7-org:v3}CE" minOccurs="0"/>
  *         &lt;choice>
- *           &lt;element name="patient" type="{urn:hl7-org:v3}COCT_MT050000UV01.Patient"/>
- *           &lt;element name="relatedEntity" type="{urn:hl7-org:v3}COCT_MT530000UV.RelatedEntity"/>
- *           &lt;element name="specimen" type="{urn:hl7-org:v3}COCT_MT080000UV.Specimen"/>
+ *           &lt;element name="patient1" type="{urn:hl7-org:v3}COCT_MT050000UV01.Patient"/>
+ *           &lt;element name="relatedEntity1" type="{urn:hl7-org:v3}COCT_MT530000UV.RelatedEntity"/>
+ *           &lt;choice>
+ *             &lt;element name="specimen" type="{urn:hl7-org:v3}COCT_MT080000UV09.Specimen"/>
+ *             &lt;element name="derivedSpecimen" type="{urn:hl7-org:v3}COCT_MT080000UV09.DerivedSpecimen"/>
+ *           &lt;/choice>
  *         &lt;/choice>
  *       &lt;/sequence>
  *       &lt;attGroup ref="{urn:hl7-org:v3}InfrastructureRootAttributes"/>
@@ -48,9 +51,10 @@ import javax.xml.bind.annotation.XmlType;
     "templateId",
     "sequenceNumber",
     "awarenessCode",
-    "patient",
-    "relatedEntity",
-    "specimen"
+    "patient1",
+    "relatedEntity1",
+    "specimen",
+    "derivedSpecimen"
 })
 public class COCTMT530000UVSubject2 {
 
@@ -59,18 +63,20 @@ public class COCTMT530000UVSubject2 {
     protected List<II> templateId;
     protected INT sequenceNumber;
     protected CE awarenessCode;
-    @XmlElementRef(name = "patient", namespace = "urn:hl7-org:v3", type = JAXBElement.class, required = false)
-    protected JAXBElement<COCTMT050000UV01Patient> patient;
-    @XmlElementRef(name = "relatedEntity", namespace = "urn:hl7-org:v3", type = JAXBElement.class, required = false)
-    protected JAXBElement<COCTMT530000UVRelatedEntity> relatedEntity;
+    @XmlElementRef(name = "patient1", namespace = "urn:hl7-org:v3", type = JAXBElement.class, required = false)
+    protected JAXBElement<COCTMT050000UV01Patient> patient1;
+    @XmlElementRef(name = "relatedEntity1", namespace = "urn:hl7-org:v3", type = JAXBElement.class, required = false)
+    protected JAXBElement<COCTMT530000UVRelatedEntity> relatedEntity1;
     @XmlElementRef(name = "specimen", namespace = "urn:hl7-org:v3", type = JAXBElement.class, required = false)
-    protected JAXBElement<COCTMT080000UVSpecimen> specimen;
+    protected JAXBElement<COCTMT080000UV09Specimen> specimen;
+    @XmlElementRef(name = "derivedSpecimen", namespace = "urn:hl7-org:v3", type = JAXBElement.class, required = false)
+    protected JAXBElement<COCTMT080000UV09DerivedSpecimen> derivedSpecimen;
     @XmlAttribute(name = "nullFlavor")
-    protected List<String> nullFlavor;
+    protected NullFlavor nullFlavor;
     @XmlAttribute(name = "typeCode", required = true)
     protected ParticipationTargetSubject typeCode;
     @XmlAttribute(name = "contextControlCode")
-    protected String contextControlCode;
+    protected ContextControl contextControlCode;
 
     /**
      * Gets the value of the realmCode property.
@@ -203,51 +209,51 @@ public class COCTMT530000UVSubject2 {
     }
 
     /**
-     * Gets the value of the patient property.
+     * Gets the value of the patient1 property.
      * 
      * @return
      *     possible object is
      *     {@link JAXBElement }{@code <}{@link COCTMT050000UV01Patient }{@code >}
      *     
      */
-    public JAXBElement<COCTMT050000UV01Patient> getPatient() {
-        return patient;
+    public JAXBElement<COCTMT050000UV01Patient> getPatient1() {
+        return patient1;
     }
 
     /**
-     * Sets the value of the patient property.
+     * Sets the value of the patient1 property.
      * 
      * @param value
      *     allowed object is
      *     {@link JAXBElement }{@code <}{@link COCTMT050000UV01Patient }{@code >}
      *     
      */
-    public void setPatient(JAXBElement<COCTMT050000UV01Patient> value) {
-        this.patient = value;
+    public void setPatient1(JAXBElement<COCTMT050000UV01Patient> value) {
+        this.patient1 = value;
     }
 
     /**
-     * Gets the value of the relatedEntity property.
+     * Gets the value of the relatedEntity1 property.
      * 
      * @return
      *     possible object is
      *     {@link JAXBElement }{@code <}{@link COCTMT530000UVRelatedEntity }{@code >}
      *     
      */
-    public JAXBElement<COCTMT530000UVRelatedEntity> getRelatedEntity() {
-        return relatedEntity;
+    public JAXBElement<COCTMT530000UVRelatedEntity> getRelatedEntity1() {
+        return relatedEntity1;
     }
 
     /**
-     * Sets the value of the relatedEntity property.
+     * Sets the value of the relatedEntity1 property.
      * 
      * @param value
      *     allowed object is
      *     {@link JAXBElement }{@code <}{@link COCTMT530000UVRelatedEntity }{@code >}
      *     
      */
-    public void setRelatedEntity(JAXBElement<COCTMT530000UVRelatedEntity> value) {
-        this.relatedEntity = value;
+    public void setRelatedEntity1(JAXBElement<COCTMT530000UVRelatedEntity> value) {
+        this.relatedEntity1 = value;
     }
 
     /**
@@ -255,10 +261,10 @@ public class COCTMT530000UVSubject2 {
      * 
      * @return
      *     possible object is
-     *     {@link JAXBElement }{@code <}{@link COCTMT080000UVSpecimen }{@code >}
+     *     {@link JAXBElement }{@code <}{@link COCTMT080000UV09Specimen }{@code >}
      *     
      */
-    public JAXBElement<COCTMT080000UVSpecimen> getSpecimen() {
+    public JAXBElement<COCTMT080000UV09Specimen> getSpecimen() {
         return specimen;
     }
 
@@ -267,40 +273,59 @@ public class COCTMT530000UVSubject2 {
      * 
      * @param value
      *     allowed object is
-     *     {@link JAXBElement }{@code <}{@link COCTMT080000UVSpecimen }{@code >}
+     *     {@link JAXBElement }{@code <}{@link COCTMT080000UV09Specimen }{@code >}
      *     
      */
-    public void setSpecimen(JAXBElement<COCTMT080000UVSpecimen> value) {
+    public void setSpecimen(JAXBElement<COCTMT080000UV09Specimen> value) {
         this.specimen = value;
+    }
+
+    /**
+     * Gets the value of the derivedSpecimen property.
+     * 
+     * @return
+     *     possible object is
+     *     {@link JAXBElement }{@code <}{@link COCTMT080000UV09DerivedSpecimen }{@code >}
+     *     
+     */
+    public JAXBElement<COCTMT080000UV09DerivedSpecimen> getDerivedSpecimen() {
+        return derivedSpecimen;
+    }
+
+    /**
+     * Sets the value of the derivedSpecimen property.
+     * 
+     * @param value
+     *     allowed object is
+     *     {@link JAXBElement }{@code <}{@link COCTMT080000UV09DerivedSpecimen }{@code >}
+     *     
+     */
+    public void setDerivedSpecimen(JAXBElement<COCTMT080000UV09DerivedSpecimen> value) {
+        this.derivedSpecimen = value;
     }
 
     /**
      * Gets the value of the nullFlavor property.
      * 
-     * <p>
-     * This accessor method returns a reference to the live list,
-     * not a snapshot. Therefore any modification you make to the
-     * returned list will be present inside the JAXB object.
-     * This is why there is not a <CODE>set</CODE> method for the nullFlavor property.
-     * 
-     * <p>
-     * For example, to add a new item, do as follows:
-     * <pre>
-     *    getNullFlavor().add(newItem);
-     * </pre>
-     * 
-     * 
-     * <p>
-     * Objects of the following type(s) are allowed in the list
-     * {@link String }
-     * 
-     * 
+     * @return
+     *     possible object is
+     *     {@link NullFlavor }
+     *     
      */
-    public List<String> getNullFlavor() {
-        if (nullFlavor == null) {
-            nullFlavor = new ArrayList<String>();
-        }
-        return this.nullFlavor;
+    public NullFlavor getNullFlavor() {
+        return nullFlavor;
+    }
+
+    /**
+     * Sets the value of the nullFlavor property.
+     * 
+     * @param value
+     *     allowed object is
+     *     {@link NullFlavor }
+     *     
+     */
+    public void setNullFlavor(NullFlavor value) {
+        this.nullFlavor = value;
     }
 
     /**
@@ -332,12 +357,12 @@ public class COCTMT530000UVSubject2 {
      * 
      * @return
      *     possible object is
-     *     {@link String }
+     *     {@link ContextControl }
      *     
      */
-    public String getContextControlCode() {
+    public ContextControl getContextControlCode() {
         if (contextControlCode == null) {
-            return "OP";
+            return ContextControl.OP;
         } else {
             return contextControlCode;
         }
@@ -348,10 +373,10 @@ public class COCTMT530000UVSubject2 {
      * 
      * @param value
      *     allowed object is
-     *     {@link String }
+     *     {@link ContextControl }
      *     
      */
-    public void setContextControlCode(String value) {
+    public void setContextControlCode(ContextControl value) {
         this.contextControlCode = value;
     }
 

@@ -49,7 +49,7 @@ public class TEL
 
     protected List<SXCMTS> useablePeriod;
     @XmlAttribute(name = "use")
-    protected List<String> use;
+    protected List<TelecommunicationAddressUse> use;
 
     /**
      * Gets the value of the useablePeriod property.
@@ -98,13 +98,13 @@ public class TEL
      * 
      * <p>
      * Objects of the following type(s) are allowed in the list
-     * {@link String }
+     * {@link TelecommunicationAddressUse }
      * 
      * 
      */
-    public List<String> getUse() {
+    public List<TelecommunicationAddressUse> getUse() {
         if (use == null) {
-            use = new ArrayList<String>();
+            use = new ArrayList<TelecommunicationAddressUse>();
         }
         return this.use;
     }

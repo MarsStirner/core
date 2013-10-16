@@ -1,5 +1,7 @@
 package ru.korus.tmis.pharmacy;
 
+import ru.korus.tmis.core.exception.CoreException;
+
 import javax.ejb.Local;
 
 /**
@@ -16,5 +18,9 @@ public interface PharmacyBeanLocal {
      */
     void pooling();
 
+    /**
+     * Отправка интервалов назначений.исполнений в 1С
+     */
+    void  sendPrescriptionTo1C() throws CoreException;
 
 }

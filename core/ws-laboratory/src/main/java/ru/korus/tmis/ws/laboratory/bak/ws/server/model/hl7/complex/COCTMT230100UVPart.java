@@ -27,7 +27,7 @@ import javax.xml.bind.annotation.XmlType;
  *       &lt;/sequence>
  *       &lt;attGroup ref="{urn:hl7-org:v3}InfrastructureRootAttributes"/>
  *       &lt;attribute name="nullFlavor" type="{urn:hl7-org:v3}NullFlavor" />
- *       &lt;attribute name="classCode" use="required" type="{urn:hl7-org:v3}RoleClassPartitivePartByBOT" />
+ *       &lt;attribute name="classCode" use="required" type="{urn:hl7-org:v3}RoleClassPart" />
  *     &lt;/restriction>
  *   &lt;/complexContent>
  * &lt;/complexType>
@@ -55,9 +55,9 @@ public class COCTMT230100UVPart {
     @XmlElement(nillable = true)
     protected List<COCTMT230100UVSubject4> subjectOf;
     @XmlAttribute(name = "nullFlavor")
-    protected List<String> nullFlavor;
+    protected NullFlavor nullFlavor;
     @XmlAttribute(name = "classCode", required = true)
-    protected RoleClassPartitivePartByBOT classCode;
+    protected RoleClassPart classCode;
 
     /**
      * Gets the value of the realmCode property.
@@ -221,30 +221,25 @@ public class COCTMT230100UVPart {
     /**
      * Gets the value of the nullFlavor property.
      * 
-     * <p>
-     * This accessor method returns a reference to the live list,
-     * not a snapshot. Therefore any modification you make to the
-     * returned list will be present inside the JAXB object.
-     * This is why there is not a <CODE>set</CODE> method for the nullFlavor property.
-     * 
-     * <p>
-     * For example, to add a new item, do as follows:
-     * <pre>
-     *    getNullFlavor().add(newItem);
-     * </pre>
-     * 
-     * 
-     * <p>
-     * Objects of the following type(s) are allowed in the list
-     * {@link String }
-     * 
-     * 
+     * @return
+     *     possible object is
+     *     {@link NullFlavor }
+     *     
      */
-    public List<String> getNullFlavor() {
-        if (nullFlavor == null) {
-            nullFlavor = new ArrayList<String>();
-        }
-        return this.nullFlavor;
+    public NullFlavor getNullFlavor() {
+        return nullFlavor;
+    }
+
+    /**
+     * Sets the value of the nullFlavor property.
+     * 
+     * @param value
+     *     allowed object is
+     *     {@link NullFlavor }
+     *     
+     */
+    public void setNullFlavor(NullFlavor value) {
+        this.nullFlavor = value;
     }
 
     /**
@@ -252,10 +247,10 @@ public class COCTMT230100UVPart {
      * 
      * @return
      *     possible object is
-     *     {@link RoleClassPartitivePartByBOT }
+     *     {@link RoleClassPart }
      *     
      */
-    public RoleClassPartitivePartByBOT getClassCode() {
+    public RoleClassPart getClassCode() {
         return classCode;
     }
 
@@ -264,10 +259,10 @@ public class COCTMT230100UVPart {
      * 
      * @param value
      *     allowed object is
-     *     {@link RoleClassPartitivePartByBOT }
+     *     {@link RoleClassPart }
      *     
      */
-    public void setClassCode(RoleClassPartitivePartByBOT value) {
+    public void setClassCode(RoleClassPart value) {
         this.classCode = value;
     }
 

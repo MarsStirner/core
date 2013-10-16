@@ -27,10 +27,9 @@ import javax.xml.bind.annotation.XmlType;
  *         &lt;element name="telecom" type="{urn:hl7-org:v3}TEL" maxOccurs="unbounded" minOccurs="0"/>
  *         &lt;element name="statusCode" type="{urn:hl7-org:v3}CS" minOccurs="0"/>
  *         &lt;element name="effectiveTime" type="{urn:hl7-org:v3}IVL_TS" minOccurs="0"/>
- *         &lt;element name="location" type="{urn:hl7-org:v3}COCT_MT710000UV01.Place" minOccurs="0"/>
+ *         &lt;element name="location" type="{urn:hl7-org:v3}COCT_MT710000UV07.Place" minOccurs="0"/>
  *       &lt;/sequence>
  *       &lt;attGroup ref="{urn:hl7-org:v3}InfrastructureRootAttributes"/>
- *       &lt;attribute name="nullFlavor" type="{urn:hl7-org:v3}NullFlavor" />
  *       &lt;attribute name="classCode" use="required" type="{urn:hl7-org:v3}RoleClassLocatedEntity" />
  *     &lt;/restriction>
  *   &lt;/complexContent>
@@ -62,9 +61,7 @@ public class COCTMT070000UV01LocatedEntity {
     protected CS statusCode;
     protected IVLTS effectiveTime;
     @XmlElementRef(name = "location", namespace = "urn:hl7-org:v3", type = JAXBElement.class, required = false)
-    protected JAXBElement<COCTMT710000UV01Place> location;
-    @XmlAttribute(name = "nullFlavor")
-    protected List<String> nullFlavor;
+    protected JAXBElement<COCTMT710000UV07Place> location;
     @XmlAttribute(name = "classCode", required = true)
     protected RoleClassLocatedEntity classCode;
 
@@ -290,10 +287,10 @@ public class COCTMT070000UV01LocatedEntity {
      * 
      * @return
      *     possible object is
-     *     {@link JAXBElement }{@code <}{@link COCTMT710000UV01Place }{@code >}
+     *     {@link JAXBElement }{@code <}{@link COCTMT710000UV07Place }{@code >}
      *     
      */
-    public JAXBElement<COCTMT710000UV01Place> getLocation() {
+    public JAXBElement<COCTMT710000UV07Place> getLocation() {
         return location;
     }
 
@@ -302,40 +299,11 @@ public class COCTMT070000UV01LocatedEntity {
      * 
      * @param value
      *     allowed object is
-     *     {@link JAXBElement }{@code <}{@link COCTMT710000UV01Place }{@code >}
+     *     {@link JAXBElement }{@code <}{@link COCTMT710000UV07Place }{@code >}
      *     
      */
-    public void setLocation(JAXBElement<COCTMT710000UV01Place> value) {
+    public void setLocation(JAXBElement<COCTMT710000UV07Place> value) {
         this.location = value;
-    }
-
-    /**
-     * Gets the value of the nullFlavor property.
-     * 
-     * <p>
-     * This accessor method returns a reference to the live list,
-     * not a snapshot. Therefore any modification you make to the
-     * returned list will be present inside the JAXB object.
-     * This is why there is not a <CODE>set</CODE> method for the nullFlavor property.
-     * 
-     * <p>
-     * For example, to add a new item, do as follows:
-     * <pre>
-     *    getNullFlavor().add(newItem);
-     * </pre>
-     * 
-     * 
-     * <p>
-     * Objects of the following type(s) are allowed in the list
-     * {@link String }
-     * 
-     * 
-     */
-    public List<String> getNullFlavor() {
-        if (nullFlavor == null) {
-            nullFlavor = new ArrayList<String>();
-        }
-        return this.nullFlavor;
     }
 
     /**

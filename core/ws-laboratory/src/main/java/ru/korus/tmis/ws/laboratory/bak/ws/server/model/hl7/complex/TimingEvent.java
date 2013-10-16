@@ -17,6 +17,10 @@ import javax.xml.bind.annotation.XmlType;
  *     &lt;enumeration value="ACD"/>
  *     &lt;enumeration value="ACM"/>
  *     &lt;enumeration value="ACV"/>
+ *     &lt;enumeration value="C"/>
+ *     &lt;enumeration value="CD"/>
+ *     &lt;enumeration value="CM"/>
+ *     &lt;enumeration value="CV"/>
  *     &lt;enumeration value="HS"/>
  *     &lt;enumeration value="IC"/>
  *     &lt;enumeration value="ICD"/>
@@ -26,6 +30,7 @@ import javax.xml.bind.annotation.XmlType;
  *     &lt;enumeration value="PCD"/>
  *     &lt;enumeration value="PCM"/>
  *     &lt;enumeration value="PCV"/>
+ *     &lt;enumeration value="WAKE"/>
  *   &lt;/restriction>
  * &lt;/simpleType>
  * </pre>
@@ -39,6 +44,10 @@ public enum TimingEvent {
     ACD,
     ACM,
     ACV,
+    C,
+    CD,
+    CM,
+    CV,
     HS,
     IC,
     ICD,
@@ -47,7 +56,8 @@ public enum TimingEvent {
     PC,
     PCD,
     PCM,
-    PCV;
+    PCV,
+    WAKE;
 
     public String value() {
         return name();

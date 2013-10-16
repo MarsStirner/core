@@ -14,11 +14,12 @@ import javax.xml.bind.annotation.XmlType;
  * &lt;simpleType name="RoleLinkRelated">
  *   &lt;restriction base="{urn:hl7-org:v3}cs">
  *     &lt;enumeration value="REL"/>
- *     &lt;enumeration value="IDENT"/>
+ *     &lt;enumeration value="BACKUP"/>
+ *     &lt;enumeration value="CONT"/>
  *     &lt;enumeration value="DIRAUTH"/>
+ *     &lt;enumeration value="IDENT"/>
  *     &lt;enumeration value="INDAUTH"/>
  *     &lt;enumeration value="PART"/>
- *     &lt;enumeration value="BACKUP"/>
  *     &lt;enumeration value="REPL"/>
  *   &lt;/restriction>
  * &lt;/simpleType>
@@ -30,11 +31,12 @@ import javax.xml.bind.annotation.XmlType;
 public enum RoleLinkRelated {
 
     REL,
-    IDENT,
+    BACKUP,
+    CONT,
     DIRAUTH,
+    IDENT,
     INDAUTH,
     PART,
-    BACKUP,
     REPL;
 
     public String value() {

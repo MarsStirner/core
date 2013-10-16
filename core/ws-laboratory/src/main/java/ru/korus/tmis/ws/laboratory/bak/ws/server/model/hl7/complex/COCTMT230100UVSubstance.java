@@ -65,11 +65,11 @@ public class COCTMT230100UVSubstance {
     @XmlElement(nillable = true)
     protected List<COCTMT230100UVSubIngredient> subIngredient;
     @XmlAttribute(name = "nullFlavor")
-    protected List<String> nullFlavor;
+    protected NullFlavor nullFlavor;
     @XmlAttribute(name = "classCode", required = true)
-    protected String classCode;
+    protected EntityClassManufacturedMaterial classCode;
     @XmlAttribute(name = "determinerCode", required = true)
-    protected String determinerCode;
+    protected EntityDeterminer determinerCode;
 
     /**
      * Gets the value of the realmCode property.
@@ -315,30 +315,25 @@ public class COCTMT230100UVSubstance {
     /**
      * Gets the value of the nullFlavor property.
      * 
-     * <p>
-     * This accessor method returns a reference to the live list,
-     * not a snapshot. Therefore any modification you make to the
-     * returned list will be present inside the JAXB object.
-     * This is why there is not a <CODE>set</CODE> method for the nullFlavor property.
-     * 
-     * <p>
-     * For example, to add a new item, do as follows:
-     * <pre>
-     *    getNullFlavor().add(newItem);
-     * </pre>
-     * 
-     * 
-     * <p>
-     * Objects of the following type(s) are allowed in the list
-     * {@link String }
-     * 
-     * 
+     * @return
+     *     possible object is
+     *     {@link NullFlavor }
+     *     
      */
-    public List<String> getNullFlavor() {
-        if (nullFlavor == null) {
-            nullFlavor = new ArrayList<String>();
-        }
-        return this.nullFlavor;
+    public NullFlavor getNullFlavor() {
+        return nullFlavor;
+    }
+
+    /**
+     * Sets the value of the nullFlavor property.
+     * 
+     * @param value
+     *     allowed object is
+     *     {@link NullFlavor }
+     *     
+     */
+    public void setNullFlavor(NullFlavor value) {
+        this.nullFlavor = value;
     }
 
     /**
@@ -346,10 +341,10 @@ public class COCTMT230100UVSubstance {
      * 
      * @return
      *     possible object is
-     *     {@link String }
+     *     {@link EntityClassManufacturedMaterial }
      *     
      */
-    public String getClassCode() {
+    public EntityClassManufacturedMaterial getClassCode() {
         return classCode;
     }
 
@@ -358,10 +353,10 @@ public class COCTMT230100UVSubstance {
      * 
      * @param value
      *     allowed object is
-     *     {@link String }
+     *     {@link EntityClassManufacturedMaterial }
      *     
      */
-    public void setClassCode(String value) {
+    public void setClassCode(EntityClassManufacturedMaterial value) {
         this.classCode = value;
     }
 
@@ -370,10 +365,10 @@ public class COCTMT230100UVSubstance {
      * 
      * @return
      *     possible object is
-     *     {@link String }
+     *     {@link EntityDeterminer }
      *     
      */
-    public String getDeterminerCode() {
+    public EntityDeterminer getDeterminerCode() {
         return determinerCode;
     }
 
@@ -382,10 +377,10 @@ public class COCTMT230100UVSubstance {
      * 
      * @param value
      *     allowed object is
-     *     {@link String }
+     *     {@link EntityDeterminer }
      *     
      */
-    public void setDeterminerCode(String value) {
+    public void setDeterminerCode(EntityDeterminer value) {
         this.determinerCode = value;
     }
 

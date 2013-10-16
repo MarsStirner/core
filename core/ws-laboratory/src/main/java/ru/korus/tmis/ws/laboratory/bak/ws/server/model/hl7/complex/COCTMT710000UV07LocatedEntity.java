@@ -6,6 +6,7 @@ import java.util.List;
 import javax.xml.bind.annotation.XmlAccessType;
 import javax.xml.bind.annotation.XmlAccessorType;
 import javax.xml.bind.annotation.XmlAttribute;
+import javax.xml.bind.annotation.XmlElement;
 import javax.xml.bind.annotation.XmlType;
 
 
@@ -20,6 +21,7 @@ import javax.xml.bind.annotation.XmlType;
  *     &lt;restriction base="{http://www.w3.org/2001/XMLSchema}anyType">
  *       &lt;sequence>
  *         &lt;group ref="{urn:hl7-org:v3}InfrastructureRootElements"/>
+ *         &lt;element name="subjectOf" type="{urn:hl7-org:v3}COCT_MT710000UV07.Subject7"/>
  *       &lt;/sequence>
  *       &lt;attGroup ref="{urn:hl7-org:v3}InfrastructureRootAttributes"/>
  *       &lt;attribute name="nullFlavor" type="{urn:hl7-org:v3}NullFlavor" />
@@ -35,15 +37,18 @@ import javax.xml.bind.annotation.XmlType;
 @XmlType(name = "COCT_MT710000UV07.LocatedEntity", propOrder = {
     "realmCode",
     "typeId",
-    "templateId"
+    "templateId",
+    "subjectOf"
 })
 public class COCTMT710000UV07LocatedEntity {
 
     protected List<CS> realmCode;
     protected II typeId;
     protected List<II> templateId;
+    @XmlElement(required = true, nillable = true)
+    protected COCTMT710000UV07Subject7 subjectOf;
     @XmlAttribute(name = "nullFlavor")
-    protected List<String> nullFlavor;
+    protected NullFlavor nullFlavor;
     @XmlAttribute(name = "classCode", required = true)
     protected RoleClassLocatedEntity classCode;
 
@@ -130,32 +135,51 @@ public class COCTMT710000UV07LocatedEntity {
     }
 
     /**
+     * Gets the value of the subjectOf property.
+     * 
+     * @return
+     *     possible object is
+     *     {@link COCTMT710000UV07Subject7 }
+     *     
+     */
+    public COCTMT710000UV07Subject7 getSubjectOf() {
+        return subjectOf;
+    }
+
+    /**
+     * Sets the value of the subjectOf property.
+     * 
+     * @param value
+     *     allowed object is
+     *     {@link COCTMT710000UV07Subject7 }
+     *     
+     */
+    public void setSubjectOf(COCTMT710000UV07Subject7 value) {
+        this.subjectOf = value;
+    }
+
+    /**
      * Gets the value of the nullFlavor property.
      * 
-     * <p>
-     * This accessor method returns a reference to the live list,
-     * not a snapshot. Therefore any modification you make to the
-     * returned list will be present inside the JAXB object.
-     * This is why there is not a <CODE>set</CODE> method for the nullFlavor property.
-     * 
-     * <p>
-     * For example, to add a new item, do as follows:
-     * <pre>
-     *    getNullFlavor().add(newItem);
-     * </pre>
-     * 
-     * 
-     * <p>
-     * Objects of the following type(s) are allowed in the list
-     * {@link String }
-     * 
-     * 
+     * @return
+     *     possible object is
+     *     {@link NullFlavor }
+     *     
      */
-    public List<String> getNullFlavor() {
-        if (nullFlavor == null) {
-            nullFlavor = new ArrayList<String>();
-        }
-        return this.nullFlavor;
+    public NullFlavor getNullFlavor() {
+        return nullFlavor;
+    }
+
+    /**
+     * Sets the value of the nullFlavor property.
+     * 
+     * @param value
+     *     allowed object is
+     *     {@link NullFlavor }
+     *     
+     */
+    public void setNullFlavor(NullFlavor value) {
+        this.nullFlavor = value;
     }
 
     /**

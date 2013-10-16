@@ -72,7 +72,7 @@ public class COCTMT090200UV01AssignedOrganization {
     @XmlElementRef(name = "representedOrganization", namespace = "urn:hl7-org:v3", type = JAXBElement.class, required = false)
     protected JAXBElement<COCTMT150000UV02Organization> representedOrganization;
     @XmlAttribute(name = "classCode", required = true)
-    protected String classCode;
+    protected RoleClassAssignedEntity classCode;
 
     /**
      * Gets the value of the realmCode property.
@@ -368,10 +368,10 @@ public class COCTMT090200UV01AssignedOrganization {
      * 
      * @return
      *     possible object is
-     *     {@link String }
+     *     {@link RoleClassAssignedEntity }
      *     
      */
-    public String getClassCode() {
+    public RoleClassAssignedEntity getClassCode() {
         return classCode;
     }
 
@@ -380,10 +380,10 @@ public class COCTMT090200UV01AssignedOrganization {
      * 
      * @param value
      *     allowed object is
-     *     {@link String }
+     *     {@link RoleClassAssignedEntity }
      *     
      */
-    public void setClassCode(String value) {
+    public void setClassCode(RoleClassAssignedEntity value) {
         this.classCode = value;
     }
 

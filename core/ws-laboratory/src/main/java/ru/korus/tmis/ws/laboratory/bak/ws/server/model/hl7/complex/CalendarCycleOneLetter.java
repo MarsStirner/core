@@ -13,11 +13,27 @@ import javax.xml.bind.annotation.XmlType;
  * <pre>
  * &lt;simpleType name="CalendarCycleOneLetter">
  *   &lt;restriction base="{urn:hl7-org:v3}cs">
+ *     &lt;enumeration value="CW"/>
+ *     &lt;enumeration value="W"/>
+ *     &lt;enumeration value="CY"/>
+ *     &lt;enumeration value="Y"/>
  *     &lt;enumeration value="D"/>
+ *     &lt;enumeration value="DM"/>
+ *     &lt;enumeration value="DW"/>
  *     &lt;enumeration value="J"/>
  *     &lt;enumeration value="H"/>
- *     &lt;enumeration value="N"/>
+ *     &lt;enumeration value="HD"/>
  *     &lt;enumeration value="M"/>
+ *     &lt;enumeration value="MY"/>
+ *     &lt;enumeration value="N"/>
+ *     &lt;enumeration value="NH"/>
+ *     &lt;enumeration value="S"/>
+ *     &lt;enumeration value="SN"/>
+ *     &lt;enumeration value="D"/>
+ *     &lt;enumeration value="H"/>
+ *     &lt;enumeration value="J"/>
+ *     &lt;enumeration value="M"/>
+ *     &lt;enumeration value="N"/>
  *     &lt;enumeration value="S"/>
  *     &lt;enumeration value="W"/>
  *     &lt;enumeration value="Y"/>
@@ -30,14 +46,22 @@ import javax.xml.bind.annotation.XmlType;
 @XmlEnum
 public enum CalendarCycleOneLetter {
 
+    CW,
+    W,
+    CY,
+    Y,
     D,
+    DM,
+    DW,
     J,
     H,
-    N,
+    HD,
     M,
+    MY,
+    N,
+    NH,
     S,
-    W,
-    Y;
+    SN;
 
     public String value() {
         return name();

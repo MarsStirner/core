@@ -10,8 +10,6 @@ import javax.xml.bind.annotation.XmlAttribute;
 import javax.xml.bind.annotation.XmlElement;
 import javax.xml.bind.annotation.XmlElementRef;
 import javax.xml.bind.annotation.XmlType;
-import javax.xml.bind.annotation.adapters.CollapsedStringAdapter;
-import javax.xml.bind.annotation.adapters.XmlJavaTypeAdapter;
 
 
 /**
@@ -140,8 +138,7 @@ public class POLBMT004000UV01ObservationReport {
     @XmlAttribute(name = "classCode", required = true)
     protected ActClassGrouper classCode;
     @XmlAttribute(name = "moodCode", required = true)
-    @XmlJavaTypeAdapter(CollapsedStringAdapter.class)
-    protected String moodCode;
+    protected ActMoodEventOccurrence moodCode;
 
     /**
      * Gets the value of the realmCode property.
@@ -915,10 +912,10 @@ public class POLBMT004000UV01ObservationReport {
      * 
      * @return
      *     possible object is
-     *     {@link String }
+     *     {@link ActMoodEventOccurrence }
      *     
      */
-    public String getMoodCode() {
+    public ActMoodEventOccurrence getMoodCode() {
         return moodCode;
     }
 
@@ -927,10 +924,10 @@ public class POLBMT004000UV01ObservationReport {
      * 
      * @param value
      *     allowed object is
-     *     {@link String }
+     *     {@link ActMoodEventOccurrence }
      *     
      */
-    public void setMoodCode(String value) {
+    public void setMoodCode(ActMoodEventOccurrence value) {
         this.moodCode = value;
     }
 

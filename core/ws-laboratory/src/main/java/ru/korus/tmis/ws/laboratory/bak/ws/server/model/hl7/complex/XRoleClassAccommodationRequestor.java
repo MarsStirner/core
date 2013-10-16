@@ -14,8 +14,8 @@ import javax.xml.bind.annotation.XmlType;
  * &lt;simpleType name="x_RoleClassAccommodationRequestor">
  *   &lt;restriction base="{urn:hl7-org:v3}cs">
  *     &lt;enumeration value="AGNT"/>
- *     &lt;enumeration value="PROV"/>
  *     &lt;enumeration value="PAT"/>
+ *     &lt;enumeration value="PROV"/>
  *     &lt;enumeration value="PRS"/>
  *   &lt;/restriction>
  * &lt;/simpleType>
@@ -27,8 +27,8 @@ import javax.xml.bind.annotation.XmlType;
 public enum XRoleClassAccommodationRequestor {
 
     AGNT,
-    PROV,
     PAT,
+    PROV,
     PRS;
 
     public String value() {

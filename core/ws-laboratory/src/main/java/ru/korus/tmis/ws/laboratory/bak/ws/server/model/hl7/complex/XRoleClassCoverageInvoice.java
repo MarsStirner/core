@@ -13,8 +13,8 @@ import javax.xml.bind.annotation.XmlType;
  * <pre>
  * &lt;simpleType name="x_RoleClassCoverageInvoice">
  *   &lt;restriction base="{urn:hl7-org:v3}cs">
- *     &lt;enumeration value="PAYOR"/>
  *     &lt;enumeration value="PAYEE"/>
+ *     &lt;enumeration value="PAYOR"/>
  *   &lt;/restriction>
  * &lt;/simpleType>
  * </pre>
@@ -24,8 +24,8 @@ import javax.xml.bind.annotation.XmlType;
 @XmlEnum
 public enum XRoleClassCoverageInvoice {
 
-    PAYOR,
-    PAYEE;
+    PAYEE,
+    PAYOR;
 
     public String value() {
         return name();

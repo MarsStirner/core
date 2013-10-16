@@ -14,11 +14,12 @@ import javax.xml.bind.annotation.XmlType;
  * <pre>
  * &lt;simpleType name="TextMediaType">
  *   &lt;restriction base="{urn:hl7-org:v3}cs">
- *     &lt;enumeration value="text/x-hl7-ft"/>
  *     &lt;enumeration value="text/html"/>
  *     &lt;enumeration value="text/plain"/>
  *     &lt;enumeration value="text/rtf"/>
  *     &lt;enumeration value="text/sgml"/>
+ *     &lt;enumeration value="text/x-hl7-ft"/>
+ *     &lt;enumeration value="text/x-hl7-text+xml"/>
  *     &lt;enumeration value="text/xml"/>
  *   &lt;/restriction>
  * &lt;/simpleType>
@@ -29,8 +30,6 @@ import javax.xml.bind.annotation.XmlType;
 @XmlEnum
 public enum TextMediaType {
 
-    @XmlEnumValue("text/x-hl7-ft")
-    TEXT_X_HL_7_FT("text/x-hl7-ft"),
     @XmlEnumValue("text/html")
     TEXT_HTML("text/html"),
     @XmlEnumValue("text/plain")
@@ -39,6 +38,10 @@ public enum TextMediaType {
     TEXT_RTF("text/rtf"),
     @XmlEnumValue("text/sgml")
     TEXT_SGML("text/sgml"),
+    @XmlEnumValue("text/x-hl7-ft")
+    TEXT_X_HL_7_FT("text/x-hl7-ft"),
+    @XmlEnumValue("text/x-hl7-text+xml")
+    TEXT_X_HL_7_TEXT_XML("text/x-hl7-text+xml"),
     @XmlEnumValue("text/xml")
     TEXT_XML("text/xml");
     private final String value;

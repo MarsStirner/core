@@ -54,10 +54,10 @@ public class IVLINT
 {
 
     @XmlElementRefs({
-        @XmlElementRef(name = "center", namespace = "urn:hl7-org:v3", type = JAXBElement.class, required = false),
-        @XmlElementRef(name = "width", namespace = "urn:hl7-org:v3", type = JAXBElement.class, required = false),
+        @XmlElementRef(name = "high", namespace = "urn:hl7-org:v3", type = JAXBElement.class, required = false),
         @XmlElementRef(name = "low", namespace = "urn:hl7-org:v3", type = JAXBElement.class, required = false),
-        @XmlElementRef(name = "high", namespace = "urn:hl7-org:v3", type = JAXBElement.class, required = false)
+        @XmlElementRef(name = "center", namespace = "urn:hl7-org:v3", type = JAXBElement.class, required = false),
+        @XmlElementRef(name = "width", namespace = "urn:hl7-org:v3", type = JAXBElement.class, required = false)
     })
     protected List<JAXBElement<? extends INT>> rest;
 
@@ -67,8 +67,8 @@ public class IVLINT
      * <p>
      * You are getting this "catch-all" property because of the following reason: 
      * The field name "High" is used by two different parts of a schema. See: 
-     * line 797 of file:/C:/development/code/wsdl-queryhl7-example/ITI/schema/HL7V3/NE2008/coreschemas/datatypes.xsd
-     * line 788 of file:/C:/development/code/wsdl-queryhl7-example/ITI/schema/HL7V3/NE2008/coreschemas/datatypes.xsd
+     * line 797 of file:/C:/Users/anosov/Downloads/processable2011/processable/coreschemas/datatypes.xsd
+     * line 788 of file:/C:/Users/anosov/Downloads/processable2011/processable/coreschemas/datatypes.xsd
      * <p>
      * To get rid of this property, apply a property customization to one 
      * of both of the following declarations to change their names: 
@@ -90,9 +90,9 @@ public class IVLINT
      * <p>
      * Objects of the following type(s) are allowed in the list
      * {@link JAXBElement }{@code <}{@link INT }{@code >}
-     * {@link JAXBElement }{@code <}{@link IVXBINT }{@code >}
-     * {@link JAXBElement }{@code <}{@link IVXBINT }{@code >}
      * {@link JAXBElement }{@code <}{@link INT }{@code >}
+     * {@link JAXBElement }{@code <}{@link IVXBINT }{@code >}
+     * {@link JAXBElement }{@code <}{@link IVXBINT }{@code >}
      * 
      * 
      */

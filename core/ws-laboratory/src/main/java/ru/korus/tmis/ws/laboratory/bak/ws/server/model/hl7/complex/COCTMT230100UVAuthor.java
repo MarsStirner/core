@@ -25,8 +25,7 @@ import javax.xml.bind.annotation.XmlType;
  *         &lt;element name="territorialAuthority" type="{urn:hl7-org:v3}COCT_MT230100UV.TerritorialAuthority"/>
  *       &lt;/sequence>
  *       &lt;attGroup ref="{urn:hl7-org:v3}InfrastructureRootAttributes"/>
- *       &lt;attribute name="nullFlavor" type="{urn:hl7-org:v3}NullFlavor" />
- *       &lt;attribute name="typeCode" use="required" type="{urn:hl7-org:v3}ParticipationType" fixed="AUT" />
+ *       &lt;attribute name="typeCode" use="required" type="{urn:hl7-org:v3}ParticipationAuthorOriginator" />
  *     &lt;/restriction>
  *   &lt;/complexContent>
  * &lt;/complexType>
@@ -50,10 +49,8 @@ public class COCTMT230100UVAuthor {
     protected TS time;
     @XmlElement(required = true)
     protected COCTMT230100UVTerritorialAuthority territorialAuthority;
-    @XmlAttribute(name = "nullFlavor")
-    protected List<String> nullFlavor;
     @XmlAttribute(name = "typeCode", required = true)
-    protected List<String> typeCode;
+    protected ParticipationAuthorOriginator typeCode;
 
     /**
      * Gets the value of the realmCode property.
@@ -186,61 +183,27 @@ public class COCTMT230100UVAuthor {
     }
 
     /**
-     * Gets the value of the nullFlavor property.
+     * Gets the value of the typeCode property.
      * 
-     * <p>
-     * This accessor method returns a reference to the live list,
-     * not a snapshot. Therefore any modification you make to the
-     * returned list will be present inside the JAXB object.
-     * This is why there is not a <CODE>set</CODE> method for the nullFlavor property.
-     * 
-     * <p>
-     * For example, to add a new item, do as follows:
-     * <pre>
-     *    getNullFlavor().add(newItem);
-     * </pre>
-     * 
-     * 
-     * <p>
-     * Objects of the following type(s) are allowed in the list
-     * {@link String }
-     * 
-     * 
+     * @return
+     *     possible object is
+     *     {@link ParticipationAuthorOriginator }
+     *     
      */
-    public List<String> getNullFlavor() {
-        if (nullFlavor == null) {
-            nullFlavor = new ArrayList<String>();
-        }
-        return this.nullFlavor;
+    public ParticipationAuthorOriginator getTypeCode() {
+        return typeCode;
     }
 
     /**
-     * Gets the value of the typeCode property.
+     * Sets the value of the typeCode property.
      * 
-     * <p>
-     * This accessor method returns a reference to the live list,
-     * not a snapshot. Therefore any modification you make to the
-     * returned list will be present inside the JAXB object.
-     * This is why there is not a <CODE>set</CODE> method for the typeCode property.
-     * 
-     * <p>
-     * For example, to add a new item, do as follows:
-     * <pre>
-     *    getTypeCode().add(newItem);
-     * </pre>
-     * 
-     * 
-     * <p>
-     * Objects of the following type(s) are allowed in the list
-     * {@link String }
-     * 
-     * 
+     * @param value
+     *     allowed object is
+     *     {@link ParticipationAuthorOriginator }
+     *     
      */
-    public List<String> getTypeCode() {
-        if (typeCode == null) {
-            typeCode = new ArrayList<String>();
-        }
-        return this.typeCode;
+    public void setTypeCode(ParticipationAuthorOriginator value) {
+        this.typeCode = value;
     }
 
 }

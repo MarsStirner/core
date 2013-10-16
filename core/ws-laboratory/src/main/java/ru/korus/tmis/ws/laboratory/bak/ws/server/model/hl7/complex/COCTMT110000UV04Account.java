@@ -10,8 +10,6 @@ import javax.xml.bind.annotation.XmlAttribute;
 import javax.xml.bind.annotation.XmlElement;
 import javax.xml.bind.annotation.XmlElementRef;
 import javax.xml.bind.annotation.XmlType;
-import javax.xml.bind.annotation.adapters.CollapsedStringAdapter;
-import javax.xml.bind.annotation.adapters.XmlJavaTypeAdapter;
 
 
 /**
@@ -68,11 +66,9 @@ public class COCTMT110000UV04Account {
     @XmlElementRef(name = "holder", namespace = "urn:hl7-org:v3", type = JAXBElement.class, required = false)
     protected JAXBElement<COCTMT110000UV04Holder> holder;
     @XmlAttribute(name = "classCode", required = true)
-    @XmlJavaTypeAdapter(CollapsedStringAdapter.class)
-    protected String classCode;
+    protected ActClassAccount classCode;
     @XmlAttribute(name = "moodCode", required = true)
-    @XmlJavaTypeAdapter(CollapsedStringAdapter.class)
-    protected String moodCode;
+    protected ActMoodEventOccurrence moodCode;
 
     /**
      * Gets the value of the realmCode property.
@@ -305,10 +301,10 @@ public class COCTMT110000UV04Account {
      * 
      * @return
      *     possible object is
-     *     {@link String }
+     *     {@link ActClassAccount }
      *     
      */
-    public String getClassCode() {
+    public ActClassAccount getClassCode() {
         return classCode;
     }
 
@@ -317,10 +313,10 @@ public class COCTMT110000UV04Account {
      * 
      * @param value
      *     allowed object is
-     *     {@link String }
+     *     {@link ActClassAccount }
      *     
      */
-    public void setClassCode(String value) {
+    public void setClassCode(ActClassAccount value) {
         this.classCode = value;
     }
 
@@ -329,10 +325,10 @@ public class COCTMT110000UV04Account {
      * 
      * @return
      *     possible object is
-     *     {@link String }
+     *     {@link ActMoodEventOccurrence }
      *     
      */
-    public String getMoodCode() {
+    public ActMoodEventOccurrence getMoodCode() {
         return moodCode;
     }
 
@@ -341,10 +337,10 @@ public class COCTMT110000UV04Account {
      * 
      * @param value
      *     allowed object is
-     *     {@link String }
+     *     {@link ActMoodEventOccurrence }
      *     
      */
-    public void setMoodCode(String value) {
+    public void setMoodCode(ActMoodEventOccurrence value) {
         this.moodCode = value;
     }
 

@@ -8,8 +8,6 @@ import javax.xml.bind.annotation.XmlAccessorType;
 import javax.xml.bind.annotation.XmlAttribute;
 import javax.xml.bind.annotation.XmlElement;
 import javax.xml.bind.annotation.XmlType;
-import javax.xml.bind.annotation.adapters.CollapsedStringAdapter;
-import javax.xml.bind.annotation.adapters.XmlJavaTypeAdapter;
 
 
 /**
@@ -71,11 +69,9 @@ public class COCTMT470000UVConsent {
     @XmlElement(required = true, nillable = true)
     protected List<COCTMT470000UVPerformer> performer;
     @XmlAttribute(name = "classCode", required = true)
-    @XmlJavaTypeAdapter(CollapsedStringAdapter.class)
-    protected String classCode;
+    protected ActClassConsent classCode;
     @XmlAttribute(name = "moodCode", required = true)
-    @XmlJavaTypeAdapter(CollapsedStringAdapter.class)
-    protected String moodCode;
+    protected ActMoodEventOccurrence moodCode;
     @XmlAttribute(name = "negationInd")
     protected Boolean negationInd;
 
@@ -344,10 +340,10 @@ public class COCTMT470000UVConsent {
      * 
      * @return
      *     possible object is
-     *     {@link String }
+     *     {@link ActClassConsent }
      *     
      */
-    public String getClassCode() {
+    public ActClassConsent getClassCode() {
         return classCode;
     }
 
@@ -356,10 +352,10 @@ public class COCTMT470000UVConsent {
      * 
      * @param value
      *     allowed object is
-     *     {@link String }
+     *     {@link ActClassConsent }
      *     
      */
-    public void setClassCode(String value) {
+    public void setClassCode(ActClassConsent value) {
         this.classCode = value;
     }
 
@@ -368,10 +364,10 @@ public class COCTMT470000UVConsent {
      * 
      * @return
      *     possible object is
-     *     {@link String }
+     *     {@link ActMoodEventOccurrence }
      *     
      */
-    public String getMoodCode() {
+    public ActMoodEventOccurrence getMoodCode() {
         return moodCode;
     }
 
@@ -380,10 +376,10 @@ public class COCTMT470000UVConsent {
      * 
      * @param value
      *     allowed object is
-     *     {@link String }
+     *     {@link ActMoodEventOccurrence }
      *     
      */
-    public void setMoodCode(String value) {
+    public void setMoodCode(ActMoodEventOccurrence value) {
         this.moodCode = value;
     }
 

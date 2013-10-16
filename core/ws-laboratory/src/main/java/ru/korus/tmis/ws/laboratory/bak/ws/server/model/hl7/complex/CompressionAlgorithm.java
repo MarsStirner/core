@@ -13,9 +13,9 @@ import javax.xml.bind.annotation.XmlType;
  * <pre>
  * &lt;simpleType name="CompressionAlgorithm">
  *   &lt;restriction base="{urn:hl7-org:v3}cs">
- *     &lt;enumeration value="Z"/>
  *     &lt;enumeration value="DF"/>
  *     &lt;enumeration value="GZ"/>
+ *     &lt;enumeration value="Z"/>
  *     &lt;enumeration value="ZL"/>
  *   &lt;/restriction>
  * &lt;/simpleType>
@@ -26,9 +26,9 @@ import javax.xml.bind.annotation.XmlType;
 @XmlEnum
 public enum CompressionAlgorithm {
 
-    Z,
     DF,
     GZ,
+    Z,
     ZL;
 
     public String value() {

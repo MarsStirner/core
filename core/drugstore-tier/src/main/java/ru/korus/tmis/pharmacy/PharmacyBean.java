@@ -10,19 +10,21 @@ import ru.korus.tmis.core.database.*;
 import ru.korus.tmis.core.entity.model.*;
 import ru.korus.tmis.core.entity.model.pharmacy.Pharmacy;
 import ru.korus.tmis.core.entity.model.pharmacy.PharmacyStatus;
+import ru.korus.tmis.core.entity.model.pharmacy.PrescriptionSendingRes;
+import ru.korus.tmis.core.entity.model.pharmacy.PrescriptionsTo1C;
 import ru.korus.tmis.core.exception.CoreException;
-import ru.korus.tmis.core.pharmacy.DbPharmacyBeanLocal;
-import ru.korus.tmis.core.pharmacy.DbUUIDBeanLocal;
-import ru.korus.tmis.core.pharmacy.FlatCode;
+import ru.korus.tmis.core.pharmacy.*;
 import ru.korus.tmis.pharmacy.exception.MessageProcessException;
 import ru.korus.tmis.pharmacy.exception.NoSuchOrgStructureException;
 import ru.korus.tmis.pharmacy.exception.SkipMessageProcessException;
+import ru.korus.tmis.prescription.Constants;
 import ru.korus.tmis.util.ConfigManager;
 import ru.korus.tmis.util.logs.ToLog;
 
 import javax.ejb.EJB;
 import javax.ejb.Schedule;
 import javax.ejb.Stateless;
+import java.sql.Timestamp;
 import java.util.*;
 
 /**
@@ -68,21 +70,49 @@ public class PharmacyBean implements PharmacyBeanLocal {
     @EJB(beanName = "DbOrganizationBean")
     private DbOrganizationBeanLocal dbOrganizationBeanLocal = null;
 
+    @EJB
+    private DbPrescriptionsTo1CBeanLocal dbPrescriptionsTo1CBeanLocal = null;
+
+    @EJB
+    private DbRbMethodOfAdministrationLocal dbRbMethodOfAdministrationLocal = null;
+
+    @EJB
+    private DbPrescriptionSendingResBeanLocal dbPrescriptionSendingResBean = null;
+
     private DateTime lastDateUpdate = null;
 
+    /**
+     * Назначен/Не исполнен (ещё или уже)
+     */
+    private static final int PS_NEW = 0;
 
     /**
-     * Полинг базы данных для поиска событий по движениям пациентов
+     * исполнен
+     */
+    private static final int PS_FINISHED = 1;
+
+    /**
+     * Отменён
+     */
+    private static final int PS_CANCELED = 2;
+
+    /**
+     * Пауза
+     */
+    private static final int PS_PAUSE = 3;
+
+    /**
+     * Полинг базы данных для поиска событий по движениям пациентов и назначениям ЛС
      */
     @Override
     @Schedule(minute = "*/1", hour = "*")
     public void pooling() {
         if (ConfigManager.Drugstore().isActive()) {
-            logger.info("pooling... last modify date {}", getLastDate());
-            if (lastDateUpdate == null) {
-                lastDateUpdate = firstPolling();
-            }
             try {
+                logger.info("pooling... last modify date {}", getLastDate());
+                if (lastDateUpdate == null) {
+                    lastDateUpdate = firstPolling();
+                }
                 final List<Action> actionAfterDate = dbPharmacy.getVirtualActionsAfterDate(lastDateUpdate);
                 if (!actionAfterDate.isEmpty()) {
                     logger.info("Found {} newest actions after date {}", actionAfterDate.size(), getLastDate());
@@ -94,11 +124,16 @@ public class PharmacyBean implements PharmacyBeanLocal {
                         }
                     }
                 }
+                // повторная отправка неотправленных сообщений
+                resendMessages();
+                //Отправка назначений ЛС
+                logger.info("sending prescription start...");
+                sendPrescriptionTo1C();
+                logger.info("sending prescription stop");
             } catch (Exception e) {
                 logger.error("Exception e: " + e, e);
             }
-            // повторная отправка неотправленных сообщений
-            resendMessages();
+
         } else {
             logger.info("pooling... {}", ConfigManager.Drugstore().Active());
         }
@@ -110,18 +145,18 @@ public class PharmacyBean implements PharmacyBeanLocal {
      * @throws CoreException
      */
     private void resendMessages() {
-        try {
-            // resend old messages
-            final List<Pharmacy> nonCompletedItems = dbPharmacy.getNonCompletedItems();
-            if (!nonCompletedItems.isEmpty()) {
-                logger.info("Resend old message....");
-                for (Pharmacy pharmacy : nonCompletedItems) {
+        // resend old messages
+        final List<Pharmacy> nonCompletedItems = dbPharmacy.getNonCompletedItems();
+        if (!nonCompletedItems.isEmpty()) {
+            logger.info("Resend old message....");
+            for (Pharmacy pharmacy : nonCompletedItems) {
+                try {
                     final Action action = dbAction.getActionById(pharmacy.getActionId());
                     send(action);
+                } catch (Exception e) {
+                    logger.error("Resend old Exception e: " + e, e);
                 }
             }
-        } catch (Exception e) {
-            logger.error("Exception e: " + e, e);
         }
     }
 
@@ -151,14 +186,7 @@ public class PharmacyBean implements PharmacyBeanLocal {
                     if (AcknowledgementType.AA.equals(ack.getTypeCode())) {
                         pharmacy.setStatus(PharmacyStatus.COMPLETE);
                     } else {
-                        final StringBuilder sb = new StringBuilder();
-                        final List<MCCIMT000200UV01AcknowledgementDetail> detailList = ack.getAcknowledgementDetail();
-                        for (MCCIMT000200UV01AcknowledgementDetail detail : detailList) {
-                            final ED text = detail.getText();
-                            for (Object o : text.getContent()) {
-                                sb.append(o);
-                            }
-                        }
+                        final StringBuilder sb = getAckString(ack);
                         pharmacy.setErrorString(sb.toString());
                         pharmacy.setStatus(PharmacyStatus.ERROR);
                     }
@@ -196,6 +224,18 @@ public class PharmacyBean implements PharmacyBeanLocal {
         }
     }
 
+    private StringBuilder getAckString(MCCIMT000200UV01Acknowledgement ack) {
+        final StringBuilder sb = new StringBuilder();
+        final List<MCCIMT000200UV01AcknowledgementDetail> detailList = ack.getAcknowledgementDetail();
+        for (MCCIMT000200UV01AcknowledgementDetail detail : detailList) {
+            final ED text = detail.getText();
+            for (Object o : text.getContent()) {
+                sb.append(o);
+            }
+        }
+        return sb;
+    }
+
     /**
      * Проверка на код по движению пациентов
      */
@@ -205,8 +245,8 @@ public class PharmacyBean implements PharmacyBeanLocal {
                 || FlatCode.DEL_RECEIVED.getCode().equalsIgnoreCase(actionType.getFlatCode())
                 || FlatCode.MOVING.getCode().equalsIgnoreCase(actionType.getFlatCode())
                 || FlatCode.DEL_MOVING.getCode().equalsIgnoreCase(actionType.getFlatCode())
-                || FlatCode.LEAVED.getCode().equalsIgnoreCase(actionType.getFlatCode())
-                || FlatCode.PRESCRIPTION.getCode().equalsIgnoreCase(actionType.getFlatCode());
+                || FlatCode.LEAVED.getCode().equalsIgnoreCase(actionType.getFlatCode());
+        // || FlatCode.PRESCRIPTION.getCode().equalsIgnoreCase(actionType.getFlatCode());
     }
 
     /**
@@ -248,33 +288,6 @@ public class PharmacyBean implements PharmacyBeanLocal {
             // выписка из стационара
             return HL7PacketBuilder.processLeaved(action);
 
-        /*} else if (FlatCode.PRESCRIPTION.getCode().equalsIgnoreCase(actionType.getFlatCode())) {
-            // Пациент
-            final Patient client = action.getEvent().getPatient();
-            // Врач, сделавший обращение
-            final Staff executorStaff = action.getExecutor();
-            // Организация, которой принадлежит документ
-            final Organisation organisation = getCustodianOrgStructure(action);
-            // Определяем код назначенного препарата
-            final String drugCode = dbPharmacy.getDrugCode(action);
-
-            return HL7PacketBuilder.processPrescription(
-                    action, client, executorStaff, organisation, drugCode, AssignmentType.ASSIGNMENT);
-
-        } else if (FlatCode.RELEASE_PRESCRIPTION.getCode().equalsIgnoreCase(actionType.getFlatCode())) {    // искусственно введеный тип, либо к нему привязаться или реализовать по-другому
-            // todo!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
-            // Пациент
-            final Patient client = action.getEvent().getPatient();
-            // Врач, сделавший обращение
-            final Staff executorStaff = action.getExecutor();
-            // Организация, которой принадлежит документ
-            final Organisation organisation = getCustodianOrgStructure(action);
-            // Определяем код назначенного препарата
-            final String drugCode = dbPharmacy.getDrugCode(action);
-
-            return HL7PacketBuilder.processPrescription(
-                    action, client, executorStaff, organisation, drugCode, AssignmentType.EXECUTION);
-                   */
         }
 
         throw new MessageProcessException();
@@ -472,6 +485,99 @@ public class PharmacyBean implements PharmacyBeanLocal {
             // skip
         }
         throw new SkipMessageProcessException("OrgStructure for " + action + " is not found");
+    }
+
+    /**
+     * Отправка интервалов назначений ЛС и их исполнений
+     *
+     * @throws CoreException
+     */
+
+    public void sendPrescriptionTo1C() throws CoreException {
+        Iterable<PrescriptionsTo1C> prescriptions = dbPrescriptionsTo1CBeanLocal.getPrescriptions();
+        for (PrescriptionsTo1C prescription : prescriptions) {
+            int errCount = prescription.getErrCount();
+            long step = 89 * 1000; // время до слейдующей попытки передачи данных
+            prescription.setErrCount(errCount + 1);
+            prescription.setSendTime(new Timestamp((new java.util.Date()).getTime() + (long) (errCount) * step));
+            if (sendPrescription(prescription)) {
+                dbPrescriptionsTo1CBeanLocal.remove(prescription);
+            }
+        }
+    }
+
+    /**
+     * Отправка одного интервала назначения/исполнения в ЛС
+     *
+     * @param prescription
+     * @return - true - интервал успешно передан в 1С
+     * @throws CoreException
+     */
+    private boolean sendPrescription(PrescriptionsTo1C prescription) throws CoreException {
+        boolean res = false;
+        try {
+            final Action action = prescription.getDrugChart().getAction();
+            // Пациент
+            final Patient client = action.getEvent().getPatient();
+            // Организация, которой принадлежит документ
+            final Organisation organisation;
+            organisation = getCustodianOrgStructure(action);
+            // Определяем код назначенного препарата
+            final List<RlsNomen> rlsNomenList = dbPharmacy.getDrugCode(action);
+            // Способ применения
+            final String code[] = {Constants.MOA};
+            String routeOfAdministration = null;
+            Map<ActionProperty, List<APValue>> actionProp = dbActionProperty.getActionPropertiesByActionIdAndTypeCodes(action.getId(), Arrays.asList(code));
+            if (!actionProp.isEmpty() && !actionProp.entrySet().iterator().next().getValue().isEmpty()) {
+                Object codeId = actionProp.entrySet().iterator().next().getValue().iterator().next().getValue();
+                if (codeId instanceof Integer) {
+                    routeOfAdministration = dbRbMethodOfAdministrationLocal.getById((Integer) codeId).getCode();
+                }
+            }
+            Request request = null;
+
+            for (RlsNomen rlsNomen : rlsNomenList) {
+                PrescriptionSendingRes prescriptionSendingResBean = dbPrescriptionSendingResBean.getPrescriptionSendingRes(prescription.getDrugChart(), rlsNomen);
+                if (prescription.isPrescription()) { // передача нового / отмена назначения
+                    request = HL7PacketBuilder.processPrescription(
+                            prescription.getDrugChart(), rlsNomen, routeOfAdministration, organisation, AssignmentType.ASSIGNMENT, prescription.getNewStatus() == PS_CANCELED, prescriptionSendingResBean);
+                } else if (prescription.getOldStatus() == PS_NEW && prescription.getNewStatus() == PS_FINISHED) {// если статус изменился с "Назначен" на "Исполнен", то передаем исполнение
+                    request = HL7PacketBuilder.processPrescription(
+                            prescription.getDrugChart(), rlsNomen, routeOfAdministration, organisation, AssignmentType.EXECUTION, false, prescriptionSendingResBean);
+                } else if (prescription.getOldStatus() == PS_FINISHED && prescription.getNewStatus() == PS_NEW) { // если статус изменился с "Исполнен" на "Назначен" , то передаем отмену исполнения
+                    request = HL7PacketBuilder.processPrescription(
+                            prescription.getDrugChart(), rlsNomen, routeOfAdministration, organisation, AssignmentType.EXECUTION, true, prescriptionSendingResBean);
+                }
+                if (request != null) {
+                    final MCCIIN000002UV012 result = new MISExchange().getMISExchangeSoap().processHL7V3Message(request);
+
+                    if (isOk(result)) {
+                        prescriptionSendingResBean.setUuid(result.getAcknowledgement().iterator().next().getTargetMessage().getId().getRoot());
+                        prescriptionSendingResBean.setVersion(prescriptionSendingResBean.getVersion() == null ? 1 : (prescriptionSendingResBean.getVersion() + 1));
+                        res = true;
+                    }
+                }
+            }
+
+        } catch (Exception e) {
+            final String errorString = e.toString();
+            prescription.setInfo(errorString);
+            logger.error(errorString);
+        }
+        return res;
+    }
+
+    private boolean isOk(MCCIIN000002UV012 result) throws CoreException {
+        boolean res = false;
+        for (MCCIMT000200UV01Acknowledgement ack : result.getAcknowledgement()) {
+            if (AcknowledgementType.AA.equals(ack.getTypeCode())) {
+                res = true;
+            } else {
+                final StringBuilder sb = getAckString(ack);
+                throw new CoreException(sb.toString());
+            }
+        }
+        return res;
     }
 
 

@@ -14,7 +14,6 @@ import javax.xml.bind.annotation.XmlType;
  * &lt;simpleType name="ActClassGrouper">
  *   &lt;restriction base="{urn:hl7-org:v3}cs">
  *     &lt;enumeration value="GROUPER"/>
- *     &lt;enumeration value="BATTERY"/>
  *     &lt;enumeration value="CLUSTER"/>
  *   &lt;/restriction>
  * &lt;/simpleType>
@@ -26,7 +25,6 @@ import javax.xml.bind.annotation.XmlType;
 public enum ActClassGrouper {
 
     GROUPER,
-    BATTERY,
     CLUSTER;
 
     public String value() {

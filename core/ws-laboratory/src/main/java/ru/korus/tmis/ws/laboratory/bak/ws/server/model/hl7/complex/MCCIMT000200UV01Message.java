@@ -5,7 +5,6 @@ import java.util.ArrayList;
 import java.util.List;
 import javax.xml.bind.annotation.XmlAccessType;
 import javax.xml.bind.annotation.XmlAccessorType;
-import javax.xml.bind.annotation.XmlAttribute;
 import javax.xml.bind.annotation.XmlElement;
 import javax.xml.bind.annotation.XmlSeeAlso;
 import javax.xml.bind.annotation.XmlType;
@@ -39,7 +38,6 @@ import javax.xml.bind.annotation.XmlType;
  *         &lt;element name="acknowledgement" type="{urn:hl7-org:v3}MCCI_MT000200UV01.Acknowledgement" maxOccurs="unbounded" minOccurs="0"/>
  *       &lt;/sequence>
  *       &lt;attGroup ref="{urn:hl7-org:v3}InfrastructureRootAttributes"/>
- *       &lt;attribute name="nullFlavor" type="{urn:hl7-org:v3}NullFlavor" />
  *     &lt;/restriction>
  *   &lt;/complexContent>
  * &lt;/complexType>
@@ -102,8 +100,6 @@ public class MCCIMT000200UV01Message {
     protected List<MCCIMT000200UV01AttentionLine> attentionLine;
     @XmlElement(nillable = true)
     protected List<MCCIMT000200UV01Acknowledgement> acknowledgement;
-    @XmlAttribute(name = "nullFlavor")
-    protected List<String> nullFlavor;
 
     /**
      * Gets the value of the realmCode property.
@@ -575,35 +571,6 @@ public class MCCIMT000200UV01Message {
             acknowledgement = new ArrayList<MCCIMT000200UV01Acknowledgement>();
         }
         return this.acknowledgement;
-    }
-
-    /**
-     * Gets the value of the nullFlavor property.
-     * 
-     * <p>
-     * This accessor method returns a reference to the live list,
-     * not a snapshot. Therefore any modification you make to the
-     * returned list will be present inside the JAXB object.
-     * This is why there is not a <CODE>set</CODE> method for the nullFlavor property.
-     * 
-     * <p>
-     * For example, to add a new item, do as follows:
-     * <pre>
-     *    getNullFlavor().add(newItem);
-     * </pre>
-     * 
-     * 
-     * <p>
-     * Objects of the following type(s) are allowed in the list
-     * {@link String }
-     * 
-     * 
-     */
-    public List<String> getNullFlavor() {
-        if (nullFlavor == null) {
-            nullFlavor = new ArrayList<String>();
-        }
-        return this.nullFlavor;
     }
 
 }

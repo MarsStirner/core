@@ -68,9 +68,9 @@ public class COCTMT590000UVAnnotation {
     @XmlElementRef(name = "dataEnterer", namespace = "urn:hl7-org:v3", type = JAXBElement.class, required = false)
     protected JAXBElement<COCTMT590000UVDataEnterer> dataEnterer;
     @XmlAttribute(name = "classCode")
-    protected List<String> classCode;
+    protected ActClass classCode;
     @XmlAttribute(name = "moodCode")
-    protected List<String> moodCode;
+    protected ActMood moodCode;
 
     /**
      * Gets the value of the realmCode property.
@@ -301,59 +301,57 @@ public class COCTMT590000UVAnnotation {
     /**
      * Gets the value of the classCode property.
      * 
-     * <p>
-     * This accessor method returns a reference to the live list,
-     * not a snapshot. Therefore any modification you make to the
-     * returned list will be present inside the JAXB object.
-     * This is why there is not a <CODE>set</CODE> method for the classCode property.
-     * 
-     * <p>
-     * For example, to add a new item, do as follows:
-     * <pre>
-     *    getClassCode().add(newItem);
-     * </pre>
-     * 
-     * 
-     * <p>
-     * Objects of the following type(s) are allowed in the list
-     * {@link String }
-     * 
-     * 
+     * @return
+     *     possible object is
+     *     {@link ActClass }
+     *     
      */
-    public List<String> getClassCode() {
+    public ActClass getClassCode() {
         if (classCode == null) {
-            classCode = new ArrayList<String>();
+            return ActClass.ACT;
+        } else {
+            return classCode;
         }
-        return this.classCode;
+    }
+
+    /**
+     * Sets the value of the classCode property.
+     * 
+     * @param value
+     *     allowed object is
+     *     {@link ActClass }
+     *     
+     */
+    public void setClassCode(ActClass value) {
+        this.classCode = value;
     }
 
     /**
      * Gets the value of the moodCode property.
      * 
-     * <p>
-     * This accessor method returns a reference to the live list,
-     * not a snapshot. Therefore any modification you make to the
-     * returned list will be present inside the JAXB object.
-     * This is why there is not a <CODE>set</CODE> method for the moodCode property.
-     * 
-     * <p>
-     * For example, to add a new item, do as follows:
-     * <pre>
-     *    getMoodCode().add(newItem);
-     * </pre>
-     * 
-     * 
-     * <p>
-     * Objects of the following type(s) are allowed in the list
-     * {@link String }
-     * 
-     * 
+     * @return
+     *     possible object is
+     *     {@link ActMood }
+     *     
      */
-    public List<String> getMoodCode() {
+    public ActMood getMoodCode() {
         if (moodCode == null) {
-            moodCode = new ArrayList<String>();
+            return ActMood.EVN;
+        } else {
+            return moodCode;
         }
-        return this.moodCode;
+    }
+
+    /**
+     * Sets the value of the moodCode property.
+     * 
+     * @param value
+     *     allowed object is
+     *     {@link ActMood }
+     *     
+     */
+    public void setMoodCode(ActMood value) {
+        this.moodCode = value;
     }
 
 }

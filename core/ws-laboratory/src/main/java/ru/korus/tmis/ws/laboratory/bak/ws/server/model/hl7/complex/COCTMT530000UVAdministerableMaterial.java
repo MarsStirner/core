@@ -21,11 +21,11 @@ import javax.xml.bind.annotation.XmlType;
  *     &lt;restriction base="{http://www.w3.org/2001/XMLSchema}anyType">
  *       &lt;sequence>
  *         &lt;group ref="{urn:hl7-org:v3}InfrastructureRootElements"/>
- *         &lt;element name="administerableMaterialKind" type="{urn:hl7-org:v3}COCT_MT530000UV.MaterialKind"/>
+ *         &lt;element name="administrableMaterialKind" type="{urn:hl7-org:v3}COCT_MT530000UV.MaterialKind"/>
  *       &lt;/sequence>
  *       &lt;attGroup ref="{urn:hl7-org:v3}InfrastructureRootAttributes"/>
  *       &lt;attribute name="nullFlavor" type="{urn:hl7-org:v3}NullFlavor" />
- *       &lt;attribute name="classCode" use="required" type="{urn:hl7-org:v3}RoleClass" fixed="ADMM" />
+ *       &lt;attribute name="classCode" use="required" type="{urn:hl7-org:v3}RoleClassAdministerableMaterial" />
  *     &lt;/restriction>
  *   &lt;/complexContent>
  * &lt;/complexType>
@@ -38,7 +38,7 @@ import javax.xml.bind.annotation.XmlType;
     "realmCode",
     "typeId",
     "templateId",
-    "administerableMaterialKind"
+    "administrableMaterialKind"
 })
 public class COCTMT530000UVAdministerableMaterial {
 
@@ -46,11 +46,11 @@ public class COCTMT530000UVAdministerableMaterial {
     protected II typeId;
     protected List<II> templateId;
     @XmlElement(required = true)
-    protected COCTMT530000UVMaterialKind administerableMaterialKind;
+    protected COCTMT530000UVMaterialKind administrableMaterialKind;
     @XmlAttribute(name = "nullFlavor")
-    protected List<String> nullFlavor;
+    protected NullFlavor nullFlavor;
     @XmlAttribute(name = "classCode", required = true)
-    protected List<String> classCode;
+    protected RoleClassAdministerableMaterial classCode;
 
     /**
      * Gets the value of the realmCode property.
@@ -135,85 +135,75 @@ public class COCTMT530000UVAdministerableMaterial {
     }
 
     /**
-     * Gets the value of the administerableMaterialKind property.
+     * Gets the value of the administrableMaterialKind property.
      * 
      * @return
      *     possible object is
      *     {@link COCTMT530000UVMaterialKind }
      *     
      */
-    public COCTMT530000UVMaterialKind getAdministerableMaterialKind() {
-        return administerableMaterialKind;
+    public COCTMT530000UVMaterialKind getAdministrableMaterialKind() {
+        return administrableMaterialKind;
     }
 
     /**
-     * Sets the value of the administerableMaterialKind property.
+     * Sets the value of the administrableMaterialKind property.
      * 
      * @param value
      *     allowed object is
      *     {@link COCTMT530000UVMaterialKind }
      *     
      */
-    public void setAdministerableMaterialKind(COCTMT530000UVMaterialKind value) {
-        this.administerableMaterialKind = value;
+    public void setAdministrableMaterialKind(COCTMT530000UVMaterialKind value) {
+        this.administrableMaterialKind = value;
     }
 
     /**
      * Gets the value of the nullFlavor property.
      * 
-     * <p>
-     * This accessor method returns a reference to the live list,
-     * not a snapshot. Therefore any modification you make to the
-     * returned list will be present inside the JAXB object.
-     * This is why there is not a <CODE>set</CODE> method for the nullFlavor property.
-     * 
-     * <p>
-     * For example, to add a new item, do as follows:
-     * <pre>
-     *    getNullFlavor().add(newItem);
-     * </pre>
-     * 
-     * 
-     * <p>
-     * Objects of the following type(s) are allowed in the list
-     * {@link String }
-     * 
-     * 
+     * @return
+     *     possible object is
+     *     {@link NullFlavor }
+     *     
      */
-    public List<String> getNullFlavor() {
-        if (nullFlavor == null) {
-            nullFlavor = new ArrayList<String>();
-        }
-        return this.nullFlavor;
+    public NullFlavor getNullFlavor() {
+        return nullFlavor;
+    }
+
+    /**
+     * Sets the value of the nullFlavor property.
+     * 
+     * @param value
+     *     allowed object is
+     *     {@link NullFlavor }
+     *     
+     */
+    public void setNullFlavor(NullFlavor value) {
+        this.nullFlavor = value;
     }
 
     /**
      * Gets the value of the classCode property.
      * 
-     * <p>
-     * This accessor method returns a reference to the live list,
-     * not a snapshot. Therefore any modification you make to the
-     * returned list will be present inside the JAXB object.
-     * This is why there is not a <CODE>set</CODE> method for the classCode property.
-     * 
-     * <p>
-     * For example, to add a new item, do as follows:
-     * <pre>
-     *    getClassCode().add(newItem);
-     * </pre>
-     * 
-     * 
-     * <p>
-     * Objects of the following type(s) are allowed in the list
-     * {@link String }
-     * 
-     * 
+     * @return
+     *     possible object is
+     *     {@link RoleClassAdministerableMaterial }
+     *     
      */
-    public List<String> getClassCode() {
-        if (classCode == null) {
-            classCode = new ArrayList<String>();
-        }
-        return this.classCode;
+    public RoleClassAdministerableMaterial getClassCode() {
+        return classCode;
+    }
+
+    /**
+     * Sets the value of the classCode property.
+     * 
+     * @param value
+     *     allowed object is
+     *     {@link RoleClassAdministerableMaterial }
+     *     
+     */
+    public void setClassCode(RoleClassAdministerableMaterial value) {
+        this.classCode = value;
     }
 
 }

@@ -14,8 +14,8 @@ import javax.xml.bind.annotation.XmlType;
  * &lt;simpleType name="RoleClassLicensedEntity">
  *   &lt;restriction base="{urn:hl7-org:v3}cs">
  *     &lt;enumeration value="LIC"/>
- *     &lt;enumeration value="PROV"/>
  *     &lt;enumeration value="NOT"/>
+ *     &lt;enumeration value="PROV"/>
  *   &lt;/restriction>
  * &lt;/simpleType>
  * </pre>
@@ -26,8 +26,8 @@ import javax.xml.bind.annotation.XmlType;
 public enum RoleClassLicensedEntity {
 
     LIC,
-    PROV,
-    NOT;
+    NOT,
+    PROV;
 
     public String value() {
         return name();

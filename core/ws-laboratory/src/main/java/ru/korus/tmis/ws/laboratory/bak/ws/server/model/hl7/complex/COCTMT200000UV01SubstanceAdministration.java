@@ -8,8 +8,6 @@ import javax.xml.bind.annotation.XmlAccessorType;
 import javax.xml.bind.annotation.XmlAttribute;
 import javax.xml.bind.annotation.XmlElement;
 import javax.xml.bind.annotation.XmlType;
-import javax.xml.bind.annotation.adapters.CollapsedStringAdapter;
-import javax.xml.bind.annotation.adapters.XmlJavaTypeAdapter;
 
 
 /**
@@ -89,8 +87,7 @@ public class COCTMT200000UV01SubstanceAdministration {
     protected List<RTOQTYQTY> doseCheckQuantity;
     protected List<RTOQTYQTY> maxDoseQuantity;
     @XmlAttribute(name = "classCode", required = true)
-    @XmlJavaTypeAdapter(CollapsedStringAdapter.class)
-    protected String classCode;
+    protected ActClassSubstanceAdministration classCode;
     @XmlAttribute(name = "moodCode", required = true)
     protected XActMoodOrdPrmsEvn moodCode;
     @XmlAttribute(name = "negationInd")
@@ -515,10 +512,10 @@ public class COCTMT200000UV01SubstanceAdministration {
      * 
      * @return
      *     possible object is
-     *     {@link String }
+     *     {@link ActClassSubstanceAdministration }
      *     
      */
-    public String getClassCode() {
+    public ActClassSubstanceAdministration getClassCode() {
         return classCode;
     }
 
@@ -527,10 +524,10 @@ public class COCTMT200000UV01SubstanceAdministration {
      * 
      * @param value
      *     allowed object is
-     *     {@link String }
+     *     {@link ActClassSubstanceAdministration }
      *     
      */
-    public void setClassCode(String value) {
+    public void setClassCode(ActClassSubstanceAdministration value) {
         this.classCode = value;
     }
 

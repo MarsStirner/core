@@ -15,11 +15,11 @@ import javax.xml.bind.annotation.XmlType;
  *   &lt;restriction base="{urn:hl7-org:v3}cs">
  *     &lt;enumeration value="CT"/>
  *     &lt;enumeration value="EQ"/>
+ *     &lt;enumeration value="GE"/>
  *     &lt;enumeration value="GN"/>
  *     &lt;enumeration value="GT"/>
- *     &lt;enumeration value="GE"/>
- *     &lt;enumeration value="LT"/>
  *     &lt;enumeration value="LE"/>
+ *     &lt;enumeration value="LT"/>
  *     &lt;enumeration value="NE"/>
  *   &lt;/restriction>
  * &lt;/simpleType>
@@ -32,11 +32,11 @@ public enum RelationalOperator {
 
     CT,
     EQ,
+    GE,
     GN,
     GT,
-    GE,
-    LT,
     LE,
+    LT,
     NE;
 
     public String value() {

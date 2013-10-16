@@ -1,8 +1,6 @@
 
 package ru.korus.tmis.ws.laboratory.bak.ws.server.model.hl7.complex;
 
-import java.util.ArrayList;
-import java.util.List;
 import javax.xml.bind.annotation.XmlAccessType;
 import javax.xml.bind.annotation.XmlAccessorType;
 import javax.xml.bind.annotation.XmlAttribute;
@@ -74,35 +72,30 @@ public class ADXP
 {
 
     @XmlAttribute(name = "partType")
-    protected List<String> partType;
+    protected AddressPartType partType;
 
     /**
      * Gets the value of the partType property.
      * 
-     * <p>
-     * This accessor method returns a reference to the live list,
-     * not a snapshot. Therefore any modification you make to the
-     * returned list will be present inside the JAXB object.
-     * This is why there is not a <CODE>set</CODE> method for the partType property.
-     * 
-     * <p>
-     * For example, to add a new item, do as follows:
-     * <pre>
-     *    getPartType().add(newItem);
-     * </pre>
-     * 
-     * 
-     * <p>
-     * Objects of the following type(s) are allowed in the list
-     * {@link String }
-     * 
-     * 
+     * @return
+     *     possible object is
+     *     {@link AddressPartType }
+     *     
      */
-    public List<String> getPartType() {
-        if (partType == null) {
-            partType = new ArrayList<String>();
-        }
-        return this.partType;
+    public AddressPartType getPartType() {
+        return partType;
+    }
+
+    /**
+     * Sets the value of the partType property.
+     * 
+     * @param value
+     *     allowed object is
+     *     {@link AddressPartType }
+     *     
+     */
+    public void setPartType(AddressPartType value) {
+        this.partType = value;
     }
 
 }

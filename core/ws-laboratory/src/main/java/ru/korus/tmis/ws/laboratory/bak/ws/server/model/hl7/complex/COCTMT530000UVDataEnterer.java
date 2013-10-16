@@ -29,7 +29,7 @@ import javax.xml.bind.annotation.XmlType;
  *       &lt;/sequence>
  *       &lt;attGroup ref="{urn:hl7-org:v3}InfrastructureRootAttributes"/>
  *       &lt;attribute name="nullFlavor" type="{urn:hl7-org:v3}NullFlavor" />
- *       &lt;attribute name="typeCode" use="required" type="{urn:hl7-org:v3}ParticipationType" fixed="ENT" />
+ *       &lt;attribute name="typeCode" use="required" type="{urn:hl7-org:v3}ParticipationDataEntryPerson" />
  *       &lt;attribute name="contextControlCode" type="{urn:hl7-org:v3}ContextControl" default="OP" />
  *     &lt;/restriction>
  *   &lt;/complexContent>
@@ -61,11 +61,11 @@ public class COCTMT530000UVDataEnterer {
     @XmlElement(required = true, nillable = true)
     protected COCTMT090000UV01AssignedEntity assignedEntity;
     @XmlAttribute(name = "nullFlavor")
-    protected List<String> nullFlavor;
+    protected NullFlavor nullFlavor;
     @XmlAttribute(name = "typeCode", required = true)
-    protected List<String> typeCode;
+    protected ParticipationDataEntryPerson typeCode;
     @XmlAttribute(name = "contextControlCode")
-    protected String contextControlCode;
+    protected ContextControl contextControlCode;
 
     /**
      * Gets the value of the realmCode property.
@@ -272,59 +272,49 @@ public class COCTMT530000UVDataEnterer {
     /**
      * Gets the value of the nullFlavor property.
      * 
-     * <p>
-     * This accessor method returns a reference to the live list,
-     * not a snapshot. Therefore any modification you make to the
-     * returned list will be present inside the JAXB object.
-     * This is why there is not a <CODE>set</CODE> method for the nullFlavor property.
-     * 
-     * <p>
-     * For example, to add a new item, do as follows:
-     * <pre>
-     *    getNullFlavor().add(newItem);
-     * </pre>
-     * 
-     * 
-     * <p>
-     * Objects of the following type(s) are allowed in the list
-     * {@link String }
-     * 
-     * 
+     * @return
+     *     possible object is
+     *     {@link NullFlavor }
+     *     
      */
-    public List<String> getNullFlavor() {
-        if (nullFlavor == null) {
-            nullFlavor = new ArrayList<String>();
-        }
-        return this.nullFlavor;
+    public NullFlavor getNullFlavor() {
+        return nullFlavor;
+    }
+
+    /**
+     * Sets the value of the nullFlavor property.
+     * 
+     * @param value
+     *     allowed object is
+     *     {@link NullFlavor }
+     *     
+     */
+    public void setNullFlavor(NullFlavor value) {
+        this.nullFlavor = value;
     }
 
     /**
      * Gets the value of the typeCode property.
      * 
-     * <p>
-     * This accessor method returns a reference to the live list,
-     * not a snapshot. Therefore any modification you make to the
-     * returned list will be present inside the JAXB object.
-     * This is why there is not a <CODE>set</CODE> method for the typeCode property.
-     * 
-     * <p>
-     * For example, to add a new item, do as follows:
-     * <pre>
-     *    getTypeCode().add(newItem);
-     * </pre>
-     * 
-     * 
-     * <p>
-     * Objects of the following type(s) are allowed in the list
-     * {@link String }
-     * 
-     * 
+     * @return
+     *     possible object is
+     *     {@link ParticipationDataEntryPerson }
+     *     
      */
-    public List<String> getTypeCode() {
-        if (typeCode == null) {
-            typeCode = new ArrayList<String>();
-        }
-        return this.typeCode;
+    public ParticipationDataEntryPerson getTypeCode() {
+        return typeCode;
+    }
+
+    /**
+     * Sets the value of the typeCode property.
+     * 
+     * @param value
+     *     allowed object is
+     *     {@link ParticipationDataEntryPerson }
+     *     
+     */
+    public void setTypeCode(ParticipationDataEntryPerson value) {
+        this.typeCode = value;
     }
 
     /**
@@ -332,12 +322,12 @@ public class COCTMT530000UVDataEnterer {
      * 
      * @return
      *     possible object is
-     *     {@link String }
+     *     {@link ContextControl }
      *     
      */
-    public String getContextControlCode() {
+    public ContextControl getContextControlCode() {
         if (contextControlCode == null) {
-            return "OP";
+            return ContextControl.OP;
         } else {
             return contextControlCode;
         }
@@ -348,10 +338,10 @@ public class COCTMT530000UVDataEnterer {
      * 
      * @param value
      *     allowed object is
-     *     {@link String }
+     *     {@link ContextControl }
      *     
      */
-    public void setContextControlCode(String value) {
+    public void setContextControlCode(ContextControl value) {
         this.contextControlCode = value;
     }
 

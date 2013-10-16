@@ -49,9 +49,9 @@ public class MCAIMT700201UV01Reason {
     @XmlElement(required = true, nillable = true)
     protected MCAIMT900001UV01DetectedIssueEvent detectedIssueEvent;
     @XmlAttribute(name = "nullFlavor")
-    protected List<String> nullFlavor;
+    protected NullFlavor nullFlavor;
     @XmlAttribute(name = "typeCode", required = true)
-    protected String typeCode;
+    protected ActRelationshipReason typeCode;
     @XmlAttribute(name = "contextConductionInd")
     protected Boolean contextConductionInd;
 
@@ -164,30 +164,25 @@ public class MCAIMT700201UV01Reason {
     /**
      * Gets the value of the nullFlavor property.
      * 
-     * <p>
-     * This accessor method returns a reference to the live list,
-     * not a snapshot. Therefore any modification you make to the
-     * returned list will be present inside the JAXB object.
-     * This is why there is not a <CODE>set</CODE> method for the nullFlavor property.
-     * 
-     * <p>
-     * For example, to add a new item, do as follows:
-     * <pre>
-     *    getNullFlavor().add(newItem);
-     * </pre>
-     * 
-     * 
-     * <p>
-     * Objects of the following type(s) are allowed in the list
-     * {@link String }
-     * 
-     * 
+     * @return
+     *     possible object is
+     *     {@link NullFlavor }
+     *     
      */
-    public List<String> getNullFlavor() {
-        if (nullFlavor == null) {
-            nullFlavor = new ArrayList<String>();
-        }
-        return this.nullFlavor;
+    public NullFlavor getNullFlavor() {
+        return nullFlavor;
+    }
+
+    /**
+     * Sets the value of the nullFlavor property.
+     * 
+     * @param value
+     *     allowed object is
+     *     {@link NullFlavor }
+     *     
+     */
+    public void setNullFlavor(NullFlavor value) {
+        this.nullFlavor = value;
     }
 
     /**
@@ -195,10 +190,10 @@ public class MCAIMT700201UV01Reason {
      * 
      * @return
      *     possible object is
-     *     {@link String }
+     *     {@link ActRelationshipReason }
      *     
      */
-    public String getTypeCode() {
+    public ActRelationshipReason getTypeCode() {
         return typeCode;
     }
 
@@ -207,10 +202,10 @@ public class MCAIMT700201UV01Reason {
      * 
      * @param value
      *     allowed object is
-     *     {@link String }
+     *     {@link ActRelationshipReason }
      *     
      */
-    public void setTypeCode(String value) {
+    public void setTypeCode(ActRelationshipReason value) {
         this.typeCode = value;
     }
 

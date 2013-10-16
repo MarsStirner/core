@@ -26,12 +26,12 @@ import javax.xml.bind.annotation.XmlType;
  *         &lt;element name="id" type="{urn:hl7-org:v3}II" maxOccurs="unbounded"/>
  *         &lt;element name="name" type="{urn:hl7-org:v3}EN" maxOccurs="unbounded" minOccurs="0"/>
  *         &lt;element name="telecom" type="{urn:hl7-org:v3}TEL" maxOccurs="unbounded" minOccurs="0"/>
- *         &lt;element name="notificationParty" type="{urn:hl7-org:v3}COCT_MT040203UV01.NotificationParty" minOccurs="0"/>
+ *         &lt;element name="notificationParty" type="{urn:hl7-org:v3}COCT_MT040203UV09.NotificationParty" minOccurs="0"/>
  *       &lt;/sequence>
  *       &lt;attGroup ref="{urn:hl7-org:v3}InfrastructureRootAttributes"/>
  *       &lt;attribute name="nullFlavor" type="{urn:hl7-org:v3}NullFlavor" />
  *       &lt;attribute name="classCode" use="required" type="{urn:hl7-org:v3}EntityClassOrganization" />
- *       &lt;attribute name="determinerCode" use="required" type="{urn:hl7-org:v3}EntityDeterminer" fixed="INSTANCE" />
+ *       &lt;attribute name="determinerCode" use="required" type="{urn:hl7-org:v3}EntityDeterminerSpecific" />
  *     &lt;/restriction>
  *   &lt;/complexContent>
  * &lt;/complexType>
@@ -59,13 +59,13 @@ public class MCCIMT000200UV01Organization {
     protected List<EN> name;
     protected List<TEL> telecom;
     @XmlElementRef(name = "notificationParty", namespace = "urn:hl7-org:v3", type = JAXBElement.class, required = false)
-    protected JAXBElement<COCTMT040203UV01NotificationParty> notificationParty;
+    protected JAXBElement<COCTMT040203UV09NotificationParty> notificationParty;
     @XmlAttribute(name = "nullFlavor")
-    protected List<String> nullFlavor;
+    protected NullFlavor nullFlavor;
     @XmlAttribute(name = "classCode", required = true)
-    protected String classCode;
+    protected EntityClassOrganization classCode;
     @XmlAttribute(name = "determinerCode", required = true)
-    protected String determinerCode;
+    protected EntityDeterminerSpecific determinerCode;
 
     /**
      * Gets the value of the realmCode property.
@@ -241,10 +241,10 @@ public class MCCIMT000200UV01Organization {
      * 
      * @return
      *     possible object is
-     *     {@link JAXBElement }{@code <}{@link COCTMT040203UV01NotificationParty }{@code >}
+     *     {@link JAXBElement }{@code <}{@link COCTMT040203UV09NotificationParty }{@code >}
      *     
      */
-    public JAXBElement<COCTMT040203UV01NotificationParty> getNotificationParty() {
+    public JAXBElement<COCTMT040203UV09NotificationParty> getNotificationParty() {
         return notificationParty;
     }
 
@@ -253,40 +253,35 @@ public class MCCIMT000200UV01Organization {
      * 
      * @param value
      *     allowed object is
-     *     {@link JAXBElement }{@code <}{@link COCTMT040203UV01NotificationParty }{@code >}
+     *     {@link JAXBElement }{@code <}{@link COCTMT040203UV09NotificationParty }{@code >}
      *     
      */
-    public void setNotificationParty(JAXBElement<COCTMT040203UV01NotificationParty> value) {
+    public void setNotificationParty(JAXBElement<COCTMT040203UV09NotificationParty> value) {
         this.notificationParty = value;
     }
 
     /**
      * Gets the value of the nullFlavor property.
      * 
-     * <p>
-     * This accessor method returns a reference to the live list,
-     * not a snapshot. Therefore any modification you make to the
-     * returned list will be present inside the JAXB object.
-     * This is why there is not a <CODE>set</CODE> method for the nullFlavor property.
-     * 
-     * <p>
-     * For example, to add a new item, do as follows:
-     * <pre>
-     *    getNullFlavor().add(newItem);
-     * </pre>
-     * 
-     * 
-     * <p>
-     * Objects of the following type(s) are allowed in the list
-     * {@link String }
-     * 
-     * 
+     * @return
+     *     possible object is
+     *     {@link NullFlavor }
+     *     
      */
-    public List<String> getNullFlavor() {
-        if (nullFlavor == null) {
-            nullFlavor = new ArrayList<String>();
-        }
-        return this.nullFlavor;
+    public NullFlavor getNullFlavor() {
+        return nullFlavor;
+    }
+
+    /**
+     * Sets the value of the nullFlavor property.
+     * 
+     * @param value
+     *     allowed object is
+     *     {@link NullFlavor }
+     *     
+     */
+    public void setNullFlavor(NullFlavor value) {
+        this.nullFlavor = value;
     }
 
     /**
@@ -294,10 +289,10 @@ public class MCCIMT000200UV01Organization {
      * 
      * @return
      *     possible object is
-     *     {@link String }
+     *     {@link EntityClassOrganization }
      *     
      */
-    public String getClassCode() {
+    public EntityClassOrganization getClassCode() {
         return classCode;
     }
 
@@ -306,10 +301,10 @@ public class MCCIMT000200UV01Organization {
      * 
      * @param value
      *     allowed object is
-     *     {@link String }
+     *     {@link EntityClassOrganization }
      *     
      */
-    public void setClassCode(String value) {
+    public void setClassCode(EntityClassOrganization value) {
         this.classCode = value;
     }
 
@@ -318,15 +313,11 @@ public class MCCIMT000200UV01Organization {
      * 
      * @return
      *     possible object is
-     *     {@link String }
+     *     {@link EntityDeterminerSpecific }
      *     
      */
-    public String getDeterminerCode() {
-        if (determinerCode == null) {
-            return "INSTANCE";
-        } else {
-            return determinerCode;
-        }
+    public EntityDeterminerSpecific getDeterminerCode() {
+        return determinerCode;
     }
 
     /**
@@ -334,10 +325,10 @@ public class MCCIMT000200UV01Organization {
      * 
      * @param value
      *     allowed object is
-     *     {@link String }
+     *     {@link EntityDeterminerSpecific }
      *     
      */
-    public void setDeterminerCode(String value) {
+    public void setDeterminerCode(EntityDeterminerSpecific value) {
         this.determinerCode = value;
     }
 
