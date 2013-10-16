@@ -24,10 +24,6 @@ public class BbtResultOrganism implements Serializable {
     private Integer actionId;
 
     @Basic(optional = false)
-    @Column(name = "idx")
-    private Integer idx;
-
-    @Basic(optional = false)
     @Column(name = "organism_id")
     private Integer organismId;
 
@@ -46,10 +42,6 @@ public class BbtResultOrganism implements Serializable {
         this.actionId = actionId;
     }
 
-    public void setIdx(Integer idx) {
-        this.idx = idx;
-    }
-
     public void setOrganismId(Integer organismId) {
         this.organismId = organismId;
     }
@@ -66,10 +58,6 @@ public class BbtResultOrganism implements Serializable {
         return actionId;
     }
 
-    public Integer getIdx() {
-        return idx;
-    }
-
     public Integer getOrganismId() {
         return organismId;
     }
@@ -83,7 +71,6 @@ public class BbtResultOrganism implements Serializable {
         return "BbtResultOrganism{" +
                 "id=" + id +
                 ", actionId=" + actionId +
-                ", idx=" + idx +
                 ", organismId=" + organismId +
                 ", concentration='" + concentration + '\'' +
                 '}';

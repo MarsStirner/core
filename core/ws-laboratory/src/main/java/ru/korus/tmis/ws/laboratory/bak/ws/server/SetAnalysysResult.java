@@ -121,7 +121,7 @@ public class SetAnalysysResult implements SetAnalysysResultWS {
             boolean isTable = detectTableForm(request);
 
             // идентификатор направления на анализы
-            String id = "";
+            int id = 0;
             // штрих-код на контейнере c биоматериалом
             String barCode;
             // уникальный идентификационный номер врача лаборатории подписавшего результаты исследования
@@ -143,7 +143,12 @@ public class SetAnalysysResult implements SetAnalysysResultWS {
                         final POLBMT004000UV01ObservationReport value = report.getValue();
 
                         final II ii = !value.getId().isEmpty() ? value.getId().get(0) : new II();
-                        id = ii.getRoot();
+                        id = Integer.parseInt(ii.getRoot()) - 1000000000;
+
+                        if (dbBbtResponseBean.get(id) != null) {
+                            throw new CoreException("Результаты с идентификатором [" + id + "] уже приняты");
+                        }
+
                         // код исследования
                         final String codeIsled = value.getCode().getCode();
                         // название исследования
@@ -205,9 +210,8 @@ public class SetAnalysysResult implements SetAnalysysResultWS {
                                 final RbMicroorganism mic = dbRbMicroorganismBean.get(codeMicroOrg);
 
                                 final BbtResultOrganism resultOrganism = new BbtResultOrganism();
-                                resultOrganism.setActionId(Integer.parseInt(id) - 100000000);
+                                resultOrganism.setActionId(id);
                                 resultOrganism.setConcentration(sensMicroOrg);
-                                resultOrganism.setIdx(idx++);
                                 resultOrganism.setOrganismId(mic.getId());
                                 dbBbtResultOrganismBean.add(resultOrganism);
 
@@ -321,7 +325,6 @@ public class SetAnalysysResult implements SetAnalysysResultWS {
                                 sensAntib1.setActivity(sensAntib);
                                 sensAntib1.setAntibioticId(a.getId());
                                 sensAntib1.setBbtResultOrganismId(m.getId());
-                                sensAntib1.setIdx(idx++);
                                 sensAntib1.setMic(concAntib);
 
                                 dbBbtOrganismSensValuesBean.add(sensAntib1);
@@ -338,7 +341,7 @@ public class SetAnalysysResult implements SetAnalysysResultWS {
 
             // записываем данные в БД
             final BbtResponse response = new BbtResponse();
-            response.setId(Integer.parseInt(id) - 100000000);
+            response.setId(id);
             response.setDoctorId(Integer.parseInt(doctorId));
             response.setFinalFlag(isComplete ? 1 : 0);
             response.setDefects(getDefects(request));
