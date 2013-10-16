@@ -40,4 +40,14 @@ public class DbBbtResultOrganismBean implements DbBbtResultOrganismBeanLocal {
                 em.createQuery("SELECT a FROM BbtResultOrganism a WHERE a.id = :id", BbtResultOrganism.class).setParameter("id", id).getResultList();
         return !resultOrganismList.isEmpty() ? resultOrganismList.get(0) : null;
     }
+
+    @Override
+    public BbtResultOrganism get(Integer organismId, Integer actionId) {
+        List<BbtResultOrganism> resultOrganismList =
+                em.createQuery("SELECT a FROM BbtResultOrganism a WHERE a.actionId = :actionId AND a.organismId = :organismId", BbtResultOrganism.class)
+                        .setParameter("actionId", actionId)
+                        .setParameter("organismId", organismId)
+                        .getResultList();
+        return !resultOrganismList.isEmpty() ? resultOrganismList.get(0) : null;
+    }
 }

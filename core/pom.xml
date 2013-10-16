@@ -169,7 +169,7 @@
             <id>production-standart</id>
             <properties>
                 <!-- Выключить дебаг -->
-                <project.build.debug>false</project.build.debug>
+                <project.build.debug>true</project.build.debug>
                 <!-- Название домена -->
                 <glassfish.domain>fccho-moscow</glassfish.domain>
             </properties>
