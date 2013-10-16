@@ -143,7 +143,7 @@ public class TrfuActionProp {
     }
 
     private Integer getOrgStructureForAction(Action moving) {
-        final String propTypeCode  = "hospOrgStruct";
+        final String propTypeCode  = "orgStructStay";
         final EntityManager em = database.getEntityMgr();
         final List<ActionPropertyType> actionPropTypes = em
                 .createQuery("SELECT atp FROM ActionPropertyType atp WHERE atp.actionType.id = :typeId AND atp.deleted = 0 AND atp.code = :propTypeCode", ActionPropertyType.class)

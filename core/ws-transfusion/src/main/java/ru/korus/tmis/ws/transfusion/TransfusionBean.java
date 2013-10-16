@@ -38,7 +38,7 @@ public class TransfusionBean {
     /**
      * Полинг базы данных для поиска и передачи новых запросов в систему ТРФУ
      */
-    @Schedule(hour = "*", minute = "*")
+    @Schedule(hour = "*", minute = "*", second = "15")
     public void pullDB() {
         try {
             logger.info("Pooling db...Trfu integration is {}", ConfigManager.TrfuProp().isActive());

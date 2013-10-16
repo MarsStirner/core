@@ -21,7 +21,7 @@ enum PropType {
     ORDER_ISSUE_RES_DATE("trfuReqBloodCompDate", "Date"), // Дата выдачи КК
     ORDER_ISSUE_RES_TIME("trfuReqBloodCompTime", "Time"), // Время выдачи КК
     ORDER_ISSUE_BLOOD_COMP_PASPORT("trfuReqBloodCompPasport", "Integer"),
-    PATIENT_ORG_STRUCT("hospOrgStruct", "OrgStructure"),
+    PATIENT_ORG_STRUCT("orgStructStay", "OrgStructure"),
 
     DONOR_ID("trfuProcedureDonor", "Integer"),
     CONTRAINDICATION("trfuProcedureContraindication", "String"),
