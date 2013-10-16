@@ -237,7 +237,15 @@ class DirectionBean extends DirectionBeanLocal
         val jt = dbJobTicketBean.insertOrUpdateJobTicket(0, a, j)
         val tt = dbTakenTissue.insertOrUpdateTakenTissue(0, a)
         if (list != null && list.size()>0) {
-          if (list.getLast._3.getBarcode != 999999) {
+          var fromList = list.find((p) => p._1.getId == null &&
+            p._2.getDatetime == a.getPlannedEndDate &&
+            p._3.getType.getId == dbTakenTissue.getActionTypeTissueTypeByMasterId(a.getActionType.getId.intValue()).getTissueType.getId &&
+            p._4.getIsUrgent == true).getOrElse(null)
+          if (fromList != null) {
+            var (j2, jt2, tt2, a2) = fromList.asInstanceOf[(Job, JobTicket, TakenTissue, Action)]
+            tt.setBarcode(tt2.getBarcode)
+            tt.setPeriod(tt2.getPeriod)
+          } else if (list.getLast._3.getBarcode != 999999) {
             tt.setBarcode(list.getLast._3.getBarcode+1)
             tt.setPeriod(list.getLast._3.getPeriod)
           } else {
@@ -409,7 +417,12 @@ class DirectionBean extends DirectionBeanLocal
       action.setCreateDatetime(request.createDateTime)
       action.setBegDate(request.createDateTime)
     }
-    action.setPlannedEndDate(new Date(request.plannedEndDate.getTime + request.plannedTime.getTime.getTime))
+    val plannedDate = if (request.plannedTime != null && request.plannedTime.getTime != null) {
+      new Date(request.plannedEndDate.getTime + request.plannedTime.getTime.getTime)
+    } else {
+      new Date(request.plannedEndDate.getTime)
+    }
+    action.setPlannedEndDate(plannedDate)
     if (request.getFinance.getId > 0) {
       action.setFinanceId(request.getFinance.getId)
     } else {
@@ -456,7 +469,7 @@ class DirectionBean extends DirectionBeanLocal
     em.flush()
 
     // Создаем ивент 29 и акшен 19 (по спеке)
-    var event29 = dbEventBean.createEvent(request.patientId, 29, new Date(request.plannedEndDate.getTime + request.plannedTime.getTime.getTime), null, userData)
+    var event29 = dbEventBean.createEvent(request.patientId, 29, plannedDate, null, userData)
     event29.setExecutor(dbStaffBean.getStaffById(request.executorId))
     event29.setExternalId(dbEventBean.getEventById(request.getEventId).getExternalId)
     em.persist(event29)
@@ -466,11 +479,14 @@ class DirectionBean extends DirectionBeanLocal
       action19.setExecutor(dbStaffBean.getStaffById(request.executorId))
     if(request.assignerId>0)
       action19.setAssigner(dbStaffBean.getStaffById(request.assignerId))
-    action19.setDirectionDate(new Date(request.plannedEndDate.getTime + request.plannedTime.getTime.getTime))
+    action19.setDirectionDate(plannedDate)
     action19.setEvent(event29)
     em.persist(action19)
     em.flush()
     // создаем и/или заполняем значение проперти 18
+    if (request.plannedTime != null) {
+
+    }
     val apSchedule = actionPropertyBean.getActionPropertyById(request.plannedTime.getId)
     val a = apSchedule.getAction
     var aps = actionPropertyBean.getActionPropertiesByActionIdAndTypeId(a.getId.intValue(), 18) // 18 = queue

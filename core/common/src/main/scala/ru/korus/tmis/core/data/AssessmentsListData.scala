@@ -207,6 +207,9 @@ class AssessmentsListEntry {
   var assessmentDate: Date = _ //дата создания
 
   @BeanProperty
+  var beginDate: Date = _ //дата создания
+
+  @BeanProperty
   var closeDate: Date = _ //дата закрытия
 
   @BeanProperty
@@ -220,6 +223,7 @@ class AssessmentsListEntry {
     this.id = action.getId.intValue()
     this.typeId = action.getActionType.getId.intValue()
     this.assessmentDate = action.getCreateDatetime
+    this.beginDate = action.getBegDate
     this.closeDate = action.getEndDate
     this.assessmentName = new IdNameContainer(action.getActionType.getId.intValue(), action.getActionType.getName)
     this.doctor = new DoctorSpecsContainer(action.getCreatePerson)
