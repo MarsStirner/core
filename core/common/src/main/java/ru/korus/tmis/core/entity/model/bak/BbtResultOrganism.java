@@ -10,10 +10,11 @@ import java.io.Serializable;
  * Description:  <br>
  */
 @Entity
-@Table(name = "bbtResultOrganism", catalog = "", schema = "")
+@Table(name = "bbtResult_Organism", catalog = "", schema = "")
 public class BbtResultOrganism implements Serializable {
 
     @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Basic(optional = false)
     @Column(name = "id")
     private Integer id;
@@ -21,10 +22,6 @@ public class BbtResultOrganism implements Serializable {
     @Basic(optional = false)
     @Column(name = "action_id")
     private Integer actionId;
-
-    @Basic(optional = false)
-    @Column(name = "idx")
-    private Integer idx;
 
     @Basic(optional = false)
     @Column(name = "organism_id")
@@ -37,16 +34,28 @@ public class BbtResultOrganism implements Serializable {
     public BbtResultOrganism() {
     }
 
+    public void setId(Integer id) {
+        this.id = id;
+    }
+
+    public void setActionId(Integer actionId) {
+        this.actionId = actionId;
+    }
+
+    public void setOrganismId(Integer organismId) {
+        this.organismId = organismId;
+    }
+
+    public void setConcentration(String concentration) {
+        this.concentration = concentration;
+    }
+
     public Integer getId() {
         return id;
     }
 
     public Integer getActionId() {
         return actionId;
-    }
-
-    public Integer getIdx() {
-        return idx;
     }
 
     public Integer getOrganismId() {
@@ -62,7 +71,6 @@ public class BbtResultOrganism implements Serializable {
         return "BbtResultOrganism{" +
                 "id=" + id +
                 ", actionId=" + actionId +
-                ", idx=" + idx +
                 ", organismId=" + organismId +
                 ", concentration='" + concentration + '\'' +
                 '}';

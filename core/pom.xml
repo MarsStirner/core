@@ -159,7 +159,7 @@
         <eclipselink.logging.parameters>false</eclipselink.logging.parameters>
         <eclipselink.logging.showsql>false</eclipselink.logging.showsql>
         <!-- Схема работы при запуске приложения-->
-        <eclipselink.ddl.generated>create-tables</eclipselink.ddl.generated>
+        <eclipselink.ddl.generated>update-tables</eclipselink.ddl.generated>
 
     </properties>
 
@@ -169,7 +169,7 @@
             <id>production-standart</id>
             <properties>
                 <!-- Выключить дебаг -->
-                <project.build.debug>false</project.build.debug>
+                <project.build.debug>true</project.build.debug>
                 <!-- Название домена -->
                 <glassfish.domain>fccho-moscow</glassfish.domain>
             </properties>
@@ -230,6 +230,8 @@
             <properties>
                 <!-- Имя ear, которое будет после package -->
                 <ear.name>tmis-server-${version.tmis.core}</ear.name>
+                <!-- Опиция для автосоздания таблиц/ключей на основе содержимого JPA-сущностей -->
+                <eclipselink.ddl.generated>NONE</eclipselink.ddl.generated>
             </properties>
         </profile>
 
@@ -390,6 +392,8 @@
                 <glassfish.admin.login>admin1234</glassfish.admin.login>
                 <!-- Пароль администратора-->
                 <glassfish.admin.password>admin1234</glassfish.admin.password>
+                <!-- Опиция для автосоздания таблиц/ключей на основе содержимого JPA-сущностей -->
+                <eclipselink.ddl.generated>NONE</eclipselink.ddl.generated>
             </properties>
         </profile>
     </profiles>
