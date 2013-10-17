@@ -92,8 +92,8 @@ class DbRbPolicyTypeBean
     }
 
     val typed = em.createQuery(AllRbPolicyTypeWithFilterQuery.format("r.id, r.name", queryStr.query, sorting), classOf[Array[AnyRef]])
-                  .setMaxResults(limit)
-                  .setFirstResult(limit * page)
+      .setMaxResults(limit)
+      .setFirstResult(limit * page)
     if (queryStr.data.size() > 0) {
       queryStr.data.foreach(qdp => typed.setParameter(qdp.name, qdp.value))
     }
@@ -113,4 +113,17 @@ class DbRbPolicyTypeBean
   %s
   %s
                                        """
+
+  def findByCode(policyTypeCode: String): RbPolicyType = {
+    val result = em.createNamedQuery("RbPolicyType.findByCode", classOf[RbPolicyType])
+      .setParameter("code", policyTypeCode).setMaxResults(1).getResultList
+    result.size match {
+      case 0 => {
+        null
+      }
+      case size => {
+        result(0)
+      }
+    }
+  }
 }

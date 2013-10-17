@@ -28,4 +28,12 @@ public interface DbRbDocumentTypeBeanLocal {
             throws CoreException;
 
     RbDocumentType findByName(String name) throws CoreException;
+
+    /**
+     * Ищет тип документа по значению кода типа документа
+     * @param code код типа документа
+     * @return тип документа, которому соответствует код \ null в случае если нету типа с таким кодом.
+     * Если найдено больше одного типа документа, то возвращает первый попавшийся (ORDER BY id DESC).
+     */
+    RbDocumentType findByCode(String code);
 }
