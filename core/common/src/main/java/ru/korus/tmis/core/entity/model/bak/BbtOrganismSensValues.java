@@ -10,10 +10,11 @@ import java.io.Serializable;
  * Description:  <br>
  */
 @Entity
-@Table(name = "bbtOrganismSensValues", catalog = "", schema = "")
+@Table(name = "bbtOrganism_SensValues", catalog = "", schema = "")
 public class BbtOrganismSensValues implements Serializable {
 
     @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Basic(optional = false)
     @Column(name = "id")
     private Integer id;
@@ -21,10 +22,6 @@ public class BbtOrganismSensValues implements Serializable {
     @Basic(optional = false)
     @Column(name = "bbtResult_Organism_id")
     private Integer bbtResultOrganismId;
-
-    @Basic(optional = false)
-    @Column(name = "idx")
-    private Integer idx;
 
     @Basic(optional = false)
     @Column(name = "antibiotic_id")
@@ -49,10 +46,6 @@ public class BbtOrganismSensValues implements Serializable {
         this.bbtResultOrganismId = bbtResultOrganismId;
     }
 
-    public void setIdx(Integer idx) {
-        this.idx = idx;
-    }
-
     public void setAntibioticId(Integer antibioticId) {
         this.antibioticId = antibioticId;
     }
@@ -73,10 +66,6 @@ public class BbtOrganismSensValues implements Serializable {
         return bbtResultOrganismId;
     }
 
-    public Integer getIdx() {
-        return idx;
-    }
-
     public Integer getAntibioticId() {
         return antibioticId;
     }
@@ -91,13 +80,13 @@ public class BbtOrganismSensValues implements Serializable {
 
     @Override
     public String toString() {
-        return "BbtOrganismSensValues{" +
-                "id=" + id +
-                ", bbtResultOrganismId=" + bbtResultOrganismId +
-                ", idx=" + idx +
-                ", antibioticId=" + antibioticId +
-                ", mic='" + mic + '\'' +
-                ", activity='" + activity + '\'' +
-                '}';
+        final StringBuilder sb = new StringBuilder("BbtOrganismSensValues{");
+        sb.append("id=").append(id);
+        sb.append(", bbtResultOrganismId=").append(bbtResultOrganismId);
+        sb.append(", antibioticId=").append(antibioticId);
+        sb.append(", mic='").append(mic).append('\'');
+        sb.append(", activity='").append(activity).append('\'');
+        sb.append('}');
+        return sb.toString();
     }
 }

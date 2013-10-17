@@ -81,12 +81,12 @@
                                 <observationEvent classCode="OBS" moodCode="EVN">
                                     <code code="{код исследования}" displayName="{название исследования}"/>
                                     <effectiveTime value="{дата исследования}"/>
-                                    <confidentialityCode nullFlavor="UNK"/>
+                                    <confidentialityCode code="{числовое значение}" displayName="{результат}"/>
 
                                     <!-- 0 или несколько-->
                                     <component1 typeCode="COMP" contextControlCode="ON">
                                         <observationEvent classCode="OBS" moodCode="EVN">
-                                            <code code="{код микроорганизма}" displayName="{название микроорганизма}" codeSystem="{концентрация}"/>
+                                            <code code="{код микроорганизма}" displayName="{название микроорганизма}" codeSystem="{чувствительность}"/>
                                         </observationEvent>
                                     </component1>
 

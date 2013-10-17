@@ -23,15 +23,23 @@ public class BbtResultText implements Serializable {
     private Integer actionId;
 
     @Basic(optional = false)
-    @Column(name = "idx")
-    private Integer index;
-
-    @Basic(optional = false)
     @Column(name = "valueText")
     private String valueText;
 
 
     public BbtResultText() {
+    }
+
+    public void setId(Integer id) {
+        this.id = id;
+    }
+
+    public void setActionId(Integer actionId) {
+        this.actionId = actionId;
+    }
+
+    public void setValueText(String valueText) {
+        this.valueText = valueText;
     }
 
     public Integer getId() {
@@ -42,21 +50,17 @@ public class BbtResultText implements Serializable {
         return actionId;
     }
 
-    public Integer getIndex() {
-        return index;
-    }
-
     public String getValueText() {
         return valueText;
     }
 
     @Override
     public String toString() {
-        return "BbtResultText{" +
-                "id=" + id +
-                ", actionId=" + actionId +
-                ", index=" + index +
-                ", valueText='" + valueText + '\'' +
-                '}';
+        final StringBuilder sb = new StringBuilder("BbtResultText{");
+        sb.append("id=").append(id);
+        sb.append(", actionId=").append(actionId);
+        sb.append(", valueText='").append(valueText).append('\'');
+        sb.append('}');
+        return sb.toString();
     }
 }
