@@ -19,6 +19,7 @@ import ru.korus.tmis.core.entity.model.*;
 import ru.korus.tmis.core.entity.model.Patient;
 import ru.korus.tmis.core.exception.CoreException;
 
+import javax.ejb.EJBException;
 import java.util.*;
 
 /**
@@ -43,6 +44,12 @@ public class CommServer implements Communications.Iface {
     private static DbActionBeanLocal actionBean = null;
     private static DbManagerBeanLocal managerBean = null;
     private static DbEventBeanLocal eventBean = null;
+    //////////////////////////////////////////////////////////
+    private static DbClientDocumentBeanLocal documentBean;
+    private static DbRbDocumentTypeBeanLocal documentTypeBean;
+    private static DbClientPolicyBeanLocal policyBean;
+    private static DbRbPolicyTypeBeanLocal policyTypeBean;
+
     //Singleton instance
     private static CommServer instance;
     private static TServer server;
@@ -111,7 +118,8 @@ public class CommServer implements Communications.Iface {
      * @throws TException
      */
     @Override
-    public List<Integer> findOrgStructureByAddress(final FindOrgStructureByAddressParameters params) throws TException {
+    public List<Integer> findOrgStructureByAddress(final FindOrgStructureByAddressParameters params)
+            throws TException {
         final int currentRequestNum = ++requestNum;
         logger.info("#{} Call method -> CommServer.findOrgStructureByAddress(streetKLADR={}, pointKLADR={}, number={}/{} flat={})",
                 currentRequestNum, params.getPointKLADR(), params.getStreetKLADR(), params.getNumber(), params.getCorpus(), params.getFlat());
@@ -245,7 +253,11 @@ public class CommServer implements Communications.Iface {
             //На всякий случай, по идее этот код никогда не должен быть выполнен
             logger.error("if reach this point, then all is too hard to understand why =(", e);
             throw new TException("UNKNOWN EXCEPTION.");
+        } catch (EJBException e) {
+            logger.error("#" + currentRequestNum + " Doctor not found by ID=" + params.getPersonId(), e);
+            throw new NotFoundException().setError_msg("Doctor not found by ID=" + params.getPersonId());
         }
+
         //3. Если есть actionId и отсутствует «Причина отсутствия» (т.е. врач на месте)
         // [причина отсутствия выбирается внутри получения ограничений]
         //  то делаем выборку ограничений $constraints = _getQuotingByTimeConstraints
@@ -532,8 +544,69 @@ public class CommServer implements Communications.Iface {
                     getSexAsString(params.getSex()), "0", "0", "", null, 0, "", "", null, 0);
             patientBean.savePatientToDataBase(patient);
             logger.debug("Patient ={}", patient);
-            if (patient.getId() == 0 || patient.getId() == null)
+            if (patient.getId() == 0 || patient.getId() == null) {
                 throw new CoreException("Something is wrong while saving");
+            } else {
+                logger.debug("Patient saved in DB, and now has id={}", patient.getId());
+            }
+            //Сохранение документов (если заполнены)
+            if (params.isSetDocumentNumber()
+                    && params.isSetDocumentSerial()
+                    && params.isSetDocumentTypeCode()
+                    && !params.getDocumentTypeCode().isEmpty()) {
+                final RbDocumentType documentType = documentTypeBean.findByCode(params.getDocumentTypeCode());
+                if (documentType != null) {
+                    final ClientDocument document = documentBean.insertOrUpdateClientDocument(
+                            0,
+                            documentType.getId(),
+                            "",
+                            params.getDocumentNumber(),
+                            params.getDocumentSerial(),
+                            new Date(),
+                            new Date(),
+                            patient,
+                            null);
+                    final ClientDocument persistedDocument = documentBean.persistNewDocument(document);
+                    logger.debug("Persisted Document[{}]", persistedDocument.getId());
+                } else {
+                    logger.warn("With code[{}] no one rbDocumentType founded", params.getDocumentTypeCode());
+                }
+            }
+
+            //Сохранение полисов (если заполнены)
+            if (params.isSetPolicyNumber()
+                    && params.isSetPolicyTypeCode()
+                    && !params.getPolicyTypeCode().isEmpty()) {
+                final RbPolicyType policyType = policyTypeBean.findByCode(params.getPolicyTypeCode());
+                if (policyType != null) {
+                    //страховщик
+                    Organisation insurer = null;
+                    if (params.isSetPolicyInsurerInfisCode() && !params.getPolicyInsurerInfisCode().isEmpty()) {
+                        try {
+                            insurer = organisationBean.getOrganizationByInfisCode(params.getPolicyInsurerInfisCode());
+                        } catch (CoreException e) {
+                            logger.warn("Couldn't find organisation with InfisCode=\"{}\"", params.getPolicyInsurerInfisCode());
+                        }
+                    }
+                    final ClientPolicy policy = policyBean.insertOrUpdateClientPolicy(
+                            0,
+                            policyType.getId(),
+                            insurer != null ? insurer.getId() : 0,
+                            params.getPolicyNumber(),
+                            params.isSetPolicySerial() ? params.getPolicySerial() : "",
+                            new Date(),
+                            null,
+                            "",
+                            "Данные из ТФОМС",
+                            patient,
+                            null);
+                    final ClientPolicy persistedPolicy = policyBean.persistNewPolicy(policy);
+                    logger.debug("Persisted policy[{}]", persistedPolicy.getId());
+                } else {
+                    logger.warn("With code[{}] no one rbPolicyType founded", params.getPolicyTypeCode());
+                }
+            }
+
         } catch (CoreException e) {
             logger.error("Error while saving to database", e);
             return result.setMessage("Error while saving to database. Message=" + e.getMessage()).setSuccess(false);
@@ -663,20 +736,26 @@ public class CommServer implements Communications.Iface {
                     } // Конец проверки и инициализации серии и номера
 
                     if (document.containsKey(DocumentMapFields.DOCUMENT_CODE.getFieldName())) {
-                        patientsList = patientBean.findPatientByDocument(parameters, serial, number,
-                                Integer.parseInt(document.get(DocumentMapFields.DOCUMENT_CODE.getFieldName())));
+                        patientsList = patientBean.findPatientByDocument(
+                                parameters,
+                                serial,
+                                number,
+                                document.get(DocumentMapFields.DOCUMENT_CODE.getFieldName())
+                        );
+                    } else if (document.containsKey(DocumentMapFields.POLICY_TYPE.getFieldName())) {
+                        patientsList = patientBean.findPatientByPolicy(
+                                parameters,
+                                serial,
+                                number,
+                                document.get(DocumentMapFields.POLICY_TYPE.getFieldName())
+                        );
                     } else {
-                        if (document.containsKey(DocumentMapFields.POLICY_TYPE.getFieldName())) {
-                            patientsList = patientBean.findPatientByPolicy(parameters, serial, number,
-                                    Integer.parseInt(document.get(DocumentMapFields.POLICY_TYPE.getFieldName())));
-                        } else {
-                            logger.error("In document map there no \"{}\", or \"{}\", or \"{}\" But map has keys {}",
-                                    DocumentMapFields.CLIENT_ID.getFieldName(),
-                                    DocumentMapFields.DOCUMENT_CODE.getFieldName(),
-                                    DocumentMapFields.POLICY_TYPE.getFieldName(),
-                                    document.keySet());
-                            throw new NotFoundException(CommunicationErrors.msgNoDocumentsAttached.getMessage());
-                        }
+                        logger.error("In document map there no \"{}\", or \"{}\", or \"{}\" But map has keys {}",
+                                DocumentMapFields.CLIENT_ID.getFieldName(),
+                                DocumentMapFields.DOCUMENT_CODE.getFieldName(),
+                                DocumentMapFields.POLICY_TYPE.getFieldName(),
+                                document.keySet());
+                        throw new NotFoundException(CommunicationErrors.msgNoDocumentsAttached.getMessage());
                     }
                 }
             }
@@ -770,6 +849,244 @@ public class CommServer implements Communications.Iface {
         }
         logger.info("End of #{} findPatients. Return (Size={}), DATA={})", currentRequestNum, resultList.size(), resultList);
         return resultList;
+    }
+
+
+    /**
+     * Поиск пациента по данным из ТФОМС
+     *
+     * @param params Параметры поиска
+     * @return Статус нахождения пациента
+     * @throws NotFoundException            когда не найдено ни одного пациента по заданным параметрам
+     * @throws InvalidPersonalInfoException когда по полису или документу найдены пациент(ы) в БД ЛПУ, но (ФИО/пол/др) отличаются от переданных
+     * @throws InvalidDocumentException     когда не найдено совпадений по полису и документу, но пациент с таким (ФИО/пол/др) уже есть в БД ЛПУ
+     * @throws AnotherPolicyException       когда пациент найден и документы совпали, но его полис отличается от запрошенного
+     * @throws NotUniqueException           когда по запрошенным параметрам невозможно выделить единственного пациента
+     */
+    @Override
+    public PatientStatus findPatientByPolicyAndDocument(FindPatientByPolicyAndDocumentParameters params)
+            throws TException {
+        final int currentRequestNum = ++requestNum;
+        logger.info("#{} Call method -> CommServer.findPatientByPolicyAndDocument({})", currentRequestNum, params);
+        final PatientStatus result = new PatientStatus();
+        //Поиск пациентов по ФИО, полу и ДР
+        logger.debug("birthDate = {}", DateConvertions.convertUTCMillisecondsToLocalDate(params.getBirthDate()));
+        final List<Patient> patientList = patientBean.findPatientsByPersonalInfo(
+                params.getLastName(),
+                params.getFirstName(),
+                params.getPatrName(),
+                params.getSex(),
+                DateConvertions.convertUTCMillisecondsToLocalDate(params.getBirthDate())
+        );
+        if (!patientList.isEmpty()) {
+            //Вывод в лог
+            if (logger.isDebugEnabled()) {
+                logger.debug("Patient founded by personal info (count={}):", patientList.size());
+                for (Patient currentPatient : patientList) {
+                    logger.debug(currentPatient.getInfoString());
+                }
+            }
+        } else {
+            logger.info("By personal info founded zero patients.");
+        }
+        //Поиск полисов по серии, номеру и коду типа полиса
+        final List<ClientPolicy> policyList = policyBean.findBySerialAndNumberAndTypeCode(
+                params.isSetPolicySerial() ? params.getPolicySerial() : "",
+                params.getPolicyNumber(),
+                params.getPolicyTypeCode()
+        );
+        if (!policyList.isEmpty()) {
+            //Вывод в лог
+            if (logger.isDebugEnabled()) {
+                logger.debug("Policies founded by params (count={}):", policyList.size());
+                for (ClientPolicy currentPolicy : policyList) {
+                    logger.debug(currentPolicy.getInfoString());
+                }
+            }
+            //Проверка страховщика
+            if (params.isSetPolicyInsurerInfisCode() && !params.getPolicyInsurerInfisCode().isEmpty()) {
+                for (ClientPolicy currentPolicy : policyList) {
+                    if (currentPolicy.getInsurer() == null || !params.getPolicyInsurerInfisCode().equals(currentPolicy.getInsurer().getInfisCode())) {
+                        logger.warn("Policy[{}] has another insurer that is in parameters", currentPolicy.getId());
+                    }
+                }
+            }
+        } else {
+            logger.info("By params founded zero policies.");
+        }
+        //Поиск документов по серии, номеру и коду типа докумнента
+        final List<ClientDocument> documentList = documentBean.findBySerialAndNumberAndTypeCode(
+                params.getDocumentSerial(), params.getDocumentNumber(), params.getDocumentTypeCode()
+        );
+        if (!documentList.isEmpty()) {
+            //Вывод в лог
+            if (logger.isDebugEnabled()) {
+                logger.debug("Documents founded by params (count={}):", documentList.size());
+                for (ClientDocument currentDocument : documentList) {
+                    logger.debug(currentDocument.getInfoString());
+                }
+            }
+        } else {
+            logger.info("By params founded zero documents.");
+        }
+
+        //Начнем перекрестную проверку
+        if (!patientList.isEmpty()) {
+            //список пациентов, у которых совпал полис
+            final List<Patient> resultList = new ArrayList<Patient>(patientList.size());
+            for (Patient currentPatient : patientList) {
+                for (ClientPolicy currentPolicy : policyList) {
+                    if (currentPatient.getId().equals(currentPolicy.getPatient().getId())) {
+                        logger.debug("Patient[{}] has policy[{}]", currentPatient.getId(), currentPolicy.getId());
+                        resultList.add(currentPatient);
+                    }
+                }
+            }
+            switch (resultList.size()) {
+                case 0: {
+                    //Совпадений пациентов и полисов не найдено
+                    int checkedWithDocuments = 0;
+                    for (Patient currentPatient : patientList) {
+                        for (ClientDocument currentDocument : documentList) {
+                            if (currentPatient.getId().equals(currentDocument.getId())) {
+                                if (checkedWithDocuments == 0 || checkedWithDocuments == currentPatient.getId()) {
+                                    logger.debug("Patient[{}] has document[{}]", currentPatient.getId(), currentDocument.getId());
+                                    checkedWithDocuments = currentPatient.getId();
+                                } else {
+                                    // В ходе проверки документов появился второй пациент с одним из отобранных документов
+                                    logger.error("End of #{}. On document check there are still more then one patients", currentRequestNum);
+                                    throw new NotUniqueException("Cannot select only one patient by params", 4);
+                                }
+                            }
+                        }
+                    }
+                    if (checkedWithDocuments == 0) {
+                        //проверка документов ничего не дала
+                        logger.error("End of #{}. No one patient has this documents", currentRequestNum);
+                        throw new InvalidDocumentException("No one patient contain this documents or policies", 3);
+                    } else {
+                        //после проверки по документам найден только один пациент
+                        logger.info("Patient[{}] selected by documents. But hasnt requested policy", checkedWithDocuments);
+                        throw new AnotherPolicyException("Policy is another or empty.", 7, checkedWithDocuments);
+                    }
+                }
+                case 1: {
+                    result.setSuccess(true);
+                    result.setPatientId(patientList.get(0).getId());
+                    result.setMessage(CommunicationErrors.msgOk.getMessage());
+                    break;
+                }
+                default: {
+                    //В случае если сопоставление пациентов и полисов дало больше одного совпадения.
+                    int checkedWithDocuments = 0;
+                    for (Patient currentPatient : resultList) {
+                        for (ClientDocument currentDocument : documentList) {
+                            if (currentPatient.getId().equals(currentDocument.getPatient().getId())) {
+                                logger.debug("Patient[{}] has document[{}]", currentPatient.getId(), currentDocument.getId());
+                                if (checkedWithDocuments == 0 || checkedWithDocuments == currentPatient.getId()) {
+                                    checkedWithDocuments = currentPatient.getId();
+                                } else {
+                                    // В ходе проверки документов появился второй пациент с одним из отобранных документов
+                                    logger.error("End of #{}. On document check there are still more then one patients", currentRequestNum);
+                                    throw new NotUniqueException("Cannot select only one patient by params", 2);
+                                }
+                            }
+                        }
+                    }
+                    if (checkedWithDocuments == 0) {
+                        //проверка документов ничего не дала
+                        logger.error("End of #{}. No one patient has this documents", currentRequestNum);
+                        throw new NotUniqueException("Cannot select only one patient by params", 3);
+                    } else {
+                        //после проверки по документам найден только один пациент
+                        logger.info("Patient[{}] selected by documents.", checkedWithDocuments);
+                        result.setSuccess(true);
+                        result.setMessage("Selected by documents");
+                        result.setPatientId(checkedWithDocuments);
+                    }
+                    break;
+                }
+            }
+
+        } else {
+            if (documentList.isEmpty() && policyList.isEmpty()) {
+                //Нету ни полисов, ни документов
+                logger.error("End of #{}. NotFound.", currentRequestNum);
+                throw new NotFoundException(CommunicationErrors.msgItemNotFound.getMessage());
+            } else {
+                //Полисы или документы есть, но по ФИО не найдено пациентов
+                logger.error("End of #{}. InvalidPersonalInfo. {} is founded",
+                        currentRequestNum, policyList.isEmpty() ? "Document" : "Policy");
+                throw new InvalidPersonalInfoException(
+                        CommunicationErrors.msgInvalidPersonalInfo.getMessage(),
+                        CommunicationErrors.msgInvalidPersonalInfo.getId());
+            }
+        }
+        logger.info("End of #{} getPatientByPolicyAndDocument. Result is {}", currentRequestNum, result);
+        return result;
+    }
+
+    /**
+     * Добавление/ изменение полиса клиента
+     *
+     * @param params 1) Параметры для добавления полиса (struct ChangePolicyParameters)
+     * @return успешность замены/добавления полиса
+     * @throws PolicyTypeNotFoundException когда нету типа полиса с переданным кодом
+     * @throws NotFoundException           когда нету пациента с переданным идентификатором
+     */
+    @Override
+    public boolean changePatientPolicy(final ChangePolicyParameters params)
+            throws PolicyTypeNotFoundException, NotFoundException, TException {
+        final int currentRequestNum = ++requestNum;
+        logger.info("#{} Call method -> CommServer.changePatientPolicy({})", currentRequestNum, params);
+        try {
+            final Patient patient = patientBean.getPatientById(params.getPatientId());
+            if (params.getPolicy().getTypeCode().isEmpty()) {
+                logger.error("End of #{}. No such rbPolicyType(policyTypeCode is empty).", currentRequestNum);
+                throw new PolicyTypeNotFoundException(
+                        "В БД ЛПУ не содержится типов полисов с таким кодом(пустое значение)",
+                        17
+                );
+            }
+            final RbPolicyType requestedType = policyTypeBean.findByCode(params.getPolicy().getTypeCode());
+            if (requestedType == null) {
+                logger.error("End of #{}. No such rbPolicyType(code={}).", currentRequestNum, params.getPolicy().getTypeCode());
+                throw new PolicyTypeNotFoundException(
+                        "В БД ЛПУ не содержится типов полисов с таким кодом("
+                                .concat(params.getPolicy().getTypeCode()).concat(")"),
+                        17
+                );
+            }
+            int deletedPolicyCount = policyBean.deleteAllClientPoliciesByType(patient.getId(), requestedType.getCode());
+            logger.debug("Delete {} previous policies.", deletedPolicyCount);
+            //страховщик
+            Organisation insurer = null;
+            if (params.getPolicy().isSetInsurerInfisCode() && !params.getPolicy().getInsurerInfisCode().isEmpty()) {
+                try {
+                    insurer = organisationBean.getOrganizationByInfisCode(params.getPolicy().getInsurerInfisCode());
+                } catch (CoreException e) {
+                    logger.warn("Couldn't find organisation with InfisCode=\"{}\"", params.getPolicy().getInsurerInfisCode());
+                }
+            }
+            final ClientPolicy policy = policyBean.insertOrUpdateClientPolicy(
+                    0,
+                    requestedType.getId(),
+                    insurer != null ? insurer.getId() : 0,
+                    params.getPolicy().getNumber(),
+                    params.getPolicy().isSetSerial() ? params.getPolicy().getSerial() : "",
+                    new Date(),
+                    null,
+                    "",
+                    "Данные из ТФОМС",
+                    patient,
+                    null);
+            final ClientPolicy persistedPolicy = policyBean.persistNewPolicy(policy);
+            logger.debug("Persisted policy[{}]", persistedPolicy.getId());
+            return true;
+        } catch (CoreException e) {
+            logger.error("End of #{}. No such Patient[{}]", currentRequestNum, params.getPatientId());
+            throw new NotFoundException().setError_msg(CommunicationErrors.msgNoSuchPatient.getMessage());
+        }
     }
 
     /**
@@ -1635,6 +1952,23 @@ public class CommServer implements Communications.Iface {
     public static void setEventBean(final DbEventBeanLocal eventBean) {
         CommServer.eventBean = eventBean;
         logger.debug("EventBean Bean Link is {}", eventBean);
+    }
+
+
+    public static void setDocumentBean(DbClientDocumentBeanLocal documentBean) {
+        CommServer.documentBean = documentBean;
+    }
+
+    public static void setDocumentTypeBean(DbRbDocumentTypeBeanLocal documentTypeBean) {
+        CommServer.documentTypeBean = documentTypeBean;
+    }
+
+    public static void setPolicyBean(DbClientPolicyBeanLocal policyBean) {
+        CommServer.policyBean = policyBean;
+    }
+
+    public static void setPolicyTypeBean(DbRbPolicyTypeBeanLocal policyTypeBean) {
+        CommServer.policyTypeBean = policyTypeBean;
     }
 
     public void endWork() {

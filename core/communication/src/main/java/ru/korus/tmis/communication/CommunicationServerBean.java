@@ -42,6 +42,17 @@ public class CommunicationServerBean {
     @EJB(beanName = "DbActionBean")
     private DbActionBeanLocal dbActionBeanLocal = null;
 
+    @EJB(beanName = "DbClientDocumentBean")
+    private DbClientDocumentBeanLocal dbClientDocumentBeanLocal = null;
+    @EJB(beanName = "DbRbDocumentTypeBean")
+    private DbRbDocumentTypeBeanLocal dbRbDocumentTypeBeanLocal = null;
+
+    @EJB(beanName = "DbClientPolicyBean")
+    private DbClientPolicyBeanLocal dbClientPolicyBeanLocal = null;
+    @EJB(beanName = "DbRbPolicyTypeBean")
+    private DbRbPolicyTypeBeanLocal dbRbPolicyTypeBeanLocal = null;
+
+
     private CommServer server = null;
 
     @PostConstruct
@@ -59,6 +70,11 @@ public class CommunicationServerBean {
             CommServer.setManagerBean(dbManagerBeanLocal);
             CommServer.setEventBean(dbEventBeanLocal);
             CommServer.setActionBean(dbActionBeanLocal);
+            ////////////////////////////////////////////////////////////
+            CommServer.setDocumentBean(dbClientDocumentBeanLocal);
+            CommServer.setDocumentTypeBean(dbRbDocumentTypeBeanLocal);
+            CommServer.setPolicyBean(dbClientPolicyBeanLocal);
+            CommServer.setPolicyTypeBean(dbRbPolicyTypeBeanLocal);
             server.startService();
         } catch (Exception exception) {
             logger.error("Exception while initialize CommunicationBean", exception);

@@ -17,4 +17,10 @@ public interface DbRbPolicyTypeBeanLocal {
     java.util.LinkedList<Object> getAllRbPolicyTypeWithFilter(int page, int limit, String sorting, ListDataFilter filter)
             throws CoreException;
 
+    /**
+     * Поиск типа полиса по коду типа
+     * @param policyTypeCode код типа полиса
+     * @return тип полиса \ null (если не найдено)
+     */
+    RbPolicyType findByCode(final String policyTypeCode);
 }
