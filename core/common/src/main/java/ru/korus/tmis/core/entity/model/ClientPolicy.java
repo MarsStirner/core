@@ -4,6 +4,7 @@ import javax.persistence.*;
 import javax.xml.bind.annotation.XmlRootElement;
 import javax.xml.bind.annotation.XmlType;
 import java.io.Serializable;
+import java.text.SimpleDateFormat;
 import java.util.Date;
 
 /**
@@ -18,7 +19,18 @@ import java.util.Date;
 @Table(name = "ClientPolicy", catalog = "", schema = "")
 @NamedQueries(
         {
-                @NamedQuery(name = "ClientPolicy.findAll", query = "SELECT p FROM ClientPolicy p")
+                @NamedQuery(name = "ClientPolicy.findAll", query = "SELECT p FROM ClientPolicy p"),
+                @NamedQuery(name = "ClientPolicy.findBySerialAndNumberAndTypeCode",
+                        query = "SELECT p FROM ClientPolicy p " +
+                                "WHERE p.serial = :serial " +
+                                "AND p.number = :number " +
+                                "AND p.policyType.code = :typeCode " +
+                                "AND p.deleted = false"),
+                @NamedQuery(name = "ClientPolicy.deleteAllClientPoliciesByType",
+                        query = "UPDATE ClientPolicy p " +
+                                "SET p.deleted = true " +
+                                "WHERE p.patient.id = :patientId " +
+                                "AND p.policyType.code = :policyTypeCode")
         })
 @XmlType(name = "policy")
 @XmlRootElement(name = "policy")
@@ -226,6 +238,20 @@ public class ClientPolicy implements Serializable, Cloneable {
     public Object clone() throws CloneNotSupportedException {
         return super.clone();
     }
+
+    /**
+     * Детальное описание полиса
+     * @return строка с описанием
+     */
+    public String getInfoString(){
+        return new StringBuilder("Policy[id=").append(id)
+                .append(" Ser.:\"").append(serial)
+                .append("\" Num.:\"").append(number)
+                .append("\" typeCode:").append(policyType.getCode())
+                .append(" insurer:").append(insurer != null ? insurer.getInfisCode() : "null")
+                .append(']').toString();
+    }
+
     ////////////////////////////////////////////////////////////////////////////
     // Custom mappings
     ////////////////////////////////////////////////////////////////////////////
