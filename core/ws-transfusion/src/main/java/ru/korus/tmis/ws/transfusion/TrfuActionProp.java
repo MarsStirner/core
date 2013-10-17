@@ -120,6 +120,11 @@ public class TrfuActionProp {
     }
 
     public static List<Action> getMovings(Action action, EntityManager em) {
+        if(action.getEvent() == null || 
+           action.getEvent().getPatient() == null || 
+           action.getEvent().getPatient().getId() == null) {
+           return new Vector<Action>(); 
+        }
         final List<ActionType> typeMovings = em
                 .createQuery("SELECT at FROM ActionType at WHERE at.deleted = 0 AND at.flatCode = 'moving'", ActionType.class).getResultList();
         if (typeMovings.isEmpty()) {
