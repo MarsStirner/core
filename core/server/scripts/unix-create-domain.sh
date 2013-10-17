@@ -20,7 +20,7 @@ CREATE_JVM_OPTIONS=(
         '-XX\:MaxPermSize=256m'
 )
 
-# Получение расположения данного скрипта. Таким образом мы получаем возможность запускать его из лютой директории.
+# Получение расположения данного скрипта. Таким образом мы получаем возможность запускать его из любой директории.
 SOURCE="${BASH_SOURCE[0]}"
 while [ -h "$SOURCE" ]; do # resolve $SOURCE until the file is no longer a symlink
     DIR="$( cd -P "$( dirname "$SOURCE" )" && pwd )"
@@ -89,7 +89,6 @@ ENABLE_SECURE_ADMIN_CMD="${ASADMIN}/asadmin --user ${ADMIN_LOGIN} \
 
 function list_domains {
     print_header "List domains"
-    echo ""
 
     echo $LIST_DOMAINS_CMD
     if ! $LIST_DOMAINS_CMD; then
@@ -101,7 +100,6 @@ function list_domains {
 
 function stop_domain {
     print_header "Stop domain ${DOMAIN}"
-    echo ""
 
     echo $STOP_DOMAIN_CMD
     if ! $STOP_DOMAIN_CMD; then
@@ -113,7 +111,6 @@ function stop_domain {
 
 function delete_domain {
     print_header "Delete domain ${DOMAIN}"
-    echo ""
 
     echo $DELETE_DOMAIN_CMD
     if ! $DELETE_DOMAIN_CMD; then
@@ -125,8 +122,6 @@ function delete_domain {
 
 function create_domain {
     print_header "Create domain ${DOMAIN}"
-    echo ""
-
     echo $CREATE_DOMAIN_CMD
     if ! $CREATE_DOMAIN_CMD; then
         # Ошибка создания домена должна приводить к остановке скрипта, т.к. последующее выполнения команд будет
@@ -137,7 +132,6 @@ function create_domain {
 
 function copy_config_files {
     print_header "Copy config file and libraries"
-    echo ""
 
     echo $COPY_CONFIG_CMD
     if ! $COPY_CONFIG_CMD; then
@@ -152,7 +146,6 @@ function copy_config_files {
 
 function start_domain {
     print_header "Start domain ${DOMAIN}"
-    echo ""
 
     echo $START_DOMAIN_CMD
     if ! $START_DOMAIN_CMD; then
@@ -163,7 +156,6 @@ function start_domain {
 
 function enable_secure_admin {
     print_header "Enable secure admin"
-    echo ""
 
     echo $ENABLE_SECURE_ADMIN_CMD
     if ! $ENABLE_SECURE_ADMIN_CMD; then
@@ -177,7 +169,6 @@ function enable_secure_admin {
 # $2 - название конфигурации
 function delete_jvm_opts {
     print_header "Delete jvm options in ${2}"
-    echo ""
     declare -a OPTS=("${!1}")
 
     DELETE_JVM_OPT_CMD="${ASADMIN}/asadmin --user ${ADMIN_LOGIN}
@@ -197,7 +188,6 @@ function delete_jvm_opts {
 # $2 - название конфигурации
 function create_jvm_opts {
     print_header "Create jvm options in ${2}"
-    echo ""
     declare -a OPTS=("${!1}")
 
     CREATE_JVM_OPT_CMD="${ASADMIN}/asadmin --user ${ADMIN_LOGIN}
@@ -221,28 +211,27 @@ function create_db_pool {
     MYSQL_DB_JNDI=$3
 
     print_header "Create DB pool ${MYSQL_DB}"
-    echo ""
-    CREATE_CONNECTION_POOL_CMD="${ASADMIN}/asadmin --user ${ADMIN_LOGIN} \
-        --passwordfile ${GF_PASSWD_FILE} \
-        --port ${ADMIN_PORT} \
-        create-jdbc-connection-pool \
-        --datasourceclassname com.mysql.jdbc.jdbc2.optional.MysqlDataSource \
-        --property user=${MYSQL_LOGIN}:password=${MYSQL_PASSWORD}:DatabaseName=${MYSQL_DB}:ServerName=${MYSQL_SERVER_NAME}:port=${MYSQL_PORT}:useUnicode=true:characterEncoding=UTF-8:characterSetResults=UTF-8:datasourceName=${MYSQL_DB}:zeroDateTimeBehavior=convertToNull \
-        --validateatmostonceperiod=60 --creationretryattempts=3 --creationretryinterval=10 --isconnectvalidatereq=true --validationmethod=auto-commit --ping=true \
+    CREATE_CONNECTION_POOL_CMD="${ASADMIN}/asadmin --user ${ADMIN_LOGIN}
+        --passwordfile ${GF_PASSWD_FILE}
+        --port ${ADMIN_PORT}
+        create-jdbc-connection-pool
+        --datasourceclassname com.mysql.jdbc.jdbc2.optional.MysqlDataSource
+        --property user=${MYSQL_LOGIN}:password=${MYSQL_PASSWORD}:DatabaseName=${MYSQL_DB}:ServerName=${MYSQL_SERVER_NAME}:port=${MYSQL_PORT}:useUnicode=true:characterEncoding=UTF-8:characterSetResults=UTF-8:datasourceName=${MYSQL_DB}:zeroDateTimeBehavior=convertToNull
+        --validateatmostonceperiod=60 --creationretryattempts=3 --creationretryinterval=10 --isconnectvalidatereq=true --validationmethod=auto-commit --ping=true
         ${MYSQL_DB_POOL}"
 
-    $CREATE_RESOURCE="${ASADMIN}/asadmin --user ${ADMIN_LOGIN} \
-        --passwordfile ${GF_PASSWD_FILE} \
-        --port ${ADMIN_PORT} \
-        create-jdbc-resource \
+    CREATE_RESOURCE="${ASADMIN}/asadmin --user ${ADMIN_LOGIN}
+        --passwordfile ${GF_PASSWD_FILE}
+        --port ${ADMIN_PORT}
+        create-jdbc-resource
         --connectionpoolid ${MYSQL_DB_POOL} ${MYSQL_DB_JNDI}"
 
-    echo $CREATE_CONNECTION_POOL_CMD
+    echo "$CREATE_CONNECTION_POOL_CMD"
     if ! $CREATE_CONNECTION_POOL_CMD; then
         exit 6
     fi
 
-    echo $CREATE_RESOURCE
+    echo "$CREATE_RESOURCE"
     if ! $CREATE_RESOURCE; then
         exit 7
     fi
@@ -251,7 +240,6 @@ function create_db_pool {
 
 function start_stop_domain {
     print_header "Stop&Start domain ${DOMAIN}"
-    echo ""
     STOP_CMD="${ASADMIN}/asadmin stop-domain --passwordfile ${GF_PASSWD_FILE} --domaindir ${DOMAIN_DIR} ${DOMAIN}"
     START_CMD="${ASADMIN}/asadmin start-domain --passwordfile ${GF_PASSWD_FILE} --domaindir ${DOMAIN_DIR} ${DOMAIN}"
 
@@ -274,7 +262,9 @@ function print_separator {
 function print_header {
     print_separator
     echo "$(tput setaf 2)$1$(tput sgr0)"
+    echo ""
 }
+
 # Удаление файла с паролями по завершению скрипта (в том числе при возникновении ошибки)
 function cleanup {
     echo "rm -f ${GF_PASSWD_FILE}"
