@@ -60,10 +60,11 @@ public class RbMicroorganism implements Serializable {
 
     @Override
     public String toString() {
-        return "RbMicroorganism{" +
-                "id=" + id +
-                ", code='" + code + '\'' +
-                ", name='" + name + '\'' +
-                '}';
+        final StringBuilder sb = new StringBuilder("RbMicroorganism{");
+        sb.append("id=").append(id);
+        sb.append(", code='").append(code).append('\'');
+        sb.append(", name='").append(name).append('\'');
+        sb.append('}');
+        return sb.toString();
     }
 }

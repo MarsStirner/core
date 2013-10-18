@@ -68,11 +68,12 @@ public class BbtResultOrganism implements Serializable {
 
     @Override
     public String toString() {
-        return "BbtResultOrganism{" +
-                "id=" + id +
-                ", actionId=" + actionId +
-                ", organismId=" + organismId +
-                ", concentration='" + concentration + '\'' +
-                '}';
+        final StringBuilder sb = new StringBuilder("BbtResultOrganism{");
+        sb.append("id=").append(id);
+        sb.append(", actionId=").append(actionId);
+        sb.append(", organismId=").append(organismId);
+        sb.append(", concentration='").append(concentration).append('\'');
+        sb.append('}');
+        return sb.toString();
     }
 }
