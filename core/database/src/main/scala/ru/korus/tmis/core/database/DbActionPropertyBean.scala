@@ -476,12 +476,12 @@ class DbActionPropertyBean
                               ap_os.id = ap.id
                       )
                     )
-                    GROUP BY idd, apt.code, ap.id, ap.createDatetime DESC
+                    GROUP BY idd, apt.code, ap.createDatetime DESC
         ) grouped
       ) counted
       WHERE rown <= ?3
     """
-
+                        //ORDER BY ap.id DESC
   val ActionPropertyFindQuery = """
     SELECT ap
     FROM

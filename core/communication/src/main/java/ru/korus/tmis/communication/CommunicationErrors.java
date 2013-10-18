@@ -14,7 +14,7 @@ public enum CommunicationErrors {
     /**
      * пациента искали - и не нашли
      */
-    msgNoSuchPatient(200, "Нет такого пациента"),
+    msgNoSuchPatient(200, "Пациент не зарегистрирован в выбранном ЛПУ"),
 
     /**
      * пациента искали - и нашли более 1
@@ -115,7 +115,9 @@ public enum CommunicationErrors {
     /**
      * Неизвестная ошибка (смотреть логи сервера)
      */
-    msgUnknownError(666, "Неизвестная ошибка (смотреть логи сервера)");
+    msgUnknownError(666, "Неизвестная ошибка (смотреть логи сервера)"),
+
+    msgInvalidPersonalInfo(1, "Некорректные личные данные");
 
 
     private final int id;

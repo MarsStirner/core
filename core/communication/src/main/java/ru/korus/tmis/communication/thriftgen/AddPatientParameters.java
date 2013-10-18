@@ -30,6 +30,21 @@ import java.util.Arrays;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+/**
+ * AddPatientParameters 	Структура для создания нового пациента
+ * @param lastName			Фамилия пациента
+ * @param firstName			Имя пациента
+ * @param patrName			Отчество пациента
+ * @param birthDate			Дата рождения пациента
+ * @param sex				Пол пациента
+ * @param documentSerial	Серия документа
+ * @param documentNumber	Номер документа
+ * @param documentTypeCode	Код типа документа
+ * @param policySerial		Серия полиса
+ * @param policyNumber		Номер полиса
+ * @param policyTypeCode	Код типа полиса
+ * @param policyInsurerInfisCode	Инфис код страховой, полис которой представлен выше
+ */
 public class AddPatientParameters implements org.apache.thrift.TBase<AddPatientParameters, AddPatientParameters._Fields>, java.io.Serializable, Cloneable {
   private static final org.apache.thrift.protocol.TStruct STRUCT_DESC = new org.apache.thrift.protocol.TStruct("AddPatientParameters");
 
@@ -38,6 +53,13 @@ public class AddPatientParameters implements org.apache.thrift.TBase<AddPatientP
   private static final org.apache.thrift.protocol.TField PATR_NAME_FIELD_DESC = new org.apache.thrift.protocol.TField("patrName", org.apache.thrift.protocol.TType.STRING, (short)3);
   private static final org.apache.thrift.protocol.TField BIRTH_DATE_FIELD_DESC = new org.apache.thrift.protocol.TField("birthDate", org.apache.thrift.protocol.TType.I64, (short)4);
   private static final org.apache.thrift.protocol.TField SEX_FIELD_DESC = new org.apache.thrift.protocol.TField("sex", org.apache.thrift.protocol.TType.I32, (short)5);
+  private static final org.apache.thrift.protocol.TField DOCUMENT_SERIAL_FIELD_DESC = new org.apache.thrift.protocol.TField("documentSerial", org.apache.thrift.protocol.TType.STRING, (short)6);
+  private static final org.apache.thrift.protocol.TField DOCUMENT_NUMBER_FIELD_DESC = new org.apache.thrift.protocol.TField("documentNumber", org.apache.thrift.protocol.TType.STRING, (short)7);
+  private static final org.apache.thrift.protocol.TField DOCUMENT_TYPE_CODE_FIELD_DESC = new org.apache.thrift.protocol.TField("documentTypeCode", org.apache.thrift.protocol.TType.STRING, (short)8);
+  private static final org.apache.thrift.protocol.TField POLICY_SERIAL_FIELD_DESC = new org.apache.thrift.protocol.TField("policySerial", org.apache.thrift.protocol.TType.STRING, (short)9);
+  private static final org.apache.thrift.protocol.TField POLICY_NUMBER_FIELD_DESC = new org.apache.thrift.protocol.TField("policyNumber", org.apache.thrift.protocol.TType.STRING, (short)10);
+  private static final org.apache.thrift.protocol.TField POLICY_TYPE_CODE_FIELD_DESC = new org.apache.thrift.protocol.TField("policyTypeCode", org.apache.thrift.protocol.TType.STRING, (short)11);
+  private static final org.apache.thrift.protocol.TField POLICY_INSURER_INFIS_CODE_FIELD_DESC = new org.apache.thrift.protocol.TField("policyInsurerInfisCode", org.apache.thrift.protocol.TType.STRING, (short)12);
 
   private static final Map<Class<? extends IScheme>, SchemeFactory> schemes = new HashMap<Class<? extends IScheme>, SchemeFactory>();
   static {
@@ -50,6 +72,13 @@ public class AddPatientParameters implements org.apache.thrift.TBase<AddPatientP
   public String patrName; // optional
   public long birthDate; // optional
   public int sex; // optional
+  public String documentSerial; // optional
+  public String documentNumber; // optional
+  public String documentTypeCode; // optional
+  public String policySerial; // optional
+  public String policyNumber; // optional
+  public String policyTypeCode; // optional
+  public String policyInsurerInfisCode; // optional
 
   /** The set of fields this struct contains, along with convenience methods for finding and manipulating them. */
   public enum _Fields implements org.apache.thrift.TFieldIdEnum {
@@ -57,7 +86,14 @@ public class AddPatientParameters implements org.apache.thrift.TBase<AddPatientP
     FIRST_NAME((short)2, "firstName"),
     PATR_NAME((short)3, "patrName"),
     BIRTH_DATE((short)4, "birthDate"),
-    SEX((short)5, "sex");
+    SEX((short)5, "sex"),
+    DOCUMENT_SERIAL((short)6, "documentSerial"),
+    DOCUMENT_NUMBER((short)7, "documentNumber"),
+    DOCUMENT_TYPE_CODE((short)8, "documentTypeCode"),
+    POLICY_SERIAL((short)9, "policySerial"),
+    POLICY_NUMBER((short)10, "policyNumber"),
+    POLICY_TYPE_CODE((short)11, "policyTypeCode"),
+    POLICY_INSURER_INFIS_CODE((short)12, "policyInsurerInfisCode");
 
     private static final Map<String, _Fields> byName = new HashMap<String, _Fields>();
 
@@ -82,6 +118,20 @@ public class AddPatientParameters implements org.apache.thrift.TBase<AddPatientP
           return BIRTH_DATE;
         case 5: // SEX
           return SEX;
+        case 6: // DOCUMENT_SERIAL
+          return DOCUMENT_SERIAL;
+        case 7: // DOCUMENT_NUMBER
+          return DOCUMENT_NUMBER;
+        case 8: // DOCUMENT_TYPE_CODE
+          return DOCUMENT_TYPE_CODE;
+        case 9: // POLICY_SERIAL
+          return POLICY_SERIAL;
+        case 10: // POLICY_NUMBER
+          return POLICY_NUMBER;
+        case 11: // POLICY_TYPE_CODE
+          return POLICY_TYPE_CODE;
+        case 12: // POLICY_INSURER_INFIS_CODE
+          return POLICY_INSURER_INFIS_CODE;
         default:
           return null;
       }
@@ -125,7 +175,7 @@ public class AddPatientParameters implements org.apache.thrift.TBase<AddPatientP
   private static final int __BIRTHDATE_ISSET_ID = 0;
   private static final int __SEX_ISSET_ID = 1;
   private byte __isset_bitfield = 0;
-  private _Fields optionals[] = {_Fields.LAST_NAME,_Fields.FIRST_NAME,_Fields.PATR_NAME,_Fields.BIRTH_DATE,_Fields.SEX};
+  private _Fields optionals[] = {_Fields.LAST_NAME,_Fields.FIRST_NAME,_Fields.PATR_NAME,_Fields.BIRTH_DATE,_Fields.SEX,_Fields.DOCUMENT_SERIAL,_Fields.DOCUMENT_NUMBER,_Fields.DOCUMENT_TYPE_CODE,_Fields.POLICY_SERIAL,_Fields.POLICY_NUMBER,_Fields.POLICY_TYPE_CODE,_Fields.POLICY_INSURER_INFIS_CODE};
   public static final Map<_Fields, org.apache.thrift.meta_data.FieldMetaData> metaDataMap;
   static {
     Map<_Fields, org.apache.thrift.meta_data.FieldMetaData> tmpMap = new EnumMap<_Fields, org.apache.thrift.meta_data.FieldMetaData>(_Fields.class);
@@ -139,6 +189,20 @@ public class AddPatientParameters implements org.apache.thrift.TBase<AddPatientP
         new org.apache.thrift.meta_data.FieldValueMetaData(org.apache.thrift.protocol.TType.I64        , "timestamp")));
     tmpMap.put(_Fields.SEX, new org.apache.thrift.meta_data.FieldMetaData("sex", org.apache.thrift.TFieldRequirementType.OPTIONAL, 
         new org.apache.thrift.meta_data.FieldValueMetaData(org.apache.thrift.protocol.TType.I32)));
+    tmpMap.put(_Fields.DOCUMENT_SERIAL, new org.apache.thrift.meta_data.FieldMetaData("documentSerial", org.apache.thrift.TFieldRequirementType.OPTIONAL, 
+        new org.apache.thrift.meta_data.FieldValueMetaData(org.apache.thrift.protocol.TType.STRING)));
+    tmpMap.put(_Fields.DOCUMENT_NUMBER, new org.apache.thrift.meta_data.FieldMetaData("documentNumber", org.apache.thrift.TFieldRequirementType.OPTIONAL, 
+        new org.apache.thrift.meta_data.FieldValueMetaData(org.apache.thrift.protocol.TType.STRING)));
+    tmpMap.put(_Fields.DOCUMENT_TYPE_CODE, new org.apache.thrift.meta_data.FieldMetaData("documentTypeCode", org.apache.thrift.TFieldRequirementType.OPTIONAL, 
+        new org.apache.thrift.meta_data.FieldValueMetaData(org.apache.thrift.protocol.TType.STRING)));
+    tmpMap.put(_Fields.POLICY_SERIAL, new org.apache.thrift.meta_data.FieldMetaData("policySerial", org.apache.thrift.TFieldRequirementType.OPTIONAL, 
+        new org.apache.thrift.meta_data.FieldValueMetaData(org.apache.thrift.protocol.TType.STRING)));
+    tmpMap.put(_Fields.POLICY_NUMBER, new org.apache.thrift.meta_data.FieldMetaData("policyNumber", org.apache.thrift.TFieldRequirementType.OPTIONAL, 
+        new org.apache.thrift.meta_data.FieldValueMetaData(org.apache.thrift.protocol.TType.STRING)));
+    tmpMap.put(_Fields.POLICY_TYPE_CODE, new org.apache.thrift.meta_data.FieldMetaData("policyTypeCode", org.apache.thrift.TFieldRequirementType.OPTIONAL, 
+        new org.apache.thrift.meta_data.FieldValueMetaData(org.apache.thrift.protocol.TType.STRING)));
+    tmpMap.put(_Fields.POLICY_INSURER_INFIS_CODE, new org.apache.thrift.meta_data.FieldMetaData("policyInsurerInfisCode", org.apache.thrift.TFieldRequirementType.OPTIONAL, 
+        new org.apache.thrift.meta_data.FieldValueMetaData(org.apache.thrift.protocol.TType.STRING)));
     metaDataMap = Collections.unmodifiableMap(tmpMap);
     org.apache.thrift.meta_data.FieldMetaData.addStructMetaDataMap(AddPatientParameters.class, metaDataMap);
   }
@@ -162,6 +226,27 @@ public class AddPatientParameters implements org.apache.thrift.TBase<AddPatientP
     }
     this.birthDate = other.birthDate;
     this.sex = other.sex;
+    if (other.isSetDocumentSerial()) {
+      this.documentSerial = other.documentSerial;
+    }
+    if (other.isSetDocumentNumber()) {
+      this.documentNumber = other.documentNumber;
+    }
+    if (other.isSetDocumentTypeCode()) {
+      this.documentTypeCode = other.documentTypeCode;
+    }
+    if (other.isSetPolicySerial()) {
+      this.policySerial = other.policySerial;
+    }
+    if (other.isSetPolicyNumber()) {
+      this.policyNumber = other.policyNumber;
+    }
+    if (other.isSetPolicyTypeCode()) {
+      this.policyTypeCode = other.policyTypeCode;
+    }
+    if (other.isSetPolicyInsurerInfisCode()) {
+      this.policyInsurerInfisCode = other.policyInsurerInfisCode;
+    }
   }
 
   public AddPatientParameters deepCopy() {
@@ -177,6 +262,13 @@ public class AddPatientParameters implements org.apache.thrift.TBase<AddPatientP
     this.birthDate = 0;
     setSexIsSet(false);
     this.sex = 0;
+    this.documentSerial = null;
+    this.documentNumber = null;
+    this.documentTypeCode = null;
+    this.policySerial = null;
+    this.policyNumber = null;
+    this.policyTypeCode = null;
+    this.policyInsurerInfisCode = null;
   }
 
   public String getLastName() {
@@ -297,6 +389,174 @@ public class AddPatientParameters implements org.apache.thrift.TBase<AddPatientP
     __isset_bitfield = EncodingUtils.setBit(__isset_bitfield, __SEX_ISSET_ID, value);
   }
 
+  public String getDocumentSerial() {
+    return this.documentSerial;
+  }
+
+  public AddPatientParameters setDocumentSerial(String documentSerial) {
+    this.documentSerial = documentSerial;
+    return this;
+  }
+
+  public void unsetDocumentSerial() {
+    this.documentSerial = null;
+  }
+
+  /** Returns true if field documentSerial is set (has been assigned a value) and false otherwise */
+  public boolean isSetDocumentSerial() {
+    return this.documentSerial != null;
+  }
+
+  public void setDocumentSerialIsSet(boolean value) {
+    if (!value) {
+      this.documentSerial = null;
+    }
+  }
+
+  public String getDocumentNumber() {
+    return this.documentNumber;
+  }
+
+  public AddPatientParameters setDocumentNumber(String documentNumber) {
+    this.documentNumber = documentNumber;
+    return this;
+  }
+
+  public void unsetDocumentNumber() {
+    this.documentNumber = null;
+  }
+
+  /** Returns true if field documentNumber is set (has been assigned a value) and false otherwise */
+  public boolean isSetDocumentNumber() {
+    return this.documentNumber != null;
+  }
+
+  public void setDocumentNumberIsSet(boolean value) {
+    if (!value) {
+      this.documentNumber = null;
+    }
+  }
+
+  public String getDocumentTypeCode() {
+    return this.documentTypeCode;
+  }
+
+  public AddPatientParameters setDocumentTypeCode(String documentTypeCode) {
+    this.documentTypeCode = documentTypeCode;
+    return this;
+  }
+
+  public void unsetDocumentTypeCode() {
+    this.documentTypeCode = null;
+  }
+
+  /** Returns true if field documentTypeCode is set (has been assigned a value) and false otherwise */
+  public boolean isSetDocumentTypeCode() {
+    return this.documentTypeCode != null;
+  }
+
+  public void setDocumentTypeCodeIsSet(boolean value) {
+    if (!value) {
+      this.documentTypeCode = null;
+    }
+  }
+
+  public String getPolicySerial() {
+    return this.policySerial;
+  }
+
+  public AddPatientParameters setPolicySerial(String policySerial) {
+    this.policySerial = policySerial;
+    return this;
+  }
+
+  public void unsetPolicySerial() {
+    this.policySerial = null;
+  }
+
+  /** Returns true if field policySerial is set (has been assigned a value) and false otherwise */
+  public boolean isSetPolicySerial() {
+    return this.policySerial != null;
+  }
+
+  public void setPolicySerialIsSet(boolean value) {
+    if (!value) {
+      this.policySerial = null;
+    }
+  }
+
+  public String getPolicyNumber() {
+    return this.policyNumber;
+  }
+
+  public AddPatientParameters setPolicyNumber(String policyNumber) {
+    this.policyNumber = policyNumber;
+    return this;
+  }
+
+  public void unsetPolicyNumber() {
+    this.policyNumber = null;
+  }
+
+  /** Returns true if field policyNumber is set (has been assigned a value) and false otherwise */
+  public boolean isSetPolicyNumber() {
+    return this.policyNumber != null;
+  }
+
+  public void setPolicyNumberIsSet(boolean value) {
+    if (!value) {
+      this.policyNumber = null;
+    }
+  }
+
+  public String getPolicyTypeCode() {
+    return this.policyTypeCode;
+  }
+
+  public AddPatientParameters setPolicyTypeCode(String policyTypeCode) {
+    this.policyTypeCode = policyTypeCode;
+    return this;
+  }
+
+  public void unsetPolicyTypeCode() {
+    this.policyTypeCode = null;
+  }
+
+  /** Returns true if field policyTypeCode is set (has been assigned a value) and false otherwise */
+  public boolean isSetPolicyTypeCode() {
+    return this.policyTypeCode != null;
+  }
+
+  public void setPolicyTypeCodeIsSet(boolean value) {
+    if (!value) {
+      this.policyTypeCode = null;
+    }
+  }
+
+  public String getPolicyInsurerInfisCode() {
+    return this.policyInsurerInfisCode;
+  }
+
+  public AddPatientParameters setPolicyInsurerInfisCode(String policyInsurerInfisCode) {
+    this.policyInsurerInfisCode = policyInsurerInfisCode;
+    return this;
+  }
+
+  public void unsetPolicyInsurerInfisCode() {
+    this.policyInsurerInfisCode = null;
+  }
+
+  /** Returns true if field policyInsurerInfisCode is set (has been assigned a value) and false otherwise */
+  public boolean isSetPolicyInsurerInfisCode() {
+    return this.policyInsurerInfisCode != null;
+  }
+
+  public void setPolicyInsurerInfisCodeIsSet(boolean value) {
+    if (!value) {
+      this.policyInsurerInfisCode = null;
+    }
+  }
+
   public void setFieldValue(_Fields field, Object value) {
     switch (field) {
     case LAST_NAME:
@@ -339,6 +599,62 @@ public class AddPatientParameters implements org.apache.thrift.TBase<AddPatientP
       }
       break;
 
+    case DOCUMENT_SERIAL:
+      if (value == null) {
+        unsetDocumentSerial();
+      } else {
+        setDocumentSerial((String)value);
+      }
+      break;
+
+    case DOCUMENT_NUMBER:
+      if (value == null) {
+        unsetDocumentNumber();
+      } else {
+        setDocumentNumber((String)value);
+      }
+      break;
+
+    case DOCUMENT_TYPE_CODE:
+      if (value == null) {
+        unsetDocumentTypeCode();
+      } else {
+        setDocumentTypeCode((String)value);
+      }
+      break;
+
+    case POLICY_SERIAL:
+      if (value == null) {
+        unsetPolicySerial();
+      } else {
+        setPolicySerial((String)value);
+      }
+      break;
+
+    case POLICY_NUMBER:
+      if (value == null) {
+        unsetPolicyNumber();
+      } else {
+        setPolicyNumber((String)value);
+      }
+      break;
+
+    case POLICY_TYPE_CODE:
+      if (value == null) {
+        unsetPolicyTypeCode();
+      } else {
+        setPolicyTypeCode((String)value);
+      }
+      break;
+
+    case POLICY_INSURER_INFIS_CODE:
+      if (value == null) {
+        unsetPolicyInsurerInfisCode();
+      } else {
+        setPolicyInsurerInfisCode((String)value);
+      }
+      break;
+
     }
   }
 
@@ -358,6 +674,27 @@ public class AddPatientParameters implements org.apache.thrift.TBase<AddPatientP
 
     case SEX:
       return Integer.valueOf(getSex());
+
+    case DOCUMENT_SERIAL:
+      return getDocumentSerial();
+
+    case DOCUMENT_NUMBER:
+      return getDocumentNumber();
+
+    case DOCUMENT_TYPE_CODE:
+      return getDocumentTypeCode();
+
+    case POLICY_SERIAL:
+      return getPolicySerial();
+
+    case POLICY_NUMBER:
+      return getPolicyNumber();
+
+    case POLICY_TYPE_CODE:
+      return getPolicyTypeCode();
+
+    case POLICY_INSURER_INFIS_CODE:
+      return getPolicyInsurerInfisCode();
 
     }
     throw new IllegalStateException();
@@ -380,6 +717,20 @@ public class AddPatientParameters implements org.apache.thrift.TBase<AddPatientP
       return isSetBirthDate();
     case SEX:
       return isSetSex();
+    case DOCUMENT_SERIAL:
+      return isSetDocumentSerial();
+    case DOCUMENT_NUMBER:
+      return isSetDocumentNumber();
+    case DOCUMENT_TYPE_CODE:
+      return isSetDocumentTypeCode();
+    case POLICY_SERIAL:
+      return isSetPolicySerial();
+    case POLICY_NUMBER:
+      return isSetPolicyNumber();
+    case POLICY_TYPE_CODE:
+      return isSetPolicyTypeCode();
+    case POLICY_INSURER_INFIS_CODE:
+      return isSetPolicyInsurerInfisCode();
     }
     throw new IllegalStateException();
   }
@@ -439,6 +790,69 @@ public class AddPatientParameters implements org.apache.thrift.TBase<AddPatientP
       if (!(this_present_sex && that_present_sex))
         return false;
       if (this.sex != that.sex)
+        return false;
+    }
+
+    boolean this_present_documentSerial = true && this.isSetDocumentSerial();
+    boolean that_present_documentSerial = true && that.isSetDocumentSerial();
+    if (this_present_documentSerial || that_present_documentSerial) {
+      if (!(this_present_documentSerial && that_present_documentSerial))
+        return false;
+      if (!this.documentSerial.equals(that.documentSerial))
+        return false;
+    }
+
+    boolean this_present_documentNumber = true && this.isSetDocumentNumber();
+    boolean that_present_documentNumber = true && that.isSetDocumentNumber();
+    if (this_present_documentNumber || that_present_documentNumber) {
+      if (!(this_present_documentNumber && that_present_documentNumber))
+        return false;
+      if (!this.documentNumber.equals(that.documentNumber))
+        return false;
+    }
+
+    boolean this_present_documentTypeCode = true && this.isSetDocumentTypeCode();
+    boolean that_present_documentTypeCode = true && that.isSetDocumentTypeCode();
+    if (this_present_documentTypeCode || that_present_documentTypeCode) {
+      if (!(this_present_documentTypeCode && that_present_documentTypeCode))
+        return false;
+      if (!this.documentTypeCode.equals(that.documentTypeCode))
+        return false;
+    }
+
+    boolean this_present_policySerial = true && this.isSetPolicySerial();
+    boolean that_present_policySerial = true && that.isSetPolicySerial();
+    if (this_present_policySerial || that_present_policySerial) {
+      if (!(this_present_policySerial && that_present_policySerial))
+        return false;
+      if (!this.policySerial.equals(that.policySerial))
+        return false;
+    }
+
+    boolean this_present_policyNumber = true && this.isSetPolicyNumber();
+    boolean that_present_policyNumber = true && that.isSetPolicyNumber();
+    if (this_present_policyNumber || that_present_policyNumber) {
+      if (!(this_present_policyNumber && that_present_policyNumber))
+        return false;
+      if (!this.policyNumber.equals(that.policyNumber))
+        return false;
+    }
+
+    boolean this_present_policyTypeCode = true && this.isSetPolicyTypeCode();
+    boolean that_present_policyTypeCode = true && that.isSetPolicyTypeCode();
+    if (this_present_policyTypeCode || that_present_policyTypeCode) {
+      if (!(this_present_policyTypeCode && that_present_policyTypeCode))
+        return false;
+      if (!this.policyTypeCode.equals(that.policyTypeCode))
+        return false;
+    }
+
+    boolean this_present_policyInsurerInfisCode = true && this.isSetPolicyInsurerInfisCode();
+    boolean that_present_policyInsurerInfisCode = true && that.isSetPolicyInsurerInfisCode();
+    if (this_present_policyInsurerInfisCode || that_present_policyInsurerInfisCode) {
+      if (!(this_present_policyInsurerInfisCode && that_present_policyInsurerInfisCode))
+        return false;
+      if (!this.policyInsurerInfisCode.equals(that.policyInsurerInfisCode))
         return false;
     }
 
@@ -508,6 +922,76 @@ public class AddPatientParameters implements org.apache.thrift.TBase<AddPatientP
         return lastComparison;
       }
     }
+    lastComparison = Boolean.valueOf(isSetDocumentSerial()).compareTo(typedOther.isSetDocumentSerial());
+    if (lastComparison != 0) {
+      return lastComparison;
+    }
+    if (isSetDocumentSerial()) {
+      lastComparison = org.apache.thrift.TBaseHelper.compareTo(this.documentSerial, typedOther.documentSerial);
+      if (lastComparison != 0) {
+        return lastComparison;
+      }
+    }
+    lastComparison = Boolean.valueOf(isSetDocumentNumber()).compareTo(typedOther.isSetDocumentNumber());
+    if (lastComparison != 0) {
+      return lastComparison;
+    }
+    if (isSetDocumentNumber()) {
+      lastComparison = org.apache.thrift.TBaseHelper.compareTo(this.documentNumber, typedOther.documentNumber);
+      if (lastComparison != 0) {
+        return lastComparison;
+      }
+    }
+    lastComparison = Boolean.valueOf(isSetDocumentTypeCode()).compareTo(typedOther.isSetDocumentTypeCode());
+    if (lastComparison != 0) {
+      return lastComparison;
+    }
+    if (isSetDocumentTypeCode()) {
+      lastComparison = org.apache.thrift.TBaseHelper.compareTo(this.documentTypeCode, typedOther.documentTypeCode);
+      if (lastComparison != 0) {
+        return lastComparison;
+      }
+    }
+    lastComparison = Boolean.valueOf(isSetPolicySerial()).compareTo(typedOther.isSetPolicySerial());
+    if (lastComparison != 0) {
+      return lastComparison;
+    }
+    if (isSetPolicySerial()) {
+      lastComparison = org.apache.thrift.TBaseHelper.compareTo(this.policySerial, typedOther.policySerial);
+      if (lastComparison != 0) {
+        return lastComparison;
+      }
+    }
+    lastComparison = Boolean.valueOf(isSetPolicyNumber()).compareTo(typedOther.isSetPolicyNumber());
+    if (lastComparison != 0) {
+      return lastComparison;
+    }
+    if (isSetPolicyNumber()) {
+      lastComparison = org.apache.thrift.TBaseHelper.compareTo(this.policyNumber, typedOther.policyNumber);
+      if (lastComparison != 0) {
+        return lastComparison;
+      }
+    }
+    lastComparison = Boolean.valueOf(isSetPolicyTypeCode()).compareTo(typedOther.isSetPolicyTypeCode());
+    if (lastComparison != 0) {
+      return lastComparison;
+    }
+    if (isSetPolicyTypeCode()) {
+      lastComparison = org.apache.thrift.TBaseHelper.compareTo(this.policyTypeCode, typedOther.policyTypeCode);
+      if (lastComparison != 0) {
+        return lastComparison;
+      }
+    }
+    lastComparison = Boolean.valueOf(isSetPolicyInsurerInfisCode()).compareTo(typedOther.isSetPolicyInsurerInfisCode());
+    if (lastComparison != 0) {
+      return lastComparison;
+    }
+    if (isSetPolicyInsurerInfisCode()) {
+      lastComparison = org.apache.thrift.TBaseHelper.compareTo(this.policyInsurerInfisCode, typedOther.policyInsurerInfisCode);
+      if (lastComparison != 0) {
+        return lastComparison;
+      }
+    }
     return 0;
   }
 
@@ -567,6 +1051,76 @@ public class AddPatientParameters implements org.apache.thrift.TBase<AddPatientP
       if (!first) sb.append(", ");
       sb.append("sex:");
       sb.append(this.sex);
+      first = false;
+    }
+    if (isSetDocumentSerial()) {
+      if (!first) sb.append(", ");
+      sb.append("documentSerial:");
+      if (this.documentSerial == null) {
+        sb.append("null");
+      } else {
+        sb.append(this.documentSerial);
+      }
+      first = false;
+    }
+    if (isSetDocumentNumber()) {
+      if (!first) sb.append(", ");
+      sb.append("documentNumber:");
+      if (this.documentNumber == null) {
+        sb.append("null");
+      } else {
+        sb.append(this.documentNumber);
+      }
+      first = false;
+    }
+    if (isSetDocumentTypeCode()) {
+      if (!first) sb.append(", ");
+      sb.append("documentTypeCode:");
+      if (this.documentTypeCode == null) {
+        sb.append("null");
+      } else {
+        sb.append(this.documentTypeCode);
+      }
+      first = false;
+    }
+    if (isSetPolicySerial()) {
+      if (!first) sb.append(", ");
+      sb.append("policySerial:");
+      if (this.policySerial == null) {
+        sb.append("null");
+      } else {
+        sb.append(this.policySerial);
+      }
+      first = false;
+    }
+    if (isSetPolicyNumber()) {
+      if (!first) sb.append(", ");
+      sb.append("policyNumber:");
+      if (this.policyNumber == null) {
+        sb.append("null");
+      } else {
+        sb.append(this.policyNumber);
+      }
+      first = false;
+    }
+    if (isSetPolicyTypeCode()) {
+      if (!first) sb.append(", ");
+      sb.append("policyTypeCode:");
+      if (this.policyTypeCode == null) {
+        sb.append("null");
+      } else {
+        sb.append(this.policyTypeCode);
+      }
+      first = false;
+    }
+    if (isSetPolicyInsurerInfisCode()) {
+      if (!first) sb.append(", ");
+      sb.append("policyInsurerInfisCode:");
+      if (this.policyInsurerInfisCode == null) {
+        sb.append("null");
+      } else {
+        sb.append(this.policyInsurerInfisCode);
+      }
       first = false;
     }
     sb.append(")");
@@ -654,6 +1208,62 @@ public class AddPatientParameters implements org.apache.thrift.TBase<AddPatientP
               org.apache.thrift.protocol.TProtocolUtil.skip(iprot, schemeField.type);
             }
             break;
+          case 6: // DOCUMENT_SERIAL
+            if (schemeField.type == org.apache.thrift.protocol.TType.STRING) {
+              struct.documentSerial = iprot.readString();
+              struct.setDocumentSerialIsSet(true);
+            } else { 
+              org.apache.thrift.protocol.TProtocolUtil.skip(iprot, schemeField.type);
+            }
+            break;
+          case 7: // DOCUMENT_NUMBER
+            if (schemeField.type == org.apache.thrift.protocol.TType.STRING) {
+              struct.documentNumber = iprot.readString();
+              struct.setDocumentNumberIsSet(true);
+            } else { 
+              org.apache.thrift.protocol.TProtocolUtil.skip(iprot, schemeField.type);
+            }
+            break;
+          case 8: // DOCUMENT_TYPE_CODE
+            if (schemeField.type == org.apache.thrift.protocol.TType.STRING) {
+              struct.documentTypeCode = iprot.readString();
+              struct.setDocumentTypeCodeIsSet(true);
+            } else { 
+              org.apache.thrift.protocol.TProtocolUtil.skip(iprot, schemeField.type);
+            }
+            break;
+          case 9: // POLICY_SERIAL
+            if (schemeField.type == org.apache.thrift.protocol.TType.STRING) {
+              struct.policySerial = iprot.readString();
+              struct.setPolicySerialIsSet(true);
+            } else { 
+              org.apache.thrift.protocol.TProtocolUtil.skip(iprot, schemeField.type);
+            }
+            break;
+          case 10: // POLICY_NUMBER
+            if (schemeField.type == org.apache.thrift.protocol.TType.STRING) {
+              struct.policyNumber = iprot.readString();
+              struct.setPolicyNumberIsSet(true);
+            } else { 
+              org.apache.thrift.protocol.TProtocolUtil.skip(iprot, schemeField.type);
+            }
+            break;
+          case 11: // POLICY_TYPE_CODE
+            if (schemeField.type == org.apache.thrift.protocol.TType.STRING) {
+              struct.policyTypeCode = iprot.readString();
+              struct.setPolicyTypeCodeIsSet(true);
+            } else { 
+              org.apache.thrift.protocol.TProtocolUtil.skip(iprot, schemeField.type);
+            }
+            break;
+          case 12: // POLICY_INSURER_INFIS_CODE
+            if (schemeField.type == org.apache.thrift.protocol.TType.STRING) {
+              struct.policyInsurerInfisCode = iprot.readString();
+              struct.setPolicyInsurerInfisCodeIsSet(true);
+            } else { 
+              org.apache.thrift.protocol.TProtocolUtil.skip(iprot, schemeField.type);
+            }
+            break;
           default:
             org.apache.thrift.protocol.TProtocolUtil.skip(iprot, schemeField.type);
         }
@@ -700,6 +1310,55 @@ public class AddPatientParameters implements org.apache.thrift.TBase<AddPatientP
         oprot.writeI32(struct.sex);
         oprot.writeFieldEnd();
       }
+      if (struct.documentSerial != null) {
+        if (struct.isSetDocumentSerial()) {
+          oprot.writeFieldBegin(DOCUMENT_SERIAL_FIELD_DESC);
+          oprot.writeString(struct.documentSerial);
+          oprot.writeFieldEnd();
+        }
+      }
+      if (struct.documentNumber != null) {
+        if (struct.isSetDocumentNumber()) {
+          oprot.writeFieldBegin(DOCUMENT_NUMBER_FIELD_DESC);
+          oprot.writeString(struct.documentNumber);
+          oprot.writeFieldEnd();
+        }
+      }
+      if (struct.documentTypeCode != null) {
+        if (struct.isSetDocumentTypeCode()) {
+          oprot.writeFieldBegin(DOCUMENT_TYPE_CODE_FIELD_DESC);
+          oprot.writeString(struct.documentTypeCode);
+          oprot.writeFieldEnd();
+        }
+      }
+      if (struct.policySerial != null) {
+        if (struct.isSetPolicySerial()) {
+          oprot.writeFieldBegin(POLICY_SERIAL_FIELD_DESC);
+          oprot.writeString(struct.policySerial);
+          oprot.writeFieldEnd();
+        }
+      }
+      if (struct.policyNumber != null) {
+        if (struct.isSetPolicyNumber()) {
+          oprot.writeFieldBegin(POLICY_NUMBER_FIELD_DESC);
+          oprot.writeString(struct.policyNumber);
+          oprot.writeFieldEnd();
+        }
+      }
+      if (struct.policyTypeCode != null) {
+        if (struct.isSetPolicyTypeCode()) {
+          oprot.writeFieldBegin(POLICY_TYPE_CODE_FIELD_DESC);
+          oprot.writeString(struct.policyTypeCode);
+          oprot.writeFieldEnd();
+        }
+      }
+      if (struct.policyInsurerInfisCode != null) {
+        if (struct.isSetPolicyInsurerInfisCode()) {
+          oprot.writeFieldBegin(POLICY_INSURER_INFIS_CODE_FIELD_DESC);
+          oprot.writeString(struct.policyInsurerInfisCode);
+          oprot.writeFieldEnd();
+        }
+      }
       oprot.writeFieldStop();
       oprot.writeStructEnd();
     }
@@ -733,7 +1392,28 @@ public class AddPatientParameters implements org.apache.thrift.TBase<AddPatientP
       if (struct.isSetSex()) {
         optionals.set(4);
       }
-      oprot.writeBitSet(optionals, 5);
+      if (struct.isSetDocumentSerial()) {
+        optionals.set(5);
+      }
+      if (struct.isSetDocumentNumber()) {
+        optionals.set(6);
+      }
+      if (struct.isSetDocumentTypeCode()) {
+        optionals.set(7);
+      }
+      if (struct.isSetPolicySerial()) {
+        optionals.set(8);
+      }
+      if (struct.isSetPolicyNumber()) {
+        optionals.set(9);
+      }
+      if (struct.isSetPolicyTypeCode()) {
+        optionals.set(10);
+      }
+      if (struct.isSetPolicyInsurerInfisCode()) {
+        optionals.set(11);
+      }
+      oprot.writeBitSet(optionals, 12);
       if (struct.isSetLastName()) {
         oprot.writeString(struct.lastName);
       }
@@ -749,12 +1429,33 @@ public class AddPatientParameters implements org.apache.thrift.TBase<AddPatientP
       if (struct.isSetSex()) {
         oprot.writeI32(struct.sex);
       }
+      if (struct.isSetDocumentSerial()) {
+        oprot.writeString(struct.documentSerial);
+      }
+      if (struct.isSetDocumentNumber()) {
+        oprot.writeString(struct.documentNumber);
+      }
+      if (struct.isSetDocumentTypeCode()) {
+        oprot.writeString(struct.documentTypeCode);
+      }
+      if (struct.isSetPolicySerial()) {
+        oprot.writeString(struct.policySerial);
+      }
+      if (struct.isSetPolicyNumber()) {
+        oprot.writeString(struct.policyNumber);
+      }
+      if (struct.isSetPolicyTypeCode()) {
+        oprot.writeString(struct.policyTypeCode);
+      }
+      if (struct.isSetPolicyInsurerInfisCode()) {
+        oprot.writeString(struct.policyInsurerInfisCode);
+      }
     }
 
     @Override
     public void read(org.apache.thrift.protocol.TProtocol prot, AddPatientParameters struct) throws org.apache.thrift.TException {
       TTupleProtocol iprot = (TTupleProtocol) prot;
-      BitSet incoming = iprot.readBitSet(5);
+      BitSet incoming = iprot.readBitSet(12);
       if (incoming.get(0)) {
         struct.lastName = iprot.readString();
         struct.setLastNameIsSet(true);
@@ -774,6 +1475,34 @@ public class AddPatientParameters implements org.apache.thrift.TBase<AddPatientP
       if (incoming.get(4)) {
         struct.sex = iprot.readI32();
         struct.setSexIsSet(true);
+      }
+      if (incoming.get(5)) {
+        struct.documentSerial = iprot.readString();
+        struct.setDocumentSerialIsSet(true);
+      }
+      if (incoming.get(6)) {
+        struct.documentNumber = iprot.readString();
+        struct.setDocumentNumberIsSet(true);
+      }
+      if (incoming.get(7)) {
+        struct.documentTypeCode = iprot.readString();
+        struct.setDocumentTypeCodeIsSet(true);
+      }
+      if (incoming.get(8)) {
+        struct.policySerial = iprot.readString();
+        struct.setPolicySerialIsSet(true);
+      }
+      if (incoming.get(9)) {
+        struct.policyNumber = iprot.readString();
+        struct.setPolicyNumberIsSet(true);
+      }
+      if (incoming.get(10)) {
+        struct.policyTypeCode = iprot.readString();
+        struct.setPolicyTypeCodeIsSet(true);
+      }
+      if (incoming.get(11)) {
+        struct.policyInsurerInfisCode = iprot.readString();
+        struct.setPolicyInsurerInfisCodeIsSet(true);
       }
     }
   }

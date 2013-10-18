@@ -17,7 +17,9 @@ import java.io.Serializable;
 @Table(name = "rbPolicyType", catalog = "", schema = "")
 @NamedQueries(
         {
-                @NamedQuery(name = "RbPolicyType.findAll", query = "SELECT r FROM RbPolicyType r")
+                @NamedQuery(name = "RbPolicyType.findAll", query = "SELECT r FROM RbPolicyType r"),
+                @NamedQuery(name = "RbPolicyType.findByCode",
+                        query = "SELECT r FROM RbPolicyType r WHERE r.code = :code ORDER BY r.id DESC")
         })
 @XmlType(name = "policyType")
 @XmlRootElement(name = "policyType")

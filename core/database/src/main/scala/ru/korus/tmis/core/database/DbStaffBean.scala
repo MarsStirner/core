@@ -179,6 +179,21 @@ class DbStaffBean
     retMap
   }
 
+  def getActionPropertyForPersonByRequest(filter: ListDataFilter) = {
+    //TODO: как то надо подрубить пэйджинг, сортировки и общее кол-во
+    val queryStr = filter.toQueryStructure()
+
+    //Получение всех врачей по графику
+    val sqlRequest = ActionPropertyForStaffWithFilterQuery.format( queryStr.query)
+    var typed = em.createQuery(sqlRequest, classOf[ActionProperty])
+
+    if (queryStr.data.size() > 0) {
+      queryStr.data.foreach(qdp => typed.setParameter(qdp.name, qdp.value))
+    }
+    val result = typed.getResultList
+    result.foreach(em.detach(_))
+    result.get(0)
+  }
 
   val StaffByIdQuery = """
   SELECT s
@@ -248,17 +263,36 @@ class DbStaffBean
       )
 
   GROUP BY s.id, ap.id, time.value
-                                     """      //%s
-                                                        /*
-                                                        AND
-    s.consultancyQuota > 0
+                                     """
 
-        (
-      apt.name = 'begTime'
-    OR
-      apt.name = 'endTime'
-    OR
-                                                         */
+  val ActionPropertyForStaffWithFilterQuery = """
+  SELECT ap
+  FROM
+    ActionProperty ap
+      JOIN ap.action a
+      JOIN a.event e
+      JOIN e.assigner s
+      JOIN ap.actionPropertyType apt,
+    APValueTime time,
+    RbServiceProfile sProfile,
+    ActionType at
+  WHERE
+    e.deleted = 0
+  AND
+    e.eventType.code = '0'
+  %s
+  AND
+    s.deleted = 0
+  AND
+    a.actionType.code = 'amb'
+  AND
+    a.deleted = 0
+  AND
+    time.id.id = ap.id
+  AND
+    apt.name = 'times'
+                                              """
+
   val AllStaffWithoutCurrentConsultancyQuery = """
     SELECT DISTINCT s
     FROM

@@ -151,6 +151,7 @@ class PrimaryAssessmentBean
     new CommonAttributeWithLayout(apt.getId,
                                   0,
                                   apt.getName,
+                                  apt.getCode,
                                   apt.getTypeName,
                                   apt.getValueDomain,//apt.getConstructorValueDomain,
                                   map,

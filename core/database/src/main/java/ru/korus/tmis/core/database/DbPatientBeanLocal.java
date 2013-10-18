@@ -46,11 +46,11 @@ public interface DbPatientBeanLocal {
     List<Patient> findPatient(Map<String, String> params, int clientId) throws CoreException;
 
     List<Patient> findPatientByPolicy
-            (Map<String, String> params, String policySerial, String policyNumber, int policyType)
+            (Map<String, String> params, String policySerial, String policyNumber, String policyType)
             throws CoreException;
 
     List<Patient> findPatientByDocument
-            (Map<String, String> params, String documentSerial, String documentNumber, int documentCode)
+            (Map<String, String> params, String documentSerial, String documentNumber, String documentCode)
             throws CoreException;
 
     List<Patient> findPatientsByParams(Map<String, String> params, Map<String, String> documents);
@@ -68,4 +68,15 @@ public interface DbPatientBeanLocal {
     boolean deletePatient(int id) throws CoreException;
 
     List<Patient> findPatientWithoutDocuments(Map<String, String> parameters);
+
+    /**
+     * Ищет пациентов по заданным параметрам
+     * @param lastName Фамилия пациента
+     * @param firstName имя пациента
+     * @param patrName отчество пациента
+     * @param sex пол пациента
+     * @param birthDate дата рождения пациента
+     * @return  список пациентов которые удовлетворяют условия поиска
+     */
+    List<Patient> findPatientsByPersonalInfo(String lastName, String firstName, String patrName, short sex, Date birthDate);
 }

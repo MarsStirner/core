@@ -77,6 +77,7 @@ class ActionPropertyWrapper(ap: ActionProperty)
     new CA(ap.getId,
       ap.getVersion.intValue,
       apt.getName,
+      apt.getCode,
       apt.getTypeName,
       apt.isMandatory.toString,
       apt.isReadOnly.toString,

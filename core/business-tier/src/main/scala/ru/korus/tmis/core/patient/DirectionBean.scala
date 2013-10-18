@@ -169,93 +169,68 @@ class DirectionBean extends DirectionBeanLocal
     var apvMKBList = new java.util.LinkedList[(ActionProperty, Mkb)]
     var jtForAp: JobTicket = null
     actions.foreach((a) => {
-      if (!a.getIsUrgent) {
-        val jobAndTicket = dbJobTicketBean.getJobTicketAndTakenTissueForAction( a.getEvent.getId.intValue(),
-                                                                                a.getActionType.getId.intValue(),
-                                                                                a.getPlannedEndDate,
-                                                                                department.getId.intValue())
-        if (jobAndTicket == null) {
-          var fromList = list.find((p) => p._1.getId == null &&
-            p._2.getDatetime == a.getPlannedEndDate &&
-            p._3.getType.getId == dbTakenTissue.getActionTypeTissueTypeByMasterId(a.getActionType.getId.intValue()).getTissueType.getId &&
-            p._4.getIsUrgent == false).getOrElse(null)     //для отфильтровки жобТикетов со срочными акшенами
-          if (fromList != null) {
+      val jobAndTicket = dbJobTicketBean.getJobTicketAndTakenTissueForAction( a.getEvent.getId.intValue(),
+                                                                              a.getActionType.getId.intValue(),
+                                                                              a.getPlannedEndDate,
+                                                                              department.getId.intValue(),
+                                                                              a.getIsUrgent)
+      if (jobAndTicket == null) {
+        var fromList = list.find((p) => p._1.getId == null &&
+          p._2.getDatetime == a.getPlannedEndDate &&
+          p._3.getType.getId == dbTakenTissue.getActionTypeTissueTypeByMasterId(a.getActionType.getId.intValue()).getTissueType.getId &&
+          p._4.getIsUrgent == a.getIsUrgent).getOrElse(null)     //срочные на одну дату и тип биоматериала должны создаваться с одним жобТикетом
+        if (fromList != null) {
+          var (j, jt, tt, a) = fromList.asInstanceOf[(Job, JobTicket, TakenTissue, Action)]
+          j.setQuantity(j.getQuantity+1)
+          if (tt != null) a.setTakenTissue(tt)
+          jtForAp = jt
+        } else if (dbTakenTissue.getActionTypeTissueTypeByMasterId(a.getActionType.getId.intValue()) != null) {
+          val j = dbJobBean.insertOrUpdateJob(0, a, department)
+          val jt = dbJobTicketBean.insertOrUpdateJobTicket(0, a, j)
+          val tt = dbTakenTissue.insertOrUpdateTakenTissue(0, a)
+          if (list != null && list.size()>0) {
+            if (list.getLast._3.getBarcode != 999999) {
+              tt.setBarcode(list.getLast._3.getBarcode+1)
+              tt.setPeriod(list.getLast._3.getPeriod)
+            } else {
+              tt.setBarcode(100000)
+              tt.setPeriod(list.getLast._3.getPeriod+1)
+            }
+          }
+          if (tt != null) a.setTakenTissue(tt)
+          list.add(j, jt, tt, a)
+          jtForAp = jt
+        }
+      } else {
+        val (jobTicket, takenTissue) = jobAndTicket.asInstanceOf[(JobTicket, TakenTissue)]
+        if (jobTicket != null && jobTicket.getJob!=null) {
+          var fromList = list.find((p) => p._1.getId != null && p._1.getId.intValue() == jobTicket.getJob.getId.intValue()).getOrElse(null)
+          if (fromList == null) {
+            val j = dbJobBean.insertOrUpdateJob(jobTicket.getJob.getId.intValue(), a, department)
+            val jt = dbJobTicketBean.insertOrUpdateJobTicket(jobTicket.getId.intValue(), a, j)
+            if (takenTissue != null) a.setTakenTissue(takenTissue)
+            list.add(j, jt, takenTissue, a)
+            jtForAp = jt
+          } else {
             var (j, jt, tt, a) = fromList.asInstanceOf[(Job, JobTicket, TakenTissue, Action)]
             j.setQuantity(j.getQuantity+1)
             if (tt != null) a.setTakenTissue(tt)
             jtForAp = jt
-          } else if (dbTakenTissue.getActionTypeTissueTypeByMasterId(a.getActionType.getId.intValue()) != null) {
-            val j = dbJobBean.insertOrUpdateJob(0, a, department)
-            val jt = dbJobTicketBean.insertOrUpdateJobTicket(0, a, j)
-            val tt = dbTakenTissue.insertOrUpdateTakenTissue(0, a)
-            if (list != null && list.size()>0) {
-              if (list.getLast._3.getBarcode != 999999) {
-                tt.setBarcode(list.getLast._3.getBarcode+1)
-                tt.setPeriod(list.getLast._3.getPeriod)
-              } else {
-                tt.setBarcode(100000)
-                tt.setPeriod(list.getLast._3.getPeriod+1)
-              }
-            }
-            if (tt != null) a.setTakenTissue(tt)
-            list.add(j, jt, tt, a)
-            jtForAp = jt
-          }
-        } else {
-          val (jobTicket, takenTissue) = jobAndTicket.asInstanceOf[(JobTicket, TakenTissue)]
-          if (jobTicket != null && jobTicket.getJob!=null) {
-            var fromList = list.find((p) => p._1.getId != null && p._1.getId.intValue() == jobTicket.getJob.getId.intValue()).getOrElse(null)
-            if (fromList == null) {
-              val j = dbJobBean.insertOrUpdateJob(jobTicket.getJob.getId.intValue(), a, department)
-              val jt = dbJobTicketBean.insertOrUpdateJobTicket(jobTicket.getId.intValue(), a, j)
-              if (takenTissue != null) a.setTakenTissue(takenTissue)
-              list.add(j, jt, takenTissue, a)
-              jtForAp = jt
-            } else {
-              var (j, jt, tt, a) = fromList.asInstanceOf[(Job, JobTicket, TakenTissue, Action)]
-              j.setQuantity(j.getQuantity+1)
-              if (tt != null) a.setTakenTissue(tt)
-              jtForAp = jt
-            }
-          }
-          //*****
-          //Проверка, есть ли подобный action за текущие сутки c другим временем
-          //по коментарию Алехиной https://korusconsulting.atlassian.net/browse/WEBMIS-711
-          val filter = new ActionsListDataFilter(a.getEvent.getId.intValue(),        //ид обращения в теле запроса
-            a.getActionType.getId.intValue(),   //действия только данного типа
-            -1,
-            -1,
-            false,
-            true)                              //за текущий день
-          val last = actionBean.getActionsWithFilter(0, 0, "", filter.unwrap(), null, null)
-          if(last!=null && last.size()>0 && jobTicket.getStatus==2 && !a.getIsUrgent()) {
-            a.setStatus(2)
           }
         }
-      } else if (dbTakenTissue.getActionTypeTissueTypeByMasterId(a.getActionType.getId.intValue()) != null) {
-        val j = dbJobBean.insertOrUpdateJob(0, a, department)
-        val jt = dbJobTicketBean.insertOrUpdateJobTicket(0, a, j)
-        val tt = dbTakenTissue.insertOrUpdateTakenTissue(0, a)
-        if (list != null && list.size()>0) {
-          var fromList = list.find((p) => p._1.getId == null &&
-            p._2.getDatetime == a.getPlannedEndDate &&
-            p._3.getType.getId == dbTakenTissue.getActionTypeTissueTypeByMasterId(a.getActionType.getId.intValue()).getTissueType.getId &&
-            p._4.getIsUrgent == true).getOrElse(null)
-          if (fromList != null) {
-            var (j2, jt2, tt2, a2) = fromList.asInstanceOf[(Job, JobTicket, TakenTissue, Action)]
-            tt.setBarcode(tt2.getBarcode)
-            tt.setPeriod(tt2.getPeriod)
-          } else if (list.getLast._3.getBarcode != 999999) {
-            tt.setBarcode(list.getLast._3.getBarcode+1)
-            tt.setPeriod(list.getLast._3.getPeriod)
-          } else {
-            tt.setBarcode(100000)
-            tt.setPeriod(list.getLast._3.getPeriod+1)
-          }
+        //*****
+        //Проверка, есть ли подобный action за текущие сутки c другим временем
+        //по коментарию Алехиной https://korusconsulting.atlassian.net/browse/WEBMIS-711
+        val filter = new ActionsListDataFilter(a.getEvent.getId.intValue(),        //ид обращения в теле запроса
+          a.getActionType.getId.intValue(),   //действия только данного типа
+          -1,
+          -1,
+          false,
+          true)                              //за текущий день
+        val last = actionBean.getActionsWithFilter(0, 0, "", filter.unwrap(), null, null)
+        if(last!=null && last.size()>0 && jobTicket.getStatus==2 && !a.getIsUrgent()) {
+          a.setStatus(2)
         }
-        if (tt != null) a.setTakenTissue(tt)
-        list.add(j, jt, tt, a)
-        jtForAp = jt
       }
 
       //*****
@@ -484,10 +459,14 @@ class DirectionBean extends DirectionBeanLocal
     em.persist(action19)
     em.flush()
     // создаем и/или заполняем значение проперти 18
-    if (request.plannedTime != null) {
+    val filter = new FreePersonsListDataFilter( 0,
+                                                request.getExecutorId,
+                                                request.getActionTypeId,
+                                                request.getPlannedEndDate.getTime,
+                                                0)
+    val timesAP = dbStaffBean.getActionPropertyForPersonByRequest(filter)  //пропертя с расписанием должна быть всегда(по идее:-)
 
-    }
-    val apSchedule = actionPropertyBean.getActionPropertyById(request.plannedTime.getId)
+    val apSchedule = actionPropertyBean.getActionPropertyById(timesAP.getId.intValue())
     val a = apSchedule.getAction
     var aps = actionPropertyBean.getActionPropertiesByActionIdAndTypeId(a.getId.intValue(), 18) // 18 = queue
     var ap18: ActionProperty = null
@@ -509,10 +488,11 @@ class DirectionBean extends DirectionBeanLocal
     if (ap18 != null) {
       val ap18values = actionPropertyBean.getActionPropertyValue(ap18)
       actionPropertyBean.getActionPropertyValue(apSchedule).foreach(f => {
-        if (f.asInstanceOf[APValueTime].getId.getIndex != request.plannedTime.getIndex() &&
-            ap18values.find(p => p.asInstanceOf[APValueAction].getId.getIndex == f.asInstanceOf[APValueTime].getId.getIndex).getOrElse(null) == null)
+        if (//f.asInstanceOf[APValueTime].getId.getIndex != request.plannedTime.getIndex() &&
+          ap18values.find(p => p.asInstanceOf[APValueAction].getId.getIndex == f.asInstanceOf[APValueTime].getId.getIndex).getOrElse(null) == null)
           em.merge(actionPropertyBean.setActionPropertyValue(ap18, null, f.asInstanceOf[APValueTime].getId.getIndex))
       })
+
       //*** Обработка срочности и сверх приема по новой спеке
       action.setAppointmentType("hospital")
       if (action.getIsUrgent) {
@@ -523,21 +503,23 @@ class DirectionBean extends DirectionBeanLocal
             citoActionsCount = citoActionsCount + 1}
         })  */
         if (action.getExecutor != null && action.getExecutor.getMaxCito > 0 && action.getExecutor.getMaxCito > citoActionsCount) {
-          //сдвинуть все индексы
-          //action.setAppointmentType(1)
-          val odin : lang.Integer = 1
-          action.setPacientInQueueType(odin.shortValue())
-          //em.merge(action)
-          ap18values.sortWith(_.asInstanceOf[APValueAction].getId.getIndex > _.asInstanceOf[APValueAction].getId.getIndex)
-          ap18values.foreach(apvv => {
-            val valueToSave =  if (apvv.getValueAsString.compareTo("<EMPTY>") != 0) {
-              apvv.asInstanceOf[APValueAction].getValue.getId.toString
-            } else {
-              null
-            }
-            em.merge(actionPropertyBean.setActionPropertyValue(ap18, valueToSave, apvv.asInstanceOf[APValueAction].getId.getIndex+1))
+          if (request.plannedTime == null || request.plannedTime.getTime == null) {
+            //сдвинуть все индексы
+            //action.setAppointmentType(1)
+            val odin : lang.Integer = 1
+            action.setPacientInQueueType(odin.shortValue())
+            //em.merge(action)
+            ap18values.sortWith(_.asInstanceOf[APValueAction].getId.getIndex > _.asInstanceOf[APValueAction].getId.getIndex)
+            ap18values.foreach(apvv => {
+              val valueToSave =  if (apvv.getValueAsString.compareTo("<EMPTY>") != 0) {
+                apvv.asInstanceOf[APValueAction].getValue.getId.toString
+              } else {
+                null
+              }
+              em.merge(actionPropertyBean.setActionPropertyValue(ap18, valueToSave, apvv.asInstanceOf[APValueAction].getId.getIndex+1))
 
-          })
+            })
+          }
           em.merge(actionPropertyBean.setActionPropertyValue(ap18, action19.getId.toString, 0))
         } else {
           action.setDeleted(true)
@@ -564,7 +546,9 @@ class DirectionBean extends DirectionBeanLocal
           throw new CoreException(ConfigManager.Messages("error.overQueueLimit"))
         }
       } else {
-        em.merge(actionPropertyBean.setActionPropertyValue(ap18, action19.getId.toString, request.plannedTime.getIndex))
+        if (request.plannedTime != null/* && request.plannedTime.getIndex != null*/) {
+          em.merge(actionPropertyBean.setActionPropertyValue(ap18, action19.getId.toString, request.plannedTime.getIndex))
+        }
       }
       em.merge(action)
     }
@@ -590,7 +574,8 @@ class DirectionBean extends DirectionBeanLocal
             val res = dbJobTicketBean.getJobTicketAndTakenTissueForAction( a.getEvent.getId.intValue(),
                                                                            a.getActionType.getId.intValue(),
                                                                            a.getPlannedEndDate,
-                                                                           hospitalBedBean.getCurrentDepartmentForAppeal(a.getEvent.getId.intValue()).getId.intValue())
+                                                                           hospitalBedBean.getCurrentDepartmentForAppeal(a.getEvent.getId.intValue()).getId.intValue(),
+                                                                           a.getIsUrgent)
             if (res!=null &&
               res.isInstanceOf[(JobTicket, TakenTissue)] &&
               res.asInstanceOf[(JobTicket, TakenTissue)]._1 != null &&
@@ -608,9 +593,38 @@ class DirectionBean extends DirectionBeanLocal
             if (action19 != null) {
               val actionId = action19.getId.intValue()
               var apv = actionPropertyBean.getActionPropertyValue_ActionByValue(action19)
-              if (apv != null) {
-                apv = em.merge(apv)
-                em.remove(apv)
+              if (a.getPacientInQueueType.intValue() == 0) {
+                if (apv != null) {
+                  apv.setValueFromString("")
+                  em.merge(apv)
+                }
+              } else {
+                val ap = actionPropertyBean.getActionPropertyById(apv.getId.getId)
+                val currentIndex = apv.getId.getIndex
+                if (apv != null) {
+                  apv = em.merge(apv)
+                  em.remove(apv)
+                }
+                if (a.getPacientInQueueType.intValue() == 1) {
+                  //сдвинуть все индексы
+                  val ap18values = actionPropertyBean.getActionPropertyValue(ap)
+                  ap18values.sortWith(_.asInstanceOf[APValueAction].getId.getIndex < _.asInstanceOf[APValueAction].getId.getIndex)
+                  ap18values.foreach(apvv => {
+                    if (apvv.asInstanceOf[APValueAction].getId.getIndex > currentIndex) {
+                      if (apvv.asInstanceOf[APValueAction].getId.getIndex == ap18values.size()) {
+                        var ap2 = em.merge(apvv)
+                        em.remove(ap2)
+                      } else {
+                        val valueToSave =  if (apvv.getValueAsString.compareTo("<EMPTY>") != 0) {
+                          apvv.asInstanceOf[APValueAction].getValue.getId.toString
+                        } else {
+                          null
+                        }
+                        em.merge(actionPropertyBean.setActionPropertyValue(ap, valueToSave, apvv.asInstanceOf[APValueAction].getId.getIndex-1))
+                      }
+                    }
+                  })
+                }
               }
               //em.flush()
               action19 = actionBean.getActionById(actionId)

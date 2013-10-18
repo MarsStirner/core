@@ -10,7 +10,13 @@ import java.util.Date;
 @Table(name = "ClientDocument", catalog = "", schema = "")
 @NamedQueries(
         {
-                @NamedQuery(name = "ClientDocument.findAll", query = "SELECT p FROM ClientDocument p")
+                @NamedQuery(name = "ClientDocument.findAll", query = "SELECT p FROM ClientDocument p"),
+                @NamedQuery(name = "ClientDocument.findBySerialAndNumberAndTypeCode",
+                        query = "SELECT d FROM ClientDocument d " +
+                                "WHERE d.serial = :serial " +
+                                "AND d.number = :number " +
+                                "AND d.documentType.code = :typeCode " +
+                                "AND d.deleted = false" )
         })
 @XmlType(name = "document")
 @XmlRootElement(name = "document")
@@ -218,6 +224,18 @@ public class ClientDocument implements Serializable, Cloneable {
     public Object clone() throws CloneNotSupportedException {
         return super.clone();
     }
+
+    /**
+     * Детальное описание полиса
+     * @return строка с описанием
+     */
+    public String getInfoString(){
+        return new StringBuilder("Document[id=").append(id)
+                .append(" Ser.:\"").append(serial)
+                .append("\" Num.:\"").append(number)
+                .append("\" typeCode:").append(documentType.getCode())
+                .append(']').toString();
+    }
     ////////////////////////////////////////////////////////////////////////////
     // Custom mappings
     ////////////////////////////////////////////////////////////////////////////
@@ -236,7 +254,6 @@ public class ClientDocument implements Serializable, Cloneable {
             patient.getClientDocuments().add(this);
         }
     }
-
     ////////////////////////////////////////////////////////////////////////////
     // End of custom mappings
     ////////////////////////////////////////////////////////////////////////////

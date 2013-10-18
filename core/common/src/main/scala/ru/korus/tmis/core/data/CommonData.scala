@@ -328,6 +328,17 @@ trait AbstractCommonAttribute {
     this.name = name
   }
 
+  var code: String = _
+
+  @XmlAttribute(name = "code")
+  def getCode() = {
+    code
+  }
+
+  def setCode(code: String) = {
+    this.code = code
+  }
+
   var aType: String = _
 
   @XmlAttribute(name = "type")
@@ -489,6 +500,7 @@ class CommonAttribute  extends AbstractCommonAttribute{
   def this(id: Integer,
            version: Integer,
            name: String,
+           code: String,
            aType: String,
            mandatory: String,
            readOnly: String,
@@ -497,17 +509,19 @@ class CommonAttribute  extends AbstractCommonAttribute{
     this(id, version, name, aType, scope, props)
     this.mandatory = mandatory
     this.readOnly = readOnly
+    this.code = code
   }
 }
 
 class CommonAttributeWithLayout(id: Integer,
                                 version: Integer,
                                 name: String,
+                                code: String,
                                 aType: String,
                                 mandatory: String,
                                 readOnly: String,
                                 scope: String,
-                                props: Map[String, String]) extends CommonAttribute (id, version, name, aType, mandatory, readOnly, scope, props){
+                                props: Map[String, String]) extends CommonAttribute (id, version, name, code, aType, mandatory, readOnly, scope, props){
 
   @BeanProperty
   var layoutAttributeValues = new LinkedList[LayoutAttributeSimplifyDataContainer]
@@ -515,19 +529,20 @@ class CommonAttributeWithLayout(id: Integer,
   def this(id: Integer,
            version: Integer,
            name: String,
+           code: String,
            aType: String,
            scope: String,
            props: Map[String, String],
            layout: List[LayoutAttributeValue],
            mandatory: String,
            readOnly: String) = {
-    this(id, version, name, aType, mandatory, readOnly, scope, props)
+    this(id, version, name, code, aType, mandatory, readOnly, scope, props)
     layout.foreach(f=> this.layoutAttributeValues.add(new LayoutAttributeSimplifyDataContainer(f)))
   }
 
   def this (ca: CommonAttribute,
             layout: List[LayoutAttributeValue] ) = {
-    this(ca.id, ca.version, ca.name, ca.aType, ca.mandatory, ca.readOnly, ca.scope, ca.properties)
+    this(ca.id, ca.version, ca.name, ca.code, ca.aType, ca.mandatory, ca.readOnly, ca.scope, ca.properties)
     layout.foreach(f=> this.layoutAttributeValues.add(new LayoutAttributeSimplifyDataContainer(f)))
   }
 }
