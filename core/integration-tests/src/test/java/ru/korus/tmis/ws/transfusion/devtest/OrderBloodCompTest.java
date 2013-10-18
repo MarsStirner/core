@@ -49,7 +49,7 @@ public class OrderBloodCompTest extends TestBase {
 
     @BeforeClass
     public static void init() {
-        initTestCase(TRFU_ACTION_TYPE_ID, propConstants);
+        initTestCase("TransfusionTherapy", propConstants);
     }
 
     @AfterClass
@@ -62,7 +62,7 @@ public class OrderBloodCompTest extends TestBase {
         try {
             clearDB(propConstants);
 
-            createActionWithProp(TRFU_ACTION_TYPE_ID, propConstants);
+            createActionWithProp(propConstants);
 
             setValue(PropType.PATIENT_ORG_STRUCT, 1);
             setValue(PropType.DIAGNOSIS, "tst DIAGNOSIS");

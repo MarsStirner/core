@@ -19,7 +19,7 @@ import java.sql.Statement;
 public class TestBase {
     private static final String HOST = "localhost";// "10.128.225.66"
     protected static final String JDBC_MYSQL_URL = "jdbc:mysql://" + HOST + "/s11r64";
-    protected final static Integer TRFU_ACTION_CREATED_PERSON_ID = 183; // TODO create tester person
+    protected final static Integer TRFU_ACTION_CREATED_PERSON_ID = 2; // TODO create tester person
 
     protected final static Integer ACTION_ID = 100000000;
     protected final static Integer ACTION_MOVING_ID = 100000001;
@@ -31,10 +31,22 @@ public class TestBase {
 
     protected static Connection conn = null;
 
-    protected static void initTestCase(final Integer actionId, final PropType[] propConstants) {
+    private static int actionTypeId;
+
+    protected static void initTestCase(final String actionFlatCode, final PropType[] propConstants) {
         try {
             initConnection();
-            initPropId(actionId, propConstants);
+            final Statement s = conn.createStatement();
+            final String sql = "SELECT id FROM ActionType WHERE flatCode LIKE '" + actionFlatCode +"%'";
+            s.executeQuery(sql);
+            final ResultSet rs = s.getResultSet();
+            if (rs.next()) {
+                actionTypeId = rs.getInt("id");
+            } else {
+                throw new SQLException(String.format("The action type for flat code %s has been not found", actionFlatCode));
+            }
+            initPropId(actionTypeId, propConstants);
+            initPropId(ACTION_MOVING_TYPE, propMovingConstants);
             System.out.println("Database connection established");
         } catch (final Exception e) {
             e.printStackTrace();
@@ -121,12 +133,10 @@ public class TestBase {
     }
 
     /**
-     * @param s
-     * @param actionTypeId
      * @param propConstants
      * @throws SQLException
      */
-    protected void createActionWithProp(final Integer actionTypeId, PropType[] propConstants) throws SQLException {
+    protected void createActionWithProp(PropType[] propConstants) throws SQLException {
         final Statement s = conn.createStatement();
         // TODO create test Event
         final String sqlActionInsertTpl =
@@ -185,11 +195,7 @@ public class TestBase {
         }
     }
 
-    /**
-     * @param diagnosis
-     * @param string
-     * @throws SQLException
-     */
+
     public <T> void setValue(final PropType propType, final T value) throws SQLException {
         final Statement s = conn.createStatement();
         final Integer id = getPropValueId(propType);

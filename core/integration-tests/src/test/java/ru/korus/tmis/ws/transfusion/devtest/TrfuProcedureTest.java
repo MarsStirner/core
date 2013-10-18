@@ -39,7 +39,7 @@ public class TrfuProcedureTest extends TestBase {
     /**
      * 
      */
-    private static final int TRFU_PROCEDURE_ACTION_TYPE_ID = 3693;
+
     private static final PropType[] propConstants = { PropType.DONOR_ID,
             PropType.CONTRAINDICATION,
             PropType.BEFORE_HEMODYNAMICS_PULSE,
@@ -87,7 +87,7 @@ public class TrfuProcedureTest extends TestBase {
 
     @BeforeClass
     public static void init() {
-        initTestCase(TRFU_PROCEDURE_ACTION_TYPE_ID, propConstants);
+        initTestCase("trfuProcedure_trfu_id_", propConstants);
     }
 
     @AfterClass
@@ -99,7 +99,7 @@ public class TrfuProcedureTest extends TestBase {
     public void createNewProc() {
         try {
             clearDB(propConstants);
-            createActionWithProp(TRFU_PROCEDURE_ACTION_TYPE_ID, propConstants);
+            createActionWithProp(propConstants);
             setValue(PropType.PATIENT_ORG_STRUCT, 1);
             String res = waitOrderRequestId();
             AssertJUnit.assertTrue(res != null ? res.indexOf("Получен идентификатор в системе ТРФУ: ") == 0 : false);
@@ -126,7 +126,7 @@ public class TrfuProcedureTest extends TestBase {
 
         List<LaboratoryMeasure> measures = new Vector<LaboratoryMeasure>();
         measures.add(new LaboratoryMeasure());
-        measures.get(0).setId(105);
+        measures.get(0).setId(90);
         measures.get(0).setAfterOperation("res after");
         measures.get(0).setBeforeOperation("res befir");
         measures.get(0).setDuringOperation("res during");
