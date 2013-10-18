@@ -5,7 +5,15 @@ import org.joda.time.format.DateTimeFormat;
 import org.joda.time.format.DateTimeFormatter;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import ru.korus.tmis.core.database.DbActionBeanLocal;
+import ru.korus.tmis.core.database.DbActionPropertyBeanLocal;
+import ru.korus.tmis.core.database.DbActionPropertyTypeBeanLocal;
+import ru.korus.tmis.core.database.DbCustomQueryLocal;
 import ru.korus.tmis.core.database.bak.*;
+import ru.korus.tmis.core.entity.model.Action;
+import ru.korus.tmis.core.entity.model.ActionProperty;
+import ru.korus.tmis.core.entity.model.ActionPropertyType;
+import ru.korus.tmis.core.entity.model.ActionType;
 import ru.korus.tmis.core.entity.model.bak.*;
 import ru.korus.tmis.core.exception.CoreException;
 import ru.korus.tmis.util.CompileTimeConfigManager;
@@ -51,6 +59,14 @@ public class SetAnalysysResult implements SetAnalysysResultWS {
 
     private static final Logger logger = LoggerFactory.getLogger(SetAnalysysResult.class);
 
+    @EJB
+    private DbActionBeanLocal dbAction;
+
+    @EJB
+    private DbActionPropertyTypeBeanLocal dbActionPropertyType;
+
+    @EJB
+    private DbActionPropertyBeanLocal dbActionProperty;
 
     @EJB
     private DbBbtResponseBeanLocal dbBbtResponseBean;
@@ -75,6 +91,9 @@ public class SetAnalysysResult implements SetAnalysysResultWS {
 
     @EJB
     private DbRbMicroorganismBeanLocal dbRbMicroorganismBean;
+
+    @EJB
+    private DbCustomQueryLocal dbCustomQuery;
 
 
     /**
@@ -230,6 +249,10 @@ public class SetAnalysysResult implements SetAnalysysResultWS {
                                     text.setValueText(resultValue + " / " + resultText);
                                     text.setActionId(id);
                                     dbBbtResultTextBean.add(text);
+
+                                    saveIfaToProperty(id, resultValue, resultText);
+
+                                    toLog.add("  Save: " + text + "\n");
                                 }
                             }
 
@@ -325,68 +348,62 @@ public class SetAnalysysResult implements SetAnalysysResultWS {
                         final JAXBElement<POLBMT004000UV01SpecimenObservationCluster> cluster = subj.getSpecimenObservationCluster();
                         final POLBMT004000UV01SpecimenObservationCluster value = cluster.getValue();
 
-                        String codeMicroOrg = "";
-
                         if (value.getSpecimen().isEmpty()) {
                             throw new CoreException("В формате тега specimenObservationCluster указано более 1 микроогранизма");
                         }
-
+                        toLog.add("---------------------------\n");
                         POLBMT004000UV01Specimen s = value.getSpecimen().get(0);
                         // код микроорганизма
-                        codeMicroOrg = s.getSpecimen().getValue().getCode().getCode();
-                        toLog.add("  codeMicroOrg: [" + codeMicroOrg + "]\n");
+                        final String codeMicroOrg = s.getSpecimen().getValue().getCode().getCode();
                         // название микрооранизма
                         final String nameMicroOrg = s.getSpecimen().getValue().getCode().getDisplayName();
-                        toLog.add("  nameMicroOrg: [" + nameMicroOrg + "]\n");
-
-//                        final RbMicroorganism microorganism = new RbMicroorganism();
-//                        microorganism.setCode(codeMicroOrg);
-//                        microorganism.setName(nameMicroOrg);
-//                        dbRbMicroorganismBean.add(microorganism);
+                        toLog.add("Microorganism: [" + codeMicroOrg + "], [" + nameMicroOrg + "]\n");
 
                         for (POLBMT004000UV01Component2 component2 : value.getComponent1()) {
                             final JAXBElement<POLBMT004000UV01ObservationBattery> ob = component2.getObservationBattery();
 
                             for (POLBMT004000UV01Component2 pp : ob.getValue().getComponent1()) {
-
                                 // код антибиотика
                                 final String codeAntib = pp.getObservationEvent().getValue().getCode().getCode();
-                                toLog.add("codeAntib: [" + codeAntib + "]\n");
-
                                 // название антибиотика
                                 final String nameAntib = pp.getObservationEvent().getValue().getCode().getDisplayName();
-                                toLog.add("nameAntib: [" + nameAntib + "]\n");
-
                                 // величина концентрации
                                 final String concAntib = pp.getObservationEvent().getValue().getCode().getCodeSystem();
-                                toLog.add("concAntib: [" + concAntib + "]\n");
-
                                 // чувствительность
                                 final String sensAntib = pp.getObservationEvent().getValue().getCode().getTranslation().get(0).getCode();
-                                toLog.add("sensAntib: [" + sensAntib + "]\n");
 
+                                toLog.add("Antibiotic: ["
+                                        + codeAntib + "][" + nameAntib
+                                        + "], concentration [" + concAntib
+                                        + "], sencivity [" + sensAntib + "]\n");
 
-                                final RbAntibiotic antibiotic = new RbAntibiotic();
-                                antibiotic.setCode(codeAntib);
-                                antibiotic.setName(nameAntib);
-                                dbRbAntibioticBean.add(antibiotic);
+                                // Записываем в справочник антибиотик
+                                if (!"".equals(codeAntib) && !"".equals(nameAntib)) {
+                                    final RbAntibiotic antibiotic = new RbAntibiotic();
+                                    antibiotic.setCode(codeAntib);
+                                    antibiotic.setName(nameAntib);
+                                    dbRbAntibioticBean.add(antibiotic);
+                                    toLog.add("  Save: " + antibiotic + "\n");
 
-                                final RbAntibiotic a = dbRbAntibioticBean.get(codeAntib);
+                                    final RbAntibiotic a = dbRbAntibioticBean.get(codeAntib);
 
+                                    final RbMicroorganism m = dbRbMicroorganismBean.get(codeMicroOrg);
+                                    final BbtResultOrganism organism = dbBbtResultOrganismBean.get(m.getId(), id);
 
-                                final RbMicroorganism m = dbRbMicroorganismBean.get(codeMicroOrg);
-                                final BbtResultOrganism organism = dbBbtResultOrganismBean.get(m.getId(), id);
+                                    final BbtOrganismSensValues sensAntib1 = new BbtOrganismSensValues();
 
-                                final BbtOrganismSensValues sensAntib1 = new BbtOrganismSensValues();
+                                    sensAntib1.setActivity(sensAntib);
+                                    sensAntib1.setAntibioticId(a.getId());
+                                    sensAntib1.setBbtResultOrganismId(organism.getId());
+                                    sensAntib1.setMic(concAntib);
 
-                                sensAntib1.setActivity(sensAntib);
-                                sensAntib1.setAntibioticId(a.getId());
-                                sensAntib1.setBbtResultOrganismId(organism.getId());
-                                sensAntib1.setMic(concAntib);
-
-                                dbBbtOrganismSensValuesBean.add(sensAntib1);
+                                    dbBbtOrganismSensValuesBean.add(sensAntib1);
+                                    toLog.add("  Save: " + sensAntib1 + "\n");
+                                }
                             }
                         }
+                        toLog.add("---------------------------\n");
+
                     } catch (Exception e) {
                         logger.error("Exception: " + e, e);
                         toLog.add("Exception " + e);
@@ -403,12 +420,32 @@ public class SetAnalysysResult implements SetAnalysysResultWS {
             response.setDefects(getDefects(request));
             response.setCodeLIS(Integer.parseInt(getLisCode(request)));
             dbBbtResponseBean.add(response);
-
+            toLog.add("  Save response: " + response + "\n");
 
         } catch (Exception e) {
             logger.error("Exception: " + e, e);
             toLog.add("Exception " + e);
             throw new CoreException("Ошибка формата результата");
+        }
+    }
+
+    private void saveIfaToProperty(int actionId, String resultValue, String resultText) {
+        try {
+            final Action action = dbAction.getActionById(actionId);
+            final ActionType actionType = action.getActionType();
+
+//            dbActionProperty.updateActionProperty()
+
+            for (ActionProperty property : action.getActionProperties()) {
+                final ActionPropertyType type = property.getType();
+                if (type.getCode().equals("ifa")) {
+
+                }
+
+            }
+
+        } catch (Exception e) {
+
         }
     }
 
