@@ -379,12 +379,17 @@ public class DiagnosticsRegistryExRESTImpl {
     @Path("/consultations/{actionId}")
     @Consumes("application/json")
     @Produces("application/x-javascript")
-    public Object modifyConsultationStudy(JSONCommonData data,
+    public Object modifyConsultationStudy(ConsultationRequestData data,
                                           @PathParam("actionId")int actionId) {
-
+        /*
         CommonData com_data = new CommonData();
         com_data.setEntity(data.getData());
         return new JSONWithPadding(wsImpl.modifyInstrumentalStudies(eventId, com_data, this.auth), this.callback);
+        */
+        AssignmentsToRemoveDataList dataToRemove = new AssignmentsToRemoveDataList();
+        dataToRemove.getData().add(new AssignmentToRemoveDataEntry(actionId));
+        JSONWithPadding removed = new JSONWithPadding(wsImpl.removeDirection(dataToRemove, "consultations", this.auth), this.callback);
+        return new JSONWithPadding(wsImpl.modifyConsultation(data.rewriteDefault(data), this.auth), callback);
     }
 
     /**

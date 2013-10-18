@@ -886,6 +886,15 @@ class WebMisRESTImpl  extends WebMisREST
     json
   }
 
+  def modifyConsultation(request: ConsultationRequestData, authData: AuthData) = {
+
+
+    val actionId = directionBean.createConsultation(request, authData)
+    var json = directionBean.getDirectionById(actionId, "Consultation", null, authData)
+    json.setRequestData(request) //по идее эта штука должна быть в конструкторе вызываемая в методе гет
+    json
+  }
+
   def removeDirection(data: AssignmentsToRemoveDataList, directionType: String, auth: AuthData) = {
     directionBean.removeDirections(data, directionType, auth)
   }

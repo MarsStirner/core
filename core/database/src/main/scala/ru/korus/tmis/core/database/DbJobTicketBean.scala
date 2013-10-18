@@ -139,7 +139,7 @@ class DbJobTicketBean extends DbJobTicketBeanLocal
     isComplete
   }
 
-  def getJobTicketAndTakenTissueForAction(eventId: Int, atId: Int, datef: Date, departmentId: Int) = {
+  def getJobTicketAndTakenTissueForAction(eventId: Int, atId: Int, datef: Date, departmentId: Int, urgent: Boolean) = {
     val formatter = new SimpleDateFormat("yyyy-MM-dd HH:mm")
     val strDate = formatter.format(datef)
     val date = formatter.parse(strDate)
@@ -149,6 +149,7 @@ class DbJobTicketBean extends DbJobTicketBeanLocal
                   .setParameter("eventId", eventId)
                   .setParameter("actionTypeId", atId)
                   .setParameter("departmentId", departmentId)
+                  .setParameter("urgent", urgent)
 
     val result = query.getResultList
 
@@ -349,7 +350,7 @@ class DbJobTicketBean extends DbJobTicketBeanLocal
       AND
         a.actionType.mnemonic = 'LAB'
       AND
-        a.isUrgent = 0
+        a.isUrgent = :urgent
       AND
         apval.id.id = ap.id
       AND

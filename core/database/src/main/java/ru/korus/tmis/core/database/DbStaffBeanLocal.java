@@ -2,6 +2,7 @@ package ru.korus.tmis.core.database;
 
 import ru.korus.tmis.core.entity.model.APValueTime;
 import ru.korus.tmis.core.entity.model.Action;
+import ru.korus.tmis.core.entity.model.ActionProperty;
 import ru.korus.tmis.core.entity.model.Staff;
 import ru.korus.tmis.core.exception.CoreException;
 import ru.korus.tmis.core.filter.ListDataFilter;
@@ -44,6 +45,8 @@ public interface DbStaffBeanLocal {
 
     java.util.HashMap<Staff, java.util.LinkedList<APValueTime>> getEmptyPersonsByRequest(int limit, int page, String sorting, ListDataFilter filter)
             throws CoreException;
+
+    ActionProperty getActionPropertyForPersonByRequest(ListDataFilter filter) throws CoreException;
 
     long getCountAllPersonsWithFilter(Object filter)
             throws CoreException;
