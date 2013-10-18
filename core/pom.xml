@@ -29,7 +29,7 @@
 
     <properties>
         <!-- Версия ядра-->
-        <version.tmis.core>2.4.0-SNAPSHOT</version.tmis.core>
+        <version.tmis.core>2.4.1-SNAPSHOT</version.tmis.core>
 
 
         <version.joda.time>2.1</version.joda.time>
@@ -370,13 +370,14 @@
             <!-- Пользовательский профиль -->
             <id>sg-win</id>
             <properties>
-                <separate>\</separate>
+                <separate>/</separate>
                 <!-- Домашняя директория Glassfish -->
-                <glassfish.home>C:/Winprog/glassfish3/</glassfish.home>
+                <glassfish.home>/usr/local/glassfish3/bin/</glassfish.home>
                 <!-- Название домена -->
-                <glassfish.domain>fccho</glassfish.domain>
+                <glassfish.domain>fccho-moscow.ru</glassfish.domain>
                 <!-- Логин администратора -->
-                <glassfish.admin.login>admin1234</glassfish.admin.login>
+                <glassfish.admin.login>admin</glassfish.admin.login>
+                <glassfish.admin.password>TRefRureB5Aw</glassfish.admin.password>
             </properties>
         </profile>
 

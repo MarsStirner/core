@@ -6,6 +6,7 @@ import javax.persistence.*;
 import javax.xml.bind.annotation.XmlRootElement;
 import javax.xml.bind.annotation.XmlType;
 import java.io.Serializable;
+import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.LinkedList;
 import java.util.List;
@@ -15,7 +16,14 @@ import java.util.List;
 @NamedQueries(
         {
                 @NamedQuery(name = "Patient.findAll", query = "SELECT p FROM Patient p"),
-                @NamedQuery(name = "ClientRelation.findAllActive", query = "SELECT r FROM ClientRelation r WHERE r.deleted = 0")
+                @NamedQuery(name = "ClientRelation.findAllActive", query = "SELECT r FROM ClientRelation r WHERE r.deleted = 0"),
+                @NamedQuery(name = "Patient.findByPersonalInfo",
+                        query = "SELECT p FROM Patient p " +
+                                "WHERE UPPER(p.lastName) = :lastName " +
+                                "AND UPPER(p.firstName) = :firstName " +
+                                "AND UPPER(p.patrName) = :patrName " +
+                                "AND p.sex = :sex " +
+                                "AND p.birthDate = :birthDate")
         })
 @XmlType(name = "patient")
 @XmlRootElement(name = "patient")
@@ -635,5 +643,19 @@ public class Patient implements Serializable, Cloneable {
             newPatient.addClientWork((ClientWork) ca.clone());
         }
         return newPatient;
+    }
+
+    /**
+     * Детальное описание пациента
+     * @return строка с описанием
+     */
+    public String getInfoString(){
+        return new StringBuilder("Patient[id=").append(id)
+                .append(' ').append(lastName)
+                .append(' ').append(firstName)
+                .append(' ').append(patrName)
+                .append(" sex:").append(sex)
+                .append(" birthDate:").append(new SimpleDateFormat("yyyy-MM-dd").format(birthDate))
+                .append(']').toString();
     }
 }

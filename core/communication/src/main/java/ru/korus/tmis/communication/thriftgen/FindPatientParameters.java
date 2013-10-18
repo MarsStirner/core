@@ -15,7 +15,6 @@ import org.apache.thrift.protocol.TTupleProtocol;
 import org.apache.thrift.protocol.TProtocolException;
 import org.apache.thrift.EncodingUtils;
 import org.apache.thrift.TException;
-
 import java.util.List;
 import java.util.ArrayList;
 import java.util.Map;
@@ -28,1115 +27,1098 @@ import java.util.Collections;
 import java.util.BitSet;
 import java.nio.ByteBuffer;
 import java.util.Arrays;
-
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 public class FindPatientParameters implements org.apache.thrift.TBase<FindPatientParameters, FindPatientParameters._Fields>, java.io.Serializable, Cloneable {
-    private static final org.apache.thrift.protocol.TStruct STRUCT_DESC = new org.apache.thrift.protocol.TStruct("FindPatientParameters");
+  private static final org.apache.thrift.protocol.TStruct STRUCT_DESC = new org.apache.thrift.protocol.TStruct("FindPatientParameters");
 
-    private static final org.apache.thrift.protocol.TField LAST_NAME_FIELD_DESC = new org.apache.thrift.protocol.TField("lastName", org.apache.thrift.protocol.TType.STRING, (short) 1);
-    private static final org.apache.thrift.protocol.TField FIRST_NAME_FIELD_DESC = new org.apache.thrift.protocol.TField("firstName", org.apache.thrift.protocol.TType.STRING, (short) 2);
-    private static final org.apache.thrift.protocol.TField PATR_NAME_FIELD_DESC = new org.apache.thrift.protocol.TField("patrName", org.apache.thrift.protocol.TType.STRING, (short) 3);
-    private static final org.apache.thrift.protocol.TField BIRTH_DATE_FIELD_DESC = new org.apache.thrift.protocol.TField("birthDate", org.apache.thrift.protocol.TType.I64, (short) 4);
-    private static final org.apache.thrift.protocol.TField SEX_FIELD_DESC = new org.apache.thrift.protocol.TField("sex", org.apache.thrift.protocol.TType.I32, (short) 5);
-    private static final org.apache.thrift.protocol.TField IDENTIFIER_TYPE_FIELD_DESC = new org.apache.thrift.protocol.TField("identifierType", org.apache.thrift.protocol.TType.STRING, (short) 6);
-    private static final org.apache.thrift.protocol.TField IDENTIFIER_FIELD_DESC = new org.apache.thrift.protocol.TField("identifier", org.apache.thrift.protocol.TType.STRING, (short) 7);
-    private static final org.apache.thrift.protocol.TField DOCUMENT_FIELD_DESC = new org.apache.thrift.protocol.TField("document", org.apache.thrift.protocol.TType.MAP, (short) 8);
+  private static final org.apache.thrift.protocol.TField LAST_NAME_FIELD_DESC = new org.apache.thrift.protocol.TField("lastName", org.apache.thrift.protocol.TType.STRING, (short)1);
+  private static final org.apache.thrift.protocol.TField FIRST_NAME_FIELD_DESC = new org.apache.thrift.protocol.TField("firstName", org.apache.thrift.protocol.TType.STRING, (short)2);
+  private static final org.apache.thrift.protocol.TField PATR_NAME_FIELD_DESC = new org.apache.thrift.protocol.TField("patrName", org.apache.thrift.protocol.TType.STRING, (short)3);
+  private static final org.apache.thrift.protocol.TField BIRTH_DATE_FIELD_DESC = new org.apache.thrift.protocol.TField("birthDate", org.apache.thrift.protocol.TType.I64, (short)4);
+  private static final org.apache.thrift.protocol.TField SEX_FIELD_DESC = new org.apache.thrift.protocol.TField("sex", org.apache.thrift.protocol.TType.I32, (short)5);
+  private static final org.apache.thrift.protocol.TField IDENTIFIER_TYPE_FIELD_DESC = new org.apache.thrift.protocol.TField("identifierType", org.apache.thrift.protocol.TType.STRING, (short)6);
+  private static final org.apache.thrift.protocol.TField IDENTIFIER_FIELD_DESC = new org.apache.thrift.protocol.TField("identifier", org.apache.thrift.protocol.TType.STRING, (short)7);
+  private static final org.apache.thrift.protocol.TField DOCUMENT_FIELD_DESC = new org.apache.thrift.protocol.TField("document", org.apache.thrift.protocol.TType.MAP, (short)8);
 
-    private static final Map<Class<? extends IScheme>, SchemeFactory> schemes = new HashMap<Class<? extends IScheme>, SchemeFactory>();
+  private static final Map<Class<? extends IScheme>, SchemeFactory> schemes = new HashMap<Class<? extends IScheme>, SchemeFactory>();
+  static {
+    schemes.put(StandardScheme.class, new FindPatientParametersStandardSchemeFactory());
+    schemes.put(TupleScheme.class, new FindPatientParametersTupleSchemeFactory());
+  }
 
-    static {
-        schemes.put(StandardScheme.class, new FindPatientParametersStandardSchemeFactory());
-        schemes.put(TupleScheme.class, new FindPatientParametersTupleSchemeFactory());
-    }
+  public String lastName; // required
+  public String firstName; // required
+  public String patrName; // required
+  public long birthDate; // required
+  public int sex; // required
+  public String identifierType; // optional
+  public String identifier; // optional
+  public Map<String,String> document; // required
 
-    public String lastName; // required
-    public String firstName; // required
-    public String patrName; // required
-    public long birthDate; // required
-    public int sex; // required
-    public String identifierType; // optional
-    public String identifier; // optional
-    public Map<String, String> document; // required
+  /** The set of fields this struct contains, along with convenience methods for finding and manipulating them. */
+  public enum _Fields implements org.apache.thrift.TFieldIdEnum {
+    LAST_NAME((short)1, "lastName"),
+    FIRST_NAME((short)2, "firstName"),
+    PATR_NAME((short)3, "patrName"),
+    BIRTH_DATE((short)4, "birthDate"),
+    SEX((short)5, "sex"),
+    IDENTIFIER_TYPE((short)6, "identifierType"),
+    IDENTIFIER((short)7, "identifier"),
+    DOCUMENT((short)8, "document");
 
-    /**
-     * The set of fields this struct contains, along with convenience methods for finding and manipulating them.
-     */
-    public enum _Fields implements org.apache.thrift.TFieldIdEnum {
-        LAST_NAME((short) 1, "lastName"),
-        FIRST_NAME((short) 2, "firstName"),
-        PATR_NAME((short) 3, "patrName"),
-        BIRTH_DATE((short) 4, "birthDate"),
-        SEX((short) 5, "sex"),
-        IDENTIFIER_TYPE((short) 6, "identifierType"),
-        IDENTIFIER((short) 7, "identifier"),
-        DOCUMENT((short) 8, "document");
-
-        private static final Map<String, _Fields> byName = new HashMap<String, _Fields>();
-
-        static {
-            for (_Fields field : EnumSet.allOf(_Fields.class)) {
-                byName.put(field.getFieldName(), field);
-            }
-        }
-
-        /**
-         * Find the _Fields constant that matches fieldId, or null if its not found.
-         */
-        public static _Fields findByThriftId(int fieldId) {
-            switch (fieldId) {
-                case 1: // LAST_NAME
-                    return LAST_NAME;
-                case 2: // FIRST_NAME
-                    return FIRST_NAME;
-                case 3: // PATR_NAME
-                    return PATR_NAME;
-                case 4: // BIRTH_DATE
-                    return BIRTH_DATE;
-                case 5: // SEX
-                    return SEX;
-                case 6: // IDENTIFIER_TYPE
-                    return IDENTIFIER_TYPE;
-                case 7: // IDENTIFIER
-                    return IDENTIFIER;
-                case 8: // DOCUMENT
-                    return DOCUMENT;
-                default:
-                    return null;
-            }
-        }
-
-        /**
-         * Find the _Fields constant that matches fieldId, throwing an exception
-         * if it is not found.
-         */
-        public static _Fields findByThriftIdOrThrow(int fieldId) {
-            _Fields fields = findByThriftId(fieldId);
-            if (fields == null) throw new IllegalArgumentException("Field " + fieldId + " doesn't exist!");
-            return fields;
-        }
-
-        /**
-         * Find the _Fields constant that matches name, or null if its not found.
-         */
-        public static _Fields findByName(String name) {
-            return byName.get(name);
-        }
-
-        private final short _thriftId;
-        private final String _fieldName;
-
-        _Fields(short thriftId, String fieldName) {
-            _thriftId = thriftId;
-            _fieldName = fieldName;
-        }
-
-        public short getThriftFieldId() {
-            return _thriftId;
-        }
-
-        public String getFieldName() {
-            return _fieldName;
-        }
-    }
-
-    // isset id assignments
-    private static final int __BIRTHDATE_ISSET_ID = 0;
-    private static final int __SEX_ISSET_ID = 1;
-    private byte __isset_bitfield = 0;
-    private _Fields optionals[] = {_Fields.IDENTIFIER_TYPE, _Fields.IDENTIFIER};
-    public static final Map<_Fields, org.apache.thrift.meta_data.FieldMetaData> metaDataMap;
+    private static final Map<String, _Fields> byName = new HashMap<String, _Fields>();
 
     static {
-        Map<_Fields, org.apache.thrift.meta_data.FieldMetaData> tmpMap = new EnumMap<_Fields, org.apache.thrift.meta_data.FieldMetaData>(_Fields.class);
-        tmpMap.put(_Fields.LAST_NAME, new org.apache.thrift.meta_data.FieldMetaData("lastName", org.apache.thrift.TFieldRequirementType.REQUIRED,
-                new org.apache.thrift.meta_data.FieldValueMetaData(org.apache.thrift.protocol.TType.STRING)));
-        tmpMap.put(_Fields.FIRST_NAME, new org.apache.thrift.meta_data.FieldMetaData("firstName", org.apache.thrift.TFieldRequirementType.REQUIRED,
-                new org.apache.thrift.meta_data.FieldValueMetaData(org.apache.thrift.protocol.TType.STRING)));
-        tmpMap.put(_Fields.PATR_NAME, new org.apache.thrift.meta_data.FieldMetaData("patrName", org.apache.thrift.TFieldRequirementType.REQUIRED,
-                new org.apache.thrift.meta_data.FieldValueMetaData(org.apache.thrift.protocol.TType.STRING)));
-        tmpMap.put(_Fields.BIRTH_DATE, new org.apache.thrift.meta_data.FieldMetaData("birthDate", org.apache.thrift.TFieldRequirementType.REQUIRED,
-                new org.apache.thrift.meta_data.FieldValueMetaData(org.apache.thrift.protocol.TType.I64, "timestamp")));
-        tmpMap.put(_Fields.SEX, new org.apache.thrift.meta_data.FieldMetaData("sex", org.apache.thrift.TFieldRequirementType.REQUIRED,
-                new org.apache.thrift.meta_data.FieldValueMetaData(org.apache.thrift.protocol.TType.I32)));
-        tmpMap.put(_Fields.IDENTIFIER_TYPE, new org.apache.thrift.meta_data.FieldMetaData("identifierType", org.apache.thrift.TFieldRequirementType.OPTIONAL,
-                new org.apache.thrift.meta_data.FieldValueMetaData(org.apache.thrift.protocol.TType.STRING)));
-        tmpMap.put(_Fields.IDENTIFIER, new org.apache.thrift.meta_data.FieldMetaData("identifier", org.apache.thrift.TFieldRequirementType.OPTIONAL,
-                new org.apache.thrift.meta_data.FieldValueMetaData(org.apache.thrift.protocol.TType.STRING)));
-        tmpMap.put(_Fields.DOCUMENT, new org.apache.thrift.meta_data.FieldMetaData("document", org.apache.thrift.TFieldRequirementType.REQUIRED,
-                new org.apache.thrift.meta_data.MapMetaData(org.apache.thrift.protocol.TType.MAP,
-                        new org.apache.thrift.meta_data.FieldValueMetaData(org.apache.thrift.protocol.TType.STRING),
-                        new org.apache.thrift.meta_data.FieldValueMetaData(org.apache.thrift.protocol.TType.STRING))));
-        metaDataMap = Collections.unmodifiableMap(tmpMap);
-        org.apache.thrift.meta_data.FieldMetaData.addStructMetaDataMap(FindPatientParameters.class, metaDataMap);
-    }
-
-    public FindPatientParameters() {
-    }
-
-    public FindPatientParameters(
-            String lastName,
-            String firstName,
-            String patrName,
-            long birthDate,
-            int sex,
-            Map<String, String> document) {
-        this();
-        this.lastName = lastName;
-        this.firstName = firstName;
-        this.patrName = patrName;
-        this.birthDate = birthDate;
-        setBirthDateIsSet(true);
-        this.sex = sex;
-        setSexIsSet(true);
-        this.document = document;
+      for (_Fields field : EnumSet.allOf(_Fields.class)) {
+        byName.put(field.getFieldName(), field);
+      }
     }
 
     /**
-     * Performs a deep copy on <i>other</i>.
+     * Find the _Fields constant that matches fieldId, or null if its not found.
      */
-    public FindPatientParameters(FindPatientParameters other) {
-        __isset_bitfield = other.__isset_bitfield;
-        if (other.isSetLastName()) {
-            this.lastName = other.lastName;
-        }
-        if (other.isSetFirstName()) {
-            this.firstName = other.firstName;
-        }
-        if (other.isSetPatrName()) {
-            this.patrName = other.patrName;
-        }
-        this.birthDate = other.birthDate;
-        this.sex = other.sex;
-        if (other.isSetIdentifierType()) {
-            this.identifierType = other.identifierType;
-        }
-        if (other.isSetIdentifier()) {
-            this.identifier = other.identifier;
-        }
-        if (other.isSetDocument()) {
-            Map<String, String> __this__document = new HashMap<String, String>();
-            for (Map.Entry<String, String> other_element : other.document.entrySet()) {
-
-                String other_element_key = other_element.getKey();
-                String other_element_value = other_element.getValue();
-
-                String __this__document_copy_key = other_element_key;
-
-                String __this__document_copy_value = other_element_value;
-
-                __this__document.put(__this__document_copy_key, __this__document_copy_value);
-            }
-            this.document = __this__document;
-        }
-    }
-
-    public FindPatientParameters deepCopy() {
-        return new FindPatientParameters(this);
-    }
-
-    @Override
-    public void clear() {
-        this.lastName = null;
-        this.firstName = null;
-        this.patrName = null;
-        setBirthDateIsSet(false);
-        this.birthDate = 0;
-        setSexIsSet(false);
-        this.sex = 0;
-        this.identifierType = null;
-        this.identifier = null;
-        this.document = null;
-    }
-
-    public String getLastName() {
-        return this.lastName;
-    }
-
-    public FindPatientParameters setLastName(String lastName) {
-        this.lastName = lastName;
-        return this;
-    }
-
-    public void unsetLastName() {
-        this.lastName = null;
+    public static _Fields findByThriftId(int fieldId) {
+      switch(fieldId) {
+        case 1: // LAST_NAME
+          return LAST_NAME;
+        case 2: // FIRST_NAME
+          return FIRST_NAME;
+        case 3: // PATR_NAME
+          return PATR_NAME;
+        case 4: // BIRTH_DATE
+          return BIRTH_DATE;
+        case 5: // SEX
+          return SEX;
+        case 6: // IDENTIFIER_TYPE
+          return IDENTIFIER_TYPE;
+        case 7: // IDENTIFIER
+          return IDENTIFIER;
+        case 8: // DOCUMENT
+          return DOCUMENT;
+        default:
+          return null;
+      }
     }
 
     /**
-     * Returns true if field lastName is set (has been assigned a value) and false otherwise
+     * Find the _Fields constant that matches fieldId, throwing an exception
+     * if it is not found.
      */
-    public boolean isSetLastName() {
-        return this.lastName != null;
-    }
-
-    public void setLastNameIsSet(boolean value) {
-        if (!value) {
-            this.lastName = null;
-        }
-    }
-
-    public String getFirstName() {
-        return this.firstName;
-    }
-
-    public FindPatientParameters setFirstName(String firstName) {
-        this.firstName = firstName;
-        return this;
-    }
-
-    public void unsetFirstName() {
-        this.firstName = null;
+    public static _Fields findByThriftIdOrThrow(int fieldId) {
+      _Fields fields = findByThriftId(fieldId);
+      if (fields == null) throw new IllegalArgumentException("Field " + fieldId + " doesn't exist!");
+      return fields;
     }
 
     /**
-     * Returns true if field firstName is set (has been assigned a value) and false otherwise
+     * Find the _Fields constant that matches name, or null if its not found.
      */
-    public boolean isSetFirstName() {
-        return this.firstName != null;
+    public static _Fields findByName(String name) {
+      return byName.get(name);
     }
 
-    public void setFirstNameIsSet(boolean value) {
-        if (!value) {
-            this.firstName = null;
-        }
+    private final short _thriftId;
+    private final String _fieldName;
+
+    _Fields(short thriftId, String fieldName) {
+      _thriftId = thriftId;
+      _fieldName = fieldName;
     }
 
-    public String getPatrName() {
-        return this.patrName;
+    public short getThriftFieldId() {
+      return _thriftId;
     }
 
-    public FindPatientParameters setPatrName(String patrName) {
-        this.patrName = patrName;
-        return this;
+    public String getFieldName() {
+      return _fieldName;
+    }
+  }
+
+  // isset id assignments
+  private static final int __BIRTHDATE_ISSET_ID = 0;
+  private static final int __SEX_ISSET_ID = 1;
+  private byte __isset_bitfield = 0;
+  private _Fields optionals[] = {_Fields.IDENTIFIER_TYPE,_Fields.IDENTIFIER};
+  public static final Map<_Fields, org.apache.thrift.meta_data.FieldMetaData> metaDataMap;
+  static {
+    Map<_Fields, org.apache.thrift.meta_data.FieldMetaData> tmpMap = new EnumMap<_Fields, org.apache.thrift.meta_data.FieldMetaData>(_Fields.class);
+    tmpMap.put(_Fields.LAST_NAME, new org.apache.thrift.meta_data.FieldMetaData("lastName", org.apache.thrift.TFieldRequirementType.REQUIRED, 
+        new org.apache.thrift.meta_data.FieldValueMetaData(org.apache.thrift.protocol.TType.STRING)));
+    tmpMap.put(_Fields.FIRST_NAME, new org.apache.thrift.meta_data.FieldMetaData("firstName", org.apache.thrift.TFieldRequirementType.REQUIRED, 
+        new org.apache.thrift.meta_data.FieldValueMetaData(org.apache.thrift.protocol.TType.STRING)));
+    tmpMap.put(_Fields.PATR_NAME, new org.apache.thrift.meta_data.FieldMetaData("patrName", org.apache.thrift.TFieldRequirementType.REQUIRED, 
+        new org.apache.thrift.meta_data.FieldValueMetaData(org.apache.thrift.protocol.TType.STRING)));
+    tmpMap.put(_Fields.BIRTH_DATE, new org.apache.thrift.meta_data.FieldMetaData("birthDate", org.apache.thrift.TFieldRequirementType.REQUIRED, 
+        new org.apache.thrift.meta_data.FieldValueMetaData(org.apache.thrift.protocol.TType.I64        , "timestamp")));
+    tmpMap.put(_Fields.SEX, new org.apache.thrift.meta_data.FieldMetaData("sex", org.apache.thrift.TFieldRequirementType.REQUIRED, 
+        new org.apache.thrift.meta_data.FieldValueMetaData(org.apache.thrift.protocol.TType.I32)));
+    tmpMap.put(_Fields.IDENTIFIER_TYPE, new org.apache.thrift.meta_data.FieldMetaData("identifierType", org.apache.thrift.TFieldRequirementType.OPTIONAL, 
+        new org.apache.thrift.meta_data.FieldValueMetaData(org.apache.thrift.protocol.TType.STRING)));
+    tmpMap.put(_Fields.IDENTIFIER, new org.apache.thrift.meta_data.FieldMetaData("identifier", org.apache.thrift.TFieldRequirementType.OPTIONAL, 
+        new org.apache.thrift.meta_data.FieldValueMetaData(org.apache.thrift.protocol.TType.STRING)));
+    tmpMap.put(_Fields.DOCUMENT, new org.apache.thrift.meta_data.FieldMetaData("document", org.apache.thrift.TFieldRequirementType.REQUIRED, 
+        new org.apache.thrift.meta_data.MapMetaData(org.apache.thrift.protocol.TType.MAP, 
+            new org.apache.thrift.meta_data.FieldValueMetaData(org.apache.thrift.protocol.TType.STRING), 
+            new org.apache.thrift.meta_data.FieldValueMetaData(org.apache.thrift.protocol.TType.STRING))));
+    metaDataMap = Collections.unmodifiableMap(tmpMap);
+    org.apache.thrift.meta_data.FieldMetaData.addStructMetaDataMap(FindPatientParameters.class, metaDataMap);
+  }
+
+  public FindPatientParameters() {
+  }
+
+  public FindPatientParameters(
+    String lastName,
+    String firstName,
+    String patrName,
+    long birthDate,
+    int sex,
+    Map<String,String> document)
+  {
+    this();
+    this.lastName = lastName;
+    this.firstName = firstName;
+    this.patrName = patrName;
+    this.birthDate = birthDate;
+    setBirthDateIsSet(true);
+    this.sex = sex;
+    setSexIsSet(true);
+    this.document = document;
+  }
+
+  /**
+   * Performs a deep copy on <i>other</i>.
+   */
+  public FindPatientParameters(FindPatientParameters other) {
+    __isset_bitfield = other.__isset_bitfield;
+    if (other.isSetLastName()) {
+      this.lastName = other.lastName;
+    }
+    if (other.isSetFirstName()) {
+      this.firstName = other.firstName;
+    }
+    if (other.isSetPatrName()) {
+      this.patrName = other.patrName;
+    }
+    this.birthDate = other.birthDate;
+    this.sex = other.sex;
+    if (other.isSetIdentifierType()) {
+      this.identifierType = other.identifierType;
+    }
+    if (other.isSetIdentifier()) {
+      this.identifier = other.identifier;
+    }
+    if (other.isSetDocument()) {
+      Map<String,String> __this__document = new HashMap<String,String>();
+      for (Map.Entry<String, String> other_element : other.document.entrySet()) {
+
+        String other_element_key = other_element.getKey();
+        String other_element_value = other_element.getValue();
+
+        String __this__document_copy_key = other_element_key;
+
+        String __this__document_copy_value = other_element_value;
+
+        __this__document.put(__this__document_copy_key, __this__document_copy_value);
+      }
+      this.document = __this__document;
+    }
+  }
+
+  public FindPatientParameters deepCopy() {
+    return new FindPatientParameters(this);
+  }
+
+  @Override
+  public void clear() {
+    this.lastName = null;
+    this.firstName = null;
+    this.patrName = null;
+    setBirthDateIsSet(false);
+    this.birthDate = 0;
+    setSexIsSet(false);
+    this.sex = 0;
+    this.identifierType = null;
+    this.identifier = null;
+    this.document = null;
+  }
+
+  public String getLastName() {
+    return this.lastName;
+  }
+
+  public FindPatientParameters setLastName(String lastName) {
+    this.lastName = lastName;
+    return this;
+  }
+
+  public void unsetLastName() {
+    this.lastName = null;
+  }
+
+  /** Returns true if field lastName is set (has been assigned a value) and false otherwise */
+  public boolean isSetLastName() {
+    return this.lastName != null;
+  }
+
+  public void setLastNameIsSet(boolean value) {
+    if (!value) {
+      this.lastName = null;
+    }
+  }
+
+  public String getFirstName() {
+    return this.firstName;
+  }
+
+  public FindPatientParameters setFirstName(String firstName) {
+    this.firstName = firstName;
+    return this;
+  }
+
+  public void unsetFirstName() {
+    this.firstName = null;
+  }
+
+  /** Returns true if field firstName is set (has been assigned a value) and false otherwise */
+  public boolean isSetFirstName() {
+    return this.firstName != null;
+  }
+
+  public void setFirstNameIsSet(boolean value) {
+    if (!value) {
+      this.firstName = null;
+    }
+  }
+
+  public String getPatrName() {
+    return this.patrName;
+  }
+
+  public FindPatientParameters setPatrName(String patrName) {
+    this.patrName = patrName;
+    return this;
+  }
+
+  public void unsetPatrName() {
+    this.patrName = null;
+  }
+
+  /** Returns true if field patrName is set (has been assigned a value) and false otherwise */
+  public boolean isSetPatrName() {
+    return this.patrName != null;
+  }
+
+  public void setPatrNameIsSet(boolean value) {
+    if (!value) {
+      this.patrName = null;
+    }
+  }
+
+  public long getBirthDate() {
+    return this.birthDate;
+  }
+
+  public FindPatientParameters setBirthDate(long birthDate) {
+    this.birthDate = birthDate;
+    setBirthDateIsSet(true);
+    return this;
+  }
+
+  public void unsetBirthDate() {
+    __isset_bitfield = EncodingUtils.clearBit(__isset_bitfield, __BIRTHDATE_ISSET_ID);
+  }
+
+  /** Returns true if field birthDate is set (has been assigned a value) and false otherwise */
+  public boolean isSetBirthDate() {
+    return EncodingUtils.testBit(__isset_bitfield, __BIRTHDATE_ISSET_ID);
+  }
+
+  public void setBirthDateIsSet(boolean value) {
+    __isset_bitfield = EncodingUtils.setBit(__isset_bitfield, __BIRTHDATE_ISSET_ID, value);
+  }
+
+  public int getSex() {
+    return this.sex;
+  }
+
+  public FindPatientParameters setSex(int sex) {
+    this.sex = sex;
+    setSexIsSet(true);
+    return this;
+  }
+
+  public void unsetSex() {
+    __isset_bitfield = EncodingUtils.clearBit(__isset_bitfield, __SEX_ISSET_ID);
+  }
+
+  /** Returns true if field sex is set (has been assigned a value) and false otherwise */
+  public boolean isSetSex() {
+    return EncodingUtils.testBit(__isset_bitfield, __SEX_ISSET_ID);
+  }
+
+  public void setSexIsSet(boolean value) {
+    __isset_bitfield = EncodingUtils.setBit(__isset_bitfield, __SEX_ISSET_ID, value);
+  }
+
+  public String getIdentifierType() {
+    return this.identifierType;
+  }
+
+  public FindPatientParameters setIdentifierType(String identifierType) {
+    this.identifierType = identifierType;
+    return this;
+  }
+
+  public void unsetIdentifierType() {
+    this.identifierType = null;
+  }
+
+  /** Returns true if field identifierType is set (has been assigned a value) and false otherwise */
+  public boolean isSetIdentifierType() {
+    return this.identifierType != null;
+  }
+
+  public void setIdentifierTypeIsSet(boolean value) {
+    if (!value) {
+      this.identifierType = null;
+    }
+  }
+
+  public String getIdentifier() {
+    return this.identifier;
+  }
+
+  public FindPatientParameters setIdentifier(String identifier) {
+    this.identifier = identifier;
+    return this;
+  }
+
+  public void unsetIdentifier() {
+    this.identifier = null;
+  }
+
+  /** Returns true if field identifier is set (has been assigned a value) and false otherwise */
+  public boolean isSetIdentifier() {
+    return this.identifier != null;
+  }
+
+  public void setIdentifierIsSet(boolean value) {
+    if (!value) {
+      this.identifier = null;
+    }
+  }
+
+  public int getDocumentSize() {
+    return (this.document == null) ? 0 : this.document.size();
+  }
+
+  public void putToDocument(String key, String val) {
+    if (this.document == null) {
+      this.document = new HashMap<String,String>();
+    }
+    this.document.put(key, val);
+  }
+
+  public Map<String,String> getDocument() {
+    return this.document;
+  }
+
+  public FindPatientParameters setDocument(Map<String,String> document) {
+    this.document = document;
+    return this;
+  }
+
+  public void unsetDocument() {
+    this.document = null;
+  }
+
+  /** Returns true if field document is set (has been assigned a value) and false otherwise */
+  public boolean isSetDocument() {
+    return this.document != null;
+  }
+
+  public void setDocumentIsSet(boolean value) {
+    if (!value) {
+      this.document = null;
+    }
+  }
+
+  public void setFieldValue(_Fields field, Object value) {
+    switch (field) {
+    case LAST_NAME:
+      if (value == null) {
+        unsetLastName();
+      } else {
+        setLastName((String)value);
+      }
+      break;
+
+    case FIRST_NAME:
+      if (value == null) {
+        unsetFirstName();
+      } else {
+        setFirstName((String)value);
+      }
+      break;
+
+    case PATR_NAME:
+      if (value == null) {
+        unsetPatrName();
+      } else {
+        setPatrName((String)value);
+      }
+      break;
+
+    case BIRTH_DATE:
+      if (value == null) {
+        unsetBirthDate();
+      } else {
+        setBirthDate((Long)value);
+      }
+      break;
+
+    case SEX:
+      if (value == null) {
+        unsetSex();
+      } else {
+        setSex((Integer)value);
+      }
+      break;
+
+    case IDENTIFIER_TYPE:
+      if (value == null) {
+        unsetIdentifierType();
+      } else {
+        setIdentifierType((String)value);
+      }
+      break;
+
+    case IDENTIFIER:
+      if (value == null) {
+        unsetIdentifier();
+      } else {
+        setIdentifier((String)value);
+      }
+      break;
+
+    case DOCUMENT:
+      if (value == null) {
+        unsetDocument();
+      } else {
+        setDocument((Map<String,String>)value);
+      }
+      break;
+
+    }
+  }
+
+  public Object getFieldValue(_Fields field) {
+    switch (field) {
+    case LAST_NAME:
+      return getLastName();
+
+    case FIRST_NAME:
+      return getFirstName();
+
+    case PATR_NAME:
+      return getPatrName();
+
+    case BIRTH_DATE:
+      return Long.valueOf(getBirthDate());
+
+    case SEX:
+      return Integer.valueOf(getSex());
+
+    case IDENTIFIER_TYPE:
+      return getIdentifierType();
+
+    case IDENTIFIER:
+      return getIdentifier();
+
+    case DOCUMENT:
+      return getDocument();
+
+    }
+    throw new IllegalStateException();
+  }
+
+  /** Returns true if field corresponding to fieldID is set (has been assigned a value) and false otherwise */
+  public boolean isSet(_Fields field) {
+    if (field == null) {
+      throw new IllegalArgumentException();
     }
 
-    public void unsetPatrName() {
-        this.patrName = null;
+    switch (field) {
+    case LAST_NAME:
+      return isSetLastName();
+    case FIRST_NAME:
+      return isSetFirstName();
+    case PATR_NAME:
+      return isSetPatrName();
+    case BIRTH_DATE:
+      return isSetBirthDate();
+    case SEX:
+      return isSetSex();
+    case IDENTIFIER_TYPE:
+      return isSetIdentifierType();
+    case IDENTIFIER:
+      return isSetIdentifier();
+    case DOCUMENT:
+      return isSetDocument();
     }
+    throw new IllegalStateException();
+  }
 
-    /**
-     * Returns true if field patrName is set (has been assigned a value) and false otherwise
-     */
-    public boolean isSetPatrName() {
-        return this.patrName != null;
-    }
+  @Override
+  public boolean equals(Object that) {
+    if (that == null)
+      return false;
+    if (that instanceof FindPatientParameters)
+      return this.equals((FindPatientParameters)that);
+    return false;
+  }
 
-    public void setPatrNameIsSet(boolean value) {
-        if (!value) {
-            this.patrName = null;
-        }
-    }
+  public boolean equals(FindPatientParameters that) {
+    if (that == null)
+      return false;
 
-    public long getBirthDate() {
-        return this.birthDate;
-    }
-
-    public FindPatientParameters setBirthDate(long birthDate) {
-        this.birthDate = birthDate;
-        setBirthDateIsSet(true);
-        return this;
-    }
-
-    public void unsetBirthDate() {
-        __isset_bitfield = EncodingUtils.clearBit(__isset_bitfield, __BIRTHDATE_ISSET_ID);
-    }
-
-    /**
-     * Returns true if field birthDate is set (has been assigned a value) and false otherwise
-     */
-    public boolean isSetBirthDate() {
-        return EncodingUtils.testBit(__isset_bitfield, __BIRTHDATE_ISSET_ID);
-    }
-
-    public void setBirthDateIsSet(boolean value) {
-        __isset_bitfield = EncodingUtils.setBit(__isset_bitfield, __BIRTHDATE_ISSET_ID, value);
-    }
-
-    public int getSex() {
-        return this.sex;
-    }
-
-    public FindPatientParameters setSex(int sex) {
-        this.sex = sex;
-        setSexIsSet(true);
-        return this;
-    }
-
-    public void unsetSex() {
-        __isset_bitfield = EncodingUtils.clearBit(__isset_bitfield, __SEX_ISSET_ID);
-    }
-
-    /**
-     * Returns true if field sex is set (has been assigned a value) and false otherwise
-     */
-    public boolean isSetSex() {
-        return EncodingUtils.testBit(__isset_bitfield, __SEX_ISSET_ID);
-    }
-
-    public void setSexIsSet(boolean value) {
-        __isset_bitfield = EncodingUtils.setBit(__isset_bitfield, __SEX_ISSET_ID, value);
-    }
-
-    public String getIdentifierType() {
-        return this.identifierType;
-    }
-
-    public FindPatientParameters setIdentifierType(String identifierType) {
-        this.identifierType = identifierType;
-        return this;
-    }
-
-    public void unsetIdentifierType() {
-        this.identifierType = null;
-    }
-
-    /**
-     * Returns true if field identifierType is set (has been assigned a value) and false otherwise
-     */
-    public boolean isSetIdentifierType() {
-        return this.identifierType != null;
-    }
-
-    public void setIdentifierTypeIsSet(boolean value) {
-        if (!value) {
-            this.identifierType = null;
-        }
-    }
-
-    public String getIdentifier() {
-        return this.identifier;
-    }
-
-    public FindPatientParameters setIdentifier(String identifier) {
-        this.identifier = identifier;
-        return this;
-    }
-
-    public void unsetIdentifier() {
-        this.identifier = null;
-    }
-
-    /**
-     * Returns true if field identifier is set (has been assigned a value) and false otherwise
-     */
-    public boolean isSetIdentifier() {
-        return this.identifier != null;
-    }
-
-    public void setIdentifierIsSet(boolean value) {
-        if (!value) {
-            this.identifier = null;
-        }
-    }
-
-    public int getDocumentSize() {
-        return (this.document == null) ? 0 : this.document.size();
-    }
-
-    public void putToDocument(String key, String val) {
-        if (this.document == null) {
-            this.document = new HashMap<String, String>();
-        }
-        this.document.put(key, val);
-    }
-
-    public Map<String, String> getDocument() {
-        return this.document;
-    }
-
-    public FindPatientParameters setDocument(Map<String, String> document) {
-        this.document = document;
-        return this;
-    }
-
-    public void unsetDocument() {
-        this.document = null;
-    }
-
-    /**
-     * Returns true if field document is set (has been assigned a value) and false otherwise
-     */
-    public boolean isSetDocument() {
-        return this.document != null;
-    }
-
-    public void setDocumentIsSet(boolean value) {
-        if (!value) {
-            this.document = null;
-        }
-    }
-
-    public void setFieldValue(_Fields field, Object value) {
-        switch (field) {
-            case LAST_NAME:
-                if (value == null) {
-                    unsetLastName();
-                } else {
-                    setLastName((String) value);
-                }
-                break;
-
-            case FIRST_NAME:
-                if (value == null) {
-                    unsetFirstName();
-                } else {
-                    setFirstName((String) value);
-                }
-                break;
-
-            case PATR_NAME:
-                if (value == null) {
-                    unsetPatrName();
-                } else {
-                    setPatrName((String) value);
-                }
-                break;
-
-            case BIRTH_DATE:
-                if (value == null) {
-                    unsetBirthDate();
-                } else {
-                    setBirthDate((Long) value);
-                }
-                break;
-
-            case SEX:
-                if (value == null) {
-                    unsetSex();
-                } else {
-                    setSex((Integer) value);
-                }
-                break;
-
-            case IDENTIFIER_TYPE:
-                if (value == null) {
-                    unsetIdentifierType();
-                } else {
-                    setIdentifierType((String) value);
-                }
-                break;
-
-            case IDENTIFIER:
-                if (value == null) {
-                    unsetIdentifier();
-                } else {
-                    setIdentifier((String) value);
-                }
-                break;
-
-            case DOCUMENT:
-                if (value == null) {
-                    unsetDocument();
-                } else {
-                    setDocument((Map<String, String>) value);
-                }
-                break;
-
-        }
-    }
-
-    public Object getFieldValue(_Fields field) {
-        switch (field) {
-            case LAST_NAME:
-                return getLastName();
-
-            case FIRST_NAME:
-                return getFirstName();
-
-            case PATR_NAME:
-                return getPatrName();
-
-            case BIRTH_DATE:
-                return Long.valueOf(getBirthDate());
-
-            case SEX:
-                return Integer.valueOf(getSex());
-
-            case IDENTIFIER_TYPE:
-                return getIdentifierType();
-
-            case IDENTIFIER:
-                return getIdentifier();
-
-            case DOCUMENT:
-                return getDocument();
-
-        }
-        throw new IllegalStateException();
-    }
-
-    /**
-     * Returns true if field corresponding to fieldID is set (has been assigned a value) and false otherwise
-     */
-    public boolean isSet(_Fields field) {
-        if (field == null) {
-            throw new IllegalArgumentException();
-        }
-
-        switch (field) {
-            case LAST_NAME:
-                return isSetLastName();
-            case FIRST_NAME:
-                return isSetFirstName();
-            case PATR_NAME:
-                return isSetPatrName();
-            case BIRTH_DATE:
-                return isSetBirthDate();
-            case SEX:
-                return isSetSex();
-            case IDENTIFIER_TYPE:
-                return isSetIdentifierType();
-            case IDENTIFIER:
-                return isSetIdentifier();
-            case DOCUMENT:
-                return isSetDocument();
-        }
-        throw new IllegalStateException();
-    }
-
-    @Override
-    public boolean equals(Object that) {
-        if (that == null)
-            return false;
-        if (that instanceof FindPatientParameters)
-            return this.equals((FindPatientParameters) that);
+    boolean this_present_lastName = true && this.isSetLastName();
+    boolean that_present_lastName = true && that.isSetLastName();
+    if (this_present_lastName || that_present_lastName) {
+      if (!(this_present_lastName && that_present_lastName))
+        return false;
+      if (!this.lastName.equals(that.lastName))
         return false;
     }
 
-    public boolean equals(FindPatientParameters that) {
-        if (that == null)
-            return false;
-
-        boolean this_present_lastName = true && this.isSetLastName();
-        boolean that_present_lastName = true && that.isSetLastName();
-        if (this_present_lastName || that_present_lastName) {
-            if (!(this_present_lastName && that_present_lastName))
-                return false;
-            if (!this.lastName.equals(that.lastName))
-                return false;
-        }
-
-        boolean this_present_firstName = true && this.isSetFirstName();
-        boolean that_present_firstName = true && that.isSetFirstName();
-        if (this_present_firstName || that_present_firstName) {
-            if (!(this_present_firstName && that_present_firstName))
-                return false;
-            if (!this.firstName.equals(that.firstName))
-                return false;
-        }
-
-        boolean this_present_patrName = true && this.isSetPatrName();
-        boolean that_present_patrName = true && that.isSetPatrName();
-        if (this_present_patrName || that_present_patrName) {
-            if (!(this_present_patrName && that_present_patrName))
-                return false;
-            if (!this.patrName.equals(that.patrName))
-                return false;
-        }
-
-        boolean this_present_birthDate = true;
-        boolean that_present_birthDate = true;
-        if (this_present_birthDate || that_present_birthDate) {
-            if (!(this_present_birthDate && that_present_birthDate))
-                return false;
-            if (this.birthDate != that.birthDate)
-                return false;
-        }
-
-        boolean this_present_sex = true;
-        boolean that_present_sex = true;
-        if (this_present_sex || that_present_sex) {
-            if (!(this_present_sex && that_present_sex))
-                return false;
-            if (this.sex != that.sex)
-                return false;
-        }
-
-        boolean this_present_identifierType = true && this.isSetIdentifierType();
-        boolean that_present_identifierType = true && that.isSetIdentifierType();
-        if (this_present_identifierType || that_present_identifierType) {
-            if (!(this_present_identifierType && that_present_identifierType))
-                return false;
-            if (!this.identifierType.equals(that.identifierType))
-                return false;
-        }
-
-        boolean this_present_identifier = true && this.isSetIdentifier();
-        boolean that_present_identifier = true && that.isSetIdentifier();
-        if (this_present_identifier || that_present_identifier) {
-            if (!(this_present_identifier && that_present_identifier))
-                return false;
-            if (!this.identifier.equals(that.identifier))
-                return false;
-        }
-
-        boolean this_present_document = true && this.isSetDocument();
-        boolean that_present_document = true && that.isSetDocument();
-        if (this_present_document || that_present_document) {
-            if (!(this_present_document && that_present_document))
-                return false;
-            if (!this.document.equals(that.document))
-                return false;
-        }
-
-        return true;
+    boolean this_present_firstName = true && this.isSetFirstName();
+    boolean that_present_firstName = true && that.isSetFirstName();
+    if (this_present_firstName || that_present_firstName) {
+      if (!(this_present_firstName && that_present_firstName))
+        return false;
+      if (!this.firstName.equals(that.firstName))
+        return false;
     }
 
-    @Override
-    public int hashCode() {
-        return 0;
+    boolean this_present_patrName = true && this.isSetPatrName();
+    boolean that_present_patrName = true && that.isSetPatrName();
+    if (this_present_patrName || that_present_patrName) {
+      if (!(this_present_patrName && that_present_patrName))
+        return false;
+      if (!this.patrName.equals(that.patrName))
+        return false;
     }
 
-    public int compareTo(FindPatientParameters other) {
-        if (!getClass().equals(other.getClass())) {
-            return getClass().getName().compareTo(other.getClass().getName());
-        }
-
-        int lastComparison = 0;
-        FindPatientParameters typedOther = (FindPatientParameters) other;
-
-        lastComparison = Boolean.valueOf(isSetLastName()).compareTo(typedOther.isSetLastName());
-        if (lastComparison != 0) {
-            return lastComparison;
-        }
-        if (isSetLastName()) {
-            lastComparison = org.apache.thrift.TBaseHelper.compareTo(this.lastName, typedOther.lastName);
-            if (lastComparison != 0) {
-                return lastComparison;
-            }
-        }
-        lastComparison = Boolean.valueOf(isSetFirstName()).compareTo(typedOther.isSetFirstName());
-        if (lastComparison != 0) {
-            return lastComparison;
-        }
-        if (isSetFirstName()) {
-            lastComparison = org.apache.thrift.TBaseHelper.compareTo(this.firstName, typedOther.firstName);
-            if (lastComparison != 0) {
-                return lastComparison;
-            }
-        }
-        lastComparison = Boolean.valueOf(isSetPatrName()).compareTo(typedOther.isSetPatrName());
-        if (lastComparison != 0) {
-            return lastComparison;
-        }
-        if (isSetPatrName()) {
-            lastComparison = org.apache.thrift.TBaseHelper.compareTo(this.patrName, typedOther.patrName);
-            if (lastComparison != 0) {
-                return lastComparison;
-            }
-        }
-        lastComparison = Boolean.valueOf(isSetBirthDate()).compareTo(typedOther.isSetBirthDate());
-        if (lastComparison != 0) {
-            return lastComparison;
-        }
-        if (isSetBirthDate()) {
-            lastComparison = org.apache.thrift.TBaseHelper.compareTo(this.birthDate, typedOther.birthDate);
-            if (lastComparison != 0) {
-                return lastComparison;
-            }
-        }
-        lastComparison = Boolean.valueOf(isSetSex()).compareTo(typedOther.isSetSex());
-        if (lastComparison != 0) {
-            return lastComparison;
-        }
-        if (isSetSex()) {
-            lastComparison = org.apache.thrift.TBaseHelper.compareTo(this.sex, typedOther.sex);
-            if (lastComparison != 0) {
-                return lastComparison;
-            }
-        }
-        lastComparison = Boolean.valueOf(isSetIdentifierType()).compareTo(typedOther.isSetIdentifierType());
-        if (lastComparison != 0) {
-            return lastComparison;
-        }
-        if (isSetIdentifierType()) {
-            lastComparison = org.apache.thrift.TBaseHelper.compareTo(this.identifierType, typedOther.identifierType);
-            if (lastComparison != 0) {
-                return lastComparison;
-            }
-        }
-        lastComparison = Boolean.valueOf(isSetIdentifier()).compareTo(typedOther.isSetIdentifier());
-        if (lastComparison != 0) {
-            return lastComparison;
-        }
-        if (isSetIdentifier()) {
-            lastComparison = org.apache.thrift.TBaseHelper.compareTo(this.identifier, typedOther.identifier);
-            if (lastComparison != 0) {
-                return lastComparison;
-            }
-        }
-        lastComparison = Boolean.valueOf(isSetDocument()).compareTo(typedOther.isSetDocument());
-        if (lastComparison != 0) {
-            return lastComparison;
-        }
-        if (isSetDocument()) {
-            lastComparison = org.apache.thrift.TBaseHelper.compareTo(this.document, typedOther.document);
-            if (lastComparison != 0) {
-                return lastComparison;
-            }
-        }
-        return 0;
+    boolean this_present_birthDate = true;
+    boolean that_present_birthDate = true;
+    if (this_present_birthDate || that_present_birthDate) {
+      if (!(this_present_birthDate && that_present_birthDate))
+        return false;
+      if (this.birthDate != that.birthDate)
+        return false;
     }
 
-    public _Fields fieldForId(int fieldId) {
-        return _Fields.findByThriftId(fieldId);
+    boolean this_present_sex = true;
+    boolean that_present_sex = true;
+    if (this_present_sex || that_present_sex) {
+      if (!(this_present_sex && that_present_sex))
+        return false;
+      if (this.sex != that.sex)
+        return false;
     }
 
-    public void read(org.apache.thrift.protocol.TProtocol iprot) throws org.apache.thrift.TException {
-        schemes.get(iprot.getScheme()).getScheme().read(iprot, this);
+    boolean this_present_identifierType = true && this.isSetIdentifierType();
+    boolean that_present_identifierType = true && that.isSetIdentifierType();
+    if (this_present_identifierType || that_present_identifierType) {
+      if (!(this_present_identifierType && that_present_identifierType))
+        return false;
+      if (!this.identifierType.equals(that.identifierType))
+        return false;
     }
 
-    public void write(org.apache.thrift.protocol.TProtocol oprot) throws org.apache.thrift.TException {
-        schemes.get(oprot.getScheme()).getScheme().write(oprot, this);
+    boolean this_present_identifier = true && this.isSetIdentifier();
+    boolean that_present_identifier = true && that.isSetIdentifier();
+    if (this_present_identifier || that_present_identifier) {
+      if (!(this_present_identifier && that_present_identifier))
+        return false;
+      if (!this.identifier.equals(that.identifier))
+        return false;
     }
 
-    @Override
-    public String toString() {
-        StringBuilder sb = new StringBuilder("FindPatientParameters(");
-        boolean first = true;
-
-        sb.append("lastName:");
-        if (this.lastName == null) {
-            sb.append("null");
-        } else {
-            sb.append(this.lastName);
-        }
-        first = false;
-        if (!first) sb.append(", ");
-        sb.append("firstName:");
-        if (this.firstName == null) {
-            sb.append("null");
-        } else {
-            sb.append(this.firstName);
-        }
-        first = false;
-        if (!first) sb.append(", ");
-        sb.append("patrName:");
-        if (this.patrName == null) {
-            sb.append("null");
-        } else {
-            sb.append(this.patrName);
-        }
-        first = false;
-        if (!first) sb.append(", ");
-        sb.append("birthDate:");
-        sb.append(this.birthDate);
-        first = false;
-        if (!first) sb.append(", ");
-        sb.append("sex:");
-        sb.append(this.sex);
-        first = false;
-        if (isSetIdentifierType()) {
-            if (!first) sb.append(", ");
-            sb.append("identifierType:");
-            if (this.identifierType == null) {
-                sb.append("null");
-            } else {
-                sb.append(this.identifierType);
-            }
-            first = false;
-        }
-        if (isSetIdentifier()) {
-            if (!first) sb.append(", ");
-            sb.append("identifier:");
-            if (this.identifier == null) {
-                sb.append("null");
-            } else {
-                sb.append(this.identifier);
-            }
-            first = false;
-        }
-        if (!first) sb.append(", ");
-        sb.append("document:");
-        if (this.document == null) {
-            sb.append("null");
-        } else {
-            sb.append(this.document);
-        }
-        first = false;
-        sb.append(")");
-        return sb.toString();
+    boolean this_present_document = true && this.isSetDocument();
+    boolean that_present_document = true && that.isSetDocument();
+    if (this_present_document || that_present_document) {
+      if (!(this_present_document && that_present_document))
+        return false;
+      if (!this.document.equals(that.document))
+        return false;
     }
 
-    public void validate() throws org.apache.thrift.TException {
-        // check for required fields
-        if (lastName == null) {
-            throw new org.apache.thrift.protocol.TProtocolException("Required field 'lastName' was not present! Struct: " + toString());
-        }
-        if (firstName == null) {
-            throw new org.apache.thrift.protocol.TProtocolException("Required field 'firstName' was not present! Struct: " + toString());
-        }
-        if (patrName == null) {
-            throw new org.apache.thrift.protocol.TProtocolException("Required field 'patrName' was not present! Struct: " + toString());
-        }
-        // alas, we cannot check 'birthDate' because it's a primitive and you chose the non-beans generator.
-        // alas, we cannot check 'sex' because it's a primitive and you chose the non-beans generator.
-        if (document == null) {
-            throw new org.apache.thrift.protocol.TProtocolException("Required field 'document' was not present! Struct: " + toString());
-        }
-        // check for sub-struct validity
+    return true;
+  }
+
+  @Override
+  public int hashCode() {
+    return 0;
+  }
+
+  public int compareTo(FindPatientParameters other) {
+    if (!getClass().equals(other.getClass())) {
+      return getClass().getName().compareTo(other.getClass().getName());
     }
 
-    private void writeObject(java.io.ObjectOutputStream out) throws java.io.IOException {
-        try {
-            write(new org.apache.thrift.protocol.TCompactProtocol(new org.apache.thrift.transport.TIOStreamTransport(out)));
-        } catch (org.apache.thrift.TException te) {
-            throw new java.io.IOException(te);
-        }
+    int lastComparison = 0;
+    FindPatientParameters typedOther = (FindPatientParameters)other;
+
+    lastComparison = Boolean.valueOf(isSetLastName()).compareTo(typedOther.isSetLastName());
+    if (lastComparison != 0) {
+      return lastComparison;
     }
-
-    private void readObject(java.io.ObjectInputStream in) throws java.io.IOException, ClassNotFoundException {
-        try {
-            // it doesn't seem like you should have to do this, but java serialization is wacky, and doesn't call the default constructor.
-            __isset_bitfield = 0;
-            read(new org.apache.thrift.protocol.TCompactProtocol(new org.apache.thrift.transport.TIOStreamTransport(in)));
-        } catch (org.apache.thrift.TException te) {
-            throw new java.io.IOException(te);
-        }
+    if (isSetLastName()) {
+      lastComparison = org.apache.thrift.TBaseHelper.compareTo(this.lastName, typedOther.lastName);
+      if (lastComparison != 0) {
+        return lastComparison;
+      }
     }
-
-    private static class FindPatientParametersStandardSchemeFactory implements SchemeFactory {
-        public FindPatientParametersStandardScheme getScheme() {
-            return new FindPatientParametersStandardScheme();
-        }
+    lastComparison = Boolean.valueOf(isSetFirstName()).compareTo(typedOther.isSetFirstName());
+    if (lastComparison != 0) {
+      return lastComparison;
     }
+    if (isSetFirstName()) {
+      lastComparison = org.apache.thrift.TBaseHelper.compareTo(this.firstName, typedOther.firstName);
+      if (lastComparison != 0) {
+        return lastComparison;
+      }
+    }
+    lastComparison = Boolean.valueOf(isSetPatrName()).compareTo(typedOther.isSetPatrName());
+    if (lastComparison != 0) {
+      return lastComparison;
+    }
+    if (isSetPatrName()) {
+      lastComparison = org.apache.thrift.TBaseHelper.compareTo(this.patrName, typedOther.patrName);
+      if (lastComparison != 0) {
+        return lastComparison;
+      }
+    }
+    lastComparison = Boolean.valueOf(isSetBirthDate()).compareTo(typedOther.isSetBirthDate());
+    if (lastComparison != 0) {
+      return lastComparison;
+    }
+    if (isSetBirthDate()) {
+      lastComparison = org.apache.thrift.TBaseHelper.compareTo(this.birthDate, typedOther.birthDate);
+      if (lastComparison != 0) {
+        return lastComparison;
+      }
+    }
+    lastComparison = Boolean.valueOf(isSetSex()).compareTo(typedOther.isSetSex());
+    if (lastComparison != 0) {
+      return lastComparison;
+    }
+    if (isSetSex()) {
+      lastComparison = org.apache.thrift.TBaseHelper.compareTo(this.sex, typedOther.sex);
+      if (lastComparison != 0) {
+        return lastComparison;
+      }
+    }
+    lastComparison = Boolean.valueOf(isSetIdentifierType()).compareTo(typedOther.isSetIdentifierType());
+    if (lastComparison != 0) {
+      return lastComparison;
+    }
+    if (isSetIdentifierType()) {
+      lastComparison = org.apache.thrift.TBaseHelper.compareTo(this.identifierType, typedOther.identifierType);
+      if (lastComparison != 0) {
+        return lastComparison;
+      }
+    }
+    lastComparison = Boolean.valueOf(isSetIdentifier()).compareTo(typedOther.isSetIdentifier());
+    if (lastComparison != 0) {
+      return lastComparison;
+    }
+    if (isSetIdentifier()) {
+      lastComparison = org.apache.thrift.TBaseHelper.compareTo(this.identifier, typedOther.identifier);
+      if (lastComparison != 0) {
+        return lastComparison;
+      }
+    }
+    lastComparison = Boolean.valueOf(isSetDocument()).compareTo(typedOther.isSetDocument());
+    if (lastComparison != 0) {
+      return lastComparison;
+    }
+    if (isSetDocument()) {
+      lastComparison = org.apache.thrift.TBaseHelper.compareTo(this.document, typedOther.document);
+      if (lastComparison != 0) {
+        return lastComparison;
+      }
+    }
+    return 0;
+  }
 
-    private static class FindPatientParametersStandardScheme extends StandardScheme<FindPatientParameters> {
+  public _Fields fieldForId(int fieldId) {
+    return _Fields.findByThriftId(fieldId);
+  }
 
-        public void read(org.apache.thrift.protocol.TProtocol iprot, FindPatientParameters struct) throws org.apache.thrift.TException {
-            org.apache.thrift.protocol.TField schemeField;
-            iprot.readStructBegin();
-            while (true) {
-                schemeField = iprot.readFieldBegin();
-                if (schemeField.type == org.apache.thrift.protocol.TType.STOP) {
-                    break;
-                }
-                switch (schemeField.id) {
-                    case 1: // LAST_NAME
-                        if (schemeField.type == org.apache.thrift.protocol.TType.STRING) {
-                            struct.lastName = iprot.readString();
-                            struct.setLastNameIsSet(true);
-                        } else {
-                            org.apache.thrift.protocol.TProtocolUtil.skip(iprot, schemeField.type);
-                        }
-                        break;
-                    case 2: // FIRST_NAME
-                        if (schemeField.type == org.apache.thrift.protocol.TType.STRING) {
-                            struct.firstName = iprot.readString();
-                            struct.setFirstNameIsSet(true);
-                        } else {
-                            org.apache.thrift.protocol.TProtocolUtil.skip(iprot, schemeField.type);
-                        }
-                        break;
-                    case 3: // PATR_NAME
-                        if (schemeField.type == org.apache.thrift.protocol.TType.STRING) {
-                            struct.patrName = iprot.readString();
-                            struct.setPatrNameIsSet(true);
-                        } else {
-                            org.apache.thrift.protocol.TProtocolUtil.skip(iprot, schemeField.type);
-                        }
-                        break;
-                    case 4: // BIRTH_DATE
-                        if (schemeField.type == org.apache.thrift.protocol.TType.I64) {
-                            struct.birthDate = iprot.readI64();
-                            struct.setBirthDateIsSet(true);
-                        } else {
-                            org.apache.thrift.protocol.TProtocolUtil.skip(iprot, schemeField.type);
-                        }
-                        break;
-                    case 5: // SEX
-                        if (schemeField.type == org.apache.thrift.protocol.TType.I32) {
-                            struct.sex = iprot.readI32();
-                            struct.setSexIsSet(true);
-                        } else {
-                            org.apache.thrift.protocol.TProtocolUtil.skip(iprot, schemeField.type);
-                        }
-                        break;
-                    case 6: // IDENTIFIER_TYPE
-                        if (schemeField.type == org.apache.thrift.protocol.TType.STRING) {
-                            struct.identifierType = iprot.readString();
-                            struct.setIdentifierTypeIsSet(true);
-                        } else {
-                            org.apache.thrift.protocol.TProtocolUtil.skip(iprot, schemeField.type);
-                        }
-                        break;
-                    case 7: // IDENTIFIER
-                        if (schemeField.type == org.apache.thrift.protocol.TType.STRING) {
-                            struct.identifier = iprot.readString();
-                            struct.setIdentifierIsSet(true);
-                        } else {
-                            org.apache.thrift.protocol.TProtocolUtil.skip(iprot, schemeField.type);
-                        }
-                        break;
-                    case 8: // DOCUMENT
-                        if (schemeField.type == org.apache.thrift.protocol.TType.MAP) {
-                            {
-                                org.apache.thrift.protocol.TMap _map8 = iprot.readMapBegin();
-                                struct.document = new HashMap<String, String>(2 * _map8.size);
-                                for (int _i9 = 0; _i9 < _map8.size; ++_i9) {
-                                    String _key10; // required
-                                    String _val11; // required
-                                    _key10 = iprot.readString();
-                                    _val11 = iprot.readString();
-                                    struct.document.put(_key10, _val11);
-                                }
-                                iprot.readMapEnd();
-                            }
-                            struct.setDocumentIsSet(true);
-                        } else {
-                            org.apache.thrift.protocol.TProtocolUtil.skip(iprot, schemeField.type);
-                        }
-                        break;
-                    default:
-                        org.apache.thrift.protocol.TProtocolUtil.skip(iprot, schemeField.type);
-                }
-                iprot.readFieldEnd();
-            }
-            iprot.readStructEnd();
+  public void read(org.apache.thrift.protocol.TProtocol iprot) throws org.apache.thrift.TException {
+    schemes.get(iprot.getScheme()).getScheme().read(iprot, this);
+  }
 
-            // check for required fields of primitive type, which can't be checked in the validate method
-            if (!struct.isSetBirthDate()) {
-                throw new org.apache.thrift.protocol.TProtocolException("Required field 'birthDate' was not found in serialized data! Struct: " + toString());
-            }
-            if (!struct.isSetSex()) {
-                throw new org.apache.thrift.protocol.TProtocolException("Required field 'sex' was not found in serialized data! Struct: " + toString());
-            }
-            struct.validate();
+  public void write(org.apache.thrift.protocol.TProtocol oprot) throws org.apache.thrift.TException {
+    schemes.get(oprot.getScheme()).getScheme().write(oprot, this);
+  }
+
+  @Override
+  public String toString() {
+    StringBuilder sb = new StringBuilder("FindPatientParameters(");
+    boolean first = true;
+
+    sb.append("lastName:");
+    if (this.lastName == null) {
+      sb.append("null");
+    } else {
+      sb.append(this.lastName);
+    }
+    first = false;
+    if (!first) sb.append(", ");
+    sb.append("firstName:");
+    if (this.firstName == null) {
+      sb.append("null");
+    } else {
+      sb.append(this.firstName);
+    }
+    first = false;
+    if (!first) sb.append(", ");
+    sb.append("patrName:");
+    if (this.patrName == null) {
+      sb.append("null");
+    } else {
+      sb.append(this.patrName);
+    }
+    first = false;
+    if (!first) sb.append(", ");
+    sb.append("birthDate:");
+    sb.append(this.birthDate);
+    first = false;
+    if (!first) sb.append(", ");
+    sb.append("sex:");
+    sb.append(this.sex);
+    first = false;
+    if (isSetIdentifierType()) {
+      if (!first) sb.append(", ");
+      sb.append("identifierType:");
+      if (this.identifierType == null) {
+        sb.append("null");
+      } else {
+        sb.append(this.identifierType);
+      }
+      first = false;
+    }
+    if (isSetIdentifier()) {
+      if (!first) sb.append(", ");
+      sb.append("identifier:");
+      if (this.identifier == null) {
+        sb.append("null");
+      } else {
+        sb.append(this.identifier);
+      }
+      first = false;
+    }
+    if (!first) sb.append(", ");
+    sb.append("document:");
+    if (this.document == null) {
+      sb.append("null");
+    } else {
+      sb.append(this.document);
+    }
+    first = false;
+    sb.append(")");
+    return sb.toString();
+  }
+
+  public void validate() throws org.apache.thrift.TException {
+    // check for required fields
+    if (lastName == null) {
+      throw new org.apache.thrift.protocol.TProtocolException("Required field 'lastName' was not present! Struct: " + toString());
+    }
+    if (firstName == null) {
+      throw new org.apache.thrift.protocol.TProtocolException("Required field 'firstName' was not present! Struct: " + toString());
+    }
+    if (patrName == null) {
+      throw new org.apache.thrift.protocol.TProtocolException("Required field 'patrName' was not present! Struct: " + toString());
+    }
+    // alas, we cannot check 'birthDate' because it's a primitive and you chose the non-beans generator.
+    // alas, we cannot check 'sex' because it's a primitive and you chose the non-beans generator.
+    if (document == null) {
+      throw new org.apache.thrift.protocol.TProtocolException("Required field 'document' was not present! Struct: " + toString());
+    }
+    // check for sub-struct validity
+  }
+
+  private void writeObject(java.io.ObjectOutputStream out) throws java.io.IOException {
+    try {
+      write(new org.apache.thrift.protocol.TCompactProtocol(new org.apache.thrift.transport.TIOStreamTransport(out)));
+    } catch (org.apache.thrift.TException te) {
+      throw new java.io.IOException(te);
+    }
+  }
+
+  private void readObject(java.io.ObjectInputStream in) throws java.io.IOException, ClassNotFoundException {
+    try {
+      // it doesn't seem like you should have to do this, but java serialization is wacky, and doesn't call the default constructor.
+      __isset_bitfield = 0;
+      read(new org.apache.thrift.protocol.TCompactProtocol(new org.apache.thrift.transport.TIOStreamTransport(in)));
+    } catch (org.apache.thrift.TException te) {
+      throw new java.io.IOException(te);
+    }
+  }
+
+  private static class FindPatientParametersStandardSchemeFactory implements SchemeFactory {
+    public FindPatientParametersStandardScheme getScheme() {
+      return new FindPatientParametersStandardScheme();
+    }
+  }
+
+  private static class FindPatientParametersStandardScheme extends StandardScheme<FindPatientParameters> {
+
+    public void read(org.apache.thrift.protocol.TProtocol iprot, FindPatientParameters struct) throws org.apache.thrift.TException {
+      org.apache.thrift.protocol.TField schemeField;
+      iprot.readStructBegin();
+      while (true)
+      {
+        schemeField = iprot.readFieldBegin();
+        if (schemeField.type == org.apache.thrift.protocol.TType.STOP) { 
+          break;
         }
-
-        public void write(org.apache.thrift.protocol.TProtocol oprot, FindPatientParameters struct) throws org.apache.thrift.TException {
-            struct.validate();
-
-            oprot.writeStructBegin(STRUCT_DESC);
-            if (struct.lastName != null) {
-                oprot.writeFieldBegin(LAST_NAME_FIELD_DESC);
-                oprot.writeString(struct.lastName);
-                oprot.writeFieldEnd();
+        switch (schemeField.id) {
+          case 1: // LAST_NAME
+            if (schemeField.type == org.apache.thrift.protocol.TType.STRING) {
+              struct.lastName = iprot.readString();
+              struct.setLastNameIsSet(true);
+            } else { 
+              org.apache.thrift.protocol.TProtocolUtil.skip(iprot, schemeField.type);
             }
-            if (struct.firstName != null) {
-                oprot.writeFieldBegin(FIRST_NAME_FIELD_DESC);
-                oprot.writeString(struct.firstName);
-                oprot.writeFieldEnd();
+            break;
+          case 2: // FIRST_NAME
+            if (schemeField.type == org.apache.thrift.protocol.TType.STRING) {
+              struct.firstName = iprot.readString();
+              struct.setFirstNameIsSet(true);
+            } else { 
+              org.apache.thrift.protocol.TProtocolUtil.skip(iprot, schemeField.type);
             }
-            if (struct.patrName != null) {
-                oprot.writeFieldBegin(PATR_NAME_FIELD_DESC);
-                oprot.writeString(struct.patrName);
-                oprot.writeFieldEnd();
+            break;
+          case 3: // PATR_NAME
+            if (schemeField.type == org.apache.thrift.protocol.TType.STRING) {
+              struct.patrName = iprot.readString();
+              struct.setPatrNameIsSet(true);
+            } else { 
+              org.apache.thrift.protocol.TProtocolUtil.skip(iprot, schemeField.type);
             }
-            oprot.writeFieldBegin(BIRTH_DATE_FIELD_DESC);
-            oprot.writeI64(struct.birthDate);
-            oprot.writeFieldEnd();
-            oprot.writeFieldBegin(SEX_FIELD_DESC);
-            oprot.writeI32(struct.sex);
-            oprot.writeFieldEnd();
-            if (struct.identifierType != null) {
-                if (struct.isSetIdentifierType()) {
-                    oprot.writeFieldBegin(IDENTIFIER_TYPE_FIELD_DESC);
-                    oprot.writeString(struct.identifierType);
-                    oprot.writeFieldEnd();
-                }
+            break;
+          case 4: // BIRTH_DATE
+            if (schemeField.type == org.apache.thrift.protocol.TType.I64) {
+              struct.birthDate = iprot.readI64();
+              struct.setBirthDateIsSet(true);
+            } else { 
+              org.apache.thrift.protocol.TProtocolUtil.skip(iprot, schemeField.type);
             }
-            if (struct.identifier != null) {
-                if (struct.isSetIdentifier()) {
-                    oprot.writeFieldBegin(IDENTIFIER_FIELD_DESC);
-                    oprot.writeString(struct.identifier);
-                    oprot.writeFieldEnd();
-                }
+            break;
+          case 5: // SEX
+            if (schemeField.type == org.apache.thrift.protocol.TType.I32) {
+              struct.sex = iprot.readI32();
+              struct.setSexIsSet(true);
+            } else { 
+              org.apache.thrift.protocol.TProtocolUtil.skip(iprot, schemeField.type);
             }
-            if (struct.document != null) {
-                oprot.writeFieldBegin(DOCUMENT_FIELD_DESC);
+            break;
+          case 6: // IDENTIFIER_TYPE
+            if (schemeField.type == org.apache.thrift.protocol.TType.STRING) {
+              struct.identifierType = iprot.readString();
+              struct.setIdentifierTypeIsSet(true);
+            } else { 
+              org.apache.thrift.protocol.TProtocolUtil.skip(iprot, schemeField.type);
+            }
+            break;
+          case 7: // IDENTIFIER
+            if (schemeField.type == org.apache.thrift.protocol.TType.STRING) {
+              struct.identifier = iprot.readString();
+              struct.setIdentifierIsSet(true);
+            } else { 
+              org.apache.thrift.protocol.TProtocolUtil.skip(iprot, schemeField.type);
+            }
+            break;
+          case 8: // DOCUMENT
+            if (schemeField.type == org.apache.thrift.protocol.TType.MAP) {
+              {
+                org.apache.thrift.protocol.TMap _map8 = iprot.readMapBegin();
+                struct.document = new HashMap<String,String>(2*_map8.size);
+                for (int _i9 = 0; _i9 < _map8.size; ++_i9)
                 {
-                    oprot.writeMapBegin(new org.apache.thrift.protocol.TMap(org.apache.thrift.protocol.TType.STRING, org.apache.thrift.protocol.TType.STRING, struct.document.size()));
-                    for (Map.Entry<String, String> _iter12 : struct.document.entrySet()) {
-                        oprot.writeString(_iter12.getKey());
-                        oprot.writeString(_iter12.getValue());
-                    }
-                    oprot.writeMapEnd();
+                  String _key10; // required
+                  String _val11; // required
+                  _key10 = iprot.readString();
+                  _val11 = iprot.readString();
+                  struct.document.put(_key10, _val11);
                 }
-                oprot.writeFieldEnd();
+                iprot.readMapEnd();
+              }
+              struct.setDocumentIsSet(true);
+            } else { 
+              org.apache.thrift.protocol.TProtocolUtil.skip(iprot, schemeField.type);
             }
-            oprot.writeFieldStop();
-            oprot.writeStructEnd();
+            break;
+          default:
+            org.apache.thrift.protocol.TProtocolUtil.skip(iprot, schemeField.type);
         }
+        iprot.readFieldEnd();
+      }
+      iprot.readStructEnd();
 
+      // check for required fields of primitive type, which can't be checked in the validate method
+      if (!struct.isSetBirthDate()) {
+        throw new org.apache.thrift.protocol.TProtocolException("Required field 'birthDate' was not found in serialized data! Struct: " + toString());
+      }
+      if (!struct.isSetSex()) {
+        throw new org.apache.thrift.protocol.TProtocolException("Required field 'sex' was not found in serialized data! Struct: " + toString());
+      }
+      struct.validate();
     }
 
-    private static class FindPatientParametersTupleSchemeFactory implements SchemeFactory {
-        public FindPatientParametersTupleScheme getScheme() {
-            return new FindPatientParametersTupleScheme();
+    public void write(org.apache.thrift.protocol.TProtocol oprot, FindPatientParameters struct) throws org.apache.thrift.TException {
+      struct.validate();
+
+      oprot.writeStructBegin(STRUCT_DESC);
+      if (struct.lastName != null) {
+        oprot.writeFieldBegin(LAST_NAME_FIELD_DESC);
+        oprot.writeString(struct.lastName);
+        oprot.writeFieldEnd();
+      }
+      if (struct.firstName != null) {
+        oprot.writeFieldBegin(FIRST_NAME_FIELD_DESC);
+        oprot.writeString(struct.firstName);
+        oprot.writeFieldEnd();
+      }
+      if (struct.patrName != null) {
+        oprot.writeFieldBegin(PATR_NAME_FIELD_DESC);
+        oprot.writeString(struct.patrName);
+        oprot.writeFieldEnd();
+      }
+      oprot.writeFieldBegin(BIRTH_DATE_FIELD_DESC);
+      oprot.writeI64(struct.birthDate);
+      oprot.writeFieldEnd();
+      oprot.writeFieldBegin(SEX_FIELD_DESC);
+      oprot.writeI32(struct.sex);
+      oprot.writeFieldEnd();
+      if (struct.identifierType != null) {
+        if (struct.isSetIdentifierType()) {
+          oprot.writeFieldBegin(IDENTIFIER_TYPE_FIELD_DESC);
+          oprot.writeString(struct.identifierType);
+          oprot.writeFieldEnd();
         }
+      }
+      if (struct.identifier != null) {
+        if (struct.isSetIdentifier()) {
+          oprot.writeFieldBegin(IDENTIFIER_FIELD_DESC);
+          oprot.writeString(struct.identifier);
+          oprot.writeFieldEnd();
+        }
+      }
+      if (struct.document != null) {
+        oprot.writeFieldBegin(DOCUMENT_FIELD_DESC);
+        {
+          oprot.writeMapBegin(new org.apache.thrift.protocol.TMap(org.apache.thrift.protocol.TType.STRING, org.apache.thrift.protocol.TType.STRING, struct.document.size()));
+          for (Map.Entry<String, String> _iter12 : struct.document.entrySet())
+          {
+            oprot.writeString(_iter12.getKey());
+            oprot.writeString(_iter12.getValue());
+          }
+          oprot.writeMapEnd();
+        }
+        oprot.writeFieldEnd();
+      }
+      oprot.writeFieldStop();
+      oprot.writeStructEnd();
     }
 
-    private static class FindPatientParametersTupleScheme extends TupleScheme<FindPatientParameters> {
+  }
 
-        @Override
-        public void write(org.apache.thrift.protocol.TProtocol prot, FindPatientParameters struct) throws org.apache.thrift.TException {
-            TTupleProtocol oprot = (TTupleProtocol) prot;
-            oprot.writeString(struct.lastName);
-            oprot.writeString(struct.firstName);
-            oprot.writeString(struct.patrName);
-            oprot.writeI64(struct.birthDate);
-            oprot.writeI32(struct.sex);
-            {
-                oprot.writeI32(struct.document.size());
-                for (Map.Entry<String, String> _iter13 : struct.document.entrySet()) {
-                    oprot.writeString(_iter13.getKey());
-                    oprot.writeString(_iter13.getValue());
-                }
-            }
-            BitSet optionals = new BitSet();
-            if (struct.isSetIdentifierType()) {
-                optionals.set(0);
-            }
-            if (struct.isSetIdentifier()) {
-                optionals.set(1);
-            }
-            oprot.writeBitSet(optionals, 2);
-            if (struct.isSetIdentifierType()) {
-                oprot.writeString(struct.identifierType);
-            }
-            if (struct.isSetIdentifier()) {
-                oprot.writeString(struct.identifier);
-            }
-        }
-
-        @Override
-        public void read(org.apache.thrift.protocol.TProtocol prot, FindPatientParameters struct) throws org.apache.thrift.TException {
-            TTupleProtocol iprot = (TTupleProtocol) prot;
-            struct.lastName = iprot.readString();
-            struct.setLastNameIsSet(true);
-            struct.firstName = iprot.readString();
-            struct.setFirstNameIsSet(true);
-            struct.patrName = iprot.readString();
-            struct.setPatrNameIsSet(true);
-            struct.birthDate = iprot.readI64();
-            struct.setBirthDateIsSet(true);
-            struct.sex = iprot.readI32();
-            struct.setSexIsSet(true);
-            {
-                org.apache.thrift.protocol.TMap _map14 = new org.apache.thrift.protocol.TMap(org.apache.thrift.protocol.TType.STRING, org.apache.thrift.protocol.TType.STRING, iprot.readI32());
-                struct.document = new HashMap<String, String>(2 * _map14.size);
-                for (int _i15 = 0; _i15 < _map14.size; ++_i15) {
-                    String _key16; // required
-                    String _val17; // required
-                    _key16 = iprot.readString();
-                    _val17 = iprot.readString();
-                    struct.document.put(_key16, _val17);
-                }
-            }
-            struct.setDocumentIsSet(true);
-            BitSet incoming = iprot.readBitSet(2);
-            if (incoming.get(0)) {
-                struct.identifierType = iprot.readString();
-                struct.setIdentifierTypeIsSet(true);
-            }
-            if (incoming.get(1)) {
-                struct.identifier = iprot.readString();
-                struct.setIdentifierIsSet(true);
-            }
-        }
+  private static class FindPatientParametersTupleSchemeFactory implements SchemeFactory {
+    public FindPatientParametersTupleScheme getScheme() {
+      return new FindPatientParametersTupleScheme();
     }
+  }
+
+  private static class FindPatientParametersTupleScheme extends TupleScheme<FindPatientParameters> {
+
+    @Override
+    public void write(org.apache.thrift.protocol.TProtocol prot, FindPatientParameters struct) throws org.apache.thrift.TException {
+      TTupleProtocol oprot = (TTupleProtocol) prot;
+      oprot.writeString(struct.lastName);
+      oprot.writeString(struct.firstName);
+      oprot.writeString(struct.patrName);
+      oprot.writeI64(struct.birthDate);
+      oprot.writeI32(struct.sex);
+      {
+        oprot.writeI32(struct.document.size());
+        for (Map.Entry<String, String> _iter13 : struct.document.entrySet())
+        {
+          oprot.writeString(_iter13.getKey());
+          oprot.writeString(_iter13.getValue());
+        }
+      }
+      BitSet optionals = new BitSet();
+      if (struct.isSetIdentifierType()) {
+        optionals.set(0);
+      }
+      if (struct.isSetIdentifier()) {
+        optionals.set(1);
+      }
+      oprot.writeBitSet(optionals, 2);
+      if (struct.isSetIdentifierType()) {
+        oprot.writeString(struct.identifierType);
+      }
+      if (struct.isSetIdentifier()) {
+        oprot.writeString(struct.identifier);
+      }
+    }
+
+    @Override
+    public void read(org.apache.thrift.protocol.TProtocol prot, FindPatientParameters struct) throws org.apache.thrift.TException {
+      TTupleProtocol iprot = (TTupleProtocol) prot;
+      struct.lastName = iprot.readString();
+      struct.setLastNameIsSet(true);
+      struct.firstName = iprot.readString();
+      struct.setFirstNameIsSet(true);
+      struct.patrName = iprot.readString();
+      struct.setPatrNameIsSet(true);
+      struct.birthDate = iprot.readI64();
+      struct.setBirthDateIsSet(true);
+      struct.sex = iprot.readI32();
+      struct.setSexIsSet(true);
+      {
+        org.apache.thrift.protocol.TMap _map14 = new org.apache.thrift.protocol.TMap(org.apache.thrift.protocol.TType.STRING, org.apache.thrift.protocol.TType.STRING, iprot.readI32());
+        struct.document = new HashMap<String,String>(2*_map14.size);
+        for (int _i15 = 0; _i15 < _map14.size; ++_i15)
+        {
+          String _key16; // required
+          String _val17; // required
+          _key16 = iprot.readString();
+          _val17 = iprot.readString();
+          struct.document.put(_key16, _val17);
+        }
+      }
+      struct.setDocumentIsSet(true);
+      BitSet incoming = iprot.readBitSet(2);
+      if (incoming.get(0)) {
+        struct.identifierType = iprot.readString();
+        struct.setIdentifierTypeIsSet(true);
+      }
+      if (incoming.get(1)) {
+        struct.identifier = iprot.readString();
+        struct.setIdentifierIsSet(true);
+      }
+    }
+  }
 
 }
 

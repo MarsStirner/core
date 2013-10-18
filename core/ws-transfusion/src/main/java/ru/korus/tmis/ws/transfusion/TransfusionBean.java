@@ -38,7 +38,7 @@ public class TransfusionBean {
     /**
      * Полинг базы данных для поиска и передачи новых запросов в систему ТРФУ
      */
-    @Schedule(hour = "*", minute = "*")
+    @Schedule(hour = "*", minute = "*", second = "15")
     public void pullDB() {
         try {
             logger.info("Pooling db...Trfu integration is {}", ConfigManager.TrfuProp().isActive());
@@ -55,7 +55,8 @@ public class TransfusionBean {
             }
         } catch (final WebServiceException ex) {
             logger.error("The TRFU service is not available. Exception description: {}", ex.getMessage());
-            ex.printStackTrace();
+        } catch (final Exception ex) {
+            logger.error("General exception in trfu integration: {}", ex.getMessage());
         }
     }
 }

@@ -9,7 +9,9 @@ import java.io.Serializable;
 @Table(name = "rbDocumentType", catalog = "", schema = "")
 @NamedQueries(
         {
-                @NamedQuery(name = "RbDocumentType.findAll", query = "SELECT r FROM RbDocumentType r")
+                @NamedQuery(name = "RbDocumentType.findAll", query = "SELECT r FROM RbDocumentType r"),
+                @NamedQuery(name = "RbDocumentType.findByCode",
+                        query = "SELECT r FROM RbDocumentType r WHERE r.code = :code ORDER BY r.id DESC")
         })
 @XmlType(name = "documentType")
 @XmlRootElement(name = "documentType")
