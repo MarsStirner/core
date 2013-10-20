@@ -24,6 +24,7 @@ import ru.risar.data.Patient;
 import ru.risar.data.PatientNumber;
 import ru.risar.data.validation.PatientNumberValidator;
 import ru.risar.data.validation.PatientValidator;
+import ru.risar.exception.RisarCoreException;
 import ru.risar.service.RisarPatientService;
 
 import javax.ejb.EJB;
@@ -90,7 +91,9 @@ public class RegistrationPatientBean implements RegistrationPatient {
             }
             return true;
         } else {
-            throw new CoreException(validator.getFullMessageError());
+            final RisarCoreException exception = new RisarCoreException();
+            exception.description = validator.getFullMessageError();
+            throw exception;
         }
     }
 
