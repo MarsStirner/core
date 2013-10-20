@@ -8,6 +8,7 @@ import ru.korus.tmis.core.database.DbStaffBeanLocal;
 import ru.korus.tmis.core.entity.model.Action;
 import ru.korus.tmis.core.entity.model.ActionType;
 import ru.korus.tmis.core.entity.model.Event;
+import ru.korus.tmis.core.entity.model.Organisation;
 import ru.korus.tmis.core.entity.model.Patient;
 import ru.korus.tmis.core.entity.model.RbTissueType;
 import ru.korus.tmis.core.entity.model.RbUnit;
@@ -130,7 +131,7 @@ public class BakLaboratoryBean implements BakLaboratoryService {
         createConfLevel(document, "N"); // уровень конфиденциальности документа : Normal
         createLanguageDoc(document, "ru-RU"); // язык для этого документа
         createOrderStatus(document, action); // cтатус заказа [orderStatus]
-        createRecordTarget(document, patientInfo); // демографические данные пациента
+        createRecordTarget(document, patientInfo, eventInfo); // демографические данные пациента
         createDocAuthor(document, action, requestInfo); // создатель документа. Обязательный
         createComponentOf(document, patientInfo);
         createBody(document, biomaterialInfo, orderInfo, patientInfo, requestInfo, action, eventInfo);
@@ -273,7 +274,7 @@ public class BakLaboratoryBean implements BakLaboratoryService {
         document.setAuthor(author);
     }
 
-    private static void createRecordTarget(HL7Document document, Patient patientInfo) {
+    private static void createRecordTarget(HL7Document document, Patient patientInfo, Event event) {
         final RecordTargetInfo recordTarget = new RecordTargetInfo();
         recordTarget.setTypeCode("RCT");
 
@@ -318,9 +319,10 @@ public class BakLaboratoryBean implements BakLaboratoryService {
         providerOrganization.setClassCode("ORG");
         providerOrganization.setDeterminerCode("INSTANCE");
         final LpuIDInfo orgId = new LpuIDInfo();
-        orgId.setRoot(patientInfo.getUuid().getUuid()); // todo провериь толи значение я сейчас беру!
+        final Organisation organisation = event.getOrganisation();
+        orgId.setRoot(organisation.getUuid().getUuid());
         providerOrganization.setId(orgId);
-        providerOrganization.setName(CUSTODIAN_NAME);
+        providerOrganization.setName(organisation.getTitle());
         patientRole.setProviderOrganization(providerOrganization);
 
         recordTarget.setPatientRole(patientRole);
