@@ -72,7 +72,8 @@ function undeploy {
 
     echo $UNDEPLOY_CMD
     if ! $UNDEPLOY_CMD; then
-        exit 3
+       # exit 3
+       echo !!
     fi
 }
 
