@@ -130,10 +130,9 @@ public class PharmacyBean implements PharmacyBeanLocal {
                 logger.info("sending prescription start...");
                 sendPrescriptionTo1C();
                 logger.info("sending prescription stop");
-            } catch (Exception e) {
-                logger.error("Exception e: " + e, e);
+            } catch (Throwable e) {
+                logger.error("Throwable e: " + e, e);
             }
-
         } else {
             logger.info("pooling... {}", ConfigManager.Drugstore().Active());
         }
