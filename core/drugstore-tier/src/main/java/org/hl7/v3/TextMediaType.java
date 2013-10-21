@@ -40,10 +40,10 @@ public enum TextMediaType {
     TEXT_SGML("text/sgml"),
     @XmlEnumValue("text/x-hl7-ft")
     TEXT_X_HL_7_FT("text/x-hl7-ft"),
-    @XmlEnumValue("text/x-hl7-text+xml")
-    TEXT_X_HL_7_TEXT_XML("text/x-hl7-text+xml"),
-    @XmlEnumValue("text/xml")
-    TEXT_XML("text/xml");
+    @XmlEnumValue("text/x-hl7-text+handlers")
+    TEXT_X_HL_7_TEXT_XML("text/x-hl7-text+handlers"),
+    @XmlEnumValue("text/handlers")
+    TEXT_XML("text/handlers");
     private final String value;
 
     TextMediaType(String v) {
