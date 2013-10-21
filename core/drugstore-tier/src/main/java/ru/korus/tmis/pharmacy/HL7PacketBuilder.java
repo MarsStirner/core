@@ -11,7 +11,6 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import ru.korus.tmis.core.entity.model.*;
 import ru.korus.tmis.core.entity.model.pharmacy.PrescriptionSendingRes;
-import ru.korus.tmis.rlsupdate.BalanceOfGoodsInfoBean;
 
 import javax.xml.bind.JAXBContext;
 import javax.xml.bind.JAXBElement;
@@ -419,10 +418,11 @@ public final class HL7PacketBuilder {
 
     /**
      * Формирования сообщения об интервалах назначения и исполнения ЛС
-     * @param interval      - Интервал
-     * @param organisation  -  ЛПУ
-     * @param type          - тип интервала. ASSIGNMENT - назначение; EXECUTION - исполнение
-     * @param negationInd   - true - отменить/удалить интервал; false - создать/обновить
+     *
+     * @param interval     - Интервал
+     * @param organisation -  ЛПУ
+     * @param type         - тип интервала. ASSIGNMENT - назначение; EXECUTION - исполнение
+     * @param negationInd  - true - отменить/удалить интервал; false - создать/обновить
      * @return
      */
     public static Request processPrescription(
@@ -448,7 +448,7 @@ public final class HL7PacketBuilder {
                 uuidDocument, action, client, organisation, executorStaff);
 
         final POCDMT000040ClinicalDocument clinicalDocument =
-                getClinicalDocument(interval,  rlsNomen, routeOfAdministration, client, organisation, executorStaff, type, negationInd, uuid, version);
+                getClinicalDocument(interval, rlsNomen, routeOfAdministration, client, organisation, executorStaff, type, negationInd, uuid, version);
         final String innerDocument = marshallMessage(clinicalDocument, "org.hl7.v3");
         logger.info("prepare inner document... \n\n{}", innerDocument);
 
@@ -649,20 +649,22 @@ public final class HL7PacketBuilder {
     }
 
     private static IVLTS createIVLTS(TS begDate, TS endDate) {
-        if (begDate == null && endDate == null) {
+        if (begDate == null) {
             return createIVLTS(NullFlavor.NI);
         }
         final IVLTS ivlts = FACTORY_HL7.createIVLTS();
-        if (begDate != null) {
-            final IVXBTS beg = FACTORY_HL7.createIVXBTS();
-            beg.setValue(begDate.getValue());
-            ivlts.setLow(beg);
+
+        if (endDate == null) {
+            ivlts.setValue(begDate.getValue());
+            return ivlts;
         }
-        if (endDate != null) {
-            final IVXBTS end = FACTORY_HL7.createIVXBTS();
-            end.setValue(endDate.getValue());
-            ivlts.setHigh(end);
-        }
+        final IVXBTS beg = FACTORY_HL7.createIVXBTS();
+        beg.setValue(begDate.getValue());
+        ivlts.setLow(beg);
+
+        final IVXBTS end = FACTORY_HL7.createIVXBTS();
+        end.setValue(endDate.getValue());
+        ivlts.setHigh(end);
         return ivlts;
     }
 
@@ -682,8 +684,8 @@ public final class HL7PacketBuilder {
         // источник финансирования
         substanceAdministration.getId().add(createIIEx(String.valueOf(event.getEventType().getFinance().getId())));
         // период на который выполняется назначение
-        TS begDate = event.getSetDate() == null ? null : createTS(event.getSetDate(), DATE_FORMAT);
-        TS endDate = event.getExecDate() == null ? null : createTS(event.getExecDate(), DATE_FORMAT);
+        TS begDate = interval.getBegDateTime() == null ? null : createTS(interval.getBegDateTime(), DATE_FORMAT);
+        TS endDate = interval.getEndDateTime() == null ? null : createTS(interval.getEndDateTime(), DATE_FORMAT);
         substanceAdministration.getEffectiveTime().add(createIVLTS(begDate, endDate));
         // интервал, через который необходимо применять препарат (суточная доза)
         //substanceAdministration.getEffectiveTime().add(createPIVLTS("12", "h"));
@@ -774,10 +776,6 @@ public final class HL7PacketBuilder {
 //
 //        manufacturedLabeledDrug.setCode(code1);
 //    }
-
-
-
-
     public static String marshallMessage(final Object msg, final String contextPath) {
         final StringWriter writer = new StringWriter();
         try {
