@@ -105,17 +105,17 @@ public class PharmacyBean implements PharmacyBeanLocal {
      * Полинг базы данных для поиска событий по движениям пациентов и назначениям ЛС
      */
     @Override
-    @Schedule(minute = "*/1", hour = "*")
+    @Schedule(minute = "*/1", hour = "*", persistent = false)
     public void pooling() {
         if (ConfigManager.Drugstore().isActive()) {
             try {
-                logger.info("pooling... last modify date #", getLastDate());
+                logger.info("pooling... last modify date {}", getLastDate());
                 if (lastDateUpdate == null) {
                     lastDateUpdate = firstPolling();
                 }
                 final List<Action> actionAfterDate = dbPharmacy.getVirtualActionsAfterDate(lastDateUpdate);
                 if (!actionAfterDate.isEmpty()) {
-                    logger.info("Found # newest actions after date #", actionAfterDate.size(), getLastDate());
+                    logger.info("Found # newest actions after date {}", actionAfterDate.size(), getLastDate());
                     for (Action action : actionAfterDate) {
                         final ToLog toLog = new ToLog();
                         try {
@@ -138,7 +138,7 @@ public class PharmacyBean implements PharmacyBeanLocal {
                 logger.error("Throwable e: " + e, e);
             }
         } else {
-            logger.info("pooling... #", ConfigManager.Drugstore().Active());
+            logger.info("pooling... {}", ConfigManager.Drugstore().Active());
         }
     }
 
