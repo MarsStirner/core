@@ -1,6 +1,7 @@
 package ru.korus.tmis.core.pharmacy;
 
 import ru.korus.tmis.core.entity.model.DrugChart;
+import ru.korus.tmis.core.entity.model.DrugComponent;
 import ru.korus.tmis.core.entity.model.RlsNomen;
 import ru.korus.tmis.core.entity.model.pharmacy.PrescriptionSendingRes;
 
@@ -22,13 +23,13 @@ public class DbPrescriptionSendingResBean implements DbPrescriptionSendingResBea
     private EntityManager em = null;
 
     @Override
-    public PrescriptionSendingRes getPrescriptionSendingRes(DrugChart drugChart, RlsNomen rlsNomen) {
+    public PrescriptionSendingRes getPrescriptionSendingRes(DrugChart drugChart, DrugComponent drugComponent) {
         List<PrescriptionSendingRes> resList = em.createNamedQuery("PrescriptionSendingRes.findByIntervalAndNomen", PrescriptionSendingRes.class).
                 setParameter("intervalId", drugChart.getId()).
-                setParameter("nomenId", rlsNomen.getId() ).getResultList();
+                setParameter("compId", drugComponent.getId() ).getResultList();
         if(resList.isEmpty()) {
             final PrescriptionSendingRes prescriptionSendingRes = new PrescriptionSendingRes();
-            prescriptionSendingRes.setRlsNomen(rlsNomen);
+            prescriptionSendingRes.setDrugComponent(drugComponent);
             prescriptionSendingRes.setDrugChart(drugChart);
             em.persist(prescriptionSendingRes);
             em.flush();

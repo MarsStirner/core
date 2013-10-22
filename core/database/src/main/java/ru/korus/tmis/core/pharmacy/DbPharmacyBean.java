@@ -6,7 +6,10 @@ import org.slf4j.LoggerFactory;
 import ru.korus.tmis.core.database.DbActionPropertyBeanLocal;
 import ru.korus.tmis.core.database.DbActionPropertyTypeBeanLocal;
 import ru.korus.tmis.core.database.DbManagerBeanLocal;
-import ru.korus.tmis.core.entity.model.*;
+import ru.korus.tmis.core.entity.model.Action;
+import ru.korus.tmis.core.entity.model.ActionType;
+import ru.korus.tmis.core.entity.model.DrugComponent;
+import ru.korus.tmis.core.entity.model.RlsNomen;
 import ru.korus.tmis.core.entity.model.pharmacy.Pharmacy;
 import ru.korus.tmis.core.entity.model.pharmacy.PharmacyStatus;
 import ru.korus.tmis.core.exception.CoreException;
@@ -19,7 +22,6 @@ import javax.persistence.EntityManager;
 import javax.persistence.PersistenceContext;
 import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.LinkedList;
 import java.util.List;
 
 /**
@@ -61,21 +63,12 @@ public class DbPharmacyBean implements DbPharmacyBeanLocal {
         return nonCompleteList;
     }
 
-    /**
-     * Получение лекарственного средства назначенного пациенту. Метод требует переработки в дальнейшем.
-     *
-     *
-     * @param action связанное действие
-     * @return код (code) в формате ФОЛС из RLS
-     */
-    public List<RlsNomen> getDrugCode(final Action action) {
+    public List<DrugComponent> getDrugComponent(final Action action) {
         List<DrugComponent> comps = em.createNamedQuery("DrugComponent.getByActionId", DrugComponent.class).setParameter("actionId", action.getId()).getResultList();
-        List<RlsNomen> res = new LinkedList<RlsNomen>();
-        for (DrugComponent comp : comps) {
-            res.add(em.find(RlsNomen.class, comp.getNomen()));
-        }
-        return res;
+
+        return comps;
     }
+
 
     private Integer getResult(final List input) {
         if (!input.isEmpty()) {
@@ -156,7 +149,7 @@ public class DbPharmacyBean implements DbPharmacyBeanLocal {
     private List<String> getFlatCodeStrings() {
         final List<String> flatCodeList = new ArrayList<String>(10);
         for (FlatCode fc : FlatCode.values()) {
-            if( !FlatCode.PRESCRIPTION.equals(fc)) {
+            if (!FlatCode.PRESCRIPTION.equals(fc)) {
                 flatCodeList.add(fc.getCode());
             }
         }

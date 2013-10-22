@@ -1,6 +1,7 @@
 package ru.korus.tmis.core.entity.model.pharmacy;
 
 import ru.korus.tmis.core.entity.model.DrugChart;
+import ru.korus.tmis.core.entity.model.DrugComponent;
 import ru.korus.tmis.core.entity.model.RlsNomen;
 
 import javax.persistence.*;
@@ -20,7 +21,7 @@ import javax.persistence.*;
 @NamedQueries(
         {
                 @NamedQuery(name = "PrescriptionSendingRes.findByIntervalAndNomen", query =
-                        "SELECT p FROM PrescriptionSendingRes p WHERE p.rlsNomen.id = :nomenId AND p.drugChart.id = :intervalId")
+                        "SELECT p FROM PrescriptionSendingRes p WHERE p.drugComponent.id = :compId AND p.drugChart.id = :intervalId")
         })
 public class PrescriptionSendingRes {
 
@@ -31,8 +32,8 @@ public class PrescriptionSendingRes {
     private int id;
 
     @ManyToOne
-    @JoinColumn(name = "nomen_id", nullable = true)
-    private RlsNomen rlsNomen;
+    @JoinColumn(name = "drugComponent_id", nullable = true)
+    private DrugComponent drugComponent;
 
     @ManyToOne
     @JoinColumn(name = "interval_id", nullable = true)
@@ -52,12 +53,12 @@ public class PrescriptionSendingRes {
         this.id = id;
     }
 
-    public RlsNomen getRlsNomen() {
-        return rlsNomen;
+    public DrugComponent getDrugComponent() {
+        return drugComponent;
     }
 
-    public void setRlsNomen(RlsNomen rlsNomen) {
-        this.rlsNomen = rlsNomen;
+    public void setDrugComponent(DrugComponent drugComponent) {
+        this.drugComponent = drugComponent;
     }
 
     public DrugChart getDrugChart() {

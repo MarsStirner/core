@@ -27,9 +27,9 @@ public class DrugComponent {
     @JoinColumn(name = "action_id", nullable = false)
     private Action action;
 
-    @Basic(optional = true)
-    @Column(name = "nomen", nullable = true)
-    private Integer nomen;
+    @ManyToOne
+    @JoinColumn(name = "nomen_id", nullable = true)
+    private RlsNomen nomen;
 
     @Basic(optional = true)
     @Column(name = "name", nullable = true)
@@ -72,11 +72,11 @@ public class DrugComponent {
         this.action = action;
     }
 
-    public Integer getNomen() {
+    public RlsNomen getNomen() {
         return nomen;
     }
 
-    public void setNomen(Integer nomen) {
+    public void setNomen(RlsNomen nomen) {
         this.nomen = nomen;
     }
 
