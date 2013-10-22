@@ -50,7 +50,7 @@ public class ToLog {
         final StringBuilder sb = new StringBuilder();
         for (StringTokenizer stringTokenizer = new StringTokenizer(toLog, "#", true); stringTokenizer.hasMoreTokens();) {
             String s = stringTokenizer.nextToken();
-            if (s.equals("{}")) {
+            if (s.equals("#")) {
                 if (i < arguments.length) {
                     sb.append(arguments[i++]);
                 }
