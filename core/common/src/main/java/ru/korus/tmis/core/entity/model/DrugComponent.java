@@ -28,7 +28,7 @@ public class DrugComponent {
     private Action action;
 
     @ManyToOne
-    @JoinColumn(name = "nomen_id", nullable = true)
+    @JoinColumn(name = "nomen", nullable = true)
     private RlsNomen nomen;
 
     @Basic(optional = true)
