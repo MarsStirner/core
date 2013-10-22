@@ -16,7 +16,7 @@
         <module>drugstore-tier</module>
         <module>laboratory-tier</module>
         <module>server</module>
-        <module>ws-medipad</module>
+        <!--<module>ws-medipad</module>-->
         <module>ws-laboratory</module>
         <!--<module>ws-drugstore</module>-->
         <module>referencebook</module>
@@ -29,7 +29,7 @@
 
     <properties>
         <!-- Версия ядра-->
-        <version.tmis.core>2.4.2-SNAPSHOT</version.tmis.core>
+        <version.tmis.core>2.4.3-SNAPSHOT</version.tmis.core>
 
 
         <version.joda.time>2.1</version.joda.time>
