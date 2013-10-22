@@ -119,7 +119,7 @@ public class PharmacyBean implements PharmacyBeanLocal {
                     for (Action action : actionAfterDate) {
                         final ToLog toLog = new ToLog();
                         try {
-                            if (isActionForSend(action)) {
+                            if (isActionForSend(action, toLog)) {
                                 send(action, toLog);
                                 lastDateUpdate = new DateTime(action.getCreateDatetime());
                             }
@@ -244,8 +244,9 @@ public class PharmacyBean implements PharmacyBeanLocal {
     /**
      * Проверка на код по движению пациентов
      */
-    private boolean isActionForSend(final Action action) {
+    private boolean isActionForSend(final Action action, final ToLog toLog) {
         final ActionType actionType = action.getActionType();
+        toLog.add(actionType.getFlatCode());
         return FlatCode.RECEIVED.getCode().equalsIgnoreCase(actionType.getFlatCode())
                 || FlatCode.DEL_RECEIVED.getCode().equalsIgnoreCase(actionType.getFlatCode())
                 || FlatCode.MOVING.getCode().equalsIgnoreCase(actionType.getFlatCode())
@@ -355,7 +356,7 @@ public class PharmacyBean implements PharmacyBeanLocal {
                 for (APValue apValue : apValues) {
                     if (apValue instanceof APValueOrgStructure) {
                         final OrgStructure orgStructure = (OrgStructure) apValue.getValue();
-                        toLog.add("Found OrgStructureOut: #, #", orgStructure, orgStructure.getName());
+                        toLog.add("orgStructure [#], [#]", orgStructure.getId(), orgStructure.getName());
                         return orgStructure;
                     }
                 }
@@ -379,14 +380,12 @@ public class PharmacyBean implements PharmacyBeanLocal {
 
                     final Map<ActionProperty, List<APValue>> names =
                             dbActionPropertyBeanLocal.getActionPropertiesByActionIdAndActionPropertyTypeCodesWithoutDel(parentAction.getId(), codes);
-
-                    toLog.add("getOrgStructureOut Action properties and type #", names);
                     for (ActionProperty property : names.keySet()) {
                         final List<APValue> apValues = names.get(property);
                         for (APValue apValue : apValues) {
                             if (apValue instanceof APValueOrgStructure) {
                                 final OrgStructure orgStructure = (OrgStructure) apValue.getValue();
-                                toLog.add("Found OrgStructureOut: #, #", orgStructure, orgStructure.getName());
+                                toLog.add("orgStructure [#], [#]", orgStructure.getId(), orgStructure.getName());
                                 return orgStructure;
                             }
                         }
@@ -417,7 +416,7 @@ public class PharmacyBean implements PharmacyBeanLocal {
                 for (APValue apValue : apValues) {
                     if (apValue instanceof APValueOrgStructure) {
                         final OrgStructure orgStructure = (OrgStructure) apValue.getValue();
-                        toLog.add("Found OrgStructureIn: #, #", orgStructure, orgStructure.getName());
+                        toLog.add("orgStructureOut [#], [#]", orgStructure.getId(), orgStructure.getName());
                         return orgStructure;
                     }
                 }
@@ -441,14 +440,13 @@ public class PharmacyBean implements PharmacyBeanLocal {
 
                     final Map<ActionProperty, List<APValue>> names
                             = dbActionPropertyBeanLocal.getActionPropertiesByActionIdAndActionPropertyTypeCodesWithoutDel(parentAction.getId(), codes);
-                    toLog.add("getOrgStructureIn Action properties and type #", names);
 
                     for (ActionProperty property : names.keySet()) {
                         final List<APValue> apValues = names.get(property);
                         for (APValue apValue : apValues) {
                             if (apValue instanceof APValueOrgStructure) {
                                 final OrgStructure orgStructure = (OrgStructure) apValue.getValue();
-                                toLog.add("Found OrgStructureIn: #, #", orgStructure, orgStructure.getName());
+                                toLog.add("orgStructureIn [#], [#]", orgStructure.getId(), orgStructure.getName());
                                 return orgStructure;
                             }
                         }
@@ -457,8 +455,6 @@ public class PharmacyBean implements PharmacyBeanLocal {
                     toLog.add("OrgStructure is not found # by actionParentId [#]", action, action.getParentActionId());
                 }
             }
-
-
         } catch (CoreException e) {
         }
         throw new SkipMessageProcessException();
@@ -474,15 +470,13 @@ public class PharmacyBean implements PharmacyBeanLocal {
 
             final Map<ActionProperty, List<APValue>> names
                     = dbActionPropertyBeanLocal.getActionPropertiesByActionIdAndActionPropertyTypeCodesWithoutDel(action.getId(), codesSet);
-            toLog.add("Action properties and type #", names);
-
-            //     final Map<ActionProperty, List<APValue>> actionPropertiesMap = dbActionPropertyBeanLocal.getActionPropertiesByActionId(action.getId());
             for (ActionProperty property : names.keySet()) {
                 final List<APValue> apValues = names.get(property);
                 for (APValue apValue : apValues) {
                     if (apValue instanceof APValueOrgStructure) {
-                        toLog.add("Found OrgStructure property: #, apvalue: #, value: #", property, apValue, apValue.getValue());
-                        return (OrgStructure) apValue.getValue();
+                        final OrgStructure orgStructure = (OrgStructure) apValue.getValue();
+                        toLog.add("orgStructure [#], [#]", orgStructure.getId(), orgStructure.getName());
+                        return orgStructure;
                     }
                 }
             }
@@ -510,7 +504,7 @@ public class PharmacyBean implements PharmacyBeanLocal {
                 prescription.setSendTime(new Timestamp((new java.util.Date()).getTime() + (long) (errCount) * step));
 
                 if (sendPrescription(prescription, toLog)) {
-                    toLog.add("remove prescription item #", prescription.getIntervalId());
+                    toLog.add("remove prescription item [#]", prescription.getIntervalId());
                     dbPrescriptionsTo1CBeanLocal.remove(prescription);
                 }
             } catch (Exception e) {
