@@ -109,13 +109,13 @@ public class PharmacyBean implements PharmacyBeanLocal {
     public void pooling() {
         if (ConfigManager.Drugstore().isActive()) {
             try {
-                logger.info("pooling... last modify date {}", getLastDate());
+                logger.info("pooling... last modify date #", getLastDate());
                 if (lastDateUpdate == null) {
                     lastDateUpdate = firstPolling();
                 }
                 final List<Action> actionAfterDate = dbPharmacy.getVirtualActionsAfterDate(lastDateUpdate);
                 if (!actionAfterDate.isEmpty()) {
-                    logger.info("Found {} newest actions after date {}", actionAfterDate.size(), getLastDate());
+                    logger.info("Found # newest actions after date #", actionAfterDate.size(), getLastDate());
                     for (Action action : actionAfterDate) {
                         final ToLog toLog = new ToLog();
                         try {
@@ -138,7 +138,7 @@ public class PharmacyBean implements PharmacyBeanLocal {
                 logger.error("Throwable e: " + e, e);
             }
         } else {
-            logger.info("pooling... {}", ConfigManager.Drugstore().Active());
+            logger.info("pooling... #", ConfigManager.Drugstore().Active());
         }
     }
 
@@ -176,13 +176,13 @@ public class PharmacyBean implements PharmacyBeanLocal {
             // формирование сообщения для отправки
             final Request request = createRequest(action, toLog);
 
-            toLog.add("prepare message... \n\n {}", HL7PacketBuilder.marshallMessage(request, "misexchange"));
+            toLog.add("prepare message... \n\n #", HL7PacketBuilder.marshallMessage(request, "misexchange"));
             // отправка сообщения в 1С
             // final MCCIIN000002UV01 result = new MISExchange().getMISExchangeSoap().processHL7V3Message(request);
             final MCCIIN000002UV012 result = new MISExchange().getMISExchangeSoap().processHL7V3Message(request);
             if (result != null) {
                 // обработка результата
-                toLog.add("Connection successful. Result: {} \n\n {}",
+                toLog.add("Connection successful. Result: # \n\n #",
                         result, HL7PacketBuilder.marshallMessage(result, "org.hl7.v3"));
 
                 for (MCCIMT000200UV01Acknowledgement ack : result.getAcknowledgement()) {
@@ -349,13 +349,13 @@ public class PharmacyBean implements PharmacyBeanLocal {
             final Map<ActionProperty, List<APValue>> names =
                     dbActionPropertyBeanLocal.getActionPropertiesByActionIdAndActionPropertyTypeCodesWithoutDel(action.getId(), codes);
 
-            toLog.add("getOrgStructureOut Action properties and type {}", names);
+            toLog.add("getOrgStructureOut Action properties and type #", names);
             for (ActionProperty property : names.keySet()) {
                 final List<APValue> apValues = names.get(property);
                 for (APValue apValue : apValues) {
                     if (apValue instanceof APValueOrgStructure) {
                         final OrgStructure orgStructure = (OrgStructure) apValue.getValue();
-                        toLog.add("Found OrgStructureOut: {}, {}", orgStructure, orgStructure.getName());
+                        toLog.add("Found OrgStructureOut: #, #", orgStructure, orgStructure.getName());
                         return orgStructure;
                     }
                 }
@@ -371,7 +371,7 @@ public class PharmacyBean implements PharmacyBeanLocal {
     private OrgStructure getOrgStructureOutWithDel(final Action action, final ToLog toLog) throws SkipMessageProcessException {
         try {
             if (action.getParentActionId() != 0) {
-                toLog.add("try recursive call {} by actionParentId [{}]", action, action.getParentActionId());
+                toLog.add("try recursive call # by actionParentId [#]", action, action.getParentActionId());
                 final Action parentAction = dbAction.getActionByIdWithIgnoreDeleted(action.getParentActionId());
                 if (parentAction != null) {
                     final Set<String> codes = new HashSet<String>();
@@ -380,20 +380,20 @@ public class PharmacyBean implements PharmacyBeanLocal {
                     final Map<ActionProperty, List<APValue>> names =
                             dbActionPropertyBeanLocal.getActionPropertiesByActionIdAndActionPropertyTypeCodesWithoutDel(parentAction.getId(), codes);
 
-                    toLog.add("getOrgStructureOut Action properties and type {}", names);
+                    toLog.add("getOrgStructureOut Action properties and type #", names);
                     for (ActionProperty property : names.keySet()) {
                         final List<APValue> apValues = names.get(property);
                         for (APValue apValue : apValues) {
                             if (apValue instanceof APValueOrgStructure) {
                                 final OrgStructure orgStructure = (OrgStructure) apValue.getValue();
-                                toLog.add("Found OrgStructureOut: {}, {}", orgStructure, orgStructure.getName());
+                                toLog.add("Found OrgStructureOut: #, #", orgStructure, orgStructure.getName());
                                 return orgStructure;
                             }
                         }
                     }
                 }
             } else {
-                toLog.add("OrgStructure is not found {} by actionParentId [{}]", action, action.getParentActionId());
+                toLog.add("OrgStructure is not found # by actionParentId [#]", action, action.getParentActionId());
             }
         } catch (CoreException e) {
         }
@@ -410,14 +410,14 @@ public class PharmacyBean implements PharmacyBeanLocal {
 
             final Map<ActionProperty, List<APValue>> names
                     = dbActionPropertyBeanLocal.getActionPropertiesByActionIdAndActionPropertyTypeCodesWithoutDel(action.getId(), codes);
-            toLog.add("getOrgStructureIn Action properties and type {}", names);
+            toLog.add("getOrgStructureIn Action properties and type #", names);
 
             for (ActionProperty property : names.keySet()) {
                 final List<APValue> apValues = names.get(property);
                 for (APValue apValue : apValues) {
                     if (apValue instanceof APValueOrgStructure) {
                         final OrgStructure orgStructure = (OrgStructure) apValue.getValue();
-                        toLog.add("Found OrgStructureIn: {}, {}", orgStructure, orgStructure.getName());
+                        toLog.add("Found OrgStructureIn: #, #", orgStructure, orgStructure.getName());
                         return orgStructure;
                     }
                 }
@@ -433,7 +433,7 @@ public class PharmacyBean implements PharmacyBeanLocal {
     private OrgStructure getOrgStructureInWithDel(final Action action, final ToLog toLog) throws SkipMessageProcessException {
         try {
             if (action.getParentActionId() != 0) {
-                toLog.add("try recursive call {} by actionParentId [{}]", action, action.getParentActionId());
+                toLog.add("try recursive call # by actionParentId [#]", action, action.getParentActionId());
                 final Action parentAction = dbAction.getActionByIdWithIgnoreDeleted(action.getParentActionId());
                 if (parentAction != null) {
                     final Set<String> codes = new HashSet<String>();
@@ -441,20 +441,20 @@ public class PharmacyBean implements PharmacyBeanLocal {
 
                     final Map<ActionProperty, List<APValue>> names
                             = dbActionPropertyBeanLocal.getActionPropertiesByActionIdAndActionPropertyTypeCodesWithoutDel(parentAction.getId(), codes);
-                    toLog.add("getOrgStructureIn Action properties and type {}", names);
+                    toLog.add("getOrgStructureIn Action properties and type #", names);
 
                     for (ActionProperty property : names.keySet()) {
                         final List<APValue> apValues = names.get(property);
                         for (APValue apValue : apValues) {
                             if (apValue instanceof APValueOrgStructure) {
                                 final OrgStructure orgStructure = (OrgStructure) apValue.getValue();
-                                toLog.add("Found OrgStructureIn: {}, {}", orgStructure, orgStructure.getName());
+                                toLog.add("Found OrgStructureIn: #, #", orgStructure, orgStructure.getName());
                                 return orgStructure;
                             }
                         }
                     }
                 } else {
-                    toLog.add("OrgStructure is not found {} by actionParentId [{}]", action, action.getParentActionId());
+                    toLog.add("OrgStructure is not found # by actionParentId [#]", action, action.getParentActionId());
                 }
             }
 
@@ -474,14 +474,14 @@ public class PharmacyBean implements PharmacyBeanLocal {
 
             final Map<ActionProperty, List<APValue>> names
                     = dbActionPropertyBeanLocal.getActionPropertiesByActionIdAndActionPropertyTypeCodesWithoutDel(action.getId(), codesSet);
-            toLog.add("Action properties and type {}", names);
+            toLog.add("Action properties and type #", names);
 
             //     final Map<ActionProperty, List<APValue>> actionPropertiesMap = dbActionPropertyBeanLocal.getActionPropertiesByActionId(action.getId());
             for (ActionProperty property : names.keySet()) {
                 final List<APValue> apValues = names.get(property);
                 for (APValue apValue : apValues) {
                     if (apValue instanceof APValueOrgStructure) {
-                        toLog.add("Found OrgStructure property: {}, apvalue: {}, value: {}", property, apValue, apValue.getValue());
+                        toLog.add("Found OrgStructure property: #, apvalue: #, value: #", property, apValue, apValue.getValue());
                         return (OrgStructure) apValue.getValue();
                     }
                 }
@@ -498,11 +498,11 @@ public class PharmacyBean implements PharmacyBeanLocal {
      * @throws CoreException
      */
     public void sendPrescriptionTo1C() {
-        ToLog toLog = new ToLog("SEND PRESCRIPTION TO 1C");
-        try {
-            Iterable<PrescriptionsTo1C> prescriptions = dbPrescriptionsTo1CBeanLocal.getPrescriptions();
-            for (PrescriptionsTo1C prescription : prescriptions) {
-                toLog.add("found {}", prescription);
+        Iterable<PrescriptionsTo1C> prescriptions = dbPrescriptionsTo1CBeanLocal.getPrescriptions();
+        for (PrescriptionsTo1C prescription : prescriptions) {
+            ToLog toLog = new ToLog("PRESCRIPTION");
+            try {
+                toLog.add("found #", prescription);
 
                 int errCount = prescription.getErrCount();
                 long step = 89 * 1000; // время до слейдующей попытки передачи данных
@@ -510,15 +510,16 @@ public class PharmacyBean implements PharmacyBeanLocal {
                 prescription.setSendTime(new Timestamp((new java.util.Date()).getTime() + (long) (errCount) * step));
 
                 if (sendPrescription(prescription, toLog)) {
+                    toLog.add("remove prescription item #", prescription.getIntervalId());
                     dbPrescriptionsTo1CBeanLocal.remove(prescription);
                 }
-                toLog.add("sending prescription stop");
+            } catch (Exception e) {
+                toLog.add("Exception: " + e);
+                logger.error("Exception: " + e, e);
+            } finally {
+                logger.info(toLog.releaseString());
             }
-        } catch (Exception e) {
-            toLog.add("Exception: " + e);
-            logger.error("Exception: " + e, e);
-        } finally {
-            logger.info(toLog.releaseString());
+
         }
     }
 
@@ -589,9 +590,9 @@ public class PharmacyBean implements PharmacyBeanLocal {
                 }
                 if (request != null) {
 
-                    toLog.add("prepare message... \n\n {}", HL7PacketBuilder.marshallMessage(request, "misexchange"));
+                    toLog.add("prepare message... \n\n #", HL7PacketBuilder.marshallMessage(request, "misexchange"));
                     final MCCIIN000002UV012 result = new MISExchange().getMISExchangeSoap().processHL7V3Message(request);
-                    toLog.add("Connection successful. Result: {} \n\n {}",
+                    toLog.add("Connection successful. Result: # \n\n #",
                             result, HL7PacketBuilder.marshallMessage(result, "org.hl7.v3"));
 
                     if (isOk(result)) {

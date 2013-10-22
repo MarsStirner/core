@@ -1,10 +1,8 @@
 
 package misexchange;
 
-import javax.xml.bind.annotation.XmlAccessType;
-import javax.xml.bind.annotation.XmlAccessorType;
-import javax.xml.bind.annotation.XmlElement;
-import javax.xml.bind.annotation.XmlType;
+import javax.xml.bind.annotation.*;
+
 import org.hl7.v3.RCMRIN000002UV022;
 
 
@@ -28,6 +26,7 @@ import org.hl7.v3.RCMRIN000002UV022;
  * 
  */
 @XmlAccessorType(XmlAccessType.FIELD)
+@XmlRootElement
 @XmlType(name = "RCMR_IN000002UV02", propOrder = {
     "message"
 })

@@ -48,7 +48,7 @@ public class ToLog {
         delta = curr;
         int i = 0;
         final StringBuilder sb = new StringBuilder();
-        for (StringTokenizer stringTokenizer = new StringTokenizer(toLog, "{}", true); stringTokenizer.hasMoreTokens(); i++) {
+        for (StringTokenizer stringTokenizer = new StringTokenizer(toLog, "#", true); stringTokenizer.hasMoreTokens();) {
             String s = stringTokenizer.nextToken();
             if (s.equals("{}")) {
                 if (i < arguments.length) {
