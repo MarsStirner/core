@@ -6,6 +6,7 @@ import org.slf4j.LoggerFactory;
 
 import java.text.SimpleDateFormat;
 import java.util.Date;
+import java.util.StringTokenizer;
 
 /**
  * Author:      Dmitriy E. Nosov <br>
@@ -41,15 +42,27 @@ public class ToLog {
         }
     }
 
-//    public void add(String toLog,Object... arguments) {
-//        curr = System.currentTimeMillis();
-//        raz = curr - delta;
-//        delta = curr;
-//        sb.append("[").append(toLog).append("]");
-//        if (raz > 0) {
-//            sb.append("(").append(String.valueOf(raz)).append("mls) ");
-//        }
-//    }
+    public void add(String toLog, Object... arguments) {
+        curr = System.currentTimeMillis();
+        raz = curr - delta;
+        delta = curr;
+        int i = 0;
+        final StringBuilder sb = new StringBuilder();
+        for (StringTokenizer stringTokenizer = new StringTokenizer(toLog, "{}", true); stringTokenizer.hasMoreTokens(); i++) {
+            String s = stringTokenizer.nextToken();
+            if (s.equals("{}")) {
+                if (i < arguments.length) {
+                    sb.append(arguments[i++]);
+                }
+            } else {
+                sb.append(s);
+            }
+        }
+        sb.append("[").append(sb.toString()).append("]");
+        if (raz > 0) {
+            sb.append("(").append(String.valueOf(raz)).append("mls) ");
+        }
+    }
 
     public void startAdd(String toLog) {
         sb.append("[").append(toLog);

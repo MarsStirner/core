@@ -211,7 +211,7 @@ public class Database {
      */
     public List<Action> getNewActionByFlatCode(final String flatCode) {
         final List<Action> actions =
-                em.createQuery("SELECT a FROM Action a WHERE a.status = 0 AND a.actionType.flatCode = :flatCode AND a.deleted = 0 ", Action.class)
+                em.createNamedQuery("Action.findNewByFlatCode", Action.class)
                         .setParameter("flatCode", flatCode).getResultList();
         return actions;
     }

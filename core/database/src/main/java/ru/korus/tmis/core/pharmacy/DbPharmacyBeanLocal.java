@@ -2,6 +2,7 @@ package ru.korus.tmis.core.pharmacy;
 
 import org.joda.time.DateTime;
 import ru.korus.tmis.core.entity.model.Action;
+import ru.korus.tmis.core.entity.model.DrugComponent;
 import ru.korus.tmis.core.entity.model.RlsNomen;
 import ru.korus.tmis.core.entity.model.pharmacy.Pharmacy;
 import ru.korus.tmis.core.exception.CoreException;
@@ -26,13 +27,13 @@ public interface DbPharmacyBeanLocal {
     List<Pharmacy> getNonCompletedItems();
 
     /**
-     * Получение кода назначенного препарата
+     * Получение списка компонентов назначения
      *
      *
      * @param action
      * @return
      */
-    List<RlsNomen> getDrugCode(Action action);
+    List<DrugComponent> getDrugComponent(Action action);
 
     /**
      * Поиск или создание записи об обращении в таблице Pharmacy

@@ -1,6 +1,7 @@
 package ru.korus.tmis.core.pharmacy;
 
 import ru.korus.tmis.core.entity.model.DrugChart;
+import ru.korus.tmis.core.entity.model.DrugComponent;
 import ru.korus.tmis.core.entity.model.RlsNomen;
 import ru.korus.tmis.core.entity.model.pharmacy.PrescriptionSendingRes;
 
@@ -14,5 +15,5 @@ import javax.ejb.Local;
  */
 @Local
 public interface DbPrescriptionSendingResBeanLocal {
-    PrescriptionSendingRes getPrescriptionSendingRes(DrugChart drugChart, RlsNomen rlsNomen);
+    PrescriptionSendingRes getPrescriptionSendingRes(DrugChart drugChart, DrugComponent drugComponent);
 }

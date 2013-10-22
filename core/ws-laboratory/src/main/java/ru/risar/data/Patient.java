@@ -16,6 +16,8 @@ import java.util.Date;
         "name",
         "gender",
         "birthTime",
+        "socStatus",
+        "bloodType",
         "patientNumbers",
         "addresses",
         "contactInfo"
@@ -33,6 +35,20 @@ public class Patient {
 
     @XmlElement(required = true)
     protected Date birthTime;
+
+    /**
+     * Социальный статус
+     *
+     * Справочник 'Социальный статус' {rbsocstatustype}
+     */
+    protected Integer socStatus;
+
+    /**
+     * Группа крови
+     *
+     * Справочник 'Группа крови' {rbbloodtype}
+     */
+    protected String bloodType;
 
     @XmlElement(required = true)
     protected PatientNumbers patientNumbers;
@@ -97,5 +113,21 @@ public class Patient {
 
     public void setContactInfo(ContactInfo contactInfo) {
         this.contactInfo = contactInfo;
+    }
+
+    public Integer getSocStatus() {
+        return socStatus;
+    }
+
+    public void setSocStatus(Integer socStatus) {
+        this.socStatus = socStatus;
+    }
+
+    public String getBloodType() {
+        return bloodType;
+    }
+
+    public void setBloodType(String bloodType) {
+        this.bloodType = bloodType;
     }
 }

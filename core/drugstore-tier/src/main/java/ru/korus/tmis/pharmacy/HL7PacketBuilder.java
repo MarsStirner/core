@@ -12,6 +12,7 @@ import org.slf4j.LoggerFactory;
 import ru.korus.tmis.core.entity.model.*;
 import ru.korus.tmis.core.entity.model.pharmacy.PrescriptionSendingRes;
 import ru.korus.tmis.rlsupdate.BalanceOfGoodsInfoBean;
+import ru.korus.tmis.util.logs.ToLog;
 
 import javax.xml.bind.JAXBContext;
 import javax.xml.bind.JAXBElement;
@@ -53,9 +54,6 @@ public final class HL7PacketBuilder {
         final String uuidDocument = UUID.randomUUID().toString();
         final String uuidOrgStructure = orgStructure.getUuid().getUuid();
         final String uuidClient = client.getUuid().getUuid();
-
-        logger.info("process RECEIVED document {}, action {}, event {}, orgStructure {}, client {}",
-                uuidDocument, action, event, orgStructure, client);
 
         final Request request = FACTORY_MIS.createPRPAIN402001UV02();
 
@@ -144,10 +142,7 @@ public final class HL7PacketBuilder {
         final String uuidExternalId = event.getUuid().getUuid();
         final String externalId = event.getExternalId();
         final String uuidClient = client.getUuid().getUuid();
-
         final String uuidDocument = UUID.randomUUID().toString();
-        logger.info("process DEL_RECEIVED document {}, action {}, uuidExternalId {}, externalId {}, uuidClient {}, client {}",
-                action, uuidExternalId, externalId, uuidClient, client);
 
         final Request request = FACTORY_MIS.createPRPAIN402006UV02();
         final PRPAIN402006UV022 prpain402006UV02 = FACTORY_HL7.createPRPAIN402006UV022();
@@ -213,9 +208,6 @@ public final class HL7PacketBuilder {
         final String clientUUID = client.getUuid().getUuid();
         final String rootUUID = UUID.randomUUID().toString();
 
-        logger.info("process LEAVED action {}, externalId {}, externalUUID {}, client {}, clientUUID {}",
-                action, externalId, externalUUID, client, clientUUID);
-
         final Request request = FACTORY_MIS.createPRPAIN402003UV02();
 
         final PRPAIN402003UV022 prpain402003UV02 = FACTORY_HL7.createPRPAIN402003UV022();
@@ -277,9 +269,7 @@ public final class HL7PacketBuilder {
         final String uuidLocationOut = orgStructureOut.getUuid() != null ? orgStructureOut.getUuid().getUuid() : String.valueOf(UUID.randomUUID());
         // Если OrgStructure не содержит UUID, то генерируем случайный
         final String uuidLocationIn = orgStructureIn.getUuid() != null ? orgStructureIn.getUuid().getUuid() : String.valueOf(UUID.randomUUID());
-
         final String uuidDocument = UUID.randomUUID().toString();
-        logger.info("process MOVING document {}, action {}", uuidDocument, action);
 
         final Request request = FACTORY_MIS.createPRPAIN302011UV02();
         final PRPAIN302011UV022 prpain302011UV022 = FACTORY_HL7.createPRPAIN302011UV022();
@@ -356,10 +346,7 @@ public final class HL7PacketBuilder {
         final String uuidLocationOut = orgStructureOut.getUuid() != null ? orgStructureOut.getUuid().getUuid() : String.valueOf(UUID.randomUUID());
         // Если OrgStructure не содержит UUID, то генерируем случайный
         final String uuidLocationIn = orgStructureIn.getUuid() != null ? orgStructureIn.getUuid().getUuid() : String.valueOf(UUID.randomUUID());
-
-
         final String uuidDocument = UUID.randomUUID().toString();
-        logger.info("process DEL_MOVING document {}, action {}", uuidDocument, action);
 
         final Request request = FACTORY_MIS.createPRPAIN302012UV02();
         final PRPAIN302012UV022 prpain302012UV022 = FACTORY_HL7.createPRPAIN302012UV022();
@@ -419,20 +406,22 @@ public final class HL7PacketBuilder {
 
     /**
      * Формирования сообщения об интервалах назначения и исполнения ЛС
-     * @param interval      - Интервал
-     * @param organisation  -  ЛПУ
-     * @param type          - тип интервала. ASSIGNMENT - назначение; EXECUTION - исполнение
-     * @param negationInd   - true - отменить/удалить интервал; false - создать/обновить
+     *
+     * @param interval     - Интервал
+     * @param organisation -  ЛПУ
+     * @param type         - тип интервала. ASSIGNMENT - назначение; EXECUTION - исполнение
+     * @param negationInd  - true - отменить/удалить интервал; false - создать/обновить
      * @return
      */
     public static Request processPrescription(
             final DrugChart interval,
-            final RlsNomen rlsNomen,
+            final DrugComponent drugComponent,
             final String routeOfAdministration,
             final Organisation organisation,
             final AssignmentType type,
             final Boolean negationInd,
-            final PrescriptionSendingRes prescriptionSendingRes) {
+            final PrescriptionSendingRes prescriptionSendingRes,
+            final ToLog toLog) {
         final Action action = interval.getAction();
         //Пациент
         final Patient client = action.getEvent().getPatient();
@@ -444,13 +433,11 @@ public final class HL7PacketBuilder {
         final Staff executorStaff = action.getExecutor();
 
         final String uuidDocument = uuid == null ? UUID.randomUUID().toString() : uuid;
-        logger.info("process RCMRIN000002UV02 document {}, action {}, patient {}, organisation {}, executor staff {}",
-                uuidDocument, action, client, organisation, executorStaff);
 
         final POCDMT000040ClinicalDocument clinicalDocument =
-                getClinicalDocument(interval,  rlsNomen, routeOfAdministration, client, organisation, executorStaff, type, negationInd, uuid, version);
+                getClinicalDocument(interval, drugComponent, routeOfAdministration, client, organisation, executorStaff, type, negationInd, uuid, version);
         final String innerDocument = marshallMessage(clinicalDocument, "org.hl7.v3");
-        logger.info("prepare inner document... \n\n{}", innerDocument);
+        toLog.add("prepare inner document... \n\n{}", innerDocument);
 
         final Request request = FACTORY_MIS.createRCMRIN000002UV02();
         final RCMRIN000002UV022 message = FACTORY_HL7.createRCMRIN000002UV022();
@@ -458,6 +445,7 @@ public final class HL7PacketBuilder {
         message.setITSVersion("XML_1.0");
         message.setId(createII(UUID.randomUUID().toString()));
 
+        // Время создания документа
         message.setCreationTime(createTS(action.getCreateDatetime(), "yyyyMMddHHmmss"));
         message.setInteractionId(createII("2.16.840.1.113883.1.18", "RCMR_IN000002UV02"));
         message.setProcessingCode(createCS("P"));
@@ -514,7 +502,7 @@ public final class HL7PacketBuilder {
      */
     private static POCDMT000040ClinicalDocument getClinicalDocument(
             final DrugChart interval,
-            final RlsNomen rlsNomen,
+            final DrugComponent drugComponent,
             final String routeOfAdministration,
             final Patient client,
             final Organisation organisation,
@@ -525,11 +513,11 @@ public final class HL7PacketBuilder {
         final Action action = interval.getAction();
         final String uuidDocument = UUID.randomUUID().toString();
         final Event event = action.getEvent();
+        //Номер амбулаторной карты пациента
         final String externalId = event.getExternalId();
+
         final String externalUUID = event.getUuid().getUuid();
 
-        // Версия документа, должна инкрементироваться при повторной передаче
-        final String versionOfDocument = "1";
 
         final POCDMT000040ClinicalDocument clinicalDocument = FACTORY_HL7.createPOCDMT000040ClinicalDocument();
         clinicalDocument.getRealmCode().add(createCS("RU"));
@@ -546,33 +534,34 @@ public final class HL7PacketBuilder {
         clinicalDocument.setLanguageCode(createCS("ru-RU"));
         clinicalDocument.setSetId(createII(uuidDocument));
 
-        final INT versionNumber = FACTORY_HL7.createINT();
-        versionNumber.setValue(new BigInteger(versionOfDocument));
-        clinicalDocument.setVersionNumber(versionNumber);
-
-        // --- record target
         final POCDMT000040RecordTarget recordTarget = FACTORY_HL7.createPOCDMT000040RecordTarget();
         final POCDMT000040PatientRole patientRole = FACTORY_HL7.createPOCDMT000040PatientRole();
+        // Номер амбулаторной карты пациента и UUID пациента
         patientRole.getId().add(createII(client.getUuid().getUuid(), externalId));
 
+        //Пол пациента
         final POCDMT000040Patient patient = FACTORY_HL7.createPOCDMT000040Patient();
         patient.getName().add(createPN(client));
         if (client.getSex() > 0) {
             patient.setAdministrativeGenderCode(createCE(client.getSex() == 1 ? "M" : "F", "2.16.840.1.113883.5.1"));
         }
+
+        // Дата рождения пациента
         patient.setBirthTime(createTS(client.getBirthDate(), "yyyyMMdd"));
         patientRole.setPatient(patient);
         recordTarget.setPatientRole(patientRole);
         clinicalDocument.getRecordTarget().add(recordTarget);
 
-        // --- author
+        // Автор медицинского документа
         final POCDMT000040Author author = FACTORY_HL7.createPOCDMT000040Author();
         author.setTime(createTS(new Date(), DATE_FORMAT));
-
         final POCDMT000040AssignedAuthor assignedAuthor = FACTORY_HL7.createPOCDMT000040AssignedAuthor();
+        // UUID автора медицинского документа
         assignedAuthor.getId().add(createII(executorStaff.getUuid().getUuid()));
 
+
         final POCDMT000040Person assignedPerson = FACTORY_HL7.createPOCDMT000040Person();
+        //ФИО автора медицинского документа
         assignedPerson.getName().add(getPNDoctor(executorStaff));
         assignedAuthor.setAssignedPerson(assignedPerson);
         author.setAssignedAuthor(assignedAuthor);
@@ -631,16 +620,15 @@ public final class HL7PacketBuilder {
 
         section.setText(text);
 
-        //----------------- Создаем несколько лек.средств в нашем случае будет только одно
-        section.getEntry().add(createEntry(event, interval, rlsNomen, routeOfAdministration, type, negationInd));
-//        section.getEntry().add(createEntry(drug));
-        //-----------------
+        // Создаем описание лек.средства
+        section.getEntry().add(createEntry(event, interval, drugComponent, routeOfAdministration, type, negationInd));
         component3.setSection(section);
 
         structuredBody.getComponent().add(component3);
         component.setStructuredBody(structuredBody);
         clinicalDocument.setComponent(component);
 
+        // Версия документа, должна инкрементироваться при повторной передаче
         final POCDMT000040RegionOfInterestValue intValue = FACTORY_HL7.createPOCDMT000040RegionOfInterestValue();
         intValue.setValue(BigInteger.valueOf(version));
         clinicalDocument.setVersionNumber(intValue);
@@ -649,27 +637,29 @@ public final class HL7PacketBuilder {
     }
 
     private static IVLTS createIVLTS(TS begDate, TS endDate) {
-        if (begDate == null && endDate == null) {
+        if (begDate == null) {
             return createIVLTS(NullFlavor.NI);
         }
         final IVLTS ivlts = FACTORY_HL7.createIVLTS();
-        if (begDate != null) {
-            final IVXBTS beg = FACTORY_HL7.createIVXBTS();
-            beg.setValue(begDate.getValue());
-            ivlts.setLow(beg);
+
+        if (endDate == null) {
+            ivlts.setValue(begDate.getValue());
+            return ivlts;
         }
-        if (endDate != null) {
-            final IVXBTS end = FACTORY_HL7.createIVXBTS();
-            end.setValue(endDate.getValue());
-            ivlts.setHigh(end);
-        }
+        final IVXBTS beg = FACTORY_HL7.createIVXBTS();
+        beg.setValue(begDate.getValue());
+        ivlts.setLow(beg);
+
+        final IVXBTS end = FACTORY_HL7.createIVXBTS();
+        end.setValue(endDate.getValue());
+        ivlts.setHigh(end);
         return ivlts;
     }
 
     /**
      * Создание наименование одного лекарственного средства
      */
-    private static POCDMT000040Entry createEntry(final Event event, DrugChart interval, RlsNomen rlsNomen, final String routeOfAdministration, final AssignmentType type, final Boolean negationInd) {
+    private static POCDMT000040Entry createEntry(final Event event, DrugChart interval, DrugComponent drugComponent, final String routeOfAdministration, final AssignmentType type, final Boolean negationInd) {
         final POCDMT000040Entry entry = FACTORY_HL7.createPOCDMT000040Entry();
         //----------------
         final POCDMT000040SubstanceAdministration substanceAdministration = FACTORY_HL7.createPOCDMT000040SubstanceAdministration();
@@ -682,8 +672,8 @@ public final class HL7PacketBuilder {
         // источник финансирования
         substanceAdministration.getId().add(createIIEx(String.valueOf(event.getEventType().getFinance().getId())));
         // период на который выполняется назначение
-        TS begDate = event.getSetDate() == null ? null : createTS(event.getSetDate(), DATE_FORMAT);
-        TS endDate = event.getExecDate() == null ? null : createTS(event.getExecDate(), DATE_FORMAT);
+        TS begDate = interval.getBegDateTime() == null ? null : createTS(interval.getBegDateTime(), DATE_FORMAT);
+        TS endDate = interval.getEndDateTime() == null ? null : createTS(interval.getEndDateTime(), DATE_FORMAT);
         substanceAdministration.getEffectiveTime().add(createIVLTS(begDate, endDate));
         // интервал, через который необходимо применять препарат (суточная доза)
         //substanceAdministration.getEffectiveTime().add(createPIVLTS("12", "h"));
@@ -700,11 +690,11 @@ public final class HL7PacketBuilder {
 
         final IVLPQ doseQuantity = FACTORY_HL7.createIVLPQ();
         final PQ center = FACTORY_HL7.createPQ();
-        center.setValue(rlsNomen.getDosageValue().trim());
+        center.setValue(String.valueOf(drugComponent.getDose()));
         final PQR pqr = FACTORY_HL7.createPQR();
         pqr.setCodeSystemName("RLS");
         final ED originalText = FACTORY_HL7.createED();
-        originalText.getContent().add(rlsNomen.getDosageUnit().getCode());
+        originalText.getContent().add(drugComponent.getNomen().getUnit().getCode());
         pqr.setOriginalText(originalText);
         center.getTranslation().add(pqr);
         doseQuantity.setCenter(center);
@@ -715,8 +705,8 @@ public final class HL7PacketBuilder {
         final POCDMT000040ManufacturedProduct manufacturedProduct = FACTORY_HL7.createPOCDMT000040ManufacturedProduct();
 
         // Получение товарной единицы лекарственного средства
-        //final POCDMT000040LabeledDrug drug = BalanceOfGoodsInfoBean.getLabeledDrug(FACTORY_HL7, String.valueOf(rlsNomen.getId()));
-        final POCDMT000040LabeledDrug drug = getFomsDrug("33814");
+        final POCDMT000040LabeledDrug drug = BalanceOfGoodsInfoBean.getLabeledDrug(FACTORY_HL7, String.valueOf(drugComponent.getNomen().getId()));
+        //final POCDMT000040LabeledDrug drug = getFomsDrug("33814");
 
         manufacturedProduct.setManufacturedLabeledDrug(/*manufacturedLabeledDrug*/drug);
         consumable.setManufacturedProduct(manufacturedProduct);
@@ -774,10 +764,6 @@ public final class HL7PacketBuilder {
 //
 //        manufacturedLabeledDrug.setCode(code1);
 //    }
-
-
-
-
     public static String marshallMessage(final Object msg, final String contextPath) {
         final StringWriter writer = new StringWriter();
         try {
@@ -1134,20 +1120,20 @@ public final class HL7PacketBuilder {
 
     }
 
-    public static POCDMT000040LabeledDrug getFomsDrug(final String code) {
+   /* public static POCDMT000040LabeledDrug getFomsDrug(final String code) {
 
         final DrugList drugList1 = new MISExchange().getMISExchangeSoap().getDrugList();
         List<POCDMT000040LabeledDrug> drugList = drugList1.getDrug();
         logger.info("Loading successful...{} drug(s)", drugList.size());
 
         for (POCDMT000040LabeledDrug d : drugList) {
-            if (d.getCode().getCode().equals(code/*"20044"*/)) {
+            if (d.getCode().getCode().equals(code*//*"20044"*//*)) {
                 logger.info("Fetch drug from cache {}", marshallMessage(d, "org.hl7.v3"));
                 return d;
             }
         }
         return drugList.get(2); //todo для теста возвращаем любой drug
-    }
+    }*/
 
 
 }

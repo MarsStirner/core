@@ -214,7 +214,7 @@ public class StrucDocText {
      */
     public String getMediaType() {
         if (mediaType == null) {
-            return "text/x-hl7-text+xml";
+            return "text/x-hl7-text+handlers";
         } else {
             return mediaType;
         }

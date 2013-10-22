@@ -152,7 +152,7 @@ public class Helper {
                 .setId(tableDrugComponent.getId())
                 .setCreateDateTime(DateConvertions.convertDateToUTCMilliseconds(tableDrugComponent.getCreateDateTime()));
         if(tableDrugComponent.getNomen() != null){
-            result.setNomen(tableDrugComponent.getNomen());
+            result.setNomen(tableDrugComponent.getNomen().getId());
         } else {
             logger.warn("DrugComponent[{}].nomem IS NULL", tableDrugComponent.getId());
         }
@@ -193,7 +193,8 @@ public class Helper {
         result.setCreateDateTime(now);
         result.setDose(drugComponent.getDose());
         result.setName(drugComponent.getName());
-        result.setNomen(drugComponent.getNomen());
+        //TODO Доработать!
+        //result.setNomen(drugComponent.getNomen());
         result.setUnit(PrescriptionServer.getUnitBean().getById(drugComponent.getUnit()));
         return result;
     }

@@ -199,7 +199,7 @@ public class StrucDocTitle {
      */
     public String getMediaType() {
         if (mediaType == null) {
-            return "text/x-hl7-title+xml";
+            return "text/x-hl7-title+handlers";
         } else {
             return mediaType;
         }

@@ -114,4 +114,19 @@ public class PrescriptionsTo1C implements Serializable {
     public void setOldStatus(Integer oldStatus) {
         this.oldStatus = oldStatus;
     }
+
+    @Override
+    public String toString() {
+        final StringBuilder sb = new StringBuilder("PrescriptionsTo1C{");
+        sb.append("intervalId=").append(intervalId);
+        sb.append(", isPrescription=").append(isPrescription);
+        sb.append(", newStatus=").append(newStatus);
+        sb.append(", oldStatus=").append(oldStatus);
+        sb.append(", errCount=").append(errCount);
+        sb.append(", info='").append(info).append('\'');
+        sb.append(", sendTime=").append(sendTime);
+        sb.append(", drugChart=").append(drugChart);
+        sb.append('}');
+        return sb.toString();
+    }
 }
