@@ -92,7 +92,8 @@ class DirectionBean extends DirectionBeanLocal
       AWI.Finance,
       AWI.PlannedEndDate,
       AWI.ExecutorId,
-      AWI.AssignerId
+      AWI.AssignerId,
+      AWI.PacientInQueueType
       //AWI.ToOrder
     )
     commonDataProcessor.addAttributes(group, new ActionWrapper(direction), attributes)
@@ -595,7 +596,7 @@ class DirectionBean extends DirectionBeanLocal
               var apv = actionPropertyBean.getActionPropertyValue_ActionByValue(action19)
               if (a.getPacientInQueueType.intValue() == 0) {
                 if (apv != null) {
-                  apv.setValueFromString("")
+                  apv.setValueFromString(null)
                   em.merge(apv)
                 }
               } else {
@@ -626,11 +627,10 @@ class DirectionBean extends DirectionBeanLocal
                   })
                 }
               }
-              //em.flush()
-              action19 = actionBean.getActionById(actionId)
               val event29 = action19.getEvent
               action19.setDeleted(true)
               event29.setDeleted(true)
+              //em.detach(event29)
               em.merge(event29)
               //em.merge(action19)
             }
@@ -640,6 +640,7 @@ class DirectionBean extends DirectionBeanLocal
           }
         }
         a.setDeleted(true)
+        //em.detach(a)
         em.merge(a)
       }
       else {
@@ -656,16 +657,19 @@ class DirectionBean extends DirectionBeanLocal
       var isAllActionSent: Boolean = true
       if (f.getStatus == 2) {
         dbJobTicketBean.getActionsForJobTicket(f.getId).foreach(a => {
-          try {
-            lisBean.sendLis2AnalysisRequest(a.getId.intValue())
-          }
-          catch {
-            case e: Exception => {
-              var jt = dbJobTicketBean.getJobTicketById(f.getId)
-              jt.setNote(jt.getNote + "Невозможно передать данные об исследовании '%s'. ".format(a.getId.toString))
-              jt.setLabel("##Ошибка отправки в ЛИС##")
-              isAllActionSent = false
-              em.merge(jt)
+          val labCode = dbJobTicketBean.getLaboratoryCodeForActionId(a.getId.intValue())
+          if (labCode != null && labCode.compareTo("0101")==0) {
+            try {
+              lisBean.sendLis2AnalysisRequest(a.getId.intValue())
+            }
+            catch {
+              case e: Exception => {
+                var jt = dbJobTicketBean.getJobTicketById(f.getId)
+                jt.setNote(jt.getNote + "Невозможно передать данные об исследовании '%s'. ".format(a.getId.toString))
+                jt.setLabel("##Ошибка отправки в ЛИС##")
+                isAllActionSent = false
+                em.merge(jt)
+              }
             }
           }
         })

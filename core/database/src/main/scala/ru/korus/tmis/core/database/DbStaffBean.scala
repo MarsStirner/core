@@ -192,7 +192,11 @@ class DbStaffBean
     }
     val result = typed.getResultList
     result.foreach(em.detach(_))
-    result.get(0)
+    if (result.size() > 0) {
+      result.get(0)
+    } else {
+      null
+    }
   }
 
   val StaffByIdQuery = """

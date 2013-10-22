@@ -64,4 +64,6 @@ public interface DbJobTicketBeanLocal {
      * @see CoreException
      */
     ActionTypeTissueType getActionTypeTissueTypeForActionType(int actionTypeId) throws CoreException;
+
+    String getLaboratoryCodeForActionId(int actionId) throws CoreException;
 }

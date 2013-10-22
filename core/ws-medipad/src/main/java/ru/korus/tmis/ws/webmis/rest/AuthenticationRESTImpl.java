@@ -3,7 +3,9 @@ package ru.korus.tmis.ws.webmis.rest;
 import javax.inject.Inject;
 import javax.inject.Singleton;
 import javax.interceptor.Interceptors;
+import javax.servlet.http.HttpServletRequest;
 import javax.ws.rs.*;
+import javax.ws.rs.core.Context;
 
 import com.sun.jersey.api.json.JSONWithPadding;
 import ru.korus.tmis.core.auth.*;
@@ -11,6 +13,7 @@ import ru.korus.tmis.core.logging.slf4j.interceptor.AuthLoggingInterceptor;
 import ru.korus.tmis.ws.impl.AuthenticationWSImpl;
 import  ru.korus.tmis.core.data.RoleData;
 import ru.korus.tmis.core.exception.AuthenticationException;
+import ru.korus.tmis.ws.impl.WebMisRESTImpl;
 
 /**
  * Description: Сервисы авторизации
@@ -25,6 +28,11 @@ public class AuthenticationRESTImpl   {
 	@Inject
 	AuthenticationWSImpl wsImpl;
 
+    @Inject
+    WebMisRESTImpl webmisImpl;
+
+    @Context
+    HttpServletRequest servRequest;
     /**
      * Сервис по получению доступных ролей для пользователя (первичная авторизация)
      * @param login Логин пользователя.
@@ -101,4 +109,25 @@ public class AuthenticationRESTImpl   {
         JSONWithPadding returnValue = new JSONWithPadding(wsImpl.authenticate(request.login(), request.password(), request.roleId()), callback);
         return returnValue;
     }
+
+    /**
+     * Сервис авторизации пользователя в системе TMIS (авторизация по токену с ролью)
+     * @param callback callback запроса.
+     * @return ru.korus.tmis.core.auth.AuthData как Object. Контейнер с авторизационными данными о пользователе.
+     * @throws AuthenticationException
+     * @see AuthenticationException
+     * @see AuthData
+     * @see AuthEntry
+     */
+    @POST
+    @Path("/changeRole")
+    @Consumes("application/json")
+    @Produces("application/x-javascript")
+    public Object authenticate3(@QueryParam("roleId") int roleId,
+                                @QueryParam("callback") String callback) {
+        AuthData auth = webmisImpl.checkTokenCookies(this.servRequest);
+        JSONWithPadding returnValue = new JSONWithPadding(wsImpl.authenticate(auth.getUser().getLogin(), auth.getUser().getPassword(), roleId), callback);
+        return returnValue;
+    }
+
 }

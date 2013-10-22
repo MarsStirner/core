@@ -121,15 +121,15 @@ class DbJobTicketBean extends DbJobTicketBeanLocal
 
     if (id > 0) {
       val jobTicket = this.getJobTicketById(id)
-      val oldJobTicket = JobTicket.clone(jobTicket)
-      val lockId = appLock.acquireLock("Job_Ticket", id, oldJobTicket.getId.intValue(), auth)
+      //val oldJobTicket = JobTicket.clone(jobTicket)
+      //val lockId = appLock.acquireLock("Job_Ticket", id, oldJobTicket.getId.intValue(), auth)
 
       try {
         jobTicket.setStatus(status)
         dbManager.merge(jobTicket)
         isComplete = true
       } finally {
-        appLock.releaseLock(lockId)
+        //appLock.releaseLock(lockId)
       }
     } else {
       LoggingManager.setLoggerType(LoggingManager.LoggingTypes.Debug)
@@ -249,6 +249,68 @@ class DbJobTicketBean extends DbJobTicketBeanLocal
       result
     }
   }
+
+  def getLaboratoryCodeForActionId(actionId: Int) = {
+    val query = em.createQuery(LaboratoryCodeByActionIdQuery, classOf[String])
+      .setParameter("actionId", actionId)
+
+    val result = query.getResultList
+    if (result.size() > 0) {
+      result.get(0)
+    } else {
+      null
+    }
+
+  }
+
+  val LaboratoryCodeByActionIdQuery =
+    """
+    SELECT
+      lab.code
+    FROM
+      Action a,
+      ActionProperty ap,
+      ActionPropertyType apt,
+      RbTest rbTest,
+      RbLaboratoryTest labTest,
+      RbLaboratory lab,
+      ActionType at
+    WHERE
+      ap.action = a
+    AND
+      ap.actionPropertyType.id = apt.id
+    AND
+      apt.test.id = rbTest.id
+    AND
+      labTest.testId = rbTest.id
+    AND
+      labTest.masterId = labTest.id
+    AND
+      at.id = a.actionType.id
+    AND
+      a.id = :actionId
+    AND
+      ap.isAssigned = 1
+    """
+
+  val LaboratoryCodeByActionIdQuery2 =
+    """
+     SELECT
+          rbLaboratory.code,
+          rbTest.name,
+          ActionType.name,
+          ActionProperty.isAssigned
+      FROM Action
+          JOIN ActionProperty on ActionProperty.action_id = Action.id
+          JOIN ActionPropertyType on ActionPropertyType.id = ActionProperty.type_id
+          JOIN rbTest on ActionPropertyType.test_id = rbTest.id
+          LEFT JOIN rbLaboratory_Test on rbLaboratory_Test.test_id = rbTest.id
+          LEFT JOIN rbLaboratory on rbLaboratory_Test.master_id = rbLaboratory.id
+          LEFT JOIN ActionType on Action.actionType_id = ActionType.id
+      WHERE
+          Action.id = :actionId
+          AND ActionProperty.isAssigned = 1
+    """
 
   val JobTicketByIdQuery =
     """

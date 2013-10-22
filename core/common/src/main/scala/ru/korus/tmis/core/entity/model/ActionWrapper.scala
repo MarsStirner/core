@@ -222,6 +222,11 @@ class ActionWrapper(a: Action)
           Map(APWI.Value.toString -> this.a.getIsUrgent.toString)
         )
       }
+      case AWI.PacientInQueueType => {
+        List(
+          Map(APWI.Value.toString -> this.a.getPacientInQueueType.toString)
+        )
+      }
       case AWI.Multiplicity => {
         //кратность только для get
         List(
