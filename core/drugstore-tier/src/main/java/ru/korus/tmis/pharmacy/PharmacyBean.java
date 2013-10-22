@@ -115,7 +115,7 @@ public class PharmacyBean implements PharmacyBeanLocal {
                 }
                 final List<Action> actionAfterDate = dbPharmacy.getVirtualActionsAfterDate(lastDateUpdate);
                 if (!actionAfterDate.isEmpty()) {
-                    logger.info("Found # newest actions after date {}", actionAfterDate.size(), getLastDate());
+                    logger.info("Found {} newest actions after date {}", actionAfterDate.size(), getLastDate());
                     for (Action action : actionAfterDate) {
                         final ToLog toLog = new ToLog();
                         try {
