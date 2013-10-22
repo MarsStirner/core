@@ -47,14 +47,14 @@ public class ToLog {
         raz = curr - delta;
         delta = curr;
         if (arguments != null) {
-            int i = 0;
+            int idx = 0;
             final StringBuilder str = new StringBuilder();
             for (StringTokenizer stringTokenizer = new StringTokenizer(toLog, "#", true); stringTokenizer.hasMoreTokens(); ) {
                 String s = stringTokenizer.nextToken();
                 if (s.equals("#")) {
-                    if (i < arguments.length) {
-                        str.append(arguments[i]);
-                        i++;
+                    if (idx < arguments.length) {
+                        str.append(arguments[idx]);
+                        idx++;
                     }
                 } else {
                     str.append(s);
