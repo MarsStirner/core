@@ -554,7 +554,7 @@ public final class HL7PacketBuilder {
 
         // Автор медицинского документа
         final POCDMT000040Author author = FACTORY_HL7.createPOCDMT000040Author();
-       // author.setTime(createTS(new Date(), DATE_FORMAT));
+        author.setTime(createTS(new Date(), DATE_FORMAT));
         final POCDMT000040AssignedAuthor assignedAuthor = FACTORY_HL7.createPOCDMT000040AssignedAuthor();
         // UUID автора медицинского документа
         assignedAuthor.getId().add(createII(executorStaff.getUuid().getUuid()));
