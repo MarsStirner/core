@@ -694,7 +694,7 @@ public final class HL7PacketBuilder {
         final PQR pqr = FACTORY_HL7.createPQR();
         pqr.setCodeSystemName("RLS");
         final ED originalText = FACTORY_HL7.createED();
-        originalText.getContent().add(drugComponent.getNomen().getDosageUnit().getCode());
+        originalText.getContent().add(drugComponent.getNomen().getUnit().getCode());
         pqr.setOriginalText(originalText);
         center.getTranslation().add(pqr);
         doseQuantity.setCenter(center);
