@@ -12,6 +12,7 @@ import org.slf4j.LoggerFactory;
 import ru.korus.tmis.core.entity.model.*;
 import ru.korus.tmis.core.entity.model.pharmacy.PrescriptionSendingRes;
 import ru.korus.tmis.rlsupdate.BalanceOfGoodsInfoBean;
+import ru.korus.tmis.util.logs.ToLog;
 
 import javax.xml.bind.JAXBContext;
 import javax.xml.bind.JAXBElement;
@@ -53,9 +54,6 @@ public final class HL7PacketBuilder {
         final String uuidDocument = UUID.randomUUID().toString();
         final String uuidOrgStructure = orgStructure.getUuid().getUuid();
         final String uuidClient = client.getUuid().getUuid();
-
-        logger.info("process RECEIVED document {}, action {}, event {}, orgStructure {}, client {}",
-                uuidDocument, action, event, orgStructure, client);
 
         final Request request = FACTORY_MIS.createPRPAIN402001UV02();
 
@@ -144,10 +142,7 @@ public final class HL7PacketBuilder {
         final String uuidExternalId = event.getUuid().getUuid();
         final String externalId = event.getExternalId();
         final String uuidClient = client.getUuid().getUuid();
-
         final String uuidDocument = UUID.randomUUID().toString();
-        logger.info("process DEL_RECEIVED document {}, action {}, uuidExternalId {}, externalId {}, uuidClient {}, client {}",
-                action, uuidExternalId, externalId, uuidClient, client);
 
         final Request request = FACTORY_MIS.createPRPAIN402006UV02();
         final PRPAIN402006UV022 prpain402006UV02 = FACTORY_HL7.createPRPAIN402006UV022();
@@ -213,9 +208,6 @@ public final class HL7PacketBuilder {
         final String clientUUID = client.getUuid().getUuid();
         final String rootUUID = UUID.randomUUID().toString();
 
-        logger.info("process LEAVED action {}, externalId {}, externalUUID {}, client {}, clientUUID {}",
-                action, externalId, externalUUID, client, clientUUID);
-
         final Request request = FACTORY_MIS.createPRPAIN402003UV02();
 
         final PRPAIN402003UV022 prpain402003UV02 = FACTORY_HL7.createPRPAIN402003UV022();
@@ -277,9 +269,7 @@ public final class HL7PacketBuilder {
         final String uuidLocationOut = orgStructureOut.getUuid() != null ? orgStructureOut.getUuid().getUuid() : String.valueOf(UUID.randomUUID());
         // Если OrgStructure не содержит UUID, то генерируем случайный
         final String uuidLocationIn = orgStructureIn.getUuid() != null ? orgStructureIn.getUuid().getUuid() : String.valueOf(UUID.randomUUID());
-
         final String uuidDocument = UUID.randomUUID().toString();
-        logger.info("process MOVING document {}, action {}", uuidDocument, action);
 
         final Request request = FACTORY_MIS.createPRPAIN302011UV02();
         final PRPAIN302011UV022 prpain302011UV022 = FACTORY_HL7.createPRPAIN302011UV022();
@@ -356,10 +346,7 @@ public final class HL7PacketBuilder {
         final String uuidLocationOut = orgStructureOut.getUuid() != null ? orgStructureOut.getUuid().getUuid() : String.valueOf(UUID.randomUUID());
         // Если OrgStructure не содержит UUID, то генерируем случайный
         final String uuidLocationIn = orgStructureIn.getUuid() != null ? orgStructureIn.getUuid().getUuid() : String.valueOf(UUID.randomUUID());
-
-
         final String uuidDocument = UUID.randomUUID().toString();
-        logger.info("process DEL_MOVING document {}, action {}", uuidDocument, action);
 
         final Request request = FACTORY_MIS.createPRPAIN302012UV02();
         final PRPAIN302012UV022 prpain302012UV022 = FACTORY_HL7.createPRPAIN302012UV022();
@@ -433,7 +420,8 @@ public final class HL7PacketBuilder {
             final Organisation organisation,
             final AssignmentType type,
             final Boolean negationInd,
-            final PrescriptionSendingRes prescriptionSendingRes) {
+            final PrescriptionSendingRes prescriptionSendingRes,
+            final ToLog toLog) {
         final Action action = interval.getAction();
         //Пациент
         final Patient client = action.getEvent().getPatient();
@@ -445,13 +433,11 @@ public final class HL7PacketBuilder {
         final Staff executorStaff = action.getExecutor();
 
         final String uuidDocument = uuid == null ? UUID.randomUUID().toString() : uuid;
-        logger.info("process RCMRIN000002UV02 document {}, action {}, patient {}, organisation {}, executor staff {}",
-                uuidDocument, action, client, organisation, executorStaff);
 
         final POCDMT000040ClinicalDocument clinicalDocument =
                 getClinicalDocument(interval, drugComponent, routeOfAdministration, client, organisation, executorStaff, type, negationInd, uuid, version);
         final String innerDocument = marshallMessage(clinicalDocument, "org.hl7.v3");
-        logger.info("prepare inner document... \n\n{}", innerDocument);
+        toLog.add("prepare inner document... \n\n{}", innerDocument);
 
         final Request request = FACTORY_MIS.createRCMRIN000002UV02();
         final RCMRIN000002UV022 message = FACTORY_HL7.createRCMRIN000002UV022();
