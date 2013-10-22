@@ -46,19 +46,23 @@ public class ToLog {
         curr = System.currentTimeMillis();
         raz = curr - delta;
         delta = curr;
-        int i = 0;
-        final StringBuilder sb = new StringBuilder();
-        for (StringTokenizer stringTokenizer = new StringTokenizer(toLog, "#", true); stringTokenizer.hasMoreTokens();) {
-            String s = stringTokenizer.nextToken();
-            if (s.equals("#")) {
-                if (i < arguments.length) {
-                    sb.append(arguments[i++]);
+        if (arguments != null) {
+            int i = 0;
+            final StringBuilder str = new StringBuilder();
+            for (StringTokenizer stringTokenizer = new StringTokenizer(toLog, "#", true); stringTokenizer.hasMoreTokens(); ) {
+                String s = stringTokenizer.nextToken();
+                if (s.equals("#")) {
+                    if (i < arguments.length) {
+                        str.append(arguments[i]);
+                        i++;
+                    }
+                } else {
+                    str.append(s);
                 }
-            } else {
-                sb.append(s);
             }
+            toLog = str.toString();
         }
-        sb.append("[").append(sb.toString()).append("]");
+        sb.append("[").append(toLog).append("]");
         if (raz > 0) {
             sb.append("(").append(String.valueOf(raz)).append("mls) ");
         }
