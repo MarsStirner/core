@@ -39,7 +39,7 @@ GF_PASSWD_FILE="${DIR}/password"
 
 source ${DIR}/unix-common.sh
 
-COPY_LIBRARIES_CMD="cp ${DIR}/../scripts/lib/* ${DOMAIN_DIR}/${DOMAIN}/lib/ext/"
+COPY_LIBRARIES_CMD="cp ${DIR}/lib/* ${DOMAIN_DIR}/${DOMAIN}/lib/ext/"
 
 DELETE_DOMAIN_CMD="${ASADMIN}/asadmin delete-domain ${DOMAIN}"
 
