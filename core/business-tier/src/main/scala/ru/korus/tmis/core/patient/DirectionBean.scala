@@ -518,10 +518,11 @@ class DirectionBean extends DirectionBeanLocal
                 null
               }
               em.merge(actionPropertyBean.setActionPropertyValue(ap18, valueToSave, apvv.asInstanceOf[APValueAction].getId.getIndex+1))
-
             })
+            em.merge(actionPropertyBean.setActionPropertyValue(ap18, action19.getId.toString, 0))
+          } else {
+            em.merge(actionPropertyBean.setActionPropertyValue(ap18, action19.getId.toString, request.plannedTime.getIndex))
           }
-          em.merge(actionPropertyBean.setActionPropertyValue(ap18, action19.getId.toString, 0))
         } else {
           action.setDeleted(true)
           em.flush()
