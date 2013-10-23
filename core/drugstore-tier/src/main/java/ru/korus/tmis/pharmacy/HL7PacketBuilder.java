@@ -686,7 +686,7 @@ public final class HL7PacketBuilder {
         }
         substanceAdministration.setPriorityCode(createCE(prio, "2.16.840.1.113883.5.7", "ActPriority", prioName));
         // способ применения
-        substanceAdministration.setRouteCode(createCE(routeOfAdministration, "2.16.840.1.113883.5.112", "RouteOfAdministration"));
+        //substanceAdministration.setRouteCode(createCE(routeOfAdministration, "2.16.840.1.113883.5.112", "RouteOfAdministration"));
 
         final IVLPQ doseQuantity = FACTORY_HL7.createIVLPQ();
         final PQ center = FACTORY_HL7.createPQ();

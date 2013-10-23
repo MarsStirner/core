@@ -600,6 +600,8 @@ public class PharmacyBean implements PharmacyBeanLocal {
                         prescriptionSendingResBean.setVersion(prescriptionSendingResBean.getVersion() == null ? 1 : (prescriptionSendingResBean.getVersion() + 1));
                         res = true;
                     }
+                } else {
+                    prescription.setErrCount(prescription.getErrCount() - 1);
                 }
             }
 
