@@ -145,7 +145,7 @@
             </resource>
             <resource>
                 <directory>scripts/lib/</directory>
-                <targetPath>../</targetPath>
+                <targetPath>../lib/</targetPath>
                 <filtering>false</filtering>
                 <includes>
                     <include>**/*.jar</include>
