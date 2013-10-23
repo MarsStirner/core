@@ -1,4 +1,4 @@
-#!/bin/bash
+#!/usr/bin/env bash
 #
 # Скрипт (пере)создания домена
 #
@@ -9,6 +9,12 @@
 # 4 - ошибка запуска домена
 # 5 - ошибка включения secure admin
 # 6 - ошибка создания пола подключений к базе данных
+
+# Запуск данного скрипта требует bash и если он вызывается чем-то другим, то пытаемся запустить его с помощью bash
+if [ -z "$BASH_VERSION" ]
+then
+    exec bash "$0" "$@"
+fi
 
 DELETE_JVM_OPTIONS=('-Xmx512m' '-XX\:MaxPermSize=192m')
 CREATE_JVM_OPTIONS=(
@@ -33,7 +39,7 @@ GF_PASSWD_FILE="${DIR}/password"
 
 source ${DIR}/unix-common.sh
 
-COPY_LIBRARIES_CMD="cp ${DIR}/../scripts/lib/* ${DOMAIN_DIR}/${DOMAIN}/lib/ext/"
+COPY_LIBRARIES_CMD="cp ${DIR}/lib/* ${DOMAIN_DIR}/${DOMAIN}/lib/ext/"
 
 DELETE_DOMAIN_CMD="${ASADMIN}/asadmin delete-domain ${DOMAIN}"
 

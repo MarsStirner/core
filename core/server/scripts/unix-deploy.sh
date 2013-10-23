@@ -1,7 +1,11 @@
-#!/bin/bash
+#!/usr/bin/env bash
 #
 # Скрипт редеплоя приложения c рестартом
 #
+if [ -z "$BASH_VERSION" ]
+then
+    exec bash "$0" "$@"
+fi
 
 # Получение расположения данного скрипта. Таким образом мы получаем возможность запускать его из любой директории.
 SOURCE="${BASH_SOURCE[0]}"
@@ -58,13 +62,12 @@ echo "AS_ADMIN_MASTERPASSWORD="${MASTER_PASSWORD} >> $GF_PASSWD_FILE
 # Необходимость данной конструкции под сомнением
 export PATH=${glassfish.home}/bin/:$PATH
 
+EQUALS_APPLICATIONS=""
 function list_applications {
     print_header "List applications"
 
     echo $LIST_APPLICATION_CMD
-    if ! $LIST_APPLICATION_CMD; then
-        exit 1
-    fi
+    local APPLICATIONS_PLAIN=$($LIST_APPLICATION_CMD)
 }
 
 function undeploy {
@@ -72,8 +75,8 @@ function undeploy {
 
     echo $UNDEPLOY_CMD
     if ! $UNDEPLOY_CMD; then
-       # exit 3
-       echo !!
+       # Может завершиться ошибкой, если приложение не существует
+       echo $?
     fi
 }
 
@@ -99,9 +102,9 @@ function print_tail {
     print_separator
     echo ""
     # Показать лог
-    echo "tail -f -n 5000 ${com.sun.aas.instanceRoot}/logs/tmis-core/core.log"
-    echo "tail -f -n 5000 ${com.sun.aas.instanceRoot}/logs/pharmacy/pharmacy.log"
-    echo "tail -f -n 5000 ${com.sun.aas.instanceRoot}/logs/server.log"
+    echo "tail -f -n 5000 ${DOMAIN_DIR}/${DOMAIN}/logs/tmis-core/core.$(date +%Y-%-m-%-d).log"
+    echo "tail -f -n 5000 ${DOMAIN_DIR}/${DOMAIN}/logs/pharmacy/pharmacy.$(date +%Y-%-m-%-d).log"
+    echo "tail -f -n 5000 ${DOMAIN_DIR}/${DOMAIN}/logs/server.log"
 }
 
 
