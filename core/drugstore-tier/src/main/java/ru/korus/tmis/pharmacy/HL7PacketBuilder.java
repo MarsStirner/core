@@ -437,7 +437,7 @@ public final class HL7PacketBuilder {
         final POCDMT000040ClinicalDocument clinicalDocument =
                 getClinicalDocument(interval, drugComponent, routeOfAdministration, client, organisation, executorStaff, type, negationInd, uuid, version);
         final String innerDocument = marshallMessage(clinicalDocument, "org.hl7.v3");
-        toLog.add("prepare inner document... \n\n{}", innerDocument);
+        toLog.add("prepare inner document... \n\n #", innerDocument);
 
         final Request request = FACTORY_MIS.createRCMRIN000002UV02();
         final RCMRIN000002UV022 message = FACTORY_HL7.createRCMRIN000002UV022();
