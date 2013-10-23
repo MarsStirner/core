@@ -1,20 +1,36 @@
-#!/bin/bash
+#!/usr/bin/env bash
 #
 # Данный скрипт содержит функции, используемые в скриптах создания домена, развертывания и удаления приложения
 #
 
+# Запуск данного скрипта требует bash и если он вызывается чем-то другим, то пытаемся запустить его с помощью bash
+if [ -z "$BASH_VERSION" ]
+then
+    exec bash "$0" "$@"
+fi
 
+# Адрес хоста, например, localhost
 HOST=${glassfish.host}
+# Путь к директории bin Glassfish
 ASADMIN=${glassfish.bin}
+# Имя домена
 DOMAIN=${glassfish.domain}
+# Путь к директории, содержащей домены Glassfish
 DOMAIN_DIR=${glassfish.domain.dir}
+# Логин доступа к Glassfish
 ADMIN_LOGIN=${glassfish.admin.login}
+# Пароль доступа к Glassfish
 ADMIN_PASSWORD=${glassfish.admin.password}
+# Порт на котором будут доступны приложения
 PORT_INSTANCE=${glassfish.port.instance}
+# Порт подключения к GlassFish Server Administration Console
 ADMIN_PORT=${glassfish.port.admin}
+# Мастер-пароль
 MASTER_PASSWORD=${glassfish.master.password}
+# Имя приложения при деплое
 APP_NAME=${glassfish.application.name}
 
+# Параметры подключения к БД
 MYSQL_LOGIN=${mysql.login}
 MYSQL_PASSWORD=${mysql.password}
 MYSQL_SERVER_NAME=${mysql.db.host}
