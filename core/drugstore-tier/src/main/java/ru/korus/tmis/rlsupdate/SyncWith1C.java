@@ -413,10 +413,11 @@ public class SyncWith1C {
      */
     private String getFillingUnit(POCDMT000040LabeledDrug drug) {
         final CD translation = getTranslationByCodeSystemNameAndCode(drug.getCode().getTranslation(), CODE_SYSTEM_RLS, PPACK);
+        String drugFormUnit = getTranslationCodeByName(drug, RLS_CLSDRUGFORMS);
         if (translation != null) {
             // Код упаковки
             final CD cdCode = getValueByCodeSystemName(translation.getQualifier(), RLS_DRUGPACK);
-            final String code = cdCode != null ? formatForDb(cdCode.getCode().trim()): "";
+            final String code = drugFormUnit;
             // Кол-во в упаковке
             String count = cdCode != null ? ((String) cdCode.getOriginalText().getContent().get(0)).trim() : "";
             if ( "0".equals(count)) {

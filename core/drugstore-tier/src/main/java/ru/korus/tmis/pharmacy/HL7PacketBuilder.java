@@ -1,10 +1,10 @@
 package ru.korus.tmis.pharmacy;
 
-import misexchange.*;
 import misexchange.ObjectFactory;
 import misexchange.PRPAIN302011UV02;
 import misexchange.PRPAIN302012UV02;
 import misexchange.RCMRIN000002UV02;
+import misexchange.*;
 import org.hl7.v3.*;
 import org.joda.time.DateTime;
 import org.slf4j.Logger;
@@ -21,7 +21,6 @@ import java.io.IOException;
 import java.io.StringWriter;
 import java.math.BigInteger;
 import java.util.Date;
-import java.util.List;
 import java.util.UUID;
 
 /**
@@ -36,6 +35,8 @@ public final class HL7PacketBuilder {
     private static final ObjectFactory FACTORY_MIS = new ObjectFactory();
     private static final org.hl7.v3.ObjectFactory FACTORY_HL7 = new org.hl7.v3.ObjectFactory();
     private static final String DATE_FORMAT = "yyyyMMdd";
+    private static final String DATETIME_FORMAT = "yyyyMMddHHmmss";
+
 
     private HL7PacketBuilder() {
     }
@@ -59,7 +60,8 @@ public final class HL7PacketBuilder {
 
         final PRPAIN402001UV022 prpain402001UV022 = FACTORY_HL7.createPRPAIN402001UV022();
         prpain402001UV022.setITSVersion("XML_1.0");
-        prpain402001UV022.setCreationTime(createTS(action.getCreateDatetime(), "yyyyMMddHHmmss"));
+        prpain402001UV022.setCreationTime(createTS(action.getCreateDatetime(),
+                DATETIME_FORMAT));
         prpain402001UV022.setAcceptAckCode(createCS("AL"));
         prpain402001UV022.setId(createII(uuidDocument));
         prpain402001UV022.setInteractionId(createII("2.16.840.1.113883.1.18", "PRPA_IN402001UV02"));
@@ -82,7 +84,7 @@ public final class HL7PacketBuilder {
         inpatientEncounterEvent.getId().add(createII(uuidExternalId, externalId));
         inpatientEncounterEvent.setCode(createCD("IMP", "2.16.840.1.113883.5.4", "actCode", "abc"));
         inpatientEncounterEvent.setStatusCode(createCS("completed"));
-        inpatientEncounterEvent.setEffectiveTime(createIVLTS(action.getCreateDatetime(), "yyyyMMdd"));
+        inpatientEncounterEvent.setEffectiveTime(createIVLTS(action.getCreateDatetime(), DATE_FORMAT));
 //        inpatientEncounterEvent.setLengthOfStayQuantity(createPQ("5", "d"));
 
         final PRPAMT402001UV02Subject subject = FACTORY_HL7.createPRPAMT402001UV02Subject();
@@ -148,7 +150,7 @@ public final class HL7PacketBuilder {
         final PRPAIN402006UV022 prpain402006UV02 = FACTORY_HL7.createPRPAIN402006UV022();
         prpain402006UV02.setITSVersion("XML_1.0");
         prpain402006UV02.setId(createII(uuidDocument));
-        prpain402006UV02.setCreationTime(createTS(action.getCreateDatetime(), "yyyyMMddHHmmss"));
+        prpain402006UV02.setCreationTime(createTS(action.getCreateDatetime(), DATETIME_FORMAT));
         prpain402006UV02.setInteractionId(createII("2.16.840.1.11.3883.1.18", "PRPA_IN402006UV02"));
         prpain402006UV02.setProcessingCode(createCS("P"));
         prpain402006UV02.setProcessingModeCode(createCS("T"));
@@ -212,7 +214,7 @@ public final class HL7PacketBuilder {
 
         final PRPAIN402003UV022 prpain402003UV02 = FACTORY_HL7.createPRPAIN402003UV022();
         prpain402003UV02.setITSVersion("XML_1.0");
-        prpain402003UV02.setCreationTime(createTS(new Date(), "yyyyMMddHHmmss"));
+        prpain402003UV02.setCreationTime(createTS(new Date(), DATETIME_FORMAT));
         prpain402003UV02.setAcceptAckCode(createCS("AL"));
         prpain402003UV02.setId(createII(rootUUID));
         prpain402003UV02.setInteractionId(createII("2.16.840.1.113883.1.18", "PRPA_IN402003UV02"));
@@ -275,7 +277,7 @@ public final class HL7PacketBuilder {
         final PRPAIN302011UV022 prpain302011UV022 = FACTORY_HL7.createPRPAIN302011UV022();
         prpain302011UV022.setITSVersion("XML_1.0");
         prpain302011UV022.setId(createII(uuidDocument));
-        prpain302011UV022.setCreationTime(createTS(action.getCreateDatetime(), "yyyyMMddHHmmss"));
+        prpain302011UV022.setCreationTime(createTS(action.getCreateDatetime(), DATETIME_FORMAT));
         prpain302011UV022.setInteractionId(createII("2.16.840.1.113883.1.18", "PRPA_IN302011UV02"));
         prpain302011UV022.setProcessingCode(createCS("P"));
         prpain302011UV022.setProcessingModeCode(createCS("T"));
@@ -307,7 +309,7 @@ public final class HL7PacketBuilder {
         // location1
         final PRPAMT302011UV02Location1 location1 = FACTORY_HL7.createPRPAMT302011UV02Location1();
         location1.setTypeCode(ParticipationTargetLocation.LOC);
-        location1.setTime(createIVLTSCenter(action.getCreateDatetime(), "yyyyMMddHHmmss"));
+        location1.setTime(createIVLTSCenter(action.getCreateDatetime(), DATETIME_FORMAT));
         location1.setStatusCode(createCS("active"));
         location1.setServiceDeliveryLocation(createServiceDeliveryLocation(uuidLocationOut));
         encounterEvent.setLocation1(location1);
@@ -315,7 +317,7 @@ public final class HL7PacketBuilder {
         // location2
         final PRPAMT302011UV02Location2 location2 = FACTORY_HL7.createPRPAMT302011UV02Location2();
         location2.setTypeCode(ParticipationTargetLocation.LOC);
-        location2.setTime(createIVLTSCenter(action.getCreateDatetime(), "yyyyMMdd"));
+        location2.setTime(createIVLTSCenter(action.getCreateDatetime(), DATE_FORMAT));
         location2.setStatusCode(createCS("active"));
         location2.setServiceDeliveryLocation(createServiceDeliveryLocation(uuidLocationIn));
         encounterEvent.setLocation2(location2);
@@ -352,7 +354,7 @@ public final class HL7PacketBuilder {
         final PRPAIN302012UV022 prpain302012UV022 = FACTORY_HL7.createPRPAIN302012UV022();
         prpain302012UV022.setITSVersion("XML_1.0");
         prpain302012UV022.setId(createII(uuidDocument));
-        prpain302012UV022.setCreationTime(createTS(action.getCreateDatetime(), "yyyyMMddHHmmss"));
+        prpain302012UV022.setCreationTime(createTS(action.getCreateDatetime(), DATETIME_FORMAT));
         prpain302012UV022.setInteractionId(createII("2.16.840.1.113883.1.18", "PRPA_IN302012UV02"));
         prpain302012UV022.setProcessingCode(createCS("P"));
         prpain302012UV022.setProcessingModeCode(createCS("T"));
@@ -383,7 +385,7 @@ public final class HL7PacketBuilder {
         // location1
         final PRPAMT302012UV02Location1 location1 = FACTORY_HL7.createPRPAMT302012UV02Location1();
         location1.setTypeCode(ParticipationTargetLocation.LOC);
-        location1.setTime(createIVLTSCenter(action.getCreateDatetime(), "yyyyMMdd"));
+        location1.setTime(createIVLTSCenter(action.getCreateDatetime(), DATE_FORMAT));
         location1.setStatusCode(createCS("active"));
         location1.setServiceDeliveryLocation(createServiceDeliveryLocation2012(uuidLocationOut));
         encounterEvent.setLocation1(location1);
@@ -391,7 +393,7 @@ public final class HL7PacketBuilder {
         // location2
         final PRPAMT302012UV02Location2 location2 = FACTORY_HL7.createPRPAMT302012UV02Location2();
         location2.setTypeCode(ParticipationTargetLocation.LOC);
-        location2.setTime(createIVLTSCenter(action.getCreateDatetime(), "yyyyMMdd"));
+        location2.setTime(createIVLTSCenter(action.getCreateDatetime(), DATE_FORMAT));
         location2.setStatusCode(createCS("active"));
         location2.setServiceDeliveryLocation(createServiceDeliveryLocation2012(uuidLocationIn));
         encounterEvent.setLocation2(location2);
@@ -446,7 +448,7 @@ public final class HL7PacketBuilder {
         message.setId(createII(UUID.randomUUID().toString()));
 
         // Время создания документа
-        message.setCreationTime(createTS(action.getCreateDatetime(), "yyyyMMddHHmmss"));
+        message.setCreationTime(createTS(action.getCreateDatetime(), DATETIME_FORMAT));
         message.setInteractionId(createII("2.16.840.1.113883.1.18", "RCMR_IN000002UV02"));
         message.setProcessingCode(createCS("P"));
         message.setProcessingModeCode(createCS("T"));
@@ -547,7 +549,7 @@ public final class HL7PacketBuilder {
         }
 
         // Дата рождения пациента
-        patient.setBirthTime(createTS(client.getBirthDate(), "yyyyMMdd"));
+        patient.setBirthTime(createTS(client.getBirthDate(), DATE_FORMAT));
         patientRole.setPatient(patient);
         recordTarget.setPatientRole(patientRole);
         clinicalDocument.getRecordTarget().add(recordTarget);
@@ -584,9 +586,7 @@ public final class HL7PacketBuilder {
         final POCDMT000040EncompassingEncounter encompassingEncounter = FACTORY_HL7.createPOCDMT000040EncompassingEncounter();
         encompassingEncounter.getId().add(createII(externalUUID, externalId));
         encompassingEncounter.setCode(createCE("IMP", "2.16.840.1.113883.5.4", "actCode", "Inpatient encounter"));
-        TS begDate = event.getSetDate() == null ? null : createTS(event.getSetDate(), DATE_FORMAT);
-        TS endDate = event.getExecDate() == null ? null : createTS(event.getExecDate(), DATE_FORMAT);
-        encompassingEncounter.setEffectiveTime(createIVLTS(begDate, endDate));
+        encompassingEncounter.setEffectiveTime(createIVLTS(NullFlavor.NI));
         componentOf.setEncompassingEncounter(encompassingEncounter);
         clinicalDocument.setComponentOf(componentOf);
 
@@ -621,7 +621,7 @@ public final class HL7PacketBuilder {
         section.setText(text);
 
         // Создаем описание лек.средства
-        section.getEntry().add(createEntry(event, interval, drugComponent, routeOfAdministration, type, negationInd));
+        section.getEntry().add(createEntry(action, interval, drugComponent, routeOfAdministration, type, negationInd));
         component3.setSection(section);
 
         structuredBody.getComponent().add(component3);
@@ -636,16 +636,19 @@ public final class HL7PacketBuilder {
         return clinicalDocument;
     }
 
-    private static IVLTS createIVLTS(TS begDate, TS endDate) {
+    private static SXCMTS createSXCMTS(TS begDate, TS endDate) {
         if (begDate == null) {
             return createIVLTS(NullFlavor.NI);
         }
-        final IVLTS ivlts = FACTORY_HL7.createIVLTS();
 
         if (endDate == null) {
-            ivlts.setValue(begDate.getValue());
-            return ivlts;
+            final SXCMTS sxcmts = FACTORY_HL7.createSXCMTS();
+            sxcmts.setValue(begDate.getValue());
+            return sxcmts;
         }
+
+        final IVLTS ivlts = FACTORY_HL7.createIVLTS();
+
         final IVXBTS beg = FACTORY_HL7.createIVXBTS();
         beg.setValue(begDate.getValue());
         ivlts.setLow(beg);
@@ -659,7 +662,7 @@ public final class HL7PacketBuilder {
     /**
      * Создание наименование одного лекарственного средства
      */
-    private static POCDMT000040Entry createEntry(final Event event, DrugChart interval, DrugComponent drugComponent, final String routeOfAdministration, final AssignmentType type, final Boolean negationInd) {
+    private static POCDMT000040Entry createEntry(final Action action, DrugChart interval, DrugComponent drugComponent, final String routeOfAdministration, final AssignmentType type, final Boolean negationInd) {
         final POCDMT000040Entry entry = FACTORY_HL7.createPOCDMT000040Entry();
         //----------------
         final POCDMT000040SubstanceAdministration substanceAdministration = FACTORY_HL7.createPOCDMT000040SubstanceAdministration();
@@ -670,11 +673,11 @@ public final class HL7PacketBuilder {
         substanceAdministration.getId().add(createII(UUID.randomUUID().toString())); // UUID назначения
 
         // источник финансирования
-        substanceAdministration.getId().add(createIIEx(String.valueOf(event.getEventType().getFinance().getId())));
+        substanceAdministration.getId().add(createIIEx(String.valueOf(getFinaceType(action))));
         // период на который выполняется назначение
-        TS begDate = interval.getBegDateTime() == null ? null : createTS(interval.getBegDateTime(), DATE_FORMAT);
-        TS endDate = interval.getEndDateTime() == null ? null : createTS(interval.getEndDateTime(), DATE_FORMAT);
-        substanceAdministration.getEffectiveTime().add(createIVLTS(begDate, endDate));
+        TS begDate = interval.getBegDateTime() == null ? null : createTS(interval.getBegDateTime(), DATETIME_FORMAT);
+        TS endDate = interval.getEndDateTime() == null ? null : createTS(interval.getEndDateTime(), DATETIME_FORMAT);
+        substanceAdministration.getEffectiveTime().add(createSXCMTS(begDate, endDate));
         // интервал, через который необходимо применять препарат (суточная доза)
         //substanceAdministration.getEffectiveTime().add(createPIVLTS("12", "h"));
         // приоритет выполнения
@@ -694,7 +697,7 @@ public final class HL7PacketBuilder {
         final PQR pqr = FACTORY_HL7.createPQR();
         pqr.setCodeSystemName("RLS");
         final ED originalText = FACTORY_HL7.createED();
-        originalText.getContent().add(drugComponent.getNomen().getUnit().getCode());
+        originalText.getContent().add(drugComponent.getNomen().getDosageUnit().getCode());
         pqr.setOriginalText(originalText);
         center.getTranslation().add(pqr);
         doseQuantity.setCenter(center);
@@ -713,6 +716,18 @@ public final class HL7PacketBuilder {
         substanceAdministration.setConsumable(consumable);
         entry.setSubstanceAdministration(substanceAdministration);
         return entry;
+    }
+
+    private static Integer getFinaceType(Action action) {
+        Integer res = action.getFinanceId();
+        if (res == null) {
+            final Event event = action.getEvent();
+            if (event != null) {
+                final RbFinance finance = event.getEventType().getFinance();
+                res = finance == null ? null : finance.getId();
+            }
+        }
+        return res;
     }
 
     /**
