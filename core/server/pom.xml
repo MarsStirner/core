@@ -143,6 +143,14 @@
                     <include>**/*.bat</include>
                 </includes>
             </resource>
+            <resource>
+                <directory>scripts/lib/</directory>
+                <targetPath>../</targetPath>
+                <filtering>false</filtering>
+                <includes>
+                    <include>**/*.jar</include>
+                </includes>
+            </resource>
         </resources>
 
         <plugins>
