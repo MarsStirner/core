@@ -409,10 +409,12 @@ public final class HL7PacketBuilder {
     /**
      * Формирования сообщения об интервалах назначения и исполнения ЛС
      *
+     *
      * @param interval     - Интервал
      * @param organisation -  ЛПУ
      * @param type         - тип интервала. ASSIGNMENT - назначение; EXECUTION - исполнение
      * @param negationInd  - true - отменить/удалить интервал; false - создать/обновить
+     * @param prescrUUID
      * @return
      */
     public static Request processPrescription(
@@ -423,7 +425,7 @@ public final class HL7PacketBuilder {
             final AssignmentType type,
             final Boolean negationInd,
             final PrescriptionSendingRes prescriptionSendingRes,
-            final ToLog toLog) {
+            final ToLog toLog, String prescrUUID) {
         final Action action = interval.getAction();
         //Пациент
         final Patient client = action.getEvent().getPatient();
@@ -437,7 +439,7 @@ public final class HL7PacketBuilder {
         final String uuidDocument = uuid == null ? UUID.randomUUID().toString() : uuid;
 
         final POCDMT000040ClinicalDocument clinicalDocument =
-                getClinicalDocument(interval, drugComponent, routeOfAdministration, client, organisation, executorStaff, type, negationInd, uuid, version);
+                getClinicalDocument(interval, drugComponent, routeOfAdministration, client, organisation, executorStaff, type, negationInd, uuid, version, prescrUUID);
         final String innerDocument = marshallMessage(clinicalDocument, "org.hl7.v3");
         toLog.add("prepare inner document... \n\n #", innerDocument);
 
@@ -510,7 +512,7 @@ public final class HL7PacketBuilder {
             final Organisation organisation,
             final Staff executorStaff,
             final AssignmentType type,
-            final Boolean negationInd, String uuid, Integer version) {
+            final Boolean negationInd, String uuid, Integer version, String prescrUUID) {
 
         final Action action = interval.getAction();
         final String uuidDocument = UUID.randomUUID().toString();
@@ -613,7 +615,7 @@ public final class HL7PacketBuilder {
         section.setText(text);
 
         // Создаем описание лек.средства
-        section.getEntry().add(createEntry(action, interval, drugComponent, routeOfAdministration, type, negationInd));
+        section.getEntry().add(createEntry(action, interval, drugComponent, routeOfAdministration, type, negationInd, prescrUUID));
         component3.setSection(section);
 
         structuredBody.getComponent().add(component3);
@@ -654,7 +656,12 @@ public final class HL7PacketBuilder {
     /**
      * Создание наименование одного лекарственного средства
      */
-    private static POCDMT000040Entry createEntry(final Action action, DrugChart interval, DrugComponent drugComponent, final String routeOfAdministration, final AssignmentType type, final Boolean negationInd) {
+    private static POCDMT000040Entry createEntry(final Action action,
+                                                 DrugChart interval,
+                                                 DrugComponent drugComponent,
+                                                 final String routeOfAdministration,
+                                                 final AssignmentType type,
+                                                 final Boolean negationInd, String prescrUUID) {
         final POCDMT000040Entry entry = FACTORY_HL7.createPOCDMT000040Entry();
         //----------------
         final POCDMT000040SubstanceAdministration substanceAdministration = FACTORY_HL7.createPOCDMT000040SubstanceAdministration();
@@ -662,7 +669,11 @@ public final class HL7PacketBuilder {
         substanceAdministration.setMoodCode(getAssignmentType2(type));  // тип документа
         substanceAdministration.setNegationInd(negationInd);
 
-        substanceAdministration.getId().add(createII(UUID.randomUUID().toString())); // UUID назначения
+        if(prescrUUID == null) {
+            substanceAdministration.getId().add(createII(UUID.randomUUID().toString())); // UUID назначения
+        } else {
+            substanceAdministration.getId().add(createII(prescrUUID)); // UUID назначения
+        }
 
         // источник финансирования
         substanceAdministration.getId().add(createIIEx(String.valueOf(getFinaceType(action))));

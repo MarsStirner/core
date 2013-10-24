@@ -551,6 +551,13 @@ public class PharmacyBean implements PharmacyBeanLocal {
             for (DrugComponent comp : drugComponents) {
                 RlsNomen rlsNomen = comp.getNomen();
                 PrescriptionSendingRes prescriptionSendingResBean = dbPrescriptionSendingResBean.getPrescriptionSendingRes(prescription.getDrugChart(), comp);
+                String prescrUUID = null;
+                if (prescription.getDrugChart().getMaster() != null) {
+                    PrescriptionSendingRes master = dbPrescriptionSendingResBean.getPrescriptionSendingRes(prescription.getDrugChart().getMaster(), comp);
+                    if(master != null) {
+                        prescrUUID = master.getUuid();
+                    }
+                }
                 if (prescription.isPrescription()) { // передача нового / отмена назначения
                     request = HL7PacketBuilder.processPrescription(
                             prescription.getDrugChart(),
@@ -560,7 +567,8 @@ public class PharmacyBean implements PharmacyBeanLocal {
                             AssignmentType.ASSIGNMENT,
                             prescription.getNewStatus() == PS_CANCELED,
                             prescriptionSendingResBean,
-                            toLog);
+                            toLog,
+                            prescrUUID);
                 } else if (prescription.getOldStatus() == PS_NEW && prescription.getNewStatus() == PS_FINISHED) {// если статус изменился с "Назначен" на "Исполнен", то передаем исполнение
                     request = HL7PacketBuilder.processPrescription(
                             prescription.getDrugChart(),
@@ -570,7 +578,8 @@ public class PharmacyBean implements PharmacyBeanLocal {
                             AssignmentType.EXECUTION,
                             false,
                             prescriptionSendingResBean,
-                            toLog);
+                            toLog,
+                            prescrUUID);
                 } else if (prescription.getOldStatus() == PS_FINISHED && prescription.getNewStatus() == PS_NEW) { // если статус изменился с "Исполнен" на "Назначен" , то передаем отмену исполнения
                     request = HL7PacketBuilder.processPrescription(
                             prescription.getDrugChart(),
@@ -580,7 +589,8 @@ public class PharmacyBean implements PharmacyBeanLocal {
                             AssignmentType.EXECUTION,
                             true,
                             prescriptionSendingResBean,
-                            toLog);
+                            toLog,
+                            prescrUUID);
                 }
                 if (request != null) {
 
