@@ -25,13 +25,13 @@ LIST_APPLICATION_CMD="$ASADMIN/asadmin --user ${ADMIN_LOGIN} \
         --port ${ADMIN_PORT} \
         list-applications"
 
-UNDEPLOY_CMD="$ASADMIN/asadmin --host ${HOST} \
+UNDEPLOY_CMD_WITHOUT_APPNAME="$ASADMIN/asadmin --host ${HOST} \
         --port ${ADMIN_PORT} \
         --user  ${ADMIN_LOGIN} \
         --passwordfile ${GF_PASSWD_FILE} \
         --interactive=false \
         undeploy \
-        ${APP_NAME}"
+        "
 
 DEPLOY_CMD="${ASADMIN}/asadmin --host ${HOST} \
         --port ${ADMIN_PORT} \
@@ -59,24 +59,49 @@ DEPLOY_CMD="${ASADMIN}/asadmin --host ${HOST} \
 echo "AS_ADMIN_PASSWORD="${ADMIN_PASSWORD} > $GF_PASSWD_FILE
 echo "AS_ADMIN_MASTERPASSWORD="${MASTER_PASSWORD} >> $GF_PASSWD_FILE
 
-# Необходимость данной конструкции под сомнением
-export PATH=${glassfish.home}/bin/:$PATH
 
 EQUALS_APPLICATIONS=""
 function list_applications {
     print_header "List applications"
 
     echo $LIST_APPLICATION_CMD
-    local APPLICATIONS_PLAIN=$($LIST_APPLICATION_CMD)
+    local APPLICATIONS_PLAIN=`$LIST_APPLICATION_CMD`
+    
+    local NEWAPP=$(echo "$APP_NAME" | sed 's/-[0-9].*//')
+
+    # Проходим по списку установленных приложений
+    while IFS= read -r line
+    do
+        echo "$line"
+        # Получаем первое слово (это имя приложения и его версия)
+        APP=`echo "$line" | awk '{ print $1 }'` 
+        # Получаем имя приложения без версии
+        PROGRAM_NAME=$(echo "$APP" | sed 's/-[0-9].*//')
+        # Если оно совпадает с именем устанавливаемого приложения, то добавляем его в список на удаление
+        if [ $NEWAPP == $PROGRAM_NAME ]; then
+            EQUALS_APPLICATIONS+=$APP
+            EQUALS_APPLICATIONS+=$'\n'
+        fi
+    done <<< "$APPLICATIONS_PLAIN"  
 }
 
 function undeploy {
-    print_header "Undeploy ${glassfish.application.name}"
+    print_header "Undeploy $(echo "$APP_NAME" | sed 's/-[0-9].*//')"    
+    
+    NUM_OF_APPS=`echo "EQUALS_APPLICATIONS" | wc -l`
+     
+    if [ $NUM_OF_APPS == 1 ] && [ "$EQUALS_APPLICATIONS" != "" ]; then 
+        UNDEPLOY_CMD="${UNDEPLOY_CMD_WITHOUT_APPNAME} $EQUALS_APPLICATIONS"
+        echo $UNDEPLOY_CMD    
+        if ! $UNDEPLOY_CMD; then
+            # Может завершиться ошибкой, но это не критично
+            echo $?
+        fi
 
-    echo $UNDEPLOY_CMD
-    if ! $UNDEPLOY_CMD; then
-       # Может завершиться ошибкой, если приложение не существует
-       echo $?
+    elif [ $NUM_OF_APPS == 0 ] || [ "$EQUALS_APPLICATIONS" == "" ]; then
+        echo "Cannot find similar applications. If there are any of them undeploy them manually."
+    else
+        echo "Founded more than 1 similar applications. Undeploy them manually."
     fi
 }
 
@@ -90,7 +115,7 @@ function copy_config {
 }
 
 function deploy_application {
-    print_header "Deploy ${glassfish.application.name}"
+    print_header "Deploy ${APP_NAME}"
 
     if ! $DEPLOY_CMD; then
         # Выходим с ошибкой в случае ошибки развертывания приложения
