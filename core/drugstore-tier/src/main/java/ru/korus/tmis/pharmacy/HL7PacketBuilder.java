@@ -596,28 +596,20 @@ public final class HL7PacketBuilder {
         final POCDMT000040StructuredBody structuredBody = FACTORY_HL7.createPOCDMT000040StructuredBody();
         final POCDMT000040Component3 component3 = FACTORY_HL7.createPOCDMT000040Component3();
         final POCDMT000040Section section = FACTORY_HL7.createPOCDMT000040Section();
+
+        //Необязателная дополнительная информация
         final StrucDocText text = FACTORY_HL7.createStrucDocText();
         text.getContent().add("Дополнительные рекомендации");
-
         JAXBElement<StrucDocList> docItemList = FACTORY_HL7.createStrucDocItemList(FACTORY_HL7.createStrucDocList());
         final StrucDocList docList = FACTORY_HL7.createStrucDocList();
-
         final StrucDocItem item = FACTORY_HL7.createStrucDocItem();
         item.getContent().add("Описание препарата");
         docList.getItem().add(item);
-
         final StrucDocItem item2 = FACTORY_HL7.createStrucDocItem();
+        item2.getContent().add(drugComponent.getNomen().getRlsTradeName().getLocalName());
         docList.getItem().add(item2);
         docItemList.setValue(docList);
         text.getContent().add(docItemList);
-
-        final JAXBElement<StrucDocContent> strucDocItemContent = FACTORY_HL7.createStrucDocItemContent(FACTORY_HL7.createStrucDocContent());
-        final StrucDocContent content = FACTORY_HL7.createStrucDocContent();
-        content.getContent().add("Во время еды");
-        content.setID1("patient-instruction");
-        strucDocItemContent.setValue(content);
-        text.getContent().add(strucDocItemContent);
-
         section.setText(text);
 
         // Создаем описание лек.средства
@@ -709,7 +701,6 @@ public final class HL7PacketBuilder {
 
         // Получение товарной единицы лекарственного средства
         final POCDMT000040LabeledDrug drug = BalanceOfGoodsInfoBean.getLabeledDrug(FACTORY_HL7, String.valueOf(drugComponent.getNomen().getId()));
-        //final POCDMT000040LabeledDrug drug = getFomsDrug("33814");
 
         manufacturedProduct.setManufacturedLabeledDrug(/*manufacturedLabeledDrug*/drug);
         consumable.setManufacturedProduct(manufacturedProduct);
@@ -730,55 +721,6 @@ public final class HL7PacketBuilder {
         return res;
     }
 
-    /**
-     * Метод для получения товарного наименования лек.средства
-     *
-     * @param drugCode
-     * @return
-     */
-//    private static POCDMT000040LabeledDrug getDrug(final String drugCode) {
-//        final POCDMT000040LabeledDrug manufacturedLabeledDrug = FACTORY_HL7.createPOCDMT000040LabeledDrug();
-//
-//        final CE code1 = FACTORY_HL7.createCE();
-//        code1.setCodeSystem("1.2.643.2.0");
-//        code1.setCodeSystemName("RLS");
-//
-//
-//        final CD cd = FACTORY_HL7.createCD();
-//        final CD cdTrans = FACTORY_HL7.createCD();
-//        cdTrans.setCode("Фенистил");
-//        cdTrans.setDisplayName("Фенистил");
-//        cdTrans.setCodeSystemName("RLS_ACTMATTERS");
-//        cd.getTranslation().add(cdTrans);
-//        code1.getTranslation().add(cd);
-//
-//
-//        final CD cdTrans2 = FACTORY_HL7.createCD();
-//
-//        cdTrans2.setCode("капли");
-//        cdTrans2.setDisplayName("капли");
-//        cdTrans2.setCodeSystemName("RLS_CLSDRUGFORMS");
-//
-//        final CR cr = FACTORY_HL7.createCR();
-//        final CV cv = FACTORY_HL7.createCV();
-//        cv.setCode("DFMASS");
-//        cv.setCodeSystemName("RLS");
-//        cr.setName(cv);
-//
-//        final CD cdValue = FACTORY_HL7.createCD();
-//        cdValue.setCode("мг");
-//        cdValue.setDisplayName("мг");
-//        cdValue.setCodeSystemName("RLS_MASSUNITS");
-//        final ED originalText1 = FACTORY_HL7.createED();
-//        originalText1.getContent().add("5");
-//        cdValue.setOriginalText(originalText1);
-//        cr.setValue(cdValue);
-//
-//        cdTrans2.getQualifier().add(cr);
-//        code1.getTranslation().add(cdTrans2);
-//
-//        manufacturedLabeledDrug.setCode(code1);
-//    }
     public static String marshallMessage(final Object msg, final String contextPath) {
         final StringWriter writer = new StringWriter();
         try {
@@ -1134,21 +1076,5 @@ public final class HL7PacketBuilder {
         return patientPerson;
 
     }
-
-   /* public static POCDMT000040LabeledDrug getFomsDrug(final String code) {
-
-        final DrugList drugList1 = new MISExchange().getMISExchangeSoap().getDrugList();
-        List<POCDMT000040LabeledDrug> drugList = drugList1.getDrug();
-        logger.info("Loading successful...{} drug(s)", drugList.size());
-
-        for (POCDMT000040LabeledDrug d : drugList) {
-            if (d.getCode().getCode().equals(code*//*"20044"*//*)) {
-                logger.info("Fetch drug from cache {}", marshallMessage(d, "org.hl7.v3"));
-                return d;
-            }
-        }
-        return drugList.get(2); //todo для теста возвращаем любой drug
-    }*/
-
 
 }

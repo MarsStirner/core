@@ -182,19 +182,18 @@ public class SyncWith1C {
     }
 
 
-    private RbUnit getRbUnit(final String code) {
-        if(code == null) {
+    private RbUnit getRbUnit(final CD cd) {
+        if(cd == null || cd.getCode() == null) {
             return null;
         }
-        //final TypedQuery<RbUnit> code1 = em.createNamedQuery("RbUnit.findByCode", RbUnit.class).setParameter("code", code);
-        final TypedQuery<RbUnit> code1 = em.createQuery("SELECT u FROM RbUnit u WHERE u.code = :code", RbUnit.class).setParameter("code", code);
+        final String code =  formatForDb(cd.getCode().trim());
         List<RbUnit> units =
-                code1.getResultList();
+                em.createQuery("SELECT u FROM RbUnit u WHERE u.code = :code", RbUnit.class).setParameter("code", code).getResultList();
 
         if(units.isEmpty()) {
             RbUnit res = new RbUnit();
             res.setCode(code);
-            res.setName(code);
+            res.setName(cd.getDisplayName());
             em.persist(res);
             return res;
         }
@@ -411,33 +410,30 @@ public class SyncWith1C {
      * @param drug - 1С описание лекарства
      * @return - строку, содержащею описание упаковки
      */
-    private String getFillingUnit(POCDMT000040LabeledDrug drug) {
+    private CD getFillingUnit(POCDMT000040LabeledDrug drug) {
         final CD translation = getTranslationByCodeSystemNameAndCode(drug.getCode().getTranslation(), CODE_SYSTEM_RLS, PPACK);
-        String drugFormUnit = getTranslationCodeByName(drug, RLS_CLSDRUGFORMS);
+        final CD drugFormUnit = getTranslationByCodeSystemName(drug.getCode().getTranslation(), RLS_CLSDRUGFORMS);
         if (translation != null) {
             // Код упаковки
             final CD cdCode = getValueByCodeSystemName(translation.getQualifier(), RLS_DRUGPACK);
-            final String code = drugFormUnit;
             // Кол-во в упаковке
             String count = cdCode != null ? ((String) cdCode.getOriginalText().getContent().get(0)).trim() : "";
             if ( "0".equals(count)) {
                 // Ед.изм. массы
                 final CD cdMass = getValueByCodeSystemName(translation.getQualifier(), RLS_MASSUNITS);
-                final String massUnit = cdMass != null ? cdMass.getCode().trim() : "";
-                if("".equals(massUnit)) {
-                    final CD volume = getValueByCodeSystemName(translation.getQualifier(), RLS_CUBICUNITS);
+                if(cdMass == null) {
                     // Ед.изм. объема
-                    return volume != null ? formatForDb(volume.getCode().trim()) : null;
-
+                    final CD volume = getValueByCodeSystemName(translation.getQualifier(), RLS_CUBICUNITS);
+                    if (volume != null) {
+                        return volume;
+                    }
                 }  else { // масса
-                    return massUnit;
+                    return cdMass;
                 }
-
-            } else { //измеряется м штуках
-                return code;
             }
         }
-        return null;
+        //измеряется м штуках
+        return drugFormUnit;
     }
 
 
@@ -475,9 +471,8 @@ public class SyncWith1C {
      * @param drug - 1С описание лекарства
      * @return строку, содержащею описание дозировки
      */
-    private String getDosageUnit(POCDMT000040LabeledDrug drug) {
-        CD value = getDrugFormCdValue(drug);
-        return value != null ? value.getCode() : null;
+    private CD getDosageUnit(POCDMT000040LabeledDrug drug) {
+        return getDrugFormCdValue(drug);
     }
 
 
