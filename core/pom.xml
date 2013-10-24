@@ -164,18 +164,36 @@
     </properties>
 
     <profiles>
+        <profile>
+            <id>debug-info</id>
+            <properties>
+                <project.build.debug>true</project.build.debug>
+            </properties>
+        </profile>
+
         <!-- Профиль для установки на стандартный Linux-сервер -->
         <profile>
             <id>production-standart</id>
             <properties>
                 <!-- Выключить дебаг -->
-                <project.build.debug>true</project.build.debug>
+                <project.build.debug>false</project.build.debug>
                 <!-- Название домена -->
                 <glassfish.domain>fccho-moscow</glassfish.domain>
             </properties>
             <activation>
                 <activeByDefault>true</activeByDefault>
             </activation>
+        </profile>
+
+        <!-- Профиль для установки на стандартный Linux-сервер -->
+        <profile>
+            <id>test-fnkc-66</id>
+            <properties>
+                <!-- Выключить дебаг -->
+                <project.build.debug>true</project.build.debug>
+                <glassfish.host>10.128.225.66</glassfish.host>
+                <glassfish.home>/Users/nde/Unixprog/glassfish3</glassfish.home>
+            </properties>
         </profile>
 
 

@@ -20,6 +20,7 @@ import ru.korus.tmis.laboratory.data.request.BiomaterialInfo;
 import ru.korus.tmis.laboratory.data.request.DiagnosticRequestInfo;
 import ru.korus.tmis.laboratory.data.request.IndicatorMetodic;
 import ru.korus.tmis.laboratory.data.request.OrderInfo;
+import ru.korus.tmis.util.ConfigManager;
 import ru.korus.tmis.util.logs.ToLog;
 import ru.korus.tmis.laboratory.bak.ws.client.handlers.SOAPEnvelopeHandlerResolver;
 import ru.korus.tmis.laboratory.bak.ws.server.Utils;
@@ -80,6 +81,7 @@ public class BakLaboratoryBean implements BakLaboratoryService {
     @Override
     public void sendLisAnalysisRequest(int actionId) throws CoreException {
         ToLog toLog = new ToLog("Analysis Request");
+        toLog.add(ConfigManager.LaboratoryBak().ServiceUrl().toString());
         try {
             final SendBakRequestWS service = createCGMService();
             final HL7Document hl7Document = createDocument(actionId, toLog);
