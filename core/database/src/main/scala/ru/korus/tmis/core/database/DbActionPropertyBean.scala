@@ -388,9 +388,16 @@ class DbActionPropertyBean
 
   @TransactionAttribute(TransactionAttributeType.REQUIRES_NEW)
   def getActionPropertyValue_ActionByValue(action: Action): APValueAction = {
-    val apv = em.createQuery(ActionProperty_ActionByValue, classOf[APValueAction]).setParameter("VALUE", action).getSingleResult
-    em.detach(apv)
-    apv
+    val result = em.createQuery(ActionProperty_ActionByValue, classOf[APValueAction]).setParameter("VALUE", action).getResultList
+    result.size match {
+      case 0 => {
+        null
+      }
+      case size => {
+        result.foreach(em.detach(_))
+        result(0)
+      }
+    }
   }
 
   val ActionsWithAppointmentTypeQuery = """
