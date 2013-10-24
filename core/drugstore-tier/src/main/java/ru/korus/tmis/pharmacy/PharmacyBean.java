@@ -584,9 +584,9 @@ public class PharmacyBean implements PharmacyBeanLocal {
                 }
                 if (request != null) {
 
-                    toLog.add("prepare message... \n\n #", HL7PacketBuilder.marshallMessage(request, "misexchange"));
+                    toLog.add("prepare message... \n\n # \n", HL7PacketBuilder.marshallMessage(request, "misexchange"));
                     final MCCIIN000002UV012 result = new MISExchange().getMISExchangeSoap().processHL7V3Message(request);
-                    toLog.add("Connection successful. Result: # \n\n #",
+                    toLog.add("Connection successful. Result: # \n\n # \n",
                             result, HL7PacketBuilder.marshallMessage(result, "org.hl7.v3"));
 
                     if (isOk(result)) {
