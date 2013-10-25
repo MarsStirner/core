@@ -1,0 +1,22 @@
+<usage><!--Have 3 CMET usage sets for QUQI and UV--><cmetuse role="uses">
+      <hmdref ref="QUQI_HD121000UV-hmd"
+              refname="Query Response-Acknowledgement Control Act -Choice"
+              refidentifier="QUQI_HD121000UV"/>
+      <cmetref ref="COCT_MT090100UV01-msg" refname="R_AssignedPersonUniversal"
+               refidentifier="COCT_MT090100UV01"/>
+   </cmetuse>
+   <cmetuse role="uses">
+      <hmdref ref="QUQI_HD121000UV-hmd"
+              refname="Query Response-Acknowledgement Control Act -Choice"
+              refidentifier="QUQI_HD121000UV"/>
+      <cmetref ref="COCT_MT090300UV01-msg" refname="R_AssignedDeviceUniversal"
+               refidentifier="COCT_MT090300UV01"/>
+   </cmetuse>
+   <cmetuse role="uses">
+      <hmdref ref="QUQI_HD121000UV-hmd"
+              refname="Query Response-Acknowledgement Control Act -Choice"
+              refidentifier="QUQI_HD121000UV"/>
+      <cmetref ref="MCAI_MT900001UV01-msg" refname="A_DetectedIssueUniversal"
+               refidentifier="MCAI_MT900001UV01"/>
+   </cmetuse>
+</usage>

@@ -217,8 +217,6 @@ echo "AS_ADMIN_USERPASSWORD="${ADMIN_PASSWORD} >> $GF_PASSWD_FILE
 echo "AS_ADMIN_ALIASPASSWORD="${ADMIN_PASSWORD} >> $GF_PASSWD_FILE
 echo "AS_ADMIN_PASSWORD="${ADMIN_PASSWORD} >> $GF_PASSWD_FILE
 
-export PATH=${glassfish.home}/bin/:$PATH
-
 # Запуск функций
 list_domains
 stop_domain

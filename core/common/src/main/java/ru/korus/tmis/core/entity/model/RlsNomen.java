@@ -87,11 +87,11 @@ public class RlsNomen implements Serializable {
         this.dosageValue = dosageValue;
     }
 
-    public int getDrugLifetime() {
+    public Integer getDrugLifetime() {
         return this.drugLifetime;
     }
 
-    public void setDrugLifetime(int drugLifetime) {
+    public void setDrugLifetime(Integer drugLifetime) {
         this.drugLifetime = drugLifetime;
     }
 

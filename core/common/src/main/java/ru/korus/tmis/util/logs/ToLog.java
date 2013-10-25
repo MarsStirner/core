@@ -32,15 +32,16 @@ public class ToLog {
         this.sb = new StringBuffer("[" + DateTime.now().toString(DATE_TIME_FORMAT) + "]");
     }
 
-    public void add(String toLog) {
-        curr = System.currentTimeMillis();
-        raz = curr - delta;
-        delta = curr;
-        sb.append("[").append(toLog).append("]");
-        if (raz > 0) {
-            sb.append("(").append(String.valueOf(raz)).append("mls) ");
-        }
-    }
+//    public void add(String toLog) {
+//        curr = System.currentTimeMillis();
+//        raz = curr - delta;
+//        delta = curr;
+//        sb.append("[").append(toLog).append("]");
+//        if (raz > 0) {
+//            sb.append("(").append(String.valueOf(raz)).append("mls) ");
+//        }
+//    }
+
 
     public void add(String toLog, Object... arguments) {
         curr = System.currentTimeMillis();
@@ -66,6 +67,11 @@ public class ToLog {
         if (raz > 0) {
             sb.append("(").append(String.valueOf(raz)).append("mls) ");
         }
+    }
+
+    public void addN(String toLog, Object... arguments) {
+        add(toLog, arguments);
+        sb.append("\n");
     }
 
     public void startAdd(String toLog) {

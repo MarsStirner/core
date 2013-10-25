@@ -1,0 +1,50 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<spec xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:noNamespaceSchemaLocation="../../support/dtd/v3spec.xsd">
+	<header>
+		<title>Composite Privacy Consent Directive Domain Analysis</title>
+		<version>1.0</version>
+		<date>April 20, 2010</date>
+		<authlist>
+			<author>
+				<role>Author</role>
+				<name key="CBCC WG">Community-Based Collaborative Care</name>
+			</author>
+			
+		</authlist>
+	</header>
+	<body>
+		<div1 id="CompositeDataConsentDAM" ballotNumber="2" ballotStatus="DSTU">
+			<head>Composite Privacy Consent Directive Domain Analysis 1.0</head>
+			<div2 id="pdf">
+				<head>
+					Domain Analysis for Composite Privacy: PDF Publication
+				</head>
+				<p><loc href="V3DAM_MR_CPCD_DSTU_R2_2010APR.pdf" target="_blank">PDF file</loc><br/>
+					<emph> (Hint: Right-click and select 'Save Target As...' to download a copy to
+						your desktop for viewing, or right-click and select 'Open in New Window' to
+						maintain the current frameset.) </emph>
+				</p>
+			</div2>
+			<div2 id="uml">
+				<head>Domain Analysis for Composite Privacy: UML Model</head>
+				<p> To view the source model used to generate the Composite Privacy Directive
+					specification, <loc href="Privacy Domain Analysis Model.zip"> download the model file
+					</loc> and open it using an Eclipse-based UML tool (e.g. Rational Software
+					Modeler). The UML model can be used as a starting point or building block for a
+					project team. <br/>
+					<emph> (Hint: To download the file, right-click the link and select 'Save Target
+						As...' to download a copy to your desktop for viewing.) </emph>
+				</p>
+				<div3 id="References">
+				<head>References</head>
+				<p> The Domain Analysis Model conforms to the HL7 Development Framework (HDF). For
+					more information on the process and artifacts (HDF): <loc
+						href="http://hl7projects.hl7.nscee.edu/projects/hdf/" target="_blank">
+						http://hl7projects.hl7.nscee.edu/projects/hdf/ </loc>
+				</p>
+				</div3>
+			</div2>
+		</div1>
+	</body>
+</spec>

@@ -1,0 +1,69 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!-- edited with XML Spy v3.5 NT (http://www.xmlspy.com) by andrew hinchley (Cerner Corporation) -->
+<!-- edited with XMLSPY v5 rel. 3 U (http://www.xmlspy.com) by andrew hinchley (HL7 Publications TC) -->
+<div2 id="v3_Infrastructure">
+	<head>Version 3 Message Wrappers and Infrastructure</head>
+	<p>HL7 Version 3 provides a substantial level of functionality in the provision of envelopes to support the transport (in a generic sense of the word) of HL7 messages from sender to receiver. HL7 calls these wrappers. Domain content is contained within wrappers</p>
+	<p>Message wrappers are defined in the same way as message content, by defining object classes and related relationships. These specifications can then be used to generate an ITS-defined syntax (e.g. XML schema) to go on the wire. The distinction is that wrappers have one or more "stub" classes which define locations within the message which need to be bound to other message structures before the model can be implemented. For example, a Batch Transmission Wrapper (see below) might have a stub for a Message</p>
+	<p>The Specification Infrastructure domain group (which consists of a number of wrapper related domains) specifies the two basic types of wrappers: </p>
+	<p>
+		<list role="ordered">
+			<item>Transmission Wrapper – described in the (MCCI) Transmission Infrastructure domain</item>
+			<item>Trigger Event Control Act Wrapper (also know as the Control Act Wrapper) – described in three domains, see below for details</item>
+		</list>
+	</p>
+	<p>Whenever domain content (as a payload) is transmitted in the form of messages they will use the wrappers as defined by the above domains. A HL7 Version 3 message typically consists of a Transmission Wrapper, a Trigger Event Control Act wrapper (conditional) and the Domain Content (optional). In the future, additional wrapper layers may be added. For example, a claims wrapper around a billable act or a scheduling wrapper around the order being scheduled</p>
+	<p>HL7 has defined a rich set of transmission oriented functions within the HL7 standards scope because there is no de facto way of providing these functions in a single standard that could be adopted. Messaging Infrastructure standards such as Webservices or ebXML provide similar functionality, whereas MLLP or FTP do not.</p>
+	<div3 id="transmission_wrapper">
+		<head>Transmission Wrapper
+</head>
+		<p>The HL7 Transmission wrapper is required for all Version 3 messages. It contains a large number of optional fields so the message overhead will vary from one context to another. Loosely coupled systems may require the use of a larger set of attributes than tightly coupled systems. This wrapper may be constrained to fit the requirements of a specific use-case or realm.</p>
+		<p>All Transmission Wrappers have mandatory attributes which identify the sending and receiving systems of a message transmission by means of a Device ID. Additional information about the Sender and Receiver may also be transmitted in other classes, but the use of a mandatory attribute ensures that a Messaging Infrastructure such as ebXML can base its addressing mechanism on the ID of the receiving Device as contained in the Transmission Wrapper.
+</p>
+		<p>Associated with use of the wrapper are a number of services that are available as needed:-
+</p>
+		<list role="ordered">
+			<item>A message with a corresponding R-MIM has been defined to support the reporting of any syntax issues (or the lack of any issues) by the communication software of the receiving application. Note that this is not a reliability feature (although it has been inappropriately used as such in HL7 version 2), HL7 assumes that the underlying Messaging Infrastructure is reliable. 
+</item>
+			<item>An optional message sequence number protocol. It is an essential component of supporting in-sequence delivery at the network level. It is not required if an external mechanism for in-sequence delivery is used (e.g. by means of Webservices or ebXML).</item>
+			<item> An optional set of functions and messages to support polling. These functions are included for compatibility with some early V2 use. Polling is probably a matter of limited interest to implementers, other than those with particular legacy problems.</item>
+			<item>An optional Batch Transmission Wrapper used to group messages for transmission purposes. On occasion one may want to group messages before transmitting them, e.g. a batch of financial charge messages, or a group of response messages to a single query message</item>
+		</list>
+	</div3>
+	<div3 id="control_act_wrapper">
+		<head>Trigger Event Control Act Wrapper
+</head>
+		<p> Additional richness in functionality is provided by the Trigger Event Control Act Wrapper (a.k.a. Control Act Wrapper), which is used when information about the interaction which has triggered a message needs to be communicated within that message to the receiver. Almost all Version 3 messages contain trigger related information. In some exceptional cases there is no need for such information to be included in the message. The Version 3 standard documents which Control Act Wrapper needs to be used for a particular message. A generic wrapper definition is supplied as part of the Specification Infrastructure domain. This wrapper may be constrained to fit the requirements of a specific use-case or realm</p>
+		<p>Two particular areas of application of the Control Act Wrapper are query sessions and registry interactions (such as Master Person Index). Messages in those application areas use specializations (query or registration related extensions) of the basic Control Act Wrapper.</p>
+		<p>The Control Act Wrappers are described in the HL7 standard in three separate domains: </p>
+		<list role="ordered">
+			<item>Message Control Act Infrastructure (MCAI) -defines the basic Trigger Event Control Act Wrapper. 
+</item>
+			<item>Query Infrastructure (QUQI) -describes how to use an extended version of the Control Act wrapper to support queries. The domain describes a generic parameter based query/response mechanism. </item>
+			<item>Master File/Registry Infrastructure (MFMI) -describes how to use an extended version of the Control Act Wrapper to support master file and registry use-cases. The domain describes a generic pattern for the support of registry (e.g. MPI Master Patient Index) interactions</item>
+		</list>
+	</div3>
+	<div3 id="v3MCAI">
+		<head>Message Control Act Infrastructure</head>
+		<p>MCAI defines the detail of the Control Act. Key uses are for Query and Master File applications, these are summarised in the next two paragraphs.
+</p>
+	</div3>
+	<div3 id="v3QUQI">
+		<head>Query Infrastructure</head>
+		<p>The objective is to set up a general structure for queries and their response. Three messages are defined along with appropriate roles and interactions.
+
+</p>
+		<list role="ordered">
+			<item>Query General Activate Query Continue
+</item>
+			<item>Query General Response</item>
+			<item>Query by Parameter specification</item>
+		</list>
+	</div3>
+	<div3 id="v3MFI">
+		<head>Master File  Infrastructure</head>
+		<p>A typical application is an MPI Master Patient Index. Again, the intention is to define a general set of messages that can be used to maintain any type of patient or professional database, or similar.</p>
+		<p>In these functional areas, there are no specific messages against the message functionality required. The Control Act is used to define what is needed, together with a set of standard trigger events, and an appropriate state diagram.
+</p>
+	</div3>
+</div2>

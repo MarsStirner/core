@@ -1,0 +1,1527 @@
+<!--<?xml version="1.0" encoding="UTF-8"?>-->
+<!--<!DOCTYPE spec SYSTEM "../../support/dtd/v3mDomain.dtd">-->
+<spec id="POQM_DO000000UV-ic" sectionCode="HMPOQM" lastEdit="1/31/2010 3:21:20 PM">
+	<!-- DGL - Altered this for HQ processing rules so we can pick up RMIM -->
+	<header>
+		<title>Health Quality Measures Format: eMeasures</title>
+		<version>1.0</version>
+		<ballot type="DSTU" number="1"/>
+		<date>31 January 2010</date>
+		<authlist>
+			<author>
+				<role>Author/Co-Chair</role>
+				<name>Robert H. Dolin, MD</name>
+				<affiliation>Semantically Yours, LLC</affiliation>
+				<email href="bobdolin@gmail.com">bobdolin@gmail.com</email>
+			</author>
+			<author>
+				<role>Co-Chair/Co-Editor</role>
+				<name>Liora Alschuler</name>
+				<affiliation>Alschuler Associates, LLC</affiliation>
+				<email href="liora@alschulerassociates.com">liora@alschulerassociates.com</email>
+			</author>
+			<author>
+				<role>Co-Chair/Co-Editor</role>
+				<name>Keith Boone</name>
+				<affiliation>GE Healthcare Integrated IT Solutions</affiliation>
+				<email href="keith.boone@ge.com">keith.boone@ge.com</email>
+			</author>
+			<author>
+				<role>Co-Chair/Co-Editor</role>
+				<name>Calvin Beebe</name>
+				<affiliation>Mayo Clinic/Foundation</affiliation>
+				<email href="cbeebe@mayo.edu">cbeebe@mayo.edu</email>
+			</author>
+			<author>
+				<role>Co-Editor</role>
+				<name>Gunther Schadow, MD</name>
+				<affiliation>Regenstrief Institute, Inc</affiliation>
+				<email href="gschadow@regenstrief.org">gschadow@regenstrief.org</email>
+			</author>
+			<author>
+				<role>Co-Chair/Co-Editor</role>
+				<name>Robert A. Jenders, MD, MS, FACP, FACMI</name>
+				<affiliation>Professor, Department of Medicine University of California, Los Angeles</affiliation>
+				<email href="jenders@ucla.edu">jenders@ucla.edu</email>
+			</author>
+			<author>
+				<role>Co-Editor</role>
+				<name>Douglas S. Bell, MD, PhD</name>
+				<affiliation>Research Scientist, RAND Health
+Associate Professor of Medicine, David Geffen School of Medicine at UCLA
+</affiliation>
+				<email href="dbell@rand.org">dbell@rand.org</email>
+			</author>
+			<author>
+				<role>Co-Editor</role>
+				<name>Floyd P. Eisenberg, MD, MPH</name>
+				<affiliation>National Quality Forum</affiliation>
+				<email href="floyd.eisenberg@qualityforum.org">floyd.eisenberg@qualityforum.org</email>
+			</author>
+			<author>
+				<role>Co-Editor</role>
+				<name>Thomas Murray, MA</name>
+				<affiliation>National Quality Forum</affiliation>
+				<email href="tom.murray@qualityforum.org">tom.murray@qualityforum.org</email>
+			</author>
+			<author>
+				<role>Co-Editor</role>
+				<name>Gay Giannone, MSN, RN</name>
+				<affiliation>Alschuler Associates, LLC</affiliation>
+				<email href="gay@alschulerassociates.com">gay@alschulerassociates.com</email>
+			</author>
+			<author>
+				<role>Co-Editor</role>
+				<name>Crystal Kallem, RHIA</name>
+				<affiliation>American Health Information Management Association</affiliation>
+				<email href="crystal.kallem@ahima.org">crystal.kallem@ahima.org</email>
+			</author>
+			<author>
+				<role>Co-Editor</role>
+				<name>Rick Geimer</name>
+				<affiliation>Alschuler Associates, LLC</affiliation>
+				<email href="rick@alschulerassociates.com">rick@alschulerassociates.com</email>
+			</author>
+			<author>
+				<role>Co-Editor</role>
+				<name>Jingdong (JD) Li</name>
+				<affiliation>Alschuler Associates, LLC</affiliation>
+				<email href="jdli@alschulerassociates.com">jdli@alschulerassociates.com</email>
+			</author>
+			<author>
+				<role>Publishing Facilitator</role>
+				<name>Peter Gilbert</name>
+				<affiliation>Wayne State University Physician Group</affiliation>
+				<email href="pgilbert@med.wayne.edu">pgilbert@med.wayne.edu</email>
+			</author>
+		</authlist>
+		<legalese copyRightDate="2010" copyRightOwner="Health Level Seven, Inc." copyRightNotation="All rights reserved." renderer="HandEdit"/>
+	</header>
+	<front>
+	<div1 id="prefDSTU">
+		<head>HL7 Draft Standard for Trial Use</head>
+		<p>This is a Draft Standard for Trial Use of the Version 3 Health Quality Measures Format: eMeasures, Release 1.  This material was approved as a DSTU following a successful DSTU ballot during HL7 International's September 2009 ballot cycle.</p>
+		<p>“Publication of this draft standard for trial use and comment has been approved by Health Level Seven, Inc. (HL7). This draft standard is not an accredited American National Standard. The comment period for use of this draft standard shall end 24 months from the date of publication. Suggestions for revision should be submitted at <loc href="http://www.hl7.org/dstucomments/index.cfm">//www.hl7.org/dstucomments/index.cfm.</loc>
+		</p>
+		<p>Following this 24 month evaluation period, this draft standard, revised as necessary, will be submitted to a normative ballot in preparation for approval by ANSI as an American National Standard. Implementations of this draft standard shall be viable throughout the normative ballot process and for up to six months after publication of the relevant normative standard</p>
+	</div1>
+	<div1 id="prefAck">
+			<head>Acknowledgements</head>
+			<p>This project was supported by volunteer efforts and through the National Quality Forum’s (NQF, <loc href="http://www.qualityforum.org" target="_blank">www.qualityforum.org</loc>) contract with the U.S. Department of Health and Human Services to promote the effective use of Electronic Health Record (EHR) systems. The initiative aims to significantly improve the quality and efficiency of patient care by making possible the capture and reporting of quality measure information for physicians and other health care providers.  </p>
+			<p>The NQF is a unique, multi-stakeholder, nonprofit organization dedicated to improving the quality of American healthcare by setting national priorities and goals for performance improvement, endorsing national consensus standards for measuring and publicly reporting on performance, and promoting the attainment of national goals through education and outreach programs.</p>
+			<p>NQF is also working with other organizations to assure that quality measure specifications can be uniformly incorporated into EHRs and reported to physicians and other clinicians for continuing quality improvement efforts at the point of care.</p>
+			<p>As physicians and other clinicians are asked to participate in more and more quality improvement and pay-for-performance programs, standardizing the implementation of NQF-endorsed performance measures will be critical in making quality improvement efforts useful and meaningful for physicians and other clinicians and for improving the health of patients.</p>
+			<p>The Collaborative for Performance Measure Integration with EHR Systems ("Collaborative"), co-sponsored by the American Medical Association (AMA) and the National Committee for Quality Assurance (NCQA) and Electronic Heath Record Association (EHRA), is a group of stakeholders in the physician performance measurement and quality improvement arena who have a shared goal to provide the industry with workable recommendations for performance measure use. The Collaborative’s goals are: [1] To create a standardized way of communicating Performance Measures; [2] To establish standards that permit structured, encoded Performance Measure information to be incorporated into EHR applications while preserving the clinical intent of the Performance Measure; and [3] To improve the process of Performance Measure update and maintenance for EHR vendors</p>
+			<p>The Collaborative developed the HQMF reference guide, a prototype to address performance measure functionality and integration with EHR systems. The HQMF prototype defined a standardized way of expressing performance measures while preserving the clinical intent of the measure itself. In spring 2009, NQF sponsored efforts to take the prototype HQMF and align it with HL7 constructs. This draft HL7 standard was produced through volunteer efforts and the Health Quality Measure Format (HQMF) project sponsored by the NQF. </p>
+			<p>The design of this specification was produced over the course of 22 sessions using an open and transparent process to ensure broad stakeholder input. The following individuals were instrumental in guiding the project so that alignment occurred between interested organizations:</p>
+			<list role="unordered">
+				<item>Chad Bennett, Iowa Foundation for Medical Care</item>
+				<item>Kevin Coonan, Dana-Farber Cancer Institute</item>
+				<item>Patty Craig, The Joint Commission</item>
+				<item>Aaron Cutshall, Indiana Health Information Exchange</item>
+				<item>Lori Fourquet, eHealth Sign</item>
+				<item>Paul Fu, Illumisys</item>
+				<item>Grahame Grieve, Kestral Computing Pty Ltd.</item>
+				<item>William Goossen, Results 4 Care</item>
+				<item>Kendra Hanley, American Medical Association</item>
+				<item>Delane Heldt, American Medical Association</item>
+				<item>Joy Kuhl, Child Health Corporation of America</item>
+				<item>Austin Kreisler, Centers for Disease Control and Prevention</item>
+				<item>Thom Kuhn, American College of Physicians</item>
+				<item>Cecil Lynch, OntoReason, LLC</item>
+				<item>Susan Matney, University of Utah Health Care</item>
+				<item>Lloyd McKenzie, LM&amp;A Consulting / HL7 Canada</item>
+				<item>Greg Pawlson, National Committee for Quality Assurance</item>
+				<item>Jacob Reider, Allscripts</item>
+				<item>Phil Renner, National Committee for Quality Assurance</item>
+				<item>Dan Russler, Oracle Corporation</item>
+				<item>Harry Solomon, GE Healthcare</item>
+				<item>David Stumpf, United Health </item>
+				<item>Julie Thompson, Nationwide IT Services, Inc.</item>
+				<item>Jim Unander, American Medical Association</item>
+			</list>
+			<p>The co-editors also express their appreciation for the support and sponsorship of the HL7 Structured Documents Working Group. We acknowledge the work on HL7 Version 3 and the Reference Information Model (RIM), and the contributions from HL7 domain committees, especially Clinical Decision Support, Patient Care, and Modeling and Methodology Working Groups.</p>
+			<p>Finally, we acknowledge the foundational work on the HQMF, initially a prototype of the Collaborative for Performance Measure Integration with EHR Systems (a collaborative of the American Medical Association, the National Committee for Quality Assurance, and the Electronic Health Records Association); and the RAND's work on a Performance Measure Reporting Language (PMRL) for representing performance measures in a computer-interpretable and sharable format.</p>
+		</div1>
+		<div1 id="prefChange">
+			<head>Changes from Previous Release	
+			</head>
+			<p>This is a new document that is ballotted as a Draft Standard for Trial Use (DSTU) in the September 2009 ballot cycle. The DSTU Period for this document is two years.</p>
+		</div1>
+	</front>
+	<body>
+		<div1 id="HQMFOverview" ballotStatus="DSTUBallot">
+			<head>HQMF Overview</head>
+			<p>
+				<quote>"If you cannot measure it, you cannot improve it." -- 
+Lord Kelvin (1824-1907)</quote>
+			</p>
+			<div2 id="WhatisHQMF">
+				<head>What is the HQMF, and what is an eMeasure?</head>
+				<p>The Health Quality Measures Format (HQMF) is a standard for representing a health quality measure as an electronic document. A quality measure is a quantitative tool that provides an indication of an individual or organization’s performance in relation to a specified process or outcome via the measurement of an action, process or outcome of clinical care. Quality measures are often derived from clinical guidelines and are designed to determine whether the appropriate care has been provided given a set of clinical criteria and an evidence base. Quality measures are also often referred to as performance measures or quality indicators.</p>
+				<p>Through standardization of a measure's structure, metadata, definitions, and logic, the HQMF provides for quality measure consistency and unambiguous interpretation. A health quality measure encoded in the HQMF format is referred to as an "eMeasure".</p>
+				<p>Standardization of document structure (e.g. sections), metadata (e.g. author, verifier), and definitions (e.g. "numerator", "initial patient population") enables a wide range of measures, currently existing in a variety of formats, to achieve at least a minimal level of consistency and readability, even if not fully machine processable.</p>
+				<p>From there, a formal representation of the clinical, financial and/or administrative concepts and logic within an eMeasure support unambiguous interpretation and consistent reporting. Examples of statements that can be formally represented by the HQMF include:</p>
+				<list role="unordered">
+					<item><emph>To be included in a measure's Denominator. a patient will have had at least two face to face visits; AND will have a confirmed diagnosis of coronary artery disease (based on diagnostic or procedure criteria);</emph></item>
+					<item><emph>To be included in a measure's Initial Patient Population, a patient will have had a principal inpatient discharge diagnosis of stroke; AND a hospital length of stay less than or equal to 120 days.</emph></item>
+				</list>
+			</div2>
+			<div2 id="HQMFQualityLifeCycle">
+				<head>HQMF and the quality life cycle</head>
+				<p>HQMF is one component of a larger quality framework, as shown in the following figure. </p>
+				<graphic source="eMeasureQualityLifeCycle.jpg"/>
+				<p>Measure developers, often drawing upon available evidence devise measureable parameters to gauge the quality of care in a particular area. These measureable parameters are assembled into quality measures, which are then expressible as eMeasures in HQMF format. eMeasures may be understood by providers  to guide optimal care, and to guide collection of Electronic Health Record (EHR) and other data, which is then assembled into quality reports (e.g. HL7 CDA R2 Quality Reporting Document Architecture) and submitted to quality or other organizations. </p>
+				<p>Unambiguous expression of concepts and logic within an eMeasure is a necessary step towards the larger objective of automatically enabling a direct query against an EHR or other operational data store. While HQMF is not an EHR query language, through the provision of unambiguous and formal definitions, it is an EHR query enabler. Additionally, an unambiguous representation of the clinical concepts in an eMeasure allows EHR vendors and healthcare providers to be proactive in capturing such information at the point of care. If, for instance, a quality measure reports on the provision of educational material to stroke patients, the corresponding eMeasure will make it clear exactly what type of educational care provision would be considered appropriate care. If the eMeasure calls for the collection of a certain data element not normally captured by the EHR, the EHR might now prompt the user in some way to provide this information, thereby enhancing not only the quality of data reporting, but also the quality of care.</p>
+				<p>HQMF, like the HL7 Clinical Document Architecture (CDA) standard, is derived from an overarching Structured Document Architecture. HQMF is not a CDA standard, but rather, has a peer-to-peer relationship with CDA. </p>
+			</div2>
+			<div2 id="GeneralHQMFConcepts">
+				<head>General HQMF Concepts</head>
+				<div3 id="MajorComponents">
+					<head>Major components of an HQMF Document</head>
+					<p>This section serves as a high-level introduction to the major components of an eMeasure document, all of which are described again and in greater detail later on. The intent here is to familiarize the reader with the high-level concepts to facilitate an understanding of the sections that follow.</p>
+					<p>Major components of a prototypic eMeasure document are shown in the following skeletal example. (Note that many required components are missing to simplify the example. See the <specref ref="examples"/> section for several detailed conformant examples).</p>
+					<p>An eMeasure document is wrapped by the &lt;QualityMeasureDocument&gt; element, and contains a header (see <specref ref="hqmfheader"/>) and a body (see <specref ref="HQMFBody"/>). The header identifies and classifies the document and provides important metadata about the measure.</p>
+					<p>The HQMF Body contains eMeasure sections. An eMeasure section is wrapped by the &lt;section&gt; element. Each section can contain a single narrative block (see the <specref ref="sectionnarrativeblock"/> section), and any number of HQMF entries. A conformant eMeasure may contain various pre-defined sections, such as the Population Criteria section (see <specref ref="documentconstraints"/>). Each pre-defined section may suggest or require various entries (see <specref ref="SectionConstraints"/>), and HQMF entries within these sections are constrained to better ensure consistency across eMeasures (see <specref ref="EntryConstraints"/>). Additional sections and entries, above and beyond those required for HQMF conformance, can be included as needed.</p>
+					<p>The HQMF narrative block is wrapped by the &lt;text&gt; element within the &lt;section&gt; element, and must contain the human readable content to be rendered. Within a document section, the narrative block represents content to be rendered, whereas entries represent structured content provided for further computer processing. </p>
+					<p>A minimally conformant eMeasure will contain elements from the document header, but need not include structured sections. The full measure, in any electronic format, is placed into or referenced by QualityMeasureDocument/text. From there, one can represent the full narrative of a quality measure within the narrative blocks of HQMF defined sections. Full encoding further enhances the narrative of the quality measure with the addition of entries.</p>
+					<p>
+						<eg>
+&lt;QualityMeasureDocument&gt;
+    ... eMeasure Header ... 
+   &lt;section&gt;
+      &lt;title&gt;Measure description&lt;/title&gt;
+      &lt;text&gt;... narrative measure description...&lt;/text&gt;
+      &lt;entry&gt;... Measure description multimedia ...&lt;/entry&gt;
+      &lt;entry&gt;... Measure description multimedia ...&lt;/entry&gt;
+      ...
+   &lt;/section&gt;
+   &lt;section&gt;
+      &lt;title&gt;Data criteria&lt;/title&gt;
+      &lt;text&gt;... narrative data criteria descriptions ...&lt;/text&gt;
+      &lt;entry&gt;... Formal data criteria definition ...&lt;/entry&gt;
+      &lt;entry&gt;... Formal data criteria definition ...&lt;/entry&gt;
+      ...
+   &lt;/section&gt;
+   &lt;section&gt;
+      &lt;title&gt;Population criteria&lt;/title&gt;
+      &lt;text&gt;... narrative population criteria descriptions ...&lt;/text&gt;
+      &lt;entry&gt;... Formal population criteria definition ...&lt;/entry&gt;
+      &lt;entry&gt;... Formal population criteria definition ...&lt;/entry&gt;
+      ....
+   &lt;/section&gt;
+   &lt;section&gt;
+      &lt;title&gt;Measure observations&lt;/title&gt;
+      &lt;text&gt;... narrative measure observation descriptions ...&lt;/text&gt;
+      &lt;entry&gt;... Formal measure observation definition ...&lt;/entry&gt;
+      &lt;entry&gt;... Formal measure observation definition ...&lt;/entry&gt;
+      ...
+   &lt;/section&gt;
+   &lt;section&gt;
+      &lt;section&gt;...&lt;/section&gt;
+   &lt;/section&gt;
+&lt;/QualityMeasureDocument&gt;				
+					</eg>
+					</p>
+				</div3>
+				<div3 id="HumanReadability">
+					<head>Human Readability and Rendering HQMF Documents</head>
+					<p>HQMF requires that a receiver of an eMeasure be able to algorithmically display the document on a standard Web browser such that a human reader would extract the same quality data as would a computer that is basing the extraction on formally encoded eMeasure entries. Material within a section to be rendered is to be placed into the section.text field. The content model of this field is the same as that used for other Structured Document specifications (e.g. Clinical Document Architecture, Structured Product Labeling). </p>
+					<p>Conformance constraints related to Section Narrative Block</p>
+					<list role="unordered">
+						<item>A recipient of an eMeasure shall be able to parse and interpret the document  sufficiently to be able to render it, using the following rendering rules:
+							<list role="unordered">
+								<item>HQMF header fields which if present must be rendered include:<list role="unordered">
+										<item>QualityMeasureDocument.title.</item>
+										<item>QualityMeasureDocument.text.</item>
+										<item>QualityMeasureDocument.statusCode.</item>
+										<item>QualityMeasureDocument.effectiveTime.</item>
+										<item>QualityMeasureDocument.versionNumber.</item>
+										<item>QualityMeasureDocument.author</item>
+										<item>QualityMeasureDocument.custodian</item>
+										<item>QualityMeasureDocument.verifier
+										<list role="unordered">
+											<item>QualityMeasureDocument.verifier.time</item>
+										</list>
+										</item>
+										<item>QualityMeasureDocument.componentOf. QualityMeasureSet. title.</item>
+										<item>QualityMeasureDocument.subjectOf. MeasureAttribute code value pairs.</item>
+									</list>
+								</item>
+								<item>HQMF section fields which if present must be rendered include:
+							<list role="unordered">
+										<item>Section.title.</item>
+										<item>Section.text (must be rendered per the rules defined in 3.3.4 Section Narrative Block).</item>
+									</list>
+								</item>
+							</list>
+						</item>
+						<item>A creator of an eMeasure shall properly populate section.text and Section Narrative Blocks such that a recipient, adhering to the recipient requirements above, will render the document such that a human reader would extract the same quality data as would a computer that is basing the extraction on formally encoded eMeasure entries. </item>
+					</list>
+				</div3>
+				<div3 id="EncodingeMeasureQualityStatements">
+					<head>Encoding eMeasure quality statements</head>
+					<div4 id="encodinggeneralapproach">
+						<head>General Approach</head>
+						<p>Quality measures exist in a variety of formats today, and the HQMF specification, while providing a formalism for query measure statements, also provides for an incremental approach, where one can:</p>
+						<list role="unordered">
+							<item>Create a miniminally conformant eMeasure that simply wraps an existing quality measure in any electronic format within in the HQMF header. </item>
+							<item>Represent the full narrative of a quality measure within the narrative blocks of HQMF defined sections. </item>
+							<item>Enhance the full narrative within the HQMF XML with a formalized representation of quality statements. This formalism is based on the following approach, which serves to modularize the process and make it easier to understand, reuse, and implement via an eMeasure authoring tool:
+						<list role="ordered">
+									<item>
+										<emph role="strong">Data criteria are defined:</emph> A criterion ("age is greater than 18", "antibiotic was prescribed", "diminished renal capacity", "length of stay less than 120 days") is an assertion that can be found to be true or false, often by looking at raw EHR data. Data criteria in HQMF are used primarily to determine whether or not a given patient is included in a measure's numerator, denominator, etc. For instance, a measure might say that "to be included in the Denominator, a patient must have age greater than 18 and antibiotic therapy prescribed". 
+HQMF formalizes a datum criterion by expressing it as a RIM pattern coupled with vocabulary. Where a patient has an object in their EHR that is subsumed by a datum criterion, that criterion can be deemed true for that patient.
+</item>
+									<item>
+										<emph role="strong">Population criteria are defined:</emph> Criteria for numerator, denominator, and other measurement populations are defined based on the underlying data criteria. For instance, the criteria for a patient to be part of a measure's denominator might be that they meet the criteria for "diminished renal capacity" and do not meet the criteria that "antibiotic was prescribed". 
+A population criterion, like a data criterion, is an assertion that can be found to be true or false, thereby providing a means for HQMF to formalize a measure's population parameters.
+</item>
+									<item>
+										<emph role="strong">Measure observations are defined:</emph> While some quality measures only define data criteria and population criteria, other quality measures also define variables or calculations that are used to score a particular aspect of performance. For instance, a measure intends to assess the use of restraints. Population criteria for the measure include "patient is in a psychiatric inpatient setting" and "patient has been restrained". For this population, the measure defines a measure observation of "restraint time" as the total amount of time the patient has been restrained. 
+Measure observations are not criteria, but rather, are definitions of observations, used to score a measure
+</item>
+								</list>
+							</item>
+						</list>
+						<p>These steps are described in greater detail in the sections that follow. HQMF entries corresponding to these steps are segregated into different sections in an eMeasure</p>
+					</div4>
+					<div4 id="patientcriteriavsaggregatescores">
+						<head>Patient criteria vs. aggregate scores</head>
+						<p>Terms like "numerator" and "denominator" can be ambiguous, in that they can refer to [1] the criteria for determining if an individual patient is included in a particular population (e.g. "numerator criteria are inpatient AND diagnosis of pneumonia AND treated with antibiotic); [2] the total count of patients meeting the criteria (e.g. "27 patients meet the numerator criteria"); [3] the top or bottom of a fraction (e.g. "the numerator is total restraint time, the denominator is total psychiatric inpatient days"). HQMF differentiates these interpretations in a number of ways:</p>
+						<list role="unordered">
+							<item>Data criteria and population criteria are expressed as individual patient criteria. In other words, criteria are constructed such that one can determine whether or not a particular patient meets the criteria. </item>
+							<item>HL7 has distinct codes to distinguish between the interpretations. For example, the code "included in denominator" is an assertion (represented in HQMF as an observation value) that a patient has met the denominator criteria; whereas the code "denominator count" is an observation (represented as an observation code) that carries a value.</item>
+							<item>Measure Observations are not directly tied to any particular population. For example, a measure defines a Measure Observation "average systolic blood pressure" as the sum of systolic blood pressures divided by the number of blood pressure readings. While the "sum of systolic blood pressures" is the numerator of an equation, it bears no relationship to the measure's numerator population. In fact, a quality organization may require that "average systolic blood pressure" be reported on any of the measure populations.</item>
+						</list>
+					</div4>
+					<div4 id="measuredefinitionvsreportingrequirements">
+						<head>Measure definition vs. Reporting requirements</head>
+						<p>Different quality organizations can collect data based on the same eMeasure, but stipulate different reporting requirements. For example, several quality organizations are interested in the use of antibiotics in patients with bronchitis. An eMeasure is created, which defines the denominator criteria as "encounter with diagnosis of bronchitis", and the numerator criteria as "antibiotic prescription is written". One quality organization wishes to receive a quarterly summary where all qualifying encounters are reported, stratified by age; whereas another quality organization requests semi-annual reports, where, in order to minimize the human burden of chart review, only 20% of encounters with a diagnosis of bronchitis need to be sampled. </p>
+						<p>A "measure definition" includes those components of a quality measure that are fixed and universally applicable, whereas "reporting requirements" are not part of a measure's definition, and can vary across quality organizations. While the dividing line is not absolute, common reporting requirements, not typically defined as part of an eMeasure, include reporting frequency, sampling, chart source (e.g. paper vs. EHR).</p>
+					</div4>
+				</div3>
+				<div3 id="DataCollectionandMissingData">
+					<head>Data collection and missing data</head>
+				
+					<p>Where the approach to missing data is part of the measure definition itself, it can be included as part of the eMeasure. </p>
+				</div3>
+				<div3 id="RelationshipofHQMFtoHL7MessagingStandards">
+					<head>Relationship of the HQMF to HL7 Messaging Standards</head>
+					<p>An HQMF document is a defined and complete information object that can exist outside of a messaging context and/or can be a payload within an HL7 Version 2 or Version 3 message. Thus, the HQMF complements HL7 messaging specifications. The exact method by which an eMeasure is exchanged is outside the scope of this standard. </p>
+				</div3>
+			</div2>
+		</div1>
+		<div1 id="IntroductiontoHQMFTechnicalArtifacts" ballotStatus="Reference">
+			<head>Introduction to HQMF Technical Artifacts</head>
+			<p>A complete understanding of HQMF requires an understanding of the underlying HL7 technical artifacts used to describe the specification. While an eMeasure must validate against the HQMF Schema, it must also adhere to the conformance rules stated in this specification.</p>
+			<p>The following sections summarize the artifacts used by HQMF, and how they can be used by those seeking to implement or understand the specification.</p>
+			<div2 id="rim">
+				<head>HL7 Reference Information Model</head>
+				<p>The definitive description of the HL7 Reference Information Model can be <xspecref spec="rim" alt="found here"/>
+				</p>
+				<p>The HL7 RIM is the definitive reference source for class and attribute definitions. The HQMF specification does not exhaustively replicate RIM definitions, but instead refers the reader to the RIM for complete definitions. While HQMF may further constrain RIM definitions, at no time will HQMF definitions conflict with those in the RIM.</p>
+				<p>HQMF, Release One is derived from HL7 RIM, Version 2.30.</p>
+				<p>Where a reader needs to see the complete definition of a RIM attribute or class, they should refer to the HL7 RIM.</p>
+			</div2>
+			<div2 id="datatypes">
+				<head>V3 Data Types</head>
+				<p>HL7 defines both an <xspecref spec="datatypes" alt="abstract data type specification"/>, which is the definitive reference, and an <xspecref spec="datatypes-its-xml" alt="XML-specific data type representation"/>.</p>
+				<p>Data types define the structural format of the data carried within a RIM attribute and influence the set of allowable values an attribute may assume. Some data types have very little intrinsic semantic content. However HL7 also defines more extensive data types such as the one for a person or organization's name. Every attribute in the RIM is associated with one and only one data type.</p>
+				<p>HQMF, Release One uses the HL7 Version 3 Data Types, Release 2 abstract and Release 1.1 XML-specific specification.</p>
+				<p>A reader will often find that the XML-specific description of a data type is sufficient for implementation, but at times will want to refer to the abstract data type specification for a more comprehensive discussion.</p>
+			</div2>
+			<div2 id="conceptdomainsandvaluesets">
+				<head>Concept Domains and Value Sets</head>
+				<p>The definitive description of HL7 V3 Vocabulary can be found <xspecref spec="vocabulary" alt="here"/>. </p>
+				<p>An HL7 Concept Domain is a named category of like concepts (semantic type) that will be bound to one or more coded elements. Concept Domains exist because we want to constrain the intent of a coded element at a universal level, while deferring the association of the element to a specific coded terminology until later in the standards development or implementation process, often at a part of particular country's localization. Thus, Concept Domains are independent of any specific vocabulary or code system.</p>
+				<p>A list of intended values for a concept domain is referred to as a value set. A value set consists of one or more coded concepts. These are the possible concept codes that can be carried in an eMeasure within a coded data type. Different value sets can be associated with the same concept domain in different countries.</p>
+				<p>Concept domains and value sets have a coding strength that can be "Coded, No Extensions" (CNE), in which case the only allowable values are those stated by the standard; or "Coded, With Extensions" (CWE), in which case values outside those stated can be used if necessary. </p>
+				<p>Where a reader needs to see the complete definition of an HL7-defined value, they should refer to the HL7 Vocabulary chapter.</p>
+			</div2>
+			<div2 id="hl7HQMFModel">
+				<head>HL7 HQMF Model</head>
+				<p>The definitive description of the HL7 V3 model refinement process, model development and interpretation can be found here. </p>
+				<p>The HL7 HQMF Model is a "Constrained Information Model" (CIM) (previously known as a "Refined Message Information Model (RMIM)), derived from a broader "Domain Information Model" (DIM) (previously known as a "Domain Message Information Model" (DMIM).</p>
+				<p>HL7 specifications derived from the HL7 RIM use a process known as "cloning" to refine domain specific models from the base HL7 RIM. When a refined model makes use of a specialization of an HL7 RIM class, the new class in the refined model is known as a clone of the HL7 RIM class. These specializations may further constrain the base class, for example, by specifying more restrictive attribute cardinality or by further constraints on the allowed vocabulary values. Multiple clones of a particular HL7 RIM class may appear in a refined model, each representing a different specialization.</p>
+				<p>The HQMF model is a technical diagrammatic representation of the HQMF specification. It is presented using diagramming conventions and notations that were developed by HL7 to represent the specific semantic constructs contained in the critical, "back-bone" classes of the RIM. Although it could be represented in UML notation, as the RIM is, the HL7 notation provides more details about the specific constraints and class clones being represented. </p>
+				<p>The HQMF model can be displayed graphically to aid in the understanding of the specification. Because the HQMF Hierarchical Description, and subsequently the HQMF Schema, are derived from the model, the model serves as a good basis for describing the standard. The narrative description below is aligned to correspond with the model.</p>
+				<p>Although the eMeasure is defined and represented based upon the HL7 RIM, an EHR system does not necessarily require full RIM compliance. The EHR can successfully implement eMeasure by mapping relevant EHR data components to RIM classes.</p>
+			</div2>
+			<div2 id="constraints">
+				<head>HL7 HQMF Constraints</head>
+				<p>Additional constraints, above and beyond what is easily expressed in the HQMF model and/or the HQMF schema, are asserted in this document as conformance statements.</p>
+				<p>Constraints are often used to define required or optional patterns or templates, rather than restricting HQMF model attributes or associations or allowable values. For instance, an eMeasure has a required Data dictionary section. Constraints are used to define the Data dictionary section and to require that it be present in an eMeasure, but those constraints do not preclude the inclusion of additional sections, above and beyond those required by conformance constraints. </p>
+			</div2>
+			<div2 id="HQMFHMD">
+				<head>HL7 HQMF Hierarchical Description</head>
+				<p>The definitive description of developing and interpreting <loc href="http://www.hl7.org/v3ballot/html/help/v3guide/v3guide.htm#v3ghmd">HL7 Hierarchical Descriptions</loc> can be found by following the link.</p>
+				<p>A Hierarchical Description is a tabular representation of the sequence of elements (i.e., classes, attributes and associations) represented in a model and that define the structure of the instance without reference to XML or any other implementation technology.</p>
+				<p>For HQMF, Release One, the HQMF HD is uniquely identified by the string "POQM_HD000001UV". As described below, this value must be included in an eMeasure instance to serve as an unambiguous reference to the HQMF, Release One specification.</p>
+			</div2>
+			<div2 id="xmlimplementation">
+				<head>HL7 HQMF XML Implementation</head>
+				<p>The HQMF Schema is derived through the use of the HL7 XML Implementation Technology Specification (ITS). The definitive description of HL7 XML ITS and the process used to go from Hierarchical Description to Schema can be found <loc href="http://www.hl7.org/v3ballot/html/help/v3guide/v3guide.htm#v3gits">here</loc>. </p>
+				<p>HQMF, Release One is based on the HL7 V3 XML Implementable Technology Specification for V3 Structures, Release One. </p>
+				<p>Looking at the HQMF model, a reader familiar with the RIM and the HL7 Development Framework and its rules for XML implementations can identify the corresponding XML elements and attributes. Due to algorithmic generation of some of the element names, the correspondence may be unclear, and the reader should refer to the HL7 V3 XML ITS for more details.</p>
+			</div2>
+		</div1>
+		<div1 id="hqmfmodel" ballotStatus="DSTUBallot">
+			<head>HQMF Model</head>
+			<p>The HQMF Model is derived from the <xspecref spec="rim" alt="RIM"/>. <br/>
+				<loc style="border:0px solid none" href="../../domains/uvqm/editable/POQM_RM000001UV.htm" target="_blank">
+					<graphic source="MyT-POQM_RM000001UV.png"/>
+				</loc>
+				<br/>
+				<loc style="border:0px solid none" href="../../domains/uvqm/editable/POQM_RM000001UV.htm" target="_blank">
+					<img class="graphic" src="../../domains/uvqm/editable/images/T-POQM_RM000001UV.png" alt=""/>
+					<br/>Click thumbnail above to open larger graphic in a new window.</loc>
+			</p>
+			<p>The HQMF HMD table view and excel view can be accessed by viewing the model and clicking on it.</p>
+			<div2 id="HQMFdocument">
+				<head>HQMF Document</head>
+				<p>The QualityMeasureDocument class is the entry point into the HQMF model, and corresponds to the &lt;QualityMeasureDocument&gt; XML element that is the root element of an eMeasure document. An eMeasure document is logically broken up into a header and a body. </p>
+				<p>The QualityMeasureDocument class inherits various attributes from the InfrastructureRoot class of RIM, including templateId and typeId.  In the QualityMeasureDocument class these are represented as QualityMeasureDocument.templateId and QualityMeasureDocument.typeId. When QualityMeasureDocument.templateId is valued in an instance, it signals the imposition of a set of template-defined constraints. In addition, the templateId attribute is available in all other HQMF classes, thus enabling the imposition of a set of template-defined constraints at any level of granularity. The value of this attribute provides a unique identifier for the template(s) in question. </p>
+				<p>QualityMeasureDocument.typeId is a technology-neutral explicit reference to this HQMF, Release One specification, and must be valued as follows: QualityMeasureDocument.typeId.root = "2.16.840.1.113883.1.3" (which is the OID for HL7 Registered models); QualityMeasureDocument.typeId.extension = "POQM_HD000001" (which is the unique identifier for the HQMF, Release One Hierarchical Description).</p>
+				
+					<p><emph role="strong">Constraint 1.</emph> An eMeasure SHALL contain 1..1 QualityMeasureDocument / typeId / @root valued with "2.16.840.1.113883.1.3"</p>
+					<p><emph role="strong">Constraint 2.</emph> An eMeasure SHALL contain 1..1 QualityMeasureDocument / typeId / @extension valued with "POQM_HD000001"</p>
+				
+				<div3 id="documentconstraints">
+					<head>Document constraints</head>
+					<p>Additional constraints, above and beyond what is expressed in the HQMF model, include:</p>
+				
+						<p><emph role="strong">Constraint 3. </emph>The value for QualityMeasureDocument/code SHALL be "eMeas-X" Health Quality Measure Document (CodeSystem: 2.16.840.1.113883.6.1, LOINC)</p>
+						<p><emph role="strong">Constraint 4.</emph>An eMeasure MAY contain 0..1 Measure Description section. </p>
+						<p><emph role="strong">Constraint 5.</emph>An eMeasure SHOULD contain  0..1 Data Criteria section</p>
+						<p><emph role="strong">Constraint 6.</emph>An eMeasure SHALL contain 1..1 Population Criteria section</p>
+						<p><emph role="strong">Constraint 7.</emph>An eMeasure MAY contain 0..1 Measure ObservationsSection</p>
+					
+					<p>These sections are described below. See <specref ref="HQMFSections"/> for more information. </p>
+				</div3>
+			</div2>
+			<div2 id="hqmfheader">
+				<head>HQMF Header</head>
+				<div3 id="headerattributes">
+					<head>Header attributes</head>
+					<div4 id="qmdclasscode">
+						<head>QualityMeasureDocument.classCode</head>
+						<p>The major class of Acts to which a QualityMeasureDocument.classCode instance belongs.  The class code is fixed at "DOC" (document).</p>
+					</div4>
+					<div4 id="qmdmoodcode">
+						<head>QualityMeasureDocument.moodCode</head>
+						<p>The intended use of the QualityMeasureDocument. The QualityMeasureDocument moodCode is fixed at "EVN" (event).</p>
+					</div4>
+					<div4 id="qmdidid">
+						<head>QualityMeasureDocument.id</head>
+						<p>Represents the globally unique measure identifier for a particular version of a quality measure. Contrast with QualityMeasureDocument.setId, which represents the unique measure identifier for a quality measure, regardless of version. For example, the "Anticoagulation therapy for atrial fibrillation/flutter" quality measure can have multiple versions. For each version, the QualityMeasureDocument.setId remains constant, whereas each version has a unique QualityMeasureDocument.id.</p>
+					</div4>
+					<div4 id="qmdcode">
+						<head>QualityMeasureDocument.code</head>
+						<p>The code specifying the kind of document. The value is fixed in HQMF. The unique identification of a quality measure is via QualityMeasureDocument.id (which uniquely identifies a particular version of a measure) and QualityMeasureDocument.setId (which uniquely identifies a measure across versions).</p>
+						
+							<p><emph role="strong">Constraint 8.</emph>The value for QualityMeasureDocument/code SHALL be "57024-2" Health Quality Measure Document (CodeSystem: 2.16.840.1.113883.6.1, LOINC)</p>
+						
+					</div4>
+					<div4 id="qmdtitle">
+						<head>QualityMeasureDocument.title</head>
+						<p>Represents the title of the particular quality measure, such as "Anticoagulation therapy for atrial fibrillation/flutter"</p>
+					</div4>
+					<div4 id="qmdtext">
+						<head>QualityMeasureDocument.text</head>
+						<p>Represents a brief narrative description of the measure, such as "Ischemic stroke patients with atrial fibrillation/flutter who are prescribed anticoagulation therapy at hospital discharge". </p>
+						<p>A minimally conformant eMeasure will contain elements from the document header, but will not include structured sections. The full measure, in any electronic format, is placed into or referenced by QualityMeasureDocument.text.</p>
+						<p>A more detailed or embellished description, such as one containing images and/or flow diagrams, can be included in the body of the document, in the Measure Description section.</p>
+					</div4>
+					<div4 id="qmdstatuscode">
+						<head>QualityMeasureDocument.statusCode</head>
+						<p>Represents the state of the current version of the eMeasure. Can be used to signify that a particular version is draft (statusCode="active") vs. final (statusCode="final").</p>
+					</div4>
+					<div4 id="qmdeffectivetime">
+						<head>QualityMeasureDocument.effectiveTime</head>
+						<p>Represents the time interval over which this version of the measure is applicable. The QualityMeasureDocument.effectiveTime is not the same as the reporting period.  The reporting period is the time interval over which data for the measure is collected.  The same measure may have different reporting periods depending on the organization requesting the data. The reporting period is not part of the measure definition and therefore is not represented in HQMF. </p>
+					</div4>
+					<div4 id="qmdavailabilitytime">
+						<head>QualityMeasureDocument.availabilityTime</head>
+						<p>Represents the time that a particular completed version of an eMeasure was made publically available.</p>
+					</div4>
+					<div4 id="qmdlanguagecode">
+						<head>QualityMeasureDocument.languageCode</head>
+						<p>Represents the human language of character data (whether they be in contents or attribute values). The values of the attribute are language identifiers as defined by the IETF (Internet Engineering Task Force)  <loc href="http://www.ietf.org/rfc/rfc3066.txt" target="_blank">RFC 3066 for the Identification of Languages</loc>, which obsoletes RFC 1766. The HL7 code system for these values is "2.16.840.1.113883.6.121". </p>
+					</div4>
+					<div4 id="qmdsetid">
+						<head>QualityMeasureDocument.setId</head>
+						<p>Represents the unique measure identifier for a quality measure, regardless of version. For example, the "Anticoagulation therapy for atrial fibrillation/flutter" quality measure can have multiple versions. For each version, the QualityMeasureDocument.setId remains constant, whereas each version has a unique QualityMeasureDocument.id.</p>
+					</div4>
+					<div4 id="qmdversionnumber">
+						<head>QualityMeasureDocument.versionNumber</head>
+						<p>A positive integer value used to version successive replacement documents.</p>
+					</div4>
+				</div3>
+				<div3 id="qmdheaderparticipants">
+					<head>Header Participants</head>
+					<p>This section describes all participant classes involved with the quality measure creation and maintenance.</p>
+					<div4 id="qmdauthor">
+						<head>Author</head>
+						<p>Represents the humans and/or organizations that authored the quality measure.</p>
+						<p>A human author is uniquely identified via QualityMeasureDocument.author.responsibleParty.id. The responsible organization is identified via QualityMeasureDocument.author.responsibleParty.representedResponsibleOrganization.id.</p>
+						<p>Authorship defined in the document header propagates throughout the entire document, where it can be overridden at the section and/or entry level.
+</p>
+<p>Typically, the author(s) and the custodian are part of the same organization. However, there may be use cases where the quality measure is authored by one organization on behalf of the custodian organization.</p>
+						<p>
+							<emph role="strong">author.typeCode</emph>
+						</p>
+						<p>The QualityMeasureDocument.author.typeCode is fixed at "AUT" (author).</p>
+						<p>
+							<emph role="strong">author.functionCode</emph>
+						</p>
+						<p>Additional detail about the function that the author has in the QualityMeasureDocument. This code, if specified, must not conflict with the Participation.typeCode.</p>
+						<p>
+							<emph role="strong">author.contextControlCode</emph>
+						</p>
+						<p>The QualityMeasureDocument.author.contextControlCode is fixed at "OP" (overriding propagating), meaning that the stated author is the author for the entire document and all of its components, unless overridden by a different author somewhere within the document.</p>
+						<p>
+							<emph role="strong">author.time</emph>
+						</p>
+						<p>The time during which the author is involved in the QualityMeasureDocument.</p>
+						<p>
+							<emph role="strong">author.signatureCode</emph>
+						</p>
+						<p>A code indicating that the author has attested participation through a signature.</p>
+					</div4>
+					<div4 id="qmdResponsibleParty">
+						<head>responsibleParty</head>
+						<p>The responsibleParty is the individual or organization  accountable for their participation in the QualityMeasureDocument. The responsibleParty represents a relationship between a person (responsiblePerson) and an organization (responsibleOrganization). The person, playing the role described within the responsibleParty class, is participating in the QualityMeasureDocument as described by the type of participation (e.g. as author, as verifier, etc). A person's role is scoped by an organization. In other words, it is within an organization that a person can function as author or verifier. </p>
+						<p>
+							<emph role="strong">responsibleParty.classCode</emph>
+						</p>
+						<p>responsibleParty.classCode is a subtype of "assigned" in a QualityMeasureDocument.  "Assigned" is a role in which the playing entity is acting in the employ of or on behalf of a scoping organization.</p>
+						<p>
+							<emph role="strong">responsibleParty.id</emph>
+						</p>
+						<p>A unique identifier for the responsiblePerson in the Role in a QualityMeasureDocument.</p>
+						<p>
+							<emph role="strong">responsibleParty.code</emph>
+						</p>
+						<p>The specific kind of Role. Role.code must conceptually be a proper specialization of Role.classCode.</p>
+						<p>
+							<emph role="strong">responsibleParty.addr</emph>
+						</p>
+						<p>A postal address for the Responsible Party.</p>
+						<p>
+							<emph role="strong">responsibleParty.telecom</emph>
+						</p>
+						<p>A telecommunication address for the Responsible Party.</p>
+					</div4>
+					<div4 id="qmdresponsibleperson">
+						<head>responsiblePerson</head>
+						<p>The person playing the role of responsibleParty</p>
+						<p>
+							<emph role="strong">responsiblePerson.classCode</emph>
+						</p>
+						<p>responsiblePerson.classCode is fixed at "PSN" (person) in a QualityMeasureDocument.</p>
+						<p>
+							<emph role="strong">responsiblePerson.determinerCode</emph>
+						</p>
+						<p>ResponsiblePerson.determiner code is fixed at "INSTANCE" in a QualityMeasureDocument.</p>
+						<p>
+							<emph role="strong">responsiblePerson.name</emph>
+						</p>
+						<p>The name of the responsiblePerson.</p>
+					</div4>
+					<div4 id="qmdresponsibleorganization">
+						<head>responsibleOrganization</head>
+						<p>The organization scoping the role of responsibleParty</p>
+						<p>
+							<emph role="strong">responsibleOrganization.classCode</emph>
+						</p>
+						<p>ResponsibleOrganization.classCode is fixed at "ORG" (organization) in a QualityMeasureDocument.</p>
+						<p>
+							<emph role="strong">responsibleOrganization.determinerCode</emph>
+						</p>
+						<p>ResponsibleOrganization.determiner code is fixed at "INSTANCE" in a QualityMeasureDocument.</p>
+						<p>
+							<emph role="strong">responsibleOrganization.id</emph>
+						</p>
+						<p>A unique identifier for the responsibleOrganization.</p>
+						<p>
+							<emph role="strong">responsibleOrganization.name</emph>
+						</p>
+						<p>The name of the responsibleOrganization</p>
+						<p>
+							<emph role="strong">responsibleOrganization.desc</emph>
+						</p>
+						<p>A textual or multimedia depiction of the responsibleOrganization.</p>
+						<p>
+							<emph role="strong">responsibleOrganization.telecom</emph>
+						</p>
+						<p>A telecommunication address for the ResponsibleOrganization.</p>
+						<p>
+							<emph role="strong">responsibleOrganization.addr</emph>
+						</p>
+						<p>A postal address for the ResponsibleOrganization.</p>
+					</div4>
+					<div4 id="qmdcustodian">
+						<head>Custodian</head>
+						<p>Represents the organization that is in charge of maintaining the document. The custodian is the steward that is entrusted with the care of the document, and bears overall responsibility for the measure, serving as primary contact for issues or concerns about the measure. Every eMeasure document has exactly one custodian.</p>
+						<p>Typically, the author(s) and the custodian are part of the same organization. However, there may be use cases where the quality measure is authored by one organization on behalf of the custodian organization.</p>
+						<p>
+							<emph role="strong">custodian.typeCode </emph>
+						</p>
+						<p>The QualityMeasureDocument.author.typeCode is fixed at "CST" (custodian).</p>
+						<p>
+							<emph role="strong">custodian.contextControlCode</emph>
+						</p>
+						<p>The QualityMeasureDocument.custodian.contextControlCode is fixed at "OP" (overriding propagating), meaning that the stated custodian is the custodian for the entire document and all of its components.</p>
+						<p>
+							<emph role="strong">ResponsibleParty, ResponsiblePerson, ResponsibleOrganization</emph>
+						</p>
+						<p>See the descriptions in the Author section.</p>
+					</div4>
+					<div4 id="qmdparticipant">
+						<head>Participant</head>
+						<p>Represents other parties somehow participating in the quality measure. The type of participation is represented by the required participant.typeCode, along with the optional participant.functionCode where more details about the type of participation are needed.</p>
+						<p>
+							<emph role="strong">participant.typeCode</emph>
+						</p>
+						<p>The kind of Participation or involvement the responsiblePerson playing the participant has with regard to the QualityMeasureDocument.  The QualityMeasureDocument.participant.typeCode is a subtype of ParticipationType (any participation typeCode).</p>
+						<p>
+							<emph role="strong">participant.functionCode</emph>
+						</p>
+						<p>Additional detail about the function that the participant has in the QualityMeasureDocument.  This code, if specified, must not conflict with the Participation.typeCode.</p>
+						<p>
+							<emph role="strong">participant.contextControlCode</emph>
+						</p>
+						<p>The QualityMeasureDocument.participant.contextControlCode is fixed at "OP" (overriding propagating), meaning that the stated participant is the participant for the entire document and all of its components, unless overridden by a participant of the same type  somewhere within the document.</p>
+						<p>
+							<emph role="strong">participant.time</emph>
+						</p>
+						<p>The time during which the participant is involved in the QualityMeasureDocument.</p>
+						<p>
+							<emph role="strong">participant.signatureCode</emph>
+						</p>
+						<p>A code indicating that the participant has attested participation through a signature.</p>
+						<p>
+							<emph role="strong">ResponsibleParty, ResponsiblePerson, ResponsibleOrganization</emph>
+						</p>
+						<p>See the descriptions in the Author section.</p>
+					</div4>
+					<div4 id="qmdverifier">
+						<head>Verifier</head>
+						<p>Represents the humans and/or organization who have endorsed or approved the quality measure definition including data criteria, population criteria, and observation measures. There can be many approvals – e.g. by the authoring organization, by the National Quality Forum, etc.</p>
+						<p>Time of verification is captured via QualityMeasureDocument. verifier. time.</p>
+						<p>
+							<emph role="strong">verfier.typeCode </emph>
+						</p>
+						<p>The QualityMeasureDocument.author.typeCode is fixed at "VRF" (verifier).</p>
+						<p>
+							<emph role="strong">verifier.functionCode</emph>
+						</p>
+						<p>Additional detail about the function that the verifier has in the QualityMeasureDocument.  This code, if specified, must not conflict with the Participation.typeCode.</p>
+						<p>
+							<emph role="strong">verifier.contextControlCode</emph>
+						</p>
+						<p>The QualityMeasureDocument.verifier.contextControlCode is fixed at "OP" (overriding propagating), meaning that the stated verifier is the verifier for the entire document and all of its components.</p>
+						<p>
+							<emph role="strong">verifier.time</emph>
+						</p>
+						<p>The time during which the verifier is involved in the QualityMeasureDocument.</p>
+						<p>
+							<emph role="strong">verifier.signatureCode</emph>
+						</p>
+						<p>A code indicating that the verifier has attested participation through a signature.</p>
+						<p>
+							<emph role="strong">ResponsibleParty, ResponsiblePerson, ResponsibleOrganization</emph>
+						</p>
+						<p>See the descriptions in the Author section.</p>
+					</div4>
+				</div3>
+				<div3 id="headerrelationships">
+					<head>Header Relationships</head>
+					<div4 id="ParentQualityMeasureDocument">
+						<head>ParentQualityMeasureDocument</head>
+						<p>Represents the source of a document revision (relatedDocument.typeCode="RPLC") or transformation (relatedDocument.typeCode="XFRM").  </p>
+						<p>Where a quality measure in a non eMeasure format is used as the source for the construction of the corresponding eMeasure, that source document can be represented with the ParentQualityMeasureDocument class.</p>
+						<p>
+							<emph role="strong">ParentQualityMeasureDocument.classCode </emph>
+						</p>
+						<p>The class code is fixed at "DOC" (document).</p>
+						<p>
+							<emph role="strong">ParentQualityMeasureDocument.moodCode</emph>
+						</p>
+						<p>The QualityMeasureDocument moodCode is fixed at "EVN" (event).</p>
+						<p>
+							<emph role="strong">ParentQualityMeasureDocument.id</emph>
+						</p>
+						<p>A unique identifier for the ParentQualityMeasureDocument.</p>
+						<p>
+							<emph role="strong">ParentQualityMeasureDocument.code</emph>
+						</p>
+						<p>The code specifying the kind of document.  The value may be any documentType.</p>
+						<p>
+							<emph role="strong">ParentQualityMeasureDocument.text</emph>
+						</p>
+						<p>Can be used to indicate the MIME type of the related document. It is not to be used to embed the related document.</p>
+						<p>
+							<emph role="strong">ParentQualityMeasureDocument.setId</emph>
+						</p>
+						<p>Represents the unique measure identifier for a quality measure, regardless of version.</p>
+						<p>
+							<emph role="strong">ParentQualityMeasureDocument.versionNumber</emph>
+						</p>
+						<p>A positive integer value used to version successive replacement documents.</p>
+					</div4>
+					<div4 id="qualitymeasureset">
+						<head>QualityMeasureSet</head>
+						<p>Represents the measure set, if any, of which this eMeasure is a part.</p>
+						<p>A measure set is a unique grouping of performance measures carefully selected to provide, when viewed together, a robust picture of the care provided in a given domain(e.g., cardiovascular care, pregnancy). The Initial Patient Population is the same across all quality measures within a single quality measure set.</p>
+						<p>
+							<emph role="strong">QualityMeasureSet.id </emph>
+						</p>
+						<p>A unique identifier for the QualityMeasureSet.</p>
+						<p>
+							<emph role="strong">QualityMeasureSet.title</emph>
+						</p>
+						<p>Represents the title of the particular quality measure set.</p>
+					</div4>
+					<div4 id="MeasureAttribute">
+						<head>MeasureAttribute</head>
+						<p>Represents miscellaneous metadata to further characterize an eMeasure. The following measure attributes may be included. In addition, other metadata attributes may be included.</p>
+						<p>
+							<emph role="strong">MeasureAttribute.classCode </emph>
+						</p>
+						<p>The class code is fixed at "OBS" (observation).</p>
+						<p>
+							<emph role="strong">MeasureAttribute.moodCode </emph>
+						</p>
+						<p>The MeasureAttibute moodCode is fixed at "EVN" (event).</p>
+						<p>
+							<emph role="strong">MeasureAttribute.code </emph>
+						</p>
+						<p>The code specifying the kind of measureAttribute. In the following table, columns " Data Element Name" and "Code" include suggested measure attributes. None of them are required, and other measure attributes can be included.</p>
+						<p><emph role="strong">Constraint 9.</emph> An eMeasure MAY include 0..* measure attributes from the following table.</p>
+						<p><emph role="strong">Constraint 10.</emph> An eMeasure SHOULD include 0..1 Measure Scoring data element.</p>
+						<p>
+							<emph role="strong">MeasureAttribute.value </emph>
+						</p>
+						<p>The result of the observation action of a measureAttribute.  The following table includes suggested measure attribute data types (column "Value data type") and values (column "Allowable values"). </p>
+						<table>
+							<caption>Measure Attribute Table</caption>
+							<tbody>
+								<tr>
+									<th>Data Element Name</th>
+									<th>Code</th>
+									<th>Value Data Type</th>
+									<th>Allowable Values (ValueSet OID)</th>
+									<th>Definition</th>
+								</tr>
+								<tr>
+									<td>Care Setting</td>
+									<td>MSRSET</td>
+									<td>CD/CWE</td>
+									<td>RoleClassServiceDeliveryLocation ValueSet (2.16.840.1.113883.1.11.16927)
+</td>
+									<td>Location(s) in which care being measured is rendered.</td>
+								</tr>
+								<tr>
+									<td>Copyright</td>
+									<td>COPY</td>
+									<td>ED</td>
+									<td>Any</td>
+									<td>Copyright Information for the measure</td>
+								</tr>
+								<tr>
+									<td>Data Aggregation</td>
+									<td>MSRAGG</td>
+									<td>ED</td>
+									<td>Examples: "Aggregate rate generated from count data reported as a proportion (for example, rate-based measures which report summary data generated from the number of Cesarean sections as a proportion of deliveries)", "Aggregate rate generated from count data reported as a ratio (e.g., bloodstream infection per 1,000 line days)", "Aggregate measures of central tendency (e.g., continuous variables which report means and medians such as length of stay)".</td>
+									<td>Indicates, for the measure, how data will be analyzed and statistically reported for quality improvement and public reporting activities. Note:  This does not identify the type of data (patient-level or aggregate) that will be transmitted to the measure adopter / warehouse.</td>
+								</tr>
+								<tr>
+									<td>Disclaimer</td>
+									<td>DISC</td>
+									<td>ED</td>
+									<td>Any</td>
+									<td>A statement intended to specify or delimit the scope of rights and obligations associated with the measure.</td>
+								</tr>
+								<tr>
+									<td>Keyword</td>
+									<td>KEY</td>
+									<td>CD/CWE or ED</td>
+									<td/>
+									<td>A significant word or words that aid in discoverability.</td>
+								</tr>
+								<tr>
+									<td>Improvement Notation</td>
+									<td>MSRIMPROV</td>
+									<td>ED</td>
+									<td>Any</td>
+									<td>Information on whether an increase or decrease in score is the preferred result. This should reflect information on which way is better, an increase or decrease in score.</td>
+								</tr>
+								<tr>
+									<td>Measure Type</td>
+									<td>MSRTYPE</td>
+									<td>CD/CWE</td>
+									<td>ObservationMeasureType ValueSet (2.16.840.1.113883.1.11.20368)</td>
+									<td>Indicates whether the measure is used to examine a process or an outcome over time. Examples: Process, Outcome</td>
+								</tr>
+								<tr>
+									<td>Measure Scoring</td>
+									<td>MSRSCORE</td>
+									<td>CD/CWE</td>
+									<td>ObservationMeasureScoring ValueSet (2.16.840.1.113883.1.11.20367)</td>
+									<td>Examples: Proportion, Ratio, Continuous variable</td>
+								</tr>
+								
+								<tr>
+									<td>Notice of Use</td>
+									<td>USE</td>
+									<td>ED</td>
+									<td>Any</td>
+									<td>Usage notes</td>
+								</tr>
+								<tr>
+									<td>Rationale</td>
+									<td>RAT</td>
+									<td>ED</td>
+									<td>Any</td>
+									<td>Description of why this measure is important, particularly from a clinical perspective.</td>
+								</tr>
+																
+								<tr>
+									<td>Reference</td>
+									<td>REF</td>
+									<td>ED</td>
+									<td>Any</td>
+									<td>Bibliographic citations. May include general references, related clinical practice guidelines, sources of evidence, etc.</td>
+								</tr>
+								<tr>
+									<td>Risk Adjustment</td>
+									<td>MSRADJ</td>
+									<td>ED</td>
+									<td>Any</td>
+									<td>The method of adjusting for clinical severity and conditions present at the start of care that can influence patient outcomes, to make valid comparisons of outcome measures across providers. Indicates whether a measure is subject to the statistical process for reducing, removing, or clarifying the influences of confounding factors to allow more useful comparisons.</td>
+								</tr>
+								<tr>
+									<td>Topic Type</td>
+									<td>MSRTOPIC</td>
+									<td>CD/CWE</td>
+									<td>Any</td>
+									<td>Clinical condition or activity for which the measure was developed to address.</td>
+								</tr>
+							</tbody>
+						</table>
+						<p>NOTE that the Codes in Column 2 (Code) are taken from ActCode (codeSystem="2.16.840.1.113883.5.4")</p>
+					</div4>
+				</div3>
+			</div2>
+			<div2 id="HQMFBody">
+				<head>HQMF Body</head>
+				<div3 id="HQMFSections">
+					<head>HQMF Sections</head>
+					<p>A minimally conformant eMeasure will contain elements from the document header, but need not include structured sections. Where there are structured sections, an eMeasure must have at least one section - Population Criteria section, and any number of other document sections, with any level of section nesting.  </p>
+					<table>
+						<caption>eMeasure Sections</caption>
+						<tbody>
+							<tr>
+								<th>Section</th>
+								<th>Section.code</th>
+								<th>Cardinality</th>
+								<th>Description</th>
+							</tr>
+							<tr>
+								<td>Measure Description Section</td>
+								<td>34089-3</td>
+								<td>0..1</td>
+								<td>The Measure Description section is used to provide a more detailed or embellished description, such as one containing images and/or flow diagrams, than that provided in QualityMeasureDocument.text.</td>
+							</tr>
+							<tr>
+								<td>Data Criteria section</td>
+								<td>57025-9</td>
+								<td>0..1</td>
+								<td>The Data Criteria section contains criteria used primarily to determine whether or not a given patient is included in a measure's numerator, denomator, etc</td>
+							</tr>
+							<tr>
+								<td>Population Criteria section</td>
+								<td>57026-7</td>
+								<td>0..1</td>
+								<td>The Population Criteria section is used to formalize a measure's population (e.g. numerator, denominator) parameters.</td>
+							</tr>
+							<tr>
+								<td>Measure Observations Section</td>
+								<td>57027-5</td>
+								<td>0..1</td>
+								<td>The Measure Observations section defines variables (e.g. time from check in to antibiotic administration) used to score particular aspects of performance</td>
+							</tr>
+						</tbody>
+					</table>
+					<p>Note that the Section Codes in column 2 of the above table are from LOINC (codeSystem="2.16.840.1.113883.6.1").</p>
+				</div3>
+				<div3 id="SectionAttriibutes">
+					<head>Section Attributes</head>
+					<div4 id="Sectionid">
+						<head>Section.id</head>
+						<p>Represents the unique identifier of a particular document section.</p>
+					</div4>
+					<div4 id="sectioncode">
+						<head>Section.code</head>
+						<p>Represents the particular kind of section. </p>
+					</div4>
+					<div4 id="sectiontitle">
+						<head>Section.title</head>
+						<p>Represents the label of a section. If valued, it is to be rendered as part of the narrative content of the document body.</p>
+					</div4>
+					<div4 id="sectiontext">
+						<head>Section.text</head>
+						<p>Used to store narrative to be rendered. Also referred to as the Section Narrative Block. (See <specref ref="sectionnarrativeblock"/> for details.</p>
+					</div4>
+					<div4 id="sectionlanguagecode">
+						<head>Section.languageCode</head>
+						<p>Represents the human language of character data (whether they be in contents or attribute values). The values of the attribute are language identifiers as defined by the IETF (Internet Engineering Task Force)  <loc href="http://www.ietf.org/rfc/rfc3066.txt" target="_blank">RFC 3066 for the Identification of Languages</loc>, which obsoletes RFC 1766. The HL7 code system for these values is "2.16.840.1.113883.6.121". </p>
+					</div4>
+				</div3>
+				<div3 id="SectionRelationships">
+					<head>Section Relationships</head>
+					<div4 id="sectioncomponent">
+						<head>Component</head>
+						<p>Used to nest a Section within a Section. </p>
+					</div4>
+					<div4 id="sectionentry">
+						<head>Entry</head>
+						<p>Represents the relationship between a section and its entries. </p>
+						<p>Entry.typeCode is defaulted to "COMP" (component), for the general case where the only assertion is that the related entries are contained within the source section and no other semantics are implied. Entry.typeCode can be set to "DRIV" (is derived from) where the narrative is fully derived from HQMF Entries. </p>
+					</div4>
+				</div3>
+				<div3 id="sectionnarrativeblock">
+					<head>Section Narrative Block</head>
+					<p>The Section.text field is used to store narrative to be rendered, and is therefore referred to as the Section Narrative Block. </p>
+					<p>The content model of the Section Narrative Block schema is the same as that used for other Structured Document specifications (e.g. Clinical Document Architecture, Structured Product Labeling). The schema is registered as a MIME type (text/x-hl7-text+xml), which is the fixed media type for Section.text. Components of the schema are described in the sections that follow. While all narrative block components are available for use in an eMeasure, many were added to meet the needs of other Structured Document specifications, so may not be directly applicable.  </p>
+					<div4 id="paragraph">
+						<head>paragraph</head>
+						<p>A &lt;paragraph&gt; element is similar to the HTML &lt;p&gt; element, which allows blocks of narrative to be broken up into logically consistent structures. A narrative block &lt;paragraph&gt; element contains an optional caption, which if present must come first before any other character data.</p>
+					</div4>
+					<div4 id="list">
+						<head>list</head>
+						<p>A &lt;list&gt; element is similar to the HTML &lt;ol&gt; or &lt;ul&gt; elements. The &lt;list&gt; element has an optional caption, and contains one or more &lt;item&gt; elements. The required listType attribute specifies whether the list is ordered or unordered (with unordered being the default). Unordered lists are typically rendered with bullets, whereas ordered lists are typically rendered with numbers, although this is not a requirement. </p>
+						<p>A &lt;item&gt; element contains an optional caption, which if present must come first before any other character data.</p>
+					</div4>
+					<div4 id="table">
+						<head>table</head>
+						<p>The &lt;table&gt; is similar to the HTML table. The table markup is for presentation purposes only and, unlike a database table, does not possess meaningful field names. </p>
+						<p>The narrative block schema modifies the strict XHTML table model by removing formatting tags and by setting the content model of cells to be similar to the contents of other elements in the narrative block. </p>
+					</div4>
+					<div4 id="footnote">
+						<head>footnote, footNoteRef</head>
+						<p>The &lt;footnote&gt; element is used to indicate a footnote. The element contains the footnote, inline with the flow of text to which it is applied. </p>
+						<p>Receivers are required to interpret a footnote when rendering by visually distinguishing footnoted text. The exact rendition is at the discretion of the recipient, and might include a mark at the location of the footnote with a hyperlink to the footnoted text, a simple demarcation (such as "This is the text [this is the footnote] that is being footnoted"), etc.</p>
+						<p>The &lt;footnoteRef&gt; element can reference an existing footnote in the same or different narrative block of the same document. It can be used when the same footnote is being used multiple times. The value of the footnoteRef.IDREF must be an footnote.ID value in the same document.</p>
+					</div4>
+					<div4 id="content">
+						<head>content</head>
+						<p>The &lt;content&gt; element is used to wrap a string of text so that it can be explicitly referenced, or so that it can suggest rendering characteristics. The &lt;content&gt; element can nest recursively, which enables wrapping a string of plain text down to as small a chunk as desired. 
+The &lt;content&gt; element contains an optional identifier that can serve as the target of a reference. All values of attributes of type XML ID must be unique within the document (per theW3C XML specification). </p>
+						<p>The &lt;content&gt; element contains an optional "revised" attribute that can be valued with "insert" or "delete", which can be used to indicate narrative changes from the last version of a document. The attribute is limited to a single generation, in that it only reflects the changes from the preceding version of a document. If applied, it needs to be used in conjunction with standard document revision tracking. Changes to a document that has been released for use still require a formal versioning and revision, and the revised document can optionally carry the "revised" attribute to show the delta in the narrative. Receivers are required to interpret the "revised" attribute when rendering by visually distinguishing or suppressing deleted narrative.</p>
+					</div4>
+					<div4 id="styleCode">
+						<head>styleCode</head>
+						<p>The styleCode attribute is used within the narrative block to give the instance author the ability to suggest rendering characteristics of the nested character data. Receivers are not required to render documents using the style hints provided and can present stylized text in accordance with their local style conventions.</p>
+						<p>The styleCode attribute is used within the narrative block to give the instance author the ability to suggest rendering characteristics of the nested character data. Receivers are not required to render documents using the style hints provided and can present stylized text in accordance with their local style conventions.</p>
+						<p>Local extensions to the styleType vocabulary domain must follow the following convention: [x][A-Za-z][A-Za-z0-9]* (first character is "x", second character is an upper or lower case A-Z, remaining characters are any combination of upper and lower case letters or numbers).</p>
+						<p>The styleCode attribute can contain multiple values, separated by white space. Where an element containing a styleCode attribute is nested within another element containing a styleCode attribute, the style effects are additive, as in the following example: </p>
+						<p>
+							<eg>
+&lt;section&gt;
+  &lt;text&gt;
+    &lt;content styleCode="Bold"&gt;This is rendered bold, 
+       &lt;content styleCode="Italics"&gt;this is rendered bold and  
+       italicized,&lt;/content&gt; this is rendered bold.&lt;/content&gt;
+       &lt;content styleCode="Bold Italics"&gt;This is also rendered bold 
+       and italicized.
+    &lt;/content&gt;
+  &lt;/text&gt;
+&lt;/section&gt;						
+						</eg>
+						</p>
+					</div4>
+					<div4 id="subsup">
+						<head>sub and sup</head>
+						<p>The &lt;sub&gt; and &lt;sup&gt; elements are used to indicate subscripts and superscripts, respectively. Receivers are required to interpret these elements when rendering by visually distinguishing subscripted and superscripted characters. </p>
+					</div4>
+					<div4 id="br">
+						<head>br</head>
+						<p>The &lt;br/&gt; element is used to indicate a hard line break. It differs from the &lt;paragraph&gt; element in that the &lt;br/&gt; element has no content. Receivers are required to interpret this element when rendering so as to represent a line break.</p>
+					</div4>
+					<div4 id="caption">
+						<head>caption</head>
+						<p>The &lt;caption&gt; element contains a label for a paragraph, list, list item, table, or table cell. It can also be used within the &lt;renderMultiMedia&gt; element to indicate a label for multimedia content. The &lt;caption&gt; element contains plain text and may contain links and footnotes.</p>
+					</div4>
+					<div4 id="linkHTML">
+						<head>linkHTML</head>
+						<p>The &lt;linkHtml&gt; element is a generic referencing mechanism, similar, but not identical, to the HTML &lt;a&gt; tag. It can be used to reference identifiers that are either internal or external to the document. </p>
+						<p>Multimedia that is integral to, and part of the verified content of the document requires the use of the &lt;renderMultimedia&gt; element described below. Multimedia that is simply referenced by the document and not an integral part of the document can use the &lt;linkHtml&gt; element. </p>
+						<p>The source of a link uses the linkHtml.href attribute. The target of an internal reference is an identifier of type XML ID, which can exist on other elements in the same or a different narrative block, or Act.id identifiers. </p>
+						<p>The linkHtml.name attribute is deprecated, because attributes of type XML ID provide an alternative and more consistent target for referencing. Following the conventions of HTML, an internal link is prefaced with the pound sign, as shown in the following example. </p>
+						<p>Document links do not convey shareable meaning. Shareable semantics are only achieved by the inclusion of entries and their associated formalized relationships. There is no requirement that a receiver render an internal or external link, or the target of an external link. </p>
+					</div4>
+					<div4 id="renderMultiMedia">
+						<head>renderMultiMedia</head>
+						<p>The &lt;renderMultiMedia&gt; element references external multimedia that is integral to a document, and part of the verified content of the document, and serves to show where the referenced multimedia is to be rendered. </p>
+						<p>The &lt;renderMultiMedia&gt; element has an optional &lt;caption&gt;, and contains a required referencedObject attribute (of type XML IDREFS), the values of which must equal the XML ID value(s) of an entry within the same document. </p>
+						<p>Multimedia that is simply referenced by the document and not an integral part of the document must use &lt;linkHtml&gt;. 
+The expected behavior is that the referenced multimedia should be rendered or referenced at the point of reference. Where a caption is present, it must also be rendered. If the &lt;renderMultiMedia&gt; element references a single observation class, that observation class should be rendered or referenced at the point of reference. </p>
+					</div4>
+				</div3>
+				<div3 id="SectionConstraints">
+					<head>Section Constraints</head>
+					<p>Additional constraints, above and beyond what is expressed in the HQMF model, include:</p>
+					<div4 id="MeasureDescriptionSectionConstraints">
+						<head>Measure Description Section Constraints</head>
+						<p><emph role="strong">Constraint 11.</emph> The value for section/code shall be "34089-3" Measure Description section (CodeSystem: 2.16.840.1.113883.6.1, LOINC</p>
+					</div4>
+					<div4 id="PopulationCriteriaSectionConstraints">
+						<head>Population Criteria Section Constraints</head>
+						<p><emph role="strong">Constraint 13.</emph> The value for section/code shall be "57026-7" Population Criteria section (CodeSystem: 2.16.840.1.113883.6.1, LOINC)</p>
+						<p><emph role="strong">Constraint 14.</emph> SHALL contain 1..1 Initial Patient Population entry.</p>
+						<p><emph role="strong">Constraint 15.</emph> SHALL contain 1..1 Denominator entry if the measure population parameters are proportion or ratio based.</p>
+						<p><emph role="strong">Constraint 16.</emph> SHALL contain 1..1 Numerator entry if the measure population parameters are proportion or ratio based.</p>
+						<p><emph role="strong">Constraint 17.</emph> MAY contain 0..1 Denominator Exception entry if the measure population parameters are proportion or ratio based.</p>
+						<p><emph role="strong">Constraint 18.</emph> SHALL contain 1..1 Measure Population entry if the measure population parameters are continuous variable based (e.g. average wait time in the emergency department).</p>
+						<p><emph role="strong">Constraint 19.</emph> SHALL NOT contain Denominator entry if the measure population parameters are continuous variable based.</p>
+						<p><emph role="strong">Constraint 20.</emph> SHALL NOT contain Numerator entry if the measure population parameters are continuous variable based.</p>
+						<p><emph role="strong">Constraint 21.</emph> SHALL NOT contain Denominator Exception entry if the measure population parameters are continuous variable based.</p>
+					</div4>
+					<div4 id="MeasureObservationSectionConstaints">
+						<head>Measure Observations Section Constraints</head>
+						<p><emph role="strong">Constraint 22.</emph> The value for section/code shall be "57027-5" Measure Observation section (CodeSystem: 2.16.840.1.113883.6.1, LOINC)</p>
+					</div4>
+				</div3>
+				<div3 id="Entries">
+					<head>Entries</head>
+					<p>HQMF entries represent the structured computer-processable components within a document section. Each section can contain zero to many entries.</p>
+					<p>Quality measures taken as a whole contain a wide breadth of content. It may only require small portions of the RIM to encode the commonly seen components in quality measures (e.g. diagnoses, medications, lab results), whereas additional portions of the RIM are required to meet the use cases addressed by quality measures as a whole. For this reason, the entire RIM is available in the HQMF model, where it can be used to encode quality measure components. </p>
+				</div3>
+				<div3 id="EntryConstraints">
+					<head>Entry Constraints</head>
+					<p>Along with the tremendous expressivity afforded by inclusion of the RIM in the HQMF model comes the potential for representing the same concept in more than one way. To counter this potential for multiple representations, this standard introduces a set of internationally applicable authoring constraints. Within a particular country or where this specification is used by a particular quality measure developer, it is likely that additional authoring guidelines and constraints will help ensure consistency.</p>
+					<div4 id="entriesinthedatacriteriaection">
+						<head>Entries in the Data Criteria section</head>
+						<p>The RIM, like many other healthcare data models, is a service-centric model, meaning that much of health care is defined as comprised of a number of health care services or "acts". At the heart of the HL7 RIM is the Act class. Acts include such things as observations (blood pressure, lab result), procedures (appendectomy, caesarian section), encounters (office visit, hospitalization), etc. An act is "a record of something that is being done, has been done, can be done, or is intended or requested to be done". Thus, the RIM allows for not only the representation of acts that have occurred, but that may occur, or serve as the criteria for a rule or guideline or quality measure should they occur. This latter feature, the ability to express an act as a criterion, is heavily exploited in the formal representation of quality measure statements in the Data Criteria section.</p>
+						<p>From a technical implementation perspective, the RIM's Act class contains an attribute "moodCode", which is used to represent the intended use of the Act – as an event that occurred ("EVN"), as an order ("RQO"), as a definition of a service ("DEF"), as a criterion ("CRT"), etc. Entries in the Data Criteria section will have Act.moodCode valued with either "DEF" or "CRT", or a subtype of "CRT". </p>
+						<p>The following example, a valid entry in the Data Element section, represents the criterion for a completed weight observation: </p>
+						<eg>
+&lt;observation classCode="OBS" moodCode="EVN.CRT"&gt;
+	&lt;id root="f92aa450-73c0-11de-8a39-0800200c9a66"/&gt;
+	&lt;code code="27113001" codeSystem="2.16.840.1.113883.6.96"
+        codeSystemName="SNOMED CT" displayName="weight"/&gt;
+	&lt;statusCode code="completed"/&gt;
+&lt;/observation&gt;
+						</eg>
+						<p>Some things to note about the example:</p>
+						<list role="unordered">
+							<item>An Act in criterion mood is somewhat analogous to a "query by example", in that it lays out patterns, which if matched by an object in an EHR, are considered to be satisfied. In reality, an EHR would not necessarily search for an exact match, but rather, for objects that are subsumed by the criteria. For instance, if the EHR is using a local code that maps to the criterion's weight measurement code, the EHR object would still meet the criterion.</item>
+							<item>The observation.id uniquely identifies this criterion assertion, allowing it to be referenced by other criteria. The ability to uniquely identify and reference a criterion enables an external library of criteria, and enables the construction of more molecular criteria, which is further exploited in the Population Criteria section (e.g. when defining numerator criteria). (An observation.id is a globally unique object identifier. Details can of the Instance Identifier (II) datatype can be found in <loc href="../../infrastructure/datatypes/datatypes.htm#dt-II">the Datatypes R1 specification</loc>.)</item>
+							<item>An act's moodCode can be "DEF" or "CRT" or a subtype of "CRT". In this case, the moodCode is "EVN.CRT" (event criterion), indicating that in order to meet the criteria, the EHR object must have actually occurred.</item>
+							<item>Whereas observation.id uniquely identifies this criterion, all other properties of the criterion, such as observation.code and observation.recordStatusCode, express patterns that are to be met by a subsumed EHR object meeting the criterion. </item>
+						</list>
+						<p>In a data criterion, if a measure parameter's value must be one of a list of allowable codes, the eMeasure steward would be expected to provide access to the actual value set, e.g. via a web site (HL7 value set definition can be found here). The following example represents the criterion that encounter discharge disposition be one of a list of allowable codes: </p>
+						<eg>
+&lt;encounter classCode="ENC" moodCode="EVN.CRT"&gt;
+  &lt;id root="db9b8400-73c4-11de-8a39-0800200c9a66"/&gt;
+  &lt;dischargeDispositionCode code="NQF_DischargeDispositionCode" 
+           codeSystem="2.16.840.1.113883.19.5" codeSystemName="National Quality Forum" 
+           displayName="NQF DischargeDispositionCodes"/&gt;
+&lt;/encounter&gt;						
+						</eg>
+						<p>Some things to note about the example:</p>
+						<list role="unordered">
+							<item>In this example, an external body, the National Quality Forum (NQF), has developed a value set of discharge disposition codes. The NQF manages and versions this value set, and the value set is used in the construction of a number of other criteria. DischargeDispositionCode.code contains a "code" that references this value set. An actual encounter event with a discharge disposition from this value set (or with a local code mapped to a member of the value set) would be subsumed by this criterion.</item>
+							<item>The example contains a reference to a value set. The eMeasure steward would be expected to provide access to the actual value set (e.g. via a web site).</item>
+							<item>DischargeDispositionCode.codeSystemVersion can be used where it is necessary to associate an eMeasure with a particular version of allowable codes.</item>
+						</list>
+						<p>Quality measure criteria commonly apply to age, or to a defined subset of observations, such as the first, last, minimum, or maximum in a set. The following example represents the criterion that the patient's age is between 2 to 6 months, inclusive:</p>
+						<eg>
+&lt;observation classCode="OBS" moodCode="EVN.CRT"&gt;
+  &lt;id root="42e2aef0-73c4-11de-8a39-0800200c9a66"/&gt;
+  &lt;code code="424144002" codeSystem="2.16.840.1.113883.6.96" 
+    displayName="Age"/&gt;
+  &lt;value xsi:type="IVL_PQ"&gt;
+    &lt;low value="2" unit="mo" inclusive="true"/&gt;
+    &lt;high value="6" unit="mo" inclusive="true"/&gt;
+  &lt;/value&gt;
+  &lt;participant typeCode="SBJ"&gt;
+    &lt;role classCode="PAT"/&gt;
+  &lt;/participant&gt;
+&lt;/observation&gt;
+						</eg>
+						<p>This next example represents the criterion that an encounter's first systolic blood pressure reading be less than 180 mm Hg.</p>
+						<eg>
+&lt;encounter classCode="ENC" moodCode="CRT"&gt;
+  &lt;sourceOf typeCode="COMP"&gt;
+    &lt;subsetCode code="FIRST"/&gt;
+    &lt;observation classCode="OBS" moodCode="EVN.CRT"&gt;
+      &lt;code code="271649006" codeSystem="2.16.840.1.113883.6.96" 
+        displayName="Systolic blood pressure"/&gt;
+      &lt;value xsi:type="IVL_PQ"&gt;
+        &lt;high value="180" unit="mm[Hg]"/&gt;
+      &lt;/value&gt;
+    &lt;/observation&gt;
+  &lt;/sourceOf&gt;
+&lt;/encounter&gt;						
+						</eg>
+						<p>Some things to note about the examples:</p>
+						<p><emph role="strong">Constraint 23.</emph> An entry SHALL have act.moodCode valued with either "DEF" or "CRT", or a subtype of "CRT".</p>
+						<p><emph role="strong">Constraint 24.</emph> The root entry SHALL contain 1..* act.id. Child acts (via the sourceOf act relationship) SHOULD have 1..* act.id.</p>
+						<p><emph role="strong">Constraint 25.</emph> An entry SHOULD represent status criterion (e.g. to differentiate an active vs. inactive medication) with act.recordSstatusCode.</p>
+						<p><emph role="strong">Constraint 26.</emph> An entry SHOULD represent author criterion (e.g. to differentiate a physician- vs. patient-authored problem) with act.participant. When participant.criterionInd is valued "true", it will assert that this participation is part of a criterion or definition (as opposed to the author of the criterion or definition). </p>
+						<p><emph role="strong">Constraint 27.</emph> An entry SHOULD reference an externally maintained code list by citing that code list in a code attribute (e.g. observation.code.code, observation.value.code), where the codeSystem is the owner of the code list. </p>
+					</div4>
+					<div4 id="entriesinthemeasurespecificparameterssection">
+						<head>Entries in the Population Criteria section</head>
+						<p>The Population Criteria section contains criteria for the measure population parameters (e.g. numerator, denominator). Applicable measure parameters vary based on the measure scoring (e.g. proportion, ratio, continuous variable).  Each of the population parameters has a normative definition stated within this HQMF standard. See <specref ref="definitions"/>.
+In a proportion measure, there is a fixed mathematical relationship between the parameters, as shown in the following figure. In some cases, the Denominator and Initial Patient Population will be the same.
+</p>
+						<p>In a proportion measure, there is a fixed mathematical relationship between the parameters, as shown in the following figure. In some cases, the Sample Size will equal the Initial Patient Population. In some cases, the Denominator, Sample Size, and Initial Patient Population will be the same.</p>
+						<graphic source="setdiagram.jpg"/>
+						<p>Continuous variable measures do not have a Denominator, but instead define a Measure Population, as shown in the following figure. Rather than reporting a ratio or a Numerator and Denominator, a continuous variable measure defines variables that are computed across the Measure Population (e.g. average wait time in the emergency department).</p>
+						<graphic source="setdiagram2.jpg"/>
+						<p>Entries in the Population Criteria section, like entries in the Data Criteria section, are defined as a set of criterion. </p>
+						<p>The following example, a valid entry in the Population Criteria section, defines the criteria for inclusion in a measure's Initial Patient Population as those patients who have had their weight measured (the weight measure criterion was illustrated above): </p>
+						<eg>
+&lt;observation classCode="OBS" moodCode="EVN.CRT"&gt;
+  &lt;id root="c75181d0-73eb-11de-8a39-0800200c9a66"/&gt;
+  &lt;code code="ASSERTION" codeSystem="2.16.840.1.113883.5.4"/&gt;
+  &lt;value xsi:type="CD" code="IPP" codeSystem="2.16.840.1.113883.5.1063" 
+    codeSystemName="HL7 Observation Value" 
+    displayName="Included in Initial Patient Population"/&gt;
+  &lt;sourceOf typeCode="PRCN"&gt;
+    &lt;!-- Weight measured --&gt;
+    &lt;observation classCode="OBS" moodCode="EVN.CRT"&gt;
+      &lt;id root="f92aa450-73c0-11de-8a39-0800200c9a66"/&gt;
+    &lt;/observation&gt;
+  &lt;/sourceOf&gt;
+&lt;/observation&gt;						
+						</eg>
+						<p>Some things to note about the example:</p>
+						<list role="unordered">
+							<item>The observation is defining inclusion criteria for a single patient – i.e. it is providing the criteria for determining whether or not a single patient meets the Initial Patient Population criteria. A separate observation could be used to represent the total count of those patients meeting the criteria.</item>
+							<item>The sourceOf.typeCode "PRCN" (precondition) defines the criteria that must hold in order to satisfy inclusion. The target of the precondition can be a reference to a criterion defined elsewhere, whether in the same eMeasure document or contained in an external library of criteria, if necessary. </item>
+						</list>
+						<p>Logic Expression Representation - AND: The next example defines the criteria for inclusion in a measure's Initial Patient Population as a combination of two criteria, joined by a logical "AND":</p>
+						<eg>
+&lt;observation classCode="OBS" moodCode="EVN.CRT"&gt;
+   &lt;id root="c75181d0-73eb-11de-8a39-0800200c9a66"/&gt;
+   &lt;code code="ASSERTION" codeSystem="2.16.840.1.113883.5.4"/&gt;
+   &lt;value xsi:type="CD" code="IPP" codeSystem="2.16.840.1.113883.5.1063"
+      codeSystemName="HL7 Observation Value" 
+      displayName="Included in Initial Patient Population"/&gt;
+     &lt;sourceOf typeCode="PRCN"&gt;
+	 &lt;conjunctionCode code="AND"/&gt;
+	 &lt;!-- Weight measured --&gt;
+	 &lt;observation classCode="OBS" moodCode="EVN.CRT"&gt;
+	   &lt;id root="f92aa450-73c0-11de-8a39-0800200c9a66"/&gt;
+	 &lt;/observation&gt;
+     &lt;/sourceOf&gt;
+     &lt;sourceOf typeCode="PRCN"&gt;
+	 &lt;conjunctionCode code="AND"/&gt;
+	 &lt;!-- Age 2 to 6 months --&gt;
+	 &lt;observation classCode="OBS" moodCode="EVN.CRT"&gt;
+	    &lt;id root="42e2aef0-73c4-11de-8a39-0800200c9a66"/&gt;
+	 &lt;/observation&gt;
+     &lt;/sourceOf&gt;
+&lt;/observation&gt;					
+						</eg>
+						<p>Some things to note about the example:</p>
+						<list role="unordered">
+							<item>Preconditions can be logically joined, using the "AND", "OR", or "XOR" codes. The conjunctionCode represents the logical conjunction of the criteria. Upon evaluation, the criterion is passed if all "AND" criteria are true. If "OR" and "AND" criteria occur together, one criterion out of the "OR"-group must be true and all "AND" criteria must be true also. If "XOR" criteria occur together with "OR" and "AND" criteria, exactly one of the "XOR" criteria must be true, and at least one of the "OR" criteria and all "AND" criteria must be true. In other words, the sets of "AND", "OR", and "XOR" criteria are in turn combined by a logical "AND" operator (all "AND" criteria and at least one "OR" criterion and exactly one "XOR" criterion). To overcome this ordering, Act criteria can be nested as necessary.</item>
+							<item>HL7 RelationshipConjunction code system can be found at here. HL7 RIM ActRelationship.conjunctionCode usage description can be found at here.</item>
+						</list>
+						<p>Logic Expression Representation - AND, AND NOT: </p>
+						<p>The next example defines the criteria for inclusion in a measure's Denominator as a combination of three criteria, joined by a logical "AND" and "AND NOT". The "AND NOT" is represented by setting the value of the attribute "negationInd" of the Act ActRelationship (a.k.a. the sourceOf element) to "true", with the conjunctionCode "AND". </p>
+						<eg>
+&lt;observation classCode="OBS" moodCode="EVN.CRT"&gt;
+	&lt;id root="238a0250-7401-11de-8a39-0800200c9a66"/&gt;
+	&lt;code code="ASSERTION" codeSystem="2.16.840.1.113883.5.4"/&gt;
+	&lt;value xsi:type="CD" code="DENOM" codeSystem="2.16.840.1.113883.5.1063"
+          codeSystemName="HL7 Observation Value" 
+          displayName="Included in Denominator"/&gt;
+	&lt;sourceOf typeCode="PRCN"&gt;
+		&lt;conjunctionCode code="AND"/&gt;
+		&lt;!-- Denominator encounter criteria --&gt;
+		&lt;encounter classCode="ENC" moodCode="CRT"&gt;
+			&lt;id root="6026f0c0-7f8b-11de-8a39-0800200c9a66"/&gt;
+		&lt;/encounter&gt;
+	&lt;/sourceOf&gt;
+	&lt;sourceOf typeCode="PRCN"&gt;
+		&lt;conjunctionCode code="AND"/&gt;
+		&lt;!-- Problem list entry of atrial fibrillation/atrial flutter --&gt;
+		&lt;act classCode="ACT" moodCode="EVN.CRT"&gt;
+			&lt;id root="aebb2a61-73da-11de-8a39-0800200c9a66"/&gt;
+		&lt;/act&gt;
+	&lt;/sourceOf&gt;
+	&lt;sourceOf typeCode="PRCN" negationInd="true"&gt;
+		&lt;conjunctionCode code="AND"/&gt;
+		&lt;!-- Problem list entry of Von Willebrand's Disease --&gt;
+		&lt;act classCode="ACT" moodCode="EVN.CRT"&gt;
+			&lt;id root="aebb2a62-73da-11de-8a39-0800200c9a66"/&gt;
+		&lt;/act&gt;
+	&lt;/sourceOf&gt;
+&lt;/observation&gt;						
+						</eg>
+						<p>Some things to note about the example:</p>
+						<list role="unordered">
+							<item>The logical expression "AND NOT" can be represented by a combination of the negationInd="true" and conjunctionCode="AND". </item>
+							<item>The interpretation of the example is "the criteria of the measure's denominator include an encounter, AND the problem of atrial fibrillation/atrial flutter, AND NOT the problem of Von Villebrand's Disease". </item>
+						</list>
+						<p>Logic Expression Representation - further nested AND, OR, XOR: </p>
+						<p>Act criteria can be nested under another Act criterion as necessary. The next example illustrates the XML representation of nested AND, OR (AND, (OR)) criteria for inclusion in a measure's Dominator.</p>
+						<eg>
+&lt;observation classCode="OBS" moodCode="EVN.CRT"&gt;
+   &lt;id root="238a0250-7401-11de-8a39-0800200c9a66"/&gt;
+   &lt;code code="ASSERTION" codeSystem="2.16.840.1.113883.5.4"/&gt;
+   &lt;value xsi:type="CD" code="DENOM" codeSystem="2.16.840.1.113883.5.1063"
+      codeSystemName="HL7 Observation Value" 
+      displayName="Included in Denominator"/&gt;
+   &lt;sourceOf typeCode="PRCN"&gt;
+      &lt;conjunctionCode code="AND"/&gt;
+      &lt;!-- Denominator encounter criterion --&gt;
+      &lt;encounter classCode="ENC" moodCode="CRT"&gt;
+         &lt;id root="6026f0c0-7f8b-11de-8a39-0800200c9a66"/&gt;
+      &lt;/encounter&gt;
+   &lt;/sourceOf&gt;
+   &lt;sourceOf typeCode="PRCN"&gt;
+      &lt;conjunctionCode code="AND"/&gt;
+      &lt;!-- Nested OR criteria group --&gt;
+      &lt;observation classCode="OBS" moodCode="EVN.CRT"&gt;
+         &lt;sourceOf typeCode="PRCN"&gt;
+            &lt;conjunctionCode code="OR"/&gt;
+            &lt;!-- act one criterion --&gt;
+            &lt;act classCode="ACT" moodCode="EVN.CRT"&gt;
+               &lt;id root="aebb2a61-73da-11de-8a39-0800200c9a76"/&gt;
+            &lt;/act&gt;
+         &lt;/sourceOf&gt;
+         &lt;sourceOf typeCode="PRCN"&gt;
+            &lt;conjunctionCode code="OR"/&gt;
+            &lt;!-- Nested AND criteria group --&gt;
+            &lt;observation classCode="OBS" moodCode="EVN.CRT"&gt;
+               &lt;sourceOf typeCode="PRCN"&gt;
+                  &lt;conjunctionCode code="AND"/&gt;
+                  &lt;!-- act two criterion --&gt;
+                  &lt;act classCode="ACT" moodCode="EVN.CRT"&gt;
+                     &lt;id root="aebb2a61-73da-11de-8a39-0800200c9a80"/&gt;
+                  &lt;/act&gt;
+               &lt;/sourceOf&gt;
+               &lt;sourceOf typeCode="PRCN"&gt;
+                  &lt;conjunctionCode code="AND"/&gt;
+                  &lt;!-- procedure one criterion --&gt;
+                  &lt;procedure classCode="PROC" moodCode="EVN.CRT"&gt;
+                     &lt;id root="aebb2a61-73da-11de-8a39-0800200c9a81"/&gt;
+                  &lt;/procedure&gt;
+               &lt;/sourceOf&gt;
+            &lt;/observation&gt;
+         &lt;/sourceOf&gt;
+      &lt;/observation&gt;
+   &lt;/sourceOf&gt;
+&lt;/observation&gt;
+						</eg>
+						<p>Some things to note about the example:</p>
+						<list role="unordered">
+							<item>The nested "AND", "OR", or "XOR" criteria groups all reside within parent observation class. In each group, criterion joins with each other through actRelationship/conjunctionCode. </item>
+							<item>The interpretation of the example is "the criteria of the measure's denominator include an encounter, AND at least one of the (act one criterion, (act two criterion AND procedure one criterion)) ".</item>
+						</list>
+						<p>Whereas the Numerator is always a subset of the Denominator in a proportion measure, this relationship is not necessarily the case for a ratio measure. The next example makes the relationship explicit by defining the Numerator criteria as a further constraint on the Denominator criteria:</p>
+						<eg>
+&lt;observation classCode="OBS" moodCode="EVN.CRT"&gt;
+  &lt;code code="ASSERTION" codeSystem="2.16.840.1.113883.5.4" /&gt;
+  &lt;value xsi:type="CD" code="NUMER" 
+    codeSystem="2.16.840.1.113883.5.1063" 
+    codeSystemName="HL7 Observation Value" 
+    displayName="Included in Numerator" /&gt;
+  &lt;sourceOf typeCode="PRCN"&gt;
+    &lt;conjunctionCode code="AND"/&gt;
+    &lt;sourceOf typeCode="PRCN"&gt;
+    &lt;!-- Denominator --&gt;
+    &lt;observation classCode="OBS" moodCode="EVN.CRT"&gt;
+      &lt;id root="f7d92711-7f92-11de-8a39-0800200c9a66" /&gt;
+    &lt;/observation&gt;
+  &lt;/sourceOf&gt;
+  &lt;sourceOf typeCode="PRCN"&gt;
+    &lt;conjunctionCode code="AND" /&gt;
+    &lt;!-- Problem list entry of atrial fibrillation --&gt;
+    &lt;act classCode="ACT" moodCode="EVN.CRT"&gt;
+      &lt;id root="aebb2a61-73da-11de-8a39-0800200c9a66" /&gt;
+    &lt;/act&gt;
+  &lt;/sourceOf&gt;
+&lt;/observation&gt;						
+						</eg>
+						<p>Some things to note about the example:</p>
+						<list role="unordered">
+							<item>The example represents "to be included in the numerator population, a patient must meet the Denominator criteria AND must have a problem list entry of atrial fibrillation".</item>
+						</list>
+						<p>
+							<emph role="strong">When developing entries in the Population Criteria section, it is paramount to first understand and be able to express clearly the underlying logic and criteria of the measure. An ambiguous measure, with fuzzy inclusion criteria, will not become magically computable simply through its representation as an eMeasure.</emph> For instance, if a measure's numerator inclusion criteria is "ambulatory visit" and "2 to 6 months at the visit" and "weight measurement at the visit", it is important to understand that satisfying the criteria requires that there be at least one visit such that it is ambulatory AND age 2-6 months at visit AND weight measurement at visit. It would be incorrect to identify a patient that had two ambulatory visits during the measurement period, the first when 5 months old with no weight measurement, the second when 7 months old with weight measurement. </p>
+						<p>The next example correctly defines the Numerator criteria in the above scenario, by expressing the age and weight measurement criteria as components of the ambulatory encounter criterion:</p>
+						<eg>
+&lt;observation classCode="OBS" moodCode="EVN.CRT"&gt;
+  &lt;id root="c751a8e0-73eb-11de-8a39-0800200c9a66"/&gt;
+  &lt;code code="ASSERTION" codeSystem="2.16.840.1.113883.5.4"/&gt;
+  &lt;value xsi:type="CD" code="NUM" codeSystem="2.16.840.1.113883.5.1063" 
+    codeSystemName="HL7 Observation Value" 
+    displayName="Included in Numerator"/&gt;
+  &lt;sourceOf typeCode="PRCN"&gt;
+    &lt;encounter classCode="ENC" moodCode="EVN.CRT"&gt;
+      &lt;code code="AMB" 
+        codeSystem="2.16.840.1.113883.5.4" displayName="Ambulatory encounter"/&gt;
+      &lt;sourceOf typeCode="COMP"&gt;
+        &lt;!-- Weight measured --&gt;
+        &lt;observation classCode="OBS" moodCode="EVN.CRT"&gt;
+          &lt;id root="f92aa450-73c0-11de-8a39-0800200c9a66"/&gt;
+        &lt;/observation&gt;
+      &lt;/sourceOf&gt;	
+      &lt;sourceOf typeCode="COMP"&gt;
+        &lt;!-- Age 2 to 6 months --&gt;
+        &lt;observation classCode="OBS" moodCode="EVN.CRT"&gt;
+          &lt;id root="42e2aef0-73c4-11de-8a39-0800200c9a66"/&gt;
+        &lt;/observation&gt;
+      &lt;/sourceOf&gt;
+    &lt;/sourceOf&gt;
+    &lt;/encounter&gt;
+&lt;/observation&gt;						
+						</eg>
+						<p>Constraints applicable to entries in the Population Criteria section include:</p>
+						<p>Initial Patient Population entry:</p>
+						<p><emph role="strong">Constraint 28.</emph> The Initial Patient Population entry is represented as an Observation (classCode OBS) in event criterion mood (moodCode EVN.CRT).</p>
+						<p><emph role="strong">Constraint 29.</emph> The Initial Patient Population entry SHALL contain 1..1 Observation.id.</p>
+						<p><emph role="strong">Constraint 30.</emph> The Initial Patient Population entry SHALL contain 1..1 Observation.code, with code "ASSERTION", codeSystem "2.16.840.1.113883.5.4" (HL7 Act Code).</p>
+						<p><emph role="strong">Constraint 31.</emph> The Initial Patient Population entry SHALL contain 1..1 Observation.value, of type "CD".</p>
+						<p><emph role="strong">Constraint 32.</emph> The Initial Patient Population entry SHALL value observation.value with "IPP", codeSystem "2.16.840.1.113883.5.1063" (HL7 Observation Value).</p>
+						<p>Initial Patient Population entry:</p>
+						<p><emph role="strong">Constraint 33.</emph> The Denominator entry is represented as an Observation (classCode OBS) in event criterion mood (moodCode EVN.CRT).</p>
+						<p><emph role="strong">Constraint 34.</emph> The Denominator entry SHALL contain 1..1 Observation.id.</p>
+						<p><emph role="strong">Constraint 35.</emph> The Denominator entry SHALL contain 1..1 Observation.code, with code "ASSERTION", codeSystem "2.16.840.1.113883.5.4" (HL7 Act Code).</p>
+						<p><emph role="strong">Constraint 36.</emph> The Denominator entry SHALL contain 1..1 Observation.value, of type "CD".</p>
+						<p><emph role="strong">Constraint 37.</emph> The Denominator entry SHALL value observation.value with "DENOM", codeSystem "2.16.840.1.113883.5.1063" (HL7 Observation Value).</p>
+						<p>Numerator entry:</p>
+						<p><emph role="strong">Constraint 38.</emph> The Numerator entry is represented as an Observation (classCode OBS) in event criterion mood (moodCode EVN.CRT).</p>
+						<p><emph role="strong">Constraint 39.</emph> The Numerator entry SHALL contain 1..1 Observation.id.</p>
+						<p><emph role="strong">Constraint 40.</emph> The Numerator entry SHALL contain 1..1 Observation.code, with code "ASSERTION", codeSystem "2.16.840.1.113883.5.4" (HL7 Act Code).</p>
+						<p><emph role="strong">Constraint 41.</emph> The Numerator entry SHALL contain 1..1 Observation.value, of type "CD".</p>
+						<p><emph role="strong">Constraint 42.</emph> The Numerator entry SHALL value observation.value with "NUMER", codeSystem "2.16.840.1.113883.5.1063" (HL7 Observation Value).</p>
+<p>Denominator Exception entry:</p>						
+						<p><emph role="strong">Constraint 43.</emph> The Denominator Exception entry is represented as an Observation (classCode OBS) in event criterion mood (moodCode EVN.CRT).</p>
+						
+						<p><emph role="strong">Constraint 44.</emph> The Denominator Exception entry SHALL contain 1..1 Observation.id.</p>
+						<p><emph role="strong">Constraint 45.</emph> The Denominator Exception entry SHALL contain 1..1 Observation.code, with code "ASSERTION", codeSystem "2.16.840.1.113883.5.4" (HL7 Act Code).</p>
+						<p><emph role="strong">Constraint 46.</emph> The Denominator Exception entry SHALL contain 1..1 Observation.value, of type "CD".</p>
+						<p><emph role="strong">Constraint 47.</emph> The Denominator Exception entry SHALL value observation.value with "DENEXCEP", codeSystem "2.16.840.1.113883.5.1063" (HL7 Observation Value).</p>
+						<p>Measure Population entry:</p>
+						<p><emph role="strong">Constraint 48.</emph> The Measure Population entry is represented as an Observation (classCode OBS) in event criterion mood (moodCode EVN.CRT).</p>
+						<p><emph role="strong">Constraint 49.</emph> The Measure Population entry SHALL contain 1..1 Observation.id.</p>
+						<p><emph role="strong">Constraint 50.</emph> The Measure Population entry SHALL contain 1..1 Observation.code, with code "ASSERTION", codeSystem "2.16.840.1.113883.5.4" (HL7 Act Code).</p>
+						<p><emph role="strong">Constraint 51.</emph> The Measure Population entry SHALL contain 1..1 Observation.value, of type "CD".</p>
+						<p><emph role="strong">Constraint 52.</emph> The Measure Population entry SHALL value observation.value with "MSRPOPL", codeSystem "2.16.840.1.113883.5.1063" (HL7 Observation Value).</p>
+							
+					</div4>
+					<div4 id="entriesintheContinuousVariableSection">
+						<head>Entries in the Measure Observations section</head>
+						<p>While some quality measures only define data criteria and population criteria, other quality measures, such as continuous variable measures, also define variables or calculations that are used to score a particular aspect of performance. For instance, a measure intends to assess the use of restraints. Population criteria for the measure include "patient is in a psychiatric inpatient setting" and "patient has been restrained". For this population, the measure defines a measure observation of "restraint time" as the total amount of time the patient has been restrained. 
+Measure observations are not criteria, but rather, are definitions of observations, used to score a measure.
+</p>
+						<p>The following example, a valid entry in the Measure Ovservations section, defines the criteria for computing the time interval from when a decision is made in the Emergency Department to admit a patient to the hospital to when the patient physically leaves the Emergency Department.</p>
+						<eg>
+&lt;observation classCode="OBS" moodCode="DEF"&gt;
+  &lt;id root="b421c8a3-7949-11de-8a39-0800200c9a66"/&gt;
+  &lt;code ... displayName="Time from admit decision to departure from ED"/&gt;
+  &lt;derivationExpr&gt;
+    PhysicalDepartureFromED.effectiveTime - ListedForAdmission.effectiveTime  
+  &lt;/derivationExpr&gt;
+  &lt;sourceOf typeCode="DRIV"&gt;
+    &lt;localVariableName&gt;PhysicalDepartureFromED&lt;/localVariableName&gt;
+    &lt;!-- Physical departure from ED --&gt;
+    &lt;observation classCode="OBS" moodCode="CRT"&gt;
+      &lt;id root="b421c8a9-7949-11de-8a39-0800200c9a66"/&gt;
+    &lt;/observation&gt;
+  &lt;/sourceOf&gt;
+  &lt;sourceOf typeCode="DRIV"&gt;
+    &lt;localVariableName&gt;ListedForAdmission&lt;/localVariableName&gt;
+    &lt;!-- Listed for admission --&gt;
+    &lt;observation classCode="OBS" moodCode="CRT"&gt;
+      &lt;id root="b421c8a2-7949-11de-8a39-0800200c9a66"/&gt;
+    &lt;/observation&gt;
+  &lt;/sourceOf&gt;
+&lt;/observation&gt;						
+						</eg>
+						<p>Some things to note about the example:</p>
+						<list role="unordered">
+							<item>Whereas observations in previous sections were criteria (i.e. had moodCode="CRT"), observations in this section are definitions (i.e. have moodCode="DEF"). Measure observations are not criteria that can found to be true or false, but rather, are definitions of observations, used to score a measure.</item>
+							<item>The observation is defined for a single patient – i.e. it defines the time interval for a single patient. A separate observation could be used to represent the mean of those patients meeting the criteria.</item>
+							<item>Observation.derivationExpr is a character string containing a narrative, semi-formal, or formal language expression that specifies how the observation.value is to be derived from the nested observations. Nested observations used in the derivation have a sourceOf.typeCode of "DRIV" (is derived from), and can have a sourceOf.localVariableName, which is used in the observation.derivationExpr expression. (Note: The syntax of the derivationExpr expression is yet to be fully specified, it will be updated based upon the HL7 data type release two evolution). </item>
+							<item>While many potential expression languages exist, the HQMF standard makes no specific recommendations for which to use at this time. </item>
+						</list>
+					</div4>
+				</div3>
+			</div2>
+		</div1>
+		<div1 id="definitions" ballotStatus="DSTUBallot">
+			<head>Definitions</head>
+			<div2 id="GeneralDefinitions">
+				<head>General Definitions</head>
+				<glist>
+					<gitem id="emeasuredef">
+						<label>eMeasure</label>
+						<def>
+							<p>A health quality measure expressed in HQMF format</p>
+						</def>
+					</gitem>
+					<gitem id="hqmfdef">
+						<label>Health Quality Measures Format (HQMF)</label>
+						<def>
+							<p>A standards-based formalism for the representation of quality measures. A quality measure expressed in HQMF format is also referred to as an "eMeasure".</p>
+						</def>
+					</gitem>
+					<gitem id="qualitymeasuredef">
+						<label>Quality Measure</label>
+						<def>
+							<p>A quantitative tool that provides an indication of an individual or organization’s performance in relation to a specified process or outcome via the measurement of an action, process or outcome of clinical care. Quality measures are often derived from clinical guidelines and are designed to determine whether the appropriate care has been provided given a set of clinical criteria and an evidence base. Quality measures are also often referred to as performance measures or quality indicators.</p>
+						</def>
+					</gitem>
+					<gitem id="qualitymeasuresetdef">
+						<label>Quality Measure Set</label>
+						<def>
+							<p>A unique grouping of performance measures carefully selected to provide, when viewed together, a robust picture of the care provided in a given domain (e.g., cardiovascular care, pregnancy).</p>
+						</def>
+					</gitem>
+				</glist>
+			</div2>
+			<div2 id="measureparameterdefinitions">
+				<head>Measure Parameter Definitions</head>
+				<glist>
+					<gitem id="denominatordef">
+						<label>Denominator</label>
+						<def>
+							<p>The lower part of a fraction used to calculate a rate, proportion, or ratio. The Denominator is a subset of the Initial Patient Population, grouped for inclusion in a specific performance measure based on specific criteria (e.g., patient's age, diagnosis, prior MI). Different measures within a measure set may have different Denominators (e.g. measure #1 Denominator = Initial Patient Population AND Smoker; measure #2 Denominator = Initial Patient Population AND Atrial Fibrillation).(Can have inclusion and exclusion criteria). (Continuous Variable measures do not have a Denominator, but instead define a Measure Population).</p>
+						</def>
+					</gitem>
+					<gitem id="denonimatorexceptiondef">
+						<label>Denominator Exception</label>
+						<def>
+							<p>Cases that meet the Denominator criteria and do not meet the Numerator criteria can be counted as Denominator Exceptions if they meet the Denominator Exception criteria. Cases in the Denominator that meet the Numerator criteria are not counted as Denominator Exceptions. Denominator Exceptions are the valid reasons for patients who are included in the denominator population, but for whom a process or outcome of care does not occur. Patients may have Denominator Exceptions for medical reasons (e.g., patient has an egg allergy so they did not receive flu vaccine); patient reasons (e.g., patient refused flu vaccine); or system reasons (e.g., patient did not receive flu vaccine due to vaccine shortage). These cases are removed from the denominator for the performance logic, however the logic can indicate the number of patients with valid exceptions for reporting.</p>
+						</def>
+					</gitem>
+					<gitem id="initialpatientpopulationdef">
+						<label>Initial Patient Population</label>
+						<def>
+							<p>This identifies the eligible group of patients that the performance measure is designed to address; usually focused on a specific disease process (e.g., coronary artery disease, asthma). Details could include such information as specific age groups, diagnoses, diagnostic and procedure codes, enrollment periods, insurance and health plan groups, etc. For example, a patient aged 18 years and older with a diagnosis of CAD who has at least 2 visits during the measurement period. The Initial Patient Population is the same across all quality measures within a single quality measure set. All patients counted (e.g. as Numerator, as Denominator), are drawn from the Initial Patient Population. (Can have inclusion and exclusion criteria).</p>
+						</def>
+					</gitem>
+					<gitem id="measureexclusiondef">
+						<label>Measure Exclusion</label>
+						<def>
+							<p>Equals Initial Patient Population minus Denominator. Measure Exclusions apply to patients who are included in the Initial Patient Population but who do not meet the measure denominator criteria (e.g. CAD and no prior MI), for an individual measure within that same clinical topic. Measure Exclusions are not considered to be part of a given measure’s denominator. They are removed from the eligible population for a measure in order to identify patients who qualify for the denominator.</p>
+						</def>
+					</gitem>
+					<gitem id="measurepopulationdef">
+						<label>Measure Population</label>
+						<def>
+							<p>Continuous variable measures do not have a Denominator, but instead define a Measure Population. To be in the measure population, a patient is in the larger Initial Patient Population appropriate to the measure set and is not excluded from the individual measure.  (Can have inclusion and exclusion criteria). (Proportion and Ratio measures do not have a Measure Population, but instead define a Denominator).</p>
+						</def>
+					</gitem>
+					<gitem id="numeratordef">
+						<label>Numerator</label>
+						<def>
+							<p>The upper portion of a fraction used to calculate a rate, proportion, or ratio. For a Proportion Measure, the Numerator is a subset of the Denominator, which defines the group of patients in the denominator for whom a process or outcome of care occurs (e.g., flu vaccine received).</p>
+						</def>
+					</gitem>
+				</glist>
+			</div2>
+			<div2 id="QualityMeasureScoringdef">
+				<head>Quality Measure Scoring</head>
+				<glist>
+					<gitem id="continuousvariable">
+						<label>Continuous Variable</label>
+						<def>
+							<p>A measure score in which each individual value for the measure can fall anywhere along a continuous scale (e.g., mean time to thrombolytics which aggregates the time in minutes from a case presenting with chest pain to the time of administration of thrombolytics).</p>
+						</def>
+					</gitem>
+					<gitem id="proportiondef">
+						<label>Proportion</label>
+						<def>
+							<p>A score derived by dividing the number of cases that meet a criterion for quality (the numerator) by the number of eligible cases within a given time frame (the denominator) where the numerator cases are a subset of the denominator cases (e.g., percentage of eligible women with a mammogram performed in the last year).</p>
+						</def>
+					</gitem>
+					<gitem id="ratiodef">
+						<label>Ratio</label>
+						<def>
+							<p>A score that may have a value of zero or greater that is derived by dividing a count of one type of data by a count of another type of data (e.g., the number of patients with central lines who develop infection divided by the number of central line days).</p>
+						</def>
+					</gitem>
+				</glist>
+			</div2>
+			<div2 id="qualitymeasureyptesdef">
+				<head>Quality Measure Types</head>
+				
+				<glist>
+					<gitem id="outcomemeasuredef">
+						<label>Outcome Measure</label>
+						<def>
+							<p>A measure that indicates the result of the performance (or non-performance) of a function or process.</p>
+						</def>
+					</gitem>
+					<gitem id="processmeasuredef">
+						<label>Process Measure</label>
+						<def>
+							<p>A measure which focuses on a process which leads to a certain outcome, meaning that a scientific basis exists for believing that the process, when executed well, will increase the probability of achieving a desired outcome.</p>
+						</def>
+					</gitem>
+				</glist>
+			</div2>
+		</div1>
+		<div1 id="examples" ballotStatus="Reference">
+			<head>Examples</head>
+			<div2 id="emeasureexample">
+				<head>eMeasure Example Files</head>
+				<p>The following sample measures are provided for illustration purposes only. They are all draft, awaiting formal validation by the measure steward.</p>
+				<p>An example <loc href="POQM_EX000001.xml"> HQMF document for Joint Commission Stroke 3 Quality Measure</loc> is available by following the link.</p>
+				<p>An example <loc href="POQM_EX000003.xml">HQMF document for Joint Commission Stroke 8 Quality Measure</loc> is available by following the link.</p>
+				<p>An example <loc href="POQM_EX000002.xml">HQMF Document for National Initiative for Children's Healthcare Quality BMI Percentile Recording Quality Measure</loc> is available by following the link.</p>
+				<p>An example <loc href="POQM_EX000004.xml">HQMF Document for Centers for Medicare and Medicaid Services Emergency Department</loc> is available by following the link.</p>
+				<p>An example <loc href="POQM_EX000005.xml">HQMF Document for Joint Commission Inpatient Psychiatry</loc> is available by following the link.</p>
+			</div2>
+			<div2 id="samplestylesheet">
+				<head>Sample HQMF Rendering Style Sheet</head>
+				<p>This is a sample HQMF XSLT style sheet that can be used to transform an eMeasure into HTML. It is provided as a convenient starting point for local style sheet development, and has several known limitations, including:</p>
+				<list role="unordered">
+					<item>Local implementations may have different requirements for rendering HQMF header components;</item>
+					<item>Does not support RegionOfInterest rendering in the narrative block.</item>
+					<item>Does not support rendering of inline multimedia (e.g. multimedia that is Base 64 encoded within the eMeasure document).</item>
+					<item>Does not support rendering of deleted text within the Narrative Block.</item>
+				</list>
+				<p>A sample <loc href="eMeasure.xsl"> style sheet for rendering an eMeasure</loc> into a web browser is available by following the link.</p>
+			</div2>
+		</div1>
+		<div1 id="hqmfschema" ballotStatus="DSTUBallot">
+			<head>HQMF Schema</head>
+			<p>An eMeasure document conforms to and is a valid XML document against the eMeasure Schema. The <loc href="emeasure.xsd">eMeasure schema</loc> can be viewed by following the link. </p>
+			<list role="unordered">
+				<item>The eMeasure Schema can be found <loc href="eMeasure.xsd">here</loc></item>
+				<item>The Datatypes.xsd file can be found <loc href="../../processable/coreschemas/datatypes.xsd">here</loc></item>
+				<item>The Datatypes-base.xsd file can be found <loc href="../../processable/coreschemas/datatypes-base.xsd.xsd">here</loc></item>
+				<item>The POQM_MT000001.xsd file can be found <loc href="../../processable/multicacheschemas/POQM_MT000001UV.xsd">here</loc></item>
+				<item>The Narrative Block schema can be found <loc href="../../processable/coreschemas/NarrativeBlock.xsd">here</loc>.</item>
+				<item>The voc.xsd file can be found <loc href="../../processable/coreschemas/voc.xsd">here</loc>.</item>
+				<item>The InfrastructureRootxsd file can be found <loc href="../../processable/coreschemas/InfrastructureRoot.xsd">here</loc>.</item>
+			</list>
+			<p>The eMeasure schema is algorithmically generated from the HQMF model as described above (see <specref ref="xmlimplementation"></specref>), followed by various hand edits needed to accommodate structured documents:</p>
+			<list role="unordered">
+				<item>Wrap POQM_MT000001.xsd in eMeasure.xsd (which declares the root eMeasure element, QualityMeasureDocument).</item>
+				<item>Reorder act relationships coming off of QualityMeasureDocument so that component/section comes last.</item>
+				<item>Incorporate narrative block markup into section.text:
+					<list role="unordered">
+						<item>Include narrative block schema.</item>
+						<item>Change type of section.text to "StrucDoc.Text"</item>
+					</list>
+				
+				</item>
+			</list>
+		</div1>
+	</body>
+</spec>
