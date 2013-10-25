@@ -1,0 +1,87 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE spec SYSTEM "../../support/dtd/v3m.dtd">
+<spec>
+	<header>
+		<title>Domain Analysis Model: Vital Records, Release 1</title>
+		<version>1.0</version>
+		<date>April 2011</date>
+		<authlist>
+			<author>
+				<role>Project Lead</role>
+				<name key="Williamson, Michelle">Michelle Williamson, RN, MS</name>
+			</author>
+			<author>
+				<role>Author</role>
+				<name key="Atkinson, Delton">Delton Atkinson, MPH, PMP</name>
+			</author>
+			<author>
+				<role>Author</role>
+				<name key="Brown-Scoggins, Sherry">Sherry Brown-Scoggins, PMP, CEA</name>
+			</author>
+			<author>
+				<role>Author</role>
+				<name key="Elkins, Steve">Steve Elkins</name>
+			</author>
+			<author>
+				<role>Author</role>
+				<name key="Hoyert, Donna L.">Donna L. Hoyert, Ph.D.</name>
+			</author>
+			<author>
+				<role>Author</role>
+				<name key="Jennings, Teresa">Teresa Jennings, MPA</name>
+			</author>
+			<author>
+				<role>Author</role>
+				<name key="Martin, Joyce">Joyce A. Martin, MPH</name>
+			</author>
+			<author>
+				<role>Author</role>
+				<name key="Savage, Tom">Tom Savage</name>
+			</author>
+			<author>
+				<role>Author</role>
+				<name key="Shem-Tov, Leesa">Leesa Shem-Tov</name>
+			</author>
+			<author>
+				<role>Author</role>
+				<name key="Shoultz, Jared">Jared Shoultz</name>
+			</author>
+			<author>
+				<role>Author</role>
+				<name key="Trasatti, Rose">Rose Trasatti</name>
+			</author>
+			<author>
+				<role>Author</role>
+				<name key="Virkar, Rajesh">Rajesh Virkar</name>
+			</author>
+			<author>
+				<role>Author</role>
+				<name key="Walker, Mead">Mead Walker</name>
+			</author>
+			<author>
+				<role>Author</role>
+				<name key="Williamson, Michelle">Michelle Williamson, RN, MS</name>
+			</author>
+		</authlist>
+	</header>
+	<body>
+		<div1 id="VR-intro" ballotStatus="InformativeStandard" ballotNumber="1">
+			<head>Introduction</head>
+			<div2 id="NotestoReaders">
+					<head>Notes to Readers</head>
+	<p>The linked files comprise the final Vital Records Domain Analysis Model, Release 1 Informative Document and its supporting materials.</p>
+	<p>Readers wishing to review the domain material are directed first to the Vital Records DAM Project overview, and then to the other following files:</p>
+			<list>
+				<item><loc href="V3DAM_VR_ R1_INFORM_2011APR_Section 1_Vital Records Domain Analysis Model Project Overview.pdf">Vital Records Domain Analysis Model Project Overview</loc></item>
+				<item><loc href="V3DAM_VR_ R1_INFORM_2011APR_Section 2_Vital Records Storyboards.pdf">Vital Records Storyboards</loc></item>
+				<item><loc href="V3DAM_VR_ R1_INFORM_2011APR_Section 3_Vital Records Domain Analysis Model.pdf">Vital Records Domain Analysis Model</loc></item>
+				<item><loc href="V3DAM_VR_ R1_INFORM_2011APR_Section 4_U.S. Standard Certificate for Live Birth and Supporting Documentation.pdf">U.S. Standard Certificate of Live Birth and Supporting Reference Material</loc></item>
+				<item><loc href="V3DAM_VR_ R1_INFORM_2011APR_Section 5_U.S. Standard Certificate of Death and Supporting Ref Material.pdf">U.S. Standard Certificate of Death and Supporting Reference Material</loc></item>
+				<item><loc href="V3DAM_VR_ R1_INFORM_2011APR_Section 6_U.S. Standard Report of Fetal Death and Supporting Documentation.pdf">U.S. Standard Report of Fetal Death and Supporting Reference Material</loc></item>
+				<item><loc href="V3DAM_VR_ R1_INFORM_2011APR_Section 7_Description of Class Model.pdf">Description of Class Model</loc></item>
+			</list>
+		<p>For questions please contact <loc href="mailto:mwilliamson@cdc.gov">Michelle Williamson (mwilliamson@cdc.gov)</loc>.</p>
+	</div2>
+		</div1>
+	</body>
+</spec>

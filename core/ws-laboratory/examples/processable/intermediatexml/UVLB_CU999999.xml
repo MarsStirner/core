@@ -1,0 +1,67 @@
+<usage><!--Have 11 CMET usage sets for POLB and UV--><cmetuse role="uses">
+      <hmdref ref="POLB_HD004000UV01-hmd" refname="Result Event"
+              refidentifier="POLB_HD004000UV01"/>
+      <cmetref ref="COCT_MT010000UV01-msg" refname="A_EncounterUniversal"
+               refidentifier="COCT_MT010000UV01"/>
+   </cmetuse>
+   <cmetuse role="uses">
+      <hmdref ref="POLB_HD004000UV01-hmd" refname="Result Event"
+              refidentifier="POLB_HD004000UV01"/>
+      <cmetref ref="COCT_MT050004UV01-msg" refname="R_PatientClinical"
+               refidentifier="COCT_MT050004UV01"/>
+   </cmetuse>
+   <cmetuse role="uses">
+      <hmdref ref="POLB_HD004000UV01-hmd" refname="Result Event"
+              refidentifier="POLB_HD004000UV01"/>
+      <cmetref ref="COCT_MT080000UV09-msg" refname="R_SpecimenUniversal"
+               refidentifier="COCT_MT080000UV09"/>
+   </cmetuse>
+   <cmetuse role="uses">
+      <hmdref ref="POLB_HD004000UV01-hmd" refname="Result Event"
+              refidentifier="POLB_HD004000UV01"/>
+      <cmetref ref="COCT_MT090000UV01-msg" refname="R_AssignedEntityUniversal"
+               refidentifier="COCT_MT090000UV01"/>
+   </cmetuse>
+   <cmetuse role="uses">
+      <hmdref ref="POLB_HD004000UV01-hmd" refname="Result Event"
+              refidentifier="POLB_HD004000UV01"/>
+      <cmetref ref="COCT_MT090100UV01-msg" refname="R_AssignedPersonUniversal"
+               refidentifier="COCT_MT090100UV01"/>
+   </cmetuse>
+   <cmetuse role="uses">
+      <hmdref ref="POLB_HD004000UV01-hmd" refname="Result Event"
+              refidentifier="POLB_HD004000UV01"/>
+      <cmetref ref="COCT_MT090300UV01-msg" refname="R_AssignedDeviceUniversal"
+               refidentifier="COCT_MT090300UV01"/>
+   </cmetuse>
+   <cmetuse role="uses">
+      <hmdref ref="POLB_HD004000UV01-hmd" refname="Result Event"
+              refidentifier="POLB_HD004000UV01"/>
+      <cmetref ref="COCT_MT250000UV03-msg" refname="R_ReagentUniversal"
+               refidentifier="COCT_MT250000UV03"/>
+   </cmetuse>
+   <cmetuse role="uses">
+      <hmdref ref="POLB_HD004000UV01-hmd" refname="Result Event"
+              refidentifier="POLB_HD004000UV01"/>
+      <cmetref ref="COCT_MT430000UV09-msg" refname="R_LabTestKitUniversal"
+               refidentifier="COCT_MT430000UV09"/>
+   </cmetuse>
+   <cmetuse role="uses">
+      <hmdref ref="POLB_HD004000UV01-hmd" refname="Result Event"
+              refidentifier="POLB_HD004000UV01"/>
+      <cmetref ref="COCT_MT530000UV-msg" refname="A_SupportingClinicalStatementUniversal"
+               refidentifier="COCT_MT530000UV"/>
+   </cmetuse>
+   <cmetuse role="uses">
+      <hmdref ref="POLB_HD004000UV01-hmd" refname="Result Event"
+              refidentifier="POLB_HD004000UV01"/>
+      <cmetref ref="COCT_MT560000UV07-msg" refname="R_SubjectUniversal"
+               refidentifier="COCT_MT560000UV07"/>
+   </cmetuse>
+   <cmetuse role="uses">
+      <hmdref ref="POLB_HD004000UV01-hmd" refname="Result Event"
+              refidentifier="POLB_HD004000UV01"/>
+      <cmetref ref="COCT_MT590000UV-msg" refname="A_AnnotationUniversal"
+               refidentifier="COCT_MT590000UV"/>
+   </cmetuse>
+</usage>

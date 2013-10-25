@@ -13,6 +13,9 @@ import java.io.Serializable;
 @Table(name = "bbtResponse", catalog = "", schema = "")
 public class BbtResponse implements Serializable {
 
+    /**
+     * id == actionId
+     */
     @Id
     //@GeneratedValue(strategy = GenerationType.IDENTITY)
     @Basic(optional = false)

@@ -1,0 +1,120 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE spec SYSTEM "../../support/dtd/v3m.dtd">
+<!--<!DOCTYPE spec SYSTEM "v3m.dtd">-->
+<spec>
+	<header>
+		<title>HL7 Common Terminology Services, Release 2 Service Functional Model(SFM)</title>
+		<version>2.0</version>
+		<date>October 2009</date>
+		<authlist>
+			<author>
+				<role>Project Lead</role>
+				<name key="Hamm, Russell">Russell Hamm</name>
+				<affiliation>Apelon, Inc.</affiliation>
+				<email href="rhamm@apelon.com">rhamm@apelon.com</email>
+			</author>
+			<author>
+				<role>Project Lead</role>
+				<name key="Stancl, Craig">Craig Stancl</name>
+				<affiliation>Mayo Clinic/Foundation</affiliation>
+				<email href="stancl.craig@mayo.edu">stancl.craig@mayo.edu</email>
+			</author>
+			<author>
+				<role>Principal Contributor</role>
+				<name key="Eckerson, Kristi">Kristi Eckerson</name>
+				<affiliation>Emory University</affiliation>
+				<email href="keckers@sph.emory.edu">keckers@sph.emory.edu</email>
+			</author>
+			<author>
+				<role>Principal Contributor</role>
+				<name key="Gabriel, Davera">Davera Gabriel</name>
+				<affiliation>University of California, Davis</affiliation>
+				<email href="davera@ucdavis.edu">davera@ucdavis.edu</email>
+			</author>
+			<author>
+				<role>Principal Contributor</role>
+				<name key="Hamm, Russell">Russell Hamm</name>
+				<affiliation>Apelon, Inc.</affiliation>
+				<email href="rhamm@apelon.com">rhamm@apelon.com</email>
+		</author>
+			<author>
+				<role>Principal Contributor</role>
+				<name key="Honey, Alan">Alan Honey</name>
+				<affiliation>Booz&amp;Co/II4SM</affiliation>
+				<email href="aphoneysys@gmail.com">aphoneysys@gmail.com</email>
+		</author>
+			<author>
+				<role>Principal Contributor</role>
+				<name key="Landgrebe, Jobst">Dr. Jobst Landgrebe</name>
+				<affiliation>II4SM</affiliation>
+				<email href="jobstlandgreve@googlemail.com">jobstlandgreve@googlemail.com</email>
+		</author>
+			<author>
+				<role>Contributor</role>
+				<name key="Carter, John">John Carter</name>
+				<affiliation>Apelon, Inc.</affiliation>
+				<email href="jcarter@apelon.com">jcarter@apelon.com</email>
+			</author>
+			<author>
+				<role>Contributor</role>
+				<name key="Nachimuthu, Senthil">Senthil Nachimuthu</name>
+				<affiliation>3M Health Information Systems</affiliation>
+				<email href="snachimuthu@mmm.com">snachimuthu@mmm.com</email>
+			</author>
+			<author>
+				<role>Contributor</role>
+				<name key="Solbrig, Harold">Harold Solbrig</name>
+				<affiliation>Mayo Clinic/Foundation</affiliation>
+				<email href="solbrig.harold@mayo.edu">solbrig.harold@mayo.edu</email>
+			</author>
+			<author>
+				<role>Contributor</role>
+				<name key="Stancl, Craig">Craig Stancl</name>
+				<affiliation>Mayo Clinic/Foundation</affiliation>
+				<email href="stancl.craig@mayo.edu">stancl.craig@mayo.edu</email>
+			</author>
+			<author>
+				<role>HL7 Vocabulary Co-Chair</role>
+				<name key="Grain, Heather">Heather Grain</name>
+				<affiliation>LaTrobe University</affiliation>
+				<email href="heather@lginformatics.com">heather@lginformatics.com</email>
+			</author>
+			<author>
+				<role>HL7 Vocabulary Co-Chair</role>
+				<name key="Hamm, Russell">Russell Hamm</name>
+				<affiliation>Apelon, Inc.</affiliation>
+				<email href="rhamm@apelon.com">rhamm@apelon.com</email>
+			</author>
+			<author>
+				<role>HL7 Vocabulary Co-Chair</role>
+				<name key="Klein, Ted">Ted Klein</name>
+				<affiliation>Klein Consulting</affiliation>
+				<email href="ted@tklein.com">ted@tklein.com</email>
+			</author>
+			<author>
+				<role>HL7 Vocabulary Co-Chair</role>
+				<name key="Knight, Beverly">Beverly Knight</name>
+				<affiliation>Canada Health Infoway</affiliation>
+				<email href="beverly.knight@procurement.ca">beverly.knight@procurement.ca</email>
+			</author>
+		</authlist>
+			</header>
+	<body>
+		<div1 id="CTS_R2" ballotStatus="DSTU" ballotNumber="1">
+			<head>Preface</head>
+			<div2 id="reader_notes">
+				<head>Notes to Readers</head>
+				<p>This document is the Service Functional Model for the Common Terminology Services 2 specification, which is specified under the Service Development Framework process under the auspices of the Healthcare Services Specification Project (HSSP). Further context is given in the overview section below, but one key point to note is that the SFM provides a Service Interface specification, NOT the specification of a Service implementation. This is a critical distinction in terms of Service Oriented Architecture. There could be many different ways of implementing all or part of the functionality to support the behavior described in this specification.</p>
+				<p>For the full ballotable document, please see the linked document below.</p>
+			</div2>
+			<div2 id="Acknowledgments">
+				<head>Acknowledgments</head>
+				<p>This document is the result of the collaboration of many individuals and organizations. The terminology and standards community - all involved in the numerous meetings and teleconferences are to be thanked for their contributions and support. In addition to the listed authors, we would like to thank all the individuals and organizations who have dedicated effort and resource into furthering the development of this specification.</p>
+			</div2>
+			<div2 id="BallotDocument">
+				<head>Ballot Document</head>
+				<p><loc href="V3_CTS_R2_DSTU_2009OCT.pdf">Click here to download a copy of the approved document.</loc></p>
+			</div2>
+		</div1>
+	</body>
+</spec>

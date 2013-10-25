@@ -1,0 +1,1381 @@
+<?xml version="1.0" encoding="iso-8859-1"?>
+<spec id="REPC_DO000000UV-ic" type="dependencyTree" sectionCode="UVPC">
+   <header>
+      <title> Care Provision Dependency Annex
+				</title>
+      <version>V 00-00</version>
+      <ballot type="NormativeStandard" number="1"/>
+      <date>6/31/2008</date>
+      <legalese copyRightDate="2008"/>
+   </header>
+   <body>
+      <div1 id="all-sortOrder">
+         <head> Care Provision in Structured Sort Order</head>
+         <artree role="ssn">
+            <artreeitem>
+               <stref id="d2e20615" role="tree-intro" sectID="UVPC" sectType="SB"
+                      refName="Domain: Care Provision"
+                      refFamiliarName="Domain: Care Provision"
+                      refIdentifier="REPC_DO000000UV"/>
+               <artreeitem>
+                  <rmimref id="treeRef-REPC_DM000000UV" role="tree-element" sectID="UVPC" sectType="SB"
+                           refName="Care Provision"
+                           refFamiliarName="Care Provision"
+                           refIdentifier="REPC_DM000000UV"/>
+               </artreeitem>
+               <artreeitem>
+                  <stref id="d2e20619" role="tree-intro" sectID="UVPC" sectType="SB"
+                         refName="Topic: Allergies &amp; Intolerance"
+                         refFamiliarName="Topic: Allergies &amp; Intolerance"
+                         refIdentifier="REPC_DO000000UV"/>
+                  <artreeitem>
+                     <stref id="d2e20619" role="tree-intro" sectID="" sectType="SB" refName=" Story Boards"
+                            refFamiliarName=" Story Boards"
+                            refIdentifier=""/>
+                     <artreeitem>
+                        <stref id="treeRef-REPC_ST006006UV01" role="tree-element" sectID="UVPC" sectType="SB"
+                               refName="Patient Report Food Allergy"
+                               refFamiliarName="Patient Report Food Allergy"
+                               refIdentifier="REPC_ST006006UV01"/>
+                        <artreeitem>
+                           <stref id="treeRef-REPC_SN006006UV01" role="tree-element" sectID="UVPC" sectType="SB"
+                                  refName="Patient Report Food Allergy"
+                                  refFamiliarName="Patient Report Food Allergy"
+                                  refIdentifier="REPC_SN006006UV01"/>
+                        </artreeitem>
+                     </artreeitem>
+                     <artreeitem>
+                        <stref id="treeRef-REPC_ST006000UV01" role="tree-element" sectID="UVPC" sectType="SB"
+                               refName="Physician Adds Allergy Information"
+                               refFamiliarName="Physician Adds Allergy Information"
+                               refIdentifier="REPC_ST006000UV01"/>
+                        <artreeitem>
+                           <stref id="treeRef-REPC_SN006000UV01" role="tree-element" sectID="UVPC" sectType="SB"
+                                  refName="Physician Adds Allergy Information"
+                                  refFamiliarName="Physician Adds Allergy Information"
+                                  refIdentifier="REPC_SN006000UV01"/>
+                        </artreeitem>
+                     </artreeitem>
+                     <artreeitem>
+                        <stref id="treeRef-REPC_ST006004UV01" role="tree-element" sectID="UVPC" sectType="SB"
+                               refName="Physician Annotates Allergy"
+                               refFamiliarName="Physician Annotates Allergy"
+                               refIdentifier="REPC_ST006004UV01"/>
+                        <artreeitem>
+                           <stref id="treeRef-REPC_SN006004UV01" role="tree-element" sectID="UVPC" sectType="SB"
+                                  refName="Physician Annotates Allergy"
+                                  refFamiliarName="Physician Annotates Allergy"
+                                  refIdentifier="REPC_SN006004UV01"/>
+                        </artreeitem>
+                     </artreeitem>
+                     <artreeitem>
+                        <stref id="treeRef-REPC_ST006003UV01" role="tree-element" sectID="UVPC" sectType="SB"
+                               refName="Physician Clarifies Allergy Information"
+                               refFamiliarName="Physician Clarifies Allergy Information"
+                               refIdentifier="REPC_ST006003UV01"/>
+                        <artreeitem>
+                           <stref id="treeRef-REPC_SN006003UV01" role="tree-element" sectID="UVPC" sectType="SB"
+                                  refName="Physician Clarifies Allergy Information"
+                                  refFamiliarName="Physician Clarifies Allergy Information"
+                                  refIdentifier="REPC_SN006003UV01"/>
+                        </artreeitem>
+                     </artreeitem>
+                     <artreeitem>
+                        <stref id="treeRef-REPC_ST006007UV01" role="tree-element" sectID="UVPC" sectType="SB"
+                               refName="Physician Enters Suspect Environmental Allergy"
+                               refFamiliarName="Physician Enters Suspect Environmental Allergy"
+                               refIdentifier="REPC_ST006007UV01"/>
+                        <artreeitem>
+                           <stref id="treeRef-REPC_SN006007UV01" role="tree-element" sectID="UVPC" sectType="SB"
+                                  refName="Physician Enters Suspect Environmental Allergy"
+                                  refFamiliarName="Physician Enters Suspect Environmental Allergy"
+                                  refIdentifier="REPC_SN006007UV01"/>
+                        </artreeitem>
+                     </artreeitem>
+                     <artreeitem>
+                        <stref id="treeRef-REPC_ST006008UV01" role="tree-element" sectID="UVPC" sectType="SB"
+                               refName="Physician Notes Severe Intolerance"
+                               refFamiliarName="Physician Notes Severe Intolerance"
+                               refIdentifier="REPC_ST006008UV01"/>
+                        <artreeitem>
+                           <stref id="treeRef-REPC_SN006008UV01" role="tree-element" sectID="UVPC" sectType="SB"
+                                  refName="Physician Notes Severe Intolerance"
+                                  refFamiliarName="Physician Notes Severe Intolerance"
+                                  refIdentifier="REPC_SN006008UV01"/>
+                        </artreeitem>
+                     </artreeitem>
+                     <artreeitem>
+                        <stref id="treeRef-REPC_ST006002UV01" role="tree-element" sectID="UVPC" sectType="SB"
+                               refName="Physician Reviews Verifies Allergy Information"
+                               refFamiliarName="Physician Reviews Verifies Allergy Information"
+                               refIdentifier="REPC_ST006002UV01"/>
+                        <artreeitem>
+                           <stref id="treeRef-REPC_SN006002UV01" role="tree-element" sectID="UVPC" sectType="SB"
+                                  refName="Physician Reviews Verifies Allergy Information"
+                                  refFamiliarName="Physician Reviews Verifies Allergy Information"
+                                  refIdentifier="REPC_SN006002UV01"/>
+                        </artreeitem>
+                     </artreeitem>
+                     <artreeitem>
+                        <stref id="treeRef-REPC_ST006001UV01" role="tree-element" sectID="UVPC" sectType="SB"
+                               refName="Physician Updates Allergy Information"
+                               refFamiliarName="Physician Updates Allergy Information"
+                               refIdentifier="REPC_ST006001UV01"/>
+                        <artreeitem>
+                           <stref id="treeRef-REPC_SN006001UV01" role="tree-element" sectID="UVPC" sectType="SB"
+                                  refName="Physician Updates Allergy Information"
+                                  refFamiliarName="Physician Updates Allergy Information"
+                                  refIdentifier="REPC_SN006001UV01"/>
+                        </artreeitem>
+                     </artreeitem>
+                  </artreeitem>
+                  <artreeitem>
+                     <stref id="d2e20619" role="tree-intro" sectID="" sectType="SB"
+                            refName=" Application Roles"
+                            refFamiliarName=" Application Roles"
+                            refIdentifier=""/>
+                     <artreeitem>
+                        <arref id="treeRef-REPC_AR000009UV01" role="tree-element" sectID="UVPC" sectType="SB"
+                               refName="Allergy/Intolerance Entry System"
+                               refFamiliarName="Allergy/Intolerance Entry System"
+                               refIdentifier="REPC_AR000009UV01"/>
+                     </artreeitem>
+                     <artreeitem>
+                        <arref id="treeRef-REPC_AR000010UV01" role="tree-element" sectID="UVPC" sectType="SB"
+                               refName="Allergy/Intolerance Querying System"
+                               refFamiliarName="Allergy/Intolerance Querying System"
+                               refIdentifier="REPC_AR000010UV01"/>
+                     </artreeitem>
+                     <artreeitem>
+                        <arref id="treeRef-REPC_AR000008UV01" role="tree-element" sectID="UVPC" sectType="SB"
+                               refName="Allergy/Intolerance Repository"
+                               refFamiliarName="Allergy/Intolerance Repository"
+                               refIdentifier="REPC_AR000008UV01"/>
+                     </artreeitem>
+                  </artreeitem>
+                  <artreeitem>
+                     <stref id="d2e20619" role="tree-intro" sectID="" sectType="SB"
+                            refName=" Trigger Events"
+                            refFamiliarName=" Trigger Events"
+                            refIdentifier=""/>
+                     <artreeitem>
+                        <teref id="treeRef-REPC_TE000023UV01" role="tree-element" sectID="UVPC" sectType="SB"
+                               refName="Allergy/ intolerance request list updated"
+                               refFamiliarName="Allergy/ intolerance request list updated"
+                               refIdentifier="REPC_TE000023UV01"/>
+                     </artreeitem>
+                     <artreeitem>
+                        <teref id="treeRef-REPC_TE000003UV01" role="tree-element" sectID="UVPC" sectType="SB"
+                               refName="Decision to not record allergy or intolerance"
+                               refFamiliarName="Decision to not record allergy or intolerance"
+                               refIdentifier="REPC_TE000003UV01"/>
+                     </artreeitem>
+                     <artreeitem>
+                        <teref id="treeRef-REPC_TE000025UV01" role="tree-element" sectID="UVPC" sectType="SB"
+                               refName="Decision to not record allergy/ intol. change"
+                               refFamiliarName="Decision to not record allergy/ intol. change"
+                               refIdentifier="REPC_TE000025UV01"/>
+                     </artreeitem>
+                     <artreeitem>
+                        <teref id="treeRef-REPC_TE000006UV01" role="tree-element" sectID="UVPC" sectType="SB"
+                               refName="Allergy and intolerances list query"
+                               refFamiliarName="Allergy and intolerances list query"
+                               refIdentifier="REPC_TE000006UV01"/>
+                     </artreeitem>
+                     <artreeitem>
+                        <teref id="treeRef-REPC_TE000002UV01" role="tree-element" sectID="UVPC" sectType="SB"
+                               refName="Allergy or intolerance list response"
+                               refFamiliarName="Allergy or intolerance list response"
+                               refIdentifier="REPC_TE000002UV01"/>
+                     </artreeitem>
+                     <artreeitem>
+                        <teref id="treeRef-REPC_TE000024UV01" role="tree-element" sectID="UVPC" sectType="SB"
+                               refName="Allergy or intolerance list updated"
+                               refFamiliarName="Allergy or intolerance list updated"
+                               refIdentifier="REPC_TE000024UV01"/>
+                     </artreeitem>
+                  </artreeitem>
+                  <artreeitem>
+                     <stref id="d2e20619" role="tree-intro" sectID="" sectType="SB"
+                            refName=" Refined Message Information Models"
+                            refFamiliarName=" Refined Message Information Models"
+                            refIdentifier=""/>
+                     <artreeitem>
+                        <rmimref id="treeRef-REPC_RM000324UV01" role="tree-element" sectID="UVPC" sectType="SB"
+                                 refName="Allergy/Intolerance Concern"
+                                 refFamiliarName="Allergy/Intolerance Concern"
+                                 refIdentifier="REPC_RM000324UV01"/>
+                        <artreeitem>
+                           <hmdref id="treeRef-REPC_HD000324UV01" role="tree-element" sectID="UVPC" sectType="SB"
+                                   refName="Allergyintolerance Concern"
+                                   refFamiliarName="Allergyintolerance Concern"
+                                   refIdentifier="REPC_HD000324UV01"/>
+                           <artreeitem>
+                              <msgref id="treeRef-REPC_MT000324UV01" role="tree-element" sectID="UVPC" sectType="SB"
+                                      refName="Allergyintolerance Concern"
+                                      refFamiliarName="Allergyintolerance Concern"
+                                      refIdentifier="REPC_MT000324UV01"/>
+                              <artreeitem>
+                                 <cmetref id="treeRef-COCT_MT090102UV02" role="dependency" sectID="UVCT" sectType="SB"
+                                          refName="R_AssignedPersonIdentified-confirmable"
+                                          refFamiliarName="R_AssignedPersonIdentified-confirmable"
+                                          refIdentifier="COCT_MT090102UV02"/>
+                              </artreeitem>
+                              <artreeitem>
+                                 <cmetref id="treeRef-COCT_MT050000UV01" role="dependency" sectID="UVCT" sectType="SB"
+                                          refName="R_PatientUniversal"
+                                          refFamiliarName="R_PatientUniversal"
+                                          refIdentifier="COCT_MT050000UV01"/>
+                              </artreeitem>
+                              <artreeitem>
+                                 <cmetref id="treeRef-COCT_MT910000UV" role="dependency" sectID="UVCT" sectType="SB"
+                                          refName="R_RelatedPartyUniversal"
+                                          refFamiliarName="R_RelatedPartyUniversal"
+                                          refIdentifier="COCT_MT910000UV"/>
+                              </artreeitem>
+                              <artreeitem>
+                                 <cmetref id="treeRef-COCT_MT230100UV" role="dependency" sectID="UVCT" sectType="SB"
+                                          refName="R_MedicationUniversal"
+                                          refFamiliarName="R_MedicationUniversal"
+                                          refIdentifier="COCT_MT230100UV"/>
+                              </artreeitem>
+                           </artreeitem>
+                        </artreeitem>
+                     </artreeitem>
+                     <artreeitem>
+                        <rmimref id="treeRef-REPC_RM000322UV01" role="tree-element" sectID="UVPC" sectType="SB"
+                                 refName="Allergy/Intolerance List"
+                                 refFamiliarName="Allergy/Intolerance List"
+                                 refIdentifier="REPC_RM000322UV01"/>
+                        <artreeitem>
+                           <hmdref id="treeRef-REPC_HD000322UV01" role="tree-element" sectID="UVPC" sectType="SB"
+                                   refName="Allergyintolerance List"
+                                   refFamiliarName="Allergyintolerance List"
+                                   refIdentifier="REPC_HD000322UV01"/>
+                           <artreeitem>
+                              <msgref id="treeRef-REPC_MT000322UV01" role="tree-element" sectID="UVPC" sectType="SB"
+                                      refName="Allergyintolerance List"
+                                      refFamiliarName="Allergyintolerance List"
+                                      refIdentifier="REPC_MT000322UV01"/>
+                              <artreeitem>
+                                 <cmetref id="treeRef-COCT_MT090102UV02" role="dependency" sectID="UVCT" sectType="SB"
+                                          refName="R_AssignedPersonIdentified-confirmable"
+                                          refFamiliarName="R_AssignedPersonIdentified-confirmable"
+                                          refIdentifier="COCT_MT090102UV02"/>
+                              </artreeitem>
+                              <artreeitem>
+                                 <cmetref id="treeRef-COCT_MT050000UV01" role="dependency" sectID="UVCT" sectType="SB"
+                                          refName="R_PatientUniversal"
+                                          refFamiliarName="R_PatientUniversal"
+                                          refIdentifier="COCT_MT050000UV01"/>
+                              </artreeitem>
+                              <artreeitem>
+                                 <cmetref id="treeRef-COCT_MT910000UV" role="dependency" sectID="UVCT" sectType="SB"
+                                          refName="R_RelatedPartyUniversal"
+                                          refFamiliarName="R_RelatedPartyUniversal"
+                                          refIdentifier="COCT_MT910000UV"/>
+                              </artreeitem>
+                              <artreeitem>
+                                 <cmetref id="treeRef-COCT_MT040200UV09" role="dependency" sectID="UVCT" sectType="SB"
+                                          refName="R_ResponsiblePartyUniversal"
+                                          refFamiliarName="R_ResponsiblePartyUniversal"
+                                          refIdentifier="COCT_MT040200UV09"/>
+                              </artreeitem>
+                              <artreeitem>
+                                 <cmetref id="treeRef-" role="dependency" sectID="" sectType="SB"
+                                          refName="A_AllergyIntoleranceGroupNegationObservationCare provision"
+                                          refFamiliarName="A_AllergyIntoleranceGroupNegationObservationCare provision"
+                                          refIdentifier=""/>
+                              </artreeitem>
+                              <artreeitem>
+                                 <cmetref id="treeRef-" role="dependency" sectID="" sectType="SB"
+                                          refName="A_AllergyIntoleranceConcernCare provision"
+                                          refFamiliarName="A_AllergyIntoleranceConcernCare provision"
+                                          refIdentifier=""/>
+                              </artreeitem>
+                              <artreeitem>
+                                 <cmetref id="treeRef-COCT_MT090100UV01" role="dependency" sectID="UVCT" sectType="SB"
+                                          refName="R_AssignedPersonUniversal"
+                                          refFamiliarName="R_AssignedPersonUniversal"
+                                          refIdentifier="COCT_MT090100UV01"/>
+                              </artreeitem>
+                           </artreeitem>
+                        </artreeitem>
+                     </artreeitem>
+                     <artreeitem>
+                        <rmimref id="treeRef-REPC_RM000323UV01" role="tree-element" sectID="UVPC" sectType="SB"
+                                 refName="Allergy/Intolerance Summary Observation"
+                                 refFamiliarName="Allergy/Intolerance Summary Observation"
+                                 refIdentifier="REPC_RM000323UV01"/>
+                        <artreeitem>
+                           <hmdref id="treeRef-REPC_HD000323UV01" role="tree-element" sectID="UVPC" sectType="SB"
+                                   refName="Allergy/Intolerance Summary Observation"
+                                   refFamiliarName="Allergy/Intolerance Summary Observation"
+                                   refIdentifier="REPC_HD000323UV01"/>
+                           <artreeitem>
+                              <msgref id="treeRef-REPC_MT000323UV01" role="tree-element" sectID="UVPC" sectType="SB"
+                                      refName="Allergy/Intolerance Summary Observation"
+                                      refFamiliarName="Allergy/Intolerance Summary Observation"
+                                      refIdentifier="REPC_MT000323UV01"/>
+                              <artreeitem>
+                                 <cmetref id="treeRef-COCT_MT090102UV02" role="dependency" sectID="UVCT" sectType="SB"
+                                          refName="R_AssignedPersonIdentified-confirmable"
+                                          refFamiliarName="R_AssignedPersonIdentified-confirmable"
+                                          refIdentifier="COCT_MT090102UV02"/>
+                              </artreeitem>
+                              <artreeitem>
+                                 <cmetref id="treeRef-COCT_MT050000UV01" role="dependency" sectID="UVCT" sectType="SB"
+                                          refName="R_PatientUniversal"
+                                          refFamiliarName="R_PatientUniversal"
+                                          refIdentifier="COCT_MT050000UV01"/>
+                              </artreeitem>
+                              <artreeitem>
+                                 <cmetref id="treeRef-COCT_MT910000UV" role="dependency" sectID="UVCT" sectType="SB"
+                                          refName="R_RelatedPartyUniversal"
+                                          refFamiliarName="R_RelatedPartyUniversal"
+                                          refIdentifier="COCT_MT910000UV"/>
+                              </artreeitem>
+                           </artreeitem>
+                        </artreeitem>
+                     </artreeitem>
+                  </artreeitem>
+                  <artreeitem>
+                     <stref id="d2e20619" role="tree-intro" sectID="" sectType="SB" refName=" Interactions"
+                            refFamiliarName=" Interactions"
+                            refIdentifier=""/>
+                     <artreeitem>
+                        <intref id="treeRef-REPC_IN000013UV01" role="tree-element" sectID="UVPC" sectType="SB"
+                                refName="Add allergy/intolerance request accepted"
+                                refFamiliarName="Add allergy/intolerance request accepted"
+                                refIdentifier="REPC_IN000013UV01"/>
+                        <artreeitem>
+                           <teref id="treeRef-REPC_TE000002UV01" role="dependency" sectID="UVPC" sectType="SB"
+                                  refName="Allergy or intolerance list response"
+                                  refFamiliarName="Allergy or intolerance list response"
+                                  refIdentifier="REPC_TE000002UV01"/>
+                        </artreeitem>
+                        <artreeitem>
+                           <msgref id="treeRef-MCCI_MT000300UV01" role="dependency" sectID="UVCI" sectType="SB"
+                                   refName="Application Level Acknowledgement"
+                                   refFamiliarName="Application Level Acknowledgement"
+                                   refIdentifier="MCCI_MT000300UV01"/>
+                        </artreeitem>
+                        <artreeitem>
+                           <msgref id="treeRef-MCAI_MT700201UV01" role="dependency" sectID="UVAI" sectType="SB"
+                                   refName="Trigger Event Control Act"
+                                   refFamiliarName="Trigger Event Control Act"
+                                   refIdentifier="MCAI_MT700201UV01"/>
+                        </artreeitem>
+                        <artreeitem/>
+                        <artreeitem>
+                           <msgref id="treeRef-COMT_MT001103UV" role="dependency" sectID="UVMT" sectType="SB"
+                                   refName="Act generic Status - Event"
+                                   refFamiliarName="Act generic Status - Event"
+                                   refIdentifier="COMT_MT001103UV"/>
+                        </artreeitem>
+                     </artreeitem>
+                     <artreeitem>
+                        <intref id="treeRef-REPC_IN000014UV01" role="tree-element" sectID="UVPC" sectType="SB"
+                                refName="Add allergy/intolerance request refused"
+                                refFamiliarName="Add allergy/intolerance request refused"
+                                refIdentifier="REPC_IN000014UV01"/>
+                        <artreeitem>
+                           <teref id="treeRef-REPC_TE000003UV01" role="dependency" sectID="UVPC" sectType="SB"
+                                  refName="Decision to not record allergy or intolerance"
+                                  refFamiliarName="Decision to not record allergy or intolerance"
+                                  refIdentifier="REPC_TE000003UV01"/>
+                        </artreeitem>
+                        <artreeitem>
+                           <msgref id="treeRef-MCCI_MT000300UV01" role="dependency" sectID="UVCI" sectType="SB"
+                                   refName="Application Level Acknowledgement"
+                                   refFamiliarName="Application Level Acknowledgement"
+                                   refIdentifier="MCCI_MT000300UV01"/>
+                        </artreeitem>
+                        <artreeitem>
+                           <msgref id="treeRef-MCAI_MT700201UV01" role="dependency" sectID="UVAI" sectType="SB"
+                                   refName="Trigger Event Control Act"
+                                   refFamiliarName="Trigger Event Control Act"
+                                   refIdentifier="MCAI_MT700201UV01"/>
+                        </artreeitem>
+                     </artreeitem>
+                     <artreeitem>
+                        <intref id="treeRef-REPC_IN000021UV01" role="tree-element" sectID="UVPC" sectType="SB"
+                                refName="Update allergy/intolerance request accepted"
+                                refFamiliarName="Update allergy/intolerance request accepted"
+                                refIdentifier="REPC_IN000021UV01"/>
+                        <artreeitem>
+                           <teref id="treeRef-REPC_TE000024UV01" role="dependency" sectID="UVPC" sectType="SB"
+                                  refName="Allergy or intolerance list updated"
+                                  refFamiliarName="Allergy or intolerance list updated"
+                                  refIdentifier="REPC_TE000024UV01"/>
+                        </artreeitem>
+                        <artreeitem>
+                           <msgref id="treeRef-MCCI_MT000300UV01" role="dependency" sectID="UVCI" sectType="SB"
+                                   refName="Application Level Acknowledgement"
+                                   refFamiliarName="Application Level Acknowledgement"
+                                   refIdentifier="MCCI_MT000300UV01"/>
+                        </artreeitem>
+                        <artreeitem>
+                           <msgref id="treeRef-MCAI_MT700201UV01" role="dependency" sectID="UVAI" sectType="SB"
+                                   refName="Trigger Event Control Act"
+                                   refFamiliarName="Trigger Event Control Act"
+                                   refIdentifier="MCAI_MT700201UV01"/>
+                        </artreeitem>
+                        <artreeitem/>
+                        <artreeitem>
+                           <msgref id="treeRef-COMT_MT001103UV" role="dependency" sectID="UVMT" sectType="SB"
+                                   refName="Act generic Status - Event"
+                                   refFamiliarName="Act generic Status - Event"
+                                   refIdentifier="COMT_MT001103UV"/>
+                        </artreeitem>
+                     </artreeitem>
+                     <artreeitem>
+                        <intref id="treeRef-REPC_IN000022UV01" role="tree-element" sectID="UVPC" sectType="SB"
+                                refName="Update allergy/intolerance request refused"
+                                refFamiliarName="Update allergy/intolerance request refused"
+                                refIdentifier="REPC_IN000022UV01"/>
+                        <artreeitem>
+                           <teref id="treeRef-REPC_TE000025UV01" role="dependency" sectID="UVPC" sectType="SB"
+                                  refName="Decision to not record allergy/ intol. change"
+                                  refFamiliarName="Decision to not record allergy/ intol. change"
+                                  refIdentifier="REPC_TE000025UV01"/>
+                        </artreeitem>
+                        <artreeitem>
+                           <msgref id="treeRef-MCCI_MT000300UV01" role="dependency" sectID="UVCI" sectType="SB"
+                                   refName="Application Level Acknowledgement"
+                                   refFamiliarName="Application Level Acknowledgement"
+                                   refIdentifier="MCCI_MT000300UV01"/>
+                        </artreeitem>
+                        <artreeitem>
+                           <msgref id="treeRef-MCAI_MT700201UV01" role="dependency" sectID="UVAI" sectType="SB"
+                                   refName="Trigger Event Control Act"
+                                   refFamiliarName="Trigger Event Control Act"
+                                   refIdentifier="MCAI_MT700201UV01"/>
+                        </artreeitem>
+                        <artreeitem/>
+                        <artreeitem>
+                           <msgref id="treeRef-COMT_MT001103UV" role="dependency" sectID="UVMT" sectType="SB"
+                                   refName="Act generic Status - Event"
+                                   refFamiliarName="Act generic Status - Event"
+                                   refIdentifier="COMT_MT001103UV"/>
+                        </artreeitem>
+                     </artreeitem>
+                  </artreeitem>
+               </artreeitem>
+            </artreeitem>
+         </artree>
+      </div1>
+      <div1 id="all-codeOrder">
+         <head> Care Provision in Artifact Code Order</head>
+         <artree role="code">
+            <artreeitem>
+               <stref id="d2e20615" role="tree-intro" sectID="UVPC" sectType="SB"
+                      refName="Domain: Care Provision"
+                      refFamiliarName="Domain: Care Provision"
+                      refIdentifier="REPC_DO000000UV"/>
+               <artreeitem>
+                  <rmimref id="treeRef-REPC_DM000000UV" role="tree-element" sectID="UVPC" sectType="SB"
+                           refName="Care Provision"
+                           refFamiliarName="Care Provision"
+                           refIdentifier="REPC_DM000000UV"/>
+               </artreeitem>
+               <artreeitem>
+                  <stref id="d2e20619" role="tree-intro" sectID="UVPC" sectType="SB"
+                         refName="Topic: Allergies &amp; Intolerance"
+                         refFamiliarName="Topic: Allergies &amp; Intolerance"
+                         refIdentifier="REPC_DO000000UV"/>
+                  <artreeitem>
+                     <stref id="d2e20619" role="tree-intro" sectID="" sectType="SB" refName=" Story Boards"
+                            refFamiliarName=" Story Boards"
+                            refIdentifier=""/>
+                     <artreeitem>
+                        <stref id="treeRef-REPC_ST006000UV01" role="tree-element" sectID="UVPC" sectType="SB"
+                               refName="Physician Adds Allergy Information"
+                               refFamiliarName="Physician Adds Allergy Information"
+                               refIdentifier="REPC_ST006000UV01"/>
+                        <artreeitem>
+                           <stref id="treeRef-REPC_SN006000UV01" role="tree-element" sectID="UVPC" sectType="SB"
+                                  refName="Physician Adds Allergy Information"
+                                  refFamiliarName="Physician Adds Allergy Information"
+                                  refIdentifier="REPC_SN006000UV01"/>
+                        </artreeitem>
+                     </artreeitem>
+                     <artreeitem>
+                        <stref id="treeRef-REPC_ST006001UV01" role="tree-element" sectID="UVPC" sectType="SB"
+                               refName="Physician Updates Allergy Information"
+                               refFamiliarName="Physician Updates Allergy Information"
+                               refIdentifier="REPC_ST006001UV01"/>
+                        <artreeitem>
+                           <stref id="treeRef-REPC_SN006001UV01" role="tree-element" sectID="UVPC" sectType="SB"
+                                  refName="Physician Updates Allergy Information"
+                                  refFamiliarName="Physician Updates Allergy Information"
+                                  refIdentifier="REPC_SN006001UV01"/>
+                        </artreeitem>
+                     </artreeitem>
+                     <artreeitem>
+                        <stref id="treeRef-REPC_ST006002UV01" role="tree-element" sectID="UVPC" sectType="SB"
+                               refName="Physician Reviews Verifies Allergy Information"
+                               refFamiliarName="Physician Reviews Verifies Allergy Information"
+                               refIdentifier="REPC_ST006002UV01"/>
+                        <artreeitem>
+                           <stref id="treeRef-REPC_SN006002UV01" role="tree-element" sectID="UVPC" sectType="SB"
+                                  refName="Physician Reviews Verifies Allergy Information"
+                                  refFamiliarName="Physician Reviews Verifies Allergy Information"
+                                  refIdentifier="REPC_SN006002UV01"/>
+                        </artreeitem>
+                     </artreeitem>
+                     <artreeitem>
+                        <stref id="treeRef-REPC_ST006003UV01" role="tree-element" sectID="UVPC" sectType="SB"
+                               refName="Physician Clarifies Allergy Information"
+                               refFamiliarName="Physician Clarifies Allergy Information"
+                               refIdentifier="REPC_ST006003UV01"/>
+                        <artreeitem>
+                           <stref id="treeRef-REPC_SN006003UV01" role="tree-element" sectID="UVPC" sectType="SB"
+                                  refName="Physician Clarifies Allergy Information"
+                                  refFamiliarName="Physician Clarifies Allergy Information"
+                                  refIdentifier="REPC_SN006003UV01"/>
+                        </artreeitem>
+                     </artreeitem>
+                     <artreeitem>
+                        <stref id="treeRef-REPC_ST006004UV01" role="tree-element" sectID="UVPC" sectType="SB"
+                               refName="Physician Annotates Allergy"
+                               refFamiliarName="Physician Annotates Allergy"
+                               refIdentifier="REPC_ST006004UV01"/>
+                        <artreeitem>
+                           <stref id="treeRef-REPC_SN006004UV01" role="tree-element" sectID="UVPC" sectType="SB"
+                                  refName="Physician Annotates Allergy"
+                                  refFamiliarName="Physician Annotates Allergy"
+                                  refIdentifier="REPC_SN006004UV01"/>
+                        </artreeitem>
+                     </artreeitem>
+                     <artreeitem>
+                        <stref id="treeRef-REPC_ST006006UV01" role="tree-element" sectID="UVPC" sectType="SB"
+                               refName="Patient Report Food Allergy"
+                               refFamiliarName="Patient Report Food Allergy"
+                               refIdentifier="REPC_ST006006UV01"/>
+                        <artreeitem>
+                           <stref id="treeRef-REPC_SN006006UV01" role="tree-element" sectID="UVPC" sectType="SB"
+                                  refName="Patient Report Food Allergy"
+                                  refFamiliarName="Patient Report Food Allergy"
+                                  refIdentifier="REPC_SN006006UV01"/>
+                        </artreeitem>
+                     </artreeitem>
+                     <artreeitem>
+                        <stref id="treeRef-REPC_ST006007UV01" role="tree-element" sectID="UVPC" sectType="SB"
+                               refName="Physician Enters Suspect Environmental Allergy"
+                               refFamiliarName="Physician Enters Suspect Environmental Allergy"
+                               refIdentifier="REPC_ST006007UV01"/>
+                        <artreeitem>
+                           <stref id="treeRef-REPC_SN006007UV01" role="tree-element" sectID="UVPC" sectType="SB"
+                                  refName="Physician Enters Suspect Environmental Allergy"
+                                  refFamiliarName="Physician Enters Suspect Environmental Allergy"
+                                  refIdentifier="REPC_SN006007UV01"/>
+                        </artreeitem>
+                     </artreeitem>
+                     <artreeitem>
+                        <stref id="treeRef-REPC_ST006008UV01" role="tree-element" sectID="UVPC" sectType="SB"
+                               refName="Physician Notes Severe Intolerance"
+                               refFamiliarName="Physician Notes Severe Intolerance"
+                               refIdentifier="REPC_ST006008UV01"/>
+                        <artreeitem>
+                           <stref id="treeRef-REPC_SN006008UV01" role="tree-element" sectID="UVPC" sectType="SB"
+                                  refName="Physician Notes Severe Intolerance"
+                                  refFamiliarName="Physician Notes Severe Intolerance"
+                                  refIdentifier="REPC_SN006008UV01"/>
+                        </artreeitem>
+                     </artreeitem>
+                  </artreeitem>
+                  <artreeitem>
+                     <stref id="d2e20619" role="tree-intro" sectID="" sectType="SB"
+                            refName=" Application Roles"
+                            refFamiliarName=" Application Roles"
+                            refIdentifier=""/>
+                     <artreeitem>
+                        <arref id="treeRef-REPC_AR000008UV01" role="tree-element" sectID="UVPC" sectType="SB"
+                               refName="Allergy/Intolerance Repository"
+                               refFamiliarName="Allergy/Intolerance Repository"
+                               refIdentifier="REPC_AR000008UV01"/>
+                     </artreeitem>
+                     <artreeitem>
+                        <arref id="treeRef-REPC_AR000009UV01" role="tree-element" sectID="UVPC" sectType="SB"
+                               refName="Allergy/Intolerance Entry System"
+                               refFamiliarName="Allergy/Intolerance Entry System"
+                               refIdentifier="REPC_AR000009UV01"/>
+                     </artreeitem>
+                     <artreeitem>
+                        <arref id="treeRef-REPC_AR000010UV01" role="tree-element" sectID="UVPC" sectType="SB"
+                               refName="Allergy/Intolerance Querying System"
+                               refFamiliarName="Allergy/Intolerance Querying System"
+                               refIdentifier="REPC_AR000010UV01"/>
+                     </artreeitem>
+                  </artreeitem>
+                  <artreeitem>
+                     <stref id="d2e20619" role="tree-intro" sectID="" sectType="SB"
+                            refName=" Trigger Events"
+                            refFamiliarName=" Trigger Events"
+                            refIdentifier=""/>
+                     <artreeitem>
+                        <teref id="treeRef-REPC_TE000002UV01" role="tree-element" sectID="UVPC" sectType="SB"
+                               refName="Allergy or intolerance list response"
+                               refFamiliarName="Allergy or intolerance list response"
+                               refIdentifier="REPC_TE000002UV01"/>
+                     </artreeitem>
+                     <artreeitem>
+                        <teref id="treeRef-REPC_TE000003UV01" role="tree-element" sectID="UVPC" sectType="SB"
+                               refName="Decision to not record allergy or intolerance"
+                               refFamiliarName="Decision to not record allergy or intolerance"
+                               refIdentifier="REPC_TE000003UV01"/>
+                     </artreeitem>
+                     <artreeitem>
+                        <teref id="treeRef-REPC_TE000006UV01" role="tree-element" sectID="UVPC" sectType="SB"
+                               refName="Allergy and intolerances list query"
+                               refFamiliarName="Allergy and intolerances list query"
+                               refIdentifier="REPC_TE000006UV01"/>
+                     </artreeitem>
+                     <artreeitem>
+                        <teref id="treeRef-REPC_TE000023UV01" role="tree-element" sectID="UVPC" sectType="SB"
+                               refName="Allergy/ intolerance request list updated"
+                               refFamiliarName="Allergy/ intolerance request list updated"
+                               refIdentifier="REPC_TE000023UV01"/>
+                     </artreeitem>
+                     <artreeitem>
+                        <teref id="treeRef-REPC_TE000024UV01" role="tree-element" sectID="UVPC" sectType="SB"
+                               refName="Allergy or intolerance list updated"
+                               refFamiliarName="Allergy or intolerance list updated"
+                               refIdentifier="REPC_TE000024UV01"/>
+                     </artreeitem>
+                     <artreeitem>
+                        <teref id="treeRef-REPC_TE000025UV01" role="tree-element" sectID="UVPC" sectType="SB"
+                               refName="Decision to not record allergy/ intol. change"
+                               refFamiliarName="Decision to not record allergy/ intol. change"
+                               refIdentifier="REPC_TE000025UV01"/>
+                     </artreeitem>
+                  </artreeitem>
+                  <artreeitem>
+                     <stref id="d2e20619" role="tree-intro" sectID="" sectType="SB"
+                            refName=" Refined Message Information Models"
+                            refFamiliarName=" Refined Message Information Models"
+                            refIdentifier=""/>
+                     <artreeitem>
+                        <rmimref id="treeRef-REPC_RM000322UV01" role="tree-element" sectID="UVPC" sectType="SB"
+                                 refName="Allergy/Intolerance List"
+                                 refFamiliarName="Allergy/Intolerance List"
+                                 refIdentifier="REPC_RM000322UV01"/>
+                        <artreeitem>
+                           <hmdref id="treeRef-REPC_HD000322UV01" role="tree-element" sectID="UVPC" sectType="SB"
+                                   refName="Allergyintolerance List"
+                                   refFamiliarName="Allergyintolerance List"
+                                   refIdentifier="REPC_HD000322UV01"/>
+                           <artreeitem>
+                              <msgref id="treeRef-REPC_MT000322UV01" role="tree-element" sectID="UVPC" sectType="SB"
+                                      refName="Allergyintolerance List"
+                                      refFamiliarName="Allergyintolerance List"
+                                      refIdentifier="REPC_MT000322UV01"/>
+                              <artreeitem>
+                                 <cmetref id="treeRef-COCT_MT090102UV02" role="dependency" sectID="UVCT" sectType="SB"
+                                          refName="R_AssignedPersonIdentified-confirmable"
+                                          refFamiliarName="R_AssignedPersonIdentified-confirmable"
+                                          refIdentifier="COCT_MT090102UV02"/>
+                              </artreeitem>
+                              <artreeitem>
+                                 <cmetref id="treeRef-COCT_MT050000UV01" role="dependency" sectID="UVCT" sectType="SB"
+                                          refName="R_PatientUniversal"
+                                          refFamiliarName="R_PatientUniversal"
+                                          refIdentifier="COCT_MT050000UV01"/>
+                              </artreeitem>
+                              <artreeitem>
+                                 <cmetref id="treeRef-COCT_MT910000UV" role="dependency" sectID="UVCT" sectType="SB"
+                                          refName="R_RelatedPartyUniversal"
+                                          refFamiliarName="R_RelatedPartyUniversal"
+                                          refIdentifier="COCT_MT910000UV"/>
+                              </artreeitem>
+                              <artreeitem>
+                                 <cmetref id="treeRef-COCT_MT040200UV09" role="dependency" sectID="UVCT" sectType="SB"
+                                          refName="R_ResponsiblePartyUniversal"
+                                          refFamiliarName="R_ResponsiblePartyUniversal"
+                                          refIdentifier="COCT_MT040200UV09"/>
+                              </artreeitem>
+                              <artreeitem>
+                                 <cmetref id="treeRef-" role="dependency" sectID="" sectType="SB"
+                                          refName="A_AllergyIntoleranceGroupNegationObservationCare provision"
+                                          refFamiliarName="A_AllergyIntoleranceGroupNegationObservationCare provision"
+                                          refIdentifier=""/>
+                              </artreeitem>
+                              <artreeitem>
+                                 <cmetref id="treeRef-" role="dependency" sectID="" sectType="SB"
+                                          refName="A_AllergyIntoleranceConcernCare provision"
+                                          refFamiliarName="A_AllergyIntoleranceConcernCare provision"
+                                          refIdentifier=""/>
+                              </artreeitem>
+                              <artreeitem>
+                                 <cmetref id="treeRef-COCT_MT090100UV01" role="dependency" sectID="UVCT" sectType="SB"
+                                          refName="R_AssignedPersonUniversal"
+                                          refFamiliarName="R_AssignedPersonUniversal"
+                                          refIdentifier="COCT_MT090100UV01"/>
+                              </artreeitem>
+                           </artreeitem>
+                        </artreeitem>
+                     </artreeitem>
+                     <artreeitem>
+                        <rmimref id="treeRef-REPC_RM000323UV01" role="tree-element" sectID="UVPC" sectType="SB"
+                                 refName="Allergy/Intolerance Summary Observation"
+                                 refFamiliarName="Allergy/Intolerance Summary Observation"
+                                 refIdentifier="REPC_RM000323UV01"/>
+                        <artreeitem>
+                           <hmdref id="treeRef-REPC_HD000323UV01" role="tree-element" sectID="UVPC" sectType="SB"
+                                   refName="Allergy/Intolerance Summary Observation"
+                                   refFamiliarName="Allergy/Intolerance Summary Observation"
+                                   refIdentifier="REPC_HD000323UV01"/>
+                           <artreeitem>
+                              <msgref id="treeRef-REPC_MT000323UV01" role="tree-element" sectID="UVPC" sectType="SB"
+                                      refName="Allergy/Intolerance Summary Observation"
+                                      refFamiliarName="Allergy/Intolerance Summary Observation"
+                                      refIdentifier="REPC_MT000323UV01"/>
+                              <artreeitem>
+                                 <cmetref id="treeRef-COCT_MT090102UV02" role="dependency" sectID="UVCT" sectType="SB"
+                                          refName="R_AssignedPersonIdentified-confirmable"
+                                          refFamiliarName="R_AssignedPersonIdentified-confirmable"
+                                          refIdentifier="COCT_MT090102UV02"/>
+                              </artreeitem>
+                              <artreeitem>
+                                 <cmetref id="treeRef-COCT_MT050000UV01" role="dependency" sectID="UVCT" sectType="SB"
+                                          refName="R_PatientUniversal"
+                                          refFamiliarName="R_PatientUniversal"
+                                          refIdentifier="COCT_MT050000UV01"/>
+                              </artreeitem>
+                              <artreeitem>
+                                 <cmetref id="treeRef-COCT_MT910000UV" role="dependency" sectID="UVCT" sectType="SB"
+                                          refName="R_RelatedPartyUniversal"
+                                          refFamiliarName="R_RelatedPartyUniversal"
+                                          refIdentifier="COCT_MT910000UV"/>
+                              </artreeitem>
+                           </artreeitem>
+                        </artreeitem>
+                     </artreeitem>
+                     <artreeitem>
+                        <rmimref id="treeRef-REPC_RM000324UV01" role="tree-element" sectID="UVPC" sectType="SB"
+                                 refName="Allergy/Intolerance Concern"
+                                 refFamiliarName="Allergy/Intolerance Concern"
+                                 refIdentifier="REPC_RM000324UV01"/>
+                        <artreeitem>
+                           <hmdref id="treeRef-REPC_HD000324UV01" role="tree-element" sectID="UVPC" sectType="SB"
+                                   refName="Allergyintolerance Concern"
+                                   refFamiliarName="Allergyintolerance Concern"
+                                   refIdentifier="REPC_HD000324UV01"/>
+                           <artreeitem>
+                              <msgref id="treeRef-REPC_MT000324UV01" role="tree-element" sectID="UVPC" sectType="SB"
+                                      refName="Allergyintolerance Concern"
+                                      refFamiliarName="Allergyintolerance Concern"
+                                      refIdentifier="REPC_MT000324UV01"/>
+                              <artreeitem>
+                                 <cmetref id="treeRef-COCT_MT090102UV02" role="dependency" sectID="UVCT" sectType="SB"
+                                          refName="R_AssignedPersonIdentified-confirmable"
+                                          refFamiliarName="R_AssignedPersonIdentified-confirmable"
+                                          refIdentifier="COCT_MT090102UV02"/>
+                              </artreeitem>
+                              <artreeitem>
+                                 <cmetref id="treeRef-COCT_MT050000UV01" role="dependency" sectID="UVCT" sectType="SB"
+                                          refName="R_PatientUniversal"
+                                          refFamiliarName="R_PatientUniversal"
+                                          refIdentifier="COCT_MT050000UV01"/>
+                              </artreeitem>
+                              <artreeitem>
+                                 <cmetref id="treeRef-COCT_MT910000UV" role="dependency" sectID="UVCT" sectType="SB"
+                                          refName="R_RelatedPartyUniversal"
+                                          refFamiliarName="R_RelatedPartyUniversal"
+                                          refIdentifier="COCT_MT910000UV"/>
+                              </artreeitem>
+                              <artreeitem>
+                                 <cmetref id="treeRef-COCT_MT230100UV" role="dependency" sectID="UVCT" sectType="SB"
+                                          refName="R_MedicationUniversal"
+                                          refFamiliarName="R_MedicationUniversal"
+                                          refIdentifier="COCT_MT230100UV"/>
+                              </artreeitem>
+                           </artreeitem>
+                        </artreeitem>
+                     </artreeitem>
+                  </artreeitem>
+                  <artreeitem>
+                     <stref id="d2e20619" role="tree-intro" sectID="" sectType="SB" refName=" Interactions"
+                            refFamiliarName=" Interactions"
+                            refIdentifier=""/>
+                     <artreeitem>
+                        <intref id="treeRef-REPC_IN000013UV01" role="tree-element" sectID="UVPC" sectType="SB"
+                                refName="Add allergy/intolerance request accepted"
+                                refFamiliarName="Add allergy/intolerance request accepted"
+                                refIdentifier="REPC_IN000013UV01"/>
+                        <artreeitem>
+                           <teref id="treeRef-REPC_TE000002UV01" role="dependency" sectID="UVPC" sectType="SB"
+                                  refName="Allergy or intolerance list response"
+                                  refFamiliarName="Allergy or intolerance list response"
+                                  refIdentifier="REPC_TE000002UV01"/>
+                        </artreeitem>
+                        <artreeitem>
+                           <msgref id="treeRef-MCCI_MT000300UV01" role="dependency" sectID="UVCI" sectType="SB"
+                                   refName="Application Level Acknowledgement"
+                                   refFamiliarName="Application Level Acknowledgement"
+                                   refIdentifier="MCCI_MT000300UV01"/>
+                        </artreeitem>
+                        <artreeitem>
+                           <msgref id="treeRef-MCAI_MT700201UV01" role="dependency" sectID="UVAI" sectType="SB"
+                                   refName="Trigger Event Control Act"
+                                   refFamiliarName="Trigger Event Control Act"
+                                   refIdentifier="MCAI_MT700201UV01"/>
+                        </artreeitem>
+                        <artreeitem/>
+                        <artreeitem>
+                           <msgref id="treeRef-COMT_MT001103UV" role="dependency" sectID="UVMT" sectType="SB"
+                                   refName="Act generic Status - Event"
+                                   refFamiliarName="Act generic Status - Event"
+                                   refIdentifier="COMT_MT001103UV"/>
+                        </artreeitem>
+                     </artreeitem>
+                     <artreeitem>
+                        <intref id="treeRef-REPC_IN000014UV01" role="tree-element" sectID="UVPC" sectType="SB"
+                                refName="Add allergy/intolerance request refused"
+                                refFamiliarName="Add allergy/intolerance request refused"
+                                refIdentifier="REPC_IN000014UV01"/>
+                        <artreeitem>
+                           <teref id="treeRef-REPC_TE000003UV01" role="dependency" sectID="UVPC" sectType="SB"
+                                  refName="Decision to not record allergy or intolerance"
+                                  refFamiliarName="Decision to not record allergy or intolerance"
+                                  refIdentifier="REPC_TE000003UV01"/>
+                        </artreeitem>
+                        <artreeitem>
+                           <msgref id="treeRef-MCCI_MT000300UV01" role="dependency" sectID="UVCI" sectType="SB"
+                                   refName="Application Level Acknowledgement"
+                                   refFamiliarName="Application Level Acknowledgement"
+                                   refIdentifier="MCCI_MT000300UV01"/>
+                        </artreeitem>
+                        <artreeitem>
+                           <msgref id="treeRef-MCAI_MT700201UV01" role="dependency" sectID="UVAI" sectType="SB"
+                                   refName="Trigger Event Control Act"
+                                   refFamiliarName="Trigger Event Control Act"
+                                   refIdentifier="MCAI_MT700201UV01"/>
+                        </artreeitem>
+                     </artreeitem>
+                     <artreeitem>
+                        <intref id="treeRef-REPC_IN000021UV01" role="tree-element" sectID="UVPC" sectType="SB"
+                                refName="Update allergy/intolerance request accepted"
+                                refFamiliarName="Update allergy/intolerance request accepted"
+                                refIdentifier="REPC_IN000021UV01"/>
+                        <artreeitem>
+                           <teref id="treeRef-REPC_TE000024UV01" role="dependency" sectID="UVPC" sectType="SB"
+                                  refName="Allergy or intolerance list updated"
+                                  refFamiliarName="Allergy or intolerance list updated"
+                                  refIdentifier="REPC_TE000024UV01"/>
+                        </artreeitem>
+                        <artreeitem>
+                           <msgref id="treeRef-MCCI_MT000300UV01" role="dependency" sectID="UVCI" sectType="SB"
+                                   refName="Application Level Acknowledgement"
+                                   refFamiliarName="Application Level Acknowledgement"
+                                   refIdentifier="MCCI_MT000300UV01"/>
+                        </artreeitem>
+                        <artreeitem>
+                           <msgref id="treeRef-MCAI_MT700201UV01" role="dependency" sectID="UVAI" sectType="SB"
+                                   refName="Trigger Event Control Act"
+                                   refFamiliarName="Trigger Event Control Act"
+                                   refIdentifier="MCAI_MT700201UV01"/>
+                        </artreeitem>
+                        <artreeitem/>
+                        <artreeitem>
+                           <msgref id="treeRef-COMT_MT001103UV" role="dependency" sectID="UVMT" sectType="SB"
+                                   refName="Act generic Status - Event"
+                                   refFamiliarName="Act generic Status - Event"
+                                   refIdentifier="COMT_MT001103UV"/>
+                        </artreeitem>
+                     </artreeitem>
+                     <artreeitem>
+                        <intref id="treeRef-REPC_IN000022UV01" role="tree-element" sectID="UVPC" sectType="SB"
+                                refName="Update allergy/intolerance request refused"
+                                refFamiliarName="Update allergy/intolerance request refused"
+                                refIdentifier="REPC_IN000022UV01"/>
+                        <artreeitem>
+                           <teref id="treeRef-REPC_TE000025UV01" role="dependency" sectID="UVPC" sectType="SB"
+                                  refName="Decision to not record allergy/ intol. change"
+                                  refFamiliarName="Decision to not record allergy/ intol. change"
+                                  refIdentifier="REPC_TE000025UV01"/>
+                        </artreeitem>
+                        <artreeitem>
+                           <msgref id="treeRef-MCCI_MT000300UV01" role="dependency" sectID="UVCI" sectType="SB"
+                                   refName="Application Level Acknowledgement"
+                                   refFamiliarName="Application Level Acknowledgement"
+                                   refIdentifier="MCCI_MT000300UV01"/>
+                        </artreeitem>
+                        <artreeitem>
+                           <msgref id="treeRef-MCAI_MT700201UV01" role="dependency" sectID="UVAI" sectType="SB"
+                                   refName="Trigger Event Control Act"
+                                   refFamiliarName="Trigger Event Control Act"
+                                   refIdentifier="MCAI_MT700201UV01"/>
+                        </artreeitem>
+                        <artreeitem/>
+                        <artreeitem>
+                           <msgref id="treeRef-COMT_MT001103UV" role="dependency" sectID="UVMT" sectType="SB"
+                                   refName="Act generic Status - Event"
+                                   refFamiliarName="Act generic Status - Event"
+                                   refIdentifier="COMT_MT001103UV"/>
+                        </artreeitem>
+                     </artreeitem>
+                  </artreeitem>
+               </artreeitem>
+            </artreeitem>
+         </artree>
+      </div1>
+      <div1 id="all-nameOrder">
+         <head> Care Provision in Name Order</head>
+         <artree role="name">
+            <artreeitem>
+               <stref id="d2e20615" role="tree-intro" sectID="UVPC" sectType="SB"
+                      refName="Domain: Care Provision"
+                      refFamiliarName="Domain: Care Provision"
+                      refIdentifier="REPC_DO000000UV"/>
+               <artreeitem>
+                  <rmimref id="treeRef-REPC_DM000000UV" role="tree-element" sectID="UVPC" sectType="SB"
+                           refName="Care Provision"
+                           refFamiliarName="Care Provision"
+                           refIdentifier="REPC_DM000000UV"/>
+               </artreeitem>
+               <artreeitem>
+                  <stref id="d2e20619" role="tree-intro" sectID="UVPC" sectType="SB"
+                         refName="Topic: Allergies &amp; Intolerance"
+                         refFamiliarName="Topic: Allergies &amp; Intolerance"
+                         refIdentifier="REPC_DO000000UV"/>
+                  <artreeitem>
+                     <stref id="d2e20619" role="tree-intro" sectID="" sectType="SB" refName=" Story Boards"
+                            refFamiliarName=" Story Boards"
+                            refIdentifier=""/>
+                     <artreeitem>
+                        <stref id="treeRef-REPC_ST006006UV01" role="tree-element" sectID="UVPC" sectType="SB"
+                               refName="Patient Report Food Allergy"
+                               refFamiliarName="Patient Report Food Allergy"
+                               refIdentifier="REPC_ST006006UV01"/>
+                        <artreeitem>
+                           <stref id="treeRef-REPC_SN006006UV01" role="tree-element" sectID="UVPC" sectType="SB"
+                                  refName="Patient Report Food Allergy"
+                                  refFamiliarName="Patient Report Food Allergy"
+                                  refIdentifier="REPC_SN006006UV01"/>
+                        </artreeitem>
+                     </artreeitem>
+                     <artreeitem>
+                        <stref id="treeRef-REPC_ST006000UV01" role="tree-element" sectID="UVPC" sectType="SB"
+                               refName="Physician Adds Allergy Information"
+                               refFamiliarName="Physician Adds Allergy Information"
+                               refIdentifier="REPC_ST006000UV01"/>
+                        <artreeitem>
+                           <stref id="treeRef-REPC_SN006000UV01" role="tree-element" sectID="UVPC" sectType="SB"
+                                  refName="Physician Adds Allergy Information"
+                                  refFamiliarName="Physician Adds Allergy Information"
+                                  refIdentifier="REPC_SN006000UV01"/>
+                        </artreeitem>
+                     </artreeitem>
+                     <artreeitem>
+                        <stref id="treeRef-REPC_ST006004UV01" role="tree-element" sectID="UVPC" sectType="SB"
+                               refName="Physician Annotates Allergy"
+                               refFamiliarName="Physician Annotates Allergy"
+                               refIdentifier="REPC_ST006004UV01"/>
+                        <artreeitem>
+                           <stref id="treeRef-REPC_SN006004UV01" role="tree-element" sectID="UVPC" sectType="SB"
+                                  refName="Physician Annotates Allergy"
+                                  refFamiliarName="Physician Annotates Allergy"
+                                  refIdentifier="REPC_SN006004UV01"/>
+                        </artreeitem>
+                     </artreeitem>
+                     <artreeitem>
+                        <stref id="treeRef-REPC_ST006003UV01" role="tree-element" sectID="UVPC" sectType="SB"
+                               refName="Physician Clarifies Allergy Information"
+                               refFamiliarName="Physician Clarifies Allergy Information"
+                               refIdentifier="REPC_ST006003UV01"/>
+                        <artreeitem>
+                           <stref id="treeRef-REPC_SN006003UV01" role="tree-element" sectID="UVPC" sectType="SB"
+                                  refName="Physician Clarifies Allergy Information"
+                                  refFamiliarName="Physician Clarifies Allergy Information"
+                                  refIdentifier="REPC_SN006003UV01"/>
+                        </artreeitem>
+                     </artreeitem>
+                     <artreeitem>
+                        <stref id="treeRef-REPC_ST006007UV01" role="tree-element" sectID="UVPC" sectType="SB"
+                               refName="Physician Enters Suspect Environmental Allergy"
+                               refFamiliarName="Physician Enters Suspect Environmental Allergy"
+                               refIdentifier="REPC_ST006007UV01"/>
+                        <artreeitem>
+                           <stref id="treeRef-REPC_SN006007UV01" role="tree-element" sectID="UVPC" sectType="SB"
+                                  refName="Physician Enters Suspect Environmental Allergy"
+                                  refFamiliarName="Physician Enters Suspect Environmental Allergy"
+                                  refIdentifier="REPC_SN006007UV01"/>
+                        </artreeitem>
+                     </artreeitem>
+                     <artreeitem>
+                        <stref id="treeRef-REPC_ST006008UV01" role="tree-element" sectID="UVPC" sectType="SB"
+                               refName="Physician Notes Severe Intolerance"
+                               refFamiliarName="Physician Notes Severe Intolerance"
+                               refIdentifier="REPC_ST006008UV01"/>
+                        <artreeitem>
+                           <stref id="treeRef-REPC_SN006008UV01" role="tree-element" sectID="UVPC" sectType="SB"
+                                  refName="Physician Notes Severe Intolerance"
+                                  refFamiliarName="Physician Notes Severe Intolerance"
+                                  refIdentifier="REPC_SN006008UV01"/>
+                        </artreeitem>
+                     </artreeitem>
+                     <artreeitem>
+                        <stref id="treeRef-REPC_ST006002UV01" role="tree-element" sectID="UVPC" sectType="SB"
+                               refName="Physician Reviews Verifies Allergy Information"
+                               refFamiliarName="Physician Reviews Verifies Allergy Information"
+                               refIdentifier="REPC_ST006002UV01"/>
+                        <artreeitem>
+                           <stref id="treeRef-REPC_SN006002UV01" role="tree-element" sectID="UVPC" sectType="SB"
+                                  refName="Physician Reviews Verifies Allergy Information"
+                                  refFamiliarName="Physician Reviews Verifies Allergy Information"
+                                  refIdentifier="REPC_SN006002UV01"/>
+                        </artreeitem>
+                     </artreeitem>
+                     <artreeitem>
+                        <stref id="treeRef-REPC_ST006001UV01" role="tree-element" sectID="UVPC" sectType="SB"
+                               refName="Physician Updates Allergy Information"
+                               refFamiliarName="Physician Updates Allergy Information"
+                               refIdentifier="REPC_ST006001UV01"/>
+                        <artreeitem>
+                           <stref id="treeRef-REPC_SN006001UV01" role="tree-element" sectID="UVPC" sectType="SB"
+                                  refName="Physician Updates Allergy Information"
+                                  refFamiliarName="Physician Updates Allergy Information"
+                                  refIdentifier="REPC_SN006001UV01"/>
+                        </artreeitem>
+                     </artreeitem>
+                  </artreeitem>
+                  <artreeitem>
+                     <stref id="d2e20619" role="tree-intro" sectID="" sectType="SB"
+                            refName=" Application Roles"
+                            refFamiliarName=" Application Roles"
+                            refIdentifier=""/>
+                     <artreeitem>
+                        <arref id="treeRef-REPC_AR000009UV01" role="tree-element" sectID="UVPC" sectType="SB"
+                               refName="Allergy/Intolerance Entry System"
+                               refFamiliarName="Allergy/Intolerance Entry System"
+                               refIdentifier="REPC_AR000009UV01"/>
+                     </artreeitem>
+                     <artreeitem>
+                        <arref id="treeRef-REPC_AR000010UV01" role="tree-element" sectID="UVPC" sectType="SB"
+                               refName="Allergy/Intolerance Querying System"
+                               refFamiliarName="Allergy/Intolerance Querying System"
+                               refIdentifier="REPC_AR000010UV01"/>
+                     </artreeitem>
+                     <artreeitem>
+                        <arref id="treeRef-REPC_AR000008UV01" role="tree-element" sectID="UVPC" sectType="SB"
+                               refName="Allergy/Intolerance Repository"
+                               refFamiliarName="Allergy/Intolerance Repository"
+                               refIdentifier="REPC_AR000008UV01"/>
+                     </artreeitem>
+                  </artreeitem>
+                  <artreeitem>
+                     <stref id="d2e20619" role="tree-intro" sectID="" sectType="SB"
+                            refName=" Trigger Events"
+                            refFamiliarName=" Trigger Events"
+                            refIdentifier=""/>
+                     <artreeitem>
+                        <teref id="treeRef-REPC_TE000006UV01" role="tree-element" sectID="UVPC" sectType="SB"
+                               refName="Allergy and intolerances list query"
+                               refFamiliarName="Allergy and intolerances list query"
+                               refIdentifier="REPC_TE000006UV01"/>
+                     </artreeitem>
+                     <artreeitem>
+                        <teref id="treeRef-REPC_TE000002UV01" role="tree-element" sectID="UVPC" sectType="SB"
+                               refName="Allergy or intolerance list response"
+                               refFamiliarName="Allergy or intolerance list response"
+                               refIdentifier="REPC_TE000002UV01"/>
+                     </artreeitem>
+                     <artreeitem>
+                        <teref id="treeRef-REPC_TE000024UV01" role="tree-element" sectID="UVPC" sectType="SB"
+                               refName="Allergy or intolerance list updated"
+                               refFamiliarName="Allergy or intolerance list updated"
+                               refIdentifier="REPC_TE000024UV01"/>
+                     </artreeitem>
+                     <artreeitem>
+                        <teref id="treeRef-REPC_TE000023UV01" role="tree-element" sectID="UVPC" sectType="SB"
+                               refName="Allergy/ intolerance request list updated"
+                               refFamiliarName="Allergy/ intolerance request list updated"
+                               refIdentifier="REPC_TE000023UV01"/>
+                     </artreeitem>
+                     <artreeitem>
+                        <teref id="treeRef-REPC_TE000003UV01" role="tree-element" sectID="UVPC" sectType="SB"
+                               refName="Decision to not record allergy or intolerance"
+                               refFamiliarName="Decision to not record allergy or intolerance"
+                               refIdentifier="REPC_TE000003UV01"/>
+                     </artreeitem>
+                     <artreeitem>
+                        <teref id="treeRef-REPC_TE000025UV01" role="tree-element" sectID="UVPC" sectType="SB"
+                               refName="Decision to not record allergy/ intol. change"
+                               refFamiliarName="Decision to not record allergy/ intol. change"
+                               refIdentifier="REPC_TE000025UV01"/>
+                     </artreeitem>
+                  </artreeitem>
+                  <artreeitem>
+                     <stref id="d2e20619" role="tree-intro" sectID="" sectType="SB"
+                            refName=" Refined Message Information Models"
+                            refFamiliarName=" Refined Message Information Models"
+                            refIdentifier=""/>
+                     <artreeitem>
+                        <rmimref id="treeRef-REPC_RM000324UV01" role="tree-element" sectID="UVPC" sectType="SB"
+                                 refName="Allergy/Intolerance Concern"
+                                 refFamiliarName="Allergy/Intolerance Concern"
+                                 refIdentifier="REPC_RM000324UV01"/>
+                        <artreeitem>
+                           <hmdref id="treeRef-REPC_HD000324UV01" role="tree-element" sectID="UVPC" sectType="SB"
+                                   refName="Allergyintolerance Concern"
+                                   refFamiliarName="Allergyintolerance Concern"
+                                   refIdentifier="REPC_HD000324UV01"/>
+                           <artreeitem>
+                              <msgref id="treeRef-REPC_MT000324UV01" role="tree-element" sectID="UVPC" sectType="SB"
+                                      refName="Allergyintolerance Concern"
+                                      refFamiliarName="Allergyintolerance Concern"
+                                      refIdentifier="REPC_MT000324UV01"/>
+                              <artreeitem>
+                                 <cmetref id="treeRef-COCT_MT090102UV02" role="dependency" sectID="UVCT" sectType="SB"
+                                          refName="R_AssignedPersonIdentified-confirmable"
+                                          refFamiliarName="R_AssignedPersonIdentified-confirmable"
+                                          refIdentifier="COCT_MT090102UV02"/>
+                              </artreeitem>
+                              <artreeitem>
+                                 <cmetref id="treeRef-COCT_MT050000UV01" role="dependency" sectID="UVCT" sectType="SB"
+                                          refName="R_PatientUniversal"
+                                          refFamiliarName="R_PatientUniversal"
+                                          refIdentifier="COCT_MT050000UV01"/>
+                              </artreeitem>
+                              <artreeitem>
+                                 <cmetref id="treeRef-COCT_MT910000UV" role="dependency" sectID="UVCT" sectType="SB"
+                                          refName="R_RelatedPartyUniversal"
+                                          refFamiliarName="R_RelatedPartyUniversal"
+                                          refIdentifier="COCT_MT910000UV"/>
+                              </artreeitem>
+                              <artreeitem>
+                                 <cmetref id="treeRef-COCT_MT230100UV" role="dependency" sectID="UVCT" sectType="SB"
+                                          refName="R_MedicationUniversal"
+                                          refFamiliarName="R_MedicationUniversal"
+                                          refIdentifier="COCT_MT230100UV"/>
+                              </artreeitem>
+                           </artreeitem>
+                        </artreeitem>
+                     </artreeitem>
+                     <artreeitem>
+                        <rmimref id="treeRef-REPC_RM000322UV01" role="tree-element" sectID="UVPC" sectType="SB"
+                                 refName="Allergy/Intolerance List"
+                                 refFamiliarName="Allergy/Intolerance List"
+                                 refIdentifier="REPC_RM000322UV01"/>
+                        <artreeitem>
+                           <hmdref id="treeRef-REPC_HD000322UV01" role="tree-element" sectID="UVPC" sectType="SB"
+                                   refName="Allergyintolerance List"
+                                   refFamiliarName="Allergyintolerance List"
+                                   refIdentifier="REPC_HD000322UV01"/>
+                           <artreeitem>
+                              <msgref id="treeRef-REPC_MT000322UV01" role="tree-element" sectID="UVPC" sectType="SB"
+                                      refName="Allergyintolerance List"
+                                      refFamiliarName="Allergyintolerance List"
+                                      refIdentifier="REPC_MT000322UV01"/>
+                              <artreeitem>
+                                 <cmetref id="treeRef-COCT_MT090102UV02" role="dependency" sectID="UVCT" sectType="SB"
+                                          refName="R_AssignedPersonIdentified-confirmable"
+                                          refFamiliarName="R_AssignedPersonIdentified-confirmable"
+                                          refIdentifier="COCT_MT090102UV02"/>
+                              </artreeitem>
+                              <artreeitem>
+                                 <cmetref id="treeRef-COCT_MT050000UV01" role="dependency" sectID="UVCT" sectType="SB"
+                                          refName="R_PatientUniversal"
+                                          refFamiliarName="R_PatientUniversal"
+                                          refIdentifier="COCT_MT050000UV01"/>
+                              </artreeitem>
+                              <artreeitem>
+                                 <cmetref id="treeRef-COCT_MT910000UV" role="dependency" sectID="UVCT" sectType="SB"
+                                          refName="R_RelatedPartyUniversal"
+                                          refFamiliarName="R_RelatedPartyUniversal"
+                                          refIdentifier="COCT_MT910000UV"/>
+                              </artreeitem>
+                              <artreeitem>
+                                 <cmetref id="treeRef-COCT_MT040200UV09" role="dependency" sectID="UVCT" sectType="SB"
+                                          refName="R_ResponsiblePartyUniversal"
+                                          refFamiliarName="R_ResponsiblePartyUniversal"
+                                          refIdentifier="COCT_MT040200UV09"/>
+                              </artreeitem>
+                              <artreeitem>
+                                 <cmetref id="treeRef-" role="dependency" sectID="" sectType="SB"
+                                          refName="A_AllergyIntoleranceGroupNegationObservationCare provision"
+                                          refFamiliarName="A_AllergyIntoleranceGroupNegationObservationCare provision"
+                                          refIdentifier=""/>
+                              </artreeitem>
+                              <artreeitem>
+                                 <cmetref id="treeRef-" role="dependency" sectID="" sectType="SB"
+                                          refName="A_AllergyIntoleranceConcernCare provision"
+                                          refFamiliarName="A_AllergyIntoleranceConcernCare provision"
+                                          refIdentifier=""/>
+                              </artreeitem>
+                              <artreeitem>
+                                 <cmetref id="treeRef-COCT_MT090100UV01" role="dependency" sectID="UVCT" sectType="SB"
+                                          refName="R_AssignedPersonUniversal"
+                                          refFamiliarName="R_AssignedPersonUniversal"
+                                          refIdentifier="COCT_MT090100UV01"/>
+                              </artreeitem>
+                           </artreeitem>
+                        </artreeitem>
+                     </artreeitem>
+                     <artreeitem>
+                        <rmimref id="treeRef-REPC_RM000323UV01" role="tree-element" sectID="UVPC" sectType="SB"
+                                 refName="Allergy/Intolerance Summary Observation"
+                                 refFamiliarName="Allergy/Intolerance Summary Observation"
+                                 refIdentifier="REPC_RM000323UV01"/>
+                        <artreeitem>
+                           <hmdref id="treeRef-REPC_HD000323UV01" role="tree-element" sectID="UVPC" sectType="SB"
+                                   refName="Allergy/Intolerance Summary Observation"
+                                   refFamiliarName="Allergy/Intolerance Summary Observation"
+                                   refIdentifier="REPC_HD000323UV01"/>
+                           <artreeitem>
+                              <msgref id="treeRef-REPC_MT000323UV01" role="tree-element" sectID="UVPC" sectType="SB"
+                                      refName="Allergy/Intolerance Summary Observation"
+                                      refFamiliarName="Allergy/Intolerance Summary Observation"
+                                      refIdentifier="REPC_MT000323UV01"/>
+                              <artreeitem>
+                                 <cmetref id="treeRef-COCT_MT090102UV02" role="dependency" sectID="UVCT" sectType="SB"
+                                          refName="R_AssignedPersonIdentified-confirmable"
+                                          refFamiliarName="R_AssignedPersonIdentified-confirmable"
+                                          refIdentifier="COCT_MT090102UV02"/>
+                              </artreeitem>
+                              <artreeitem>
+                                 <cmetref id="treeRef-COCT_MT050000UV01" role="dependency" sectID="UVCT" sectType="SB"
+                                          refName="R_PatientUniversal"
+                                          refFamiliarName="R_PatientUniversal"
+                                          refIdentifier="COCT_MT050000UV01"/>
+                              </artreeitem>
+                              <artreeitem>
+                                 <cmetref id="treeRef-COCT_MT910000UV" role="dependency" sectID="UVCT" sectType="SB"
+                                          refName="R_RelatedPartyUniversal"
+                                          refFamiliarName="R_RelatedPartyUniversal"
+                                          refIdentifier="COCT_MT910000UV"/>
+                              </artreeitem>
+                           </artreeitem>
+                        </artreeitem>
+                     </artreeitem>
+                  </artreeitem>
+                  <artreeitem>
+                     <stref id="d2e20619" role="tree-intro" sectID="" sectType="SB" refName=" Interactions"
+                            refFamiliarName=" Interactions"
+                            refIdentifier=""/>
+                     <artreeitem>
+                        <intref id="treeRef-REPC_IN000013UV01" role="tree-element" sectID="UVPC" sectType="SB"
+                                refName="Add allergy/intolerance request accepted"
+                                refFamiliarName="Add allergy/intolerance request accepted"
+                                refIdentifier="REPC_IN000013UV01"/>
+                        <artreeitem>
+                           <teref id="treeRef-REPC_TE000002UV01" role="dependency" sectID="UVPC" sectType="SB"
+                                  refName="Allergy or intolerance list response"
+                                  refFamiliarName="Allergy or intolerance list response"
+                                  refIdentifier="REPC_TE000002UV01"/>
+                        </artreeitem>
+                        <artreeitem>
+                           <msgref id="treeRef-MCCI_MT000300UV01" role="dependency" sectID="UVCI" sectType="SB"
+                                   refName="Application Level Acknowledgement"
+                                   refFamiliarName="Application Level Acknowledgement"
+                                   refIdentifier="MCCI_MT000300UV01"/>
+                        </artreeitem>
+                        <artreeitem>
+                           <msgref id="treeRef-MCAI_MT700201UV01" role="dependency" sectID="UVAI" sectType="SB"
+                                   refName="Trigger Event Control Act"
+                                   refFamiliarName="Trigger Event Control Act"
+                                   refIdentifier="MCAI_MT700201UV01"/>
+                        </artreeitem>
+                        <artreeitem/>
+                        <artreeitem>
+                           <msgref id="treeRef-COMT_MT001103UV" role="dependency" sectID="UVMT" sectType="SB"
+                                   refName="Act generic Status - Event"
+                                   refFamiliarName="Act generic Status - Event"
+                                   refIdentifier="COMT_MT001103UV"/>
+                        </artreeitem>
+                     </artreeitem>
+                     <artreeitem>
+                        <intref id="treeRef-REPC_IN000014UV01" role="tree-element" sectID="UVPC" sectType="SB"
+                                refName="Add allergy/intolerance request refused"
+                                refFamiliarName="Add allergy/intolerance request refused"
+                                refIdentifier="REPC_IN000014UV01"/>
+                        <artreeitem>
+                           <teref id="treeRef-REPC_TE000003UV01" role="dependency" sectID="UVPC" sectType="SB"
+                                  refName="Decision to not record allergy or intolerance"
+                                  refFamiliarName="Decision to not record allergy or intolerance"
+                                  refIdentifier="REPC_TE000003UV01"/>
+                        </artreeitem>
+                        <artreeitem>
+                           <msgref id="treeRef-MCCI_MT000300UV01" role="dependency" sectID="UVCI" sectType="SB"
+                                   refName="Application Level Acknowledgement"
+                                   refFamiliarName="Application Level Acknowledgement"
+                                   refIdentifier="MCCI_MT000300UV01"/>
+                        </artreeitem>
+                        <artreeitem>
+                           <msgref id="treeRef-MCAI_MT700201UV01" role="dependency" sectID="UVAI" sectType="SB"
+                                   refName="Trigger Event Control Act"
+                                   refFamiliarName="Trigger Event Control Act"
+                                   refIdentifier="MCAI_MT700201UV01"/>
+                        </artreeitem>
+                     </artreeitem>
+                     <artreeitem>
+                        <intref id="treeRef-REPC_IN000021UV01" role="tree-element" sectID="UVPC" sectType="SB"
+                                refName="Update allergy/intolerance request accepted"
+                                refFamiliarName="Update allergy/intolerance request accepted"
+                                refIdentifier="REPC_IN000021UV01"/>
+                        <artreeitem>
+                           <teref id="treeRef-REPC_TE000024UV01" role="dependency" sectID="UVPC" sectType="SB"
+                                  refName="Allergy or intolerance list updated"
+                                  refFamiliarName="Allergy or intolerance list updated"
+                                  refIdentifier="REPC_TE000024UV01"/>
+                        </artreeitem>
+                        <artreeitem>
+                           <msgref id="treeRef-MCCI_MT000300UV01" role="dependency" sectID="UVCI" sectType="SB"
+                                   refName="Application Level Acknowledgement"
+                                   refFamiliarName="Application Level Acknowledgement"
+                                   refIdentifier="MCCI_MT000300UV01"/>
+                        </artreeitem>
+                        <artreeitem>
+                           <msgref id="treeRef-MCAI_MT700201UV01" role="dependency" sectID="UVAI" sectType="SB"
+                                   refName="Trigger Event Control Act"
+                                   refFamiliarName="Trigger Event Control Act"
+                                   refIdentifier="MCAI_MT700201UV01"/>
+                        </artreeitem>
+                        <artreeitem/>
+                        <artreeitem>
+                           <msgref id="treeRef-COMT_MT001103UV" role="dependency" sectID="UVMT" sectType="SB"
+                                   refName="Act generic Status - Event"
+                                   refFamiliarName="Act generic Status - Event"
+                                   refIdentifier="COMT_MT001103UV"/>
+                        </artreeitem>
+                     </artreeitem>
+                     <artreeitem>
+                        <intref id="treeRef-REPC_IN000022UV01" role="tree-element" sectID="UVPC" sectType="SB"
+                                refName="Update allergy/intolerance request refused"
+                                refFamiliarName="Update allergy/intolerance request refused"
+                                refIdentifier="REPC_IN000022UV01"/>
+                        <artreeitem>
+                           <teref id="treeRef-REPC_TE000025UV01" role="dependency" sectID="UVPC" sectType="SB"
+                                  refName="Decision to not record allergy/ intol. change"
+                                  refFamiliarName="Decision to not record allergy/ intol. change"
+                                  refIdentifier="REPC_TE000025UV01"/>
+                        </artreeitem>
+                        <artreeitem>
+                           <msgref id="treeRef-MCCI_MT000300UV01" role="dependency" sectID="UVCI" sectType="SB"
+                                   refName="Application Level Acknowledgement"
+                                   refFamiliarName="Application Level Acknowledgement"
+                                   refIdentifier="MCCI_MT000300UV01"/>
+                        </artreeitem>
+                        <artreeitem>
+                           <msgref id="treeRef-MCAI_MT700201UV01" role="dependency" sectID="UVAI" sectType="SB"
+                                   refName="Trigger Event Control Act"
+                                   refFamiliarName="Trigger Event Control Act"
+                                   refIdentifier="MCAI_MT700201UV01"/>
+                        </artreeitem>
+                        <artreeitem/>
+                        <artreeitem>
+                           <msgref id="treeRef-COMT_MT001103UV" role="dependency" sectID="UVMT" sectType="SB"
+                                   refName="Act generic Status - Event"
+                                   refFamiliarName="Act generic Status - Event"
+                                   refIdentifier="COMT_MT001103UV"/>
+                        </artreeitem>
+                     </artreeitem>
+                  </artreeitem>
+               </artreeitem>
+            </artreeitem>
+         </artree>
+      </div1>
+   </body>
+</spec>

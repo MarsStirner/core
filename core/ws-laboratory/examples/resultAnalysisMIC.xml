@@ -112,6 +112,7 @@
                                             <code code="{код антибиотика}" displayName="{название антибиотика}" codeSystem="{величина концентрации}">
                                                 <translation code="{чувствительность}"/>
                                             </code>
+                                            <statusCode code="{комментарий к антибиотику}"/>
                                         </observationEvent>
                                     </component1>
 

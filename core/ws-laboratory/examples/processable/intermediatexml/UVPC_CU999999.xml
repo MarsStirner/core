@@ -1,0 +1,89 @@
+<usage><!--Have 14 CMET usage sets for REPC and UV--><cmetuse role="uses">
+      <hmdref ref="REPC_HD000322UV01-hmd" refname="AllergyIntoleranceList"
+              refidentifier="REPC_HD000322UV01"/>
+      <cmetref ref="COCT_MT040200UV09-msg" refname="R_ResponsiblePartyUniversal"
+               refidentifier="COCT_MT040200UV09"/>
+   </cmetuse>
+   <cmetuse role="uses">
+      <hmdref ref="REPC_HD000322UV01-hmd" refname="AllergyIntoleranceList"
+              refidentifier="REPC_HD000322UV01"/>
+      <cmetref ref="COCT_MT050000UV01-msg" refname="R_PatientUniversal"
+               refidentifier="COCT_MT050000UV01"/>
+   </cmetuse>
+   <cmetuse role="uses">
+      <hmdref ref="REPC_HD000322UV01-hmd" refname="AllergyIntoleranceList"
+              refidentifier="REPC_HD000322UV01"/>
+      <cmetref ref="COCT_MT090100UV01-msg" refname="R_AssignedPersonUniversal"
+               refidentifier="COCT_MT090100UV01"/>
+   </cmetuse>
+   <cmetuse role="uses">
+      <hmdref ref="REPC_HD000322UV01-hmd" refname="AllergyIntoleranceList"
+              refidentifier="REPC_HD000322UV01"/>
+      <cmetref ref="COCT_MT090102UV02-msg" refname="R_AssignedPersonIdentified-confirmable"
+               refidentifier="COCT_MT090102UV02"/>
+   </cmetuse>
+   <cmetuse role="uses">
+      <hmdref ref="REPC_HD000322UV01-hmd" refname="AllergyIntoleranceList"
+              refidentifier="REPC_HD000322UV01"/>
+      <cmetref ref="COCT_MT910000UV-msg" refname="R_RelatedPartyUniversal"
+               refidentifier="COCT_MT910000UV"/>
+   </cmetuse>
+   <cmetuse role="uses">
+      <hmdref ref="REPC_HD000322UV01-hmd" refname="AllergyIntoleranceList"
+              refidentifier="REPC_HD000322UV01"/>
+      <cmetref ref="REPC_MT000323UV01-msg"
+               refname="A_AllergyIntoleranceGroupNegationObservationCare provision"
+               refidentifier="REPC_MT000323UV01"/>
+   </cmetuse>
+   <cmetuse role="uses">
+      <hmdref ref="REPC_HD000322UV01-hmd" refname="AllergyIntoleranceList"
+              refidentifier="REPC_HD000322UV01"/>
+      <cmetref ref="REPC_MT000324UV01-msg" refname="A_AllergyIntoleranceConcernCare provision"
+               refidentifier="REPC_MT000324UV01"/>
+   </cmetuse>
+   <cmetuse role="uses">
+      <hmdref ref="REPC_HD000323UV01-hmd"
+              refname="AllergyIntoleranceGroupNegationObservation"
+              refidentifier="REPC_HD000323UV01"/>
+      <cmetref ref="COCT_MT050000UV01-msg" refname="R_PatientUniversal"
+               refidentifier="COCT_MT050000UV01"/>
+   </cmetuse>
+   <cmetuse role="uses">
+      <hmdref ref="REPC_HD000323UV01-hmd"
+              refname="AllergyIntoleranceGroupNegationObservation"
+              refidentifier="REPC_HD000323UV01"/>
+      <cmetref ref="COCT_MT090102UV02-msg" refname="R_AssignedPersonIdentified-confirmable"
+               refidentifier="COCT_MT090102UV02"/>
+   </cmetuse>
+   <cmetuse role="uses">
+      <hmdref ref="REPC_HD000323UV01-hmd"
+              refname="AllergyIntoleranceGroupNegationObservation"
+              refidentifier="REPC_HD000323UV01"/>
+      <cmetref ref="COCT_MT910000UV-msg" refname="R_RelatedPartyUniversal"
+               refidentifier="COCT_MT910000UV"/>
+   </cmetuse>
+   <cmetuse role="uses">
+      <hmdref ref="REPC_HD000324UV01-hmd" refname="AllergyIntoleranceConcern"
+              refidentifier="REPC_HD000324UV01"/>
+      <cmetref ref="COCT_MT050000UV01-msg" refname="R_PatientUniversal"
+               refidentifier="COCT_MT050000UV01"/>
+   </cmetuse>
+   <cmetuse role="uses">
+      <hmdref ref="REPC_HD000324UV01-hmd" refname="AllergyIntoleranceConcern"
+              refidentifier="REPC_HD000324UV01"/>
+      <cmetref ref="COCT_MT090102UV02-msg" refname="R_AssignedPersonIdentified-confirmable"
+               refidentifier="COCT_MT090102UV02"/>
+   </cmetuse>
+   <cmetuse role="uses">
+      <hmdref ref="REPC_HD000324UV01-hmd" refname="AllergyIntoleranceConcern"
+              refidentifier="REPC_HD000324UV01"/>
+      <cmetref ref="COCT_MT230100UV-msg" refname="R_MedicationUniversal"
+               refidentifier="COCT_MT230100UV"/>
+   </cmetuse>
+   <cmetuse role="uses">
+      <hmdref ref="REPC_HD000324UV01-hmd" refname="AllergyIntoleranceConcern"
+              refidentifier="REPC_HD000324UV01"/>
+      <cmetref ref="COCT_MT910000UV-msg" refname="R_RelatedPartyUniversal"
+               refidentifier="COCT_MT910000UV"/>
+   </cmetuse>
+</usage>

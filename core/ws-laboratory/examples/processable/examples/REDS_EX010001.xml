@@ -1,0 +1,54 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<knowledgeRequestNotification xmlns="urn:hl7-org:v3" xmlns:gsd="http://aurora.regenstrief.org/GenericXMLSchema" xmlns:sch="http://www.ascc.net/xml/schematron" xmlns:xlink="http://www.w3.org/TR/WD-xlink" xmlns:mif="urn:hl7-org:v3/mif" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" classCode="ACT" moodCode="DEF">
+	<!--In this example the user is looking at a coded problem list of a male, 77 years-old patient with Bacterial Pneumonia. The user clicks on an infobutton that presents a series of questions. The user selects  “How do I treat Bacterial Pneumonia?” The following messge represents the communication between the Infobutton Manager an the Information Resource.-->
+	<!-- id.root is an ID of the request, which can be used for debugging or processing. id.assigningAuthorityName is the display name of the organization that created the request. -->
+	<id root="Example1" assigningAuthorityName="EHR"/>
+	<!-- date/time the event was generated.-->
+	<effectiveTime value="20060706001023"/>
+	<subject1 typeCode="SBJ">
+		<patientContext classCode="PAT">
+			<patientPerson classCode="PSN" determinerCode="INSTANCE">
+				<administrativeGenderCode code="M" codeSystem="2.16.840.1.113883.5.1" codeSystemName="AdministrativeGender" displayName="Male"/>
+			</patientPerson>
+			<subjectOf typeCode="SBJ">
+				<age classCode="OBS" moodCode="DEF">
+					<!--The age of the patient is expressed as an observation, which consists of a code (indicating what is being observed) and a value (the result of the observation). The code in this case should always be the same (LOINC code 30525-0 = AGE). Value should be expressed by a number followed by a unit (as determined by the Unified Code for Units of Measure (UCUM) [http://aurora.rg.iupui.edu/UCUM].-->
+					<code code="30525-0" codeSystem="2.16.840.1.113883.6.1" codeSystemName="LN" displayName="AGE"/>
+					<value value="77" unit="a"/>
+				</age>
+			</subjectOf>
+			<subjectOf typeCode="SBJ">
+				<ageGroup classCode="OBS" moodCode="DEF">
+					<!--The ageGroup is also expressed as an observation. The code should always be the same (a code to be created in LOINC). The value in this example is a MeSH code representing age 65-79 years old ("Aged"). -->
+					<code code="46251-5" codeSystem="2.16.840.1.113883.6.1" codeSystemName="LN"/>
+					<value code="D000368" codeSystem="2.16.840.1.113883.6.177" codeSystemName="MSH" displayName="Aged"/>
+				</ageGroup>
+			</subjectOf>
+		</patientContext>
+	</subject1>
+	<holder typeCode="HLD">
+		<assignedEntity classCode="ASSIGNED">
+			<name>Organization-Username</name>
+			<certificateText>organization-password</certificateText>
+		</assignedEntity>
+	</holder>
+	<subject2 typeCode="SUBJ">
+		<taskContext classCode="ACT" moodCode="DEF">
+			<code code="PROBLISTREV" codeSystem="2.16.840.1.113883.5.4" codeSystemName="ActCode" displayName="Problem List Review"/>
+		</taskContext>
+	</subject2>
+	<subject3 typeCode="SUBJ">
+		<subTopic classCode="OBS" moodCode="DEF">
+			<code code="KSUBJ" codeSystem="2.16.840.1.113883.5.4" codeSystemName="ActCode"/>
+			<value code="Q000628" codeSystem="2.16.840.1.113883.6.177" codeSystemName="MSH" displayName="therapy"/>
+		</subTopic>
+	</subject3>
+	<subject4 typeCode="SUBJ">
+		<mainSearchCriteria classCode="OBS" moodCode="DEF">
+			<code code="KSUBT" codeSystem="2.16.840.1.113883.5.4" codeSystemName="ActCode"/>
+			<value code="D018410" codeSystem="2.16.840.1.113883.6.177" codeSystemName="MSH" displayName="Bacterial Pneumonia">
+				<originalText>Pneumonia</originalText>
+			</value>
+		</mainSearchCriteria>
+	</subject4>
+</knowledgeRequestNotification>
