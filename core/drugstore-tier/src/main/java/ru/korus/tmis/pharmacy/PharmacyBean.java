@@ -71,6 +71,9 @@ public class PharmacyBean implements PharmacyBeanLocal {
     @EJB(beanName = "DbOrganizationBean")
     private DbOrganizationBeanLocal dbOrganizationBeanLocal = null;
 
+    @EJB(beanName  = "DbRbFinance1CBean")
+    private DbRbFinance1CBeanLocal dbRbFinance1CBeanLocal = null;
+
     @EJB
     private DbPrescriptionsTo1CBeanLocal dbPrescriptionsTo1CBeanLocal = null;
 
@@ -548,6 +551,7 @@ public class PharmacyBean implements PharmacyBeanLocal {
                 }
             }
             Request request = null;
+            String financeType = getFinaceType(prescription.getDrugChart().getAction());
 
             for (DrugComponent comp : drugComponents) {
                 RlsNomen rlsNomen = comp.getNomen();
@@ -569,7 +573,8 @@ public class PharmacyBean implements PharmacyBeanLocal {
                             prescription.getNewStatus() == PS_CANCELED,
                             prescriptionSendingResBean,
                             toLog,
-                            prescrUUID);
+                            prescrUUID,
+                            financeType);
                 } else if (prescription.getOldStatus() == PS_NEW && prescription.getNewStatus() == PS_FINISHED) {// если статус изменился с "Назначен" на "Исполнен", то передаем исполнение
                     request = HL7PacketBuilder.processPrescription(
                             prescription.getDrugChart(),
@@ -580,7 +585,8 @@ public class PharmacyBean implements PharmacyBeanLocal {
                             false,
                             prescriptionSendingResBean,
                             toLog,
-                            prescrUUID);
+                            prescrUUID,
+                            financeType);
                 } else if (prescription.getOldStatus() == PS_FINISHED && prescription.getNewStatus() == PS_NEW) { // если статус изменился с "Исполнен" на "Назначен" , то передаем отмену исполнения
                     request = HL7PacketBuilder.processPrescription(
                             prescription.getDrugChart(),
@@ -591,7 +597,8 @@ public class PharmacyBean implements PharmacyBeanLocal {
                             true,
                             prescriptionSendingResBean,
                             toLog,
-                            prescrUUID);
+                            prescrUUID,
+                            financeType);
                 }
                 if (request != null) {
 
@@ -617,6 +624,22 @@ public class PharmacyBean implements PharmacyBeanLocal {
             toLog.add("Exception: " + e);
         }
         return res;
+    }
+
+    private String getFinaceType(Action action) {
+        Integer id = action.getFinanceId();
+        if (id == null) {
+            final Event event = action.getEvent();
+            if (event != null) {
+                final RbFinance finance = event.getEventType().getFinance();
+                id = finance == null ? null : finance.getId();
+            }
+        }
+        final RbFinance1C rbFinance1C = dbRbFinance1CBeanLocal.getByFianceId(id);
+        if (rbFinance1C == null) {
+            return null;
+        }
+        return rbFinance1C.getCode1C();
     }
 
     private boolean isOk(MCCIIN000002UV012 result) throws CoreException {
