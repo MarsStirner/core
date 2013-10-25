@@ -29,6 +29,11 @@ public class RbAntibiotic implements Serializable {
     public RbAntibiotic() {
     }
 
+    public RbAntibiotic(String code, String name) {
+        this.code = code;
+        this.name = name;
+    }
+
     public Integer getId() {
         return id;
     }

@@ -13,7 +13,9 @@ import javax.ejb.Local;
 @Local
 public interface DbBbtResponseBeanLocal {
 
-    void add(BbtResponse bbtResponse);
+    void add(final BbtResponse bbtResponse);
 
     BbtResponse get(final Integer id);
+
+    void remove(final int id);
 }

@@ -42,4 +42,13 @@ public class DbBbtResponseBean implements DbBbtResponseBeanLocal {
                         .setParameter("id", id).getResultList();
         return !responseList.isEmpty() ? responseList.get(0) : null;
     }
+
+    @Override
+    public void remove(int id) {
+        final BbtResponse bbtResponse = em.find(BbtResponse.class, id);
+        em.remove(bbtResponse);
+        em.flush();
+    }
+
+
 }

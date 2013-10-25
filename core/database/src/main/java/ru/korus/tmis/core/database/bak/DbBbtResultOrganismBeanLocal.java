@@ -4,6 +4,7 @@ import ru.korus.tmis.core.entity.model.bak.BbtResultOrganism;
 import ru.korus.tmis.core.entity.model.bak.BbtResultTable;
 
 import javax.ejb.Local;
+import java.util.List;
 
 /**
  * Author:      Dmitriy E. Nosov <br>
@@ -19,4 +20,8 @@ public interface DbBbtResultOrganismBeanLocal {
     BbtResultOrganism get(final Integer id);
 
     BbtResultOrganism get(Integer organismId, Integer actionId);
+
+    List<BbtResultOrganism> getByActionId(int actionId);
+
+    void remove(Integer id);
 }
