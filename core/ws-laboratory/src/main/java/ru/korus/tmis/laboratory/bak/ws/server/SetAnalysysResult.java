@@ -244,12 +244,12 @@ public class SetAnalysysResult implements SetAnalysysResultWS {
 
                     for (POLBMT004000UV01Component2 component2 : value.getComponent1()) {
                         for (POLBMT004000UV01Component2 pp : component2.getObservationBattery().getValue().getComponent1()) {
-                            final String antibioticCode = pp.getObservationEvent().getValue().getCode().getCode();
-                            final String antibioticName = pp.getObservationEvent().getValue().getCode().getDisplayName();
-                            final String antibioticConcentration = pp.getObservationEvent().getValue().getCode().getCodeSystem();
-                            final String antibioticSensitivity = pp.getObservationEvent().getValue().getCode().getTranslation().get(0).getCode();
-                            final String antibioticComment = pp.getObservationEvent().getValue().getStatusCode() != null ?
-                                    pp.getObservationEvent().getValue().getStatusCode().getCode() : "";
+                            final String antibioticCode = getValue(pp.getObservationEvent().getValue().getCode().getCode());
+                            final String antibioticName = getValue(pp.getObservationEvent().getValue().getCode().getDisplayName());
+                            final String antibioticConcentration = getValue(pp.getObservationEvent().getValue().getCode().getCodeSystem());
+                            final String antibioticSensitivity = getValue(pp.getObservationEvent().getValue().getCode().getTranslation().get(0).getCode());
+                            final String antibioticComment = getValue(pp.getObservationEvent().getValue().getStatusCode() != null ?
+                                    pp.getObservationEvent().getValue().getStatusCode().getCode() : "");
 
                             ru.korus.tmis.laboratory.bak.ws.server.model.Antibiotic antibiotic = new ru.korus.tmis.laboratory.bak.ws.server.model.Antibiotic(
                                     antibioticCode, antibioticName);
@@ -267,6 +267,10 @@ public class SetAnalysysResult implements SetAnalysysResultWS {
             }
         }
         return bakPosev;
+    }
+
+    private String getValue(final String value) {
+        return value != null ? value : "";
     }
 
     /**
@@ -308,16 +312,14 @@ public class SetAnalysysResult implements SetAnalysysResultWS {
      * Очистка от старых результатов
      */
     private void removeOldResult(int actionId) {
-        final BbtResponse bbtResponse = dbBbtResponseBean.get(actionId);
-        if (bbtResponse != null) {
-            // пришли уточняющие данные
-            dbBbtResponseBean.remove(actionId);
+        // пришли уточняющие данные
+        dbBbtResponseBean.remove(actionId);
 
-            for (BbtResultOrganism bbtResultOrganism : dbBbtResultOrganismBean.getByActionId(actionId)) {
-                dbBbtOrganismSensValuesBean.removeByResultOrganismId(bbtResultOrganism.getId());
-                dbBbtResultOrganismBean.remove(bbtResultOrganism.getId());
-            }
+        for (BbtResultOrganism bbtResultOrganism : dbBbtResultOrganismBean.getByActionId(actionId)) {
+            dbBbtOrganismSensValuesBean.removeByResultOrganismId(bbtResultOrganism.getId());
+            dbBbtResultOrganismBean.remove(bbtResultOrganism.getId());
         }
+
     }
 
     /**

@@ -46,9 +46,9 @@ public class DbBbtResponseBean implements DbBbtResponseBeanLocal {
     @Override
     public void remove(int id) {
         final BbtResponse bbtResponse = em.find(BbtResponse.class, id);
-        em.remove(bbtResponse);
-        em.flush();
+        if (bbtResponse != null) {
+            em.remove(bbtResponse);
+            em.flush();
+        }
     }
-
-
 }

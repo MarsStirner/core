@@ -18,15 +18,15 @@ public class Antibiotic {
     /**
      * Концентрация
      */
-    private String concentration;
+    private String concentration = "";
     /**
      * Чувствительность R,S
      */
-    private String sensitivity;
+    private String sensitivity = "";
     /**
      * Комментарий БАК
      */
-    private String comment;
+    private String comment = "";
 
     public Antibiotic(String code, String name) {
         this.code = code;
