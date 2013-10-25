@@ -593,7 +593,7 @@ class DirectionBean extends DirectionBeanLocal
           case "consultations" => {
             var action19 = actionBean.getEvent29AndAction19ForAction(a)
             if (action19 != null) {
-              val actionId = action19.getId.intValue()
+              //val actionId = action19.getId.intValue()
               var apv = actionPropertyBean.getActionPropertyValue_ActionByValue(action19)
               if (a.getPacientInQueueType.intValue() == 0) {
                 if (apv != null) {
@@ -628,11 +628,11 @@ class DirectionBean extends DirectionBeanLocal
                   })
                 }
               }
-              val event29 = action19.getEvent
+              //val event29 = action19.getEvent
               action19.setDeleted(true)
-              event29.setDeleted(true)
+              //event29.setDeleted(true)
               //em.detach(event29)
-              em.merge(event29)
+              //em.merge(event29)
               em.merge(action19)
             }
           }
