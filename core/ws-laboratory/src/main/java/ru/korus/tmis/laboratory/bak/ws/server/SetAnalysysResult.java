@@ -14,6 +14,9 @@ import ru.korus.tmis.core.database.dbutil.Database;
 import ru.korus.tmis.core.entity.model.*;
 import ru.korus.tmis.core.entity.model.bak.*;
 import ru.korus.tmis.core.exception.CoreException;
+import ru.korus.tmis.laboratory.bak.ws.server.model.BakPosev;
+import ru.korus.tmis.laboratory.bak.ws.server.model.IFA;
+import ru.korus.tmis.laboratory.bak.ws.server.model.Microorganism;
 import ru.korus.tmis.util.CompileTimeConfigManager;
 import ru.korus.tmis.util.logs.ToLog;
 import ru.korus.tmis.laboratory.bak.ws.server.model.fake.Antibiotic;
@@ -22,6 +25,7 @@ import ru.korus.tmis.laboratory.bak.ws.server.model.fake.MicroOrg;
 import ru.korus.tmis.laboratory.bak.ws.server.model.fake.Result;
 import ru.korus.tmis.laboratory.bak.ws.server.model.hl7.complex.*;
 
+import javax.annotation.Nullable;
 import javax.ejb.EJB;
 import javax.jws.WebMethod;
 import javax.jws.WebParam;
@@ -111,13 +115,14 @@ public class SetAnalysysResult implements SetAnalysysResultWS {
         final ToLog toLog = new ToLog("setAnalysisResults");
         MCCIIN000002UV01 response;
         try {
-            toLog.add("Get result: \n" + Utils.marshallMessage(request, "ru.korus.tmis.laboratory.bak.ws.server.model.hl7.complex"));
+            toLog.add("Request: \n" + Utils.marshallMessage(request, "ru.korus.tmis.laboratory.bak.ws.server.model.hl7.complex"));
+            // processRequest(request, toLog);
             flushToDB(request, toLog);
             response = createSuccessResponse();
             toLog.add("Response: \n" + Utils.marshallMessage(response, "ru.korus.tmis.laboratory.bak.ws.server.model.hl7.complex"));
 
             return response;
-        } catch (Exception e) {
+        } catch (Throwable e) {
             logger.error("Exception: " + e, e);
             response = createErrorResponse();
             toLog.add("Response: \n" + Utils.marshallMessage(response, "ru.korus.tmis.laboratory.bak.ws.server.model.hl7.complex"));
@@ -125,6 +130,156 @@ public class SetAnalysysResult implements SetAnalysysResultWS {
             logger.info(toLog.releaseString());
         }
         return response;
+    }
+
+    /**
+     * Обработка результатов
+     */
+    private void processRequest(final POLBIN224100UV01 request, final ToLog toLog) throws CoreException {
+
+        final IFA ifa = processIFA(request);
+        if (ifa != null) {
+            toLog.addN("IFA test #", ifa);
+            saveIFA(ifa, toLog);
+        } else {
+            final BakPosev bakPosev = processBakPosev(request);
+            toLog.addN("BAK posev #", bakPosev);
+            saveBakPosev(bakPosev, toLog);
+        }
+    }
+
+    /**
+     * Выборка данных по ИФА исследования
+     *
+     * @param request
+     * @return
+     */
+    @Nullable
+    private IFA processIFA(final POLBIN224100UV01 request) {
+        IFA ifa = null;
+        try {
+            for (POLBIN224100UV01MCAIMT700201UV01Subject2 subj : request.getControlActProcess().getSubject()) {
+                if (subj.getObservationBattery() != null) {
+                    final JAXBElement<POLBMT004000UV01ObservationBattery> battery = subj.getObservationBattery();
+                    final POLBMT004000UV01ObservationBattery value = battery.getValue();
+                    final String orderMisId = value.getInFulfillmentOf().get(0).getPlacerOrder().getValue().getId().get(0).getExtension();
+                    final List<CE> ceList = value.getComponent1().get(0).getObservationEvent().getValue().getConfidentialityCode();
+                    if (ceList != null && !ceList.isEmpty()) {
+                        ifa = new IFA(
+                                ceList.get(0).getDisplayName(),
+                                ceList.get(0).getCode(),
+                                Long.parseLong(orderMisId));
+                    }
+                }
+            }
+        } catch (Exception e) {
+            logger.error("Exception " + e, e);
+        }
+        return ifa;
+    }
+
+    /**
+     * Сохранение ИФА исседования
+     *
+     * @param ifa
+     * @param toLog
+     */
+    private void saveIFA(IFA ifa, ToLog toLog) {
+        try {
+            final Action action = dbAction.getActionById(ifa.getActionId());
+            int aptId = 0;
+            for (ActionProperty property : action.getActionProperties()) {
+                final ActionPropertyType type = property.getType();
+                if (type.getCode() != null && "ifa".equals(type.getCode())) {
+                    aptId = type.getId();
+                }
+            }
+            db.addSinglePropBasic(ifa.getFullResult(), APValueString.class, ifa.getActionId(), aptId, true);
+            toLog.addN("Save IFA result [#], aptId [#]", ifa.getFullResult(), aptId);
+        } catch (Exception e) {
+            logger.error("Exception: " + e, e);
+            toLog.add("Problem save to ActionProperty IFA values: " + e + "]\n");
+        }
+    }
+
+    /**
+     * Выборка данных
+     *
+     * @param request
+     * @return
+     */
+    @Nullable
+    private BakPosev processBakPosev(final POLBIN224100UV01 request) throws CoreException {
+        BakPosev bakPosev = null;
+
+        long actionId;
+        final List<Microorganism> microorganismList = new LinkedList<Microorganism>();
+
+        for (POLBIN224100UV01MCAIMT700201UV01Subject2 subj : request.getControlActProcess().getSubject()) {
+            if (subj.getObservationBattery() != null) {
+                try {
+                    final JAXBElement<POLBMT004000UV01ObservationBattery> battery = subj.getObservationBattery();
+                    final POLBMT004000UV01ObservationBattery value = battery.getValue();
+                    final String testName = value.getCode().getDisplayName();
+                    final String orderMisId = value.getInFulfillmentOf().get(0).getPlacerOrder().getValue().getId().get(0).getExtension();
+                    actionId = Integer.parseInt(orderMisId);
+                    bakPosev = new BakPosev(actionId, microorganismList);
+                    final List<POLBMT004000UV01Component2> component1 = value.getComponent1();
+                    for (POLBMT004000UV01Component2 p : component1) {
+
+                        final JAXBElement<POLBMT004000UV01ObservationEvent> observationEvent = p.getObservationEvent();
+                        final String testCode = observationEvent.getValue().getCode().getCode();
+                        final String testName2 = observationEvent.getValue().getCode().getDisplayName();
+                        final DateTime effectiveTime = createDate(observationEvent.getValue().getEffectiveTime().get(0).getValue());
+
+                        for (POLBMT004000UV01Component2 comp : observationEvent.getValue().getComponent1()) {
+                            final String microorgCode = comp.getObservationEvent().getValue().getCode().getCode();
+                            final String microorgName = comp.getObservationEvent().getValue().getCode().getDisplayName();
+                            final String microorgComment = comp.getObservationEvent().getValue().getCode().getCodeSystem();
+                            if (!"".equals(microorgCode) && !"".equals(microorgName)) {
+                                microorganismList.add(new Microorganism(microorgCode, microorgName, microorgComment));
+                            }
+                        }
+                    }
+                } catch (Exception e) {
+                    logger.error("Exception: " + e, e);
+                    throw new CoreException("Ошибка в формате тега observationBattery");
+                }
+
+            } else if (subj.getSpecimenObservationCluster() != null) {
+                try {
+                    final JAXBElement<POLBMT004000UV01SpecimenObservationCluster> cluster = subj.getSpecimenObservationCluster();
+                    final POLBMT004000UV01SpecimenObservationCluster value = cluster.getValue();
+                    POLBMT004000UV01Specimen s = value.getSpecimen().get(0);
+                    // код микроорганизма
+                    final String codeMicroOrg = s.getSpecimen().getValue().getCode().getCode();
+
+                    for (POLBMT004000UV01Component2 component2 : value.getComponent1()) {
+                        final JAXBElement<POLBMT004000UV01ObservationBattery> ob = component2.getObservationBattery();
+
+                        for (POLBMT004000UV01Component2 pp : ob.getValue().getComponent1()) {
+                            final String antibioticCode = pp.getObservationEvent().getValue().getCode().getCode();
+                            final String antibioticName = pp.getObservationEvent().getValue().getCode().getDisplayName();
+                            final String antibioticConcentration = pp.getObservationEvent().getValue().getCode().getCodeSystem();
+                            final String antibioticSensitivity = pp.getObservationEvent().getValue().getCode().getTranslation().get(0).getCode();
+
+                            ru.korus.tmis.laboratory.bak.ws.server.model.Antibiotic antibiotic = new ru.korus.tmis.laboratory.bak.ws.server.model.Antibiotic(
+                                    antibioticCode, antibioticName, antibioticConcentration, antibioticSensitivity);
+
+                            bakPosev.addAntibioticToOrganism(codeMicroOrg, antibiotic);
+                        }
+                    }
+                } catch (Exception e) {
+                    logger.error("Exception: " + e, e);
+                    throw new CoreException("Ошибка в формате тега specimenObservationCluster");
+                }
+            }
+        }
+        return bakPosev;
+    }
+
+    private void saveBakPosev(BakPosev bakPosev, ToLog toLog) {
+
     }
 
 
@@ -135,16 +290,16 @@ public class SetAnalysysResult implements SetAnalysysResultWS {
      */
     private void flushToDB(POLBIN224100UV01 request, ToLog toLog) throws CoreException {
         try {
-            toLog.add("\n----Flush to DB-----\n");
+            toLog.addN("\n----Flush to DB-----");
             final String uuidDocument = request.getId().getRoot();
-            toLog.add("uuidDocument: [" + uuidDocument + "]\n");
+            toLog.addN("uuidDocument: [#]", uuidDocument);
 
             final DateTime createTime = createDate(request.getCreationTime().getValue());
-            toLog.add("createTime: [" + createTime + "]\n");
+            toLog.addN("createTime: [#]", createTime);
 
             // true - табличное представление, false - с микроорганизмами
-            boolean isTable = detectTableForm(request);
-            toLog.add("isTable: [" + isTable + "]\n");
+            //         boolean isTable = detectTableForm(request);
+            //       toLog.add("isTable: [" + isTable + "]\n");
 
             // идентификатор направления на анализы
             int actionId = 0;
@@ -331,13 +486,13 @@ public class SetAnalysysResult implements SetAnalysysResultWS {
                         if (value.getSpecimen().isEmpty()) {
                             throw new CoreException("В формате тега specimenObservationCluster указано более 1 микроогранизма");
                         }
-                        toLog.add("---------------------------\n");
+                        toLog.addN("---------------------------");
                         POLBMT004000UV01Specimen s = value.getSpecimen().get(0);
                         // код микроорганизма
                         final String codeMicroOrg = s.getSpecimen().getValue().getCode().getCode();
                         // название микрооранизма
                         final String nameMicroOrg = s.getSpecimen().getValue().getCode().getDisplayName();
-                        toLog.add("Microorganism: [" + codeMicroOrg + "], [" + nameMicroOrg + "]\n");
+                        toLog.addN("Microorganism: [#], [#]", codeMicroOrg, nameMicroOrg);
 
                         for (POLBMT004000UV01Component2 component2 : value.getComponent1()) {
                             final JAXBElement<POLBMT004000UV01ObservationBattery> ob = component2.getObservationBattery();
@@ -348,9 +503,9 @@ public class SetAnalysysResult implements SetAnalysysResultWS {
                                 final String antibioticConcentration = pp.getObservationEvent().getValue().getCode().getCodeSystem();
                                 final String antibioticSensitivity = pp.getObservationEvent().getValue().getCode().getTranslation().get(0).getCode();
 
-                                toLog.add("Antibiotic: [" + antibioticCode + "][" + antibioticName
+                                toLog.addN("Antibiotic: [" + antibioticCode + "][" + antibioticName
                                         + "], concentration [" + antibioticConcentration
-                                        + "], sensitivity [" + antibioticSensitivity + "]\n");
+                                        + "], sensitivity [" + antibioticSensitivity + "]");
 
                                 // Записываем в справочник антибиотик
                                 if (!"".equals(antibioticCode) && !"".equals(antibioticName)) {
@@ -358,7 +513,7 @@ public class SetAnalysysResult implements SetAnalysysResultWS {
                                     antibiotic.setCode(antibioticCode);
                                     antibiotic.setName(antibioticName);
                                     dbRbAntibioticBean.add(antibiotic);
-                                    toLog.add("  Save: " + antibiotic + "\n");
+                                    toLog.addN("  Save: #", antibiotic);
 
                                     final RbAntibiotic rbAntibiotic = dbRbAntibioticBean.get(antibioticCode);
 
@@ -373,7 +528,7 @@ public class SetAnalysysResult implements SetAnalysysResultWS {
                                     bbtOrganismSens.setMic(antibioticConcentration);
 
                                     dbBbtOrganismSensValuesBean.add(bbtOrganismSens);
-                                    toLog.add("  Save: " + bbtOrganismSens + "\n");
+                                    toLog.addN("  Save: #", bbtOrganismSens);
                                 }
                             }
                         }
@@ -381,7 +536,7 @@ public class SetAnalysysResult implements SetAnalysysResultWS {
 
                     } catch (Exception e) {
                         logger.error("Exception: " + e, e);
-                        toLog.add("Exception " + e);
+                        toLog.addN("Exception #", e);
                         throw new CoreException("Ошибка в формате тега specimenObservationCluster");
                     }
                 }
