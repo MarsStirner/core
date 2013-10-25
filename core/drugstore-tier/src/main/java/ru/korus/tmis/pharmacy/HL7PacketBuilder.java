@@ -615,7 +615,11 @@ public final class HL7PacketBuilder {
         section.setText(text);
 
         // Создаем описание лек.средства
-        section.getEntry().add(createEntry(action, interval, drugComponent, routeOfAdministration, type, negationInd, prescrUUID));
+        section.getEntry().add(createEntry(action, interval, drugComponent, routeOfAdministration, AssignmentType.ASSIGNMENT, false, prescrUUID));
+       if (!AssignmentType.ASSIGNMENT.equals(type) || negationInd) {
+            section.getEntry().add(createEntry(action, interval, drugComponent, routeOfAdministration, type, negationInd, prescrUUID));
+       }
+
         component3.setSection(section);
 
         structuredBody.getComponent().add(component3);
@@ -669,11 +673,7 @@ public final class HL7PacketBuilder {
         substanceAdministration.setMoodCode(getAssignmentType2(type));  // тип документа
         substanceAdministration.setNegationInd(negationInd);
 
-        if(prescrUUID == null) {
-            substanceAdministration.getId().add(createII(UUID.randomUUID().toString())); // UUID назначения
-        } else {
-            substanceAdministration.getId().add(createII(prescrUUID)); // UUID назначения
-        }
+        substanceAdministration.getId().add(createII(prescrUUID)); // UUID назначения
 
         // источник финансирования
         substanceAdministration.getId().add(createIIEx(String.valueOf(getFinaceType(action))));
@@ -717,6 +717,7 @@ public final class HL7PacketBuilder {
         consumable.setManufacturedProduct(manufacturedProduct);
         substanceAdministration.setConsumable(consumable);
         entry.setSubstanceAdministration(substanceAdministration);
+
         return entry;
     }
 

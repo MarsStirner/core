@@ -26,6 +26,7 @@ import javax.ejb.Schedule;
 import javax.ejb.Stateless;
 import java.sql.Timestamp;
 import java.util.*;
+import java.util.UUID;
 
 /**
  * Author:      Dmitriy E. Nosov <br>
@@ -551,7 +552,7 @@ public class PharmacyBean implements PharmacyBeanLocal {
             for (DrugComponent comp : drugComponents) {
                 RlsNomen rlsNomen = comp.getNomen();
                 PrescriptionSendingRes prescriptionSendingResBean = dbPrescriptionSendingResBean.getPrescriptionSendingRes(prescription.getDrugChart(), comp);
-                String prescrUUID = null;
+                String prescrUUID = UUID.randomUUID().toString();
                 if (prescription.getDrugChart().getMaster() != null) {
                     PrescriptionSendingRes master = dbPrescriptionSendingResBean.getPrescriptionSendingRes(prescription.getDrugChart().getMaster(), comp);
                     if(master != null) {
@@ -600,7 +601,7 @@ public class PharmacyBean implements PharmacyBeanLocal {
                             result, HL7PacketBuilder.marshallMessage(result, "org.hl7.v3"));
 
                     if (isOk(result)) {
-                        prescriptionSendingResBean.setUuid(result.getAcknowledgement().iterator().next().getTargetMessage().getId().getRoot());
+                        prescriptionSendingResBean.setUuid(prescrUUID);
                         prescriptionSendingResBean.setVersion(prescriptionSendingResBean.getVersion() == null ? 1 : (prescriptionSendingResBean.getVersion() + 1));
                         res = true;
                     }

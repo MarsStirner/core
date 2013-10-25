@@ -72,6 +72,7 @@ public class SyncWith1C {
     private static final Logger logger = LoggerFactory.getLogger(SyncWith1C.class);
     private static final String RLS_UPDATE_IS_DISABLED = "RLS update is disabled. For enable RLS update set Drugstore.UpdateRLS=true in  table 'Setting' (database 'tmis_core').";
     private static final String EOL = System.getProperty("line.separator");
+    private static final String DRUGLIFETIME = "DRUGLIFETIME";
 
     @PersistenceContext(unitName = "s11r64")
     private EntityManager em = null;
@@ -135,6 +136,8 @@ public class SyncWith1C {
                 rlsNomen.setRlsPacking(initByName(new RlsPacking(), formatForDb(getPackingName(drug))));
                 rlsNomen.setRlsTradeName(initByLocalName(initByName(new RlsTradeName(), getTradeNameLat(drug)), getTradeName(drug)));
 
+                rlsNomen.setDrugLifetime(getDrugLifeTime(drug));
+
                 RlsNomen drugDb = em.find(RlsNomen.class, drugRlsCode);
 
                 if (drugDb == null) { // если лекарственного средства нет в БД, то добавляем его в БД
@@ -158,6 +161,19 @@ public class SyncWith1C {
         final String end = htmlNewLine("update RLS...completed");
         res += end;
         logger.info(end);
+        return res;
+    }
+
+    private Integer getDrugLifeTime(POCDMT000040LabeledDrug drug) {
+        Integer res = null;
+        CD lifeTime = getTranslationByCodeSystemNameAndCode( drug.getCode().getTranslation(), CODE_SYSTEM_RLS, DRUGLIFETIME);
+        if (lifeTime != null) {
+            try {
+                res = Integer.parseInt(lifeTime.getDisplayName());
+            } catch (NumberFormatException ex) {
+                // если код не целое число, то возвращаем значение по умолчанию
+            }
+        }
         return res;
     }
 
