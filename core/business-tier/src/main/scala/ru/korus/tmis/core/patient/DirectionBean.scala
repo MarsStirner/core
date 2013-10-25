@@ -633,7 +633,7 @@ class DirectionBean extends DirectionBeanLocal
               event29.setDeleted(true)
               //em.detach(event29)
               em.merge(event29)
-              //em.merge(action19)
+              em.merge(action19)
             }
           }
           case _ => {

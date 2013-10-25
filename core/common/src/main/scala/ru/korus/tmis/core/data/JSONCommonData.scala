@@ -67,6 +67,8 @@ class ConsultationRequestData {
   @BeanProperty
   var overQueue: Boolean = _
   @BeanProperty
+  var pacientInQueue: Int = _
+  @BeanProperty
   var finance: IdNameContainer = _
   @BeanProperty
   var diagnosis: MKBContainer = _

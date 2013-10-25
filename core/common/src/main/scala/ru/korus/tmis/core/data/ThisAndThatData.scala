@@ -136,6 +136,13 @@ class ScheduleContainer {
 
     }
   }
+
+  def this(id: Int, index: Int, time: Date){
+    this()
+    this.id = id
+    this.index = index
+    this.time = time
+  }
 }
 
 @XmlType(name = "freePersonsListDataFilter")

@@ -276,7 +276,7 @@ class DbJobTicketBean extends DbJobTicketBeanLocal
       RbLaboratory lab,
       ActionType at
     WHERE
-      ap.action = a
+      ap.action.id = a.id
     AND
       ap.actionPropertyType.id = apt.id
     AND
@@ -284,32 +284,13 @@ class DbJobTicketBean extends DbJobTicketBeanLocal
     AND
       labTest.testId = rbTest.id
     AND
-      labTest.masterId = labTest.id
+      labTest.masterId = lab.id
     AND
       at.id = a.actionType.id
     AND
       a.id = :actionId
     AND
       ap.isAssigned = 1
-    """
-
-  val LaboratoryCodeByActionIdQuery2 =
-    """
-     SELECT
-          rbLaboratory.code,
-          rbTest.name,
-          ActionType.name,
-          ActionProperty.isAssigned
-      FROM Action
-          JOIN ActionProperty on ActionProperty.action_id = Action.id
-          JOIN ActionPropertyType on ActionPropertyType.id = ActionProperty.type_id
-          JOIN rbTest on ActionPropertyType.test_id = rbTest.id
-          LEFT JOIN rbLaboratory_Test on rbLaboratory_Test.test_id = rbTest.id
-          LEFT JOIN rbLaboratory on rbLaboratory_Test.master_id = rbLaboratory.id
-          LEFT JOIN ActionType on Action.actionType_id = ActionType.id
-      WHERE
-          Action.id = :actionId
-          AND ActionProperty.isAssigned = 1
     """
 
   val JobTicketByIdQuery =

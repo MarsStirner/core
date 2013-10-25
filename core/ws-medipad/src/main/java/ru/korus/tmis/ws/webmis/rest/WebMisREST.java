@@ -2,6 +2,7 @@ package ru.korus.tmis.ws.webmis.rest;
 
 import ru.korus.tmis.core.auth.AuthData;
 import ru.korus.tmis.core.data.*;
+import ru.korus.tmis.core.entity.model.APValueAction;
 import ru.korus.tmis.core.exception.CoreException;
 
 import java.io.Serializable;
@@ -143,6 +144,7 @@ public interface WebMisREST extends Serializable {
 
     boolean removeDirection(AssignmentsToRemoveDataList data, String directionType, AuthData auth) throws CoreException;
 
+    //APValueAction getPlannedTime(Action action) throws CoreException;
     /**
      * Получение справочника FlatDirectory
      * @param request Данные из запроса как FlatDirectoryRequestData
