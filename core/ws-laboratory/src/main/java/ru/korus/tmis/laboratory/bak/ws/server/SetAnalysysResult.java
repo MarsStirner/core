@@ -14,15 +14,9 @@ import ru.korus.tmis.core.database.dbutil.Database;
 import ru.korus.tmis.core.entity.model.*;
 import ru.korus.tmis.core.entity.model.bak.*;
 import ru.korus.tmis.core.exception.CoreException;
-import ru.korus.tmis.laboratory.bak.ws.server.model.BakPosev;
-import ru.korus.tmis.laboratory.bak.ws.server.model.IFA;
-import ru.korus.tmis.laboratory.bak.ws.server.model.Microorganism;
+import ru.korus.tmis.laboratory.bak.ws.server.model.*;
 import ru.korus.tmis.util.CompileTimeConfigManager;
 import ru.korus.tmis.util.logs.ToLog;
-import ru.korus.tmis.laboratory.bak.ws.server.model.fake.Antibiotic;
-import ru.korus.tmis.laboratory.bak.ws.server.model.fake.FakeResult;
-import ru.korus.tmis.laboratory.bak.ws.server.model.fake.MicroOrg;
-import ru.korus.tmis.laboratory.bak.ws.server.model.fake.Result;
 import ru.korus.tmis.laboratory.bak.ws.server.model.hl7.complex.*;
 
 import javax.annotation.Nullable;
@@ -54,7 +48,6 @@ import static ru.korus.tmis.laboratory.bak.ws.server.model.hl7.HL7Specification.
         serviceName = SetAnalysysResultWS.SERVICE_NAME,
         portName = SetAnalysysResultWS.PORT_NAME,
         name = SetAnalysysResultWS.PORT_NAME)
-//@XmlSeeAlso({ObjectFactory.class})
 public class SetAnalysysResult implements SetAnalysysResultWS {
 
     private static final Logger logger = LoggerFactory.getLogger(SetAnalysysResult.class);
@@ -101,10 +94,6 @@ public class SetAnalysysResult implements SetAnalysysResultWS {
 
     /**
      * Получение результатов исследования
-     *
-     * @param request
-     * @return
-     * @throws CoreException
      */
     @Override
     @WebMethod(operationName = "setAnalysisResults")
@@ -115,17 +104,16 @@ public class SetAnalysysResult implements SetAnalysysResultWS {
         final ToLog toLog = new ToLog("setAnalysisResults");
         MCCIIN000002UV01 response;
         try {
-            toLog.add("Request: \n" + Utils.marshallMessage(request, "ru.korus.tmis.laboratory.bak.ws.server.model.hl7.complex"));
+            toLog.addN("Request: \n#", Utils.marshallMessage(request, "ru.korus.tmis.laboratory.bak.ws.server.model.hl7.complex"));
             processRequest(request, toLog);
             //flushToDB(request, toLog);
             response = createSuccessResponse();
-            toLog.add("Response: \n" + Utils.marshallMessage(response, "ru.korus.tmis.laboratory.bak.ws.server.model.hl7.complex"));
-
+            toLog.addN("Response: \n#", Utils.marshallMessage(response, "ru.korus.tmis.laboratory.bak.ws.server.model.hl7.complex"));
             return response;
         } catch (Throwable e) {
             logger.error("Exception: " + e, e);
             response = createErrorResponse();
-            toLog.add("Response: \n" + Utils.marshallMessage(response, "ru.korus.tmis.laboratory.bak.ws.server.model.hl7.complex"));
+            toLog.addN("Response: \n#", Utils.marshallMessage(response, "ru.korus.tmis.laboratory.bak.ws.server.model.hl7.complex"));
         } finally {
             logger.info(toLog.releaseString());
         }
@@ -214,20 +202,28 @@ public class SetAnalysysResult implements SetAnalysysResultWS {
         final BakPosev bakPosev = new BakPosev(actionId);
 
         for (POLBIN224100UV01MCAIMT700201UV01Subject2 subj : request.getControlActProcess().getSubject()) {
-            if (subj.getObservationBattery() != null) {
+            if (subj.getObservationReport() != null) {
                 try {
-                    final JAXBElement<POLBMT004000UV01ObservationBattery> battery = subj.getObservationBattery();
-                    final POLBMT004000UV01ObservationBattery value = battery.getValue();
-                    final String testName = value.getCode().getDisplayName();
-                    final List<POLBMT004000UV01Component2> component1 = value.getComponent1();
-                    for (POLBMT004000UV01Component2 p : component1) {
+                    final POLBMT004000UV01ObservationReport value = subj.getObservationReport().getValue();
 
-                        final JAXBElement<POLBMT004000UV01ObservationEvent> observationEvent = p.getObservationEvent();
-                        final String testCode = observationEvent.getValue().getCode().getCode();
-                        final String testName2 = observationEvent.getValue().getCode().getDisplayName();
-                        final DateTime effectiveTime = createDate(observationEvent.getValue().getEffectiveTime().get(0).getValue());
+                    bakPosev.setComplete(value.getStatusCode().getCode().equals("true"));
+                    bakPosev.setBarCode(value.getSpecimen().get(0).getSpecimen().getValue().getId().getRoot());
 
-                        for (POLBMT004000UV01Component2 comp : observationEvent.getValue().getComponent1()) {
+                    final COCTMT090000UV01AssignedEntity assignedEntity = value.getAuthor().get(0).getAssignedEntity();
+                    bakPosev.setDoctor(new Doctor(
+                            Integer.parseInt(assignedEntity.getCode().getCode()),
+                            assignedEntity.getCode().getDisplayName(),
+                            getLisCode(request)));
+
+                } catch (Exception e) {
+                    logger.error("Exception: " + e, e);
+                    throw new CoreException("Ошибка в формате тега observationReport");
+                }
+
+            } else if (subj.getObservationBattery() != null) {
+                try {
+                    for (POLBMT004000UV01Component2 p : subj.getObservationBattery().getValue().getComponent1()) {
+                        for (POLBMT004000UV01Component2 comp : p.getObservationEvent().getValue().getComponent1()) {
                             final String microorgCode = comp.getObservationEvent().getValue().getCode().getCode();
                             final String microorgName = comp.getObservationEvent().getValue().getCode().getDisplayName();
                             final String microorgComment = comp.getObservationEvent().getValue().getCode().getCodeSystem();
@@ -243,16 +239,11 @@ public class SetAnalysysResult implements SetAnalysysResultWS {
 
             } else if (subj.getSpecimenObservationCluster() != null) {
                 try {
-                    final JAXBElement<POLBMT004000UV01SpecimenObservationCluster> cluster = subj.getSpecimenObservationCluster();
-                    final POLBMT004000UV01SpecimenObservationCluster value = cluster.getValue();
-                    POLBMT004000UV01Specimen s = value.getSpecimen().get(0);
-                    // код микроорганизма
-                    final String codeMicroOrg = s.getSpecimen().getValue().getCode().getCode();
+                    final POLBMT004000UV01SpecimenObservationCluster value = subj.getSpecimenObservationCluster().getValue();
+                    final String microorgCode = value.getSpecimen().get(0).getSpecimen().getValue().getCode().getCode();
 
                     for (POLBMT004000UV01Component2 component2 : value.getComponent1()) {
-                        final JAXBElement<POLBMT004000UV01ObservationBattery> ob = component2.getObservationBattery();
-
-                        for (POLBMT004000UV01Component2 pp : ob.getValue().getComponent1()) {
+                        for (POLBMT004000UV01Component2 pp : component2.getObservationBattery().getValue().getComponent1()) {
                             final String antibioticCode = pp.getObservationEvent().getValue().getCode().getCode();
                             final String antibioticName = pp.getObservationEvent().getValue().getCode().getDisplayName();
                             final String antibioticConcentration = pp.getObservationEvent().getValue().getCode().getCodeSystem();
@@ -266,7 +257,7 @@ public class SetAnalysysResult implements SetAnalysysResultWS {
                             antibiotic.setSensitivity(antibioticSensitivity);
                             antibiotic.setComment(antibioticComment);
 
-                            bakPosev.addAntibioticToOrganism(codeMicroOrg, antibiotic);
+                            bakPosev.addAntibioticToOrganism(microorgCode, antibiotic);
                         }
                     }
                 } catch (Exception e) {
@@ -278,6 +269,60 @@ public class SetAnalysysResult implements SetAnalysysResultWS {
         return bakPosev;
     }
 
+    /**
+     * Запись результатов БАК-посева в БД
+     */
+    private void saveBakPosev(final BakPosev bakPosev, final ToLog toLog) {
+        removeOldResult(bakPosev.getActionId());
+
+        for (Microorganism microorganism : bakPosev.getMicroorganismList()) {
+            dbRbMicroorganismBean.add(new RbMicroorganism(microorganism.getCode(), microorganism.getName()));
+
+            final RbMicroorganism mic = dbRbMicroorganismBean.get(microorganism.getCode());
+            final BbtResultOrganism resultOrganism = new BbtResultOrganism();
+            resultOrganism.setActionId(bakPosev.getActionId());
+            resultOrganism.setConcentration(microorganism.getComment());
+            resultOrganism.setOrganismId(mic.getId());
+            dbBbtResultOrganismBean.add(resultOrganism);
+
+            for (Antibiotic antibiotic : microorganism.getAntibioticList()) {
+                dbRbAntibioticBean.add(new RbAntibiotic(antibiotic.getCode(), antibiotic.getName()));
+
+                final RbAntibiotic rbAntibiotic = dbRbAntibioticBean.get(antibiotic.getCode());
+                final RbMicroorganism rbMicroorganism = dbRbMicroorganismBean.get(microorganism.getCode());
+                final BbtResultOrganism bbtResultOrganism = dbBbtResultOrganismBean.get(rbMicroorganism.getId(), bakPosev.getActionId());
+
+                final BbtOrganismSensValues bbtOrganismSens = new BbtOrganismSensValues();
+
+                bbtOrganismSens.setActivity(antibiotic.getSensitivity());
+                bbtOrganismSens.setAntibioticId(rbAntibiotic.getId());
+                bbtOrganismSens.setBbtResultOrganismId(bbtResultOrganism.getId());
+                bbtOrganismSens.setMic(antibiotic.getConcentration());
+
+                dbBbtOrganismSensValuesBean.add(bbtOrganismSens);
+            }
+        }
+    }
+
+    /**
+     * Очистка от старых результатов
+     */
+    private void removeOldResult(int actionId) {
+        final BbtResponse bbtResponse = dbBbtResponseBean.get(actionId);
+        if (bbtResponse != null) {
+            // пришли уточняющие данные
+            dbBbtResponseBean.remove(actionId);
+
+            for (BbtResultOrganism bbtResultOrganism : dbBbtResultOrganismBean.getByActionId(actionId)) {
+                dbBbtOrganismSensValuesBean.removeByResultOrganismId(bbtResultOrganism.getId());
+                dbBbtResultOrganismBean.remove(bbtResultOrganism.getId());
+            }
+        }
+    }
+
+    /**
+     * Определение actionId, к которому прявязаны результаты
+     */
     private int getActionId(final POLBIN224100UV01 request) throws CoreException {
         for (POLBIN224100UV01MCAIMT700201UV01Subject2 subj : request.getControlActProcess().getSubject()) {
             if (subj.getObservationBattery() != null) {
@@ -285,14 +330,6 @@ public class SetAnalysysResult implements SetAnalysysResultWS {
             }
         }
         throw new CoreException("Отсутствует actionId");
-    }
-
-    private void saveBakPosev(final BakPosev bakPosev, final ToLog toLog) {
-        final BbtResponse bbtResponse = dbBbtResponseBean.get(bakPosev.getActionId());
-
-
-//        dbBbtResultOrganismBean.
-
     }
 
 
@@ -522,9 +559,7 @@ public class SetAnalysysResult implements SetAnalysysResultWS {
 
                                 // Записываем в справочник антибиотик
                                 if (!"".equals(antibioticCode) && !"".equals(antibioticName)) {
-                                    final RbAntibiotic antibiotic = new RbAntibiotic();
-                                    antibiotic.setCode(antibioticCode);
-                                    antibiotic.setName(antibioticName);
+                                    final RbAntibiotic antibiotic = new RbAntibiotic(antibioticCode, antibioticName);
                                     dbRbAntibioticBean.add(antibiotic);
                                     toLog.addN("  Save: #", antibiotic);
 
@@ -561,7 +596,7 @@ public class SetAnalysysResult implements SetAnalysysResultWS {
             response.setDoctorId(Integer.parseInt(doctorId));
             response.setFinalFlag(isComplete ? 1 : 0);
             response.setDefects(getDefects(request));
-            response.setCodeLIS(Integer.parseInt(getLisCode(request)));
+            response.setCodeLIS(getLisCode(request));
             dbBbtResponseBean.add(response);
             toLog.add("  Save response: " + response + "\n");
 
@@ -807,99 +842,7 @@ public class SetAnalysysResult implements SetAnalysysResultWS {
                             @WebParam(name = "orderBiomaterialName", targetNamespace = Namespace)
                             Integer orderBarCode) throws CoreException {
 
+        logger.info("Bak Delivered [{}],[{}],[{}],[{}]", GUID, orderMisId, orderBarCode, DtTime);
         return 0;
-    }
-
-
-    @Override
-    @WebMethod(operationName = "setAnalysisResults2")
-    @WebResult(name = SUCCESS_ACCEPT_EVENT, targetNamespace = NAMESPACE, partName = "Body")
-    public MCCIIN000002UV01 setAnalysisResults2(
-            @WebParam(name = "FakeResult", targetNamespace = NAMESPACE, partName = "Body")
-            final FakeResult request) throws CoreException {
-
-        validateRequest(request);
-
-        try {
-            for (Result result : request.getResults().getResults()) {
-                for (Antibiotic a : result.getAntibiotics().getAntibiotics()) {
-                    final RbAntibiotic rbAntibiotic = new RbAntibiotic();
-                    rbAntibiotic.setCode(a.getIdAntibiotic());
-                    rbAntibiotic.setName(a.getNameAntibiotic());
-                    dbRbAntibioticBean.add(rbAntibiotic);
-                }
-            }
-
-//        final RbBacIndicator rbBacIndicator = new RbBacIndicator();
-//        rbBacIndicator.setCode("2");
-//        rbBacIndicator.setName("cde");
-//        dbRbBacIndicatorBean.add(rbBacIndicator);
-
-            for (MicroOrg microOrg : request.getMicroOrgs().getMicroOrgs()) {
-                final RbMicroorganism rbMicroorganism = new RbMicroorganism();
-                rbMicroorganism.setCode(microOrg.getCode());
-                rbMicroorganism.setName(microOrg.getName());
-                dbRbMicroorganismBean.add(rbMicroorganism);
-            }
-
-//        final BbtResultTable bbtResultTable = new BbtResultTable();
-
-//        dbBbtResultTableBean.add(bbtResultTable);
-
-            final BbtResponse bbtResponse = new BbtResponse();
-            bbtResponse.setId(Integer.parseInt(request.getOrderMISId()));
-            bbtResponse.setDoctorId(Integer.parseInt(request.getDoctorId()));
-            bbtResponse.setFinalFlag(1);
-            bbtResponse.setCodeLIS(Integer.parseInt(request.getOrderMISId()));
-            bbtResponse.setDefects("----");
-
-            dbBbtResponseBean.add(bbtResponse);
-
-//            for (request.getResults().getResults()) {
-//                final BbtOrganismSensValues sens = new BbtOrganismSensValues();
-//                sens.setBbtResultOrganismId();
-//                dbBbtOrganismSensValuesBean.add(sens);
-//            }
-
-        } catch (Exception e) {
-            throw new CoreException(400, "Ошибка обработки запроса");
-        }
-        return createSuccessResponse();
-    }
-
-
-    /**
-     * Проверка входных данных
-     *
-     * @param request
-     * @throws CoreException
-     */
-    private void validateRequest(FakeResult request) throws CoreException {
-        try {
-            if (request.getBarCode() == null) {
-//                throw new CoreException(new SOAPFaultInfo("400", "Отсутствует штрих-код"));
-            }
-            if (request.getCodeIsl() == null) {
-//                throw new BakIntegrationException(400, "Отсутствует код исследования");
-            }
-            if (request.getDate() == null) {
-//                throw new BakIntegrationException(400, "Отсутствует дата исследования");
-            }
-            if (request.getDoctorId() == null) {
-//                throw new BakIntegrationException(400, "Отсутствует идентификатор врача");
-            }
-            if (request.getNameIsl() == null) {
-//                throw new BakIntegrationException(400, "Отсутствует название исследования");
-            }
-            if (request.getMicroOrgs().getMicroOrgs().isEmpty()) {
-//                throw new BakIntegrationException(400, "Отсутствует список микроорганизмов");
-            }
-            if (request.getResults().getResults().isEmpty()) {
-//                throw new BakIntegrationException(400, "Отсутствует список результатов и антибиотиков");
-            }
-        } catch (Exception e) {
-            throw new CoreException(400, "Ошибка в формате результатов анализов");
-        }
-
     }
 }
