@@ -887,8 +887,6 @@ class WebMisRESTImpl  extends WebMisREST
   }
 
   def modifyConsultation(request: ConsultationRequestData, authData: AuthData) = {
-
-
     val actionId = directionBean.createConsultation(request, authData)
     var json = directionBean.getDirectionById(actionId, "Consultation", null, authData)
     json.setRequestData(request) //по идее эта штука должна быть в конструкторе вызываемая в методе гет
@@ -897,6 +895,25 @@ class WebMisRESTImpl  extends WebMisREST
 
   def removeDirection(data: AssignmentsToRemoveDataList, directionType: String, auth: AuthData) = {
     directionBean.removeDirections(data, directionType, auth)
+  }
+
+  def getPlannedTime(actionId: Int) = {
+    var a = actionBean.getActionById(actionId)
+    var action19 = actionBean.getEvent29AndAction19ForAction(a)
+    val apva = actionPropertyBean.getActionPropertyValue_ActionByValue(action19)
+    val filter = new FreePersonsListDataFilter( 0,
+      a.getExecutor.getId.intValue(),
+      a.getActionType.getId.intValue(),
+      a.getPlannedEndDate.getTime,
+      0)
+    val timesAP = dbStaff.getActionPropertyForPersonByRequest(filter)
+    if (timesAP != null) {
+      val timesAPV = actionPropertyBean.getActionPropertyValue(timesAP)
+      var data = new ScheduleContainer(timesAPV.get(apva.getId.getIndex).asInstanceOf[APValueTime])
+      data
+    } else {
+      null
+    }
   }
   //*********  **********
 

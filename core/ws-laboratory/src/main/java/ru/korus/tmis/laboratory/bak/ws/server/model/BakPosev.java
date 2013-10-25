@@ -1,5 +1,6 @@
 package ru.korus.tmis.laboratory.bak.ws.server.model;
 
+import java.util.ArrayList;
 import java.util.LinkedList;
 import java.util.List;
 
@@ -7,25 +8,38 @@ import java.util.List;
  * Author:      Dmitriy E. Nosov <br>
  * Date:        25.10.13, 12:32 <br>
  * Company:     Korus Consulting IT<br>
- * Description:  <br>
+ * Description: Модель результата БАК-посева<br>
  */
 public class BakPosev {
+    /**
+     * Идентификатор исследования
+     */
+    private int actionId;
 
-    private long actionId;
-
+    /**
+     * Список микроорганизмов
+     */
     private List<Microorganism> microorganismList;
 
 
-    public BakPosev(long actionId, List<Microorganism> microorganismList) {
+    public BakPosev(int actionId) {
         this.actionId = actionId;
-        this.microorganismList = microorganismList;
+        this.microorganismList = new LinkedList<Microorganism>();
     }
 
+    public void addMicroorganism(final Microorganism microorganism) {
+        if (microorganism != null) {
+            microorganismList.add(microorganism);
+        }
+    }
+
+    public int getActionId() {
+        return actionId;
+    }
 
     public List<Microorganism> getMicroorganismList() {
-        return microorganismList;
+        return new ArrayList<Microorganism>(microorganismList);
     }
-
 
     public void addAntibioticToOrganism(String codeMicroOrg, Antibiotic antibiotic) {
         for (Microorganism microorganism : microorganismList) {
@@ -34,5 +48,14 @@ public class BakPosev {
                 break;
             }
         }
+    }
+
+    @Override
+    public String toString() {
+        final StringBuilder sb = new StringBuilder("BakPosev{");
+        sb.append("actionId=").append(actionId);
+        sb.append(", microorganismList=").append(microorganismList);
+        sb.append('}');
+        return sb.toString();
     }
 }

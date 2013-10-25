@@ -1,0 +1,79 @@
+<usage><!--Have 13 CMET usage sets for PORX and UV--><cmetuse role="uses">
+      <hmdref ref="PORX_HD010120UV01-hmd" refname="MedicationOrder"
+              refidentifier="PORX_HD010120UV01"/>
+      <cmetref ref="COCT_MT010000UV01-msg" refname="A_EncounterUniversal"
+               refidentifier="COCT_MT010000UV01"/>
+   </cmetuse>
+   <cmetuse role="uses">
+      <hmdref ref="PORX_HD010120UV01-hmd" refname="MedicationOrder"
+              refidentifier="PORX_HD010120UV01"/>
+      <cmetref ref="COCT_MT050000UV01-msg" refname="R_PatientUniversal"
+               refidentifier="COCT_MT050000UV01"/>
+   </cmetuse>
+   <cmetuse role="uses">
+      <hmdref ref="PORX_HD010120UV01-hmd" refname="MedicationOrder"
+              refidentifier="PORX_HD010120UV01"/>
+      <cmetref ref="COCT_MT090000UV01-msg" refname="R_AssignedEntityUniversal"
+               refidentifier="COCT_MT090000UV01"/>
+   </cmetuse>
+   <cmetuse role="uses">
+      <hmdref ref="PORX_HD010120UV01-hmd" refname="MedicationOrder"
+              refidentifier="PORX_HD010120UV01"/>
+      <cmetref ref="COCT_MT090100UV01-msg" refname="R_AssignedPersonUniversal"
+               refidentifier="COCT_MT090100UV01"/>
+   </cmetuse>
+   <cmetuse role="uses">
+      <hmdref ref="PORX_HD010120UV01-hmd" refname="MedicationOrder"
+              refidentifier="PORX_HD010120UV01"/>
+      <cmetref ref="COCT_MT090200UV01-msg" refname="R_AssignedOrganizationUniversal"
+               refidentifier="COCT_MT090200UV01"/>
+   </cmetuse>
+   <cmetuse role="uses">
+      <hmdref ref="PORX_HD010120UV01-hmd" refname="MedicationOrder"
+              refidentifier="PORX_HD010120UV01"/>
+      <cmetref ref="COCT_MT090300UV01-msg" refname="R_AssignedDeviceUniversal"
+               refidentifier="COCT_MT090300UV01"/>
+   </cmetuse>
+   <cmetuse role="uses">
+      <hmdref ref="PORX_HD010120UV01-hmd" refname="MedicationOrder"
+              refidentifier="PORX_HD010120UV01"/>
+      <cmetref ref="COCT_MT180000UV04-msg" refname="A_CoverageDeprecated"
+               refidentifier="COCT_MT180000UV04"/>
+   </cmetuse>
+   <cmetuse role="uses">
+      <hmdref ref="PORX_HD010120UV01-hmd" refname="MedicationOrder"
+              refidentifier="PORX_HD010120UV01"/>
+      <cmetref ref="COCT_MT220100UV-msg" refname="R_OrderableMedicationUniversal"
+               refidentifier="COCT_MT220100UV"/>
+   </cmetuse>
+   <cmetuse role="uses">
+      <hmdref ref="PORX_HD010120UV01-hmd" refname="MedicationOrder"
+              refidentifier="PORX_HD010120UV01"/>
+      <cmetref ref="COCT_MT220200UV-msg" refname="R_AdministerableMedicationUniversal"
+               refidentifier="COCT_MT220200UV"/>
+   </cmetuse>
+   <cmetuse role="uses">
+      <hmdref ref="PORX_HD010120UV01-hmd" refname="MedicationOrder"
+              refidentifier="PORX_HD010120UV01"/>
+      <cmetref ref="COCT_MT240000UV01-msg" refname="R_ServiceDeliveryLocationUniversal"
+               refidentifier="COCT_MT240000UV01"/>
+   </cmetuse>
+   <cmetuse role="uses">
+      <hmdref ref="PORX_HD010120UV01-hmd" refname="MedicationOrder"
+              refidentifier="PORX_HD010120UV01"/>
+      <cmetref ref="COCT_MT260003UV-msg" refname="A_DetectedMedicationIssueUniversal"
+               refidentifier="COCT_MT260003UV"/>
+   </cmetuse>
+   <cmetuse role="uses">
+      <hmdref ref="PORX_HD010120UV01-hmd" refname="MedicationOrder"
+              refidentifier="PORX_HD010120UV01"/>
+      <cmetref ref="COCT_MT530004UV-msg" refname="A_SupportingClinicalStatementMinimal"
+               refidentifier="COCT_MT530004UV"/>
+   </cmetuse>
+   <cmetuse role="uses">
+      <hmdref ref="PORX_HD010120UV01-hmd" refname="MedicationOrder"
+              refidentifier="PORX_HD010120UV01"/>
+      <cmetref ref="COCT_MT590000UV-msg" refname="A_AnnotationUniversal"
+               refidentifier="COCT_MT590000UV"/>
+   </cmetuse>
+</usage>

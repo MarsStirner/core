@@ -1,0 +1,50 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<knowledgeRequestNotification xmlns="urn:hl7-org:v3" xmlns:gsd="http://aurora.regenstrief.org/GenericXMLSchema" xmlns:sch="http://www.ascc.net/xml/schematron" xmlns:xlink="http://www.w3.org/TR/WD-xlink" xmlns:mif="urn:hl7-org:v3/mif" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" classCode="ACT" moodCode="DEF">
+	<!--the user (an RN) is looking at a non-coded medications list of a female, Spanish speaker, 8 years-old patient who came for an outpatient appointment. The user clicks on the infobutton next to “Racemic epinephrine” and is presented with a series of links. The user selects the “patient education" link.-->
+	<id root="Example4" assigningAuthorityName="EHR"/>
+	<effectiveTime value="20060706"/>
+	<subject1 typeCode="SBJ">
+		<patientContext classCode="PAT">
+			<patientPerson classCode="PSN" determinerCode="INSTANCE">
+				<administrativeGenderCode code="F" codeSystem="2.16.840.1.113883.5.1" codeSystemName="AdministrativeGender" displayName="Female"/>
+			</patientPerson>
+			<subjectOf typeCode="SBJ">
+				<age classCode="OBS" moodCode="DEF">
+					<code code="30525-0" codeSystem="2.16.840.1.113883.6.1" codeSystemName="LN" displayName="AGE"/>
+					<value value="8" unit="a"/>
+				</age>
+			</subjectOf>
+		</patientContext>
+	</subject1>
+	<performer typeCode="PRF">
+		<healthCareProvider classCode="PROV">
+			<code code="163W00000X" codeSystem="2.16.840.1.113883.6.101" codeSystemName="NUCC Health Care Provider Taxonomy" displayName="Registered Nurse"/>
+			<healthCarePerson classCode="PSN" determinerCode="INSTANCE">
+				<languageCommunication>
+					<languageCode code="en" codeSystem="2.16.840.1.113883.6.121" codeSystemName="Tags for the Identification of Languages" displayName="English"/>
+				</languageCommunication>
+			</healthCarePerson>
+		</healthCareProvider>
+	</performer>
+	<!--This indicates that the recipient of the content is a patient who speaks Spanish-->
+	<informationRecipient typeCode="IRCP">
+		<patient classCode="PAT">
+			<patientPerson classCode="PSN" determinerCode="INSTANCE">
+				<languageCommunication>
+					<languageCode code="sp" codeSystem="2.16.840.1.113883.6.121" displayName="Spanish"/>
+				</languageCommunication>
+			</patientPerson>
+		</patient>
+	</informationRecipient>
+	<subject2 typeCode="SUBJ">
+		<taskContext classCode="ACT" moodCode="DEF">
+			<code code="MLREV" codeSystem="2.16.840.1.113883.5.4" codeSystemName="ActCode" displayName="Medication List Review"/>
+		</taskContext>
+	</subject2>
+	<subject4 typeCode="SUBJ">
+		<mainSearchCriteria classCode="OBS" moodCode="DEF">
+			<code code="KSUBJ" codeSystem="2.16.840.1.113883.5.4" codeSystemName="ActCode"/>
+			<value displayName="Racemic epinephrine"/>
+		</mainSearchCriteria>
+	</subject4>
+</knowledgeRequestNotification>

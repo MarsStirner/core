@@ -386,6 +386,10 @@ public class DiagnosticsRegistryExRESTImpl {
         com_data.setEntity(data.getData());
         return new JSONWithPadding(wsImpl.modifyInstrumentalStudies(eventId, com_data, this.auth), this.callback);
         */
+        if (data.getPacientInQueue() == 0 && data.getUrgent() == true && (data.getPlannedTime() == null || data.getPlannedTime().getId() == 0)) {
+            ScheduleContainer timeToCreate = wsImpl.getPlannedTime(actionId);
+            data.setPlannedTime(timeToCreate);
+        }
         AssignmentsToRemoveDataList dataToRemove = new AssignmentsToRemoveDataList();
         dataToRemove.getData().add(new AssignmentToRemoveDataEntry(actionId));
         JSONWithPadding removed = new JSONWithPadding(wsImpl.removeDirection(dataToRemove, "consultations", this.auth), this.callback);

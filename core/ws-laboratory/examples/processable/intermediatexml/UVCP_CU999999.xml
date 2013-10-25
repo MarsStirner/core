@@ -1,0 +1,627 @@
+<usage><!--Have 104 CMET usage sets for POCP and UV--><cmetuse role="uses">
+      <hmdref ref="POCP_HD010100UV01-hmd" refname="R_ProductListed"
+              refidentifier="POCP_HD010100UV01"/>
+      <cmetref ref="COCT_MT440001UV09-msg" refname="A_ValuedItemIdentified"
+               refidentifier="COCT_MT440001UV09"/>
+   </cmetuse>
+   <cmetuse role="uses">
+      <hmdref ref="POCP_HD010100UV01-hmd" refname="R_ProductListed"
+              refidentifier="POCP_HD010100UV01"/>
+      <cmetref ref="POCP_MT020100UV01-msg" refname="R_ProductInstanceUniversal"
+               refidentifier="POCP_MT020100UV01"/>
+   </cmetuse>
+   <cmetuse role="uses">
+      <hmdref ref="POCP_HD010100UV01-hmd" refname="R_ProductListed"
+              refidentifier="POCP_HD010100UV01"/>
+      <cmetref ref="POCP_MT030100UV01-msg" refname="R_ProductRelatedAssignedEntityUniversal"
+               refidentifier="POCP_MT030100UV01"/>
+   </cmetuse>
+   <cmetuse role="uses">
+      <hmdref ref="POCP_HD010100UV01-hmd" refname="R_ProductListed"
+              refidentifier="POCP_HD010100UV01"/>
+      <cmetref ref="POCP_MT030200UV01-msg" refname="E_ProductEstablishmentUniversal"
+               refidentifier="POCP_MT030200UV01"/>
+   </cmetuse>
+   <cmetuse role="uses">
+      <hmdref ref="POCP_HD010100UV01-hmd" refname="R_ProductListed"
+              refidentifier="POCP_HD010100UV01"/>
+      <cmetref ref="POCP_MT050100UV01-msg" refname="A_ProductInformationUniversal"
+               refidentifier="POCP_MT050100UV01"/>
+   </cmetuse>
+   <cmetuse role="uses">
+      <hmdref ref="POCP_HD010100UV01-hmd" refname="R_ProductListed"
+              refidentifier="POCP_HD010100UV01"/>
+      <cmetref ref="POCP_MT050400UV01-msg" refname="E_TerritoryUniversal"
+               refidentifier="POCP_MT050400UV01"/>
+   </cmetuse>
+   <cmetuse role="uses">
+      <hmdref ref="POCP_HD010100UV01-hmd" refname="R_ProductListed"
+              refidentifier="POCP_HD010100UV01"/>
+      <cmetref ref="POCP_MT060000UV01-msg" refname="A_ProductUseGuidelineUniversal"
+               refidentifier="POCP_MT060000UV01"/>
+   </cmetuse>
+   <cmetuse role="uses">
+      <hmdref ref="POCP_HD010100UV01-hmd" refname="R_ProductListed"
+              refidentifier="POCP_HD010100UV01"/>
+      <cmetref ref="POCP_MT070000UV01-msg" refname="A_DeviceActDefinitionUniversal"
+               refidentifier="POCP_MT070000UV01"/>
+   </cmetuse>
+   <cmetuse role="uses">
+      <hmdref ref="POCP_HD010100UV01-hmd" refname="R_ProductListed"
+              refidentifier="POCP_HD010100UV01"/>
+      <cmetref ref="POCP_MT081100UV01-msg" refname="E_SubstanceClinicalUniversal"
+               refidentifier="POCP_MT081100UV01"/>
+   </cmetuse>
+   <cmetuse role="uses">
+      <hmdref ref="POCP_HD010200UV01-hmd" refname="E_ProductKind"
+              refidentifier="POCP_HD010200UV01"/>
+      <cmetref ref="COCT_MT440001UV09-msg" refname="A_ValuedItemIdentified"
+               refidentifier="COCT_MT440001UV09"/>
+   </cmetuse>
+   <cmetuse role="uses">
+      <hmdref ref="POCP_HD010200UV01-hmd" refname="E_ProductKind"
+              refidentifier="POCP_HD010200UV01"/>
+      <cmetref ref="POCP_MT020100UV01-msg" refname="R_ProductInstanceUniversal"
+               refidentifier="POCP_MT020100UV01"/>
+   </cmetuse>
+   <cmetuse role="uses">
+      <hmdref ref="POCP_HD010200UV01-hmd" refname="E_ProductKind"
+              refidentifier="POCP_HD010200UV01"/>
+      <cmetref ref="POCP_MT030100UV01-msg" refname="R_ProductRelatedAssignedEntityUniversal"
+               refidentifier="POCP_MT030100UV01"/>
+   </cmetuse>
+   <cmetuse role="uses">
+      <hmdref ref="POCP_HD010200UV01-hmd" refname="E_ProductKind"
+              refidentifier="POCP_HD010200UV01"/>
+      <cmetref ref="POCP_MT030200UV01-msg" refname="E_ProductEstablishmentUniversal"
+               refidentifier="POCP_MT030200UV01"/>
+   </cmetuse>
+   <cmetuse role="uses">
+      <hmdref ref="POCP_HD010200UV01-hmd" refname="E_ProductKind"
+              refidentifier="POCP_HD010200UV01"/>
+      <cmetref ref="POCP_MT050100UV01-msg" refname="A_ProductInformationUniversal"
+               refidentifier="POCP_MT050100UV01"/>
+   </cmetuse>
+   <cmetuse role="uses">
+      <hmdref ref="POCP_HD010200UV01-hmd" refname="E_ProductKind"
+              refidentifier="POCP_HD010200UV01"/>
+      <cmetref ref="POCP_MT050400UV01-msg" refname="E_TerritoryUniversal"
+               refidentifier="POCP_MT050400UV01"/>
+   </cmetuse>
+   <cmetuse role="uses">
+      <hmdref ref="POCP_HD010200UV01-hmd" refname="E_ProductKind"
+              refidentifier="POCP_HD010200UV01"/>
+      <cmetref ref="POCP_MT060000UV01-msg" refname="A_ProductUseGuidelineUniversal"
+               refidentifier="POCP_MT060000UV01"/>
+   </cmetuse>
+   <cmetuse role="uses">
+      <hmdref ref="POCP_HD010200UV01-hmd" refname="E_ProductKind"
+              refidentifier="POCP_HD010200UV01"/>
+      <cmetref ref="POCP_MT070000UV01-msg" refname="A_DeviceActDefinitionUniversal"
+               refidentifier="POCP_MT070000UV01"/>
+   </cmetuse>
+   <cmetuse role="uses">
+      <hmdref ref="POCP_HD010200UV01-hmd" refname="E_ProductKind"
+              refidentifier="POCP_HD010200UV01"/>
+      <cmetref ref="POCP_MT081100UV01-msg" refname="E_SubstanceClinicalUniversal"
+               refidentifier="POCP_MT081100UV01"/>
+   </cmetuse>
+   <cmetuse role="uses">
+      <hmdref ref="POCP_HD010300UV01-hmd" refname="R_SpecializedKind"
+              refidentifier="POCP_HD010300UV01"/>
+      <cmetref ref="COCT_MT440001UV09-msg" refname="A_ValuedItemIdentified"
+               refidentifier="COCT_MT440001UV09"/>
+   </cmetuse>
+   <cmetuse role="uses">
+      <hmdref ref="POCP_HD010300UV01-hmd" refname="R_SpecializedKind"
+              refidentifier="POCP_HD010300UV01"/>
+      <cmetref ref="POCP_MT020100UV01-msg" refname="R_ProductInstanceUniversal"
+               refidentifier="POCP_MT020100UV01"/>
+   </cmetuse>
+   <cmetuse role="uses">
+      <hmdref ref="POCP_HD010300UV01-hmd" refname="R_SpecializedKind"
+              refidentifier="POCP_HD010300UV01"/>
+      <cmetref ref="POCP_MT030100UV01-msg" refname="R_ProductRelatedAssignedEntityUniversal"
+               refidentifier="POCP_MT030100UV01"/>
+   </cmetuse>
+   <cmetuse role="uses">
+      <hmdref ref="POCP_HD010300UV01-hmd" refname="R_SpecializedKind"
+              refidentifier="POCP_HD010300UV01"/>
+      <cmetref ref="POCP_MT030200UV01-msg" refname="E_ProductEstablishmentUniversal"
+               refidentifier="POCP_MT030200UV01"/>
+   </cmetuse>
+   <cmetuse role="uses">
+      <hmdref ref="POCP_HD010300UV01-hmd" refname="R_SpecializedKind"
+              refidentifier="POCP_HD010300UV01"/>
+      <cmetref ref="POCP_MT050100UV01-msg" refname="A_ProductInformationUniversal"
+               refidentifier="POCP_MT050100UV01"/>
+   </cmetuse>
+   <cmetuse role="uses">
+      <hmdref ref="POCP_HD010300UV01-hmd" refname="R_SpecializedKind"
+              refidentifier="POCP_HD010300UV01"/>
+      <cmetref ref="POCP_MT050400UV01-msg" refname="E_TerritoryUniversal"
+               refidentifier="POCP_MT050400UV01"/>
+   </cmetuse>
+   <cmetuse role="uses">
+      <hmdref ref="POCP_HD010300UV01-hmd" refname="R_SpecializedKind"
+              refidentifier="POCP_HD010300UV01"/>
+      <cmetref ref="POCP_MT060000UV01-msg" refname="A_ProductUseGuidelineUniversal"
+               refidentifier="POCP_MT060000UV01"/>
+   </cmetuse>
+   <cmetuse role="uses">
+      <hmdref ref="POCP_HD010300UV01-hmd" refname="R_SpecializedKind"
+              refidentifier="POCP_HD010300UV01"/>
+      <cmetref ref="POCP_MT070000UV01-msg" refname="A_DeviceActDefinitionUniversal"
+               refidentifier="POCP_MT070000UV01"/>
+   </cmetuse>
+   <cmetuse role="uses">
+      <hmdref ref="POCP_HD010300UV01-hmd" refname="R_SpecializedKind"
+              refidentifier="POCP_HD010300UV01"/>
+      <cmetref ref="POCP_MT081100UV01-msg" refname="E_SubstanceClinicalUniversal"
+               refidentifier="POCP_MT081100UV01"/>
+   </cmetuse>
+   <cmetuse role="uses">
+      <hmdref ref="POCP_HD010400UV01-hmd" refname="E_ProductMaterialKind"
+              refidentifier="POCP_HD010400UV01"/>
+      <cmetref ref="COCT_MT440001UV09-msg" refname="A_ValuedItemIdentified"
+               refidentifier="COCT_MT440001UV09"/>
+   </cmetuse>
+   <cmetuse role="uses">
+      <hmdref ref="POCP_HD010400UV01-hmd" refname="E_ProductMaterialKind"
+              refidentifier="POCP_HD010400UV01"/>
+      <cmetref ref="POCP_MT020100UV01-msg" refname="R_ProductInstanceUniversal"
+               refidentifier="POCP_MT020100UV01"/>
+   </cmetuse>
+   <cmetuse role="uses">
+      <hmdref ref="POCP_HD010400UV01-hmd" refname="E_ProductMaterialKind"
+              refidentifier="POCP_HD010400UV01"/>
+      <cmetref ref="POCP_MT030100UV01-msg" refname="R_ProductRelatedAssignedEntityUniversal"
+               refidentifier="POCP_MT030100UV01"/>
+   </cmetuse>
+   <cmetuse role="uses">
+      <hmdref ref="POCP_HD010400UV01-hmd" refname="E_ProductMaterialKind"
+              refidentifier="POCP_HD010400UV01"/>
+      <cmetref ref="POCP_MT030200UV01-msg" refname="E_ProductEstablishmentUniversal"
+               refidentifier="POCP_MT030200UV01"/>
+   </cmetuse>
+   <cmetuse role="uses">
+      <hmdref ref="POCP_HD010400UV01-hmd" refname="E_ProductMaterialKind"
+              refidentifier="POCP_HD010400UV01"/>
+      <cmetref ref="POCP_MT050100UV01-msg" refname="A_ProductInformationUniversal"
+               refidentifier="POCP_MT050100UV01"/>
+   </cmetuse>
+   <cmetuse role="uses">
+      <hmdref ref="POCP_HD010400UV01-hmd" refname="E_ProductMaterialKind"
+              refidentifier="POCP_HD010400UV01"/>
+      <cmetref ref="POCP_MT050400UV01-msg" refname="E_TerritoryUniversal"
+               refidentifier="POCP_MT050400UV01"/>
+   </cmetuse>
+   <cmetuse role="uses">
+      <hmdref ref="POCP_HD010400UV01-hmd" refname="E_ProductMaterialKind"
+              refidentifier="POCP_HD010400UV01"/>
+      <cmetref ref="POCP_MT060000UV01-msg" refname="A_ProductUseGuidelineUniversal"
+               refidentifier="POCP_MT060000UV01"/>
+   </cmetuse>
+   <cmetuse role="uses">
+      <hmdref ref="POCP_HD010400UV01-hmd" refname="E_ProductMaterialKind"
+              refidentifier="POCP_HD010400UV01"/>
+      <cmetref ref="POCP_MT070000UV01-msg" refname="A_DeviceActDefinitionUniversal"
+               refidentifier="POCP_MT070000UV01"/>
+   </cmetuse>
+   <cmetuse role="uses">
+      <hmdref ref="POCP_HD010400UV01-hmd" refname="E_ProductMaterialKind"
+              refidentifier="POCP_HD010400UV01"/>
+      <cmetref ref="POCP_MT081100UV01-msg" refname="E_SubstanceClinicalUniversal"
+               refidentifier="POCP_MT081100UV01"/>
+   </cmetuse>
+   <cmetuse role="uses">
+      <hmdref ref="POCP_HD010500UV01-hmd" refname="R_ProductAdministrable"
+              refidentifier="POCP_HD010500UV01"/>
+      <cmetref ref="COCT_MT440001UV09-msg" refname="A_ValuedItemIdentified"
+               refidentifier="COCT_MT440001UV09"/>
+   </cmetuse>
+   <cmetuse role="uses">
+      <hmdref ref="POCP_HD010500UV01-hmd" refname="R_ProductAdministrable"
+              refidentifier="POCP_HD010500UV01"/>
+      <cmetref ref="POCP_MT020100UV01-msg" refname="R_ProductInstanceUniversal"
+               refidentifier="POCP_MT020100UV01"/>
+   </cmetuse>
+   <cmetuse role="uses">
+      <hmdref ref="POCP_HD010500UV01-hmd" refname="R_ProductAdministrable"
+              refidentifier="POCP_HD010500UV01"/>
+      <cmetref ref="POCP_MT030100UV01-msg" refname="R_ProductRelatedAssignedEntityUniversal"
+               refidentifier="POCP_MT030100UV01"/>
+   </cmetuse>
+   <cmetuse role="uses">
+      <hmdref ref="POCP_HD010500UV01-hmd" refname="R_ProductAdministrable"
+              refidentifier="POCP_HD010500UV01"/>
+      <cmetref ref="POCP_MT030200UV01-msg" refname="E_ProductEstablishmentUniversal"
+               refidentifier="POCP_MT030200UV01"/>
+   </cmetuse>
+   <cmetuse role="uses">
+      <hmdref ref="POCP_HD010500UV01-hmd" refname="R_ProductAdministrable"
+              refidentifier="POCP_HD010500UV01"/>
+      <cmetref ref="POCP_MT050100UV01-msg" refname="A_ProductInformationUniversal"
+               refidentifier="POCP_MT050100UV01"/>
+   </cmetuse>
+   <cmetuse role="uses">
+      <hmdref ref="POCP_HD010500UV01-hmd" refname="R_ProductAdministrable"
+              refidentifier="POCP_HD010500UV01"/>
+      <cmetref ref="POCP_MT050400UV01-msg" refname="E_TerritoryUniversal"
+               refidentifier="POCP_MT050400UV01"/>
+   </cmetuse>
+   <cmetuse role="uses">
+      <hmdref ref="POCP_HD010500UV01-hmd" refname="R_ProductAdministrable"
+              refidentifier="POCP_HD010500UV01"/>
+      <cmetref ref="POCP_MT060000UV01-msg" refname="A_ProductUseGuidelineUniversal"
+               refidentifier="POCP_MT060000UV01"/>
+   </cmetuse>
+   <cmetuse role="uses">
+      <hmdref ref="POCP_HD010500UV01-hmd" refname="R_ProductAdministrable"
+              refidentifier="POCP_HD010500UV01"/>
+      <cmetref ref="POCP_MT070000UV01-msg" refname="A_DeviceActDefinitionUniversal"
+               refidentifier="POCP_MT070000UV01"/>
+   </cmetuse>
+   <cmetuse role="uses">
+      <hmdref ref="POCP_HD010500UV01-hmd" refname="R_ProductAdministrable"
+              refidentifier="POCP_HD010500UV01"/>
+      <cmetref ref="POCP_MT081100UV01-msg" refname="E_SubstanceClinicalUniversal"
+               refidentifier="POCP_MT081100UV01"/>
+   </cmetuse>
+   <cmetuse role="uses">
+      <hmdref ref="POCP_HD010600UV01-hmd" refname="R_ProductUseExact"
+              refidentifier="POCP_HD010600UV01"/>
+      <cmetref ref="COCT_MT440001UV09-msg" refname="A_ValuedItemIdentified"
+               refidentifier="COCT_MT440001UV09"/>
+   </cmetuse>
+   <cmetuse role="uses">
+      <hmdref ref="POCP_HD010600UV01-hmd" refname="R_ProductUseExact"
+              refidentifier="POCP_HD010600UV01"/>
+      <cmetref ref="POCP_MT020100UV01-msg" refname="R_ProductInstanceUniversal"
+               refidentifier="POCP_MT020100UV01"/>
+   </cmetuse>
+   <cmetuse role="uses">
+      <hmdref ref="POCP_HD010600UV01-hmd" refname="R_ProductUseExact"
+              refidentifier="POCP_HD010600UV01"/>
+      <cmetref ref="POCP_MT030100UV01-msg" refname="R_ProductRelatedAssignedEntityUniversal"
+               refidentifier="POCP_MT030100UV01"/>
+   </cmetuse>
+   <cmetuse role="uses">
+      <hmdref ref="POCP_HD010600UV01-hmd" refname="R_ProductUseExact"
+              refidentifier="POCP_HD010600UV01"/>
+      <cmetref ref="POCP_MT030200UV01-msg" refname="E_ProductEstablishmentUniversal"
+               refidentifier="POCP_MT030200UV01"/>
+   </cmetuse>
+   <cmetuse role="uses">
+      <hmdref ref="POCP_HD010600UV01-hmd" refname="R_ProductUseExact"
+              refidentifier="POCP_HD010600UV01"/>
+      <cmetref ref="POCP_MT050100UV01-msg" refname="A_ProductInformationUniversal"
+               refidentifier="POCP_MT050100UV01"/>
+   </cmetuse>
+   <cmetuse role="uses">
+      <hmdref ref="POCP_HD010600UV01-hmd" refname="R_ProductUseExact"
+              refidentifier="POCP_HD010600UV01"/>
+      <cmetref ref="POCP_MT050400UV01-msg" refname="E_TerritoryUniversal"
+               refidentifier="POCP_MT050400UV01"/>
+   </cmetuse>
+   <cmetuse role="uses">
+      <hmdref ref="POCP_HD010600UV01-hmd" refname="R_ProductUseExact"
+              refidentifier="POCP_HD010600UV01"/>
+      <cmetref ref="POCP_MT060000UV01-msg" refname="A_ProductUseGuidelineUniversal"
+               refidentifier="POCP_MT060000UV01"/>
+   </cmetuse>
+   <cmetuse role="uses">
+      <hmdref ref="POCP_HD010600UV01-hmd" refname="R_ProductUseExact"
+              refidentifier="POCP_HD010600UV01"/>
+      <cmetref ref="POCP_MT070000UV01-msg" refname="A_DeviceActDefinitionUniversal"
+               refidentifier="POCP_MT070000UV01"/>
+   </cmetuse>
+   <cmetuse role="uses">
+      <hmdref ref="POCP_HD010600UV01-hmd" refname="R_ProductUseExact"
+              refidentifier="POCP_HD010600UV01"/>
+      <cmetref ref="POCP_MT081100UV01-msg" refname="E_SubstanceClinicalUniversal"
+               refidentifier="POCP_MT081100UV01"/>
+   </cmetuse>
+   <cmetuse role="uses">
+      <hmdref ref="POCP_HD020100UV01-hmd" refname="R_ProductInstance"
+              refidentifier="POCP_HD020100UV01"/>
+      <cmetref ref="POCP_MT010200UV01-msg" refname="E_ProductKindUniversal"
+               refidentifier="POCP_MT010200UV01"/>
+   </cmetuse>
+   <cmetuse role="uses">
+      <hmdref ref="POCP_HD020100UV01-hmd" refname="R_ProductInstance"
+              refidentifier="POCP_HD020100UV01"/>
+      <cmetref ref="POCP_MT010400UV01-msg" refname="E_ProductMaterialKindUniversal"
+               refidentifier="POCP_MT010400UV01"/>
+   </cmetuse>
+   <cmetuse role="uses">
+      <hmdref ref="POCP_HD020100UV01-hmd" refname="R_ProductInstance"
+              refidentifier="POCP_HD020100UV01"/>
+      <cmetref ref="POCP_MT030200UV01-msg" refname="E_ProductEstablishmentUniversal"
+               refidentifier="POCP_MT030200UV01"/>
+   </cmetuse>
+   <cmetuse role="uses">
+      <hmdref ref="POCP_HD020100UV01-hmd" refname="R_ProductInstance"
+              refidentifier="POCP_HD020100UV01"/>
+      <cmetref ref="POCP_MT040100UV01-msg" refname="A_ProductEventUniversal"
+               refidentifier="POCP_MT040100UV01"/>
+   </cmetuse>
+   <cmetuse role="uses">
+      <hmdref ref="POCP_HD020200UV01-hmd" refname="R_ProductReportable"
+              refidentifier="POCP_HD020200UV01"/>
+      <cmetref ref="POCP_MT010200UV01-msg" refname="E_ProductKindUniversal"
+               refidentifier="POCP_MT010200UV01"/>
+   </cmetuse>
+   <cmetuse role="uses">
+      <hmdref ref="POCP_HD020200UV01-hmd" refname="R_ProductReportable"
+              refidentifier="POCP_HD020200UV01"/>
+      <cmetref ref="POCP_MT010400UV01-msg" refname="E_ProductMaterialKindUniversal"
+               refidentifier="POCP_MT010400UV01"/>
+   </cmetuse>
+   <cmetuse role="uses">
+      <hmdref ref="POCP_HD020200UV01-hmd" refname="R_ProductReportable"
+              refidentifier="POCP_HD020200UV01"/>
+      <cmetref ref="POCP_MT030200UV01-msg" refname="E_ProductEstablishmentUniversal"
+               refidentifier="POCP_MT030200UV01"/>
+   </cmetuse>
+   <cmetuse role="uses">
+      <hmdref ref="POCP_HD020200UV01-hmd" refname="R_ProductReportable"
+              refidentifier="POCP_HD020200UV01"/>
+      <cmetref ref="POCP_MT040100UV01-msg" refname="A_ProductEventUniversal"
+               refidentifier="POCP_MT040100UV01"/>
+   </cmetuse>
+   <cmetuse role="uses">
+      <hmdref ref="POCP_HD030100UV01-hmd" refname="R_ProductRelatedAssignedEntity"
+              refidentifier="POCP_HD030100UV01"/>
+      <cmetref ref="POCP_MT010400UV01-msg" refname="E_ProductMaterialKindUniversal"
+               refidentifier="POCP_MT010400UV01"/>
+   </cmetuse>
+   <cmetuse role="uses">
+      <hmdref ref="POCP_HD030200UV01-hmd" refname="E_ProductEstablishment"
+              refidentifier="POCP_HD030200UV01"/>
+      <cmetref ref="POCP_MT010400UV01-msg" refname="E_ProductMaterialKindUniversal"
+               refidentifier="POCP_MT010400UV01"/>
+   </cmetuse>
+   <cmetuse role="uses">
+      <hmdref ref="POCP_HD030300UV01-hmd" refname="R_ProductEstablishment"
+              refidentifier="POCP_HD030300UV01"/>
+      <cmetref ref="POCP_MT010400UV01-msg" refname="E_ProductMaterialKindUniversal"
+               refidentifier="POCP_MT010400UV01"/>
+   </cmetuse>
+   <cmetuse role="uses">
+      <hmdref ref="POCP_HD040100UV01-hmd" refname="A_ProductEvent"
+              refidentifier="POCP_HD040100UV01"/>
+      <cmetref ref="COCT_MT240003UV02-msg" refname="R_ServiceDeliveryLocationContact"
+               refidentifier="COCT_MT240003UV02"/>
+   </cmetuse>
+   <cmetuse role="uses">
+      <hmdref ref="POCP_HD040100UV01-hmd" refname="A_ProductEvent"
+              refidentifier="POCP_HD040100UV01"/>
+      <cmetref ref="POCP_MT030100UV01-msg" refname="R_ProductRelatedAssignedEntityUniversal"
+               refidentifier="POCP_MT030100UV01"/>
+   </cmetuse>
+   <cmetuse role="uses">
+      <hmdref ref="POCP_HD050100UV01-hmd" refname="A_ProductInformation"
+              refidentifier="POCP_HD050100UV01"/>
+      <cmetref ref="POCP_MT030100UV01-msg" refname="R_ProductRelatedAssignedEntityUniversal"
+               refidentifier="POCP_MT030100UV01"/>
+   </cmetuse>
+   <cmetuse role="uses">
+      <hmdref ref="POCP_HD050100UV01-hmd" refname="A_ProductInformation"
+              refidentifier="POCP_HD050100UV01"/>
+      <cmetref ref="POCP_MT030200UV01-msg" refname="E_ProductEstablishmentUniversal"
+               refidentifier="POCP_MT030200UV01"/>
+   </cmetuse>
+   <cmetuse role="uses">
+      <hmdref ref="POCP_HD050100UV01-hmd" refname="A_ProductInformation"
+              refidentifier="POCP_HD050100UV01"/>
+      <cmetref ref="POCP_MT090100UV01-msg" refname="A_SubstanceSpecificationUniversal"
+               refidentifier="POCP_MT090100UV01"/>
+   </cmetuse>
+   <cmetuse role="uses">
+      <hmdref ref="POCP_HD050200UV01-hmd" refname="A_ProductCharacteristic"
+              refidentifier="POCP_HD050200UV01"/>
+      <cmetref ref="POCP_MT030100UV01-msg" refname="R_ProductRelatedAssignedEntityUniversal"
+               refidentifier="POCP_MT030100UV01"/>
+   </cmetuse>
+   <cmetuse role="uses">
+      <hmdref ref="POCP_HD050200UV01-hmd" refname="A_ProductCharacteristic"
+              refidentifier="POCP_HD050200UV01"/>
+      <cmetref ref="POCP_MT030200UV01-msg" refname="E_ProductEstablishmentUniversal"
+               refidentifier="POCP_MT030200UV01"/>
+   </cmetuse>
+   <cmetuse role="uses">
+      <hmdref ref="POCP_HD050200UV01-hmd" refname="A_ProductCharacteristic"
+              refidentifier="POCP_HD050200UV01"/>
+      <cmetref ref="POCP_MT090100UV01-msg" refname="A_SubstanceSpecificationUniversal"
+               refidentifier="POCP_MT090100UV01"/>
+   </cmetuse>
+   <cmetuse role="uses">
+      <hmdref ref="POCP_HD050300UV01-hmd" refname="R_TerritorialAuthority"
+              refidentifier="POCP_HD050300UV01"/>
+      <cmetref ref="POCP_MT030100UV01-msg" refname="R_ProductRelatedAssignedEntityUniversal"
+               refidentifier="POCP_MT030100UV01"/>
+   </cmetuse>
+   <cmetuse role="uses">
+      <hmdref ref="POCP_HD050300UV01-hmd" refname="R_TerritorialAuthority"
+              refidentifier="POCP_HD050300UV01"/>
+      <cmetref ref="POCP_MT030200UV01-msg" refname="E_ProductEstablishmentUniversal"
+               refidentifier="POCP_MT030200UV01"/>
+   </cmetuse>
+   <cmetuse role="uses">
+      <hmdref ref="POCP_HD050300UV01-hmd" refname="R_TerritorialAuthority"
+              refidentifier="POCP_HD050300UV01"/>
+      <cmetref ref="POCP_MT090100UV01-msg" refname="A_SubstanceSpecificationUniversal"
+               refidentifier="POCP_MT090100UV01"/>
+   </cmetuse>
+   <cmetuse role="uses">
+      <hmdref ref="POCP_HD050400UV01-hmd" refname="E_Territory"
+              refidentifier="POCP_HD050400UV01"/>
+      <cmetref ref="POCP_MT030100UV01-msg" refname="R_ProductRelatedAssignedEntityUniversal"
+               refidentifier="POCP_MT030100UV01"/>
+   </cmetuse>
+   <cmetuse role="uses">
+      <hmdref ref="POCP_HD050400UV01-hmd" refname="E_Territory"
+              refidentifier="POCP_HD050400UV01"/>
+      <cmetref ref="POCP_MT030200UV01-msg" refname="E_ProductEstablishmentUniversal"
+               refidentifier="POCP_MT030200UV01"/>
+   </cmetuse>
+   <cmetuse role="uses">
+      <hmdref ref="POCP_HD050400UV01-hmd" refname="E_Territory"
+              refidentifier="POCP_HD050400UV01"/>
+      <cmetref ref="POCP_MT090100UV01-msg" refname="A_SubstanceSpecificationUniversal"
+               refidentifier="POCP_MT090100UV01"/>
+   </cmetuse>
+   <cmetuse role="uses">
+      <hmdref ref="POCP_HD060000UV01-hmd" refname="A_ProductUseGuideline"
+              refidentifier="POCP_HD060000UV01"/>
+      <cmetref ref="POCP_MT060100UV01-msg" refname="A_ProductUseGuidelineSPLUniversal"
+               refidentifier="POCP_MT060100UV01"/>
+   </cmetuse>
+   <cmetuse role="uses">
+      <hmdref ref="POCP_HD060100UV01-hmd" refname="A_ProductUseGuideline(SPL)"
+              refidentifier="POCP_HD060100UV01"/>
+      <cmetref ref="POCP_MT010400UV01-msg" refname="E_ProductMaterialKindUniversal"
+               refidentifier="POCP_MT010400UV01"/>
+   </cmetuse>
+   <cmetuse role="uses">
+      <hmdref ref="POCP_HD060100UV01-hmd" refname="A_ProductUseGuideline(SPL)"
+              refidentifier="POCP_HD060100UV01"/>
+      <cmetref ref="POCP_MT010600UV01-msg" refname="R_ProductUseExactUniversal"
+               refidentifier="POCP_MT010600UV01"/>
+   </cmetuse>
+   <cmetuse role="uses">
+      <hmdref ref="POCP_HD060100UV01-hmd" refname="A_ProductUseGuideline(SPL)"
+              refidentifier="POCP_HD060100UV01"/>
+      <cmetref ref="POCP_MT050200UV01-msg" refname="A_ProductCharacteristicUniversal"
+               refidentifier="POCP_MT050200UV01"/>
+   </cmetuse>
+   <cmetuse role="uses">
+      <hmdref ref="POCP_HD060200UV01-hmd" refname="A_ProductUseGuideline(Canada)"
+              refidentifier="POCP_HD060200UV01"/>
+      <cmetref ref="COCT_MT980050UV-msg" refname="A_IndicationBasic"
+               refidentifier="COCT_MT980050UV"/>
+   </cmetuse>
+   <cmetuse role="uses">
+      <hmdref ref="POCP_HD060200UV01-hmd" refname="A_ProductUseGuideline(Canada)"
+              refidentifier="POCP_HD060200UV01"/>
+      <cmetref ref="PORX_MT980040UV-msg" refname="A_SubstanceAdministrationRequestUniversal"
+               refidentifier="PORX_MT980040UV"/>
+   </cmetuse>
+   <cmetuse role="uses">
+      <hmdref ref="POCP_HD070000UV01-hmd" refname="A_DeviceActDefinition"
+              refidentifier="POCP_HD070000UV01"/>
+      <cmetref ref="POCP_MT070100UV-msg"
+               refname="A_DeviceActDefinitionInVitroDiagnosticUniversal"
+               refidentifier="POCP_MT070100UV"/>
+   </cmetuse>
+   <cmetuse role="uses">
+      <hmdref ref="POCP_HD070000UV01-hmd" refname="A_DeviceActDefinition"
+              refidentifier="POCP_HD070000UV01"/>
+      <cmetref ref="POCP_MT070200UV01-msg"
+               refname="A_DeviceActDefinitionInVivoImplantedUniversal"
+               refidentifier="POCP_MT070200UV01"/>
+   </cmetuse>
+   <cmetuse role="uses">
+      <hmdref ref="POCP_HD070100UV-hmd" refname="A_DeviceActDefinitionInVitroDiagnostic"
+              refidentifier="POCP_HD070100UV"/>
+      <cmetref ref="POCP_MT080200UV01-msg" refname="R_PresentSubstanceUniversal"
+               refidentifier="POCP_MT080200UV01"/>
+   </cmetuse>
+   <cmetuse role="uses">
+      <hmdref ref="POCP_HD070200UV01-hmd" refname="A_DeviceActDefinitionInVivoImplanted"
+              refidentifier="POCP_HD070200UV01"/>
+      <cmetref ref="COCT_MT050002UV07-msg" refname="R_PatientIdentified-confirmable"
+               refidentifier="COCT_MT050002UV07"/>
+   </cmetuse>
+   <cmetuse role="uses">
+      <hmdref ref="POCP_HD070200UV01-hmd" refname="A_DeviceActDefinitionInVivoImplanted"
+              refidentifier="POCP_HD070200UV01"/>
+      <cmetref ref="POCP_MT010100UV01-msg" refname="R_ProductListedUniversal"
+               refidentifier="POCP_MT010100UV01"/>
+   </cmetuse>
+   <cmetuse role="uses">
+      <hmdref ref="POCP_HD080100UV01-hmd" refname="E_Substance"
+              refidentifier="POCP_HD080100UV01"/>
+      <cmetref ref="POCP_MT081100UV01-msg" refname="E_SubstanceClinicalUniversal"
+               refidentifier="POCP_MT081100UV01"/>
+   </cmetuse>
+   <cmetuse role="uses">
+      <hmdref ref="POCP_HD080100UV01-hmd" refname="E_Substance"
+              refidentifier="POCP_HD080100UV01"/>
+      <cmetref ref="POCP_MT082100UV01-msg" refname="E_SubstanceChemicalUniversal"
+               refidentifier="POCP_MT082100UV01"/>
+   </cmetuse>
+   <cmetuse role="uses">
+      <hmdref ref="POCP_HD080200UV01-hmd" refname="R_SubstancePresence"
+              refidentifier="POCP_HD080200UV01"/>
+      <cmetref ref="POCP_MT081100UV01-msg" refname="E_SubstanceClinicalUniversal"
+               refidentifier="POCP_MT081100UV01"/>
+   </cmetuse>
+   <cmetuse role="uses">
+      <hmdref ref="POCP_HD080200UV01-hmd" refname="R_SubstancePresence"
+              refidentifier="POCP_HD080200UV01"/>
+      <cmetref ref="POCP_MT082100UV01-msg" refname="E_SubstanceChemicalUniversal"
+               refidentifier="POCP_MT082100UV01"/>
+   </cmetuse>
+   <cmetuse role="uses">
+      <hmdref ref="POCP_HD080300UV01-hmd" refname="R_Substance"
+              refidentifier="POCP_HD080300UV01"/>
+      <cmetref ref="POCP_MT010300UV01-msg" refname="R_SpecializedKindUniversal"
+               refidentifier="POCP_MT010300UV01"/>
+   </cmetuse>
+   <cmetuse role="uses">
+      <hmdref ref="POCP_HD080300UV01-hmd" refname="R_Substance"
+              refidentifier="POCP_HD080300UV01"/>
+      <cmetref ref="POCP_MT080200UV01-msg" refname="R_PresentSubstanceUniversal"
+               refidentifier="POCP_MT080200UV01"/>
+   </cmetuse>
+   <cmetuse role="uses">
+      <hmdref ref="POCP_HD080300UV01-hmd" refname="R_Substance"
+              refidentifier="POCP_HD080300UV01"/>
+      <cmetref ref="POCP_MT090100UV01-msg" refname="A_SubstanceSpecificationUniversal"
+               refidentifier="POCP_MT090100UV01"/>
+   </cmetuse>
+   <cmetuse role="uses">
+      <hmdref ref="POCP_HD081100UV01-hmd" refname="E_SubstanceClinical"
+              refidentifier="POCP_HD081100UV01"/>
+      <cmetref ref="POCP_MT010300UV01-msg" refname="R_SpecializedKindUniversal"
+               refidentifier="POCP_MT010300UV01"/>
+   </cmetuse>
+   <cmetuse role="uses">
+      <hmdref ref="POCP_HD082100UV01-hmd" refname="E_SubstanceChemical"
+              refidentifier="POCP_HD082100UV01"/>
+      <cmetref ref="POCP_MT010300UV01-msg" refname="R_SpecializedKindUniversal"
+               refidentifier="POCP_MT010300UV01"/>
+   </cmetuse>
+   <cmetuse role="uses">
+      <hmdref ref="POCP_HD082100UV01-hmd" refname="E_SubstanceChemical"
+              refidentifier="POCP_HD082100UV01"/>
+      <cmetref ref="POCP_MT080200UV01-msg" refname="R_PresentSubstanceUniversal"
+               refidentifier="POCP_MT080200UV01"/>
+   </cmetuse>
+   <cmetuse role="uses">
+      <hmdref ref="POCP_HD082100UV01-hmd" refname="E_SubstanceChemical"
+              refidentifier="POCP_HD082100UV01"/>
+      <cmetref ref="POCP_MT090100UV01-msg" refname="A_SubstanceSpecificationUniversal"
+               refidentifier="POCP_MT090100UV01"/>
+   </cmetuse>
+   <cmetuse role="uses">
+      <hmdref ref="POCP_HD090100UV01-hmd" refname="A_SubstanceSpecification"
+              refidentifier="POCP_HD090100UV01"/>
+      <cmetref ref="POCP_MT020200UV01-msg" refname="R_ProductReportableUniversal"
+               refidentifier="POCP_MT020200UV01"/>
+   </cmetuse>
+   <cmetuse role="uses">
+      <hmdref ref="POCP_HD090100UV01-hmd" refname="A_SubstanceSpecification"
+              refidentifier="POCP_HD090100UV01"/>
+      <cmetref ref="POCP_MT030300UV01-msg" refname="R_ProductEstablishmentUniversal"
+               refidentifier="POCP_MT030300UV01"/>
+   </cmetuse>
+   <cmetuse role="uses">
+      <hmdref ref="POCP_HD090100UV01-hmd" refname="A_SubstanceSpecification"
+              refidentifier="POCP_HD090100UV01"/>
+      <cmetref ref="POCP_MT080300UV01-msg" refname="R_SubstanceUniversal"
+               refidentifier="POCP_MT080300UV01"/>
+   </cmetuse>
+</usage>

@@ -1,0 +1,50 @@
+<usage><!--Have 8 CMET usage sets for PORR and UV--><cmetuse role="uses">
+      <hmdref ref="PORR_HD049006UV01-hmd" refname="IndividualCaseSafetyReport"
+              refidentifier="PORR_HD049006UV01"/>
+      <cmetref ref="COCT_MT970000UV-msg" refname="A_ResearchStudyEnrollmentUniversal"
+               refidentifier="COCT_MT970000UV"/>
+   </cmetuse>
+   <cmetuse role="uses">
+      <hmdref ref="PORR_HD049006UV01-hmd" refname="IndividualCaseSafetyReport"
+              refidentifier="PORR_HD049006UV01"/>
+      <cmetref ref="POCP_MT020200UV01-msg" refname="R_ProductReportableUniversal"
+               refidentifier="POCP_MT020200UV01"/>
+   </cmetuse>
+   <cmetuse role="uses">
+      <hmdref ref="PORR_HD049006UV01-hmd" refname="IndividualCaseSafetyReport"
+              refidentifier="PORR_HD049006UV01"/>
+      <cmetref ref="PORR_MT049013UV01-msg"
+               refname="A_RelevantInformationForProductReportingUniversal"
+               refidentifier="PORR_MT049013UV01"/>
+   </cmetuse>
+   <cmetuse role="uses">
+      <hmdref ref="PORR_HD049013UV01-hmd" refname="Product Reporting Relevant Information"
+              refidentifier="PORR_HD049013UV01"/>
+      <cmetref ref="COCT_MT080000UV09-msg" refname="R_SpecimenUniversal"
+               refidentifier="COCT_MT080000UV09"/>
+   </cmetuse>
+   <cmetuse role="uses">
+      <hmdref ref="PORR_HD049013UV01-hmd" refname="Product Reporting Relevant Information"
+              refidentifier="PORR_HD049013UV01"/>
+      <cmetref ref="COCT_MT710000UV07-msg" refname="E_PlaceUniversal"
+               refidentifier="COCT_MT710000UV07"/>
+   </cmetuse>
+   <cmetuse role="uses">
+      <hmdref ref="PORR_HD049013UV01-hmd" refname="Product Reporting Relevant Information"
+              refidentifier="PORR_HD049013UV01"/>
+      <cmetref ref="POCP_MT020200UV01-msg" refname="R_ProductReportableUniversal"
+               refidentifier="POCP_MT020200UV01"/>
+   </cmetuse>
+   <cmetuse role="uses">
+      <hmdref ref="PORR_HD049016UV01-hmd" refname="HumanPharmaceuticalsBaseRMIM"
+              refidentifier="PORR_HD049016UV01"/>
+      <cmetref ref="PORR_MT049023UV01-msg" refname="A_HumanPharmaceuticalsPRRIModelUniversal"
+               refidentifier="PORR_MT049023UV01"/>
+   </cmetuse>
+   <cmetuse role="uses">
+      <hmdref ref="PORR_HD049023UV01-hmd" refname="HumanPharmaceuticalsPRRIModel"
+              refidentifier="PORR_HD049023UV01"/>
+      <cmetref ref="POCP_MT020200UV01-msg" refname="R_ProductReportableUniversal"
+               refidentifier="POCP_MT020200UV01"/>
+   </cmetuse>
+</usage>

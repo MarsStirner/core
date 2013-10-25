@@ -1,0 +1,2320 @@
+<?xml version="1.0" encoding="iso-8859-1"?>
+<spec id="PORR_DO000001UV-ic" type="dependencyTree" sectionCode="UVRR">
+   <header>
+      <title> Regulated Reporting Dependency Annex
+				</title>
+      <version>V 00-00</version>
+      <ballot type="NormativeStandard" number="1"/>
+      <date>6/31/2008</date>
+      <legalese copyRightDate="2008"/>
+   </header>
+   <body>
+      <div1 id="all-sortOrder">
+         <head> Regulated Reporting in Structured Sort Order</head>
+         <artree role="ssn">
+            <artreeitem>
+               <stref id="d2e22929" role="tree-intro" sectID="UVRR" sectType="SB"
+                      refName="Domain: Regulated Reporting"
+                      refFamiliarName="Domain: Regulated Reporting"
+                      refIdentifier="PORR_DO000001UV"/>
+               <artreeitem>
+                  <rmimref id="treeRef-PORR_DM000000UV" role="tree-element" sectID="UVRR" sectType="SB"
+                           refName="Public Health Reporting Domain Information Model"
+                           refFamiliarName="Public Health Reporting Domain Information Model"
+                           refIdentifier="PORR_DM000000UV"/>
+               </artreeitem>
+               <artreeitem>
+                  <rmimref id="treeRef-PORR_DM100001UV" role="tree-element" sectID="UVRR" sectType="SB"
+                           refName="Public Health Reporting Domain Information Model"
+                           refFamiliarName="Public Health Reporting Domain Information Model"
+                           refIdentifier="PORR_DM100001UV"/>
+               </artreeitem>
+               <artreeitem>
+                  <stref id="d2e22935" role="tree-intro" sectID="UVRR" sectType="SB"
+                         refName="Topic: Individual Case Safety Reporting"
+                         refFamiliarName="Topic: Individual Case Safety Reporting"
+                         refIdentifier="PORR_DO000001UV"/>
+                  <artreeitem>
+                     <stref id="d2e22935" role="tree-intro" sectID="" sectType="SB" refName=" Story Boards"
+                            refFamiliarName=" Story Boards"
+                            refIdentifier=""/>
+                     <artreeitem>
+                        <stref id="treeRef-PORR_ST040001UV01" role="tree-element" sectID="UVRR" sectType="SB"
+                               refName="Individual Case Safety Reporting"
+                               refFamiliarName="Individual Case Safety Reporting"
+                               refIdentifier="PORR_ST040001UV01"/>
+                        <artreeitem>
+                           <stref id="treeRef-PORR_SN040001UV01" role="tree-element" sectID="UVRR" sectType="SB"
+                                  refName="Healthcare Provider Initial Report"
+                                  refFamiliarName="Healthcare Provider Initial Report"
+                                  refIdentifier="PORR_SN040001UV01"/>
+                        </artreeitem>
+                        <artreeitem>
+                           <stref id="treeRef-PORR_SN040002UV01" role="tree-element" sectID="UVRR" sectType="SB"
+                                  refName="ICSR Product Defect Reporting"
+                                  refFamiliarName="ICSR Product Defect Reporting"
+                                  refIdentifier="PORR_SN040002UV01"/>
+                        </artreeitem>
+                        <artreeitem>
+                           <stref id="treeRef-PORR_SN040003UV01" role="tree-element" sectID="UVRR" sectType="SB"
+                                  refName="Healthcare Provider Follow Up Report"
+                                  refFamiliarName="Healthcare Provider Follow Up Report"
+                                  refIdentifier="PORR_SN040003UV01"/>
+                        </artreeitem>
+                        <artreeitem>
+                           <stref id="treeRef-PORR_SN040004UV01" role="tree-element" sectID="UVRR" sectType="SB"
+                                  refName="ICSR Nullification Report"
+                                  refFamiliarName="ICSR Nullification Report"
+                                  refIdentifier="PORR_SN040004UV01"/>
+                        </artreeitem>
+                        <artreeitem>
+                           <stref id="treeRef-PORR_SN040005UV01" role="tree-element" sectID="UVRR" sectType="SB"
+                                  refName="ICSR Product Defect Follow up Report"
+                                  refFamiliarName="ICSR Product Defect Follow up Report"
+                                  refIdentifier="PORR_SN040005UV01"/>
+                        </artreeitem>
+                        <artreeitem>
+                           <stref id="treeRef-PORR_SN040006UV01" role="tree-element" sectID="UVRR" sectType="SB"
+                                  refName="Nullify ICSR Product Defect Report"
+                                  refFamiliarName="Nullify ICSR Product Defect Report"
+                                  refIdentifier="PORR_SN040006UV01"/>
+                        </artreeitem>
+                        <artreeitem>
+                           <stref id="treeRef-PORR_SN040007UV01" role="tree-element" sectID="UVRR" sectType="SB"
+                                  refName="Device Reporting"
+                                  refFamiliarName="Device Reporting"
+                                  refIdentifier="PORR_SN040007UV01"/>
+                        </artreeitem>
+                        <artreeitem>
+                           <stref id="treeRef-PORR_SN040008UV01" role="tree-element" sectID="UVRR" sectType="SB"
+                                  refName="Adulterated Food Reporting"
+                                  refFamiliarName="Adulterated Food Reporting"
+                                  refIdentifier="PORR_SN040008UV01"/>
+                        </artreeitem>
+                        <artreeitem>
+                           <stref id="treeRef-PORR_SN040009UV01" role="tree-element" sectID="UVRR" sectType="SB"
+                                  refName="Dietary Supplement"
+                                  refFamiliarName="Dietary Supplement"
+                                  refIdentifier="PORR_SN040009UV01"/>
+                        </artreeitem>
+                        <artreeitem>
+                           <stref id="treeRef-PORR_SN040010UV01" role="tree-element" sectID="UVRR" sectType="SB"
+                                  refName="Cosmetic as Face Paint Report"
+                                  refFamiliarName="Cosmetic as Face Paint Report"
+                                  refIdentifier="PORR_SN040010UV01"/>
+                        </artreeitem>
+                        <artreeitem>
+                           <stref id="treeRef-PORR_SN040011UV01" role="tree-element" sectID="UVRR" sectType="SB"
+                                  refName="Parent Child Report"
+                                  refFamiliarName="Parent Child Report"
+                                  refIdentifier="PORR_SN040011UV01"/>
+                        </artreeitem>
+                        <artreeitem>
+                           <stref id="treeRef-PORR_SN040012UV01" role="tree-element" sectID="UVRR" sectType="SB"
+                                  refName="Clinical Trial Report I"
+                                  refFamiliarName="Clinical Trial Report I"
+                                  refIdentifier="PORR_SN040012UV01"/>
+                        </artreeitem>
+                        <artreeitem>
+                           <stref id="treeRef-PORR_SN040013UV01" role="tree-element" sectID="UVRR" sectType="SB"
+                                  refName="Clinical Trial Report II"
+                                  refFamiliarName="Clinical Trial Report II"
+                                  refIdentifier="PORR_SN040013UV01"/>
+                        </artreeitem>
+                        <artreeitem>
+                           <intref id="treeRef-PORR_IN049006UV01" role="dependency" sectID="UVRR" sectType="SB"
+                                   refName="Individual Case Safety Report Create"
+                                   refFamiliarName="Individual Case Safety Report Create"
+                                   refIdentifier="PORR_IN049006UV01"/>
+                        </artreeitem>
+                        <artreeitem>
+                           <intref id="treeRef-PORR_IN049007UV01" role="dependency" sectID="UVRR" sectType="SB"
+                                   refName="Individual Case Safety Report Revise"
+                                   refFamiliarName="Individual Case Safety Report Revise"
+                                   refIdentifier="PORR_IN049007UV01"/>
+                        </artreeitem>
+                        <artreeitem>
+                           <intref id="treeRef-PORR_IN049008UV01" role="dependency" sectID="UVRR" sectType="SB"
+                                   refName="Individual Case Safety Report Retract"
+                                   refFamiliarName="Individual Case Safety Report Retract"
+                                   refIdentifier="PORR_IN049008UV01"/>
+                        </artreeitem>
+                     </artreeitem>
+                  </artreeitem>
+                  <artreeitem>
+                     <stref id="d2e22935" role="tree-intro" sectID="" sectType="SB"
+                            refName=" Application Roles"
+                            refFamiliarName=" Application Roles"
+                            refIdentifier=""/>
+                     <artreeitem>
+                        <arref id="treeRef-PORR_AR040002UV01" role="tree-element" sectID="UVRR" sectType="SB"
+                               refName="ICSR Notification Receiver"
+                               refFamiliarName="ICSR Notification Receiver"
+                               refIdentifier="PORR_AR040002UV01"/>
+                        <artreeitem>
+                           <intref id="treeRef-PORR_IN049006UV01" role="dependency" sectID="UVRR" sectType="SB"
+                                   refName="Individual Case Safety Report Create"
+                                   refFamiliarName="Individual Case Safety Report Create"
+                                   refIdentifier="PORR_IN049006UV01"/>
+                        </artreeitem>
+                        <artreeitem>
+                           <intref id="treeRef-PORR_IN049007UV01" role="dependency" sectID="UVRR" sectType="SB"
+                                   refName="Individual Case Safety Report Revise"
+                                   refFamiliarName="Individual Case Safety Report Revise"
+                                   refIdentifier="PORR_IN049007UV01"/>
+                        </artreeitem>
+                        <artreeitem>
+                           <intref id="treeRef-PORR_IN049008UV01" role="dependency" sectID="UVRR" sectType="SB"
+                                   refName="Individual Case Safety Report Retract"
+                                   refFamiliarName="Individual Case Safety Report Retract"
+                                   refIdentifier="PORR_IN049008UV01"/>
+                        </artreeitem>
+                     </artreeitem>
+                     <artreeitem>
+                        <arref id="treeRef-PORR_AR040001UV01" role="tree-element" sectID="UVRR" sectType="SB"
+                               refName="ICSR Notification Sender"
+                               refFamiliarName="ICSR Notification Sender"
+                               refIdentifier="PORR_AR040001UV01"/>
+                        <artreeitem>
+                           <intref id="treeRef-PORR_IN049006UV01" role="dependency" sectID="UVRR" sectType="SB"
+                                   refName="Individual Case Safety Report Create"
+                                   refFamiliarName="Individual Case Safety Report Create"
+                                   refIdentifier="PORR_IN049006UV01"/>
+                        </artreeitem>
+                        <artreeitem>
+                           <intref id="treeRef-PORR_IN049007UV01" role="dependency" sectID="UVRR" sectType="SB"
+                                   refName="Individual Case Safety Report Revise"
+                                   refFamiliarName="Individual Case Safety Report Revise"
+                                   refIdentifier="PORR_IN049007UV01"/>
+                        </artreeitem>
+                        <artreeitem>
+                           <intref id="treeRef-PORR_IN049008UV01" role="dependency" sectID="UVRR" sectType="SB"
+                                   refName="Individual Case Safety Report Retract"
+                                   refFamiliarName="Individual Case Safety Report Retract"
+                                   refIdentifier="PORR_IN049008UV01"/>
+                        </artreeitem>
+                     </artreeitem>
+                  </artreeitem>
+                  <artreeitem>
+                     <stref id="d2e22935" role="tree-intro" sectID="" sectType="SB"
+                            refName=" Trigger Events"
+                            refFamiliarName=" Trigger Events"
+                            refIdentifier=""/>
+                     <artreeitem>
+                        <teref id="treeRef-PORR_TE049007UV01" role="tree-element" sectID="UVRR" sectType="SB"
+                               refName="ICSR Revise Notification"
+                               refFamiliarName="ICSR Revise Notification"
+                               refIdentifier="PORR_TE049007UV01"/>
+                     </artreeitem>
+                     <artreeitem>
+                        <teref id="treeRef-PORR_TE049006UV01" role="tree-element" sectID="UVRR" sectType="SB"
+                               refName="ICSR Complete Notification"
+                               refFamiliarName="ICSR Complete Notification"
+                               refIdentifier="PORR_TE049006UV01"/>
+                     </artreeitem>
+                     <artreeitem>
+                        <teref id="treeRef-PORR_TE049008UV01" role="tree-element" sectID="UVRR" sectType="SB"
+                               refName="ICSR Withdraw Notification"
+                               refFamiliarName="ICSR Withdraw Notification"
+                               refIdentifier="PORR_TE049008UV01"/>
+                     </artreeitem>
+                  </artreeitem>
+                  <artreeitem>
+                     <stref id="d2e22935" role="tree-intro" sectID="" sectType="SB"
+                            refName=" Refined Message Information Models"
+                            refFamiliarName=" Refined Message Information Models"
+                            refIdentifier=""/>
+                     <artreeitem>
+                        <rmimref id="treeRef-PORR_RM049006UV01" role="tree-element" sectID="UVRR" sectType="SB"
+                                 refName="Individual Case Safety Report Base RMIM"
+                                 refFamiliarName="Individual Case Safety Report Base RMIM"
+                                 refIdentifier="PORR_RM049006UV01"/>
+                        <artreeitem>
+                           <hmdref id="treeRef-PORR_HD049006UV01" role="tree-element" sectID="UVRR" sectType="SB"
+                                   refName="ICSR HMD"
+                                   refFamiliarName="ICSR HMD"
+                                   refIdentifier="PORR_HD049006UV01"/>
+                           <artreeitem>
+                              <msgref id="treeRef-PORR_MT049006UV01" role="tree-element" sectID="UVRR" sectType="SB"
+                                      refName="ICSR"
+                                      refFamiliarName="ICSR"
+                                      refIdentifier="PORR_MT049006UV01"/>
+                              <artreeitem>
+                                 <cmetref id="treeRef-COCT_MT970000UV" role="dependency" sectID="UVCT" sectType="SB"
+                                          refName="A_ResearchStudyEnrollmentUniversal"
+                                          refFamiliarName="A_ResearchStudyEnrollmentUniversal"
+                                          refIdentifier="COCT_MT970000UV"/>
+                              </artreeitem>
+                              <artreeitem>
+                                 <cmetref id="treeRef-" role="dependency" sectID="" sectType="SB"
+                                          refName="A_RelevantInformationForProductReportingUniversal"
+                                          refFamiliarName="A_RelevantInformationForProductReportingUniversal"
+                                          refIdentifier=""/>
+                              </artreeitem>
+                              <artreeitem>
+                                 <cmetref id="treeRef-POCP_MT020200UV01" role="dependency" sectID="UVCP" sectType="SB"
+                                          refName="R_ProductReportableUniversal"
+                                          refFamiliarName="R_ProductReportableUniversal"
+                                          refIdentifier="POCP_MT020200UV01"/>
+                              </artreeitem>
+                           </artreeitem>
+                        </artreeitem>
+                     </artreeitem>
+                     <artreeitem>
+                        <rmimref id="treeRef-PORR_RM049013UV01" role="tree-element" sectID="UVRR" sectType="SB"
+                                 refName="ICSR A_ProductReportingRelevantInformation"
+                                 refFamiliarName="ICSR A_ProductReportingRelevantInformation"
+                                 refIdentifier="PORR_RM049013UV01"/>
+                        <artreeitem>
+                           <hmdref id="treeRef-PORR_HD049013UV01" role="tree-element" sectID="UVRR" sectType="SB"
+                                   refName="ICSR A_ProductReportingRelevantInformation HMD"
+                                   refFamiliarName="ICSR A_ProductReportingRelevantInformation HMD"
+                                   refIdentifier="PORR_HD049013UV01"/>
+                           <artreeitem>
+                              <msgref id="treeRef-PORR_MT049013UV01" role="tree-element" sectID="UVRR" sectType="SB"
+                                      refName="ICSR A_ProductReportingRelevantInformationHMD"
+                                      refFamiliarName="ICSR A_ProductReportingRelevantInformationHMD"
+                                      refIdentifier="PORR_MT049013UV01"/>
+                              <artreeitem>
+                                 <cmetref id="treeRef-POCP_MT020200UV01" role="dependency" sectID="UVCP" sectType="SB"
+                                          refName="R_ProductReportableUniversal"
+                                          refFamiliarName="R_ProductReportableUniversal"
+                                          refIdentifier="POCP_MT020200UV01"/>
+                              </artreeitem>
+                              <artreeitem>
+                                 <cmetref id="treeRef-COCT_MT080000UV09" role="dependency" sectID="UVCT" sectType="SB"
+                                          refName="R_SpecimenUniversal"
+                                          refFamiliarName="R_SpecimenUniversal"
+                                          refIdentifier="COCT_MT080000UV09"/>
+                              </artreeitem>
+                              <artreeitem>
+                                 <cmetref id="treeRef-COCT_MT710000UV07" role="dependency" sectID="UVCT" sectType="SB"
+                                          refName="E_PlaceUniversal"
+                                          refFamiliarName="E_PlaceUniversal"
+                                          refIdentifier="COCT_MT710000UV07"/>
+                              </artreeitem>
+                           </artreeitem>
+                        </artreeitem>
+                     </artreeitem>
+                  </artreeitem>
+                  <artreeitem>
+                     <stref id="d2e22935" role="tree-intro" sectID="" sectType="SB" refName=" Interactions"
+                            refFamiliarName=" Interactions"
+                            refIdentifier=""/>
+                     <artreeitem>
+                        <intref id="treeRef-PORR_IN049007UV01" role="tree-element" sectID="UVRR" sectType="SB"
+                                refName="Individual Case Safety Report Revise"
+                                refFamiliarName="Individual Case Safety Report Revise"
+                                refIdentifier="PORR_IN049007UV01"/>
+                        <artreeitem>
+                           <arref id="treeRef-PORR_AR040001UV01" role="dependency" sectID="UVRR" sectType="SB"
+                                  refName="ICSR Notification Sender"
+                                  refFamiliarName="ICSR Notification Sender"
+                                  refIdentifier="PORR_AR040001UV01"/>
+                        </artreeitem>
+                        <artreeitem>
+                           <arref id="treeRef-PORR_AR040002UV01" role="dependency" sectID="UVRR" sectType="SB"
+                                  refName="ICSR Notification Receiver"
+                                  refFamiliarName="ICSR Notification Receiver"
+                                  refIdentifier="PORR_AR040002UV01"/>
+                        </artreeitem>
+                        <artreeitem>
+                           <teref id="treeRef-PORR_TE049007UV01" role="dependency" sectID="UVRR" sectType="SB"
+                                  refName="ICSR Revise Notification"
+                                  refFamiliarName="ICSR Revise Notification"
+                                  refIdentifier="PORR_TE049007UV01"/>
+                        </artreeitem>
+                        <artreeitem>
+                           <msgref id="treeRef-MCCI_MT000100UV01" role="dependency" sectID="UVCI" sectType="SB"
+                                   refName="Send Message Payload"
+                                   refFamiliarName="Send Message Payload"
+                                   refIdentifier="MCCI_MT000100UV01"/>
+                        </artreeitem>
+                        <artreeitem>
+                           <msgref id="treeRef-MCAI_MT700201UV01" role="dependency" sectID="UVAI" sectType="SB"
+                                   refName="Trigger Event Control Act"
+                                   refFamiliarName="Trigger Event Control Act"
+                                   refIdentifier="MCAI_MT700201UV01"/>
+                        </artreeitem>
+                        <artreeitem>
+                           <msgref id="treeRef-PORR_MT049006UV01" role="dependency" sectID="UVRR" sectType="SB"
+                                   refName="ICSR"
+                                   refFamiliarName="ICSR"
+                                   refIdentifier="PORR_MT049006UV01"/>
+                        </artreeitem>
+                     </artreeitem>
+                     <artreeitem>
+                        <intref id="treeRef-PORR_IN049006UV01" role="tree-element" sectID="UVRR" sectType="SB"
+                                refName="Individual Case Safety Report Create"
+                                refFamiliarName="Individual Case Safety Report Create"
+                                refIdentifier="PORR_IN049006UV01"/>
+                        <artreeitem>
+                           <arref id="treeRef-PORR_AR040001UV01" role="dependency" sectID="UVRR" sectType="SB"
+                                  refName="ICSR Notification Sender"
+                                  refFamiliarName="ICSR Notification Sender"
+                                  refIdentifier="PORR_AR040001UV01"/>
+                        </artreeitem>
+                        <artreeitem>
+                           <arref id="treeRef-PORR_AR040002UV01" role="dependency" sectID="UVRR" sectType="SB"
+                                  refName="ICSR Notification Receiver"
+                                  refFamiliarName="ICSR Notification Receiver"
+                                  refIdentifier="PORR_AR040002UV01"/>
+                        </artreeitem>
+                        <artreeitem>
+                           <teref id="treeRef-PORR_TE049006UV01" role="dependency" sectID="UVRR" sectType="SB"
+                                  refName="ICSR Complete Notification"
+                                  refFamiliarName="ICSR Complete Notification"
+                                  refIdentifier="PORR_TE049006UV01"/>
+                        </artreeitem>
+                        <artreeitem>
+                           <msgref id="treeRef-MCCI_MT000100UV01" role="dependency" sectID="UVCI" sectType="SB"
+                                   refName="Send Message Payload"
+                                   refFamiliarName="Send Message Payload"
+                                   refIdentifier="MCCI_MT000100UV01"/>
+                        </artreeitem>
+                        <artreeitem>
+                           <msgref id="treeRef-MCAI_MT700201UV01" role="dependency" sectID="UVAI" sectType="SB"
+                                   refName="Trigger Event Control Act"
+                                   refFamiliarName="Trigger Event Control Act"
+                                   refIdentifier="MCAI_MT700201UV01"/>
+                        </artreeitem>
+                        <artreeitem>
+                           <msgref id="treeRef-PORR_MT049006UV01" role="dependency" sectID="UVRR" sectType="SB"
+                                   refName="ICSR"
+                                   refFamiliarName="ICSR"
+                                   refIdentifier="PORR_MT049006UV01"/>
+                        </artreeitem>
+                     </artreeitem>
+                     <artreeitem>
+                        <intref id="treeRef-PORR_IN049008UV01" role="tree-element" sectID="UVRR" sectType="SB"
+                                refName="Individual Case Safety Report Retract"
+                                refFamiliarName="Individual Case Safety Report Retract"
+                                refIdentifier="PORR_IN049008UV01"/>
+                        <artreeitem>
+                           <arref id="treeRef-PORR_AR040001UV01" role="dependency" sectID="UVRR" sectType="SB"
+                                  refName="ICSR Notification Sender"
+                                  refFamiliarName="ICSR Notification Sender"
+                                  refIdentifier="PORR_AR040001UV01"/>
+                        </artreeitem>
+                        <artreeitem>
+                           <arref id="treeRef-PORR_AR040002UV01" role="dependency" sectID="UVRR" sectType="SB"
+                                  refName="ICSR Notification Receiver"
+                                  refFamiliarName="ICSR Notification Receiver"
+                                  refIdentifier="PORR_AR040002UV01"/>
+                        </artreeitem>
+                        <artreeitem>
+                           <teref id="treeRef-PORR_TE049008UV01" role="dependency" sectID="UVRR" sectType="SB"
+                                  refName="ICSR Withdraw Notification"
+                                  refFamiliarName="ICSR Withdraw Notification"
+                                  refIdentifier="PORR_TE049008UV01"/>
+                        </artreeitem>
+                        <artreeitem>
+                           <msgref id="treeRef-MCCI_MT000100UV01" role="dependency" sectID="UVCI" sectType="SB"
+                                   refName="Send Message Payload"
+                                   refFamiliarName="Send Message Payload"
+                                   refIdentifier="MCCI_MT000100UV01"/>
+                        </artreeitem>
+                        <artreeitem>
+                           <msgref id="treeRef-MCAI_MT700201UV01" role="dependency" sectID="UVAI" sectType="SB"
+                                   refName="Trigger Event Control Act"
+                                   refFamiliarName="Trigger Event Control Act"
+                                   refIdentifier="MCAI_MT700201UV01"/>
+                        </artreeitem>
+                        <artreeitem>
+                           <msgref id="treeRef-PORR_MT049006UV01" role="dependency" sectID="UVRR" sectType="SB"
+                                   refName="ICSR"
+                                   refFamiliarName="ICSR"
+                                   refIdentifier="PORR_MT049006UV01"/>
+                        </artreeitem>
+                     </artreeitem>
+                  </artreeitem>
+               </artreeitem>
+               <artreeitem>
+                  <stref id="d2e23078" role="tree-intro" sectID="UVRR" sectType="SB"
+                         refName="Topic: Human Pharmaceutical Reporting"
+                         refFamiliarName="Topic: Human Pharmaceutical Reporting"
+                         refIdentifier="PORR_DO000001UV"/>
+                  <artreeitem>
+                     <stref id="d2e23078" role="tree-intro" sectID="" sectType="SB" refName=" Story Boards"
+                            refFamiliarName=" Story Boards"
+                            refIdentifier=""/>
+                     <artreeitem>
+                        <stref id="treeRef-PORR_ST050001UV01" role="tree-element" sectID="UVRR" sectType="SB"
+                               refName="Regulated Human Pharmaceuticals Reporting"
+                               refFamiliarName="Regulated Human Pharmaceuticals Reporting"
+                               refIdentifier="PORR_ST050001UV01"/>
+                        <artreeitem>
+                           <stref id="treeRef-PORR_SN050002UV01" role="tree-element" sectID="UVRR" sectType="SB"
+                                  refName="Medical Confirmation at Event Level"
+                                  refFamiliarName="Medical Confirmation at Event Level"
+                                  refIdentifier="PORR_SN050002UV01"/>
+                        </artreeitem>
+                        <artreeitem>
+                           <stref id="treeRef-PORR_SN050003UV01" role="tree-element" sectID="UVRR" sectType="SB"
+                                  refName="Nullification Report"
+                                  refFamiliarName="Nullification Report"
+                                  refIdentifier="PORR_SN050003UV01"/>
+                        </artreeitem>
+                        <artreeitem>
+                           <stref id="treeRef-PORR_SN050004UV01" role="tree-element" sectID="UVRR" sectType="SB"
+                                  refName="Counterfeit medications"
+                                  refFamiliarName="Counterfeit medications"
+                                  refIdentifier="PORR_SN050004UV01"/>
+                        </artreeitem>
+                        <artreeitem>
+                           <stref id="treeRef-PORR_SN050005UV01" role="tree-element" sectID="UVRR" sectType="SB"
+                                  refName="Observational Study Report"
+                                  refFamiliarName="Observational Study Report"
+                                  refIdentifier="PORR_SN050005UV01"/>
+                        </artreeitem>
+                        <artreeitem>
+                           <stref id="treeRef-PORR_SN050006UV01" role="tree-element" sectID="UVRR" sectType="SB"
+                                  refName="Clinical Trial Report I"
+                                  refFamiliarName="Clinical Trial Report I"
+                                  refIdentifier="PORR_SN050006UV01"/>
+                        </artreeitem>
+                        <artreeitem>
+                           <stref id="treeRef-PORR_SN050007UV01" role="tree-element" sectID="UVRR" sectType="SB"
+                                  refName="Clinical Trial Report II"
+                                  refFamiliarName="Clinical Trial Report II"
+                                  refIdentifier="PORR_SN050007UV01"/>
+                        </artreeitem>
+                        <artreeitem>
+                           <stref id="treeRef-PORR_SN050008UV01" role="tree-element" sectID="UVRR" sectType="SB"
+                                  refName="Literature Report"
+                                  refFamiliarName="Literature Report"
+                                  refIdentifier="PORR_SN050008UV01"/>
+                        </artreeitem>
+                        <artreeitem>
+                           <stref id="treeRef-PORR_SN050009UV01" role="tree-element" sectID="UVRR" sectType="SB"
+                                  refName="Backlog Report"
+                                  refFamiliarName="Backlog Report"
+                                  refIdentifier="PORR_SN050009UV01"/>
+                        </artreeitem>
+                        <artreeitem>
+                           <intref id="treeRef-PORR_IN049016UV01" role="dependency" sectID="UVRR" sectType="SB"
+                                   refName="Human Pharmaceuticals Report Create"
+                                   refFamiliarName="Human Pharmaceuticals Report Create"
+                                   refIdentifier="PORR_IN049016UV01"/>
+                        </artreeitem>
+                        <artreeitem>
+                           <intref id="treeRef-PORR_IN049017UV01" role="dependency" sectID="UVRR" sectType="SB"
+                                   refName="HumanPharmaceuticals Report Revise"
+                                   refFamiliarName="HumanPharmaceuticals Report Revise"
+                                   refIdentifier="PORR_IN049017UV01"/>
+                        </artreeitem>
+                        <artreeitem>
+                           <intref id="treeRef-PORR_IN049018UV01" role="dependency" sectID="UVRR" sectType="SB"
+                                   refName="Human Pharmaceuticals Report Retract"
+                                   refFamiliarName="Human Pharmaceuticals Report Retract"
+                                   refIdentifier="PORR_IN049018UV01"/>
+                        </artreeitem>
+                     </artreeitem>
+                  </artreeitem>
+                  <artreeitem>
+                     <stref id="d2e23078" role="tree-intro" sectID="" sectType="SB"
+                            refName=" Application Roles"
+                            refFamiliarName=" Application Roles"
+                            refIdentifier=""/>
+                     <artreeitem>
+                        <arref id="treeRef-PORR_AR040012UV01" role="tree-element" sectID="UVRR" sectType="SB"
+                               refName="Human Pharmaceuticals Report Receiver"
+                               refFamiliarName="Human Pharmaceuticals Report Receiver"
+                               refIdentifier="PORR_AR040012UV01"/>
+                        <artreeitem>
+                           <intref id="treeRef-PORR_IN049016UV01" role="dependency" sectID="UVRR" sectType="SB"
+                                   refName="Human Pharmaceuticals Report Create"
+                                   refFamiliarName="Human Pharmaceuticals Report Create"
+                                   refIdentifier="PORR_IN049016UV01"/>
+                        </artreeitem>
+                        <artreeitem>
+                           <intref id="treeRef-PORR_IN049017UV01" role="dependency" sectID="UVRR" sectType="SB"
+                                   refName="HumanPharmaceuticals Report Revise"
+                                   refFamiliarName="HumanPharmaceuticals Report Revise"
+                                   refIdentifier="PORR_IN049017UV01"/>
+                        </artreeitem>
+                        <artreeitem>
+                           <intref id="treeRef-PORR_IN049018UV01" role="dependency" sectID="UVRR" sectType="SB"
+                                   refName="Human Pharmaceuticals Report Retract"
+                                   refFamiliarName="Human Pharmaceuticals Report Retract"
+                                   refIdentifier="PORR_IN049018UV01"/>
+                        </artreeitem>
+                     </artreeitem>
+                     <artreeitem>
+                        <arref id="treeRef-PORR_AR040011UV01" role="tree-element" sectID="UVRR" sectType="SB"
+                               refName="Human Pharmaceuticals Report Sender"
+                               refFamiliarName="Human Pharmaceuticals Report Sender"
+                               refIdentifier="PORR_AR040011UV01"/>
+                        <artreeitem>
+                           <intref id="treeRef-PORR_IN049016UV01" role="dependency" sectID="UVRR" sectType="SB"
+                                   refName="Human Pharmaceuticals Report Create"
+                                   refFamiliarName="Human Pharmaceuticals Report Create"
+                                   refIdentifier="PORR_IN049016UV01"/>
+                        </artreeitem>
+                        <artreeitem>
+                           <intref id="treeRef-PORR_IN049017UV01" role="dependency" sectID="UVRR" sectType="SB"
+                                   refName="HumanPharmaceuticals Report Revise"
+                                   refFamiliarName="HumanPharmaceuticals Report Revise"
+                                   refIdentifier="PORR_IN049017UV01"/>
+                        </artreeitem>
+                        <artreeitem>
+                           <intref id="treeRef-PORR_IN049018UV01" role="dependency" sectID="UVRR" sectType="SB"
+                                   refName="Human Pharmaceuticals Report Retract"
+                                   refFamiliarName="Human Pharmaceuticals Report Retract"
+                                   refIdentifier="PORR_IN049018UV01"/>
+                        </artreeitem>
+                     </artreeitem>
+                  </artreeitem>
+                  <artreeitem>
+                     <stref id="d2e23078" role="tree-intro" sectID="" sectType="SB"
+                            refName=" Trigger Events"
+                            refFamiliarName=" Trigger Events"
+                            refIdentifier=""/>
+                     <artreeitem>
+                        <teref id="treeRef-PORR_TE049017UV01" role="tree-element" sectID="UVRR" sectType="SB"
+                               refName="Human Pharmaceutical Revise Notification"
+                               refFamiliarName="Human Pharmaceutical Revise Notification"
+                               refIdentifier="PORR_TE049017UV01"/>
+                     </artreeitem>
+                     <artreeitem>
+                        <teref id="treeRef-PORR_TE049016UV01" role="tree-element" sectID="UVRR" sectType="SB"
+                               refName="Human Pharmacetical Complete Notification"
+                               refFamiliarName="Human Pharmacetical Complete Notification"
+                               refIdentifier="PORR_TE049016UV01"/>
+                     </artreeitem>
+                     <artreeitem>
+                        <teref id="treeRef-PORR_TE049018UV01" role="tree-element" sectID="UVRR" sectType="SB"
+                               refName="Human Pharmaceutical Withdraw Notification"
+                               refFamiliarName="Human Pharmaceutical Withdraw Notification"
+                               refIdentifier="PORR_TE049018UV01"/>
+                     </artreeitem>
+                  </artreeitem>
+                  <artreeitem>
+                     <stref id="d2e23078" role="tree-intro" sectID="" sectType="SB"
+                            refName=" Refined Message Information Models"
+                            refFamiliarName=" Refined Message Information Models"
+                            refIdentifier=""/>
+                     <artreeitem>
+                        <rmimref id="treeRef-PORR_RM049016UV01" role="tree-element" sectID="UVRR" sectType="SB"
+                                 refName="HumanPharmaceuticalsBaseRMIM"
+                                 refFamiliarName="HumanPharmaceuticalsBaseRMIM"
+                                 refIdentifier="PORR_RM049016UV01"/>
+                        <artreeitem>
+                           <hmdref id="treeRef-PORR_HD049016UV01" role="tree-element" sectID="UVRR" sectType="SB"
+                                   refName="HumanPharmacuticalsBaseHMD"
+                                   refFamiliarName="HumanPharmacuticalsBaseHMD"
+                                   refIdentifier="PORR_HD049016UV01"/>
+                           <artreeitem>
+                              <msgref id="treeRef-PORR_MT049016UV01" role="tree-element" sectID="UVRR" sectType="SB"
+                                      refName="HumanPharmaceuticalsBaseMT"
+                                      refFamiliarName="HumanPharmaceuticalsBaseMT"
+                                      refIdentifier="PORR_MT049016UV01"/>
+                              <artreeitem>
+                                 <cmetref id="treeRef-" role="dependency" sectID="" sectType="SB"
+                                          refName="A_HumanPharmaceuticalsPRRIModelUniversal"
+                                          refFamiliarName="A_HumanPharmaceuticalsPRRIModelUniversal"
+                                          refIdentifier=""/>
+                              </artreeitem>
+                           </artreeitem>
+                        </artreeitem>
+                     </artreeitem>
+                     <artreeitem>
+                        <rmimref id="treeRef-PORR_RM049023UV01" role="tree-element" sectID="UVRR" sectType="SB"
+                                 refName="HumanPharmaceuticalsPRRIModel"
+                                 refFamiliarName="HumanPharmaceuticalsPRRIModel"
+                                 refIdentifier="PORR_RM049023UV01"/>
+                        <artreeitem>
+                           <hmdref id="treeRef-PORR_HD049023UV01" role="tree-element" sectID="UVRR" sectType="SB"
+                                   refName="Human PharmaceuticalsPRRIHMD"
+                                   refFamiliarName="Human PharmaceuticalsPRRIHMD"
+                                   refIdentifier="PORR_HD049023UV01"/>
+                           <artreeitem>
+                              <msgref id="treeRef-PORR_MT049023UV01" role="tree-element" sectID="UVRR" sectType="SB"
+                                      refName="HumanPharmaceuticalsPRRIMT"
+                                      refFamiliarName="HumanPharmaceuticalsPRRIMT"
+                                      refIdentifier="PORR_MT049023UV01"/>
+                              <artreeitem>
+                                 <cmetref id="treeRef-POCP_MT020200UV01" role="dependency" sectID="UVCP" sectType="SB"
+                                          refName="R_ProductReportableUniversal"
+                                          refFamiliarName="R_ProductReportableUniversal"
+                                          refIdentifier="POCP_MT020200UV01"/>
+                              </artreeitem>
+                           </artreeitem>
+                        </artreeitem>
+                     </artreeitem>
+                  </artreeitem>
+                  <artreeitem>
+                     <stref id="d2e23078" role="tree-intro" sectID="" sectType="SB" refName=" Interactions"
+                            refFamiliarName=" Interactions"
+                            refIdentifier=""/>
+                     <artreeitem>
+                        <intref id="treeRef-PORR_IN049017UV01" role="tree-element" sectID="UVRR" sectType="SB"
+                                refName="HumanPharmaceuticals Report Revise"
+                                refFamiliarName="HumanPharmaceuticals Report Revise"
+                                refIdentifier="PORR_IN049017UV01"/>
+                        <artreeitem>
+                           <arref id="treeRef-PORR_AR040011UV01" role="dependency" sectID="UVRR" sectType="SB"
+                                  refName="Human Pharmaceuticals Report Sender"
+                                  refFamiliarName="Human Pharmaceuticals Report Sender"
+                                  refIdentifier="PORR_AR040011UV01"/>
+                        </artreeitem>
+                        <artreeitem>
+                           <arref id="treeRef-PORR_AR040012UV01" role="dependency" sectID="UVRR" sectType="SB"
+                                  refName="Human Pharmaceuticals Report Receiver"
+                                  refFamiliarName="Human Pharmaceuticals Report Receiver"
+                                  refIdentifier="PORR_AR040012UV01"/>
+                        </artreeitem>
+                        <artreeitem>
+                           <teref id="treeRef-PORR_TE049017UV01" role="dependency" sectID="UVRR" sectType="SB"
+                                  refName="Human Pharmaceutical Revise Notification"
+                                  refFamiliarName="Human Pharmaceutical Revise Notification"
+                                  refIdentifier="PORR_TE049017UV01"/>
+                        </artreeitem>
+                        <artreeitem>
+                           <msgref id="treeRef-MCCI_MT000100UV01" role="dependency" sectID="UVCI" sectType="SB"
+                                   refName="Send Message Payload"
+                                   refFamiliarName="Send Message Payload"
+                                   refIdentifier="MCCI_MT000100UV01"/>
+                        </artreeitem>
+                        <artreeitem>
+                           <msgref id="treeRef-MCAI_MT700201UV01" role="dependency" sectID="UVAI" sectType="SB"
+                                   refName="Trigger Event Control Act"
+                                   refFamiliarName="Trigger Event Control Act"
+                                   refIdentifier="MCAI_MT700201UV01"/>
+                        </artreeitem>
+                        <artreeitem>
+                           <msgref id="treeRef-PORR_MT049016UV01" role="dependency" sectID="UVRR" sectType="SB"
+                                   refName="HumanPharmaceuticalsBaseMT"
+                                   refFamiliarName="HumanPharmaceuticalsBaseMT"
+                                   refIdentifier="PORR_MT049016UV01"/>
+                        </artreeitem>
+                     </artreeitem>
+                     <artreeitem>
+                        <intref id="treeRef-PORR_IN049016UV01" role="tree-element" sectID="UVRR" sectType="SB"
+                                refName="Human Pharmaceuticals Report Create"
+                                refFamiliarName="Human Pharmaceuticals Report Create"
+                                refIdentifier="PORR_IN049016UV01"/>
+                        <artreeitem>
+                           <arref id="treeRef-PORR_AR040011UV01" role="dependency" sectID="UVRR" sectType="SB"
+                                  refName="Human Pharmaceuticals Report Sender"
+                                  refFamiliarName="Human Pharmaceuticals Report Sender"
+                                  refIdentifier="PORR_AR040011UV01"/>
+                        </artreeitem>
+                        <artreeitem>
+                           <arref id="treeRef-PORR_AR040012UV01" role="dependency" sectID="UVRR" sectType="SB"
+                                  refName="Human Pharmaceuticals Report Receiver"
+                                  refFamiliarName="Human Pharmaceuticals Report Receiver"
+                                  refIdentifier="PORR_AR040012UV01"/>
+                        </artreeitem>
+                        <artreeitem>
+                           <teref id="treeRef-PORR_TE049016UV01" role="dependency" sectID="UVRR" sectType="SB"
+                                  refName="Human Pharmacetical Complete Notification"
+                                  refFamiliarName="Human Pharmacetical Complete Notification"
+                                  refIdentifier="PORR_TE049016UV01"/>
+                        </artreeitem>
+                        <artreeitem>
+                           <msgref id="treeRef-MCCI_MT000100UV01" role="dependency" sectID="UVCI" sectType="SB"
+                                   refName="Send Message Payload"
+                                   refFamiliarName="Send Message Payload"
+                                   refIdentifier="MCCI_MT000100UV01"/>
+                        </artreeitem>
+                        <artreeitem>
+                           <msgref id="treeRef-MCAI_MT700201UV01" role="dependency" sectID="UVAI" sectType="SB"
+                                   refName="Trigger Event Control Act"
+                                   refFamiliarName="Trigger Event Control Act"
+                                   refIdentifier="MCAI_MT700201UV01"/>
+                        </artreeitem>
+                        <artreeitem>
+                           <msgref id="treeRef-PORR_MT049016UV01" role="dependency" sectID="UVRR" sectType="SB"
+                                   refName="HumanPharmaceuticalsBaseMT"
+                                   refFamiliarName="HumanPharmaceuticalsBaseMT"
+                                   refIdentifier="PORR_MT049016UV01"/>
+                        </artreeitem>
+                     </artreeitem>
+                     <artreeitem>
+                        <intref id="treeRef-PORR_IN049018UV01" role="tree-element" sectID="UVRR" sectType="SB"
+                                refName="Human Pharmaceuticals Report Retract"
+                                refFamiliarName="Human Pharmaceuticals Report Retract"
+                                refIdentifier="PORR_IN049018UV01"/>
+                        <artreeitem>
+                           <arref id="treeRef-PORR_AR040011UV01" role="dependency" sectID="UVRR" sectType="SB"
+                                  refName="Human Pharmaceuticals Report Sender"
+                                  refFamiliarName="Human Pharmaceuticals Report Sender"
+                                  refIdentifier="PORR_AR040011UV01"/>
+                        </artreeitem>
+                        <artreeitem>
+                           <arref id="treeRef-PORR_AR040012UV01" role="dependency" sectID="UVRR" sectType="SB"
+                                  refName="Human Pharmaceuticals Report Receiver"
+                                  refFamiliarName="Human Pharmaceuticals Report Receiver"
+                                  refIdentifier="PORR_AR040012UV01"/>
+                        </artreeitem>
+                        <artreeitem>
+                           <teref id="treeRef-PORR_TE049018UV01" role="dependency" sectID="UVRR" sectType="SB"
+                                  refName="Human Pharmaceutical Withdraw Notification"
+                                  refFamiliarName="Human Pharmaceutical Withdraw Notification"
+                                  refIdentifier="PORR_TE049018UV01"/>
+                        </artreeitem>
+                        <artreeitem>
+                           <msgref id="treeRef-MCCI_MT000100UV01" role="dependency" sectID="UVCI" sectType="SB"
+                                   refName="Send Message Payload"
+                                   refFamiliarName="Send Message Payload"
+                                   refIdentifier="MCCI_MT000100UV01"/>
+                        </artreeitem>
+                        <artreeitem>
+                           <msgref id="treeRef-MCAI_MT700201UV01" role="dependency" sectID="UVAI" sectType="SB"
+                                   refName="Trigger Event Control Act"
+                                   refFamiliarName="Trigger Event Control Act"
+                                   refIdentifier="MCAI_MT700201UV01"/>
+                        </artreeitem>
+                        <artreeitem>
+                           <msgref id="treeRef-PORR_MT049016UV01" role="dependency" sectID="UVRR" sectType="SB"
+                                   refName="HumanPharmaceuticalsBaseMT"
+                                   refFamiliarName="HumanPharmaceuticalsBaseMT"
+                                   refIdentifier="PORR_MT049016UV01"/>
+                        </artreeitem>
+                     </artreeitem>
+                  </artreeitem>
+               </artreeitem>
+            </artreeitem>
+         </artree>
+      </div1>
+      <div1 id="all-codeOrder">
+         <head> Regulated Reporting in Artifact Code Order</head>
+         <artree role="code">
+            <artreeitem>
+               <stref id="d2e22929" role="tree-intro" sectID="UVRR" sectType="SB"
+                      refName="Domain: Regulated Reporting"
+                      refFamiliarName="Domain: Regulated Reporting"
+                      refIdentifier="PORR_DO000001UV"/>
+               <artreeitem>
+                  <rmimref id="treeRef-PORR_DM000000UV" role="tree-element" sectID="UVRR" sectType="SB"
+                           refName="Public Health Reporting Domain Information Model"
+                           refFamiliarName="Public Health Reporting Domain Information Model"
+                           refIdentifier="PORR_DM000000UV"/>
+               </artreeitem>
+               <artreeitem>
+                  <rmimref id="treeRef-PORR_DM100001UV" role="tree-element" sectID="UVRR" sectType="SB"
+                           refName="Public Health Reporting Domain Information Model"
+                           refFamiliarName="Public Health Reporting Domain Information Model"
+                           refIdentifier="PORR_DM100001UV"/>
+               </artreeitem>
+               <artreeitem>
+                  <stref id="d2e22935" role="tree-intro" sectID="UVRR" sectType="SB"
+                         refName="Topic: Individual Case Safety Reporting"
+                         refFamiliarName="Topic: Individual Case Safety Reporting"
+                         refIdentifier="PORR_DO000001UV"/>
+                  <artreeitem>
+                     <stref id="d2e22935" role="tree-intro" sectID="" sectType="SB" refName=" Story Boards"
+                            refFamiliarName=" Story Boards"
+                            refIdentifier=""/>
+                     <artreeitem>
+                        <stref id="treeRef-PORR_ST040001UV01" role="tree-element" sectID="UVRR" sectType="SB"
+                               refName="Individual Case Safety Reporting"
+                               refFamiliarName="Individual Case Safety Reporting"
+                               refIdentifier="PORR_ST040001UV01"/>
+                        <artreeitem>
+                           <stref id="treeRef-PORR_SN040001UV01" role="tree-element" sectID="UVRR" sectType="SB"
+                                  refName="Healthcare Provider Initial Report"
+                                  refFamiliarName="Healthcare Provider Initial Report"
+                                  refIdentifier="PORR_SN040001UV01"/>
+                        </artreeitem>
+                        <artreeitem>
+                           <stref id="treeRef-PORR_SN040002UV01" role="tree-element" sectID="UVRR" sectType="SB"
+                                  refName="ICSR Product Defect Reporting"
+                                  refFamiliarName="ICSR Product Defect Reporting"
+                                  refIdentifier="PORR_SN040002UV01"/>
+                        </artreeitem>
+                        <artreeitem>
+                           <stref id="treeRef-PORR_SN040003UV01" role="tree-element" sectID="UVRR" sectType="SB"
+                                  refName="Healthcare Provider Follow Up Report"
+                                  refFamiliarName="Healthcare Provider Follow Up Report"
+                                  refIdentifier="PORR_SN040003UV01"/>
+                        </artreeitem>
+                        <artreeitem>
+                           <stref id="treeRef-PORR_SN040004UV01" role="tree-element" sectID="UVRR" sectType="SB"
+                                  refName="ICSR Nullification Report"
+                                  refFamiliarName="ICSR Nullification Report"
+                                  refIdentifier="PORR_SN040004UV01"/>
+                        </artreeitem>
+                        <artreeitem>
+                           <stref id="treeRef-PORR_SN040005UV01" role="tree-element" sectID="UVRR" sectType="SB"
+                                  refName="ICSR Product Defect Follow up Report"
+                                  refFamiliarName="ICSR Product Defect Follow up Report"
+                                  refIdentifier="PORR_SN040005UV01"/>
+                        </artreeitem>
+                        <artreeitem>
+                           <stref id="treeRef-PORR_SN040006UV01" role="tree-element" sectID="UVRR" sectType="SB"
+                                  refName="Nullify ICSR Product Defect Report"
+                                  refFamiliarName="Nullify ICSR Product Defect Report"
+                                  refIdentifier="PORR_SN040006UV01"/>
+                        </artreeitem>
+                        <artreeitem>
+                           <stref id="treeRef-PORR_SN040007UV01" role="tree-element" sectID="UVRR" sectType="SB"
+                                  refName="Device Reporting"
+                                  refFamiliarName="Device Reporting"
+                                  refIdentifier="PORR_SN040007UV01"/>
+                        </artreeitem>
+                        <artreeitem>
+                           <stref id="treeRef-PORR_SN040008UV01" role="tree-element" sectID="UVRR" sectType="SB"
+                                  refName="Adulterated Food Reporting"
+                                  refFamiliarName="Adulterated Food Reporting"
+                                  refIdentifier="PORR_SN040008UV01"/>
+                        </artreeitem>
+                        <artreeitem>
+                           <stref id="treeRef-PORR_SN040009UV01" role="tree-element" sectID="UVRR" sectType="SB"
+                                  refName="Dietary Supplement"
+                                  refFamiliarName="Dietary Supplement"
+                                  refIdentifier="PORR_SN040009UV01"/>
+                        </artreeitem>
+                        <artreeitem>
+                           <stref id="treeRef-PORR_SN040010UV01" role="tree-element" sectID="UVRR" sectType="SB"
+                                  refName="Cosmetic as Face Paint Report"
+                                  refFamiliarName="Cosmetic as Face Paint Report"
+                                  refIdentifier="PORR_SN040010UV01"/>
+                        </artreeitem>
+                        <artreeitem>
+                           <stref id="treeRef-PORR_SN040011UV01" role="tree-element" sectID="UVRR" sectType="SB"
+                                  refName="Parent Child Report"
+                                  refFamiliarName="Parent Child Report"
+                                  refIdentifier="PORR_SN040011UV01"/>
+                        </artreeitem>
+                        <artreeitem>
+                           <stref id="treeRef-PORR_SN040012UV01" role="tree-element" sectID="UVRR" sectType="SB"
+                                  refName="Clinical Trial Report I"
+                                  refFamiliarName="Clinical Trial Report I"
+                                  refIdentifier="PORR_SN040012UV01"/>
+                        </artreeitem>
+                        <artreeitem>
+                           <stref id="treeRef-PORR_SN040013UV01" role="tree-element" sectID="UVRR" sectType="SB"
+                                  refName="Clinical Trial Report II"
+                                  refFamiliarName="Clinical Trial Report II"
+                                  refIdentifier="PORR_SN040013UV01"/>
+                        </artreeitem>
+                        <artreeitem>
+                           <intref id="treeRef-PORR_IN049006UV01" role="dependency" sectID="UVRR" sectType="SB"
+                                   refName="Individual Case Safety Report Create"
+                                   refFamiliarName="Individual Case Safety Report Create"
+                                   refIdentifier="PORR_IN049006UV01"/>
+                        </artreeitem>
+                        <artreeitem>
+                           <intref id="treeRef-PORR_IN049007UV01" role="dependency" sectID="UVRR" sectType="SB"
+                                   refName="Individual Case Safety Report Revise"
+                                   refFamiliarName="Individual Case Safety Report Revise"
+                                   refIdentifier="PORR_IN049007UV01"/>
+                        </artreeitem>
+                        <artreeitem>
+                           <intref id="treeRef-PORR_IN049008UV01" role="dependency" sectID="UVRR" sectType="SB"
+                                   refName="Individual Case Safety Report Retract"
+                                   refFamiliarName="Individual Case Safety Report Retract"
+                                   refIdentifier="PORR_IN049008UV01"/>
+                        </artreeitem>
+                     </artreeitem>
+                  </artreeitem>
+                  <artreeitem>
+                     <stref id="d2e22935" role="tree-intro" sectID="" sectType="SB"
+                            refName=" Application Roles"
+                            refFamiliarName=" Application Roles"
+                            refIdentifier=""/>
+                     <artreeitem>
+                        <arref id="treeRef-PORR_AR040001UV01" role="tree-element" sectID="UVRR" sectType="SB"
+                               refName="ICSR Notification Sender"
+                               refFamiliarName="ICSR Notification Sender"
+                               refIdentifier="PORR_AR040001UV01"/>
+                        <artreeitem>
+                           <intref id="treeRef-PORR_IN049006UV01" role="dependency" sectID="UVRR" sectType="SB"
+                                   refName="Individual Case Safety Report Create"
+                                   refFamiliarName="Individual Case Safety Report Create"
+                                   refIdentifier="PORR_IN049006UV01"/>
+                        </artreeitem>
+                        <artreeitem>
+                           <intref id="treeRef-PORR_IN049007UV01" role="dependency" sectID="UVRR" sectType="SB"
+                                   refName="Individual Case Safety Report Revise"
+                                   refFamiliarName="Individual Case Safety Report Revise"
+                                   refIdentifier="PORR_IN049007UV01"/>
+                        </artreeitem>
+                        <artreeitem>
+                           <intref id="treeRef-PORR_IN049008UV01" role="dependency" sectID="UVRR" sectType="SB"
+                                   refName="Individual Case Safety Report Retract"
+                                   refFamiliarName="Individual Case Safety Report Retract"
+                                   refIdentifier="PORR_IN049008UV01"/>
+                        </artreeitem>
+                     </artreeitem>
+                     <artreeitem>
+                        <arref id="treeRef-PORR_AR040002UV01" role="tree-element" sectID="UVRR" sectType="SB"
+                               refName="ICSR Notification Receiver"
+                               refFamiliarName="ICSR Notification Receiver"
+                               refIdentifier="PORR_AR040002UV01"/>
+                        <artreeitem>
+                           <intref id="treeRef-PORR_IN049006UV01" role="dependency" sectID="UVRR" sectType="SB"
+                                   refName="Individual Case Safety Report Create"
+                                   refFamiliarName="Individual Case Safety Report Create"
+                                   refIdentifier="PORR_IN049006UV01"/>
+                        </artreeitem>
+                        <artreeitem>
+                           <intref id="treeRef-PORR_IN049007UV01" role="dependency" sectID="UVRR" sectType="SB"
+                                   refName="Individual Case Safety Report Revise"
+                                   refFamiliarName="Individual Case Safety Report Revise"
+                                   refIdentifier="PORR_IN049007UV01"/>
+                        </artreeitem>
+                        <artreeitem>
+                           <intref id="treeRef-PORR_IN049008UV01" role="dependency" sectID="UVRR" sectType="SB"
+                                   refName="Individual Case Safety Report Retract"
+                                   refFamiliarName="Individual Case Safety Report Retract"
+                                   refIdentifier="PORR_IN049008UV01"/>
+                        </artreeitem>
+                     </artreeitem>
+                  </artreeitem>
+                  <artreeitem>
+                     <stref id="d2e22935" role="tree-intro" sectID="" sectType="SB"
+                            refName=" Trigger Events"
+                            refFamiliarName=" Trigger Events"
+                            refIdentifier=""/>
+                     <artreeitem>
+                        <teref id="treeRef-PORR_TE049006UV01" role="tree-element" sectID="UVRR" sectType="SB"
+                               refName="ICSR Complete Notification"
+                               refFamiliarName="ICSR Complete Notification"
+                               refIdentifier="PORR_TE049006UV01"/>
+                     </artreeitem>
+                     <artreeitem>
+                        <teref id="treeRef-PORR_TE049007UV01" role="tree-element" sectID="UVRR" sectType="SB"
+                               refName="ICSR Revise Notification"
+                               refFamiliarName="ICSR Revise Notification"
+                               refIdentifier="PORR_TE049007UV01"/>
+                     </artreeitem>
+                     <artreeitem>
+                        <teref id="treeRef-PORR_TE049008UV01" role="tree-element" sectID="UVRR" sectType="SB"
+                               refName="ICSR Withdraw Notification"
+                               refFamiliarName="ICSR Withdraw Notification"
+                               refIdentifier="PORR_TE049008UV01"/>
+                     </artreeitem>
+                  </artreeitem>
+                  <artreeitem>
+                     <stref id="d2e22935" role="tree-intro" sectID="" sectType="SB"
+                            refName=" Refined Message Information Models"
+                            refFamiliarName=" Refined Message Information Models"
+                            refIdentifier=""/>
+                     <artreeitem>
+                        <rmimref id="treeRef-PORR_RM049006UV01" role="tree-element" sectID="UVRR" sectType="SB"
+                                 refName="Individual Case Safety Report Base RMIM"
+                                 refFamiliarName="Individual Case Safety Report Base RMIM"
+                                 refIdentifier="PORR_RM049006UV01"/>
+                        <artreeitem>
+                           <hmdref id="treeRef-PORR_HD049006UV01" role="tree-element" sectID="UVRR" sectType="SB"
+                                   refName="ICSR HMD"
+                                   refFamiliarName="ICSR HMD"
+                                   refIdentifier="PORR_HD049006UV01"/>
+                           <artreeitem>
+                              <msgref id="treeRef-PORR_MT049006UV01" role="tree-element" sectID="UVRR" sectType="SB"
+                                      refName="ICSR"
+                                      refFamiliarName="ICSR"
+                                      refIdentifier="PORR_MT049006UV01"/>
+                              <artreeitem>
+                                 <cmetref id="treeRef-COCT_MT970000UV" role="dependency" sectID="UVCT" sectType="SB"
+                                          refName="A_ResearchStudyEnrollmentUniversal"
+                                          refFamiliarName="A_ResearchStudyEnrollmentUniversal"
+                                          refIdentifier="COCT_MT970000UV"/>
+                              </artreeitem>
+                              <artreeitem>
+                                 <cmetref id="treeRef-" role="dependency" sectID="" sectType="SB"
+                                          refName="A_RelevantInformationForProductReportingUniversal"
+                                          refFamiliarName="A_RelevantInformationForProductReportingUniversal"
+                                          refIdentifier=""/>
+                              </artreeitem>
+                              <artreeitem>
+                                 <cmetref id="treeRef-POCP_MT020200UV01" role="dependency" sectID="UVCP" sectType="SB"
+                                          refName="R_ProductReportableUniversal"
+                                          refFamiliarName="R_ProductReportableUniversal"
+                                          refIdentifier="POCP_MT020200UV01"/>
+                              </artreeitem>
+                           </artreeitem>
+                        </artreeitem>
+                     </artreeitem>
+                     <artreeitem>
+                        <rmimref id="treeRef-PORR_RM049013UV01" role="tree-element" sectID="UVRR" sectType="SB"
+                                 refName="ICSR A_ProductReportingRelevantInformation"
+                                 refFamiliarName="ICSR A_ProductReportingRelevantInformation"
+                                 refIdentifier="PORR_RM049013UV01"/>
+                        <artreeitem>
+                           <hmdref id="treeRef-PORR_HD049013UV01" role="tree-element" sectID="UVRR" sectType="SB"
+                                   refName="ICSR A_ProductReportingRelevantInformation HMD"
+                                   refFamiliarName="ICSR A_ProductReportingRelevantInformation HMD"
+                                   refIdentifier="PORR_HD049013UV01"/>
+                           <artreeitem>
+                              <msgref id="treeRef-PORR_MT049013UV01" role="tree-element" sectID="UVRR" sectType="SB"
+                                      refName="ICSR A_ProductReportingRelevantInformationHMD"
+                                      refFamiliarName="ICSR A_ProductReportingRelevantInformationHMD"
+                                      refIdentifier="PORR_MT049013UV01"/>
+                              <artreeitem>
+                                 <cmetref id="treeRef-POCP_MT020200UV01" role="dependency" sectID="UVCP" sectType="SB"
+                                          refName="R_ProductReportableUniversal"
+                                          refFamiliarName="R_ProductReportableUniversal"
+                                          refIdentifier="POCP_MT020200UV01"/>
+                              </artreeitem>
+                              <artreeitem>
+                                 <cmetref id="treeRef-COCT_MT080000UV09" role="dependency" sectID="UVCT" sectType="SB"
+                                          refName="R_SpecimenUniversal"
+                                          refFamiliarName="R_SpecimenUniversal"
+                                          refIdentifier="COCT_MT080000UV09"/>
+                              </artreeitem>
+                              <artreeitem>
+                                 <cmetref id="treeRef-COCT_MT710000UV07" role="dependency" sectID="UVCT" sectType="SB"
+                                          refName="E_PlaceUniversal"
+                                          refFamiliarName="E_PlaceUniversal"
+                                          refIdentifier="COCT_MT710000UV07"/>
+                              </artreeitem>
+                           </artreeitem>
+                        </artreeitem>
+                     </artreeitem>
+                  </artreeitem>
+                  <artreeitem>
+                     <stref id="d2e22935" role="tree-intro" sectID="" sectType="SB" refName=" Interactions"
+                            refFamiliarName=" Interactions"
+                            refIdentifier=""/>
+                     <artreeitem>
+                        <intref id="treeRef-PORR_IN049006UV01" role="tree-element" sectID="UVRR" sectType="SB"
+                                refName="Individual Case Safety Report Create"
+                                refFamiliarName="Individual Case Safety Report Create"
+                                refIdentifier="PORR_IN049006UV01"/>
+                        <artreeitem>
+                           <arref id="treeRef-PORR_AR040001UV01" role="dependency" sectID="UVRR" sectType="SB"
+                                  refName="ICSR Notification Sender"
+                                  refFamiliarName="ICSR Notification Sender"
+                                  refIdentifier="PORR_AR040001UV01"/>
+                        </artreeitem>
+                        <artreeitem>
+                           <arref id="treeRef-PORR_AR040002UV01" role="dependency" sectID="UVRR" sectType="SB"
+                                  refName="ICSR Notification Receiver"
+                                  refFamiliarName="ICSR Notification Receiver"
+                                  refIdentifier="PORR_AR040002UV01"/>
+                        </artreeitem>
+                        <artreeitem>
+                           <teref id="treeRef-PORR_TE049006UV01" role="dependency" sectID="UVRR" sectType="SB"
+                                  refName="ICSR Complete Notification"
+                                  refFamiliarName="ICSR Complete Notification"
+                                  refIdentifier="PORR_TE049006UV01"/>
+                        </artreeitem>
+                        <artreeitem>
+                           <msgref id="treeRef-MCCI_MT000100UV01" role="dependency" sectID="UVCI" sectType="SB"
+                                   refName="Send Message Payload"
+                                   refFamiliarName="Send Message Payload"
+                                   refIdentifier="MCCI_MT000100UV01"/>
+                        </artreeitem>
+                        <artreeitem>
+                           <msgref id="treeRef-MCAI_MT700201UV01" role="dependency" sectID="UVAI" sectType="SB"
+                                   refName="Trigger Event Control Act"
+                                   refFamiliarName="Trigger Event Control Act"
+                                   refIdentifier="MCAI_MT700201UV01"/>
+                        </artreeitem>
+                        <artreeitem>
+                           <msgref id="treeRef-PORR_MT049006UV01" role="dependency" sectID="UVRR" sectType="SB"
+                                   refName="ICSR"
+                                   refFamiliarName="ICSR"
+                                   refIdentifier="PORR_MT049006UV01"/>
+                        </artreeitem>
+                     </artreeitem>
+                     <artreeitem>
+                        <intref id="treeRef-PORR_IN049007UV01" role="tree-element" sectID="UVRR" sectType="SB"
+                                refName="Individual Case Safety Report Revise"
+                                refFamiliarName="Individual Case Safety Report Revise"
+                                refIdentifier="PORR_IN049007UV01"/>
+                        <artreeitem>
+                           <arref id="treeRef-PORR_AR040001UV01" role="dependency" sectID="UVRR" sectType="SB"
+                                  refName="ICSR Notification Sender"
+                                  refFamiliarName="ICSR Notification Sender"
+                                  refIdentifier="PORR_AR040001UV01"/>
+                        </artreeitem>
+                        <artreeitem>
+                           <arref id="treeRef-PORR_AR040002UV01" role="dependency" sectID="UVRR" sectType="SB"
+                                  refName="ICSR Notification Receiver"
+                                  refFamiliarName="ICSR Notification Receiver"
+                                  refIdentifier="PORR_AR040002UV01"/>
+                        </artreeitem>
+                        <artreeitem>
+                           <teref id="treeRef-PORR_TE049007UV01" role="dependency" sectID="UVRR" sectType="SB"
+                                  refName="ICSR Revise Notification"
+                                  refFamiliarName="ICSR Revise Notification"
+                                  refIdentifier="PORR_TE049007UV01"/>
+                        </artreeitem>
+                        <artreeitem>
+                           <msgref id="treeRef-MCCI_MT000100UV01" role="dependency" sectID="UVCI" sectType="SB"
+                                   refName="Send Message Payload"
+                                   refFamiliarName="Send Message Payload"
+                                   refIdentifier="MCCI_MT000100UV01"/>
+                        </artreeitem>
+                        <artreeitem>
+                           <msgref id="treeRef-MCAI_MT700201UV01" role="dependency" sectID="UVAI" sectType="SB"
+                                   refName="Trigger Event Control Act"
+                                   refFamiliarName="Trigger Event Control Act"
+                                   refIdentifier="MCAI_MT700201UV01"/>
+                        </artreeitem>
+                        <artreeitem>
+                           <msgref id="treeRef-PORR_MT049006UV01" role="dependency" sectID="UVRR" sectType="SB"
+                                   refName="ICSR"
+                                   refFamiliarName="ICSR"
+                                   refIdentifier="PORR_MT049006UV01"/>
+                        </artreeitem>
+                     </artreeitem>
+                     <artreeitem>
+                        <intref id="treeRef-PORR_IN049008UV01" role="tree-element" sectID="UVRR" sectType="SB"
+                                refName="Individual Case Safety Report Retract"
+                                refFamiliarName="Individual Case Safety Report Retract"
+                                refIdentifier="PORR_IN049008UV01"/>
+                        <artreeitem>
+                           <arref id="treeRef-PORR_AR040001UV01" role="dependency" sectID="UVRR" sectType="SB"
+                                  refName="ICSR Notification Sender"
+                                  refFamiliarName="ICSR Notification Sender"
+                                  refIdentifier="PORR_AR040001UV01"/>
+                        </artreeitem>
+                        <artreeitem>
+                           <arref id="treeRef-PORR_AR040002UV01" role="dependency" sectID="UVRR" sectType="SB"
+                                  refName="ICSR Notification Receiver"
+                                  refFamiliarName="ICSR Notification Receiver"
+                                  refIdentifier="PORR_AR040002UV01"/>
+                        </artreeitem>
+                        <artreeitem>
+                           <teref id="treeRef-PORR_TE049008UV01" role="dependency" sectID="UVRR" sectType="SB"
+                                  refName="ICSR Withdraw Notification"
+                                  refFamiliarName="ICSR Withdraw Notification"
+                                  refIdentifier="PORR_TE049008UV01"/>
+                        </artreeitem>
+                        <artreeitem>
+                           <msgref id="treeRef-MCCI_MT000100UV01" role="dependency" sectID="UVCI" sectType="SB"
+                                   refName="Send Message Payload"
+                                   refFamiliarName="Send Message Payload"
+                                   refIdentifier="MCCI_MT000100UV01"/>
+                        </artreeitem>
+                        <artreeitem>
+                           <msgref id="treeRef-MCAI_MT700201UV01" role="dependency" sectID="UVAI" sectType="SB"
+                                   refName="Trigger Event Control Act"
+                                   refFamiliarName="Trigger Event Control Act"
+                                   refIdentifier="MCAI_MT700201UV01"/>
+                        </artreeitem>
+                        <artreeitem>
+                           <msgref id="treeRef-PORR_MT049006UV01" role="dependency" sectID="UVRR" sectType="SB"
+                                   refName="ICSR"
+                                   refFamiliarName="ICSR"
+                                   refIdentifier="PORR_MT049006UV01"/>
+                        </artreeitem>
+                     </artreeitem>
+                  </artreeitem>
+               </artreeitem>
+               <artreeitem>
+                  <stref id="d2e23078" role="tree-intro" sectID="UVRR" sectType="SB"
+                         refName="Topic: Human Pharmaceutical Reporting"
+                         refFamiliarName="Topic: Human Pharmaceutical Reporting"
+                         refIdentifier="PORR_DO000001UV"/>
+                  <artreeitem>
+                     <stref id="d2e23078" role="tree-intro" sectID="" sectType="SB" refName=" Story Boards"
+                            refFamiliarName=" Story Boards"
+                            refIdentifier=""/>
+                     <artreeitem>
+                        <stref id="treeRef-PORR_ST050001UV01" role="tree-element" sectID="UVRR" sectType="SB"
+                               refName="Regulated Human Pharmaceuticals Reporting"
+                               refFamiliarName="Regulated Human Pharmaceuticals Reporting"
+                               refIdentifier="PORR_ST050001UV01"/>
+                        <artreeitem>
+                           <stref id="treeRef-PORR_SN050002UV01" role="tree-element" sectID="UVRR" sectType="SB"
+                                  refName="Medical Confirmation at Event Level"
+                                  refFamiliarName="Medical Confirmation at Event Level"
+                                  refIdentifier="PORR_SN050002UV01"/>
+                        </artreeitem>
+                        <artreeitem>
+                           <stref id="treeRef-PORR_SN050003UV01" role="tree-element" sectID="UVRR" sectType="SB"
+                                  refName="Nullification Report"
+                                  refFamiliarName="Nullification Report"
+                                  refIdentifier="PORR_SN050003UV01"/>
+                        </artreeitem>
+                        <artreeitem>
+                           <stref id="treeRef-PORR_SN050004UV01" role="tree-element" sectID="UVRR" sectType="SB"
+                                  refName="Counterfeit medications"
+                                  refFamiliarName="Counterfeit medications"
+                                  refIdentifier="PORR_SN050004UV01"/>
+                        </artreeitem>
+                        <artreeitem>
+                           <stref id="treeRef-PORR_SN050005UV01" role="tree-element" sectID="UVRR" sectType="SB"
+                                  refName="Observational Study Report"
+                                  refFamiliarName="Observational Study Report"
+                                  refIdentifier="PORR_SN050005UV01"/>
+                        </artreeitem>
+                        <artreeitem>
+                           <stref id="treeRef-PORR_SN050006UV01" role="tree-element" sectID="UVRR" sectType="SB"
+                                  refName="Clinical Trial Report I"
+                                  refFamiliarName="Clinical Trial Report I"
+                                  refIdentifier="PORR_SN050006UV01"/>
+                        </artreeitem>
+                        <artreeitem>
+                           <stref id="treeRef-PORR_SN050007UV01" role="tree-element" sectID="UVRR" sectType="SB"
+                                  refName="Clinical Trial Report II"
+                                  refFamiliarName="Clinical Trial Report II"
+                                  refIdentifier="PORR_SN050007UV01"/>
+                        </artreeitem>
+                        <artreeitem>
+                           <stref id="treeRef-PORR_SN050008UV01" role="tree-element" sectID="UVRR" sectType="SB"
+                                  refName="Literature Report"
+                                  refFamiliarName="Literature Report"
+                                  refIdentifier="PORR_SN050008UV01"/>
+                        </artreeitem>
+                        <artreeitem>
+                           <stref id="treeRef-PORR_SN050009UV01" role="tree-element" sectID="UVRR" sectType="SB"
+                                  refName="Backlog Report"
+                                  refFamiliarName="Backlog Report"
+                                  refIdentifier="PORR_SN050009UV01"/>
+                        </artreeitem>
+                        <artreeitem>
+                           <intref id="treeRef-PORR_IN049016UV01" role="dependency" sectID="UVRR" sectType="SB"
+                                   refName="Human Pharmaceuticals Report Create"
+                                   refFamiliarName="Human Pharmaceuticals Report Create"
+                                   refIdentifier="PORR_IN049016UV01"/>
+                        </artreeitem>
+                        <artreeitem>
+                           <intref id="treeRef-PORR_IN049017UV01" role="dependency" sectID="UVRR" sectType="SB"
+                                   refName="HumanPharmaceuticals Report Revise"
+                                   refFamiliarName="HumanPharmaceuticals Report Revise"
+                                   refIdentifier="PORR_IN049017UV01"/>
+                        </artreeitem>
+                        <artreeitem>
+                           <intref id="treeRef-PORR_IN049018UV01" role="dependency" sectID="UVRR" sectType="SB"
+                                   refName="Human Pharmaceuticals Report Retract"
+                                   refFamiliarName="Human Pharmaceuticals Report Retract"
+                                   refIdentifier="PORR_IN049018UV01"/>
+                        </artreeitem>
+                     </artreeitem>
+                  </artreeitem>
+                  <artreeitem>
+                     <stref id="d2e23078" role="tree-intro" sectID="" sectType="SB"
+                            refName=" Application Roles"
+                            refFamiliarName=" Application Roles"
+                            refIdentifier=""/>
+                     <artreeitem>
+                        <arref id="treeRef-PORR_AR040011UV01" role="tree-element" sectID="UVRR" sectType="SB"
+                               refName="Human Pharmaceuticals Report Sender"
+                               refFamiliarName="Human Pharmaceuticals Report Sender"
+                               refIdentifier="PORR_AR040011UV01"/>
+                        <artreeitem>
+                           <intref id="treeRef-PORR_IN049016UV01" role="dependency" sectID="UVRR" sectType="SB"
+                                   refName="Human Pharmaceuticals Report Create"
+                                   refFamiliarName="Human Pharmaceuticals Report Create"
+                                   refIdentifier="PORR_IN049016UV01"/>
+                        </artreeitem>
+                        <artreeitem>
+                           <intref id="treeRef-PORR_IN049017UV01" role="dependency" sectID="UVRR" sectType="SB"
+                                   refName="HumanPharmaceuticals Report Revise"
+                                   refFamiliarName="HumanPharmaceuticals Report Revise"
+                                   refIdentifier="PORR_IN049017UV01"/>
+                        </artreeitem>
+                        <artreeitem>
+                           <intref id="treeRef-PORR_IN049018UV01" role="dependency" sectID="UVRR" sectType="SB"
+                                   refName="Human Pharmaceuticals Report Retract"
+                                   refFamiliarName="Human Pharmaceuticals Report Retract"
+                                   refIdentifier="PORR_IN049018UV01"/>
+                        </artreeitem>
+                     </artreeitem>
+                     <artreeitem>
+                        <arref id="treeRef-PORR_AR040012UV01" role="tree-element" sectID="UVRR" sectType="SB"
+                               refName="Human Pharmaceuticals Report Receiver"
+                               refFamiliarName="Human Pharmaceuticals Report Receiver"
+                               refIdentifier="PORR_AR040012UV01"/>
+                        <artreeitem>
+                           <intref id="treeRef-PORR_IN049016UV01" role="dependency" sectID="UVRR" sectType="SB"
+                                   refName="Human Pharmaceuticals Report Create"
+                                   refFamiliarName="Human Pharmaceuticals Report Create"
+                                   refIdentifier="PORR_IN049016UV01"/>
+                        </artreeitem>
+                        <artreeitem>
+                           <intref id="treeRef-PORR_IN049017UV01" role="dependency" sectID="UVRR" sectType="SB"
+                                   refName="HumanPharmaceuticals Report Revise"
+                                   refFamiliarName="HumanPharmaceuticals Report Revise"
+                                   refIdentifier="PORR_IN049017UV01"/>
+                        </artreeitem>
+                        <artreeitem>
+                           <intref id="treeRef-PORR_IN049018UV01" role="dependency" sectID="UVRR" sectType="SB"
+                                   refName="Human Pharmaceuticals Report Retract"
+                                   refFamiliarName="Human Pharmaceuticals Report Retract"
+                                   refIdentifier="PORR_IN049018UV01"/>
+                        </artreeitem>
+                     </artreeitem>
+                  </artreeitem>
+                  <artreeitem>
+                     <stref id="d2e23078" role="tree-intro" sectID="" sectType="SB"
+                            refName=" Trigger Events"
+                            refFamiliarName=" Trigger Events"
+                            refIdentifier=""/>
+                     <artreeitem>
+                        <teref id="treeRef-PORR_TE049016UV01" role="tree-element" sectID="UVRR" sectType="SB"
+                               refName="Human Pharmacetical Complete Notification"
+                               refFamiliarName="Human Pharmacetical Complete Notification"
+                               refIdentifier="PORR_TE049016UV01"/>
+                     </artreeitem>
+                     <artreeitem>
+                        <teref id="treeRef-PORR_TE049017UV01" role="tree-element" sectID="UVRR" sectType="SB"
+                               refName="Human Pharmaceutical Revise Notification"
+                               refFamiliarName="Human Pharmaceutical Revise Notification"
+                               refIdentifier="PORR_TE049017UV01"/>
+                     </artreeitem>
+                     <artreeitem>
+                        <teref id="treeRef-PORR_TE049018UV01" role="tree-element" sectID="UVRR" sectType="SB"
+                               refName="Human Pharmaceutical Withdraw Notification"
+                               refFamiliarName="Human Pharmaceutical Withdraw Notification"
+                               refIdentifier="PORR_TE049018UV01"/>
+                     </artreeitem>
+                  </artreeitem>
+                  <artreeitem>
+                     <stref id="d2e23078" role="tree-intro" sectID="" sectType="SB"
+                            refName=" Refined Message Information Models"
+                            refFamiliarName=" Refined Message Information Models"
+                            refIdentifier=""/>
+                     <artreeitem>
+                        <rmimref id="treeRef-PORR_RM049016UV01" role="tree-element" sectID="UVRR" sectType="SB"
+                                 refName="HumanPharmaceuticalsBaseRMIM"
+                                 refFamiliarName="HumanPharmaceuticalsBaseRMIM"
+                                 refIdentifier="PORR_RM049016UV01"/>
+                        <artreeitem>
+                           <hmdref id="treeRef-PORR_HD049016UV01" role="tree-element" sectID="UVRR" sectType="SB"
+                                   refName="HumanPharmacuticalsBaseHMD"
+                                   refFamiliarName="HumanPharmacuticalsBaseHMD"
+                                   refIdentifier="PORR_HD049016UV01"/>
+                           <artreeitem>
+                              <msgref id="treeRef-PORR_MT049016UV01" role="tree-element" sectID="UVRR" sectType="SB"
+                                      refName="HumanPharmaceuticalsBaseMT"
+                                      refFamiliarName="HumanPharmaceuticalsBaseMT"
+                                      refIdentifier="PORR_MT049016UV01"/>
+                              <artreeitem>
+                                 <cmetref id="treeRef-" role="dependency" sectID="" sectType="SB"
+                                          refName="A_HumanPharmaceuticalsPRRIModelUniversal"
+                                          refFamiliarName="A_HumanPharmaceuticalsPRRIModelUniversal"
+                                          refIdentifier=""/>
+                              </artreeitem>
+                           </artreeitem>
+                        </artreeitem>
+                     </artreeitem>
+                     <artreeitem>
+                        <rmimref id="treeRef-PORR_RM049023UV01" role="tree-element" sectID="UVRR" sectType="SB"
+                                 refName="HumanPharmaceuticalsPRRIModel"
+                                 refFamiliarName="HumanPharmaceuticalsPRRIModel"
+                                 refIdentifier="PORR_RM049023UV01"/>
+                        <artreeitem>
+                           <hmdref id="treeRef-PORR_HD049023UV01" role="tree-element" sectID="UVRR" sectType="SB"
+                                   refName="Human PharmaceuticalsPRRIHMD"
+                                   refFamiliarName="Human PharmaceuticalsPRRIHMD"
+                                   refIdentifier="PORR_HD049023UV01"/>
+                           <artreeitem>
+                              <msgref id="treeRef-PORR_MT049023UV01" role="tree-element" sectID="UVRR" sectType="SB"
+                                      refName="HumanPharmaceuticalsPRRIMT"
+                                      refFamiliarName="HumanPharmaceuticalsPRRIMT"
+                                      refIdentifier="PORR_MT049023UV01"/>
+                              <artreeitem>
+                                 <cmetref id="treeRef-POCP_MT020200UV01" role="dependency" sectID="UVCP" sectType="SB"
+                                          refName="R_ProductReportableUniversal"
+                                          refFamiliarName="R_ProductReportableUniversal"
+                                          refIdentifier="POCP_MT020200UV01"/>
+                              </artreeitem>
+                           </artreeitem>
+                        </artreeitem>
+                     </artreeitem>
+                  </artreeitem>
+                  <artreeitem>
+                     <stref id="d2e23078" role="tree-intro" sectID="" sectType="SB" refName=" Interactions"
+                            refFamiliarName=" Interactions"
+                            refIdentifier=""/>
+                     <artreeitem>
+                        <intref id="treeRef-PORR_IN049016UV01" role="tree-element" sectID="UVRR" sectType="SB"
+                                refName="Human Pharmaceuticals Report Create"
+                                refFamiliarName="Human Pharmaceuticals Report Create"
+                                refIdentifier="PORR_IN049016UV01"/>
+                        <artreeitem>
+                           <arref id="treeRef-PORR_AR040011UV01" role="dependency" sectID="UVRR" sectType="SB"
+                                  refName="Human Pharmaceuticals Report Sender"
+                                  refFamiliarName="Human Pharmaceuticals Report Sender"
+                                  refIdentifier="PORR_AR040011UV01"/>
+                        </artreeitem>
+                        <artreeitem>
+                           <arref id="treeRef-PORR_AR040012UV01" role="dependency" sectID="UVRR" sectType="SB"
+                                  refName="Human Pharmaceuticals Report Receiver"
+                                  refFamiliarName="Human Pharmaceuticals Report Receiver"
+                                  refIdentifier="PORR_AR040012UV01"/>
+                        </artreeitem>
+                        <artreeitem>
+                           <teref id="treeRef-PORR_TE049016UV01" role="dependency" sectID="UVRR" sectType="SB"
+                                  refName="Human Pharmacetical Complete Notification"
+                                  refFamiliarName="Human Pharmacetical Complete Notification"
+                                  refIdentifier="PORR_TE049016UV01"/>
+                        </artreeitem>
+                        <artreeitem>
+                           <msgref id="treeRef-MCCI_MT000100UV01" role="dependency" sectID="UVCI" sectType="SB"
+                                   refName="Send Message Payload"
+                                   refFamiliarName="Send Message Payload"
+                                   refIdentifier="MCCI_MT000100UV01"/>
+                        </artreeitem>
+                        <artreeitem>
+                           <msgref id="treeRef-MCAI_MT700201UV01" role="dependency" sectID="UVAI" sectType="SB"
+                                   refName="Trigger Event Control Act"
+                                   refFamiliarName="Trigger Event Control Act"
+                                   refIdentifier="MCAI_MT700201UV01"/>
+                        </artreeitem>
+                        <artreeitem>
+                           <msgref id="treeRef-PORR_MT049016UV01" role="dependency" sectID="UVRR" sectType="SB"
+                                   refName="HumanPharmaceuticalsBaseMT"
+                                   refFamiliarName="HumanPharmaceuticalsBaseMT"
+                                   refIdentifier="PORR_MT049016UV01"/>
+                        </artreeitem>
+                     </artreeitem>
+                     <artreeitem>
+                        <intref id="treeRef-PORR_IN049017UV01" role="tree-element" sectID="UVRR" sectType="SB"
+                                refName="HumanPharmaceuticals Report Revise"
+                                refFamiliarName="HumanPharmaceuticals Report Revise"
+                                refIdentifier="PORR_IN049017UV01"/>
+                        <artreeitem>
+                           <arref id="treeRef-PORR_AR040011UV01" role="dependency" sectID="UVRR" sectType="SB"
+                                  refName="Human Pharmaceuticals Report Sender"
+                                  refFamiliarName="Human Pharmaceuticals Report Sender"
+                                  refIdentifier="PORR_AR040011UV01"/>
+                        </artreeitem>
+                        <artreeitem>
+                           <arref id="treeRef-PORR_AR040012UV01" role="dependency" sectID="UVRR" sectType="SB"
+                                  refName="Human Pharmaceuticals Report Receiver"
+                                  refFamiliarName="Human Pharmaceuticals Report Receiver"
+                                  refIdentifier="PORR_AR040012UV01"/>
+                        </artreeitem>
+                        <artreeitem>
+                           <teref id="treeRef-PORR_TE049017UV01" role="dependency" sectID="UVRR" sectType="SB"
+                                  refName="Human Pharmaceutical Revise Notification"
+                                  refFamiliarName="Human Pharmaceutical Revise Notification"
+                                  refIdentifier="PORR_TE049017UV01"/>
+                        </artreeitem>
+                        <artreeitem>
+                           <msgref id="treeRef-MCCI_MT000100UV01" role="dependency" sectID="UVCI" sectType="SB"
+                                   refName="Send Message Payload"
+                                   refFamiliarName="Send Message Payload"
+                                   refIdentifier="MCCI_MT000100UV01"/>
+                        </artreeitem>
+                        <artreeitem>
+                           <msgref id="treeRef-MCAI_MT700201UV01" role="dependency" sectID="UVAI" sectType="SB"
+                                   refName="Trigger Event Control Act"
+                                   refFamiliarName="Trigger Event Control Act"
+                                   refIdentifier="MCAI_MT700201UV01"/>
+                        </artreeitem>
+                        <artreeitem>
+                           <msgref id="treeRef-PORR_MT049016UV01" role="dependency" sectID="UVRR" sectType="SB"
+                                   refName="HumanPharmaceuticalsBaseMT"
+                                   refFamiliarName="HumanPharmaceuticalsBaseMT"
+                                   refIdentifier="PORR_MT049016UV01"/>
+                        </artreeitem>
+                     </artreeitem>
+                     <artreeitem>
+                        <intref id="treeRef-PORR_IN049018UV01" role="tree-element" sectID="UVRR" sectType="SB"
+                                refName="Human Pharmaceuticals Report Retract"
+                                refFamiliarName="Human Pharmaceuticals Report Retract"
+                                refIdentifier="PORR_IN049018UV01"/>
+                        <artreeitem>
+                           <arref id="treeRef-PORR_AR040011UV01" role="dependency" sectID="UVRR" sectType="SB"
+                                  refName="Human Pharmaceuticals Report Sender"
+                                  refFamiliarName="Human Pharmaceuticals Report Sender"
+                                  refIdentifier="PORR_AR040011UV01"/>
+                        </artreeitem>
+                        <artreeitem>
+                           <arref id="treeRef-PORR_AR040012UV01" role="dependency" sectID="UVRR" sectType="SB"
+                                  refName="Human Pharmaceuticals Report Receiver"
+                                  refFamiliarName="Human Pharmaceuticals Report Receiver"
+                                  refIdentifier="PORR_AR040012UV01"/>
+                        </artreeitem>
+                        <artreeitem>
+                           <teref id="treeRef-PORR_TE049018UV01" role="dependency" sectID="UVRR" sectType="SB"
+                                  refName="Human Pharmaceutical Withdraw Notification"
+                                  refFamiliarName="Human Pharmaceutical Withdraw Notification"
+                                  refIdentifier="PORR_TE049018UV01"/>
+                        </artreeitem>
+                        <artreeitem>
+                           <msgref id="treeRef-MCCI_MT000100UV01" role="dependency" sectID="UVCI" sectType="SB"
+                                   refName="Send Message Payload"
+                                   refFamiliarName="Send Message Payload"
+                                   refIdentifier="MCCI_MT000100UV01"/>
+                        </artreeitem>
+                        <artreeitem>
+                           <msgref id="treeRef-MCAI_MT700201UV01" role="dependency" sectID="UVAI" sectType="SB"
+                                   refName="Trigger Event Control Act"
+                                   refFamiliarName="Trigger Event Control Act"
+                                   refIdentifier="MCAI_MT700201UV01"/>
+                        </artreeitem>
+                        <artreeitem>
+                           <msgref id="treeRef-PORR_MT049016UV01" role="dependency" sectID="UVRR" sectType="SB"
+                                   refName="HumanPharmaceuticalsBaseMT"
+                                   refFamiliarName="HumanPharmaceuticalsBaseMT"
+                                   refIdentifier="PORR_MT049016UV01"/>
+                        </artreeitem>
+                     </artreeitem>
+                  </artreeitem>
+               </artreeitem>
+            </artreeitem>
+         </artree>
+      </div1>
+      <div1 id="all-nameOrder">
+         <head> Regulated Reporting in Name Order</head>
+         <artree role="name">
+            <artreeitem>
+               <stref id="d2e22929" role="tree-intro" sectID="UVRR" sectType="SB"
+                      refName="Domain: Regulated Reporting"
+                      refFamiliarName="Domain: Regulated Reporting"
+                      refIdentifier="PORR_DO000001UV"/>
+               <artreeitem>
+                  <rmimref id="treeRef-PORR_DM000000UV" role="tree-element" sectID="UVRR" sectType="SB"
+                           refName="Public Health Reporting Domain Information Model"
+                           refFamiliarName="Public Health Reporting Domain Information Model"
+                           refIdentifier="PORR_DM000000UV"/>
+               </artreeitem>
+               <artreeitem>
+                  <rmimref id="treeRef-PORR_DM100001UV" role="tree-element" sectID="UVRR" sectType="SB"
+                           refName="Public Health Reporting Domain Information Model"
+                           refFamiliarName="Public Health Reporting Domain Information Model"
+                           refIdentifier="PORR_DM100001UV"/>
+               </artreeitem>
+               <artreeitem>
+                  <stref id="d2e22935" role="tree-intro" sectID="UVRR" sectType="SB"
+                         refName="Topic: Individual Case Safety Reporting"
+                         refFamiliarName="Topic: Individual Case Safety Reporting"
+                         refIdentifier="PORR_DO000001UV"/>
+                  <artreeitem>
+                     <stref id="d2e22935" role="tree-intro" sectID="" sectType="SB" refName=" Story Boards"
+                            refFamiliarName=" Story Boards"
+                            refIdentifier=""/>
+                     <artreeitem>
+                        <stref id="treeRef-PORR_ST040001UV01" role="tree-element" sectID="UVRR" sectType="SB"
+                               refName="Individual Case Safety Reporting"
+                               refFamiliarName="Individual Case Safety Reporting"
+                               refIdentifier="PORR_ST040001UV01"/>
+                        <artreeitem>
+                           <stref id="treeRef-PORR_SN040001UV01" role="tree-element" sectID="UVRR" sectType="SB"
+                                  refName="Healthcare Provider Initial Report"
+                                  refFamiliarName="Healthcare Provider Initial Report"
+                                  refIdentifier="PORR_SN040001UV01"/>
+                        </artreeitem>
+                        <artreeitem>
+                           <stref id="treeRef-PORR_SN040002UV01" role="tree-element" sectID="UVRR" sectType="SB"
+                                  refName="ICSR Product Defect Reporting"
+                                  refFamiliarName="ICSR Product Defect Reporting"
+                                  refIdentifier="PORR_SN040002UV01"/>
+                        </artreeitem>
+                        <artreeitem>
+                           <stref id="treeRef-PORR_SN040003UV01" role="tree-element" sectID="UVRR" sectType="SB"
+                                  refName="Healthcare Provider Follow Up Report"
+                                  refFamiliarName="Healthcare Provider Follow Up Report"
+                                  refIdentifier="PORR_SN040003UV01"/>
+                        </artreeitem>
+                        <artreeitem>
+                           <stref id="treeRef-PORR_SN040004UV01" role="tree-element" sectID="UVRR" sectType="SB"
+                                  refName="ICSR Nullification Report"
+                                  refFamiliarName="ICSR Nullification Report"
+                                  refIdentifier="PORR_SN040004UV01"/>
+                        </artreeitem>
+                        <artreeitem>
+                           <stref id="treeRef-PORR_SN040005UV01" role="tree-element" sectID="UVRR" sectType="SB"
+                                  refName="ICSR Product Defect Follow up Report"
+                                  refFamiliarName="ICSR Product Defect Follow up Report"
+                                  refIdentifier="PORR_SN040005UV01"/>
+                        </artreeitem>
+                        <artreeitem>
+                           <stref id="treeRef-PORR_SN040006UV01" role="tree-element" sectID="UVRR" sectType="SB"
+                                  refName="Nullify ICSR Product Defect Report"
+                                  refFamiliarName="Nullify ICSR Product Defect Report"
+                                  refIdentifier="PORR_SN040006UV01"/>
+                        </artreeitem>
+                        <artreeitem>
+                           <stref id="treeRef-PORR_SN040007UV01" role="tree-element" sectID="UVRR" sectType="SB"
+                                  refName="Device Reporting"
+                                  refFamiliarName="Device Reporting"
+                                  refIdentifier="PORR_SN040007UV01"/>
+                        </artreeitem>
+                        <artreeitem>
+                           <stref id="treeRef-PORR_SN040008UV01" role="tree-element" sectID="UVRR" sectType="SB"
+                                  refName="Adulterated Food Reporting"
+                                  refFamiliarName="Adulterated Food Reporting"
+                                  refIdentifier="PORR_SN040008UV01"/>
+                        </artreeitem>
+                        <artreeitem>
+                           <stref id="treeRef-PORR_SN040009UV01" role="tree-element" sectID="UVRR" sectType="SB"
+                                  refName="Dietary Supplement"
+                                  refFamiliarName="Dietary Supplement"
+                                  refIdentifier="PORR_SN040009UV01"/>
+                        </artreeitem>
+                        <artreeitem>
+                           <stref id="treeRef-PORR_SN040010UV01" role="tree-element" sectID="UVRR" sectType="SB"
+                                  refName="Cosmetic as Face Paint Report"
+                                  refFamiliarName="Cosmetic as Face Paint Report"
+                                  refIdentifier="PORR_SN040010UV01"/>
+                        </artreeitem>
+                        <artreeitem>
+                           <stref id="treeRef-PORR_SN040011UV01" role="tree-element" sectID="UVRR" sectType="SB"
+                                  refName="Parent Child Report"
+                                  refFamiliarName="Parent Child Report"
+                                  refIdentifier="PORR_SN040011UV01"/>
+                        </artreeitem>
+                        <artreeitem>
+                           <stref id="treeRef-PORR_SN040012UV01" role="tree-element" sectID="UVRR" sectType="SB"
+                                  refName="Clinical Trial Report I"
+                                  refFamiliarName="Clinical Trial Report I"
+                                  refIdentifier="PORR_SN040012UV01"/>
+                        </artreeitem>
+                        <artreeitem>
+                           <stref id="treeRef-PORR_SN040013UV01" role="tree-element" sectID="UVRR" sectType="SB"
+                                  refName="Clinical Trial Report II"
+                                  refFamiliarName="Clinical Trial Report II"
+                                  refIdentifier="PORR_SN040013UV01"/>
+                        </artreeitem>
+                        <artreeitem>
+                           <intref id="treeRef-PORR_IN049006UV01" role="dependency" sectID="UVRR" sectType="SB"
+                                   refName="Individual Case Safety Report Create"
+                                   refFamiliarName="Individual Case Safety Report Create"
+                                   refIdentifier="PORR_IN049006UV01"/>
+                        </artreeitem>
+                        <artreeitem>
+                           <intref id="treeRef-PORR_IN049007UV01" role="dependency" sectID="UVRR" sectType="SB"
+                                   refName="Individual Case Safety Report Revise"
+                                   refFamiliarName="Individual Case Safety Report Revise"
+                                   refIdentifier="PORR_IN049007UV01"/>
+                        </artreeitem>
+                        <artreeitem>
+                           <intref id="treeRef-PORR_IN049008UV01" role="dependency" sectID="UVRR" sectType="SB"
+                                   refName="Individual Case Safety Report Retract"
+                                   refFamiliarName="Individual Case Safety Report Retract"
+                                   refIdentifier="PORR_IN049008UV01"/>
+                        </artreeitem>
+                     </artreeitem>
+                  </artreeitem>
+                  <artreeitem>
+                     <stref id="d2e22935" role="tree-intro" sectID="" sectType="SB"
+                            refName=" Application Roles"
+                            refFamiliarName=" Application Roles"
+                            refIdentifier=""/>
+                     <artreeitem>
+                        <arref id="treeRef-PORR_AR040002UV01" role="tree-element" sectID="UVRR" sectType="SB"
+                               refName="ICSR Notification Receiver"
+                               refFamiliarName="ICSR Notification Receiver"
+                               refIdentifier="PORR_AR040002UV01"/>
+                        <artreeitem>
+                           <intref id="treeRef-PORR_IN049006UV01" role="dependency" sectID="UVRR" sectType="SB"
+                                   refName="Individual Case Safety Report Create"
+                                   refFamiliarName="Individual Case Safety Report Create"
+                                   refIdentifier="PORR_IN049006UV01"/>
+                        </artreeitem>
+                        <artreeitem>
+                           <intref id="treeRef-PORR_IN049007UV01" role="dependency" sectID="UVRR" sectType="SB"
+                                   refName="Individual Case Safety Report Revise"
+                                   refFamiliarName="Individual Case Safety Report Revise"
+                                   refIdentifier="PORR_IN049007UV01"/>
+                        </artreeitem>
+                        <artreeitem>
+                           <intref id="treeRef-PORR_IN049008UV01" role="dependency" sectID="UVRR" sectType="SB"
+                                   refName="Individual Case Safety Report Retract"
+                                   refFamiliarName="Individual Case Safety Report Retract"
+                                   refIdentifier="PORR_IN049008UV01"/>
+                        </artreeitem>
+                     </artreeitem>
+                     <artreeitem>
+                        <arref id="treeRef-PORR_AR040001UV01" role="tree-element" sectID="UVRR" sectType="SB"
+                               refName="ICSR Notification Sender"
+                               refFamiliarName="ICSR Notification Sender"
+                               refIdentifier="PORR_AR040001UV01"/>
+                        <artreeitem>
+                           <intref id="treeRef-PORR_IN049006UV01" role="dependency" sectID="UVRR" sectType="SB"
+                                   refName="Individual Case Safety Report Create"
+                                   refFamiliarName="Individual Case Safety Report Create"
+                                   refIdentifier="PORR_IN049006UV01"/>
+                        </artreeitem>
+                        <artreeitem>
+                           <intref id="treeRef-PORR_IN049007UV01" role="dependency" sectID="UVRR" sectType="SB"
+                                   refName="Individual Case Safety Report Revise"
+                                   refFamiliarName="Individual Case Safety Report Revise"
+                                   refIdentifier="PORR_IN049007UV01"/>
+                        </artreeitem>
+                        <artreeitem>
+                           <intref id="treeRef-PORR_IN049008UV01" role="dependency" sectID="UVRR" sectType="SB"
+                                   refName="Individual Case Safety Report Retract"
+                                   refFamiliarName="Individual Case Safety Report Retract"
+                                   refIdentifier="PORR_IN049008UV01"/>
+                        </artreeitem>
+                     </artreeitem>
+                  </artreeitem>
+                  <artreeitem>
+                     <stref id="d2e22935" role="tree-intro" sectID="" sectType="SB"
+                            refName=" Trigger Events"
+                            refFamiliarName=" Trigger Events"
+                            refIdentifier=""/>
+                     <artreeitem>
+                        <teref id="treeRef-PORR_TE049006UV01" role="tree-element" sectID="UVRR" sectType="SB"
+                               refName="ICSR Complete Notification"
+                               refFamiliarName="ICSR Complete Notification"
+                               refIdentifier="PORR_TE049006UV01"/>
+                     </artreeitem>
+                     <artreeitem>
+                        <teref id="treeRef-PORR_TE049007UV01" role="tree-element" sectID="UVRR" sectType="SB"
+                               refName="ICSR Revise Notification"
+                               refFamiliarName="ICSR Revise Notification"
+                               refIdentifier="PORR_TE049007UV01"/>
+                     </artreeitem>
+                     <artreeitem>
+                        <teref id="treeRef-PORR_TE049008UV01" role="tree-element" sectID="UVRR" sectType="SB"
+                               refName="ICSR Withdraw Notification"
+                               refFamiliarName="ICSR Withdraw Notification"
+                               refIdentifier="PORR_TE049008UV01"/>
+                     </artreeitem>
+                  </artreeitem>
+                  <artreeitem>
+                     <stref id="d2e22935" role="tree-intro" sectID="" sectType="SB"
+                            refName=" Refined Message Information Models"
+                            refFamiliarName=" Refined Message Information Models"
+                            refIdentifier=""/>
+                     <artreeitem>
+                        <rmimref id="treeRef-PORR_RM049013UV01" role="tree-element" sectID="UVRR" sectType="SB"
+                                 refName="ICSR A_ProductReportingRelevantInformation"
+                                 refFamiliarName="ICSR A_ProductReportingRelevantInformation"
+                                 refIdentifier="PORR_RM049013UV01"/>
+                        <artreeitem>
+                           <hmdref id="treeRef-PORR_HD049013UV01" role="tree-element" sectID="UVRR" sectType="SB"
+                                   refName="ICSR A_ProductReportingRelevantInformation HMD"
+                                   refFamiliarName="ICSR A_ProductReportingRelevantInformation HMD"
+                                   refIdentifier="PORR_HD049013UV01"/>
+                           <artreeitem>
+                              <msgref id="treeRef-PORR_MT049013UV01" role="tree-element" sectID="UVRR" sectType="SB"
+                                      refName="ICSR A_ProductReportingRelevantInformationHMD"
+                                      refFamiliarName="ICSR A_ProductReportingRelevantInformationHMD"
+                                      refIdentifier="PORR_MT049013UV01"/>
+                              <artreeitem>
+                                 <cmetref id="treeRef-POCP_MT020200UV01" role="dependency" sectID="UVCP" sectType="SB"
+                                          refName="R_ProductReportableUniversal"
+                                          refFamiliarName="R_ProductReportableUniversal"
+                                          refIdentifier="POCP_MT020200UV01"/>
+                              </artreeitem>
+                              <artreeitem>
+                                 <cmetref id="treeRef-COCT_MT080000UV09" role="dependency" sectID="UVCT" sectType="SB"
+                                          refName="R_SpecimenUniversal"
+                                          refFamiliarName="R_SpecimenUniversal"
+                                          refIdentifier="COCT_MT080000UV09"/>
+                              </artreeitem>
+                              <artreeitem>
+                                 <cmetref id="treeRef-COCT_MT710000UV07" role="dependency" sectID="UVCT" sectType="SB"
+                                          refName="E_PlaceUniversal"
+                                          refFamiliarName="E_PlaceUniversal"
+                                          refIdentifier="COCT_MT710000UV07"/>
+                              </artreeitem>
+                           </artreeitem>
+                        </artreeitem>
+                     </artreeitem>
+                     <artreeitem>
+                        <rmimref id="treeRef-PORR_RM049006UV01" role="tree-element" sectID="UVRR" sectType="SB"
+                                 refName="Individual Case Safety Report Base RMIM"
+                                 refFamiliarName="Individual Case Safety Report Base RMIM"
+                                 refIdentifier="PORR_RM049006UV01"/>
+                        <artreeitem>
+                           <hmdref id="treeRef-PORR_HD049006UV01" role="tree-element" sectID="UVRR" sectType="SB"
+                                   refName="ICSR HMD"
+                                   refFamiliarName="ICSR HMD"
+                                   refIdentifier="PORR_HD049006UV01"/>
+                           <artreeitem>
+                              <msgref id="treeRef-PORR_MT049006UV01" role="tree-element" sectID="UVRR" sectType="SB"
+                                      refName="ICSR"
+                                      refFamiliarName="ICSR"
+                                      refIdentifier="PORR_MT049006UV01"/>
+                              <artreeitem>
+                                 <cmetref id="treeRef-COCT_MT970000UV" role="dependency" sectID="UVCT" sectType="SB"
+                                          refName="A_ResearchStudyEnrollmentUniversal"
+                                          refFamiliarName="A_ResearchStudyEnrollmentUniversal"
+                                          refIdentifier="COCT_MT970000UV"/>
+                              </artreeitem>
+                              <artreeitem>
+                                 <cmetref id="treeRef-" role="dependency" sectID="" sectType="SB"
+                                          refName="A_RelevantInformationForProductReportingUniversal"
+                                          refFamiliarName="A_RelevantInformationForProductReportingUniversal"
+                                          refIdentifier=""/>
+                              </artreeitem>
+                              <artreeitem>
+                                 <cmetref id="treeRef-POCP_MT020200UV01" role="dependency" sectID="UVCP" sectType="SB"
+                                          refName="R_ProductReportableUniversal"
+                                          refFamiliarName="R_ProductReportableUniversal"
+                                          refIdentifier="POCP_MT020200UV01"/>
+                              </artreeitem>
+                           </artreeitem>
+                        </artreeitem>
+                     </artreeitem>
+                  </artreeitem>
+                  <artreeitem>
+                     <stref id="d2e22935" role="tree-intro" sectID="" sectType="SB" refName=" Interactions"
+                            refFamiliarName=" Interactions"
+                            refIdentifier=""/>
+                     <artreeitem>
+                        <intref id="treeRef-PORR_IN049006UV01" role="tree-element" sectID="UVRR" sectType="SB"
+                                refName="Individual Case Safety Report Create"
+                                refFamiliarName="Individual Case Safety Report Create"
+                                refIdentifier="PORR_IN049006UV01"/>
+                        <artreeitem>
+                           <arref id="treeRef-PORR_AR040001UV01" role="dependency" sectID="UVRR" sectType="SB"
+                                  refName="ICSR Notification Sender"
+                                  refFamiliarName="ICSR Notification Sender"
+                                  refIdentifier="PORR_AR040001UV01"/>
+                        </artreeitem>
+                        <artreeitem>
+                           <arref id="treeRef-PORR_AR040002UV01" role="dependency" sectID="UVRR" sectType="SB"
+                                  refName="ICSR Notification Receiver"
+                                  refFamiliarName="ICSR Notification Receiver"
+                                  refIdentifier="PORR_AR040002UV01"/>
+                        </artreeitem>
+                        <artreeitem>
+                           <teref id="treeRef-PORR_TE049006UV01" role="dependency" sectID="UVRR" sectType="SB"
+                                  refName="ICSR Complete Notification"
+                                  refFamiliarName="ICSR Complete Notification"
+                                  refIdentifier="PORR_TE049006UV01"/>
+                        </artreeitem>
+                        <artreeitem>
+                           <msgref id="treeRef-MCCI_MT000100UV01" role="dependency" sectID="UVCI" sectType="SB"
+                                   refName="Send Message Payload"
+                                   refFamiliarName="Send Message Payload"
+                                   refIdentifier="MCCI_MT000100UV01"/>
+                        </artreeitem>
+                        <artreeitem>
+                           <msgref id="treeRef-MCAI_MT700201UV01" role="dependency" sectID="UVAI" sectType="SB"
+                                   refName="Trigger Event Control Act"
+                                   refFamiliarName="Trigger Event Control Act"
+                                   refIdentifier="MCAI_MT700201UV01"/>
+                        </artreeitem>
+                        <artreeitem>
+                           <msgref id="treeRef-PORR_MT049006UV01" role="dependency" sectID="UVRR" sectType="SB"
+                                   refName="ICSR"
+                                   refFamiliarName="ICSR"
+                                   refIdentifier="PORR_MT049006UV01"/>
+                        </artreeitem>
+                     </artreeitem>
+                     <artreeitem>
+                        <intref id="treeRef-PORR_IN049008UV01" role="tree-element" sectID="UVRR" sectType="SB"
+                                refName="Individual Case Safety Report Retract"
+                                refFamiliarName="Individual Case Safety Report Retract"
+                                refIdentifier="PORR_IN049008UV01"/>
+                        <artreeitem>
+                           <arref id="treeRef-PORR_AR040001UV01" role="dependency" sectID="UVRR" sectType="SB"
+                                  refName="ICSR Notification Sender"
+                                  refFamiliarName="ICSR Notification Sender"
+                                  refIdentifier="PORR_AR040001UV01"/>
+                        </artreeitem>
+                        <artreeitem>
+                           <arref id="treeRef-PORR_AR040002UV01" role="dependency" sectID="UVRR" sectType="SB"
+                                  refName="ICSR Notification Receiver"
+                                  refFamiliarName="ICSR Notification Receiver"
+                                  refIdentifier="PORR_AR040002UV01"/>
+                        </artreeitem>
+                        <artreeitem>
+                           <teref id="treeRef-PORR_TE049008UV01" role="dependency" sectID="UVRR" sectType="SB"
+                                  refName="ICSR Withdraw Notification"
+                                  refFamiliarName="ICSR Withdraw Notification"
+                                  refIdentifier="PORR_TE049008UV01"/>
+                        </artreeitem>
+                        <artreeitem>
+                           <msgref id="treeRef-MCCI_MT000100UV01" role="dependency" sectID="UVCI" sectType="SB"
+                                   refName="Send Message Payload"
+                                   refFamiliarName="Send Message Payload"
+                                   refIdentifier="MCCI_MT000100UV01"/>
+                        </artreeitem>
+                        <artreeitem>
+                           <msgref id="treeRef-MCAI_MT700201UV01" role="dependency" sectID="UVAI" sectType="SB"
+                                   refName="Trigger Event Control Act"
+                                   refFamiliarName="Trigger Event Control Act"
+                                   refIdentifier="MCAI_MT700201UV01"/>
+                        </artreeitem>
+                        <artreeitem>
+                           <msgref id="treeRef-PORR_MT049006UV01" role="dependency" sectID="UVRR" sectType="SB"
+                                   refName="ICSR"
+                                   refFamiliarName="ICSR"
+                                   refIdentifier="PORR_MT049006UV01"/>
+                        </artreeitem>
+                     </artreeitem>
+                     <artreeitem>
+                        <intref id="treeRef-PORR_IN049007UV01" role="tree-element" sectID="UVRR" sectType="SB"
+                                refName="Individual Case Safety Report Revise"
+                                refFamiliarName="Individual Case Safety Report Revise"
+                                refIdentifier="PORR_IN049007UV01"/>
+                        <artreeitem>
+                           <arref id="treeRef-PORR_AR040001UV01" role="dependency" sectID="UVRR" sectType="SB"
+                                  refName="ICSR Notification Sender"
+                                  refFamiliarName="ICSR Notification Sender"
+                                  refIdentifier="PORR_AR040001UV01"/>
+                        </artreeitem>
+                        <artreeitem>
+                           <arref id="treeRef-PORR_AR040002UV01" role="dependency" sectID="UVRR" sectType="SB"
+                                  refName="ICSR Notification Receiver"
+                                  refFamiliarName="ICSR Notification Receiver"
+                                  refIdentifier="PORR_AR040002UV01"/>
+                        </artreeitem>
+                        <artreeitem>
+                           <teref id="treeRef-PORR_TE049007UV01" role="dependency" sectID="UVRR" sectType="SB"
+                                  refName="ICSR Revise Notification"
+                                  refFamiliarName="ICSR Revise Notification"
+                                  refIdentifier="PORR_TE049007UV01"/>
+                        </artreeitem>
+                        <artreeitem>
+                           <msgref id="treeRef-MCCI_MT000100UV01" role="dependency" sectID="UVCI" sectType="SB"
+                                   refName="Send Message Payload"
+                                   refFamiliarName="Send Message Payload"
+                                   refIdentifier="MCCI_MT000100UV01"/>
+                        </artreeitem>
+                        <artreeitem>
+                           <msgref id="treeRef-MCAI_MT700201UV01" role="dependency" sectID="UVAI" sectType="SB"
+                                   refName="Trigger Event Control Act"
+                                   refFamiliarName="Trigger Event Control Act"
+                                   refIdentifier="MCAI_MT700201UV01"/>
+                        </artreeitem>
+                        <artreeitem>
+                           <msgref id="treeRef-PORR_MT049006UV01" role="dependency" sectID="UVRR" sectType="SB"
+                                   refName="ICSR"
+                                   refFamiliarName="ICSR"
+                                   refIdentifier="PORR_MT049006UV01"/>
+                        </artreeitem>
+                     </artreeitem>
+                  </artreeitem>
+               </artreeitem>
+               <artreeitem>
+                  <stref id="d2e23078" role="tree-intro" sectID="UVRR" sectType="SB"
+                         refName="Topic: Human Pharmaceutical Reporting"
+                         refFamiliarName="Topic: Human Pharmaceutical Reporting"
+                         refIdentifier="PORR_DO000001UV"/>
+                  <artreeitem>
+                     <stref id="d2e23078" role="tree-intro" sectID="" sectType="SB" refName=" Story Boards"
+                            refFamiliarName=" Story Boards"
+                            refIdentifier=""/>
+                     <artreeitem>
+                        <stref id="treeRef-PORR_ST050001UV01" role="tree-element" sectID="UVRR" sectType="SB"
+                               refName="Regulated Human Pharmaceuticals Reporting"
+                               refFamiliarName="Regulated Human Pharmaceuticals Reporting"
+                               refIdentifier="PORR_ST050001UV01"/>
+                        <artreeitem>
+                           <stref id="treeRef-PORR_SN050002UV01" role="tree-element" sectID="UVRR" sectType="SB"
+                                  refName="Medical Confirmation at Event Level"
+                                  refFamiliarName="Medical Confirmation at Event Level"
+                                  refIdentifier="PORR_SN050002UV01"/>
+                        </artreeitem>
+                        <artreeitem>
+                           <stref id="treeRef-PORR_SN050003UV01" role="tree-element" sectID="UVRR" sectType="SB"
+                                  refName="Nullification Report"
+                                  refFamiliarName="Nullification Report"
+                                  refIdentifier="PORR_SN050003UV01"/>
+                        </artreeitem>
+                        <artreeitem>
+                           <stref id="treeRef-PORR_SN050004UV01" role="tree-element" sectID="UVRR" sectType="SB"
+                                  refName="Counterfeit medications"
+                                  refFamiliarName="Counterfeit medications"
+                                  refIdentifier="PORR_SN050004UV01"/>
+                        </artreeitem>
+                        <artreeitem>
+                           <stref id="treeRef-PORR_SN050005UV01" role="tree-element" sectID="UVRR" sectType="SB"
+                                  refName="Observational Study Report"
+                                  refFamiliarName="Observational Study Report"
+                                  refIdentifier="PORR_SN050005UV01"/>
+                        </artreeitem>
+                        <artreeitem>
+                           <stref id="treeRef-PORR_SN050006UV01" role="tree-element" sectID="UVRR" sectType="SB"
+                                  refName="Clinical Trial Report I"
+                                  refFamiliarName="Clinical Trial Report I"
+                                  refIdentifier="PORR_SN050006UV01"/>
+                        </artreeitem>
+                        <artreeitem>
+                           <stref id="treeRef-PORR_SN050007UV01" role="tree-element" sectID="UVRR" sectType="SB"
+                                  refName="Clinical Trial Report II"
+                                  refFamiliarName="Clinical Trial Report II"
+                                  refIdentifier="PORR_SN050007UV01"/>
+                        </artreeitem>
+                        <artreeitem>
+                           <stref id="treeRef-PORR_SN050008UV01" role="tree-element" sectID="UVRR" sectType="SB"
+                                  refName="Literature Report"
+                                  refFamiliarName="Literature Report"
+                                  refIdentifier="PORR_SN050008UV01"/>
+                        </artreeitem>
+                        <artreeitem>
+                           <stref id="treeRef-PORR_SN050009UV01" role="tree-element" sectID="UVRR" sectType="SB"
+                                  refName="Backlog Report"
+                                  refFamiliarName="Backlog Report"
+                                  refIdentifier="PORR_SN050009UV01"/>
+                        </artreeitem>
+                        <artreeitem>
+                           <intref id="treeRef-PORR_IN049016UV01" role="dependency" sectID="UVRR" sectType="SB"
+                                   refName="Human Pharmaceuticals Report Create"
+                                   refFamiliarName="Human Pharmaceuticals Report Create"
+                                   refIdentifier="PORR_IN049016UV01"/>
+                        </artreeitem>
+                        <artreeitem>
+                           <intref id="treeRef-PORR_IN049017UV01" role="dependency" sectID="UVRR" sectType="SB"
+                                   refName="HumanPharmaceuticals Report Revise"
+                                   refFamiliarName="HumanPharmaceuticals Report Revise"
+                                   refIdentifier="PORR_IN049017UV01"/>
+                        </artreeitem>
+                        <artreeitem>
+                           <intref id="treeRef-PORR_IN049018UV01" role="dependency" sectID="UVRR" sectType="SB"
+                                   refName="Human Pharmaceuticals Report Retract"
+                                   refFamiliarName="Human Pharmaceuticals Report Retract"
+                                   refIdentifier="PORR_IN049018UV01"/>
+                        </artreeitem>
+                     </artreeitem>
+                  </artreeitem>
+                  <artreeitem>
+                     <stref id="d2e23078" role="tree-intro" sectID="" sectType="SB"
+                            refName=" Application Roles"
+                            refFamiliarName=" Application Roles"
+                            refIdentifier=""/>
+                     <artreeitem>
+                        <arref id="treeRef-PORR_AR040012UV01" role="tree-element" sectID="UVRR" sectType="SB"
+                               refName="Human Pharmaceuticals Report Receiver"
+                               refFamiliarName="Human Pharmaceuticals Report Receiver"
+                               refIdentifier="PORR_AR040012UV01"/>
+                        <artreeitem>
+                           <intref id="treeRef-PORR_IN049016UV01" role="dependency" sectID="UVRR" sectType="SB"
+                                   refName="Human Pharmaceuticals Report Create"
+                                   refFamiliarName="Human Pharmaceuticals Report Create"
+                                   refIdentifier="PORR_IN049016UV01"/>
+                        </artreeitem>
+                        <artreeitem>
+                           <intref id="treeRef-PORR_IN049017UV01" role="dependency" sectID="UVRR" sectType="SB"
+                                   refName="HumanPharmaceuticals Report Revise"
+                                   refFamiliarName="HumanPharmaceuticals Report Revise"
+                                   refIdentifier="PORR_IN049017UV01"/>
+                        </artreeitem>
+                        <artreeitem>
+                           <intref id="treeRef-PORR_IN049018UV01" role="dependency" sectID="UVRR" sectType="SB"
+                                   refName="Human Pharmaceuticals Report Retract"
+                                   refFamiliarName="Human Pharmaceuticals Report Retract"
+                                   refIdentifier="PORR_IN049018UV01"/>
+                        </artreeitem>
+                     </artreeitem>
+                     <artreeitem>
+                        <arref id="treeRef-PORR_AR040011UV01" role="tree-element" sectID="UVRR" sectType="SB"
+                               refName="Human Pharmaceuticals Report Sender"
+                               refFamiliarName="Human Pharmaceuticals Report Sender"
+                               refIdentifier="PORR_AR040011UV01"/>
+                        <artreeitem>
+                           <intref id="treeRef-PORR_IN049016UV01" role="dependency" sectID="UVRR" sectType="SB"
+                                   refName="Human Pharmaceuticals Report Create"
+                                   refFamiliarName="Human Pharmaceuticals Report Create"
+                                   refIdentifier="PORR_IN049016UV01"/>
+                        </artreeitem>
+                        <artreeitem>
+                           <intref id="treeRef-PORR_IN049017UV01" role="dependency" sectID="UVRR" sectType="SB"
+                                   refName="HumanPharmaceuticals Report Revise"
+                                   refFamiliarName="HumanPharmaceuticals Report Revise"
+                                   refIdentifier="PORR_IN049017UV01"/>
+                        </artreeitem>
+                        <artreeitem>
+                           <intref id="treeRef-PORR_IN049018UV01" role="dependency" sectID="UVRR" sectType="SB"
+                                   refName="Human Pharmaceuticals Report Retract"
+                                   refFamiliarName="Human Pharmaceuticals Report Retract"
+                                   refIdentifier="PORR_IN049018UV01"/>
+                        </artreeitem>
+                     </artreeitem>
+                  </artreeitem>
+                  <artreeitem>
+                     <stref id="d2e23078" role="tree-intro" sectID="" sectType="SB"
+                            refName=" Trigger Events"
+                            refFamiliarName=" Trigger Events"
+                            refIdentifier=""/>
+                     <artreeitem>
+                        <teref id="treeRef-PORR_TE049016UV01" role="tree-element" sectID="UVRR" sectType="SB"
+                               refName="Human Pharmacetical Complete Notification"
+                               refFamiliarName="Human Pharmacetical Complete Notification"
+                               refIdentifier="PORR_TE049016UV01"/>
+                     </artreeitem>
+                     <artreeitem>
+                        <teref id="treeRef-PORR_TE049017UV01" role="tree-element" sectID="UVRR" sectType="SB"
+                               refName="Human Pharmaceutical Revise Notification"
+                               refFamiliarName="Human Pharmaceutical Revise Notification"
+                               refIdentifier="PORR_TE049017UV01"/>
+                     </artreeitem>
+                     <artreeitem>
+                        <teref id="treeRef-PORR_TE049018UV01" role="tree-element" sectID="UVRR" sectType="SB"
+                               refName="Human Pharmaceutical Withdraw Notification"
+                               refFamiliarName="Human Pharmaceutical Withdraw Notification"
+                               refIdentifier="PORR_TE049018UV01"/>
+                     </artreeitem>
+                  </artreeitem>
+                  <artreeitem>
+                     <stref id="d2e23078" role="tree-intro" sectID="" sectType="SB"
+                            refName=" Refined Message Information Models"
+                            refFamiliarName=" Refined Message Information Models"
+                            refIdentifier=""/>
+                     <artreeitem>
+                        <rmimref id="treeRef-PORR_RM049016UV01" role="tree-element" sectID="UVRR" sectType="SB"
+                                 refName="HumanPharmaceuticalsBaseRMIM"
+                                 refFamiliarName="HumanPharmaceuticalsBaseRMIM"
+                                 refIdentifier="PORR_RM049016UV01"/>
+                        <artreeitem>
+                           <hmdref id="treeRef-PORR_HD049016UV01" role="tree-element" sectID="UVRR" sectType="SB"
+                                   refName="HumanPharmacuticalsBaseHMD"
+                                   refFamiliarName="HumanPharmacuticalsBaseHMD"
+                                   refIdentifier="PORR_HD049016UV01"/>
+                           <artreeitem>
+                              <msgref id="treeRef-PORR_MT049016UV01" role="tree-element" sectID="UVRR" sectType="SB"
+                                      refName="HumanPharmaceuticalsBaseMT"
+                                      refFamiliarName="HumanPharmaceuticalsBaseMT"
+                                      refIdentifier="PORR_MT049016UV01"/>
+                              <artreeitem>
+                                 <cmetref id="treeRef-" role="dependency" sectID="" sectType="SB"
+                                          refName="A_HumanPharmaceuticalsPRRIModelUniversal"
+                                          refFamiliarName="A_HumanPharmaceuticalsPRRIModelUniversal"
+                                          refIdentifier=""/>
+                              </artreeitem>
+                           </artreeitem>
+                        </artreeitem>
+                     </artreeitem>
+                     <artreeitem>
+                        <rmimref id="treeRef-PORR_RM049023UV01" role="tree-element" sectID="UVRR" sectType="SB"
+                                 refName="HumanPharmaceuticalsPRRIModel"
+                                 refFamiliarName="HumanPharmaceuticalsPRRIModel"
+                                 refIdentifier="PORR_RM049023UV01"/>
+                        <artreeitem>
+                           <hmdref id="treeRef-PORR_HD049023UV01" role="tree-element" sectID="UVRR" sectType="SB"
+                                   refName="Human PharmaceuticalsPRRIHMD"
+                                   refFamiliarName="Human PharmaceuticalsPRRIHMD"
+                                   refIdentifier="PORR_HD049023UV01"/>
+                           <artreeitem>
+                              <msgref id="treeRef-PORR_MT049023UV01" role="tree-element" sectID="UVRR" sectType="SB"
+                                      refName="HumanPharmaceuticalsPRRIMT"
+                                      refFamiliarName="HumanPharmaceuticalsPRRIMT"
+                                      refIdentifier="PORR_MT049023UV01"/>
+                              <artreeitem>
+                                 <cmetref id="treeRef-POCP_MT020200UV01" role="dependency" sectID="UVCP" sectType="SB"
+                                          refName="R_ProductReportableUniversal"
+                                          refFamiliarName="R_ProductReportableUniversal"
+                                          refIdentifier="POCP_MT020200UV01"/>
+                              </artreeitem>
+                           </artreeitem>
+                        </artreeitem>
+                     </artreeitem>
+                  </artreeitem>
+                  <artreeitem>
+                     <stref id="d2e23078" role="tree-intro" sectID="" sectType="SB" refName=" Interactions"
+                            refFamiliarName=" Interactions"
+                            refIdentifier=""/>
+                     <artreeitem>
+                        <intref id="treeRef-PORR_IN049016UV01" role="tree-element" sectID="UVRR" sectType="SB"
+                                refName="Human Pharmaceuticals Report Create"
+                                refFamiliarName="Human Pharmaceuticals Report Create"
+                                refIdentifier="PORR_IN049016UV01"/>
+                        <artreeitem>
+                           <arref id="treeRef-PORR_AR040011UV01" role="dependency" sectID="UVRR" sectType="SB"
+                                  refName="Human Pharmaceuticals Report Sender"
+                                  refFamiliarName="Human Pharmaceuticals Report Sender"
+                                  refIdentifier="PORR_AR040011UV01"/>
+                        </artreeitem>
+                        <artreeitem>
+                           <arref id="treeRef-PORR_AR040012UV01" role="dependency" sectID="UVRR" sectType="SB"
+                                  refName="Human Pharmaceuticals Report Receiver"
+                                  refFamiliarName="Human Pharmaceuticals Report Receiver"
+                                  refIdentifier="PORR_AR040012UV01"/>
+                        </artreeitem>
+                        <artreeitem>
+                           <teref id="treeRef-PORR_TE049016UV01" role="dependency" sectID="UVRR" sectType="SB"
+                                  refName="Human Pharmacetical Complete Notification"
+                                  refFamiliarName="Human Pharmacetical Complete Notification"
+                                  refIdentifier="PORR_TE049016UV01"/>
+                        </artreeitem>
+                        <artreeitem>
+                           <msgref id="treeRef-MCCI_MT000100UV01" role="dependency" sectID="UVCI" sectType="SB"
+                                   refName="Send Message Payload"
+                                   refFamiliarName="Send Message Payload"
+                                   refIdentifier="MCCI_MT000100UV01"/>
+                        </artreeitem>
+                        <artreeitem>
+                           <msgref id="treeRef-MCAI_MT700201UV01" role="dependency" sectID="UVAI" sectType="SB"
+                                   refName="Trigger Event Control Act"
+                                   refFamiliarName="Trigger Event Control Act"
+                                   refIdentifier="MCAI_MT700201UV01"/>
+                        </artreeitem>
+                        <artreeitem>
+                           <msgref id="treeRef-PORR_MT049016UV01" role="dependency" sectID="UVRR" sectType="SB"
+                                   refName="HumanPharmaceuticalsBaseMT"
+                                   refFamiliarName="HumanPharmaceuticalsBaseMT"
+                                   refIdentifier="PORR_MT049016UV01"/>
+                        </artreeitem>
+                     </artreeitem>
+                     <artreeitem>
+                        <intref id="treeRef-PORR_IN049018UV01" role="tree-element" sectID="UVRR" sectType="SB"
+                                refName="Human Pharmaceuticals Report Retract"
+                                refFamiliarName="Human Pharmaceuticals Report Retract"
+                                refIdentifier="PORR_IN049018UV01"/>
+                        <artreeitem>
+                           <arref id="treeRef-PORR_AR040011UV01" role="dependency" sectID="UVRR" sectType="SB"
+                                  refName="Human Pharmaceuticals Report Sender"
+                                  refFamiliarName="Human Pharmaceuticals Report Sender"
+                                  refIdentifier="PORR_AR040011UV01"/>
+                        </artreeitem>
+                        <artreeitem>
+                           <arref id="treeRef-PORR_AR040012UV01" role="dependency" sectID="UVRR" sectType="SB"
+                                  refName="Human Pharmaceuticals Report Receiver"
+                                  refFamiliarName="Human Pharmaceuticals Report Receiver"
+                                  refIdentifier="PORR_AR040012UV01"/>
+                        </artreeitem>
+                        <artreeitem>
+                           <teref id="treeRef-PORR_TE049018UV01" role="dependency" sectID="UVRR" sectType="SB"
+                                  refName="Human Pharmaceutical Withdraw Notification"
+                                  refFamiliarName="Human Pharmaceutical Withdraw Notification"
+                                  refIdentifier="PORR_TE049018UV01"/>
+                        </artreeitem>
+                        <artreeitem>
+                           <msgref id="treeRef-MCCI_MT000100UV01" role="dependency" sectID="UVCI" sectType="SB"
+                                   refName="Send Message Payload"
+                                   refFamiliarName="Send Message Payload"
+                                   refIdentifier="MCCI_MT000100UV01"/>
+                        </artreeitem>
+                        <artreeitem>
+                           <msgref id="treeRef-MCAI_MT700201UV01" role="dependency" sectID="UVAI" sectType="SB"
+                                   refName="Trigger Event Control Act"
+                                   refFamiliarName="Trigger Event Control Act"
+                                   refIdentifier="MCAI_MT700201UV01"/>
+                        </artreeitem>
+                        <artreeitem>
+                           <msgref id="treeRef-PORR_MT049016UV01" role="dependency" sectID="UVRR" sectType="SB"
+                                   refName="HumanPharmaceuticalsBaseMT"
+                                   refFamiliarName="HumanPharmaceuticalsBaseMT"
+                                   refIdentifier="PORR_MT049016UV01"/>
+                        </artreeitem>
+                     </artreeitem>
+                     <artreeitem>
+                        <intref id="treeRef-PORR_IN049017UV01" role="tree-element" sectID="UVRR" sectType="SB"
+                                refName="HumanPharmaceuticals Report Revise"
+                                refFamiliarName="HumanPharmaceuticals Report Revise"
+                                refIdentifier="PORR_IN049017UV01"/>
+                        <artreeitem>
+                           <arref id="treeRef-PORR_AR040011UV01" role="dependency" sectID="UVRR" sectType="SB"
+                                  refName="Human Pharmaceuticals Report Sender"
+                                  refFamiliarName="Human Pharmaceuticals Report Sender"
+                                  refIdentifier="PORR_AR040011UV01"/>
+                        </artreeitem>
+                        <artreeitem>
+                           <arref id="treeRef-PORR_AR040012UV01" role="dependency" sectID="UVRR" sectType="SB"
+                                  refName="Human Pharmaceuticals Report Receiver"
+                                  refFamiliarName="Human Pharmaceuticals Report Receiver"
+                                  refIdentifier="PORR_AR040012UV01"/>
+                        </artreeitem>
+                        <artreeitem>
+                           <teref id="treeRef-PORR_TE049017UV01" role="dependency" sectID="UVRR" sectType="SB"
+                                  refName="Human Pharmaceutical Revise Notification"
+                                  refFamiliarName="Human Pharmaceutical Revise Notification"
+                                  refIdentifier="PORR_TE049017UV01"/>
+                        </artreeitem>
+                        <artreeitem>
+                           <msgref id="treeRef-MCCI_MT000100UV01" role="dependency" sectID="UVCI" sectType="SB"
+                                   refName="Send Message Payload"
+                                   refFamiliarName="Send Message Payload"
+                                   refIdentifier="MCCI_MT000100UV01"/>
+                        </artreeitem>
+                        <artreeitem>
+                           <msgref id="treeRef-MCAI_MT700201UV01" role="dependency" sectID="UVAI" sectType="SB"
+                                   refName="Trigger Event Control Act"
+                                   refFamiliarName="Trigger Event Control Act"
+                                   refIdentifier="MCAI_MT700201UV01"/>
+                        </artreeitem>
+                        <artreeitem>
+                           <msgref id="treeRef-PORR_MT049016UV01" role="dependency" sectID="UVRR" sectType="SB"
+                                   refName="HumanPharmaceuticalsBaseMT"
+                                   refFamiliarName="HumanPharmaceuticalsBaseMT"
+                                   refIdentifier="PORR_MT049016UV01"/>
+                        </artreeitem>
+                     </artreeitem>
+                  </artreeitem>
+               </artreeitem>
+            </artreeitem>
+         </artree>
+      </div1>
+   </body>
+</spec>

@@ -116,8 +116,8 @@ public class SetAnalysysResult implements SetAnalysysResultWS {
         MCCIIN000002UV01 response;
         try {
             toLog.add("Request: \n" + Utils.marshallMessage(request, "ru.korus.tmis.laboratory.bak.ws.server.model.hl7.complex"));
-            // processRequest(request, toLog);
-            flushToDB(request, toLog);
+            processRequest(request, toLog);
+            //flushToDB(request, toLog);
             response = createSuccessResponse();
             toLog.add("Response: \n" + Utils.marshallMessage(response, "ru.korus.tmis.laboratory.bak.ws.server.model.hl7.complex"));
 
@@ -149,10 +149,10 @@ public class SetAnalysysResult implements SetAnalysysResultWS {
     }
 
     /**
-     * Выборка данных по ИФА исследования
+     * Выборка данных по ИФА исследованию
      *
      * @param request
-     * @return
+     * @return значение ИФА исследовани, null - это не ИФА исследование
      */
     @Nullable
     private IFA processIFA(final POLBIN224100UV01 request) {
@@ -160,15 +160,15 @@ public class SetAnalysysResult implements SetAnalysysResultWS {
         try {
             for (POLBIN224100UV01MCAIMT700201UV01Subject2 subj : request.getControlActProcess().getSubject()) {
                 if (subj.getObservationBattery() != null) {
-                    final JAXBElement<POLBMT004000UV01ObservationBattery> battery = subj.getObservationBattery();
-                    final POLBMT004000UV01ObservationBattery value = battery.getValue();
-                    final String orderMisId = value.getInFulfillmentOf().get(0).getPlacerOrder().getValue().getId().get(0).getExtension();
-                    final List<CE> ceList = value.getComponent1().get(0).getObservationEvent().getValue().getConfidentialityCode();
+                    final String orderMisId = subj.getObservationBattery().getValue().getInFulfillmentOf().get(0).getPlacerOrder().getValue().getId().get(0).getExtension();
+                    final List<CE> ceList = subj.getObservationBattery().getValue().getComponent1().get(0).getObservationEvent().getValue().getConfidentialityCode();
                     if (ceList != null && !ceList.isEmpty()) {
-                        ifa = new IFA(
-                                ceList.get(0).getDisplayName(),
-                                ceList.get(0).getCode(),
-                                Long.parseLong(orderMisId));
+                        final String text = ceList.get(0).getDisplayName();
+                        final String value = ceList.get(0).getCode();
+                        if (!text.isEmpty() || !value.isEmpty()) {
+                            ifa = new IFA(text, value, Long.parseLong(orderMisId));
+                            break;
+                        }
                     }
                 }
             }
@@ -184,7 +184,7 @@ public class SetAnalysysResult implements SetAnalysysResultWS {
      * @param ifa
      * @param toLog
      */
-    private void saveIFA(IFA ifa, ToLog toLog) {
+    private void saveIFA(final IFA ifa, final ToLog toLog) {
         try {
             final Action action = dbAction.getActionById(ifa.getActionId());
             int aptId = 0;
@@ -210,10 +210,8 @@ public class SetAnalysysResult implements SetAnalysysResultWS {
      */
     @Nullable
     private BakPosev processBakPosev(final POLBIN224100UV01 request) throws CoreException {
-        BakPosev bakPosev = null;
-
-        long actionId;
-        final List<Microorganism> microorganismList = new LinkedList<Microorganism>();
+        final int actionId = getActionId(request);
+        final BakPosev bakPosev = new BakPosev(actionId);
 
         for (POLBIN224100UV01MCAIMT700201UV01Subject2 subj : request.getControlActProcess().getSubject()) {
             if (subj.getObservationBattery() != null) {
@@ -221,9 +219,6 @@ public class SetAnalysysResult implements SetAnalysysResultWS {
                     final JAXBElement<POLBMT004000UV01ObservationBattery> battery = subj.getObservationBattery();
                     final POLBMT004000UV01ObservationBattery value = battery.getValue();
                     final String testName = value.getCode().getDisplayName();
-                    final String orderMisId = value.getInFulfillmentOf().get(0).getPlacerOrder().getValue().getId().get(0).getExtension();
-                    actionId = Integer.parseInt(orderMisId);
-                    bakPosev = new BakPosev(actionId, microorganismList);
                     final List<POLBMT004000UV01Component2> component1 = value.getComponent1();
                     for (POLBMT004000UV01Component2 p : component1) {
 
@@ -237,7 +232,7 @@ public class SetAnalysysResult implements SetAnalysysResultWS {
                             final String microorgName = comp.getObservationEvent().getValue().getCode().getDisplayName();
                             final String microorgComment = comp.getObservationEvent().getValue().getCode().getCodeSystem();
                             if (!"".equals(microorgCode) && !"".equals(microorgName)) {
-                                microorganismList.add(new Microorganism(microorgCode, microorgName, microorgComment));
+                                bakPosev.addMicroorganism(new Microorganism(microorgCode, microorgName, microorgComment));
                             }
                         }
                     }
@@ -262,9 +257,14 @@ public class SetAnalysysResult implements SetAnalysysResultWS {
                             final String antibioticName = pp.getObservationEvent().getValue().getCode().getDisplayName();
                             final String antibioticConcentration = pp.getObservationEvent().getValue().getCode().getCodeSystem();
                             final String antibioticSensitivity = pp.getObservationEvent().getValue().getCode().getTranslation().get(0).getCode();
+                            final String antibioticComment = pp.getObservationEvent().getValue().getStatusCode() != null ?
+                                    pp.getObservationEvent().getValue().getStatusCode().getCode() : "";
 
                             ru.korus.tmis.laboratory.bak.ws.server.model.Antibiotic antibiotic = new ru.korus.tmis.laboratory.bak.ws.server.model.Antibiotic(
-                                    antibioticCode, antibioticName, antibioticConcentration, antibioticSensitivity);
+                                    antibioticCode, antibioticName);
+                            antibiotic.setConcentration(antibioticConcentration);
+                            antibiotic.setSensitivity(antibioticSensitivity);
+                            antibiotic.setComment(antibioticComment);
 
                             bakPosev.addAntibioticToOrganism(codeMicroOrg, antibiotic);
                         }
@@ -278,7 +278,20 @@ public class SetAnalysysResult implements SetAnalysysResultWS {
         return bakPosev;
     }
 
-    private void saveBakPosev(BakPosev bakPosev, ToLog toLog) {
+    private int getActionId(final POLBIN224100UV01 request) throws CoreException {
+        for (POLBIN224100UV01MCAIMT700201UV01Subject2 subj : request.getControlActProcess().getSubject()) {
+            if (subj.getObservationBattery() != null) {
+                return Integer.parseInt(subj.getObservationBattery().getValue().getInFulfillmentOf().get(0).getPlacerOrder().getValue().getId().get(0).getExtension());
+            }
+        }
+        throw new CoreException("Отсутствует actionId");
+    }
+
+    private void saveBakPosev(final BakPosev bakPosev, final ToLog toLog) {
+        final BbtResponse bbtResponse = dbBbtResponseBean.get(bakPosev.getActionId());
+
+
+//        dbBbtResultOrganismBean.
 
     }
 
@@ -288,7 +301,7 @@ public class SetAnalysysResult implements SetAnalysysResultWS {
      *
      * @param request
      */
-    private void flushToDB(POLBIN224100UV01 request, ToLog toLog) throws CoreException {
+    private void flushToDB(final POLBIN224100UV01 request, final ToLog toLog) throws CoreException {
         try {
             toLog.addN("\n----Flush to DB-----");
             final String uuidDocument = request.getId().getRoot();

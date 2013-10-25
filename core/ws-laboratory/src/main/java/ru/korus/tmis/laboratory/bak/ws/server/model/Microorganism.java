@@ -1,5 +1,7 @@
 package ru.korus.tmis.laboratory.bak.ws.server.model;
 
+import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.LinkedList;
 import java.util.List;
 
@@ -7,12 +9,24 @@ import java.util.List;
  * Author:      Dmitriy E. Nosov <br>
  * Date:        25.10.13, 13:15 <br>
  * Company:     Korus Consulting IT<br>
- * Description:  <br>
+ * Description: Модель микроорганизмов в результате БАК-посева<br>
  */
 public class Microorganism {
+    /**
+     * Код микроорганизма
+     */
     private String code;
+    /**
+     * Название микроорганизма
+     */
     private String name;
+    /**
+     * Комментарий БАК
+     */
     private String comment;
+    /**
+     * Список применявшихся антибиотиков
+     */
     private List<Antibiotic> antibioticList;
 
     public Microorganism(String code, String name, String comment) {
@@ -41,7 +55,7 @@ public class Microorganism {
     }
 
     public List<Antibiotic> getAntibioticList() {
-        return antibioticList;
+        return new ArrayList<Antibiotic>(antibioticList);
     }
 
     @Override

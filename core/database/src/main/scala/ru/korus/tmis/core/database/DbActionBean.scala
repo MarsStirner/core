@@ -317,7 +317,7 @@ class DbActionBean
   @TransactionAttribute(TransactionAttributeType.REQUIRES_NEW)
   def getEvent29AndAction19ForAction(action: Action) = {
     var typed = em.createQuery(GetEvent29AndAction19ForAction, classOf[Action])
-      .setParameter("externalId", action.getEvent.getExternalId)
+      //.setParameter("externalId", action.getEvent.getExternalId)
       .setParameter("directionDate", action.getPlannedEndDate)
 
     val result = typed.getResultList
@@ -358,8 +358,6 @@ class DbActionBean
   FROM
     Action a
   WHERE
-    a.event.externalId = :externalId
-  AND
     a.event.eventType.id = '29'
   AND
     a.directionDate = :directionDate

@@ -1,0 +1,2003 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE v3pub-locations SYSTEM "..\..\support\ent\v3m.ent">
+<!-- This is a template to be used to create a new HL7 Spec XML file. png June 2005 -->
+<spec xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="..\..\support\dtd\v3spec.xsd">
+	<header>
+		<title>Role Based Access Control (RBAC) Healthcare Permission Catalog</title>
+		<version>2.0</version>
+		<date>January 2010</date>
+		<authlist>
+			<author>
+				<role>Security WG Co-Chair</role>
+				<name>Bernd Blobel</name>
+				<affiliation>The University of Regensburg</affiliation>
+				<email href="bernd.blobel@klinik.uni-regensburg.de">bernd.blobel@klinik.uni-regensburg.de</email>
+			</author>
+			<author>
+				<role>Security WG Co-Chair</role>
+				<name>Mike Davis</name>
+				<affiliation>Department of Veterans Affairs</affiliation>
+				<email href="Mike.Davis@VA.gov">Mike.Davis@VA.gov</email>
+			</author>
+			<author>
+				<role>Security WG Co-Chair</role>
+				<name>John Moehrke</name>
+				<affiliation>GE Healthcare</affiliation>
+				<email href="John.Moehrke@med.ge.com">John.Moehrke@med.ge.com</email>
+			</author>
+			<author>
+				<role>CBCC WG Co-Chair</role>
+				<name>Suzanne Gonzales-Webb</name>
+				<affiliation>SAIC</affiliation>
+				<email href="Suzanne.L.Gonzales-Webb@SAIC.com">Suzanne.L.Gonzales-Webb@SAIC.com</email>
+			</author>
+			<author>
+				<role>Contributor</role>
+				<name>Glen Marshall</name>
+				<affiliation>Grok-A-Lot, LLC</affiliation>
+				<email href="glen@grok-a-lot.com">glen@grok-a-lot.com</email>
+			</author>
+			<author>
+				<role>Contributor</role>
+				<name>Tony Weida</name>
+				<affiliation>Apelon</affiliation>
+				<email href="tweida@apelon.com">tweida@apelon.com</email>
+			</author>
+			<author>
+				<role>Contributor</role>
+				<name>Steve Connolly</name>
+				<affiliation>Apelon</affiliation>
+				<email href="sconnolly@apelon.com">sconnolly@apelon.com</email>
+			</author>
+		</authlist>
+	</header>
+	<front>
+		<div1 id="prefNotes">
+			<head>Notes to Readers</head>
+			<p>These are documents related to access control permissions to healthcare information.</p>
+		</div1>
+		<div1 id="prefChange">
+			<head>Changes from Previous Release</head>
+			<p>Both the operation and object vocabularies have been expanded considerably since the last release, providing implementers a greater range of control over protected health information. </p>
+<p>In expanding the object vocabulary, the HL7 Electronic Health Record (EHR) System Functional Model has served as a comprehensive source of clinical, support and infrastructure functions in the Health Information Technology (IT) domain.  As such, its functions interact with and produce all relevant electronic artifacts containing protected health information in the EHR System.  For the purposes of the RBAC Permission Catalog, the Electronic Health Record Systems - Functional Model (EHR-S FM) provides a source of functions that must either overlap with workflow objects from the object vocabulary or indicate a record type that must be represented in the object vocabulary.</p>
+<p>A non-normative Constraint Catalog has been included in this version of the Permission Catalog to provide implementers with controls over access to protected information that could not be provided with operations and objects alone.  
+</p>
+		</div1>
+	</front>
+	<body>
+		<!-- need to be sure to set ballot status on the first div, or on each div if you are mixing levels -->
+		<div1 id="overview" ballotStatus="NormativeStandard" ballotNumber="2">
+			<head>Overview</head>
+			<div2 id="scope">
+				<head>Introduction and Scope</head>
+				<p>This document is an overview of the five documents that together comprise the HL7 Security Work Group’s Role Based Access Control project work products.   </p>
+			</div2>
+		</div1>
+		<div1 id="permissions">
+			<head>Healthcare Permission Catalog</head>
+			<div2 id="HCPIntro">
+				<head>Introduction</head>
+				<p>This document presents normative language to the HL7 permission vocabulary in constructing permissions {operation, object} pairs.</p>
+				<p>Table 1 lists definitions of terms used in this document.</p>
+				<table>
+					<caption>Definitions</caption>
+					<tbody>
+						<tr>
+							<th>Term</th>
+							<th>Definition</th>
+							<th>Source</th>
+						</tr>
+						<tr>
+							<td>
+								<p>Permission</p>
+							</td>
+							<td>
+								<p>
+									<emph role="italic">Permission </emph>is an approval to perform
+            an operation on one or more RBAC protected objects.</p>
+							</td>
+							<td>
+								<p>[ANSI-RBAC]</p>
+							</td>
+						</tr>
+						<tr>
+							<td>
+								<p>Operation</p>
+							</td>
+							<td>
+								<p>An <emph role="italic">operation </emph>is an executable image
+            of a program, which upon invocation executes some function for the
+            user.  Within a file system, <emph role="italic">operations</emph> might include read,
+            write, and execute.  Within a database management system, <emph role="italic">operations</emph> might
+            include append, delete, and update.</p>
+								<p>An <emph role="italic">operation</emph> is also known as an action or privilege.</p>
+							</td>
+							<td>
+								<p>[ANSI-RBAC]</p>
+							</td>
+						</tr>
+						<tr>
+							<td>
+								<p>Object</p>
+							</td>
+							<td>
+								<p>An <emph role="italic">object </emph>is an entity that contains
+            or receives information.  An <emph role="italic">object</emph> can represent information
+            containers (e.g., files or directories in an operating system, and/or
+            columns, rows, tables, and views within a database management system)
+            or <emph role="italic">objects</emph> can represent exhaustible system resources, such
+            as printers, disk space, and Central Processing Unit (CPU) cycles.</p>
+								<p>The set of <emph role="italic">objects</emph> covered by RBAC includes all of the objects
+            listed in the permissions that are assigned to roles.</p>
+								<p>Note: The definition of objects includes objects both at rest and in motion.</p>
+							</td>
+							<td>
+								<p>[ANSI-RBAC]</p>
+							</td>
+						</tr>
+					</tbody>
+				</table>
+			</div2>
+			<div2 id="conformance">
+				<head>Conformance</head>
+				<p>Interoperability is dependent upon organizations building roles from normative objects and operations.  The vocabulary makes no assumptions regarding any negotiated trust that exists between communicating partners or the protocols used to exchange role information.  In terms of the normative vocabulary it is sufficient and complete that interoperating agencies convey which permissions have been granted to a user.  There is no presumption of which workflow or process that the user is engaged in or what access the user may be granted by a business partner.  The authorization assertion would only convey the rights that the owing organization has bestowed to its business partner.  Business partner relationships or policy exchanges may be needed to clarify how trusting organizations will treat a specific permission assertion.</p>
+				<p>To conform to ANSI INCITS<footnote>
+						<p>ANSI INCITS (American National Standards Institute &mdash; International Committee for Information Technology Standards)</p>
+					</footnote> role-based access control standards, a role definition consists of a name and a corresponding set of permissions.  In different policy domains, the selection of permissions establishing a special role might be different.  When used to define ANSI INCITS compliant healthcare roles, the open list of permissions defined by the permission vocabulary in the healthcare domain is mandatory.</p>
+				<p> An implementation is said to be conformant when it contains permissions composed of permission {operation, object} pairs selected from this catalog where such permissions are defined in this catalog.  Additions to the catalog are anticipated and allowed, however, any implementation which adopts such extensions prior to having those changes approved by HL7 ballot would be considered non-conformant.  This is not to say that only the permission catalog vocabulary can be used for RBAC implementation. The permission catalog and defined ANSI INCITS healthcare roles should instead be considered as a baseline for interoperability between different policy domains.  Permission {operation, object} pairs not currently found in this version of the permission catalog should be brought forward to the HL7 Security Work Group to be considered for addition to the HL7 normative standard. </p>
+				<p>Organizations that require non-standard interpretations of the standard vocabulary also have the option of accommodating implementation concerns by simply mapping the standard vocabulary to their own proprietary systems.  Regardless, interoperability requires use of the appropriate normative permissions if the organization expects the receiving organization to correctly interpret and apply their assertions.</p>
+				<p>For example, in the case of orders, the standard vocabulary provides for separation between order creation and signature as distinct permissions.  While some organization implementation may not distinguish between these, locally granting signature rights to holders of the “create order” permission, there should be no expectation that receiving parties would be required to follow suit and accordingly they may “deny” signature rights if such rights are not explicitly asserted.  In fact, the receiving organization may “deny” signature rights even if asserted by the entity’s parent organization.  Such policy matters are not a matter for the vocabulary definition which is neutral to these issues, but resides more with intra/extra organization policy negotiation.  </p>
+			</div2>
+			<div2 id="confscope">
+				<head>Scope</head>
+				<p>The vocabulary contained in this permission catalog provides information supporting access control decision and enforcement functions as defined by ISO 10181-3.  Other forms of access control information are possible including entity based access control and context based access control outside the scope of these definitions.  This vocabulary does not presume or prevent organizations from executing these controls or other local constraints used for other purposes (e.g., cardinality constraints regarding the number of persons asserting a role with a specific permission at a particular time).  Specifically, this vocabulary does not prohibit use of logical rules and policies that an entity may choose to execute.  This vocabulary is consistent with Organization for the Advancement of Structured Information Standards (OASIS) eXtensible Access Control Markup Language (XACML) and ANSI INCITS RBAC standards allowing entities to integrate RBAC into their total access management solution.  The vocabulary is appropriate for RBAC only and may not be appropriate for use by other security services.  There is nothing in these definitions to suggest that RBAC completely defines all aspects of access control information, only that which is necessary for interoperability defined by roles.</p>
+				<p>The HL7 Security WG has future plans to consider situations that reflect the policies of specific domains.  These domain specific considerations are out of scope of the current permission definitions.</p>
+			</div2>
+			<div2 id="Extensibility">
+				<head>Extensibility</head>
+				<p>This catalog includes a non-normative “Role Engineering Process” which is based on the process described by Neumann and Strembeck <footnote>
+						<p>Neumann, G. and M. Strembeck, A Scenario-driven Role Engineering Process for Functional RBAC Roles, SACMAT ’02, June 3-4, 2002, Monterey, California, USA.</p>
+					</footnote>.  This process may be used by organizations to create new permissions that are consistent with the HL7 permission definitions.  Such permissions may be submitted to the HL7 Security Working Group (WG) along with associated scenarios and artifacts for proposed extensions to the normative vocabulary or simply adopted as proprietary non-interoperable or local domain extensions.</p>
+					<p><emph role="italic">As an alternative to RBAC, implementers may use Digital Rights Management.</emph>  International Organization for Standardization (ISO)/International Electrotechnical Commission (IEC) 21000-6:2004 which describes a Rights Data Dictionary comprises a set of clear, consistent, structured, integrated and uniquely identified terms to support the Moving Picture Experts Group (MPEG)-21 Rights Expression Language (REL), ISO/IEC 21000-5.  Future work will examine extensions of this vocabulary to harmonize with ISO 21000.</p>
+			</div2>
+			<div2 id="OperatDef">
+				<head>Operation Definitions</head>
+				<p>Table 2 below lists normative ‘operation definition’ vocabulary for the purpose of having privileges to perform an action on an object.  The operations below are examples of access types.<footnote><p>Note: each action applies to that action ONLY and there is no presumed subsumption.  For example, use of “Reproduce” does not imply any form of “Copy.”</p></footnote></p>
+				<list role="unordered">
+					<item><emph role="strong">ID</emph><br />
+							&nbsp;&nbsp;P = Indicates code for O<emph role="strong">p</emph>eration<br />
+							&nbsp;&nbsp;0000 = numeric identifier</item>
+					<item>Code &mdash; Operation name</item>
+					<item>Definition &mdash; description of the operation</item>
+				</list>
+				<table>
+					<caption>Operation Definitions</caption>
+					<tbody>
+						<tr>
+							<th>ID</th>
+							<th>Code</th>
+							<th>Definition</th>
+						</tr>
+						<tr>
+							<td>P1001</td>
+							<td>OPERATE</td>
+							<td>Act on an object or objects.</td>
+						</tr>
+						<tr>
+							<td>P1002</td>
+							<td>CREATE</td>
+							<td>Fundamental operation in an Information System (IS) that results only in the act of bringing an object into existence.</td>
+						</tr>
+						<tr>
+							<td>P1003</td>
+							<td>READ</td>
+							<td>Fundamental operation in an Information System (IS) that results only in the flow of information about an object to a subject.</td>
+						</tr>
+						<tr>
+							<td>P1004</td>
+							<td>UPDATE</td>
+							<td>Fundamental operation in an Information System (IS) that results only in the revision or alteration of an object.</td>
+						</tr>
+						<tr>
+							<td>P1005</td>
+							<td>APPEND</td>
+							<td>Fundamental operation in an Information System (IS) that results only in the addition of information to an object already in existence.</td>
+						</tr>
+						<tr>
+							<td>P1006</td>
+							<td>ANNOTATE</td>
+							<td>Add commentary, explanatory notes, critical notes or similar content to an object.</td>
+						</tr>
+						<tr>
+							<td>P1007</td>
+							<td>DELETE</td>
+							<td>Fundamental operation in an Information System (IS) that results only in the removal of information about an object from memory or storage.</td>
+						</tr>
+						<tr>
+							<td>P1008</td>
+							<td>PURGE</td>
+							<td>Operation that results in the permanent, unrecoverable removal of information about an object from memory or storage (e.g. by multiple overwrites with a series of random bits).</td>
+						</tr>
+						<tr>
+							<td>P1009</td>
+							<td>EXECUTE</td>
+							<td>Fundamental operation in an IS that results only in initiating performance of a single or set of programs (i.e., software objects).</td>
+						</tr>
+						<tr>
+							<td>P1010</td>
+							<td>REPRODUCE</td>
+							<td>Produce another online or offline object with the same content as the original. [Use of Reproduce does not imply any form of Copy]</td>
+						</tr>
+						<tr>
+							<td>P1011</td>
+							<td>COPY</td>
+							<td>Produce another online object with the same content as the original.</td>
+						</tr>
+						<tr>
+							<td>P1012</td>
+							<td>BACKUP</td>
+							<td>Produce another object with the same content as the original for potential recovery, i.e., create a spare copy.</td>
+						</tr>
+						<tr>
+							<td>P1013</td>
+							<td>RESTORE</td>
+							<td>Return/recreate content to original content. Produce another object with the same content as one previously backed up, i.e., recreate a readily usable copy.</td>
+						</tr>
+						<tr>
+							<td>P1014</td>
+							<td>EXPORT</td>
+							<td>Reproduce an object (or a portion thereof) so that the data leaves the control of the security subsystem.</td>
+						</tr>
+						<tr>
+							<td>P1015</td>
+							<td>PRINT</td>
+							<td>Render an object in printed form (typically hardcopy). </td>
+						</tr>
+						<tr>
+							<td>P1016</td>
+							<td>DERIVE</td>
+							<td>Make another object with content based on but different from that of an existing object.</td>
+						</tr>
+						<tr>
+							<td>P1017</td>
+							<td>CONVERT</td>
+							<td>Derive another object with the same content in a different form (different data model, different representation, and/or different format).</td>
+						</tr>
+						<tr>
+							<td>P1018</td>
+							<td>EXCERPT</td>
+							<td>Derive another object which includes part but not all of the original content. </td>
+						</tr>
+						<tr>
+							<td>P1019</td>
+							<td>TRANSLATE</td>
+							<td>Derive object in a different natural language, e.g., from English to Spanish.</td>
+						</tr>
+						<tr>
+							<td>P1020</td>
+							<td>MOVE</td>
+							<td>Relocate (the content of) an object.</td>
+						</tr>
+						<tr>
+							<td>P1021</td>
+							<td>ARCHIVE</td>
+							<td>Move (the content of) an object to long term storage.</td>
+						</tr>
+						<tr>
+							<td>P1022</td>
+							<td>REPLACE</td>
+							<td>Replace an object with another object. The replaced object becomes obsolete in the process.</td>
+						</tr>
+						<tr>
+							<td>P1023</td>
+							<td>FORWARD</td>
+							<td>Communicate (the content of) an object to another covered entity. </td>
+						</tr>
+						<tr>
+							<td>P1024</td>
+							<td>TRANSFER</td>
+							<td>Communicate (the content of) an object to an external clearinghouse without examining the content. </td>
+						</tr>
+						<tr>
+							<td>P1025</td>
+							<td>SIGN</td>
+							<td>Affix authentication information (i.e. An electronic signature) to an object so that its origin and integrity can be verified.</td>
+						</tr>
+						<tr>
+							<td>P1026</td>
+							<td>VERIFY</td>
+							<td>Determine whether an object has been altered and whether its signature was affixed by the claimed signer.</td>
+						</tr>
+					</tbody>
+				</table>
+			</div2>
+			<div2 id="ObjectDef">
+				<head>Object Definitions</head>
+				<p>Table 3 lists normative ‘object definition’ vocabulary.  The objects defined in the vocabulary are defined at a level that does not require detailed knowledge of their structure at a data element level as this is not standard across vendor implementations.</p>
+				<list role="unordered">
+					<item><emph role="strong">ID</emph><br />
+							B = indicates code for O<emph role="strong">b</emph>ject<br />
+							0000 = numeric identifier<br /><br />
+					</item>
+					<item><emph role="strong">Object</emph><br />
+							Definition from ANSI INCITS 359-2004:<br />
+							<emph role="italic">An object can be any system resource subject to access control, such as a file, printer, terminal, database record, etc. An object is an entity that contains or receives information. For a system that implements RBAC, the objects can represent information containers (e.g., files, directories, in an operating system, and/or columns, rows, tables, and views within a database management system) or objects can represent exhaustible system resources, such as printers, disk space, and CPU cycles.</emph><br /><br />
+					</item>
+					<item><emph role="strong">Record</emph><br />
+							Definition adapted from SNOMED CT:<br />
+							<emph role="italic">A record is an entity that is created by a person or persons for the purpose of providing other people with information about events or states of affairs. In general, a record is virtual, that is, it is independent of its particular physical instantiation(s), and consists of its information elements (usually words, phrases and sentences, but also numbers, graphs, and other information elements). Records need not be complete reports or complete records. They can be parts of larger records. For example, a complete health record is a record that also may contain other records in the form of individual documents or reports, which in turn may contain more finely granular records such as sections and even section headers.</emph><br />
+							R = indicates the object type is record<br /><br />
+					</item>
+					<item><emph role="strong">Workflow</emph><br />
+							Definition from ASTM E2595-07 Standard Guide for Privilege Management Infrastructure:<br />
+							<emph role="italic">A workflow is a representation of an organizational or business process in which documents, information, or tasks are passed from one participant to another in a way that is governed by rules or procedures; a workflow separates the various activities of a given organizational process into a set of well-defined tasks.</emph><br />
+							W = indicates the object type is workflow<br />
+					        Definition &mdash; definition of the object<br /><br />
+					        </item>
+					<item><emph role="strong">EHR-S Functional Model &mdash; Object mapping to HL7 EHR-S Functional Model</emph><br />
+							From EHR-S Functional Model, Release 1, February 2007:<br />
+							<emph role="italic">The HL7 EHR System Functional Model provides a reference list of functions that may be present in an Electronic Health Record System (EHR-S). The function list is described from a user perspective with the intent to enable consistent expression of system functionality. This EHR-S Functional Model, through the creation of Functional Profiles for care settings and realms, enables a standardized description and common understanding of functions sought or available in a given setting (e.g., intensive care, cardiology, office practice in one country or primary care in another country).</emph><br />
+								Source of Definition &mdash; authoritative source of the definition of the object<br /><br />
+					</item>
+				</list>
+				<table>
+					<caption>Object Definitions</caption>
+					<tbody>
+						<tr>
+							<th>ID</th>
+							<th>Object</th>
+							<th>Record or Workflow</th>
+							<th>Definition</th>
+							<th>EHR-S Functional Model</th>
+							<th>Source of Definition</th>
+						</tr>
+						<tr>
+							<td>B2001</td>
+							<td>Account Receivable</td>
+							<td>R</td>
+							<td>A record of an account for collecting charges, reversals, adjustments and payments, including deductibles, copayments, coinsurance (financial transactions) credited or debited to the account receivable account for a patient`s encounter.</td>
+							<td>&nbsp;</td>
+							<td>ANSI/HL7 V3 RBAC, R1-2008</td>
+						</tr>
+						<tr>
+							<td>B2002</td>
+							<td>Administrative Ad Hoc Report</td>
+							<td>R</td>
+							<td>A record of information generated on an ad hoc (one time) basis that contains administrative data; no clinical data will be included.</td>
+							<td>DC.1.1.5</td>
+							<td>ANSI/HL7 V3 RBAC, R1-2008</td>
+						</tr>
+						<tr>
+							<td>B2003</td>
+							<td>Administrative Report</td>
+							<td>R</td>
+							<td>A record of data (patient-specific and/or summary) generated for a variety of administrative purposes.</td>
+							<td>&nbsp;</td>
+							<td>ANSI/HL7 V3 RBAC, R1-2008</td>
+						</tr>
+						<tr>
+							<td>B2004</td>
+							<td>ADT (Admission, Discharge, Transfer) Function</td>
+							<td>W</td>
+							<td>The administrative functions of patient registration status, admission, discharge, and transfer.</td>
+							<td>&nbsp;</td>
+							<td>ANSI/HL7 V3 RBAC, R1-2008</td>
+						</tr>
+						<tr>
+							<td>B2005</td>
+							<td>Admission Record</td>
+							<td>R</td>
+							<td>A record of patient registration upon being admitted to (accepted into) hospital.</td>
+							<td>&nbsp;</td>
+							<td>ASTM E1239-04</td>
+						</tr>
+						<tr>
+							<td>B2006</td>
+							<td>Advance Directive</td>
+							<td>R</td>
+							<td>A record of a living will written by the patient to the physician in case of incapacitation to give further instructions.</td>
+							<td>DC.1.3.2</td>
+							<td>ANSI/HL7 V3 RBAC, R1-2008</td>
+						</tr>
+						<tr>
+							<td>B2007</td>
+							<td>Alert</td>
+							<td>R</td>
+							<td>A record of a brief online notices that is issued to users as they complete a cycle through the menu system.  An alert is designed to provide interactive notification of pending computing activities, such as the need to reorder supplies or review a patient's clinical test results.</td>
+							<td>DC.1.8.6, DC.2.1.2, DC.2.5.1, DC.2.6.2, DC.2.6.3</td>
+							<td>ANSI/HL7 V3 RBAC, R1-2008</td>
+						</tr>
+						<tr>
+							<td>B2008</td>
+							<td>Ambulance Run Report</td>
+							<td>R</td>
+							<td>See On-site Care Record</td>
+							<td>&nbsp;</td>
+							<td>Emergency Responder Electronic Health Record, Detailed Use Case, ONCHIT, 2006.</td>
+						</tr>
+						<tr>
+							<td>B2009</td>
+							<td>Appointment Schedule</td>
+							<td>R</td>
+							<td>A record of an appointment representing a booked slot or group of slots on a schedule, relating to one or more services or resources.  Two examples might include a patient visit scheduled at a clinic, and a reservation for a piece of equipment. A record of an appointment including past, present, and future appointments.</td>
+							<td>&nbsp;</td>
+							<td>ANSI/HL7 V3 RBAC, R1-2008</td>
+						</tr>
+						<tr>
+							<td>B2010</td>
+							<td>Appointment Schedule Function</td>
+							<td>W</td>
+							<td>The process of interacting with systems and applications for the purpose of scheduling time for healthcare resources or patient care</td>
+							<td>S.1.6</td>
+							<td>ANSI/HL7 V3 RBAC, R1-2008</td>
+						</tr>
+						<tr>
+							<td>B2011</td>
+							<td>Assessment</td>
+							<td>R</td>
+							<td>A record of a clinical evaluation consisting of a careful and complete history from the patient (or those who have information about the patient) and the reason(s) for their need of medical care in order to establish a diagnosis.</td>
+							<td>DC.1.5, DC.2.1.2</td>
+							<td>Adapted from Tabers Cyclopedic Medical Dictionary, 1993</td>
+						</tr>
+						<tr>
+							<td>B2012</td>
+							<td>Audit Trail</td>
+							<td>R</td>
+							<td>A record of access attempts and resource usage to verify enforcement of business, data integrity, security, and access-control rules.</td>
+							<td>IN.2.2</td>
+							<td>ISO TS 18308, EHR-S FM, Chapter 5, Section IN.2.2</td>
+						</tr>
+						<tr>
+							<td>B2013</td>
+							<td>Billing Attachment</td>
+							<td>R</td>
+							<td>A record of the processing of financial transactions related to the provision of healthcare services including the processing of eligibility verification, prior authorization, pre-determination, claims and remittance advice.  The processing of patient information in the context of the EHR for reimbursement support.</td>
+							<td>&nbsp;</td>
+							<td>ANSI/HL7 V3 RBAC, R1-2008</td>
+						</tr>
+						<tr>
+							<td>B2014</td>
+							<td>Blood Bank Order</td>
+							<td>R</td>
+							<td>A record of a request for whole blood or certain derived blood components.</td>
+							<td>DC.17.2.3, DC 2.4.5.1</td>
+							<td>Adapted from Tabers Cyclopedic Medical Dictionary, 1993</td>
+						</tr>
+						<tr>
+							<td>B2015</td>
+							<td>Blood Product Administration Record</td>
+							<td>R</td>
+							<td>A record of the blood products or certain derived blood components administered to a particular patient.</td>
+							<td>DC.17.2.3, DC 2.4.5.1</td>
+							<td>EHR-S FM, Chapter 3, Section DC.2.4.5.1</td>
+						</tr>
+						<tr>
+							<td>B2016</td>
+							<td>Biologic Order</td>
+							<td>R</td>
+							<td>A record of a request for (general) medicinal compounds that are prepared from living organisms and their products.  Includes serums, vaccines, antigents and antitoxins.</td>
+							<td>DC.17.2.3, DC 2.4.5.1</td>
+							<td>Adapted from Tabers Cyclopedic Medical Dictionary, 1993</td>
+						</tr>
+						<tr>
+							<td>B2017</td>
+							<td>Business Rule</td>
+							<td>R</td>
+							<td>A record of computable statement that alter system behavior in accordance with specified policies or clinical algorithms.  Alerts that provide clinical decision support typically rely on underlying business rules.</td>
+							<td>IN.6</td>
+							<td>EHR-S FM, Chapter 5, Section IN.6</td>
+						</tr>
+						<tr>
+							<td>B2018</td>
+							<td>Care Plan</td>
+							<td>R</td>
+							<td>A record of expected or planned activities, including observations, goals, services, appointments and procedures, usually organized in phases or sessions, which have the objective of organizing and managing health care activity for the patient, often focused upon one or more of the patient’s health care problems.</td>
+							<td>DC.1.6.1, DC.1.6.2</td>
+							<td>EHR-S Functional Model, Glossary</td>
+						</tr>
+						<tr>
+							<td>B2019</td>
+							<td>Chief Complaint</td>
+							<td>R</td>
+							<td>A record of the reason for the episode/encounter and patient’s complaints and symptoms reflecting their own perceptions of their needs.  The nature and duration of symptoms that caused the patient to seek medical attention, as stated in the patient’s own words.</td>
+							<td>&nbsp;</td>
+							<td>ANSI/HL7 V3 RBAC, R1-2008</td>
+						</tr>
+						<tr>
+							<td>B2020</td>
+							<td>Claims and Reimbursement</td>
+							<td>R</td>
+							<td>A record of a request for payment from third-party payors for health-care-related services received by a patient.</td>
+							<td>S.3.3.4, S.3.3.5</td>
+							<td>HL7 Claims and Reimbursement Glossary <br/>
+      HL7 RBAC Task Force</td>
+						</tr>
+						<tr>
+							<td>B2021</td>
+							<td>Clinical Ad Hoc Report</td>
+							<td>R</td>
+							<td>A record of information generated on an ad hoc (one time) basis that contains clinical data.</td>
+							<td>DC.1.1.5</td>
+							<td>EHR-S FM, Chapter 3 Section DC.1.1.5; HL7 RBAC Task Force</td>
+						</tr>
+						<tr>
+							<td>B2022</td>
+							<td>Clinical Guideline</td>
+							<td>R</td>
+							<td>A record that describes the processes used to evaluate and treat a patient having a specific diagnosis, condition, or symptom.  Clinical practice guidelines are found in the literature under many names - practice parameters, practice guidelines, patient care protocols, standards of practice, clinical pathways or highways, care maps, and other descriptive names.   Clinical practice guidelines should be evidence-based, authoritative, efficacious and effective within the targeted patient populations.</td>
+							<td>&nbsp;</td>
+							<td>ANSI/HL7 V3 RBAC, R1-2008</td>
+						</tr>
+						<tr>
+							<td>B2023</td>
+							<td>Clinical Report</td>
+							<td>R</td>
+							<td>A record that summarizes clinical, as opposed to administrative, information about a patient.</td>
+							<td>DC.1.1.4</td>
+							<td>EHR-S FM specification, Chapter 3 Section DC.1.1.4; HL7 RBAC Task Force</td>
+						</tr>
+						<tr>
+							<td>B2024</td>
+							<td>Coding</td>
+							<td>W</td>
+							<td>A process where medical records produced by the health care provider are translated into a code that identifies each diagnosis and procedure utilized in treating the patient. </td>
+							<td>S.3.2.1, S.3.2.2</td>
+							<td>ANSI/HL7 V3 RBAC, R1-2008</td>
+						</tr>
+						<tr>
+							<td>B2025</td>
+							<td>Consent Directive (informational)</td>
+							<td>R</td>
+							<td>A record of a patient's consent or dissent to collection, access, use or disclosure of individually identifiable health information as permitted under the applicable privacy policies about which they have been informed.</td>
+							<td>&nbsp;</td>
+							<td>ANSI/HL7 V3 RBAC, R1-2008</td>
+						</tr>
+						<tr>
+							<td>B2026</td>
+							<td>Consent Directive (consent to treat)</td>
+							<td>R</td>
+							<td>A record of a patient's consent indicating that (s)he has been informed of the nature of the treatment, risks, complications, alternative forms of treatment and treatment consequences and has authorized that treatment. </td>
+							<td>&nbsp;</td>
+							<td>ANSI/HL7 V3 RBAC, R1-2008</td>
+						</tr>
+						<tr>
+							<td>B2027</td>
+							<td>Consult Order</td>
+							<td>R</td>
+							<td>A record of a request for a consult (service/sub-specialty evaluation) or procedure (i.e. Electrocardiogram) to be completed for a patient.  Referral of a patient by the primary care physician to another hospital service/ specialty, to obtain a medical opinion based on patient evaluation and completion of any procedures, modalities, or treatments the consulting specialist deems necessary to render a medical opinion.</td>
+							<td>&nbsp;</td>
+							<td>ANSI/HL7 V3 RBAC, R1-2008</td>
+						</tr>
+						<tr>
+							<td>B2028</td>
+							<td>Consultation Finding</td>
+							<td>R</td>
+							<td>A record of the recommendations made by the consulting practitioner.</td>
+							<td>&nbsp;</td>
+							<td>ANSI/HL7 V3 RBAC, R1-2008</td>
+						</tr>
+						<tr>
+							<td>B2029</td>
+							<td>Current Directory of Provider Information</td>
+							<td>R</td>
+							<td>The current directory of provider information in accordance with relevant laws, regulations, and conventions, including full name, address or physical location, and a 24x7 telecommunications address (e.g. phone or pager access number) to support delivery of effective healthcare.</td>
+							<td>S.1.3.7</td>
+							<td>ANSI/HL7 V3 RBAC, R1-2008</td>
+						</tr>
+						<tr>
+							<td>B2030</td>
+							<td>De-identified Patient Data</td>
+							<td>R</td>
+							<td>A record of patient data from which important identifiers (Birth date, gender, address, age, etc) have been removed before they can be used for research or other purposes.</td>
+							<td>S.1.5</td>
+							<td>
+								<loc href="http://www.informatics-review.com/wiki/index.php/De-Identified_Patient_Data">http://www.informatics-review.com/wiki/index.php/De-Identified_Patient_Data</loc>
+							</td>
+						</tr>
+						<tr>
+							<td>B2031</td>
+							<td>Diet Order</td>
+							<td>R</td>
+							<td>A record of a patient diet.  A patient may have only one effective diet order at a time.</td>
+							<td>&nbsp;</td>
+							<td>ANSI/HL7 V3 RBAC, R1-2008</td>
+						</tr>
+						<tr>
+							<td>B2032</td>
+							<td>Discharge Summary</td>
+							<td>R</td>
+							<td>A record of a summary of hospitalization to the Primary Care Provider (PCP) who will follow the patient in clinic after his/her stay or to the admitting doctor at next hospitalization.</td>
+							<td>&nbsp;</td>
+							<td>ANSI/HL7 V3 RBAC, R1-2008</td>
+						</tr>
+						<tr>
+							<td>B2033</td>
+							<td>Do Not Resusitate (DNR) Order</td>
+							<td>R</td>
+							<td>A record in the patient's medical record instructing the medical staff not to try to revive the patient if breathing or heartbeat has stopped. </td>
+							<td>&nbsp;</td>
+							<td>ANSI/HL7 V3 RBAC, R1-2008</td>
+						</tr>
+						<tr>
+							<td>B2034</td>
+							<td>Durable Medical Equipment Order</td>
+							<td>R</td>
+							<td>A record of a request for durable medical equipment.<br/>
+							</td>
+							<td>DC.1.7.2.1</td>
+							<td>
+								<loc href="http://www.ssa.gov/OP_Home/ssact/title18/1861.htm#n">http://www.ssa.gov/OP_Home/ssact/title18/1861.htm#n</loc>
+							</td>
+						</tr>
+						<tr>
+							<td>B2035</td>
+							<td>Emergency Care Record</td>
+							<td>R</td>
+							<td>A record of patient care given in an Emergency Department.</td>
+							<td>&nbsp;</td>
+							<td>Emergency Responder Electronic Health Record, Detailed Use Case, ONCHIT, 2006.</td>
+						</tr>
+						<tr>
+							<td>B2036</td>
+							<td>Emergency Contact Information</td>
+							<td>R</td>
+							<td>A record of a information required to contact an individual selected by the patient in case of an emergency.</td>
+							<td>&nbsp;</td>
+							<td>Emergency Responder Electronic Health Record, Detailed Use Case, ONCHIT, 2006.</td>
+						</tr>
+						<tr>
+							<td>B2037</td>
+							<td>Emergency healthcare resource information</td>
+							<td>R</td>
+							<td>A record of health care resources (such as beds, operating theatres, medical supplies, and vaccines) that are available in response to local or national emergencies.</td>
+							<td>S.1.7</td>
+							<td>EHR-S FM, Chapter 4, Section S.1.7</td>
+						</tr>
+						<tr>
+							<td>B2038</td>
+							<td>Encounter Data</td>
+							<td>R</td>
+							<td>A record of data relating to treatment or service rendered by a provider to a patient.  Used in determining the level of service.</td>
+							<td>&nbsp;</td>
+							<td>ANSI/HL7 V3 RBAC, R1-2008</td>
+						</tr>
+						<tr>
+							<td>B2039</td>
+							<td>Explanation of Benefits (EOB)</td>
+							<td>R</td>
+							<td>A record which identifies paid amount, adjudication results and informational items for invoice grouping. The provider may forward EOB details from a primary payor unaltered to a secondary adjudicator for co-ordination of benefits.</td>
+							<td>S.3.3.2</td>
+							<td>HL7 Claims and Reimbursement glossary </td>
+						</tr>
+						<tr>
+							<td>B2040</td>
+							<td>External Clinical Information</td>
+							<td>R</td>
+							<td>A record of clinical data and documentation (such as diagnostic images) from outside the institution's Electronic Health Record system.</td>
+							<td>DC.1.1.3.1</td>
+							<td>EHR-S FM, Chapter 3, Section DC.1.1.3.1</td>
+						</tr>
+						<tr>
+							<td>B2041</td>
+							<td>Family History</td>
+							<td>R</td>
+							<td>A record of the patient family's relationships, major illnesses and causes of death.</td>
+							<td>PH.2.5.8</td>
+							<td>PHRS Functional Model, Release 1, May 2008.</td>
+						</tr>
+						<tr>
+							<td>B2042</td>
+							<td>Formulary</td>
+							<td>R</td>
+							<td>A record of the list of medications that are a benefit for an individual or a defined group.</td>
+							<td>DC.1.7.1</td>
+							<td>HL7 Claims and Reimbursement glossary </td>
+						</tr>
+						<tr>
+							<td>B2043</td>
+							<td>Genetic Information</td>
+							<td>R</td>
+							<td>A record of a genetic test that reveals information about a patient's genotype, mutations or chromosomal changes.</td>
+							<td>PH.2.5.9</td>
+							<td>PHRS Functional Model, Release 1, May 2008. </td>
+						</tr>
+						<tr>
+							<td>B2044</td>
+							<td>Health Outcome Record</td>
+							<td>R</td>
+							<td>A record of the effects of the health care process on patients and populations.  Examples of health outcome records include chronic disease and morbidity, physical functional status, and quality of life.</td>
+							<td>S.2.1</td>
+							<td>
+								<loc href="http://www.nlm.nih.gov/nichsr/corelib/houtcomes.html">http://www.nlm.nih.gov/nichsr/corelib/houtcomes.html</loc>
+							</td>
+						</tr>
+						<tr>
+							<td>B2045</td>
+							<td>Health Record Extraction </td>
+							<td>R</td>
+							<td>A record of patient data aggregated for analysis, reporting, or distribution.  May include de-identified patient data.</td>
+							<td>IN.2.4</td>
+							<td>EHR-S FM, Chapter 5, Section IN.2.4</td>
+						</tr>
+						<tr>
+							<td>B2046</td>
+							<td>Health Status Data</td>
+							<td>R</td>
+							<td>A record of the state of the health of a specified individual, group, or population. This item lists the data elements and indicators used in the data set to describe the health status of an individual or target population(s).</td>
+							<td>&nbsp;</td>
+							<td>ANSI/HL7 V3 RBAC, R1-2008</td>
+						</tr>
+						<tr>
+							<td>B2047</td>
+							<td>History and Physical</td>
+							<td>R</td>
+							<td>A record of a patient's history and physical examinations. </td>
+							<td>&nbsp;</td>
+							<td>ANSI/HL7 V3 RBAC, R1-2008</td>
+						</tr>
+						<tr>
+							<td>B2048</td>
+							<td>Immunization List</td>
+							<td>R</td>
+							<td>A detailed record of the immunizations administered to a patient over a given time period.</td>
+							<td>DC.1.4.4</td>
+							<td>ANSI/HL7 V3 RBAC, R1-2008</td>
+						</tr>
+						<tr>
+							<td>B2049</td>
+							<td>Inpatient Medication Order</td>
+							<td>R</td>
+							<td>A record of (a) the identity of the drug to be administered, (b) dosage of the drug, (c) route by which the drug is to be administered, (d) time and/or frequency of administration, (e) registration number and address for a controlled substance.</td>
+							<td>&nbsp;</td>
+							<td>ANSI/HL7 V3 RBAC, R1-2008</td>
+						</tr>
+						<tr>
+							<td>B2050</td>
+							<td>Inter-Provider Communication</td>
+							<td>W</td>
+							<td>The process of supporting electronic messaging (inbound and outbound) between providers to trigger or respond to pertinent actions in the care process and document non-electronic communication (such as phone calls, correspondence or other encounters).  Messaging among providers involved in the care process can range from real time communication (for example, fulfillment of an injection while the patient is in the exam room), to asynchronous communication (for example, consult reports between physicians).</td>
+							<td>&nbsp;</td>
+							<td>ANSI/HL7 V3 RBAC, R1-2008</td>
+						</tr>
+						<tr>
+							<td>B2051</td>
+							<td>Laboratory Order</td>
+							<td>R</td>
+							<td>A record of a request for clinical laboratory services for a specified patient.</td>
+							<td>&nbsp;</td>
+							<td>ANSI/HL7 V3 RBAC, R1-2008</td>
+						</tr>
+						<tr>
+							<td>B2052</td>
+							<td>Master Patient Index</td>
+							<td>R</td>
+							<td>A record used for the tracking of patient information by assigning each patient an identifying series of characters.</td>
+							<td>&nbsp;</td>
+							<td>ANSI/HL7 V3 RBAC, R1-2008</td>
+						</tr>
+						<tr>
+							<td>B2053</td>
+							<td>Medical History<br/>
+							</td>
+							<td>R</td>
+							<td>A record of information about a patient's medical, procedural/surgical, social and family history that can provide information useful in formulating a diagnosis and providing medical care to the patient.</td>
+							<td>DC.1.2</td>
+							<td>ANSI/HL7 V3 RBAC, R1-2008</td>
+						</tr>
+						<tr>
+							<td>B2054</td>
+							<td>Medication Administration Record (M.A.R.)</td>
+							<td>R</td>
+							<td>A record of a medication administration is generated by the EHR, based upon the medical orders and the patient's plan of care.  This document is used to conduct rounds and dispense medications.  (i.e. The medication bar code, patient wristband, and the provider bar are used to uniquely identify each administration of a medication in the hospital and nursing home settings.) </td>
+							<td>&nbsp;</td>
+							<td>ANSI/HL7 V3 RBAC, R1-2008</td>
+						</tr>
+						<tr>
+							<td>B2055</td>
+							<td>Nursing Order</td>
+							<td>R</td>
+							<td>A record of a request to a nurse in a ward regarding nursing procedures for a patient.</td>
+							<td>DC.1.6.2, DC.1.7.1, DC.1.7.2, DC.1.7.3</td>
+							<td>ANSI/HL7 V3 RBAC, R1-2008</td>
+						</tr>
+						<tr>
+							<td>B2056</td>
+							<td>On-Site Care Record</td>
+							<td>R</td>
+							<td>A record that is used to collect information at the scene of a healthcare incident by on-site care providers. On-site healthcare is often provided in emergency situations. Also called Ambulance Run Report.</td>
+							<td>&nbsp;</td>
+							<td>Emergency Responder Electronic Health Record, Detailed Use Case, ONCHIT, 2006.</td>
+						</tr>
+						<tr>
+							<td>B2057</td>
+							<td>Order Set</td>
+							<td>R</td>
+							<td>A record of a pre-filled ordering template, or electronic protocol, that is derived from evidence based best practice guidelines. The collection of proposed acts within the order set has been developed and edited to promote consistent and effective organization of health care activity. </td>
+							<td>DC.1.6.2, DC.1.7.1, DC.1.7.2, DC.1.7.3</td>
+							<td>HL7 Glossary, (1) Kamal J, Rogers P, Saltz J, Mekhjian HS. Information Warehouse as a Tool to Analyze Computerized Physician Order Entry Order Set Utilization: Opportunities for Improvement. In: AMIA 2003 Symposium Proceedings; 2003; Washington, DC; 2003. p. 336-41.</td>
+						</tr>
+						<tr>
+							<td>B2058</td>
+							<td>Outpatient Prescription Order</td>
+							<td>R</td>
+							<td>A record of a request for a prescription medication to be dispensed to an outpatient.</td>
+							<td>&nbsp;</td>
+							<td>ANSI/HL7 V3 RBAC, R1-2008</td>
+						</tr>
+						<tr>
+							<td>B2059</td>
+							<td>Past Visits</td>
+							<td>R</td>
+							<td>A record of all prior admissions to a facility that may have been documented in Provider Visit notes, Non-Visit Encounter notes, and Non-Scheduled Provider Visit notes.</td>
+							<td>&nbsp;</td>
+							<td>ANSI/HL7 V3 RBAC, R1-2008</td>
+						</tr>
+						<tr>
+							<td>B2060</td>
+							<td>Patient Acuity</td>
+							<td>R</td>
+							<td>A record of the measurement of the intensity of care required for a patient accomplished by a registered nurse.  There are six categories ranging from minimal care (I) to intensive care (VI).</td>
+							<td>&nbsp;</td>
+							<td>ANSI/HL7 V3 RBAC, R1-2008</td>
+						</tr>
+						<tr>
+							<td>B2061</td>
+							<td>Patient Allergy or Adverse Reaction</td>
+							<td>R</td>
+							<td>A record of a misguided reaction to a foreign substance by the immune system, the body system of defense against foreign invaders, particularly pathogens (the agents of infection).  This includes noxious reaction from the administration of over-the-counter, prescription, or investigational/research drugs. </td>
+							<td>&nbsp;</td>
+							<td>ANSI/HL7 V3 RBAC, R1-2008</td>
+						</tr>
+						<tr>
+							<td>B2062</td>
+							<td>Patient Bed Assignment</td>
+							<td>R</td>
+							<td>A record of the available beds to which a patient can be assigned to optimize care and minimize risk (such as exposure to contagious patients).</td>
+							<td>S.1.4.4</td>
+							<td>EHR-S FM, Chapter 4, Section S.1.4.4</td>
+						</tr>
+						<tr>
+							<td>B2063</td>
+							<td>Patient Demographics (see also Patient Identification)</td>
+							<td>R</td>
+							<td>A record of the patient's demographic characteristics (such as age, gender, race/ethnicity, marital status, and occupation).</td>
+							<td>DC.2.5.1, DC.2.6.1, DC.3.2.5</td>
+							<td>
+								<loc href="http://www.usc.edu/schools/medicine/departments/preventive_medicine/divisions/epidemiology/research/csp/CSPedia/WebHelp/Patient_Demographics/Patient_Demographics_Introduction.htm">http://www.usc.edu/schools/medicine/departments/preventive_medicine/divisions/epidemiology/research/csp/CSPedia/WebHelp/Patient_Demographics/Patient_Demographics_Introduction.htm</loc>
+							</td>
+						</tr>
+						<tr>
+							<td>B2064</td>
+							<td>Patient Education</td>
+							<td>W</td>
+							<td>A teaching program or information data sheet given to patients concerning their own health needs.</td>
+							<td>&nbsp;</td>
+							<td>ANSI/HL7 V3 RBAC, R1-2008</td>
+						</tr>
+						<tr>
+							<td>B2065</td>
+							<td>Patient health data from administrative or financial sources</td>
+							<td>R</td>
+							<td>A record of patient health data extracted from administrative or financial information sources.  Such derived data should be clearly labeled to distinguish it from clinically authenticated data.</td>
+							<td>DC 1.1.3.3</td>
+							<td>EHR-S FM, Chapter 3, Section S.1.1.3.3</td>
+						</tr>
+						<tr>
+							<td>B2066</td>
+							<td>Patient Identification (see also Patient Demographic)</td>
+							<td>R</td>
+							<td>A record of permanent identifying and demographic information about a patient used by applications as the main means of communicating this information to other systems.</td>
+							<td>&nbsp;</td>
+							<td>ANSI/HL7 V3 RBAC, R1-2008</td>
+						</tr>
+						<tr>
+							<td>B2067</td>
+							<td>Patient-Specific Instructions</td>
+							<td>R</td>
+							<td>A record of specific directions given to a patient in connection with his or her health care.  Examples include directions for taking medication, for activities that are required or prohibited shortly before or after a surgical procedure, or for a regimen to be followed after discharge from a hospital.</td>
+							<td>DC.1.7.1, DC.1.7.2.1, DC.1.9</td>
+							<td>EHR-S FM, Chapter 3 Sections DC.1.7.1, DC.1.7.2.1, and DC.1.9</td>
+						</tr>
+						<tr>
+							<td>B2068</td>
+							<td>Patient Location Information</td>
+							<td>R</td>
+							<td>A record of a patient's location within the premises of a health care facility during an episode of care.</td>
+							<td>S.1.4.2</td>
+							<td>EHR-S FM, Chapter 4 Section S.1.4.2</td>
+						</tr>
+						<tr>
+							<td>B2069</td>
+							<td>Patient Lookup (see also Patient Demographic)</td>
+							<td>W</td>
+							<td>A process by which the user queries the EHR for patient information by criteria such as name, date of birth, last name, and sex. </td>
+							<td>&nbsp;</td>
+							<td>ANSI/HL7 V3 RBAC, R1-2008</td>
+						</tr>
+						<tr>
+							<td>B2070</td>
+							<td>Patient Originated Data</td>
+							<td>R</td>
+							<td>A record containing data provided by the patient.  Such a record should be clearly labelled to distinguish it from clinically authenticated data entered by a provider.</td>
+							<td>DC.1.1.3.2</td>
+							<td>EHR-S FM, Chapter 3, Section DC.1.1.3.2</td>
+						</tr>
+						<tr>
+							<td>B2071</td>
+							<td>Patient/Family Preferences</td>
+							<td>R</td>
+							<td>A record of patient/family preferences and concerns, such as with native speaking language, medication choice, invasive testing, and consent and advance directives.  Improves patient safety and facilitates self-health management. </td>
+							<td>DC.1.3.1</td>
+							<td>EHR-S FM, Chapter 3, Section DC.1.3.2, ANSI/HL7 V3 RBAC, R1-2008</td>
+						</tr>
+						<tr>
+							<td>B2072</td>
+							<td>Patient Residence Information</td>
+							<td>R</td>
+							<td>A record of the patient's residence, for the purpose of providing in-home health services or providing transportion assistance.</td>
+							<td>S.1.4.3</td>
+							<td>EHR-S FM, Chapter 4, Section S.1.4.3</td>
+						</tr>
+						<tr>
+							<td>B2073</td>
+							<td>Patient Test Report</td>
+							<td>R</td>
+							<td>A record of the result of any test or procedure performed on a patient or patient specimen.</td>
+							<td>&nbsp;</td>
+							<td>ANSI/HL7 V3 RBAC, R1-2008</td>
+						</tr>
+						<tr>
+							<td>B2074</td>
+							<td>Point of Care Testing Results</td>
+							<td>R</td>
+							<td>A record of the results of a diagnostic test performed at or near the site of patient care.</td>
+							<td>&nbsp;</td>
+							<td>ANSI/HL7 V3 RBAC, R1-2008</td>
+						</tr>
+						<tr>
+							<td>B2075</td>
+							<td>Population Group</td>
+							<td>R</td>
+							<td>A record which includes information from a group of individuals united by a common factor (e.g., geographic location, ethnicity, disease, age, gender)</td>
+							<td>DC.2.2.2</td>
+							<td>NCI Thesaurus/A7589551</td>
+						</tr>
+						<tr>
+							<td>B2076</td>
+							<td>Prescription Costing Information</td>
+							<td>R</td>
+							<td>A record of the cost of a prescription.</td>
+							<td>&nbsp;</td>
+							<td>ANSI/HL7 V3 RBAC, R1-2008</td>
+						</tr>
+						<tr>
+							<td>B2077</td>
+							<td>Problem List</td>
+							<td>R</td>
+							<td>A record of brief statements that catalog a patient’s medical, nursing, dental, social, preventative and psychiatric events and issues that are relevant to that patient’s health care (e.g., signs, symptoms, and defined conditions).</td>
+							<td>DC.1.1.4, DC.1.4.3</td>
+							<td>ANSI/HL7 V3 RBAC, R1-2008</td>
+						</tr>
+						<tr>
+							<td>B2078</td>
+							<td>Progress Note</td>
+							<td>R</td>
+							<td>A record of a description of the health care provider’s observations, their interpretations and conclusions about the clinical course of the patient or the steps taken, or to be taken, in the care of the patient.</td>
+							<td>&nbsp;</td>
+							<td>ANSI/HL7 V3 RBAC, R1-2008</td>
+						</tr>
+						<tr>
+							<td>B2079</td>
+							<td>Prosthetic Order</td>
+							<td>R</td>
+							<td>A record of a request for an appropriate prosthetic that affects the care and treatment of the beneficiary.</td>
+							<td>&nbsp;</td>
+							<td>ANSI/HL7 V3 RBAC, R1-2008</td>
+						</tr>
+						<tr>
+							<td>B2080</td>
+							<td>Provider Access Level</td>
+							<td>R</td>
+							<td>A record showing the system resources that each practitioner in a provider directory is authorized to use.</td>
+							<td>S.1.3.1</td>
+							<td>EHR-S FM, Chapter 4, Section S.1.3.1</td>
+						</tr>
+						<tr>
+							<td>B2081</td>
+							<td>Provider Caseload Information</td>
+							<td>R</td>
+							<td>A record of the caseload (i.e., panel of patients) for a given provider.  Information about the caseload or panel includes such things as whether or not a new member/patient/client can be added.<br/>
+								<br/>
+							</td>
+							<td>S.1.3.6</td>
+							<td>EHR-S FM, Chapter 4, Section S.1.3.6</td>
+						</tr>
+						<tr>
+							<td>B2082</td>
+							<td>Provider Group Information</td>
+							<td>R</td>
+							<td>A record, directory, registry or repository containing information about teams or groups of providers.</td>
+							<td>S.1.3.5</td>
+							<td>EHR-S FM, Chapter 4, Section S.1.3.5</td>
+						</tr>
+						<tr>
+							<td>B2083</td>
+							<td>Provider Location Information</td>
+							<td>R</td>
+							<td>A record of the location of a provider within a facility, at offices outside a facility, and when on call.</td>
+							<td>S.1.3.2, S.1.3.3, S.1.3.4</td>
+							<td>EHR-S FM, Chapter 4, Sections S.1.3.2, S.1.3.3, and S.1.3.4</td>
+						</tr>
+						<tr>
+							<td>B2084</td>
+							<td>Public Health Report</td>
+							<td>R</td>
+							<td>A record of information submitted to public health authorities regarding a particular patient</td>
+							<td>DC.1.1.4, S.3.3.6</td>
+							<td>EHR-S FM, Chapter 3 Section DC.1.1.4 and Chapter 4 Section S.3.3.6</td>
+						</tr>
+						<tr>
+							<td>B2085</td>
+							<td>Quality of Care Information</td>
+							<td>R</td>
+							<td>A record containing information used by performance and accountability measures for health care delivery</td>
+							<td>S.2.1.2</td>
+							<td>EHR-S FM, Chapter 4, Section S.2.1.2</td>
+						</tr>
+						<tr>
+							<td>B2086</td>
+							<td>Radiology Order</td>
+							<td>R</td>
+							<td>A record of a request for radiology and diagnostic services for a specified patient.</td>
+							<td>&nbsp;</td>
+							<td>ANSI/HL7 V3 RBAC, R1-2008</td>
+						</tr>
+						<tr>
+							<td>B2087</td>
+							<td>Record Tracking</td>
+							<td>W</td>
+							<td>A process for managing and tracking the location of patient medical records.</td>
+							<td>&nbsp;</td>
+							<td>ANSI/HL7 V3 RBAC, R1-2008</td>
+						</tr>
+						<tr>
+							<td>B2088</td>
+							<td>Referral Information</td>
+							<td>R</td>
+							<td>A record of a referral of a patient from one health care provider to another, regardless of whether a provider is internal or external to the organization </td>
+							<td>DC.1.7.2.4</td>
+							<td>EHR-S FM, Chapter 3, Section S.1.7.2.4</td>
+						</tr>
+						<tr>
+							<td>B2089</td>
+							<td>Registration</td>
+							<td>R</td>
+							<td>A record of information for legal or other records.  Information may be gathered by interview or other source documentation.</td>
+							<td>&nbsp;</td>
+							<td>ANSI/HL7 V3 RBAC, R1-2008</td>
+						</tr>
+						<tr>
+							<td>B2090</td>
+							<td>Release of Information</td>
+							<td>R</td>
+							<td>A record of a request by a patient or patient representative to release specified medical information to a third party.</td>
+							<td>&nbsp;</td>
+							<td>ANSI/HL7 V3 RBAC, R1-2008</td>
+						</tr>
+						<tr>
+							<td>B2091</td>
+							<td>Remotely Monitored Device Data</td>
+							<td>R</td>
+							<td>A record of information from a medical device measuring a patient's physiological, diagnostic, medication tracking or activities of daily living measurements in a non-clinical setting remote from the healthcare provider. Such information can be communicated to the provider's EHR or the patient's PHR directly.</td>
+							<td>PH.3.1.2, S.3.1.4</td>
+							<td>PHRS Functional Model, Release 1, May 2008,<br/>
+      EHR-S FM, Chapter 3, Section S.3.1.4</td>
+						</tr>
+						<tr>
+							<td>B2092</td>
+							<td>Research Protocol</td>
+							<td>R</td>
+							<td>A record describing an action plan for a research study, including enrollment criteria, interventions to be performed, and data to be collected.</td>
+							<td>DC.2.2.3</td>
+							<td>EHR-S FM, Chapter 3, Section DC.2.2.3</td>
+						</tr>
+						<tr>
+							<td>B2093</td>
+							<td>Result Interpretation</td>
+							<td>R</td>
+							<td>A record of how results (from diagnostic tests) were interpreted in the concext of the patient's health care data.</td>
+							<td>DC.2.4.3</td>
+							<td>EHR-S FM, Chapter 3, Section S.2.4.3</td>
+						</tr>
+						<tr>
+							<td>B2094</td>
+							<td>Service Authorization</td>
+							<td>R</td>
+							<td>A record of information needed to support verification of medical necessity and prior authorization of services at the appropriate juncture in the encounter workflow.</td>
+							<td>S.3.3.3</td>
+							<td>EHR-S FM, Chapter 4, Section S.3.3.3.</td>
+						</tr>
+						<tr>
+							<td>B2095</td>
+							<td>Service Request</td>
+							<td>R</td>
+							<td>A record of a request for additional clinical information.</td>
+							<td>S.3.3.4</td>
+							<td>EHR-S FM, Chapter 4, Section S.3.3.4.</td>
+						</tr>
+						<tr>
+							<td>B2096</td>
+							<td>Skin Test Order</td>
+							<td>R</td>
+							<td>A request for an epicutaneous or intradermal application of a sensitizer for demonstration of either delayed or immediate hypersensitivity.  Used in diagnosis of hypersensitivity or as a test for cellular immunity.</td>
+							<td>&nbsp;</td>
+							<td>ANSI/HL7 V3 RBAC, R1-2008</td>
+						</tr>
+						<tr>
+							<td>B2097</td>
+							<td>Standing Order(s) PRN</td>
+							<td>R</td>
+							<td>Standing Orders - The record of a request to be carried out. PRN orders - a record of a request to be carried out as needed.</td>
+							<td>&nbsp;</td>
+							<td>ANSI/HL7 V3 RBAC, R1-2008</td>
+						</tr>
+						<tr>
+							<td>B2098</td>
+							<td>Supply Order</td>
+							<td>R</td>
+							<td>A record of a request for a quantity of manufactured material to be specified either by name, ID, or optionally, the manufacturer.</td>
+							<td>&nbsp;</td>
+							<td>ANSI/HL7 V3 RBAC, R1-2008</td>
+						</tr>
+						<tr>
+							<td>B2099</td>
+							<td>Surgical Report</td>
+							<td>R</td>
+							<td>A report containing information regarding the surgical team, diagnoses, surgical interventions, and the method of anesthesia.</td>
+							<td>&nbsp;</td>
+							<td>ANSI/HL7 V3 RBAC, R1-2008</td>
+						</tr>
+						<tr>
+							<td>B2100</td>
+							<td>Task Assignment</td>
+							<td>R</td>
+							<td>A record of the assignment or delegation of health care tasks to appropriate parties</td>
+							<td>DC.3.3.1</td>
+							<td>EHR-S FM, Chapter 3, Section DC.3.3.1</td>
+						</tr>
+						<tr>
+							<td>B2101</td>
+							<td>Transcription</td>
+							<td>W</td>
+							<td>The process of dictating or otherwise documenting information into an electronic format. </td>
+							<td>&nbsp;</td>
+							<td>ANSI/HL7 V3 RBAC, R1-2008</td>
+						</tr>
+						<tr>
+							<td>B2102</td>
+							<td>Transfer Summary</td>
+							<td>R</td>
+							<td>A record of a patient's health information necessary to facilitate the transition of the patient from one healthcare provider to another and enable efficient and effective care.</td>
+							<td>&nbsp;</td>
+							<td>FORE Library: HIM Body of Knowledge</td>
+						</tr>
+						<tr>
+							<td>B2103</td>
+							<td>Treatment Plan</td>
+							<td>R</td>
+							<td>See Care Plan.</td>
+							<td>&nbsp;</td>
+							<td>(see Care Plan)</td>
+						</tr>
+						<tr>
+							<td>B2104</td>
+							<td>Verbal and Telephone Order</td>
+							<td>R</td>
+							<td>A record describing the healthcare services requested in a verbal or telephone communication.</td>
+							<td>&nbsp;</td>
+							<td>ANSI/HL7 V3 RBAC, R1-2008</td>
+						</tr>
+						<tr>
+							<td>B2105</td>
+							<td>Vital Signs/Patient Measurements</td>
+							<td>R</td>
+							<td>A record of physical signs that indicate an individual is alive, such as heart beat, breathing rate, temperature, and blood pressure.  These signs may be observed, measured, (documented in the patient’s chart) and monitored to assess an individual's level of physical functioning. </td>
+							<td>&nbsp;</td>
+							<td>ANSI/HL7 V3 RBAC, R1-2008</td>
+						</tr>
+					</tbody>
+				</table>
+			</div2>
+			<div2 id="PermissionConst">
+				<head>Permission Constraints</head>
+					<p>Constraints are restrictions (conditions or obligations) that are enforced upon access permissions.  In RBAC, a constraint may restrict for example, a user to continue to operate on the object they are accessing.  This could include contextual properties such as separation of duties, time-dependency, mutual exclusivity, cardinality, location, etc.  More recent documentation also includes in the healthcare realms, the addition of patient consent and confidentiality codes<footnote>
+					<p>Document links, examples can be found on the  HL7 Community Based Collaborative Care WiKi main page: <loc href="http://wiki.hl7.org/index.php?title=Community-Based_Collaborative_Care">http://wiki.hl7.org/index.php?title=Community-Based_Collaborative_Care</loc></p>
+					</footnote>  directed toward patient specific privacy issues in accessing Electronic Healthcare Record (EHR) and/or Personal Healthcare Record (PHR) information.  For the complex healthcare environments, constraints provide the higher flexibility required in RBAC implementation (see Strembeck and Neumann<footnote>
+					<p>Strembeck, M. and G. Neumann, An Integrated Approach to Engineer and Enforce Context Constraints in RBAC Environments; ACM Transactions on Information and System Security, Vol. 7, No. 3, August 2004.</p>
+					</footnote> ).</p>
+					<p><emph role="italic">Constraints are restrictions that are enforced upon access permissions.</emph></p>
+					<p>According to Strembeck and Neumann “A <emph role="italic">context constraint</emph> is defined as a dynamic RBAC constraint that checks the actual values of one or more contextual attributes for pre-defined conditions.  If these conditions are satisfied, the corresponding access request can be permitted.  Accordingly, a <emph role="italic">conditional permission</emph> is an RBAC permission that is constrained by one or more context constraints.”  Thus, constraints are restrictions that are enforced upon access permissions.  Context constraints are used to define conditional permissions. For further detailed information on constraints, please reference the <loc href="http://gforge.hl7.org/gf/download/docmanfileversion/5577/7157/HL7_RBAC_Constraint_Catalog_v1.39_POST_reconciliation_JAN_2010.docx" target="_blank">HL7 RBAC Constraint Catalog.</loc></p>
+			</div2>
+		</div1>
+	</body>
+	<back>
+		<div1 id="HCPermTables">
+			<head>Healthcare Permission Tables</head>
+			<p>Listed below are non-normative examples of “Standard” Healthcare permissions that may be assigned to licensed, certified and non-licensed healthcare personnel created from the normative vocabulary.</p>
+			<p>Legend for the following healthcare permission table examples:</p>
+			<list role="unordered">
+				<item>
+					<emph role="strong">ID (xyy-nnn) Legend:</emph>
+					<br/>
+		x&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;=&nbsp;&nbsp;&nbsp;&nbsp;P (permission)<br/>
+		&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;S (scenario)<br/>
+		yy&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;=&nbsp;&nbsp;&nbsp;&nbsp;OE (order entry)<br/>
+		&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;RD (review documentation)<br/>
+		&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;PD (perform documentation)<br/>
+		&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;SC (scheduling)<br/>
+		&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;AD (administration)<br/>
+		nnn&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;=&nbsp;&nbsp;&nbsp;&nbsp;Sequential number starting at 001 (note: permissions may be eliminated as a result of on-going analysis and review, thus numbers may not be sequential in this document)</item>
+				<item>
+					<emph role="strong">Scenario ID</emph> &mdash; refers to the scenario (reference the RBAC Healthcare Scenarios document) from which the permission name was derived.</item>
+				<item>
+					<emph role="strong">Unique Permission ID</emph> &mdash; refers to the identifier assigned to the permission name.</item>
+				<item>
+					<emph role="strong">Permission Name</emph> &mdash; the name given to the {operation, object} pair using operations from Table 2 and objects from Table 3.</item>
+				<item>	
+					<emph role="strong">{Operation, Object}</emph> &mdash; the actual operation and object pair that make up the permission.</item>
+			</list>
+			<p>Permissions are organized according to the following tasks:</p>
+			<p>
+				A.1&nbsp;&nbsp;&nbsp;Order Entry<br />
+				A.2&nbsp;&nbsp;&nbsp;Review Documentation<br />
+				A.3&nbsp;&nbsp;&nbsp;Perform Documentation<br />
+				A.4&nbsp;&nbsp;&nbsp;Scheduling<br />
+				A.5&nbsp;&nbsp;&nbsp;Administration<br />
+			</p>
+			<div2 id="orderentrytask">
+				<head>Order Entry Task</head>
+				<p>The table below lists the permissions associated with order entry.</p>
+				<table>
+					<caption>Order Entry Permissions</caption>
+					<tbody>
+						<tr>
+							<th>Scenario ID</th>
+							<th>Unique Permission ID</th>
+							<th>Permission Name</th>
+							<th>{Operation, Object}</th>
+						</tr>
+						<tr>
+							<td>SOE-002</td>
+							<td>POE-001</td>
+							<td>New Laboratory Order</td>
+							<td>{CREATE, Laboratory Order}</td>
+						</tr>
+						<tr>
+							<td>SOE-002</td>
+							<td>POE-002</td>
+							<td>Change/Discontinue Laboratory Order</td>
+							<td>{UPDATE, Laboratory Order}</td>
+						</tr>
+						<tr>
+							<td>SOE-001</td>
+							<td>POE-003</td>
+							<td>New Radiology Order</td>
+							<td>{CREATE, Radiology Order}</td>
+						</tr>
+						<tr>
+							<td>SOE-007</td>
+							<td>POE-004</td>
+							<td>Change/Discontinue Radiology Order</td>
+							<td>{UPDATE, Radiology Order}</td>
+						</tr>
+						<tr>
+							<td>SOE-001</td>
+							<td>POE-005</td>
+							<td>New/Renew Outpatient Prescription Order</td>
+							<td>{CREATE, Outpatient Prescription Order}</td>
+						</tr>
+						<tr>
+							<td>SOE-001</td>
+							<td>POE-006</td>
+							<td>Change/Discontinue/Refill Outpatient Prescription Order</td>
+							<td>{UPDATE, Outpatient Prescription Order}<br/>{CREATE, Outpatient Prescription Order}</td>
+						</tr>
+						<tr>
+							<td>SOE-003</td>
+							<td>POE-007</td>
+							<td>New Inpatient Medication Order</td>
+							<td>{CREATE, Inpatient Medication Order}</td>
+						</tr>
+						<tr>
+							<td>SOE-003</td>
+							<td>POE-008</td>
+							<td>Change/Discontinue Inpatient Medication Order</td>
+							<td>{UPDATE, Inpatient Medication Order}</td>
+						</tr>
+						<tr>
+							<td>SOE-002</td>
+							<td>POE-009</td>
+							<td>New Diet Order</td>
+							<td>{CREATE, Diet Order}</td>
+						</tr>
+						<tr>
+							<td>SOE-002</td>
+							<td>POE-010</td>
+							<td>Change/Discontinue Diet Order</td>
+							<td>{UPDATE, Diet Order}</td>
+						</tr>
+						<tr>
+							<td>SOE-001</td>
+							<td>POE-011</td>
+							<td>New Consult Order</td>
+							<td>{CREATE, Consult Order}</td>
+						</tr>
+						<tr>
+							<td>SOE-006</td>
+							<td>POE-012</td>
+							<td>Change/Discontinue Consult Order</td>
+							<td>{UPDATE, Consult Order}</td>
+						</tr>
+						<tr>
+							<td>SOE-003</td>
+							<td>POE-013</td>
+							<td>New Nursing Order</td>
+							<td>{CREATE, Nursing Order}</td>
+						</tr>
+						<tr>
+							<td>SOE-003</td>
+							<td>POE-014</td>
+							<td>Change/Discontinue Nursing Order</td>
+							<td>{UPDATE, Nursing Order}</td>
+						</tr>
+						<tr>
+							<td>SOE-002</td>
+							<td>POE-015</td>
+							<td>New Standing Order(s) PRN</td>
+							<td>{CREATE, Standing Order(s) PRN}</td>
+						</tr>
+						<tr>
+							<td>SOE-002</td>
+							<td>POE-016</td>
+							<td>Change/Discontinue Standing Order(s) PRN</td>
+							<td>{UPDATE, Standing Order(s) PRN}</td>
+						</tr>
+						<tr>
+							<td>SOE-005</td>
+							<td>POE-017</td>
+							<td>New Verbal and Telephone Order</td>
+							<td>{CREATE, Verbal and Telephone Order}</td>
+						</tr>
+						<tr>
+							<td>SOE-005</td>
+							<td>POE-018</td>
+							<td>Change/Discontinue Verbal and Telephone Order</td>
+							<td>{UPDATE, Verbal and Telephone Order}</td>
+						</tr>
+						<tr>
+							<td>SOE-002</td>
+							<td>POE-019</td>
+							<td>New Supply Order</td>
+							<td>{CREATE, Supply Order}</td>
+						</tr>
+						<tr>
+							<td>SOE-002</td>
+							<td>POE-020</td>
+							<td>Change/Discontinue Supply Order</td>
+							<td>{UPDATE, Supply Order}</td>
+						</tr>
+						<tr>
+							<td>SOE-006</td>
+							<td>POE-021</td>
+							<td>New Prosthetic Order</td>
+							<td>{CREATE, Prosthetic Order}</td>
+						</tr>
+						<tr>
+							<td>SOE-006</td>
+							<td>POE-022</td>
+							<td>Change/Discontinue Prosthetic Order</td>
+							<td>{UPDATE, Prosthetic Order}</td>
+						</tr>
+						<tr>
+							<td>SOE-001</td>
+							<td>POE-023</td>
+							<td>Sign Order</td>
+							<td>{SIGN, Laboratory Order}<br/>{SIGN, Radiology Order}<br/>{SIGN, Outpatient Prescription Order}<br/>{SIGN, Inpatient Medication}<br/>{SIGN, Diet Order}<br/>{SIGN, Consult Order}<br/>{SIGN, Nursing Order}<br/>{SIGN, Standing Order(s) PRN}<br/>{SIGN, Verbal and Telephone Order}<br/>{SIGN, Supply Order}<br/>{SIGN, Prosthetic Order}</td>
+						</tr>
+						<tr>
+							<td>SOE-003</td>
+							<td>POE-026</td>
+							<td>New Do Not Resuscitate (DNR) Order</td>
+							<td>{CREATE, Do Not Resuscitate (DNR) Order}</td>
+						</tr>
+						<tr>
+							<td>SOE-003</td>
+							<td>POE-027</td>
+							<td>Change/Discontinue Do Not Resuscitate (DNR) Order</td>
+							<td>{UPDATE, Do Not Resuscitate (DNR) Order}</td>
+						</tr>
+						<tr>
+							<td>SOE-008</td>
+							<td>POE-028</td>
+							<td>Release Order</td>
+							<td>{UPDATE, Laboratory Order}<br/>{UPDATE, Radiology Order}<br/>{UPDATE, Outpatient Prescription Order}<br/>{UPDATE, Inpatient Medication}<br/>{UPDATE, Diet Order}<br/>{UPDATE, Consult Order}<br/>{UPDATE,  Nursing Order}<br/>{UPDATE, Standing Order(s) PRN}<br/>{UPDATE, Verbal and Telephone Order}<br/>{UPDATE, Supply Order}<br/>{UPDATE, Prosthetic Order}</td>
+						</tr>
+					</tbody>
+				</table>
+			</div2>
+			<div2 id="reviewdoctask">
+				<head>Review Documentation Task</head>
+				<p>Table 5 lists the permissions associated with reviewing documentation.</p>
+				<table>
+					<caption>Review Documentation Permissions</caption>
+					<tbody>
+						<tr>
+							<th>Scenario ID</th>
+							<th>Unique Permission ID</th>
+							<th>Permission Name</th>
+							<th>{Operation, Object}</th>
+						</tr>
+						<tr>
+							<td>SRD-001</td>
+							<td>PRD-001</td>
+							<td>Review Patient Test Report</td>
+							<td>{READ, Patient Test Report}</td>
+						</tr>
+						<tr>
+							<td>SRD-001</td>
+							<td>PRD-002</td>
+							<td>Review Chief Complaint</td>
+							<td>{READ, Chief Complaint}</td>
+						</tr>
+						<tr>
+							<td>SRD-001</td>
+							<td>PRD-003</td>
+							<td>Review Medical History</td>
+							<td>{READ, Medical History}</td>
+						</tr>
+						<tr>
+							<td>SRD-001</td>
+							<td>PRD-004</td>
+							<td>Review Existing Order</td>
+							<td>{READ, Laboratory Order}<br/>{READ, Radiology Order}<br/>{READ, Outpatient Prescription Order}<br/>{READ, Inpatient Medication}<br/>{READ, Diet Order}<br/>{READ, Consult Order}<br/>{READ, Nursing Order}<br/>{READ, Standing Order(s) PRN}<br/>{READ, Verbal and Telephone Order}<br/>{READ, Supply Order}<br/>{READ, Prosthetic Order}<br/>{READ, Do Not Resuscitate (DNR) Order}</td>
+						</tr>
+						<tr>
+							<td>SRD-001</td>
+							<td>PRD-005</td>
+							<td>Review Vital Signs/Patient Measurements</td>
+							<td>{READ, Vital Signs/Patient Measurements}</td>
+						</tr>
+						<tr>
+							<td>SRD-001</td>
+							<td>PRD-006</td>
+							<td>Review Patient Identification </td>
+							<td>{READ, Patient Identification}</td>
+						</tr>
+						<tr>
+							<td>SRD-001</td>
+							<td>PRD-007</td>
+							<td>Review Clinical Guideline</td>
+							<td>{READ, Clinical Guideline}</td>
+						</tr>
+						<tr>
+							<td>SRD-001</td>
+							<td>PRD-008</td>
+							<td>Review Alert</td>
+							<td>{READ, Alert}</td>
+						</tr>
+						<tr>
+							<td>SRD-001</td>
+							<td>PRD-009</td>
+							<td>Review Current Directory of Provider Information</td>
+							<td>{READ, Current Directory of Provider Information}</td>
+						</tr>
+						<tr>
+							<td>SRD-001</td>
+							<td>PRD-010</td>
+							<td>Review Patient Medications</td>
+							<td>{READ, Outpatient Prescription Order}<br/>{READ, Inpatient Medication Order}</td>
+						</tr>
+						<tr>
+							<td>SRD-001</td>
+							<td>PRD-011</td>
+							<td>Review Patient Allergy or Adverse Reaction</td>
+							<td>{READ, Patient Allergy or Adverse Reaction}</td>
+						</tr>
+						<tr>
+							<td>SRD-001</td>
+							<td>PRD-012</td>
+							<td>Review Past Visits</td>
+							<td>{READ, Past Visits}</td>
+						</tr>
+						<tr>
+							<td>SRD-001</td>
+							<td>PRD-013</td>
+							<td>Review Immunization List</td>
+							<td>{READ, Immunization List}</td>
+						</tr>
+						<tr>
+							<td>SRD-001</td>
+							<td>PRD-014</td>
+							<td>Review Health Status Data</td>
+							<td>{READ, Health Status Data}</td>
+						</tr>
+						<tr>
+							<td>SRD-001</td>
+							<td>PRD-015</td>
+							<td>Review Prescription Costing Information</td>
+							<td>{READ, Prescription Costing Information}</td>
+						</tr>
+						<tr>
+							<td>SRD-001</td>
+							<td>PRD-016</td>
+							<td>Review Problem List</td>
+							<td>{READ, Problem List}</td>
+						</tr>
+						<tr>
+							<td>SAD-004</td>
+							<td>PRD-017</td>
+							<td>Review Progress Note</td>
+							<td>{READ, Progress Note}</td>
+						</tr>
+					</tbody>
+				</table>
+			</div2>
+			<div2 id="performdocumentationtask">
+				<head>Perform Documentation Task</head>
+				<p>This Table lists the permissions associated with performing documentation activities.</p>
+				<table>
+					<caption>Perform Documentation Permissions</caption>
+					<tbody>
+						<tr>
+							<th>Scenario ID</th>
+							<th>Unique Permission ID</th>
+							<th>Permission Name</th>
+							<th>{Operation, Object}</th>
+						</tr>
+						<tr>
+							<td>SPD-001</td>
+							<td>PPD-001</td>
+							<td>New Progress Note</td>
+							<td>{CREATE, Progress Note}</td>
+						</tr>
+						<tr>
+							<td>SPD-001</td>
+							<td>PPD-002</td>
+							<td>Edit/Append/Sign Progress Note</td>
+							<td>{UPDATE, Progress Note}<br/>{APPEND, Progress Note}<br/>{SIGN, Progress Note}</td>
+						</tr>
+						<tr>
+							<td>SPD-001</td>
+							<td>PPD-006</td>
+							<td>New Patient Education</td>
+							<td>{CREATE, Patient Education}</td>
+						</tr>
+						<tr>
+							<td>SPD-001</td>
+							<td>PPD-007</td>
+							<td>Edit/Append/Sign Patient Education</td>
+							<td>{UPDATE, Patient Education}<br/>{APPEND, Progress Note}<br/>{SIGN, Progress Note}</td>
+						</tr>
+						<tr>
+							<td>SPD-005</td>
+							<td>PPD-009</td>
+							<td>New History and Physical</td>
+							<td>{CREATE, History and Physical}</td>
+						</tr>
+						<tr>
+							<td>SPD-001</td>
+							<td>PPD-010</td>
+							<td>Edit/Append/Sign History and Physical</td>
+							<td>{UPDATE, History and Physical}<br/>{APPEND, History and Physical}<br/>{SIGN, History and Physical}</td>
+						</tr>
+						<tr>
+							<td>SPD-009</td>
+							<td>PPD-012</td>
+							<td>New Consultation Finding</td>
+							<td>{CREATE, Consultation Finding}</td>
+						</tr>
+						<tr>
+							<td>SPD-009</td>
+							<td>PPD-013</td>
+							<td>Edit/Append/Sign Consultation Finding</td>
+							<td>{UPDATE, Consultation Finding}<br/>{APPEND, Consultation Finding}<br/>{SIGN, Consultation Finding}</td>
+						</tr>
+						<tr>
+							<td>SPD-011</td>
+							<td>PPD-015</td>
+							<td>New Surgical Report</td>
+							<td>{CREATE, Surgical Report}</td>
+						</tr>
+						<tr>
+							<td>SPD-011</td>
+							<td>PPD-016</td>
+							<td>Edit/Append/Sign Surgical Report</td>
+							<td>{UPDATE, Surgical Report}<br/>{APPEND, Surgical Report}<br/>{SIGN, Surgical Report}</td>
+						</tr>
+						<tr>
+							<td>SPD-001</td>
+							<td>PPD-018</td>
+							<td>New Patient Allergy or Adverse Reaction</td>
+							<td>{CREATE, Patient Allergy or Adverse Reaction}</td>
+						</tr>
+						<tr>
+							<td>SPD-004</td>
+							<td>PPD-019</td>
+							<td>Edit Patient Allergy or Adverse Reaction</td>
+							<td>{UPDATE, Patient Allergy or Adverse Reaction}</td>
+						</tr>
+						<tr>
+							<td>SPD-007</td>
+							<td>PPD-020</td>
+							<td>New Patient Test Report</td>
+							<td>{CREATE, Patient Test Report}</td>
+						</tr>
+						<tr>
+							<td>SPD-007</td>
+							<td>PPD-021</td>
+							<td>Edit/Append/Sign Patient Test Report</td>
+							<td>{UPDATE, Patient Test Report}<br/>{APPEND, Patient Test Report}<br/>{SIGN, Patient Test Report}</td>
+						</tr>
+						<tr>
+							<td>SPD-003</td>
+							<td>PPD-023</td>
+							<td>New Point of Care Testing Results</td>
+							<td>{CREATE, Point of Care Testing Results}</td>
+						</tr>
+						<tr>
+							<td>SPD-003</td>
+							<td>PPD-024</td>
+							<td>Edit/Append/Sign Point of Care Lab Testing Results</td>
+							<td>{UPDATE, Point of Care Testing Results}<br/>{APPEND, Point of Care Testing Results}<br/>{SIGN, Point of Care Testing Results}</td>
+						</tr>
+						<tr>
+							<td>SPD-005</td>
+							<td>PPD-025</td>
+							<td>New Problem List</td>
+							<td>{CREATE, Problem List}</td>
+						</tr>
+						<tr>
+							<td>SPD-005</td>
+							<td>PPD-026</td>
+							<td>Edit/Append Problem List</td>
+							<td>{UPDATE, Problem List}<br/>{APPEND, Problem List}</td>
+						</tr>
+						<tr>
+							<td>SPD-013</td>
+							<td>PPD-029</td>
+							<td>New Discharge Summary</td>
+							<td>{CREATE, Discharge Summary}</td>
+						</tr>
+						<tr>
+							<td>SPD-013</td>
+							<td>PPD-030</td>
+							<td>Edit/Append/Sign Discharge Summary</td>
+							<td>{UPDATE, Discharge Summary}<br/>{APPEND, Discharge Summary}<br/>{SIGN, Discharge Summary}</td>
+						</tr>
+						<tr>
+							<td>SPD-004</td>
+							<td>PPD-032</td>
+							<td>New Consent Directive (consent for treatment)</td>
+							<td>{CREATE, Consent Directive (consent for treatment)}</td>
+						</tr>
+						<tr>
+							<td>SPD-004</td>
+							<td>PPD-033</td>
+							<td>Edit/Append/Sign Consent Directive (consent for treatment)</td>
+							<td>{UPDATE, Consent Directive (consent for treatment)}<br/>{APPEND, Consent Directive (consent for treatment)}<br/>{SIGN, Consent Directive (consent for treatment)}</td>
+						</tr>
+						<tr>
+							<td>SPD-004</td>
+							<td>PPD-034</td>
+							<td>Verify Presence or Absence of Advance Directive</td>
+							<td>{VERIFY, Advance Directive}</td>
+						</tr>
+						<tr>
+							<td>SPD-015</td>
+							<td>PPD-035</td>
+							<td>Replace Advance Directive</td>
+							<td>{REPLACE, Advance Directive}</td>
+						</tr>
+						<tr>
+							<td>SPD-004</td>
+							<td>PPD-036</td>
+							<td>New Patient/Family Preferences</td>
+							<td>{CREATE, Patient/Family Preferences}</td>
+						</tr>
+						<tr>
+							<td>SPD-005</td>
+							<td>PPD-037</td>
+							<td>Edit/Append Patient/Family Preferences</td>
+							<td>{UPDATE, Patient/Family Preferences}<br/>{APPEND, Patient/Family Preferences}</td>
+						</tr>
+						<tr>
+							<td>SPD-005</td>
+							<td>PPD-038</td>
+							<td>New Inter-Provider Communication</td>
+							<td>{CREATE, Inter-Provider Communication}</td>
+						</tr>
+						<tr>
+							<td>SPD-005</td>
+							<td>PPD-039</td>
+							<td>Edit/Append Inter- Provider Communication</td>
+							<td>{UPDATE, Inter- Provider Communication}<br/>{APPEND, Inter- Provider Communication}</td>
+						</tr>
+						<tr>
+							<td>SPD-001</td>
+							<td>PPD-040</td>
+							<td>New Encounter Data</td>
+							<td>{CREATE, Encounter Data}</td>
+						</tr>
+						<tr>
+							<td>SPD-001</td>
+							<td>PPD-041</td>
+							<td>Edit/Append/Sign Encounter Data</td>
+							<td>{UPDATE, Encounter Data}<br/>{APPEND, Encounter Data}<br/>{SIGN, Encounter Data}</td>
+						</tr>
+						<tr>
+							<td>SPD-014</td>
+							<td>PPD-044</td>
+							<td>New Patient Acuity</td>
+							<td>{CREATE, Patient Acuity}</td>
+						</tr>
+						<tr>
+							<td>SPD-014</td>
+							<td>PPD-045</td>
+							<td>Edit/Append Patient Acuity</td>
+							<td>{UPDATE, Patient Acuity}<br/>{APPEND, Patient Acuity}</td>
+						</tr>
+						<tr>
+							<td>SPD-003</td>
+							<td>PPD-046</td>
+							<td>Record Medication Administration Record (M.A.R.)</td>
+							<td>{CREATE, Medication Administration Record (M.A.R.)}</td>
+						</tr>
+						<tr>
+							<td>SPD-005</td>
+							<td>PPD-047</td>
+							<td>New Immunization List</td>
+							<td>{CREATE, Immunization List}</td>
+						</tr>
+						<tr>
+							<td>SPD-005</td>
+							<td>PPD-048</td>
+							<td>Edit/Append/Sign Immunization List</td>
+							<td>{UPDATE, Immunization List }<br/>{APPEND, Immunization List }<br/>{SIGN, Immunization List }</td>
+						</tr>
+						<tr>
+							<td>SPD-005</td>
+							<td>PPD-049</td>
+							<td>New Skin Test Order</td>
+							<td>{CREATE, Skin Test Order}</td>
+						</tr>
+						<tr>
+							<td>SPD-005</td>
+							<td>PPD-050</td>
+							<td>Edit/Append/Sign Skin Test Order</td>
+							<td>{UPDATE, Skin Test Order }<br/>{APPEND, Skin Test Order }<br/>{SIGN, Skin Test Order }</td>
+						</tr>
+						<tr>
+							<td>SPD-002</td>
+							<td>PPD-051</td>
+							<td>New Vital Signs/Patient Measurements</td>
+							<td>{CREATE, Vital Signs/Patient Measurements}</td>
+						</tr>
+						<tr>
+							<td>SPD-005</td>
+							<td>PPD-052</td>
+							<td>Edit/Append Vital Signs/Patient Measurements</td>
+							<td>{UPDATE, Vital Signs/Patient Measurements}<br/>{APPEND, Vital Signs/Patient Measurements}</td>
+						</tr>
+						<tr>
+							<td>SPD-005</td>
+							<td>PPD-053</td>
+							<td>New Health Status Data</td>
+							<td>{CREATE, Health Status Data}</td>
+						</tr>
+						<tr>
+							<td>SPD-005</td>
+							<td>PPD-054</td>
+							<td>Edit/Append/Sign Health Status Data</td>
+							<td>{UPDATE, Health Status Data}<br/>{APPEND, Health Status Data}<br/>{SIGN, Health Status Data}</td>
+						</tr>
+						<tr>
+							<td>SPD-016</td>
+							<td>PPD-055</td>
+							<td>New Clinical Report</td>
+							<td>{CREATE, Clinical Report}</td>
+						</tr>
+						<tr>
+							<td>SPD-016</td>
+							<td>PPD-056</td>
+							<td>Edit/Append Clinical Report</td>
+							<td>{UPDATE, Clinical Report}<br/>{APPEND, Clinical Report}</td>
+						</tr>
+					</tbody>
+				</table>
+			</div2>
+			<div2 id="schedulingtask">
+				<head>Scheduling Task</head>
+				<p>This Table lists the permissions associated with scheduling.</p>
+				<table>
+					<caption>Scheduling Permissions</caption>
+					<tbody>
+						<tr>
+							<th>Scenario ID</th>
+							<th>Unique Permission ID</th>
+							<th>Permission Name</th>
+							<th>{Operation, Object}</th>
+						</tr>
+						<tr>
+							<td>SSC-001</td>
+							<td>PSC-001</td>
+							<td>New Appointment Schedule</td>
+							<td>{CREATE, Appointment Schedule}</td>
+						</tr>
+						<tr>
+							<td>SSC-001</td>
+							<td>PSC-002</td>
+							<td>Edit/Access Appointment Schedule</td>
+							<td>{UPDATE, Appointment Schedule}<br/>{READ, Appointment Schedule}</td>
+						</tr>
+						<tr>
+							<td>SSC-001</td>
+							<td>PSC-003</td>
+							<td>Display/Print Appointment Schedule</td>
+							<td>{READ, Appointment Schedule}<br/>{PRINT, Appointment Schedule}</td>
+						</tr>
+						<tr>
+							<td>SSC-001</td>
+							<td>PSC-004</td>
+							<td>Perform Appointment Schedule Function</td>
+							<td>{CREATE, Appointment Schedule}<br/>{READ, Appointment Schedule}<br/>{UPDATE, Appointment Schedule}</td>
+						</tr>
+					</tbody>
+				</table>
+			</div2>
+			<div2 id="administrationtask">
+				<head>Administration Task</head>
+				<p>Table 8 lists the permissions associated with administration.</p>
+				<table>
+					<caption>Administration Permissions</caption>
+					<tbody>
+						<tr>
+							<th>Scenario ID</th>
+							<th>Unique Permission ID</th>
+							<th>Permission Name</th>
+							<th>{Operation, Object}</th>
+						</tr>
+						<tr>
+							<td>SAD-001</td>
+							<td>PAD-001</td>
+							<td>Perform Admission/Discharge/Transfer Function</td>
+							<td>{CREATE, Admission Record}<br/>{READ, Admission Record}<br/>{UPDATE, Admission Record}<br/>{CREATE, Discharge Summary }<br/>{READ, Discharge Summary }<br/>{UPDATE, Discharge Summary }<br/>{CREATE, Transfer Summary}<br/>{READ, Transfer Summary }<br/>{UPDATE, Transfer Summary}</td>
+						</tr>
+						<tr>
+							<td>SAD-005</td>
+							<td>PAD-008</td>
+							<td>New Registration</td>
+							<td>{CREATE, Registration}</td>
+						</tr>
+						<tr>
+							<td>SAD-005</td>
+							<td>PAD-009</td>
+							<td>Edit/Append Registration</td>
+							<td>{UPDATE, Registration}<br/>{APPEND, Registration)</td>
+						</tr>
+						<tr>
+							<td>SAD-002</td>
+							<td>PAD-010</td>
+							<td>Perform Coding </td>
+							<td>{CREATE, Coding}<br/>{UPDATE, Coding}</td>
+						</tr>
+						<tr>
+							<td>SAD-002</td>
+							<td>PAD-011</td>
+							<td>Review Coding </td>
+							<td>{READ, Coding}</td>
+						</tr>
+						<tr>
+							<td>SAD-002</td>
+							<td>PAD-012</td>
+							<td>Perform Billing Function</td>
+							<td>{CREATE, Billing Attachment}<br/>{UPDATE, Billing Attachment}<br/>{CREATE, Claims and Reimbursement}<br/>{UPDATE, Claims and Reimbursement}</td>
+						</tr>
+						<tr>
+							<td>SAD-003</td>
+							<td>PAD-013</td>
+							<td>Review Billing Data</td>
+							<td>{READ, Billing Attachment}<br/>{READ, Claims and Reimbursement}</td>
+						</tr>
+						<tr>
+							<td>SAD-008</td>
+							<td>PAD-014</td>
+							<td>New Account Receivable </td>
+							<td>{CREATE, Account Receivable}</td>
+						</tr>
+						<tr>
+							<td>SAD-003</td>
+							<td>PAD-015</td>
+							<td>Review Account Receivable</td>
+							<td>{READ, Account Receivable}</td>
+						</tr>
+						<tr>
+							<td>SAD-004</td>
+							<td>PAD-016</td>
+							<td>Display/Print Administrative Report</td>
+							<td>{READ, Administrative Report}<br/>{PRINT, Administrative Report}</td>
+						</tr>
+						<tr>
+							<td>SAD-004</td>
+							<td>PAD-017</td>
+							<td>Create/Display/Print Administrative Ad Hoc Report</td>
+							<td>{CREATE, Administrative Ad Hoc Report}<br/>{READ, Administrative Ad Hoc Report}<br/>{PRINT, Administrative Ad Hoc Report}</td>
+						</tr>
+						<tr>
+							<td>SAD-006</td>
+							<td>PAD-018</td>
+							<td>Perform Record Tracking</td>
+							<td>{CREATE, Record Tracking}<br/>{UPDATE, Record Tracking}</td>
+						</tr>
+						<tr>
+							<td>SAD-003</td>
+							<td>PAD-019</td>
+							<td>Review Record Tracking </td>
+							<td>{READ, Record Tracking}</td>
+						</tr>
+						<tr>
+							<td>SAD-010</td>
+							<td>PAD-021</td>
+							<td>New Master Patient Index </td>
+							<td>{CREATE, Master Patient Index}</td>
+						</tr>
+						<tr>
+							<td>SAD-010</td>
+							<td>PAD-022</td>
+							<td>Edit/Append Master Patient Index</td>
+							<td>{UPDATE, Master Patient Index}<br/>{READ, Master Patient Index}</td>
+						</tr>
+						<tr>
+							<td>SAD-012</td>
+							<td>PAD-024</td>
+							<td>Perform Release of Information </td>
+							<td>{CREATE, Release of Information}<br/>{UPDATE, Release of Information}<br/>{READ, Release of Information}</td>
+						</tr>
+					</tbody>
+				</table>
+			</div2>
+		</div1>
+		<div1 id="engineeringprocess" ballotStatus="Reference">
+			<head>Role Engineering Process</head>
+			<p>This document describes the scenario-based role engineering process adopted by the HL7 Security Work Group (WG) as of November 2005 for the purpose of defining a  healthcare-specific permission vocabulary for Role Based Access Control. </p>
+			<p>
+				<loc href="20051103_HL7 RBAC Role Engineering Process v1.1.pdf" target="_blank">Click here to view the document.</loc>
+			</p>
+		</div1>
+		<div1 id="appliedexample" ballotStatus="Reference">
+			<head>Role Engineering Process, Applied Example</head>
+			<p>This document provides an detailed illustrative example for the Role Engineering Process using the “Lab Frequency Order with Results” storyboard from the HL7 Orders/Observations Technical Committee.  </p>
+			<p>
+				<loc href="20051103_HL7 RBAC Role Engineering Process Applied Example v1.1.pdf" target="_blank">Click here to view the document.</loc>
+			</p>
+		</div1>
+		<div1 id="healthcarescenarios" ballotStatus="Reference">
+			<head>Healthcare Scenarios</head>
+			<p>This document defines all of the scenarios used to develop the Healthcare Permission Catalog document using the Role Engineering Process.</p>
+			<p>
+				<loc href="20051104_HL7 RBAC Healthcare Scenarios v2.0.pdf" target="_blank">Click here to view the document.</loc>
+			</p>
+		</div1>
+		<div1 id="scenarioroadmap" ballotStatus="Reference">
+			<head>Healthcare Scenario Roadmap</head>
+			<p>This spreadsheet (broken down into three sheets) is the key artifact of the Role Engineering</p>
+			<p>
+				<loc href="20060906_HL7 Healthcare Scenario Roadmap v2.20_Licensed_Providers.pdf" target="_blank">Click here to view the Licensed Providers sheet.</loc>
+				<br/>
+				<loc href="20060906_HL7 Healthcare Scenario Roadmap v2.20_NonLicensed_Providers.pdf" target="_blank">Click here to view the Non-Licensed Providers sheet.</loc>
+				<br/>
+				<loc href="20060906_HL7 Healthcare Scenario Roadmap v2.20_NonASTM.pdf" target="_blank">Click here to view the Non-ASTM sheet.</loc>
+				<br/>
+			</p>
+		</div1>
+	</back>
+</spec>

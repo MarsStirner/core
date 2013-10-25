@@ -1,0 +1,11 @@
+<usage><!--Have 2 CMET usage sets for POQM and UV--><cmetuse role="uses">
+      <hmdref ref="POQM_HD000001UV-hmd" refname="eMeasure" refidentifier="POQM_HD000001UV"/>
+      <cmetref ref="COCT_MT090107UV-msg" refname="R_AssignedPersonInformational"
+               refidentifier="COCT_MT090107UV"/>
+   </cmetuse>
+   <cmetuse role="uses">
+      <hmdref ref="POQM_HD000001UV-hmd" refname="eMeasure" refidentifier="POQM_HD000001UV"/>
+      <cmetref ref="POQM_MT000002UV-msg" refname="A_LocalEMeasureActUniversal"
+               refidentifier="POQM_MT000002UV"/>
+   </cmetuse>
+</usage>

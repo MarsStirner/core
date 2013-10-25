@@ -1,0 +1,52 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<knowledgeRequestNotification xmlns="urn:hl7-org:v3" xmlns:gsd="http://aurora.regenstrief.org/GenericXMLSchema" xmlns:sch="http://www.ascc.net/xml/schematron" xmlns:xlink="http://www.w3.org/TR/WD-xlink" xmlns:mif="urn:hl7-org:v3/mif" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" classCode="ACT" moodCode="DEF">
+	<!--the user is looking at the lab results (a high serum potassium) of a male, 45 years-old patient. The user clicks on the infobutton next to “serum potassium” and is presented with a series of questions regarding high serum potassium. The user selects “what are the clinical findings of high serum potassium?”-->
+	<id root="Example2" assigningAuthorityName="EHR"/>
+	<effectiveTime value="20060706"/>
+	<subject1 typeCode="SBJ">
+		<patientContext classCode="PAT">
+			<patientPerson classCode="PSN" determinerCode="INSTANCE">
+				<administrativeGenderCode code="M" codeSystem="2.16.840.1.113883.5.1" codeSystemName="AdministrativeGender" displayName="Male"/>
+			</patientPerson>
+			<subjectOf typeCode="SBJ">
+				<age classCode="OBS" moodCode="DEF">
+					<code code="30525-0" codeSystem="2.16.840.1.113883.6.1" codeSystemName="LN" displayName="AGE"/>
+					<value value="45" unit="a"/>
+				</age>
+			</subjectOf>
+		</patientContext>
+	</subject1>
+	<holder typeCode="HLD">
+		<!--This is for the username and password associated with the institution's subscription to a given resource.-->
+		<assignedEntity classCode="ASSIGNED">
+			<name>username</name>
+			<certificateText>password</certificateText>
+		</assignedEntity>
+	</holder>
+	<subject2 typeCode="SUBJ">
+		<taskContext classCode="ACT" moodCode="DEF">
+			<code code="LABRREV" codeSystem="2.16.840.1.113883.5.4" codeSystemName="ActCode" displayName="Laboratory Results Review"/>
+		</taskContext>
+	</subject2>
+	<subject3 typeCode="SUBJ">
+		<subTopic classCode="OBS" moodCode="DEF">
+			<code code="KSUBT" codeSystem="2.16.840.1.113883.5.4" codeSystemName="ActCode"/>
+			<value code="D012816" codeSystem="2.16.840.1.113883.6.177" codeSystemName="MSH" displayName="Signs and Symptoms"/>
+		</subTopic>
+	</subject3>
+	<subject4 typeCode="SUBJ">
+		<mainSearchCriteria classCode="OBS" moodCode="DEF">
+			<code code="KSUBJ" codeSystem="2.16.840.1.113883.5.4" codeSystemName="ActCode"/>
+			<value code="12812-4" codeSystem="2.16.840.1.113883.6.1" codeSystemName="LN" displayName="serum potassium">
+				<originalText>Potassium</originalText>
+			</value>
+			<!--This is the abnormal flag for lab results.-->
+			<subject typeCode="SUBJ">
+				<severityObservation classCode="OBS" moodCode="DEF">
+					<code code="SEV" codeSystem="2.16.840.1.113883.5.4" codeSystemName="ActCode" displayName="Severity Observation"/>
+					<interpretationCode code="H" codeSystem="2.16.840.1.113883.5.83" codeSystemName="ObservationInterpretation" displayName="High"/>
+				</severityObservation>
+			</subject>
+		</mainSearchCriteria>
+	</subject4>
+</knowledgeRequestNotification>
