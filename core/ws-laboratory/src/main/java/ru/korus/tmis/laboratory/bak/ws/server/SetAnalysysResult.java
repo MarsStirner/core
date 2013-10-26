@@ -112,6 +112,7 @@ public class SetAnalysysResult implements SetAnalysysResultWS {
             return response;
         } catch (Throwable e) {
             logger.error("Exception: " + e, e);
+            toLog.addN("Exception: #", e);
             response = createErrorResponse();
             toLog.addN("Response: \n#", Utils.marshallMessage(response, "ru.korus.tmis.laboratory.bak.ws.server.model.hl7.complex"));
         } finally {
@@ -121,7 +122,7 @@ public class SetAnalysysResult implements SetAnalysysResultWS {
     }
 
     /**
-     * Обработка результатов
+     * Обработка результатов, определение типа ИФА или БАК-посев
      */
     private void processRequest(final POLBIN224100UV01 request, final ToLog toLog) throws CoreException {
 
@@ -191,7 +192,7 @@ public class SetAnalysysResult implements SetAnalysysResultWS {
     }
 
     /**
-     * Выборка данных
+     * Выборка данных по БАК-посеву
      *
      * @param request
      * @return
