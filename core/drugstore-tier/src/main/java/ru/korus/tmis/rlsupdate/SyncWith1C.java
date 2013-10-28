@@ -88,11 +88,15 @@ public class SyncWith1C {
     /**
      * Обновление БД - один раз в день в 0 часов 00 мин
      */
-    @Schedule(second = "0", minute = "0", hour = "0")
+    @Schedule(second = "00", minute = "00", hour = "00")
     public void pull1С() {
+        logger.info("update RLS pull...start");
         if ( ConfigManager.Drugstore().isUpdateRLS()) {
             update();
+        } else {
+            logger.info("update RLS has been disabled");
         }
+
     }
 
     /**
