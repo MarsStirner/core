@@ -64,7 +64,10 @@ public class DbBbtResultOrganismBean implements DbBbtResultOrganismBeanLocal {
 
     @Override
     public void remove(Integer id) {
-        em.remove(em.find(BbtResultOrganism.class, id));
-        em.flush();
+        final BbtResultOrganism bbtResultOrganism = em.find(BbtResultOrganism.class, id);
+        if (bbtResultOrganism != null) {
+            em.remove(bbtResultOrganism);
+            em.flush();
+        }
     }
 }

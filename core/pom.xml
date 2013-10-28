@@ -66,6 +66,7 @@
         <version.maven.plugin.resources>2.6</version.maven.plugin.resources>
         <version.maven.plugin.ejb>2.3</version.maven.plugin.ejb>
         <version.maven.gmaven.plugin>1.4</version.maven.gmaven.plugin>
+        <version.maven.plugin.dependency>2.8</version.maven.plugin.dependency>
 
         <spring.version>3.2.0.RELEASE</spring.version>
 
@@ -927,8 +928,7 @@
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-dependency-plugin</artifactId>
-                <version>2.8</version>
-
+                <version>${version.maven.plugin.dependency}</version>
             </plugin>
 
             <!--
