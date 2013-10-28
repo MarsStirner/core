@@ -1171,6 +1171,7 @@ WHERE ap.action.id IN (
     WHERE (a.event.execDate IS NULL OR a.event.execDate > :endDate )
     %s
     AND a.event.deleted = '0'
+    AND a.endDate IS NULL
 
     AND a.begDate <= :endDate
     AND a.actionType.flatCode IN :flatCodes
