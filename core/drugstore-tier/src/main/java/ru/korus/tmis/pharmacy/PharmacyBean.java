@@ -71,7 +71,7 @@ public class PharmacyBean implements PharmacyBeanLocal {
     @EJB(beanName = "DbOrganizationBean")
     private DbOrganizationBeanLocal dbOrganizationBeanLocal = null;
 
-    @EJB(beanName  = "DbRbFinance1CBean")
+    @EJB(beanName = "DbRbFinance1CBean")
     private DbRbFinance1CBeanLocal dbRbFinance1CBeanLocal = null;
 
     @EJB
@@ -180,13 +180,13 @@ public class PharmacyBean implements PharmacyBeanLocal {
             // формирование сообщения для отправки
             final Request request = createRequest(action, toLog);
 
-            toLog.add("prepare message... \n\n #", HL7PacketBuilder.marshallMessage(request, "misexchange"));
+            toLog.addN("prepare message... \n\n #", HL7PacketBuilder.marshallMessage(request, "misexchange"));
             // отправка сообщения в 1С
             // final MCCIIN000002UV01 result = new MISExchange().getMISExchangeSoap().processHL7V3Message(request);
             final MCCIIN000002UV012 result = new MISExchange().getMISExchangeSoap().processHL7V3Message(request);
             if (result != null) {
                 // обработка результата
-                toLog.add("Connection successful. Result: # \n\n #",
+                toLog.addN("Connection successful. Result: # \n\n #",
                         result, HL7PacketBuilder.marshallMessage(result, "org.hl7.v3"));
 
                 for (MCCIMT000200UV01Acknowledgement ack : result.getAcknowledgement()) {
@@ -498,26 +498,18 @@ public class PharmacyBean implements PharmacyBeanLocal {
     public void sendPrescriptionTo1C() {
         Iterable<PrescriptionsTo1C> prescriptions = dbPrescriptionsTo1CBeanLocal.getPrescriptions();
         for (PrescriptionsTo1C prescription : prescriptions) {
-            ToLog toLog = new ToLog("PRESCRIPTION");
             try {
-                toLog.add("found #", prescription);
-
                 int errCount = prescription.getErrCount();
                 long step = 89 * 1000; // время до слейдующей попытки передачи данных
                 prescription.setErrCount(errCount + 1);
                 prescription.setSendTime(new Timestamp((new java.util.Date()).getTime() + (long) (errCount) * step));
 
-                if (sendPrescription(prescription, toLog)) {
-                    toLog.add("remove prescription item [#]", prescription.getIntervalId());
+                if (sendPrescription(prescription)) {
                     dbPrescriptionsTo1CBeanLocal.remove(prescription);
                 }
             } catch (Exception e) {
-                toLog.add("Exception: " + e);
                 logger.error("Exception: " + e, e);
-            } finally {
-                logger.info(toLog.releaseString());
             }
-
         }
     }
 
@@ -528,7 +520,7 @@ public class PharmacyBean implements PharmacyBeanLocal {
      * @return - true - интервал успешно передан в 1С
      * @throws CoreException
      */
-    private boolean sendPrescription(PrescriptionsTo1C prescription, ToLog toLog) throws CoreException {
+    private boolean sendPrescription(PrescriptionsTo1C prescription) throws CoreException {
         boolean res = false;
         try {
             final Action action = prescription.getDrugChart().getAction();
@@ -554,12 +546,13 @@ public class PharmacyBean implements PharmacyBeanLocal {
             String financeType = getFinaceType(prescription.getDrugChart().getAction());
 
             for (DrugComponent comp : drugComponents) {
+                ToLog toLog = new ToLog("PRESCRIPTION");
                 RlsNomen rlsNomen = comp.getNomen();
-                PrescriptionSendingRes prescriptionSendingResBean = dbPrescriptionSendingResBean.getPrescriptionSendingRes(prescription.getDrugChart(), comp);
+                final PrescriptionSendingRes prescriptionSendingResBean = dbPrescriptionSendingResBean.getPrescriptionSendingRes(prescription.getDrugChart(), comp);
                 String prescrUUID = UUID.randomUUID().toString();
                 if (prescription.getDrugChart().getMaster() != null) {
                     PrescriptionSendingRes master = dbPrescriptionSendingResBean.getPrescriptionSendingRes(prescription.getDrugChart().getMaster(), comp);
-                    if(master != null) {
+                    if (master != null) {
                         prescrUUID = master.getUuid();
                     }
                 }
@@ -601,7 +594,6 @@ public class PharmacyBean implements PharmacyBeanLocal {
                             financeType);
                 }
                 if (request != null) {
-
                     toLog.add("prepare message... \n\n # \n", HL7PacketBuilder.marshallMessage(request, "misexchange"));
                     final MCCIIN000002UV012 result = new MISExchange().getMISExchangeSoap().processHL7V3Message(request);
                     toLog.add("Connection successful. Result: # \n\n # \n",
@@ -615,13 +607,12 @@ public class PharmacyBean implements PharmacyBeanLocal {
                 } else {
                     prescription.setErrCount(prescription.getErrCount() - 1);
                 }
+                logger.info(toLog.releaseString());
             }
-
         } catch (Exception e) {
             final String errorString = e.toString();
             prescription.setInfo(errorString);
             logger.error("sending prescription to 1C issue: ", e);
-            toLog.add("Exception: " + e);
         }
         return res;
     }
