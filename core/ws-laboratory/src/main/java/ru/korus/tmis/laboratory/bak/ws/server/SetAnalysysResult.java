@@ -141,7 +141,7 @@ public class SetAnalysysResult implements SetAnalysysResultWS {
      * Выборка данных по ИФА исследованию
      *
      * @param request
-     * @return значение ИФА исследовани, null - это не ИФА исследование
+     * @return значение ИФА исследования, null - это не ИФА исследование
      */
     @Nullable
     private IFA processIFA(final POLBIN224100UV01 request) {
@@ -173,7 +173,7 @@ public class SetAnalysysResult implements SetAnalysysResultWS {
      * @param ifa
      * @param toLog
      */
-    private void saveIFA(final IFA ifa, final ToLog toLog) {
+    private void saveIFA(final IFA ifa, final ToLog toLog) throws CoreException {
         try {
             final Action action = dbAction.getActionById(ifa.getActionId());
             int aptId = 0;
@@ -188,6 +188,7 @@ public class SetAnalysysResult implements SetAnalysysResultWS {
         } catch (Exception e) {
             logger.error("Exception: " + e, e);
             toLog.add("Problem save to ActionProperty IFA values: " + e + "]\n");
+            throw new CoreException("Не удалось сохранить данные по ИФА");
         }
     }
 
@@ -277,35 +278,41 @@ public class SetAnalysysResult implements SetAnalysysResultWS {
     /**
      * Запись результатов БАК-посева в БД
      */
-    private void saveBakPosev(final BakPosev bakPosev, final ToLog toLog) {
-        removeOldResult(bakPosev.getActionId());
+    private void saveBakPosev(final BakPosev bakPosev, final ToLog toLog) throws CoreException {
+        try {
+            removeOldResult(bakPosev.getActionId());
 
-        for (Microorganism microorganism : bakPosev.getMicroorganismList()) {
-            dbRbMicroorganismBean.add(new RbMicroorganism(microorganism.getCode(), microorganism.getName()));
+            for (Microorganism microorganism : bakPosev.getMicroorganismList()) {
+                dbRbMicroorganismBean.add(new RbMicroorganism(microorganism.getCode(), microorganism.getName()));
 
-            final RbMicroorganism mic = dbRbMicroorganismBean.get(microorganism.getCode());
-            final BbtResultOrganism resultOrganism = new BbtResultOrganism();
-            resultOrganism.setActionId(bakPosev.getActionId());
-            resultOrganism.setConcentration(microorganism.getComment());
-            resultOrganism.setOrganismId(mic.getId());
-            dbBbtResultOrganismBean.add(resultOrganism);
+                final RbMicroorganism mic = dbRbMicroorganismBean.get(microorganism.getCode());
+                final BbtResultOrganism resultOrganism = new BbtResultOrganism();
+                resultOrganism.setActionId(bakPosev.getActionId());
+                resultOrganism.setConcentration(microorganism.getComment());
+                resultOrganism.setOrganismId(mic.getId());
+                dbBbtResultOrganismBean.add(resultOrganism);
 
-            for (Antibiotic antibiotic : microorganism.getAntibioticList()) {
-                dbRbAntibioticBean.add(new RbAntibiotic(antibiotic.getCode(), antibiotic.getName()));
+                for (Antibiotic antibiotic : microorganism.getAntibioticList()) {
+                    dbRbAntibioticBean.add(new RbAntibiotic(antibiotic.getCode(), antibiotic.getName()));
 
-                final RbAntibiotic rbAntibiotic = dbRbAntibioticBean.get(antibiotic.getCode());
-                final RbMicroorganism rbMicroorganism = dbRbMicroorganismBean.get(microorganism.getCode());
-                final BbtResultOrganism bbtResultOrganism = dbBbtResultOrganismBean.get(rbMicroorganism.getId(), bakPosev.getActionId());
+                    final RbAntibiotic rbAntibiotic = dbRbAntibioticBean.get(antibiotic.getCode());
+                    final RbMicroorganism rbMicroorganism = dbRbMicroorganismBean.get(microorganism.getCode());
+                    final BbtResultOrganism bbtResultOrganism = dbBbtResultOrganismBean.get(rbMicroorganism.getId(), bakPosev.getActionId());
 
-                final BbtOrganismSensValues bbtOrganismSens = new BbtOrganismSensValues();
+                    final BbtOrganismSensValues bbtOrganismSens = new BbtOrganismSensValues();
 
-                bbtOrganismSens.setActivity(antibiotic.getSensitivity());
-                bbtOrganismSens.setAntibioticId(rbAntibiotic.getId());
-                bbtOrganismSens.setBbtResultOrganismId(bbtResultOrganism.getId());
-                bbtOrganismSens.setMic(antibiotic.getConcentration());
+                    bbtOrganismSens.setActivity(antibiotic.getSensitivity());
+                    bbtOrganismSens.setAntibioticId(rbAntibiotic.getId());
+                    bbtOrganismSens.setBbtResultOrganismId(bbtResultOrganism.getId());
+                    bbtOrganismSens.setMic(antibiotic.getConcentration());
 
-                dbBbtOrganismSensValuesBean.add(bbtOrganismSens);
+                    dbBbtOrganismSensValuesBean.add(bbtOrganismSens);
+                }
             }
+        } catch (Exception e) {
+            toLog.addN("Exception " + e);
+            logger.error("Exception " + e, e);
+            throw new CoreException("Не удалось сохранить данные по БАК-посеву");
         }
     }
 
