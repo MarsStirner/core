@@ -59,6 +59,21 @@ DEPLOY_CMD="${ASADMIN}/asadmin --host ${HOST} \
 echo "AS_ADMIN_PASSWORD="${ADMIN_PASSWORD} > $GF_PASSWD_FILE
 echo "AS_ADMIN_MASTERPASSWORD="${MASTER_PASSWORD} >> $GF_PASSWD_FILE
 
+function list_domains_wrapper {
+  DOMAINS_LIST_OUT=$(list_domains)
+  while IFS= read -r line
+  do
+    echo "$line"
+    if [[ $line = "${DOMAIN} "* ]] && [[ $line = *" not running" ]]; then
+      echo "Domain is stoped. It will be started."
+      NEED_START=true
+    fi
+  done <<< "$DOMAINS_LIST_OUT" 
+  
+  if [[ $NEED_START = true ]]; then
+    start_domain
+  fi
+}
 
 EQUALS_APPLICATIONS=""
 function list_applications {
@@ -141,11 +156,11 @@ function cleanup {
 trap cleanup EXIT
 
 # Запуск функций
-list_domains
-list_applications
-undeploy
-stop_domain
-copy_config
-start_domain
-deploy_application
-print_tail
+list_domains_wrapper
+#list_applications
+#undeploy
+#stop_domain
+#copy_config
+#start_domain
+#deploy_application
+#print_tail
