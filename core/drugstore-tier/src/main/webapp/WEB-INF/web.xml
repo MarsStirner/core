@@ -8,7 +8,7 @@
                 </servlet-class>
 		<init-param>
 		     <param-name>com.sun.jersey.config.property.packages</param-name>
-		     <param-value>ru.korus.tmis.rlsupdate</param-value>
+		     <param-value>ru.korus.tmis.pharmacy.rlsupdate</param-value>
 		</init-param>
 		<load-on-startup>1</load-on-startup>
 	</servlet>

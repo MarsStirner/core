@@ -1,4 +1,4 @@
-package ru.korus.tmis.rlsupdate;
+package ru.korus.tmis.pharmacy.rlsupdate;
 
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
@@ -7,7 +7,6 @@ import java.util.*;
 import javax.ejb.*;
 import javax.persistence.EntityManager;
 import javax.persistence.PersistenceContext;
-import javax.persistence.TypedQuery;
 
 import misexchange.*;
 
@@ -18,8 +17,6 @@ import org.hl7.v3.POCDMT000040LabeledDrug;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import ru.korus.tmis.core.database.DbOrgStructureBean;
-import ru.korus.tmis.core.database.DbOrgStructureBeanLocal;
 import ru.korus.tmis.core.entity.model.*;
 import ru.korus.tmis.util.ConfigManager;
 
@@ -88,11 +85,15 @@ public class SyncWith1C {
     /**
      * Обновление БД - один раз в день в 0 часов 00 мин
      */
-    @Schedule(second = "0", minute = "0", hour = "0")
+    @Schedule(second = "00", minute = "00", hour = "00")
     public void pull1С() {
+        logger.info("update RLS pull...start");
         if ( ConfigManager.Drugstore().isUpdateRLS()) {
             update();
+        } else {
+            logger.info("update RLS has been disabled");
         }
+
     }
 
     /**
@@ -538,6 +539,7 @@ public class SyncWith1C {
     }
 
     public String updateBalance() {
+        logger.info("updateBalance...start");
         UpdateStorageUuid();
         return updateBalance(drugList);
     }

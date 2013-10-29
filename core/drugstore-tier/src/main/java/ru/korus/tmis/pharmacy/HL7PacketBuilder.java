@@ -11,7 +11,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import ru.korus.tmis.core.entity.model.*;
 import ru.korus.tmis.core.entity.model.pharmacy.PrescriptionSendingRes;
-import ru.korus.tmis.rlsupdate.BalanceOfGoodsInfoBean;
+import ru.korus.tmis.pharmacy.rlsupdate.BalanceOfGoodsInfoBean;
 import ru.korus.tmis.util.logs.ToLog;
 
 import javax.xml.bind.JAXBContext;

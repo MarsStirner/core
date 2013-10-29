@@ -188,12 +188,35 @@
 
         <!-- Профиль для установки на стандартный Linux-сервер -->
         <profile>
-            <id>test-fnkc-66</id>
+            <id>fnkc-10.128.225.66-8080-bak</id>
             <properties>
                 <!-- Выключить дебаг -->
                 <project.build.debug>true</project.build.debug>
-                <glassfish.host>10.128.225.66</glassfish.host>
-                <glassfish.home>/Users/nde/Unixprog/glassfish3</glassfish.home>
+                <glassfish.host>localhost</glassfish.host>
+                <glassfish.home>/opt/glassfish3</glassfish.home>
+                <glassfish.domain>bak</glassfish.domain>
+
+                <mysql.db.mis>hospital</mysql.db.mis>
+                <mysql.db.mis.pool>hospital-pool</mysql.db.mis.pool>
+            </properties>
+        </profile>
+
+        <!-- Профиль для установки на стандартный Linux-сервер -->
+        <profile>
+            <id>fnkc-10.128.225.66-8081-pharmacy</id>
+            <properties>
+                <!-- Выключить дебаг -->
+                <project.build.debug>true</project.build.debug>
+                <glassfish.host>localhost</glassfish.host>
+                <glassfish.home>/opt/glassfish3</glassfish.home>
+                <glassfish.domain>pharmacy</glassfish.domain>
+
+                <mysql.db.mis>s11r64</mysql.db.mis>
+                <mysql.db.mis.pool>s11r64-pool</mysql.db.mis.pool>
+
+                <glassfish.port.instance>8081</glassfish.port.instance>
+                <!-- Порт админского Web IF -->
+                <glassfish.port.admin>4849</glassfish.port.admin>
             </properties>
         </profile>
 

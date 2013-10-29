@@ -1,9 +1,9 @@
-package ru.korus.tmis.rlsupdate;
+package ru.korus.tmis.pharmacy.rlsupdate;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import ru.korus.tmis.core.exception.CoreException;
-import ru.korus.tmis.pharmacy.PharmacyBean;
 import ru.korus.tmis.prescription.BalanceOfGoodsInfo;
-import ru.korus.tmis.rlsupdate.SyncWith1C;
 
 import javax.ejb.EJB;
 import javax.ejb.Schedule;
@@ -34,10 +34,13 @@ public class RestSyncWith1C {
     @EJB
     BalanceOfGoodsInfo balanceOfGoodsInfoBean;
 
+    private static final Logger logger = LoggerFactory.getLogger(RestSyncWith1C.class);
+
 
     @GET
     @Path("/update")
     public Response updateDragList() {
+        logger.info("REST: /tmis-drugstore-tier/tmis-drugstore/update... start");
         String res = sync.update();
         return Response.status(Response.Status.OK).entity(res).build();
     }
@@ -45,13 +48,15 @@ public class RestSyncWith1C {
     @GET
     @Path("/update-balance")
     public Response updateBalance() {
+        logger.info("REST: /tmis-drugstore-tier/tmis-drugstore/update-balance... start");
         String res = sync.updateBalance();
         return Response.status(Response.Status.OK).entity(res).build();
     }
 
 
-    @Schedule(hour = "1", minute = "33")
+    @Schedule(hour = "22", minute = "50")
     public void updateDragListSchedule() {
+        logger.info("Schedule 22h 50min: update RLS and balance... start");
         sync.update();
         sync.updateBalance();
     }
@@ -60,6 +65,7 @@ public class RestSyncWith1C {
     @GET
     @Path("/update-tst")
     public Response updateDragListTst() {
+        logger.info("REST: /tmis-drugstore-tier/tmis-drugstore/update-tst... start");
         String res = "";
         sync.UpdateStorageUuid();
         final Integer drugs[] = { 162019 };
@@ -70,6 +76,7 @@ public class RestSyncWith1C {
     @GET
     @Path("/send-pre")
     public Response sendPrescription() {
+        logger.info("REST: /tmis-drugstore-tier/tmis-drugstore/send-pre... start");
         String res = "OK";
         try {
             pharmacyBean.sendPrescriptionTo1C();
