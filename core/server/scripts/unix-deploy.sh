@@ -157,10 +157,10 @@ trap cleanup EXIT
 
 # Запуск функций
 list_domains_wrapper
-#list_applications
-#undeploy
-#stop_domain
-#copy_config
-#start_domain
-#deploy_application
-#print_tail
+list_applications
+undeploy
+stop_domain
+copy_config
+start_domain
+deploy_application
+print_tail
