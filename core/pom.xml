@@ -259,7 +259,25 @@
             <id>macmini</id>
             <properties>
                 <!-- Домашняя директория Glassfish -->
-                <glassfish.home>/usr/local/opt/glassfish/glassfish/libexec</glassfish.home>
+                <glassfish.home>/usr/local/opt/glassfish/libexec/glassfish/domains/domain1</glassfish.home>
+                <!-- Логин к базе данных -->
+                <mysql.login>tmis</mysql.login>
+                <!-- Пароль к базе данных -->
+                <mysql.password>q1w2e3r4t5</mysql.password>
+                <!-- Название базы данных МИС -->
+                <mysql.db.mis>pnz_gor1</mysql.db.mis>
+                <!-- Порт админского Web IF -->
+                <glassfish.port.admin>4848</glassfish.port.admin>
+                <!-- Название домена -->
+                <glassfish.domain>domain1</glassfish.domain>
+                <!-- Логин администратора -->
+                <glassfish.admin.login>admin</glassfish.admin.login>
+                <!-- Пароль администратора-->
+                <glassfish.admin.password>admin1234</glassfish.admin.password>
+                <!-- Мастер пароль -->
+                <glassfish.master.password>admin1234</glassfish.master.password>
+                <!-- Схема работы при запуске приложения-->
+                <eclipselink.ddl.generated>NONE</eclipselink.ddl.generated>
             </properties>
         </profile>
 
