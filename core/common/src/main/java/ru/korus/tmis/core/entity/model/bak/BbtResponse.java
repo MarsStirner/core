@@ -36,7 +36,7 @@ public class BbtResponse implements Serializable {
 
     @Basic(optional = false)
     @Column(name = "codeLIS")
-    private Integer codeLIS;
+    private String codeLIS;
 
 
     public BbtResponse() {
@@ -58,7 +58,7 @@ public class BbtResponse implements Serializable {
         return doctorId;
     }
 
-    public Integer getCodeLIS() {
+    public String getCodeLIS() {
         return codeLIS;
     }
 
@@ -78,7 +78,7 @@ public class BbtResponse implements Serializable {
         this.doctorId = doctorId;
     }
 
-    public void setCodeLIS(Integer codeLIS) {
+    public void setCodeLIS(String codeLIS) {
         this.codeLIS = codeLIS;
     }
 

@@ -17,7 +17,6 @@ import java.util.List;
  */
 @Stateless
 public class DbBbtOrganismSensValuesBean implements DbBbtOrganismSensValuesBeanLocal {
-    private static final Logger logger = LoggerFactory.getLogger(DbBbtOrganismSensValuesBean.class);
 
     @PersistenceContext(unitName = "s11r64")
     private EntityManager em = null;
@@ -28,10 +27,8 @@ public class DbBbtOrganismSensValuesBean implements DbBbtOrganismSensValuesBeanL
         final BbtOrganismSensValues response = get(bbtOrganismSensValues.getId());
         if (response == null) {
             em.persist(bbtOrganismSensValues);
-            logger.info("create BbtOrganismSensValues {}", bbtOrganismSensValues);
-        } else {
-            logger.info("find BbtOrganismSensValues {}", response);
         }
+
     }
 
     @Override
@@ -41,4 +38,14 @@ public class DbBbtOrganismSensValuesBean implements DbBbtOrganismSensValuesBeanL
                         .setParameter("id", id).getResultList();
         return !responseList.isEmpty() ? responseList.get(0) : null;
     }
+
+    @Override
+    public void removeByResultOrganismId(Integer id) {
+        em.createQuery(
+                "DELETE FROM BbtOrganismSensValues a WHERE a.bbtResultOrganismId = :bbtResultOrganismId")
+                .setParameter("bbtResultOrganismId", id).executeUpdate();
+        em.flush();
+    }
+
+
 }

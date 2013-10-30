@@ -11,7 +11,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import ru.korus.tmis.core.entity.model.*;
 import ru.korus.tmis.core.entity.model.pharmacy.PrescriptionSendingRes;
-import ru.korus.tmis.rlsupdate.BalanceOfGoodsInfoBean;
+import ru.korus.tmis.pharmacy.rlsupdate.BalanceOfGoodsInfoBean;
 import ru.korus.tmis.util.logs.ToLog;
 
 import javax.xml.bind.JAXBContext;
@@ -410,11 +410,13 @@ public final class HL7PacketBuilder {
      * Формирования сообщения об интервалах назначения и исполнения ЛС
      *
      *
+     *
      * @param interval     - Интервал
      * @param organisation -  ЛПУ
      * @param type         - тип интервала. ASSIGNMENT - назначение; EXECUTION - исполнение
      * @param negationInd  - true - отменить/удалить интервал; false - создать/обновить
      * @param prescrUUID
+     * @param financeType
      * @return
      */
     public static Request processPrescription(
@@ -425,7 +427,7 @@ public final class HL7PacketBuilder {
             final AssignmentType type,
             final Boolean negationInd,
             final PrescriptionSendingRes prescriptionSendingRes,
-            final ToLog toLog, String prescrUUID) {
+            final ToLog toLog, String prescrUUID, String financeType) {
         final Action action = interval.getAction();
         //Пациент
         final Patient client = action.getEvent().getPatient();
@@ -439,7 +441,7 @@ public final class HL7PacketBuilder {
         final String uuidDocument = uuid == null ? UUID.randomUUID().toString() : uuid;
 
         final POCDMT000040ClinicalDocument clinicalDocument =
-                getClinicalDocument(interval, drugComponent, routeOfAdministration, client, organisation, executorStaff, type, negationInd, uuid, version, prescrUUID);
+                getClinicalDocument(interval, drugComponent, routeOfAdministration, client, organisation, executorStaff, type, negationInd, uuid, version, prescrUUID, financeType);
         final String innerDocument = marshallMessage(clinicalDocument, "org.hl7.v3");
         toLog.add("prepare inner document... \n\n #", innerDocument);
 
@@ -512,7 +514,7 @@ public final class HL7PacketBuilder {
             final Organisation organisation,
             final Staff executorStaff,
             final AssignmentType type,
-            final Boolean negationInd, String uuid, Integer version, String prescrUUID) {
+            final Boolean negationInd, String uuid, Integer version, String prescrUUID, String financeType) {
 
         final Action action = interval.getAction();
         final String uuidDocument = UUID.randomUUID().toString();
@@ -615,9 +617,9 @@ public final class HL7PacketBuilder {
         section.setText(text);
 
         // Создаем описание лек.средства
-        section.getEntry().add(createEntry(action, interval, drugComponent, routeOfAdministration, AssignmentType.ASSIGNMENT, false, prescrUUID));
+        section.getEntry().add(createEntry(action, interval, drugComponent, routeOfAdministration, AssignmentType.ASSIGNMENT, false, prescrUUID, financeType));
        if (!AssignmentType.ASSIGNMENT.equals(type) || negationInd) {
-            section.getEntry().add(createEntry(action, interval, drugComponent, routeOfAdministration, type, negationInd, prescrUUID));
+            section.getEntry().add(createEntry(action, interval, drugComponent, routeOfAdministration, type, negationInd, prescrUUID, financeType));
        }
 
         component3.setSection(section);
@@ -665,7 +667,7 @@ public final class HL7PacketBuilder {
                                                  DrugComponent drugComponent,
                                                  final String routeOfAdministration,
                                                  final AssignmentType type,
-                                                 final Boolean negationInd, String prescrUUID) {
+                                                 final Boolean negationInd, String prescrUUID, String financeType) {
         final POCDMT000040Entry entry = FACTORY_HL7.createPOCDMT000040Entry();
         //----------------
         final POCDMT000040SubstanceAdministration substanceAdministration = FACTORY_HL7.createPOCDMT000040SubstanceAdministration();
@@ -676,7 +678,7 @@ public final class HL7PacketBuilder {
         substanceAdministration.getId().add(createII(prescrUUID)); // UUID назначения
 
         // источник финансирования
-        substanceAdministration.getId().add(createIIEx(String.valueOf(getFinaceType(action))));
+        substanceAdministration.getId().add(createIIEx(financeType));
         // период на который выполняется назначение
         TS begDate = interval.getBegDateTime() == null ? null : createTS(interval.getBegDateTime(), DATETIME_FORMAT);
         TS endDate = interval.getEndDateTime() == null ? null : createTS(interval.getEndDateTime(), DATETIME_FORMAT);
@@ -721,17 +723,7 @@ public final class HL7PacketBuilder {
         return entry;
     }
 
-    private static Integer getFinaceType(Action action) {
-        Integer res = action.getFinanceId();
-        if (res == null) {
-            final Event event = action.getEvent();
-            if (event != null) {
-                final RbFinance finance = event.getEventType().getFinance();
-                res = finance == null ? null : finance.getId();
-            }
-        }
-        return res;
-    }
+
 
     public static String marshallMessage(final Object msg, final String contextPath) {
         final StringWriter writer = new StringWriter();

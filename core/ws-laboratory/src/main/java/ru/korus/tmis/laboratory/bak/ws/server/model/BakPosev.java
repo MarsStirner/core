@@ -15,6 +15,19 @@ public class BakPosev {
      * Идентификатор исследования
      */
     private int actionId;
+    /**
+     * Штрих-код результата исследования
+     */
+    private String barCode;
+    /**
+     * Врач, сделавший анализ
+     */
+    private Doctor doctor;
+
+    /**
+     * Флаг окончательного результата
+     */
+    private boolean isComplete;
 
     /**
      * Список микроорганизмов
@@ -50,10 +63,25 @@ public class BakPosev {
         }
     }
 
+    public void setBarCode(String barCode) {
+        this.barCode = barCode;
+    }
+
+    public void setDoctor(Doctor doctor) {
+        this.doctor = doctor;
+    }
+
+    public void setComplete(boolean complete) {
+        isComplete = complete;
+    }
+
     @Override
     public String toString() {
         final StringBuilder sb = new StringBuilder("BakPosev{");
         sb.append("actionId=").append(actionId);
+        sb.append(", barCode='").append(barCode).append('\'');
+        sb.append(", doctor=").append(doctor);
+        sb.append(", isComplete=").append(isComplete);
         sb.append(", microorganismList=").append(microorganismList);
         sb.append('}');
         return sb.toString();

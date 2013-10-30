@@ -17,17 +17,22 @@ import static ru.korus.tmis.laboratory.bak.ws.server.model.hl7.HL7Specification.
 /**
  * @author anosov@outlook.com
  */
-@WebService(
-        targetNamespace = Namespace,
-        name = SetAnalysysResultWS.SERVICE_NAME)
+@WebService(targetNamespace = Namespace, name = SetAnalysysResultWS.SERVICE_NAME)
 public interface SetAnalysysResultWS {
 
+    /**
+     * Сообщение с результатами из БАК лаборатории
+     *
+     * @param response результаты в формате HL7 POLB
+     * @return результат в формате HL7 MCCIIN000002UV01
+     * @throws CoreException ошибка формата
+     */
     @WebMethod(operationName = "setAnalysisResults")
     @WebResult(name = SUCCESS_ACCEPT_EVENT, targetNamespace = NAMESPACE, partName = "Body")
     MCCIIN000002UV01 setAnalysisResults(
             @WebParam(name = "POLB_IN224100UV01", targetNamespace = NAMESPACE, partName = "Body")
             POLBIN224100UV01 response
-    )  throws CoreException;
+    ) throws CoreException;
 
 
     /**
@@ -37,8 +42,8 @@ public interface SetAnalysysResultWS {
      * @param DtTime       - Время создания события. Значение value кодируется по шаблону: ггггммддччммсс. Подставляет ЛИС
      * @param orderMisId   - идентификатор направления на анализы
      * @param orderBarCode - штрих-код на контейнере c биоматериалом (десятичное представление считанного штрих-кода)
-     * @return
-     * @throws CoreException
+     * @return 0 данные приняты успешно
+     * @throws CoreException ошибка формата
      */
     @WebMethod
     int bakDelivered(@WebParam(name = "GUID ", targetNamespace = Namespace)
@@ -51,16 +56,6 @@ public interface SetAnalysysResultWS {
                      Integer orderBarCode) throws CoreException;
 
 
-
-
     static final String SERVICE_NAME = "setAnalysisResultService";
     static final String PORT_NAME = "setAnalysisResultPortType";
-
-
-
-    @WebMethod(operationName = "setAnalysisResults2")
-    @WebResult(name = SUCCESS_ACCEPT_EVENT, targetNamespace = NAMESPACE, partName = "Body")
-    MCCIIN000002UV01 setAnalysisResults2(
-            @WebParam(name = "FakeResult", targetNamespace = NAMESPACE, partName = "Body")
-            final FakeResult response) throws CoreException;
 }

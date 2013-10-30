@@ -4,10 +4,9 @@ import ru.korus.tmis.util.Defaultible
 import ru.korus.tmis.util.Defaultible.defaultValue
 
 object Utility {
-  def setAsOptional[A](v: Option[A])(lam: A => Unit) = {
-    v.foreach {
-      lam(_)
-    }
+  def setAsOptional[A](v: Option[A])(lam: A => Unit) = v match {
+    case Some(x) => lam(x)
+    case None => {}
   }
 
   def setAsDefaultible[A: Defaultible](v: Option[A])(lam: A => Unit) = v match {

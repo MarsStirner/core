@@ -1,4 +1,4 @@
-package ru.korus.tmis.rlsupdate;
+package ru.korus.tmis.pharmacy.rlsupdate;
 
 import misexchange.DrugList;
 import org.hl7.v3.CE;

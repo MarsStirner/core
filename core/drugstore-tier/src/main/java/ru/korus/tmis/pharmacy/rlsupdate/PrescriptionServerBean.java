@@ -1,4 +1,4 @@
-package ru.korus.tmis.rlsupdate;
+package ru.korus.tmis.pharmacy.rlsupdate;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;

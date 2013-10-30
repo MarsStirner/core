@@ -7,6 +7,8 @@ import ru.korus.tmis.core.entity.model.bak.BbtResultOrganism;
 import javax.ejb.Stateless;
 import javax.persistence.EntityManager;
 import javax.persistence.PersistenceContext;
+import java.util.ArrayList;
+import java.util.LinkedList;
 import java.util.List;
 
 /**
@@ -27,8 +29,8 @@ public class DbBbtResultOrganismBean implements DbBbtResultOrganismBeanLocal {
     public void add(BbtResultOrganism bbtResultOrganism) {
 //        final BbtResultOrganism response = get(bbtResultOrganism.getId());
 //        if (response == null) {
-            em.persist(bbtResultOrganism);
-            logger.info("create BbtResultOrganism {}", bbtResultOrganism);
+        em.persist(bbtResultOrganism);
+        logger.info("create BbtResultOrganism {}", bbtResultOrganism);
 //        } else {
 //            logger.info("find BbtResultOrganism {}", response);
 //        }
@@ -49,5 +51,23 @@ public class DbBbtResultOrganismBean implements DbBbtResultOrganismBeanLocal {
                         .setParameter("organismId", organismId)
                         .getResultList();
         return !resultOrganismList.isEmpty() ? resultOrganismList.get(0) : null;
+    }
+
+    @Override
+    public List<BbtResultOrganism> getByActionId(int actionId) {
+        List<BbtResultOrganism> resultOrganismList =
+                em.createQuery("SELECT a FROM BbtResultOrganism a WHERE a.actionId = :actionId", BbtResultOrganism.class)
+                        .setParameter("actionId", actionId)
+                        .getResultList();
+        return resultOrganismList != null ? resultOrganismList : new ArrayList<BbtResultOrganism>(0);
+    }
+
+    @Override
+    public void remove(Integer id) {
+        final BbtResultOrganism bbtResultOrganism = em.find(BbtResultOrganism.class, id);
+        if (bbtResultOrganism != null) {
+            em.remove(bbtResultOrganism);
+            em.flush();
+        }
     }
 }

@@ -17,4 +17,6 @@ public interface DbBbtOrganismSensValuesBeanLocal {
     void add(BbtOrganismSensValues bbtOrganismSensValues);
 
     BbtOrganismSensValues get(final Integer id);
+
+    void removeByResultOrganismId(Integer id);
 }
