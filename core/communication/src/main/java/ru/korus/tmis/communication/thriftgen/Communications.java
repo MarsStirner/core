@@ -81,6 +81,44 @@ public class Communications {
      */
     public boolean changePatientPolicy(ChangePolicyParameters params) throws PolicyTypeNotFoundException, NotFoundException, org.apache.thrift.TException;
 
+    /**
+     *  Запрос на список талончиков, которые появились с момента последнего запроса
+     * (для поиска записей на прием к врачу созданных не через КС)
+     *  @return Список новых талончиков или пустой список, если таких талончиков не найдено то пустой список
+     */
+    public List<QueueCoupon> checkForNewQueueCoupons() throws org.apache.thrift.TException;
+
+    /**
+     * Метод для получения первого свободного талончика врача
+     * @param personId                  1)Идетификатор врача
+     * @param dateTime                  2)Время с которого начинается поиск свободных талончиков
+     * @param hospitalUidFrom           3)Идентификатор ЛПУ из которого производится запись
+     * @return Структура с данными первого доступного для записи талончика
+     * @throws NotFoundException        когда у выьранного врача с этой даты нету свободных талончиков
+     * 
+     * @param personId
+     * @param dateTime
+     * @param hospitalUidFrom
+     */
+    public FreeTicket getFirstFreeTicket(int personId, long dateTime, String hospitalUidFrom) throws NotFoundException, org.apache.thrift.TException;
+
+    /**
+     * Метод для получения расписания врача пачкой
+     * @param personId                  1)Идетификатор врача
+     * @param begDate                   2)Дата начала периода за который получаем расписание
+     * @param endDate                   3)Дата окончания периода за который получаем расписание
+     * @param hospitalUidFrom           4)Идентификатор ЛПУ из которого производится запись
+     * @return map<timestamp, Amb> - карта вида <[Дата приема], [Расписание на эту дату]>,
+     * в случае отсутствия расписания на указанную дату набор ключ-значение опускается
+     * @throws NotFoundException        когда нету такого идентификатора врача
+     * 
+     * @param personId
+     * @param begDate
+     * @param endDate
+     * @param hospitalUidFrom
+     */
+    public Map<Long,Amb> getPersonSchedule(int personId, long begDate, long endDate, String hospitalUidFrom) throws NotFoundException, org.apache.thrift.TException;
+
     public Map<Integer,PatientInfo> getPatientInfo(List<Integer> patientIds) throws NotFoundException, SQLException, org.apache.thrift.TException;
 
     public List<Contact> getPatientContacts(int patientId) throws NotFoundException, org.apache.thrift.TException;
@@ -124,6 +162,12 @@ public class Communications {
     public void findPatientByPolicyAndDocument(FindPatientByPolicyAndDocumentParameters params, org.apache.thrift.async.AsyncMethodCallback<AsyncClient.findPatientByPolicyAndDocument_call> resultHandler) throws org.apache.thrift.TException;
 
     public void changePatientPolicy(ChangePolicyParameters params, org.apache.thrift.async.AsyncMethodCallback<AsyncClient.changePatientPolicy_call> resultHandler) throws org.apache.thrift.TException;
+
+    public void checkForNewQueueCoupons(org.apache.thrift.async.AsyncMethodCallback<AsyncClient.checkForNewQueueCoupons_call> resultHandler) throws org.apache.thrift.TException;
+
+    public void getFirstFreeTicket(int personId, long dateTime, String hospitalUidFrom, org.apache.thrift.async.AsyncMethodCallback<AsyncClient.getFirstFreeTicket_call> resultHandler) throws org.apache.thrift.TException;
+
+    public void getPersonSchedule(int personId, long begDate, long endDate, String hospitalUidFrom, org.apache.thrift.async.AsyncMethodCallback<AsyncClient.getPersonSchedule_call> resultHandler) throws org.apache.thrift.TException;
 
     public void getPatientInfo(List<Integer> patientIds, org.apache.thrift.async.AsyncMethodCallback<AsyncClient.getPatientInfo_call> resultHandler) throws org.apache.thrift.TException;
 
@@ -545,6 +589,85 @@ public class Communications {
         throw result.nfExc;
       }
       throw new org.apache.thrift.TApplicationException(org.apache.thrift.TApplicationException.MISSING_RESULT, "changePatientPolicy failed: unknown result");
+    }
+
+    public List<QueueCoupon> checkForNewQueueCoupons() throws org.apache.thrift.TException
+    {
+      send_checkForNewQueueCoupons();
+      return recv_checkForNewQueueCoupons();
+    }
+
+    public void send_checkForNewQueueCoupons() throws org.apache.thrift.TException
+    {
+      checkForNewQueueCoupons_args args = new checkForNewQueueCoupons_args();
+      sendBase("checkForNewQueueCoupons", args);
+    }
+
+    public List<QueueCoupon> recv_checkForNewQueueCoupons() throws org.apache.thrift.TException
+    {
+      checkForNewQueueCoupons_result result = new checkForNewQueueCoupons_result();
+      receiveBase(result, "checkForNewQueueCoupons");
+      if (result.isSetSuccess()) {
+        return result.success;
+      }
+      throw new org.apache.thrift.TApplicationException(org.apache.thrift.TApplicationException.MISSING_RESULT, "checkForNewQueueCoupons failed: unknown result");
+    }
+
+    public FreeTicket getFirstFreeTicket(int personId, long dateTime, String hospitalUidFrom) throws NotFoundException, org.apache.thrift.TException
+    {
+      send_getFirstFreeTicket(personId, dateTime, hospitalUidFrom);
+      return recv_getFirstFreeTicket();
+    }
+
+    public void send_getFirstFreeTicket(int personId, long dateTime, String hospitalUidFrom) throws org.apache.thrift.TException
+    {
+      getFirstFreeTicket_args args = new getFirstFreeTicket_args();
+      args.setPersonId(personId);
+      args.setDateTime(dateTime);
+      args.setHospitalUidFrom(hospitalUidFrom);
+      sendBase("getFirstFreeTicket", args);
+    }
+
+    public FreeTicket recv_getFirstFreeTicket() throws NotFoundException, org.apache.thrift.TException
+    {
+      getFirstFreeTicket_result result = new getFirstFreeTicket_result();
+      receiveBase(result, "getFirstFreeTicket");
+      if (result.isSetSuccess()) {
+        return result.success;
+      }
+      if (result.nfExc != null) {
+        throw result.nfExc;
+      }
+      throw new org.apache.thrift.TApplicationException(org.apache.thrift.TApplicationException.MISSING_RESULT, "getFirstFreeTicket failed: unknown result");
+    }
+
+    public Map<Long,Amb> getPersonSchedule(int personId, long begDate, long endDate, String hospitalUidFrom) throws NotFoundException, org.apache.thrift.TException
+    {
+      send_getPersonSchedule(personId, begDate, endDate, hospitalUidFrom);
+      return recv_getPersonSchedule();
+    }
+
+    public void send_getPersonSchedule(int personId, long begDate, long endDate, String hospitalUidFrom) throws org.apache.thrift.TException
+    {
+      getPersonSchedule_args args = new getPersonSchedule_args();
+      args.setPersonId(personId);
+      args.setBegDate(begDate);
+      args.setEndDate(endDate);
+      args.setHospitalUidFrom(hospitalUidFrom);
+      sendBase("getPersonSchedule", args);
+    }
+
+    public Map<Long,Amb> recv_getPersonSchedule() throws NotFoundException, org.apache.thrift.TException
+    {
+      getPersonSchedule_result result = new getPersonSchedule_result();
+      receiveBase(result, "getPersonSchedule");
+      if (result.isSetSuccess()) {
+        return result.success;
+      }
+      if (result.nfExc != null) {
+        throw result.nfExc;
+      }
+      throw new org.apache.thrift.TApplicationException(org.apache.thrift.TApplicationException.MISSING_RESULT, "getPersonSchedule failed: unknown result");
     }
 
     public Map<Integer,PatientInfo> getPatientInfo(List<Integer> patientIds) throws NotFoundException, SQLException, org.apache.thrift.TException
@@ -1194,6 +1317,114 @@ public class Communications {
       }
     }
 
+    public void checkForNewQueueCoupons(org.apache.thrift.async.AsyncMethodCallback<checkForNewQueueCoupons_call> resultHandler) throws org.apache.thrift.TException {
+      checkReady();
+      checkForNewQueueCoupons_call method_call = new checkForNewQueueCoupons_call(resultHandler, this, ___protocolFactory, ___transport);
+      this.___currentMethod = method_call;
+      ___manager.call(method_call);
+    }
+
+    public static class checkForNewQueueCoupons_call extends org.apache.thrift.async.TAsyncMethodCall {
+      public checkForNewQueueCoupons_call(org.apache.thrift.async.AsyncMethodCallback<checkForNewQueueCoupons_call> resultHandler, org.apache.thrift.async.TAsyncClient client, org.apache.thrift.protocol.TProtocolFactory protocolFactory, org.apache.thrift.transport.TNonblockingTransport transport) throws org.apache.thrift.TException {
+        super(client, protocolFactory, transport, resultHandler, false);
+      }
+
+      public void write_args(org.apache.thrift.protocol.TProtocol prot) throws org.apache.thrift.TException {
+        prot.writeMessageBegin(new org.apache.thrift.protocol.TMessage("checkForNewQueueCoupons", org.apache.thrift.protocol.TMessageType.CALL, 0));
+        checkForNewQueueCoupons_args args = new checkForNewQueueCoupons_args();
+        args.write(prot);
+        prot.writeMessageEnd();
+      }
+
+      public List<QueueCoupon> getResult() throws org.apache.thrift.TException {
+        if (getState() != org.apache.thrift.async.TAsyncMethodCall.State.RESPONSE_READ) {
+          throw new IllegalStateException("Method call not finished!");
+        }
+        org.apache.thrift.transport.TMemoryInputTransport memoryTransport = new org.apache.thrift.transport.TMemoryInputTransport(getFrameBuffer().array());
+        org.apache.thrift.protocol.TProtocol prot = client.getProtocolFactory().getProtocol(memoryTransport);
+        return (new Client(prot)).recv_checkForNewQueueCoupons();
+      }
+    }
+
+    public void getFirstFreeTicket(int personId, long dateTime, String hospitalUidFrom, org.apache.thrift.async.AsyncMethodCallback<getFirstFreeTicket_call> resultHandler) throws org.apache.thrift.TException {
+      checkReady();
+      getFirstFreeTicket_call method_call = new getFirstFreeTicket_call(personId, dateTime, hospitalUidFrom, resultHandler, this, ___protocolFactory, ___transport);
+      this.___currentMethod = method_call;
+      ___manager.call(method_call);
+    }
+
+    public static class getFirstFreeTicket_call extends org.apache.thrift.async.TAsyncMethodCall {
+      private int personId;
+      private long dateTime;
+      private String hospitalUidFrom;
+      public getFirstFreeTicket_call(int personId, long dateTime, String hospitalUidFrom, org.apache.thrift.async.AsyncMethodCallback<getFirstFreeTicket_call> resultHandler, org.apache.thrift.async.TAsyncClient client, org.apache.thrift.protocol.TProtocolFactory protocolFactory, org.apache.thrift.transport.TNonblockingTransport transport) throws org.apache.thrift.TException {
+        super(client, protocolFactory, transport, resultHandler, false);
+        this.personId = personId;
+        this.dateTime = dateTime;
+        this.hospitalUidFrom = hospitalUidFrom;
+      }
+
+      public void write_args(org.apache.thrift.protocol.TProtocol prot) throws org.apache.thrift.TException {
+        prot.writeMessageBegin(new org.apache.thrift.protocol.TMessage("getFirstFreeTicket", org.apache.thrift.protocol.TMessageType.CALL, 0));
+        getFirstFreeTicket_args args = new getFirstFreeTicket_args();
+        args.setPersonId(personId);
+        args.setDateTime(dateTime);
+        args.setHospitalUidFrom(hospitalUidFrom);
+        args.write(prot);
+        prot.writeMessageEnd();
+      }
+
+      public FreeTicket getResult() throws NotFoundException, org.apache.thrift.TException {
+        if (getState() != org.apache.thrift.async.TAsyncMethodCall.State.RESPONSE_READ) {
+          throw new IllegalStateException("Method call not finished!");
+        }
+        org.apache.thrift.transport.TMemoryInputTransport memoryTransport = new org.apache.thrift.transport.TMemoryInputTransport(getFrameBuffer().array());
+        org.apache.thrift.protocol.TProtocol prot = client.getProtocolFactory().getProtocol(memoryTransport);
+        return (new Client(prot)).recv_getFirstFreeTicket();
+      }
+    }
+
+    public void getPersonSchedule(int personId, long begDate, long endDate, String hospitalUidFrom, org.apache.thrift.async.AsyncMethodCallback<getPersonSchedule_call> resultHandler) throws org.apache.thrift.TException {
+      checkReady();
+      getPersonSchedule_call method_call = new getPersonSchedule_call(personId, begDate, endDate, hospitalUidFrom, resultHandler, this, ___protocolFactory, ___transport);
+      this.___currentMethod = method_call;
+      ___manager.call(method_call);
+    }
+
+    public static class getPersonSchedule_call extends org.apache.thrift.async.TAsyncMethodCall {
+      private int personId;
+      private long begDate;
+      private long endDate;
+      private String hospitalUidFrom;
+      public getPersonSchedule_call(int personId, long begDate, long endDate, String hospitalUidFrom, org.apache.thrift.async.AsyncMethodCallback<getPersonSchedule_call> resultHandler, org.apache.thrift.async.TAsyncClient client, org.apache.thrift.protocol.TProtocolFactory protocolFactory, org.apache.thrift.transport.TNonblockingTransport transport) throws org.apache.thrift.TException {
+        super(client, protocolFactory, transport, resultHandler, false);
+        this.personId = personId;
+        this.begDate = begDate;
+        this.endDate = endDate;
+        this.hospitalUidFrom = hospitalUidFrom;
+      }
+
+      public void write_args(org.apache.thrift.protocol.TProtocol prot) throws org.apache.thrift.TException {
+        prot.writeMessageBegin(new org.apache.thrift.protocol.TMessage("getPersonSchedule", org.apache.thrift.protocol.TMessageType.CALL, 0));
+        getPersonSchedule_args args = new getPersonSchedule_args();
+        args.setPersonId(personId);
+        args.setBegDate(begDate);
+        args.setEndDate(endDate);
+        args.setHospitalUidFrom(hospitalUidFrom);
+        args.write(prot);
+        prot.writeMessageEnd();
+      }
+
+      public Map<Long,Amb> getResult() throws NotFoundException, org.apache.thrift.TException {
+        if (getState() != org.apache.thrift.async.TAsyncMethodCall.State.RESPONSE_READ) {
+          throw new IllegalStateException("Method call not finished!");
+        }
+        org.apache.thrift.transport.TMemoryInputTransport memoryTransport = new org.apache.thrift.transport.TMemoryInputTransport(getFrameBuffer().array());
+        org.apache.thrift.protocol.TProtocol prot = client.getProtocolFactory().getProtocol(memoryTransport);
+        return (new Client(prot)).recv_getPersonSchedule();
+      }
+    }
+
     public void getPatientInfo(List<Integer> patientIds, org.apache.thrift.async.AsyncMethodCallback<getPatientInfo_call> resultHandler) throws org.apache.thrift.TException {
       checkReady();
       getPatientInfo_call method_call = new getPatientInfo_call(patientIds, resultHandler, this, ___protocolFactory, ___transport);
@@ -1447,6 +1678,9 @@ public class Communications {
       processMap.put("findPatients", new findPatients());
       processMap.put("findPatientByPolicyAndDocument", new findPatientByPolicyAndDocument());
       processMap.put("changePatientPolicy", new changePatientPolicy());
+      processMap.put("checkForNewQueueCoupons", new checkForNewQueueCoupons());
+      processMap.put("getFirstFreeTicket", new getFirstFreeTicket());
+      processMap.put("getPersonSchedule", new getPersonSchedule());
       processMap.put("getPatientInfo", new getPatientInfo());
       processMap.put("getPatientContacts", new getPatientContacts());
       processMap.put("getPatientOrgStructures", new getPatientOrgStructures());
@@ -1791,6 +2025,74 @@ public class Communications {
           result.setSuccessIsSet(true);
         } catch (PolicyTypeNotFoundException ptnfExc) {
           result.ptnfExc = ptnfExc;
+        } catch (NotFoundException nfExc) {
+          result.nfExc = nfExc;
+        }
+        return result;
+      }
+    }
+
+    public static class checkForNewQueueCoupons<I extends Iface> extends org.apache.thrift.ProcessFunction<I, checkForNewQueueCoupons_args> {
+      public checkForNewQueueCoupons() {
+        super("checkForNewQueueCoupons");
+      }
+
+      public checkForNewQueueCoupons_args getEmptyArgsInstance() {
+        return new checkForNewQueueCoupons_args();
+      }
+
+      protected boolean isOneway() {
+        return false;
+      }
+
+      public checkForNewQueueCoupons_result getResult(I iface, checkForNewQueueCoupons_args args) throws org.apache.thrift.TException {
+        checkForNewQueueCoupons_result result = new checkForNewQueueCoupons_result();
+        result.success = iface.checkForNewQueueCoupons();
+        return result;
+      }
+    }
+
+    public static class getFirstFreeTicket<I extends Iface> extends org.apache.thrift.ProcessFunction<I, getFirstFreeTicket_args> {
+      public getFirstFreeTicket() {
+        super("getFirstFreeTicket");
+      }
+
+      public getFirstFreeTicket_args getEmptyArgsInstance() {
+        return new getFirstFreeTicket_args();
+      }
+
+      protected boolean isOneway() {
+        return false;
+      }
+
+      public getFirstFreeTicket_result getResult(I iface, getFirstFreeTicket_args args) throws org.apache.thrift.TException {
+        getFirstFreeTicket_result result = new getFirstFreeTicket_result();
+        try {
+          result.success = iface.getFirstFreeTicket(args.personId, args.dateTime, args.hospitalUidFrom);
+        } catch (NotFoundException nfExc) {
+          result.nfExc = nfExc;
+        }
+        return result;
+      }
+    }
+
+    public static class getPersonSchedule<I extends Iface> extends org.apache.thrift.ProcessFunction<I, getPersonSchedule_args> {
+      public getPersonSchedule() {
+        super("getPersonSchedule");
+      }
+
+      public getPersonSchedule_args getEmptyArgsInstance() {
+        return new getPersonSchedule_args();
+      }
+
+      protected boolean isOneway() {
+        return false;
+      }
+
+      public getPersonSchedule_result getResult(I iface, getPersonSchedule_args args) throws org.apache.thrift.TException {
+        getPersonSchedule_result result = new getPersonSchedule_result();
+        try {
+          result.success = iface.getPersonSchedule(args.personId, args.begDate, args.endDate, args.hospitalUidFrom);
         } catch (NotFoundException nfExc) {
           result.nfExc = nfExc;
         }
@@ -14907,6 +15209,2828 @@ public class Communications {
 
   }
 
+  public static class checkForNewQueueCoupons_args implements org.apache.thrift.TBase<checkForNewQueueCoupons_args, checkForNewQueueCoupons_args._Fields>, java.io.Serializable, Cloneable   {
+    private static final org.apache.thrift.protocol.TStruct STRUCT_DESC = new org.apache.thrift.protocol.TStruct("checkForNewQueueCoupons_args");
+
+
+    private static final Map<Class<? extends IScheme>, SchemeFactory> schemes = new HashMap<Class<? extends IScheme>, SchemeFactory>();
+    static {
+      schemes.put(StandardScheme.class, new checkForNewQueueCoupons_argsStandardSchemeFactory());
+      schemes.put(TupleScheme.class, new checkForNewQueueCoupons_argsTupleSchemeFactory());
+    }
+
+
+    /** The set of fields this struct contains, along with convenience methods for finding and manipulating them. */
+    public enum _Fields implements org.apache.thrift.TFieldIdEnum {
+;
+
+      private static final Map<String, _Fields> byName = new HashMap<String, _Fields>();
+
+      static {
+        for (_Fields field : EnumSet.allOf(_Fields.class)) {
+          byName.put(field.getFieldName(), field);
+        }
+      }
+
+      /**
+       * Find the _Fields constant that matches fieldId, or null if its not found.
+       */
+      public static _Fields findByThriftId(int fieldId) {
+        switch(fieldId) {
+          default:
+            return null;
+        }
+      }
+
+      /**
+       * Find the _Fields constant that matches fieldId, throwing an exception
+       * if it is not found.
+       */
+      public static _Fields findByThriftIdOrThrow(int fieldId) {
+        _Fields fields = findByThriftId(fieldId);
+        if (fields == null) throw new IllegalArgumentException("Field " + fieldId + " doesn't exist!");
+        return fields;
+      }
+
+      /**
+       * Find the _Fields constant that matches name, or null if its not found.
+       */
+      public static _Fields findByName(String name) {
+        return byName.get(name);
+      }
+
+      private final short _thriftId;
+      private final String _fieldName;
+
+      _Fields(short thriftId, String fieldName) {
+        _thriftId = thriftId;
+        _fieldName = fieldName;
+      }
+
+      public short getThriftFieldId() {
+        return _thriftId;
+      }
+
+      public String getFieldName() {
+        return _fieldName;
+      }
+    }
+    public static final Map<_Fields, org.apache.thrift.meta_data.FieldMetaData> metaDataMap;
+    static {
+      Map<_Fields, org.apache.thrift.meta_data.FieldMetaData> tmpMap = new EnumMap<_Fields, org.apache.thrift.meta_data.FieldMetaData>(_Fields.class);
+      metaDataMap = Collections.unmodifiableMap(tmpMap);
+      org.apache.thrift.meta_data.FieldMetaData.addStructMetaDataMap(checkForNewQueueCoupons_args.class, metaDataMap);
+    }
+
+    public checkForNewQueueCoupons_args() {
+    }
+
+    /**
+     * Performs a deep copy on <i>other</i>.
+     */
+    public checkForNewQueueCoupons_args(checkForNewQueueCoupons_args other) {
+    }
+
+    public checkForNewQueueCoupons_args deepCopy() {
+      return new checkForNewQueueCoupons_args(this);
+    }
+
+    @Override
+    public void clear() {
+    }
+
+    public void setFieldValue(_Fields field, Object value) {
+      switch (field) {
+      }
+    }
+
+    public Object getFieldValue(_Fields field) {
+      switch (field) {
+      }
+      throw new IllegalStateException();
+    }
+
+    /** Returns true if field corresponding to fieldID is set (has been assigned a value) and false otherwise */
+    public boolean isSet(_Fields field) {
+      if (field == null) {
+        throw new IllegalArgumentException();
+      }
+
+      switch (field) {
+      }
+      throw new IllegalStateException();
+    }
+
+    @Override
+    public boolean equals(Object that) {
+      if (that == null)
+        return false;
+      if (that instanceof checkForNewQueueCoupons_args)
+        return this.equals((checkForNewQueueCoupons_args)that);
+      return false;
+    }
+
+    public boolean equals(checkForNewQueueCoupons_args that) {
+      if (that == null)
+        return false;
+
+      return true;
+    }
+
+    @Override
+    public int hashCode() {
+      return 0;
+    }
+
+    public int compareTo(checkForNewQueueCoupons_args other) {
+      if (!getClass().equals(other.getClass())) {
+        return getClass().getName().compareTo(other.getClass().getName());
+      }
+
+      int lastComparison = 0;
+      checkForNewQueueCoupons_args typedOther = (checkForNewQueueCoupons_args)other;
+
+      return 0;
+    }
+
+    public _Fields fieldForId(int fieldId) {
+      return _Fields.findByThriftId(fieldId);
+    }
+
+    public void read(org.apache.thrift.protocol.TProtocol iprot) throws org.apache.thrift.TException {
+      schemes.get(iprot.getScheme()).getScheme().read(iprot, this);
+    }
+
+    public void write(org.apache.thrift.protocol.TProtocol oprot) throws org.apache.thrift.TException {
+      schemes.get(oprot.getScheme()).getScheme().write(oprot, this);
+    }
+
+    @Override
+    public String toString() {
+      StringBuilder sb = new StringBuilder("checkForNewQueueCoupons_args(");
+      boolean first = true;
+
+      sb.append(")");
+      return sb.toString();
+    }
+
+    public void validate() throws org.apache.thrift.TException {
+      // check for required fields
+      // check for sub-struct validity
+    }
+
+    private void writeObject(java.io.ObjectOutputStream out) throws java.io.IOException {
+      try {
+        write(new org.apache.thrift.protocol.TCompactProtocol(new org.apache.thrift.transport.TIOStreamTransport(out)));
+      } catch (org.apache.thrift.TException te) {
+        throw new java.io.IOException(te);
+      }
+    }
+
+    private void readObject(java.io.ObjectInputStream in) throws java.io.IOException, ClassNotFoundException {
+      try {
+        read(new org.apache.thrift.protocol.TCompactProtocol(new org.apache.thrift.transport.TIOStreamTransport(in)));
+      } catch (org.apache.thrift.TException te) {
+        throw new java.io.IOException(te);
+      }
+    }
+
+    private static class checkForNewQueueCoupons_argsStandardSchemeFactory implements SchemeFactory {
+      public checkForNewQueueCoupons_argsStandardScheme getScheme() {
+        return new checkForNewQueueCoupons_argsStandardScheme();
+      }
+    }
+
+    private static class checkForNewQueueCoupons_argsStandardScheme extends StandardScheme<checkForNewQueueCoupons_args> {
+
+      public void read(org.apache.thrift.protocol.TProtocol iprot, checkForNewQueueCoupons_args struct) throws org.apache.thrift.TException {
+        org.apache.thrift.protocol.TField schemeField;
+        iprot.readStructBegin();
+        while (true)
+        {
+          schemeField = iprot.readFieldBegin();
+          if (schemeField.type == org.apache.thrift.protocol.TType.STOP) { 
+            break;
+          }
+          switch (schemeField.id) {
+            default:
+              org.apache.thrift.protocol.TProtocolUtil.skip(iprot, schemeField.type);
+          }
+          iprot.readFieldEnd();
+        }
+        iprot.readStructEnd();
+
+        // check for required fields of primitive type, which can't be checked in the validate method
+        struct.validate();
+      }
+
+      public void write(org.apache.thrift.protocol.TProtocol oprot, checkForNewQueueCoupons_args struct) throws org.apache.thrift.TException {
+        struct.validate();
+
+        oprot.writeStructBegin(STRUCT_DESC);
+        oprot.writeFieldStop();
+        oprot.writeStructEnd();
+      }
+
+    }
+
+    private static class checkForNewQueueCoupons_argsTupleSchemeFactory implements SchemeFactory {
+      public checkForNewQueueCoupons_argsTupleScheme getScheme() {
+        return new checkForNewQueueCoupons_argsTupleScheme();
+      }
+    }
+
+    private static class checkForNewQueueCoupons_argsTupleScheme extends TupleScheme<checkForNewQueueCoupons_args> {
+
+      @Override
+      public void write(org.apache.thrift.protocol.TProtocol prot, checkForNewQueueCoupons_args struct) throws org.apache.thrift.TException {
+        TTupleProtocol oprot = (TTupleProtocol) prot;
+      }
+
+      @Override
+      public void read(org.apache.thrift.protocol.TProtocol prot, checkForNewQueueCoupons_args struct) throws org.apache.thrift.TException {
+        TTupleProtocol iprot = (TTupleProtocol) prot;
+      }
+    }
+
+  }
+
+  public static class checkForNewQueueCoupons_result implements org.apache.thrift.TBase<checkForNewQueueCoupons_result, checkForNewQueueCoupons_result._Fields>, java.io.Serializable, Cloneable   {
+    private static final org.apache.thrift.protocol.TStruct STRUCT_DESC = new org.apache.thrift.protocol.TStruct("checkForNewQueueCoupons_result");
+
+    private static final org.apache.thrift.protocol.TField SUCCESS_FIELD_DESC = new org.apache.thrift.protocol.TField("success", org.apache.thrift.protocol.TType.LIST, (short)0);
+
+    private static final Map<Class<? extends IScheme>, SchemeFactory> schemes = new HashMap<Class<? extends IScheme>, SchemeFactory>();
+    static {
+      schemes.put(StandardScheme.class, new checkForNewQueueCoupons_resultStandardSchemeFactory());
+      schemes.put(TupleScheme.class, new checkForNewQueueCoupons_resultTupleSchemeFactory());
+    }
+
+    public List<QueueCoupon> success; // required
+
+    /** The set of fields this struct contains, along with convenience methods for finding and manipulating them. */
+    public enum _Fields implements org.apache.thrift.TFieldIdEnum {
+      SUCCESS((short)0, "success");
+
+      private static final Map<String, _Fields> byName = new HashMap<String, _Fields>();
+
+      static {
+        for (_Fields field : EnumSet.allOf(_Fields.class)) {
+          byName.put(field.getFieldName(), field);
+        }
+      }
+
+      /**
+       * Find the _Fields constant that matches fieldId, or null if its not found.
+       */
+      public static _Fields findByThriftId(int fieldId) {
+        switch(fieldId) {
+          case 0: // SUCCESS
+            return SUCCESS;
+          default:
+            return null;
+        }
+      }
+
+      /**
+       * Find the _Fields constant that matches fieldId, throwing an exception
+       * if it is not found.
+       */
+      public static _Fields findByThriftIdOrThrow(int fieldId) {
+        _Fields fields = findByThriftId(fieldId);
+        if (fields == null) throw new IllegalArgumentException("Field " + fieldId + " doesn't exist!");
+        return fields;
+      }
+
+      /**
+       * Find the _Fields constant that matches name, or null if its not found.
+       */
+      public static _Fields findByName(String name) {
+        return byName.get(name);
+      }
+
+      private final short _thriftId;
+      private final String _fieldName;
+
+      _Fields(short thriftId, String fieldName) {
+        _thriftId = thriftId;
+        _fieldName = fieldName;
+      }
+
+      public short getThriftFieldId() {
+        return _thriftId;
+      }
+
+      public String getFieldName() {
+        return _fieldName;
+      }
+    }
+
+    // isset id assignments
+    public static final Map<_Fields, org.apache.thrift.meta_data.FieldMetaData> metaDataMap;
+    static {
+      Map<_Fields, org.apache.thrift.meta_data.FieldMetaData> tmpMap = new EnumMap<_Fields, org.apache.thrift.meta_data.FieldMetaData>(_Fields.class);
+      tmpMap.put(_Fields.SUCCESS, new org.apache.thrift.meta_data.FieldMetaData("success", org.apache.thrift.TFieldRequirementType.DEFAULT, 
+          new org.apache.thrift.meta_data.ListMetaData(org.apache.thrift.protocol.TType.LIST, 
+              new org.apache.thrift.meta_data.StructMetaData(org.apache.thrift.protocol.TType.STRUCT, QueueCoupon.class))));
+      metaDataMap = Collections.unmodifiableMap(tmpMap);
+      org.apache.thrift.meta_data.FieldMetaData.addStructMetaDataMap(checkForNewQueueCoupons_result.class, metaDataMap);
+    }
+
+    public checkForNewQueueCoupons_result() {
+    }
+
+    public checkForNewQueueCoupons_result(
+      List<QueueCoupon> success)
+    {
+      this();
+      this.success = success;
+    }
+
+    /**
+     * Performs a deep copy on <i>other</i>.
+     */
+    public checkForNewQueueCoupons_result(checkForNewQueueCoupons_result other) {
+      if (other.isSetSuccess()) {
+        List<QueueCoupon> __this__success = new ArrayList<QueueCoupon>();
+        for (QueueCoupon other_element : other.success) {
+          __this__success.add(new QueueCoupon(other_element));
+        }
+        this.success = __this__success;
+      }
+    }
+
+    public checkForNewQueueCoupons_result deepCopy() {
+      return new checkForNewQueueCoupons_result(this);
+    }
+
+    @Override
+    public void clear() {
+      this.success = null;
+    }
+
+    public int getSuccessSize() {
+      return (this.success == null) ? 0 : this.success.size();
+    }
+
+    public java.util.Iterator<QueueCoupon> getSuccessIterator() {
+      return (this.success == null) ? null : this.success.iterator();
+    }
+
+    public void addToSuccess(QueueCoupon elem) {
+      if (this.success == null) {
+        this.success = new ArrayList<QueueCoupon>();
+      }
+      this.success.add(elem);
+    }
+
+    public List<QueueCoupon> getSuccess() {
+      return this.success;
+    }
+
+    public checkForNewQueueCoupons_result setSuccess(List<QueueCoupon> success) {
+      this.success = success;
+      return this;
+    }
+
+    public void unsetSuccess() {
+      this.success = null;
+    }
+
+    /** Returns true if field success is set (has been assigned a value) and false otherwise */
+    public boolean isSetSuccess() {
+      return this.success != null;
+    }
+
+    public void setSuccessIsSet(boolean value) {
+      if (!value) {
+        this.success = null;
+      }
+    }
+
+    public void setFieldValue(_Fields field, Object value) {
+      switch (field) {
+      case SUCCESS:
+        if (value == null) {
+          unsetSuccess();
+        } else {
+          setSuccess((List<QueueCoupon>)value);
+        }
+        break;
+
+      }
+    }
+
+    public Object getFieldValue(_Fields field) {
+      switch (field) {
+      case SUCCESS:
+        return getSuccess();
+
+      }
+      throw new IllegalStateException();
+    }
+
+    /** Returns true if field corresponding to fieldID is set (has been assigned a value) and false otherwise */
+    public boolean isSet(_Fields field) {
+      if (field == null) {
+        throw new IllegalArgumentException();
+      }
+
+      switch (field) {
+      case SUCCESS:
+        return isSetSuccess();
+      }
+      throw new IllegalStateException();
+    }
+
+    @Override
+    public boolean equals(Object that) {
+      if (that == null)
+        return false;
+      if (that instanceof checkForNewQueueCoupons_result)
+        return this.equals((checkForNewQueueCoupons_result)that);
+      return false;
+    }
+
+    public boolean equals(checkForNewQueueCoupons_result that) {
+      if (that == null)
+        return false;
+
+      boolean this_present_success = true && this.isSetSuccess();
+      boolean that_present_success = true && that.isSetSuccess();
+      if (this_present_success || that_present_success) {
+        if (!(this_present_success && that_present_success))
+          return false;
+        if (!this.success.equals(that.success))
+          return false;
+      }
+
+      return true;
+    }
+
+    @Override
+    public int hashCode() {
+      return 0;
+    }
+
+    public int compareTo(checkForNewQueueCoupons_result other) {
+      if (!getClass().equals(other.getClass())) {
+        return getClass().getName().compareTo(other.getClass().getName());
+      }
+
+      int lastComparison = 0;
+      checkForNewQueueCoupons_result typedOther = (checkForNewQueueCoupons_result)other;
+
+      lastComparison = Boolean.valueOf(isSetSuccess()).compareTo(typedOther.isSetSuccess());
+      if (lastComparison != 0) {
+        return lastComparison;
+      }
+      if (isSetSuccess()) {
+        lastComparison = org.apache.thrift.TBaseHelper.compareTo(this.success, typedOther.success);
+        if (lastComparison != 0) {
+          return lastComparison;
+        }
+      }
+      return 0;
+    }
+
+    public _Fields fieldForId(int fieldId) {
+      return _Fields.findByThriftId(fieldId);
+    }
+
+    public void read(org.apache.thrift.protocol.TProtocol iprot) throws org.apache.thrift.TException {
+      schemes.get(iprot.getScheme()).getScheme().read(iprot, this);
+    }
+
+    public void write(org.apache.thrift.protocol.TProtocol oprot) throws org.apache.thrift.TException {
+      schemes.get(oprot.getScheme()).getScheme().write(oprot, this);
+      }
+
+    @Override
+    public String toString() {
+      StringBuilder sb = new StringBuilder("checkForNewQueueCoupons_result(");
+      boolean first = true;
+
+      sb.append("success:");
+      if (this.success == null) {
+        sb.append("null");
+      } else {
+        sb.append(this.success);
+      }
+      first = false;
+      sb.append(")");
+      return sb.toString();
+    }
+
+    public void validate() throws org.apache.thrift.TException {
+      // check for required fields
+      // check for sub-struct validity
+    }
+
+    private void writeObject(java.io.ObjectOutputStream out) throws java.io.IOException {
+      try {
+        write(new org.apache.thrift.protocol.TCompactProtocol(new org.apache.thrift.transport.TIOStreamTransport(out)));
+      } catch (org.apache.thrift.TException te) {
+        throw new java.io.IOException(te);
+      }
+    }
+
+    private void readObject(java.io.ObjectInputStream in) throws java.io.IOException, ClassNotFoundException {
+      try {
+        read(new org.apache.thrift.protocol.TCompactProtocol(new org.apache.thrift.transport.TIOStreamTransport(in)));
+      } catch (org.apache.thrift.TException te) {
+        throw new java.io.IOException(te);
+      }
+    }
+
+    private static class checkForNewQueueCoupons_resultStandardSchemeFactory implements SchemeFactory {
+      public checkForNewQueueCoupons_resultStandardScheme getScheme() {
+        return new checkForNewQueueCoupons_resultStandardScheme();
+      }
+    }
+
+    private static class checkForNewQueueCoupons_resultStandardScheme extends StandardScheme<checkForNewQueueCoupons_result> {
+
+      public void read(org.apache.thrift.protocol.TProtocol iprot, checkForNewQueueCoupons_result struct) throws org.apache.thrift.TException {
+        org.apache.thrift.protocol.TField schemeField;
+        iprot.readStructBegin();
+        while (true)
+        {
+          schemeField = iprot.readFieldBegin();
+          if (schemeField.type == org.apache.thrift.protocol.TType.STOP) { 
+            break;
+          }
+          switch (schemeField.id) {
+            case 0: // SUCCESS
+              if (schemeField.type == org.apache.thrift.protocol.TType.LIST) {
+                {
+                  org.apache.thrift.protocol.TList _list76 = iprot.readListBegin();
+                  struct.success = new ArrayList<QueueCoupon>(_list76.size);
+                  for (int _i77 = 0; _i77 < _list76.size; ++_i77)
+                  {
+                    QueueCoupon _elem78; // required
+                    _elem78 = new QueueCoupon();
+                    _elem78.read(iprot);
+                    struct.success.add(_elem78);
+                  }
+                  iprot.readListEnd();
+                }
+                struct.setSuccessIsSet(true);
+              } else { 
+                org.apache.thrift.protocol.TProtocolUtil.skip(iprot, schemeField.type);
+              }
+              break;
+            default:
+              org.apache.thrift.protocol.TProtocolUtil.skip(iprot, schemeField.type);
+          }
+          iprot.readFieldEnd();
+        }
+        iprot.readStructEnd();
+
+        // check for required fields of primitive type, which can't be checked in the validate method
+        struct.validate();
+      }
+
+      public void write(org.apache.thrift.protocol.TProtocol oprot, checkForNewQueueCoupons_result struct) throws org.apache.thrift.TException {
+        struct.validate();
+
+        oprot.writeStructBegin(STRUCT_DESC);
+        if (struct.success != null) {
+          oprot.writeFieldBegin(SUCCESS_FIELD_DESC);
+          {
+            oprot.writeListBegin(new org.apache.thrift.protocol.TList(org.apache.thrift.protocol.TType.STRUCT, struct.success.size()));
+            for (QueueCoupon _iter79 : struct.success)
+            {
+              _iter79.write(oprot);
+            }
+            oprot.writeListEnd();
+          }
+          oprot.writeFieldEnd();
+        }
+        oprot.writeFieldStop();
+        oprot.writeStructEnd();
+      }
+
+    }
+
+    private static class checkForNewQueueCoupons_resultTupleSchemeFactory implements SchemeFactory {
+      public checkForNewQueueCoupons_resultTupleScheme getScheme() {
+        return new checkForNewQueueCoupons_resultTupleScheme();
+      }
+    }
+
+    private static class checkForNewQueueCoupons_resultTupleScheme extends TupleScheme<checkForNewQueueCoupons_result> {
+
+      @Override
+      public void write(org.apache.thrift.protocol.TProtocol prot, checkForNewQueueCoupons_result struct) throws org.apache.thrift.TException {
+        TTupleProtocol oprot = (TTupleProtocol) prot;
+        BitSet optionals = new BitSet();
+        if (struct.isSetSuccess()) {
+          optionals.set(0);
+        }
+        oprot.writeBitSet(optionals, 1);
+        if (struct.isSetSuccess()) {
+          {
+            oprot.writeI32(struct.success.size());
+            for (QueueCoupon _iter80 : struct.success)
+            {
+              _iter80.write(oprot);
+            }
+          }
+        }
+      }
+
+      @Override
+      public void read(org.apache.thrift.protocol.TProtocol prot, checkForNewQueueCoupons_result struct) throws org.apache.thrift.TException {
+        TTupleProtocol iprot = (TTupleProtocol) prot;
+        BitSet incoming = iprot.readBitSet(1);
+        if (incoming.get(0)) {
+          {
+            org.apache.thrift.protocol.TList _list81 = new org.apache.thrift.protocol.TList(org.apache.thrift.protocol.TType.STRUCT, iprot.readI32());
+            struct.success = new ArrayList<QueueCoupon>(_list81.size);
+            for (int _i82 = 0; _i82 < _list81.size; ++_i82)
+            {
+              QueueCoupon _elem83; // required
+              _elem83 = new QueueCoupon();
+              _elem83.read(iprot);
+              struct.success.add(_elem83);
+            }
+          }
+          struct.setSuccessIsSet(true);
+        }
+      }
+    }
+
+  }
+
+  public static class getFirstFreeTicket_args implements org.apache.thrift.TBase<getFirstFreeTicket_args, getFirstFreeTicket_args._Fields>, java.io.Serializable, Cloneable   {
+    private static final org.apache.thrift.protocol.TStruct STRUCT_DESC = new org.apache.thrift.protocol.TStruct("getFirstFreeTicket_args");
+
+    private static final org.apache.thrift.protocol.TField PERSON_ID_FIELD_DESC = new org.apache.thrift.protocol.TField("personId", org.apache.thrift.protocol.TType.I32, (short)1);
+    private static final org.apache.thrift.protocol.TField DATE_TIME_FIELD_DESC = new org.apache.thrift.protocol.TField("dateTime", org.apache.thrift.protocol.TType.I64, (short)2);
+    private static final org.apache.thrift.protocol.TField HOSPITAL_UID_FROM_FIELD_DESC = new org.apache.thrift.protocol.TField("hospitalUidFrom", org.apache.thrift.protocol.TType.STRING, (short)3);
+
+    private static final Map<Class<? extends IScheme>, SchemeFactory> schemes = new HashMap<Class<? extends IScheme>, SchemeFactory>();
+    static {
+      schemes.put(StandardScheme.class, new getFirstFreeTicket_argsStandardSchemeFactory());
+      schemes.put(TupleScheme.class, new getFirstFreeTicket_argsTupleSchemeFactory());
+    }
+
+    public int personId; // required
+    public long dateTime; // required
+    public String hospitalUidFrom; // required
+
+    /** The set of fields this struct contains, along with convenience methods for finding and manipulating them. */
+    public enum _Fields implements org.apache.thrift.TFieldIdEnum {
+      PERSON_ID((short)1, "personId"),
+      DATE_TIME((short)2, "dateTime"),
+      HOSPITAL_UID_FROM((short)3, "hospitalUidFrom");
+
+      private static final Map<String, _Fields> byName = new HashMap<String, _Fields>();
+
+      static {
+        for (_Fields field : EnumSet.allOf(_Fields.class)) {
+          byName.put(field.getFieldName(), field);
+        }
+      }
+
+      /**
+       * Find the _Fields constant that matches fieldId, or null if its not found.
+       */
+      public static _Fields findByThriftId(int fieldId) {
+        switch(fieldId) {
+          case 1: // PERSON_ID
+            return PERSON_ID;
+          case 2: // DATE_TIME
+            return DATE_TIME;
+          case 3: // HOSPITAL_UID_FROM
+            return HOSPITAL_UID_FROM;
+          default:
+            return null;
+        }
+      }
+
+      /**
+       * Find the _Fields constant that matches fieldId, throwing an exception
+       * if it is not found.
+       */
+      public static _Fields findByThriftIdOrThrow(int fieldId) {
+        _Fields fields = findByThriftId(fieldId);
+        if (fields == null) throw new IllegalArgumentException("Field " + fieldId + " doesn't exist!");
+        return fields;
+      }
+
+      /**
+       * Find the _Fields constant that matches name, or null if its not found.
+       */
+      public static _Fields findByName(String name) {
+        return byName.get(name);
+      }
+
+      private final short _thriftId;
+      private final String _fieldName;
+
+      _Fields(short thriftId, String fieldName) {
+        _thriftId = thriftId;
+        _fieldName = fieldName;
+      }
+
+      public short getThriftFieldId() {
+        return _thriftId;
+      }
+
+      public String getFieldName() {
+        return _fieldName;
+      }
+    }
+
+    // isset id assignments
+    private static final int __PERSONID_ISSET_ID = 0;
+    private static final int __DATETIME_ISSET_ID = 1;
+    private byte __isset_bitfield = 0;
+    public static final Map<_Fields, org.apache.thrift.meta_data.FieldMetaData> metaDataMap;
+    static {
+      Map<_Fields, org.apache.thrift.meta_data.FieldMetaData> tmpMap = new EnumMap<_Fields, org.apache.thrift.meta_data.FieldMetaData>(_Fields.class);
+      tmpMap.put(_Fields.PERSON_ID, new org.apache.thrift.meta_data.FieldMetaData("personId", org.apache.thrift.TFieldRequirementType.DEFAULT, 
+          new org.apache.thrift.meta_data.FieldValueMetaData(org.apache.thrift.protocol.TType.I32)));
+      tmpMap.put(_Fields.DATE_TIME, new org.apache.thrift.meta_data.FieldMetaData("dateTime", org.apache.thrift.TFieldRequirementType.DEFAULT, 
+          new org.apache.thrift.meta_data.FieldValueMetaData(org.apache.thrift.protocol.TType.I64          , "timestamp")));
+      tmpMap.put(_Fields.HOSPITAL_UID_FROM, new org.apache.thrift.meta_data.FieldMetaData("hospitalUidFrom", org.apache.thrift.TFieldRequirementType.DEFAULT, 
+          new org.apache.thrift.meta_data.FieldValueMetaData(org.apache.thrift.protocol.TType.STRING)));
+      metaDataMap = Collections.unmodifiableMap(tmpMap);
+      org.apache.thrift.meta_data.FieldMetaData.addStructMetaDataMap(getFirstFreeTicket_args.class, metaDataMap);
+    }
+
+    public getFirstFreeTicket_args() {
+    }
+
+    public getFirstFreeTicket_args(
+      int personId,
+      long dateTime,
+      String hospitalUidFrom)
+    {
+      this();
+      this.personId = personId;
+      setPersonIdIsSet(true);
+      this.dateTime = dateTime;
+      setDateTimeIsSet(true);
+      this.hospitalUidFrom = hospitalUidFrom;
+    }
+
+    /**
+     * Performs a deep copy on <i>other</i>.
+     */
+    public getFirstFreeTicket_args(getFirstFreeTicket_args other) {
+      __isset_bitfield = other.__isset_bitfield;
+      this.personId = other.personId;
+      this.dateTime = other.dateTime;
+      if (other.isSetHospitalUidFrom()) {
+        this.hospitalUidFrom = other.hospitalUidFrom;
+      }
+    }
+
+    public getFirstFreeTicket_args deepCopy() {
+      return new getFirstFreeTicket_args(this);
+    }
+
+    @Override
+    public void clear() {
+      setPersonIdIsSet(false);
+      this.personId = 0;
+      setDateTimeIsSet(false);
+      this.dateTime = 0;
+      this.hospitalUidFrom = null;
+    }
+
+    public int getPersonId() {
+      return this.personId;
+    }
+
+    public getFirstFreeTicket_args setPersonId(int personId) {
+      this.personId = personId;
+      setPersonIdIsSet(true);
+      return this;
+    }
+
+    public void unsetPersonId() {
+      __isset_bitfield = EncodingUtils.clearBit(__isset_bitfield, __PERSONID_ISSET_ID);
+    }
+
+    /** Returns true if field personId is set (has been assigned a value) and false otherwise */
+    public boolean isSetPersonId() {
+      return EncodingUtils.testBit(__isset_bitfield, __PERSONID_ISSET_ID);
+    }
+
+    public void setPersonIdIsSet(boolean value) {
+      __isset_bitfield = EncodingUtils.setBit(__isset_bitfield, __PERSONID_ISSET_ID, value);
+    }
+
+    public long getDateTime() {
+      return this.dateTime;
+    }
+
+    public getFirstFreeTicket_args setDateTime(long dateTime) {
+      this.dateTime = dateTime;
+      setDateTimeIsSet(true);
+      return this;
+    }
+
+    public void unsetDateTime() {
+      __isset_bitfield = EncodingUtils.clearBit(__isset_bitfield, __DATETIME_ISSET_ID);
+    }
+
+    /** Returns true if field dateTime is set (has been assigned a value) and false otherwise */
+    public boolean isSetDateTime() {
+      return EncodingUtils.testBit(__isset_bitfield, __DATETIME_ISSET_ID);
+    }
+
+    public void setDateTimeIsSet(boolean value) {
+      __isset_bitfield = EncodingUtils.setBit(__isset_bitfield, __DATETIME_ISSET_ID, value);
+    }
+
+    public String getHospitalUidFrom() {
+      return this.hospitalUidFrom;
+    }
+
+    public getFirstFreeTicket_args setHospitalUidFrom(String hospitalUidFrom) {
+      this.hospitalUidFrom = hospitalUidFrom;
+      return this;
+    }
+
+    public void unsetHospitalUidFrom() {
+      this.hospitalUidFrom = null;
+    }
+
+    /** Returns true if field hospitalUidFrom is set (has been assigned a value) and false otherwise */
+    public boolean isSetHospitalUidFrom() {
+      return this.hospitalUidFrom != null;
+    }
+
+    public void setHospitalUidFromIsSet(boolean value) {
+      if (!value) {
+        this.hospitalUidFrom = null;
+      }
+    }
+
+    public void setFieldValue(_Fields field, Object value) {
+      switch (field) {
+      case PERSON_ID:
+        if (value == null) {
+          unsetPersonId();
+        } else {
+          setPersonId((Integer)value);
+        }
+        break;
+
+      case DATE_TIME:
+        if (value == null) {
+          unsetDateTime();
+        } else {
+          setDateTime((Long)value);
+        }
+        break;
+
+      case HOSPITAL_UID_FROM:
+        if (value == null) {
+          unsetHospitalUidFrom();
+        } else {
+          setHospitalUidFrom((String)value);
+        }
+        break;
+
+      }
+    }
+
+    public Object getFieldValue(_Fields field) {
+      switch (field) {
+      case PERSON_ID:
+        return Integer.valueOf(getPersonId());
+
+      case DATE_TIME:
+        return Long.valueOf(getDateTime());
+
+      case HOSPITAL_UID_FROM:
+        return getHospitalUidFrom();
+
+      }
+      throw new IllegalStateException();
+    }
+
+    /** Returns true if field corresponding to fieldID is set (has been assigned a value) and false otherwise */
+    public boolean isSet(_Fields field) {
+      if (field == null) {
+        throw new IllegalArgumentException();
+      }
+
+      switch (field) {
+      case PERSON_ID:
+        return isSetPersonId();
+      case DATE_TIME:
+        return isSetDateTime();
+      case HOSPITAL_UID_FROM:
+        return isSetHospitalUidFrom();
+      }
+      throw new IllegalStateException();
+    }
+
+    @Override
+    public boolean equals(Object that) {
+      if (that == null)
+        return false;
+      if (that instanceof getFirstFreeTicket_args)
+        return this.equals((getFirstFreeTicket_args)that);
+      return false;
+    }
+
+    public boolean equals(getFirstFreeTicket_args that) {
+      if (that == null)
+        return false;
+
+      boolean this_present_personId = true;
+      boolean that_present_personId = true;
+      if (this_present_personId || that_present_personId) {
+        if (!(this_present_personId && that_present_personId))
+          return false;
+        if (this.personId != that.personId)
+          return false;
+      }
+
+      boolean this_present_dateTime = true;
+      boolean that_present_dateTime = true;
+      if (this_present_dateTime || that_present_dateTime) {
+        if (!(this_present_dateTime && that_present_dateTime))
+          return false;
+        if (this.dateTime != that.dateTime)
+          return false;
+      }
+
+      boolean this_present_hospitalUidFrom = true && this.isSetHospitalUidFrom();
+      boolean that_present_hospitalUidFrom = true && that.isSetHospitalUidFrom();
+      if (this_present_hospitalUidFrom || that_present_hospitalUidFrom) {
+        if (!(this_present_hospitalUidFrom && that_present_hospitalUidFrom))
+          return false;
+        if (!this.hospitalUidFrom.equals(that.hospitalUidFrom))
+          return false;
+      }
+
+      return true;
+    }
+
+    @Override
+    public int hashCode() {
+      return 0;
+    }
+
+    public int compareTo(getFirstFreeTicket_args other) {
+      if (!getClass().equals(other.getClass())) {
+        return getClass().getName().compareTo(other.getClass().getName());
+      }
+
+      int lastComparison = 0;
+      getFirstFreeTicket_args typedOther = (getFirstFreeTicket_args)other;
+
+      lastComparison = Boolean.valueOf(isSetPersonId()).compareTo(typedOther.isSetPersonId());
+      if (lastComparison != 0) {
+        return lastComparison;
+      }
+      if (isSetPersonId()) {
+        lastComparison = org.apache.thrift.TBaseHelper.compareTo(this.personId, typedOther.personId);
+        if (lastComparison != 0) {
+          return lastComparison;
+        }
+      }
+      lastComparison = Boolean.valueOf(isSetDateTime()).compareTo(typedOther.isSetDateTime());
+      if (lastComparison != 0) {
+        return lastComparison;
+      }
+      if (isSetDateTime()) {
+        lastComparison = org.apache.thrift.TBaseHelper.compareTo(this.dateTime, typedOther.dateTime);
+        if (lastComparison != 0) {
+          return lastComparison;
+        }
+      }
+      lastComparison = Boolean.valueOf(isSetHospitalUidFrom()).compareTo(typedOther.isSetHospitalUidFrom());
+      if (lastComparison != 0) {
+        return lastComparison;
+      }
+      if (isSetHospitalUidFrom()) {
+        lastComparison = org.apache.thrift.TBaseHelper.compareTo(this.hospitalUidFrom, typedOther.hospitalUidFrom);
+        if (lastComparison != 0) {
+          return lastComparison;
+        }
+      }
+      return 0;
+    }
+
+    public _Fields fieldForId(int fieldId) {
+      return _Fields.findByThriftId(fieldId);
+    }
+
+    public void read(org.apache.thrift.protocol.TProtocol iprot) throws org.apache.thrift.TException {
+      schemes.get(iprot.getScheme()).getScheme().read(iprot, this);
+    }
+
+    public void write(org.apache.thrift.protocol.TProtocol oprot) throws org.apache.thrift.TException {
+      schemes.get(oprot.getScheme()).getScheme().write(oprot, this);
+    }
+
+    @Override
+    public String toString() {
+      StringBuilder sb = new StringBuilder("getFirstFreeTicket_args(");
+      boolean first = true;
+
+      sb.append("personId:");
+      sb.append(this.personId);
+      first = false;
+      if (!first) sb.append(", ");
+      sb.append("dateTime:");
+      sb.append(this.dateTime);
+      first = false;
+      if (!first) sb.append(", ");
+      sb.append("hospitalUidFrom:");
+      if (this.hospitalUidFrom == null) {
+        sb.append("null");
+      } else {
+        sb.append(this.hospitalUidFrom);
+      }
+      first = false;
+      sb.append(")");
+      return sb.toString();
+    }
+
+    public void validate() throws org.apache.thrift.TException {
+      // check for required fields
+      // check for sub-struct validity
+    }
+
+    private void writeObject(java.io.ObjectOutputStream out) throws java.io.IOException {
+      try {
+        write(new org.apache.thrift.protocol.TCompactProtocol(new org.apache.thrift.transport.TIOStreamTransport(out)));
+      } catch (org.apache.thrift.TException te) {
+        throw new java.io.IOException(te);
+      }
+    }
+
+    private void readObject(java.io.ObjectInputStream in) throws java.io.IOException, ClassNotFoundException {
+      try {
+        // it doesn't seem like you should have to do this, but java serialization is wacky, and doesn't call the default constructor.
+        __isset_bitfield = 0;
+        read(new org.apache.thrift.protocol.TCompactProtocol(new org.apache.thrift.transport.TIOStreamTransport(in)));
+      } catch (org.apache.thrift.TException te) {
+        throw new java.io.IOException(te);
+      }
+    }
+
+    private static class getFirstFreeTicket_argsStandardSchemeFactory implements SchemeFactory {
+      public getFirstFreeTicket_argsStandardScheme getScheme() {
+        return new getFirstFreeTicket_argsStandardScheme();
+      }
+    }
+
+    private static class getFirstFreeTicket_argsStandardScheme extends StandardScheme<getFirstFreeTicket_args> {
+
+      public void read(org.apache.thrift.protocol.TProtocol iprot, getFirstFreeTicket_args struct) throws org.apache.thrift.TException {
+        org.apache.thrift.protocol.TField schemeField;
+        iprot.readStructBegin();
+        while (true)
+        {
+          schemeField = iprot.readFieldBegin();
+          if (schemeField.type == org.apache.thrift.protocol.TType.STOP) { 
+            break;
+          }
+          switch (schemeField.id) {
+            case 1: // PERSON_ID
+              if (schemeField.type == org.apache.thrift.protocol.TType.I32) {
+                struct.personId = iprot.readI32();
+                struct.setPersonIdIsSet(true);
+              } else { 
+                org.apache.thrift.protocol.TProtocolUtil.skip(iprot, schemeField.type);
+              }
+              break;
+            case 2: // DATE_TIME
+              if (schemeField.type == org.apache.thrift.protocol.TType.I64) {
+                struct.dateTime = iprot.readI64();
+                struct.setDateTimeIsSet(true);
+              } else { 
+                org.apache.thrift.protocol.TProtocolUtil.skip(iprot, schemeField.type);
+              }
+              break;
+            case 3: // HOSPITAL_UID_FROM
+              if (schemeField.type == org.apache.thrift.protocol.TType.STRING) {
+                struct.hospitalUidFrom = iprot.readString();
+                struct.setHospitalUidFromIsSet(true);
+              } else { 
+                org.apache.thrift.protocol.TProtocolUtil.skip(iprot, schemeField.type);
+              }
+              break;
+            default:
+              org.apache.thrift.protocol.TProtocolUtil.skip(iprot, schemeField.type);
+          }
+          iprot.readFieldEnd();
+        }
+        iprot.readStructEnd();
+
+        // check for required fields of primitive type, which can't be checked in the validate method
+        struct.validate();
+      }
+
+      public void write(org.apache.thrift.protocol.TProtocol oprot, getFirstFreeTicket_args struct) throws org.apache.thrift.TException {
+        struct.validate();
+
+        oprot.writeStructBegin(STRUCT_DESC);
+        oprot.writeFieldBegin(PERSON_ID_FIELD_DESC);
+        oprot.writeI32(struct.personId);
+        oprot.writeFieldEnd();
+        oprot.writeFieldBegin(DATE_TIME_FIELD_DESC);
+        oprot.writeI64(struct.dateTime);
+        oprot.writeFieldEnd();
+        if (struct.hospitalUidFrom != null) {
+          oprot.writeFieldBegin(HOSPITAL_UID_FROM_FIELD_DESC);
+          oprot.writeString(struct.hospitalUidFrom);
+          oprot.writeFieldEnd();
+        }
+        oprot.writeFieldStop();
+        oprot.writeStructEnd();
+      }
+
+    }
+
+    private static class getFirstFreeTicket_argsTupleSchemeFactory implements SchemeFactory {
+      public getFirstFreeTicket_argsTupleScheme getScheme() {
+        return new getFirstFreeTicket_argsTupleScheme();
+      }
+    }
+
+    private static class getFirstFreeTicket_argsTupleScheme extends TupleScheme<getFirstFreeTicket_args> {
+
+      @Override
+      public void write(org.apache.thrift.protocol.TProtocol prot, getFirstFreeTicket_args struct) throws org.apache.thrift.TException {
+        TTupleProtocol oprot = (TTupleProtocol) prot;
+        BitSet optionals = new BitSet();
+        if (struct.isSetPersonId()) {
+          optionals.set(0);
+        }
+        if (struct.isSetDateTime()) {
+          optionals.set(1);
+        }
+        if (struct.isSetHospitalUidFrom()) {
+          optionals.set(2);
+        }
+        oprot.writeBitSet(optionals, 3);
+        if (struct.isSetPersonId()) {
+          oprot.writeI32(struct.personId);
+        }
+        if (struct.isSetDateTime()) {
+          oprot.writeI64(struct.dateTime);
+        }
+        if (struct.isSetHospitalUidFrom()) {
+          oprot.writeString(struct.hospitalUidFrom);
+        }
+      }
+
+      @Override
+      public void read(org.apache.thrift.protocol.TProtocol prot, getFirstFreeTicket_args struct) throws org.apache.thrift.TException {
+        TTupleProtocol iprot = (TTupleProtocol) prot;
+        BitSet incoming = iprot.readBitSet(3);
+        if (incoming.get(0)) {
+          struct.personId = iprot.readI32();
+          struct.setPersonIdIsSet(true);
+        }
+        if (incoming.get(1)) {
+          struct.dateTime = iprot.readI64();
+          struct.setDateTimeIsSet(true);
+        }
+        if (incoming.get(2)) {
+          struct.hospitalUidFrom = iprot.readString();
+          struct.setHospitalUidFromIsSet(true);
+        }
+      }
+    }
+
+  }
+
+  public static class getFirstFreeTicket_result implements org.apache.thrift.TBase<getFirstFreeTicket_result, getFirstFreeTicket_result._Fields>, java.io.Serializable, Cloneable   {
+    private static final org.apache.thrift.protocol.TStruct STRUCT_DESC = new org.apache.thrift.protocol.TStruct("getFirstFreeTicket_result");
+
+    private static final org.apache.thrift.protocol.TField SUCCESS_FIELD_DESC = new org.apache.thrift.protocol.TField("success", org.apache.thrift.protocol.TType.STRUCT, (short)0);
+    private static final org.apache.thrift.protocol.TField NF_EXC_FIELD_DESC = new org.apache.thrift.protocol.TField("nfExc", org.apache.thrift.protocol.TType.STRUCT, (short)1);
+
+    private static final Map<Class<? extends IScheme>, SchemeFactory> schemes = new HashMap<Class<? extends IScheme>, SchemeFactory>();
+    static {
+      schemes.put(StandardScheme.class, new getFirstFreeTicket_resultStandardSchemeFactory());
+      schemes.put(TupleScheme.class, new getFirstFreeTicket_resultTupleSchemeFactory());
+    }
+
+    public FreeTicket success; // required
+    public NotFoundException nfExc; // required
+
+    /** The set of fields this struct contains, along with convenience methods for finding and manipulating them. */
+    public enum _Fields implements org.apache.thrift.TFieldIdEnum {
+      SUCCESS((short)0, "success"),
+      NF_EXC((short)1, "nfExc");
+
+      private static final Map<String, _Fields> byName = new HashMap<String, _Fields>();
+
+      static {
+        for (_Fields field : EnumSet.allOf(_Fields.class)) {
+          byName.put(field.getFieldName(), field);
+        }
+      }
+
+      /**
+       * Find the _Fields constant that matches fieldId, or null if its not found.
+       */
+      public static _Fields findByThriftId(int fieldId) {
+        switch(fieldId) {
+          case 0: // SUCCESS
+            return SUCCESS;
+          case 1: // NF_EXC
+            return NF_EXC;
+          default:
+            return null;
+        }
+      }
+
+      /**
+       * Find the _Fields constant that matches fieldId, throwing an exception
+       * if it is not found.
+       */
+      public static _Fields findByThriftIdOrThrow(int fieldId) {
+        _Fields fields = findByThriftId(fieldId);
+        if (fields == null) throw new IllegalArgumentException("Field " + fieldId + " doesn't exist!");
+        return fields;
+      }
+
+      /**
+       * Find the _Fields constant that matches name, or null if its not found.
+       */
+      public static _Fields findByName(String name) {
+        return byName.get(name);
+      }
+
+      private final short _thriftId;
+      private final String _fieldName;
+
+      _Fields(short thriftId, String fieldName) {
+        _thriftId = thriftId;
+        _fieldName = fieldName;
+      }
+
+      public short getThriftFieldId() {
+        return _thriftId;
+      }
+
+      public String getFieldName() {
+        return _fieldName;
+      }
+    }
+
+    // isset id assignments
+    public static final Map<_Fields, org.apache.thrift.meta_data.FieldMetaData> metaDataMap;
+    static {
+      Map<_Fields, org.apache.thrift.meta_data.FieldMetaData> tmpMap = new EnumMap<_Fields, org.apache.thrift.meta_data.FieldMetaData>(_Fields.class);
+      tmpMap.put(_Fields.SUCCESS, new org.apache.thrift.meta_data.FieldMetaData("success", org.apache.thrift.TFieldRequirementType.DEFAULT, 
+          new org.apache.thrift.meta_data.StructMetaData(org.apache.thrift.protocol.TType.STRUCT, FreeTicket.class)));
+      tmpMap.put(_Fields.NF_EXC, new org.apache.thrift.meta_data.FieldMetaData("nfExc", org.apache.thrift.TFieldRequirementType.DEFAULT, 
+          new org.apache.thrift.meta_data.FieldValueMetaData(org.apache.thrift.protocol.TType.STRUCT)));
+      metaDataMap = Collections.unmodifiableMap(tmpMap);
+      org.apache.thrift.meta_data.FieldMetaData.addStructMetaDataMap(getFirstFreeTicket_result.class, metaDataMap);
+    }
+
+    public getFirstFreeTicket_result() {
+    }
+
+    public getFirstFreeTicket_result(
+      FreeTicket success,
+      NotFoundException nfExc)
+    {
+      this();
+      this.success = success;
+      this.nfExc = nfExc;
+    }
+
+    /**
+     * Performs a deep copy on <i>other</i>.
+     */
+    public getFirstFreeTicket_result(getFirstFreeTicket_result other) {
+      if (other.isSetSuccess()) {
+        this.success = new FreeTicket(other.success);
+      }
+      if (other.isSetNfExc()) {
+        this.nfExc = new NotFoundException(other.nfExc);
+      }
+    }
+
+    public getFirstFreeTicket_result deepCopy() {
+      return new getFirstFreeTicket_result(this);
+    }
+
+    @Override
+    public void clear() {
+      this.success = null;
+      this.nfExc = null;
+    }
+
+    public FreeTicket getSuccess() {
+      return this.success;
+    }
+
+    public getFirstFreeTicket_result setSuccess(FreeTicket success) {
+      this.success = success;
+      return this;
+    }
+
+    public void unsetSuccess() {
+      this.success = null;
+    }
+
+    /** Returns true if field success is set (has been assigned a value) and false otherwise */
+    public boolean isSetSuccess() {
+      return this.success != null;
+    }
+
+    public void setSuccessIsSet(boolean value) {
+      if (!value) {
+        this.success = null;
+      }
+    }
+
+    public NotFoundException getNfExc() {
+      return this.nfExc;
+    }
+
+    public getFirstFreeTicket_result setNfExc(NotFoundException nfExc) {
+      this.nfExc = nfExc;
+      return this;
+    }
+
+    public void unsetNfExc() {
+      this.nfExc = null;
+    }
+
+    /** Returns true if field nfExc is set (has been assigned a value) and false otherwise */
+    public boolean isSetNfExc() {
+      return this.nfExc != null;
+    }
+
+    public void setNfExcIsSet(boolean value) {
+      if (!value) {
+        this.nfExc = null;
+      }
+    }
+
+    public void setFieldValue(_Fields field, Object value) {
+      switch (field) {
+      case SUCCESS:
+        if (value == null) {
+          unsetSuccess();
+        } else {
+          setSuccess((FreeTicket)value);
+        }
+        break;
+
+      case NF_EXC:
+        if (value == null) {
+          unsetNfExc();
+        } else {
+          setNfExc((NotFoundException)value);
+        }
+        break;
+
+      }
+    }
+
+    public Object getFieldValue(_Fields field) {
+      switch (field) {
+      case SUCCESS:
+        return getSuccess();
+
+      case NF_EXC:
+        return getNfExc();
+
+      }
+      throw new IllegalStateException();
+    }
+
+    /** Returns true if field corresponding to fieldID is set (has been assigned a value) and false otherwise */
+    public boolean isSet(_Fields field) {
+      if (field == null) {
+        throw new IllegalArgumentException();
+      }
+
+      switch (field) {
+      case SUCCESS:
+        return isSetSuccess();
+      case NF_EXC:
+        return isSetNfExc();
+      }
+      throw new IllegalStateException();
+    }
+
+    @Override
+    public boolean equals(Object that) {
+      if (that == null)
+        return false;
+      if (that instanceof getFirstFreeTicket_result)
+        return this.equals((getFirstFreeTicket_result)that);
+      return false;
+    }
+
+    public boolean equals(getFirstFreeTicket_result that) {
+      if (that == null)
+        return false;
+
+      boolean this_present_success = true && this.isSetSuccess();
+      boolean that_present_success = true && that.isSetSuccess();
+      if (this_present_success || that_present_success) {
+        if (!(this_present_success && that_present_success))
+          return false;
+        if (!this.success.equals(that.success))
+          return false;
+      }
+
+      boolean this_present_nfExc = true && this.isSetNfExc();
+      boolean that_present_nfExc = true && that.isSetNfExc();
+      if (this_present_nfExc || that_present_nfExc) {
+        if (!(this_present_nfExc && that_present_nfExc))
+          return false;
+        if (!this.nfExc.equals(that.nfExc))
+          return false;
+      }
+
+      return true;
+    }
+
+    @Override
+    public int hashCode() {
+      return 0;
+    }
+
+    public int compareTo(getFirstFreeTicket_result other) {
+      if (!getClass().equals(other.getClass())) {
+        return getClass().getName().compareTo(other.getClass().getName());
+      }
+
+      int lastComparison = 0;
+      getFirstFreeTicket_result typedOther = (getFirstFreeTicket_result)other;
+
+      lastComparison = Boolean.valueOf(isSetSuccess()).compareTo(typedOther.isSetSuccess());
+      if (lastComparison != 0) {
+        return lastComparison;
+      }
+      if (isSetSuccess()) {
+        lastComparison = org.apache.thrift.TBaseHelper.compareTo(this.success, typedOther.success);
+        if (lastComparison != 0) {
+          return lastComparison;
+        }
+      }
+      lastComparison = Boolean.valueOf(isSetNfExc()).compareTo(typedOther.isSetNfExc());
+      if (lastComparison != 0) {
+        return lastComparison;
+      }
+      if (isSetNfExc()) {
+        lastComparison = org.apache.thrift.TBaseHelper.compareTo(this.nfExc, typedOther.nfExc);
+        if (lastComparison != 0) {
+          return lastComparison;
+        }
+      }
+      return 0;
+    }
+
+    public _Fields fieldForId(int fieldId) {
+      return _Fields.findByThriftId(fieldId);
+    }
+
+    public void read(org.apache.thrift.protocol.TProtocol iprot) throws org.apache.thrift.TException {
+      schemes.get(iprot.getScheme()).getScheme().read(iprot, this);
+    }
+
+    public void write(org.apache.thrift.protocol.TProtocol oprot) throws org.apache.thrift.TException {
+      schemes.get(oprot.getScheme()).getScheme().write(oprot, this);
+      }
+
+    @Override
+    public String toString() {
+      StringBuilder sb = new StringBuilder("getFirstFreeTicket_result(");
+      boolean first = true;
+
+      sb.append("success:");
+      if (this.success == null) {
+        sb.append("null");
+      } else {
+        sb.append(this.success);
+      }
+      first = false;
+      if (!first) sb.append(", ");
+      sb.append("nfExc:");
+      if (this.nfExc == null) {
+        sb.append("null");
+      } else {
+        sb.append(this.nfExc);
+      }
+      first = false;
+      sb.append(")");
+      return sb.toString();
+    }
+
+    public void validate() throws org.apache.thrift.TException {
+      // check for required fields
+      // check for sub-struct validity
+      if (success != null) {
+        success.validate();
+      }
+    }
+
+    private void writeObject(java.io.ObjectOutputStream out) throws java.io.IOException {
+      try {
+        write(new org.apache.thrift.protocol.TCompactProtocol(new org.apache.thrift.transport.TIOStreamTransport(out)));
+      } catch (org.apache.thrift.TException te) {
+        throw new java.io.IOException(te);
+      }
+    }
+
+    private void readObject(java.io.ObjectInputStream in) throws java.io.IOException, ClassNotFoundException {
+      try {
+        read(new org.apache.thrift.protocol.TCompactProtocol(new org.apache.thrift.transport.TIOStreamTransport(in)));
+      } catch (org.apache.thrift.TException te) {
+        throw new java.io.IOException(te);
+      }
+    }
+
+    private static class getFirstFreeTicket_resultStandardSchemeFactory implements SchemeFactory {
+      public getFirstFreeTicket_resultStandardScheme getScheme() {
+        return new getFirstFreeTicket_resultStandardScheme();
+      }
+    }
+
+    private static class getFirstFreeTicket_resultStandardScheme extends StandardScheme<getFirstFreeTicket_result> {
+
+      public void read(org.apache.thrift.protocol.TProtocol iprot, getFirstFreeTicket_result struct) throws org.apache.thrift.TException {
+        org.apache.thrift.protocol.TField schemeField;
+        iprot.readStructBegin();
+        while (true)
+        {
+          schemeField = iprot.readFieldBegin();
+          if (schemeField.type == org.apache.thrift.protocol.TType.STOP) { 
+            break;
+          }
+          switch (schemeField.id) {
+            case 0: // SUCCESS
+              if (schemeField.type == org.apache.thrift.protocol.TType.STRUCT) {
+                struct.success = new FreeTicket();
+                struct.success.read(iprot);
+                struct.setSuccessIsSet(true);
+              } else { 
+                org.apache.thrift.protocol.TProtocolUtil.skip(iprot, schemeField.type);
+              }
+              break;
+            case 1: // NF_EXC
+              if (schemeField.type == org.apache.thrift.protocol.TType.STRUCT) {
+                struct.nfExc = new NotFoundException();
+                struct.nfExc.read(iprot);
+                struct.setNfExcIsSet(true);
+              } else { 
+                org.apache.thrift.protocol.TProtocolUtil.skip(iprot, schemeField.type);
+              }
+              break;
+            default:
+              org.apache.thrift.protocol.TProtocolUtil.skip(iprot, schemeField.type);
+          }
+          iprot.readFieldEnd();
+        }
+        iprot.readStructEnd();
+
+        // check for required fields of primitive type, which can't be checked in the validate method
+        struct.validate();
+      }
+
+      public void write(org.apache.thrift.protocol.TProtocol oprot, getFirstFreeTicket_result struct) throws org.apache.thrift.TException {
+        struct.validate();
+
+        oprot.writeStructBegin(STRUCT_DESC);
+        if (struct.success != null) {
+          oprot.writeFieldBegin(SUCCESS_FIELD_DESC);
+          struct.success.write(oprot);
+          oprot.writeFieldEnd();
+        }
+        if (struct.nfExc != null) {
+          oprot.writeFieldBegin(NF_EXC_FIELD_DESC);
+          struct.nfExc.write(oprot);
+          oprot.writeFieldEnd();
+        }
+        oprot.writeFieldStop();
+        oprot.writeStructEnd();
+      }
+
+    }
+
+    private static class getFirstFreeTicket_resultTupleSchemeFactory implements SchemeFactory {
+      public getFirstFreeTicket_resultTupleScheme getScheme() {
+        return new getFirstFreeTicket_resultTupleScheme();
+      }
+    }
+
+    private static class getFirstFreeTicket_resultTupleScheme extends TupleScheme<getFirstFreeTicket_result> {
+
+      @Override
+      public void write(org.apache.thrift.protocol.TProtocol prot, getFirstFreeTicket_result struct) throws org.apache.thrift.TException {
+        TTupleProtocol oprot = (TTupleProtocol) prot;
+        BitSet optionals = new BitSet();
+        if (struct.isSetSuccess()) {
+          optionals.set(0);
+        }
+        if (struct.isSetNfExc()) {
+          optionals.set(1);
+        }
+        oprot.writeBitSet(optionals, 2);
+        if (struct.isSetSuccess()) {
+          struct.success.write(oprot);
+        }
+        if (struct.isSetNfExc()) {
+          struct.nfExc.write(oprot);
+        }
+      }
+
+      @Override
+      public void read(org.apache.thrift.protocol.TProtocol prot, getFirstFreeTicket_result struct) throws org.apache.thrift.TException {
+        TTupleProtocol iprot = (TTupleProtocol) prot;
+        BitSet incoming = iprot.readBitSet(2);
+        if (incoming.get(0)) {
+          struct.success = new FreeTicket();
+          struct.success.read(iprot);
+          struct.setSuccessIsSet(true);
+        }
+        if (incoming.get(1)) {
+          struct.nfExc = new NotFoundException();
+          struct.nfExc.read(iprot);
+          struct.setNfExcIsSet(true);
+        }
+      }
+    }
+
+  }
+
+  public static class getPersonSchedule_args implements org.apache.thrift.TBase<getPersonSchedule_args, getPersonSchedule_args._Fields>, java.io.Serializable, Cloneable   {
+    private static final org.apache.thrift.protocol.TStruct STRUCT_DESC = new org.apache.thrift.protocol.TStruct("getPersonSchedule_args");
+
+    private static final org.apache.thrift.protocol.TField PERSON_ID_FIELD_DESC = new org.apache.thrift.protocol.TField("personId", org.apache.thrift.protocol.TType.I32, (short)1);
+    private static final org.apache.thrift.protocol.TField BEG_DATE_FIELD_DESC = new org.apache.thrift.protocol.TField("begDate", org.apache.thrift.protocol.TType.I64, (short)2);
+    private static final org.apache.thrift.protocol.TField END_DATE_FIELD_DESC = new org.apache.thrift.protocol.TField("endDate", org.apache.thrift.protocol.TType.I64, (short)3);
+    private static final org.apache.thrift.protocol.TField HOSPITAL_UID_FROM_FIELD_DESC = new org.apache.thrift.protocol.TField("hospitalUidFrom", org.apache.thrift.protocol.TType.STRING, (short)4);
+
+    private static final Map<Class<? extends IScheme>, SchemeFactory> schemes = new HashMap<Class<? extends IScheme>, SchemeFactory>();
+    static {
+      schemes.put(StandardScheme.class, new getPersonSchedule_argsStandardSchemeFactory());
+      schemes.put(TupleScheme.class, new getPersonSchedule_argsTupleSchemeFactory());
+    }
+
+    public int personId; // required
+    public long begDate; // required
+    public long endDate; // required
+    public String hospitalUidFrom; // required
+
+    /** The set of fields this struct contains, along with convenience methods for finding and manipulating them. */
+    public enum _Fields implements org.apache.thrift.TFieldIdEnum {
+      PERSON_ID((short)1, "personId"),
+      BEG_DATE((short)2, "begDate"),
+      END_DATE((short)3, "endDate"),
+      HOSPITAL_UID_FROM((short)4, "hospitalUidFrom");
+
+      private static final Map<String, _Fields> byName = new HashMap<String, _Fields>();
+
+      static {
+        for (_Fields field : EnumSet.allOf(_Fields.class)) {
+          byName.put(field.getFieldName(), field);
+        }
+      }
+
+      /**
+       * Find the _Fields constant that matches fieldId, or null if its not found.
+       */
+      public static _Fields findByThriftId(int fieldId) {
+        switch(fieldId) {
+          case 1: // PERSON_ID
+            return PERSON_ID;
+          case 2: // BEG_DATE
+            return BEG_DATE;
+          case 3: // END_DATE
+            return END_DATE;
+          case 4: // HOSPITAL_UID_FROM
+            return HOSPITAL_UID_FROM;
+          default:
+            return null;
+        }
+      }
+
+      /**
+       * Find the _Fields constant that matches fieldId, throwing an exception
+       * if it is not found.
+       */
+      public static _Fields findByThriftIdOrThrow(int fieldId) {
+        _Fields fields = findByThriftId(fieldId);
+        if (fields == null) throw new IllegalArgumentException("Field " + fieldId + " doesn't exist!");
+        return fields;
+      }
+
+      /**
+       * Find the _Fields constant that matches name, or null if its not found.
+       */
+      public static _Fields findByName(String name) {
+        return byName.get(name);
+      }
+
+      private final short _thriftId;
+      private final String _fieldName;
+
+      _Fields(short thriftId, String fieldName) {
+        _thriftId = thriftId;
+        _fieldName = fieldName;
+      }
+
+      public short getThriftFieldId() {
+        return _thriftId;
+      }
+
+      public String getFieldName() {
+        return _fieldName;
+      }
+    }
+
+    // isset id assignments
+    private static final int __PERSONID_ISSET_ID = 0;
+    private static final int __BEGDATE_ISSET_ID = 1;
+    private static final int __ENDDATE_ISSET_ID = 2;
+    private byte __isset_bitfield = 0;
+    public static final Map<_Fields, org.apache.thrift.meta_data.FieldMetaData> metaDataMap;
+    static {
+      Map<_Fields, org.apache.thrift.meta_data.FieldMetaData> tmpMap = new EnumMap<_Fields, org.apache.thrift.meta_data.FieldMetaData>(_Fields.class);
+      tmpMap.put(_Fields.PERSON_ID, new org.apache.thrift.meta_data.FieldMetaData("personId", org.apache.thrift.TFieldRequirementType.DEFAULT, 
+          new org.apache.thrift.meta_data.FieldValueMetaData(org.apache.thrift.protocol.TType.I32)));
+      tmpMap.put(_Fields.BEG_DATE, new org.apache.thrift.meta_data.FieldMetaData("begDate", org.apache.thrift.TFieldRequirementType.DEFAULT, 
+          new org.apache.thrift.meta_data.FieldValueMetaData(org.apache.thrift.protocol.TType.I64          , "timestamp")));
+      tmpMap.put(_Fields.END_DATE, new org.apache.thrift.meta_data.FieldMetaData("endDate", org.apache.thrift.TFieldRequirementType.DEFAULT, 
+          new org.apache.thrift.meta_data.FieldValueMetaData(org.apache.thrift.protocol.TType.I64          , "timestamp")));
+      tmpMap.put(_Fields.HOSPITAL_UID_FROM, new org.apache.thrift.meta_data.FieldMetaData("hospitalUidFrom", org.apache.thrift.TFieldRequirementType.DEFAULT, 
+          new org.apache.thrift.meta_data.FieldValueMetaData(org.apache.thrift.protocol.TType.STRING)));
+      metaDataMap = Collections.unmodifiableMap(tmpMap);
+      org.apache.thrift.meta_data.FieldMetaData.addStructMetaDataMap(getPersonSchedule_args.class, metaDataMap);
+    }
+
+    public getPersonSchedule_args() {
+    }
+
+    public getPersonSchedule_args(
+      int personId,
+      long begDate,
+      long endDate,
+      String hospitalUidFrom)
+    {
+      this();
+      this.personId = personId;
+      setPersonIdIsSet(true);
+      this.begDate = begDate;
+      setBegDateIsSet(true);
+      this.endDate = endDate;
+      setEndDateIsSet(true);
+      this.hospitalUidFrom = hospitalUidFrom;
+    }
+
+    /**
+     * Performs a deep copy on <i>other</i>.
+     */
+    public getPersonSchedule_args(getPersonSchedule_args other) {
+      __isset_bitfield = other.__isset_bitfield;
+      this.personId = other.personId;
+      this.begDate = other.begDate;
+      this.endDate = other.endDate;
+      if (other.isSetHospitalUidFrom()) {
+        this.hospitalUidFrom = other.hospitalUidFrom;
+      }
+    }
+
+    public getPersonSchedule_args deepCopy() {
+      return new getPersonSchedule_args(this);
+    }
+
+    @Override
+    public void clear() {
+      setPersonIdIsSet(false);
+      this.personId = 0;
+      setBegDateIsSet(false);
+      this.begDate = 0;
+      setEndDateIsSet(false);
+      this.endDate = 0;
+      this.hospitalUidFrom = null;
+    }
+
+    public int getPersonId() {
+      return this.personId;
+    }
+
+    public getPersonSchedule_args setPersonId(int personId) {
+      this.personId = personId;
+      setPersonIdIsSet(true);
+      return this;
+    }
+
+    public void unsetPersonId() {
+      __isset_bitfield = EncodingUtils.clearBit(__isset_bitfield, __PERSONID_ISSET_ID);
+    }
+
+    /** Returns true if field personId is set (has been assigned a value) and false otherwise */
+    public boolean isSetPersonId() {
+      return EncodingUtils.testBit(__isset_bitfield, __PERSONID_ISSET_ID);
+    }
+
+    public void setPersonIdIsSet(boolean value) {
+      __isset_bitfield = EncodingUtils.setBit(__isset_bitfield, __PERSONID_ISSET_ID, value);
+    }
+
+    public long getBegDate() {
+      return this.begDate;
+    }
+
+    public getPersonSchedule_args setBegDate(long begDate) {
+      this.begDate = begDate;
+      setBegDateIsSet(true);
+      return this;
+    }
+
+    public void unsetBegDate() {
+      __isset_bitfield = EncodingUtils.clearBit(__isset_bitfield, __BEGDATE_ISSET_ID);
+    }
+
+    /** Returns true if field begDate is set (has been assigned a value) and false otherwise */
+    public boolean isSetBegDate() {
+      return EncodingUtils.testBit(__isset_bitfield, __BEGDATE_ISSET_ID);
+    }
+
+    public void setBegDateIsSet(boolean value) {
+      __isset_bitfield = EncodingUtils.setBit(__isset_bitfield, __BEGDATE_ISSET_ID, value);
+    }
+
+    public long getEndDate() {
+      return this.endDate;
+    }
+
+    public getPersonSchedule_args setEndDate(long endDate) {
+      this.endDate = endDate;
+      setEndDateIsSet(true);
+      return this;
+    }
+
+    public void unsetEndDate() {
+      __isset_bitfield = EncodingUtils.clearBit(__isset_bitfield, __ENDDATE_ISSET_ID);
+    }
+
+    /** Returns true if field endDate is set (has been assigned a value) and false otherwise */
+    public boolean isSetEndDate() {
+      return EncodingUtils.testBit(__isset_bitfield, __ENDDATE_ISSET_ID);
+    }
+
+    public void setEndDateIsSet(boolean value) {
+      __isset_bitfield = EncodingUtils.setBit(__isset_bitfield, __ENDDATE_ISSET_ID, value);
+    }
+
+    public String getHospitalUidFrom() {
+      return this.hospitalUidFrom;
+    }
+
+    public getPersonSchedule_args setHospitalUidFrom(String hospitalUidFrom) {
+      this.hospitalUidFrom = hospitalUidFrom;
+      return this;
+    }
+
+    public void unsetHospitalUidFrom() {
+      this.hospitalUidFrom = null;
+    }
+
+    /** Returns true if field hospitalUidFrom is set (has been assigned a value) and false otherwise */
+    public boolean isSetHospitalUidFrom() {
+      return this.hospitalUidFrom != null;
+    }
+
+    public void setHospitalUidFromIsSet(boolean value) {
+      if (!value) {
+        this.hospitalUidFrom = null;
+      }
+    }
+
+    public void setFieldValue(_Fields field, Object value) {
+      switch (field) {
+      case PERSON_ID:
+        if (value == null) {
+          unsetPersonId();
+        } else {
+          setPersonId((Integer)value);
+        }
+        break;
+
+      case BEG_DATE:
+        if (value == null) {
+          unsetBegDate();
+        } else {
+          setBegDate((Long)value);
+        }
+        break;
+
+      case END_DATE:
+        if (value == null) {
+          unsetEndDate();
+        } else {
+          setEndDate((Long)value);
+        }
+        break;
+
+      case HOSPITAL_UID_FROM:
+        if (value == null) {
+          unsetHospitalUidFrom();
+        } else {
+          setHospitalUidFrom((String)value);
+        }
+        break;
+
+      }
+    }
+
+    public Object getFieldValue(_Fields field) {
+      switch (field) {
+      case PERSON_ID:
+        return Integer.valueOf(getPersonId());
+
+      case BEG_DATE:
+        return Long.valueOf(getBegDate());
+
+      case END_DATE:
+        return Long.valueOf(getEndDate());
+
+      case HOSPITAL_UID_FROM:
+        return getHospitalUidFrom();
+
+      }
+      throw new IllegalStateException();
+    }
+
+    /** Returns true if field corresponding to fieldID is set (has been assigned a value) and false otherwise */
+    public boolean isSet(_Fields field) {
+      if (field == null) {
+        throw new IllegalArgumentException();
+      }
+
+      switch (field) {
+      case PERSON_ID:
+        return isSetPersonId();
+      case BEG_DATE:
+        return isSetBegDate();
+      case END_DATE:
+        return isSetEndDate();
+      case HOSPITAL_UID_FROM:
+        return isSetHospitalUidFrom();
+      }
+      throw new IllegalStateException();
+    }
+
+    @Override
+    public boolean equals(Object that) {
+      if (that == null)
+        return false;
+      if (that instanceof getPersonSchedule_args)
+        return this.equals((getPersonSchedule_args)that);
+      return false;
+    }
+
+    public boolean equals(getPersonSchedule_args that) {
+      if (that == null)
+        return false;
+
+      boolean this_present_personId = true;
+      boolean that_present_personId = true;
+      if (this_present_personId || that_present_personId) {
+        if (!(this_present_personId && that_present_personId))
+          return false;
+        if (this.personId != that.personId)
+          return false;
+      }
+
+      boolean this_present_begDate = true;
+      boolean that_present_begDate = true;
+      if (this_present_begDate || that_present_begDate) {
+        if (!(this_present_begDate && that_present_begDate))
+          return false;
+        if (this.begDate != that.begDate)
+          return false;
+      }
+
+      boolean this_present_endDate = true;
+      boolean that_present_endDate = true;
+      if (this_present_endDate || that_present_endDate) {
+        if (!(this_present_endDate && that_present_endDate))
+          return false;
+        if (this.endDate != that.endDate)
+          return false;
+      }
+
+      boolean this_present_hospitalUidFrom = true && this.isSetHospitalUidFrom();
+      boolean that_present_hospitalUidFrom = true && that.isSetHospitalUidFrom();
+      if (this_present_hospitalUidFrom || that_present_hospitalUidFrom) {
+        if (!(this_present_hospitalUidFrom && that_present_hospitalUidFrom))
+          return false;
+        if (!this.hospitalUidFrom.equals(that.hospitalUidFrom))
+          return false;
+      }
+
+      return true;
+    }
+
+    @Override
+    public int hashCode() {
+      return 0;
+    }
+
+    public int compareTo(getPersonSchedule_args other) {
+      if (!getClass().equals(other.getClass())) {
+        return getClass().getName().compareTo(other.getClass().getName());
+      }
+
+      int lastComparison = 0;
+      getPersonSchedule_args typedOther = (getPersonSchedule_args)other;
+
+      lastComparison = Boolean.valueOf(isSetPersonId()).compareTo(typedOther.isSetPersonId());
+      if (lastComparison != 0) {
+        return lastComparison;
+      }
+      if (isSetPersonId()) {
+        lastComparison = org.apache.thrift.TBaseHelper.compareTo(this.personId, typedOther.personId);
+        if (lastComparison != 0) {
+          return lastComparison;
+        }
+      }
+      lastComparison = Boolean.valueOf(isSetBegDate()).compareTo(typedOther.isSetBegDate());
+      if (lastComparison != 0) {
+        return lastComparison;
+      }
+      if (isSetBegDate()) {
+        lastComparison = org.apache.thrift.TBaseHelper.compareTo(this.begDate, typedOther.begDate);
+        if (lastComparison != 0) {
+          return lastComparison;
+        }
+      }
+      lastComparison = Boolean.valueOf(isSetEndDate()).compareTo(typedOther.isSetEndDate());
+      if (lastComparison != 0) {
+        return lastComparison;
+      }
+      if (isSetEndDate()) {
+        lastComparison = org.apache.thrift.TBaseHelper.compareTo(this.endDate, typedOther.endDate);
+        if (lastComparison != 0) {
+          return lastComparison;
+        }
+      }
+      lastComparison = Boolean.valueOf(isSetHospitalUidFrom()).compareTo(typedOther.isSetHospitalUidFrom());
+      if (lastComparison != 0) {
+        return lastComparison;
+      }
+      if (isSetHospitalUidFrom()) {
+        lastComparison = org.apache.thrift.TBaseHelper.compareTo(this.hospitalUidFrom, typedOther.hospitalUidFrom);
+        if (lastComparison != 0) {
+          return lastComparison;
+        }
+      }
+      return 0;
+    }
+
+    public _Fields fieldForId(int fieldId) {
+      return _Fields.findByThriftId(fieldId);
+    }
+
+    public void read(org.apache.thrift.protocol.TProtocol iprot) throws org.apache.thrift.TException {
+      schemes.get(iprot.getScheme()).getScheme().read(iprot, this);
+    }
+
+    public void write(org.apache.thrift.protocol.TProtocol oprot) throws org.apache.thrift.TException {
+      schemes.get(oprot.getScheme()).getScheme().write(oprot, this);
+    }
+
+    @Override
+    public String toString() {
+      StringBuilder sb = new StringBuilder("getPersonSchedule_args(");
+      boolean first = true;
+
+      sb.append("personId:");
+      sb.append(this.personId);
+      first = false;
+      if (!first) sb.append(", ");
+      sb.append("begDate:");
+      sb.append(this.begDate);
+      first = false;
+      if (!first) sb.append(", ");
+      sb.append("endDate:");
+      sb.append(this.endDate);
+      first = false;
+      if (!first) sb.append(", ");
+      sb.append("hospitalUidFrom:");
+      if (this.hospitalUidFrom == null) {
+        sb.append("null");
+      } else {
+        sb.append(this.hospitalUidFrom);
+      }
+      first = false;
+      sb.append(")");
+      return sb.toString();
+    }
+
+    public void validate() throws org.apache.thrift.TException {
+      // check for required fields
+      // check for sub-struct validity
+    }
+
+    private void writeObject(java.io.ObjectOutputStream out) throws java.io.IOException {
+      try {
+        write(new org.apache.thrift.protocol.TCompactProtocol(new org.apache.thrift.transport.TIOStreamTransport(out)));
+      } catch (org.apache.thrift.TException te) {
+        throw new java.io.IOException(te);
+      }
+    }
+
+    private void readObject(java.io.ObjectInputStream in) throws java.io.IOException, ClassNotFoundException {
+      try {
+        // it doesn't seem like you should have to do this, but java serialization is wacky, and doesn't call the default constructor.
+        __isset_bitfield = 0;
+        read(new org.apache.thrift.protocol.TCompactProtocol(new org.apache.thrift.transport.TIOStreamTransport(in)));
+      } catch (org.apache.thrift.TException te) {
+        throw new java.io.IOException(te);
+      }
+    }
+
+    private static class getPersonSchedule_argsStandardSchemeFactory implements SchemeFactory {
+      public getPersonSchedule_argsStandardScheme getScheme() {
+        return new getPersonSchedule_argsStandardScheme();
+      }
+    }
+
+    private static class getPersonSchedule_argsStandardScheme extends StandardScheme<getPersonSchedule_args> {
+
+      public void read(org.apache.thrift.protocol.TProtocol iprot, getPersonSchedule_args struct) throws org.apache.thrift.TException {
+        org.apache.thrift.protocol.TField schemeField;
+        iprot.readStructBegin();
+        while (true)
+        {
+          schemeField = iprot.readFieldBegin();
+          if (schemeField.type == org.apache.thrift.protocol.TType.STOP) { 
+            break;
+          }
+          switch (schemeField.id) {
+            case 1: // PERSON_ID
+              if (schemeField.type == org.apache.thrift.protocol.TType.I32) {
+                struct.personId = iprot.readI32();
+                struct.setPersonIdIsSet(true);
+              } else { 
+                org.apache.thrift.protocol.TProtocolUtil.skip(iprot, schemeField.type);
+              }
+              break;
+            case 2: // BEG_DATE
+              if (schemeField.type == org.apache.thrift.protocol.TType.I64) {
+                struct.begDate = iprot.readI64();
+                struct.setBegDateIsSet(true);
+              } else { 
+                org.apache.thrift.protocol.TProtocolUtil.skip(iprot, schemeField.type);
+              }
+              break;
+            case 3: // END_DATE
+              if (schemeField.type == org.apache.thrift.protocol.TType.I64) {
+                struct.endDate = iprot.readI64();
+                struct.setEndDateIsSet(true);
+              } else { 
+                org.apache.thrift.protocol.TProtocolUtil.skip(iprot, schemeField.type);
+              }
+              break;
+            case 4: // HOSPITAL_UID_FROM
+              if (schemeField.type == org.apache.thrift.protocol.TType.STRING) {
+                struct.hospitalUidFrom = iprot.readString();
+                struct.setHospitalUidFromIsSet(true);
+              } else { 
+                org.apache.thrift.protocol.TProtocolUtil.skip(iprot, schemeField.type);
+              }
+              break;
+            default:
+              org.apache.thrift.protocol.TProtocolUtil.skip(iprot, schemeField.type);
+          }
+          iprot.readFieldEnd();
+        }
+        iprot.readStructEnd();
+
+        // check for required fields of primitive type, which can't be checked in the validate method
+        struct.validate();
+      }
+
+      public void write(org.apache.thrift.protocol.TProtocol oprot, getPersonSchedule_args struct) throws org.apache.thrift.TException {
+        struct.validate();
+
+        oprot.writeStructBegin(STRUCT_DESC);
+        oprot.writeFieldBegin(PERSON_ID_FIELD_DESC);
+        oprot.writeI32(struct.personId);
+        oprot.writeFieldEnd();
+        oprot.writeFieldBegin(BEG_DATE_FIELD_DESC);
+        oprot.writeI64(struct.begDate);
+        oprot.writeFieldEnd();
+        oprot.writeFieldBegin(END_DATE_FIELD_DESC);
+        oprot.writeI64(struct.endDate);
+        oprot.writeFieldEnd();
+        if (struct.hospitalUidFrom != null) {
+          oprot.writeFieldBegin(HOSPITAL_UID_FROM_FIELD_DESC);
+          oprot.writeString(struct.hospitalUidFrom);
+          oprot.writeFieldEnd();
+        }
+        oprot.writeFieldStop();
+        oprot.writeStructEnd();
+      }
+
+    }
+
+    private static class getPersonSchedule_argsTupleSchemeFactory implements SchemeFactory {
+      public getPersonSchedule_argsTupleScheme getScheme() {
+        return new getPersonSchedule_argsTupleScheme();
+      }
+    }
+
+    private static class getPersonSchedule_argsTupleScheme extends TupleScheme<getPersonSchedule_args> {
+
+      @Override
+      public void write(org.apache.thrift.protocol.TProtocol prot, getPersonSchedule_args struct) throws org.apache.thrift.TException {
+        TTupleProtocol oprot = (TTupleProtocol) prot;
+        BitSet optionals = new BitSet();
+        if (struct.isSetPersonId()) {
+          optionals.set(0);
+        }
+        if (struct.isSetBegDate()) {
+          optionals.set(1);
+        }
+        if (struct.isSetEndDate()) {
+          optionals.set(2);
+        }
+        if (struct.isSetHospitalUidFrom()) {
+          optionals.set(3);
+        }
+        oprot.writeBitSet(optionals, 4);
+        if (struct.isSetPersonId()) {
+          oprot.writeI32(struct.personId);
+        }
+        if (struct.isSetBegDate()) {
+          oprot.writeI64(struct.begDate);
+        }
+        if (struct.isSetEndDate()) {
+          oprot.writeI64(struct.endDate);
+        }
+        if (struct.isSetHospitalUidFrom()) {
+          oprot.writeString(struct.hospitalUidFrom);
+        }
+      }
+
+      @Override
+      public void read(org.apache.thrift.protocol.TProtocol prot, getPersonSchedule_args struct) throws org.apache.thrift.TException {
+        TTupleProtocol iprot = (TTupleProtocol) prot;
+        BitSet incoming = iprot.readBitSet(4);
+        if (incoming.get(0)) {
+          struct.personId = iprot.readI32();
+          struct.setPersonIdIsSet(true);
+        }
+        if (incoming.get(1)) {
+          struct.begDate = iprot.readI64();
+          struct.setBegDateIsSet(true);
+        }
+        if (incoming.get(2)) {
+          struct.endDate = iprot.readI64();
+          struct.setEndDateIsSet(true);
+        }
+        if (incoming.get(3)) {
+          struct.hospitalUidFrom = iprot.readString();
+          struct.setHospitalUidFromIsSet(true);
+        }
+      }
+    }
+
+  }
+
+  public static class getPersonSchedule_result implements org.apache.thrift.TBase<getPersonSchedule_result, getPersonSchedule_result._Fields>, java.io.Serializable, Cloneable   {
+    private static final org.apache.thrift.protocol.TStruct STRUCT_DESC = new org.apache.thrift.protocol.TStruct("getPersonSchedule_result");
+
+    private static final org.apache.thrift.protocol.TField SUCCESS_FIELD_DESC = new org.apache.thrift.protocol.TField("success", org.apache.thrift.protocol.TType.MAP, (short)0);
+    private static final org.apache.thrift.protocol.TField NF_EXC_FIELD_DESC = new org.apache.thrift.protocol.TField("nfExc", org.apache.thrift.protocol.TType.STRUCT, (short)1);
+
+    private static final Map<Class<? extends IScheme>, SchemeFactory> schemes = new HashMap<Class<? extends IScheme>, SchemeFactory>();
+    static {
+      schemes.put(StandardScheme.class, new getPersonSchedule_resultStandardSchemeFactory());
+      schemes.put(TupleScheme.class, new getPersonSchedule_resultTupleSchemeFactory());
+    }
+
+    public Map<Long,Amb> success; // required
+    public NotFoundException nfExc; // required
+
+    /** The set of fields this struct contains, along with convenience methods for finding and manipulating them. */
+    public enum _Fields implements org.apache.thrift.TFieldIdEnum {
+      SUCCESS((short)0, "success"),
+      NF_EXC((short)1, "nfExc");
+
+      private static final Map<String, _Fields> byName = new HashMap<String, _Fields>();
+
+      static {
+        for (_Fields field : EnumSet.allOf(_Fields.class)) {
+          byName.put(field.getFieldName(), field);
+        }
+      }
+
+      /**
+       * Find the _Fields constant that matches fieldId, or null if its not found.
+       */
+      public static _Fields findByThriftId(int fieldId) {
+        switch(fieldId) {
+          case 0: // SUCCESS
+            return SUCCESS;
+          case 1: // NF_EXC
+            return NF_EXC;
+          default:
+            return null;
+        }
+      }
+
+      /**
+       * Find the _Fields constant that matches fieldId, throwing an exception
+       * if it is not found.
+       */
+      public static _Fields findByThriftIdOrThrow(int fieldId) {
+        _Fields fields = findByThriftId(fieldId);
+        if (fields == null) throw new IllegalArgumentException("Field " + fieldId + " doesn't exist!");
+        return fields;
+      }
+
+      /**
+       * Find the _Fields constant that matches name, or null if its not found.
+       */
+      public static _Fields findByName(String name) {
+        return byName.get(name);
+      }
+
+      private final short _thriftId;
+      private final String _fieldName;
+
+      _Fields(short thriftId, String fieldName) {
+        _thriftId = thriftId;
+        _fieldName = fieldName;
+      }
+
+      public short getThriftFieldId() {
+        return _thriftId;
+      }
+
+      public String getFieldName() {
+        return _fieldName;
+      }
+    }
+
+    // isset id assignments
+    public static final Map<_Fields, org.apache.thrift.meta_data.FieldMetaData> metaDataMap;
+    static {
+      Map<_Fields, org.apache.thrift.meta_data.FieldMetaData> tmpMap = new EnumMap<_Fields, org.apache.thrift.meta_data.FieldMetaData>(_Fields.class);
+      tmpMap.put(_Fields.SUCCESS, new org.apache.thrift.meta_data.FieldMetaData("success", org.apache.thrift.TFieldRequirementType.DEFAULT, 
+          new org.apache.thrift.meta_data.MapMetaData(org.apache.thrift.protocol.TType.MAP, 
+              new org.apache.thrift.meta_data.FieldValueMetaData(org.apache.thrift.protocol.TType.I64              , "timestamp"), 
+              new org.apache.thrift.meta_data.StructMetaData(org.apache.thrift.protocol.TType.STRUCT, Amb.class))));
+      tmpMap.put(_Fields.NF_EXC, new org.apache.thrift.meta_data.FieldMetaData("nfExc", org.apache.thrift.TFieldRequirementType.DEFAULT, 
+          new org.apache.thrift.meta_data.FieldValueMetaData(org.apache.thrift.protocol.TType.STRUCT)));
+      metaDataMap = Collections.unmodifiableMap(tmpMap);
+      org.apache.thrift.meta_data.FieldMetaData.addStructMetaDataMap(getPersonSchedule_result.class, metaDataMap);
+    }
+
+    public getPersonSchedule_result() {
+    }
+
+    public getPersonSchedule_result(
+      Map<Long,Amb> success,
+      NotFoundException nfExc)
+    {
+      this();
+      this.success = success;
+      this.nfExc = nfExc;
+    }
+
+    /**
+     * Performs a deep copy on <i>other</i>.
+     */
+    public getPersonSchedule_result(getPersonSchedule_result other) {
+      if (other.isSetSuccess()) {
+        Map<Long,Amb> __this__success = new HashMap<Long,Amb>();
+        for (Map.Entry<Long, Amb> other_element : other.success.entrySet()) {
+
+          Long other_element_key = other_element.getKey();
+          Amb other_element_value = other_element.getValue();
+
+          Long __this__success_copy_key = other_element_key;
+
+          Amb __this__success_copy_value = new Amb(other_element_value);
+
+          __this__success.put(__this__success_copy_key, __this__success_copy_value);
+        }
+        this.success = __this__success;
+      }
+      if (other.isSetNfExc()) {
+        this.nfExc = new NotFoundException(other.nfExc);
+      }
+    }
+
+    public getPersonSchedule_result deepCopy() {
+      return new getPersonSchedule_result(this);
+    }
+
+    @Override
+    public void clear() {
+      this.success = null;
+      this.nfExc = null;
+    }
+
+    public int getSuccessSize() {
+      return (this.success == null) ? 0 : this.success.size();
+    }
+
+    public void putToSuccess(long key, Amb val) {
+      if (this.success == null) {
+        this.success = new HashMap<Long,Amb>();
+      }
+      this.success.put(key, val);
+    }
+
+    public Map<Long,Amb> getSuccess() {
+      return this.success;
+    }
+
+    public getPersonSchedule_result setSuccess(Map<Long,Amb> success) {
+      this.success = success;
+      return this;
+    }
+
+    public void unsetSuccess() {
+      this.success = null;
+    }
+
+    /** Returns true if field success is set (has been assigned a value) and false otherwise */
+    public boolean isSetSuccess() {
+      return this.success != null;
+    }
+
+    public void setSuccessIsSet(boolean value) {
+      if (!value) {
+        this.success = null;
+      }
+    }
+
+    public NotFoundException getNfExc() {
+      return this.nfExc;
+    }
+
+    public getPersonSchedule_result setNfExc(NotFoundException nfExc) {
+      this.nfExc = nfExc;
+      return this;
+    }
+
+    public void unsetNfExc() {
+      this.nfExc = null;
+    }
+
+    /** Returns true if field nfExc is set (has been assigned a value) and false otherwise */
+    public boolean isSetNfExc() {
+      return this.nfExc != null;
+    }
+
+    public void setNfExcIsSet(boolean value) {
+      if (!value) {
+        this.nfExc = null;
+      }
+    }
+
+    public void setFieldValue(_Fields field, Object value) {
+      switch (field) {
+      case SUCCESS:
+        if (value == null) {
+          unsetSuccess();
+        } else {
+          setSuccess((Map<Long,Amb>)value);
+        }
+        break;
+
+      case NF_EXC:
+        if (value == null) {
+          unsetNfExc();
+        } else {
+          setNfExc((NotFoundException)value);
+        }
+        break;
+
+      }
+    }
+
+    public Object getFieldValue(_Fields field) {
+      switch (field) {
+      case SUCCESS:
+        return getSuccess();
+
+      case NF_EXC:
+        return getNfExc();
+
+      }
+      throw new IllegalStateException();
+    }
+
+    /** Returns true if field corresponding to fieldID is set (has been assigned a value) and false otherwise */
+    public boolean isSet(_Fields field) {
+      if (field == null) {
+        throw new IllegalArgumentException();
+      }
+
+      switch (field) {
+      case SUCCESS:
+        return isSetSuccess();
+      case NF_EXC:
+        return isSetNfExc();
+      }
+      throw new IllegalStateException();
+    }
+
+    @Override
+    public boolean equals(Object that) {
+      if (that == null)
+        return false;
+      if (that instanceof getPersonSchedule_result)
+        return this.equals((getPersonSchedule_result)that);
+      return false;
+    }
+
+    public boolean equals(getPersonSchedule_result that) {
+      if (that == null)
+        return false;
+
+      boolean this_present_success = true && this.isSetSuccess();
+      boolean that_present_success = true && that.isSetSuccess();
+      if (this_present_success || that_present_success) {
+        if (!(this_present_success && that_present_success))
+          return false;
+        if (!this.success.equals(that.success))
+          return false;
+      }
+
+      boolean this_present_nfExc = true && this.isSetNfExc();
+      boolean that_present_nfExc = true && that.isSetNfExc();
+      if (this_present_nfExc || that_present_nfExc) {
+        if (!(this_present_nfExc && that_present_nfExc))
+          return false;
+        if (!this.nfExc.equals(that.nfExc))
+          return false;
+      }
+
+      return true;
+    }
+
+    @Override
+    public int hashCode() {
+      return 0;
+    }
+
+    public int compareTo(getPersonSchedule_result other) {
+      if (!getClass().equals(other.getClass())) {
+        return getClass().getName().compareTo(other.getClass().getName());
+      }
+
+      int lastComparison = 0;
+      getPersonSchedule_result typedOther = (getPersonSchedule_result)other;
+
+      lastComparison = Boolean.valueOf(isSetSuccess()).compareTo(typedOther.isSetSuccess());
+      if (lastComparison != 0) {
+        return lastComparison;
+      }
+      if (isSetSuccess()) {
+        lastComparison = org.apache.thrift.TBaseHelper.compareTo(this.success, typedOther.success);
+        if (lastComparison != 0) {
+          return lastComparison;
+        }
+      }
+      lastComparison = Boolean.valueOf(isSetNfExc()).compareTo(typedOther.isSetNfExc());
+      if (lastComparison != 0) {
+        return lastComparison;
+      }
+      if (isSetNfExc()) {
+        lastComparison = org.apache.thrift.TBaseHelper.compareTo(this.nfExc, typedOther.nfExc);
+        if (lastComparison != 0) {
+          return lastComparison;
+        }
+      }
+      return 0;
+    }
+
+    public _Fields fieldForId(int fieldId) {
+      return _Fields.findByThriftId(fieldId);
+    }
+
+    public void read(org.apache.thrift.protocol.TProtocol iprot) throws org.apache.thrift.TException {
+      schemes.get(iprot.getScheme()).getScheme().read(iprot, this);
+    }
+
+    public void write(org.apache.thrift.protocol.TProtocol oprot) throws org.apache.thrift.TException {
+      schemes.get(oprot.getScheme()).getScheme().write(oprot, this);
+      }
+
+    @Override
+    public String toString() {
+      StringBuilder sb = new StringBuilder("getPersonSchedule_result(");
+      boolean first = true;
+
+      sb.append("success:");
+      if (this.success == null) {
+        sb.append("null");
+      } else {
+        sb.append(this.success);
+      }
+      first = false;
+      if (!first) sb.append(", ");
+      sb.append("nfExc:");
+      if (this.nfExc == null) {
+        sb.append("null");
+      } else {
+        sb.append(this.nfExc);
+      }
+      first = false;
+      sb.append(")");
+      return sb.toString();
+    }
+
+    public void validate() throws org.apache.thrift.TException {
+      // check for required fields
+      // check for sub-struct validity
+    }
+
+    private void writeObject(java.io.ObjectOutputStream out) throws java.io.IOException {
+      try {
+        write(new org.apache.thrift.protocol.TCompactProtocol(new org.apache.thrift.transport.TIOStreamTransport(out)));
+      } catch (org.apache.thrift.TException te) {
+        throw new java.io.IOException(te);
+      }
+    }
+
+    private void readObject(java.io.ObjectInputStream in) throws java.io.IOException, ClassNotFoundException {
+      try {
+        read(new org.apache.thrift.protocol.TCompactProtocol(new org.apache.thrift.transport.TIOStreamTransport(in)));
+      } catch (org.apache.thrift.TException te) {
+        throw new java.io.IOException(te);
+      }
+    }
+
+    private static class getPersonSchedule_resultStandardSchemeFactory implements SchemeFactory {
+      public getPersonSchedule_resultStandardScheme getScheme() {
+        return new getPersonSchedule_resultStandardScheme();
+      }
+    }
+
+    private static class getPersonSchedule_resultStandardScheme extends StandardScheme<getPersonSchedule_result> {
+
+      public void read(org.apache.thrift.protocol.TProtocol iprot, getPersonSchedule_result struct) throws org.apache.thrift.TException {
+        org.apache.thrift.protocol.TField schemeField;
+        iprot.readStructBegin();
+        while (true)
+        {
+          schemeField = iprot.readFieldBegin();
+          if (schemeField.type == org.apache.thrift.protocol.TType.STOP) { 
+            break;
+          }
+          switch (schemeField.id) {
+            case 0: // SUCCESS
+              if (schemeField.type == org.apache.thrift.protocol.TType.MAP) {
+                {
+                  org.apache.thrift.protocol.TMap _map84 = iprot.readMapBegin();
+                  struct.success = new HashMap<Long,Amb>(2*_map84.size);
+                  for (int _i85 = 0; _i85 < _map84.size; ++_i85)
+                  {
+                    long _key86; // required
+                    Amb _val87; // required
+                    _key86 = iprot.readI64();
+                    _val87 = new Amb();
+                    _val87.read(iprot);
+                    struct.success.put(_key86, _val87);
+                  }
+                  iprot.readMapEnd();
+                }
+                struct.setSuccessIsSet(true);
+              } else { 
+                org.apache.thrift.protocol.TProtocolUtil.skip(iprot, schemeField.type);
+              }
+              break;
+            case 1: // NF_EXC
+              if (schemeField.type == org.apache.thrift.protocol.TType.STRUCT) {
+                struct.nfExc = new NotFoundException();
+                struct.nfExc.read(iprot);
+                struct.setNfExcIsSet(true);
+              } else { 
+                org.apache.thrift.protocol.TProtocolUtil.skip(iprot, schemeField.type);
+              }
+              break;
+            default:
+              org.apache.thrift.protocol.TProtocolUtil.skip(iprot, schemeField.type);
+          }
+          iprot.readFieldEnd();
+        }
+        iprot.readStructEnd();
+
+        // check for required fields of primitive type, which can't be checked in the validate method
+        struct.validate();
+      }
+
+      public void write(org.apache.thrift.protocol.TProtocol oprot, getPersonSchedule_result struct) throws org.apache.thrift.TException {
+        struct.validate();
+
+        oprot.writeStructBegin(STRUCT_DESC);
+        if (struct.success != null) {
+          oprot.writeFieldBegin(SUCCESS_FIELD_DESC);
+          {
+            oprot.writeMapBegin(new org.apache.thrift.protocol.TMap(org.apache.thrift.protocol.TType.I64, org.apache.thrift.protocol.TType.STRUCT, struct.success.size()));
+            for (Map.Entry<Long, Amb> _iter88 : struct.success.entrySet())
+            {
+              oprot.writeI64(_iter88.getKey());
+              _iter88.getValue().write(oprot);
+            }
+            oprot.writeMapEnd();
+          }
+          oprot.writeFieldEnd();
+        }
+        if (struct.nfExc != null) {
+          oprot.writeFieldBegin(NF_EXC_FIELD_DESC);
+          struct.nfExc.write(oprot);
+          oprot.writeFieldEnd();
+        }
+        oprot.writeFieldStop();
+        oprot.writeStructEnd();
+      }
+
+    }
+
+    private static class getPersonSchedule_resultTupleSchemeFactory implements SchemeFactory {
+      public getPersonSchedule_resultTupleScheme getScheme() {
+        return new getPersonSchedule_resultTupleScheme();
+      }
+    }
+
+    private static class getPersonSchedule_resultTupleScheme extends TupleScheme<getPersonSchedule_result> {
+
+      @Override
+      public void write(org.apache.thrift.protocol.TProtocol prot, getPersonSchedule_result struct) throws org.apache.thrift.TException {
+        TTupleProtocol oprot = (TTupleProtocol) prot;
+        BitSet optionals = new BitSet();
+        if (struct.isSetSuccess()) {
+          optionals.set(0);
+        }
+        if (struct.isSetNfExc()) {
+          optionals.set(1);
+        }
+        oprot.writeBitSet(optionals, 2);
+        if (struct.isSetSuccess()) {
+          {
+            oprot.writeI32(struct.success.size());
+            for (Map.Entry<Long, Amb> _iter89 : struct.success.entrySet())
+            {
+              oprot.writeI64(_iter89.getKey());
+              _iter89.getValue().write(oprot);
+            }
+          }
+        }
+        if (struct.isSetNfExc()) {
+          struct.nfExc.write(oprot);
+        }
+      }
+
+      @Override
+      public void read(org.apache.thrift.protocol.TProtocol prot, getPersonSchedule_result struct) throws org.apache.thrift.TException {
+        TTupleProtocol iprot = (TTupleProtocol) prot;
+        BitSet incoming = iprot.readBitSet(2);
+        if (incoming.get(0)) {
+          {
+            org.apache.thrift.protocol.TMap _map90 = new org.apache.thrift.protocol.TMap(org.apache.thrift.protocol.TType.I64, org.apache.thrift.protocol.TType.STRUCT, iprot.readI32());
+            struct.success = new HashMap<Long,Amb>(2*_map90.size);
+            for (int _i91 = 0; _i91 < _map90.size; ++_i91)
+            {
+              long _key92; // required
+              Amb _val93; // required
+              _key92 = iprot.readI64();
+              _val93 = new Amb();
+              _val93.read(iprot);
+              struct.success.put(_key92, _val93);
+            }
+          }
+          struct.setSuccessIsSet(true);
+        }
+        if (incoming.get(1)) {
+          struct.nfExc = new NotFoundException();
+          struct.nfExc.read(iprot);
+          struct.setNfExcIsSet(true);
+        }
+      }
+    }
+
+  }
+
   public static class getPatientInfo_args implements org.apache.thrift.TBase<getPatientInfo_args, getPatientInfo_args._Fields>, java.io.Serializable, Cloneable   {
     private static final org.apache.thrift.protocol.TStruct STRUCT_DESC = new org.apache.thrift.protocol.TStruct("getPatientInfo_args");
 
@@ -15216,13 +18340,13 @@ public class Communications {
             case 1: // PATIENT_IDS
               if (schemeField.type == org.apache.thrift.protocol.TType.LIST) {
                 {
-                  org.apache.thrift.protocol.TList _list76 = iprot.readListBegin();
-                  struct.patientIds = new ArrayList<Integer>(_list76.size);
-                  for (int _i77 = 0; _i77 < _list76.size; ++_i77)
+                  org.apache.thrift.protocol.TList _list94 = iprot.readListBegin();
+                  struct.patientIds = new ArrayList<Integer>(_list94.size);
+                  for (int _i95 = 0; _i95 < _list94.size; ++_i95)
                   {
-                    int _elem78; // required
-                    _elem78 = iprot.readI32();
-                    struct.patientIds.add(_elem78);
+                    int _elem96; // required
+                    _elem96 = iprot.readI32();
+                    struct.patientIds.add(_elem96);
                   }
                   iprot.readListEnd();
                 }
@@ -15250,9 +18374,9 @@ public class Communications {
           oprot.writeFieldBegin(PATIENT_IDS_FIELD_DESC);
           {
             oprot.writeListBegin(new org.apache.thrift.protocol.TList(org.apache.thrift.protocol.TType.I32, struct.patientIds.size()));
-            for (int _iter79 : struct.patientIds)
+            for (int _iter97 : struct.patientIds)
             {
-              oprot.writeI32(_iter79);
+              oprot.writeI32(_iter97);
             }
             oprot.writeListEnd();
           }
@@ -15283,9 +18407,9 @@ public class Communications {
         if (struct.isSetPatientIds()) {
           {
             oprot.writeI32(struct.patientIds.size());
-            for (int _iter80 : struct.patientIds)
+            for (int _iter98 : struct.patientIds)
             {
-              oprot.writeI32(_iter80);
+              oprot.writeI32(_iter98);
             }
           }
         }
@@ -15297,13 +18421,13 @@ public class Communications {
         BitSet incoming = iprot.readBitSet(1);
         if (incoming.get(0)) {
           {
-            org.apache.thrift.protocol.TList _list81 = new org.apache.thrift.protocol.TList(org.apache.thrift.protocol.TType.I32, iprot.readI32());
-            struct.patientIds = new ArrayList<Integer>(_list81.size);
-            for (int _i82 = 0; _i82 < _list81.size; ++_i82)
+            org.apache.thrift.protocol.TList _list99 = new org.apache.thrift.protocol.TList(org.apache.thrift.protocol.TType.I32, iprot.readI32());
+            struct.patientIds = new ArrayList<Integer>(_list99.size);
+            for (int _i100 = 0; _i100 < _list99.size; ++_i100)
             {
-              int _elem83; // required
-              _elem83 = iprot.readI32();
-              struct.patientIds.add(_elem83);
+              int _elem101; // required
+              _elem101 = iprot.readI32();
+              struct.patientIds.add(_elem101);
             }
           }
           struct.setPatientIdsIsSet(true);
@@ -15781,16 +18905,16 @@ public class Communications {
             case 0: // SUCCESS
               if (schemeField.type == org.apache.thrift.protocol.TType.MAP) {
                 {
-                  org.apache.thrift.protocol.TMap _map84 = iprot.readMapBegin();
-                  struct.success = new HashMap<Integer,PatientInfo>(2*_map84.size);
-                  for (int _i85 = 0; _i85 < _map84.size; ++_i85)
+                  org.apache.thrift.protocol.TMap _map102 = iprot.readMapBegin();
+                  struct.success = new HashMap<Integer,PatientInfo>(2*_map102.size);
+                  for (int _i103 = 0; _i103 < _map102.size; ++_i103)
                   {
-                    int _key86; // required
-                    PatientInfo _val87; // required
-                    _key86 = iprot.readI32();
-                    _val87 = new PatientInfo();
-                    _val87.read(iprot);
-                    struct.success.put(_key86, _val87);
+                    int _key104; // required
+                    PatientInfo _val105; // required
+                    _key104 = iprot.readI32();
+                    _val105 = new PatientInfo();
+                    _val105.read(iprot);
+                    struct.success.put(_key104, _val105);
                   }
                   iprot.readMapEnd();
                 }
@@ -15836,10 +18960,10 @@ public class Communications {
           oprot.writeFieldBegin(SUCCESS_FIELD_DESC);
           {
             oprot.writeMapBegin(new org.apache.thrift.protocol.TMap(org.apache.thrift.protocol.TType.I32, org.apache.thrift.protocol.TType.STRUCT, struct.success.size()));
-            for (Map.Entry<Integer, PatientInfo> _iter88 : struct.success.entrySet())
+            for (Map.Entry<Integer, PatientInfo> _iter106 : struct.success.entrySet())
             {
-              oprot.writeI32(_iter88.getKey());
-              _iter88.getValue().write(oprot);
+              oprot.writeI32(_iter106.getKey());
+              _iter106.getValue().write(oprot);
             }
             oprot.writeMapEnd();
           }
@@ -15886,10 +19010,10 @@ public class Communications {
         if (struct.isSetSuccess()) {
           {
             oprot.writeI32(struct.success.size());
-            for (Map.Entry<Integer, PatientInfo> _iter89 : struct.success.entrySet())
+            for (Map.Entry<Integer, PatientInfo> _iter107 : struct.success.entrySet())
             {
-              oprot.writeI32(_iter89.getKey());
-              _iter89.getValue().write(oprot);
+              oprot.writeI32(_iter107.getKey());
+              _iter107.getValue().write(oprot);
             }
           }
         }
@@ -15907,16 +19031,16 @@ public class Communications {
         BitSet incoming = iprot.readBitSet(3);
         if (incoming.get(0)) {
           {
-            org.apache.thrift.protocol.TMap _map90 = new org.apache.thrift.protocol.TMap(org.apache.thrift.protocol.TType.I32, org.apache.thrift.protocol.TType.STRUCT, iprot.readI32());
-            struct.success = new HashMap<Integer,PatientInfo>(2*_map90.size);
-            for (int _i91 = 0; _i91 < _map90.size; ++_i91)
+            org.apache.thrift.protocol.TMap _map108 = new org.apache.thrift.protocol.TMap(org.apache.thrift.protocol.TType.I32, org.apache.thrift.protocol.TType.STRUCT, iprot.readI32());
+            struct.success = new HashMap<Integer,PatientInfo>(2*_map108.size);
+            for (int _i109 = 0; _i109 < _map108.size; ++_i109)
             {
-              int _key92; // required
-              PatientInfo _val93; // required
-              _key92 = iprot.readI32();
-              _val93 = new PatientInfo();
-              _val93.read(iprot);
-              struct.success.put(_key92, _val93);
+              int _key110; // required
+              PatientInfo _val111; // required
+              _key110 = iprot.readI32();
+              _val111 = new PatientInfo();
+              _val111.read(iprot);
+              struct.success.put(_key110, _val111);
             }
           }
           struct.setSuccessIsSet(true);
@@ -16674,14 +19798,14 @@ public class Communications {
             case 0: // SUCCESS
               if (schemeField.type == org.apache.thrift.protocol.TType.LIST) {
                 {
-                  org.apache.thrift.protocol.TList _list94 = iprot.readListBegin();
-                  struct.success = new ArrayList<Contact>(_list94.size);
-                  for (int _i95 = 0; _i95 < _list94.size; ++_i95)
+                  org.apache.thrift.protocol.TList _list112 = iprot.readListBegin();
+                  struct.success = new ArrayList<Contact>(_list112.size);
+                  for (int _i113 = 0; _i113 < _list112.size; ++_i113)
                   {
-                    Contact _elem96; // required
-                    _elem96 = new Contact();
-                    _elem96.read(iprot);
-                    struct.success.add(_elem96);
+                    Contact _elem114; // required
+                    _elem114 = new Contact();
+                    _elem114.read(iprot);
+                    struct.success.add(_elem114);
                   }
                   iprot.readListEnd();
                 }
@@ -16718,9 +19842,9 @@ public class Communications {
           oprot.writeFieldBegin(SUCCESS_FIELD_DESC);
           {
             oprot.writeListBegin(new org.apache.thrift.protocol.TList(org.apache.thrift.protocol.TType.STRUCT, struct.success.size()));
-            for (Contact _iter97 : struct.success)
+            for (Contact _iter115 : struct.success)
             {
-              _iter97.write(oprot);
+              _iter115.write(oprot);
             }
             oprot.writeListEnd();
           }
@@ -16759,9 +19883,9 @@ public class Communications {
         if (struct.isSetSuccess()) {
           {
             oprot.writeI32(struct.success.size());
-            for (Contact _iter98 : struct.success)
+            for (Contact _iter116 : struct.success)
             {
-              _iter98.write(oprot);
+              _iter116.write(oprot);
             }
           }
         }
@@ -16776,14 +19900,14 @@ public class Communications {
         BitSet incoming = iprot.readBitSet(2);
         if (incoming.get(0)) {
           {
-            org.apache.thrift.protocol.TList _list99 = new org.apache.thrift.protocol.TList(org.apache.thrift.protocol.TType.STRUCT, iprot.readI32());
-            struct.success = new ArrayList<Contact>(_list99.size);
-            for (int _i100 = 0; _i100 < _list99.size; ++_i100)
+            org.apache.thrift.protocol.TList _list117 = new org.apache.thrift.protocol.TList(org.apache.thrift.protocol.TType.STRUCT, iprot.readI32());
+            struct.success = new ArrayList<Contact>(_list117.size);
+            for (int _i118 = 0; _i118 < _list117.size; ++_i118)
             {
-              Contact _elem101; // required
-              _elem101 = new Contact();
-              _elem101.read(iprot);
-              struct.success.add(_elem101);
+              Contact _elem119; // required
+              _elem119 = new Contact();
+              _elem119.read(iprot);
+              struct.success.add(_elem119);
             }
           }
           struct.setSuccessIsSet(true);
@@ -17536,14 +20660,14 @@ public class Communications {
             case 0: // SUCCESS
               if (schemeField.type == org.apache.thrift.protocol.TType.LIST) {
                 {
-                  org.apache.thrift.protocol.TList _list102 = iprot.readListBegin();
-                  struct.success = new ArrayList<OrgStructuresProperties>(_list102.size);
-                  for (int _i103 = 0; _i103 < _list102.size; ++_i103)
+                  org.apache.thrift.protocol.TList _list120 = iprot.readListBegin();
+                  struct.success = new ArrayList<OrgStructuresProperties>(_list120.size);
+                  for (int _i121 = 0; _i121 < _list120.size; ++_i121)
                   {
-                    OrgStructuresProperties _elem104; // required
-                    _elem104 = new OrgStructuresProperties();
-                    _elem104.read(iprot);
-                    struct.success.add(_elem104);
+                    OrgStructuresProperties _elem122; // required
+                    _elem122 = new OrgStructuresProperties();
+                    _elem122.read(iprot);
+                    struct.success.add(_elem122);
                   }
                   iprot.readListEnd();
                 }
@@ -17580,9 +20704,9 @@ public class Communications {
           oprot.writeFieldBegin(SUCCESS_FIELD_DESC);
           {
             oprot.writeListBegin(new org.apache.thrift.protocol.TList(org.apache.thrift.protocol.TType.STRUCT, struct.success.size()));
-            for (OrgStructuresProperties _iter105 : struct.success)
+            for (OrgStructuresProperties _iter123 : struct.success)
             {
-              _iter105.write(oprot);
+              _iter123.write(oprot);
             }
             oprot.writeListEnd();
           }
@@ -17621,9 +20745,9 @@ public class Communications {
         if (struct.isSetSuccess()) {
           {
             oprot.writeI32(struct.success.size());
-            for (OrgStructuresProperties _iter106 : struct.success)
+            for (OrgStructuresProperties _iter124 : struct.success)
             {
-              _iter106.write(oprot);
+              _iter124.write(oprot);
             }
           }
         }
@@ -17638,14 +20762,14 @@ public class Communications {
         BitSet incoming = iprot.readBitSet(2);
         if (incoming.get(0)) {
           {
-            org.apache.thrift.protocol.TList _list107 = new org.apache.thrift.protocol.TList(org.apache.thrift.protocol.TType.STRUCT, iprot.readI32());
-            struct.success = new ArrayList<OrgStructuresProperties>(_list107.size);
-            for (int _i108 = 0; _i108 < _list107.size; ++_i108)
+            org.apache.thrift.protocol.TList _list125 = new org.apache.thrift.protocol.TList(org.apache.thrift.protocol.TType.STRUCT, iprot.readI32());
+            struct.success = new ArrayList<OrgStructuresProperties>(_list125.size);
+            for (int _i126 = 0; _i126 < _list125.size; ++_i126)
             {
-              OrgStructuresProperties _elem109; // required
-              _elem109 = new OrgStructuresProperties();
-              _elem109.read(iprot);
-              struct.success.add(_elem109);
+              OrgStructuresProperties _elem127; // required
+              _elem127 = new OrgStructuresProperties();
+              _elem127.read(iprot);
+              struct.success.add(_elem127);
             }
           }
           struct.setSuccessIsSet(true);
@@ -19397,14 +22521,14 @@ public class Communications {
             case 0: // SUCCESS
               if (schemeField.type == org.apache.thrift.protocol.TType.LIST) {
                 {
-                  org.apache.thrift.protocol.TList _list110 = iprot.readListBegin();
-                  struct.success = new ArrayList<Queue>(_list110.size);
-                  for (int _i111 = 0; _i111 < _list110.size; ++_i111)
+                  org.apache.thrift.protocol.TList _list128 = iprot.readListBegin();
+                  struct.success = new ArrayList<Queue>(_list128.size);
+                  for (int _i129 = 0; _i129 < _list128.size; ++_i129)
                   {
-                    Queue _elem112; // required
-                    _elem112 = new Queue();
-                    _elem112.read(iprot);
-                    struct.success.add(_elem112);
+                    Queue _elem130; // required
+                    _elem130 = new Queue();
+                    _elem130.read(iprot);
+                    struct.success.add(_elem130);
                   }
                   iprot.readListEnd();
                 }
@@ -19450,9 +22574,9 @@ public class Communications {
           oprot.writeFieldBegin(SUCCESS_FIELD_DESC);
           {
             oprot.writeListBegin(new org.apache.thrift.protocol.TList(org.apache.thrift.protocol.TType.STRUCT, struct.success.size()));
-            for (Queue _iter113 : struct.success)
+            for (Queue _iter131 : struct.success)
             {
-              _iter113.write(oprot);
+              _iter131.write(oprot);
             }
             oprot.writeListEnd();
           }
@@ -19499,9 +22623,9 @@ public class Communications {
         if (struct.isSetSuccess()) {
           {
             oprot.writeI32(struct.success.size());
-            for (Queue _iter114 : struct.success)
+            for (Queue _iter132 : struct.success)
             {
-              _iter114.write(oprot);
+              _iter132.write(oprot);
             }
           }
         }
@@ -19519,14 +22643,14 @@ public class Communications {
         BitSet incoming = iprot.readBitSet(3);
         if (incoming.get(0)) {
           {
-            org.apache.thrift.protocol.TList _list115 = new org.apache.thrift.protocol.TList(org.apache.thrift.protocol.TType.STRUCT, iprot.readI32());
-            struct.success = new ArrayList<Queue>(_list115.size);
-            for (int _i116 = 0; _i116 < _list115.size; ++_i116)
+            org.apache.thrift.protocol.TList _list133 = new org.apache.thrift.protocol.TList(org.apache.thrift.protocol.TType.STRUCT, iprot.readI32());
+            struct.success = new ArrayList<Queue>(_list133.size);
+            for (int _i134 = 0; _i134 < _list133.size; ++_i134)
             {
-              Queue _elem117; // required
-              _elem117 = new Queue();
-              _elem117.read(iprot);
-              struct.success.add(_elem117);
+              Queue _elem135; // required
+              _elem135 = new Queue();
+              _elem135.read(iprot);
+              struct.success.add(_elem135);
             }
           }
           struct.setSuccessIsSet(true);
@@ -21295,14 +24419,14 @@ public class Communications {
             case 0: // SUCCESS
               if (schemeField.type == org.apache.thrift.protocol.TType.LIST) {
                 {
-                  org.apache.thrift.protocol.TList _list118 = iprot.readListBegin();
-                  struct.success = new ArrayList<Speciality>(_list118.size);
-                  for (int _i119 = 0; _i119 < _list118.size; ++_i119)
+                  org.apache.thrift.protocol.TList _list136 = iprot.readListBegin();
+                  struct.success = new ArrayList<Speciality>(_list136.size);
+                  for (int _i137 = 0; _i137 < _list136.size; ++_i137)
                   {
-                    Speciality _elem120; // required
-                    _elem120 = new Speciality();
-                    _elem120.read(iprot);
-                    struct.success.add(_elem120);
+                    Speciality _elem138; // required
+                    _elem138 = new Speciality();
+                    _elem138.read(iprot);
+                    struct.success.add(_elem138);
                   }
                   iprot.readListEnd();
                 }
@@ -21339,9 +24463,9 @@ public class Communications {
           oprot.writeFieldBegin(SUCCESS_FIELD_DESC);
           {
             oprot.writeListBegin(new org.apache.thrift.protocol.TList(org.apache.thrift.protocol.TType.STRUCT, struct.success.size()));
-            for (Speciality _iter121 : struct.success)
+            for (Speciality _iter139 : struct.success)
             {
-              _iter121.write(oprot);
+              _iter139.write(oprot);
             }
             oprot.writeListEnd();
           }
@@ -21380,9 +24504,9 @@ public class Communications {
         if (struct.isSetSuccess()) {
           {
             oprot.writeI32(struct.success.size());
-            for (Speciality _iter122 : struct.success)
+            for (Speciality _iter140 : struct.success)
             {
-              _iter122.write(oprot);
+              _iter140.write(oprot);
             }
           }
         }
@@ -21397,14 +24521,14 @@ public class Communications {
         BitSet incoming = iprot.readBitSet(2);
         if (incoming.get(0)) {
           {
-            org.apache.thrift.protocol.TList _list123 = new org.apache.thrift.protocol.TList(org.apache.thrift.protocol.TType.STRUCT, iprot.readI32());
-            struct.success = new ArrayList<Speciality>(_list123.size);
-            for (int _i124 = 0; _i124 < _list123.size; ++_i124)
+            org.apache.thrift.protocol.TList _list141 = new org.apache.thrift.protocol.TList(org.apache.thrift.protocol.TType.STRUCT, iprot.readI32());
+            struct.success = new ArrayList<Speciality>(_list141.size);
+            for (int _i142 = 0; _i142 < _list141.size; ++_i142)
             {
-              Speciality _elem125; // required
-              _elem125 = new Speciality();
-              _elem125.read(iprot);
-              struct.success.add(_elem125);
+              Speciality _elem143; // required
+              _elem143 = new Speciality();
+              _elem143.read(iprot);
+              struct.success.add(_elem143);
             }
           }
           struct.setSuccessIsSet(true);

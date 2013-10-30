@@ -15,8 +15,10 @@ import ru.korus.tmis.communication.thriftgen.OrgStructure;
 import ru.korus.tmis.communication.thriftgen.Queue;
 import ru.korus.tmis.communication.thriftgen.Speciality;
 import ru.korus.tmis.core.database.*;
+import ru.korus.tmis.core.database.epgu.EPGUTicketBeanLocal;
 import ru.korus.tmis.core.entity.model.*;
 import ru.korus.tmis.core.entity.model.Patient;
+import ru.korus.tmis.core.entity.model.communication.QueueTicket;
 import ru.korus.tmis.core.exception.CoreException;
 
 import javax.ejb.EJBException;
@@ -49,6 +51,8 @@ public class CommServer implements Communications.Iface {
     private static DbRbDocumentTypeBeanLocal documentTypeBean;
     private static DbClientPolicyBeanLocal policyBean;
     private static DbRbPolicyTypeBeanLocal policyTypeBean;
+    //////////////////////////////////////////////////////////
+    private static EPGUTicketBeanLocal queueTicketBean;
 
     //Singleton instance
     private static CommServer instance;
@@ -245,7 +249,7 @@ public class CommServer implements Communications.Iface {
                 throw new NotFoundException().setError_msg("Doctor not found by ID=" + params.getPersonId());
             }
             if (personAction == null) {
-                logger.error("#" + currentRequestNum + "Exception while getting actions for PersonID=" + params.getPersonId());
+                logger.error("End of #" + currentRequestNum + " Exception while getting actions for PersonID=" + params.getPersonId());
                 throw new NotFoundException()
                         .setError_msg("Error during the preparation of action associated with inspection by the doctor. Doctor ID ="
                                 + params.getPersonId());
@@ -254,7 +258,7 @@ public class CommServer implements Communications.Iface {
             logger.error("if reach this point, then all is too hard to understand why =(", e);
             throw new TException("UNKNOWN EXCEPTION.");
         } catch (EJBException e) {
-            logger.error("#" + currentRequestNum + " Doctor not found by ID=" + params.getPersonId(), e);
+            logger.error("End of #" + currentRequestNum + " Doctor not found by ID=" + params.getPersonId(), e);
             throw new NotFoundException().setError_msg("Doctor not found by ID=" + params.getPersonId());
         }
 
@@ -262,7 +266,7 @@ public class CommServer implements Communications.Iface {
         // [причина отсутствия выбирается внутри получения ограничений]
         //  то делаем выборку ограничений $constraints = _getQuotingByTimeConstraints
         List<QuotingByTime> constraints = getPersonConstraints(doctor, paramsDate, params.getHospitalUidFrom());
-        logger.debug("#{} Constraints={}", currentRequestNum, constraints);
+        logger.debug("Constraints={}", constraints);
 
         //4. Выборка талончиков:
         Amb result = new Amb();
@@ -293,7 +297,6 @@ public class CommServer implements Communications.Iface {
         for (Ticket currentTicket : ticketList) {
             int available = 0;
             for (QuotingByTime qbt : constraints) {
-
                 if (qbt.getQuotingTimeStart().getTime() != 0 && qbt.getQuotingTimeEnd().getTime() != 0) {
                     long qbtStartTime = DateConvertions.convertDateToUTCMilliseconds(qbt.getQuotingTimeStart());
                     long qbtEndTime = DateConvertions.convertDateToUTCMilliseconds(qbt.getQuotingTimeEnd());
@@ -331,12 +334,9 @@ public class CommServer implements Communications.Iface {
             logger.warn("Timeline action doesnt exists");
         }
         if (timelineAction == null) {
-            final QuotingType quotingType;
-            if (!hospitalUidFrom.isEmpty()) quotingType = QuotingType.FROM_OTHER_LPU;
-            else quotingType = QuotingType.FROM_PORTAL;
-
+            final QuotingType quotingType =
+                    !hospitalUidFrom.isEmpty() ? QuotingType.FROM_OTHER_LPU : QuotingType.FROM_PORTAL;
             final List<QuotingByTime> constraints = quotingByTimeBean.getQuotingByTimeConstraints(person.getId(), constraintDate, quotingType.getValue());
-
             if (logger.isDebugEnabled()) {
                 for (QuotingByTime qbt : constraints) {
                     logger.debug("QuotingByTime [Id={}, Person={}, DATE={}, START={}, END={}, TYPE={}]",
@@ -347,7 +347,6 @@ public class CommServer implements Communications.Iface {
             }
             return constraints;
         }
-
         return new ArrayList<QuotingByTime>(0);
     }
 
@@ -1090,6 +1089,182 @@ public class CommServer implements Communications.Iface {
     }
 
     /**
+     * Запрос на список талончиков, которые появились с момента последнего запроса
+     * (для поиска записей на прием к врачу созданных не через КС)
+     *
+     * @return Список новых талончиков или пустой список, если таких талончиков не найдено то пустой список
+     */
+    @Override
+    public List<QueueCoupon> checkForNewQueueCoupons() throws TException {
+        final int currentRequestNum = ++requestNum;
+        logger.info("#{} Call method -> CommServer.checkForNewQueueCoupons()", currentRequestNum);
+        final List<QueueCoupon> result = new ArrayList<QueueCoupon>();
+        final List<QueueTicket> databaseChangeList = queueTicketBean.pullDatabase();
+        //        Если изменений нету
+        if(databaseChangeList.isEmpty()){
+            logger.info("End of #{} checkForNewQueueCoupons. Empty changelist", currentRequestNum);
+            return result;
+        } else if(logger.isDebugEnabled()){
+            logger.debug("Database changeList size={}. DATA:", databaseChangeList.size());
+            for(QueueTicket currentTicket : databaseChangeList){
+                logger.debug(currentTicket.getInfoString());
+            }
+        }
+        for (QueueTicket currentQueueCoupon : databaseChangeList) {
+            result.add(ParserToThriftStruct.parseQueueCoupon(currentQueueCoupon));
+            queueTicketBean.changeStatus(currentQueueCoupon, QueueTicket.Status.SENDED);
+        }
+        logger.info("End of #{} checkForNewQueueCoupons. Result is {}", currentRequestNum, result);
+        return result;
+    }
+
+    @Override
+    public FreeTicket getFirstFreeTicket(final int personId, final long dateTime, final String hospitalUidFrom) throws NotFoundException, TException {
+        final int currentRequestNum = ++requestNum;
+        logger.info("#{} Call method -> CommServer.getFirstFreeTicket(personId={}, dateTime={}, hospitalUidFrom={})",
+                currentRequestNum, personId, dateTime, hospitalUidFrom);
+        final Staff doctor;
+        try {
+            doctor = staffBean.getStaffById(personId);
+        } catch (CoreException e) {
+            logger.error("End of #{}.Doctor not found by ID={}", currentRequestNum, personId);
+            throw new NotFoundException().setError_msg("Doctor not found by ID=" + personId);
+        } catch (EJBException e) {
+            logger.error("End of #{}.Doctor not found by ID={}", currentRequestNum, personId);
+            throw new NotFoundException().setError_msg("Doctor not found by ID=" + personId);
+        }
+        final Date begDate = DateConvertions.convertUTCMillisecondsToLocalDate(dateTime);
+        final Date endDate = new DateMidnight(begDate).plusMonths(1).toDate();
+        logger.debug("From {} to {}.", begDate, endDate);
+        List<Action> doctorActions = staffBean.getPersonShedule(doctor.getId(), begDate, endDate);
+        logger.debug("Ambulatory Actions count = {}. DATA:", doctorActions.size());
+        for (Action currentAction : doctorActions) {
+            if (logger.isDebugEnabled()) {
+                logger.debug("ACTION [ ID={} DOCTOR={} {} {}, ACT_TYPE={}, EVENT={}, EVENTDATE={}, NOTE={}]",
+                        currentAction.getId(),
+                        doctor.getLastName(), doctor.getFirstName(), doctor.getPatrName(),
+                        currentAction.getActionType().getName(),
+                        currentAction.getEvent().getId(),
+                        currentAction.getEvent().getSetDate(),
+                        currentAction.getNote()
+                );
+                try {
+                    final Amb currentAmb = getAmbInfo(currentAction, (short) 0);
+                    //3. Если есть actionId и отсутствует «Причина отсутствия» (т.е. врач на месте)
+                    // [причина отсутствия выбирается внутри получения ограничений]
+                    //  то делаем выборку ограничений $constraints = _getQuotingByTimeConstraints
+                    final List<QuotingByTime> constraints = getPersonConstraints(
+                            doctor,
+                            currentAction.getEvent().getSetDate(),
+                            hospitalUidFrom
+                    );
+                    logger.debug("Constraints={}", constraints);
+                    takeConstraintsOnTickets(constraints, currentAmb.getTickets());
+                    Iterator<Ticket> iterator = currentAmb.getTicketsIterator();
+                    while (iterator.hasNext()) {
+                        Ticket currentTicket = iterator.next();
+                        if (currentTicket.getFree() == 1
+                                && (dateTime - currentAction.getEvent().getSetDate().getTime()) <= currentTicket.getTime()) {
+                            final FreeTicket result = new FreeTicket();
+                            result.setOffice(currentAmb.getOffice());
+                            final long eventDate = DateConvertions.convertDateToUTCMilliseconds(currentAction.getEvent().getSetDate());
+                            result.setBegDateTime(eventDate + currentTicket.getTime());
+                            if (iterator.hasNext()) {
+                                result.setEndDateTime(eventDate + iterator.next().getTime());
+                            } else {
+                                result.setEndDateTime(eventDate + currentAmb.getEndTime());
+                            }
+                            result.setPersonId(personId);
+                            logger.info("End of #{}. Return {} as result", currentRequestNum, result);
+                            return result;
+                        }
+                    }
+                } catch (CoreException e) {
+                    logger.debug("Skip this action.");
+                    continue;
+                }
+            }
+        }
+        logger.info("End of #{} getFirstFreeTicket. No one is founded", currentRequestNum);
+        throw new NotFoundException().setError_msg("No free ticket founded.");
+    }
+
+    /**
+     * Метод для получения расписания врача пачкой
+     *
+     * @param personId        1)Идетификатор врача
+     * @param begDate         2)Дата начала периода за который получаем расписание
+     * @param endDate         3)Дата окончания периода за который получаем расписание
+     * @param hospitalUidFrom 4)Идентификатор ЛПУ из которого производится запись
+     * @return map<timestamp, Amb> - карта вида <[Дата приема], [Расписание на эту дату]>,
+     *         в случае отсутствия расписания на указанную дату набор ключ-значение опускается
+     * @throws NotFoundException когда нету такого идентификатора врача
+     */
+    @Override
+    public Map<Long, Amb> getPersonSchedule(final int personId, final long begDate, final long endDate, final String hospitalUidFrom)
+            throws NotFoundException, TException {
+        final int currentRequestNum = ++requestNum;
+        logger.info("#{} Call method -> CommServer.getPersonSchedule(personId={}, begDate={}, endDate={})",
+                currentRequestNum, personId, begDate, endDate);
+        final Staff doctor;
+        try {
+            doctor = staffBean.getStaffById(personId);
+            if (logger.isDebugEnabled()) {
+                logger.debug("Requested doctor: {}", doctor.getInfoString());
+            }
+        } catch (CoreException e) {
+            logger.error("End of #{}. Doctor not found by ID={}", currentRequestNum, personId);
+            throw new NotFoundException().setError_msg("Doctor not found by ID=" + personId);
+        } catch (EJBException e) {
+            logger.error("End of #{}. Doctor not found by ID={}", currentRequestNum, personId);
+            throw new NotFoundException().setError_msg("Doctor not found by ID=" + personId);
+        }
+        final Date begInterval = DateConvertions.convertUTCMillisecondsToLocalDate(begDate);
+        final Date endInterval = DateConvertions.convertUTCMillisecondsToLocalDate(endDate);
+        logger.debug("From [{}] to [{}]", begInterval, endInterval);
+        final List<Action> shedule = staffBean.getPersonShedule(personId, begInterval, endInterval);
+        if (shedule.isEmpty()) {
+            logger.info("End of #{}. Person[{}] has no one ambulatoryAction in this interval", currentRequestNum, personId);
+            return new HashMap<Long, Amb>(0);
+        } else if (logger.isDebugEnabled()) {
+            for (Action currentAction : shedule) {
+                logger.debug("ACTION [ ID={} DOCTOR={} {} {}, ACT_TYPE={}, EVENT={}, EVENTDATE={}, NOTE={}]",
+                        currentAction.getId(),
+                        doctor.getLastName(), doctor.getFirstName(), doctor.getPatrName(),
+                        currentAction.getActionType().getName(),
+                        currentAction.getEvent().getId(),
+                        currentAction.getEvent().getSetDate(),
+                        currentAction.getNote()
+                );
+            }
+        }
+        final Map<Long, Amb> result = new HashMap<Long, Amb>(shedule.size());
+        for (Action currentAction : shedule) {
+            //3. Если есть actionId и отсутствует «Причина отсутствия» (т.е. врач на месте)
+            // [причина отсутствия выбирается внутри получения ограничений]
+            //  то делаем выборку ограничений $constraints = _getQuotingByTimeConstraints
+            List<QuotingByTime> constraints = getPersonConstraints(doctor, currentAction.getEvent().getSetDate(), hospitalUidFrom);
+            logger.debug("#{} Constraints={}", currentRequestNum, constraints);
+            final Amb currentAmb;
+            try {
+                if (constraints.size() == 0) {
+                    currentAmb = getAmbInfo(currentAction, doctor.getExternalQuota());
+                } else {
+                    //4.1. Если обнаружены ограничения, то производим полную выборку $vResult = _getAmbInfo(actionId, -1)
+                    // и осуществляем преобразование результата, согласно ограничениям:
+                    currentAmb = getAmbInfo(currentAction, (short) -1);
+                    takeConstraintsOnTickets(constraints, currentAmb.getTickets());
+                }
+            } catch (CoreException e) {
+                logger.error("getAmbInfo failed!", e);
+                continue;
+            }
+            result.put(DateConvertions.convertDateToUTCMilliseconds(currentAction.getEvent().getSetDate()), currentAmb);
+        }
+        return result;
+    }
+
+    /**
      * Получение информации о пациентах по их идентификаторам
      *
      * @param patientIds Список идентификаторов пациентов
@@ -1138,10 +1313,8 @@ public class CommServer implements Communications.Iface {
     public EnqueuePatientStatus enqueuePatient(final EnqueuePatientParameters params) throws TException {
         final int currentRequestNum = ++requestNum;
         final DateTime paramsDateTime = new DateTime(params.getDateTime(), DateTimeZone.UTC);
-        logger.info("#{} Call method -> CommServer.enqueuePatient( DOCTOR_ID={} PATIENT_ID={} DATE=[{}] MILLIS={} )",
-                currentRequestNum, params.getPersonId(), params.getPatientId(), paramsDateTime, params.getDateTime());
-        logger.info("RECIEVED PARAMS IS {}", params.toString());
-
+        logger.info("#{} Call method -> CommServer.enqueuePatient( {} )",
+                currentRequestNum, params);
         ru.korus.tmis.core.entity.model.Patient patient = null;
         Staff person = null;
         // Получаем ActionId:
@@ -1971,6 +2144,10 @@ public class CommServer implements Communications.Iface {
         CommServer.policyTypeBean = policyTypeBean;
     }
 
+    public static void setQueueTicketBean(EPGUTicketBeanLocal queueTicketBean) {
+        CommServer.queueTicketBean = queueTicketBean;
+    }
+
     public void endWork() {
         logger.warn("CommServer start closing");
         logger.info("Total request served={}", requestNum);
@@ -1981,12 +2158,14 @@ public class CommServer implements Communications.Iface {
         communicationListener.interrupt();
         if (communicationListener.isInterrupted()) {
             logger.warn("ServerThread is interrupted successfully");
+            logger.debug("He is dead! So we know this thread as a very good thread, he process requests well, works all day long from sunrise to sunset. Rest in peace.");
         }
         if (communicationListener.isAlive()) {
             try {
                 logger.error("Wait for a second to Thread interrupt");
                 communicationListener.join(1000);
             } catch (InterruptedException e) {
+                logger.error("He is dead! So we know this thread as a very good thread, he process requests well, works all day long from sunrise to sunset. Rest in peace.");
             }
             if (communicationListener.isAlive()) {
                 logger.error("ServerThread is STILL ALIVE?! Setting MinimalPriority to the Thread");

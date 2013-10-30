@@ -3,6 +3,7 @@ package ru.korus.tmis.communication;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import ru.korus.tmis.core.database.*;
+import ru.korus.tmis.core.database.epgu.EPGUTicketBeanLocal;
 
 import javax.annotation.PostConstruct;
 import javax.annotation.PreDestroy;
@@ -52,6 +53,8 @@ public class CommunicationServerBean {
     @EJB(beanName = "DbRbPolicyTypeBean")
     private DbRbPolicyTypeBeanLocal dbRbPolicyTypeBeanLocal = null;
 
+    @EJB(beanName = "EPGUTicketBean")
+    private EPGUTicketBeanLocal  ticketBeanLocal = null;
 
     private CommServer server = null;
 
@@ -75,6 +78,7 @@ public class CommunicationServerBean {
             CommServer.setDocumentTypeBean(dbRbDocumentTypeBeanLocal);
             CommServer.setPolicyBean(dbClientPolicyBeanLocal);
             CommServer.setPolicyTypeBean(dbRbPolicyTypeBeanLocal);
+            CommServer.setQueueTicketBean(ticketBeanLocal);
             server.startService();
         } catch (Exception exception) {
             logger.error("Exception while initialize CommunicationBean", exception);
