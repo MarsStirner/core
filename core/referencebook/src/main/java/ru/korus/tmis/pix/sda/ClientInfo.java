@@ -173,8 +173,8 @@ public class ClientInfo {
                         }
                         if (street != null) {
                             addrStreet =
-                                    street.getOcatd() + "." + street.getName() + ("".equals(addrHouse.getNumber()) ? "" : addrHouse.getNumber())
-                                            + addrHouse.getCorpus();
+                                    street.getSocr() + "." + street.getName() + ("".equals(addrHouse.getNumber()) ? "" : (" д." + addrHouse.getNumber()))
+                                            + ("".equals(addrHouse.getCorpus()) ? "" : (" корп." + addrHouse.getCorpus()));
                             addrZip = street.getIndex();
                         }
                     }
@@ -239,8 +239,8 @@ public class ClientInfo {
     private ClientContact getContact(Patient client, String type) {
         List<ClientContact> docs = client.getClientContacts();
         for (ClientContact contact : docs) {
-            if (contact.isDeleted() &&
-                    contact.getContactType().getCode().equals(type))
+            if (contact.isDeleted() && contact.getContactType() != null &&
+                    type.equals(contact.getContactType().getCode()))
                 return contact;
         }
         return null;

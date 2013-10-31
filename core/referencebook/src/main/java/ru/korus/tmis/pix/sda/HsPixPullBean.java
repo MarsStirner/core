@@ -17,14 +17,16 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import ru.korus.tmis.core.database.DbActionPropertyBeanLocal;
+import ru.korus.tmis.core.database.DbOrganizationBeanLocal;
 import ru.korus.tmis.core.database.DbSchemeKladrBeanLocal;
-import ru.korus.tmis.core.entity.model.Action;
+import ru.korus.tmis.core.entity.model.*;import ru.korus.tmis.core.entity.model.Action;
 import ru.korus.tmis.core.entity.model.ActionType;
 import ru.korus.tmis.core.entity.model.ClientAllergy;
 import ru.korus.tmis.core.entity.model.Diagnostic;
 import ru.korus.tmis.core.entity.model.Event;
 import ru.korus.tmis.core.entity.model.HSIntegration;
 import ru.korus.tmis.core.entity.model.PatientsToHs;
+import ru.korus.tmis.core.exception.CoreException;
 import ru.korus.tmis.pix.sda.ws.SDASoapServiceService;
 import ru.korus.tmis.pix.sda.ws.SDASoapServiceServiceSoap;
 import ru.korus.tmis.util.ConfigManager;
@@ -51,7 +53,10 @@ public class HsPixPullBean {
     DbActionPropertyBeanLocal dbActionPropertyBeanLocal;
 
     @EJB
-    DbSchemeKladrBeanLocal dbSchemeKladrBeanLocal;
+    DbSchemeKladrBeanLocal dbSchemeKladrBeanLocal;private String defOrgName;
+
+    @EJB
+    DbOrganizationBeanLocal organizationBeanLocal;
 
     @Schedule(hour = "*", minute = "*", second = "30")
     void pullDb() {
@@ -90,7 +95,7 @@ public class HsPixPullBean {
 
     /**
      * @param port
-     * 
+     *
      */
     private void sendPatientsInfo(SDASoapServiceServiceSoap port) {
         List<PatientsToHs> patientsToHs = em.
@@ -98,6 +103,7 @@ public class HsPixPullBean {
                 .setParameter("now", new Timestamp((new Date()).getTime())).getResultList();
         for (PatientsToHs patientToHs : patientsToHs) {
             try {
+                logger.info("HS integration processing PatientsToHs.patientId = {}", patientToHs.getPatientId());
                 int errCount = patientToHs.getErrCount();
                 long step = 89 * 1000; // время до слейдующей попытки передачи данных
                 patientToHs.setErrCount(errCount + 1);
@@ -105,7 +111,7 @@ public class HsPixPullBean {
                 final LinkedList<AllergyInfo> emptyAllergy = new LinkedList<AllergyInfo>();
                 List<DiagnosisInfo> emptyDiag = new LinkedList<DiagnosisInfo>();
                 List<EpicrisisInfo> emptyEpi = new LinkedList<EpicrisisInfo>();
-                port.sendSDA(PixInfo.toSda(new ClientInfo(patientToHs.getPatient(), dbSchemeKladrBeanLocal), null, emptyAllergy, emptyDiag, emptyEpi));
+                port.sendSDA(PixInfo.toSda(new ClientInfo(patientToHs.getPatient(), dbSchemeKladrBeanLocal), new EventInfo(getDefOrgName()), emptyAllergy, emptyDiag, emptyEpi));
                 em.remove(patientToHs);
             } catch (SOAPFaultException ex) {
                 patientToHs.setInfo(ex.getMessage());
@@ -133,6 +139,7 @@ public class HsPixPullBean {
                         "hsi.event.eventType.requestType.code = '6' )", Event.class).setParameter("newEvent", HSIntegration.Status.NEW).getResultList();
 
         for (Event event : newEvents) {
+            logger.info("HS integration processing Event.Id = {}", event.getId());
             sendNewEventToHS(event, em, dbSchemeKladrBeanLocal, port);
         }
     }
@@ -215,6 +222,19 @@ public class HsPixPullBean {
             hsi.setStatus(HSIntegration.Status.NEW);
             em.persist(hsi);
             em.flush();
+        }
+    }
+
+    public String getDefOrgName() {
+        Organisation organization = null;
+        try {
+            organization = organizationBeanLocal.getOrganizationById(ConfigManager.Common().OrgId());
+        } catch (CoreException e) {
+        }
+        if (organization == null) {
+            return "Не задано";
+        } else {
+            return organization.getShortName();
         }
     }
 }
