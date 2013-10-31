@@ -78,7 +78,6 @@
         <!-- Вкл/Выкл отладочную информацию-->
         <project.build.debug>true</project.build.debug>
 
-
         <!-- Проверить! Удалить, если не используется-->
         <my.build.directory>target</my.build.directory>
 
