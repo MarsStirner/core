@@ -483,7 +483,6 @@ class DbPatientBean
     commlogger.debug("JPQL query string is \"" + query.toString + "\"")
     commlogger.debug("SQL query string is \"" + typedQuery.toString + "\"")
     typedQuery.getResultList
-
   }
 
   def deletePatient(id: Int) = {

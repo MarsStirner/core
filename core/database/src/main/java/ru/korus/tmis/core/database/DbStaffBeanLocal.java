@@ -64,4 +64,13 @@ public interface DbStaffBeanLocal {
             throws CoreException;
 
     Staff getDoctorByClientAmbulatoryAction(Action queueAction);
+
+    /**
+     * Получение расписаний врача
+     * @param personId идентификатор врача
+     * @param begDate дата начала интервала за который ищем приемы врача
+     * @param endDate дата окончания интервала за который ищем приемы врача
+     * @return список жействий с приемами врача
+     */
+    List<Action> getPersonShedule(final int personId, final Date begDate, final Date endDate);
 }

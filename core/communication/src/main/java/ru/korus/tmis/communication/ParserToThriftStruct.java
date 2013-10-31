@@ -2,9 +2,12 @@ package ru.korus.tmis.communication;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import ru.korus.tmis.communication.thriftgen.Organization;
-import ru.korus.tmis.communication.thriftgen.PatientInfo;
+import ru.korus.tmis.communication.thriftgen.*;
 import ru.korus.tmis.core.entity.model.*;
+import ru.korus.tmis.core.entity.model.OrgStructure;
+import ru.korus.tmis.core.entity.model.Patient;
+import ru.korus.tmis.core.entity.model.Speciality;
+import ru.korus.tmis.core.entity.model.communication.QueueTicket;
 
 /**
  * User: EUpatov<br>
@@ -132,4 +135,34 @@ public final class ParserToThriftStruct {
     }
 
 
+    public static QueueCoupon parseQueueCoupon(final QueueTicket item) {
+        if (item == null || item.getPerson() == null || item.getPatient() == null) {
+            logger.warn("Parser: NullPointer Speciality item. Return \"null\"");
+            return null;
+        }
+        final ru.korus.tmis.communication.thriftgen.Patient patient =
+                new ru.korus.tmis.communication.thriftgen.Patient(item.getPatient().getId())
+                .setBirthDate(DateConvertions.convertDateToUTCMilliseconds(item.getPatient().getBirthDate()))
+                .setLastName(item.getPatient().getLastName())
+                .setFirstName(item.getPatient().getFirstName())
+                .setPatrName(item.getPatient().getPatrName())
+                .setSex(item.getPatient().getSex());
+        final QueueCoupon coupon = new QueueCoupon()
+                .setUuid(item.getQueueAction().getId().toString())
+                .setPersonId(item.getPerson().getId())
+                .setPatient(patient)
+                .setBegDateTime(DateConvertions.convertDateToUTCMilliseconds(item.getBegDateTime()))
+                .setEndDateTime(DateConvertions.convertDateToUTCMilliseconds(item.getEndDateTime()));
+        if(item.getOffice() != null && !item.getOffice().isEmpty()){
+            coupon.setOffice(item.getOffice());
+        }
+        if(QueueTicket.Status.NEW.toString().equals(item.getStatus())){
+            coupon.setStatus(CouponStatus.NEW);
+        } else if(QueueTicket.Status.CANCELLED.toString().equals(item.getStatus())){
+            coupon.setStatus(CouponStatus.CANCELLED);
+        } else {
+            logger.error("QueueTicket[{}] has unknown Status = {}", item.getId(), item.getStatus());
+        }
+        return coupon;
+    }
 }
