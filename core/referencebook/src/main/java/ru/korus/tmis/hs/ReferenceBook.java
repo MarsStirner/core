@@ -30,7 +30,6 @@ import java.lang.reflect.Field;
 @Stateless
 public class ReferenceBook implements ReferenceBookLocal {
     private static final Logger logger = LoggerFactory.getLogger(ReferenceBook.class);
-        cccc     hjhhgh
     /**
      * Кол-во сообщений, которые можно запросить у HS за один сеанс
      */
