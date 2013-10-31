@@ -1161,10 +1161,12 @@ public class CommServer implements Communications.Iface {
                     logger.debug("Constraints={}", constraints);
                     takeConstraintsOnTickets(constraints, currentAmb.getTickets());
                     Iterator<Ticket> iterator = currentAmb.getTicketsIterator();
+                    long currentAmbulatoryDate = DateConvertions.convertDateToUTCMilliseconds(currentAction.getEvent().getSetDate());
+                    logger.debug("Current AmbulatoryDate : {}", currentAmbulatoryDate);
                     while (iterator.hasNext()) {
                         Ticket currentTicket = iterator.next();
                         if (currentTicket.getFree() == 1
-                                && (dateTime - currentAction.getEvent().getSetDate().getTime()) <= currentTicket.getTime()) {
+                                && (dateTime - currentAmbulatoryDate) <= currentTicket.getTime()) {
                             final FreeTicket result = new FreeTicket();
                             result.setOffice(currentAmb.getOffice());
                             final long eventDate = DateConvertions.convertDateToUTCMilliseconds(currentAction.getEvent().getSetDate());
