@@ -831,4 +831,34 @@ public class CommunicationServiceTest {
                 "4) In recieved list there are no requested patient. Method findPatients failed");
         logger.debug("4) Find patient by id result is {}", patientList);
     }
+
+
+
+    @Test(enabled = true)
+    public void getFirstFreeTicket() {
+        logger.info("Start of getFirstFreeTicket test:");
+       try {
+           FreeTicket result = client.getFirstFreeTicket(303, 0, "");
+            logger.info("Send and recieve is successfully done.");
+            assertTrue(result != null);
+            logger.info("Received = {}", result.toString());
+            logger.info("Successful end of getFirstFreeTicket test.");
+        } catch (TException e) {
+            logger.error("getFirstFreeTicket test failed", e);
+        }
+    }
+
+
+    @Test(enabled = true)
+    public void checkForNewQueueCoupons(){
+        try {
+            final List<QueueCoupon> result = client.checkForNewQueueCoupons();
+            for(QueueCoupon current : result){
+                logger.info(current.toString());
+            }
+        } catch (TException e) {
+            logger.error("Failed to checkForNewQueueCoupons: ", e);
+            fail("Not working");
+        }
+    }
 }

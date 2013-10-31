@@ -525,7 +525,8 @@ class AppealBean extends AppealBeanLocal
           //Проверяем наличие экшна - Движение
           setATIds = JavaConversions.asJavaSet(Set(i18n("db.actionType.moving").toInt :java.lang.Integer))
           val movingId = actionBean.getLastActionByActionTypeIdAndEventId(eventId, setATIds)
-          status = if (movingId>0) i18n("patient.status.regToBed").toString
+          status = if (movingId>0)
+            if (actionBean.getActionById(movingId).getEndDate == null) i18n("patient.status.regToBed").toString else i18n("patient.status.sentTo").toString
           else i18n("patient.status.sentTo").toString
         } else {
           if (execDate!= null)

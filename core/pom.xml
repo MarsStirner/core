@@ -29,7 +29,7 @@
 
     <properties>
         <!-- Версия ядра-->
-        <version.tmis.core>2.4.6-SNAPSHOT</version.tmis.core>
+        <version.tmis.core>2.4.7-SNAPSHOT</version.tmis.core>
 
 
         <version.joda.time>2.1</version.joda.time>
@@ -68,6 +68,8 @@
         <version.maven.gmaven.plugin>1.4</version.maven.gmaven.plugin>
         <version.maven.plugin.dependency>2.8</version.maven.plugin.dependency>
 
+        <version.jersey.servlet>com.sun.jersey.spi.container.servlet.ServletContainer</version.jersey.servlet>
+
         <spring.version>3.2.0.RELEASE</spring.version>
 
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
@@ -75,7 +77,6 @@
 
         <!-- Вкл/Выкл отладочную информацию-->
         <project.build.debug>true</project.build.debug>
-
 
         <!-- Проверить! Удалить, если не используется-->
         <my.build.directory>target</my.build.directory>
@@ -188,12 +189,35 @@
 
         <!-- Профиль для установки на стандартный Linux-сервер -->
         <profile>
-            <id>test-fnkc-66</id>
+            <id>fnkc-10.128.225.66-8080-bak</id>
             <properties>
                 <!-- Выключить дебаг -->
                 <project.build.debug>true</project.build.debug>
-                <glassfish.host>10.128.225.66</glassfish.host>
-                <glassfish.home>/Users/nde/Unixprog/glassfish3</glassfish.home>
+                <glassfish.host>localhost</glassfish.host>
+                <glassfish.home>/opt/glassfish3</glassfish.home>
+                <glassfish.domain>bak</glassfish.domain>
+
+                <mysql.db.mis>hospital</mysql.db.mis>
+                <mysql.db.mis.pool>hospital-pool</mysql.db.mis.pool>
+            </properties>
+        </profile>
+
+        <!-- Профиль для установки на стандартный Linux-сервер -->
+        <profile>
+            <id>fnkc-10.128.225.66-8081-pharmacy</id>
+            <properties>
+                <!-- Выключить дебаг -->
+                <project.build.debug>true</project.build.debug>
+                <glassfish.host>localhost</glassfish.host>
+                <glassfish.home>/opt/glassfish3</glassfish.home>
+                <glassfish.domain>pharmacy</glassfish.domain>
+
+                <mysql.db.mis>s11r64</mysql.db.mis>
+                <mysql.db.mis.pool>s11r64-pool</mysql.db.mis.pool>
+
+                <glassfish.port.instance>8081</glassfish.port.instance>
+                <!-- Порт админского Web IF -->
+                <glassfish.port.admin>4849</glassfish.port.admin>
             </properties>
         </profile>
 
@@ -259,7 +283,25 @@
             <id>macmini</id>
             <properties>
                 <!-- Домашняя директория Glassfish -->
-                <glassfish.home>/usr/local/opt/glassfish/glassfish/libexec</glassfish.home>
+                <glassfish.home>/usr/local/opt/glassfish/libexec/glassfish/domains/domain1</glassfish.home>
+                <!-- Логин к базе данных -->
+                <mysql.login>tmis</mysql.login>
+                <!-- Пароль к базе данных -->
+                <mysql.password>q1w2e3r4t5</mysql.password>
+                <!-- Название базы данных МИС -->
+                <mysql.db.mis>pnz_gor1</mysql.db.mis>
+                <!-- Порт админского Web IF -->
+                <glassfish.port.admin>4848</glassfish.port.admin>
+                <!-- Название домена -->
+                <glassfish.domain>domain1</glassfish.domain>
+                <!-- Логин администратора -->
+                <glassfish.admin.login>admin</glassfish.admin.login>
+                <!-- Пароль администратора-->
+                <glassfish.admin.password>admin1234</glassfish.admin.password>
+                <!-- Мастер пароль -->
+                <glassfish.master.password>admin1234</glassfish.master.password>
+                <!-- Схема работы при запуске приложения-->
+                <eclipselink.ddl.generated>NONE</eclipselink.ddl.generated>
             </properties>
         </profile>
 
@@ -270,7 +312,10 @@
                 <!-- Домашняя директория Glassfish -->
                 <glassfish.home>/usr/local/opt/glassfish/libexec</glassfish.home>
 
+
                 <glassfish.master.password>changeit</glassfish.master.password>
+
+                <version.jersey.servlet>org.glassfish.jersey.servlet.ServletContainer</version.jersey.servlet>
 
                 <project.build.jdk>1.7</project.build.jdk>
                 <version.javaee.api>7.0</version.javaee.api>
@@ -584,6 +629,27 @@
             <version>${version.findbug.annotation}</version>
         </dependency>
 
+
+        <!--<dependency>-->
+            <!--<groupId>org.glassfish.jersey.containers</groupId>-->
+            <!--<artifactId>jersey-container-servlet</artifactId>-->
+            <!--<version>2.4</version>-->
+            <!--<scope>provided</scope>-->
+        <!--</dependency>-->
+
+        <!-- if you are using Jersey client specific features -->
+        <!--<dependency>-->
+            <!--<groupId>org.glassfish.jersey.core</groupId>-->
+            <!--<artifactId>jersey-client</artifactId>-->
+            <!--<version>2.4</version>-->
+        <!--</dependency>-->
+
+        <!--<dependency>-->
+            <!--<groupId>org.glassfish.jersey.core</groupId>-->
+            <!--<artifactId>jersey-common</artifactId>-->
+            <!--<version>2.4</version>-->
+        <!--</dependency>-->
+
         <!--<dependency>-->
             <!--<groupId>javax.xml.bind</groupId>-->
             <!--<artifactId>jaxb-api</artifactId>-->
@@ -616,6 +682,7 @@
                     <include>**/*.*</include>
                 </includes>
             </resource>
+
         </resources>
 
         <!-- Ресурсы для тестового окружения -->

@@ -43,7 +43,7 @@ public interface DbStaffBeanLocal {
                                        Function1<Long, Boolean> setRecCount)
             throws CoreException;
 
-    java.util.HashMap<Staff, java.util.LinkedList<APValueTime>> getEmptyPersonsByRequest(int limit, int page, String sorting, ListDataFilter filter)
+    java.util.HashMap<Staff, java.util.LinkedList<APValueTime>> getEmptyPersonsByRequest(int limit, int page, String sorting, ListDataFilter filter, int citoActionsCount)
             throws CoreException;
 
     ActionProperty getActionPropertyForPersonByRequest(ListDataFilter filter) throws CoreException;
@@ -64,4 +64,13 @@ public interface DbStaffBeanLocal {
             throws CoreException;
 
     Staff getDoctorByClientAmbulatoryAction(Action queueAction);
+
+    /**
+     * Получение расписаний врача
+     * @param personId идентификатор врача
+     * @param begDate дата начала интервала за который ищем приемы врача
+     * @param endDate дата окончания интервала за который ищем приемы врача
+     * @return список жействий с приемами врача
+     */
+    List<Action> getPersonShedule(final int personId, final Date begDate, final Date endDate);
 }
