@@ -43,7 +43,7 @@ public interface DbStaffBeanLocal {
                                        Function1<Long, Boolean> setRecCount)
             throws CoreException;
 
-    java.util.HashMap<Staff, java.util.LinkedList<APValueTime>> getEmptyPersonsByRequest(int limit, int page, String sorting, ListDataFilter filter)
+    java.util.HashMap<Staff, java.util.LinkedList<APValueTime>> getEmptyPersonsByRequest(int limit, int page, String sorting, ListDataFilter filter, int citoActionsCount)
             throws CoreException;
 
     ActionProperty getActionPropertyForPersonByRequest(ListDataFilter filter) throws CoreException;

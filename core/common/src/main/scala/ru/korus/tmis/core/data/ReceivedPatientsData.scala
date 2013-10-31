@@ -368,13 +368,20 @@ class ReceivedPatientsEntry extends I18nable  {
         eventIds.add(event.getId.intValue())
         if (status.compareTo(ConfigManager.Messages("patient.status.sentTo"))==0) {
           //Движения
-          val setATCodes = JavaConversions.asJavaSet(Set(i18n("db.apt.received.codes.orgStructDirection")))
+          val setATCodes = JavaConversions.asJavaSet(Set(i18n("db.apt.received.codes.orgStructDirection"),
+                                                         i18n("db.apt.moving.codes.orgStructTransfer")))
           if (mMovingProperties!=null){
             val moveProps = mMovingProperties(eventIds, setATCodes, 1, false)
             if (moveProps!=null && moveProps.size>0) {
               val filtred = moveProps.get(event.getId.intValue()).filter(element=>element._2.size>0)
               if (filtred.size>0){
-                this.moving = new MovingContainer(filtred.iterator.next._2.get(0).getValue.asInstanceOf[OrgStructure])
+                var res = filtred.find(f => {f._1.getType.getCode.compareTo(i18n("db.apt.received.codes.orgStructDirection"))==0}).getOrElse(null)
+                var res2 = filtred.find(f => {f._1.getType.getCode.compareTo(i18n("db.apt.moving.codes.orgStructTransfer"))==0}).getOrElse(null)
+                if (res2 != null) {
+                  this.moving = new MovingContainer(res2._2.get(0).getValue.asInstanceOf[OrgStructure])
+                } else {
+                  this.moving = new MovingContainer(res._2.get(0).getValue.asInstanceOf[OrgStructure])
+                }
               }
             }
           }
