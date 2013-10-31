@@ -736,4 +736,18 @@ public class Staff implements Serializable {
 
         return sb.toString().trim();
     }
+
+    /**
+     * Детальное описание врача
+     * @return строка с описанием
+     */
+    public String getInfoString(){
+        return new StringBuilder("Staff[id=").append(id)
+                .append(" sex=").append(sex)
+                .append(" FIO=\"").append(lastName)
+                .append(" ").append(firstName)
+                .append(" ").append(patrName)
+                .append("\" Speciality=").append(speciality != null ? speciality.getName() : "null")
+                .append(']').toString();
+    }
 }

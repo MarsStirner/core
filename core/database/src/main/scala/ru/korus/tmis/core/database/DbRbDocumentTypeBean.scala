@@ -185,6 +185,5 @@ class DbRbDocumentTypeBean
         result(0)
       }
     }
-
   }
 }
