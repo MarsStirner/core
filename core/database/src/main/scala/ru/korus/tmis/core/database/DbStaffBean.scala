@@ -102,14 +102,14 @@ class DbStaffBean
     result
   }
 
-  def getEmptyPersonsByRequest(limit: Int, page: Int, sorting: String, filter: ListDataFilter) = {
+  def getEmptyPersonsByRequest(limit: Int, page: Int, sorting: String, filter: ListDataFilter, citoActionsCount: Int) = {
 
     //TODO: как то надо подрубить пэйджинг, сортировки и общее кол-во
     val queryStr = filter.toQueryStructure()
 
     //Получение всех врачей по графику
     val sqlRequest = AllEmptyStaffWithFilterQuery.format("s, time", queryStr.query, sorting)
-    var typed = em.createQuery(sqlRequest, classOf[Array[AnyRef]])
+    var typed = em.createQuery(sqlRequest, classOf[Array[AnyRef]]).setParameter("citoActionsCount", citoActionsCount)
 
     if (queryStr.data.size() > 0) {
       queryStr.data.foreach(qdp => typed.setParameter(qdp.name, qdp.value))
@@ -245,7 +245,7 @@ class DbStaffBean
       AND
         apvAction.id.id = ap2.id
       AND
-        apvAction.id.index = time.id.index
+        apvAction.id.index - :citoActionsCount = time.id.index
       )
     OR
       NOT exists (
@@ -260,7 +260,7 @@ class DbStaffBean
         AND
           apvAction2.id.id = ap3.id
         AND
-          apvAction2.id.index = time.id.index
+          apvAction2.id.index - :citoActionsCount = time.id.index
         AND
           apvAction2.value is not null
         )

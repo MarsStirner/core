@@ -331,14 +331,16 @@ class DirectoryInfoRESTTest {
     when(dbStaff.getEmptyPersonsByRequest(requestData.limit,
       requestData.page-1,
       requestData.sortingFieldInternal,
-      requestData.filter.unwrap())).thenReturn(map)
+      requestData.filter.unwrap(),
+      0)).thenReturn(map)
 
-    val result = wsImpl.getFreePersons(requestData)
+    val result = wsImpl.getFreePersons(requestData, 0)
 
     verify(dbStaff).getEmptyPersonsByRequest( requestData.limit,
       requestData.page-1,
       requestData.sortingFieldInternal,
-      requestData.filter.unwrap())
+      requestData.filter.unwrap(),
+      0)
 
     Assert.assertNotNull(result)
     Assert.assertEquals(1, result.data.size());
@@ -360,14 +362,16 @@ class DirectoryInfoRESTTest {
     when(dbStaff.getEmptyPersonsByRequest(requestData.limit,
       requestData.page-1,
       requestData.sortingFieldInternal,
-      requestData.filter.unwrap())).thenReturn(map)
+      requestData.filter.unwrap(),
+      0)).thenReturn(map)
 
-    val result = wsImpl.getFreePersons(requestData)
+    val result = wsImpl.getFreePersons(requestData, 0)
 
     verify(dbStaff).getEmptyPersonsByRequest( requestData.limit,
       requestData.page-1,
       requestData.sortingFieldInternal,
-      requestData.filter.unwrap())
+      requestData.filter.unwrap(),
+      0)
 
     Assert.assertNotNull(result)
     Assert.assertNotNull(result.data)
