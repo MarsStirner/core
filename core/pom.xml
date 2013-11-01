@@ -434,14 +434,14 @@
             <!-- Пользовательский профиль -->
             <id>sg-win</id>
             <properties>
-                <separate>/</separate>
+                <separate>\</separate>
                 <!-- Домашняя директория Glassfish -->
-                <glassfish.home>/usr/local/glassfish3/bin/</glassfish.home>
+                <glassfish.home>C:\Winprog\glassfish3\</glassfish.home>
                 <!-- Название домена -->
-                <glassfish.domain>fccho-moscow.ru</glassfish.domain>
+                <glassfish.domain>fccho</glassfish.domain>
                 <!-- Логин администратора -->
-                <glassfish.admin.login>admin</glassfish.admin.login>
-                <glassfish.admin.password>TRefRureB5Aw</glassfish.admin.password>
+                <glassfish.admin.login>admin1234</glassfish.admin.login>
+                <glassfish.admin.password>admin1234</glassfish.admin.password>
             </properties>
         </profile>
 
