@@ -5,9 +5,7 @@ import java.util.Date;
 import java.util.LinkedList;
 import java.util.List;
 
-import javax.ejb.EJB;
-import javax.ejb.Schedule;
-import javax.ejb.Stateless;
+import javax.ejb.*;
 import javax.persistence.EntityManager;
 import javax.persistence.PersistenceContext;
 import javax.xml.ws.WebServiceException;
@@ -102,26 +100,31 @@ public class HsPixPullBean {
                 createQuery("SELECT pths FROM PatientsToHs pths WHERE pths.sendTime < :now", PatientsToHs.class)
                 .setParameter("now", new Timestamp((new Date()).getTime())).getResultList();
         for (PatientsToHs patientToHs : patientsToHs) {
-            try {
-                logger.info("HS integration processing PatientsToHs.patientId = {}", patientToHs.getPatientId());
-                int errCount = patientToHs.getErrCount();
-                long step = 89 * 1000; // время до слейдующей попытки передачи данных
-                patientToHs.setErrCount(errCount + 1);
-                patientToHs.setSendTime(new Timestamp(patientToHs.getSendTime().getTime() + (long) (errCount) * step));
-                final LinkedList<AllergyInfo> emptyAllergy = new LinkedList<AllergyInfo>();
-                List<DiagnosisInfo> emptyDiag = new LinkedList<DiagnosisInfo>();
-                List<EpicrisisInfo> emptyEpi = new LinkedList<EpicrisisInfo>();
-                port.sendSDA(PixInfo.toSda(new ClientInfo(patientToHs.getPatient(), dbSchemeKladrBeanLocal), new EventInfo(getDefOrgName()), emptyAllergy, emptyDiag, emptyEpi));
-                em.remove(patientToHs);
-            } catch (SOAPFaultException ex) {
-                patientToHs.setInfo(ex.getMessage());
-                ex.printStackTrace();
-                em.flush();
-            } catch (WebServiceException ex) {
-                patientToHs.setInfo(ex.getMessage());
-                ex.printStackTrace();
-                em.flush();
-            }
+            sendPatientInfo(port, patientToHs);
+        }
+    }
+
+    @TransactionAttribute(TransactionAttributeType.REQUIRES_NEW)
+    private void sendPatientInfo(SDASoapServiceServiceSoap port, PatientsToHs patientToHs) {
+        try {
+            logger.info("HS integration processing PatientsToHs.patientId = {}", patientToHs.getPatientId());
+            int errCount = patientToHs.getErrCount();
+            long step = 89 * 1000; // время до слейдующей попытки передачи данных
+            patientToHs.setErrCount(errCount + 1);
+            patientToHs.setSendTime(new Timestamp(patientToHs.getSendTime().getTime() + (long) (errCount) * step));
+            final LinkedList<AllergyInfo> emptyAllergy = new LinkedList<AllergyInfo>();
+            List<DiagnosisInfo> emptyDiag = new LinkedList<DiagnosisInfo>();
+            List<EpicrisisInfo> emptyEpi = new LinkedList<EpicrisisInfo>();
+            port.sendSDA(PixInfo.toSda(new ClientInfo(patientToHs.getPatient(), dbSchemeKladrBeanLocal), new EventInfo(getDefOrgName()), emptyAllergy, emptyDiag, emptyEpi));
+            em.remove(patientToHs);
+        } catch (SOAPFaultException ex) {
+            patientToHs.setInfo(ex.getMessage());
+            ex.printStackTrace();
+            em.flush();
+        } catch (WebServiceException ex) {
+            patientToHs.setInfo(ex.getMessage());
+            ex.printStackTrace();
+            em.flush();
         }
     }
 
@@ -144,6 +147,7 @@ public class HsPixPullBean {
         }
     }
 
+    @TransactionAttribute(TransactionAttributeType.REQUIRES_NEW)
     public void sendNewEventToHS(Event event, EntityManager em, DbSchemeKladrBeanLocal dbSchemeKladrBeanLocal, SDASoapServiceServiceSoap port) {
         final HSIntegration hsIntegration = em.find(HSIntegration.class, event.getId());
         try {
