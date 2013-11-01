@@ -222,6 +222,8 @@ public class BakLaboratoryBean implements BakLaboratoryService {
     }
 
 
+
+
     private void createDocAuthor(HL7Document document, Action action, DiagnosticRequestInfo requestInfo) throws CoreException {
         final AuthorInfo author = new AuthorInfo();
         author.setTypeCode("AUT");
