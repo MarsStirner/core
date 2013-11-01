@@ -3,14 +3,7 @@ package ru.korus.tmis.core.entity.model;
 import java.io.Serializable;
 import java.sql.Timestamp;
 
-import javax.persistence.Column;
-import javax.persistence.Entity;
-import javax.persistence.GeneratedValue;
-import javax.persistence.GenerationType;
-import javax.persistence.Id;
-import javax.persistence.JoinColumn;
-import javax.persistence.OneToOne;
-import javax.persistence.Table;
+import javax.persistence.*;
 
 /**
  * The persistent class for the PatientsToHS database table.
@@ -18,6 +11,11 @@ import javax.persistence.Table;
  */
 @Entity
 @Table(name = "PatientsToHS")
+@NamedQueries(
+        {
+                @NamedQuery(name = "PatientsToHs.ToSend", query = "SELECT pths FROM PatientsToHs pths WHERE pths.sendTime < :now ORDER BY pths.patientId")
+        }
+)
 public class PatientsToHs implements Serializable {
     private static final long serialVersionUID = 1L;
 

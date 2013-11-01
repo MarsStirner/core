@@ -43,6 +43,7 @@ import ru.korus.tmis.util.ConfigManager;
 public class HsPixPullBean {
 
     private static final Logger logger = LoggerFactory.getLogger(HsPixPullBean.class);
+    private static final int MAX_RESULT = 100;
 
     @PersistenceContext(unitName = "s11r64")
     private EntityManager em = null;
@@ -72,12 +73,7 @@ public class HsPixPullBean {
             }
             logger.info("HS integration ... maxId = {}", maxId );
             List<Event> newEvents =
-                    em.createQuery("SELECT e FROM Event e WHERE e.id > :max AND (" +
-                            "e.eventType.requestType.code = 'clinic' OR " +
-                            "e.eventType.requestType.code = 'hospital' OR " +
-                            "e.eventType.requestType.code = 'stationary' OR " +
-                            "e.eventType.requestType.code = '4' OR " +
-                            "e.eventType.requestType.code = '6' )", Event.class).setParameter("max", maxId).getResultList();
+                    em.createNamedQuery("Event.toHs", Event.class).setParameter("max", maxId).setMaxResults(MAX_RESULT).getResultList();
 
             addNewEvent(newEvents);
 
@@ -97,14 +93,13 @@ public class HsPixPullBean {
      */
     private void sendPatientsInfo(SDASoapServiceServiceSoap port) {
         List<PatientsToHs> patientsToHs = em.
-                createQuery("SELECT pths FROM PatientsToHs pths WHERE pths.sendTime < :now", PatientsToHs.class)
-                .setParameter("now", new Timestamp((new Date()).getTime())).getResultList();
+                createNamedQuery("PatientsToHs.ToSend", PatientsToHs.class)
+                .setParameter("now", new Timestamp((new Date()).getTime())).setMaxResults(MAX_RESULT).getResultList();
         for (PatientsToHs patientToHs : patientsToHs) {
             sendPatientInfo(port, patientToHs);
         }
     }
 
-    @TransactionAttribute(TransactionAttributeType.REQUIRES_NEW)
     private void sendPatientInfo(SDASoapServiceServiceSoap port, PatientsToHs patientToHs) {
         try {
             logger.info("HS integration processing PatientsToHs.patientId = {}", patientToHs.getPatientId());
@@ -147,7 +142,7 @@ public class HsPixPullBean {
         }
     }
 
-    @TransactionAttribute(TransactionAttributeType.REQUIRES_NEW)
+
     public void sendNewEventToHS(Event event, EntityManager em, DbSchemeKladrBeanLocal dbSchemeKladrBeanLocal, SDASoapServiceServiceSoap port) {
         final HSIntegration hsIntegration = em.find(HSIntegration.class, event.getId());
         try {
