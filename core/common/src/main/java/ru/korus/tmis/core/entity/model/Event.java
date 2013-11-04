@@ -13,7 +13,7 @@ import java.util.List;
 @NamedQueries(
         {
                 @NamedQuery(name = "Event.findAll", query = "SELECT e FROM Event e"),
-                @NamedQuery(name = "Event_toHS", query = "SELECT e FROM Event e WHERE e.id > :max AND (" +
+                @NamedQuery(name = "Event.toHS", query = "SELECT e FROM Event e WHERE e.id > :max AND (" +
                         "e.eventType.requestType.code = 'clinic' OR " +
                         "e.eventType.requestType.code = 'hospital' OR " +
                         "e.eventType.requestType.code = 'stationary' OR " +

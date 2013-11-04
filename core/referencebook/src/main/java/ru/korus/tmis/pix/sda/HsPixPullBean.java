@@ -1,33 +1,27 @@
 package ru.korus.tmis.pix.sda;
 
-import java.sql.Timestamp;
-import java.util.Date;
-import java.util.LinkedList;
-import java.util.List;
-
-import javax.ejb.*;
-import javax.persistence.EntityManager;
-import javax.persistence.PersistenceContext;
-import javax.xml.ws.WebServiceException;
-import javax.xml.ws.soap.SOAPFaultException;
-
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-
 import ru.korus.tmis.core.database.DbActionPropertyBeanLocal;
 import ru.korus.tmis.core.database.DbOrganizationBeanLocal;
 import ru.korus.tmis.core.database.DbSchemeKladrBeanLocal;
-import ru.korus.tmis.core.entity.model.*;import ru.korus.tmis.core.entity.model.Action;
-import ru.korus.tmis.core.entity.model.ActionType;
-import ru.korus.tmis.core.entity.model.ClientAllergy;
-import ru.korus.tmis.core.entity.model.Diagnostic;
-import ru.korus.tmis.core.entity.model.Event;
-import ru.korus.tmis.core.entity.model.HSIntegration;
-import ru.korus.tmis.core.entity.model.PatientsToHs;
+import ru.korus.tmis.core.entity.model.*;
 import ru.korus.tmis.core.exception.CoreException;
 import ru.korus.tmis.pix.sda.ws.SDASoapServiceService;
 import ru.korus.tmis.pix.sda.ws.SDASoapServiceServiceSoap;
 import ru.korus.tmis.util.ConfigManager;
+
+import javax.ejb.EJB;
+import javax.ejb.Schedule;
+import javax.ejb.Stateless;
+import javax.persistence.EntityManager;
+import javax.persistence.PersistenceContext;
+import javax.xml.ws.WebServiceException;
+import javax.xml.ws.soap.SOAPFaultException;
+import java.sql.Timestamp;
+import java.util.Date;
+import java.util.LinkedList;
+import java.util.List;
 
 /**
  * Author:      Sergey A. Zagrebelny <br>
@@ -37,7 +31,7 @@ import ru.korus.tmis.util.ConfigManager;
  */
 
 /**
- * 
+ *
  */
 @Stateless
 public class HsPixPullBean {
@@ -52,44 +46,48 @@ public class HsPixPullBean {
     DbActionPropertyBeanLocal dbActionPropertyBeanLocal;
 
     @EJB
-    DbSchemeKladrBeanLocal dbSchemeKladrBeanLocal;private String defOrgName;
+    DbSchemeKladrBeanLocal dbSchemeKladrBeanLocal;
+    private String defOrgName;
 
     @EJB
     DbOrganizationBeanLocal organizationBeanLocal;
 
     @Schedule(hour = "*", minute = "*", second = "30")
     void pullDb() {
-        logger.info("HS integration entry...");
-        if (ConfigManager.HealthShare().isSdaActive()) {
-            logger.info("HS integration is active...");
-            SDASoapServiceService service = new SDASoapServiceService();
-            service.setHandlerResolver(new SdaHandlerResolver());
-            SDASoapServiceServiceSoap port = service.getSDASoapServiceServiceSoap();
+        try {
+            logger.info("HS integration entry...");
+            if (ConfigManager.HealthShare().isSdaActive()) {
+                logger.info("HS integration is active...");
+                SDASoapServiceService service = new SDASoapServiceService();
+                service.setHandlerResolver(new SdaHandlerResolver());
+                SDASoapServiceServiceSoap port = service.getSDASoapServiceServiceSoap();
 
-            logger.info("HS integration ... SDASoapServiceServiceSoap is avalable");
-            Integer maxId = em.createQuery("SELECT max(hsi.eventId) FROM HSIntegration hsi", Integer.class).getSingleResult();
-            if (maxId == null) {
-                maxId = 0;
+                logger.info("HS integration ... SDASoapServiceServiceSoap is avalable");
+                Integer maxId = em.createQuery("SELECT max(hsi.eventId) FROM HSIntegration hsi", Integer.class).getSingleResult();
+                if (maxId == null) {
+                    maxId = 0;
+                }
+                logger.info("HS integration ... maxId = {}", maxId);
+                List<Event> newEvents =
+                        em.createNamedQuery("Event.toHS", Event.class).setParameter("max", maxId).setMaxResults(MAX_RESULT).getResultList();
+
+                addNewEvent(newEvents);
+
+                // Отправка завершенных обращений
+                sendNewEventToHS(port);
+                // Отправка карточек новых/обновленных пациентов
+                sendPatientsInfo(port);
+            } else {
+                logger.info("HS integration is disabled...");
             }
-            logger.info("HS integration ... maxId = {}", maxId );
-            List<Event> newEvents =
-                    em.createNamedQuery("Event.toHs", Event.class).setParameter("max", maxId).setMaxResults(MAX_RESULT).getResultList();
-
-            addNewEvent(newEvents);
-
-            // Отправка завершенных обращений
-            sendNewEventToHS(port);
-            // Отправка карточек новых/обновленных пациентов
-            sendPatientsInfo(port);
+        } catch (Exception ex) {
+            logger.error("HS integration internal error.", ex);
         }
-        else {
-            logger.info("HS integration is disabled...");
-        }
+
     }
 
     /**
      * @param port
-     *
      */
     private void sendPatientsInfo(SDASoapServiceServiceSoap port) {
         List<PatientsToHs> patientsToHs = em.
@@ -125,7 +123,6 @@ public class HsPixPullBean {
 
     /**
      * @param port
-     * 
      */
     private void sendNewEventToHS(SDASoapServiceServiceSoap port) {
         List<Event> newEvents = em.
