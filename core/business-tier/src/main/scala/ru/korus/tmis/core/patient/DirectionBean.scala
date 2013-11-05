@@ -540,8 +540,9 @@ class DirectionBean extends DirectionBeanLocal
           val odin : lang.Integer = 2
           action.setPacientInQueueType(odin.shortValue())
           //em.merge(action)
-          val maxIndex = ap18values.sortBy(_.asInstanceOf[APValueAction].getId.getIndex).last.asInstanceOf[APValueAction].getId.getIndex
-          em.merge(actionPropertyBean.setActionPropertyValue(ap18, action19.getId.toString, maxIndex+1))
+          //val maxIndex = ap18values.sortBy(_.asInstanceOf[APValueAction].getId.getIndex).last.asInstanceOf[APValueAction].getId.getIndex
+
+          em.merge(actionPropertyBean.setActionPropertyValue(ap18, action19.getId.toString, ap18values.size()))
         } else {
           action.setDeleted(true)
           em.flush()

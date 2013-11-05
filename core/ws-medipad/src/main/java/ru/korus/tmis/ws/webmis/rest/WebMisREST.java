@@ -113,7 +113,7 @@ public interface WebMisREST extends Serializable {
      */
     JSONCommonData getInfoAboutDiagnosticsForPatientByEvent(int actionId, AuthData authData) throws CoreException;
 
-    FreePersonsListData getFreePersons(ListDataRequest requestData, int eventId) throws CoreException;
+    FreePersonsListData getFreePersons(ListDataRequest requestData, long beginDate) throws CoreException;
 
     /**
      * Получение справочника типов действий плоской структурой либо структуры CommonData для нужного ActionType

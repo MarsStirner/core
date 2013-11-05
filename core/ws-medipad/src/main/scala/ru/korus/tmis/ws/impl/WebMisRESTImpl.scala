@@ -754,13 +754,13 @@ class WebMisRESTImpl  extends WebMisREST
     json_data
   }
 
-  def getFreePersons(requestData: ListDataRequest, eventId: Int) = {
+  def getFreePersons(requestData: ListDataRequest, beginDate: Long) = {
 
     //<= Изменить запрос (ждем отклик)
     //requestData.setRecordsCount(dbStaff.getCountAllPersonsWithFilter(requestData.filter))
     var citoActionsCount = 0;
-    if (eventId > 0) {
-      citoActionsCount = actionBean.getActionForEventAndPacientInQueueType(eventId, 1).toInt;
+    if (beginDate > 0) {
+      citoActionsCount = actionBean.getActionForDateAndPacientInQueueType(beginDate, 1).toInt;
     }
 
     new FreePersonsListDataFilter()

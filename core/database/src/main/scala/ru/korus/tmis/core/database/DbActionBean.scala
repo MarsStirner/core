@@ -16,6 +16,7 @@ import ru.korus.tmis.core.data.{QueryDataStructure, AssessmentsListRequestDataFi
 import ru.korus.tmis.core.pharmacy.DbUUIDBeanLocal
 import java.util
 import ru.korus.tmis.core.filter.ListDataFilter
+import java.text.SimpleDateFormat
 
 @Interceptors(Array(classOf[LoggingInterceptor]))
 @Stateless
@@ -331,6 +332,17 @@ class DbActionBean
   }
 
   @TransactionAttribute(TransactionAttributeType.REQUIRES_NEW)
+  def getActionForDateAndPacientInQueueType(beginDate: Long, pacientInQueueType: Int) = {
+    val formatter = new SimpleDateFormat("yyyy-MM-dd")
+    val strDate = formatter.format(new Date(beginDate))
+    var typed = em.createQuery(GetActionForDateAndPacientInQueueType, classOf[Long])
+      .setParameter("beginDate", strDate)
+      .setParameter("pacientInQueueType", pacientInQueueType)
+
+    typed.getSingleResult
+  }
+
+  @TransactionAttribute(TransactionAttributeType.REQUIRES_NEW)
   def getActionForEventAndPacientInQueueType(eventId: Int, pacientInQueueType: Int) = {
     var typed = em.createQuery(GetActionForEventAndPacientInQueueType, classOf[Long])
       .setParameter("eventId", eventId)
@@ -345,6 +357,20 @@ class DbActionBean
     Action a
   WHERE
     a.event.id = :eventId
+  AND
+    a.pacientInQueueType = :pacientInQueueType
+  AND
+    a.event.deleted = 0
+  AND
+    a.deleted = '0'
+                                               """
+
+  val GetActionForDateAndPacientInQueueType = """
+  SELECT COUNT(a)
+  FROM
+    Action a
+  WHERE
+    substring(a.directionDate, 1, 10) = :beginDate
   AND
     a.pacientInQueueType = :pacientInQueueType
   AND

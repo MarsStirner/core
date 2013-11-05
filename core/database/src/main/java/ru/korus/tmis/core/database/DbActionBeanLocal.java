@@ -186,6 +186,8 @@ public interface DbActionBeanLocal {
      */
     long getActionForEventAndPacientInQueueType(int eventId, int pacientInQueueType) throws CoreException;
 
+    long getActionForDateAndPacientInQueueType(long beginDate, int pacientInQueueType) throws CoreException;
+
     /**
      * Возвращает список действий относящихся к заданному обращению и типу действия(по flatCode)
      * @param eventId идентификатор обращения

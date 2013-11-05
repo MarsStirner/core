@@ -151,12 +151,11 @@ public class DirectoryInfoRESTImpl {
                                  @QueryParam("filter[speciality]")int speciality,
                                  @QueryParam("filter[doctorId]")int doctorId,
                                  @QueryParam("filter[beginDate]")long beginDate,
-                                 @QueryParam("filter[endDate]")long endDate,
-                                 @QueryParam("eventId")int eventId) {
+                                 @QueryParam("filter[endDate]")long endDate) {
 
         FreePersonsListDataFilter filter = new FreePersonsListDataFilter(speciality, doctorId, actionType, beginDate, endDate);
         ListDataRequest request = new ListDataRequest(this.sortingField, this.sortingMethod, this.limit, this.page, filter);
-        return new JSONWithPadding(wsImpl.getFreePersons(request, eventId),this.callback);
+        return new JSONWithPadding(wsImpl.getFreePersons(request, beginDate),this.callback);
     }
 
     /**
