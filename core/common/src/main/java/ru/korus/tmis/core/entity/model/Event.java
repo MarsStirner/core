@@ -1,36 +1,26 @@
 package ru.korus.tmis.core.entity.model;
 
+import javax.persistence.*;
+import javax.xml.bind.annotation.XmlRootElement;
+import javax.xml.bind.annotation.XmlType;
 import java.io.Serializable;
 import java.util.Date;
 import java.util.LinkedList;
 import java.util.List;
 
-import javax.persistence.Basic;
-import javax.persistence.CascadeType;
-import javax.persistence.Column;
-import javax.persistence.Entity;
-import javax.persistence.GeneratedValue;
-import javax.persistence.GenerationType;
-import javax.persistence.Id;
-import javax.persistence.JoinColumn;
-import javax.persistence.Lob;
-import javax.persistence.ManyToOne;
-import javax.persistence.NamedQueries;
-import javax.persistence.NamedQuery;
-import javax.persistence.OneToMany;
-import javax.persistence.Table;
-import javax.persistence.Temporal;
-import javax.persistence.TemporalType;
-import javax.persistence.Version;
-import javax.xml.bind.annotation.XmlRootElement;
-import javax.xml.bind.annotation.XmlType;
-
 @Entity
 @Table(name = "Event", catalog = "", schema = "")
 @NamedQueries(
-{
-        @NamedQuery(name = "Event.findAll", query = "SELECT e FROM Event e")
-})
+        {
+                @NamedQuery(name = "Event.findAll", query = "SELECT e FROM Event e"),
+                @NamedQuery(name = "Event.toHS", query = "SELECT e FROM Event e WHERE e.id > :max AND (" +
+                        "e.eventType.requestType.code = 'clinic' OR " +
+                        "e.eventType.requestType.code = 'hospital' OR " +
+                        "e.eventType.requestType.code = 'stationary' OR " +
+                        "e.eventType.requestType.code = '4' OR " +
+                        "e.eventType.requestType.code = '6' ) ORDER BY e.id")
+        }
+)
 @XmlType(name = "event")
 @XmlRootElement(name = "event")
 public class Event implements Serializable {

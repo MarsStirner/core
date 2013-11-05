@@ -9,6 +9,8 @@
     <version>${version.tmis.core}</version>
     <name>TMIS Root Project</name>
 
+
+
     <modules>
         <module>business-tier</module>
         <module>common</module>
@@ -29,7 +31,7 @@
 
     <properties>
         <!-- Версия ядра-->
-        <version.tmis.core>2.4.7-SNAPSHOT</version.tmis.core>
+        <version.tmis.core>2.4.8-SNAPSHOT</version.tmis.core>
 
 
         <version.joda.time>2.1</version.joda.time>
@@ -52,7 +54,7 @@
         <version.gmaven.runtime>1.4</version.gmaven.runtime>
         <version.mysql.connector>5.1.25</version.mysql.connector>
         <version.eclipselink>2.5.0</version.eclipselink>
-        <version.eclipse.persistence.jpa>2.5.0-M5</version.eclipse.persistence.jpa>
+        <version.eclipse.persistence.jpa>2.5.1</version.eclipse.persistence.jpa>
         <version.findbug.annotation>2.0.1</version.findbug.annotation>
         <version.test.spock>0.7-groovy-2.0</version.test.spock>
 
@@ -434,14 +436,14 @@
             <!-- Пользовательский профиль -->
             <id>sg-win</id>
             <properties>
-                <separate>/</separate>
+                <separate>\</separate>
                 <!-- Домашняя директория Glassfish -->
-                <glassfish.home>/usr/local/glassfish3/bin/</glassfish.home>
+                <glassfish.home>C:\Winprog\glassfish3\</glassfish.home>
                 <!-- Название домена -->
-                <glassfish.domain>fccho-moscow.ru</glassfish.domain>
+                <glassfish.domain>fccho</glassfish.domain>
                 <!-- Логин администратора -->
-                <glassfish.admin.login>admin</glassfish.admin.login>
-                <glassfish.admin.password>TRefRureB5Aw</glassfish.admin.password>
+                <glassfish.admin.login>admin1234</glassfish.admin.login>
+                <glassfish.admin.password>admin1234</glassfish.admin.password>
             </properties>
         </profile>
 

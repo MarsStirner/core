@@ -233,7 +233,6 @@ public class BakLaboratoryBean implements BakLaboratoryService {
             try {
                 xmlTime = DatatypeFactory.newInstance().newXMLGregorianCalendar(c1);
             } catch (DatatypeConfigurationException e) {
-//            logger.error(e.getMessage());
             }
             time.setValue(xmlTime);
             author.setTime(time);

@@ -66,6 +66,14 @@ public class EventInfo {
         this.orgName = getOrgShortName(event);
         this.type = event.getEventType().getId();
     }
+    public EventInfo(String defaultOrgShortName ) {
+        this.orgName = defaultOrgShortName;
+        eventUuid = null;
+        requestType = null;
+        begDate = null;
+        endDate = null;
+        type = null;
+    }
 
     /**
      * @param event

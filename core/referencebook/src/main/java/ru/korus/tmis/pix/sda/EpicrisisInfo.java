@@ -111,8 +111,8 @@ public class EpicrisisInfo {
         final SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd");
         res.append(orgName).append(' ')
                 .append("Дата и время: ").append(createDate != null ? dateFormat.format(createDate.toGregorianCalendar().getTime()) : "???").append(' ')
-                .append("Амбулаторная карта №").append(action.getEvent().getExternalId()).append(' ')
-                .append("Ф.И.О. пациента: " + clientInfo.getFamilyName() + ' ' + clientInfo.getGivenName() + ' ' + clientInfo.getMiddleName())
+                .append("Амбулаторная карта №").append("".equals(action.getEvent().getExternalId()) ? " Не задано" : action.getEvent().getExternalId()).append(' ')
+                .append("Ф.И.О. пациента: " + clientInfo.getFamilyName() + ' ' + clientInfo.getGivenName() + ' ' + clientInfo.getMiddleName()).append(' ')
                 .append("Возраст: " + (createDate != null && clientInfo.getBirthDate() != null ? getAge(createDate, clientInfo.getBirthDate()) : "???"))
                 .append(XML_EOL);
         Map<ActionProperty, List<APValue>> ap;
