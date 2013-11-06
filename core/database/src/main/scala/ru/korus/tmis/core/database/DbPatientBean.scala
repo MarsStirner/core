@@ -362,7 +362,7 @@ class DbPatientBean
     AND patient.sex = :SEX
     AND document.number = :DOCNUMBER
     AND document.serial = :DOCSERIAL
-    AND document.documentType.code = :DOCTYPECODE
+    AND document.documentType.TFOMSCode = :DOCTYPECODE
     AND document.deleted = 0
                            """
     if (params.contains("identifier") && params.contains("identifierType")) {
@@ -404,7 +404,7 @@ class DbPatientBean
       else {
         if (documents.containsKey("document_code")) {
           query.append("INNER JOIN pat.clientDocuments doc WHERE pat.deleted=0 AND doc.deleted=0" +
-            " AND doc.number = :NUMBER AND doc.serial = :SERIAL AND doc.documentType.CODE = :DOCTYPECODE"
+            " AND doc.number = :NUMBER AND doc.serial = :SERIAL AND doc.documentType.TFOMSCode = :DOCTYPECODE"
           )
         }
         else {
