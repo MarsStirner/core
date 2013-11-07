@@ -144,6 +144,8 @@ public interface WebMisREST extends Serializable {
 
     boolean removeDirection(AssignmentsToRemoveDataList data, String directionType, AuthData auth) throws CoreException;
 
+    void checkCountOfConsultations(int eventId, int pqt, int executorId) throws CoreException;
+
     //APValueAction getPlannedTime(Action action) throws CoreException;
     /**
      * Получение справочника FlatDirectory

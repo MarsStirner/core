@@ -370,7 +370,7 @@ class DbActionBean
   FROM
     Action a
   WHERE
-    substring(a.directionDate, 1, 10) = :beginDate
+    substring(a.plannedEndDate, 1, 10) = :beginDate
   AND
     a.pacientInQueueType = :pacientInQueueType
   AND

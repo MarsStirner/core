@@ -903,6 +903,20 @@ class WebMisRESTImpl  extends WebMisREST
     directionBean.removeDirections(data, directionType, auth)
   }
 
+  def checkCountOfConsultations(eventId: Int, pqt: Int, executorId: Int) {
+    var executor = dbStaff.getStaffById(executorId)
+    var actionsCount = actionBean.getActionForEventAndPacientInQueueType(eventId, pqt)
+    if (pqt == 1) {
+      if (executor.getMaxCito <= 0 || executor.getMaxCito <= actionsCount) {
+        throw new CoreException(ConfigManager.Messages("error.citoLimit"))
+      }
+    } else if (pqt == 2) {
+      if (executor.getMaxOverQueue <= 0 || executor.getMaxOverQueue <= actionsCount) {
+        throw new CoreException(ConfigManager.Messages("error.overQueueLimit"))
+      }
+    }
+  }
+
   def getPlannedTime(actionId: Int) = {
     var a = actionBean.getActionById(actionId)
     var action19 = actionBean.getEvent29AndAction19ForAction(a)
