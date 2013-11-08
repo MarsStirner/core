@@ -11,13 +11,16 @@ import ru.korus.tmis.core.database.DbActionPropertyTypeBeanLocal;
 import ru.korus.tmis.core.database.DbCustomQueryLocal;
 import ru.korus.tmis.core.database.bak.*;
 import ru.korus.tmis.core.database.dbutil.Database;
-import ru.korus.tmis.core.entity.model.*;
+import ru.korus.tmis.core.entity.model.APValueString;
+import ru.korus.tmis.core.entity.model.Action;
+import ru.korus.tmis.core.entity.model.ActionProperty;
+import ru.korus.tmis.core.entity.model.ActionPropertyType;
 import ru.korus.tmis.core.entity.model.bak.*;
 import ru.korus.tmis.core.exception.CoreException;
 import ru.korus.tmis.laboratory.bak.ws.server.model.*;
+import ru.korus.tmis.laboratory.bak.ws.server.model.hl7.complex.*;
 import ru.korus.tmis.util.CompileTimeConfigManager;
 import ru.korus.tmis.util.logs.ToLog;
-import ru.korus.tmis.laboratory.bak.ws.server.model.hl7.complex.*;
 
 import javax.annotation.Nullable;
 import javax.ejb.EJB;
@@ -27,12 +30,13 @@ import javax.jws.WebResult;
 import javax.jws.WebService;
 import javax.xml.bind.JAXBElement;
 import java.text.SimpleDateFormat;
-import java.util.*;
+import java.util.Date;
+import java.util.List;
 import java.util.UUID;
 
-import static ru.korus.tmis.util.CompileTimeConfigManager.Laboratory.Namespace;
 import static ru.korus.tmis.laboratory.bak.ws.server.model.hl7.HL7Specification.NAMESPACE;
 import static ru.korus.tmis.laboratory.bak.ws.server.model.hl7.HL7Specification.SUCCESS_ACCEPT_EVENT;
+import static ru.korus.tmis.util.CompileTimeConfigManager.Laboratory.Namespace;
 
 /**
  * Веб-сервис для сохранения результатов исследования из лаборатории
@@ -280,7 +284,27 @@ public class SetAnalysysResult implements SetAnalysysResultWS {
      */
     private void saveBakPosev(final BakPosev bakPosev, final ToLog toLog) throws CoreException {
         try {
-            removeOldResult(bakPosev.getActionId());
+            int actionId = bakPosev.getActionId();
+            toLog.addN("Clean old actionId #", actionId);
+            // пришли уточняющие данные
+            dbBbtResponseBean.remove(actionId);
+
+            for (BbtResultOrganism bbtResultOrganism1 : dbBbtResultOrganismBean.getByActionId(actionId)) {
+                dbBbtOrganismSensValuesBean.removeByResultOrganismId(bbtResultOrganism1.getId());
+                dbBbtResultOrganismBean.remove(bbtResultOrganism1.getId());
+            }
+            toLog.addN("Save new data [#]", bakPosev);
+
+            // записываем данные в БД
+            final BbtResponse response = new BbtResponse();
+            response.setId(actionId);
+            response.setDoctorId(bakPosev.getDoctor().getId());
+            response.setFinalFlag(bakPosev.isComplete() ? 1 : 0);
+            response.setDefects("нет");
+            response.setCodeLIS(bakPosev.getDoctor().getCodeLis());
+            dbBbtResponseBean.add(response);
+
+            toLog.add("Save response: #", response);
 
             for (Microorganism microorganism : bakPosev.getMicroorganismList()) {
                 dbRbMicroorganismBean.add(new RbMicroorganism(microorganism.getCode(), microorganism.getName()));
@@ -314,20 +338,6 @@ public class SetAnalysysResult implements SetAnalysysResultWS {
             logger.error("Exception " + e, e);
             throw new CoreException("Не удалось сохранить данные по БАК-посеву");
         }
-    }
-
-    /**
-     * Очистка от старых результатов
-     */
-    private void removeOldResult(int actionId) {
-        // пришли уточняющие данные
-        dbBbtResponseBean.remove(actionId);
-
-        for (BbtResultOrganism bbtResultOrganism : dbBbtResultOrganismBean.getByActionId(actionId)) {
-            dbBbtOrganismSensValuesBean.removeByResultOrganismId(bbtResultOrganism.getId());
-            dbBbtResultOrganismBean.remove(bbtResultOrganism.getId());
-        }
-
     }
 
     /**

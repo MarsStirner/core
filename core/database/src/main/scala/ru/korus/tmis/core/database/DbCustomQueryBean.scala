@@ -1464,7 +1464,7 @@ AND ap.deleted = 0
     AND at.deleted = 0
     ORDER BY
       a.createDatetime ASC
-                                               """.format(i18n("db.action.preAssessmentGroupName"),
+ """.format(i18n("db.action.preAssessmentGroupName"),
     i18n("db.action.diagnosisSubstantiation"))
 
   val AllAssessmentsByEventIdQuery = """

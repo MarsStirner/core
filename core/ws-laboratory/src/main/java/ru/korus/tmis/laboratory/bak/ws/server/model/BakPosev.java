@@ -63,6 +63,18 @@ public class BakPosev {
         }
     }
 
+    public String getBarCode() {
+        return barCode;
+    }
+
+    public Doctor getDoctor() {
+        return doctor;
+    }
+
+    public boolean isComplete() {
+        return isComplete;
+    }
+
     public void setBarCode(String barCode) {
         this.barCode = barCode;
     }
