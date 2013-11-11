@@ -99,11 +99,11 @@ class DbCustomQueryBean
 
     val typed = em.createQuery(ActiveEventsByDepartmentIdAndDoctorIdBetweenDatesQueryEx
                                .format(queryStr.query,
-                                       //i18n("db.action.leavingFlatCode"), в спеке нет проверки на выписку https://docs.google.com/spreadsheet/ccc?key=0AgE0ILPv06JcdEE0ajBZdmk1a29ncjlteUp3VUI2MEE#gid=0
-                                       i18n("db.apt.moving.codes.hospitalBed"),
-                                       i18n("db.apt.moving.codes.hospOrgStruct"),
-                                       i18n("db.apt.moving.codes.orgStructTransfer"),
-                                       sorting), classOf[ActionProperty])
+      i18n("db.apt.moving.codes.orgStructTransfer"),
+      i18n("db.apt.moving.codes.hospitalBed"),
+      i18n("db.apt.moving.codes.hospOrgStruct"),
+      i18n("db.apt.moving.codes.orgStructTransfer"),
+      sorting), classOf[ActionProperty])
 
     if (queryStr.data.size() > 0) {
       queryStr.data.foreach(qdp => typed.setParameter(qdp.name, qdp.value))
@@ -111,9 +111,6 @@ class DbCustomQueryBean
 
     typed.setParameter("flatCodes", asJavaCollection(Set(i18n("db.action.admissionFlatCode"),
                                                          i18n("db.action.movingFlatCode"))))
-    typed.setParameter("gr1Codes", asJavaCollection(Set(i18n("db.apt.received.codes.orgStructDirection"),
-                                                        i18n("db.apt.moving.codes.orgStructTransfer"))))
-
     var result = typed.getResultList
 
     var actions = result.foldLeft(LinkedHashMap.empty[Action, java.util.Map[ActionProperty, List[APValue]]])(
@@ -1187,7 +1184,7 @@ WHERE ap.action.id IN (
 AND
 (
     (
-        ap.actionPropertyType.code IN :gr1Codes
+        ap.actionPropertyType.code = '%s'
         AND ap.action.endDate < :endDate
         AND exists (
             SELECT valA.id
@@ -1196,6 +1193,7 @@ AND
             AND valA.value.id = :departmentId
         )
     )
+
     OR
     (
         ap.actionPropertyType.code = '%s'
