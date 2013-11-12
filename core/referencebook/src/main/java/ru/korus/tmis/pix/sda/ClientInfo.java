@@ -231,11 +231,6 @@ public class ClientInfo {
 
     }
 
-    /**
-     * @param client
-     * @param homeTel
-     * @return
-     */
     private ClientContact getContact(Patient client, String type) {
         List<ClientContact> docs = client.getClientContacts();
         for (ClientContact contact : docs) {
@@ -253,7 +248,7 @@ public class ClientInfo {
     private ClientDocument getDoc(final Patient client, final String type) {
         List<ClientDocument> docs = client.getClientDocuments();
         for (ClientDocument doc : docs) {
-            if (doc.isDeleted() &&
+            if (doc.isDeleted() && doc.getDocumentType() != null &&
                     doc.getDocumentType().getCode().equals(type))
                 return doc;
         }
@@ -267,7 +262,7 @@ public class ClientInfo {
     private ClientPolicy getOMS(Patient client) {
         List<ClientPolicy> policies = client.getClientPolicies();
         for (ClientPolicy policy : policies) {
-            if (policy.isDeleted() &&
+            if (policy.isDeleted() && policy.getPolicyType() != null &&
                     (policy.getPolicyType().getCode().equals(OMS_LOC) ||
                     policy.getPolicyType().getCode().equals(OMS_WORK)))
                 return policy;
