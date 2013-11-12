@@ -94,7 +94,12 @@ public class HsPixPullBean {
                 createNamedQuery("PatientsToHs.ToSend", PatientsToHs.class)
                 .setParameter("now", new Timestamp((new Date()).getTime())).setMaxResults(MAX_RESULT).getResultList();
         for (PatientsToHs patientToHs : patientsToHs) {
-            sendPatientInfo(port, patientToHs);
+            try {
+                logger.info("HS integration processing. Sending patient info. PatientsToHs.client_id = {}", patientToHs.getPatientId());
+                sendPatientInfo(port, patientToHs);
+            } catch (Exception ex) {
+                logger.error("Sending patient info. HS integration internal error.", ex);
+            }
         }
     }
 
@@ -134,13 +139,17 @@ public class HsPixPullBean {
                         "hsi.event.eventType.requestType.code = '6' )", Event.class).setParameter("newEvent", HSIntegration.Status.NEW).getResultList();
 
         for (Event event : newEvents) {
-            logger.info("HS integration processing Event.Id = {}", event.getId());
-            sendNewEventToHS(event, em, dbSchemeKladrBeanLocal, port);
+            try {
+                logger.info("HS integration processing Event.Id = {}", event.getId());
+                sendNewEventToHS(event, em, dbSchemeKladrBeanLocal, port);
+            } catch (Exception ex) {
+                logger.error("Sending event info. HS integration internal error.", ex);
+            }
         }
     }
 
 
-    public void sendNewEventToHS(Event event, EntityManager em, DbSchemeKladrBeanLocal dbSchemeKladrBeanLocal, SDASoapServiceServiceSoap port) {
+    private void sendNewEventToHS(Event event, EntityManager em, DbSchemeKladrBeanLocal dbSchemeKladrBeanLocal, SDASoapServiceServiceSoap port) {
         final HSIntegration hsIntegration = em.find(HSIntegration.class, event.getId());
         try {
             final ClientInfo clientInfo = new ClientInfo(event.getPatient(), dbSchemeKladrBeanLocal);
