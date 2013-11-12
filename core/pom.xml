@@ -31,7 +31,7 @@
 
     <properties>
         <!-- Версия ядра-->
-        <version.tmis.core>2.4.10-SNAPSHOT</version.tmis.core>
+        <version.tmis.core>2.4.11-SNAPSHOT</version.tmis.core>
 
 
         <version.joda.time>2.1</version.joda.time>
