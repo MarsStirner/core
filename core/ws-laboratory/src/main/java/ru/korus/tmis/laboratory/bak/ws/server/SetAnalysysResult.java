@@ -170,7 +170,7 @@ public class SetAnalysysResult implements SetAnalysysResultWS {
         } catch (Exception e) {
             logger.error("Exception " + e, e);
         }
-        return ifa;
+        return ifa.getActionId() != 0 ? ifa : null;
     }
 
     /**
@@ -303,7 +303,7 @@ public class SetAnalysysResult implements SetAnalysysResultWS {
             dbBbtResultTextBean.removeByActionId(actionId);
 
             // записываем новые данные в БД
-            toLog.addN("Save new data [#]", bakPosev);
+            toLog.addN("Save new data");
 
             final BbtResponse response = new BbtResponse();
             response.setId(actionId);
@@ -392,6 +392,7 @@ public class SetAnalysysResult implements SetAnalysysResultWS {
      * Запись данных результата в БД
      *
      * @param request
+     * @deprecated - не использовать
      */
     private void flushToDB(final POLBIN224100UV01 request, final ToLog toLog) throws CoreException {
         try {
