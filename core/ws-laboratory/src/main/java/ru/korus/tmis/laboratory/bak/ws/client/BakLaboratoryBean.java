@@ -128,7 +128,8 @@ public class BakLaboratoryBean implements BakLaboratoryService {
         final Patient patientInfo = eventInfo.getPatient();
         final DiagnosticRequestInfo requestInfo = laboratoryBean.getDiagnosticRequestInfo(action); // Request section
 
-        ru.korus.tmis.core.database.bak.Diagnosis diagnosis = dbCustomQuery.getDiagnosisBak(action);
+//        ru.korus.tmis.core.database.bak.Diagnosis diagnosis = dbCustomQuery.getDiagnosisBak(action);
+        ru.korus.tmis.core.database.bak.Diagnosis diagnosis = new Diagnosis("", "");
 
         //requestInfo.orderDiagCode() = diagnosis.getCode();
 

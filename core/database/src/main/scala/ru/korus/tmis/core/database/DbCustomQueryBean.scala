@@ -1764,10 +1764,10 @@ AND ap.deleted = 0
           ORDER BY
           Action.createDatetime DESC
           LIMIT 0, 1
-      """, classOf[String])
+      """)
       .setParameter(1, action.getCreateDatetime)
       .setParameter(2, action.getEvent.getId)
-      .getSingleResult
+      .getResultList
 
     val res2 =  em.createNativeQuery( """
          SELECT MKB.DiagName
@@ -1784,11 +1784,11 @@ AND ap.deleted = 0
           ORDER BY
           Action.createDatetime DESC
           LIMIT 0, 1
-      """, classOf[String])
+      """)
       .setParameter(1, action.getCreateDatetime)
       .setParameter(2, action.getEvent.getId)
-      .getSingleResult
+      .getResultList
 
-      new ru.korus.tmis.core.database.bak.Diagnosis(res.asInstanceOf[String], res2.asInstanceOf[String])
+      new ru.korus.tmis.core.database.bak.Diagnosis(res.get(0).asInstanceOf[String], res2.get(0).asInstanceOf[String])
     }
 }
