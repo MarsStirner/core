@@ -395,6 +395,7 @@ public class CommServer implements Communications.Iface {
         //COMPUTE TICKETS to list and evaluate externalCount
         final short externalCount = computeTickets(action, times, queue, tickets, emergencyPatientCount);
         // http://miswiki.ru/   Получение талончиков _getTickets()
+        //TODO абсолютное количество или проценты? должно зависеть от Person.quoteUnit
         final int available = Math.max(0, (int) (quota * tickets.size() * 0.01) - externalCount);
         if (quota != -1 && available < 1) {
             for (Ticket ticket : tickets) {
@@ -418,11 +419,12 @@ public class CommServer implements Communications.Iface {
         short externalCount = 0;
         for (int i = 0; i < times.size(); i++) {
             final APValueTime currentTime = times.get(i);
-            int free;
+            final Action queueAction = (queue.size() > emergencyCount + i) ? queue.get(emergencyCount + i).getValue() : null;
+            short free;
             if (currentTime != null) {
-                if (queue.size() > emergencyCount + i && queue.get(emergencyCount + i).getValue() != null) {
+                if (queueAction != null) {
                     free = 0;
-                    if (action.getAssigner() != null) {
+                    if (queueAction.getAssigner() != null) {
                         externalCount++;
                     }
                 } else {
@@ -434,12 +436,12 @@ public class CommServer implements Communications.Iface {
                 if (free == 0) {
                     //талончик занят, выясняем кем
                     if (logger.isDebugEnabled()) {
-                        logger.debug("CLIENT ACTION={}", queue.get(emergencyCount + i).getValue());
-                        logger.debug("CLIENT ACTIONID={}", queue.get(emergencyCount + i).getValue().getId());
-                        logger.debug("CLIENT ACTIONEVENT={}", queue.get(emergencyCount + i).getValue().getEvent());
-                        logger.debug("CLIENT ACTIONEVENTPATIENT={}", queue.get(emergencyCount + i).getValue().getEvent().getPatient());
+                        logger.debug("Queue ACTIONID={}", queueAction.getId());
+                        logger.debug("Queue EVENTID={}", queueAction.getEvent() != null ?
+                                queueAction.getEvent().getId() : "null");
+                        logger.debug("Queue PATIENT={}", queueAction.getEvent().getPatient() != null ?
+                                queueAction.getEvent().getPatient().getId() : "null");
                     }
-
                     final Patient queuePatient = queue.get(emergencyCount + i).getValue().getEvent().getPatient();
                     if (queuePatient != null) {
                         newTicket.setPatientId(queuePatient.getId())
