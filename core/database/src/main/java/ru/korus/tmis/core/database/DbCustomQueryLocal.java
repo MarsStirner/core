@@ -125,4 +125,10 @@ public interface DbCustomQueryLocal {
     Integer getFinanceId(Event e);
 
 
+
+    /**
+     * Получить код и описание диагноза
+     * (для БАК направления)
+     */
+    ru.korus.tmis.core.database.bak.Diagnosis getDiagnosisBak(Action action);
 }

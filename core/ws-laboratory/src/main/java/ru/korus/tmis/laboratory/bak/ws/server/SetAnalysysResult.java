@@ -11,10 +11,7 @@ import ru.korus.tmis.core.database.DbActionPropertyTypeBeanLocal;
 import ru.korus.tmis.core.database.DbCustomQueryLocal;
 import ru.korus.tmis.core.database.bak.*;
 import ru.korus.tmis.core.database.dbutil.Database;
-import ru.korus.tmis.core.entity.model.APValueString;
-import ru.korus.tmis.core.entity.model.Action;
-import ru.korus.tmis.core.entity.model.ActionProperty;
-import ru.korus.tmis.core.entity.model.ActionPropertyType;
+import ru.korus.tmis.core.entity.model.*;
 import ru.korus.tmis.core.entity.model.bak.*;
 import ru.korus.tmis.core.exception.CoreException;
 import ru.korus.tmis.laboratory.bak.ws.server.model.*;
@@ -149,7 +146,7 @@ public class SetAnalysysResult implements SetAnalysysResultWS {
      */
     @Nullable
     private IFA processIFA(final POLBIN224100UV01 request) {
-        IFA ifa = null;
+        final IFA ifa = new IFA();
         try {
             for (POLBIN224100UV01MCAIMT700201UV01Subject2 subj : request.getControlActProcess().getSubject()) {
                 if (subj.getObservationBattery() != null) {
@@ -159,10 +156,15 @@ public class SetAnalysysResult implements SetAnalysysResultWS {
                         final String text = ceList.get(0).getDisplayName();
                         final String value = ceList.get(0).getCode();
                         if (!text.isEmpty() || !value.isEmpty()) {
-                            ifa = new IFA(text, value, Long.parseLong(orderMisId));
+                            ifa.setText(text);
+                            ifa.setValue(value);
+                            ifa.setActionId(Long.parseLong(orderMisId));
                             break;
                         }
                     }
+                } else if (subj.getObservationReport() != null) {
+                    final POLBMT004000UV01ObservationReport value = subj.getObservationReport().getValue();
+                    ifa.setComplete(value.getStatusCode().getCode().equals("true"));
                 }
             }
         } catch (Exception e) {
@@ -189,6 +191,11 @@ public class SetAnalysysResult implements SetAnalysysResultWS {
             }
             db.addSinglePropBasic(ifa.getFullResult(), APValueString.class, ifa.getActionId(), aptId, true);
             toLog.addN("Save IFA result [#], aptId [#]", ifa.getFullResult(), aptId);
+            // Изменяем статус действия на "Закончено"
+            if (ifa.isComplete()) {
+                action.setStatus(ActionStatus.FINISHED.getCode());
+                toLog.addN("Save status [#]", ActionStatus.FINISHED.getCode());
+            }
         } catch (Exception e) {
             logger.error("Exception: " + e, e);
             toLog.add("Problem save to ActionProperty IFA values: " + e + "]\n");
@@ -229,6 +236,7 @@ public class SetAnalysysResult implements SetAnalysysResultWS {
             } else if (subj.getObservationBattery() != null) {
                 try {
                     for (POLBMT004000UV01Component2 p : subj.getObservationBattery().getValue().getComponent1()) {
+                        bakPosev.setGeneralComment(p.getObservationEvent().getValue().getCode().getCodeSystemName());
                         for (POLBMT004000UV01Component2 comp : p.getObservationEvent().getValue().getComponent1()) {
                             final String microorgCode = comp.getObservationEvent().getValue().getCode().getCode();
                             final String microorgName = comp.getObservationEvent().getValue().getCode().getDisplayName();
@@ -280,22 +288,23 @@ public class SetAnalysysResult implements SetAnalysysResultWS {
     }
 
     /**
-     * Запись результатов БАК-посева в БД
+     * Запись результатов БАК-посева в БД. Метод необходимо оптимизировать, убрать лишние запросы для получения id
      */
     private void saveBakPosev(final BakPosev bakPosev, final ToLog toLog) throws CoreException {
         try {
             int actionId = bakPosev.getActionId();
             toLog.addN("Clean old actionId #", actionId);
-            // пришли уточняющие данные
+            // пришли уточняющие данные, стираем старые данные
             dbBbtResponseBean.remove(actionId);
-
             for (BbtResultOrganism bbtResultOrganism1 : dbBbtResultOrganismBean.getByActionId(actionId)) {
                 dbBbtOrganismSensValuesBean.removeByResultOrganismId(bbtResultOrganism1.getId());
                 dbBbtResultOrganismBean.remove(bbtResultOrganism1.getId());
             }
+            dbBbtResultTextBean.removeByActionId(actionId);
+
+            // записываем новые данные в БД
             toLog.addN("Save new data [#]", bakPosev);
 
-            // записываем данные в БД
             final BbtResponse response = new BbtResponse();
             response.setId(actionId);
             response.setDoctorId(bakPosev.getDoctor().getId());
@@ -304,7 +313,14 @@ public class SetAnalysysResult implements SetAnalysysResultWS {
             response.setCodeLIS(bakPosev.getDoctor().getCodeLis());
             dbBbtResponseBean.add(response);
 
-            toLog.add("Save response: #", response);
+            toLog.add("Save response: [#]", response);
+
+            if (!"".equals(bakPosev.getGeneralComment())) {
+                final BbtResultText bbtResultText = new BbtResultText();
+                bbtResultText.setActionId(actionId);
+                bbtResultText.setValueText("Общий комментарий: " + bakPosev.getGeneralComment());
+                dbBbtResultTextBean.add(bbtResultText);
+            }
 
             for (Microorganism microorganism : bakPosev.getMicroorganismList()) {
                 dbRbMicroorganismBean.add(new RbMicroorganism(microorganism.getCode(), microorganism.getName()));
@@ -316,23 +332,42 @@ public class SetAnalysysResult implements SetAnalysysResultWS {
                 resultOrganism.setOrganismId(mic.getId());
                 dbBbtResultOrganismBean.add(resultOrganism);
 
+                if (!"".equals(microorganism.getComment())) {
+                    final BbtResultText bbtResultText = new BbtResultText();
+                    bbtResultText.setActionId(actionId);
+                    bbtResultText.setValueText(microorganism.getName() + " - " + microorganism.getComment());
+                    dbBbtResultTextBean.add(bbtResultText);
+                }
+
                 for (Antibiotic antibiotic : microorganism.getAntibioticList()) {
                     dbRbAntibioticBean.add(new RbAntibiotic(antibiotic.getCode(), antibiotic.getName()));
-
                     final RbAntibiotic rbAntibiotic = dbRbAntibioticBean.get(antibiotic.getCode());
                     final RbMicroorganism rbMicroorganism = dbRbMicroorganismBean.get(microorganism.getCode());
                     final BbtResultOrganism bbtResultOrganism = dbBbtResultOrganismBean.get(rbMicroorganism.getId(), bakPosev.getActionId());
 
                     final BbtOrganismSensValues bbtOrganismSens = new BbtOrganismSensValues();
-
                     bbtOrganismSens.setActivity(antibiotic.getSensitivity());
                     bbtOrganismSens.setAntibioticId(rbAntibiotic.getId());
                     bbtOrganismSens.setBbtResultOrganismId(bbtResultOrganism.getId());
                     bbtOrganismSens.setMic(antibiotic.getConcentration());
-
                     dbBbtOrganismSensValuesBean.add(bbtOrganismSens);
+
+                    if (!"".equals(antibiotic.getComment())) {
+                        final BbtResultText bbtResultText2 = new BbtResultText();
+                        bbtResultText2.setActionId(actionId);
+                        bbtResultText2.setValueText(antibiotic.getName() + " - " + antibiotic.getComment());
+                        dbBbtResultTextBean.add(bbtResultText2);
+                    }
                 }
             }
+
+            // Изменяем статус действия на "Закончено"
+            if (bakPosev.isComplete()) {
+                final Action actionById = dbAction.getActionById(actionId);
+                actionById.setStatus(ActionStatus.FINISHED.getCode());
+                toLog.addN("Save status [#]", ActionStatus.FINISHED.getCode());
+            }
+
         } catch (Exception e) {
             toLog.addN("Exception " + e);
             logger.error("Exception " + e, e);

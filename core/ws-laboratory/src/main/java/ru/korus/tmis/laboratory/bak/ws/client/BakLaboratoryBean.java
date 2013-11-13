@@ -4,7 +4,9 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import ru.cgm.service.*;
 import ru.korus.tmis.core.database.DbActionBeanLocal;
+import ru.korus.tmis.core.database.DbCustomQueryLocal;
 import ru.korus.tmis.core.database.DbStaffBeanLocal;
+import ru.korus.tmis.core.database.bak.Diagnosis;
 import ru.korus.tmis.core.entity.model.Action;
 import ru.korus.tmis.core.entity.model.ActionType;
 import ru.korus.tmis.core.entity.model.Event;
@@ -72,6 +74,9 @@ public class BakLaboratoryBean implements BakLaboratoryService {
     @EJB
     private DbActionBeanLocal dbActionBean;
 
+    @EJB
+    private DbCustomQueryLocal dbCustomQuery;
+
     /**
      * Метод для отсылки запроса на анализ в лабораторию
      *
@@ -122,6 +127,11 @@ public class BakLaboratoryBean implements BakLaboratoryService {
         final Event eventInfo = action.getEvent();
         final Patient patientInfo = eventInfo.getPatient();
         final DiagnosticRequestInfo requestInfo = laboratoryBean.getDiagnosticRequestInfo(action); // Request section
+
+        ru.korus.tmis.core.database.bak.Diagnosis diagnosis = dbCustomQuery.getDiagnosisBak(action);
+
+        //requestInfo.orderDiagCode() = diagnosis.getCode();
+
         final BiomaterialInfo biomaterialInfo = laboratoryBean.getBiomaterialInfo(action, action.getTakenTissue()); // Biomaterial section
         final OrderInfo orderInfo = laboratoryBean.getOrderInfo(action, actionType); // Order section
 
@@ -136,13 +146,15 @@ public class BakLaboratoryBean implements BakLaboratoryService {
         createRecordTarget(document, patientInfo, eventInfo); // демографические данные пациента
         createDocAuthor(document, action, requestInfo); // создатель документа. Обязательный
         createComponentOf(document, patientInfo);
-        createBody(document, biomaterialInfo, orderInfo, patientInfo, requestInfo, action, eventInfo);
+        createBody(document, biomaterialInfo, orderInfo, patientInfo, requestInfo, action, eventInfo, diagnosis);
 
         return document;
     }
 
 
-    private static void createBody(HL7Document document, BiomaterialInfo biomaterialInfo, OrderInfo orderInfo, Patient patient, DiagnosticRequestInfo requestInfo, Action action, Event eventInfo) {
+    private static void createBody(HL7Document document, BiomaterialInfo biomaterialInfo, OrderInfo orderInfo,
+                                   Patient patient, DiagnosticRequestInfo requestInfo, Action action, Event eventInfo,
+                                   ru.korus.tmis.core.database.bak.Diagnosis diagnosis) {
         final ComponentInfo component = new ComponentInfo();
         final StructuredBodyInfo structuredBody = new StructuredBodyInfo();
         final SubComponentInfo subComponentInfo = FACTORY_BAK.createSubComponentInfo();
@@ -159,7 +171,7 @@ public class BakLaboratoryBean implements BakLaboratoryService {
         section.getEntry().add(createEntry(eventInfo.getOrganisation().getUuid().getUuid(), "OBS", "RQO", requestInfo.orderDepartmentMisCode().get(), requestInfo.orderDepartmentName().get()));
         section.getEntry().add(createEntry(action.getUuid().getUuid(), "OBS", "RQO", action.getIsUrgent() + "", ""));
         // MKB.DiagName
-        section.getEntry().add(createEntry("", "OBS", "RQO", requestInfo.orderDiagCode().get(), requestInfo.orderDiagText().get()));
+        section.getEntry().add(createEntry("", "OBS", "RQO",diagnosis.getCode()/* requestInfo.orderDiagCode().get()*/, diagnosis.getName() /*requestInfo.orderDiagText().get()*/));
         section.getEntry().add(createEntry(eventInfo.getEventType().getFinance().getName(), "OBS", "RQO", orderInfo.diagnosticCode().get(), orderInfo.diagnosticName().get()));
 
         for (IndicatorMetodic indicatorMetodic : orderInfo.indicators()) {

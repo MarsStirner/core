@@ -1743,4 +1743,32 @@ AND ap.deleted = 0
     %s
     GROUP BY e
                              """ */
+
+  /**
+   * @see
+   * @param action
+   */
+  def getDiagnosisBak(action: Action): ru.korus.tmis.core.database.bak.Diagnosis = {
+    val res = em.createNativeQuery( """
+         SELECT MKB.DiagID, MKB.DiagName
+          FROM Action
+          JOIN ActionProperty ON ActionProperty.action_id = Action.id
+          JOIN ActionPropertyType ON ActionPropertyType.id = ActionProperty.type_id
+          JOIN ActionProperty_MKB ON ActionProperty.id = ActionProperty_MKB.id
+          JOIN MKB ON MKB.id = ActionProperty_MKB.value
+          WHERE
+          Action.createDatetime <= :createDate
+          AND Action.event_id = :eventId
+          AND ActionPropertyType.code = 'mainDiagMkb'
+          AND Action.deleted = 0
+          ORDER BY
+          Action.createDatetime DESC
+          LIMIT 0, 1
+      """, classOf[Array[AnyRef]])
+      .setParameter("createDate", action.getCreateDatetime)
+      .setParameter("eventId", action.getEvent.getId)
+      .getResultList
+
+      new ru.korus.tmis.core.database.bak.Diagnosis(res.get(0).asInstanceOf[String], res.get(1).asInstanceOf[String])
+    }
 }

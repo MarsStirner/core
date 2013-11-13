@@ -17,4 +17,6 @@ public interface DbBbtResultTextBeanLocal {
     void add(BbtResultText bbtResultText);
 
     BbtResultText get(final Integer id);
+
+    void removeByActionId(int actionId);
 }
