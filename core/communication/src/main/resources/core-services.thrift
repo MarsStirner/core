@@ -4,6 +4,34 @@ namespace java ru.korus.tmis.communication.thriftgen
 typedef i64 timestamp
 typedef i16 short
 
+//Enums
+
+/**
+ * Тип квотирования
+ */
+enum QuotingType{
+    // из регистратуры
+    FROM_REGISTRY = 1,
+    //повторная запись врачем
+    SECOND_VISIT = 2,
+    // меж-кабинетная запись
+    BETWEEN_CABINET = 3,
+    // другое ЛПУ
+    FROM_OTHER_LPU = 4,
+    //с портала
+    FROM_PORTAL = 5
+}
+
+/**
+ * CouponStatus
+ * Перечисление статусов талончика на прием к врачу
+ */
+enum CouponStatus{
+// новый талончик
+NEW = 1;
+// отмена старого талончика
+CANCELLED = 2;
+}
 
 //Type definitions for return structures
 
@@ -144,18 +172,6 @@ struct Contact{
 3:optional string contact;
 4:optional string note;
 }
-
-/**
- * CouponStatus
- * Перечисление статусов талончика на прием к врачу
- */
-enum CouponStatus{
-// новый талончик
-NEW = 1;
-// отмена старого талончика
-CANCELLED = 2;
-}
-
 
 /**
  * QueueCoupon
@@ -338,6 +354,23 @@ struct FindPatientByPolicyAndDocumentParameters{
 12:optional string policyInsurerInfisCode;
 }
 
+/**
+ * Структура с данными для получения расписания пачкой и поиска превого свободного талончика
+ * @param personId                  1)Идетификатор врача
+ * @param beginDateTime             2)Время с которого начинается поиск свободных талончиков
+ * @param endDateTime               3)Время до которого происходит поиск свободных талончиков
+ (если не установлено - то плюс месяц к beginDateTime)
+ * @param hospitalUidFrom           4)Идентификатор ЛПУ из которого производится запись
+ * @param quotingType               5)Тип квотирования
+ */
+struct ScheduleParameters{
+1:required i32 personId;
+2:required timestamp beginDateTime;
+3:optional timestamp endDateTime;
+4:optional string hospitalUidFrom;
+5:optional QuotingType quotingType;
+}
+
 //Exceptions
 exception NotFoundException {
  1: string error_msg;
@@ -450,31 +483,22 @@ list<QueueCoupon> checkForNewQueueCoupons();
 
 /**
  * Метод для получения первого свободного талончика врача
- * @param personId                  1)Идетификатор врача
- * @param dateTime                  2)Время с которого начинается поиск свободных талончиков
- * @param hospitalUidFrom           3)Идентификатор ЛПУ из которого производится запись
+ * @param params Параметры для поиска первого свободого талончика
  * @return Структура с данными первого доступного для записи талончика
  * @throws NotFoundException        когда у выьранного врача с этой даты нету свободных талончиков
  */
-FreeTicket getFirstFreeTicket(1:i32 personId, 2:timestamp dateTime, 3:string hospitalUidFrom)
+FreeTicket getFirstFreeTicket(1:ScheduleParameters params)
     throws (1:NotFoundException nfExc);
 
 /**
- * Метод для получения расписания врача пачкой
- * @param personId                  1)Идетификатор врача
- * @param begDate                   2)Дата начала периода за который получаем расписание
- * @param endDate                   3)Дата окончания периода за который получаем расписание
- * @param hospitalUidFrom           4)Идентификатор ЛПУ из которого производится запись
+ * Метод для получения расписания врача пачкой за указанный интервал
+ * @param params Параметры для получения расписания
  * @return map<timestamp, Amb> - карта вида <[Дата приема], [Расписание на эту дату]>,
  * в случае отсутствия расписания на указанную дату набор ключ-значение опускается
  * @throws NotFoundException        когда нету такого идентификатора врача
  */
-map<timestamp, Amb> getPersonSchedule(
-                                    1:i32 personId,
-                                    2:timestamp begDate,
-                                    3:timestamp endDate,
-                                    4:string hospitalUidFrom
-    ) throws (1:NotFoundException nfExc);
+map<timestamp, Amb> getPersonSchedule(1:ScheduleParameters params)
+    throws (1:NotFoundException nfExc);
 
 map<i32,PatientInfo> getPatientInfo(1:list<i32> patientIds)
 throws (1:NotFoundException exc, 2:SQLException excsql);
@@ -496,5 +520,4 @@ throws (1:NotFoundException exc, 2:SQLException excsql);
 
 list<Speciality> getSpecialities(1:string hospitalUidFrom)
 throws (1:SQLException exc);
-
 }

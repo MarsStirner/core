@@ -90,34 +90,24 @@ public class Communications {
 
     /**
      * Метод для получения первого свободного талончика врача
-     * @param personId                  1)Идетификатор врача
-     * @param dateTime                  2)Время с которого начинается поиск свободных талончиков
-     * @param hospitalUidFrom           3)Идентификатор ЛПУ из которого производится запись
+     * @param params Параметры для поиска первого свободого талончика
      * @return Структура с данными первого доступного для записи талончика
      * @throws NotFoundException        когда у выьранного врача с этой даты нету свободных талончиков
      * 
-     * @param personId
-     * @param dateTime
-     * @param hospitalUidFrom
+     * @param params
      */
-    public FreeTicket getFirstFreeTicket(int personId, long dateTime, String hospitalUidFrom) throws NotFoundException, org.apache.thrift.TException;
+    public FreeTicket getFirstFreeTicket(ScheduleParameters params) throws NotFoundException, org.apache.thrift.TException;
 
     /**
      * Метод для получения расписания врача пачкой
-     * @param personId                  1)Идетификатор врача
-     * @param begDate                   2)Дата начала периода за который получаем расписание
-     * @param endDate                   3)Дата окончания периода за который получаем расписание
-     * @param hospitalUidFrom           4)Идентификатор ЛПУ из которого производится запись
+     * @param params Параметры для получения расписания
      * @return map<timestamp, Amb> - карта вида <[Дата приема], [Расписание на эту дату]>,
      * в случае отсутствия расписания на указанную дату набор ключ-значение опускается
      * @throws NotFoundException        когда нету такого идентификатора врача
      * 
-     * @param personId
-     * @param begDate
-     * @param endDate
-     * @param hospitalUidFrom
+     * @param params
      */
-    public Map<Long,Amb> getPersonSchedule(int personId, long begDate, long endDate, String hospitalUidFrom) throws NotFoundException, org.apache.thrift.TException;
+    public Map<Long,Amb> getPersonSchedule(ScheduleParameters params) throws NotFoundException, org.apache.thrift.TException;
 
     public Map<Integer,PatientInfo> getPatientInfo(List<Integer> patientIds) throws NotFoundException, SQLException, org.apache.thrift.TException;
 
@@ -165,9 +155,9 @@ public class Communications {
 
     public void checkForNewQueueCoupons(org.apache.thrift.async.AsyncMethodCallback<AsyncClient.checkForNewQueueCoupons_call> resultHandler) throws org.apache.thrift.TException;
 
-    public void getFirstFreeTicket(int personId, long dateTime, String hospitalUidFrom, org.apache.thrift.async.AsyncMethodCallback<AsyncClient.getFirstFreeTicket_call> resultHandler) throws org.apache.thrift.TException;
+    public void getFirstFreeTicket(ScheduleParameters params, org.apache.thrift.async.AsyncMethodCallback<AsyncClient.getFirstFreeTicket_call> resultHandler) throws org.apache.thrift.TException;
 
-    public void getPersonSchedule(int personId, long begDate, long endDate, String hospitalUidFrom, org.apache.thrift.async.AsyncMethodCallback<AsyncClient.getPersonSchedule_call> resultHandler) throws org.apache.thrift.TException;
+    public void getPersonSchedule(ScheduleParameters params, org.apache.thrift.async.AsyncMethodCallback<AsyncClient.getPersonSchedule_call> resultHandler) throws org.apache.thrift.TException;
 
     public void getPatientInfo(List<Integer> patientIds, org.apache.thrift.async.AsyncMethodCallback<AsyncClient.getPatientInfo_call> resultHandler) throws org.apache.thrift.TException;
 
@@ -613,18 +603,16 @@ public class Communications {
       throw new org.apache.thrift.TApplicationException(org.apache.thrift.TApplicationException.MISSING_RESULT, "checkForNewQueueCoupons failed: unknown result");
     }
 
-    public FreeTicket getFirstFreeTicket(int personId, long dateTime, String hospitalUidFrom) throws NotFoundException, org.apache.thrift.TException
+    public FreeTicket getFirstFreeTicket(ScheduleParameters params) throws NotFoundException, org.apache.thrift.TException
     {
-      send_getFirstFreeTicket(personId, dateTime, hospitalUidFrom);
+      send_getFirstFreeTicket(params);
       return recv_getFirstFreeTicket();
     }
 
-    public void send_getFirstFreeTicket(int personId, long dateTime, String hospitalUidFrom) throws org.apache.thrift.TException
+    public void send_getFirstFreeTicket(ScheduleParameters params) throws org.apache.thrift.TException
     {
       getFirstFreeTicket_args args = new getFirstFreeTicket_args();
-      args.setPersonId(personId);
-      args.setDateTime(dateTime);
-      args.setHospitalUidFrom(hospitalUidFrom);
+      args.setParams(params);
       sendBase("getFirstFreeTicket", args);
     }
 
@@ -641,19 +629,16 @@ public class Communications {
       throw new org.apache.thrift.TApplicationException(org.apache.thrift.TApplicationException.MISSING_RESULT, "getFirstFreeTicket failed: unknown result");
     }
 
-    public Map<Long,Amb> getPersonSchedule(int personId, long begDate, long endDate, String hospitalUidFrom) throws NotFoundException, org.apache.thrift.TException
+    public Map<Long,Amb> getPersonSchedule(ScheduleParameters params) throws NotFoundException, org.apache.thrift.TException
     {
-      send_getPersonSchedule(personId, begDate, endDate, hospitalUidFrom);
+      send_getPersonSchedule(params);
       return recv_getPersonSchedule();
     }
 
-    public void send_getPersonSchedule(int personId, long begDate, long endDate, String hospitalUidFrom) throws org.apache.thrift.TException
+    public void send_getPersonSchedule(ScheduleParameters params) throws org.apache.thrift.TException
     {
       getPersonSchedule_args args = new getPersonSchedule_args();
-      args.setPersonId(personId);
-      args.setBegDate(begDate);
-      args.setEndDate(endDate);
-      args.setHospitalUidFrom(hospitalUidFrom);
+      args.setParams(params);
       sendBase("getPersonSchedule", args);
     }
 
@@ -1346,30 +1331,24 @@ public class Communications {
       }
     }
 
-    public void getFirstFreeTicket(int personId, long dateTime, String hospitalUidFrom, org.apache.thrift.async.AsyncMethodCallback<getFirstFreeTicket_call> resultHandler) throws org.apache.thrift.TException {
+    public void getFirstFreeTicket(ScheduleParameters params, org.apache.thrift.async.AsyncMethodCallback<getFirstFreeTicket_call> resultHandler) throws org.apache.thrift.TException {
       checkReady();
-      getFirstFreeTicket_call method_call = new getFirstFreeTicket_call(personId, dateTime, hospitalUidFrom, resultHandler, this, ___protocolFactory, ___transport);
+      getFirstFreeTicket_call method_call = new getFirstFreeTicket_call(params, resultHandler, this, ___protocolFactory, ___transport);
       this.___currentMethod = method_call;
       ___manager.call(method_call);
     }
 
     public static class getFirstFreeTicket_call extends org.apache.thrift.async.TAsyncMethodCall {
-      private int personId;
-      private long dateTime;
-      private String hospitalUidFrom;
-      public getFirstFreeTicket_call(int personId, long dateTime, String hospitalUidFrom, org.apache.thrift.async.AsyncMethodCallback<getFirstFreeTicket_call> resultHandler, org.apache.thrift.async.TAsyncClient client, org.apache.thrift.protocol.TProtocolFactory protocolFactory, org.apache.thrift.transport.TNonblockingTransport transport) throws org.apache.thrift.TException {
+      private ScheduleParameters params;
+      public getFirstFreeTicket_call(ScheduleParameters params, org.apache.thrift.async.AsyncMethodCallback<getFirstFreeTicket_call> resultHandler, org.apache.thrift.async.TAsyncClient client, org.apache.thrift.protocol.TProtocolFactory protocolFactory, org.apache.thrift.transport.TNonblockingTransport transport) throws org.apache.thrift.TException {
         super(client, protocolFactory, transport, resultHandler, false);
-        this.personId = personId;
-        this.dateTime = dateTime;
-        this.hospitalUidFrom = hospitalUidFrom;
+        this.params = params;
       }
 
       public void write_args(org.apache.thrift.protocol.TProtocol prot) throws org.apache.thrift.TException {
         prot.writeMessageBegin(new org.apache.thrift.protocol.TMessage("getFirstFreeTicket", org.apache.thrift.protocol.TMessageType.CALL, 0));
         getFirstFreeTicket_args args = new getFirstFreeTicket_args();
-        args.setPersonId(personId);
-        args.setDateTime(dateTime);
-        args.setHospitalUidFrom(hospitalUidFrom);
+        args.setParams(params);
         args.write(prot);
         prot.writeMessageEnd();
       }
@@ -1384,33 +1363,24 @@ public class Communications {
       }
     }
 
-    public void getPersonSchedule(int personId, long begDate, long endDate, String hospitalUidFrom, org.apache.thrift.async.AsyncMethodCallback<getPersonSchedule_call> resultHandler) throws org.apache.thrift.TException {
+    public void getPersonSchedule(ScheduleParameters params, org.apache.thrift.async.AsyncMethodCallback<getPersonSchedule_call> resultHandler) throws org.apache.thrift.TException {
       checkReady();
-      getPersonSchedule_call method_call = new getPersonSchedule_call(personId, begDate, endDate, hospitalUidFrom, resultHandler, this, ___protocolFactory, ___transport);
+      getPersonSchedule_call method_call = new getPersonSchedule_call(params, resultHandler, this, ___protocolFactory, ___transport);
       this.___currentMethod = method_call;
       ___manager.call(method_call);
     }
 
     public static class getPersonSchedule_call extends org.apache.thrift.async.TAsyncMethodCall {
-      private int personId;
-      private long begDate;
-      private long endDate;
-      private String hospitalUidFrom;
-      public getPersonSchedule_call(int personId, long begDate, long endDate, String hospitalUidFrom, org.apache.thrift.async.AsyncMethodCallback<getPersonSchedule_call> resultHandler, org.apache.thrift.async.TAsyncClient client, org.apache.thrift.protocol.TProtocolFactory protocolFactory, org.apache.thrift.transport.TNonblockingTransport transport) throws org.apache.thrift.TException {
+      private ScheduleParameters params;
+      public getPersonSchedule_call(ScheduleParameters params, org.apache.thrift.async.AsyncMethodCallback<getPersonSchedule_call> resultHandler, org.apache.thrift.async.TAsyncClient client, org.apache.thrift.protocol.TProtocolFactory protocolFactory, org.apache.thrift.transport.TNonblockingTransport transport) throws org.apache.thrift.TException {
         super(client, protocolFactory, transport, resultHandler, false);
-        this.personId = personId;
-        this.begDate = begDate;
-        this.endDate = endDate;
-        this.hospitalUidFrom = hospitalUidFrom;
+        this.params = params;
       }
 
       public void write_args(org.apache.thrift.protocol.TProtocol prot) throws org.apache.thrift.TException {
         prot.writeMessageBegin(new org.apache.thrift.protocol.TMessage("getPersonSchedule", org.apache.thrift.protocol.TMessageType.CALL, 0));
         getPersonSchedule_args args = new getPersonSchedule_args();
-        args.setPersonId(personId);
-        args.setBegDate(begDate);
-        args.setEndDate(endDate);
-        args.setHospitalUidFrom(hospitalUidFrom);
+        args.setParams(params);
         args.write(prot);
         prot.writeMessageEnd();
       }
@@ -2068,7 +2038,7 @@ public class Communications {
       public getFirstFreeTicket_result getResult(I iface, getFirstFreeTicket_args args) throws org.apache.thrift.TException {
         getFirstFreeTicket_result result = new getFirstFreeTicket_result();
         try {
-          result.success = iface.getFirstFreeTicket(args.personId, args.dateTime, args.hospitalUidFrom);
+          result.success = iface.getFirstFreeTicket(args.params);
         } catch (NotFoundException nfExc) {
           result.nfExc = nfExc;
         }
@@ -2092,7 +2062,7 @@ public class Communications {
       public getPersonSchedule_result getResult(I iface, getPersonSchedule_args args) throws org.apache.thrift.TException {
         getPersonSchedule_result result = new getPersonSchedule_result();
         try {
-          result.success = iface.getPersonSchedule(args.personId, args.begDate, args.endDate, args.hospitalUidFrom);
+          result.success = iface.getPersonSchedule(args.params);
         } catch (NotFoundException nfExc) {
           result.nfExc = nfExc;
         }
@@ -15866,9 +15836,7 @@ public class Communications {
   public static class getFirstFreeTicket_args implements org.apache.thrift.TBase<getFirstFreeTicket_args, getFirstFreeTicket_args._Fields>, java.io.Serializable, Cloneable   {
     private static final org.apache.thrift.protocol.TStruct STRUCT_DESC = new org.apache.thrift.protocol.TStruct("getFirstFreeTicket_args");
 
-    private static final org.apache.thrift.protocol.TField PERSON_ID_FIELD_DESC = new org.apache.thrift.protocol.TField("personId", org.apache.thrift.protocol.TType.I32, (short)1);
-    private static final org.apache.thrift.protocol.TField DATE_TIME_FIELD_DESC = new org.apache.thrift.protocol.TField("dateTime", org.apache.thrift.protocol.TType.I64, (short)2);
-    private static final org.apache.thrift.protocol.TField HOSPITAL_UID_FROM_FIELD_DESC = new org.apache.thrift.protocol.TField("hospitalUidFrom", org.apache.thrift.protocol.TType.STRING, (short)3);
+    private static final org.apache.thrift.protocol.TField PARAMS_FIELD_DESC = new org.apache.thrift.protocol.TField("params", org.apache.thrift.protocol.TType.STRUCT, (short)1);
 
     private static final Map<Class<? extends IScheme>, SchemeFactory> schemes = new HashMap<Class<? extends IScheme>, SchemeFactory>();
     static {
@@ -15876,15 +15844,11 @@ public class Communications {
       schemes.put(TupleScheme.class, new getFirstFreeTicket_argsTupleSchemeFactory());
     }
 
-    public int personId; // required
-    public long dateTime; // required
-    public String hospitalUidFrom; // required
+    public ScheduleParameters params; // required
 
     /** The set of fields this struct contains, along with convenience methods for finding and manipulating them. */
     public enum _Fields implements org.apache.thrift.TFieldIdEnum {
-      PERSON_ID((short)1, "personId"),
-      DATE_TIME((short)2, "dateTime"),
-      HOSPITAL_UID_FROM((short)3, "hospitalUidFrom");
+      PARAMS((short)1, "params");
 
       private static final Map<String, _Fields> byName = new HashMap<String, _Fields>();
 
@@ -15899,12 +15863,8 @@ public class Communications {
        */
       public static _Fields findByThriftId(int fieldId) {
         switch(fieldId) {
-          case 1: // PERSON_ID
-            return PERSON_ID;
-          case 2: // DATE_TIME
-            return DATE_TIME;
-          case 3: // HOSPITAL_UID_FROM
-            return HOSPITAL_UID_FROM;
+          case 1: // PARAMS
+            return PARAMS;
           default:
             return null;
         }
@@ -15945,18 +15905,11 @@ public class Communications {
     }
 
     // isset id assignments
-    private static final int __PERSONID_ISSET_ID = 0;
-    private static final int __DATETIME_ISSET_ID = 1;
-    private byte __isset_bitfield = 0;
     public static final Map<_Fields, org.apache.thrift.meta_data.FieldMetaData> metaDataMap;
     static {
       Map<_Fields, org.apache.thrift.meta_data.FieldMetaData> tmpMap = new EnumMap<_Fields, org.apache.thrift.meta_data.FieldMetaData>(_Fields.class);
-      tmpMap.put(_Fields.PERSON_ID, new org.apache.thrift.meta_data.FieldMetaData("personId", org.apache.thrift.TFieldRequirementType.DEFAULT, 
-          new org.apache.thrift.meta_data.FieldValueMetaData(org.apache.thrift.protocol.TType.I32)));
-      tmpMap.put(_Fields.DATE_TIME, new org.apache.thrift.meta_data.FieldMetaData("dateTime", org.apache.thrift.TFieldRequirementType.DEFAULT, 
-          new org.apache.thrift.meta_data.FieldValueMetaData(org.apache.thrift.protocol.TType.I64          , "timestamp")));
-      tmpMap.put(_Fields.HOSPITAL_UID_FROM, new org.apache.thrift.meta_data.FieldMetaData("hospitalUidFrom", org.apache.thrift.TFieldRequirementType.DEFAULT, 
-          new org.apache.thrift.meta_data.FieldValueMetaData(org.apache.thrift.protocol.TType.STRING)));
+      tmpMap.put(_Fields.PARAMS, new org.apache.thrift.meta_data.FieldMetaData("params", org.apache.thrift.TFieldRequirementType.DEFAULT, 
+          new org.apache.thrift.meta_data.StructMetaData(org.apache.thrift.protocol.TType.STRUCT, ScheduleParameters.class)));
       metaDataMap = Collections.unmodifiableMap(tmpMap);
       org.apache.thrift.meta_data.FieldMetaData.addStructMetaDataMap(getFirstFreeTicket_args.class, metaDataMap);
     }
@@ -15965,27 +15918,18 @@ public class Communications {
     }
 
     public getFirstFreeTicket_args(
-      int personId,
-      long dateTime,
-      String hospitalUidFrom)
+      ScheduleParameters params)
     {
       this();
-      this.personId = personId;
-      setPersonIdIsSet(true);
-      this.dateTime = dateTime;
-      setDateTimeIsSet(true);
-      this.hospitalUidFrom = hospitalUidFrom;
+      this.params = params;
     }
 
     /**
      * Performs a deep copy on <i>other</i>.
      */
     public getFirstFreeTicket_args(getFirstFreeTicket_args other) {
-      __isset_bitfield = other.__isset_bitfield;
-      this.personId = other.personId;
-      this.dateTime = other.dateTime;
-      if (other.isSetHospitalUidFrom()) {
-        this.hospitalUidFrom = other.hospitalUidFrom;
+      if (other.isSetParams()) {
+        this.params = new ScheduleParameters(other.params);
       }
     }
 
@@ -15995,106 +15939,40 @@ public class Communications {
 
     @Override
     public void clear() {
-      setPersonIdIsSet(false);
-      this.personId = 0;
-      setDateTimeIsSet(false);
-      this.dateTime = 0;
-      this.hospitalUidFrom = null;
+      this.params = null;
     }
 
-    public int getPersonId() {
-      return this.personId;
+    public ScheduleParameters getParams() {
+      return this.params;
     }
 
-    public getFirstFreeTicket_args setPersonId(int personId) {
-      this.personId = personId;
-      setPersonIdIsSet(true);
+    public getFirstFreeTicket_args setParams(ScheduleParameters params) {
+      this.params = params;
       return this;
     }
 
-    public void unsetPersonId() {
-      __isset_bitfield = EncodingUtils.clearBit(__isset_bitfield, __PERSONID_ISSET_ID);
+    public void unsetParams() {
+      this.params = null;
     }
 
-    /** Returns true if field personId is set (has been assigned a value) and false otherwise */
-    public boolean isSetPersonId() {
-      return EncodingUtils.testBit(__isset_bitfield, __PERSONID_ISSET_ID);
+    /** Returns true if field params is set (has been assigned a value) and false otherwise */
+    public boolean isSetParams() {
+      return this.params != null;
     }
 
-    public void setPersonIdIsSet(boolean value) {
-      __isset_bitfield = EncodingUtils.setBit(__isset_bitfield, __PERSONID_ISSET_ID, value);
-    }
-
-    public long getDateTime() {
-      return this.dateTime;
-    }
-
-    public getFirstFreeTicket_args setDateTime(long dateTime) {
-      this.dateTime = dateTime;
-      setDateTimeIsSet(true);
-      return this;
-    }
-
-    public void unsetDateTime() {
-      __isset_bitfield = EncodingUtils.clearBit(__isset_bitfield, __DATETIME_ISSET_ID);
-    }
-
-    /** Returns true if field dateTime is set (has been assigned a value) and false otherwise */
-    public boolean isSetDateTime() {
-      return EncodingUtils.testBit(__isset_bitfield, __DATETIME_ISSET_ID);
-    }
-
-    public void setDateTimeIsSet(boolean value) {
-      __isset_bitfield = EncodingUtils.setBit(__isset_bitfield, __DATETIME_ISSET_ID, value);
-    }
-
-    public String getHospitalUidFrom() {
-      return this.hospitalUidFrom;
-    }
-
-    public getFirstFreeTicket_args setHospitalUidFrom(String hospitalUidFrom) {
-      this.hospitalUidFrom = hospitalUidFrom;
-      return this;
-    }
-
-    public void unsetHospitalUidFrom() {
-      this.hospitalUidFrom = null;
-    }
-
-    /** Returns true if field hospitalUidFrom is set (has been assigned a value) and false otherwise */
-    public boolean isSetHospitalUidFrom() {
-      return this.hospitalUidFrom != null;
-    }
-
-    public void setHospitalUidFromIsSet(boolean value) {
+    public void setParamsIsSet(boolean value) {
       if (!value) {
-        this.hospitalUidFrom = null;
+        this.params = null;
       }
     }
 
     public void setFieldValue(_Fields field, Object value) {
       switch (field) {
-      case PERSON_ID:
+      case PARAMS:
         if (value == null) {
-          unsetPersonId();
+          unsetParams();
         } else {
-          setPersonId((Integer)value);
-        }
-        break;
-
-      case DATE_TIME:
-        if (value == null) {
-          unsetDateTime();
-        } else {
-          setDateTime((Long)value);
-        }
-        break;
-
-      case HOSPITAL_UID_FROM:
-        if (value == null) {
-          unsetHospitalUidFrom();
-        } else {
-          setHospitalUidFrom((String)value);
+          setParams((ScheduleParameters)value);
         }
         break;
 
@@ -16103,14 +15981,8 @@ public class Communications {
 
     public Object getFieldValue(_Fields field) {
       switch (field) {
-      case PERSON_ID:
-        return Integer.valueOf(getPersonId());
-
-      case DATE_TIME:
-        return Long.valueOf(getDateTime());
-
-      case HOSPITAL_UID_FROM:
-        return getHospitalUidFrom();
+      case PARAMS:
+        return getParams();
 
       }
       throw new IllegalStateException();
@@ -16123,12 +15995,8 @@ public class Communications {
       }
 
       switch (field) {
-      case PERSON_ID:
-        return isSetPersonId();
-      case DATE_TIME:
-        return isSetDateTime();
-      case HOSPITAL_UID_FROM:
-        return isSetHospitalUidFrom();
+      case PARAMS:
+        return isSetParams();
       }
       throw new IllegalStateException();
     }
@@ -16146,30 +16014,12 @@ public class Communications {
       if (that == null)
         return false;
 
-      boolean this_present_personId = true;
-      boolean that_present_personId = true;
-      if (this_present_personId || that_present_personId) {
-        if (!(this_present_personId && that_present_personId))
+      boolean this_present_params = true && this.isSetParams();
+      boolean that_present_params = true && that.isSetParams();
+      if (this_present_params || that_present_params) {
+        if (!(this_present_params && that_present_params))
           return false;
-        if (this.personId != that.personId)
-          return false;
-      }
-
-      boolean this_present_dateTime = true;
-      boolean that_present_dateTime = true;
-      if (this_present_dateTime || that_present_dateTime) {
-        if (!(this_present_dateTime && that_present_dateTime))
-          return false;
-        if (this.dateTime != that.dateTime)
-          return false;
-      }
-
-      boolean this_present_hospitalUidFrom = true && this.isSetHospitalUidFrom();
-      boolean that_present_hospitalUidFrom = true && that.isSetHospitalUidFrom();
-      if (this_present_hospitalUidFrom || that_present_hospitalUidFrom) {
-        if (!(this_present_hospitalUidFrom && that_present_hospitalUidFrom))
-          return false;
-        if (!this.hospitalUidFrom.equals(that.hospitalUidFrom))
+        if (!this.params.equals(that.params))
           return false;
       }
 
@@ -16189,32 +16039,12 @@ public class Communications {
       int lastComparison = 0;
       getFirstFreeTicket_args typedOther = (getFirstFreeTicket_args)other;
 
-      lastComparison = Boolean.valueOf(isSetPersonId()).compareTo(typedOther.isSetPersonId());
+      lastComparison = Boolean.valueOf(isSetParams()).compareTo(typedOther.isSetParams());
       if (lastComparison != 0) {
         return lastComparison;
       }
-      if (isSetPersonId()) {
-        lastComparison = org.apache.thrift.TBaseHelper.compareTo(this.personId, typedOther.personId);
-        if (lastComparison != 0) {
-          return lastComparison;
-        }
-      }
-      lastComparison = Boolean.valueOf(isSetDateTime()).compareTo(typedOther.isSetDateTime());
-      if (lastComparison != 0) {
-        return lastComparison;
-      }
-      if (isSetDateTime()) {
-        lastComparison = org.apache.thrift.TBaseHelper.compareTo(this.dateTime, typedOther.dateTime);
-        if (lastComparison != 0) {
-          return lastComparison;
-        }
-      }
-      lastComparison = Boolean.valueOf(isSetHospitalUidFrom()).compareTo(typedOther.isSetHospitalUidFrom());
-      if (lastComparison != 0) {
-        return lastComparison;
-      }
-      if (isSetHospitalUidFrom()) {
-        lastComparison = org.apache.thrift.TBaseHelper.compareTo(this.hospitalUidFrom, typedOther.hospitalUidFrom);
+      if (isSetParams()) {
+        lastComparison = org.apache.thrift.TBaseHelper.compareTo(this.params, typedOther.params);
         if (lastComparison != 0) {
           return lastComparison;
         }
@@ -16239,19 +16069,11 @@ public class Communications {
       StringBuilder sb = new StringBuilder("getFirstFreeTicket_args(");
       boolean first = true;
 
-      sb.append("personId:");
-      sb.append(this.personId);
-      first = false;
-      if (!first) sb.append(", ");
-      sb.append("dateTime:");
-      sb.append(this.dateTime);
-      first = false;
-      if (!first) sb.append(", ");
-      sb.append("hospitalUidFrom:");
-      if (this.hospitalUidFrom == null) {
+      sb.append("params:");
+      if (this.params == null) {
         sb.append("null");
       } else {
-        sb.append(this.hospitalUidFrom);
+        sb.append(this.params);
       }
       first = false;
       sb.append(")");
@@ -16261,6 +16083,9 @@ public class Communications {
     public void validate() throws org.apache.thrift.TException {
       // check for required fields
       // check for sub-struct validity
+      if (params != null) {
+        params.validate();
+      }
     }
 
     private void writeObject(java.io.ObjectOutputStream out) throws java.io.IOException {
@@ -16273,8 +16098,6 @@ public class Communications {
 
     private void readObject(java.io.ObjectInputStream in) throws java.io.IOException, ClassNotFoundException {
       try {
-        // it doesn't seem like you should have to do this, but java serialization is wacky, and doesn't call the default constructor.
-        __isset_bitfield = 0;
         read(new org.apache.thrift.protocol.TCompactProtocol(new org.apache.thrift.transport.TIOStreamTransport(in)));
       } catch (org.apache.thrift.TException te) {
         throw new java.io.IOException(te);
@@ -16299,26 +16122,11 @@ public class Communications {
             break;
           }
           switch (schemeField.id) {
-            case 1: // PERSON_ID
-              if (schemeField.type == org.apache.thrift.protocol.TType.I32) {
-                struct.personId = iprot.readI32();
-                struct.setPersonIdIsSet(true);
-              } else { 
-                org.apache.thrift.protocol.TProtocolUtil.skip(iprot, schemeField.type);
-              }
-              break;
-            case 2: // DATE_TIME
-              if (schemeField.type == org.apache.thrift.protocol.TType.I64) {
-                struct.dateTime = iprot.readI64();
-                struct.setDateTimeIsSet(true);
-              } else { 
-                org.apache.thrift.protocol.TProtocolUtil.skip(iprot, schemeField.type);
-              }
-              break;
-            case 3: // HOSPITAL_UID_FROM
-              if (schemeField.type == org.apache.thrift.protocol.TType.STRING) {
-                struct.hospitalUidFrom = iprot.readString();
-                struct.setHospitalUidFromIsSet(true);
+            case 1: // PARAMS
+              if (schemeField.type == org.apache.thrift.protocol.TType.STRUCT) {
+                struct.params = new ScheduleParameters();
+                struct.params.read(iprot);
+                struct.setParamsIsSet(true);
               } else { 
                 org.apache.thrift.protocol.TProtocolUtil.skip(iprot, schemeField.type);
               }
@@ -16338,15 +16146,9 @@ public class Communications {
         struct.validate();
 
         oprot.writeStructBegin(STRUCT_DESC);
-        oprot.writeFieldBegin(PERSON_ID_FIELD_DESC);
-        oprot.writeI32(struct.personId);
-        oprot.writeFieldEnd();
-        oprot.writeFieldBegin(DATE_TIME_FIELD_DESC);
-        oprot.writeI64(struct.dateTime);
-        oprot.writeFieldEnd();
-        if (struct.hospitalUidFrom != null) {
-          oprot.writeFieldBegin(HOSPITAL_UID_FROM_FIELD_DESC);
-          oprot.writeString(struct.hospitalUidFrom);
+        if (struct.params != null) {
+          oprot.writeFieldBegin(PARAMS_FIELD_DESC);
+          struct.params.write(oprot);
           oprot.writeFieldEnd();
         }
         oprot.writeFieldStop();
@@ -16367,42 +16169,23 @@ public class Communications {
       public void write(org.apache.thrift.protocol.TProtocol prot, getFirstFreeTicket_args struct) throws org.apache.thrift.TException {
         TTupleProtocol oprot = (TTupleProtocol) prot;
         BitSet optionals = new BitSet();
-        if (struct.isSetPersonId()) {
+        if (struct.isSetParams()) {
           optionals.set(0);
         }
-        if (struct.isSetDateTime()) {
-          optionals.set(1);
-        }
-        if (struct.isSetHospitalUidFrom()) {
-          optionals.set(2);
-        }
-        oprot.writeBitSet(optionals, 3);
-        if (struct.isSetPersonId()) {
-          oprot.writeI32(struct.personId);
-        }
-        if (struct.isSetDateTime()) {
-          oprot.writeI64(struct.dateTime);
-        }
-        if (struct.isSetHospitalUidFrom()) {
-          oprot.writeString(struct.hospitalUidFrom);
+        oprot.writeBitSet(optionals, 1);
+        if (struct.isSetParams()) {
+          struct.params.write(oprot);
         }
       }
 
       @Override
       public void read(org.apache.thrift.protocol.TProtocol prot, getFirstFreeTicket_args struct) throws org.apache.thrift.TException {
         TTupleProtocol iprot = (TTupleProtocol) prot;
-        BitSet incoming = iprot.readBitSet(3);
+        BitSet incoming = iprot.readBitSet(1);
         if (incoming.get(0)) {
-          struct.personId = iprot.readI32();
-          struct.setPersonIdIsSet(true);
-        }
-        if (incoming.get(1)) {
-          struct.dateTime = iprot.readI64();
-          struct.setDateTimeIsSet(true);
-        }
-        if (incoming.get(2)) {
-          struct.hospitalUidFrom = iprot.readString();
-          struct.setHospitalUidFromIsSet(true);
+          struct.params = new ScheduleParameters();
+          struct.params.read(iprot);
+          struct.setParamsIsSet(true);
         }
       }
     }
@@ -16873,10 +16656,7 @@ public class Communications {
   public static class getPersonSchedule_args implements org.apache.thrift.TBase<getPersonSchedule_args, getPersonSchedule_args._Fields>, java.io.Serializable, Cloneable   {
     private static final org.apache.thrift.protocol.TStruct STRUCT_DESC = new org.apache.thrift.protocol.TStruct("getPersonSchedule_args");
 
-    private static final org.apache.thrift.protocol.TField PERSON_ID_FIELD_DESC = new org.apache.thrift.protocol.TField("personId", org.apache.thrift.protocol.TType.I32, (short)1);
-    private static final org.apache.thrift.protocol.TField BEG_DATE_FIELD_DESC = new org.apache.thrift.protocol.TField("begDate", org.apache.thrift.protocol.TType.I64, (short)2);
-    private static final org.apache.thrift.protocol.TField END_DATE_FIELD_DESC = new org.apache.thrift.protocol.TField("endDate", org.apache.thrift.protocol.TType.I64, (short)3);
-    private static final org.apache.thrift.protocol.TField HOSPITAL_UID_FROM_FIELD_DESC = new org.apache.thrift.protocol.TField("hospitalUidFrom", org.apache.thrift.protocol.TType.STRING, (short)4);
+    private static final org.apache.thrift.protocol.TField PARAMS_FIELD_DESC = new org.apache.thrift.protocol.TField("params", org.apache.thrift.protocol.TType.STRUCT, (short)1);
 
     private static final Map<Class<? extends IScheme>, SchemeFactory> schemes = new HashMap<Class<? extends IScheme>, SchemeFactory>();
     static {
@@ -16884,17 +16664,11 @@ public class Communications {
       schemes.put(TupleScheme.class, new getPersonSchedule_argsTupleSchemeFactory());
     }
 
-    public int personId; // required
-    public long begDate; // required
-    public long endDate; // required
-    public String hospitalUidFrom; // required
+    public ScheduleParameters params; // required
 
     /** The set of fields this struct contains, along with convenience methods for finding and manipulating them. */
     public enum _Fields implements org.apache.thrift.TFieldIdEnum {
-      PERSON_ID((short)1, "personId"),
-      BEG_DATE((short)2, "begDate"),
-      END_DATE((short)3, "endDate"),
-      HOSPITAL_UID_FROM((short)4, "hospitalUidFrom");
+      PARAMS((short)1, "params");
 
       private static final Map<String, _Fields> byName = new HashMap<String, _Fields>();
 
@@ -16909,14 +16683,8 @@ public class Communications {
        */
       public static _Fields findByThriftId(int fieldId) {
         switch(fieldId) {
-          case 1: // PERSON_ID
-            return PERSON_ID;
-          case 2: // BEG_DATE
-            return BEG_DATE;
-          case 3: // END_DATE
-            return END_DATE;
-          case 4: // HOSPITAL_UID_FROM
-            return HOSPITAL_UID_FROM;
+          case 1: // PARAMS
+            return PARAMS;
           default:
             return null;
         }
@@ -16957,21 +16725,11 @@ public class Communications {
     }
 
     // isset id assignments
-    private static final int __PERSONID_ISSET_ID = 0;
-    private static final int __BEGDATE_ISSET_ID = 1;
-    private static final int __ENDDATE_ISSET_ID = 2;
-    private byte __isset_bitfield = 0;
     public static final Map<_Fields, org.apache.thrift.meta_data.FieldMetaData> metaDataMap;
     static {
       Map<_Fields, org.apache.thrift.meta_data.FieldMetaData> tmpMap = new EnumMap<_Fields, org.apache.thrift.meta_data.FieldMetaData>(_Fields.class);
-      tmpMap.put(_Fields.PERSON_ID, new org.apache.thrift.meta_data.FieldMetaData("personId", org.apache.thrift.TFieldRequirementType.DEFAULT, 
-          new org.apache.thrift.meta_data.FieldValueMetaData(org.apache.thrift.protocol.TType.I32)));
-      tmpMap.put(_Fields.BEG_DATE, new org.apache.thrift.meta_data.FieldMetaData("begDate", org.apache.thrift.TFieldRequirementType.DEFAULT, 
-          new org.apache.thrift.meta_data.FieldValueMetaData(org.apache.thrift.protocol.TType.I64          , "timestamp")));
-      tmpMap.put(_Fields.END_DATE, new org.apache.thrift.meta_data.FieldMetaData("endDate", org.apache.thrift.TFieldRequirementType.DEFAULT, 
-          new org.apache.thrift.meta_data.FieldValueMetaData(org.apache.thrift.protocol.TType.I64          , "timestamp")));
-      tmpMap.put(_Fields.HOSPITAL_UID_FROM, new org.apache.thrift.meta_data.FieldMetaData("hospitalUidFrom", org.apache.thrift.TFieldRequirementType.DEFAULT, 
-          new org.apache.thrift.meta_data.FieldValueMetaData(org.apache.thrift.protocol.TType.STRING)));
+      tmpMap.put(_Fields.PARAMS, new org.apache.thrift.meta_data.FieldMetaData("params", org.apache.thrift.TFieldRequirementType.DEFAULT, 
+          new org.apache.thrift.meta_data.StructMetaData(org.apache.thrift.protocol.TType.STRUCT, ScheduleParameters.class)));
       metaDataMap = Collections.unmodifiableMap(tmpMap);
       org.apache.thrift.meta_data.FieldMetaData.addStructMetaDataMap(getPersonSchedule_args.class, metaDataMap);
     }
@@ -16980,31 +16738,18 @@ public class Communications {
     }
 
     public getPersonSchedule_args(
-      int personId,
-      long begDate,
-      long endDate,
-      String hospitalUidFrom)
+      ScheduleParameters params)
     {
       this();
-      this.personId = personId;
-      setPersonIdIsSet(true);
-      this.begDate = begDate;
-      setBegDateIsSet(true);
-      this.endDate = endDate;
-      setEndDateIsSet(true);
-      this.hospitalUidFrom = hospitalUidFrom;
+      this.params = params;
     }
 
     /**
      * Performs a deep copy on <i>other</i>.
      */
     public getPersonSchedule_args(getPersonSchedule_args other) {
-      __isset_bitfield = other.__isset_bitfield;
-      this.personId = other.personId;
-      this.begDate = other.begDate;
-      this.endDate = other.endDate;
-      if (other.isSetHospitalUidFrom()) {
-        this.hospitalUidFrom = other.hospitalUidFrom;
+      if (other.isSetParams()) {
+        this.params = new ScheduleParameters(other.params);
       }
     }
 
@@ -17014,139 +16759,40 @@ public class Communications {
 
     @Override
     public void clear() {
-      setPersonIdIsSet(false);
-      this.personId = 0;
-      setBegDateIsSet(false);
-      this.begDate = 0;
-      setEndDateIsSet(false);
-      this.endDate = 0;
-      this.hospitalUidFrom = null;
+      this.params = null;
     }
 
-    public int getPersonId() {
-      return this.personId;
+    public ScheduleParameters getParams() {
+      return this.params;
     }
 
-    public getPersonSchedule_args setPersonId(int personId) {
-      this.personId = personId;
-      setPersonIdIsSet(true);
+    public getPersonSchedule_args setParams(ScheduleParameters params) {
+      this.params = params;
       return this;
     }
 
-    public void unsetPersonId() {
-      __isset_bitfield = EncodingUtils.clearBit(__isset_bitfield, __PERSONID_ISSET_ID);
+    public void unsetParams() {
+      this.params = null;
     }
 
-    /** Returns true if field personId is set (has been assigned a value) and false otherwise */
-    public boolean isSetPersonId() {
-      return EncodingUtils.testBit(__isset_bitfield, __PERSONID_ISSET_ID);
+    /** Returns true if field params is set (has been assigned a value) and false otherwise */
+    public boolean isSetParams() {
+      return this.params != null;
     }
 
-    public void setPersonIdIsSet(boolean value) {
-      __isset_bitfield = EncodingUtils.setBit(__isset_bitfield, __PERSONID_ISSET_ID, value);
-    }
-
-    public long getBegDate() {
-      return this.begDate;
-    }
-
-    public getPersonSchedule_args setBegDate(long begDate) {
-      this.begDate = begDate;
-      setBegDateIsSet(true);
-      return this;
-    }
-
-    public void unsetBegDate() {
-      __isset_bitfield = EncodingUtils.clearBit(__isset_bitfield, __BEGDATE_ISSET_ID);
-    }
-
-    /** Returns true if field begDate is set (has been assigned a value) and false otherwise */
-    public boolean isSetBegDate() {
-      return EncodingUtils.testBit(__isset_bitfield, __BEGDATE_ISSET_ID);
-    }
-
-    public void setBegDateIsSet(boolean value) {
-      __isset_bitfield = EncodingUtils.setBit(__isset_bitfield, __BEGDATE_ISSET_ID, value);
-    }
-
-    public long getEndDate() {
-      return this.endDate;
-    }
-
-    public getPersonSchedule_args setEndDate(long endDate) {
-      this.endDate = endDate;
-      setEndDateIsSet(true);
-      return this;
-    }
-
-    public void unsetEndDate() {
-      __isset_bitfield = EncodingUtils.clearBit(__isset_bitfield, __ENDDATE_ISSET_ID);
-    }
-
-    /** Returns true if field endDate is set (has been assigned a value) and false otherwise */
-    public boolean isSetEndDate() {
-      return EncodingUtils.testBit(__isset_bitfield, __ENDDATE_ISSET_ID);
-    }
-
-    public void setEndDateIsSet(boolean value) {
-      __isset_bitfield = EncodingUtils.setBit(__isset_bitfield, __ENDDATE_ISSET_ID, value);
-    }
-
-    public String getHospitalUidFrom() {
-      return this.hospitalUidFrom;
-    }
-
-    public getPersonSchedule_args setHospitalUidFrom(String hospitalUidFrom) {
-      this.hospitalUidFrom = hospitalUidFrom;
-      return this;
-    }
-
-    public void unsetHospitalUidFrom() {
-      this.hospitalUidFrom = null;
-    }
-
-    /** Returns true if field hospitalUidFrom is set (has been assigned a value) and false otherwise */
-    public boolean isSetHospitalUidFrom() {
-      return this.hospitalUidFrom != null;
-    }
-
-    public void setHospitalUidFromIsSet(boolean value) {
+    public void setParamsIsSet(boolean value) {
       if (!value) {
-        this.hospitalUidFrom = null;
+        this.params = null;
       }
     }
 
     public void setFieldValue(_Fields field, Object value) {
       switch (field) {
-      case PERSON_ID:
+      case PARAMS:
         if (value == null) {
-          unsetPersonId();
+          unsetParams();
         } else {
-          setPersonId((Integer)value);
-        }
-        break;
-
-      case BEG_DATE:
-        if (value == null) {
-          unsetBegDate();
-        } else {
-          setBegDate((Long)value);
-        }
-        break;
-
-      case END_DATE:
-        if (value == null) {
-          unsetEndDate();
-        } else {
-          setEndDate((Long)value);
-        }
-        break;
-
-      case HOSPITAL_UID_FROM:
-        if (value == null) {
-          unsetHospitalUidFrom();
-        } else {
-          setHospitalUidFrom((String)value);
+          setParams((ScheduleParameters)value);
         }
         break;
 
@@ -17155,17 +16801,8 @@ public class Communications {
 
     public Object getFieldValue(_Fields field) {
       switch (field) {
-      case PERSON_ID:
-        return Integer.valueOf(getPersonId());
-
-      case BEG_DATE:
-        return Long.valueOf(getBegDate());
-
-      case END_DATE:
-        return Long.valueOf(getEndDate());
-
-      case HOSPITAL_UID_FROM:
-        return getHospitalUidFrom();
+      case PARAMS:
+        return getParams();
 
       }
       throw new IllegalStateException();
@@ -17178,14 +16815,8 @@ public class Communications {
       }
 
       switch (field) {
-      case PERSON_ID:
-        return isSetPersonId();
-      case BEG_DATE:
-        return isSetBegDate();
-      case END_DATE:
-        return isSetEndDate();
-      case HOSPITAL_UID_FROM:
-        return isSetHospitalUidFrom();
+      case PARAMS:
+        return isSetParams();
       }
       throw new IllegalStateException();
     }
@@ -17203,39 +16834,12 @@ public class Communications {
       if (that == null)
         return false;
 
-      boolean this_present_personId = true;
-      boolean that_present_personId = true;
-      if (this_present_personId || that_present_personId) {
-        if (!(this_present_personId && that_present_personId))
+      boolean this_present_params = true && this.isSetParams();
+      boolean that_present_params = true && that.isSetParams();
+      if (this_present_params || that_present_params) {
+        if (!(this_present_params && that_present_params))
           return false;
-        if (this.personId != that.personId)
-          return false;
-      }
-
-      boolean this_present_begDate = true;
-      boolean that_present_begDate = true;
-      if (this_present_begDate || that_present_begDate) {
-        if (!(this_present_begDate && that_present_begDate))
-          return false;
-        if (this.begDate != that.begDate)
-          return false;
-      }
-
-      boolean this_present_endDate = true;
-      boolean that_present_endDate = true;
-      if (this_present_endDate || that_present_endDate) {
-        if (!(this_present_endDate && that_present_endDate))
-          return false;
-        if (this.endDate != that.endDate)
-          return false;
-      }
-
-      boolean this_present_hospitalUidFrom = true && this.isSetHospitalUidFrom();
-      boolean that_present_hospitalUidFrom = true && that.isSetHospitalUidFrom();
-      if (this_present_hospitalUidFrom || that_present_hospitalUidFrom) {
-        if (!(this_present_hospitalUidFrom && that_present_hospitalUidFrom))
-          return false;
-        if (!this.hospitalUidFrom.equals(that.hospitalUidFrom))
+        if (!this.params.equals(that.params))
           return false;
       }
 
@@ -17255,42 +16859,12 @@ public class Communications {
       int lastComparison = 0;
       getPersonSchedule_args typedOther = (getPersonSchedule_args)other;
 
-      lastComparison = Boolean.valueOf(isSetPersonId()).compareTo(typedOther.isSetPersonId());
+      lastComparison = Boolean.valueOf(isSetParams()).compareTo(typedOther.isSetParams());
       if (lastComparison != 0) {
         return lastComparison;
       }
-      if (isSetPersonId()) {
-        lastComparison = org.apache.thrift.TBaseHelper.compareTo(this.personId, typedOther.personId);
-        if (lastComparison != 0) {
-          return lastComparison;
-        }
-      }
-      lastComparison = Boolean.valueOf(isSetBegDate()).compareTo(typedOther.isSetBegDate());
-      if (lastComparison != 0) {
-        return lastComparison;
-      }
-      if (isSetBegDate()) {
-        lastComparison = org.apache.thrift.TBaseHelper.compareTo(this.begDate, typedOther.begDate);
-        if (lastComparison != 0) {
-          return lastComparison;
-        }
-      }
-      lastComparison = Boolean.valueOf(isSetEndDate()).compareTo(typedOther.isSetEndDate());
-      if (lastComparison != 0) {
-        return lastComparison;
-      }
-      if (isSetEndDate()) {
-        lastComparison = org.apache.thrift.TBaseHelper.compareTo(this.endDate, typedOther.endDate);
-        if (lastComparison != 0) {
-          return lastComparison;
-        }
-      }
-      lastComparison = Boolean.valueOf(isSetHospitalUidFrom()).compareTo(typedOther.isSetHospitalUidFrom());
-      if (lastComparison != 0) {
-        return lastComparison;
-      }
-      if (isSetHospitalUidFrom()) {
-        lastComparison = org.apache.thrift.TBaseHelper.compareTo(this.hospitalUidFrom, typedOther.hospitalUidFrom);
+      if (isSetParams()) {
+        lastComparison = org.apache.thrift.TBaseHelper.compareTo(this.params, typedOther.params);
         if (lastComparison != 0) {
           return lastComparison;
         }
@@ -17315,23 +16889,11 @@ public class Communications {
       StringBuilder sb = new StringBuilder("getPersonSchedule_args(");
       boolean first = true;
 
-      sb.append("personId:");
-      sb.append(this.personId);
-      first = false;
-      if (!first) sb.append(", ");
-      sb.append("begDate:");
-      sb.append(this.begDate);
-      first = false;
-      if (!first) sb.append(", ");
-      sb.append("endDate:");
-      sb.append(this.endDate);
-      first = false;
-      if (!first) sb.append(", ");
-      sb.append("hospitalUidFrom:");
-      if (this.hospitalUidFrom == null) {
+      sb.append("params:");
+      if (this.params == null) {
         sb.append("null");
       } else {
-        sb.append(this.hospitalUidFrom);
+        sb.append(this.params);
       }
       first = false;
       sb.append(")");
@@ -17341,6 +16903,9 @@ public class Communications {
     public void validate() throws org.apache.thrift.TException {
       // check for required fields
       // check for sub-struct validity
+      if (params != null) {
+        params.validate();
+      }
     }
 
     private void writeObject(java.io.ObjectOutputStream out) throws java.io.IOException {
@@ -17353,8 +16918,6 @@ public class Communications {
 
     private void readObject(java.io.ObjectInputStream in) throws java.io.IOException, ClassNotFoundException {
       try {
-        // it doesn't seem like you should have to do this, but java serialization is wacky, and doesn't call the default constructor.
-        __isset_bitfield = 0;
         read(new org.apache.thrift.protocol.TCompactProtocol(new org.apache.thrift.transport.TIOStreamTransport(in)));
       } catch (org.apache.thrift.TException te) {
         throw new java.io.IOException(te);
@@ -17379,34 +16942,11 @@ public class Communications {
             break;
           }
           switch (schemeField.id) {
-            case 1: // PERSON_ID
-              if (schemeField.type == org.apache.thrift.protocol.TType.I32) {
-                struct.personId = iprot.readI32();
-                struct.setPersonIdIsSet(true);
-              } else { 
-                org.apache.thrift.protocol.TProtocolUtil.skip(iprot, schemeField.type);
-              }
-              break;
-            case 2: // BEG_DATE
-              if (schemeField.type == org.apache.thrift.protocol.TType.I64) {
-                struct.begDate = iprot.readI64();
-                struct.setBegDateIsSet(true);
-              } else { 
-                org.apache.thrift.protocol.TProtocolUtil.skip(iprot, schemeField.type);
-              }
-              break;
-            case 3: // END_DATE
-              if (schemeField.type == org.apache.thrift.protocol.TType.I64) {
-                struct.endDate = iprot.readI64();
-                struct.setEndDateIsSet(true);
-              } else { 
-                org.apache.thrift.protocol.TProtocolUtil.skip(iprot, schemeField.type);
-              }
-              break;
-            case 4: // HOSPITAL_UID_FROM
-              if (schemeField.type == org.apache.thrift.protocol.TType.STRING) {
-                struct.hospitalUidFrom = iprot.readString();
-                struct.setHospitalUidFromIsSet(true);
+            case 1: // PARAMS
+              if (schemeField.type == org.apache.thrift.protocol.TType.STRUCT) {
+                struct.params = new ScheduleParameters();
+                struct.params.read(iprot);
+                struct.setParamsIsSet(true);
               } else { 
                 org.apache.thrift.protocol.TProtocolUtil.skip(iprot, schemeField.type);
               }
@@ -17426,18 +16966,9 @@ public class Communications {
         struct.validate();
 
         oprot.writeStructBegin(STRUCT_DESC);
-        oprot.writeFieldBegin(PERSON_ID_FIELD_DESC);
-        oprot.writeI32(struct.personId);
-        oprot.writeFieldEnd();
-        oprot.writeFieldBegin(BEG_DATE_FIELD_DESC);
-        oprot.writeI64(struct.begDate);
-        oprot.writeFieldEnd();
-        oprot.writeFieldBegin(END_DATE_FIELD_DESC);
-        oprot.writeI64(struct.endDate);
-        oprot.writeFieldEnd();
-        if (struct.hospitalUidFrom != null) {
-          oprot.writeFieldBegin(HOSPITAL_UID_FROM_FIELD_DESC);
-          oprot.writeString(struct.hospitalUidFrom);
+        if (struct.params != null) {
+          oprot.writeFieldBegin(PARAMS_FIELD_DESC);
+          struct.params.write(oprot);
           oprot.writeFieldEnd();
         }
         oprot.writeFieldStop();
@@ -17458,52 +16989,23 @@ public class Communications {
       public void write(org.apache.thrift.protocol.TProtocol prot, getPersonSchedule_args struct) throws org.apache.thrift.TException {
         TTupleProtocol oprot = (TTupleProtocol) prot;
         BitSet optionals = new BitSet();
-        if (struct.isSetPersonId()) {
+        if (struct.isSetParams()) {
           optionals.set(0);
         }
-        if (struct.isSetBegDate()) {
-          optionals.set(1);
-        }
-        if (struct.isSetEndDate()) {
-          optionals.set(2);
-        }
-        if (struct.isSetHospitalUidFrom()) {
-          optionals.set(3);
-        }
-        oprot.writeBitSet(optionals, 4);
-        if (struct.isSetPersonId()) {
-          oprot.writeI32(struct.personId);
-        }
-        if (struct.isSetBegDate()) {
-          oprot.writeI64(struct.begDate);
-        }
-        if (struct.isSetEndDate()) {
-          oprot.writeI64(struct.endDate);
-        }
-        if (struct.isSetHospitalUidFrom()) {
-          oprot.writeString(struct.hospitalUidFrom);
+        oprot.writeBitSet(optionals, 1);
+        if (struct.isSetParams()) {
+          struct.params.write(oprot);
         }
       }
 
       @Override
       public void read(org.apache.thrift.protocol.TProtocol prot, getPersonSchedule_args struct) throws org.apache.thrift.TException {
         TTupleProtocol iprot = (TTupleProtocol) prot;
-        BitSet incoming = iprot.readBitSet(4);
+        BitSet incoming = iprot.readBitSet(1);
         if (incoming.get(0)) {
-          struct.personId = iprot.readI32();
-          struct.setPersonIdIsSet(true);
-        }
-        if (incoming.get(1)) {
-          struct.begDate = iprot.readI64();
-          struct.setBegDateIsSet(true);
-        }
-        if (incoming.get(2)) {
-          struct.endDate = iprot.readI64();
-          struct.setEndDateIsSet(true);
-        }
-        if (incoming.get(3)) {
-          struct.hospitalUidFrom = iprot.readString();
-          struct.setHospitalUidFromIsSet(true);
+          struct.params = new ScheduleParameters();
+          struct.params.read(iprot);
+          struct.setParamsIsSet(true);
         }
       }
     }
