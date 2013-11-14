@@ -12,7 +12,7 @@ import javax.ejb.{TransactionAttributeType, TransactionAttribute, EJB, Stateless
 import javax.interceptor.Interceptors
 import scala.collection.JavaConversions._
 import javax.persistence.{TypedQuery, PersistenceContext, EntityManager}
-import ru.korus.tmis.core.data.{QueryDataStructure, AssessmentsListRequestDataFilter, AssessmentsListRequestData}
+import ru.korus.tmis.core.data.QueryDataStructure
 import ru.korus.tmis.core.pharmacy.DbUUIDBeanLocal
 import java.util
 import ru.korus.tmis.core.filter.ListDataFilter
@@ -140,7 +140,7 @@ class DbActionBean
     a.setEvent(e)
     a.setActionType(at)
     // Исправление дефолтного значения от 03.07.2013 по задаче WEBMIS-873
-    a.setExecutor(userData.user)//a.setExecutor(at.getDefaultExecutor)
+    a.setExecutor(userData.user) //a.setExecutor(at.getDefaultExecutor)
 
     a.setStatus(ActionStatus.STARTED.getCode)
     a.setUuid(dbUUIDBeanLocal.createUUID())
@@ -174,6 +174,14 @@ class DbActionBean
     val a = getActionById(id)
     a.setStatus(status)
     a
+  }
+
+  def updateActionStatusWithFlush(id: Int, status: Short) = {
+    em.createQuery("UPDATE Action a SET a.status = :status WHERE a.id = :id")
+      .setParameter("status", status)
+      .setParameter("id", id)
+      .executeUpdate()
+    em.flush()
   }
 
   def getAppealActionByEventId(eventId: Int, atId: Int) = {
@@ -282,16 +290,16 @@ class DbActionBean
      Выполнено согласно "ТРЕБОВАНИЯМ К РАБОТЕ С МЕДИЦИНСКИМИ ДОКУМЕНТАМИ"
      */
     //val subQuery = // if(actionTypeId == i18n("db.actionType.primary").toInt || actionTypeId == i18n("db.actionType.secondary").toInt)
-                   //   "e.patient.id IN (SELECT DISTINCT e2.patient.id FROM Event e2 WHERE e2.id = :id)"
-                   //else //"e.id = :id"
+    //   "e.patient.id IN (SELECT DISTINCT e2.patient.id FROM Event e2 WHERE e2.id = :id)"
+    //else //"e.id = :id"
     //        "e.createDatetime IN (SELECT DISTINCT MAX(e2.createDatetime) FROM Event e2 WHERE e2.patient.id IN" +
     //          "(SELECT DISTINCT e3.patient.id FROM Event e3 WHERE e3.id = :id) AND e2.deleted = 0 AND e2.createDatetime < " +
     //          "(SELECT DISTINCT e4.createDatetime FROM Event e4 WHERE e4.id = :id))"
 
-    val typed =  em.createQuery(ActionsIdFindQuery/*.format(subQuery)*/, classOf[Int])
+    val typed = em.createQuery(ActionsIdFindQuery /*.format(subQuery)*/ , classOf[Int])
     val result = typed.setParameter("id", eventId)
-                      .setParameter("actionTypeId", actionTypeId)
-                      .getResultList
+      .setParameter("actionTypeId", actionTypeId)
+      .getResultList
 
     result.size match {
       case 0 => 0
@@ -377,7 +385,7 @@ class DbActionBean
     a.event.deleted = 0
   AND
     a.deleted = '0'
-                                       """
+                                              """
 
   val GetEvent29AndAction19ForAction = """
   SELECT a
@@ -442,7 +450,7 @@ class DbActionBean
     AND
       a.deleted = 0
     ORDER BY a.createDatetime DESC
-                           """         //
+                           """ //
 
   val ActionFindQuery = """
     SELECT a
@@ -602,8 +610,8 @@ class DbActionBean
 
   def getActionsByTypeFlatCodeAndEventId(eventId: Int, actionTypeFlatCode: String): util.List[Action] = {
     em.createQuery(ActionsByTypeFlatCodeAndEventQuery, classOf[Action])
-    .setParameter("EVENTID", eventId)
-    .setParameter("FLATCODE", actionTypeFlatCode)
-    .getResultList
+      .setParameter("EVENTID", eventId)
+      .setParameter("FLATCODE", actionTypeFlatCode)
+      .getResultList
   }
 }

@@ -193,7 +193,7 @@ public class SetAnalysysResult implements SetAnalysysResultWS {
             toLog.addN("Save IFA result [#], aptId [#]", ifa.getFullResult(), aptId);
             // Изменяем статус действия на "Закончено"
             if (ifa.isComplete()) {
-                action.setStatus(ActionStatus.FINISHED.getCode());
+                dbAction.updateActionStatusWithFlush(action.getId(), ActionStatus.FINISHED.getCode());
                 toLog.addN("Save status [#]", ActionStatus.FINISHED.getCode());
             }
         } catch (Exception e) {
@@ -313,7 +313,7 @@ public class SetAnalysysResult implements SetAnalysysResultWS {
             response.setCodeLIS(bakPosev.getDoctor().getCodeLis());
             dbBbtResponseBean.add(response);
 
-            toLog.add("Save response: [#]", response);
+            toLog.addN("Save response: [#]", response);
 
             if (!"".equals(bakPosev.getGeneralComment())) {
                 final BbtResultText bbtResultText = new BbtResultText();
@@ -363,8 +363,7 @@ public class SetAnalysysResult implements SetAnalysysResultWS {
 
             // Изменяем статус действия на "Закончено"
             if (bakPosev.isComplete()) {
-                final Action actionById = dbAction.getActionById(actionId);
-                actionById.setStatus(ActionStatus.FINISHED.getCode());
+                dbAction.updateActionStatusWithFlush(actionId, ActionStatus.FINISHED.getCode());
                 toLog.addN("Save status [#]", ActionStatus.FINISHED.getCode());
             }
 
