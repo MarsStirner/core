@@ -13,10 +13,21 @@ public class IFA {
 
     private long actionId;
 
-    public IFA(String text, String value, long actionId) {
-        this.text = text;
-        this.value = value;
-        this.actionId = actionId;
+    /**
+     * Признак завершенности исследования
+     */
+    private boolean complete;
+
+    public IFA() {
+
+    }
+
+    public boolean isComplete() {
+        return complete;
+    }
+
+    public void setComplete(boolean complete) {
+        this.complete = complete;
     }
 
     public String getText() {
@@ -29,6 +40,18 @@ public class IFA {
 
     public int getActionId() {
         return (int)actionId;
+    }
+
+    public void setText(String text) {
+        this.text = text;
+    }
+
+    public void setValue(String value) {
+        this.value = value;
+    }
+
+    public void setActionId(long actionId) {
+        this.actionId = actionId;
     }
 
     /**

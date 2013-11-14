@@ -30,6 +30,10 @@ public class BakPosev {
     private boolean isComplete;
 
     /**
+     * Основной комментарий к исследованию
+     */
+    private String generalComment;
+    /**
      * Список микроорганизмов
      */
     private List<Microorganism> microorganismList;
@@ -87,6 +91,14 @@ public class BakPosev {
         isComplete = complete;
     }
 
+    public String getGeneralComment() {
+        return generalComment;
+    }
+
+    public void setGeneralComment(String generalComment) {
+        this.generalComment = generalComment;
+    }
+
     @Override
     public String toString() {
         final StringBuilder sb = new StringBuilder("BakPosev{");
@@ -94,6 +106,7 @@ public class BakPosev {
         sb.append(", barCode='").append(barCode).append('\'');
         sb.append(", doctor=").append(doctor);
         sb.append(", isComplete=").append(isComplete);
+        sb.append(", generalComment='").append(generalComment).append('\'');
         sb.append(", microorganismList=").append(microorganismList);
         sb.append('}');
         return sb.toString();
