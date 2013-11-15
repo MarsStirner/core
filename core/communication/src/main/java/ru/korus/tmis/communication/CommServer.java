@@ -14,7 +14,6 @@ import ru.korus.tmis.communication.thriftgen.Address;
 import ru.korus.tmis.communication.thriftgen.OrgStructure;
 import ru.korus.tmis.communication.thriftgen.Queue;
 import ru.korus.tmis.communication.thriftgen.Speciality;
-import ru.korus.tmis.communication.thriftgen.Ticket;
 import ru.korus.tmis.core.database.*;
 import ru.korus.tmis.core.database.epgu.EPGUTicketBeanLocal;
 import ru.korus.tmis.core.entity.model.*;
@@ -229,28 +228,15 @@ public class CommServer implements Communications.Iface {
             doctor = staffBean.getStaffById(params.getPersonId());
             //1. Получаем actionId по id врача (personId) и дате(date)
             personAction = staffBean.getPersonActionsByDateAndType(params.getPersonId(), paramsDate, "amb");
-            if (logger.isDebugEnabled()) {
-                logger.debug("ACTION [ ID={} DOCTOR={} {} {}, ACT_TYPE={}, EVENT={}, NOTE={}]",
-                        personAction.getId(),
-                        doctor.getLastName(), doctor.getFirstName(), doctor.getPatrName(),
-                        personAction.getActionType().getName(),
-                        personAction.getEvent().getId(),
-                        personAction.getNote());
-            }
         } catch (CoreException e) {
             if (doctor == null) {
                 logger.error("#" + currentRequestNum + " Doctor not found by ID=" + params.getPersonId(), e);
                 throw new NotFoundException().setError_msg("Doctor not found by ID=" + params.getPersonId());
             }
-            if (personAction == null) {
-                logger.error("End of #" + currentRequestNum + " Exception while getting actions for PersonID=" + params.getPersonId());
-                throw new NotFoundException()
-                        .setError_msg("Error during the preparation of action associated with inspection by the doctor. Doctor ID ="
-                                + params.getPersonId());
-            }
-            //На всякий случай, по идее этот код никогда не должен быть выполнен
-            logger.error("if reach this point, then all is too hard to understand why =(", e);
-            throw new TException("UNKNOWN EXCEPTION.");
+            logger.error("End of #" + currentRequestNum + " Exception while getting actions for PersonID=" + params.getPersonId());
+            throw new NotFoundException()
+                    .setError_msg("Error during the preparation of action associated with inspection by the doctor. Doctor ID ="
+                            + params.getPersonId());
         } catch (EJBException e) {
             logger.error("End of #" + currentRequestNum + " Doctor not found by ID=" + params.getPersonId(), e);
             throw new NotFoundException().setError_msg("Doctor not found by ID=" + params.getPersonId());
@@ -260,13 +246,13 @@ public class CommServer implements Communications.Iface {
         if (currentSchedule.checkReasonOfAbscence()) {
             throw new NotFoundException().setError_msg("Doctor has ReasonOfAbsence");
         }
-        try{
+        try {
             currentSchedule.formTickets();
-        } catch (CoreException e){
+        } catch (CoreException e) {
             logger.error("Exception while forming tickets:", e);
         }
         currentSchedule.takeConstraintsOnTickets(CommunicationHelper.getQuotingType(params));
-        final Amb result = ParserToThriftStruct.parsePersonShedule(currentSchedule);
+        final Amb result = ParserToThriftStruct.parsePersonSchedule(currentSchedule);
         logger.info("End of #{} getWorkTimeAndStatus. Return \"{}\" as result.",
                 currentRequestNum, result);
         return result;
@@ -385,13 +371,13 @@ public class CommServer implements Communications.Iface {
         //TODO передавать сразу map
         final Map<String, String> parameters = new HashMap<String, String>();
         if (params.isSetLastName()) {
-            parameters.put("lastName", ParserToThriftStruct.convertDotPatternToSQLLikePattern(params.lastName));
+            parameters.put("lastName", CommunicationHelper.convertDotPatternToSQLLikePattern(params.lastName));
         }
         if (params.isSetFirstName()) {
-            parameters.put("firstName", ParserToThriftStruct.convertDotPatternToSQLLikePattern(params.firstName));
+            parameters.put("firstName", CommunicationHelper.convertDotPatternToSQLLikePattern(params.firstName));
         }
         if (params.isSetPatrName()) {
-            parameters.put("patrName", ParserToThriftStruct.convertDotPatternToSQLLikePattern(params.patrName));
+            parameters.put("patrName", CommunicationHelper.convertDotPatternToSQLLikePattern(params.patrName));
         }
         if (params.isSetBirthDate()) {
             parameters.put("birthDate", String.valueOf(params.getBirthDate()));
@@ -507,13 +493,13 @@ public class CommServer implements Communications.Iface {
         //TODO передавать сразу map
         final Map<String, String> parameters = new HashMap<String, String>();
         if (params.isSetLastName()) {
-            parameters.put("lastName", ParserToThriftStruct.convertDotPatternToSQLLikePattern(params.lastName));
+            parameters.put("lastName", CommunicationHelper.convertDotPatternToSQLLikePattern(params.lastName));
         }
         if (params.isSetFirstName()) {
-            parameters.put("firstName", ParserToThriftStruct.convertDotPatternToSQLLikePattern(params.firstName));
+            parameters.put("firstName", CommunicationHelper.convertDotPatternToSQLLikePattern(params.firstName));
         }
         if (params.isSetPatrName()) {
-            parameters.put("patrName", ParserToThriftStruct.convertDotPatternToSQLLikePattern(params.patrName));
+            parameters.put("patrName", CommunicationHelper.convertDotPatternToSQLLikePattern(params.patrName));
         }
         if (params.isSetBirthDate()) {
             parameters.put("birthDate", String.valueOf(params.getBirthDate()));
@@ -555,7 +541,6 @@ public class CommServer implements Communications.Iface {
 
     /**
      * Поиск пациента по данным из ТФОМС
-     *
      * @param params Параметры поиска
      * @return Статус нахождения пациента
      * @throws NotFoundException            когда не найдено ни одного пациента по заданным параметрам
@@ -848,31 +833,21 @@ public class CommServer implements Communications.Iface {
         List<Action> doctorActions = staffBean.getPersonShedule(doctor.getId(), begDate, endDate);
         logger.debug("Ambulatory Actions count = {}. DATA:", doctorActions.size());
         for (Action currentAction : doctorActions) {
-            if (logger.isDebugEnabled()) {
-                logger.debug("ACTION [ ID={} DOCTOR={} {} {}, ACT_TYPE={}, EVENT={}, EVENTDATE={}, NOTE={}]",
-                        currentAction.getId(),
-                        doctor.getLastName(), doctor.getFirstName(), doctor.getPatrName(),
-                        currentAction.getActionType().getName(),
-                        currentAction.getEvent().getId(),
-                        currentAction.getEvent().getSetDate(),
-                        currentAction.getNote()
-                );
-                try {
-                    final PersonSchedule currentSchedule = new PersonSchedule(doctor, currentAction);
-                    if (currentSchedule.checkReasonOfAbscence()) {
-                        continue;
-                    }
-                    currentSchedule.formTickets();
-                    currentSchedule.takeConstraintsOnTickets(CommunicationHelper.getQuotingType(params));
-                    final ru.korus.tmis.communication.Ticket ticket = currentSchedule.getFirstFreeTicketAfterDateTime(params.beginDateTime);
-                    if (ticket != null) {
-                        final FreeTicket result = ParserToThriftStruct.parseFreeTicket(currentSchedule, ticket);
-                        logger.info("End of #{}. Return: {}", currentRequestNum, result);
-                        return result;
-                    }
-                } catch (CoreException e) {
-                    logger.debug("Skip this action.");
+            try {
+                final PersonSchedule currentSchedule = new PersonSchedule(doctor, currentAction);
+                if (currentSchedule.checkReasonOfAbscence()) {
+                    continue;
                 }
+                currentSchedule.formTickets();
+                currentSchedule.takeConstraintsOnTickets(CommunicationHelper.getQuotingType(params));
+                final ru.korus.tmis.communication.Ticket ticket = currentSchedule.getFirstFreeTicketAfterDateTime(params.beginDateTime);
+                if (ticket != null) {
+                    final FreeTicket result = ParserToThriftStruct.parseFreeTicket(currentSchedule, ticket);
+                    logger.info("End of #{}. Return: {}", currentRequestNum, result);
+                    return result;
+                }
+            } catch (CoreException e) {
+                logger.debug("Skip this action.");
             }
         }
         logger.info("End of #{} getFirstFreeTicket. No one is founded", currentRequestNum);
@@ -883,7 +858,7 @@ public class CommServer implements Communications.Iface {
      * Метод для получения расписания врача пачкой
      *
      * @param params Параметры для получения расписания
-     * @return map<timestamp, Amb> - карта вида <[Дата приема], [Расписание на эту дату]>,
+     * @return map[timestamp,Amb] - карта вида <[Дата приема], [Расписание на эту дату]>,
      *         в случае отсутствия расписания на указанную дату набор ключ-значение опускается
      * @throws NotFoundException когда нету такого идентификатора врача
      */
@@ -913,44 +888,24 @@ public class CommServer implements Communications.Iface {
         if (shedule.isEmpty()) {
             logger.info("End of #{}. Person[{}] has no one ambulatoryAction in this interval", currentRequestNum, doctor.getId());
             return new HashMap<Long, Amb>(0);
-        } else if (logger.isDebugEnabled()) {
-            for (Action currentAction : shedule) {
-                logger.debug("ACTION [ ID={} DOCTOR={} {} {}, ACT_TYPE={}, EVENT={}, EVENTDATE={}, NOTE={}]",
-                        currentAction.getId(),
-                        doctor.getLastName(), doctor.getFirstName(), doctor.getPatrName(),
-                        currentAction.getActionType().getName(),
-                        currentAction.getEvent().getId(),
-                        currentAction.getEvent().getSetDate(),
-                        currentAction.getNote()
-                );
-            }
         }
         final Map<Long, Amb> result = new HashMap<Long, Amb>(shedule.size());
         for (Action currentAction : shedule) {
-            //3. Если есть actionId и отсутствует «Причина отсутствия» (т.е. врач на месте)
-            // [причина отсутствия выбирается внутри получения ограничений]
-            //  то делаем выборку ограничений $constraints = _getQuotingByTimeConstraints
-            List<QuotingByTime> constraints = CommunicationHelper.getPersonConstraints(
-                    doctor,
-                    currentAction.getEvent().getSetDate(),
-                    CommunicationHelper.getQuotingType(params)
-            );
-            logger.debug("#{} Constraints={}", currentRequestNum, constraints);
-            final Amb currentAmb;
-            try {
-                if (constraints.size() == 0) {
-                    currentAmb = CommunicationHelper.getAmbInfo(currentAction, doctor.getExternalQuota());
-                } else {
-                    //4.1. Если обнаружены ограничения, то производим полную выборку $vResult = _getAmbInfo(actionId, -1)
-                    // и осуществляем преобразование результата, согласно ограничениям:
-                    currentAmb = CommunicationHelper.getAmbInfo(currentAction, (short) -1);
-                    CommunicationHelper.takeConstraintsOnTickets(constraints, currentAmb.getTickets());
-                }
-            } catch (CoreException e) {
-                logger.error("getAmbInfo failed!", e);
+            final PersonSchedule currentSchedule = new PersonSchedule(doctor, currentAction);
+            if (currentSchedule.checkReasonOfAbscence()) {
                 continue;
             }
-            result.put(DateConvertions.convertDateToUTCMilliseconds(currentAction.getEvent().getSetDate()), currentAmb);
+            try {
+                currentSchedule.formTickets();
+            } catch (CoreException e) {
+                logger.error("Exception while forming tickets:", e);
+                continue;
+            }
+            currentSchedule.takeConstraintsOnTickets(CommunicationHelper.getQuotingType(params));
+            result.put(
+                    DateConvertions.convertDateToUTCMilliseconds(currentSchedule.getAmbulatoryDate()),
+                    ParserToThriftStruct.parsePersonSchedule(currentSchedule)
+            );
         }
         return result;
     }
@@ -1152,12 +1107,10 @@ public class CommServer implements Communications.Iface {
         } else {
             if (quotingBySpecialityList.size() == 1) {
                 logger.info("QuotingBySpeciality found and it is {}", quotingBySpecialityList);
-                //TODO multithreading
                 QuotingBySpeciality current = quotingBySpecialityList.get(0);
                 if (current.getCouponsRemaining() > 0) {
                     current.setCouponsRemaining(current.getCouponsRemaining() - 1);
                     logger.debug("QuotingBySpeciality coupons_remaining reduce by 1");
-                    //TODO merge
                     try {
                         managerBean.merge(current);
                         return true;
@@ -1361,7 +1314,6 @@ public class CommServer implements Communications.Iface {
                                 .setMessage(CommunicationErrors.msgTicketIsNotBelongToPatient.getMessage());
                         return result;
                     }
-                    //TODO multithreading
                     String hospitalUidFrom = queueAction.getHospitalUidFrom();
                     if (!"0".equals(queueAction.getHospitalUidFrom()) || (queueAction.getHospitalUidFrom() != null)
                             || !queueAction.getHospitalUidFrom().isEmpty()) {

@@ -10,6 +10,7 @@ import ru.korus.tmis.communication.thriftgen.QuotingType;
 import ru.korus.tmis.core.entity.model.*;
 import ru.korus.tmis.core.exception.CoreException;
 
+import java.text.SimpleDateFormat;
 import java.util.*;
 
 /**
@@ -65,6 +66,18 @@ public class PersonSchedule {
         this.doctor = doctor;
         this.ambulatoryAction = ambulatoryAction;
         this.ambulatoryDate = ambulatoryAction.getEvent().getSetDate();
+        if (logger.isDebugEnabled()) {
+            logger.debug("PersonSchedule[{}] Action[{}] Doctor: {} {} {}",
+                    new SimpleDateFormat("yyyy-MM-dd").format(ambulatoryDate),
+                    ambulatoryAction.getId(),
+                    doctor.getLastName(),
+                    doctor.getFirstName(),
+                    doctor.getPatrName()
+            );
+        }
+        this.times = new ArrayList<APValueTime>();
+        this.queue = new ArrayList<APValueAction>();
+        this.tickets = new ArrayList<Ticket>();
     }
 
     /**
@@ -132,13 +145,11 @@ public class PersonSchedule {
                 } else if ("plan".equals(fieldName)) {
                     plan = ((APValueInteger) value).getValue();
                 } else if ("times".equals(fieldName)) {
-                    times = new ArrayList<APValueTime>(apValueList.size());
                     //Не преобразуем эти времена
                     for (APValue timevalue : apValueList) {
                         times.add((APValueTime) timevalue);
                     }
                 } else if ("queue".equals(fieldName)) {
-                    queue = new ArrayList<APValueAction>(apValueList.size());
                     for (APValue queuevalue : apValueList) {
                         queue.add((APValueAction) queuevalue);
                     }
@@ -182,9 +193,9 @@ public class PersonSchedule {
     }
 
     /**
-     * Создание списка талончиков к врачу из двух списков (times и queue)
-     *
-     * @return Количество внешних обращений (из других ЛПУ)
+     * Создание списка талончиков к врачу
+     * Выборка свойств расписания из свойств действия
+     * и формирование талончиков из двух списков (times и queue)
      */
     public void formTickets() throws CoreException {
         getAmbulatoryProperties();
@@ -195,7 +206,7 @@ public class PersonSchedule {
             final Date currentTime = times.get(timeIndex).getValue();
             //окончание текущей ячейки вермени
             final Date nextTime;
-            if (times.size() < timeIndex + 1) {
+            if (times.size() > (timeIndex + 1)) {
                 nextTime = times.get(timeIndex + 1).getValue();
             } else {
                 nextTime = endTime;
@@ -218,39 +229,75 @@ public class PersonSchedule {
             tickets.add(currentTicket);
             queueIndex++;
         }
+        if (logger.isDebugEnabled()) {
+            for (Ticket currentTicket : tickets) {
+                logger.debug(currentTicket.getInfo());
+            }
+        }
     }
 
 
     /**
-     * Применяет ограничения по времени (QuotingByTime врача) на возвращаемый набор талончиков(result.tickets)
+     * Выбирает и применяет ограничения по времени
+     * (QuotingByTime врача)
+     * на возвращаемый набор талончиков
+     * (result.tickets)
      */
     public void takeConstraintsOnTickets(QuotingType quotingType) {
         getQuotingByTimeConstraints(quotingType);
-        final short quota = quotingByTimeConstraints.isEmpty() ? doctor.getExternalQuota() : -1;
-        //TODO абсолютное количество или проценты? должно зависеть от Person.quoteUnit
-        final int quoteAvailable = Math.max(0, (int) (quota * tickets.size() * 0.01) - externalCount);
-        this.available = (quoteAvailable != 0);
-        for (Ticket currentTicket : tickets) {
-            boolean available = false;
-            for (QuotingByTime qbt : quotingByTimeConstraints) {
-                if (qbt.getQuotingTimeStart().getTime() != 0 && qbt.getQuotingTimeEnd().getTime() != 0) {
-                    if (currentTicket.getBegTime().after(qbt.getQuotingTimeStart()) && currentTicket.getEndTime().before(qbt.getQuotingTimeEnd())
-                            && currentTicket.isAvailable() && quota == -1 && quoteAvailable > 0) {
-                        available = true;
-                        break;
-                    }
+        final short quota;
+        final int quoteAvailable;
+        if (quotingByTimeConstraints.isEmpty()) {
+            quota = doctor.getExternalQuota();
+            quoteAvailable = Math.max(0, (int) (quota * tickets.size() * 0.01) - externalCount);
+            if(quoteAvailable < 1){
+                for(Ticket currentTicket : tickets){
+                    currentTicket.setAvailable(false);
                 }
             }
-            currentTicket.setAvailable(available);
+        } else {
+            quota = -1;
+            quoteAvailable = Math.max(0, (int) (quota * tickets.size() * 0.01) - externalCount);
+            for (Ticket currentTicket : tickets) {
+                boolean available = false;
+                for (QuotingByTime qbt : quotingByTimeConstraints) {
+                    if (qbt.getQuotingTimeStart().getTime() != 0 && qbt.getQuotingTimeEnd().getTime() != 0) {
+                        if (currentTicket.getBegTime().after(qbt.getQuotingTimeStart())
+                                && currentTicket.getEndTime().before(qbt.getQuotingTimeEnd())
+                                && currentTicket.isAvailable()) {
+                            available = true;
+                            break;
+                        }
+                    }
+                }
+                currentTicket.setAvailable(available);
+            }
         }
 
+        this.available = (quoteAvailable != 0);
+        logger.debug("Quota={} quoteAvailable={} externalCount={}", quota, quoteAvailable, externalCount);
+        if (logger.isDebugEnabled()) {
+            logger.debug("After constraints:");
+            for (Ticket currentTicket : tickets) {
+                logger.debug(currentTicket.getInfo());
+            }
+        }
     }
 
-
+    /**
+     * Возвращает первый свободный и доступный талончик врача поле заданного вермени
+     *
+     * @param checkDateTime время после которого ищется талончик
+     * @return null если не найдено
+     */
     public Ticket getFirstFreeTicketAfterDateTime(final long checkDateTime) {
         final long currentAmbulatoryDaty = DateConvertions.convertDateToUTCMilliseconds(ambulatoryDate);
         for (Ticket currentTicket : tickets) {
-            if (currentTicket.isAvailable() && currentTicket.isFree() && currentTicket.getBegTime().after(DateConvertions.convertUTCMillisecondsToLocalDate(checkDateTime - currentAmbulatoryDaty))) {
+            if (currentTicket.isAvailable()
+                    && currentTicket.isFree()
+                    && currentTicket.getBegTime().after(
+                    DateConvertions.convertUTCMillisecondsToLocalDate(checkDateTime - currentAmbulatoryDaty))
+                    ) {
                 return currentTicket;
             }
         }

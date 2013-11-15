@@ -107,28 +107,7 @@ public class CommunicationHelper {
         }
     }
 
-    /**
-     * Применяет ограничения по времени (QuotingByTime врача) на возвращаемый набор талончиков(result.tickets)
-     * @param constraints Ограничения по времени
-     * @param ticketList  Список талончиков
-     */
-    public static void takeConstraintsOnTickets(final List<QuotingByTime> constraints, final List<ru.korus.tmis.communication.thriftgen.Ticket> ticketList) {
-        for (ru.korus.tmis.communication.thriftgen.Ticket currentTicket : ticketList) {
-            int available = 0;
-            for (QuotingByTime qbt : constraints) {
-                if (qbt.getQuotingTimeStart().getTime() != 0 && qbt.getQuotingTimeEnd().getTime() != 0) {
-                    long qbtStartTime = DateConvertions.convertDateToUTCMilliseconds(qbt.getQuotingTimeStart());
-                    long qbtEndTime = DateConvertions.convertDateToUTCMilliseconds(qbt.getQuotingTimeEnd());
-                    if (currentTicket.getTime() >= qbtStartTime && currentTicket.getTime() <= qbtEndTime
-                            && currentTicket.available == 1) {
-                        available = 1;
-                        break;
-                    }
-                }
-            }
-            currentTicket.setAvailable(available);
-        }
-    }
+
 
     /**
      * Перевод из численного отображения пола к строковому
@@ -264,167 +243,12 @@ public class CommunicationHelper {
         return emergencyPatientCount;
     }
 
-
-    /**
-     * Получение ограничений врача на прием в заданную дату
-     *
-     * @param person          Врач для которого выбираются ограничения
-     * @param constraintDate  Дата, на момент которой ищутся ограничения
-     * @return список ограничений
-     */
-    public static List<QuotingByTime> getPersonConstraints(final Staff person, final Date constraintDate, final ru.korus.tmis.communication.thriftgen.QuotingType quotingType) {
-        //2. Проверяем есть ли «причина отсутствия» этого врача в указанную дату _getReasonOfAbsence
-        Action timelineAction = null;
-        try {
-            timelineAction = CommServer.getStaffBean().getPersonActionsByDateAndType(person.getId(), constraintDate, "timeline");
-            if (logger.isDebugEnabled()) {
-                if (timelineAction != null && CommServer.getActionPropertyBean().getActionPropertyValue(timelineAction.getActionProperties().get(0)).get(0) != null) {
-                    logger.debug("TIMELINE ACTION [ ID={}, ACT_TYPE={}, EVENT={}, NOTE={}]", timelineAction.getId(),
-                            timelineAction.getActionType().getName(), timelineAction.getEvent().getId(), timelineAction.getNote());
-                }
-            }
-        } catch (Exception e) {
-            logger.warn("Timeline action doesnt exists");
+    public static String convertDotPatternToSQLLikePattern(final String dotPattern) {
+        if (dotPattern != null && dotPattern.length() > 0) {
+            return dotPattern.replaceAll("(\\.{3})|(\\*)", "%").replaceAll("\\.", "_");
+        } else {
+            return "";
         }
-        if (timelineAction == null) {
-            final List<QuotingByTime> constraints = CommServer.getQuotingByTimeBean().getQuotingByTimeConstraints(person.getId(), constraintDate, quotingType.getValue());
-            if (logger.isDebugEnabled()) {
-                for (QuotingByTime qbt : constraints) {
-                    logger.debug("QuotingByTime [Id={}, Person={}, DATE={}, START={}, END={}, TYPE={}]",
-                            qbt.getId(), qbt.getDoctor().getLastName(),
-                            new DateMidnight(qbt.getQuotingDate()), new DateTime(qbt.getQuotingTimeStart()),
-                            new DateTime(qbt.getQuotingTimeEnd()), qbt.getQuotingType());
-                }
-            }
-            return constraints;
-        }
-        return new ArrayList<QuotingByTime>(0);
     }
 
-    /**
-     * Получение талончика
-     * @param action Действие связанное с приемом врача ("amb")
-     * @param quota  Значение квоты
-     * @return Новый талончик с заполненными полями
-     * @throws ru.korus.tmis.core.exception.CoreException
-     */
-    public static Amb getAmbInfo(final Action action, final short quota) throws CoreException {
-        final List<APValueTime> times = new ArrayList<APValueTime>();
-        final List<APValueAction> queue = new ArrayList<APValueAction>();
-        final List<ru.korus.tmis.communication.thriftgen.Ticket> tickets = new ArrayList<ru.korus.tmis.communication.thriftgen.Ticket>();
-        //fill Amb structure and lists
-        final Amb result = getAmbulatoryProperties(action, times, queue);
-        //Количество пациентов, записанных вне очереди
-        final short emergencyPatientCount = CommunicationHelper.getEmergencyPatientCount(queue);
-        //COMPUTE TICKETS to list and evaluate externalCount
-        final short externalCount = computeTickets(action, times, queue, tickets, emergencyPatientCount);
-        // http://miswiki.ru/   Получение талончиков _getTickets()
-        //TODO абсолютное количество или проценты? должно зависеть от Person.quoteUnit
-        final int available = Math.max(0, (int) (quota * tickets.size() * 0.01) - externalCount);
-
-        if (quota != -1 && available < 1) {
-            for (ru.korus.tmis.communication.thriftgen.Ticket ticket : tickets) {
-                ticket.setAvailable(0);
-            }
-        }
-        return result.setAvailable(available).setTickets(tickets);
-    }
-
-    /**
-     * Создание списка талончиков к врачу из двух списков (times и queue)
-     *
-     * @param action  Действие (прием врача)
-     * @param times   Список временных интервалов
-     * @param queue   Список бронированых заявок, индекс соответствует временному интервалу
-     * @param tickets Список талончиков для заполнения
-     * @return Количество внешних обращений (из других ЛПУ)
-     */
-    public static short computeTickets(final Action action, final List<APValueTime> times, final List<APValueAction> queue,
-                                 final List<ru.korus.tmis.communication.thriftgen.Ticket> tickets, final int emergencyCount) {
-        short externalCount = 0;
-        for (int i = 0; i < times.size(); i++) {
-            final APValueTime currentTime = times.get(i);
-            final Action queueAction = (queue.size() > emergencyCount + i) ? queue.get(emergencyCount + i).getValue() : null;
-            short free;
-            if (currentTime != null) {
-                if (queueAction != null) {
-                    free = 0;
-                    if (queueAction.getAssigner() != null) {
-                        externalCount++;
-                    }
-                } else {
-                    free = 1;
-                }
-                final ru.korus.tmis.communication.thriftgen.Ticket newTicket = new ru.korus.tmis.communication.thriftgen.Ticket();
-                newTicket.setTime(DateConvertions.convertDateToUTCMilliseconds(currentTime.getValue()));
-                newTicket.setFree(free).setAvailable(free);
-                if (free == 0) {
-                    //талончик занят, выясняем кем
-                    if (logger.isDebugEnabled()) {
-                        logger.debug("Queue ACTIONID={}", queueAction.getId());
-                    }
-                    final Patient queuePatient = queue.get(emergencyCount + i).getValue().getEvent().getPatient();
-                    if (queuePatient != null) {
-                        newTicket.setPatientId(queuePatient.getId())
-                                .setPatientInfo(new StringBuilder(queuePatient.getLastName())
-                                        .append(" ").append(queuePatient.getFirstName())
-                                        .append(" ").append(queuePatient.getPatrName()).toString());
-                    } else {
-                        newTicket.setPatientId(0)
-                                .setPatientInfo("НЕИЗВЕСТНЫЙ ПОЛЬЗОВАТЕЛЬ (возможно удален из БД напрямую)");
-                    }
-                }
-                tickets.add(newTicket);
-            }
-        }
-        return externalCount;
-    }
-
-    /**
-     * Получение и высталение свойств амбулаторного приема врача
-     *
-     * @param action Событие отвечающее за прием врача
-     * @param times  Временные интревалы (Свойства приема врача)
-     * @param queue  Элементы очереди к врачу на прием  (Свойства приема врача)[индексы совпадают с временными интервалами]
-     * @throws CoreException Ошибка во время получение некоторых свойств
-     */
-    public static Amb getAmbulatoryProperties(final Action action, final List<APValueTime> times, final List<APValueAction> queue) throws CoreException {
-        String fieldName;
-        final Amb ambulatoryInfo = new Amb();
-        for (ActionProperty currentProperty : action.getActionProperties()) {
-            fieldName = currentProperty.getType().getName();
-            //Fill AMB params without tickets and fill arrays to compute tickets
-            final List<APValue> apValueList = CommServer.getActionPropertyBean().getActionPropertyValue(currentProperty);
-            if (!apValueList.isEmpty()) {
-                final APValue value = apValueList.get(0);
-                if ("begTime".equals(fieldName)) {
-                    ambulatoryInfo.setBegTime(DateConvertions.convertDateToUTCMilliseconds((Date) value.getValue()));
-                } else if ("endTime".equals(fieldName)) {
-                    ambulatoryInfo.setEndTime(DateConvertions.convertDateToUTCMilliseconds((Date) value.getValue()));
-                } else if ("office".equals(fieldName)) {
-                    ambulatoryInfo.setOffice(((APValueString) value).getValue());
-                } else if ("plan".equals(fieldName)) {
-                    ambulatoryInfo.setPlan(((APValueInteger) value).getValue());
-                } else if ("times".equals(fieldName)) {
-                    //Не преобразуем эти времена
-                    for (APValue timevalue : apValueList) {
-                       times.add((APValueTime) timevalue);
-                    }
-                } else if ("queue".equals(fieldName)) {
-                    for (APValue queuevalue : apValueList) {
-                        queue.add((APValueAction) queuevalue);
-                    }
-                }
-                //Вывод всех свойств со значениями в лог
-                if (logger.isDebugEnabled()) {
-                    for (APValue apValue : apValueList) {
-                        logger.debug("ID={} NAME={} VALUE={}",
-                                currentProperty.getId(), currentProperty.getType().getName(), apValue.getValue());
-                    }
-                }
-            }
-        }
-        //END OF ###Fill AMB params without tickets and fill arrays to compute tickets
-        return ambulatoryInfo;
-    }
 }

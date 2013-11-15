@@ -2,6 +2,7 @@ package ru.korus.tmis.communication;
 
 import ru.korus.tmis.core.entity.model.Patient;
 
+import java.text.SimpleDateFormat;
 import java.util.Date;
 
 /**
@@ -73,5 +74,15 @@ public class Ticket {
 
     public void setPatient(Patient patient) {
         this.patient = patient;
+    }
+
+    public String getInfo() {
+        final SimpleDateFormat timeFormat = new SimpleDateFormat("HH:mm:ss");
+        return new StringBuilder("Ticket: [")
+                .append(timeFormat.format(begTime)).append("]-[")
+                .append(timeFormat.format(endTime)).append("] ")
+                .append(free ? "FREE " : "BUSY ")
+                .append(available ? "AVAILABLE" : "RESTRICTED")
+                .toString();
     }
 }

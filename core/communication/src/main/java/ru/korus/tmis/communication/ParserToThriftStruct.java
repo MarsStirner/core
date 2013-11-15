@@ -109,12 +109,11 @@ public final class ParserToThriftStruct {
             logger.warn("Parser: NullPointer Speciality item. Return \"null\"");
             return null;
         }
-        final ru.korus.tmis.communication.thriftgen.Speciality speciality = new ru.korus.tmis.communication.thriftgen.Speciality()
+        return new ru.korus.tmis.communication.thriftgen.Speciality()
                 .setTicketsAvailable(item.getCouponsRemaining())
                 .setTicketsPerMonths(item.getCouponsQuote())
                 .setSpeciality(item.getSpeciality().getName())
                 .setId(item.getSpeciality().getId());
-        return speciality;
     }
 
     public static ru.korus.tmis.communication.thriftgen.Organization parseOrganisation(final Organisation item) {
@@ -122,20 +121,10 @@ public final class ParserToThriftStruct {
             logger.warn("Parser: NullPointer Organisation item. Return \"null\"");
             return null;
         }
-        final ru.korus.tmis.communication.thriftgen.Organization result = new Organization()
+        return new Organization()
                 .setFullName(item.getFullName()).setAddress(item.getAddress()).setInfisCode(item.getInfisCode())
                 .setShortName(item.getShortName());
-        return result;
     }
-
-    public static String convertDotPatternToSQLLikePattern(final String dotPattern) {
-        if (dotPattern != null && dotPattern.length() > 0) {
-            return dotPattern.replaceAll("(\\.{3})|(\\*)", "%").replaceAll("\\.", "_");
-        } else {
-            return "";
-        }
-    }
-
 
     public static QueueCoupon parseQueueCoupon(final QueueTicket item) {
         if (item == null || item.getPerson() == null || item.getPatient() == null) {
@@ -172,13 +161,13 @@ public final class ParserToThriftStruct {
         final FreeTicket result = new FreeTicket();
         final long day = DateConvertions.convertDateToUTCMilliseconds(schedule.getAmbulatoryDate());
         result.setBegDateTime(day + DateConvertions.convertDateToUTCMilliseconds(ticket.getBegTime()));
-        result.setBegDateTime(day + DateConvertions.convertDateToUTCMilliseconds(ticket.getEndTime()));
+        result.setEndDateTime(day + DateConvertions.convertDateToUTCMilliseconds(ticket.getEndTime()));
         result.setOffice(schedule.getOffice());
         result.setPersonId(schedule.getDoctor().getId());
         return result;
     }
 
-    public static Amb parsePersonShedule(final PersonSchedule schedule) {
+    public static Amb parsePersonSchedule(final PersonSchedule schedule) {
         final Amb result = new Amb();
         result.setAvailable(schedule.isAvailable() ? 1 : 0);
         result.setBegTime(DateConvertions.convertDateToUTCMilliseconds(schedule.getBegTime()));
