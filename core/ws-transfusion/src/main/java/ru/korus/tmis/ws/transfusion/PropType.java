@@ -39,8 +39,6 @@ public enum PropType {
 
     VOLUME("trfuReqBloodCompValue", APValueInteger.class, "Объем требуемого компонента крови (все, кроме тромбоцитов)", false),
 
-    DOSE_COUNT("trfuReqBloodCompDose", APValueDouble.class, "Количество требуемых донорских доз (тромбоциты)", false),
-
     ROOT_CAUSE("trfuReqBloodCompRootCause", APValueString.class, "Показания к проведению трансфузии", true),
 
     ORDER_ISSUE_BLOOD_COMP_PASPORT("trfuReqBloodCompPasport", APValueInteger.class, "Паспортные данные выданных компонентов крови"),

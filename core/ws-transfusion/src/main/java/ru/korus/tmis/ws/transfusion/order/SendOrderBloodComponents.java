@@ -96,7 +96,6 @@ public class SendOrderBloodComponents {
             PropType.BLOOD_COMP_TYPE, // "Требуемый компонент крови"
             PropType.TYPE, // "Вид трансфузии"
             PropType.VOLUME, // "Объем требуемого компонента крови (все, кроме тромбоцитов)"
-            PropType.DOSE_COUNT, // "Количество требуемых донорских доз (тромбоциты)"
             PropType.ROOT_CAUSE, // "Показания к проведению трансфузии"
             PropType.ORDER_REQUEST_ID, // "Результат передачи требования в систему ТРФУ"
             PropType.ORDER_ISSUE_RES_DATE, // "Дата выдачи КК"
@@ -251,7 +250,6 @@ public class SendOrderBloodComponents {
         final Integer compTypeId = compType != null ? compType.getId() : null;
         res.setComponentTypeId(convertComponentType(em, action.getId(), compTypeId));
         res.setVolume(trfuActionProp.getProp(action.getId(), PropType.VOLUME, 0));
-        res.setDoseCount(trfuActionProp.getProp(action.getId(), PropType.DOSE_COUNT, 0.0));
         res.setIndication(convertFromXml((String) trfuActionProp.getProp(action.getId(), PropType.ROOT_CAUSE)));
         res.setTransfusionType(convertTrfuType((String) trfuActionProp.getProp(action.getId(), PropType.TYPE)));
         final Date plannedEndDate = senderUtils.getPlannedData(action, trfuActionProp);
