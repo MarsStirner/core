@@ -129,7 +129,7 @@ public class BakLaboratoryBean implements BakLaboratoryService {
         final DiagnosticRequestInfo requestInfo = laboratoryBean.getDiagnosticRequestInfo(action); // Request section
 
 //        ru.korus.tmis.core.database.bak.Diagnosis diagnosis = dbCustomQuery.getDiagnosisBak(action);
-        ru.korus.tmis.core.database.bak.Diagnosis diagnosis = new Diagnosis("", "");
+        ru.korus.tmis.core.database.bak.Diagnosis diagnosis = new Diagnosis(requestInfo.orderDiagCode().get(), requestInfo.orderDiagText().get());
 
         //requestInfo.orderDiagCode() = diagnosis.getCode();
 
@@ -172,7 +172,7 @@ public class BakLaboratoryBean implements BakLaboratoryService {
         section.getEntry().add(createEntry(eventInfo.getOrganisation().getUuid().getUuid(), "OBS", "RQO", requestInfo.orderDepartmentMisCode().get(), requestInfo.orderDepartmentName().get()));
         section.getEntry().add(createEntry(action.getUuid().getUuid(), "OBS", "RQO", action.getIsUrgent() + "", ""));
         // MKB.DiagName
-        section.getEntry().add(createEntry("", "OBS", "RQO",diagnosis.getCode()/* requestInfo.orderDiagCode().get()*/, diagnosis.getName() /*requestInfo.orderDiagText().get()*/));
+        section.getEntry().add(createEntry("", "OBS", "RQO", diagnosis.getCode()/* requestInfo.orderDiagCode().get()*/, diagnosis.getName() /*requestInfo.orderDiagText().get()*/));
         section.getEntry().add(createEntry(eventInfo.getEventType().getFinance().getName(), "OBS", "RQO", orderInfo.diagnosticCode().get(), orderInfo.diagnosticName().get()));
 
         for (IndicatorMetodic indicatorMetodic : orderInfo.indicators()) {

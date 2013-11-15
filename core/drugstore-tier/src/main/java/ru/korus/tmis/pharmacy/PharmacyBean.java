@@ -501,9 +501,7 @@ public class PharmacyBean implements PharmacyBeanLocal {
             try {
                 int errCount = prescription.getErrCount();
                 long step = 89 * 1000; // время до слейдующей попытки передачи данных
-                prescription.setErrCount(errCount + 1);
                 prescription.setSendTime(new Timestamp((new java.util.Date()).getTime() + (long) (errCount) * step));
-
                 if (sendPrescription(prescription)) {
                     dbPrescriptionsTo1CBeanLocal.remove(prescription);
                 }
@@ -594,6 +592,7 @@ public class PharmacyBean implements PharmacyBeanLocal {
                             financeType);
                 }
                 if (request != null) {
+                    prescription.setErrCount(prescription.getErrCount() + 1);
                     toLog.add("prepare message... \n\n # \n", HL7PacketBuilder.marshallMessage(request, "misexchange"));
                     final MCCIIN000002UV012 result = new MISExchange().getMISExchangeSoap().processHL7V3Message(request);
                     toLog.add("Connection successful. Result: # \n\n # \n",
@@ -604,8 +603,6 @@ public class PharmacyBean implements PharmacyBeanLocal {
                         prescriptionSendingResBean.setVersion(prescriptionSendingResBean.getVersion() == null ? 1 : (prescriptionSendingResBean.getVersion() + 1));
                         res = true;
                     }
-                } else {
-                    prescription.setErrCount(prescription.getErrCount() - 1);
                 }
                 logger.info(toLog.releaseString());
             }

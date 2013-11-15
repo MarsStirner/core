@@ -40,7 +40,6 @@ public class OrderBloodCompTest extends TestBase {
             PropType.BLOOD_COMP_TYPE, // Требуемый компонент крови
             PropType.TYPE, // Вид трансфузии
             PropType.VOLUME, // Объем требуемого компонента крови (все, кроме тромбоцитов)
-            PropType.DOSE_COUNT, // Количество требуемых донорских доз (тромбоциты)
             PropType.ROOT_CAUSE, // Показания к проведению трансфузии
             PropType.ORDER_REQUEST_ID, // Результат передачи требования в систему ТРФУ
             PropType.ORDER_ISSUE_RES_DATE, // Дата выдачи КК
@@ -67,7 +66,6 @@ public class OrderBloodCompTest extends TestBase {
             setValue(PropType.PATIENT_ORG_STRUCT, 1);
             setValue(PropType.DIAGNOSIS, "tst DIAGNOSIS");
             setValue(PropType.BLOOD_COMP_TYPE, 1);
-            setValue(PropType.DOSE_COUNT, 0.1);
             setValue(PropType.ROOT_CAUSE, "tst root cause");
             setValue(PropType.TYPE, "<>" + SendOrderBloodComponents.TRANSFUSION_TYPE_PLANED + "<>");
             setValue(PropType.ORDER_ISSUE_BLOOD_COMP_PASPORT, ACTION_ID);
