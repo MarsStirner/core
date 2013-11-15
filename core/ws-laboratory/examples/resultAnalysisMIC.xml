@@ -79,7 +79,7 @@
                             <component1 typeCode="COMP" contextControlCode="ON">
 
                                 <observationEvent classCode="OBS" moodCode="EVN">
-                                    <code code="{код исследования}" displayName="{название исследования}"/>
+                                    <code code="{код исследования}" displayName="{название исследования}" codeSystemName="{общий комментарий}"/>
                                     <effectiveTime value="{дата исследования}"/>
                                     <confidentialityCode code="{числовое значение}" displayName="{результат}"/>
 

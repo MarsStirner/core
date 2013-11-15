@@ -41,4 +41,12 @@ public class DbBbtResultTextBean implements DbBbtResultTextBeanLocal {
                 em.createQuery("SELECT a FROM BbtResultText a WHERE a.id = :id", BbtResultText.class).setParameter("id", id).getResultList();
         return !antibioticList.isEmpty() ? antibioticList.get(0) : null;
     }
+
+    @Override
+    public void removeByActionId(int actionId) {
+        em.createQuery(
+                "DELETE FROM BbtResultText a WHERE a.actionId = :actionId")
+                .setParameter("actionId", actionId).executeUpdate();
+        em.flush();
+    }
 }

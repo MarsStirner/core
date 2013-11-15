@@ -87,6 +87,17 @@ public interface DbActionBeanLocal {
             throws CoreException;
 
     /**
+     * Обновление статуса действия  (Action)
+     *
+     * @param id     Идентификатор действия (Action).
+     * @param status Новый статус.
+     * @return Отредактированное действие  (Action).
+     * @throws CoreException
+     * @see Action
+     */
+    void updateActionStatusWithFlush(int id, short status)
+            throws CoreException;
+    /**
      * Получение действия для обращения заданного типа
      *
      * @param eventId      Идентификатор обращения.
