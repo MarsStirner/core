@@ -9,6 +9,8 @@ import ru.korus.tmis.core.entity.model.Patient;
 import ru.korus.tmis.core.entity.model.Speciality;
 import ru.korus.tmis.core.entity.model.communication.QueueTicket;
 
+import java.util.Date;
+
 /**
  * User: EUpatov<br>
  * Date: 16.01.13 at 16:45<br>
@@ -142,27 +144,66 @@ public final class ParserToThriftStruct {
         }
         final ru.korus.tmis.communication.thriftgen.Patient patient =
                 new ru.korus.tmis.communication.thriftgen.Patient(item.getPatient().getId())
-                .setBirthDate(DateConvertions.convertDateToUTCMilliseconds(item.getPatient().getBirthDate()))
-                .setLastName(item.getPatient().getLastName())
-                .setFirstName(item.getPatient().getFirstName())
-                .setPatrName(item.getPatient().getPatrName())
-                .setSex(item.getPatient().getSex());
+                        .setBirthDate(DateConvertions.convertDateToUTCMilliseconds(item.getPatient().getBirthDate()))
+                        .setLastName(item.getPatient().getLastName())
+                        .setFirstName(item.getPatient().getFirstName())
+                        .setPatrName(item.getPatient().getPatrName())
+                        .setSex(item.getPatient().getSex());
         final QueueCoupon coupon = new QueueCoupon()
                 .setUuid(item.getQueueAction().getId().toString())
                 .setPersonId(item.getPerson().getId())
                 .setPatient(patient)
                 .setBegDateTime(DateConvertions.convertDateToUTCMilliseconds(item.getBegDateTime()))
                 .setEndDateTime(DateConvertions.convertDateToUTCMilliseconds(item.getEndDateTime()));
-        if(item.getOffice() != null && !item.getOffice().isEmpty()){
+        if (item.getOffice() != null && !item.getOffice().isEmpty()) {
             coupon.setOffice(item.getOffice());
         }
-        if(QueueTicket.Status.NEW.toString().equals(item.getStatus())){
+        if (QueueTicket.Status.NEW.toString().equals(item.getStatus())) {
             coupon.setStatus(CouponStatus.NEW);
-        } else if(QueueTicket.Status.CANCELLED.toString().equals(item.getStatus())){
+        } else if (QueueTicket.Status.CANCELLED.toString().equals(item.getStatus())) {
             coupon.setStatus(CouponStatus.CANCELLED);
         } else {
             logger.error("QueueTicket[{}] has unknown Status = {}", item.getId(), item.getStatus());
         }
         return coupon;
+    }
+
+    public static FreeTicket parseFreeTicket(final PersonSchedule schedule, final Ticket ticket) {
+        final FreeTicket result = new FreeTicket();
+        final long day = DateConvertions.convertDateToUTCMilliseconds(schedule.getAmbulatoryDate());
+        result.setBegDateTime(day + DateConvertions.convertDateToUTCMilliseconds(ticket.getBegTime()));
+        result.setBegDateTime(day + DateConvertions.convertDateToUTCMilliseconds(ticket.getEndTime()));
+        result.setOffice(schedule.getOffice());
+        result.setPersonId(schedule.getDoctor().getId());
+        return result;
+    }
+
+    public static Amb parsePersonShedule(final PersonSchedule schedule) {
+        final Amb result = new Amb();
+        result.setAvailable(schedule.isAvailable() ? 1 : 0);
+        result.setBegTime(DateConvertions.convertDateToUTCMilliseconds(schedule.getBegTime()));
+        result.setEndTime(DateConvertions.convertDateToUTCMilliseconds(schedule.getEndTime()));
+        result.setOffice(schedule.getOffice());
+        result.setPlan(schedule.getPlan());
+        for (Ticket currentTicket : schedule.getTickets()) {
+            result.addToTickets(parseTicket(currentTicket));
+        }
+        return result;
+    }
+
+    private static ru.korus.tmis.communication.thriftgen.Ticket parseTicket(Ticket ticket) {
+        final ru.korus.tmis.communication.thriftgen.Ticket result = new ru.korus.tmis.communication.thriftgen.Ticket();
+        result.setAvailable(ticket.isAvailable() ? 1 : 0);
+        result.setFree(ticket.isFree() ? 1: 0);
+        result.setTime(DateConvertions.convertDateToUTCMilliseconds(ticket.getBegTime()));
+        final Patient patient = ticket.getPatient();
+        if(patient != null){
+            result.setPatientId(patient.getId());
+            result.setPatientInfo(new StringBuilder(patient.getLastName()).append(' ')
+                    .append(patient.getFirstName()).append(' ').append(patient.getPatrName()).toString());
+        } else {
+            result.setPatientId(0);
+        }
+        return result;
     }
 }

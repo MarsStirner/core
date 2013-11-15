@@ -112,8 +112,8 @@ public class CommunicationHelper {
      * @param constraints Ограничения по времени
      * @param ticketList  Список талончиков
      */
-    public static void takeConstraintsOnTickets(final List<QuotingByTime> constraints, final List<Ticket> ticketList) {
-        for (Ticket currentTicket : ticketList) {
+    public static void takeConstraintsOnTickets(final List<QuotingByTime> constraints, final List<ru.korus.tmis.communication.thriftgen.Ticket> ticketList) {
+        for (ru.korus.tmis.communication.thriftgen.Ticket currentTicket : ticketList) {
             int available = 0;
             for (QuotingByTime qbt : constraints) {
                 if (qbt.getQuotingTimeStart().getTime() != 0 && qbt.getQuotingTimeEnd().getTime() != 0) {
@@ -219,6 +219,14 @@ public class CommunicationHelper {
         }
     }
 
+    public static QuotingType getQuotingType(final GetTimeWorkAndStatusParameters parameters){
+        if (parameters.isSetHospitalUidFrom() && !parameters.getHospitalUidFrom().isEmpty()){
+            return QuotingType.FROM_OTHER_LPU;
+        } else {
+            return QuotingType.FROM_PORTAL;
+        }
+    }
+
 
     /**
      * Подсччет количества пациентов, записанных вне очереди и экстренно
@@ -303,7 +311,7 @@ public class CommunicationHelper {
     public static Amb getAmbInfo(final Action action, final short quota) throws CoreException {
         final List<APValueTime> times = new ArrayList<APValueTime>();
         final List<APValueAction> queue = new ArrayList<APValueAction>();
-        final List<Ticket> tickets = new ArrayList<Ticket>();
+        final List<ru.korus.tmis.communication.thriftgen.Ticket> tickets = new ArrayList<ru.korus.tmis.communication.thriftgen.Ticket>();
         //fill Amb structure and lists
         final Amb result = getAmbulatoryProperties(action, times, queue);
         //Количество пациентов, записанных вне очереди
@@ -315,7 +323,7 @@ public class CommunicationHelper {
         final int available = Math.max(0, (int) (quota * tickets.size() * 0.01) - externalCount);
 
         if (quota != -1 && available < 1) {
-            for (Ticket ticket : tickets) {
+            for (ru.korus.tmis.communication.thriftgen.Ticket ticket : tickets) {
                 ticket.setAvailable(0);
             }
         }
@@ -332,7 +340,7 @@ public class CommunicationHelper {
      * @return Количество внешних обращений (из других ЛПУ)
      */
     public static short computeTickets(final Action action, final List<APValueTime> times, final List<APValueAction> queue,
-                                 final List<Ticket> tickets, final int emergencyCount) {
+                                 final List<ru.korus.tmis.communication.thriftgen.Ticket> tickets, final int emergencyCount) {
         short externalCount = 0;
         for (int i = 0; i < times.size(); i++) {
             final APValueTime currentTime = times.get(i);
@@ -347,7 +355,7 @@ public class CommunicationHelper {
                 } else {
                     free = 1;
                 }
-                final Ticket newTicket = new Ticket();
+                final ru.korus.tmis.communication.thriftgen.Ticket newTicket = new ru.korus.tmis.communication.thriftgen.Ticket();
                 newTicket.setTime(DateConvertions.convertDateToUTCMilliseconds(currentTime.getValue()));
                 newTicket.setFree(free).setAvailable(free);
                 if (free == 0) {

@@ -14,6 +14,7 @@ import ru.korus.tmis.communication.thriftgen.Address;
 import ru.korus.tmis.communication.thriftgen.OrgStructure;
 import ru.korus.tmis.communication.thriftgen.Queue;
 import ru.korus.tmis.communication.thriftgen.Speciality;
+import ru.korus.tmis.communication.thriftgen.Ticket;
 import ru.korus.tmis.core.database.*;
 import ru.korus.tmis.core.database.epgu.EPGUTicketBeanLocal;
 import ru.korus.tmis.core.entity.model.*;
@@ -76,6 +77,7 @@ public class CommServer implements Communications.Iface {
     /**
      * Получение оргструктур, которые входят в заданное подразделение.
      * При установленном флаге рекурсии выводит все подразделения которые принадлежат запрошенному.
+     *
      * @param parentId  Подразделение для которого необходимо найти, входящие в него, подразделения.
      * @param recursive Флаг рекурсии.
      * @return Список подразделений
@@ -254,32 +256,19 @@ public class CommServer implements Communications.Iface {
             throw new NotFoundException().setError_msg("Doctor not found by ID=" + params.getPersonId());
         }
 
-        //3. Если есть actionId и отсутствует «Причина отсутствия» (т.е. врач на месте)
-        // [причина отсутствия выбирается внутри получения ограничений]
-        //  то делаем выборку ограничений $constraints = _getQuotingByTimeConstraints
-        List<QuotingByTime> constraints = CommunicationHelper.getPersonConstraints(
-                doctor,
-                paramsDate,
-                (params.isSetHospitalUidFrom() && params.getHospitalUidFrom().isEmpty()) ?
-                        QuotingType.FROM_PORTAL : QuotingType.FROM_OTHER_LPU);
-        logger.debug("Constraints={}", constraints);
-
-        //4. Выборка талончиков:
-        Amb result = new Amb();
-        try {
-            if (constraints.size() == 0) {
-                result = CommunicationHelper.getAmbInfo(personAction, doctor.getExternalQuota());
-            } else {
-                //4.1. Если обнаружены ограничения, то производим полную выборку $vResult = _getAmbInfo(actionId, -1)
-                // и осуществляем преобразование результата, согласно ограничениям:
-                result = CommunicationHelper.getAmbInfo(personAction, (short) -1);
-                CommunicationHelper.takeConstraintsOnTickets(constraints, result.getTickets());
-            }
-        } catch (CoreException e) {
-            logger.error("getAmbInfo failed!", e);
+        final PersonSchedule currentSchedule = new PersonSchedule(doctor, personAction);
+        if (currentSchedule.checkReasonOfAbscence()) {
+            throw new NotFoundException().setError_msg("Doctor has ReasonOfAbsence");
         }
-        logger.info("End of #{} getWorkTimeAndStatus. Return (TicketsSize={}) \"{}\" as result.",
-                currentRequestNum, result.getTicketsSize(), result);
+        try{
+            currentSchedule.formTickets();
+        } catch (CoreException e){
+            logger.error("Exception while forming tickets:", e);
+        }
+        currentSchedule.takeConstraintsOnTickets(CommunicationHelper.getQuotingType(params));
+        final Amb result = ParserToThriftStruct.parsePersonShedule(currentSchedule);
+        logger.info("End of #{} getWorkTimeAndStatus. Return \"{}\" as result.",
+                currentRequestNum, result);
         return result;
     }
 
@@ -566,6 +555,7 @@ public class CommServer implements Communications.Iface {
 
     /**
      * Поиск пациента по данным из ТФОМС
+     *
      * @param params Параметры поиска
      * @return Статус нахождения пациента
      * @throws NotFoundException            когда не найдено ни одного пациента по заданным параметрам
@@ -739,6 +729,7 @@ public class CommServer implements Communications.Iface {
 
     /**
      * Добавление/ изменение полиса клиента
+     *
      * @param params 1) Параметры для добавления полиса (struct ChangePolicyParameters)
      * @return успешность замены/добавления полиса
      * @throws PolicyTypeNotFoundException когда нету типа полиса с переданным кодом
@@ -802,6 +793,7 @@ public class CommServer implements Communications.Iface {
     /**
      * Запрос на список талончиков, которые появились с момента последнего запроса
      * (для поиска записей на прием к врачу созданных не через КС)
+     *
      * @return Список новых талончиков или пустой список, если таких талончиков не найдено то пустой список
      */
     @Override
@@ -830,9 +822,10 @@ public class CommServer implements Communications.Iface {
 
     /**
      * Метод для получения первого свободного талончика врача
+     *
      * @param params Параметры для поиска первого свободого талончика
      * @return Структура с данными первого доступного для записи талончика
-     * @throws NotFoundException        когда у выьранного врача с этой даты нету свободных талончиков
+     * @throws NotFoundException когда у выьранного врача с этой даты нету свободных талончиков
      */
     @Override
     public FreeTicket getFirstFreeTicket(final ScheduleParameters params) throws TException {
@@ -865,37 +858,17 @@ public class CommServer implements Communications.Iface {
                         currentAction.getNote()
                 );
                 try {
-                    final Amb currentAmb = CommunicationHelper.getAmbInfo(currentAction, (short) 0);
-                    //3. Если есть actionId и отсутствует «Причина отсутствия» (т.е. врач на месте)
-                    // [причина отсутствия выбирается внутри получения ограничений]
-                    //  то делаем выборку ограничений $constraints = _getQuotingByTimeConstraints
-                    final List<QuotingByTime> constraints = CommunicationHelper.getPersonConstraints(
-                            doctor,
-                            currentAction.getEvent().getSetDate(),
-                            CommunicationHelper.getQuotingType(params)
-                    );
-                    logger.debug("Constraints={}", constraints);
-                    CommunicationHelper.takeConstraintsOnTickets(constraints, currentAmb.getTickets());
-                    Iterator<Ticket> iterator = currentAmb.getTicketsIterator();
-                    long currentAmbulatoryDate = DateConvertions.convertDateToUTCMilliseconds(currentAction.getEvent().getSetDate());
-                    logger.debug("Current AmbulatoryDate : {}", currentAmbulatoryDate);
-                    while (iterator.hasNext()) {
-                        Ticket currentTicket = iterator.next();
-                        if (currentTicket.getFree() == 1
-                                && (params.getBeginDateTime() - currentAmbulatoryDate) <= currentTicket.getTime()) {
-                            final FreeTicket result = new FreeTicket();
-                            result.setOffice(currentAmb.getOffice());
-                            final long eventDate = DateConvertions.convertDateToUTCMilliseconds(currentAction.getEvent().getSetDate());
-                            result.setBegDateTime(eventDate + currentTicket.getTime());
-                            if (iterator.hasNext()) {
-                                result.setEndDateTime(eventDate + iterator.next().getTime());
-                            } else {
-                                result.setEndDateTime(eventDate + currentAmb.getEndTime());
-                            }
-                            result.setPersonId(doctor.getId());
-                            logger.info("End of #{}. Return {} as result", currentRequestNum, result);
-                            return result;
-                        }
+                    final PersonSchedule currentSchedule = new PersonSchedule(doctor, currentAction);
+                    if (currentSchedule.checkReasonOfAbscence()) {
+                        continue;
+                    }
+                    currentSchedule.formTickets();
+                    currentSchedule.takeConstraintsOnTickets(CommunicationHelper.getQuotingType(params));
+                    final ru.korus.tmis.communication.Ticket ticket = currentSchedule.getFirstFreeTicketAfterDateTime(params.beginDateTime);
+                    if (ticket != null) {
+                        final FreeTicket result = ParserToThriftStruct.parseFreeTicket(currentSchedule, ticket);
+                        logger.info("End of #{}. Return: {}", currentRequestNum, result);
+                        return result;
                     }
                 } catch (CoreException e) {
                     logger.debug("Skip this action.");
@@ -908,6 +881,7 @@ public class CommServer implements Communications.Iface {
 
     /**
      * Метод для получения расписания врача пачкой
+     *
      * @param params Параметры для получения расписания
      * @return map<timestamp, Amb> - карта вида <[Дата приема], [Расписание на эту дату]>,
      *         в случае отсутствия расписания на указанную дату набор ключ-значение опускается
@@ -983,6 +957,7 @@ public class CommServer implements Communications.Iface {
 
     /**
      * Получение информации о пациентах по их идентификаторам
+     *
      * @param patientIds Список идентификаторов пациентов
      * @return Список, содержащий информацию по каждому пациенту (Ключ = переданный ID \ значение = Информация о пациенте)
      * @throws NotFoundException
@@ -1018,6 +993,7 @@ public class CommServer implements Communications.Iface {
 
     /**
      * Запись пациента на прием к врачу
+     *
      * @param params ID пациента, ID врача, Дата записи
      * @return Статус успешности записи
      * @throws TException
@@ -1196,6 +1172,7 @@ public class CommServer implements Communications.Iface {
 
     /**
      * Внесение действия( состояние в очереди пациента ) в БД
+     *
      * @param doctorAction Действие, отвечающее за прием врача
      * @param timesAMB     Список временных интервалов
      * @param queueAMB     Список очереди
@@ -1290,6 +1267,7 @@ public class CommServer implements Communications.Iface {
 
     /**
      * Получение талончиков пациента
+     *
      * @param patientId ид пациента
      * @return список талончиков
      * @throws TException
@@ -1350,6 +1328,7 @@ public class CommServer implements Communications.Iface {
 
     /**
      * Отмена записи пациента к врачу
+     *
      * @param patientId Ид пациента
      * @param queueId   Ид записи
      * @return Статус отмены записи
@@ -1450,6 +1429,7 @@ public class CommServer implements Communications.Iface {
 
     /**
      * Получение списка специальностей работников ЛПУ
+     *
      * @param hospitalUidFrom ИД ЛПУ
      * @return Список специальностей
      * @throws TException
@@ -1480,6 +1460,7 @@ public class CommServer implements Communications.Iface {
 
     /**
      * Получение информации об Организации по её Инфис-коду
+     *
      * @param infisCode инфис-код организации
      * @return информация об Организации
      * @throws TException Ели не найдено ни одной(NotFoundException)
@@ -1501,6 +1482,7 @@ public class CommServer implements Communications.Iface {
 
     /**
      * Получение адресов организаций
+     *
      * @param orgStructureId ид организации
      * @param recursive      флаг рекурсивной выборки организаций
      * @return Список (адрес и ид организации, которой этот адрес принадлежит)
@@ -1556,6 +1538,7 @@ public class CommServer implements Communications.Iface {
 
     /**
      * получение контактов пациента
+     *
      * @param patientId ИД пациента
      * @return Список контактов
      * @throws TException
