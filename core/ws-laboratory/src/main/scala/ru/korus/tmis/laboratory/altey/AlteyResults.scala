@@ -4,7 +4,7 @@ import grizzled.slf4j.Logging
 
 import ru.korus.tmis.util.I18nable
 import javax.ejb.EJB
-import ru.korus.tmis.laboratory.data.lis.accept._
+import ru.korus.tmis.laboratory.altey.accept._
 
 
 import ru.korus.tmis.util.General.catchy
@@ -12,7 +12,6 @@ import ru.korus.tmis.core.exception.CoreException
 import javax.jws.{HandlerChain, WebService}
 
 import ru.korus.tmis.util.General.nullity_implicits
-import ru.korus.tmis.laboratory.business.LaboratoryBeanLocal
 
 
 import ru.korus.tmis.util.Types._

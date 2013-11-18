@@ -2,9 +2,7 @@ package ru.korus.tmis.laboratory.altey.request
 
 import ru.korus.tmis.laboratory.altey.{ws => lab}
 
-import ru.korus.tmis.util.General.nullity_implicits
 
-import DataConverter._
 import ru.korus.tmis.util.Defaultible._
 
 

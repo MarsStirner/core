@@ -1,19 +1,15 @@
 package ru.korus.tmis.laboratory.across.request
 
-import javax.xml.bind.annotation._
-import javax.xml.datatype.XMLGregorianCalendar
 import java.util.Date
 
 import ru.korus.tmis.laboratory.across.{ws => lab2}
 
-import ru.korus.tmis.util.General.nullity_implicits
 
 import DataConverter._
-import java.util
 import ru.korus.tmis.core.exception.CoreException
 
 import ru.korus.tmis.util.Defaultible.setDefault
-import ru.korus.tmis.laboratory.data.request.Utility._
+import ru.korus.tmis.laboratory.across.request.Utility._
 
 sealed case class DiagnosticRequestInfo(
                                          orderMisId: Int,

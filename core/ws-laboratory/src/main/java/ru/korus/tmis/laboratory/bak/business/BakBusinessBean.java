@@ -17,12 +17,12 @@ import ru.korus.tmis.core.entity.model.RbUnit;
 import ru.korus.tmis.core.entity.model.Staff;
 import ru.korus.tmis.core.entity.model.TakenTissue;
 import ru.korus.tmis.core.exception.CoreException;
+import ru.korus.tmis.laboratory.across.business.AcrossBusinessBeanLocal;
 import ru.korus.tmis.laboratory.bak.ws.client.BakSend;
-import ru.korus.tmis.laboratory.business.LaboratoryBeanLocal;
-import ru.korus.tmis.laboratory.data.request.BiomaterialInfo;
-import ru.korus.tmis.laboratory.data.request.DiagnosticRequestInfo;
-import ru.korus.tmis.laboratory.data.request.IndicatorMetodic;
-import ru.korus.tmis.laboratory.data.request.OrderInfo;
+import ru.korus.tmis.laboratory.across.request.BiomaterialInfo;
+import ru.korus.tmis.laboratory.across.request.DiagnosticRequestInfo;
+import ru.korus.tmis.laboratory.across.request.IndicatorMetodic;
+import ru.korus.tmis.laboratory.across.request.OrderInfo;
 import ru.korus.tmis.util.ConfigManager;
 import ru.korus.tmis.util.logs.ToLog;
 import ru.korus.tmis.laboratory.bak.ws.client.handlers.SOAPEnvelopeHandlerResolver;
@@ -70,7 +70,7 @@ public class BakBusinessBean implements BakBusinessBeanLocal {
     private DbStaffBeanLocal staffBean;
 
     @EJB
-    private LaboratoryBeanLocal laboratoryBean;
+    private AcrossBusinessBeanLocal laboratoryBean;
 
     @EJB
     private DbActionBeanLocal dbActionBean;

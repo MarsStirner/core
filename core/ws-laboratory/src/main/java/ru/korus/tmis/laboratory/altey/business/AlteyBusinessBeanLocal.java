@@ -1,13 +1,7 @@
 package ru.korus.tmis.laboratory.altey.business;
 
-import ru.korus.tmis.core.entity.model.Action;
-import ru.korus.tmis.core.entity.model.ActionType;
-import ru.korus.tmis.core.entity.model.TakenTissue;
 import ru.korus.tmis.core.exception.CoreException;
-import ru.korus.tmis.laboratory.data.lis.accept.AnalysisResult;
-import ru.korus.tmis.laboratory.data.request.BiomaterialInfo;
-import ru.korus.tmis.laboratory.data.request.DiagnosticRequestInfo;
-import ru.korus.tmis.laboratory.data.request.OrderInfo;
+import ru.korus.tmis.laboratory.altey.accept.AnalysisResult;
 
 import javax.ejb.Local;
 import java.util.List;
@@ -22,8 +16,6 @@ public interface AlteyBusinessBeanLocal {
      */
     void sendLisAnalysisRequest(int actionId) throws CoreException;
 
-    void sendLis2AnalysisRequest(int actionId) throws CoreException;
-
     /**
      * Сохранить результаты анализа в БД ТМИС
      *
@@ -31,6 +23,7 @@ public interface AlteyBusinessBeanLocal {
      * @param results            результаты анализа
      * @param biomaterialDefects дефекты биоматериала
      * @throws ru.korus.tmis.core.exception.CoreException
+     *
      */
     int setLisAnalysisResults(
             int requestId,
@@ -38,19 +31,4 @@ public interface AlteyBusinessBeanLocal {
             List<AnalysisResult> results,
             String biomaterialDefects) throws CoreException;
 
-    int setLis2AnalysisResults(
-            int requestId,
-            int barCode,
-            int period,
-            boolean lastPiece,
-            List<ru.korus.tmis.laboratory.data.lis2.accept.AnalysisResult> results,
-            String biomaterialDefects) throws CoreException;
-
-
-    //    TEMP FIXME...
-    DiagnosticRequestInfo getDiagnosticRequestInfo(Action a);
-
-    BiomaterialInfo getBiomaterialInfo(Action action, TakenTissue takenTissue);
-
-    OrderInfo getOrderInfo(Action a, ActionType at);
 }

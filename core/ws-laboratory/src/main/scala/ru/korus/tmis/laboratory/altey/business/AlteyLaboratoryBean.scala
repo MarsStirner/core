@@ -3,9 +3,8 @@ package ru.korus.tmis.laboratory.altey.business
 import ru.korus.tmis.core.database._
 import ru.korus.tmis.core.entity.model._
 import ru.korus.tmis.core.exception.CoreException
-import ru.korus.tmis.laboratory.data.lis.accept.{AnalysisResult => AResult1}
-import ru.korus.tmis.laboratory.data.lis2.accept.{AnalysisResult => AResult2}
-import ru.korus.ws.{laboratory => lab, laboratory2 => lab2}
+import ru.korus.tmis.laboratory.altey.accept.{AnalysisResult => AResult1}
+import ru.korus.tmis.laboratory.altey.{ws => lab}
 
 import grizzled.slf4j.Logging
 import java.lang.String
@@ -25,8 +24,8 @@ import ru.korus.tmis.util.{CompileTimeConfigManager, ConfigManager, I18nable}
 import javax.xml.namespace.QName
 import java.net.{PasswordAuthentication, Authenticator}
 import java.util.{LinkedList, Date}
-import ru.korus.tmis.laboratory.data.request._
-import ru.korus.tmis.laboratory.data.accept.AnalysisResult
+import ru.korus.tmis.laboratory.altey.request._
+import ru.korus.tmis.laboratory.altey.accept.AnalysisResult
 import ru.korus.tmis.core.logging.LoggingInterceptor
 import javax.xml.rpc.Stub
 
@@ -129,77 +128,7 @@ class AlteyLaboratoryBean extends AlteyBusinessBeanLocal with Logging with I18na
     }
   }
 
-  def getLab2Ws(): lab2.IAcrossIntf_FNKC = {
-    import lab2._
-    try {
-      // Вызываем удаленный веб-сервис
 
-
-      if (ConfigManager.Laboratory2.User != null && ConfigManager.Laboratory2.Password != null) {
-        Authenticator.setDefault(new Authenticator() {
-          override def getPasswordAuthentication(): PasswordAuthentication = {
-            info("Authentication requested")
-            info("host: " + getRequestingHost)
-            info("site: " + getRequestingSite.toString)
-            info("url: " + getRequestingURL.toString)
-
-            return new PasswordAuthentication(ConfigManager.Laboratory2.User, ConfigManager.Laboratory2.Password.toCharArray);
-          }
-        });
-      }
-
-      val service = Option(ConfigManager.Laboratory2.WSDLUrl).map {
-        it =>
-          info("LIS2 WSDL URL specified: overriding standard url to '" + it.toString + "'")
-          new IAcrossIntf_FNKCserviceLocator(it.toString, new QName(CompileTimeConfigManager.Laboratory2.Namespace, CompileTimeConfigManager.Laboratory2.ServiceName))
-      }.getOrElse {
-        warn("LIS2 WSDL URL not specified: using local WSDL")
-        val url = this.getClass.getResource("/labisws2.wsdl")
-        new IAcrossIntf_FNKCserviceLocator(url.toString, new QName(CompileTimeConfigManager.Laboratory2.Namespace, CompileTimeConfigManager.Laboratory2.ServiceName))
-      }
-
-      val endPoint = service.getPorts.next().asInstanceOf[QName]
-
-      Option(ConfigManager.Laboratory2.ServiceUrl).foreach {
-        url =>
-          service.setIAcrossIntf_FNKCPortEndpointAddress(url.toString)
-      }
-
-      val handlerInfo = LoggingHandler.handlerInfo
-      val handlerChain =
-        Option(service.getHandlerRegistry.getHandlerChain(endPoint).asInstanceOf[JList[AnyRef]]).getOrElse(new ArrayList[AnyRef])
-
-      if (!handlerChain.contains(handlerInfo)) handlerChain.add(handlerInfo)
-
-      service.getHandlerRegistry.setHandlerChain(endPoint, handlerChain)
-
-      val port = service.getIAcrossIntf_FNKCPort
-
-      import ru.korus.tmis.util.General.cast_implicits
-
-      for (
-        user <- Option(ConfigManager.Laboratory2.User);
-        password <- Option(ConfigManager.Laboratory2.Password);
-        stub <- port.asSafe[Stub]
-      ) yield {
-        stub._setProperty(Stub.PASSWORD_PROPERTY, password)
-        stub._setProperty(Stub.USERNAME_PROPERTY, user)
-      }
-
-      // Disable multiRef generation
-      port.asSafe[AxisStub] match {
-        case Some(stub) => stub._setProperty(org.apache.axis.AxisEngine.PROP_DOMULTIREFS, false)
-        case None => {}
-      }
-
-      port
-    } catch {
-      case e => {
-        error("Error while creating LIS2 service endpoint", e)
-        throw e
-      }
-    }
-  }
 
   // get bio from Tissue (LIS)
   def getBiomaterialInfo(action: Action, tissues: JSet[Tissue]): BiomaterialInfo = {
@@ -682,36 +611,6 @@ class AlteyLaboratoryBean extends AlteyBusinessBeanLocal with Logging with I18na
   }
 
 
-  def setLis2AnalysisResults(requestId: Int, barCode: Int, period: Int, lastPiece: Boolean, lis_results: JList[AResult2],
-                             biomaterialDefects: String) = {
-
-    import ru.korus.tmis.util.General.cast_implicits
-
-    val results: mutable.Buffer[AnalysisResult] = lis_results map {
-      _.castTo[AnalysisResult]
-    }
-
-    info("Acquired requestId = " + requestId)
-    info("Acquired barCode = " + barCode)
-    info("Acquired lastPiece = " + lastPiece)
-    info("Acquired results = " + results)
-    info("Acquired biomaterialDefects = " + biomaterialDefects)
-
-    val tissue = Option(dbCustomQuery.getTakenTissueByBarcode(barCode, period)).getOrElse {
-      throw new CoreException(i18n("error.takenTissueNotFound", barCode))
-    }
-
-    info("Processing results for tissue #" + tissue.getId)
-
-    val ress = tissue.getActions.collect {
-      case a =>
-        info(msg = "SetAnalysisResults requested with id = " + a.getId)
-        val res = results.toList
-        setAnalysisResults(a, res, lastPiece, biomaterialDefects)
-    }.sum
-
-    if (ress == 0) 0 else 1
-  }
 
   def checkNull[T](o: T, message: String): T = {
     o match {
@@ -720,67 +619,7 @@ class AlteyLaboratoryBean extends AlteyBusinessBeanLocal with Logging with I18na
     }
   }
 
-  def sendTestLis2AnalysisRequest() = {
-    val barCode = 0xCAFEBABE
 
-    val exPatient = PatientInfo(100,
-      Option("Иванов"),
-      Option("Сидор"),
-      Option("Петрович"),
-      Option(new Date(88, 10, 1)),
-      Sex.MEN
-    )
-
-    val exRequest = DiagnosticRequestInfo(220,
-      Option("111"),
-      Option(1),
-      Option(new Date(112, 2, 27, 17, 0)),
-      Option(9),
-      Option(9),
-      Option("111"),
-      Option("Рыболовецкий сейнер"),
-      Option("Без комментариев"),
-      Option("Отделение трансфузиологии"),
-      Option("42"),
-      Option("Пётрович"),
-      Option("Пётрович"),
-      Option("Пётрович"),
-      Option(21)
-    )
-
-    val exBio = BiomaterialInfo(
-      Option("XY"),
-      Option("Кровь каппилярная"),
-      Option(barCode.toString),
-      Option(barCode),
-      Option(0),
-      Option(new Date(112, 2, 27, 17, 0)),
-      Option("Без комментариев")
-    )
-
-    val exOrder = OrderInfo(
-      Option("x001"),
-      Option("RTFM"),
-      Option(OrderInfo.OrderPriority.Normal),
-      List(
-        IndicatorMetodic(Option("WBC"), Option("Г0001")),
-        IndicatorMetodic(Option("RBC"), Option("Г0010"))
-      )
-    )
-
-
-    info("connecting to LIS2 webservice...")
-
-    val labws = getLab2Ws()
-
-    info("sending to LIS2 webservice...")
-    try {
-      labws.queryAnalysis(exPatient, exRequest, exBio, exOrder)
-      info("successfully interacted with LIS2 webservice...")
-    } catch {
-      case e: Throwable => error("Error responce from LIS webservice", e)
-    }
-  }
 
   def getAnalysisRequest(actionId: Int) = {
     val a = dbActionBean.getActionById(actionId)
@@ -842,33 +681,6 @@ class AlteyLaboratoryBean extends AlteyBusinessBeanLocal with Logging with I18na
     }
   }
 
-  def sendLis2AnalysisRequest(actionId: Int) {
-    // sendTestLis2AnalysisRequest()
-    val (patientInfo, requestInfo, biomaterialInfo, orderInfo) = getAnalysisRequest(actionId)
 
-    info {
-      """Lis data:
-        |  %s
-        |  %s
-        |  %s
-        |  %s
-      """.stripMargin format(
-        patientInfo.toString,
-        requestInfo.toString,
-        biomaterialInfo.toString,
-        orderInfo.toString
-        )
-    }
-
-    val labws = getLab2Ws()
-
-    info("sending to LIS webservice...")
-    try {
-      labws.queryAnalysis(patientInfo, requestInfo, biomaterialInfo, orderInfo)
-      info("successfully interacted with LIS webservice...")
-    } catch {
-      case e => error("Error responce from LIS webservice", e)
-    }
-  }
 
 }

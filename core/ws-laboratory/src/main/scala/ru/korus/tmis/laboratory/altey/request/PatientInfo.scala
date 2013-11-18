@@ -2,12 +2,10 @@ package ru.korus.tmis.laboratory.altey.request
 
 import ru.korus.tmis.laboratory.altey.{ws => lab}
 
-import ru.korus.tmis.util.General.nullity_implicits
 
 import DataConverter._
 import java.util.Date
 import ru.korus.tmis.core.entity.model.Sex
-import java.util
 import ru.korus.tmis.util.Defaultible._
 import ru.korus.tmis.core.exception.CoreException
 
