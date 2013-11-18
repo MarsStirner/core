@@ -29,6 +29,7 @@ import ru.korus.tmis.laboratory.bak.ws.client.handlers.SOAPEnvelopeHandlerResolv
 import ru.korus.tmis.laboratory.bak.ws.server.Utils;
 
 import javax.ejb.EJB;
+import javax.ejb.Remote;
 import javax.ejb.Stateless;
 import javax.xml.bind.JAXBElement;
 import javax.xml.datatype.DatatypeConfigurationException;

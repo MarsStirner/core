@@ -29,6 +29,7 @@ public interface AcrossBusinessBeanLocal {
      * @param results            результаты анализа
      * @param biomaterialDefects дефекты биоматериала
      * @throws ru.korus.tmis.core.exception.CoreException
+     *
      */
     int setLis2AnalysisResults(
             int requestId,

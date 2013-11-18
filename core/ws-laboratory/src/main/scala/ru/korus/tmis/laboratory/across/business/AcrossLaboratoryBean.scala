@@ -3,7 +3,6 @@ package ru.korus.tmis.laboratory.across.business
 import ru.korus.tmis.core.database._
 import ru.korus.tmis.core.entity.model._
 import ru.korus.tmis.core.exception.CoreException
-import java.util
 
 //import ru.korus.tmis.laboratory.data.lis.accept.{AnalysisResult => AResult1}
 
@@ -21,16 +20,14 @@ import javax.xml.datatype.{DatatypeFactory, XMLGregorianCalendar}
 
 import scala.collection.JavaConversions._
 import java.text.SimpleDateFormat
-import javax.xml.ws.BindingProvider
 import scala.Some
-import ru.korus.tmis.util.Types.{JList, JSet}
+import ru.korus.tmis.util.Types.JList
 import java.util.{ArrayList, GregorianCalendar, Collections}
-import javax.xml.ws.handler.{MessageContext, Handler}
 import ru.korus.tmis.core.logging.slf4j.soap.LoggingHandler
 import ru.korus.tmis.util.{CompileTimeConfigManager, ConfigManager, I18nable}
 import javax.xml.namespace.QName
 import java.net.{PasswordAuthentication, Authenticator}
-import java.util.{LinkedList, Date}
+import java.util.Date
 import ru.korus.tmis.laboratory.across.request._
 import ru.korus.tmis.laboratory.across.accept.AnalysisResultAcross
 import ru.korus.tmis.core.logging.LoggingInterceptor
@@ -302,7 +299,6 @@ class AcrossLaboratoryBean extends AcrossBusinessBeanLocal with Logging with I18
     // DoctorCode (string) -- уникальный код или идентификатор врача
     info("Request.DoctorCode=" + drCode)
 
-    import ru.korus.tmis.util.General.NumberImplicits._
 
     DiagnosticRequestInfo(
       id,
