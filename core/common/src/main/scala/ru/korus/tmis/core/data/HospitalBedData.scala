@@ -592,6 +592,8 @@ class BedDataContainer {
   @BeanProperty
   var code: String = _
   @BeanProperty
+  var profileId: Int = _
+  @BeanProperty
   var busy: String = _
 
   /**
@@ -602,9 +604,10 @@ class BedDataContainer {
   def this(bed: OrgStructureHospitalBed, busy: Boolean){
     this()
     if(bed!=null){
-      this.bedId = bed.getId.intValue()
+      this.bedId = bed.getId.intValue
       this.name = bed.getName
       this.code = bed.getCode
+      this.profileId = bed.getProfileId.getId.intValue
       this.busy = if(busy) "yes" else "no"
     }
   }
