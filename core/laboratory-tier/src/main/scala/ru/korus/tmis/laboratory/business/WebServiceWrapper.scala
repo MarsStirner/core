@@ -19,7 +19,7 @@ class WebServiceWrapper[Port: Manifest](wsdl: URL, serviceAddr: QName) {
 
   import BindingProvider._
 
-  private[this] val service = new Service(wsdl, serviceAddr)
+  private[this] val service = new Service(wsdl, serviceAddr) {}
   val port: Port = service.getPort[Port](service.getPorts.next, classOf[Port])
   private[this] val bp = port.asSafe[BindingProvider]
 
