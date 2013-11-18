@@ -113,6 +113,9 @@ class WebMisRESTImpl  extends WebMisREST
   private var hospitalBedBean: HospitalBedBeanLocal = _
 
   @EJB
+  private var hospitalBedProfileBean: DbRbHospitalBedProfileBeanLocal = _
+
+  @EJB
   private var assignmentBean: AssignmentBeanLocal = _
 
   @EJB
@@ -615,6 +618,15 @@ class WebMisRESTImpl  extends WebMisREST
     new BedDataListContainer(hospitalBedBean.getCaseHospitalBedsByDepartmentId(departmentId), departmentId)
   }
 
+  def getBedProfileNameById(profileId: Int) = {
+    hospitalBedProfileBean.getRbHospitalBedProfileById(profileId) match {
+      case null =>
+        throw new CoreException("В базе данных не найден профиль койки с идентификатором " + profileId);
+      case (p: RbHospitalBedProfile) => p.getName
+      case _ =>
+        throw new CoreException("Произошла неизвестная ошибка при поиске профиля койки с идентификатором" + profileId);
+    }
+  }
   /*  def getFormOfAccountingMovementOfPatients(departmentId: Int) = {
     val linear = seventhFormBean.fillInSeventhForm(departmentId, null, null/*previousMedDate, currentMedDate*/)
     new FormOfAccountingMovementOfPatientsData(linear, null)
