@@ -9,7 +9,7 @@ import java.util.HashMap;
 import java.util.Map;
 
 @Entity
-@Table(name = "ActionProperty", catalog = "", schema = "")
+@Table(name = "ActionProperty")
 @NamedQueries(
         {
                 @NamedQuery(name = "ActionProperty.findAll", query = "SELECT a FROM ActionProperty a")

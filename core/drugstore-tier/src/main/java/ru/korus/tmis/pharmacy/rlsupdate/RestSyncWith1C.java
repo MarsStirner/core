@@ -54,7 +54,7 @@ public class RestSyncWith1C {
     }
 
 
-    @Schedule(hour = "22", minute = "50")
+    @Schedule(hour = "22", minute = "50", persistent=false)
     public void updateDragListSchedule() {
         logger.info("Schedule 22h 50min: update RLS and balance... start");
         sync.update();

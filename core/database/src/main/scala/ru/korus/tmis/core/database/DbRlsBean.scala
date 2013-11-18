@@ -18,7 +18,7 @@ class DbRlsBean
   extends DbRlsBeanLocal
   with Logging {
 
-  @PersistenceContext(unitName = "rls")
+  @PersistenceContext(unitName = "s11r64")
   var em: EntityManager = _
 
   def getRlsDrugList = {

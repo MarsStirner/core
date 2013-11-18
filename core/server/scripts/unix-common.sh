@@ -40,10 +40,6 @@ MYSQL_DB_MIS=${mysql.db.mis}
 MYSQL_DB_MIS_POOL=${mysql.db.mis.pool}
 MYSQL_DB_JNDI_MIS=${mysql.db.jndi.mis}
 
-MYSQL_DB_RLS=${mysql.db.rls}
-MYSQL_DB_RLS_POOL=${mysql.db.rls.pool}
-MYSQL_DB_JNDI_RLS=${mysql.db.jndi.rls}
-
 MYSQL_DB_TMIS_CORE=${mysql.db.tmis_core}
 MYSQL_DB_TMIS_CORE_POOL=${mysql.db.tmis_core.pool}
 MYSQL_DB_JNDI_TMIS_CORE=${mysql.db.jndi.tmis_core}

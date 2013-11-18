@@ -26,8 +26,6 @@ class DbActionPropertyBean
   @PersistenceContext(unitName = "s11r64")
   var em: EntityManager = _
 
-  @PersistenceContext(unitName = "rls")
-  var emRls: EntityManager = _
 
   @EJB
   var dbAction: DbActionBeanLocal = _
@@ -219,7 +217,7 @@ class DbActionPropertyBean
    */
   @TransactionAttribute(TransactionAttributeType.REQUIRES_NEW)
   def getRLSNomenclature(code: Int): List[Nomenclature] = {
-    emRls.createQuery("SELECT n FROM Nomenclature n WHERE n.code = :code",
+    em.createQuery("SELECT n FROM Nomenclature n WHERE n.code = :code",
       classOf[Nomenclature])
       .setParameter("code", code)
       .getResultList
