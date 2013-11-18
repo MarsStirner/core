@@ -20,7 +20,7 @@ import ru.korus.tmis.laboratory.business.LaboratoryBeanLocal
 import ru.korus.tmis.util.Types._
 
 @WebService(
-  endpointInterface = "ru.korus.tmis.ws.laboratory.lis1.TMISWebService",
+  endpointInterface = "ru.korus.tmis.ws.laboratory.lis1.AlteyResultsService",
   targetNamespace = "http://korus.ru/tmis/tmis-laboratory-integration",
   serviceName = "tmis-laboratory-integration",
   portName = "tmis",

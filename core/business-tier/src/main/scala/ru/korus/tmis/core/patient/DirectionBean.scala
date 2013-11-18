@@ -19,7 +19,9 @@ import collection.JavaConversions
 import java.{lang, util}
 import ru.korus.tmis.core.filter.ActionsListDataFilter
 import ru.korus.tmis.core.exception.CoreException
-import ru.korus.tmis.laboratory.business.LaboratoryBeanLocal
+//import ru.korus.tmis.laboratory.across.business.AcrossBusinessBeanLocal
+
+// import ru.korus.tmis.laboratory.business.LaboratoryBeanLocal
 import util.{HashSet, Date}
 
 import java.lang.reflect.Method;
@@ -67,8 +69,9 @@ class DirectionBean extends DirectionBeanLocal
   @EJB
   private var dbStaffBean: DbStaffBeanLocal = _
 
-  @EJB
-  var lisBean: LaboratoryBeanLocal = _
+//  @EJB
+//todo  var lisBean: LaboratoryBeanLocal = _
+ //  var lisBean: AcrossBusinessBeanLocal = _
 
   def summary(direction: Action) = {
     val group = new CommonGroup(0, "Summary")
@@ -662,7 +665,7 @@ class DirectionBean extends DirectionBeanLocal
           val labCode = dbJobTicketBean.getLaboratoryCodeForActionId(a.getId.intValue())
           if (labCode != null && labCode.compareTo("0101")==0) {
             try {
-              lisBean.sendLis2AnalysisRequest(a.getId.intValue())
+  //todo            lisBean.sendLis2AnalysisRequest(a.getId.intValue())
             }
             catch {
               case e: Exception => {
@@ -691,7 +694,7 @@ class DirectionBean extends DirectionBeanLocal
     var jt = dbJobTicketBean.getJobTicketForAction(actionId)
     if (jt != null) {
       try {
-        lisBean.sendLis2AnalysisRequest(actionId)
+//todo        lisBean.sendLis2AnalysisRequest(actionId)
       }
       catch {
         case e: Exception => {

@@ -1,5 +1,5 @@
 
-package ru.korus.tmis.laboratory.bak.ws.client;
+package ru.korus.tmis.laboratory.bak;
 
 import ru.cgm.service.HL7Document;
 import ru.cgm.service.ObjectFactory;
@@ -23,9 +23,7 @@ import javax.xml.ws.Holder;
 @XmlSeeAlso({
     ObjectFactory.class
 })
-public interface SendBakRequestWS {
-
-
+public interface BakSendService {
     /**
      * Отправить запрос в БАК
      *

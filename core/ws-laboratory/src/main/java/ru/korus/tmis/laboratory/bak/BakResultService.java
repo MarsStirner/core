@@ -1,7 +1,6 @@
-package ru.korus.tmis.laboratory.bak.ws.server;
+package ru.korus.tmis.laboratory.bak;
 
 import ru.korus.tmis.core.exception.CoreException;
-import ru.korus.tmis.laboratory.bak.ws.server.model.fake.FakeResult;
 import ru.korus.tmis.laboratory.bak.ws.server.model.hl7.complex.MCCIIN000002UV01;
 import ru.korus.tmis.laboratory.bak.ws.server.model.hl7.complex.POLBIN224100UV01;
 
@@ -17,8 +16,10 @@ import static ru.korus.tmis.laboratory.bak.ws.server.model.hl7.HL7Specification.
 /**
  * @author anosov@outlook.com
  */
-@WebService(targetNamespace = Namespace, name = SetAnalysysResultWS.SERVICE_NAME)
-public interface SetAnalysysResultWS {
+@WebService(
+        targetNamespace = "http://www.korusconsulting.ru",
+        name = "service-bak-results")
+public interface BakResultService {
 
     /**
      * Сообщение с результатами из БАК лаборатории
@@ -56,6 +57,4 @@ public interface SetAnalysysResultWS {
                      Integer orderBarCode) throws CoreException;
 
 
-    static final String SERVICE_NAME = "setAnalysisResultService";
-    static final String PORT_NAME = "setAnalysisResultPortType";
 }

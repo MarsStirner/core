@@ -1,23 +1,18 @@
-package ru.korus.tmis.laboratory.bak.ws.client;
+package ru.korus.tmis.laboratory.altey;
 
 import ru.korus.tmis.core.exception.CoreException;
 
 import javax.jws.WebMethod;
 import javax.jws.WebService;
 
-
 /**
  * Интерфейс для взаимодействия ТМИС и новой МИС для интерграции с ЛИС.
- *
- *
- * @author anosov
- *         Date: 18.06.13 18:10
  */
 @WebService(
-        targetNamespace = "http://korus.ru/tmis/client-bak",
-        name = "client-bak"
+        targetNamespace = "http://korus.ru/tmis/client-laboratory",
+        name = "client-laboratory"
 )
-public interface BakClientWS {
+public interface AlteyRequestService {
 
     /**
      * Отправить в ЛИС запрос анализа

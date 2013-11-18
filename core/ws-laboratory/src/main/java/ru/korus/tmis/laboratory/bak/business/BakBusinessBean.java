@@ -1,4 +1,4 @@
-package ru.korus.tmis.laboratory.bak.ws.client;
+package ru.korus.tmis.laboratory.bak.business;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -17,6 +17,7 @@ import ru.korus.tmis.core.entity.model.RbUnit;
 import ru.korus.tmis.core.entity.model.Staff;
 import ru.korus.tmis.core.entity.model.TakenTissue;
 import ru.korus.tmis.core.exception.CoreException;
+import ru.korus.tmis.laboratory.bak.ws.client.BakSend;
 import ru.korus.tmis.laboratory.business.LaboratoryBeanLocal;
 import ru.korus.tmis.laboratory.data.request.BiomaterialInfo;
 import ru.korus.tmis.laboratory.data.request.DiagnosticRequestInfo;
@@ -38,10 +39,10 @@ import javax.xml.ws.Holder;
 import java.util.Date;
 import java.util.GregorianCalendar;
 
-import static ru.korus.tmis.laboratory.bak.ws.client.BakLaboratoryBean.EntryFactory.createEntry;
-import static ru.korus.tmis.laboratory.bak.ws.client.BakLaboratoryBean.EntryFactory.createEntryBiomaterial;
-import static ru.korus.tmis.laboratory.bak.ws.client.BakLaboratoryBean.EntryFactory.createEntryComment;
-import static ru.korus.tmis.laboratory.bak.ws.client.BakLaboratoryBean.EntryFactory.createEntryPregnat;
+import static ru.korus.tmis.laboratory.bak.business.BakBusinessBean.EntryFactory.createEntry;
+import static ru.korus.tmis.laboratory.bak.business.BakBusinessBean.EntryFactory.createEntryBiomaterial;
+import static ru.korus.tmis.laboratory.bak.business.BakBusinessBean.EntryFactory.createEntryComment;
+import static ru.korus.tmis.laboratory.bak.business.BakBusinessBean.EntryFactory.createEntryPregnat;
 
 
 /**
@@ -53,9 +54,9 @@ import static ru.korus.tmis.laboratory.bak.ws.client.BakLaboratoryBean.EntryFact
  */
 //@Interceptors(LoggingInterceptor.class)
 @Stateless
-public class BakLaboratoryBean implements BakLaboratoryService {
+public class BakBusinessBean implements BakBusinessBeanLocal {
 
-    private static final Logger logger = LoggerFactory.getLogger(BakLaboratoryBean.class);
+    private static final Logger logger = LoggerFactory.getLogger(BakBusinessBean.class);
 
     private static final String ROOT = "2.16.840.1.113883.1.3";
 
@@ -88,7 +89,7 @@ public class BakLaboratoryBean implements BakLaboratoryService {
         ToLog toLog = new ToLog("Analysis Request");
         toLog.add(ConfigManager.LaboratoryBak().ServiceUrl().toString());
         try {
-            final SendBakRequestWS service = createCGMService();
+            final ru.korus.tmis.laboratory.bak.BakSendService service = createCGMService();
             final HL7Document hl7Document = createDocument(actionId, toLog);
             toLog.add("Query: \n" + Utils.marshallMessage(hl7Document, "ru.cgm.service"));
             toLog.add("Sending... \n");
@@ -110,13 +111,13 @@ public class BakLaboratoryBean implements BakLaboratoryService {
     /**
      * Создание CGM-сервиса для запросов в ЛИС
      *
-     * @return SendBakRequestWS - сервис для выполнения запросов
-     * @see SendBakRequestWS
+     * @return BakSend - сервис для выполнения запросов
+     * @see ru.korus.tmis.laboratory.bak.BakSendService
      */
-    private SendBakRequestWS createCGMService() {
-        final SendBakRequest SendBakRequest = new SendBakRequest();
-        SendBakRequest.setHandlerResolver(new SOAPEnvelopeHandlerResolver());
-        return SendBakRequest.getService();
+    private ru.korus.tmis.laboratory.bak.BakSendService createCGMService() {
+        final BakSend BakSend = new BakSend();
+        BakSend.setHandlerResolver(new SOAPEnvelopeHandlerResolver());
+        return BakSend.getService();
     }
 
     private HL7Document createDocument(int actionId, ToLog toLog) throws CoreException {

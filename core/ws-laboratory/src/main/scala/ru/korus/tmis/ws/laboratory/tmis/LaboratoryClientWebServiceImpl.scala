@@ -11,7 +11,7 @@ import ru.korus.tmis.core.logging.slf4j.interceptor.NoDBLoggingInterceptor
 import CompileTimeConfigManager.LaboratoryClient._
 
 @WebService(
-  endpointInterface = "ru.korus.tmis.ws.laboratory.tmis.LaboratoryClientWebService",
+  endpointInterface = "ru.korus.tmis.ws.laboratory.tmis.AlteyRequestService",
   targetNamespace = Namespace,
   serviceName = ServiceName,
   portName = PortName,

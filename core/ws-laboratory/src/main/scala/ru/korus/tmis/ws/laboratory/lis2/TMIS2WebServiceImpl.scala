@@ -15,7 +15,7 @@ import ru.korus.tmis.laboratory.business.LaboratoryBeanLocal
 
 
 @WebService(
-  endpointInterface = "ru.korus.tmis.ws.laboratory.lis2.TMIS2WebService",
+  endpointInterface = "ru.korus.tmis.ws.laboratory.lis2.AcrossResultsService",
   targetNamespace = CompileTimeConfigManager.Laboratory.Namespace,
   serviceName = "tmis2-laboratory-integration",
   portName = "tmis2",

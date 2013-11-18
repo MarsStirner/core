@@ -14,6 +14,7 @@ import ru.korus.tmis.core.database.dbutil.Database;
 import ru.korus.tmis.core.entity.model.*;
 import ru.korus.tmis.core.entity.model.bak.*;
 import ru.korus.tmis.core.exception.CoreException;
+import ru.korus.tmis.laboratory.bak.BakResultService;
 import ru.korus.tmis.laboratory.bak.ws.server.model.*;
 import ru.korus.tmis.laboratory.bak.ws.server.model.hl7.complex.*;
 import ru.korus.tmis.util.CompileTimeConfigManager;
@@ -25,7 +26,6 @@ import javax.jws.WebMethod;
 import javax.jws.WebParam;
 import javax.jws.WebResult;
 import javax.jws.WebService;
-import javax.xml.bind.JAXBElement;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.List;
@@ -44,14 +44,14 @@ import static ru.korus.tmis.util.CompileTimeConfigManager.Laboratory.Namespace;
  *         date: 5/21/13
  */
 @WebService(
-        endpointInterface = "ru.korus.tmis.laboratory.bak.ws.server.SetAnalysysResultWS",
-        targetNamespace = CompileTimeConfigManager.Laboratory.Namespace,
-        serviceName = SetAnalysysResultWS.SERVICE_NAME,
-        portName = SetAnalysysResultWS.PORT_NAME,
-        name = SetAnalysysResultWS.PORT_NAME)
-public class SetAnalysysResult implements SetAnalysysResultWS {
+        endpointInterface = "ru.korus.tmis.laboratory.bak.BakResultService",
+        targetNamespace = "http://www.korusconsulting.ru",
+        serviceName = "service-bak-results",
+        portName = "service-bak-results",
+        name = "service-bak-results")
+public class BakResult implements BakResultService {
 
-    private static final Logger logger = LoggerFactory.getLogger(SetAnalysysResult.class);
+    private static final Logger logger = LoggerFactory.getLogger(BakResult.class);
 
     @EJB
     private DbActionBeanLocal dbAction;
@@ -262,8 +262,7 @@ public class SetAnalysysResult implements SetAnalysysResultWS {
                             final String antibioticName = getValue(pp.getObservationEvent().getValue().getCode().getDisplayName());
                             final String antibioticConcentration = getValue(pp.getObservationEvent().getValue().getCode().getCodeSystem());
                             final String antibioticSensitivity = getValue(pp.getObservationEvent().getValue().getCode().getTranslation().get(0).getCode());
-                            final String antibioticComment = getValue(pp.getObservationEvent().getValue().getStatusCode() != null ?
-                                    pp.getObservationEvent().getValue().getStatusCode().getCode() : "");
+                            final String antibioticComment = getValue(pp.getObservationEvent().getValue().getStatusCode().getCode());
 
                             ru.korus.tmis.laboratory.bak.ws.server.model.Antibiotic antibiotic = new ru.korus.tmis.laboratory.bak.ws.server.model.Antibiotic(
                                     antibioticCode, antibioticName);
@@ -384,282 +383,6 @@ public class SetAnalysysResult implements SetAnalysysResultWS {
             }
         }
         throw new CoreException("Отсутствует actionId");
-    }
-
-
-    /**
-     * Запись данных результата в БД
-     *
-     * @param request
-     * @deprecated - не использовать
-     */
-    private void flushToDB(final POLBIN224100UV01 request, final ToLog toLog) throws CoreException {
-        try {
-            toLog.addN("\n----Flush to DB-----");
-            final String uuidDocument = request.getId().getRoot();
-            toLog.addN("uuidDocument: [#]", uuidDocument);
-
-            final DateTime createTime = createDate(request.getCreationTime().getValue());
-            toLog.addN("createTime: [#]", createTime);
-
-            // true - табличное представление, false - с микроорганизмами
-            //         boolean isTable = detectTableForm(request);
-            //       toLog.add("isTable: [" + isTable + "]\n");
-
-            // идентификатор направления на анализы
-            int actionId = 0;
-            // штрих-код на контейнере c биоматериалом
-            String barCode;
-            // уникальный идентификационный номер врача лаборатории подписавшего результаты исследования
-            String doctorId = "0";
-            // ФИО врача лаборатории подписавшего результаты исследования
-            String doctorName;
-            // отметка об окончании исследований по направлению, true-окончательный, заказ закрывается, false - предварительный
-            boolean isComplete = false;
-
-
-            String defects = getDefects(request);
-            toLog.add("defects: [" + defects + "]\n");
-
-            for (POLBIN224100UV01MCAIMT700201UV01Subject2 subj : request.getControlActProcess().getSubject()) {
-
-                if (subj.getObservationReport() != null) {
-                    try {
-                        final JAXBElement<POLBMT004000UV01ObservationReport> report = subj.getObservationReport();
-                        final POLBMT004000UV01ObservationReport value = report.getValue();
-
-                        final II ii = !value.getId().isEmpty() ? value.getId().get(0) : new II();
-                        toLog.add("actionId: [" + ii.getRoot() + "]\n");
-
-                        actionId = Integer.parseInt(ii.getRoot());
-
-//                        if (dbBbtResponseBean.get(actionId) != null) {
-//                            throw new CoreException("Результаты с идентификатором [" + actionId + "] уже приняты");
-//                        }
-
-                        // код исследования
-                        final String codeIsled = value.getCode().getCode();
-                        toLog.add("codeIsled: [" + codeIsled + "]\n");
-
-                        // название исследования
-                        final String nameIsled = value.getCode().getDisplayName();
-                        toLog.add("nameIsled: [" + nameIsled + "]\n");
-
-                        isComplete = value.getStatusCode().getCode().equals("true");
-                        toLog.add("isComplete: [" + isComplete + "]\n");
-
-                        barCode = value.getSpecimen().get(0).getSpecimen().getValue().getId().getRoot();
-                        toLog.add("barCode: [" + barCode + "]\n");
-
-                        final COCTMT090000UV01AssignedEntity assignedEntity = value.getAuthor().get(0).getAssignedEntity();
-                        doctorId = assignedEntity.getCode().getCode();
-                        toLog.add("doctorId: [" + doctorId + "]\n");
-                        doctorName = assignedEntity.getCode().getDisplayName();
-                        toLog.add("doctorName: [" + doctorName + "]\n");
-
-                    } catch (Exception e) {
-                        logger.error("Exception: " + e, e);
-                        throw new CoreException("Ошибка в формате тега observationReport");
-                    }
-
-                } else if (subj.getObservationBattery() != null) {
-                    try {
-                        final JAXBElement<POLBMT004000UV01ObservationBattery> battery = subj.getObservationBattery();
-                        final POLBMT004000UV01ObservationBattery value = battery.getValue();
-
-                        // название исследования
-                        final String testName = value.getCode().getDisplayName();
-                        toLog.add("testName: [" + testName + "]\n");
-
-                        // идентификатор направления на анализы actionId=orderMisId
-                        final String orderMisId = value.getInFulfillmentOf().get(0).getPlacerOrder().getValue().getId().get(0).getExtension();
-                        toLog.add("orderMisId: [" + orderMisId + "]\n");
-
-                        final List<POLBMT004000UV01Component2> component1 = value.getComponent1();
-                        for (POLBMT004000UV01Component2 p : component1) {
-
-                            final JAXBElement<POLBMT004000UV01ObservationEvent> observationEvent = p.getObservationEvent();
-                            final String testCode = observationEvent.getValue().getCode().getCode();
-                            final String testName2 = observationEvent.getValue().getCode().getDisplayName();
-                            final DateTime effectiveTime = createDate(observationEvent.getValue().getEffectiveTime().get(0).getValue());
-
-                            toLog.add("Bacteriological test: [" + testCode + "] [" + testName2 + "] [" + effectiveTime + "]\n");
-
-                            final List<CE> ceList = observationEvent.getValue().getConfidentialityCode();
-                            if (ceList != null && !ceList.isEmpty()) {
-                                final String resultValue = ceList.get(0).getCode();
-                                final String resultText = ceList.get(0).getDisplayName();
-                                toLog.add("IFA test result: [" + resultValue + "] [" + resultText + "]\n");
-
-                                if (!"".equals(resultText) || !"".equals(resultValue)) {
-                                    final BbtResultText text = new BbtResultText();
-                                    text.setValueText(resultValue + " / " + resultText);
-                                    text.setActionId(actionId);
-                                    dbBbtResultTextBean.add(text);
-                                    toLog.add("  Save result_text: " + text + "\n");
-                                    saveIfaToProperty(actionId, resultValue, resultText, toLog);
-                                }
-                            }
-
-                            for (POLBMT004000UV01Component2 comp : observationEvent.getValue().getComponent1()) {
-                                final String microorgCode = comp.getObservationEvent().getValue().getCode().getCode();
-                                final String microorgName = comp.getObservationEvent().getValue().getCode().getDisplayName();
-                                final String microorgComment = comp.getObservationEvent().getValue().getCode().getCodeSystem();
-
-                                toLog.add("Microorganism [" + microorgCode + "] [" + microorgName + "], comment [" + microorgComment + "] \n");
-
-                                if (microorgCode != null && !"".equals(microorgCode) && microorgName != null && !"".equals(microorgName)) {
-
-                                    final RbMicroorganism rbMicroorganism = new RbMicroorganism(microorgCode, microorgName);
-                                    dbRbMicroorganismBean.add(rbMicroorganism);
-                                    toLog.add("  Save: " + rbMicroorganism + "\n");
-                                    final RbMicroorganism mic = dbRbMicroorganismBean.get(microorgCode);
-                                    final BbtResultOrganism resultOrganism = new BbtResultOrganism();
-                                    resultOrganism.setActionId(actionId);
-                                    resultOrganism.setConcentration(microorgComment);
-                                    resultOrganism.setOrganismId(mic.getId());
-                                    dbBbtResultOrganismBean.add(resultOrganism);
-                                    toLog.add("  Save: " + resultOrganism + "\n");
-                                }
-                            }
-                        }
-                    } catch (Exception e) {
-                        logger.error("Exception: " + e, e);
-                        toLog.add("Exception " + e);
-                        throw new CoreException("Ошибка в формате тега observationBattery");
-                    }
-
-                } else if (subj.getObservationEvent() != null) {
-                    try {
-                        final JAXBElement<POLBMT004000UV01ObservationEvent> event = subj.getObservationEvent();
-                        final POLBMT004000UV01ObservationEvent value = event.getValue();
-
-                        // код методики/показателя/микроорганизма
-                        final String codeMethod = value.getCode().getCode();
-                        toLog.add("codeMethod: [" + codeMethod + "]\n");
-
-                        // название методики/показателя/микроорганизма
-                        final String nameMethod = value.getCode().getDisplayName();
-                        toLog.add("nameMethod: [" + nameMethod + "]\n");
-
-                        // произвольный текстовый комментарий
-                        final String commentMethod = value.getCode().getCodeSystem();
-                        toLog.add("commentMethod: [" + commentMethod + "]\n");
-
-                        // если результата нет, здесь указана причина
-                        final String statusCode = value.getStatusCode().getCode();
-                        toLog.add("statusCode: [" + statusCode + "]\n");
-
-                        // дата исследования
-                        final DateTime effectiveTime = createDate(value.getEffectiveTime().get(0).getValue());
-                        toLog.add("effectiveTime: [" + effectiveTime + "]\n");
-
-                        // единица измерения
-                        final PQ pq = (PQ) value.getValue();
-                        final String unUnit = pq.getUnit();
-                        toLog.add("unUnit: [" + unUnit + "]\n");
-                        final String valueUnit = pq.getValue();
-                        toLog.add("valueUnit: [" + valueUnit + "]\n");
-
-                        for (POLBMT004000UV01Device dd : value.getDevice()) {
-                            // название прибора
-                            final String pribor = dd.getLabTestKit().getManufacturedTestKit().getValue().getCode().getDisplayName();
-                            toLog.add("pribor: [" + pribor + "]\n");
-
-                        }
-
-                        for (POLBMT004000UV01ReferenceRange range : value.getReferenceRange()) {
-                            // норма, т.е. диапазон допустимых значений в строковом вид
-                            final String interCode = range.getInterpretationRange().getInterpretationCode().getDisplayName();
-                            for (POLBMT004000UV01Precondition precondition1 : range.getInterpretationRange().getPrecondition()) {
-                                // значение результата относительно нормы
-                                final String norma = precondition1.getCriterion().getCode().getDisplayName();
-                                toLog.add("norma: [" + norma + "]\n");
-                            }
-                        }
-                    } catch (Exception e) {
-                        logger.error("Exception: " + e, e);
-                        toLog.add("Exception " + e);
-                        throw new CoreException("Ошибка в формате тега observationEvent");
-                    }
-
-                } else if (subj.getSpecimenObservationCluster() != null) {
-                    try {
-                        final JAXBElement<POLBMT004000UV01SpecimenObservationCluster> cluster = subj.getSpecimenObservationCluster();
-                        final POLBMT004000UV01SpecimenObservationCluster value = cluster.getValue();
-
-                        if (value.getSpecimen().isEmpty()) {
-                            throw new CoreException("В формате тега specimenObservationCluster указано более 1 микроогранизма");
-                        }
-                        toLog.addN("---------------------------");
-                        POLBMT004000UV01Specimen s = value.getSpecimen().get(0);
-                        // код микроорганизма
-                        final String codeMicroOrg = s.getSpecimen().getValue().getCode().getCode();
-                        // название микрооранизма
-                        final String nameMicroOrg = s.getSpecimen().getValue().getCode().getDisplayName();
-                        toLog.addN("Microorganism: [#], [#]", codeMicroOrg, nameMicroOrg);
-
-                        for (POLBMT004000UV01Component2 component2 : value.getComponent1()) {
-                            final JAXBElement<POLBMT004000UV01ObservationBattery> ob = component2.getObservationBattery();
-
-                            for (POLBMT004000UV01Component2 pp : ob.getValue().getComponent1()) {
-                                final String antibioticCode = pp.getObservationEvent().getValue().getCode().getCode();
-                                final String antibioticName = pp.getObservationEvent().getValue().getCode().getDisplayName();
-                                final String antibioticConcentration = pp.getObservationEvent().getValue().getCode().getCodeSystem();
-                                final String antibioticSensitivity = pp.getObservationEvent().getValue().getCode().getTranslation().get(0).getCode();
-
-                                toLog.addN("Antibiotic: [" + antibioticCode + "][" + antibioticName
-                                        + "], concentration [" + antibioticConcentration
-                                        + "], sensitivity [" + antibioticSensitivity + "]");
-
-                                // Записываем в справочник антибиотик
-                                if (!"".equals(antibioticCode) && !"".equals(antibioticName)) {
-                                    final RbAntibiotic antibiotic = new RbAntibiotic(antibioticCode, antibioticName);
-                                    dbRbAntibioticBean.add(antibiotic);
-                                    toLog.addN("  Save: #", antibiotic);
-
-                                    final RbAntibiotic rbAntibiotic = dbRbAntibioticBean.get(antibioticCode);
-
-                                    final RbMicroorganism rbMicroorganism = dbRbMicroorganismBean.get(codeMicroOrg);
-                                    final BbtResultOrganism bbtResultOrganism = dbBbtResultOrganismBean.get(rbMicroorganism.getId(), actionId);
-
-                                    final BbtOrganismSensValues bbtOrganismSens = new BbtOrganismSensValues();
-
-                                    bbtOrganismSens.setActivity(antibioticSensitivity);
-                                    bbtOrganismSens.setAntibioticId(rbAntibiotic.getId());
-                                    bbtOrganismSens.setBbtResultOrganismId(bbtResultOrganism.getId());
-                                    bbtOrganismSens.setMic(antibioticConcentration);
-
-                                    dbBbtOrganismSensValuesBean.add(bbtOrganismSens);
-                                    toLog.addN("  Save: #", bbtOrganismSens);
-                                }
-                            }
-                        }
-                        toLog.add("---------------------------\n");
-
-                    } catch (Exception e) {
-                        logger.error("Exception: " + e, e);
-                        toLog.addN("Exception #", e);
-                        throw new CoreException("Ошибка в формате тега specimenObservationCluster");
-                    }
-                }
-            }
-
-            // записываем данные в БД
-            final BbtResponse response = new BbtResponse();
-            response.setId(actionId);
-            response.setDoctorId(Integer.parseInt(doctorId));
-            response.setFinalFlag(isComplete ? 1 : 0);
-            response.setDefects(getDefects(request));
-            response.setCodeLIS(getLisCode(request));
-            dbBbtResponseBean.add(response);
-            toLog.add("  Save response: " + response + "\n");
-
-        } catch (Exception e) {
-            logger.error("Exception: " + e, e);
-            toLog.add("Exception " + e);
-            throw new CoreException("Ошибка формата результата");
-        }
     }
 
     private void saveIfaToProperty(int actionId, String resultValue, String resultText, ToLog toLog) {

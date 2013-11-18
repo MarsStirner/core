@@ -9,7 +9,7 @@ import ru.korus.tmis.laboratory.business.LaboratoryBeanLocal
 import CompileTimeConfigManager.Laboratory2Client._
 
 @WebService(
-  endpointInterface = "ru.korus.tmis.ws.laboratory.tmis.Laboratory2ClientWebService",
+  endpointInterface = "ru.korus.tmis.ws.laboratory.tmis.AcrossRequestService",
   targetNamespace = Namespace,
   serviceName = ServiceName,
   portName = PortName,

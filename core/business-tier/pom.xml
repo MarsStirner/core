@@ -30,12 +30,14 @@
             <version>${version.tmis.core}</version>
             <type>ejb</type>
         </dependency>
-        <dependency>
-            <groupId>ru.korus.tmis.laboratory</groupId>
-            <artifactId>tmis-laboratory-tier</artifactId>
-            <version>${version.tmis.core}</version>
-            <type>ejb</type>
-        </dependency>
+        <!--<dependency>-->
+            <!--<groupId>ru.korus.tmis.laboratory</groupId>-->
+            <!--<artifactId>tmis-laboratory-tier</artifactId>-->
+            <!--<version>${version.tmis.core}</version>-->
+            <!--<type>ejb</type>-->
+        <!--</dependency>-->
+
+
         <dependency>
             <groupId>net.sf.ehcache</groupId>
             <artifactId>ehcache-web</artifactId>

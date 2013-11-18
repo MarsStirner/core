@@ -1,6 +1,7 @@
 
 package ru.korus.tmis.laboratory.bak.ws.client;
 
+import ru.korus.tmis.laboratory.bak.BakSendService;
 import ru.korus.tmis.util.ConfigManager;
 
 import javax.xml.namespace.QName;
@@ -22,7 +23,7 @@ import java.util.Map;
 @WebServiceClient(name = "CGM_SOAP",
         targetNamespace = "http://cgm.ru",
         wsdlLocation = "/CGMSERVICE_hl7.wsdl")
-public class SendBakRequest extends Service {
+public class BakSend extends Service {
 
     private final static URL CGMSOAP_WSDL_LOCATION;
     private final static WebServiceException CGMSOAP_EXCEPTION;
@@ -47,7 +48,7 @@ public class SendBakRequest extends Service {
         WebServiceException e = null;
 
         try {
-            final URL baseUrl = ru.korus.tmis.laboratory.bak.ws.client.SendBakRequest.class.getResource("");
+            final URL baseUrl = BakSend.class.getResource("");
             url = new URL(baseUrl, "../../../../../../../CGMSERVICE_hl7.wsdl");
         } catch (MalformedURLException ex) {
             e = new WebServiceException(ex);
@@ -56,49 +57,49 @@ public class SendBakRequest extends Service {
         CGMSOAP_EXCEPTION = e;
     }
 
-    public SendBakRequest() {
+    public BakSend() {
         super(__getWsdlLocation(), CGMSOAP_QNAME);
     }
 
-    public SendBakRequest(WebServiceFeature... features) {
+    public BakSend(WebServiceFeature... features) {
         super(__getWsdlLocation(), CGMSOAP_QNAME, features);
     }
 
-    public SendBakRequest(URL wsdlLocation) {
+    public BakSend(URL wsdlLocation) {
         super(wsdlLocation, CGMSOAP_QNAME);
     }
 
-    public SendBakRequest(URL wsdlLocation, WebServiceFeature... features) {
+    public BakSend(URL wsdlLocation, WebServiceFeature... features) {
         super(wsdlLocation, CGMSOAP_QNAME, features);
     }
 
-    public SendBakRequest(URL wsdlLocation, QName serviceName) {
+    public BakSend(URL wsdlLocation, QName serviceName) {
         super(wsdlLocation, serviceName);
     }
 
-    public SendBakRequest(URL wsdlLocation, QName serviceName, WebServiceFeature... features) {
+    public BakSend(URL wsdlLocation, QName serviceName, WebServiceFeature... features) {
         super(wsdlLocation, serviceName, features);
     }
 
     /**
-     * @return returns SendBakRequestWS
+     * @return returns BakSend
      */
     @WebEndpoint(name = "cgmsoap_PortType")
-    public SendBakRequestWS getService() {
-        final SendBakRequestWS service
-                = super.getPort(new QName("http://cgm.ru", "cgmsoap_PortType"), SendBakRequestWS.class);
+    public BakSendService getService() {
+        final BakSendService service
+                = super.getPort(new QName("http://cgm.ru", "cgmsoap_PortType"), BakSendService.class);
         configureServiceURL((BindingProvider) service);
         return service;
     }
 
     /**
      * @param features A list of {@link javax.xml.ws.WebServiceFeature} to configure on the proxy.  Supported features not in the <code>features</code> parameter will have their default values.
-     * @return returns SendBakRequestWS
+     * @return returns BakSend
      */
     @WebEndpoint(name = "cgmsoap_PortType")
-    public SendBakRequestWS getService(WebServiceFeature... features) {
-        final SendBakRequestWS service
-                = super.getPort(new QName("http://cgm.ru", "cgmsoap_PortType"), SendBakRequestWS.class, features);
+    public BakSendService getService(WebServiceFeature... features) {
+        final BakSendService service
+                = super.getPort(new QName("http://cgm.ru", "cgmsoap_PortType"), BakSendService.class, features);
         configureServiceURL((BindingProvider) service);
         return service;
     }
