@@ -25,7 +25,7 @@ class AcrossRequest extends AcrossRequestService with Logging with I18nable {
   /**
    *  @see ru.korus.tmis.laboratory.across.AcrossBusinessBeanLocal
    **/
-  def sendAnalysisRequestToAcross(actionId: Int) {
+  def sendAnalysisRequest(actionId: Int) {
     try {
       labBean.sendAnalysisRequestToAcross(actionId)
     } catch {

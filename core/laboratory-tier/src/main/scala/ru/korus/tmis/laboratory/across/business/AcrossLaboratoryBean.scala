@@ -298,7 +298,7 @@ class AcrossLaboratoryBean extends AcrossBusinessBeanLocal with Logging with I18
     info("Request.DoctorMiddleName=" + drMiddleName)
     // DoctorCode (string) -- уникальный код или идентификатор врача
     info("Request.DoctorCode=" + drCode)
-
+    val cc: Int = drCode.intValue()
 
     DiagnosticRequestInfo(
       id,
@@ -315,7 +315,7 @@ class AcrossLaboratoryBean extends AcrossBusinessBeanLocal with Logging with I18
       Option(drLastName),
       Option(drFirstName),
       Option(drMiddleName),
-      drCode
+      Option(cc)
     )
   }
 

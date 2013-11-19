@@ -20,5 +20,5 @@ public interface AcrossRequestService {
      * @param actionId идентификатор действия, соответствующего назначенному анализу
      */
     @WebMethod
-    void sendAnalysisRequestToAcross(int actionId) throws CoreException;
+    void sendAnalysisRequest(int actionId) throws CoreException;
 }

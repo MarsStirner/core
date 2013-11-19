@@ -16,7 +16,7 @@
         <module>common</module>
         <module>database</module>
         <module>drugstore-tier</module>
-        <!--<module>laboratory-tier</module>-->
+        <module>laboratory-tier</module>
         <module>server</module>
         <module>ws-medipad</module>
         <module>ws-laboratory</module>

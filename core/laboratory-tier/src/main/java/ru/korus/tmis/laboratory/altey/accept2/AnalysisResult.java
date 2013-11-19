@@ -1,8 +1,5 @@
 package ru.korus.tmis.laboratory.altey.accept2;
 
-import ru.korus.tmis.laboratory.altey.accept2.ImageValue;
-import ru.korus.tmis.laboratory.altey.accept2.MicroOrganismResult;
-
 import javax.xml.bind.annotation.XmlElement;
 import javax.xml.bind.annotation.XmlTransient;
 import javax.xml.bind.annotation.XmlType;
