@@ -44,29 +44,28 @@ public class HospitalBedsInfoRESTImpl {
     }
 
     /**
-     * Сервис для получения информации о доступных для отделения профилей коек
+     * Сервис для получения информации о доступных профилях коек
      * Url: .../hospitalbed/avaliable_profiles
-     * @param departmentId Идентификатор отделения.
      * @return Список коек в json-формате.
      */
      @GET
      @Path("/avaliable_profiles")
      @Produces("application/x-javascript")
-     public Object getAvaliableProfiles(@QueryParam("filter[departmentId]") int departmentId) {
-         return new JSONWithPadding("{ \"avaliable\": \"none\"}");
+     public Object getAvailableProfiles() {
+         return new JSONWithPadding(wsImpl.getAllAvailableBedProfiles(auth), this.callback);
      }
 
     /**
-     * Сервис для получения текстового представления профиля койки по id
-     * Url: .../hospitalbed/profilebyid
+     * Сервис для получения описания профиля койки
+     * Url: .../hospitalbed/profile_by_id
      * @param profileId Идентификатор профиля койки.
-     * @return Текстовое представления профиля (название профиля).
+     * @return Представления описания профиля койки в JSON.
      */
     @GET
     @Path("/profile_by_id/")
     @Produces("application/x-javascript")
     public Object getProfileNameById(@QueryParam("id")int profileId) {
-        return new JSONWithPadding(wsImpl.getBedProfileNameById(profileId));
+        return new JSONWithPadding(wsImpl.getBedProfileById(profileId, auth), this.callback);
     }
 
 }

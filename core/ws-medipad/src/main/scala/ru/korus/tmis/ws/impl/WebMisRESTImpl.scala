@@ -618,15 +618,22 @@ class WebMisRESTImpl  extends WebMisREST
     new BedDataListContainer(hospitalBedBean.getCaseHospitalBedsByDepartmentId(departmentId), departmentId)
   }
 
-  def getBedProfileNameById(profileId: Int) = {
+  //Профиль койки по идентификатору
+  def getBedProfileById(profileId: Int, authData: AuthData) = {
     hospitalBedProfileBean.getRbHospitalBedProfileById(profileId) match {
       case null =>
         throw new CoreException("В базе данных не найден профиль койки с идентификатором " + profileId);
-      case (p: RbHospitalBedProfile) => p.getName
+      case (p: RbHospitalBedProfile) => new HospitalBedProfileContainer(p)
       case _ =>
         throw new CoreException("Произошла неизвестная ошибка при поиске профиля койки с идентификатором" + profileId);
     }
   }
+
+  //Полный список профилей коек в системе
+  def getAllAvailableBedProfiles(authData: AuthData) = {
+    new HospitalBedProfilesListContainer(hospitalBedProfileBean.getAllRbHospitalBedProfiles)
+  }
+
   /*  def getFormOfAccountingMovementOfPatients(departmentId: Int) = {
     val linear = seventhFormBean.fillInSeventhForm(departmentId, null, null/*previousMedDate, currentMedDate*/)
     new FormOfAccountingMovementOfPatientsData(linear, null)

@@ -8,11 +8,9 @@ import ru.korus.tmis.core.exception.CoreException;
 import java.io.Serializable;
 
 /**
- * Created with IntelliJ IDEA.
  * User: idmitriev
  * Date: 3/19/13
  * Time: 12:05 PM
- * To change this template use File | Settings | File Templates.
  */
 public interface WebMisREST extends Serializable {
 
@@ -74,7 +72,9 @@ public interface WebMisREST extends Serializable {
 
     BedDataListContainer getVacantHospitalBeds(int departmentId, AuthData authData) throws CoreException;
 
-    String getBedProfileNameById(int profileId) throws CoreException;
+    HospitalBedProfileContainer getBedProfileById(int profileId, AuthData authData) throws CoreException;
+
+    HospitalBedProfilesListContainer getAllAvailableBedProfiles(AuthData authData) throws CoreException;
 
     //FormOfAccountingMovementOfPatientsData getFormOfAccountingMovementOfPatients(int departmentId) throws CoreException;
 
