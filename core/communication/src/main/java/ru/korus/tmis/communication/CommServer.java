@@ -213,6 +213,7 @@ public class CommServer implements Communications.Iface {
      * @throws TException
      */
     @Override
+    @Deprecated
     public Amb getWorkTimeAndStatus(final GetTimeWorkAndStatusParameters params) throws TException {
         final int currentRequestNum = ++requestNum;
         final Date paramsDate = DateConvertions.convertUTCMillisecondsToLocalDate(params.getDate());
@@ -255,7 +256,7 @@ public class CommServer implements Communications.Iface {
             logger.error("Exception while forming tickets:", e);
         }
         currentSchedule.takeConstraintsOnTickets(CommunicationHelper.getQuotingType(params));
-        final Amb result = ParserToThriftStruct.parsePersonSchedule(currentSchedule);
+        final Amb result = ParserToThriftStruct.parsePersonScheduleToAmb(currentSchedule);
         logger.info("End of #{} getWorkTimeAndStatus. Return \"{}\" as result.",
                 currentRequestNum, result);
         return result;
@@ -817,7 +818,7 @@ public class CommServer implements Communications.Iface {
      * @throws NotFoundException когда у выьранного врача с этой даты нету свободных талончиков
      */
     @Override
-    public FreeTicket getFirstFreeTicket(final ScheduleParameters params) throws TException {
+    public TTicket getFirstFreeTicket(final ScheduleParameters params) throws TException {
         final int currentRequestNum = ++requestNum;
         logger.info("#{} Call method -> CommServer.getFirstFreeTicket({})", currentRequestNum, params);
         final Staff doctor;
@@ -846,7 +847,7 @@ public class CommServer implements Communications.Iface {
                 currentSchedule.takeConstraintsOnTickets(CommunicationHelper.getQuotingType(params));
                 final ru.korus.tmis.communication.Ticket ticket = currentSchedule.getFirstFreeTicketAfterDateTime(params.beginDateTime);
                 if (ticket != null) {
-                    final FreeTicket result = ParserToThriftStruct.parseFreeTicket(currentSchedule, ticket);
+                    final TTicket result = ParserToThriftStruct.parseTTicket(currentSchedule, ticket);
                     logger.info("End of #{}. Return: {}", currentRequestNum, result);
                     return result;
                 }
@@ -867,7 +868,7 @@ public class CommServer implements Communications.Iface {
      * @throws NotFoundException когда нету такого идентификатора врача
      */
     @Override
-    public Map<Long, Amb> getPersonSchedule(final ScheduleParameters params)
+    public Map<Long, Schedule> getPersonSchedule(final ScheduleParameters params)
             throws TException {
         final int currentRequestNum = ++requestNum;
         logger.info("#{} Call method -> CommServer.getPersonSchedule({})", currentRequestNum, params);
@@ -891,9 +892,9 @@ public class CommServer implements Communications.Iface {
         final List<Action> shedule = staffBean.getPersonShedule(doctor.getId(), begInterval, endInterval);
         if (shedule.isEmpty()) {
             logger.info("End of #{}. Person[{}] has no one ambulatoryAction in this interval", currentRequestNum, doctor.getId());
-            return new HashMap<Long, Amb>(0);
+            return new HashMap<Long, Schedule>(0);
         }
-        final Map<Long, Amb> result = new HashMap<Long, Amb>(shedule.size());
+        final Map<Long, Schedule> result = new HashMap<Long, Schedule>(shedule.size());
         for (Action currentAction : shedule) {
             final PersonSchedule currentSchedule = new PersonSchedule(doctor, currentAction);
             if (currentSchedule.checkReasonOfAbscence()) {

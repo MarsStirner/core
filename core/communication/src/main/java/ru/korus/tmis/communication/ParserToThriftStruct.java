@@ -157,17 +157,41 @@ public final class ParserToThriftStruct {
         return coupon;
     }
 
-    public static FreeTicket parseFreeTicket(final PersonSchedule schedule, final Ticket ticket) {
-        final FreeTicket result = new FreeTicket();
-        final long day = DateConvertions.convertDateToUTCMilliseconds(schedule.getAmbulatoryDate());
-        result.setBegDateTime(day + DateConvertions.convertDateToUTCMilliseconds(ticket.getBegTime()));
-        result.setEndDateTime(day + DateConvertions.convertDateToUTCMilliseconds(ticket.getEndTime()));
+    public static TTicket parseTTicket(final PersonSchedule schedule, final Ticket ticket) {
+        final TTicket result = new TTicket();
+        result.setDate(DateConvertions.convertDateToUTCMilliseconds(schedule.getAmbulatoryDate()));
+        result.setBegTime(DateConvertions.convertDateToUTCMilliseconds(ticket.getBegTime()));
+        result.setEndTime(DateConvertions.convertDateToUTCMilliseconds(ticket.getEndTime()));
         result.setOffice(schedule.getOffice());
-        result.setPersonId(schedule.getDoctor().getId());
+        result.setAvailable(ticket.isAvailable());
+        result.setFree(ticket.isFree());
+        result.setTimeIndex(ticket.getTimeCellIndex());
+        final Patient patient = ticket.getPatient();
+        if(patient != null){
+            result.setPatientId(patient.getId());
+            result.setPatientInfo(new StringBuilder(patient.getLastName()).append(' ')
+                    .append(patient.getFirstName()).append(' ').append(patient.getPatrName()).toString());
+        } else {
+            result.setPatientId(0);
+        }
         return result;
     }
 
-    public static Amb parsePersonSchedule(final PersonSchedule schedule) {
+    public static Schedule parsePersonSchedule(final PersonSchedule schedule) {
+        final Schedule result = new Schedule();
+        result.setAvailable(schedule.isAvailable());
+        result.setBegTime(DateConvertions.convertDateToUTCMilliseconds(schedule.getBegTime()));
+        result.setEndTime(DateConvertions.convertDateToUTCMilliseconds(schedule.getEndTime()));
+        result.setOffice(schedule.getOffice());
+        result.setPlan(schedule.getPlan());
+        for (Ticket currentTicket : schedule.getTickets()) {
+            result.addToTickets(parseTTicket(schedule, currentTicket));
+        }
+        return result;
+    }
+
+    @Deprecated
+    public static Amb parsePersonScheduleToAmb(final PersonSchedule schedule) {
         final Amb result = new Amb();
         result.setAvailable(schedule.isAvailable() ? 1 : 0);
         result.setBegTime(DateConvertions.convertDateToUTCMilliseconds(schedule.getBegTime()));
@@ -180,6 +204,7 @@ public final class ParserToThriftStruct {
         return result;
     }
 
+    @Deprecated
     private static ru.korus.tmis.communication.thriftgen.Ticket parseTicket(Ticket ticket) {
         final ru.korus.tmis.communication.thriftgen.Ticket result = new ru.korus.tmis.communication.thriftgen.Ticket();
         result.setAvailable(ticket.isAvailable() ? 1 : 0);

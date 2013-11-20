@@ -45,6 +45,7 @@ public class PatientQueueBean implements PatientQueueBeanLocal {
                 "AND a.event.patient = :patient " +
                 "AND a.deleted = false " +
                 "AND FUNC('DATE', a.directionDate) = :checkDate", Action.class)
+                //НЕ ОШИБКА, просто вызов функции MYSQL DATE(), checkDate по этой же причине и не видет в запросе, но подставит правильно
                 .setParameter("actionType", getQueueActionType())
                 .setParameter("patient", patient)
                 .setParameter("checkDate", date)
