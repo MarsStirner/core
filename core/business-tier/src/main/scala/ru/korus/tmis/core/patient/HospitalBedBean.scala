@@ -170,6 +170,13 @@ with TmisLogging{
             Integer.valueOf(hbData.data.bedRegistration.bedId)
           else null
         }
+        else if (code.compareTo(ConfigManager.Messages("db.apt.moving.codes.hospitaxlBedProfile"))==0) {
+          value = if(hbData.getData.getBedRegistration.getBedProfileId>0)
+            Integer.valueOf(hbData.getData.getBedRegistration.getBedProfileId)
+          else null
+          //TODO Implement writing hospital bed profile
+        }
+
         else if(code.compareTo(ConfigManager.Messages("db.apt.moving.codes.orgStructReceived"))==0){
           if(hbData.data.bedRegistration.movedFromUnitId>0)
             value = Integer.valueOf(hbData.data.bedRegistration.movedFromUnitId)

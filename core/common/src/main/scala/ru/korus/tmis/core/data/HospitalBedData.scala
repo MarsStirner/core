@@ -482,6 +482,9 @@ class RegistrationHospitalBedContainer {
   var movedFromUnitId: Int = _
   @BeanProperty
   var patronage: String = _
+  @BeanProperty
+  var bedProfileId: Int = _
+
   @JsonView(Array(classOf[HospitalBedViews.RegistrationFormView]))
   @BeanProperty
   var chamberList: java.util.LinkedList[ChamberDataContainer] = new java.util.LinkedList[ChamberDataContainer]
