@@ -392,18 +392,18 @@ class DirectoryInfoRESTTest {
 
     //Тестовые параметры запроса
     //Выбрать справочники с id = {1, 2}
-    val flatDictionaryIds = new util.LinkedList[Int]()
+    val flatDictionaryIds = new util.LinkedList[java.lang.Integer]()
     flatDictionaryIds.add(1)
     flatDictionaryIds.add(2)
     //Ситуация №1
     //выбрать записи из FDRecord c id = {1, 2, 9, 10}
-    val filterRecordIds = new util.LinkedList[Int]()
+    val filterRecordIds = new util.LinkedList[java.lang.Integer]()
     filterRecordIds.add(1)
     filterRecordIds.add(2)
     filterRecordIds.add(9)
     filterRecordIds.add(10)
     //сортировка по двум полям FDField
-    val sortingFieldIds = new util.LinkedHashMap[Int,Int]()
+    val sortingFieldIds = new util.LinkedHashMap[java.lang.Integer,java.lang.Integer]()
     sortingFieldIds.put(1, 0) //fdfield_id = 1 asc
     sortingFieldIds.put(3, 1) //fdfield_id = 3 desc
 

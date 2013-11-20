@@ -31,7 +31,7 @@
 
     <properties>
         <!-- Версия ядра-->
-        <version.tmis.core>2.4.13-SNAPSHOT</version.tmis.core>
+        <version.tmis.core>2.5.1-SNAPSHOT</version.tmis.core>
 
 
         <version.joda.time>2.1</version.joda.time>
@@ -505,6 +505,12 @@
             <version>${version.scala}</version>
         </dependency>
 
+        <!--<dependency>-->
+            <!--<groupId>org.scala-lang</groupId>-->
+            <!--<artifactId>scala-actors</artifactId>-->
+            <!--<version>${version.scala}</version>-->
+        <!--</dependency>-->
+
         <!--
             Groovy
         -->
@@ -630,6 +636,7 @@
             <artifactId>annotations</artifactId>
             <version>${version.findbug.annotation}</version>
         </dependency>
+
 
 
         <!--<dependency>-->
