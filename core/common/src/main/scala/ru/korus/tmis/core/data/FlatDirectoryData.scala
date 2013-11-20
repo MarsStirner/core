@@ -8,7 +8,6 @@ import ru.korus.tmis.util.ConfigManager
 import ru.korus.tmis.core.entity.model.{ActionStatus, Staff, Action}
 import ru.korus.tmis.core.entity.model.fd.{FDFieldValue, FDRecord, FDField, FlatDirectory}
 import ru.korus.tmis.core.exception.CoreException
-import java.util
 
 //Контейнер для справочника плоских структур
 @XmlType(name = "flatDirectoryData")
@@ -56,7 +55,7 @@ class FlatDirectoryRequestData {
 
   var sortingFieldInternal: String = _
 
-  def this(sortingFields: java.util.LinkedHashMap[java.lang.Integer, java.lang.Integer],
+  def this(sortingFields: java.util.LinkedHashMap[Int, Int],
            limit: Int,
            page: Int,
            filter: AnyRef) = {
@@ -67,10 +66,7 @@ class FlatDirectoryRequestData {
     } else {
       null
     }
-    this.sortingFields = sortingFields.foldLeft(new util.LinkedHashMap[Int, Int]())((list, elem) => {
-      list.put(elem._1.intValue(), elem._2.intValue())
-      list
-    })
+    this.sortingFields = sortingFields
 
     this.limit = if (limit > 0) {
       limit
@@ -111,28 +107,21 @@ class FlatDirectoryRequestDataListFilter {
   @BeanProperty
   var filterRecordIds: java.util.List[Int] = _
 
-  def this(flatDictionaryIds: java.util.List[java.lang.Integer],
+  def this(flatDictionaryIds: java.util.List[Int],
            includeMeta: String,
            includeRecordList: String,
            includeFDRecord: String,
-           filterFields: java.util.Map[java.lang.Integer, java.util.List[String]],
+           filterFields: java.util.Map[Int, java.util.List[String]],
            filterValue: String,
-           filterRecordIds: java.util.List[java.lang.Integer]) {
+           filterRecordIds: java.util.List[Int]) {
     this()
-    this.flatDictionaryIds = flatDictionaryIds.foldLeft[java.util.List[Int]](new util.ArrayList[Int]())((list, elem) => {
-      list.add(elem.intValue())
-      list
-    })
-
+    this.flatDictionaryIds = flatDictionaryIds
     this.includeMeta = (includeMeta != null && includeMeta.isEmpty != true && includeMeta.compare("yes") == 0)
     this.includeRecordList = (includeRecordList != null && includeRecordList.isEmpty != true && includeRecordList.compare("yes") == 0)
     this.includeFDRecord = (includeFDRecord != null && includeFDRecord.isEmpty != true && includeFDRecord.compare("yes") == 0)
-    this.filterFields = filterFields.collect{case (i: java.lang.Integer, l : java.util.List[String]) => (i.intValue(), l)}
+    this.filterFields = filterFields
     this.filterValue = filterValue
-    this.filterRecordIds = filterRecordIds.foldLeft[java.util.List[Int]](new util.ArrayList[Int]())((list, elem) => {
-      list.add(elem.intValue())
-      list
-    })
+    this.filterRecordIds = filterRecordIds
   }
 
   def toQueryStructure() = {
