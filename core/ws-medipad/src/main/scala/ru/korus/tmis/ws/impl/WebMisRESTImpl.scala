@@ -24,7 +24,7 @@ import ru.korus.tmis.core.thesaurus.ThesaurusBeanLocal
 import ru.korus.tmis.core.treatment.TreatmentBeanLocal
 import com.google.common.collect.Lists
 import javax.servlet.http.HttpServletRequest
-import ru.korus.tmis.laboratory.business.LaboratoryBeanLocal
+//import ru.korus.tmis.laboratory.business.LaboratoryBeanLocal
 import ru.korus.tmis.core.entity.model.layout.LayoutAttribute
 import ru.korus.tmis.util.StringId
 
@@ -175,8 +175,8 @@ class WebMisRESTImpl  extends WebMisREST
   @EJB
   var dbLayoutAttributeBean: DbLayoutAttributeBeanLocal = _
 
-  @EJB
-  var lisBean: LaboratoryBeanLocal = _
+ // @EJB
+ // var lisBean: LaboratoryBeanLocal = _
 
   @EJB
   var dbTempInvalidBean: DbTempInvalidBeanLocal = _

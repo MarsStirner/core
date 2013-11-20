@@ -31,7 +31,7 @@
 
     <properties>
         <!-- Версия ядра-->
-        <version.tmis.core>2.4.12-SNAPSHOT</version.tmis.core>
+        <version.tmis.core>2.5.1-SNAPSHOT</version.tmis.core>
 
 
         <version.joda.time>2.1</version.joda.time>
@@ -43,9 +43,9 @@
         <version.logging.logback.janino>2.6.1</version.logging.logback.janino>
         <version.logging.jcl>1.7.2</version.logging.jcl>
         <version.logging.slf4j>1.7.2</version.logging.slf4j>
-        <version.logging.grizzled-slf4j>0.6.10</version.logging.grizzled-slf4j>
+        <version.logging.grizzled-slf4j>1.0.1</version.logging.grizzled-slf4j>
 
-        <version.scala>2.8.1</version.scala>
+        <version.scala>2.10.3</version.scala>
         <version.javax.inject>1</version.javax.inject>
         <version.javaee.api>6.0</version.javaee.api>
         <version.javax.mail>1.4.5</version.javax.mail>
@@ -505,6 +505,12 @@
             <version>${version.scala}</version>
         </dependency>
 
+        <dependency>
+            <groupId>org.scala-lang</groupId>
+            <artifactId>scala-actors</artifactId>
+            <version>${version.scala}</version>
+        </dependency>
+
         <!--
             Groovy
         -->
@@ -526,7 +532,7 @@
         -->
         <dependency>
             <groupId>org.clapper</groupId>
-            <artifactId>grizzled-slf4j_2.8.1</artifactId>
+            <artifactId>grizzled-slf4j_2.10</artifactId>
             <version>${version.logging.grizzled-slf4j}</version>
         </dependency>
 
@@ -630,6 +636,7 @@
             <artifactId>annotations</artifactId>
             <version>${version.findbug.annotation}</version>
         </dependency>
+
 
 
         <!--<dependency>-->

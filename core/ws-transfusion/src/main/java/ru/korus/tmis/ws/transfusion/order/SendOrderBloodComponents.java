@@ -251,6 +251,7 @@ public class SendOrderBloodComponents {
         res.setComponentTypeId(convertComponentType(em, action.getId(), compTypeId));
         res.setVolume(trfuActionProp.getProp(action.getId(), PropType.VOLUME, 0));
         res.setIndication(convertFromXml((String) trfuActionProp.getProp(action.getId(), PropType.ROOT_CAUSE)));
+        res.setDoseCount(0.0); //данный параметер не используется
         res.setTransfusionType(convertTrfuType((String) trfuActionProp.getProp(action.getId(), PropType.TYPE)));
         final Date plannedEndDate = senderUtils.getPlannedData(action, trfuActionProp);
         res.setPlanDate(Database.toGregorianCalendar(plannedEndDate));
