@@ -20,6 +20,7 @@ import ru.korus.tmis.core.entity.model.*;
 import ru.korus.tmis.core.entity.model.Patient;
 import ru.korus.tmis.core.entity.model.communication.QueueTicket;
 import ru.korus.tmis.core.exception.CoreException;
+import ru.korus.tmis.core.exception.NoSuchPatientException;
 
 import javax.ejb.EJBException;
 import java.util.*;
@@ -47,12 +48,14 @@ public class CommServer implements Communications.Iface {
     private static DbManagerBeanLocal managerBean = null;
     private static DbEventBeanLocal eventBean = null;
     //////////////////////////////////////////////////////////
-    private static DbClientDocumentBeanLocal documentBean;
-    private static DbRbDocumentTypeBeanLocal documentTypeBean;
-    private static DbClientPolicyBeanLocal policyBean;
-    private static DbRbPolicyTypeBeanLocal policyTypeBean;
+    private static DbClientDocumentBeanLocal documentBean = null;
+    private static DbRbDocumentTypeBeanLocal documentTypeBean = null;
+    private static DbClientPolicyBeanLocal policyBean = null;
+    private static DbRbPolicyTypeBeanLocal policyTypeBean = null;
     //////////////////////////////////////////////////////////
-    private static EPGUTicketBeanLocal queueTicketBean;
+    private static EPGUTicketBeanLocal queueTicketBean = null;
+    //////////////////////////////////////////////////////////
+    private static PatientQueueBeanLocal patientQueueBean = null;
 
     //Singleton instance
     private static CommServer instance;
@@ -541,6 +544,7 @@ public class CommServer implements Communications.Iface {
 
     /**
      * Поиск пациента по данным из ТФОМС
+     *
      * @param params Параметры поиска
      * @return Статус нахождения пациента
      * @throws NotFoundException            когда не найдено ни одного пациента по заданным параметрам
@@ -858,7 +862,7 @@ public class CommServer implements Communications.Iface {
      * Метод для получения расписания врача пачкой
      *
      * @param params Параметры для получения расписания
-     * @return map[timestamp,Amb] - карта вида <[Дата приема], [Расписание на эту дату]>,
+     * @return map[timestamp, Amb] - карта вида <[Дата приема], [Расписание на эту дату]>,
      *         в случае отсутствия расписания на указанную дату набор ключ-значение опускается
      * @throws NotFoundException когда нету такого идентификатора врача
      */
@@ -956,15 +960,18 @@ public class CommServer implements Communications.Iface {
     @Override
     public EnqueuePatientStatus enqueuePatient(final EnqueuePatientParameters params) throws TException {
         final int currentRequestNum = ++requestNum;
-        final DateTime paramsDateTime = new DateTime(params.getDateTime(), DateTimeZone.UTC);
-        logger.info("#{} Call method -> CommServer.enqueuePatient( {} )",
-                currentRequestNum, params);
-        ru.korus.tmis.core.entity.model.Patient patient = null;
-        Staff person = null;
-        // Получаем ActionId:
-        final Action doctorAction;
-        //Проверяем существование пациента по ID:
+        logger.info("#{} Call method -> CommServer.enqueuePatient( {} )", currentRequestNum, params);
+        final Date paramsDateTime = DateConvertions.convertUTCMillisecondsToLocalDate(params.getDateTime());
+        logger.debug("Date: {}", paramsDateTime);
+        //Выбранный пациент
+        final Patient patient;
+        //выбранный врач
+        final Staff doctor;
+        // прием врача
+        final Action personAction;
+
         try {
+            //Проверяем существование пациента по ID:
             patient = patientBean.getPatientById(params.getPatientId());
             //проверить жив ли пациент
             if (!patientBean.isAlive(patient)) {
@@ -972,214 +979,54 @@ public class CommServer implements Communications.Iface {
                 return new EnqueuePatientStatus().setSuccess(false)
                         .setMessage(CommunicationErrors.msgPatientMarkedAsDead.getMessage());
             }
-            person = staffBean.getStaffById(params.getPersonId());
-            if (!CommunicationHelper.checkApplicable(patient, person.getSpeciality())) {
+            //Проверяем существование врача по ID:
+            doctor = staffBean.getStaffById(params.getPersonId());
+            if (!CommunicationHelper.checkApplicable(patient, doctor.getSpeciality())) {
                 logger.warn("Doctor speciality is not applicable to patient.");
                 return new EnqueuePatientStatus().setSuccess(false)
                         .setMessage(CommunicationErrors.msgEnqueueNotApplicable.getMessage());
             }
-            doctorAction = staffBean.getPersonActionsByDateAndType(
-                    params.getPersonId(),
-                    new Date(paramsDateTime.getMillis() - TimeZone.getDefault().getOffset(paramsDateTime.getMillis())),
-                    "amb");
-        } catch (Exception e) {
-            if (patient == null) {
-                logger.error("Error while get patient by ID=" + params.getPatientId(), e);
-                return new EnqueuePatientStatus().setSuccess(false)
-                        .setMessage(CommunicationErrors.msgWrongPatientId.getMessage());
-            } else {
-                if (person == null) {
-                    logger.error("Error while get Staff by ID=" + params.getPersonId(), e);
-                    return new EnqueuePatientStatus().setSuccess(false)
-                            .setMessage(CommunicationErrors.msgWrongDoctorId.getMessage());
-                } else {
-                    logger.error("DOCTOR NOT WORK AT THIS DATE", e);
-                    return new EnqueuePatientStatus().setSuccess(false)
-                            .setMessage(CommunicationErrors.msgQueueNotFound.getMessage()
-                                    + paramsDateTime.toDateMidnight().toString());
-                }
-            }
-        }
-        logger.info("AMB ACTION={} TYPEID={} TYPENAME={} OFFICE={}", doctorAction.getId(),
-                doctorAction.getActionType().getId(), doctorAction.getActionType().getName(), doctorAction.getOffice());
-        final List<APValueTime> timesAMB = new ArrayList<APValueTime>();
-        final List<APValueAction> queueAMB = new ArrayList<APValueAction>();
-        final Event queueEvent;
-        final EventType queueEventType;
-        Action queueAction = null;
-        final ActionType queueActionType;
-        ActionProperty queueAP = getAmbTimesAndQueues(doctorAction, timesAMB, queueAMB);
-        //Количество пациентов, записанных вне очереди
-        final short emergencyPatientCount = CommunicationHelper.getEmergencyPatientCount(queueAMB);
-        logger.debug("Action property: {}", queueAP);
-        //счетчик индекса для queue & times
-        short i = 0;
-        //Индикатор совпадения одного из времён приема врача и запрошенного времени
-        boolean timeHit = false;
-        for (APValueTime currentTimeAMB : timesAMB) {
-            if (new DateTime(currentTimeAMB.getValue()).getMillisOfDay() == paramsDateTime.getMillisOfDay()) {
-                //Совпадение времени с запрошенным
-                timeHit = true;
-                logger.info("HIT!!!!");
-                //Проверка свободности найденной ячейки времени
-                if (queueAMB.size() > emergencyPatientCount + i && queueAMB.get(emergencyPatientCount + i).getValue() != null) {
-                    logger.info("#{} Ticket is busy.", currentRequestNum);
-                    return new EnqueuePatientStatus().setSuccess(false)
-                            .setMessage(CommunicationErrors.msgTicketIsBusy.getMessage());
-                } else {
-                    logger.info("#{} Ticket is free.", currentRequestNum);
-                    //Нельзя записывать пациента, если на этот же день к этому же врачу он уже записывался
-                    if (CommunicationHelper.checkRepetitionTicket(queueAMB, params.getPatientId())) {
-                        logger.info("Repetition enqueue.");
-                        return new EnqueuePatientStatus().setSuccess(false)
-                                .setMessage(CommunicationErrors.msgPatientAlreadyQueued.getMessage());
-                    }
-                    //Если ячейка времени свободна, то создаём записи в таблицах Event, Action, ActionProperty_Action:
-                    logger.info("Time cell:[{}] is free. Starting to enqueue Patient",
-                            new DateTime(currentTimeAMB.getValue()));
-                    try {
-                        //0 проверяем квоты!
-                        if (params.isSetHospitalUidFrom() && !params.getHospitalUidFrom().isEmpty()) {
-                            if (!checkQuotingBySpeciality(person.getSpeciality(), params.getHospitalUidFrom())) {
-                                logger.info("No coupons available for recording (by quotes on speciality)");
-                                return new EnqueuePatientStatus().setSuccess(false)
-                                        .setMessage(CommunicationErrors.msgNoTicketsAvailable.getMessage());
-                            }
-                        }
-                        //1) Создаем событие  (Event)
-                        //1.a)Получаем тип события (EventType)
-                        queueEventType = eventBean.getEventTypeByCode("queue");
-                        logger.debug("EventType is {} typeID={} typeName={}",
-                                queueEventType, queueEventType.getId(), queueEventType.getName());
-                        //1.b)Сохраняем событие  (Event)
-                        queueEvent = eventBean.createEvent(
-                                patient, queueEventType, person,
-                                DateConvertions.convertUTCMillisecondsToLocalDate(paramsDateTime.getMillis()), paramsDateTime.plusWeeks(1).toDate());
-                        logger.debug("Event is {} ID={} UUID={}",
-                                queueEvent, queueEvent.getId(), queueEvent.getUuid().getUuid());
-                        //2) Создаем действие (Action)
-                        //2.a)Получаем тип    (ActionType)
-                        queueActionType = actionBean.getActionTypeByCode("queue");
-                        logger.debug("ActionType is {} typeID={} typeName={}",
-                                queueActionType, queueActionType.getId(), queueActionType.getName());
-                        //2.b)Сохраняем действие  (Action)
 
-                        queueAction = actionBean.createAction(
-                                queueActionType, queueEvent, person,
-                                DateConvertions.convertUTCMillisecondsToLocalDate(paramsDateTime.getMillis()), params.hospitalUidFrom, (params.getNote() == null ? "" : params.note));
-                        logger.debug("Action is {} ID={} UUID={}",
-                                queueAction, queueAction.getId(), queueAction.getUuid().getUuid());
-                        // Заполняем ActionProperty_Action для 'queue' из Action='amb'
-                        // Для каждого времени(times) из Action[приема врача]
-                        // заполняем очередь(queue) null'ами если она не ссылается на другой Action,
-                        // и добавлем наш запрос в эту очередь
-                        // с нужным значением index, по которому будет происходить соответствие с ячейкой времени.
-                        addActionToQueuePropertyValue(doctorAction, timesAMB, queueAMB, queueAction, queueAP, emergencyPatientCount + i);
-                    } catch (CoreException e) {
-                        logger.error("CoreException while create new EVENT", e);
-                        return new EnqueuePatientStatus().setSuccess(false)
-                                .setMessage(CommunicationErrors.msgUnknownError.getMessage());
-                    }
-                    break;
-                }
-            }
-            i++;
-        }
-        //У врача нету талончиков на запрошенную дату.
-        if (!timeHit) {
-            logger.warn("Doctor has no tickets to this date:[{}]", paramsDateTime);
+            personAction = staffBean.getPersonActionsByDateAndType(
+                    params.getPersonId(),
+                    DateConvertions.convertUTCMillisecondsToLocalDate(params.getDateTime()),
+                    "amb");
+        } catch (NoSuchPatientException e) {
+            logger.error("Error while get patient by ID=" + params.getPatientId(), e);
             return new EnqueuePatientStatus().setSuccess(false)
-                    .setMessage(CommunicationErrors.msgTicketNotFound.getMessage() + "  [" + paramsDateTime.toString() + "]");
+                    .setMessage(CommunicationErrors.msgWrongPatientId.getMessage());
+        } catch (CoreException e) {
+            logger.error("DOCTOR NOT WORK AT THIS DATE", e);
+            return new EnqueuePatientStatus().setSuccess(false)
+                    .setMessage(CommunicationErrors.msgQueueNotFound.getMessage());
+        } catch (Exception e) {
+            logger.error("Error while get Staff by ID=" + params.getPersonId(), e);
+            return new EnqueuePatientStatus().setSuccess(false)
+                    .setMessage(CommunicationErrors.msgWrongDoctorId.getMessage());
+
         }
-        logger.info("NEW QUEUE ACTION IS {}", queueAction.toString());
-        final EnqueuePatientStatus result = new EnqueuePatientStatus().setSuccess(true).setIndex(i)
-                .setMessage(CommunicationErrors.msgOk.getMessage()).setQueueId(queueAction.getId());
+
+        final PersonSchedule currentSchedule = new PersonSchedule(doctor, personAction);
+        if (currentSchedule.checkReasonOfAbscence()) {
+            throw new NotFoundException().setError_msg("Doctor has ReasonOfAbsence");
+        }
+        try {
+            currentSchedule.formTickets();
+        } catch (CoreException e) {
+            logger.error("Exception while forming tickets:", e);
+        }
+        // currentSchedule.takeConstraintsOnTickets(CommunicationHelper.getQuotingType(params));
+        final EnqueuePatientStatus result = currentSchedule.enqueuePatientToTime(
+                paramsDateTime,
+                patient,
+                params.getHospitalUidFrom(),
+                params.getNote()
+        );
         logger.info("End of #{} enqueuePatient. Return \"{}\" as result.", currentRequestNum, result);
         return result;
     }
 
-    private boolean checkQuotingBySpeciality(
-            final ru.korus.tmis.core.entity.model.Speciality speciality, final String organisationInfisCode) {
-        List<QuotingBySpeciality> quotingBySpecialityList =
-                quotingBySpecialityBean.getQuotingBySpecialityAndOrganisation(speciality, organisationInfisCode);
-        if (quotingBySpecialityList.isEmpty()) {
-            return true;
-        } else {
-            if (quotingBySpecialityList.size() == 1) {
-                logger.info("QuotingBySpeciality found and it is {}", quotingBySpecialityList);
-                QuotingBySpeciality current = quotingBySpecialityList.get(0);
-                if (current.getCouponsRemaining() > 0) {
-                    current.setCouponsRemaining(current.getCouponsRemaining() - 1);
-                    logger.debug("QuotingBySpeciality coupons_remaining reduce by 1");
-                    try {
-                        managerBean.merge(current);
-                        return true;
-                    } catch (CoreException e) {
-                        logger.error("Error while merge quoting.", e);
-                    }
-                }
-            }
-        }
-        return false;
-    }
 
-    /**
-     * Внесение действия( состояние в очереди пациента ) в БД
-     *
-     * @param doctorAction Действие, отвечающее за прием врача
-     * @param timesAMB     Список временных интервалов
-     * @param queueAMB     Список очереди
-     * @param queueAction  Действие пациента, отвечающее за его состояние в очереди
-     * @param queueAP      Свойтво действия пациента
-     * @param index        Номер временного отрезка на которое происходит запись
-     * @throws CoreException Ошибка сохранения действия в БД
-     */
-    private void addActionToQueuePropertyValue(
-            final Action doctorAction,
-            final List<APValueTime> timesAMB,
-            final List<APValueAction> queueAMB,
-            final Action queueAction,
-            ActionProperty queueAP,
-            final int index) throws CoreException {
-
-        if (queueAP == null) {
-            logger.warn("Our enqueue is first to this doctor. Because queueActionProperty for doctorAction is null" +
-                    " queueAMB.size()={}", queueAMB.size());
-            ActionPropertyType queueAPType = null;
-            for (ActionPropertyType apt : doctorAction.getActionType().getActionPropertyTypes()) {
-                if ("queue".equals(apt.getName())) {
-                    queueAPType = apt;
-                    break;
-                }
-            }
-            if (queueAPType != null) {
-                queueAP = actionPropertyBean.createActionProperty(doctorAction, queueAPType);
-            } else {
-                queueAP = actionPropertyBean.createActionProperty(doctorAction, 14, null);
-            }
-        }
-        logger.debug("Queue ActionProperty = {}", queueAP.getId());
-        for (int j = queueAMB.size(); j < index; j++) {
-            APValueAction newActionPropertyAction = new APValueAction(queueAP.getId(), j);
-            newActionPropertyAction.setValue(null);
-            managerBean.persist(newActionPropertyAction);
-        }
-
-        APValueAction newActionPropertyAction = new APValueAction(queueAP.getId(), index);
-        newActionPropertyAction.setValue(queueAction);
-        logger.debug("NewActionProperty [{} {} {}]",
-                newActionPropertyAction.getId().getId(),
-                newActionPropertyAction.getId().getIndex(),
-                newActionPropertyAction.getValue().getId());
-        if (queueAMB.size() < index) {
-            logger.debug("Persist!");
-            managerBean.persist(newActionPropertyAction);
-        } else {
-            logger.debug("Merge!");
-            managerBean.merge(newActionPropertyAction);
-        }
-        logger.debug("All ActionProperty_Action's set successfully with index = {}", newActionPropertyAction.getId().getIndex());
-    }
 
     /**
      * Поучение двух списков (очереди и интервалов) из приема врача
@@ -1297,7 +1144,7 @@ public class CommServer implements Communications.Iface {
         APValueAction ambActionPropertyAction = null;
         try {
             queueAction = actionBean.getActionById(queueId);
-            //Проверка тот ли пациент имеет данный талончик
+//Проверка тот ли пациент имеет данный талончик
             final Event queueEvent = queueAction.getEvent();
             if (queueEvent == null) {
                 logger.warn("Action {} has null event.", queueAction);
@@ -1445,7 +1292,7 @@ public class CommServer implements Communications.Iface {
         final int currentRequestNum = ++requestNum;
         logger.info("#{} Call method -> CommServer.getAddresses(orgStructureId={},recursive={})",
                 currentRequestNum, orgStructureId, recursive);
-        //Список для хранения сущностей из БД
+//Список для хранения сущностей из БД
         final List<ru.korus.tmis.core.entity.model.OrgStructure> orgStructureList = new ArrayList<ru.korus.tmis.core.entity.model.OrgStructure>();
         try {
             if (orgStructureId != 0) {
@@ -1684,6 +1531,14 @@ public class CommServer implements Communications.Iface {
 
     public static EPGUTicketBeanLocal getQueueTicketBean() {
         return queueTicketBean;
+    }
+
+    public static void setPatientQueueBean(PatientQueueBeanLocal patientQueueBean) {
+        CommServer.patientQueueBean = patientQueueBean;
+    }
+
+    public static PatientQueueBeanLocal getPatientQueueBean() {
+        return patientQueueBean;
     }
 
     public void endWork() {

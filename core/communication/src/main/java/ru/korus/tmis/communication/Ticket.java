@@ -18,6 +18,8 @@ public class Ticket {
     private boolean free;
     private boolean available;
     private Patient patient;
+    private short timeCellIndex;
+    private short queueCellIndex;
 
     public Ticket(
             final Date begTime,
@@ -74,6 +76,22 @@ public class Ticket {
 
     public void setPatient(Patient patient) {
         this.patient = patient;
+    }
+
+    public short getTimeCellIndex() {
+        return timeCellIndex;
+    }
+
+    public void setTimeCellIndex(short timeCellIndex) {
+        this.timeCellIndex = timeCellIndex;
+    }
+
+    public short getQueueCellIndex() {
+        return queueCellIndex;
+    }
+
+    public void setQueueCellIndex(short queueCellIndex) {
+        this.queueCellIndex = queueCellIndex;
     }
 
     public String getInfo() {
