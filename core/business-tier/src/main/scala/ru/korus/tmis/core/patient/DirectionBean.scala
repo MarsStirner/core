@@ -187,7 +187,7 @@ with I18nable {
           p._3.getType.getId == dbTakenTissue.getActionTypeTissueTypeByMasterId(a.getActionType.getId.intValue()).getTissueType.getId &&
           p._4.getIsUrgent == a.getIsUrgent).getOrElse(null) //срочные на одну дату и тип биоматериала должны создаваться с одним жобТикетом
         if (fromList != null) {
-          var (j, jt, tt, a) = fromList.asInstanceOf[(Job, JobTicket, TakenTissue, Action)]
+          val (j, jt, tt) = (fromList._1, fromList._2, fromList._3)
           j.setQuantity(j.getQuantity + 1)
           if (tt != null) a.setTakenTissue(tt)
           jtForAp = jt
@@ -225,6 +225,7 @@ with I18nable {
             list.add(j, jt, takenTissue, a)
             jtForAp = jt
           }
+
         }
         //*****
         //Проверка, есть ли подобный action за текущие сутки c другим временем
