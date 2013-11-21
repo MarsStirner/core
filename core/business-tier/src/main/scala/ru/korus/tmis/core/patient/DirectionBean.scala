@@ -503,7 +503,7 @@ with I18nable {
       //*** Обработка срочности и сверх приема по новой спеке
       action.setAppointmentType("hospital")
       if (action.getIsUrgent) {
-        var citoActionsCount = actionBean.getActionForEventAndPacientInQueueType(action.getEvent.getId.intValue(), 1) //срочные акшены
+        var citoActionsCount = actionBean.getActionForEventAndPacientInQueueType(action.getEvent.getId.intValue(), action.getPlannedEndDate.getTime, 1) //срочные акшены
         /*
         ap18values.foreach(p => {
           if (p.asInstanceOf[APValueAction].getValue != null && p.asInstanceOf[APValueAction].getValue.getPacientInQueueType.intValue() == 1) {
@@ -535,7 +535,7 @@ with I18nable {
           throw new CoreException(ConfigManager.Messages("error.citoLimit"))
         }
       } else if (request.overQueue) {
-        var overQueueActionsCount = actionBean.getActionForEventAndPacientInQueueType(action.getEvent.getId.intValue(), 2) //акшены сверх сетки приема
+        var overQueueActionsCount = actionBean.getActionForEventAndPacientInQueueType(action.getEvent.getId.intValue(), action.getPlannedEndDate.getTime, 2) //акшены сверх сетки приема
         /*
         ap18values.foreach(p => {
           if (p.asInstanceOf[APValueAction].getValue != null && p.asInstanceOf[APValueAction].getValue.getPacientInQueueType.intValue() == 1) {overQueueActionsCount = overQueueActionsCount + 1}
