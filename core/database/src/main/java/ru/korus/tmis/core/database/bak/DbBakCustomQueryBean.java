@@ -2,6 +2,7 @@ package ru.korus.tmis.core.database.bak;
 
 import ru.korus.tmis.core.entity.model.Action;
 
+import javax.ejb.Stateless;
 import javax.persistence.EntityManager;
 import javax.persistence.PersistenceContext;
 import java.util.List;
@@ -12,7 +13,8 @@ import java.util.List;
  * Company:     Korus Consulting IT<br>
  * Description:  <br>
  */
-public class DbCustomQueryBean implements DbCustomQueryBeanLocal {
+@Stateless
+public class DbBakCustomQueryBean implements DbBakCustomQueryBeanLocal {
 
     @PersistenceContext(unitName = "s11r64")
     private EntityManager em = null;
@@ -34,6 +36,7 @@ public class DbCustomQueryBean implements DbCustomQueryBeanLocal {
                 .setParameter(3, "mainDiagMkb")
                 .getResultList();
 
-        return new BakDiagnosis((String) mainDiagMkb.get(0), (String) mainDiagMkb.get(1));
+        final Object[] mas = (Object[]) mainDiagMkb.get(0);
+        return new BakDiagnosis((String) mas[0], (String) mas[1]);
     }
 }

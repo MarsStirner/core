@@ -1771,8 +1771,8 @@ AND ap.deleted = 0
       .getSingleResult
 
     if (res!=null) {
-
-      new BakDiagnosis(res.asInstanceOf[java.lang.String], res.asInstanceOf[java.lang.String])
+      val objects: Array[Object] = res.asInstanceOf[Array[Object]]
+      new BakDiagnosis(objects(0).asInstanceOf[java.lang.String], objects(1).asInstanceOf[java.lang.String])
     } else {
       null
     }

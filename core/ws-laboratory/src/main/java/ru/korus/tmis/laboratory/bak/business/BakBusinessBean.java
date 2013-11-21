@@ -5,7 +5,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import ru.korus.tmis.core.database.*;
 import ru.korus.tmis.core.database.bak.BakDiagnosis;
-import ru.korus.tmis.core.database.bak.DbCustomQueryBeanLocal;
+import ru.korus.tmis.core.database.bak.DbBakCustomQueryBeanLocal;
 import ru.korus.tmis.core.entity.model.*;
 import ru.korus.tmis.core.exception.CoreException;
 import ru.korus.tmis.laboratory.bak.BakSendService;
@@ -76,7 +76,7 @@ public class BakBusinessBean implements BakBusinessBeanLocal {
     private DbActionPropertyBeanLocal dbActionProperty;
 
     @EJB
-    private DbCustomQueryBeanLocal dbCustomQueryBean;
+    private DbBakCustomQueryBeanLocal dbCustomQueryBean;
 
     /**
      * Метод для отсылки запроса на анализ в лабораторию
