@@ -351,9 +351,12 @@ class DbActionBean
   }
 
   @TransactionAttribute(TransactionAttributeType.REQUIRES_NEW)
-  def getActionForEventAndPacientInQueueType(eventId: Int, pacientInQueueType: Int) = {
+  def getActionForEventAndPacientInQueueType(eventId: Int, date: Long, pacientInQueueType: Int) = {
+    val formatter = new SimpleDateFormat("yyyy-MM-dd")
+    val strDate = formatter.format(new Date(date))
     var typed = em.createQuery(GetActionForEventAndPacientInQueueType, classOf[Long])
       .setParameter("eventId", eventId)
+      .setParameter("date", strDate)
       .setParameter("pacientInQueueType", pacientInQueueType)
 
     typed.getSingleResult
@@ -367,6 +370,8 @@ class DbActionBean
     a.event.id = :eventId
   AND
     a.pacientInQueueType = :pacientInQueueType
+  AND
+    substring(a.plannedEndDate, 1, 10) = :date
   AND
     a.event.deleted = 0
   AND

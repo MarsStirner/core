@@ -1,8 +1,8 @@
 
 package ru.korus.tmis.laboratory.bak;
 
-import ru.cgm.service.HL7Document;
-import ru.cgm.service.ObjectFactory;
+import ru.korus.tmis.laboratory.bak.service.HL7Document;
+import ru.korus.tmis.laboratory.bak.service.ObjectFactory;
 
 import javax.jws.WebMethod;
 import javax.jws.WebParam;

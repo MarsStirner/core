@@ -387,7 +387,7 @@ public class DiagnosticsRegistryExRESTImpl {
         return new JSONWithPadding(wsImpl.modifyInstrumentalStudies(eventId, com_data, this.auth), this.callback);
         */
         if (data.getPacientInQueue() > 0) {
-            wsImpl.checkCountOfConsultations(data.getEventId(), data.getPacientInQueue(), data.getExecutorId());
+            wsImpl.checkCountOfConsultations(data.getEventId(), data.getPacientInQueue(), data.getExecutorId(), data.getPlannedEndDate().getTime());
         }
         if (data.getPacientInQueue() == 0 && (data.getPlannedTime() == null || data.getPlannedTime().getId() == 0)) {
             ScheduleContainer timeToCreate = wsImpl.getPlannedTime(actionId);
