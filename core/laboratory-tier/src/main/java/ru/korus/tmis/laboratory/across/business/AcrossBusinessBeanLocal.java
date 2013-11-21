@@ -41,7 +41,7 @@ public interface AcrossBusinessBeanLocal {
 
 
     //todo Временный хак, нужен для быстрого запуска
-    DiagnosticRequestInfo getDiagnosticRequestInfo(Action a);
-    BiomaterialInfo getBiomaterialInfo(Action action, TakenTissue takenTissue);
-    OrderInfo getOrderInfo(Action a, ActionType at);
+//    DiagnosticRequestInfo getDiagnosticRequestInfo(Action a);
+//    BiomaterialInfo getBiomaterialInfo(Action action, TakenTissue takenTissue);
+//    OrderInfo getOrderInfo(Action a, ActionType at);
 }

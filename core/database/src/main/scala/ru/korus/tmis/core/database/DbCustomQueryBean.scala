@@ -26,6 +26,7 @@ import ru.korus.tmis.util.General._
 import java.lang.{Double => JDouble}
 import collection.immutable.{HashMap, ListMap}
 import ru.korus.tmis.core.filter.ListDataFilter
+import ru.korus.tmis.core.database.bak.BakDiagnosis
 import collection.JavaConversions
 import java.util
 
@@ -1748,9 +1749,9 @@ AND ap.deleted = 0
    * @see
    * @param action
    */
-  def getDiagnosisBak(action: Action): ru.korus.tmis.core.database.bak.Diagnosis = {
+  def getBakDiagnosis(action: Action): BakDiagnosis = {
     val res = em.createNativeQuery( """
-         SELECT MKB.DiagID
+         SELECT MKB.DiagID, MKB.DiagName
           FROM Action
           JOIN ActionProperty ON ActionProperty.action_id = Action.id
           JOIN ActionPropertyType ON ActionPropertyType.id = ActionProperty.type_id
@@ -1763,38 +1764,16 @@ AND ap.deleted = 0
           AND Action.deleted = 0
           ORDER BY
           Action.createDatetime DESC
-          LIMIT 0, 1
-                                    """)
+          LIMIT 0, 1 """)
       .setParameter(1, action.getCreateDatetime)
       .setParameter(2, action.getEvent.getId)
       .setParameter(3, "mainDiagMkb")
       .getResultList
 
-    val res2 = em.createNativeQuery( """
-         SELECT MKB.DiagName
-          FROM Action
-          JOIN ActionProperty ON ActionProperty.action_id = Action.id
-          JOIN ActionPropertyType ON ActionPropertyType.id = ActionProperty.type_id
-          JOIN ActionProperty_MKB ON ActionProperty.id = ActionProperty_MKB.id
-          JOIN MKB ON MKB.id = ActionProperty_MKB.value
-          WHERE
-          Action.createDatetime <= ?
-          AND Action.event_id = ?
-          AND ActionPropertyType.code = ?
-          AND Action.deleted = 0
-          ORDER BY
-          Action.createDatetime DESC
-          LIMIT 0, 1
-                                     """)
-      .setParameter(1, action.getCreateDatetime)
-      .setParameter(2, action.getEvent.getId)
-      .setParameter(3, "mainDiagMkb")
-      .getResultList
-
-    if (res.isEmpty) {
-      null
+    if (!res.isEmpty) {
+      new BakDiagnosis(res.get(0).asInstanceOf[String], res.get(1).asInstanceOf[String])
     } else {
-      new ru.korus.tmis.core.database.bak.Diagnosis(res.get(0).asInstanceOf[String], res2.get(0).asInstanceOf[String])
+      null
     }
   }
 }

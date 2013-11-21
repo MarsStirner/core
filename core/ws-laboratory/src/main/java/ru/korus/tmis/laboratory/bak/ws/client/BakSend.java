@@ -22,7 +22,7 @@ import java.util.Map;
  */
 @WebServiceClient(name = "CGM_SOAP",
         targetNamespace = "http://cgm.ru",
-        wsdlLocation = "/CGMSERVICE_hl7.wsdl")
+        wsdlLocation = "../../../../../../../CGMSERVICE_hl7.wsdl")
 public class BakSend extends Service {
 
     private final static URL CGMSOAP_WSDL_LOCATION;
