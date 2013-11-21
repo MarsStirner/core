@@ -219,9 +219,10 @@ with I18nable {
             list.add(j, jt, takenTissue, a)
             jtForAp = jt
           } else {
-            var (j, jt, tt, a) = fromList.asInstanceOf[(Job, JobTicket, TakenTissue, Action)]
+            val (j, jt, tt) = (fromList._1, fromList._2, fromList._3)
             j.setQuantity(j.getQuantity + 1)
             if (tt != null) a.setTakenTissue(tt)
+            list.add(j, jt, takenTissue, a)
             jtForAp = jt
           }
         }
