@@ -5,6 +5,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import ru.korus.tmis.core.database.*;
 import ru.korus.tmis.core.database.bak.BakDiagnosis;
+import ru.korus.tmis.core.database.bak.DbCustomQueryBeanLocal;
 import ru.korus.tmis.core.entity.model.*;
 import ru.korus.tmis.core.exception.CoreException;
 import ru.korus.tmis.laboratory.bak.BakSendService;
@@ -73,6 +74,9 @@ public class BakBusinessBean implements BakBusinessBeanLocal {
 
     @EJB
     private DbActionPropertyBeanLocal dbActionProperty;
+
+    @EJB
+    private DbCustomQueryBeanLocal dbCustomQueryBean;
 
     /**
      * Метод для отсылки запроса на анализ в лабораторию
@@ -249,7 +253,7 @@ public class BakBusinessBean implements BakBusinessBeanLocal {
         diag.setOrderPregnatMax(pregMax);
 
         // Diagnosis
-        final BakDiagnosis diagnosisBak = dbCustomQuery.getBakDiagnosis(action);
+        final BakDiagnosis diagnosisBak = dbCustomQueryBean.getBakDiagnosis(action);
         toLog.addN("Request:#", diagnosisBak);
         if (diagnosisBak != null) {
             diag.setOrderDiagCode(diagnosisBak.getCode());

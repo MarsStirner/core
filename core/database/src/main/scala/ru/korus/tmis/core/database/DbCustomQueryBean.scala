@@ -1768,10 +1768,11 @@ AND ap.deleted = 0
       .setParameter(1, action.getCreateDatetime)
       .setParameter(2, action.getEvent.getId)
       .setParameter(3, "mainDiagMkb")
-      .getResultList
+      .getSingleResult
 
-    if (!res.isEmpty) {
-      new BakDiagnosis(res.get(0).asInstanceOf[String], res.get(1).asInstanceOf[String])
+    if (res!=null) {
+
+      new BakDiagnosis(res.asInstanceOf[java.lang.String], res.asInstanceOf[java.lang.String])
     } else {
       null
     }
