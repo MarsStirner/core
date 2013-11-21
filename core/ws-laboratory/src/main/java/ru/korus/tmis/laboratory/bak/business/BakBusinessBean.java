@@ -16,6 +16,7 @@ import ru.korus.tmis.util.logs.ToLog;
 import ru.korus.tmis.laboratory.bak.ws.client.handlers.SOAPEnvelopeHandlerResolver;
 import ru.korus.tmis.laboratory.bak.ws.server.Utils;
 
+import javax.annotation.Nullable;
 import javax.ejb.EJB;
 import javax.ejb.Stateless;
 import javax.xml.bind.JAXBElement;
@@ -159,13 +160,17 @@ public class BakBusinessBean implements BakBusinessBeanLocal {
         toLog.addN("OrderInfo:Urgent=#", priority);
         orderInfo.setOrderPriority(priority);
 
+        ActionPropertyType aa = null;
         // Показатели
         List<ActionPropertyType> apts = dbActionTypeBean.getActionTypePropertiesById(actionType.getId());
         for (ActionPropertyType apt : apts) {
-            if (apt.getTest() == null) {
-                // Если для данного исследования не определены показатели из rbTest, то не нужно отправлять анализ в ЛИС
-                throw new CoreException("не определены показатели из rbTest, не нужно отправлять анализ в ЛИС actionId: " + action.getId());
+            if (apt.getTest() != null) {
+                aa = apt;
             }
+        }
+        if (aa == null) {
+            // Если для данного исследования не определены показатели из rbTest, то не нужно отправлять анализ в ЛИС
+            throw new CoreException("не определены показатели из rbTest, не нужно отправлять анализ в ЛИС actionId: " + action.getId());
         }
 
         Set<ActionPropertyType> aptsSet = new HashSet<ActionPropertyType>();
@@ -241,24 +246,28 @@ public class BakBusinessBean implements BakBusinessBeanLocal {
         diag.setOrderPregnatMax(pregMax);
 
         // Diagnosis
-        final Diagnoz diagnosis = getDiagnosis(action.getEvent(), toLog);
+        final Diagnosis diagnosisBak = dbCustomQuery.getDiagnosisBak(action);
+//        final Diagnoz diagnosisBak = getDiagnosis(action.getEvent(), toLog);
+//        final Diagnoz diagnosis = getDiagnosis(action.getEvent(), toLog);
         // Diagnosis (string) -- диагноз (текст из МКБ) (последний из обоснования; если нет, то из первичного осмотра)
         // МКБ (string) -- диагноз (код из МКБ) (последний из обоснования; если нет, то из первичного осмотра)
-        toLog.addN("Request:Diagnosis=#", diagnosis);
-        diag.setOrderDiagCode(diagnosis.getCode());
-        diag.setOrderDiagText(diagnosis.getName());
+        toLog.addN("Request:Diagnosis=#", diagnosisBak);
+        if (diagnosisBak != null) {
+            diag.setOrderDiagCode(diagnosisBak.getCode());
+            diag.setOrderDiagText(diagnosisBak.getName());
+        }
 
         // Comment (string) (необязательно) – произвольный текстовый комментарий к направлению
         final String comment = action.getNote();
         toLog.addN("Request:Comment" + comment);
         diag.setOrderComment(comment);
 
-        final OrgStructure department = getOrgStructureByEvent(action.getEvent());
-        // DepartmentName (string) -- название подразделения - отделение
-        // DepartmentCode (string) -- уникальный код подразделения (отделения)
+        final OrgStructure department = getOrgStructureByEvent(action.getEvent(), toLog);
         toLog.addN("Request:Department: #", department);
-        diag.setOrderDepartmentMisCode(department.getCode());
-        diag.setOrderDepartmentName(department.getName());
+        if (department != null) {
+            diag.setOrderDepartmentMisCode(department.getCode());// DepartmentCode (string) -- уникальный код подразделения (отделения)
+            diag.setOrderDepartmentName(department.getName()); // DepartmentName (string) -- название подразделения - отделение
+        }
 
         final String doctorLastname = action.getAssigner().getLastName();
         final String doctorFirstname = action.getAssigner().getFirstName();
@@ -282,6 +291,7 @@ public class BakBusinessBean implements BakBusinessBeanLocal {
      * <p/>
      * Возвращает пару (код, текстовое описание диагноза) по МКБ или null
      */
+    @Nullable
     private Diagnoz getDiagnosis(Event event, ToLog toLog) throws CoreException {
         // Получаем тип свойства действия для диагноза
         final Set<ActionPropertyType> diagnosisAPT = dbActionPropertyType.getDiagnosisAPT();
@@ -289,64 +299,51 @@ public class BakBusinessBean implements BakBusinessBeanLocal {
         final LinkedList<Event> events = new LinkedList<Event>();
         events.add(event);
 
-        Map<Event, Action> diagMap = dbCustomQuery.getDiagnosisSubstantiationByEvents(events);
-
+        final Map<Event, Action> diagMap = dbCustomQuery.getDiagnosisSubstantiationByEvents(events);
         final Action action = diagMap.get(event);
         if (action == null) {
             toLog.addN("Diagnosis not found!!!");
             return null;
         }
-
         // Получаем список пар (APT, AP)
-        Map<ActionPropertyType, ActionProperty> aps = action.getActionPropertiesByTypes(diagnosisAPT);
+        final Map<ActionPropertyType, ActionProperty> aps = action.getActionPropertiesByTypes(diagnosisAPT);
 
         // Получаем список APValue
-/*
-        val apvals = aps.foldLeft(scala.collection.immutable.List[APValue] ())((ps, pair)=>{
-            val ap = pair._2
-            val apvs = dbActionProperty.getActionPropertyValue(ap).toList
-            apvs:::ps
-        })
+        final List<APValue> apValues = new ArrayList<APValue>();
+        for (Map.Entry<ActionPropertyType, ActionProperty> apt : aps.entrySet()) {
+            final List<APValue> apvs = dbActionProperty.getActionPropertyValue(apt.getValue());
+            apValues.addAll(apvs);
+        }
 
-        apvals.size match {
-            case 0 =>null
-            case x:
-                Int =>{
-                val pair = apvals.get(0)
-                var res = pair.getValueAsString.replaceAll("<(.)+?>", "")
-                res = res.replaceAll("<(\n)+?>", "")
-                res = res.replaceAll("\\&.*?\\;", "")
-                if (res.length > 150) {
-                    res = res.take(147) + "..."
-                }
-                ("", res)
+        if (!apValues.isEmpty()) {
+            final APValue apValue = apValues.get(0);
+            String res = apValue.getValueAsString().replaceAll("<(.)+?>", "");
+            res = res.replaceAll("<(\n)+?>", "");
+            res = res.replaceAll("\\&.*?\\;", "");
+            if (res.length() > 150) {
+                res = res.substring(147) + "...";
             }
-*/
-
-        return null;  //To change body of created methods use File | Settings | File Templates.
+            return new Diagnoz("", res);
+        }
+        return null;
     }
 
-    private OrgStructure getOrgStructureByEvent(final Event e) throws CoreException {
+    @Nullable
+    private OrgStructure getOrgStructureByEvent(final Event e, final ToLog toLog) throws CoreException {
         Map<Event, ActionProperty> hospitalBeds = dbCustomQuery.getHospitalBedsByEvents(Collections.singletonList(e));
-
-
-       /* hospitalBeds.get(e) match {
-            case null =>{
-                warn("Hospital bed not found for " + e)
-            }
-            case hospitalBed:
-                ActionProperty =>{
-                val apvs = dbActionProperty.getActionPropertyValue(hospitalBed)
-                apvs.foreach(
-                        (apv) = > {
-                if (apv.getValue.isInstanceOf[OrgStructureHospitalBed]) {
-                    val bed = apv.getValue.asInstanceOf[OrgStructureHospitalBed]
-                    return bed.getMasterDepartment()
+        if (hospitalBeds == null) {
+            toLog.addN("Hospital bed not found for #", e);
+            return null;
+        }
+        for (Event event : hospitalBeds.keySet()) {
+            final ActionProperty actionProperty = hospitalBeds.get(event);
+            final List<APValue> actionPropertyValue = dbActionProperty.getActionPropertyValue(actionProperty);
+            for (APValue apValue : actionPropertyValue) {
+                if (apValue instanceof OrgStructureHospitalBed) {
+                    return ((OrgStructureHospitalBed) apValue).getMasterDepartment();
                 }
-                })
             }
-        }*/
-
+        }
         return null;
     }
 
