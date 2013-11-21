@@ -903,9 +903,9 @@ class WebMisRESTImpl  extends WebMisREST
     directionBean.removeDirections(data, directionType, auth)
   }
 
-  def checkCountOfConsultations(eventId: Int, pqt: Int, executorId: Int) {
+  def checkCountOfConsultations(eventId: Int, pqt: Int, executorId: Int, data: Long) {
     var executor = dbStaff.getStaffById(executorId)
-    var actionsCount = actionBean.getActionForEventAndPacientInQueueType(eventId, pqt)
+    var actionsCount = actionBean.getActionForEventAndPacientInQueueType(eventId, data, pqt)
     if (pqt == 1) {
       if (executor.getMaxCito <= 0 || executor.getMaxCito <= actionsCount) {
         throw new CoreException(ConfigManager.Messages("error.citoLimit"))
