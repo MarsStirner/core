@@ -41,9 +41,9 @@ public interface AcrossBusinessBeanLocal {
 
 
     //    TEMP FIXME...
-    DiagnosticRequestInfo getDiagnosticRequestInfo(Action a);
+  //  DiagnosticRequestInfo getDiagnosticRequestInfo(Action a);
 
-    BiomaterialInfo getBiomaterialInfo(Action action, TakenTissue takenTissue);
+ //   BiomaterialInfo getBiomaterialInfo(Action action, TakenTissue takenTissue);
 
-    OrderInfo getOrderInfo(Action a, ActionType at);
+   // OrderInfo getOrderInfo(Action a, ActionType at);
 }
