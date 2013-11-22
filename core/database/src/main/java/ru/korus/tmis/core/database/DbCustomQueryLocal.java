@@ -121,7 +121,6 @@ public interface DbCustomQueryLocal {
      *
      * @param e - карточка пациента
      * @return - код источника финансирования
-     * @throws CoreException
      */
     Integer getFinanceId(Event e);
 
@@ -129,5 +128,6 @@ public interface DbCustomQueryLocal {
      * Получить код и описание диагноза
      * (для БАК направления)
      */
+    @Deprecated
     BakDiagnosis getBakDiagnosis(Action action);
 }

@@ -268,8 +268,8 @@ public class BakBusinessBean implements BakBusinessBeanLocal {
         final OrgStructure department = getOrgStructureByEvent(action.getEvent(), toLog);
         toLog.addN("Request:Department: #", department);
         if (department != null) {
-            toLog.addN("Request:Department:Code #,Name #", department.getCode(), department.getName());
-            diag.setOrderDepartmentMisCode(department.getCode());// DepartmentCode (string) -- уникальный код подразделения (отделения)
+            toLog.addN("Request:Department:Code=#, Name=#", department.getId(), department.getName());
+            diag.setOrderDepartmentMisCode(String.valueOf(department.getId()));// DepartmentCode (string) -- уникальный код подразделения (отделения)
             diag.setOrderDepartmentName(department.getName()); // DepartmentName (string) -- название подразделения - отделение
         }
 
@@ -329,16 +329,30 @@ public class BakBusinessBean implements BakBusinessBeanLocal {
         final SectionInfo section = new SectionInfo();
 //        section.setText("");
 
-        section.getEntry().add(createEntry(eventInfo.getOrganisation().getUuid().getUuid(), "OBS", "RQO", requestInfo.getOrderDepartmentMisCode(), requestInfo.getOrderDepartmentName()));
-        section.getEntry().add(createEntry(action.getUuid().getUuid(), "OBS", "RQO", action.getIsUrgent() + "", ""));
+        section.getEntry().add(
+                createEntry(
+                        eventInfo.getOrganisation().getUuid().getUuid(),
+                        "OBS",
+                        "RQO",
+                        requestInfo.getOrderDepartmentMisCode(),
+                        requestInfo.getOrderDepartmentName()));
+        section.getEntry().add(
+                createEntry(action.getUuid().getUuid(), "OBS", "RQO", action.getIsUrgent() + "", ""));
         // MKB.DiagName
-        section.getEntry().add(createEntry("", "OBS", "RQO", requestInfo.getOrderDiagCode(), requestInfo.getOrderDiagText()));
-        section.getEntry().add(createEntry(eventInfo.getEventType().getFinance().getName(), "OBS", "RQO", orderInfo.getDiagnosticCode(), orderInfo.getDiagnosticName()));
+        section.getEntry().add(
+                createEntry("", "OBS", "RQO", requestInfo.getOrderDiagCode(), requestInfo.getOrderDiagText()));
+        section.getEntry().add(
+                createEntry(
+                        eventInfo.getEventType().getFinance().getName(),
+                        "OBS",
+                        "RQO",
+                        orderInfo.getDiagnosticCode(),
+                        orderInfo.getDiagnosticName()));
 
         for (IndicatorMetodic indicatorMetodic : orderInfo.getIndicatorList()) {
-            section.getEntry().add(createEntry("", "OBS", "RQO", indicatorMetodic.getCode(), indicatorMetodic.getName()));
+            section.getEntry().add(
+                    createEntry("", "OBS", "RQO", indicatorMetodic.getCode(), indicatorMetodic.getName()));
         }
-
 
         subComponentInfo2.setSection(section);
         final JAXBElement<SubComponentInfo> jaxbElement2
@@ -355,7 +369,6 @@ public class BakBusinessBean implements BakBusinessBeanLocal {
         final JAXBElement<SubComponentInfo> jaxbElement3
                 = new JAXBElement<SubComponentInfo>(QName.valueOf("component"), SubComponentInfo.class, subComponentInfo3);
         structuredBody.getContent().add(jaxbElement3);
-
 
         final SubComponentInfo subComponentInfo4 = FACTORY_BAK.createSubComponentInfo();
         final SectionInfo section4 = new SectionInfo();
@@ -394,18 +407,20 @@ public class BakBusinessBean implements BakBusinessBeanLocal {
         document.setComponentOf(componentOf);
     }
 
-    private void createDocAuthor(final HL7Document document, final Action action, final DiagnosticRequestInfo requestInfo) throws CoreException {
+    private void createDocAuthor(final HL7Document document, final Action action, final DiagnosticRequestInfo requestInfo)
+            throws CoreException {
         final AuthorInfo author = new AuthorInfo();
         author.setTypeCode("AUT");
         final Date execDate = action.getCreateDatetime();
         if (execDate != null) {
             final DateTimeInfo time = new DateTimeInfo();
             XMLGregorianCalendar xmlTime = null;
-            GregorianCalendar c1 = new GregorianCalendar();
+            final GregorianCalendar c1 = new GregorianCalendar();
             c1.setTime(execDate);
             try {
                 xmlTime = DatatypeFactory.newInstance().newXMLGregorianCalendar(c1);
             } catch (DatatypeConfigurationException e) {
+                logger.error(e.getMessage());
             }
             time.setValue(xmlTime);
             author.setTime(time);
@@ -553,7 +568,6 @@ public class BakBusinessBean implements BakBusinessBeanLocal {
         return actionType;
     }
 
-
     static class EntryFactory {
         static EntryInfo createEntry(final String root,
                                      final String classCode,
@@ -673,6 +687,5 @@ public class BakBusinessBean implements BakBusinessBeanLocal {
             entry.setObservation(observation);
             return entry;
         }
-
     }
 }
