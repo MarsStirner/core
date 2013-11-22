@@ -187,7 +187,7 @@ with I18nable {
           p._3.getType.getId == dbTakenTissue.getActionTypeTissueTypeByMasterId(a.getActionType.getId.intValue()).getTissueType.getId &&
           p._4.getIsUrgent == a.getIsUrgent).getOrElse(null) //срочные на одну дату и тип биоматериала должны создаваться с одним жобТикетом
         if (fromList != null) {
-          var (j, jt, tt, a) = fromList.asInstanceOf[(Job, JobTicket, TakenTissue, Action)]
+          val (j, jt, tt) = (fromList._1, fromList._2, fromList._3)
           j.setQuantity(j.getQuantity + 1)
           if (tt != null) a.setTakenTissue(tt)
           jtForAp = jt
@@ -219,11 +219,13 @@ with I18nable {
             list.add(j, jt, takenTissue, a)
             jtForAp = jt
           } else {
-            var (j, jt, tt, a) = fromList.asInstanceOf[(Job, JobTicket, TakenTissue, Action)]
+            val (j, jt, tt) = (fromList._1, fromList._2, fromList._3)
             j.setQuantity(j.getQuantity + 1)
             if (tt != null) a.setTakenTissue(tt)
+            list.add(j, jt, takenTissue, a)
             jtForAp = jt
           }
+
         }
         //*****
         //Проверка, есть ли подобный action за текущие сутки c другим временем
@@ -503,7 +505,7 @@ with I18nable {
       //*** Обработка срочности и сверх приема по новой спеке
       action.setAppointmentType("hospital")
       if (action.getIsUrgent) {
-        var citoActionsCount = actionBean.getActionForEventAndPacientInQueueType(action.getEvent.getId.intValue(), 1) //срочные акшены
+        var citoActionsCount = actionBean.getActionForEventAndPacientInQueueType(action.getEvent.getId.intValue(), action.getPlannedEndDate.getTime, 1) //срочные акшены
         /*
         ap18values.foreach(p => {
           if (p.asInstanceOf[APValueAction].getValue != null && p.asInstanceOf[APValueAction].getValue.getPacientInQueueType.intValue() == 1) {
@@ -535,7 +537,7 @@ with I18nable {
           throw new CoreException(ConfigManager.Messages("error.citoLimit"))
         }
       } else if (request.overQueue) {
-        var overQueueActionsCount = actionBean.getActionForEventAndPacientInQueueType(action.getEvent.getId.intValue(), 2) //акшены сверх сетки приема
+        var overQueueActionsCount = actionBean.getActionForEventAndPacientInQueueType(action.getEvent.getId.intValue(), action.getPlannedEndDate.getTime, 2) //акшены сверх сетки приема
         /*
         ap18values.foreach(p => {
           if (p.asInstanceOf[APValueAction].getValue != null && p.asInstanceOf[APValueAction].getValue.getPacientInQueueType.intValue() == 1) {overQueueActionsCount = overQueueActionsCount + 1}
