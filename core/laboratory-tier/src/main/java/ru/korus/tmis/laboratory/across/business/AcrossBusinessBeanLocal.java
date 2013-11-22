@@ -40,10 +40,8 @@ public interface AcrossBusinessBeanLocal {
             String biomaterialDefects) throws CoreException;
 
 
-    //    TEMP FIXME...
-  //  DiagnosticRequestInfo getDiagnosticRequestInfo(Action a);
-
- //   BiomaterialInfo getBiomaterialInfo(Action action, TakenTissue takenTissue);
-
-   // OrderInfo getOrderInfo(Action a, ActionType at);
+    //todo Временный хак, нужен для быстрого запуска
+//    DiagnosticRequestInfo getDiagnosticRequestInfo(Action a);
+//    BiomaterialInfo getBiomaterialInfo(Action action, TakenTissue takenTissue);
+//    OrderInfo getOrderInfo(Action a, ActionType at);
 }

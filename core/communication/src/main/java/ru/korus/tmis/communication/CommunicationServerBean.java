@@ -43,6 +43,9 @@ public class CommunicationServerBean {
     @EJB(beanName = "DbActionBean")
     private DbActionBeanLocal dbActionBeanLocal = null;
 
+    @EJB(beanName = "PatientQueueBean")
+    private PatientQueueBeanLocal patientQueueBeanLocal = null;
+
     @EJB(beanName = "DbClientDocumentBean")
     private DbClientDocumentBeanLocal dbClientDocumentBeanLocal = null;
     @EJB(beanName = "DbRbDocumentTypeBean")
@@ -79,6 +82,8 @@ public class CommunicationServerBean {
             CommServer.setPolicyBean(dbClientPolicyBeanLocal);
             CommServer.setPolicyTypeBean(dbRbPolicyTypeBeanLocal);
             CommServer.setQueueTicketBean(ticketBeanLocal);
+            ////////////////////////////////////////////////////////////
+            CommServer.setPatientQueueBean(patientQueueBeanLocal);
             server.startService();
         } catch (Exception exception) {
             logger.error("Exception while initialize CommunicationBean", exception);

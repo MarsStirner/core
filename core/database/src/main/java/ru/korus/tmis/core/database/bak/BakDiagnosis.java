@@ -9,8 +9,7 @@ import org.slf4j.LoggerFactory;
  * Company:     Korus Consulting IT<br>
  * Description: Диагноз для БАК лаборатории<br>
  */
-public class Diagnosis {
-    private static final Logger logger = LoggerFactory.getLogger(Diagnosis.class);
+public class BakDiagnosis {
     /**
      * Код диагноза
      */
@@ -20,7 +19,7 @@ public class Diagnosis {
      */
     private String name;
 
-    public Diagnosis(String code, String name) {
+    public BakDiagnosis(String code, String name) {
         this.code = code;
         this.name = name;
     }
@@ -35,7 +34,7 @@ public class Diagnosis {
 
     @Override
     public String toString() {
-        final StringBuilder sb = new StringBuilder("Diagnosis{");
+        final StringBuilder sb = new StringBuilder("BakDiagnosis{");
         sb.append("code='").append(code).append('\'');
         sb.append(", name='").append(name).append('\'');
         sb.append('}');

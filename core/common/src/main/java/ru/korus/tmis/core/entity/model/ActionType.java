@@ -14,7 +14,9 @@ import javax.xml.bind.annotation.XmlType;
 @Table(name = "ActionType", catalog = "", schema = "")
 @NamedQueries(
         {
-                @NamedQuery(name = "ActionType.findAll", query = "SELECT a FROM ActionType a")
+                @NamedQuery(name = "ActionType.findAll", query = "SELECT a FROM ActionType a"),
+                @NamedQuery(name = "ActionType.getQueueActionType",
+                        query = "SELECT a FROM ActionType a WHERE a.code = 'queue'")
         })
 @XmlType(name = "actionType")
 @XmlRootElement(name = "actionType")

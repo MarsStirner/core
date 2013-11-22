@@ -929,15 +929,15 @@ public class FindMultiplePatientsParameters implements org.apache.thrift.TBase<F
           case 8: // DOCUMENT
             if (schemeField.type == org.apache.thrift.protocol.TType.MAP) {
               {
-                org.apache.thrift.protocol.TMap _map18 = iprot.readMapBegin();
-                struct.document = new HashMap<String,String>(2*_map18.size);
-                for (int _i19 = 0; _i19 < _map18.size; ++_i19)
+                org.apache.thrift.protocol.TMap _map26 = iprot.readMapBegin();
+                struct.document = new HashMap<String,String>(2*_map26.size);
+                for (int _i27 = 0; _i27 < _map26.size; ++_i27)
                 {
-                  String _key20; // required
-                  String _val21; // required
-                  _key20 = iprot.readString();
-                  _val21 = iprot.readString();
-                  struct.document.put(_key20, _val21);
+                  String _key28; // required
+                  String _val29; // required
+                  _key28 = iprot.readString();
+                  _val29 = iprot.readString();
+                  struct.document.put(_key28, _val29);
                 }
                 iprot.readMapEnd();
               }
@@ -1011,10 +1011,10 @@ public class FindMultiplePatientsParameters implements org.apache.thrift.TBase<F
           oprot.writeFieldBegin(DOCUMENT_FIELD_DESC);
           {
             oprot.writeMapBegin(new org.apache.thrift.protocol.TMap(org.apache.thrift.protocol.TType.STRING, org.apache.thrift.protocol.TType.STRING, struct.document.size()));
-            for (Map.Entry<String, String> _iter22 : struct.document.entrySet())
+            for (Map.Entry<String, String> _iter30 : struct.document.entrySet())
             {
-              oprot.writeString(_iter22.getKey());
-              oprot.writeString(_iter22.getValue());
+              oprot.writeString(_iter30.getKey());
+              oprot.writeString(_iter30.getValue());
             }
             oprot.writeMapEnd();
           }
@@ -1088,10 +1088,10 @@ public class FindMultiplePatientsParameters implements org.apache.thrift.TBase<F
       if (struct.isSetDocument()) {
         {
           oprot.writeI32(struct.document.size());
-          for (Map.Entry<String, String> _iter23 : struct.document.entrySet())
+          for (Map.Entry<String, String> _iter31 : struct.document.entrySet())
           {
-            oprot.writeString(_iter23.getKey());
-            oprot.writeString(_iter23.getValue());
+            oprot.writeString(_iter31.getKey());
+            oprot.writeString(_iter31.getValue());
           }
         }
       }
@@ -1131,15 +1131,15 @@ public class FindMultiplePatientsParameters implements org.apache.thrift.TBase<F
       }
       if (incoming.get(7)) {
         {
-          org.apache.thrift.protocol.TMap _map24 = new org.apache.thrift.protocol.TMap(org.apache.thrift.protocol.TType.STRING, org.apache.thrift.protocol.TType.STRING, iprot.readI32());
-          struct.document = new HashMap<String,String>(2*_map24.size);
-          for (int _i25 = 0; _i25 < _map24.size; ++_i25)
+          org.apache.thrift.protocol.TMap _map32 = new org.apache.thrift.protocol.TMap(org.apache.thrift.protocol.TType.STRING, org.apache.thrift.protocol.TType.STRING, iprot.readI32());
+          struct.document = new HashMap<String,String>(2*_map32.size);
+          for (int _i33 = 0; _i33 < _map32.size; ++_i33)
           {
-            String _key26; // required
-            String _val27; // required
-            _key26 = iprot.readString();
-            _val27 = iprot.readString();
-            struct.document.put(_key26, _val27);
+            String _key34; // required
+            String _val35; // required
+            _key34 = iprot.readString();
+            _val35 = iprot.readString();
+            struct.document.put(_key34, _val35);
           }
         }
         struct.setDocumentIsSet(true);

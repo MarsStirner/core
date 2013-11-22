@@ -4,18 +4,23 @@ import org.joda.time.DateTime;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import ru.korus.tmis.core.database.*;
-import ru.korus.tmis.core.database.bak.Diagnosis;
+import ru.korus.tmis.core.database.bak.BakDiagnosis;
+import ru.korus.tmis.core.database.bak.DbBakCustomQueryBeanLocal;
 import ru.korus.tmis.core.entity.model.*;
 import ru.korus.tmis.core.exception.CoreException;
-import ru.korus.tmis.laboratory.across.business.AcrossBusinessBeanLocal;
-import ru.korus.tmis.laboratory.bak.model.*;
+import ru.korus.tmis.laboratory.bak.BakSendService;
+import ru.korus.tmis.laboratory.bak.model.BiomaterialInfo;
+import ru.korus.tmis.laboratory.bak.model.DiagnosticRequestInfo;
+import ru.korus.tmis.laboratory.bak.model.IndicatorMetodic;
+import ru.korus.tmis.laboratory.bak.model.OrderInfo;
 import ru.korus.tmis.laboratory.bak.service.*;
 import ru.korus.tmis.laboratory.bak.ws.client.BakSend;
-import ru.korus.tmis.util.ConfigManager;
-import ru.korus.tmis.util.logs.ToLog;
 import ru.korus.tmis.laboratory.bak.ws.client.handlers.SOAPEnvelopeHandlerResolver;
 import ru.korus.tmis.laboratory.bak.ws.server.Utils;
+import ru.korus.tmis.util.ConfigManager;
+import ru.korus.tmis.util.logs.ToLog;
 
+import javax.annotation.Nullable;
 import javax.ejb.EJB;
 import javax.ejb.Stateless;
 import javax.xml.bind.JAXBElement;
@@ -26,10 +31,7 @@ import javax.xml.namespace.QName;
 import javax.xml.ws.Holder;
 import java.util.*;
 
-import static ru.korus.tmis.laboratory.bak.business.BakBusinessBean.EntryFactory.createEntry;
-import static ru.korus.tmis.laboratory.bak.business.BakBusinessBean.EntryFactory.createEntryBiomaterial;
-import static ru.korus.tmis.laboratory.bak.business.BakBusinessBean.EntryFactory.createEntryComment;
-import static ru.korus.tmis.laboratory.bak.business.BakBusinessBean.EntryFactory.createEntryPregnat;
+import static ru.korus.tmis.laboratory.bak.business.BakBusinessBean.EntryFactory.*;
 
 
 /**
@@ -53,6 +55,8 @@ public class BakBusinessBean implements BakBusinessBeanLocal {
 
     private static final String CUSTODIAN_NAME = "ФГБУ &quot;ФНКЦ ДГОИ им. Дмитрия Рогачева&quot; Минздрава России";
 
+    public static final String DATE_FORMAT = "YYYY-MM-dd HH:mm";
+
     @EJB
     private DbStaffBeanLocal staffBean;
 
@@ -71,6 +75,9 @@ public class BakBusinessBean implements BakBusinessBeanLocal {
     @EJB
     private DbActionPropertyBeanLocal dbActionProperty;
 
+    @EJB
+    private DbBakCustomQueryBeanLocal dbCustomQueryBean;
+
     /**
      * Метод для отсылки запроса на анализ в лабораторию
      *
@@ -78,22 +85,22 @@ public class BakBusinessBean implements BakBusinessBeanLocal {
      * @throws CoreException - ошибка при отправке
      */
     @Override
-    public void sendLisAnalysisRequest(int actionId) throws CoreException {
+    public void sendLisAnalysisRequest(final int actionId) throws CoreException {
         ToLog toLog = new ToLog("Analysis Request");
-        toLog.add(ConfigManager.LaboratoryBak().ServiceUrl().toString());
+        toLog.addN(ConfigManager.LaboratoryBak().ServiceUrl().toString());
         try {
-            final ru.korus.tmis.laboratory.bak.BakSendService service = createCGMService();
+            final BakSendService service = createCGMService();
             final HL7Document hl7Document = createDocument(actionId, toLog);
-            toLog.add("Query: \n" + Utils.marshallMessage(hl7Document, "ru.korus.tmis.laboratory.bak.service"));
-            toLog.add("Sending... \n");
+            toLog.addN("Query: #", Utils.marshallMessage(hl7Document, "ru.korus.tmis.laboratory.bak.service"));
+            toLog.addN("Sending...");
             final Holder<Integer> id = new Holder<Integer>(1);
             final Holder<String> guid = new Holder<String>(GUID);
             service.queryAnalysis(hl7Document, id, guid);
-            toLog.add("Result id[" + id.value + "], guid [" + guid.value + "]");
+            toLog.addN("Result id[#], guid [#]", id.value, guid.value);
 
         } catch (Exception e) {
             logger.error("Sending error:" + e.getMessage(), e);
-            toLog.add("Sending error:" + e.getMessage());
+            toLog.addN("Sending error: #", e.getMessage());
             throw new CoreException("Ошибка отправки направления в БАК: " + e.getMessage());
         } finally {
             logger.info(toLog.releaseString());
@@ -105,15 +112,15 @@ public class BakBusinessBean implements BakBusinessBeanLocal {
      * Создание CGM-сервиса для запросов в ЛИС
      *
      * @return BakSend - сервис для выполнения запросов
-     * @see ru.korus.tmis.laboratory.bak.BakSendService
+     * @see BakSendService
      */
-    private ru.korus.tmis.laboratory.bak.BakSendService createCGMService() {
+    private BakSendService createCGMService() {
         final BakSend BakSend = new BakSend();
         BakSend.setHandlerResolver(new SOAPEnvelopeHandlerResolver());
         return BakSend.getService();
     }
 
-    private HL7Document createDocument(int actionId, ToLog toLog) throws CoreException {
+    private HL7Document createDocument(final int actionId, final ToLog toLog) throws CoreException {
         final HL7Document document = new HL7Document();
 
         final Action action = dbActionBean.getActionById(actionId);
@@ -121,7 +128,7 @@ public class BakBusinessBean implements BakBusinessBeanLocal {
         final Event eventInfo = action.getEvent();
         final Patient patientInfo = eventInfo.getPatient();
         final DiagnosticRequestInfo requestInfo = getDiagnosticRequestInfo(action, toLog); // Request section
-        final Diagnosis diagnosis = new Diagnosis(requestInfo.getOrderDiagCode(), requestInfo.getOrderDiagText());
+        // final Diagnosis diagnosis = new Diagnosis(requestInfo.getOrderDiagCode(), requestInfo.getOrderDiagText());
         final BiomaterialInfo biomaterialInfo = getBiomaterialInfo(action, toLog); // Biomaterial section
         final OrderInfo orderInfo = getOrderInfo(action, actionType, toLog); // Order section
 
@@ -136,12 +143,12 @@ public class BakBusinessBean implements BakBusinessBeanLocal {
         createRecordTarget(document, patientInfo, eventInfo); // демографические данные пациента
         createDocAuthor(document, action, requestInfo); // создатель документа. Обязательный
         createComponentOf(document, patientInfo);
-        createBody(document, biomaterialInfo, orderInfo, patientInfo, requestInfo, action, eventInfo, diagnosis);
+        createBody(document, biomaterialInfo, orderInfo, patientInfo, requestInfo, action, eventInfo);
 
         return document;
     }
 
-    private OrderInfo getOrderInfo(Action action, ActionType actionType, ToLog toLog) throws CoreException {
+    private OrderInfo getOrderInfo(final Action action, final ActionType actionType, final ToLog toLog) throws CoreException {
 
         final OrderInfo orderInfo = new OrderInfo();
         // Код исследования
@@ -159,13 +166,17 @@ public class BakBusinessBean implements BakBusinessBeanLocal {
         toLog.addN("OrderInfo:Urgent=#", priority);
         orderInfo.setOrderPriority(priority);
 
+        ActionPropertyType aa = null;
         // Показатели
-        List<ActionPropertyType> apts = dbActionTypeBean.getActionTypePropertiesById(actionType.getId());
+        final List<ActionPropertyType> apts = dbActionTypeBean.getActionTypePropertiesById(actionType.getId());
         for (ActionPropertyType apt : apts) {
-            if (apt.getTest() == null) {
-                // Если для данного исследования не определены показатели из rbTest, то не нужно отправлять анализ в ЛИС
-                throw new CoreException("не определены показатели из rbTest, не нужно отправлять анализ в ЛИС actionId: " + action.getId());
+            if (apt.getTest() != null) {
+                aa = apt;
             }
+        }
+        if (aa == null) {
+            // Если для данного исследования не определены показатели из rbTest, то не нужно отправлять анализ в ЛИС
+            throw new CoreException("не определены показатели из rbTest, не нужно отправлять анализ в ЛИС actionId: " + action.getId());
         }
 
         Set<ActionPropertyType> aptsSet = new HashSet<ActionPropertyType>();
@@ -187,7 +198,7 @@ public class BakBusinessBean implements BakBusinessBeanLocal {
         return orderInfo;
     }
 
-    private BiomaterialInfo getBiomaterialInfo(Action action, ToLog toLog) throws CoreException {
+    private BiomaterialInfo getBiomaterialInfo(final Action action, final ToLog toLog) throws CoreException {
         final TakenTissue tt = action.getTakenTissue();
         final RbTissueType type = tt.getType();
         if (type != null) {
@@ -201,16 +212,17 @@ public class BakBusinessBean implements BakBusinessBeanLocal {
                     tt.getNote());
 
             toLog.addN("Biomaterial:BarCode=#", bi.getOrderBarCode());
-            toLog.addN("Biomaterial:SamplingDate=#", bi.getOrderProbeDate().toString("YYYY-MM-DD HH:mm"));
+            toLog.addN("Biomaterial:SamplingDate=#", bi.getOrderProbeDate().toString(DATE_FORMAT));
             toLog.addN("Biomaterial:Code=#", bi.getOrderBiomaterialCode());
             toLog.addN("Biomaterial:Name=#", bi.getOrderBiomaterialname());
             toLog.addN("Biomaterial:Full=#", bi);
             return bi;
         }
+        toLog.addN("Error RbTissueType not found, actionId " + action.getId());
         throw new CoreException("Не найден RbTissueType для actionId " + action.getId());
     }
 
-    private DiagnosticRequestInfo getDiagnosticRequestInfo(Action action, ToLog toLog) throws CoreException {
+    private DiagnosticRequestInfo getDiagnosticRequestInfo(final Action action, final ToLog toLog) throws CoreException {
         final DiagnosticRequestInfo diag = new DiagnosticRequestInfo();
 
         // Id (long) -- уникальный идентификатор направления в МИС (Action.id)
@@ -230,7 +242,7 @@ public class BakBusinessBean implements BakBusinessBeanLocal {
 
         // CreateDate (datetime) -- дата создания направления врачом (Action.createDatetime)
         final DateTime date = new DateTime(action.getCreateDatetime());
-        toLog.addN("Request:CreateDate=#", date.toString("YYYY-MM-DD HH:mm"));
+        toLog.addN("Request:CreateDate=#", date.toString(DATE_FORMAT));
         diag.setOrderMisDate(date);
 
         // PregnancyDurationWeeks (int) -- срок беременности пациентки (в неделях)
@@ -241,24 +253,25 @@ public class BakBusinessBean implements BakBusinessBeanLocal {
         diag.setOrderPregnatMax(pregMax);
 
         // Diagnosis
-        final Diagnoz diagnosis = getDiagnosis(action.getEvent(), toLog);
-        // Diagnosis (string) -- диагноз (текст из МКБ) (последний из обоснования; если нет, то из первичного осмотра)
-        // МКБ (string) -- диагноз (код из МКБ) (последний из обоснования; если нет, то из первичного осмотра)
-        toLog.addN("Request:Diagnosis=#", diagnosis);
-        diag.setOrderDiagCode(diagnosis.getCode());
-        diag.setOrderDiagText(diagnosis.getName());
+        final BakDiagnosis diagnosisBak = dbCustomQueryBean.getBakDiagnosis(action);
+        toLog.addN("Request:#", diagnosisBak);
+        if (diagnosisBak != null) {
+            diag.setOrderDiagCode(diagnosisBak.getCode());
+            diag.setOrderDiagText(diagnosisBak.getName());
+        }
 
         // Comment (string) (необязательно) – произвольный текстовый комментарий к направлению
         final String comment = action.getNote();
-        toLog.addN("Request:Comment" + comment);
+        toLog.addN("Request:Comment=" + comment);
         diag.setOrderComment(comment);
 
-        final OrgStructure department = getOrgStructureByEvent(action.getEvent());
-        // DepartmentName (string) -- название подразделения - отделение
-        // DepartmentCode (string) -- уникальный код подразделения (отделения)
+        final OrgStructure department = getOrgStructureByEvent(action.getEvent(), toLog);
         toLog.addN("Request:Department: #", department);
-        diag.setOrderDepartmentMisCode(department.getCode());
-        diag.setOrderDepartmentName(department.getName());
+        if (department != null) {
+            toLog.addN("Request:Department:Code #,Name #", department.getCode(), department.getName());
+            diag.setOrderDepartmentMisCode(department.getCode());// DepartmentCode (string) -- уникальный код подразделения (отделения)
+            diag.setOrderDepartmentName(department.getName()); // DepartmentName (string) -- название подразделения - отделение
+        }
 
         final String doctorLastname = action.getAssigner().getLastName();
         final String doctorFirstname = action.getAssigner().getFirstName();
@@ -277,82 +290,32 @@ public class BakBusinessBean implements BakBusinessBeanLocal {
         return diag;
     }
 
-    /**
-     * Получить диагноз по МКБ
-     * <p/>
-     * Возвращает пару (код, текстовое описание диагноза) по МКБ или null
-     */
-    private Diagnoz getDiagnosis(Event event, ToLog toLog) throws CoreException {
-        // Получаем тип свойства действия для диагноза
-        final Set<ActionPropertyType> diagnosisAPT = dbActionPropertyType.getDiagnosisAPT();
-        // Выбираем диагнозы
-        final LinkedList<Event> events = new LinkedList<Event>();
-        events.add(event);
-
-        Map<Event, Action> diagMap = dbCustomQuery.getDiagnosisSubstantiationByEvents(events);
-
-        final Action action = diagMap.get(event);
-        if (action == null) {
-            toLog.addN("Diagnosis not found!!!");
+    @Nullable
+    private OrgStructure getOrgStructureByEvent(final Event e, final ToLog toLog) throws CoreException {
+        Map<Event, ActionProperty> hospitalBeds = dbCustomQuery.getHospitalBedsByEvents(Collections.singletonList(e));
+        if (hospitalBeds == null) {
+            toLog.addN("Hospital bed not found for #", e);
             return null;
         }
-
-        // Получаем список пар (APT, AP)
-        Map<ActionPropertyType, ActionProperty> aps = action.getActionPropertiesByTypes(diagnosisAPT);
-
-        // Получаем список APValue
-/*
-        val apvals = aps.foldLeft(scala.collection.immutable.List[APValue] ())((ps, pair)=>{
-            val ap = pair._2
-            val apvs = dbActionProperty.getActionPropertyValue(ap).toList
-            apvs:::ps
-        })
-
-        apvals.size match {
-            case 0 =>null
-            case x:
-                Int =>{
-                val pair = apvals.get(0)
-                var res = pair.getValueAsString.replaceAll("<(.)+?>", "")
-                res = res.replaceAll("<(\n)+?>", "")
-                res = res.replaceAll("\\&.*?\\;", "")
-                if (res.length > 150) {
-                    res = res.take(147) + "..."
+        for (Event event : hospitalBeds.keySet()) {
+            final ActionProperty actionProperty = hospitalBeds.get(event);
+            final List<APValue> actionPropertyValue = dbActionProperty.getActionPropertyValue(actionProperty);
+            for (APValue apValue : actionPropertyValue) {
+                if (apValue.getValue() instanceof OrgStructureHospitalBed) {
+                    return ((OrgStructureHospitalBed) apValue.getValue()).getMasterDepartment();
                 }
-                ("", res)
             }
-*/
-
-        return null;  //To change body of created methods use File | Settings | File Templates.
-    }
-
-    private OrgStructure getOrgStructureByEvent(final Event e) throws CoreException {
-        Map<Event, ActionProperty> hospitalBeds = dbCustomQuery.getHospitalBedsByEvents(Collections.singletonList(e));
-
-
-       /* hospitalBeds.get(e) match {
-            case null =>{
-                warn("Hospital bed not found for " + e)
-            }
-            case hospitalBed:
-                ActionProperty =>{
-                val apvs = dbActionProperty.getActionPropertyValue(hospitalBed)
-                apvs.foreach(
-                        (apv) = > {
-                if (apv.getValue.isInstanceOf[OrgStructureHospitalBed]) {
-                    val bed = apv.getValue.asInstanceOf[OrgStructureHospitalBed]
-                    return bed.getMasterDepartment()
-                }
-                })
-            }
-        }*/
-
+        }
         return null;
     }
 
-    private static void createBody(HL7Document document, BiomaterialInfo biomaterialInfo, OrderInfo orderInfo,
-                                   Patient patient, DiagnosticRequestInfo requestInfo, Action action, Event eventInfo,
-                                   ru.korus.tmis.core.database.bak.Diagnosis diagnosis) {
+    private static void createBody(final HL7Document document,
+                                   final BiomaterialInfo biomaterialInfo,
+                                   final OrderInfo orderInfo,
+                                   final Patient patient,
+                                   final DiagnosticRequestInfo requestInfo,
+                                   final Action action,
+                                   final Event eventInfo) {
         final ComponentInfo component = new ComponentInfo();
         final StructuredBodyInfo structuredBody = new StructuredBodyInfo();
         final SubComponentInfo subComponentInfo = FACTORY_BAK.createSubComponentInfo();
@@ -369,7 +332,7 @@ public class BakBusinessBean implements BakBusinessBeanLocal {
         section.getEntry().add(createEntry(eventInfo.getOrganisation().getUuid().getUuid(), "OBS", "RQO", requestInfo.getOrderDepartmentMisCode(), requestInfo.getOrderDepartmentName()));
         section.getEntry().add(createEntry(action.getUuid().getUuid(), "OBS", "RQO", action.getIsUrgent() + "", ""));
         // MKB.DiagName
-        section.getEntry().add(createEntry("", "OBS", "RQO", diagnosis.getCode()/* requestInfo.orderDiagCode().get()*/, diagnosis.getName() /*requestInfo.orderDiagText().get()*/));
+        section.getEntry().add(createEntry("", "OBS", "RQO", requestInfo.getOrderDiagCode(), requestInfo.getOrderDiagText()));
         section.getEntry().add(createEntry(eventInfo.getEventType().getFinance().getName(), "OBS", "RQO", orderInfo.getDiagnosticCode(), orderInfo.getDiagnosticName()));
 
         for (IndicatorMetodic indicatorMetodic : orderInfo.getIndicatorList()) {
@@ -410,7 +373,7 @@ public class BakBusinessBean implements BakBusinessBeanLocal {
     }
 
 
-    private static void createComponentOf(HL7Document document, Patient patientInfo) {
+    private static void createComponentOf(final HL7Document document, final Patient patientInfo) {
         final ComponentOfInfo componentOf = new ComponentOfInfo();
         final EncompassingEncounterInfo encompassingEncounter = new EncompassingEncounterInfo();
         final EeIdInfo eeIdInfo = new EeIdInfo();
@@ -431,7 +394,7 @@ public class BakBusinessBean implements BakBusinessBeanLocal {
         document.setComponentOf(componentOf);
     }
 
-    private void createDocAuthor(HL7Document document, Action action, DiagnosticRequestInfo requestInfo) throws CoreException {
+    private void createDocAuthor(final HL7Document document, final Action action, final DiagnosticRequestInfo requestInfo) throws CoreException {
         final AuthorInfo author = new AuthorInfo();
         author.setTypeCode("AUT");
         final Date execDate = action.getCreateDatetime();
@@ -452,10 +415,13 @@ public class BakBusinessBean implements BakBusinessBeanLocal {
         assignedAuthor.setClassCode("ASSIGNED");
 
         final DoctorIdInfo doctorId = new DoctorIdInfo();
-        final Integer docId = (Integer) requestInfo.getOrderDoctorMisId();
+        final Integer docId = requestInfo.getOrderDoctorMisId();
         final Staff doctor = staffBean.getStaffById(docId);
+        if (doctor == null) {
+            throw new CoreException("Не указан автор назначения");
+        }
         doctorId.setExtension(doctor.getId().toString());
-        doctorId.setRoot(doctor.getUuid().getUuid());
+        doctorId.setRoot(doctor.getUuid() != null ? doctor.getUuid().getUuid() : "");
         assignedAuthor.setId(doctorId);
 
         final AssignedPersonInfo assignedPerson = new AssignedPersonInfo();
@@ -483,7 +449,7 @@ public class BakBusinessBean implements BakBusinessBeanLocal {
         document.setAuthor(author);
     }
 
-    private static void createRecordTarget(HL7Document document, Patient patientInfo, Event event) {
+    private static void createRecordTarget(final HL7Document document, final Patient patientInfo, final Event event) {
         final RecordTargetInfo recordTarget = new RecordTargetInfo();
         recordTarget.setTypeCode("RCT");
 
@@ -539,46 +505,46 @@ public class BakBusinessBean implements BakBusinessBeanLocal {
         document.setRecordTarget(recordTarget);
     }
 
-    private static void createOrderStatus(HL7Document document, Action action) {
+    private static void createOrderStatus(final HL7Document document, final Action action) {
         final HL7Document.VersionNumber versionNumber = new HL7Document.VersionNumber();
         versionNumber.setValue(String.valueOf(action.getStatus()));
         document.setVersionNumber(versionNumber);
     }
 
-    private static void createLanguageDoc(HL7Document document, String langCode) {
+    private static void createLanguageDoc(final HL7Document document, final String langCode) {
         final HL7Document.LanguageCode languageCode = new HL7Document.LanguageCode();
         languageCode.setCode(langCode);
         document.setLanguageCode(languageCode);
     }
 
-    private static void createConfLevel(HL7Document document, String levelCode) {
+    private static void createConfLevel(final HL7Document document, final String levelCode) {
         final HL7Document.ConfidentialityCode confidentialityCode = new HL7Document.ConfidentialityCode();
         confidentialityCode.setCode(levelCode);
         confidentialityCode.setCodeSystem("2.16.840.1.113883.5.25");
         document.setConfidentialityCode(confidentialityCode);
     }
 
-    private static void createEffectiveTimeRequest(HL7Document document, DiagnosticRequestInfo requestInfo) {
+    private static void createEffectiveTimeRequest(final HL7Document document, final DiagnosticRequestInfo requestInfo) {
         final HL7Document.EffectiveTime effectiveTime = new HL7Document.EffectiveTime();
-        effectiveTime.setValue(requestInfo.getOrderMisDate().toString("YYYY-MM-DD HH:mm"));
+        effectiveTime.setValue(requestInfo.getOrderMisDate().toString(DATE_FORMAT));
         document.setEffectiveTime(effectiveTime);
     }
 
-    private static void createMedDocId(HL7Document document, DiagnosticRequestInfo requestInfo) {
+    private static void createMedDocId(final HL7Document document, final DiagnosticRequestInfo requestInfo) {
         final HL7Document.Id id = new HL7Document.Id();
         id.setRoot(ROOT);
         id.setExtention(String.valueOf(requestInfo.getOrderMisId()));
         document.setId(id);
     }
 
-    private static void createTypeId(HL7Document document) {
+    private static void createTypeId(final HL7Document document) {
         final HL7Document.TypeId typeId = new HL7Document.TypeId();
         typeId.setExtention("POCD_HD000040");
         typeId.setRoot(ROOT);
         document.setTypeId(typeId);
     }
 
-    private ActionType getActionType(Action action) throws CoreException {
+    private ActionType getActionType(final Action action) throws CoreException {
         final ActionType actionType = action.getActionType();
 
         if (actionType.getId() == -1) {
@@ -589,7 +555,11 @@ public class BakBusinessBean implements BakBusinessBeanLocal {
 
 
     static class EntryFactory {
-        static EntryInfo createEntry(String root, String classCode, String moodCode, String code, String displayName) {
+        static EntryInfo createEntry(final String root,
+                                     final String classCode,
+                                     final String moodCode,
+                                     final String code,
+                                     final String displayName) {
             final EntryInfo entry = new EntryInfo();
             final ObservationInfo observation = new ObservationInfo();
             observation.setClassCode(classCode);
@@ -607,7 +577,7 @@ public class BakBusinessBean implements BakBusinessBeanLocal {
             return entry;
         }
 
-        static EntryInfo createEntryPregnat(String code, DiagnosticRequestInfo requestInfo) {
+        static EntryInfo createEntryPregnat(final String code, final DiagnosticRequestInfo requestInfo) {
             final EntryInfo entry = new EntryInfo();
             final ObservationInfo observation = new ObservationInfo();
             observation.setClassCode("OBS");
@@ -626,7 +596,7 @@ public class BakBusinessBean implements BakBusinessBeanLocal {
             return entry;
         }
 
-        static EntryInfo createEntryComment(String code, String comment) {
+        static EntryInfo createEntryComment(final String code, final String comment) {
             final EntryInfo entry = new EntryInfo();
             final ObservationInfo observation = new ObservationInfo();
             observation.setClassCode("OBS");
@@ -644,7 +614,7 @@ public class BakBusinessBean implements BakBusinessBeanLocal {
             return entry;
         }
 
-        static EntryInfo createEntryBiomaterial(BiomaterialInfo biomaterialInfo, Action action) {
+        static EntryInfo createEntryBiomaterial(final BiomaterialInfo biomaterialInfo, final Action action) {
             final EntryInfo entry = new EntryInfo();
             final ObservationInfo observation = new ObservationInfo();
             observation.setClassCode("OBS");
