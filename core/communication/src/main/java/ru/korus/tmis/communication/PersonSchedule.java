@@ -487,7 +487,7 @@ public class PersonSchedule {
                             ) {
                         logger.info("Detected repetition enqueue to another doctor by same time. Cancelling enqueue.");
                         return new EnqueuePatientStatus().setSuccess(false)
-                                .setMessage(CommunicationErrors.msgPatientAlreadyQueued.getMessage());
+                                .setMessage(CommunicationErrors.msgPatientAlreadyQueuedToTime.getMessage());
                     }
                     //Если ячейка времени свободна, то создаём записи в таблицах Event, Action, ActionProperty_Action:
                     try {
@@ -637,8 +637,8 @@ public class PersonSchedule {
     }
 
     public Ticket getTicketByQueueIndex(final int queueIndex) {
-        for(Ticket currentTicket : tickets){
-            if(currentTicket.getQueueCellIndex() == queueIndex){
+        for (Ticket currentTicket : tickets) {
+            if (currentTicket.getQueueCellIndex() == queueIndex) {
                 return currentTicket;
             }
         }

@@ -961,7 +961,7 @@ public class CommServer implements Communications.Iface {
     @Override
     public EnqueuePatientStatus enqueuePatient(final EnqueuePatientParameters params) throws TException {
         final int currentRequestNum = ++requestNum;
-        logger.info("#{} Call method -> CommServer.enqueuePatient( {} )", currentRequestNum, params);
+        logger.info("#{} Call method -> CommServer.enqueuePatient({})", currentRequestNum, params);
         final Date paramsDateTime = DateConvertions.convertUTCMillisecondsToLocalDate(params.getDateTime());
         logger.debug("Date: {}", paramsDateTime);
         //Выбранный пациент
@@ -1025,45 +1025,6 @@ public class CommServer implements Communications.Iface {
         );
         logger.info("End of #{} enqueuePatient. Return \"{}\" as result.", currentRequestNum, result);
         return result;
-    }
-
-
-
-    /**
-     * Поучение двух списков (очереди и интервалов) из приема врача
-     *
-     * @param doctorAction прием врача
-     * @param timesAMB     список интервалов
-     * @param queueAMB     список очереди
-     * @return свойство действия, отвечающее за запись пациента, если уже имеются. иначе null;
-     */
-    private ActionProperty getAmbTimesAndQueues(
-            final Action doctorAction, final List<APValueTime> timesAMB, final List<APValueAction> queueAMB) {
-        ActionProperty queueAP = null;
-        try {
-            for (ActionProperty currentProperty : doctorAction.getActionProperties()) {
-                String fieldName = currentProperty.getType().getName();
-                if ("times".equals(fieldName)) {
-                    for (APValue timeValue : actionPropertyBean.getActionPropertyValue(currentProperty)) {
-                        timesAMB.add((APValueTime) timeValue);
-                    }
-                } else if ("queue".equals(fieldName)) {
-                    queueAP = currentProperty;
-                    for (APValue queueValue : actionPropertyBean.getActionPropertyValue(currentProperty)) {
-                        queueAMB.add((APValueAction) queueValue);
-                    }
-                }
-                if (logger.isDebugEnabled()) {  //ALL ACTION PROPERTIES TO LOG
-                    List<APValue> values = actionPropertyBean.getActionPropertyValue(currentProperty);
-                    for (APValue apValue : values) {
-                        logger.debug("NAME={} VALUE={}", currentProperty.getType().getName(), apValue.getValue());
-                    }
-                }
-            }
-        } catch (CoreException e) {
-            logger.error("PARSE ERROR", e);
-        }
-        return queueAP;
     }
 
     /**
