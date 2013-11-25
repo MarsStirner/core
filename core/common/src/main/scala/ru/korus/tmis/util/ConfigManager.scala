@@ -18,7 +18,7 @@ object ConfigManager extends Configuration {
 
   /**
    * Общие параметры работы ядра
-   */Common
+   */
   var Common = new CommonClass
 
   class CommonClass extends Configuration {

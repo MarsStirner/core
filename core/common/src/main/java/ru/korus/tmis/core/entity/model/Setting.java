@@ -16,7 +16,7 @@ import javax.persistence.Table;
  * Класс для представления роли (профиля в терминах предыдущих версий системы).
  */
 @Entity
-@Table(name = "Setting", catalog = "", schema = "tmis_core")
+@Table(name = "Setting", catalog = "", schema = "")
 @NamedQueries(
         {
                 @NamedQuery(name = "Setting.findAll", query = "SELECT s FROM Setting s")

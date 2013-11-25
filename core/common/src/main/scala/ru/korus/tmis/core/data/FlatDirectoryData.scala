@@ -67,10 +67,12 @@ class FlatDirectoryRequestData {
     } else {
       null
     }
-    this.sortingFields = sortingFields.foldLeft(new util.LinkedHashMap[Int, Int]())((list, elem) => {
+    this.sortingFields = if (sortingFields != null)
+      sortingFields.foldLeft(new util.LinkedHashMap[Int, Int]())((list, elem) => {
       list.put(elem._1.intValue(), elem._2.intValue())
-      list
-    })
+      list})
+    else
+      null
 
     this.limit = if (limit > 0) {
       limit
@@ -119,20 +121,29 @@ class FlatDirectoryRequestDataListFilter {
            filterValue: String,
            filterRecordIds: java.util.List[java.lang.Integer]) {
     this()
-    this.flatDictionaryIds = flatDictionaryIds.foldLeft[java.util.List[Int]](new util.ArrayList[Int]())((list, elem) => {
+    this.flatDictionaryIds = if(flatDictionaryIds != null)
+      flatDictionaryIds.foldLeft[java.util.List[Int]](new util.ArrayList[Int]())((list, elem) => {
       list.add(elem.intValue())
-      list
-    })
+      list})
+    else
+      throw new CoreException("Ошибка, не заданы идентификаторы справочников")
 
     this.includeMeta = (includeMeta != null && includeMeta.isEmpty != true && includeMeta.compare("yes") == 0)
     this.includeRecordList = (includeRecordList != null && includeRecordList.isEmpty != true && includeRecordList.compare("yes") == 0)
     this.includeFDRecord = (includeFDRecord != null && includeFDRecord.isEmpty != true && includeFDRecord.compare("yes") == 0)
-    this.filterFields = filterFields.collect{case (i: java.lang.Integer, l : java.util.List[String]) => (i.intValue(), l)}
+    this.filterFields =
+      if(filterFields != null)
+        filterFields.collect{case (i: java.lang.Integer, l : java.util.List[String]) => (i.intValue(), l)}
+      else
+        null
     this.filterValue = filterValue
-    this.filterRecordIds = filterRecordIds.foldLeft[java.util.List[Int]](new util.ArrayList[Int]())((list, elem) => {
-      list.add(elem.intValue())
-      list
-    })
+    this.filterRecordIds =
+      if(filterRecordIds != null)
+        filterRecordIds.foldLeft[java.util.List[Int]](new util.ArrayList[Int]())((list, elem) => {
+        list.add(elem.intValue())
+        list})
+      else
+        null
   }
 
   def toQueryStructure() = {

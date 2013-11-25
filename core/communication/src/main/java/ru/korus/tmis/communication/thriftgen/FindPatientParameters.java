@@ -950,15 +950,15 @@ public class FindPatientParameters implements org.apache.thrift.TBase<FindPatien
           case 8: // DOCUMENT
             if (schemeField.type == org.apache.thrift.protocol.TType.MAP) {
               {
-                org.apache.thrift.protocol.TMap _map8 = iprot.readMapBegin();
-                struct.document = new HashMap<String,String>(2*_map8.size);
-                for (int _i9 = 0; _i9 < _map8.size; ++_i9)
+                org.apache.thrift.protocol.TMap _map16 = iprot.readMapBegin();
+                struct.document = new HashMap<String,String>(2*_map16.size);
+                for (int _i17 = 0; _i17 < _map16.size; ++_i17)
                 {
-                  String _key10; // required
-                  String _val11; // required
-                  _key10 = iprot.readString();
-                  _val11 = iprot.readString();
-                  struct.document.put(_key10, _val11);
+                  String _key18; // required
+                  String _val19; // required
+                  _key18 = iprot.readString();
+                  _val19 = iprot.readString();
+                  struct.document.put(_key18, _val19);
                 }
                 iprot.readMapEnd();
               }
@@ -1027,10 +1027,10 @@ public class FindPatientParameters implements org.apache.thrift.TBase<FindPatien
         oprot.writeFieldBegin(DOCUMENT_FIELD_DESC);
         {
           oprot.writeMapBegin(new org.apache.thrift.protocol.TMap(org.apache.thrift.protocol.TType.STRING, org.apache.thrift.protocol.TType.STRING, struct.document.size()));
-          for (Map.Entry<String, String> _iter12 : struct.document.entrySet())
+          for (Map.Entry<String, String> _iter20 : struct.document.entrySet())
           {
-            oprot.writeString(_iter12.getKey());
-            oprot.writeString(_iter12.getValue());
+            oprot.writeString(_iter20.getKey());
+            oprot.writeString(_iter20.getValue());
           }
           oprot.writeMapEnd();
         }
@@ -1060,10 +1060,10 @@ public class FindPatientParameters implements org.apache.thrift.TBase<FindPatien
       oprot.writeI32(struct.sex);
       {
         oprot.writeI32(struct.document.size());
-        for (Map.Entry<String, String> _iter13 : struct.document.entrySet())
+        for (Map.Entry<String, String> _iter21 : struct.document.entrySet())
         {
-          oprot.writeString(_iter13.getKey());
-          oprot.writeString(_iter13.getValue());
+          oprot.writeString(_iter21.getKey());
+          oprot.writeString(_iter21.getValue());
         }
       }
       BitSet optionals = new BitSet();
@@ -1096,15 +1096,15 @@ public class FindPatientParameters implements org.apache.thrift.TBase<FindPatien
       struct.sex = iprot.readI32();
       struct.setSexIsSet(true);
       {
-        org.apache.thrift.protocol.TMap _map14 = new org.apache.thrift.protocol.TMap(org.apache.thrift.protocol.TType.STRING, org.apache.thrift.protocol.TType.STRING, iprot.readI32());
-        struct.document = new HashMap<String,String>(2*_map14.size);
-        for (int _i15 = 0; _i15 < _map14.size; ++_i15)
+        org.apache.thrift.protocol.TMap _map22 = new org.apache.thrift.protocol.TMap(org.apache.thrift.protocol.TType.STRING, org.apache.thrift.protocol.TType.STRING, iprot.readI32());
+        struct.document = new HashMap<String,String>(2*_map22.size);
+        for (int _i23 = 0; _i23 < _map22.size; ++_i23)
         {
-          String _key16; // required
-          String _val17; // required
-          _key16 = iprot.readString();
-          _val17 = iprot.readString();
-          struct.document.put(_key16, _val17);
+          String _key24; // required
+          String _val25; // required
+          _key24 = iprot.readString();
+          _val25 = iprot.readString();
+          struct.document.put(_key24, _val25);
         }
       }
       struct.setDocumentIsSet(true);

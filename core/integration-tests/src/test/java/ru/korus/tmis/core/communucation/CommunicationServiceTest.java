@@ -838,7 +838,7 @@ public class CommunicationServiceTest {
     public void getFirstFreeTicket() {
         logger.info("Start of getFirstFreeTicket test:");
        try {
-           FreeTicket result = client.getFirstFreeTicket(303, 0, "");
+           TTicket result = client.getFirstFreeTicket(new ScheduleParameters().setPersonId(303).setBeginDateTime(0).setHospitalUidFrom("").setQuotingType(QuotingType.FROM_PORTAL));
             logger.info("Send and recieve is successfully done.");
             assertTrue(result != null);
             logger.info("Received = {}", result.toString());
