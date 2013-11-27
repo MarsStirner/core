@@ -505,9 +505,7 @@ public class BakResult implements BakResultService {
         response.getReceiver().add(receiver);
 
         final MCCIMT000200UV01Acknowledgement acknowledgement = new MCCIMT000200UV01Acknowledgement();
-        final CS typeCode = new CS();
-        typeCode.setCode("AA");
-//        acknowledgement.setTypeCode(typeCode);
+        acknowledgement.setTypeCode(AcknowledgementType.AA);
         final MCCIMT000200UV01TargetMessage targetMessage = new MCCIMT000200UV01TargetMessage();
         final II id1 = new II();
         id1.setRoot(UUID.randomUUID().toString());
@@ -581,9 +579,7 @@ public class BakResult implements BakResultService {
         response.getReceiver().add(receiver);
 
         final MCCIMT000200UV01Acknowledgement acknowledgement = new MCCIMT000200UV01Acknowledgement();
-        final CS typeCode = new CS();
-        typeCode.setCode("AE");
-//        acknowledgement.setTypeCode(typeCode);
+        acknowledgement.setTypeCode(AcknowledgementType.AE);
         final MCCIMT000200UV01TargetMessage targetMessage = new MCCIMT000200UV01TargetMessage();
         final II id1 = new II();
         id1.setRoot(UUID.randomUUID().toString());
