@@ -44,34 +44,34 @@ public class PharmacyBean implements PharmacyBeanLocal {
 
     private static final String DATE_TIME_FORMAT = "yyyy-MM-dd HH:mm:ss";
 
-    @EJB(beanName = "DbActionBean")
+    @EJB
     private DbActionBeanLocal dbAction = null;
 
-    @EJB(beanName = "DbOrgStructureBean")
+    @EJB
     private DbOrgStructureBeanLocal dbOrgStructureBeanLocal = null;
 
-    @EJB(beanName = "DbActionPropertyBean")
+    @EJB
     private DbActionPropertyBeanLocal dbActionProperty = null;
 
-    @EJB(beanName = "DbPharmacyBean")
+    @EJB
     private DbPharmacyBeanLocal dbPharmacy = null;
 
-    @EJB(beanName = "DbUUIDBean")
+    @EJB
     private DbUUIDBeanLocal dbUUIDBeanLocal = null;
 
-    @EJB(beanName = "DbCustomQueryBean")
+    @EJB
     private DbCustomQueryLocal dbCustomQueryLocal = null;
 
-    @EJB(beanName = "DbActionPropertyBean")
+    @EJB
     private DbActionPropertyBeanLocal dbActionPropertyBeanLocal = null;
 
-    @EJB(beanName = "DbActionPropertyTypeBean")
+    @EJB
     private DbActionPropertyTypeBeanLocal dbActionPropertyTypeBeanLocal = null;
 
-    @EJB(beanName = "DbOrganizationBean")
+    @EJB
     private DbOrganizationBeanLocal dbOrganizationBeanLocal = null;
 
-    @EJB(beanName = "DbRbFinance1CBean")
+    @EJB
     private DbRbFinance1CBeanLocal dbRbFinance1CBeanLocal = null;
 
     @EJB
@@ -121,9 +121,9 @@ public class PharmacyBean implements PharmacyBeanLocal {
                 if (!actionAfterDate.isEmpty()) {
                     logger.info("Found {} newest actions after date {}", actionAfterDate.size(), getLastDate());
                     for (Action action : actionAfterDate) {
-                        final ToLog toLog = new ToLog();
+                        final ToLog toLog = new ToLog(action.getActionType().getFlatCode());
                         try {
-                            if (isActionForSend(action, toLog)) {
+                            if (isActionForSend(action)) {
                                 send(action, toLog);
                                 lastDateUpdate = new DateTime(action.getCreateDatetime());
                             }
@@ -248,9 +248,8 @@ public class PharmacyBean implements PharmacyBeanLocal {
     /**
      * Проверка на код по движению пациентов
      */
-    private boolean isActionForSend(final Action action, final ToLog toLog) {
+    private boolean isActionForSend(final Action action) {
         final ActionType actionType = action.getActionType();
-        toLog.add(actionType.getFlatCode());
         return FlatCode.RECEIVED.getCode().equalsIgnoreCase(actionType.getFlatCode())
                 || FlatCode.DEL_RECEIVED.getCode().equalsIgnoreCase(actionType.getFlatCode())
                 || FlatCode.MOVING.getCode().equalsIgnoreCase(actionType.getFlatCode())
@@ -272,8 +271,8 @@ public class PharmacyBean implements PharmacyBeanLocal {
         final ActionType actionType = action.getActionType();
 
         if (FlatCode.RECEIVED.getCode().equalsIgnoreCase(actionType.getFlatCode())) {
-            final OrgStructure structure = getReceivedOrgStructure(action, toLog);
-            // поступление в стационар
+            final OrgStructure structure = getReceivedOrgStructure(action);
+            toLog.addN("receive orgStructure [#], [#]", structure.getId(), structure.getName());
             return HL7PacketBuilder.processReceived(action, structure);
 
         } else if (FlatCode.DEL_RECEIVED.getCode().equalsIgnoreCase(actionType.getFlatCode())) {
@@ -282,24 +281,26 @@ public class PharmacyBean implements PharmacyBeanLocal {
 
         } else if (FlatCode.MOVING.getCode().equalsIgnoreCase(actionType.getFlatCode())) {
             // движение пациента между отделениями
-            final OrgStructure orgStructureOut = getOrgStructureOut(action, toLog);
-            final OrgStructure orgStructureIn = getOrgStructureIn(action, toLog);
-
-            return HL7PacketBuilder.processMoving(action, orgStructureOut, orgStructureIn);
+            final OrgStructure outStruct = getOrgStructureOut(action);
+            toLog.addN("out orgStructure [#], [#]", outStruct.getId(), outStruct.getName());
+            final OrgStructure inStruct = getOrgStructureIn(action);
+            toLog.addN("in orgStructure [#], [#]", inStruct.getId(), inStruct.getName());
+            return HL7PacketBuilder.processMoving(action, outStruct, inStruct);
 
         } else if (FlatCode.DEL_MOVING.getCode().equalsIgnoreCase(actionType.getFlatCode())) {
             // отмена движения
-            final OrgStructure orgStructureOut = getOrgStructureOutWithDel(action, toLog);
-            final OrgStructure orgStructureIn = getOrgStructureInWithDel(action, toLog);
-
-            return HL7PacketBuilder.processDelMoving(action, orgStructureOut, orgStructureIn);
+            final OrgStructure outStruct = getOrgStructureOutWithDel(action);
+            toLog.addN("out orgStructure [#], [#]", outStruct.getId(), outStruct.getName());
+            final OrgStructure inStruct = getOrgStructureInWithDel(action);
+            toLog.addN("in orgStructure [#], [#]", inStruct.getId(), inStruct.getName());
+            return HL7PacketBuilder.processDelMoving(action, outStruct, inStruct);
 
         } else if (FlatCode.LEAVED.getCode().equalsIgnoreCase(actionType.getFlatCode())) {
             // выписка из стационара
             return HL7PacketBuilder.processLeaved(action);
 
         }
-
+        toLog.addN("No such flat code type [#]", actionType.getFlatCode());
         throw new MessageProcessException();
     }
 
@@ -346,21 +347,18 @@ public class PharmacyBean implements PharmacyBeanLocal {
     /**
      * Поиск OrgStructure для конкретного Action
      */
-    private OrgStructure getOrgStructureOut(final Action action, final ToLog toLog) throws SkipMessageProcessException {
+    private OrgStructure getOrgStructureOut(final Action action) throws SkipMessageProcessException {
         try {
             final Set<String> codes = new HashSet<String>();
             codes.add("orgStructReceived");
-
             final Map<ActionProperty, List<APValue>> names =
                     dbActionPropertyBeanLocal.getActionPropertiesByActionIdAndActionPropertyTypeCodesWithoutDel(action.getId(), codes);
 
-            toLog.add("getOrgStructureOut Action properties and type #", names);
             for (ActionProperty property : names.keySet()) {
                 final List<APValue> apValues = names.get(property);
                 for (APValue apValue : apValues) {
                     if (apValue instanceof APValueOrgStructure) {
                         final OrgStructure orgStructure = (OrgStructure) apValue.getValue();
-                        toLog.add("orgStructure [#], [#]", orgStructure.getId(), orgStructure.getName());
                         return orgStructure;
                     }
                 }
@@ -373,10 +371,9 @@ public class PharmacyBean implements PharmacyBeanLocal {
     /**
      * Поиск OrgStructure для конкретного Action
      */
-    private OrgStructure getOrgStructureOutWithDel(final Action action, final ToLog toLog) throws SkipMessageProcessException {
+    private OrgStructure getOrgStructureOutWithDel(final Action action) throws SkipMessageProcessException {
         try {
             if (action.getParentActionId() != 0) {
-                toLog.add("try recursive call # by actionParentId [#]", action, action.getParentActionId());
                 final Action parentAction = dbAction.getActionByIdWithIgnoreDeleted(action.getParentActionId());
                 if (parentAction != null) {
                     final Set<String> codes = new HashSet<String>();
@@ -388,15 +385,11 @@ public class PharmacyBean implements PharmacyBeanLocal {
                         final List<APValue> apValues = names.get(property);
                         for (APValue apValue : apValues) {
                             if (apValue instanceof APValueOrgStructure) {
-                                final OrgStructure orgStructure = (OrgStructure) apValue.getValue();
-                                toLog.add("orgStructure [#], [#]", orgStructure.getId(), orgStructure.getName());
-                                return orgStructure;
+                                return (OrgStructure) apValue.getValue();
                             }
                         }
                     }
                 }
-            } else {
-                toLog.add("OrgStructure is not found # by actionParentId [#]", action, action.getParentActionId());
             }
         } catch (CoreException e) {
         }
@@ -406,22 +399,18 @@ public class PharmacyBean implements PharmacyBeanLocal {
     /**
      * Поиск OrgStructure для конкретного Action
      */
-    private OrgStructure getOrgStructureIn(final Action action, final ToLog toLog) throws SkipMessageProcessException {
+    private OrgStructure getOrgStructureIn(final Action action) throws SkipMessageProcessException {
         try {
             final Set<String> codes = new HashSet<String>();
             codes.add("orgStructStay");
-
             final Map<ActionProperty, List<APValue>> names
                     = dbActionPropertyBeanLocal.getActionPropertiesByActionIdAndActionPropertyTypeCodesWithoutDel(action.getId(), codes);
-            toLog.add("getOrgStructureIn Action properties and type #", names);
 
             for (ActionProperty property : names.keySet()) {
                 final List<APValue> apValues = names.get(property);
                 for (APValue apValue : apValues) {
                     if (apValue instanceof APValueOrgStructure) {
-                        final OrgStructure orgStructure = (OrgStructure) apValue.getValue();
-                        toLog.add("orgStructureOut [#], [#]", orgStructure.getId(), orgStructure.getName());
-                        return orgStructure;
+                        return (OrgStructure) apValue.getValue();
                     }
                 }
             }
@@ -433,10 +422,9 @@ public class PharmacyBean implements PharmacyBeanLocal {
     /**
      * Поиск OrgStructure для конкретного Action
      */
-    private OrgStructure getOrgStructureInWithDel(final Action action, final ToLog toLog) throws SkipMessageProcessException {
+    private OrgStructure getOrgStructureInWithDel(final Action action) throws SkipMessageProcessException {
         try {
             if (action.getParentActionId() != 0) {
-                toLog.add("try recursive call # by actionParentId [#]", action, action.getParentActionId());
                 final Action parentAction = dbAction.getActionByIdWithIgnoreDeleted(action.getParentActionId());
                 if (parentAction != null) {
                     final Set<String> codes = new HashSet<String>();
@@ -449,14 +437,10 @@ public class PharmacyBean implements PharmacyBeanLocal {
                         final List<APValue> apValues = names.get(property);
                         for (APValue apValue : apValues) {
                             if (apValue instanceof APValueOrgStructure) {
-                                final OrgStructure orgStructure = (OrgStructure) apValue.getValue();
-                                toLog.add("orgStructureIn [#], [#]", orgStructure.getId(), orgStructure.getName());
-                                return orgStructure;
+                                return (OrgStructure) apValue.getValue();
                             }
                         }
                     }
-                } else {
-                    toLog.add("OrgStructure is not found # by actionParentId [#]", action, action.getParentActionId());
                 }
             }
         } catch (CoreException e) {
@@ -467,7 +451,7 @@ public class PharmacyBean implements PharmacyBeanLocal {
     /**
      * Поиск OrgStructure для конкретного Action
      */
-    private OrgStructure getReceivedOrgStructure(final Action action, final ToLog toLog) throws SkipMessageProcessException {
+    private OrgStructure getReceivedOrgStructure(final Action action) throws SkipMessageProcessException {
         try {
             final Set<String> codesSet = new HashSet<String>();
             codesSet.add("orgStructStay");
@@ -478,9 +462,7 @@ public class PharmacyBean implements PharmacyBeanLocal {
                 final List<APValue> apValues = names.get(property);
                 for (APValue apValue : apValues) {
                     if (apValue instanceof APValueOrgStructure) {
-                        final OrgStructure orgStructure = (OrgStructure) apValue.getValue();
-                        toLog.add("orgStructure [#], [#]", orgStructure.getId(), orgStructure.getName());
-                        return orgStructure;
+                        return (OrgStructure) apValue.getValue();
                     }
                 }
             }

@@ -10,7 +10,8 @@ import java.util.Date;
 @Table(name = "OrgStructure", catalog = "", schema = "")
 @NamedQueries(
         {
-                @NamedQuery(name = "OrgStructure.findAll", query = "SELECT o FROM OrgStructure o")
+                @NamedQuery(name = "OrgStructure.findAll", query = "SELECT o FROM OrgStructure o"),
+                @NamedQuery(name = "OrgStructure.findMain", query = "SELECT o FROM OrgStructure o WHERE o.parentId IS NULL")
         })
 @XmlType(name = "orgStructure")
 @XmlRootElement(name = "orgStructure")

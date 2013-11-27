@@ -26,7 +26,7 @@ public class DbBakCustomQueryBean implements DbBakCustomQueryBeanLocal {
     @Nullable
     @Override
     public BakDiagnosis getBakDiagnosis(Action action) {
-        final Object[] mainDiagMkb = (Object[]) em.createNativeQuery("SELECT MKB.DiagID, MKB.DiagName " +
+        final List<Object[]> diagList = em.createNativeQuery("SELECT MKB.DiagID, MKB.DiagName " +
                 "FROM Action " +
                 "JOIN ActionProperty ON ActionProperty.action_id = Action.id " +
                 "JOIN ActionPropertyType ON ActionPropertyType.id = ActionProperty.type_id " +
@@ -38,7 +38,7 @@ public class DbBakCustomQueryBean implements DbBakCustomQueryBeanLocal {
                 .setParameter(1, action.getCreateDatetime())
                 .setParameter(2, action.getEvent().getId())
                 .setParameter(3, "mainDiagMkb")
-                .getSingleResult();
-        return mainDiagMkb != null ? new BakDiagnosis((String) mainDiagMkb[0], (String) mainDiagMkb[1]) : null;
+                .getResultList();
+        return diagList != null && !diagList.isEmpty() ? new BakDiagnosis((String)diagList.get(0)[0], (String)diagList.get(0)[1]) : null;
     }
 }

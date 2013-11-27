@@ -25,9 +25,6 @@ class DbEnumBean
   @PersistenceContext(unitName = "s11r64")
   var s11r64: EntityManager = _
 
-  @PersistenceContext(unitName = "rls")
-  var rls: EntityManager = _
-
   @Resource
   var tx: UserTransaction = _
 
@@ -49,7 +46,7 @@ class DbEnumBean
   }
 
   def syncEnums_rls() = {
-    syncEnums(rls, "rls")
+    syncEnums(s11r64, "rls")
   }
 
   def syncEnums(em: EntityManager, EmId: String) = {

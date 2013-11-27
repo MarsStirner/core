@@ -117,7 +117,9 @@ public enum CommunicationErrors {
      */
     msgUnknownError(666, "Неизвестная ошибка (смотреть логи сервера)"),
 
-    msgInvalidPersonalInfo(1, "Некорректные личные данные");
+    msgInvalidPersonalInfo(1, "Некорректные личные данные"),
+
+    msgPatientAlreadyQueuedToTime(311, "За выбранный промежуток времени у пациента есть запись к другому врачу");
 
 
     private final int id;

@@ -44,9 +44,7 @@ public final class HL7PacketBuilder {
     /**
      * Формирование и отправка сообщения о госпитализации PRPA_IN402001UV02
      */
-    public static Request processReceived(
-            final Action action,
-            final OrgStructure orgStructure) {
+    public static Request processReceived(final Action action, final OrgStructure orgStructure) {
 
         final Event event = action.getEvent();
         final Patient client = event.getPatient();
@@ -334,10 +332,7 @@ public final class HL7PacketBuilder {
      * Формирование и отправка сообщения об отмене предыдущего сообщения о переводе пациента между отделениями стационара
      * PRPA_IN302012UV02
      */
-    public static Request processDelMoving(
-            final Action action,
-            final OrgStructure orgStructureOut,
-            final OrgStructure orgStructureIn) {
+    public static Request processDelMoving(final Action action, final OrgStructure outStruct, final OrgStructure inStruct) {
 
         final Event event = action.getEvent();
         final Patient client = event.getPatient();
@@ -345,9 +340,9 @@ public final class HL7PacketBuilder {
         final String uuidExternal = event.getUuid().getUuid();
         final String uuidClient = client.getUuid().getUuid();
         // Если OrgStructure не содержит UUID, то генерируем случайный
-        final String uuidLocationOut = orgStructureOut.getUuid() != null ? orgStructureOut.getUuid().getUuid() : String.valueOf(UUID.randomUUID());
+        final String uuidLocationOut = outStruct.getUuid() != null ? outStruct.getUuid().getUuid() : String.valueOf(UUID.randomUUID());
         // Если OrgStructure не содержит UUID, то генерируем случайный
-        final String uuidLocationIn = orgStructureIn.getUuid() != null ? orgStructureIn.getUuid().getUuid() : String.valueOf(UUID.randomUUID());
+        final String uuidLocationIn = inStruct.getUuid() != null ? inStruct.getUuid().getUuid() : String.valueOf(UUID.randomUUID());
         final String uuidDocument = UUID.randomUUID().toString();
 
         final Request request = FACTORY_MIS.createPRPAIN302012UV02();

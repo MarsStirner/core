@@ -50,11 +50,11 @@ public class PatientQueueBean implements PatientQueueBeanLocal {
                 .setParameter("patient", patient)
                 .setParameter("checkDate", date)
                 .getResultList();
-         for (Action currentAction : personQueueActions) {
+        for (Action currentAction : personQueueActions) {
             logger.debug("Patient has queueAction[{}] for this day, beginnig in {}",
                     currentAction.getId(), currentAction.getDirectionDate());
             final Ticket queueTicket = getQueueActionTicket(currentAction);
-            if (begTime.before(queueTicket.getEndTime()) && endTime.after(queueTicket.getEndTime())) {
+            if (begTime.before(queueTicket.getEndTime()) && endTime.after(queueTicket.getBegTime())) {
                 return true;
             }
         }
@@ -72,7 +72,7 @@ public class PatientQueueBean implements PatientQueueBeanLocal {
         }
         int queueIndex = -1;
         for (APValueAction currentAP_A : schedule.getQueue()) {
-            if (currentAP_A.getValue().equals(queueAction)) {
+            if (queueAction.equals(currentAP_A.getValue())) {
                 queueIndex = currentAP_A.getId().getIndex();
                 break;
             }
@@ -86,7 +86,7 @@ public class PatientQueueBean implements PatientQueueBeanLocal {
                 "AND ap.id = ap_a.id.id " +
                 "AND ap.actionPropertyType.name = 'queue'", Action.class)
                 .setParameter("queueAction", queueAction)
-                //.setParameter("queueActionPropertyType", queueActionPropertyType)
+                        //.setParameter("queueActionPropertyType", queueActionPropertyType)
                 .getSingleResult();
     }
 

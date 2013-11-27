@@ -540,6 +540,10 @@ public class SyncWith1C {
 
     public String updateBalance() {
         logger.info("updateBalance...start");
+        if ( !ConfigManager.Drugstore().isUpdateRLS() ) {
+            logger.info("updateBalance...stoped");
+            return "RLS_UPDATE_IS_DISABLED";
+        }
         UpdateStorageUuid();
         return updateBalance(drugList);
     }
@@ -551,7 +555,8 @@ public class SyncWith1C {
             return RLS_UPDATE_IS_DISABLED;
         }
         String res =  htmlNewLine("update RLS balance...start" + EOL);
-        OrgStructure mainOrganization =  em.find(OrgStructure.class, 1);
+        final int mainOrgId = getMainOrgId();
+        OrgStructure mainOrganization =  em.find(OrgStructure.class, mainOrgId);
         if(mainOrganization != null && mainOrganization.getUuid() != null) {
             List<RbStorage> rbStoragesList = em.createNamedQuery("rbStorage.findAll", RbStorage.class).getResultList();
             for(RbStorage rbStorage : rbStoragesList) {
@@ -559,6 +564,15 @@ public class SyncWith1C {
             }
         }
         return res;
+    }
+
+    private int getMainOrgId() {
+        List<OrgStructure> res = em.createNamedQuery("OrgStructure.findMain", OrgStructure.class).setMaxResults(1).getResultList();
+        if(res.isEmpty()) {
+            return 1;
+        }
+
+        return res.iterator().next().getId();
     }
 
     public void UpdateStorageUuid() {

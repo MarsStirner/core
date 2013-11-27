@@ -8,7 +8,7 @@ import java.util.List;
 import javax.persistence.*;
 
 @Entity
-@Table(name = "vNomen", catalog = "", schema = "rls")
+@Table(name = "vNomen")
 @NamedQueries(
         {
                 @NamedQuery(name = "Nomenclature.findAll", query = "SELECT n FROM Nomenclature n")

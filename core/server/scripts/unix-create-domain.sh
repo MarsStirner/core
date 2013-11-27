@@ -231,6 +231,5 @@ delete_jvm_opts DELETE_JVM_OPTIONS[@] "default-config"
 create_jvm_opts CREATE_JVM_OPTIONS[@] "server-config"
 create_jvm_opts CREATE_JVM_OPTIONS[@] "default-config"
 create_db_pool $MYSQL_DB_MIS $MYSQL_DB_MIS_POOL $MYSQL_DB_JNDI_MIS
-create_db_pool $MYSQL_DB_RLS $MYSQL_DB_RLS_POOL $MYSQL_DB_JNDI_RLS
 create_db_pool $MYSQL_DB_TMIS_CORE $MYSQL_DB_TMIS_CORE_POOL $MYSQL_DB_JNDI_TMIS_CORE
 start_stop_domain
