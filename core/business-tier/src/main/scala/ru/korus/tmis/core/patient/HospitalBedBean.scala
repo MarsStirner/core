@@ -170,7 +170,7 @@ with TmisLogging{
             Integer.valueOf(hbData.data.bedRegistration.bedId)
           else null
         }
-        else if (code.compareTo(ConfigManager.Messages("db.apt.moving.codes.hospitaxlBedProfile"))==0) {
+        else if (code.compareTo(ConfigManager.Messages("db.apt.moving.codes.hospitalBedProfile"))==0) {
           value = if(hbData.getData.getBedRegistration.getBedProfileId>0)
             Integer.valueOf(hbData.getData.getBedRegistration.getBedProfileId)
           else null
