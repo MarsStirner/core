@@ -93,6 +93,9 @@
 
     <logger name="ru.korus.tmis" level="INFO" additivity="false">
         <appender-ref ref="TMIS"/>
+        <appender-ref ref="LIS_ACROSS"/>
+        <appender-ref ref="LIS_ALTEY"/>
+        <appender-ref ref="LIS_BAK"/>
         <appender-ref ref="STDOUT_ERROR"/>
         <appender-ref ref="EXCEPTIONS"/>
     </logger>
@@ -128,7 +131,7 @@
         </rollingPolicy>
     </appender>
 
-    <logger name="ru.korus.tmis.laboratory.across" level="INFO" additivity="false">
+    <logger name="ru.korus.tmis.laboratory.across" level="INFO" additivity="true">
         <appender-ref ref="LIS_ACROSS"/>
         <appender-ref ref="STDOUT_ERROR"/>
         <appender-ref ref="EXCEPTIONS"/>
@@ -146,7 +149,7 @@
         </rollingPolicy>
     </appender>
 
-    <logger name="ru.korus.tmis.laboratory.altey" level="INFO" additivity="false">
+    <logger name="ru.korus.tmis.laboratory.altey" level="INFO" additivity="true">
         <appender-ref ref="LIS_ALTEY"/>
         <appender-ref ref="STDOUT_ERROR"/>
         <appender-ref ref="EXCEPTIONS"/>

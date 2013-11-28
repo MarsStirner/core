@@ -119,7 +119,8 @@ class PrimaryAssessmentBean
 
         apvs.size match {
           case 0 => {
-            group add apw.get(null, List(APWI.Unit, APWI.Norm))
+            val ca = apw.get(null, List(APWI.Unit, APWI.Norm))
+            group add new CommonAttributeWithLayout(ca, dbLayoutAttributeValueBean.getLayoutAttributeValuesByActionPropertyTypeId(ap.getType.getId.intValue()).toList)
           }
           case _ => {
             apvs.foreach((apv) => {

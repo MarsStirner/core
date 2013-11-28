@@ -82,11 +82,11 @@ class AcrossLaboratoryBean extends AcrossBusinessBeanLocal with Logging with I18
 
       val service = Option(ConfigManager.Laboratory2.WSDLUrl).map {
         it =>
-          info("LIS2 WSDL URL specified: overriding standard url to '" + it.toString + "'")
+          info("LIS2 Across WSDL URL specified: overriding standard url to '" + it.toString + "'")
           new IAcrossIntf_FNKCserviceLocator(it.toString, new QName(CompileTimeConfigManager.Laboratory2.Namespace, CompileTimeConfigManager.Laboratory2.ServiceName))
       }.getOrElse {
-        warn("LIS2 WSDL URL not specified: using local WSDL")
         val url = this.getClass.getResource("/labisws2.wsdl")
+        warn("LIS Across WSDL URL not specified: using local WSDL " + url.toString)
         new IAcrossIntf_FNKCserviceLocator(url.toString, new QName(CompileTimeConfigManager.Laboratory2.Namespace, CompileTimeConfigManager.Laboratory2.ServiceName))
       }
 

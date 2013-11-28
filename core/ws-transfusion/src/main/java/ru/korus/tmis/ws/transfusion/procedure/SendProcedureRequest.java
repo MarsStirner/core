@@ -1,42 +1,22 @@
 package ru.korus.tmis.ws.transfusion.procedure;
 
-import java.util.Arrays;
-import java.util.Date;
-import java.util.HashMap;
-import java.util.LinkedList;
-import java.util.List;
-import java.util.Map;
-
-import javax.ejb.EJB;
-import javax.ejb.Stateless;
-import javax.persistence.EntityManager;
-import javax.xml.datatype.DatatypeConfigurationException;
-
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-
 import ru.korus.tmis.core.database.dbutil.Database;
-import ru.korus.tmis.core.entity.model.Action;
-import ru.korus.tmis.core.entity.model.ActionPropertyType;
-import ru.korus.tmis.core.entity.model.ActionType;
-import ru.korus.tmis.core.entity.model.Event;
-import ru.korus.tmis.core.entity.model.Patient;
-import ru.korus.tmis.core.entity.model.RbTrfuLaboratoryMeasureTypes;
-import ru.korus.tmis.core.entity.model.RbTrfuProcedureTypes;
-import ru.korus.tmis.core.entity.model.RbUnit;
-import ru.korus.tmis.core.entity.model.Staff;
+import ru.korus.tmis.core.entity.model.*;
 import ru.korus.tmis.core.exception.CoreException;
 import ru.korus.tmis.util.EntityMgr;
 import ru.korus.tmis.ws.transfusion.PropType;
 import ru.korus.tmis.ws.transfusion.SenderUtils;
 import ru.korus.tmis.ws.transfusion.TrfuActionProp;
-import ru.korus.tmis.ws.transfusion.efive.DonorInfo;
-import ru.korus.tmis.ws.transfusion.efive.LaboratoryMeasureType;
-import ru.korus.tmis.ws.transfusion.efive.OrderResult;
-import ru.korus.tmis.ws.transfusion.efive.PatientCredentials;
-import ru.korus.tmis.ws.transfusion.efive.ProcedureType;
-import ru.korus.tmis.ws.transfusion.efive.TransfusionMedicalService;
+import ru.korus.tmis.ws.transfusion.efive.*;
 import ru.korus.tmis.ws.transfusion.order.SendOrderBloodComponents;
+
+import javax.ejb.EJB;
+import javax.ejb.Stateless;
+import javax.persistence.EntityManager;
+import javax.xml.datatype.DatatypeConfigurationException;
+import java.util.*;
 
 /**
  * Author:      Sergey A. Zagrebelny <br>
@@ -46,13 +26,13 @@ import ru.korus.tmis.ws.transfusion.order.SendOrderBloodComponents;
  */
 
 /**
- * 
+ *
  */
 @Stateless
 public class SendProcedureRequest {
 
     /**
-     * 
+     *
      */
     private static final String AP_VALUE = "APValue";
 
@@ -64,7 +44,7 @@ public class SendProcedureRequest {
     private SenderUtils senderUtils = new SenderUtils();
 
     /**
-     * 
+     *
      */
     private static final String TRFU_PROCEDURE_TRFU_ID_BASE = "trfuProcedure_trfu_id_";
     private static final Logger logger = LoggerFactory.getLogger(SendProcedureRequest.class);
@@ -136,7 +116,7 @@ public class SendProcedureRequest {
     }
 
     /**
-     * 
+     *
      */
     private void initCoreUser() {
         coreUser = database.getCoreUser();
@@ -144,7 +124,7 @@ public class SendProcedureRequest {
 
     /**
      * Отправка запроса на проведелиен лечебной процедуры ТРФУ
-     * 
+     *
      * @param em
      * @param trfuService
      * @throws CoreException
@@ -199,13 +179,15 @@ public class SendProcedureRequest {
                 logger.error("The TRFU procedure {} was not registrate in TRFU. Cannot create the date information. Error description: '{}'", action.getId(),
                         e.getMessage());
                 e.printStackTrace();
+            } catch (final Exception ex) {
+                logger.error("General exception in trfu integration (in sendNewProcedure): {}", ex.getMessage());
             }
         }
     }
 
     private ru.korus.tmis.ws.transfusion.efive.ProcedureInfo
-            getProcedureInfo(final EntityManager em, final Action action, TrfuActionProp trfuActionProp) throws CoreException,
-                    DatatypeConfigurationException {
+    getProcedureInfo(final EntityManager em, final Action action, TrfuActionProp trfuActionProp) throws CoreException,
+            DatatypeConfigurationException {
         final ru.korus.tmis.ws.transfusion.efive.ProcedureInfo res = new ru.korus.tmis.ws.transfusion.efive.ProcedureInfo();
         res.setId(action.getId());
         final ActionType actionType = EntityMgr.getSafe(action.getActionType());
