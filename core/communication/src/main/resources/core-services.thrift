@@ -28,14 +28,22 @@ enum QuotingType{
  * Перечисление статусов талончика на прием к врачу
  */
 enum CouponStatus{
-// новый талончик
-NEW = 1;
-// отмена старого талончика
-CANCELLED = 2;
+	// новый талончик
+	NEW = 1;
+	// отмена старого талончика
+	CANCELLED = 2;
 }
 
 //Type definitions for return structures
 
+/**
+ * Organization 
+ * Структура с данными об организации
+ * @param fullName				1) Полное наименование организации
+ * @param shortName				2) Краткое наименование организации
+ * @param address				3) Строковое представление адреса организации
+ * @param infisCode				4) Инфис-код организации 
+ */
 struct Organization{
 1:required string fullName;
 2:optional string shortName;
@@ -43,6 +51,17 @@ struct Organization{
 4:required string infisCode;
 }
 
+/**
+ * OrgStructure 
+ * Структура с данными о подразделении
+ * @param id					1) Внутренний идентификатор подразделения
+ * @param parent_id				2) Внутренний идентификатор вышестоящего подразделения, или 0 если вышестоящего отделеия не существует
+ * @param code					3) Код подразделения
+ * @param name					4) Название подразделения
+ * @param address				5) Адрес подразделения
+ * @param sexFilter				6) Половой фильтр
+ * @param ageFilter				7) Возрастной фильтр 
+ */
 struct OrgStructure{
 1:required i32 id;
 2:optional i32 parent_id=0;
@@ -53,6 +72,22 @@ struct OrgStructure{
 7:optional string ageFilter="";
 }
 
+/**
+ * Person
+ * Структура с данными о мед. работнике
+ * @param id					1) Внутренний идентификатор работника	
+ * @param code					2) Код работника
+ * @param orgStructureId		3) Идентификатор подразделения к которому работник приписан
+ * @param lastName				4) Фамилия
+ * @param firstName				5) Имя
+ * @param patrName				6) Отчество
+ * @param office				7) Офис, который указан в таблице персонала
+ * @param speciality			8) Наименование специальности
+ * @param specialityOKSOCode    9) ОКСО-код специальности
+ * @param specialityRegionalCode 10) Региональный код специальности
+ * @param post					11) Наименование должности
+ * @param sexFilter				12) Пол работника
+ */
 struct Person{
 1:required i32 id;
 2:required string code;
@@ -65,7 +100,7 @@ struct Person{
 9:optional string specialityOKSOCode;
 10:optional string specialityRegionalCode;
 11:optional string post;
-12:optional string SexFilter;
+12:optional string sexFilter;
 }
 
 struct Ticket{
@@ -97,18 +132,17 @@ struct Amb{
 6:optional i32 available;
 }
 
+/**
+ * PatientStatus
+ * Структура с данными о  результате поиска \ добавления пациента
+ * @param success				1) Статус поиска\добавления пациента (true - найдено\добавлено)
+ * @param message				2) Строковое описание причины неудачи
+ * @param patientId				3) Идентификатор найденного\добавленого пациента 
+ */
 struct PatientStatus{
 1:required bool success;
 2:optional string message;
 3:optional i32 patientId;
-}
-
-struct PatientInfo{
-1:optional string lastName;
-2:optional string firstName;
-3:optional string patrName;
-4:optional timestamp birthDate;
-5:optional i32 sex;
 }
 
 struct Patient{
@@ -157,6 +191,17 @@ struct Speciality{
 4:optional string speciality;
 }
 
+/**
+ * Address
+ * Структура с данными об адресах, которые обслуживаются подразделением
+ * @param orgStructureId		1) Внутренний идентификатор подразделения, к которому приписан этот адрес
+ * @param pointKLADR			2) Соответствующий адресу КЛАДР-код
+ * @param streetKLADR 			3) Соответствующий КЛАДР-код улицы
+ * @param number				4) Номер дома\строения
+ * @param corpus				5) Номер корпуса
+ * @param firstFlat				6) Начало диапозона обслуживаемых квартир
+ * @param lastFlat				7) Конец диапозона обслуживаемых квартир 
+ */
 struct Address{
 1:required i32 orgStructureId;
 2:required string pointKLADR;
@@ -465,8 +510,8 @@ list<OrgStructure> getOrgStructures(1:i32 parent_id, 2:bool recursive, 3:string 
     throws (1:NotFoundException exc, 2:SQLException excsql);
 
 /**
- * Получение адресов запрошенного подразделения
- * @param orgStructureId                1) идетификатор подразделения, для которого требуется найти адреса
+ * Получение обслуживаемых адресов запрошенного подразделения
+ * @param orgStructureId                1) идетификатор подразделения, для которого требуется найти обслуживаемые им адреса
  * @param recursive                     2) Флаг рекурсии (выбрать также подразделения, входяшие во все дочерние подразделения)
  * @param infisCode                     3) Инфис-код
  * @return                              Список структур, содержащих информацию об адресах запрошенных подразделений
@@ -614,7 +659,7 @@ map<timestamp, Schedule> getPersonSchedule(1:ScheduleParameters params)
  * @throws NotFoundException            //TODO
  * @throws SQLException                 когда произошла внутренняя ошибка при запросах к БД ЛПУ
  */
-map<i32,PatientInfo> getPatientInfo(1:list<i32> patientIds)
+map<i32, Patient> getPatientInfo(1:list<i32> patientIds)
     throws (1:NotFoundException exc, 2:SQLException excsql);
 
 /**

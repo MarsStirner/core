@@ -409,7 +409,7 @@ class DbPatientBean
         }
         else {
           if (documents.containsKey("policy_type")) {
-            query.append("INNER JOIN patient.clientPolicies policy WHERE pat.deleted=0 AND policy.deleted = 0" +
+            query.append("INNER JOIN pat.clientPolicies policy WHERE pat.deleted=0 AND policy.deleted = 0" +
               " AND policy.number = :NUMBER AND policy.serial = :SERIAL AND policy.policyType.CODE = :POLICYTYPECODE"
             )
           }

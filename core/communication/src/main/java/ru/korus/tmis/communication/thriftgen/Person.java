@@ -30,6 +30,22 @@ import java.util.Arrays;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+/**
+ * Person
+ * Структура с данными о мед. работнике
+ * @param id					1) Внутренний идентификатор работника
+ * @param code					2) Код работника
+ * @param orgStructureId		3) Идентификатор подразделения к которому работник приписан
+ * @param lastName				4) Фамилия
+ * @param firstName				5) Имя
+ * @param patrName				6) Отчество
+ * @param office				7) Офис, который указан в таблице персонала
+ * @param speciality			8) Наименование специальности
+ * @param specialityOKSOCode    9) ОКСО-код специальности
+ * @param specialityRegionalCode 10) Региональный код специальности
+ * @param post					11) Наименование должности
+ * @param sexFilter				12) Пол работника
+ */
 public class Person implements org.apache.thrift.TBase<Person, Person._Fields>, java.io.Serializable, Cloneable {
   private static final org.apache.thrift.protocol.TStruct STRUCT_DESC = new org.apache.thrift.protocol.TStruct("Person");
 
@@ -44,7 +60,7 @@ public class Person implements org.apache.thrift.TBase<Person, Person._Fields>, 
   private static final org.apache.thrift.protocol.TField SPECIALITY_OKSOCODE_FIELD_DESC = new org.apache.thrift.protocol.TField("specialityOKSOCode", org.apache.thrift.protocol.TType.STRING, (short)9);
   private static final org.apache.thrift.protocol.TField SPECIALITY_REGIONAL_CODE_FIELD_DESC = new org.apache.thrift.protocol.TField("specialityRegionalCode", org.apache.thrift.protocol.TType.STRING, (short)10);
   private static final org.apache.thrift.protocol.TField POST_FIELD_DESC = new org.apache.thrift.protocol.TField("post", org.apache.thrift.protocol.TType.STRING, (short)11);
-  private static final org.apache.thrift.protocol.TField SEX_FILTER_FIELD_DESC = new org.apache.thrift.protocol.TField("SexFilter", org.apache.thrift.protocol.TType.STRING, (short)12);
+  private static final org.apache.thrift.protocol.TField SEX_FILTER_FIELD_DESC = new org.apache.thrift.protocol.TField("sexFilter", org.apache.thrift.protocol.TType.STRING, (short)12);
 
   private static final Map<Class<? extends IScheme>, SchemeFactory> schemes = new HashMap<Class<? extends IScheme>, SchemeFactory>();
   static {
@@ -63,7 +79,7 @@ public class Person implements org.apache.thrift.TBase<Person, Person._Fields>, 
   public String specialityOKSOCode; // optional
   public String specialityRegionalCode; // optional
   public String post; // optional
-  public String SexFilter; // optional
+  public String sexFilter; // optional
 
   /** The set of fields this struct contains, along with convenience methods for finding and manipulating them. */
   public enum _Fields implements org.apache.thrift.TFieldIdEnum {
@@ -78,7 +94,7 @@ public class Person implements org.apache.thrift.TBase<Person, Person._Fields>, 
     SPECIALITY_OKSOCODE((short)9, "specialityOKSOCode"),
     SPECIALITY_REGIONAL_CODE((short)10, "specialityRegionalCode"),
     POST((short)11, "post"),
-    SEX_FILTER((short)12, "SexFilter");
+    SEX_FILTER((short)12, "sexFilter");
 
     private static final Map<String, _Fields> byName = new HashMap<String, _Fields>();
 
@@ -186,7 +202,7 @@ public class Person implements org.apache.thrift.TBase<Person, Person._Fields>, 
         new org.apache.thrift.meta_data.FieldValueMetaData(org.apache.thrift.protocol.TType.STRING)));
     tmpMap.put(_Fields.POST, new org.apache.thrift.meta_data.FieldMetaData("post", org.apache.thrift.TFieldRequirementType.OPTIONAL, 
         new org.apache.thrift.meta_data.FieldValueMetaData(org.apache.thrift.protocol.TType.STRING)));
-    tmpMap.put(_Fields.SEX_FILTER, new org.apache.thrift.meta_data.FieldMetaData("SexFilter", org.apache.thrift.TFieldRequirementType.OPTIONAL, 
+    tmpMap.put(_Fields.SEX_FILTER, new org.apache.thrift.meta_data.FieldMetaData("sexFilter", org.apache.thrift.TFieldRequirementType.OPTIONAL, 
         new org.apache.thrift.meta_data.FieldValueMetaData(org.apache.thrift.protocol.TType.STRING)));
     metaDataMap = Collections.unmodifiableMap(tmpMap);
     org.apache.thrift.meta_data.FieldMetaData.addStructMetaDataMap(Person.class, metaDataMap);
@@ -240,7 +256,7 @@ public class Person implements org.apache.thrift.TBase<Person, Person._Fields>, 
       this.post = other.post;
     }
     if (other.isSetSexFilter()) {
-      this.SexFilter = other.SexFilter;
+      this.sexFilter = other.sexFilter;
     }
   }
 
@@ -263,7 +279,7 @@ public class Person implements org.apache.thrift.TBase<Person, Person._Fields>, 
     this.specialityOKSOCode = null;
     this.specialityRegionalCode = null;
     this.post = null;
-    this.SexFilter = null;
+    this.sexFilter = null;
   }
 
   public int getId() {
@@ -529,26 +545,26 @@ public class Person implements org.apache.thrift.TBase<Person, Person._Fields>, 
   }
 
   public String getSexFilter() {
-    return this.SexFilter;
+    return this.sexFilter;
   }
 
-  public Person setSexFilter(String SexFilter) {
-    this.SexFilter = SexFilter;
+  public Person setSexFilter(String sexFilter) {
+    this.sexFilter = sexFilter;
     return this;
   }
 
   public void unsetSexFilter() {
-    this.SexFilter = null;
+    this.sexFilter = null;
   }
 
-  /** Returns true if field SexFilter is set (has been assigned a value) and false otherwise */
+  /** Returns true if field sexFilter is set (has been assigned a value) and false otherwise */
   public boolean isSetSexFilter() {
-    return this.SexFilter != null;
+    return this.sexFilter != null;
   }
 
   public void setSexFilterIsSet(boolean value) {
     if (!value) {
-      this.SexFilter = null;
+      this.sexFilter = null;
     }
   }
 
@@ -842,12 +858,12 @@ public class Person implements org.apache.thrift.TBase<Person, Person._Fields>, 
         return false;
     }
 
-    boolean this_present_SexFilter = true && this.isSetSexFilter();
-    boolean that_present_SexFilter = true && that.isSetSexFilter();
-    if (this_present_SexFilter || that_present_SexFilter) {
-      if (!(this_present_SexFilter && that_present_SexFilter))
+    boolean this_present_sexFilter = true && this.isSetSexFilter();
+    boolean that_present_sexFilter = true && that.isSetSexFilter();
+    if (this_present_sexFilter || that_present_sexFilter) {
+      if (!(this_present_sexFilter && that_present_sexFilter))
         return false;
-      if (!this.SexFilter.equals(that.SexFilter))
+      if (!this.sexFilter.equals(that.sexFilter))
         return false;
     }
 
@@ -982,7 +998,7 @@ public class Person implements org.apache.thrift.TBase<Person, Person._Fields>, 
       return lastComparison;
     }
     if (isSetSexFilter()) {
-      lastComparison = org.apache.thrift.TBaseHelper.compareTo(this.SexFilter, typedOther.SexFilter);
+      lastComparison = org.apache.thrift.TBaseHelper.compareTo(this.sexFilter, typedOther.sexFilter);
       if (lastComparison != 0) {
         return lastComparison;
       }
@@ -1106,11 +1122,11 @@ public class Person implements org.apache.thrift.TBase<Person, Person._Fields>, 
     }
     if (isSetSexFilter()) {
       if (!first) sb.append(", ");
-      sb.append("SexFilter:");
-      if (this.SexFilter == null) {
+      sb.append("sexFilter:");
+      if (this.sexFilter == null) {
         sb.append("null");
       } else {
-        sb.append(this.SexFilter);
+        sb.append(this.sexFilter);
       }
       first = false;
     }
@@ -1253,7 +1269,7 @@ public class Person implements org.apache.thrift.TBase<Person, Person._Fields>, 
             break;
           case 12: // SEX_FILTER
             if (schemeField.type == org.apache.thrift.protocol.TType.STRING) {
-              struct.SexFilter = iprot.readString();
+              struct.sexFilter = iprot.readString();
               struct.setSexFilterIsSet(true);
             } else { 
               org.apache.thrift.protocol.TProtocolUtil.skip(iprot, schemeField.type);
@@ -1346,10 +1362,10 @@ public class Person implements org.apache.thrift.TBase<Person, Person._Fields>, 
           oprot.writeFieldEnd();
         }
       }
-      if (struct.SexFilter != null) {
+      if (struct.sexFilter != null) {
         if (struct.isSetSexFilter()) {
           oprot.writeFieldBegin(SEX_FILTER_FIELD_DESC);
-          oprot.writeString(struct.SexFilter);
+          oprot.writeString(struct.sexFilter);
           oprot.writeFieldEnd();
         }
       }
@@ -1432,7 +1448,7 @@ public class Person implements org.apache.thrift.TBase<Person, Person._Fields>, 
         oprot.writeString(struct.post);
       }
       if (struct.isSetSexFilter()) {
-        oprot.writeString(struct.SexFilter);
+        oprot.writeString(struct.sexFilter);
       }
     }
 
@@ -1481,7 +1497,7 @@ public class Person implements org.apache.thrift.TBase<Person, Person._Fields>, 
         struct.setPostIsSet(true);
       }
       if (incoming.get(9)) {
-        struct.SexFilter = iprot.readString();
+        struct.sexFilter = iprot.readString();
         struct.setSexFilterIsSet(true);
       }
     }

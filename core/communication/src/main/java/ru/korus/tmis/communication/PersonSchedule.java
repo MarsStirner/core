@@ -306,8 +306,8 @@ public class PersonSchedule {
                 boolean available = false;
                 for (QuotingByTime qbt : quotingByTimeConstraints) {
                     if (qbt.getQuotingTimeStart().getTime() != 0 && qbt.getQuotingTimeEnd().getTime() != 0) {
-                        if (currentTicket.getBegTime().after(qbt.getQuotingTimeStart())
-                                && currentTicket.getEndTime().before(qbt.getQuotingTimeEnd())
+                        if (currentTicket.getBegTime().getTime() >= qbt.getQuotingTimeStart().getTime()
+                                && currentTicket.getEndTime().getTime() <= qbt.getQuotingTimeEnd().getTime()
                                 && currentTicket.isAvailable()) {
                             available = true;
                             break;
@@ -493,7 +493,7 @@ public class PersonSchedule {
                     try {
                         //0 проверяем квоты!
                         if (hospitalUidFrom != null && !hospitalUidFrom.isEmpty()) {
-                            if (!checkQuotingBySpeciality(doctor.getSpeciality(), hospitalUidFrom)) {
+                            if (!checkAndDecrementQuotingBySpeciality(doctor.getSpeciality(), hospitalUidFrom)) {
                                 logger.info("No coupons available for recording (by quotes on speciality)");
                                 return new EnqueuePatientStatus().setSuccess(false)
                                         .setMessage(CommunicationErrors.msgNoTicketsAvailable.getMessage());
@@ -611,25 +611,21 @@ public class PersonSchedule {
         return false;
     }
 
-    private boolean checkQuotingBySpeciality(
+    private boolean checkAndDecrementQuotingBySpeciality(
             final ru.korus.tmis.core.entity.model.Speciality speciality, final String organisationInfisCode) {
         List<QuotingBySpeciality> quotingBySpecialityList =
                 CommServer.getQuotingBySpecialityBean().getQuotingBySpecialityAndOrganisation(speciality, organisationInfisCode);
-        if (quotingBySpecialityList.isEmpty()) {
-            return true;
-        } else {
-            if (quotingBySpecialityList.size() == 1) {
-                logger.info("QuotingBySpeciality found and it is {}", quotingBySpecialityList);
-                QuotingBySpeciality current = quotingBySpecialityList.get(0);
-                if (current.getCouponsRemaining() > 0) {
-                    current.setCouponsRemaining(current.getCouponsRemaining() - 1);
-                    logger.debug("QuotingBySpeciality coupons_remaining reduce by 1");
-                    try {
-                        CommServer.getManagerBean().merge(current);
-                        return true;
-                    } catch (CoreException e) {
-                        logger.error("Error while merge quoting.", e);
-                    }
+        if (quotingBySpecialityList.size() == 1) {
+            logger.info("QuotingBySpeciality found and it is {}", quotingBySpecialityList);
+            QuotingBySpeciality current = quotingBySpecialityList.get(0);
+            if (current.getCouponsRemaining() > 0) {
+                current.setCouponsRemaining(current.getCouponsRemaining() - 1);
+                logger.debug("QuotingBySpeciality coupons_remaining reduce by 1");
+                try {
+                    CommServer.getManagerBean().merge(current);
+                    return true;
+                } catch (CoreException e) {
+                    logger.error("Error while merge quoting.", e);
                 }
             }
         }
@@ -643,5 +639,30 @@ public class PersonSchedule {
             }
         }
         return null;
+    }
+
+    /**
+     * Поиск и применение квот по специальности для заданного ЛПУ
+     *
+     * @param hospitalUidFrom инфис-код ЛПУ для которого требуется проверить квоты.
+     */
+    public boolean checkQuotingBySpeciality(final String hospitalUidFrom) {
+        List<QuotingBySpeciality> quotingBySpecialityList =
+                CommServer.getQuotingBySpecialityBean().getQuotingBySpecialityAndOrganisation(doctor.getSpeciality(), hospitalUidFrom);
+        //Квота должна быть единственной
+        if (quotingBySpecialityList.size() == 1) {
+            logger.debug("QuotingBySpeciality[{}] founded.", quotingBySpecialityList.get(0).getId());
+            if (quotingBySpecialityList.get(0).getCouponsRemaining() > 0) {
+                //Еще есть свободные квоты
+                return true;
+            }
+            //Квот нету, запрещаем доступ ко всем талончикам
+        }
+        //Квота не найдена или исчерпана -> запрет на доступность талончиков
+        logger.debug("All tickets are unavailable by QuotingBySpeciality");
+        for (Ticket currentTicket : tickets) {
+            currentTicket.setAvailable(false);
+        }
+        return false;
     }
 }
