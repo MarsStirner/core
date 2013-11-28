@@ -114,7 +114,7 @@ with TmisLogging{
     val action: Action = actionBean.createAction(eventId.intValue(),
                                                  i18n("db.actionType.moving").toInt,
                                                  authData)
-    action.setBegDate(date)
+    action.setBegDate(new Date())
     action.setEndDate(null:java.util.Date)
     dbManager.persist(action)
 
@@ -149,7 +149,7 @@ with TmisLogging{
           }
           else { //берем значение по умолчанию из предыдущего действия
             if (lastAction.getActionType.getFlatCode.compareTo(ConfigManager.Messages("db.action.admissionFlatCode"))==0) {
-              value = formatter.format(lastAction.getBegDate)  //TODO: getBegDate???
+              value = formatter.format(lastAction.getEndDate)  //TODO: getBegDate???
             }
             else if(lastAction.getActionType.getFlatCode.compareTo(ConfigManager.Messages("db.action.movingFlatCode"))==0){
               val codes = Set[String](ConfigManager.Messages("db.apt.moving.codes.timeLeaved"))
