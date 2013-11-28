@@ -1,4 +1,4 @@
-/*package ru.korus.test.patient;
+package ru.korus.test.patient;
 
 import org.jboss.arquillian.container.test.api.Deployment;
 import org.jboss.arquillian.container.test.api.OperateOnDeployment;
@@ -10,17 +10,20 @@ import org.jboss.shrinkwrap.api.asset.EmptyAsset;
 import org.jboss.shrinkwrap.api.spec.WebArchive;
 import org.junit.Test;
 import org.junit.runner.RunWith;
+import org.reflections.Reflections;
 import ru.korus.tmis.core.auth.AuthData;
 import ru.korus.tmis.core.auth.AuthStorageBean;
 import ru.korus.tmis.core.auth.AuthStorageBeanLocal;
 import ru.korus.tmis.core.database.*;
-import ru.korus.tmis.core.entity.model.Patient;
-import ru.korus.tmis.core.entity.model.Staff;
+import ru.korus.tmis.core.entity.model.*;
+import ru.korus.tmis.core.pharmacy.DbUUIDBean;
+import ru.korus.tmis.core.pharmacy.DbUUIDBeanLocal;
 
 import static org.junit.Assert.assertTrue;
 import javax.ejb.EJB;
 import java.io.File;
 import java.util.Date;
+import java.util.Set;
 
 
 @RunWith(Arquillian.class)
@@ -39,7 +42,7 @@ public class PatientTestCase {
     private AuthStorageBeanLocal authStorage;
 
     //Создание архива для деплоя тестового приложения
-    @Deployment(name="glassfish",testable = false)
+    @Deployment(name="PatientTestCase-glassfish")
     public static Archive createTestArchive() {
 
         //Тестируемые классы и зависимости
@@ -105,14 +108,26 @@ public class PatientTestCase {
                 //AuthStorageBeanLocal.class, AuthStorageBean.class,
                 //AuthData.class,
 
-                DbStaffBeanLocal.class, DbStaffBean.class
+                DbStaffBeanLocal.class, DbStaffBean.class, DbCustomQueryBean.class, DbUUIDBeanLocal.class, DbPatientBean.class,
+                DbEventBean.class, DbActionPropertyBean.class, DbUUIDBean.class, DbOrgStructureBeanLocal.class, DbOrgStructureBean.class,
+                DbActionPropertyTypeBeanLocal.class, DbActionPropertyTypeBean.class, DbActionBeanLocal.class, DbActionBean.class,
+                DbEventPersonBeanLocal.class, DbEventPersonBean.class,  DbContractBeanLocal.class, DbContractBean.class,
+                AuthStorageBeanLocal.class, AuthStorageBean.class, RbFinance.class, UUID.class, Diagnostic.class, RbDiseaseStage.class
 
         };
+
+
+        Set<Class<? extends Object>> allClasses = (new Reflections("ru.korus.tmis.core.database")).getSubTypesOf(Object.class);
+        allClasses.addAll((new Reflections("ru.korus.tmis.core.auth")).getSubTypesOf(Object.class));
 
         //EnterpriseArchive - ear, WebArchive - war, JavaArchive - jar (используется апи ShrinkWrap)
         WebArchive wa = ShrinkWrap.create(WebArchive.class, "test.war");
         wa.addAsWebInfResource(new File("./src/test/resources/META-INF/persistence.xml"),"classes/META-INF/persistence.xml");
         wa.addClasses(classes);
+        wa.addPackage(UUID.class.getPackage());
+        for(Class<?> cl : allClasses) {
+            wa.addClass(cl);
+        }
         wa.addAsWebInfResource(EmptyAsset.INSTANCE, "beans.xml");
         wa.addAsManifestResource(new File("./src/test/resources/META-INF/log4j.properties"));
 
@@ -120,20 +135,16 @@ public class PatientTestCase {
         assertTrue("testPatients>> true", true);
         return wa;
     }
- */
+
     //Теcтирование сервисов Patient
-/*    @Test
-    @OperateOnDeployment("glassfish")
+    @Test
+    @OperateOnDeployment("PatientTestCase-glassfish")
     @OverProtocol("EJB")
     public void testPatients() throws Exception{    //
 
-        //Patient asd = dbPatient.getPatientById(139);
         assertTrue("testPatients>> true", true);
-       // assertTrue("testPatients>> false",false);
 
         Date now  = new Date();
-        //AuthData authData =  authStorage.createToken("Педиатров", "698d51a19d8a121ce581499d7b701668", 24);
-        //AuthData authData =  wsAuth.authenticate("ДБалашов", "c4ca4238a0b923820dcc509a6f75849b", 24);
         Staff testUser = dbStaff.getStaffById(579);
         assertTrue("testPatients>> true", true);
         assertTrue("testPatients>> false",false);
@@ -161,6 +172,4 @@ public class PatientTestCase {
         assertTrue("testPatients>> true", true);
         assertTrue("testPatients>> false",false);
     }
-*/
-
-//}
+}

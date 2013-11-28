@@ -100,10 +100,12 @@ with TmisLogging{
     val lastActions = actionBean.getActionsWithFilter(0, 0, filter.toSortingString("createDatetime", "desc"), filter.unwrap, null, authData)
     val lastAction: Action = if(lastActions!=null && lastActions.size()>0) lastActions.get(0) else null
 
-    if(hbData.data.bedRegistration!=null && hbData.data.bedRegistration.moveDatetime!=null)
-      date = hbData.data.bedRegistration.moveDatetime
-    else if (lastAction!=null)//ищем дату выписки в последнем Action
-      date = lastAction.getEndDate
+    //if(hbData.data.bedRegistration!=null && hbData.data.bedRegistration.moveDatetime!=null)
+    //  date = hbData.data.bedRegistration.moveDatetime
+    //else
+    if (lastAction!=null)//ищем дату выписки в последнем Action
+      date = new Date(lastAction.getEndDate.getTime + 1000)
+    else date = new Date()
 
     if(date==null) {
       throw new CoreException("Регистрация пациента невозможна. \nНе заданы дата и время поступления")
@@ -149,7 +151,7 @@ with TmisLogging{
           }
           else { //берем значение по умолчанию из предыдущего действия
             if (lastAction.getActionType.getFlatCode.compareTo(ConfigManager.Messages("db.action.admissionFlatCode"))==0) {
-              value = formatter.format(lastAction.getBegDate)  //TODO: getBegDate???
+              value = formatter.format(lastAction.getEndDate)  //TODO: getBegDate???
             }
             else if(lastAction.getActionType.getFlatCode.compareTo(ConfigManager.Messages("db.action.movingFlatCode"))==0){
               val codes = Set[String](ConfigManager.Messages("db.apt.moving.codes.timeLeaved"))
