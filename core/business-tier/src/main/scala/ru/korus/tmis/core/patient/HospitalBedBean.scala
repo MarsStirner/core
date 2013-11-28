@@ -100,10 +100,12 @@ with TmisLogging{
     val lastActions = actionBean.getActionsWithFilter(0, 0, filter.toSortingString("createDatetime", "desc"), filter.unwrap, null, authData)
     val lastAction: Action = if(lastActions!=null && lastActions.size()>0) lastActions.get(0) else null
 
-    if(hbData.data.bedRegistration!=null && hbData.data.bedRegistration.moveDatetime!=null)
-      date = hbData.data.bedRegistration.moveDatetime
-    else if (lastAction!=null)//ищем дату выписки в последнем Action
-      date = lastAction.getEndDate
+    //if(hbData.data.bedRegistration!=null && hbData.data.bedRegistration.moveDatetime!=null)
+    //  date = hbData.data.bedRegistration.moveDatetime
+    //else
+    if (lastAction!=null)//ищем дату выписки в последнем Action
+      date = new Date(lastAction.getEndDate.getTime + 1000)
+    else date = new Date()
 
     if(date==null) {
       throw new CoreException("Регистрация пациента невозможна. \nНе заданы дата и время поступления")
@@ -114,7 +116,7 @@ with TmisLogging{
     val action: Action = actionBean.createAction(eventId.intValue(),
                                                  i18n("db.actionType.moving").toInt,
                                                  authData)
-    action.setBegDate(new Date())
+    action.setBegDate(date)
     action.setEndDate(null:java.util.Date)
     dbManager.persist(action)
 
