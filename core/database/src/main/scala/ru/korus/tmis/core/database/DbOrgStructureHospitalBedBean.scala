@@ -10,11 +10,9 @@ import ru.korus.tmis.core.entity.model.OrgStructureHospitalBed
 import scala.collection.JavaConversions._
 
 /**
- * Created with IntelliJ IDEA.
  * User: idmitriev
  * Date: 8/19/13
  * Time: 11:09 AM
- * To change this template use File | Settings | File Templates.
  */
 @Interceptors(Array(classOf[LoggingInterceptor]))
 @Stateless

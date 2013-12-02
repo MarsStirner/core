@@ -13,4 +13,7 @@ public interface DbRbHospitalBedProfileBeanLocal {
 
     RbHospitalBedProfile getRbHospitalBedProfileById(int id)
             throws CoreException;
+
+    Iterable<RbHospitalBedProfile> getAllRbHospitalBedProfiles()
+            throws CoreException;
 }

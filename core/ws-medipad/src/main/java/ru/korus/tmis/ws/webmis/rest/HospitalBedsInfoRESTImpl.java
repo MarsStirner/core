@@ -42,4 +42,30 @@ public class HospitalBedsInfoRESTImpl {
         int depId = (departmentId>0) ? departmentId : this.auth.getUser().getOrgStructure().getId().intValue();
         return new JSONWithPadding(wsImpl.getVacantHospitalBeds(depId, this.auth), this.callback);
     }
+
+    /**
+     * Сервис для получения информации о доступных профилях коек
+     * Url: .../hospitalbed/avaliable_profiles
+     * @return Список коек в json-формате.
+     */
+     @GET
+     @Path("/avaliable_profiles")
+     @Produces("application/x-javascript")
+     public Object getAvailableProfiles() {
+         return new JSONWithPadding(wsImpl.getAllAvailableBedProfiles(auth), this.callback);
+     }
+
+    /**
+     * Сервис для получения описания профиля койки
+     * Url: .../hospitalbed/profile_by_id
+     * @param profileId Идентификатор профиля койки.
+     * @return Представления описания профиля койки в JSON.
+     */
+    @GET
+    @Path("/profile_by_id/")
+    @Produces("application/x-javascript")
+    public Object getProfileNameById(@QueryParam("id")int profileId) {
+        return new JSONWithPadding(wsImpl.getBedProfileById(profileId, auth), this.callback);
+    }
+
 }
