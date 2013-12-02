@@ -179,13 +179,13 @@ public class BakBusinessBean implements BakBusinessBeanLocal {
             throw new CoreException("не определены показатели из rbTest, не нужно отправлять анализ в ЛИС actionId: " + action.getId());
         }
 
-        Set<ActionPropertyType> aptsSet = new HashSet<ActionPropertyType>();
+        final Set<ActionPropertyType> aptsSet = new HashSet<ActionPropertyType>();
         for (ActionPropertyType apt : apts) {
             aptsSet.add(apt);
         }
 
         // Получаем map из APT в AP
-        Map<ActionPropertyType, ActionProperty> apsMap = action.getActionPropertiesByTypes(aptsSet);
+        final Map<ActionPropertyType, ActionProperty> apsMap = action.getActionPropertiesByTypes(aptsSet);
         // Фильтруем map чтобы найти показатели/методы
         for (Map.Entry<ActionPropertyType, ActionProperty> entry : apsMap.entrySet()) {
             final ActionProperty ap = entry.getValue();
