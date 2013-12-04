@@ -201,7 +201,7 @@ public class PharmacyBean implements PharmacyBeanLocal {
                     }
                 }
             } else {
-                toLog.add("Error connection with 1C Pharmacy. Message is setup ERROR status");
+                toLog.add("Error connection with 1C Pharmacy. Message was set in ERROR status");
                 pharmacy.setStatus(PharmacyStatus.ERROR);
             }
         } catch (NoSuchOrgStructureException e) {
@@ -315,12 +315,11 @@ public class PharmacyBean implements PharmacyBeanLocal {
         try {
             final List<Action> actionList = dbPharmacy.getVirtualActions(LAST_ACTIONS);
             if (!actionList.isEmpty()) {
-                toLog.add("Fetch last actions with size [" + actionList.size() + "]");
+                toLog.addN("Fetch last actions with size [#]", actionList.size());
                 for (Action action : actionList) {
                     final Pharmacy checkPharmacy = dbPharmacy.getPharmacyByAction(action);
                     if (checkPharmacy == null) {
-                        toLog.add("Found non sending action " + action
-                                + ", flatCode [" + action.getActionType().getFlatCode() + "]");
+                        toLog.addN("Found non sending action [#], flatCode [#]", action, action.getActionType().getFlatCode());
                         send(action, toLog);
                     }
                 }
