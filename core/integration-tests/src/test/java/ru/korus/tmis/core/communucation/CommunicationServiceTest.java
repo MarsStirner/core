@@ -309,9 +309,9 @@ public class CommunicationServiceTest {
         ids.add(1000);
         ids.add(152);
         ids.add(1);
-        HashMap<Integer, PatientInfo> result;
+        HashMap<Integer, Patient> result;
         try {
-            result = (HashMap<Integer, PatientInfo>) client.getPatientInfo(ids);
+            result = (HashMap<Integer, Patient>) client.getPatientInfo(ids);
             logger.info("Send and recieve is successfully done.");
             assertTrue(result != null);
             logger.info("Received list size=" + result.size());
@@ -719,11 +719,11 @@ public class CommunicationServiceTest {
     private void getPatientInfoFromLinkedTest(String lastName, String firstName, String patrName, long birthDate, Integer id) throws TException {
         List<Integer> idPseudoList = new ArrayList<Integer>(1);
         idPseudoList.add(id);
-        final Map<Integer, PatientInfo> patientInfoMap = client.getPatientInfo(idPseudoList);
+        final Map<Integer, Patient> patientInfoMap = client.getPatientInfo(idPseudoList);
         logger.info("Recieved result from method \"getPatientInfo\" call = {}", patientInfoMap);
         assertEquals(patientInfoMap.size(), 1, "В возвращаемой коллекциии не ровно один пациент");
         assertTrue(patientInfoMap.containsKey(id), "Возвращаемая коллекция не имеет пациента с заданным ID");
-        PatientInfo patientInfo = patientInfoMap.get(id);
+        Patient patientInfo = patientInfoMap.get(id);
         logger.info("Result is {}", patientInfo);
         assertEquals(patientInfo.getFirstName(), firstName, "Имя несовпало");
         assertEquals(patientInfo.getLastName(), lastName, "Фамилия несовпала");

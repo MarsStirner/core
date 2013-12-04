@@ -33,13 +33,13 @@ import org.slf4j.LoggerFactory;
 /**
  * Schedule
  * Структура с данными для расписания врача
- * @param begTime       Время начала приема врача
- * @param endTime       Время окончания приема врача
- * @param date          Дата приема врача
- * @param office        Офис в котором будет происходить прием
- * @param plan          План приема (количество ячеек времени в которые врач будет принимать пациентов)
- * @param tickets       Список талончиков на прием
- * @param available     Признак доступности записи на этот прием (в целом)
+ * @param begTime       		1) Время начала приема врача
+ * @param endTime       		2) Время окончания приема врача
+ * @param date          		3) Дата приема врача
+ * @param office        		4) Офис в котором будет происходить прием
+ * @param plan          		5) План приема (количество ячеек времени в которые врач будет принимать пациентов)
+ * @param tickets       		6) Список талончиков на прием
+ * @param available     		7) Признак доступности записи на этот прием (в целом)
  */
 public class Schedule implements org.apache.thrift.TBase<Schedule, Schedule._Fields>, java.io.Serializable, Cloneable {
   private static final org.apache.thrift.protocol.TStruct STRUCT_DESC = new org.apache.thrift.protocol.TStruct("Schedule");

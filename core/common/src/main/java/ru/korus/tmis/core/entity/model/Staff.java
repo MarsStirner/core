@@ -227,6 +227,11 @@ public class Staff implements Serializable {
     @Column(name = "maxOverQueue")
     private int maxOverQueue;
 
+    @Basic(optional = true)
+    @Column(name = "quotUnit")
+    private Integer quoteUnit;
+    //
+
     @ManyToOne
     @JoinColumn(name = "uuid_id")
     // @Transient
@@ -683,6 +688,13 @@ public class Staff implements Serializable {
         this.maxOverQueue = maxOverQueue;
     }
 
+    public Integer getQuoteUnit() {
+        return quoteUnit;
+    }
+
+    public void setQuoteUnit(Integer quoteUnit) {
+        this.quoteUnit = quoteUnit;
+    }
 
     public UUID getUuid() {
         return uuid;

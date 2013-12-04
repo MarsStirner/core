@@ -30,6 +30,13 @@ import java.util.Arrays;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+/**
+ * PatientStatus
+ * Структура с данными о  результате поиска \ добавления пациента
+ * @param success				1) Статус поиска\добавления пациента (true - найдено\добавлено)
+ * @param message				2) Строковое описание причины неудачи
+ * @param patientId				3) Идентификатор найденного\добавленого пациента
+ */
 public class PatientStatus implements org.apache.thrift.TBase<PatientStatus, PatientStatus._Fields>, java.io.Serializable, Cloneable {
   private static final org.apache.thrift.protocol.TStruct STRUCT_DESC = new org.apache.thrift.protocol.TStruct("PatientStatus");
 

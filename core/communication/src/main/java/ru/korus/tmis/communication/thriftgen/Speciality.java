@@ -30,6 +30,14 @@ import java.util.Arrays;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+/**
+ * Speciality
+ * Структура с данными о специальностях врачей, на которые доступна внешняя запись
+ * @param id 					1) Внутренний идентификатор специальности
+ * @param ticketsPerMonths		2) Количество выделяемых талончиков в месяц
+ * @param ticketsAvailable		3) Количество доступных талончиков (остатки)
+ * @param speciality			4) Строковое название специальности
+ */
 public class Speciality implements org.apache.thrift.TBase<Speciality, Speciality._Fields>, java.io.Serializable, Cloneable {
   private static final org.apache.thrift.protocol.TStruct STRUCT_DESC = new org.apache.thrift.protocol.TStruct("Speciality");
 
