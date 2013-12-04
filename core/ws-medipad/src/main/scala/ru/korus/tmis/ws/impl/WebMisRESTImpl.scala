@@ -624,8 +624,6 @@ class WebMisRESTImpl  extends WebMisREST
       case null =>
         throw new CoreException("В базе данных не найден профиль койки с идентификатором " + profileId);
       case (p: RbHospitalBedProfile) => new HospitalBedProfileContainer(p)
-      case _ =>
-        throw new CoreException("Произошла неизвестная ошибка при поиске профиля койки с идентификатором" + profileId);
     }
   }
 
