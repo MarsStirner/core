@@ -30,6 +30,12 @@ import java.util.Arrays;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+/**
+ * DequeuePatientStatus
+ * Структура со статусом отмены записи пациента к врачу
+ * @param success				1) Статус отмены записи пациента к врачу
+ * @param message				2) Сообшение
+ */
 public class DequeuePatientStatus implements org.apache.thrift.TBase<DequeuePatientStatus, DequeuePatientStatus._Fields>, java.io.Serializable, Cloneable {
   private static final org.apache.thrift.protocol.TStruct STRUCT_DESC = new org.apache.thrift.protocol.TStruct("DequeuePatientStatus");
 

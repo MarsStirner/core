@@ -91,7 +91,7 @@ public interface DbOrgStructureBeanLocal {
     List<OrgStructure> getRecursiveOrgStructures(int parentId, boolean recursive, String infisCode) throws CoreException;
 
     /**
-     * Запрос на получение ИД оргструктур по заданному адресу
+     * Запрос на получение ИД оргструктур, которые работают с пациентом по заданному адресу
      *
      * @return Список ИД оргутруктур удовлятворяющих заданному адресу
      * @throws CoreException

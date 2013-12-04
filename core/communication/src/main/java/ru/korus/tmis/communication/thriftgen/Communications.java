@@ -60,8 +60,8 @@ public class Communications {
     public List<OrgStructure> getOrgStructures(int parent_id, boolean recursive, String infisCode) throws NotFoundException, SQLException, org.apache.thrift.TException;
 
     /**
-     * Получение адресов запрошенного подразделения
-     * @param orgStructureId                1) идетификатор подразделения, для которого требуется найти адреса
+     * Получение обслуживаемых адресов запрошенного подразделения
+     * @param orgStructureId                1) идетификатор подразделения, для которого требуется найти обслуживаемые им адреса
      * @param recursive                     2) Флаг рекурсии (выбрать также подразделения, входяшие во все дочерние подразделения)
      * @param infisCode                     3) Инфис-код
      * @return                              Список структур, содержащих информацию об адресах запрошенных подразделений
@@ -220,7 +220,7 @@ public class Communications {
      * 
      * @param patientIds
      */
-    public Map<Integer,PatientInfo> getPatientInfo(List<Integer> patientIds) throws NotFoundException, SQLException, org.apache.thrift.TException;
+    public Map<Integer,Patient> getPatientInfo(List<Integer> patientIds) throws NotFoundException, SQLException, org.apache.thrift.TException;
 
     /**
      * Получение контактной информации для заданного пациента
@@ -817,7 +817,7 @@ public class Communications {
       throw new org.apache.thrift.TApplicationException(org.apache.thrift.TApplicationException.MISSING_RESULT, "getPersonSchedule failed: unknown result");
     }
 
-    public Map<Integer,PatientInfo> getPatientInfo(List<Integer> patientIds) throws NotFoundException, SQLException, org.apache.thrift.TException
+    public Map<Integer,Patient> getPatientInfo(List<Integer> patientIds) throws NotFoundException, SQLException, org.apache.thrift.TException
     {
       send_getPatientInfo(patientIds);
       return recv_getPatientInfo();
@@ -830,7 +830,7 @@ public class Communications {
       sendBase("getPatientInfo", args);
     }
 
-    public Map<Integer,PatientInfo> recv_getPatientInfo() throws NotFoundException, SQLException, org.apache.thrift.TException
+    public Map<Integer,Patient> recv_getPatientInfo() throws NotFoundException, SQLException, org.apache.thrift.TException
     {
       getPatientInfo_result result = new getPatientInfo_result();
       receiveBase(result, "getPatientInfo");
@@ -1579,7 +1579,7 @@ public class Communications {
         prot.writeMessageEnd();
       }
 
-      public Map<Integer,PatientInfo> getResult() throws NotFoundException, SQLException, org.apache.thrift.TException {
+      public Map<Integer,Patient> getResult() throws NotFoundException, SQLException, org.apache.thrift.TException {
         if (getState() != org.apache.thrift.async.TAsyncMethodCall.State.RESPONSE_READ) {
           throw new IllegalStateException("Method call not finished!");
         }
@@ -18114,7 +18114,7 @@ public class Communications {
       schemes.put(TupleScheme.class, new getPatientInfo_resultTupleSchemeFactory());
     }
 
-    public Map<Integer,PatientInfo> success; // required
+    public Map<Integer,Patient> success; // required
     public NotFoundException exc; // required
     public SQLException excsql; // required
 
@@ -18189,7 +18189,7 @@ public class Communications {
       tmpMap.put(_Fields.SUCCESS, new org.apache.thrift.meta_data.FieldMetaData("success", org.apache.thrift.TFieldRequirementType.DEFAULT, 
           new org.apache.thrift.meta_data.MapMetaData(org.apache.thrift.protocol.TType.MAP, 
               new org.apache.thrift.meta_data.FieldValueMetaData(org.apache.thrift.protocol.TType.I32), 
-              new org.apache.thrift.meta_data.StructMetaData(org.apache.thrift.protocol.TType.STRUCT, PatientInfo.class))));
+              new org.apache.thrift.meta_data.StructMetaData(org.apache.thrift.protocol.TType.STRUCT, Patient.class))));
       tmpMap.put(_Fields.EXC, new org.apache.thrift.meta_data.FieldMetaData("exc", org.apache.thrift.TFieldRequirementType.DEFAULT, 
           new org.apache.thrift.meta_data.FieldValueMetaData(org.apache.thrift.protocol.TType.STRUCT)));
       tmpMap.put(_Fields.EXCSQL, new org.apache.thrift.meta_data.FieldMetaData("excsql", org.apache.thrift.TFieldRequirementType.DEFAULT, 
@@ -18202,7 +18202,7 @@ public class Communications {
     }
 
     public getPatientInfo_result(
-      Map<Integer,PatientInfo> success,
+      Map<Integer,Patient> success,
       NotFoundException exc,
       SQLException excsql)
     {
@@ -18217,15 +18217,15 @@ public class Communications {
      */
     public getPatientInfo_result(getPatientInfo_result other) {
       if (other.isSetSuccess()) {
-        Map<Integer,PatientInfo> __this__success = new HashMap<Integer,PatientInfo>();
-        for (Map.Entry<Integer, PatientInfo> other_element : other.success.entrySet()) {
+        Map<Integer,Patient> __this__success = new HashMap<Integer,Patient>();
+        for (Map.Entry<Integer, Patient> other_element : other.success.entrySet()) {
 
           Integer other_element_key = other_element.getKey();
-          PatientInfo other_element_value = other_element.getValue();
+          Patient other_element_value = other_element.getValue();
 
           Integer __this__success_copy_key = other_element_key;
 
-          PatientInfo __this__success_copy_value = new PatientInfo(other_element_value);
+          Patient __this__success_copy_value = new Patient(other_element_value);
 
           __this__success.put(__this__success_copy_key, __this__success_copy_value);
         }
@@ -18254,18 +18254,18 @@ public class Communications {
       return (this.success == null) ? 0 : this.success.size();
     }
 
-    public void putToSuccess(int key, PatientInfo val) {
+    public void putToSuccess(int key, Patient val) {
       if (this.success == null) {
-        this.success = new HashMap<Integer,PatientInfo>();
+        this.success = new HashMap<Integer,Patient>();
       }
       this.success.put(key, val);
     }
 
-    public Map<Integer,PatientInfo> getSuccess() {
+    public Map<Integer,Patient> getSuccess() {
       return this.success;
     }
 
-    public getPatientInfo_result setSuccess(Map<Integer,PatientInfo> success) {
+    public getPatientInfo_result setSuccess(Map<Integer,Patient> success) {
       this.success = success;
       return this;
     }
@@ -18339,7 +18339,7 @@ public class Communications {
         if (value == null) {
           unsetSuccess();
         } else {
-          setSuccess((Map<Integer,PatientInfo>)value);
+          setSuccess((Map<Integer,Patient>)value);
         }
         break;
 
@@ -18570,13 +18570,13 @@ public class Communications {
               if (schemeField.type == org.apache.thrift.protocol.TType.MAP) {
                 {
                   org.apache.thrift.protocol.TMap _map110 = iprot.readMapBegin();
-                  struct.success = new HashMap<Integer,PatientInfo>(2*_map110.size);
+                  struct.success = new HashMap<Integer,Patient>(2*_map110.size);
                   for (int _i111 = 0; _i111 < _map110.size; ++_i111)
                   {
                     int _key112; // required
-                    PatientInfo _val113; // required
+                    Patient _val113; // required
                     _key112 = iprot.readI32();
-                    _val113 = new PatientInfo();
+                    _val113 = new Patient();
                     _val113.read(iprot);
                     struct.success.put(_key112, _val113);
                   }
@@ -18624,7 +18624,7 @@ public class Communications {
           oprot.writeFieldBegin(SUCCESS_FIELD_DESC);
           {
             oprot.writeMapBegin(new org.apache.thrift.protocol.TMap(org.apache.thrift.protocol.TType.I32, org.apache.thrift.protocol.TType.STRUCT, struct.success.size()));
-            for (Map.Entry<Integer, PatientInfo> _iter114 : struct.success.entrySet())
+            for (Map.Entry<Integer, Patient> _iter114 : struct.success.entrySet())
             {
               oprot.writeI32(_iter114.getKey());
               _iter114.getValue().write(oprot);
@@ -18674,7 +18674,7 @@ public class Communications {
         if (struct.isSetSuccess()) {
           {
             oprot.writeI32(struct.success.size());
-            for (Map.Entry<Integer, PatientInfo> _iter115 : struct.success.entrySet())
+            for (Map.Entry<Integer, Patient> _iter115 : struct.success.entrySet())
             {
               oprot.writeI32(_iter115.getKey());
               _iter115.getValue().write(oprot);
@@ -18696,13 +18696,13 @@ public class Communications {
         if (incoming.get(0)) {
           {
             org.apache.thrift.protocol.TMap _map116 = new org.apache.thrift.protocol.TMap(org.apache.thrift.protocol.TType.I32, org.apache.thrift.protocol.TType.STRUCT, iprot.readI32());
-            struct.success = new HashMap<Integer,PatientInfo>(2*_map116.size);
+            struct.success = new HashMap<Integer,Patient>(2*_map116.size);
             for (int _i117 = 0; _i117 < _map116.size; ++_i117)
             {
               int _key118; // required
-              PatientInfo _val119; // required
+              Patient _val119; // required
               _key118 = iprot.readI32();
-              _val119 = new PatientInfo();
+              _val119 = new Patient();
               _val119.read(iprot);
               struct.success.put(_key118, _val119);
             }

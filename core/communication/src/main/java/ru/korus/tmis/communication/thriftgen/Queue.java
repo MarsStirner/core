@@ -30,6 +30,17 @@ import java.util.Arrays;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+/**
+ * Queue
+ * Структура с данными о записях пациента к врачам
+ * @param dateTime				1) Дата+время начала талончика
+ * @param index					2) Индекс ячейки записи
+ * @param personId				3) Идентификатор врача
+ * @param note					4) Примечание
+ * @param queueId				5) Идентификатор Action-а записи к врачу
+ * @param enqueuePersonId		6) Идентификатор врача, который записал пациента
+ * @param enqueueDateTime		7) Дата+время создания записи
+ */
 public class Queue implements org.apache.thrift.TBase<Queue, Queue._Fields>, java.io.Serializable, Cloneable {
   private static final org.apache.thrift.protocol.TStruct STRUCT_DESC = new org.apache.thrift.protocol.TStruct("Queue");
 

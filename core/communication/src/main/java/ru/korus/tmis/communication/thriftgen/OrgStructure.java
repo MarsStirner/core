@@ -30,6 +30,17 @@ import java.util.Arrays;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+/**
+ * OrgStructure
+ * Структура с данными о подразделении
+ * @param id					1) Внутренний идентификатор подразделения
+ * @param parent_id				2) Внутренний идентификатор вышестоящего подразделения, или 0 если вышестоящего отделеия не существует
+ * @param code					3) Код подразделения
+ * @param name					4) Название подразделения
+ * @param address				5) Адрес подразделения
+ * @param sexFilter				6) Половой фильтр
+ * @param ageFilter				7) Возрастной фильтр
+ */
 public class OrgStructure implements org.apache.thrift.TBase<OrgStructure, OrgStructure._Fields>, java.io.Serializable, Cloneable {
   private static final org.apache.thrift.protocol.TStruct STRUCT_DESC = new org.apache.thrift.protocol.TStruct("OrgStructure");
 

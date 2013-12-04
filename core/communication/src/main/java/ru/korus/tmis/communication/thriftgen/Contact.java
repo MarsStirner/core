@@ -30,6 +30,14 @@ import java.util.Arrays;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+/**
+ * Contact
+ * Структура с контактными данными пациента
+ * @param type					1) Тип контакта
+ * @param code					2) Код типа контакта
+ * @param contact				3) Контактная информация
+ * @param note					4) Примечание
+ */
 public class Contact implements org.apache.thrift.TBase<Contact, Contact._Fields>, java.io.Serializable, Cloneable {
   private static final org.apache.thrift.protocol.TStruct STRUCT_DESC = new org.apache.thrift.protocol.TStruct("Contact");
 

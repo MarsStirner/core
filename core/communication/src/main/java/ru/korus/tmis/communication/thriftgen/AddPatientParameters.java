@@ -31,19 +31,20 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 /**
- * AddPatientParameters 	Структура для создания нового пациента
- * @param lastName			Фамилия пациента
- * @param firstName			Имя пациента
- * @param patrName			Отчество пациента
- * @param birthDate			Дата рождения пациента
- * @param sex				Пол пациента
- * @param documentSerial	Серия документа
- * @param documentNumber	Номер документа
- * @param documentTypeCode	Код типа документа
- * @param policySerial		Серия полиса
- * @param policyNumber		Номер полиса
- * @param policyTypeCode	Код типа полиса
- * @param policyInsurerInfisCode	Инфис код страховой, полис которой представлен выше
+ * AddPatientParameters
+ * Структура для создания нового пациента
+ * @param lastName				1) Фамилия пациента
+ * @param firstName				2) Имя пациента
+ * @param patrName				3) Отчество пациента
+ * @param birthDate				4) Дата рождения пациента
+ * @param sex					5) Пол пациента
+ * @param documentSerial		6) Серия документа
+ * @param documentNumber		7) Номер документа
+ * @param documentTypeCode		8) Код типа документа
+ * @param policySerial			9) Серия полиса
+ * @param policyNumber			10) Номер полиса
+ * @param policyTypeCode		11) Код типа полиса
+ * @param policyInsurerInfisCode	12)Инфис код страховой, полис которой представлен выше
  */
 public class AddPatientParameters implements org.apache.thrift.TBase<AddPatientParameters, AddPatientParameters._Fields>, java.io.Serializable, Cloneable {
   private static final org.apache.thrift.protocol.TStruct STRUCT_DESC = new org.apache.thrift.protocol.TStruct("AddPatientParameters");

@@ -27,25 +27,18 @@ public final class ParserToThriftStruct {
     private ParserToThriftStruct() {
     }
 
-    public static PatientInfo parsePatientInfo(final Patient item) {
-        if (item == null) {
-            logger.warn("Parser: NullPointer patient item. Return \"null\"");
-            return null;
-        }
-        final PatientInfo result = new PatientInfo().setFirstName(item.getFirstName()).setLastName(item.getLastName()).setPatrName(item.getPatrName());
-        result.setSex(item.getSex()).setBirthDate(DateConvertions.convertDateToUTCMilliseconds(item.getBirthDate()));
-        return result;
-    }
-
     public static ru.korus.tmis.communication.thriftgen.Patient parsePatient(final Patient item) {
         if (item == null) {
             logger.warn("Parser: NullPointer patient item. Return \"null\"");
             return null;
         }
-        final ru.korus.tmis.communication.thriftgen.Patient result =
-                new ru.korus.tmis.communication.thriftgen.Patient().setFirstName(
-                        item.getFirstName()).setLastName(item.getLastName()).setPatrName(item.getPatrName());
-        result.setSex(item.getSex()).setBirthDate(item.getBirthDate().getTime()).setId(item.getId());
+        final ru.korus.tmis.communication.thriftgen.Patient result = new ru.korus.tmis.communication.thriftgen.Patient()
+                .setFirstName(item.getFirstName())
+                .setLastName(item.getLastName())
+                .setPatrName(item.getPatrName())
+                .setSex(item.getSex())
+                .setBirthDate(DateConvertions.convertDateToUTCMilliseconds(item.getBirthDate()))
+                .setId(item.getId());
         return result;
     }
 
@@ -167,7 +160,7 @@ public final class ParserToThriftStruct {
         result.setFree(ticket.isFree());
         result.setTimeIndex(ticket.getTimeCellIndex());
         final Patient patient = ticket.getPatient();
-        if(patient != null){
+        if (patient != null) {
             result.setPatientId(patient.getId());
             result.setPatientInfo(new StringBuilder(patient.getLastName()).append(' ')
                     .append(patient.getFirstName()).append(' ').append(patient.getPatrName()).toString());
@@ -208,10 +201,10 @@ public final class ParserToThriftStruct {
     private static ru.korus.tmis.communication.thriftgen.Ticket parseTicket(Ticket ticket) {
         final ru.korus.tmis.communication.thriftgen.Ticket result = new ru.korus.tmis.communication.thriftgen.Ticket();
         result.setAvailable(ticket.isAvailable() ? 1 : 0);
-        result.setFree(ticket.isFree() ? 1: 0);
+        result.setFree(ticket.isFree() ? 1 : 0);
         result.setTime(DateConvertions.convertDateToUTCMilliseconds(ticket.getBegTime()));
         final Patient patient = ticket.getPatient();
-        if(patient != null){
+        if (patient != null) {
             result.setPatientId(patient.getId());
             result.setPatientInfo(new StringBuilder(patient.getLastName()).append(' ')
                     .append(patient.getFirstName()).append(' ').append(patient.getPatrName()).toString());
