@@ -218,9 +218,9 @@ public class CommunicationServiceTest {
         ids.add(1000);
         ids.add(152);
         ids.add(1);
-        HashMap<Integer, PatientInfo> result;
+        HashMap<Integer, Patient> result;
         try {
-            result = (HashMap<Integer, PatientInfo>) client.getPatientInfo(ids);
+            result = (HashMap<Integer, Patient>) client.getPatientInfo(ids);
             logger.info("Send and recieve is successfully done.");
             assertTrue(result != null);
             logger.info("Received list size=" + result.size());

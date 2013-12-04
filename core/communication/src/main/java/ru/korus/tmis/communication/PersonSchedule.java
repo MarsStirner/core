@@ -136,13 +136,23 @@ public class PersonSchedule {
             );
             logger.debug("Timeline exists and is Action[{}]", timelineAction.getId());
             final Map<ActionProperty, List<APValue>> actionPropertyListMap = CommServer.getActionPropertyBean()
-                    .getActionPropertiesByActionIdAndTypeTypeNames(timelineAction.getId(), ImmutableList.of("reasonOfAbsence"));
+                    .getActionPropertiesByActionIdAndTypeNames(timelineAction.getId(), ImmutableList.of("reasonOfAbsence"));
             if (actionPropertyListMap.isEmpty()) {
                 logger.debug("Timeline hasn't ReasonOfAbsence");
                 return false;
             } else {
                 final Iterator<ActionProperty> propertyIterator = actionPropertyListMap.keySet().iterator();
-                return propertyIterator.hasNext() && !actionPropertyListMap.get(propertyIterator.next()).isEmpty();
+                if(propertyIterator.hasNext()) {
+                    final List<APValue> reasonAPList = actionPropertyListMap.get(propertyIterator.next());
+                    if(reasonAPList.isEmpty()) {
+                        logger.debug("AP exists, but AP_rbReasonOfAbsence not!");
+                        return false;
+                    } else {
+                        logger.debug("ReasonOfAbsence is [{}] ", reasonAPList.get(0).toString());
+                        return true;
+                    }
+                }
+                return false;
             }
         } catch (Exception e) {
             if (timelineAction == null) {
@@ -206,6 +216,21 @@ public class PersonSchedule {
                     }
                 }
             }
+        }
+        //Check required fields
+        if(times.isEmpty()){
+            logger.error("No one times in AP. Throws NotFoundException...");
+            throw new CoreException();
+        }
+        //Show warnings
+        if(plan == null){
+            logger.warn("Schedule plan is not set in AP...");
+        }
+        if(begTime == null){
+            logger.warn("Schedule begTime is not set in AP...");
+        }
+        if(endTime == null){
+            logger.warn("Schedule endTime is not set in AP...");
         }
     }
 
@@ -287,17 +312,62 @@ public class PersonSchedule {
      * на возвращаемый набор талончиков
      * (result.tickets)
      */
-    public void takeConstraintsOnTickets(QuotingType quotingType) {
+    public void takeConstraintsOnTickets(final QuotingType quotingType) {
+        //Пропустить ПРОВЕРКУ если НЕТУ талончиков
+        if(tickets.isEmpty()){
+            return;
+        }
         getQuotingByTimeConstraints(quotingType);
         final short quota;
-        final int quoteAvailable;
+        final short quotedTickets;
+        int quoteAvailable = 0;
         if (quotingByTimeConstraints.isEmpty()) {
-            quota = doctor.getExternalQuota();
-            quoteAvailable = Math.max(0, (int) (quota * tickets.size() * 0.01) - externalCount);
-            if (quoteAvailable < 1) {
-                for (Ticket currentTicket : tickets) {
-                    currentTicket.setAvailable(false);
+            switch (quotingType) {
+                /**
+                 case FROM_REGISTRY:{
+                 quota = doctor.getPrimaryQuota();
+                 break;
+                 }
+                 case SECOND_VISIT:{
+                 quota = doctor.getOwnQuota();
+                 break;
+                 }
+                 case BETWEEN_CABINET:{
+                 quota = doctor.getConsultancyQuota();
+                 break;
+                 }    **/
+                case FROM_OTHER_LPU: {
+                    quota = doctor.getExternalQuota();
+                    quotedTickets = externalCount;
+                    break;
                 }
+                case FROM_PORTAL: {
+                    quota = doctor.getExternalQuota();
+                    quotedTickets = externalCount;
+                    break;
+                }
+                default: {
+                    quota = 100;
+                    quotedTickets = 0;
+                    break;
+                }
+            }
+            logger.debug("Quota={} quotedTickets={} unit={}", quota, quotedTickets, doctor.getQuoteUnit());
+            if (doctor.getQuoteUnit() != null) {
+                if (doctor.getQuoteUnit() == 0) {
+                    //%
+                    quoteAvailable = quota - quotedTickets * 100 / tickets.size();
+                } else {
+                    //Абсолютное количество
+                    quoteAvailable = quota - quotedTickets;
+                }
+                if (quoteAvailable < 1) {
+                    for (Ticket currentTicket : tickets) {
+                        currentTicket.setAvailable(false);
+                    }
+                }
+            } else {
+                logger.warn("Doctor quoteUnit is NULL, skip doctor quoting.");
             }
         } else {
             quota = -1;
@@ -305,9 +375,11 @@ public class PersonSchedule {
             for (Ticket currentTicket : tickets) {
                 boolean available = false;
                 for (QuotingByTime qbt : quotingByTimeConstraints) {
+                    //Проверяется не весь интервал, а только начало талончика
+                    //Потому что "так было в 6098" бебебе
                     if (qbt.getQuotingTimeStart().getTime() != 0 && qbt.getQuotingTimeEnd().getTime() != 0) {
                         if (currentTicket.getBegTime().getTime() >= qbt.getQuotingTimeStart().getTime()
-                                && currentTicket.getEndTime().getTime() <= qbt.getQuotingTimeEnd().getTime()
+                                && currentTicket.getBegTime().getTime() <= qbt.getQuotingTimeEnd().getTime()
                                 && currentTicket.isAvailable()) {
                             available = true;
                             break;

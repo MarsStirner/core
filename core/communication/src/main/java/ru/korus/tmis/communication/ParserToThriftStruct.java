@@ -32,10 +32,13 @@ public final class ParserToThriftStruct {
             logger.warn("Parser: NullPointer patient item. Return \"null\"");
             return null;
         }
-        final ru.korus.tmis.communication.thriftgen.Patient result =
-                new ru.korus.tmis.communication.thriftgen.Patient().setFirstName(
-                        item.getFirstName()).setLastName(item.getLastName()).setPatrName(item.getPatrName());
-        result.setSex(item.getSex()).setBirthDate(item.getBirthDate().getTime()).setId(item.getId());
+        final ru.korus.tmis.communication.thriftgen.Patient result = new ru.korus.tmis.communication.thriftgen.Patient()
+                .setFirstName(item.getFirstName())
+                .setLastName(item.getLastName())
+                .setPatrName(item.getPatrName())
+                .setSex(item.getSex())
+                .setBirthDate(DateConvertions.convertDateToUTCMilliseconds(item.getBirthDate()))
+                .setId(item.getId());
         return result;
     }
 

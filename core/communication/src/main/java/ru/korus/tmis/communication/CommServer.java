@@ -216,11 +216,12 @@ public class CommServer implements Communications.Iface {
     @Deprecated
     public Amb getWorkTimeAndStatus(final GetTimeWorkAndStatusParameters params) throws TException {
         final int currentRequestNum = ++requestNum;
-        final Date paramsDate = DateConvertions.convertUTCMillisecondsToLocalDate(params.getDate());
         logger.info("#{} Call method -> CommServer.getWorkTimeAndStatus({})", currentRequestNum, params);
         if (!params.isSetDate()) {
             params.setDate(new DateMidnight(DateTimeZone.UTC).getMillis());
         }
+        final Date paramsDate = DateConvertions.convertUTCMillisecondsToLocalDate(params.getDate());
+        logger.debug("Readable date: {}", paramsDate);
         Action personAction = null;
         //Доктор для которого получаем расписание
         Staff doctor = null;
@@ -244,12 +245,14 @@ public class CommServer implements Communications.Iface {
 
         final PersonSchedule currentSchedule = new PersonSchedule(doctor, personAction);
         if (currentSchedule.checkReasonOfAbscence()) {
+            logger.info("End of #{}. Doctor has ReasonOfAbsence.", currentRequestNum);
             throw new NotFoundException().setError_msg("Doctor has ReasonOfAbsence");
         }
         try {
             currentSchedule.formTickets();
         } catch (CoreException e) {
-            logger.error("Exception while forming tickets:", e);
+            logger.error("End of #{}. Exception while forming tickets: {}", currentRequestNum, e);
+            throw new NotFoundException().setError_msg("Doctor Schedule is broken");
         }
         if(params.isSetHospitalUidFrom() && !params.getHospitalUidFrom().isEmpty()){
             currentSchedule.checkQuotingBySpeciality(params.hospitalUidFrom);
@@ -480,7 +483,6 @@ public class CommServer implements Communications.Iface {
 
     /**
      * Поиск всех пациентов, удовлетворяющих условиям
-     *
      * @param params Параметры для поиска пациентов
      * @return Список пациентов
      * @throws TException
@@ -636,7 +638,7 @@ public class CommServer implements Communications.Iface {
                     int checkedWithDocuments = 0;
                     for (Patient currentPatient : patientList) {
                         for (ClientDocument currentDocument : documentList) {
-                            if (currentPatient.getId().equals(currentDocument.getId())) {
+                            if (currentPatient.getId().equals(currentDocument.getPatient().getId())) {
                                 if (checkedWithDocuments == 0 || checkedWithDocuments == currentPatient.getId()) {
                                     logger.debug("Patient[{}] has document[{}]", currentPatient.getId(), currentDocument.getId());
                                     checkedWithDocuments = currentPatient.getId();

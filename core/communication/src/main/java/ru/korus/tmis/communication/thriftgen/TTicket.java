@@ -33,15 +33,15 @@ import org.slf4j.LoggerFactory;
 /**
  * TTicket
  * Структура с данными о талончике на прием к врачу
- * @param begTime           1)Время начала талончика
- * @param endTime           2)Время конца талончика
- * @param free              3)признак, указывающий занят ли этот талончик каким-либо пациентом
- * @param available         4)признак, указывающий доступен ли этот талончик для записи
- * @param patientId         5) OPTIONAL: Идентификатор пациента, который занял этот талончик
- * @param patientInfo       6) OPTIONAL: ФИО пациента, который занял этот талончик
- * @param timeIndex         7) OPTIONAL: Индекс ячейки времени в расписании врача, на который ссылается этот талончик
- * @param date              8) OPTIONAL: Дата приема врача. Будет выставляться для метода getFirstFreeTicket
- * @param office            9) OPTIONAL: Офис, в котором будет происходить прием врача. Будет выставляться для метода getFirstFreeTicket
+ * @param begTime           	1)Время начала талончика
+ * @param endTime           	2)Время конца талончика
+ * @param free              	3)признак, указывающий занят ли этот талончик каким-либо пациентом
+ * @param available         	4)признак, указывающий доступен ли этот талончик для записи
+ * @param patientId         	5) OPTIONAL: Идентификатор пациента, который занял этот талончик
+ * @param patientInfo       	6) OPTIONAL: ФИО пациента, который занял этот талончик
+ * @param timeIndex         	7) OPTIONAL: Индекс ячейки времени в расписании врача, на который ссылается этот талончик
+ * @param date              	8) OPTIONAL: Дата приема врача. Будет выставляться для метода getFirstFreeTicket
+ * @param office            	9) OPTIONAL: Офис, в котором будет происходить прием врача. Будет выставляться для метода getFirstFreeTicket
  */
 public class TTicket implements org.apache.thrift.TBase<TTicket, TTicket._Fields>, java.io.Serializable, Cloneable {
   private static final org.apache.thrift.protocol.TStruct STRUCT_DESC = new org.apache.thrift.protocol.TStruct("TTicket");
