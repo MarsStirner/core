@@ -438,7 +438,7 @@ class DbCustomQueryBean
       //Получение отделения из последнего экшена движения
       val depArrayTyped = em.createQuery(OrgStructureSubQuery.format(department_filter), classOf[ActionProperty])
         .setParameter("ids", asJavaCollection(ids))
-        .setParameter("flatCode", i18n("db.action.movingFlatCode"))
+        .setParameter("flatCode", setAsJavaSet(Set(i18n("db.action.movingFlatCode"), i18n("db.action.admissionFlatCode"))))
         .setParameter("code", i18n("db.apt.moving.codes.hospOrgStruct"))
       if (flgDepartmentSwitched)
         depArrayTyped.setParameter("departmentId", filter.asInstanceOf[AppealSimplifiedRequestDataFilter].departmentId)
@@ -1706,13 +1706,13 @@ AND ap.deleted = 0
           SELECT a.id
           FROM Action a
           WHERE a.event.id IN :ids
-          AND a.actionType.flatCode = :flatCode
+          AND a.actionType.flatCode IN :flatCode
           AND a.deleted = '0'
           AND a.createDatetime = (
             SELECT Max(a2.createDatetime)
             FROM Action a2
             WHERE a2.event.id = a.event.id
-            AND a2.actionType.flatCode = :flatCode
+            AND a2.actionType.flatCode IN :flatCode
             AND a2.deleted = '0'
           )
         )
