@@ -675,32 +675,63 @@ with TmisLogging{
   }
 
   def getLastCloseMovingActionForEventId(eventId: Int) = {
-    this.getLastActionByCondition(eventId, "AND a.endDate IS NOT NULL ORDER BY a.endDate desc, a.id desc")
+    this.getLastMovingActionByCondition(eventId, "AND a.endDate IS NOT NULL ORDER BY a.endDate desc, a.id desc")
   }
 
   def getLastMovingActionForEventId(eventId: Int) = {
-     this.getLastActionByCondition(eventId, "ORDER BY a.createDatetime desc")
+     this.getLastMovingActionByCondition(eventId, "ORDER BY a.createDatetime desc")
   }
 
+  /**
+   * Получение отделения в котором находится госпитализированый пациент
+   * (Когда нибудь код здесь надо будет поправить, надо посмотреть, где еще используются
+   * методы и аккуратно поправить поиск не по движениям а по движениям и поступлениям в 1 запрос).
+   * Если ты пришел править этот метод - то задача по рефакторингу ложится на тебя.
+   * @param id Идентификатор госпитализации
+   *@return Экземпляр класса, описывающего организационную структуру в БД
+   */
   def getCurrentDepartmentForAppeal(id: Int) = {
     // Текущее отделение пребывания пациента
     val moving = this.getLastMovingActionForEventId(id)
-    var department = dbOrgStructureBean.getOrgStructureById(i18n("db.dayHospital.id").toInt)//приемное отделение
+    var department: OrgStructure = null
     if (moving != null) {
-      val bedValues = actionPropertyBean.getActionPropertiesByActionIdAndTypeCodes(moving.getId.intValue(),
+      val bedValues = actionPropertyBean.getActionPropertiesByActionIdAndTypeCodes(moving.getId.intValue,
         JavaConversions.asJavaList(List(i18n("db.apt.moving.codes.hospOrgStruct"))))
       if (bedValues!=null && bedValues.size()>0) {
         val values = bedValues.iterator.next()._2
         if (values!=null && values.size()>0){
-          department = values.get(0).getValue.asInstanceOf[OrgStructure]//.asInstanceOf[OrgStructureHospitalBed].getMasterDepartment
+          department = values.get(0).getValue.asInstanceOf[OrgStructure]
+        }
+      }
+    // Отсутствуют движения, смотрим поступления
+    } else {
+      val receiving = getReceivingActionByCondition(id, "ORDER BY a.createDatetime desc")
+      val bedValues = actionPropertyBean.getActionPropertiesByActionIdAndTypeCodes(receiving.getId.intValue, JavaConversions.asJavaList(List(i18n("db.apt.moving.codes.hospOrgStruct"))))
+      if (bedValues!=null && bedValues.size()>0) {
+        val values = bedValues.iterator.next()._2
+        if (values!=null && values.size()>0){
+          department = values.get(0).getValue.asInstanceOf[OrgStructure]
         }
       }
     }
-    department
+    //Добавлено для совместимости с предыдущим поведением, когда если не было движений - возвращалось приемное отделение
+    //Рекомендую убрать, когда точно будет ясно, что
+    if(department == null)
+      dbOrgStructureBean.getOrgStructureById(i18n("db.dayHospital.id").toInt)
+    else
+      department
   }
 
-  private def getLastActionByCondition(eventId: Int, condition: String) = {
-    val result = em.createQuery(LastMovingActionByEventIdQuery.format(i18n("db.action.movingFlatCode"), condition),
+  private def getLastMovingActionByCondition(eventId: Int, condition: String) = {
+    getActionByConditionAndCode(eventId, condition, i18n("db.action.movingFlatCode"))
+  }
+
+  private def getReceivingActionByCondition(eventId: Int, condition: String) = {
+    getActionByConditionAndCode(eventId, condition, i18n("db.action.admissionFlatCode"))
+  }
+
+  private def getActionByConditionAndCode(eventId: Int, condition: String, code: String) = {
+    val result = em.createQuery(LastMovingActionByEventIdQuery.format(code, condition),
       classOf[Action])
       .setParameter("id", eventId)
       .getResultList

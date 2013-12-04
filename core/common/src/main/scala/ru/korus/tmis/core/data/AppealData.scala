@@ -74,7 +74,7 @@ class AppealData extends I18nable {
            contract: Contract,
            currentDepartment: OrgStructure,
            mDiagnosticList: (Int, java.util.Set[String]) => java.util.List[Diagnostic],
-           tempInvalid: TempInvalid){
+           tempInvalid: TempInvalid) {
     this ()
     this.requestData = requestData
 
@@ -282,10 +282,10 @@ class AppealEntry extends I18nable {
 
   @JsonView(Array(classOf[Views.DynamicFieldsPrintForm]))
   @BeanProperty
-  var ward: OrgStructureContainer = _                                            //Отделение
+  var ward: OrgStructureContainer = _                                           //Отделение
   @JsonView(Array(classOf[Views.DynamicFieldsPrintForm]))
   @BeanProperty
-  var totalDays: String = _                                       //Проведено койко-дней
+  var totalDays: String = _                                                     //Проведено койко-дней
   @BeanProperty
   var currentDepartment: IdNameContainer = _
   //данные о последующей госпитализации (reeadonly)
@@ -295,15 +295,17 @@ class AppealEntry extends I18nable {
   @BeanProperty
   var result: IdNameContainer = _
   @BeanProperty
-  var tempInvalid: TempInvalidAppealContainer = _  //
+  var tempInvalid: TempInvalidAppealContainer = _   //
   @BeanProperty
-  var laboratory: LaboratoryPropertiesContainer = _  //
+  var laboratory: LaboratoryPropertiesContainer = _ //
   @BeanProperty
-  var preHospitalDefects: String = _  //
+  var preHospitalDefects: String = _                //
   @BeanProperty
-  var closed: Boolean = false       //Флаг закрыта ли госпитализация
+  var closed: Boolean = false                       //Флаг закрыта ли госпитализация
   @BeanProperty
-  var closeDateTime: Date = _       //Дата закрытия госпитализации госпитализация
+  var closeDateTime: Date = _                       //Дата закрытия госпитализации госпитализация
+  @BeanProperty
+  var orgStructStay: Int = _                        //Отделение поступления
 
   /**
    * Конструктор класса AppealEntry
@@ -551,7 +553,8 @@ class AppealEntry extends I18nable {
     val setATCodes = JavaConversions.asJavaSet(Set(i18n("db.apt.received.codes.orgStructDirection"),
                                                    i18n("db.apt.moving.codes.orgStructTransfer"),
                                                    i18n("db.apt.documents.codes.RW"),
-                                                   i18n("db.apt.documents.codes.preHospitalDefects")
+                                                   i18n("db.apt.documents.codes.preHospitalDefects"),
+                                                   i18n("db.apt.moving.codes.hospOrgStruct")
         ))
     if (mMovingProperties!=null){
       val eventIds: java.util.List[java.lang.Integer] = new util.LinkedList[java.lang.Integer]();
@@ -565,6 +568,10 @@ class AppealEntry extends I18nable {
         var labProp = moveProps.get(event.getId.intValue()).find(f => {f._1.getType.getCode.compareTo(i18n("db.apt.documents.codes.RW"))==0}).getOrElse(null)
         if (labProp != null) {
           this.laboratory = new LaboratoryPropertiesContainer(labProp._2.get(0).getValueAsString)
+        }
+        var ogrStructStay = moveProps.get(event.getId.intValue()).find(f => {f._1.getType.getCode.compareTo(i18n("db.apt.moving.codes.hospOrgStruct"))==0}).getOrElse(null)
+        if(orgStructStay != null) {
+          this.orgStructStay = ogrStructStay._2.get(0).getValueAsId.toInt
         }
         var preHospitalDefects = moveProps.get(event.getId.intValue()).find(f => {f._1.getType.getCode.compareTo(i18n("db.apt.documents.codes.preHospitalDefects"))==0}).getOrElse(null)
         if (labProp != null) {

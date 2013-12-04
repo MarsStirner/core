@@ -135,7 +135,8 @@ class AppealBean extends AppealBeanLocal
                     iCapIds("db.rbCAP.hosp.primary.id.diagnosis.attendant.description").toInt,   //Клиническое описание (сопутствующий)
                     iCapIds("db.rbCAP.hosp.primary.id.bloodPressure.right.ADdiast").toInt,       //Правая рука: АД диаст.
                     iCapIds("db.rbCAP.hosp.primary.id.bloodPressure.right.ADsyst").toInt,        //Правая рука: АД сист.
-                    iCapIds("db.rbCAP.hosp.primary.id.note").toInt)                              //Примечание
+                    iCapIds("db.rbCAP.hosp.primary.id.note").toInt,                              //Примечание
+                    iCapIds("db.rbCap.host.primary.id.orgStructStay").toInt)                     //Отделение поступления
 
   //Insert or modify appeal
   def insertAppealForPatient(appealData : AppealData, patientId: Int, authData: AuthData) = {
@@ -669,40 +670,41 @@ class AppealBean extends AppealBeanLocal
     val cap = dbRbCoreActionPropertyBean.getRbCoreActionPropertiesByActionPropertyTypeId(aptId)
 
     cap.getId.intValue() match {
-      case listNdx(0) => this.AnyToSetOfString(appealData.data.assignment.directed, "")                                                 //Кем направлен
-      case listNdx(1) => this.AnyToSetOfString(appealData.data.assignment.number, "")                                                   //Номер направления
-      case listNdx(2) => this.AnyToSetOfString(appealData.data.deliveredType, "")                                                       //Кем доставлен
-      case listNdx(3) => this.writeMKBDiagnosesFromAppealData(appealData.data.diagnoses, "diagReceivedMkb", false)                       //Диагноз направившего учреждения
-      case listNdx(4) => this.AnyToSetOfString(appealData.data.deliveredAfterType, "")                                                  //Доставлен в стационар от начала заболевания
-      case listNdx(5) => this.AnyToSetOfString(null, "")                                                                                //Направлен в отделение
-      case listNdx(6) => this.AnyToSetOfString(appealData.data.refuseAppealReason, "")                                                  //Причина отказа в госпитализации
-      case listNdx(7) => this.AnyToSetOfString(appealData.data.appealWithDeseaseThisYear, "")                                           //Госпитализирован по поводу данного заболевания в текущем году
-      case listNdx(8) => this.AnyToSetOfString(appealData.data.movingType, "")                                                          //Вид транспортировки
-      case listNdx(9) => this.AnyToSetOfString(null, "")                                                                                //Профиль койки
-      case listNdx(10) => this.AnyToSetOfString(appealData.data.stateType, "")                                                          //Доставлен в состоянии опьянения
-      case listNdx(11) => this.AnyToSetOfString(appealData.data.injury, "")                                                             //Травма
-      case listNdx(12) => this.AnyToSetOfString(appealData.data.assignment.assignmentDate, "")                                          //Дата направления
-      case listNdx(13) => this.AnyToSetOfString(appealData.data.hospitalizationChannelType, "")      //Канал госпитализации
-      case listNdx(14) => this.AnyToSetOfString(appealData.data.assignment.doctor, "")                                                  //Направивший врач
-      case listNdx(15) => this.writeMKBDiagnosesFromAppealData(appealData.data.diagnoses, "diagReceivedMkb", true)                       //Клиническое описание
-      case listNdx(16) => this.writeMKBDiagnosesFromAppealData(appealData.data.diagnoses, "aftereffectMkb", false)                     //Диагноз направившего учреждения (осложнения)
-      case listNdx(17) => this.writeMKBDiagnosesFromAppealData(appealData.data.diagnoses, "aftereffectMkb", true)                      //Клиническое описание (осложнения)
-      case listNdx(18) => this.AnyToSetOfString(appealData.data.ambulanceNumber, "")                                                    //Номер наряда СП
-      case listNdx(19) => this.AnyToSetOfString(java.lang.Double.valueOf(appealData.data.physicalParameters.bloodPressure.left.diast), "")                              //Артериальное давление (левая рука Диаст)
-      case listNdx(20) => this.AnyToSetOfString(java.lang.Double.valueOf(appealData.data.physicalParameters.bloodPressure.left.syst), "")                             //Артериальное давление (левая рука Сист)
-      case listNdx(21) => this.AnyToSetOfString(java.lang.Double.valueOf(appealData.data.physicalParameters.temperature), "")           //t температура тела
-      case listNdx(22) => this.AnyToSetOfString(java.lang.Double.valueOf(appealData.data.physicalParameters.weight), "")                //Вес при поступлении
-      case listNdx(23) => this.AnyToSetOfString(java.lang.Double.valueOf(appealData.data.physicalParameters.height), "")                //Рост
-      case listNdx(24) => this.AnyToSetOfString(appealData.data.agreedType, "")                      //Тип согласования
-      case listNdx(25) => this.AnyToSetOfString(appealData.data.agreedDoctor, "")                                                       //Комментарий к согласованию
-      case listNdx(26) => this.AnyToSetOfString(appealData.data.hospitalizationWith, "relative")                                                //Законный представитель
-      case listNdx(27) => this.AnyToSetOfString(appealData.data.hospitalizationType, "")             //Тип госпитализации
-      case listNdx(28) => this.AnyToSetOfString(appealData.data.hospitalizationPointType, "")        //Цель госпитализации
-      case listNdx(29) => this.writeMKBDiagnosesFromAppealData(appealData.data.diagnoses, "attendantMkb", false)                       //Диагноз направившего учреждения (сопутствующий)
-      case listNdx(30) => this.writeMKBDiagnosesFromAppealData(appealData.data.diagnoses, "attendantMkb", true)                        //Клиническое описание (сопутствующий)
-      case listNdx(31) => this.AnyToSetOfString(java.lang.Double.valueOf(appealData.data.physicalParameters.bloodPressure.right.diast), "")                              //Артериальное давление (правая рука)
+      case listNdx(0) => this.AnyToSetOfString(appealData.data.assignment.directed, "")                                                     //Кем направлен
+      case listNdx(1) => this.AnyToSetOfString(appealData.data.assignment.number, "")                                                       //Номер направления
+      case listNdx(2) => this.AnyToSetOfString(appealData.data.deliveredType, "")                                                           //Кем доставлен
+      case listNdx(3) => this.writeMKBDiagnosesFromAppealData(appealData.data.diagnoses, "diagReceivedMkb", false)                          //Диагноз направившего учреждения
+      case listNdx(4) => this.AnyToSetOfString(appealData.data.deliveredAfterType, "")                                                      //Доставлен в стационар от начала заболевания
+      case listNdx(5) => this.AnyToSetOfString(null, "")                                                                                    //Направлен в отделение
+      case listNdx(6) => this.AnyToSetOfString(appealData.data.refuseAppealReason, "")                                                      //Причина отказа в госпитализации
+      case listNdx(7) => this.AnyToSetOfString(appealData.data.appealWithDeseaseThisYear, "")                                               //Госпитализирован по поводу данного заболевания в текущем году
+      case listNdx(8) => this.AnyToSetOfString(appealData.data.movingType, "")                                                              //Вид транспортировки
+      case listNdx(9) => this.AnyToSetOfString(null, "")                                                                                    //Профиль койки
+      case listNdx(10) => this.AnyToSetOfString(appealData.data.stateType, "")                                                              //Доставлен в состоянии опьянения
+      case listNdx(11) => this.AnyToSetOfString(appealData.data.injury, "")                                                                 //Травма
+      case listNdx(12) => this.AnyToSetOfString(appealData.data.assignment.assignmentDate, "")                                              //Дата направления
+      case listNdx(13) => this.AnyToSetOfString(appealData.data.hospitalizationChannelType, "")                                             //Канал госпитализации
+      case listNdx(14) => this.AnyToSetOfString(appealData.data.assignment.doctor, "")                                                      //Направивший врач
+      case listNdx(15) => this.writeMKBDiagnosesFromAppealData(appealData.data.diagnoses, "diagReceivedMkb", true)                          //Клиническое описание
+      case listNdx(16) => this.writeMKBDiagnosesFromAppealData(appealData.data.diagnoses, "aftereffectMkb", false)                          //Диагноз направившего учреждения (осложнения)
+      case listNdx(17) => this.writeMKBDiagnosesFromAppealData(appealData.data.diagnoses, "aftereffectMkb", true)                           //Клиническое описание (осложнения)
+      case listNdx(18) => this.AnyToSetOfString(appealData.data.ambulanceNumber, "")                                                        //Номер наряда СП
+      case listNdx(19) => this.AnyToSetOfString(java.lang.Double.valueOf(appealData.data.physicalParameters.bloodPressure.left.diast), "")  //Артериальное давление (левая рука Диаст)
+      case listNdx(20) => this.AnyToSetOfString(java.lang.Double.valueOf(appealData.data.physicalParameters.bloodPressure.left.syst), "")   //Артериальное давление (левая рука Сист)
+      case listNdx(21) => this.AnyToSetOfString(java.lang.Double.valueOf(appealData.data.physicalParameters.temperature), "")               //t температура тела
+      case listNdx(22) => this.AnyToSetOfString(java.lang.Double.valueOf(appealData.data.physicalParameters.weight), "")                    //Вес при поступлении
+      case listNdx(23) => this.AnyToSetOfString(java.lang.Double.valueOf(appealData.data.physicalParameters.height), "")                    //Рост
+      case listNdx(24) => this.AnyToSetOfString(appealData.data.agreedType, "")                                                             //Тип согласования
+      case listNdx(25) => this.AnyToSetOfString(appealData.data.agreedDoctor, "")                                                           //Комментарий к согласованию
+      case listNdx(26) => this.AnyToSetOfString(appealData.data.hospitalizationWith, "relative")                                            //Законный представитель
+      case listNdx(27) => this.AnyToSetOfString(appealData.data.hospitalizationType, "")                                                    //Тип госпитализации
+      case listNdx(28) => this.AnyToSetOfString(appealData.data.hospitalizationPointType, "")                                               //Цель госпитализации
+      case listNdx(29) => this.writeMKBDiagnosesFromAppealData(appealData.data.diagnoses, "attendantMkb", false)                            //Диагноз направившего учреждения (сопутствующий)
+      case listNdx(30) => this.writeMKBDiagnosesFromAppealData(appealData.data.diagnoses, "attendantMkb", true)                             //Клиническое описание (сопутствующий)
+      case listNdx(31) => this.AnyToSetOfString(java.lang.Double.valueOf(appealData.data.physicalParameters.bloodPressure.right.diast), "") //Артериальное давление (правая рука)
       case listNdx(32) => this.AnyToSetOfString(java.lang.Double.valueOf(appealData.data.physicalParameters.bloodPressure.right.syst), "")
-      case listNdx(33) => this.AnyToSetOfString(appealData.data.hospitalizationWith, "note") //Примечание
+      case listNdx(33) => this.AnyToSetOfString(appealData.data.hospitalizationWith, "note")                                                //Примечание
+      case listNdx(34) => this.AnyToSetOfString(appealData.data.orgStructStay.toString, "orgStructStay")                                    //Отделение поступления
       case _ => this.AnyToSetOfString(null, "")
     }
   }
