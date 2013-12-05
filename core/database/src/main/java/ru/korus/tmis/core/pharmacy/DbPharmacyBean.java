@@ -86,10 +86,8 @@ public class DbPharmacyBean implements DbPharmacyBeanLocal {
      */
     @Override
     public Pharmacy getOrCreate(final Action action) throws CoreException {
-
         Pharmacy pharmacy = em.find(Pharmacy.class, action.getId());
         if (pharmacy == null) {
-
             final ActionType actionType = action.getActionType();
             pharmacy = new Pharmacy();
             pharmacy.setActionId(action.getId());
