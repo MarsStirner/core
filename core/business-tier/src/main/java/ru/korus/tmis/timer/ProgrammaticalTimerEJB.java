@@ -22,6 +22,9 @@ public class ProgrammaticalTimerEJB {
     @Resource
     private TimerService timerService;
 
+    public ProgrammaticalTimerEJB() {
+    }
+
     @PostConstruct
     public void createProgrammaticalTimer() {
         logger.info("ProgrammaticalTimerEJB initialized");
