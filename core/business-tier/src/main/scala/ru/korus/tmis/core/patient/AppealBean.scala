@@ -136,7 +136,8 @@ class AppealBean extends AppealBeanLocal
                     iCapIds("db.rbCAP.hosp.primary.id.bloodPressure.right.ADdiast").toInt,       //Правая рука: АД диаст.
                     iCapIds("db.rbCAP.hosp.primary.id.bloodPressure.right.ADsyst").toInt,        //Правая рука: АД сист.
                     iCapIds("db.rbCAP.hosp.primary.id.note").toInt,                              //Примечание
-                    iCapIds("db.rbCap.host.primary.id.orgStructStay").toInt)                     //Отделение поступления
+                    iCapIds("db.rbCap.host.primary.id.orgStructStay").toInt,                     //Отделение поступления
+                    iCapIds("db.rbCap.host.primary.id.orgStructDirectedFrom").toInt)             //Направлен из
 
   //Insert or modify appeal
   def insertAppealForPatient(appealData : AppealData, patientId: Int, authData: AuthData) = {
@@ -705,6 +706,7 @@ class AppealBean extends AppealBeanLocal
       case listNdx(32) => this.AnyToSetOfString(java.lang.Double.valueOf(appealData.data.physicalParameters.bloodPressure.right.syst), "")
       case listNdx(33) => this.AnyToSetOfString(appealData.data.hospitalizationWith, "note")                                                //Примечание
       case listNdx(34) => this.AnyToSetOfString(appealData.data.orgStructStay.toString, "orgStructStay")                                    //Отделение поступления
+      case listNdx(35) => this.AnyToSetOfString(appealData.data.orgStructDirectedFrom.toString, "orgStructDirectedFrom")                    //Напрвлен из
       case _ => this.AnyToSetOfString(null, "")
     }
   }

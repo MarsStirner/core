@@ -306,6 +306,8 @@ class AppealEntry extends I18nable {
   var closeDateTime: Date = _                       //Дата закрытия госпитализации госпитализация
   @BeanProperty
   var orgStructStay: Int = _                        //Отделение поступления
+  @BeanProperty
+  var orgStructDirectedFrom: Int = _                //Направлен из
 
   /**
    * Конструктор класса AppealEntry
@@ -554,7 +556,8 @@ class AppealEntry extends I18nable {
                                                    i18n("db.apt.moving.codes.orgStructTransfer"),
                                                    i18n("db.apt.documents.codes.RW"),
                                                    i18n("db.apt.documents.codes.preHospitalDefects"),
-                                                   i18n("db.apt.moving.codes.hospOrgStruct")
+                                                   i18n("db.apt.moving.codes.hospOrgStruct"),
+                                                   i18n("db.apt.received.codes.orgStructDirectedFrom")
         ))
     if (mMovingProperties!=null){
       val eventIds: java.util.List[java.lang.Integer] = new util.LinkedList[java.lang.Integer]();
@@ -569,11 +572,15 @@ class AppealEntry extends I18nable {
         if (labProp != null) {
           this.laboratory = new LaboratoryPropertiesContainer(labProp._2.get(0).getValueAsString)
         }
-        var ogrStructStay = moveProps.get(event.getId.intValue()).find(f => {f._1.getType.getCode.compareTo(i18n("db.apt.moving.codes.hospOrgStruct"))==0}).getOrElse(null)
+        val ogrStructStay = moveProps.get(event.getId.intValue()).find(f => {f._1.getType.getCode.compareTo(i18n("db.apt.moving.codes.hospOrgStruct"))==0}).getOrElse(null)
         if(orgStructStay != null) {
           this.orgStructStay = ogrStructStay._2.get(0).getValueAsId.toInt
         }
-        var preHospitalDefects = moveProps.get(event.getId.intValue()).find(f => {f._1.getType.getCode.compareTo(i18n("db.apt.documents.codes.preHospitalDefects"))==0}).getOrElse(null)
+        val orgStructDirectedFrom = moveProps.get(event.getId.intValue()).find(f => {f._1.getType.getCode.compareTo(i18n("db.apt.received.codes.orgStructDirectedFrom"))==0}).getOrElse(null)
+        if(orgStructDirectedFrom != null) {
+          this.orgStructDirectedFrom = orgStructDirectedFrom._2.get(0).getValueAsId.toInt
+        }
+        val preHospitalDefects = moveProps.get(event.getId.intValue()).find(f => {f._1.getType.getCode.compareTo(i18n("db.apt.documents.codes.preHospitalDefects"))==0}).getOrElse(null)
         if (labProp != null) {
           this.preHospitalDefects = preHospitalDefects._2.get(0).asInstanceOf[String]
         }
