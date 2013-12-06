@@ -116,9 +116,6 @@ public class PersonSchedule {
                     doctor.getPatrName()
             );
         }
-        this.times = new ArrayList<APValueTime>();
-        this.queue = new ArrayList<APValueAction>();
-        this.tickets = new ArrayList<Ticket>();
     }
 
     /**
@@ -142,9 +139,9 @@ public class PersonSchedule {
                 return false;
             } else {
                 final Iterator<ActionProperty> propertyIterator = actionPropertyListMap.keySet().iterator();
-                if(propertyIterator.hasNext()) {
+                if (propertyIterator.hasNext()) {
                     final List<APValue> reasonAPList = actionPropertyListMap.get(propertyIterator.next());
-                    if(reasonAPList.isEmpty()) {
+                    if (reasonAPList.isEmpty()) {
                         logger.debug("AP exists, but AP_rbReasonOfAbsence not!");
                         return false;
                     } else {
@@ -167,7 +164,7 @@ public class PersonSchedule {
                 .getQuotingByTimeConstraints(doctor.getId(), ambulatoryDate, quotingType.getValue());
         if (logger.isDebugEnabled()) {
             for (QuotingByTime qbt : quotingByTimeConstraints) {
-                logger.debug("QuotingByTime [Id={}, START={}, END={}]",
+                logger.debug("QuotingByTime[{}]: START={}, END={}]",
                         qbt.getId(), qbt.getQuotingTimeStart(), qbt.getQuotingTimeEnd()
                 );
             }
@@ -186,15 +183,14 @@ public class PersonSchedule {
             //Fill AMB params without tickets and fill arrays to compute tickets
             final List<APValue> apValueList = CommServer.getActionPropertyBean().getActionPropertyValue(currentProperty);
             if (!apValueList.isEmpty()) {
-                final APValue value = apValueList.get(0);
                 if ("begTime".equals(fieldName)) {
-                    begTime = (Date) value.getValue();
+                    begTime = (Date) apValueList.get(0).getValue();
                 } else if ("endTime".equals(fieldName)) {
-                    endTime = (Date) value.getValue();
+                    endTime = (Date) apValueList.get(0).getValue();
                 } else if ("office".equals(fieldName)) {
-                    office = ((APValueString) value).getValue();
+                    office = ((APValueString) apValueList.get(0)).getValue();
                 } else if ("plan".equals(fieldName)) {
-                    plan = ((APValueInteger) value).getValue();
+                    plan = ((APValueInteger) apValueList.get(0)).getValue();
                 } else if ("times".equals(fieldName)) {
                     //Не преобразуем эти времена
                     for (APValue timevalue : apValueList) {
@@ -218,19 +214,21 @@ public class PersonSchedule {
             }
         }
         //Check required fields
-        if(times.isEmpty()){
+        if (times.isEmpty()) {
             logger.error("No one times in AP. Throws NotFoundException...");
             throw new CoreException();
         }
         //Show warnings
-        if(plan == null){
-            logger.warn("Schedule plan is not set in AP...");
-        }
-        if(begTime == null){
-            logger.warn("Schedule begTime is not set in AP...");
-        }
-        if(endTime == null){
-            logger.warn("Schedule endTime is not set in AP...");
+        if (logger.isWarnEnabled()) {
+            if (plan == null) {
+                logger.warn("Schedule plan is not set in AP...");
+            }
+            if (begTime == null) {
+                logger.warn("Schedule begTime is not set in AP...");
+            }
+            if (endTime == null) {
+                logger.warn("Schedule endTime is not set in AP...");
+            }
         }
     }
 
@@ -265,14 +263,20 @@ public class PersonSchedule {
      * и формирование талончиков из двух списков (times и queue)
      */
     public void formTickets() throws CoreException {
+        this.times = new ArrayList<APValueTime>();
+        this.queue = new ArrayList<APValueAction>();
         getAmbulatoryProperties();
+
         tickets = new ArrayList<Ticket>(times.size());
+
         short queueIndex = emergencyPatientCount;
+        Date currentTime;
+        Date nextTime = times.get(0).getValue();
+
         for (short timeIndex = 0; timeIndex < times.size(); timeIndex++) {
             //Текущая ячейка времени
-            final Date currentTime = times.get(timeIndex).getValue();
+             currentTime = nextTime;
             //окончание текущей ячейки вермени
-            final Date nextTime;
             if (times.size() > (timeIndex + 1)) {
                 nextTime = times.get(timeIndex + 1).getValue();
             } else {
@@ -314,7 +318,7 @@ public class PersonSchedule {
      */
     public void takeConstraintsOnTickets(final QuotingType quotingType) {
         //Пропустить ПРОВЕРКУ если НЕТУ талончиков
-        if(tickets.isEmpty()){
+        if (tickets.isEmpty()) {
             return;
         }
         getQuotingByTimeConstraints(quotingType);

@@ -254,9 +254,10 @@ public class CommServer implements Communications.Iface {
             logger.error("End of #{}. Exception while forming tickets: {}", currentRequestNum, e);
             throw new NotFoundException().setError_msg("Doctor Schedule is broken");
         }
-        if(params.isSetHospitalUidFrom() && !params.getHospitalUidFrom().isEmpty()){
-            currentSchedule.checkQuotingBySpeciality(params.hospitalUidFrom);
-        }
+        //TODO uncomment to NTK version after 3.3.23 inlusive
+//        if(params.isSetHospitalUidFrom() && !params.getHospitalUidFrom().isEmpty()){
+//            currentSchedule.checkQuotingBySpeciality(params.hospitalUidFrom);
+//        }
         currentSchedule.takeConstraintsOnTickets(CommunicationHelper.getQuotingType(params));
         final Amb result = ParserToThriftStruct.parsePersonScheduleToAmb(currentSchedule);
         logger.info("End of #{} TimeAndStatus. Return \"{}\" as result.",
@@ -842,9 +843,10 @@ public class CommServer implements Communications.Iface {
                     continue;
                 }
                 currentSchedule.formTickets();
-                if(params.isSetHospitalUidFrom() && !params.getHospitalUidFrom().isEmpty()){
-                    currentSchedule.checkQuotingBySpeciality(params.hospitalUidFrom);
-                }
+                //TODO uncomment to NTK version after 3.3.23 inlusive
+//                if(params.isSetHospitalUidFrom() && !params.getHospitalUidFrom().isEmpty()){
+//                    currentSchedule.checkQuotingBySpeciality(params.hospitalUidFrom);
+//                }
                 currentSchedule.takeConstraintsOnTickets(CommunicationHelper.getQuotingType(params));
                 final ru.korus.tmis.communication.Ticket ticket = currentSchedule.getFirstFreeTicketAfterDateTime(params.beginDateTime);
                 if (ticket != null) {
@@ -907,9 +909,10 @@ public class CommServer implements Communications.Iface {
                 logger.error("Exception while forming tickets:", e);
                 continue;
             }
-            if(params.isSetHospitalUidFrom() && !params.getHospitalUidFrom().isEmpty()){
-                currentSchedule.checkQuotingBySpeciality(params.hospitalUidFrom);
-            }
+            //TODO uncomment to NTK version after 3.3.23 inlusive
+//            if(params.isSetHospitalUidFrom() && !params.getHospitalUidFrom().isEmpty()){
+//                currentSchedule.checkQuotingBySpeciality(params.hospitalUidFrom);
+//            }
             currentSchedule.takeConstraintsOnTickets(CommunicationHelper.getQuotingType(params));
             result.put(
                     DateConvertions.convertDateToUTCMilliseconds(currentSchedule.getAmbulatoryDate()),
