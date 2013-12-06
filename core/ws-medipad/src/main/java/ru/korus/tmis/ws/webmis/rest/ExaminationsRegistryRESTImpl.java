@@ -7,11 +7,13 @@ import ru.korus.tmis.core.data.AssessmentsListRequestDataFilter;
 import ru.korus.tmis.core.data.JSONCommonData;
 import ru.korus.tmis.core.logging.slf4j.interceptor.ServicesLoggingInterceptor;
 import ru.korus.tmis.ws.impl.WebMisRESTImpl;
+
 import javax.interceptor.Interceptors;
 import javax.ws.rs.*;
 import javax.ws.rs.core.Context;
 import javax.ws.rs.core.UriInfo;
 import java.util.LinkedList;
+import java.util.List;
 
 /**
  * Список REST-сервисов для работы с осмотрами
@@ -106,16 +108,17 @@ public class ExaminationsRegistryRESTImpl {
                                                         @QueryParam("filter[actionTypeId]")int actionTypeId,
                                                         @QueryParam("filter[begDate]")long begDate,
                                                         @QueryParam("filter[endDate]")long endDate,
-                                                        @QueryParam("filter[actionTypeCode]")String  assessmentTypeCode,
-                                                        //@QueryParam("filter[assessmentDate]") long assessmentDate,
+                                                        @QueryParam("filter[actionTypeCode]")String assessmentTypeCode,
                                                         @QueryParam("filter[doctorId]") int doctorId,
                                                         @QueryParam("filter[doctorName]") String doctorName,
                                                         @QueryParam("filter[speciality]") String speciality,
                                                         @QueryParam("filter[assessmentName]") String assessmentName,
                                                         @QueryParam("filter[departmentName]") String departmentName) {
 
-        java.util.List<String> mnems = info.getQueryParameters().get("filter[mnem]");
-        java.util.List<String> mnemonics = new LinkedList<String>();
+        List<String> mnems = info.getQueryParameters().get("filter[mnem]");
+        List<String> flatCodes = info.getQueryParameters().get("filter[flatCode]");
+        if(flatCodes == null) flatCodes = new LinkedList<String>();
+        List<String> mnemonics = new LinkedList<String>();
         if(mnems!=null && mnems.size()>0) {
             for(String mnem: mnems) {
                 DirectoryInfoRESTImpl.ActionTypesSubType atst = (mnem!=null && !mnem.isEmpty()) ? DirectoryInfoRESTImpl.ActionTypesSubType.getType(mnem.toLowerCase())
@@ -123,7 +126,7 @@ public class ExaminationsRegistryRESTImpl {
                 mnemonics.add(atst.getMnemonic());
             }
         }
-        AssessmentsListRequestDataFilter filter = new AssessmentsListRequestDataFilter(this.eventId, actionTypeId, assessmentTypeCode, begDate, endDate, doctorId, doctorName, speciality, assessmentName, departmentName, mnemonics);
+        AssessmentsListRequestDataFilter filter = new AssessmentsListRequestDataFilter(this.eventId, actionTypeId, assessmentTypeCode, begDate, endDate, doctorId, doctorName, speciality, assessmentName, departmentName, mnemonics, flatCodes);
         AssessmentsListRequestData alrd= new AssessmentsListRequestData(sortingField, sortingMethod, limit, page, filter);
         return new JSONWithPadding(this.wsImpl.getListOfAssessmentsForPatientByEvent(alrd, this.auth), this.callback);
     }
