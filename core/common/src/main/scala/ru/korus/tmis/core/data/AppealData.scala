@@ -357,6 +357,12 @@ class AppealEntry extends I18nable {
     this.execPerson = new DoctorContainer(event.getExecutor)
     this.urgent = action.getIsUrgent
 
+    this.orgStructStay = {
+      //val ap = values.filter(p => p._1._2.getType.getCode.equals(i18n("db.apt.moving.codes.hospOrgStruct"))).head._1._2
+      //new APValueOrgStructure(ap.getId, 0).getId.getId
+      0
+    }
+
     exValue = this.extractValuesInNumberedMap(Set(ConfigManager.RbCAPIds("db.rbCAP.hosp.primary.id.ambulanceNumber").toInt :java.lang.Integer), values).get("0")
     this.ambulanceNumber = exValue.get(0).asInstanceOf[String]
 

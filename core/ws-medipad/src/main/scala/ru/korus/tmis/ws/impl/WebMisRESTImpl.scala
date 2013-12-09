@@ -10,7 +10,7 @@ import java.util
 import ru.korus.tmis.util._
 import ru.korus.tmis.core.entity.model._
 import collection.{JavaConversions, mutable}
-import util.LinkedList
+import java.util.{Date, LinkedList}
 import grizzled.slf4j.Logging
 import ru.korus.tmis.ws.webmis.rest.WebMisREST
 import javax.ejb.EJB
@@ -24,6 +24,8 @@ import ru.korus.tmis.core.thesaurus.ThesaurusBeanLocal
 import ru.korus.tmis.core.treatment.TreatmentBeanLocal
 import com.google.common.collect.Lists
 import javax.servlet.http.HttpServletRequest
+import scala.Predef._
+
 //import ru.korus.tmis.laboratory.business.LaboratoryBeanLocal
 import ru.korus.tmis.core.entity.model.layout.LayoutAttribute
 import ru.korus.tmis.util.StringId
@@ -609,7 +611,7 @@ class WebMisRESTImpl  extends WebMisREST
   }
 
   //Снятие пациента с койки
-  def callOffHospitalBedForPatient(actionId: Int, authData: AuthData) = {
+    def callOffHospitalBedForPatient(actionId: Int, authData: AuthData) = {
     hospitalBedBean.callOffHospitalBedForPatient(actionId, authData)
   }
 
@@ -651,6 +653,26 @@ class WebMisRESTImpl  extends WebMisREST
     val mapper: ObjectMapper = new ObjectMapper()
     mapper.getSerializationConfig().setSerializationView(classOf[HospitalBedViews.MoveView])
     mapper.writeValueAsString(hospitalBedBean.getRegistryOriginalForm(action, authData))
+  }
+
+  def closeLastMovingOfAppeal(eventId: Int, authData: AuthData, date: Date) = {
+    val actionTypes = new java.util.HashSet[Integer]
+    actionTypes.add(i18n("db.actionType.moving").toInt)
+    val lastAction = actionBean.getLastActionByActionTypeIdAndEventId(eventId, actionTypes)
+    val action = actionBean.getActionById(lastAction)
+
+    // Проверяем входные значения
+    if(actionBean.getActionsByTypeFlatCodeAndEventId(eventId, "leaved").size < 1)
+      throw new CoreException("Для закрытия последнего движения требуется наличие выписки")
+    if(date.before(action.getBegDate))
+      throw new CoreException("Дата закрытия движения не может быть раньше даты начала движения")
+
+    action.setEndDate(date)
+    action.setStatus(2)           //A little piece of magic - 2 is a status of CLOSED action
+    actionBean.updateAction(action)
+    val mapper: ObjectMapper = new ObjectMapper()
+    mapper.getSerializationConfig().setSerializationView(classOf[ActionDataContainer])
+    mapper.writeValueAsString(new ActionDataContainer(action))
   }
 
   def insertOrUpdateQuota(quotaData: QuotaData, eventId: Int, auth: AuthData) = {

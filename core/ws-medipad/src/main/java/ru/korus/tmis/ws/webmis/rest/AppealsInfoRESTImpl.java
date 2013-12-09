@@ -10,6 +10,7 @@ import ru.korus.tmis.core.logging.slf4j.interceptor.ServicesLoggingInterceptor;
 import ru.korus.tmis.ws.impl.WebMisRESTImpl;
 import javax.interceptor.Interceptors;
 import javax.ws.rs.*;
+import java.util.Date;
 
 /**
  * Список REST-сервисов для получения информации о обращениях на госпитализацию
@@ -121,6 +122,28 @@ public class AppealsInfoRESTImpl {
     public Object updatePatientAppeal(@PathParam("eventId")int eventId,
                                       AppealData data) {
         return new JSONWithPadding(wsImpl.updateAppeal(data, eventId, this.auth), this.callback);
+    }
+
+    /**
+     * Закрытие последнего движения пациента. Применяется для снятия пациента с койки
+     * при выписке. Требует наличия у истории болезни документа "выписка" (с flatcode "leaved").
+     * @return Json-представление последнего движения, которое было закрыто.
+     * @throws ru.korus.tmis.core.exception.CoreException при отсутствии выписки у пациента
+     * @see ru.korus.tmis.core.exception.CoreException
+     */
+    @POST
+    @Path("{eventId}/closemove")
+    @Consumes("application/json")
+    @Produces("application/x-javascript")
+    public Object closeLastMovingAtAppeal(@PathParam(("eventId"))int eventId,
+                                          @QueryParam("date")long timestamp) {
+        Date date;
+        if(timestamp < 1)
+            date = new Date();
+        else
+            date = new Date(timestamp);
+
+        return new JSONWithPadding(wsImpl.closeLastMovingOfAppeal(eventId, auth, date), this.callback);
     }
 
     /**
