@@ -187,6 +187,8 @@ public interface DbActionBeanLocal {
 
     Action createAction(ActionType actionType, Event event, Staff person, Date date, String hospitalUidFrom, String note);
 
+    Action updateAction(Action action);
+
     Action getEvent29AndAction19ForAction (Action action) throws CoreException;
 
     /**

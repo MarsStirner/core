@@ -6,6 +6,7 @@ import ru.korus.tmis.core.entity.model.APValueAction;
 import ru.korus.tmis.core.exception.CoreException;
 
 import java.io.Serializable;
+import java.util.Date;
 
 /**
  * User: idmitriev
@@ -85,6 +86,8 @@ public interface WebMisREST extends Serializable {
                                                        AuthData authData) throws CoreException;
 
     String movingPatientToDepartment(int eventId, HospitalBedData data, AuthData authData) throws CoreException;
+
+    String  closeLastMovingOfAppeal(int eventId, AuthData authData, Date date) throws CoreException;
 
     TalonSPODataList getAllTalonsForPatient(TalonSPOListRequestData requestData) throws CoreException;
 

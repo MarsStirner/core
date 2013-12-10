@@ -210,15 +210,33 @@ class HospitalBedEntry {
     val received = actions.filter(p => p.getActionType.getFlatCode.compareTo(ConfigManager.Messages("db.action.admissionFlatCode"))==0)
     if(received!=null && received.size>0) {
       val action = received.get(0)
-      //Первая запись всегда "Приемное отделение"
+      val properties = mGetPropertiesWithValuesByCodes(action.getId.intValue(), Set(ConfigManager.Messages("db.apt.moving.codes.hospOrgStruct")))
+
+      // Стандартное отделение поступления
+      var orgStructId = 28
+      var orgStructName = "Приемное отделение"
+     // Если свойство "Приемное отделение не выставлено на действии "Поступление",
+     // то пользователю выводится приемное отделение, а в лог пишется запись о критической ситуации.
+      if(properties.size == 1) {
+        val apvList = properties.head._2
+        if(apvList != null && apvList.size == 1 && apvList.get(0).asInstanceOf[APValueOrgStructure].getValue != null) {
+          orgStructId = apvList.get(0).asInstanceOf[APValueOrgStructure].getValue.getId
+          orgStructName = apvList.get(0).asInstanceOf[APValueOrgStructure].getValue.getName
+        } else {
+          //TODO Log - неверное количество значений свойства "Отденение поступления", должно быть 1
+        }
+      } else {
+        //TODO Log - неверное количество свойств с кодом "orgStructStay", должно быть 1
+      }
+
       this.moves.add(new MovesListHospitalBedContainer(action,
-                                                       28,
-                                                       "Приемное отделение",
+                                                       orgStructId,
+                                                       orgStructName,
                                                        action.getBegDate,
                                                        null))
       //Смотрим, куда направлен (apt.code - db.apt.received.codes.sentTo)
       if(mGetPropertiesWithValuesByCodes!=null) {
-        val properties = mGetPropertiesWithValuesByCodes(action.getId.intValue(), asJavaSet(Set(ConfigManager.Messages("db.apt.received.codes.orgStructDirection"))))
+        val properties = mGetPropertiesWithValuesByCodes(action.getId.intValue(), Set(ConfigManager.Messages("db.apt.received.codes.orgStructDirection")))
         if(properties!=null && properties.size()>0){
           val property = properties.iterator.next()
           if (property!=null && property._2!=null && property._2.size()>0)
@@ -239,7 +257,7 @@ class HospitalBedEntry {
                                   ConfigManager.Messages("db.apt.moving.codes.orgStructTransfer"),
                                   ConfigManager.Messages("db.apt.moving.codes.timeArrival"),
                                   ConfigManager.Messages("db.apt.moving.codes.timeLeaved"))
-          val properties = mGetPropertiesWithValuesByCodes(action.getId.intValue(), asJavaSet(codes))
+          val properties = mGetPropertiesWithValuesByCodes(action.getId.intValue(), codes)
           val flgClose = if (action.getEndDate!=null)true else false
 
           properties.foreach(ap => {

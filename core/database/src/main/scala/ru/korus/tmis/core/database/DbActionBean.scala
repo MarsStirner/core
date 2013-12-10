@@ -595,6 +595,12 @@ class DbActionBean
     newAction
   }
 
+  def updateAction(action : Action): Action = {
+    //em.persist(action)
+    em.merge(action)
+    getActionById(action.getId)
+  }
+
   def getActionsByTypeCode(code: String, userData: AuthData) = {
     val result = em.createQuery(ActionsByCodeQuery,
       classOf[Action])
