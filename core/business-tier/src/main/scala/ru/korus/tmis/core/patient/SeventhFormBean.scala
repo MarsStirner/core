@@ -1,7 +1,5 @@
 package ru.korus.tmis.core.patient
 
-import javax.interceptor.Interceptors
-import ru.korus.tmis.core.logging.LoggingInterceptor
 import grizzled.slf4j.Logging
 import ru.korus.tmis.util.{CAPids, I18nable}
 import javax.persistence.{EntityManager, PersistenceContext}
@@ -9,14 +7,16 @@ import scala.collection.JavaConversions._
 import javax.ejb.{EJB, Stateless}
 import java.text.SimpleDateFormat
 import java.util.{Calendar, Date}
-import ru.korus.tmis.core.entity.model.Event
 import ru.korus.tmis.core.data.{SeventhFormRequestData, FormOfAccountingMovementOfPatientsData}
 import ru.korus.tmis.core.database.DbOrgStructureBeanLocal
+import java.util.List
+import scala.collection.JavaConverters._
+
 
 /**
  * Класс для работы с формой 007
  */
-@Interceptors(Array(classOf[LoggingInterceptor]))
+//@Interceptors(Array(classOf[LoggingInterceptor]))
 @Stateless
 class SeventhFormBean extends SeventhFormBeanLocal
 with Logging
@@ -47,21 +47,22 @@ with CAPids {
 
   import ru.korus.tmis.core.data.Form007QueryStatuses._
 
-  private var linear = Map.empty[Form007QueryStatuses, (Long, List[Event])]
+  private var linearLongMap = Map.empty[String, scala.collection.mutable.Map[Form007QueryStatuses, Long]]
+  private var linearListString = Map.empty[Form007QueryStatuses, scala.collection.immutable.List[String]]
 
 
-  def getForm007LinearView(departmentId: Int, beginDate: Long, endDate: Long) = {
+  def getForm007LinearView(departmentId: Int, beginDate: Long, endDate: Long, profileBeds: java.util.List[Integer]) = {
 
     var bDate: Date = null
     var eDate: Date = null
 
     //Анализ дат
-    if(beginDate>0 && endDate>0){
+    if (beginDate > 0 && endDate > 0) {
       bDate = new Date(beginDate)
       eDate = new Date(endDate)
     }
-    else if(beginDate<=0){
-      if(endDate<=0)
+    else if (beginDate <= 0) {
+      if (endDate <= 0)
         eDate = this.getDefaultEndDate()
       else
         eDate = new Date(endDate)
@@ -74,10 +75,31 @@ with CAPids {
 
     //Получение инфо об отделении
     val department = dbOrgStructureBean.getOrgStructureById(departmentId)
+    //Преобразование профеля коек в строку
+    var profileBedsStr = Array(profileBeds).mkString(",")
+    profileBedsStr = profileBedsStr.substring(1, profileBedsStr.length - 1);
     //Получение данных
-    ru.korus.tmis.core.data.Form007QueryStatuses.values.foreach(status => this.addDataToLinearMapByCellNumber(departmentId, bDate, eDate, status))
+    //ru.korus.tmis.core.data.Form007QueryStatuses.values.foreach(status => this.addDataToLinearMapByCellNumber(departmentId, bDate, eDate, profileBeds, status))
+    //Получение информации о кол-ве
+    val res = em.createNativeQuery("CALL form007front(\"%d\", \"%d\", \"%s\")".format(endDate, departmentId, profileBedsStr)).getResultList
+    val resList: List[Array[Object]] = res.asInstanceOf[List[Array[Object]]]
+    resList.foreach(resSql => {
+      this.linearLongMap += resSql(0).asInstanceOf[String] -> scala.collection.mutable.Map.empty[Form007QueryStatuses, Long]
+      ru.korus.tmis.core.data.Form007QueryStatuses.values.foreach(status => this.addDataToLinearMapByCellNumber(resSql, status, resSql(0).asInstanceOf[String]))
+    })
+    val resFIOinput = em.createNativeQuery("CALL  %s(\"%d\", \"%d\", \"%s\")".format(F007QS_RECEIVED_ALL.toString, endDate, departmentId, profileBedsStr)).getResultList
+    val resListFIOinput: List[String] = resFIOinput.asInstanceOf[List[String]]
+    ru.korus.tmis.core.data.Form007QueryStatuses.values.foreach(status => {
+      if (status.toString != null && !status.toString.startsWith("count")) {
+        val resFIOinput = em.createNativeQuery("CALL  %s(\"%d\", \"%d\", \"%s\")".format(status.toString, endDate, departmentId, profileBedsStr)).getResultList
+        val resListFIOinput: List[String] = resFIOinput.asInstanceOf[List[String]]
+        linearListString += status -> resListFIOinput.asScala.toList
+      }
+    })
+
+
     //Заполнение Entity
-    new FormOfAccountingMovementOfPatientsData(department, this.linear, new SeventhFormRequestData(departmentId, bDate, eDate))
+    new FormOfAccountingMovementOfPatientsData(department, this.linearLongMap, this.linearListString, new SeventhFormRequestData(departmentId, bDate, eDate))
   }
 
   /**
@@ -121,40 +143,68 @@ with CAPids {
    * @param endDate  Дата окончания выборки данных.
    * @param status  Идентификатор запроса как Form007QueryStatuses
    */
-  private def addDataToLinearMapByCellNumber(departmentId: Int, beginDate: Date, endDate: Date, status: Form007QueryStatuses) {
+  /*private def addDataToLinearMapByCellNumber(departmentId: Int, beginDate: Date, endDate: Date,  profileBeds: java.util.List[Integer], status: Form007QueryStatuses) {
+
+     val pp = status match {
+       case F007QS_PERMANENT_BEDS => (this.getCountOfPermanentBeds(departmentId, profileBeds), List.empty[Event])
+       case F007QS_ALL_PATIENTS_LOCATED_AT_BEGIN_DATE => (this.getCountOfPatientsForBeginDate(departmentId, beginDate), List.empty[Event])
+       case F007QS_RECEIVED_ALL |
+            F007QS_LEAVED_ALL |
+            F007QS_MOVING_FROM |
+            F007QS_MOVING_IN |
+            F007QS_RECEIVED_DAY_HOSPITAL |
+            F007QS_RECEIVED_VILLAGERS |
+            F007QS_RECEIVED_CHILDREN |
+            F007QS_RECEIVED_AFTER60  => this.getFullDataByQueryStatuses(departmentId, beginDate, endDate, status) //Количества + [Список действий (для ФИО + НИБ)]
+       case F007QS_LEAVED_ANOTHER_HOSPITAL |
+            F007QS_LEAVED_HOUR_HOSPITAL |
+            F007QS_LEAVED_DAY_HOSPITAL |
+            F007QS_LEAVED_DEAD => this.getDataOfMovingPatients(departmentId, beginDate, endDate, status)
+       case F007QS_ALL_PATIENTS_LOCATED_AT_END_DATE => (this.getCountOfPatientsForEndDate(departmentId, endDate), List.empty[Event])
+       case F007QS_PATRONAGE => (this.getCountOfMothers(departmentId, /*beginDate*/endDate), List.empty[Event])
+       case _ => null
+     }
+     linear += status -> pp
+   }*/
+
+  private def addDataToLinearMapByCellNumber(resQuery: Array[Object], status: Form007QueryStatuses, profileName: String) {
 
     val pp = status match {
-      case F007QS_PERMANENT_BEDS => (this.getCountOfPermanentBeds(departmentId), List.empty[Event])
-      case F007QS_ALL_PATIENTS_LOCATED_AT_BEGIN_DATE => (this.getCountOfPatientsForBeginDate(departmentId, beginDate), List.empty[Event])
-      case F007QS_RECEIVED_ALL |
-           F007QS_LEAVED_ALL |
-           F007QS_MOVING_FROM |
-           F007QS_MOVING_IN |
-           F007QS_RECEIVED_DAY_HOSPITAL |
-           F007QS_RECEIVED_VILLAGERS |
-           F007QS_RECEIVED_CHILDREN |
-           F007QS_RECEIVED_AFTER60  => this.getFullDataByQueryStatuses(departmentId, beginDate, endDate, status) //Количества + [Список действий (для ФИО + НИБ)]
-      case F007QS_LEAVED_ANOTHER_HOSPITAL |
-           F007QS_LEAVED_HOUR_HOSPITAL |
-           F007QS_LEAVED_DAY_HOSPITAL |
-           F007QS_LEAVED_DEAD => this.getDataOfMovingPatients(departmentId, beginDate, endDate, status)
-      case F007QS_ALL_PATIENTS_LOCATED_AT_END_DATE => (this.getCountOfPatientsForEndDate(departmentId, endDate), List.empty[Event])
-      case F007QS_PATRONAGE => (this.getCountOfMothers(departmentId, /*beginDate*/endDate), List.empty[Event])
+      case F007QS_PERMANENT_BEDS => resQuery(1)
+      case F007QS_BEDS_REPAIR => resQuery(2)
+      case F007QS_ALL_PATIENTS_LOCATED_AT_BEGIN_DATE => resQuery(3)
+      case F007QS_RECEIVED_ALL => resQuery(4)
+      case F007QS_RECEIVED_DAY_HOSPITAL => resQuery(5)
+      case F007QS_RECEIVED_VILLAGERS => resQuery(6)
+      case F007QS_RECEIVED_CHILDREN => resQuery(7)
+      case F007QS_RECEIVED_AFTER60 => resQuery(8)
+      case F007QS_MOVING_FROM => resQuery(9)
+      case F007QS_MOVING_IN => resQuery(10)
+      case F007QS_LEAVED_ALL => resQuery(11)
+      case F007QS_LEAVED_ANOTHER_HOSPITAL => resQuery(12)
+      case F007QS_LEAVED_HOUR_HOSPITAL => resQuery(13)
+      case F007QS_LEAVED_DAY_HOSPITAL => resQuery(14)
+      case F007QS_LEAVED_DEAD => resQuery(15)
+      case F007QS_ALL_PATIENTS_LOCATED_AT_END_DATE => resQuery(16)
+      case F007QS_PATRONAGE => resQuery(17)
+      case F007QS_FREE_BEDS_MALE => resQuery(18)
+      case F007QS_FREE_BEDS_FEMALE => resQuery(19)
       case _ => null
     }
-    linear += status -> pp
+    this.linearLongMap(profileName) += status -> pp.asInstanceOf[Long]
   }
 
   /**
-  * Получение количества развернутых коек по идентификатору отделения
-  * @author idmitriev Sistema-Soft
-  * @since 1.0.0.57
-  * @param departmentId
-  * @return Количество развернутых коек в отделении как Long
-  */
-  private def getCountOfPermanentBeds(departmentId: Int) = {
+   * Получение количества развернутых коек по идентификатору отделения
+   * @author idmitriev Sistema-Soft
+   * @since 1.0.0.57
+   * @param departmentId
+   * @return Количество развернутых коек в отделении как Long
+   */
+  private def getCountOfPermanentBeds(departmentId: Int, profileBeds: java.util.List[Integer]) = {
     em.createQuery(countOfPermanentBedsQuery, classOf[Long])
       .setParameter("departmentId", departmentId)
+      .setParameter("profileBeds", profileBeds)
       .getSingleResult
   }
 
@@ -183,130 +233,138 @@ with CAPids {
    * @param status  Идентификатор запроса как Form007QueryStatuses
    * @return Количество записей и данные о госпитализациях(если нужно) как (Long, List[Event])
    */
-  private def getFullDataByQueryStatuses(departmentId: Int, beginDate: Date, endDate: Date, status: Form007QueryStatuses) = {
+  /* private def getFullDataByQueryStatuses(departmentId: Int, beginDate: Date, endDate: Date, status: Form007QueryStatuses) = {
 
-    var inLex: String = ""                          //Лексема подмножества, в котором идет поиск
-    var mergeLex: String = ""                       //Операция сравнения
-    var selectCond: String = "count(a.id)"          //Условие подблока SELECT
-    var selectAdditionalLex: String = ""            //Дополнительное условие подблока FROM
-    var conditionAdditionalLex: String = ""         //Дополнительное условие подблока WHERE
-    var cell: String = ""                           //ActionProperty, по которому идет поиск
-    var isNative :Boolean = false                   //Флаг нативный (SQL) запрос или JPA/HQL запрос
-    var isHasActionsList: Boolean = false           //Флаг необходимости возврата списка Event
-    var dataSubquery = "AND (a%s.begDate >= :beginDate AND a%s.begDate <= :endDate)"
+     var inLex: String = "" //Лексема подмножества, в котором идет поиск
+     var mergeLex: String = "" //Операция сравнения
+     var selectCond: String = "count(a.id)" //Условие подблока SELECT
+     var selectAdditionalLex: String = "" //Дополнительное условие подблока FROM
+     var conditionAdditionalLex: String = "" //Дополнительное условие подблока WHERE
+     var cell: String = "" //ActionProperty, по которому идет поиск
+     var isNative: Boolean = false //Флаг нативный (SQL) запрос или JPA/HQL запрос
+     var isHasActionsList: Boolean = false //Флаг необходимости возврата списка Event
+     var dataSubquery = "AND (a%s.begDate >= :beginDate AND a%s.begDate <= :endDate)"
 
-    status match {
-      case F007QS_RECEIVED_ALL => {  //2.1. Фамилия И.О. поступивших.
-        isHasActionsList = true
-        selectCond = "e"
-        inLex = "NOT IN"
-        mergeLex = "<>"
-        cell = iCapIds("db.rbCAP.moving.id.movedFrom")
-      }
-      case F007QS_MOVING_FROM  => { //2.2. Фамилия И.О. поступивших из других отделений.
-        isHasActionsList = true
-        selectCond = "e"
-        inLex = "IN"
-        mergeLex = "<>"
-        cell = iCapIds("db.rbCAP.moving.id.movedFrom")
-      }
-      case F007QS_LEAVED_ALL => { //2.3. Фамилия И.О. выписанных.
-        isHasActionsList = true
-        selectCond = "e"
-        inLex = "NOT IN"
-        mergeLex = "<>"
-        cell = iCapIds("db.rbCAP.moving.id.movedIn")
-        dataSubquery = "AND (a%s.endDate >= :beginDate AND a%s.endDate <= :endDate)"
-        conditionAdditionalLex =
-                                leavedAllSubquery.format(
-                                  leavedSubquery.format("e3.id",
-                                                        leavedFromSubquery.format(i18n("db.action.leavingFlatCode"),
-                                                                                  iCapIds("db.rbCAP.extract.id.hospResult"),
-                                                                                  "AND apstr3.value = '%s'".format(isDeadValue)),
-                                                        i18n("db.action.movingFlatCode"),
-                                                        iCapIds("db.rbCAP.moving.id.movedIn"),
-                                                        i18n("db.dayHospital.id"),
-                                                        i18n("db.action.movingFlatCode"),
-                                                        ""
-                                  ))
-      }
-      case F007QS_MOVING_IN => { //2.4. Фамилия И.О. переведенных в другие отделения
-        isHasActionsList = true
-        selectCond = "e"
-        inLex = "IN"
-        mergeLex = "<>"
-        cell = iCapIds("db.rbCAP.moving.id.movedIn")
-        dataSubquery = "AND (a%s.endDate >= :beginDate AND a%s.endDate <= :endDate)"
-      }
-      case F007QS_RECEIVED_DAY_HOSPITAL => {  //В том числе из дневного стационара
-        inLex = "IN"
-        mergeLex = "="
-        cell = iCapIds("db.rbCAP.moving.id.movedFrom")
-      }
-      case F007QS_RECEIVED_VILLAGERS => {  //Кол-во сельских жителей
-        inLex = "NOT IN"
-        mergeLex = "<>"
-        selectAdditionalLex = villagersSelectSubquery
-        conditionAdditionalLex = villagersConditionsSubquery
-        cell = iCapIds("db.rbCAP.moving.id.movedFrom")
-      }
-      case F007QS_RECEIVED_CHILDREN => {  //Кол-во детей в возрасте от 0 до 17 лет
-        conditionAdditionalLex = childrensConditionsSubquery
-        isNative = true
-        cell = iCapIds("db.rbCAP.moving.id.movedFrom")
-      }
-      case F007QS_RECEIVED_AFTER60 => {  //Кол-во старше 60 лет
-        conditionAdditionalLex = after60ConditionsSubquery
-        isNative = true
-        cell = iCapIds("db.rbCAP.moving.id.movedFrom")
-      }
-      case _ => null
-    }
-    if (!isNative){
-      val query = countOfAllReceivedPatientsQuery.format( selectCond,
-                                                          selectAdditionalLex,
-                                                          inLex,
-                                                          i18n("db.action.movingFlatCode"),
-                                                          cell,
-                                                          mergeLex,
-                                                          i18n("db.dayHospital.id"),
-                                                          dataSubquery.format("2","2"),
-                                                          dataSubquery.format("",""),
-                                                          i18n("db.action.movingFlatCode"),
-                                                          conditionAdditionalLex)
-      if(!isHasActionsList) {
-        val count =
-          em.createQuery(query, classOf[Long])
-            .setParameter("beginDate", beginDate)
-            .setParameter("endDate", endDate)
-            .setParameter("departmentId", departmentId)
-            .getSingleResult
-        (count, List.empty[Event])
-      }
-      else {
-        val list =
-          em.createQuery(query, classOf[Event])
-            .setParameter("beginDate", beginDate)
-            .setParameter("endDate", endDate)
-            .setParameter("departmentId", departmentId)
-            .getResultList
-            .toList
-        list.foreach(event=>em.detach(_))
-        (list.size.toLong, list)
-      }
-    } else {
-      val count = em.createNativeQuery(countOfAllReceivedPatientsNativeQuery.format(i18n("db.action.movingFlatCode"),
-                                                                                    iCapIds("db.rbCAP.moving.id.movedFrom"),
-                                                                                    i18n("db.dayHospital.id"),
-                                                                                    i18n("db.action.movingFlatCode"),
-                                                                                    conditionAdditionalLex))
-                                                                                    .setParameter(1, beginDate)
-                                                                                    .setParameter(2, endDate)
-                                                                                    .setParameter(3, departmentId)
-                                                                                    .getSingleResult
-      (count.asInstanceOf[Long], List.empty[Event])
-    }
-  }
+     status match {
+       case F007QS_RECEIVED_ALL => {
+         //2.1. Фамилия И.О. поступивших.
+         isHasActionsList = true
+         selectCond = "e"
+         inLex = "NOT IN"
+         mergeLex = "<>"
+         cell = iCapIds("db.rbCAP.moving.id.movedFrom")
+       }
+       case F007QS_MOVING_FROM => {
+         //2.2. Фамилия И.О. поступивших из других отделений.
+         isHasActionsList = true
+         selectCond = "e"
+         inLex = "IN"
+         mergeLex = "<>"
+         cell = iCapIds("db.rbCAP.moving.id.movedFrom")
+       }
+       case F007QS_LEAVED_ALL => {
+         //2.3. Фамилия И.О. выписанных.
+         isHasActionsList = true
+         selectCond = "e"
+         inLex = "NOT IN"
+         mergeLex = "<>"
+         cell = iCapIds("db.rbCAP.moving.id.movedIn")
+         dataSubquery = "AND (a%s.endDate >= :beginDate AND a%s.endDate <= :endDate)"
+         conditionAdditionalLex =
+           leavedAllSubquery.format(
+             leavedSubquery.format("e3.id",
+               leavedFromSubquery.format(i18n("db.action.leavingFlatCode"),
+                 iCapIds("db.rbCAP.extract.id.hospResult"),
+                 "AND apstr3.value = '%s'".format(isDeadValue)),
+               i18n("db.action.movingFlatCode"),
+               iCapIds("db.rbCAP.moving.id.movedIn"),
+               i18n("db.dayHospital.id"),
+               i18n("db.action.movingFlatCode"),
+               ""
+             ))
+       }
+       case F007QS_MOVING_IN => {
+         //2.4. Фамилия И.О. переведенных в другие отделения
+         isHasActionsList = true
+         selectCond = "e"
+         inLex = "IN"
+         mergeLex = "<>"
+         cell = iCapIds("db.rbCAP.moving.id.movedIn")
+         dataSubquery = "AND (a%s.endDate >= :beginDate AND a%s.endDate <= :endDate)"
+       }
+       case F007QS_RECEIVED_DAY_HOSPITAL => {
+         //В том числе из дневного стационара
+         inLex = "IN"
+         mergeLex = "="
+         cell = iCapIds("db.rbCAP.moving.id.movedFrom")
+       }
+       case F007QS_RECEIVED_VILLAGERS => {
+         //Кол-во сельских жителей
+         inLex = "NOT IN"
+         mergeLex = "<>"
+         selectAdditionalLex = villagersSelectSubquery
+         conditionAdditionalLex = villagersConditionsSubquery
+         cell = iCapIds("db.rbCAP.moving.id.movedFrom")
+       }
+       case F007QS_RECEIVED_CHILDREN => {
+         //Кол-во детей в возрасте от 0 до 17 лет
+         conditionAdditionalLex = childrensConditionsSubquery
+         isNative = true
+         cell = iCapIds("db.rbCAP.moving.id.movedFrom")
+       }
+       case F007QS_RECEIVED_AFTER60 => {
+         //Кол-во старше 60 лет
+         conditionAdditionalLex = after60ConditionsSubquery
+         isNative = true
+         cell = iCapIds("db.rbCAP.moving.id.movedFrom")
+       }
+       case _ => null
+     }
+     if (!isNative) {
+       val query = countOfAllReceivedPatientsQuery.format(selectCond,
+         selectAdditionalLex,
+         inLex,
+         i18n("db.action.movingFlatCode"),
+         cell,
+         mergeLex,
+         i18n("db.dayHospital.id"),
+         dataSubquery.format("2", "2"),
+         dataSubquery.format("", ""),
+         i18n("db.action.movingFlatCode"),
+         conditionAdditionalLex)
+       if (!isHasActionsList) {
+         val count =
+           em.createQuery(query, classOf[Long])
+             .setParameter("beginDate", beginDate)
+             .setParameter("endDate", endDate)
+             .setParameter("departmentId", departmentId)
+             .getSingleResult
+         (count, List.empty[Event])
+       }
+       else {
+         val list =
+           em.createQuery(query, classOf[Event])
+             .setParameter("beginDate", beginDate)
+             .setParameter("endDate", endDate)
+             .setParameter("departmentId", departmentId)
+             .getResultList
+             .toList
+         list.foreach(event => em.detach(_))
+         (list.size.toLong, list)
+       }
+     } else {
+       val count = em.createNativeQuery(countOfAllReceivedPatientsNativeQuery.format(i18n("db.action.movingFlatCode"),
+         iCapIds("db.rbCAP.moving.id.movedFrom"),
+         i18n("db.dayHospital.id"),
+         i18n("db.action.movingFlatCode"),
+         conditionAdditionalLex))
+         .setParameter(1, beginDate)
+         .setParameter(2, endDate)
+         .setParameter(3, departmentId)
+         .getSingleResult
+       (count.asInstanceOf[Long], List.empty[Event])
+     }
+   }*/
 
   /**
    * Получение данных о выбытии пациентов.
@@ -318,51 +376,53 @@ with CAPids {
    * @param status  Идентификатор запроса как Form007QueryStatuses
    * @return Количество записей и данные о госпитализациях(если нужно) как (Long, List[Event])
    */
-  private def getDataOfMovingPatients(departmentId: Int, beginDate: Date, endDate: Date, status: Form007QueryStatuses) = {
+  /*private def getDataOfMovingPatients(departmentId: Int, beginDate: Date, endDate: Date, status: Form007QueryStatuses) = {
     var selectCond: String = "count(a3.id)"
     var isHasActionsList: Boolean = false
     var additional: String = ""
     val condition =
       status match {
-        case F007QS_LEAVED_ANOTHER_HOSPITAL => { //2.5. Фамилия И.О. переведенных в другие стационары
+        case F007QS_LEAVED_ANOTHER_HOSPITAL => {
+          //2.5. Фамилия И.О. переведенных в другие стационары
           selectCond = "e3"
           isHasActionsList = true
           leavedFromSubquery.format(i18n("db.action.leavingFlatCode"),
-                                    iCapIds("db.rbCAP.extract.id.hospResult"),
-                                    "AND (apstr3.value = '%s' OR apstr3.value = '%s')".format(toAnotherHospitalValue,
-                                                                                              toAnotherHospitalValue2))
+            iCapIds("db.rbCAP.extract.id.hospResult"),
+            "AND (apstr3.value = '%s' OR apstr3.value = '%s')".format(toAnotherHospitalValue,
+              toAnotherHospitalValue2))
         }
         case F007QS_LEAVED_HOUR_HOSPITAL => {
           leavedFromSubquery.format(i18n("db.action.leavingFlatCode"),
-                                    iCapIds("db.rbCAP.extract.id.hospResult"),
-                                    "AND (apstr3.value = '%s' OR apstr3.value = '%s')".format(toHourHospitalValue,
-                                                                                              toHourHospitalValue2))
+            iCapIds("db.rbCAP.extract.id.hospResult"),
+            "AND (apstr3.value = '%s' OR apstr3.value = '%s')".format(toHourHospitalValue,
+              toHourHospitalValue2))
         }
         case F007QS_LEAVED_DAY_HOSPITAL => {
           leavedFromSubquery.format(i18n("db.action.leavingFlatCode"),
-                                    iCapIds("db.rbCAP.extract.id.hospResult"),
-                                    "AND (apstr3.value = '%s' OR apstr3.value = '%s')".format(toDayHospitalValue,
-                                                                                              toDayHospitalValue2))
+            iCapIds("db.rbCAP.extract.id.hospResult"),
+            "AND (apstr3.value = '%s' OR apstr3.value = '%s')".format(toDayHospitalValue,
+              toDayHospitalValue2))
         }
-        case F007QS_LEAVED_DEAD => {     //TODO: !Рефакторинг быстродействия
+        case F007QS_LEAVED_DEAD => {
+          //TODO: !Рефакторинг быстродействия
           selectCond = "e3"
           isHasActionsList = true
-          additional = leavedFromDeadAdditionalSubquery.format("%"+ isDeadValue + "%")
+          additional = leavedFromDeadAdditionalSubquery.format("%" + isDeadValue + "%")
           leavedFromDeadSubquery
         }
         case _ => ""
       }
 
     val query = leavedSubquery.format(selectCond,
-                                      condition,
-                                      i18n("db.action.movingFlatCode"),
-                                      iCapIds("db.rbCAP.moving.id.movedIn"),
-                                      i18n("db.dayHospital.id"),
-                                      i18n("db.action.movingFlatCode"),
-                                      additional
+      condition,
+      i18n("db.action.movingFlatCode"),
+      iCapIds("db.rbCAP.moving.id.movedIn"),
+      i18n("db.dayHospital.id"),
+      i18n("db.action.movingFlatCode"),
+      additional
     )
 
-    if(!isHasActionsList) {
+    if (!isHasActionsList) {
       val count =
         em.createQuery(query, classOf[Long])
           .setParameter("beginDate", beginDate)
@@ -379,10 +439,10 @@ with CAPids {
           .setParameter("departmentId", departmentId)
           .getResultList
           .toList
-      list.foreach(event=>em.detach(_))
+      list.foreach(event => em.detach(_))
       (list.size().toLong, list)
     }
-  }
+  }*/
 
   /**
    * Получение количества пациентов в отделении на начало текущего дня
@@ -394,7 +454,7 @@ with CAPids {
    */
   private def getCountOfPatientsForEndDate(departmentId: Int, endDate: Date) = {
     em.createQuery(countOfPatientsOnBegDateQuery.format("count(a.id)",
-                                                        i18n("db.action.movingFlatCode")), classOf[Long])
+      i18n("db.action.movingFlatCode")), classOf[Long])
       .setParameter("endDate", endDate)
       .setParameter("departmentId", departmentId)
       .getSingleResult
@@ -408,17 +468,18 @@ with CAPids {
    * @param endDate Дата начала текущего дня
    * @return Количества пациентов в отделении, которые госпитализированы с матерями на начало мед.суток
    */
-  private def getCountOfMothers(departmentId: Int, /*beginDate*/endDate: Date) = {
+  private def getCountOfMothers(departmentId: Int, /*beginDate*/ endDate: Date) = {
     em.createQuery(countOfMothersQuery.format(i18n("db.action.movingFlatCode"),
-                                              iCapIds("db.rbCAP.moving.id.patronage"),
-                                              "Да",
-                                              /*countOfPatientForBeginDateQuery.format("a.id",
-                                                                                      i18n("db.action.movingFlatCode"))*///это по спеке но так не правильно
-                                              countOfPatientsOnBegDateQuery.format("a.id",
-                                                                                   i18n("db.action.movingFlatCode"))
+      iCapIds("db.rbCAP.moving.id.patronage"),
+      "Да",
+      /*countOfPatientForBeginDateQuery.format("a.id",
+                                              i18n("db.action.movingFlatCode"))*/
+      //это по спеке но так не правильно
+      countOfPatientsOnBegDateQuery.format("a.id",
+        i18n("db.action.movingFlatCode"))
 
     ), classOf[Long])
-      .setParameter(/*"beginDate", beginDate*/"endDate", endDate)
+      .setParameter(/*"beginDate", beginDate*/ "endDate", endDate)
       .setParameter("departmentId", departmentId)
       .getSingleResult
   }
@@ -431,7 +492,9 @@ with CAPids {
   WHERE
     orghb.masterDepartment.id = :departmentId
   AND
-    orghb.isPermanent = '0'
+    orghb.isPermanent = '1'
+  AND
+    orghb.profileId.id IN :profileBeds
                                   """
 
   //Состояло на начало суток
@@ -732,11 +795,11 @@ with CAPids {
       RbResult res
       WHERE
         res.id = e3.result.id
-  """
+                               """
   val leavedFromDeadAdditionalSubquery = """
       AND
         res.name LIKE '%s'
-  """
+                                         """
 
   //Состоит на начало текущего дня
   val countOfPatientsOnBegDateQuery = """

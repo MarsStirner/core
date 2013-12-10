@@ -634,6 +634,8 @@ class WebMisRESTImpl  extends WebMisREST
     new HospitalBedProfilesListContainer(hospitalBedProfileBean.getAllRbHospitalBedProfiles)
   }
 
+  def getAllAvailableBedProfiles() = hospitalBedProfileBean.getAllRbHospitalBedProfiles
+
   /*  def getFormOfAccountingMovementOfPatients(departmentId: Int) = {
     val linear = seventhFormBean.fillInSeventhForm(departmentId, null, null/*previousMedDate, currentMedDate*/)
     new FormOfAccountingMovementOfPatientsData(linear, null)
@@ -643,7 +645,8 @@ class WebMisRESTImpl  extends WebMisREST
   def getForm007(departmentId: Int,
                  beginDate: Long,
                  endDate: Long,
-                 authData: AuthData) = seventhFormBean.getForm007LinearView(departmentId, beginDate, endDate)
+                 profileBeds: java.util.List[Integer],
+                 authData: AuthData) = seventhFormBean.getForm007LinearView(departmentId, beginDate, endDate, profileBeds)
 
 
   def movingPatientToDepartment(eventId: Int, data: HospitalBedData, authData: AuthData) = {

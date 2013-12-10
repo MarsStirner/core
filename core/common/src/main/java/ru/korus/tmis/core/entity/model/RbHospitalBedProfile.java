@@ -95,4 +95,11 @@ public class RbHospitalBedProfile implements Serializable {
     public String toString() {
         return "ru.korus.tmis.core.entity.model.RbHospitalBedProfile[id=" + id + "]";
     }
+
+    static public RbHospitalBedProfile newInstance(String name) {
+        RbHospitalBedProfile res = new RbHospitalBedProfile();
+        res.name = name;
+        res.id = -1;
+        return res;
+    }
 }

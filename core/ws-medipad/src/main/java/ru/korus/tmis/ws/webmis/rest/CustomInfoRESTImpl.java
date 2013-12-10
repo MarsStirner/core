@@ -6,11 +6,13 @@ import ru.korus.tmis.core.data.JobTicketStatusDataList;
 import ru.korus.tmis.core.data.PatientsListRequestData;
 import ru.korus.tmis.core.data.TakingOfBiomaterialRequesData;
 import ru.korus.tmis.core.data.TakingOfBiomaterialRequesDataFilter;
+import ru.korus.tmis.core.entity.model.RbHospitalBedProfile;
 import ru.korus.tmis.core.logging.slf4j.interceptor.ServicesLoggingInterceptor;
 import ru.korus.tmis.ws.impl.WebMisRESTImpl;
 
 import javax.interceptor.Interceptors;
 import javax.ws.rs.*;
+import java.util.List;
 
 /**
  * Список REST-сервисов для получения данных из справочников
@@ -66,10 +68,17 @@ public class CustomInfoRESTImpl {
     @Produces("application/x-javascript")
     public Object getForm007( @QueryParam("filter[departmentId]") int departmentId,
                               @QueryParam("filter[beginDate]")long beginDate,
-                              @QueryParam("filter[endDate]")long endDate) {
+                              @QueryParam("filter[endDate]")long endDate,
+                              @QueryParam("filter[profileBed]")List<Integer> profileBeds )  {
         //Отделение обязательное поле, если не задано в запросе, то берем из роли специалиста
         int depId = (departmentId>0) ? departmentId : this.auth.getUser().getOrgStructure().getId().intValue();
-        return new JSONWithPadding(wsImpl.getForm007(depId, beginDate, endDate, this.auth),this.callback);
+        if(profileBeds.isEmpty()) { // если профили коек не заданы, то строим для всех
+            Iterable<RbHospitalBedProfile> list = wsImpl.getAllAvailableBedProfiles();
+            for(RbHospitalBedProfile curProfileBed : list) {
+                profileBeds.add(curProfileBed.getId());
+            }
+        }
+        return new JSONWithPadding(wsImpl.getForm007(depId, beginDate, endDate, profileBeds, this.auth),this.callback);
     }
 
     /**

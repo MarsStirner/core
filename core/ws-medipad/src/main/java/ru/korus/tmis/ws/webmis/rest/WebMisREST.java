@@ -81,6 +81,7 @@ public interface WebMisREST extends Serializable {
     FormOfAccountingMovementOfPatientsData getForm007( int departmentId,
                                                        long beginDate,
                                                        long endDate,
+                                                       java.util.List<Integer> profileBeds,
                                                        AuthData authData) throws CoreException;
 
     String movingPatientToDepartment(int eventId, HospitalBedData data, AuthData authData) throws CoreException;

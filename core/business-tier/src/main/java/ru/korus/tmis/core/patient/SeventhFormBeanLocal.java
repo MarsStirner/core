@@ -4,6 +4,8 @@ import javax.ejb.Local;
 import ru.korus.tmis.core.data.FormOfAccountingMovementOfPatientsData;
 import ru.korus.tmis.core.exception.CoreException;
 
+import java.util.List;
+
 @Local
 public interface SeventhFormBeanLocal {
 
@@ -21,5 +23,6 @@ public interface SeventhFormBeanLocal {
      */
     FormOfAccountingMovementOfPatientsData getForm007LinearView(int departmentId,
                                                                 long beginDate,
-                                                                long endDate) throws CoreException;
+                                                                long endDate,
+                                                                java.util.List<Integer> profileBeds) throws CoreException;
 }
