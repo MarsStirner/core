@@ -215,19 +215,19 @@ public class PersonSchedule {
         }
         //Check required fields
         if (times.isEmpty()) {
-            logger.error("No one times in AP. Throws NotFoundException...");
+            logger.error("No one times in AP. Throws NotFoundException.");
             throw new CoreException();
         }
         //Show warnings
         if (logger.isWarnEnabled()) {
             if (plan == null) {
-                logger.warn("Schedule plan is not set in AP...");
+                logger.warn("Schedule plan is not set in AP.");
             }
             if (begTime == null) {
-                logger.warn("Schedule begTime is not set in AP...");
+                logger.warn("Schedule begTime is not set in AP.");
             }
             if (endTime == null) {
-                logger.warn("Schedule endTime is not set in AP...");
+                logger.warn("Schedule endTime is not set in AP.");
             }
         }
     }
@@ -292,7 +292,7 @@ public class PersonSchedule {
             if (queueAction != null) {
                 currentTicket.setFree(false);
                 currentTicket.setPatient(queueAction.getEvent().getPatient());
-                if (queueAction.getAssigner() != null) {
+                if (queueAction.getAssigner() == null) {
                     externalCount++;
                 }
             } else {
