@@ -26,9 +26,9 @@ import javax.jws.WebMethod;
 import javax.jws.WebParam;
 import javax.jws.WebResult;
 import javax.jws.WebService;
+import javax.validation.constraints.NotNull;
 import java.text.SimpleDateFormat;
-import java.util.Date;
-import java.util.List;
+import java.util.*;
 import java.util.UUID;
 
 import static ru.korus.tmis.laboratory.bak.ws.server.model.hl7.HL7Specification.NAMESPACE;
@@ -127,14 +127,18 @@ public class BakResult implements BakResultService {
      */
     private void processRequest(final POLBIN224100UV01 request, final ToLog toLog) throws CoreException {
 
-        final IFA ifa = processIFA(request);
-        if (ifa != null) {
-            toLog.addN("IFA test #", ifa);
-            saveIFA(ifa, toLog);
+        final List<IFA> ifaList = processIFA(request);
+        if (!ifaList.isEmpty()) {
+            for (IFA ifa : ifaList) {
+                toLog.addN("Test #", ifa);
+                saveIFA(ifa, toLog);
+            }
         } else {
-            final BakPosev bakPosev = processBakPosev(request);
-            toLog.addN("BAK posev #", bakPosev);
-            saveBakPosev(bakPosev, toLog);
+            final List<BakPosev> bakPosevList = processBakPosev(request);
+            for (BakPosev bakPosev : bakPosevList) {
+                toLog.addN("BAK posev #", bakPosev);
+                saveBakPosev(bakPosev, toLog);
+            }
         }
     }
 
@@ -144,11 +148,12 @@ public class BakResult implements BakResultService {
      * @param request
      * @return значение ИФА исследования, null - это не ИФА исследование
      */
-    @Nullable
-    private IFA processIFA(final POLBIN224100UV01 request) {
-        final IFA ifa = new IFA();
+    @NotNull
+    private List<IFA> processIFA(final POLBIN224100UV01 request) {
+        List<IFA> ifaList = new LinkedList<IFA>();
         try {
             for (POLBIN224100UV01MCAIMT700201UV01Subject2 subj : request.getControlActProcess().getSubject()) {
+                IFA ifa = null;
                 if (subj.getObservationBattery() != null) {
                     final String orderMisId = subj.getObservationBattery().getValue().getInFulfillmentOf().get(0).getPlacerOrder().getValue().getId().get(0).getExtension();
                     final List<CE> ceList = subj.getObservationBattery().getValue().getComponent1().get(0).getObservationEvent().getValue().getConfidentialityCode();
@@ -156,21 +161,28 @@ public class BakResult implements BakResultService {
                         final String text = ceList.get(0).getDisplayName();
                         final String value = ceList.get(0).getCode();
                         if (!text.isEmpty() || !value.isEmpty()) {
+                            ifa = new IFA();
                             ifa.setText(text);
                             ifa.setValue(value);
                             ifa.setActionId(Long.parseLong(orderMisId));
-                            break;
+                            if (ifa.getActionId() != 0) {
+                                ifaList.add(ifa);
+                            }
                         }
                     }
                 } else if (subj.getObservationReport() != null) {
                     final POLBMT004000UV01ObservationReport value = subj.getObservationReport().getValue();
-                    ifa.setComplete(value.getStatusCode().getCode().equals("true"));
+                    for (IFA i : ifaList) {
+                        if (i.getActionId() == Integer.parseInt(value.getId().get(0).getRoot())) {
+                            i.setComplete(value.getStatusCode().getCode().equals("true"));
+                        }
+                    }
                 }
             }
         } catch (Exception e) {
             logger.error("Exception " + e, e);
         }
-        return ifa.getActionId() != 0 ? ifa : null;
+        return ifaList;
     }
 
     /**
@@ -203,21 +215,29 @@ public class BakResult implements BakResultService {
         }
     }
 
+    private BakPosev getBakPosevByActionId(final Map<Integer, BakPosev> bakPosevMap, final int actionId) {
+        BakPosev bakPosev = bakPosevMap.get(actionId);
+        if (bakPosev == null) {
+            bakPosev = new BakPosev(actionId);
+        }
+        return bakPosev;
+    }
+
     /**
      * Выборка данных по БАК-посеву
      *
      * @param request
      * @return
      */
-    @Nullable
-    private BakPosev processBakPosev(final POLBIN224100UV01 request) throws CoreException {
-        final int actionId = getActionId(request);
-        final BakPosev bakPosev = new BakPosev(actionId);
-
+    @NotNull
+    private List<BakPosev> processBakPosev(final POLBIN224100UV01 request) throws CoreException {
+        final Map<Integer, BakPosev> bakMap = new LinkedHashMap<Integer, BakPosev>();
         for (POLBIN224100UV01MCAIMT700201UV01Subject2 subj : request.getControlActProcess().getSubject()) {
             if (subj.getObservationReport() != null) {
                 try {
                     final POLBMT004000UV01ObservationReport value = subj.getObservationReport().getValue();
+                    final int actionId = Integer.parseInt(value.getId().get(0).getRoot());
+                    final BakPosev bakPosev = getBakPosevByActionId(bakMap, actionId);
 
                     bakPosev.setComplete(value.getStatusCode().getCode().equals("true"));
                     bakPosev.setBarCode(value.getSpecimen().get(0).getSpecimen().getValue().getId().getRoot());
@@ -235,6 +255,10 @@ public class BakResult implements BakResultService {
 
             } else if (subj.getObservationBattery() != null) {
                 try {
+                    final int actionIdObs = Integer.parseInt(
+                            subj.getObservationBattery().getValue().getInFulfillmentOf().get(0).getPlacerOrder().getValue().getId().get(0).getExtension());
+                    final BakPosev bakPosev = getBakPosevByActionId(bakMap, actionIdObs);
+
                     for (POLBMT004000UV01Component2 p : subj.getObservationBattery().getValue().getComponent1()) {
                         bakPosev.setGeneralComment(p.getObservationEvent().getValue().getCode().getCodeSystemName());
                         for (POLBMT004000UV01Component2 comp : p.getObservationEvent().getValue().getComponent1()) {
@@ -254,6 +278,8 @@ public class BakResult implements BakResultService {
             } else if (subj.getSpecimenObservationCluster() != null) {
                 try {
                     final POLBMT004000UV01SpecimenObservationCluster value = subj.getSpecimenObservationCluster().getValue();
+                    final int actionId = Integer.parseInt(value.getSpecimen().get(0).getSpecimen().getValue().getCode().getCodeSystem());
+                    final BakPosev bakPosev = getBakPosevByActionId(bakMap, actionId);
                     final String microorgCode = value.getSpecimen().get(0).getSpecimen().getValue().getCode().getCode();
 
                     for (POLBMT004000UV01Component2 component2 : value.getComponent1()) {
@@ -279,7 +305,7 @@ public class BakResult implements BakResultService {
                 }
             }
         }
-        return bakPosev;
+        return new LinkedList<BakPosev>(bakMap.values());
     }
 
     private String getValue(final String value) {
@@ -376,34 +402,34 @@ public class BakResult implements BakResultService {
     /**
      * Определение actionId, к которому прявязаны результаты
      */
-    private int getActionId(final POLBIN224100UV01 request) throws CoreException {
-        for (POLBIN224100UV01MCAIMT700201UV01Subject2 subj : request.getControlActProcess().getSubject()) {
-            if (subj.getObservationBattery() != null) {
-                return Integer.parseInt(subj.getObservationBattery().getValue().getInFulfillmentOf().get(0).getPlacerOrder().getValue().getId().get(0).getExtension());
-            }
-        }
-        throw new CoreException("Отсутствует actionId");
-    }
+//    private int getActionId(final POLBIN224100UV01 request) throws CoreException {
+//        for (POLBIN224100UV01MCAIMT700201UV01Subject2 subj : request.getControlActProcess().getSubject()) {
+//            if (subj.getObservationBattery() != null) {
+//                return Integer.parseInt(subj.getObservationBattery().getValue().getInFulfillmentOf().get(0).getPlacerOrder().getValue().getId().get(0).getExtension());
+//            }
+//        }
+//        throw new CoreException("Отсутствует actionId");
+//    }
 
-    private void saveIfaToProperty(int actionId, String resultValue, String resultText, ToLog toLog) {
-        try {
-            final String ifaValue = resultValue + "/" + resultText;
-
-            final Action action = dbAction.getActionById(actionId);
-            int aptId = 0;
-            for (ActionProperty property : action.getActionProperties()) {
-                final ActionPropertyType type = property.getType();
-                if (type.getCode() != null && "ifa".equals(type.getCode())) {
-                    aptId = type.getId();
-                }
-            }
-            db.addSinglePropBasic(ifaValue, APValueString.class, actionId, aptId, true);
-            toLog.add("Save IFA result [" + ifaValue + "], aptId [" + aptId + "]\n");
-        } catch (Exception e) {
-            logger.error("Exception: " + e, e);
-            toLog.add("Problem save to ActionProperty IFA values: " + e + "]\n");
-        }
-    }
+//    private void saveIfaToProperty(int actionId, String resultValue, String resultText, ToLog toLog) {
+//        try {
+//            final String ifaValue = resultValue + "/" + resultText;
+//
+//            final Action action = dbAction.getActionById(actionId);
+//            int aptId = 0;
+//            for (ActionProperty property : action.getActionProperties()) {
+//                final ActionPropertyType type = property.getType();
+//                if (type.getCode() != null && "ifa".equals(type.getCode())) {
+//                    aptId = type.getId();
+//                }
+//            }
+//            db.addSinglePropBasic(ifaValue, APValueString.class, actionId, aptId, true);
+//            toLog.add("Save IFA result [" + ifaValue + "], aptId [" + aptId + "]\n");
+//        } catch (Exception e) {
+//            logger.error("Exception: " + e, e);
+//            toLog.add("Problem save to ActionProperty IFA values: " + e + "]\n");
+//        }
+//    }
 
     /**
      * Описание дефектов биоматериала

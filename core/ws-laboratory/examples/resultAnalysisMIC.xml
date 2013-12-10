@@ -100,7 +100,7 @@
                         <specimenObservationCluster classCode="CLUSTER" moodCode="EVN">
                             <specimen typeCode="SPC" contextControlCode="ON">
                                 <specimen classCode="SPEC">
-                                    <code code="{код микроорганизма}" displayName="{название микрооранизма}"/>
+                                    <code code="{код микроорганизма}" displayName="{название микрооранизма}" codeSystem="{actionId}"/>
                                 </specimen>
                             </specimen>
                             <component1 typeCode="COMP" contextControlCode="ON">
