@@ -421,7 +421,10 @@ class CommonDataProcessorBean
                 val ap = dbActionProperty.getActionPropertyById(
                   id.intValue)
                 new ActionPropertyWrapper(ap).set(attribute)
-                //TODO Здесь должно быть удаление значений свойств
+
+                //Удаление значений свойств, если они присутствуют
+                  dbManager.removeAll(dbActionProperty.getActionPropertyValue(ap))
+
                 entities = entities + ap
               }
 
