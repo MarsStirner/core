@@ -23,7 +23,7 @@ import ru.korus.tmis.laboratory.altey.business.AlteyBusinessBeanLocal
  */
 @WebService(
   endpointInterface = "ru.korus.tmis.laboratory.altey.AlteyResultsService",
-  targetNamespace = "http://korus.ru/tmis/tmis-laboratory-altey-integration",
+  targetNamespace = "http://korus.ru/tmis/tmis-laboratory-integration",
   serviceName = "tmis-laboratory-integration",
   portName = "tmis-laboratory-integration",
   name = "tmis-laboratory-integration")
