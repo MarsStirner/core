@@ -105,9 +105,11 @@ class FormOfAccountingMovementOfPatientsEntry {
     this()
     this.rangeReportDateTime = new DatePeriodContainer(request.getBeginDate, request.getEndDate)
     val totalCnts = scala.collection.mutable.Map.empty[Form007QueryStatuses.Form007QueryStatuses, Long]
+    var pos: Int = 0
     cnts.foreach(cnt => {
-      cnt._2.foreach(c => totalCnts.put(c._1, totalCnts.getOrElse[Long](c._1, 0) + c._2))
-      this.counts.add(new SeventhFormFrontPage(0, RbHospitalBedProfile.newInstance(cnt._1), cnt._2))
+      cnt._2.foreach(c => totalCnts += c._1 -> (totalCnts.getOrElse[Long](c._1, 0) + c._2))
+      pos += 1
+      this.counts.add(new SeventhFormFrontPage( pos, RbHospitalBedProfile.newInstance(cnt._1), cnt._2))
     })
     this.counts.add(new SeventhFormFrontPage(0, null, totalCnts)) //Всего
     this.patients = new SeventhFormReversePage(pat)
