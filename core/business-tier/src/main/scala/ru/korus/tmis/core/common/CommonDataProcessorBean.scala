@@ -226,9 +226,12 @@ class CommonDataProcessorBean
                 if (ap.getType.getTypeName.compareTo("FlatDirectory") != 0 && ap.getType.getTypeName.compareTo("FlatDictionary") != 0) {
                   if (ap.getType.getDefaultValue.compareTo("нет") != 0) {     //костылик для мкб
                     val apv = dbActionProperty.setActionPropertyValue(ap,
-                                                                      ap.getType.getDefaultValue,
+                                                                      null,
                                                                       0)
-                    apv :: list
+                    if(apv != null)
+                      apv :: list
+                    else
+                      list
                   } else list
                 } else list
               }
@@ -414,10 +417,11 @@ class CommonDataProcessorBean
           } else {
             (attribute.properties.get("valueId"), attribute.properties.get("value")) match {
 
-              case (None | Some(null) | Some(""), None | Some(null)) => {
+              case (None | Some(null) | Some(""), None | Some("") | Some(null)) => {
                 val ap = dbActionProperty.getActionPropertyById(
                   id.intValue)
                 new ActionPropertyWrapper(ap).set(attribute)
+                //TODO Здесь должно быть удаление значений свойств
                 entities = entities + ap
               }
 
