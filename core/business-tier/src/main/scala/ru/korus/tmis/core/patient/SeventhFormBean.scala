@@ -78,20 +78,19 @@ with CAPids {
     //Преобразование профеля коек в строку
     var profileBedsStr = Array(profileBeds).mkString(",")
     profileBedsStr = profileBedsStr.substring(1, profileBedsStr.length - 1);
+    val endDateStr = "'" + new SimpleDateFormat("yyyy-MM-dd HH:mm:ss").format(new Date(endDate) ) + "'"
     //Получение данных
     //ru.korus.tmis.core.data.Form007QueryStatuses.values.foreach(status => this.addDataToLinearMapByCellNumber(departmentId, bDate, eDate, profileBeds, status))
     //Получение информации о кол-ве
-    val res = em.createNativeQuery("CALL form007front(\"%d\", \"%d\", \"%s\")".format(endDate, departmentId, profileBedsStr)).getResultList
+    val res = em.createNativeQuery("CALL form007front(\"%s\", \"%d\", \"%s\")".format(endDateStr, departmentId, profileBedsStr)).getResultList
     val resList: List[Array[Object]] = res.asInstanceOf[List[Array[Object]]]
     resList.foreach(resSql => {
       this.linearLongMap += resSql(0).asInstanceOf[String] -> scala.collection.mutable.Map.empty[Form007QueryStatuses, Long]
       ru.korus.tmis.core.data.Form007QueryStatuses.values.foreach(status => this.addDataToLinearMapByCellNumber(resSql, status, resSql(0).asInstanceOf[String]))
     })
-    val resFIOinput = em.createNativeQuery("CALL  %s(\"%d\", \"%d\", \"%s\")".format(F007QS_RECEIVED_ALL.toString, endDate, departmentId, profileBedsStr)).getResultList
-    val resListFIOinput: List[String] = resFIOinput.asInstanceOf[List[String]]
     ru.korus.tmis.core.data.Form007QueryStatuses.values.foreach(status => {
       if (status.toString != null && !status.toString.startsWith("count")) {
-        val resFIOinput = em.createNativeQuery("CALL  %s(\"%d\", \"%d\", \"%s\")".format(status.toString, endDate, departmentId, profileBedsStr)).getResultList
+        val resFIOinput = em.createNativeQuery("CALL  %s(\"%s\", \"%d\", \"%s\")".format(status.toString, endDateStr, departmentId, profileBedsStr)).getResultList
         val resListFIOinput: List[String] = resFIOinput.asInstanceOf[List[String]]
         linearListString += status -> resListFIOinput.asScala.toList
       }
