@@ -171,7 +171,7 @@ public class BakResult implements BakResultService {
                         final String value = ceList.get(0).getCode();
                         if (!text.isEmpty() || !value.isEmpty()) {
                             final int actionId = Integer.parseInt(orderMisId);
-                            IFA ifa = getIfa(ifaMap, actionId);
+                            final IFA ifa = getIfa(ifaMap, actionId);
                             ifa.setText(text);
                             ifa.setValue(value);
                             ifa.setActionId(actionId);
@@ -180,7 +180,7 @@ public class BakResult implements BakResultService {
                 } else if (subj.getObservationReport() != null) {
                     final POLBMT004000UV01ObservationReport value = subj.getObservationReport().getValue();
                     final int actionId = Integer.parseInt(value.getId().get(0).getRoot());
-                    IFA statusIfa = getIfa(ifaMap, actionId);
+                    final IFA statusIfa = getIfa(ifaMap, actionId);
                     statusIfa.setComplete(value.getStatusCode().getCode().equals("true"));
                 }
             }
