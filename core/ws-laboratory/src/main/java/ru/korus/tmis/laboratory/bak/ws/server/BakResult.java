@@ -639,16 +639,16 @@ public class BakResult implements BakResultService {
      * {@inheritDoc}
      */
     @Override
-    public int bakDelivered(@WebParam(name = "GUID ", targetNamespace = Namespace)
-                            String GUID,
-                            @WebParam(name = "DtTime", targetNamespace = Namespace)
-                            String DtTime,
-                            @WebParam(name = "orderMisId", targetNamespace = Namespace)
-                            Integer orderMisId,
+    public int bakDelivered(@WebParam(name = "orderBarCode", targetNamespace = Namespace)
+                            Integer orderBarCode,
+                            @WebParam(name = "TakenTissueJournal", targetNamespace = Namespace)
+                            String takenTissueJournal,
+                            @WebParam(name = "getTissueTime", targetNamespace = Namespace)
+                            String tissueTime,
                             @WebParam(name = "orderBiomaterialName", targetNamespace = Namespace)
-                            Integer orderBarCode) throws CoreException {
+                            String orderBiomaterialName) throws CoreException {
 
-        logger.info("Bak Delivered [{}],[{}],[{}],[{}]", GUID, orderMisId, orderBarCode, DtTime);
+        logger.info("Bak Delivered [{}],[{}],[{}],[{}]", orderBarCode, takenTissueJournal, tissueTime, orderBiomaterialName);
         return 0;
     }
 }
