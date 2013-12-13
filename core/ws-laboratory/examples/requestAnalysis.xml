@@ -1,189 +1,195 @@
-<?xml version="1.0" encoding="windows-1251"?>
-<ClinicalDocument xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns="urn:hl7-org:v3"
-                  xsi:schemaLocation="urn:hl7-org:v3 CDA.xsd">
-    <typeId extension="POCD_HD000040" root="2.16.840.1.113883.1.3"/>
-    <!-- идентификатор мед документа -->
-    <id root="2.16.840.1.113883.1.3" extension="orderMisId"/>
-    <!-- код для документа type - пустой в нашем случае   -->
-    <code/>
-    <!-- Title для документа -->
-    <title>Заказ лабораторных исследований</title>
-    <!-- дата и время создания направления врачом -->
-    <effectiveTime value="orderMisDate"/>
-    <!-- уровень конфиденциальности документа : Normal -->
-    <confidentialityCode code="N" codeSystem="2.16.840.1.113883.5.25"/>
-    <!--язык для этого документа -->
-    <languageCode code="ru-RU"/>
-    <!-- Статус заказа -->
-    <versionNumber value="orderStatus"/>
-    <!-- Record target - демографические данные пациента -->
-    <recordTarget typeCode="RCT">
-        <patientRole classCode="PAT">
-            <!-- идентификатор пациента-->
-            <id extension="patientMisId" root="GUID"/>
-            <!-- адрес пациента-  если адреса нет <addr nullFlavor=“NI"/>-->
-            <addr>patientAddress</addr>
-            <patient classCode="PSN" determinerCode="INSTANCE">
-                <!-- фио пациента -->
-                <name>
-                    <given>patientName</given>
-                    <suffix>patientPatronum</suffix>
-                    <family>patientFamily</family>
-                </name>
-                <!-- пол пациента -->
-                <administrativeGenderCode code="patientSex"/>
-                <!-- дата рождения пациента -->
-                <birthTime value="YYYYMMDD"/>
-            </patient>
-            <providerOrganization classCode="ORG" determinerCode="INSTANCE">
-                <!-- UUID ЛПУ -->
-                <id root="XXXX-XXXX-XXXX-XXXX-XXXX"/>
-                <!-- Название ЛПУ, которое посылает в ЛИС направление -->
-                <name>orderCustodian</name>
-            </providerOrganization>
-        </patientRole>
-    </recordTarget>
-    <!-- создатель документа. Обязательный -->
-    <author typeCode="AUT">
-        <!-- дата и время создания направления врачом -->
-        <time value="YYYYMMDDHHMM"/>
-        <assignedAuthor classCode="ASSIGNED">
-            <!-- уникальный код назначившего врача, UUID врача -->
-            <id extension="orderDoctorMisId" root="XXXX-XXXX-XXXX-XXXX-XXXX"/>
-            <assignedPerson classCode="PSN" determinerCode="INSTANCE">
-                <!-- ФИО направивишего врача -->
-                <name>
-                    <family>orderDoctorFamily</family>
-                    <given>orderDoctorName</given>
-                    <suffix>orderDoctorPatronum</suffix>
-                </name>
-            </assignedPerson>
-            <representedOrganization>
-                <!-- UUID лпу в котором работает врач-->
-                <id root="XXXX-XXXX-XXXX-XXXX-XXXX"/>
-                <!-- лпу в котором работает врач-->
-                <name>orderCustodian</name>
-            </representedOrganization>
-        </assignedAuthor>
-    </author>
-    <componentOf>
-        <encompassingEncounter>
-            <!-- Данные о случае госпитализации -->
-            <id root="orderCustodian" extension="patientNumber"/>
-            <!-- Название ЛПУ, которое посылает в ЛИС направление, patientNumber - номер карты пациента -->
-            <code codeSystem="2.16.840.1.113883.5.4"
-                  codeSystemName="actCode"
-                  code="IMP"
-                  displayName="Inpatient encounter"/>
-            <effectiveTime nullFlavor='NI'/>
-            <!-- Обязательный элемент. Дату госпитализации и выписки из стационара не пересылаем -->
-        </encompassingEncounter>
-    </componentOf>
+<?xml version='1.0' encoding='UTF-8'?>
+<S:Envelope xmlns:S="http://schemas.xmlsoap.org/soap/envelope/">
+    <S:Body>
+        <ns3:queryAnalysis xmlns:ns3="urn:cgm.ru:cgmsoap" xmlns:ns2="http://cgm.ru">
+            <?xml version="1.0" encoding="windows-1251"?>
+            <ClinicalDocument xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns="urn:hl7-org:v3"
+                              xsi:schemaLocation="urn:hl7-org:v3 CDA.xsd">
+                <typeId extension="POCD_HD000040" root="2.16.840.1.113883.1.3"/>
+                <!-- РёРґРµРЅС‚РёС„РёРєР°С‚РѕСЂ РјРµРґ РґРѕРєСѓРјРµРЅС‚Р° -->
+                <id root="2.16.840.1.113883.1.3" extension="orderMisId"/>
+                <!-- РєРѕРґ РґР»СЏ РґРѕРєСѓРјРµРЅС‚Р° type - РїСѓСЃС‚РѕР№ РІ РЅР°С€РµРј СЃР»СѓС‡Р°Рµ   -->
+                <code/>
+                <!-- Title РґР»СЏ РґРѕРєСѓРјРµРЅС‚Р° -->
+                <title>Р—Р°РєР°Р· Р»Р°Р±РѕСЂР°С‚РѕСЂРЅС‹С… РёСЃСЃР»РµРґРѕРІР°РЅРёР№</title>
+                <!-- РґР°С‚Р° Рё РІСЂРµРјСЏ СЃРѕР·РґР°РЅРёСЏ РЅР°РїСЂР°РІР»РµРЅРёСЏ РІСЂР°С‡РѕРј -->
+                <effectiveTime value="orderMisDate"/>
+                <!-- СѓСЂРѕРІРµРЅСЊ РєРѕРЅС„РёРґРµРЅС†РёР°Р»СЊРЅРѕСЃС‚Рё РґРѕРєСѓРјРµРЅС‚Р° : Normal -->
+                <confidentialityCode code="N" codeSystem="2.16.840.1.113883.5.25"/>
+                <!--СЏР·С‹Рє РґР»СЏ СЌС‚РѕРіРѕ РґРѕРєСѓРјРµРЅС‚Р° -->
+                <languageCode code="ru-RU"/>
+                <!-- РЎС‚Р°С‚СѓСЃ Р·Р°РєР°Р·Р° -->
+                <versionNumber value="orderStatus"/>
+                <!-- Record target - РґРµРјРѕРіСЂР°С„РёС‡РµСЃРєРёРµ РґР°РЅРЅС‹Рµ РїР°С†РёРµРЅС‚Р° -->
+                <recordTarget typeCode="RCT">
+                    <patientRole classCode="PAT">
+                        <id extension="{РёРґРµРЅС‚РёС„РёРєР°С‚РѕСЂ РїР°С†РёРµРЅС‚Р°}" root="GUID"/>
+                        <addr>{Р°РґСЂРµСЃ РїР°С†РёРµРЅС‚Р°}</addr>
+                        <patient classCode="PSN" determinerCode="INSTANCE">
+                            <!-- С„РёРѕ РїР°С†РёРµРЅС‚Р° -->
+                            <name>
+                                <given>{РРјСЏ РїР°С†РёРµРЅС‚Р°}</given>
+                                <suffix>{РћС‚С‡РµСЃС‚РІРѕ РїР°С†РёРµРЅС‚Р°}</suffix>
+                                <family>{Р¤Р°РјРёР»РёСЏ РїР°С†РёРµРЅС‚Р°}</family>
+                            </name>
+                            <!-- РїРѕР» РїР°С†РёРµРЅС‚Р° -->
+                            <administrativeGenderCode code="patientSex"/>
+                            <!-- РґР°С‚Р° СЂРѕР¶РґРµРЅРёСЏ РїР°С†РёРµРЅС‚Р° -->
+                            <birthTime value="YYYYMMDD"/>
+                        </patient>
+                        <providerOrganization classCode="ORG" determinerCode="INSTANCE">
+                            <!-- UUID Р›РџРЈ -->
+                            <id root="XXXX-XXXX-XXXX-XXXX-XXXX"/>
+                            <!-- РќР°Р·РІР°РЅРёРµ Р›РџРЈ, РєРѕС‚РѕСЂРѕРµ РїРѕСЃС‹Р»Р°РµС‚ РІ Р›РРЎ РЅР°РїСЂР°РІР»РµРЅРёРµ -->
+                            <name>orderCustodian</name>
+                        </providerOrganization>
+                    </patientRole>
+                </recordTarget>
+                <!-- СЃРѕР·РґР°С‚РµР»СЊ РґРѕРєСѓРјРµРЅС‚Р°. РћР±СЏР·Р°С‚РµР»СЊРЅС‹Р№ -->
+                <author typeCode="AUT">
+                    <!-- РґР°С‚Р° Рё РІСЂРµРјСЏ СЃРѕР·РґР°РЅРёСЏ РЅР°РїСЂР°РІР»РµРЅРёСЏ РІСЂР°С‡РѕРј -->
+                    <time value="YYYYMMDDHHMM"/>
+                    <assignedAuthor classCode="ASSIGNED">
+                        <!-- СѓРЅРёРєР°Р»СЊРЅС‹Р№ РєРѕРґ РЅР°Р·РЅР°С‡РёРІС€РµРіРѕ РІСЂР°С‡Р°, UUID РІСЂР°С‡Р° -->
+                        <id extension="orderDoctorMisId" root="XXXX-XXXX-XXXX-XXXX-XXXX"/>
+                        <assignedPerson classCode="PSN" determinerCode="INSTANCE">
+                            <!-- Р¤РРћ РЅР°РїСЂР°РІРёРІРёС€РµРіРѕ РІСЂР°С‡Р° -->
+                            <name>
+                                <family>orderDoctorFamily</family>
+                                <given>orderDoctorName</given>
+                                <suffix>orderDoctorPatronum</suffix>
+                            </name>
+                        </assignedPerson>
+                        <representedOrganization>
+                            <!-- UUID Р»РїСѓ РІ РєРѕС‚РѕСЂРѕРј СЂР°Р±РѕС‚Р°РµС‚ РІСЂР°С‡-->
+                            <id root="XXXX-XXXX-XXXX-XXXX-XXXX"/>
+                            <!-- Р»РїСѓ РІ РєРѕС‚РѕСЂРѕРј СЂР°Р±РѕС‚Р°РµС‚ РІСЂР°С‡-->
+                            <name>orderCustodian</name>
+                        </representedOrganization>
+                    </assignedAuthor>
+                </author>
+                <componentOf>
+                    <encompassingEncounter>
+                        <!-- Р”Р°РЅРЅС‹Рµ Рѕ СЃР»СѓС‡Р°Рµ РіРѕСЃРїРёС‚Р°Р»РёР·Р°С†РёРё -->
+                        <id root="orderCustodian" extension="patientNumber"/>
+                        <!-- РќР°Р·РІР°РЅРёРµ Р›РџРЈ, РєРѕС‚РѕСЂРѕРµ РїРѕСЃС‹Р»Р°РµС‚ РІ Р›РРЎ РЅР°РїСЂР°РІР»РµРЅРёРµ, patientNumber - РЅРѕРјРµСЂ РєР°СЂС‚С‹ РїР°С†РёРµРЅС‚Р° -->
+                        <code codeSystem="2.16.840.1.113883.5.4"
+                              codeSystemName="actCode"
+                              code="IMP"
+                              displayName="Inpatient encounter"/>
+                        <effectiveTime nullFlavor='NI'/>
+                        <!-- РћР±СЏР·Р°С‚РµР»СЊРЅС‹Р№ СЌР»РµРјРµРЅС‚. Р”Р°С‚Сѓ РіРѕСЃРїРёС‚Р°Р»РёР·Р°С†РёРё Рё РІС‹РїРёСЃРєРё РёР· СЃС‚Р°С†РёРѕРЅР°СЂР° РЅРµ РїРµСЂРµСЃС‹Р»Р°РµРј -->
+                    </encompassingEncounter>
+                </componentOf>
 
-    <component>
-        <structuredBody>
-            <!-- информация по биоматериалу -->
-            <component>
-                <entry>
-                    <observation classCode="OBS" moodCode="ENT" negationInd="false">
-                        <!-- дата и время забора биоматериала -->
-                        <effectiveTime value="orderProbeDate"/>
-                        <specimen>
-                            <specimenRole>
-                                <!-- штрих-код на контейнере c биоматериалом  -->
-                                <id root="orderBarCode"/>
-                                <specimenPlayingEntity>
-                                    <code code="orderBiomaterialCode">  <!-- код  биоматериала  -->
-                                        <translation displayName="orderBiomaterialName"/>
-                                        <!-- название  биоматериала -->
-                                    </code>
-                                    <!-- Количество/объем биоматериала -->
-                                    <quantity value="orderBiomaterialVolume"/>
-                                    <!-- UnitBiomaterialCode - Код единицы измерения биоматериала и UnitBiomaterialName - название биоматериала -->
-                                    <unit code="UnitBiomaterialCode" codename="UnitBiomaterialName"/>
-                                    <!-- orderBiomaterialComment  -->
-                                    <text value="orderBiomaterialComment"/>
-                                </specimenPlayingEntity>
-                            </specimenRole>
-                        </specimen>
-                    </observation>
-                </entry>
-            </component>
-            <component>
-                <section>
-                    <entry>
-                        <observation classCode="OBS" moodCode="RQO" negationInd="false">
-                            <!-- Код отделения   Название отделения  -->
-                            <id root="XXXX-XXXX-XXXX-XXXX-XXXX" extension="1"/>
-                            <code code="orderDepartmentMisId" displayName="orderDepartmentName"/>
-                        </observation>
-                    </entry>
-                    <entry>
-                        <observation classCode="OBS" moodCode="RQO" negationInd="false">
-                            <!-- Срочность  -->
-                            <id root="XXXX-XXXX-XXXX-XXXX-XXXX" extension="1"/>
-                            <code code="isUrgent" displayName=""/>
-                        </observation>
-                    </entry>
-                    <entry>
-                        <observation classCode="OBS" moodCode="RQO" negationInd="false">
-                            <!-- Код МКБ10 Название диагноза    -->
-                            <id root="XXXX-XXXX-XXXX-XXXX-XXXX" extension="1"/>
-                            <code code="orderDiagCode" displayName="orderDiagText"/>
-                        </observation>
-                    </entry>
-                    <entry>
-                        <observation classCode="OBS" moodCode="RQO" negationInd="false">
-                            <!-- Название типа финансирования, код исследования, название исследования    -->
-                            <id root="XXXX-XXXX-XXXX-XXXX-XXXX" extension="1"/>
-                            <id extension="tyepeFinanceName"/>
-                            <code code="diagnosticCode" displayName="diagnosticName"/>
-                        </observation>
-                    </entry>
-                    <!--таблица индикаторов - может быть несколько строк   -->
-                    <entry>
-                        <observation classCode="OBS" moodCode="RQO" negationInd="false">
-                            <id root="XXXX-XXXX-XXXX-XXXX-XXXX" extension="1"/>
-                            <code code="indicatorCode1" displayName="indicatorName1"/>
-                        </observation>
-                    </entry>
-                    <entry>
-                        <observation classCode="OBS" moodCode="RQO" negationInd="false">
-                            <id root="XXXX-XXXX-XXXX-XXXX-XXXX" extension="1"/>
-                            <code code="indicatorCode2" displayName="indicatorName2"/>
-                        </observation>
-                    </entry>
-                </section>
-            </component>
-            <!--  появляется если пациент женщина и беременная  -->
-            <component>
-                <section>
-                    <entry>
-                        <observation classCode="OBS" moodCode="EVN">
-                            <code code="">
-                                <!-- Описание  -->
-                                <translation displayName="средний срок беременности, в неделях"/>
-                            </code>
-                            <!-- срок беременности в неделях -->
-                            <value value="orderPregnat" unit="нед"/>
-                        </observation>
-                    </entry>
-                </section>
-            </component>
-            <component>
-                <section>
-                    <entry>
-                        <observation classCode="OBS" moodCode="EVN">
-                            <code code="">
-                                <!-- комментарий к направлению  -->
-                                <translation displayName="комментарий к направлению"/>
-                            </code>
-                            <value value="orderComment"/>
-                        </observation>
-                    </entry>
-                </section>
-            </component>
-            <!-- закрытие  body и document -->
-        </structuredBody>
-    </component>
-</ClinicalDocument>
+                <component>
+                    <structuredBody>
+                        <!-- РёРЅС„РѕСЂРјР°С†РёСЏ РїРѕ Р±РёРѕРјР°С‚РµСЂРёР°Р»Сѓ -->
+                        <component>
+                            <entry>
+                                <observation classCode="OBS" moodCode="ENT" negationInd="false">
+                                    <!-- РґР°С‚Р° Рё РІСЂРµРјСЏ Р·Р°Р±РѕСЂР° Р±РёРѕРјР°С‚РµСЂРёР°Р»Р° -->
+                                    <effectiveTime value="orderProbeDate"/>
+                                    <specimen>
+                                        <specimenRole>
+                                            <!-- С€С‚СЂРёС…-РєРѕРґ РЅР° РєРѕРЅС‚РµР№РЅРµСЂРµ c Р±РёРѕРјР°С‚РµСЂРёР°Р»РѕРј  -->
+                                            <id root="orderBarCode"/>
+                                            <specimenPlayingEntity>
+                                                <code code="orderBiomaterialCode">  <!-- РєРѕРґ  Р±РёРѕРјР°С‚РµСЂРёР°Р»Р°  -->
+                                                    <translation displayName="orderBiomaterialName"/>
+                                                    <!-- РЅР°Р·РІР°РЅРёРµ  Р±РёРѕРјР°С‚РµСЂРёР°Р»Р° -->
+                                                </code>
+                                                <!-- РљРѕР»РёС‡РµСЃС‚РІРѕ/РѕР±СЉРµРј Р±РёРѕРјР°С‚РµСЂРёР°Р»Р° -->
+                                                <quantity value="orderBiomaterialVolume"/>
+                                                <!-- UnitBiomaterialCode - РљРѕРґ РµРґРёРЅРёС†С‹ РёР·РјРµСЂРµРЅРёСЏ Р±РёРѕРјР°С‚РµСЂРёР°Р»Р° Рё UnitBiomaterialName - РЅР°Р·РІР°РЅРёРµ Р±РёРѕРјР°С‚РµСЂРёР°Р»Р° -->
+                                                <unit code="UnitBiomaterialCode" codename="UnitBiomaterialName"/>
+                                                <!-- orderBiomaterialComment  -->
+                                                <text value="orderBiomaterialComment"/>
+                                            </specimenPlayingEntity>
+                                        </specimenRole>
+                                    </specimen>
+                                </observation>
+                            </entry>
+                        </component>
+                        <component>
+                            <section>
+                                <entry>
+                                    <observation classCode="OBS" moodCode="RQO" negationInd="false">
+                                        <!-- РљРѕРґ РѕС‚РґРµР»РµРЅРёСЏ   РќР°Р·РІР°РЅРёРµ РѕС‚РґРµР»РµРЅРёСЏ  -->
+                                        <id root="XXXX-XXXX-XXXX-XXXX-XXXX" extension="1"/>
+                                        <code code="orderDepartmentMisId" displayName="orderDepartmentName"/>
+                                    </observation>
+                                </entry>
+                                <entry>
+                                    <observation classCode="OBS" moodCode="RQO" negationInd="false">
+                                        <!-- РЎСЂРѕС‡РЅРѕСЃС‚СЊ  -->
+                                        <id root="XXXX-XXXX-XXXX-XXXX-XXXX" extension="1"/>
+                                        <code code="isUrgent" displayName=""/>
+                                    </observation>
+                                </entry>
+                                <entry>
+                                    <observation classCode="OBS" moodCode="RQO" negationInd="false">
+                                        <!-- РљРѕРґ РњРљР‘10 РќР°Р·РІР°РЅРёРµ РґРёР°РіРЅРѕР·Р°    -->
+                                        <id root="XXXX-XXXX-XXXX-XXXX-XXXX" extension="1"/>
+                                        <code code="orderDiagCode" displayName="orderDiagText"/>
+                                    </observation>
+                                </entry>
+                                <entry>
+                                    <observation classCode="OBS" moodCode="RQO" negationInd="false">
+                                        <!-- РќР°Р·РІР°РЅРёРµ С‚РёРїР° С„РёРЅР°РЅСЃРёСЂРѕРІР°РЅРёСЏ, РєРѕРґ РёСЃСЃР»РµРґРѕРІР°РЅРёСЏ, РЅР°Р·РІР°РЅРёРµ РёСЃСЃР»РµРґРѕРІР°РЅРёСЏ    -->
+                                        <id root="XXXX-XXXX-XXXX-XXXX-XXXX" extension="1"/>
+                                        <id extension="tyepeFinanceName"/>
+                                        <code code="diagnosticCode" displayName="diagnosticName"/>
+                                    </observation>
+                                </entry>
+                                <!--С‚Р°Р±Р»РёС†Р° РёРЅРґРёРєР°С‚РѕСЂРѕРІ - РјРѕР¶РµС‚ Р±С‹С‚СЊ РЅРµСЃРєРѕР»СЊРєРѕ СЃС‚СЂРѕРє   -->
+                                <entry>
+                                    <observation classCode="OBS" moodCode="RQO" negationInd="false">
+                                        <id root="XXXX-XXXX-XXXX-XXXX-XXXX" extension="1"/>
+                                        <code code="indicatorCode1" displayName="indicatorName1"/>
+                                    </observation>
+                                </entry>
+                                <entry>
+                                    <observation classCode="OBS" moodCode="RQO" negationInd="false">
+                                        <id root="XXXX-XXXX-XXXX-XXXX-XXXX" extension="1"/>
+                                        <code code="indicatorCode2" displayName="indicatorName2"/>
+                                    </observation>
+                                </entry>
+                            </section>
+                        </component>
+                        <!--  РїРѕСЏРІР»СЏРµС‚СЃСЏ РµСЃР»Рё РїР°С†РёРµРЅС‚ Р¶РµРЅС‰РёРЅР° Рё Р±РµСЂРµРјРµРЅРЅР°СЏ  -->
+                        <component>
+                            <section>
+                                <entry>
+                                    <observation classCode="OBS" moodCode="EVN">
+                                        <code code="">
+                                            <!-- РћРїРёСЃР°РЅРёРµ  -->
+                                            <translation displayName="СЃСЂРµРґРЅРёР№ СЃСЂРѕРє Р±РµСЂРµРјРµРЅРЅРѕСЃС‚Рё, РІ РЅРµРґРµР»СЏС…"/>
+                                        </code>
+                                        <!-- СЃСЂРѕРє Р±РµСЂРµРјРµРЅРЅРѕСЃС‚Рё РІ РЅРµРґРµР»СЏС… -->
+                                        <value value="orderPregnat" unit="РЅРµРґ"/>
+                                    </observation>
+                                </entry>
+                            </section>
+                        </component>
+                        <component>
+                            <section>
+                                <entry>
+                                    <observation classCode="OBS" moodCode="EVN">
+                                        <code code="">
+                                            <!-- РєРѕРјРјРµРЅС‚Р°СЂРёР№ Рє РЅР°РїСЂР°РІР»РµРЅРёСЋ  -->
+                                            <translation displayName="РєРѕРјРјРµРЅС‚Р°СЂРёР№ Рє РЅР°РїСЂР°РІР»РµРЅРёСЋ"/>
+                                        </code>
+                                        <value value="orderComment"/>
+                                    </observation>
+                                </entry>
+                            </section>
+                        </component>
+                        <!-- Р·Р°РєСЂС‹С‚РёРµ  body Рё document -->
+                    </structuredBody>
+                </component>
+            </ClinicalDocument>
+        </ns3:queryAnalysis>
+    </S:Body>
+</S:Envelope>
+

@@ -357,11 +357,23 @@ class AppealEntry extends I18nable {
     this.execPerson = new DoctorContainer(event.getExecutor)
     this.urgent = action.getIsUrgent
 
-    this.orgStructStay = {
-      //val ap = values.filter(p => p._1._2.getType.getCode.equals(i18n("db.apt.moving.codes.hospOrgStruct"))).head._1._2
-      //new APValueOrgStructure(ap.getId, 0).getId.getId
-      0
+
+    val getOrgStructPropByCode: String => Integer = (code: String) => {
+      val orgs = values.entrySet.filter(e => {
+        val ap = e.getKey._2
+        if(ap != null && ap.getType != null && ap.getType.getCode != null && ap.getType.getCode.equals(i18n(code))) {
+          true
+        } else
+          false
+      })
+      if(orgs.size == 1 && orgs.head.getValue.size == 1  && orgs.head.getValue.head.isInstanceOf[OrgStructure])
+        orgs.head.getValue.head.asInstanceOf[OrgStructure].getId
+      else
+        0
     }
+    this.orgStructStay = getOrgStructPropByCode("db.apt.moving.codes.hospOrgStruct")
+    this.orgStructDirectedFrom = getOrgStructPropByCode("db.apt.received.codes.orgStructDirectedFrom")
+
 
     exValue = this.extractValuesInNumberedMap(Set(ConfigManager.RbCAPIds("db.rbCAP.hosp.primary.id.ambulanceNumber").toInt :java.lang.Integer), values).get("0")
     this.ambulanceNumber = exValue.get(0).asInstanceOf[String]

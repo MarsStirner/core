@@ -9,9 +9,9 @@ import javax.jws.WebParam;
 import javax.jws.WebResult;
 import javax.jws.WebService;
 
-import static ru.korus.tmis.util.CompileTimeConfigManager.Laboratory.Namespace;
 import static ru.korus.tmis.laboratory.bak.ws.server.model.hl7.HL7Specification.NAMESPACE;
 import static ru.korus.tmis.laboratory.bak.ws.server.model.hl7.HL7Specification.SUCCESS_ACCEPT_EVENT;
+import static ru.korus.tmis.util.CompileTimeConfigManager.Laboratory.Namespace;
 
 /**
  * @author anosov@outlook.com
@@ -39,22 +39,22 @@ public interface BakResultService {
     /**
      * Сообщение от ЛИС о доставке материала. Факт завершения забора биоматериала.
      *
-     * @param GUID         - GUID сообщения - подставляет ЛИС
-     * @param DtTime       - Время создания события. Значение value кодируется по шаблону: ггггммддччммсс. Подставляет ЛИС
-     * @param orderMisId   - идентификатор направления на анализы
-     * @param orderBarCode - штрих-код на контейнере c биоматериалом (десятичное представление считанного штрих-кода)
+     * @param orderBarCode         - GUID сообщения - подставляет ЛИС
+     * @param takenTissueJournal       - Время создания события. Значение value кодируется по шаблону: ггггммддччммсс. Подставляет ЛИС
+     * @param tissueTime   - идентификатор направления на анализы
+     * @param orderBiomaterialName - штрих-код на контейнере c биоматериалом (десятичное представление считанного штрих-кода)
      * @return 0 данные приняты успешно
      * @throws CoreException ошибка формата
      */
     @WebMethod
-    int bakDelivered(@WebParam(name = "GUID ", targetNamespace = Namespace)
-                     String GUID,
-                     @WebParam(name = "DtTime", targetNamespace = Namespace)
-                     String DtTime,
-                     @WebParam(name = "orderMisId", targetNamespace = Namespace)
-                     Integer orderMisId,
+    int bakDelivered(@WebParam(name = "orderBarCode", targetNamespace = Namespace)
+                     Integer orderBarCode,
+                     @WebParam(name = "TakenTissueJournal", targetNamespace = Namespace)
+                     String takenTissueJournal,
+                     @WebParam(name = "getTissueTime", targetNamespace = Namespace)
+                     String tissueTime,
                      @WebParam(name = "orderBiomaterialName", targetNamespace = Namespace)
-                     Integer orderBarCode) throws CoreException;
+                     String orderBiomaterialName) throws CoreException;
 
 
 }

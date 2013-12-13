@@ -169,14 +169,17 @@ class DbActionPropertyBean
         }
         else null
       }
-      case size => {
+      case _ => {
         if (ap.getType.getIsVector) {
-          val apv = createActionPropertyValue(ap, value, index)
-          apv
-        }
-        else {
+          createActionPropertyValue(ap, value, index)
+        } else {
           val apv = apvs.get(0)
-          if (apv.unwrap.setValueFromString(value)) apv else null
+          if(value != null)
+            if (apv.unwrap.setValueFromString(value)) apv else null
+          else {
+            em remove apv
+            null
+          }
         }
       }
     }
@@ -184,17 +187,16 @@ class DbActionPropertyBean
 
   def createActionPropertyValue(ap: ActionProperty, value: String, index: Int = 0) = {
     val cls = ap.getValueClass
-    cls match {
-      case null => {
+    if(cls == null)
         throw new CoreException(i18n("error.actionPropertyTypeClassNotFound").format(ap.getId))
-      }
-      case _ => {}
-    }
-    val apv = cls.newInstance.asInstanceOf[APValue]
-    // Устанваливаем id, index
-    apv.linkToActionProperty(ap, index)
-    // Записываем значение
-    if (apv.setValueFromString(value)) apv else null
+    if(value != null) {
+      val apv = cls.newInstance.asInstanceOf[APValue]
+      // Устанваливаем id, index
+      apv.linkToActionProperty(ap, index)
+      // Записываем значение
+      if (apv.setValueFromString(value)) apv else null
+    } else
+      null
   }
 
   ///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////

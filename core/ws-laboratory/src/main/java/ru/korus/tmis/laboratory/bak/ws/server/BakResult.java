@@ -142,6 +142,15 @@ public class BakResult implements BakResultService {
         }
     }
 
+    private IFA getIfa(final Map<Integer, IFA> ifaMap, final int actionId) {
+        IFA ifa = ifaMap.get(actionId);
+        if (ifa == null) {
+            ifa = new IFA();
+            ifaMap.put(actionId, ifa);
+        }
+        return ifa;
+    }
+
     /**
      * Выборка данных по ИФА исследованию
      *
@@ -150,10 +159,10 @@ public class BakResult implements BakResultService {
      */
     @NotNull
     private List<IFA> processIFA(final POLBIN224100UV01 request) {
-        List<IFA> ifaList = new LinkedList<IFA>();
+        final Map<Integer, IFA> ifaMap = new HashMap<Integer, IFA>();
         try {
             for (POLBIN224100UV01MCAIMT700201UV01Subject2 subj : request.getControlActProcess().getSubject()) {
-                IFA ifa = null;
+
                 if (subj.getObservationBattery() != null) {
                     final String orderMisId = subj.getObservationBattery().getValue().getInFulfillmentOf().get(0).getPlacerOrder().getValue().getId().get(0).getExtension();
                     final List<CE> ceList = subj.getObservationBattery().getValue().getComponent1().get(0).getObservationEvent().getValue().getConfidentialityCode();
@@ -161,28 +170,24 @@ public class BakResult implements BakResultService {
                         final String text = ceList.get(0).getDisplayName();
                         final String value = ceList.get(0).getCode();
                         if (!text.isEmpty() || !value.isEmpty()) {
-                            ifa = new IFA();
+                            final int actionId = Integer.parseInt(orderMisId);
+                            final IFA ifa = getIfa(ifaMap, actionId);
                             ifa.setText(text);
                             ifa.setValue(value);
-                            ifa.setActionId(Long.parseLong(orderMisId));
-                            if (ifa.getActionId() != 0) {
-                                ifaList.add(ifa);
-                            }
+                            ifa.setActionId(actionId);
                         }
                     }
                 } else if (subj.getObservationReport() != null) {
                     final POLBMT004000UV01ObservationReport value = subj.getObservationReport().getValue();
-                    for (IFA i : ifaList) {
-                        if (i.getActionId() == Integer.parseInt(value.getId().get(0).getRoot())) {
-                            i.setComplete(value.getStatusCode().getCode().equals("true"));
-                        }
-                    }
+                    final int actionId = Integer.parseInt(value.getId().get(0).getRoot());
+                    final IFA statusIfa = getIfa(ifaMap, actionId);
+                    statusIfa.setComplete(value.getStatusCode().getCode().equals("true"));
                 }
             }
         } catch (Exception e) {
             logger.error("Exception " + e, e);
         }
-        return ifaList;
+        return new LinkedList<IFA>(ifaMap.values());
     }
 
     /**
@@ -219,6 +224,7 @@ public class BakResult implements BakResultService {
         BakPosev bakPosev = bakPosevMap.get(actionId);
         if (bakPosev == null) {
             bakPosev = new BakPosev(actionId);
+            bakPosevMap.put(actionId, bakPosev);
         }
         return bakPosev;
     }
@@ -633,16 +639,16 @@ public class BakResult implements BakResultService {
      * {@inheritDoc}
      */
     @Override
-    public int bakDelivered(@WebParam(name = "GUID ", targetNamespace = Namespace)
-                            String GUID,
-                            @WebParam(name = "DtTime", targetNamespace = Namespace)
-                            String DtTime,
-                            @WebParam(name = "orderMisId", targetNamespace = Namespace)
-                            Integer orderMisId,
+    public int bakDelivered(@WebParam(name = "orderBarCode", targetNamespace = Namespace)
+                            Integer orderBarCode,
+                            @WebParam(name = "TakenTissueJournal", targetNamespace = Namespace)
+                            String takenTissueJournal,
+                            @WebParam(name = "getTissueTime", targetNamespace = Namespace)
+                            String tissueTime,
                             @WebParam(name = "orderBiomaterialName", targetNamespace = Namespace)
-                            Integer orderBarCode) throws CoreException {
+                            String orderBiomaterialName) throws CoreException {
 
-        logger.info("Bak Delivered [{}],[{}],[{}],[{}]", GUID, orderMisId, orderBarCode, DtTime);
+        logger.info("Bak Delivered [{}],[{}],[{}],[{}]", orderBarCode, takenTissueJournal, tissueTime, orderBiomaterialName);
         return 0;
     }
 }
