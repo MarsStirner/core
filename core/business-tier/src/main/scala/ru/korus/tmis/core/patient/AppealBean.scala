@@ -143,15 +143,14 @@ class AppealBean extends AppealBeanLocal
   def insertAppealForPatient(appealData : AppealData, patientId: Int, authData: AuthData) = {
 
     //1. Event и проверка данных на валидность
-    var newEvent = this.verificationData(patientId, authData, appealData, true)
+    val newEvent = this.verificationData(patientId, authData, appealData, true)
     dbManager.persist(newEvent)
     dbManager.detach(newEvent)
     insertOrModifyAppeal(appealData, newEvent, true, authData)
   }
 
   def updateAppeal(appealData : AppealData, eventId: Int, authData: AuthData) = {
-
-    var newEvent = this.verificationData(eventId, authData, appealData, false)
+    val newEvent = this.verificationData(eventId, authData, appealData, false)
     insertOrModifyAppeal(appealData, newEvent, false, authData)
   }
 
@@ -237,7 +236,7 @@ class AppealBean extends AppealBeanLocal
         if (!flgCreate)
           entities = entities + ap
 
-        val values = this.getValueByCase(ap.getType.getId.intValue(), appealData, authData)
+        var values = this.getValueByCase(ap.getType.getId.intValue(), appealData, authData)
         if (values!=null){
           values.size match {
             case 0 => {
@@ -272,6 +271,12 @@ class AppealBean extends AppealBeanLocal
                 }
               }
               var it = 0
+              // Если не пришло отделение поступления - проставляем приемное отделение
+              val pTypeId = dbRbCoreActionPropertyBean.getRbCoreActionPropertiesByActionPropertyTypeId(ap.getType.getId.intValue()).getId.toInt
+              val storedpTypeId = iCapIds("db.rbCap.host.primary.id.orgStructStay").toInt
+              if(pTypeId.equals(storedpTypeId))
+                values = Set(i18n("db.dayHospital.id"))
+
               values.foreach(value => {
                 val apv = actionPropertyBean.setActionPropertyValue(ap, value, it)
                 if (apv!=null)
