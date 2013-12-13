@@ -274,7 +274,7 @@ class AppealBean extends AppealBeanLocal
               // Если не пришло отделение поступления - проставляем приемное отделение
               val pTypeId = dbRbCoreActionPropertyBean.getRbCoreActionPropertiesByActionPropertyTypeId(ap.getType.getId.intValue()).getId.toInt
               val storedpTypeId = iCapIds("db.rbCap.host.primary.id.orgStructStay").toInt
-              if(pTypeId.equals(storedpTypeId))
+              if(pTypeId.equals(storedpTypeId) && values.head.equals("0"))
                 values = Set(i18n("db.dayHospital.id"))
 
               values.foreach(value => {
