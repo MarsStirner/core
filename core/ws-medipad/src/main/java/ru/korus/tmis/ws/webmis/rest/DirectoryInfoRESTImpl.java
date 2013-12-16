@@ -281,7 +281,7 @@ public class DirectoryInfoRESTImpl {
         java.util.LinkedHashMap<Integer, Integer> sortingFieldIds= AuxiliaryFunctions.foldFilterValueToLinkedMapFromQuery(fullQueryPath, "sortingField[", "]=");
 
         boolean fields = ((filterFields!=null)&&filterFields.size()>0);
-        boolean values = ((filterValue!=null)&&(filterValue.isEmpty()!=true));
+        boolean values = ((filterValue!=null)&&(!filterValue.isEmpty()));
         boolean recordIds = ((filterRecordIds!=null)&&filterRecordIds.size()>0);
 
         if((fields&&values)||(fields&&recordIds)||(recordIds&&values)) {
@@ -407,7 +407,6 @@ public class DirectoryInfoRESTImpl {
      * &#15; "name" - по обозначению типа действия;</pre>
      * @param groupId Фильтр по идентификатору группы типа действия (s11r64.ActionType.group_id). (В url: filter[groupId]=...)
      * @param code  Фильтр по коду типа действия (s11r64.ActionType.code). (В url: filter[code]=...)
-     * @param flatCode Фильтр по флэтКоду. (В url: filter[flatCode]=...)
      * @param view  Фильтр по коду типа отображения информации. (В url: filter[view]=...)
      * &#15; Возможные значения:
      * &#15; "tree" - в виде дерева;
@@ -423,8 +422,7 @@ public class DirectoryInfoRESTImpl {
                                         @QueryParam("patientId")int patientId,
                                         @QueryParam("filter[groupId]")int groupId,
                                         @QueryParam("filter[code]")String code,
-                                        @QueryParam("filter[view]")String view/*,
-                                        @QueryParam("filter[mnem]")String mnem*/) {
+                                        @QueryParam("filter[view]")String view) {
 
         java.util.List<String> mnems = info.getQueryParameters().get("filter[mnem]");
         java.util.List<String> flatCodes = info.getQueryParameters().get("filter[flatCode]");
@@ -509,6 +507,14 @@ public class DirectoryInfoRESTImpl {
         EXAM("exam"){
             public String getSubType() { return "examinations";}
             public String getMnemonic() { return "EXAM";}
+        },
+        JOUR_OLD("jour_old"){
+            public String getSubType() { return "journal old";}
+            public String getMnemonic() { return "JOUR_OLD";}
+        },
+        EXAM_OLD("exam_old"){
+            public String getSubType() { return "examinations old";}
+            public String getMnemonic() { return "EXAM_OLD";}
         },
         JOUR("jour"){
             public String getSubType() { return "journal";}
