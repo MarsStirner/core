@@ -1,11 +1,7 @@
 package ru.korus.tmis.util.logs;
 
 import org.joda.time.DateTime;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
-import java.text.SimpleDateFormat;
-import java.util.Date;
 import java.util.StringTokenizer;
 
 /**
@@ -15,7 +11,7 @@ import java.util.StringTokenizer;
  * Description: Класс для записи продолжительных операций в виде строки, последовательность отделяется через скобки "[]" <br>
  */
 public class ToLog {
-    private static final String DATE_TIME_FORMAT = "yyyy-MM-dd hh:mm:ss,SS";
+    private static final String DATE_TIME_FORMAT = "yyyy-MM-dd HH:mm:ss,SS";
     private StringBuffer sb;
     private long startTime;
     private long delta = 0;
