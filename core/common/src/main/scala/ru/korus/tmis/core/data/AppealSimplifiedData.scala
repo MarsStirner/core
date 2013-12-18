@@ -133,7 +133,7 @@ class AppealSimplifiedRequestDataFilter {
     this.code = code
   }
 
-  def toQueryStructure() = {
+  def toQueryStructure = {
     var qs = new QueryDataStructure()
     if(this.patientId>0){
       qs.query += "AND e.patient.id = :patientId\n"
