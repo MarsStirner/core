@@ -545,6 +545,11 @@ exception PolicyTypeNotFoundException{
     2:i32 code;
 }
 
+exception DoctorAbsenceException{
+    1:string reason;
+    2:i32 code;
+}
+
 /////////////////////////////////////////////////////////////////////
 //Service 
 /////////////////////////////////////////////////////////////////////
@@ -631,7 +636,7 @@ list<ExtendedTicketsAvailability> getTicketsAvailability(1:GetTicketsAvailabilit
  * @throws SQLException                  когда произошла внутренняя ошибка при запросах к БД ЛПУ
  */
 Amb getWorkTimeAndStatus(1:GetTimeWorkAndStatusParameters params)
-    throws (1:NotFoundException exc, 2:SQLException excsql);
+    throws (1:NotFoundException exc, 2:SQLException excsql, 3:DoctorAbsenceException absenceExc);
 
 /**
  * добавление нового пациента в БД ЛПУ

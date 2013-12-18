@@ -26,6 +26,7 @@
         <module>ws-transfusion</module>
         <module>communication</module>
         <module>ws-users-mgr</module>
+        <module>config</module>
     </modules>
 
 
@@ -539,12 +540,6 @@
             <groupId>org.slf4j</groupId>
             <artifactId>slf4j-api</artifactId>
             <version>${version.logging.slf4j}</version>
-        </dependency>
-
-        <dependency>
-            <groupId>ch.qos.logback</groupId>
-            <artifactId>logback-classic</artifactId>
-            <version>${version.logging.logback}</version>
         </dependency>
 
         <dependency>

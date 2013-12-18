@@ -118,6 +118,12 @@
             <type>ejb</type>
         </dependency>
 
+        <dependency>
+            <groupId>ru.korus.tmis.config</groupId>
+            <artifactId>config</artifactId>
+            <version>${version.tmis.core}</version>
+            <type>jar</type>
+        </dependency>
 
 
     </dependencies>
@@ -162,10 +168,9 @@
                     <generateApplicationXml>true</generateApplicationXml>
                     <!--<version>7</version>-->
                     <defaultLibBundleDir>lib</defaultLibBundleDir>
-                    <!--<earSourceDirectory>${basedir}/src/main/resources/</earSourceDirectory>-->
+                    <earSourceDirectory>${basedir}/src/main/resources/</earSourceDirectory>
                     <!--<earSourceDirectory>${basedir}/src/main/webapps/</earSourceDirectory>-->
-                    <earSourceExcludes>logback.xml</earSourceExcludes>
-                    <!--<earSourceIncludes>logback.xml</earSourceIncludes>-->
+                    <earSourceIncludes>logback.xml</earSourceIncludes>
                 </configuration>
             </plugin>
             <plugin>
