@@ -219,12 +219,12 @@ public class CommServer implements Communications.Iface {
     @Deprecated
     public Amb getWorkTimeAndStatus(final GetTimeWorkAndStatusParameters params) throws TException {
         final int currentRequestNum = ++requestNum;
-        logger.info("#{} Call method -> CommServer.getWorkTimeAndStatus({})", currentRequestNum, params);
+        logger.info(LOGGING_SUBSYSTEM_MARKER, "#{} Call method -> CommServer.getWorkTimeAndStatus({})", currentRequestNum, params);
         if (!params.isSetDate()) {
             params.setDate(new DateMidnight(DateTimeZone.UTC).getMillis());
         }
         final Date paramsDate = DateConvertions.convertUTCMillisecondsToLocalDate(params.getDate());
-        logger.debug("Readable date: {}", paramsDate);
+        logger.debug(LOGGING_SUBSYSTEM_MARKER, "Readable date: {}", paramsDate);
         Action personAction = null;
         //Доктор для которого получаем расписание
         Staff doctor = null;
