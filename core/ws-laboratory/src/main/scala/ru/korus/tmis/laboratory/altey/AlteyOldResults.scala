@@ -25,8 +25,8 @@ import ru.korus.tmis.laboratory.altey.business.AlteyBusinessBeanLocal
   endpointInterface = "ru.korus.tmis.laboratory.altey.AlteyResultsService",
   targetNamespace = "http://korus.ru/tmis/tmis-laboratory-integration",
   serviceName = "tmis-laboratory-integration",
-  portName = "tmis-laboratory-integration",
-  name = "tmis-laboratory-integration")
+  portName = "tmis",
+  name = "tmis")
 @HandlerChain(file = "tmis-ws-lab-logging-handlers.xml")
 class AlteyOldResults extends AlteyResultsService with Logging with I18nable {
 

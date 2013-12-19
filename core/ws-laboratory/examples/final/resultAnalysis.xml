@@ -42,8 +42,8 @@
                         </assignedPerson>
                     </authorOrPerformer>
 
+                    <!-- Один или несколько блоков subject с описанием результата и автора -->
                     <subject typeCode="SUBJ">
-                        <!-- раздел результата 1, для идентификации заказа/исследования -->
                         <observationReport classCode="GROUPER" moodCode="EVN">
                             <id root="{идентификатор направления на анализы actionId}"/>
                             <code code="{код исследования}" displayName="{название исследования}"/>
