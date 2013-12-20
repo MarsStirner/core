@@ -235,7 +235,7 @@
         <url>http://192.168.1.102</url>
         <charset>UTF8</charset>
         <contentType>application/json</contentType>
-        <timeout>150</timeout>
+        <timeout>3000</timeout>
         <!--Фильтр на уровни равные или выше указанного-->
         <filter class="ch.qos.logback.classic.filter.ThresholdFilter">
             <level>INFO</level>

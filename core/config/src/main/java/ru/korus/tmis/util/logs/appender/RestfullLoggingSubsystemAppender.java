@@ -6,20 +6,17 @@ import ch.qos.logback.core.Layout;
 
 import org.apache.http.Header;
 import org.apache.http.HttpResponse;
-import org.apache.http.client.ClientProtocolException;
 import org.apache.http.client.HttpClient;
 import org.apache.http.client.methods.HttpGet;
-import org.apache.http.client.methods.HttpPost;
-import org.apache.http.entity.StringEntity;
 import org.apache.http.impl.client.DefaultHttpClient;
 import org.apache.http.message.BasicHeader;
-import org.apache.http.params.HttpConnectionParams;
+import ru.korus.tmis.util.logs.task.LoggingSubsystemRequest;
 
 import java.io.IOException;
-import java.io.InputStream;
-import java.io.UnsupportedEncodingException;
 import java.net.URI;
 import java.net.URISyntaxException;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
 
 /**
  * Author: Upatov Egor <br>
@@ -28,7 +25,6 @@ import java.net.URISyntaxException;
  * Description: <br>
  */
 public class RestfullLoggingSubsystemAppender extends AppenderBase<ILoggingEvent> {
-
 
     //Адрес сервиса куда отправляем запросы на логирование
     private String url;
@@ -53,9 +49,16 @@ public class RestfullLoggingSubsystemAppender extends AppenderBase<ILoggingEvent
     private Header[] headers = new Header[2];
 
 
-    //Layout возвращает строку в нужном формате,
-    // в данном случае необходимо получить строковое отображение JSON-овского объекта
+    //Layout возвращает строку в нужном формате
+    //Layout для подсистемы журналирования: в данном случае необходимо получить строковое отображение JSON-овского объекта
     private Layout<ILoggingEvent> layout;
+
+    //Размер пула потоков
+    private static final int POOL_SIZE = 8;
+    //Пул потоков
+    private ExecutorService pool = Executors.newFixedThreadPool(POOL_SIZE);
+
+    private int counter = 0;
 
 
     @Override
@@ -64,8 +67,17 @@ public class RestfullLoggingSubsystemAppender extends AppenderBase<ILoggingEvent
         checkUrl();
         checkContentType();
         checkCharset();
+        LoggingSubsystemRequest.setHeaders(headers);
         checkLayout();
         checkTimeout();
+        LoggingSubsystemRequest.setParent(this);
+    }
+
+    @Override
+    public void stop(){
+        super.stop();
+        pool.shutdown();
+
     }
 
     private void checkTimeout() {
@@ -75,6 +87,7 @@ public class RestfullLoggingSubsystemAppender extends AppenderBase<ILoggingEvent
             addWarn("LoggingSubsystemAppender: Timeout is not set. Set it to 3000 milliseconds");
             timeout = DEFAULT_TIMEOUT;
         }
+        LoggingSubsystemRequest.setTimeout(timeout);
     }
 
     /**
@@ -88,6 +101,7 @@ public class RestfullLoggingSubsystemAppender extends AppenderBase<ILoggingEvent
             addWarn(String.format("LoggingSubsystemAppender: Charset is not present. Set it to \"%s\"", charset));
         }
         headers[0] = new BasicHeader("charset", charset);
+        LoggingSubsystemRequest.setCharset(charset);
     }
 
 
@@ -97,6 +111,7 @@ public class RestfullLoggingSubsystemAppender extends AppenderBase<ILoggingEvent
     private void checkLayout() {
         if (layout != null && layout.isStarted()) {
             addInfo(String.format("LoggingSubsystemAppender: layout is initialized and has type \"%s\"", layout.getClass().getName()));
+            LoggingSubsystemRequest.setLayout(layout);
         } else {
             addError("LoggingSubsystem: layout is not initialized. Appender not started");
             stop();
@@ -153,47 +168,16 @@ public class RestfullLoggingSubsystemAppender extends AppenderBase<ILoggingEvent
             addError("LoggingSubsystemAppender: URL is not present. Appender not started.");
             stop();
         }
+        LoggingSubsystemRequest.setUri(entryURI);
     }
 
 
     @Override
     protected void append(final ILoggingEvent event) {
-        addWarn("######### NEW REQUEST");
-        boolean result = sendToLoggingSubsystem(event);
-        appendSendStatusToFile(event);
-    }
-
-    private void appendSendStatusToFile(final ILoggingEvent event) {
-        addWarn("## APPEND TO SOME LOG_FILE");
-    }
-
-    private boolean sendToLoggingSubsystem(final ILoggingEvent event) {
-        final HttpClient httpClient = new DefaultHttpClient();
-        HttpConnectionParams.setConnectionTimeout(httpClient.getParams(), timeout);
-        HttpConnectionParams.setSoTimeout(httpClient.getParams(), timeout);
-        if (event != null || event.getMessage().length() > 1) {
-            final HttpPost request = new HttpPost(entryURI);
-            final String data;
-            try {
-                data = layout.doLayout(event);
-                addInfo(data);
-                request.setHeaders(headers);
-                request.setEntity(new StringEntity(data, charset));
-                final HttpResponse response = httpClient.execute(request);
-                addWarn(response.toString());
-            } catch (UnsupportedEncodingException e) {
-                addError("Encoding exception", e);
-            } catch (ClientProtocolException e) {
-                addError("CP exception", e);
-            } catch (IOException e) {
-                addError("IO exception", e);
-            } catch (Exception e) {
-                addError("Exception", e);
-            } finally {
-                httpClient.getConnectionManager().shutdown();
-            }
-        }
-        return true;
+        counter++;
+        addInfo("###NEW_REQUEST #"+counter);
+        pool.execute(new LoggingSubsystemRequest(event, counter));
+        addInfo("###END OF REQUEST #"+ counter);
     }
 
     public String getUrl() {

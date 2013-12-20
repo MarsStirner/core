@@ -4,6 +4,7 @@ import ch.qos.logback.classic.Level;
 import ch.qos.logback.classic.spi.ILoggingEvent;
 import ch.qos.logback.core.LayoutBase;
 
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
@@ -24,6 +25,7 @@ public class JSONLayout extends LayoutBase<ILoggingEvent> {
     private List<String> tagList = new ArrayList<String>(5);
 
     private Gson gson = new Gson();
+    private SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss:SSS z");
 
     @Override
     public void start() {
@@ -61,11 +63,14 @@ public class JSONLayout extends LayoutBase<ILoggingEvent> {
     public String doLayout(ILoggingEvent event) {
         final LoggingSubsystemItem item = new LoggingSubsystemItem();
         item.setLevel(event.getLevel().levelStr);
-        item.addToOwner("version", coreVersion);
-        item.addToOwner("infisCode", "I'm LPU");
+        item.addToOwner("coreVersion", coreVersion);
+        item.addToOwner("LoggerName", event.getLoggerName());
         item.setTags(tagList);
-        item.addToData("FormattedMessage", event.getFormattedMessage());
+        item.addToData("Number", event.getLoggerContextVO().getName() );
+        item.addToData("Timestamp", dateFormat.format(event.getTimeStamp()));
         item.addToData("ThreadName", event.getThreadName());
+        item.addToData("FormattedMessage", event.getFormattedMessage());
+
         return gson.toJson(item);
     }
 
