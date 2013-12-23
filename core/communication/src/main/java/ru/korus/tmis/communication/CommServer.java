@@ -874,7 +874,7 @@ public class CommServer implements Communications.Iface {
      * @throws NotFoundException когда нету такого идентификатора врача
      */
     @Override
-    public Map<Long, Schedule> getPersonSchedule(final ScheduleParameters params)
+    public ru.korus.tmis.communication.thriftgen.PersonSchedule getPersonSchedule(final ScheduleParameters params)
             throws TException {
         final int currentRequestNum = ++requestNum;
         logger.info("#{} Call method -> CommServer.getPersonSchedule({})", currentRequestNum, params);
@@ -895,17 +895,20 @@ public class CommServer implements Communications.Iface {
         final Date endInterval = (params.isSetEndDateTime() && params.getBeginDateTime() < params.getEndDateTime()) ?
                 DateConvertions.convertUTCMillisecondsToLocalDate(params.getEndDateTime()) : new DateMidnight(begInterval).plusMonths(1).toDate();
         logger.debug("From [{}] to [{}]", begInterval, endInterval);
+        final ru.korus.tmis.communication.thriftgen.PersonSchedule result = new ru.korus.tmis.communication.thriftgen.PersonSchedule();
         final List<Action> shedule = staffBean.getPersonShedule(doctor.getId(), begInterval, endInterval);
         if (shedule.isEmpty()) {
             logger.info("End of #{}. Person[{}] has no one ambulatoryAction in this interval", currentRequestNum, doctor.getId());
-            return new HashMap<Long, Schedule>(0);
+            result.setSchedules(new HashMap<Long, Schedule>(0));
+            return result;
         }
-        final Map<Long, Schedule> result = new HashMap<Long, Schedule>(shedule.size());
         for (Action currentAction : shedule) {
             final PersonSchedule currentSchedule = new PersonSchedule(doctor, currentAction);
             final RbReasonOfAbsence reasonOfAbsence = currentSchedule.checkReasonOfAbscence();
             if (reasonOfAbsence != null) {
                 logger.info("Doctor has ReasonOfAbsence.", currentRequestNum);
+                result.putToPersonAbsences(DateConvertions.convertDateToUTCMilliseconds(currentSchedule.getAmbulatoryDate()),
+                        new ReasonOfAbsenceException(reasonOfAbsence.getName(), reasonOfAbsence.getCode()));
                 continue;
             }
             try {
@@ -919,7 +922,7 @@ public class CommServer implements Communications.Iface {
 //                currentSchedule.checkQuotingBySpeciality(params.hospitalUidFrom);
 //            }
             currentSchedule.takeConstraintsOnTickets(CommunicationHelper.getQuotingType(params));
-            result.put(
+            result.putToSchedules(
                     DateConvertions.convertDateToUTCMilliseconds(currentSchedule.getAmbulatoryDate()),
                     ParserToThriftStruct.parsePersonSchedule(currentSchedule)
             );
