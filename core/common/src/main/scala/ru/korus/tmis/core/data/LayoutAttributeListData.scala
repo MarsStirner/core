@@ -2,7 +2,7 @@ package ru.korus.tmis.core.data
 
 import javax.xml.bind.annotation.{XmlRootElement, XmlType}
 import org.codehaus.jackson.annotate.JsonIgnoreProperties
-import reflect.BeanProperty
+import scala.beans.BeanProperty
 import java.util.LinkedList
 import ru.korus.tmis.core.entity.model.layout.{LayoutAttributeValue, LayoutAttribute}
 import scala.collection.JavaConversions._
@@ -79,7 +79,11 @@ class LayoutAttributeSimplifyDataContainer {
   def this (value: LayoutAttributeValue) {
     this()
     this.id = value.getId.intValue()
+
+    if(value.getLayoutAttribute == null)
+      throw new Exception("Cannot find layout attribute of layout attribute value id=" + id)
     this.layoutAttribute_id = value.getLayoutAttribute.getId.intValue()
+
     this.value = value.getValue
   }
 }

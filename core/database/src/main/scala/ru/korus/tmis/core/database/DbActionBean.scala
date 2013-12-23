@@ -568,26 +568,29 @@ class DbActionBean
     var newAction = new Action()
     //Инициализируем структуру Event
     try {
-      newAction.setCreateDatetime(now);
-      newAction.setCreatePerson(null);
-      newAction.setModifyPerson(null);
-      newAction.setActionType(actionType);
-      newAction.setModifyDatetime(now);
-      newAction.setEvent(event);
-      newAction.setNote(note);
-      newAction.setBegDate(date);
-      newAction.setEndDate(now);
+      newAction.setCreateDatetime(now)
+      newAction.setCreatePerson(null)
+      newAction.setModifyPerson(null)
+      newAction.setActionType(actionType)
+      newAction.setModifyDatetime(now)
+      newAction.setEvent(event)
+      newAction.setNote(note)
+      newAction.setBegDate(date)
+      newAction.setEndDate(now)
       newAction.setDirectionDate(date)
-      newAction.setDeleted(false);
-      newAction.setPayStatus(0);
+      newAction.setDeleted(false)
+      newAction.setPayStatus(0)
       newAction.setExecutor(person)
-      newAction.setAssigner(person)
-      newAction.setUuid(dbUUIDBeanLocal.createUUID());
+
+      //не менять на person, иначе нельзя будет отличить запись на прием к врачу с портала и других ЛПУ
+      newAction.setAssigner(null)
+
+      newAction.setUuid(dbUUIDBeanLocal.createUUID())
       if (!hospitalUidFrom.isEmpty) {
-        newAction.setHospitalUidFrom(hospitalUidFrom);
+        newAction.setHospitalUidFrom(hospitalUidFrom)
       }
       //1. Инсертим
-      em.persist(newAction);
+      em.persist(newAction)
     }
     catch {
       case ex: Exception => throw new CoreException("error while creating action ");

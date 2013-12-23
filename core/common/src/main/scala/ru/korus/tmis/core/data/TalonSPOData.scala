@@ -167,7 +167,7 @@ class TalonSPODataListFilter {
     this.code = code
   }
 
-  def toQueryStructure() = {
+  def toQueryStructure = {
     var qs = new QueryDataStructure()
 
     if(this.patientId>0){

@@ -7,7 +7,7 @@
     <SOAP-ENV:Body>
         <urn:setAnalysisResults>
             <POLB_IN224100UV01 xmlns="urn:hl7-org:v3" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-                               xsi:schemaLocation="urn:hl7-org:v3 ./processable/multicacheschemas/POLB_IN224100UV01.xsd"
+                               xsi:schemaLocation="urn:hl7-org:v3 ../processable/multicacheschemas/POLB_IN224100UV01.xsd"
                                ITSVersion="XML_1.0">
                 <id root="{UUID сообщения}"/>
                 <creationTime value="{Время создания события. Значение value кодируется по шаблону: ггггммддччммсс}"/>
@@ -42,13 +42,11 @@
                         </assignedPerson>
                     </authorOrPerformer>
 
+                    <!-- Один или несколько блоков subject с описанием результата и автора -->
                     <subject typeCode="SUBJ">
-                        <!-- раздел результата, для идентификации заказу/исследованию -->
                         <observationReport classCode="GROUPER" moodCode="EVN">
-                            <id root="{идентификатор направления на анализы}"/>
+                            <id root="{идентификатор направления на анализы actionId}"/>
                             <code code="{код исследования}" displayName="{название исследования}"/>
-                            <statusCode
-                                    code="{отметка об окончании исследований по направлению, true-окончательный, заказ закрывается, false - предварительный}"/>
 
                             <specimen typeCode="SPC" contextControlCode="OP">
                                 <specimen classCode="SPEC">
@@ -64,29 +62,40 @@
                         </observationReport>
                     </subject>
 
+                    <!-- Один или несколько блоков subject с описанием исследования -->
                     <subject typeCode="SUBJ">
-                        <!-- раздел описание результата исследования : сюда входят перечень обнаруженных микроорганизмов, и концентрация их -->
-                        <observationBattery classCode="BATTERY" moodCode="EVN">
+                        <!-- сюда входят перечень обнаруженных микроорганизмов, и концентрация их -->
+                        <observationBattery classCode="BATTERY" moodCode="EVN">                    т
                             <code displayName="{название исследования}"/>
 
                             <inFulfillmentOf typeCode="FLFS">
                                 <placerOrder classCode="ACT" moodCode="RQO">
-                                    <id extension="{идентификатор направления на анализы id=orderMisId}"/>
+                                    <id extension="{идентификатор направления на анализы actionId}"/>
                                 </placerOrder>
                             </inFulfillmentOf>
 
-
                             <component1 typeCode="COMP" contextControlCode="ON">
-
                                 <observationEvent classCode="OBS" moodCode="EVN">
                                     <code code="{код исследования}" displayName="{название исследования}" codeSystemName="{общий комментарий}"/>
+                                    <statusCode
+                                            code="{отметка об окончании исследований по направлению, true-окончательный, заказ закрывается, false - предварительный}"/>
                                     <effectiveTime value="{дата исследования}"/>
-                                    <confidentialityCode code="{числовое значение}" displayName="{результат}"/>
+                                    <confidentialityCode code="{числовое значение для ИФА}" displayName="{результат для ИФА}"/>
 
-                                    <!-- 0 или несколько-->
+                                    <!-- 0 или несколько блоков с описание микроорганизмов -->
                                     <component1 typeCode="COMP" contextControlCode="ON">
                                         <observationEvent classCode="OBS" moodCode="EVN">
-                                            <code code="{код микроорганизма}" displayName="{название микроорганизма}" codeSystem="{чувствительность}"/>
+                                            <code code="{код микроорганизма1}" displayName="{название микроорганизма1}" codeSystem="{чувствительность1}"/>
+                                        </observationEvent>
+                                    </component1>
+                                    <component1 typeCode="COMP" contextControlCode="ON">
+                                        <observationEvent classCode="OBS" moodCode="EVN">
+                                            <code code="{код микроорганизма2}" displayName="{название микроорганизма2}" codeSystem="{чувствительность2}"/>
+                                        </observationEvent>
+                                    </component1>
+                                    <component1 typeCode="COMP" contextControlCode="ON">
+                                        <observationEvent classCode="OBS" moodCode="EVN">
+                                            <code code="{код микроорганизмаХ}" displayName="{название микроорганизмаХ}" codeSystem="{чувствительностьХ}"/>
                                         </observationEvent>
                                     </component1>
 
@@ -95,24 +104,44 @@
                         </observationBattery>
                     </subject>
 
+
+                    <!-- Один или несколько блоков subject с результатами, проведенными конкретно для обнаруженного микроорганизма, проверка на чувствительность к антибиотикам, антибиотиков может быть несколько -->
                     <subject typeCode="SUBJ">
-                        <!-- результаты, проведенные конкретно для обнаруженного микроорганизма, проверка на чувствительность к антибиотикам, антибиотиков может быть несколько -->
                         <specimenObservationCluster classCode="CLUSTER" moodCode="EVN">
                             <specimen typeCode="SPC" contextControlCode="ON">
                                 <specimen classCode="SPEC">
-                                    <code code="{код микроорганизма}" displayName="{название микрооранизма}" codeSystem="{actionId}"/>
+                                    <code code="{код микроорганизма}" displayName="{название микрооранизма}" codeSystem="{идентификатор исследования actionId}"/>
                                 </specimen>
                             </specimen>
+
                             <component1 typeCode="COMP" contextControlCode="ON">
                                 <observationBattery classCode="BATTERY" moodCode="EVN">
 
-                                    <!-- 1 или более-->
+                                    <!-- 1 или более блоков со списком антибиотиков и чувствительностью микроорганизма к этому антибиотику с комментариями -->
                                     <component1 typeCode="COMP" contextControlCode="ON">
                                         <observationEvent classCode="OBS" moodCode="EVN">
-                                            <code code="{код антибиотика}" displayName="{название антибиотика}" codeSystem="{величина концентрации}">
-                                                <translation code="{чувствительность}"/>
+                                            <code code="{код антибиотика1}" displayName="{название антибиотика1}" codeSystem="{величина концентрации1}">
+                                                <translation code="{чувствительность1}"/>
                                             </code>
-                                            <statusCode code="{комментарий к антибиотику}"/>
+                                            <statusCode code="{комментарий к антибиотику1}"/>
+                                        </observationEvent>
+                                    </component1>
+
+                                    <component1 typeCode="COMP" contextControlCode="ON">
+                                        <observationEvent classCode="OBS" moodCode="EVN">
+                                            <code code="{код антибиотика2}" displayName="{название антибиотика2}" codeSystem="{величина концентрации2}">
+                                                <translation code="{чувствительность2}"/>
+                                            </code>
+                                            <statusCode code="{комментарий к антибиотику2}"/>
+                                        </observationEvent>
+                                    </component1>
+
+                                    <component1 typeCode="COMP" contextControlCode="ON">
+                                        <observationEvent classCode="OBS" moodCode="EVN">
+                                            <code code="{код антибиотикаХ}" displayName="{название антибиотикаХ}" codeSystem="{величина концентрацииХ}">
+                                                <translation code="{чувствительностьХ}"/>
+                                            </code>
+                                            <statusCode code="{комментарий к антибиотикуХ}"/>
                                         </observationEvent>
                                     </component1>
 
@@ -120,7 +149,6 @@
                             </component1>
                         </specimenObservationCluster>
                     </subject>
-
 
                 </controlActProcess>
             </POLB_IN224100UV01>
