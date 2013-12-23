@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<configuration scan="true" scanPeriod="30 seconds" debug="true">
+<configuration scan="true" scanPeriod="60 seconds" debug="true">
     <jmxConfigurator/>
     <contextName>tmis-core</contextName>
 
@@ -227,15 +227,17 @@
 
     <!--TEST TEST TEST TEST TEST TEST-->
     <appender name="LOGGING_SUBSYSTEM" class="ru.korus.tmis.util.logs.appender.RestfullLoggingSubsystemAppender">
+        <!--Layout отображения записи лога в строку (JSON)-->
         <layout class="ru.korus.tmis.util.logs.layout.JSONLayout">
             <coreVersion>${version.tmis.core}</coreVersion>
             <tag>core</tag>
-            <tag>#additionalTagTest#</tag>
+            <tag>TESTING</tag>
         </layout>
         <url>http://192.168.1.102</url>
         <charset>UTF8</charset>
         <contentType>application/json</contentType>
         <timeout>3000</timeout>
+        <checkInterval>30</checkInterval>
         <!--Фильтр на уровни равные или выше указанного-->
         <filter class="ch.qos.logback.classic.filter.ThresholdFilter">
             <level>INFO</level>

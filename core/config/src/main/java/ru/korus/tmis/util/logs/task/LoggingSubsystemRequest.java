@@ -11,6 +11,7 @@ import org.apache.http.client.methods.HttpPost;
 import org.apache.http.entity.StringEntity;
 import org.apache.http.impl.client.DefaultHttpClient;
 import org.apache.http.params.HttpConnectionParams;
+import ru.korus.tmis.util.logs.appender.RestfullLoggingSubsystemAppender;
 
 import java.io.IOException;
 import java.io.UnsupportedEncodingException;
@@ -29,7 +30,7 @@ public class LoggingSubsystemRequest implements Runnable {
     private static Header[] headers;
     private static int timeout;
     private static String charset;
-    private static Appender parent;
+    private static RestfullLoggingSubsystemAppender parent;
 
     private final int number;
     private final ILoggingEvent event;
@@ -41,32 +42,40 @@ public class LoggingSubsystemRequest implements Runnable {
 
     @Override
     public void run() {
-        long startTimeMillis = System.currentTimeMillis();
         final HttpClient httpClient = new DefaultHttpClient();
         HttpConnectionParams.setConnectionTimeout(httpClient.getParams(), timeout);
         HttpConnectionParams.setSoTimeout(httpClient.getParams(), timeout);
         if (event != null && event.getMessage() != null && event.getMessage().length() > 1) {
+            final HttpPost request = new HttpPost(uri);
+            final String data = layout.doLayout(event);
             try {
-                final HttpPost request = new HttpPost(uri);
-                final String data = layout.doLayout(event);
                 request.setHeaders(headers);
                 request.setEntity(new StringEntity(data, charset));
                 final HttpResponse response = httpClient.execute(request);
-                long responseArrived = System.currentTimeMillis();
-                parent.addInfo(String.format("#%d Milliseconds elapsed=%d" , number, responseArrived - startTimeMillis));
+                if(200 != response.getStatusLine().getStatusCode()){
+                    parent.addError(String.format("#%d Message:\"%s\" return \"%s\" ResponseContent:\"%s\"",
+                            number,
+                            data,
+                            response.toString(),
+                            convertStreamToString(response.getEntity().getContent()) )
+                    );
+                }
             } catch (UnsupportedEncodingException e) {
-                parent.addError("############# Encoding error #"+number, e);
+                parent.addError(String.format("#%d UnsupportedEncodingException for message:\"%s\"", number, data), e);
+                parent.submitError();
             } catch (ClientProtocolException e) {
-                parent.addError("############# ClientProtocol error #"+number, e);
+                parent.addError(String.format("#%d ClientProtocolException for message:\"%s\"", number, data), e);
+                parent.submitError();
             } catch (IOException e) {
-                parent.addError("############# IO error #"+number, e);
+                parent.addError(String.format("#%d IOException for message:\"%s\"", number, data), e);
+                parent.submitError();
             } catch (Exception e) {
-                parent.addError("############# Unknown error #"+number, e);
+                parent.addError(String.format("#%d Unknown Exception for message:\"%s\"", number, data), e);
+                parent.submitError();
             } finally {
                 httpClient.getConnectionManager().shutdown();
             }
         }
-
     }
 
     public static void setUri(final URI uri) {
@@ -89,7 +98,7 @@ public class LoggingSubsystemRequest implements Runnable {
         LoggingSubsystemRequest.charset = charset;
     }
 
-    public static void setParent(Appender parent) {
+    public static void setParent(RestfullLoggingSubsystemAppender parent) {
         LoggingSubsystemRequest.parent = parent;
     }
 

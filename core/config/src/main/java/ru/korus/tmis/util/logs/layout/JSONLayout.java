@@ -4,6 +4,8 @@ import ch.qos.logback.classic.Level;
 import ch.qos.logback.classic.spi.ILoggingEvent;
 import ch.qos.logback.core.LayoutBase;
 
+import java.net.InetAddress;
+import java.net.UnknownHostException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Iterator;
@@ -26,6 +28,8 @@ public class JSONLayout extends LayoutBase<ILoggingEvent> {
 
     private Gson gson = new Gson();
     private SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss:SSS z");
+
+    private String ipAddress = "";
 
     @Override
     public void start() {
@@ -57,6 +61,11 @@ public class JSONLayout extends LayoutBase<ILoggingEvent> {
             //что-то в коде не нашел где у них это делается.. собственно смысл флажка в чем тогда?
             stop();
         }
+        try {
+            ipAddress = InetAddress.getLocalHost().getHostAddress();
+        } catch (UnknownHostException e) {
+            ipAddress = "unknown";
+        }
     }
 
     @Override
@@ -65,6 +74,7 @@ public class JSONLayout extends LayoutBase<ILoggingEvent> {
         item.setLevel(event.getLevel().levelStr);
         item.addToOwner("coreVersion", coreVersion);
         item.addToOwner("LoggerName", event.getLoggerName());
+        item.addToOwner("ip", ipAddress);
         item.setTags(tagList);
         item.addToData("Number", event.getLoggerContextVO().getName() );
         item.addToData("Timestamp", dateFormat.format(event.getTimeStamp()));

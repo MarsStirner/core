@@ -36,14 +36,20 @@ public class RestfullLoggingSubsystemAppender extends AppenderBase<ILoggingEvent
     //Адрес для проверки доступности сервиса
     private URI stateURI;
 
+    //Время последнего опроса на доступность подсистемы журналирования
+    private long lastStateCheck;
+    //Флажок доступности сервиса подсистемы журналирования
+    private boolean serviceAvailable = false;
+    //Интервал сканирования доступности подсистемы журналирования
+    private long checkInterval = 30000;
+
     //Указанная кодировка
-    private String charset;
+    private String charset = "UTF8";
     //Заголовок с типом содержимого
-    private String contentType;
+    private String contentType = "application/json";
 
     //таймаут соединения & ожидания ответа
-    private Integer timeout;
-    private static final Integer DEFAULT_TIMEOUT = 3000;
+    private Integer timeout = 3000;
 
     //Внтутренний список заголовков запроса
     private Header[] headers = new Header[2];
@@ -56,9 +62,13 @@ public class RestfullLoggingSubsystemAppender extends AppenderBase<ILoggingEvent
     //Размер пула потоков
     private static final int POOL_SIZE = 8;
     //Пул потоков
-    private ExecutorService pool = Executors.newFixedThreadPool(POOL_SIZE);
+    private ExecutorService pool;
 
     private int counter = 0;
+
+
+    private long lastErrorTime;
+    private int errorCount = 0;
 
 
     @Override
@@ -71,21 +81,21 @@ public class RestfullLoggingSubsystemAppender extends AppenderBase<ILoggingEvent
         checkLayout();
         checkTimeout();
         LoggingSubsystemRequest.setParent(this);
+        pool = Executors.newFixedThreadPool(POOL_SIZE);
     }
 
     @Override
-    public void stop(){
-        super.stop();
+    public void stop() {
+        serviceAvailable = false;
         pool.shutdown();
-
+        //super.stop();
     }
 
     private void checkTimeout() {
-        if(timeout != null && timeout > 0){
+        if (timeout != null && timeout > 0) {
             addInfo(String.format("LoggingSubsystemAppender: Timeout is set to %d milliseconds", timeout));
         } else {
             addWarn("LoggingSubsystemAppender: Timeout is not set. Set it to 3000 milliseconds");
-            timeout = DEFAULT_TIMEOUT;
         }
         LoggingSubsystemRequest.setTimeout(timeout);
     }
@@ -97,7 +107,6 @@ public class RestfullLoggingSubsystemAppender extends AppenderBase<ILoggingEvent
         if (charset != null && !charset.isEmpty()) {
             addInfo(String.format("LoggingSubsystemAppender: Charset is set to \"%s\"", charset));
         } else {
-            contentType = "UTF8";
             addWarn(String.format("LoggingSubsystemAppender: Charset is not present. Set it to \"%s\"", charset));
         }
         headers[0] = new BasicHeader("charset", charset);
@@ -114,7 +123,7 @@ public class RestfullLoggingSubsystemAppender extends AppenderBase<ILoggingEvent
             LoggingSubsystemRequest.setLayout(layout);
         } else {
             addError("LoggingSubsystem: layout is not initialized. Appender not started");
-            stop();
+            super.stop();
         }
     }
 
@@ -126,7 +135,6 @@ public class RestfullLoggingSubsystemAppender extends AppenderBase<ILoggingEvent
         if (contentType != null && !contentType.isEmpty()) {
             addInfo(String.format("LoggingSubsystemAppender: Content-Type=\"%s\"", contentType));
         } else {
-            contentType = "application/json";
             addWarn(String.format("LoggingSubsystemAppender: Content-Type is not present. Set it to \"%s\"", contentType));
         }
         headers[1] = new BasicHeader("content-type", contentType);
@@ -146,6 +154,8 @@ public class RestfullLoggingSubsystemAppender extends AppenderBase<ILoggingEvent
             try {
                 final HttpResponse stateResponse = httpClient.execute(stateRequest);
                 addInfo(String.format("LoggingSubsystem: checkState return \"%s\"", convertStreamToString(stateResponse.getEntity().getContent())));
+                lastStateCheck = System.currentTimeMillis();
+                serviceAvailable = true;
                 addError(String.format("STATUS LINE %d %s", stateResponse.getStatusLine().getStatusCode(), stateResponse.getStatusLine().getReasonPhrase()));
             } catch (IOException e) {
                 addError("LoggingSubsystemAppender: State request IO exception. Appender not started.", e);
@@ -174,10 +184,14 @@ public class RestfullLoggingSubsystemAppender extends AppenderBase<ILoggingEvent
 
     @Override
     protected void append(final ILoggingEvent event) {
-        counter++;
-        addInfo("###NEW_REQUEST #"+counter);
-        pool.execute(new LoggingSubsystemRequest(event, counter));
-        addInfo("###END OF REQUEST #"+ counter);
+        if (serviceAvailable) {
+            counter++;
+            pool.execute(new LoggingSubsystemRequest(event, counter));
+        } else {
+            if (System.currentTimeMillis() - lastStateCheck > checkInterval) {
+                start();
+            }
+        }
     }
 
     public String getUrl() {
@@ -227,8 +241,30 @@ public class RestfullLoggingSubsystemAppender extends AppenderBase<ILoggingEvent
         this.timeout = timeout;
     }
 
+    public long getCheckInterval() {
+        return checkInterval;
+    }
+
+    public void setCheckInterval(long checkInterval) {
+        this.checkInterval = checkInterval * 1000;
+    }
+
     private static String convertStreamToString(final java.io.InputStream is) {
         final java.util.Scanner s = new java.util.Scanner(is).useDelimiter("\\A");
         return s.hasNext() ? s.next() : "";
+    }
+
+
+    public synchronized void submitError() {
+        if (System.currentTimeMillis() - lastErrorTime > checkInterval) {
+            errorCount++;
+        } else {
+            errorCount = 1;
+        }
+        lastErrorTime = System.currentTimeMillis();
+        if (errorCount > 10) {
+            errorCount = 0;
+            stop();
+        }
     }
 }
