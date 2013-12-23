@@ -244,9 +244,10 @@ public class CommServer implements Communications.Iface {
         }
 
         final PersonSchedule currentSchedule = new PersonSchedule(doctor, personAction);
-        if (currentSchedule.checkReasonOfAbscence()) {
+        final RbReasonOfAbsence reasonOfAbsence = currentSchedule.checkReasonOfAbscence();
+        if (reasonOfAbsence != null) {
             logger.info("End of #{}. Doctor has ReasonOfAbsence.", currentRequestNum);
-            throw new NotFoundException().setError_msg("Doctor has ReasonOfAbsence");
+            throw new ReasonOfAbsenceException().setCode(reasonOfAbsence.getCode()).setName(reasonOfAbsence.getName());
         }
         try {
             currentSchedule.formTickets();
@@ -839,7 +840,9 @@ public class CommServer implements Communications.Iface {
         for (Action currentAction : doctorActions) {
             try {
                 final PersonSchedule currentSchedule = new PersonSchedule(doctor, currentAction);
-                if (currentSchedule.checkReasonOfAbscence()) {
+                final RbReasonOfAbsence reasonOfAbsence = currentSchedule.checkReasonOfAbscence();
+                if (reasonOfAbsence != null) {
+                    logger.info("End of #{}. Doctor has ReasonOfAbsence.", currentRequestNum);
                     continue;
                 }
                 currentSchedule.formTickets();
@@ -900,7 +903,9 @@ public class CommServer implements Communications.Iface {
         final Map<Long, Schedule> result = new HashMap<Long, Schedule>(shedule.size());
         for (Action currentAction : shedule) {
             final PersonSchedule currentSchedule = new PersonSchedule(doctor, currentAction);
-            if (currentSchedule.checkReasonOfAbscence()) {
+            final RbReasonOfAbsence reasonOfAbsence = currentSchedule.checkReasonOfAbscence();
+            if (reasonOfAbsence != null) {
+                logger.info("Doctor has ReasonOfAbsence.", currentRequestNum);
                 continue;
             }
             try {
@@ -1014,8 +1019,10 @@ public class CommServer implements Communications.Iface {
         }
 
         final PersonSchedule currentSchedule = new PersonSchedule(doctor, personAction);
-        if (currentSchedule.checkReasonOfAbscence()) {
-            throw new NotFoundException().setError_msg("Doctor has ReasonOfAbsence");
+        final RbReasonOfAbsence reasonOfAbsence = currentSchedule.checkReasonOfAbscence();
+        if (reasonOfAbsence != null) {
+            logger.info("End of #{}. Doctor has ReasonOfAbsence.", currentRequestNum);
+            throw new ReasonOfAbsenceException().setCode(reasonOfAbsence.getCode()).setName(reasonOfAbsence.getName());
         }
         try {
             currentSchedule.formTickets();

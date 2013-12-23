@@ -123,7 +123,7 @@ public class PersonSchedule {
      *
      * @return true - У врача есть причина отсутствия
      */
-    public boolean checkReasonOfAbscence() {
+    public RbReasonOfAbsence checkReasonOfAbscence() {
         Action timelineAction = null;
         try {
             timelineAction = CommServer.getStaffBean().getPersonActionsByDateAndType(
@@ -136,26 +136,26 @@ public class PersonSchedule {
                     .getActionPropertiesByActionIdAndTypeNames(timelineAction.getId(), ImmutableList.of("reasonOfAbsence"));
             if (actionPropertyListMap.isEmpty()) {
                 logger.debug("Timeline hasn't ReasonOfAbsence");
-                return false;
+                return null;
             } else {
                 final Iterator<ActionProperty> propertyIterator = actionPropertyListMap.keySet().iterator();
                 if (propertyIterator.hasNext()) {
                     final List<APValue> reasonAPList = actionPropertyListMap.get(propertyIterator.next());
                     if (reasonAPList.isEmpty()) {
                         logger.debug("AP exists, but AP_rbReasonOfAbsence not!");
-                        return false;
+                        return null;
                     } else {
                         logger.debug("ReasonOfAbsence is [{}] ", reasonAPList.get(0).toString());
-                        return true;
+                        return ((APValueRbReasonOfAbsence)reasonAPList.get(0)).getValue();
                     }
                 }
-                return false;
+                return null;
             }
         } catch (Exception e) {
             if (timelineAction == null) {
                 logger.debug("Timeline action doesn't exists");
             }
-            return false;
+            return null;
         }
     }
 

@@ -123,7 +123,7 @@ public class Communications {
      * 
      * @param params
      */
-    public Amb getWorkTimeAndStatus(GetTimeWorkAndStatusParameters params) throws NotFoundException, SQLException, org.apache.thrift.TException;
+    public Amb getWorkTimeAndStatus(GetTimeWorkAndStatusParameters params) throws NotFoundException, SQLException, ReasonOfAbsenceException, org.apache.thrift.TException;
 
     /**
      * добавление нового пациента в БД ЛПУ
@@ -563,7 +563,7 @@ public class Communications {
       throw new org.apache.thrift.TApplicationException(org.apache.thrift.TApplicationException.MISSING_RESULT, "getTicketsAvailability failed: unknown result");
     }
 
-    public Amb getWorkTimeAndStatus(GetTimeWorkAndStatusParameters params) throws NotFoundException, SQLException, org.apache.thrift.TException
+    public Amb getWorkTimeAndStatus(GetTimeWorkAndStatusParameters params) throws NotFoundException, SQLException, ReasonOfAbsenceException, org.apache.thrift.TException
     {
       send_getWorkTimeAndStatus(params);
       return recv_getWorkTimeAndStatus();
@@ -576,7 +576,7 @@ public class Communications {
       sendBase("getWorkTimeAndStatus", args);
     }
 
-    public Amb recv_getWorkTimeAndStatus() throws NotFoundException, SQLException, org.apache.thrift.TException
+    public Amb recv_getWorkTimeAndStatus() throws NotFoundException, SQLException, ReasonOfAbsenceException, org.apache.thrift.TException
     {
       getWorkTimeAndStatus_result result = new getWorkTimeAndStatus_result();
       receiveBase(result, "getWorkTimeAndStatus");
@@ -588,6 +588,9 @@ public class Communications {
       }
       if (result.excsql != null) {
         throw result.excsql;
+      }
+      if (result.raExc != null) {
+        throw result.raExc;
       }
       throw new org.apache.thrift.TApplicationException(org.apache.thrift.TApplicationException.MISSING_RESULT, "getWorkTimeAndStatus failed: unknown result");
     }
@@ -1294,7 +1297,7 @@ public class Communications {
         prot.writeMessageEnd();
       }
 
-      public Amb getResult() throws NotFoundException, SQLException, org.apache.thrift.TException {
+      public Amb getResult() throws NotFoundException, SQLException, ReasonOfAbsenceException, org.apache.thrift.TException {
         if (getState() != org.apache.thrift.async.TAsyncMethodCall.State.RESPONSE_READ) {
           throw new IllegalStateException("Method call not finished!");
         }
@@ -2024,6 +2027,8 @@ public class Communications {
           result.exc = exc;
         } catch (SQLException excsql) {
           result.excsql = excsql;
+        } catch (ReasonOfAbsenceException raExc) {
+          result.raExc = raExc;
         }
         return result;
       }
@@ -9926,6 +9931,7 @@ public class Communications {
     private static final org.apache.thrift.protocol.TField SUCCESS_FIELD_DESC = new org.apache.thrift.protocol.TField("success", org.apache.thrift.protocol.TType.STRUCT, (short)0);
     private static final org.apache.thrift.protocol.TField EXC_FIELD_DESC = new org.apache.thrift.protocol.TField("exc", org.apache.thrift.protocol.TType.STRUCT, (short)1);
     private static final org.apache.thrift.protocol.TField EXCSQL_FIELD_DESC = new org.apache.thrift.protocol.TField("excsql", org.apache.thrift.protocol.TType.STRUCT, (short)2);
+    private static final org.apache.thrift.protocol.TField RA_EXC_FIELD_DESC = new org.apache.thrift.protocol.TField("raExc", org.apache.thrift.protocol.TType.STRUCT, (short)3);
 
     private static final Map<Class<? extends IScheme>, SchemeFactory> schemes = new HashMap<Class<? extends IScheme>, SchemeFactory>();
     static {
@@ -9936,12 +9942,14 @@ public class Communications {
     public Amb success; // required
     public NotFoundException exc; // required
     public SQLException excsql; // required
+    public ReasonOfAbsenceException raExc; // required
 
     /** The set of fields this struct contains, along with convenience methods for finding and manipulating them. */
     public enum _Fields implements org.apache.thrift.TFieldIdEnum {
       SUCCESS((short)0, "success"),
       EXC((short)1, "exc"),
-      EXCSQL((short)2, "excsql");
+      EXCSQL((short)2, "excsql"),
+      RA_EXC((short)3, "raExc");
 
       private static final Map<String, _Fields> byName = new HashMap<String, _Fields>();
 
@@ -9962,6 +9970,8 @@ public class Communications {
             return EXC;
           case 2: // EXCSQL
             return EXCSQL;
+          case 3: // RA_EXC
+            return RA_EXC;
           default:
             return null;
         }
@@ -10011,6 +10021,8 @@ public class Communications {
           new org.apache.thrift.meta_data.FieldValueMetaData(org.apache.thrift.protocol.TType.STRUCT)));
       tmpMap.put(_Fields.EXCSQL, new org.apache.thrift.meta_data.FieldMetaData("excsql", org.apache.thrift.TFieldRequirementType.DEFAULT, 
           new org.apache.thrift.meta_data.FieldValueMetaData(org.apache.thrift.protocol.TType.STRUCT)));
+      tmpMap.put(_Fields.RA_EXC, new org.apache.thrift.meta_data.FieldMetaData("raExc", org.apache.thrift.TFieldRequirementType.DEFAULT, 
+          new org.apache.thrift.meta_data.FieldValueMetaData(org.apache.thrift.protocol.TType.STRUCT)));
       metaDataMap = Collections.unmodifiableMap(tmpMap);
       org.apache.thrift.meta_data.FieldMetaData.addStructMetaDataMap(getWorkTimeAndStatus_result.class, metaDataMap);
     }
@@ -10021,12 +10033,14 @@ public class Communications {
     public getWorkTimeAndStatus_result(
       Amb success,
       NotFoundException exc,
-      SQLException excsql)
+      SQLException excsql,
+      ReasonOfAbsenceException raExc)
     {
       this();
       this.success = success;
       this.exc = exc;
       this.excsql = excsql;
+      this.raExc = raExc;
     }
 
     /**
@@ -10042,6 +10056,9 @@ public class Communications {
       if (other.isSetExcsql()) {
         this.excsql = new SQLException(other.excsql);
       }
+      if (other.isSetRaExc()) {
+        this.raExc = new ReasonOfAbsenceException(other.raExc);
+      }
     }
 
     public getWorkTimeAndStatus_result deepCopy() {
@@ -10053,6 +10070,7 @@ public class Communications {
       this.success = null;
       this.exc = null;
       this.excsql = null;
+      this.raExc = null;
     }
 
     public Amb getSuccess() {
@@ -10127,6 +10145,30 @@ public class Communications {
       }
     }
 
+    public ReasonOfAbsenceException getRaExc() {
+      return this.raExc;
+    }
+
+    public getWorkTimeAndStatus_result setRaExc(ReasonOfAbsenceException raExc) {
+      this.raExc = raExc;
+      return this;
+    }
+
+    public void unsetRaExc() {
+      this.raExc = null;
+    }
+
+    /** Returns true if field raExc is set (has been assigned a value) and false otherwise */
+    public boolean isSetRaExc() {
+      return this.raExc != null;
+    }
+
+    public void setRaExcIsSet(boolean value) {
+      if (!value) {
+        this.raExc = null;
+      }
+    }
+
     public void setFieldValue(_Fields field, Object value) {
       switch (field) {
       case SUCCESS:
@@ -10153,6 +10195,14 @@ public class Communications {
         }
         break;
 
+      case RA_EXC:
+        if (value == null) {
+          unsetRaExc();
+        } else {
+          setRaExc((ReasonOfAbsenceException)value);
+        }
+        break;
+
       }
     }
 
@@ -10166,6 +10216,9 @@ public class Communications {
 
       case EXCSQL:
         return getExcsql();
+
+      case RA_EXC:
+        return getRaExc();
 
       }
       throw new IllegalStateException();
@@ -10184,6 +10237,8 @@ public class Communications {
         return isSetExc();
       case EXCSQL:
         return isSetExcsql();
+      case RA_EXC:
+        return isSetRaExc();
       }
       throw new IllegalStateException();
     }
@@ -10225,6 +10280,15 @@ public class Communications {
         if (!(this_present_excsql && that_present_excsql))
           return false;
         if (!this.excsql.equals(that.excsql))
+          return false;
+      }
+
+      boolean this_present_raExc = true && this.isSetRaExc();
+      boolean that_present_raExc = true && that.isSetRaExc();
+      if (this_present_raExc || that_present_raExc) {
+        if (!(this_present_raExc && that_present_raExc))
+          return false;
+        if (!this.raExc.equals(that.raExc))
           return false;
       }
 
@@ -10274,6 +10338,16 @@ public class Communications {
           return lastComparison;
         }
       }
+      lastComparison = Boolean.valueOf(isSetRaExc()).compareTo(typedOther.isSetRaExc());
+      if (lastComparison != 0) {
+        return lastComparison;
+      }
+      if (isSetRaExc()) {
+        lastComparison = org.apache.thrift.TBaseHelper.compareTo(this.raExc, typedOther.raExc);
+        if (lastComparison != 0) {
+          return lastComparison;
+        }
+      }
       return 0;
     }
 
@@ -10315,6 +10389,14 @@ public class Communications {
         sb.append("null");
       } else {
         sb.append(this.excsql);
+      }
+      first = false;
+      if (!first) sb.append(", ");
+      sb.append("raExc:");
+      if (this.raExc == null) {
+        sb.append("null");
+      } else {
+        sb.append(this.raExc);
       }
       first = false;
       sb.append(")");
@@ -10390,6 +10472,15 @@ public class Communications {
                 org.apache.thrift.protocol.TProtocolUtil.skip(iprot, schemeField.type);
               }
               break;
+            case 3: // RA_EXC
+              if (schemeField.type == org.apache.thrift.protocol.TType.STRUCT) {
+                struct.raExc = new ReasonOfAbsenceException();
+                struct.raExc.read(iprot);
+                struct.setRaExcIsSet(true);
+              } else { 
+                org.apache.thrift.protocol.TProtocolUtil.skip(iprot, schemeField.type);
+              }
+              break;
             default:
               org.apache.thrift.protocol.TProtocolUtil.skip(iprot, schemeField.type);
           }
@@ -10420,6 +10511,11 @@ public class Communications {
           struct.excsql.write(oprot);
           oprot.writeFieldEnd();
         }
+        if (struct.raExc != null) {
+          oprot.writeFieldBegin(RA_EXC_FIELD_DESC);
+          struct.raExc.write(oprot);
+          oprot.writeFieldEnd();
+        }
         oprot.writeFieldStop();
         oprot.writeStructEnd();
       }
@@ -10447,7 +10543,10 @@ public class Communications {
         if (struct.isSetExcsql()) {
           optionals.set(2);
         }
-        oprot.writeBitSet(optionals, 3);
+        if (struct.isSetRaExc()) {
+          optionals.set(3);
+        }
+        oprot.writeBitSet(optionals, 4);
         if (struct.isSetSuccess()) {
           struct.success.write(oprot);
         }
@@ -10457,12 +10556,15 @@ public class Communications {
         if (struct.isSetExcsql()) {
           struct.excsql.write(oprot);
         }
+        if (struct.isSetRaExc()) {
+          struct.raExc.write(oprot);
+        }
       }
 
       @Override
       public void read(org.apache.thrift.protocol.TProtocol prot, getWorkTimeAndStatus_result struct) throws org.apache.thrift.TException {
         TTupleProtocol iprot = (TTupleProtocol) prot;
-        BitSet incoming = iprot.readBitSet(3);
+        BitSet incoming = iprot.readBitSet(4);
         if (incoming.get(0)) {
           struct.success = new Amb();
           struct.success.read(iprot);
@@ -10477,6 +10579,11 @@ public class Communications {
           struct.excsql = new SQLException();
           struct.excsql.read(iprot);
           struct.setExcsqlIsSet(true);
+        }
+        if (incoming.get(3)) {
+          struct.raExc = new ReasonOfAbsenceException();
+          struct.raExc.read(iprot);
+          struct.setRaExcIsSet(true);
         }
       }
     }

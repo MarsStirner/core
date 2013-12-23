@@ -545,6 +545,11 @@ exception PolicyTypeNotFoundException{
     2:i32 code;
 }
 
+exception ReasonOfAbsenceException{
+    1:string name;
+    2:string code;
+}
+
 /////////////////////////////////////////////////////////////////////
 //Service 
 /////////////////////////////////////////////////////////////////////
@@ -631,7 +636,7 @@ list<ExtendedTicketsAvailability> getTicketsAvailability(1:GetTicketsAvailabilit
  * @throws SQLException                  когда произошла внутренняя ошибка при запросах к БД ЛПУ
  */
 Amb getWorkTimeAndStatus(1:GetTimeWorkAndStatusParameters params)
-    throws (1:NotFoundException exc, 2:SQLException excsql);
+    throws (1:NotFoundException exc, 2:SQLException excsql, 3:ReasonOfAbsenceException raExc);
 
 /**
  * добавление нового пациента в БД ЛПУ
@@ -714,6 +719,7 @@ TTicket getFirstFreeTicket(1:ScheduleParameters params)
  *                                      в случае отсутствия расписания на указанную дату набор ключ-значение опускается
  * @throws NotFoundException            когда нету такого идентификатора врача
  */
+ //TODO ReasonOfAbsenceException to map... may method return structure with two maps...
 map<timestamp, Schedule> getPersonSchedule(1:ScheduleParameters params)
     throws (1:NotFoundException nfExc);
 
@@ -752,7 +758,7 @@ list<OrgStructuresProperties> getPatientOrgStructures(1:i32 parentId)
  * @throws SQLException                 когда произошла внутренняя ошибка при запросах к БД ЛПУ
  */
 EnqueuePatientStatus enqueuePatient(1:EnqueuePatientParameters params)
-    throws (1:NotFoundException exc, 2:SQLException excsql);
+    throws (1:NotFoundException exc, 2:SQLException excsql, 3:ReasonOfAbsenceException raExc);
 
 /**
  * Получение списка записей на приемы к врачам заданного пациента
