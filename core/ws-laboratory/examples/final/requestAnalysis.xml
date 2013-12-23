@@ -12,13 +12,12 @@
                 <code/>
                 <!-- Title для документа -->
                 <title>Заказ лабораторных исследований</title>
-                <!-- дата и время создания направления врачом -->
-                <effectiveTime value="orderMisDate"/>
+                <effectiveTime value="дата и время создания направления врачом, YYYYMMDDHHmm "/>
                 <!-- уровень конфиденциальности документа : Normal -->
                 <confidentialityCode code="N" codeSystem="2.16.840.1.113883.5.25"/>
                 <!--язык для этого документа -->
                 <languageCode code="ru-RU"/>
-                <versionNumber value="{Код статуса заказа (actionId)}"/>
+                <versionNumber value="{Код статуса заказа (статус actionId)}"/>
                 <!-- Record target - демографические данные пациента -->
                 <recordTarget typeCode="RCT">
                     <patientRole classCode="PAT">
@@ -50,9 +49,9 @@
                         <assignedPerson classCode="PSN" determinerCode="INSTANCE">
                             <!-- ФИО направивишего врача -->
                             <name>
-                                <family>{Фамилия, направивишего врача}</family>
-                                <given>{Имя, направивишего врача}</given>
-                                <suffix>{Отчество, направивишего врача}</suffix>
+                                <family>{Фамилия, направившего врача}</family>
+                                <given>{Имя, направившего врача}</given>
+                                <suffix>{Отчество, направившего врача}</suffix>
                             </name>
                         </assignedPerson>
                         <representedOrganization>
@@ -161,7 +160,7 @@
                                 </entry>
                             </section>
                         </component>
-
+                        <!-- Блок комментариев -->
                         <component>
                             <section>
                                 <entry>
