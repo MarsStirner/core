@@ -42,7 +42,7 @@
                         </assignedPerson>
                     </authorOrPerformer>
 
-                    <!-- Один или несколько блоков subject с описанием результата и автора -->
+                    <!-- Один или несколько блоков subject с описанием результата и автора этого результата -->
                     <subject typeCode="SUBJ">
                         <observationReport classCode="GROUPER" moodCode="EVN">
                             <id root="{идентификатор направления на анализы actionId}"/>
