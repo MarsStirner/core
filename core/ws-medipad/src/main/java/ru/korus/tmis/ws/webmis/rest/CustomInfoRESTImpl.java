@@ -6,6 +6,7 @@ import ru.korus.tmis.core.data.JobTicketStatusDataList;
 import ru.korus.tmis.core.data.PatientsListRequestData;
 import ru.korus.tmis.core.data.TakingOfBiomaterialRequesData;
 import ru.korus.tmis.core.data.TakingOfBiomaterialRequesDataFilter;
+import ru.korus.tmis.core.entity.model.OrgStructure;
 import ru.korus.tmis.core.entity.model.RbHospitalBedProfile;
 import ru.korus.tmis.core.logging.slf4j.interceptor.ServicesLoggingInterceptor;
 import ru.korus.tmis.ws.impl.WebMisRESTImpl;
@@ -71,7 +72,7 @@ public class CustomInfoRESTImpl {
                               @QueryParam("filter[endDate]")long endDate,
                               @QueryParam("filter[profileBed]")List<Integer> profileBeds )  {
         //Отделение обязательное поле, если не задано в запросе, то берем из роли специалиста
-        int depId = (departmentId>0) ? departmentId : this.auth.getUser().getOrgStructure().getId().intValue();
+        final int depId = getCurDepartamentOrDefault(departmentId);
         if(profileBeds.isEmpty()) { // если профили коек не заданы, то строим для всех
             Iterable<RbHospitalBedProfile> list = wsImpl.getAllAvailableBedProfiles();
             for(RbHospitalBedProfile curProfileBed : list) {
@@ -138,8 +139,8 @@ public class CustomInfoRESTImpl {
                                          @QueryParam("filter[biomaterial]") int biomaterial)   {
 
         //Отделение обязательное поле, если не задано в запросе, то берем из роли специалиста
-        int depId = (departmentId>0) ? departmentId : this.auth.getUser().getOrgStructure().getId().intValue();
-        short statusS = (status!=null && !status.isEmpty()) ? Short.parseShort(status): -1;
+        final int depId = getCurDepartamentOrDefault(departmentId);
+        final short statusS = (status!=null && !status.isEmpty()) ? Short.parseShort(status): -1;
 
         TakingOfBiomaterialRequesDataFilter filter = new TakingOfBiomaterialRequesDataFilter(jobTicketId,
                                                                                             depId,
@@ -149,6 +150,11 @@ public class CustomInfoRESTImpl {
                                                                                             biomaterial);
         TakingOfBiomaterialRequesData request = new TakingOfBiomaterialRequesData(this.sortingField, this.sortingMethod, filter);
         return new JSONWithPadding(wsImpl.getTakingOfBiomaterial(request, this.auth),this.callback);
+    }
+
+    private int getCurDepartamentOrDefault(int departmentId) {
+        final OrgStructure orgStructure = this.auth.getUser().getOrgStructure();
+        return (departmentId>0) ? departmentId : orgStructure != null? orgStructure.getId().intValue() : 1;
     }
 
     /**
@@ -193,7 +199,7 @@ public class CustomInfoRESTImpl {
                                                             @QueryParam("filter[departmentId]") int departmentId,
                                                             @QueryParam("filter[doctorId]") int doctorId) {
 
-        int depId = (departmentId>0) ? departmentId : auth.getUser().getOrgStructure().getId().intValue();
+        final int depId = getCurDepartamentOrDefault(departmentId);
         PatientsListRequestData requestData = new PatientsListRequestData ( depId,
                                                                             doctorId,//auth.getUser().getId().intValue(),           //WEBMIS-809: Если параметр doctorId не указан, то ищем всех пациентов отделения.
                                                                             doctorId>0 ? 0 : auth.getUserRole().getId().intValue(), //Если указан доктор, то ищем пациентов доктора.
