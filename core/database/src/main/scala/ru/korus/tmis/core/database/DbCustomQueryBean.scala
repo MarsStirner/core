@@ -526,11 +526,15 @@ class DbCustomQueryBean
         ListMap(ret_value_sorted.toList.sortBy(_._2.asInstanceOf[(Map[Object, Object], OrgStructure)]._2.getName): _*)
     } else if (flgAppealNumberSort) {
       //Cортировка по AppealNumber (externalId) как int
+      try {
       if (sortingMethod.compareTo("desc") == 0) //desc
         ListMap(ret_value_sorted.toList.sortWith(_._1.getExternalId.substring(5).toInt > _._1.getExternalId.substring(5).toInt)
           .sortWith(_._1.getExternalId.substring(0, 4).toInt > _._1.getExternalId.substring(0, 4).toInt): _*)
       else //asc
         ListMap(ret_value_sorted.toList.sortBy(m => (m._1.getExternalId.substring(0, 4).toInt, m._1.getExternalId.substring(5).toInt)): _*)
+      } catch {
+        case e:StringIndexOutOfBoundsException => { ListMap(ret_value_sorted.toList: _*) }
+     }
     } else {
       ListMap(ret_value_sorted.toList: _*)
     }

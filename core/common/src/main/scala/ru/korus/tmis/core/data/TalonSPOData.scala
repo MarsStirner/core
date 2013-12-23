@@ -174,8 +174,10 @@ class TalonSPODataListFilter {
       qs.query += ("AND e.patient.id =  :patientId\n")
       qs.add("patientId", this.patientId:java.lang.Integer)
     }
-    qs.query += ("AND e.eventType.code =  :code\n")
-    qs.add("code", this.code)
+    if(this.code != null) {
+      qs.query += ("AND e.eventType.code =  :code\n")
+      qs.add("code", this.code)
+    }
     qs
   }
   def toSortingString (sortingField: String) = {

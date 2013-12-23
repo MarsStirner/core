@@ -264,7 +264,7 @@ class AtBeginingOfDayContainer {
 
     import Form007QueryStatuses._
     this.summary = that.get(F007QS_ALL_PATIENTS_LOCATED_AT_END_DATE).getOrElse(0)
-    this.mothers = that.get(F007QS_ALL_PATIENTS_LOCATED_AT_END_DATE).getOrElse(0)
+    this.mothers = that.get(F007QS_PATRONAGE).getOrElse(0)
     this.freePlaces = new CountOfFreePlacesContainer(0, 0) //Не используется в этой реализации
   }
 }

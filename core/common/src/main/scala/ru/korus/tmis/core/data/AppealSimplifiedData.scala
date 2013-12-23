@@ -163,8 +163,10 @@ class AppealSimplifiedRequestDataFilter {
       qs.query += "AND upper(e.externalId) LIKE upper(:number)\n"
       qs.add("number","%"+this.number+"%")
     }
-    qs.query += "AND e.eventType.code IN :code\n"
-    qs.add("code",this.code)
+    if (!this.code.isEmpty) {
+      qs.query += "AND e.eventType.code IN :code\n"
+      qs.add("code",this.code)
+    }
     qs
   }
   def toSortingString (sortingField: String) = {
