@@ -333,12 +333,12 @@ with I18nable {
 
     directions.getEntity.foreach((action) => {
       //Проверка прав у пользователя на редактирование направления
-      var oldjt = 0
+      var oldJT = 0
       val a = actionBean.getActionById(action.getId.intValue())
       if (flgLab) {
         a.getActionProperties.foreach((ap) => {
-          if (ap.getType.getTypeName.compareTo("JobTicket") == 0) {
-            oldjt = actionPropertyBean.getActionPropertyValue(ap).get(0).asInstanceOf[APValueJobTicket].getValue.intValue()
+          if (ap.getType.getTypeName.equals("JobTicket") && !actionPropertyBean.getActionPropertyValue(ap).isEmpty) {
+            oldJT = actionPropertyBean.getActionPropertyValue(ap).head.asInstanceOf[APValueJobTicket].getValue.intValue()
           }
         })
       }
@@ -352,7 +352,7 @@ with I18nable {
         if (flgLab) {
           actions = createJobTicketsForActions(actions, a.getEvent.getId.intValue())
           //редактирование или удаление старого жобТикета
-          val jobTicket = if (oldjt > 0) dbJobTicketBean.getJobTicketById(oldjt) else null
+          val jobTicket = if (oldJT > 0) dbJobTicketBean.getJobTicketById(oldJT) else null
           if (jobTicket != null) {
             if (jobTicket != null && jobTicket.getJob != null) {
               val job = jobTicket.getJob
