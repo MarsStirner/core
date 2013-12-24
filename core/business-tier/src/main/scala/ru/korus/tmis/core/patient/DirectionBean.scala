@@ -2,11 +2,9 @@ package ru.korus.tmis.core.patient
 
 import javax.interceptor.Interceptors
 import ru.korus.tmis.core.logging.LoggingInterceptor
-import javax.ejb.{TransactionAttributeType, TransactionAttribute, EJB, Stateless}
+import javax.ejb.{EJB, Stateless}
 import grizzled.slf4j.Logging
-import ru.korus.tmis.util.{StringId, ConfigManager, CAPids, I18nable}
-import javax.persistence.{FlushModeType, EntityManager, PersistenceContext}
-import ru.korus.tmis.core.data._
+import ru.korus.tmis.util.{ConfigManager, CAPids, I18nable}
 import javax.persistence.{EntityManager, PersistenceContext}
 import ru.korus.tmis.core.data._
 import ru.korus.tmis.core.auth.AuthData
@@ -15,21 +13,13 @@ import scala.collection.JavaConversions._
 import ru.korus.tmis.core.common.CommonDataProcessorBeanLocal
 import ru.korus.tmis.util.ConfigManager._
 import ru.korus.tmis.core.database._
-import collection.JavaConversions
 import java.{lang, util}
 import ru.korus.tmis.core.filter.ActionsListDataFilter
 import ru.korus.tmis.core.exception.CoreException
 import ru.korus.tmis.laboratory.across.business.AcrossBusinessBeanLocal
 
-//import ru.korus.tmis.laboratory.across.business.AcrossBusinessBeanLocal
+import util.Date
 
-// import ru.korus.tmis.laboratory.business.LaboratoryBeanLocal
-
-import util.{HashSet, Date}
-
-import java.lang.reflect.Method;
-import java.lang.reflect.Type;
-import scala.collection.immutable.StringOps;
 
 /**
  * Методы для работы с Направлениями
@@ -498,8 +488,10 @@ with I18nable {
       val ap18values = actionPropertyBean.getActionPropertyValue(ap18)
       actionPropertyBean.getActionPropertyValue(apSchedule).foreach(f => {
         if ( //f.asInstanceOf[APValueTime].getId.getIndex != request.plannedTime.getIndex() &&
-          ap18values.find(p => p.asInstanceOf[APValueAction].getId.getIndex == f.asInstanceOf[APValueTime].getId.getIndex).getOrElse(null) == null)
-          em.merge(actionPropertyBean.setActionPropertyValue(ap18, null, f.asInstanceOf[APValueTime].getId.getIndex))
+          ap18values.find(p => p.asInstanceOf[APValueAction].getId.getIndex == f.asInstanceOf[APValueTime].getId.getIndex).getOrElse(null) == null) {
+          val propValue = actionPropertyBean.setActionPropertyValue(ap18, null, f.asInstanceOf[APValueTime].getId.getIndex)
+          if (propValue != null) em.merge(propValue)
+        }
       })
 
       //*** Обработка срочности и сверх приема по новой спеке
