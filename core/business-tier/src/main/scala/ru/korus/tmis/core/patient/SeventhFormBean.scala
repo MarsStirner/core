@@ -6,10 +6,9 @@ import javax.persistence.{EntityManager, PersistenceContext}
 import scala.collection.JavaConversions._
 import javax.ejb.{EJB, Stateless}
 import java.text.SimpleDateFormat
-import java.util.{Calendar, Date}
+import java.util.{TimeZone, Calendar, Date, List}
 import ru.korus.tmis.core.data.{SeventhFormRequestData, FormOfAccountingMovementOfPatientsData}
 import ru.korus.tmis.core.database.DbOrgStructureBeanLocal
-import java.util.List
 import scala.collection.JavaConverters._
 
 
@@ -75,7 +74,9 @@ with CAPids {
     val endDateStr = "'" + new SimpleDateFormat("yyyy-MM-dd HH:mm:ss").format(new Date(endDate)) + "'"
     //Получение данных
     //Получение информации о кол-ве (лицевая сторона формы 007)
-    val res = em.createNativeQuery("CALL form007front(\"%s\", \"%d\", \"%s\")".format(endDateStr, departmentId, profileBedsStr)).getResultList
+    val query: String = "CALL form007front(\"%s\", \"%d\", \"%s\")".format(endDateStr, departmentId, profileBedsStr)
+    logger.info("form 007 front SQL query: " + query);
+    val res = em.createNativeQuery(query).getResultList
     val resList: List[Array[Object]] = res.asInstanceOf[List[Array[Object]]]
     resList.foreach(resSql => {
       this.linearLongMap += resSql(0).asInstanceOf[String] -> scala.collection.mutable.Map.empty[Form007QueryStatuses, Long]
