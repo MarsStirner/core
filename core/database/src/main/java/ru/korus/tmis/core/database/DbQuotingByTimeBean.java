@@ -31,7 +31,7 @@ public class DbQuotingByTimeBean implements DbQuotingByTimeBeanLocal {
             " SELECT qbt FROM QuotingByTime qbt " +
                     " WHERE  qbt.doctor.id = :PERSONID " +
                     " AND qbt.quotingDate = :DATE " +
-                    " AND qbt.quotingType= :QUOTINGTYPE ";
+                    " AND qbt.quotingType = :QUOTINGTYPE ";
 
     /**
      * Получение ограничений для врача

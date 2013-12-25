@@ -177,6 +177,7 @@ public final class ParserToThriftStruct {
         result.setEndTime(DateConvertions.convertDateToUTCMilliseconds(schedule.getEndTime()));
         result.setOffice(schedule.getOffice());
         result.setPlan(schedule.getPlan());
+        result.setDate(DateConvertions.convertDateToUTCMilliseconds(schedule.getAmbulatoryDate()));
         for (Ticket currentTicket : schedule.getTickets()) {
             result.addToTickets(parseTTicket(schedule, currentTicket));
         }
