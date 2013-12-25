@@ -618,7 +618,7 @@ public class BakBusinessBean implements BakBusinessBeanLocal {
             final ObsCodeInfo codeInfo = new ObsCodeInfo();
             codeInfo.setCode(code);
             final ObsTranslationInfo translation = new ObsTranslationInfo();
-            translation.setDisplayName("комментарий к направлению");
+            translation.setDisplayName(comment);
             codeInfo.setTranslation(translation);
             observation.setCode(codeInfo);
             final ObsValueInfo value = new ObsValueInfo();
