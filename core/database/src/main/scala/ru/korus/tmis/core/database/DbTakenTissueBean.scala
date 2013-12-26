@@ -10,6 +10,7 @@ import javax.persistence.{FlushModeType, EntityManager, PersistenceContext}
 import ru.korus.tmis.core.exception.CoreException
 import ru.korus.tmis.core.entity.model.{ActionTypeTissueType, Action, Event, TakenTissue}
 import java.util.Date
+import javax.annotation.Nullable
 
 /**
  * Методы для работы с TakenTissueJournal
@@ -50,6 +51,7 @@ class DbTakenTissueBean extends DbTakenTissueBeanLocal
     tissue
   }
 
+  @Nullable
   def getActionTypeTissueTypeByMasterId(actionTypeId: Int) = {
     val result = em.createQuery(ActionTypeTissueTypeByMasterIdQuery, classOf[ActionTypeTissueType])
       .setParameter("actionTypeId", actionTypeId)
@@ -58,11 +60,6 @@ class DbTakenTissueBean extends DbTakenTissueBeanLocal
     result.size match {
       case 0 => {
         null
-        /*
-        throw new CoreException(
-          ConfigManager.ErrorCodes.ActionTypeNotFound,
-          i18n("error.tissueForActionNotFound").format(actionTypeId))
-          */
       }
       case size => {
         result.foreach(em.detach(_))
@@ -71,7 +68,8 @@ class DbTakenTissueBean extends DbTakenTissueBeanLocal
     }
   }
 
-  private def getLastTakenTissueJournalBarCode() = {
+  @Nullable
+  private def getLastTakenTissueJournalBarCode = {
      val result = em.createQuery(LastTakenTissueQuery, classOf[TakenTissue])
       .getSingleResult
 
@@ -81,11 +79,6 @@ class DbTakenTissueBean extends DbTakenTissueBeanLocal
     } else {
       null
     }
-    /*
-        throw new CoreException(
-        ConfigManager.ErrorCodes.TakenTissueNotFound,
-        i18n("error.TakenTissueNotFound").format(id))
-    */
   }
 
   def getTakenTissueById(id: Int): TakenTissue = {

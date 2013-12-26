@@ -145,10 +145,10 @@ with I18nable {
       title,
       List(summary _, detailsWithAge _))
 
-    val isTrueDoctor = (authData.getUser.getId.intValue() == action.getCreatePerson.getId.intValue() ||
-      authData.getUser.getId.intValue() == action.getAssigner.getId.intValue())
+    val isTrueDoctor = authData.getUser.getId.intValue() == action.getCreatePerson.getId.intValue() ||
+      authData.getUser.getId.intValue() == action.getAssigner.getId.intValue()
     val jt = dbJobTicketBean.getJobTicketForAction(action.getId.intValue())
-    com_data.getEntity().get(0).setIsEditable(action.getStatus == 0 && action.getEvent.getExecDate == null && isTrueDoctor && (jt == null || (jt != null && jt.getStatus == 0)))
+    com_data.getEntity.get(0).setIsEditable(action.getStatus == 0 && action.getEvent.getExecDate == null && isTrueDoctor && (jt == null || (jt != null && jt.getStatus == 0)))
 
     var json_data = new JSONCommonData()
     json_data.data = com_data.entity
@@ -171,17 +171,23 @@ with I18nable {
         a.getPlannedEndDate,
         department.getId.intValue(),
         a.getIsUrgent)
+
+      val tissueType = dbTakenTissue.getActionTypeTissueTypeByMasterId(a.getActionType.getId.intValue())
+      if(tissueType == null)
+        throw new CoreException(
+          ConfigManager.ErrorCodes.TakenTissueNotFound, i18n("error.TakenTissueNotFound").format(a.getActionType.getId.intValue()))
+
       if (jobAndTicket == null) {
         val fromList = list.find((p) => p._1.getId == null &&
           p._2.getDatetime == a.getPlannedEndDate &&
-          p._3.getType.getId == dbTakenTissue.getActionTypeTissueTypeByMasterId(a.getActionType.getId.intValue()).getTissueType.getId &&
+          p._3.getType.getId == tissueType.getTissueType.getId &&
           p._4.getIsUrgent == a.getIsUrgent).getOrElse(null) //срочные на одну дату и тип биоматериала должны создаваться с одним жобТикетом
         if (fromList != null) {
           val (j, jt, tt) = (fromList._1, fromList._2, fromList._3)
           j.setQuantity(j.getQuantity + 1)
           if (tt != null) a.setTakenTissue(tt)
           jtForAp = jt
-        } else if (dbTakenTissue.getActionTypeTissueTypeByMasterId(a.getActionType.getId.intValue()) != null) {
+        } else {
           val j = dbJobBean.insertOrUpdateJob(0, a, department)
           val jt = dbJobTicketBean.insertOrUpdateJobTicket(0, a, j)
           val tt = dbTakenTissue.insertOrUpdateTakenTissue(0, a)
@@ -218,7 +224,7 @@ with I18nable {
           false,
           true) //за текущий день
         val last = actionBean.getActionsWithFilter(0, 0, "", filter.unwrap(), null, null)
-        if (last != null && last.size() > 0 && jobTicket.getStatus == 2 && !a.getIsUrgent()) {
+        if (last != null && last.size() > 0 && jobTicket.getStatus == 2 && !a.getIsUrgent) {
           a.setStatus(2)
         }
       }
@@ -281,7 +287,7 @@ with I18nable {
         em.merge(actionPropertyBean.setActionPropertyValue(ap, mkb.getId.intValue().toString, 0))
       })
       //сохраняем изменения в акшенах (setTakenTissue) (TakenTissueJournal)
-      actions.map(em.merge(_))
+      actions.map(em.merge)
       em.flush()
     }
     actions
@@ -298,7 +304,16 @@ with I18nable {
 
     //Для лабораторных исследований отработаем с JobTicket
     if (mnem.toUpperCase.compareTo("LAB") == 0) {
-      actions = createJobTicketsForActions(actions, eventId)
+      try {
+        actions = createJobTicketsForActions(actions, eventId)
+      } catch {
+        // Если произошла ошибка в процессе проставления JobTickets -
+        // то помечаем действие лабораторного исследования как удаленное
+        case e: Throwable => {
+          actions.foreach(a => {em.find(classOf[Action], a.getId).setDeleted(true); em.flush()})
+          throw e
+        }
+      }
     }
 
     val com_data = commonDataProcessor.fromActions(actions, title, List(summary _, detailsWithAge _))
@@ -320,12 +335,12 @@ with I18nable {
     var actions: java.util.List[Action] = null
     val userId = userData.getUser.getId
     val userRole = userData.getUserRole.getCode
-    val flgLab = (mnem.toUpperCase.compareTo("LAB") == 0)
+    val flgLab = mnem.toUpperCase.compareTo("LAB") == 0
 
     directions.getEntity.foreach((action) => {
       //Проверка прав у пользователя на редактирование направления
       var oldJT = 0
-      val a = actionBean.getActionById(action.getId.intValue())
+      val a = actionBean.getActionById(action.getId().intValue())
       if (flgLab) {
         a.getActionProperties.foreach((ap) => {
           if (ap.getType.getTypeName.equals("JobTicket") && !actionPropertyBean.getActionPropertyValue(ap).isEmpty) {
@@ -637,7 +652,7 @@ with I18nable {
         em.merge(a)
       }
       else {
-        throw new CoreException(ConfigManager.ErrorCodes.noRightForAction, "Удалять диагностику может только врач, создавший направление, или лечащий врач, или заведующий отделением");
+        throw new CoreException(ConfigManager.ErrorCodes.noRightForAction, "Удалять диагностику может только врач, создавший направление, или лечащий врач, или заведующий отделением")
       }
     })
     em.flush()
