@@ -161,9 +161,9 @@ with I18nable {
   private def createJobTicketsForActions(actions: java.util.List[Action], eventId: Int) = {
 
     val department = hospitalBedBean.getCurrentDepartmentForAppeal(eventId)
-    var list = new java.util.LinkedList[(Job, JobTicket, TakenTissue, Action)]
-    var apvList = new java.util.LinkedList[(ActionProperty, JobTicket)]
-    var apvMKBList = new java.util.LinkedList[(ActionProperty, Mkb)]
+    val list = new java.util.LinkedList[(Job, JobTicket, TakenTissue, Action)]
+    val apvList = new java.util.LinkedList[(ActionProperty, JobTicket)]
+    val apvMKBList = new java.util.LinkedList[(ActionProperty, Mkb)]
     var jtForAp: JobTicket = null
     actions.foreach((a) => {
       val jobAndTicket = dbJobTicketBean.getJobTicketAndTakenTissueForAction(a.getEvent.getId.intValue(),
@@ -172,7 +172,7 @@ with I18nable {
         department.getId.intValue(),
         a.getIsUrgent)
       if (jobAndTicket == null) {
-        var fromList = list.find((p) => p._1.getId == null &&
+        val fromList = list.find((p) => p._1.getId == null &&
           p._2.getDatetime == a.getPlannedEndDate &&
           p._3.getType.getId == dbTakenTissue.getActionTypeTissueTypeByMasterId(a.getActionType.getId.intValue()).getTissueType.getId &&
           p._4.getIsUrgent == a.getIsUrgent).getOrElse(null) //срочные на одну дату и тип биоматериала должны создаваться с одним жобТикетом
@@ -185,15 +185,6 @@ with I18nable {
           val j = dbJobBean.insertOrUpdateJob(0, a, department)
           val jt = dbJobTicketBean.insertOrUpdateJobTicket(0, a, j)
           val tt = dbTakenTissue.insertOrUpdateTakenTissue(0, a)
-          if (list != null && list.size() > 0) {
-            if (list.getLast._3.getBarcode != 999999) {
-              tt.setBarcode(list.getLast._3.getBarcode + 1)
-              tt.setPeriod(list.getLast._3.getPeriod)
-            } else {
-              tt.setBarcode(100000)
-              tt.setPeriod(list.getLast._3.getPeriod + 1)
-            }
-          }
           if (tt != null) a.setTakenTissue(tt)
           list.add(j, jt, tt, a)
           jtForAp = jt
