@@ -1,6 +1,6 @@
 package ru.korus.tmis.core.data
 
-import reflect.BeanProperty
+import scala.beans.BeanProperty
 import java.util.{Date, LinkedList}
 import javax.xml.bind.annotation.{XmlAttribute, XmlRootElement, XmlType}
 import ru.korus.tmis.util.ConfigManager
