@@ -792,6 +792,7 @@ class CommonDataProcessorBean
             needProp = true
           }
         }
+        case 4 => needProp = false //лет
         case _ => {
           needProp = true
         }

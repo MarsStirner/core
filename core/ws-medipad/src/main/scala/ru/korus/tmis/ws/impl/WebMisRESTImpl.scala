@@ -1,7 +1,5 @@
 package ru.korus.tmis.ws.impl
 
-import javax.inject.Named
-import javax.jws.{HandlerChain, WebService}
 import ru.korus.tmis.core.data._
 import ru.korus.tmis.core.auth.{AuthToken, AuthStorageBeanLocal, AuthData}
 import org.codehaus.jackson.map.ObjectMapper
@@ -9,33 +7,24 @@ import ru.korus.tmis.core.exception.CoreException
 import java.util
 import ru.korus.tmis.util._
 import ru.korus.tmis.core.entity.model._
-import collection.{JavaConversions, mutable}
+import collection.mutable
 import java.util.{Date, LinkedList}
 import grizzled.slf4j.Logging
 import ru.korus.tmis.ws.webmis.rest.WebMisREST
 import javax.ejb.EJB
 import ru.korus.tmis.core.database._
 import ru.korus.tmis.core.patient._
-import ru.korus.tmis.util.StringId
 import scala.collection.JavaConversions._
-import ru.korus.tmis.core.assessment.AssessmentBeanLocal
-import ru.korus.tmis.core.diagnostic.DiagnosticBeanLocal
-import ru.korus.tmis.core.thesaurus.ThesaurusBeanLocal
-import ru.korus.tmis.core.treatment.TreatmentBeanLocal
 import com.google.common.collect.Lists
 import javax.servlet.http.HttpServletRequest
 import scala.Predef._
 
-//import ru.korus.tmis.laboratory.business.LaboratoryBeanLocal
-import ru.korus.tmis.core.entity.model.layout.LayoutAttribute
 import ru.korus.tmis.util.StringId
 
 /**
- * Created with IntelliJ IDEA.
  * User: idmitriev
  * Date: 3/19/13
  * Time: 11:53 AM
- * To change this template use File | Settings | File Templates.
  */
 
 /*@Named
@@ -929,7 +918,7 @@ class WebMisRESTImpl  extends WebMisREST
 
   def insertConsultation(request: ConsultationRequestData, authData: AuthData) = {
     val actionId = directionBean.createConsultation(request, authData)
-    var json = directionBean.getDirectionById(actionId, "Consultation", null, authData)
+    val json = directionBean.getDirectionById(actionId, "Consultation", null, authData)
     json.setRequestData(request) //по идее эта штука должна быть в конструкторе вызываемая в методе гет
     json
   }
