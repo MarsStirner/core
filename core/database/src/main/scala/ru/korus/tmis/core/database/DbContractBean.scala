@@ -84,7 +84,7 @@ class DbContractBean
     }
   }
 
-  @TransactionAttribute(TransactionAttributeType.REQUIRES_NEW)
+  //@TransactionAttribute(TransactionAttributeType.REQUIRES_NEW)
   def getContractForEventType(eventType: EventType) = {
     val result = em.createQuery(FindContractForEventQuery,
       classOf[Contract])
