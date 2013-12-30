@@ -4,12 +4,11 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import ru.korus.tmis.communication.thriftgen.*;
 import ru.korus.tmis.core.entity.model.*;
-import ru.korus.tmis.core.entity.model.OrgStructure;
 import ru.korus.tmis.core.entity.model.Patient;
-import ru.korus.tmis.core.entity.model.Speciality;
 import ru.korus.tmis.core.entity.model.communication.QueueTicket;
+import ru.korus.tmis.schedule.*;
+import ru.korus.tmis.schedule.Ticket;
 
-import java.util.Date;
 
 /**
  * User: EUpatov<br>
