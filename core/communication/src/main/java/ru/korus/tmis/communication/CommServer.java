@@ -896,13 +896,13 @@ public class CommServer implements Communications.Iface {
                 DateConvertions.convertUTCMillisecondsToLocalDate(params.getEndDateTime()) : new DateMidnight(begInterval).plusMonths(1).toDate();
         logger.debug("From [{}] to [{}]", begInterval, endInterval);
         final ru.korus.tmis.communication.thriftgen.PersonSchedule result = new ru.korus.tmis.communication.thriftgen.PersonSchedule();
-        final List<Action> shedule = staffBean.getPersonShedule(doctor.getId(), begInterval, endInterval);
-        if (shedule.isEmpty()) {
+        final List<Action> schedule = staffBean.getPersonShedule(doctor.getId(), begInterval, endInterval);
+        result.setSchedules(new HashMap<Long, Schedule>(schedule.size()));
+        if (schedule.isEmpty()) {
             logger.info("End of #{}. Person[{}] has no one ambulatoryAction in this interval", currentRequestNum, doctor.getId());
-            result.setSchedules(new HashMap<Long, Schedule>(0));
             return result;
         }
-        for (Action currentAction : shedule) {
+        for (Action currentAction : schedule) {
             final PersonSchedule currentSchedule = new PersonSchedule(doctor, currentAction);
             final RbReasonOfAbsence reasonOfAbsence = currentSchedule.checkReasonOfAbscence();
             if (reasonOfAbsence != null) {
@@ -927,6 +927,7 @@ public class CommServer implements Communications.Iface {
                     ParserToThriftStruct.parsePersonSchedule(currentSchedule)
             );
         }
+        logger.debug("End of #{} getPersonSchedule. Return: {}", currentRequestNum, result);
         return result;
     }
 
