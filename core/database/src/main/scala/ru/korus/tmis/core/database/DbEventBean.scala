@@ -74,7 +74,7 @@ class DbEventBean
   //@TransactionAttribute(TransactionAttributeType.REQUIRES_NEW)
   def getEventById(id: Int) = {
     val e = em.find(classOf[Event], id)
-    em.detach(e)
+    if(e != null) em.detach(e)
     e
   }
 
