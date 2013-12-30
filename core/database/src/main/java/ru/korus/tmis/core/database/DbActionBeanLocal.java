@@ -1,6 +1,5 @@
 package ru.korus.tmis.core.database;
 
-import com.google.common.collect.ImmutableSet;
 import ru.korus.tmis.core.auth.AuthData;
 import ru.korus.tmis.core.data.AssessmentsListRequestData;
 import ru.korus.tmis.core.entity.model.Action;
@@ -9,7 +8,7 @@ import ru.korus.tmis.core.entity.model.Event;
 import ru.korus.tmis.core.entity.model.Staff;
 import ru.korus.tmis.core.exception.CoreException;
 import ru.korus.tmis.core.filter.ListDataFilter;
-import ru.rorus.tmis.schedule.QueueActionParam;
+import ru.korus.tmis.schedule.QueueActionParam;
 import scala.Function1;
 
 import javax.ejb.Local;

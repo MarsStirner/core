@@ -1,4 +1,4 @@
-package ru.rorus.tmis.schedule;
+package ru.korus.tmis.schedule;
 
 /**
  * User: EUpatov<br>

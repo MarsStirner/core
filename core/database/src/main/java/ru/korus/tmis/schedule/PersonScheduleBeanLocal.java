@@ -1,8 +1,7 @@
-package ru.rorus.tmis.schedule;
+package ru.korus.tmis.schedule;
 
 import ru.korus.tmis.core.entity.model.Action;
 import ru.korus.tmis.core.entity.model.Patient;
-import ru.korus.tmis.core.entity.model.Staff;
 import ru.korus.tmis.core.exception.CoreException;
 
 import javax.ejb.Local;

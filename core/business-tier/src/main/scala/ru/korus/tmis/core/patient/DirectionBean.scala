@@ -17,8 +17,9 @@ import java.{lang, util}
 import ru.korus.tmis.core.filter.ActionsListDataFilter
 import ru.korus.tmis.core.exception.CoreException
 import ru.korus.tmis.laboratory.across.business.AcrossBusinessBeanLocal
-import ru.rorus.tmis.schedule.{PacientInQueueType, AppointmentType, QueueActionParam, PersonScheduleBeanLocal}
-import ru.rorus.tmis.schedule.PersonScheduleBean.PersonSchedule
+import ru.rorus.tmis.schedule.{AppointmentType}
+import ru.korus.tmis.schedule.{QueueActionParam, PersonScheduleBeanLocal, PersonScheduleBean, PacientInQueueType}
+import PersonScheduleBean.PersonSchedule
 
 import util.Date
 
