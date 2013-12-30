@@ -38,7 +38,7 @@ class DbActionPropertyBean
   private val FILTER_CODE = 2
   private val FILTER_TYPENAME = 3
 
-  @TransactionAttribute(TransactionAttributeType.REQUIRES_NEW)
+  //@TransactionAttribute(TransactionAttributeType.REQUIRES_NEW)
   def getActionPropertyById(id: Int) = {
     val result = em.createQuery(ActionPropertyFindQuery,
       classOf[ActionProperty])
@@ -59,7 +59,7 @@ class DbActionPropertyBean
     }
   }
 
-  @TransactionAttribute(TransactionAttributeType.REQUIRES_NEW)
+  //@TransactionAttribute(TransactionAttributeType.REQUIRES_NEW)
   def getActionPropertiesByActionId(actionId: Int) = {
     val result = em.createQuery(ActionPropertiesByActionIdQuery,
       classOf[ActionProperty])
@@ -204,7 +204,7 @@ class DbActionPropertyBean
   /**
    * Получить APValue в простом случае по id и имени entity-класса
    */
-  @TransactionAttribute(TransactionAttributeType.REQUIRES_NEW)
+  //@TransactionAttribute(TransactionAttributeType.REQUIRES_NEW)
   def getPropertyValues(id: Int, entityName: String) = {
     val query = APValueQuery.format(entityName)
     val apvs = em.createQuery(query)
@@ -217,7 +217,7 @@ class DbActionPropertyBean
   /**
    * @param code поле code в таблице rls.vNomen
    */
-  @TransactionAttribute(TransactionAttributeType.REQUIRES_NEW)
+  //@TransactionAttribute(TransactionAttributeType.REQUIRES_NEW)
   def getRLSNomenclature(code: Int): List[Nomenclature] = {
     em.createQuery("SELECT n FROM Nomenclature n WHERE n.code = :code",
       classOf[Nomenclature])
@@ -225,22 +225,22 @@ class DbActionPropertyBean
       .getResultList
   }
 
-  @TransactionAttribute(TransactionAttributeType.REQUIRES_NEW)
+  //@TransactionAttribute(TransactionAttributeType.REQUIRES_NEW)
   def getActionPropertiesByActionIdAndTypeNames(actionId: Int, names: java.util.List[String]) = {
     this.getActionPropertiesByActionIdAndCustomParameters(actionId, names, FILTER_NAME)
   }
 
-  @TransactionAttribute(TransactionAttributeType.REQUIRES_NEW)
+  //@TransactionAttribute(TransactionAttributeType.REQUIRES_NEW)
   def getActionPropertiesByActionIdAndTypeCodes(actionId: Int, codes: java.util.List[String]) = {
     this.getActionPropertiesByActionIdAndCustomParameters(actionId, codes, FILTER_CODE)
   }
 
-  @TransactionAttribute(TransactionAttributeType.REQUIRES_NEW)
+  //@TransactionAttribute(TransactionAttributeType.REQUIRES_NEW)
   def getActionPropertiesByActionIdAndTypeTypeNames(actionId: Int, codes: java.util.List[String]) = {
     this.getActionPropertiesByActionIdAndCustomParameters(actionId, codes, FILTER_TYPENAME)
   }
 
-  @TransactionAttribute(TransactionAttributeType.REQUIRES_NEW)
+  //@TransactionAttribute(TransactionAttributeType.REQUIRES_NEW)
   def getActionPropertiesByActionIdAndTypeId(actionId: Int, typeId: Int) = {
     val result = em.createQuery(ActionPropertiesByActionIdAndTypeIdQuery,
       classOf[ActionProperty])
@@ -252,7 +252,7 @@ class DbActionPropertyBean
     result
   }
 
-  @TransactionAttribute(TransactionAttributeType.REQUIRES_NEW)
+  //@TransactionAttribute(TransactionAttributeType.REQUIRES_NEW)
   def getActionPropertiesByActionIdAndRbCoreActionPropertyIds(actionId: Int, ids: java.util.List[java.lang.Integer]) = {
     val result = em.createQuery(ActionPropertiesByActionIdAndRbCoreActionPropertyIds, classOf[ActionProperty])
       .setParameter("actionId", actionId)
@@ -268,7 +268,7 @@ class DbActionPropertyBean
     )
   }
 
-  @TransactionAttribute(TransactionAttributeType.REQUIRES_NEW)
+  //@TransactionAttribute(TransactionAttributeType.REQUIRES_NEW)
   def getActionPropertiesByActionIdAndActionPropertyTypeCodes(actionId: Int, codes: java.util.Set[String]) = {
     val result = em.createQuery(ActionPropertiesByActionIdAndTypeCodesQuery, classOf[ActionProperty])
       .setParameter("actionId", actionId)
@@ -284,7 +284,7 @@ class DbActionPropertyBean
     )
   }
 
-  @TransactionAttribute(TransactionAttributeType.REQUIRES_NEW)
+  //@TransactionAttribute(TransactionAttributeType.REQUIRES_NEW)
   def getActionPropertiesByActionIdAndActionPropertyTypeCodesWithoutDel(actionId: Int, codes: java.util.Set[String]) = {
     val result = em.createQuery(ActionPropertiesByActionIdAndTypeCodesQuery2, classOf[ActionProperty])
       .setParameter("actionId", actionId)
@@ -300,7 +300,7 @@ class DbActionPropertyBean
     )
   }
 
-  @TransactionAttribute(TransactionAttributeType.REQUIRES_NEW)
+  //@TransactionAttribute(TransactionAttributeType.REQUIRES_NEW)
   def getActionPropertiesForEventByActionTypes(eventId: Int, atIds: java.util.Set[java.lang.Integer], coreIds: java.util.Set[java.lang.Integer]) = {
     val result = em.createQuery(ActionPropertiesForEventByActionTypesQuery, classOf[Array[AnyRef]])
       .setParameter("eventId", eventId)
@@ -317,7 +317,7 @@ class DbActionPropertyBean
     )
   }
 
-  @TransactionAttribute(TransactionAttributeType.REQUIRES_NEW)
+  //@TransactionAttribute(TransactionAttributeType.REQUIRES_NEW)
   def getActionPropertiesByEventIdsAndActionPropertyTypeCodes(eventIds: java.util.List[java.lang.Integer], codes: java.util.Set[String], cntRead: Int, needStatus: Boolean) = {
 
     val sqlCodes = convertCollectionToSqlString(asJavaCollection(codes))
@@ -386,7 +386,7 @@ class DbActionPropertyBean
       .getSingleResult
   }
 
-  @TransactionAttribute(TransactionAttributeType.REQUIRES_NEW)
+  //@TransactionAttribute(TransactionAttributeType.REQUIRES_NEW)
   def getActionPropertyValue_ActionByValue(action: Action): APValueAction = {
     val result = em.createQuery(ActionProperty_ActionByValue, classOf[APValueAction]).setParameter("VALUE", action).getResultList
     result.size match {
@@ -628,6 +628,7 @@ class DbActionPropertyBean
     catch {
       case ex: Exception => throw new CoreException("error while creating action ");
     }
+    em.flush();
     newActionProperty
   }
 

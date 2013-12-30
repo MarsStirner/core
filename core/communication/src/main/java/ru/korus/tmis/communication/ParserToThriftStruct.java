@@ -4,12 +4,9 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import ru.korus.tmis.communication.thriftgen.*;
 import ru.korus.tmis.core.entity.model.*;
-import ru.korus.tmis.core.entity.model.OrgStructure;
 import ru.korus.tmis.core.entity.model.Patient;
-import ru.korus.tmis.core.entity.model.Speciality;
 import ru.korus.tmis.core.entity.model.communication.QueueTicket;
-
-import java.util.Date;
+import ru.rorus.tmis.schedule.DateConvertions;
 
 /**
  * User: EUpatov<br>
@@ -150,7 +147,7 @@ public final class ParserToThriftStruct {
         return coupon;
     }
 
-    public static TTicket parseTTicket(final PersonSchedule schedule, final Ticket ticket) {
+    public static TTicket parseTTicket(final PersonSchedule schedule, final ru.rorus.tmis.schedule.Ticket ticket) {
         final TTicket result = new TTicket();
         result.setDate(DateConvertions.convertDateToUTCMilliseconds(schedule.getAmbulatoryDate()));
         result.setBegTime(DateConvertions.convertDateToUTCMilliseconds(ticket.getBegTime()));
@@ -177,7 +174,7 @@ public final class ParserToThriftStruct {
         result.setEndTime(DateConvertions.convertDateToUTCMilliseconds(schedule.getEndTime()));
         result.setOffice(schedule.getOffice());
         result.setPlan(schedule.getPlan());
-        for (Ticket currentTicket : schedule.getTickets()) {
+        for (ru.rorus.tmis.schedule.Ticket currentTicket : schedule.getTickets()) {
             result.addToTickets(parseTTicket(schedule, currentTicket));
         }
         return result;
@@ -191,14 +188,14 @@ public final class ParserToThriftStruct {
         result.setEndTime(DateConvertions.convertDateToUTCMilliseconds(schedule.getEndTime()));
         result.setOffice(schedule.getOffice());
         result.setPlan(schedule.getPlan());
-        for (Ticket currentTicket : schedule.getTickets()) {
+        for (ru.rorus.tmis.schedule.Ticket currentTicket : schedule.getTickets()) {
             result.addToTickets(parseTicket(currentTicket));
         }
         return result;
     }
 
     @Deprecated
-    private static ru.korus.tmis.communication.thriftgen.Ticket parseTicket(Ticket ticket) {
+    private static ru.korus.tmis.communication.thriftgen.Ticket parseTicket(ru.rorus.tmis.schedule.Ticket ticket) {
         final ru.korus.tmis.communication.thriftgen.Ticket result = new ru.korus.tmis.communication.thriftgen.Ticket();
         result.setAvailable(ticket.isAvailable() ? 1 : 0);
         result.setFree(ticket.isFree() ? 1 : 0);

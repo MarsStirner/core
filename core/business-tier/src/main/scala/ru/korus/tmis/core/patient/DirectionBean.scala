@@ -17,6 +17,8 @@ import java.{lang, util}
 import ru.korus.tmis.core.filter.ActionsListDataFilter
 import ru.korus.tmis.core.exception.CoreException
 import ru.korus.tmis.laboratory.across.business.AcrossBusinessBeanLocal
+import ru.rorus.tmis.schedule.{PacientInQueueType, AppointmentType, QueueActionParam, PersonScheduleBeanLocal}
+import ru.rorus.tmis.schedule.PersonScheduleBean.PersonSchedule
 
 import util.Date
 
@@ -59,6 +61,11 @@ with I18nable {
   private var dbEventBean: DbEventBeanLocal = _
   @EJB
   private var dbStaffBean: DbStaffBeanLocal = _
+  @EJB
+  private var personScheduleBean: PersonScheduleBeanLocal = _
+  @EJB
+  private var patientBean: DbPatientBeanLocal = _
+
 
   //todo это безобразие убрать, должен быть вызов веб-сервиса с передачей actionId
   @EJB
@@ -368,10 +375,9 @@ with I18nable {
     json_data
   }
 
-  def createConsultation(request: ConsultationRequestData, userData: AuthData) = {
-
-    val action: Action = actionBean.createAction(request.eventId.intValue(), request.actionTypeId.intValue(), userData)
-    action.setIsUrgent(request.urgent)
+  def createServiceForConsultation(request: ConsultationRequestData, plannedDate: Date, userData: AuthData) : Action = {
+    var action: Action = actionBean.createAction(request.eventId.intValue(), request.actionTypeId.intValue(), userData)
+    action.setIsUrgent(request.urgent) //если постановка в очередь срочная, то и услуга срочная
     if (request.createPerson > 0 && dbStaffBean.getStaffById(request.createPerson) != null) {
       action.setCreatePerson(dbStaffBean.getStaffById(request.createPerson))
     }
@@ -379,11 +385,7 @@ with I18nable {
       action.setCreateDatetime(request.createDateTime)
       action.setBegDate(request.createDateTime)
     }
-    val plannedDate = if (request.plannedTime != null && request.plannedTime.getTime != null) {
-      new Date(request.plannedEndDate.getTime + request.plannedTime.getTime.getTime)
-    } else {
-      new Date(request.plannedEndDate.getTime)
-    }
+
     action.setPlannedEndDate(plannedDate)
     if (request.getFinance.getId > 0) {
       action.setFinanceId(request.getFinance.getId)
@@ -415,7 +417,7 @@ with I18nable {
             apSet = apSet + apv.unwrap
         } else {
           //если диагноз не пришел, то запишем дефолтный
-          val props = actionPropertyBean.getActionPropertyValue(ap)
+          var props = actionPropertyBean.getActionPropertyValue(ap)
           if (props.get(0).getValueAsString.compareTo("") == 0) {
             val diagnosis = dbCustomQueryBean.getDiagnosisForMainDiagInAppeal(action.getEvent.getId.intValue())
             if (diagnosis != null) {
@@ -429,122 +431,35 @@ with I18nable {
     })
     apSet.foreach(f => em.persist(f))
     em.flush()
+    action
+  }
+  def createConsultation(request: ConsultationRequestData, userData: AuthData) = {
 
-    // Создаем ивент 29 и акшен 19 (по спеке)
-    val event29 = dbEventBean.createEvent(request.patientId, 29, plannedDate, null, userData)
-    event29.setExecutor(dbStaffBean.getStaffById(request.executorId))
-    event29.setExternalId(dbEventBean.getEventById(request.getEventId).getExternalId)
-    em.persist(event29)
-    em.flush()
-    val action19 = actionBean.createAction(event29.getId.intValue(), 19, userData)
-    if (request.executorId > 0)
-      action19.setExecutor(dbStaffBean.getStaffById(request.executorId))
-    if (request.assignerId > 0)
-      action19.setAssigner(dbStaffBean.getStaffById(request.assignerId))
-    action19.setDirectionDate(plannedDate)
-    action19.setEvent(event29)
-    em.persist(action19)
-    em.flush()
-    // создаем и/или заполняем значение проперти 18
-    val filter = new FreePersonsListDataFilter(0,
-      request.getExecutorId,
-      request.getActionTypeId,
-      request.getPlannedEndDate.getTime,
-      0)
-    val timesAP = dbStaffBean.getActionPropertyForPersonByRequest(filter) //пропертя с расписанием должна быть всегда(по идее:-)
-
-    val apSchedule = actionPropertyBean.getActionPropertyById(timesAP.getId.intValue())
-    val a = apSchedule.getAction
-    val aps = actionPropertyBean.getActionPropertiesByActionIdAndTypeId(a.getId.intValue(), 18) // 18 = queue
-    var ap18: ActionProperty = null
-    aps.size() match {
-      case 0 => {
-        ap18 = actionPropertyBean.createActionProperty(a, 18, userData)
-        /*
-        actionPropertyBean.getActionPropertyValue(apSchedule).foreach(f => {
-          if (f.asInstanceOf[APValueDate].getId.getIndex != request.plannedTime.getIndex())
-            em.merge(actionPropertyBean.setActionPropertyValue(ap18, null, f.asInstanceOf[APValueAction].getId.getIndex))
-        })   */
-        em.persist(ap18)
-        em.flush()
-      }
-      case _ => {
-        ap18 = aps(0)
-      }
+    val plannedDate = if (request.plannedTime != null && request.plannedTime.getTime != null) {
+      new Date(request.plannedEndDate.getTime + request.plannedTime.getTime.getTime)
+    } else {
+      new Date(request.plannedEndDate.getTime)
     }
-    if (ap18 != null) {
-      val ap18values = actionPropertyBean.getActionPropertyValue(ap18)
-      actionPropertyBean.getActionPropertyValue(apSchedule).foreach(f => {
-        if ( //f.asInstanceOf[APValueTime].getId.getIndex != request.plannedTime.getIndex() &&
-          ap18values.find(p => p.asInstanceOf[APValueAction].getId.getIndex == f.asInstanceOf[APValueTime].getId.getIndex).getOrElse(null) == null) {
-          val propValue = actionPropertyBean.setActionPropertyValue(ap18, null, f.asInstanceOf[APValueTime].getId.getIndex)
-          if (propValue != null) em.merge(propValue)
-        }
-      })
+    // Создание услуги
+    val action: Action = createServiceForConsultation(request, plannedDate, userData)
 
-      //*** Обработка срочности и сверх приема по новой спеке
-      action.setAppointmentType("hospital")
-      if (request.getPacientInQueue == 1) {                      //action.getIsUrgent
-        val citoActionsCount = actionBean.getActionForEventAndPacientInQueueType(action.getEvent.getId.intValue(), action.getPlannedEndDate.getTime, 1) //срочные акшены
-        /*
-        ap18values.foreach(p => {
-          if (p.asInstanceOf[APValueAction].getValue != null && p.asInstanceOf[APValueAction].getValue.getPacientInQueueType.intValue() == 1) {
-            citoActionsCount = citoActionsCount + 1}
-        })  */
-        if (action.getExecutor != null && action.getExecutor.getMaxCito > 0 && action.getExecutor.getMaxCito > citoActionsCount) {
-          if (request.plannedTime == null || request.plannedTime.getTime == null) {
-            //сдвинуть все индексы
-            //action.setAppointmentType(1)
-            val odin: lang.Integer = 1
-            action.setPacientInQueueType(odin.shortValue())
-            //em.merge(action)
-            ap18values.sortWith(_.asInstanceOf[APValueAction].getId.getIndex > _.asInstanceOf[APValueAction].getId.getIndex)
-            ap18values.foreach(apvv => {
-              val valueToSave = if (apvv.getValueAsString.compareTo("<EMPTY>") != 0) {
-                apvv.asInstanceOf[APValueAction].getValue.getId.toString
-              } else {
-                null
-              }
-              em.merge(actionPropertyBean.setActionPropertyValue(ap18, valueToSave, apvv.asInstanceOf[APValueAction].getId.getIndex + 1))
-            })
-            em.merge(actionPropertyBean.setActionPropertyValue(ap18, action19.getId.toString, 0))
-          } else {
-            em.merge(actionPropertyBean.setActionPropertyValue(ap18, action19.getId.toString, request.plannedTime.getIndex))
-          }
-        } else {
-          action.setDeleted(true)
-          em.flush()
-          throw new CoreException(ConfigManager.Messages("error.citoLimit"))
-        }
-      } else if (request.getPacientInQueue == 2) {                    //request.overQueue
-        val overQueueActionsCount = actionBean.getActionForEventAndPacientInQueueType(action.getEvent.getId.intValue(), action.getPlannedEndDate.getTime, 2) //акшены сверх сетки приема
-        /*
-        ap18values.foreach(p => {
-          if (p.asInstanceOf[APValueAction].getValue != null && p.asInstanceOf[APValueAction].getValue.getPacientInQueueType.intValue() == 1) {overQueueActionsCount = overQueueActionsCount + 1}
-        }) */
-        if (action.getExecutor != null && action.getExecutor.getMaxOverQueue > 0 && action.getExecutor.getMaxOverQueue > overQueueActionsCount) {
-          //записать в конец
-          //action.setAppointmentType(2)
-          val odin: lang.Integer = 2
-          action.setPacientInQueueType(odin.shortValue())
-          //em.merge(action)
-          //val maxIndex = ap18values.sortBy(_.asInstanceOf[APValueAction].getId.getIndex).last.asInstanceOf[APValueAction].getId.getIndex
+    // Записываем пациента в очередь на время
+    val personAction = dbStaffBean.getPersonActionsByDateAndType( request.getExecutorId, request.getPlannedEndDate, "amb")
 
-          em.merge(actionPropertyBean.setActionPropertyValue(ap18, action19.getId.toString, ap18values.size()))
-        } else {
-          action.setDeleted(true)
-          em.flush()
-          throw new CoreException(ConfigManager.Messages("error.overQueueLimit"))
-        }
-      } else {
-        if (request.plannedTime != null /* && request.plannedTime.getIndex != null*/ ) {
-          em.merge(actionPropertyBean.setActionPropertyValue(ap18, action19.getId.toString, request.plannedTime.getIndex))
-        }
-      }
-      em.merge(action)
+    val personSchedule: PersonSchedule = personScheduleBean.newInstanceOfPersonSchedule(personAction)
+    personScheduleBean.formTickets(personSchedule)
+    val pacientInQueueType = if (request.getUrgent) {
+      PacientInQueueType.URGENT
+    } else if (request.getOverQueue) {
+      PacientInQueueType.OVERQUEUE
+    } else {
+      PacientInQueueType.QUEUE
     }
-    // ****
-    em.flush()
+    val queueActionParam : QueueActionParam = (new QueueActionParam()).setAppointmentType(AppointmentType.HOSPITAL).setPacientInQueueType(pacientInQueueType)
+    val res = personScheduleBean.enqueuePatientToTime(personSchedule, plannedDate, patientBean.getPatientById(request.getPatientId), queueActionParam)
+    if (!res.isSuccess) {
+      throw new CoreException(res.getMessage)
+    }
     action.getId.intValue()
   }
 

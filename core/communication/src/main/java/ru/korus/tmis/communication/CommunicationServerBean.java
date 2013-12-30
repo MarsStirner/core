@@ -4,6 +4,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import ru.korus.tmis.core.database.*;
 import ru.korus.tmis.core.database.epgu.EPGUTicketBeanLocal;
+import ru.rorus.tmis.schedule.PatientQueueBeanLocal;
 
 import javax.annotation.PostConstruct;
 import javax.annotation.PreDestroy;

@@ -9,6 +9,7 @@ import ru.korus.tmis.core.entity.model.Event;
 import ru.korus.tmis.core.entity.model.Staff;
 import ru.korus.tmis.core.exception.CoreException;
 import ru.korus.tmis.core.filter.ListDataFilter;
+import ru.rorus.tmis.schedule.QueueActionParam;
 import scala.Function1;
 
 import javax.ejb.Local;
@@ -185,7 +186,7 @@ public interface DbActionBeanLocal {
 
     ActionType getActionTypeByCode(String code) throws CoreException;
 
-    Action createAction(ActionType actionType, Event event, Staff person, Date date, String hospitalUidFrom, String note);
+    Action createAction(ActionType actionType, Event event, Staff person, Date date, QueueActionParam queueActionParam);
 
     Action updateAction(Action action);
 
@@ -208,4 +209,6 @@ public interface DbActionBeanLocal {
      * @return Список действий
      */
     List<Action> getActionsByTypeFlatCodeAndEventId(int eventId, String actionTypeFlatCode);
+
+    Action createAction(ActionType queueActionType, Event queueEvent, Staff doctor, Date paramsDateTime, String hospitalUidFrom, String note);
 }

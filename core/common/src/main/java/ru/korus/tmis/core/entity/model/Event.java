@@ -9,7 +9,7 @@ import java.util.LinkedList;
 import java.util.List;
 
 @Entity
-@Table(name = "Event", catalog = "", schema = "")
+@Table(name = "Event")
 @NamedQueries(
         {
                 @NamedQuery(name = "Event.findAll", query = "SELECT e FROM Event e"),
