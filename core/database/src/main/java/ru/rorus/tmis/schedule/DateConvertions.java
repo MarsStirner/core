@@ -1,4 +1,7 @@
-package ru.korus.tmis.communication;
+package ru.rorus.tmis.schedule;
+
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.util.Date;
 import java.util.TimeZone;
@@ -8,6 +11,8 @@ import java.util.TimeZone;
  * и из миллисекунд от начала эпохи к локальным датам
  */
 public final class DateConvertions {
+
+    private static final Logger logger = LoggerFactory.getLogger(DateConvertions.class);
     /**
      * конвертация локальной даты в миллисекунды от начала эпохи
      *
@@ -16,7 +21,7 @@ public final class DateConvertions {
      */
     public static long convertDateToUTCMilliseconds(final Date date) {
         if (date == null) {
-            ParserToThriftStruct.logger.warn("Date convert method get \"null\" as param. Return \"0\" (Type: java.util.long)");
+            logger.warn("Date convert method get \"null\" as param. Return \"0\" (Type: java.util.long)");
             return 0l;
         } else {
             //Возвращаем кол-во миллисекунд из даты (преобразованной к локальному часовому поясу)

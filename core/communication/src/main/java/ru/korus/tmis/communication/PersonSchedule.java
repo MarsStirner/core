@@ -8,6 +8,7 @@ import ru.korus.tmis.communication.thriftgen.EnqueuePatientStatus;
 import ru.korus.tmis.communication.thriftgen.QuotingType;
 import ru.korus.tmis.core.entity.model.*;
 import ru.korus.tmis.core.exception.CoreException;
+import ru.rorus.tmis.schedule.*;
 
 import java.text.SimpleDateFormat;
 import java.util.*;

@@ -6,7 +6,7 @@ import ru.korus.tmis.core.entity.model.{APValue, ActionProperty}
 import reflect.BeanProperty
 import scala.collection.JavaConversions._
 import java.util.Date
-import collection.mutable
+import java.{util => ju}
 
 /**
  * Контейнер для мониторинга значений измерений и экспресс-анализов
@@ -20,11 +20,11 @@ import collection.mutable
 @JsonIgnoreProperties(ignoreUnknown = true)
 class MonitoringInfoListData {
   @BeanProperty
-  var data: java.util.LinkedList[MonitoringInfoContainer] = new java.util.LinkedList[MonitoringInfoContainer]
+  var data: ju.LinkedList[MonitoringInfoContainer] = new ju.LinkedList[MonitoringInfoContainer]
 
-  def this(records: java.util.LinkedHashMap[ActionProperty, java.util.List[APValue]]){
+  def this(records: ju.LinkedHashMap[ActionProperty, ju.List[APValue]]){
     this()
-    val map = new java.util.LinkedHashMap[String,(String, java.util.LinkedList[(Date, APValue)])]
+    val map = new ju.LinkedHashMap[String,(String, ju.LinkedList[(Date, APValue)])]
     if (records!=null && records.size()>0){
       try {
         records.foreach(record => {
@@ -32,10 +32,10 @@ class MonitoringInfoListData {
             val code = record._1.getType.getCode
             val name = record._1.getType.getName
             if (!map.contains(code)){
-              val values  = new java.util.LinkedList[(Date, APValue)]
+              val values  = new ju.LinkedList[(Date, APValue)]
               map.put(code,(name, values))
             }
-            map.get(code)._2.add((record._1.getAction.getEndDate, record._2.get(0)))
+            map.get(code)._2.add((record._1.getAction.getBegDate, record._2.get(0)))
           }
         })
 

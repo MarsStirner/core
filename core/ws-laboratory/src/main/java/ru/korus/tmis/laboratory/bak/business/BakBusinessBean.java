@@ -373,9 +373,9 @@ public class BakBusinessBean implements BakBusinessBeanLocal {
         final SubComponentInfo subComponentInfo4 = FACTORY_BAK.createSubComponentInfo();
         final SectionInfo section4 = new SectionInfo();
 
-        if (patient.getSex() == 2) { // появляется если пациент женщина и беременная
+//        if (patient.getSex() == 2) { // появляется если пациент женщина и беременная
             section4.getEntry().add(createEntryComment("", action.getTakenTissue().getNote()));
-        }
+//        }
         subComponentInfo4.setSection(section4);
         final JAXBElement<SubComponentInfo> jaxbElement4
                 = new JAXBElement<SubComponentInfo>(QName.valueOf("component"), SubComponentInfo.class, subComponentInfo4);

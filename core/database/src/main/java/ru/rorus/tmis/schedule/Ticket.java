@@ -1,4 +1,4 @@
-package ru.korus.tmis.communication;
+package ru.rorus.tmis.schedule;
 
 import ru.korus.tmis.core.entity.model.Patient;
 

@@ -24,7 +24,7 @@ import java.{util => ju}
 
 @Interceptors(Array(classOf[LoggingInterceptor]))
 @Stateless
-@TransactionAttribute(TransactionAttributeType.REQUIRES_NEW)
+//@TransactionAttribute(TransactionAttributeType.REQUIRES_NEW)
 class DbCustomQueryBean
   extends DbCustomQueryLocal
   with Logging
