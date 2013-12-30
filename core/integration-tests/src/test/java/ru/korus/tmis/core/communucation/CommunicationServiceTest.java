@@ -14,7 +14,7 @@ import org.slf4j.LoggerFactory;
 import org.testng.annotations.AfterClass;
 import org.testng.annotations.BeforeClass;
 import org.testng.annotations.Test;
-import ru.rorus.tmis.schedule.DateConvertions;
+import ru.korus.tmis.schedule.DateConvertions;
 import ru.korus.tmis.communication.thriftgen.*;
 import ru.korus.tmis.communication.thriftgen.Queue;
 

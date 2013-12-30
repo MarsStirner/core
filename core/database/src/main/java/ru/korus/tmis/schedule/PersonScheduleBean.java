@@ -1,4 +1,4 @@
-package ru.rorus.tmis.schedule;
+package ru.korus.tmis.schedule;
 
 import com.google.common.collect.ImmutableList;
 import org.joda.time.LocalDate;
@@ -11,8 +11,6 @@ import ru.korus.tmis.core.exception.CoreException;
 
 import javax.ejb.EJB;
 import javax.ejb.Stateless;
-import javax.ejb.TransactionAttribute;
-import javax.ejb.TransactionAttributeType;
 import javax.persistence.EntityManager;
 import javax.persistence.PersistenceContext;
 import java.text.SimpleDateFormat;

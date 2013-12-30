@@ -1,7 +1,6 @@
-package ru.rorus.tmis.schedule;
+package ru.korus.tmis.schedule;
 
 import ru.korus.tmis.core.entity.model.*;
-import ru.rorus.tmis.schedule.Ticket;
 
 import javax.ejb.Local;
 import java.util.Date;

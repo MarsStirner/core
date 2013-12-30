@@ -17,7 +17,7 @@ import ru.korus.tmis.core.pharmacy.DbUUIDBeanLocal
 import java.util
 import ru.korus.tmis.core.filter.ListDataFilter
 import java.text.SimpleDateFormat
-import ru.rorus.tmis.schedule.QueueActionParam
+import ru.korus.tmis.schedule.QueueActionParam
 
 @Interceptors(Array(classOf[LoggingInterceptor]))
 @Stateless

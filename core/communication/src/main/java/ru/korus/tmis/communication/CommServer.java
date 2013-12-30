@@ -20,7 +20,7 @@ import ru.korus.tmis.core.entity.model.Patient;
 import ru.korus.tmis.core.entity.model.communication.QueueTicket;
 import ru.korus.tmis.core.exception.CoreException;
 import ru.korus.tmis.core.exception.NoSuchPatientException;
-import ru.rorus.tmis.schedule.*;
+import ru.korus.tmis.schedule.*;
 
 import javax.ejb.EJBException;
 import java.util.*;
@@ -848,7 +848,7 @@ public class CommServer implements Communications.Iface {
 //                    currentSchedule.checkQuotingBySpeciality(params.hospitalUidFrom);
 //                }
                 currentSchedule.takeConstraintsOnTickets(CommunicationHelper.getQuotingType(params));
-                final ru.rorus.tmis.schedule.Ticket ticket = currentSchedule.getFirstFreeTicketAfterDateTime(params.beginDateTime);
+                final ru.korus.tmis.schedule.Ticket ticket = currentSchedule.getFirstFreeTicketAfterDateTime(params.beginDateTime);
                 if (ticket != null) {
                     final TTicket result = ParserToThriftStruct.parseTTicket(currentSchedule, ticket);
                     logger.info("End of #{}. Return: {}", currentRequestNum, result);
