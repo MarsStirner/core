@@ -29,10 +29,10 @@ public class PharmacyTimer {
     @PostConstruct
     public void createProgrammaticalTimer() {
         logger.info("ProgrammaticalTimerEJB initialized");
-        ScheduleExpression everyTenSeconds = new ScheduleExpression()
-                .second("*/10").minute("*").hour("*");
-        timerService.createCalendarTimer(everyTenSeconds, new TimerConfig(
-                "passed message " + new Date(), false));
+//        ScheduleExpression everyTenSeconds = new ScheduleExpression()
+//                .second("*/10").minute("*").hour("*");
+//        timerService.createCalendarTimer(everyTenSeconds, new TimerConfig(
+//                "passed message " + new Date(), false));
     }
 
     @Timeout
