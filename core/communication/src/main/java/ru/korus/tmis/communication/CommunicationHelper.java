@@ -1,15 +1,14 @@
 package ru.korus.tmis.communication;
 
-import org.joda.time.DateMidnight;
 import org.joda.time.DateTime;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import ru.korus.tmis.communication.thriftgen.*;
 import ru.korus.tmis.core.entity.model.*;
 import ru.korus.tmis.core.entity.model.Patient;
-import ru.korus.tmis.core.exception.CoreException;
+import ru.korus.tmis.core.entity.model.AppointmentType;
+import ru.korus.tmis.schedule.TypeOfQuota;
 
-import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 
@@ -56,6 +55,7 @@ public class CommunicationHelper {
 
     /**
      * фильтрации возрастов
+     *
      * @param age       возрастные ограничения ("{NNN{д|н|м|г}-{MMM{д|н|м|г}}" -
      *                  с NNN дней/недель/месяцев/лет по MMM дней/недель/месяцев/лет;
      *                  пустая нижняя или верхняя граница - нет ограничения снизу или сверху)
@@ -89,6 +89,7 @@ public class CommunicationHelper {
 
     /**
      * подходит ли пол и возраст для данного врача
+     *
      * @param patient    пациент
      * @param speciality специальность врача
      * @return результат проверки
@@ -108,9 +109,9 @@ public class CommunicationHelper {
     }
 
 
-
     /**
      * Перевод из численного отображения пола к строковому
+     *
      * @param sex 1="male", 2="male", X=""
      * @return строковое представление пола
      */
@@ -130,6 +131,7 @@ public class CommunicationHelper {
 
     /**
      * Проверка корректности значений параметров
+     *
      * @param params параметры
      * @param result в случае ошибки будет заполнена
      * @return флажок корректности ( false = некорректно )
@@ -154,93 +156,43 @@ public class CommunicationHelper {
         return allParamsIsSet;
     }
 
-    /**
-     * Проверка повторная ли запись этого пациента к этому врачу на сегодня
-     * @param queueAMB список талончиков
-     * @param personId ид пациента для проверки
-     * @return false-еще не был записан, true- уже есть запись на сегодня
-     */
-    public static boolean checkRepetitionTicket(List<APValueAction> queueAMB, int personId) {
-        if (queueAMB.isEmpty()) {
-            return false;
-        } else {
-            for (APValueAction currentActionInQueueActions : queueAMB) {
-                final Action queueAction = currentActionInQueueActions.getValue();
-                if (queueAction != null) {
-                    //Проверка на существование пациента при получении очереди
-                    final Event queueEvent = queueAction.getEvent();
-                    if (queueEvent != null) {
-                        if (queueEvent.getPatient() == null) {
-                            logger.warn("Not have any patient who own this action [{}] and this event [{}]",
-                                    queueAction, queueEvent);
-                        } else {
-                            if (queueEvent.getPatient().getId() == personId) {
-                                logger.info("Repetition queue detected. Reject enqueue.");
-                                return true;
-                            }
-                        }
-                    } else {
-                        logger.warn("Patient queue action [{}] hasn't event.", queueAction);
-                    }
-                } //END OF IF (action is not null)
-            } //END OF FOR
-            return false;
-        }
-    }
 
-    public static QuotingType getQuotingType(final ScheduleParameters parameters){
-        if(parameters.isSetQuotingType()){
-            return parameters.getQuotingType();
-        } else if (parameters.isSetHospitalUidFrom() && !parameters.getHospitalUidFrom().isEmpty()){
-            return QuotingType.FROM_OTHER_LPU;
-        } else {
-            return QuotingType.FROM_PORTAL;
-        }
-    }
-
-    public static QuotingType getQuotingType(final GetTimeWorkAndStatusParameters parameters){
-        if (parameters.isSetHospitalUidFrom() && !parameters.getHospitalUidFrom().isEmpty()){
-            return QuotingType.FROM_OTHER_LPU;
-        } else {
-            return QuotingType.FROM_PORTAL;
-        }
-    }
-
-
-    /**
-     * Подсччет количества пациентов, записанных вне очереди и экстренно
-     * @param queueAMB записи пациентов на прием
-     * @return количество экстренных записей на прием к врачу
-     */
-    public static short getEmergencyPatientCount(List<APValueAction> queueAMB) {
-        /**
-         * количество записанных экстренно
-         */
-        short emergencyPatientCount = 0;
-        /**
-         * Количество записанных вне очереди
-         */
-        short outOfTurnCount = 0;
-
-        for (APValueAction checkAction : queueAMB) {
-            if (checkAction != null) {
-                Action chechActionValue = checkAction.getValue();
-                if (chechActionValue != null) {
-                    Short pacientInQueueType = chechActionValue.getPacientInQueueType();
-                    if (pacientInQueueType != null) {
-                        if (pacientInQueueType == (short) 1) {
-                            emergencyPatientCount++;
-                        } else {
-                            if (pacientInQueueType == (short) 2) {
-                                outOfTurnCount++;
-                            }
-                        }
-                    }
+    public static TypeOfQuota getTypeOfQuota(final ScheduleParameters parameters) {
+        if (parameters.isSetQuotingType()) {
+            switch (parameters.getQuotingType()) {
+                case BETWEEN_CABINET: {
+                    return TypeOfQuota.BETWEEN_CABINET;
+                }
+                case FROM_OTHER_LPU: {
+                    return TypeOfQuota.FROM_OTHER_LPU;
+                }
+                case FROM_PORTAL: {
+                    return TypeOfQuota.FROM_PORTAL;
+                }
+                case FROM_REGISTRY: {
+                    return TypeOfQuota.FROM_REGISTRY;
+                }
+                case SECOND_VISIT: {
+                    return TypeOfQuota.SECOND_VISIT;
+                }
+                default: {
+                    //НЕ должно выполнятся
+                    return TypeOfQuota.FROM_REGISTRY;
                 }
             }
+        } else if (parameters.isSetHospitalUidFrom() && !parameters.getHospitalUidFrom().isEmpty()) {
+            return TypeOfQuota.FROM_OTHER_LPU;
+        } else {
+            return TypeOfQuota.FROM_PORTAL;
         }
-        logger.debug("Founded {} emergency and {} out of turn actions", emergencyPatientCount, outOfTurnCount);
-        return emergencyPatientCount;
+    }
+
+    public static TypeOfQuota getTypeOfQuota(final GetTimeWorkAndStatusParameters parameters) {
+        if (parameters.isSetHospitalUidFrom() && !parameters.getHospitalUidFrom().isEmpty()) {
+            return TypeOfQuota.FROM_OTHER_LPU;
+        } else {
+            return TypeOfQuota.FROM_PORTAL;
+        }
     }
 
     public static String convertDotPatternToSQLLikePattern(final String dotPattern) {
@@ -251,4 +203,11 @@ public class CommunicationHelper {
         }
     }
 
+    public static AppointmentType getAppointmentType(EnqueuePatientParameters params) {
+        if (params.isSetHospitalUidFrom() && !params.getHospitalUidFrom().isEmpty()) {
+            return AppointmentType.OTHER_LPU;
+        } else {
+            return AppointmentType.PORTAL;
+        }
+    }
 }

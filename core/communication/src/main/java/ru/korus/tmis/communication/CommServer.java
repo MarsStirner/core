@@ -43,10 +43,8 @@ public class CommServer implements Communications.Iface {
     private static DbQuotingBySpecialityBeanLocal quotingBySpecialityBean = null;
     private static DbOrganizationBeanLocal organisationBean = null;
     private static DbActionPropertyBeanLocal actionPropertyBean = null;
-    private static DbQuotingByTimeBeanLocal quotingByTimeBean = null;
     private static DbActionBeanLocal actionBean = null;
     private static DbManagerBeanLocal managerBean = null;
-    private static DbEventBeanLocal eventBean = null;
     //////////////////////////////////////////////////////////
     private static DbClientDocumentBeanLocal documentBean = null;
     private static DbRbDocumentTypeBeanLocal documentTypeBean = null;
@@ -55,6 +53,7 @@ public class CommServer implements Communications.Iface {
     //////////////////////////////////////////////////////////
     private static EPGUTicketBeanLocal queueTicketBean = null;
     //////////////////////////////////////////////////////////
+    private static PersonScheduleBeanLocal personScheduleBean = null;
     private static PatientQueueBeanLocal patientQueueBean = null;
 
     //Singleton instance
@@ -74,6 +73,8 @@ public class CommServer implements Communications.Iface {
     private static final int MAX_WORKER_THREADS = 255;
     //Number of request
     private static int requestNum = 0;
+
+
 
 
     /**
@@ -129,16 +130,11 @@ public class CommServer implements Communications.Iface {
         final int currentRequestNum = ++requestNum;
         logger.info("#{} Call method -> CommServer.findOrgStructureByAddress(streetKLADR={}, pointKLADR={}, number={}/{} flat={})",
                 currentRequestNum, params.getPointKLADR(), params.getStreetKLADR(), params.getNumber(), params.getCorpus(), params.getFlat());
-        final List<Integer> resultList;
-        try {
-            resultList = orgStructureBean.getOrgStructureByAddress(
+        final List<Integer> resultList = orgStructureBean.getOrgStructureIdListByAddress(
                     params.getPointKLADR(), params.getStreetKLADR(), params.getNumber(), params.getCorpus(), params.getFlat());
-        } catch (CoreException e) {
-            logger.error("#" + currentRequestNum + " CoreException. Message=" + e.getMessage(), e);
+        if(resultList.isEmpty()){
+            logger.error("End of #{}. No one orgStructureFound", currentRequestNum);
             throw new NotFoundException().setError_msg("No one OrgStructure found.");
-        } catch (Exception e) {
-            logger.error("#" + currentRequestNum + " Exception. Message=" + e.getMessage(), e);
-            throw new TException("Unknown Error", e);
         }
         logger.info("End of #{} findOrgStructureByAddress. Return (size={} DATA=({})) as result.",
                 currentRequestNum, resultList.size(), resultList);
@@ -187,7 +183,6 @@ public class CommServer implements Communications.Iface {
             throws TException {
         final int currentRequestNum = ++requestNum;
         logger.info("#{} Call method -> CommServer.getTotalTicketsAvailability({})", currentRequestNum, params);
-
         final TicketsAvailability result = null;
         logger.info("End of #{} getTotalTicketsAvailability. Return \"({})\" as result.", currentRequestNum, result);
         throw new TException(CommunicationErrors.msgNotImplemented.getMessage());
@@ -243,14 +238,14 @@ public class CommServer implements Communications.Iface {
             throw new NotFoundException().setError_msg("Doctor not found by ID=" + params.getPersonId());
         }
 
-        final PersonSchedule currentSchedule = new PersonSchedule(doctor, personAction);
-        final RbReasonOfAbsence reasonOfAbsence = currentSchedule.checkReasonOfAbscence();
+        final PersonScheduleBean.PersonSchedule currentSchedule = personScheduleBean.newInstanceOfPersonSchedule(personAction);
+        final RbReasonOfAbsence reasonOfAbsence = personScheduleBean.getReasonOfAbsence(currentSchedule);
         if (reasonOfAbsence != null) {
             logger.info("End of #{}. Doctor has ReasonOfAbsence.", currentRequestNum);
             throw new ReasonOfAbsenceException().setCode(reasonOfAbsence.getCode()).setName(reasonOfAbsence.getName());
         }
         try {
-            currentSchedule.formTickets();
+            personScheduleBean.formTickets(currentSchedule);
         } catch (CoreException e) {
             logger.error("End of #{}. Exception while forming tickets: {}", currentRequestNum, e);
             throw new NotFoundException().setError_msg("Doctor Schedule is broken");
@@ -259,7 +254,7 @@ public class CommServer implements Communications.Iface {
 //        if(params.isSetHospitalUidFrom() && !params.getHospitalUidFrom().isEmpty()){
 //            currentSchedule.checkQuotingBySpeciality(params.hospitalUidFrom);
 //        }
-        currentSchedule.takeConstraintsOnTickets(CommunicationHelper.getQuotingType(params));
+        personScheduleBean.takeConstraintsOnTickets(currentSchedule, CommunicationHelper.getTypeOfQuota(params));
         final Amb result = ParserToThriftStruct.parsePersonScheduleToAmb(currentSchedule);
         logger.info("End of #{} TimeAndStatus. Return \"{}\" as result.",
                 currentRequestNum, result);
@@ -277,7 +272,7 @@ public class CommServer implements Communications.Iface {
     @Override
     public PatientStatus addPatient(final AddPatientParameters params) throws TException {
         final int currentRequestNum = ++requestNum;
-        logger.info("#{} Call method -> CommServer.addPatient( {} )", currentRequestNum, params );
+        logger.info("#{} Call method -> CommServer.addPatient( {} )", currentRequestNum, params);
         final PatientStatus result = new PatientStatus();
         //CHECK PARAMS
         if (!CommunicationHelper.checkAddPatientParams(params, result)) {
@@ -352,7 +347,6 @@ public class CommServer implements Communications.Iface {
                     logger.warn("With code[{}] no one rbPolicyType founded", params.getPolicyTypeCode());
                 }
             }
-
         } catch (CoreException e) {
             logger.error("Error while saving to database", e);
             return result.setMessage("Error while saving to database. Message=" + e.getMessage()).setSuccess(false);
@@ -485,6 +479,7 @@ public class CommServer implements Communications.Iface {
 
     /**
      * Поиск всех пациентов, удовлетворяющих условиям
+     *
      * @param params Параметры для поиска пациентов
      * @return Список пациентов
      * @throws TException
@@ -839,19 +834,19 @@ public class CommServer implements Communications.Iface {
         logger.debug("Ambulatory Actions count = {}. DATA:", doctorActions.size());
         for (Action currentAction : doctorActions) {
             try {
-                final PersonSchedule currentSchedule = new PersonSchedule(doctor, currentAction);
-                final RbReasonOfAbsence reasonOfAbsence = currentSchedule.checkReasonOfAbscence();
+                final PersonScheduleBean.PersonSchedule currentSchedule = personScheduleBean.newInstanceOfPersonSchedule(currentAction);
+                final RbReasonOfAbsence reasonOfAbsence = personScheduleBean.getReasonOfAbsence(currentSchedule);
                 if (reasonOfAbsence != null) {
                     logger.info("End of #{}. Doctor has ReasonOfAbsence.", currentRequestNum);
                     continue;
                 }
-                currentSchedule.formTickets();
+                personScheduleBean.formTickets(currentSchedule);
                 //TODO uncomment to NTK version after 3.3.23 inlusive
 //                if(params.isSetHospitalUidFrom() && !params.getHospitalUidFrom().isEmpty()){
 //                    currentSchedule.checkQuotingBySpeciality(params.hospitalUidFrom);
 //                }
-                currentSchedule.takeConstraintsOnTickets(CommunicationHelper.getQuotingType(params));
-                final ru.korus.tmis.schedule.Ticket ticket = currentSchedule.getFirstFreeTicketAfterDateTime(params.beginDateTime);
+                personScheduleBean.takeConstraintsOnTickets(currentSchedule, CommunicationHelper.getTypeOfQuota(params));
+                final ru.korus.tmis.schedule.Ticket ticket = personScheduleBean.getFirstFreeTicketAfterDateTime(currentSchedule, params.beginDateTime);
                 if (ticket != null) {
                     final TTicket result = ParserToThriftStruct.parseTTicket(currentSchedule, ticket);
                     logger.info("End of #{}. Return: {}", currentRequestNum, result);
@@ -903,8 +898,8 @@ public class CommServer implements Communications.Iface {
             return result;
         }
         for (Action currentAction : schedule) {
-            final PersonSchedule currentSchedule = new PersonSchedule(doctor, currentAction);
-            final RbReasonOfAbsence reasonOfAbsence = currentSchedule.checkReasonOfAbscence();
+            final PersonScheduleBean.PersonSchedule currentSchedule = personScheduleBean.newInstanceOfPersonSchedule(currentAction);
+            final RbReasonOfAbsence reasonOfAbsence = personScheduleBean.getReasonOfAbsence(currentSchedule);
             if (reasonOfAbsence != null) {
                 logger.info("Doctor has ReasonOfAbsence.", currentRequestNum);
                 result.putToPersonAbsences(DateConvertions.convertDateToUTCMilliseconds(currentSchedule.getAmbulatoryDate()),
@@ -912,7 +907,7 @@ public class CommServer implements Communications.Iface {
                 continue;
             }
             try {
-                currentSchedule.formTickets();
+                personScheduleBean.formTickets(currentSchedule);
             } catch (CoreException e) {
                 logger.error("Exception while forming tickets:", e);
                 continue;
@@ -921,7 +916,7 @@ public class CommServer implements Communications.Iface {
 //            if(params.isSetHospitalUidFrom() && !params.getHospitalUidFrom().isEmpty()){
 //                currentSchedule.checkQuotingBySpeciality(params.hospitalUidFrom);
 //            }
-            currentSchedule.takeConstraintsOnTickets(CommunicationHelper.getQuotingType(params));
+            personScheduleBean.takeConstraintsOnTickets(currentSchedule, CommunicationHelper.getTypeOfQuota(params));
             result.putToSchedules(
                     DateConvertions.convertDateToUTCMilliseconds(currentSchedule.getAmbulatoryDate()),
                     ParserToThriftStruct.parsePersonSchedule(currentSchedule)
@@ -1002,11 +997,11 @@ public class CommServer implements Communications.Iface {
                 return new EnqueuePatientStatus().setSuccess(false)
                         .setMessage(CommunicationErrors.msgEnqueueNotApplicable.getMessage());
             }
-
             personAction = staffBean.getPersonActionsByDateAndType(
                     params.getPersonId(),
-                    DateConvertions.convertUTCMillisecondsToLocalDate(params.getDateTime()),
-                    "amb");
+                    paramsDateTime,
+                    "amb"
+            );
         } catch (NoSuchPatientException e) {
             logger.error("Error while get patient by ID=" + params.getPatientId(), e);
             return new EnqueuePatientStatus().setSuccess(false)
@@ -1022,24 +1017,25 @@ public class CommServer implements Communications.Iface {
 
         }
 
-        final PersonSchedule currentSchedule = new PersonSchedule(doctor, personAction);
-        final RbReasonOfAbsence reasonOfAbsence = currentSchedule.checkReasonOfAbscence();
+        final PersonScheduleBean.PersonSchedule currentSchedule = personScheduleBean.newInstanceOfPersonSchedule(personAction);
+        final RbReasonOfAbsence reasonOfAbsence = personScheduleBean.getReasonOfAbsence(currentSchedule);
         if (reasonOfAbsence != null) {
             logger.info("End of #{}. Doctor has ReasonOfAbsence.", currentRequestNum);
             throw new ReasonOfAbsenceException().setCode(reasonOfAbsence.getCode()).setName(reasonOfAbsence.getName());
         }
         try {
-            currentSchedule.formTickets();
+            personScheduleBean.formTickets(currentSchedule);
         } catch (CoreException e) {
             logger.error("Exception while forming tickets:", e);
         }
         // currentSchedule.takeConstraintsOnTickets(CommunicationHelper.getQuotingType(params));
-        final EnqueuePatientStatus result = currentSchedule.enqueuePatientToTime(
-                paramsDateTime,
-                patient,
-                params.getHospitalUidFrom(),
-                params.getNote()
-        );
+        QueueActionParam enqueueParameters = new QueueActionParam()
+                .setHospitalUidFrom(params.getHospitalUidFrom())
+                .setNote(params.getNote())
+                .setPacientInQueueType(PacientInQueueType.QUEUE)
+                .setAppointmentType(CommunicationHelper.getAppointmentType(params));
+        final EnqueuePatientResult enqueueResult = personScheduleBean.enqueuePatientToTime(currentSchedule, paramsDateTime, patient, enqueueParameters);
+        final EnqueuePatientStatus result = ParserToThriftStruct.parseEnqueuePatientResult(enqueueResult);
         logger.info("End of #{} enqueuePatient. Return \"{}\" as result.", currentRequestNum, result);
         return result;
     }
@@ -1060,9 +1056,9 @@ public class CommServer implements Communications.Iface {
         try {
             patient = patientBean.getPatientById(patientId);
             logger.debug("Patient = {}", patient);
-            final EventType queueEventType = eventBean.getEventTypeByCode("queue");
+            final EventType queueEventType = patientQueueBean.getQueueEventType();
             logger.debug("EventType = {}", queueEventType);
-            final ActionType queueActionType = actionBean.getActionTypeByCode("queue");
+            final ActionType queueActionType = patientQueueBean.getQueueActionType();
             logger.debug("ActionType = {}", queueActionType);
             for (Event currentEvent : patient.getEvents()) {
                 if (currentEvent.getEventType().getId().equals(queueEventType.getId()) && !currentEvent.getDeleted()) {
@@ -1190,13 +1186,10 @@ public class CommServer implements Communications.Iface {
                 logger.warn("No quoting for this speciality");
             } else {
                 for (QuotingBySpeciality currentQuotingBySpeciality : currentQuotingBySpecialityList) {
-                    currentQuotingBySpeciality.setCouponsRemaining(
-                            currentQuotingBySpeciality.getCouponsRemaining() + 1);
-                    logger.debug("Remaining coupons incremented to quoting = {}", currentQuotingBySpeciality);
-                    try {
-                        managerBean.merge(currentQuotingBySpeciality);
-                    } catch (CoreException e) {
-                        logger.error("Error while changing QuotingBySpeciality({})", currentQuotingBySpeciality, e);
+                    if (quotingBySpecialityBean.incrementRemainingCoupons(currentQuotingBySpeciality)) {
+                        logger.debug("Remaining coupons incremented to quoting = {}", currentQuotingBySpeciality);
+                    } else {
+                        logger.error("Error while changing QuotingBySpeciality({})", currentQuotingBySpeciality);
                     }
                 }
             }
@@ -1207,6 +1200,7 @@ public class CommServer implements Communications.Iface {
 
     /**
      * Получение списка специальностей работников ЛПУ
+     *
      * @param hospitalUidFrom ИД ЛПУ
      * @return Список специальностей
      * @throws TException
@@ -1215,16 +1209,10 @@ public class CommServer implements Communications.Iface {
     public List<Speciality> getSpecialities(final String hospitalUidFrom) throws TException {
         final int currentRequestNum = ++requestNum;
         logger.info("#{} Call method -> CommServer.getSpecialities({})", currentRequestNum, hospitalUidFrom);
-
-        final List<QuotingBySpeciality> quotingBySpecialityList;
-        try {
-            quotingBySpecialityList = quotingBySpecialityBean.getQuotingByOrganisation(hospitalUidFrom);
-        } catch (CoreException e) {
-            logger.error("#" + currentRequestNum + " COREException. Message=" + e.getMessage(), e);
+        final List<QuotingBySpeciality> quotingBySpecialityList = quotingBySpecialityBean.getQuotingByOrganisation(hospitalUidFrom);
+        if (quotingBySpecialityList.isEmpty()) {
+            logger.error("End of #{}. No one speciality found.", currentRequestNum);
             throw new NotFoundException().setError_msg(CommunicationErrors.msgItemNotFound.getMessage());
-        } catch (Exception e) {
-            logger.error("#" + currentRequestNum + " Exception. Message=" + e.getMessage(), e);
-            throw new SQLException().setError_msg(CommunicationErrors.msgUnknownError.getMessage());
         }
         List<Speciality> resultList = new ArrayList<Speciality>(quotingBySpecialityList.size());
         for (QuotingBySpeciality item : quotingBySpecialityList) {
@@ -1270,7 +1258,7 @@ public class CommServer implements Communications.Iface {
         final int currentRequestNum = ++requestNum;
         logger.info("#{} Call method -> CommServer.getAddresses(orgStructureId={}, recursive={}, infisCode={})",
                 currentRequestNum, orgStructureId, recursive, infisCode);
-//Список для хранения сущностей из БД
+        //Список для хранения сущностей из БД
         final List<ru.korus.tmis.core.entity.model.OrgStructure> orgStructureList = new ArrayList<ru.korus.tmis.core.entity.model.OrgStructure>();
         try {
             if (orgStructureId != 0) {
@@ -1295,16 +1283,10 @@ public class CommServer implements Communications.Iface {
                     : orgStructureBean.getOrgStructureAddressByOrgStructure(currentOrgStructure)) {
                 logger.debug("OrgStructureAddress ={}", currentOrgStructureAddress);
                 if (currentOrgStructureAddress != null) {
-                    final AddressHouse adrHouse = currentOrgStructureAddress.getAddressHouseList();
-                    logger.debug("AddressHouse={}", adrHouse);
-                    if (adrHouse != null) {
-                        resultList.add(
-                                new Address().setOrgStructureId(currentOrgStructure.getId())
-                                        .setPointKLADR(adrHouse.getKLADRCode())
-                                        .setStreetKLADR(adrHouse.getKLADRStreetCode())
-                                        .setCorpus(adrHouse.getCorpus()).setNumber(adrHouse.getNumber())
-                                        .setFirstFlat(currentOrgStructureAddress.getFirstFlat())
-                                        .setLastFlat(currentOrgStructureAddress.getLastFlat()));
+                    if (currentOrgStructureAddress.getAddressHouseList() != null) {
+                        resultList.add(ParserToThriftStruct.parseAddress(currentOrgStructure, currentOrgStructureAddress));
+                    }  else {
+                        logger.debug("AddressHouse=NULL");
                     }
                 }
             }
@@ -1415,20 +1397,12 @@ public class CommServer implements Communications.Iface {
         CommServer.actionPropertyBean = actionPropertyBean;
     }
 
-    public static void setQuotingByTimeBean(final DbQuotingByTimeBeanLocal quotingByTimeBean) {
-        CommServer.quotingByTimeBean = quotingByTimeBean;
-    }
-
     public static void setActionBean(final DbActionBeanLocal actionBean) {
         CommServer.actionBean = actionBean;
     }
 
     public static void setManagerBean(final DbManagerBeanLocal managerBean) {
         CommServer.managerBean = managerBean;
-    }
-
-    public static void setEventBean(final DbEventBeanLocal eventBean) {
-        CommServer.eventBean = eventBean;
     }
 
     public static void setDocumentBean(DbClientDocumentBeanLocal documentBean) {
@@ -1451,72 +1425,12 @@ public class CommServer implements Communications.Iface {
         CommServer.queueTicketBean = queueTicketBean;
     }
 
-    public static DbOrgStructureBeanLocal getOrgStructureBean() {
-        return orgStructureBean;
-    }
-
-    public static DbPatientBeanLocal getPatientBean() {
-        return patientBean;
-    }
-
-    public static DbStaffBeanLocal getStaffBean() {
-        return staffBean;
-    }
-
-    public static DbQuotingBySpecialityBeanLocal getQuotingBySpecialityBean() {
-        return quotingBySpecialityBean;
-    }
-
-    public static DbOrganizationBeanLocal getOrganisationBean() {
-        return organisationBean;
-    }
-
-    public static DbActionPropertyBeanLocal getActionPropertyBean() {
-        return actionPropertyBean;
-    }
-
-    public static DbQuotingByTimeBeanLocal getQuotingByTimeBean() {
-        return quotingByTimeBean;
-    }
-
-    public static DbActionBeanLocal getActionBean() {
-        return actionBean;
-    }
-
-    public static DbManagerBeanLocal getManagerBean() {
-        return managerBean;
-    }
-
-    public static DbEventBeanLocal getEventBean() {
-        return eventBean;
-    }
-
-    public static DbClientDocumentBeanLocal getDocumentBean() {
-        return documentBean;
-    }
-
-    public static DbRbDocumentTypeBeanLocal getDocumentTypeBean() {
-        return documentTypeBean;
-    }
-
-    public static DbClientPolicyBeanLocal getPolicyBean() {
-        return policyBean;
-    }
-
-    public static DbRbPolicyTypeBeanLocal getPolicyTypeBean() {
-        return policyTypeBean;
-    }
-
-    public static EPGUTicketBeanLocal getQueueTicketBean() {
-        return queueTicketBean;
+    public static void setPersonScheduleBean(PersonScheduleBeanLocal personScheduleBean) {
+        CommServer.personScheduleBean = personScheduleBean;
     }
 
     public static void setPatientQueueBean(PatientQueueBeanLocal patientQueueBean) {
         CommServer.patientQueueBean = patientQueueBean;
-    }
-
-    public static PatientQueueBeanLocal getPatientQueueBean() {
-        return patientQueueBean;
     }
 
     public void endWork() {

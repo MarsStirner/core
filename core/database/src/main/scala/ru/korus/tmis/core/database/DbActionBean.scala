@@ -589,6 +589,7 @@ class DbActionBean
       newAction.setPayStatus(0)
       newAction.setExecutor(person)
       newAction.setPacientInQueueType(queueActionParam.getPacientInQueueType().getValue)
+      newAction.setAppointmentType(queueActionParam.getAppointmentType)
 
       //не менять на person, иначе нельзя будет отличить запись на прием к врачу с портала и других ЛПУ
       newAction.setAssigner(null)

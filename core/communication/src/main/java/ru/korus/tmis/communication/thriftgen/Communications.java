@@ -278,11 +278,11 @@ public class Communications {
      * Получение списка  с информацией о специализациях и доступных талончиках
      * @param hospitalUidFrom               1) Инфис-код ЛПУ
      * @return                              Список структур с данными о специализациях врачей
-     * @throws SQLException                 когда произошла внутренняя ошибка при запросах к БД ЛПУ
+     * @throws NotFoundException            когда ничего не найдено
      * 
      * @param hospitalUidFrom
      */
-    public List<Speciality> getSpecialities(String hospitalUidFrom) throws SQLException, org.apache.thrift.TException;
+    public List<Speciality> getSpecialities(String hospitalUidFrom) throws NotFoundException, org.apache.thrift.TException;
 
   }
 
@@ -991,7 +991,7 @@ public class Communications {
       throw new org.apache.thrift.TApplicationException(org.apache.thrift.TApplicationException.MISSING_RESULT, "dequeuePatient failed: unknown result");
     }
 
-    public List<Speciality> getSpecialities(String hospitalUidFrom) throws SQLException, org.apache.thrift.TException
+    public List<Speciality> getSpecialities(String hospitalUidFrom) throws NotFoundException, org.apache.thrift.TException
     {
       send_getSpecialities(hospitalUidFrom);
       return recv_getSpecialities();
@@ -1004,15 +1004,15 @@ public class Communications {
       sendBase("getSpecialities", args);
     }
 
-    public List<Speciality> recv_getSpecialities() throws SQLException, org.apache.thrift.TException
+    public List<Speciality> recv_getSpecialities() throws NotFoundException, org.apache.thrift.TException
     {
       getSpecialities_result result = new getSpecialities_result();
       receiveBase(result, "getSpecialities");
       if (result.isSetSuccess()) {
         return result.success;
       }
-      if (result.exc != null) {
-        throw result.exc;
+      if (result.nfExc != null) {
+        throw result.nfExc;
       }
       throw new org.apache.thrift.TApplicationException(org.apache.thrift.TApplicationException.MISSING_RESULT, "getSpecialities failed: unknown result");
     }
@@ -1779,7 +1779,7 @@ public class Communications {
         prot.writeMessageEnd();
       }
 
-      public List<Speciality> getResult() throws SQLException, org.apache.thrift.TException {
+      public List<Speciality> getResult() throws NotFoundException, org.apache.thrift.TException {
         if (getState() != org.apache.thrift.async.TAsyncMethodCall.State.RESPONSE_READ) {
           throw new IllegalStateException("Method call not finished!");
         }
@@ -2410,8 +2410,8 @@ public class Communications {
         getSpecialities_result result = new getSpecialities_result();
         try {
           result.success = iface.getSpecialities(args.hospitalUidFrom);
-        } catch (SQLException exc) {
-          result.exc = exc;
+        } catch (NotFoundException nfExc) {
+          result.nfExc = nfExc;
         }
         return result;
       }
@@ -23854,7 +23854,7 @@ public class Communications {
     private static final org.apache.thrift.protocol.TStruct STRUCT_DESC = new org.apache.thrift.protocol.TStruct("getSpecialities_result");
 
     private static final org.apache.thrift.protocol.TField SUCCESS_FIELD_DESC = new org.apache.thrift.protocol.TField("success", org.apache.thrift.protocol.TType.LIST, (short)0);
-    private static final org.apache.thrift.protocol.TField EXC_FIELD_DESC = new org.apache.thrift.protocol.TField("exc", org.apache.thrift.protocol.TType.STRUCT, (short)1);
+    private static final org.apache.thrift.protocol.TField NF_EXC_FIELD_DESC = new org.apache.thrift.protocol.TField("nfExc", org.apache.thrift.protocol.TType.STRUCT, (short)1);
 
     private static final Map<Class<? extends IScheme>, SchemeFactory> schemes = new HashMap<Class<? extends IScheme>, SchemeFactory>();
     static {
@@ -23863,12 +23863,12 @@ public class Communications {
     }
 
     public List<Speciality> success; // required
-    public SQLException exc; // required
+    public NotFoundException nfExc; // required
 
     /** The set of fields this struct contains, along with convenience methods for finding and manipulating them. */
     public enum _Fields implements org.apache.thrift.TFieldIdEnum {
       SUCCESS((short)0, "success"),
-      EXC((short)1, "exc");
+      NF_EXC((short)1, "nfExc");
 
       private static final Map<String, _Fields> byName = new HashMap<String, _Fields>();
 
@@ -23885,8 +23885,8 @@ public class Communications {
         switch(fieldId) {
           case 0: // SUCCESS
             return SUCCESS;
-          case 1: // EXC
-            return EXC;
+          case 1: // NF_EXC
+            return NF_EXC;
           default:
             return null;
         }
@@ -23933,7 +23933,7 @@ public class Communications {
       tmpMap.put(_Fields.SUCCESS, new org.apache.thrift.meta_data.FieldMetaData("success", org.apache.thrift.TFieldRequirementType.DEFAULT, 
           new org.apache.thrift.meta_data.ListMetaData(org.apache.thrift.protocol.TType.LIST, 
               new org.apache.thrift.meta_data.StructMetaData(org.apache.thrift.protocol.TType.STRUCT, Speciality.class))));
-      tmpMap.put(_Fields.EXC, new org.apache.thrift.meta_data.FieldMetaData("exc", org.apache.thrift.TFieldRequirementType.DEFAULT, 
+      tmpMap.put(_Fields.NF_EXC, new org.apache.thrift.meta_data.FieldMetaData("nfExc", org.apache.thrift.TFieldRequirementType.DEFAULT, 
           new org.apache.thrift.meta_data.FieldValueMetaData(org.apache.thrift.protocol.TType.STRUCT)));
       metaDataMap = Collections.unmodifiableMap(tmpMap);
       org.apache.thrift.meta_data.FieldMetaData.addStructMetaDataMap(getSpecialities_result.class, metaDataMap);
@@ -23944,11 +23944,11 @@ public class Communications {
 
     public getSpecialities_result(
       List<Speciality> success,
-      SQLException exc)
+      NotFoundException nfExc)
     {
       this();
       this.success = success;
-      this.exc = exc;
+      this.nfExc = nfExc;
     }
 
     /**
@@ -23962,8 +23962,8 @@ public class Communications {
         }
         this.success = __this__success;
       }
-      if (other.isSetExc()) {
-        this.exc = new SQLException(other.exc);
+      if (other.isSetNfExc()) {
+        this.nfExc = new NotFoundException(other.nfExc);
       }
     }
 
@@ -23974,7 +23974,7 @@ public class Communications {
     @Override
     public void clear() {
       this.success = null;
-      this.exc = null;
+      this.nfExc = null;
     }
 
     public int getSuccessSize() {
@@ -24016,27 +24016,27 @@ public class Communications {
       }
     }
 
-    public SQLException getExc() {
-      return this.exc;
+    public NotFoundException getNfExc() {
+      return this.nfExc;
     }
 
-    public getSpecialities_result setExc(SQLException exc) {
-      this.exc = exc;
+    public getSpecialities_result setNfExc(NotFoundException nfExc) {
+      this.nfExc = nfExc;
       return this;
     }
 
-    public void unsetExc() {
-      this.exc = null;
+    public void unsetNfExc() {
+      this.nfExc = null;
     }
 
-    /** Returns true if field exc is set (has been assigned a value) and false otherwise */
-    public boolean isSetExc() {
-      return this.exc != null;
+    /** Returns true if field nfExc is set (has been assigned a value) and false otherwise */
+    public boolean isSetNfExc() {
+      return this.nfExc != null;
     }
 
-    public void setExcIsSet(boolean value) {
+    public void setNfExcIsSet(boolean value) {
       if (!value) {
-        this.exc = null;
+        this.nfExc = null;
       }
     }
 
@@ -24050,11 +24050,11 @@ public class Communications {
         }
         break;
 
-      case EXC:
+      case NF_EXC:
         if (value == null) {
-          unsetExc();
+          unsetNfExc();
         } else {
-          setExc((SQLException)value);
+          setNfExc((NotFoundException)value);
         }
         break;
 
@@ -24066,8 +24066,8 @@ public class Communications {
       case SUCCESS:
         return getSuccess();
 
-      case EXC:
-        return getExc();
+      case NF_EXC:
+        return getNfExc();
 
       }
       throw new IllegalStateException();
@@ -24082,8 +24082,8 @@ public class Communications {
       switch (field) {
       case SUCCESS:
         return isSetSuccess();
-      case EXC:
-        return isSetExc();
+      case NF_EXC:
+        return isSetNfExc();
       }
       throw new IllegalStateException();
     }
@@ -24110,12 +24110,12 @@ public class Communications {
           return false;
       }
 
-      boolean this_present_exc = true && this.isSetExc();
-      boolean that_present_exc = true && that.isSetExc();
-      if (this_present_exc || that_present_exc) {
-        if (!(this_present_exc && that_present_exc))
+      boolean this_present_nfExc = true && this.isSetNfExc();
+      boolean that_present_nfExc = true && that.isSetNfExc();
+      if (this_present_nfExc || that_present_nfExc) {
+        if (!(this_present_nfExc && that_present_nfExc))
           return false;
-        if (!this.exc.equals(that.exc))
+        if (!this.nfExc.equals(that.nfExc))
           return false;
       }
 
@@ -24145,12 +24145,12 @@ public class Communications {
           return lastComparison;
         }
       }
-      lastComparison = Boolean.valueOf(isSetExc()).compareTo(typedOther.isSetExc());
+      lastComparison = Boolean.valueOf(isSetNfExc()).compareTo(typedOther.isSetNfExc());
       if (lastComparison != 0) {
         return lastComparison;
       }
-      if (isSetExc()) {
-        lastComparison = org.apache.thrift.TBaseHelper.compareTo(this.exc, typedOther.exc);
+      if (isSetNfExc()) {
+        lastComparison = org.apache.thrift.TBaseHelper.compareTo(this.nfExc, typedOther.nfExc);
         if (lastComparison != 0) {
           return lastComparison;
         }
@@ -24183,11 +24183,11 @@ public class Communications {
       }
       first = false;
       if (!first) sb.append(", ");
-      sb.append("exc:");
-      if (this.exc == null) {
+      sb.append("nfExc:");
+      if (this.nfExc == null) {
         sb.append("null");
       } else {
-        sb.append(this.exc);
+        sb.append(this.nfExc);
       }
       first = false;
       sb.append(")");
@@ -24252,11 +24252,11 @@ public class Communications {
                 org.apache.thrift.protocol.TProtocolUtil.skip(iprot, schemeField.type);
               }
               break;
-            case 1: // EXC
+            case 1: // NF_EXC
               if (schemeField.type == org.apache.thrift.protocol.TType.STRUCT) {
-                struct.exc = new SQLException();
-                struct.exc.read(iprot);
-                struct.setExcIsSet(true);
+                struct.nfExc = new NotFoundException();
+                struct.nfExc.read(iprot);
+                struct.setNfExcIsSet(true);
               } else { 
                 org.apache.thrift.protocol.TProtocolUtil.skip(iprot, schemeField.type);
               }
@@ -24288,9 +24288,9 @@ public class Communications {
           }
           oprot.writeFieldEnd();
         }
-        if (struct.exc != null) {
-          oprot.writeFieldBegin(EXC_FIELD_DESC);
-          struct.exc.write(oprot);
+        if (struct.nfExc != null) {
+          oprot.writeFieldBegin(NF_EXC_FIELD_DESC);
+          struct.nfExc.write(oprot);
           oprot.writeFieldEnd();
         }
         oprot.writeFieldStop();
@@ -24314,7 +24314,7 @@ public class Communications {
         if (struct.isSetSuccess()) {
           optionals.set(0);
         }
-        if (struct.isSetExc()) {
+        if (struct.isSetNfExc()) {
           optionals.set(1);
         }
         oprot.writeBitSet(optionals, 2);
@@ -24327,8 +24327,8 @@ public class Communications {
             }
           }
         }
-        if (struct.isSetExc()) {
-          struct.exc.write(oprot);
+        if (struct.isSetNfExc()) {
+          struct.nfExc.write(oprot);
         }
       }
 
@@ -24351,9 +24351,9 @@ public class Communications {
           struct.setSuccessIsSet(true);
         }
         if (incoming.get(1)) {
-          struct.exc = new SQLException();
-          struct.exc.read(iprot);
-          struct.setExcIsSet(true);
+          struct.nfExc = new NotFoundException();
+          struct.nfExc.read(iprot);
+          struct.setNfExcIsSet(true);
         }
       }
     }

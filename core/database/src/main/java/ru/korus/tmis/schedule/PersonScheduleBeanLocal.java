@@ -2,6 +2,7 @@ package ru.korus.tmis.schedule;
 
 import ru.korus.tmis.core.entity.model.Action;
 import ru.korus.tmis.core.entity.model.Patient;
+import ru.korus.tmis.core.entity.model.RbReasonOfAbsence;
 import ru.korus.tmis.core.exception.CoreException;
 
 import javax.ejb.Local;
@@ -23,7 +24,7 @@ public interface PersonScheduleBeanLocal {
      *
      * @return true - У врача есть причина отсутствия
      */
-    boolean checkReasonOfAbscence(final PersonScheduleBean.PersonSchedule personSchedule);
+    RbReasonOfAbsence getReasonOfAbsence(final PersonScheduleBean.PersonSchedule personSchedule);
 
     /**
      * Создание списка талончиков к врачу

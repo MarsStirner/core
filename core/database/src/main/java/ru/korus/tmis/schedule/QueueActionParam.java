@@ -1,5 +1,7 @@
 package ru.korus.tmis.schedule;
 
+import ru.korus.tmis.core.entity.model.AppointmentType;
+
 /**
  * Author:      Sergey A. Zagrebelny <br>
  * Date:        25.12.13, 18:27 <br>

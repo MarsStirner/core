@@ -43,9 +43,6 @@ public class PersonScheduleBean implements PersonScheduleBeanLocal {
     @EJB
     private DbActionBeanLocal actionBean;
 
-    //@EJB
-    //private DbManagerBeanLocal managerBean;
-
     @EJB
     private DbQuotingBySpecialityBeanLocal quotingBySpecialityBean;
 
@@ -54,6 +51,8 @@ public class PersonScheduleBean implements PersonScheduleBeanLocal {
 
     //Logger
     private static final Logger logger = LoggerFactory.getLogger(PersonScheduleBean.class);
+
+    private static final SimpleDateFormat loggerDateFormat = new SimpleDateFormat("yyyy-MM-dd");
 
     public static class PersonSchedule {
         /**
@@ -184,7 +183,30 @@ public class PersonScheduleBean implements PersonScheduleBeanLocal {
         res.ambulatoryDate = ambulatoryAction.getEvent().getSetDate();
         if (logger.isDebugEnabled()) {
             logger.info("PersonSchedule[{}] Action[{}] Doctor: {} {} {}",
-                    new SimpleDateFormat("yyyy-MM-dd").format(res.ambulatoryDate),
+                    loggerDateFormat.format(res.ambulatoryDate),
+                    ambulatoryAction.getId(),
+                    res.doctor.getLastName(),
+                    res.doctor.getFirstName(),
+                    res.doctor.getPatrName()
+            );
+        }
+        return res;
+    }
+
+    public PersonSchedule newInstanceOfPersonSchedule(final Date requestedDate, final Staff doctor) {
+        final Action ambulatoryAction;
+        try {
+            ambulatoryAction = staffBean.getPersonActionsByDateAndType(doctor.getId(), requestedDate, "amb");
+        } catch (CoreException e) {
+            return null;
+        }
+        PersonSchedule res = new PersonSchedule();
+        res.doctor = ambulatoryAction.getEvent().getExecutor();
+        res.ambulatoryAction = ambulatoryAction;
+        res.ambulatoryDate = ambulatoryAction.getEvent().getSetDate();
+        if (logger.isDebugEnabled()) {
+            logger.info("PersonSchedule[{}] Action[{}] Doctor: {} {} {}",
+                    loggerDateFormat.format(res.ambulatoryDate),
                     ambulatoryAction.getId(),
                     res.doctor.getLastName(),
                     res.doctor.getFirstName(),
@@ -197,9 +219,9 @@ public class PersonScheduleBean implements PersonScheduleBeanLocal {
     /**
      * Проверка на наличие у врача "Причины отсутствия в указанную дату"
      *
-     * @return true - У врача есть причина отсутствия
+     * @return RbReasonOfAbsence - У врача есть причина отсутствия
      */
-    public boolean checkReasonOfAbscence(final PersonSchedule personSchedule) {
+    public RbReasonOfAbsence getReasonOfAbsence(final PersonSchedule personSchedule) {
         Action timelineAction = null;
         try {
             timelineAction = staffBean.getPersonActionsByDateAndType(
@@ -212,26 +234,26 @@ public class PersonScheduleBean implements PersonScheduleBeanLocal {
                     .getActionPropertiesByActionIdAndTypeNames(timelineAction.getId(), ImmutableList.of("reasonOfAbsence"));
             if (actionPropertyListMap.isEmpty()) {
                 logger.info("Timeline hasn't ReasonOfAbsence");
-                return false;
+                return null;
             } else {
                 final Iterator<ActionProperty> propertyIterator = actionPropertyListMap.keySet().iterator();
                 if (propertyIterator.hasNext()) {
                     final List<APValue> reasonAPList = actionPropertyListMap.get(propertyIterator.next());
                     if (reasonAPList.isEmpty()) {
                         logger.info("AP exists, but AP_rbReasonOfAbsence not!");
-                        return false;
+                        return null;
                     } else {
                         logger.info("ReasonOfAbsence is [{}] ", reasonAPList.get(0).toString());
-                        return true;
+                        return ((APValueRbReasonOfAbsence) reasonAPList.get(0)).getValue();
                     }
                 }
-                return false;
+                return null;
             }
         } catch (Exception e) {
             if (timelineAction == null) {
                 logger.info("Timeline action doesn't exists");
             }
-            return false;
+            return null;
         }
     }
 
@@ -368,7 +390,8 @@ public class PersonScheduleBean implements PersonScheduleBeanLocal {
             if (queueAction != null) {
                 currentTicket.setFree(false);
                 currentTicket.setPatient(queueAction.getEvent().getPatient());
-                if (queueAction.getAssigner() == null) {
+                if (AppointmentType.PORTAL.equals(queueAction.getAppointmentType())
+                        || AppointmentType.OTHER_LPU.equals(queueAction.getAppointmentType())) {
                     personSchedule.externalCount++;
                 }
             } else {
@@ -498,6 +521,7 @@ public class PersonScheduleBean implements PersonScheduleBeanLocal {
         }
         return null;
     }
+
     //@TransactionAttribute(TransactionAttributeType.NEVER)
     public EnqueuePatientResult enqueuePatientToTime(final PersonSchedule personSchedule,
                                                      final Date paramsDateTime,

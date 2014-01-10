@@ -118,8 +118,8 @@ class DbOrgStructureBean
     var parentIdsSet = Set[java.lang.Integer](parentId)
     var result = Set[OrgStructure]()
 
-    val infisCodeIsDefined: Boolean = infisCode.length > 0;
-    val parentIdIsDefined: Boolean = parentId.intValue() > 0;
+    val infisCodeIsDefined: Boolean = infisCode.length > 0
+    val parentIdIsDefined: Boolean = parentId.intValue() > 0
 
     allEntitiesList.map((current: OrgStructure) => {
       if (!current.getDeleted && current.getAvailableForExternal == AVAILABLE_FOR_EXTERNAL &&
@@ -156,20 +156,14 @@ class DbOrgStructureBean
 
   /**
    * Запрос на получение ИД оргструктур по заданному адресу
-   *
-   * @return Список ИД оргутруктур удовлятворяющих заданному адресу
-   * @throws CoreException
+   * @return Список ИД оргутруктур удовлятворяющих заданному адресу  \ Пустой список
    */
-  def getOrgStructureByAddress(KLADRCode: java.lang.String, KLADRStreetCode: java.lang.String, number: java.lang.String,
+  def getOrgStructureIdListByAddress(KLADRCode: java.lang.String, KLADRStreetCode: java.lang.String, number: java.lang.String,
                                corpus: java.lang.String, flat: java.lang.Integer): util.List[java.lang.Integer] = {
-    val result = em.createQuery(OrgStructureIdByAdressQuery, classOf[java.lang.Integer])
+     em.createQuery(OrgStructureIdByAdressQuery, classOf[java.lang.Integer])
       .setParameter("KLADRCode", KLADRCode).setParameter("KLADRStreetCode", KLADRStreetCode)
       .setParameter("NUMBER", number).setParameter("CORPUS", corpus).setParameter("FLAT", flat)
       .getResultList
-    if (result.size() == 0) {
-      throw new CoreException("Not found any OrgStrucutre by this address");
-    }
-    result
   }
 
   /**
@@ -243,13 +237,8 @@ class DbOrgStructureBean
     %s
                                                     """
 
-  val OrgStructuresAddressesByOrgStructureQuery = """
-    SELECT orgAdr
-    FROM OrgStructureAddress orgAdr
-    WHERE orgAdr.master= :ORGSTRUCTURE
-                                                  """
-
   def getOrgStructureAddressByOrgStructure(orgStructure: OrgStructure): util.List[OrgStructureAddress] = {
-    em.createQuery(OrgStructuresAddressesByOrgStructureQuery, classOf[OrgStructureAddress]).setParameter("ORGSTRUCTURE", orgStructure).getResultList
+    em.createNamedQuery("OrgStructureAddress.findByOrgStructure", classOf[OrgStructureAddress])
+      .setParameter("orgStructure", orgStructure).getResultList
   }
 }

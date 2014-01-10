@@ -59,7 +59,7 @@ public class Action
 
     @Basic(optional = false)
     @Column(name = "idx")
-    private int idx = Integer.MAX_VALUE;
+    private int idx = 0;
 
     @Column(name = "directionDate")
     @Temporal(TemporalType.TIMESTAMP)
@@ -161,7 +161,7 @@ public class Action
 
     @Basic(optional = true)
     @Column(name = "appointmentType")
-    private String appointmentType = "0";
+    private String appointmentType = AppointmentType.NONE.getName();
 
     @Version
     @Basic(optional = false)
@@ -185,7 +185,7 @@ public class Action
 
     @Basic(optional = false)
     @Column(name = "parentAction_id")
-    private int parentActionId = 0;
+    private Integer parentActionId = null;
     ////////////////////////////////////////////////////////////////////////////
     // Custom mappings
     ////////////////////////////////////////////////////////////////////////////
@@ -535,12 +535,12 @@ public class Action
         this.pacientInQueueType = pacientInQueueType;
     }
 
-    public String getAppointmentType() {
-        return appointmentType;
+    public AppointmentType getAppointmentType() {
+        return AppointmentType.getByValue(appointmentType);
     }
 
-    public void setAppointmentType(String appointmentType) {
-        this.appointmentType = appointmentType;
+    public void setAppointmentType(AppointmentType appointmentType) {
+        this.appointmentType = appointmentType.getName();
     }
 
     public UUID getUuid() {
@@ -575,7 +575,7 @@ public class Action
         this.tissue = tissue;
     }
 
-    public int getParentActionId() {
+    public Integer getParentActionId() {
         return parentActionId;
     }
 

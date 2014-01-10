@@ -16,11 +16,41 @@ import java.util.List;
 @Local
 public interface DbQuotingBySpecialityBeanLocal {
 
-    public List<QuotingBySpeciality> getQuotingByOrganisation(String organisationUid) throws CoreException;
+    /**
+     * Получение квотирования по специальности для заданного инфис-кода организации
+     * @param organisationUid  инфис-код организации
+     * @return Перечень квот \ Пустой список
+     */
+    public List<QuotingBySpeciality> getQuotingByOrganisation(final String organisationUid);
 
+    /**
+     *  Получения квотирования по специальности для заданной специальности и инфис-кода организации
+     * @param speciality
+     * @param organisationInfisCode    инфис-код организации
+     * @return  Перечень квот \ Пустой список
+     */
     public List<QuotingBySpeciality> getQuotingBySpecialityAndOrganisation
-            (Speciality speciality, String organisationInfisCode);
+            (final Speciality speciality, final String organisationInfisCode);
 
-    public List<QuotingBySpeciality> getQuotingBySpeciality(Speciality speciality);
+    /**
+     * Получения квотирования по специальности для заданной специальности
+     * @param speciality   специальность для поиска
+     * @return    Перечень квот \ Пустой список
+     */
+    public List<QuotingBySpeciality> getQuotingBySpeciality(final Speciality speciality);
+
+    /**
+     * Увеличение оставшегося количества талончиков для квоты по специальности  на один
+     * @param toIncrement  квота для которой необходимо увеличить количество оставшихся талонов
+     * @return статус операции
+     */
+    public boolean incrementRemainingCoupons(QuotingBySpeciality toIncrement);
+
+    /**
+     * Уменьшение оставшегося количества талончиков для квоты по специальности  на один
+     * @param toDecrement  квота для которой необходимо уменьшить количество оставшихся талонов
+     * @return статус операции
+     */
+    public boolean decrementRemainingCoupons(QuotingBySpeciality toDecrement);
 
 }
