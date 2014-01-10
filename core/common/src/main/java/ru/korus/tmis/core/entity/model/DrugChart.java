@@ -11,6 +11,11 @@ import java.util.Date;
  * Company: Korus Consulting IT <br>
  * Description: <br>
  */
+
+@NamedQueries(
+        {
+                @NamedQuery(name = "DrugChart.findByEvent", query = "SELECT i FROM DrugChart i WHERE i.action.event.id = :eventId")
+        })
 @Entity
 @Table(name = "DrugChart", catalog = "", schema = "")
 public class DrugChart {

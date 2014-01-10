@@ -2,7 +2,7 @@ package ru.korus.tmis.core.patient
 
 import javax.interceptor.Interceptors
 import ru.korus.tmis.core.logging.LoggingInterceptor
-import javax.ejb.{EJB, Stateless}
+import javax.ejb.{TransactionAttributeType, TransactionAttribute, EJB, Stateless}
 import grizzled.slf4j.Logging
 import ru.korus.tmis.util.{ConfigManager, CAPids, I18nable}
 import javax.persistence.{EntityManager, PersistenceContext}

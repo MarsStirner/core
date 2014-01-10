@@ -3,12 +3,11 @@ package ru.korus.tmis.core.database;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import ru.korus.tmis.core.entity.model.DrugChart;
+import ru.korus.tmis.core.entity.model.Event;
 
 import javax.ejb.Stateless;
 import javax.persistence.EntityManager;
 import javax.persistence.PersistenceContext;
-import javax.persistence.PersistenceUnit;
-import java.util.ArrayList;
 import java.util.List;
 
 /**
@@ -18,7 +17,7 @@ import java.util.List;
  * Description: <br>
  */
 @Stateless
-public class DbDrugChartBean implements DbDrugChartBeanLocal{
+public class DbDrugChartBean implements DbDrugChartBeanLocal {
 
     final static Logger logger = LoggerFactory.getLogger(DbQuotingBySpecialityBean.class);
 
@@ -42,5 +41,11 @@ public class DbDrugChartBean implements DbDrugChartBeanLocal{
                 .setParameter("ACTIONID", prescriptionActionId)
                 .setParameter("MASTERID", masterId)
                 .getResultList();
+    }
+
+    @Override
+    public Iterable<DrugChart> getIntervalsByEvent(Event event) {
+        return em.createNamedQuery("DrugChart.findByEvent", DrugChart.class)
+                .setParameter("eventId", event.getId()).getResultList();
     }
 }

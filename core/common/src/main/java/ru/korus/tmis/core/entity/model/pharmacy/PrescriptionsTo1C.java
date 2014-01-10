@@ -15,7 +15,7 @@ import java.sql.Timestamp;
 @Table(name = "PrescriptionsTo1C")
 @NamedQueries(
         {
-                @NamedQuery(name = "PrescriptionsTo1C.findToSend", query = "SELECT p FROM PrescriptionsTo1C p WHERE p.sendTime < :now")
+                @NamedQuery(name = "PrescriptionsTo1C.findToSend", query = "SELECT p FROM PrescriptionsTo1C p WHERE p.sendTime < :now"),
         })
 public class PrescriptionsTo1C implements Serializable {
     private static final long serialVersionUID = 1L;
