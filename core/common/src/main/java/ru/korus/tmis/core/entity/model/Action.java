@@ -53,7 +53,7 @@ public class Action
     @JoinColumn(name = "actionType_id")
     private ActionType actionType;
 
-    @ManyToOne(cascade = CascadeType.ALL)
+    @ManyToOne
     @JoinColumn(name = "event_id")
     private Event event;
 
