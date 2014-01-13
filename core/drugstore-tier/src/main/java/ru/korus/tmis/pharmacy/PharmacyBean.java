@@ -138,7 +138,7 @@ public class PharmacyBean implements PharmacyBeanLocal {
      */
     private void resendMessages() {
         // resend old messages
-        nonCompletedItems = dbPharmacy.getNonCompletedItems();
+        final List<Pharmacy> nonCompletedItems = dbPharmacy.getNonCompletedItems();
         if (!nonCompletedItems.isEmpty()) {
             ToLog toLog = new ToLog("Resend old message....");
             for (Pharmacy pharmacy : nonCompletedItems) {
