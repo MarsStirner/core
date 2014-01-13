@@ -8,8 +8,7 @@ import ru.korus.tmis.core.database.DbActionPropertyTypeBeanLocal;
 import ru.korus.tmis.core.database.DbManagerBeanLocal;
 import ru.korus.tmis.core.entity.model.Action;
 import ru.korus.tmis.core.entity.model.ActionType;
-import ru.korus.tmis.core.entity.model.DrugComponent;
-import ru.korus.tmis.core.entity.model.RlsNomen;
+import ru.korus.tmis.core.entity.model.pharmacy.DrugComponent;
 import ru.korus.tmis.core.entity.model.pharmacy.Pharmacy;
 import ru.korus.tmis.core.entity.model.pharmacy.PharmacyStatus;
 import ru.korus.tmis.core.exception.CoreException;
@@ -93,7 +92,7 @@ public class DbPharmacyBean implements DbPharmacyBeanLocal {
             pharmacy.setActionId(action.getId());
             pharmacy.setFlatCode(actionType.getFlatCode());
             pharmacy.setStatus(PharmacyStatus.ADDED);
-            dbManager.persist(pharmacy);
+            em.persist(pharmacy);
             logger.info("create pharmacy {}", pharmacy);
         } else {
             logger.info("find pharmacy {}", pharmacy);
@@ -111,7 +110,7 @@ public class DbPharmacyBean implements DbPharmacyBeanLocal {
             findPharmacy.setStatus(pharmacy.getStatus());
             findPharmacy.setDocumentUUID(pharmacy.getDocumentUUID());
             findPharmacy.setResult(pharmacy.getResult());
-            dbManager.merge(findPharmacy);
+            em.merge(findPharmacy);
             return findPharmacy;
         }
         return null;

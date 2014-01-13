@@ -1,11 +1,12 @@
 package ru.korus.tmis.pharmacy;
 
 import ru.korus.tmis.core.entity.model.Action;
-import ru.korus.tmis.core.entity.model.DrugChart;
-import ru.korus.tmis.core.entity.model.DrugComponent;
+import ru.korus.tmis.core.entity.model.pharmacy.DrugChart;
+import ru.korus.tmis.core.entity.model.pharmacy.DrugComponent;
 import ru.korus.tmis.core.entity.model.Event;
+import ru.korus.tmis.core.entity.model.pharmacy.PrescriptionStatus;
+import ru.korus.tmis.core.pharmacy.DbPrescriptionSendingResBeanLocal;
 
-import java.io.Serializable;
 import java.util.Date;
 import java.util.LinkedList;
 import java.util.List;
@@ -21,29 +22,41 @@ public class PrescriptionInfo {
 
     public static class IntervalInfo {
 
-        final Date begDateTime;
+        private final Date begDateTime;
 
-        final Date endDateTime;
+        private final Date endDateTime;
 
-        final boolean isUrgent;
+        private final boolean isUrgent;
 
-        final List<ComponentInfo> componentInfoList;
+        private final List<ComponentInfo> componentInfoList;
 
-        public IntervalInfo(Map.Entry<DrugChart, List<DrugComponent>> intervalWithComp) {
+        private final PrescriptionStatus status;
+
+        private final boolean isPrescription;
+
+        public IntervalInfo(Map.Entry<DrugChart, List<DrugComponent>> intervalWithComp, DbPrescriptionSendingResBeanLocal dbPrescriptionSendingResBeanLocal) {
             final DrugChart interval = intervalWithComp.getKey();
             begDateTime = interval.getBegDateTime();
             endDateTime = interval.getEndDateTime();
             isUrgent =interval.getAction().getIsUrgent();
-            componentInfoList = initComponentInfoList(intervalWithComp.getValue());
+            componentInfoList = initComponentInfoList(interval, intervalWithComp.getValue(), dbPrescriptionSendingResBeanLocal);
+            this.status = interval.getStatusEnum();
+            this.isPrescription = interval.getMaster() == null;
         }
 
-        private List<ComponentInfo> initComponentInfoList(Iterable<DrugComponent> drugComponents) {
+        private List<ComponentInfo> initComponentInfoList(DrugChart interval, Iterable<DrugComponent> drugComponents,
+                                                          DbPrescriptionSendingResBeanLocal dbPrescriptionSendingResBeanLocal) {
             final List<ComponentInfo> res = new LinkedList<ComponentInfo>();
             for(DrugComponent drugComponent : drugComponents) {
-                res.add(new ComponentInfo(drugComponent));
+                res.add(new ComponentInfo(interval, drugComponent, dbPrescriptionSendingResBeanLocal));
             }
             return res;
         }
+
+        public boolean isPrescription() {
+            return isPrescription;
+        }
+
 
         public List<ComponentInfo> getComponentInfoList() {
             return componentInfoList;
@@ -60,6 +73,10 @@ public class PrescriptionInfo {
         public boolean isUrgent() {
             return isUrgent;
         }
+
+        public PrescriptionStatus getStatus() {
+            return status;
+        }
     }
 
     public static class ComponentInfo {
@@ -72,11 +89,18 @@ public class PrescriptionInfo {
 
         private final  String localName;
 
-        public ComponentInfo(DrugComponent drugComponent) {
-            code = drugComponent.getId();
+        private final String uuid;
+
+        public ComponentInfo(DrugChart interval, DrugComponent drugComponent, DbPrescriptionSendingResBeanLocal dbPrescriptionSendingResBeanLocal) {
+            code = drugComponent.getNomen().getId();
             dose = drugComponent.getDose();
             unitCode = drugComponent.getNomen().getUnit().getCode();
             localName = drugComponent.getNomen().getRlsTradeName().getLocalName();
+            uuid = dbPrescriptionSendingResBeanLocal.getIntervalUUID(interval, drugComponent);
+        }
+
+        public String getUuid() {
+            return uuid;
         }
 
         public Integer getCode() {
@@ -126,19 +150,23 @@ public class PrescriptionInfo {
 
     final List<IntervalInfo> intervalInfoList;
 
-    public PrescriptionInfo(Event event, Action action, Map<DrugChart, List<DrugComponent>> intervalsWithDrugComp, String routeOfAdministration, String financeType) {
+    public PrescriptionInfo(Event event, Action action, Map<DrugChart,
+            List<DrugComponent>> intervalsWithDrugComp,
+                            String routeOfAdministration,
+                            String financeType,
+                            DbPrescriptionSendingResBeanLocal dbPrescriptionSendingResBeanLocal) {
         this.routeOfAdministration = routeOfAdministration;
         this.financeType = financeType;
         this.uuidDocument = event.getUuid().getUuid();
         this.externalId = event.getExternalId();
         this.createDatetime = action.getCreateDatetime();
-        this.intervalInfoList = initPrescriptionIntervals(intervalsWithDrugComp);
+        this.intervalInfoList = initPrescriptionIntervals(intervalsWithDrugComp, dbPrescriptionSendingResBeanLocal);
     }
 
-    private List<IntervalInfo> initPrescriptionIntervals(Map<DrugChart, List<DrugComponent>> intervalsWithDrugComp) {
+    private List<IntervalInfo> initPrescriptionIntervals(Map<DrugChart, List<DrugComponent>> intervalsWithDrugComp, DbPrescriptionSendingResBeanLocal dbPrescriptionSendingResBeanLocal) {
         LinkedList<IntervalInfo> res = new LinkedList<IntervalInfo>();
         for (Map.Entry<DrugChart, List<DrugComponent>> intervalWithDrugComp : intervalsWithDrugComp.entrySet()) {
-            res.add(new IntervalInfo(intervalWithDrugComp));
+            res.add(new IntervalInfo(intervalWithDrugComp, dbPrescriptionSendingResBeanLocal));
         }
         return res;
     }

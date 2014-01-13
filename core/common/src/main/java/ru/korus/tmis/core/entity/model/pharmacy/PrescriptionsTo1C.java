@@ -1,11 +1,11 @@
 package ru.korus.tmis.core.entity.model.pharmacy;
 
 import ru.korus.tmis.core.entity.model.Action;
-import ru.korus.tmis.core.entity.model.DrugChart;
 
 import javax.persistence.*;
 import java.io.Serializable;
 import java.sql.Timestamp;
+import java.util.Arrays;
 
 /**
  * The persistent class for the PatientsToHS database table.
@@ -99,20 +99,20 @@ public class PrescriptionsTo1C implements Serializable {
         isPrescription = prescription;
     }
 
-    public Integer getNewStatus() {
-        return newStatus;
+    public PrescriptionStatus getNewStatus() {
+        return PrescriptionStatus.values()[newStatus];
     }
 
-    public void setNewStatus(Integer newStatus) {
-        this.newStatus = newStatus;
+    public void setNewStatus(PrescriptionStatus newStatus) {
+        this.newStatus = Arrays.asList(PrescriptionStatus.values()).indexOf(newStatus);
     }
 
-    public Integer getOldStatus() {
-        return oldStatus;
+    public PrescriptionStatus getOldStatus() {
+        return PrescriptionStatus.values()[oldStatus];
     }
 
     public void setOldStatus(Integer oldStatus) {
-        this.oldStatus = oldStatus;
+        this.newStatus = Arrays.asList(PrescriptionStatus.values()).indexOf(oldStatus);
     }
 
     @Override

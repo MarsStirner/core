@@ -1,6 +1,6 @@
 package ru.korus.tmis.core.database;
 
-import ru.korus.tmis.core.entity.model.DrugComponent;
+import ru.korus.tmis.core.entity.model.pharmacy.DrugComponent;
 
 import javax.ejb.Local;
 import java.util.List;

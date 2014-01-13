@@ -8,10 +8,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import ru.korus.tmis.core.database.*;
 import ru.korus.tmis.core.entity.model.*;
-import ru.korus.tmis.core.entity.model.pharmacy.Pharmacy;
-import ru.korus.tmis.core.entity.model.pharmacy.PharmacyStatus;
-import ru.korus.tmis.core.entity.model.pharmacy.PrescriptionSendingRes;
-import ru.korus.tmis.core.entity.model.pharmacy.PrescriptionsTo1C;
+import ru.korus.tmis.core.entity.model.pharmacy.*;
 import ru.korus.tmis.core.exception.CoreException;
 import ru.korus.tmis.core.pharmacy.*;
 import ru.korus.tmis.pharmacy.exception.MessageProcessException;
@@ -88,25 +85,7 @@ public class PharmacyBean implements PharmacyBeanLocal {
 
     private DateTime lastDateUpdate = null;
 
-    /**
-     * Назначен/Не исполнен (ещё или уже)
-     */
-    private static final int PS_NEW = 0;
-
-    /**
-     * исполнен
-     */
-    private static final int PS_FINISHED = 1;
-
-    /**
-     * Отменён
-     */
-    private static final int PS_CANCELED = 2;
-
-    /**
-     * Пауза
-     */
-    private static final int PS_PAUSE = 3;
+    private List<Pharmacy> nonCompletedItems;
 
     /**
      * Полинг базы данных для поиска событий по движениям пациентов и назначениям ЛС
@@ -156,7 +135,7 @@ public class PharmacyBean implements PharmacyBeanLocal {
      */
     private void resendMessages() {
         // resend old messages
-        final List<Pharmacy> nonCompletedItems = dbPharmacy.getNonCompletedItems();
+        nonCompletedItems = dbPharmacy.getNonCompletedItems();
         if (!nonCompletedItems.isEmpty()) {
             ToLog toLog = new ToLog("Resend old message....");
             for (Pharmacy pharmacy : nonCompletedItems) {
@@ -538,52 +517,51 @@ public class PharmacyBean implements PharmacyBeanLocal {
                     action,
                     intervalsWithDrugComp,
                     routeOfAdministration,
-                    financeType);
+                    financeType,
+                    dbPrescriptionSendingResBeanLocal);
 
             for (DrugComponent comp : drugComponents) {
                 ToLog toLog = new ToLog("PRESCRIPTION");
-                final PrescriptionSendingRes prescriptionSendingRes = dbPrescriptionSendingResBeanLocal.getPrescriptionSendingRes(prescription.getDrugChart(), comp);
-                String prescrUUID = UUID.randomUUID().toString();
-                if (prescription.getDrugChart().getMaster() != null) {
-                    PrescriptionSendingRes master = dbPrescriptionSendingResBeanLocal.getPrescriptionSendingRes(prescription.getDrugChart().getMaster(), comp);
-                    if (master != null) {
-                        prescrUUID = master.getUuid();
+                try {
+                    final PrescriptionSendingRes prescriptionSendingRes = dbPrescriptionSendingResBeanLocal.getPrescriptionSendingRes(prescription.getDrugChart(), comp);
+                    prescriptionInfo.setPrescrUUID(this.dbPrescriptionSendingResBeanLocal.getIntervalUUID(prescription.getDrugChart(),comp));
+                    if (prescription.isPrescription()) { // передача нового / отмена назначения
+                        prescriptionInfo.setAssignmentType(AssignmentType.ASSIGNMENT)
+                                .setNegationInd(prescription.getNewStatus().equals(PrescriptionStatus.PS_CANCELED));
+                    } else if (prescription.getOldStatus().equals(PrescriptionStatus.PS_NEW)
+                            && prescription.getNewStatus().equals(PrescriptionStatus.PS_FINISHED)) {// если статус изменился с "Назначен" на "Исполнен", то передаем исполнение
+                        prescriptionInfo.setAssignmentType(AssignmentType.EXECUTION).setNegationInd(false);
+                    } else if (prescription.getOldStatus().equals(PrescriptionStatus.PS_FINISHED)
+                            && prescription.getNewStatus().equals(PrescriptionStatus.PS_NEW)) { // если статус изменился с "Исполнен" на "Назначен" , то передаем отмену исполнения
+                        prescriptionInfo.setAssignmentType(AssignmentType.EXECUTION).setNegationInd(true);
+                    } else {
+                        prescriptionInfo.setAssignmentType(null);
                     }
-                }
-                prescriptionInfo.setPrescrUUID(prescrUUID);
-                if (prescription.isPrescription()) { // передача нового / отмена назначения
-                    prescriptionInfo.setAssignmentType(AssignmentType.ASSIGNMENT)
-                            .setNegationInd(prescription.getNewStatus() == PS_CANCELED);
-                } else if (prescription.getOldStatus() == PS_NEW && prescription.getNewStatus() == PS_FINISHED) {// если статус изменился с "Назначен" на "Исполнен", то передаем исполнение
-                    prescriptionInfo.setAssignmentType(AssignmentType.EXECUTION).setNegationInd(false);
-                } else if (prescription.getOldStatus() == PS_FINISHED && prescription.getNewStatus() == PS_NEW) { // если статус изменился с "Исполнен" на "Назначен" , то передаем отмену исполнения
-                    prescriptionInfo.setAssignmentType(AssignmentType.EXECUTION).setNegationInd(true);
-                } else {
-                    prescriptionInfo.setAssignmentType(null);
-                }
 
-                if(prescriptionInfo.getAssignmentType() != null) {
-                    request = HL7PacketBuilder.processPrescription(
-                            action,
-                            prescriptionInfo,
-                            organisation,
-                            prescriptionSendingRes,
-                            toLog);
-                }
-                if (request != null) {
-                    prescription.setErrCount(prescription.getErrCount() + 1);
-                    toLog.add("prepare message... \n\n # \n", HL7PacketBuilder.marshallMessage(request, "misexchange"));
-                    final MCCIIN000002UV012 result = new MISExchange().getMISExchangeSoap().processHL7V3Message(request);
-                    toLog.add("Connection successful. Result: # \n\n # \n",
-                            result, HL7PacketBuilder.marshallMessage(result, "org.hl7.v3"));
-
-                    if (isOk(result)) {
-                        prescriptionSendingRes.setUuid(prescrUUID);
-                        prescriptionSendingRes.setVersion(prescriptionSendingRes.getVersion() == null ? 1 : (prescriptionSendingRes.getVersion() + 1));
-                        res = true;
+                    if (prescriptionInfo.getAssignmentType() != null) {
+                        request = HL7PacketBuilder.processPrescription(
+                                action,
+                                prescriptionInfo,
+                                organisation,
+                                prescriptionSendingRes,
+                                toLog);
                     }
+                    if (request != null) {
+                        prescription.setErrCount(prescription.getErrCount() + 1);
+                        toLog.add("prepare message... \n\n # \n", HL7PacketBuilder.marshallMessage(request, "misexchange"));
+                        final MCCIIN000002UV012 result = new MISExchange().getMISExchangeSoap().processHL7V3Message(request);
+                        toLog.add("Connection successful. Result: # \n\n # \n",
+                                result, HL7PacketBuilder.marshallMessage(result, "org.hl7.v3"));
+
+                        if (isOk(result)) {
+                            prescriptionSendingRes.setUuid(prescriptionInfo.getPrescrUUID());
+                            prescriptionSendingRes.setVersion(prescriptionSendingRes.getVersion() == null ? 1 : (prescriptionSendingRes.getVersion() + 1));
+                            res = true;
+                        }
+                    }
+                } finally {
+                    logger.info(toLog.releaseString());
                 }
-                logger.info(toLog.releaseString());
             }
         } catch (Exception e) {
             final String errorString = e.toString();

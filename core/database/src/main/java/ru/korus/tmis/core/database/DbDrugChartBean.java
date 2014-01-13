@@ -2,7 +2,7 @@ package ru.korus.tmis.core.database;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import ru.korus.tmis.core.entity.model.DrugChart;
+import ru.korus.tmis.core.entity.model.pharmacy.DrugChart;
 import ru.korus.tmis.core.entity.model.Event;
 
 import javax.ejb.Stateless;

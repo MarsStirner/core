@@ -17,7 +17,6 @@ import javax.annotation.Resource
 
 @Interceptors(Array(classOf[LoggingInterceptor]))
 @Stateless
-@TransactionAttribute(TransactionAttributeType.REQUIRES_NEW)
 class DbManagerBean
   extends DbManagerBeanLocal
   with Logging

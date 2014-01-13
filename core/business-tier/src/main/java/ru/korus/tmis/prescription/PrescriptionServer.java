@@ -10,6 +10,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import ru.korus.tmis.core.database.*;
 import ru.korus.tmis.core.entity.model.*;
+import ru.korus.tmis.core.entity.model.pharmacy.DrugChart;
 import ru.korus.tmis.core.exception.CoreException;
 import ru.korus.tmis.prescription.thservice.*;
 import ru.korus.tmis.prescription.thservice.DrugComponent;
@@ -174,7 +175,7 @@ public class PrescriptionServer implements PrescriptionExchange.Iface {
                 //Сохранение препаратов в этом назначении
                 for(DrugComponent currentDrugComponent : currentPrescription.getDrugComponents()){
                     try {
-                        ru.korus.tmis.core.entity.model.DrugComponent drugComponentToSave =
+                        ru.korus.tmis.core.entity.model.pharmacy.DrugComponent drugComponentToSave =
                                 Helper.createEntityDrugComponentFromThriftDrugComponent(currentDrugComponent, newPrescriptionAction);
                         //TODO persist DrugComponent
                         logger.warn("NOT READY: persist DrugComponent");

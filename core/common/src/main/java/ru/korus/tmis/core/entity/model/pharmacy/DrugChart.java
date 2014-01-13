@@ -1,8 +1,9 @@
-package ru.korus.tmis.core.entity.model;
+package ru.korus.tmis.core.entity.model.pharmacy;
 
-import org.joda.time.DateMidnight;
+import ru.korus.tmis.core.entity.model.Action;
 
 import javax.persistence.*;
+import java.util.Arrays;
 import java.util.Date;
 
 /**
@@ -106,6 +107,16 @@ public class DrugChart {
     public void setStatus(Short status) {
         this.status = status;
     }
+
+
+    public PrescriptionStatus getStatusEnum() {
+        return PrescriptionStatus.values()[status];
+    }
+
+    public void setStatusEnum(PrescriptionStatus status) {
+        this.status = (short) Arrays.asList(PrescriptionStatus.values()).indexOf(status);
+    }
+
 
     public Date getStatusDateTime() {
         return statusDateTime;

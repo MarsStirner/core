@@ -1,4 +1,8 @@
-package ru.korus.tmis.core.entity.model;
+package ru.korus.tmis.core.entity.model.pharmacy;
+
+import ru.korus.tmis.core.entity.model.Action;
+import ru.korus.tmis.core.entity.model.RbUnit;
+import ru.korus.tmis.core.entity.model.RlsNomen;
 
 import javax.persistence.*;
 import java.util.Date;

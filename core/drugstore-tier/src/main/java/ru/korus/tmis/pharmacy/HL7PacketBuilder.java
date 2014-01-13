@@ -11,6 +11,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import ru.korus.tmis.core.entity.model.*;
 import ru.korus.tmis.core.entity.model.pharmacy.PrescriptionSendingRes;
+import ru.korus.tmis.core.entity.model.pharmacy.PrescriptionStatus;
 import ru.korus.tmis.pharmacy.rlsupdate.BalanceOfGoodsInfoBean;
 import ru.korus.tmis.util.logs.ToLog;
 
@@ -598,8 +599,11 @@ public final class HL7PacketBuilder {
         }*/
         for (PrescriptionInfo.IntervalInfo curInterval : prescriptionInfo.getIntervalInfoList() )  {
             for(PrescriptionInfo.ComponentInfo curComp : curInterval.getComponentInfoList()) {
-                final POCDMT000040Entry entry = createEntry(curInterval, curComp, prescriptionInfo);
-                section.getEntry().add(entry);
+                if( (curInterval.isPrescription() && !curInterval.getStatus().equals(PrescriptionStatus.PS_CANCELED)) ||
+                    (!curInterval.isPrescription() && curInterval.getStatus().equals(PrescriptionStatus.PS_FINISHED))) {
+                    final POCDMT000040Entry entry = createEntry(curInterval, curComp, prescriptionInfo);
+                    section.getEntry().add(entry);
+                }
             }
         }
 
@@ -651,10 +655,11 @@ public final class HL7PacketBuilder {
         //----------------
         final POCDMT000040SubstanceAdministration substanceAdministration = FACTORY_HL7.createPOCDMT000040SubstanceAdministration();
         substanceAdministration.setClassCode(ActClass.SBADM);
-        substanceAdministration.setMoodCode(getAssignmentType2(prescriptionInfo.getAssignmentType()));  // тип документа
+        //substanceAdministration.setMoodCode(getAssignmentType2(prescriptionInfo.getAssignmentType()));  // тип документа
+        substanceAdministration.setMoodCode(interval.isPrescription() ? XDocumentSubstanceMood.RQO : XDocumentSubstanceMood.EVN);
         substanceAdministration.setNegationInd(prescriptionInfo.getNegationInd());
 
-        substanceAdministration.getId().add(createII(prescriptionInfo.getPrescrUUID())); // UUID назначения
+        substanceAdministration.getId().add(createII(drugComponent.getUuid())); // UUID назначения
 
         // источник финансирования
         substanceAdministration.getId().add(createIIEx(prescriptionInfo.getFinanceType()));
