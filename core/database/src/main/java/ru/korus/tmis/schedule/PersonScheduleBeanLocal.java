@@ -58,4 +58,10 @@ public interface PersonScheduleBeanLocal {
                                               final Patient patient,
                                               final QueueActionParam queueActionParam);
 
+    /**
+     * Отмена записи на прием к врачу
+     * @param queueAction запись, которую необходимо отменить
+     */
+    boolean dequeuePatient(final Action queueAction);
+
 }

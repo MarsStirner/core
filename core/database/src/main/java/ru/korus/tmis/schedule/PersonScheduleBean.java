@@ -50,7 +50,8 @@ public class PersonScheduleBean implements PersonScheduleBeanLocal {
     EntityManager em;
 
     //Logger
-    private static final Logger logger = LoggerFactory.getLogger(PersonScheduleBean.class);
+    //TODO change it
+    private static final Logger logger = LoggerFactory.getLogger("ru.korus.tmis.communication");
 
     private static final SimpleDateFormat loggerDateFormat = new SimpleDateFormat("yyyy-MM-dd");
 
@@ -194,26 +195,12 @@ public class PersonScheduleBean implements PersonScheduleBeanLocal {
     }
 
     public PersonSchedule newInstanceOfPersonSchedule(final Date requestedDate, final Staff doctor) {
-        final Action ambulatoryAction;
         try {
-            ambulatoryAction = staffBean.getPersonActionsByDateAndType(doctor.getId(), requestedDate, "amb");
+            final Action ambulatoryAction = staffBean.getPersonActionsByDateAndType(doctor.getId(), requestedDate, "amb");
+            return newInstanceOfPersonSchedule(ambulatoryAction);
         } catch (CoreException e) {
             return null;
         }
-        PersonSchedule res = new PersonSchedule();
-        res.doctor = ambulatoryAction.getEvent().getExecutor();
-        res.ambulatoryAction = ambulatoryAction;
-        res.ambulatoryDate = ambulatoryAction.getEvent().getSetDate();
-        if (logger.isDebugEnabled()) {
-            logger.info("PersonSchedule[{}] Action[{}] Doctor: {} {} {}",
-                    loggerDateFormat.format(res.ambulatoryDate),
-                    ambulatoryAction.getId(),
-                    res.doctor.getLastName(),
-                    res.doctor.getFirstName(),
-                    res.doctor.getPatrName()
-            );
-        }
-        return res;
     }
 
     /**
@@ -222,13 +209,16 @@ public class PersonScheduleBean implements PersonScheduleBeanLocal {
      * @return RbReasonOfAbsence - У врача есть причина отсутствия
      */
     public RbReasonOfAbsence getReasonOfAbsence(final PersonSchedule personSchedule) {
-        Action timelineAction = null;
         try {
-            timelineAction = staffBean.getPersonActionsByDateAndType(
+            final Action timelineAction = staffBean.getPersonActionsByDateAndType(
                     personSchedule.doctor.getId(),
                     personSchedule.ambulatoryDate,
                     "timeline"
             );
+            if (timelineAction == null) {
+                logger.info("Timeline action doesn't exists");
+                return null;
+            }
             logger.info("Timeline exists and is Action[{}]", timelineAction.getId());
             final Map<ActionProperty, List<APValue>> actionPropertyListMap = actionPropertyBean
                     .getActionPropertiesByActionIdAndTypeNames(timelineAction.getId(), ImmutableList.of("reasonOfAbsence"));
@@ -250,9 +240,7 @@ public class PersonScheduleBean implements PersonScheduleBeanLocal {
                 return null;
             }
         } catch (Exception e) {
-            if (timelineAction == null) {
-                logger.info("Timeline action doesn't exists");
-            }
+            logger.info("Timeline action doesn't exists");
             return null;
         }
     }
@@ -627,6 +615,65 @@ public class PersonScheduleBean implements PersonScheduleBeanLocal {
                 .setMessage(CommunicationErrors.msgTicketNotFound.getMessage() + "  [" + paramsDateTime.toString() + "]");
     }
 
+    /**
+     * Отмена записи на прием к врачу
+     *
+     * @param queueAction запись, которую необходимо отменить
+     */
+    @Override
+    public boolean dequeuePatient(final Action queueAction) {
+        try {
+            //Получение ActionProperty_Action соответствующего записи пациента к врачу (queue)
+            APValueAction ambActionPropertyAction = actionPropertyBean.getActionProperty_ActionByValue(queueAction);
+            switch (queueAction.getPacientInQueueType()) {
+                //Обыкновенная запись на прием к врачу
+                case 0: {
+                    //Обнуление поля = отмена очереди
+                    ambActionPropertyAction.setValue(null);
+                    em.merge(ambActionPropertyAction);
+                    break;
+                }
+                //запись сверх очереди / экстренно
+                case 1:
+                case 2: {
+                    //Удалить запись
+                    final int removedIndex = ambActionPropertyAction.getId().getIndex();
+                    final ActionProperty actionProperty = actionPropertyBean.getActionPropertyById(ambActionPropertyAction.getId().getId());
+                    em.remove(ambActionPropertyAction);
+                    final List<APValue> valueList = actionPropertyBean.getActionPropertyValue(actionProperty);
+                    //сдвинуть все индексы последующих элементов
+                    //в запросе использовалось ORDER BY index ASC (на 13.01.2014), поэтому список упоряочен по возрастанию индексов
+                    for (APValue currentApValue : valueList) {
+                        if (currentApValue instanceof APValueAction) {
+                            APValueAction currentTypedApValue = (APValueAction) currentApValue;
+                            if(currentTypedApValue.getId().getIndex() > removedIndex) {
+                                //сдвигаем на одну позицию вверх
+                                currentTypedApValue.getId().setIndex(currentTypedApValue.getId().getIndex()-1);
+                                // меняем в БД
+                                em.merge(currentTypedApValue);
+                            }
+                        }
+                    }
+                    break;
+                }
+            }
+            //Выставляем флаг удаления у соответствующего действия пользователя
+            queueAction.setDeleted(true);
+            queueAction.setModifyDatetime(new Date());
+            em.merge(queueAction);
+            //Выставляем флаг удаления у соответствующего события пользователя
+            final Event queueEvent = queueAction.getEvent();
+            queueEvent.setDeleted(true);
+            queueEvent.setModifyDatetime(new Date());
+            em.merge(queueEvent);
+            em.flush();
+            return true;
+        } catch (CoreException e) {
+            logger.error("Error while getting ActionProperty_Action for Action[{}]", queueAction.getId());
+            return false;
+        }
+    }
+
     private boolean checkMaxOverQueue(PersonSchedule personSchedule) {
         return personSchedule.doctor.getMaxOverQueue() <= personSchedule.overQueueCount;
     }
@@ -731,12 +778,7 @@ public class PersonScheduleBean implements PersonScheduleBeanLocal {
                 current.setCouponsRemaining(current.getCouponsRemaining() - 1);
                 logger.info("QuotingBySpeciality coupons_remaining reduce by 1");
                 em.merge(current);
-                /*try {
-                    managerBean.merge(current);
-                    return true;
-                } catch (CoreException e) {
-                    logger.error("Error while merge quoting.", e);
-                }*/
+                return  true;
             }
         }
         return false;

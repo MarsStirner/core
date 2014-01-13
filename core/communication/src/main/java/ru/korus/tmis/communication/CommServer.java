@@ -74,9 +74,6 @@ public class CommServer implements Communications.Iface {
     //Number of request
     private static int requestNum = 0;
 
-
-
-
     /**
      * Получение оргструктур, которые входят в заданное подразделение.
      * При установленном флаге рекурсии выводит все подразделения которые принадлежат запрошенному.
@@ -131,8 +128,8 @@ public class CommServer implements Communications.Iface {
         logger.info("#{} Call method -> CommServer.findOrgStructureByAddress(streetKLADR={}, pointKLADR={}, number={}/{} flat={})",
                 currentRequestNum, params.getPointKLADR(), params.getStreetKLADR(), params.getNumber(), params.getCorpus(), params.getFlat());
         final List<Integer> resultList = orgStructureBean.getOrgStructureIdListByAddress(
-                    params.getPointKLADR(), params.getStreetKLADR(), params.getNumber(), params.getCorpus(), params.getFlat());
-        if(resultList.isEmpty()){
+                params.getPointKLADR(), params.getStreetKLADR(), params.getNumber(), params.getCorpus(), params.getFlat());
+        if (resultList.isEmpty()) {
             logger.error("End of #{}. No one orgStructureFound", currentRequestNum);
             throw new NotFoundException().setError_msg("No one OrgStructure found.");
         }
@@ -1116,10 +1113,9 @@ public class CommServer implements Communications.Iface {
                 currentRequestNum, patientId, queueId);
         Action queueAction = null;
         final DequeuePatientStatus result = new DequeuePatientStatus();
-        APValueAction ambActionPropertyAction = null;
         try {
             queueAction = actionBean.getActionById(queueId);
-//Проверка тот ли пациент имеет данный талончик
+            //Проверка тот ли пациент имеет данный талончик
             final Event queueEvent = queueAction.getEvent();
             if (queueEvent == null) {
                 logger.warn("Action {} has null event.", queueAction);
@@ -1141,35 +1137,14 @@ public class CommServer implements Communications.Iface {
                             || !queueAction.getHospitalUidFrom().isEmpty()) {
                         updateQuotingBySpeciality(queueAction, hospitalUidFrom);
                     }
-                    //Получение ActionProperty_Action соответствующего записи пациента к врачу (queue)
-                    ambActionPropertyAction = actionPropertyBean.getActionProperty_ActionByValue(queueAction);
-                    //Обнуление поля = отмена очереди
-                    ambActionPropertyAction.setValue(null);
-                    managerBean.merge(ambActionPropertyAction);
-                    //Выставляем флаг удаления у соответствующего действия пользователя
-                    queueAction.setDeleted(true);
-                    queueAction.setModifyDatetime(new Date());
-                    managerBean.merge(queueAction);
-                    //Выставляем флаг удаления у соответствующего события пользователя
-                    queueEvent.setDeleted(true);
-                    queueEvent.setModifyDatetime(new Date());
-                    managerBean.merge(queueEvent);
+                    result.setSuccess(personScheduleBean.dequeuePatient(queueAction));
                 }
             }
         } catch (CoreException e) {
-            if (queueAction == null) {
-                logger.error("Cannot get queueAction for this ID=" + queueId, e);
-                result.setMessage(CommunicationErrors.msgPatientQueueNotFound.getMessage()).setSuccess(false);
-            }
-            if (ambActionPropertyAction == null) {
-                logger.error("Cannot get queueActionProperty for this ID=" + queueId, e);
-                result.setMessage(CommunicationErrors.msgPatientQueueNotFound.getMessage()).setSuccess(false);
-            }
+            logger.error("Cannot get queueAction for this ID=" + queueId, e);
+            result.setMessage(CommunicationErrors.msgPatientQueueNotFound.getMessage()).setSuccess(false);
         }
-
-        if (ambActionPropertyAction != null && ambActionPropertyAction.getValue() == null) {
-            result.setMessage(CommunicationErrors.msgOk.getMessage()).setSuccess(true);
-        }
+        result.setMessage(CommunicationErrors.msgOk.getMessage());
         logger.info("End of #{} dequeuePatient. Return \"{}\" as result.", currentRequestNum, result);
         return result;
     }
@@ -1285,7 +1260,7 @@ public class CommServer implements Communications.Iface {
                 if (currentOrgStructureAddress != null) {
                     if (currentOrgStructureAddress.getAddressHouseList() != null) {
                         resultList.add(ParserToThriftStruct.parseAddress(currentOrgStructure, currentOrgStructureAddress));
-                    }  else {
+                    } else {
                         logger.debug("AddressHouse=NULL");
                     }
                 }
