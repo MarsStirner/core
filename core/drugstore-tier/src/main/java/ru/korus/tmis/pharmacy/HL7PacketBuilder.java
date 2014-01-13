@@ -657,7 +657,8 @@ public final class HL7PacketBuilder {
         substanceAdministration.setClassCode(ActClass.SBADM);
         //substanceAdministration.setMoodCode(getAssignmentType2(prescriptionInfo.getAssignmentType()));  // тип документа
         substanceAdministration.setMoodCode(interval.isPrescription() ? XDocumentSubstanceMood.RQO : XDocumentSubstanceMood.EVN);
-        substanceAdministration.setNegationInd(prescriptionInfo.getNegationInd());
+        //substanceAdministration.setNegationInd(prescriptionInfo.getNegationInd());
+        substanceAdministration.setNegationInd(false);
 
         substanceAdministration.getId().add(createII(drugComponent.getUuid())); // UUID назначения
 
