@@ -26,8 +26,8 @@ public class DbPrescriptionSendingResBean implements DbPrescriptionSendingResBea
     public PrescriptionSendingRes getPrescriptionSendingRes(DrugChart drugChart, DrugComponent drugComponent) {
         List<PrescriptionSendingRes> resList = em.createNamedQuery("PrescriptionSendingRes.findByIntervalAndNomen", PrescriptionSendingRes.class).
                 setParameter("intervalId", drugChart.getId()).
-                setParameter("compId", drugComponent.getId() ).getResultList();
-        if(resList.isEmpty()) {
+                setParameter("compId", drugComponent.getId()).getResultList();
+        if (resList.isEmpty()) {
             final PrescriptionSendingRes prescriptionSendingRes = new PrescriptionSendingRes();
             prescriptionSendingRes.setDrugComponent(drugComponent);
             prescriptionSendingRes.setDrugChart(drugChart);
@@ -41,12 +41,16 @@ public class DbPrescriptionSendingResBean implements DbPrescriptionSendingResBea
     @Override
     public String getIntervalUUID(DrugChart drugChart, DrugComponent drugComponent) {
         final PrescriptionSendingRes prescriptionSendingRes = getPrescriptionSendingRes(drugChart, drugComponent);
-        String res = UUID.randomUUID().toString();
-        if (drugChart.getMaster() != null) {
+        String res = null;
+        if (prescriptionSendingRes.getUuid() != null) {
+            res = prescriptionSendingRes.getUuid();
+        } else if (drugChart.getMaster() != null) {
             PrescriptionSendingRes master = getPrescriptionSendingRes(drugChart.getMaster(), drugComponent);
             if (master != null) {
                 res = master.getUuid();
             }
+        } else {
+            res = UUID.randomUUID().toString();
         }
         return res;
     }
