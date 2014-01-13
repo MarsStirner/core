@@ -10,7 +10,9 @@ import java.util.List;
 @Table(name = "OrgStructure_Address", catalog = "", schema = "")
 @NamedQueries(
         {
-                @NamedQuery(name = "OrgStructureAddress.findAll", query = "SELECT o FROM OrgStructureAddress o")
+                @NamedQuery(name = "OrgStructureAddress.findAll", query = "SELECT o FROM OrgStructureAddress o"),
+                @NamedQuery(name = "OrgStructureAddress.findByOrgStructure",
+                        query = "SELECT o  FROM OrgStructureAddress o   WHERE o.master= :orgStructure")
         })
 @XmlType(name = "orgStructureAddress")
 @XmlRootElement(name = "orgStructureAddress")

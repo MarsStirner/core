@@ -123,7 +123,7 @@ public class Communications {
      * 
      * @param params
      */
-    public Amb getWorkTimeAndStatus(GetTimeWorkAndStatusParameters params) throws NotFoundException, SQLException, org.apache.thrift.TException;
+    public Amb getWorkTimeAndStatus(GetTimeWorkAndStatusParameters params) throws NotFoundException, SQLException, ReasonOfAbsenceException, org.apache.thrift.TException;
 
     /**
      * добавление нового пациента в БД ЛПУ
@@ -202,13 +202,12 @@ public class Communications {
     /**
      * Метод для получения расписания врача пачкой за указанный интервал
      * @param params                        1) Параметры для получения расписания
-     * @return                              map<timestamp, Schedule> - карта вида <[Дата приема], [Расписание на эту дату]>,
-     *                                      в случае отсутствия расписания на указанную дату набор ключ-значение опускается
+     * @return                              структура данных с информацией о примемах врача
      * @throws NotFoundException            когда нету такого идентификатора врача
      * 
      * @param params
      */
-    public Map<Long,Schedule> getPersonSchedule(ScheduleParameters params) throws NotFoundException, org.apache.thrift.TException;
+    public PersonSchedule getPersonSchedule(ScheduleParameters params) throws NotFoundException, org.apache.thrift.TException;
 
     /**
      * * Получение детальной информации по пациентам по их идентфикаторам
@@ -249,7 +248,7 @@ public class Communications {
      * 
      * @param params
      */
-    public EnqueuePatientStatus enqueuePatient(EnqueuePatientParameters params) throws NotFoundException, SQLException, org.apache.thrift.TException;
+    public EnqueuePatientStatus enqueuePatient(EnqueuePatientParameters params) throws NotFoundException, SQLException, ReasonOfAbsenceException, org.apache.thrift.TException;
 
     /**
      * Получение списка записей на приемы к врачам заданного пациента
@@ -279,11 +278,11 @@ public class Communications {
      * Получение списка  с информацией о специализациях и доступных талончиках
      * @param hospitalUidFrom               1) Инфис-код ЛПУ
      * @return                              Список структур с данными о специализациях врачей
-     * @throws SQLException                 когда произошла внутренняя ошибка при запросах к БД ЛПУ
+     * @throws NotFoundException            когда ничего не найдено
      * 
      * @param hospitalUidFrom
      */
-    public List<Speciality> getSpecialities(String hospitalUidFrom) throws SQLException, org.apache.thrift.TException;
+    public List<Speciality> getSpecialities(String hospitalUidFrom) throws NotFoundException, org.apache.thrift.TException;
 
   }
 
@@ -563,7 +562,7 @@ public class Communications {
       throw new org.apache.thrift.TApplicationException(org.apache.thrift.TApplicationException.MISSING_RESULT, "getTicketsAvailability failed: unknown result");
     }
 
-    public Amb getWorkTimeAndStatus(GetTimeWorkAndStatusParameters params) throws NotFoundException, SQLException, org.apache.thrift.TException
+    public Amb getWorkTimeAndStatus(GetTimeWorkAndStatusParameters params) throws NotFoundException, SQLException, ReasonOfAbsenceException, org.apache.thrift.TException
     {
       send_getWorkTimeAndStatus(params);
       return recv_getWorkTimeAndStatus();
@@ -576,7 +575,7 @@ public class Communications {
       sendBase("getWorkTimeAndStatus", args);
     }
 
-    public Amb recv_getWorkTimeAndStatus() throws NotFoundException, SQLException, org.apache.thrift.TException
+    public Amb recv_getWorkTimeAndStatus() throws NotFoundException, SQLException, ReasonOfAbsenceException, org.apache.thrift.TException
     {
       getWorkTimeAndStatus_result result = new getWorkTimeAndStatus_result();
       receiveBase(result, "getWorkTimeAndStatus");
@@ -588,6 +587,9 @@ public class Communications {
       }
       if (result.excsql != null) {
         throw result.excsql;
+      }
+      if (result.raExc != null) {
+        throw result.raExc;
       }
       throw new org.apache.thrift.TApplicationException(org.apache.thrift.TApplicationException.MISSING_RESULT, "getWorkTimeAndStatus failed: unknown result");
     }
@@ -791,7 +793,7 @@ public class Communications {
       throw new org.apache.thrift.TApplicationException(org.apache.thrift.TApplicationException.MISSING_RESULT, "getFirstFreeTicket failed: unknown result");
     }
 
-    public Map<Long,Schedule> getPersonSchedule(ScheduleParameters params) throws NotFoundException, org.apache.thrift.TException
+    public PersonSchedule getPersonSchedule(ScheduleParameters params) throws NotFoundException, org.apache.thrift.TException
     {
       send_getPersonSchedule(params);
       return recv_getPersonSchedule();
@@ -804,7 +806,7 @@ public class Communications {
       sendBase("getPersonSchedule", args);
     }
 
-    public Map<Long,Schedule> recv_getPersonSchedule() throws NotFoundException, org.apache.thrift.TException
+    public PersonSchedule recv_getPersonSchedule() throws NotFoundException, org.apache.thrift.TException
     {
       getPersonSchedule_result result = new getPersonSchedule_result();
       receiveBase(result, "getPersonSchedule");
@@ -898,7 +900,7 @@ public class Communications {
       throw new org.apache.thrift.TApplicationException(org.apache.thrift.TApplicationException.MISSING_RESULT, "getPatientOrgStructures failed: unknown result");
     }
 
-    public EnqueuePatientStatus enqueuePatient(EnqueuePatientParameters params) throws NotFoundException, SQLException, org.apache.thrift.TException
+    public EnqueuePatientStatus enqueuePatient(EnqueuePatientParameters params) throws NotFoundException, SQLException, ReasonOfAbsenceException, org.apache.thrift.TException
     {
       send_enqueuePatient(params);
       return recv_enqueuePatient();
@@ -911,7 +913,7 @@ public class Communications {
       sendBase("enqueuePatient", args);
     }
 
-    public EnqueuePatientStatus recv_enqueuePatient() throws NotFoundException, SQLException, org.apache.thrift.TException
+    public EnqueuePatientStatus recv_enqueuePatient() throws NotFoundException, SQLException, ReasonOfAbsenceException, org.apache.thrift.TException
     {
       enqueuePatient_result result = new enqueuePatient_result();
       receiveBase(result, "enqueuePatient");
@@ -923,6 +925,9 @@ public class Communications {
       }
       if (result.excsql != null) {
         throw result.excsql;
+      }
+      if (result.raExc != null) {
+        throw result.raExc;
       }
       throw new org.apache.thrift.TApplicationException(org.apache.thrift.TApplicationException.MISSING_RESULT, "enqueuePatient failed: unknown result");
     }
@@ -986,7 +991,7 @@ public class Communications {
       throw new org.apache.thrift.TApplicationException(org.apache.thrift.TApplicationException.MISSING_RESULT, "dequeuePatient failed: unknown result");
     }
 
-    public List<Speciality> getSpecialities(String hospitalUidFrom) throws SQLException, org.apache.thrift.TException
+    public List<Speciality> getSpecialities(String hospitalUidFrom) throws NotFoundException, org.apache.thrift.TException
     {
       send_getSpecialities(hospitalUidFrom);
       return recv_getSpecialities();
@@ -999,15 +1004,15 @@ public class Communications {
       sendBase("getSpecialities", args);
     }
 
-    public List<Speciality> recv_getSpecialities() throws SQLException, org.apache.thrift.TException
+    public List<Speciality> recv_getSpecialities() throws NotFoundException, org.apache.thrift.TException
     {
       getSpecialities_result result = new getSpecialities_result();
       receiveBase(result, "getSpecialities");
       if (result.isSetSuccess()) {
         return result.success;
       }
-      if (result.exc != null) {
-        throw result.exc;
+      if (result.nfExc != null) {
+        throw result.nfExc;
       }
       throw new org.apache.thrift.TApplicationException(org.apache.thrift.TApplicationException.MISSING_RESULT, "getSpecialities failed: unknown result");
     }
@@ -1294,7 +1299,7 @@ public class Communications {
         prot.writeMessageEnd();
       }
 
-      public Amb getResult() throws NotFoundException, SQLException, org.apache.thrift.TException {
+      public Amb getResult() throws NotFoundException, SQLException, ReasonOfAbsenceException, org.apache.thrift.TException {
         if (getState() != org.apache.thrift.async.TAsyncMethodCall.State.RESPONSE_READ) {
           throw new IllegalStateException("Method call not finished!");
         }
@@ -1547,7 +1552,7 @@ public class Communications {
         prot.writeMessageEnd();
       }
 
-      public Map<Long,Schedule> getResult() throws NotFoundException, org.apache.thrift.TException {
+      public PersonSchedule getResult() throws NotFoundException, org.apache.thrift.TException {
         if (getState() != org.apache.thrift.async.TAsyncMethodCall.State.RESPONSE_READ) {
           throw new IllegalStateException("Method call not finished!");
         }
@@ -1675,7 +1680,7 @@ public class Communications {
         prot.writeMessageEnd();
       }
 
-      public EnqueuePatientStatus getResult() throws NotFoundException, SQLException, org.apache.thrift.TException {
+      public EnqueuePatientStatus getResult() throws NotFoundException, SQLException, ReasonOfAbsenceException, org.apache.thrift.TException {
         if (getState() != org.apache.thrift.async.TAsyncMethodCall.State.RESPONSE_READ) {
           throw new IllegalStateException("Method call not finished!");
         }
@@ -1774,7 +1779,7 @@ public class Communications {
         prot.writeMessageEnd();
       }
 
-      public List<Speciality> getResult() throws SQLException, org.apache.thrift.TException {
+      public List<Speciality> getResult() throws NotFoundException, org.apache.thrift.TException {
         if (getState() != org.apache.thrift.async.TAsyncMethodCall.State.RESPONSE_READ) {
           throw new IllegalStateException("Method call not finished!");
         }
@@ -2024,6 +2029,8 @@ public class Communications {
           result.exc = exc;
         } catch (SQLException excsql) {
           result.excsql = excsql;
+        } catch (ReasonOfAbsenceException raExc) {
+          result.raExc = raExc;
         }
         return result;
       }
@@ -2327,6 +2334,8 @@ public class Communications {
           result.exc = exc;
         } catch (SQLException excsql) {
           result.excsql = excsql;
+        } catch (ReasonOfAbsenceException raExc) {
+          result.raExc = raExc;
         }
         return result;
       }
@@ -2401,8 +2410,8 @@ public class Communications {
         getSpecialities_result result = new getSpecialities_result();
         try {
           result.success = iface.getSpecialities(args.hospitalUidFrom);
-        } catch (SQLException exc) {
-          result.exc = exc;
+        } catch (NotFoundException nfExc) {
+          result.nfExc = nfExc;
         }
         return result;
       }
@@ -4234,14 +4243,14 @@ public class Communications {
             case 0: // SUCCESS
               if (schemeField.type == org.apache.thrift.protocol.TType.LIST) {
                 {
-                  org.apache.thrift.protocol.TList _list36 = iprot.readListBegin();
-                  struct.success = new ArrayList<OrgStructure>(_list36.size);
-                  for (int _i37 = 0; _i37 < _list36.size; ++_i37)
+                  org.apache.thrift.protocol.TList _list56 = iprot.readListBegin();
+                  struct.success = new ArrayList<OrgStructure>(_list56.size);
+                  for (int _i57 = 0; _i57 < _list56.size; ++_i57)
                   {
-                    OrgStructure _elem38; // required
-                    _elem38 = new OrgStructure();
-                    _elem38.read(iprot);
-                    struct.success.add(_elem38);
+                    OrgStructure _elem58; // required
+                    _elem58 = new OrgStructure();
+                    _elem58.read(iprot);
+                    struct.success.add(_elem58);
                   }
                   iprot.readListEnd();
                 }
@@ -4287,9 +4296,9 @@ public class Communications {
           oprot.writeFieldBegin(SUCCESS_FIELD_DESC);
           {
             oprot.writeListBegin(new org.apache.thrift.protocol.TList(org.apache.thrift.protocol.TType.STRUCT, struct.success.size()));
-            for (OrgStructure _iter39 : struct.success)
+            for (OrgStructure _iter59 : struct.success)
             {
-              _iter39.write(oprot);
+              _iter59.write(oprot);
             }
             oprot.writeListEnd();
           }
@@ -4336,9 +4345,9 @@ public class Communications {
         if (struct.isSetSuccess()) {
           {
             oprot.writeI32(struct.success.size());
-            for (OrgStructure _iter40 : struct.success)
+            for (OrgStructure _iter60 : struct.success)
             {
-              _iter40.write(oprot);
+              _iter60.write(oprot);
             }
           }
         }
@@ -4356,14 +4365,14 @@ public class Communications {
         BitSet incoming = iprot.readBitSet(3);
         if (incoming.get(0)) {
           {
-            org.apache.thrift.protocol.TList _list41 = new org.apache.thrift.protocol.TList(org.apache.thrift.protocol.TType.STRUCT, iprot.readI32());
-            struct.success = new ArrayList<OrgStructure>(_list41.size);
-            for (int _i42 = 0; _i42 < _list41.size; ++_i42)
+            org.apache.thrift.protocol.TList _list61 = new org.apache.thrift.protocol.TList(org.apache.thrift.protocol.TType.STRUCT, iprot.readI32());
+            struct.success = new ArrayList<OrgStructure>(_list61.size);
+            for (int _i62 = 0; _i62 < _list61.size; ++_i62)
             {
-              OrgStructure _elem43; // required
-              _elem43 = new OrgStructure();
-              _elem43.read(iprot);
-              struct.success.add(_elem43);
+              OrgStructure _elem63; // required
+              _elem63 = new OrgStructure();
+              _elem63.read(iprot);
+              struct.success.add(_elem63);
             }
           }
           struct.setSuccessIsSet(true);
@@ -5392,14 +5401,14 @@ public class Communications {
             case 0: // SUCCESS
               if (schemeField.type == org.apache.thrift.protocol.TType.LIST) {
                 {
-                  org.apache.thrift.protocol.TList _list44 = iprot.readListBegin();
-                  struct.success = new ArrayList<Address>(_list44.size);
-                  for (int _i45 = 0; _i45 < _list44.size; ++_i45)
+                  org.apache.thrift.protocol.TList _list64 = iprot.readListBegin();
+                  struct.success = new ArrayList<Address>(_list64.size);
+                  for (int _i65 = 0; _i65 < _list64.size; ++_i65)
                   {
-                    Address _elem46; // required
-                    _elem46 = new Address();
-                    _elem46.read(iprot);
-                    struct.success.add(_elem46);
+                    Address _elem66; // required
+                    _elem66 = new Address();
+                    _elem66.read(iprot);
+                    struct.success.add(_elem66);
                   }
                   iprot.readListEnd();
                 }
@@ -5445,9 +5454,9 @@ public class Communications {
           oprot.writeFieldBegin(SUCCESS_FIELD_DESC);
           {
             oprot.writeListBegin(new org.apache.thrift.protocol.TList(org.apache.thrift.protocol.TType.STRUCT, struct.success.size()));
-            for (Address _iter47 : struct.success)
+            for (Address _iter67 : struct.success)
             {
-              _iter47.write(oprot);
+              _iter67.write(oprot);
             }
             oprot.writeListEnd();
           }
@@ -5494,9 +5503,9 @@ public class Communications {
         if (struct.isSetSuccess()) {
           {
             oprot.writeI32(struct.success.size());
-            for (Address _iter48 : struct.success)
+            for (Address _iter68 : struct.success)
             {
-              _iter48.write(oprot);
+              _iter68.write(oprot);
             }
           }
         }
@@ -5514,14 +5523,14 @@ public class Communications {
         BitSet incoming = iprot.readBitSet(3);
         if (incoming.get(0)) {
           {
-            org.apache.thrift.protocol.TList _list49 = new org.apache.thrift.protocol.TList(org.apache.thrift.protocol.TType.STRUCT, iprot.readI32());
-            struct.success = new ArrayList<Address>(_list49.size);
-            for (int _i50 = 0; _i50 < _list49.size; ++_i50)
+            org.apache.thrift.protocol.TList _list69 = new org.apache.thrift.protocol.TList(org.apache.thrift.protocol.TType.STRUCT, iprot.readI32());
+            struct.success = new ArrayList<Address>(_list69.size);
+            for (int _i70 = 0; _i70 < _list69.size; ++_i70)
             {
-              Address _elem51; // required
-              _elem51 = new Address();
-              _elem51.read(iprot);
-              struct.success.add(_elem51);
+              Address _elem71; // required
+              _elem71 = new Address();
+              _elem71.read(iprot);
+              struct.success.add(_elem71);
             }
           }
           struct.setSuccessIsSet(true);
@@ -6363,13 +6372,13 @@ public class Communications {
             case 0: // SUCCESS
               if (schemeField.type == org.apache.thrift.protocol.TType.LIST) {
                 {
-                  org.apache.thrift.protocol.TList _list52 = iprot.readListBegin();
-                  struct.success = new ArrayList<Integer>(_list52.size);
-                  for (int _i53 = 0; _i53 < _list52.size; ++_i53)
+                  org.apache.thrift.protocol.TList _list72 = iprot.readListBegin();
+                  struct.success = new ArrayList<Integer>(_list72.size);
+                  for (int _i73 = 0; _i73 < _list72.size; ++_i73)
                   {
-                    int _elem54; // required
-                    _elem54 = iprot.readI32();
-                    struct.success.add(_elem54);
+                    int _elem74; // required
+                    _elem74 = iprot.readI32();
+                    struct.success.add(_elem74);
                   }
                   iprot.readListEnd();
                 }
@@ -6415,9 +6424,9 @@ public class Communications {
           oprot.writeFieldBegin(SUCCESS_FIELD_DESC);
           {
             oprot.writeListBegin(new org.apache.thrift.protocol.TList(org.apache.thrift.protocol.TType.I32, struct.success.size()));
-            for (int _iter55 : struct.success)
+            for (int _iter75 : struct.success)
             {
-              oprot.writeI32(_iter55);
+              oprot.writeI32(_iter75);
             }
             oprot.writeListEnd();
           }
@@ -6464,9 +6473,9 @@ public class Communications {
         if (struct.isSetSuccess()) {
           {
             oprot.writeI32(struct.success.size());
-            for (int _iter56 : struct.success)
+            for (int _iter76 : struct.success)
             {
-              oprot.writeI32(_iter56);
+              oprot.writeI32(_iter76);
             }
           }
         }
@@ -6484,13 +6493,13 @@ public class Communications {
         BitSet incoming = iprot.readBitSet(3);
         if (incoming.get(0)) {
           {
-            org.apache.thrift.protocol.TList _list57 = new org.apache.thrift.protocol.TList(org.apache.thrift.protocol.TType.I32, iprot.readI32());
-            struct.success = new ArrayList<Integer>(_list57.size);
-            for (int _i58 = 0; _i58 < _list57.size; ++_i58)
+            org.apache.thrift.protocol.TList _list77 = new org.apache.thrift.protocol.TList(org.apache.thrift.protocol.TType.I32, iprot.readI32());
+            struct.success = new ArrayList<Integer>(_list77.size);
+            for (int _i78 = 0; _i78 < _list77.size; ++_i78)
             {
-              int _elem59; // required
-              _elem59 = iprot.readI32();
-              struct.success.add(_elem59);
+              int _elem79; // required
+              _elem79 = iprot.readI32();
+              struct.success.add(_elem79);
             }
           }
           struct.setSuccessIsSet(true);
@@ -7519,14 +7528,14 @@ public class Communications {
             case 0: // SUCCESS
               if (schemeField.type == org.apache.thrift.protocol.TType.LIST) {
                 {
-                  org.apache.thrift.protocol.TList _list60 = iprot.readListBegin();
-                  struct.success = new ArrayList<Person>(_list60.size);
-                  for (int _i61 = 0; _i61 < _list60.size; ++_i61)
+                  org.apache.thrift.protocol.TList _list80 = iprot.readListBegin();
+                  struct.success = new ArrayList<Person>(_list80.size);
+                  for (int _i81 = 0; _i81 < _list80.size; ++_i81)
                   {
-                    Person _elem62; // required
-                    _elem62 = new Person();
-                    _elem62.read(iprot);
-                    struct.success.add(_elem62);
+                    Person _elem82; // required
+                    _elem82 = new Person();
+                    _elem82.read(iprot);
+                    struct.success.add(_elem82);
                   }
                   iprot.readListEnd();
                 }
@@ -7572,9 +7581,9 @@ public class Communications {
           oprot.writeFieldBegin(SUCCESS_FIELD_DESC);
           {
             oprot.writeListBegin(new org.apache.thrift.protocol.TList(org.apache.thrift.protocol.TType.STRUCT, struct.success.size()));
-            for (Person _iter63 : struct.success)
+            for (Person _iter83 : struct.success)
             {
-              _iter63.write(oprot);
+              _iter83.write(oprot);
             }
             oprot.writeListEnd();
           }
@@ -7621,9 +7630,9 @@ public class Communications {
         if (struct.isSetSuccess()) {
           {
             oprot.writeI32(struct.success.size());
-            for (Person _iter64 : struct.success)
+            for (Person _iter84 : struct.success)
             {
-              _iter64.write(oprot);
+              _iter84.write(oprot);
             }
           }
         }
@@ -7641,14 +7650,14 @@ public class Communications {
         BitSet incoming = iprot.readBitSet(3);
         if (incoming.get(0)) {
           {
-            org.apache.thrift.protocol.TList _list65 = new org.apache.thrift.protocol.TList(org.apache.thrift.protocol.TType.STRUCT, iprot.readI32());
-            struct.success = new ArrayList<Person>(_list65.size);
-            for (int _i66 = 0; _i66 < _list65.size; ++_i66)
+            org.apache.thrift.protocol.TList _list85 = new org.apache.thrift.protocol.TList(org.apache.thrift.protocol.TType.STRUCT, iprot.readI32());
+            struct.success = new ArrayList<Person>(_list85.size);
+            for (int _i86 = 0; _i86 < _list85.size; ++_i86)
             {
-              Person _elem67; // required
-              _elem67 = new Person();
-              _elem67.read(iprot);
-              struct.success.add(_elem67);
+              Person _elem87; // required
+              _elem87 = new Person();
+              _elem87.read(iprot);
+              struct.success.add(_elem87);
             }
           }
           struct.setSuccessIsSet(true);
@@ -9412,14 +9421,14 @@ public class Communications {
             case 0: // SUCCESS
               if (schemeField.type == org.apache.thrift.protocol.TType.LIST) {
                 {
-                  org.apache.thrift.protocol.TList _list68 = iprot.readListBegin();
-                  struct.success = new ArrayList<ExtendedTicketsAvailability>(_list68.size);
-                  for (int _i69 = 0; _i69 < _list68.size; ++_i69)
+                  org.apache.thrift.protocol.TList _list88 = iprot.readListBegin();
+                  struct.success = new ArrayList<ExtendedTicketsAvailability>(_list88.size);
+                  for (int _i89 = 0; _i89 < _list88.size; ++_i89)
                   {
-                    ExtendedTicketsAvailability _elem70; // required
-                    _elem70 = new ExtendedTicketsAvailability();
-                    _elem70.read(iprot);
-                    struct.success.add(_elem70);
+                    ExtendedTicketsAvailability _elem90; // required
+                    _elem90 = new ExtendedTicketsAvailability();
+                    _elem90.read(iprot);
+                    struct.success.add(_elem90);
                   }
                   iprot.readListEnd();
                 }
@@ -9465,9 +9474,9 @@ public class Communications {
           oprot.writeFieldBegin(SUCCESS_FIELD_DESC);
           {
             oprot.writeListBegin(new org.apache.thrift.protocol.TList(org.apache.thrift.protocol.TType.STRUCT, struct.success.size()));
-            for (ExtendedTicketsAvailability _iter71 : struct.success)
+            for (ExtendedTicketsAvailability _iter91 : struct.success)
             {
-              _iter71.write(oprot);
+              _iter91.write(oprot);
             }
             oprot.writeListEnd();
           }
@@ -9514,9 +9523,9 @@ public class Communications {
         if (struct.isSetSuccess()) {
           {
             oprot.writeI32(struct.success.size());
-            for (ExtendedTicketsAvailability _iter72 : struct.success)
+            for (ExtendedTicketsAvailability _iter92 : struct.success)
             {
-              _iter72.write(oprot);
+              _iter92.write(oprot);
             }
           }
         }
@@ -9534,14 +9543,14 @@ public class Communications {
         BitSet incoming = iprot.readBitSet(3);
         if (incoming.get(0)) {
           {
-            org.apache.thrift.protocol.TList _list73 = new org.apache.thrift.protocol.TList(org.apache.thrift.protocol.TType.STRUCT, iprot.readI32());
-            struct.success = new ArrayList<ExtendedTicketsAvailability>(_list73.size);
-            for (int _i74 = 0; _i74 < _list73.size; ++_i74)
+            org.apache.thrift.protocol.TList _list93 = new org.apache.thrift.protocol.TList(org.apache.thrift.protocol.TType.STRUCT, iprot.readI32());
+            struct.success = new ArrayList<ExtendedTicketsAvailability>(_list93.size);
+            for (int _i94 = 0; _i94 < _list93.size; ++_i94)
             {
-              ExtendedTicketsAvailability _elem75; // required
-              _elem75 = new ExtendedTicketsAvailability();
-              _elem75.read(iprot);
-              struct.success.add(_elem75);
+              ExtendedTicketsAvailability _elem95; // required
+              _elem95 = new ExtendedTicketsAvailability();
+              _elem95.read(iprot);
+              struct.success.add(_elem95);
             }
           }
           struct.setSuccessIsSet(true);
@@ -9926,6 +9935,7 @@ public class Communications {
     private static final org.apache.thrift.protocol.TField SUCCESS_FIELD_DESC = new org.apache.thrift.protocol.TField("success", org.apache.thrift.protocol.TType.STRUCT, (short)0);
     private static final org.apache.thrift.protocol.TField EXC_FIELD_DESC = new org.apache.thrift.protocol.TField("exc", org.apache.thrift.protocol.TType.STRUCT, (short)1);
     private static final org.apache.thrift.protocol.TField EXCSQL_FIELD_DESC = new org.apache.thrift.protocol.TField("excsql", org.apache.thrift.protocol.TType.STRUCT, (short)2);
+    private static final org.apache.thrift.protocol.TField RA_EXC_FIELD_DESC = new org.apache.thrift.protocol.TField("raExc", org.apache.thrift.protocol.TType.STRUCT, (short)3);
 
     private static final Map<Class<? extends IScheme>, SchemeFactory> schemes = new HashMap<Class<? extends IScheme>, SchemeFactory>();
     static {
@@ -9936,12 +9946,14 @@ public class Communications {
     public Amb success; // required
     public NotFoundException exc; // required
     public SQLException excsql; // required
+    public ReasonOfAbsenceException raExc; // required
 
     /** The set of fields this struct contains, along with convenience methods for finding and manipulating them. */
     public enum _Fields implements org.apache.thrift.TFieldIdEnum {
       SUCCESS((short)0, "success"),
       EXC((short)1, "exc"),
-      EXCSQL((short)2, "excsql");
+      EXCSQL((short)2, "excsql"),
+      RA_EXC((short)3, "raExc");
 
       private static final Map<String, _Fields> byName = new HashMap<String, _Fields>();
 
@@ -9962,6 +9974,8 @@ public class Communications {
             return EXC;
           case 2: // EXCSQL
             return EXCSQL;
+          case 3: // RA_EXC
+            return RA_EXC;
           default:
             return null;
         }
@@ -10011,6 +10025,8 @@ public class Communications {
           new org.apache.thrift.meta_data.FieldValueMetaData(org.apache.thrift.protocol.TType.STRUCT)));
       tmpMap.put(_Fields.EXCSQL, new org.apache.thrift.meta_data.FieldMetaData("excsql", org.apache.thrift.TFieldRequirementType.DEFAULT, 
           new org.apache.thrift.meta_data.FieldValueMetaData(org.apache.thrift.protocol.TType.STRUCT)));
+      tmpMap.put(_Fields.RA_EXC, new org.apache.thrift.meta_data.FieldMetaData("raExc", org.apache.thrift.TFieldRequirementType.DEFAULT, 
+          new org.apache.thrift.meta_data.FieldValueMetaData(org.apache.thrift.protocol.TType.STRUCT)));
       metaDataMap = Collections.unmodifiableMap(tmpMap);
       org.apache.thrift.meta_data.FieldMetaData.addStructMetaDataMap(getWorkTimeAndStatus_result.class, metaDataMap);
     }
@@ -10021,12 +10037,14 @@ public class Communications {
     public getWorkTimeAndStatus_result(
       Amb success,
       NotFoundException exc,
-      SQLException excsql)
+      SQLException excsql,
+      ReasonOfAbsenceException raExc)
     {
       this();
       this.success = success;
       this.exc = exc;
       this.excsql = excsql;
+      this.raExc = raExc;
     }
 
     /**
@@ -10042,6 +10060,9 @@ public class Communications {
       if (other.isSetExcsql()) {
         this.excsql = new SQLException(other.excsql);
       }
+      if (other.isSetRaExc()) {
+        this.raExc = new ReasonOfAbsenceException(other.raExc);
+      }
     }
 
     public getWorkTimeAndStatus_result deepCopy() {
@@ -10053,6 +10074,7 @@ public class Communications {
       this.success = null;
       this.exc = null;
       this.excsql = null;
+      this.raExc = null;
     }
 
     public Amb getSuccess() {
@@ -10127,6 +10149,30 @@ public class Communications {
       }
     }
 
+    public ReasonOfAbsenceException getRaExc() {
+      return this.raExc;
+    }
+
+    public getWorkTimeAndStatus_result setRaExc(ReasonOfAbsenceException raExc) {
+      this.raExc = raExc;
+      return this;
+    }
+
+    public void unsetRaExc() {
+      this.raExc = null;
+    }
+
+    /** Returns true if field raExc is set (has been assigned a value) and false otherwise */
+    public boolean isSetRaExc() {
+      return this.raExc != null;
+    }
+
+    public void setRaExcIsSet(boolean value) {
+      if (!value) {
+        this.raExc = null;
+      }
+    }
+
     public void setFieldValue(_Fields field, Object value) {
       switch (field) {
       case SUCCESS:
@@ -10153,6 +10199,14 @@ public class Communications {
         }
         break;
 
+      case RA_EXC:
+        if (value == null) {
+          unsetRaExc();
+        } else {
+          setRaExc((ReasonOfAbsenceException)value);
+        }
+        break;
+
       }
     }
 
@@ -10166,6 +10220,9 @@ public class Communications {
 
       case EXCSQL:
         return getExcsql();
+
+      case RA_EXC:
+        return getRaExc();
 
       }
       throw new IllegalStateException();
@@ -10184,6 +10241,8 @@ public class Communications {
         return isSetExc();
       case EXCSQL:
         return isSetExcsql();
+      case RA_EXC:
+        return isSetRaExc();
       }
       throw new IllegalStateException();
     }
@@ -10225,6 +10284,15 @@ public class Communications {
         if (!(this_present_excsql && that_present_excsql))
           return false;
         if (!this.excsql.equals(that.excsql))
+          return false;
+      }
+
+      boolean this_present_raExc = true && this.isSetRaExc();
+      boolean that_present_raExc = true && that.isSetRaExc();
+      if (this_present_raExc || that_present_raExc) {
+        if (!(this_present_raExc && that_present_raExc))
+          return false;
+        if (!this.raExc.equals(that.raExc))
           return false;
       }
 
@@ -10274,6 +10342,16 @@ public class Communications {
           return lastComparison;
         }
       }
+      lastComparison = Boolean.valueOf(isSetRaExc()).compareTo(typedOther.isSetRaExc());
+      if (lastComparison != 0) {
+        return lastComparison;
+      }
+      if (isSetRaExc()) {
+        lastComparison = org.apache.thrift.TBaseHelper.compareTo(this.raExc, typedOther.raExc);
+        if (lastComparison != 0) {
+          return lastComparison;
+        }
+      }
       return 0;
     }
 
@@ -10315,6 +10393,14 @@ public class Communications {
         sb.append("null");
       } else {
         sb.append(this.excsql);
+      }
+      first = false;
+      if (!first) sb.append(", ");
+      sb.append("raExc:");
+      if (this.raExc == null) {
+        sb.append("null");
+      } else {
+        sb.append(this.raExc);
       }
       first = false;
       sb.append(")");
@@ -10390,6 +10476,15 @@ public class Communications {
                 org.apache.thrift.protocol.TProtocolUtil.skip(iprot, schemeField.type);
               }
               break;
+            case 3: // RA_EXC
+              if (schemeField.type == org.apache.thrift.protocol.TType.STRUCT) {
+                struct.raExc = new ReasonOfAbsenceException();
+                struct.raExc.read(iprot);
+                struct.setRaExcIsSet(true);
+              } else { 
+                org.apache.thrift.protocol.TProtocolUtil.skip(iprot, schemeField.type);
+              }
+              break;
             default:
               org.apache.thrift.protocol.TProtocolUtil.skip(iprot, schemeField.type);
           }
@@ -10420,6 +10515,11 @@ public class Communications {
           struct.excsql.write(oprot);
           oprot.writeFieldEnd();
         }
+        if (struct.raExc != null) {
+          oprot.writeFieldBegin(RA_EXC_FIELD_DESC);
+          struct.raExc.write(oprot);
+          oprot.writeFieldEnd();
+        }
         oprot.writeFieldStop();
         oprot.writeStructEnd();
       }
@@ -10447,7 +10547,10 @@ public class Communications {
         if (struct.isSetExcsql()) {
           optionals.set(2);
         }
-        oprot.writeBitSet(optionals, 3);
+        if (struct.isSetRaExc()) {
+          optionals.set(3);
+        }
+        oprot.writeBitSet(optionals, 4);
         if (struct.isSetSuccess()) {
           struct.success.write(oprot);
         }
@@ -10457,12 +10560,15 @@ public class Communications {
         if (struct.isSetExcsql()) {
           struct.excsql.write(oprot);
         }
+        if (struct.isSetRaExc()) {
+          struct.raExc.write(oprot);
+        }
       }
 
       @Override
       public void read(org.apache.thrift.protocol.TProtocol prot, getWorkTimeAndStatus_result struct) throws org.apache.thrift.TException {
         TTupleProtocol iprot = (TTupleProtocol) prot;
-        BitSet incoming = iprot.readBitSet(3);
+        BitSet incoming = iprot.readBitSet(4);
         if (incoming.get(0)) {
           struct.success = new Amb();
           struct.success.read(iprot);
@@ -10477,6 +10583,11 @@ public class Communications {
           struct.excsql = new SQLException();
           struct.excsql.read(iprot);
           struct.setExcsqlIsSet(true);
+        }
+        if (incoming.get(3)) {
+          struct.raExc = new ReasonOfAbsenceException();
+          struct.raExc.read(iprot);
+          struct.setRaExcIsSet(true);
         }
       }
     }
@@ -13047,14 +13158,14 @@ public class Communications {
             case 0: // SUCCESS
               if (schemeField.type == org.apache.thrift.protocol.TType.LIST) {
                 {
-                  org.apache.thrift.protocol.TList _list76 = iprot.readListBegin();
-                  struct.success = new ArrayList<Patient>(_list76.size);
-                  for (int _i77 = 0; _i77 < _list76.size; ++_i77)
+                  org.apache.thrift.protocol.TList _list96 = iprot.readListBegin();
+                  struct.success = new ArrayList<Patient>(_list96.size);
+                  for (int _i97 = 0; _i97 < _list96.size; ++_i97)
                   {
-                    Patient _elem78; // required
-                    _elem78 = new Patient();
-                    _elem78.read(iprot);
-                    struct.success.add(_elem78);
+                    Patient _elem98; // required
+                    _elem98 = new Patient();
+                    _elem98.read(iprot);
+                    struct.success.add(_elem98);
                   }
                   iprot.readListEnd();
                 }
@@ -13100,9 +13211,9 @@ public class Communications {
           oprot.writeFieldBegin(SUCCESS_FIELD_DESC);
           {
             oprot.writeListBegin(new org.apache.thrift.protocol.TList(org.apache.thrift.protocol.TType.STRUCT, struct.success.size()));
-            for (Patient _iter79 : struct.success)
+            for (Patient _iter99 : struct.success)
             {
-              _iter79.write(oprot);
+              _iter99.write(oprot);
             }
             oprot.writeListEnd();
           }
@@ -13149,9 +13260,9 @@ public class Communications {
         if (struct.isSetSuccess()) {
           {
             oprot.writeI32(struct.success.size());
-            for (Patient _iter80 : struct.success)
+            for (Patient _iter100 : struct.success)
             {
-              _iter80.write(oprot);
+              _iter100.write(oprot);
             }
           }
         }
@@ -13169,14 +13280,14 @@ public class Communications {
         BitSet incoming = iprot.readBitSet(3);
         if (incoming.get(0)) {
           {
-            org.apache.thrift.protocol.TList _list81 = new org.apache.thrift.protocol.TList(org.apache.thrift.protocol.TType.STRUCT, iprot.readI32());
-            struct.success = new ArrayList<Patient>(_list81.size);
-            for (int _i82 = 0; _i82 < _list81.size; ++_i82)
+            org.apache.thrift.protocol.TList _list101 = new org.apache.thrift.protocol.TList(org.apache.thrift.protocol.TType.STRUCT, iprot.readI32());
+            struct.success = new ArrayList<Patient>(_list101.size);
+            for (int _i102 = 0; _i102 < _list101.size; ++_i102)
             {
-              Patient _elem83; // required
-              _elem83 = new Patient();
-              _elem83.read(iprot);
-              struct.success.add(_elem83);
+              Patient _elem103; // required
+              _elem103 = new Patient();
+              _elem103.read(iprot);
+              struct.success.add(_elem103);
             }
           }
           struct.setSuccessIsSet(true);
@@ -15896,14 +16007,14 @@ public class Communications {
             case 0: // SUCCESS
               if (schemeField.type == org.apache.thrift.protocol.TType.LIST) {
                 {
-                  org.apache.thrift.protocol.TList _list84 = iprot.readListBegin();
-                  struct.success = new ArrayList<QueueCoupon>(_list84.size);
-                  for (int _i85 = 0; _i85 < _list84.size; ++_i85)
+                  org.apache.thrift.protocol.TList _list104 = iprot.readListBegin();
+                  struct.success = new ArrayList<QueueCoupon>(_list104.size);
+                  for (int _i105 = 0; _i105 < _list104.size; ++_i105)
                   {
-                    QueueCoupon _elem86; // required
-                    _elem86 = new QueueCoupon();
-                    _elem86.read(iprot);
-                    struct.success.add(_elem86);
+                    QueueCoupon _elem106; // required
+                    _elem106 = new QueueCoupon();
+                    _elem106.read(iprot);
+                    struct.success.add(_elem106);
                   }
                   iprot.readListEnd();
                 }
@@ -15931,9 +16042,9 @@ public class Communications {
           oprot.writeFieldBegin(SUCCESS_FIELD_DESC);
           {
             oprot.writeListBegin(new org.apache.thrift.protocol.TList(org.apache.thrift.protocol.TType.STRUCT, struct.success.size()));
-            for (QueueCoupon _iter87 : struct.success)
+            for (QueueCoupon _iter107 : struct.success)
             {
-              _iter87.write(oprot);
+              _iter107.write(oprot);
             }
             oprot.writeListEnd();
           }
@@ -15964,9 +16075,9 @@ public class Communications {
         if (struct.isSetSuccess()) {
           {
             oprot.writeI32(struct.success.size());
-            for (QueueCoupon _iter88 : struct.success)
+            for (QueueCoupon _iter108 : struct.success)
             {
-              _iter88.write(oprot);
+              _iter108.write(oprot);
             }
           }
         }
@@ -15978,14 +16089,14 @@ public class Communications {
         BitSet incoming = iprot.readBitSet(1);
         if (incoming.get(0)) {
           {
-            org.apache.thrift.protocol.TList _list89 = new org.apache.thrift.protocol.TList(org.apache.thrift.protocol.TType.STRUCT, iprot.readI32());
-            struct.success = new ArrayList<QueueCoupon>(_list89.size);
-            for (int _i90 = 0; _i90 < _list89.size; ++_i90)
+            org.apache.thrift.protocol.TList _list109 = new org.apache.thrift.protocol.TList(org.apache.thrift.protocol.TType.STRUCT, iprot.readI32());
+            struct.success = new ArrayList<QueueCoupon>(_list109.size);
+            for (int _i110 = 0; _i110 < _list109.size; ++_i110)
             {
-              QueueCoupon _elem91; // required
-              _elem91 = new QueueCoupon();
-              _elem91.read(iprot);
-              struct.success.add(_elem91);
+              QueueCoupon _elem111; // required
+              _elem111 = new QueueCoupon();
+              _elem111.read(iprot);
+              struct.success.add(_elem111);
             }
           }
           struct.setSuccessIsSet(true);
@@ -17177,7 +17288,7 @@ public class Communications {
   public static class getPersonSchedule_result implements org.apache.thrift.TBase<getPersonSchedule_result, getPersonSchedule_result._Fields>, java.io.Serializable, Cloneable   {
     private static final org.apache.thrift.protocol.TStruct STRUCT_DESC = new org.apache.thrift.protocol.TStruct("getPersonSchedule_result");
 
-    private static final org.apache.thrift.protocol.TField SUCCESS_FIELD_DESC = new org.apache.thrift.protocol.TField("success", org.apache.thrift.protocol.TType.MAP, (short)0);
+    private static final org.apache.thrift.protocol.TField SUCCESS_FIELD_DESC = new org.apache.thrift.protocol.TField("success", org.apache.thrift.protocol.TType.STRUCT, (short)0);
     private static final org.apache.thrift.protocol.TField NF_EXC_FIELD_DESC = new org.apache.thrift.protocol.TField("nfExc", org.apache.thrift.protocol.TType.STRUCT, (short)1);
 
     private static final Map<Class<? extends IScheme>, SchemeFactory> schemes = new HashMap<Class<? extends IScheme>, SchemeFactory>();
@@ -17186,7 +17297,7 @@ public class Communications {
       schemes.put(TupleScheme.class, new getPersonSchedule_resultTupleSchemeFactory());
     }
 
-    public Map<Long,Schedule> success; // required
+    public PersonSchedule success; // required
     public NotFoundException nfExc; // required
 
     /** The set of fields this struct contains, along with convenience methods for finding and manipulating them. */
@@ -17255,9 +17366,7 @@ public class Communications {
     static {
       Map<_Fields, org.apache.thrift.meta_data.FieldMetaData> tmpMap = new EnumMap<_Fields, org.apache.thrift.meta_data.FieldMetaData>(_Fields.class);
       tmpMap.put(_Fields.SUCCESS, new org.apache.thrift.meta_data.FieldMetaData("success", org.apache.thrift.TFieldRequirementType.DEFAULT, 
-          new org.apache.thrift.meta_data.MapMetaData(org.apache.thrift.protocol.TType.MAP, 
-              new org.apache.thrift.meta_data.FieldValueMetaData(org.apache.thrift.protocol.TType.I64              , "timestamp"), 
-              new org.apache.thrift.meta_data.StructMetaData(org.apache.thrift.protocol.TType.STRUCT, Schedule.class))));
+          new org.apache.thrift.meta_data.StructMetaData(org.apache.thrift.protocol.TType.STRUCT, PersonSchedule.class)));
       tmpMap.put(_Fields.NF_EXC, new org.apache.thrift.meta_data.FieldMetaData("nfExc", org.apache.thrift.TFieldRequirementType.DEFAULT, 
           new org.apache.thrift.meta_data.FieldValueMetaData(org.apache.thrift.protocol.TType.STRUCT)));
       metaDataMap = Collections.unmodifiableMap(tmpMap);
@@ -17268,7 +17377,7 @@ public class Communications {
     }
 
     public getPersonSchedule_result(
-      Map<Long,Schedule> success,
+      PersonSchedule success,
       NotFoundException nfExc)
     {
       this();
@@ -17281,19 +17390,7 @@ public class Communications {
      */
     public getPersonSchedule_result(getPersonSchedule_result other) {
       if (other.isSetSuccess()) {
-        Map<Long,Schedule> __this__success = new HashMap<Long,Schedule>();
-        for (Map.Entry<Long, Schedule> other_element : other.success.entrySet()) {
-
-          Long other_element_key = other_element.getKey();
-          Schedule other_element_value = other_element.getValue();
-
-          Long __this__success_copy_key = other_element_key;
-
-          Schedule __this__success_copy_value = new Schedule(other_element_value);
-
-          __this__success.put(__this__success_copy_key, __this__success_copy_value);
-        }
-        this.success = __this__success;
+        this.success = new PersonSchedule(other.success);
       }
       if (other.isSetNfExc()) {
         this.nfExc = new NotFoundException(other.nfExc);
@@ -17310,22 +17407,11 @@ public class Communications {
       this.nfExc = null;
     }
 
-    public int getSuccessSize() {
-      return (this.success == null) ? 0 : this.success.size();
-    }
-
-    public void putToSuccess(long key, Schedule val) {
-      if (this.success == null) {
-        this.success = new HashMap<Long,Schedule>();
-      }
-      this.success.put(key, val);
-    }
-
-    public Map<Long,Schedule> getSuccess() {
+    public PersonSchedule getSuccess() {
       return this.success;
     }
 
-    public getPersonSchedule_result setSuccess(Map<Long,Schedule> success) {
+    public getPersonSchedule_result setSuccess(PersonSchedule success) {
       this.success = success;
       return this;
     }
@@ -17375,7 +17461,7 @@ public class Communications {
         if (value == null) {
           unsetSuccess();
         } else {
-          setSuccess((Map<Long,Schedule>)value);
+          setSuccess((PersonSchedule)value);
         }
         break;
 
@@ -17526,6 +17612,9 @@ public class Communications {
     public void validate() throws org.apache.thrift.TException {
       // check for required fields
       // check for sub-struct validity
+      if (success != null) {
+        success.validate();
+      }
     }
 
     private void writeObject(java.io.ObjectOutputStream out) throws java.io.IOException {
@@ -17563,21 +17652,9 @@ public class Communications {
           }
           switch (schemeField.id) {
             case 0: // SUCCESS
-              if (schemeField.type == org.apache.thrift.protocol.TType.MAP) {
-                {
-                  org.apache.thrift.protocol.TMap _map92 = iprot.readMapBegin();
-                  struct.success = new HashMap<Long,Schedule>(2*_map92.size);
-                  for (int _i93 = 0; _i93 < _map92.size; ++_i93)
-                  {
-                    long _key94; // required
-                    Schedule _val95; // required
-                    _key94 = iprot.readI64();
-                    _val95 = new Schedule();
-                    _val95.read(iprot);
-                    struct.success.put(_key94, _val95);
-                  }
-                  iprot.readMapEnd();
-                }
+              if (schemeField.type == org.apache.thrift.protocol.TType.STRUCT) {
+                struct.success = new PersonSchedule();
+                struct.success.read(iprot);
                 struct.setSuccessIsSet(true);
               } else { 
                 org.apache.thrift.protocol.TProtocolUtil.skip(iprot, schemeField.type);
@@ -17609,15 +17686,7 @@ public class Communications {
         oprot.writeStructBegin(STRUCT_DESC);
         if (struct.success != null) {
           oprot.writeFieldBegin(SUCCESS_FIELD_DESC);
-          {
-            oprot.writeMapBegin(new org.apache.thrift.protocol.TMap(org.apache.thrift.protocol.TType.I64, org.apache.thrift.protocol.TType.STRUCT, struct.success.size()));
-            for (Map.Entry<Long, Schedule> _iter96 : struct.success.entrySet())
-            {
-              oprot.writeI64(_iter96.getKey());
-              _iter96.getValue().write(oprot);
-            }
-            oprot.writeMapEnd();
-          }
+          struct.success.write(oprot);
           oprot.writeFieldEnd();
         }
         if (struct.nfExc != null) {
@@ -17651,14 +17720,7 @@ public class Communications {
         }
         oprot.writeBitSet(optionals, 2);
         if (struct.isSetSuccess()) {
-          {
-            oprot.writeI32(struct.success.size());
-            for (Map.Entry<Long, Schedule> _iter97 : struct.success.entrySet())
-            {
-              oprot.writeI64(_iter97.getKey());
-              _iter97.getValue().write(oprot);
-            }
-          }
+          struct.success.write(oprot);
         }
         if (struct.isSetNfExc()) {
           struct.nfExc.write(oprot);
@@ -17670,19 +17732,8 @@ public class Communications {
         TTupleProtocol iprot = (TTupleProtocol) prot;
         BitSet incoming = iprot.readBitSet(2);
         if (incoming.get(0)) {
-          {
-            org.apache.thrift.protocol.TMap _map98 = new org.apache.thrift.protocol.TMap(org.apache.thrift.protocol.TType.I64, org.apache.thrift.protocol.TType.STRUCT, iprot.readI32());
-            struct.success = new HashMap<Long,Schedule>(2*_map98.size);
-            for (int _i99 = 0; _i99 < _map98.size; ++_i99)
-            {
-              long _key100; // required
-              Schedule _val101; // required
-              _key100 = iprot.readI64();
-              _val101 = new Schedule();
-              _val101.read(iprot);
-              struct.success.put(_key100, _val101);
-            }
-          }
+          struct.success = new PersonSchedule();
+          struct.success.read(iprot);
           struct.setSuccessIsSet(true);
         }
         if (incoming.get(1)) {
@@ -18004,13 +18055,13 @@ public class Communications {
             case 1: // PATIENT_IDS
               if (schemeField.type == org.apache.thrift.protocol.TType.LIST) {
                 {
-                  org.apache.thrift.protocol.TList _list102 = iprot.readListBegin();
-                  struct.patientIds = new ArrayList<Integer>(_list102.size);
-                  for (int _i103 = 0; _i103 < _list102.size; ++_i103)
+                  org.apache.thrift.protocol.TList _list112 = iprot.readListBegin();
+                  struct.patientIds = new ArrayList<Integer>(_list112.size);
+                  for (int _i113 = 0; _i113 < _list112.size; ++_i113)
                   {
-                    int _elem104; // required
-                    _elem104 = iprot.readI32();
-                    struct.patientIds.add(_elem104);
+                    int _elem114; // required
+                    _elem114 = iprot.readI32();
+                    struct.patientIds.add(_elem114);
                   }
                   iprot.readListEnd();
                 }
@@ -18038,9 +18089,9 @@ public class Communications {
           oprot.writeFieldBegin(PATIENT_IDS_FIELD_DESC);
           {
             oprot.writeListBegin(new org.apache.thrift.protocol.TList(org.apache.thrift.protocol.TType.I32, struct.patientIds.size()));
-            for (int _iter105 : struct.patientIds)
+            for (int _iter115 : struct.patientIds)
             {
-              oprot.writeI32(_iter105);
+              oprot.writeI32(_iter115);
             }
             oprot.writeListEnd();
           }
@@ -18071,9 +18122,9 @@ public class Communications {
         if (struct.isSetPatientIds()) {
           {
             oprot.writeI32(struct.patientIds.size());
-            for (int _iter106 : struct.patientIds)
+            for (int _iter116 : struct.patientIds)
             {
-              oprot.writeI32(_iter106);
+              oprot.writeI32(_iter116);
             }
           }
         }
@@ -18085,13 +18136,13 @@ public class Communications {
         BitSet incoming = iprot.readBitSet(1);
         if (incoming.get(0)) {
           {
-            org.apache.thrift.protocol.TList _list107 = new org.apache.thrift.protocol.TList(org.apache.thrift.protocol.TType.I32, iprot.readI32());
-            struct.patientIds = new ArrayList<Integer>(_list107.size);
-            for (int _i108 = 0; _i108 < _list107.size; ++_i108)
+            org.apache.thrift.protocol.TList _list117 = new org.apache.thrift.protocol.TList(org.apache.thrift.protocol.TType.I32, iprot.readI32());
+            struct.patientIds = new ArrayList<Integer>(_list117.size);
+            for (int _i118 = 0; _i118 < _list117.size; ++_i118)
             {
-              int _elem109; // required
-              _elem109 = iprot.readI32();
-              struct.patientIds.add(_elem109);
+              int _elem119; // required
+              _elem119 = iprot.readI32();
+              struct.patientIds.add(_elem119);
             }
           }
           struct.setPatientIdsIsSet(true);
@@ -18569,16 +18620,16 @@ public class Communications {
             case 0: // SUCCESS
               if (schemeField.type == org.apache.thrift.protocol.TType.MAP) {
                 {
-                  org.apache.thrift.protocol.TMap _map110 = iprot.readMapBegin();
-                  struct.success = new HashMap<Integer,Patient>(2*_map110.size);
-                  for (int _i111 = 0; _i111 < _map110.size; ++_i111)
+                  org.apache.thrift.protocol.TMap _map120 = iprot.readMapBegin();
+                  struct.success = new HashMap<Integer,Patient>(2*_map120.size);
+                  for (int _i121 = 0; _i121 < _map120.size; ++_i121)
                   {
-                    int _key112; // required
-                    Patient _val113; // required
-                    _key112 = iprot.readI32();
-                    _val113 = new Patient();
-                    _val113.read(iprot);
-                    struct.success.put(_key112, _val113);
+                    int _key122; // required
+                    Patient _val123; // required
+                    _key122 = iprot.readI32();
+                    _val123 = new Patient();
+                    _val123.read(iprot);
+                    struct.success.put(_key122, _val123);
                   }
                   iprot.readMapEnd();
                 }
@@ -18624,10 +18675,10 @@ public class Communications {
           oprot.writeFieldBegin(SUCCESS_FIELD_DESC);
           {
             oprot.writeMapBegin(new org.apache.thrift.protocol.TMap(org.apache.thrift.protocol.TType.I32, org.apache.thrift.protocol.TType.STRUCT, struct.success.size()));
-            for (Map.Entry<Integer, Patient> _iter114 : struct.success.entrySet())
+            for (Map.Entry<Integer, Patient> _iter124 : struct.success.entrySet())
             {
-              oprot.writeI32(_iter114.getKey());
-              _iter114.getValue().write(oprot);
+              oprot.writeI32(_iter124.getKey());
+              _iter124.getValue().write(oprot);
             }
             oprot.writeMapEnd();
           }
@@ -18674,10 +18725,10 @@ public class Communications {
         if (struct.isSetSuccess()) {
           {
             oprot.writeI32(struct.success.size());
-            for (Map.Entry<Integer, Patient> _iter115 : struct.success.entrySet())
+            for (Map.Entry<Integer, Patient> _iter125 : struct.success.entrySet())
             {
-              oprot.writeI32(_iter115.getKey());
-              _iter115.getValue().write(oprot);
+              oprot.writeI32(_iter125.getKey());
+              _iter125.getValue().write(oprot);
             }
           }
         }
@@ -18695,16 +18746,16 @@ public class Communications {
         BitSet incoming = iprot.readBitSet(3);
         if (incoming.get(0)) {
           {
-            org.apache.thrift.protocol.TMap _map116 = new org.apache.thrift.protocol.TMap(org.apache.thrift.protocol.TType.I32, org.apache.thrift.protocol.TType.STRUCT, iprot.readI32());
-            struct.success = new HashMap<Integer,Patient>(2*_map116.size);
-            for (int _i117 = 0; _i117 < _map116.size; ++_i117)
+            org.apache.thrift.protocol.TMap _map126 = new org.apache.thrift.protocol.TMap(org.apache.thrift.protocol.TType.I32, org.apache.thrift.protocol.TType.STRUCT, iprot.readI32());
+            struct.success = new HashMap<Integer,Patient>(2*_map126.size);
+            for (int _i127 = 0; _i127 < _map126.size; ++_i127)
             {
-              int _key118; // required
-              Patient _val119; // required
-              _key118 = iprot.readI32();
-              _val119 = new Patient();
-              _val119.read(iprot);
-              struct.success.put(_key118, _val119);
+              int _key128; // required
+              Patient _val129; // required
+              _key128 = iprot.readI32();
+              _val129 = new Patient();
+              _val129.read(iprot);
+              struct.success.put(_key128, _val129);
             }
           }
           struct.setSuccessIsSet(true);
@@ -19462,14 +19513,14 @@ public class Communications {
             case 0: // SUCCESS
               if (schemeField.type == org.apache.thrift.protocol.TType.LIST) {
                 {
-                  org.apache.thrift.protocol.TList _list120 = iprot.readListBegin();
-                  struct.success = new ArrayList<Contact>(_list120.size);
-                  for (int _i121 = 0; _i121 < _list120.size; ++_i121)
+                  org.apache.thrift.protocol.TList _list130 = iprot.readListBegin();
+                  struct.success = new ArrayList<Contact>(_list130.size);
+                  for (int _i131 = 0; _i131 < _list130.size; ++_i131)
                   {
-                    Contact _elem122; // required
-                    _elem122 = new Contact();
-                    _elem122.read(iprot);
-                    struct.success.add(_elem122);
+                    Contact _elem132; // required
+                    _elem132 = new Contact();
+                    _elem132.read(iprot);
+                    struct.success.add(_elem132);
                   }
                   iprot.readListEnd();
                 }
@@ -19506,9 +19557,9 @@ public class Communications {
           oprot.writeFieldBegin(SUCCESS_FIELD_DESC);
           {
             oprot.writeListBegin(new org.apache.thrift.protocol.TList(org.apache.thrift.protocol.TType.STRUCT, struct.success.size()));
-            for (Contact _iter123 : struct.success)
+            for (Contact _iter133 : struct.success)
             {
-              _iter123.write(oprot);
+              _iter133.write(oprot);
             }
             oprot.writeListEnd();
           }
@@ -19547,9 +19598,9 @@ public class Communications {
         if (struct.isSetSuccess()) {
           {
             oprot.writeI32(struct.success.size());
-            for (Contact _iter124 : struct.success)
+            for (Contact _iter134 : struct.success)
             {
-              _iter124.write(oprot);
+              _iter134.write(oprot);
             }
           }
         }
@@ -19564,14 +19615,14 @@ public class Communications {
         BitSet incoming = iprot.readBitSet(2);
         if (incoming.get(0)) {
           {
-            org.apache.thrift.protocol.TList _list125 = new org.apache.thrift.protocol.TList(org.apache.thrift.protocol.TType.STRUCT, iprot.readI32());
-            struct.success = new ArrayList<Contact>(_list125.size);
-            for (int _i126 = 0; _i126 < _list125.size; ++_i126)
+            org.apache.thrift.protocol.TList _list135 = new org.apache.thrift.protocol.TList(org.apache.thrift.protocol.TType.STRUCT, iprot.readI32());
+            struct.success = new ArrayList<Contact>(_list135.size);
+            for (int _i136 = 0; _i136 < _list135.size; ++_i136)
             {
-              Contact _elem127; // required
-              _elem127 = new Contact();
-              _elem127.read(iprot);
-              struct.success.add(_elem127);
+              Contact _elem137; // required
+              _elem137 = new Contact();
+              _elem137.read(iprot);
+              struct.success.add(_elem137);
             }
           }
           struct.setSuccessIsSet(true);
@@ -20324,14 +20375,14 @@ public class Communications {
             case 0: // SUCCESS
               if (schemeField.type == org.apache.thrift.protocol.TType.LIST) {
                 {
-                  org.apache.thrift.protocol.TList _list128 = iprot.readListBegin();
-                  struct.success = new ArrayList<OrgStructuresProperties>(_list128.size);
-                  for (int _i129 = 0; _i129 < _list128.size; ++_i129)
+                  org.apache.thrift.protocol.TList _list138 = iprot.readListBegin();
+                  struct.success = new ArrayList<OrgStructuresProperties>(_list138.size);
+                  for (int _i139 = 0; _i139 < _list138.size; ++_i139)
                   {
-                    OrgStructuresProperties _elem130; // required
-                    _elem130 = new OrgStructuresProperties();
-                    _elem130.read(iprot);
-                    struct.success.add(_elem130);
+                    OrgStructuresProperties _elem140; // required
+                    _elem140 = new OrgStructuresProperties();
+                    _elem140.read(iprot);
+                    struct.success.add(_elem140);
                   }
                   iprot.readListEnd();
                 }
@@ -20368,9 +20419,9 @@ public class Communications {
           oprot.writeFieldBegin(SUCCESS_FIELD_DESC);
           {
             oprot.writeListBegin(new org.apache.thrift.protocol.TList(org.apache.thrift.protocol.TType.STRUCT, struct.success.size()));
-            for (OrgStructuresProperties _iter131 : struct.success)
+            for (OrgStructuresProperties _iter141 : struct.success)
             {
-              _iter131.write(oprot);
+              _iter141.write(oprot);
             }
             oprot.writeListEnd();
           }
@@ -20409,9 +20460,9 @@ public class Communications {
         if (struct.isSetSuccess()) {
           {
             oprot.writeI32(struct.success.size());
-            for (OrgStructuresProperties _iter132 : struct.success)
+            for (OrgStructuresProperties _iter142 : struct.success)
             {
-              _iter132.write(oprot);
+              _iter142.write(oprot);
             }
           }
         }
@@ -20426,14 +20477,14 @@ public class Communications {
         BitSet incoming = iprot.readBitSet(2);
         if (incoming.get(0)) {
           {
-            org.apache.thrift.protocol.TList _list133 = new org.apache.thrift.protocol.TList(org.apache.thrift.protocol.TType.STRUCT, iprot.readI32());
-            struct.success = new ArrayList<OrgStructuresProperties>(_list133.size);
-            for (int _i134 = 0; _i134 < _list133.size; ++_i134)
+            org.apache.thrift.protocol.TList _list143 = new org.apache.thrift.protocol.TList(org.apache.thrift.protocol.TType.STRUCT, iprot.readI32());
+            struct.success = new ArrayList<OrgStructuresProperties>(_list143.size);
+            for (int _i144 = 0; _i144 < _list143.size; ++_i144)
             {
-              OrgStructuresProperties _elem135; // required
-              _elem135 = new OrgStructuresProperties();
-              _elem135.read(iprot);
-              struct.success.add(_elem135);
+              OrgStructuresProperties _elem145; // required
+              _elem145 = new OrgStructuresProperties();
+              _elem145.read(iprot);
+              struct.success.add(_elem145);
             }
           }
           struct.setSuccessIsSet(true);
@@ -20813,6 +20864,7 @@ public class Communications {
     private static final org.apache.thrift.protocol.TField SUCCESS_FIELD_DESC = new org.apache.thrift.protocol.TField("success", org.apache.thrift.protocol.TType.STRUCT, (short)0);
     private static final org.apache.thrift.protocol.TField EXC_FIELD_DESC = new org.apache.thrift.protocol.TField("exc", org.apache.thrift.protocol.TType.STRUCT, (short)1);
     private static final org.apache.thrift.protocol.TField EXCSQL_FIELD_DESC = new org.apache.thrift.protocol.TField("excsql", org.apache.thrift.protocol.TType.STRUCT, (short)2);
+    private static final org.apache.thrift.protocol.TField RA_EXC_FIELD_DESC = new org.apache.thrift.protocol.TField("raExc", org.apache.thrift.protocol.TType.STRUCT, (short)3);
 
     private static final Map<Class<? extends IScheme>, SchemeFactory> schemes = new HashMap<Class<? extends IScheme>, SchemeFactory>();
     static {
@@ -20823,12 +20875,14 @@ public class Communications {
     public EnqueuePatientStatus success; // required
     public NotFoundException exc; // required
     public SQLException excsql; // required
+    public ReasonOfAbsenceException raExc; // required
 
     /** The set of fields this struct contains, along with convenience methods for finding and manipulating them. */
     public enum _Fields implements org.apache.thrift.TFieldIdEnum {
       SUCCESS((short)0, "success"),
       EXC((short)1, "exc"),
-      EXCSQL((short)2, "excsql");
+      EXCSQL((short)2, "excsql"),
+      RA_EXC((short)3, "raExc");
 
       private static final Map<String, _Fields> byName = new HashMap<String, _Fields>();
 
@@ -20849,6 +20903,8 @@ public class Communications {
             return EXC;
           case 2: // EXCSQL
             return EXCSQL;
+          case 3: // RA_EXC
+            return RA_EXC;
           default:
             return null;
         }
@@ -20898,6 +20954,8 @@ public class Communications {
           new org.apache.thrift.meta_data.FieldValueMetaData(org.apache.thrift.protocol.TType.STRUCT)));
       tmpMap.put(_Fields.EXCSQL, new org.apache.thrift.meta_data.FieldMetaData("excsql", org.apache.thrift.TFieldRequirementType.DEFAULT, 
           new org.apache.thrift.meta_data.FieldValueMetaData(org.apache.thrift.protocol.TType.STRUCT)));
+      tmpMap.put(_Fields.RA_EXC, new org.apache.thrift.meta_data.FieldMetaData("raExc", org.apache.thrift.TFieldRequirementType.DEFAULT, 
+          new org.apache.thrift.meta_data.FieldValueMetaData(org.apache.thrift.protocol.TType.STRUCT)));
       metaDataMap = Collections.unmodifiableMap(tmpMap);
       org.apache.thrift.meta_data.FieldMetaData.addStructMetaDataMap(enqueuePatient_result.class, metaDataMap);
     }
@@ -20908,12 +20966,14 @@ public class Communications {
     public enqueuePatient_result(
       EnqueuePatientStatus success,
       NotFoundException exc,
-      SQLException excsql)
+      SQLException excsql,
+      ReasonOfAbsenceException raExc)
     {
       this();
       this.success = success;
       this.exc = exc;
       this.excsql = excsql;
+      this.raExc = raExc;
     }
 
     /**
@@ -20929,6 +20989,9 @@ public class Communications {
       if (other.isSetExcsql()) {
         this.excsql = new SQLException(other.excsql);
       }
+      if (other.isSetRaExc()) {
+        this.raExc = new ReasonOfAbsenceException(other.raExc);
+      }
     }
 
     public enqueuePatient_result deepCopy() {
@@ -20940,6 +21003,7 @@ public class Communications {
       this.success = null;
       this.exc = null;
       this.excsql = null;
+      this.raExc = null;
     }
 
     public EnqueuePatientStatus getSuccess() {
@@ -21014,6 +21078,30 @@ public class Communications {
       }
     }
 
+    public ReasonOfAbsenceException getRaExc() {
+      return this.raExc;
+    }
+
+    public enqueuePatient_result setRaExc(ReasonOfAbsenceException raExc) {
+      this.raExc = raExc;
+      return this;
+    }
+
+    public void unsetRaExc() {
+      this.raExc = null;
+    }
+
+    /** Returns true if field raExc is set (has been assigned a value) and false otherwise */
+    public boolean isSetRaExc() {
+      return this.raExc != null;
+    }
+
+    public void setRaExcIsSet(boolean value) {
+      if (!value) {
+        this.raExc = null;
+      }
+    }
+
     public void setFieldValue(_Fields field, Object value) {
       switch (field) {
       case SUCCESS:
@@ -21040,6 +21128,14 @@ public class Communications {
         }
         break;
 
+      case RA_EXC:
+        if (value == null) {
+          unsetRaExc();
+        } else {
+          setRaExc((ReasonOfAbsenceException)value);
+        }
+        break;
+
       }
     }
 
@@ -21053,6 +21149,9 @@ public class Communications {
 
       case EXCSQL:
         return getExcsql();
+
+      case RA_EXC:
+        return getRaExc();
 
       }
       throw new IllegalStateException();
@@ -21071,6 +21170,8 @@ public class Communications {
         return isSetExc();
       case EXCSQL:
         return isSetExcsql();
+      case RA_EXC:
+        return isSetRaExc();
       }
       throw new IllegalStateException();
     }
@@ -21112,6 +21213,15 @@ public class Communications {
         if (!(this_present_excsql && that_present_excsql))
           return false;
         if (!this.excsql.equals(that.excsql))
+          return false;
+      }
+
+      boolean this_present_raExc = true && this.isSetRaExc();
+      boolean that_present_raExc = true && that.isSetRaExc();
+      if (this_present_raExc || that_present_raExc) {
+        if (!(this_present_raExc && that_present_raExc))
+          return false;
+        if (!this.raExc.equals(that.raExc))
           return false;
       }
 
@@ -21161,6 +21271,16 @@ public class Communications {
           return lastComparison;
         }
       }
+      lastComparison = Boolean.valueOf(isSetRaExc()).compareTo(typedOther.isSetRaExc());
+      if (lastComparison != 0) {
+        return lastComparison;
+      }
+      if (isSetRaExc()) {
+        lastComparison = org.apache.thrift.TBaseHelper.compareTo(this.raExc, typedOther.raExc);
+        if (lastComparison != 0) {
+          return lastComparison;
+        }
+      }
       return 0;
     }
 
@@ -21202,6 +21322,14 @@ public class Communications {
         sb.append("null");
       } else {
         sb.append(this.excsql);
+      }
+      first = false;
+      if (!first) sb.append(", ");
+      sb.append("raExc:");
+      if (this.raExc == null) {
+        sb.append("null");
+      } else {
+        sb.append(this.raExc);
       }
       first = false;
       sb.append(")");
@@ -21277,6 +21405,15 @@ public class Communications {
                 org.apache.thrift.protocol.TProtocolUtil.skip(iprot, schemeField.type);
               }
               break;
+            case 3: // RA_EXC
+              if (schemeField.type == org.apache.thrift.protocol.TType.STRUCT) {
+                struct.raExc = new ReasonOfAbsenceException();
+                struct.raExc.read(iprot);
+                struct.setRaExcIsSet(true);
+              } else { 
+                org.apache.thrift.protocol.TProtocolUtil.skip(iprot, schemeField.type);
+              }
+              break;
             default:
               org.apache.thrift.protocol.TProtocolUtil.skip(iprot, schemeField.type);
           }
@@ -21307,6 +21444,11 @@ public class Communications {
           struct.excsql.write(oprot);
           oprot.writeFieldEnd();
         }
+        if (struct.raExc != null) {
+          oprot.writeFieldBegin(RA_EXC_FIELD_DESC);
+          struct.raExc.write(oprot);
+          oprot.writeFieldEnd();
+        }
         oprot.writeFieldStop();
         oprot.writeStructEnd();
       }
@@ -21334,7 +21476,10 @@ public class Communications {
         if (struct.isSetExcsql()) {
           optionals.set(2);
         }
-        oprot.writeBitSet(optionals, 3);
+        if (struct.isSetRaExc()) {
+          optionals.set(3);
+        }
+        oprot.writeBitSet(optionals, 4);
         if (struct.isSetSuccess()) {
           struct.success.write(oprot);
         }
@@ -21344,12 +21489,15 @@ public class Communications {
         if (struct.isSetExcsql()) {
           struct.excsql.write(oprot);
         }
+        if (struct.isSetRaExc()) {
+          struct.raExc.write(oprot);
+        }
       }
 
       @Override
       public void read(org.apache.thrift.protocol.TProtocol prot, enqueuePatient_result struct) throws org.apache.thrift.TException {
         TTupleProtocol iprot = (TTupleProtocol) prot;
-        BitSet incoming = iprot.readBitSet(3);
+        BitSet incoming = iprot.readBitSet(4);
         if (incoming.get(0)) {
           struct.success = new EnqueuePatientStatus();
           struct.success.read(iprot);
@@ -21364,6 +21512,11 @@ public class Communications {
           struct.excsql = new SQLException();
           struct.excsql.read(iprot);
           struct.setExcsqlIsSet(true);
+        }
+        if (incoming.get(3)) {
+          struct.raExc = new ReasonOfAbsenceException();
+          struct.raExc.read(iprot);
+          struct.setRaExcIsSet(true);
         }
       }
     }
@@ -22185,14 +22338,14 @@ public class Communications {
             case 0: // SUCCESS
               if (schemeField.type == org.apache.thrift.protocol.TType.LIST) {
                 {
-                  org.apache.thrift.protocol.TList _list136 = iprot.readListBegin();
-                  struct.success = new ArrayList<Queue>(_list136.size);
-                  for (int _i137 = 0; _i137 < _list136.size; ++_i137)
+                  org.apache.thrift.protocol.TList _list146 = iprot.readListBegin();
+                  struct.success = new ArrayList<Queue>(_list146.size);
+                  for (int _i147 = 0; _i147 < _list146.size; ++_i147)
                   {
-                    Queue _elem138; // required
-                    _elem138 = new Queue();
-                    _elem138.read(iprot);
-                    struct.success.add(_elem138);
+                    Queue _elem148; // required
+                    _elem148 = new Queue();
+                    _elem148.read(iprot);
+                    struct.success.add(_elem148);
                   }
                   iprot.readListEnd();
                 }
@@ -22238,9 +22391,9 @@ public class Communications {
           oprot.writeFieldBegin(SUCCESS_FIELD_DESC);
           {
             oprot.writeListBegin(new org.apache.thrift.protocol.TList(org.apache.thrift.protocol.TType.STRUCT, struct.success.size()));
-            for (Queue _iter139 : struct.success)
+            for (Queue _iter149 : struct.success)
             {
-              _iter139.write(oprot);
+              _iter149.write(oprot);
             }
             oprot.writeListEnd();
           }
@@ -22287,9 +22440,9 @@ public class Communications {
         if (struct.isSetSuccess()) {
           {
             oprot.writeI32(struct.success.size());
-            for (Queue _iter140 : struct.success)
+            for (Queue _iter150 : struct.success)
             {
-              _iter140.write(oprot);
+              _iter150.write(oprot);
             }
           }
         }
@@ -22307,14 +22460,14 @@ public class Communications {
         BitSet incoming = iprot.readBitSet(3);
         if (incoming.get(0)) {
           {
-            org.apache.thrift.protocol.TList _list141 = new org.apache.thrift.protocol.TList(org.apache.thrift.protocol.TType.STRUCT, iprot.readI32());
-            struct.success = new ArrayList<Queue>(_list141.size);
-            for (int _i142 = 0; _i142 < _list141.size; ++_i142)
+            org.apache.thrift.protocol.TList _list151 = new org.apache.thrift.protocol.TList(org.apache.thrift.protocol.TType.STRUCT, iprot.readI32());
+            struct.success = new ArrayList<Queue>(_list151.size);
+            for (int _i152 = 0; _i152 < _list151.size; ++_i152)
             {
-              Queue _elem143; // required
-              _elem143 = new Queue();
-              _elem143.read(iprot);
-              struct.success.add(_elem143);
+              Queue _elem153; // required
+              _elem153 = new Queue();
+              _elem153.read(iprot);
+              struct.success.add(_elem153);
             }
           }
           struct.setSuccessIsSet(true);
@@ -23701,7 +23854,7 @@ public class Communications {
     private static final org.apache.thrift.protocol.TStruct STRUCT_DESC = new org.apache.thrift.protocol.TStruct("getSpecialities_result");
 
     private static final org.apache.thrift.protocol.TField SUCCESS_FIELD_DESC = new org.apache.thrift.protocol.TField("success", org.apache.thrift.protocol.TType.LIST, (short)0);
-    private static final org.apache.thrift.protocol.TField EXC_FIELD_DESC = new org.apache.thrift.protocol.TField("exc", org.apache.thrift.protocol.TType.STRUCT, (short)1);
+    private static final org.apache.thrift.protocol.TField NF_EXC_FIELD_DESC = new org.apache.thrift.protocol.TField("nfExc", org.apache.thrift.protocol.TType.STRUCT, (short)1);
 
     private static final Map<Class<? extends IScheme>, SchemeFactory> schemes = new HashMap<Class<? extends IScheme>, SchemeFactory>();
     static {
@@ -23710,12 +23863,12 @@ public class Communications {
     }
 
     public List<Speciality> success; // required
-    public SQLException exc; // required
+    public NotFoundException nfExc; // required
 
     /** The set of fields this struct contains, along with convenience methods for finding and manipulating them. */
     public enum _Fields implements org.apache.thrift.TFieldIdEnum {
       SUCCESS((short)0, "success"),
-      EXC((short)1, "exc");
+      NF_EXC((short)1, "nfExc");
 
       private static final Map<String, _Fields> byName = new HashMap<String, _Fields>();
 
@@ -23732,8 +23885,8 @@ public class Communications {
         switch(fieldId) {
           case 0: // SUCCESS
             return SUCCESS;
-          case 1: // EXC
-            return EXC;
+          case 1: // NF_EXC
+            return NF_EXC;
           default:
             return null;
         }
@@ -23780,7 +23933,7 @@ public class Communications {
       tmpMap.put(_Fields.SUCCESS, new org.apache.thrift.meta_data.FieldMetaData("success", org.apache.thrift.TFieldRequirementType.DEFAULT, 
           new org.apache.thrift.meta_data.ListMetaData(org.apache.thrift.protocol.TType.LIST, 
               new org.apache.thrift.meta_data.StructMetaData(org.apache.thrift.protocol.TType.STRUCT, Speciality.class))));
-      tmpMap.put(_Fields.EXC, new org.apache.thrift.meta_data.FieldMetaData("exc", org.apache.thrift.TFieldRequirementType.DEFAULT, 
+      tmpMap.put(_Fields.NF_EXC, new org.apache.thrift.meta_data.FieldMetaData("nfExc", org.apache.thrift.TFieldRequirementType.DEFAULT, 
           new org.apache.thrift.meta_data.FieldValueMetaData(org.apache.thrift.protocol.TType.STRUCT)));
       metaDataMap = Collections.unmodifiableMap(tmpMap);
       org.apache.thrift.meta_data.FieldMetaData.addStructMetaDataMap(getSpecialities_result.class, metaDataMap);
@@ -23791,11 +23944,11 @@ public class Communications {
 
     public getSpecialities_result(
       List<Speciality> success,
-      SQLException exc)
+      NotFoundException nfExc)
     {
       this();
       this.success = success;
-      this.exc = exc;
+      this.nfExc = nfExc;
     }
 
     /**
@@ -23809,8 +23962,8 @@ public class Communications {
         }
         this.success = __this__success;
       }
-      if (other.isSetExc()) {
-        this.exc = new SQLException(other.exc);
+      if (other.isSetNfExc()) {
+        this.nfExc = new NotFoundException(other.nfExc);
       }
     }
 
@@ -23821,7 +23974,7 @@ public class Communications {
     @Override
     public void clear() {
       this.success = null;
-      this.exc = null;
+      this.nfExc = null;
     }
 
     public int getSuccessSize() {
@@ -23863,27 +24016,27 @@ public class Communications {
       }
     }
 
-    public SQLException getExc() {
-      return this.exc;
+    public NotFoundException getNfExc() {
+      return this.nfExc;
     }
 
-    public getSpecialities_result setExc(SQLException exc) {
-      this.exc = exc;
+    public getSpecialities_result setNfExc(NotFoundException nfExc) {
+      this.nfExc = nfExc;
       return this;
     }
 
-    public void unsetExc() {
-      this.exc = null;
+    public void unsetNfExc() {
+      this.nfExc = null;
     }
 
-    /** Returns true if field exc is set (has been assigned a value) and false otherwise */
-    public boolean isSetExc() {
-      return this.exc != null;
+    /** Returns true if field nfExc is set (has been assigned a value) and false otherwise */
+    public boolean isSetNfExc() {
+      return this.nfExc != null;
     }
 
-    public void setExcIsSet(boolean value) {
+    public void setNfExcIsSet(boolean value) {
       if (!value) {
-        this.exc = null;
+        this.nfExc = null;
       }
     }
 
@@ -23897,11 +24050,11 @@ public class Communications {
         }
         break;
 
-      case EXC:
+      case NF_EXC:
         if (value == null) {
-          unsetExc();
+          unsetNfExc();
         } else {
-          setExc((SQLException)value);
+          setNfExc((NotFoundException)value);
         }
         break;
 
@@ -23913,8 +24066,8 @@ public class Communications {
       case SUCCESS:
         return getSuccess();
 
-      case EXC:
-        return getExc();
+      case NF_EXC:
+        return getNfExc();
 
       }
       throw new IllegalStateException();
@@ -23929,8 +24082,8 @@ public class Communications {
       switch (field) {
       case SUCCESS:
         return isSetSuccess();
-      case EXC:
-        return isSetExc();
+      case NF_EXC:
+        return isSetNfExc();
       }
       throw new IllegalStateException();
     }
@@ -23957,12 +24110,12 @@ public class Communications {
           return false;
       }
 
-      boolean this_present_exc = true && this.isSetExc();
-      boolean that_present_exc = true && that.isSetExc();
-      if (this_present_exc || that_present_exc) {
-        if (!(this_present_exc && that_present_exc))
+      boolean this_present_nfExc = true && this.isSetNfExc();
+      boolean that_present_nfExc = true && that.isSetNfExc();
+      if (this_present_nfExc || that_present_nfExc) {
+        if (!(this_present_nfExc && that_present_nfExc))
           return false;
-        if (!this.exc.equals(that.exc))
+        if (!this.nfExc.equals(that.nfExc))
           return false;
       }
 
@@ -23992,12 +24145,12 @@ public class Communications {
           return lastComparison;
         }
       }
-      lastComparison = Boolean.valueOf(isSetExc()).compareTo(typedOther.isSetExc());
+      lastComparison = Boolean.valueOf(isSetNfExc()).compareTo(typedOther.isSetNfExc());
       if (lastComparison != 0) {
         return lastComparison;
       }
-      if (isSetExc()) {
-        lastComparison = org.apache.thrift.TBaseHelper.compareTo(this.exc, typedOther.exc);
+      if (isSetNfExc()) {
+        lastComparison = org.apache.thrift.TBaseHelper.compareTo(this.nfExc, typedOther.nfExc);
         if (lastComparison != 0) {
           return lastComparison;
         }
@@ -24030,11 +24183,11 @@ public class Communications {
       }
       first = false;
       if (!first) sb.append(", ");
-      sb.append("exc:");
-      if (this.exc == null) {
+      sb.append("nfExc:");
+      if (this.nfExc == null) {
         sb.append("null");
       } else {
-        sb.append(this.exc);
+        sb.append(this.nfExc);
       }
       first = false;
       sb.append(")");
@@ -24083,14 +24236,14 @@ public class Communications {
             case 0: // SUCCESS
               if (schemeField.type == org.apache.thrift.protocol.TType.LIST) {
                 {
-                  org.apache.thrift.protocol.TList _list144 = iprot.readListBegin();
-                  struct.success = new ArrayList<Speciality>(_list144.size);
-                  for (int _i145 = 0; _i145 < _list144.size; ++_i145)
+                  org.apache.thrift.protocol.TList _list154 = iprot.readListBegin();
+                  struct.success = new ArrayList<Speciality>(_list154.size);
+                  for (int _i155 = 0; _i155 < _list154.size; ++_i155)
                   {
-                    Speciality _elem146; // required
-                    _elem146 = new Speciality();
-                    _elem146.read(iprot);
-                    struct.success.add(_elem146);
+                    Speciality _elem156; // required
+                    _elem156 = new Speciality();
+                    _elem156.read(iprot);
+                    struct.success.add(_elem156);
                   }
                   iprot.readListEnd();
                 }
@@ -24099,11 +24252,11 @@ public class Communications {
                 org.apache.thrift.protocol.TProtocolUtil.skip(iprot, schemeField.type);
               }
               break;
-            case 1: // EXC
+            case 1: // NF_EXC
               if (schemeField.type == org.apache.thrift.protocol.TType.STRUCT) {
-                struct.exc = new SQLException();
-                struct.exc.read(iprot);
-                struct.setExcIsSet(true);
+                struct.nfExc = new NotFoundException();
+                struct.nfExc.read(iprot);
+                struct.setNfExcIsSet(true);
               } else { 
                 org.apache.thrift.protocol.TProtocolUtil.skip(iprot, schemeField.type);
               }
@@ -24127,17 +24280,17 @@ public class Communications {
           oprot.writeFieldBegin(SUCCESS_FIELD_DESC);
           {
             oprot.writeListBegin(new org.apache.thrift.protocol.TList(org.apache.thrift.protocol.TType.STRUCT, struct.success.size()));
-            for (Speciality _iter147 : struct.success)
+            for (Speciality _iter157 : struct.success)
             {
-              _iter147.write(oprot);
+              _iter157.write(oprot);
             }
             oprot.writeListEnd();
           }
           oprot.writeFieldEnd();
         }
-        if (struct.exc != null) {
-          oprot.writeFieldBegin(EXC_FIELD_DESC);
-          struct.exc.write(oprot);
+        if (struct.nfExc != null) {
+          oprot.writeFieldBegin(NF_EXC_FIELD_DESC);
+          struct.nfExc.write(oprot);
           oprot.writeFieldEnd();
         }
         oprot.writeFieldStop();
@@ -24161,21 +24314,21 @@ public class Communications {
         if (struct.isSetSuccess()) {
           optionals.set(0);
         }
-        if (struct.isSetExc()) {
+        if (struct.isSetNfExc()) {
           optionals.set(1);
         }
         oprot.writeBitSet(optionals, 2);
         if (struct.isSetSuccess()) {
           {
             oprot.writeI32(struct.success.size());
-            for (Speciality _iter148 : struct.success)
+            for (Speciality _iter158 : struct.success)
             {
-              _iter148.write(oprot);
+              _iter158.write(oprot);
             }
           }
         }
-        if (struct.isSetExc()) {
-          struct.exc.write(oprot);
+        if (struct.isSetNfExc()) {
+          struct.nfExc.write(oprot);
         }
       }
 
@@ -24185,22 +24338,22 @@ public class Communications {
         BitSet incoming = iprot.readBitSet(2);
         if (incoming.get(0)) {
           {
-            org.apache.thrift.protocol.TList _list149 = new org.apache.thrift.protocol.TList(org.apache.thrift.protocol.TType.STRUCT, iprot.readI32());
-            struct.success = new ArrayList<Speciality>(_list149.size);
-            for (int _i150 = 0; _i150 < _list149.size; ++_i150)
+            org.apache.thrift.protocol.TList _list159 = new org.apache.thrift.protocol.TList(org.apache.thrift.protocol.TType.STRUCT, iprot.readI32());
+            struct.success = new ArrayList<Speciality>(_list159.size);
+            for (int _i160 = 0; _i160 < _list159.size; ++_i160)
             {
-              Speciality _elem151; // required
-              _elem151 = new Speciality();
-              _elem151.read(iprot);
-              struct.success.add(_elem151);
+              Speciality _elem161; // required
+              _elem161 = new Speciality();
+              _elem161.read(iprot);
+              struct.success.add(_elem161);
             }
           }
           struct.setSuccessIsSet(true);
         }
         if (incoming.get(1)) {
-          struct.exc = new SQLException();
-          struct.exc.read(iprot);
-          struct.setExcIsSet(true);
+          struct.nfExc = new NotFoundException();
+          struct.nfExc.read(iprot);
+          struct.setNfExcIsSet(true);
         }
       }
     }

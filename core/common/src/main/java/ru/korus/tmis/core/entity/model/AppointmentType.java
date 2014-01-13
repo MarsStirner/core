@@ -1,4 +1,4 @@
-package ru.korus.tmis.schedule;
+package ru.korus.tmis.core.entity.model;
 
 /**
  * Author:      Sergey A. Zagrebelny <br>
@@ -17,7 +17,7 @@ public enum AppointmentType {
 
     private final String name;
 
-    AppointmentType(String name) {
+    private AppointmentType(String name) {
         this.name = name;
     }
 
@@ -25,4 +25,12 @@ public enum AppointmentType {
         return name;
     }
 
+    public static AppointmentType getByValue(String appointmentType) {
+        for(AppointmentType type : values()){
+            if(type.getName().equalsIgnoreCase(appointmentType)){
+                return type;
+            }
+        }
+        return NONE;
+    }
 }

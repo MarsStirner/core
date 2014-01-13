@@ -73,7 +73,9 @@ class DbEventBean
 
   //@TransactionAttribute(TransactionAttributeType.REQUIRES_NEW)
   def getEventById(id: Int) = {
-    em.find(classOf[Event], id)
+    val e = em.find(classOf[Event], id)
+    if(e != null) em.detach(e)
+    e
   }
 
   def getActionTypeFilter(eventId: Int) = {

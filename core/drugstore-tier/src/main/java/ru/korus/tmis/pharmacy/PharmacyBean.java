@@ -85,7 +85,10 @@ public class PharmacyBean implements PharmacyBeanLocal {
 
     private DateTime lastDateUpdate = null;
 
-    private List<Pharmacy> nonCompletedItems;
+    /**
+     * Назначен/Не исполнен (ещё или уже)
+     */
+    private static final int PS_NEW = 0;
 
     /**
      * Полинг базы данных для поиска событий по движениям пациентов и назначениям ЛС
@@ -356,7 +359,7 @@ public class PharmacyBean implements PharmacyBeanLocal {
      */
     private OrgStructure getOrgStructureOutWithDel(final Action action) throws SkipMessageProcessException {
         try {
-            if (action.getParentActionId() != 0) {
+            if (action.getParentActionId() != null && action.getParentActionId() != 0) {
                 final Action parentAction = dbAction.getActionByIdWithIgnoreDeleted(action.getParentActionId());
                 if (parentAction != null) {
                     final Set<String> codes = new HashSet<String>();
@@ -407,7 +410,7 @@ public class PharmacyBean implements PharmacyBeanLocal {
      */
     private OrgStructure getOrgStructureInWithDel(final Action action) throws SkipMessageProcessException {
         try {
-            if (action.getParentActionId() != 0) {
+            if (action.getParentActionId() != null && action.getParentActionId() != 0) {
                 final Action parentAction = dbAction.getActionByIdWithIgnoreDeleted(action.getParentActionId());
                 if (parentAction != null) {
                     final Set<String> codes = new HashSet<String>();

@@ -20,13 +20,14 @@ public class Ticket {
     private Patient patient;
     private short timeCellIndex;
     private short queueCellIndex;
+    private static final SimpleDateFormat timeFormat = new SimpleDateFormat("HH:mm:ss");
 
     public Ticket(
             final Date begTime,
             final Date endTime,
             final boolean free,
             final boolean available,
-            final Patient patient){
+            final Patient patient) {
         this.begTime = begTime;
         this.endTime = endTime;
         this.free = free;
@@ -34,7 +35,7 @@ public class Ticket {
         this.patient = patient;
     }
 
-    public Ticket(){
+    public Ticket() {
 
     }
 
@@ -95,7 +96,6 @@ public class Ticket {
     }
 
     public String getInfo() {
-        final SimpleDateFormat timeFormat = new SimpleDateFormat("HH:mm:ss");
         return new StringBuilder("Ticket: [")
                 .append(timeFormat.format(begTime)).append("]-[")
                 .append(timeFormat.format(endTime)).append("] ")

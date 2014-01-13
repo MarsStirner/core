@@ -94,7 +94,7 @@ public class PatientQueueBean implements PatientQueueBeanLocal {
                 .setParameter("queueAction", queueAction)
                         //.setParameter("queueActionPropertyType", queueActionPropertyType)
                 .getResultList();
-        if(queueActionList.isEmpty()) {
+        if (queueActionList.isEmpty()) {
             return null;
         }
         return queueActionList.get(0);
@@ -118,8 +118,10 @@ public class PatientQueueBean implements PatientQueueBeanLocal {
                 break;
             }
             default: {
-                for (EventType currentEventType : queueEventTypeList) {
-                    logger.warn("EventType[code='queue'] is not unique: id={}", currentEventType.getId());
+                if (logger.isWarnEnabled()) {
+                    for (EventType currentEventType : queueEventTypeList) {
+                        logger.warn("EventType[code='queue'] is not unique: id={}", currentEventType.getId());
+                    }
                 }
                 queueEventType = queueEventTypeList.get(0);
                 break;
@@ -146,8 +148,10 @@ public class PatientQueueBean implements PatientQueueBeanLocal {
                 break;
             }
             default: {
-                for (ActionType currentActionType : queueActionTypeList) {
-                    logger.warn("ActionType[code='queue'] is not unique: id={}", currentActionType.getId());
+                if (logger.isWarnEnabled()) {
+                    for (ActionType currentActionType : queueActionTypeList) {
+                        logger.warn("ActionType[code='queue'] is not unique: id={}", currentActionType.getId());
+                    }
                 }
                 queueActionType = queueActionTypeList.get(0);
                 break;
@@ -175,8 +179,10 @@ public class PatientQueueBean implements PatientQueueBeanLocal {
                 break;
             }
             default: {
-                for (ActionPropertyType currentActionPropertyType : actionPropertyTypes) {
-                    logger.warn("ActionType[code='queue'] is not unique: id={}", currentActionPropertyType.getId());
+                if (logger.isWarnEnabled()) {
+                    for (ActionPropertyType currentActionPropertyType : actionPropertyTypes) {
+                        logger.warn("ActionType[code='queue'] is not unique: id={}", currentActionPropertyType.getId());
+                    }
                 }
                 queueActionPropertyType = actionPropertyTypes.get(0);
                 break;

@@ -187,7 +187,7 @@ class AppealBean extends AppealBeanLocal
                                           actionTypeBean.getActionTypeById(i18n("db.actionType.hospitalization.primary").toInt).getId.intValue(),
                                           authData)
         action.setStatus(ActionStatus.FINISHED.getCode) //TODO: Материть Александра!
-        em.persist(action)
+        dbManager.persist(action)
         list = actionPropertyTypeBean.getActionPropertyTypesByActionTypeId(i18n("db.actionType.hospitalization.primary").toInt).toList
       }
       else {
