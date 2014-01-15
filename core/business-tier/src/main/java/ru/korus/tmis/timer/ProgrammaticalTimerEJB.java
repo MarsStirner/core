@@ -14,29 +14,29 @@ import java.util.Date;
  * Company:     Korus Consulting IT<br>
  * Description:  Пробный программируемый таймер<br>
  */
-@Startup
-@Singleton
+//@Startup
+//@Singleton
 public class ProgrammaticalTimerEJB {
     private static final Logger logger = LoggerFactory.getLogger(ProgrammaticalTimerEJB.class);
 
-    @Resource
-    private TimerService timerService;
+//    @Resource
+//    private TimerService timerService;
 
     public ProgrammaticalTimerEJB() {
     }
 
-    @PostConstruct
+//    @PostConstruct
     public void createProgrammaticalTimer() {
-        logger.info("ProgrammaticalTimerEJB initialized");
-        ScheduleExpression everyTenSeconds = new ScheduleExpression()
-                .second("*/10").minute("*").hour("*");
-        timerService.createCalendarTimer(everyTenSeconds, new TimerConfig(
-                "passed message " + new Date(), false));
+//        logger.info("ProgrammaticalTimerEJB initialized");
+//        ScheduleExpression everyTenSeconds = new ScheduleExpression()
+//                .second("*/10").minute("*").hour("*");
+//        timerService.createCalendarTimer(everyTenSeconds, new TimerConfig(
+//                "passed message " + new Date(), false));
     }
 
     @Timeout
     public void handleTimer(final Timer timer) {
-        logger.info("timer received - contained message is: " + timer.getInfo());
+//        logger.info("timer received - contained message is: " + timer.getInfo());
     }
 
 }
