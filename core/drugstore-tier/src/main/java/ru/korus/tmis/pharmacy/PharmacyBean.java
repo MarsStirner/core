@@ -94,7 +94,8 @@ public class PharmacyBean implements PharmacyBeanLocal {
      * Полинг базы данных для поиска событий по движениям пациентов и назначениям ЛС
      */
     @Override
-    @Schedule(minute = "*/1", hour = "*", persistent = false)
+    // Шедулер отключен, т.к. работает таймер PharmacyTimer
+    // @Schedule(minute = "*/1", hour = "*", persistent = false)
     public void pooling() {
         if (ConfigManager.Drugstore().isActive()) {
             try {
@@ -527,7 +528,7 @@ public class PharmacyBean implements PharmacyBeanLocal {
                 ToLog toLog = new ToLog("PRESCRIPTION");
                 try {
                     final PrescriptionSendingRes prescriptionSendingRes = dbPrescriptionSendingResBeanLocal.getPrescriptionSendingRes(prescription.getDrugChart(), comp);
-                    prescriptionInfo.setPrescrUUID(this.dbPrescriptionSendingResBeanLocal.getIntervalUUID(prescription.getDrugChart(),comp));
+                    prescriptionInfo.setPrescrUUID(this.dbPrescriptionSendingResBeanLocal.getIntervalUUID(prescription.getDrugChart(), comp));
                     if (prescription.isPrescription()) { // передача нового / отмена назначения
                         prescriptionInfo.setAssignmentType(AssignmentType.ASSIGNMENT)
                                 .setNegationInd(prescription.getNewStatus().equals(PrescriptionStatus.PS_CANCELED));
