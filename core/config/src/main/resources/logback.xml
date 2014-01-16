@@ -226,36 +226,36 @@
     </appender>
 
     <!--TEST TEST TEST TEST TEST TEST-->
-    <appender name="LOGGING_SUBSYSTEM" class="ru.korus.tmis.util.logs.appender.RestfullLoggingSubsystemAppender">
-        <!--Layout отображения записи лога в строку (JSON)-->
-        <layout class="ru.korus.tmis.util.logs.layout.JSONLayout">
-            <coreVersion>${version.tmis.core}</coreVersion>
-            <tag>core</tag>
-            <tag>TESTING</tag>
-        </layout>
-        <url>http://192.168.1.102</url>
-        <charset>UTF8</charset>
-        <contentType>application/json</contentType>
-        <timeout>3000</timeout>
-        <checkInterval>30</checkInterval>
-        <!--Фильтр на уровни равные или выше указанного-->
-        <filter class="ch.qos.logback.classic.filter.ThresholdFilter">
-            <level>INFO</level>
-        </filter>
-        <!--Фильтр на маркеры-->
-        <filter class="ru.korus.tmis.util.logs.filter.MarkerFilter">
-            <marker>LOGGING_SUBSYSTEM_MARKER</marker>
-            <onMatch>ACCEPT</onMatch>
-            <onMismatch>DENY</onMismatch>
-        </filter>
-    </appender>
+    <!--<appender name="LOGGING_SUBSYSTEM" class="ru.korus.tmis.util.logs.appender.RestfullLoggingSubsystemAppender">-->
+        <!--&lt;!&ndash;Layout отображения записи лога в строку (JSON)&ndash;&gt;-->
+        <!--<layout class="ru.korus.tmis.util.logs.layout.JSONLayout">-->
+            <!--<coreVersion>${version.tmis.core}</coreVersion>-->
+            <!--<tag>core</tag>-->
+            <!--<tag>TESTING</tag>-->
+        <!--</layout>-->
+        <!--<url>http://192.168.1.102</url>-->
+        <!--<charset>UTF8</charset>-->
+        <!--<contentType>application/json</contentType>-->
+        <!--<timeout>3000</timeout>-->
+        <!--<checkInterval>30</checkInterval>-->
+        <!--&lt;!&ndash;Фильтр на уровни равные или выше указанного&ndash;&gt;-->
+        <!--<filter class="ch.qos.logback.classic.filter.ThresholdFilter">-->
+            <!--<level>INFO</level>-->
+        <!--</filter>-->
+        <!--&lt;!&ndash;Фильтр на маркеры&ndash;&gt;-->
+        <!--<filter class="ru.korus.tmis.util.logs.filter.MarkerFilter">-->
+            <!--<marker>LOGGING_SUBSYSTEM_MARKER</marker>-->
+            <!--<onMatch>ACCEPT</onMatch>-->
+            <!--<onMismatch>DENY</onMismatch>-->
+        <!--</filter>-->
+    <!--</appender>-->
     <!--TEST TEST TEST TEST TEST TEST-->
 
     <logger name="ru.korus.tmis.communication" level="DEBUG" additivity="false">
         <appender-ref ref="COMMUNICATION"/>
         <appender-ref ref="STDOUT_ERROR"/>
         <appender-ref ref="EXCEPTIONS"/>
-        <appender-ref ref="LOGGING_SUBSYSTEM"/>
+        <!--<appender-ref ref="LOGGING_SUBSYSTEM"/>-->
     </logger>
 
     <appender name="AUTH" class="ch.qos.logback.core.rolling.RollingFileAppender">

@@ -38,7 +38,7 @@ import java.util.*;
 public class CommServer implements Communications.Iface {
     //Logger
     private static final Logger logger = LoggerFactory.getLogger(CommServer.class);
-    private static final Marker LOGGING_SUBSYSTEM_MARKER = MarkerFactory.getMarker("LOGGING_SUBSYSTEM_MARKER");
+    //private static final Marker LOGGING_SUBSYSTEM_MARKER = MarkerFactory.getMarker("LOGGING_SUBSYSTEM_MARKER");
     //Beans
     private static DbOrgStructureBeanLocal orgStructureBean = null;
     private static DbPatientBeanLocal patientBean = null;
@@ -211,12 +211,12 @@ public class CommServer implements Communications.Iface {
     @Deprecated
     public Amb getWorkTimeAndStatus(final GetTimeWorkAndStatusParameters params) throws TException {
         final int currentRequestNum = ++requestNum;
-        logger.info(LOGGING_SUBSYSTEM_MARKER, "#{} Call method -> CommServer.getWorkTimeAndStatus({})", currentRequestNum, params);
+        logger.info("#{} Call method -> CommServer.getWorkTimeAndStatus({})", currentRequestNum, params);
         if (!params.isSetDate()) {
             params.setDate(new DateMidnight(DateTimeZone.UTC).getMillis());
         }
         final Date paramsDate = DateConvertions.convertUTCMillisecondsToLocalDate(params.getDate());
-        logger.debug(LOGGING_SUBSYSTEM_MARKER, "Readable date: {}", paramsDate);
+        logger.debug("Readable date: {}", paramsDate);
         Action personAction = null;
         //Доктор для которого получаем расписание
         Staff doctor = null;
@@ -256,7 +256,7 @@ public class CommServer implements Communications.Iface {
 //        }
         personScheduleBean.takeConstraintsOnTickets(currentSchedule, CommunicationHelper.getTypeOfQuota(params));
         final Amb result = ParserToThriftStruct.parsePersonScheduleToAmb(currentSchedule);
-        logger.info("End of #{} TimeAndStatus. Return \"{}\" as result.",
+        logger.info("End of #{} getWorkTimeAndStatus. Return \"{}\" as result.",
                 currentRequestNum, result);
         return result;
     }
@@ -1413,7 +1413,7 @@ public class CommServer implements Communications.Iface {
 
     public void endWork() {
         logger.warn("CommServer start closing");
-        logger.info(LOGGING_SUBSYSTEM_MARKER, "Total request served={}", requestNum);
+        logger.info("Total request served={}", requestNum);
         server.stop();
         logger.warn("Server stopped.");
         serverTransport.close();

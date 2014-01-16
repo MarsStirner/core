@@ -19,7 +19,7 @@ fi
 
 DELETE_JVM_OPTIONS=('-Xmx512m' '-XX\:MaxPermSize=192m')
 CREATE_JVM_OPTIONS=(
-        '-Dlogback.configurationFile=${com.sun.aas.instanceRoot}/config/logback.xml'
+#        '-Dlogback.configurationFile=${com.sun.aas.instanceRoot}/config/logback.xml'
         '-Dfile.encoding=UTF8'
         '-agentlib\:jdwp=transport=dt_socket,server=y,suspend=n,address=5005'
         '-XX\:+UnlockExperimentalVMOptions'
